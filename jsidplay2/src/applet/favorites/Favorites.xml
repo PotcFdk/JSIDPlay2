@@ -1,0 +1,74 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- Favorites -->
+<panel layout="GridLayout" bundle="applet.favorites.FavoritesTexts">
+	<vbox>
+		<label text="HINT" font="Georgia-ITALIC-12" constraints="BorderLayout.NORTH" />
+		<panel>
+			<vbox>
+				<hbox>
+					<button text="ADD" id="add" icon="applet/icons/add.png"
+						action="addFavorites" />
+					<button text="REMOVE" Enabled="false" icon="applet/icons/remove.png"
+						id="remove" action="removeFavorites" />
+					<button text="SELECT_ALL" id="selectAll" icon="applet/icons/selectall.png"
+						action="selectAllFavorites" />
+					<button text="DESELECT_ALL" id="deselectAll"
+						icon="applet/icons/deselectall.png" action="deselectAllFavorites" />
+				</hbox>
+				<hbox>
+					<button text="LOAD" id="load" icon="applet/icons/load.png"
+						action="loadFavorites" />
+					<button text="SAVE" id="save" icon="applet/icons/save.png"
+						action="saveFavorites" />
+					<button text="SAVEAS" id="saveAs" icon="applet/icons/save.png"
+						action="saveFavoritesAs" />
+				</hbox>
+			</vbox>
+		</panel>
+		<tabbedpane titles="" TabLayoutPolicy="WRAP_TAB_LAYOUT" id="favoriteList"
+			border="TitledBorder(PLAYLISTS)">
+			<label text="HINT_PLAYLISTS" />
+		</tabbedpane>
+		<panel layout="GridBagLayout" border="TitledBorder(PLAYBACK_OPTIONS)">
+			<label text="PLAYBACK_HINT" font="Georgia-ITALIC-12"
+				Foreground="BLUE">
+				<gridbagconstraints gridx="0" gridy="0"
+					gridwidth="4" gridheight="1" fill="GridBagConstraints.BOTH" />
+			</label>
+			<checkbox label="PLAYBACK_ON_OFF" id="playbackEnable"
+				action="enablePlayback">
+				<gridbagconstraints gridx="0" gridy="1" weightx="1"
+					weighty="1" fill="GridBagConstraints.BOTH" />
+			</checkbox>
+			<buttongroup>
+				<radiobutton label="NORMAL" Selected="true" Enabled="false"
+					id="normal">
+					<gridbagconstraints gridx="1" gridy="1" weightx="1"
+						weighty="1" fill="GridBagConstraints.BOTH" />
+				</radiobutton>
+				<radiobutton label="RANDOM_ONE_PLAYLIST" Enabled="false"
+					id="randomOne">
+					<gridbagconstraints gridx="2" gridy="1" weightx="1"
+						weighty="1" fill="GridBagConstraints.BOTH" />
+				</radiobutton>
+				<radiobutton label="RANDOM_ALL_PLAYLISTS" Enabled="false"
+					id="randomAll">
+					<gridbagconstraints gridx="3" gridy="1" weightx="1"
+						weighty="1" fill="GridBagConstraints.BOTH" />
+				</radiobutton>
+			</buttongroup>
+			<checkbox label="REPEAT_ON_OFF" Enable="false" id="repeatEnable"
+				action="enableRepeat">
+				<gridbagconstraints gridx="0" gridy="2" weightx="1"
+					weighty="1" fill="GridBagConstraints.BOTH" />
+			</checkbox>
+			<buttongroup>
+				<radiobutton label="REPEAT_ONE_TUNE" Selected="true"
+					Enabled="false" id="repeatOne">
+					<gridbagconstraints gridx="1" gridy="2" weightx="1"
+						weighty="1" fill="GridBagConstraints.BOTH" />
+				</radiobutton>
+			</buttongroup>
+		</panel>
+	</vbox>
+</panel>

@@ -1,0 +1,5 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- Video Screen -->
+<panel layout="BorderLayout" bundle="applet.printer.PrinterTexts">
+		<Paper id="paper" />
+</panel>

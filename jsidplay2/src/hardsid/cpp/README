@@ -1,0 +1,17 @@
+Fake HardSID driver:
+====================
+It emulates the existence of one or more HardSID sound cards (http://www.hardsid.com/).
+The first 8 devices are handled by communication via socket connection
+with the Java Virtual Machine running JSIDPlay2.
+That means all SID writes are transferred to JSIDPlay2 and executed
+in the SID emulator environment.
+Additionally, the fake HardSID driver loads the original driver
+of a HardSID4U sound-card and puts all real devices on top
+of the fake devices. Therefore, a software like ACID64,
+that is able to use HardSID4U as an output device
+detects up to 16 devices:
+8 jsidplay2 fake devices
++4 HardSID PCI card real devices
++4 HardSID4U USB devices
+The available number of devices depends on
+the actual number of real devices connected to your Computer.

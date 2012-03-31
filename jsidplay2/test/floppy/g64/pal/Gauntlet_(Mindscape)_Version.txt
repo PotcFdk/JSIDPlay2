@@ -1,0 +1,26 @@
+==============================================================================
+GAME INFO:
+------------------------------------------------------------------------------
+Name:              Gauntlet
+Published:         1986 Mindscape, Inc.
+Programmer:        Bob Armour
+Musician:          Ben Daglish
+Language:          English
+Genre:             Shoot'em Up - Gauntlet
+Players:           1 - 2 (Simultaneous)
+Control:           Joystick Port 1
+Comment:           US version
+Sid:               Daglish_Ben\Gauntlet.sid
+==============================================================================
+VERSION INFO:
+------------------------------------------------------------------------------
+Cracked/Crunched:  (None)
+Game Length:       1 Disk
+Trainers:          0
+High Score Saver:  No
+Loading Screen:    Yes
+Included Docs:     No
+True Drive Emul.:  Yes
+Pal/NTSC:          PAL+NTSC
+Comment:           
+==============================================================================

@@ -1,0 +1,16 @@
+The result of the ANE opcode is A = ((A | CONST) & X & IMM), with CONST apparently
+608	 	 being both chip- and temperature dependent.
+609	 	 
+610	 	 The commonly used value for CONST in various documents is 0xee, which is however
+611	 	 not to be taken for granted (as it is unstable). see here:
+612	 	 http://visual6502.org/wiki/index.php?title=6502_Opcode_8B_(XAA,_ANE)
+613	 	 
+614	 	 as seen in the list, there are several possible values, and its origin is still
+615	 	 kinda unknown. instead of the commonly used 0xee we use 0xff here, since this
+616	 	 will make the only known occurance of this opcode in actual code work. see here:
+617	 	 https://sourceforge.net/tracker/?func=detail&aid=2110948&group_id=223021&atid=1057617
+			(see file Spectipede_1006.tap)
+618	 	 
+619	 	 FIXME: in the unlikely event that other code surfaces that depends on another
+620	 	 CONST value, it probably has to be made configureable somehow if no value can
+621	 	 be found that works for both.

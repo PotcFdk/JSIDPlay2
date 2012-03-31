@@ -1,0 +1,125 @@
+Date:  20-Sep-96 22:55:21  MsgID: 294-17046  ToID: 100112,220
+From: 0Michael Schwendt >INTERNET:3schwend@informatik.uni-hamburg.de
+Subj:  Re: Combined SID waveforms, Envelope
+Chrg:  $0.00   Imp: Norm   Sens: Std    Receipt: No 
+
+Sender: 3schwend@informatik.uni-hamburg.de
+Received: from public.uni-hamburg.de (public.uni-hamburg.de [134.100.41.1]) by hil-img-2.compuserve.com (8.6.10/5.950515)
+	id WAA26879; Fri, 20 Sep 1996 22:47:43 -0400
+Received: from Hamburg.public.uni-hamburg.de by public.uni-hamburg.de (AIX 4.1/UCB 5.64/4.03)
+          id AA29386; Sat, 21 Sep 1996 04:47:25 +0200
+Sender: ms@public.uni-hamburg.de
+Message-Id: <324352D0.52D3C25C@informatik.uni-hamburg.de>
+Date: Sat, 21 Sep 1996 04:38:32 +0200
+From: Michael Schwendt <3schwend@informatik.uni-hamburg.de>
+Organization: Private Intranet (Moelln/Germany)
+X-Mailer: Mozilla 3.0 (X11; I; Linux 2.0.20 i586)
+Mime-Version: 1.0
+To: "Marko M." <Marko.Makela@HUT.FI>
+Cc: sjudd@nwu.edu, boose@misa.extern.fh-hannover.de, alstrup@diku.dk,
+        100112.220@compuserve.com, e9426444@stud1.tuwien.ac.at
+Subject: Re: Combined SID waveforms, Envelope
+References: <199609202204.AAA00974@sranje.tky.hut.fi>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+Marko M. wrote:
+> 
+> If you cannot remember reading his article in the
+> c64-hackers@lists.funet.fi list (where we should actually be
+> discussing this), ...
+
+Sorry for my ignorance, but as I haven't heard before about that
+mailing-list, I would like you to send me some related info, e.g. how to
+subscribe (e.g. ADD ?) ... is this possible ?
+
+> Wolfgang had some questions about the SID a while ago.  I think that
+> he measured the Attack, Decay and Release times and found there some
+> inconsistencies (the internal counters could not be fully
+> initialized). 
+
+Month ago I asked George W.Taylor for verification of the following,
+which is required to correctly replay some sidtunes.
+
+- in front of the Attack-phase there is a delay of 32 milliseconds, if
+the SID Attack-value is different from the Release-value
+
+- between Decay-phase and Release-phase there is a delay von 32
+milliseconds, if the SID Decay-value is different from the Release-value
+
+I could not correctly determine, whether the delay is always 32 ms or
+sometimes up to 32 ms. Inspite of this, the delay seems to be regular.
+Without, some notes are noticably shorter.
+
+[$51, tri-pulse]
+> How would you store it?  By digitizing the SID chip output again, or
+> by reading it from OSC3 in a synchronized loop?  Write the program (or
+> tell me to write it, if it is too much trouble), and scan the results
+> of all SIDs you have access to.  That info should definitely be put on
+> Andreas' SID homepage.
+
+Digitizing the SID chip output **again** ?? I rather tried to examine
+the combined waveforms with an oscilloscope at the Uni's Experimental
+Physics Laboratory. But that was when I had access to the equipment. Now
+I don't. Of course I wanted to find a way to calculate the resulting
+waveform. Since I didn't succeed and was terribly fed up hacking and
+combining functions, I used a *real* AND for a long time without
+examining its result. It didn't even sound like it could come close to
+the SID. We know why ! Later I decided to use an array of samples, which
+have a similar characteristic sound in comparison to the real SID. At
+least the output came somewhat closer.
+
+Digitizing the SID output by connecting the C64 to a PC soundcard at
+least gives the opportunity to take a look at the waveform
+characteristic. One thing is clear, for sure. A pulsewidth of zero (0)
+must be used to see the full waveform. Would mean, the pulse (square)
+waveform is nearly always of the value 255. A Pulsewidth of 2048 ($800)
+only shows the second part, which is the mirrored first half from
+0-2048. A distant relation to the triangle waveform can be discovered.
+The axis of the mirror is put where the triangle wave reaches its peak
+value.
+
+Concerning the other SID chip revisions, I'm still trying to persuade my
+friend to compile his old C64 equipment upon time. He has moved and left
+some of his old hardware at his family's and his younger brother's
+place. My C64 with MOS-6581R4 is available, though. But as my overall
+SID emulation is still far from perfect (I still find me calling it
+approximization), I doubt, that later SID chip revisions would reveal
+something spectacular. For instance, the R7 chip completely f*cked up
+occasionally, so it might also be damaged (Note: It was once taken out
+of the C64 and put into Roger Dahl's LPT1 hardware SID board, which had
+some flaws, but worked approx. 98% (?)).
+
+> Yet another thing to find out would be the filter behaviour.  Like
+> Yannes said, his solution regarding the filters caused different
+> manufacturing lots to behave differently. Now the question is if all
+> chips of the same revision were created in the same (or similar
+> enough) process, e.g. if all 6569R1s sound the same etc.  Well, the
+> answer is quite obviously "no", I think.  For instance, there are
+> differences between 6569R3 video chips manufactured at different
+> times.
+
+I still think, the inconsistencies just result in a somewhat
+stronger/weaker filter effect, nothing severe. Instead, I would be happy
+to learn more about the mapping of the SID filter value and the real
+filter frequency. The docs state: SIDvalue = (freq-30)/5.8182 Hz. But
+simply really is neither linear, nor exponential nor logarithmic.
+Christian Bauer told me, he approximizes via a second grade Taylor
+polynom, I'm using a clipped exponential approach. Bandwidth of the
+band-pass filter would be interesting, too.
+
+-- Michael Schwendt (aka "The Mage") 
+## Internet: mailto:Michael_Schwendt@public.uni-hamburg.de
+## Department of Computer Science - University of Hamburg, Germany
+## Entertainment: http://www.student.nada.kth.se/~d93-alo/c64/Sidplay/
+
+
+
+**CCs to:
+  100112,220
+  INTERNET:SJUDD@NWU.EDU
+  INTERNET:BOOSE@MISA.EXTERN.FH-HANNOVER.DE
+  INTERNET:ALSTRUP@DIKU.DK
+  INTERNET:E9426444@STUD1.TUWIEN.AC.AT
+
+

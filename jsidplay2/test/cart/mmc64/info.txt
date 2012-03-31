@@ -1,0 +1,16 @@
+How to create a BIOS bin (forum post snippets):
+
+Alternative 1:
+1. Attach some trash file as bios 
+2. Use the recovery diks and overwrite it 
+3. Now you have a valid bios image
+
+Alternative 2:
+Let's see - right click on file, send to hex editor,
+search "CBM80" (C3 C2 CD 38 30), go 4 bytes back (start/end address), cut to beginning of file,
+jump to 0x2000, cut to end of file, save with new filename.
+20 seconds.
+
+Btw, we still need an image of the SD card, additionally.
+These days tools like dd or WinImage are used.
+FAT16 is required for that, however never MMC64 plugins support FAT32.

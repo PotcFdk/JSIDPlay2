@@ -1,0 +1,81 @@
+Date:  14-Aug-95 20:50:43 GMT
+From:  Jonas Olse >INTERNET:bastard@diku.dk 
+Subj:  C64 SID test, differences between old and new vers
+
+Fredrik Claesson <e94_fcl@elixir.e.kth.se> writes:
+
+>>>And All 6581s don't sound alike, this is
+>>>especially apparent with the filters.
+>>
+>>Oh, how do you proofed that it is the 6581 that is responsible for
+>>different sound and not the board? There are two ceramic capacitors
+>>involved for filtering and these capacitors' capacity varies about +-~20%,
+>>which is likely the reason by any board sounds different. For testing I
+>>used 3 different SIDs in the same C64 board and the sound stayed the same.
+
+>Actually, I did some testing a while ago, using several different SIDs in a C6
+4
+>and a C128 respectively. Filter-specific sounds differed in no way when using
+a
+>SID in the C64 and then switching it to the C128. But compared to one another,
+>the SIDs sounded very different.
+
+I have experienced differences in filter sounds of the type Andreas mentions
+(same SID in different computers), which are probably cause by the capacitors,
+but I have also experienced differences in the sound using different SIDs in
+the same computer. This was at a copyparty here in Denmark, where Link/Vibrants
+swapped his SID with another one which sounded much cooler - it had more
+bass and generally it had a more "full" sound.
+
+Now, this was a long time ago, and thus before I started investigating the SID,
+so I don't know which revisions the SIDs were (sigh).
+
+I only have one SID now (from 1982(!), I think), but I have noticed several
+features in the SID, that might be things to change in newer revisions:
+
+When you trigger the test bit in $d404 bit 3, the waveform is supposed to
+reset as soon as the test bit is cleared. This reseting happens immediately
+when you use the triangle, sawtooth and pulsewaveforms, but with the noise-
+waveform, the waveform is not reset until several thousands of cycles later
+(this delay is different from time to time).
+This does not imply that the noise waveform doesn't output anything when
+you toggle the test bit, but rather that the noise waveform pattern does
+not start over until the above mentioned cycles. This means that you have
+to wait a few seconds after reseting the test bit before you start the noise
+waveform if you want to read the noise waveform from the beginning as I have
+done when I investigated it and discovered the underlying formula.
+I consider this to be a bug in the SID and I would imagine this is one of
+the things to fix in future revisions (and it shouldn't be hard to fix as
+it is only a matter of loading a 23 internal register with a fixed value).
+
+Furthermore, interesting things happen when you mix waveforms such as triangle
+and pulse. The programmers reference guide states that the output should be
+the logical AND of the two waveforms, but this was be proven to be false (other
+statements of the appendix regarding the SID have also be proven to be false).
+The resulting waveform is rather complex and I have not been able to establish
+what happens. But I know that some newer SIDs can produce audiable output when
+using other waveforms than the $51 which is heard on all c64s I have
+encountered.
+
+Known to most, is also the fact that a lot of the newer c64 can't play
+samples as audiable as the older c64s can.
+
+Finally, the envelope is subject to irratic behaviour on my SID too. If I
+toggle the gate bit a lot in a few seconds, the resulting envelope value
+measure at a given time differs from time to time.
+
+For further info on the SID, check out the technical SID documentation of
+the SID homepage at:
+
+http://stud1.tuwien.ac.at/~e9426444/sidtech.html
+
+Greetings,
+
+Asger Alstrup (using a friends account)
+--
+*******************************************************************************
+In the states they have; Bill Clinton, Bob Hope, Stewie Wonder and Jonny Cash -
+In Denmark we have; Poul Nyrup, No Hope, No Wonder and No Cash...
+*******************************************************************************
+
+

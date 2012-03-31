@@ -1,0 +1,884 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     12.07.2009 17:47:41                                                        
+
+     JSIDPlay2    
+     Create deployable JARS of the sources
+                   
+     Ken Händel
+     ====================================================================== -->
+<project name="JSIDPlay2" default="deploy" xmlns:cl="antlib:net.jtools.classloadertask">
+	<description>
+		Create deployable JARS from scratch, sign and upload to Sourceforge
+    </description>
+
+	<!-- SCP task definition -->
+	<typedef uri="antlib:net.jtools.classloadertask" resource="net/jtools/classloadertask/antlib.xml">
+		<classpath>
+			<fileset dir="${basedir}/antlib" includes="ant-classloadertask.jar" />
+		</classpath>
+	</typedef>
+	<cl:classloader loader="project">
+		<classpath>
+			<fileset dir="${basedir}/antlib" includes="jsch-0.1.45.jar" />
+			<fileset dir="${basedir}/antlib" includes="proguard.jar" />
+			<fileset dir="${launch4j.bindir}" includes="launch4j.jar" />
+			<fileset dir="${launch4j.bindir}/lib" includes="xstream.jar" />
+		</classpath>
+	</cl:classloader>
+
+	<!-- ProGuard task definition -->
+	<taskdef resource="proguard/ant/task.properties" loaderref="project" />
+
+	<!-- source folder to compile -->
+	<property name="src" location="${basedir}/src" />
+	<!-- encoding of java source files -->
+	<property name="src_encoding" value="ISO-8859-1" />
+	<!-- resources folder -->
+	<property name="res" location="${basedir}/res" />
+	<!-- binary folder of class files and resources -->
+	<property name="bin" location="${basedir}/bin" />
+	<!-- test source folder to compile -->
+	<property name="test_src" location="${basedir}/test" />
+	<!-- binary test folder of class files and resources -->
+	<property name="test_bin" location="${basedir}/test_bin" />
+	<!-- main jar name of the player -->
+	<property name="mainJar" value="jsidplay2.jar" />
+	<property name="mainJarConsole" value="jsidplay2_console.jar" />
+
+	<!-- build result directory with deployable form of JSIDPlay2 -->
+	<property name="result_dir" location="${basedir}/result" />
+	<!-- test results directory -->
+	<property name="target.junit.results.dir" location="${basedir}/test_results" />
+	<!-- test report directory -->
+	<property name="target.junit.report.dir" location="${target.junit.results.dir}/test_report" />
+	<!-- result directory of C64Jukebox applet version -->
+	<property name="c64jukebox_dir" location="${result_dir}/C64Jukebox" />
+	<!-- result directory of gamebase database JAR -->
+	<property name="gamebase_dir" location="${result_dir}/online/gamebase" />
+	<!-- result directory of HVSC -->
+	<property name="hvsc_dir" location="${result_dir}/online/hvsc" />
+	<!-- result directory of CGSC -->
+	<property name="cgsc_dir" location="${result_dir}/online/cgsc" />
+	<!-- result directory of Demos -->
+	<property name="demos_dir" location="${result_dir}/online/demos" />
+	<!-- result directory of HVMEC -->
+	<property name="hvmec_dir" location="${result_dir}/online/hvmec" />
+
+	<!-- Class path of JSIDPlay2 -->
+	<fileset id="jars" dir="${basedir}">
+		<include name="*.jar" />
+	</fileset>
+	<path id="class.path">
+		<fileset refid="jars" />
+	</path>
+	<!-- Test Class path of JSIDPlay2 -->
+	<fileset id="testjars" dir="${basedir}">
+		<include name="test/lib/*.jar" />
+	</fileset>
+	<path id="test.class.path">
+		<fileset refid="testjars" />
+	</path>
+	<!-- FEST task definition -->
+	<taskdef resource="festjunittasks" classpathref="test.class.path" />
+
+	<!-- Applet infos -->
+	<property name="name" value="Java SIDPlay2 - Music Player &amp; C64 SID Chip Emulator" />
+	<property name="width" value="1024" />
+	<property name="height" value="768" />
+	<!-- JNLP main class -->
+	<property name="jnlp_main_class" value="applet.JSIDPlay2" />
+	<!-- Main class of manifest file -->
+	<property name="mf_main_class" value="applet.JSIDPlay2" />
+	<property name="mf_main_class_console" value="sidplay.ConsolePlayer" />
+	<!-- Class path of manifest file -->
+	<pathconvert property="mf_class_path" pathsep=" " dirsep="">
+		<path refid="class.path" />
+		<map from="${basedir}" to="" />
+	</pathconvert>
+	<!-- Sizes of the class path entries -->
+	<scriptdef name="getfs" language="javascript">
+		<attribute name="files" />
+		<attribute name="path" />
+		<attribute name="property" />
+		<![CDATA[
+	            fileNames = attributes.get("files");
+				path = attributes.get("path");
+	            propName = attributes.get("property");
+				buf = new java.lang.StringBuffer();
+				tok = new java.util.StringTokenizer(fileNames, " ");
+				while (tok.hasMoreTokens()) {
+					fileName = tok.nextToken();
+        			file = new java.io.File(new java.io.File(path), fileName);
+					buf.append(new java.lang.Integer(file.length()));
+					if (tok.hasMoreTokens()) {
+						buf.append(" ");
+					}
+				}
+		        project.setNewProperty(propName, buf.toString());
+	        ]]>
+	</scriptdef>
+
+	<!-- Name of the archive containing the release of JSIDPlay2 -->
+	<property name="releaseName" value="jsidplay2-2.5" />
+
+	<!-- alias name of the key in the keystore to sign the JARs -->
+	<property name="sign_key_alias" value="jsidplay2" />
+
+	<!-- Sourceforge SSH server directory -->
+	<property name="remote_dir" value="htdocs" />
+
+	<!-- Read all properties to build and deploy -->
+	<property file="build.properties" />
+
+	<!-- ================================= 
+          target: launch4j_setup
+          Description:
+          Define task launch4j, but
+          only if property launch4j.bindir is set and pointing to a valid
+          launch4j (launch4j.sourceforge.net) installation.
+         ================================= -->
+	<target name="launch4j_setup" if="launch4j.bindir">
+		<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" loaderref="project" />
+	</target>
+
+	<!-- ================================= 
+          target: test
+          Description:
+          Run tests of JSIDPlay2.
+         ================================= -->
+	<target name="test" depends="test_compile" description="Test JSIDPlay2">
+		<delete dir="${target.junit.results.dir}" failonerror="false" />
+		<mkdir dir="${target.junit.results.dir}" />
+		<junit forkmode="perBatch" printsummary="yes" haltonfailure="no" haltonerror="no">
+			<classpath refid="test.class.path" />
+			<classpath refid="class.path" />
+			<classpath location="${bin}" />
+			<classpath location="${test_bin}" />
+			<formatter classname="org.fest.swing.junit.ant.ScreenshotOnFailureResultFormatter" extension=".xml" />
+			<batchtest fork="yes" todir="${target.junit.results.dir}">
+				<fileset dir="${test_bin}" includes="**/SidTest.class" />
+			</batchtest>
+		</junit>
+		<junit forkmode="perBatch" printsummary="yes" haltonfailure="no" haltonerror="no">
+			<classpath refid="test.class.path" />
+			<classpath refid="class.path" />
+			<classpath location="${bin}" />
+			<classpath location="${test_bin}" />
+			<formatter classname="org.fest.swing.junit.ant.ScreenshotOnFailureResultFormatter" extension=".xml" />
+			<batchtest fork="yes" todir="${target.junit.results.dir}">
+				<fileset dir="${test_bin}" includes="**/FrodoTest.class" />
+			</batchtest>
+		</junit>
+		<junit forkmode="perBatch" printsummary="yes" haltonfailure="no" haltonerror="no">
+			<classpath refid="test.class.path" />
+			<classpath refid="class.path" />
+			<classpath location="${bin}" />
+			<classpath location="${test_bin}" />
+			<formatter classname="org.fest.swing.junit.ant.ScreenshotOnFailureResultFormatter" extension=".xml" />
+			<batchtest fork="yes" todir="${target.junit.results.dir}">
+				<fileset dir="${test_bin}" includes="**/WolfgangLorenzTest.class" />
+			</batchtest>
+		</junit>
+		<delete dir="${target.junit.report.dir}" failonerror="true" />
+		<mkdir dir="${target.junit.report.dir}" />
+		<festreport todir="${target.junit.report.dir}">
+			<classpath refid="test.class.path" />
+			<fileset dir="${target.junit.results.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${target.junit.report.dir}/html" />
+		</festreport>
+	</target>
+
+	<!-- ================================= 
+          target: install
+          Description:
+          Install JSIDPlay2 to the result folder.
+          An installed JSIDPlay2 is launchable.
+         ================================= -->
+	<target name="install" depends="build,native_libs" description="Install JSIDPlay2" />
+
+	<!-- ================================= 
+          target: release
+          Description:
+          Create a release version of JSIDPlay2.
+          A release version is an archive containing
+          an JSIDPlay2 installation and some READMEs.
+         ================================= -->
+	<target name="release" depends="install" description="Release JSIDPlay2">
+		<mkdir dir="${result_dir}/${releaseName}" />
+		<copy todir="${result_dir}/${releaseName}">
+			<fileset dir="${res}">
+				<include name="README_1st.txt" />
+				<include name="README_2nd.txt" />
+			</fileset>
+		</copy>
+		<move todir="${result_dir}/${releaseName}">
+			<fileset dir="${result_dir}">
+				<include name="*" />
+
+				<exclude name="${releaseName}" />
+			</fileset>
+		</move>
+		<zip destfile="${result_dir}/${releaseName}.zip">
+			<fileset dir="${result_dir}">
+				<include name="${releaseName}/*" />
+			</fileset>
+		</zip>
+		<delete includeemptydirs="true">
+			<fileset dir="${result_dir}">
+				<include name="${releaseName}/*" />
+				<include name="${releaseName}" />
+			</fileset>
+		</delete>
+	</target>
+
+	<!-- ================================= 
+          target: deploy
+          Description:
+          Create JSIDPlay2. Also all JARs are signed.
+          The keystore file, the keystore password and the key password is required.
+          Everything is then deployed to Sourceforge.
+          The SSH key file, username and password is required as well.
+         ================================= -->
+	<target name="deploy" depends="build,jsiddevice_zip,c64jukebox,native_libs_jar,sign,jsidplay2_webresources,jsidplay2_jnlp,upload" description="Deploy JSIDPlay2 to Sourceforge" />
+
+	<!-- ================================= 
+          target: deployOnlineContent
+          Description:
+          Create extra online content of JSIDPlay2, that is Gamebase64 and HVSC.
+          Everything is deployed to Sourceforge.
+          The SSH key file, username and password is required.
+         ================================= -->
+	<target name="deployOnlineContent" depends="init,gb64_import,hvsc_import,cgsc_import,demos,hvmec_import,upload" description="Deploy extra online content to Sourceforge" />
+
+	<!-- ================================= 
+          target: build              
+          Description:
+          Create JSIDPlay2. For all sorts of deployable
+          variants that are supported.
+         ================================= -->
+	<target name="build" depends="init,jsidplay2,jsiddevice,create_executables,compress_exe" />
+
+	<!-- ================================= 
+          target: init
+          Description:
+          Clean up old binaries and build results and
+          re-create the directories.
+         ================================= -->
+	<target name="init">
+		<echo>Please, make sure java.home points to a JDK (java.home=${java.home})</echo>
+		<delete dir="${result_dir}" />
+		<mkdir dir="${result_dir}" />
+	</target>
+
+	<!-- ================================= 
+          target: compile
+          Description:
+          The time stamp in the main class is updated first,
+          then all classes of the source directory are
+          compiled into the target directory.
+          All resources are copied into the target directory,
+          as eclipse does it accordingly.
+         ================================= -->
+	<target name="compile">
+		<delete dir="${bin}" />
+		<mkdir dir="${bin}" />
+		<javac includeantruntime="false" debug="true" debuglevel="lines,vars,source" srcdir="${src}" destdir="${bin}" encoding="${src_encoding}">
+			<classpath refid="class.path" />
+		</javac>
+		<copy todir="${bin}">
+			<fileset dir="${src}">
+				<include name="**/*" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- ================================= 
+          target: test_compile
+          Description:
+          All test classes of the test source directory are
+          compiled into the test target directory.
+          All resources are copied into the test target directory,
+          that they are available for testing.
+         ================================= -->
+	<target name="test_compile" depends="compile">
+		<delete dir="${test_bin}" />
+		<mkdir dir="${test_bin}" />
+		<javac debug="true" debuglevel="lines,vars,source" srcdir="${test_src}" destdir="${test_bin}" encoding="${src_encoding}">
+			<classpath refid="class.path" />
+			<classpath refid="test.class.path" />
+			<classpath location="${bin}" />
+		</javac>
+		<copy todir="${test_bin}">
+			<fileset dir="${test_src}">
+				<include name="**/*" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- ================================= 
+          target: jsidplay2
+          Description:
+          Create a deployable form of JSIDPlay2.
+          At the moment applets, Java WebStart and
+          command-line is supported.
+         ================================= -->
+	<target name="jsidplay2" depends="jsidplay2_jar,jsidplay2_extjars" />
+
+	<!-- ================================= 
+          target: jsidplay2_jar
+          Description:
+          Create the main jar of JSIDplay2
+          all binaries and all sources are included
+          as well as a manifest file to create an executable jar.
+          In fact a GUI version and a console version is created (<mainJar>_console.jar).
+         ================================= -->
+	<target name="jsidplay2_jar" depends="compile">
+		<!-- GUI Player -->
+		<delete file="${result_dir}/${mainJar}" />
+		<jar destfile="${result_dir}/${mainJar}">
+			<fileset dir="${src}">
+				<include name="**/*" />
+				<exclude name="**/*.java" />
+			</fileset>
+			<fileset dir="${bin}">
+				<include name="**/*.class" />
+			</fileset>
+			<manifest>
+				<attribute name="Main-Class" value="${mf_main_class}" />
+				<attribute name="Class-Path" value="${mf_class_path}" />
+			</manifest>
+		</jar>
+		<!-- Console Player -->
+		<delete file="${result_dir}/${mainJarConsole}" />
+		<jar destfile="${result_dir}/${mainJarConsole}">
+			<manifest>
+				<attribute name="Main-Class" value="${mf_main_class_console}" />
+				<attribute name="Class-Path" value="${mainJar} ${mf_class_path}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- ================================= 
+          target: jsidplay2_extjars
+          Description:
+          Create all additional jar files needed
+          by the player. Some native libraries
+          are included in a jar to be deployable
+          by Java WebStart.
+         ================================= -->
+	<target name="jsidplay2_extjars">
+		<copy todir="${result_dir}">
+			<fileset refid="jars" />
+		</copy>
+	</target>
+
+	<!-- ================================= 
+          target: jsidplay2_resources
+          Description:
+          Add all additional resources.
+          That is a start page of the web-site,
+          some pictures and a disclaimer.
+         ================================= -->
+	<target name="jsidplay2_webresources" depends="jsidplay2_html">
+		<copy todir="${result_dir}">
+			<fileset dir="${res}">
+				<include name="disclaimer.gif" />
+				<include name="index.htm" />
+				<include name="*.jpg" />
+				<include name="*.gif" />
+				<include name="*.png" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- ================================= 
+          target: jsidplay2_html
+          Description:
+          Create an Applet HTML file.
+          That is the main page of the
+          Applet version.
+         ================================= -->
+	<target name="jsidplay2_html">
+		<xslt in="${res}/jsidplay2.html.tmpl" out="${result_dir}/jsidplay2.html" style="${res}/jsidplay2.html.xsl">
+			<param name="name" expression="${name}" />
+			<param name="width" expression="${width}" />
+			<param name="height" expression="${height}" />
+			<param name="main" expression="${jnlp_main_class}" />
+		</xslt>
+	</target>
+
+	<!-- ================================= 
+          target: c64jukebox
+          Description:
+          Create a deployable form of C64Jukebox,
+          that is a lightweight applet version
+          (http://c64jukebox.hardsid.com).
+         ================================= -->
+	<target name="c64jukebox" depends="c64jukebox_init,c64jukebox_jar,c64jukebox_resources" />
+
+	<!-- ================================= 
+          target: c64jukebox_init
+          Description:
+          Create C64Jukebox directory.
+         ================================= -->
+	<target name="c64jukebox_init">
+		<mkdir dir="${c64jukebox_dir}" />
+	</target>
+
+	<!-- ================================= 
+          target: c64jukebox_jar
+          Description:
+          Create the main jar of C64Jukebox.
+          all binaries and all sources are included.
+          Excluded is all GUI staff and functionality
+          which is not needed here.
+         ================================= -->
+	<target name="c64jukebox_jar" depends="compile">
+		<delete file="${c64jukebox_dir}/c64jukebox.jar" />
+		<jar destfile="${c64jukebox_dir}/c64jukebox.jar">
+			<fileset dir="${src}">
+				<exclude name="applet/**" />
+				<exclude name="hardsid/**" />
+				<exclude name="hardsid_builder/driver/**" />
+				<exclude name="hardsid_builder/lib/**" />
+				<exclude name="libpsid64/**" />
+			</fileset>
+			<fileset dir="${bin}">
+				<include name="**/*.class" />
+				<exclude name="applet/**" />
+				<exclude name="hardsid/**" />
+				<exclude name="hardsid_builder/driver/**" />
+				<exclude name="hardsid_builder/lib/**" />
+				<exclude name="libpsid64/**" />
+			</fileset>
+		</jar>
+	</target>
+
+	<!-- ================================= 
+          target: c64jukebox_resources
+          Description:
+          Add all additional resources.
+          That is a start page of the web-site
+          and some example SID files.
+         ================================= -->
+	<target name="c64jukebox_resources">
+		<copy todir="${c64jukebox_dir}">
+			<fileset dir="${res}">
+				<include name="files/**/*" />
+				<include name="SIDPlay.html" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- ================================= 
+          target: jsiddevice
+          Description:
+          Create a deployable form of JSIDDevice,
+          that is a Network SID Device of ACID64 player
+          (http://www.acid64.com).
+         ================================= -->
+	<target name="jsiddevice" depends="jsiddevice_jar,jsiddevice_shrink" description="Create a deployable form of JSIDDevice" />
+
+	<!-- ================================= 
+          target: jsiddevice_jar
+          Description:
+          Create the main jar of JSIDDevice
+          and add a manifest file to create an executable JAR.
+         ================================= -->
+	<target name="jsiddevice_jar" depends="compile">
+		<delete file="${result_dir}/jsiddevice.jar" />
+		<jar destfile="${result_dir}/jsiddevice.jar">
+			<fileset dir="${bin}">
+				<include name="netsiddev/*" />
+				<include name="netsiddev/ini/*" />
+				<include name="resid_builder/**/*.class" />
+				<include name="libsidplay/common/*.class" />
+				<include name="sidplay/audio/Audio*.class" />
+				<include name="sidplay/audio/JavaSound*.class" />
+				<include name="sidplay/ini/IniSection.class" />
+				<include name="sidplay/ini/IniReader.class" />
+				<include name="sidplay/ini/IniAudioSection.class" />
+				<include name="sidplay/ini/IniFilterSection.class" />
+			</fileset>
+			<manifest>
+				<attribute name="Main-Class" value="netsiddev.NetworkSIDDevice" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- ================================= 
+          target: jsiddevice_shrink
+          Description:
+          Optimize the main jar of JSIDDevice.
+          The JAR is really small (shrinked and optimized)
+          using proguard.
+         ================================= -->
+	<target name="jsiddevice_shrink" depends="jsiddevice_jar">
+		<proguard overloadaggressively="true" allowaccessmodification="true">
+			<injar file="${result_dir}/jsiddevice.jar" />
+			<outjar file="${result_dir}/jsiddevice_shrinked.jar" />
+			<libraryjar file="${java.home}/lib/rt.jar" />
+			<!-- Preserve the main method -->
+			<keep access="public" name="netsiddev.NetworkSIDDevice">
+				<method access="public static" type="void" name="main" parameters="java.lang.String[]" />
+			</keep>
+			<!-- Preserve the methods that are required in all enumeration classes. -->
+			<keepclassmembers extends="java.lang.Enum">
+				<method access="public static" type="**[]" name="values" parameters="" />
+				<method access="public static" type="**" name="valueOf" parameters="java.lang.String" />
+			</keepclassmembers>
+			<adaptresourcefilenames filter="**.png" />
+		</proguard>
+		<move file="${result_dir}/jsiddevice_shrinked.jar" tofile="${result_dir}/jsiddevice.jar" />
+	</target>
+
+	<!-- ================================= 
+          target: jsiddevice_zip
+          Description:
+          Create a ZIP containing the JSIDDevice
+          executable.
+         ================================= -->
+	<target name="jsiddevice_zip">
+		<zip destfile="${result_dir}/jsiddevice.zip">
+			<fileset dir="${result_dir}">
+				<include name="jsiddevice.exe" />
+			</fileset>
+		</zip>
+	</target>
+
+	<!-- ================================= 
+          target: native_libs
+          Description:
+          Add all native libraries to JSIDPlay2.
+         ================================= -->
+	<target name="native_libs">
+		<copy todir="${result_dir}">
+			<fileset dir="native">
+				<include name="**/*-linux*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${result_dir}">
+			<fileset dir="native">
+				<include name="**/*-osx*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${result_dir}">
+			<fileset dir="native">
+				<include name="**/*-dx*.*" />
+				<include name="**/*-win*.*" />
+				<include name="**/*-raw*.*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- ================================= 
+          target: native_libs_jar
+          Description:
+          Add all native libraries as a JAR to JSIDPlay2.
+         ================================= -->
+	<target name="native_libs_jar">
+		<jar destfile="${result_dir}/jinput-linux-native.jar">
+			<fileset dir="native">
+				<include name="**/*-linux*.*" />
+			</fileset>
+		</jar>
+		<jar destfile="${result_dir}/jinput-osx-native.jar">
+			<fileset dir="native">
+				<include name="**/*-osx*.*" />
+			</fileset>
+		</jar>
+		<jar destfile="${result_dir}/jinput-windows-native.jar">
+			<fileset dir="native">
+				<include name="**/*-dx*.*" />
+				<include name="**/*-win*.*" />
+				<include name="**/*-raw*.*" />
+			</fileset>
+		</jar>
+	</target>
+
+	<!-- ================================= 
+          target: sign
+          Description:
+          Sign JSIDPlay2 deployment results.
+         ================================= -->
+	<target name="sign">
+		<available file="${basedir}/build.properties" property="build.configured" />
+		<fail unless="build.configured" message="Please copy sample_build.properties to build.properties and configure settings." />
+		<input message="Keystore file?" addproperty="keystore" />
+		<input message="Keystore password to sign the jars?" addproperty="storepass" />
+		<input message="Key password to sign the jars?" addproperty="keypass" />
+		<input message="Key alias name?" addproperty="sign_key_alias" />
+		<!-- remove already existing key in keystore -->
+		<exec executable="${java.home}/bin/keytool">
+			<arg value="-delete" />
+			<arg value="-alias" />
+			<arg value="${sign_key_alias}" />
+			<arg value="-keystore" />
+			<arg value="${keystore}" />
+			<arg value="-storepass" />
+			<arg value="${storepass}" />
+		</exec>
+		<!-- generate key in keystore -->
+		<genkey keystore="${keystore}" storepass="${storepass}" keypass="${keypass}" alias="${sign_key_alias}" validity="3650" keyalg="RSA">
+			<dname>
+				<param name="CN" value="Ken Händel" />
+				<param name="OU" value="Open Source" />
+				<param name="O" value="JSIDPlay2" />
+				<param name="L" value="Berlin" />
+				<param name="ST" value="Berlin" />
+				<param name="C" value="DE" />
+			</dname>
+		</genkey>
+		<!-- sign jars using the key in keystore -->
+		<signjar keystore="${keystore}" storepass="${storepass}" keypass="${keypass}" alias="${sign_key_alias}">
+			<fileset dir="${result_dir}">
+				<include name="**/*.jar" />
+
+				<exclude name="**/jsiddevice.jar" />
+			</fileset>
+		</signjar>
+	</target>
+
+	<!-- ================================= 
+          target: jsidplay2_jnlp
+          Description:
+          Create a JNLP configuration file.
+          That is the main page of the Java
+          Web Start Application.
+         ================================= -->
+	<target name="jsidplay2_jnlp">
+		<getfs property="jars.size" files="${mf_class_path}" path="${result_dir}" />
+		<length file="${result_dir}/${mainJar}" property="length" />
+
+		<length file="${result_dir}/jinput-linux-native.jar" property="linuxLength" />
+		<length file="${result_dir}/jinput-osx-native.jar" property="osxLength" />
+		<length file="${result_dir}/jinput-windows-native.jar" property="windowsLength" />
+
+		<length file="${result_dir}/jsidplay2.jpg" property="iconSize" />
+
+		<!-- JNLP to be used as an application (using application-desc) -->
+		<xslt in="${res}/jsidplay2.jnlp.tmpl" out="${result_dir}/jsidplay2.jnlp" style="${res}/jsidplay2.jnlp.xsl">
+			<param name="filename" expression="jsidplay2.jnlp" />
+			<param name="applet" expression="false" />
+			<!-- Classpath infos -->
+			<param name="classpath" expression="${mf_class_path}" />
+			<param name="jars_sizes" expression="${jars.size}" />
+			<!-- Main infos -->
+			<param name="main" expression="${jnlp_main_class}" />
+			<param name="jar" expression="${mainJar}" />
+			<param name="size" expression="${length}" />
+			<!-- Native infos -->
+			<param name="sizeLinux" expression="${linuxLength}" />
+			<param name="sizeOsx" expression="${osxLength}" />
+			<param name="sizeWindows" expression="${windowsLength}" />
+			<!-- Icon -->
+			<param name="sizeIcon" expression="${iconSize}" />
+		</xslt>
+		<!-- JNLP to be used as an applet (using applet-desc) -->
+		<xslt in="${res}/jsidplay2.jnlp.tmpl" out="${result_dir}/jsidplay2applet.jnlp" style="${res}/jsidplay2.jnlp.xsl">
+			<param name="filename" expression="jsidplay2applet.jnlp" />
+			<param name="applet" expression="true" />
+			<!-- Applet infos -->
+			<param name="name" expression="${name}" />
+			<param name="width" expression="${width}" />
+			<param name="height" expression="${height}" />
+			<!-- Classpath infos -->
+			<param name="classpath" expression="${mf_class_path}" />
+			<param name="jars_sizes" expression="${jars.size}" />
+			<!-- Main infos -->
+			<param name="main" expression="${jnlp_main_class}" />
+			<param name="jar" expression="${mainJar}" />
+			<param name="size" expression="${length}" />
+			<!-- Native infos -->
+			<param name="sizeLinux" expression="${linuxLength}" />
+			<param name="sizeOsx" expression="${osxLength}" />
+			<param name="sizeWindows" expression="${windowsLength}" />
+			<!-- Icon -->
+			<param name="sizeIcon" expression="${iconSize}" />
+		</xslt>
+	</target>
+
+	<!-- ================================= 
+          target: create_executables
+          Description:
+          Create native executables of all applications,
+          that is JSIDDevice, JSIDPlay2 and the console version of JSIDPlay2, but
+          only if property launch4j.bindir is set and pointing to a valid
+          launch4j (launch4j.sourceforge.net) installation.
+         ================================= -->
+	<target name="create_executables" depends="launch4j_setup" if="launch4j.bindir">
+		<launch4j configFile="launch4j/jsidplay2.cfg.xml" />
+		<launch4j configFile="launch4j/jsidplay2.cfg.console.xml" />
+		<launch4j configFile="launch4j/jsiddevice.xml" />
+	</target>
+
+	<!-- ================================= 
+          target: compress_exe
+          Description:
+          Shrink JSIDDevice, but
+          only if property upx.bindir is set and pointing to a valid
+          UPX (upx.sourceforge.net) installation.
+         ================================= -->
+	<target name="compress_exe" if="upx.bindir">
+		<exec executable="${upx.bindir}/upx">
+			<arg value="--lzma" />
+			<arg value="--best" />
+			<arg value="--ultra-brute" />
+			<arg file="${result_dir}/jsiddevice.exe" />
+		</exec>
+	</target>
+
+	<!-- ================================= 
+          target: upload
+          Description:
+          Upload JSIDPlay2 deployment results to Sourceforge.
+         ================================= -->
+	<target name="upload">
+		<available file="${basedir}/build.properties" property="build.configured" />
+		<fail unless="build.configured" message="Please copy sample_build.properties to build.properties and configure settings." />
+		<input message="SSH keyfile?" addproperty="keyfile" />
+		<input message="SSH passphrase?" addproperty="passphrase" />
+		<input message="SSH remote server?" addproperty="remote_srv" />
+		<input message="SSH remote directory?" addproperty="remote_dir" />
+		<scp verbose="true" keyfile="${keyfile}" passphrase="${passphrase}" todir="${remote_srv}:${remote_dir}" trust="true">
+			<fileset dir="${result_dir}">
+				<include name="**/*" />
+			</fileset>
+		</scp>
+	</target>
+
+	<!-- ================================= 
+          target: gb64_import
+          Description:
+          Import GameBase 64 database file (.mdb) via ODBC-JDBC bridge
+          into a java-based HSQLDB database as a JAR.
+         ================================= -->
+	<target name="gb64_import" depends="compile" if="gb64.mdbfile">
+		<available file="${basedir}/build.properties" property="build.configured" />
+		<fail unless="build.configured" message="Please copy sample_build.properties to build.properties and configure settings." />
+		<input message="sourceDriver?" addproperty="sourceDriver" />
+		<input message="sourceURL?" addproperty="sourceURL" />
+		<input message="targetDriver?" addproperty="targetDriver" />
+		<input message="targetURL?" addproperty="targetURL" />
+		<mkdir dir="${gamebase_dir}" />
+		<java fork="true" classname="applet.gamebase.createdb.DataMoverUtility">
+			<classpath refid="class.path" />
+			<classpath location="${bin}" />
+			<arg value="sourceDriver=${sourceDriver}" />
+			<arg value="sourceURL=${sourceURL}" />
+			<arg value="targetDriver=${targetDriver}" />
+			<arg value="targetURL=${targetURL}" />
+		</java>
+		<delete file="${gamebase_dir}/gb64.jar" />
+		<jar destfile="${gamebase_dir}/gb64.jar">
+			<fileset dir="${gamebase_dir}">
+				<include name="gb64.idx.*" />
+			</fileset>
+		</jar>
+		<delete>
+			<fileset dir="${gamebase_dir}">
+				<include name="gb64.idx.*" />
+			</fileset>
+		</delete>
+	</target>
+
+	<!-- ================================= 
+          target: hvsc_import
+          Description:
+          Import HVSC ZIP file (.zip) containing another ZIP file
+          into a single high compressed ZIP file.
+         ================================= -->
+	<target name="hvsc_import" if="hvsc.zip">
+		<delete dir="${hvsc_dir}" />
+		<mkdir dir="${hvsc_dir}" />
+		<!-- Uncompress HVSC completely -->
+		<unzip dest="${hvsc_dir}" src="${hvsc.zip}" />
+		<unzip dest="${hvsc_dir}" src="${hvsc_dir}/C64Music.zip" />
+		<delete>
+			<fileset dir="${hvsc_dir}">
+				<include name="*.zip" />
+			</fileset>
+		</delete>
+		<!-- Compress HVSC -->
+		<zip level="9" destfile="${hvsc_dir}/C64Music.zip" compress="true" update="false">
+			<fileset dir="${hvsc_dir}">
+				<include name="**/*.sid" />
+				<include name="**/*.txt" />
+			</fileset>
+		</zip>
+		<delete dir="${hvsc_dir}/C64Music" />
+		<!-- Split ZIP file (sourceforge has a maximum file size limit) -->
+		<java fork="true" classname="applet.collection.createhvsc.Split">
+			<classpath refid="class.path" />
+			<classpath location="${bin}" />
+			<arg value="bytes=99328000" />
+			<arg value="file=${hvsc_dir}/C64Music.zip" />
+		</java>
+		<delete file="${hvsc_dir}/C64Music.zip" />
+	</target>
+
+	<!-- ================================= 
+          target: cgsc_import
+          Description:
+          Import CGSC ZIP file (.7z)
+          into a ZIP file.
+         ================================= -->
+	<target name="cgsc_import" if="7zip.home">
+		<delete dir="${cgsc_dir}" />
+		<mkdir dir="${cgsc_dir}" />
+		<!-- Uncompress CGSC -->
+		<exec executable="${7zip.home}/7z" failonerror="true">
+			<arg value="x" />
+			<arg value="-o${cgsc_dir}" />
+			<arg value="${cgsc.7z}" />
+		</exec>
+		<!-- Compress CGSC -->
+		<zip level="9" destfile="${cgsc_dir}/CGSC.zip" compress="true" update="false">
+			<fileset dir="${cgsc_dir}">
+				<include name="**/*.mus" />
+				<include name="**/*.str" />
+			</fileset>
+		</zip>
+		<delete dir="${cgsc_dir}/CGSC" />
+	</target>
+
+	<!-- ================================= 
+          target: demos
+          Description:
+          Copy Demos ZIP file.
+         ================================= -->
+	<target name="demos">
+		<delete dir="${demos_dir}" />
+		<mkdir dir="${demos_dir}" />
+		<copy todir="${demos_dir}" file="${test_src}/demos/Demos.zip" />
+	</target>
+
+	<!-- ================================= 
+          target: hvmec
+          Description:
+          Import HVMEC BZ2 file (.bz2)
+          into a ZIP file.
+         ================================= -->
+	<target name="hvmec_import" if="hvmec.bz2">
+		<delete dir="${hvmec_dir}" />
+		<mkdir dir="${hvmec_dir}" />
+		<untar src="${hvmec.bz2}" compression="gzip" dest="${hvmec_dir}" />
+		<delete>
+			<fileset dir="${hvmec_dir}">
+				<include name="*.tar" />
+			</fileset>
+		</delete>
+		<zip level="9" destfile="${hvmec_dir}/HVMEC.zip" compress="true" update="false">
+			<fileset dir="${hvmec_dir}">
+				<include name="**/*" />
+			</fileset>
+		</zip>
+		<delete dir="${hvmec_dir}/HVMEC" />
+	</target>
+
+</project>

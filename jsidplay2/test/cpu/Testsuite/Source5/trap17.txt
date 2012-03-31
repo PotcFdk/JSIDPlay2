@@ -1,0 +1,2085 @@
+
+                          *= $0801
+0801 4C 14 08 00 97
+                          .BYTE $4C,$14,$08,$00,$97
+               TURBOASS   = 780
+0806 37 38 30             .TEXT "780"
+0809 2C 30 3A 9E 32 30
+                          .BYTE $2C,$30,$3A,$9E,$32,$30
+080F 37 33 00 00 00
+                          .BYTE $37,$33,$00,$00,$00
+0814 A9 01                LDA #1
+0816 8D 0C 03             STA TURBOASS
+0819 4C 3D 08             JMP MAIN
+
+               CODE       = $FFFF
+               DATA       = $34E3
+               ZERODATA   = $F7
+               ZEROPTR    = $F7;$F8
+
+               PTABLE     = 172;173
+081C 00        BCMD       .BYTE 0
+               PCODE      = 174;175
+
+               DB         = %00011011
+               AB         = %11000110
+               XB         = %10110001
+               YB         = %01101100
+
+               DA         = DATA
+081D 00        AA         .BYTE 0
+081E 00        XA         .BYTE 0
+081F 00        YA         .BYTE 0
+0820 00        PA         .BYTE 0
+
+               RAM
+0821 A9 7F                LDA #127
+0823 8D 0D DC             STA $DC0D
+0826 A9 E3                LDA #$E3
+0828 85 00                STA 0
+082A A9 34                LDA #$34
+082C 85 01                STA 1
+082E 60                   RTS
+
+               ROM
+082F A9 2F                LDA #$2F
+0831 85 00                STA 0
+0833 A9 37                LDA #$37
+0835 85 01                STA 1
+0837 A9 81                LDA #129
+0839 8D 0D DC             STA $DC0D
+083C 60                   RTS
+
+
+               MAIN
+083D 20 DC 09             JSR PRINT
+0840 0D                   .BYTE 13
+0841 91 54 52 41 50 31 37
+                          .TEXT "‘TRAP17"
+0848 00                   .BYTE 0
+0849 A9 FF                LDA #$FF
+084B 85 AE                STA PCODE+0
+084D A9 FF                LDA #$FF
+084F 85 AF                STA PCODE+1
+
+0851 A9 F6                LDA #<TABLE
+0853 85 AC                STA PTABLE+0
+0855 A9 0E                LDA #>TABLE
+0857 85 AD                STA PTABLE+1
+
+               NEXTCOMMAND
+
+               WAITBORDER
+0859 AD 11 D0             LDA $D011
+085C 30 07                BMI ISBORDER
+085E AD 12 D0             LDA $D012
+0861 C9 14                CMP #20
+0863 B0 F4                BCS WAITBORDER
+               ISBORDER
+0865 20 21 08             JSR RAM
+0868 A9 60                LDA #$60
+086A 8D FF FF             STA $FFFF
+086D 85 02                STA 2
+086F 85 03                STA 3
+0871 A0 00                LDY #0
+0873 AD 1C 08             LDA BCMD
+0876 91 AE                STA (PCODE),Y
+
+0878 A0 03                LDY #3
+087A B1 AC                LDA (PTABLE),Y
+087C 8D 86 08             STA JUMP+1
+087F C8                   INY
+0880 B1 AC                LDA (PTABLE),Y
+0882 8D 87 08             STA JUMP+2
+
+0885 20 11 11  JUMP       JSR $1111
+
+0888 20 2F 08             JSR ROM
+
+088B A0 05                LDY #5
+088D AD E3 34             LDA DA
+0890 D1 AC                CMP (PTABLE),Y
+0892 D0 3B                BNE ERROR
+0894 C8                   INY
+0895 AD 1D 08             LDA AA
+0898 D1 AC                CMP (PTABLE),Y
+089A D0 33                BNE ERROR
+089C C8                   INY
+089D AD 1E 08             LDA XA
+08A0 D1 AC                CMP (PTABLE),Y
+08A2 D0 2B                BNE ERROR
+08A4 C8                   INY
+08A5 AD 1F 08             LDA YA
+08A8 D1 AC                CMP (PTABLE),Y
+08AA D0 23                BNE ERROR
+08AC C8                   INY
+08AD AD 20 08             LDA PA
+08B0 D1 AC                CMP (PTABLE),Y
+08B2 D0 1B                BNE ERROR
+               NOSTOP
+08B4 20 2F 08             JSR ROM
+08B7 18                   CLC
+08B8 A5 AC                LDA PTABLE+0
+08BA 69 0A                ADC #10
+08BC 85 AC                STA PTABLE+0
+08BE A5 AD                LDA PTABLE+1
+08C0 69 00                ADC #0
+08C2 85 AD                STA PTABLE+1
+08C4 EE 1C 08             INC BCMD
+08C7 D0 03                BNE JMPNEXTCOMMAND
+08C9 4C 9C 09             JMP OK
+               JMPNEXTCOMMAND
+08CC 4C 59 08             JMP NEXTCOMMAND
+
+               ERROR
+08CF 20 2F 08             JSR ROM
+08D2 A9 0D                LDA #13
+08D4 20 D2 FF             JSR $FFD2
+08D7 A0 00                LDY #0
+08D9 B1 AC                LDA (PTABLE),Y
+08DB 20 D2 FF             JSR $FFD2
+08DE C8                   INY
+08DF B1 AC                LDA (PTABLE),Y
+08E1 20 D2 FF             JSR $FFD2
+08E4 C8                   INY
+08E5 B1 AC                LDA (PTABLE),Y
+08E7 20 D2 FF             JSR $FFD2
+08EA A9 20                LDA #32
+08EC 20 D2 FF             JSR $FFD2
+08EF AD 1C 08             LDA BCMD
+08F2 20 04 0A             JSR PRINTHB
+08F5 20 DC 09             JSR PRINT
+08F8 0D                   .BYTE 13
+08F9 41 46 54 45 52 20 20
+                          .TEXT "AFTER  "
+0900 00                   .BYTE 0
+0901 AD E3 34             LDA DA
+0904 20 04 0A             JSR PRINTHB
+0907 A9 20                LDA #32
+0909 20 D2 FF             JSR $FFD2
+090C 20 D2 FF             JSR $FFD2
+090F AD 1D 08             LDA AA
+0912 20 04 0A             JSR PRINTHB
+0915 A9 20                LDA #32
+0917 20 D2 FF             JSR $FFD2
+091A AD 1E 08             LDA XA
+091D 20 04 0A             JSR PRINTHB
+0920 A9 20                LDA #32
+0922 20 D2 FF             JSR $FFD2
+0925 AD 1F 08             LDA YA
+0928 20 04 0A             JSR PRINTHB
+092B A9 20                LDA #32
+092D 20 D2 FF             JSR $FFD2
+0930 20 D2 FF             JSR $FFD2
+0933 AD 20 08             LDA PA
+0936 20 04 0A             JSR PRINTHB
+0939 20 DC 09             JSR PRINT
+093C 0D                   .BYTE 13
+093D 52 49 47 48 54 20 20
+                          .TEXT "RIGHT  "
+0944 00                   .BYTE 0
+0945 A0 05                LDY #5
+0947 B1 AC                LDA (PTABLE),Y
+0949 20 04 0A             JSR PRINTHB
+094C A9 20                LDA #32
+094E 20 D2 FF             JSR $FFD2
+0951 20 D2 FF             JSR $FFD2
+0954 C8                   INY
+0955 B1 AC                LDA (PTABLE),Y
+0957 20 04 0A             JSR PRINTHB
+095A A9 20                LDA #32
+095C 20 D2 FF             JSR $FFD2
+095F C8                   INY
+0960 B1 AC                LDA (PTABLE),Y
+0962 20 04 0A             JSR PRINTHB
+0965 A9 20                LDA #32
+0967 20 D2 FF             JSR $FFD2
+096A C8                   INY
+096B B1 AC                LDA (PTABLE),Y
+096D 20 04 0A             JSR PRINTHB
+0970 A9 20                LDA #32
+0972 20 D2 FF             JSR $FFD2
+0975 20 D2 FF             JSR $FFD2
+0978 C8                   INY
+0979 B1 AC                LDA (PTABLE),Y
+097B 20 04 0A             JSR PRINTHB
+097E A9 0D                LDA #13
+0980 20 D2 FF             JSR $FFD2
+               WAITKEY
+0983 20 E4 FF             JSR $FFE4
+0986 F0 FB                BEQ WAITKEY
+0988 C9 03                CMP #3
+098A D0 08                BNE JMPNOSTOP
+098C AD 0C 03             LDA TURBOASS
+098F F0 06                BEQ RETURN
+0991 4C 00 80             JMP $8000
+               JMPNOSTOP
+0994 4C B4 08             JMP NOSTOP
+               RETURN
+0997 A9 2F                LDA #47
+0999 85 00                STA 0
+099B 60                   RTS
+
+               OK
+099C 20 DC 09             JSR PRINT
+099F 20 2D 20 4F 4B
+                          .TEXT " - OK"
+09A4 0D 00                .BYTE 13,0
+09A6 AD 0C 03             LDA TURBOASS
+09A9 F0 08                BEQ LOAD
+09AB 20 E4 FF  WAIT       JSR $FFE4
+09AE F0 FB                BEQ WAIT
+09B0 4C 00 80             JMP $8000
+
+               LOAD
+09B3 A9 2F                LDA #47
+09B5 85 00                STA 0
+09B7 20 DC 09             JSR PRINT
+09BA 42 52 41 4E 43 48 57 52 41 50
+               NAME       .TEXT "BRANCHWRAP"
+               NAMELEN    = *-NAME
+09C4 00                   .BYTE 0
+09C5 A9 00                LDA #0
+09C7 85 0A                STA $0A
+09C9 85 B9                STA $B9
+09CB A9 0A                LDA #NAMELEN
+09CD 85 B7                STA $B7
+09CF A9 BA                LDA #<NAME
+09D1 85 BB                STA $BB
+09D3 A9 09                LDA #>NAME
+09D5 85 BC                STA $BC
+09D7 68                   PLA
+09D8 68                   PLA
+09D9 4C 6F E1             JMP $E16F
+
+09DC 68        PRINT      PLA
+                          .BLOCK
+09DD 8D E7 09             STA PRINT0+1
+09E0 68                   PLA
+09E1 8D E8 09             STA PRINT0+2
+09E4 A2 01                LDX #1
+09E6 BD E6 09  PRINT0     LDA !*,X
+09E9 F0 06                BEQ PRINT1
+09EB 20 D2 FF             JSR $FFD2
+09EE E8                   INX
+09EF D0 F5                BNE PRINT0
+09F1 38        PRINT1     SEC
+09F2 8A                   TXA
+09F3 6D E7 09             ADC PRINT0+1
+09F6 8D 02 0A             STA PRINT2+1
+09F9 A9 00                LDA #0
+09FB 6D E8 09             ADC PRINT0+2
+09FE 8D 03 0A             STA PRINT2+2
+0A01 4C 01 0A  PRINT2     JMP !*
+                          .BEND
+
+               PRINTHB
+                          .BLOCK
+0A04 48                   PHA
+0A05 4A                   LSR A
+0A06 4A                   LSR A
+0A07 4A                   LSR A
+0A08 4A                   LSR A
+0A09 20 0F 0A             JSR PRINTHN
+0A0C 68                   PLA
+0A0D 29 0F                AND #$0F
+               PRINTHN
+0A0F 09 30                ORA #$30
+0A11 C9 3A                CMP #$3A
+0A13 90 02                BCC PRINTHN0
+0A15 69 06                ADC #6
+               PRINTHN0
+0A17 20 D2 FF             JSR $FFD2
+0A1A 60                   RTS
+                          .BEND
+
+
+0A1B 00        SAVESP     .BYTE 0
+               SAVEDSTACK = $2A00;2AFF
+
+
+               SAVESTACK
+                          .BLOCK
+0A1C BA                   TSX
+0A1D 8E 1B 0A             STX SAVESP
+0A20 A2 00                LDX #0
+               SAVE
+0A22 BD 00 01             LDA $0100,X
+0A25 9D 00 2A             STA SAVEDSTACK,X
+0A28 E8                   INX
+0A29 D0 F7                BNE SAVE
+0A2B 60                   RTS
+                          .BEND
+
+
+               RESTORESTACK
+                          .BLOCK
+0A2C 68                   PLA
+0A2D 8D 49 0A             STA RETLOW+1
+0A30 68                   PLA
+0A31 8D 46 0A             STA RETHIGH+1
+0A34 AE 1B 0A             LDX SAVESP
+0A37 E8                   INX
+0A38 E8                   INX
+0A39 9A                   TXS
+0A3A A2 00                LDX #0
+               RESTORE
+0A3C BD 00 2A             LDA SAVEDSTACK,X
+0A3F 9D 00 01             STA $0100,X
+0A42 E8                   INX
+0A43 D0 F7                BNE RESTORE
+               RETHIGH
+0A45 A9 11                LDA #$11
+0A47 48                   PHA
+               RETLOW
+0A48 A9 11                LDA #$11
+0A4A 48                   PHA
+0A4B 60                   RTS
+                          .BEND
+
+               EXECUTE
+0A4C A9 00                LDA #0
+0A4E 48                   PHA
+0A4F A9 1B                LDA #DB
+0A51 8D E3 34             STA DA
+0A54 A9 C6                LDA #AB
+0A56 A2 B1                LDX #XB
+0A58 A0 6C                LDY #YB
+0A5A 28                   PLP
+0A5B 20 6E 0A             JSR JMPPCODE
+0A5E 08                   PHP
+0A5F D8                   CLD
+0A60 8D 1D 08             STA AA
+0A63 8E 1E 08             STX XA
+0A66 8C 1F 08             STY YA
+0A69 68                   PLA
+0A6A 8D 20 08             STA PA
+0A6D 60                   RTS
+
+               JMPPCODE
+0A6E 6C AE 00             JMP (PCODE)
+
+               N
+0A71 A9 87                LDA #$87
+0A73 85 00                STA 0
+0A75 20 4C 0A             JSR EXECUTE
+0A78 60                   RTS
+
+               B
+0A79 A9 1B                LDA #DB
+0A7B 85 00                STA 0
+0A7D 20 4C 0A             JSR EXECUTE
+0A80 60                   RTS
+
+               Z
+0A81 A9 F7                LDA #ZERODATA
+0A83 A0 01                LDY #1
+0A85 91 AE                STA (PCODE),Y
+0A87 A9 1B                LDA #DB
+0A89 85 F7                STA ZERODATA
+0A8B 20 4C 0A             JSR EXECUTE
+0A8E A5 F7                LDA ZERODATA
+0A90 8D E3 34             STA DA
+0A93 60                   RTS
+
+               ZX
+0A94 A9 53                LDA #$53
+0A96 85 00                STA 0
+0A98 A9 1B                LDA #DB
+0A9A 85 04                STA 4
+0A9C 20 4C 0A             JSR EXECUTE
+0A9F A5 04                LDA 4
+0AA1 8D E3 34             STA DA
+0AA4 60                   RTS
+
+               ZY
+0AA5 A9 87                LDA #$87
+0AA7 85 00                STA 0
+0AA9 A9 8B                LDA #ZERODATA-YB&$FF
+0AAB A0 01                LDY #1
+0AAD 91 AE                STA (PCODE),Y
+0AAF A9 1B                LDA #DB
+0AB1 85 F7                STA ZERODATA
+0AB3 20 4C 0A             JSR EXECUTE
+0AB6 A5 F7                LDA ZERODATA
+0AB8 8D E3 34             STA DA
+0ABB 60                   RTS
+
+               A
+0ABC A0 01                LDY #1
+0ABE A9 E3                LDA #<DA
+0AC0 91 AE                STA (PCODE),Y
+0AC2 C8                   INY
+0AC3 A9 34                LDA #>DA
+0AC5 91 AE                STA (PCODE),Y
+0AC7 20 4C 0A             JSR EXECUTE
+0ACA 60                   RTS
+
+               AX
+0ACB A9 03                LDA #$03
+0ACD 85 00                STA 0
+0ACF A9 14                LDA #$14
+0AD1 85 01                STA 1
+0AD3 AD B4 14             LDA $1403+XB
+0AD6 48                   PHA
+0AD7 A9 1B                LDA #DB
+0AD9 8D B4 14             STA $1403+XB
+0ADC 20 4C 0A             JSR EXECUTE
+0ADF AD B4 14             LDA $1403+XB
+0AE2 8D E3 34             STA DA
+0AE5 68                   PLA
+0AE6 8D B4 14             STA $1403+XB
+0AE9 60                   RTS
+
+               AY
+0AEA A9 03                LDA #$03
+0AEC 85 00                STA 0
+0AEE A9 14                LDA #$14
+0AF0 85 01                STA 1
+0AF2 AD 6F 14             LDA $1403+YB
+0AF5 48                   PHA
+0AF6 A9 1B                LDA #DB
+0AF8 8D 6F 14             STA $1403+YB
+0AFB 20 4C 0A             JSR EXECUTE
+0AFE AD 6F 14             LDA $1403+YB
+0B01 8D E3 34             STA DA
+0B04 68                   PLA
+0B05 8D 6F 14             STA $1403+YB
+0B08 60                   RTS
+
+
+               IX
+0B09 A9 53                LDA #$53
+0B0B 85 00                STA 0
+0B0D A9 E3                LDA #<DA
+0B0F 85 04                STA 4
+0B11 A9 34                LDA #>DA
+0B13 85 05                STA 5
+0B15 20 4C 0A             JSR EXECUTE
+0B18 60                   RTS
+
+               IY
+0B19 A9 87                LDA #$87
+0B1B 85 00                STA 0
+0B1D A0 01                LDY #1
+0B1F A9 F7                LDA #ZEROPTR
+0B21 91 AE                STA (PCODE),Y
+0B23 A9 77                LDA #<(DA-YB)
+0B25 85 F7                STA ZEROPTR+0&$FF
+0B27 A9 34                LDA #>(DA-YB)
+0B29 85 F8                STA ZEROPTR+1&$FF
+0B2B 20 4C 0A             JSR EXECUTE
+0B2E 60                   RTS
+
+               R
+0B2F A9 03                LDA #3
+0B31 85 00                STA 0
+0B33 A9 60                LDA #$60
+0B35 85 04                STA 4
+0B37 A9 00                LDA #0
+0B39 48                   PHA
+0B3A A9 1B                LDA #DB
+0B3C 8D E3 34             STA DA
+0B3F A9 C6                LDA #AB
+0B41 A2 B1                LDX #XB
+0B43 A0 6C                LDY #YB
+0B45 28                   PLP
+0B46 20 6E 0A             JSR JMPPCODE
+0B49 A9 F3                LDA #$F3
+0B4B 48                   PHA
+0B4C A9 1B                LDA #DB
+0B4E 8D E3 34             STA DA
+0B51 A9 C6                LDA #AB
+0B53 A2 B1                LDX #XB
+0B55 A0 6C                LDY #YB
+0B57 28                   PLP
+0B58 20 6E 0A             JSR JMPPCODE
+0B5B A9 E3                LDA #$E3
+0B5D 85 00                STA 0
+0B5F A9 60                LDA #$60
+0B61 8D E4 FF             STA $FFE4
+0B64 A9 00                LDA #0
+0B66 48                   PHA
+0B67 A9 1B                LDA #DB
+0B69 8D E3 34             STA DA
+0B6C A9 C6                LDA #AB
+0B6E A2 B1                LDX #XB
+0B70 A0 6C                LDY #YB
+0B72 28                   PLP
+0B73 20 6E 0A             JSR JMPPCODE
+0B76 A9 F3                LDA #$F3
+0B78 48                   PHA
+0B79 A9 1B                LDA #DB
+0B7B 8D E3 34             STA DA
+0B7E A9 C6                LDA #AB
+0B80 A2 B1                LDX #XB
+0B82 A0 6C                LDY #YB
+0B84 28                   PLP
+0B85 20 6E 0A             JSR JMPPCODE
+0B88 08                   PHP
+0B89 D8                   CLD
+0B8A 8D 1D 08             STA AA
+0B8D 8E 1E 08             STX XA
+0B90 8C 1F 08             STY YA
+0B93 68                   PLA
+0B94 8D 20 08             STA PA
+0B97 60                   RTS
+
+               HLTN
+0B98 A9 00                LDA #0
+0B9A 8D E3 34             STA DA
+0B9D 8D 1D 08             STA AA
+0BA0 8D 1E 08             STA XA
+0BA3 8D 1F 08             STA YA
+0BA6 8D 20 08             STA PA
+0BA9 60                   RTS
+
+
+               BRKN
+                          .BLOCK
+0BAA A9 03                LDA #3
+0BAC 8D FE FF             STA $FFFE
+0BAF A9 4C                LDA #$4C
+0BB1 85 03                STA 3
+0BB3 A9 C8                LDA #<CONTINUE
+0BB5 85 04                STA 4
+0BB7 A9 0B                LDA #>CONTINUE
+0BB9 85 05                STA 5
+0BBB A9 00                LDA #0
+0BBD 48                   PHA
+0BBE A9 C6                LDA #AB
+0BC0 A2 B1                LDX #XB
+0BC2 A0 6C                LDY #YB
+0BC4 28                   PLP
+0BC5 6C AE 00             JMP (PCODE)
+               CONTINUE
+0BC8 08                   PHP
+0BC9 D8                   CLD
+0BCA 8D 1D 08             STA AA
+0BCD 8E 1E 08             STX XA
+0BD0 8C 1F 08             STY YA
+0BD3 68                   PLA
+0BD4 8D 20 08             STA PA
+0BD7 A9 1B                LDA #DB
+0BD9 8D E3 34             STA DA
+0BDC 58                   CLI
+0BDD 68                   PLA
+0BDE 68                   PLA
+0BDF 68                   PLA
+0BE0 60                   RTS
+                          .BEND
+
+
+               JMPI
+                          .BLOCK
+0BE1 A9 F8                LDA #<CONTINUE
+0BE3 8D E3 34             STA DA+0
+0BE6 A9 0B                LDA #>CONTINUE
+0BE8 8D E4 34             STA DA+1
+0BEB A9 00                LDA #0
+0BED 48                   PHA
+0BEE A9 C6                LDA #AB
+0BF0 A2 B1                LDX #XB
+0BF2 A0 6C                LDY #YB
+0BF4 28                   PLP
+0BF5 6C AE 00             JMP (PCODE)
+               CONTINUE
+0BF8 08                   PHP
+0BF9 D8                   CLD
+0BFA 8D 1D 08             STA AA
+0BFD 8E 1E 08             STX XA
+0C00 8C 1F 08             STY YA
+0C03 68                   PLA
+0C04 8D 20 08             STA PA
+0C07 A9 1B                LDA #DB
+0C09 8D E3 34             STA DA
+0C0C 60                   RTS
+                          .BEND
+
+               JMPW
+                          .BLOCK
+0C0D A9 4C                LDA #$4C
+0C0F 8D E3 34             STA DA+0
+0C12 A9 29                LDA #<CONTINUE
+0C14 8D E4 34             STA DA+1
+0C17 A9 0C                LDA #>CONTINUE
+0C19 8D E5 34             STA DA+2
+0C1C A9 00                LDA #0
+0C1E 48                   PHA
+0C1F A9 C6                LDA #AB
+0C21 A2 B1                LDX #XB
+0C23 A0 6C                LDY #YB
+0C25 28                   PLP
+0C26 6C AE 00             JMP (PCODE)
+               CONTINUE
+0C29 08                   PHP
+0C2A D8                   CLD
+0C2B 8D 1D 08             STA AA
+0C2E 8E 1E 08             STX XA
+0C31 8C 1F 08             STY YA
+0C34 68                   PLA
+0C35 8D 20 08             STA PA
+0C38 A9 1B                LDA #DB
+0C3A 8D E3 34             STA DA
+0C3D 60                   RTS
+                          .BEND
+
+               JSRW
+                          .BLOCK
+0C3E A9 4C                LDA #$4C
+0C40 8D E3 34             STA DA+0
+0C43 A9 5A                LDA #<CONTINUE
+0C45 8D E4 34             STA DA+1
+0C48 A9 0C                LDA #>CONTINUE
+0C4A 8D E5 34             STA DA+2
+0C4D A9 00                LDA #0
+0C4F 48                   PHA
+0C50 A9 C6                LDA #AB
+0C52 A2 B1                LDX #XB
+0C54 A0 6C                LDY #YB
+0C56 28                   PLP
+0C57 6C AE 00             JMP (PCODE)
+               CONTINUE
+0C5A 08                   PHP
+0C5B D8                   CLD
+0C5C 8D 1D 08             STA AA
+0C5F 8E 1E 08             STX XA
+0C62 8C 1F 08             STY YA
+0C65 68                   PLA
+0C66 8D 20 08             STA PA
+0C69 A9 1B                LDA #DB
+0C6B 8D E3 34             STA DA
+0C6E 68                   PLA
+0C6F 68                   PLA
+0C70 60                   RTS
+                          .BEND
+
+
+               RTIN
+                          .BLOCK
+0C71 A9 0C                LDA #>CONTINUE
+0C73 48                   PHA
+0C74 A9 8C                LDA #<CONTINUE
+0C76 48                   PHA
+0C77 A9 B3                LDA #$B3
+0C79 48                   PHA
+0C7A A9 00                LDA #0
+0C7C 48                   PHA
+0C7D A9 1B                LDA #DB
+0C7F 8D E3 34             STA DA
+0C82 A9 C6                LDA #AB
+0C84 A2 B1                LDX #XB
+0C86 A0 6C                LDY #YB
+0C88 28                   PLP
+0C89 6C AE 00             JMP (PCODE)
+               CONTINUE
+0C8C 08                   PHP
+0C8D D8                   CLD
+0C8E 8D 1D 08             STA AA
+0C91 8E 1E 08             STX XA
+0C94 8C 1F 08             STY YA
+0C97 68                   PLA
+0C98 8D 20 08             STA PA
+0C9B 60                   RTS
+                          .BEND
+
+
+               SHAAY
+                          .IFPL DA&$FF-$C0
+0C9C A9 14                LDA #$14
+0C9E 18                   CLC
+0C9F 69 01                ADC #1
+0CA1 29 C6                AND #AB
+0CA3 29 B1                AND #XB
+0CA5 A0 05                LDY #5
+0CA7 91 AC                STA (PTABLE),Y
+0CA9 4C EA 0A             JMP AY
+                          .ENDIF
+               SHAIY
+                          .IFPL DA&$FF-$C0
+0CAC A9 34                LDA #>DA
+0CAE 18                   CLC
+0CAF 69 01                ADC #1
+0CB1 29 C6                AND #AB
+0CB3 29 B1                AND #XB
+0CB5 A0 05                LDY #5
+0CB7 91 AC                STA (PTABLE),Y
+0CB9 4C 19 0B             JMP IY
+                          .ENDIF
+               SHXAY
+                          .IFPL DA&$FF-$C0
+0CBC A9 14                LDA #$14
+0CBE 18                   CLC
+0CBF 69 01                ADC #1
+0CC1 29 B1                AND #XB
+0CC3 A0 05                LDY #5
+0CC5 91 AC                STA (PTABLE),Y
+0CC7 4C EA 0A             JMP AY
+                          .ENDIF
+               SHYAX
+                          .IFPL DA&$FF-$C0
+0CCA A9 14                LDA #$14
+0CCC 18                   CLC
+0CCD 69 01                ADC #1
+0CCF 29 6C                AND #YB
+0CD1 A0 05                LDY #5
+0CD3 91 AC                STA (PTABLE),Y
+0CD5 4C CB 0A             JMP AX
+                          .ENDIF
+               SHSAY
+                          .IFPL DA&$FF-$C0
+                          .BLOCK
+0CD8 A9 C6                LDA #AB
+0CDA 29 B1                AND #XB
+0CDC 8D 3D 0D             STA SR+1
+0CDF A2 14                LDX #$14
+0CE1 E8                   INX
+0CE2 8E E6 0C             STX ANDX+1
+               ANDX
+0CE5 29 11                AND #$11
+0CE7 A0 05                LDY #5
+0CE9 91 AC                STA (PTABLE),Y
+0CEB A9 03                LDA #$03
+0CED 85 00                STA 0
+0CEF A9 14                LDA #$14
+0CF1 85 01                STA 1
+0CF3 AD 6F 14             LDA $1403+YB
+0CF6 48                   PHA
+0CF7 A9 1B                LDA #DB
+0CF9 8D 6F 14             STA $1403+YB
+0CFC A9 4C                LDA #$4C
+0CFE 85 02                STA 2
+0D00 A9 18                LDA #<CONTINUE
+0D02 85 03                STA 3
+0D04 A9 0D                LDA #>CONTINUE
+0D06 85 04                STA 4
+0D08 20 1C 0A             JSR SAVESTACK
+0D0B A9 00                LDA #0
+0D0D 48                   PHA
+0D0E A9 C6                LDA #AB
+0D10 A2 B1                LDX #XB
+0D12 A0 6C                LDY #YB
+0D14 28                   PLP
+0D15 6C AE 00             JMP (PCODE)
+               CONTINUE
+0D18 08                   PHP
+0D19 D8                   CLD
+0D1A 8D 1D 08             STA AA
+0D1D 8E 1E 08             STX XA
+0D20 8C 1F 08             STY YA
+0D23 68                   PLA
+0D24 8D 20 08             STA PA
+0D27 BA                   TSX
+0D28 8E 39 0D             STX SA+1
+0D2B 20 2C 0A             JSR RESTORESTACK
+0D2E AD 6F 14             LDA $1403+YB
+0D31 8D E3 34             STA DA
+0D34 68                   PLA
+0D35 8D 6F 14             STA $1403+YB
+               SA
+0D38 A9 11                LDA #$11
+0D3A A0 06                LDY #6
+               SR
+0D3C C9 11                CMP #$11
+0D3E D0 01                BNE WRONG
+0D40 60                   RTS
+               WRONG
+0D41 68                   PLA
+0D42 68                   PLA
+0D43 4C CF 08             JMP ERROR
+                          .BEND
+                          .ENDIF
+
+                          .IFMI DA&$FF-$C0
+                          .ENDIF
+
+
+               TXSN
+                          .BLOCK
+0D46 A9 87                LDA #$87
+0D48 85 00                STA 0
+0D4A A9 4C                LDA #$4C
+0D4C 85 02                STA 2
+0D4E A9 6B                LDA #<CONTINUE
+0D50 85 03                STA 3
+0D52 A9 0D                LDA #>CONTINUE
+0D54 85 04                STA 4
+0D56 20 1C 0A             JSR SAVESTACK
+0D59 A9 00                LDA #0
+0D5B 48                   PHA
+0D5C A9 1B                LDA #DB
+0D5E 8D E3 34             STA DA
+0D61 A9 C6                LDA #AB
+0D63 A2 B1                LDX #XB
+0D65 A0 6C                LDY #YB
+0D67 28                   PLP
+0D68 6C AE 00             JMP (PCODE)
+               CONTINUE
+0D6B 08                   PHP
+0D6C D8                   CLD
+0D6D 8D 1D 08             STA AA
+0D70 8E 1E 08             STX XA
+0D73 8C 1F 08             STY YA
+0D76 68                   PLA
+0D77 8D 20 08             STA PA
+0D7A BA                   TSX
+0D7B 8E 82 0D             STX NEWSP+1
+0D7E 20 2C 0A             JSR RESTORESTACK
+               NEWSP
+0D81 A9 11                LDA #$11
+0D83 C9 B1                CMP #XB
+0D85 D0 01                BNE WRONG
+0D87 60                   RTS
+               WRONG
+0D88 68                   PLA
+0D89 68                   PLA
+0D8A 4C CF 08             JMP ERROR
+                          .BEND
+
+               PLAN
+                          .BLOCK
+0D8D A9 87                LDA #$87
+0D8F 85 00                STA 0
+0D91 A9 4C                LDA #$4C
+0D93 85 02                STA 2
+0D95 A9 B2                LDA #<CONTINUE
+0D97 85 03                STA 3
+0D99 A9 0D                LDA #>CONTINUE
+0D9B 85 04                STA 4
+0D9D A9 F0                LDA #$F0
+0D9F 48                   PHA
+0DA0 A9 00                LDA #0
+0DA2 48                   PHA
+0DA3 A9 1B                LDA #DB
+0DA5 8D E3 34             STA DA
+0DA8 A9 C6                LDA #AB
+0DAA A2 B1                LDX #XB
+0DAC A0 6C                LDY #YB
+0DAE 28                   PLP
+0DAF 6C AE 00             JMP (PCODE)
+               CONTINUE
+0DB2 08                   PHP
+0DB3 D8                   CLD
+0DB4 8D 1D 08             STA AA
+0DB7 8E 1E 08             STX XA
+0DBA 8C 1F 08             STY YA
+0DBD 68                   PLA
+0DBE 8D 20 08             STA PA
+0DC1 60                   RTS
+                          .BEND
+
+               PHAN
+                          .BLOCK
+0DC2 A9 87                LDA #$87
+0DC4 85 00                STA 0
+0DC6 A9 4C                LDA #$4C
+0DC8 85 02                STA 2
+0DCA A9 E4                LDA #<CONTINUE
+0DCC 85 03                STA 3
+0DCE A9 0D                LDA #>CONTINUE
+0DD0 85 04                STA 4
+0DD2 A9 00                LDA #0
+0DD4 48                   PHA
+0DD5 A9 1B                LDA #DB
+0DD7 8D E3 34             STA DA
+0DDA A9 C6                LDA #AB
+0DDC A2 B1                LDX #XB
+0DDE A0 6C                LDY #YB
+0DE0 28                   PLP
+0DE1 6C AE 00             JMP (PCODE)
+               CONTINUE
+0DE4 08                   PHP
+0DE5 D8                   CLD
+0DE6 8D 1D 08             STA AA
+0DE9 8E 1E 08             STX XA
+0DEC 8C 1F 08             STY YA
+0DEF 68                   PLA
+0DF0 8D 20 08             STA PA
+0DF3 68                   PLA
+0DF4 C9 C6                CMP #AB
+0DF6 D0 01                BNE WRONG
+0DF8 60                   RTS
+               WRONG
+0DF9 68                   PLA
+0DFA 68                   PLA
+0DFB 4C CF 08             JMP ERROR
+                          .BEND
+
+               PLPN
+                          .BLOCK
+0DFE A9 87                LDA #$87
+0E00 85 00                STA 0
+0E02 A9 4C                LDA #$4C
+0E04 85 02                STA 2
+0E06 A9 23                LDA #<CONTINUE
+0E08 85 03                STA 3
+0E0A A9 0E                LDA #>CONTINUE
+0E0C 85 04                STA 4
+0E0E A9 B3                LDA #$B3
+0E10 48                   PHA
+0E11 A9 00                LDA #0
+0E13 48                   PHA
+0E14 A9 1B                LDA #DB
+0E16 8D E3 34             STA DA
+0E19 A9 C6                LDA #AB
+0E1B A2 B1                LDX #XB
+0E1D A0 6C                LDY #YB
+0E1F 28                   PLP
+0E20 6C AE 00             JMP (PCODE)
+               CONTINUE
+0E23 08                   PHP
+0E24 D8                   CLD
+0E25 8D 1D 08             STA AA
+0E28 8E 1E 08             STX XA
+0E2B 8C 1F 08             STY YA
+0E2E 68                   PLA
+0E2F 8D 20 08             STA PA
+0E32 60                   RTS
+                          .BEND
+
+               PHPN
+                          .BLOCK
+0E33 A9 87                LDA #$87
+0E35 85 00                STA 0
+0E37 A9 4C                LDA #$4C
+0E39 85 02                STA 2
+0E3B A9 55                LDA #<CONTINUE
+0E3D 85 03                STA 3
+0E3F A9 0E                LDA #>CONTINUE
+0E41 85 04                STA 4
+0E43 A9 00                LDA #0
+0E45 48                   PHA
+0E46 A9 1B                LDA #DB
+0E48 8D E3 34             STA DA
+0E4B A9 C6                LDA #AB
+0E4D A2 B1                LDX #XB
+0E4F A0 6C                LDY #YB
+0E51 28                   PLP
+0E52 6C AE 00             JMP (PCODE)
+               CONTINUE
+0E55 08                   PHP
+0E56 D8                   CLD
+0E57 8D 1D 08             STA AA
+0E5A 8E 1E 08             STX XA
+0E5D 8C 1F 08             STY YA
+0E60 68                   PLA
+0E61 8D 20 08             STA PA
+0E64 68                   PLA
+0E65 C9 30                CMP #$30
+0E67 D0 01                BNE WRONG
+0E69 60                   RTS
+               WRONG
+0E6A 68                   PLA
+0E6B 68                   PLA
+0E6C 4C CF 08             JMP ERROR
+                          .BEND
+
+
+               LASAY
+                          .BLOCK
+0E6F BA                   TSX
+0E70 CA                   DEX
+0E71 8A                   TXA
+0E72 29 1B                AND #DB
+0E74 08                   PHP
+0E75 A0 06                LDY #6
+0E77 91 AC                STA (PTABLE),Y
+0E79 C8                   INY
+0E7A 91 AC                STA (PTABLE),Y
+0E7C 68                   PLA
+0E7D 29 B2                AND #%10110010
+0E7F A0 09                LDY #9
+0E81 91 AC                STA (PTABLE),Y
+0E83 A9 03                LDA #$03
+0E85 85 00                STA 0
+0E87 A9 14                LDA #$14
+0E89 85 01                STA 1
+0E8B AD 6F 14             LDA $1403+YB
+0E8E 48                   PHA
+0E8F A9 1B                LDA #DB
+0E91 8D 6F 14             STA $1403+YB
+0E94 A9 4C                LDA #$4C
+0E96 85 02                STA 2
+0E98 A9 B0                LDA #<CONTINUE
+0E9A 85 03                STA 3
+0E9C A9 0E                LDA #>CONTINUE
+0E9E 85 04                STA 4
+0EA0 20 1C 0A             JSR SAVESTACK
+0EA3 A9 00                LDA #0
+0EA5 48                   PHA
+0EA6 A9 C6                LDA #AB
+0EA8 A2 B1                LDX #XB
+0EAA A0 6C                LDY #YB
+0EAC 28                   PLP
+0EAD 6C AE 00             JMP (PCODE)
+               CONTINUE
+0EB0 08                   PHP
+0EB1 D8                   CLD
+0EB2 8D 1D 08             STA AA
+0EB5 8E 1E 08             STX XA
+0EB8 8C 1F 08             STY YA
+0EBB 68                   PLA
+0EBC 8D 20 08             STA PA
+0EBF BA                   TSX
+0EC0 8E D1 0E             STX SA+1
+0EC3 20 2C 0A             JSR RESTORESTACK
+0EC6 AD 6F 14             LDA $1403+YB
+0EC9 8D E3 34             STA DA
+0ECC 68                   PLA
+0ECD 8D 6F 14             STA $1403+YB
+               SA
+0ED0 A9 11                LDA #$11
+0ED2 A0 06                LDY #6
+0ED4 D1 AC                CMP (PTABLE),Y
+0ED6 D0 01                BNE WRONG
+0ED8 60                   RTS
+               WRONG
+0ED9 68                   PLA
+0EDA 68                   PLA
+0EDB 4C CF 08             JMP ERROR
+                          .BEND
+
+               TSXN
+0EDE A9 87                LDA #$87
+0EE0 85 00                STA 0
+0EE2 20 4C 0A             JSR EXECUTE
+0EE5 BA                   TSX
+0EE6 CA                   DEX
+0EE7 CA                   DEX
+0EE8 CA                   DEX
+0EE9 CA                   DEX
+0EEA 08                   PHP
+0EEB 8A                   TXA
+0EEC A0 07                LDY #7
+0EEE 91 AC                STA (PTABLE),Y
+0EF0 68                   PLA
+0EF1 A0 09                LDY #9
+0EF3 91 AC                STA (PTABLE),Y
+0EF5 60                   RTS
+
+               TABLE
+0EF6 42 52 4B             .TEXT "BRK"
+0EF9 AA 0B                .WORD BRKN
+0EFB 1B C6 B1 6C 34
+                          .BYTE $1B,$C6,$B1,$6C,$34
+0F00 4F 52 41             .TEXT "ORA"
+0F03 09 0B                .WORD IX
+0F05 1B DF B1 6C B0
+                          .BYTE $1B,$DF,$B1,$6C,$B0
+0F0A 48 4C 54             .TEXT "HLT"
+0F0D 98 0B                .WORD HLTN
+0F0F 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+0F14 41 53 4F             .TEXT "ASO"
+0F17 09 0B                .WORD IX
+0F19 36 F6 B1 6C B0
+                          .BYTE $36,$F6,$B1,$6C,$B0
+0F1E 4E 4F 50             .TEXT "NOP"
+0F21 81 0A                .WORD Z
+0F23 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+0F28 4F 52 41             .TEXT "ORA"
+0F2B 81 0A                .WORD Z
+0F2D 1B DF B1 6C B0
+                          .BYTE $1B,$DF,$B1,$6C,$B0
+0F32 41 53 4C             .TEXT "ASL"
+0F35 81 0A                .WORD Z
+0F37 36 C6 B1 6C 30
+                          .BYTE $36,$C6,$B1,$6C,$30
+0F3C 41 53 4F             .TEXT "ASO"
+0F3F 81 0A                .WORD Z
+0F41 36 F6 B1 6C B0
+                          .BYTE $36,$F6,$B1,$6C,$B0
+0F46 50 48 50             .TEXT "PHP"
+0F49 33 0E                .WORD PHPN
+0F4B 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+0F50 4F 52 41             .TEXT "ORA"
+0F53 79 0A                .WORD B
+0F55 1B DF B1 6C B0
+                          .BYTE $1B,$DF,$B1,$6C,$B0
+0F5A 41 53 4C             .TEXT "ASL"
+0F5D 71 0A                .WORD N
+0F5F 1B 8C B1 6C B1
+                          .BYTE $1B,$8C,$B1,$6C,$B1
+0F64 41 4E 43             .TEXT "ANC"
+0F67 79 0A                .WORD B
+0F69 1B 02 B1 6C 30
+                          .BYTE $1B,$02,$B1,$6C,$30
+0F6E 4E 4F 50             .TEXT "NOP"
+0F71 BC 0A                .WORD A
+0F73 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+0F78 4F 52 41             .TEXT "ORA"
+0F7B BC 0A                .WORD A
+0F7D 1B DF B1 6C B0
+                          .BYTE $1B,$DF,$B1,$6C,$B0
+0F82 41 53 4C             .TEXT "ASL"
+0F85 BC 0A                .WORD A
+0F87 36 C6 B1 6C 30
+                          .BYTE $36,$C6,$B1,$6C,$30
+0F8C 41 53 4F             .TEXT "ASO"
+0F8F BC 0A                .WORD A
+0F91 36 F6 B1 6C B0
+                          .BYTE $36,$F6,$B1,$6C,$B0
+0F96 42 50 4C             .TEXT "BPL"
+0F99 2F 0B                .WORD R
+0F9B 1B C6 B1 6C F3
+                          .BYTE $1B,$C6,$B1,$6C,$F3
+0FA0 4F 52 41             .TEXT "ORA"
+0FA3 19 0B                .WORD IY
+0FA5 1B DF B1 6C B0
+                          .BYTE $1B,$DF,$B1,$6C,$B0
+0FAA 48 4C 54             .TEXT "HLT"
+0FAD 98 0B                .WORD HLTN
+0FAF 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+0FB4 41 53 4F             .TEXT "ASO"
+0FB7 19 0B                .WORD IY
+0FB9 36 F6 B1 6C B0
+                          .BYTE $36,$F6,$B1,$6C,$B0
+0FBE 4E 4F 50             .TEXT "NOP"
+0FC1 94 0A                .WORD ZX
+0FC3 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+0FC8 4F 52 41             .TEXT "ORA"
+0FCB 94 0A                .WORD ZX
+0FCD 1B DF B1 6C B0
+                          .BYTE $1B,$DF,$B1,$6C,$B0
+0FD2 41 53 4C             .TEXT "ASL"
+0FD5 94 0A                .WORD ZX
+0FD7 36 C6 B1 6C 30
+                          .BYTE $36,$C6,$B1,$6C,$30
+0FDC 41 53 4F             .TEXT "ASO"
+0FDF 94 0A                .WORD ZX
+0FE1 36 F6 B1 6C B0
+                          .BYTE $36,$F6,$B1,$6C,$B0
+0FE6 43 4C 43             .TEXT "CLC"
+0FE9 71 0A                .WORD N
+0FEB 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+0FF0 4F 52 41             .TEXT "ORA"
+0FF3 EA 0A                .WORD AY
+0FF5 1B DF B1 6C B0
+                          .BYTE $1B,$DF,$B1,$6C,$B0
+0FFA 4E 4F 50             .TEXT "NOP"
+0FFD 71 0A                .WORD N
+0FFF 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1004 41 53 4F             .TEXT "ASO"
+1007 EA 0A                .WORD AY
+1009 36 F6 B1 6C B0
+                          .BYTE $36,$F6,$B1,$6C,$B0
+100E 4E 4F 50             .TEXT "NOP"
+1011 CB 0A                .WORD AX
+1013 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1018 4F 52 41             .TEXT "ORA"
+101B CB 0A                .WORD AX
+101D 1B DF B1 6C B0
+                          .BYTE $1B,$DF,$B1,$6C,$B0
+1022 41 53 4C             .TEXT "ASL"
+1025 CB 0A                .WORD AX
+1027 36 C6 B1 6C 30
+                          .BYTE $36,$C6,$B1,$6C,$30
+102C 41 53 4F             .TEXT "ASO"
+102F CB 0A                .WORD AX
+1031 36 F6 B1 6C B0
+                          .BYTE $36,$F6,$B1,$6C,$B0
+1036 4A 53 52             .TEXT "JSR"
+1039 3E 0C                .WORD JSRW
+103B 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1040 41 4E 44             .TEXT "AND"
+1043 09 0B                .WORD IX
+1045 1B 02 B1 6C 30
+                          .BYTE $1B,$02,$B1,$6C,$30
+104A 48 4C 54             .TEXT "HLT"
+104D 98 0B                .WORD HLTN
+104F 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+1054 52 4C 41             .TEXT "RLA"
+1057 09 0B                .WORD IX
+1059 36 06 B1 6C 30
+                          .BYTE $36,$06,$B1,$6C,$30
+105E 42 49 54             .TEXT "BIT"
+1061 81 0A                .WORD Z
+1063 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1068 41 4E 44             .TEXT "AND"
+106B 81 0A                .WORD Z
+106D 1B 02 B1 6C 30
+                          .BYTE $1B,$02,$B1,$6C,$30
+1072 52 4F 4C             .TEXT "ROL"
+1075 81 0A                .WORD Z
+1077 36 C6 B1 6C 30
+                          .BYTE $36,$C6,$B1,$6C,$30
+107C 52 4C 41             .TEXT "RLA"
+107F 81 0A                .WORD Z
+1081 36 06 B1 6C 30
+                          .BYTE $36,$06,$B1,$6C,$30
+1086 50 4C 50             .TEXT "PLP"
+1089 FE 0D                .WORD PLPN
+108B 1B C6 B1 6C B3
+                          .BYTE $1B,$C6,$B1,$6C,$B3
+1090 41 4E 44             .TEXT "AND"
+1093 79 0A                .WORD B
+1095 1B 02 B1 6C 30
+                          .BYTE $1B,$02,$B1,$6C,$30
+109A 52 4F 4C             .TEXT "ROL"
+109D 71 0A                .WORD N
+109F 1B 8C B1 6C B1
+                          .BYTE $1B,$8C,$B1,$6C,$B1
+10A4 41 4E 43             .TEXT "ANC"
+10A7 79 0A                .WORD B
+10A9 1B 02 B1 6C 30
+                          .BYTE $1B,$02,$B1,$6C,$30
+10AE 42 49 54             .TEXT "BIT"
+10B1 BC 0A                .WORD A
+10B3 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+10B8 41 4E 44             .TEXT "AND"
+10BB BC 0A                .WORD A
+10BD 1B 02 B1 6C 30
+                          .BYTE $1B,$02,$B1,$6C,$30
+10C2 52 4F 4C             .TEXT "ROL"
+10C5 BC 0A                .WORD A
+10C7 36 C6 B1 6C 30
+                          .BYTE $36,$C6,$B1,$6C,$30
+10CC 52 4C 41             .TEXT "RLA"
+10CF BC 0A                .WORD A
+10D1 36 06 B1 6C 30
+                          .BYTE $36,$06,$B1,$6C,$30
+10D6 42 4D 49             .TEXT "BMI"
+10D9 2F 0B                .WORD R
+10DB 1B C6 B1 6C F3
+                          .BYTE $1B,$C6,$B1,$6C,$F3
+10E0 41 4E 44             .TEXT "AND"
+10E3 19 0B                .WORD IY
+10E5 1B 02 B1 6C 30
+                          .BYTE $1B,$02,$B1,$6C,$30
+10EA 48 4C 54             .TEXT "HLT"
+10ED 98 0B                .WORD HLTN
+10EF 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+10F4 52 4C 41             .TEXT "RLA"
+10F7 19 0B                .WORD IY
+10F9 36 06 B1 6C 30
+                          .BYTE $36,$06,$B1,$6C,$30
+10FE 4E 4F 50             .TEXT "NOP"
+1101 94 0A                .WORD ZX
+1103 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1108 41 4E 44             .TEXT "AND"
+110B 94 0A                .WORD ZX
+110D 1B 02 B1 6C 30
+                          .BYTE $1B,$02,$B1,$6C,$30
+1112 52 4F 4C             .TEXT "ROL"
+1115 94 0A                .WORD ZX
+1117 36 C6 B1 6C 30
+                          .BYTE $36,$C6,$B1,$6C,$30
+111C 52 4C 41             .TEXT "RLA"
+111F 94 0A                .WORD ZX
+1121 36 06 B1 6C 30
+                          .BYTE $36,$06,$B1,$6C,$30
+1126 53 45 43             .TEXT "SEC"
+1129 71 0A                .WORD N
+112B 1B C6 B1 6C 31
+                          .BYTE $1B,$C6,$B1,$6C,$31
+1130 41 4E 44             .TEXT "AND"
+1133 EA 0A                .WORD AY
+1135 1B 02 B1 6C 30
+                          .BYTE $1B,$02,$B1,$6C,$30
+113A 4E 4F 50             .TEXT "NOP"
+113D 71 0A                .WORD N
+113F 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1144 52 4C 41             .TEXT "RLA"
+1147 EA 0A                .WORD AY
+1149 36 06 B1 6C 30
+                          .BYTE $36,$06,$B1,$6C,$30
+114E 4E 4F 50             .TEXT "NOP"
+1151 CB 0A                .WORD AX
+1153 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1158 41 4E 44             .TEXT "AND"
+115B CB 0A                .WORD AX
+115D 1B 02 B1 6C 30
+                          .BYTE $1B,$02,$B1,$6C,$30
+1162 52 4F 4C             .TEXT "ROL"
+1165 CB 0A                .WORD AX
+1167 36 C6 B1 6C 30
+                          .BYTE $36,$C6,$B1,$6C,$30
+116C 52 4C 41             .TEXT "RLA"
+116F CB 0A                .WORD AX
+1171 36 06 B1 6C 30
+                          .BYTE $36,$06,$B1,$6C,$30
+1176 52 54 49             .TEXT "RTI"
+1179 71 0C                .WORD RTIN
+117B 1B C6 B1 6C B3
+                          .BYTE $1B,$C6,$B1,$6C,$B3
+1180 45 4F 52             .TEXT "EOR"
+1183 09 0B                .WORD IX
+1185 1B DD B1 6C B0
+                          .BYTE $1B,$DD,$B1,$6C,$B0
+118A 48 4C 54             .TEXT "HLT"
+118D 98 0B                .WORD HLTN
+118F 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+1194 4C 53 45             .TEXT "LSE"
+1197 09 0B                .WORD IX
+1199 0D CB B1 6C B1
+                          .BYTE $0D,$CB,$B1,$6C,$B1
+119E 4E 4F 50             .TEXT "NOP"
+11A1 81 0A                .WORD Z
+11A3 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+11A8 45 4F 52             .TEXT "EOR"
+11AB 81 0A                .WORD Z
+11AD 1B DD B1 6C B0
+                          .BYTE $1B,$DD,$B1,$6C,$B0
+11B2 4C 53 52             .TEXT "LSR"
+11B5 81 0A                .WORD Z
+11B7 0D C6 B1 6C 31
+                          .BYTE $0D,$C6,$B1,$6C,$31
+11BC 4C 53 45             .TEXT "LSE"
+11BF 81 0A                .WORD Z
+11C1 0D CB B1 6C B1
+                          .BYTE $0D,$CB,$B1,$6C,$B1
+11C6 50 48 41             .TEXT "PHA"
+11C9 C2 0D                .WORD PHAN
+11CB 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+11D0 45 4F 52             .TEXT "EOR"
+11D3 79 0A                .WORD B
+11D5 1B DD B1 6C B0
+                          .BYTE $1B,$DD,$B1,$6C,$B0
+11DA 4C 53 52             .TEXT "LSR"
+11DD 71 0A                .WORD N
+11DF 1B 63 B1 6C 30
+                          .BYTE $1B,$63,$B1,$6C,$30
+11E4 41 4C 52             .TEXT "ALR"
+11E7 79 0A                .WORD B
+11E9 1B 01 B1 6C 30
+                          .BYTE $1B,$01,$B1,$6C,$30
+11EE 4A 4D 50             .TEXT "JMP"
+11F1 0D 0C                .WORD JMPW
+11F3 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+11F8 45 4F 52             .TEXT "EOR"
+11FB BC 0A                .WORD A
+11FD 1B DD B1 6C B0
+                          .BYTE $1B,$DD,$B1,$6C,$B0
+1202 4C 53 52             .TEXT "LSR"
+1205 BC 0A                .WORD A
+1207 0D C6 B1 6C 31
+                          .BYTE $0D,$C6,$B1,$6C,$31
+120C 4C 53 45             .TEXT "LSE"
+120F BC 0A                .WORD A
+1211 0D CB B1 6C B1
+                          .BYTE $0D,$CB,$B1,$6C,$B1
+1216 42 56 43             .TEXT "BVC"
+1219 2F 0B                .WORD R
+121B 1B C6 B1 6C F3
+                          .BYTE $1B,$C6,$B1,$6C,$F3
+1220 45 4F 52             .TEXT "EOR"
+1223 19 0B                .WORD IY
+1225 1B DD B1 6C B0
+                          .BYTE $1B,$DD,$B1,$6C,$B0
+122A 48 4C 54             .TEXT "HLT"
+122D 98 0B                .WORD HLTN
+122F 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+1234 4C 53 45             .TEXT "LSE"
+1237 19 0B                .WORD IY
+1239 0D CB B1 6C B1
+                          .BYTE $0D,$CB,$B1,$6C,$B1
+123E 4E 4F 50             .TEXT "NOP"
+1241 94 0A                .WORD ZX
+1243 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1248 45 4F 52             .TEXT "EOR"
+124B 94 0A                .WORD ZX
+124D 1B DD B1 6C B0
+                          .BYTE $1B,$DD,$B1,$6C,$B0
+1252 4C 53 52             .TEXT "LSR"
+1255 94 0A                .WORD ZX
+1257 0D C6 B1 6C 31
+                          .BYTE $0D,$C6,$B1,$6C,$31
+125C 4C 53 45             .TEXT "LSE"
+125F 94 0A                .WORD ZX
+1261 0D CB B1 6C B1
+                          .BYTE $0D,$CB,$B1,$6C,$B1
+1266 43 4C 49             .TEXT "CLI"
+1269 71 0A                .WORD N
+126B 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1270 45 4F 52             .TEXT "EOR"
+1273 EA 0A                .WORD AY
+1275 1B DD B1 6C B0
+                          .BYTE $1B,$DD,$B1,$6C,$B0
+127A 4E 4F 50             .TEXT "NOP"
+127D 71 0A                .WORD N
+127F 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1284 4C 53 45             .TEXT "LSE"
+1287 EA 0A                .WORD AY
+1289 0D CB B1 6C B1
+                          .BYTE $0D,$CB,$B1,$6C,$B1
+128E 4E 4F 50             .TEXT "NOP"
+1291 CB 0A                .WORD AX
+1293 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1298 45 4F 52             .TEXT "EOR"
+129B CB 0A                .WORD AX
+129D 1B DD B1 6C B0
+                          .BYTE $1B,$DD,$B1,$6C,$B0
+12A2 4C 53 52             .TEXT "LSR"
+12A5 CB 0A                .WORD AX
+12A7 0D C6 B1 6C 31
+                          .BYTE $0D,$C6,$B1,$6C,$31
+12AC 4C 53 45             .TEXT "LSE"
+12AF CB 0A                .WORD AX
+12B1 0D CB B1 6C B1
+                          .BYTE $0D,$CB,$B1,$6C,$B1
+12B6 52 54 53             .TEXT "RTS"
+12B9 71 0A                .WORD N
+12BB 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+12C0 41 44 43             .TEXT "ADC"
+12C3 09 0B                .WORD IX
+12C5 1B E1 B1 6C B0
+                          .BYTE $1B,$E1,$B1,$6C,$B0
+12CA 48 4C 54             .TEXT "HLT"
+12CD 98 0B                .WORD HLTN
+12CF 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+12D4 52 52 41             .TEXT "RRA"
+12D7 09 0B                .WORD IX
+12D9 0D D4 B1 6C B0
+                          .BYTE $0D,$D4,$B1,$6C,$B0
+12DE 4E 4F 50             .TEXT "NOP"
+12E1 81 0A                .WORD Z
+12E3 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+12E8 41 44 43             .TEXT "ADC"
+12EB 81 0A                .WORD Z
+12ED 1B E1 B1 6C B0
+                          .BYTE $1B,$E1,$B1,$6C,$B0
+12F2 52 4F 52             .TEXT "ROR"
+12F5 81 0A                .WORD Z
+12F7 0D C6 B1 6C 31
+                          .BYTE $0D,$C6,$B1,$6C,$31
+12FC 52 52 41             .TEXT "RRA"
+12FF 81 0A                .WORD Z
+1301 0D D4 B1 6C B0
+                          .BYTE $0D,$D4,$B1,$6C,$B0
+1306 50 4C 41             .TEXT "PLA"
+1309 8D 0D                .WORD PLAN
+130B 1B F0 B1 6C B0
+                          .BYTE $1B,$F0,$B1,$6C,$B0
+1310 41 44 43             .TEXT "ADC"
+1313 79 0A                .WORD B
+1315 1B E1 B1 6C B0
+                          .BYTE $1B,$E1,$B1,$6C,$B0
+131A 52 4F 52             .TEXT "ROR"
+131D 71 0A                .WORD N
+131F 1B 63 B1 6C 30
+                          .BYTE $1B,$63,$B1,$6C,$30
+1324 41 52 52             .TEXT "ARR"
+1327 79 0A                .WORD B
+1329 1B 01 B1 6C 30
+                          .BYTE $1B,$01,$B1,$6C,$30
+132E 4A 4D 50             .TEXT "JMP"
+1331 E1 0B                .WORD JMPI
+1333 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1338 41 44 43             .TEXT "ADC"
+133B BC 0A                .WORD A
+133D 1B E1 B1 6C B0
+                          .BYTE $1B,$E1,$B1,$6C,$B0
+1342 52 4F 52             .TEXT "ROR"
+1345 BC 0A                .WORD A
+1347 0D C6 B1 6C 31
+                          .BYTE $0D,$C6,$B1,$6C,$31
+134C 52 52 41             .TEXT "RRA"
+134F BC 0A                .WORD A
+1351 0D D4 B1 6C B0
+                          .BYTE $0D,$D4,$B1,$6C,$B0
+1356 42 56 53             .TEXT "BVS"
+1359 2F 0B                .WORD R
+135B 1B C6 B1 6C F3
+                          .BYTE $1B,$C6,$B1,$6C,$F3
+1360 41 44 43             .TEXT "ADC"
+1363 19 0B                .WORD IY
+1365 1B E1 B1 6C B0
+                          .BYTE $1B,$E1,$B1,$6C,$B0
+136A 48 4C 54             .TEXT "HLT"
+136D 98 0B                .WORD HLTN
+136F 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+1374 52 52 41             .TEXT "RRA"
+1377 19 0B                .WORD IY
+1379 0D D4 B1 6C B0
+                          .BYTE $0D,$D4,$B1,$6C,$B0
+137E 4E 4F 50             .TEXT "NOP"
+1381 94 0A                .WORD ZX
+1383 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1388 41 44 43             .TEXT "ADC"
+138B 94 0A                .WORD ZX
+138D 1B E1 B1 6C B0
+                          .BYTE $1B,$E1,$B1,$6C,$B0
+1392 52 4F 52             .TEXT "ROR"
+1395 94 0A                .WORD ZX
+1397 0D C6 B1 6C 31
+                          .BYTE $0D,$C6,$B1,$6C,$31
+139C 52 52 41             .TEXT "RRA"
+139F 94 0A                .WORD ZX
+13A1 0D D4 B1 6C B0
+                          .BYTE $0D,$D4,$B1,$6C,$B0
+13A6 53 45 49             .TEXT "SEI"
+13A9 71 0A                .WORD N
+13AB 1B C6 B1 6C 34
+                          .BYTE $1B,$C6,$B1,$6C,$34
+13B0 41 44 43             .TEXT "ADC"
+13B3 EA 0A                .WORD AY
+13B5 1B E1 B1 6C B0
+                          .BYTE $1B,$E1,$B1,$6C,$B0
+13BA 4E 4F 50             .TEXT "NOP"
+13BD 71 0A                .WORD N
+13BF 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+13C4 52 52 41             .TEXT "RRA"
+13C7 EA 0A                .WORD AY
+13C9 0D D4 B1 6C B0
+                          .BYTE $0D,$D4,$B1,$6C,$B0
+13CE 4E 4F 50             .TEXT "NOP"
+13D1 CB 0A                .WORD AX
+13D3 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+13D8 41 44 43             .TEXT "ADC"
+13DB CB 0A                .WORD AX
+13DD 1B E1 B1 6C B0
+                          .BYTE $1B,$E1,$B1,$6C,$B0
+13E2 52 4F 52             .TEXT "ROR"
+13E5 CB 0A                .WORD AX
+13E7 0D C6 B1 6C 31
+                          .BYTE $0D,$C6,$B1,$6C,$31
+13EC 52 52 41             .TEXT "RRA"
+13EF CB 0A                .WORD AX
+13F1 0D D4 B1 6C B0
+                          .BYTE $0D,$D4,$B1,$6C,$B0
+13F6 4E 4F 50             .TEXT "NOP"
+13F9 79 0A                .WORD B
+13FB 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1400 53 54 41             .TEXT "STA"
+1403 09 0B                .WORD IX
+1405 C6 C6 B1 6C 30
+                          .BYTE $C6,$C6,$B1,$6C,$30
+140A 4E 4F 50             .TEXT "NOP"
+140D 79 0A                .WORD B
+140F 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1414 41 58 53             .TEXT "AXS"
+1417 09 0B                .WORD IX
+1419 80 C6 B1 6C 30
+                          .BYTE $80,$C6,$B1,$6C,$30
+141E 53 54 59             .TEXT "STY"
+1421 81 0A                .WORD Z
+1423 6C C6 B1 6C 30
+                          .BYTE $6C,$C6,$B1,$6C,$30
+1428 53 54 41             .TEXT "STA"
+142B 81 0A                .WORD Z
+142D C6 C6 B1 6C 30
+                          .BYTE $C6,$C6,$B1,$6C,$30
+1432 53 54 58             .TEXT "STX"
+1435 81 0A                .WORD Z
+1437 B1 C6 B1 6C 30
+                          .BYTE $B1,$C6,$B1,$6C,$30
+143C 41 58 53             .TEXT "AXS"
+143F 81 0A                .WORD Z
+1441 80 C6 B1 6C 30
+                          .BYTE $80,$C6,$B1,$6C,$30
+1446 44 45 59             .TEXT "DEY"
+1449 71 0A                .WORD N
+144B 1B C6 B1 6B 30
+                          .BYTE $1B,$C6,$B1,$6B,$30
+1450 4E 4F 50             .TEXT "NOP"
+1453 79 0A                .WORD B
+1455 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+145A 54 58 41             .TEXT "TXA"
+145D 71 0A                .WORD N
+145F 1B B1 B1 6C B0
+                          .BYTE $1B,$B1,$B1,$6C,$B0
+1464 41 4E 45             .TEXT "ANE"
+1467 79 0A                .WORD B
+1469 1B 00 B1 6C 32
+                          .BYTE $1B,$00,$B1,$6C,$32
+146E 53 54 59             .TEXT "STY"
+1471 BC 0A                .WORD A
+1473 6C C6 B1 6C 30
+                          .BYTE $6C,$C6,$B1,$6C,$30
+1478 53 54 41             .TEXT "STA"
+147B BC 0A                .WORD A
+147D C6 C6 B1 6C 30
+                          .BYTE $C6,$C6,$B1,$6C,$30
+1482 53 54 58             .TEXT "STX"
+1485 BC 0A                .WORD A
+1487 B1 C6 B1 6C 30
+                          .BYTE $B1,$C6,$B1,$6C,$30
+148C 41 58 53             .TEXT "AXS"
+148F BC 0A                .WORD A
+1491 80 C6 B1 6C 30
+                          .BYTE $80,$C6,$B1,$6C,$30
+1496 42 43 43             .TEXT "BCC"
+1499 2F 0B                .WORD R
+149B 1B C6 B1 6C F3
+                          .BYTE $1B,$C6,$B1,$6C,$F3
+14A0 53 54 41             .TEXT "STA"
+14A3 19 0B                .WORD IY
+14A5 C6 C6 B1 6C 30
+                          .BYTE $C6,$C6,$B1,$6C,$30
+14AA 48 4C 54             .TEXT "HLT"
+14AD 98 0B                .WORD HLTN
+14AF 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+14B4 53 48 41             .TEXT "SHA"
+14B7 AC 0C                .WORD SHAIY
+14B9 00 C6 B1 6C 30
+                          .BYTE $00,$C6,$B1,$6C,$30
+14BE 53 54 59             .TEXT "STY"
+14C1 94 0A                .WORD ZX
+14C3 6C C6 B1 6C 30
+                          .BYTE $6C,$C6,$B1,$6C,$30
+14C8 53 54 41             .TEXT "STA"
+14CB 94 0A                .WORD ZX
+14CD C6 C6 B1 6C 30
+                          .BYTE $C6,$C6,$B1,$6C,$30
+14D2 53 54 58             .TEXT "STX"
+14D5 A5 0A                .WORD ZY
+14D7 B1 C6 B1 6C 30
+                          .BYTE $B1,$C6,$B1,$6C,$30
+14DC 41 58 53             .TEXT "AXS"
+14DF A5 0A                .WORD ZY
+14E1 80 C6 B1 6C 30
+                          .BYTE $80,$C6,$B1,$6C,$30
+14E6 54 59 41             .TEXT "TYA"
+14E9 71 0A                .WORD N
+14EB 1B 6C B1 6C 30
+                          .BYTE $1B,$6C,$B1,$6C,$30
+14F0 53 54 41             .TEXT "STA"
+14F3 EA 0A                .WORD AY
+14F5 C6 C6 B1 6C 30
+                          .BYTE $C6,$C6,$B1,$6C,$30
+14FA 54 58 53             .TEXT "TXS"
+14FD 46 0D                .WORD TXSN
+14FF 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1504 53 48 53             .TEXT "SHS"
+1507 D8 0C                .WORD SHSAY
+1509 00 C6 B1 6C 30
+                          .BYTE $00,$C6,$B1,$6C,$30
+150E 53 48 59             .TEXT "SHY"
+1511 CA 0C                .WORD SHYAX
+1513 00 C6 B1 6C 30
+                          .BYTE $00,$C6,$B1,$6C,$30
+1518 53 54 41             .TEXT "STA"
+151B CB 0A                .WORD AX
+151D C6 C6 B1 6C 30
+                          .BYTE $C6,$C6,$B1,$6C,$30
+1522 53 48 58             .TEXT "SHX"
+1525 BC 0C                .WORD SHXAY
+1527 00 C6 B1 6C 30
+                          .BYTE $00,$C6,$B1,$6C,$30
+152C 53 48 41             .TEXT "SHA"
+152F 9C 0C                .WORD SHAAY
+1531 00 C6 B1 6C 30
+                          .BYTE $00,$C6,$B1,$6C,$30
+1536 4C 44 59             .TEXT "LDY"
+1539 79 0A                .WORD B
+153B 1B C6 B1 1B 30
+                          .BYTE $1B,$C6,$B1,$1B,$30
+1540 4C 44 41             .TEXT "LDA"
+1543 09 0B                .WORD IX
+1545 1B 1B B1 6C 30
+                          .BYTE $1B,$1B,$B1,$6C,$30
+154A 4C 44 58             .TEXT "LDX"
+154D 79 0A                .WORD B
+154F 1B C6 1B 6C 30
+                          .BYTE $1B,$C6,$1B,$6C,$30
+1554 4C 41 58             .TEXT "LAX"
+1557 09 0B                .WORD IX
+1559 1B 1B 1B 6C 30
+                          .BYTE $1B,$1B,$1B,$6C,$30
+155E 4C 44 59             .TEXT "LDY"
+1561 81 0A                .WORD Z
+1563 1B C6 B1 1B 30
+                          .BYTE $1B,$C6,$B1,$1B,$30
+1568 4C 44 41             .TEXT "LDA"
+156B 81 0A                .WORD Z
+156D 1B 1B B1 6C 30
+                          .BYTE $1B,$1B,$B1,$6C,$30
+1572 4C 44 58             .TEXT "LDX"
+1575 81 0A                .WORD Z
+1577 1B C6 1B 6C 30
+                          .BYTE $1B,$C6,$1B,$6C,$30
+157C 4C 41 58             .TEXT "LAX"
+157F 81 0A                .WORD Z
+1581 1B 1B 1B 6C 30
+                          .BYTE $1B,$1B,$1B,$6C,$30
+1586 54 41 59             .TEXT "TAY"
+1589 71 0A                .WORD N
+158B 1B C6 B1 C6 B0
+                          .BYTE $1B,$C6,$B1,$C6,$B0
+1590 4C 44 41             .TEXT "LDA"
+1593 79 0A                .WORD B
+1595 1B 1B B1 6C 30
+                          .BYTE $1B,$1B,$B1,$6C,$30
+159A 54 41 58             .TEXT "TAX"
+159D 71 0A                .WORD N
+159F 1B C6 C6 6C B0
+                          .BYTE $1B,$C6,$C6,$6C,$B0
+15A4 4C 58 41             .TEXT "LXA"
+15A7 79 0A                .WORD B
+15A9 1B 0A 0A 6C 30
+                          .BYTE $1B,$0A,$0A,$6C,$30
+15AE 4C 44 59             .TEXT "LDY"
+15B1 BC 0A                .WORD A
+15B3 1B C6 B1 1B 30
+                          .BYTE $1B,$C6,$B1,$1B,$30
+15B8 4C 44 41             .TEXT "LDA"
+15BB BC 0A                .WORD A
+15BD 1B 1B B1 6C 30
+                          .BYTE $1B,$1B,$B1,$6C,$30
+15C2 4C 44 58             .TEXT "LDX"
+15C5 BC 0A                .WORD A
+15C7 1B C6 1B 6C 30
+                          .BYTE $1B,$C6,$1B,$6C,$30
+15CC 4C 41 58             .TEXT "LAX"
+15CF BC 0A                .WORD A
+15D1 1B 1B 1B 6C 30
+                          .BYTE $1B,$1B,$1B,$6C,$30
+15D6 42 43 53             .TEXT "BCS"
+15D9 2F 0B                .WORD R
+15DB 1B C6 B1 6C F3
+                          .BYTE $1B,$C6,$B1,$6C,$F3
+15E0 4C 44 41             .TEXT "LDA"
+15E3 19 0B                .WORD IY
+15E5 1B 1B B1 6C 30
+                          .BYTE $1B,$1B,$B1,$6C,$30
+15EA 48 4C 54             .TEXT "HLT"
+15ED 98 0B                .WORD HLTN
+15EF 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+15F4 4C 41 58             .TEXT "LAX"
+15F7 19 0B                .WORD IY
+15F9 1B 1B 1B 6C 30
+                          .BYTE $1B,$1B,$1B,$6C,$30
+15FE 4C 44 59             .TEXT "LDY"
+1601 94 0A                .WORD ZX
+1603 1B C6 B1 1B 30
+                          .BYTE $1B,$C6,$B1,$1B,$30
+1608 4C 44 41             .TEXT "LDA"
+160B 94 0A                .WORD ZX
+160D 1B 1B B1 6C 30
+                          .BYTE $1B,$1B,$B1,$6C,$30
+1612 4C 44 58             .TEXT "LDX"
+1615 A5 0A                .WORD ZY
+1617 1B C6 1B 6C 30
+                          .BYTE $1B,$C6,$1B,$6C,$30
+161C 4C 41 58             .TEXT "LAX"
+161F A5 0A                .WORD ZY
+1621 1B 1B 1B 6C 30
+                          .BYTE $1B,$1B,$1B,$6C,$30
+1626 43 4C 56             .TEXT "CLV"
+1629 71 0A                .WORD N
+162B 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1630 4C 44 41             .TEXT "LDA"
+1633 EA 0A                .WORD AY
+1635 1B 1B B1 6C 30
+                          .BYTE $1B,$1B,$B1,$6C,$30
+163A 54 53 58             .TEXT "TSX"
+163D DE 0E                .WORD TSXN
+163F 1B C6 00 6C 00
+                          .BYTE $1B,$C6,$00,$6C,$00
+1644 4C 41 53             .TEXT "LAS"
+1647 6F 0E                .WORD LASAY
+1649 1B 00 00 6C 00
+                          .BYTE $1B,$00,$00,$6C,$00
+164E 4C 44 59             .TEXT "LDY"
+1651 CB 0A                .WORD AX
+1653 1B C6 B1 1B 30
+                          .BYTE $1B,$C6,$B1,$1B,$30
+1658 4C 44 41             .TEXT "LDA"
+165B CB 0A                .WORD AX
+165D 1B 1B B1 6C 30
+                          .BYTE $1B,$1B,$B1,$6C,$30
+1662 4C 44 58             .TEXT "LDX"
+1665 EA 0A                .WORD AY
+1667 1B C6 1B 6C 30
+                          .BYTE $1B,$C6,$1B,$6C,$30
+166C 4C 41 58             .TEXT "LAX"
+166F EA 0A                .WORD AY
+1671 1B 1B 1B 6C 30
+                          .BYTE $1B,$1B,$1B,$6C,$30
+1676 43 50 59             .TEXT "CPY"
+1679 79 0A                .WORD B
+167B 1B C6 B1 6C 31
+                          .BYTE $1B,$C6,$B1,$6C,$31
+1680 43 4D 50             .TEXT "CMP"
+1683 09 0B                .WORD IX
+1685 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+168A 4E 4F 50             .TEXT "NOP"
+168D 79 0A                .WORD B
+168F 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1694 44 43 4D             .TEXT "DCM"
+1697 09 0B                .WORD IX
+1699 1A C6 B1 6C B1
+                          .BYTE $1A,$C6,$B1,$6C,$B1
+169E 43 50 59             .TEXT "CPY"
+16A1 81 0A                .WORD Z
+16A3 1B C6 B1 6C 31
+                          .BYTE $1B,$C6,$B1,$6C,$31
+16A8 43 4D 50             .TEXT "CMP"
+16AB 81 0A                .WORD Z
+16AD 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+16B2 44 45 43             .TEXT "DEC"
+16B5 81 0A                .WORD Z
+16B7 1A C6 B1 6C 30
+                          .BYTE $1A,$C6,$B1,$6C,$30
+16BC 44 43 4D             .TEXT "DCM"
+16BF 81 0A                .WORD Z
+16C1 1A C6 B1 6C B1
+                          .BYTE $1A,$C6,$B1,$6C,$B1
+16C6 49 4E 59             .TEXT "INY"
+16C9 71 0A                .WORD N
+16CB 1B C6 B1 6D 30
+                          .BYTE $1B,$C6,$B1,$6D,$30
+16D0 43 4D 50             .TEXT "CMP"
+16D3 79 0A                .WORD B
+16D5 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+16DA 44 45 58             .TEXT "DEX"
+16DD 71 0A                .WORD N
+16DF 1B C6 B0 6C B0
+                          .BYTE $1B,$C6,$B0,$6C,$B0
+16E4 53 42 58             .TEXT "SBX"
+16E7 79 0A                .WORD B
+16E9 1B C6 65 6C 31
+                          .BYTE $1B,$C6,$65,$6C,$31
+16EE 43 50 59             .TEXT "CPY"
+16F1 BC 0A                .WORD A
+16F3 1B C6 B1 6C 31
+                          .BYTE $1B,$C6,$B1,$6C,$31
+16F8 43 4D 50             .TEXT "CMP"
+16FB BC 0A                .WORD A
+16FD 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+1702 44 45 43             .TEXT "DEC"
+1705 BC 0A                .WORD A
+1707 1A C6 B1 6C 30
+                          .BYTE $1A,$C6,$B1,$6C,$30
+170C 44 43 4D             .TEXT "DCM"
+170F BC 0A                .WORD A
+1711 1A C6 B1 6C B1
+                          .BYTE $1A,$C6,$B1,$6C,$B1
+1716 42 4E 45             .TEXT "BNE"
+1719 2F 0B                .WORD R
+171B 1B C6 B1 6C F3
+                          .BYTE $1B,$C6,$B1,$6C,$F3
+1720 43 4D 50             .TEXT "CMP"
+1723 19 0B                .WORD IY
+1725 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+172A 48 4C 54             .TEXT "HLT"
+172D 98 0B                .WORD HLTN
+172F 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+1734 44 43 4D             .TEXT "DCM"
+1737 19 0B                .WORD IY
+1739 1A C6 B1 6C B1
+                          .BYTE $1A,$C6,$B1,$6C,$B1
+173E 4E 4F 50             .TEXT "NOP"
+1741 94 0A                .WORD ZX
+1743 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1748 43 4D 50             .TEXT "CMP"
+174B 94 0A                .WORD ZX
+174D 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+1752 44 45 43             .TEXT "DEC"
+1755 94 0A                .WORD ZX
+1757 1A C6 B1 6C 30
+                          .BYTE $1A,$C6,$B1,$6C,$30
+175C 44 43 4D             .TEXT "DCM"
+175F 94 0A                .WORD ZX
+1761 1A C6 B1 6C B1
+                          .BYTE $1A,$C6,$B1,$6C,$B1
+1766 43 4C 44             .TEXT "CLD"
+1769 71 0A                .WORD N
+176B 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1770 43 4D 50             .TEXT "CMP"
+1773 EA 0A                .WORD AY
+1775 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+177A 4E 4F 50             .TEXT "NOP"
+177D 71 0A                .WORD N
+177F 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1784 44 43 4D             .TEXT "DCM"
+1787 EA 0A                .WORD AY
+1789 1A C6 B1 6C B1
+                          .BYTE $1A,$C6,$B1,$6C,$B1
+178E 4E 4F 50             .TEXT "NOP"
+1791 CB 0A                .WORD AX
+1793 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1798 43 4D 50             .TEXT "CMP"
+179B CB 0A                .WORD AX
+179D 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+17A2 44 45 43             .TEXT "DEC"
+17A5 CB 0A                .WORD AX
+17A7 1A C6 B1 6C 30
+                          .BYTE $1A,$C6,$B1,$6C,$30
+17AC 44 43 4D             .TEXT "DCM"
+17AF CB 0A                .WORD AX
+17B1 1A C6 B1 6C B1
+                          .BYTE $1A,$C6,$B1,$6C,$B1
+17B6 43 50 58             .TEXT "CPX"
+17B9 79 0A                .WORD B
+17BB 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+17C0 53 42 43             .TEXT "SBC"
+17C3 09 0B                .WORD IX
+17C5 1B AA B1 6C B1
+                          .BYTE $1B,$AA,$B1,$6C,$B1
+17CA 4E 4F 50             .TEXT "NOP"
+17CD 79 0A                .WORD B
+17CF 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+17D4 49 4E 53             .TEXT "INS"
+17D7 09 0B                .WORD IX
+17D9 1C A9 B1 6C B1
+                          .BYTE $1C,$A9,$B1,$6C,$B1
+17DE 43 50 58             .TEXT "CPX"
+17E1 81 0A                .WORD Z
+17E3 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+17E8 53 42 43             .TEXT "SBC"
+17EB 81 0A                .WORD Z
+17ED 1B AA B1 6C B1
+                          .BYTE $1B,$AA,$B1,$6C,$B1
+17F2 49 4E 43             .TEXT "INC"
+17F5 81 0A                .WORD Z
+17F7 1C C6 B1 6C 30
+                          .BYTE $1C,$C6,$B1,$6C,$30
+17FC 49 4E 53             .TEXT "INS"
+17FF 81 0A                .WORD Z
+1801 1C A9 B1 6C B1
+                          .BYTE $1C,$A9,$B1,$6C,$B1
+1806 49 4E 58             .TEXT "INX"
+1809 71 0A                .WORD N
+180B 1B C6 B2 6C B0
+                          .BYTE $1B,$C6,$B2,$6C,$B0
+1810 53 42 43             .TEXT "SBC"
+1813 79 0A                .WORD B
+1815 1B AA B1 6C B1
+                          .BYTE $1B,$AA,$B1,$6C,$B1
+181A 4E 4F 50             .TEXT "NOP"
+181D 71 0A                .WORD N
+181F 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1824 53 42 43             .TEXT "SBC"
+1827 79 0A                .WORD B
+1829 1B AA B1 6C B1
+                          .BYTE $1B,$AA,$B1,$6C,$B1
+182E 43 50 58             .TEXT "CPX"
+1831 BC 0A                .WORD A
+1833 1B C6 B1 6C B1
+                          .BYTE $1B,$C6,$B1,$6C,$B1
+1838 53 42 43             .TEXT "SBC"
+183B BC 0A                .WORD A
+183D 1B AA B1 6C B1
+                          .BYTE $1B,$AA,$B1,$6C,$B1
+1842 49 4E 43             .TEXT "INC"
+1845 BC 0A                .WORD A
+1847 1C C6 B1 6C 30
+                          .BYTE $1C,$C6,$B1,$6C,$30
+184C 49 4E 53             .TEXT "INS"
+184F BC 0A                .WORD A
+1851 1C A9 B1 6C B1
+                          .BYTE $1C,$A9,$B1,$6C,$B1
+1856 42 45 51             .TEXT "BEQ"
+1859 2F 0B                .WORD R
+185B 1B C6 B1 6C F3
+                          .BYTE $1B,$C6,$B1,$6C,$F3
+1860 53 42 43             .TEXT "SBC"
+1863 19 0B                .WORD IY
+1865 1B AA B1 6C B1
+                          .BYTE $1B,$AA,$B1,$6C,$B1
+186A 48 4C 54             .TEXT "HLT"
+186D 98 0B                .WORD HLTN
+186F 00 00 00 00 00
+                          .BYTE $00,$00,$00,$00,$00
+1874 49 4E 53             .TEXT "INS"
+1877 19 0B                .WORD IY
+1879 1C A9 B1 6C B1
+                          .BYTE $1C,$A9,$B1,$6C,$B1
+187E 4E 4F 50             .TEXT "NOP"
+1881 94 0A                .WORD ZX
+1883 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+1888 53 42 43             .TEXT "SBC"
+188B 94 0A                .WORD ZX
+188D 1B AA B1 6C B1
+                          .BYTE $1B,$AA,$B1,$6C,$B1
+1892 49 4E 43             .TEXT "INC"
+1895 94 0A                .WORD ZX
+1897 1C C6 B1 6C 30
+                          .BYTE $1C,$C6,$B1,$6C,$30
+189C 49 4E 53             .TEXT "INS"
+189F 94 0A                .WORD ZX
+18A1 1C A9 B1 6C B1
+                          .BYTE $1C,$A9,$B1,$6C,$B1
+18A6 53 45 44             .TEXT "SED"
+18A9 71 0A                .WORD N
+18AB 1B C6 B1 6C 38
+                          .BYTE $1B,$C6,$B1,$6C,$38
+18B0 53 42 43             .TEXT "SBC"
+18B3 EA 0A                .WORD AY
+18B5 1B AA B1 6C B1
+                          .BYTE $1B,$AA,$B1,$6C,$B1
+18BA 4E 4F 50             .TEXT "NOP"
+18BD 71 0A                .WORD N
+18BF 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+18C4 49 4E 53             .TEXT "INS"
+18C7 EA 0A                .WORD AY
+18C9 1C A9 B1 6C B1
+                          .BYTE $1C,$A9,$B1,$6C,$B1
+18CE 4E 4F 50             .TEXT "NOP"
+18D1 CB 0A                .WORD AX
+18D3 1B C6 B1 6C 30
+                          .BYTE $1B,$C6,$B1,$6C,$30
+18D8 53 42 43             .TEXT "SBC"
+18DB CB 0A                .WORD AX
+18DD 1B AA B1 6C B1
+                          .BYTE $1B,$AA,$B1,$6C,$B1
+18E2 49 4E 43             .TEXT "INC"
+18E5 CB 0A                .WORD AX
+18E7 1C C6 B1 6C 30
+                          .BYTE $1C,$C6,$B1,$6C,$30
+18EC 49 4E 53             .TEXT "INS"
+18EF CB 0A                .WORD AX
+18F1 1C A9 B1 6C B1
+                          .BYTE $1C,$A9,$B1,$6C,$B1
+18F6 00                   .BYTE 0

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="BorderLayout" bundle="applet.ConsoleViewTexts">
+	<vbox>
+		<panel layout="BorderLayout" border="TitledBorder(CONSOLE)">
+			<scrollpane constraints="BorderLayout.CENTER">
+				<textpane Editable="false" id="console" />
+			</scrollpane>
+		</panel>
+	</vbox>
+</panel>

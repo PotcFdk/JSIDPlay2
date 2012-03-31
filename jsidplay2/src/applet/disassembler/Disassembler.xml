@@ -1,0 +1,89 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- Disassembler dialogue -->
+<dialog size="600, 640" title="Disassembler"
+	bundle="applet.disassembler.DisassemblerTexts" defaultCloseOperation="JFrame.DISPOSE_ON_CLOSE"
+	Visible="true" IconImage="ICON">
+	<panel layout="GridLayout(1,2)" border="TitledBorder(MEMORY_BROWSER)">
+		<scrollpane id="memorytablescrollPane">
+			<table id="memoryTable"></table>
+		</scrollpane>
+		<panel layout="GridLayout(2,1)">
+			<panel layout="GridBagLayout" border="TitledBorder(JUMP)">
+				<label text="ADDRESS" font="Georgia-BOLD-12">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" />
+				</label>
+				<textfield text="0x0000" id="address" action="gotoAddress">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" anchor="GridBagConstraints.LINE_START"
+						gridwidth="GridBagConstraints.REMAINDER" />
+				</textfield>
+				<label text="DRIVER_ADDRESS" font="Georgia-BOLD-12">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" />
+				</label>
+				<button text="?" id="driverAddress" action="gotoDriverAddress">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" anchor="GridBagConstraints.LINE_START"
+						gridwidth="GridBagConstraints.REMAINDER" />
+				</button>
+				<label text="LOAD_ADDRESS" font="Georgia-BOLD-12">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" />
+				</label>
+				<button text="?" id="loadAddress" action="gotoLoadAddress">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" anchor="GridBagConstraints.LINE_START"
+						gridwidth="GridBagConstraints.REMAINDER" />
+				</button>
+				<label text="INIT_ADDRESS" font="Georgia-BOLD-12">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" />
+				</label>
+				<button text="?" id="initAddress" action="gotoInitAddress">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" anchor="GridBagConstraints.LINE_START"
+						gridwidth="GridBagConstraints.REMAINDER" />
+				</button>
+				<label text="PLAYER_ADDRESS" font="Georgia-BOLD-12">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" />
+				</label>
+				<button text="?" id="playerAddress" action="gotoPlayerAddress">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" anchor="GridBagConstraints.LINE_START"
+						gridwidth="GridBagConstraints.REMAINDER" />
+				</button>
+			</panel>
+			<panel layout="GridBagLayout" border="TitledBorder(SAVE_MEMORY)">
+				<label text="START" font="Georgia-BOLD-12">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" />
+				</label>
+				<textfield id="startAddress">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" anchor="GridBagConstraints.LINE_START"
+						gridwidth="GridBagConstraints.REMAINDER" />
+				</textfield>
+				<label text="END" font="Georgia-BOLD-12">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" />
+				</label>
+				<textfield id="endAddress">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" anchor="GridBagConstraints.LINE_START"
+						gridwidth="GridBagConstraints.REMAINDER" />
+				</textfield>
+				<label>
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" />
+				</label>
+				<button text="SAVE" id="save" action="saveMemory">
+					<gridbagconstraints weightx="0.5"
+						fill="GridBagConstraints.BOTH" anchor="GridBagConstraints.LINE_START"
+						gridwidth="GridBagConstraints.REMAINDER" />
+				</button>
+			</panel>
+		</panel>
+	</panel>
+</dialog>

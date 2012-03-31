@@ -1,0 +1,17 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- STIL -->
+<dialog title="TITLE" bundle="applet.collection.stil.STILTexts"
+	DefaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" Visible="true">
+	<panel layout="GridLayout(1, 2)">
+		<splitpane orientation="VERTICAL" OneTouchExpandable="true"
+			DividerLocation="100">
+			<scrollpane>
+				<tree initclass="applet.collection.stil.STILTreeModel"
+					SelectionMode="TreeSelectionModel.SINGLE_TREE_SELECTION" id="tree"></tree>
+			</scrollpane>
+			<scrollpane>
+				<textpane Editable="false" id="textpane"></textpane>
+			</scrollpane>
+		</splitpane>
+	</panel>
+</dialog>

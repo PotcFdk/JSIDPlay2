@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="BorderLayout" bundle="applet.JSIDPlay2UITexts">
+	<menubar id="menuBar">
+		<menu text="FILE" mnemonic="VK_FILE">
+			<menuitem Name="Load" text="LOAD" mnemonic="VK_LOAD"
+				accelerator="ACC_LOAD" action="load" />
+			<menuitem text="LOAD_REU_VIDEO" mnemonic="VK_LOAD_REU_VIDEO"
+				accelerator="ACC_LOAD_REU_VIDEO" action="video" />
+			<menuitem text="RESET" mnemonic="VK_RESET" accelerator="ACC_RESET"
+				action="reset" />
+			<separator />
+			<menuitem text="QUIT" mnemonic="VK_QUIT" accelerator="ACC_QUIT"
+				action="quit" />
+		</menu>
+		<menu text="PLAYER" mnemonic="VK_PLAYER">
+			<checkboxmenuitem text="PAUSE" mnemonic="VK_PAUSE"
+				accelerator="ACC_PAUSE" action="pause" id="pauseContinue" />
+			<menuitem text="PREVIOUS" mnemonic="VK_PREVIOUS"
+				accelerator="ACC_PREVIOUS" action="previousSong" id="previous" />
+			<menuitem text="NEXT" mnemonic="VK_NEXT" accelerator="ACC_NEXT"
+				action="nextSong" id="next" />
+			<buttongroup>
+				<checkboxmenuitem text="NORMAL_SPEED" mnemonic="VK_NORMAL_SPEED"
+					accelerator="ACC_NORMAL_SPEED" action="playNormalSpeed" id="normalSpeed" />
+				<checkboxmenuitem text="FAST_FORWARD" mnemonic="VK_FAST_FORWARD"
+					accelerator="ACC_FAST_FORWARD" action="playFastForward" id="fastForward" />
+			</buttongroup>
+			<menuitem text="STOP" mnemonic="VK_STOP" accelerator="ACC_STOP"
+				action="stopSong" />
+		</menu>
+		<menu text="CAPTURE" mnemonic="VK_CAPTURE">
+			<buttongroup>
+				<checkboxmenuitem text="START_CAPTURE" ToolTipText="START_CAPTURE_TIP"
+					mnemonic="VK_START_CAPTURE" accelerator="ACC_START_CAPTURE" action="doStartCapture"
+					id="startCapture" />
+				<checkboxmenuitem text="STOP_CAPTURE" mnemonic="VK_STOP_CAPTURE"
+					accelerator="ACC_STOP_CAPTURE" action="doStopCapture" id="stopCapture" />
+				<menu text="HARDCOPY" mnemonic="VK_HARDCOPY">
+					<menuitem text="HARDCOPY_BMP" mnemonic="VK_HARDCOPY_BMP"
+						action="doHardcopyBmp" />
+					<menuitem text="HARDCOPY_GIF" mnemonic="VK_HARDCOPY_GIF"
+						action="doHardcopyGif" />
+					<menuitem text="HARDCOPY_JPG" mnemonic="VK_HARDCOPY_JPG"
+						action="doHardcopyJpg" />
+					<menuitem text="HARDCOPY_PNG" mnemonic="VK_HARDCOPY_PNG"
+						accelerator="ACC_HARDCOPY_PNG" action="doHardcopyPng" />
+				</menu>
+			</buttongroup>
+		</menu>
+		<menu text="OPTIONS" mnemonic="VK_OPTIONS">
+			<menu text="VIDEO_STANDARD">
+				<buttongroup>
+					<radiobuttonmenuitem text="PAL" action="videoStandardPal"
+						id="pal" />
+					<radiobuttonmenuitem text="NTSC" action="videoStandardNtsc"
+						id="ntsc" />
+				</buttongroup>
+			</menu>
+			<menuitem text="SOUND_SETTINGS" action="soundSettings" />
+			<menuitem Name="EmulationSettings" text="EMULATION_SETTINGS"
+				action="emulationSettings" />
+			<menuitem text="JOYSTICK_SETTINGS" action="joystickSettings" />
+		</menu>
+		<menu text="DEVICES" mnemonic="VK_DEVICES">
+			<menu text="DATASETTE">
+				<menuitem text="RECORD" action="record" />
+				<menuitem text="PLAY" action="play" />
+				<menuitem text="REWIND" action="rewind" />
+				<menuitem text="FORWARD" action="forward" />
+				<menuitem text="STOP" action="stop" />
+				<menuitem text="RESET_COUNTER" action="resetCounter" />
+				<menuitem text="INSERT_TAPE" accelerator="ACC_INSERT_TAPE"
+					action="insertTape" />
+				<menuitem text="EJECT_TAPE" action="ejectTape" />
+			</menu>
+			<menu text="FLOPPY">
+				<checkboxmenuitem text="TURN_DRIVE_ON" action="turnDriveOn"
+					id="driveOn" />
+				<checkboxmenuitem text="DRIVE_SOUND" action="driveSound"
+					id="driveSoundOn" />
+				<checkboxmenuitem text="PARALLEL_CABLE" action="parallelCable"
+					id="parCable" />
+				<menu text="FLOPPY_TYPE">
+					<buttongroup>
+						<radiobuttonmenuitem text="C1541" action="floppyTypeC1541"
+							id="c1541" />
+						<radiobuttonmenuitem text="C1541-II" action="floppyTypeC1541_II"
+							id="c1541_II" />
+					</buttongroup>
+				</menu>
+				<menu text="40_TRACK_HANDLING">
+					<buttongroup>
+						<radiobuttonmenuitem text="NEVER_EXTEND"
+							action="extendNever" id="neverExtend" />
+						<radiobuttonmenuitem text="ASK_ON_EXTEND"
+							action="extendAsk" id="askExtend" />
+						<radiobuttonmenuitem text="EXTEND_ON_ACCESS"
+							action="extendAccess" id="accessExtend" />
+					</buttongroup>
+				</menu>
+				<checkboxmenuitem text="8K_RAM_EXPANSION_0X2000"
+					action="expansion0x2000" id="expand2000" />
+				<checkboxmenuitem text="8K_RAM_EXPANSION_0X4000"
+					action="expansion0x4000" id="expand4000" />
+				<checkboxmenuitem text="8K_RAM_EXPANSION_0X6000"
+					action="expansion0x6000" id="expand6000" />
+				<checkboxmenuitem text="8K_RAM_EXPANSION_0X8000"
+					action="expansion0x8000" id="expand8000" />
+				<checkboxmenuitem text="8K_RAM_EXPANSION_0XA000"
+					action="expansion0xA000" id="expandA000" />
+				<menuitem text="INSERT_DISK" accelerator="ACC_INSERT_DISK"
+					action="insertDisk" />
+				<menuitem text="EJECT_DISK" action="ejectDisk" />
+				<menuitem text="RESET_DRIVE" action="resetDrive" />
+			</menu>
+			<menu text="PRINTER">
+				<checkboxmenuitem text="TURN_PRINTER_ON" action="printer"
+					id="turnPrinterOn" />
+			</menu>
+			<menu text="CARTRIDGE">
+				<menuitem text="INSERT_CARTRIDGE" action="insertCartridge"
+					accelerator="ACC_INSERT_CARTRIDGE" />
+				<menu text="GEORAM">
+					<menuitem text="INSERT_GEORAM" action="insertGeoRAM" />
+					<menuitem text="INSERT_GEORAM_(64KB)" action="insertGeoRAM64" />
+					<menuitem text="INSERT_GEORAM_(128KB)" action="insertGeoRAM128" />
+					<menuitem text="INSERT_GEORAM_(256KB)" action="insertGeoRAM256" />
+					<menuitem text="INSERT_GEORAM_(512KB)" action="insertGeoRAM512" />
+					<menuitem text="INSERT_GEORAM_(1024KB)" action="insertGeoRAM1024" />
+					<menuitem text="INSERT_GEORAM_(2048KB)" action="insertGeoRAM2048" />
+				</menu>
+				<menu text="REU">
+					<menuitem text="INSERT_REU_(128KB)" action="insertREU128" />
+					<menuitem text="INSERT_REU_(256KB)" action="insertREU256" />
+					<menuitem text="INSERT_REU_(512KB)" action="insertREU512" />
+					<menuitem text="INSERT_REU_(2MB)" action="insertREU2048" />
+					<menuitem text="INSERT_REU_(16MB)" action="insertREU16384" />
+				</menu>
+				<menuitem text="EJECT_CARTRIDGE" action="ejectCartridge" />
+				<menuitem text="FREEZE" action="freezeCartridge" />
+			</menu>
+			<menuitem text="INSTALL_JIFFYDOS" action="installJiffyDos" />
+			<menuitem text="UNINSTALL_JIFFYDOS" action="uninstallJiffyDos" />
+		</menu>
+		<menu text="TOOLS" mnemonic="VK_TOOLS">
+			<menuitem text="MEMORY" action="memory" />
+			<menuitem text="SID_DUMP" action="sidDump" />
+			<menuitem text="SID_REGISTERS" action="sidRegisters" />
+		</menu>
+		<menu text="HELP" mnemonic="VK_HELP">
+			<menuitem text="ABOUT" action="about" />
+		</menu>
+		<glue />
+		<button focusable="false" Opaque="false"
+			icon="applet/icons/playback_prev.png" ToolTipText="PREVIOUS" action="previousSong"
+			id="previous2" />
+		<togglebutton focusable="false" Opaque="false"
+			icon="applet/icons/playback_pause.png" SelectedIcon="applet/icons/playback_start.png"
+			ToolTipText="PAUSE" action="pause" id="pauseContinue2" />
+		<button focusable="false" Opaque="false"
+			icon="applet/icons/playback_next.png" ToolTipText="NEXT" action="nextSong"
+			id="next2" />
+		<button focusable="false" Opaque="false"
+			icon="applet/icons/playback_stop.png" ToolTipText="STOP" action="stopSong" />
+		<glue />
+		<glue />
+	</menubar>
+	<panel layout="BorderLayout">
+		<tabbedPane Focusable="false" id="tabbedPane" constraints="BorderLayout.CENTER" />
+		<hbox Background="Color.LIGHT_GRAY" constraints="BorderLayout.SOUTH">
+			<glue />
+			<label id="status" />
+			<glue />
+			<progressbar Minimum="0" Maximum="100" id="progress" />
+		</hbox>
+	</panel>
+</panel>

@@ -1,0 +1,23 @@
+EXPORTS
+  InitHardSID_Mapper;
+  GetHardSIDCount;
+  MuteHardSID_Line;
+  ReadFromHardSID;
+  SetDebug;
+  WriteToHardSID;
+  HardSID_Delay;
+  HardSID_Devices;
+  HardSID_Filter;
+  HardSID_Flush;
+  HardSID_Mute;
+  HardSID_MuteAll;
+  HardSID_Reset;
+  HardSID_Read;
+  HardSID_Sync;
+  HardSID_Write;
+  HardSID_Version;
+  HardSID_Reset2;
+  HardSID_Lock;
+  HardSID_Unlock;
+  HardSID_SoftFlush;
+  HardSID_Try_Write;

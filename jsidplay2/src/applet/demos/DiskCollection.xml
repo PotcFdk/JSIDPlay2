@@ -1,0 +1,39 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- Demos -->
+<panel layout="GridBagLayout" bundle="applet.demos.DiskCollectionTexts"
+	border="TitledBorder(DISK_COLLECTION)">
+	<checkbox label="AUTO_CONFIGURATION" id="autoConfiguration"
+		action="doAutoConfiguration">
+		<gridbagconstraints fill="GridBagConstraints.BOTH"
+			gridx="0" gridy="0" />
+	</checkbox>
+	<splitpane ResizeWeight="0" id="horizontalSplit">
+		<gridbagconstraints gridx="0" gridy="1" weightx="1"
+			weighty="1" fill="GridBagConstraints.BOTH" />
+		<splitpane ResizeWeight="1" Orientation="JSplitPane.VERTICAL_SPLIT"
+			id="verticalSplit">
+			<scrollpane border="TitledBorder(DIRECTORY)">
+				<directory id="imgPreview" />
+			</scrollpane>
+			<label layout="GridLayout(1,1)" border="TitledBorder(SCREENSHOT)"
+				id="photograph">
+			</label>
+		</splitpane>
+		<scrollpane>
+			<tree ExpandsSelectedPaths="true" ScrollsOnExpand="true" id="fileBrowser"
+				initClass="applet.demos.DiskCollectionTreeModel" />
+		</scrollpane>
+	</splitpane>
+	<panel border="TitledBorder(CONFIGURATION)">
+		<gridbagconstraints gridx="0" gridy="2" gridheight="1"
+			gridwidth="GridBagConstraints.REMAINDER" fill="GridBagConstraints.BOTH" />
+		<vbox>
+			<panel layout="FlowLayout" constraints="FlowLayout.LEFT">
+				<label text="BASE_DIR"></label>
+				<textfield id="collectionDir" Enabled="false" />
+				<button text="BROWSE" id="browse" icon="applet/icons/browse.png"
+					action="doBrowse"></button>
+			</panel>
+		</vbox>
+	</panel>
+</panel>

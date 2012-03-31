@@ -1,0 +1,66 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- SID Registers dialogue -->
+<dialog size="600, 640" bundle="applet.sidreg.SidRegTexts" title="SID_REGISTERS"
+	defaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" Visible="true"
+	IconImage="ICON">
+	<panel border="TitledBorder(SID_REGISTERS)" layout="GridLayout">
+		<vbox>
+			<checkbox label="START_STOP_RECORDING" ToolTipText="On/off SID register dump"
+				font="Georgia-BOLD-12" id="startStop" action="doStartStop">
+			</checkbox>
+			<panel layout="GridLayout(5,5)" border="TitledBorder(VIEWER_FILTER)">
+				<checkbox label="FREQ_1" font="Georgia-BOLD-12" selected="true"
+					id="freq1" action="doUpdateFilter" />
+				<checkbox label="PULSE_1" font="Georgia-BOLD-12" selected="true"
+					id="pulse1" action="doUpdateFilter" />
+				<checkbox label="CTRL_1" font="Georgia-BOLD-12" selected="true"
+					id="ctrl1" action="doUpdateFilter" />
+				<checkbox label="A_D_1" font="Georgia-BOLD-12" selected="true"
+					id="ad1" action="doUpdateFilter" />
+				<checkbox label="S_R_1" font="Georgia-BOLD-12" selected="true"
+					id="sr1" action="doUpdateFilter" />
+
+				<checkbox label="FREQ_2" font="Georgia-BOLD-12" selected="true"
+					id="freq2" action="doUpdateFilter" />
+				<checkbox label="PULSE_2" font="Georgia-BOLD-12" selected="true"
+					id="pulse2" action="doUpdateFilter" />
+				<checkbox label="CTRL_2" font="Georgia-BOLD-12" selected="true"
+					id="ctrl2" action="doUpdateFilter" />
+				<checkbox label="A_D_2" font="Georgia-BOLD-12" selected="true"
+					id="ad2" action="doUpdateFilter" />
+				<checkbox label="S_R_2" font="Georgia-BOLD-12" selected="true"
+					id="sr2" action="doUpdateFilter" />
+
+				<checkbox label="FREQ_3" font="Georgia-BOLD-12" selected="true"
+					id="freq3" action="doUpdateFilter" />
+				<checkbox label="PULSE_3" font="Georgia-BOLD-12" selected="true"
+					id="pulse3" action="doUpdateFilter" />
+				<checkbox label="CTRL_3" font="Georgia-BOLD-12" selected="true"
+					id="ctrl3" action="doUpdateFilter" />
+				<checkbox label="A_D_3" font="Georgia-BOLD-12" selected="true"
+					id="ad3" action="doUpdateFilter" />
+				<checkbox label="S_R_3" font="Georgia-BOLD-12" selected="true"
+					id="sr3" action="doUpdateFilter" />
+
+				<checkbox label="FILTER" font="Georgia-BOLD-12" selected="true"
+					id="filter" action="doUpdateFilter" />
+				<checkbox label="VOL" font="Georgia-BOLD-12" selected="true"
+					id="vol" action="doUpdateFilter" />
+				<checkbox label="PADDLES" font="Georgia-BOLD-12" selected="true"
+					id="paddles" action="doUpdateFilter" />
+				<checkbox label="OSC_3" font="Georgia-BOLD-12" selected="true"
+					id="osc3" action="doUpdateFilter" />
+				<checkbox label="ENV_3" font="Georgia-BOLD-12" selected="true"
+					id="env3" action="doUpdateFilter" />
+
+				<button text="SELECT_ALL" id="selectAll" icon="applet/icons/selectall.png"
+					action="doSelectAll" />
+				<button text="DESELECT_ALL" id="deselectAll" icon="applet/icons/deselectall.png"
+					action="doDeselectAll" />
+			</panel>
+			<scrollpane>
+				<table initclass="applet.sidreg.SIDRegModel" id="regTable" />
+			</scrollpane>
+		</vbox>
+	</panel>
+</dialog>

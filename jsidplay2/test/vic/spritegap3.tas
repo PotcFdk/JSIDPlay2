@@ -1,0 +1,235 @@
+  processor 6502
+
+  .org $801
+basic:
+  .word 0$      ; link to next line
+  .word 1995    ; line number
+  .byte $9E     ; SYS token
+
+; SYS digits
+
+  .if (* + 8) / 10000
+  .byte $30 + (* + 8) / 10000
+  .endif
+  .if (* + 7) / 1000
+  .byte $30 + (* + 7) % 10000 / 1000
+  .endif
+  .if (* + 6) / 100
+  .byte $30 + (* + 6) % 1000 / 100
+  .endif
+  .if (* + 5) / 10
+  .byte $30 + (* + 5) % 100 / 10
+  .endif
+  .byte $30 + (* + 4) % 10
+
+0$:
+  .byte 0,0,0   ; end of BASIC program
+
+start:
+
+  sei
+  ldx #$09
+pushloop:
+  lda $ef,x
+  pha
+  dex
+  bne pushloop
+
+  lda #$03
+  sta $f8
+  lda #$00
+  sta $fb
+  lda #$40
+  sta $fc
+  
+  ldx #$00
+  lda #$00
+  sta $d020
+loop1:
+  sta $3fc0,x
+  sta $3f80,x
+  inx
+  cpx #$40
+  bne loop1
+
+  lda #$40
+  sta $3ffc
+  lda #$80
+  sta $3fbc  
+
+  lda #$80
+  ldx #$00
+loop2:
+  sta $d001,x
+  inx
+  inx
+  cpx #$10
+  bne loop2
+
+  lda #$01
+  ldx #$08
+colloop:
+  sta $d026,x
+  dex
+  bne colloop
+
+  lda #$00
+  sta $f0
+loopspr1:
+  ldx $f0
+  cpx #$08
+  bne initspr1
+  jmp loopendspr1
+initspr1:
+  lda #$ff
+  sta $07f8,x
+  lda #$01
+f2loop:
+  cpx #$00
+  beq f2ok
+  dex
+  asl
+  jmp f2loop
+f2ok:
+  sta $f2
+  sta $d015
+
+  lda $f0
+  sta $f1
+  inc $f1
+loopspr2:
+  ldx $f1
+  cpx #$08
+  bne initspr2
+  jmp loopendspr2
+initspr2:
+  lda #$fe
+  sta $07f8,x
+  lda #$01
+f3loop:
+  cpx #$00
+  beq f3ok
+  dex
+  asl
+  jmp f3loop
+f3ok:
+  sta $f3
+  ora $f2
+  sta $d015
+
+  ldx #$00
+  stx $f4
+  stx $f5
+
+loopx:
+  lda $f0
+  asl
+  tax
+  lda $f4
+  sta $d000,x
+  lda $f5
+  bne highx
+  sta $d010
+  jmp lowx1
+highx:
+  lda $f2
+  sta $d010  
+lowx1:
+  inc $f4
+  bne lowx2
+  dec $f5
+  beq lowx2
+  inc $f5
+  inc $f5
+lowx2:
+  lda $f1
+  asl
+  tax
+  lda $f4
+  sta $d000,x
+  lda $f5
+  beq lowx3
+  lda $f3
+  ora $d010
+  sta $d010  
+lowx3:
+
+
+delay0:
+  lda $d012
+  cmp #$90
+  bne delay0
+
+  ldy $d01e
+
+delay1:
+  lda $d012
+  cmp #$a0
+  bne delay1
+
+  ldx $d01e
+  cpx $f8
+  beq nolog
+  jsr log
+  lda $d020
+  eor #$01
+  sta $d020
+
+nolog:
+
+  clc
+  lda $f4
+  adc $f5
+  bne loopx
+
+  inc $f1
+  jmp loopspr2
+loopendspr2:
+
+  inc $f0
+  jmp loopspr1
+loopendspr1:
+     
+  ldx #$00
+pullloop:
+  pla
+  sta $f0,x
+  inx
+  cpx #$09
+  bne pullloop
+
+  lda #$00
+  sta $2b
+  lda #$40
+  sta $2c
+  lda $fb
+  sta $2d
+  lda $fc
+  sta $2e
+
+  cli
+  rts
+
+
+log:
+  ldy #$00
+  stx $f8
+  lda $f2
+  ora $f3
+  sta ($fb),y
+  inc $fb
+  lda $f4
+  sta ($fb),y
+  inc $fb
+  lda $f5
+  sta ($fb),y
+  inc $fb
+  lda $f8
+  sta ($fb),y
+  inc $fb
+  bne lognohigh
+  inc $fc
+lognohigh:
+  rts
+  
+  

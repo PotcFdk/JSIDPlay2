@@ -1,0 +1,270 @@
+
+                          *= $0801
+0801 4C 14 08 00 97
+                          .BYTE $4C,$14,$08,$00,$97
+               TURBOASS   = 780
+0806 37 38 30             .TEXT "780"
+0809 2C 30 3A 9E 32 30
+                          .BYTE $2C,$30,$3A,$9E,$32,$30
+080F 37 33 00 00 00
+                          .BYTE $37,$33,$00,$00,$00
+0814 A9 01                LDA #1
+0816 8D 0C 03             STA TURBOASS
+0819 4C 2B 08             JMP MAIN
+
+
+081C 00        CONFIG     .BYTE 0
+081D 00 00     ABACKUP    .BYTE 0,0
+081F 00        LASTSTATE  .BYTE 0
+0820 00        RIGHT      .BYTE 0
+
+
+               ROM
+0821 A9 2F                LDA #$2F
+0823 85 00                STA 0
+0825 A9 37                LDA #$37
+0827 85 01                STA 1
+0829 58                   CLI
+082A 60                   RTS
+
+
+               MAIN
+082B 20 95 09             JSR PRINT
+082E 0D                   .BYTE 13
+082F 91 43 50 55 50 4F 52 54
+                          .TEXT "‘CPUPORT"
+0837 00                   .BYTE 0
+
+0838 A9 00                LDA #0
+083A 8D 1C 08             STA CONFIG
+               NEXTCONFIG
+083D 78                   SEI
+083E A9 FF                LDA #$FF
+0840 85 00                STA 0
+0842 85 01                STA 1
+0844 8D 1D 08             STA ABACKUP+0
+0847 8D 1E 08             STA ABACKUP+1
+084A 8D 1F 08             STA LASTSTATE
+084D A2 08                LDX #8
+084F AD 1C 08             LDA CONFIG
+               PUSH
+0852 0A                   ASL A
+0853 08                   PHP
+0854 CA                   DEX
+0855 D0 FB                BNE PUSH
+0857 A2 04                LDX #4
+               PULL
+0859 68                   PLA
+085A 29 01                AND #1
+085C A8                   TAY
+085D A9 00                LDA #0
+085F 28                   PLP
+0860 E9 00                SBC #0
+0862 99 00 00             STA 0,Y
+0865 99 1D 08             STA ABACKUP,Y
+
+               ;INPUTS: KEEP LAST STATE
+0868 AD 1D 08             LDA ABACKUP+0
+086B 49 FF                EOR #$FF
+086D 2D 1F 08             AND LASTSTATE
+0870 8D 7A 08             STA OR1+1
+               ;OUTPUTS: SET NEW STATE
+0873 AD 1D 08             LDA ABACKUP+0
+0876 2D 1E 08             AND ABACKUP+1
+0879 09 11     OR1        ORA #$11
+087B 8D 1F 08             STA LASTSTATE
+
+               ;DELAY FOR LARGER CAPACITIVES
+087E A0 00                LDY #0
+               DELAY
+0880 C8                   INY
+0881 D0 FD                BNE DELAY
+
+0883 CA                   DEX
+0884 D0 D3                BNE PULL
+
+0886 AD 1D 08             LDA ABACKUP+0
+0889 C5 00                CMP 0
+088B D0 32                BNE ERROR
+
+088D AD 1D 08             LDA ABACKUP+0
+0890 49 FF                EOR #$FF
+0892 0D 1E 08             ORA ABACKUP+1
+0895 29 37                AND #$37
+0897 8D A0 08             STA OR2+1
+089A AD 1F 08             LDA LASTSTATE
+089D 29 C8                AND #$C8
+089F 09 11     OR2        ORA #$11
+
+               ;BIT 5 IS DRAWN LOW IF INPUT
+08A1 AA                   TAX
+08A2 A9 20                LDA #$20
+08A4 2C 1D 08             BIT ABACKUP+0
+08A7 D0 04                BNE NO5LOW
+08A9 8A                   TXA
+08AA 29 DF                AND #$DF
+08AC AA                   TAX
+               NO5LOW
+08AD 8E 20 08             STX RIGHT
+08B0 E4 01                CPX 1
+08B2 D0 0B                BNE ERROR
+               NOERROR
+08B4 EE 1C 08             INC CONFIG
+08B7 D0 84                BNE NEXTCONFIG
+08B9 20 21 08             JSR ROM
+08BC 4C 56 09             JMP OK
+
+               ERROR
+08BF A5 01                LDA 1
+08C1 48                   PHA
+08C2 A5 00                LDA 0
+08C4 48                   PHA
+08C5 20 21 08             JSR ROM
+
+08C8 20 95 09             JSR PRINT
+08CB 0D                   .BYTE 13
+08CC 30 3D 46 46 20 31 3D 46 46
+                          .TEXT "0=FF 1=FF"
+08D5 00                   .BYTE 0
+
+08D6 A2 08                LDX #8
+08D8 AD 1C 08             LDA CONFIG
+               PUSH1
+08DB 0A                   ASL A
+08DC 08                   PHP
+08DD CA                   DEX
+08DE D0 FB                BNE PUSH1
+08E0 A2 04                LDX #4
+               PULL1
+08E2 A9 20                LDA #32
+08E4 20 D2 FF             JSR $FFD2
+08E7 68                   PLA
+08E8 29 01                AND #1
+08EA 09 30                ORA #"0"
+08EC 20 D2 FF             JSR $FFD2
+08EF A9 3D                LDA #"="
+08F1 20 D2 FF             JSR $FFD2
+08F4 A9 00                LDA #0
+08F6 28                   PLP
+08F7 E9 00                SBC #0
+08F9 8E 00 09             STX OLDX+1
+08FC 20 BD 09             JSR PRINTHB
+               OLDX
+08FF A2 11                LDX #$11
+0901 CA                   DEX
+0902 D0 DE                BNE PULL1
+0904 20 95 09             JSR PRINT
+
+0907 0D                   .BYTE 13
+0908 41 46 54 45 52 20 20
+                          .TEXT "AFTER  "
+090F 00                   .BYTE 0
+
+0910 68                   PLA
+0911 20 BD 09             JSR PRINTHB
+0914 A9 20                LDA #32
+0916 20 D2 FF             JSR $FFD2
+0919 68                   PLA
+091A 20 BD 09             JSR PRINTHB
+091D 20 95 09             JSR PRINT
+0920 0D                   .BYTE 13
+0921 52 49 47 48 54 20 20
+                          .TEXT "RIGHT  "
+0928 00                   .BYTE 0
+0929 AD 1D 08             LDA ABACKUP+0
+092C 20 BD 09             JSR PRINTHB
+092F A9 20                LDA #32
+0931 20 D2 FF             JSR $FFD2
+0934 AD 20 08             LDA RIGHT
+0937 20 BD 09             JSR PRINTHB
+093A A9 0D                LDA #13
+093C 20 D2 FF             JSR $FFD2
+
+               WAITK
+093F 20 E4 FF             JSR $FFE4
+0942 F0 FB                BEQ WAITK
+0944 C9 03                CMP #3
+0946 F0 03                BEQ STOP
+0948 4C B4 08             JMP NOERROR
+               STOP
+094B AD 0C 03             LDA TURBOASS
+094E F0 03                BEQ BASIC
+0950 4C 00 80             JMP $8000
+               BASIC
+0953 4C 74 A4             JMP $A474
+
+
+               OK
+0956 20 95 09             JSR PRINT
+0959 20 2D 20 4F 4B
+                          .TEXT " - OK"
+095E 0D 00                .BYTE 13,0
+0960 AD 0C 03             LDA TURBOASS
+0963 F0 08                BEQ LOAD
+0965 20 E4 FF  WAIT       JSR $FFE4
+0968 F0 FB                BEQ WAIT
+096A 4C 00 80             JMP $8000
+
+               LOAD
+096D A9 2F                LDA #47
+096F 85 00                STA 0
+0971 20 95 09             JSR PRINT
+0974 43 50 55 54 49 4D 49 4E 47
+               NAME       .TEXT "CPUTIMING"
+               NAMELEN    = *-NAME
+097D 00                   .BYTE 0
+097E A9 00                LDA #0
+0980 85 0A                STA $0A
+0982 85 B9                STA $B9
+0984 A9 09                LDA #NAMELEN
+0986 85 B7                STA $B7
+0988 A9 74                LDA #<NAME
+098A 85 BB                STA $BB
+098C A9 09                LDA #>NAME
+098E 85 BC                STA $BC
+0990 68                   PLA
+0991 68                   PLA
+0992 4C 6F E1             JMP $E16F
+
+
+0995 68        PRINT      PLA
+                          .BLOCK
+0996 8D A0 09             STA PRINT0+1
+0999 68                   PLA
+099A 8D A1 09             STA PRINT0+2
+099D A2 01                LDX #1
+099F BD 9F 09  PRINT0     LDA !*,X
+09A2 F0 06                BEQ PRINT1
+09A4 20 D2 FF             JSR $FFD2
+09A7 E8                   INX
+09A8 D0 F5                BNE PRINT0
+09AA 38        PRINT1     SEC
+09AB 8A                   TXA
+09AC 6D A0 09             ADC PRINT0+1
+09AF 8D BB 09             STA PRINT2+1
+09B2 A9 00                LDA #0
+09B4 6D A1 09             ADC PRINT0+2
+09B7 8D BC 09             STA PRINT2+2
+09BA 4C BA 09  PRINT2     JMP !*
+                          .BEND
+
+               PRINTHB
+                          .BLOCK
+09BD 48                   PHA
+09BE 4A                   LSR A
+09BF 4A                   LSR A
+09C0 4A                   LSR A
+09C1 4A                   LSR A
+09C2 20 C8 09             JSR PRINTHN
+09C5 68                   PLA
+09C6 29 0F                AND #$0F
+               PRINTHN
+09C8 09 30                ORA #$30
+09CA C9 3A                CMP #$3A
+09CC 90 02                BCC PRINTHN0
+09CE 69 06                ADC #6
+               PRINTHN0
+09D0 20 D2 FF             JSR $FFD2
+09D3 60                   RTS
+                          .BEND
+

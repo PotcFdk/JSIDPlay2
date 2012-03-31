@@ -1,0 +1,31 @@
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>console</headerType>
+  <jar>jsidplay2.jar</jar>
+  <outfile>..\result\jsidplay2_console.exe</outfile>
+  <errTitle>JSIDPlay2</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>high</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>http://jsidplay2.sourceforge.net/</supportUrl>
+  <customProcName>false</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest></manifest>
+  <icon>jsidplay2.ico</icon>
+  <classPath>
+    <mainClass>sidplay.ConsolePlayer</mainClass>
+    <cp>hsqldb.jar</cp>
+    <cp>jinput.jar</cp>
+    <cp>photos.jar</cp>
+    <cp>jump3r.jar</cp>
+    <cp>swixml.jar</cp>
+    <cp>ScreenRecorder.jar</cp>
+  </classPath>
+  <jre>
+    <path></path>
+    <minVersion>1.6.0_00</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+  </jre>
+</launch4jConfig>

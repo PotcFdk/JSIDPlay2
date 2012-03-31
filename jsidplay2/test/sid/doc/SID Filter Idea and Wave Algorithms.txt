@@ -1,0 +1,96 @@
+Hi George,
+
+ >> But now there is the formula for noise!
+
+that would be great! So I wouldn't have to find it out myself. ;-)
+
+Unfortunately, the registered customers take much of my time away. "Please
+write a converter for Vizawrite text files." -- "I want to import
+xyz-painter files into Paintbrush for Windows." -- "The transfer between
+the C64 and the PC does not work" -- "When will you implement fast loaders"
+-- "There is that super xyz game I used to play very much. It doesn't run
+on the emulator" ... and so on.
+
+Thus, PC64 2.0 for Windows goes on very slow. Currently only the CPU is
+running, but it has bugs and the undocumented commands are not implemented
+yet. So I'm writing an emulator suite which tests every little detail
+automatically. This is also very time consuming but the only way to get a
+nearly 100% emulation. If the CPU is ready in about 2 months, I'll
+implement the VIC which will take at least another 4 months. Then come the
+CIAs, the floppy and at last the SID. Because the SID is not essential for
+the emulation as it has write-only registers except that 4 at the end. A
+dummy implementation with a random read register only, and 99% of the games
+will run.
+
+I've thought about your filter formula, i.e. Lowpass = Weighted Sum of
+previous values and Hipass = Value - Lowpass. This sounds easy, but there
+is a big problem on the 486: A multiply costs about 12 cycles while an add
+costs only 1 cycle. So I'd have to reduce multiplies as far as possible.
+Maybe this will work:
+
+                                50:50 square wave
+                                      .
+             HIPASS samples           .       LOWPASS samples
+    *                                 .        ************
+    **                                .      **           *
+    * *                               .     *             *
+    *  *                              .    *               *
+    *   **                            .    *                *
+    *     *****                       .   *                  **
+    *          **********          ** .  *                     ************
+                        *       ***   .
+                        *    ***      .
+                        *  **         .
+                        * *           .
+                        * *           .
+                        **            .
+                        *             .
+
+
+To form any combination of volume and filter, an emulator would need to
+calculate HIPASSval[i] * HIPASSfactor + LOWPASSval[i] * LOWPASSfactor, and
+that's only 2 multiplications per sample. But it's just an idea, I haven't
+implemented it yet as the work on the SID will begin in about 8 months.
+
+ >> 0007  1245*00 1249*01 1249*02 1249*03 1249*04 1249*05 1249*06 124A*07
+ >>       1249*08
+
+Looks like good old Bresenham:
+
+  for each clock {
+    wSum += wFreq;
+    if (carry) {
+      bIndex++; // Bresenham was here
+    }
+    if (fTest) {
+      wSum = 0;
+      bIndex = 0;
+    }
+    bOut = 0xFF; // open collector outputs allow more than one generator
+    if (fTriangle) {
+      bTemp = bIndex << 1;
+      if (bIndex & 0x80) {
+        bTemp = -bTemp;
+      }
+      bOut &= bTemp;
+    }
+    if (fSawtooth) {
+      bOut &= bIndex;
+    }
+    if (fSquare) {
+      // Dammned! The pulse/pause resolution is 2048, not 256.
+      // bIndex should be 11 bits wide!
+      if (bIndex >= wPulse) {
+        bOut = 0;
+      }
+    }
+    if (fNoise) {
+      // bIndex should be 11 bits wide!
+      bOut &= abNoise[bIndex];
+    }
+    output(bOut);
+  }
+
+Well, untested code, it's just an idea. ;-)
+
+Wolfgang

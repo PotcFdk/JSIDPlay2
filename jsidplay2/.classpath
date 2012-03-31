@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="jinput.jar" sourcepath="/jinput/coreAPI/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="jsidplay2/native"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="photos.jar"/>
+	<classpathentry kind="lib" path="hsqldb.jar"/>
+	<classpathentry kind="lib" path="jump3r.jar"/>
+	<classpathentry kind="lib" path="swixml.jar"/>
+	<classpathentry kind="lib" path="test/lib/fest-assert-1.2.jar"/>
+	<classpathentry kind="lib" path="test/lib/fest-reflect-1.2.jar"/>
+	<classpathentry kind="lib" path="test/lib/fest-swing-1.2.jar"/>
+	<classpathentry kind="lib" path="test/lib/fest-swing-junit-1.2.jar"/>
+	<classpathentry kind="lib" path="test/lib/fest-swing-junit-4.3.1-1.2.jar"/>
+	<classpathentry kind="lib" path="test/lib/fest-swing-junit-4.5-1.2.jar"/>
+	<classpathentry kind="lib" path="test/lib/fest-util-1.1.2.jar"/>
+	<classpathentry kind="lib" path="test/lib/jcip-annotations-1.0.jar"/>
+	<classpathentry kind="lib" path="test/lib/commons-codec-1.5.jar"/>
+	<classpathentry kind="lib" path="ScreenRecorder.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

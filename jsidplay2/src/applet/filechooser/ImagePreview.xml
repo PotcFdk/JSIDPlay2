@@ -1,0 +1,14 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- ImagePreview -->
+<panel layout="BorderLayout" PreferredSize="320, 200"
+	bundle="applet.filechooser.ImagePreviewTexts">
+	<button Text="SWITCH_FONT" Focusable="false" constraints="BorderLayout.NORTH"
+		action="doSwitchFont" />
+	<scrollpane id="scrollPane" VerticalScrollBarPolicy="JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED"
+		HorizontalScrollBarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED">
+		<table constraints="BorderLayout.CENTER" SelectionMode="ListSelectionModel.SINGLE_SELECTION"
+			Editable="false" ShowGrid="false" initclass="applet.filechooser.ImageTableModel"
+			id="directory">
+		</table>
+	</scrollpane>
+</panel>

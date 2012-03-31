@@ -1,0 +1,7 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- GameBaseTable -->
+<panel layout="BorderLayout" bundle="applet.gamebase.GameBasePageTexts">
+	<scrollpane>
+		<gamebasetable id="gamebasetable" initclass="applet.gamebase.GameBaseTableModel" />
+	</scrollpane>
+</panel>

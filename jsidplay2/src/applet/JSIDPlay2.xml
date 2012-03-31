@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frame title="TITLE" bundle="applet.JSIDPlay2Texts" IconImage="ICON"
+	DefaultCloseOperation="JFrame.EXIT_ON_CLOSE" Visible="true">
+</frame>

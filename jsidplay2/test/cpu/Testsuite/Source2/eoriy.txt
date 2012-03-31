@@ -1,0 +1,360 @@
+                        *= $0801
+
+0801 4C 16 08 00 97 32
+                        .BYTE $4C,$16,$08,$00,$97,$32
+0807 2C 30 3A 9E 32 30
+                        .BYTE $2C,$30,$3A,$9E,$32,$30
+080D 37 30 00 00 00 A9
+                        .BYTE $37,$30,$00,$00,$00,$A9
+0813 01 85 02           .BYTE $01,$85,$02
+
+0816 20 95 0A           JSR PRINT
+0819 0D                 .BYTE 13
+081A 91 45 4F 52 49 59
+                        .TEXT "‘EORIY"
+0820 00                 .BYTE 0
+
+0821 A9 1B              LDA #%00011011
+0823 8D 3E 09           STA DB
+0826 A9 C6              LDA #%11000110
+0828 8D 3F 09           STA AB
+082B A9 B1              LDA #%10110001
+082D 8D 40 09           STA XB
+0830 A9 6C              LDA #%01101100
+0832 8D 41 09           STA YB
+0835 A9 00              LDA #0
+0837 8D 42 09           STA PB
+083A BA                 TSX
+083B 8E 43 09           STX SB
+
+083E A9 00              LDA #0
+0840 8D 3E 09           STA DB
+0843 8D 3F 09           STA AB
+0846 8D 41 09           STA YB
+0849 A9 44              LDA #<DA
+084B 85 AC              STA 172
+084D A9 09              LDA #>DA
+084F 85 AD              STA 173
+
+0851 AD 3E 09  NEXT     LDA DB
+0854 8D 44 09           STA DA
+0857 8D 4A 09           STA DR
+085A 8D 68 08           STA CMD0+1
+085D 49 FF              EOR #$FF
+085F 8D 70 08           STA CMD1+1
+
+0862 AD 3F 09           LDA AB
+0865 49 FF              EOR #$FF
+0867 29 00     CMD0     AND #0
+0869 8D 72 08           STA CMD2+1
+086C AD 3F 09           LDA AB
+086F 29 00     CMD1     AND #0
+0871 09 00     CMD2     ORA #0
+0873 8D 4B 09           STA AR
+
+0876 AD 40 09           LDA XB
+0879 8D 4C 09           STA XR
+
+087C AD 41 09           LDA YB
+087F 8D 4D 09           STA YR
+
+0882 AD 42 09           LDA PB
+0885 09 30              ORA #%00110000
+0887 29 7D              AND #%01111101
+0889 AA                 TAX
+088A AD 4B 09           LDA AR
+088D C9 00              CMP #0
+088F D0 04              BNE NOZERO
+0891 8A                 TXA
+0892 09 02              ORA #%00000010
+0894 AA                 TAX
+0895 AD 4B 09  NOZERO   LDA AR
+0898 10 04              BPL NONEG
+089A 8A                 TXA
+089B 09 80              ORA #%10000000
+089D AA                 TAX
+089E 8E 4E 09  NONEG    STX PR
+
+08A1 AD 43 09           LDA SB
+08A4 8D 4F 09           STA SR
+
+08A7 AE 43 09           LDX SB
+08AA 9A                 TXS
+08AB AD 42 09           LDA PB
+08AE 48                 PHA
+08AF AD 3F 09           LDA AB
+08B2 AE 40 09           LDX XB
+08B5 AC 41 09           LDY YB
+08B8 28                 PLP
+
+08B9 51 AC     CMD      EOR (172),Y
+
+08BB 08                 PHP
+08BC D8                 CLD
+08BD 8D 45 09           STA AA
+08C0 8E 46 09           STX XA
+08C3 8C 47 09           STY YA
+08C6 68                 PLA
+08C7 8D 48 09           STA PA
+08CA BA                 TSX
+08CB 8E 49 09           STX SA
+08CE 20 50 09           JSR CHECK
+
+08D1 E6 AC              INC 172
+08D3 D0 02              BNE NOINC
+08D5 E6 AD              INC 173
+08D7 AD 41 09  NOINC    LDA YB
+08DA D0 02              BNE NODEC
+08DC C6 AD              DEC 173
+08DE CE 41 09  NODEC    DEC YB
+
+08E1 18                 CLC
+08E2 AD 3E 09           LDA DB
+08E5 69 11              ADC #17
+08E7 8D 3E 09           STA DB
+08EA 90 1A              BCC JMPNEXT
+08EC A9 00              LDA #0
+08EE 8D 3E 09           STA DB
+08F1 18                 CLC
+08F2 AD 3F 09           LDA AB
+08F5 69 11              ADC #17
+08F7 8D 3F 09           STA AB
+08FA 90 0A              BCC JMPNEXT
+08FC A9 00              LDA #0
+08FE 8D 3F 09           STA AB
+0901 EE 42 09           INC PB
+0904 F0 03              BEQ NONEXT
+0906 4C 51 08  JMPNEXT  JMP NEXT
+               NONEXT
+
+0909 20 95 0A           JSR PRINT
+090C 20 2D 20 4F 4B
+                        .TEXT " - OK"
+0911 0D 00              .BYTE 13,0
+0913 A5 02              LDA 2
+0915 F0 08              BEQ LOAD
+0917 20 E4 FF  WAIT     JSR $FFE4
+091A F0 FB              BEQ WAIT
+091C 4C 00 80           JMP $8000
+
+091F 20 95 0A  LOAD     JSR PRINT
+0922 43 4C 43 4E
+               NAME     .TEXT "CLCN"
+               NAMELEN  = *-NAME
+0926 00                 .BYTE 0
+0927 A9 00              LDA #0
+0929 85 0A              STA $0A
+092B 85 B9              STA $B9
+092D A9 04              LDA #NAMELEN
+092F 85 B7              STA $B7
+0931 A9 22              LDA #<NAME
+0933 85 BB              STA $BB
+0935 A9 09              LDA #>NAME
+0937 85 BC              STA $BC
+0939 68                 PLA
+093A 68                 PLA
+093B 4C 6F E1           JMP $E16F
+
+093E 00        DB       .BYTE 0
+093F 00        AB       .BYTE 0
+0940 00        XB       .BYTE 0
+0941 00        YB       .BYTE 0
+0942 00        PB       .BYTE 0
+0943 00        SB       .BYTE 0
+0944 00        DA       .BYTE 0
+0945 00        AA       .BYTE 0
+0946 00        XA       .BYTE 0
+0947 00        YA       .BYTE 0
+0948 00        PA       .BYTE 0
+0949 00        SA       .BYTE 0
+094A 00        DR       .BYTE 0
+094B 00        AR       .BYTE 0
+094C 00        XR       .BYTE 0
+094D 00        YR       .BYTE 0
+094E 00        PR       .BYTE 0
+094F 00        SR       .BYTE 0
+
+               CHECK
+                        .BLOCK
+0950 AD 44 09           LDA DA
+0953 CD 4A 09           CMP DR
+0956 D0 29              BNE ERROR
+0958 AD 45 09           LDA AA
+095B CD 4B 09           CMP AR
+095E D0 21              BNE ERROR
+0960 AD 46 09           LDA XA
+0963 CD 4C 09           CMP XR
+0966 D0 19              BNE ERROR
+0968 AD 47 09           LDA YA
+096B CD 4D 09           CMP YR
+096E D0 11              BNE ERROR
+0970 AD 48 09           LDA PA
+0973 CD 4E 09           CMP PR
+0976 D0 09              BNE ERROR
+0978 AD 49 09           LDA SA
+097B CD 4F 09           CMP SR
+097E D0 01              BNE ERROR
+0980 60                 RTS
+
+0981 20 95 0A  ERROR    JSR PRINT
+0984 0D                 .BYTE 13
+0985 42 45 46 4F 52 45 20 20 00
+                        .NULL "BEFORE  "
+098E A2 3E              LDX #<DB
+0990 A0 09              LDY #>DB
+0992 20 D6 09           JSR SHOWREGS
+0995 20 95 0A           JSR PRINT
+0998 0D                 .BYTE 13
+0999 41 46 54 45 52 20 20 20 00
+                        .NULL "AFTER   "
+09A2 A2 44              LDX #<DA
+09A4 A0 09              LDY #>DA
+09A6 20 D6 09           JSR SHOWREGS
+09A9 20 95 0A           JSR PRINT
+09AC 0D                 .BYTE 13
+09AD 52 49 47 48 54 20 20 20 00
+                        .NULL "RIGHT   "
+09B6 A2 4A              LDX #<DR
+09B8 A0 09              LDY #>DR
+09BA 20 D6 09           JSR SHOWREGS
+09BD A9 0D              LDA #13
+09BF 20 D2 FF           JSR $FFD2
+09C2 20 E4 FF  WAIT     JSR $FFE4
+09C5 F0 FB              BEQ WAIT
+09C7 C9 03              CMP #3
+09C9 F0 01              BEQ STOP
+09CB 60                 RTS
+09CC A5 02     STOP     LDA 2
+09CE F0 03              BEQ BASIC
+09D0 4C 00 80           JMP $8000
+09D3 6C 02 A0  BASIC    JMP ($A002)
+
+09D6 86 AC     SHOWREGS STX 172
+09D8 84 AD              STY 173
+09DA A0 00              LDY #0
+09DC B1 AC              LDA (172),Y
+09DE 20 7F 0A           JSR HEXB
+09E1 A9 20              LDA #32
+09E3 20 D2 FF           JSR $FFD2
+09E6 A9 20              LDA #32
+09E8 20 D2 FF           JSR $FFD2
+09EB C8                 INY
+09EC B1 AC              LDA (172),Y
+09EE 20 7F 0A           JSR HEXB
+09F1 A9 20              LDA #32
+09F3 20 D2 FF           JSR $FFD2
+09F6 C8                 INY
+09F7 B1 AC              LDA (172),Y
+09F9 20 7F 0A           JSR HEXB
+09FC A9 20              LDA #32
+09FE 20 D2 FF           JSR $FFD2
+0A01 C8                 INY
+0A02 B1 AC              LDA (172),Y
+0A04 20 7F 0A           JSR HEXB
+0A07 A9 20              LDA #32
+0A09 20 D2 FF           JSR $FFD2
+0A0C C8                 INY
+0A0D B1 AC              LDA (172),Y
+0A0F A2 4E              LDX #"N"
+0A11 0A                 ASL A
+0A12 90 02              BCC OK7
+0A14 A2 CE              LDX #"Î"
+0A16 48        OK7      PHA
+0A17 8A                 TXA
+0A18 20 D2 FF           JSR $FFD2
+0A1B 68                 PLA
+0A1C A2 56              LDX #"V"
+0A1E 0A                 ASL A
+0A1F 90 02              BCC OK6
+0A21 A2 D6              LDX #"Ö"
+0A23 48        OK6      PHA
+0A24 8A                 TXA
+0A25 20 D2 FF           JSR $FFD2
+0A28 68                 PLA
+0A29 A2 30              LDX #"0"
+0A2B 0A                 ASL A
+0A2C 90 02              BCC OK5
+0A2E A2 31              LDX #"1"
+0A30 48        OK5      PHA
+0A31 8A                 TXA
+0A32 20 D2 FF           JSR $FFD2
+0A35 68                 PLA
+0A36 A2 42              LDX #"B"
+0A38 0A                 ASL A
+0A39 90 02              BCC OK4
+0A3B A2 C2              LDX #"Â"
+0A3D 48        OK4      PHA
+0A3E 8A                 TXA
+0A3F 20 D2 FF           JSR $FFD2
+0A42 68                 PLA
+0A43 A2 44              LDX #"D"
+0A45 0A                 ASL A
+0A46 90 02              BCC OK3
+0A48 A2 C4              LDX #"Ä"
+0A4A 48        OK3      PHA
+0A4B 8A                 TXA
+0A4C 20 D2 FF           JSR $FFD2
+0A4F 68                 PLA
+0A50 A2 49              LDX #"I"
+0A52 0A                 ASL A
+0A53 90 02              BCC OK2
+0A55 A2 C9              LDX #"É"
+0A57 48        OK2      PHA
+0A58 8A                 TXA
+0A59 20 D2 FF           JSR $FFD2
+0A5C 68                 PLA
+0A5D A2 5A              LDX #"Z"
+0A5F 0A                 ASL A
+0A60 90 02              BCC OK1
+0A62 A2 DA              LDX #"Ú"
+0A64 48        OK1      PHA
+0A65 8A                 TXA
+0A66 20 D2 FF           JSR $FFD2
+0A69 68                 PLA
+0A6A A2 43              LDX #"C"
+0A6C 0A                 ASL A
+0A6D 90 02              BCC OK0
+0A6F A2 C3              LDX #"Ã"
+0A71 48        OK0      PHA
+0A72 8A                 TXA
+0A73 20 D2 FF           JSR $FFD2
+0A76 68                 PLA
+0A77 A9 20              LDA #32
+0A79 20 D2 FF           JSR $FFD2
+0A7C C8                 INY
+0A7D B1 AC              LDA (172),Y
+                        .BEND
+0A7F 48        HEXB     PHA
+0A80 4A                 LSR A
+0A81 4A                 LSR A
+0A82 4A                 LSR A
+0A83 4A                 LSR A
+0A84 20 8A 0A           JSR HEXN
+0A87 68                 PLA
+0A88 29 0F              AND #$0F
+0A8A 09 30     HEXN     ORA #$30
+0A8C C9 3A              CMP #$3A
+0A8E 90 02              BCC HEXN0
+0A90 69 06              ADC #6
+0A92 4C D2 FF  HEXN0    JMP $FFD2
+
+0A95 68        PRINT    PLA
+                        .BLOCK
+0A96 8D A0 0A           STA PRINT0+1
+0A99 68                 PLA
+0A9A 8D A1 0A           STA PRINT0+2
+0A9D A2 01              LDX #1
+0A9F BD 9F 0A  PRINT0   LDA !*,X
+0AA2 F0 06              BEQ PRINT1
+0AA4 20 D2 FF           JSR $FFD2
+0AA7 E8                 INX
+0AA8 D0 F5              BNE PRINT0
+0AAA 38        PRINT1   SEC
+0AAB 8A                 TXA
+0AAC 6D A0 0A           ADC PRINT0+1
+0AAF 8D BB 0A           STA PRINT2+1
+0AB2 A9 00              LDA #0
+0AB4 6D A1 0A           ADC PRINT0+2
+0AB7 8D BC 0A           STA PRINT2+2
+0ABA 4C BA 0A  PRINT2   JMP !*
+                        .BEND

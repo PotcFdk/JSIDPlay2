@@ -1,0 +1,34 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- Emulation settings dialogue -->
+<dialog name="EmulationDialogue" size="600, 640"
+	bundle="applet.emulationsettings.EmulationSettingsTexts" title="TITLE"
+	defaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" Visible="true"
+	IconImage="ICON">
+	<vbox>
+		<panel layout="GridLayout(1, 3)">
+			<panel border="TitledBorder(VOLUME_CONTROL)" layout="GridLayout(1, 2)">
+				<dknob label="MAIN_SID_LEVEL" type="dB" intervalLow="-60"
+					intervalHigh="60" divisor="10" focusableDKnob="true" id="leftVolume" />
+				<dknob label="SECOND_SID_LEVEL" type="dB" intervalLow="-60"
+					intervalHigh="60" divisor="10" focusableDKnob="true" id="rightVolume" />
+			</panel>
+		</panel>
+		<panel border="TitledBorder(SID_CONTROL)" layout="GridLayout(2, 5)">
+			<label text="1ST_SID"></label>
+			<combobox name="SID1Model" id="sid1Model" action="setSid1Model" />
+			<label text="2ND_SID"></label>
+			<combobox id="sid2Model" action="setSid2Model" />
+			<label text="2ND_ADDRESS"></label>
+			<textfield id="baseAddress" action="setBaseAddress" />
+			<checkbox label="FORCE_STEREO" id="forceStereo" action="doForceStereo" />
+			<checkbox label="DIGI_BOOST" id="boosted8580" action="setDigiBoost" />
+		</panel>
+		<panel border="TitledBorder(FILTER)" layout="BorderLayout">
+			<panel layout="FlowLayout(FlowLayout.LEFT)" constraints="BorderLayout.NORTH">
+				<label text="FILTER_DEFINITION" />
+				<combobox id="filter" action="setFilter" />
+			</panel>
+			<curvefit id="filterCurve" constraints="BorderLayout.CENTER" />
+		</panel>
+	</vbox>
+</dialog>

@@ -1,0 +1,77 @@
+Generell ist zu sagen 
+---------------------
+- Im Emulator treten Abstürze vermehrt auf, wenn die Emulatorgeschwindigkeit über 100% erhöht wird. (z.B.: um beim Laden des nächsten Levels nicht so lange warten zu müssen)
+- G64-Files der Original-Disk-Version nur mit Vice-Emulator verwenden. (CCS64 v2 und v3 stürzen beim Überprüfen des Kopierschutzes auf Seite 2 ab)
+- Tap's der Original-Tape-Versionen besser mit Vice-Emulator verwenden
+- Sämtliche gecrackte Versionen dieses Games stammen von der Tape-Version-(v1) des Originals (die meisten nur 1-Spieler-Modus, alle keine Highscoreliste) und alle sind auch noch mehr oder weniger fehlerhaft. (Diese Fehler sind auch beim Testen auf einem originalen C64 aufgetreten)
+
+
+originale Verionen:
+-------------------
+Original-Disk          - Diese Version dürfte in Ordnung seon
+    (2 x g64)          - CRC32: Side1 = 0c248285, Side2 = 6212acc2
+                       - Alle Levels lassen sich zu 99% ohne Fehler durchspielen
+                       - Sehr selten Absturz nach dem Endscreen
+                         (statt einer Möglichkeit sich in die Highscoreliste einzutragen)
+                       - Merkmal: Highscoreliste zu Beginn die geladen (nicht gespeichert) wird
+
+Original-Tape          - Es gibt hier anscheinend zwei verschiedene Original-Tape-Versionen-(v1)
+   (v1-newer)          - CRC32: Side1 = 3e777b87, Side2 = e04c8b8f
+                       - "v1-newer" läßt sich zu 90% ohne Fehler durchspielen
+                       - (Reset nach Endscreen, neu Laden zum nochmal spielen)
+                       - Merkmal: keine Highscoreliste zu Beginn
+
+Original-Tape          - "v1-older" Stürzt zu 50% irgendwann ab Level-2 ab. 
+   (v1-older)          - CRC32: Side1 = bfc12dd6, Side2 = b46b0b43
+                       - (spielbar, aber oft Abstürze)
+                       - Merkmal: keine Highscoreliste zu Beginn
+
+Original-Tape          - zusätzlich gibt es noch eine Original-Tape-Version-(v2)
+         (v2)          - CRC32: Side1 = 9bebc9d8, Side2 = b9e591ed
+                       - "v2"  stürzt nach dem 4. Level beim Laden des 5. Levels ab
+                       - (nicht durchspielbar!!)
+                       - Merkmal: Highscoreliste zu Beginn die nicht geladen wird,
+
+
+spielbare gecrackte Tape-Versionnen:
+------------------------------------
+Arcane (IDE-patched)   - Version von Beastie Boys (101%) mit für IDE gepatchten Loader
+                       - Seltener Absturz beim Beginn des Ladens eines Levels
+                         (dies könnte aber auch ein Bug im Programm selbst sein)
+                       - 2-Spieler-Option
+                       - keine Highscoreliste
+                       - läßt sich in der Regel durchspielen
+                       - läuft auf IDE und allen CMD + C= Laufwerken
+                       - derzeit beste gecrackte Tape-Version
+
+CREST                  - Seltener Absturz beim Beginn des Ladens eines Levels
+                         (dies könnte aber auch ein Bug im Programm selbst sein)
+                       - nur 1-Spieler-Option
+                       - keine Highscoreliste
+                       - Level 8 fehlt !!!
+                       - läßt sich in der Regel durchspielen
+
+Crack Swap Industries  - Stürzt im 2. Level nach Vernichtung des Endgegners ab.
+                         (WORKAROUND: Im 2. Level beim Endgegner Level beenden, 
+                                      Tasten C+S+I drücken)
+
+
+unspielbare gecrackte Tape-Versionen:
+-------------------------------------
+Beastie Boys (101%)    - Stürzt irgendwann ab Level-2 ab
+                       - (unspielbar!!)
+
+Rawhead                - Stürzt irgendwann ab Level-2 ab
+                       - (unspielbar!!)
+
+OneWay                 - Stürzt irgendwann ab Level-2 ab
+                       - Läßt Levels aus oder Levels scollen nicht oder sind ohne Gegener
+                       - (unspielbar!!)
+
+
+Bemerkungen:
+------------
+- Die Original-Disk-Version-(PAL) ist die stabilste und läßt sich zu 99% ohne Probleme durchspielen (mit dem externen Highscore-Saver kann nun auch der Highscore gespeichert werden)
+- Die Original-Tape-Version-(v1-newer) läßt sich zu 90% ohne Fehler durchspielen (leider keine Highscoreliste)
+- Die Version von "Arcane (IDE-patched)" ist trotz teilweiser Abstürze die (nach meiner subjektiven Meinung) derzeit beste gecrackte Tape-Version. 
+- Daß die Original-Tape-Version-(v1-older) und viele gecrackte Versionen den gleichen Fehler zeigen (Absturz nach Level 2) deutet darauf hin, daß die erste Original-Tape-Serie des Spiels fehlerhaft war.

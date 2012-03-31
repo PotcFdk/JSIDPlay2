@@ -1,0 +1,309 @@
+               ;---------------------------------------
+               ;LOADTH.ASM - THIS FILE IS PART
+               ;OF THE √64 ≈MULATOR ‘EST ”UITE
+               ;PUBLIC DOMAIN, NO COPYRIGHT
+
+                          *= $0801
+0801 4C 14 08 00 97
+                          .BYTE $4C,$14,$08,$00,$97
+               TURBOASS   = 780
+0806 37 38 30             .TEXT "780"
+0809 2C 30 3A 9E 32 30
+                          .BYTE $2C,$30,$3A,$9E,$32,$30
+080F 37 33 00 00 00
+                          .BYTE $37,$33,$00,$00,$00
+                          .BLOCK
+0814 A9 01                LDA #1
+0816 8D 0C 03             STA TURBOASS
+0819 A2 00                LDX #0
+081B 86 D3                STX $D3
+081D AD EC 08             LDA THISNAME
+               PRINTTHIS
+0820 20 D2 FF             JSR $FFD2
+0823 E8                   INX
+0824 BD EC 08             LDA THISNAME,X
+0827 D0 F7                BNE PRINTTHIS
+0829 20 F9 08             JSR MAIN
+082C A9 37                LDA #$37
+082E 85 01                STA 1
+0830 A9 2F                LDA #$2F
+0832 85 00                STA 0
+0834 20 15 FD             JSR $FD15
+0837 20 A3 FD             JSR $FDA3
+083A 20 7A 08             JSR PRINT
+083D 20 2D 20 4F 4B
+                          .TEXT " - OK"
+0842 0D 00                .BYTE 13,0
+0844 AD 0C 03             LDA TURBOASS
+0847 F0 06                BEQ LOADNEXT
+0849 20 C5 08             JSR WAITKEY
+084C 4C 00 80             JMP $8000
+                          .BEND
+               LOADNEXT
+                          .BLOCK
+084F A2 F8                LDX #$F8
+0851 9A                   TXS
+0852 AD F3 08             LDA NEXTNAME
+0855 C9 2D                CMP #"-"
+0857 D0 03                BNE NOTEMPTY
+0859 4C 74 A4             JMP $A474
+               NOTEMPTY
+085C A2 00                LDX #0
+               PRINTNEXT
+085E 20 D2 FF             JSR $FFD2
+0861 E8                   INX
+0862 BD F3 08             LDA NEXTNAME,X
+0865 D0 F7                BNE PRINTNEXT
+0867 A9 00                LDA #0
+0869 85 0A                STA $0A
+086B 85 B9                STA $B9
+086D 86 B7                STX $B7
+086F A9 F3                LDA #<NEXTNAME
+0871 85 BB                STA $BB
+0873 A9 08                LDA #>NEXTNAME
+0875 85 BC                STA $BC
+0877 4C 6F E1             JMP $E16F
+                          .BEND
+
+               ;---------------------------------------
+               ;PRINT TEXT WHICH IMMEDIATELY FOLLOWS
+               ;THE  ”“ AND RETURN TO ADDRESS AFTER 0
+
+               PRINT
+                          .BLOCK
+087A 68                   PLA
+087B 8D 85 08             STA NEXT+1
+087E 68                   PLA
+087F 8D 86 08             STA NEXT+2
+0882 A2 01                LDX #1
+               NEXT
+0884 BD 11 11             LDA $1111,X
+0887 F0 06                BEQ END
+0889 20 D2 FF             JSR $FFD2
+088C E8                   INX
+088D D0 F5                BNE NEXT
+               END
+088F 38                   SEC
+0890 8A                   TXA
+0891 6D 85 08             ADC NEXT+1
+0894 8D A0 08             STA RETURN+1
+0897 A9 00                LDA #0
+0899 6D 86 08             ADC NEXT+2
+089C 8D A1 08             STA RETURN+2
+               RETURN
+089F 4C 11 11             JMP $1111
+                          .BEND
+
+               ;---------------------------------------
+               ;PRINT HEX BYTE
+
+               PRINTHB
+                          .BLOCK
+08A2 48                   PHA
+08A3 4A                   LSR A
+08A4 4A                   LSR A
+08A5 4A                   LSR A
+08A6 4A                   LSR A
+08A7 20 AD 08             JSR PRINTHN
+08AA 68                   PLA
+08AB 29 0F                AND #$0F
+               PRINTHN
+08AD 09 30                ORA #$30
+08AF C9 3A                CMP #$3A
+08B1 90 02                BCC NOLETTER
+08B3 69 06                ADC #6
+               NOLETTER
+08B5 4C D2 FF             JMP $FFD2
+                          .BEND
+
+               ;---------------------------------------
+               ;WAIT UNTIL RASTER LINE IS IN BORDER
+               ;TO PREVENT GETTING DISTURBED BY ƒÕ¡S
+
+               WAITBORDER
+                          .BLOCK
+08B8 AD 11 D0             LDA $D011
+08BB 30 07                BMI OK
+               WAIT
+08BD AD 12 D0             LDA $D012
+08C0 C9 1E                CMP #30
+08C2 B0 F9                BCS WAIT
+               OK
+08C4 60                   RTS
+                          .BEND
+
+               ;---------------------------------------
+               ;WAIT FOR A KEY AND CHECK FOR ”‘œ–
+
+               WAITKEY
+                          .BLOCK
+08C5 20 15 FD             JSR $FD15
+08C8 20 A3 FD             JSR $FDA3
+08CB 58                   CLI
+               WAIT
+08CC 20 E4 FF             JSR $FFE4
+08CF F0 FB                BEQ WAIT
+08D1 C9 03                CMP #3
+08D3 F0 01                BEQ STOP
+08D5 60                   RTS
+               STOP
+08D6 AD 0C 03             LDA TURBOASS
+08D9 F0 03                BEQ LOAD
+08DB 4C 00 80             JMP $8000
+               LOAD
+08DE 20 7A 08             JSR PRINT
+08E1 0D                   .BYTE 13
+08E2 42 52 45 41 4B
+                          .TEXT "BREAK"
+08E7 0D 00                .BYTE 13,0
+08E9 4C 4F 08             JMP LOADNEXT
+                          .BEND
+
+               ;---------------------------------------
+
+08EC 4C 4F 41 44 54 48 00
+               THISNAME   .NULL "LOADTH"
+08F3 43 4E 54 4F 32 00
+               NEXTNAME   .NULL "CNTO2"
+
+               MAIN
+
+               ;---------------------------------------
+               ;CHECK FORCE LOAD
+
+                          .BLOCK
+08F9 78                   SEI
+08FA A9 00                LDA #0
+08FC 8D 04 DC             STA $DC04
+08FF 8D 05 DC             STA $DC05
+0902 8D 06 DC             STA $DC06
+0905 8D 07 DC             STA $DC07
+0908 8D 04 DD             STA $DD04
+090B 8D 05 DD             STA $DD05
+090E 8D 06 DD             STA $DD06
+0911 8D 07 DD             STA $DD07
+0914 A9 10                LDA #%00010000
+0916 8D 0E DC             STA $DC0E
+0919 8D 0F DC             STA $DC0F
+091C 8D 0E DD             STA $DD0E
+091F 8D 0F DD             STA $DD0F
+0922 AD 04 DC             LDA $DC04
+0925 0D 05 DC             ORA $DC05
+0928 0D 06 DC             ORA $DC06
+092B 0D 07 DC             ORA $DC07
+092E 0D 04 DD             ORA $DD04
+0931 0D 05 DD             ORA $DD05
+0934 0D 06 DD             ORA $DD06
+0937 0D 07 DD             ORA $DD07
+093A F0 20                BEQ OK1
+093C 20 7A 08             JSR PRINT
+093F 0D                   .BYTE 13
+0940 46 4F 52 43 45 20 4C 4F 41 44 20 44 4F 45 53 20
+                          .TEXT "FORCE LOAD DOES "
+0950 4E 4F 54 20 57 4F 52 4B
+                          .TEXT "NOT WORK"
+0958 00                   .BYTE 0
+0959 20 C5 08             JSR WAITKEY
+               OK1
+                          .BEND
+
+               ;---------------------------------------
+               ;WRITE TL WHILE TIMERS ARE STOPPED
+
+                          .BLOCK
+095C 78                   SEI
+095D A9 FF                LDA #255
+095F 8D 04 DC             STA $DC04
+0962 8D 06 DC             STA $DC06
+0965 8D 04 DD             STA $DD04
+0968 8D 06 DD             STA $DD06
+096B AD 04 DC             LDA $DC04
+096E 0D 05 DC             ORA $DC05
+0971 0D 06 DC             ORA $DC06
+0974 0D 07 DC             ORA $DC07
+0977 0D 04 DD             ORA $DD04
+097A 0D 05 DD             ORA $DD05
+097D 0D 06 DD             ORA $DD06
+0980 0D 07 DD             ORA $DD07
+0983 F0 27                BEQ OK1
+0985 20 7A 08             JSR PRINT
+0988 0D                   .BYTE 13
+0989 57 52 49 54 49 4E 47 20 54 4C 20 4D 41 59 20 4E 4F 54 20
+                          .TEXT "WRITING TL MAY NOT "
+099C 4C 4F 41 44 20 43 4F 55 4E 54 45 52
+                          .TEXT "LOAD COUNTER"
+09A8 00                   .BYTE 0
+09A9 20 C5 08             JSR WAITKEY
+               OK1
+                          .BEND
+
+               ;---------------------------------------
+               ;WRITE TH WHILE TIMERS ARE STOPPED
+
+                          .BLOCK
+09AC 78                   SEI
+09AD A9 FF                LDA #255
+09AF 8D 05 DC             STA $DC05
+09B2 8D 07 DC             STA $DC07
+09B5 8D 05 DD             STA $DD05
+09B8 8D 07 DD             STA $DD07
+09BB AD 04 DC             LDA $DC04
+09BE 2D 05 DC             AND $DC05
+09C1 2D 06 DC             AND $DC06
+09C4 2D 07 DC             AND $DC07
+09C7 2D 04 DD             AND $DD04
+09CA 2D 05 DD             AND $DD05
+09CD 2D 06 DD             AND $DD06
+09D0 2D 07 DD             AND $DD07
+09D3 C9 FF                CMP #255
+09D5 F0 2C                BEQ OK1
+09D7 20 7A 08             JSR PRINT
+09DA 0D                   .BYTE 13
+09DB 57 52 49 54 49 4E 47 20 54 48 20 57 48 49 4C 45 20
+                          .TEXT "WRITING TH WHILE "
+09EC 53 54 4F 50 50 45 44 20 44 49 44 4E 27 54 20 4C 4F 41 44
+                          .TEXT "STOPPED DIDN'T LOAD"
+09FF 00                   .BYTE 0
+0A00 20 C5 08             JSR WAITKEY
+               OK1
+                          .BEND
+
+               ;---------------------------------------
+               ;WRITE TH WHILE TIMERS ARE RUNNING
+
+                          .BLOCK
+0A03 78                   SEI
+0A04 A9 21                LDA #%00100001
+0A06 8D 0E DC             STA $DC0E
+0A09 8D 0F DC             STA $DC0F
+0A0C 8D 0E DD             STA $DD0E
+0A0F 8D 0F DD             STA $DD0F
+0A12 A9 00                LDA #0
+0A14 8D 05 DC             STA $DC05
+0A17 8D 07 DC             STA $DC07
+0A1A 8D 05 DD             STA $DD05
+0A1D 8D 07 DD             STA $DD07
+0A20 AD 04 DC             LDA $DC04
+0A23 2D 05 DC             AND $DC05
+0A26 2D 06 DC             AND $DC06
+0A29 2D 07 DC             AND $DC07
+0A2C 2D 04 DD             AND $DD04
+0A2F 2D 05 DD             AND $DD05
+0A32 2D 06 DD             AND $DD06
+0A35 2D 07 DD             AND $DD07
+0A38 C9 FF                CMP #255
+0A3A F0 2D                BEQ OK1
+0A3C 20 7A 08             JSR PRINT
+0A3F 0D                   .BYTE 13
+0A40 57 52 49 54 49 4E 47 20 54 48 20 57 48 49 4C 45 20
+                          .TEXT "WRITING TH WHILE "
+0A51 53 54 41 52 54 45 44 20 4D 41 59 20 4E 4F 54 20 4C 4F 41 44
+                          .TEXT "STARTED MAY NOT LOAD"
+0A65 00                   .BYTE 0
+0A66 20 C5 08             JSR WAITKEY
+               OK1
+                          .BEND
+
+               ;---------------------------------------
+
+0A69 60                   RTS

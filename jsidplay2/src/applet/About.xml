@@ -1,0 +1,14 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- About dialogue -->
+<dialog bundle="applet.AboutTexts" title="TITLE" layout="BorderLayout"
+	DefaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" size="1024,768"
+	Visible="true" IconImage="ICON">
+	<scrollpane constraints="BorderLayout.CENTER" border="EtchedBorder"
+		id="scroller">
+		<textarea Editable="false" LineWrap="false" Highlighter="null"
+			Border="EmptyBorder(4,4,4,4)" id="credits" />
+	</scrollpane>
+	<panel constraints="BorderLayout.SOUTH">
+		<button text="OK" id="ok"></button>
+	</panel>
+</dialog>

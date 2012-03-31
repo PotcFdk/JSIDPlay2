@@ -1,0 +1,344 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 //EN">
+<html>
+<head>
+<link rel="shortcut icon" href="http://jsidplay2.sourceforge.net/jsidplay2.png"> 
+<meta name="description" content="Java SID music player library v2">
+<meta name="author" content="Ken H&auml;ndel">
+<meta name="keywords" content="c64, emulator, java, music, sid, psid, commodore 64, jsidplay2, resid, resid-fp, chip tune">
+<meta name="generator" content="AFSS HTML Designer 2.3 (http://www.afss.de)">
+
+<!-- Google Webmaster Tools -->
+<meta name="verify-v1" content="cq1G5uus0JAE1VqwILHudp3mwykCH48je5Q0IB/QvWQ=" />
+
+<title>JSIDPlay2 Homepage (Java C64 Emulator and SID Player)</title>
+		<!-- AKVS head start v1.5 -->
+		<style type="text/css">
+		<!--
+		div#akct {
+			position: absolute; top:0px; right: 0px; z-index: 2342; width:113px; height:88px;
+			background-image: url(http://wiki.vorratsdatenspeicherung.de/images/Akvse.gif);
+			background-repeat: no-repeat;
+			background-position: right top;
+			border:none;
+			padding:0;
+			margin:0;
+			text-align: right;
+		}
+
+		div#akct img {
+			border:none;
+			padding:0;
+			margin:0;
+			background: none;
+		}
+
+		div#akct a#akpeel img {
+		        width: 113px;
+		        height: 88px;
+		}
+
+		div#akct a, div#akct a:hover {
+			text-decoration: none;
+			border:none;
+			padding:0;
+			margin:0;
+			display: block;
+			background: none;
+		}
+
+		div#akct a#akpeel:hover {
+			position: absolute; top:0px; right: 0px; z-index: 4223; width:500px; height:500px;
+			display: block;
+			background-image: url(http://wiki.vorratsdatenspeicherung.de/images/Akvsb.gif);
+			background-repeat: no-repeat;
+			background-position: right top;
+		}
+
+		div#akct a#akpreload {
+			background-image: url(http://wiki.vorratsdatenspeicherung.de/images/Akvsb.gif);
+			background-repeat: no-repeat;
+			background-position: 234px 0px;
+		}
+		-->
+		</style>
+		<!--[if gte IE 5.5]>
+		<![if lt IE 7]>
+		<style type="text/css">
+		div#akct a#akpeel:hover {
+				right: -1px;
+		}
+		</style>
+		<![endif]>
+		<![endif]-->
+		<!-- AKVS head end -->
+</head>
+<body bgcolor="#bbddff" text="#000000" link="#0000ff" alink="#ff0000" vlink="#400040"><!-- AKVS body start v1.5 -->
+		<div id="akct"><a id="akpeel" href="http://www.vorratsdatenspeicherung.de" target="_blank" title="Stoppt die Vorratsdatenspeicherung! Jetzt klicken &amp; handeln!"><img src="http://wiki.vorratsdatenspeicherung.de/images/Akvst.gif" alt="Stoppt die Vorratsdatenspeicherung! Jetzt klicken &amp;handeln!" ></a>
+		<a id="akpreload" href="http://wiki.vorratsdatenspeicherung.de/?title=Online-Demo" target="_blank" title="Willst du auch an der Aktion teilnehmen? Hier findest du alle relevanten Infos und Materialien:"><img src="http://wiki.vorratsdatenspeicherung.de/images/Akvsi.gif" alt="Willst du auch an der Aktion teilnehmen? Hier findest du alle relevanten Infos und Materialien:" ></a></div><!-- AKVS body end --><!-- Commodore Web Ring -->
+<center><script type="text/javascript"
+ src="http://ss.webring.com/navbar?f=j;y=kenchis;u=defurl2"></script>
+Powered by <a href="http://dir.webring.com/rw" target=_top>WebRing</a>.</center><!--optional-->
+<noscript><center><table bgcolor=gray cellspacing=0 border=2 bordercolor=red>
+<tr><td><table cellpadding=2 cellspacing=0 border=0><tr><td align="center">
+<font face=arial size=-1>This site is a member of WebRing. 
+To browse visit <a href="http://ss.webring.com/navbar?f=l;y=kenchis;u=defurl2">
+here</a>.</font></td></tr></table></td></tr></table></center></noscript>
+
+<P align=center><FONT size=7><A 
+href="https://sourceforge.net/projects/jsidplay2/">JSIDPlay2</A> - Homepage (modification date: 21.03.2012)</FONT></P>
+<P align=left><FONT size=6>Introduction:</FONT></P>
+<P align=left><FONT size=4>I am a C64 fan since 1986 as many other people are. I 
+played games, watched demos and read books, but when the time goes by, all 
+activities stopped slowly in the&nbsp;beginning of the 90s.</FONT><FONT size=4>        <BR>But one thing from the past i actually do until today, 
+that&nbsp;is listening the precious SID music of all the talented music artists 
+and demo groups. So many thanks to all of you for your work collected in the <A 
+href="http://www.hvsc.c64.org/">HVSC</A>       
+            
+               
+     .</FONT></P>
+<P align=left><FONT size=4>To listen 
+the new releases from the still active groups i often used <A 
+href="http://sourceforge.net/projects/sidplay2/">sidplay2 </A>&nbsp;for windows or an 
+emulator like <A href="http://www.computerbrains.com/ccs64/">CCS64</A>         
+           , because my 
+commodore was on the attic.<BR></FONT></P>
+<P align=left><FONT size=4>I am a Java developer and wanted to have my very own java implementation to 
+create a so called C64 Jukebox.</FONT><FONT size=4>            
+         <BR>I decided to create a 1:1 conversion of <A 
+href="http://sourceforge.net/projects/sidplay2/">sidplay2 </A>   
+      from C++ to java. It should have all 
+features of the original.<BR>It was a long time work and when it was finished i 
+decided to make it open source, that others can integrate into their java 
+emulators.<BR>Perhaps there will be plugins for many 
+java apps some day or a version running even on a mobile.</FONT></P>
+
+<P align=left><FONT size=4>Since then people have joined to develop
+a more complete C64 emulator to be fast, feature complete and eye-catching.
+Without them this project would be stuck on version 1.4 and i am very thankful
+for their help.
+In fact i hope this project will never die.
+</FONT></P>
+<P align=left><FONT size=4>The current version has been evolved
+toward a full featured and very compatible C64 emulator.
+This was possible due to the tremendous support of the C64 community.
+In fact many people have supported JSIDPlay2 during its development.
+</FONT></P>
+<P align=left><FONT size=4>
+<B>Special thanks</B> go to Antti S. Lankila for continued development to enhance the emulation and adding valuable features,
+Nata for his numerous tests and many feedback of the beta versions, Wilfred Bos for his support and bugfix of the SIDNetDevice implementation.
+Other people contributed valuable pieces of code just read the Credits in the player to find out.
+<BR>Thank you!
+</FONT></P>
+
+<P align=left>If you want to give feedback, please <A 
+href="mailto:kschwiersch@yahoo.de?subject=JSIDPlay2">email me</A>.<BR>If you 
+want to know who i am, you can visit my <A 
+href="http://haendel-junior.de">homepage</A>.<BR>If you want to visit my other 
+open source project, please visit <A 
+href="http://www.totalcmd.net/plugring/tc_java.html">Total Comander Plugin 
+Interface</A> page.</P>
+<P align=left><FONT size=6>Features:</FONT></P>
+<P align=left><FONT size=4>JSidplay2 is able to</FONT></P>
+<UL>
+  <LI>
+  <DIV align=left><FONT size=4>load 
+  sound files with 
+  extensions: SID (PSID/RSID), MUS, DAT, P00, PRG, STR. You can find most of 
+  them in the <A href="http://www.hvsc.c64.org/">High Voltage SID 
+  Collection</A>, the biggest music 
+  collecton on earth.&nbsp;      
+       </FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>play mono and stereo formats</FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>play with custom sample rates (sample size is 16 bit)</FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>load external SID Filter 
+  definition</FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>check song length from Song Length database (SLDb 
+  - contained in HVSC)</FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>be configured by an INI file containing emulation 
+  and player settings</FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>be integrated into Java enabled 
+  platforms</FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>being used like a real C64 (watching demos, playing games etc.)</FONT></DIV></LI>
+  </UL>
+
+  <P align=left><FONT size=6>Live Demo - Latest beta (often stable)</FONT></P>
+<OL>
+  <LI>
+  <DIV align=left><FONT size=4>Be sure you have installed at least Java 6</FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>Uninstall previous version
+  (1st Go to the control panel and Double Click Java, 2nd Click on "Settings...", 3rd Click on "Delete Files...", 4th Click OK to remove temporary files).
+  </FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>Enable java in your browser</FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>Click here to <A 
+  href="http://jsidplay2.sourceforge.net/jsidplay2.jnlp">launch and install</A> 
+  JSIDPlay2 or click <A 
+  href="http://jsidplay2.sourceforge.net/jsidplay2.html"><FONT 
+  color=#0066cc>here</FONT></A> to start it embedded into your browser without any installation</FONT></DIV>
+</OL>
+
+<P align=left><FONT size=6>Download Version 2.5 (Stable 2012)</FONT></P>
+<P align=left><FONT size=4>Click <A 
+href="https://sourceforge.net/projects/jsidplay2/">here</A> to 
+download</FONT></P>
+
+<P align=left><FONT size=6>Download Version 2.0 (Stable 2010)</FONT></P>
+<P align=left><FONT size=4>Click <A 
+href="https://sourceforge.net/projects/jsidplay2/">here</A> to 
+download</FONT></P>
+
+<P align=left><FONT size=6>Download Version 1.4 (Stable 2007)</FONT></P>
+<P align=left><FONT size=4>Click <A 
+href="https://sourceforge.net/projects/jsidplay2/">here</A> to 
+download</FONT></P>
+
+<P align=left><FONT size=6>Further possibilities</FONT></P>
+<UL>
+  <LI>
+  <DIV align=left><FONT size=4>If you want to embed the player without a graphical user interface into your own web-page,
+  just check out the <A 
+  href="http://jsidplay2.sourceforge.net/C64Jukebox/SIDPlay.html">JavaScript API test page</A>.</FONT></DIV></LI>
+  <LI>
+  <DIV align=left><FONT size=4>If you want to compare the quality of this emulation with the real thing
+  and own a <A href="http://www.hardsid.com/">HardSID4U</A> soundcard,
+  then just download and start <A href="http://www.acid64.com">ACID64</A> (by Wilfred Bos) the recommended music player to play SID tunes on a real SID chip
+  and additionally download the <A href="http://jsidplay2.sourceforge.net/jsiddevice.zip">Network SID Device</A> (part of JSIDPlay2).
+  Now, using ACID64 you are able to switch between the real SID chip playback and the emulation on the fly.</FONT></DIV></LI>
+</UL>
+
+
+<P align=left><FONT size=6>Metrics</FONT></P>
+  <TABLE>
+  <TR>
+    <TD>
+	  <script type="text/javascript" src="http://www.ohloh.net/p/79813/widgets/project_partner_badge.js"></script>
+	</TD>
+	</TR>
+    <TR>
+    <TD>
+	<script type="text/javascript" src="http://www.ohloh.net/p/79813/widgets/project_languages.js"></script>
+	</TD>
+	</TR>
+  </TABLE>
+
+<P align=left><FONT size=6>Awards</FONT></P>
+  <TABLE>
+    <TR>
+	<TD> <A href="http://mac.softpedia.com/progClean/JSidplay2-Clean-60694.html"><IMG alt="JSidplay2 2.0 - SOFTPEDIA &quot;100% FREE&quot; AWARD"  hspace=0 src="softpedia_free_award_f.gif" align="bottom"  border=0 width=100% height=100%> </A> </TD>
+	<TD> <A href="http://download.famouswhy.com/jsidplay2/" ><img src="http://download.famouswhy.com/awards/famouswhy_pickaward.gif" alt="Famous Software Download" ></A>
+	     <A href="http://download.famouswhy.com/publisher/kenchis/" alt="Short Interview with me"><IMG src="http://download.famouswhy.com/account_images/public_profile/interview.gif" alt="Short Interview"></IMG></A> </TD>
+	<TD> <A href="http://www.geardownload.com/multimedia/jsidplay2.html"><IMG alt="JSIDPlay2 - 5 stars rated on GearDownload.com"  hspace=0 src="http://www.geardownload.com/images/5starsc.jpg" align="bottom"  border=0 width=40% height=40%> </A> </TD>
+	<TD> <A href="http://mac.wareseeker.com/Utilities/jsidplay2-2.0.zip/c8c55e258"><IMG alt="JSIDPlay2 - Editor's Pick at WareSeeker.com"  hspace=0 src="http://image.wareseeker.com/images_icon/editor_pick.gif" align="bottom"> </A> </TD>
+	</TR>
+	<TR>
+	  <TD> <A href="http://mac.softpedia.com/get/Utilities/JSidplay2.shtml"> JSIDPlay2 2.0 at Softpedia </A> </TD>
+	  <TD> <A href="http://download.famouswhy.com/jsidplay2/" > JSidplay2 2.0 at FamousWhy </A> </TD>
+	  <TD> <A href="http://www.geardownload.com/multimedia/jsidplay2.html" > JSidplay2 2.0 at GearDownload.com </A> </TD>
+	  <TD> <A href="http://mac.wareseeker.com/Utilities/jsidplay2-2.0.zip/c8c55e258" > JSidplay2 2.0 at WareSeeker.com </A> </TD>
+	</TR>
+  </TABLE>
+  
+<P align=left><FONT size=6>Screenshots of the Graphical User Interface</FONT></P>
+  <TABLE>
+  <TR>
+    <TD>
+	  <IMG alt="HVSC"  hspace=0 src="HVSC.jpg" align="bottom"  border=0 width=80% height=80%>
+	</TD>
+    <TD>
+	  <IMG alt="Settings"  hspace=0 src="Settings.jpg" align="bottom"  border=0 width=80% height=80%>
+	</TD>
+	</TR>
+  <TR>
+    <TD>
+	  <IMG alt="Favorites"  hspace=0 src="Favorites.jpg" align="bottom"  border=0 width=80% height=80%>
+	</TD>
+    <TD>
+	  <IMG alt="Graphics"  hspace=0 src="Graphics.jpg" align="bottom"  border=0 width=80% height=80%>
+	</TD>
+	</TR>
+  <TR>
+    <TD>
+	  <IMG alt="Video"  hspace=0 src="Video.jpg" align="bottom"  border=0 width=80% height=80%>
+	</TD>
+    <TD>
+	  <IMG alt="Video2"  hspace=0 src="Video2.jpg" align="bottom"  border=0 width=80% height=80%>
+	</TD>
+	</TR>
+  </TABLE>
+  
+
+<P align=left><FONT size=6>Further developement:</FONT></P>
+<UL>
+  <LI>
+  <DIV align=left><FONT size=4>Increase compatibility of the emulation</FONT></DIV></LI>
+</UL>
+If you want to contribute to this project just <A href="mailto:kschwiersch@yahoo.de?subject=JSIDPlay2">contact me</A>.
+Any help is appreciated.
+<P align=left><FONT size=6>Credits:</FONT></P>
+<P align=left><FONT size=4>Credits go first to the original authors for doing 
+such a great sidplay2 software!</FONT></P>
+<TABLE width="50%" border=1>
+  
+  <TR>
+    <TD><FONT size=4>Dag Lem</FONT></TD>
+    <TD><FONT size=4>reSID emulation engine</FONT></TD></TR>
+  <TR>
+    <TD><FONT size=4>Michael Schwendt</FONT></TD>
+    <TD><FONT size=4>SidTune library, Sid2Wav 
+      support<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      and basis for xSID...</FONT></TD></TR>
+  <TR>
+    <TD><FONT size=4>Simon White</FONT></TD>
+    <TD><FONT size=4>Sidplay2 music player library v2</FONT></TD></TR>
+  <TR>
+    <TD>Antti Lankila</TD>
+    <TD>SID chip Distortion Simulation efforts and development</TD></TR></TABLE>
+<!--
+<P align=left><FONT size=6>Supporters:</FONT><FONT size=3></FONT></P>
+<P>
+
+"YourKit is kindly supporting open source projects with its full-featured  
+Java Profiler.
+YourKit, LLC is creator of innovative and intelligent tools for profiling
+Java and .NET applications. Take a look at YourKit's leading software  
+products:
+<a href="http://www.yourkit.com/java/profiler/index.jsp">YourKit Java  
+Profiler</a> and
+<a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit ASP.NET  
+Profiler</a>." </P>-->
+<P><FONT size=6>License:</FONT></P>
+<P>This program is free software; you can redistribute it and/or 
+modify<BR>&nbsp; it under the terms of the GNU General Public License as 
+published by<BR>&nbsp; the Free Software Foundation; either version 2 of the 
+License, or<BR>&nbsp; (at your option) any later version.</P>
+<P>&nbsp; This program is distributed in the hope that it will be 
+useful,<BR>&nbsp; but WITHOUT ANY WARRANTY; without even the implied warranty 
+of<BR>&nbsp; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.&nbsp; See 
+the<BR>&nbsp; GNU General Public License for more details.</P>
+<P>&nbsp; You should have received a copy of the GNU General Public 
+License<BR>&nbsp; along with this program; if not, write to the Free 
+Software<BR>&nbsp; Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
+MA&nbsp; 02111-1307&nbsp; USA </P>
+<P><A href="http://www.disclaimer.de/disclaimer.htm"><IMG alt=Disclaimer  hspace=0 src="disclaimer.gif" align="bottom"  border=0></A></P>
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-822784-2");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>
