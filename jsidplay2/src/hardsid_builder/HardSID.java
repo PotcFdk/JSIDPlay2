@@ -191,7 +191,7 @@ public class HardSID extends SIDEmu {
 	protected void event() {
 		final int cycles = clocksSinceLastAccess();
 		hsid2.HardSID_Delay(chipNum, cycles);
-		context.schedule(event, HARDSID_DELAY_CYCLES);
+		context.schedule(event, HARDSID_DELAY_CYCLES, Event.Phase.PHI2);
 	}
 	
 	@Override
