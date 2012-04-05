@@ -22,7 +22,7 @@ import resid_builder.resid.ISIDDefs.ChipModel;
  * 
  */
 public class HardSID extends SIDEmu {
-	private static final int HARDSID_DELAY_CYCLES = 10000;
+	private static final int HARDSID_DELAY_CYCLES = 500;
 
 	/** Number of SID slots */
 	public static final int SID_DEVICES = 8;
