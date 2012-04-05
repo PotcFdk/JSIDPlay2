@@ -4,7 +4,16 @@
 
 using namespace std;
 
-// DLL main
+/*
+  The purpose of this implementation is to provide
+  the possibility to call the native driver by Java.
+  The driver is provided by www.hardsid.com (hardsid.dll).
+  Before the native implemented Java methods can be called,
+  the function LoadLibry must be called to provide the fully
+  qualified path name to the original driver (hardsid.dll).
+*/
+
+// DLL main function
 BOOL APIENTRY DllMain( HINSTANCE hModule, 
                        DWORD  ul_reason_for_call, 
                        LPVOID lpReserved
@@ -24,15 +33,21 @@ BOOL APIENTRY DllMain( HINSTANCE hModule,
     return TRUE;
 }
 
-// JNI methods
+// Native method implementation called via Java Native Interface (JNI)
 
 /*
+ * Load the original HardSID library and
+ * determine entry points of the callback functions.
+ * Returns true (success) or false (no success).
+ *
  * Class:     hardsid_builder_HsidDLL2
  * Method:    LoadLibrary
  * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_hardsid_1builder_HsidDLL2_LoadLibrary
 (JNIEnv *_env, jobject, jstring libName) {
+	// Determine fully qualified path name of the parametrized original
+	// hardsid.dll provided by www.hardsid.com
 	const char *libNameC = NULL;
 	jboolean iscopy;
 	if (libName!=NULL) {
@@ -40,12 +55,13 @@ JNIEXPORT jboolean JNICALL Java_hardsid_1builder_HsidDLL2_LoadLibrary
 	} else {
 		return (jboolean) FALSE;
 	}
-
+	// Load hardsid.dll library
 	HINSTANCE hJvmDll = LoadLibrary(libNameC);
 	hardsiddll = hJvmDll;
 	if (hJvmDll==NULL) {
 		return (jboolean) FALSE;
 	}
+	// Determine addresses of the callback functions
 	InitHardSID_Mapper = (lpInitHardSID_Mapper) GetProcAddress(hardsiddll, "InitHardSID_Mapper");
 	HardSID_Version = (HsidDLL2_Version_t) GetProcAddress(hardsiddll, "HardSID_Version");
 	HardSID_Delay = (lpHardSID_Delay) GetProcAddress(hardsiddll, "HardSID_Delay");

@@ -1,50 +1,48 @@
-typedef void (CALLBACK* lpInitHardSID_Mapper)(void);
-typedef WORD (CALLBACK* HsidDLL2_Version_t) (void);
-typedef void (CALLBACK* lpHardSID_Delay)(BYTE DeviceID, WORD Cycles);
-typedef BYTE (CALLBACK* HsidDLL2_Devices_t) (void);
-typedef void (CALLBACK* HsidDLL2_Filter_t) (BYTE DeviceID, BOOL filter);
-typedef void (CALLBACK* HsidDLL2_Flush_t) (BYTE DeviceID);
-typedef void (CALLBACK* HsidDLL2_MuteAll_t) (BYTE DeviceID, BOOL mute);
-typedef BYTE (CALLBACK* HsidDLL2_Read_t) (BYTE DeviceID, WORD cycles, BYTE SID_reg);
-typedef void (CALLBACK* HsidDLL2_Sync_t) (BYTE DeviceID);
-typedef void (CALLBACK* HsidDLL2_Write_t) (BYTE DeviceID, WORD cycles, BYTE SID_reg, BYTE data);
-typedef void (CALLBACK* HsidDLL2_Reset_t) (BYTE DeviceID);
-typedef BOOL (CALLBACK* HsidDLL2_Lock_t) (BYTE DeviceID);
-typedef void (CALLBACK* HsidDLL2_Unlock_t) (BYTE DeviceID);
-typedef void (CALLBACK* HsidDLL2_Reset2_t) (BYTE DeviceID, BYTE volume);
-typedef void (CALLBACK* HsidDLL2_Mute2_t) (BYTE DeviceID, BYTE channel, BOOL mute, BOOL x);
-typedef void (CALLBACK* HsidDLL2_Mute_t) (BYTE DeviceID, BYTE channel, BOOL mute);
-typedef void (CALLBACK* lpHardSID_SoftFlush)(BYTE DeviceID);
-typedef void (CALLBACK* lpMuteHardSID_Line)(int Mute);
-typedef BYTE (CALLBACK* lpReadFromHardSID)(BYTE DeviceID, BYTE SID_reg);
-typedef void (CALLBACK* lpWriteToHardSID)(BYTE DeviceID, BYTE SID_reg, BYTE Data);
-typedef void (CALLBACK* HsidDLL2_SetDebug_t) (BOOL debug);
-typedef BYTE (CALLBACK* HsidDLL2_GetHardSIDCount_t) ();
-
-
-
 // HardSID DLL
 HMODULE hardsiddll;
-// hardsid.dll functions
+
+// functions of the original hardsid.dll provided by www.hardsid.com
+typedef void (CALLBACK* lpInitHardSID_Mapper)(void);
 lpInitHardSID_Mapper InitHardSID_Mapper;
+typedef WORD (CALLBACK* HsidDLL2_Version_t) (void);
 HsidDLL2_Version_t HardSID_Version;
+typedef void (CALLBACK* lpHardSID_Delay)(BYTE DeviceID, WORD Cycles);
 lpHardSID_Delay HardSID_Delay;
+typedef BYTE (CALLBACK* HsidDLL2_Devices_t) (void);
 HsidDLL2_Devices_t HardSID_Devices;
+typedef void (CALLBACK* HsidDLL2_Filter_t) (BYTE DeviceID, BOOL filter);
 HsidDLL2_Filter_t HardSID_Filter;
+typedef void (CALLBACK* HsidDLL2_Flush_t) (BYTE DeviceID);
 HsidDLL2_Flush_t HardSID_Flush;
+typedef void (CALLBACK* HsidDLL2_MuteAll_t) (BYTE DeviceID, BOOL mute);
 HsidDLL2_MuteAll_t HardSID_MuteAll;
+typedef BYTE (CALLBACK* HsidDLL2_Read_t) (BYTE DeviceID, WORD cycles, BYTE SID_reg);
 HsidDLL2_Read_t HardSID_Read;
+typedef void (CALLBACK* HsidDLL2_Sync_t) (BYTE DeviceID);
 HsidDLL2_Sync_t HardSID_Sync;
+typedef void (CALLBACK* HsidDLL2_Write_t) (BYTE DeviceID, WORD cycles, BYTE SID_reg, BYTE data);
 HsidDLL2_Write_t HardSID_Write;
+typedef void (CALLBACK* HsidDLL2_Reset_t) (BYTE DeviceID);
 HsidDLL2_Reset_t HardSID_Reset;
+typedef BOOL (CALLBACK* HsidDLL2_Lock_t) (BYTE DeviceID);
 HsidDLL2_Lock_t HardSID_Lock;
+typedef void (CALLBACK* HsidDLL2_Unlock_t) (BYTE DeviceID);
 HsidDLL2_Unlock_t HardSID_Unlock;
+typedef void (CALLBACK* HsidDLL2_Reset2_t) (BYTE DeviceID, BYTE volume);
 HsidDLL2_Reset2_t HardSID_Reset2;
-HsidDLL2_Mute_t HardSID_Mute;
+typedef void (CALLBACK* HsidDLL2_Mute2_t) (BYTE DeviceID, BYTE channel, BOOL mute, BOOL x);
 HsidDLL2_Mute2_t HardSID_Mute2;
+typedef void (CALLBACK* HsidDLL2_Mute_t) (BYTE DeviceID, BYTE channel, BOOL mute);
+HsidDLL2_Mute_t HardSID_Mute;
+typedef void (CALLBACK* lpHardSID_SoftFlush)(BYTE DeviceID);
 lpHardSID_SoftFlush HardSID_SoftFlush;
+typedef void (CALLBACK* lpMuteHardSID_Line)(int Mute);
 lpMuteHardSID_Line MuteHardSID_Line;
+typedef BYTE (CALLBACK* lpReadFromHardSID)(BYTE DeviceID, BYTE SID_reg);
 lpReadFromHardSID ReadFromHardSID;
+typedef void (CALLBACK* lpWriteToHardSID)(BYTE DeviceID, BYTE SID_reg, BYTE Data);
 lpWriteToHardSID WriteToHardSID;
+typedef void (CALLBACK* HsidDLL2_SetDebug_t) (BOOL debug);
 HsidDLL2_SetDebug_t SetDebug;
+typedef BYTE (CALLBACK* HsidDLL2_GetHardSIDCount_t) ();
 HsidDLL2_GetHardSIDCount_t GetHardSIDCount;

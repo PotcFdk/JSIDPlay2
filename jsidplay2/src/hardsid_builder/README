@@ -1,0 +1,5 @@
+HardSID driver wrapper:
+=======================
+This driver is a wrapper around the original hardsid.dll driver provided by
+www.hardsid.com
+It makes it possible to use the native HardSID driver via Java Native Interface (JNI).

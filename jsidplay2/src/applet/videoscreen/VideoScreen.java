@@ -533,7 +533,7 @@ public class VideoScreen extends TuneTab {
 		c64.setupVideoScreen(player.getC64());
 
 		// Overlay for the C64 screen, if the internal player is used.
-		if (player.getTune() != null
+		if (player.getTune() != null && player.getC64().getSID(0) != null
 				&& player.getTune().getInfo().playAddr != 0) {
 			if (player.getC64().getSID(0).getChipModel() == ChipModel.MOS6581) {
 				// Old SID chip model? Old C64 screen
