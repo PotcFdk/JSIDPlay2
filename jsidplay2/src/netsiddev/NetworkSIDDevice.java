@@ -324,6 +324,8 @@ public class NetworkSIDDevice {
 		Runnable runner = new Runnable() {
 			protected final AboutBox abox = new AboutBox(TITLE, CREDITS);
 			
+			protected final SettingsDialog settingsDialog = new SettingsDialog();
+			
 			public void run() {
 				if (SystemTray.isSupported()) {
 					createSystemTrayMenu();
@@ -349,6 +351,16 @@ public class NetworkSIDDevice {
 					}
 				});
 				popup.add(aboutItem);
+				
+				MenuItem settingsItem = new MenuItem("Settings...");
+				settingsItem.addActionListener(new ActionListener() {
+					synchronized public void actionPerformed(ActionEvent e) {
+						settingsDialog.setVisible(true);
+					}
+				});
+				popup.add(settingsItem);
+				
+				popup.addSeparator();				
 				
 				MenuItem exitItem = new MenuItem("Exit");
 				exitItem.addActionListener(new ActionListener() {

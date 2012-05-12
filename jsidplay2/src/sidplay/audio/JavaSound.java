@@ -7,6 +7,7 @@ import java.util.Arrays;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
 public class JavaSound extends AudioDriver {
@@ -14,11 +15,30 @@ public class JavaSound extends AudioDriver {
 	private SourceDataLine dataLine;
 
 	protected ByteBuffer sampleBuffer;
-
+	private AudioConfig cfg;
+	
 	@Override
 	public synchronized void open(final AudioConfig cfg) throws LineUnavailableException {
+		open(cfg, null);
+	}
+		
+	public synchronized void open(final AudioConfig cfg, final Mixer.Info info) throws LineUnavailableException {
+		this.cfg = cfg;
 		audioFormat = new AudioFormat(cfg.frameRate, 16, cfg.channels, true, false);
-		dataLine = AudioSystem.getSourceDataLine(audioFormat);
+
+		setAudioDevice(info);
+	}
+	
+	public synchronized void setAudioDevice(final Mixer.Info info) throws LineUnavailableException {
+		// first close previous dataLine when it already present
+		close();
+		
+		if (info == null) {
+			dataLine = AudioSystem.getSourceDataLine(audioFormat);
+		} else {
+			dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
+		}	
+	
 		dataLine.open(dataLine.getFormat(), cfg.bufferFrames * 2 * cfg.channels);
 		cfg.bufferFrames = dataLine.getBufferSize() / 2 / cfg.channels;
 		

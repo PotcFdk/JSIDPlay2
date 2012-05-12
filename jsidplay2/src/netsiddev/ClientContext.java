@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.sound.sampled.Mixer;
 
 import libsidplay.common.ISID2Types;
 import netsiddev.ini.JSIDDeviceConfig;
@@ -107,6 +110,9 @@ class ClientContext {
 	/** Current clock value in input. */
 	private long inputClock;
 
+	/** Map which holds all instances of each client connection. */
+	private static Map<SocketChannel, ClientContext> clientContextMap = new ConcurrentHashMap<SocketChannel, ClientContext>();
+	
 	/** Construct a new audio player for connected client */
 	private ClientContext(AudioConfig config, int latency) {
 		this.latency = latency;
@@ -435,8 +441,18 @@ class ClientContext {
 	private ByteBuffer getWriteBuffer() {
 		return dataWrite;
 	}
+	
+	/**
+	 * change device will change the device to the specified device for all connected client contexts
+	 * @param deviceInfo the device that should be used
+	 */
+	public static void changeDevice(final Mixer.Info deviceInfo) {
+		for(ClientContext clientContext : clientContextMap.values()) { 
+			clientContext.eventConsumerThread.changeDevice(deviceInfo); 
+		} 
+	}	
 
-	public static void listenForClients(JSIDDeviceConfig config) {
+	public static void listenForClients(final JSIDDeviceConfig config) {
 		/* check for new connections. */
 		ServerSocketChannel ssc = null;
 		try {
@@ -448,7 +464,8 @@ class ClientContext {
 			Selector s = Selector.open();
 			ssc.register(s, SelectionKey.OP_ACCEPT);
 	
-			Map<SocketChannel, ClientContext> clientContextMap = new HashMap<SocketChannel, ClientContext>();
+			clientContextMap.clear();
+			
 			while (s.select() > 0) {
 				for (SelectionKey sk : s.selectedKeys()) {
 					if (sk.isAcceptable()) {

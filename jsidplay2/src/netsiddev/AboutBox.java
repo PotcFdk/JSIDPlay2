@@ -1,6 +1,7 @@
 package netsiddev;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Image;
@@ -19,13 +20,12 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 class EscapeDialog extends JDialog {
-	public EscapeDialog(Frame owner, String title, boolean modal) {
+	public EscapeDialog(final Frame owner, final String title, final boolean modal) {
 		super(owner, title, modal);
 	}
 
@@ -49,7 +49,7 @@ class EscapeDialog extends JDialog {
 public class AboutBox extends EscapeDialog {
 	final String aboutText;
 	
-	public AboutBox(String title, String aboutText) {
+	public AboutBox(final String title, final String aboutText) {
 		super(null, title, true);
 		this.aboutText = aboutText;
 		setLayout(new BorderLayout());
@@ -84,9 +84,9 @@ public class AboutBox extends EscapeDialog {
 
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
-		p.setBorder(BorderFactory.createEtchedBorder());
+		p.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 		p.add(textField);
-		return new JScrollPane(p);
+		return p;
 	}
 
 	private JComponent createOkButton() {

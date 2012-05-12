@@ -9,7 +9,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
 
 import libsidplay.common.ISID2Types;
 import resid_builder.resid.ISIDDefs.SamplingMethod;
@@ -49,10 +51,15 @@ public class AudioGeneratorThread extends Thread {
 
 	private int[] sidLevel;
 
+	private Integer deviceIndex;
+	
 	private int[] sidPositionL;
 
 	private int[] sidPositionR;
 
+	private Mixer.Info mixerInfo;
+	private boolean deviceChanged = false;
+	
 	/** Is audio thread waiting? */
 	private final AtomicBoolean audioWait = new AtomicBoolean(true);
 
@@ -75,6 +82,9 @@ public class AudioGeneratorThread extends Thread {
 		setPriority(Thread.MAX_PRIORITY);
 		sidCommandQueue = new LinkedBlockingQueue<SIDWrite>();
 		audioConfig = config;
+
+		SIDDeviceSettings settings = SIDDeviceSettings.getInstance();
+		deviceIndex = settings.getDeviceIndex();
 	}
 	
 	@Override
@@ -82,8 +92,14 @@ public class AudioGeneratorThread extends Thread {
 		/** Audio output driver. */
 		JavaSound driver = new JavaSound();
 		
+		Mixer.Info[] aInfos = AudioSystem.getMixerInfo();
 		try {
-			driver.open(audioConfig);
+			if (deviceIndex != null && deviceIndex >= 0 && deviceIndex < aInfos.length) {
+				mixerInfo = aInfos[deviceIndex];
+				driver.open(audioConfig, mixerInfo);
+			} else {
+				driver.open(audioConfig);
+			}
 			
 			/* Do sound 10 ms at a time. */
 			final int audioLength = 10000;
@@ -209,6 +225,11 @@ public class AudioGeneratorThread extends Thread {
 				if (! write.isPureDelay()) {
 					sid[write.getChip()].write(write.getRegister(), write.getValue());
 				}
+				
+				if (deviceChanged) {
+					driver.setAudioDevice(mixerInfo);
+					deviceChanged = false;
+				}
 			}
 		} catch (final InterruptedException e) {
 		} catch (final LineUnavailableException e) {
@@ -240,6 +261,16 @@ public class AudioGeneratorThread extends Thread {
 		sid[sidNumber].mute(voiceNo, mute);
 	}
 
+	/**
+	 * Change the output device
+	 * 
+	 * @param deviceInfo
+	 */
+	public void changeDevice(final Mixer.Info deviceInfo) {
+		mixerInfo = deviceInfo;
+		deviceChanged = true;
+	}	
+	
 	/**
 	 * Set NTSC/PAL time source.
 	 * 
