@@ -34,6 +34,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import applet.JSIDPlay2;
+
 import libsidplay.C64;
 import libsidplay.components.mos656x.VIC;
 
@@ -47,7 +49,7 @@ public class C64Canvas extends JLayeredPane {
 			PropertyChangeListener {
 		private final VIC vic;
 		private final MemoryImageSource memoryImageSource;
-		private final Image screenImage;
+		private final Image screenImage, monitorImage;
 		private int scale;
 		protected ImageIcon c64Image;
 		protected ColorModel cm;
@@ -86,6 +88,9 @@ public class C64Canvas extends JLayeredPane {
 			memoryImageSource.setAnimated(true);
 			memoryImageSource.setFullBufferUpdates(true);
 			screenImage = createImage(memoryImageSource);
+			
+			monitorImage = new ImageIcon(
+					JSIDPlay2.class.getResource("icons/monitor.png")).getImage();
 		}
 
 		/**
@@ -111,7 +116,8 @@ public class C64Canvas extends JLayeredPane {
 			// Sigh. Can't really afford this stuff for memory images.
 			//((Graphics2D) g).setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 			if (c64Image == null) {
-				g.drawImage(screenImage, 0, 0, getWidth(), getHeight(), this);
+				g.drawImage(screenImage, 35*scale, 25*scale, getWidth()-70*scale, getHeight()-58*scale, this);
+				g.drawImage(monitorImage, 0, 0, getWidth(), getHeight(), this);
 			} else {
 				g.drawImage(c64Image.getImage(), 0, 0, getWidth(), getHeight(),
 						this);
