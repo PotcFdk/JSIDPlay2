@@ -53,7 +53,6 @@ public class SIDDeviceSettings {
 	 * @param deviceIndex the device index to be saved
 	 */
 	public synchronized void saveDeviceIndex(final Integer deviceIndex) {
-		final Properties props = new java.util.Properties(); 
 		props.setProperty(PROPERTY_DEVICE_INDEX, String.valueOf(deviceIndex));
 		try {
 			props.store(new FileOutputStream(FILE_NAME_PROPERTIES), PROPERTY_DEVICE_INDEX_COMMENT);
