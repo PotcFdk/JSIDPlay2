@@ -11,10 +11,8 @@
 		<gridbagconstraints gridx="0" gridy="1" weightx="1"
 			weighty="1" fill="GridBagConstraints.BOTH" />
 		<splitpane ResizeWeight="1" Orientation="JSplitPane.VERTICAL_SPLIT"
-			id="verticalSplit">
-			<scrollpane border="TitledBorder(DIRECTORY)">
-				<directory id="imgPreview" />
-			</scrollpane>
+			id="verticalSplit" border="TitledBorder(DIRECTORY)">
+			<directory id="imgPreview" />
 			<label layout="GridLayout(1,1)" border="TitledBorder(SCREENSHOT)"
 				id="photograph">
 			</label>
