@@ -35,6 +35,7 @@ public class SettingsDialog extends EscapeDialog {
 	private static Mixer.Info[] devices;
 	
 	private int currentDeviceIndex = 0;
+	private boolean digiBoostEnabled = false;
 	
 	private SIDDeviceSettings settings;
 	
@@ -43,6 +44,7 @@ public class SettingsDialog extends EscapeDialog {
 		
 		settings = SIDDeviceSettings.getInstance();
 		currentDeviceIndex = settings.getDeviceIndex();
+		digiBoostEnabled = settings.getDigiBoostEnabled();
 		
 		setLayout(new BorderLayout());
 		
@@ -51,15 +53,31 @@ public class SettingsDialog extends EscapeDialog {
         setIconImage(image);
 
 		JPanel mainPanel = new JPanel();
-		JPanel innerPanel = new JPanel();
-		innerPanel.setBorder(BorderFactory.createTitledBorder("Audio Settings"));
-        
-		innerPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		innerPanel.add(createLabel("Device:"));
-		innerPanel.add(createDeviceSelectionBox());
-		mainPanel.add(innerPanel);
-		add(mainPanel);
+		mainPanel.setLayout(new BorderLayout());
 
+		JPanel devicePanel = new JPanel();
+		devicePanel.setLayout(new BorderLayout());
+		devicePanel.setBorder(BorderFactory.createTitledBorder("Audio Settings"));
+		devicePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		devicePanel.add(createLabel("Device:", 100), BorderLayout.WEST);
+		devicePanel.add(createDeviceSelectionBox(), BorderLayout.CENTER);
+		mainPanel.add(devicePanel, BorderLayout.NORTH);
+
+		JPanel sidEmulationPanel = new JPanel();
+		sidEmulationPanel.setLayout(new BorderLayout());
+		sidEmulationPanel.setBorder(BorderFactory.createTitledBorder("SID Emulation Settings"));
+		sidEmulationPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		sidEmulationPanel.add(createLabel("8580 Digi Boost:", 100), BorderLayout.WEST);
+		JPanel sidEmulationPanel1 = new JPanel();
+		sidEmulationPanel1.setLayout(new BorderLayout());
+		sidEmulationPanel1.add(createDigiBoostSelectionBox(), BorderLayout.WEST);
+
+		sidEmulationPanel.add(sidEmulationPanel1, BorderLayout.CENTER);
+
+		mainPanel.add(sidEmulationPanel, BorderLayout.SOUTH);
+
+		add(mainPanel);
+		
 		add(createOkButton(), BorderLayout.PAGE_END);
 		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -75,8 +93,11 @@ public class SettingsDialog extends EscapeDialog {
 		return new Point((d.width - s.width)/2, (d.height - s.height)/2); 
 	}
 
-	private JComponent createLabel(final String text) {
-		return new JLabel(text);
+	private JComponent createLabel(final String text, final int width) {
+		JLabel label = new JLabel(" " + text);
+		Dimension d = label.getPreferredSize();   
+	    label.setPreferredSize(new Dimension(width, d.height));  		
+		return label;
 	}
 
 	private static class DeviceItemCompare implements Comparator<DeviceItem> {
@@ -173,6 +194,25 @@ public class SettingsDialog extends EscapeDialog {
 		return comboBox;
 	}
 
+	private JComponent createDigiBoostSelectionBox() {
+		JComboBox comboBox = new JComboBox();
+		comboBox.addItem("Enabled");
+		comboBox.addItem("Disabled");
+		comboBox.setSelectedIndex(digiBoostEnabled ? 0 : 1);
+		
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox cb = (JComboBox) e.getSource();
+				int comboBoxIndex = cb.getSelectedIndex();
+				ClientContext.setDigiBoost(comboBoxIndex == 0);
+				
+				settings.saveDigiBoost(comboBoxIndex == 0);
+			}
+		});
+		
+		return comboBox;
+	}	
+	
 	private JComponent createOkButton() {
 		JButton okButton = new JButton("OK");
 		okButton.addActionListener(new ActionListener() {

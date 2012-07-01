@@ -14,6 +14,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 
 import libsidplay.common.ISID2Types;
+import resid_builder.resid.ISIDDefs.ChipModel;
 import resid_builder.resid.ISIDDefs.SamplingMethod;
 import resid_builder.resid.SID;
 import sidplay.audio.AudioConfig;
@@ -34,6 +35,9 @@ public class AudioGeneratorThread extends Thread {
 	/** Queue with SID writes from client. We reserve a space assuming writes come at most one every 10 cpu clocks. */
 	private final BlockingQueue<SIDWrite> sidCommandQueue;
 
+	/** global setting for each 8580 if digiboost should be enabled */
+	private boolean digiBoostEnabled = false;
+	
 	/** SIDs that generate output */
 	private SID[] sid;
 
@@ -84,7 +88,9 @@ public class AudioGeneratorThread extends Thread {
 		audioConfig = config;
 
 		SIDDeviceSettings settings = SIDDeviceSettings.getInstance();
+
 		deviceIndex = settings.getDeviceIndex();
+		digiBoostEnabled = settings.getDigiBoostEnabled();
 	}
 	
 	@Override
@@ -391,6 +397,18 @@ public class AudioGeneratorThread extends Thread {
 
 	public void setSID(int sidNumber, SID sidConfig) {
 		sid[sidNumber] = sidConfig;
+		setDigiBoost(digiBoostEnabled);
 	}
 
+	public void setDigiBoost(final boolean selected) {
+		digiBoostEnabled = selected;
+		
+		final int input = selected ? 0x7FF : 0;
+		
+		for (SID sidChip : sid) {
+			if (sidChip != null && sidChip.getChipModel().equals(ChipModel.MOS8580)) {
+				sidChip.input(input);
+			}
+		}
+	}		
 }

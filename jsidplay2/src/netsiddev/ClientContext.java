@@ -9,7 +9,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
@@ -443,12 +442,22 @@ class ClientContext {
 	}
 	
 	/**
-	 * change device will change the device to the specified device for all connected client contexts
+	 * changeDevice will change the device to the specified device for all connected client contexts
 	 * @param deviceInfo the device that should be used
 	 */
 	public static void changeDevice(final Mixer.Info deviceInfo) {
-		for(ClientContext clientContext : clientContextMap.values()) { 
+		for (ClientContext clientContext : clientContextMap.values()) { 
 			clientContext.eventConsumerThread.changeDevice(deviceInfo); 
+		} 
+	}
+	
+	/**
+	 * setDigiBoost will change the digiboost setting for each 8580 device for all connected client contexts
+	 * @param enabled specifies if the digiboost feature is turned on
+	 */
+	public static void setDigiBoost(final boolean enabled) {
+		for (ClientContext clientContext : clientContextMap.values()) { 
+			clientContext.eventConsumerThread.setDigiBoost(enabled); 
 		} 
 	}	
 

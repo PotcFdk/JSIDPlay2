@@ -74,7 +74,6 @@ public class AboutBox extends EscapeDialog {
 		return new Point((d.width - s.width)/2, (d.height - s.height)/2); 
 	}
 	
-
 	private JComponent createCredits() {
 		JTextArea textField = new JTextArea(aboutText);
 		textField.setEditable(false);

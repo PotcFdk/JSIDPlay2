@@ -10,6 +10,7 @@ public class SIDDeviceSettings {
 	
 	private final static String FILE_NAME_PROPERTIES = "jsiddevice.properties";
 	private final static String PROPERTY_DEVICE_INDEX = "deviceIndex";
+	private final static String PROPERTY_DIGI_BOOST = "digiBoost";
 	private final static String PROPERTY_DEVICE_INDEX_COMMENT = "JSIDDevice settings";
 	
 	private static final SIDDeviceSettings instance = new SIDDeviceSettings();
@@ -50,6 +51,16 @@ public class SIDDeviceSettings {
 	}
 	
 	/**
+	 * @return digi boost value from the settings.
+	 */
+	public synchronized boolean getDigiBoostEnabled() {
+		Boolean digiBoostEnabled;
+		final String digiBoostString = props.getProperty(PROPERTY_DIGI_BOOST);
+		digiBoostEnabled = Boolean.valueOf(digiBoostString);
+		return digiBoostEnabled == null ? false : digiBoostEnabled.booleanValue();
+	}		
+	
+	/**
 	 * @param deviceIndex the device index to be saved
 	 */
 	public synchronized void saveDeviceIndex(final Integer deviceIndex) {
@@ -59,4 +70,15 @@ public class SIDDeviceSettings {
 		} catch (IOException e1) {
 		}
 	}
+	
+	/**
+	 * @param enabled specifies if digiBoost should be enabled for 8580 model
+	 */
+	public synchronized void saveDigiBoost(boolean enabled) {
+		props.setProperty(PROPERTY_DIGI_BOOST, String.valueOf(enabled));
+		try {
+			props.store(new FileOutputStream(FILE_NAME_PROPERTIES), PROPERTY_DEVICE_INDEX_COMMENT);
+		} catch (IOException e1) {
+		}
+	}	
 }
