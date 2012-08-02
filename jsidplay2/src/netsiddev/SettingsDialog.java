@@ -36,6 +36,7 @@ public class SettingsDialog extends EscapeDialog {
 	
 	private int currentDeviceIndex = 0;
 	private boolean digiBoostEnabled = false;
+	private static String primaryDeviceName = "Primary Sound Driver";
 	
 	private SIDDeviceSettings settings;
 	
@@ -105,10 +106,10 @@ public class SettingsDialog extends EscapeDialog {
 			String devName1 = d1.getInfo().getName();
 			String devName2 = d2.getInfo().getName();
 			// Make sure the Primary Sound Driver is the first entry
-			if ("Primary Sound Driver".equals(devName1)) {
+			if (primaryDeviceName.equals(devName1)) {
 				return -1;
-			} if ("Primary Sound Driver".equals(devName2)) {
-					return 1;
+			} if (primaryDeviceName.equals(devName2)) {
+				return 1;
 			} else {
 				// group the device names by device type which is most of the times
 				// between brackets at the end of the string
@@ -161,7 +162,10 @@ public class SettingsDialog extends EscapeDialog {
 			deviceIndex++;
 		}
 
-		Collections.sort(deviceItems, new DeviceItemCompare());
+		if (deviceItems.size() > 0) {
+			primaryDeviceName = deviceItems.get(0).getInfo().getName();		// first device name is the primary device driver which can be translated on some systems
+			Collections.sort(deviceItems, new DeviceItemCompare());
+		}
 		
 		int comboBoxIndex = 0;
 		for (DeviceItem deviceItem : deviceItems) {
