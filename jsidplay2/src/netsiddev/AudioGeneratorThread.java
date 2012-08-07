@@ -307,13 +307,18 @@ public class AudioGeneratorThread extends Thread {
 		}
 	}
 
-	public void setPosition(int sid, int position) {
-		float rightFraction = (position + 100) / 200f;
-		float leftFraction = 1f - rightFraction;		
-		float power = (float) Math.sqrt(leftFraction * leftFraction + rightFraction * rightFraction);
-		sidPositionL[sid] = (int) (1024 * leftFraction / power);
-		sidPositionR[sid] = (int) (1024 * rightFraction / power);
-	}
+	public void setPosition(int sidNumber, int position) {
+		if (sid.length > 1) {
+			float rightFraction = (position + 100) / 200f;
+			float leftFraction = 1f - rightFraction;		
+			float power = (float) Math.sqrt(leftFraction * leftFraction + rightFraction * rightFraction);
+			sidPositionL[sidNumber] = (int) (1024 * leftFraction / power);
+			sidPositionR[sidNumber] = (int) (1024 * rightFraction / power);
+		} else {
+			sidPositionL[sidNumber] = 1024;
+			sidPositionR[sidNumber] = 1024;
+		}
+	}	
 
 	public void setLevelAdjustment(int sid, int level) {
 		sidLevel[sid] = (int) (1024 * Math.pow(10.0, level / 100.0));
