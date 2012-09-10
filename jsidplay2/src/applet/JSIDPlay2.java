@@ -264,6 +264,9 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 		stopC64();
 		// Load tune
 		cp.loadTune(file);
+		if (file != null) {
+			System.out.println("Play File: <" + file.getAbsolutePath() + ">");
+		}
 		// Start emulation
 		startC64();
 	}
