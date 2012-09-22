@@ -55,9 +55,24 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (sid1Model.getSelectedIndex() == 0) {
-				ChipModel m = config.emulation().getDefaultSidModel();
 				config.emulation().setUserSidModel(null);
-				setSIDModel(m);
+				if (player.getTune() != null) {
+					switch (player.getTune().getInfo().sid1Model) {
+					case MOS6581:
+						setSIDModel(ChipModel.MOS6581);
+						break;
+					case MOS8580:
+						setSIDModel(ChipModel.MOS8580);
+						break;
+					default:
+						setSIDModel(config.emulation().getDefaultSidModel());
+						break;
+					}
+				} else {
+					ChipModel defaultModel = config.emulation()
+							.getDefaultSidModel();
+					setSIDModel(defaultModel);
+				}
 			} else {
 				ChipModel m = (ChipModel) sid1Model.getSelectedItem();
 				config.emulation().setUserSidModel(m);
