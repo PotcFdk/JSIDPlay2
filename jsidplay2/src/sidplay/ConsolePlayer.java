@@ -1039,8 +1039,7 @@ public class ConsolePlayer {
 				tune = loadTune(new URL(argv[infile]));
 			}
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return -1;
+			tune = loadTune(new File(argv[infile]));
 		}
 		if (tune == null) {
 			return -1;
