@@ -30,15 +30,15 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 public class SettingsDialog extends EscapeDialog {
-	private Map<Integer, Integer> indexMapping = new HashMap<Integer, Integer>();
+	protected Map<Integer, Integer> indexMapping = new HashMap<Integer, Integer>();
 	
-	private static Mixer.Info[] devices;
+	protected static Mixer.Info[] devices;
 	
-	private int currentDeviceIndex = 0;
+	protected int currentDeviceIndex = 0;
 	private boolean digiBoostEnabled = false;
-	private static String primaryDeviceName = "Primary Sound Driver";
+	protected static String primaryDeviceName = "Primary Sound Driver";
 	
-	private SIDDeviceSettings settings;
+	protected SIDDeviceSettings settings;
 	
 	public SettingsDialog() {
 		super(null, "Settings", true);
@@ -101,7 +101,7 @@ public class SettingsDialog extends EscapeDialog {
 		return label;
 	}
 
-	private static class DeviceItemCompare implements Comparator<DeviceItem> {
+	protected static class DeviceItemCompare implements Comparator<DeviceItem> {
 		public int compare(DeviceItem d1, DeviceItem d2) {
 			String devName1 = d1.getInfo().getName();
 			String devName2 = d2.getInfo().getName();

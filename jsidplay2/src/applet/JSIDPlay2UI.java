@@ -1398,6 +1398,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			case DISK:
 				// automatically turn drive on
 				driveOn.setSelected(true);
+			default:
 			}
 		}
 	}

@@ -308,6 +308,7 @@ public class Cartridge {
 		
 		final byte[] header = new byte[0x40];
 		dis.readFully(header);
+		is.close();
 		
 		if (! new String(header, 0, 0x10, ISO88591).equals("C64 CARTRIDGE   ")) {
 			return dir;
@@ -317,7 +318,6 @@ public class Cartridge {
 		dir.setTitle(type.toString().replace('_', '-').getBytes(ISO88591));
 		// directory id: size in KB
 		dir.setId(String.valueOf(file.length() >> 10).getBytes(ISO88591));
-		is.close();
 		return dir;
 	}
 }

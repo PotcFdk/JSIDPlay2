@@ -159,19 +159,19 @@ public abstract class Collection extends TuneTab implements
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {
-					try {
-						if (is != null) {
+					if (is != null) {
+						try {
 							is.close();
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
-					} catch (IOException e) {
-						e.printStackTrace();
 					}
-					try {
-						if (os != null) {
+					if (os != null) {
+						try {
 							os.close();
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
-					} catch (IOException e) {
-						e.printStackTrace();
 					}
 				}
 				part1File.delete();

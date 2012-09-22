@@ -143,6 +143,7 @@ public abstract class DiskImage {
 		try {
 			headerString = new String(header, "ISO-8859-1");
 		} catch (UnsupportedEncodingException e) {
+			fd.close();
 			throw new RuntimeException("No ISO-8859-1 encoding!");
 		}
 		// Create specific disk image

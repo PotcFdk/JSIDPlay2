@@ -878,8 +878,9 @@ public class SIDDumpModel extends DefaultTableModel implements
 	public void load(final String name) {
 		// first clear table
 		clearTable();
+		BufferedReader br = null;
 		try {
-			final BufferedReader br = new BufferedReader(new InputStreamReader(
+			br = new BufferedReader(new InputStreamReader(
 					new FileInputStream(name)));
 			// ignore header
 			String lineContents;
@@ -1105,11 +1106,18 @@ public class SIDDumpModel extends DefaultTableModel implements
 				putInRow(colVector);
 			} while (sc.hasNext());
 			sc.close();
-			br.close();
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (final IOException e) {
 			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		stop();
 	}
