@@ -17,13 +17,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceUtil;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -64,6 +66,7 @@ import applet.collection.search.SearchInIndexThread;
 import applet.collection.search.SearchIndexCreator;
 import applet.collection.search.SearchIndexerThread;
 import applet.collection.search.SearchThread;
+import applet.entities.service.VersionService;
 import applet.events.ICollectionChanged;
 import applet.events.ICollectionChanged.CollectionType;
 import applet.events.IGotoURL;
@@ -202,7 +205,7 @@ public abstract class Collection extends TuneTab implements
 	public static class HVSC extends Collection {
 		public HVSC(final Player pl, final IniConfig cfg) {
 			super(pl, cfg, "High Voltage SID Collection",
-					"http://www.hvsc.de/", "PLEASE_SELECT_HVSC", "HVSC.idx");
+					"http://www.hvsc.de/", "PLEASE_SELECT_HVSC", "HVSC");
 		}
 
 		@Override
@@ -282,7 +285,7 @@ public abstract class Collection extends TuneTab implements
 		public CGSC(final Player pl, final IniConfig cfg) {
 			super(pl, cfg, "Compute's Gazette Sid Collection",
 					"http://www.btinternet.com/~pweighill/music/",
-					"PLEASE_SELECT_CGSC", "CGSC.idx");
+					"PLEASE_SELECT_CGSC", "CGSC");
 		}
 
 		@Override
@@ -401,7 +404,7 @@ public abstract class Collection extends TuneTab implements
 	protected CollectionTreeModel collectionTreeModel;
 	protected final String collectionTitle, collectionURL,
 			msgSelectCollectionDir, dbName;
-	private Connection dbConnection;
+	// private Connection dbConnection;
 	protected SearchThread searchThread;
 	protected Object savedState;
 	protected String recentlySearchedText;
@@ -523,6 +526,10 @@ public abstract class Collection extends TuneTab implements
 			});
 		}
 	};
+
+	private EntityManagerFactory emf;
+	private EntityManager em;
+	VersionService versionService;
 
 	public Collection(Player pl, IniConfig cfg, final String title,
 			final String sourceURL, final String message, final String dbName) {
@@ -780,17 +787,23 @@ public abstract class Collection extends TuneTab implements
 				fileBrowser.setSelectionPath(new TreePath(collectionTreeModel
 						.getRoot()));
 			}
+
+			final File dbFile = new File(rootFile.getParentFile(), dbName);
+			String jdbcURL = "jdbc:hsqldb:file:" + dbFile.getAbsolutePath() + ";shutdown=true";
+
+			Map<String,String> properties = new HashMap<String,String>();
+			properties.put("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
+			properties.put("hibernate.connection.url", jdbcURL);
+			properties.put("hibernate.connection.username", "");
+			properties.put("hibernate.connection.password", "");
+			properties.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
+			properties.put("hibernate.hbm2ddl.auto", "update");
+			emf = Persistence.createEntityManagerFactory("hsqldb-ds",properties);
+			em = (EntityManager) emf.createEntityManager();
+			versionService = new VersionService(em);
 			setRootDir(rootFile);
 		}
 		resetSearch();
-		if (dbConnection != null) {
-			try {
-				dbConnection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			dbConnection = null;
-		}
 	}
 
 	protected abstract void setRootDir(final File collectionFile);
@@ -930,39 +943,13 @@ public abstract class Collection extends TuneTab implements
 
 		currentProgress = 0;
 
-		if (forceRecreate && dbConnection != null) {
-			try {
-				// shutdown previous database
-				dbConnection.close();
-				// trigger a new connection to drop previous tables
-				dbConnection = null;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		if (dbConnection == null) {
-			dbConnection = SearchIndexCreator.getConnection(
-					collectionDir.getText(), dbName, forceRecreate);
-		}
-
 		/*
 		 * validate database: version is inserted only after successful create
 		 * completes.
 		 */
 		if (!forceRecreate) {
-			try {
-				Statement s = dbConnection.createStatement();
-				ResultSet rs = s.executeQuery("SELECT count(*) FROM version");
-				if (!rs.next() || rs.getInt(1) == 0) {
-					throw new SQLException(
-							"Database is not complete, recreating");
-				}
-				s.close();
-			} catch (SQLException e) {
-				System.err.println(e.getMessage());
+			if (!versionService.isExpectedVersion()) {
 				forceRecreate = true;
-				dbConnection = SearchIndexCreator.getConnection(
-						collectionDir.getText(), dbName, forceRecreate);
 			}
 		}
 
@@ -970,10 +957,8 @@ public abstract class Collection extends TuneTab implements
 			final File root = (File) collectionTreeModel.getRoot();
 			searchThread = new SearchIndexerThread(root);
 			searchThread.addSearchListener(this);
-			searchThread
-					.addSearchListener(new SearchIndexCreator(
-							(File) collectionTreeModel.getRoot(), config,
-							dbConnection));
+			searchThread.addSearchListener(new SearchIndexCreator(
+					(File) collectionTreeModel.getRoot(), config, em));
 
 			searchThread.start();
 		} else {
@@ -1000,7 +985,7 @@ public abstract class Collection extends TuneTab implements
 			}
 
 			final SearchInIndexThread t = new SearchInIndexThread(
-					collectionTreeModel, dbConnection,
+					collectionTreeModel, em,
 					searchScope.getSelectedIndex() != 1);
 			t.addSearchListener(this);
 			t.setField(searchCriteria.getSelectedIndex());
@@ -1011,7 +996,7 @@ public abstract class Collection extends TuneTab implements
 				searchOptionsChanged = false;
 			}
 			searchThread = t;
-			searchThread.restoreSearchState(savedState);
+			searchThread.setSearchState(savedState);
 			searchThread.start();
 		}
 

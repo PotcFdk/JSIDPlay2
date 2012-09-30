@@ -77,5 +77,5 @@ public abstract class SearchThread extends Thread {
 	 * @param state
 	 *            the search state
 	 */
-	public abstract void restoreSearchState(Object state);
+	public abstract void setSearchState(Object state);
 }

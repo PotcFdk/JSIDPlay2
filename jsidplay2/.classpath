@@ -9,7 +9,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="photos.jar"/>
-	<classpathentry kind="lib" path="hsqldb.jar"/>
 	<classpathentry kind="lib" path="jump3r.jar"/>
 	<classpathentry kind="lib" path="swixml.jar"/>
 	<classpathentry kind="lib" path="test/lib/fest-assert-1.2.jar"/>
@@ -22,6 +21,18 @@
 	<classpathentry kind="lib" path="test/lib/jcip-annotations-1.0.jar"/>
 	<classpathentry kind="lib" path="test/lib/commons-codec-1.5.jar"/>
 	<classpathentry kind="lib" path="ScreenRecorder.jar"/>
+	<classpathentry kind="lib" path="hibernate-entitymanager-4.1.7.Final.jar" sourcepath="C:/Users/Ken/.m2/repository/org/hibernate/hibernate-entitymanager/4.1.7.Final/hibernate-entitymanager-4.1.7.Final-sources.jar"/>
+	<classpathentry kind="lib" path="slf4j-log4j12-1.6.4.jar"/>
+	<classpathentry kind="lib" path="log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="hibernate-jpa-2.0-api-1.0.1.Final.jar" sourcepath="C:/Users/Ken/.m2/repository/org/hibernate/javax/persistence/hibernate-jpa-2.0-api/1.0.1.Final/hibernate-jpa-2.0-api-1.0.1.Final-sources.jar"/>
+	<classpathentry kind="lib" path="hibernate-core-4.1.7.Final.jar" sourcepath="C:/Users/Ken/.m2/repository/org/hibernate/hibernate-core/4.1.7.Final/hibernate-core-4.1.7.Final-sources.jar"/>
+	<classpathentry kind="lib" path="jboss-logging-3.1.0.GA.jar"/>
+	<classpathentry kind="lib" path="jboss-transaction-api_1.1_spec-1.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="hibernate-commons-annotations-4.0.1.Final.jar"/>
+	<classpathentry kind="lib" path="javassist-3.15.0-GA.jar"/>
+	<classpathentry kind="lib" path="antlr-2.7.7.jar"/>
+	<classpathentry kind="lib" path="hsqldb-2.2.8.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

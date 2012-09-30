@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="hsqldb-ds" transaction-type="RESOURCE_LOCAL">
+
+		<description>HSQLDB Persistence Unit</description>
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+
+		<!-- This is where we tell JPA/Hibernate about our @Entity objects -->
+		<class>applet.entities.HVSCEntry</class>
+		<class>applet.entities.STIL</class>
+		<class>applet.entities.Version</class>
+	</persistence-unit>
+</persistence>

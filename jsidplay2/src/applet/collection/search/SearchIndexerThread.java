@@ -49,8 +49,8 @@ public class SearchIndexerThread extends SearchThread {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void restoreSearchState(final Object state) {
-		if (state != null && state instanceof Queue<?>) {
+	public void setSearchState(final Object state) {
+		if (state != null && (state instanceof Queue<?>)) {
 			fQueue = (Queue<File>) state;
 		}
 

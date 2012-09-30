@@ -1,84 +1,30 @@
 package applet.collection.search;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
+import javax.persistence.EntityManager;
 
-import libsidutils.STIL;
 import applet.collection.CollectionTreeModel;
-import applet.sidtuneinfo.SidTuneInfoCache;
+import applet.entities.service.HVSCEntryService;
+import applet.entities.service.HVSCEntryService.HVSCEntries;
 
 public class SearchInIndexThread extends SearchThread {
 
-	private final Connection fConnection;
 	private final CollectionTreeModel fModel;
-	private ResultSet rs;
 
 	private int field;
 	private String fieldValue;
 	private boolean caseSensitive;
 
-	public SearchInIndexThread(CollectionTreeModel model, Connection conn, boolean forward) {
+	private HVSCEntryService hvscEntryService;
+	private HVSCEntries state;
+
+	public SearchInIndexThread(CollectionTreeModel model, EntityManager em,
+			boolean forward) {
 		super(forward);
-		fConnection = conn;
-		fModel = model;
-	}
-
-	private void select() throws SQLException {
-		if (rs != null) {
-			rs.close();
-		}
-
-		String fv = fieldValue;
-		if (!caseSensitive) {
-			fv = fv.toLowerCase();
-		}
-		String[] pieces = fv.split("\\s+");
-
-		StringBuilder query = new StringBuilder("SELECT \"FULL_PATH\" FROM ");
-		String fieldName = "";
-		int firstSTILIdx = 2 + SidTuneInfoCache.SIDTUNE_INFOS.length;
-		if (field >= firstSTILIdx) {
-			// STIL infos
-			fieldName = STIL.STIL_INFOS[field - firstSTILIdx];
-			query.append("stil");
-		} else if (field >= 2) {
-			// tune infos
-			fieldName = SidTuneInfoCache.SIDTUNE_INFOS[field - 2];
-			query.append("collection");
-		} else if (field == 0) {
-			// Full filename
-			fieldName = "FILE_NAME";
-			query.append("collection");
-		} else if (field == 1) {
-			// Full path
-			fieldName = "FULL_PATH";
-			query.append("collection");
-		}
-		query.append(" WHERE 1=1");
-
-		/* split by spaces, find entries where all match */
-		for (@SuppressWarnings("unused") String piece : pieces) {
-			if (!caseSensitive) {
-				query.append(" AND lower(\"" + fieldName + "\")");
-			} else {
-				query.append(" AND \"" + fieldName + "\"");
-			}
-			query.append(" LIKE ?");
-		}
-		query.append(" ORDER BY \"FULL_PATH\" ASC");
-		PreparedStatement stmt = fConnection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-
-		for (int i = 0; i < pieces.length; i++) {
-			stmt.setString(i + 1, "%" + pieces[i] + "%");
-		}
-
-		rs = stmt.executeQuery();
+		this.fModel = model;
+		hvscEntryService = new HVSCEntryService(em);
 	}
 
 	@Override
@@ -86,58 +32,37 @@ public class SearchInIndexThread extends SearchThread {
 		for (ISearchListener listener : fListeners) {
 			listener.searchStart();
 		}
-		try {
-			if (rs == null) {
-				select();
-			}
-			// search the collection
-			while (!fAborted && (fForward ? next() : prev())) {
-				String filePath = rs.getString(1);
-				for (ISearchListener listener : fListeners) {
-					ArrayList<File> file = fModel.getFile(filePath);
-					if (file.size() > 0) {
-						listener.searchHit(file.get(file.size() - 1));
-					}
+
+		if (state == null) {
+			state = hvscEntryService.search(field, fieldValue, caseSensitive,
+					fForward);
+		}
+		while (!fAborted && (fForward ? state.next() : state.prev())) {
+			String filePath = state.getPath();
+			for (ISearchListener listener : fListeners) {
+				ArrayList<File> file = fModel.getFile(filePath);
+				if (file.size() > 0) {
+					listener.searchHit(file.get(file.size() - 1));
 				}
 			}
-			if (!fAborted) {
-				rs.close();
-				rs = null;
-			}
-		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, e);
+		}
+		if (!fAborted) {
+			state = null;
 		}
 		for (ISearchListener listener : fListeners) {
 			listener.searchStop(fAborted);
 		}
 	}
 
-	private boolean prev() throws SQLException {
-		if (rs.isFirst()) {
-			return false;// rs.last();
-		} else {
-			return rs.previous();
-		}
-	}
-
-	private boolean next() throws SQLException {
-		if (rs.isLast()) {
-			return false;// rs.first();
-		} else {
-			return rs.next();
-		}
-	}
-
 	@Override
 	public Object getSearchState() {
-		return rs;
+		return state;
 	}
 
 	@Override
-	public void restoreSearchState(Object state) {
-		if (state instanceof ResultSet) {
-			rs = (ResultSet) state;
-		}
+	public void setSearchState(Object state) {
+		if (state instanceof HVSCEntries)
+		this.state = (HVSCEntries) state;
 	}
 
 	public int getField() {
