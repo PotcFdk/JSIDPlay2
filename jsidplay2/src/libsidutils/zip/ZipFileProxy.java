@@ -41,10 +41,11 @@ public class ZipFileProxy extends File {
 	/* create a hashtable of the entries and their paths */
 	@SuppressWarnings("rawtypes")
 	private void parse(Enumeration en) {
+		String fullName="";
 		while (en.hasMoreElements()) {
 			try {
 				ZipEntry ze = (ZipEntry) en.nextElement();
-				String fullName = ze.getName();
+				fullName = ze.getName();
 
 				// Determine parent path for hashtable access
 				String parent = "";
@@ -68,7 +69,8 @@ public class ZipFileProxy extends File {
 					parentChildren.put(fullName, "");
 				}
 			} catch (IllegalArgumentException e) {
-				System.err.println(e.getMessage());
+				System.err.println(fullName);
+				e.printStackTrace();
 			}
 		}
 	}

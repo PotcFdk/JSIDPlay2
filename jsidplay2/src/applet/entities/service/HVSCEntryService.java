@@ -6,7 +6,11 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
@@ -154,62 +158,90 @@ public class HVSCEntryService {
 		return sidChipBase2 != 0 ? "Stereo" : "Mono";
 	}
 
-	@SuppressWarnings("unchecked")
 	public HVSCEntries search(int field, String fieldValue,
 			boolean caseSensitive, boolean fForward) {
-		String fieldName;
-		String from;
-		String where;
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> q = cb.createQuery(String.class);
+
 		if (field == 0) {
-			fieldName = "h.name";
-			from = "HVSCEntry AS h";
-			where = "";
+			// SELECT distinct h.path FROM HVSCEntry h WHERE name LIKE VALUE
+			Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
+			Path<String> fieldName = h.get("name");
+			Predicate like = fieldNameLikeFieldValue(cb, fieldName, fieldValue,
+					caseSensitive);
+			q.where(like);
 		} else if (field == 1) {
-			fieldName = "h.path";
-			from = "HVSCEntry AS h";
-			where = "";
+			// SELECT distinct h.path FROM HVSCEntry h WHERE path LIKE VALUE
+			Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
+			Path<String> fieldName = h.get("path");
+			Predicate like = fieldNameLikeFieldValue(cb, fieldName, fieldValue,
+					caseSensitive);
+			q.where(like);
 		} else if (field - 2 < SidTuneInfoCache.SIDTUNE_INFOS.length) {
-			fieldName = "h." + SidTuneInfoCache.SIDTUNE_INFOS[field - 2];
-			from = "HVSCEntry AS h";
-			where = "";
+			// SELECT distinct h.path FROM HVSCEntry h WHERE <fieldName> LIKE
+			// <value>
+			Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
+			Path<String> fieldName = h
+					.get(convertSearchCriteriaToEntityFieldName(SidTuneInfoCache.SIDTUNE_INFOS[field - 2]));
+			Predicate like = fieldNameLikeFieldValue(cb, fieldName, fieldValue,
+					caseSensitive);
+			q.where(like);
 		} else if (field - 2 < SidTuneInfoCache.SIDTUNE_INFOS.length
 				+ STIL.STIL_INFOS.length) {
 			int stilIdx = field - 2 - SidTuneInfoCache.SIDTUNE_INFOS.length;
 			if (stilIdx == 0) {
-				fieldName = "h." + STIL.STIL_INFOS[stilIdx];
-				from = "HVSCEntry AS h";
-				where = "";
+				// SELECT distinct h.path FROM HVSCEntry h WHERE <fieldName>
+				// LIKE <value>
+				Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
+				Path<String> fieldName = h
+						.get(convertSearchCriteriaToEntityFieldName(STIL.STIL_INFOS[stilIdx]));
+				Predicate like = fieldNameLikeFieldValue(cb, fieldName,
+						fieldValue, caseSensitive);
+				q.where(like);
 			} else {
-				fieldName = "s." + STIL.STIL_INFOS[stilIdx];
-				from = "HVSCEntry AS h, STIL AS s";
-				where = "h.path=s.hvscEntry.path and ";
+				// SELECT distinct h.path FROM HVSCEntry h, STIL AS s WHERE
+				// h.path=s.hvscEntry.path and <fieldName> LIKE <value>
+				Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
+				Root<applet.entities.STIL> s = q
+						.from(applet.entities.STIL.class);
+				Path<String> fieldName = s
+						.get(convertSearchCriteriaToEntityFieldName(STIL.STIL_INFOS[stilIdx]));
+				Predicate like = fieldNameLikeFieldValue(cb, fieldName,
+						fieldValue, caseSensitive);
+				q.where(cb.and(cb.equal(h.get("path"),
+						s.get("hvscEntry").get("path"))), like);
 			}
 		} else {
 			throw new RuntimeException("Search criteria is not supported: "
 					+ field);
 		}
-		String selectFromWhere = "select distinct h.path from " + from
-				+ " where " + where;
-		fieldName = convertSearchCriteriaToEntityFieldName(fieldName);
+		return new HVSCEntries(em.createQuery(q).getResultList(), fForward);
+	}
 
-		String queryString;
+	private Root<HVSCEntry> selectDistinctPathFromHVSCEntry(
+			CriteriaQuery<String> query) {
+		Root<HVSCEntry> h = query.from(HVSCEntry.class);
+		Path<String> path = h.get("path");
+		query.select(path).distinct(true);
+		return h;
+	}
+
+	private Predicate fieldNameLikeFieldValue(CriteriaBuilder cb,
+			Path<String> fieldNm, String fieldValue, boolean caseSensitive) {
+		Predicate like;
 		if (!caseSensitive) {
-			queryString = selectFromWhere + " lower(" + fieldName
-					+ ") Like :value";
-			fieldValue = "%" + fieldValue.toLowerCase() + "%";
+			like = cb.like(cb.lower(fieldNm), "%" + fieldValue.toLowerCase()
+					+ "%");
 		} else {
-			queryString = selectFromWhere + " " + fieldName + " Like :value";
-			fieldValue = "%" + fieldValue + "%";
+			like = cb.like(fieldNm, "%" + fieldValue + "%");
 		}
-		Query q = em.createQuery(queryString);
-		q.setParameter("value", fieldValue);
-		return new HVSCEntries(q.getResultList(), fForward);
+		return like;
 	}
 
 	private String convertSearchCriteriaToEntityFieldName(String fieldName) {
+		String[] fieldNameParts = fieldName.toLowerCase().split("_");
 		StringBuilder fieldNameResult = new StringBuilder();
 		boolean first = true;
-		String[] fieldNameParts = fieldName.toLowerCase().split("_");
 		for (String fieldNamePart : fieldNameParts) {
 			if (!first) {
 				fieldNameResult.append(
@@ -220,8 +252,7 @@ public class HVSCEntryService {
 			}
 			first = false;
 		}
-		fieldName = fieldNameResult.toString();
-		return fieldName;
+		return fieldNameResult.toString();
 	}
 
 	public void clear() {
