@@ -134,8 +134,8 @@ public abstract class Collection extends TuneTab implements
 			if (part == 1) {
 				// part 1 has been downloaded, start download of part 2
 				DownloadThread downloadThread = new DownloadThread(config,
-						new HVSCListener(2),
-						"http://jsidplay2.sourceforge.net/online/hvsc/C64Music.002");
+						new HVSCListener(2), JSIDPlay2.DEPLOYMENT_URL
+								+ "hvsc/C64Music.002");
 				downloadThread.start();
 			} else {
 				// part 1 and 2 has been downloaded, merge them
@@ -272,8 +272,8 @@ public abstract class Collection extends TuneTab implements
 					// First time, the HVSC is downloaded, download part 1
 					autoConfiguration.setEnabled(false);
 					DownloadThread downloadThread = new DownloadThread(config,
-							new HVSCListener(1),
-							"http://jsidplay2.sourceforge.net/online/hvsc/C64Music.001");
+							new HVSCListener(1), JSIDPlay2.DEPLOYMENT_URL
+									+ "online/hvsc/C64Music.001");
 					downloadThread.start();
 				}
 			}
@@ -353,8 +353,8 @@ public abstract class Collection extends TuneTab implements
 					// First time, the CGSC is downloaded
 					autoConfiguration.setEnabled(false);
 					DownloadThread downloadThread = new DownloadThread(config,
-							new CGSCListener(),
-							"http://jsidplay2.sourceforge.net/online/cgsc/CGSC.zip");
+							new CGSCListener(), JSIDPlay2.DEPLOYMENT_URL
+									+ "online/cgsc/CGSC.zip");
 					downloadThread.start();
 				}
 			}

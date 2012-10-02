@@ -35,6 +35,7 @@ import libsidplay.sidtune.SidTune;
 import org.swixml.SwingEngine;
 
 import sidplay.ini.IniConfig;
+import applet.JSIDPlay2;
 import applet.TuneTab;
 import applet.collection.Picture;
 import applet.events.IMadeProgress;
@@ -207,8 +208,8 @@ public class GameBase extends TuneTab {
 						} catch (SQLException e2) {
 							e2.printStackTrace();
 						}
-						downloadStart(
-								"http://jsidplay2.sourceforge.net/online/gamebase/gb64.jar",
+						downloadStart(JSIDPlay2.DEPLOYMENT_URL
+								+ "online/gamebase/gb64.jar",
 								new GameBaseListener(GameBase.this));
 					} finally {
 						if (verStmt != null) {
@@ -221,9 +222,9 @@ public class GameBase extends TuneTab {
 					}
 				} else {
 					// First time, the database is downloaded
-					downloadStart(
-							"http://jsidplay2.sourceforge.net/online/gamebase/gb64.jar",
-							new GameBaseListener(GameBase.this));
+					downloadStart(JSIDPlay2.DEPLOYMENT_URL
+							+ "online/gamebase/gb64.jar", new GameBaseListener(
+							GameBase.this));
 				}
 			}
 		}

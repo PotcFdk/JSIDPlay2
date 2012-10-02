@@ -16,6 +16,7 @@
 	<xsl:param name="sizeOsx" />
 	<xsl:param name="sizeWindows" />
 	<xsl:param name="sizeIcon" />
+	<xsl:param name="url" />
 
 	<xsl:template match="*|@*|comment()">
 		<xsl:copy>
@@ -29,6 +30,9 @@
 			<xsl:copy-of select="@*" />
 			<xsl:attribute name="href">
 				<xsl:value-of select="$filename" />
+			</xsl:attribute>
+			<xsl:attribute name="codebase">
+				<xsl:value-of select="$url" />
 			</xsl:attribute>
 			<xsl:apply-templates />
 		</xsl:copy>

@@ -22,6 +22,7 @@
 		<classpath>
 			<fileset dir="${basedir}/antlib" includes="jsch-0.1.45.jar" />
 			<fileset dir="${basedir}/antlib" includes="proguard.jar" />
+			<fileset dir="${basedir}/antlib" includes="commons-net-3.1.jar" />
 			<fileset dir="${launch4j.bindir}" includes="launch4j.jar" />
 			<fileset dir="${launch4j.bindir}/lib" includes="xstream.jar" />
 		</classpath>
@@ -119,14 +120,14 @@
 	        ]]>
 	</scriptdef>
 
+	<!-- Applet Browser Icon -->
+	<property name="icon">jsidplay2.png</property>
+
 	<!-- Name of the archive containing the release of JSIDPlay2 -->
 	<property name="releaseName" value="jsidplay2-2.5" />
 
 	<!-- alias name of the key in the keystore to sign the JARs -->
 	<property name="sign_key_alias" value="jsidplay2" />
-
-	<!-- Sourceforge SSH server directory -->
-	<property name="remote_dir" value="htdocs" />
 
 	<!-- Read all properties to build and deploy -->
 	<property file="build.properties" />
@@ -385,10 +386,15 @@
           some pictures and a disclaimer.
          ================================= -->
 	<target name="jsidplay2_webresources" depends="jsidplay2_html">
+		<filter token="server_url" value="${server_url}"/>
+		<copy todir="${result_dir}" filtering="true">
+			<fileset dir="${res}">
+				<include name="index.htm" />
+			</fileset>
+		</copy>
 		<copy todir="${result_dir}">
 			<fileset dir="${res}">
 				<include name="disclaimer.gif" />
-				<include name="index.htm" />
 				<include name="*.jpg" />
 				<include name="*.gif" />
 				<include name="*.png" />
@@ -409,6 +415,7 @@
 			<param name="width" expression="${width}" />
 			<param name="height" expression="${height}" />
 			<param name="main" expression="${jnlp_main_class}" />
+			<param name="icon" expression="${icon}" />
 		</xslt>
 	</target>
 
@@ -467,10 +474,15 @@
           and some example SID files.
          ================================= -->
 	<target name="c64jukebox_resources">
+		<filter token="server_url" value="${server_url}"/>
+		<copy todir="${c64jukebox_dir}" filtering="true">
+			<fileset dir="${res}">
+				<include name="SIDPlay.html" />
+			</fileset>
+		</copy>
 		<copy todir="${c64jukebox_dir}">
 			<fileset dir="${res}">
 				<include name="files/**/*" />
-				<include name="SIDPlay.html" />
 			</fileset>
 		</copy>
 	</target>
@@ -652,6 +664,10 @@
           Web Start Application.
          ================================= -->
 	<target name="jsidplay2_jnlp">
+		<available file="${basedir}/build.properties" property="build.configured" />
+		<fail unless="build.configured" message="Please copy sample_build.properties to build.properties and configure settings." />
+		<input message="Server URL?" addproperty="server_url" />
+
 		<getfs property="jars.size" files="${mf_class_path}" path="${result_dir}" />
 		<length file="${result_dir}/${mainJar}" property="length" />
 
@@ -678,6 +694,8 @@
 			<param name="sizeWindows" expression="${windowsLength}" />
 			<!-- Icon -->
 			<param name="sizeIcon" expression="${iconSize}" />
+			<!-- server URL -->
+			<param name="url" expression="${server_url}" />
 		</xslt>
 		<!-- JNLP to be used as an applet (using applet-desc) -->
 		<xslt in="${res}/jsidplay2.jnlp.tmpl" out="${result_dir}/jsidplay2applet.jnlp" style="${res}/jsidplay2.jnlp.xsl">
@@ -700,6 +718,8 @@
 			<param name="sizeWindows" expression="${windowsLength}" />
 			<!-- Icon -->
 			<param name="sizeIcon" expression="${iconSize}" />
+			<!-- server URL -->
+			<param name="url" expression="${server_url}" />
 		</xslt>
 	</target>
 
@@ -733,15 +753,23 @@
 		</exec>
 	</target>
 
+	<!-- =================================================== -->
+	<!-- Set property ssh, if ssh is configured -->
+	<target name="setup_upload">
+		<available file="${basedir}/build.properties" property="build.configured" />
+		<fail unless="build.configured" message="Please copy sample_build.properties to build.properties and configure settings." />
+		<condition property="ssh">
+			<equals arg1="${access_type}" arg2="ssh" trim="true" />
+		</condition>
+	</target>
+
 	<!-- ================================= 
           target: upload
           Description:
-          Upload JSIDPlay2 deployment results to Sourceforge.
+          Upload JSIDPlay2 deployment results to Sourceforge using SSH.
          ================================= -->
-	<target name="upload">
-		<available file="${basedir}/build.properties" property="build.configured" />
-		<fail unless="build.configured" message="Please copy sample_build.properties to build.properties and configure settings." />
-		<input message="SSH keyfile?" addproperty="keyfile" />
+	<target name="upload" depends="setup_upload,upload_ftp" if="ssh">
+		<input message="SSH keyfile?" addproperty="keyfile"/>
 		<input message="SSH passphrase?" addproperty="passphrase" />
 		<input message="SSH remote server?" addproperty="remote_srv" />
 		<input message="SSH remote directory?" addproperty="remote_dir" />
@@ -750,6 +778,23 @@
 				<include name="**/*" />
 			</fileset>
 		</scp>
+	</target>
+
+	<!-- ================================= 
+          target: upload
+          Description:
+          Upload JSIDPlay2 deployment results to Sourceforge using FTP.
+         ================================= -->
+	<target name="upload_ftp" depends="setup_upload" unless="ssh">
+		<input message="FTP username?" addproperty="username" />
+		<input message="FTP password?" addproperty="passphrase" />
+		<input message="FTP server?" addproperty="remote_srv" />
+		<input message="FTP remote directory?" addproperty="remote_dir" />
+		<ftp passive="true" binary="true" action="put" verbose="true" userid="${username}" password="${passphrase}" server="${remote_srv}" remotedir="${remote_dir}">
+			<fileset dir="${result_dir}">
+				<include name="**/*" />
+			</fileset>
+		</ftp>
 	</target>
 
 	<!-- ================================= 

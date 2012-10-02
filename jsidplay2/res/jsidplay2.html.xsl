@@ -7,10 +7,21 @@
 	<xsl:param name="width" />
 	<xsl:param name="height" />
 	<xsl:param name="main" />
+	<xsl:param name="icon" />
 
 	<xsl:template match="*|@*|comment()">
 		<xsl:copy>
 			<xsl:copy-of select="@*" />
+			<xsl:apply-templates />
+		</xsl:copy>
+	</xsl:template>
+
+	<xsl:template match="LINK">
+		<xsl:copy>
+			<xsl:copy-of select="@*" />
+			<xsl:attribute name="HREF">
+				<xsl:value-of select="$icon" />
+			</xsl:attribute>
 			<xsl:apply-templates />
 		</xsl:copy>
 	</xsl:template>

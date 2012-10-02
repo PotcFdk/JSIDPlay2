@@ -40,6 +40,7 @@ import libsidutils.zip.ZipFileProxy;
 import org.swixml.SwingEngine;
 
 import sidplay.ini.IniConfig;
+import applet.JSIDPlay2;
 import applet.PathUtils;
 import applet.TuneTab;
 import applet.events.ICollectionChanged;
@@ -60,8 +61,7 @@ public abstract class DiskCollection extends TuneTab implements
 	public static final class HVMEC extends DiskCollection {
 
 		public HVMEC(final Player pl, final IniConfig cfg) {
-			super(pl, cfg,
-					"http://jsidplay2.sourceforge.net/online/hvmec/HVMEC.zip",
+			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL + "online/hvmec/HVMEC.zip",
 					"HVMEC.zip");
 			// Initially configure Demos
 			if (config.sidplay2().getHVMEC() != null) {
@@ -125,8 +125,7 @@ public abstract class DiskCollection extends TuneTab implements
 	public static final class Demos extends DiskCollection {
 
 		public Demos(final Player pl, final IniConfig cfg) {
-			super(pl, cfg,
-					"http://jsidplay2.sourceforge.net/online/demos/Demos.zip",
+			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL + "online/demos/Demos.zip",
 					"Demos.zip");
 			// Initially configure Demos
 			if (config.sidplay2().getDemos() != null) {
@@ -189,9 +188,8 @@ public abstract class DiskCollection extends TuneTab implements
 	public static final class Mags extends DiskCollection {
 
 		public Mags(final Player pl, final IniConfig cfg) {
-			super(pl, cfg,
-					"http://jsidplay2.sourceforge.net/online/mags/C64Magazines.zip",
-					"C64Magazines.zip");
+			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL
+					+ "online/mags/C64Magazines.zip", "C64Magazines.zip");
 			// Initially configure Mags
 			if (config.sidplay2().getMags() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
