@@ -55,7 +55,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	/**
 	 * URL where the JSIDPlay2 is deploey to.
 	 */
-	public static final String DEPLOYMENT_URL="http://kenchis.t15.org/jsidplay2/online/";
+	public static final String DEPLOYMENT_URL="http://kenchis.t15.org/jsidplay2/";
 		
 	/**
 	 * Console player
