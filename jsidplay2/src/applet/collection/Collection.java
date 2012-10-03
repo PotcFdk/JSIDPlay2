@@ -135,7 +135,7 @@ public abstract class Collection extends TuneTab implements
 				// part 1 has been downloaded, start download of part 2
 				DownloadThread downloadThread = new DownloadThread(config,
 						new HVSCListener(2), JSIDPlay2.DEPLOYMENT_URL
-								+ "hvsc/C64Music.002");
+								+ "online/hvsc/C64Music.002");
 				downloadThread.start();
 			} else {
 				// part 1 and 2 has been downloaded, merge them
