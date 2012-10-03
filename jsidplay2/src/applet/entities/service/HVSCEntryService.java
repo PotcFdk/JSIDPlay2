@@ -8,6 +8,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -164,21 +166,21 @@ public class HVSCEntryService {
 		CriteriaQuery<String> q = cb.createQuery(String.class);
 
 		if (field == 0) {
-			// SELECT distinct h.path FROM HVSCEntry h WHERE name LIKE VALUE
+			// SELECT distinct h.path FROM HVSCEntry h WHERE h.name LIKE <value>
 			Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
 			Path<String> fieldName = h.get("name");
 			Predicate like = fieldNameLikeFieldValue(cb, fieldName, fieldValue,
 					caseSensitive);
 			q.where(like);
 		} else if (field == 1) {
-			// SELECT distinct h.path FROM HVSCEntry h WHERE path LIKE VALUE
+			// SELECT distinct h.path FROM HVSCEntry h WHERE h.path LIKE <value>
 			Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
 			Path<String> fieldName = h.get("path");
 			Predicate like = fieldNameLikeFieldValue(cb, fieldName, fieldValue,
 					caseSensitive);
 			q.where(like);
 		} else if (field - 2 < SidTuneInfoCache.SIDTUNE_INFOS.length) {
-			// SELECT distinct h.path FROM HVSCEntry h WHERE <fieldName> LIKE
+			// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName> LIKE
 			// <value>
 			Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
 			Path<String> fieldName = h
@@ -190,7 +192,7 @@ public class HVSCEntryService {
 				+ STIL.STIL_INFOS.length) {
 			int stilIdx = field - 2 - SidTuneInfoCache.SIDTUNE_INFOS.length;
 			if (stilIdx == 0) {
-				// SELECT distinct h.path FROM HVSCEntry h WHERE <fieldName>
+				// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName>
 				// LIKE <value>
 				Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
 				Path<String> fieldName = h
@@ -199,17 +201,18 @@ public class HVSCEntryService {
 						fieldValue, caseSensitive);
 				q.where(like);
 			} else {
-				// SELECT distinct h.path FROM HVSCEntry h, STIL AS s WHERE
-				// h.path=s.hvscEntry.path and <fieldName> LIKE <value>
-				Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
-				Root<applet.entities.STIL> s = q
-						.from(applet.entities.STIL.class);
-				Path<String> fieldName = s
-						.get(convertSearchCriteriaToEntityFieldName(STIL.STIL_INFOS[stilIdx]));
+				// SELECT distinct h.path FROM HVSCEntry h INNER JOIN h.stil s
+				// WHERE s.<fieldName> Like <value>
+				Root<HVSCEntry> person = q.from(HVSCEntry.class);
+				Path<String> path = person.get("path");
+				q.select(path).distinct(true);
+				Join<HVSCEntry, applet.entities.STIL> stil = person.join(
+						"stil", JoinType.INNER);
+				Path<String> fieldName = stil
+						.<String> get(convertSearchCriteriaToEntityFieldName(STIL.STIL_INFOS[stilIdx]));
 				Predicate like = fieldNameLikeFieldValue(cb, fieldName,
 						fieldValue, caseSensitive);
-				q.where(cb.and(cb.equal(h.get("path"),
-						s.get("hvscEntry").get("path"))), like);
+				q.where(like);
 			}
 		} else {
 			throw new RuntimeException("Search criteria is not supported: "
