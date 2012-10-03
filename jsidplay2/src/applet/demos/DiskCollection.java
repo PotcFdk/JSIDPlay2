@@ -10,11 +10,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
@@ -61,8 +65,8 @@ public abstract class DiskCollection extends TuneTab implements
 	public static final class HVMEC extends DiskCollection {
 
 		public HVMEC(final Player pl, final IniConfig cfg) {
-			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL + "online/hvmec/HVMEC.zip",
-					"HVMEC.zip");
+			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL + "online/hvmec/HVMEC",
+					"HVMEC");
 			// Initially configure Demos
 			if (config.sidplay2().getHVMEC() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
@@ -125,8 +129,8 @@ public abstract class DiskCollection extends TuneTab implements
 	public static final class Demos extends DiskCollection {
 
 		public Demos(final Player pl, final IniConfig cfg) {
-			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL + "online/demos/Demos.zip",
-					"Demos.zip");
+			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL + "online/demos/Demos",
+					"Demos");
 			// Initially configure Demos
 			if (config.sidplay2().getDemos() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
@@ -189,7 +193,7 @@ public abstract class DiskCollection extends TuneTab implements
 
 		public Mags(final Player pl, final IniConfig cfg) {
 			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL
-					+ "online/mags/C64Magazines.zip", "C64Magazines.zip");
+					+ "online/mags/C64Magazines", "C64Magazines");
 			// Initially configure Mags
 			if (config.sidplay2().getMags() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
@@ -268,12 +272,76 @@ public abstract class DiskCollection extends TuneTab implements
 
 	public class DemosListener extends ProgressListener {
 
+		private int part;
+
+		public DemosListener(final int part) {
+			this.part = part;
+		}
+
 		@Override
 		public void downloaded(File downloadedFile) {
-			// ZIP downloaded
-			autoConfiguration.setEnabled(true);
-			setRootFile(new File(System.getProperty("jsidplay2.tmpdir"),
-					zipName));
+			if (zipName.endsWith("C64Magazines")) {
+				if (part == 1) {
+					// part 1 has been downloaded, start download of part 2
+					DownloadThread downloadThread = new DownloadThread(config,
+							new DemosListener(2), downloadUrl + ".002");
+					downloadThread.start();
+				} else {
+					// part 1 and 2 has been downloaded, merge them
+					File part1File = new File(
+							System.getProperty("jsidplay2.tmpdir"), zipName
+									+ ".001");
+					File part2File = new File(
+							System.getProperty("jsidplay2.tmpdir"), zipName
+									+ ".002");
+					File mags = new File(
+							System.getProperty("jsidplay2.tmpdir"), zipName
+									+ ".zip");
+					BufferedInputStream is = null;
+					BufferedOutputStream os = null;
+					try {
+						is = new BufferedInputStream(new SequenceInputStream(
+								new FileInputStream(part1File),
+								new FileInputStream(part2File)));
+						os = new BufferedOutputStream(
+								new FileOutputStream(mags));
+						int bytesRead;
+						byte[] buffer = new byte[DownloadThread.MAX_BUFFER_SIZE];
+						while ((bytesRead = is.read(buffer)) != -1) {
+							os.write(buffer, 0, bytesRead);
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					} finally {
+						if (is != null) {
+							try {
+								is.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+						if (os != null) {
+							try {
+								os.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					part1File.delete();
+					part2File.delete();
+					// ZIP downloaded
+					autoConfiguration.setEnabled(true);
+					setRootFile(new File(
+							System.getProperty("jsidplay2.tmpdir"), zipName
+									+ ".zip"));
+				}
+			} else {
+				// ZIP downloaded
+				autoConfiguration.setEnabled(true);
+				setRootFile(new File(System.getProperty("jsidplay2.tmpdir"),
+						zipName + ".zip"));
+			}
 		}
 	}
 
@@ -283,16 +351,22 @@ public abstract class DiskCollection extends TuneTab implements
 			if (autoConfiguration.isSelected()) {
 				autoConfiguration.setEnabled(false);
 				final String outputDir = System.getProperty("jsidplay2.tmpdir");
-				if (new File(outputDir, zipName).exists()) {
+				if (new File(outputDir, zipName + ".zip").exists()) {
 					// There is already a database file downloaded earlier.
 					// Therefore we try to connect
 					autoConfiguration.setEnabled(true);
-					setRootFile(new File(outputDir, zipName));
+					setRootFile(new File(outputDir, zipName + ".zip"));
 				} else {
 					// First time, the database is downloaded
-					DownloadThread downloadThread = new DownloadThread(config,
-							new DemosListener(), downloadUrl);
-					downloadThread.start();
+					if (zipName.endsWith("C64Magazines")) {
+						DownloadThread downloadThread = new DownloadThread(config,
+								new DemosListener(1), downloadUrl + ".001");
+						downloadThread.start();
+					} else {
+						DownloadThread downloadThread = new DownloadThread(config,
+								new DemosListener(1), downloadUrl + ".zip");
+						downloadThread.start();
+					}
 				}
 			}
 		}

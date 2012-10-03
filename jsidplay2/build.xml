@@ -861,7 +861,7 @@
 		<java fork="true" classname="applet.collection.createhvsc.Split">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
-			<arg value="bytes=99328000" />
+			<arg value="bytes=48000000" />
 			<arg value="file=${hvsc_dir}/C64Music.zip" />
 		</java>
 		<delete file="${hvsc_dir}/C64Music.zip" />

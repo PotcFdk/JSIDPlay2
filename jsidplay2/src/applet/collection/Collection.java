@@ -137,23 +137,33 @@ public abstract class Collection extends TuneTab implements
 						new HVSCListener(2), JSIDPlay2.DEPLOYMENT_URL
 								+ "online/hvsc/C64Music.002");
 				downloadThread.start();
+			} else  if (part == 2) {
+					// part 1 has been downloaded, start download of part 2
+					DownloadThread downloadThread = new DownloadThread(config,
+							new HVSCListener(3), JSIDPlay2.DEPLOYMENT_URL
+									+ "online/hvsc/C64Music.003");
+					downloadThread.start();
 			} else {
-				// part 1 and 2 has been downloaded, merge them
+				// part 1, 2 and 3 has been downloaded, merge them
 				autoConfiguration.setEnabled(true);
 				File part1File = new File(
 						System.getProperty("jsidplay2.tmpdir"), "C64Music.001");
 				File part2File = new File(
 						System.getProperty("jsidplay2.tmpdir"), "C64Music.002");
+				File part3File = new File(
+						System.getProperty("jsidplay2.tmpdir"), "C64Music.003");
 				File hvscFile = new File(
 						System.getProperty("jsidplay2.tmpdir"), "C64Music.zip");
 				BufferedInputStream is = null;
 				BufferedOutputStream os = null;
+				File tmp = null;
 				try {
+					tmp = File.createTempFile("jsidplay2", "hvsctmp");
 					is = new BufferedInputStream(new SequenceInputStream(
 							new FileInputStream(part1File),
 							new FileInputStream(part2File)));
 					os = new BufferedOutputStream(
-							new FileOutputStream(hvscFile));
+							new FileOutputStream(tmp));
 					int bytesRead;
 					byte[] buffer = new byte[DownloadThread.MAX_BUFFER_SIZE];
 					while ((bytesRead = is.read(buffer)) != -1) {
@@ -177,8 +187,41 @@ public abstract class Collection extends TuneTab implements
 						}
 					}
 				}
+				try {
+					if (tmp != null) {
+						is = new BufferedInputStream(new SequenceInputStream(
+								new FileInputStream(tmp),
+								new FileInputStream(part3File)));
+						os = new BufferedOutputStream(
+								new FileOutputStream(hvscFile));
+						int bytesRead;
+						byte[] buffer = new byte[DownloadThread.MAX_BUFFER_SIZE];
+						while ((bytesRead = is.read(buffer)) != -1) {
+							os.write(buffer, 0, bytesRead);
+						}
+						tmp.delete();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (is != null) {
+						try {
+							is.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					if (os != null) {
+						try {
+							os.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
 				part1File.delete();
 				part2File.delete();
+				part3File.delete();
 				setRootFile(hvscFile);
 			}
 		}
