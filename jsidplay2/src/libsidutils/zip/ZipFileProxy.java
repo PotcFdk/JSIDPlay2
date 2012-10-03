@@ -3,6 +3,7 @@ package libsidutils.zip;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,7 +19,8 @@ public class ZipFileProxy extends File {
 		super(file.getAbsolutePath());
 		try {
 			this.hash = new HashMap<String, HashMap<String, String>>();
-			zipfile = new ZipFile(file, ZipFile.OPEN_READ);
+			zipfile = new ZipFile(file, ZipFile.OPEN_READ,
+					Charset.forName("ISO-8859-1"));
 			hash.put("", new HashMap<String, String>());
 			@SuppressWarnings("rawtypes")
 			Enumeration en = zipfile.entries();
