@@ -8,8 +8,18 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
 		<!-- This is where we tell JPA/Hibernate about our @Entity objects -->
-		<class>applet.entities.HVSCEntry</class>
-		<class>applet.entities.STIL</class>
-		<class>applet.entities.Version</class>
+
+		<class>applet.entities.collection.HVSCEntry</class>
+		<class>applet.entities.collection.STIL</class>
+		<class>applet.entities.collection.Version</class>
+
+		<class>applet.entities.gamebase.Config</class>
+		<class>applet.entities.gamebase.Games</class>
+		<class>applet.entities.gamebase.Genres</class>
+		<class>applet.entities.gamebase.Musicians</class>
+		<class>applet.entities.gamebase.PGenres</class>
+		<class>applet.entities.gamebase.Programmers</class>
+		<class>applet.entities.gamebase.Publishers</class>
+		<class>applet.entities.gamebase.Years</class>
 	</persistence-unit>
 </persistence>

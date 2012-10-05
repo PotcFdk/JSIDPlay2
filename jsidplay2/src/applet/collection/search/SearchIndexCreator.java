@@ -9,9 +9,9 @@ import java.io.IOException;
 import javax.persistence.EntityManager;
 
 import sidplay.ini.IniConfig;
-import applet.entities.service.HVSCEntryService;
-import applet.entities.service.STILService;
-import applet.entities.service.VersionService;
+import applet.entities.collection.service.HVSCEntryService;
+import applet.entities.collection.service.STILService;
+import applet.entities.collection.service.VersionService;
 
 public final class SearchIndexCreator implements ISearchListener {
 

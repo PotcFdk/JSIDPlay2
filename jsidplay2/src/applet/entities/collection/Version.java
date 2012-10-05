@@ -1,4 +1,4 @@
-package applet.entities;
+package applet.entities.collection;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

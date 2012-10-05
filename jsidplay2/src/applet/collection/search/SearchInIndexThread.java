@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import javax.persistence.EntityManager;
 
 import applet.collection.CollectionTreeModel;
-import applet.entities.service.HVSCEntryService;
-import applet.entities.service.HVSCEntryService.HVSCEntries;
+import applet.entities.collection.service.HVSCEntryService;
+import applet.entities.collection.service.HVSCEntryService.HVSCEntries;
 
 public class SearchInIndexThread extends SearchThread {
 

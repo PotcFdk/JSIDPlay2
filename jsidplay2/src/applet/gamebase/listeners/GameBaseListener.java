@@ -67,8 +67,9 @@ public class GameBaseListener extends ProgressListener {
 				this.gameBase.connect(dbName);
 				this.gameBase.setLettersEnabled(true);
 				GameBasePage page = this.gameBase.pages.get(0);
-				page.setRows(this.gameBase.select(String
-						.valueOf(GameBase.ALL_LETTERS.charAt(0))));
+				page.setRows(this.gameBase.getGamesService().select(
+						GameBase.ALL_LETTERS.charAt(0)));
+				this.gameBase.getLetter().setSelectedIndex(0);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
