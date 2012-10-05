@@ -5,17 +5,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -38,6 +38,9 @@ import sidplay.ini.IniConfig;
 import applet.JSIDPlay2;
 import applet.TuneTab;
 import applet.collection.Picture;
+import applet.entities.gamebase.Games;
+import applet.entities.gamebase.service.ConfigService;
+import applet.entities.gamebase.service.GamesService;
 import applet.events.IMadeProgress;
 import applet.events.UIEvent;
 import applet.gamebase.listeners.GameBaseListener;
@@ -65,41 +68,22 @@ public class GameBase extends TuneTab {
 			int row1 = page.gamebasetable.getSelectedRow();
 			if (row1 != -1 && !e.getValueIsAdjusting()) {
 				int row = page.rowSorter.convertRowIndexToModel(row1);
-				Vector<String> vector = (Vector<String>) page.dataModel
+				Vector<Games> vector = (Vector<Games>) page.dataModel
 						.getDataVector().get(row);
-				try {
-					String cmt = String.valueOf(vector.get(4));
-					comment.setText(cmt);
+				Games game = vector.get(0);
 
-					int catIdx = Integer.valueOf(vector.get(5));
-					category.setText(getCategory(catIdx));
-
-					int yearIdx = Integer.valueOf(vector.get(6));
-					int publisherIdx = Integer.valueOf(vector.get(7));
-					infos.setText(String.format(getSwix().getLocalizer()
-							.getString("PUBLISHER"), getYear(yearIdx),
-							getPublisher(publisherIdx)));
-
-					int musIdx = Integer.valueOf(vector.get(8));
-					musician.setText(getMusician(musIdx));
-
-					int progIdx = Integer.valueOf(vector.get(9));
-					programmer.setText(getProgrammer(progIdx));
-
-					String musId = String.valueOf(vector.get(10));
-					try {
-						linkMusic.setText(musId != null ? musId : "");
-						linkMusic.setEnabled(musId != null
-								&& musId.length() > 0);
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-				} catch (NumberFormatException e1) {
-					e1.printStackTrace();
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
-
+				comment.setText(game.getComment());
+				category.setText(game.getGenres().getGenre());
+				infos.setText(String.format(
+						getSwix().getLocalizer().getString("PUBLISHER"), game
+								.getYears().getYear(), game.getPublishers()
+								.getPublisher()));
+				musician.setText(game.getMusicians().getMusician());
+				programmer.setText(game.getProgrammers().getProgrammer());
+				String sidFilename = game.getSidFilename();
+				linkMusic.setText(sidFilename != null ? sidFilename : "");
+				linkMusic.setEnabled(sidFilename != null
+						&& sidFilename.length() > 0);
 			}
 		}
 	}
@@ -109,21 +93,10 @@ public class GameBase extends TuneTab {
 	 */
 	public static final String ALL_LETTERS = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-	/**
-	 * HSQLDB driver class name.
-	 */
-	private String DRIVER_CLASS = "org.hsqldb.jdbcDriver";
-
-	/**
-	 * GameBase64 database connection handle.
-	 */
-	private Connection connection;
-
-	/**
-	 * Query statement.
-	 */
-	protected PreparedStatement stmt, stmtNum, pubStmt, yearStmt, genreStmt,
-			pgenreStmt, musStmt, progStmt;
+	private EntityManagerFactory emf;
+	private EntityManager em;
+	private ConfigService configService;
+	private GamesService gamesService;
 
 	/**
 	 * INI settings.
@@ -142,7 +115,7 @@ public class GameBase extends TuneTab {
 
 	private SwingEngine swix;
 	public JCheckBox enableGameBase;
-	protected JTextField dbFile, filterField;
+	protected JTextField dbFileField, filterField;
 	protected JTabbedPane letter;
 	public Picture picture;
 	public JPanel screenshot;
@@ -173,53 +146,31 @@ public class GameBase extends TuneTab {
 			if (enableGameBase.isSelected()) {
 				enableGameBase.setEnabled(false);
 				final String outputDir = System.getProperty("jsidplay2.tmpdir");
-				if (new File(outputDir, "gb64.idx.data").exists()) {
+				File dbFile = new File(outputDir, "gb64.idx.data");
+				if (dbFile.exists()) {
 					// There is already a database file downloaded earlier.
 					// Therefore we try to connect
-					PreparedStatement verStmt = null;
-					try {
-						connect(new File(outputDir, "gb64.idx")
-								.getAbsolutePath());
-						// Check version of GB64
-						verStmt = getConnection().prepareStatement(
-								"SELECT number FROM version");
-						ResultSet rs = verStmt.executeQuery();
-						if (!rs.next()
-								|| !EXPECTED_VERSION.equals(rs.getString(1))) {
-							throw new SQLException();
-						}
+
+					connect(new File(outputDir, "gb64.idx").getAbsolutePath());
+
+					// Check version of GB64
+					if (configService.checkVersion()) {
 						// Version check is positive
 						enableGameBase.setEnabled(true);
 						setLettersEnabled(true);
 						GameBasePage page = pages.get(0);
-						page.setRows(select(String.valueOf(ALL_LETTERS
-								.charAt(0))));
-					} catch (Exception e1) {
+						page.setRows(gamesService.select(ALL_LETTERS.charAt(0)));
+						letter.setSelectedIndex(0);
+					} else {
 						System.err
 								.println("Version is different or database is broken,"
 										+ " re-download");
-						// Version is different or database is broken,
-						// re-download
-						try {
-							if (getConnection() != null
-									&& !getConnection().isClosed()) {
-								getConnection().close();
-							}
-						} catch (SQLException e2) {
-							e2.printStackTrace();
-						}
+						disconnect();
 						downloadStart(JSIDPlay2.DEPLOYMENT_URL
 								+ "online/gamebase/gb64.jar",
 								new GameBaseListener(GameBase.this));
-					} finally {
-						if (verStmt != null) {
-							try {
-								verStmt.close();
-							} catch (SQLException e1) {
-								e1.printStackTrace();
-							}
-						}
 					}
+
 				} else {
 					// First time, the database is downloaded
 					downloadStart(JSIDPlay2.DEPLOYMENT_URL
@@ -246,23 +197,18 @@ public class GameBase extends TuneTab {
 
 	private void setDefaultsAndActions() {
 		for (int i = 0; i < ALL_LETTERS.length(); i++) {
-			try {
-				final GameBasePage page = new GameBasePage(this,
-						new ScreenShotListener(GameBase.this),
-						new GameListener(this, player, config)) {
-					@Override
-					void downloadStart(String url, IDownloadListener listener) {
-						GameBase.this.downloadStart(url, listener);
-					}
-				};
-				page.gamebasetable.getSelectionModel()
-						.addListSelectionListener(
-								new GameSelectionListener(page));
-				pages.add(page);
-				letter.addTab(String.valueOf(ALL_LETTERS.charAt(i)), page);
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
+			final GameBasePage page = new GameBasePage(this,
+					new ScreenShotListener(GameBase.this), new GameListener(
+							this, player, config)) {
+				@Override
+				void downloadStart(String url, IDownloadListener listener) {
+					GameBase.this.downloadStart(url, listener);
+				}
+			};
+			page.gamebasetable.getSelectionModel().addListSelectionListener(
+					new GameSelectionListener(page));
+			pages.add(page);
+			letter.addTab(String.valueOf(ALL_LETTERS.charAt(i)), page);
 		}
 		letter.addChangeListener(new ChangeListener() {
 
@@ -272,8 +218,7 @@ public class GameBase extends TuneTab {
 				if (i != -1) {
 					filterField.setText("");
 					GameBasePage page = pages.get(i);
-					page.setRows(select(String.valueOf(ALL_LETTERS.substring(i,
-							i + 1))));
+					page.setRows(gamesService.select(ALL_LETTERS.charAt(i)));
 				}
 			}
 		});
@@ -316,14 +261,13 @@ public class GameBase extends TuneTab {
 		DownloadThread downloadThread = new DownloadThread(config, listener,
 				url);
 		downloadThread.start();
-		getUiEvents().fireEvent(IMadeProgress.class,
-				new IMadeProgress() {
+		getUiEvents().fireEvent(IMadeProgress.class, new IMadeProgress() {
 
-					@Override
-					public int getPercentage() {
-						return 0;
-					}
-				});
+			@Override
+			public int getPercentage() {
+				return 0;
+			}
+		});
 	}
 
 	public void setLettersEnabled(boolean b) {
@@ -332,91 +276,47 @@ public class GameBase extends TuneTab {
 		}
 	}
 
-	public void connect(String dbFile) throws SQLException {
-		try {
-			final String dbFileNoExt;
-			if (dbFile.lastIndexOf('.') != -1) {
-				dbFileNoExt = dbFile.substring(0, dbFile.lastIndexOf('.'));
-			} else {
-				dbFileNoExt = dbFile;
-			}
-			if (!new File(dbFileNoExt + ".idx.data").exists()) {
-				System.err.println("Database does not exist: " + dbFileNoExt
-						+ ".idx");
-				return;
-			}
-			if (connection != null) {
-				connection.close();
-			}
-			Class.forName(DRIVER_CLASS).newInstance();
-			connection = DriverManager.getConnection("jdbc:hsqldb:file:"
-					+ dbFileNoExt + ".idx;shutdown=true");
-			stmt = connection.prepareStatement(
-					"SELECT * FROM GAMES WHERE NAME LIKE ? ORDER BY NAME ASC",
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			stmtNum = connection
-					.prepareStatement(
-							"SELECT * FROM GAMES WHERE NAME BETWEEN ? AND ? ORDER BY NAME ASC",
-							ResultSet.TYPE_SCROLL_INSENSITIVE,
-							ResultSet.CONCUR_READ_ONLY);
-			pubStmt = connection.prepareStatement(
-					"SELECT PUBLISHER FROM PUBLISHERS WHERE PU_ID=?",
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			yearStmt = connection.prepareStatement(
-					"SELECT YEAR FROM YEARS WHERE YE_ID=?",
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			genreStmt = connection.prepareStatement(
-					"SELECT PG_ID, GENRE FROM GENRES WHERE GE_ID=?",
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			pgenreStmt = connection.prepareStatement(
-					"SELECT PARENTGENRE FROM PGENRES WHERE PG_ID=?",
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			musStmt = connection.prepareStatement(
-					"SELECT MUSICIAN, GRP FROM MUSICIANS WHERE MU_ID=?",
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			progStmt = connection.prepareStatement(
-					"SELECT PROGRAMMER FROM PROGRAMMERS WHERE PR_ID=?",
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-		} catch (InstantiationException e) {
-			throw new SQLException(e);
-		} catch (IllegalAccessException e) {
-			throw new SQLException(e);
-		} catch (ClassNotFoundException e) {
-			throw new SQLException(e);
-		} catch (SQLException e) {
-			throw new SQLException(e);
+	public void connect(String dbFile) {
+		final String dbFileNoExt;
+		if (dbFile.lastIndexOf('.') != -1) {
+			dbFileNoExt = dbFile.substring(0, dbFile.lastIndexOf('.'));
+		} else {
+			dbFileNoExt = dbFile;
 		}
+		if (!new File(dbFileNoExt + ".idx.data").exists()) {
+			System.err.println("Database does not exist: " + dbFileNoExt
+					+ ".idx");
+			return;
+		}
+		disconnect();
+
+		String jdbcURL = "jdbc:hsqldb:file:" + dbFile + ";shutdown=true";
+
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put("hibernate.connection.driver_class",
+				"org.hsqldb.jdbcDriver");
+		properties.put("hibernate.connection.url", jdbcURL);
+		properties
+				.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
+		emf = Persistence.createEntityManagerFactory("hsqldb-ds", properties);
+		em = (EntityManager) emf.createEntityManager();
+		gamesService = new GamesService(em);
+		configService = new ConfigService(em);
 	}
 
-	public ResultSet select(String character) {
-		try {
-			if (character.charAt(0) == ALL_LETTERS.charAt(0)) {
-				stmtNum.setString(1, "0%");
-				stmtNum.setString(2, "9%");
-				return stmtNum.executeQuery();
-			} else {
-				stmt.setString(1, character + "%");
-				return stmt.executeQuery();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+	private void disconnect() {
+		if (em != null && em.isOpen()) {
+			em.close();
 		}
+		if (emf != null && emf.isOpen()) {
+			emf.close();
+		}
+		enableGameBase.setEnabled(true);
+		setLettersEnabled(true);
 	}
 
 	public SwingEngine getSwix() {
 		return swix;
-	}
-
-	public Connection getConnection() {
-		return connection;
 	}
 
 	@Override
@@ -427,93 +327,17 @@ public class GameBase extends TuneTab {
 	public void setTune(Player m_engine, SidTune m_tune) {
 	}
 
-	public String getPublisher(int id) throws SQLException {
-		String result;
-		pubStmt.setInt(1, id);
-		ResultSet rs = pubStmt.executeQuery();
-		if (rs.next()) {
-			result = rs.getString("PUBLISHER");
-		} else {
-			result = "";
-		}
-		rs.close();
-		return result;
-	}
-
-	public String getYear(int id) throws SQLException {
-		String result;
-		yearStmt.setInt(1, id);
-		ResultSet rs = yearStmt.executeQuery();
-		if (rs.next()) {
-			result = String.valueOf(rs.getInt("YEAR"));
-		} else {
-			result = "????";
-		}
-		rs.close();
-		return result;
-	}
-
-	public String getCategory(int id) throws SQLException {
-		String result;
-		genreStmt.setInt(1, id);
-		ResultSet rs = genreStmt.executeQuery();
-		if (rs.next()) {
-			result = rs.getString("GENRE");
-			int pgId = rs.getInt("PG_ID");
-			rs.close();
-			pgenreStmt.setInt(1, pgId);
-			rs = pgenreStmt.executeQuery();
-			if (rs.next()) {
-				String pGenre = rs.getString("PARENTGENRE");
-				result = pGenre + (pGenre.length() > 0 ? " - " : "") + result;
-				rs.close();
-			} else {
-				result = "????" + result;
-			}
-		} else {
-			result = "????";
-		}
-		rs.close();
-		return result;
-	}
-
-	public String getMusician(int id) throws SQLException {
-		String result;
-		musStmt.setInt(1, id);
-		ResultSet rs = musStmt.executeQuery();
-		if (rs.next()) {
-			result = rs.getString("MUSICIAN");
-			String group = rs.getString("GRP");
-			if (group.length() > 0) {
-				result += " (" + group + ")";
-			}
-			rs.close();
-		} else {
-			result = "????";
-		}
-		return result;
-	}
-
-	public String getProgrammer(int id) throws SQLException {
-		String result;
-		progStmt.setInt(1, id);
-		ResultSet rs = progStmt.executeQuery();
-		if (rs.next()) {
-			result = rs.getString("PROGRAMMER");
-			rs.close();
-		} else {
-			result = "????";
-		}
-		return result;
-	}
-
 	public void clearPicture() {
 		picture.setComposerImage(null);
 		screenshot.repaint();
 	}
 
-	public IniConfig getConfig() {
-		return config;
+	public GamesService getGamesService() {
+		return gamesService;
+	}
+
+	public JTabbedPane getLetter() {
+		return letter;
 	}
 
 }

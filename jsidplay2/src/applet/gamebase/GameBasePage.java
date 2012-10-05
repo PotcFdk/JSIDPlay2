@@ -4,8 +4,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -19,6 +18,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.swixml.SwingEngine;
 
+import applet.entities.gamebase.Games;
 import applet.gamebase.listeners.GameListener;
 import applet.soundsettings.IDownloadListener;
 
@@ -68,8 +68,9 @@ public abstract class GameBasePage extends JPanel {
 				int row1 = gamebasetable.getSelectedRow();
 				if (row1 != -1) {
 					int row = rowSorter.convertRowIndexToModel(row1);
-					startGame((Vector<String>) dataModel.getDataVector().get(
-							row));
+					Vector<Games> vector = (Vector<Games>) dataModel
+							.getDataVector().get(row);
+					startGame(vector.get(0));
 				}
 			}
 		});
@@ -80,8 +81,9 @@ public abstract class GameBasePage extends JPanel {
 				if (row1 != -1 && mouseEvent.getButton() == MouseEvent.BUTTON1
 						&& mouseEvent.getClickCount() > 1) {
 					int row = rowSorter.convertRowIndexToModel(row1);
-					startGame((Vector<String>) dataModel.getDataVector().get(
-							row));
+					Vector<Games> vector = (Vector<Games>) dataModel
+							.getDataVector().get(row);
+					startGame(vector.get(0));
 				}
 			}
 		});
@@ -93,12 +95,13 @@ public abstract class GameBasePage extends JPanel {
 						int row1 = gamebasetable.getSelectedRow();
 						if (row1 != -1 && !e.getValueIsAdjusting()) {
 							int row = rowSorter.convertRowIndexToModel(row1);
-							Vector<String> vector = (Vector<String>) dataModel
+							Vector<Games> vector = (Vector<Games>) dataModel
 									.getDataVector().get(row);
-							String filename = String.valueOf(vector.get(3));
-
-							downloadStart("http://www.gb64.com/Screenshots/"
-									+ filename.replace('\\', '/'),
+							Games game = vector.get(0);
+							downloadStart(
+									"http://www.gb64.com/Screenshots/"
+											+ game.getScreenshotFilename()
+													.replace('\\', '/'),
 									screenShotListener);
 						}
 					}
@@ -107,39 +110,21 @@ public abstract class GameBasePage extends JPanel {
 
 	abstract void downloadStart(String url, IDownloadListener listener);
 
-	protected void startGame(Vector<String> vector) {
-		String filename = String.valueOf(vector.get(1));
-		((GameListener) gameListener).setFileToRun(String
-				.valueOf(vector.get(2)));
-		downloadStart(
-				"http://gamebase64.hardabasht.com/games/"
-						+ filename.replace('\\', '/'), gameListener);
+	protected void startGame(Games game) {
+		((GameListener) gameListener).setFileToRun(game.getFileToRun());
+		downloadStart("http://gamebase64.hardabasht.com/games/"
+				+ game.getFilename().replace('\\', '/'), gameListener);
 	}
 
-	public void setRows(ResultSet result) {
+	public void setRows(List<Games> games) {
 		rowSorter.setRowFilter(null);
 		dataModel.setNumRows(0);
-		try {
-			while (result.next()) {
-				Vector<String> data = new Vector<String>();
-				data.add(result.getString("NAME"));
-				data.add(result.getString("FILENAME"));
-				data.add(result.getString("FILETORUN"));
-				data.add(result.getString("SCRNSHOTFILENAME"));
-				data.add(result.getString("COMMENT"));
-				data.add(String.valueOf(result.getInt("GE_ID")));
-				data.add(String.valueOf(result.getInt("YE_ID")));
-				data.add(String.valueOf(result.getInt("PU_ID")));
-				data.add(String.valueOf(result.getInt("MU_ID")));
-				data.add(String.valueOf(result.getInt("PR_ID")));
-				data.add(result.getString("SIDFILENAME"));
-				dataModel.addRow(data);
-			}
-			rowSorter.allRowsChanged();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
+		for (Games game : games) {
+			Vector<Games> data = new Vector<Games>();
+			data.add(game);
+			dataModel.addRow(data);
 		}
-
+		rowSorter.allRowsChanged();
 	}
 
 	public void filter(String filterText) {
