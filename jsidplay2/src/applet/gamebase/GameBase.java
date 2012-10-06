@@ -73,7 +73,14 @@ public class GameBase extends TuneTab {
 				Games game = vector.get(0);
 
 				comment.setText(game.getComment());
-				category.setText(game.getGenres().getGenre());
+				String genre = game.getGenres().getGenre();
+				String pGenre = game.getGenres().getParentGenres()
+						.getParentGenre();
+				if (pGenre != null && pGenre.length() != 0) {
+					category.setText(pGenre + "-" + genre);
+				} else {
+					category.setText(genre);
+				}
 				infos.setText(String.format(
 						getSwix().getLocalizer().getString("PUBLISHER"), game
 								.getYears().getYear(), game.getPublishers()

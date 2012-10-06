@@ -23,7 +23,7 @@ public class Genres {
 		this.id = id;
 	}
 
-	@OneToOne
+	@OneToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GE_ID")
 	private Games games;
 	
