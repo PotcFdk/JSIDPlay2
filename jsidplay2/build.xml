@@ -823,7 +823,6 @@
 		<jar destfile="${gamebase_dir}/gb64.jar" compress="true">
 			<fileset dir="${gamebase_dir}">
 				<include name="GBC_v09.*" />
-				<exclude name="GBC_v09.log" />
 			</fileset>
 		</jar>
 		<delete includeemptydirs="true">
