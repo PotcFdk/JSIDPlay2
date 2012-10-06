@@ -811,7 +811,7 @@
 		<input message="targetDriver?" addproperty="targetDriver" />
 		<input message="targetURL?" addproperty="targetURL" />
 		<mkdir dir="${gamebase_dir}" />
-		<java fork="true" classname="applet.gamebase.createdb.DataMoverUtility">
+		<java fork="true" classname="applet.gamebase.createdb.GameBaseUtility">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
 			<arg value="sourceDriver=${sourceDriver}" />
@@ -822,12 +822,13 @@
 		<delete file="${gamebase_dir}/gb64.jar" />
 		<jar destfile="${gamebase_dir}/gb64.jar">
 			<fileset dir="${gamebase_dir}">
-				<include name="gb64.idx.*" />
+				<include name="GBC_v09.*" />
 			</fileset>
 		</jar>
-		<delete>
+		<delete includeemptydirs="true">
 			<fileset dir="${gamebase_dir}">
-				<include name="gb64.idx.*" />
+				<include name="GBC_v09.*" />
+				<exclude name="GBC_v09.jar" />
 			</fileset>
 		</delete>
 	</target>

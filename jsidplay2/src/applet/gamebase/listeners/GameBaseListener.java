@@ -13,9 +13,6 @@ import applet.gamebase.GameBasePage;
 
 public class GameBaseListener extends ProgressListener {
 
-	/**
-	 * 
-	 */
 	private final GameBase gameBase;
 
 	public GameBaseListener(GameBase gameBase) {

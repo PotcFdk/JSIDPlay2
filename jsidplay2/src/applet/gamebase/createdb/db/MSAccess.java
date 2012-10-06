@@ -31,7 +31,7 @@ public class MSAccess extends Database {
 		}
 		return type;
 	}
-	
+
 	/**
 	 * Check to see if the specified type is numeric.
 	 * 
@@ -58,13 +58,4 @@ public class MSAccess extends Database {
 		throw new RuntimeException("Should never be called!");
 	}
 
-	@Override
-	public void commit() throws DatabaseException {
-		throw new RuntimeException("Should never be called!");
-	}
-
-	@Override
-	public void createVersionTable() {
-		throw new RuntimeException("Should never be called!");
-	}
 }

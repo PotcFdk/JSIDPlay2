@@ -4,7 +4,6 @@ import java.io.File;
 import java.sql.SQLException;
 
 import applet.gamebase.createdb.db.Database;
-import applet.gamebase.createdb.db.DatabaseException;
 import applet.gamebase.createdb.db.HSSQL;
 import applet.gamebase.createdb.db.MSAccess;
 
@@ -13,13 +12,14 @@ import applet.gamebase.createdb.db.MSAccess;
  * arguments. The configuration file is of the format:
  * 
  * sourceDriver=sun.jdbc.odbc.JdbcOdbcDriver
- * sourceURL=jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=${gb64.mdbfile} targetDriver=org.hsqldb.jdbcDriver
+ * sourceURL=jdbc:odbc:Driver={Microsoft Access Driver (*.mdb,
+ * *.accdb)};DBQ=${gb64.mdbfile} targetDriver=org.hsqldb.jdbcDriver
  * targetURL=jdbc:hsqldb:file:${gamebase_dir}/gb64.idx;shutdown=true,create=true
  * 
  * @author Jeff Heaton (http://www.heatonresearch.com)
  * 
  */
-public class DataMoverUtility {
+public class GameBaseUtility {
 	private String sourceDriver = "";
 	private String sourceURL = "";
 	private String targetDriver = "";
@@ -45,42 +45,41 @@ public class DataMoverUtility {
 	}
 
 	public void run() {
-		try {
-			DataMover mover = new DataMover();
+		GameBaseCopier mover = new GameBaseCopier();
 
-			Database source = new MSAccess();
-			int mdbNameIdx = sourceURL.indexOf("DBQ=");
-			if (mdbNameIdx != -1) {
-				File mdbFile = new File(sourceURL.substring(mdbNameIdx
-						+ "DBQ=".length()));
-				if (!mdbFile.exists()) {
-					System.err.println("MDB file does not exist: "
-							+ mdbFile.getAbsolutePath());
-					return;
-				}
+		Database source = new MSAccess();
+		int mdbNameIdx = sourceURL.indexOf("DBQ=");
+		if (mdbNameIdx != -1) {
+			File mdbFile = new File(sourceURL.substring(mdbNameIdx
+					+ "DBQ=".length()));
+			if (!mdbFile.exists()) {
+				System.err.println("MDB file does not exist: "
+						+ mdbFile.getAbsolutePath());
+				return;
 			}
-			source.connect(sourceDriver, sourceURL);
+		}
+		source.connect(sourceDriver, sourceURL, null);
 
-			Database target = new HSSQL();
-			target.connect(targetDriver, targetURL);
+		Database target = new HSSQL();
+		target.connect(targetDriver, targetURL, "create");
 
-			mover.setSource(source);
-			mover.setTarget(target);
+		mover.setSource(source);
+		mover.setTarget(target);
+
+		try {
 			mover.exportDatabse();
-
-			source.close();
-			target.close();
-
-		} catch (DatabaseException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void main(String args[]) throws SQLException {
+	public static void main(String args[]) {
 		if (args.length < 1) {
-			System.out.println("Usage:\n\njava DataMoverUtility <config file>");
+			System.out.println("Usage:\n\njava DataMoverUtility "
+					+ "sourceDriver=<sourceDriver> sourceURL=<sourceURL> "
+					+ "targetDriver=<targetDriver> targetURL=<targetURL>");
 		} else {
-			DataMoverUtility utility = new DataMoverUtility();
+			GameBaseUtility utility = new GameBaseUtility();
 			utility.getArguments(args);
 			utility.run();
 		}

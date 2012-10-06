@@ -1,10 +1,5 @@
 package applet.gamebase.createdb.db;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import applet.gamebase.GameBase;
-
 /**
  * Database class for the HSSQL database.
  * 
@@ -43,75 +38,4 @@ public class HSSQL extends Database {
 		return "CREATE CACHED TABLE ";
 	}
 
-	@Override
-	public void commit() throws DatabaseException {
-		super.commit();
-		PreparedStatement prepareStatement = null;
-		try {
-			prepareStatement = connection.prepareStatement("CHECKPOINT");
-			prepareStatement.execute();
-		} catch (SQLException e) {
-			throw (new DatabaseException(e));
-		} finally {
-			if (prepareStatement != null) {
-				try {
-					prepareStatement.close();
-				} catch (SQLException e) {
-					throw (new DatabaseException(e));
-				}
-			}
-		}
-
-	}
-
-	@Override
-	public void createVersionTable() {
-		PreparedStatement prepareStatement = null;
-		try {
-			prepareStatement = connection
-					.prepareStatement("CREATE CACHED TABLE version (number INTEGER)");
-			prepareStatement.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				prepareStatement.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		try {
-			prepareStatement = connection
-					.prepareStatement("INSERT INTO version VALUES ( ? )");
-			prepareStatement.setInt(1,
-					Integer.valueOf(GameBase.EXPECTED_VERSION));
-			prepareStatement.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				prepareStatement.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		try {
-			connection.commit();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		try {
-			prepareStatement = connection.prepareStatement("CHECKPOINT DEFRAG");
-			prepareStatement.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				prepareStatement.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-	}
 }
