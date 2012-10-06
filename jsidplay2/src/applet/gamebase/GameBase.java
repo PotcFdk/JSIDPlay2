@@ -284,15 +284,8 @@ public class GameBase extends TuneTab {
 	}
 
 	public void connect(String dbFile) {
-		final String dbFileNoExt;
-		if (dbFile.lastIndexOf('.') != -1) {
-			dbFileNoExt = dbFile.substring(0, dbFile.lastIndexOf('.'));
-		} else {
-			dbFileNoExt = dbFile;
-		}
-		if (!new File(dbFileNoExt + ".idx.data").exists()) {
-			System.err.println("Database does not exist: " + dbFileNoExt
-					+ ".idx");
+		if (!new File(dbFile + ".data").exists()) {
+			System.err.println("Database does not exist: " + dbFile);
 			return;
 		}
 		disconnect();
