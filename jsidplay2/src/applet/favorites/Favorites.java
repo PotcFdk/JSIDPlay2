@@ -6,8 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.StringTokenizer;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -32,9 +32,10 @@ import org.swixml.SwingEngine;
 
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFavoritesSection;
-import applet.PathUtils;
 import applet.TuneTab;
 import applet.collection.Collection;
+import applet.entities.config.DbConfig;
+import applet.entities.config.DbFavoritesSection;
 import applet.events.IPlayTune;
 import applet.events.ITuneStateChanged;
 import applet.events.UIEvent;
@@ -197,10 +198,12 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 				getUiEvents().fireEvent(IAddFavoritesTab.class,
 						new IAddFavoritesTab() {
 
+							@Override
 							public String getTitle() {
 								return title;
 							}
 
+							@Override
 							public void setFavorites(IFavorites favorites) {
 
 							}
@@ -215,18 +218,22 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 				}
 				getUiEvents().fireEvent(IChangeFavoritesTab.class,
 						new IChangeFavoritesTab() {
+							@Override
 							public int getIndex() {
 								return index;
 							}
 
+							@Override
 							public String getTitle() {
 								return title;
 							}
 
+							@Override
 							public String getFileName() {
 								return name;
 							}
 
+							@Override
 							public boolean isSelected() {
 								return false;
 							}
@@ -293,15 +300,18 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 					favoriteList, "", "icons/addtab.png", swix.getLocalizer()
 							.getString("ADD_A_NEW_TAB"), new ActionListener() {
 
+						@Override
 						public void actionPerformed(ActionEvent e) {
 							getUiEvents().fireEvent(IAddFavoritesTab.class,
 									new IAddFavoritesTab() {
 
+										@Override
 										public String getTitle() {
 											return getSwix().getLocalizer()
 													.getString("NEW_TAB");
 										}
 
+										@Override
 										public void setFavorites(
 												IFavorites favorites) {
 
@@ -317,6 +327,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 
 			favoriteList.addChangeListener(new ChangeListener() {
 
+				@Override
 				public void stateChanged(ChangeEvent e) {
 					final int index = favoriteList.getSelectedIndex();
 					if (index == -1 || index == favoriteList.getTabCount() - 1) {
@@ -331,14 +342,17 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 					}
 					getUiEvents().fireEvent(IChangeFavoritesTab.class,
 							new IChangeFavoritesTab() {
+								@Override
 								public int getIndex() {
 									return index;
 								}
 
+								@Override
 								public String getTitle() {
 									return favoriteList.getTitleAt(index);
 								}
 
+								@Override
 								public String getFileName() {
 									Component comp = favoriteList
 											.getComponentAt(index);
@@ -349,6 +363,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 									return null;
 								}
 
+								@Override
 								public boolean isSelected() {
 									return true;
 								}
@@ -363,16 +378,17 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 	}
 
 	private void reloadRestoredFavorites() {
-		IFavoritesSection favorites = config.getFavorites();
-		String[] stringToList = stringToList(favorites.getFavoritesFilenames());
-		for (int i = 0; i < stringToList.length; i++) {
-			final String filename = stringToList[i];
+		List<? extends IFavoritesSection> favorites = config.getFavorites();
+		int i = 0;
+		for (IFavoritesSection favorite : favorites) {
+			final String filename = favorite.getFilename();
 			if (filename == null) {
 				continue;
 			}
 			final int index = i;
 			SwingUtilities.invokeLater(new Runnable() {
 
+				@Override
 				public void run() {
 					Component comp = favoriteList.getComponentAt(index);
 					if (comp instanceof IFavorites) {
@@ -390,20 +406,24 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 						}
 						getUiEvents().fireEvent(IChangeFavoritesTab.class,
 								new IChangeFavoritesTab() {
+									@Override
 									public int getIndex() {
 										return index;
 									}
 
+									@Override
 									public String getTitle() {
 										return title;
 									}
 
+									@Override
 									public String getFileName() {
 										return filename.substring(0,
 												filename.lastIndexOf('.'))
 												+ FavoritesFileFilter.EXT_FAVORITES;
 									}
 
+									@Override
 									public boolean isSelected() {
 										return false;
 									}
@@ -413,32 +433,34 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 				}
 
 			});
+			i++;
 		}
 	}
 
 	private void restoreFavorites() {
-		IFavoritesSection favorites = config.getFavorites();
-		String[] stringToList = stringToList(favorites.getFavoritesTitles());
-		for (int i = 0; i < stringToList.length; i++) {
-			final String title = stringToList[i];
+		List<? extends IFavoritesSection> favorites = config.getFavorites();
+		for (IFavoritesSection favorite : favorites) {
+			final String title = favorite.getName();
 			addTab(title);
 		}
-		if (stringToList.length == 0) {
+		if (favorites.size() == 0) {
 			// add a first tab
 			getUiEvents().fireEvent(IAddFavoritesTab.class,
 					new IAddFavoritesTab() {
 
+						@Override
 						public String getTitle() {
 							return getSwix().getLocalizer()
 									.getString("NEW_TAB");
 						}
 
+						@Override
 						public void setFavorites(IFavorites newFavorites) {
 						}
 
 					});
 		} else {
-			String title = favorites.getFavoritesCurrent();
+			String title = config.getCurrentFavorite();
 			int index = favoriteList.indexOfTab(title);
 			favoriteList.setSelectedIndex(Math.max(index, 0));
 		}
@@ -455,6 +477,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 						.getLocalizer().getString("CLOSE_THIS_TAB"),
 				new ActionListener() {
 
+					@Override
 					public void actionPerformed(final ActionEvent e) {
 						ButtonTabComponent.TabButton button = (ButtonTabComponent.TabButton) e
 								.getSource();
@@ -486,10 +509,12 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 											IRemoveFavoritesTab.class,
 											new IRemoveFavoritesTab() {
 
+												@Override
 												public int getIndex() {
 													return index;
 												}
 
+												@Override
 												public String getTitle() {
 													return title;
 												}
@@ -555,6 +580,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 				final File file = nextFile;
 				SwingUtilities.invokeLater(new Runnable() {
 
+					@Override
 					public void run() {
 						// play tune
 						getUiEvents().fireEvent(IPlayTune.class,
@@ -614,18 +640,22 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 			}
 			getUiEvents().fireEvent(IChangeFavoritesTab.class,
 					new IChangeFavoritesTab() {
+						@Override
 						public int getIndex() {
 							return index;
 						}
 
+						@Override
 						public String getTitle() {
 							return title;
 						}
 
+						@Override
 						public String getFileName() {
 							return name;
 						}
 
+						@Override
 						public boolean isSelected() {
 							return false;
 						}
@@ -633,6 +663,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 		}
 	}
 
+	@Override
 	public void notify(UIEvent event) {
 		if (event.isOfType(IAddFavoritesTab.class)) {
 			final IAddFavoritesTab ifObj = (IAddFavoritesTab) event
@@ -640,52 +671,40 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 			IFavorites newTab = addTab(ifObj.getTitle());
 			ifObj.setFavorites(newTab);
 
-			final IFavoritesSection favorites = config.getFavorites();
-			String[] stringToList = stringToList(favorites.getFavoritesTitles());
-			final String[] newFavoritesTitles = new String[stringToList.length + 1];
-			for (int i = 0; i < stringToList.length; i++) {
-				newFavoritesTitles[i] = stringToList[i];
+			ArrayList<DbFavoritesSection> newFavoritesList = new ArrayList<DbFavoritesSection>();
+			DbConfig dbConfig = (DbConfig) config;
+			for (IFavoritesSection f : config.getFavorites()) {
+				DbFavoritesSection newFavorite = new DbFavoritesSection();
+				newFavorite.setDbConfig(dbConfig);
+				newFavorite.setName(f.getName());
+				newFavorite.setFilename(f.getFilename());
+				newFavoritesList.add(newFavorite);
 			}
-			newFavoritesTitles[stringToList.length] = ifObj.getTitle();
-			favorites.setFavoritesTitles(listToString(newFavoritesTitles));
-			String[] stringToList2 = stringToList(favorites
-					.getFavoritesFilenames());
-			final String[] newFavoritesFilenames = new String[stringToList2.length + 1];
-			for (int i = 0; i < stringToList2.length; i++) {
-				newFavoritesFilenames[i] = stringToList2[i];
-			}
-			newFavoritesFilenames[stringToList2.length] = null;
-			favorites
-					.setFavoritesFilenames(listToString(newFavoritesFilenames));
+			DbFavoritesSection newFavorite = new DbFavoritesSection();
+			newFavorite.setDbConfig(dbConfig);
+			newFavorite.setName(ifObj.getTitle());
+			newFavoritesList.add(newFavorite);
+			dbConfig.setFavorites(newFavoritesList);
+
 			// System.err.println("Add title=" + ifObj.getTitle());
 		} else if (event.isOfType(IRemoveFavoritesTab.class)) {
 			final IRemoveFavoritesTab ifObj = (IRemoveFavoritesTab) event
 					.getUIEventImpl();
 			removeTab(ifObj.getIndex());
 
-			final IFavoritesSection favorites = config.getFavorites();
-			String[] stringToList = stringToList(favorites.getFavoritesTitles());
-			final String[] newFavoriteTitles = new String[stringToList.length - 1];
-			int j = 0;
-			for (int i = 0; i < stringToList.length; i++) {
-				if (i != ifObj.getIndex()) {
-					newFavoriteTitles[j] = stringToList[i];
-					j++;
+			ArrayList<DbFavoritesSection> newFavoritesList = new ArrayList<DbFavoritesSection>();
+			DbConfig dbConfig = (DbConfig) config;
+			int i = 0;
+			for (IFavoritesSection f : config.getFavorites()) {
+				if (i++ != ifObj.getIndex()) {
+					DbFavoritesSection newFavorite = new DbFavoritesSection();
+					newFavorite.setDbConfig(dbConfig);
+					newFavorite.setName(f.getName());
+					newFavorite.setFilename(f.getFilename());
+					newFavoritesList.add(newFavorite);
 				}
 			}
-			favorites.setFavoritesTitles(listToString(newFavoriteTitles));
-
-			String[] stringToList2 = stringToList(favorites
-					.getFavoritesFilenames());
-			final String[] newFavoriteFilenames = new String[stringToList2.length - 1];
-			int k = 0;
-			for (int i = 0; i < stringToList2.length; i++) {
-				if (i != ifObj.getIndex()) {
-					newFavoriteFilenames[k] = stringToList2[i];
-					k++;
-				}
-			}
-			favorites.setFavoritesFilenames(listToString(newFavoriteFilenames));
+			dbConfig.setFavorites(newFavoritesList);
 
 			// System.err.println("Remove index=" + ifObj.getIndex() + ",
 			// title="
@@ -695,38 +714,23 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 					.getUIEventImpl();
 			changeTab(ifObj);
 
-			final IFavoritesSection favorites = config.getFavorites();
-			String[] stringToList = stringToList(favorites.getFavoritesTitles());
-			String[] newTitles = new String[stringToList.length];
-			for (int i = 0; i < newTitles.length; i++) {
-				if (i == ifObj.getIndex()) {
-					newTitles[i] = ifObj.getTitle();
+			ArrayList<DbFavoritesSection> newFavoritesList = new ArrayList<DbFavoritesSection>();
+			DbConfig dbConfig = (DbConfig) config;
+			int i = 0;
+			for (IFavoritesSection f : config.getFavorites()) {
+				DbFavoritesSection newFavorite = new DbFavoritesSection();
+				newFavorite.setDbConfig(dbConfig);
+				if (i++ == ifObj.getIndex()) {
+					newFavorite.setName(ifObj.getTitle());
+					newFavorite.setFilename(ifObj.getFileName());
 				} else {
-					newTitles[i] = stringToList[i];
+					newFavorite.setName(f.getName());
+					newFavorite.setFilename(f.getFilename());
 				}
+				newFavoritesList.add(newFavorite);
 			}
-			favorites.setFavoritesTitles(listToString(newTitles));
-			String[] stringToList2 = stringToList(favorites
-					.getFavoritesFilenames());
-			String[] newFilenames = new String[stringToList2.length];
-			for (int i = 0; i < newFilenames.length; i++) {
-				if (i == ifObj.getIndex()) {
-					newFilenames[i] = ifObj.getFileName();
-				} else {
-					newFilenames[i] = stringToList2[i];
-				}
-			}
-			if (ifObj.getFileName() != null) {
-				final String relativePath = PathUtils.getPath(new File(ifObj
-						.getFileName()));
-				if (relativePath != null) {
-					newFilenames[ifObj.getIndex()] = relativePath;
-				}
-			}
-			favorites.setFavoritesFilenames(listToString(newFilenames));
-			if (ifObj.isSelected()) {
-				favorites.setFavoritesCurrent(ifObj.getTitle());
-			}
+			dbConfig.setFavorites(newFavoritesList);
+
 			// System.err.println("Change index=" + ifObj.getTitle()
 			// + ", filename=" + ifObj.getFileName());
 		} else if (event.isOfType(IFavoriteTabNames.class)) {
@@ -797,37 +801,6 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 
 	public SwingEngine getSwix() {
 		return swix;
-	}
-
-	private static String[] stringToList(final String str) {
-		if (str == null) {
-			return new String[0];
-		}
-		final ArrayList<String> result = new ArrayList<String>();
-		final StringTokenizer tok = new StringTokenizer(str, ",", false);
-		while (tok.hasMoreElements()) {
-			final String name = (String) tok.nextElement();
-			if ("null".equals(name)) {
-				result.add(null);
-			} else {
-				result.add(name);
-			}
-		}
-		return result.toArray(new String[result.size()]);
-	}
-
-	private static String listToString(final String[] list) {
-		if (list == null) {
-			return "";
-		}
-		final StringBuffer result = new StringBuffer();
-		for (int i = 0; i < list.length; i++) {
-			if (i != 0) {
-				result.append(",");
-			}
-			result.append(list[i]);
-		}
-		return result.toString();
 	}
 
 }

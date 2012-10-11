@@ -18,7 +18,11 @@ public interface IConfig {
 
 	public IEmulationSection getEmulation();
 
-	public IFavoritesSection getFavorites();
+	public String getCurrentFavorite();
+
+	public void setCurrentFavorite(String currentFavorite);
+
+	public List<? extends IFavoritesSection> getFavorites();
 
 	public List<? extends IFilterSection> getFilter();
 

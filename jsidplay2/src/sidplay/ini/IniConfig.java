@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IC1541Section;
@@ -58,7 +59,6 @@ public class IniConfig implements IConfig {
 	private IConsoleSection consoleSection;
 	private IAudioSection audioSection;
 	private IEmulationSection emulationSection;
-	private IFavoritesSection favoritesSection;
 
 	protected IniReader iniReader;
 
@@ -70,7 +70,45 @@ public class IniConfig implements IConfig {
 		consoleSection = new IniConsoleSection(iniReader);
 		audioSection = new IniAudioSection(iniReader);
 		emulationSection = new IniEmulationSection(iniReader);
-		favoritesSection = new IniFavoritesSection(iniReader);
+	}
+
+	private String currentFavorite;
+
+	@Override
+	public String getCurrentFavorite() {
+		return currentFavorite;
+	}
+
+	@Override
+	public void setCurrentFavorite(String currentFavorite) {
+		this.currentFavorite = currentFavorite;
+	}
+
+	@Override
+	public List<? extends IFavoritesSection> getFavorites() {
+		final List<IFavoritesSection> favorites = new ArrayList<IFavoritesSection>();
+
+		String titles = iniReader
+				.getPropertyString("Favorites", "Titles", null);
+		String filenames = iniReader.getPropertyString("Favorites",
+				"Filenames", null);
+		Scanner sc = new Scanner(titles);
+		Scanner sc2 = new Scanner(filenames);
+		sc.useDelimiter(",");
+		sc2.useDelimiter(",");
+		while (sc.hasNext() && sc2.hasNext()) {
+			String title = sc.next();
+			String filename = sc2.next();
+			IniFavoritesSection newFavorite = new IniFavoritesSection(iniReader);
+			newFavorite.setName(title);
+			newFavorite.setFilename(filename);
+			favorites.add(newFavorite);
+		}
+		sc.close();
+		sc2.close();
+		setCurrentFavorite(iniReader.getPropertyString("Favorites", "Current",
+				null));
+		return favorites;
 	}
 
 	@Override
@@ -225,11 +263,6 @@ public class IniConfig implements IConfig {
 	@Override
 	public final IEmulationSection getEmulation() {
 		return emulationSection;
-	}
-
-	@Override
-	public final IFavoritesSection getFavorites() {
-		return favoritesSection;
 	}
 
 }

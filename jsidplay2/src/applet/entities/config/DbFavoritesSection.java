@@ -1,49 +1,50 @@
 package applet.entities.config;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import sidplay.ini.intf.IFavoritesSection;
 
-@Embeddable
+@Entity
 public class DbFavoritesSection implements IFavoritesSection {
 
-	@Column(length = 2048)
-	private String favoritesTitles;
+	@Id
+	private String name;
 
 	@Override
-	public String getFavoritesTitles() {
-		return favoritesTitles;
+	public String getName() {
+		return name;
 	}
 
 	@Override
-	public void setFavoritesTitles(String favoritesTitles) {
-		this.favoritesTitles = favoritesTitles;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	@Column(length = 2048)
-	private String favoritesFilenames;
+	@Column
+	private String favoritesFilename;
 
 	@Override
-	public String getFavoritesFilenames() {
-		return favoritesFilenames;
-	}
-
-	@Override
-	public void setFavoritesFilenames(String favoritesFilenames) {
-		this.favoritesFilenames = favoritesFilenames;
-	}
-
-	private String favoritesCurrent;
-
-	@Override
-	public String getFavoritesCurrent() {
-		return favoritesCurrent;
+	public String getFilename() {
+		return favoritesFilename;
 	}
 
 	@Override
-	public void setFavoritesCurrent(String favoritesCurrent) {
-		this.favoritesCurrent = favoritesCurrent;
+	public void setFilename(String favoritesFilename) {
+		this.favoritesFilename = favoritesFilename;
+	}
+
+	@ManyToOne
+	public DbConfig dbConfig;
+
+	public DbConfig getDbConfig() {
+		return dbConfig;
+	}
+
+	public void setDbConfig(DbConfig dbConfig) {
+		this.dbConfig = dbConfig;
 	}
 
 }

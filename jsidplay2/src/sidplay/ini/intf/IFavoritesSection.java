@@ -7,22 +7,22 @@ public interface IFavoritesSection {
 	 * 
 	 * @return the favorites browser titles
 	 */
-	public String getFavoritesTitles();
+	public String getName();
 
 	/**
-	 * Setter of the favorites browser titles.
+	 * Setter of the Favorites browser titles.
 	 * 
-	 * @param titles
+	 * @param name
 	 *            the favorites browser titles
 	 */
-	public void setFavoritesTitles(String titles);
+	public void setName(String name);
 
 	/**
 	 * Getter of the favorites browser filenames.
 	 * 
 	 * @return the favorites browser filenames
 	 */
-	public String getFavoritesFilenames();
+	public String getFilename();
 
 	/**
 	 * Setter of the favorites browser filenames.
@@ -30,21 +30,6 @@ public interface IFavoritesSection {
 	 * @param filenames
 	 *            the favorites browser filenames
 	 */
-	public void setFavoritesFilenames(String filenames);
-
-	/**
-	 * Getter of the currently active favorites title.
-	 * 
-	 * @return the currently active favorites title
-	 */
-	public String getFavoritesCurrent();
-
-	/**
-	 * Setter of the currently active favorites title.
-	 * 
-	 * @param current
-	 *            currently active favorites title
-	 */
-	public void setFavoritesCurrent(String current);
+	public void setFilename(String filename);
 
 }

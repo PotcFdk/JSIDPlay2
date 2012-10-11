@@ -122,15 +122,30 @@ public class DbConfig implements IConfig {
 		return emulation;
 	}
 
-	@Embedded
-	private DbFavoritesSection favorites;
+	private String currentFavorite;
 
-	public void setFavorites(DbFavoritesSection favorites) {
+	@Override
+	public String getCurrentFavorite() {
+		return currentFavorite;
+	}
+
+	@Override
+	public void setCurrentFavorite(String currentFavorite) {
+		this.currentFavorite = currentFavorite;
+	}
+
+	@OneToMany(mappedBy = "dbConfig", cascade = CascadeType.PERSIST)
+	private List<DbFavoritesSection> favorites;
+
+	public void setFavorites(List<DbFavoritesSection> favorites) {
 		this.favorites = favorites;
 	}
 
 	@Override
-	public IFavoritesSection getFavorites() {
+	public List<? extends IFavoritesSection> getFavorites() {
+		if (favorites == null) {
+			favorites = new ArrayList<DbFavoritesSection>();
+		}
 		return favorites;
 	}
 
@@ -278,13 +293,16 @@ public class DbConfig implements IConfig {
 		getEmulation().setStereoSidModel(
 				iniConfig.getEmulation().getStereoSidModel());
 
-		setFavorites(new DbFavoritesSection());
-		getFavorites().setFavoritesTitles(
-				iniConfig.getFavorites().getFavoritesTitles());
-		getFavorites().setFavoritesFilenames(
-				iniConfig.getFavorites().getFavoritesFilenames());
-		getFavorites().setFavoritesCurrent(
-				iniConfig.getFavorites().getFavoritesCurrent());
+		ArrayList<DbFavoritesSection> newFavoritesList = new ArrayList<DbFavoritesSection>();
+		for (IFavoritesSection f : iniConfig.getFavorites()) {
+			DbFavoritesSection newFavorite = new DbFavoritesSection();
+			newFavorite.setDbConfig(this);
+			newFavorite.setName(f.getName());
+			newFavorite.setFilename(f.getFilename());
+			newFavoritesList.add(newFavorite);
+		}
+		setCurrentFavorite(iniConfig.getCurrentFavorite());
+		setFavorites(newFavoritesList);
 
 		ArrayList<DbFilterSection> newFilterList = new ArrayList<DbFilterSection>();
 		for (IFilterSection f : iniConfig.getFilter()) {
