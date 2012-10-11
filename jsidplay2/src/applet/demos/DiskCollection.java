@@ -278,6 +278,7 @@ public abstract class DiskCollection extends TuneTab implements
 			this.part = part;
 		}
 
+		@SuppressWarnings("resource")
 		@Override
 		public void downloaded(File downloadedFile) {
 			if (zipName.endsWith("C64Magazines")) {
@@ -359,12 +360,14 @@ public abstract class DiskCollection extends TuneTab implements
 				} else {
 					// First time, the database is downloaded
 					if (zipName.endsWith("C64Magazines")) {
-						DownloadThread downloadThread = new DownloadThread(config,
-								new DemosListener(1), downloadUrl + ".001");
+						DownloadThread downloadThread = new DownloadThread(
+								config, new DemosListener(1), downloadUrl
+										+ ".001");
 						downloadThread.start();
 					} else {
-						DownloadThread downloadThread = new DownloadThread(config,
-								new DemosListener(1), downloadUrl + ".zip");
+						DownloadThread downloadThread = new DownloadThread(
+								config, new DemosListener(1), downloadUrl
+										+ ".zip");
 						downloadThread.start();
 					}
 				}
@@ -523,7 +526,8 @@ public abstract class DiskCollection extends TuneTab implements
 				ex.printStackTrace();
 			}
 		} else {
-			config.getSidplay2().setLastDirectory(config.getSidplay2().getDemos());
+			config.getSidplay2().setLastDirectory(
+					config.getSidplay2().getDemos());
 			if (diskfileFilter.accept(selectedFile)) {
 				getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
 

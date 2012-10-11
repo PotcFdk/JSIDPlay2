@@ -34,11 +34,11 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 	private SwingEngine swix;
 
 	protected JCheckBox activateJoy1, activateJoy2;
-	protected JComboBox device1, device2;
-	protected JComboBox up1, down1, left1, right1, fire1;
+	protected JComboBox<String> device1, device2;
+	protected JComboBox<String> up1, down1, left1, right1, fire1;
 	protected JTextField up1Value, down1Value, left1Value, right1Value,
 			fire1Value;
-	protected JComboBox up2, down2, left2, right2, fire2;
+	protected JComboBox<String> up2, down2, left2, right2, fire2;
 	protected JTextField up2Value, down2Value, left2Value, right2Value,
 			fire2Value;
 	protected JTable testTable1, testTable2;
@@ -159,7 +159,8 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = right1.getSelectedIndex();
 			if (index >= 0) {
 				dirRight1 = controller1.getComponents()[index];
-				config.getJoystick().setComponentNameRight1(dirRight1.getName());
+				config.getJoystick()
+						.setComponentNameRight1(dirRight1.getName());
 			}
 		}
 	};
@@ -298,7 +299,8 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = right2.getSelectedIndex();
 			if (index >= 0) {
 				dirRight2 = controller2.getComponents()[index];
-				config.getJoystick().setComponentNameRight2(dirRight2.getName());
+				config.getJoystick()
+						.setComponentNameRight2(dirRight2.getName());
 			}
 		}
 	};
@@ -441,7 +443,8 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 		{
-			String componentName = config.getJoystick().getComponentNameRight1();
+			String componentName = config.getJoystick()
+					.getComponentNameRight1();
 			if (componentName != null) {
 				right1.setSelectedItem(componentName);
 				for (int i = 0; controller1 != null
@@ -573,7 +576,8 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 		{
-			String componentName = config.getJoystick().getComponentNameRight2();
+			String componentName = config.getJoystick()
+					.getComponentNameRight2();
 			if (componentName != null) {
 				right2.setSelectedItem(componentName);
 				for (int i = 0; controller2 != null

@@ -37,7 +37,8 @@ import javax.swing.JList;
  * @author rharder@usa.net
  * @version 1.1
  */
-class DnDList extends JList implements DropTargetListener, DragSourceListener, DragGestureListener {
+class DnDList extends JList<Object> implements DropTargetListener,
+		DragSourceListener, DragGestureListener {
 	private DragSource dragSource = null;
 
 	protected int sourceIndex = -1;
@@ -49,7 +50,7 @@ class DnDList extends JList implements DropTargetListener, DragSourceListener, D
 	 * @since 1.1
 	 */
 	public DnDList() {
-		super(new DefaultListModel());
+		super(new DefaultListModel<Object>());
 		initComponents();
 	}
 
@@ -61,6 +62,7 @@ class DnDList extends JList implements DropTargetListener, DragSourceListener, D
 	}
 
 	/* DragGesture API */
+	@Override
 	public void dragGestureRecognized(final DragGestureEvent event) {
 		final Object selected = getSelectedValue();
 		if (selected == null) {
@@ -71,46 +73,63 @@ class DnDList extends JList implements DropTargetListener, DragSourceListener, D
 		final Transferable transfer = new TransferableObject(
 				new TransferableObject.Fetcher() {
 					/**
-					 * This will be called when the transfer data is
-					 * requested at the very end. At this point we can
-					 * remove the object from its original place in the
-					 * list.
+					 * This will be called when the transfer data is requested
+					 * at the very end. At this point we can remove the object
+					 * from its original place in the list.
 					 */
+					@Override
 					public Object getObject() {
-						((DefaultListModel) getModel())
-						.remove(sourceIndex);
+						((DefaultListModel<Object>) getModel())
+								.remove(sourceIndex);
 						return selected;
 					}
-				}
-		);
-		
-		dragSource.startDrag(event,
-				java.awt.dnd.DragSource.DefaultLinkDrop, transfer, this);
+				});
+
+		dragSource.startDrag(event, java.awt.dnd.DragSource.DefaultLinkDrop,
+				transfer, this);
 	}
 
 	/* DragSource API */
+	@Override
 	public void dragDropEnd(final DragSourceDropEvent evt) {
 	}
+
+	@Override
 	public void dragEnter(final DragSourceDragEvent evt) {
 	}
+
+	@Override
 	public void dragExit(final DragSourceEvent evt) {
 	}
+
+	@Override
 	public void dragOver(final DragSourceDragEvent evt) {
 	}
+
+	@Override
 	public void dropActionChanged(final DragSourceDragEvent evt) {
 	}
-	
+
 	/* DropTarget API */
+	@Override
 	public void dragEnter(final DropTargetDragEvent evt) {
 		evt.acceptDrag(java.awt.dnd.DnDConstants.ACTION_MOVE);
 	}
+
+	@Override
 	public void dragExit(final DropTargetEvent evt) {
 	}
+
+	@Override
 	public void dragOver(final DropTargetDragEvent evt) {
 	}
+
+	@Override
 	public void dropActionChanged(final DropTargetDragEvent evt) {
 		evt.acceptDrag(java.awt.dnd.DnDConstants.ACTION_MOVE);
 	}
+
+	@Override
 	public void drop(final DropTargetDropEvent evt) {
 		final Transferable transferable = evt.getTransferable();
 
@@ -119,7 +138,8 @@ class DnDList extends JList implements DropTargetListener, DragSourceListener, D
 			evt.acceptDrop(java.awt.dnd.DnDConstants.ACTION_MOVE);
 			Object obj = null;
 			try {
-				obj = transferable.getTransferData(TransferableObject.DATA_FLAVOR);
+				obj = transferable
+						.getTransferData(TransferableObject.DATA_FLAVOR);
 			} // end try
 			catch (final java.awt.datatransfer.UnsupportedFlavorException e) {
 				e.printStackTrace();
@@ -131,7 +151,7 @@ class DnDList extends JList implements DropTargetListener, DragSourceListener, D
 			if (obj != null) {
 				// See where in the list we dropped the element.
 				final int dropIndex = locationToIndex(evt.getLocation());
-				final DefaultListModel model = (DefaultListModel) getModel();
+				final DefaultListModel<Object> model = (DefaultListModel<Object>) getModel();
 
 				if (dropIndex < 0) {
 					model.addElement(obj);
@@ -143,8 +163,7 @@ class DnDList extends JList implements DropTargetListener, DragSourceListener, D
 			} else {
 				evt.rejectDrop();
 			}
-		}
-		else {
+		} else {
 			evt.rejectDrop();
 		}
 	}

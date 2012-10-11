@@ -61,8 +61,9 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 	protected JTextField defaultTime, mp3, tmpdir, proxyHost, proxyPort,
 			dwnlUrl6581R2, dwnlUrl6581R4, dwnlUrl8580R5;
 	protected JCheckBox enableSldb, singleSong, proxyEnable;
-	protected JComboBox soundDevice, hardsid6581, hardsid8580, samplingRate,
-			samplingMethod;
+	protected JComboBox<String> soundDevice, samplingRate;
+	protected JComboBox<Integer> hardsid6581, hardsid8580;
+	protected JComboBox<SamplingMethod> samplingMethod;
 	protected JRadioButton playMP3, playEmulation;
 	protected JButton mp3Browse, download6581R2Btn, download6581R4Btn,
 			download8580R5Btn;
@@ -308,7 +309,6 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		}
 	};
 
-	// TODO enable/disable UI elements
 	public SoundSettings(ConsolePlayer cp, Player pl, IConfig cfg) {
 		this.consolePl = cp;
 		this.player = pl;
@@ -454,8 +454,8 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 					.isEnableProxy());
 			proxyHost.setText(consolePl.getConfig().getSidplay2()
 					.getProxyHostname());
-			proxyPort.setText(String.valueOf(consolePl.getConfig().getSidplay2()
-					.getProxyPort()));
+			proxyPort.setText(String.valueOf(consolePl.getConfig()
+					.getSidplay2().getProxyPort()));
 			dwnlUrl6581R2.setText(config.getSidplay2().getSoasc6581R2());
 			dwnlUrl6581R4.setText(config.getSidplay2().getSoasc6581R4());
 			dwnlUrl8580R5.setText(config.getSidplay2().getSoasc8580R5());
@@ -469,7 +469,8 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 			return;
 		}
 		final SidTuneInfo tuneInfo = sidTuneMod.getInfo();
-		final String name = PathUtils.getHVSCName(config, sidTuneMod.getInfo().file);
+		final String name = PathUtils.getHVSCName(config,
+				sidTuneMod.getInfo().file);
 		if (name != null) {
 			hvscName = name.replace(".sid", "");
 			currentSong = tuneInfo.currentSong;
@@ -527,6 +528,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		});
 	}
 
+	@Override
 	public void downloadStep(final int pct) {
 		uiEvents.fireEvent(IMadeProgress.class, new IMadeProgress() {
 
@@ -537,6 +539,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		});
 	}
 
+	@Override
 	public void downloadStop(File downloadedFile) {
 		downloadThread = null;
 

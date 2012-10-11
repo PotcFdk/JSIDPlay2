@@ -42,7 +42,8 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 	private SwingEngine swix;
 
 	protected DKnob2 leftVolume, rightVolume;
-	protected JComboBox sid1Model, sid2Model, filter;
+	protected JComboBox<Object> sid1Model, sid2Model;
+	protected JComboBox<String> filter;
 	protected JTextField baseAddress;
 	protected JCheckBox forceStereo, boosted8580;
 	protected CurveFit filterCurve;

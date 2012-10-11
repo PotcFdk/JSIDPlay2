@@ -51,7 +51,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 	protected JTextField firstFrame, noteSpacing, maxRecordLength,
 			patternSpacing, oldNoteFactor, tableFontSize, baseFreq, baseNote,
 			callsPerFrame;
-	protected JComboBox regPlayer;
+	protected JComboBox<String> regPlayer;
 	protected JTable dumpTable;
 
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
@@ -235,7 +235,8 @@ public class SIDDump extends XDialog implements UIEventListener {
 
 	public void setTune(SidTune sidTune) {
 		final SIDDumpModel sidDumpModel = (SIDDumpModel) dumpTable.getModel();
-		sidDumpModel.setPlayer(player, AudioConfig.getInstance(config.getAudio(), 2));
+		sidDumpModel.setPlayer(player,
+				AudioConfig.getInstance(config.getAudio(), 2));
 		if (tune == null) {
 			startStop.setEnabled(false);
 			return;
@@ -563,6 +564,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 			dumpTable.getSelectionModel().addListSelectionListener(
 					new ListSelectionListener() {
 
+						@Override
 						public void valueChanged(final ListSelectionEvent e) {
 							replaySelected.setEnabled(dumpTable
 									.getSelectedRowCount() > 0);
@@ -587,6 +589,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 		}
 	}
 
+	@Override
 	public void notify(final UIEvent evt) {
 		if (evt.isOfType(ITuneStateChanged.class)) {
 			final SIDDumpModel sidDumpModel = (SIDDumpModel) dumpTable
@@ -602,6 +605,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 		sidDumpModel.setReplayRange(from, to);
 
 		new Thread(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					sidDumpModel.replay();

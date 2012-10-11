@@ -1152,6 +1152,7 @@ public class ConsolePlayer {
 		return tune;
 	}
 
+	@SuppressWarnings("resource")
 	void displayArgs(final String arg) {
 		final PrintStream out = arg != null ? System.err : System.out;
 

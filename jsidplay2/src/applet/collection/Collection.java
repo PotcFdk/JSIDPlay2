@@ -126,6 +126,7 @@ public abstract class Collection extends TuneTab implements
 			this.part = part;
 		}
 
+		@SuppressWarnings("resource")
 		@Override
 		public void downloaded(final File downloadedFile) {
 			if (part == 1) {
@@ -433,7 +434,7 @@ public abstract class Collection extends TuneTab implements
 	protected JPanel photograph;
 	protected Picture picture;
 	protected JTree fileBrowser;
-	protected JComboBox searchCriteria, searchScope, searchResult;
+	protected JComboBox<String> searchCriteria, searchScope, searchResult;
 	protected JButton startSearch, stopSearch, resetSearch, createSearchIndex,
 			browse;
 	protected JTextField searchFor, collectionDir;
