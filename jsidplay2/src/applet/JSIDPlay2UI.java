@@ -53,7 +53,7 @@ import libsidutils.SidDatabase;
 import org.swixml.SwingEngine;
 
 import sidplay.ConsolePlayer;
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.collection.Collection;
 import applet.demos.DiskCollection;
 import applet.disassembler.Disassembler;
@@ -221,7 +221,7 @@ public class JSIDPlay2UI implements UIEventListener {
 		// Get status information of the first disk drive
 		final C1541 c1541 = getPlayer().getFloppies()[0];
 		// Disk motor status
-		boolean motor = getConfig().c1541().isDriveSoundOn()
+		boolean motor = getConfig().getC1541().isDriveSoundOn()
 				&& cp.getState() == ConsolePlayer.playerRunning
 				&& c1541.getDiskController().isMotorOn();
 		if (!oldDiskMotor && motor) {
@@ -279,7 +279,7 @@ public class JSIDPlay2UI implements UIEventListener {
 	 * @return song length in seconds (0 means unknown, -1 means unconfigured)
 	 */
 	private int getSongLength(final SidTune sidTune) {
-		SidDatabase database = SidDatabase.getInstance(getConfig().sidplay2()
+		SidDatabase database = SidDatabase.getInstance(getConfig().getSidplay2()
 				.getHvsc());
 		if (database != null) {
 			return database.length(sidTune);
@@ -289,7 +289,7 @@ public class JSIDPlay2UI implements UIEventListener {
 
 	private void setDefaultsAndActions() {
 		normalSpeed.setSelected(true);
-		Clock defClk = getConfig().emulation().getDefaultClockSpeed();
+		Clock defClk = getConfig().getEmulation().getDefaultClockSpeed();
 		switch (defClk) {
 		case NTSC:
 			ntsc.setSelected(true);
@@ -300,10 +300,10 @@ public class JSIDPlay2UI implements UIEventListener {
 			pal.setSelected(true);
 			break;
 		}
-		driveOn.setSelected(getConfig().c1541().isDriveOn());
-		driveSoundOn.setSelected(getConfig().c1541().isDriveSoundOn());
-		parCable.setSelected(getConfig().c1541().isParallelCable());
-		switch (getConfig().c1541().getFloppyType()) {
+		driveOn.setSelected(getConfig().getC1541().isDriveOn());
+		driveSoundOn.setSelected(getConfig().getC1541().isDriveSoundOn());
+		parCable.setSelected(getConfig().getC1541().isParallelCable());
+		switch (getConfig().getC1541().getFloppyType()) {
 		case C1541:
 			c1541.setSelected(true);
 			break;
@@ -313,7 +313,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			c1541_II.setSelected(true);
 			break;
 		}
-		switch (getConfig().c1541().getExtendImagePolicy()) {
+		switch (getConfig().getC1541().getExtendImagePolicy()) {
 		case EXTEND_NEVER:
 			neverExtend.setSelected(true);
 			break;
@@ -329,12 +329,12 @@ public class JSIDPlay2UI implements UIEventListener {
 		default:
 			break;
 		}
-		expand2000.setSelected(getConfig().c1541().isRamExpansionEnabled(0));
-		expand4000.setSelected(getConfig().c1541().isRamExpansionEnabled(1));
-		expand6000.setSelected(getConfig().c1541().isRamExpansionEnabled(2));
-		expand8000.setSelected(getConfig().c1541().isRamExpansionEnabled(3));
-		expandA000.setSelected(getConfig().c1541().isRamExpansionEnabled(4));
-		turnPrinterOn.setSelected(getConfig().printer().isPrinterOn());
+		expand2000.setSelected(getConfig().getC1541().isRamExpansionEnabled0());
+		expand4000.setSelected(getConfig().getC1541().isRamExpansionEnabled1());
+		expand6000.setSelected(getConfig().getC1541().isRamExpansionEnabled2());
+		expand8000.setSelected(getConfig().getC1541().isRamExpansionEnabled3());
+		expandA000.setSelected(getConfig().getC1541().isRamExpansionEnabled4());
+		turnPrinterOn.setSelected(getConfig().getPrinter().isPrinterOn());
 	}
 
 	//
@@ -505,7 +505,7 @@ public class JSIDPlay2UI implements UIEventListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getConfig().emulation().setDefaultClockSpeed(Clock.PAL);
+			getConfig().getEmulation().setDefaultClockSpeed(Clock.PAL);
 			reset();
 		}
 	};
@@ -514,7 +514,7 @@ public class JSIDPlay2UI implements UIEventListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getConfig().emulation().setDefaultClockSpeed(Clock.NTSC);
+			getConfig().getEmulation().setDefaultClockSpeed(Clock.NTSC);
 			reset();
 		}
 	};
@@ -646,7 +646,7 @@ public class JSIDPlay2UI implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
 			getPlayer().enableFloppyDiskDrives(source.isSelected());
-			getConfig().c1541().setDriveOn(source.isSelected());
+			getConfig().getC1541().setDriveOn(source.isSelected());
 		}
 	};
 
@@ -655,7 +655,7 @@ public class JSIDPlay2UI implements UIEventListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
-			getConfig().c1541().setDriveSoundOn(source.isSelected());
+			getConfig().getC1541().setDriveSoundOn(source.isSelected());
 		}
 	};
 
@@ -666,7 +666,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
 			getPlayer()
 					.connectC64AndC1541WithParallelCable(source.isSelected());
-			getConfig().c1541().setParallelCable(source.isSelected());
+			getConfig().getC1541().setParallelCable(source.isSelected());
 		}
 	};
 
@@ -675,7 +675,7 @@ public class JSIDPlay2UI implements UIEventListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			getPlayer().getFloppies()[0].setFloppyType(FloppyType.C1541);
-			getConfig().c1541().setFloppyType(FloppyType.C1541);
+			getConfig().getC1541().setFloppyType(FloppyType.C1541);
 		}
 	};
 
@@ -684,7 +684,7 @@ public class JSIDPlay2UI implements UIEventListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			getPlayer().getFloppies()[0].setFloppyType(FloppyType.C1541_II);
-			getConfig().c1541().setFloppyType(FloppyType.C1541_II);
+			getConfig().getC1541().setFloppyType(FloppyType.C1541_II);
 		}
 	};
 
@@ -692,7 +692,7 @@ public class JSIDPlay2UI implements UIEventListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getConfig().c1541().setExtendImagePolicy(
+			getConfig().getC1541().setExtendImagePolicy(
 					ExtendImagePolicy.EXTEND_NEVER);
 		}
 	};
@@ -701,7 +701,7 @@ public class JSIDPlay2UI implements UIEventListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getConfig().c1541().setExtendImagePolicy(
+			getConfig().getC1541().setExtendImagePolicy(
 					ExtendImagePolicy.EXTEND_ASK);
 		}
 	};
@@ -710,7 +710,7 @@ public class JSIDPlay2UI implements UIEventListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getConfig().c1541().setExtendImagePolicy(
+			getConfig().getC1541().setExtendImagePolicy(
 					ExtendImagePolicy.EXTEND_ACCESS);
 		}
 	};
@@ -722,7 +722,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
 			getPlayer().getFloppies()[0]
 					.setRamExpansion(0, source.isSelected());
-			getConfig().c1541().setRamExpansion(0, source.isSelected());
+			getConfig().getC1541().setRamExpansion0(source.isSelected());
 		}
 	};
 
@@ -733,7 +733,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
 			getPlayer().getFloppies()[0]
 					.setRamExpansion(1, source.isSelected());
-			getConfig().c1541().setRamExpansion(1, source.isSelected());
+			getConfig().getC1541().setRamExpansion1(source.isSelected());
 		}
 	};
 
@@ -744,7 +744,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
 			getPlayer().getFloppies()[0]
 					.setRamExpansion(2, source.isSelected());
-			getConfig().c1541().setRamExpansion(2, source.isSelected());
+			getConfig().getC1541().setRamExpansion2(source.isSelected());
 		}
 	};
 
@@ -755,7 +755,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
 			getPlayer().getFloppies()[0]
 					.setRamExpansion(3, source.isSelected());
-			getConfig().c1541().setRamExpansion(3, source.isSelected());
+			getConfig().getC1541().setRamExpansion3(source.isSelected());
 		}
 	};
 
@@ -766,7 +766,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
 			getPlayer().getFloppies()[0]
 					.setRamExpansion(4, source.isSelected());
-			getConfig().c1541().setRamExpansion(4, source.isSelected());
+			getConfig().getC1541().setRamExpansion4(source.isSelected());
 		}
 	};
 
@@ -834,7 +834,7 @@ public class JSIDPlay2UI implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
 			getPlayer().turnPrinterOnOff(source.isSelected());
-			getConfig().printer().setPrinterOn(source.isSelected());
+			getConfig().getPrinter().setPrinterOn(source.isSelected());
 		}
 	};
 
@@ -879,12 +879,12 @@ public class JSIDPlay2UI implements UIEventListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final JFileChooser fileDialog = new JFileChooser(getConfig()
-					.sidplay2().getLastDirectory());
+					.getSidplay2().getLastDirectory());
 			fileDialog.setFileFilter(new CartFileFilter());
 			final int rc = fileDialog.showOpenDialog(parent);
 			if (rc == JFileChooser.APPROVE_OPTION
 					&& fileDialog.getSelectedFile() != null) {
-				getConfig().sidplay2().setLastDirectory(
+				getConfig().getSidplay2().setLastDirectory(
 						fileDialog.getSelectedFile().getParentFile()
 								.getAbsolutePath());
 				try {
@@ -1045,25 +1045,25 @@ public class JSIDPlay2UI implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				final JFileChooser c64FileDialog = new JFileChooser(getConfig()
-						.sidplay2().getLastDirectory());
+						.getSidplay2().getLastDirectory());
 				c64FileDialog.setDialogTitle(getSwix().getLocalizer()
 						.getString("CHOOSE_C64_KERNAL_ROM"));
 				c64FileDialog.setFileFilter(new RomFileFilter());
 				final int c64Rc = c64FileDialog.showOpenDialog(parent);
 				if (c64Rc == JFileChooser.APPROVE_OPTION
 						&& c64FileDialog.getSelectedFile() != null) {
-					getConfig().sidplay2().setLastDirectory(
+					getConfig().getSidplay2().setLastDirectory(
 							c64FileDialog.getSelectedFile().getParentFile()
 									.getAbsolutePath());
 					final JFileChooser c1541FileDialog = new JFileChooser(
-							getConfig().sidplay2().getLastDirectory());
+							getConfig().getSidplay2().getLastDirectory());
 					c1541FileDialog.setDialogTitle(getSwix().getLocalizer()
 							.getString("CHOOSE_C1541_KERNAL_ROM"));
 					c1541FileDialog.setFileFilter(new RomFileFilter());
 					final int c1541Rc = c1541FileDialog.showOpenDialog(parent);
 					if (c1541Rc == JFileChooser.APPROVE_OPTION
 							&& c1541FileDialog.getSelectedFile() != null) {
-						getConfig().sidplay2().setLastDirectory(
+						getConfig().getSidplay2().setLastDirectory(
 								c1541FileDialog.getSelectedFile()
 										.getParentFile().getAbsolutePath());
 						final File c64kernalFile = c64FileDialog
@@ -1403,7 +1403,7 @@ public class JSIDPlay2UI implements UIEventListener {
 		}
 	}
 
-	public IniConfig getConfig() {
+	public IConfig getConfig() {
 		return cp.getConfig();
 	}
 

@@ -9,7 +9,7 @@ import libpsid64.Psid64;
 import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
 import libsidutils.pucrunch.PUCrunch;
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.filefilter.TuneFileFilter;
 
 public class SidTuneConverter {
@@ -18,9 +18,9 @@ public class SidTuneConverter {
 	 */
 	private final FileFilter fFileFilter = new TuneFileFilter();
 
-	protected IniConfig config;
+	protected IConfig config;
 
-	public SidTuneConverter(IniConfig cfg) {
+	public SidTuneConverter(IConfig cfg) {
 		config = cfg;
 	}
 
@@ -40,7 +40,7 @@ public class SidTuneConverter {
 			final File target) {
 		final String filename = file.getAbsolutePath();
 		final Psid64 psid64 = new Psid64();
-		psid64.setHVSC(config.sidplay2().getHvsc());
+		psid64.setHVSC(config.getSidplay2().getHvsc());
 		psid64.setStilEntry(getSTIL(file));
 		if (!psid64.load(file)) {
 			System.err.println("filename: " + filename);
@@ -75,9 +75,9 @@ public class SidTuneConverter {
 	}
 
 	private STILEntry getSTIL(final File file) {
-		final String name = config.getHVSCName(file);
+		final String name = PathUtils.getHVSCName(config, file);
 		if (null != name) {
-			STIL stil = STIL.getInstance(config.sidplay2().getHvsc());
+			STIL stil = STIL.getInstance(config.getSidplay2().getHvsc());
 			if (stil != null) {
 				return stil.getSTIL(name);
 			}

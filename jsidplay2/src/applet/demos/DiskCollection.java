@@ -43,7 +43,7 @@ import libsidutils.zip.ZipFileProxy;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.JSIDPlay2;
 import applet.PathUtils;
 import applet.TuneTab;
@@ -64,17 +64,17 @@ public abstract class DiskCollection extends TuneTab implements
 		PropertyChangeListener {
 	public static final class HVMEC extends DiskCollection {
 
-		public HVMEC(final Player pl, final IniConfig cfg) {
+		public HVMEC(final Player pl, final IConfig cfg) {
 			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL + "online/hvmec/HVMEC",
 					"HVMEC");
 			// Initially configure Demos
-			if (config.sidplay2().getHVMEC() != null) {
+			if (config.getSidplay2().getHVMEC() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
 							@Override
 							public File getCollectionRoot() {
-								return new File(config.sidplay2().getHVMEC());
+								return new File(config.getSidplay2().getHVMEC());
 							}
 
 							@Override
@@ -88,7 +88,7 @@ public abstract class DiskCollection extends TuneTab implements
 		@Override
 		protected void setRootDir(final File rootFile) {
 			if (rootFile.exists()) {
-				config.sidplay2().setHVMEC(PathUtils.getPath(rootFile));
+				config.getSidplay2().setHVMEC(PathUtils.getPath(rootFile));
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
@@ -128,17 +128,17 @@ public abstract class DiskCollection extends TuneTab implements
 
 	public static final class Demos extends DiskCollection {
 
-		public Demos(final Player pl, final IniConfig cfg) {
+		public Demos(final Player pl, final IConfig cfg) {
 			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL + "online/demos/Demos",
 					"Demos");
 			// Initially configure Demos
-			if (config.sidplay2().getDemos() != null) {
+			if (config.getSidplay2().getDemos() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
 							@Override
 							public File getCollectionRoot() {
-								return new File(config.sidplay2().getDemos());
+								return new File(config.getSidplay2().getDemos());
 							}
 
 							@Override
@@ -152,7 +152,7 @@ public abstract class DiskCollection extends TuneTab implements
 		@Override
 		protected void setRootDir(final File rootFile) {
 			if (rootFile.exists()) {
-				config.sidplay2().setDemos(PathUtils.getPath(rootFile));
+				config.getSidplay2().setDemos(PathUtils.getPath(rootFile));
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
@@ -191,17 +191,17 @@ public abstract class DiskCollection extends TuneTab implements
 
 	public static final class Mags extends DiskCollection {
 
-		public Mags(final Player pl, final IniConfig cfg) {
+		public Mags(final Player pl, final IConfig cfg) {
 			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL
 					+ "online/mags/C64Magazines", "C64Magazines");
 			// Initially configure Mags
-			if (config.sidplay2().getMags() != null) {
+			if (config.getSidplay2().getMags() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
 							@Override
 							public File getCollectionRoot() {
-								return new File(config.sidplay2().getMags());
+								return new File(config.getSidplay2().getMags());
 							}
 
 							@Override
@@ -215,7 +215,7 @@ public abstract class DiskCollection extends TuneTab implements
 		@Override
 		protected void setRootDir(final File rootFile) {
 			if (rootFile.exists()) {
-				config.sidplay2().setMags(PathUtils.getPath(rootFile));
+				config.getSidplay2().setMags(PathUtils.getPath(rootFile));
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
@@ -257,7 +257,7 @@ public abstract class DiskCollection extends TuneTab implements
 
 	protected SwingEngine swix;
 
-	protected IniConfig config;
+	protected IConfig config;
 	protected Player player;
 
 	protected JSplitPane verticalSplit, horizontalSplit;
@@ -393,7 +393,7 @@ public abstract class DiskCollection extends TuneTab implements
 		}
 	};
 
-	public DiskCollection(Player pl, IniConfig cfg, String downloadUrl,
+	public DiskCollection(Player pl, IConfig cfg, String downloadUrl,
 			String zipName) {
 		this.player = pl;
 		this.config = cfg;
@@ -523,7 +523,7 @@ public abstract class DiskCollection extends TuneTab implements
 				ex.printStackTrace();
 			}
 		} else {
-			config.sidplay2().setLastDirectory(config.sidplay2().getDemos());
+			config.getSidplay2().setLastDirectory(config.getSidplay2().getDemos());
 			if (diskfileFilter.accept(selectedFile)) {
 				getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
 

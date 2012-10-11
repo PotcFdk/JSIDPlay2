@@ -18,6 +18,7 @@ package sidplay.audio;
 import java.io.File;
 
 import resid_builder.resid.ISIDDefs.SamplingMethod;
+import sidplay.ini.intf.IAudioSection;
 
 public class AudioConfig {
 	protected int frameRate = 48000;
@@ -43,6 +44,16 @@ public class AudioConfig {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.samplingMethod = samplingMethod;
+	}
+
+	/**
+	 * Return a detached AudioConfig instance corresponding to current parameters.
+	 * 
+	 * @param channels
+	 * @return AudioConfig for current specification
+	 */
+	public static AudioConfig getInstance(IAudioSection audio, int channels) {
+		return new AudioConfig(audio.getFrequency(), channels, audio.getSampling());
 	}
 
 	/**

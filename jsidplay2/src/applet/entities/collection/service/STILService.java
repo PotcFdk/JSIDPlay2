@@ -9,7 +9,8 @@ import libsidutils.STIL;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
+import applet.PathUtils;
 import applet.entities.collection.HVSCEntry;
 
 public class STILService {
@@ -20,7 +21,7 @@ public class STILService {
 		this.em = em;
 	};
 
-	public void add(final IniConfig config, final File root,
+	public void add(final IConfig config, final File root,
 			final File tuneFile, HVSCEntry hvscEntry) {
 		final STILEntry stilEntry = getSTIL(config, tuneFile);
 		if (stilEntry != null) {
@@ -35,10 +36,10 @@ public class STILService {
 		}
 	}
 
-	private STILEntry getSTIL(final IniConfig config, final File tuneFile) {
-		final String name = config.getHVSCName(tuneFile);
+	private STILEntry getSTIL(final IConfig config, final File tuneFile) {
+		final String name = PathUtils.getHVSCName(config, tuneFile);
 		if (null != name) {
-			STIL stil = STIL.getInstance(config.sidplay2().getHvsc());
+			STIL stil = STIL.getInstance(config.getSidplay2().getHvsc());
 			if (stil != null) {
 				return stil.getSTIL(name);
 			}

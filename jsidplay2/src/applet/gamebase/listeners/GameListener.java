@@ -13,7 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import libsidplay.Player;
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.events.IInsertMedia;
 import applet.events.Reset;
 
@@ -22,14 +22,14 @@ public class GameListener extends ProgressListener {
 	private String fileToRun;
 	protected Component parent;
 	protected Player player;
-	protected IniConfig config;
+	protected IConfig config;
 
 	/**
 	 * Last downloaded game file.
 	 */
 	public List<File> lastMedia = new ArrayList<File>();
 
-	public GameListener(Component parent, Player player, IniConfig config) {
+	public GameListener(Component parent, Player player, IConfig config) {
 		this.parent = parent;
 		this.config = config;
 		this.player = player;
@@ -40,7 +40,7 @@ public class GameListener extends ProgressListener {
 	public void downloaded(File downloadedFile) {
 		// Make it possible to choose a file from ZIP next time
 		// the file chooser opens
-		config.sidplay2().setLastDirectory(downloadedFile.getAbsolutePath());
+		config.getSidplay2().setLastDirectory(downloadedFile.getAbsolutePath());
 		try {
 			byte[] b = new byte[1024];
 			ZipFile zip = new ZipFile(downloadedFile);

@@ -20,7 +20,7 @@ import javax.swing.UIManager;
 import netsiddev.ini.JSIDDeviceConfig;
 import resid_builder.resid.ISIDDefs.ChipModel;
 import resid_builder.resid.SID;
-import sidplay.ini.IniFilterSection;
+import sidplay.ini.intf.IFilterSection;
 
 /**
  * JSIDPlay2 SID-emulation integration protocol. It is possible to have
@@ -292,7 +292,7 @@ public class NetworkSIDDevice {
 	 */
 	protected static SID getSidConfig(int sidNumber) {
 		SID sid = new SID();
-		IniFilterSection iniFilter = config.getFilter(config.getFilterList()[sidNumber]);
+		IFilterSection iniFilter = config.getFilter(config.getFilterList()[sidNumber]);
 
 		if (iniFilter.getFilter8580CurvePosition() == 0) {
 			sid.setChipModel(ChipModel.MOS6581);

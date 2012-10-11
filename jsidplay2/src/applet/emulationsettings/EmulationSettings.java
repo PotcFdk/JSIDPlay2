@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -25,8 +26,8 @@ import resid_builder.ReSID;
 import resid_builder.resid.ISIDDefs.ChipModel;
 import resid_builder.resid.SID;
 import sidplay.ConsolePlayer;
-import sidplay.ini.IniConfig;
-import sidplay.ini.IniFilterSection;
+import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IFilterSection;
 import applet.events.IChangeFilter;
 import applet.events.IReplayTune;
 import applet.events.UIEvent;
@@ -48,14 +49,14 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 
 	protected ConsolePlayer consolePl;
 	protected Player player;
-	protected IniConfig config;
+	protected IConfig config;
 
 	public Action setSid1Model = new AbstractAction() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (sid1Model.getSelectedIndex() == 0) {
-				config.emulation().setUserSidModel(null);
+				config.getEmulation().setUserSidModel(null);
 				if (player.getTune() != null) {
 					switch (player.getTune().getInfo().sid1Model) {
 					case MOS6581:
@@ -65,17 +66,17 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 						setSIDModel(ChipModel.MOS8580);
 						break;
 					default:
-						setSIDModel(config.emulation().getDefaultSidModel());
+						setSIDModel(config.getEmulation().getDefaultSidModel());
 						break;
 					}
 				} else {
-					ChipModel defaultModel = config.emulation()
+					ChipModel defaultModel = config.getEmulation()
 							.getDefaultSidModel();
 					setSIDModel(defaultModel);
 				}
 			} else {
 				ChipModel m = (ChipModel) sid1Model.getSelectedItem();
-				config.emulation().setUserSidModel(m);
+				config.getEmulation().setUserSidModel(m);
 				setSIDModel(m);
 			}
 			consolePl.updateSidEmulation();
@@ -87,11 +88,11 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (sid2Model.getSelectedIndex() == 0) {
-				config.emulation().setStereoSidModel(null);
+				config.getEmulation().setStereoSidModel(null);
 			} else {
 				ChipModel stereoSidModel = (ChipModel) sid2Model
 						.getSelectedItem();
-				config.emulation().setStereoSidModel(stereoSidModel);
+				config.getEmulation().setStereoSidModel(stereoSidModel);
 			}
 			consolePl.updateSidEmulation();
 		}
@@ -101,7 +102,7 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.emulation().setDualSidBase(
+			config.getEmulation().setDualSidBase(
 					Integer.decode(baseAddress.getText()));
 			uiEvents.fireEvent(IReplayTune.class, new IReplayTune() {
 			});
@@ -112,7 +113,7 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.emulation().setForceStereoTune(forceStereo.isSelected());
+			config.getEmulation().setForceStereoTune(forceStereo.isSelected());
 			uiEvents.fireEvent(IReplayTune.class, new IReplayTune() {
 			});
 		}
@@ -136,7 +137,7 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 		}
 	};
 
-	public EmulationSettings(ConsolePlayer cp, Player pl, IniConfig cfg) {
+	public EmulationSettings(ConsolePlayer cp, Player pl, IConfig cfg) {
 		this.consolePl = cp;
 		this.player = pl;
 		this.config = cfg;
@@ -168,16 +169,17 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 	}
 
 	private void setDefaultsAndActions() {
-		leftVolume.setValue(config.audio().getLeftVolume());
+		leftVolume.setValue(config.getAudio().getLeftVolume());
 		leftVolume.addChangeListener(this);
-		rightVolume.setValue(config.audio().getRightVolume());
+		rightVolume.setValue(config.getAudio().getRightVolume());
 		rightVolume.addChangeListener(this);
 
 		sid1Model.removeActionListener(setSid1Model);
 		sid2Model.removeActionListener(setSid2Model);
 		filter.removeActionListener(setFilter);
-		if (config.emulation().isForceStereoTune()) {
-			ChipModel stereoSidModel = config.emulation().getStereoSidModel();
+		if (config.getEmulation().isForceStereoTune()) {
+			ChipModel stereoSidModel = config.getEmulation()
+					.getStereoSidModel();
 			if (stereoSidModel != null) {
 				sid2Model.setSelectedItem(stereoSidModel);
 			} else {
@@ -191,9 +193,9 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 		sid2Model.addActionListener(setSid2Model);
 		filter.addActionListener(setFilter);
 
-		baseAddress.setText(String.format("0x%4x", config.emulation()
+		baseAddress.setText(String.format("0x%4x", config.getEmulation()
 				.getDualSidBase()));
-		forceStereo.setSelected(config.emulation().isForceStereoTune());
+		forceStereo.setSelected(config.getEmulation().isForceStereoTune());
 		setDigiBoost(boosted8580.isSelected());
 
 		uiEvents.addListener(filterCurve);
@@ -203,7 +205,7 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 
 	protected void setDigiBoost(final boolean selected) {
 		// set settings
-		config.emulation().setDigiBoosted8580(selected);
+		config.getEmulation().setDigiBoosted8580(selected);
 		final int input = selected ? 0x7FF : 0;
 		for (int i = 0; i < C64.MAX_SIDS; i++) {
 			SID sid = getSID(i);
@@ -223,7 +225,7 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 	}
 
 	protected void setChipModel() {
-		ChipModel lockModel = config.emulation().getUserSidModel();
+		ChipModel lockModel = config.getEmulation().getUserSidModel();
 		if (lockModel != null) {
 			setSIDModel(lockModel);
 			sid1Model.setSelectedItem(lockModel);
@@ -237,11 +239,11 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 					setSIDModel(ChipModel.MOS8580);
 					break;
 				default:
-					setSIDModel(config.emulation().getDefaultSidModel());
+					setSIDModel(config.getEmulation().getDefaultSidModel());
 					break;
 				}
 			} else {
-				ChipModel defaultModel = config.emulation()
+				ChipModel defaultModel = config.getEmulation()
 						.getDefaultSidModel();
 				setSIDModel(defaultModel);
 				sid1Model.setSelectedIndex(0);
@@ -261,12 +263,27 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 			enable = true;
 			saveCurrentFilter(filterName);
 		}
-		config.emulation().setFilter(enable);
+		config.getEmulation().setFilter(enable);
 
-		final IniFilterSection f6581 = config.getFilter(config.emulation()
-				.getFilter6581());
-		final IniFilterSection f8580 = config.getFilter(config.emulation()
-				.getFilter8580());
+		IFilterSection f6581 = null;
+		List<? extends IFilterSection> filters = config.getFilter();
+		for (IFilterSection iFilterSection : filters) {
+			if (iFilterSection.getName().equals(
+					config.getEmulation().getFilter6581())) {
+				if (iFilterSection.getFilter8580CurvePosition() == 0) {
+					f6581 = iFilterSection;
+				}
+			}
+		}
+		IFilterSection f8580 = null;
+		for (IFilterSection iFilterSection : filters) {
+			if (iFilterSection.getName().equals(
+					config.getEmulation().getFilter8580())) {
+				if (iFilterSection.getFilter8580CurvePosition() != 0) {
+					f8580 = iFilterSection;
+				}
+			}
+		}
 
 		for (int i = 0; i < C64.MAX_SIDS; i++) {
 			final SIDEmu resid = player.getC64().getSID(i);
@@ -292,9 +309,9 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 		if (sid != null) {
 			final ChipModel model = sid.getChipModel();
 			if (model == ChipModel.MOS6581) {
-				config.emulation().setFilter6581(filterName);
+				config.getEmulation().setFilter6581(filterName);
 			} else {
-				config.emulation().setFilter8580(filterName);
+				config.getEmulation().setFilter8580(filterName);
 			}
 		}
 	}
@@ -318,10 +335,10 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 	public void stateChanged(final ChangeEvent event) {
 		final Object src = event.getSource();
 		if (src == leftVolume) {
-			config.audio().setLeftVolume(leftVolume.getValue());
+			config.getAudio().setLeftVolume(leftVolume.getValue());
 			consolePl.setSIDVolume(0, dB2Factor(leftVolume.getValue()));
 		} else if (src == rightVolume) {
-			config.audio().setRightVolume(rightVolume.getValue());
+			config.getAudio().setRightVolume(rightVolume.getValue());
 			consolePl.setSIDVolume(1, dB2Factor(rightVolume.getValue()));
 		}
 	}
@@ -344,13 +361,13 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 	}
 
 	private void setFilter(final ChipModel model) {
-		final boolean enable = config.emulation().isFilter();
+		final boolean enable = config.getEmulation().isFilter();
 		String item = null;
 		if (enable) {
 			if (model == ChipModel.MOS6581) {
-				item = config.emulation().getFilter6581();
+				item = config.getEmulation().getFilter6581();
 			} else if (model == ChipModel.MOS8580) {
-				item = config.emulation().getFilter8580();
+				item = config.getEmulation().getFilter8580();
 			}
 		}
 		filter.removeActionListener(setFilter);
@@ -358,9 +375,12 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 		filter.addItem("");
 
 		if (model != null) {
-			final Object[] items = config.getFilterList(model);
-			for (final Object filterName : items) {
-				filter.addItem(filterName);
+			List<? extends IFilterSection> filters = config.getFilter();
+			for (IFilterSection iFilterSection : filters) {
+				if (iFilterSection.getFilter8580CurvePosition() != 0
+						^ model == ChipModel.MOS6581) {
+					filter.addItem(iFilterSection.getName());
+				}
 			}
 		}
 		filter.addActionListener(setFilter);
@@ -376,6 +396,7 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 	 * If some settings of the GUI changes, some settings of this panel must be
 	 * set accordingly.
 	 */
+	@Override
 	public void notify(final UIEvent event) {
 		if (event.isOfType(IChangeFilter.class)) {
 			setChipModel();

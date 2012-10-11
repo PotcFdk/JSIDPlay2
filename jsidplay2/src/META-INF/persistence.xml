@@ -2,16 +2,9 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-	<persistence-unit name="hsqldb-ds" transaction-type="RESOURCE_LOCAL">
-
+	<persistence-unit name="gamebase-ds" transaction-type="RESOURCE_LOCAL">
 		<description>HSQLDB Persistence Unit</description>
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-
-		<!-- This is where we tell JPA/Hibernate about our @Entity objects -->
-
-		<class>applet.entities.collection.HVSCEntry</class>
-		<class>applet.entities.collection.STIL</class>
-		<class>applet.entities.collection.Version</class>
 
 		<class>applet.entities.gamebase.Config</class>
 		<class>applet.entities.gamebase.Games</class>
@@ -21,5 +14,28 @@
 		<class>applet.entities.gamebase.Programmers</class>
 		<class>applet.entities.gamebase.Publishers</class>
 		<class>applet.entities.gamebase.Years</class>
+	</persistence-unit>
+	<persistence-unit name="collection-ds" transaction-type="RESOURCE_LOCAL">
+		<description>HSQLDB Persistence Unit</description>
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+
+		<class>applet.entities.collection.HVSCEntry</class>
+		<class>applet.entities.collection.STIL</class>
+		<class>applet.entities.collection.Version</class>
+	</persistence-unit>
+	<persistence-unit name="jsidplay2-ds" transaction-type="RESOURCE_LOCAL">
+		<description>HSQLDB Persistence Unit</description>
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+
+		<class>applet.entities.config.DbAudioSection</class>
+		<class>applet.entities.config.DbC1541Section</class>
+		<class>applet.entities.config.DbConfig</class>
+		<class>applet.entities.config.DbConsoleSection</class>
+		<class>applet.entities.config.DbEmulationSection</class>
+		<class>applet.entities.config.DbFavoritesSection</class>
+		<class>applet.entities.config.DbFilterSection</class>
+		<class>applet.entities.config.DbJoystickSection</class>
+		<class>applet.entities.config.DbPrinterSection</class>
+		<class>applet.entities.config.DbSidPlay2Section</class>
 	</persistence-unit>
 </persistence>

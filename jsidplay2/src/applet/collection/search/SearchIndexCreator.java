@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import javax.persistence.EntityManager;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.entities.collection.service.HVSCEntryService;
 import applet.entities.collection.service.STILService;
 import applet.entities.collection.service.VersionService;
@@ -20,10 +20,10 @@ public final class SearchIndexCreator implements ISearchListener {
 	private STILService stilService;
 	private VersionService versionService;
 
-	protected IniConfig config;
+	protected IConfig config;
 	private File root;
 
-	public SearchIndexCreator(File root, final IniConfig cfg,
+	public SearchIndexCreator(File root, final IConfig cfg,
 			final EntityManager em) {
 		this.root = root;
 		this.config = cfg;

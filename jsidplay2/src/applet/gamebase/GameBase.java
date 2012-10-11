@@ -6,9 +6,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -34,10 +32,11 @@ import libsidplay.sidtune.SidTune;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.JSIDPlay2;
 import applet.TuneTab;
 import applet.collection.Picture;
+import applet.entities.PersistenceProperties;
 import applet.entities.gamebase.Games;
 import applet.entities.gamebase.service.ConfigService;
 import applet.entities.gamebase.service.GamesService;
@@ -100,7 +99,6 @@ public class GameBase extends TuneTab {
 	 */
 	public static final String ALL_LETTERS = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-	private EntityManagerFactory emf;
 	private EntityManager em;
 	private ConfigService configService;
 	private GamesService gamesService;
@@ -108,7 +106,7 @@ public class GameBase extends TuneTab {
 	/**
 	 * INI settings.
 	 */
-	public IniConfig config;
+	public IConfig config;
 
 	/**
 	 * C64 environment.
@@ -153,7 +151,7 @@ public class GameBase extends TuneTab {
 			if (enableGameBase.isSelected()) {
 				enableGameBase.setEnabled(false);
 				final String outputDir = System.getProperty("jsidplay2.tmpdir");
-				File dbFile = new File(outputDir, "GBC_v09.data");
+				File dbFile = new File(outputDir, "GBC_v09.properties");
 				if (dbFile.exists()) {
 					// There is already a database file downloaded earlier.
 					// Therefore we try to connect
@@ -188,7 +186,7 @@ public class GameBase extends TuneTab {
 		}
 	};
 
-	public GameBase(Player player, IniConfig config) {
+	public GameBase(Player player, IConfig config) {
 		this.config = config;
 		this.player = player;
 		try {
@@ -284,22 +282,17 @@ public class GameBase extends TuneTab {
 	}
 
 	public void connect(String dbFile) {
-		if (!new File(dbFile + ".data").exists()) {
+		if (!new File(dbFile + ".properties").exists()) {
 			System.err.println("Database does not exist: " + dbFile);
 			return;
 		}
 		disconnect();
 
-		String jdbcURL = "jdbc:hsqldb:file:" + dbFile + ";shutdown=true";
+		em = Persistence.createEntityManagerFactory(
+				PersistenceProperties.GAMEBASE_DS,
+				new PersistenceProperties(new File(dbFile)))
+				.createEntityManager();
 
-		Map<String, String> properties = new HashMap<String, String>();
-		properties.put("hibernate.connection.driver_class",
-				"org.hsqldb.jdbcDriver");
-		properties.put("hibernate.connection.url", jdbcURL);
-		properties
-				.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-		emf = Persistence.createEntityManagerFactory("hsqldb-ds", properties);
-		em = (EntityManager) emf.createEntityManager();
 		gamesService = new GamesService(em);
 		configService = new ConfigService(em);
 	}
@@ -307,9 +300,10 @@ public class GameBase extends TuneTab {
 	private void disconnect() {
 		if (em != null && em.isOpen()) {
 			em.close();
-		}
-		if (emf != null && emf.isOpen()) {
-			emf.close();
+			EntityManagerFactory emf = em.getEntityManagerFactory();
+			if (emf != null && emf.isOpen()) {
+				emf.close();
+			}
 		}
 		enableGameBase.setEnabled(true);
 		setLettersEnabled(true);

@@ -12,6 +12,7 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.List;
 
 import libsidplay.Player;
 import libsidplay.common.ISID2Types.Clock;
@@ -35,10 +36,12 @@ import sidplay.audio.MP3File;
 import sidplay.audio.NaturalFinishedException;
 import sidplay.audio.ProxyDriver;
 import sidplay.audio.WavFile;
-import sidplay.ini.IniAudioSection;
 import sidplay.ini.IniConfig;
-import sidplay.ini.IniConsoleSection;
-import sidplay.ini.IniEmulationSection;
+import sidplay.ini.intf.IAudioSection;
+import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IConsoleSection;
+import sidplay.ini.intf.IEmulationSection;
+import sidplay.ini.intf.IFilterSection;
 import applet.disassembler.CPUParser;
 
 public class ConsolePlayer {
@@ -201,7 +204,7 @@ public class ConsolePlayer {
 	public final Player getPlayer() {
 		return player;
 	}
-	
+
 	private SidTune tune;
 
 	private int state;
@@ -212,9 +215,9 @@ public class ConsolePlayer {
 
 	private String outputFilename;
 
-	private final IniConfig iniCfg = new IniConfig();
+	private IConfig iniCfg;
 
-	public final IniConfig getConfig() {
+	public final IConfig getConfig() {
 		return iniCfg;
 	}
 
@@ -253,12 +256,12 @@ public class ConsolePlayer {
 	private boolean lastPlayOriginal;
 	private boolean lastTimeMP3;
 
-	public ConsolePlayer() {
+	public ConsolePlayer(IConfig config) {
 		state = playerStopped;
-
-		final IniEmulationSection emulation = iniCfg.emulation();
+		iniCfg = config;
+		final IEmulationSection emulation = iniCfg.getEmulation();
 		filterEnable = emulation.isFilter();
-		track.single = iniCfg.sidplay2().isSingle();
+		track.single = iniCfg.getSidplay2().isSingle();
 	}
 
 	/**
@@ -268,7 +271,8 @@ public class ConsolePlayer {
 	 * @param tuneInfo
 	 * @return
 	 */
-	public boolean createSidEmu(final SIDEMUS emu, AudioConfig audioConfig, double cpuFrequency) {
+	public boolean createSidEmu(final SIDEMUS emu, AudioConfig audioConfig,
+			double cpuFrequency) {
 		sidEmuFactory = null;
 
 		switch (emu) {
@@ -334,14 +338,14 @@ public class ConsolePlayer {
 			file = tuneInfo.file;
 		}
 
-		Clock cpuFreq = iniCfg.emulation().getUserClockSpeed();
+		Clock cpuFreq = iniCfg.getEmulation().getUserClockSpeed();
 		if (cpuFreq == null) {
-			cpuFreq = iniCfg.emulation().getDefaultClockSpeed();
+			cpuFreq = iniCfg.getEmulation().getDefaultClockSpeed();
 			if (tuneInfo != null) {
 				switch (tuneInfo.clockSpeed) {
 				case UNKNOWN:
 				case ANY:
-					cpuFreq = iniCfg.emulation().getDefaultClockSpeed();
+					cpuFreq = iniCfg.getEmulation().getDefaultClockSpeed();
 					break;
 				case PAL:
 				case NTSC:
@@ -352,7 +356,7 @@ public class ConsolePlayer {
 		}
 		player.setClock(cpuFreq);
 
-		final IniAudioSection audio = iniCfg.audio();
+		final IAudioSection audio = iniCfg.getAudio();
 		if (lastTimeMP3) {
 			// restore settings after MP3 has been played last time
 			driver.setOutput(lastOutput);
@@ -369,21 +373,22 @@ public class ConsolePlayer {
 			driver.setOutput(OUTPUTS.OUT_COMPARE);
 			driver.setSid(SIDEMUS.EMU_RESID);
 			audio.setPlayOriginal(true);
-			audio.setMp3File(file);
+			audio.setMp3File(file.getAbsolutePath());
 		}
 		if (driver.getDevice() instanceof CmpMP3File) {
 			// Set MP3 comparison settings
 			((CmpMP3File) driver.getDevice()).setPlayOriginal(audio
 					.isPlayOriginal());
-			((CmpMP3File) driver.getDevice()).setMp3File(audio.getMp3File());
+			((CmpMP3File) driver.getDevice()).setMp3File(new File(audio
+					.getMp3File()));
 		}
 
 		/* Determine number of SIDs */
 		int secondAddress = 0;
 		driver.channels = 1;
 		{
-			if (iniCfg.emulation().isForceStereoTune()) {
-				secondAddress = iniCfg.emulation().getDualSidBase();
+			if (iniCfg.getEmulation().isForceStereoTune()) {
+				secondAddress = iniCfg.getEmulation().getDualSidBase();
 			} else if (tuneInfo != null) {
 				if (tuneInfo.sidChipBase2 != 0) {
 					secondAddress = tuneInfo.sidChipBase2;
@@ -397,7 +402,8 @@ public class ConsolePlayer {
 				player.getC64().setSecondSIDAddress(secondAddress);
 			}
 		}
-		final AudioConfig audioConfig = iniCfg.audio().toAudioConfig(driver.channels);
+		final AudioConfig audioConfig = AudioConfig.getInstance(
+				iniCfg.getAudio(), driver.channels);
 		audioConfig.setTuneFilename(file);
 		audioConfig.setSongCount(songs);
 		audioConfig.setCurrentSong(currentSong);
@@ -413,9 +419,12 @@ public class ConsolePlayer {
 		}
 
 		if (sidEmuFactory instanceof ReSIDBuilder) {
-			((ReSIDBuilder) sidEmuFactory).setSIDVolume(0, dB2factor(iniCfg.audio().getLeftVolume()));
-			((ReSIDBuilder) sidEmuFactory).setSIDVolume(1, dB2factor(iniCfg.audio().getRightVolume()));
-			((ReSIDBuilder) sidEmuFactory).setOutput(OUTPUTS.OUT_NULL.getDriver());
+			((ReSIDBuilder) sidEmuFactory).setSIDVolume(0, dB2factor(iniCfg
+					.getAudio().getLeftVolume()));
+			((ReSIDBuilder) sidEmuFactory).setSIDVolume(1, dB2factor(iniCfg
+					.getAudio().getRightVolume()));
+			((ReSIDBuilder) sidEmuFactory).setOutput(OUTPUTS.OUT_NULL
+					.getDriver());
 		}
 
 		// According to the configuration, the SIDs must be updated.
@@ -428,48 +437,49 @@ public class ConsolePlayer {
 			final SIDEmu s1 = player.getC64().getSID(0);
 			final SIDEmu s2 = player.getC64().getSID(1);
 
-			player.getC64().setSID(0, new SIDEmu(player.getC64().getEventScheduler()) {
-				@Override
-				public void reset(byte volume) {
-					s1.reset(volume);
-				}
+			player.getC64().setSID(0,
+					new SIDEmu(player.getC64().getEventScheduler()) {
+						@Override
+						public void reset(byte volume) {
+							s1.reset(volume);
+						}
 
-				@Override
-				public byte read(int addr) {
-					return s1.read(addr);
-				}
+						@Override
+						public byte read(int addr) {
+							return s1.read(addr);
+						}
 
-				@Override
-				public void write(int addr, byte data) {
-					s1.write(addr, data);
-					s2.write(addr, data);
-				}
+						@Override
+						public void write(int addr, byte data) {
+							s1.write(addr, data);
+							s2.write(addr, data);
+						}
 
-				@Override
-				public byte readInternalRegister(int addr) {
-					return s1.readInternalRegister(addr);
-				}
+						@Override
+						public byte readInternalRegister(int addr) {
+							return s1.readInternalRegister(addr);
+						}
 
-				@Override
-				public void clock() {
-					s1.clock();
-				}
+						@Override
+						public void clock() {
+							s1.clock();
+						}
 
-				@Override
-				public void setEnabled(int num, boolean mute) {
-					s1.setEnabled(num, mute);
-				}
+						@Override
+						public void setEnabled(int num, boolean mute) {
+							s1.setEnabled(num, mute);
+						}
 
-				@Override
-				public void setFilter(boolean enable) {
-					s1.setFilter(enable);
-				}
+						@Override
+						public void setFilter(boolean enable) {
+							s1.setFilter(enable);
+						}
 
-				@Override
-				public ChipModel getChipModel() {
-					return s1.getChipModel();
-				}
-			});
+						@Override
+						public ChipModel getChipModel() {
+							return s1.getChipModel();
+						}
+					});
 		}
 
 		// Start the player. Do this by fast
@@ -481,32 +491,32 @@ public class ConsolePlayer {
 		player.reset();
 
 		// Initialize floppies
-		player.enableFloppyDiskDrives(getConfig().c1541().isDriveOn());
-		player.connectC64AndC1541WithParallelCable(getConfig().c1541()
+		player.enableFloppyDiskDrives(getConfig().getC1541().isDriveOn());
+		player.connectC64AndC1541WithParallelCable(getConfig().getC1541()
 				.isParallelCable());
 		for (int driveNum = 0; driveNum < player.getFloppies().length; driveNum++) {
 			final C1541 floppy = player.getFloppies()[driveNum];
-			floppy.setFloppyType(getConfig().c1541().getFloppyType());
-			floppy.setRamExpansion(0, getConfig().c1541()
-					.isRamExpansionEnabled(0));
-			floppy.setRamExpansion(1, getConfig().c1541()
-					.isRamExpansionEnabled(1));
-			floppy.setRamExpansion(2, getConfig().c1541()
-					.isRamExpansionEnabled(2));
-			floppy.setRamExpansion(3, getConfig().c1541()
-					.isRamExpansionEnabled(3));
-			floppy.setRamExpansion(4, getConfig().c1541()
-					.isRamExpansionEnabled(4));
+			floppy.setFloppyType(getConfig().getC1541().getFloppyType());
+			floppy.setRamExpansion(0, getConfig().getC1541()
+					.isRamExpansionEnabled0());
+			floppy.setRamExpansion(1, getConfig().getC1541()
+					.isRamExpansionEnabled1());
+			floppy.setRamExpansion(2, getConfig().getC1541()
+					.isRamExpansionEnabled2());
+			floppy.setRamExpansion(3, getConfig().getC1541()
+					.isRamExpansionEnabled3());
+			floppy.setRamExpansion(4, getConfig().getC1541()
+					.isRamExpansionEnabled4());
 		}
-		player.turnPrinterOnOff(getConfig().printer().isPrinterOn());
+		player.turnPrinterOnOff(getConfig().getPrinter().isPrinterOn());
 
 		// As yet we don't have a required songlength
 		// so try the songlength database
 		if (tune != null) {
-			SidDatabase database = SidDatabase.getInstance(iniCfg.sidplay2()
+			SidDatabase database = SidDatabase.getInstance(iniCfg.getSidplay2()
 					.getHvsc());
 			if (database != null && !timer.valid
-					&& iniCfg.sidplay2().isEnableDatabase()) {
+					&& iniCfg.getSidplay2().isEnableDatabase()) {
 				final int length = database.length(tune);
 				if (length >= 0) {
 					// length==0 means forever
@@ -539,7 +549,7 @@ public class ConsolePlayer {
 	}
 
 	private float dB2factor(float volume) {
-		return (float) Math.pow(10, volume/20.0f);
+		return (float) Math.pow(10, volume / 20.0f);
 	}
 
 	public void close() {
@@ -593,8 +603,8 @@ public class ConsolePlayer {
 	public void setSLDb(final boolean enableSLDb) {
 		if (!timer.valid) {
 			if (enableSLDb && tune != null) {
-				SidDatabase database = SidDatabase.getInstance(iniCfg.sidplay2()
-						.getHvsc());
+				SidDatabase database = SidDatabase.getInstance(iniCfg
+						.getSidplay2().getHvsc());
 				final int length = database.length(tune);
 				if (length > 0) {
 					timer.defaultLength = length;
@@ -622,11 +632,12 @@ public class ConsolePlayer {
 				normalSpeed();
 				player.setDebug(disassembler);
 				if (sidEmuFactory instanceof ReSIDBuilder) {
-					((ReSIDBuilder) sidEmuFactory).setOutput(driver.getDevice());
+					((ReSIDBuilder) sidEmuFactory)
+							.setOutput(driver.getDevice());
 				}
 			}
 
-			if (iniCfg.sidplay2().isEnableDatabase() && timer.stop != 0
+			if (iniCfg.getSidplay2().isEnableDatabase() && timer.stop != 0
 					&& seconds >= timer.stop) {
 				// Single song?
 				if (track.single) {
@@ -878,12 +889,12 @@ public class ConsolePlayer {
 					timer.start = time;
 				} else if (argv[i].equals("-fd")) {
 					// Override sidTune and enable the second sid
-					iniCfg.emulation().setForceStereoTune(true);
+					iniCfg.getEmulation().setForceStereoTune(true);
 				} else if (argv[i].startsWith("-f")) {
 					if (argv[i].length() == 2) {
 						err = true;
 					}
-					iniCfg.audio().setFrequency(
+					iniCfg.getAudio().setFrequency(
 							Integer.valueOf(argv[i].substring(2)));
 				}
 
@@ -898,11 +909,13 @@ public class ConsolePlayer {
 				else if (argv[i].startsWith("-ns")) {
 					switch (argv[i].charAt(3)) {
 					case '1':
-						iniCfg.emulation().setUserSidModel(ChipModel.MOS8580);
+						iniCfg.getEmulation()
+								.setUserSidModel(ChipModel.MOS8580);
 						break;
 					// No new sid so use old one (6581)
 					case '0':
-						iniCfg.emulation().setUserSidModel(ChipModel.MOS6581);
+						iniCfg.getEmulation()
+								.setUserSidModel(ChipModel.MOS6581);
 						break;
 					default:
 						err = true;
@@ -943,18 +956,18 @@ public class ConsolePlayer {
 					}
 					timer.defaultLength = time;
 					timer.valid = true;
-					iniCfg.sidplay2().setEnableDatabase(true);
+					iniCfg.getSidplay2().setEnableDatabase(true);
 				}
 
 				// Video/Verbose Options
 				else if (argv[i].equals("-vnf")) {
-					iniCfg.emulation().setUserClockSpeed(Clock.NTSC);
+					iniCfg.getEmulation().setUserClockSpeed(Clock.NTSC);
 				} else if (argv[i].equals("-vpf")) {
-					iniCfg.emulation().setUserClockSpeed(Clock.PAL);
+					iniCfg.getEmulation().setUserClockSpeed(Clock.PAL);
 				} else if (argv[i].equals("-vn")) {
-					iniCfg.emulation().setDefaultClockSpeed(Clock.NTSC);
+					iniCfg.getEmulation().setDefaultClockSpeed(Clock.NTSC);
 				} else if (argv[i].equals("-vp")) {
-					iniCfg.emulation().setDefaultClockSpeed(Clock.PAL);
+					iniCfg.getEmulation().setDefaultClockSpeed(Clock.PAL);
 				} else if (argv[i].startsWith("-v")) {
 					if (argv[i].length() == 2) {
 						verboseLevel = 1;
@@ -1063,16 +1076,17 @@ public class ConsolePlayer {
 				return -1;
 			}
 			if (!timer.valid) {
-				timer.defaultLength = iniCfg.sidplay2().getPlayLength();
+				timer.defaultLength = iniCfg.getSidplay2().getPlayLength();
 				if (driver.output.isFileBased()) {
-					timer.defaultLength = iniCfg.sidplay2().getRecordLength();
+					timer.defaultLength = iniCfg.getSidplay2()
+							.getRecordLength();
 				}
 			}
 		}
 		return 1;
 	}
 
-	public SidTune loadTune (final URL url) {
+	public SidTune loadTune(final URL url) {
 		// Load the tune
 		try {
 			InputStream stream = null;
@@ -1080,6 +1094,7 @@ public class ConsolePlayer {
 				// load from URL (applet version)
 				stream = AccessController
 						.doPrivileged(new PrivilegedExceptionAction<InputStream>() {
+							@Override
 							public InputStream run() throws IOException {
 								return url.openConnection().getInputStream();
 							}
@@ -1105,6 +1120,7 @@ public class ConsolePlayer {
 		}
 		return tune;
 	}
+
 	/**
 	 * Load a tune, this is either an absolute path name or a URL of an applet
 	 * version.
@@ -1116,7 +1132,7 @@ public class ConsolePlayer {
 	public SidTune loadTune(final File f) {
 		// Next time player is used, the track is reset
 		resetTrack();
-		
+
 		if (f == null) {
 			tune = null;
 			track.first = 1;
@@ -1149,8 +1165,10 @@ public class ConsolePlayer {
 				+ "\n" + " --help-debug debug help menu" + "\n"
 				+ " -b<num>      set start time in [m:]s format (default 0)"
 				+ "\n"
-				
-				+ " -f<num>      set frequency in Hz (default: " + iniCfg.audio().getFrequency() + ")"
+
+				+ " -f<num>      set frequency in Hz (default: "
+				+ iniCfg.getAudio().getFrequency()
+				+ ")"
 				+ "\n"
 				+ " -fd          force dual sid environment"
 				+ "\n"
@@ -1222,7 +1240,7 @@ public class ConsolePlayer {
 			return;
 		}
 
-		final IniConsoleSection console = iniCfg.console();
+		final IConsoleSection console = iniCfg.getConsole();
 
 		System.out.println(String.format("%c%s%c", console.getTopLeft(),
 				setfill(console.getHorizontal(), 54), console.getTopRight()));
@@ -1260,8 +1278,7 @@ public class ConsolePlayer {
 					console.getVertical(), tuneInfo.getClass().getSimpleName(),
 					console.getVertical()));
 			System.out.println(String.format("%c Filename(s)  : %37s %c",
-					console.getVertical(),
-					tuneInfo.file.getName(),
+					console.getVertical(), tuneInfo.file.getName(),
 					console.getVertical()));
 		}
 		System.out.print(String.format("%c Playlist     : ",
@@ -1386,7 +1403,7 @@ public class ConsolePlayer {
 	}
 
 	public static void main(final String[] args) throws InterruptedException {
-		final ConsolePlayer player = new ConsolePlayer();
+		final ConsolePlayer player = new ConsolePlayer(new IniConfig());
 		if (player.args(args) < 0) {
 			System.exit(1);
 		}
@@ -1414,7 +1431,7 @@ public class ConsolePlayer {
 					e.printStackTrace();
 				}
 			}
-			
+
 			player.close();
 			if ((player.getState() & ~playerFast) == playerRestart) {
 				continue main_restart;
@@ -1431,15 +1448,15 @@ public class ConsolePlayer {
 		if (sidEmuFactory != null) {
 
 			/* Find first chip model. */
-			ChipModel chipModel = determineSIDModel(iniCfg.emulation()
-					.getUserSidModel(),
-					iniCfg.emulation().getDefaultSidModel(),
+			ChipModel chipModel = determineSIDModel(iniCfg.getEmulation()
+					.getUserSidModel(), iniCfg.getEmulation()
+					.getDefaultSidModel(),
 					tune != null ? tune.getInfo().sid1Model : null);
 			updateSIDEmu(0, chipModel);
 
 			if (driver.channels == 2) {
 				ChipModel stereoChipModel = determineSIDModel(iniCfg
-						.emulation().getStereoSidModel(), chipModel,
+						.getEmulation().getStereoSidModel(), chipModel,
 						Model.valueOf(chipModel.toString()));
 				updateSIDEmu(1, stereoChipModel);
 			}
@@ -1504,8 +1521,19 @@ public class ConsolePlayer {
 
 		if (s instanceof ReSID) {
 			((ReSID) s).model(model);
-			((ReSID) s).filter(iniCfg.filter(ChipModel.MOS6581),
-					iniCfg.filter(ChipModel.MOS8580));
+			IFilterSection f6581 = null;
+			IFilterSection f8580 = null;
+			List<? extends IFilterSection> filters = iniCfg.getFilter();
+			for (IFilterSection iFilterSection : filters) {
+				if (iFilterSection.getName().equals(
+						iniCfg.getEmulation().getFilter6581())) {
+					f6581 = iFilterSection;
+				} else if (iFilterSection.getName().equals(
+						iniCfg.getEmulation().getFilter8580())) {
+					f8580 = iFilterSection;
+				}
+			}
+			((ReSID) s).filter(f6581, f8580);
 		}
 
 		player.getC64().setSID(chipNum, s);

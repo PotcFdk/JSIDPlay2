@@ -19,7 +19,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
 import libsidutils.zip.ZipEntryFileProxy;
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.entities.collection.HVSCEntry;
 import applet.sidtuneinfo.SidTuneInfoCache;
 
@@ -63,7 +63,7 @@ public class HVSCEntryService {
 		this.stilService = new STILService(em);
 	};
 
-	public HVSCEntry add(final IniConfig config, final File root,
+	public HVSCEntry add(final IConfig config, final File root,
 			final File tuneFile) throws IOException {
 		HVSCEntry hvscEntry = new HVSCEntry();
 		hvscEntry.setPath(makeRelative(root, tuneFile));
@@ -144,8 +144,8 @@ public class HVSCEntryService {
 		return ids.toString();
 	}
 
-	private long getTuneLength(final IniConfig config, final SidTune tune) {
-		final SidDatabase sldb = SidDatabase.getInstance(config.sidplay2()
+	private long getTuneLength(final IConfig config, final SidTune tune) {
+		final SidDatabase sldb = SidDatabase.getInstance(config.getSidplay2()
 				.getHvsc());
 		long fullLength;
 		if (sldb != null) {

@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -29,8 +30,8 @@ import libsidplay.sidtune.SidTune;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.IniConfig;
-import sidplay.ini.IniFavoritesSection;
+import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IFavoritesSection;
 import applet.PathUtils;
 import applet.TuneTab;
 import applet.collection.Collection;
@@ -64,14 +65,14 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 	protected JRadioButton normal, randomOne, randomAll, repeatOne;
 
 	protected Player player;
-	protected IniConfig config;
+	protected IConfig config;
 	protected Collection hvsc, cgsc;
 
 	protected File lastDir;
 	protected PlayList currentlyPlayedFavorites;
 	protected final Random random = new Random();
 
-	public Favorites(Player pl, IniConfig cfg, Collection hvsc, Collection cgsc) {
+	public Favorites(Player pl, IConfig cfg, Collection hvsc, Collection cgsc) {
 		this.player = pl;
 		this.config = cfg;
 		this.hvsc = hvsc;
@@ -362,9 +363,10 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 	}
 
 	private void reloadRestoredFavorites() {
-		IniFavoritesSection favorites = config.favorites();
-		for (int i = 0; i < favorites.getFavoritesFilenames().length; i++) {
-			final String filename = favorites.getFavoritesFilenames()[i];
+		IFavoritesSection favorites = config.getFavorites();
+		String[] stringToList = stringToList(favorites.getFavoritesFilenames());
+		for (int i = 0; i < stringToList.length; i++) {
+			final String filename = stringToList[i];
 			if (filename == null) {
 				continue;
 			}
@@ -415,12 +417,13 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 	}
 
 	private void restoreFavorites() {
-		IniFavoritesSection favorites = config.favorites();
-		for (int i = 0; i < favorites.getFavoritesTitles().length; i++) {
-			final String title = favorites.getFavoritesTitles()[i];
+		IFavoritesSection favorites = config.getFavorites();
+		String[] stringToList = stringToList(favorites.getFavoritesTitles());
+		for (int i = 0; i < stringToList.length; i++) {
+			final String title = stringToList[i];
 			addTab(title);
 		}
-		if (favorites.getFavoritesTitles().length == 0) {
+		if (stringToList.length == 0) {
 			// add a first tab
 			getUiEvents().fireEvent(IAddFavoritesTab.class,
 					new IAddFavoritesTab() {
@@ -637,50 +640,52 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 			IFavorites newTab = addTab(ifObj.getTitle());
 			ifObj.setFavorites(newTab);
 
-			final IniFavoritesSection favorites = config.favorites();
-			final String[] newFavoritesTitles = new String[favorites
-					.getFavoritesTitles().length + 1];
-			for (int i = 0; i < favorites.getFavoritesTitles().length; i++) {
-				newFavoritesTitles[i] = favorites.getFavoritesTitles()[i];
+			final IFavoritesSection favorites = config.getFavorites();
+			String[] stringToList = stringToList(favorites.getFavoritesTitles());
+			final String[] newFavoritesTitles = new String[stringToList.length + 1];
+			for (int i = 0; i < stringToList.length; i++) {
+				newFavoritesTitles[i] = stringToList[i];
 			}
-			newFavoritesTitles[favorites.getFavoritesTitles().length] = ifObj
-					.getTitle();
-			favorites.setFavoritesTitles(newFavoritesTitles);
-			final String[] newFavoritesFilenames = new String[favorites
-					.getFavoritesFilenames().length + 1];
-			for (int i = 0; i < favorites.getFavoritesFilenames().length; i++) {
-				newFavoritesFilenames[i] = favorites.getFavoritesFilenames()[i];
+			newFavoritesTitles[stringToList.length] = ifObj.getTitle();
+			favorites.setFavoritesTitles(listToString(newFavoritesTitles));
+			String[] stringToList2 = stringToList(favorites
+					.getFavoritesFilenames());
+			final String[] newFavoritesFilenames = new String[stringToList2.length + 1];
+			for (int i = 0; i < stringToList2.length; i++) {
+				newFavoritesFilenames[i] = stringToList2[i];
 			}
-			newFavoritesFilenames[favorites.getFavoritesFilenames().length] = null;
-			favorites.setFavoritesFilenames(newFavoritesFilenames);
+			newFavoritesFilenames[stringToList2.length] = null;
+			favorites
+					.setFavoritesFilenames(listToString(newFavoritesFilenames));
 			// System.err.println("Add title=" + ifObj.getTitle());
 		} else if (event.isOfType(IRemoveFavoritesTab.class)) {
 			final IRemoveFavoritesTab ifObj = (IRemoveFavoritesTab) event
 					.getUIEventImpl();
 			removeTab(ifObj.getIndex());
 
-			final IniFavoritesSection favorites = config.favorites();
-			final String[] newFavoriteTitles = new String[favorites
-					.getFavoritesTitles().length - 1];
+			final IFavoritesSection favorites = config.getFavorites();
+			String[] stringToList = stringToList(favorites.getFavoritesTitles());
+			final String[] newFavoriteTitles = new String[stringToList.length - 1];
 			int j = 0;
-			for (int i = 0; i < favorites.getFavoritesTitles().length; i++) {
+			for (int i = 0; i < stringToList.length; i++) {
 				if (i != ifObj.getIndex()) {
-					newFavoriteTitles[j] = favorites.getFavoritesTitles()[i];
+					newFavoriteTitles[j] = stringToList[i];
 					j++;
 				}
 			}
-			favorites.setFavoritesTitles(newFavoriteTitles);
+			favorites.setFavoritesTitles(listToString(newFavoriteTitles));
 
-			final String[] newFavoriteFilenames = new String[favorites
-					.getFavoritesFilenames().length - 1];
+			String[] stringToList2 = stringToList(favorites
+					.getFavoritesFilenames());
+			final String[] newFavoriteFilenames = new String[stringToList2.length - 1];
 			int k = 0;
-			for (int i = 0; i < favorites.getFavoritesFilenames().length; i++) {
+			for (int i = 0; i < stringToList2.length; i++) {
 				if (i != ifObj.getIndex()) {
-					newFavoriteFilenames[k] = favorites.getFavoritesFilenames()[i];
+					newFavoriteFilenames[k] = stringToList2[i];
 					k++;
 				}
 			}
-			favorites.setFavoritesFilenames(newFavoriteFilenames);
+			favorites.setFavoritesFilenames(listToString(newFavoriteFilenames));
 
 			// System.err.println("Remove index=" + ifObj.getIndex() + ",
 			// title="
@@ -690,23 +695,25 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 					.getUIEventImpl();
 			changeTab(ifObj);
 
-			final IniFavoritesSection favorites = config.favorites();
-			String[] newTitles = new String[favorites.getFavoritesTitles().length];
+			final IFavoritesSection favorites = config.getFavorites();
+			String[] stringToList = stringToList(favorites.getFavoritesTitles());
+			String[] newTitles = new String[stringToList.length];
 			for (int i = 0; i < newTitles.length; i++) {
 				if (i == ifObj.getIndex()) {
 					newTitles[i] = ifObj.getTitle();
 				} else {
-					newTitles[i] = favorites.getFavoritesTitles()[i];
+					newTitles[i] = stringToList[i];
 				}
 			}
-			favorites.setFavoritesTitles(newTitles);
-			String[] newFilenames = new String[favorites
-					.getFavoritesFilenames().length];
+			favorites.setFavoritesTitles(listToString(newTitles));
+			String[] stringToList2 = stringToList(favorites
+					.getFavoritesFilenames());
+			String[] newFilenames = new String[stringToList2.length];
 			for (int i = 0; i < newFilenames.length; i++) {
 				if (i == ifObj.getIndex()) {
 					newFilenames[i] = ifObj.getFileName();
 				} else {
-					newFilenames[i] = favorites.getFavoritesFilenames()[i];
+					newFilenames[i] = stringToList2[i];
 				}
 			}
 			if (ifObj.getFileName() != null) {
@@ -716,7 +723,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 					newFilenames[ifObj.getIndex()] = relativePath;
 				}
 			}
-			favorites.setFavoritesFilenames(newFilenames);
+			favorites.setFavoritesFilenames(listToString(newFilenames));
 			if (ifObj.isSelected()) {
 				favorites.setFavoritesCurrent(ifObj.getTitle());
 			}
@@ -790,6 +797,37 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 
 	public SwingEngine getSwix() {
 		return swix;
+	}
+
+	private static String[] stringToList(final String str) {
+		if (str == null) {
+			return new String[0];
+		}
+		final ArrayList<String> result = new ArrayList<String>();
+		final StringTokenizer tok = new StringTokenizer(str, ",", false);
+		while (tok.hasMoreElements()) {
+			final String name = (String) tok.nextElement();
+			if ("null".equals(name)) {
+				result.add(null);
+			} else {
+				result.add(name);
+			}
+		}
+		return result.toArray(new String[result.size()]);
+	}
+
+	private static String listToString(final String[] list) {
+		if (list == null) {
+			return "";
+		}
+		final StringBuffer result = new StringBuffer();
+		for (int i = 0; i < list.length; i++) {
+			if (i != 0) {
+				result.append(",");
+			}
+			result.append(list[i]);
+		}
+		return result.toString();
 	}
 
 }

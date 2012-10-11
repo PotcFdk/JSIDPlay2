@@ -8,18 +8,19 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.util.List;
 
 import javax.swing.JPanel;
 
 import resid_builder.resid.FilterModelConfig;
-import sidplay.ini.IniConfig;
-import sidplay.ini.IniFilterSection;
+import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IFilterSection;
 import applet.events.IChangeFilter;
 import applet.events.UIEvent;
 import applet.events.UIEventListener;
 
 public class CurveFit extends JPanel implements UIEventListener {
-	protected IniConfig config;
+	protected IConfig config;
 
 	private static final int XMIN = 0;
 	private static final int XMAX = 2048;
@@ -28,7 +29,7 @@ public class CurveFit extends JPanel implements UIEventListener {
 
 	private final Font fLabelFont = new Font("Courier",
 			Font.BOLD | Font.ITALIC, 18);
-	protected IniFilterSection filter;
+	protected IFilterSection filter;
 
 	protected final int distance(final int x1, final int y1, final int x2,
 			final int y2) {
@@ -40,7 +41,7 @@ public class CurveFit extends JPanel implements UIEventListener {
 	public CurveFit() {
 	}
 
-	public final void setConfig(IniConfig cfg) {
+	public final void setConfig(IConfig cfg) {
 		this.config = cfg;
 	}
 
@@ -159,6 +160,7 @@ public class CurveFit extends JPanel implements UIEventListener {
 		return Math.log10(x);
 	}
 
+	@Override
 	public void notify(final UIEvent e) {
 		if (e.isOfType(IChangeFilter.class)) {
 			final IChangeFilter ifObj = (IChangeFilter) e.getUIEventImpl();
@@ -166,7 +168,12 @@ public class CurveFit extends JPanel implements UIEventListener {
 			if ("".equals(filterName)) {
 				filter = null;
 			} else {
-				filter = config.getFilter(filterName);
+				List<? extends IFilterSection> filters = config.getFilter();
+				for (IFilterSection iFilterSection : filters) {
+					if (iFilterSection.getName().equals(filterName)) {
+						filter = iFilterSection;
+					}
+				}
 			}
 			repaint();
 		}

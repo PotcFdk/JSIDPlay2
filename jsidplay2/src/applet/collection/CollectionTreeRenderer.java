@@ -13,14 +13,15 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import libsidplay.Player;
 import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.JSIDPlay2;
+import applet.PathUtils;
 
 @SuppressWarnings("serial")
 final class CollectionTreeRenderer extends DefaultTreeCellRenderer {
 
 	protected Player player;
-	protected IniConfig config;
+	protected IConfig config;
 
 	private final JPanel view;
 
@@ -34,7 +35,7 @@ final class CollectionTreeRenderer extends DefaultTreeCellRenderer {
 	 * @param view
 	 * @param sidplay
 	 */
-	public CollectionTreeRenderer(final JPanel view, Player pl, IniConfig cfg) {
+	public CollectionTreeRenderer(final JPanel view, Player pl, IConfig cfg) {
 		this.view = view;
 		this.config = cfg;
 		this.player = pl;
@@ -76,9 +77,9 @@ final class CollectionTreeRenderer extends DefaultTreeCellRenderer {
 		if (file == null) {
 			return null;
 		}
-		final String name = config.getHVSCName(file);
+		final String name = PathUtils.getHVSCName(config, file);
 		if (null != name) {
-			STIL stil = STIL.getInstance(config.sidplay2().getHvsc());
+			STIL stil = STIL.getInstance(config.getSidplay2().getHvsc());
 			if (stil != null) {
 				return stil.getSTIL(name);
 			}

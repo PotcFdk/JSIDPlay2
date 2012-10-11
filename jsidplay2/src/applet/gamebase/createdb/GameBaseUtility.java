@@ -58,10 +58,10 @@ public class GameBaseUtility {
 				return;
 			}
 		}
-		source.connect(sourceDriver, sourceURL, null);
+		source.connect(sourceDriver, sourceURL);
 
 		Database target = new HSSQL();
-		target.connect(targetDriver, targetURL, "create");
+		target.connect(targetDriver, targetURL);
 
 		mover.setSource(source);
 		mover.setTarget(target);

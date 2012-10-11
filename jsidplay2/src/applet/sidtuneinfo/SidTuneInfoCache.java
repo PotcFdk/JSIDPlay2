@@ -13,7 +13,7 @@ import libsidutils.SidDatabase;
 import org.swixml.Localizer;
 import org.swixml.SwingEngine;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 
 public class SidTuneInfoCache {
 	public static final String[] SIDTUNE_INFOS = new String[] { "TITLE",
@@ -80,7 +80,7 @@ public class SidTuneInfoCache {
 
 	public static int INFO_RELOC_NO_PAGES = 23;
 
-	protected IniConfig config;
+	protected IConfig config;
 	private Localizer localizer;
 
 	private static final LinkedHashMap<File, Object[]> pathNamesToTune = new LinkedHashMap<File, Object[]>() {
@@ -92,7 +92,7 @@ public class SidTuneInfoCache {
 		}
 	};
 
-	public SidTuneInfoCache(IniConfig cfg) {
+	public SidTuneInfoCache(IConfig cfg) {
 		this.config = cfg;
 		SwingEngine swix = new SwingEngine(this);
 		swix.setResourceBundle("applet.sidtuneinfo.SidTuneInfoCacheTexts");
@@ -137,7 +137,7 @@ public class SidTuneInfoCache {
 		infos[9] = info.sid1Model;
 		infos[10] = info.sid2Model;
 		infos[11] = info.compatibility;
-		final SidDatabase sldb = SidDatabase.getInstance(config.sidplay2()
+		final SidDatabase sldb = SidDatabase.getInstance(config.getSidplay2()
 				.getHvsc());
 		int fullLength;
 		if (sldb != null) {

@@ -23,7 +23,7 @@ import net.java.games.input.ControllerEnvironment;
 import org.swixml.SwingEngine;
 import org.swixml.XDialog;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.events.IUpdateUI;
 import applet.events.UIEvent;
 import applet.events.UIEventFactory;
@@ -44,9 +44,9 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 	protected JTable testTable1, testTable2;
 
 	protected Player player;
-	protected IniConfig config;
+	protected IConfig config;
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
-	
+
 	protected static ControllerEnvironment fControllerEnv = ControllerEnvironment
 			.getDefaultEnvironment();
 	protected Controller controller1, controller2;
@@ -79,7 +79,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			if (index >= 1) {
 				setController1(fControllerEnv.getControllers()[index - 1]);
 
-				config.joystick().setDeviceName(1, controller1.getName());
+				config.getJoystick().setDeviceName1(controller1.getName());
 				((DefaultTableModel) testTable1.getModel())
 						.fireTableStructureChanged();
 			}
@@ -93,7 +93,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = up1.getSelectedIndex();
 			if (index >= 0) {
 				dirUp1 = controller1.getComponents()[index];
-				config.joystick().setComponentNameUp(1, dirUp1.getName());
+				config.getJoystick().setComponentNameUp1(dirUp1.getName());
 			}
 		}
 	};
@@ -104,7 +104,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			final float value = Float.valueOf(up1Value.getText());
 			dirUp1Value = value;
-			config.joystick().setComponentValueUp(1, value);
+			config.getJoystick().setComponentValueUp1(value);
 		}
 	};
 
@@ -115,7 +115,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = down1.getSelectedIndex();
 			if (index >= 0) {
 				dirDown1 = controller1.getComponents()[index];
-				config.joystick().setComponentNameDown(1, dirDown1.getName());
+				config.getJoystick().setComponentNameDown1(dirDown1.getName());
 			}
 		}
 	};
@@ -126,7 +126,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			final float value = Float.valueOf(down1Value.getText());
 			dirDown1Value = value;
-			config.joystick().setComponentValueDown(1, value);
+			config.getJoystick().setComponentValueDown1(value);
 		}
 	};
 
@@ -137,7 +137,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = left1.getSelectedIndex();
 			if (index >= 0) {
 				dirLeft1 = controller1.getComponents()[index];
-				config.joystick().setComponentNameLeft(1, dirLeft1.getName());
+				config.getJoystick().setComponentNameLeft1(dirLeft1.getName());
 			}
 		}
 	};
@@ -148,7 +148,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			final float value = Float.valueOf(left1Value.getText());
 			dirLeft1Value = value;
-			config.joystick().setComponentValueLeft(1, value);
+			config.getJoystick().setComponentValueLeft1(value);
 		}
 	};
 
@@ -159,7 +159,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = right1.getSelectedIndex();
 			if (index >= 0) {
 				dirRight1 = controller1.getComponents()[index];
-				config.joystick().setComponentNameRight(1, dirRight1.getName());
+				config.getJoystick().setComponentNameRight1(dirRight1.getName());
 			}
 		}
 	};
@@ -170,7 +170,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			final float value = Float.valueOf(right1Value.getText());
 			dirRight1Value = value;
-			config.joystick().setComponentValueRight(1, value);
+			config.getJoystick().setComponentValueRight1(value);
 		}
 	};
 
@@ -181,7 +181,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = fire1.getSelectedIndex();
 			if (index >= 0) {
 				dirFire1 = controller1.getComponents()[index];
-				config.joystick().setComponentNameBtn(1, dirFire1.getName());
+				config.getJoystick().setComponentNameBtn1(dirFire1.getName());
 			}
 		}
 	};
@@ -192,7 +192,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			final float value = Float.valueOf(fire1Value.getText());
 			dirFire1Value = value;
-			config.joystick().setComponentValueBtn(1, value);
+			config.getJoystick().setComponentValueBtn1(value);
 		}
 	};
 
@@ -218,7 +218,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			if (index >= 1) {
 				setController2(fControllerEnv.getControllers()[index - 1]);
 
-				config.joystick().setDeviceName(2, controller2.getName());
+				config.getJoystick().setDeviceName2(controller2.getName());
 				((DefaultTableModel) testTable2.getModel())
 						.fireTableStructureChanged();
 			}
@@ -232,7 +232,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = up2.getSelectedIndex();
 			if (index >= 0) {
 				dirUp2 = controller2.getComponents()[index];
-				config.joystick().setComponentNameUp(2, dirUp2.getName());
+				config.getJoystick().setComponentNameUp2(dirUp2.getName());
 			}
 		}
 	};
@@ -243,7 +243,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			final float value = Float.valueOf(up2Value.getText());
 			dirUp2Value = value;
-			config.joystick().setComponentValueUp(2, value);
+			config.getJoystick().setComponentValueUp2(value);
 		}
 	};
 
@@ -254,7 +254,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = down2.getSelectedIndex();
 			if (index >= 0) {
 				dirDown2 = controller2.getComponents()[index];
-				config.joystick().setComponentNameDown(2, dirDown2.getName());
+				config.getJoystick().setComponentNameDown2(dirDown2.getName());
 			}
 		}
 	};
@@ -265,7 +265,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			final float value = Float.valueOf(down2Value.getText());
 			dirDown2Value = value;
-			config.joystick().setComponentValueDown(2, value);
+			config.getJoystick().setComponentValueDown2(value);
 		}
 	};
 
@@ -276,7 +276,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = left2.getSelectedIndex();
 			if (index >= 0) {
 				dirLeft2 = controller2.getComponents()[index];
-				config.joystick().setComponentNameLeft(2, dirLeft2.getName());
+				config.getJoystick().setComponentNameLeft2(dirLeft2.getName());
 			}
 		}
 	};
@@ -287,7 +287,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			final float value = Float.valueOf(left2Value.getText());
 			dirLeft2Value = value;
-			config.joystick().setComponentValueLeft(2, value);
+			config.getJoystick().setComponentValueLeft2(value);
 		}
 	};
 
@@ -298,7 +298,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = right2.getSelectedIndex();
 			if (index >= 0) {
 				dirRight2 = controller2.getComponents()[index];
-				config.joystick().setComponentNameRight(2, dirRight2.getName());
+				config.getJoystick().setComponentNameRight2(dirRight2.getName());
 			}
 		}
 	};
@@ -309,7 +309,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			final float value = Float.valueOf(right2Value.getText());
 			dirRight2Value = value;
-			config.joystick().setComponentValueRight(2, value);
+			config.getJoystick().setComponentValueRight2(value);
 		}
 	};
 
@@ -320,7 +320,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			final int index = fire2.getSelectedIndex();
 			if (index >= 0) {
 				dirFire2 = controller2.getComponents()[index];
-				config.joystick().setComponentNameBtn(2, dirFire2.getName());
+				config.getJoystick().setComponentNameBtn2(dirFire2.getName());
 			}
 		}
 	};
@@ -331,11 +331,11 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			final float value = Float.valueOf(fire2Value.getText());
 			dirFire2Value = value;
-			config.joystick().setComponentValueBtn(2, value);
+			config.getJoystick().setComponentValueBtn2(value);
 		}
 	};
 
-	public JoystickSettings(Player pl, IniConfig cfg) {
+	public JoystickSettings(Player pl, IConfig cfg) {
 		this.player = pl;
 		this.config = cfg;
 		uiEvents.addListener(this);
@@ -380,7 +380,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			left1.removeActionListener(chooseLeft1);
 			right1.removeActionListener(chooseRight1);
 			fire1.removeActionListener(chooseFire1);
-			String deviceName = config.joystick().getDeviceName(1);
+			String deviceName = config.getJoystick().getDeviceName1();
 			if (deviceName != null) {
 				device1.setSelectedItem(deviceName);
 				for (int i = 0; i < fControllerEnv.getControllers().length; i++) {
@@ -399,7 +399,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			fire1.addActionListener(chooseFire1);
 		}
 		{
-			String componentName = config.joystick().getComponentNameUp(1);
+			String componentName = config.getJoystick().getComponentNameUp1();
 			if (componentName != null) {
 				up1.setSelectedItem(componentName);
 				for (int i = 0; controller1 != null
@@ -413,7 +413,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 		{
-			String componentName = config.joystick().getComponentNameDown(1);
+			String componentName = config.getJoystick().getComponentNameDown1();
 			if (componentName != null) {
 				down1.setSelectedItem(componentName);
 				for (int i = 0; controller1 != null
@@ -427,7 +427,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 		{
-			String componentName = config.joystick().getComponentNameLeft(1);
+			String componentName = config.getJoystick().getComponentNameLeft1();
 			if (componentName != null) {
 				left1.setSelectedItem(componentName);
 				for (int i = 0; controller1 != null
@@ -441,7 +441,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 		{
-			String componentName = config.joystick().getComponentNameRight(1);
+			String componentName = config.getJoystick().getComponentNameRight1();
 			if (componentName != null) {
 				right1.setSelectedItem(componentName);
 				for (int i = 0; controller1 != null
@@ -455,7 +455,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 		{
-			String componentName = config.joystick().getComponentNameBtn(1);
+			String componentName = config.getJoystick().getComponentNameBtn1();
 			if (componentName != null) {
 				fire1.setSelectedItem(componentName);
 				for (int i = 0; controller1 != null
@@ -470,32 +470,32 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		}
 
 		{
-			final float value = Float.valueOf(config.joystick()
-					.getComponentValueUp(1));
+			final float value = Float.valueOf(config.getJoystick()
+					.getComponentValueUp1());
 			dirUp1Value = value;
 			up1Value.setText(String.valueOf(value));
 		}
 		{
-			final float value = Float.valueOf(config.joystick()
-					.getComponentValueDown(1));
+			final float value = Float.valueOf(config.getJoystick()
+					.getComponentValueDown1());
 			dirDown1Value = value;
 			down1Value.setText(String.valueOf(value));
 		}
 		{
-			final float value = Float.valueOf(config.joystick()
-					.getComponentValueLeft(1));
+			final float value = Float.valueOf(config.getJoystick()
+					.getComponentValueLeft1());
 			dirLeft1Value = value;
 			left1Value.setText(String.valueOf(value));
 		}
 		{
-			final float value = Float.valueOf(config.joystick()
-					.getComponentValueRight(1));
+			final float value = Float.valueOf(config.getJoystick()
+					.getComponentValueRight1());
 			dirRight1Value = value;
 			right1Value.setText(String.valueOf(value));
 		}
 		{
-			final float value = Float.valueOf(config.joystick()
-					.getComponentValueBtn(1));
+			final float value = Float.valueOf(config.getJoystick()
+					.getComponentValueBtn1());
 			dirFire1Value = value;
 			fire1Value.setText(String.valueOf(value));
 		}
@@ -512,7 +512,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			left2.removeActionListener(chooseLeft2);
 			right2.removeActionListener(chooseRight2);
 			fire2.removeActionListener(chooseFire2);
-			String deviceName = config.joystick().getDeviceName(2);
+			String deviceName = config.getJoystick().getDeviceName2();
 			if (deviceName != null) {
 				device2.setSelectedItem(deviceName);
 				for (int i = 0; i < fControllerEnv.getControllers().length; i++) {
@@ -531,7 +531,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			fire2.addActionListener(chooseFire2);
 		}
 		{
-			String componentName = config.joystick().getComponentNameUp(2);
+			String componentName = config.getJoystick().getComponentNameUp2();
 			if (componentName != null) {
 				up2.setSelectedItem(componentName);
 				for (int i = 0; controller2 != null
@@ -545,7 +545,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 		{
-			String componentName = config.joystick().getComponentNameDown(2);
+			String componentName = config.getJoystick().getComponentNameDown2();
 			if (componentName != null) {
 				down2.setSelectedItem(componentName);
 				for (int i = 0; controller2 != null
@@ -559,7 +559,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 		{
-			String componentName = config.joystick().getComponentNameLeft(2);
+			String componentName = config.getJoystick().getComponentNameLeft2();
 			if (componentName != null) {
 				left2.setSelectedItem(componentName);
 				for (int i = 0; controller2 != null
@@ -573,7 +573,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 		{
-			String componentName = config.joystick().getComponentNameRight(2);
+			String componentName = config.getJoystick().getComponentNameRight2();
 			if (componentName != null) {
 				right2.setSelectedItem(componentName);
 				for (int i = 0; controller2 != null
@@ -587,7 +587,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 		{
-			String componentName = config.joystick().getComponentNameBtn(2);
+			String componentName = config.getJoystick().getComponentNameBtn2();
 			if (componentName != null) {
 				fire2.setSelectedItem(componentName);
 				for (int i = 0; controller2 != null
@@ -602,32 +602,32 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		}
 
 		{
-			final float value = Float.valueOf(config.joystick()
-					.getComponentValueUp(2));
+			final float value = Float.valueOf(config.getJoystick()
+					.getComponentValueUp2());
 			dirUp2Value = value;
 			up2Value.setText(String.valueOf(value));
 		}
 		{
-			final float value = Float.valueOf(config.joystick()
-					.getComponentValueDown(2));
+			final float value = Float.valueOf(config.getJoystick()
+					.getComponentValueDown2());
 			dirDown2Value = value;
 			down2Value.setText(String.valueOf(value));
 		}
 		{
-			final float value = Float.valueOf(config.joystick()
-					.getComponentValueLeft(2));
+			final float value = Float.valueOf(config.getJoystick()
+					.getComponentValueLeft2());
 			dirLeft2Value = value;
 			left2Value.setText(String.valueOf(value));
 		}
 		{
-			final float value = Float.valueOf(config.joystick()
-					.getComponentValueRight(2));
+			final float value = Float.valueOf(config.getJoystick()
+					.getComponentValueRight2());
 			dirRight2Value = value;
 			right2Value.setText(String.valueOf(value));
 		}
 		{
-			final float value = Float.valueOf(config.joystick()
-					.getComponentValueBtn(2));
+			final float value = Float.valueOf(config.getJoystick()
+					.getComponentValueBtn2());
 			dirFire2Value = value;
 			fire2Value.setText(String.valueOf(value));
 		}
@@ -685,6 +685,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 
 	long oldRenderTime;
 
+	@Override
 	public void notify(final UIEvent evt) {
 		if (evt.isOfType(IUpdateUI.class)) {
 			final long currentTime = System.currentTimeMillis();
@@ -695,7 +696,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			}
 		}
 	}
-	
+
 	/**
 	 * Implementation of Joystick in port 1. Connects selected controller values
 	 * with the emulation core.
@@ -707,6 +708,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			private long lastPollingTime;
 			private byte bits;
 
+			@Override
 			public byte getValue() {
 				if (controller1 == null) {
 					return (byte) 0xff;
@@ -757,6 +759,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 			private long lastPollingTime;
 			private byte bits;
 
+			@Override
 			public byte getValue() {
 				if (controller2 == null) {
 					return (byte) 0xff;

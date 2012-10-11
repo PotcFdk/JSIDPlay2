@@ -28,7 +28,7 @@ import java.util.List;
 import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
 import libsidutils.zip.ZipEntryFileProxy;
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.sidtuneinfo.SidTuneInfoCache;
 
 /**
@@ -418,7 +418,7 @@ public abstract class SidTune {
 	 */
 	private static SidTuneInfoCache cache;
 	
-	public static Directory getDirectory(File file, IniConfig cfg)
+	public static Directory getDirectory(File file, IConfig cfg)
 			throws IOException {
 		Directory dir = new Directory();
 		SidTune tune;

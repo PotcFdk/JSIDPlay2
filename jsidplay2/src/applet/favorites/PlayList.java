@@ -54,7 +54,7 @@ import libsidutils.STIL.STILEntry;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.PathUtils;
 import applet.SidTuneConverter;
 import applet.collection.stil.STIL;
@@ -81,14 +81,14 @@ public class PlayList extends JPanel implements IFavorites {
 
 	protected final Favorites favoritesView;
 	protected Player player;
-	protected IniConfig config;
+	protected IConfig config;
 
 	protected int headerColumnToRemove;
 	protected File lastDir;
 	protected String playListFilename;
 	protected Random randomPlayback = new Random();
 
-	public PlayList(Player pl, IniConfig cfg, final Favorites favoritesView) {
+	public PlayList(Player pl, IConfig cfg, final Favorites favoritesView) {
 		this.favoritesView = favoritesView;
 		this.player = pl;
 		this.config = cfg;
@@ -211,10 +211,10 @@ public class PlayList extends JPanel implements IFavorites {
 			private JPopupMenu tablePopup;
 
 			protected STILEntry getSTIL(final File file) {
-				final String name = config.getHVSCName(file);
+				final String name = PathUtils.getHVSCName(config, file);
 				if (null != name) {
 					libsidutils.STIL stil = libsidutils.STIL.getInstance(config
-							.sidplay2().getHvsc());
+							.getSidplay2().getHvsc());
 					if (stil != null) {
 						return stil.getSTIL(name);
 					}
@@ -612,12 +612,12 @@ public class PlayList extends JPanel implements IFavorites {
 	protected String createRelativePath(File fileToConvert) {
 		boolean converted = false;
 		String result = fileToConvert.getAbsolutePath();
-		String hvscName = config.getHVSCName(fileToConvert);
+		String hvscName = PathUtils.getHVSCName(config, fileToConvert);
 		if (hvscName != null) {
 			result = FavoritesModel.HVSC_PREFIX + hvscName;
 			converted = true;
 		}
-		String cgscName = config.getCGSCName(fileToConvert);
+		String cgscName = PathUtils.getCGSCName(config, fileToConvert);
 		if (!converted && cgscName != null) {
 			result = FavoritesModel.CGSC_PREFIX + cgscName;
 			converted = true;

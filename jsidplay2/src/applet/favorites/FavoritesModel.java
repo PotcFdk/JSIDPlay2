@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreeModel;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.collection.Collection;
 import applet.collection.CollectionTreeModel;
 import applet.sidtuneinfo.SidTuneInfoCache;
@@ -22,14 +22,14 @@ public class FavoritesModel extends DefaultTableModel {
 
 	ArrayList<Integer> propertyIndices = new ArrayList<Integer>(1);
 
-	protected IniConfig config;
+	protected IConfig config;
 	protected Collection hvsc, cgsc;
 
 	public FavoritesModel() {
 		super(new Object[] { "Filename" }, 0);
 	}
 
-	public void setConfig(IniConfig cfg) {
+	public void setConfig(IConfig cfg) {
 		this.config = cfg;
 		infoCache = new SidTuneInfoCache(config);
 		propertyIndices.add(0);

@@ -1,12 +1,14 @@
 package sidplay.ini;
 
+import sidplay.ini.intf.IJoystickSection;
+
 /**
  * Joystick section of the INI file.
  * 
  * @author Ken Händel
  * 
  */
-public class IniJoystickSection extends IniSection {
+public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	protected IniJoystickSection(IniReader iniReader) {
 		super(iniReader);
@@ -19,9 +21,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return name of the Joystick device
 	 */
-	public final String getDeviceName(final int port) {
-		return iniReader.getPropertyString("Joystick", "Port" + port + "Name",
-				null);
+	@Override
+	public final String getDeviceName1() {
+		return iniReader.getPropertyString("Joystick", "Port1Name", null);
+	}
+
+	@Override
+	public final String getDeviceName2() {
+		return iniReader.getPropertyString("Joystick", "Port2Name", null);
 	}
 
 	/**
@@ -32,8 +39,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param deviceName
 	 *            name of the Joystick device
 	 */
-	public final void setDeviceName(final int port, final String deviceName) {
-		iniReader.setProperty("Joystick", "Port" + port + "Name", deviceName);
+	@Override
+	public final void setDeviceName1(final String deviceName) {
+		iniReader.setProperty("Joystick", "Port1Name", deviceName);
+	}
+
+	@Override
+	public final void setDeviceName2(final String deviceName) {
+		iniReader.setProperty("Joystick", "Port2Name", deviceName);
 	}
 
 	/**
@@ -43,9 +56,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return component name of Joystick direction up
 	 */
-	public final String getComponentNameUp(final int port) {
-		return iniReader.getPropertyString("Joystick",
-				"Port" + port + "UpName", null);
+	@Override
+	public final String getComponentNameUp1() {
+		return iniReader.getPropertyString("Joystick", "Port1UpName", null);
+	}
+
+	@Override
+	public final String getComponentNameUp2() {
+		return iniReader.getPropertyString("Joystick", "Port2UpName", null);
 	}
 
 	/**
@@ -56,11 +74,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param componentName
 	 *            component name of Joystick direction up
 	 */
-	public final void setComponentNameUp(final int port,
-			final String componentName) {
-//		System.err.println("Set NameUp: " + port + ":"+componentName);
-		iniReader.setProperty("Joystick", "Port" + port + "UpName",
-				componentName);
+	@Override
+	public final void setComponentNameUp1(final String componentName) {
+		iniReader.setProperty("Joystick", "Port1UpName", componentName);
+	}
+
+	@Override
+	public final void setComponentNameUp2(final String componentName) {
+		iniReader.setProperty("Joystick", "Port2UpName", componentName);
 	}
 
 	/**
@@ -70,9 +91,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return component name of Joystick direction down
 	 */
-	public final String getComponentNameDown(final int port) {
-		return iniReader.getPropertyString("Joystick", "Port" + port
-				+ "DownName", null);
+	@Override
+	public final String getComponentNameDown1() {
+		return iniReader.getPropertyString("Joystick", "Port1DownName", null);
+	}
+
+	@Override
+	public final String getComponentNameDown2() {
+		return iniReader.getPropertyString("Joystick", "Port2DownName", null);
 	}
 
 	/**
@@ -83,11 +109,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param componentName
 	 *            component name of Joystick direction down
 	 */
-	public final void setComponentNameDown(final int port,
-			final String componentName) {
-//		System.err.println("Set NameDown: " + port + ":"+componentName);
-		iniReader.setProperty("Joystick", "Port" + port + "DownName",
-				componentName);
+	@Override
+	public final void setComponentNameDown1(final String componentName) {
+		iniReader.setProperty("Joystick", "Port1DownName", componentName);
+	}
+
+	@Override
+	public final void setComponentNameDown2(final String componentName) {
+		iniReader.setProperty("Joystick", "Port2DownName", componentName);
 	}
 
 	/**
@@ -97,9 +126,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return component name of Joystick direction ledt
 	 */
-	public final String getComponentNameLeft(final int port) {
-		return iniReader.getPropertyString("Joystick", "Port" + port
-				+ "LeftName", null);
+	@Override
+	public final String getComponentNameLeft1() {
+		return iniReader.getPropertyString("Joystick", "Port1LeftName", null);
+	}
+
+	@Override
+	public final String getComponentNameLeft2() {
+		return iniReader.getPropertyString("Joystick", "Port2LeftName", null);
 	}
 
 	/**
@@ -110,11 +144,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param componentName
 	 *            component name of Joystick direction left
 	 */
-	public final void setComponentNameLeft(final int port,
-			final String componentName) {
-//		System.err.println("Set NameLeft: " + port + ":"+componentName);
-		iniReader.setProperty("Joystick", "Port" + port + "LeftName",
-				componentName);
+	@Override
+	public final void setComponentNameLeft1(final String componentName) {
+		iniReader.setProperty("Joystick", "Port1LeftName", componentName);
+	}
+
+	@Override
+	public final void setComponentNameLeft2(final String componentName) {
+		iniReader.setProperty("Joystick", "Port2LeftName", componentName);
 	}
 
 	/**
@@ -124,9 +161,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return component name of Joystick direction right
 	 */
-	public final String getComponentNameRight(final int port) {
-		return iniReader.getPropertyString("Joystick", "Port" + port
-				+ "RightName", null);
+	@Override
+	public final String getComponentNameRight1() {
+		return iniReader.getPropertyString("Joystick", "Port1RightName", null);
+	}
+
+	@Override
+	public final String getComponentNameRight2() {
+		return iniReader.getPropertyString("Joystick", "Port2RightName", null);
 	}
 
 	/**
@@ -137,11 +179,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param componentName
 	 *            component name of Joystick direction right
 	 */
-	public final void setComponentNameRight(final int port,
-			final String componentName) {
-//		System.err.println("Set NameRight: " + port + ":"+componentName);
-		iniReader.setProperty("Joystick", "Port" + port + "RightName",
-				componentName);
+	@Override
+	public final void setComponentNameRight1(final String componentName) {
+		iniReader.setProperty("Joystick", "Port1RightName", componentName);
+	}
+
+	@Override
+	public final void setComponentNameRight2(final String componentName) {
+		iniReader.setProperty("Joystick", "Port2RightName", componentName);
 	}
 
 	/**
@@ -151,9 +196,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return component name of Joystick fire button
 	 */
-	public final String getComponentNameBtn(final int port) {
-		return iniReader.getPropertyString("Joystick", "Port" + port
-				+ "BtnName", null);
+	@Override
+	public final String getComponentNameBtn1() {
+		return iniReader.getPropertyString("Joystick", "Port1BtnName", null);
+	}
+
+	@Override
+	public final String getComponentNameBtn2() {
+		return iniReader.getPropertyString("Joystick", "Port2BtnName", null);
 	}
 
 	/**
@@ -164,11 +214,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param componentName
 	 *            component name of Joystick fire button
 	 */
-	public final void setComponentNameBtn(final int port,
-			final String componentName) {
-//		System.err.println("Set NameBtn: " + port + ":"+componentName);
-		iniReader.setProperty("Joystick", "Port" + port + "BtnName",
-				componentName);
+	@Override
+	public final void setComponentNameBtn1(final String componentName) {
+		iniReader.setProperty("Joystick", "Port1BtnName", componentName);
+	}
+
+	@Override
+	public final void setComponentNameBtn2(final String componentName) {
+		iniReader.setProperty("Joystick", "Port2BtnName", componentName);
 	}
 
 	/**
@@ -178,9 +231,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return component value of Joystick direction up
 	 */
-	public final float getComponentValueUp(final int port) {
-		return iniReader.getPropertyFloat("Joystick", "Port" + port
-				+ "UpValue", 1.0f);
+	@Override
+	public final float getComponentValueUp1() {
+		return iniReader.getPropertyFloat("Joystick", "Port1UpValue", 1.0f);
+	}
+
+	@Override
+	public final float getComponentValueUp2() {
+		return iniReader.getPropertyFloat("Joystick", "Port2UpValue", 1.0f);
 	}
 
 	/**
@@ -191,11 +249,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param componentValue
 	 *            component value of Joystick direction up
 	 */
-	public final void setComponentValueUp(final int port,
-			final float componentValue) {
-//		System.err.println("Set ValueUp: " + port + ":"+componentValue);
-		iniReader.setProperty("Joystick", "Port" + port + "UpValue",
-				componentValue);
+	@Override
+	public final void setComponentValueUp1(final float componentValue) {
+		iniReader.setProperty("Joystick", "Port1UpValue", componentValue);
+	}
+
+	@Override
+	public final void setComponentValueUp2(final float componentValue) {
+		iniReader.setProperty("Joystick", "Port2UpValue", componentValue);
 	}
 
 	/**
@@ -205,9 +266,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return component value of Joystick direction down
 	 */
-	public final float getComponentValueDown(final int port) {
-		return iniReader.getPropertyFloat("Joystick", "Port" + port
-				+ "DownValue", 1.0f);
+	@Override
+	public final float getComponentValueDown1() {
+		return iniReader.getPropertyFloat("Joystick", "Port1DownValue", 1.0f);
+	}
+
+	@Override
+	public final float getComponentValueDown2() {
+		return iniReader.getPropertyFloat("Joystick", "Port2DownValue", 1.0f);
 	}
 
 	/**
@@ -218,11 +284,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param componentValue
 	 *            component value of Joystick direction down
 	 */
-	public final void setComponentValueDown(final int port,
-			final float componentValue) {
-//		System.err.println("Set ValueDown: " + port + ":"+componentValue);
-		iniReader.setProperty("Joystick", "Port" + port + "DownValue",
-				componentValue);
+	@Override
+	public final void setComponentValueDown1(final float componentValue) {
+		iniReader.setProperty("Joystick", "Port1DownValue", componentValue);
+	}
+
+	@Override
+	public final void setComponentValueDown2(final float componentValue) {
+		iniReader.setProperty("Joystick", "Port2DownValue", componentValue);
 	}
 
 	/**
@@ -232,9 +301,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return component value of Joystick direction ledt
 	 */
-	public final float getComponentValueLeft(final int port) {
-		return iniReader.getPropertyFloat("Joystick", "Port" + port
-				+ "LeftValue", 1.0f);
+	@Override
+	public final float getComponentValueLeft1() {
+		return iniReader.getPropertyFloat("Joystick", "Port1LeftValue", 1.0f);
+	}
+
+	@Override
+	public final float getComponentValueLeft2() {
+		return iniReader.getPropertyFloat("Joystick", "Port2LeftValue", 1.0f);
 	}
 
 	/**
@@ -245,11 +319,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param componentValue
 	 *            component value of Joystick direction left
 	 */
-	public final void setComponentValueLeft(final int port,
-			final float componentValue) {
-//		System.err.println("Set ValueLeft: " + port + ":"+componentValue);
-		iniReader.setProperty("Joystick", "Port" + port + "LeftValue",
-				componentValue);
+	@Override
+	public final void setComponentValueLeft1(final float componentValue) {
+		iniReader.setProperty("Joystick", "Port1LeftValue", componentValue);
+	}
+
+	@Override
+	public final void setComponentValueLeft2(final float componentValue) {
+		iniReader.setProperty("Joystick", "Port2LeftValue", componentValue);
 	}
 
 	/**
@@ -259,9 +336,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return component value of Joystick direction right
 	 */
-	public final float getComponentValueRight(final int port) {
-		return iniReader.getPropertyFloat("Joystick", "Port" + port
-				+ "RightValue", 1.0f);
+	@Override
+	public final float getComponentValueRight1() {
+		return iniReader.getPropertyFloat("Joystick", "Port1RightValue", 1.0f);
+	}
+
+	@Override
+	public final float getComponentValueRight2() {
+		return iniReader.getPropertyFloat("Joystick", "Port2RightValue", 1.0f);
 	}
 
 	/**
@@ -272,11 +354,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param componentValue
 	 *            component value of Joystick direction right
 	 */
-	public final void setComponentValueRight(final int port,
-			final float componentValue) {
-//		System.err.println("Set ValueRight: " + port + ":"+componentValue);
-		iniReader.setProperty("Joystick", "Port" + port + "RightValue",
-				componentValue);
+	@Override
+	public final void setComponentValueRight1(final float componentValue) {
+		iniReader.setProperty("Joystick", "Port1RightValue", componentValue);
+	}
+
+	@Override
+	public final void setComponentValueRight2(final float componentValue) {
+		iniReader.setProperty("Joystick", "Port2RightValue", componentValue);
 	}
 
 	/**
@@ -286,9 +371,14 @@ public class IniJoystickSection extends IniSection {
 	 *            port 1..2
 	 * @return component value of Joystick fire button
 	 */
-	public final float getComponentValueBtn(final int port) {
-		return iniReader.getPropertyFloat("Joystick", "Port" + port
-				+ "BtnValue", 1.0f);
+	@Override
+	public final float getComponentValueBtn1() {
+		return iniReader.getPropertyFloat("Joystick", "Port1BtnValue", 1.0f);
+	}
+
+	@Override
+	public final float getComponentValueBtn2() {
+		return iniReader.getPropertyFloat("Joystick", "Port2BtnValue", 1.0f);
 	}
 
 	/**
@@ -299,11 +389,14 @@ public class IniJoystickSection extends IniSection {
 	 * @param componentValue
 	 *            component value of Joystick fire button
 	 */
-	public final void setComponentValueBtn(final int port,
-			final float componentValue) {
-//		System.err.println("Set ValueBtn: " + port + ":"+componentValue);
-		iniReader.setProperty("Joystick", "Port" + port + "BtnValue",
-				componentValue);
+	@Override
+	public final void setComponentValueBtn1(final float componentValue) {
+		iniReader.setProperty("Joystick", "Port1BtnValue", componentValue);
+	}
+
+	@Override
+	public final void setComponentValueBtn2(final float componentValue) {
+		iniReader.setProperty("Joystick", "Port2BtnValue", componentValue);
 	}
 
 }

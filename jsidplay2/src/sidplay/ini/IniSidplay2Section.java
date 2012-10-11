@@ -1,12 +1,14 @@
 package sidplay.ini;
 
+import sidplay.ini.intf.ISidPlay2Section;
+
 /**
  * SIDPlay2 section of the INI file.
  * 
  * @author Ken Händel
  * 
  */
-public class IniSidplay2Section extends IniSection {
+public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	/**
 	 * SIDPlay2 section of the INI file.
@@ -23,6 +25,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return INI file version
 	 */
+	@Override
 	public final int getVersion() {
 		return iniReader.getPropertyInt("SIDPlay2", "Version",
 				IniConfig.REQUIRED_CONFIG_VERSION);
@@ -33,6 +36,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return Is the Songlengths database enabled?
 	 */
+	@Override
 	public final boolean isEnableDatabase() {
 		return iniReader.getPropertyBool("SIDPlay2", "EnableDatabase", true);
 	}
@@ -43,6 +47,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param enable
 	 *            the enable of the Songlengths database
 	 */
+	@Override
 	public final void setEnableDatabase(final boolean enable) {
 		iniReader.setProperty("SIDPlay2", "EnableDatabase", enable);
 	}
@@ -52,6 +57,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return default play length
 	 */
+	@Override
 	public final int getPlayLength() {
 		return iniReader.getPropertyTime("SIDPlay2", "Default Play Length",
 				3 * 60 + 30);
@@ -63,6 +69,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param length
 	 *            default play length
 	 */
+	@Override
 	public final void setPlayLength(final int playLength) {
 		iniReader.setProperty("SIDPlay2", "Default Play Length", String.format(
 				"%02d:%02d", (playLength / 60), (playLength % 60)));
@@ -73,9 +80,16 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the record length
 	 */
+	@Override
 	public final int getRecordLength() {
 		return iniReader.getPropertyTime("SIDPlay2", "Default Record Length",
 				3 * 60 + 30);
+	}
+
+	@Override
+	public final void setRecordLength(int playLength) {
+		iniReader.setProperty("SIDPlay2", "Default Record Length", String
+				.format("%02d:%02d", (playLength / 60), (playLength % 60)));
 	}
 
 	/**
@@ -83,6 +97,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the HVMEC collection directory
 	 */
+	@Override
 	public final String getHVMEC() {
 		return iniReader.getPropertyString("SIDPlay2", "HVMEC Dir", null);
 	}
@@ -93,6 +108,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param hvmec
 	 *            the HVMEC directory
 	 */
+	@Override
 	public final void setHVMEC(final String hvmec) {
 		iniReader.setProperty("SIDPlay2", "HVMEC Dir", hvmec);
 	}
@@ -102,6 +118,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the CGSC collection directory
 	 */
+	@Override
 	public final String getDemos() {
 		return iniReader.getPropertyString("SIDPlay2", "DEMOS Dir", null);
 	}
@@ -112,6 +129,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param demos
 	 *            the Demos directory
 	 */
+	@Override
 	public final void setDemos(final String demos) {
 		iniReader.setProperty("SIDPlay2", "DEMOS Dir", demos);
 	}
@@ -121,6 +139,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the Mags directory
 	 */
+	@Override
 	public final String getMags() {
 		return iniReader.getPropertyString("SIDPlay2", "MAGS Dir", null);
 	}
@@ -131,6 +150,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param mags
 	 *            the Mags directory
 	 */
+	@Override
 	public final void setMags(final String mags) {
 		iniReader.setProperty("SIDPlay2", "MAGS Dir", mags);
 	}
@@ -140,6 +160,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the CGSC collection directory
 	 */
+	@Override
 	public final String getCgsc() {
 		return iniReader.getPropertyString("SIDPlay2", "CGSC Dir", null);
 	}
@@ -150,6 +171,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param cgsc
 	 *            the CGSC collection directory
 	 */
+	@Override
 	public final void setCgsc(final String cgsc) {
 		iniReader.setProperty("SIDPlay2", "CGSC Dir", cgsc);
 	}
@@ -159,6 +181,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the HVSC collection directory
 	 */
+	@Override
 	public final String getHvsc() {
 		return iniReader.getPropertyString("SIDPlay2", "HVSC Dir", null);
 	}
@@ -169,6 +192,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param hvsc
 	 *            the HVSC collection directory
 	 */
+	@Override
 	public final void setHvsc(final String hvsc) {
 		iniReader.setProperty("SIDPlay2", "HVSC Dir", hvsc);
 	}
@@ -178,6 +202,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return play a single song per tune
 	 */
+	@Override
 	public final boolean isSingle() {
 		return iniReader.getPropertyBool("SIDPlay2", "SingleTrack", false);
 	}
@@ -188,6 +213,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param singleSong
 	 *            play a single song per tune
 	 */
+	@Override
 	public final void setSingle(final boolean singleSong) {
 		iniReader.setProperty("SIDPlay2", "SingleTrack", singleSong);
 	}
@@ -197,6 +223,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the download URL for SOASC MOS6581R2
 	 */
+	@Override
 	public final String getSoasc6581R2() {
 		return iniReader.getPropertyString("SIDPlay2", "SOASC_6581R2", null);
 	}
@@ -207,6 +234,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param soasc6581R2
 	 *            the download URL for SOASC MOS6581R2
 	 */
+	@Override
 	public final void setSoasc6581R2(final String soasc6581R2) {
 		iniReader.setProperty("SIDPlay2", "SOASC_6581R2", soasc6581R2);
 	}
@@ -216,6 +244,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the download URL for SOASC MOS6581R4
 	 */
+	@Override
 	public final String getSoasc6581R4() {
 		return iniReader.getPropertyString("SIDPlay2", "SOASC_6581R4", null);
 	}
@@ -226,6 +255,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param soascr6581R4
 	 *            the download URL for SOASC MOS6581R4
 	 */
+	@Override
 	public final void setSoasc6581R4(final String soasc6581R4) {
 		iniReader.setProperty("SIDPlay2", "SOASC_6581R2", soasc6581R4);
 	}
@@ -235,6 +265,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the download URL for SOASC CSG8580R5
 	 */
+	@Override
 	public final String getSoasc8580R5() {
 		return iniReader.getPropertyString("SIDPlay2", "SOASC_8580R5", null);
 	}
@@ -245,6 +276,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param soasc8580R5
 	 *            the download URL for SOASC CSG8580R5
 	 */
+	@Override
 	public final void setSoasc8580R5(final String soasc8580R5) {
 		iniReader.setProperty("SIDPlay2", "SOASC_8580R5", soasc8580R5);
 	}
@@ -254,6 +286,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return enable proxy for SOASC downloads
 	 */
+	@Override
 	public final boolean isEnableProxy() {
 		return iniReader.getPropertyBool("SIDPlay2", "EnableProxy", false);
 	}
@@ -264,6 +297,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param enable
 	 *            enable proxy for SOASC downloads
 	 */
+	@Override
 	public final void setEnableProxy(final boolean enable) {
 		iniReader.setProperty("SIDPlay2", "EnableProxy", enable);
 	}
@@ -273,6 +307,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the proxy hostname for SOASC downloads
 	 */
+	@Override
 	public final String getProxyHostname() {
 		return iniReader.getPropertyString("SIDPlay2", "ProxyHostname", null);
 	}
@@ -283,6 +318,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param hostname
 	 *            the proxy hostname for SOASC downloads
 	 */
+	@Override
 	public final void setProxyHostname(final String hostname) {
 		iniReader.setProperty("SIDPlay2", "ProxyHostname", hostname);
 	}
@@ -292,6 +328,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the proxy port for SOASC downloads
 	 */
+	@Override
 	public final int getProxyPort() {
 		return iniReader.getPropertyInt("SIDPlay2", "ProxyPort", 80);
 	}
@@ -302,6 +339,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param port
 	 *            the proxy port for SOASC downloads
 	 */
+	@Override
 	public final void setProxyPort(final int port) {
 		iniReader.setProperty("SIDPlay2", "ProxyPort", port);
 	}
@@ -311,6 +349,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the last accessed directory in the file browser
 	 */
+	@Override
 	public final String getLastDirectory() {
 		return iniReader.getPropertyString("SIDPlay2", "Last Directory", null);
 	}
@@ -321,6 +360,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param lastDir
 	 *            the last accessed directory in the file browser
 	 */
+	@Override
 	public final void setLastDirectory(final String lastDir) {
 		iniReader.setProperty("SIDPlay2", "Last Directory", lastDir);
 	}
@@ -332,6 +372,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the temporary directory for JSIDPlay2
 	 */
+	@Override
 	public final String getTmpDir() {
 		return iniReader.getPropertyString(
 				"SIDPlay2",
@@ -346,6 +387,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param path
 	 *            the temporary directory for JSIDPlay2
 	 */
+	@Override
 	public final void setTmpDir(final String path) {
 		iniReader.setProperty("SIDPlay2", "Temp Dir", path);
 	}
@@ -355,6 +397,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the application window X position
 	 */
+	@Override
 	public final int getFrameX() {
 		return iniReader.getPropertyInt("SIDPlay2", "Frame X", -1);
 	}
@@ -365,6 +408,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param x
 	 *            application window X position
 	 */
+	@Override
 	public final void setFrameX(final int x) {
 		iniReader.setProperty("SIDPlay2", "Frame X", x);
 	}
@@ -374,6 +418,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the application window Y position
 	 */
+	@Override
 	public final int getFrameY() {
 		return iniReader.getPropertyInt("SIDPlay2", "Frame Y", -1);
 	}
@@ -384,6 +429,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param y
 	 *            application window Y position
 	 */
+	@Override
 	public final void setFrameY(final int y) {
 		iniReader.setProperty("SIDPlay2", "Frame Y", y);
 	}
@@ -393,6 +439,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the application window width
 	 */
+	@Override
 	public final int getFrameWidth() {
 		return iniReader.getPropertyInt("SIDPlay2", "Frame Width", -1);
 	}
@@ -403,6 +450,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param width
 	 *            application window width
 	 */
+	@Override
 	public final void setFrameWidth(final int width) {
 		iniReader.setProperty("SIDPlay2", "Frame Width", width);
 	}
@@ -412,6 +460,7 @@ public class IniSidplay2Section extends IniSection {
 	 * 
 	 * @return the application window height
 	 */
+	@Override
 	public final int getFrameHeight() {
 		return iniReader.getPropertyInt("SIDPlay2", "Frame Height", -1);
 	}
@@ -422,6 +471,7 @@ public class IniSidplay2Section extends IniSection {
 	 * @param height
 	 *            application window height
 	 */
+	@Override
 	public final void setFrameHeight(final int height) {
 		iniReader.setProperty("SIDPlay2", "Frame Height", height);
 	}

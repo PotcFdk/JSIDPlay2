@@ -12,16 +12,16 @@ import javax.swing.filechooser.FileFilter;
 
 import libsidutils.zip.ZipEntryFileProxy;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.filechooser.zip.ZipFileSystemView;
 
 public class ImageFileChooser extends JFileChooser implements PropertyChangeListener {
 
-	private IniConfig config;
+	private IConfig config;
 	private File autostartFile;
 
-	public ImageFileChooser(final IniConfig cfg, final FileFilter filter) {
-		super(cfg.sidplay2().getLastDirectory(), new ZipFileSystemView());
+	public ImageFileChooser(final IConfig cfg, final FileFilter filter) {
+		super(cfg.getSidplay2().getLastDirectory(), new ZipFileSystemView());
 		this.config = cfg;
 		setFileFilter(filter);
 		setFileView(new ImageFileView());
@@ -44,10 +44,10 @@ public class ImageFileChooser extends JFileChooser implements PropertyChangeList
 					// Load file entry from ZIP
 					ZipEntryFileProxy zipEntry = (ZipEntryFileProxy) selectedFile;
 					setSelectedFile(ZipEntryFileProxy.extractFromZip(zipEntry));
-					config.sidplay2().setLastDirectory(
+					config.getSidplay2().setLastDirectory(
 							zipEntry.getZip().getAbsolutePath());
 				} else {
-					config.sidplay2().setLastDirectory(
+					config.getSidplay2().setLastDirectory(
 							selectedFile.getParentFile().getAbsolutePath());
 				}
 			}

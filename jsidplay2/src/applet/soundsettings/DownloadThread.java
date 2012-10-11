@@ -12,17 +12,17 @@ import java.net.SocketAddress;
 import java.net.URL;
 import java.net.URLConnection;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 
 public class DownloadThread extends Thread {
 	public static final int MAX_BUFFER_SIZE = 1<<20;
 
 	private boolean isAborted;
-	private final IniConfig config;
+	private final IConfig config;
 	private final String fURL;
 	private final IDownloadListener fListener;
 
-	public DownloadThread(IniConfig cfg, IDownloadListener listener,
+	public DownloadThread(IConfig cfg, IDownloadListener listener,
 			String url) {
 		config = cfg;
 		fURL = url;
@@ -33,11 +33,11 @@ public class DownloadThread extends Thread {
 	public void run() {
 		try {
 			Proxy proxy;
-			if (!config.sidplay2().isEnableProxy()) {
+			if (!config.getSidplay2().isEnableProxy()) {
 				proxy = null;
 			} else {
 				final SocketAddress addr = new InetSocketAddress(config
-						.sidplay2().getProxyHostname(), config.sidplay2()
+						.getSidplay2().getProxyHostname(), config.getSidplay2()
 						.getProxyPort());
 				proxy = new Proxy(Proxy.Type.HTTP, addr);
 			}

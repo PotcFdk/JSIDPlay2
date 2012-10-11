@@ -1,9 +1,7 @@
 package sidplay.ini;
 
-import java.io.File;
-
 import resid_builder.resid.ISIDDefs.SamplingMethod;
-import sidplay.audio.AudioConfig;
+import sidplay.ini.intf.IAudioSection;
 
 /**
  * Audio section of the INI file.
@@ -11,7 +9,7 @@ import sidplay.audio.AudioConfig;
  * @author Ken Händel
  * 
  */
-public class IniAudioSection extends IniSection {
+public class IniAudioSection extends IniSection implements IAudioSection {
 	public IniAudioSection(IniReader iniReader) {
 		super(iniReader);
 	}
@@ -21,6 +19,7 @@ public class IniAudioSection extends IniSection {
 	 * 
 	 * @return Playback/Recording frequency
 	 */
+	@Override
 	public final int getFrequency() {
 		return iniReader.getPropertyInt("Audio", "Frequency", 48000);
 	}
@@ -31,6 +30,7 @@ public class IniAudioSection extends IniSection {
 	 * @param freq
 	 *            Playback/Recording frequency
 	 */
+	@Override
 	public final void setFrequency(final int freq) {
 		iniReader.setProperty("Audio", "Frequency", freq);
 	}
@@ -40,6 +40,7 @@ public class IniAudioSection extends IniSection {
 	 * 
 	 * @return the sampling method
 	 */
+	@Override
 	public final SamplingMethod getSampling() {
 		return iniReader.getPropertyEnum("Audio", "Sampling", SamplingMethod.DECIMATE);
 	}
@@ -50,6 +51,7 @@ public class IniAudioSection extends IniSection {
 	 * @param method
 	 *            the sampling method
 	 */
+	@Override
 	public final void setSampling(final SamplingMethod method) {
 		iniReader.setProperty("Audio", "Sampling", method);
 	}
@@ -64,6 +66,7 @@ public class IniAudioSection extends IniSection {
 	 * 
 	 * @return play the recording
 	 */
+	@Override
 	public final boolean isPlayOriginal() {
 		return playOriginal;
 	}
@@ -74,6 +77,7 @@ public class IniAudioSection extends IniSection {
 	 * @param original
 	 *            Play recorded (original) or emulated tune
 	 */
+	@Override
 	public final void setPlayOriginal(final boolean original) {
 		this.playOriginal = original;
 	}
@@ -88,8 +92,9 @@ public class IniAudioSection extends IniSection {
 	 * 
 	 * @return the recorded tune filename
 	 */
-	public final File getMp3File() {
-		return new File(iniReader.getPropertyString("Audio", "MP3File", null));
+	@Override
+	public final String getMp3File() {
+		return iniReader.getPropertyString("Audio", "MP3File", null);
 	}
 
 	/**
@@ -98,8 +103,9 @@ public class IniAudioSection extends IniSection {
 	 * @param recording
 	 *            the recorded tune filename
 	 */
-	public final void setMp3File(final File recording) {
-		iniReader.setProperty("Audio", "MP3File", recording.getAbsolutePath());
+	@Override
+	public final void setMp3File(final String recording) {
+		iniReader.setProperty("Audio", "MP3File", recording);
 	}
 
 	/**
@@ -107,6 +113,7 @@ public class IniAudioSection extends IniSection {
 	 * 
 	 * @return the left volume setting
 	 */
+	@Override
 	public final float getLeftVolume() {
 		return iniReader.getPropertyFloat("Audio", "LeftVolume", 0f);
 	}
@@ -117,6 +124,7 @@ public class IniAudioSection extends IniSection {
 	 * @param volume
 	 *            the left volume setting
 	 */
+	@Override
 	public final void setLeftVolume(final float volume) {
 		iniReader.setProperty("Audio", "LeftVolume", volume);
 	}
@@ -126,6 +134,7 @@ public class IniAudioSection extends IniSection {
 	 * 
 	 * @return the right volume setting
 	 */
+	@Override
 	public float getRightVolume() {
 		return iniReader.getPropertyFloat("Audio", "RightVolume", 0f);
 	}
@@ -136,17 +145,9 @@ public class IniAudioSection extends IniSection {
 	 * @param volume
 	 *            the right volume setting
 	 */
+	@Override
 	public void setRightVolume(final float volume) {
 		iniReader.setProperty("Audio", "RightVolume", volume);
 	}
 
-	/**
-	 * Return a detached AudioConfig instance corresponding to current parameters.
-	 * 
-	 * @param channels
-	 * @return AudioConfig for current specification
-	 */
-	public AudioConfig toAudioConfig(int channels) {
-		return new AudioConfig(getFrequency(), channels, getSampling());
-	}
 }

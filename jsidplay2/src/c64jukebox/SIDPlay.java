@@ -12,6 +12,7 @@ import libsidplay.sidtune.SidTune;
 import sidplay.ConsolePlayer;
 import sidplay.ConsolePlayer.OUTPUTS;
 import sidplay.ConsolePlayer.SIDEMUS;
+import sidplay.ini.IniConfig;
 
 @SuppressWarnings("serial")
 public class SIDPlay extends Applet implements Runnable {
@@ -36,7 +37,7 @@ public class SIDPlay extends Applet implements Runnable {
 
 	@Override
 	public void init() {
-		cp = new ConsolePlayer();
+		cp = new ConsolePlayer(new IniConfig());
 		try {
 			if (isapplet && getAppletContext() != null) {
 				getAppletContext().showDocument(new URL("javascript:init()"));
@@ -250,8 +251,8 @@ public class SIDPlay extends Applet implements Runnable {
 	 *            device number to be used for 8580
 	 */
 	public void setChipDevice(final int hardsid6581, final int hardsid8580) {
-		cp.getConfig().emulation().setHardsid6581(hardsid6581);
-		cp.getConfig().emulation().setHardsid8580(hardsid8580);
+		cp.getConfig().getEmulation().setHardsid6581(hardsid6581);
+		cp.getConfig().getEmulation().setHardsid8580(hardsid8580);
 	}
 
 	/**

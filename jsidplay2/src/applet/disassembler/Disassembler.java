@@ -22,7 +22,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import org.swixml.SwingEngine;
 import org.swixml.XDialog;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 
 public class Disassembler extends XDialog {
 
@@ -34,9 +34,9 @@ public class Disassembler extends XDialog {
 	protected JScrollPane memorytablescrollPane;
 
 	protected Player player;
-	protected IniConfig config;
+	protected IConfig config;
 
-	public Disassembler(final Player pl, final IniConfig cfg) {
+	public Disassembler(final Player pl, final IConfig cfg) {
 		this.player = pl;
 		this.config = cfg;
 		try {
@@ -189,7 +189,7 @@ public class Disassembler extends XDialog {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JFileChooser chooser = new JFileChooser(config.sidplay2()
+			JFileChooser chooser = new JFileChooser(config.getSidplay2()
 					.getLastDirectory());
 			int rc = chooser.showOpenDialog(getContentPane());
 			if (rc == JFileChooser.APPROVE_OPTION) {

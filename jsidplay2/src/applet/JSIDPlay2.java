@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 import javax.swing.JApplet;
 import javax.swing.JOptionPane;
 
@@ -32,7 +34,10 @@ import org.swixml.SwingEngine;
 
 import sidplay.ConsolePlayer;
 import sidplay.ini.IniConfig;
-import sidplay.ini.IniSidplay2Section;
+import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.ISidPlay2Section;
+import applet.entities.PersistenceProperties;
+import applet.entities.config.DbConfig;
 import applet.events.IGotoURL;
 import applet.events.IInsertMedia;
 import applet.events.IPlayTune;
@@ -55,8 +60,10 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	/**
 	 * URL where the JSIDPlay2 is deploey to.
 	 */
-	public static final String DEPLOYMENT_URL="http://kenchis.t15.org/jsidplay2/";
-		
+	public static final String DEPLOYMENT_URL = "http://kenchis.t15.org/jsidplay2/";
+
+	public static final String CONFIG_DATABASE = "JSIDPLAY2";
+
 	/**
 	 * Console player
 	 */
@@ -76,6 +83,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 */
 	protected JSIDPlay2UI ui;
 
+	protected EntityManager em;
+
 	/**
 	 * Applet constructor.
 	 */
@@ -87,9 +96,12 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * Application constructor.
 	 */
 	public JSIDPlay2(final String[] args) {
+		IConfig config = initializeConfigDatabase();
+		initializeTmpDir(config);
+
 		uiEvents.addListener(this);
 
-		cp = new ConsolePlayer();
+		cp = new ConsolePlayer(config);
 		if (args.length != 0) {
 			cp.args(args);
 		}
@@ -99,6 +111,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * Player runnable to play music in the background.
 	 */
 	private transient final Runnable playerRunnable = new Runnable() {
+		@Override
 		public void run() {
 			// Run until the player gets stopped
 			while (true) {
@@ -127,7 +140,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				}
 				// save settings and filter definitions,
 				// only if dirty (auto save after the tune gets stopped)
-				getConfig().write();
+				write();
 
 				// "Play it once, Sam. For old times' sake."
 				if ((cp.getState() & ~playerFast) == playerRestart) {
@@ -140,15 +153,33 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 			// Player has finished, play another favorite tune? Notify!
 			uiEvents.fireEvent(ITuneStateChanged.class,
 					new ITuneStateChanged() {
+						@Override
 						public File getTune() {
 							return getPlayer().getTune().getInfo().file;
 						}
 
+						@Override
 						public boolean naturalFinished() {
 							return cp.getState() == playerExit;
 						}
 
 					});
+		}
+
+		private void write() {
+			if (getConfig() instanceof IniConfig) {
+				((IniConfig) getConfig()).write();
+			} else {
+				// getConfig() instanceof DbConfig
+				em.getTransaction().begin();
+				try {
+					em.persist(getConfig());
+					em.getTransaction().commit();
+				} catch (Exception e) {
+					e.printStackTrace();
+					em.getTransaction().rollback();
+				}
+			}
 		}
 	};
 
@@ -163,7 +194,6 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 */
 	@Override
 	public void init() {
-		initializeTmpDir();
 		createUI();
 	}
 
@@ -213,13 +243,51 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	// Helper methods
 	//
 
+	private IConfig initializeConfigDatabase() {
+		File dbFile = getDbPath();
+		boolean dbFileExists = dbFile.exists();
+		em = Persistence.createEntityManagerFactory(
+				PersistenceProperties.CONFIG_DS,
+				new PersistenceProperties(new File(dbFile.getParent(),
+						CONFIG_DATABASE))).createEntityManager();
+		if (!dbFileExists) {
+			return importINIFile();
+		} else {
+			DbConfig config = em.find(DbConfig.class, 1);
+			if (config == null) {
+				return importINIFile();
+			}
+			return config;
+		}
+	}
+
+	private IConfig importINIFile() {
+		DbConfig dbConfig = new DbConfig();
+		dbConfig.copyFrom(new IniConfig());
+		return dbConfig;
+	}
+
+	private File getDbPath() {
+		File configPlace = null;
+		for (final String s : new String[] { System.getProperty("user.dir"),
+				System.getProperty("user.home"), }) {
+			configPlace = new File(s, CONFIG_DATABASE + ".properties");
+			if (configPlace.exists()) {
+				return configPlace;
+			}
+		}
+		return configPlace;
+	}
+
 	/**
 	 * Create temp directory, if not exists (default is user home dir).
 	 * 
 	 * Note: system property jsidplay2.tmpdir is set accordingly.
+	 * 
+	 * @param config
 	 */
-	private void initializeTmpDir() {
-		String tmpDirPath = getConfig().sidplay2().getTmpDir();
+	private void initializeTmpDir(IConfig config) {
+		String tmpDirPath = config.getSidplay2().getTmpDir();
 		File tmpDir = new File(tmpDirPath);
 		if (!tmpDir.exists()) {
 			tmpDir.mkdirs();
@@ -322,14 +390,15 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 			final Component component) throws IOException {
 		// automatically turn drive on
 		getPlayer().enableFloppyDiskDrives(true);
-		getConfig().c1541().setDriveOn(true);
+		getConfig().getC1541().setDriveOn(true);
 		// attach selected disk into the first disk drive
 		DiskImage disk = getPlayer().getFloppies()[0].getDiskController()
 				.insertDisk(selectedDisk);
 		disk.setExtendImagePolicy(new IExtendImageListener() {
 
+			@Override
 			public boolean isAllowed() {
-				if (getConfig().c1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ASK) {
+				if (getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ASK) {
 					// EXTEND_ASK
 					return JOptionPane.YES_OPTION == JOptionPane
 							.showConfirmDialog(
@@ -341,7 +410,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 									ui.getSwix().getLocalizer()
 											.getString("EXTEND_DISK_IMAGE"),
 									JOptionPane.YES_NO_OPTION);
-				} else if (getConfig().c1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ACCESS) {
+				} else if (getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ACCESS) {
 					// EXTEND_ACCESS
 					return true;
 				} else {
@@ -419,8 +488,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 			window.add(sidplayApplet);
 
 			// Set default position and size
-			final IniSidplay2Section section = sidplayApplet.getConfig()
-					.sidplay2();
+			final ISidPlay2Section section = sidplayApplet.getConfig()
+					.getSidplay2();
 			if (section.getFrameX() != -1 && section.getFrameY() != -1) {
 				// Restore saved coordinates
 				window.setLocation(section.getFrameX(), section.getFrameY());
@@ -439,6 +508,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 					sidplayApplet.stop();
 					// Free resources
 					sidplayApplet.destroy();
+					sidplayApplet.em.close();
 				}
 			});
 
@@ -449,9 +519,9 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				public void componentResized(final ComponentEvent e) {
 					// Store window dimensions, if resized
 					final Dimension size = window.getSize();
-					sidplayApplet.getConfig().sidplay2()
+					sidplayApplet.getConfig().getSidplay2()
 							.setFrameWidth(size.width);
-					sidplayApplet.getConfig().sidplay2()
+					sidplayApplet.getConfig().getSidplay2()
 							.setFrameHeight(size.height);
 				}
 
@@ -459,8 +529,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				public void componentMoved(final ComponentEvent e) {
 					// Store window location, if moved
 					final Point loc = window.getLocation();
-					sidplayApplet.getConfig().sidplay2().setFrameX(loc.x);
-					sidplayApplet.getConfig().sidplay2().setFrameY(loc.y);
+					sidplayApplet.getConfig().getSidplay2().setFrameX(loc.x);
+					sidplayApplet.getConfig().getSidplay2().setFrameY(loc.y);
 				}
 
 			});
@@ -478,6 +548,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * @param evt
 	 *            property change event
 	 */
+	@Override
 	public void notify(final UIEvent evt) {
 		if (evt.isOfType(IReplayTune.class)) {
 			// Replay (restart) a tune
@@ -564,7 +635,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * 
 	 * @return INI file configuration
 	 */
-	public IniConfig getConfig() {
+	public IConfig getConfig() {
 		return cp.getConfig();
 	}
 

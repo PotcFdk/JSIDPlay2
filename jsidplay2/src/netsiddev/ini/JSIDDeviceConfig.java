@@ -27,6 +27,8 @@ import java.util.List;
 import sidplay.ini.IniAudioSection;
 import sidplay.ini.IniFilterSection;
 import sidplay.ini.IniReader;
+import sidplay.ini.intf.IAudioSection;
+import sidplay.ini.intf.IFilterSection;
 
 /**
  * INI configuration file support responsible to load and save all emulator
@@ -47,7 +49,7 @@ public class JSIDDeviceConfig {
 
 	private IniJSIDDeviceSection jsiddeviceSection;
 
-	private IniAudioSection audioSection;
+	private IAudioSection audioSection;
 
 	protected IniReader iniReader;
 
@@ -69,7 +71,7 @@ public class JSIDDeviceConfig {
 		filterList = filters.toArray(new String[] {});
 	}
 
-	public IniFilterSection getFilter(final String filterName) {
+	public IFilterSection getFilter(final String filterName) {
 		return new IniFilterSection(iniReader, "Filter" + filterName);
 	}
 
@@ -171,7 +173,7 @@ public class JSIDDeviceConfig {
 		return jsiddeviceSection;
 	}
 
-	public final IniAudioSection audio() {
+	public final IAudioSection audio() {
 		return audioSection;
 	}
 

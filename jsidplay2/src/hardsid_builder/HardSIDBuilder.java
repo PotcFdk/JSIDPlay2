@@ -13,7 +13,7 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
 import resid_builder.resid.ISIDDefs.ChipModel;
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 
 /**
  * <pre>
@@ -219,9 +219,9 @@ public class HardSIDBuilder extends SIDBuilder {
 		}
 	}
 
-	public void setDevicesToUse(final IniConfig m_iniCfg) {
-		sid8580 = m_iniCfg.emulation().getHardsid8580() - 1;
-		sid6581 = m_iniCfg.emulation().getHardsid6581() - 1;
+	public void setDevicesToUse(final IConfig m_iniCfg) {
+		sid8580 = m_iniCfg.getEmulation().getHardsid8580() - 1;
+		sid6581 = m_iniCfg.getEmulation().getHardsid6581() - 1;
 	}
 
 }

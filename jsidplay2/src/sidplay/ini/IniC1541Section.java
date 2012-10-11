@@ -1,5 +1,6 @@
 package sidplay.ini;
 
+import sidplay.ini.intf.IC1541Section;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 
@@ -9,7 +10,7 @@ import libsidplay.components.c1541.ExtendImagePolicy;
  * @author Ken Händel
  * 
  */
-public class IniC1541Section extends IniSection {
+public class IniC1541Section extends IniSection implements IC1541Section {
 
 	protected IniC1541Section(IniReader iniReader) {
 		super(iniReader);
@@ -20,6 +21,7 @@ public class IniC1541Section extends IniSection {
 	 * 
 	 * @return drive turned on?
 	 */
+	@Override
 	public final boolean isDriveOn() {
 		return iniReader.getPropertyBool("C1541", "DriveOn", false);
 	}
@@ -30,6 +32,7 @@ public class IniC1541Section extends IniSection {
 	 * @param on
 	 *            drive turned on?
 	 */
+	@Override
 	public final void setDriveOn(final boolean on) {
 		iniReader.setProperty("C1541", "DriveOn", on);
 	}
@@ -39,6 +42,7 @@ public class IniC1541Section extends IniSection {
 	 * 
 	 * @return drive sound turned on?
 	 */
+	@Override
 	public final boolean isDriveSoundOn() {
 		return iniReader.getPropertyBool("C1541", "DriveSound", false);
 	}
@@ -49,6 +53,7 @@ public class IniC1541Section extends IniSection {
 	 * @param driveSound
 	 *            drive sound turned on?
 	 */
+	@Override
 	public final void setDriveSoundOn(final boolean on) {
 		iniReader.setProperty("C1541", "DriveSound", on);
 	}
@@ -58,6 +63,7 @@ public class IniC1541Section extends IniSection {
 	 * 
 	 * @return parallel cable plugged in?
 	 */
+	@Override
 	public final boolean isParallelCable() {
 		return iniReader.getPropertyBool("C1541", "ParallelCable", false);
 	}
@@ -68,6 +74,7 @@ public class IniC1541Section extends IniSection {
 	 * @param cable
 	 *            parallel cable plugged in?
 	 */
+	@Override
 	public final void setParallelCable(final boolean on) {
 		iniReader.setProperty("C1541", "ParallelCable", on);
 	}
@@ -81,8 +88,25 @@ public class IniC1541Section extends IniSection {
 	 * @return state
 	 * 			  enabled?
 	 */
-	public final boolean isRamExpansionEnabled(final int selector) {
-		return iniReader.getPropertyBool("C1541", String.format("RamExpand0x%X", 8192 * (selector + 1)), false);
+	@Override
+	public final boolean isRamExpansionEnabled0() {
+		return iniReader.getPropertyBool("C1541", "RamExpand0x2000", false);
+	}
+	@Override
+	public final boolean isRamExpansionEnabled1() {
+		return iniReader.getPropertyBool("C1541", "RamExpand0x4000", false);
+	}
+	@Override
+	public final boolean isRamExpansionEnabled2() {
+		return iniReader.getPropertyBool("C1541", "RamExpand0x6000", false);
+	}
+	@Override
+	public final boolean isRamExpansionEnabled3() {
+		return iniReader.getPropertyBool("C1541", "RamExpand0x8000", false);
+	}
+	@Override
+	public final boolean isRamExpansionEnabled4() {
+		return iniReader.getPropertyBool("C1541", "RamExpand0xA000", false);
 	}
 
 	/**
@@ -94,8 +118,25 @@ public class IniC1541Section extends IniSection {
 	 * @param state
 	 *            enable 8K Ram expansion
 	 */
-	public final void setRamExpansion(final int selector, final boolean on) {
-		iniReader.setProperty("C1541", String.format("RamExpand0x%X", 8192 * (selector + 1)), on);
+	@Override
+	public final void setRamExpansion0(final boolean on) {
+		iniReader.setProperty("C1541", "RamExpand0x2000", on);
+	}
+	@Override
+	public final void setRamExpansion1(final boolean on) {
+		iniReader.setProperty("C1541", "RamExpand0x4000", on);
+	}
+	@Override
+	public final void setRamExpansion2(final boolean on) {
+		iniReader.setProperty("C1541", "RamExpand0x6000", on);
+	}
+	@Override
+	public final void setRamExpansion3(final boolean on) {
+		iniReader.setProperty("C1541", "RamExpand0x8000", on);
+	}
+	@Override
+	public final void setRamExpansion4(final boolean on) {
+		iniReader.setProperty("C1541", "RamExpand0xA000", on);
 	}
 
 	/**
@@ -104,6 +145,7 @@ public class IniC1541Section extends IniSection {
 	 * @param policy
 	 *            policy to extend disk image
 	 */
+	@Override
 	public final void setExtendImagePolicy(final ExtendImagePolicy policy) {
 		iniReader.setProperty("C1541", "DiskExtendPolicy", policy);
 	}
@@ -113,6 +155,7 @@ public class IniC1541Section extends IniSection {
 	 * 
 	 * @return disk image extension policy
 	 */
+	@Override
 	public final ExtendImagePolicy getExtendImagePolicy() {
 		return iniReader.getPropertyEnum("C1541", "DiskExtendPolicy", ExtendImagePolicy.EXTEND_ACCESS);
 	}
@@ -123,6 +166,7 @@ public class IniC1541Section extends IniSection {
 	 * @param floppyType
 	 *            type of floppy
 	 */
+	@Override
 	public final void setFloppyType(final FloppyType floppyType) {
 		iniReader.setProperty("C1541", "FloppyType", floppyType);
 	}
@@ -132,6 +176,7 @@ public class IniC1541Section extends IniSection {
 	 * 
 	 * @return type of floppy
 	 */
+	@Override
 	public final FloppyType getFloppyType() {
 		return iniReader.getPropertyEnum("C1541", "FloppyType", FloppyType.C1541);
 	}

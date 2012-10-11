@@ -23,10 +23,16 @@ import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.List;
 
-import libsidutils.zip.ZipEntryFileProxy;
-
-
-import resid_builder.resid.ISIDDefs.ChipModel;
+import sidplay.ini.intf.IAudioSection;
+import sidplay.ini.intf.IC1541Section;
+import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IConsoleSection;
+import sidplay.ini.intf.IEmulationSection;
+import sidplay.ini.intf.IFavoritesSection;
+import sidplay.ini.intf.IFilterSection;
+import sidplay.ini.intf.IJoystickSection;
+import sidplay.ini.intf.IPrinterSection;
+import sidplay.ini.intf.ISidPlay2Section;
 
 /**
  * INI configuration file support responsible to load and save all emulator
@@ -35,7 +41,7 @@ import resid_builder.resid.ISIDDefs.ChipModel;
  * @author Ken Händel
  * 
  */
-public class IniConfig {
+public class IniConfig implements IConfig {
 	/** Bump this each time you want to invalidate sidplay2.ini files on disk */
 	protected static final int REQUIRED_CONFIG_VERSION = 18;
 
@@ -45,14 +51,14 @@ public class IniConfig {
 	/** INI configuration filename or null (use internal configuration) */
 	private final File iniPath;
 
-	private IniSidplay2Section sidplay2Section;
-	private IniC1541Section c1541Section;
-	private IniPrinterSection printerSection;
-	private IniJoystickSection joystickSection;
-	private IniConsoleSection consoleSection;
-	private IniAudioSection audioSection;
-	private IniEmulationSection emulationSection;
-	private IniFavoritesSection favoritesSection;
+	private ISidPlay2Section sidplay2Section;
+	private IC1541Section c1541Section;
+	private IPrinterSection printerSection;
+	private IJoystickSection joystickSection;
+	private IConsoleSection consoleSection;
+	private IAudioSection audioSection;
+	private IEmulationSection emulationSection;
+	private IFavoritesSection favoritesSection;
 
 	protected IniReader iniReader;
 
@@ -67,23 +73,18 @@ public class IniConfig {
 		favoritesSection = new IniFavoritesSection(iniReader);
 	}
 
-	public IniFilterSection getFilter(final String filterName) {
-		return new IniFilterSection(iniReader, filterName);
-	}
-
-	public String[] getFilterList(final ChipModel model) {
-		final List<String> filters = new ArrayList<String>();
+	@Override
+	public List<? extends IFilterSection> getFilter() {
+		final List<IFilterSection> filters = new ArrayList<IFilterSection>();
 		for (final String heading : iniReader.listSections()) {
 			if (!heading.matches("Filter.*")) {
 				continue;
 			}
 
-			if (getFilter(heading).getFilter8580CurvePosition() != 0 ^ model == ChipModel.MOS6581) {
-				filters.add(heading);
-			}
+			filters.add(new IniFilterSection(iniReader, heading));
 		}
 
-		return filters.toArray(new String[] {});
+		return filters;
 	}
 
 	public IniConfig() {
@@ -131,7 +132,9 @@ public class IniConfig {
 	private File getINIPath() {
 		try {
 			File configPlace = null;
-			for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			for (final String s : new String[] {
+					System.getProperty("user.dir"),
+					System.getProperty("user.home"), }) {
 				if (s == null) {
 					continue;
 				}
@@ -160,14 +163,17 @@ public class IniConfig {
 	}
 
 	private void readInternal() {
-		final InputStream is = getClass().getClassLoader().getResourceAsStream("sidplay/ini/" + FILE_NAME);
-		System.out.println("Use internal INI file: " + "sidplay/ini/" + FILE_NAME);
+		final InputStream is = getClass().getClassLoader().getResourceAsStream(
+				"sidplay/ini/" + FILE_NAME);
+		System.out.println("Use internal INI file: " + "sidplay/ini/"
+				+ FILE_NAME);
 
 		try {
 			iniReader = new IniReader(is);
 			clear();
 			/* Set the current version so that we detect old versions in future. */
-			iniReader.setProperty("SIDPlay2", "Version", REQUIRED_CONFIG_VERSION);
+			iniReader.setProperty("SIDPlay2", "Version",
+					REQUIRED_CONFIG_VERSION);
 			is.close();
 		} catch (final IOException e) {
 			return;
@@ -175,7 +181,7 @@ public class IniConfig {
 	}
 
 	public void write() {
-		if (! iniReader.isDirty()) {
+		if (!iniReader.isDirty()) {
 			return;
 		}
 
@@ -186,83 +192,44 @@ public class IniConfig {
 		}
 	}
 
-	public final IniSidplay2Section sidplay2() {
+	@Override
+	public final ISidPlay2Section getSidplay2() {
 		return sidplay2Section;
 	}
 
-	public final IniC1541Section c1541() {
+	@Override
+	public final IC1541Section getC1541() {
 		return c1541Section;
 	}
-	
-	public final IniPrinterSection printer() {
+
+	@Override
+	public final IPrinterSection getPrinter() {
 		return printerSection;
 	}
 
-	public final IniJoystickSection joystick() {
+	@Override
+	public final IJoystickSection getJoystick() {
 		return joystickSection;
 	}
 
-	public final IniConsoleSection console() {
+	@Override
+	public final IConsoleSection getConsole() {
 		return consoleSection;
 	}
 
-	public final IniAudioSection audio() {
+	@Override
+	public final IAudioSection getAudio() {
 		return audioSection;
 	}
 
-	public final IniEmulationSection emulation() {
+	@Override
+	public final IEmulationSection getEmulation() {
 		return emulationSection;
 	}
 
-	public final IniFavoritesSection favorites() {
+	@Override
+	public final IFavoritesSection getFavorites() {
 		return favoritesSection;
-	}
-
-	public final IniFilterSection filter(final ChipModel model) {
-		if (model == ChipModel.MOS8580) {
-			return new IniFilterSection(iniReader, emulationSection.getFilter8580());
-		} else {
-			return new IniFilterSection(iniReader, emulationSection.getFilter6581());
-		}
-	}
-	
-	public String getHVSCName(final File file) {
-		String hvsc = sidplay2().getHvsc();
-		return getCollectionRelName(file, hvsc);
-	}
-
-	public String getCGSCName(final File file) {
-		String cgsc = sidplay2().getCgsc();
-		return getCollectionRelName(file, cgsc);
-	}
-
-	public static String getCollectionRelName(final File file,
-			String collectionRoot) {
-		try {
-			if (collectionRoot == null || collectionRoot.length() == 0) {
-				return null;
-			}
-			if (file instanceof ZipEntryFileProxy) {
-				final int indexOf = file.getPath().indexOf('/');
-				if (indexOf == -1) {
-					return null;
-				}
-				return file.getPath().substring(indexOf);
-			}
-			final String canonicalPath = file.getCanonicalPath();
-			final String collCanonicalPath = new File(collectionRoot)
-					.getCanonicalPath();
-			if (canonicalPath.startsWith(collCanonicalPath)) {
-				final String name = canonicalPath.substring(
-						collCanonicalPath.length()).replace('\\', '/');
-				if (name.startsWith("/")) {
-					return name;
-				}
-			}
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 }

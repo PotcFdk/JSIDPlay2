@@ -1,6 +1,10 @@
 package applet;
 
 import java.io.File;
+import java.io.IOException;
+
+import libsidutils.zip.ZipEntryFileProxy;
+import sidplay.ini.intf.IConfig;
 
 /**
  * This class provides a function used to generate a path name. JSIDPlay uses
@@ -74,6 +78,45 @@ public class PathUtils {
 					.toLowerCase(dest.charAt(0));
 		}
 		return sameDrive;
+	}
+
+	public static String getHVSCName(final IConfig config, final File file) {
+		String hvsc = config.getSidplay2().getHvsc();
+		return getCollectionRelName(file, hvsc);
+	}
+
+	public static String getCGSCName(final IConfig config, final File file) {
+		String cgsc = config.getSidplay2().getCgsc();
+		return getCollectionRelName(file, cgsc);
+	}
+
+	public static String getCollectionRelName(final File file,
+			String collectionRoot) {
+		try {
+			if (collectionRoot == null || collectionRoot.length() == 0) {
+				return null;
+			}
+			if (file instanceof ZipEntryFileProxy) {
+				final int indexOf = file.getPath().indexOf('/');
+				if (indexOf == -1) {
+					return null;
+				}
+				return file.getPath().substring(indexOf);
+			}
+			final String canonicalPath = file.getCanonicalPath();
+			final String collCanonicalPath = new File(collectionRoot)
+					.getCanonicalPath();
+			if (canonicalPath.startsWith(collCanonicalPath)) {
+				final String name = canonicalPath.substring(
+						collCanonicalPath.length()).replace('\\', '/');
+				if (name.startsWith("/")) {
+					return name;
+				}
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

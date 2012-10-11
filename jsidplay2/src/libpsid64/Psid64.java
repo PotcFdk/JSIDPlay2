@@ -19,7 +19,7 @@ import libsidutils.STIL;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
-import sidplay.ini.IniConfig;
+import applet.PathUtils;
 
 public class Psid64 {
 	public static final String PACKAGE = "psid64";
@@ -606,7 +606,7 @@ public class Psid64 {
 
 		String str = "";
 		if (m_stilEntry == null && m_file != null) {
-			final String name = IniConfig.getCollectionRelName(m_file,
+			final String name = PathUtils.getCollectionRelName(m_file,
 					m_hvscRoot);
 			if (null != name) {
 				STIL stil = STIL.getInstance(m_hvscRoot);

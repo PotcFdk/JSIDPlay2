@@ -14,7 +14,7 @@ import libsidplay.components.cart.Cartridge;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.T64;
 import libsidutils.zip.ZipEntryFileProxy;
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.filefilter.DiskFileFilter;
 import applet.filefilter.TuneFileFilter;
 
@@ -118,7 +118,7 @@ public class Directory {
 	 *             can not open file
 	 */
 	public static final Directory getDirectory(final File file,
-			final IniConfig cfg) throws IOException {
+			final IConfig cfg) throws IOException {
 		if (file.getName().toLowerCase().endsWith(".gz")) {
 			return gzToDir(file, cfg);
 		} else if (file.getName().toLowerCase().endsWith(".zip")) {
@@ -135,7 +135,7 @@ public class Directory {
 		return null;
 	}
 
-	protected static Directory gzToDir(final File file, final IniConfig cfg)
+	protected static Directory gzToDir(final File file, final IConfig cfg)
 			throws IOException {
 		final File outFile = ZipEntryFileProxy.extractFromGZ(file);
 		return getDirectory(outFile, cfg);

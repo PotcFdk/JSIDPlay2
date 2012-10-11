@@ -38,8 +38,8 @@ import sidplay.ConsolePlayer.DriverSettings;
 import sidplay.ConsolePlayer.OUTPUTS;
 import sidplay.ConsolePlayer.SIDEMUS;
 import sidplay.audio.CmpMP3File;
-import sidplay.ini.IniConfig;
 import sidplay.ini.IniReader;
+import sidplay.ini.intf.IConfig;
 import applet.PathUtils;
 import applet.events.IMadeProgress;
 import applet.events.IReplayTune;
@@ -53,7 +53,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		UIEventListener {
 	protected ConsolePlayer consolePl;
 	protected Player player;
-	protected IniConfig config;
+	protected IConfig config;
 
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 	private SwingEngine swix;
@@ -79,7 +79,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.sidplay2().setEnableDatabase(enableSldb.isSelected());
+			config.getSidplay2().setEnableDatabase(enableSldb.isSelected());
 			consolePl.setSLDb(enableSldb.isSelected());
 		}
 	};
@@ -88,7 +88,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.sidplay2().setSingle(singleSong.isSelected());
+			config.getSidplay2().setSingle(singleSong.isSelected());
 			consolePl.getTrack().setCurrentSingle(singleSong.isSelected());
 		}
 	};
@@ -129,8 +129,8 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			hardsid6581Num = (Integer) hardsid6581.getSelectedItem();
-			config.emulation().setHardsid6581(hardsid6581Num);
-			config.emulation().setHardsid8580(hardsid8580Num);
+			config.getEmulation().setHardsid6581(hardsid6581Num);
+			config.getEmulation().setHardsid8580(hardsid8580Num);
 			// A restart is necessary to close/re-open the HardSID card
 			consolePl.restart();
 		}
@@ -141,8 +141,8 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			hardsid8580Num = (Integer) hardsid8580.getSelectedItem();
-			config.emulation().setHardsid6581(hardsid6581Num);
-			config.emulation().setHardsid8580(hardsid8580Num);
+			config.getEmulation().setHardsid6581(hardsid6581Num);
+			config.getEmulation().setHardsid8580(hardsid8580Num);
 			// A restart is necessary to close/re-open the HardSID card
 			consolePl.restart();
 		}
@@ -152,7 +152,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.audio().setFrequency(
+			config.getAudio().setFrequency(
 					Integer.valueOf(samplingRate.getSelectedItem().toString()));
 			// replay last tune
 			uiEvents.fireEvent(IReplayTune.class, new IReplayTune() {
@@ -164,7 +164,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.audio().setSampling(
+			config.getAudio().setSampling(
 					(SamplingMethod) samplingMethod.getSelectedItem());
 			consolePl.updateSidEmulation();
 		}
@@ -190,7 +190,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.audio().setMp3File(new File(mp3.getText()));
+			config.getAudio().setMp3File(mp3.getText());
 		}
 	};
 
@@ -205,7 +205,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 			if (result == JFileChooser.APPROVE_OPTION
 					&& fc.getSelectedFile() != null) {
 				mp3.setText(fc.getSelectedFile().getAbsolutePath());
-				config.audio().setMp3File(new File(mp3.getText()));
+				config.getAudio().setMp3File(mp3.getText());
 				// replay last tune
 				uiEvents.fireEvent(IReplayTune.class, new IReplayTune() {
 				});
@@ -223,7 +223,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 			if (result == JFileChooser.APPROVE_OPTION
 					&& fc.getSelectedFile() != null) {
 				tmpdir.setText(fc.getSelectedFile().getAbsolutePath());
-				config.sidplay2().setTmpDir(
+				config.getSidplay2().setTmpDir(
 						PathUtils.getPath(fc.getSelectedFile()));
 			}
 		}
@@ -235,7 +235,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		public void actionPerformed(ActionEvent e) {
 			proxyHost.setEnabled(proxyEnable.isSelected());
 			proxyPort.setEnabled(proxyEnable.isSelected());
-			config.sidplay2().setEnableProxy(proxyEnable.isSelected());
+			config.getSidplay2().setEnableProxy(proxyEnable.isSelected());
 		}
 	};
 
@@ -243,7 +243,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.sidplay2().setProxyHostname(proxyHost.getText());
+			config.getSidplay2().setProxyHostname(proxyHost.getText());
 		}
 	};
 
@@ -251,7 +251,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.sidplay2().setProxyPort(
+			config.getSidplay2().setProxyPort(
 					proxyPort.getText().length() > 0 ? Integer
 							.valueOf(proxyPort.getText()) : 80);
 		}
@@ -261,7 +261,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.sidplay2().setSoasc6581R2(dwnlUrl6581R2.getText());
+			config.getSidplay2().setSoasc6581R2(dwnlUrl6581R2.getText());
 		}
 	};
 
@@ -269,7 +269,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			final String url = config.sidplay2().getSoasc6581R2();
+			final String url = config.getSidplay2().getSoasc6581R2();
 			downloadStart(MessageFormat.format(url, hvscName, currentSong));
 		}
 	};
@@ -278,7 +278,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.sidplay2().setSoasc6581R4(dwnlUrl6581R4.getText());
+			config.getSidplay2().setSoasc6581R4(dwnlUrl6581R4.getText());
 		}
 	};
 
@@ -286,7 +286,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			final String url = config.sidplay2().getSoasc6581R4();
+			final String url = config.getSidplay2().getSoasc6581R4();
 			downloadStart(MessageFormat.format(url, hvscName, currentSong));
 		}
 	};
@@ -295,7 +295,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.sidplay2().setSoasc6581R4(dwnlUrl8580R5.getText());
+			config.getSidplay2().setSoasc6581R4(dwnlUrl8580R5.getText());
 		}
 	};
 
@@ -303,13 +303,13 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			final String url = config.sidplay2().getSoasc8580R5();
+			final String url = config.getSidplay2().getSoasc8580R5();
 			downloadStart(MessageFormat.format(url, hvscName, currentSong));
 		}
 	};
 
 	// TODO enable/disable UI elements
-	public SoundSettings(ConsolePlayer cp, Player pl, IniConfig cfg) {
+	public SoundSettings(ConsolePlayer cp, Player pl, IConfig cfg) {
 		this.consolePl = cp;
 		this.player = pl;
 		this.config = cfg;
@@ -378,7 +378,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 	private void setDefaultsAndActions() {
 		{
-			final int seconds = config.sidplay2().getPlayLength();
+			final int seconds = config.getSidplay2().getPlayLength();
 			defaultTime.setText(String.format("%02d:%02d", seconds / 60,
 					seconds % 60));
 			defaultTime.addKeyListener(new KeyAdapter() {
@@ -389,7 +389,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 					final int secs = IniReader.parseTime(time);
 					if (secs != -1) {
 						consolePl.getTimer().setDefaultLength(secs);
-						config.sidplay2().setPlayLength(secs);
+						config.getSidplay2().setPlayLength(secs);
 						defaultTime.setToolTipText(getSwix().getLocalizer()
 								.getString("DEFAULT_LENGTH_TIP"));
 						defaultTime.setBackground(Color.white);
@@ -403,8 +403,8 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 			});
 		}
 		{
-			enableSldb.setEnabled(!"".equals(config.sidplay2().getHvsc()));
-			enableSldb.setSelected(config.sidplay2().isEnableDatabase());
+			enableSldb.setEnabled(!"".equals(config.getSidplay2().getHvsc()));
+			enableSldb.setSelected(config.getSidplay2().isEnableDatabase());
 		}
 		{
 			soundDevice.removeActionListener(setSoundDevice);
@@ -429,36 +429,36 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		{
 			hardsid6581.removeActionListener(setSid6581);
 			hardsid8580.removeActionListener(setSid8580);
-			hardsid6581Num = config.emulation().getHardsid6581();
+			hardsid6581Num = config.getEmulation().getHardsid6581();
 			hardsid6581.setSelectedIndex(hardsid6581Num);
-			hardsid8580Num = config.emulation().getHardsid8580();
+			hardsid8580Num = config.getEmulation().getHardsid8580();
 			hardsid8580.setSelectedIndex(hardsid8580Num);
 			hardsid6581.addActionListener(setSid6581);
 			hardsid8580.addActionListener(setSid8580);
 
 			samplingRate.removeActionListener(setSamplingRate);
-			samplingRate.setSelectedItem(String.valueOf(config.audio()
+			samplingRate.setSelectedItem(String.valueOf(config.getAudio()
 					.getFrequency()));
 			samplingRate.addActionListener(setSamplingRate);
 			samplingMethod.removeActionListener(setSamplingMethod);
-			samplingMethod.setSelectedItem(config.audio().getSampling());
+			samplingMethod.setSelectedItem(config.getAudio().getSampling());
 			samplingMethod.addActionListener(setSamplingMethod);
 
-			mp3.setText(config.audio().getMp3File().getAbsolutePath());
-			playMP3.setSelected(config.audio().isPlayOriginal());
-			playEmulation.setSelected(!config.audio().isPlayOriginal());
+			mp3.setText(config.getAudio().getMp3File());
+			playMP3.setSelected(config.getAudio().isPlayOriginal());
+			playEmulation.setSelected(!config.getAudio().isPlayOriginal());
 
-			tmpdir.setText(config.sidplay2().getTmpDir());
+			tmpdir.setText(config.getSidplay2().getTmpDir());
 
-			proxyEnable.setSelected(consolePl.getConfig().sidplay2()
+			proxyEnable.setSelected(consolePl.getConfig().getSidplay2()
 					.isEnableProxy());
-			proxyHost.setText(consolePl.getConfig().sidplay2()
+			proxyHost.setText(consolePl.getConfig().getSidplay2()
 					.getProxyHostname());
-			proxyPort.setText(String.valueOf(consolePl.getConfig().sidplay2()
+			proxyPort.setText(String.valueOf(consolePl.getConfig().getSidplay2()
 					.getProxyPort()));
-			dwnlUrl6581R2.setText(config.sidplay2().getSoasc6581R2());
-			dwnlUrl6581R4.setText(config.sidplay2().getSoasc6581R4());
-			dwnlUrl8580R5.setText(config.sidplay2().getSoasc8580R5());
+			dwnlUrl6581R2.setText(config.getSidplay2().getSoasc6581R2());
+			dwnlUrl6581R4.setText(config.getSidplay2().getSoasc6581R4());
+			dwnlUrl8580R5.setText(config.getSidplay2().getSoasc8580R5());
 		}
 	}
 
@@ -469,7 +469,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 			return;
 		}
 		final SidTuneInfo tuneInfo = sidTuneMod.getInfo();
-		final String name = config.getHVSCName(sidTuneMod.getInfo().file);
+		final String name = PathUtils.getHVSCName(config, sidTuneMod.getInfo().file);
 		if (name != null) {
 			hvscName = name.replace(".sid", "");
 			currentSong = tuneInfo.currentSong;
@@ -551,7 +551,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		} else {
 			soundDevice.setSelectedIndex(4);
 			mp3.setText(downloadedFile.getAbsolutePath());
-			config.audio().setMp3File(new File(mp3.getText()));
+			config.getAudio().setMp3File(mp3.getText());
 			setPlayOriginal(true);
 			playMP3.setSelected(true);
 			// replay last tune
@@ -566,7 +566,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 	}
 
 	public void setPlayOriginal(final boolean playOriginal) {
-		config.audio().setPlayOriginal(playOriginal);
+		config.getAudio().setPlayOriginal(playOriginal);
 		if (consolePl.getDriverSettings().getDevice() instanceof CmpMP3File) {
 			((CmpMP3File) consolePl.getDriverSettings().getDevice())
 					.setPlayOriginal(playOriginal);

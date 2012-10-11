@@ -32,8 +32,9 @@ import netsiddev.InvalidCommandException;
 import org.swixml.SwingEngine;
 import org.swixml.XDialog;
 
-import sidplay.ini.IniConfig;
+import sidplay.audio.AudioConfig;
 import sidplay.ini.IniReader;
+import sidplay.ini.intf.IConfig;
 import applet.events.IPlayTune;
 import applet.events.IStopTune;
 import applet.events.ITuneStateChanged;
@@ -55,7 +56,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 	protected libsidplay.Player player;
-	protected IniConfig config;
+	protected IConfig config;
 	protected final SidTune tune;
 	protected libsidutils.SIDDump siddump = new libsidutils.SIDDump();
 	protected File fLastDir;
@@ -192,7 +193,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 		}
 	};
 
-	public SIDDump(libsidplay.Player pl, IniConfig cfg) {
+	public SIDDump(libsidplay.Player pl, IConfig cfg) {
 		this.player = pl;
 		this.config = cfg;
 		this.tune = pl.getTune();
@@ -234,7 +235,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 
 	public void setTune(SidTune sidTune) {
 		final SIDDumpModel sidDumpModel = (SIDDumpModel) dumpTable.getModel();
-		sidDumpModel.setPlayer(player, config.audio().toAudioConfig(2));
+		sidDumpModel.setPlayer(player, AudioConfig.getInstance(config.getAudio(), 2));
 		if (tune == null) {
 			startStop.setEnabled(false);
 			return;
@@ -253,7 +254,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 		if (seconds == 0) {
 			int songLength = getSongLength(tune);
 			if (songLength <= 0) {
-				songLength = config.sidplay2().getPlayLength();
+				songLength = config.getSidplay2().getPlayLength();
 				if (songLength == 0) {
 					// default
 					songLength = 60;
@@ -571,7 +572,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 	}
 
 	private int getSongLength(final SidTune sidTuneMod) {
-		SidDatabase database = SidDatabase.getInstance(config.sidplay2()
+		SidDatabase database = SidDatabase.getInstance(config.getSidplay2()
 				.getHvsc());
 		if (database != null) {
 			return database.length(sidTuneMod);

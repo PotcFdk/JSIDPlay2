@@ -1,12 +1,14 @@
 package sidplay.ini;
 
+import sidplay.ini.intf.IConsoleSection;
+
 /**
  * Console section of the INI file.
  * 
  * @author Ken Händel
  * 
  */
-public class IniConsoleSection extends IniSection {
+public class IniConsoleSection extends IniSection implements IConsoleSection {
 	protected IniConsoleSection(IniReader iniReader) {
 		super(iniReader);
 	}
@@ -40,8 +42,11 @@ public class IniConsoleSection extends IniSection {
 	 * 
 	 * @return the top left character of the console output
 	 */
+	@Override
 	public final char getTopLeft() {
-		return getChar(iniReader.getPropertyString("Console", "Char Top Left", "'+'"), '+');
+		return getChar(
+				iniReader.getPropertyString("Console", "Char Top Left", "'+'"),
+				'+');
 	}
 
 	/**
@@ -49,8 +54,11 @@ public class IniConsoleSection extends IniSection {
 	 * 
 	 * @return the top right character of the console output
 	 */
+	@Override
 	public final char getTopRight() {
-		return getChar(iniReader.getPropertyString("Console", "Char Top Right", "'+'"), '+');
+		return getChar(
+				iniReader.getPropertyString("Console", "Char Top Right", "'+'"),
+				'+');
 	}
 
 	/**
@@ -58,8 +66,10 @@ public class IniConsoleSection extends IniSection {
 	 * 
 	 * @return the bottom left character of the console output
 	 */
+	@Override
 	public final char getBottomLeft() {
-		return getChar(iniReader.getPropertyString("Console", "Char Bottom Left", "'+'"), '+');
+		return getChar(iniReader.getPropertyString("Console",
+				"Char Bottom Left", "'+'"), '+');
 	}
 
 	/**
@@ -67,8 +77,10 @@ public class IniConsoleSection extends IniSection {
 	 * 
 	 * @return the bottom right character of the console output
 	 */
+	@Override
 	public final char getBottomRight() {
-		return getChar(iniReader.getPropertyString("Console", "Char Bottom Right", "'+'"), '+');
+		return getChar(iniReader.getPropertyString("Console",
+				"Char Bottom Right", "'+'"), '+');
 	}
 
 	/**
@@ -76,8 +88,11 @@ public class IniConsoleSection extends IniSection {
 	 * 
 	 * @return the vertical character of the console output
 	 */
+	@Override
 	public final char getVertical() {
-		return getChar(iniReader.getPropertyString("Console", "Char Vertical", "'|'"), '|');
+		return getChar(
+				iniReader.getPropertyString("Console", "Char Vertical", "'|'"),
+				'|');
 	}
 
 	/**
@@ -85,8 +100,11 @@ public class IniConsoleSection extends IniSection {
 	 * 
 	 * @return the horizontal character of the console output
 	 */
+	@Override
 	public final char getHorizontal() {
-		return getChar(iniReader.getPropertyString("Console", "Char Vertical", "'-'"), '-');
+		return getChar(
+				iniReader.getPropertyString("Console", "Char Vertical", "'-'"),
+				'-');
 	}
 
 	/**
@@ -94,8 +112,10 @@ public class IniConsoleSection extends IniSection {
 	 * 
 	 * @return the junction left character of the console output
 	 */
+	@Override
 	public final char getJunctionLeft() {
-		return getChar(iniReader.getPropertyString("Console", "Char Junction Left", "'-'"), '-');
+		return getChar(iniReader.getPropertyString("Console",
+				"Char Junction Left", "'-'"), '-');
 	}
 
 	/**
@@ -103,7 +123,9 @@ public class IniConsoleSection extends IniSection {
 	 * 
 	 * @return the junction right character of the console output
 	 */
+	@Override
 	public final char getJunctionRight() {
-		return getChar(iniReader.getPropertyString("Console", "Char Junction Right", "'-'"), '-');
+		return getChar(iniReader.getPropertyString("Console",
+				"Char Junction Right", "'-'"), '-');
 	}
 }

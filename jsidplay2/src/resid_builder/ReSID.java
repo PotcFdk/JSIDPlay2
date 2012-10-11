@@ -25,7 +25,7 @@ import resid_builder.ReSIDBuilder.MixerEvent;
 import resid_builder.resid.ISIDDefs.ChipModel;
 import resid_builder.resid.ISIDDefs.SamplingMethod;
 import resid_builder.resid.SID;
-import sidplay.ini.IniFilterSection;
+import sidplay.ini.intf.IFilterSection;
 
 public class ReSID extends SIDEmu {
 	private static final Logger RESID = Logger.getLogger(ReSID.class.getName());
@@ -96,7 +96,7 @@ public class ReSID extends SIDEmu {
 		sid.getFilter8580().enable(enable);
 	}
 
-	public void filter(final IniFilterSection filter6581, final IniFilterSection filter8580) {
+	public void filter(final IFilterSection filter6581, final IFilterSection filter8580) {
 		if (filter6581 != null) {
 			sid.getFilter6581().setFilterCurve(filter6581.getFilter6581CurvePosition());
 		}

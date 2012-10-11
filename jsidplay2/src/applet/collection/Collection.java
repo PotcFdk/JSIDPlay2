@@ -18,12 +18,9 @@ import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -55,7 +52,7 @@ import libsidutils.STIL.STILEntry;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IConfig;
 import applet.JSIDPlay2;
 import applet.PathUtils;
 import applet.SidTuneConverter;
@@ -65,6 +62,7 @@ import applet.collection.search.SearchInIndexThread;
 import applet.collection.search.SearchIndexCreator;
 import applet.collection.search.SearchIndexerThread;
 import applet.collection.search.SearchThread;
+import applet.entities.PersistenceProperties;
 import applet.entities.collection.service.VersionService;
 import applet.events.ICollectionChanged;
 import applet.events.ICollectionChanged.CollectionType;
@@ -136,12 +134,12 @@ public abstract class Collection extends TuneTab implements
 						new HVSCListener(2), JSIDPlay2.DEPLOYMENT_URL
 								+ "online/hvsc/C64Music.002");
 				downloadThread.start();
-			} else  if (part == 2) {
-					// part 1 has been downloaded, start download of part 2
-					DownloadThread downloadThread = new DownloadThread(config,
-							new HVSCListener(3), JSIDPlay2.DEPLOYMENT_URL
-									+ "online/hvsc/C64Music.003");
-					downloadThread.start();
+			} else if (part == 2) {
+				// part 1 has been downloaded, start download of part 2
+				DownloadThread downloadThread = new DownloadThread(config,
+						new HVSCListener(3), JSIDPlay2.DEPLOYMENT_URL
+								+ "online/hvsc/C64Music.003");
+				downloadThread.start();
 			} else {
 				// part 1, 2 and 3 has been downloaded, merge them
 				autoConfiguration.setEnabled(true);
@@ -161,8 +159,7 @@ public abstract class Collection extends TuneTab implements
 					is = new BufferedInputStream(new SequenceInputStream(
 							new FileInputStream(part1File),
 							new FileInputStream(part2File)));
-					os = new BufferedOutputStream(
-							new FileOutputStream(tmp));
+					os = new BufferedOutputStream(new FileOutputStream(tmp));
 					int bytesRead;
 					byte[] buffer = new byte[DownloadThread.MAX_BUFFER_SIZE];
 					while ((bytesRead = is.read(buffer)) != -1) {
@@ -189,10 +186,10 @@ public abstract class Collection extends TuneTab implements
 				try {
 					if (tmp != null) {
 						is = new BufferedInputStream(new SequenceInputStream(
-								new FileInputStream(tmp),
-								new FileInputStream(part3File)));
-						os = new BufferedOutputStream(
-								new FileOutputStream(hvscFile));
+								new FileInputStream(tmp), new FileInputStream(
+										part3File)));
+						os = new BufferedOutputStream(new FileOutputStream(
+								hvscFile));
 						int bytesRead;
 						byte[] buffer = new byte[DownloadThread.MAX_BUFFER_SIZE];
 						while ((bytesRead = is.read(buffer)) != -1) {
@@ -245,7 +242,7 @@ public abstract class Collection extends TuneTab implements
 
 	@SuppressWarnings("serial")
 	public static class HVSC extends Collection {
-		public HVSC(final Player pl, final IniConfig cfg) {
+		public HVSC(final Player pl, final IConfig cfg) {
 			super(pl, cfg, "High Voltage SID Collection",
 					"http://www.hvsc.de/", "PLEASE_SELECT_HVSC", "HVSC");
 		}
@@ -254,13 +251,13 @@ public abstract class Collection extends TuneTab implements
 		public void createContents() {
 			super.createContents();
 			// Initially configure HVSC collection
-			if (config.sidplay2().getHvsc() != null) {
+			if (config.getSidplay2().getHvsc() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
 							@Override
 							public File getCollectionRoot() {
-								return new File(config.sidplay2().getHvsc());
+								return new File(config.getSidplay2().getHvsc());
 							}
 
 							@Override
@@ -274,7 +271,7 @@ public abstract class Collection extends TuneTab implements
 		@Override
 		protected void setRootDir(final File rootFile) {
 			if (rootFile.exists()) {
-				config.sidplay2().setHvsc(PathUtils.getPath(rootFile));
+				config.getSidplay2().setHvsc(PathUtils.getPath(rootFile));
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
@@ -291,6 +288,7 @@ public abstract class Collection extends TuneTab implements
 			}
 		}
 
+		@Override
 		public void notify(UIEvent event) {
 			if (event.isOfType(ICollectionChanged.class)) {
 				ICollectionChanged ifObj = (ICollectionChanged) event
@@ -324,7 +322,7 @@ public abstract class Collection extends TuneTab implements
 
 	@SuppressWarnings("serial")
 	public static class CGSC extends Collection {
-		public CGSC(final Player pl, final IniConfig cfg) {
+		public CGSC(final Player pl, final IConfig cfg) {
 			super(pl, cfg, "Compute's Gazette Sid Collection",
 					"http://www.btinternet.com/~pweighill/music/",
 					"PLEASE_SELECT_CGSC", "CGSC");
@@ -334,13 +332,13 @@ public abstract class Collection extends TuneTab implements
 		public void createContents() {
 			super.createContents();
 			// Initially configure CGSC collection
-			if (config.sidplay2().getCgsc() != null) {
+			if (config.getSidplay2().getCgsc() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
 							@Override
 							public File getCollectionRoot() {
-								return new File(config.sidplay2().getCgsc());
+								return new File(config.getSidplay2().getCgsc());
 							}
 
 							@Override
@@ -355,7 +353,7 @@ public abstract class Collection extends TuneTab implements
 		protected void setRootDir(final File rootFile) {
 			if (rootFile.exists()) {
 				// save settings
-				config.sidplay2().setCgsc(PathUtils.getPath(rootFile));
+				config.getSidplay2().setCgsc(PathUtils.getPath(rootFile));
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
@@ -372,6 +370,7 @@ public abstract class Collection extends TuneTab implements
 			}
 		}
 
+		@Override
 		public void notify(UIEvent event) {
 			if (event.isOfType(ICollectionChanged.class)) {
 				ICollectionChanged ifObj = (ICollectionChanged) event
@@ -441,7 +440,7 @@ public abstract class Collection extends TuneTab implements
 	protected JLinkButton linkCollectionURL;
 
 	protected Player player;
-	protected IniConfig config;
+	protected IConfig config;
 
 	protected CollectionTreeModel collectionTreeModel;
 	protected final String collectionTitle, collectionURL,
@@ -569,11 +568,10 @@ public abstract class Collection extends TuneTab implements
 		}
 	};
 
-	private EntityManagerFactory emf;
 	private EntityManager em;
 	VersionService versionService;
 
-	public Collection(Player pl, IniConfig cfg, final String title,
+	public Collection(Player pl, IConfig cfg, final String title,
 			final String sourceURL, final String message, final String dbName) {
 		this.player = pl;
 		this.config = cfg;
@@ -718,6 +716,7 @@ public abstract class Collection extends TuneTab implements
 						if (se != null) {
 							mi.setEnabled(true);
 							mi.addActionListener(new ActionListener() {
+								@Override
 								public void actionPerformed(ActionEvent arg0) {
 									new applet.collection.stil.STIL(se);
 								}
@@ -728,6 +727,7 @@ public abstract class Collection extends TuneTab implements
 								.getLocalizer().getString("ADD_TO_FAVORITES"));
 						getUiEvents().fireEvent(IFavoriteTabNames.class,
 								new IFavoriteTabNames() {
+									@Override
 									public void setFavoriteTabNames(
 											final String[] names,
 											final String selected) {
@@ -737,6 +737,7 @@ public abstract class Collection extends TuneTab implements
 											final JMenuItem tabItem = new JMenuItem(
 													title);
 											tabItem.addActionListener(new ActionListener() {
+												@Override
 												public void actionPerformed(
 														final ActionEvent e) {
 													getUiEvents()
@@ -744,10 +745,12 @@ public abstract class Collection extends TuneTab implements
 																	IGetFavorites.class,
 																	new IGetFavorites() {
 
+																		@Override
 																		public int getIndex() {
 																			return index;
 																		}
 
+																		@Override
 																		public void setFavorites(
 																				final IFavorites favorites) {
 																			favorites
@@ -767,6 +770,7 @@ public abstract class Collection extends TuneTab implements
 						final JMenuItem psid64 = new JMenuItem(getSwix()
 								.getLocalizer().getString("PSID64"));
 						psid64.addActionListener(new ActionListener() {
+							@Override
 							public void actionPerformed(final ActionEvent e) {
 								final JFileChooser fc = new JFileChooser(
 										lastDir);
@@ -830,18 +834,12 @@ public abstract class Collection extends TuneTab implements
 						.getRoot()));
 			}
 
-			final File dbFile = new File(rootFile.getParentFile(), dbName);
-			String jdbcURL = "jdbc:hsqldb:file:" + dbFile.getAbsolutePath() + ";shutdown=true";
+			em = Persistence.createEntityManagerFactory(
+					PersistenceProperties.COLLECTION_DS,
+					new PersistenceProperties(new File(
+							rootFile.getParentFile(), dbName)))
+					.createEntityManager();
 
-			Map<String,String> properties = new HashMap<String,String>();
-			properties.put("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
-			properties.put("hibernate.connection.url", jdbcURL);
-			properties.put("hibernate.connection.username", "");
-			properties.put("hibernate.connection.password", "");
-			properties.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-			properties.put("hibernate.hbm2ddl.auto", "update");
-			emf = Persistence.createEntityManagerFactory("hsqldb-ds",properties);
-			em = (EntityManager) emf.createEntityManager();
 			versionService = new VersionService(em);
 			setRootDir(rootFile);
 		}
@@ -855,6 +853,7 @@ public abstract class Collection extends TuneTab implements
 	/**
 	 * On tree selection display tune info in the table
 	 */
+	@Override
 	public void valueChanged(final TreeSelectionEvent treeselectionevent) {
 		final TreePath treePath = treeselectionevent.getNewLeadSelectionPath();
 		if (treePath == null) {
@@ -962,6 +961,7 @@ public abstract class Collection extends TuneTab implements
 				fileBrowser.setSelectionPath(treePath);
 				SwingUtilities.invokeLater(new Runnable() {
 
+					@Override
 					public void run() {
 						fileBrowser.scrollPathToVisible(fileBrowser
 								.getSelectionPath());
@@ -1011,11 +1011,13 @@ public abstract class Collection extends TuneTab implements
 				getUiEvents().fireEvent(IAddFavoritesTab.class,
 						new IAddFavoritesTab() {
 
+							@Override
 							public String getTitle() {
 								return getSwix().getLocalizer().getString(
 										"NEW_TAB");
 							}
 
+							@Override
 							public void setFavorites(final IFavorites favorites) {
 								favoritesToAddSearchResult = favorites;
 							}
@@ -1054,10 +1056,10 @@ public abstract class Collection extends TuneTab implements
 	}
 
 	protected STILEntry getSTIL(final File file) {
-		final String name = config.getHVSCName(file);
+		final String name = PathUtils.getHVSCName(config, file);
 		if (null != name) {
 			libsidutils.STIL stil = libsidutils.STIL.getInstance(config
-					.sidplay2().getHvsc());
+					.getSidplay2().getHvsc());
 			if (stil != null) {
 				return stil.getSTIL(name);
 			}

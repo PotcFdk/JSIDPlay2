@@ -10,37 +10,32 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.hibernate.Session;
 import org.hibernate.jdbc.ReturningWork;
 import org.hibernate.jdbc.Work;
 
+import applet.entities.PersistenceProperties;
+
 public abstract class Database {
-	private EntityManagerFactory emf;
 	private EntityManager em;
 
 	public abstract String processType(String type, int i);
+
 	public abstract String getCreateStmtLayout();
+
 	public abstract boolean isPrimaryKey(String columnName);
+
 	public abstract boolean isAutoIncrementSupported();
 
-	public void connect(String driver, String jdbcURL, String hbm2dllAuto) {
-		Map<String, String> properties = new HashMap<String, String>();
-		properties.put("hibernate.connection.driver_class", driver);
-		properties.put("hibernate.connection.url", jdbcURL);
-		properties
-				.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-		if (hbm2dllAuto != null) {
-			properties.put("hibernate.hbm2ddl.auto", hbm2dllAuto);
-		}
-		emf = Persistence.createEntityManagerFactory("hsqldb-ds", properties);
-		em = (EntityManager) emf.createEntityManager();
+	public void connect(String driver, String jdbcURL) {
+		em = Persistence.createEntityManagerFactory(
+				PersistenceProperties.GAMEBASE_DS,
+				new PersistenceProperties(driver, jdbcURL))
+				.createEntityManager();
 	}
 
 	public boolean isNumeric(int type) {
@@ -152,10 +147,12 @@ public abstract class Database {
 		Session session = em.unwrap(Session.class);
 		return session.doReturningWork(new ReturningWork<Collection<String>>() {
 			@Override
-			public Collection<String> execute(Connection connection) throws SQLException {
+			public Collection<String> execute(Connection connection)
+					throws SQLException {
 				Collection<String> result = new ArrayList<String>();
 				DatabaseMetaData dbm = connection.getMetaData();
-				ResultSet rs = dbm.getTables(null, null, "%", new String[] { "TABLE" });
+				ResultSet rs = dbm.getTables(null, null, "%",
+						new String[] { "TABLE" });
 				while (rs.next()) {
 					String str = rs.getString("TABLE_NAME");
 					result.add(str);
@@ -166,11 +163,13 @@ public abstract class Database {
 		});
 	}
 
-	public Collection<String> listColumns(final String table) throws SQLException {
+	public Collection<String> listColumns(final String table)
+			throws SQLException {
 		Session session = em.unwrap(Session.class);
 		return session.doReturningWork(new ReturningWork<Collection<String>>() {
 			@Override
-			public Collection<String> execute(Connection connection) throws SQLException {
+			public Collection<String> execute(Connection connection)
+					throws SQLException {
 				Collection<String> result = new ArrayList<String>();
 				DatabaseMetaData dbm = connection.getMetaData();
 				ResultSet rs = dbm.getColumns(null, null, table, null);
@@ -220,8 +219,8 @@ public abstract class Database {
 					insertSQL.append(values);
 					insertSQL.append(")");
 
-					PreparedStatement statement = connection.prepareStatement(
-							insertSQL.toString());
+					PreparedStatement statement = connection
+							.prepareStatement(insertSQL.toString());
 					ResultSet rs = source.executeQuery(selectSQL.toString());
 
 					int rows = 0;
