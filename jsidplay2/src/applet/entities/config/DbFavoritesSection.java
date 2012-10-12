@@ -2,6 +2,8 @@ package applet.entities.config;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
@@ -11,6 +13,17 @@ import sidplay.ini.intf.IFavoritesSection;
 public class DbFavoritesSection implements IFavoritesSection {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int id;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	private String name;
 
 	@Override

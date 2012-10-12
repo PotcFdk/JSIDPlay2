@@ -165,22 +165,6 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 
 					});
 		}
-
-		private void write() {
-			if (getConfig() instanceof IniConfig) {
-				((IniConfig) getConfig()).write();
-			} else {
-				// getConfig() instanceof DbConfig
-				em.getTransaction().begin();
-				try {
-					em.persist(getConfig());
-					em.getTransaction().commit();
-				} catch (Exception e) {
-					e.printStackTrace();
-					em.getTransaction().rollback();
-				}
-			}
-		}
 	};
 
 	//
@@ -237,6 +221,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		write();
 	}
 
 	//
@@ -300,7 +285,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 */
 	private void createUI() {
 		// Create main window
-		ui = new JSIDPlay2UI(this, cp);
+		ui = new JSIDPlay2UI(em, this, cp);
 	}
 
 	/**
@@ -508,7 +493,6 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 					sidplayApplet.stop();
 					// Free resources
 					sidplayApplet.destroy();
-					sidplayApplet.em.close();
 				}
 			});
 
@@ -540,6 +524,22 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 
 		/* Start emulation */
 		sidplayApplet.start();
+	}
+
+	public void write() {
+		if (getConfig() instanceof IniConfig) {
+			((IniConfig) getConfig()).write();
+		} else {
+			// getConfig() instanceof DbConfig
+			em.getTransaction().begin();
+			try {
+				em.persist(getConfig());
+				em.getTransaction().commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+				em.getTransaction().rollback();
+			}
+		}
 	}
 
 	/**

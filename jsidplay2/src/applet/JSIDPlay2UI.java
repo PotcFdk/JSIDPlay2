@@ -21,6 +21,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.persistence.EntityManager;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -159,7 +160,8 @@ public class JSIDPlay2UI implements UIEventListener {
 	 */
 	protected ScreenRecorder screenRecorder;
 
-	public JSIDPlay2UI(final Container container, final ConsolePlayer player) {
+	public JSIDPlay2UI(final EntityManager em, final Container container,
+			final ConsolePlayer player) {
 		this.parent = container;
 		this.cp = player;
 		uiEvents.addListener(this);
@@ -195,7 +197,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			tabbedPane.add(swix.getLocalizer().getString("GAMEBASE"),
 					new GameBase(getPlayer(), getConfig()));
 			tabbedPane.add(swix.getLocalizer().getString("FAVORITES"),
-					new Favorites(getPlayer(), getConfig(), hvsc, cgsc));
+					new Favorites(em, getPlayer(), getConfig(), hvsc, cgsc));
 			tabbedPane.add(swix.getLocalizer().getString("PRINTER"),
 					new PrinterView(getPlayer()));
 			tabbedPane.add(swix.getLocalizer().getString("CONSOLE"),
@@ -204,6 +206,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			setDefaultsAndActions();
 
 			new Timer(100, new AbstractAction() {
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					uiEvents.fireEvent(IUpdateUI.class, new IUpdateUI() {
 					});
@@ -279,8 +282,8 @@ public class JSIDPlay2UI implements UIEventListener {
 	 * @return song length in seconds (0 means unknown, -1 means unconfigured)
 	 */
 	private int getSongLength(final SidTune sidTune) {
-		SidDatabase database = SidDatabase.getInstance(getConfig().getSidplay2()
-				.getHvsc());
+		SidDatabase database = SidDatabase.getInstance(getConfig()
+				.getSidplay2().getHvsc());
 		if (database != null) {
 			return database.length(sidTune);
 		}
@@ -1168,6 +1171,7 @@ public class JSIDPlay2UI implements UIEventListener {
 				final Container sv = new SwingEngine(this)
 						.render(JSIDPlay2UI.class.getResource("About.xml"));
 				ok.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						sv.setVisible(false);
 					}
@@ -1178,6 +1182,7 @@ public class JSIDPlay2UI implements UIEventListener {
 						(d.height - s.height) / 2));
 				credits.setText(getPlayer().getCredits());
 				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						scroller.getVerticalScrollBar().setValue(0);
 					}
@@ -1373,6 +1378,7 @@ public class JSIDPlay2UI implements UIEventListener {
 		}
 	}
 
+	@Override
 	public void notify(final UIEvent evt) {
 		if (evt.isOfType(IUpdateUI.class)) {
 			setStatusLine();

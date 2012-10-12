@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.persistence.EntityManager;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListSelectionModel;
@@ -34,8 +35,7 @@ import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFavoritesSection;
 import applet.TuneTab;
 import applet.collection.Collection;
-import applet.entities.config.DbConfig;
-import applet.entities.config.DbFavoritesSection;
+import applet.entities.config.service.DbFavoritesSectionService;
 import applet.events.IPlayTune;
 import applet.events.ITuneStateChanged;
 import applet.events.UIEvent;
@@ -73,11 +73,16 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 	protected PlayList currentlyPlayedFavorites;
 	protected final Random random = new Random();
 
-	public Favorites(Player pl, IConfig cfg, Collection hvsc, Collection cgsc) {
+	private DbFavoritesSectionService favoritesService;
+
+	public Favorites(EntityManager em, Player pl, IConfig cfg, Collection hvsc,
+			Collection cgsc) {
 		this.player = pl;
 		this.config = cfg;
 		this.hvsc = hvsc;
 		this.cgsc = cgsc;
+		favoritesService = new DbFavoritesSectionService(em);
+
 		createContents();
 	}
 
@@ -668,43 +673,18 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 		if (event.isOfType(IAddFavoritesTab.class)) {
 			final IAddFavoritesTab ifObj = (IAddFavoritesTab) event
 					.getUIEventImpl();
+
+			favoritesService.addFavorite(config, ifObj.getTitle());
+
 			IFavorites newTab = addTab(ifObj.getTitle());
 			ifObj.setFavorites(newTab);
-
-			ArrayList<DbFavoritesSection> newFavoritesList = new ArrayList<DbFavoritesSection>();
-			DbConfig dbConfig = (DbConfig) config;
-			for (IFavoritesSection f : config.getFavorites()) {
-				DbFavoritesSection newFavorite = new DbFavoritesSection();
-				newFavorite.setDbConfig(dbConfig);
-				newFavorite.setName(f.getName());
-				newFavorite.setFilename(f.getFilename());
-				newFavoritesList.add(newFavorite);
-			}
-			DbFavoritesSection newFavorite = new DbFavoritesSection();
-			newFavorite.setDbConfig(dbConfig);
-			newFavorite.setName(ifObj.getTitle());
-			newFavoritesList.add(newFavorite);
-			dbConfig.setFavorites(newFavoritesList);
-
 			// System.err.println("Add title=" + ifObj.getTitle());
 		} else if (event.isOfType(IRemoveFavoritesTab.class)) {
 			final IRemoveFavoritesTab ifObj = (IRemoveFavoritesTab) event
 					.getUIEventImpl();
 			removeTab(ifObj.getIndex());
 
-			ArrayList<DbFavoritesSection> newFavoritesList = new ArrayList<DbFavoritesSection>();
-			DbConfig dbConfig = (DbConfig) config;
-			int i = 0;
-			for (IFavoritesSection f : config.getFavorites()) {
-				if (i++ != ifObj.getIndex()) {
-					DbFavoritesSection newFavorite = new DbFavoritesSection();
-					newFavorite.setDbConfig(dbConfig);
-					newFavorite.setName(f.getName());
-					newFavorite.setFilename(f.getFilename());
-					newFavoritesList.add(newFavorite);
-				}
-			}
-			dbConfig.setFavorites(newFavoritesList);
+			favoritesService.removeFavorite(config, ifObj.getIndex());
 
 			// System.err.println("Remove index=" + ifObj.getIndex() + ",
 			// title="
@@ -714,22 +694,10 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 					.getUIEventImpl();
 			changeTab(ifObj);
 
-			ArrayList<DbFavoritesSection> newFavoritesList = new ArrayList<DbFavoritesSection>();
-			DbConfig dbConfig = (DbConfig) config;
-			int i = 0;
-			for (IFavoritesSection f : config.getFavorites()) {
-				DbFavoritesSection newFavorite = new DbFavoritesSection();
-				newFavorite.setDbConfig(dbConfig);
-				if (i++ == ifObj.getIndex()) {
-					newFavorite.setName(ifObj.getTitle());
-					newFavorite.setFilename(ifObj.getFileName());
-				} else {
-					newFavorite.setName(f.getName());
-					newFavorite.setFilename(f.getFilename());
-				}
-				newFavoritesList.add(newFavorite);
-			}
-			dbConfig.setFavorites(newFavoritesList);
+			IFavoritesSection toChange = config.getFavorites().get(
+					ifObj.getIndex());
+			toChange.setName(ifObj.getTitle());
+			toChange.setFilename(ifObj.getFileName());
 
 			// System.err.println("Change index=" + ifObj.getTitle()
 			// + ", filename=" + ifObj.getFileName());
