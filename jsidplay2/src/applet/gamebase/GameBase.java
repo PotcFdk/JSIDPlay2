@@ -36,6 +36,8 @@ import sidplay.ini.intf.IConfig;
 import applet.JSIDPlay2;
 import applet.TuneTab;
 import applet.collection.Picture;
+import applet.download.DownloadThread;
+import applet.download.IDownloadListener;
 import applet.entities.PersistenceProperties;
 import applet.entities.gamebase.Games;
 import applet.entities.gamebase.service.ConfigService;
@@ -46,8 +48,6 @@ import applet.gamebase.listeners.GameBaseListener;
 import applet.gamebase.listeners.GameListener;
 import applet.gamebase.listeners.MusicListener;
 import applet.gamebase.listeners.ScreenShotListener;
-import applet.soundsettings.DownloadThread;
-import applet.soundsettings.IDownloadListener;
 
 public class GameBase extends TuneTab {
 

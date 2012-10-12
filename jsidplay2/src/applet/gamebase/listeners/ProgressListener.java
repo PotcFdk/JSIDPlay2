@@ -2,9 +2,9 @@ package applet.gamebase.listeners;
 
 import java.io.File;
 
+import applet.download.IDownloadListener;
 import applet.events.IMadeProgress;
 import applet.events.UIEventFactory;
-import applet.soundsettings.IDownloadListener;
 
 public abstract class ProgressListener implements IDownloadListener {
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();

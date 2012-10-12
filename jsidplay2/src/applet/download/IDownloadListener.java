@@ -1,4 +1,4 @@
-package applet.soundsettings;
+package applet.download;
 
 import java.io.File;
 

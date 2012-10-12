@@ -18,9 +18,9 @@ import javax.swing.table.TableRowSorter;
 
 import org.swixml.SwingEngine;
 
+import applet.download.IDownloadListener;
 import applet.entities.gamebase.Games;
 import applet.gamebase.listeners.GameListener;
-import applet.soundsettings.IDownloadListener;
 
 @SuppressWarnings("unchecked")
 public abstract class GameBasePage extends JPanel {

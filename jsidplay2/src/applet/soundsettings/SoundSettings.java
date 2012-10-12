@@ -41,6 +41,8 @@ import sidplay.audio.CmpMP3File;
 import sidplay.ini.IniReader;
 import sidplay.ini.intf.IConfig;
 import applet.PathUtils;
+import applet.download.DownloadThread;
+import applet.download.IDownloadListener;
 import applet.events.IMadeProgress;
 import applet.events.IReplayTune;
 import applet.events.IUpdateUI;

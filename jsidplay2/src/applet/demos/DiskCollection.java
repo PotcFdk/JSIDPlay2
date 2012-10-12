@@ -47,6 +47,8 @@ import sidplay.ini.intf.IConfig;
 import applet.JSIDPlay2;
 import applet.PathUtils;
 import applet.TuneTab;
+import applet.download.DownloadThread;
+import applet.download.IDownloadListener;
 import applet.events.ICollectionChanged;
 import applet.events.ICollectionChanged.CollectionType;
 import applet.events.IInsertMedia;
@@ -57,8 +59,6 @@ import applet.filefilter.DemosFileFilter;
 import applet.filefilter.DiskFileFilter;
 import applet.gamebase.listeners.GameListener;
 import applet.gamebase.listeners.ProgressListener;
-import applet.soundsettings.DownloadThread;
-import applet.soundsettings.IDownloadListener;
 
 public abstract class DiskCollection extends TuneTab implements
 		PropertyChangeListener {

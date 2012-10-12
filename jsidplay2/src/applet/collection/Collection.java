@@ -62,6 +62,7 @@ import applet.collection.search.SearchInIndexThread;
 import applet.collection.search.SearchIndexCreator;
 import applet.collection.search.SearchIndexerThread;
 import applet.collection.search.SearchThread;
+import applet.download.DownloadThread;
 import applet.entities.PersistenceProperties;
 import applet.entities.collection.service.VersionService;
 import applet.events.ICollectionChanged;
@@ -77,7 +78,6 @@ import applet.favorites.IFavorites;
 import applet.filefilter.CollectionFileFilter;
 import applet.gamebase.listeners.ProgressListener;
 import applet.sidtuneinfo.SidTuneInfoCache;
-import applet.soundsettings.DownloadThread;
 import applet.ui.JNiceButton;
 
 /**
