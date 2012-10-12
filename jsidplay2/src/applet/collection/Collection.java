@@ -136,13 +136,19 @@ public abstract class Collection extends TuneTab implements
 								+ "online/hvsc/C64Music.002");
 				downloadThread.start();
 			} else if (part == 2) {
-				// part 1 has been downloaded, start download of part 2
+				// part 2 has been downloaded, start download of part 3
 				DownloadThread downloadThread = new DownloadThread(config,
 						new HVSCListener(3), JSIDPlay2.DEPLOYMENT_URL
 								+ "online/hvsc/C64Music.003");
 				downloadThread.start();
+			} else if (part == 3) {
+				// part 3 has been downloaded, start download of part 4
+				DownloadThread downloadThread = new DownloadThread(config,
+						new HVSCListener(4), JSIDPlay2.DEPLOYMENT_URL
+								+ "online/hvsc/C64Music.004");
+				downloadThread.start();
 			} else {
-				// part 1, 2 and 3 has been downloaded, merge them
+				// part 1, 2, 3 and 4 has been downloaded, merge them
 				autoConfiguration.setEnabled(true);
 				File part1File = new File(
 						System.getProperty("jsidplay2.tmpdir"), "C64Music.001");
@@ -150,6 +156,8 @@ public abstract class Collection extends TuneTab implements
 						System.getProperty("jsidplay2.tmpdir"), "C64Music.002");
 				File part3File = new File(
 						System.getProperty("jsidplay2.tmpdir"), "C64Music.003");
+				File part4File = new File(
+						System.getProperty("jsidplay2.tmpdir"), "C64Music.004");
 				File hvscFile = new File(
 						System.getProperty("jsidplay2.tmpdir"), "C64Music.zip");
 				BufferedInputStream is = null;
@@ -184,19 +192,20 @@ public abstract class Collection extends TuneTab implements
 						}
 					}
 				}
+				File tmp2 = null;
 				try {
+					tmp2 = File.createTempFile("jsidplay2", "hvsctmp");
 					if (tmp != null) {
 						is = new BufferedInputStream(new SequenceInputStream(
 								new FileInputStream(tmp), new FileInputStream(
 										part3File)));
-						os = new BufferedOutputStream(new FileOutputStream(
-								hvscFile));
+						os = new BufferedOutputStream(
+								new FileOutputStream(tmp2));
 						int bytesRead;
 						byte[] buffer = new byte[DownloadThread.MAX_BUFFER_SIZE];
 						while ((bytesRead = is.read(buffer)) != -1) {
 							os.write(buffer, 0, bytesRead);
 						}
-						tmp.delete();
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -216,9 +225,44 @@ public abstract class Collection extends TuneTab implements
 						}
 					}
 				}
+				tmp.delete();
+				try {
+					if (tmp != null) {
+						is = new BufferedInputStream(new SequenceInputStream(
+								new FileInputStream(tmp2), new FileInputStream(
+										part4File)));
+						os = new BufferedOutputStream(new FileOutputStream(
+								hvscFile));
+						int bytesRead;
+						byte[] buffer = new byte[DownloadThread.MAX_BUFFER_SIZE];
+						while ((bytesRead = is.read(buffer)) != -1) {
+							os.write(buffer, 0, bytesRead);
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (is != null) {
+						try {
+							is.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					if (os != null) {
+						try {
+							os.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				tmp2.delete();
+
 				part1File.delete();
 				part2File.delete();
 				part3File.delete();
+				part4File.delete();
 				setRootFile(hvscFile);
 			}
 		}
