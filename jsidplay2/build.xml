@@ -68,7 +68,7 @@
 
 	<!-- Class path of JSIDPlay2 -->
 	<fileset id="jars" dir="${basedir}">
-		<include name="*.jar" />
+		<include name="lib/*.jar" />
 	</fileset>
 	<path id="class.path">
 		<fileset refid="jars" />
@@ -373,7 +373,7 @@
           by Java WebStart.
          ================================= -->
 	<target name="jsidplay2_extjars">
-		<copy todir="${result_dir}">
+		<copy todir="${result_dir}" flatten="true">
 			<fileset refid="jars" />
 		</copy>
 	</target>
@@ -512,6 +512,8 @@
 				<include name="libsidplay/common/*.class" />
 				<include name="sidplay/audio/Audio*.class" />
 				<include name="sidplay/audio/JavaSound*.class" />
+				<include name="sidplay/ini/intf/IAudioSection.class" />
+				<include name="sidplay/ini/intf/IFilterSection.class" />
 				<include name="sidplay/ini/IniSection.class" />
 				<include name="sidplay/ini/IniReader.class" />
 				<include name="sidplay/ini/IniAudioSection.class" />

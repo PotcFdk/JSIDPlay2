@@ -112,7 +112,7 @@ public class VideoScreen extends TuneTab {
 			getC64Canvas().switchKeyboard();
 		}
 	};
-	
+
 	public Action insertTape = new AbstractAction() {
 
 		@Override
@@ -142,7 +142,7 @@ public class VideoScreen extends TuneTab {
 					public File getAutostartFile() {
 						return fileDialog.getAutostartFile();
 					}
-					
+
 					@Override
 					public Component getComponent() {
 						return VideoScreen.this;
@@ -158,6 +158,7 @@ public class VideoScreen extends TuneTab {
 		public void actionPerformed(ActionEvent e) {
 			final ImageFileChooser fileDialog = new ImageFileChooser(config,
 					new DiskFileFilter());
+			fileDialog.setName("InsertDisk");
 			final int rc = fileDialog.showDialog(VideoScreen.this, getSwix()
 					.getLocalizer().getString("ATTACH_DISK"));
 			if (rc == JFileChooser.APPROVE_OPTION
@@ -180,7 +181,7 @@ public class VideoScreen extends TuneTab {
 					public File getAutostartFile() {
 						return fileDialog.getAutostartFile();
 					}
-					
+
 					@Override
 					public Component getComponent() {
 						return VideoScreen.this;
@@ -217,7 +218,7 @@ public class VideoScreen extends TuneTab {
 					public File getAutostartFile() {
 						return null;
 					}
-					
+
 					@Override
 					public Component getComponent() {
 						return VideoScreen.this;
@@ -384,6 +385,7 @@ public class VideoScreen extends TuneTab {
 		/* RESTORE key */
 		addInputForAllModifiers(KeyEvent.VK_F11, "f11");
 		am.put("pf11", new AbstractAction() {
+			@Override
 			public void actionPerformed(final ActionEvent arg0) {
 				keyboard.restore();
 			}
@@ -392,11 +394,13 @@ public class VideoScreen extends TuneTab {
 		/* Handle modifiers */
 		addInputForAllModifiers(KeyEvent.VK_CONTROL, "ctrl");
 		am.put("pctrl", new AbstractAction() {
+			@Override
 			public void actionPerformed(final ActionEvent ae) {
 				keyboard.cbm(true);
 			}
 		});
 		am.put("rctrl", new AbstractAction() {
+			@Override
 			public void actionPerformed(final ActionEvent ae) {
 				keyboard.cbm(false);
 			}
@@ -404,6 +408,7 @@ public class VideoScreen extends TuneTab {
 
 		addInputForAllModifiers(KeyEvent.VK_SHIFT, "shift");
 		am.put("pshift", new AbstractAction() {
+			@Override
 			public void actionPerformed(final ActionEvent ae) {
 				if (keyLocation == KeyEvent.KEY_LOCATION_LEFT) {
 					keyboard.leftShift(true);
@@ -413,6 +418,7 @@ public class VideoScreen extends TuneTab {
 			}
 		});
 		am.put("rshift", new AbstractAction() {
+			@Override
 			public void actionPerformed(final ActionEvent ae) {
 				if (keyLocation == KeyEvent.KEY_LOCATION_LEFT) {
 					keyboard.leftShift(false);
@@ -426,11 +432,13 @@ public class VideoScreen extends TuneTab {
 			final KeyTableEntry kte = keycodeKeymap.get(ke);
 			addInputForAllModifiers(ke, "c" + ke);
 			am.put("pc" + ke, new AbstractAction() {
+				@Override
 				public void actionPerformed(final ActionEvent ae) {
 					keyboard.keyPressed(kte);
 				}
 			});
 			am.put("rc" + ke, new AbstractAction() {
+				@Override
 				public void actionPerformed(final ActionEvent ae) {
 					keyboard.keyReleased(kte);
 				}
@@ -482,12 +490,13 @@ public class VideoScreen extends TuneTab {
 	private void setDefaultsAndActions() {
 		c64.addMouseMotionListener(new MouseMotionAdapter() {
 
+			@Override
 			public void mouseMoved(MouseEvent e) {
 				// Cursor gets moved? Hidden mouse cursor re-appears
 				moveCounter = 0;
-					RootPaneContainer root = (RootPaneContainer) getTopLevelAncestor();
-					root.getGlassPane().setVisible(false);
-				}
+				RootPaneContainer root = (RootPaneContainer) getTopLevelAncestor();
+				root.getGlassPane().setVisible(false);
+			}
 
 		});
 		{
@@ -506,6 +515,7 @@ public class VideoScreen extends TuneTab {
 		for (final DKnob2 knob : new DKnob2[] { brightness, contrast, gamma,
 				saturation, offset, phaseShift, tint, blur, bleed }) {
 			knob.addChangeListener(new ChangeListener() {
+				@Override
 				public void stateChanged(final ChangeEvent e) {
 					final VIC vic = player.getC64().getVIC();
 					vic.getPalette().setBrightness(brightness.getValue());
@@ -549,6 +559,7 @@ public class VideoScreen extends TuneTab {
 		repaint();
 	}
 
+	@Override
 	public void notify(final UIEvent evt) {
 		if (evt.isOfType(IUpdateUI.class)) {
 			if (++moveCounter > TIME_TO_HIDE_CURSOR) {
