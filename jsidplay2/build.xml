@@ -95,7 +95,7 @@
 	<!-- Class path of manifest file -->
 	<pathconvert property="mf_class_path" pathsep=" " dirsep="">
 		<path refid="class.path" />
-		<map from="${basedir}" to="" />
+		<map from="${basedir}/lib" to="" />
 	</pathconvert>
 	<!-- Sizes of the class path entries -->
 	<scriptdef name="getfs" language="javascript">
