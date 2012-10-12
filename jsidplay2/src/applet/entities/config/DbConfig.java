@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import sidplay.ini.IniConfig;
 import sidplay.ini.intf.IAudioSection;
@@ -146,6 +147,11 @@ public class DbConfig implements IConfig {
 		if (favorites == null) {
 			favorites = new ArrayList<DbFavoritesSection>();
 		}
+		return favorites;
+	}
+
+	@Transient
+	public List<DbFavoritesSection> getFavoritesInternal() {
 		return favorites;
 	}
 

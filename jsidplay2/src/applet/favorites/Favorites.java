@@ -35,7 +35,7 @@ import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFavoritesSection;
 import applet.TuneTab;
 import applet.collection.Collection;
-import applet.entities.config.service.DbFavoritesSectionService;
+import applet.entities.config.service.DbConfigService;
 import applet.events.IPlayTune;
 import applet.events.ITuneStateChanged;
 import applet.events.UIEvent;
@@ -73,7 +73,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 	protected PlayList currentlyPlayedFavorites;
 	protected final Random random = new Random();
 
-	private DbFavoritesSectionService favoritesService;
+	private DbConfigService dbConfigService;
 
 	public Favorites(EntityManager em, Player pl, IConfig cfg, Collection hvsc,
 			Collection cgsc) {
@@ -81,7 +81,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 		this.config = cfg;
 		this.hvsc = hvsc;
 		this.cgsc = cgsc;
-		favoritesService = new DbFavoritesSectionService(em);
+		dbConfigService = new DbConfigService(em);
 
 		createContents();
 	}
@@ -674,7 +674,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 			final IAddFavoritesTab ifObj = (IAddFavoritesTab) event
 					.getUIEventImpl();
 
-			favoritesService.addFavorite(config, ifObj.getTitle());
+			dbConfigService.addFavorite(config, ifObj.getTitle());
 
 			IFavorites newTab = addTab(ifObj.getTitle());
 			ifObj.setFavorites(newTab);
@@ -684,7 +684,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 					.getUIEventImpl();
 			removeTab(ifObj.getIndex());
 
-			favoritesService.removeFavorite(config, ifObj.getIndex());
+			dbConfigService.removeFavorite(config, ifObj.getIndex());
 
 			// System.err.println("Remove index=" + ifObj.getIndex() + ",
 			// title="
