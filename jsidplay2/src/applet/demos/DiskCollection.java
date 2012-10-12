@@ -514,7 +514,16 @@ public abstract class DiskCollection extends TuneTab implements
 			final File autoStartFile) {
 		if (selectedFile.getName().toLowerCase().endsWith(".pdf")) {
 			try {
-				final File pdfFile = selectedFile;
+				File pdfFile = selectedFile;
+				if (pdfFile instanceof ZipEntryFileProxy) {
+					// Extract ZIP file
+					pdfFile = ZipEntryFileProxy
+							.extractFromZip((ZipEntryFileProxy) selectedFile);
+				}
+				if (pdfFile.getName().endsWith(".gz")) {
+					// Extract GZ file
+					pdfFile = ZipEntryFileProxy.extractFromGZ(pdfFile);
+				}
 				if (pdfFile.exists()) {
 					if (Desktop.isDesktopSupported()) {
 						Desktop.getDesktop().open(pdfFile);

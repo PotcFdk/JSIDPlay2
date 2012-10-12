@@ -1,6 +1,6 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- About dialogue -->
-<dialog bundle="applet.AboutTexts" title="TITLE" layout="BorderLayout"
+<dialog bundle="applet.about.AboutTexts" title="TITLE" layout="BorderLayout"
 	DefaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" size="1024,768"
 	Visible="true" IconImage="ICON">
 	<scrollpane constraints="BorderLayout.CENTER" border="EtchedBorder"

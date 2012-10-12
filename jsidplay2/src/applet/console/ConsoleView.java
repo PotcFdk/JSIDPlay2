@@ -1,4 +1,4 @@
-package applet;
+package applet.console;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import libsidplay.sidtune.SidTune;
 
 import org.swixml.SwingEngine;
 
+import applet.TuneTab;
 import applet.events.UIEvent;
 
 public class ConsoleView extends TuneTab {

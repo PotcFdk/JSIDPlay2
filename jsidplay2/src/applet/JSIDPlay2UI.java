@@ -56,6 +56,7 @@ import org.swixml.SwingEngine;
 import sidplay.ConsolePlayer;
 import sidplay.ini.intf.IConfig;
 import applet.collection.Collection;
+import applet.console.ConsoleView;
 import applet.demos.DiskCollection;
 import applet.disassembler.Disassembler;
 import applet.emulationsettings.EmulationSettings;
@@ -1169,7 +1170,8 @@ public class JSIDPlay2UI implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				final Container sv = new SwingEngine(this)
-						.render(JSIDPlay2UI.class.getResource("About.xml"));
+						.render(JSIDPlay2UI.class
+								.getResource("about/About.xml"));
 				ok.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
