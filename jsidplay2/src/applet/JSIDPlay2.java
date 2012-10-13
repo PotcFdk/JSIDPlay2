@@ -58,10 +58,13 @@ import applet.events.UIEventListener;
 public class JSIDPlay2 extends JApplet implements UIEventListener {
 
 	/**
-	 * URL where the JSIDPlay2 is deploey to.
+	 * URL where the JSIDPlay2 is deploy to.
 	 */
 	public static final String DEPLOYMENT_URL = "http://kenchis.t15.org/jsidplay2/";
 
+	/**
+	 * Filename of the jsidplay2 configuration database.
+	 */
 	public static final String CONFIG_DATABASE = "JSIDPLAY2";
 
 	/**
@@ -83,6 +86,9 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 */
 	protected JSIDPlay2UI ui;
 
+	/**
+	 * Database support.
+	 */
 	protected EntityManager em;
 
 	/**
@@ -96,7 +102,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * Application constructor.
 	 */
 	public JSIDPlay2(final String[] args) {
-		IConfig config = initializeConfigDatabase();
+		IConfig config = getConfiguration();
 		initializeTmpDir(config);
 
 		uiEvents.addListener(this);
@@ -138,8 +144,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 					// Don't forget to close
 					cp.close();
 				}
-				// save settings and filter definitions,
-				// only if dirty (auto save after the tune gets stopped)
+				// save configuration (auto save after the tune gets stopped)
 				write();
 
 				// "Play it once, Sam. For old times' sake."
@@ -166,6 +171,9 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 					});
 		}
 
+		/**
+		 * Save jsidplay2 configuration.
+		 */
 		private void write() {
 			em.getTransaction().begin();
 			try {
@@ -240,7 +248,12 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	// Helper methods
 	//
 
-	private IConfig initializeConfigDatabase() {
+	/**
+	 * Get the players configuration, create a new one, if absent.
+	 * 
+	 * @return the players configuration to be used
+	 */
+	private IConfig getConfiguration() {
 		File dbFile = getDbPath();
 		boolean dbFileExists = dbFile.exists();
 		em = Persistence.createEntityManagerFactory(
@@ -248,22 +261,34 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				new PersistenceProperties(new File(dbFile.getParent(),
 						CONFIG_DATABASE))).createEntityManager();
 		if (!dbFileExists) {
-			return importINIFile();
+			return createConfigurationFromINIFile();
 		} else {
 			DbConfig config = em.find(DbConfig.class, 1);
 			if (config == null) {
-				return importINIFile();
+				return createConfigurationFromINIFile();
 			}
 			return config;
 		}
 	}
 
-	private IConfig importINIFile() {
+	/**
+	 * Create the players configuration based on the already existing INI file
+	 * (use internal INI configuration, if absent).
+	 * 
+	 * @return created jsidplay2 configuration
+	 */
+	private IConfig createConfigurationFromINIFile() {
 		DbConfig dbConfig = new DbConfig();
 		dbConfig.copyFrom(new IniConfig());
 		return dbConfig;
 	}
 
+	/**
+	 * Search for the database file (the players configuration). Search in CWD
+	 * and in the HOME folder.
+	 * 
+	 * @return absolute path name of the database properties file
+	 */
 	private File getDbPath() {
 		File configPlace = null;
 		for (final String s : new String[] { System.getProperty("user.dir"),
