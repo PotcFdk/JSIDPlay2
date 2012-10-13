@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/jsidplay2/hsqldb-2.2.8.jar"/>
+<listEntry value="/jsidplay2/lib/hsqldb-2.2.8.jar"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.hsqldb.util.DatabaseManagerSwing"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--driver org.hsqldb.jdbcDriver --url jdbc:hsqldb:file:d:\Downloads\gb64\GBC_v09\GBC_v09"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--driver org.hsqldb.jdbcDriver --url jdbc:hsqldb:file:d:\Downloads\checkout\jsidplay2\result\online\gamebase\GBC_v09 --user &quot;&quot; --password &quot;&quot;"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jsidplay2"/>
 </launchConfiguration>

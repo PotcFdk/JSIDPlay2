@@ -138,7 +138,6 @@ public abstract class Database {
 			public void execute(Connection connection) throws SQLException {
 				Statement stmt = connection.createStatement();
 				stmt.executeUpdate(sql);
-				stmt.close();
 			}
 		});
 	}
@@ -157,7 +156,6 @@ public abstract class Database {
 					String str = rs.getString("TABLE_NAME");
 					result.add(str);
 				}
-				rs.close();
 				return result;
 			}
 		});
@@ -176,7 +174,6 @@ public abstract class Database {
 				while (rs.next()) {
 					result.add(rs.getString("COLUMN_NAME"));
 				}
-				rs.close();
 				return result;
 			}
 		});
@@ -250,13 +247,22 @@ public abstract class Database {
 					}
 
 					System.out.println("Copied " + rows + " rows.");
-					statement.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 
 			}
 		});
+	}
+
+	public void flush() {
+		em.getTransaction().begin();
+		em.getTransaction().commit();
+	}
+
+	public void close() {
+		em.close();
+		em.getEntityManagerFactory().close();
 	}
 
 }

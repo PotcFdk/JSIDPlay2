@@ -71,6 +71,9 @@ public class GameBaseUtility {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		source.close();
+		target.flush();
+		target.close();
 	}
 
 	public static void main(String args[]) {
