@@ -24,11 +24,11 @@ public class DbConfigService {
 
 	public void removeFavorite(IConfig config, int index) {
 		DbConfig dbConfig = (DbConfig) config;
-		DbFavoritesSection toChange = (DbFavoritesSection) dbConfig
+		DbFavoritesSection toRemove = (DbFavoritesSection) dbConfig
 				.getFavorites().get(index);
-		toChange.setDbConfig(null);
-		dbConfig.getFavorites().remove(toChange);
-		em.remove(toChange);
+		toRemove.setDbConfig(null);
+		dbConfig.getFavorites().remove(toRemove);
+		em.remove(toRemove);
 	}
 
 }

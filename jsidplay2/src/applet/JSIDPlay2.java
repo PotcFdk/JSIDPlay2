@@ -165,6 +165,17 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 
 					});
 		}
+
+		private void write() {
+			em.getTransaction().begin();
+			try {
+				em.persist(getConfig());
+				em.getTransaction().commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+				em.getTransaction().rollback();
+			}
+		}
 	};
 
 	//
@@ -221,7 +232,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		write();
+		em.close();
+		em.getEntityManagerFactory().close();
 	}
 
 	//
@@ -524,22 +536,6 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 
 		/* Start emulation */
 		sidplayApplet.start();
-	}
-
-	public void write() {
-		if (getConfig() instanceof IniConfig) {
-			((IniConfig) getConfig()).write();
-		} else {
-			// getConfig() instanceof DbConfig
-			em.getTransaction().begin();
-			try {
-				em.persist(getConfig());
-				em.getTransaction().commit();
-			} catch (Exception e) {
-				e.printStackTrace();
-				em.getTransaction().rollback();
-			}
-		}
 	}
 
 	/**
