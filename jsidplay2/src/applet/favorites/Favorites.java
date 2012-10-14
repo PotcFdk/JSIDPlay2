@@ -699,6 +699,8 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 			toChange.setName(ifObj.getTitle());
 			toChange.setFilename(ifObj.getFileName());
 
+			config.setCurrentFavorite(ifObj.getTitle());
+
 			// System.err.println("Change index=" + ifObj.getTitle()
 			// + ", filename=" + ifObj.getFileName());
 		} else if (event.isOfType(IFavoriteTabNames.class)) {
