@@ -845,7 +845,7 @@
 			</fileset>
 		</delete>
 
-		// create a CRC file
+		<!-- create a CRC file -->
 		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
@@ -885,7 +885,7 @@
 		</zip>
 		<delete dir="${hvsc_dir}/C64Music" />
 
-		// create a CRC file
+		<!-- create a CRC file -->
 		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
@@ -932,7 +932,7 @@
 		</zip>
 		<delete dir="${cgsc_dir}/CGSC" />
 
-		// create a CRC file
+		<!-- create a CRC file -->
 		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
@@ -991,7 +991,7 @@
 		</zip>
 		<delete dir="${hvmec_dir}/HVMEC" />
 
-		// create a CRC file
+		<!-- create a CRC file -->
 		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />

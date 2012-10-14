@@ -11,31 +11,28 @@ public abstract class ProgressListener implements IDownloadListener {
 
 	@Override
 	public void downloadStep(final int pct) {
-		this.uiEvents.fireEvent(IMadeProgress.class,
-				new IMadeProgress() {
+		this.uiEvents.fireEvent(IMadeProgress.class, new IMadeProgress() {
 
-					@Override
-					public int getPercentage() {
-						return pct;
-					}
-				});
+			@Override
+			public int getPercentage() {
+				return pct;
+			}
+		});
 	}
 
 	@Override
 	public void downloadStop(File downloadedFile) {
 
 		if (downloadedFile == null) {
-			this.uiEvents.fireEvent(IMadeProgress.class,
-					new IMadeProgress() {
+			this.uiEvents.fireEvent(IMadeProgress.class, new IMadeProgress() {
 
-						@Override
-						public int getPercentage() {
-							return 100;
-						}
-					});
-		} else {
-			downloaded(downloadedFile);
+				@Override
+				public int getPercentage() {
+					return 100;
+				}
+			});
 		}
+		downloaded(downloadedFile);
 	}
 
 	public abstract void downloaded(File downloadedFile);

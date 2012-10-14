@@ -19,6 +19,9 @@ public class MusicListener extends ProgressListener {
 
 	@Override
 	public void downloaded(final File downloadedFile) {
+		if (downloadedFile == null) {
+			return;
+		}
 		// play tune
 		uiEvents.fireEvent(IPlayTune.class, new IPlayTune() {
 			@Override

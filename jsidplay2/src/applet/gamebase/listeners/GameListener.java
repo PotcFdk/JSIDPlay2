@@ -38,6 +38,9 @@ public class GameListener extends ProgressListener {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void downloaded(File downloadedFile) {
+		if (downloadedFile == null) {
+			return;
+		}
 		// Make it possible to choose a file from ZIP next time
 		// the file chooser opens
 		config.getSidplay2().setLastDirectory(downloadedFile.getAbsolutePath());

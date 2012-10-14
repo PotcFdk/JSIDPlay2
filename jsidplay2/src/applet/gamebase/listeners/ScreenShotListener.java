@@ -24,9 +24,12 @@ public class ScreenShotListener extends ProgressListener {
 		gameBase.clearPicture();
 		super.downloadStep(pct);
 	}
-	
+
 	@Override
 	public void downloaded(File downloadedFile) {
+		if (downloadedFile == null) {
+			return;
+		}
 		try {
 			synchronized (this.gameBase.lastScreenshot) {
 				for (File file : this.gameBase.lastScreenshot) {
@@ -35,7 +38,8 @@ public class ScreenShotListener extends ProgressListener {
 				this.gameBase.lastScreenshot.add(downloadedFile);
 			}
 			final URL resource = downloadedFile.toURI().toURL();
-			this.gameBase.picture.setComposerImage(new ImageIcon(resource).getImage());
+			this.gameBase.picture.setComposerImage(new ImageIcon(resource)
+					.getImage());
 			this.gameBase.screenshot.repaint();
 			this.gameBase.repaint();
 		} catch (MalformedURLException e) {

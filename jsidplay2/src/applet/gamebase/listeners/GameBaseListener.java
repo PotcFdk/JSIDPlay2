@@ -21,6 +21,10 @@ public class GameBaseListener extends ProgressListener {
 
 	@Override
 	public void downloaded(File downloadedFile) {
+		if (downloadedFile == null) {
+			this.gameBase.enableGameBase.setEnabled(true);
+			return;
+		}
 		try {
 			File output = null;
 			final String outputDir = System.getProperty("jsidplay2.tmpdir");
