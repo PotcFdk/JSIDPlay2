@@ -119,6 +119,17 @@
 		        project.setNewProperty(propName, buf.toString());
 	        ]]>
 	</scriptdef>
+	<!-- file size of one file -->
+	<scriptdef name="getfsize" language="javascript">
+		<attribute name="file" />
+		<attribute name="property" />
+		<![CDATA[
+	            fileName = attributes.get("file");
+	            propName = attributes.get("property");
+    			file = new java.io.File(fileName);
+		        project.setNewProperty(propName, new java.lang.Integer(file.length()));
+	        ]]>
+	</scriptdef>
 
 	<!-- Applet Browser Icon -->
 	<property name="icon">jsidplay2.png</property>
@@ -833,6 +844,19 @@
 				<exclude name="GBC_v09.jar" />
 			</fileset>
 		</delete>
+
+		// create a CRC file
+		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
+			<classpath refid="class.path" />
+			<classpath location="${bin}" />
+			<arg path="${gamebase_dir}/gb64.jar" />
+		</java>
+		<getfsize property="filesize" file="${gamebase_dir}/gb64.jar"/>
+		<propertyfile file="${gamebase_dir}/gb64.crc">
+			<entry operation="=" type="string" key="filename" value="gb64.jar" />
+			<entry operation="=" type="string" key="size" value="${filesize}" />
+			<entry operation="=" type="string" key="crc32" value="${checksum}" />
+		</propertyfile>
 	</target>
 
 	<!-- ================================= 
@@ -860,6 +884,20 @@
 			</fileset>
 		</zip>
 		<delete dir="${hvsc_dir}/C64Music" />
+
+		// create a CRC file
+		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
+			<classpath refid="class.path" />
+			<classpath location="${bin}" />
+			<arg path="${hvsc_dir}/C64Music.zip" />
+		</java>
+		<getfsize property="filesize" file="${hvsc_dir}/C64Music.zip"/>
+		<propertyfile file="${hvsc_dir}/C64Music.crc">
+			<entry operation="=" type="string" key="filename" value="C64Music.zip" />
+			<entry operation="=" type="string" key="size" value="${filesize}" />
+			<entry operation="=" type="string" key="crc32" value="${checksum}" />
+		</propertyfile>
+
 		<!-- Split ZIP file (sourceforge has a maximum file size limit) -->
 		<java fork="true" classname="applet.collection.createhvsc.Split">
 			<classpath refid="class.path" />
@@ -893,6 +931,19 @@
 			</fileset>
 		</zip>
 		<delete dir="${cgsc_dir}/CGSC" />
+
+		// create a CRC file
+		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
+			<classpath refid="class.path" />
+			<classpath location="${bin}" />
+			<arg path="${cgsc_dir}/CGSC.zip" />
+		</java>
+		<getfsize property="filesize" file="${cgsc_dir}/CGSC.zip"/>
+		<propertyfile file="${cgsc_dir}/CGSC.crc">
+			<entry operation="=" type="string" key="filename" value="CGSC.zip" />
+			<entry operation="=" type="string" key="size" value="${filesize}" />
+			<entry operation="=" type="string" key="crc32" value="${checksum}" />
+		</propertyfile>
 	</target>
 
 	<!-- ================================= 
@@ -904,6 +955,18 @@
 		<delete dir="${demos_dir}" />
 		<mkdir dir="${demos_dir}" />
 		<copy todir="${demos_dir}" file="${test_src}/demos/Demos.zip" />
+
+		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
+			<classpath refid="class.path" />
+			<classpath location="${bin}" />
+			<arg path="${demos_dir}/Demos.zip" />
+		</java>
+		<getfsize property="filesize" file="${demos_dir}/Demos.zip"/>
+		<propertyfile file="${demos_dir}/Demos.crc">
+			<entry operation="=" type="string" key="filename" value="Demos.zip" />
+			<entry operation="=" type="string" key="size" value="${filesize}" />
+			<entry operation="=" type="string" key="crc32" value="${checksum}" />
+		</propertyfile>
 	</target>
 
 	<!-- ================================= 
@@ -927,6 +990,19 @@
 			</fileset>
 		</zip>
 		<delete dir="${hvmec_dir}/HVMEC" />
+
+		// create a CRC file
+		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
+			<classpath refid="class.path" />
+			<classpath location="${bin}" />
+			<arg path="${hvmec_dir}/HVMEC.zip" />
+		</java>
+		<getfsize property="filesize" file="${hvmec_dir}/HVMEC.zip"/>
+		<propertyfile file="${hvmec_dir}/HVMEC.crc">
+			<entry operation="=" type="string" key="filename" value="HVMEC.zip" />
+			<entry operation="=" type="string" key="size" value="${filesize}" />
+			<entry operation="=" type="string" key="crc32" value="${checksum}" />
+		</propertyfile>
 	</target>
 
 </project>

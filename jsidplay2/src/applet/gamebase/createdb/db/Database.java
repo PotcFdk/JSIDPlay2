@@ -263,6 +263,14 @@ public abstract class Database {
 	public void close() {
 		em.close();
 		em.getEntityManagerFactory().close();
+		// Workaround a bug, when tha database contents is not flushed until
+		// System.exit()
+		System.gc();
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

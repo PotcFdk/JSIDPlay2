@@ -309,7 +309,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		}
 	}
 
-	private long calculateCRC32(File file) throws IOException {
+	public static long calculateCRC32(File file) throws IOException {
 		CheckedInputStream cis = null;
 		try {
 			FileInputStream fis = new FileInputStream(file);
@@ -343,4 +343,18 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		listener.downloadStep((int) (progress));
 	}
 
+	/**
+	 * Calculate CRC32 checksum for ant build script. Output goes to stdout.
+	 * 
+	 * @param args
+	 *            filename to create a checksum for
+	 */
+	public static void main(String[] args) {
+		try {
+			long checksum = calculateCRC32(new File(args[0]));
+			System.out.println(String.format("%8X", checksum));
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+	}
 }
