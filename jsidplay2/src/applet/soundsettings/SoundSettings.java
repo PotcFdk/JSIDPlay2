@@ -230,6 +230,8 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 				tmpdir.setText(fc.getSelectedFile().getAbsolutePath());
 				config.getSidplay2().setTmpDir(
 						PathUtils.getPath(fc.getSelectedFile()));
+				System.setProperty("jsidplay2.tmpdir",
+						PathUtils.getPath(fc.getSelectedFile()));
 			}
 		}
 	};
