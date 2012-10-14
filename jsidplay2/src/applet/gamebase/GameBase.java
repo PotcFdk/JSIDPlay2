@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -42,7 +44,6 @@ import applet.entities.PersistenceProperties;
 import applet.entities.gamebase.Games;
 import applet.entities.gamebase.service.ConfigService;
 import applet.entities.gamebase.service.GamesService;
-import applet.events.IMadeProgress;
 import applet.events.UIEvent;
 import applet.gamebase.listeners.GameBaseListener;
 import applet.gamebase.listeners.GameListener;
@@ -263,16 +264,13 @@ public class GameBase extends TuneTab {
 	}
 
 	public void downloadStart(String url, IDownloadListener listener) {
-		DownloadThread downloadThread = new DownloadThread(config, listener,
-				url);
-		downloadThread.start();
-		getUiEvents().fireEvent(IMadeProgress.class, new IMadeProgress() {
-
-			@Override
-			public int getPercentage() {
-				return 0;
-			}
-		});
+		try {
+			DownloadThread downloadThread = new DownloadThread(config,
+					listener, new URL(url));
+			downloadThread.start();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void setLettersEnabled(boolean b) {

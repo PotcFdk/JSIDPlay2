@@ -1,7 +1,15 @@
 package applet;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import libsidutils.zip.ZipEntryFileProxy;
 import sidplay.ini.intf.IConfig;
@@ -15,6 +23,8 @@ import sidplay.ini.intf.IConfig;
  * @author Ken Haendel
  */
 public class PathUtils {
+	private static final int COPY_FILE_BUFFER_SIZE = 1 << 20;
+
 	/**
 	 * Remove windows drive letter.
 	 * 
@@ -119,4 +129,35 @@ public class PathUtils {
 		return null;
 	}
 
+	public static void copyFile(File inputFile, File outputFile)
+			throws IOException {
+		final InputStream input = new FileInputStream(inputFile);
+		final OutputStream output = new FileOutputStream(outputFile);
+		final ReadableByteChannel inputChannel = Channels.newChannel(input);
+		final WritableByteChannel outputChannel = Channels.newChannel(output);
+		PathUtils.fastChannelCopy(inputChannel, outputChannel);
+		inputChannel.close();
+		outputChannel.close();
+	}
+
+	private static void fastChannelCopy(final ReadableByteChannel src,
+			final WritableByteChannel dest) throws IOException {
+		final ByteBuffer buffer = ByteBuffer
+				.allocateDirect(COPY_FILE_BUFFER_SIZE);
+		while (src.read(buffer) != -1) {
+			// prepare the buffer to be drained
+			buffer.flip();
+			// write to the channel, may block
+			dest.write(buffer);
+			// If partial transfer, shift remainder down
+			// If buffer is empty, same as doing clear()
+			buffer.compact();
+		}
+		// EOF will leave buffer in fill state
+		buffer.flip();
+		// make sure the buffer is fully drained.
+		while (buffer.hasRemaining()) {
+			dest.write(buffer);
+		}
+	}
 }

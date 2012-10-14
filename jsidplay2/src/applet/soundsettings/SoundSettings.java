@@ -9,6 +9,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.MessageFormat;
 
 import javax.swing.AbstractAction;
@@ -519,15 +521,13 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 	public void downloadStart(String url) {
 		System.out.println("Download URL: <" + url + ">");
-		downloadThread = new DownloadThread(config, SoundSettings.this, url);
-		downloadThread.start();
-		uiEvents.fireEvent(IMadeProgress.class, new IMadeProgress() {
-
-			@Override
-			public int getPercentage() {
-				return 0;
-			}
-		});
+		try {
+			downloadThread = new DownloadThread(config, SoundSettings.this,
+					new URL(url));
+			downloadThread.start();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

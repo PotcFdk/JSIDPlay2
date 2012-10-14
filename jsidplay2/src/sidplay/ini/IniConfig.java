@@ -92,20 +92,23 @@ public class IniConfig implements IConfig {
 				.getPropertyString("Favorites", "Titles", null);
 		String filenames = iniReader.getPropertyString("Favorites",
 				"Filenames", null);
-		Scanner sc = new Scanner(titles);
-		Scanner sc2 = new Scanner(filenames);
-		sc.useDelimiter(",");
-		sc2.useDelimiter(",");
-		while (sc.hasNext() && sc2.hasNext()) {
-			String title = sc.next();
-			String filename = sc2.next();
-			IniFavoritesSection newFavorite = new IniFavoritesSection(iniReader);
-			newFavorite.setName(title);
-			newFavorite.setFilename(filename);
-			favorites.add(newFavorite);
+		if (titles != null && filenames != null) {
+			Scanner sc = new Scanner(titles);
+			Scanner sc2 = new Scanner(filenames);
+			sc.useDelimiter(",");
+			sc2.useDelimiter(",");
+			while (sc.hasNext() && sc2.hasNext()) {
+				String title = sc.next();
+				String filename = sc2.next();
+				IniFavoritesSection newFavorite = new IniFavoritesSection(
+						iniReader);
+				newFavorite.setName(title);
+				newFavorite.setFilename(filename);
+				favorites.add(newFavorite);
+			}
+			sc.close();
+			sc2.close();
 		}
-		sc.close();
-		sc2.close();
 		setCurrentFavorite(iniReader.getPropertyString("Favorites", "Current",
 				null));
 		return favorites;

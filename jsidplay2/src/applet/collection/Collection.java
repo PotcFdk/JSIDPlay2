@@ -8,14 +8,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.SequenceInputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -110,160 +106,11 @@ public abstract class Collection extends TuneTab implements
 	 */
 	public class HVSCListener extends ProgressListener {
 
-		/**
-		 * HVSC download part number.
-		 * 
-		 * Note: HVSC download is split into several parts due to file size
-		 * restrictions.
-		 */
-		private int part;
-
-		/**
-		 * @param part
-		 *            HVSC download part number (1..2).
-		 */
-		public HVSCListener(final int part) {
-			this.part = part;
-		}
-
-		@SuppressWarnings("resource")
 		@Override
 		public void downloaded(final File downloadedFile) {
-			if (part == 1) {
-				// part 1 has been downloaded, start download of part 2
-				DownloadThread downloadThread = new DownloadThread(config,
-						new HVSCListener(2), JSIDPlay2.DEPLOYMENT_URL
-								+ "online/hvsc/C64Music.002");
-				downloadThread.start();
-			} else if (part == 2) {
-				// part 2 has been downloaded, start download of part 3
-				DownloadThread downloadThread = new DownloadThread(config,
-						new HVSCListener(3), JSIDPlay2.DEPLOYMENT_URL
-								+ "online/hvsc/C64Music.003");
-				downloadThread.start();
-			} else if (part == 3) {
-				// part 3 has been downloaded, start download of part 4
-				DownloadThread downloadThread = new DownloadThread(config,
-						new HVSCListener(4), JSIDPlay2.DEPLOYMENT_URL
-								+ "online/hvsc/C64Music.004");
-				downloadThread.start();
-			} else {
-				// part 1, 2, 3 and 4 has been downloaded, merge them
-				autoConfiguration.setEnabled(true);
-				File part1File = new File(
-						System.getProperty("jsidplay2.tmpdir"), "C64Music.001");
-				File part2File = new File(
-						System.getProperty("jsidplay2.tmpdir"), "C64Music.002");
-				File part3File = new File(
-						System.getProperty("jsidplay2.tmpdir"), "C64Music.003");
-				File part4File = new File(
-						System.getProperty("jsidplay2.tmpdir"), "C64Music.004");
-				File hvscFile = new File(
-						System.getProperty("jsidplay2.tmpdir"), "C64Music.zip");
-				BufferedInputStream is = null;
-				BufferedOutputStream os = null;
-				File tmp = null;
-				try {
-					tmp = File.createTempFile("jsidplay2", "hvsctmp");
-					is = new BufferedInputStream(new SequenceInputStream(
-							new FileInputStream(part1File),
-							new FileInputStream(part2File)));
-					os = new BufferedOutputStream(new FileOutputStream(tmp));
-					int bytesRead;
-					byte[] buffer = new byte[DownloadThread.MAX_BUFFER_SIZE];
-					while ((bytesRead = is.read(buffer)) != -1) {
-						os.write(buffer, 0, bytesRead);
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					if (is != null) {
-						try {
-							is.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					if (os != null) {
-						try {
-							os.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				File tmp2 = null;
-				try {
-					tmp2 = File.createTempFile("jsidplay2", "hvsctmp");
-					if (tmp != null) {
-						is = new BufferedInputStream(new SequenceInputStream(
-								new FileInputStream(tmp), new FileInputStream(
-										part3File)));
-						os = new BufferedOutputStream(
-								new FileOutputStream(tmp2));
-						int bytesRead;
-						byte[] buffer = new byte[DownloadThread.MAX_BUFFER_SIZE];
-						while ((bytesRead = is.read(buffer)) != -1) {
-							os.write(buffer, 0, bytesRead);
-						}
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					if (is != null) {
-						try {
-							is.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					if (os != null) {
-						try {
-							os.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				tmp.delete();
-				try {
-					if (tmp != null) {
-						is = new BufferedInputStream(new SequenceInputStream(
-								new FileInputStream(tmp2), new FileInputStream(
-										part4File)));
-						os = new BufferedOutputStream(new FileOutputStream(
-								hvscFile));
-						int bytesRead;
-						byte[] buffer = new byte[DownloadThread.MAX_BUFFER_SIZE];
-						while ((bytesRead = is.read(buffer)) != -1) {
-							os.write(buffer, 0, bytesRead);
-						}
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					if (is != null) {
-						try {
-							is.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					if (os != null) {
-						try {
-							os.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				tmp2.delete();
-
-				part1File.delete();
-				part2File.delete();
-				part3File.delete();
-				part4File.delete();
-				setRootFile(hvscFile);
+			autoConfiguration.setEnabled(true);
+			if (downloadedFile != null) {
+				setRootFile(downloadedFile);
 			}
 		}
 	}
@@ -278,10 +125,10 @@ public abstract class Collection extends TuneTab implements
 
 		@Override
 		public void downloaded(final File downloadedFile) {
-			// ZIP has been downloaded
 			autoConfiguration.setEnabled(true);
-			setRootFile(new File(System.getProperty("jsidplay2.tmpdir"),
-					"CGSC.zip"));
+			if (downloadedFile != null) {
+				setRootFile(downloadedFile);
+			}
 		}
 	}
 
@@ -349,17 +196,15 @@ public abstract class Collection extends TuneTab implements
 		@Override
 		protected void autoConfig() {
 			if (autoConfiguration.isSelected()) {
-				final File hvscFile = new File(
-						System.getProperty("jsidplay2.tmpdir"), "C64Music.zip");
-				if (hvscFile.exists()) {
-					setRootFile(hvscFile);
-				} else {
-					// First time, the HVSC is downloaded, download part 1
-					autoConfiguration.setEnabled(false);
+				autoConfiguration.setEnabled(false);
+				try {
 					DownloadThread downloadThread = new DownloadThread(config,
-							new HVSCListener(1), JSIDPlay2.DEPLOYMENT_URL
-									+ "online/hvsc/C64Music.001");
+							new HVSCListener(), new URL(
+									JSIDPlay2.DEPLOYMENT_URL
+											+ "online/hvsc/C64Music.zip"));
 					downloadThread.start();
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -431,17 +276,16 @@ public abstract class Collection extends TuneTab implements
 		@Override
 		protected void autoConfig() {
 			if (autoConfiguration.isSelected()) {
-				final File cgscFile = new File(
-						System.getProperty("jsidplay2.tmpdir"), "CGSC.zip");
-				if (cgscFile.exists()) {
-					setRootFile(cgscFile);
-				} else {
-					// First time, the CGSC is downloaded
-					autoConfiguration.setEnabled(false);
+				// First time, the CGSC is downloaded
+				autoConfiguration.setEnabled(false);
+				try {
 					DownloadThread downloadThread = new DownloadThread(config,
-							new CGSCListener(), JSIDPlay2.DEPLOYMENT_URL
-									+ "online/cgsc/CGSC.zip");
+							new CGSCListener(), new URL(
+									JSIDPlay2.DEPLOYMENT_URL
+											+ "online/cgsc/CGSC.zip"));
 					downloadThread.start();
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
 				}
 			}
 		}
