@@ -108,9 +108,7 @@ public abstract class DiskCollection extends TuneTab implements
 			if (event.isOfType(ICollectionChanged.class)) {
 				ICollectionChanged ifObj = (ICollectionChanged) event
 						.getUIEventImpl();
-				if ((ifObj.getColectionType() == CollectionType.HVMEC)
-						&& !collectionDir.getText().equals(
-								ifObj.getCollectionRoot())) {
+				if (ifObj.getColectionType() == CollectionType.HVMEC) {
 					setRootFile(ifObj.getCollectionRoot());
 				}
 			}
@@ -172,9 +170,7 @@ public abstract class DiskCollection extends TuneTab implements
 			if (event.isOfType(ICollectionChanged.class)) {
 				ICollectionChanged ifObj = (ICollectionChanged) event
 						.getUIEventImpl();
-				if (ifObj.getColectionType() == CollectionType.DEMOS
-						&& !collectionDir.getText().equals(
-								ifObj.getCollectionRoot())) {
+				if (ifObj.getColectionType() == CollectionType.DEMOS) {
 					setRootFile(ifObj.getCollectionRoot());
 				}
 			}
@@ -235,9 +231,7 @@ public abstract class DiskCollection extends TuneTab implements
 			if (event.isOfType(ICollectionChanged.class)) {
 				ICollectionChanged ifObj = (ICollectionChanged) event
 						.getUIEventImpl();
-				if (ifObj.getColectionType() == CollectionType.MAGS
-						&& !collectionDir.getText().equals(
-								ifObj.getCollectionRoot())) {
+				if (ifObj.getColectionType() == CollectionType.MAGS) {
 					setRootFile(ifObj.getCollectionRoot());
 				}
 			}
@@ -415,8 +409,7 @@ public abstract class DiskCollection extends TuneTab implements
 	}
 
 	protected void setRootFile(final File rootFile) {
-		if (rootFile.exists()
-				&& !collectionDir.getText().equals(rootFile.getAbsolutePath())) {
+		if (rootFile.exists()) {
 			collectionDir.setText(rootFile.getAbsolutePath());
 			fileBrowser.setModel(new DiskCollectionTreeModel(rootFile));
 			fileBrowser.setCellRenderer(new DiskTreeRenderer());

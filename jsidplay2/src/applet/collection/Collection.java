@@ -185,9 +185,7 @@ public abstract class Collection extends TuneTab implements
 			if (event.isOfType(ICollectionChanged.class)) {
 				ICollectionChanged ifObj = (ICollectionChanged) event
 						.getUIEventImpl();
-				if (ifObj.getColectionType() == CollectionType.HVSC
-						&& !collectionDir.getText().equals(
-								ifObj.getCollectionRoot())) {
+				if (ifObj.getColectionType() == CollectionType.HVSC) {
 					setRootFile(ifObj.getCollectionRoot());
 				}
 			}
@@ -265,9 +263,7 @@ public abstract class Collection extends TuneTab implements
 			if (event.isOfType(ICollectionChanged.class)) {
 				ICollectionChanged ifObj = (ICollectionChanged) event
 						.getUIEventImpl();
-				if (ifObj.getColectionType() == CollectionType.CGSC
-						&& !collectionDir.getText().equals(
-								ifObj.getCollectionRoot())) {
+				if (ifObj.getColectionType() == CollectionType.CGSC) {
 					setRootFile(ifObj.getCollectionRoot());
 				}
 			}
@@ -713,8 +709,7 @@ public abstract class Collection extends TuneTab implements
 	}
 
 	protected void setRootFile(final File rootFile) {
-		if (rootFile.exists()
-				&& !collectionDir.getText().equals(rootFile.getAbsolutePath())) {
+		if (rootFile.exists()) {
 			collectionDir.setText(rootFile.getAbsolutePath());
 			fileBrowser.setModel(collectionTreeModel = new CollectionTreeModel(
 					rootFile));

@@ -18,6 +18,10 @@ public class UIEventFactory {
 	 * Listeners to notify
 	 */
 	private Set<UIEventListener> listeners;
+	/**
+	 * Recursion prevention contains currently fired event classes.
+	 */
+	private Set<Class<? extends IEvent>> currentlyFired = new HashSet<Class<? extends IEvent>>();
 
 	/**
 	 * Get an instance.
@@ -68,6 +72,12 @@ public class UIEventFactory {
 	 */
 	public void fireEvent(final Class<? extends IEvent> ifaceType,
 			final IEvent iface) {
+
+		if (currentlyFired.contains(ifaceType)) {
+			return;
+		}
+		currentlyFired.add(ifaceType);
+
 		final UIEvent uiEvent = new UIEvent(iface, ifaceType);
 		// Create a copy to avoid ConcurrentModificationException!
 		final UIEventListener[] copied = listeners
@@ -75,6 +85,7 @@ public class UIEventFactory {
 		for (UIEventListener listener : copied) {
 			listener.notify(uiEvent);
 		}
+		currentlyFired.remove(ifaceType);
 	}
 
 }
