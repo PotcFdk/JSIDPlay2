@@ -40,14 +40,6 @@ public class FavoritesModel extends DefaultTableModel {
 		this.cgsc = cgsc;
 	}
 
-	public Collection getHvsc() {
-		return hvsc;
-	}
-
-	public Collection getCgsc() {
-		return cgsc;
-	}
-
 	@Override
 	public String getColumnName(int column) {
 		int modelColumn = propertyIndices.get(column);
