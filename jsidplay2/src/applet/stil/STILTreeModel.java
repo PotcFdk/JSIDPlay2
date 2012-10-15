@@ -1,4 +1,4 @@
-package applet.collection.stil;
+package applet.stil;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;

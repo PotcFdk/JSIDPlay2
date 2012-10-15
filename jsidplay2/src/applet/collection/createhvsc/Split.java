@@ -9,11 +9,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * This class is used by Ant to split the HVSC in several parts
- * to avoid the maximum file size limit of sourceforge.
+ * This class is used by Ant to split the HVSC in several parts to avoid the
+ * maximum file size limit of the web-site provider.
  * 
  * @author Ken
- *
+ * 
  */
 public class Split {
 
@@ -26,7 +26,7 @@ public class Split {
 
 	private void doSplit(String[] args) {
 		String filename = null;
-		int bytes = -1;
+		int totalBytes = -1;
 		for (String paramValue : args) {
 			int idx = paramValue.indexOf("=");
 			if (idx != -1) {
@@ -35,17 +35,17 @@ public class Split {
 				if ("file".equals(name)) {
 					filename = value;
 				} else if ("bytes".equals(name)) {
-					bytes = Integer.valueOf(value);
+					totalBytes = Integer.valueOf(value);
 				}
 			}
 		}
-		if (filename == null || !filename.endsWith(".zip") || bytes == -1) {
+		if (filename == null || !filename.endsWith(".zip") || totalBytes == -1) {
 			System.err.println("Usage: file=<filename> bytes=<byteCount>");
 			System.exit(1);
 		}
 		int partNum = 1;
-		String output = filename.substring(0, filename.lastIndexOf(".zip"))
-				+ String.format(".%03d", partNum);
+		String output;
+		output = createOutputFilename(filename, partNum);
 
 		byte[] buffer = new byte[1 << 20];
 		BufferedInputStream is = null;
@@ -54,26 +54,20 @@ public class Split {
 			int bytesRead = 0, totalBytesRead = 0;
 			is = new BufferedInputStream(
 					new FileInputStream(new File(filename)), 1 << 20);
-			os = new BufferedOutputStream(
-					new FileOutputStream(new File(output)), 1 << 20);
-			int len = Math.min(buffer.length, bytes - totalBytesRead);
+			os = createOutputStream(output);
+			int len = Math.min(buffer.length, totalBytes - totalBytesRead);
 			while ((bytesRead = is.read(buffer, 0, len)) >= 0) {
 				os.write(buffer, 0, bytesRead);
 				totalBytesRead += bytesRead;
-				len = Math.min(buffer.length, bytes - totalBytesRead);
-				if (totalBytesRead == bytes) {
+				len = Math.min(buffer.length, totalBytes - totalBytesRead);
+				if (totalBytesRead == totalBytes) {
 					os.close();
-					output = filename
-							.substring(0, filename.lastIndexOf(".zip"))
-							+ String.format(".%03d", ++partNum);
-					os = new BufferedOutputStream(new FileOutputStream(
-							new File(output)), 1 << 20);
+					++partNum;
+					output = createOutputFilename(filename, partNum);
+					os = createOutputStream(output);
 					totalBytesRead = 0;
 				}
 			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -92,6 +86,17 @@ public class Split {
 				}
 			}
 		}
+	}
+
+	private String createOutputFilename(String filename, int partNum) {
+		return filename.substring(0, filename.lastIndexOf(".zip"))
+				+ String.format(".%03d", partNum);
+	}
+
+	private BufferedOutputStream createOutputStream(String filename)
+			throws FileNotFoundException {
+		return new BufferedOutputStream(
+				new FileOutputStream(new File(filename)), 1 << 20);
 	}
 
 }

@@ -1,4 +1,4 @@
-package applet.collection.stil;
+package applet.stil;
 
 import java.awt.Container;
 import java.awt.Point;

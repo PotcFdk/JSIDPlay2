@@ -5,7 +5,6 @@ import java.io.File;
 import javax.swing.table.AbstractTableModel;
 
 import libsidutils.zip.ZipFileProxy;
-
 import applet.sidtuneinfo.SidTuneInfoCache;
 
 public final class TuneInfoTableModel extends AbstractTableModel {
@@ -14,15 +13,10 @@ public final class TuneInfoTableModel extends AbstractTableModel {
 
 	private File tuneFile;
 
-	/**
-	 */
-	public TuneInfoTableModel() {
-	}
-
 	public final void setSidTuneInfoCache(SidTuneInfoCache cache) {
 		infoCache = cache;
 	}
-	
+
 	public void setFile(final File file) {
 		this.tuneFile = file;
 	}
@@ -32,6 +26,7 @@ public final class TuneInfoTableModel extends AbstractTableModel {
 		return false;
 	}
 
+	@Override
 	public Object getValueAt(final int rowIndex, final int columnIndex) {
 		if (tuneFile == null || tuneFile.isDirectory()
 				|| tuneFile instanceof ZipFileProxy) {
@@ -40,10 +35,9 @@ public final class TuneInfoTableModel extends AbstractTableModel {
 
 		if (columnIndex == 0) {
 			return infoCache.getLocalizer() != null ? infoCache.getLocalizer()
-					.getString(SidTuneInfoCache.SIDTUNE_INFOS[rowIndex])
-					: "?";
+					.getString(SidTuneInfoCache.SIDTUNE_INFOS[rowIndex]) : "?";
 		}
-		
+
 		if (infoCache.getInfo(tuneFile) != null) {
 			return infoCache.getInfo(tuneFile)[rowIndex];
 		} else {
@@ -51,10 +45,12 @@ public final class TuneInfoTableModel extends AbstractTableModel {
 		}
 	}
 
+	@Override
 	public int getRowCount() {
 		return SidTuneInfoCache.SIDTUNE_INFOS.length;
 	}
 
+	@Override
 	public int getColumnCount() {
 		return 2;
 	}

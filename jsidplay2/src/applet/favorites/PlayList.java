@@ -57,13 +57,13 @@ import org.swixml.SwingEngine;
 import sidplay.ini.intf.IConfig;
 import applet.PathUtils;
 import applet.SidTuneConverter;
-import applet.collection.stil.STIL;
 import applet.dnd.FileDrop;
 import applet.events.IPlayTune;
 import applet.events.UIEventFactory;
 import applet.events.favorites.IFavoriteTabNames;
 import applet.filefilter.TuneFileFilter;
 import applet.sidtuneinfo.SidTuneInfoCache;
+import applet.stil.STIL;
 import applet.ui.JNiceButton;
 
 @SuppressWarnings("serial")

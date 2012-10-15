@@ -23,13 +23,10 @@ final class CollectionTreeRenderer extends DefaultTreeCellRenderer {
 	protected Player player;
 	protected IConfig config;
 
-	private final JPanel view;
-
 	private File file;
 
-	private ImageIcon fStilIcon;
-
-	private ImageIcon fStilNoIcon;
+	private final JPanel view;
+	private ImageIcon fStilIcon, fStilNoIcon;
 
 	/**
 	 * @param view

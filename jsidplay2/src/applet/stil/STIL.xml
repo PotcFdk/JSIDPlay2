@@ -1,12 +1,12 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- STIL -->
-<dialog title="TITLE" bundle="applet.collection.stil.STILTexts"
+<dialog title="TITLE" bundle="applet.stil.STILTexts"
 	DefaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" Visible="true">
 	<panel layout="GridLayout(1, 2)">
 		<splitpane orientation="VERTICAL" OneTouchExpandable="true"
 			DividerLocation="100">
 			<scrollpane>
-				<tree initclass="applet.collection.stil.STILTreeModel"
+				<tree initclass="applet.stil.STILTreeModel"
 					SelectionMode="TreeSelectionModel.SINGLE_TREE_SELECTION" id="tree"></tree>
 			</scrollpane>
 			<scrollpane>

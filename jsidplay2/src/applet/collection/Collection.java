@@ -327,10 +327,13 @@ public abstract class Collection extends TuneTab implements
 	protected Player player;
 	protected IConfig config;
 
+	private EntityManager em;
+	private VersionService versionService;
+
 	protected CollectionTreeModel collectionTreeModel;
 	protected final String collectionTitle, collectionURL,
 			msgSelectCollectionDir, dbName;
-	// private Connection dbConnection;
+
 	protected SearchThread searchThread;
 	protected Object savedState;
 	protected String recentlySearchedText;
@@ -452,9 +455,6 @@ public abstract class Collection extends TuneTab implements
 			});
 		}
 	};
-
-	private EntityManager em;
-	VersionService versionService;
 
 	public Collection(Player pl, IConfig cfg, final String title,
 			final String sourceURL, final String message, final String dbName) {
@@ -603,7 +603,7 @@ public abstract class Collection extends TuneTab implements
 							mi.addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent arg0) {
-									new applet.collection.stil.STIL(se);
+									new applet.stil.STIL(se);
 								}
 							});
 						}

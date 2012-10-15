@@ -33,8 +33,33 @@ public final class SearchIndexCreator implements ISearchListener {
 		this.versionService = new VersionService(em);
 	}
 
+	@Override
 	public void searchStart() {
-		// Clear current database
+		clearPreviousSearchIndex();
+
+		em.getTransaction().begin();
+	}
+
+	@Override
+	public void searchHit(final File matchFile) {
+		try {
+			hvscEntryService.add(config, root, matchFile);
+		} catch (final IOException e) {
+			System.err.println("Indexing failure on: "
+					+ matchFile.getAbsolutePath() + ": " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void searchStop(final boolean canceled) {
+		versionService.setExpectedVersion();
+		em.getTransaction().commit();
+	}
+
+	/**
+	 * Clear current database.
+	 */
+	private void clearPreviousSearchIndex() {
 		em.getTransaction().begin();
 		try {
 			versionService.clear();
@@ -46,21 +71,6 @@ public final class SearchIndexCreator implements ISearchListener {
 			e.printStackTrace();
 			em.getTransaction().rollback();
 		}
-
-		em.getTransaction().begin();
 	}
 
-	public void searchHit(final File matchFile) {
-		try {
-			hvscEntryService.add(config, root, matchFile);
-		} catch (final IOException e) {
-			System.err.println("Indexing failure on: "
-					+ matchFile.getAbsolutePath() + ": " + e.getMessage());
-		}
-	}
-
-	public void searchStop(final boolean canceled) {
-		versionService.setExpectedVersion();
-		em.getTransaction().commit();
-	}
 }
