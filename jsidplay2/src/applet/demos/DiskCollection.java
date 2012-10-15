@@ -426,104 +426,122 @@ public abstract class DiskCollection extends TuneTab implements
 	protected void attachAndRunDemo(final File selectedFile,
 			final File autoStartFile) {
 		if (selectedFile.getName().toLowerCase().endsWith(".pdf")) {
-			try {
-				File pdfFile = selectedFile;
-				if (pdfFile instanceof ZipEntryFileProxy) {
-					// Extract ZIP file
-					pdfFile = ZipEntryFileProxy
-							.extractFromZip((ZipEntryFileProxy) selectedFile);
-				}
-				if (pdfFile.getName().endsWith(".gz")) {
-					// Extract GZ file
-					pdfFile = ZipEntryFileProxy.extractFromGZ(pdfFile);
-				}
-				if (pdfFile.exists()) {
-					if (Desktop.isDesktopSupported()) {
-						Desktop.getDesktop().open(pdfFile);
-					} else {
-						System.out.println("Awt Desktop is not supported!");
-					}
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			openPDF(selectedFile);
 		} else {
 			config.getSidplay2().setLastDirectory(
 					config.getSidplay2().getDemos());
 			if (diskfileFilter.accept(selectedFile)) {
-				getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
-
-					@Override
-					public MediaType getMediaType() {
-						return MediaType.DISK;
-					}
-
-					@Override
-					public File getSelectedMedia() {
-						return selectedFile;
-					}
-
-					@Override
-					public File getAutostartFile() {
-						return autoStartFile;
-					}
-
-					@Override
-					public Component getComponent() {
-						return DiskCollection.this;
-					}
-				});
+				insertDisk(selectedFile, autoStartFile);
 			} else {
-				getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
-
-					@Override
-					public MediaType getMediaType() {
-						return MediaType.TAPE;
-					}
-
-					@Override
-					public File getSelectedMedia() {
-						return selectedFile;
-					}
-
-					@Override
-					public File getAutostartFile() {
-						return autoStartFile;
-					}
-
-					@Override
-					public Component getComponent() {
-						return DiskCollection.this;
-					}
-				});
+				insertTape(selectedFile, autoStartFile);
 			}
 			if (autoStartFile == null) {
-				final String command;
-				if (diskfileFilter.accept(selectedFile)) {
-					command = "LOAD\"*\",8,1\rRUN\r";
-				} else {
-					command = "LOAD\rRUN\r";
-				}
-				// reset required after inserting the cartridge
-				getUiEvents().fireEvent(Reset.class, new Reset() {
-
-					@Override
-					public boolean switchToVideoTab() {
-						return true;
-					}
-
-					@Override
-					public String getCommand() {
-						return command;
-					}
-
-					@Override
-					public Component getComponent() {
-						return DiskCollection.this;
-					}
-				});
+				resetAndLoadDemo(selectedFile);
 			}
 		}
+	}
+
+	private void openPDF(final File selectedFile) {
+		try {
+			File pdfFile = selectedFile;
+			if (pdfFile instanceof ZipEntryFileProxy) {
+				// Extract ZIP file
+				pdfFile = ZipEntryFileProxy
+						.extractFromZip((ZipEntryFileProxy) selectedFile);
+			}
+			if (pdfFile.getName().endsWith(".gz")) {
+				// Extract GZ file
+				pdfFile = ZipEntryFileProxy.extractFromGZ(pdfFile);
+			}
+			if (pdfFile.exists()) {
+				if (Desktop.isDesktopSupported()) {
+					Desktop.getDesktop().open(pdfFile);
+				} else {
+					System.out.println("Awt Desktop is not supported!");
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void insertDisk(final File selectedFile, final File autoStartFile) {
+		getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
+
+			@Override
+			public MediaType getMediaType() {
+				return MediaType.DISK;
+			}
+
+			@Override
+			public File getSelectedMedia() {
+				return selectedFile;
+			}
+
+			@Override
+			public File getAutostartFile() {
+				return autoStartFile;
+			}
+
+			@Override
+			public Component getComponent() {
+				return DiskCollection.this;
+			}
+		});
+	}
+
+	private void insertTape(final File selectedFile, final File autoStartFile) {
+		getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
+
+			@Override
+			public MediaType getMediaType() {
+				return MediaType.TAPE;
+			}
+
+			@Override
+			public File getSelectedMedia() {
+				return selectedFile;
+			}
+
+			@Override
+			public File getAutostartFile() {
+				return autoStartFile;
+			}
+
+			@Override
+			public Component getComponent() {
+				return DiskCollection.this;
+			}
+		});
+	}
+
+	private void resetAndLoadDemo(final File selectedFile) {
+		final String command;
+		if (diskfileFilter.accept(selectedFile)) {
+			// load from disk
+			command = "LOAD\"*\",8,1\rRUN\r";
+		} else {
+			// load from tape
+			command = "LOAD\rRUN\r";
+		}
+		// reset required after inserting the cartridge
+		getUiEvents().fireEvent(Reset.class, new Reset() {
+
+			@Override
+			public boolean switchToVideoTab() {
+				return true;
+			}
+
+			@Override
+			public String getCommand() {
+				return command;
+			}
+
+			@Override
+			public Component getComponent() {
+				return DiskCollection.this;
+			}
+		});
 	}
 
 	protected void showPhoto(final File file) {
@@ -593,10 +611,10 @@ public abstract class DiskCollection extends TuneTab implements
 			File photoDir = new File(path);
 			photoFiles = photoDir.listFiles();
 		}
-		for (int i = 0; i < photoFiles.length; i++) {
-			if (photoFiles[i].getName().endsWith(".png")
-					|| photoFiles[i].getName().endsWith(".gif")) {
-				scrnShts.add(photoFiles[i]);
+		for (File photoFile : photoFiles) {
+			if (photoFile.getName().endsWith(".png")
+					|| photoFile.getName().endsWith(".gif")) {
+				scrnShts.add(photoFile);
 			}
 		}
 		return scrnShts.toArray(new File[scrnShts.size()]);
