@@ -3,16 +3,16 @@
      12.07.2009 17:47:41                                                        
 
      JSIDPlay2    
-     Create deployable JARS of the sources
+     Create deployable JARS from the sources
                    
      Ken Händel
      ====================================================================== -->
 <project name="JSIDPlay2" default="deploy" xmlns:cl="antlib:net.jtools.classloadertask">
 	<description>
-		Create deployable JARS from scratch, sign and upload to Sourceforge
+		Create deployable JARS from scratch, sign and upload to the Web hoster
     </description>
 
-	<!-- SCP task definition -->
+	<!-- Additional tasks classloader definition -->
 	<typedef uri="antlib:net.jtools.classloadertask" resource="net/jtools/classloadertask/antlib.xml">
 		<classpath>
 			<fileset dir="${basedir}/antlib" includes="ant-classloadertask.jar" />
@@ -31,6 +31,25 @@
 	<!-- ProGuard task definition -->
 	<taskdef resource="proguard/ant/task.properties" loaderref="project" />
 
+	<!-- Applet infos -->
+	<property name="name" value="Java SIDPlay2 - Music Player &amp; C64 SID Chip Emulator" />
+	<property name="width" value="1024" />
+	<property name="height" value="768" />
+	<!-- JNLP main class -->
+	<property name="jnlp_main_class" value="applet.JSIDPlay2" />
+	<!-- Main class of manifest files -->
+	<property name="mf_main_class" value="applet.JSIDPlay2" />
+	<property name="mf_main_class_console" value="sidplay.ConsolePlayer" />
+	<!-- main jar name of the player -->
+	<property name="mainJar" value="jsidplay2.jar" />
+	<property name="mainJarConsole" value="jsidplay2_console.jar" />
+	<!-- Applet Browser Icon -->
+	<property name="icon">jsidplay2.png</property>
+	<!-- Name of the archive containing the release of JSIDPlay2 -->
+	<property name="releaseName" value="jsidplay2-2.5" />
+	<!-- alias name of the key in the keystore to sign the JARs -->
+	<property name="sign_key_alias" value="jsidplay2" />
+
 	<!-- source folder to compile -->
 	<property name="src" location="${basedir}/src" />
 	<!-- encoding of java source files -->
@@ -43,10 +62,6 @@
 	<property name="test_src" location="${basedir}/test" />
 	<!-- binary test folder of class files and resources -->
 	<property name="test_bin" location="${basedir}/test_bin" />
-	<!-- main jar name of the player -->
-	<property name="mainJar" value="jsidplay2.jar" />
-	<property name="mainJarConsole" value="jsidplay2_console.jar" />
-
 	<!-- build result directory with deployable form of JSIDPlay2 -->
 	<property name="result_dir" location="${basedir}/result" />
 	<!-- test results directory -->
@@ -66,6 +81,9 @@
 	<!-- result directory of HVMEC -->
 	<property name="hvmec_dir" location="${result_dir}/online/hvmec" />
 
+	<!-- Read all properties to build and deploy -->
+	<property file="build.properties" />
+
 	<!-- Class path of JSIDPlay2 -->
 	<fileset id="jars" dir="${basedir}">
 		<include name="lib/*.jar" />
@@ -83,22 +101,13 @@
 	<!-- FEST task definition -->
 	<taskdef resource="festjunittasks" classpathref="test.class.path" />
 
-	<!-- Applet infos -->
-	<property name="name" value="Java SIDPlay2 - Music Player &amp; C64 SID Chip Emulator" />
-	<property name="width" value="1024" />
-	<property name="height" value="768" />
-	<!-- JNLP main class -->
-	<property name="jnlp_main_class" value="applet.JSIDPlay2" />
-	<!-- Main class of manifest file -->
-	<property name="mf_main_class" value="applet.JSIDPlay2" />
-	<property name="mf_main_class_console" value="sidplay.ConsolePlayer" />
-	<!-- Class path of manifest file -->
+	<!-- Class path to be included in the manifest file -->
 	<pathconvert property="mf_class_path" pathsep=" " dirsep="">
 		<path refid="class.path" />
 		<map from="${basedir}/lib" to="" />
 	</pathconvert>
-	<!-- Sizes of the class path entries -->
-	<scriptdef name="getfs" language="javascript">
+	<!-- Get list of sizes of all files (used to determine jar sizes within jnlp) -->
+	<scriptdef name="getLength" language="javascript">
 		<attribute name="files" />
 		<attribute name="path" />
 		<attribute name="property" />
@@ -119,29 +128,6 @@
 		        project.setNewProperty(propName, buf.toString());
 	        ]]>
 	</scriptdef>
-	<!-- file size of one file -->
-	<scriptdef name="getfsize" language="javascript">
-		<attribute name="file" />
-		<attribute name="property" />
-		<![CDATA[
-	            fileName = attributes.get("file");
-	            propName = attributes.get("property");
-    			file = new java.io.File(fileName);
-		        project.setNewProperty(propName, new java.lang.Integer(file.length()));
-	        ]]>
-	</scriptdef>
-
-	<!-- Applet Browser Icon -->
-	<property name="icon">jsidplay2.png</property>
-
-	<!-- Name of the archive containing the release of JSIDPlay2 -->
-	<property name="releaseName" value="jsidplay2-2.5" />
-
-	<!-- alias name of the key in the keystore to sign the JARs -->
-	<property name="sign_key_alias" value="jsidplay2" />
-
-	<!-- Read all properties to build and deploy -->
-	<property file="build.properties" />
 
 	<!-- ================================= 
           target: launch4j_setup
@@ -251,19 +237,17 @@
           Description:
           Create JSIDPlay2. Also all JARs are signed.
           The keystore file, the keystore password and the key password is required.
-          Everything is then deployed to Sourceforge.
-          The SSH key file, username and password is required as well.
+          Everything is then deployed to the web hoster.
          ================================= -->
-	<target name="deploy" depends="build,jsiddevice_zip,c64jukebox,native_libs_jar,sign,jsidplay2_webresources,jsidplay2_jnlp,upload" description="Deploy JSIDPlay2 to Sourceforge" />
+	<target name="deploy" depends="build,jsiddevice_zip,c64jukebox,native_libs_jar,sign,jsidplay2_webresources,jsidplay2_jnlp,upload" description="Deploy JSIDPlay2 to the Web Hoster" />
 
 	<!-- ================================= 
           target: deployOnlineContent
           Description:
-          Create extra online content of JSIDPlay2, that is Gamebase64 and HVSC.
-          Everything is deployed to Sourceforge.
-          The SSH key file, username and password is required.
+          Create extra online content of JSIDPlay2, that is Gamebase64 and HVSC for example.
+          Everything is deployed to the web hoster.
          ================================= -->
-	<target name="deployOnlineContent" depends="init,gb64_import,hvsc_import,cgsc_import,demos,hvmec_import,upload" description="Deploy extra online content to Sourceforge" />
+	<target name="deployOnlineContent" depends="init,gb64_import,hvsc_import,cgsc_import,demos,hvmec_import,upload" description="Deploy extra online content to the Web Hoster" />
 
 	<!-- ================================= 
           target: build              
@@ -347,7 +331,7 @@
           Create the main jar of JSIDplay2
           all binaries and all sources are included
           as well as a manifest file to create an executable jar.
-          In fact a GUI version and a console version is created (<mainJar>_console.jar).
+          In fact a GUI version and a console version is created.
          ================================= -->
 	<target name="jsidplay2_jar" depends="compile">
 		<!-- GUI Player -->
@@ -681,16 +665,14 @@
 		<fail unless="build.configured" message="Please copy sample_build.properties to build.properties and configure settings." />
 		<input message="Server URL?" addproperty="server_url" />
 
-		<getfs property="jars.size" files="${mf_class_path}" path="${result_dir}" />
+		<getLength property="jars.size" files="${mf_class_path}" path="${result_dir}" />
 		<length file="${result_dir}/${mainJar}" property="length" />
-
 		<length file="${result_dir}/jinput-linux-native.jar" property="linuxLength" />
 		<length file="${result_dir}/jinput-osx-native.jar" property="osxLength" />
 		<length file="${result_dir}/jinput-windows-native.jar" property="windowsLength" />
-
 		<length file="${result_dir}/jsidplay2.jpg" property="iconSize" />
 
-		<!-- JNLP to be used as an application (using application-desc) -->
+		<!-- JNLP to be used as an application (using application-desc in jnlp) -->
 		<xslt in="${res}/jsidplay2.jnlp.tmpl" out="${result_dir}/jsidplay2.jnlp" style="${res}/jsidplay2.jnlp.xsl">
 			<param name="filename" expression="jsidplay2.jnlp" />
 			<param name="applet" expression="false" />
@@ -710,7 +692,7 @@
 			<!-- server URL -->
 			<param name="url" expression="${server_url}" />
 		</xslt>
-		<!-- JNLP to be used as an applet (using applet-desc) -->
+		<!-- JNLP to be used as an applet (using applet-desc in jnlp) -->
 		<xslt in="${res}/jsidplay2.jnlp.tmpl" out="${result_dir}/jsidplay2applet.jnlp" style="${res}/jsidplay2.jnlp.xsl">
 			<param name="filename" expression="jsidplay2applet.jnlp" />
 			<param name="applet" expression="true" />
@@ -779,7 +761,7 @@
 	<!-- ================================= 
           target: upload
           Description:
-          Upload JSIDPlay2 deployment results to Sourceforge using SSH.
+          Upload JSIDPlay2 deployment results to the Web Hoster using SSH.
          ================================= -->
 	<target name="upload" depends="setup_upload,upload_ftp" if="ssh">
 		<input message="SSH keyfile?" addproperty="keyfile"/>
@@ -796,7 +778,7 @@
 	<!-- ================================= 
           target: upload
           Description:
-          Upload JSIDPlay2 deployment results to Sourceforge using FTP.
+          Upload JSIDPlay2 deployment results to the Web Hoster using FTP.
          ================================= -->
 	<target name="upload_ftp" depends="setup_upload" unless="ssh">
 		<input message="FTP username?" addproperty="username" />
@@ -823,6 +805,7 @@
 		<input message="sourceURL?" addproperty="sourceURL" />
 		<input message="targetDriver?" addproperty="targetDriver" />
 		<input message="targetURL?" addproperty="targetURL" />
+
 		<mkdir dir="${gamebase_dir}" />
 		<java fork="true" classname="applet.gamebase.createdb.GameBaseUtility">
 			<classpath refid="class.path" />
@@ -851,7 +834,7 @@
 			<classpath location="${bin}" />
 			<arg path="${gamebase_dir}/gb64.jar" />
 		</java>
-		<getfsize property="filesize" file="${gamebase_dir}/gb64.jar"/>
+		<length property="filesize" file="${gamebase_dir}/gb64.jar"/>
 		<propertyfile file="${gamebase_dir}/gb64.crc">
 			<entry operation="=" type="string" key="filename" value="gb64.jar" />
 			<entry operation="=" type="string" key="size" value="${filesize}" />
@@ -891,7 +874,7 @@
 			<classpath location="${bin}" />
 			<arg path="${hvsc_dir}/C64Music.zip" />
 		</java>
-		<getfsize property="filesize" file="${hvsc_dir}/C64Music.zip"/>
+		<length property="filesize" file="${hvsc_dir}/C64Music.zip"/>
 		<propertyfile file="${hvsc_dir}/C64Music.crc">
 			<entry operation="=" type="string" key="filename" value="C64Music.zip" />
 			<entry operation="=" type="string" key="size" value="${filesize}" />
@@ -938,7 +921,7 @@
 			<classpath location="${bin}" />
 			<arg path="${cgsc_dir}/CGSC.zip" />
 		</java>
-		<getfsize property="filesize" file="${cgsc_dir}/CGSC.zip"/>
+		<length property="filesize" file="${cgsc_dir}/CGSC.zip"/>
 		<propertyfile file="${cgsc_dir}/CGSC.crc">
 			<entry operation="=" type="string" key="filename" value="CGSC.zip" />
 			<entry operation="=" type="string" key="size" value="${filesize}" />
@@ -961,7 +944,7 @@
 			<classpath location="${bin}" />
 			<arg path="${demos_dir}/Demos.zip" />
 		</java>
-		<getfsize property="filesize" file="${demos_dir}/Demos.zip"/>
+		<length property="filesize" file="${demos_dir}/Demos.zip"/>
 		<propertyfile file="${demos_dir}/Demos.crc">
 			<entry operation="=" type="string" key="filename" value="Demos.zip" />
 			<entry operation="=" type="string" key="size" value="${filesize}" />
@@ -997,7 +980,7 @@
 			<classpath location="${bin}" />
 			<arg path="${hvmec_dir}/HVMEC.zip" />
 		</java>
-		<getfsize property="filesize" file="${hvmec_dir}/HVMEC.zip"/>
+		<length property="filesize" file="${hvmec_dir}/HVMEC.zip"/>
 		<propertyfile file="${hvmec_dir}/HVMEC.crc">
 			<entry operation="=" type="string" key="filename" value="HVMEC.zip" />
 			<entry operation="=" type="string" key="size" value="${filesize}" />
