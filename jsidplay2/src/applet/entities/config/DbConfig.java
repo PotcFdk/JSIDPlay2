@@ -10,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import sidplay.ini.IniConfig;
 import sidplay.ini.intf.IAudioSection;
@@ -135,7 +134,7 @@ public class DbConfig implements IConfig {
 		this.currentFavorite = currentFavorite;
 	}
 
-	@OneToMany(mappedBy = "dbConfig", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "dbConfig", cascade = CascadeType.ALL)
 	private List<DbFavoritesSection> favorites;
 
 	public void setFavorites(List<DbFavoritesSection> favorites) {
@@ -150,8 +149,10 @@ public class DbConfig implements IConfig {
 		return favorites;
 	}
 
-	@Transient
 	public List<DbFavoritesSection> getFavoritesInternal() {
+		if (favorites == null) {
+			favorites = new ArrayList<DbFavoritesSection>();
+		}
 		return favorites;
 	}
 

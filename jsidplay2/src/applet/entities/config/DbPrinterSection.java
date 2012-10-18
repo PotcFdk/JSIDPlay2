@@ -7,16 +7,16 @@ import sidplay.ini.intf.IPrinterSection;
 @Embeddable
 public class DbPrinterSection implements IPrinterSection {
 
-	private boolean isPrinterOn;
+	private boolean printerOn;
 
 	@Override
 	public boolean isPrinterOn() {
-		return isPrinterOn;
+		return printerOn;
 	}
 
 	@Override
 	public void setPrinterOn(boolean isPrinterOn) {
-		this.isPrinterOn = isPrinterOn;
+		this.printerOn = isPrinterOn;
 	}
 
 }

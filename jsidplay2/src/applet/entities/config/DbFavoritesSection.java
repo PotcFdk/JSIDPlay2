@@ -37,16 +37,16 @@ public class DbFavoritesSection implements IFavoritesSection {
 	}
 
 	@Column
-	private String favoritesFilename;
+	private String filename;
 
 	@Override
 	public String getFilename() {
-		return favoritesFilename;
+		return filename;
 	}
 
 	@Override
-	public void setFilename(String favoritesFilename) {
-		this.favoritesFilename = favoritesFilename;
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 
 	@ManyToOne

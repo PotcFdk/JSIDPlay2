@@ -181,7 +181,9 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				em.getTransaction().commit();
 			} catch (Exception e) {
 				e.printStackTrace();
-				em.getTransaction().rollback();
+				if (em.getTransaction().isActive()) {
+					em.getTransaction().rollback();
+				}
 			}
 		}
 	};

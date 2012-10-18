@@ -56,6 +56,7 @@ import org.swixml.SwingEngine;
 import sidplay.ConsolePlayer;
 import sidplay.ini.intf.IConfig;
 import applet.collection.Collection;
+import applet.config.ConfigView;
 import applet.console.ConsoleView;
 import applet.demos.DiskCollection;
 import applet.disassembler.Disassembler;
@@ -201,6 +202,8 @@ public class JSIDPlay2UI implements UIEventListener {
 					new Favorites(em, getPlayer(), getConfig(), hvsc, cgsc));
 			tabbedPane.add(swix.getLocalizer().getString("PRINTER"),
 					new PrinterView(getPlayer()));
+			tabbedPane.add(swix.getLocalizer().getString("CONFIG"),
+					new ConfigView(getPlayer(), getConfig()));
 			tabbedPane.add(swix.getLocalizer().getString("CONSOLE"),
 					new ConsoleView());
 

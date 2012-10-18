@@ -7,6 +7,7 @@ import applet.entities.config.DbConfig;
 import applet.entities.config.DbFavoritesSection;
 
 public class DbConfigService {
+	@SuppressWarnings("unused")
 	private EntityManager em;
 
 	public DbConfigService(EntityManager em) {
@@ -19,7 +20,6 @@ public class DbConfigService {
 		toAdd.setDbConfig(dbConfig);
 		toAdd.setName(title);
 		dbConfig.getFavoritesInternal().add(toAdd);
-		em.persist(toAdd);
 	}
 
 	public void removeFavorite(IConfig config, int index) {
@@ -27,8 +27,7 @@ public class DbConfigService {
 		DbFavoritesSection toRemove = (DbFavoritesSection) dbConfig
 				.getFavorites().get(index);
 		toRemove.setDbConfig(null);
-		dbConfig.getFavorites().remove(toRemove);
-		em.remove(toRemove);
+		dbConfig.getFavorites().remove(index);
 	}
 
 }

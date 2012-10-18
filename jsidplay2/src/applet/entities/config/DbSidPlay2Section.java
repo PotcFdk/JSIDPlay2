@@ -18,16 +18,16 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.version = version;
 	}
 
-	private boolean isEnableDatabase;
+	private boolean enableDatabase;
 
 	@Override
 	public boolean isEnableDatabase() {
-		return isEnableDatabase;
+		return enableDatabase;
 	}
 
 	@Override
 	public void setEnableDatabase(boolean isEnableDatabase) {
-		this.isEnableDatabase = isEnableDatabase;
+		this.enableDatabase = isEnableDatabase;
 	}
 
 	private int playLength;
@@ -114,16 +114,16 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.hvsc = hvsc;
 	}
 
-	private boolean isSingle;
+	private boolean single;
 
 	@Override
 	public boolean isSingle() {
-		return isSingle;
+		return single;
 	}
 
 	@Override
 	public void setSingle(boolean isSingle) {
-		this.isSingle = isSingle;
+		this.single = isSingle;
 	}
 
 	private String soasc6581R2;
@@ -162,16 +162,16 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		soasc8580R5 = soasc8580r5;
 	}
 
-	private boolean isEnableProxy;
+	private boolean enableProxy;
 
 	@Override
 	public boolean isEnableProxy() {
-		return isEnableProxy;
+		return enableProxy;
 	}
 
 	@Override
 	public void setEnableProxy(boolean isEnableProxy) {
-		this.isEnableProxy = isEnableProxy;
+		this.enableProxy = isEnableProxy;
 	}
 
 	private String proxyHostname;

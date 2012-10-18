@@ -23,16 +23,16 @@ public class DbAudioSection implements IAudioSection {
 	}
 
 	@Enumerated(EnumType.STRING)
-	private SamplingMethod method;
+	private SamplingMethod sampling;
 
 	@Override
 	public SamplingMethod getSampling() {
-		return this.method;
+		return this.sampling;
 	}
 
 	@Override
 	public void setSampling(SamplingMethod method) {
-		this.method = method;
+		this.sampling = method;
 	}
 
 	private boolean playOriginal;

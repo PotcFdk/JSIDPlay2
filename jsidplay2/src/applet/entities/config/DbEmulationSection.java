@@ -85,16 +85,16 @@ public class DbEmulationSection implements IEmulationSection {
 		this.hardsid8580 = hardsid8580;
 	}
 
-	private boolean isFilter;
+	private boolean filter;
 
 	@Override
 	public boolean isFilter() {
-		return isFilter;
+		return filter;
 	}
 
 	@Override
 	public void setFilter(boolean isFilter) {
-		this.isFilter = isFilter;
+		this.filter = isFilter;
 	}
 
 	private String filter6581;
@@ -121,16 +121,16 @@ public class DbEmulationSection implements IEmulationSection {
 		this.filter8580 = filter8580;
 	}
 
-	private boolean isDigiBoosted8580;
+	private boolean digiBoosted8580;
 
 	@Override
 	public boolean isDigiBoosted8580() {
-		return isDigiBoosted8580;
+		return digiBoosted8580;
 	}
 
 	@Override
 	public void setDigiBoosted8580(boolean isDigiBoosted8580) {
-		this.isDigiBoosted8580 = isDigiBoosted8580;
+		this.digiBoosted8580 = isDigiBoosted8580;
 	}
 
 	private int dualSidBase;
@@ -145,16 +145,16 @@ public class DbEmulationSection implements IEmulationSection {
 		this.dualSidBase = dualSidBase;
 	}
 
-	private boolean isForceStereoTune;
+	private boolean forceStereoTune;
 
 	@Override
 	public boolean isForceStereoTune() {
-		return isForceStereoTune;
+		return forceStereoTune;
 	}
 
 	@Override
 	public void setForceStereoTune(boolean isForceStereoTune) {
-		this.isForceStereoTune = isForceStereoTune;
+		this.forceStereoTune = isForceStereoTune;
 	}
 
 	private ChipModel stereoSidModel;

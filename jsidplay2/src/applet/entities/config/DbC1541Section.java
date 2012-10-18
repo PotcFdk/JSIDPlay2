@@ -11,100 +11,100 @@ import sidplay.ini.intf.IC1541Section;
 @Embeddable
 public class DbC1541Section implements IC1541Section {
 
-	private boolean isDriveOn;
+	private boolean driveOn;
 
 	@Override
 	public boolean isDriveOn() {
-		return this.isDriveOn;
+		return this.driveOn;
 	}
 
 	@Override
 	public void setDriveOn(boolean on) {
-		this.isDriveOn = on;
+		this.driveOn = on;
 	}
 
-	private boolean isDriveSoundOn;
+	private boolean driveSoundOn;
 
 	@Override
 	public boolean isDriveSoundOn() {
-		return this.isDriveSoundOn;
+		return this.driveSoundOn;
 	}
 
 	@Override
 	public void setDriveSoundOn(boolean on) {
-		this.isDriveSoundOn = on;
+		this.driveSoundOn = on;
 	}
 
-	private boolean isParallelCable;
+	private boolean parallelCable;
 
 	@Override
 	public boolean isParallelCable() {
-		return this.isParallelCable;
+		return this.parallelCable;
 	}
 
 	@Override
 	public void setParallelCable(boolean on) {
-		this.isParallelCable = on;
+		this.parallelCable = on;
 	}
 
-	private boolean isRamExpansionEnabled0;
+	private boolean ramExpansionEnabled0;
 
 	@Override
 	public boolean isRamExpansionEnabled0() {
-		return this.isRamExpansionEnabled0;
+		return this.ramExpansionEnabled0;
 	}
 
 	@Override
 	public void setRamExpansion0(boolean on) {
-		this.isRamExpansionEnabled0 = on;
+		this.ramExpansionEnabled0 = on;
 	}
 
-	private boolean isRamExpansionEnabled1;
+	private boolean ramExpansionEnabled1;
 
 	@Override
 	public boolean isRamExpansionEnabled1() {
-		return this.isRamExpansionEnabled1;
+		return this.ramExpansionEnabled1;
 	}
 
 	@Override
 	public void setRamExpansion1(boolean on) {
-		this.isRamExpansionEnabled1 = on;
+		this.ramExpansionEnabled1 = on;
 	}
 
-	private boolean isRamExpansionEnabled2;
+	private boolean ramExpansionEnabled2;
 
 	@Override
 	public boolean isRamExpansionEnabled2() {
-		return this.isRamExpansionEnabled2;
+		return this.ramExpansionEnabled2;
 	}
 
 	@Override
 	public void setRamExpansion2(boolean on) {
-		this.isRamExpansionEnabled2 = on;
+		this.ramExpansionEnabled2 = on;
 	}
 
-	private boolean isRamExpansionEnabled3;
+	private boolean ramExpansionEnabled3;
 
 	@Override
 	public boolean isRamExpansionEnabled3() {
-		return this.isRamExpansionEnabled3;
+		return this.ramExpansionEnabled3;
 	}
 
 	@Override
 	public void setRamExpansion3(boolean on) {
-		this.isRamExpansionEnabled3 = on;
+		this.ramExpansionEnabled3 = on;
 	}
 
-	private boolean isRamExpansionEnabled4;
+	private boolean ramExpansionEnabled4;
 
 	@Override
 	public boolean isRamExpansionEnabled4() {
-		return this.isRamExpansionEnabled4;
+		return this.ramExpansionEnabled4;
 	}
 
 	@Override
 	public void setRamExpansion4(boolean on) {
-		this.isRamExpansionEnabled4 = on;
+		this.ramExpansionEnabled4 = on;
 	}
 
 	@Enumerated(EnumType.STRING)
