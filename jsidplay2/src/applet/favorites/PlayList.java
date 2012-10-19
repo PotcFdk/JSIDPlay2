@@ -50,6 +50,7 @@ import javax.swing.table.TableRowSorter;
 
 import libsidplay.Player;
 import libsidutils.STIL.STILEntry;
+import libsidutils.zip.ZipEntryFileProxy;
 
 import org.swixml.SwingEngine;
 
@@ -278,8 +279,14 @@ public class PlayList extends JPanel implements IFavorites {
 									File file = model.getFile(model.getValueAt(
 											row, 0));
 									try {
+										if (file instanceof ZipEntryFileProxy) {
+											// Extract ZIP file
+											file = ZipEntryFileProxy
+													.extractFromZip((ZipEntryFileProxy) file);
+										}
 										PathUtils.copyFile(file,
-												fc.getSelectedFile());
+												new File(fc.getSelectedFile(),
+														file.getName()));
 									} catch (IOException e1) {
 										System.err.println(e1.getMessage());
 									}
