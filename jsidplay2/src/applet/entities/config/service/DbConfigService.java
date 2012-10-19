@@ -35,8 +35,15 @@ public class DbConfigService {
 
 	private void flush() {
 		em.getTransaction().begin();
-		em.flush();
-		em.getTransaction().commit();
+		try {
+			em.flush();
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+		}
 	}
 
 }
