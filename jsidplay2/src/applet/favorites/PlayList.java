@@ -14,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -184,6 +183,7 @@ public class PlayList extends JPanel implements IFavorites {
 		rowSorter = new TableRowSorter<TableModel>(model);
 		rowSorter.addRowSorterListener(new RowSorterListener() {
 
+			@Override
 			public void sorterChanged(RowSorterEvent e) {
 				setMoveEnabledState(getSelection());
 			}
@@ -248,6 +248,7 @@ public class PlayList extends JPanel implements IFavorites {
 						if (se != null) {
 							mi.setEnabled(true);
 							mi.addActionListener(new ActionListener() {
+								@Override
 								public void actionPerformed(ActionEvent arg0) {
 									new STIL(se);
 								}
@@ -277,9 +278,8 @@ public class PlayList extends JPanel implements IFavorites {
 									File file = model.getFile(model.getValueAt(
 											row, 0));
 									try {
-										copy(file.getAbsolutePath(), fc
-												.getSelectedFile()
-												.getAbsolutePath());
+										PathUtils.copyFile(file,
+												fc.getSelectedFile());
 									} catch (IOException e1) {
 										System.err.println(e1.getMessage());
 									}
@@ -294,6 +294,7 @@ public class PlayList extends JPanel implements IFavorites {
 					uiEvents.fireEvent(IFavoriteTabNames.class,
 							new IFavoriteTabNames() {
 
+								@Override
 								public void setFavoriteTabNames(String[] names,
 										String selected) {
 									for (String name1 : names) {
@@ -303,6 +304,7 @@ public class PlayList extends JPanel implements IFavorites {
 													title);
 											tabItem.addActionListener(new ActionListener() {
 
+												@Override
 												public void actionPerformed(
 														ActionEvent e) {
 													moveSelectedFavoritesToTab(
@@ -324,6 +326,7 @@ public class PlayList extends JPanel implements IFavorites {
 					uiEvents.fireEvent(IFavoriteTabNames.class,
 							new IFavoriteTabNames() {
 
+								@Override
 								public void setFavoriteTabNames(String[] names,
 										String selected) {
 									for (String name1 : names) {
@@ -333,6 +336,7 @@ public class PlayList extends JPanel implements IFavorites {
 													title);
 											tabItem.addActionListener(new ActionListener() {
 
+												@Override
 												public void actionPerformed(
 														ActionEvent e) {
 													moveSelectedFavoritesToTab(
@@ -357,6 +361,7 @@ public class PlayList extends JPanel implements IFavorites {
 							.getString("PSID64"));
 					psid64.addActionListener(new ActionListener() {
 
+						@Override
 						public void actionPerformed(ActionEvent e) {
 							JFileChooser fc = new JFileChooser(lastDir);
 							fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -385,6 +390,7 @@ public class PlayList extends JPanel implements IFavorites {
 		playListTable.getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 
+					@Override
 					public void valueChanged(ListSelectionEvent e) {
 						String[] selection = getSelection();
 						setMoveEnabledState(selection);
@@ -392,6 +398,7 @@ public class PlayList extends JPanel implements IFavorites {
 
 				});
 		new FileDrop(this, new FileDrop.Listener() {
+			@Override
 			public void filesDropped(java.io.File[] files, Object source,
 					Point point) {
 				addToFavorites(files);
@@ -438,6 +445,7 @@ public class PlayList extends JPanel implements IFavorites {
 		// nothing to do
 	}
 
+	@Override
 	public void addToFavorites(File[] files) {
 		for (int i = 0; files != null && i < files.length; i++) {
 			final File file = files[i];
@@ -486,6 +494,7 @@ public class PlayList extends JPanel implements IFavorites {
 		}
 	}
 
+	@Override
 	public void removeSelectedRows() {
 		int[] rows = playListTable.getSelectedRows();
 		if (rows.length == 0) {
@@ -510,6 +519,7 @@ public class PlayList extends JPanel implements IFavorites {
 		}
 	}
 
+	@Override
 	public void loadFavorites(String filename) {
 		try {
 			FavoritesModel model = (FavoritesModel) playListTable.getModel();
@@ -530,6 +540,7 @@ public class PlayList extends JPanel implements IFavorites {
 		}
 	}
 
+	@Override
 	public void saveFavorites(String filename) {
 		try {
 			final PrintStream p = new PrintStream(filename, "ISO-8859-1");
@@ -546,6 +557,7 @@ public class PlayList extends JPanel implements IFavorites {
 		}
 	}
 
+	@Override
 	public void deselectFavorites() {
 		playListTable.getSelectionModel().clearSelection();
 		String[] selection = new String[0];
@@ -566,6 +578,7 @@ public class PlayList extends JPanel implements IFavorites {
 		}
 	}
 
+	@Override
 	public void selectFavorites() {
 		FavoritesModel model = (FavoritesModel) playListTable.getModel();
 		if (model.getRowCount() == 0) {
@@ -629,93 +642,6 @@ public class PlayList extends JPanel implements IFavorites {
 		return result;
 	}
 
-	public void copy(String fromFileName, String toFileName) throws IOException {
-		File fromFile = new File(fromFileName);
-		File toFile = new File(toFileName);
-
-		if (!fromFile.exists()) {
-			throw new IOException("FileCopy: " + "no such source file: "
-					+ fromFileName);
-		}
-		if (!fromFile.isFile()) {
-			throw new IOException("FileCopy: " + "can't copy directory: "
-					+ fromFileName);
-		}
-		if (!fromFile.canRead()) {
-			throw new IOException("FileCopy: " + "source file is unreadable: "
-					+ fromFileName);
-		}
-
-		if (toFile.isDirectory()) {
-			toFile = new File(toFile, fromFile.getName());
-		}
-
-		if (toFile.exists()) {
-			if (!toFile.canWrite()) {
-				throw new IOException("FileCopy: "
-						+ "destination file is unwriteable: " + toFileName);
-			}
-			final Frame containerFrame = JOptionPane
-					.getFrameForComponent(PlayList.this);
-			int response = JOptionPane.showConfirmDialog(containerFrame, String
-					.format(getSwix().getLocalizer().getString(
-							"OVERWRITE_EXISTING_FILE"), toFile.getName()),
-					getSwix().getLocalizer().getString("OVERWRITE_FILE"),
-					JOptionPane.YES_NO_OPTION);
-			if (response != JOptionPane.YES_OPTION) {
-				throw new IOException(String.format("FileCopy: "
-						+ "existing file %s was not overwritten.",
-						toFile.getName()));
-			}
-		} else {
-			String parent = toFile.getParent();
-			if (parent == null) {
-				parent = System.getProperty("user.dir");
-			}
-			File dir = new File(parent);
-			if (!dir.exists()) {
-				throw new IOException("FileCopy: "
-						+ "destination directory doesn't exist: " + parent);
-			}
-			if (dir.isFile()) {
-				throw new IOException("FileCopy: "
-						+ "destination is not a directory: " + parent);
-			}
-			if (!dir.canWrite()) {
-				throw new IOException("FileCopy: "
-						+ "destination directory is unwriteable: " + parent);
-			}
-		}
-
-		FileInputStream from = null;
-		FileOutputStream to = null;
-		try {
-			from = new FileInputStream(fromFile);
-			to = new FileOutputStream(toFile);
-			byte[] buffer = new byte[4096];
-			int bytesRead;
-
-			while ((bytesRead = from.read(buffer)) != -1) {
-				to.write(buffer, 0, bytesRead); // write
-			}
-		} finally {
-			if (from != null) {
-				try {
-					from.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			if (to != null) {
-				try {
-					to.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
 	protected void removeColumn() {
 		int columnModelIndex = playListTable
 				.convertColumnIndexToModel(headerColumnToRemove);
@@ -766,10 +692,12 @@ public class PlayList extends JPanel implements IFavorites {
 		c.convertFiles(files.toArray(new File[0]), lastDir);
 	}
 
+	@Override
 	public String getFileName() {
 		return playListFilename;
 	}
 
+	@Override
 	public File getNextFile(File file) {
 		FavoritesModel model = (FavoritesModel) playListTable.getModel();
 		int playedRow = -1;
@@ -789,6 +717,7 @@ public class PlayList extends JPanel implements IFavorites {
 		int row = rowSorter.convertRowIndexToModel(nextRow);
 		SwingUtilities.invokeLater(new Runnable() {
 
+			@Override
 			public void run() {
 				playListTable.scrollRectToVisible(playListTable.getCellRect(
 						nextRow, 0, true));
@@ -798,6 +727,7 @@ public class PlayList extends JPanel implements IFavorites {
 		return model.getFile(model.getValueAt(row, 0));
 	}
 
+	@Override
 	public File getNextRandomFile(File file) {
 		FavoritesModel model = (FavoritesModel) playListTable.getModel();
 		int rowCount = playListTable.getRowCount();
@@ -806,6 +736,7 @@ public class PlayList extends JPanel implements IFavorites {
 		int row = rowSorter.convertRowIndexToModel(randomRow);
 		SwingUtilities.invokeLater(new Runnable() {
 
+			@Override
 			public void run() {
 				playListTable.scrollRectToVisible(playListTable.getCellRect(
 						randomRow, 0, true));
@@ -815,6 +746,7 @@ public class PlayList extends JPanel implements IFavorites {
 		return model.getFile(model.getValueAt(row, 0));
 	}
 
+	@Override
 	public String[] getSelection() {
 		int[] rows = playListTable.getSelectedRows();
 		if (rows.length == 0) {
@@ -831,6 +763,7 @@ public class PlayList extends JPanel implements IFavorites {
 		return retValue;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		FavoritesModel model = (FavoritesModel) playListTable.getModel();
 		return model.getRowCount() == 0;
