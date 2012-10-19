@@ -31,10 +31,9 @@ public class ConfigView extends TuneTab {
 	@Override
 	public void notify(UIEvent evt) {
 		if (!evt.isOfType(IUpdateUI.class)) {
-			// String expansionState = TreeUtil.getExpansionState(configTree,
-			// 0);
-			configModel.reload();
-			// TreeUtil.restoreExpanstionState(configTree, 0, expansionState);
+			if (configModel != null) {
+				configModel.reload();
+			}
 		}
 	}
 
