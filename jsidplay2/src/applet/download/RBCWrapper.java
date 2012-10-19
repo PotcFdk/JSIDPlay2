@@ -22,14 +22,6 @@ final class RBCWrapper implements ReadableByteChannel {
 		rbc.close();
 	}
 
-	public long getReadSoFar() {
-		return readSoFar;
-	}
-
-	public long getExpectedSize() {
-		return expectedSize;
-	}
-
 	@Override
 	public boolean isOpen() {
 		return rbc.isOpen();
@@ -41,7 +33,7 @@ final class RBCWrapper implements ReadableByteChannel {
 		if ((n = rbc.read(bb)) > 0) {
 			readSoFar += n;
 			double progress = expectedSize > 0 ? (double) readSoFar
-					/ (double) expectedSize * 100.0 : -1.0;
+					/ (double) expectedSize * 100.0 : 0.0;
 			delegate.rbcProgressCallback(this, progress);
 		}
 

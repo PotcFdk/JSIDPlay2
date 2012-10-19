@@ -30,28 +30,31 @@ import applet.PathUtils;
  * DownloadManager downloads a large file from a server. If the file is splitted
  * into several chunks, it downloads them separately and merges them altogether
  * again. Each chunk is checked against its content length provided by HTTP. The
- * whole downloaded file is checked against the CRC checksum which is stored
- * stored in the file with file extension crc.
+ * whole downloaded file is checked against the CRC checksum which is stored in
+ * the file with file extension crc. <BR>
+ * Download file consists of:
  * 
  * <PRE>
  * &lt;chunk&gt;.001
  * &lt;chunk&gt;.002
  * ...
  * &lt;chunk&gt;.&lt;N&gt;
- * &lt;chunk&gt;.crc
+ * &lt;file&gt;.crc
  * </PRE>
  * 
- * or
+ * (where the chunks will be merged to &lt;file&gt;.&lt;ext&gt;) or
  * 
  * <PRE>
  * &lt;file&gt;.&lt;ext&gt;
  * &lt;file&gt;.crc
  * </PRE>
  * 
+ * CRC file contents:
+ * 
  * <PRE>
  * filename=&lt;file&gt;.&lt;ext&gt;
- * size=130944022
- * crc32=BAE9A635
+ * size=&lt;fileSizeInBytes&gt;
+ * crc32=&lt;8DigitsHexCRC32&gt;
  * </PRE>
  * 
  * @author Ken
@@ -76,43 +79,44 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	@Override
 	public void run() {
-		File availableFile = createLocalFile(url);
+		// Part 1: Use already existing download
 		try {
+			File availableFile = createLocalFile(url);
 			if (alreadyAvailable(availableFile)) {
 				listener.downloadStop(availableFile);
 				return;
 			}
-		} catch (IOException e1) {
-			// on error: download again!
+		} catch (IOException e) {
+			// fall through!
 		}
+		// Part 2: Download file(s)
+		File downloadedFile = null;
 		try {
-			File downloadedFile;
-
 			boolean isSplittedInChunks = isSplittedInChunks();
 			if (isSplittedInChunks) {
 				downloadedFile = downloadAndMergeChunks();
 			} else {
 				downloadedFile = download(url, true);
 			}
-			try {
-				File crcFile = download(getCrcUrl(), false);
-				boolean checkCrc = checkCrc(crcFile, downloadedFile);
-				if (!checkCrc) {
-					System.err.println("CRC32 check failed!");
-					listener.downloadStop(null);
-				} else {
-					System.out.println("CRC32 check OK for download: " + url);
-					listener.downloadStop(downloadedFile);
-				}
-			} catch (IOException e) {
-				listener.downloadStop(downloadedFile);
-			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			listener.downloadStop(null);
 		} catch (IOException e) {
 			e.printStackTrace();
 			listener.downloadStop(null);
+			return;
+		}
+		// Part 3: Optional CRC check
+		try {
+			File crcFile = download(getCrcUrl(), false);
+			boolean checkCrc = checkCrc(crcFile, downloadedFile);
+			if (!checkCrc) {
+				System.err.println("CRC32 check failed!");
+				downloadedFile = null;
+			} else {
+				System.out.println("CRC32 check OK for download: " + url);
+			}
+		} catch (IOException ioE) {
+			// ignore missing CRC file
+		} finally {
+			listener.downloadStop(downloadedFile);
 		}
 	}
 
@@ -120,7 +124,8 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		File crcFile = download(getCrcUrl(), false);
 		boolean checkCrc = checkCrc(crcFile, file);
 		if (!checkCrc) {
-			System.err.println("CRC32 check failed, re-download!");
+			System.err
+					.println("Online file contents has changed, re-download!");
 			return false;
 		}
 		return true;
@@ -156,8 +161,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private URL getURL(int part) throws MalformedURLException {
-		return new URL(getURLUsingExt(url.toExternalForm(),
-				"." + String.format("%03d", part)));
+		return new URL(getURLUsingExt("." + String.format("%03d", part)));
 	}
 
 	private boolean checkExistingURL(URL currentURL) throws IOException {
@@ -216,7 +220,8 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 			}
 		} while (tries != MAX_TRY_COUNT);
 		throw new IOException(String.format(
-				"Download error, i have tried %d times! ", MAX_TRY_COUNT));
+				"Download error for %s, i have tried %d times! ",
+				currentURL.getPath(), MAX_TRY_COUNT));
 	}
 
 	private boolean hasNextPart(int part) throws IOException {
@@ -279,19 +284,14 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private URL getCrcUrl() throws MalformedURLException {
-		return new URL(getURLUsingExt(url.toExternalForm(), ".crc"));
+		return new URL(getURLUsingExt(".crc"));
 	}
 
 	private boolean checkCrc(File crcFile, File download) throws IOException {
 		Properties properties = new Properties();
-		BufferedInputStream stream = null;
-		try {
-			stream = new BufferedInputStream(new FileInputStream(crcFile));
+		try (BufferedInputStream stream = new BufferedInputStream(
+				new FileInputStream(crcFile))) {
 			properties.load(stream);
-		} finally {
-			if (stream != null) {
-				stream.close();
-			}
 		}
 		try {
 			long crc = Long.valueOf(properties.getProperty("crc32"), 16);
@@ -310,26 +310,17 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	public static long calculateCRC32(File file) throws IOException {
-		CheckedInputStream cis = null;
-		try {
-			FileInputStream fis = new FileInputStream(file);
-			cis = new CheckedInputStream(fis, new CRC32());
+		try (CheckedInputStream cis = new CheckedInputStream(
+				new FileInputStream(file), new CRC32())) {
 			byte[] buffer = new byte[MAX_BUFFER_SIZE];
 			while (cis.read(buffer) >= 0) {
 			}
 			return cis.getChecksum().getValue();
-		} finally {
-			if (cis != null) {
-				try {
-					cis.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 
-	private String getURLUsingExt(String path, String ext) {
+	private String getURLUsingExt(String ext) {
+		String path = url.toExternalForm();
 		int extIdx = path.lastIndexOf('.');
 		if (extIdx != -1) {
 			return path.substring(0, extIdx) + ext;
@@ -340,7 +331,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	@Override
 	public void rbcProgressCallback(RBCWrapper rbc, double progress) {
-		listener.downloadStep((int) (progress));
+		listener.downloadStep((int) progress);
 	}
 
 	/**

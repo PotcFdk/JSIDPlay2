@@ -73,11 +73,13 @@ public class UIEventFactory {
 	public void fireEvent(final Class<? extends IEvent> ifaceType,
 			final IEvent iface) {
 
-		if (currentlyFired.contains(ifaceType)) {
-			return;
+		synchronized (this) {
+			if (currentlyFired.contains(ifaceType)) {
+				// recursion prevention
+				return;
+			}
+			currentlyFired.add(ifaceType);
 		}
-		currentlyFired.add(ifaceType);
-
 		final UIEvent uiEvent = new UIEvent(iface, ifaceType);
 		// Create a copy to avoid ConcurrentModificationException!
 		final UIEventListener[] copied = listeners
@@ -85,7 +87,9 @@ public class UIEventFactory {
 		for (UIEventListener listener : copied) {
 			listener.notify(uiEvent);
 		}
-		currentlyFired.remove(ifaceType);
+		synchronized (this) {
+			currentlyFired.remove(ifaceType);
+		}
 	}
 
 }

@@ -423,13 +423,12 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 
 									@Override
 									public String getTitle() {
-										return getBaseName(filename);
+										return getBaseNameNoExt(filename);
 									}
 
 									@Override
 									public String getFileName() {
-										return getBaseName(filename)
-												+ FavoritesFileFilter.EXT_FAVORITES;
+										return filename;
 									}
 
 									@Override
@@ -618,7 +617,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 
 						@Override
 						public String getTitle() {
-							return getBaseName(name);
+							return getBaseNameNoExt(name);
 						}
 
 						@Override
@@ -634,7 +633,7 @@ public class Favorites extends TuneTab implements ListSelectionListener {
 		}
 	}
 
-	private String getBaseName(final String filename) {
+	private String getBaseNameNoExt(final String filename) {
 		String baseName = new File(filename).getName();
 		int lastIndexOf = baseName.lastIndexOf('.');
 		final String title;
