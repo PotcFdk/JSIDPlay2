@@ -1,8 +1,7 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- GameBase -->
 <panel layout="GridBagLayout" bundle="applet.gamebase.GameBaseTexts">
-	<label text="HINT" font="Georgia-ITALIC-12" Foreground="BLUE"
-		constraints="BorderLayout.NORTH">
+	<label text="HINT" font="Georgia-ITALIC-12" Foreground="BLUE">
 		<gridbagconstraints gridx="0" gridy="0" weighty="0"
 			fill="GridBagConstraints.HORIZONTAL" />
 	</label>
@@ -23,7 +22,7 @@
 			<tabbedPane Focusable="false" id="letter" constraints="BorderLayout.CENTER" />
 		</scrollpane>
 	</panel>
-	<panel border="TitledBorder(SCREENSHOT)" id="screenshot">
+	<panel layout="GridLayout(1,1)" border="TitledBorder(SCREENSHOT)" id="screenshot">
 		<gridbagconstraints gridx="1" gridy="2" gridheight="1"
 			fill="GridBagConstraints.BOTH" />
 		<picture id="picture" />
