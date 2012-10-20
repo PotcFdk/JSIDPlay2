@@ -70,16 +70,38 @@
 	<property name="target.junit.report.dir" location="${target.junit.results.dir}/test_report" />
 	<!-- result directory of C64Jukebox applet version -->
 	<property name="c64jukebox_dir" location="${result_dir}/C64Jukebox" />
-	<!-- result directory of gamebase database JAR -->
-	<property name="gamebase_dir" location="${result_dir}/online/gamebase" />
-	<!-- result directory of HVSC -->
+	<!-- name of the C64 jukebox JAR -->
+	<property name="c64jukebox_jar" value="c64jukebox.jar" />
+
+	<!-- jsiddevice -->
+	<property name="jsiddevice_jar" value="jsiddevice.jar" />
+	<property name="jsiddevice_exe" value="jsiddevice.exe" />
+	<property name="jsiddevice_zip" value="jsiddevice.zip" />
+	<property name="jsiddevice_main_class" value="netsiddev.NetworkSIDDevice" />
+	<!-- HVSC -->
 	<property name="hvsc_dir" location="${result_dir}/online/hvsc" />
-	<!-- result directory of CGSC -->
+	<property name="hvsc_zip" value="C64Music.zip" />
+	<property name="hvsc_crc" value="C64Music.crc" />
+	<property name="hvsc_subfolder" value="C64Music" />
+	<property name="hvsc_max_size" value="37748736" />
+	<!-- CGSC -->
 	<property name="cgsc_dir" location="${result_dir}/online/cgsc" />
-	<!-- result directory of Demos -->
-	<property name="demos_dir" location="${result_dir}/online/demos" />
-	<!-- result directory of HVMEC -->
+	<property name="cgsc_zip" value="CGSC.zip" />
+	<property name="cgsc_crc" value="CGSC.crc" />
+	<property name="cgsc_subfolder" location="CGSC" />
+	<!-- HVMEC -->
 	<property name="hvmec_dir" location="${result_dir}/online/hvmec" />
+	<property name="hvmec_zip" value="HVMEC.zip" />
+	<property name="hvmec_crc" value="HVMEC.crc" />
+	<!-- Demos -->
+	<property name="demos_dir" location="${result_dir}/online/demos" />
+	<property name="demos_zip" value="Demos.zip" />
+	<property name="demos_crc" value="Demos.crc" />
+	<!-- Gamebase64 -->
+	<property name="gamebase_dir" location="${result_dir}/online/gamebase" />
+	<property name="gamebase_jar" value="gb64.jar" />
+	<property name="gamebase_crc" value="gb64.crc" />
+	<property name="gamebase_name" value="GB64" />
 
 	<!-- Read all properties to build and deploy -->
 	<property file="build.properties" />
@@ -381,7 +403,7 @@
           some pictures and a disclaimer.
          ================================= -->
 	<target name="jsidplay2_webresources" depends="jsidplay2_html">
-		<filter token="server_url" value="${server_url}"/>
+		<filter token="server_url" value="${server_url}" />
 		<copy todir="${result_dir}" filtering="true">
 			<fileset dir="${res}">
 				<include name="index.htm" />
@@ -441,8 +463,8 @@
           which is not needed here.
          ================================= -->
 	<target name="c64jukebox_jar" depends="compile">
-		<delete file="${c64jukebox_dir}/c64jukebox.jar" />
-		<jar destfile="${c64jukebox_dir}/c64jukebox.jar">
+		<delete file="${c64jukebox_dir}/${c64jukebox_jar}" />
+		<jar destfile="${c64jukebox_dir}/${c64jukebox_jar}">
 			<fileset dir="${src}">
 				<exclude name="applet/**" />
 				<exclude name="hardsid/**" />
@@ -469,7 +491,7 @@
           and some example SID files.
          ================================= -->
 	<target name="c64jukebox_resources">
-		<filter token="server_url" value="${server_url}"/>
+		<filter token="server_url" value="${server_url}" />
 		<copy todir="${c64jukebox_dir}" filtering="true">
 			<fileset dir="${res}">
 				<include name="SIDPlay.html" />
@@ -498,8 +520,8 @@
           and add a manifest file to create an executable JAR.
          ================================= -->
 	<target name="jsiddevice_jar" depends="compile">
-		<delete file="${result_dir}/jsiddevice.jar" />
-		<jar destfile="${result_dir}/jsiddevice.jar">
+		<delete file="${result_dir}/${jsiddevice_jar}" />
+		<jar destfile="${result_dir}/${jsiddevice_jar}">
 			<fileset dir="${bin}">
 				<include name="netsiddev/*" />
 				<include name="netsiddev/ini/*" />
@@ -515,7 +537,7 @@
 				<include name="sidplay/ini/IniFilterSection.class" />
 			</fileset>
 			<manifest>
-				<attribute name="Main-Class" value="netsiddev.NetworkSIDDevice" />
+				<attribute name="Main-Class" value="${jsiddevice_main_class}" />
 			</manifest>
 		</jar>
 	</target>
@@ -529,11 +551,11 @@
          ================================= -->
 	<target name="jsiddevice_shrink" depends="jsiddevice_jar">
 		<proguard overloadaggressively="true" allowaccessmodification="true">
-			<injar file="${result_dir}/jsiddevice.jar" />
+			<injar file="${result_dir}/${jsiddevice_jar}" />
 			<outjar file="${result_dir}/jsiddevice_shrinked.jar" />
 			<libraryjar file="${java.home}/lib/rt.jar" />
 			<!-- Preserve the main method -->
-			<keep access="public" name="netsiddev.NetworkSIDDevice">
+			<keep access="public" name="${jsiddevice_main_class}">
 				<method access="public static" type="void" name="main" parameters="java.lang.String[]" />
 			</keep>
 			<!-- Preserve the methods that are required in all enumeration classes. -->
@@ -543,7 +565,7 @@
 			</keepclassmembers>
 			<adaptresourcefilenames filter="**.png" />
 		</proguard>
-		<move file="${result_dir}/jsiddevice_shrinked.jar" tofile="${result_dir}/jsiddevice.jar" />
+		<move file="${result_dir}/jsiddevice_shrinked.jar" tofile="${result_dir}/${jsiddevice_jar}" />
 	</target>
 
 	<!-- ================================= 
@@ -553,9 +575,9 @@
           executable.
          ================================= -->
 	<target name="jsiddevice_zip">
-		<zip destfile="${result_dir}/jsiddevice.zip">
+		<zip destfile="${result_dir}/${jsiddevice_zip}">
 			<fileset dir="${result_dir}">
-				<include name="jsiddevice.exe" />
+				<include name="${jsiddevice_exe}" />
 			</fileset>
 		</zip>
 	</target>
@@ -622,6 +644,12 @@
 		<input message="Keystore password to sign the jars?" addproperty="storepass" />
 		<input message="Key password to sign the jars?" addproperty="keypass" />
 		<input message="Key alias name?" addproperty="sign_key_alias" />
+		<input message="Your first and last name?" addproperty="CN" />
+		<input message="Organizational Unit?" addproperty="OU" />
+		<input message="Organization?" addproperty="O" />
+		<input message="City or Locality?" addproperty="L" />
+		<input message="State or Province?" addproperty="ST" />
+		<input message="Two-letter country code for this unit?" addproperty="C" />
 		<!-- remove already existing key in keystore -->
 		<exec executable="${java.home}/bin/keytool">
 			<arg value="-delete" />
@@ -635,12 +663,12 @@
 		<!-- generate key in keystore -->
 		<genkey keystore="${keystore}" storepass="${storepass}" keypass="${keypass}" alias="${sign_key_alias}" validity="3650" keyalg="RSA">
 			<dname>
-				<param name="CN" value="Ken Händel" />
-				<param name="OU" value="Open Source" />
-				<param name="O" value="JSIDPlay2" />
-				<param name="L" value="Berlin" />
-				<param name="ST" value="Berlin" />
-				<param name="C" value="DE" />
+				<param name="CN" value="${CN}" />
+				<param name="OU" value="${OU}" />
+				<param name="O" value="${O}" />
+				<param name="L" value="${L}" />
+				<param name="ST" value="${ST}" />
+				<param name="C" value="${C}" />
 			</dname>
 		</genkey>
 		<!-- sign jars using the key in keystore -->
@@ -648,7 +676,7 @@
 			<fileset dir="${result_dir}">
 				<include name="**/*.jar" />
 
-				<exclude name="**/jsiddevice.jar" />
+				<exclude name="**/${jsiddevice_jar}" />
 			</fileset>
 		</signjar>
 	</target>
@@ -744,7 +772,7 @@
 			<arg value="--lzma" />
 			<arg value="--best" />
 			<arg value="--ultra-brute" />
-			<arg file="${result_dir}/jsiddevice.exe" />
+			<arg file="${result_dir}/${jsiddevice_exe}" />
 		</exec>
 	</target>
 
@@ -764,7 +792,7 @@
           Upload JSIDPlay2 deployment results to the Web Hoster using SSH.
          ================================= -->
 	<target name="upload" depends="setup_upload,upload_ftp" if="ssh">
-		<input message="SSH keyfile?" addproperty="keyfile"/>
+		<input message="SSH keyfile?" addproperty="keyfile" />
 		<input message="SSH passphrase?" addproperty="passphrase" />
 		<input message="SSH remote server?" addproperty="remote_srv" />
 		<input message="SSH remote directory?" addproperty="remote_dir" />
@@ -815,16 +843,16 @@
 			<arg value="targetDriver=${targetDriver}" />
 			<arg value="targetURL=${targetURL}" />
 		</java>
-		<delete file="${gamebase_dir}/gb64.jar" />
-		<jar destfile="${gamebase_dir}/gb64.jar" compress="true">
+		<delete file="${gamebase_dir}/${gamebase_jar}" />
+		<jar destfile="${gamebase_dir}/${gamebase_jar}" compress="true">
 			<fileset dir="${gamebase_dir}">
-				<include name="GBC_v09.*" />
+				<include name="${gamebase_name}.*" />
 			</fileset>
 		</jar>
 		<delete includeemptydirs="true">
 			<fileset dir="${gamebase_dir}">
-				<include name="GBC_v09.*" />
-				<exclude name="GBC_v09.jar" />
+				<include name="${gamebase_name}.*" />
+				<exclude name="${gamebase_name}.jar" />
 			</fileset>
 		</delete>
 
@@ -832,11 +860,11 @@
 		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
-			<arg path="${gamebase_dir}/gb64.jar" />
+			<arg path="${gamebase_dir}/${gamebase_jar}" />
 		</java>
-		<length property="filesize" file="${gamebase_dir}/gb64.jar"/>
-		<propertyfile file="${gamebase_dir}/gb64.crc">
-			<entry operation="=" type="string" key="filename" value="gb64.jar" />
+		<length property="filesize" file="${gamebase_dir}/${gamebase_jar}" />
+		<propertyfile file="${gamebase_dir}/${gamebase_crc}">
+			<entry operation="=" type="string" key="filename" value="${gamebase_jar}" />
 			<entry operation="=" type="string" key="size" value="${filesize}" />
 			<entry operation="=" type="string" key="crc32" value="${checksum}" />
 		</propertyfile>
@@ -853,30 +881,30 @@
 		<mkdir dir="${hvsc_dir}" />
 		<!-- Uncompress HVSC completely -->
 		<unzip dest="${hvsc_dir}" src="${hvsc.zip}" />
-		<unzip dest="${hvsc_dir}" src="${hvsc_dir}/C64Music.zip" />
+		<unzip dest="${hvsc_dir}" src="${hvsc_dir}/${hvsc_zip}" />
 		<delete>
 			<fileset dir="${hvsc_dir}">
 				<include name="*.zip" />
 			</fileset>
 		</delete>
 		<!-- Compress HVSC -->
-		<zip level="9" destfile="${hvsc_dir}/C64Music.zip" compress="true" update="false">
+		<zip level="9" destfile="${hvsc_dir}/${hvsc_zip}" compress="true" update="false">
 			<fileset dir="${hvsc_dir}">
 				<include name="**/*.sid" />
 				<include name="**/*.txt" />
 			</fileset>
 		</zip>
-		<delete dir="${hvsc_dir}/C64Music" />
+		<delete dir="${hvsc_dir}/${hvsc_subfolder}" />
 
 		<!-- create a CRC file -->
 		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
-			<arg path="${hvsc_dir}/C64Music.zip" />
+			<arg path="${hvsc_dir}/${hvsc_zip}" />
 		</java>
-		<length property="filesize" file="${hvsc_dir}/C64Music.zip"/>
-		<propertyfile file="${hvsc_dir}/C64Music.crc">
-			<entry operation="=" type="string" key="filename" value="C64Music.zip" />
+		<length property="filesize" file="${hvsc_dir}/${hvsc_zip}" />
+		<propertyfile file="${hvsc_dir}/${hvsc_crc}">
+			<entry operation="=" type="string" key="filename" value="${hvsc_zip}" />
 			<entry operation="=" type="string" key="size" value="${filesize}" />
 			<entry operation="=" type="string" key="crc32" value="${checksum}" />
 		</propertyfile>
@@ -885,10 +913,10 @@
 		<java fork="true" classname="applet.collection.createhvsc.Split">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
-			<arg value="bytes=37748736" />
-			<arg value="file=${hvsc_dir}/C64Music.zip" />
+			<arg value="bytes=${hvsc_max_size}" />
+			<arg value="file=${hvsc_dir}/${hvsc_zip}" />
 		</java>
-		<delete file="${hvsc_dir}/C64Music.zip" />
+		<delete file="${hvsc_dir}/${hvsc_zip}" />
 	</target>
 
 	<!-- ================================= 
@@ -907,23 +935,23 @@
 			<arg value="${cgsc.7z}" />
 		</exec>
 		<!-- Compress CGSC -->
-		<zip level="9" destfile="${cgsc_dir}/CGSC.zip" compress="true" update="false">
+		<zip level="9" destfile="${cgsc_dir}/${cgsc_zip}" compress="true" update="false">
 			<fileset dir="${cgsc_dir}">
 				<include name="**/*.mus" />
 				<include name="**/*.str" />
 			</fileset>
 		</zip>
-		<delete dir="${cgsc_dir}/CGSC" />
+		<delete dir="${cgsc_dir}/${cgsc_subfolder}" />
 
 		<!-- create a CRC file -->
 		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
-			<arg path="${cgsc_dir}/CGSC.zip" />
+			<arg path="${cgsc_dir}/${cgsc_zip}" />
 		</java>
-		<length property="filesize" file="${cgsc_dir}/CGSC.zip"/>
-		<propertyfile file="${cgsc_dir}/CGSC.crc">
-			<entry operation="=" type="string" key="filename" value="CGSC.zip" />
+		<length property="filesize" file="${cgsc_dir}/${cgsc_zip}" />
+		<propertyfile file="${cgsc_dir}/${cgsc_crc}">
+			<entry operation="=" type="string" key="filename" value="${cgsc_zip}" />
 			<entry operation="=" type="string" key="size" value="${filesize}" />
 			<entry operation="=" type="string" key="crc32" value="${checksum}" />
 		</propertyfile>
@@ -937,16 +965,16 @@
 	<target name="demos">
 		<delete dir="${demos_dir}" />
 		<mkdir dir="${demos_dir}" />
-		<copy todir="${demos_dir}" file="${test_src}/demos/Demos.zip" />
+		<copy todir="${demos_dir}" file="${test_src}/demos/${demos_zip}" />
 
 		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
-			<arg path="${demos_dir}/Demos.zip" />
+			<arg path="${demos_dir}/${demos_zip}" />
 		</java>
-		<length property="filesize" file="${demos_dir}/Demos.zip"/>
-		<propertyfile file="${demos_dir}/Demos.crc">
-			<entry operation="=" type="string" key="filename" value="Demos.zip" />
+		<length property="filesize" file="${demos_dir}/${demos_zip}" />
+		<propertyfile file="${demos_dir}/${demos_crc}">
+			<entry operation="=" type="string" key="filename" value="${demos_zip}" />
 			<entry operation="=" type="string" key="size" value="${filesize}" />
 			<entry operation="=" type="string" key="crc32" value="${checksum}" />
 		</propertyfile>
@@ -967,7 +995,7 @@
 				<include name="*.tar" />
 			</fileset>
 		</delete>
-		<zip level="9" destfile="${hvmec_dir}/HVMEC.zip" compress="true" update="false">
+		<zip level="9" destfile="${hvmec_dir}/${hvmec_zip}" compress="true" update="false">
 			<fileset dir="${hvmec_dir}">
 				<include name="**/*" />
 			</fileset>
@@ -978,11 +1006,11 @@
 		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
-			<arg path="${hvmec_dir}/HVMEC.zip" />
+			<arg path="${hvmec_dir}/${hvmec_zip}" />
 		</java>
-		<length property="filesize" file="${hvmec_dir}/HVMEC.zip"/>
-		<propertyfile file="${hvmec_dir}/HVMEC.crc">
-			<entry operation="=" type="string" key="filename" value="HVMEC.zip" />
+		<length property="filesize" file="${hvmec_dir}/${hvmec_zip}" />
+		<propertyfile file="${hvmec_dir}/${hvmec_crc}">
+			<entry operation="=" type="string" key="filename" value="${hvmec_zip}" />
 			<entry operation="=" type="string" key="size" value="${filesize}" />
 			<entry operation="=" type="string" key="crc32" value="${checksum}" />
 		</propertyfile>

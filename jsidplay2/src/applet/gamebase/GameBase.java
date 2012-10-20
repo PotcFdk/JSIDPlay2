@@ -152,12 +152,12 @@ public class GameBase extends TuneTab {
 			if (enableGameBase.isSelected()) {
 				enableGameBase.setEnabled(false);
 				final String outputDir = System.getProperty("jsidplay2.tmpdir");
-				File dbFile = new File(outputDir, "GBC_v09.properties");
+				File dbFile = new File(outputDir, "GB64.properties");
 				if (dbFile.exists()) {
 					// There is already a database file downloaded earlier.
 					// Therefore we try to connect
 
-					connect(new File(outputDir, "GBC_v09").getAbsolutePath());
+					connect(new File(outputDir, "GB64").getAbsolutePath());
 
 					// Check version of GB64
 					if (configService.checkVersion()) {
