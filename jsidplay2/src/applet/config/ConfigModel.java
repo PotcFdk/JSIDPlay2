@@ -8,7 +8,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
+import org.swixml.SwingEngine;
+
+import sidplay.ini.intf.IConfig;
+
 public class ConfigModel extends DefaultTreeModel {
+
+	private SwingEngine swixml;
 
 	public ConfigModel() {
 		super(null);
@@ -69,9 +75,9 @@ public class ConfigModel extends DefaultTreeModel {
 				Object object = method.invoke(methodObject);
 				if (object instanceof List) {
 					List list = (List) object;
-					return new ConfigNode(object, list.get(index));
+					return new ConfigNode(swixml, object, list.get(index));
 				}
-				return new ConfigNode(object, object.getClass()
+				return new ConfigNode(swixml, object, object.getClass()
 						.getDeclaredFields()[index]);
 			} else {
 				Object obj = treeNode.getUserObject();
@@ -98,7 +104,7 @@ public class ConfigModel extends DefaultTreeModel {
 						childs[i++] = method;
 					}
 				}
-				return new ConfigNode(obj, childs[index]);
+				return new ConfigNode(swixml, obj, childs[index]);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -111,8 +117,9 @@ public class ConfigModel extends DefaultTreeModel {
 		return super.getIndexOfChild(parent, child);
 	}
 
-	public void setRootUserObject(Object config) {
-		setRoot(new ConfigNode(null, config));
+	public void setRootUserObject(SwingEngine swixml, IConfig config) {
+		this.swixml = swixml;
+		setRoot(new ConfigNode(swixml, null, config));
 	}
 
 	private Object getMethodObj(DefaultMutableTreeNode treeNode) {
