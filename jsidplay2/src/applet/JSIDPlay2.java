@@ -620,8 +620,14 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 			try {
 				if (mediaFile instanceof ZipEntryFileProxy) {
 					// Extract ZIP file
+					ZipEntryFileProxy zipEntryFileProxy = (ZipEntryFileProxy) mediaFile;
 					mediaFile = ZipEntryFileProxy
 							.extractFromZip((ZipEntryFileProxy) mediaFile);
+					getConfig().getSidplay2().setLastDirectory(
+							zipEntryFileProxy.getZip().getAbsolutePath());
+				} else {
+					getConfig().getSidplay2().setLastDirectory(
+							mediaFile.getParentFile().getAbsolutePath());
 				}
 				if (mediaFile.getName().endsWith(".gz")) {
 					// Extract GZ file

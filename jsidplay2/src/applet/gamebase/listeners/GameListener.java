@@ -41,9 +41,6 @@ public class GameListener extends ProgressListener {
 		if (downloadedFile == null) {
 			return;
 		}
-		// Make it possible to choose a file from ZIP next time
-		// the file chooser opens
-		config.getSidplay2().setLastDirectory(downloadedFile.getAbsolutePath());
 		try {
 			byte[] b = new byte[1024];
 			ZipFile zip = new ZipFile(downloadedFile);
@@ -76,6 +73,10 @@ public class GameListener extends ProgressListener {
 			}
 			zip.close();
 			downloadedFile.deleteOnExit();
+			// Make it possible to choose a file from ZIP next time
+			// the file chooser opens
+			config.getSidplay2().setLastDirectory(
+					downloadedFile.getAbsolutePath());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

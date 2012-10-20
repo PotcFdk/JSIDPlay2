@@ -423,13 +423,10 @@ public abstract class DiskCollection extends TuneTab implements
 
 	private DiskFileFilter diskfileFilter = new DiskFileFilter();
 
-	protected void attachAndRunDemo(final File selectedFile,
-			final File autoStartFile) {
+	protected void attachAndRunDemo(File selectedFile, final File autoStartFile) {
 		if (selectedFile.getName().toLowerCase().endsWith(".pdf")) {
 			openPDF(selectedFile);
 		} else {
-			config.getSidplay2().setLastDirectory(
-					config.getSidplay2().getDemos());
 			if (diskfileFilter.accept(selectedFile)) {
 				insertDisk(selectedFile, autoStartFile);
 			} else {

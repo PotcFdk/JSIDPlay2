@@ -30,6 +30,7 @@ public class ScreenShotListener extends ProgressListener {
 		if (downloadedFile == null) {
 			return;
 		}
+		downloadedFile.deleteOnExit();
 		try {
 			synchronized (this.gameBase.lastScreenshot) {
 				for (File file : this.gameBase.lastScreenshot) {
