@@ -5,28 +5,64 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
 import javax.swing.JComponent;
 
 public final class Picture extends JComponent {
-	/**
-	 * 
-	 */
 	private Image composerImage;
 
-	/**
-	 * @param collection
-	 */
-	public Picture() {
-	}
+	private int scale;
 
 	{
 		setOpaque(true);
 		setPreferredSize(new Dimension(200, 200));
+		addComponentListener(new ComponentListener() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+			}
+
+			@Override
+			public void componentResized(ComponentEvent e) {
+				calculateNewSize(getWidth(), getHeight());
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e) {
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e) {
+			}
+		});
 	}
 
 	public final void setComposerImage(Image image) {
 		composerImage = image;
+		calculateNewSize(getWidth(), getHeight());
+	}
+
+	/**
+	 * Use the largest integer fraction that will just fill this area
+	 * 
+	 * @param width
+	 *            width of container
+	 * @param height
+	 *            height of container
+	 */
+	protected void calculateNewSize(int width, int height) {
+		scale = 1;
+		if (composerImage != null) {
+			int xscale = width / composerImage.getWidth(null);
+			int yscale = height / composerImage.getHeight(null);
+			scale = Math.max(Math.min(xscale, yscale), 1);
+			setSize(new Dimension(composerImage.getWidth(null) * scale,
+					composerImage.getHeight(null) * scale));
+			setPreferredSize(new Dimension(
+					composerImage.getWidth(null) * scale,
+					composerImage.getHeight(null) * scale));
+		}
 	}
 
 	@Override
@@ -34,25 +70,9 @@ public final class Picture extends JComponent {
 		g.setColor(getBackground());
 		g.fillRect(0, 0, getWidth(), getHeight());
 		if (composerImage != null) {
-			int picWidth = composerImage.getWidth(null);
-			int picHeight = composerImage.getHeight(null);
-
-			int availableWidth = getWidth();
-			int availableHeight = getHeight();
-
-			/* figure out which dimension limits scaling first */
-			float scaleW = (float) availableWidth / picWidth;
-			float scaleH = (float) availableHeight / picHeight;
-
-			float safeScale = scaleW > scaleH ? scaleH : scaleW;
-			picWidth *= safeScale;
-			picHeight *= safeScale;
-
 			((Graphics2D) g).setRenderingHint(RenderingHints.KEY_INTERPOLATION,
 					RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-			g.drawImage(composerImage, (availableWidth - picWidth) / 2,
-					(availableHeight - picHeight) / 2, picWidth, picHeight,
-					null);
+			g.drawImage(composerImage, 0, 0, getWidth(), getHeight(), null);
 		}
 	}
 
