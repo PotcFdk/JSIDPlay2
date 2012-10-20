@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.hsqldb.util.DatabaseManagerSwing"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--driver org.hsqldb.jdbcDriver --url jdbc:hsqldb:file:d:\Downloads\checkout\jsidplay2\result\online\gamebase\GBC_v09 --user &quot;&quot; --password &quot;&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--driver org.hsqldb.jdbcDriver --url jdbc:hsqldb:file:d:\Downloads\checkout\jsidplay2\result\online\gamebase\GB64 --user &quot;&quot; --password &quot;&quot;"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jsidplay2"/>
 </launchConfiguration>
