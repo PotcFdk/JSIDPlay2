@@ -1,7 +1,6 @@
 package applet.config;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -18,24 +17,54 @@ public class ConfigNode extends DefaultMutableTreeNode {
 		this.object = object;
 	}
 
-	public Object getValue(Field field) throws NoSuchMethodException,
-			IllegalAccessException, InvocationTargetException {
+	public <T> void setValue(T text) {
+		Field field = (Field) getUserObject();
 		String name = field.getName();
 		String methodName = Character.toUpperCase(name.charAt(0))
 				+ name.substring(1);
-		String prefix = getMethodPrefix(field);
-		Method method = object.getClass().getMethod(prefix + methodName);
-		return method.invoke(object);
+		String prefix = getMethodPrefix(field, false);
+		try {
+			Method method = object.getClass().getMethod(prefix + methodName,
+					field.getType());
+			method.invoke(object, text);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			throw new RuntimeException(String.format(
+					"Could not set Value: %s for field %s", text,
+					field.getName()));
+		}
 	}
 
-	private String getMethodPrefix(Field field) {
+	public Object getValue() {
+		Field field = (Field) getUserObject();
+		String name = field.getName();
+		String methodName = Character.toUpperCase(name.charAt(0))
+				+ name.substring(1);
+		String prefix = getMethodPrefix(field, true);
+		try {
+			Method method = object.getClass().getMethod(prefix + methodName);
+			return method.invoke(object);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	private String getMethodPrefix(Field field, boolean isGetter) {
 		String prefix;
 		if (field.getType().getName().equals("boolean")
 				|| (field.getType().getPackage() != null && field.getType()
 						.getPackage().getName().equals("java.lang.Boolean"))) {
-			prefix = "is";
+			if (isGetter) {
+				prefix = "is";
+			} else {
+				prefix = "set";
+			}
 		} else {
-			prefix = "get";
+			if (isGetter) {
+				prefix = "get";
+			} else {
+				prefix = "set";
+			}
 		}
 		return prefix;
 	}
@@ -44,13 +73,8 @@ public class ConfigNode extends DefaultMutableTreeNode {
 	public String toString() {
 		if (getUserObject() instanceof Field) {
 			Field field = (Field) getUserObject();
-			try {
-				Object value = getValue(field);
-				return swixml.getLocalizer().getString(field.getName()) + "="
-						+ value;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			return swixml.getLocalizer().getString(field.getName()) + "="
+					+ getValue();
 		}
 		if (getUserObject() instanceof Method) {
 			Method method = (Method) getUserObject();
