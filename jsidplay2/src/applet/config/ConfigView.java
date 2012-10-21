@@ -161,7 +161,8 @@ public class ConfigView extends TuneTab {
 							|| field.getType() == char.class) {
 						return Character.class.getSimpleName();
 					} else {
-						return null;
+						throw new RuntimeException("unsupported type: "
+								+ field.getType().getSimpleName());
 					}
 				}
 			});
@@ -175,12 +176,7 @@ public class ConfigView extends TuneTab {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (configNode.getUserObject() instanceof Field) {
-				String value;
-				if (textField.getText().equals("")) {
-					value = null;
-				} else {
-					value = textField.getText();
-				}
+				String value = textField.getText();
 				Field field = (Field) configNode.getUserObject();
 				if (field.getType() == String.class) {
 					configNode.setValue(value);
@@ -193,7 +189,7 @@ public class ConfigView extends TuneTab {
 				} else if (field.getType() == Character.class
 						|| field.getType() == char.class) {
 					char ch;
-					if (value == null) {
+					if (value == null || value.length() == 0) {
 						ch = (char) 0;
 					} else {
 						ch = value.charAt(0);
@@ -210,17 +206,8 @@ public class ConfigView extends TuneTab {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (configNode.getUserObject() instanceof Field) {
-				Boolean value;
-				if (checkbox.isSelected()) {
-					value = true;
-				} else {
-					value = false;
-				}
-				Field field = (Field) configNode.getUserObject();
-				if (field.getType() == Boolean.class
-						|| field.getType() == boolean.class) {
-					configNode.setValue(Boolean.valueOf(value).booleanValue());
-				}
+				Boolean value = checkbox.isSelected();
+				configNode.setValue(Boolean.valueOf(value).booleanValue());
 			}
 			update();
 		}
@@ -228,20 +215,11 @@ public class ConfigView extends TuneTab {
 
 	public Action doSetEnum = new AbstractAction() {
 
-		@SuppressWarnings("rawtypes")
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (configNode.getUserObject() instanceof Field) {
-				Enum value;
-				if (combo.getSelectedItem() != null) {
-					value = (Enum) combo.getSelectedItem();
-				} else {
-					value = null;
-				}
-				Field field = (Field) configNode.getUserObject();
-				if (Enum.class.isAssignableFrom(field.getType())) {
-					configNode.setValue(value);
-				}
+				Enum<?> value = (Enum<?>) combo.getSelectedItem();
+				configNode.setValue(value);
 			}
 			update();
 		}
