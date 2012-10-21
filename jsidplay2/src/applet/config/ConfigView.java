@@ -1,6 +1,7 @@
 package applet.config;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -11,11 +12,14 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.JAXBContext;
@@ -36,6 +40,7 @@ import applet.config.editors.IntTextField;
 import applet.entities.config.DbConfig;
 import applet.events.IUpdateUI;
 import applet.events.UIEvent;
+import applet.filefilter.ConfigFileFilter;
 
 public class ConfigView extends TuneTab {
 
@@ -48,11 +53,11 @@ public class ConfigView extends TuneTab {
 	protected JComboBox<Enum<?>> combo;
 
 	private IConfig config;
+	private EntityManager em;
+	protected FileFilter configFilter = new ConfigFileFilter();
 
 	private ConfigModel configModel;
 	protected ConfigNode configNode;
-
-	private EntityManager em;
 
 	public ConfigView(EntityManager em, Player player, IConfig config) {
 		this.em = em;
@@ -242,20 +247,29 @@ public class ConfigView extends TuneTab {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			try {
-				File file = new File("d:/test.xml");
-				JAXBContext jaxbContext = JAXBContext
-						.newInstance(DbConfig.class);
-				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-				Object obj = unmarshaller.unmarshal(file);
-				if (obj instanceof DbConfig) {
-					DbConfig dbc = (DbConfig) obj;
-					em.merge(dbc);
+			JFileChooser fileDialog = new JFileChooser();
+			fileDialog.setFileFilter(configFilter);
+			final Frame containerFrame = JOptionPane
+					.getFrameForComponent(ConfigView.this);
+			int rc = fileDialog.showOpenDialog(containerFrame);
+			if (rc == JFileChooser.APPROVE_OPTION
+					&& fileDialog.getSelectedFile() != null) {
+				try {
+					File file = fileDialog.getSelectedFile();
+					JAXBContext jaxbContext = JAXBContext
+							.newInstance(DbConfig.class);
+					Unmarshaller unmarshaller = jaxbContext
+							.createUnmarshaller();
+					Object obj = unmarshaller.unmarshal(file);
+					if (obj instanceof DbConfig) {
+						DbConfig dbc = (DbConfig) obj;
+						em.merge(dbc);
+						update();
+					}
+				} catch (JAXBException e1) {
+					e1.printStackTrace();
 				}
-			} catch (JAXBException e1) {
-				e1.printStackTrace();
 			}
-
 		}
 	};
 
@@ -263,14 +277,22 @@ public class ConfigView extends TuneTab {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			try {
-				File file = new File("d:/test.xml");
-				JAXBContext jaxbContext = JAXBContext
-						.newInstance(DbConfig.class);
-				Marshaller marshaller = jaxbContext.createMarshaller();
-				marshaller.marshal(config, file);
-			} catch (JAXBException e1) {
-				e1.printStackTrace();
+			JFileChooser fileDialog = new JFileChooser();
+			fileDialog.setFileFilter(configFilter);
+			final Frame containerFrame = JOptionPane
+					.getFrameForComponent(ConfigView.this);
+			int rc = fileDialog.showSaveDialog(containerFrame);
+			if (rc == JFileChooser.APPROVE_OPTION
+					&& fileDialog.getSelectedFile() != null) {
+				try {
+					File file = fileDialog.getSelectedFile();
+					JAXBContext jaxbContext = JAXBContext
+							.newInstance(DbConfig.class);
+					Marshaller marshaller = jaxbContext.createMarshaller();
+					marshaller.marshal(config, file);
+				} catch (JAXBException e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
 	};
