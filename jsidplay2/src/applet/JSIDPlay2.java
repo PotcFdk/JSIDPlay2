@@ -280,9 +280,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * @return created jsidplay2 configuration
 	 */
 	private IConfig createConfigurationFromINIFile() {
-		DbConfig dbConfig = new DbConfig();
-		dbConfig.copyFrom(new IniConfig());
-		return dbConfig;
+		return new DbConfig().copy(new IniConfig());
 	}
 
 	/**

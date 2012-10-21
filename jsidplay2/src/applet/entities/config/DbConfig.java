@@ -171,7 +171,7 @@ public class DbConfig implements IConfig {
 		return filter;
 	}
 
-	public void copyFrom(IniConfig iniConfig) {
+	public DbConfig copy(IniConfig iniConfig) {
 		setSidplay2(new DbSidPlay2Section());
 		getSidplay2().setEnableDatabase(
 				iniConfig.getSidplay2().isEnableDatabase());
@@ -323,6 +323,7 @@ public class DbConfig implements IConfig {
 			newFilterList.add(newFilter);
 		}
 		setFilter(newFilterList);
+		return this;
 	}
 
 }
