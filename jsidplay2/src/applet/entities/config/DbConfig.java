@@ -10,6 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import sidplay.ini.IniConfig;
 import sidplay.ini.intf.IAudioSection;
@@ -24,21 +29,26 @@ import sidplay.ini.intf.IPrinterSection;
 import sidplay.ini.intf.ISidPlay2Section;
 
 @Entity
+@XmlRootElement(name = "config")
 public class DbConfig implements IConfig {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	@XmlID
+	@XmlJavaTypeAdapter(IntegerAdapter.class)
+	private Integer id;
 
-	public int getId() {
+	@XmlTransient
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	@Embedded
+	@XmlElement(name = "sidplay2")
 	private DbSidPlay2Section sidplay2;
 
 	public void setSidplay2(DbSidPlay2Section sidplay2) {
@@ -51,6 +61,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Embedded
+	@XmlElement(name = "c1541")
 	private DbC1541Section c1541;
 
 	public void setC1541(DbC1541Section c1541) {
@@ -63,6 +74,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Embedded
+	@XmlElement(name = "printer")
 	private DbPrinterSection printer;
 
 	public void setPrinter(DbPrinterSection printer) {
@@ -75,6 +87,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Embedded
+	@XmlElement(name = "joystick")
 	private DbJoystickSection joystick;
 
 	public void setJoystick(DbJoystickSection joystick) {
@@ -87,6 +100,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Embedded
+	@XmlElement(name = "console")
 	private DbConsoleSection console;
 
 	public void setConsole(DbConsoleSection console) {
@@ -99,6 +113,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Embedded
+	@XmlElement(name = "audio")
 	private DbAudioSection audio;
 
 	public void setAudio(DbAudioSection audio) {
@@ -111,6 +126,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Embedded
+	@XmlElement(name = "emulation")
 	private DbEmulationSection emulation;
 
 	public void setEmulation(DbEmulationSection emulation) {
@@ -135,6 +151,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@OneToMany(mappedBy = "dbConfig", cascade = CascadeType.ALL)
+	@XmlElement(name = "favorites")
 	private List<DbFavoritesSection> favorites;
 
 	public void setFavorites(List<DbFavoritesSection> favorites) {
@@ -157,6 +174,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@OneToMany(mappedBy = "dbConfig", cascade = CascadeType.PERSIST)
+	@XmlElement(name = "filter")
 	private List<DbFilterSection> filter;
 
 	public void setFilter(List<DbFilterSection> filter) {

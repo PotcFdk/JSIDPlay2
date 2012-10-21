@@ -3,6 +3,8 @@ package applet.entities.config;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.IFilterSection;
 
@@ -18,8 +20,10 @@ public class DbFilterSection implements IFilterSection {
 	}
 
 	@ManyToOne
+	@XmlIDREF
 	public DbConfig dbConfig;
 
+	@XmlTransient
 	public DbConfig getDbConfig() {
 		return dbConfig;
 	}

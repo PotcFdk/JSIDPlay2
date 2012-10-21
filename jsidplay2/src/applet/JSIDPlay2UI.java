@@ -203,7 +203,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			tabbedPane.add(swix.getLocalizer().getString("PRINTER"),
 					new PrinterView(getPlayer()));
 			tabbedPane.add(swix.getLocalizer().getString("CONFIG"),
-					new ConfigView(getPlayer(), getConfig()));
+					new ConfigView(em, getPlayer(), getConfig()));
 			tabbedPane.add(swix.getLocalizer().getString("CONSOLE"),
 					new ConsoleView());
 

@@ -1,9 +1,20 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- Configuration -->
 <panel layout="BorderLayout" bundle="applet.config.ConfigTexts">
-	<scrollpane constraints="BorderLayout.NORTH">
-		<tree initclass="applet.config.ConfigModel" ExpandsSelectedPaths="true"
-			ScrollsOnExpand="true" id="configTree" />
-	</scrollpane>
-	<panel constraints="BorderLayout.CENTER" layout="BorderLayout" id="parent" />
+	<vbox>
+		<panel>
+			<vbox>
+				<hbox>
+					<button text="LOAD" action="doLoad" icon="applet/icons/load.png" />
+					<button text="SAVEAS" action="doSaveAs" icon="applet/icons/save.png" />
+				</hbox>
+			</vbox>
+		</panel>
+		<scrollpane constraints="BorderLayout.NORTH">
+			<tree initclass="applet.config.ConfigModel"
+				ExpandsSelectedPaths="true" ScrollsOnExpand="true" id="configTree" />
+		</scrollpane>
+		<panel constraints="BorderLayout.CENTER" layout="BorderLayout"
+			id="parent" />
+	</vbox>
 </panel>

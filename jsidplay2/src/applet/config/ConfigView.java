@@ -3,8 +3,10 @@ package applet.config;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.lang.reflect.Field;
 
+import javax.persistence.EntityManager;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
@@ -16,6 +18,10 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
@@ -27,6 +33,7 @@ import applet.TuneTab;
 import applet.config.editors.CharTextField;
 import applet.config.editors.FloatTextField;
 import applet.config.editors.IntTextField;
+import applet.entities.config.DbConfig;
 import applet.events.IUpdateUI;
 import applet.events.UIEvent;
 
@@ -40,10 +47,16 @@ public class ConfigView extends TuneTab {
 	protected JCheckBox checkbox;
 	protected JComboBox<Enum<?>> combo;
 
+	private IConfig config;
+
 	private ConfigModel configModel;
 	protected ConfigNode configNode;
 
-	public ConfigView(Player player, IConfig config) {
+	private EntityManager em;
+
+	public ConfigView(EntityManager em, Player player, IConfig config) {
+		this.em = em;
+		this.config = config;
 		try {
 			swix = new SwingEngine(this);
 			swix.getTaglib().registerTag("inttextfield", IntTextField.class);
@@ -222,6 +235,43 @@ public class ConfigView extends TuneTab {
 				configNode.setValue(value);
 			}
 			update();
+		}
+	};
+
+	public Action doLoad = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				File file = new File("d:/test.xml");
+				JAXBContext jaxbContext = JAXBContext
+						.newInstance(DbConfig.class);
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+				Object obj = unmarshaller.unmarshal(file);
+				if (obj instanceof DbConfig) {
+					DbConfig dbc = (DbConfig) obj;
+					em.merge(dbc);
+				}
+			} catch (JAXBException e1) {
+				e1.printStackTrace();
+			}
+
+		}
+	};
+
+	public Action doSaveAs = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				File file = new File("d:/test.xml");
+				JAXBContext jaxbContext = JAXBContext
+						.newInstance(DbConfig.class);
+				Marshaller marshaller = jaxbContext.createMarshaller();
+				marshaller.marshal(config, file);
+			} catch (JAXBException e1) {
+				e1.printStackTrace();
+			}
 		}
 	};
 

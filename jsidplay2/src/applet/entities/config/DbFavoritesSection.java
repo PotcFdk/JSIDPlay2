@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.IFavoritesSection;
 
@@ -50,8 +52,10 @@ public class DbFavoritesSection implements IFavoritesSection {
 	}
 
 	@ManyToOne
+	@XmlIDREF
 	public DbConfig dbConfig;
 
+	@XmlTransient
 	public DbConfig getDbConfig() {
 		return dbConfig;
 	}
