@@ -297,15 +297,19 @@ public class JSIDPlay2UI implements UIEventListener {
 	private void setDefaultsAndActions() {
 		normalSpeed.setSelected(true);
 		Clock defClk = getConfig().getEmulation().getDefaultClockSpeed();
-		switch (defClk) {
-		case NTSC:
-			ntsc.setSelected(true);
-			break;
+		if (defClk != null) {
+			switch (defClk) {
+			case NTSC:
+				ntsc.setSelected(true);
+				break;
 
-		default:
-			// PAL
+			default:
+				// PAL
+				pal.setSelected(true);
+				break;
+			}
+		} else {
 			pal.setSelected(true);
-			break;
 		}
 		driveOn.setSelected(getConfig().getC1541().isDriveOn());
 		driveSoundOn.setSelected(getConfig().getC1541().isDriveSoundOn());

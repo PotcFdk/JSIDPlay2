@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import libsidplay.Player;
@@ -23,12 +24,16 @@ import org.swixml.SwingEngine;
 
 import sidplay.ini.intf.IConfig;
 import applet.TuneTab;
+import applet.config.editors.CharTextField;
+import applet.config.editors.FloatTextField;
+import applet.config.editors.IntTextField;
 import applet.events.IUpdateUI;
 import applet.events.UIEvent;
 
 public class ConfigView extends TuneTab {
 
 	private SwingEngine swix;
+
 	private JTree configTree;
 	protected JPanel parent;
 	protected JTextField textField;
@@ -41,6 +46,10 @@ public class ConfigView extends TuneTab {
 	public ConfigView(Player player, IConfig config) {
 		try {
 			swix = new SwingEngine(this);
+			swix.getTaglib().registerTag("inttextfield", IntTextField.class);
+			swix.getTaglib()
+					.registerTag("floattextfield", FloatTextField.class);
+			swix.getTaglib().registerTag("chartextfield", CharTextField.class);
 			swix.insert(ConfigView.class.getResource("Config.xml"), this);
 			configModel = (ConfigModel) configTree.getModel();
 			configModel.setRootUserObject(swix, config);
@@ -70,7 +79,8 @@ public class ConfigView extends TuneTab {
 										|| (field.getType() == Character.class || field
 												.getType() == char.class)) {
 									parent.add(swix.render(ConfigView.class
-											.getResource(getUITypeName(field)
+											.getResource("editors/"
+													+ getUITypeName(field)
 													+ ".xml")),
 											BorderLayout.NORTH);
 									String value;
@@ -84,7 +94,8 @@ public class ConfigView extends TuneTab {
 								} else if (field.getType() == Boolean.class
 										|| field.getType() == boolean.class) {
 									parent.add(swix.render(ConfigView.class
-											.getResource(getUITypeName(field)
+											.getResource("editors/"
+													+ getUITypeName(field)
 													+ ".xml")),
 											BorderLayout.NORTH);
 									String value;
@@ -98,7 +109,8 @@ public class ConfigView extends TuneTab {
 								} else if (Enum.class.isAssignableFrom(field
 										.getType())) {
 									parent.add(swix.render(ConfigView.class
-											.getResource(getUITypeName(field)
+											.getResource("editors/"
+													+ getUITypeName(field)
 													+ ".xml")),
 											BorderLayout.NORTH);
 									Class<? extends Enum> en = (Class<? extends Enum>) field
@@ -189,7 +201,7 @@ public class ConfigView extends TuneTab {
 					configNode.setValue(Character.valueOf(ch).charValue());
 				}
 			}
-			configModel.reload();
+			update();
 		}
 	};
 
@@ -210,7 +222,7 @@ public class ConfigView extends TuneTab {
 					configNode.setValue(Boolean.valueOf(value).booleanValue());
 				}
 			}
-			configModel.reload();
+			update();
 		}
 	};
 
@@ -231,15 +243,21 @@ public class ConfigView extends TuneTab {
 					configNode.setValue(value);
 				}
 			}
-			configModel.reload();
+			update();
 		}
 	};
+
+	private void update() {
+		String expansionState = TreeUtil.getExpansionState(configTree, 0);
+		configModel.nodeStructureChanged((TreeNode) configModel.getRoot());
+		TreeUtil.restoreExpanstionState(configTree, 0, expansionState);
+	}
 
 	@Override
 	public void notify(UIEvent evt) {
 		if (!evt.isOfType(IUpdateUI.class)) {
 			if (configModel != null) {
-				configModel.reload();
+				update();
 			}
 		}
 	}
@@ -249,5 +267,4 @@ public class ConfigView extends TuneTab {
 		// TODO Auto-generated method stub
 
 	}
-
 }
