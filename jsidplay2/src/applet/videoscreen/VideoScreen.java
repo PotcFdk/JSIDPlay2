@@ -565,12 +565,14 @@ public class VideoScreen extends TuneTab {
 			if (++moveCounter > TIME_TO_HIDE_CURSOR) {
 				moveCounter = 0;
 				// Cursor not moved for some time? Hide cursor
-				final Point p = MouseInfo.getPointerInfo().getLocation();
-				SwingUtilities.convertPointFromScreen(p, c64);
-				if (c64.contains(p) && isVisible() && hasFocus()) {
-					RootPaneContainer root = (RootPaneContainer) getTopLevelAncestor();
-					root.getGlassPane().setCursor(INVISIBLE_CURSOR);
-					root.getGlassPane().setVisible(true);
+				if (MouseInfo.getPointerInfo() != null) {
+					final Point p = MouseInfo.getPointerInfo().getLocation();
+					SwingUtilities.convertPointFromScreen(p, c64);
+					if (c64.contains(p) && isVisible() && hasFocus()) {
+						RootPaneContainer root = (RootPaneContainer) getTopLevelAncestor();
+						root.getGlassPane().setCursor(INVISIBLE_CURSOR);
+						root.getGlassPane().setVisible(true);
+					}
 				}
 			}
 			// Get status information of the first disk drive
