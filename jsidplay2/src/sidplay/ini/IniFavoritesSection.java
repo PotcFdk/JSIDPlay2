@@ -1,5 +1,8 @@
 package sidplay.ini;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import sidplay.ini.intf.IFavoritesSection;
 
 /**
@@ -39,4 +42,8 @@ public class IniFavoritesSection extends IniSection implements
 		this.filename = favoritesFilename;
 	}
 
+	@Override
+	public List<String> getFavorites() {
+		return new ArrayList<String>();
+	}
 }

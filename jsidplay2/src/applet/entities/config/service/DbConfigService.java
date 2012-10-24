@@ -3,6 +3,7 @@ package applet.entities.config.service;
 import javax.persistence.EntityManager;
 
 import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IFavoritesSection;
 import applet.entities.config.DbConfig;
 import applet.entities.config.DbFavoritesSection;
 
@@ -13,7 +14,7 @@ public class DbConfigService {
 		this.em = em;
 	};
 
-	public void addFavorite(IConfig config, String title) {
+	public IFavoritesSection addFavorite(IConfig config, String title) {
 		DbConfig dbConfig = (DbConfig) config;
 		DbFavoritesSection toAdd = new DbFavoritesSection();
 		toAdd.setDbConfig(dbConfig);
@@ -21,6 +22,7 @@ public class DbConfigService {
 		dbConfig.getFavoritesInternal().add(toAdd);
 		em.persist(toAdd);
 		flush();
+		return toAdd;
 	}
 
 	public void removeFavorite(IConfig config, int index) {

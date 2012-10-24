@@ -1,5 +1,7 @@
 package sidplay.ini.intf;
 
+import java.util.List;
+
 public interface IFavoritesSection {
 
 	/**
@@ -7,7 +9,7 @@ public interface IFavoritesSection {
 	 * 
 	 * @return the favorites browser titles
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * Setter of the Favorites browser titles.
@@ -15,14 +17,14 @@ public interface IFavoritesSection {
 	 * @param name
 	 *            the favorites browser titles
 	 */
-	public void setName(String name);
+	void setName(String name);
 
 	/**
 	 * Getter of the favorites browser filenames.
 	 * 
 	 * @return the favorites browser filenames
 	 */
-	public String getFilename();
+	String getFilename();
 
 	/**
 	 * Setter of the favorites browser filenames.
@@ -30,6 +32,8 @@ public interface IFavoritesSection {
 	 * @param filenames
 	 *            the favorites browser filenames
 	 */
-	public void setFilename(String filename);
+	void setFilename(String filename);
+
+	List<String> getFavorites();
 
 }

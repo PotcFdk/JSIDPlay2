@@ -7,6 +7,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreeModel;
 
 import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IFavoritesSection;
 import applet.collection.Collection;
 import applet.collection.CollectionTreeModel;
 import applet.sidtuneinfo.SidTuneInfoCache;
@@ -25,12 +26,15 @@ public class FavoritesModel extends DefaultTableModel {
 	protected IConfig config;
 	protected Collection hvsc, cgsc;
 
+	private IFavoritesSection favorite;
+
 	public FavoritesModel() {
 		super(new Object[] { "Filename" }, 0);
 	}
 
-	public void setConfig(IConfig cfg) {
+	public void setConfig(IConfig cfg, IFavoritesSection favorite) {
 		this.config = cfg;
+		this.favorite = favorite;
 		infoCache = new SidTuneInfoCache(config);
 		propertyIndices.add(0);
 	}
@@ -63,11 +67,11 @@ public class FavoritesModel extends DefaultTableModel {
 	@Override
 	public Object getValueAt(int row, int column) {
 		if (column == 0) {
-			return super.getValueAt(row, column);
+			return favorite.getFavorites().get(row);
 		}
 		int modelColumn = propertyIndices.get(column);
-		if (infoCache.getInfo(getFile(getValueAt(row, 0))) != null) {
-			return infoCache.getInfo(getFile(getValueAt(row, 0)))[modelColumn - 1];
+		if (infoCache.getInfo(getFile(row)) != null) {
+			return infoCache.getInfo(getFile(row))[modelColumn - 1];
 		} else {
 			return "";
 		}
@@ -75,18 +79,6 @@ public class FavoritesModel extends DefaultTableModel {
 
 	@Override
 	public boolean isCellEditable(int row, int column) {
-		return false;
-	}
-
-	public boolean contains(Object obj, int column) {
-		int modelColumn = propertyIndices.get(column);
-		for (int i = 0; i < getRowCount(); i++) {
-			Object value = getValueAt(i, modelColumn);
-			String pathName = getFile(value).getAbsolutePath();
-			if (pathName.equals(obj.toString())) {
-				return true;
-			}
-		}
 		return false;
 	}
 
@@ -112,9 +104,15 @@ public class FavoritesModel extends DefaultTableModel {
 				break;
 			}
 		}
+
 		// for (int i = 0; i < propertyIndices.size(); i++) {
 		// System.err.println("ar: " + propertyIndices.get(i));
 		// }
+	}
+
+	@Override
+	public int getRowCount() {
+		return size();
 	}
 
 	@Override
@@ -122,8 +120,8 @@ public class FavoritesModel extends DefaultTableModel {
 		return propertyIndices.size();
 	}
 
-	public File getFile(Object value) {
-		String filename = value.toString();
+	public File getFile(int row) {
+		String filename = favorite.getFavorites().get(row);
 		if (filename.startsWith(HVSC_PREFIX)) {
 			TreeModel model = hvsc.getFileBrowser().getModel();
 			if (model instanceof CollectionTreeModel) {
@@ -144,6 +142,41 @@ public class FavoritesModel extends DefaultTableModel {
 			}
 		}
 		return new File(filename);
+	}
+
+	//
+	// von aussen sichtbar!
+	//
+
+	public void add(String path) {
+		if (!favorite.getFavorites().contains(path)) {
+			favorite.getFavorites().add(path);
+		}
+	}
+
+	public void remove(int row) {
+		favorite.getFavorites().remove(row);
+	}
+
+	public void clear() {
+		favorite.getFavorites().clear();
+	}
+
+	public int size() {
+		if (favorite == null) {
+			return 0;
+		}
+		return favorite.getFavorites().size();
+	}
+
+	public void move(int start, int to) {
+		String tmp = favorite.getFavorites().get(start);
+		favorite.getFavorites().set(start, favorite.getFavorites().get(to));
+		favorite.getFavorites().set(to, tmp);
+	}
+
+	public void layoutChanged() {
+		fireTableStructureChanged();
 	}
 
 }

@@ -70,7 +70,7 @@ import applet.events.Reset;
 import applet.events.UIEvent;
 import applet.events.UIEventFactory;
 import applet.events.UIEventListener;
-import applet.favorites.Favorites;
+import applet.favorites.FavoritesView;
 import applet.filechooser.ImageFileChooser;
 import applet.filefilter.CartFileFilter;
 import applet.filefilter.DiskFileFilter;
@@ -199,7 +199,7 @@ public class JSIDPlay2UI implements UIEventListener {
 			tabbedPane.add(swix.getLocalizer().getString("GAMEBASE"),
 					new GameBase(getPlayer(), getConfig()));
 			tabbedPane.add(swix.getLocalizer().getString("FAVORITES"),
-					new Favorites(em, getPlayer(), getConfig(), hvsc, cgsc));
+					new FavoritesView(em, getPlayer(), getConfig(), hvsc, cgsc));
 			tabbedPane.add(swix.getLocalizer().getString("PRINTER"),
 					new PrinterView(getPlayer()));
 			tabbedPane.add(swix.getLocalizer().getString("CONFIG"),

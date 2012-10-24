@@ -1,743 +1,776 @@
 package applet.favorites;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
-import javax.persistence.EntityManager;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.RowFilter;
+import javax.swing.RowSorter;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import libsidplay.Player;
-import libsidplay.sidtune.SidTune;
+import libsidutils.STIL.STILEntry;
+import libsidutils.zip.ZipEntryFileProxy;
 
 import org.swixml.SwingEngine;
 
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFavoritesSection;
-import applet.TuneTab;
-import applet.collection.Collection;
-import applet.entities.config.service.DbConfigService;
+import applet.PathUtils;
+import applet.SidTuneConverter;
+import applet.dnd.FileDrop;
 import applet.events.IPlayTune;
-import applet.events.ITuneStateChanged;
-import applet.events.UIEvent;
-import applet.events.favorites.IAddFavoritesTab;
-import applet.events.favorites.IChangeFavoritesTab;
+import applet.events.UIEventFactory;
 import applet.events.favorites.IFavoriteTabNames;
-import applet.events.favorites.IGetFavorites;
-import applet.events.favorites.IRemoveFavoritesTab;
-import applet.filefilter.FavoritesFileFilter;
 import applet.filefilter.TuneFileFilter;
+import applet.sidtuneinfo.SidTuneInfoCache;
+import applet.stil.STIL;
+import applet.ui.JNiceButton;
 
 @SuppressWarnings("serial")
-public class Favorites extends TuneTab implements ListSelectionListener {
+public class Favorites extends JPanel implements IFavorites {
 
-	/**
-	 * file filter for tunes
-	 */
-	protected transient final FileFilter fPlayListFilter = new FavoritesFileFilter();
-
-	/**
-	 * file filter for tunes
-	 */
-	protected transient final FileFilter fTuneFilter = new TuneFileFilter();
-
+	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 	private SwingEngine swix;
 
-	protected JButton add, remove, selectAll, deselectAll, load, save, saveAs;
-	protected JCheckBox playbackEnable, repeatEnable;
-	protected JTabbedPane favoriteList;
-	protected JRadioButton normal, randomOne, randomAll, repeatOne;
+	protected JTable playListTable;
+	protected JTextField filterField;
+	protected JNiceButton unsort, moveUp, moveDown;
 
+	protected transient RowSorter<TableModel> rowSorter;
+	protected transient final FileFilter tuneFilter = new TuneFileFilter();
+
+	protected final FavoritesView favoritesView;
 	protected Player player;
 	protected IConfig config;
-	protected Collection hvsc, cgsc;
 
+	protected int headerColumnToRemove;
 	protected File lastDir;
-	protected PlayList currentlyPlayedFavorites;
-	protected final Random random = new Random();
+	protected String playListFilename;
+	protected Random randomPlayback = new Random();
 
-	private DbConfigService dbConfigService;
-
-	public Favorites(EntityManager em, Player pl, IConfig cfg, Collection hvsc,
-			Collection cgsc) {
+	public Favorites(Player pl, IConfig cfg, final FavoritesView favoritesView,
+			IFavoritesSection favorite) {
+		this.favoritesView = favoritesView;
 		this.player = pl;
 		this.config = cfg;
-		this.hvsc = hvsc;
-		this.cgsc = cgsc;
-		dbConfigService = new DbConfigService(em);
 
-		createContents();
-	}
-
-	public Collection getHvsc() {
-		return hvsc;
-	}
-
-	public Collection getCgsc() {
-		return cgsc;
-	}
-
-	private void createContents() {
 		try {
 			swix = new SwingEngine(this);
+			swix.getTaglib().registerTag("nicebutton", JNiceButton.class);
+			swix.getTaglib().registerTag("playlisttable", FavoritesTable.class);
 			swix.insert(Favorites.class.getResource("Favorites.xml"), this);
 
-			fillComboBoxes();
-			setDefaults();
+			FavoritesModel model = (FavoritesModel) playListTable.getModel();
+			model.setConfig(cfg, favorite);
+			model.setCollections(favoritesView.getHvsc(),
+					favoritesView.getCgsc());
+			((FavoritesCellRenderer) playListTable
+					.getDefaultRenderer(Object.class)).setConfig(cfg);
+			((FavoritesCellRenderer) playListTable
+					.getDefaultRenderer(Object.class)).setPlayer(pl);
+			model.layoutChanged();
 
+			fillComboBoxes();
+			setDefaultsAndActions();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public Action addFavorites = new AbstractAction() {
+	public SwingEngine getSwix() {
+		return swix;
+	}
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
-				JFileChooser fileDialog = new JFileChooser(lastDir);
-				fileDialog.setFileFilter(fTuneFilter);
-				fileDialog.setMultiSelectionEnabled(true);
-				fileDialog
-						.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				int rc = fileDialog.showOpenDialog(Favorites.this);
-				if (rc == JFileChooser.APPROVE_OPTION
-						&& fileDialog.getSelectedFile() != null) {
-					lastDir = fileDialog.getSelectedFile().getParentFile();
-					File files[] = fileDialog.getSelectedFiles();
-					fav.addToFavorites(files);
-				}
-			}
-		}
-	};
+	private void setDefaultsAndActions() {
+		JTableHeader header = playListTable.getTableHeader();
+		header.addMouseListener(new MouseAdapter() {
+			private final JPopupMenu headerPopup;
+			private JMenuItem removeColumn;
+			{
+				headerPopup = new JPopupMenu(getSwix().getLocalizer()
+						.getString("CUSTOMIZE_COLUMN"));
+				removeColumn = new JMenuItem(getSwix().getLocalizer()
+						.getString("REMOVE_COLUMN"));
+				removeColumn.addActionListener(new ActionListener() {
 
-	public Action removeFavorites = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
-				fav.removeSelectedRows();
-			}
-		}
-	};
-
-	public Action selectAllFavorites = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
-				fav.selectFavorites();
-			}
-		}
-	};
-
-	public Action deselectAllFavorites = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
-				fav.deselectFavorites();
-			}
-		}
-	};
-
-	public Action loadFavorites = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			JFileChooser fileDialog = new JFileChooser(lastDir);
-			fileDialog.setFileFilter(fPlayListFilter);
-			final Frame containerFrame = JOptionPane
-					.getFrameForComponent(Favorites.this);
-			int rc = fileDialog.showOpenDialog(containerFrame);
-			if (rc == JFileChooser.APPROVE_OPTION
-					&& fileDialog.getSelectedFile() != null) {
-				lastDir = fileDialog.getSelectedFile().getParentFile();
-				final String name;
-				if (!fileDialog.getSelectedFile().getAbsolutePath()
-						.endsWith(FavoritesFileFilter.EXT_FAVORITES)) {
-					name = fileDialog.getSelectedFile().getAbsolutePath()
-							+ FavoritesFileFilter.EXT_FAVORITES;
-				} else {
-					name = fileDialog.getSelectedFile().getAbsolutePath();
-				}
-				String baseName = new File(name).getName();
-				int lastIndexOf = baseName.lastIndexOf('.');
-				final String title;
-				if (lastIndexOf != -1) {
-					title = baseName.substring(0, lastIndexOf);
-				} else {
-					title = baseName;
-				}
-
-				// add a first tab
-				getUiEvents().fireEvent(IAddFavoritesTab.class,
-						new IAddFavoritesTab() {
-
-							@Override
-							public String getTitle() {
-								return title;
-							}
-
-							@Override
-							public void setFavorites(IFavorites favorites) {
-
-							}
-
-						});
-
-				final int index = favoriteList.getSelectedIndex();
-				Component comp = favoriteList.getComponentAt(index);
-				if (comp instanceof IFavorites) {
-					IFavorites fav = (IFavorites) comp;
-					fav.loadFavorites(name);
-				}
-				getUiEvents().fireEvent(IChangeFavoritesTab.class,
-						new IChangeFavoritesTab() {
-							@Override
-							public int getIndex() {
-								return index;
-							}
-
-							@Override
-							public String getTitle() {
-								return title;
-							}
-
-							@Override
-							public String getFileName() {
-								return name;
-							}
-
-							@Override
-							public boolean isSelected() {
-								return false;
-							}
-						});
-			}
-		}
-	};
-
-	public Action saveFavorites = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			final int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
-				if (fav.getFileName() == null) {
-					saveAs();
-				} else {
-					fav.saveFavorites(fav.getFileName());
-				}
-			}
-		}
-	};
-
-	public Action saveFavoritesAs = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			saveAs();
-		}
-	};
-
-	public Action enablePlayback = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			boolean playbackSelected = playbackEnable.isSelected();
-			normal.setEnabled(playbackSelected);
-			randomOne.setEnabled(playbackSelected);
-			randomAll.setEnabled(playbackSelected);
-			repeatEnable.setEnabled(playbackSelected);
-			repeatOne.setEnabled(playbackSelected);
-			boolean repeatSelected = repeatEnable.isSelected();
-			repeatOne.setEnabled(repeatSelected);
-		}
-	};
-
-	public Action enableRepeat = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			boolean repeatSelected = repeatEnable.isSelected();
-			repeatOne.setEnabled(repeatSelected);
-			repeatOne.setSelected(repeatSelected);
-		}
-	};
-
-	private void setDefaults() {
-		{
-			favoriteList.setTabComponentAt(0, new ButtonTabComponent(
-					favoriteList, "", "icons/addtab.png", swix.getLocalizer()
-							.getString("ADD_A_NEW_TAB"), new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						removeColumn();
+					}
+				});
+				headerPopup.add(removeColumn);
+				for (final String element : SidTuneInfoCache.SIDTUNE_INFOS) {
+					JMenuItem menuItem = new JMenuItem(String.format(getSwix()
+							.getLocalizer().getString("ADD_COLUMN"), element));
+					menuItem.addActionListener(new ActionListener() {
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							getUiEvents().fireEvent(IAddFavoritesTab.class,
-									new IAddFavoritesTab() {
+							try {
+								playListTable.getColumn(element);
+								// if column already exist, do nothing
+							} catch (IllegalArgumentException e1) {
+								FavoritesModel model = (FavoritesModel) playListTable
+										.getModel();
+								model.addColumn(element);
+							}
 
-										@Override
-										public String getTitle() {
-											return getSwix().getLocalizer()
-													.getString("NEW_TAB");
-										}
-
-										@Override
-										public void setFavorites(
-												IFavorites favorites) {
-
-										}
-
-									});
 						}
+					});
+					headerPopup.add(menuItem);
+				}
 
-					}));
+			}
 
-			restoreFavorites();
-			reloadRestoredFavorites();
-
-			favoriteList.addChangeListener(new ChangeListener() {
-
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					final int index = favoriteList.getSelectedIndex();
-					if (index == -1 || index == favoriteList.getTabCount() - 1) {
-						return;
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					JTableHeader popupHeader = (JTableHeader) e.getSource();
+					headerColumnToRemove = popupHeader.columnAtPoint(new Point(
+							e.getPoint()));
+					int columnModelIndex = playListTable
+							.convertColumnIndexToModel(headerColumnToRemove);
+					if (columnModelIndex == 0) {
+						removeColumn.setEnabled(false);
+					} else {
+						removeColumn.setEnabled(true);
 					}
-					Component comp = favoriteList.getComponentAt(index);
-					if (comp instanceof IFavorites) {
-						IFavorites fav = (IFavorites) comp;
-						remove.setEnabled(fav.getSelection().length > 0);
+					headerPopup.show((Component) e.getSource(), e.getX(),
+							e.getY());
+				}
+			}
+
+		});
+		FavoritesModel model = (FavoritesModel) playListTable.getModel();
+		rowSorter = new TableRowSorter<TableModel>(model);
+		rowSorter.addRowSorterListener(new RowSorterListener() {
+
+			@Override
+			public void sorterChanged(RowSorterEvent e) {
+				setMoveEnabledState(getSelection());
+			}
+
+		});
+		playListTable.setRowSorter(rowSorter);
+		playListTable.addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getModifiers() == 0
+						&& KeyEvent.VK_BACK_SPACE == e.getKeyCode()
+						|| KeyEvent.VK_DELETE == e.getKeyCode()) {
+					removeSelectedRows();
+				} else if (e.getModifiers() == 0
+						&& KeyEvent.VK_ENTER == e.getKeyCode()) {
+					playSelectedRow();
+				}
+
+			}
+
+		});
+		playListTable.addMouseListener(new MouseAdapter() {
+
+			private JPopupMenu tablePopup;
+
+			protected STILEntry getSTIL(final File file) {
+				final String name = PathUtils.getHVSCName(config, file);
+				if (null != name) {
+					libsidutils.STIL stil = libsidutils.STIL.getInstance(config
+							.getSidplay2().getHvsc());
+					if (stil != null) {
+						return stil.getSTIL(name);
 					}
-					getUiEvents().fireEvent(IChangeFavoritesTab.class,
-							new IChangeFavoritesTab() {
-								@Override
-								public int getIndex() {
-									return index;
-								}
+				}
+				return null;
+			}
 
-								@Override
-								public String getTitle() {
-									return favoriteList.getTitleAt(index);
-								}
+			@Override
+			public void mouseClicked(MouseEvent mouseEvent) {
+				if (mouseEvent.getButton() == MouseEvent.BUTTON1
+						&& mouseEvent.getClickCount() == 2) {
+					playSelectedRow();
+				} else if (mouseEvent.getButton() == MouseEvent.BUTTON3
+						&& mouseEvent.getClickCount() == 1
+						&& playListTable.getSelectionModel()
+								.getMinSelectionIndex() != -1) {
 
+					tablePopup = new JPopupMenu(getSwix().getLocalizer()
+							.getString("TUNE_ACTIONS"));
+					JMenuItem mi = new JMenuItem(getSwix().getLocalizer()
+							.getString("SHOW_STIL"));
+					mi.setEnabled(false);
+					tablePopup.add(mi);
+					int[] rows = playListTable.getSelectedRows();
+					if (rows.length == 1) {
+						int row = rowSorter.convertRowIndexToModel(rows[0]);
+						FavoritesModel model = (FavoritesModel) playListTable
+								.getModel();
+						File tuneFile = model.getFile(row);
+						final STILEntry se = getSTIL(tuneFile);
+						if (se != null) {
+							mi.setEnabled(true);
+							mi.addActionListener(new ActionListener() {
 								@Override
-								public String getFileName() {
-									Component comp = favoriteList
-											.getComponentAt(index);
-									if (comp instanceof IFavorites) {
-										IFavorites fav = (IFavorites) comp;
-										return fav.getFileName();
-									}
-									return null;
-								}
-
-								@Override
-								public boolean isSelected() {
-									return true;
+								public void actionPerformed(ActionEvent arg0) {
+									new STIL(se);
 								}
 							});
+						}
+					}
+					JMenuItem fileExportItem = new JMenuItem(getSwix()
+							.getLocalizer().getString("EXPORT_TO_DIR"));
+					fileExportItem.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							JFileChooser fc = new JFileChooser(lastDir);
+							fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+							final Frame containerFrame = JOptionPane
+									.getFrameForComponent(Favorites.this);
+							int result = fc.showOpenDialog(containerFrame);
+							if (result == JFileChooser.APPROVE_OPTION
+									&& fc.getSelectedFile() != null) {
+								lastDir = fc.getSelectedFile();
+								int[] rows = playListTable.getSelectedRows();
+								for (int row1 : rows) {
+									int row = rowSorter
+											.convertRowIndexToModel(row1);
+									FavoritesModel model = (FavoritesModel) playListTable
+											.getModel();
+									File file = model.getFile(row);
+									try {
+										if (file instanceof ZipEntryFileProxy) {
+											// Extract ZIP file
+											file = ZipEntryFileProxy
+													.extractFromZip((ZipEntryFileProxy) file);
+										}
+										PathUtils.copyFile(file,
+												new File(fc.getSelectedFile(),
+														file.getName()));
+									} catch (IOException e1) {
+										System.err.println(e1.getMessage());
+									}
+								}
+							}
+						}
+					});
+					tablePopup.add(fileExportItem);
+
+					final JMenu moveToTab = new JMenu(getSwix().getLocalizer()
+							.getString("MOVE_TO_TAB"));
+					uiEvents.fireEvent(IFavoriteTabNames.class,
+							new IFavoriteTabNames() {
+
+								@Override
+								public void setFavoriteTabNames(String[] names,
+										String selected) {
+									for (String name1 : names) {
+										if (!name1.equals(selected)) {
+											final String title = name1;
+											JMenuItem tabItem = new JMenuItem(
+													title);
+											tabItem.addActionListener(new ActionListener() {
+
+												@Override
+												public void actionPerformed(
+														ActionEvent e) {
+													moveSelectedFavoritesToTab(
+															title, false);
+												}
+
+											});
+											moveToTab.add(tabItem);
+										}
+									}
+								}
+							});
+					tablePopup.add(moveToTab);
+					if (moveToTab.getMenuComponentCount() == 0) {
+						moveToTab.setEnabled(false);
+					}
+					final JMenu copyToTab = new JMenu(getSwix().getLocalizer()
+							.getString("COPY_TO_TAB"));
+					uiEvents.fireEvent(IFavoriteTabNames.class,
+							new IFavoriteTabNames() {
+
+								@Override
+								public void setFavoriteTabNames(String[] names,
+										String selected) {
+									for (String name1 : names) {
+										if (!name1.equals(selected)) {
+											final String title = name1;
+											JMenuItem tabItem = new JMenuItem(
+													title);
+											tabItem.addActionListener(new ActionListener() {
+
+												@Override
+												public void actionPerformed(
+														ActionEvent e) {
+													moveSelectedFavoritesToTab(
+															title, true);
+												}
+
+											});
+											copyToTab.add(tabItem);
+										}
+									}
+								}
+							});
+					tablePopup.add(copyToTab);
+					if (copyToTab.getMenuComponentCount() == 0) {
+						copyToTab.setEnabled(false);
+					}
+
+					JMenu convertItem = new JMenu(getSwix().getLocalizer()
+							.getString("CONVERT_TO"));
+
+					JMenuItem psid64 = new JMenuItem(getSwix().getLocalizer()
+							.getString("PSID64"));
+					psid64.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							JFileChooser fc = new JFileChooser(lastDir);
+							fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+							final Frame containerFrame = JOptionPane
+									.getFrameForComponent(Favorites.this);
+							int result = fc.showOpenDialog(containerFrame);
+							if (result == JFileChooser.APPROVE_OPTION
+									&& fc.getSelectedFile() != null) {
+								lastDir = fc.getSelectedFile();
+								convertSelectedTunes();
+							}
+						}
+
+					});
+					convertItem.add(psid64);
+
+					tablePopup.add(convertItem);
+
+					tablePopup.show((Component) mouseEvent.getSource(),
+							mouseEvent.getX(), mouseEvent.getY());
 				}
-			});
-		}
+			}
+
+		});
+
+		playListTable.getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+
+					@Override
+					public void valueChanged(ListSelectionEvent e) {
+						String[] selection = getSelection();
+						setMoveEnabledState(selection);
+					}
+
+				});
+		new FileDrop(this, new FileDrop.Listener() {
+			@Override
+			public void filesDropped(java.io.File[] files, Object source,
+					Point point) {
+				addToFavorites(files);
+			}
+		});
+		filterField.addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (filterField.getText().trim().length() == 0) {
+					((TableRowSorter<TableModel>) rowSorter).setRowFilter(null);
+				} else {
+					if (validatePattern()) {
+						RowFilter<TableModel, Integer> filter = RowFilter
+								.regexFilter(filterField.getText());
+						((TableRowSorter<TableModel>) rowSorter)
+								.setRowFilter(filter);
+					}
+				}
+			}
+
+			private boolean validatePattern() {
+				boolean ok = true;
+				filterField.setToolTipText(null);
+				filterField.setBackground(Color.white);
+				try {
+					Pattern.compile(filterField.getText());
+				} catch (PatternSyntaxException e) {
+					filterField.setToolTipText(e.getMessage());
+					filterField.setBackground(Color.red);
+					ok = false;
+				}
+				return ok;
+			}
+
+		});
+	}
+
+	public JTable getPlayListTable() {
+		return playListTable;
 	}
 
 	private void fillComboBoxes() {
 		// nothing to do
 	}
 
-	private void restoreFavorites() {
-		List<? extends IFavoritesSection> favorites = config.getFavorites();
-		for (IFavoritesSection favorite : favorites) {
-			final String title = favorite.getName();
-			addTab(title);
-		}
-		String title = config.getCurrentFavorite();
-		int index = 0;
-		if (title != null) {
-			index = favoriteList.indexOfTab(title);
-		}
-		favoriteList.setSelectedIndex(Math.max(index, 0));
-	}
-
-	private void reloadRestoredFavorites() {
-		List<? extends IFavoritesSection> favorites = config.getFavorites();
-		int i = 0;
-		for (IFavoritesSection favorite : favorites) {
-			final String filename = favorite.getFilename();
-			if (filename == null) {
-				continue;
-			}
-			final int index = i;
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					Component comp = favoriteList.getComponentAt(index);
-					if (comp instanceof IFavorites) {
-						IFavorites fav = (IFavorites) comp;
-						// load favorite files (.js2)
-						fav.loadFavorites(filename);
-
-						// Change title/filename of favorite tabs
-						getUiEvents().fireEvent(IChangeFavoritesTab.class,
-								new IChangeFavoritesTab() {
-									@Override
-									public int getIndex() {
-										return index;
-									}
-
-									@Override
-									public String getTitle() {
-										return getBaseNameNoExt(filename);
-									}
-
-									@Override
-									public String getFileName() {
-										return filename;
-									}
-
-									@Override
-									public boolean isSelected() {
-										return false;
-									}
-								});
-					}
+	@Override
+	public void addToFavorites(File[] files) {
+		for (int i = 0; files != null && i < files.length; i++) {
+			final File file = files[i];
+			if (file.isDirectory()) {
+				addToFavorites(file.listFiles());
+			} else {
+				if (tuneFilter.accept(file)) {
+					FavoritesModel model = (FavoritesModel) playListTable
+							.getModel();
+					model.add(createRelativePath(file));
 				}
-
-			});
-			i++;
+			}
 		}
 	}
 
-	private IFavorites addTab(String newTitle) {
-		final int lastIndex = favoriteList.getTabCount() - 1;
-		final PlayList favorites = new PlayList(player, config, this);
-		favorites.getPlayListTable().getSelectionModel()
-				.addListSelectionListener(this);
-		favoriteList.insertTab(newTitle, null, favorites, null, lastIndex);
-		favoriteList.setTabComponentAt(lastIndex, new ButtonTabComponent(
-				favoriteList, newTitle, "icons/closetab.png", swix
-						.getLocalizer().getString("CLOSE_THIS_TAB"),
-				new ActionListener() {
-
-					@Override
-					public void actionPerformed(final ActionEvent e) {
-						ButtonTabComponent.TabButton button = (ButtonTabComponent.TabButton) e
-								.getSource();
-						final int index = favoriteList
-								.indexOfTabComponent(button.getComp());
-						final String title = favoriteList.getTitleAt(index);
-						if (favoriteList.getTabCount() > 2) {
-							if (index < favoriteList.getComponentCount() - 1) {
-								int response = JOptionPane.NO_OPTION;
-								if (!favorites.isEmpty()) {
-									response = JOptionPane.showConfirmDialog(
-											Favorites.this,
-											String.format(
-													getSwix()
-															.getLocalizer()
-															.getString(
-																	"REMOVE_ALL"),
-													title),
-											getSwix().getLocalizer().getString(
-													"REMOVE_FAVORITES"),
-											JOptionPane.YES_NO_OPTION);
-								} else {
-									response = JOptionPane.YES_OPTION;
-								}
-
-								if (response == JOptionPane.YES_OPTION) {
-									// remove tab
-									getUiEvents().fireEvent(
-											IRemoveFavoritesTab.class,
-											new IRemoveFavoritesTab() {
-
-												@Override
-												public int getIndex() {
-													return index;
-												}
-
-												@Override
-												public String getTitle() {
-													return title;
-												}
-											});
-								}
-							}
-						}
-					}
-
-				}));
-
-		favoriteList.setSelectedIndex(lastIndex);
-		return favorites;
-	}
-
-	private void removeTab(int index) {
-		favoriteList.removeTabAt(index);
-		favoriteList.setSelectedIndex(index > 0 ? index - 1 : 0);
-	}
-
-	private void changeTab(IChangeFavoritesTab changeFavoritesTab) {
-		favoriteList.setTitleAt(changeFavoritesTab.getIndex(),
-				changeFavoritesTab.getTitle());
-	}
-
-	private void playNextTune(ITuneStateChanged stateChanged) {
-		if (playbackEnable == null) {
-			// gui not created yet, ignore!
+	protected void playSelectedRow() {
+		int selectedRow = playListTable.getSelectedRow();
+		if (selectedRow == -1) {
 			return;
 		}
-		if (playbackEnable.isSelected()) {
-			File tune = stateChanged.getTune();
-			File nextFile = null;
-			if (currentlyPlayedFavorites != null && repeatEnable.isSelected()
-					&& repeatOne.isSelected()) {
-				// repeat one tune
-				setPlayingIcon(currentlyPlayedFavorites);
-				nextFile = tune;
-			} else if (randomAll.isSelected()) {
-				// random all playlists
-				int index = Math.abs(random.nextInt(Integer.MAX_VALUE))
-						% (favoriteList.getTabCount() - 1);
-				Component comp = favoriteList.getComponentAt(index);
-				setPlayingIcon(comp);
-				favoriteList.setSelectedComponent(comp);
-				IFavorites fav = (IFavorites) comp;
-				nextFile = fav.getNextRandomFile(tune);
-			} else if (currentlyPlayedFavorites != null
-					&& randomOne.isSelected()) {
-				// random one playlist
-				IFavorites fav = currentlyPlayedFavorites;
-				setPlayingIcon(currentlyPlayedFavorites);
-				nextFile = fav.getNextRandomFile(tune);
-			} else if (currentlyPlayedFavorites != null
-					&& !repeatEnable.isSelected()) {
-				// normal playback
-				IFavorites fav = currentlyPlayedFavorites;
-				setPlayingIcon(currentlyPlayedFavorites);
-				nextFile = fav.getNextFile(tune);
-			}
-			if (nextFile != null) {
-				// System.err.println("Play Next File: " + nextFilename);
-				final File file = nextFile;
-				SwingUtilities.invokeLater(new Runnable() {
+		final int selectedModelRow = rowSorter
+				.convertRowIndexToModel(selectedRow);
+		if (selectedModelRow != -1) {
+			// play tune
+			uiEvents.fireEvent(IPlayTune.class, new IPlayTune() {
+				@Override
+				public boolean switchToVideoTab() {
+					return false;
+				}
 
-					@Override
-					public void run() {
-						// play tune
-						getUiEvents().fireEvent(IPlayTune.class,
-								new IPlayTune() {
-									@Override
-									public boolean switchToVideoTab() {
-										return false;
-									}
+				@Override
+				public File getFile() {
+					FavoritesModel model = (FavoritesModel) playListTable
+							.getModel();
+					return model.getFile(selectedModelRow);
+				}
 
-									@Override
-									public File getFile() {
-										return file;
-									}
+				@Override
+				public Component getComponent() {
+					return favoritesView;
+				}
+			});
+			favoritesView.setCurrentlyPlayedFavorites(this);
+		}
+	}
 
-									@Override
-									public Component getComponent() {
-										return Favorites.this;
-									}
-								});
-					}
-
-				});
+	@Override
+	public void removeSelectedRows() {
+		int[] rows = playListTable.getSelectedRows();
+		if (rows.length == 0) {
+			return;
+		}
+		int response = JOptionPane.showConfirmDialog(this, String.format(swix
+				.getLocalizer().getString("REMOVE_N_OF_MY_FAVORITES"),
+				rows.length),
+				swix.getLocalizer().getString("REMOVE_FAVORITES"),
+				JOptionPane.YES_NO_OPTION);
+		if (response == JOptionPane.YES_OPTION) {
+			for (int i = 0; i < rows.length; i++) {
+				int row = rowSorter.convertRowIndexToModel(rows[i]);
+				FavoritesModel model = (FavoritesModel) playListTable
+						.getModel();
+				model.remove(row);
+				// shift row numbers
+				for (int j = i + 1; j < rows.length; j++) {
+					rows[j] = rows[j] - 1;
+				}
 			}
 		}
 	}
 
-	private void saveAs() {
-		JFileChooser fileDialog = new JFileChooser(lastDir);
-		fileDialog.setFileFilter(fPlayListFilter);
-		final Frame containerFrame = JOptionPane
-				.getFrameForComponent(Favorites.this);
-		int rc = fileDialog.showSaveDialog(containerFrame);
-		if (rc == JFileChooser.APPROVE_OPTION
-				&& fileDialog.getSelectedFile() != null) {
-			lastDir = fileDialog.getSelectedFile().getParentFile();
-			final String name;
-			if (!fileDialog.getSelectedFile().getAbsolutePath()
-					.endsWith(FavoritesFileFilter.EXT_FAVORITES)) {
-				name = fileDialog.getSelectedFile().getAbsolutePath()
-						+ FavoritesFileFilter.EXT_FAVORITES;
-			} else {
-				name = fileDialog.getSelectedFile().getAbsolutePath();
+	@Override
+	public void loadFavorites(String filename) {
+		try {
+			FavoritesModel model = (FavoritesModel) playListTable.getModel();
+			// new favorites file format
+			final BufferedReader r = new BufferedReader(new InputStreamReader(
+					new FileInputStream(filename), "ISO-8859-1"));
+			String line;
+			model.clear();
+			while ((line = r.readLine()) != null) {
+				model.add(line);
 			}
-			final int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
-				fav.saveFavorites(name);
-			}
-			getUiEvents().fireEvent(IChangeFavoritesTab.class,
-					new IChangeFavoritesTab() {
-						@Override
-						public int getIndex() {
-							return index;
-						}
-
-						@Override
-						public String getTitle() {
-							return getBaseNameNoExt(name);
-						}
-
-						@Override
-						public String getFileName() {
-							return name;
-						}
-
-						@Override
-						public boolean isSelected() {
-							return false;
-						}
-					});
+			r.close();
+			this.playListFilename = filename;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	private String getBaseNameNoExt(final String filename) {
-		String baseName = new File(filename).getName();
-		int lastIndexOf = baseName.lastIndexOf('.');
-		final String title;
-		if (lastIndexOf != -1) {
-			title = baseName.substring(0, lastIndexOf);
+	@Override
+	public void saveFavorites(String filename) {
+		try {
+			final PrintStream p = new PrintStream(filename, "ISO-8859-1");
+			FavoritesModel model = (FavoritesModel) playListTable.getModel();
+			for (int i = 0; i < model.size(); i++) {
+				p.println(model.getFile(i));
+			}
+			p.close();
+			this.playListFilename = filename;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void deselectFavorites() {
+		playListTable.getSelectionModel().clearSelection();
+		String[] selection = new String[0];
+		setMoveEnabledState(selection);
+	}
+
+	protected void setMoveEnabledState(String[] selection) {
+		List<? extends SortKey> keys = rowSorter.getSortKeys();
+		int keySize = keys.size();
+		if (keySize == 0 || keys.get(0).getSortOrder() == SortOrder.UNSORTED) {
+			moveUp.setEnabled(selection.length == 1);
+			moveDown.setEnabled(selection.length == 1);
+			unsort.setEnabled(false);
 		} else {
-			title = baseName;
-		}
-		return title;
-	}
-
-	@Override
-	public void notify(UIEvent event) {
-		if (event.isOfType(IAddFavoritesTab.class)) {
-			final IAddFavoritesTab ifObj = (IAddFavoritesTab) event
-					.getUIEventImpl();
-
-			dbConfigService.addFavorite(config, ifObj.getTitle());
-
-			IFavorites newTab = addTab(ifObj.getTitle());
-			ifObj.setFavorites(newTab);
-		} else if (event.isOfType(IRemoveFavoritesTab.class)) {
-			final IRemoveFavoritesTab ifObj = (IRemoveFavoritesTab) event
-					.getUIEventImpl();
-			removeTab(ifObj.getIndex());
-
-			dbConfigService.removeFavorite(config, ifObj.getIndex());
-
-		} else if (event.isOfType(IChangeFavoritesTab.class)) {
-			final IChangeFavoritesTab ifObj = (IChangeFavoritesTab) event
-					.getUIEventImpl();
-			changeTab(ifObj);
-
-			IFavoritesSection toChange = config.getFavorites().get(
-					ifObj.getIndex());
-			toChange.setName(ifObj.getTitle());
-			toChange.setFilename(ifObj.getFileName());
-
-			config.setCurrentFavorite(ifObj.getTitle());
-
-		} else if (event.isOfType(IFavoriteTabNames.class)) {
-			IFavoriteTabNames ifObj = (IFavoriteTabNames) event
-					.getUIEventImpl();
-
-			ArrayList<String> result = new ArrayList<String>();
-			for (int i = 0; i < favoriteList.getTabCount() - 1; i++) {
-				result.add(favoriteList.getTitleAt(i));
-			}
-
-			ifObj.setFavoriteTabNames(
-					result.toArray(new String[result.size()]),
-					favoriteList.getTitleAt(favoriteList.getSelectedIndex()));
-		} else if (event.isOfType(IGetFavorites.class)) {
-			IGetFavorites ifObj = (IGetFavorites) event.getUIEventImpl();
-			int index = ifObj.getIndex();
-			IFavorites favorites = (IFavorites) favoriteList
-					.getComponentAt(index);
-			ifObj.setFavorites(favorites);
-		} else if (event.isOfType(ITuneStateChanged.class)) {
-			ITuneStateChanged ifObj = (ITuneStateChanged) event
-					.getUIEventImpl();
-			setPlayingIcon(null);
-			if (ifObj.naturalFinished()) {
-				playNextTune(ifObj);
-			}
+			moveUp.setEnabled(false);
+			moveDown.setEnabled(false);
+			unsort.setEnabled(true);
 		}
 	}
 
 	@Override
-	public void setTune(Player m_engine, SidTune m_tune) {
+	public void selectFavorites() {
+		FavoritesModel model = (FavoritesModel) playListTable.getModel();
+		if (model.size() == 0) {
+			return;
+		}
+		playListTable.getSelectionModel().setSelectionInterval(0,
+				model.size() - 1);
 	}
 
-	public JTabbedPane getTabbedPane() {
-		return favoriteList;
+	public Action doUnsort = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			rowSorter.setSortKeys(new ArrayList<SortKey>());
+		}
+	};
+
+	public Action doMoveUp = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			FavoritesModel model = (FavoritesModel) playListTable.getModel();
+			int row = playListTable.getSelectedRow();
+			int start = row;
+			int to = row > 0 ? row - 1 : row;
+			model.move(start, to);
+			playListTable.getSelectionModel().setSelectionInterval(to, to);
+		}
+	};
+
+	public Action doMoveDown = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			FavoritesModel model = (FavoritesModel) playListTable.getModel();
+			int row = playListTable.getSelectedRow();
+			int start = row;
+			int to = row < model.size() - 1 ? row + 1 : row;
+			model.move(start, to);
+			playListTable.getSelectionModel().setSelectionInterval(to, to);
+		}
+	};
+
+	protected String createRelativePath(File fileToConvert) {
+		boolean converted = false;
+		String result = fileToConvert.getAbsolutePath();
+		String hvscName = PathUtils.getHVSCName(config, fileToConvert);
+		if (hvscName != null) {
+			result = FavoritesModel.HVSC_PREFIX + hvscName;
+			converted = true;
+		}
+		String cgscName = PathUtils.getCGSCName(config, fileToConvert);
+		if (!converted && cgscName != null) {
+			result = FavoritesModel.CGSC_PREFIX + cgscName;
+			converted = true;
+		}
+		if (!converted && fileToConvert.isAbsolute()) {
+			String relativePath = PathUtils.getPath(fileToConvert);
+			result = relativePath != null ? relativePath : result;
+		}
+		return result;
 	}
 
-	public void setCurrentlyPlayedFavorites(PlayList favoritesPanel) {
-		currentlyPlayedFavorites = favoritesPanel;
-		setPlayingIcon(favoritesPanel);
+	protected void removeColumn() {
+		int columnModelIndex = playListTable
+				.convertColumnIndexToModel(headerColumnToRemove);
+		if (columnModelIndex == 0) {
+			// do not remove filenames
+			return;
+		}
+		FavoritesModel model = (FavoritesModel) playListTable.getModel();
+		model.removeColumn(columnModelIndex);
+		model.layoutChanged();
 	}
 
-	private void setPlayingIcon(Component comp) {
-		for (int i = 0; i < favoriteList.getTabCount(); i++) {
-			ButtonTabComponent tabComponent = (ButtonTabComponent) favoriteList
-					.getTabComponentAt(i);
-			if (tabComponent == null)
-				continue;
-			if (favoriteList.getComponentAt(i) != comp) {
-				tabComponent.fPlayButton.setVisible(false);
-			} else {
-				tabComponent.fPlayButton.setVisible(true);
+	protected void moveSelectedFavoritesToTab(final String title,
+			final boolean copy) {
+		FavoritesModel model = (FavoritesModel) playListTable.getModel();
+		JTabbedPane pane = favoritesView.getTabbedPane();
+		int index = pane.indexOfTab(title);
+		// target panel
+		IFavorites panel = (IFavorites) pane.getComponentAt(index);
+
+		int[] rows = playListTable.getSelectedRows();
+		for (int i = 0; i < rows.length; i++) {
+			int row = rowSorter.convertRowIndexToModel(rows[i]);
+			// add next row to target tab
+			panel.addToFavorites(new File[] { model.getFile(row) });
+			if (!copy) {
+				// remove row from source tab
+				model.remove(row);
+				// shift row numbers
+				for (int j = i + 1; j < rows.length; j++) {
+					rows[j] = rows[j] - 1;
+				}
 			}
 		}
 	}
 
-	@Override
-	public void valueChanged(ListSelectionEvent e) {
-		DefaultListSelectionModel model = (DefaultListSelectionModel) e
-				.getSource();
-		remove.setEnabled(!model.isSelectionEmpty());
+	protected void convertSelectedTunes() {
+		FavoritesModel model = (FavoritesModel) playListTable.getModel();
+		final ArrayList<File> files = new ArrayList<File>();
+		int[] rows = playListTable.getSelectedRows();
+		for (int row1 : rows) {
+			int row = rowSorter.convertRowIndexToModel(row1);
+			files.add(model.getFile(row));
+		}
+
+		SidTuneConverter c = new SidTuneConverter(config);
+		c.convertFiles(files.toArray(new File[0]), lastDir);
 	}
 
-	public SwingEngine getSwix() {
-		return swix;
+	@Override
+	public String getFileName() {
+		return playListFilename;
+	}
+
+	@Override
+	public File getNextFile(File file) {
+		FavoritesModel model = (FavoritesModel) playListTable.getModel();
+		int playedRow = -1;
+		int rowCount = playListTable.getRowCount();
+		for (int i = 0; i < rowCount; i++) {
+			int row = rowSorter.convertRowIndexToModel(i);
+			File currFile = model.getFile(row);
+			if (currFile.equals(file)) {
+				playedRow = i;
+				break;
+			}
+		}
+		final int nextRow = playedRow + 1;
+		if (nextRow == playListTable.getRowCount()) {
+			return null;
+		}
+		int row = rowSorter.convertRowIndexToModel(nextRow);
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				playListTable.scrollRectToVisible(playListTable.getCellRect(
+						nextRow, 0, true));
+			}
+
+		});
+		return model.getFile(row);
+	}
+
+	@Override
+	public File getNextRandomFile(File file) {
+		FavoritesModel model = (FavoritesModel) playListTable.getModel();
+		int rowCount = playListTable.getRowCount();
+		final int randomRow = Math.abs(randomPlayback
+				.nextInt(Integer.MAX_VALUE)) % rowCount;
+		int row = rowSorter.convertRowIndexToModel(randomRow);
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				playListTable.scrollRectToVisible(playListTable.getCellRect(
+						randomRow, 0, true));
+			}
+
+		});
+		return model.getFile(row);
+	}
+
+	@Override
+	public String[] getSelection() {
+		int[] rows = playListTable.getSelectedRows();
+		if (rows.length == 0) {
+			return new String[0];
+		}
+		FavoritesModel model = (FavoritesModel) playListTable.getModel();
+		ArrayList<String> filenames = new ArrayList<String>();
+		for (int row1 : rows) {
+			int row = rowSorter.convertRowIndexToModel(row1);
+			filenames.add(model.getFile(row).getAbsolutePath());
+		}
+		String[] retValue = filenames.toArray(new String[filenames.size()]);
+		return retValue;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		FavoritesModel model = (FavoritesModel) playListTable.getModel();
+		return model.size() == 0;
 	}
 
 }
