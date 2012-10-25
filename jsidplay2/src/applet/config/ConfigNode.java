@@ -17,6 +17,10 @@ public class ConfigNode extends DefaultMutableTreeNode {
 		this.object = object;
 	}
 
+	public Object getObject() {
+		return object;
+	}
+
 	public <T> void setValue(T text) {
 		Field field = (Field) getUserObject();
 		String name = field.getName();
@@ -75,13 +79,17 @@ public class ConfigNode extends DefaultMutableTreeNode {
 			Field field = (Field) getUserObject();
 			return swixml.getLocalizer().getString(field.getName()) + "="
 					+ getValue();
-		}
-		if (getUserObject() instanceof Method) {
+		} else if (getUserObject() instanceof Method) {
 			Method method = (Method) getUserObject();
-			return swixml.getLocalizer().getString(method.getName());
+			return swixml.getLocalizer().getString(
+					getObject().getClass().getSimpleName() + "_"
+							+ method.getName());
+		} else if (getUserObject() instanceof String) {
+			return (String) getUserObject();
+		} else {
+			return swixml.getLocalizer().getString(
+					getUserObject().getClass().getSimpleName());
 		}
-		return swixml.getLocalizer().getString(
-				getUserObject().getClass().getSimpleName());
 	}
 
 }

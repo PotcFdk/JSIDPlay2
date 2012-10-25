@@ -85,7 +85,15 @@ public class ConfigView extends TuneTab {
 					if (pathComponent instanceof ConfigNode) {
 						configNode = (ConfigNode) pathComponent;
 						try {
-							if (configNode.getUserObject() instanceof Field) {
+							parent.removeAll();
+							if (configNode.getUserObject() instanceof String) {
+								String uiTypeName = getUITypeName(configNode
+										.getUserObject().getClass());
+								createEditorForType(uiTypeName);
+								textField.setText(configNode.getUserObject()
+										.toString());
+								textField.setEditable(false);
+							} else if (configNode.getUserObject() instanceof Field) {
 								parent.removeAll();
 								Field field = (Field) configNode
 										.getUserObject();
@@ -96,41 +104,25 @@ public class ConfigView extends TuneTab {
 												.getType() == float.class)
 										|| (field.getType() == Character.class || field
 												.getType() == char.class)) {
-									parent.add(swix.render(ConfigView.class
-											.getResource("editors/"
-													+ getUITypeName(field)
-													+ ".xml")),
-											BorderLayout.NORTH);
-									String value;
-									if (configNode.getValue() != null) {
-										value = configNode.getValue()
-												.toString();
-									} else {
-										value = "";
-									}
-									textField.setText(value);
+									String uiTypeName = getUITypeName(field
+											.getType());
+									createEditorForType(uiTypeName);
+									textField
+											.setText(configNode.getValue() != null ? configNode
+													.getValue().toString() : "");
 								} else if (field.getType() == Boolean.class
 										|| field.getType() == boolean.class) {
-									parent.add(swix.render(ConfigView.class
-											.getResource("editors/"
-													+ getUITypeName(field)
-													+ ".xml")),
-											BorderLayout.NORTH);
-									String value;
-									if (configNode.getValue() != null) {
-										value = configNode.getValue()
-												.toString();
-									} else {
-										value = "false";
-									}
-									checkbox.setSelected(Boolean.valueOf(value));
+									String uiTypeName = getUITypeName(field
+											.getType());
+									createEditorForType(uiTypeName);
+									checkbox.setSelected(configNode.getValue() != null ? Boolean
+											.valueOf(configNode.getValue()
+													.toString()) : false);
 								} else if (Enum.class.isAssignableFrom(field
 										.getType())) {
-									parent.add(swix.render(ConfigView.class
-											.getResource("editors/"
-													+ getUITypeName(field)
-													+ ".xml")),
-											BorderLayout.NORTH);
+									String uiTypeName = getUITypeName(field
+											.getType());
+									createEditorForType(uiTypeName);
 									Class<? extends Enum> en = (Class<? extends Enum>) field
 											.getType();
 									ActionListener[] actionListeners = combo
@@ -142,13 +134,8 @@ public class ConfigView extends TuneTab {
 									for (Enum val : en.getEnumConstants()) {
 										combo.addItem(val);
 									}
-									Enum value;
-									if (configNode.getValue() != null) {
-										value = (Enum) configNode.getValue();
-									} else {
-										value = null;
-									}
-									combo.setSelectedItem(value);
+									combo.setSelectedItem(configNode.getValue() != null ? (Enum) configNode
+											.getValue() : null);
 									for (ActionListener actionListener : actionListeners) {
 										combo.addActionListener(actionListener);
 									}
@@ -161,26 +148,33 @@ public class ConfigView extends TuneTab {
 					parent.repaint();
 				}
 
-				private String getUITypeName(Field field) {
-					if (field.getType() == String.class) {
+				private void createEditorForType(String uiTypeName)
+						throws Exception {
+					parent.add(
+							swix.render(ConfigView.class.getResource("editors/"
+									+ uiTypeName + ".xml")), BorderLayout.NORTH);
+				}
+
+				private String getUITypeName(Class<?> fieldType) {
+					if (fieldType == String.class) {
 						return String.class.getSimpleName();
-					} else if (field.getType() == Integer.class
-							|| field.getType() == int.class) {
+					} else if (fieldType == Integer.class
+							|| fieldType == int.class) {
 						return Integer.class.getSimpleName();
-					} else if (field.getType() == Boolean.class
-							|| field.getType() == boolean.class) {
+					} else if (fieldType == Boolean.class
+							|| fieldType == boolean.class) {
 						return Boolean.class.getSimpleName();
-					} else if (Enum.class.isAssignableFrom(field.getType())) {
+					} else if (Enum.class.isAssignableFrom(fieldType)) {
 						return Enum.class.getSimpleName();
-					} else if (field.getType() == Float.class
-							|| field.getType() == float.class) {
+					} else if (fieldType == Float.class
+							|| fieldType == float.class) {
 						return Float.class.getSimpleName();
-					} else if (field.getType() == Character.class
-							|| field.getType() == char.class) {
+					} else if (fieldType == Character.class
+							|| fieldType == char.class) {
 						return Character.class.getSimpleName();
 					} else {
 						throw new RuntimeException("unsupported type: "
-								+ field.getType().getSimpleName());
+								+ fieldType.getSimpleName());
 					}
 				}
 			});
@@ -214,8 +208,8 @@ public class ConfigView extends TuneTab {
 					}
 					configNode.setValue(Character.valueOf(ch).charValue());
 				}
+				update();
 			}
-			update();
 		}
 	};
 

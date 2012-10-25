@@ -1,6 +1,5 @@
 package applet.favorites;
 
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -61,6 +60,7 @@ public class ButtonTabComponent extends JPanel {
 		pane.addPropertyChangeListener("indexForTitle",
 				new PropertyChangeListener() {
 
+					@Override
 					public void propertyChange(PropertyChangeEvent evt) {
 						int index = pane
 								.indexOfTabComponent(ButtonTabComponent.this);
@@ -82,26 +82,18 @@ public class ButtonTabComponent extends JPanel {
 				}
 				uiEvents.fireEvent(IChangeFavoritesTab.class,
 						new IChangeFavoritesTab() {
+							@Override
 							public int getIndex() {
 								return pane
 										.indexOfTabComponent(ButtonTabComponent.this);
 							}
 
+							@Override
 							public String getTitle() {
 								return label.getText();
 							}
 
-							public String getFileName() {
-								Component comp = pane.getComponentAt(pane
-										.indexOfTabComponent(ButtonTabComponent.this));
-								if (comp instanceof IFavorites) {
-									IFavorites fav = (IFavorites) comp;
-									return fav.getFileName();
-								}
-
-								return null;
-							}
-
+							@Override
 							public boolean isSelected() {
 								return false;
 							}

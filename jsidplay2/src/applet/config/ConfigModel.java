@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 
 import org.swixml.SwingEngine;
 
@@ -25,8 +24,11 @@ public class ConfigModel extends DefaultTreeModel {
 		DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
 		if (treeNode.getUserObject() instanceof Method) {
 			return false;
-		}
-		if (treeNode.getUserObject() instanceof Field) {
+		} else if (treeNode.getUserObject() instanceof Field) {
+			return true;
+		} else if (treeNode.getUserObject().getClass().isPrimitive()
+				|| treeNode.getUserObject().getClass().getPackage().getName()
+						.startsWith("java.lang")) {
 			return true;
 		}
 		return false;
@@ -35,11 +37,11 @@ public class ConfigModel extends DefaultTreeModel {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public int getChildCount(Object parent) {
-		DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) parent;
+		ConfigNode treeNode = (ConfigNode) parent;
 		try {
 			if (treeNode.getUserObject() instanceof Method) {
 				Method method = (Method) treeNode.getUserObject();
-				Object methodObject = getMethodObj(treeNode);
+				Object methodObject = treeNode.getObject();
 				Object object = method.invoke(methodObject);
 				if (object instanceof List) {
 					List list = (List) object;
@@ -49,14 +51,14 @@ public class ConfigModel extends DefaultTreeModel {
 			} else {
 				Object obj = treeNode.getUserObject();
 				Field[] declaredFields = obj.getClass().getDeclaredFields();
-				int i = 0;
+				int fieldCount = 0;
 				for (Field field : declaredFields) {
 					if (isIgnorableField(field)) {
 						continue;
 					}
-					i++;
+					fieldCount++;
 				}
-				return i;
+				return fieldCount;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -67,11 +69,11 @@ public class ConfigModel extends DefaultTreeModel {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getChild(Object parent, int index) {
-		DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) parent;
+		ConfigNode treeNode = (ConfigNode) parent;
 		try {
 			if (treeNode.getUserObject() instanceof Method) {
 				Method method = (Method) treeNode.getUserObject();
-				Object methodObject = getMethodObj(treeNode);
+				Object methodObject = treeNode.getObject();
 				Object object = method.invoke(methodObject);
 				if (object instanceof List) {
 					List list = (List) object;
@@ -83,25 +85,22 @@ public class ConfigModel extends DefaultTreeModel {
 				Object obj = treeNode.getUserObject();
 				Field[] fields = obj.getClass().getDeclaredFields();
 				Object[] childs = new Object[fields.length];
-				int i = 0;
+				int fieldCount = 0;
 				for (Field field : fields) {
+					if (isIgnorableField(field)) {
+						continue;
+					}
 					if (field.getType().isPrimitive()
 							|| field.getType().getPackage().getName()
 									.startsWith("java.lang")) {
-						if (isIgnorableField(field)) {
-							continue;
-						}
-						childs[i++] = field;
+						childs[fieldCount++] = field;
 					} else {
 						String name = field.getName();
 						String methodName = Character.toUpperCase(name
 								.charAt(0)) + name.substring(1);
 						Method method = obj.getClass().getMethod(
 								"get" + methodName);
-						if (isIgnorableField(field)) {
-							continue;
-						}
-						childs[i++] = method;
+						childs[fieldCount++] = method;
 					}
 				}
 				return new ConfigNode(swixml, obj, childs[index]);
@@ -120,17 +119,6 @@ public class ConfigModel extends DefaultTreeModel {
 	public void setRootUserObject(SwingEngine swixml, IConfig config) {
 		this.swixml = swixml;
 		setRoot(new ConfigNode(swixml, null, config));
-	}
-
-	private Object getMethodObj(DefaultMutableTreeNode treeNode) {
-		TreeNode parentNode = treeNode.getParent();
-		Object obj;
-		if (parentNode != null) {
-			obj = ((DefaultMutableTreeNode) parentNode).getUserObject();
-		} else {
-			obj = ((DefaultMutableTreeNode) getRoot()).getUserObject();
-		}
-		return obj;
 	}
 
 	private boolean isIgnorableField(Field field) {

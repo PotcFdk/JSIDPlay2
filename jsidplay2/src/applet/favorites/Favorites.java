@@ -77,6 +77,7 @@ public class Favorites extends JPanel implements IFavorites {
 	protected JTextField filterField;
 	protected JNiceButton unsort, moveUp, moveDown;
 
+	protected FavoritesModel favoritesModel;
 	protected transient RowSorter<TableModel> rowSorter;
 	protected transient final FileFilter tuneFilter = new TuneFileFilter();
 
@@ -86,7 +87,6 @@ public class Favorites extends JPanel implements IFavorites {
 
 	protected int headerColumnToRemove;
 	protected File lastDir;
-	protected String playListFilename;
 	protected Random randomPlayback = new Random();
 
 	public Favorites(Player pl, IConfig cfg, final FavoritesView favoritesView,
@@ -101,15 +101,15 @@ public class Favorites extends JPanel implements IFavorites {
 			swix.getTaglib().registerTag("playlisttable", FavoritesTable.class);
 			swix.insert(Favorites.class.getResource("Favorites.xml"), this);
 
-			FavoritesModel model = (FavoritesModel) playListTable.getModel();
-			model.setConfig(cfg, favorite);
-			model.setCollections(favoritesView.getHvsc(),
+			favoritesModel = (FavoritesModel) playListTable.getModel();
+			favoritesModel.setConfig(cfg, favorite);
+			favoritesModel.setCollections(favoritesView.getHvsc(),
 					favoritesView.getCgsc());
 			((FavoritesCellRenderer) playListTable
 					.getDefaultRenderer(Object.class)).setConfig(cfg);
 			((FavoritesCellRenderer) playListTable
 					.getDefaultRenderer(Object.class)).setPlayer(pl);
-			model.layoutChanged();
+			favoritesModel.layoutChanged();
 
 			fillComboBoxes();
 			setDefaultsAndActions();
@@ -151,9 +151,7 @@ public class Favorites extends JPanel implements IFavorites {
 								playListTable.getColumn(element);
 								// if column already exist, do nothing
 							} catch (IllegalArgumentException e1) {
-								FavoritesModel model = (FavoritesModel) playListTable
-										.getModel();
-								model.addColumn(element);
+								favoritesModel.addColumn(element);
 							}
 
 						}
@@ -182,8 +180,7 @@ public class Favorites extends JPanel implements IFavorites {
 			}
 
 		});
-		FavoritesModel model = (FavoritesModel) playListTable.getModel();
-		rowSorter = new TableRowSorter<TableModel>(model);
+		rowSorter = new TableRowSorter<TableModel>(favoritesModel);
 		rowSorter.addRowSorterListener(new RowSorterListener() {
 
 			@Override
@@ -244,9 +241,7 @@ public class Favorites extends JPanel implements IFavorites {
 					int[] rows = playListTable.getSelectedRows();
 					if (rows.length == 1) {
 						int row = rowSorter.convertRowIndexToModel(rows[0]);
-						FavoritesModel model = (FavoritesModel) playListTable
-								.getModel();
-						File tuneFile = model.getFile(row);
+						File tuneFile = favoritesModel.getFile(row);
 						final STILEntry se = getSTIL(tuneFile);
 						if (se != null) {
 							mi.setEnabled(true);
@@ -276,9 +271,7 @@ public class Favorites extends JPanel implements IFavorites {
 								for (int row1 : rows) {
 									int row = rowSorter
 											.convertRowIndexToModel(row1);
-									FavoritesModel model = (FavoritesModel) playListTable
-											.getModel();
-									File file = model.getFile(row);
+									File file = favoritesModel.getFile(row);
 									try {
 										if (file instanceof ZipEntryFileProxy) {
 											// Extract ZIP file
@@ -461,12 +454,11 @@ public class Favorites extends JPanel implements IFavorites {
 				addToFavorites(file.listFiles());
 			} else {
 				if (tuneFilter.accept(file)) {
-					FavoritesModel model = (FavoritesModel) playListTable
-							.getModel();
-					model.add(createRelativePath(file));
+					favoritesModel.add(createRelativePath(file));
 				}
 			}
 		}
+		favoritesModel.layoutChanged();
 	}
 
 	protected void playSelectedRow() {
@@ -486,9 +478,7 @@ public class Favorites extends JPanel implements IFavorites {
 
 				@Override
 				public File getFile() {
-					FavoritesModel model = (FavoritesModel) playListTable
-							.getModel();
-					return model.getFile(selectedModelRow);
+					return favoritesModel.getFile(selectedModelRow);
 				}
 
 				@Override
@@ -514,33 +504,26 @@ public class Favorites extends JPanel implements IFavorites {
 		if (response == JOptionPane.YES_OPTION) {
 			for (int i = 0; i < rows.length; i++) {
 				int row = rowSorter.convertRowIndexToModel(rows[i]);
-				FavoritesModel model = (FavoritesModel) playListTable
-						.getModel();
-				model.remove(row);
+				favoritesModel.remove(row);
 				// shift row numbers
 				for (int j = i + 1; j < rows.length; j++) {
 					rows[j] = rows[j] - 1;
 				}
 			}
 		}
+		favoritesModel.layoutChanged();
 	}
 
 	@Override
 	public void loadFavorites(String filename) {
-		try {
-			FavoritesModel model = (FavoritesModel) playListTable.getModel();
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(
+				new FileInputStream(filename), "ISO-8859-1"))) {
 			// new favorites file format
-			final BufferedReader r = new BufferedReader(new InputStreamReader(
-					new FileInputStream(filename), "ISO-8859-1"));
 			String line;
-			model.clear();
+			favoritesModel.clear();
 			while ((line = r.readLine()) != null) {
-				model.add(line);
+				favoritesModel.add(line);
 			}
-			r.close();
-			this.playListFilename = filename;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -548,14 +531,10 @@ public class Favorites extends JPanel implements IFavorites {
 
 	@Override
 	public void saveFavorites(String filename) {
-		try {
-			final PrintStream p = new PrintStream(filename, "ISO-8859-1");
-			FavoritesModel model = (FavoritesModel) playListTable.getModel();
-			for (int i = 0; i < model.size(); i++) {
-				p.println(model.getFile(i));
+		try (PrintStream p = new PrintStream(filename, "ISO-8859-1")) {
+			for (int i = 0; i < favoritesModel.size(); i++) {
+				p.println(createRelativePath(favoritesModel.getFile(i)));
 			}
-			p.close();
-			this.playListFilename = filename;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -586,12 +565,11 @@ public class Favorites extends JPanel implements IFavorites {
 
 	@Override
 	public void selectFavorites() {
-		FavoritesModel model = (FavoritesModel) playListTable.getModel();
-		if (model.size() == 0) {
+		if (favoritesModel.size() == 0) {
 			return;
 		}
 		playListTable.getSelectionModel().setSelectionInterval(0,
-				model.size() - 1);
+				favoritesModel.size() - 1);
 	}
 
 	public Action doUnsort = new AbstractAction() {
@@ -606,11 +584,10 @@ public class Favorites extends JPanel implements IFavorites {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			FavoritesModel model = (FavoritesModel) playListTable.getModel();
 			int row = playListTable.getSelectedRow();
 			int start = row;
 			int to = row > 0 ? row - 1 : row;
-			model.move(start, to);
+			favoritesModel.move(start, to);
 			playListTable.getSelectionModel().setSelectionInterval(to, to);
 		}
 	};
@@ -619,11 +596,10 @@ public class Favorites extends JPanel implements IFavorites {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			FavoritesModel model = (FavoritesModel) playListTable.getModel();
 			int row = playListTable.getSelectedRow();
 			int start = row;
-			int to = row < model.size() - 1 ? row + 1 : row;
-			model.move(start, to);
+			int to = row < favoritesModel.size() - 1 ? row + 1 : row;
+			favoritesModel.move(start, to);
 			playListTable.getSelectionModel().setSelectionInterval(to, to);
 		}
 	};
@@ -655,14 +631,12 @@ public class Favorites extends JPanel implements IFavorites {
 			// do not remove filenames
 			return;
 		}
-		FavoritesModel model = (FavoritesModel) playListTable.getModel();
-		model.removeColumn(columnModelIndex);
-		model.layoutChanged();
+		favoritesModel.removeColumn(columnModelIndex);
+		favoritesModel.layoutChanged();
 	}
 
 	protected void moveSelectedFavoritesToTab(final String title,
 			final boolean copy) {
-		FavoritesModel model = (FavoritesModel) playListTable.getModel();
 		JTabbedPane pane = favoritesView.getTabbedPane();
 		int index = pane.indexOfTab(title);
 		// target panel
@@ -672,10 +646,10 @@ public class Favorites extends JPanel implements IFavorites {
 		for (int i = 0; i < rows.length; i++) {
 			int row = rowSorter.convertRowIndexToModel(rows[i]);
 			// add next row to target tab
-			panel.addToFavorites(new File[] { model.getFile(row) });
+			panel.addToFavorites(new File[] { favoritesModel.getFile(row) });
 			if (!copy) {
 				// remove row from source tab
-				model.remove(row);
+				favoritesModel.remove(row);
 				// shift row numbers
 				for (int j = i + 1; j < rows.length; j++) {
 					rows[j] = rows[j] - 1;
@@ -685,12 +659,11 @@ public class Favorites extends JPanel implements IFavorites {
 	}
 
 	protected void convertSelectedTunes() {
-		FavoritesModel model = (FavoritesModel) playListTable.getModel();
 		final ArrayList<File> files = new ArrayList<File>();
 		int[] rows = playListTable.getSelectedRows();
 		for (int row1 : rows) {
 			int row = rowSorter.convertRowIndexToModel(row1);
-			files.add(model.getFile(row));
+			files.add(favoritesModel.getFile(row));
 		}
 
 		SidTuneConverter c = new SidTuneConverter(config);
@@ -698,18 +671,12 @@ public class Favorites extends JPanel implements IFavorites {
 	}
 
 	@Override
-	public String getFileName() {
-		return playListFilename;
-	}
-
-	@Override
 	public File getNextFile(File file) {
-		FavoritesModel model = (FavoritesModel) playListTable.getModel();
 		int playedRow = -1;
 		int rowCount = playListTable.getRowCount();
 		for (int i = 0; i < rowCount; i++) {
 			int row = rowSorter.convertRowIndexToModel(i);
-			File currFile = model.getFile(row);
+			File currFile = favoritesModel.getFile(row);
 			if (currFile.equals(file)) {
 				playedRow = i;
 				break;
@@ -729,12 +696,11 @@ public class Favorites extends JPanel implements IFavorites {
 			}
 
 		});
-		return model.getFile(row);
+		return favoritesModel.getFile(row);
 	}
 
 	@Override
 	public File getNextRandomFile(File file) {
-		FavoritesModel model = (FavoritesModel) playListTable.getModel();
 		int rowCount = playListTable.getRowCount();
 		final int randomRow = Math.abs(randomPlayback
 				.nextInt(Integer.MAX_VALUE)) % rowCount;
@@ -748,7 +714,7 @@ public class Favorites extends JPanel implements IFavorites {
 			}
 
 		});
-		return model.getFile(row);
+		return favoritesModel.getFile(row);
 	}
 
 	@Override
@@ -757,11 +723,10 @@ public class Favorites extends JPanel implements IFavorites {
 		if (rows.length == 0) {
 			return new String[0];
 		}
-		FavoritesModel model = (FavoritesModel) playListTable.getModel();
 		ArrayList<String> filenames = new ArrayList<String>();
 		for (int row1 : rows) {
 			int row = rowSorter.convertRowIndexToModel(row1);
-			filenames.add(model.getFile(row).getAbsolutePath());
+			filenames.add(favoritesModel.getFile(row).getAbsolutePath());
 		}
 		String[] retValue = filenames.toArray(new String[filenames.size()]);
 		return retValue;
@@ -769,8 +734,7 @@ public class Favorites extends JPanel implements IFavorites {
 
 	@Override
 	public boolean isEmpty() {
-		FavoritesModel model = (FavoritesModel) playListTable.getModel();
-		return model.size() == 0;
+		return favoritesModel.size() == 0;
 	}
 
 }

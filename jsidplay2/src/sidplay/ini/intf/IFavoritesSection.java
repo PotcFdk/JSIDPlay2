@@ -26,14 +26,6 @@ public interface IFavoritesSection {
 	 */
 	String getFilename();
 
-	/**
-	 * Setter of the favorites browser filenames.
-	 * 
-	 * @param filenames
-	 *            the favorites browser filenames
-	 */
-	void setFilename(String filename);
-
 	List<String> getFavorites();
 
 }

@@ -37,7 +37,6 @@ public class IniFavoritesSection extends IniSection implements
 		return filename;
 	}
 
-	@Override
 	public void setFilename(String favoritesFilename) {
 		this.filename = favoritesFilename;
 	}

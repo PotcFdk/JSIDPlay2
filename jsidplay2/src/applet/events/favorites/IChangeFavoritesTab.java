@@ -4,8 +4,9 @@ import applet.events.IEvent;
 
 /**
  * Change the favorites properties
+ * 
  * @author Ken Händel
- *
+ * 
  */
 public interface IChangeFavoritesTab extends IEvent {
 
@@ -18,11 +19,6 @@ public interface IChangeFavoritesTab extends IEvent {
 	 * @return the new title of the favorites
 	 */
 	String getTitle();
-
-	/**
-	 * @return the filename of the favorites
-	 */
-	String getFileName();
 
 	boolean isSelected();
 }

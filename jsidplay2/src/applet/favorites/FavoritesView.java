@@ -237,32 +237,10 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 							}
 
 							@Override
-							public String getFileName() {
-								return name;
-							}
-
-							@Override
 							public boolean isSelected() {
 								return false;
 							}
 						});
-			}
-		}
-	};
-
-	public Action saveFavorites = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			final int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
-				if (fav.getFileName() == null) {
-					saveAs();
-				} else {
-					fav.saveFavorites(fav.getFileName());
-				}
 			}
 		}
 	};
@@ -328,8 +306,16 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 					}));
 
-			restoreFavorites();
-			reloadRestoredFavorites();
+			List<? extends IFavoritesSection> favorites = config.getFavorites();
+			for (IFavoritesSection favorite : favorites) {
+				addTab(favorite, favorite.getName());
+			}
+			String title = config.getCurrentFavorite();
+			int index1 = 0;
+			if (title != null) {
+				index1 = favoriteList.indexOfTab(title);
+			}
+			favoriteList.setSelectedIndex(Math.max(index1, 0));
 
 			favoriteList.addChangeListener(new ChangeListener() {
 
@@ -357,17 +343,6 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 								}
 
 								@Override
-								public String getFileName() {
-									Component comp = favoriteList
-											.getComponentAt(index);
-									if (comp instanceof IFavorites) {
-										IFavorites fav = (IFavorites) comp;
-										return fav.getFileName();
-									}
-									return null;
-								}
-
-								@Override
 								public boolean isSelected() {
 									return true;
 								}
@@ -379,69 +354,6 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 	private void fillComboBoxes() {
 		// nothing to do
-	}
-
-	private void restoreFavorites() {
-		List<? extends IFavoritesSection> favorites = config.getFavorites();
-		for (IFavoritesSection favorite : favorites) {
-			addTab(favorite, favorite.getName());
-		}
-		String title = config.getCurrentFavorite();
-		int index = 0;
-		if (title != null) {
-			index = favoriteList.indexOfTab(title);
-		}
-		favoriteList.setSelectedIndex(Math.max(index, 0));
-	}
-
-	private void reloadRestoredFavorites() {
-		List<? extends IFavoritesSection> favorites = config.getFavorites();
-		int i = 0;
-		for (IFavoritesSection favorite : favorites) {
-			final String filename = favorite.getFilename();
-			if (filename == null) {
-				continue;
-			}
-			final int index = i;
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					Component comp = favoriteList.getComponentAt(index);
-					if (comp instanceof IFavorites) {
-						IFavorites fav = (IFavorites) comp;
-						// load favorite files (.js2)
-						fav.loadFavorites(filename);
-
-						// Change title/filename of favorite tabs
-						getUiEvents().fireEvent(IChangeFavoritesTab.class,
-								new IChangeFavoritesTab() {
-									@Override
-									public int getIndex() {
-										return index;
-									}
-
-									@Override
-									public String getTitle() {
-										return getBaseNameNoExt(filename);
-									}
-
-									@Override
-									public String getFileName() {
-										return filename;
-									}
-
-									@Override
-									public boolean isSelected() {
-										return false;
-									}
-								});
-					}
-				}
-
-			});
-			i++;
-		}
 	}
 
 	private IFavorites addTab(IFavoritesSection favorite, String newTitle) {
@@ -622,11 +534,6 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 						}
 
 						@Override
-						public String getFileName() {
-							return name;
-						}
-
-						@Override
 						public boolean isSelected() {
 							return false;
 						}
@@ -672,7 +579,6 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 			IFavoritesSection toChange = config.getFavorites().get(
 					ifObj.getIndex());
 			toChange.setName(ifObj.getTitle());
-			toChange.setFilename(ifObj.getFileName());
 
 			config.setCurrentFavorite(ifObj.getTitle());
 

@@ -6,8 +6,6 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import applet.favorites.FavoritesModel;
-
 public class TuneInfoTableRenderer extends DefaultTableCellRenderer {
 
 	private final Color white, gray;
@@ -26,8 +24,8 @@ public class TuneInfoTableRenderer extends DefaultTableCellRenderer {
 
 		setBackground((row % 2) == 0 ? white : gray);
 
-		setToolTipText(String.valueOf(((FavoritesModel) table.getModel())
-				.getFile(row)));
+		setToolTipText(String.valueOf(((TuneInfoTableModel) table.getModel())
+				.getValueAt(row, 0)));
 		return super.getTableCellRendererComponent(table, data, isSelected,
 				hasFocus, row, column);
 	}

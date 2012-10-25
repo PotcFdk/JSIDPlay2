@@ -18,8 +18,6 @@
 				<hbox>
 					<button text="LOAD" id="load" icon="applet/icons/load.png"
 						action="loadFavorites" />
-					<button text="SAVE" id="save" icon="applet/icons/save.png"
-						action="saveFavorites" />
 					<button text="SAVEAS" id="saveAs" icon="applet/icons/save.png"
 						action="saveFavoritesAs" />
 				</hbox>

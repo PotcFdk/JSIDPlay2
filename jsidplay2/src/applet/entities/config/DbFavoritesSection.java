@@ -44,7 +44,7 @@ public class DbFavoritesSection implements IFavoritesSection {
 		this.name = name;
 	}
 
-	@XmlElement(name = "favorites")
+	@XmlElement(name = "favorite")
 	@ElementCollection
 	@CollectionTable(name = "favorites")
 	private List<String> favorites;
@@ -54,6 +54,7 @@ public class DbFavoritesSection implements IFavoritesSection {
 	}
 
 	@Override
+	@XmlTransient
 	public List<String> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<String>();
@@ -64,14 +65,13 @@ public class DbFavoritesSection implements IFavoritesSection {
 	@Column
 	private String filename;
 
+	/**
+	 * Favorites are persisted, please use getFavorites() instead.
+	 */
+	@Deprecated
 	@Override
 	public String getFilename() {
 		return filename;
-	}
-
-	@Override
-	public void setFilename(String filename) {
-		this.filename = filename;
 	}
 
 	@ManyToOne

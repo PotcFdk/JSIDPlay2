@@ -38,6 +38,7 @@ import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.ISidPlay2Section;
 import applet.entities.PersistenceProperties;
 import applet.entities.config.DbConfig;
+import applet.entities.config.service.DbConfigService;
 import applet.events.IGotoURL;
 import applet.events.IInsertMedia;
 import applet.events.IPlayTune;
@@ -90,6 +91,11 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * Database support.
 	 */
 	protected EntityManager em;
+
+	/**
+	 * DbConfig service class.
+	 */
+	protected DbConfigService dbConfigService;
 
 	/**
 	 * Applet constructor.
@@ -145,7 +151,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 					cp.close();
 				}
 				// save configuration (auto save after the tune gets stopped)
-				write();
+				dbConfigService.write(getConfig());
 
 				// "Play it once, Sam. For old times' sake."
 				if ((cp.getState() & ~playerFast) == playerRestart) {
@@ -171,21 +177,6 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 					});
 		}
 
-		/**
-		 * Save jsidplay2 configuration.
-		 */
-		private void write() {
-			em.getTransaction().begin();
-			try {
-				em.persist(getConfig());
-				em.getTransaction().commit();
-			} catch (Exception e) {
-				e.printStackTrace();
-				if (em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				}
-			}
-		}
 	};
 
 	//
@@ -262,11 +253,14 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				PersistenceProperties.CONFIG_DS,
 				new PersistenceProperties(new File(dbFile.getParent(),
 						CONFIG_DATABASE))).createEntityManager();
+		dbConfigService = new DbConfigService(em);
 		if (!dbFileExists) {
+			// No database found?
 			return createConfigurationFromINIFile();
 		} else {
 			DbConfig config = em.find(DbConfig.class, 1);
 			if (config == null) {
+				// No configuration in database found?
 				return createConfigurationFromINIFile();
 			}
 			return config;
@@ -277,10 +271,15 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * Create the players configuration based on the already existing INI file
 	 * (use internal INI configuration, if absent).
 	 * 
+	 * Note: Internally the IniConfig class is no more used. Importing INI file
+	 * is only done for migration purposes and initially, if no INI file is
+	 * present. Instead of INI files we now use persistent entities.
+	 * 
 	 * @return created jsidplay2 configuration
 	 */
 	private IConfig createConfigurationFromINIFile() {
-		return new DbConfig().copy(new IniConfig());
+		System.out.println("Import INI file!");
+		return dbConfigService.importIniConfig(new IniConfig());
 	}
 
 	/**
