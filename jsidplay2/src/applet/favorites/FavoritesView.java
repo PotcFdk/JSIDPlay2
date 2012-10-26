@@ -33,6 +33,7 @@ import org.swixml.SwingEngine;
 
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFavoritesSection;
+import applet.PathUtils;
 import applet.TuneTab;
 import applet.collection.Collection;
 import applet.entities.config.service.DbConfigService;
@@ -177,7 +178,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JFileChooser fileDialog = new JFileChooser(lastDir);
+			final JFileChooser fileDialog = new JFileChooser(lastDir);
 			fileDialog.setFileFilter(fPlayListFilter);
 			final Frame containerFrame = JOptionPane
 					.getFrameForComponent(FavoritesView.this);
@@ -185,30 +186,14 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 			if (rc == JFileChooser.APPROVE_OPTION
 					&& fileDialog.getSelectedFile() != null) {
 				lastDir = fileDialog.getSelectedFile().getParentFile();
-				final String name;
-				if (!fileDialog.getSelectedFile().getAbsolutePath()
-						.endsWith(FavoritesFileFilter.EXT_FAVORITES)) {
-					name = fileDialog.getSelectedFile().getAbsolutePath()
-							+ FavoritesFileFilter.EXT_FAVORITES;
-				} else {
-					name = fileDialog.getSelectedFile().getAbsolutePath();
-				}
-				String baseName = new File(name).getName();
-				int lastIndexOf = baseName.lastIndexOf('.');
-				final String title;
-				if (lastIndexOf != -1) {
-					title = baseName.substring(0, lastIndexOf);
-				} else {
-					title = baseName;
-				}
-
 				// add a first tab
 				getUiEvents().fireEvent(IAddFavoritesTab.class,
 						new IAddFavoritesTab() {
 
 							@Override
 							public String getTitle() {
-								return title;
+								return PathUtils.getBaseNameNoExt(fileDialog
+										.getSelectedFile());
 							}
 
 							@Override
@@ -222,6 +207,14 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 				Component comp = favoriteList.getComponentAt(index);
 				if (comp instanceof IFavorites) {
 					IFavorites fav = (IFavorites) comp;
+					final String name;
+					if (!fileDialog.getSelectedFile().getAbsolutePath()
+							.endsWith(FavoritesFileFilter.EXT_FAVORITES)) {
+						name = fileDialog.getSelectedFile().getAbsolutePath()
+								+ FavoritesFileFilter.EXT_FAVORITES;
+					} else {
+						name = fileDialog.getSelectedFile().getAbsolutePath();
+					}
 					fav.loadFavorites(name);
 				}
 				getUiEvents().fireEvent(IChangeFavoritesTab.class,
@@ -233,7 +226,8 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 							@Override
 							public String getTitle() {
-								return title;
+								return PathUtils.getBaseNameNoExt(fileDialog
+										.getSelectedFile());
 							}
 
 							@Override
@@ -249,7 +243,47 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			saveAs();
+			final JFileChooser fileDialog = new JFileChooser(lastDir);
+			fileDialog.setFileFilter(fPlayListFilter);
+			final Frame containerFrame = JOptionPane
+					.getFrameForComponent(FavoritesView.this);
+			int rc = fileDialog.showSaveDialog(containerFrame);
+			if (rc == JFileChooser.APPROVE_OPTION
+					&& fileDialog.getSelectedFile() != null) {
+				lastDir = fileDialog.getSelectedFile().getParentFile();
+				final int index = favoriteList.getSelectedIndex();
+				Component comp = favoriteList.getComponentAt(index);
+				if (comp instanceof IFavorites) {
+					IFavorites fav = (IFavorites) comp;
+					final String name;
+					if (!fileDialog.getSelectedFile().getAbsolutePath()
+							.endsWith(FavoritesFileFilter.EXT_FAVORITES)) {
+						name = fileDialog.getSelectedFile().getAbsolutePath()
+								+ FavoritesFileFilter.EXT_FAVORITES;
+					} else {
+						name = fileDialog.getSelectedFile().getAbsolutePath();
+					}
+					fav.saveFavorites(name);
+				}
+				getUiEvents().fireEvent(IChangeFavoritesTab.class,
+						new IChangeFavoritesTab() {
+							@Override
+							public int getIndex() {
+								return index;
+							}
+
+							@Override
+							public String getTitle() {
+								return PathUtils.getBaseNameNoExt(fileDialog
+										.getSelectedFile());
+							}
+
+							@Override
+							public boolean isSelected() {
+								return false;
+							}
+						});
+			}
 		}
 	};
 
@@ -496,61 +530,6 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 				});
 			}
 		}
-	}
-
-	private void saveAs() {
-		JFileChooser fileDialog = new JFileChooser(lastDir);
-		fileDialog.setFileFilter(fPlayListFilter);
-		final Frame containerFrame = JOptionPane
-				.getFrameForComponent(FavoritesView.this);
-		int rc = fileDialog.showSaveDialog(containerFrame);
-		if (rc == JFileChooser.APPROVE_OPTION
-				&& fileDialog.getSelectedFile() != null) {
-			lastDir = fileDialog.getSelectedFile().getParentFile();
-			final String name;
-			if (!fileDialog.getSelectedFile().getAbsolutePath()
-					.endsWith(FavoritesFileFilter.EXT_FAVORITES)) {
-				name = fileDialog.getSelectedFile().getAbsolutePath()
-						+ FavoritesFileFilter.EXT_FAVORITES;
-			} else {
-				name = fileDialog.getSelectedFile().getAbsolutePath();
-			}
-			final int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
-				fav.saveFavorites(name);
-			}
-			getUiEvents().fireEvent(IChangeFavoritesTab.class,
-					new IChangeFavoritesTab() {
-						@Override
-						public int getIndex() {
-							return index;
-						}
-
-						@Override
-						public String getTitle() {
-							return getBaseNameNoExt(name);
-						}
-
-						@Override
-						public boolean isSelected() {
-							return false;
-						}
-					});
-		}
-	}
-
-	private String getBaseNameNoExt(final String filename) {
-		String baseName = new File(filename).getName();
-		int lastIndexOf = baseName.lastIndexOf('.');
-		final String title;
-		if (lastIndexOf != -1) {
-			title = baseName.substring(0, lastIndexOf);
-		} else {
-			title = baseName;
-		}
-		return title;
 	}
 
 	@Override

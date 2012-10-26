@@ -36,8 +36,7 @@ public class SidTuneConverter {
 		}
 	}
 
-	private void convertToPSID64(final File file,
-			final File target) {
+	private void convertToPSID64(final File file, final File target) {
 		final String filename = file.getAbsolutePath();
 		final Psid64 psid64 = new Psid64();
 		psid64.setHVSC(config.getSidplay2().getHvsc());
@@ -54,8 +53,8 @@ public class SidTuneConverter {
 		}
 		File tmpFile = null;
 		try {
-			tmpFile = new File(System.getProperty("jsidplay2.tmpdir"), ext(
-					file, ".prg.tmp"));
+			tmpFile = new File(System.getProperty("jsidplay2.tmpdir"),
+					PathUtils.getBaseNameNoExt(file) + ".prg.tmp");
 			if (!psid64.save(tmpFile.getAbsolutePath())) {
 				System.err.println("filename: " + filename);
 				System.err.println(psid64.getStatus());
@@ -63,8 +62,10 @@ public class SidTuneConverter {
 			}
 			// crunch result
 			PUCrunch crunch = new PUCrunch();
-			crunch.run(new String[] { tmpFile.getAbsolutePath(),
-					new File(target, ext(file, ".prg")).getAbsolutePath() });
+			crunch.run(new String[] {
+					tmpFile.getAbsolutePath(),
+					new File(target, PathUtils.getBaseNameNoExt(file) + ".prg")
+							.getAbsolutePath() });
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -85,13 +86,4 @@ public class SidTuneConverter {
 		return null;
 	}
 
-	private String ext(final File file, final String ext) {
-		final String name = file.getName();
-		final int lastIndexOf = name.lastIndexOf('.');
-		if (lastIndexOf != -1) {
-			return name.substring(0, lastIndexOf) + ext;
-		} else {
-			return name + ext;
-		}
-	}
 }

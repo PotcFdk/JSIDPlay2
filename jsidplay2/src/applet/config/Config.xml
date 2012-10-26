@@ -10,11 +10,11 @@
 				</hbox>
 			</vbox>
 		</panel>
-		<scrollpane constraints="BorderLayout.NORTH">
+		<scrollpane constraints="BorderLayout.NORTH" border="TitledBorder(CONFIGURATION)">
 			<tree initclass="applet.config.ConfigModel"
 				ExpandsSelectedPaths="true" ScrollsOnExpand="true" id="configTree" />
 		</scrollpane>
 		<panel constraints="BorderLayout.CENTER" layout="BorderLayout"
-			id="parent" />
+			id="parent" border="TitledBorder(EDITOR)" />
 	</vbox>
 </panel>

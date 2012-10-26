@@ -160,4 +160,17 @@ public class PathUtils {
 			dest.write(buffer);
 		}
 	}
+
+	public static String getBaseNameNoExt(final File file) {
+		String filename = file.getName();
+		int lastIndexOf = filename.lastIndexOf('.');
+		final String basename;
+		if (lastIndexOf != -1) {
+			basename = filename.substring(0, lastIndexOf);
+		} else {
+			basename = filename;
+		}
+		return basename;
+	}
+
 }
