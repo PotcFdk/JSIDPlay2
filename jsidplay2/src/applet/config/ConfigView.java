@@ -59,6 +59,8 @@ public class ConfigView extends TuneTab {
 	private ConfigModel configModel;
 	protected ConfigNode configNode;
 
+	private int refreshCounter = 0;
+
 	public ConfigView(EntityManager em, Player player, IConfig config) {
 		this.em = em;
 		this.config = config;
@@ -70,10 +72,9 @@ public class ConfigView extends TuneTab {
 			swix.getTaglib().registerTag("chartextfield", CharTextField.class);
 			swix.insert(ConfigView.class.getResource("Config.xml"), this);
 			configModel = (ConfigModel) configTree.getModel();
-			configModel.setRootUserObject(swix, config);
+			configModel.setRootUserObject(swix.getLocalizer(), config);
 			configTree.addTreeSelectionListener(new TreeSelectionListener() {
 
-				@SuppressWarnings({ "rawtypes", "unchecked" })
 				@Override
 				public void valueChanged(TreeSelectionEvent event) {
 					final TreePath treePath = event.getNewLeadSelectionPath();
@@ -94,51 +95,23 @@ public class ConfigView extends TuneTab {
 										.toString());
 								textField.setEditable(false);
 							} else if (configNode.getUserObject() instanceof Field) {
-								parent.removeAll();
 								Field field = (Field) configNode
 										.getUserObject();
-								if (field.getType() == String.class
-										|| (field.getType() == Integer.class || field
-												.getType() == int.class)
-										|| (field.getType() == Float.class || field
-												.getType() == float.class)
-										|| (field.getType() == Character.class || field
-												.getType() == char.class)) {
+								if (isTextFieldType(field)) {
 									String uiTypeName = getUITypeName(field
 											.getType());
 									createEditorForType(uiTypeName);
-									textField
-											.setText(configNode.getValue() != null ? configNode
-													.getValue().toString() : "");
-								} else if (field.getType() == Boolean.class
-										|| field.getType() == boolean.class) {
+									initTextField();
+								} else if (isCheckBoxType(field)) {
 									String uiTypeName = getUITypeName(field
 											.getType());
 									createEditorForType(uiTypeName);
-									checkbox.setSelected(configNode.getValue() != null ? Boolean
-											.valueOf(configNode.getValue()
-													.toString()) : false);
-								} else if (Enum.class.isAssignableFrom(field
-										.getType())) {
+									initCheckBox();
+								} else if (isEnumType(field)) {
 									String uiTypeName = getUITypeName(field
 											.getType());
 									createEditorForType(uiTypeName);
-									Class<? extends Enum> en = (Class<? extends Enum>) field
-											.getType();
-									ActionListener[] actionListeners = combo
-											.getActionListeners();
-									for (ActionListener actionListener : actionListeners) {
-										combo.removeActionListener(actionListener);
-									}
-									combo.addItem(null);
-									for (Enum val : en.getEnumConstants()) {
-										combo.addItem(val);
-									}
-									combo.setSelectedItem(configNode.getValue() != null ? (Enum) configNode
-											.getValue() : null);
-									for (ActionListener actionListener : actionListeners) {
-										combo.addActionListener(actionListener);
-									}
+									initEnumComboBox(field);
 								}
 							}
 						} catch (Exception e) {
@@ -146,6 +119,55 @@ public class ConfigView extends TuneTab {
 						}
 					}
 					parent.repaint();
+				}
+
+				private boolean isEnumType(Field field) {
+					return Enum.class.isAssignableFrom(field.getType());
+				}
+
+				private boolean isCheckBoxType(Field field) {
+					return field.getType() == Boolean.class
+							|| field.getType() == boolean.class;
+				}
+
+				private boolean isTextFieldType(Field field) {
+					return field.getType() == String.class
+							|| (field.getType() == Integer.class || field
+									.getType() == int.class)
+							|| (field.getType() == Float.class || field
+									.getType() == float.class)
+							|| (field.getType() == Character.class || field
+									.getType() == char.class);
+				}
+
+				private void initTextField() {
+					textField.setText(configNode.getValue() != null ? configNode
+							.getValue().toString() : "");
+				}
+
+				private void initCheckBox() {
+					checkbox.setSelected(configNode.getValue() != null ? Boolean
+							.valueOf(configNode.getValue().toString()) : false);
+				}
+
+				@SuppressWarnings({ "rawtypes", "unchecked" })
+				private void initEnumComboBox(Field field) {
+					ActionListener[] actionListeners = combo
+							.getActionListeners();
+					for (ActionListener actionListener : actionListeners) {
+						combo.removeActionListener(actionListener);
+					}
+					combo.addItem(null);
+					Class<? extends Enum> en = (Class<? extends Enum>) field
+							.getType();
+					for (Enum val : en.getEnumConstants()) {
+						combo.addItem(val);
+					}
+					combo.setSelectedItem(configNode.getValue() != null ? (Enum) configNode
+							.getValue() : null);
+					for (ActionListener actionListener : actionListeners) {
+						combo.addActionListener(actionListener);
+					}
 				}
 
 				private void createEditorForType(String uiTypeName)
@@ -188,8 +210,8 @@ public class ConfigView extends TuneTab {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (configNode.getUserObject() instanceof Field) {
-				String value = textField.getText();
 				Field field = (Field) configNode.getUserObject();
+				String value = textField.getText();
 				if (field.getType() == String.class) {
 					configNode.setValue(value);
 				} else if (field.getType() == Integer.class
@@ -200,7 +222,7 @@ public class ConfigView extends TuneTab {
 					configNode.setValue(Float.valueOf(value).floatValue());
 				} else if (field.getType() == Character.class
 						|| field.getType() == char.class) {
-					char ch;
+					final char ch;
 					if (value == null || value.length() == 0) {
 						ch = (char) 0;
 					} else {
@@ -220,8 +242,8 @@ public class ConfigView extends TuneTab {
 			if (configNode.getUserObject() instanceof Field) {
 				Boolean value = checkbox.isSelected();
 				configNode.setValue(Boolean.valueOf(value).booleanValue());
+				update();
 			}
-			update();
 		}
 	};
 
@@ -232,8 +254,8 @@ public class ConfigView extends TuneTab {
 			if (configNode.getUserObject() instanceof Field) {
 				Enum<?> value = (Enum<?>) combo.getSelectedItem();
 				configNode.setValue(value);
+				update();
 			}
-			update();
 		}
 	};
 
@@ -300,8 +322,10 @@ public class ConfigView extends TuneTab {
 	@Override
 	public void notify(UIEvent evt) {
 		if (!evt.isOfType(IUpdateUI.class)) {
-			if (configModel != null) {
-				update();
+			if (refreshCounter++ % 10 == 0) {
+				if (configModel != null) {
+					update();
+				}
 			}
 		}
 	}

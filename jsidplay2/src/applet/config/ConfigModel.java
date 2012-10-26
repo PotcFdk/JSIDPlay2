@@ -7,13 +7,13 @@ import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.swixml.SwingEngine;
+import org.swixml.Localizer;
 
 import sidplay.ini.intf.IConfig;
 
 public class ConfigModel extends DefaultTreeModel {
 
-	private SwingEngine swixml;
+	private Localizer localizer;
 
 	public ConfigModel() {
 		super(null);
@@ -26,25 +26,22 @@ public class ConfigModel extends DefaultTreeModel {
 			return false;
 		} else if (treeNode.getUserObject() instanceof Field) {
 			return true;
-		} else if (treeNode.getUserObject().getClass().isPrimitive()
-				|| treeNode.getUserObject().getClass().getPackage().getName()
-						.startsWith("java.lang")) {
+		} else if (isSimpleField(treeNode.getUserObject().getClass())) {
 			return true;
 		}
 		return false;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public int getChildCount(Object parent) {
 		ConfigNode treeNode = (ConfigNode) parent;
 		try {
 			if (treeNode.getUserObject() instanceof Method) {
 				Method method = (Method) treeNode.getUserObject();
-				Object methodObject = treeNode.getObject();
+				Object methodObject = treeNode.getMethodObject();
 				Object object = method.invoke(methodObject);
 				if (object instanceof List) {
-					List list = (List) object;
+					List<?> list = (List<?>) object;
 					return list.size();
 				}
 				return object.getClass().getDeclaredFields().length;
@@ -66,21 +63,20 @@ public class ConfigModel extends DefaultTreeModel {
 		return 0;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getChild(Object parent, int index) {
 		ConfigNode treeNode = (ConfigNode) parent;
 		try {
 			if (treeNode.getUserObject() instanceof Method) {
 				Method method = (Method) treeNode.getUserObject();
-				Object methodObject = treeNode.getObject();
+				Object methodObject = treeNode.getMethodObject();
 				Object object = method.invoke(methodObject);
 				if (object instanceof List) {
-					List list = (List) object;
-					return new ConfigNode(swixml, object, list.get(index));
+					List<?> list = (List<?>) object;
+					return new ConfigNode(object, list.get(index), localizer);
 				}
-				return new ConfigNode(swixml, object, object.getClass()
-						.getDeclaredFields()[index]);
+				return new ConfigNode(object, object.getClass()
+						.getDeclaredFields()[index], localizer);
 			} else {
 				Object obj = treeNode.getUserObject();
 				Field[] fields = obj.getClass().getDeclaredFields();
@@ -90,20 +86,15 @@ public class ConfigModel extends DefaultTreeModel {
 					if (isIgnorableField(field)) {
 						continue;
 					}
-					if (field.getType().isPrimitive()
-							|| field.getType().getPackage().getName()
-									.startsWith("java.lang")) {
+					if (isSimpleField(field.getType())) {
 						childs[fieldCount++] = field;
 					} else {
-						String name = field.getName();
-						String methodName = Character.toUpperCase(name
-								.charAt(0)) + name.substring(1);
 						Method method = obj.getClass().getMethod(
-								"get" + methodName);
+								ConfigNode.getGetterMethod(field, true));
 						childs[fieldCount++] = method;
 					}
 				}
-				return new ConfigNode(swixml, obj, childs[index]);
+				return new ConfigNode(obj, childs[index], localizer);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -116,9 +107,14 @@ public class ConfigModel extends DefaultTreeModel {
 		return super.getIndexOfChild(parent, child);
 	}
 
-	public void setRootUserObject(SwingEngine swixml, IConfig config) {
-		this.swixml = swixml;
-		setRoot(new ConfigNode(swixml, null, config));
+	public void setRootUserObject(Localizer localizer, IConfig config) {
+		this.localizer = localizer;
+		setRoot(new ConfigNode(null, config, localizer));
+	}
+
+	private boolean isSimpleField(Class<?> cls) {
+		return cls.isPrimitive()
+				|| cls.getPackage().getName().startsWith("java.lang");
 	}
 
 	private boolean isIgnorableField(Field field) {

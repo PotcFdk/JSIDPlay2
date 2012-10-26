@@ -26,9 +26,12 @@ import sidplay.ini.intf.IFilterSection;
 import sidplay.ini.intf.IJoystickSection;
 import sidplay.ini.intf.IPrinterSection;
 import sidplay.ini.intf.ISidPlay2Section;
+import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigMethod;
 
 @Entity
 @XmlRootElement(name = "config")
+@ConfigClass(getBundleKey = "CONFIG")
 public class DbConfig implements IConfig {
 
 	@Id
@@ -55,6 +58,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Override
+	@ConfigMethod(getBundleKey = "JSIDPLAY2")
 	public ISidPlay2Section getSidplay2() {
 		return sidplay2;
 	}
@@ -68,6 +72,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Override
+	@ConfigMethod(getBundleKey = "C1541")
 	public IC1541Section getC1541() {
 		return c1541;
 	}
@@ -81,6 +86,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Override
+	@ConfigMethod(getBundleKey = "PRINTER")
 	public IPrinterSection getPrinter() {
 		return printer;
 	}
@@ -94,6 +100,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Override
+	@ConfigMethod(getBundleKey = "JOYSTICK")
 	public IJoystickSection getJoystick() {
 		return joystick;
 	}
@@ -107,6 +114,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Override
+	@ConfigMethod(getBundleKey = "CONSOLE")
 	public IConsoleSection getConsole() {
 		return console;
 	}
@@ -120,6 +128,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Override
+	@ConfigMethod(getBundleKey = "AUDIO")
 	public IAudioSection getAudio() {
 		return audio;
 	}
@@ -133,6 +142,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Override
+	@ConfigMethod(getBundleKey = "EMULATION")
 	public IEmulationSection getEmulation() {
 		return emulation;
 	}
@@ -158,6 +168,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Override
+	@ConfigMethod(getBundleKey = "FAVORITES")
 	public List<? extends IFavoritesSection> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<DbFavoritesSection>();
@@ -172,7 +183,7 @@ public class DbConfig implements IConfig {
 		return favorites;
 	}
 
-	@OneToMany(mappedBy = "dbConfig", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "dbConfig", cascade = CascadeType.ALL)
 	@XmlElement(name = "filter")
 	private List<DbFilterSection> filter;
 
@@ -181,6 +192,7 @@ public class DbConfig implements IConfig {
 	}
 
 	@Override
+	@ConfigMethod(getBundleKey = "FILTERS")
 	public List<? extends IFilterSection> getFilter() {
 		if (filter == null) {
 			filter = new ArrayList<DbFilterSection>();

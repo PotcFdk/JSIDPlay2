@@ -7,8 +7,10 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.IFilterSection;
+import applet.config.annotations.ConfigClass;
 
 @Entity
+@ConfigClass(getBundleKey = "FILTER")
 public class DbFilterSection implements IFilterSection {
 
 	@Id

@@ -16,8 +16,11 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.IFavoritesSection;
+import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigMethod;
 
 @Entity
+@ConfigClass(getBundleKey = "FAVORITE")
 public class DbFavoritesSection implements IFavoritesSection {
 
 	@Id
@@ -55,6 +58,7 @@ public class DbFavoritesSection implements IFavoritesSection {
 
 	@Override
 	@XmlTransient
+	@ConfigMethod(getBundleKey = "FILENAME")
 	public List<String> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<String>();
