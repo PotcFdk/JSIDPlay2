@@ -1,8 +1,12 @@
 package applet.entities.config;
 
+import java.io.File;
+
 import javax.persistence.Embeddable;
+import javax.swing.JFileChooser;
 
 import sidplay.ini.intf.ISidPlay2Section;
+import applet.config.annotations.ConfigField;
 
 @Embeddable
 public class DbSidPlay2Section implements ISidPlay2Section {
@@ -54,6 +58,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.recordLength = recordLength;
 	}
 
+	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_AND_DIRECTORIES)
 	private String HVMEC;
 
 	@Override
@@ -66,6 +71,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		HVMEC = hVMEC;
 	}
 
+	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_AND_DIRECTORIES)
 	private String demos;
 
 	@Override
@@ -78,6 +84,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.demos = demos;
 	}
 
+	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_AND_DIRECTORIES)
 	private String mags;
 
 	@Override
@@ -90,6 +97,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.mags = mags;
 	}
 
+	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_AND_DIRECTORIES)
 	private String cgsc;
 
 	@Override
@@ -102,6 +110,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.cgsc = cgsc;
 	}
 
+	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_AND_DIRECTORIES)
 	private String hvsc;
 
 	@Override
@@ -198,6 +207,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.proxyPort = proxyPort;
 	}
 
+	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.DIRECTORIES_ONLY)
 	private String lastDirectory;
 
 	@Override
@@ -210,6 +220,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.lastDirectory = lastDirectory;
 	}
 
+	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.DIRECTORIES_ONLY)
 	private String tmpDir;
 
 	@Override

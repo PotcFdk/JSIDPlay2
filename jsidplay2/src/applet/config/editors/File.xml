@@ -1,0 +1,8 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- String Configuration -->
+<panel layout="BorderLayout" bundle="applet.config.ConfigTexts">
+	<hbox constraints="BorderLayout.NORTH" border="TitledBorder(FILENAME_CONFIG)">
+		<textfield columns="20" id="textField" action="doSetValue" />
+		<button text="BROWSE" icon="applet/icons/browse.png" action="doBrowse" />
+	</hbox>
+</panel>

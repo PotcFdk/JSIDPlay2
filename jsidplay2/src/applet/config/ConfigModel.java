@@ -119,6 +119,7 @@ public class ConfigModel extends DefaultTreeModel {
 
 	private boolean isIgnorableField(Field field) {
 		return field.getName().equals("dbConfig")
+				|| field.getName().equals("filename")
 				|| field.getName().equals("id");
 	}
 

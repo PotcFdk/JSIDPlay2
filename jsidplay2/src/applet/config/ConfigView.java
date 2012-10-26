@@ -33,7 +33,9 @@ import libsidplay.sidtune.SidTune;
 import org.swixml.SwingEngine;
 
 import sidplay.ini.intf.IConfig;
+import applet.PathUtils;
 import applet.TuneTab;
+import applet.config.annotations.ConfigField;
 import applet.config.editors.CharTextField;
 import applet.config.editors.FloatTextField;
 import applet.config.editors.IntTextField;
@@ -54,12 +56,15 @@ public class ConfigView extends TuneTab {
 
 	private IConfig config;
 	private EntityManager em;
+	protected File lastDir;
 	protected FileFilter configFilter = new ConfigFileFilter();
 
 	private ConfigModel configModel;
 	protected ConfigNode configNode;
 
 	private int refreshCounter = 0;
+
+	protected int fileChooserFilter;
 
 	public ConfigView(EntityManager em, Player player, IConfig config) {
 		this.em = em;
@@ -98,8 +103,19 @@ public class ConfigView extends TuneTab {
 								Field field = (Field) configNode
 										.getUserObject();
 								if (isTextFieldType(field)) {
-									String uiTypeName = getUITypeName(field
-											.getType());
+									ConfigField uiConfig = field
+											.getAnnotation(ConfigField.class);
+									String uiTypeName;
+									if (uiConfig != null
+											&& uiConfig.getUIClass() != null) {
+										fileChooserFilter = uiConfig
+												.getFilter();
+										uiTypeName = getUITypeName(uiConfig
+												.getUIClass());
+									} else {
+										uiTypeName = getUITypeName(field
+												.getType());
+									}
 									createEditorForType(uiTypeName);
 									initTextField();
 								} else if (isCheckBoxType(field)) {
@@ -194,6 +210,8 @@ public class ConfigView extends TuneTab {
 					} else if (fieldType == Character.class
 							|| fieldType == char.class) {
 						return Character.class.getSimpleName();
+					} else if (fieldType == File.class) {
+						return File.class.getSimpleName();
 					} else {
 						throw new RuntimeException("unsupported type: "
 								+ fieldType.getSimpleName());
@@ -263,13 +281,14 @@ public class ConfigView extends TuneTab {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JFileChooser fileDialog = new JFileChooser();
+			JFileChooser fileDialog = new JFileChooser(lastDir);
 			fileDialog.setFileFilter(configFilter);
 			final Frame containerFrame = JOptionPane
 					.getFrameForComponent(ConfigView.this);
 			int rc = fileDialog.showOpenDialog(containerFrame);
 			if (rc == JFileChooser.APPROVE_OPTION
 					&& fileDialog.getSelectedFile() != null) {
+				lastDir = fileDialog.getSelectedFile();
 				try {
 					File file = fileDialog.getSelectedFile();
 					JAXBContext jaxbContext = JAXBContext
@@ -293,13 +312,14 @@ public class ConfigView extends TuneTab {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JFileChooser fileDialog = new JFileChooser();
+			JFileChooser fileDialog = new JFileChooser(lastDir);
 			fileDialog.setFileFilter(configFilter);
 			final Frame containerFrame = JOptionPane
 					.getFrameForComponent(ConfigView.this);
 			int rc = fileDialog.showSaveDialog(containerFrame);
 			if (rc == JFileChooser.APPROVE_OPTION
 					&& fileDialog.getSelectedFile() != null) {
+				lastDir = fileDialog.getSelectedFile();
 				try {
 					File file = fileDialog.getSelectedFile();
 					JAXBContext jaxbContext = JAXBContext
@@ -309,6 +329,24 @@ public class ConfigView extends TuneTab {
 				} catch (JAXBException e1) {
 					e1.printStackTrace();
 				}
+			}
+		}
+	};
+
+	public Action doBrowse = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JFileChooser fileDialog = new JFileChooser(lastDir);
+			fileDialog.setFileSelectionMode(fileChooserFilter);
+			final Frame containerFrame = JOptionPane
+					.getFrameForComponent(ConfigView.this);
+			int rc = fileDialog.showOpenDialog(containerFrame);
+			if (rc == JFileChooser.APPROVE_OPTION
+					&& fileDialog.getSelectedFile() != null) {
+				lastDir = fileDialog.getSelectedFile();
+				File file = fileDialog.getSelectedFile();
+				textField.setText(PathUtils.getPath(file));
 			}
 		}
 	};

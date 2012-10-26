@@ -1,11 +1,15 @@
 package applet.entities.config;
 
+import java.io.File;
+
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.swing.JFileChooser;
 
 import resid_builder.resid.ISIDDefs.SamplingMethod;
 import sidplay.ini.intf.IAudioSection;
+import applet.config.annotations.ConfigField;
 
 @Embeddable
 public class DbAudioSection implements IAudioSection {
@@ -47,6 +51,7 @@ public class DbAudioSection implements IAudioSection {
 		this.playOriginal = original;
 	}
 
+	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_ONLY)
 	private String mp3File;
 
 	@Override
