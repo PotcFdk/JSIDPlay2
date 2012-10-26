@@ -1,6 +1,9 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- Configuration -->
 <panel layout="BorderLayout" bundle="applet.config.ConfigTexts">
+	<panel constraints="BorderLayout.NORTH">
+		<label text="HINT" font="Georgia-ITALIC-12"></label>
+	</panel>
 	<vbox>
 		<panel>
 			<vbox>
