@@ -258,10 +258,14 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 			// No database found?
 			return createConfigurationFromINIFile();
 		} else {
-			DbConfig config = em.find(DbConfig.class, 1);
+			DbConfig config = dbConfigService.get();
 			if (config == null) {
 				// No configuration in database found?
 				return createConfigurationFromINIFile();
+			}
+			if (config.getReconfigFilename() != null) {
+				// restore configuration (flagged by configuration viewer)
+				config = dbConfigService.restore(config);
 			}
 			return config;
 		}
@@ -340,7 +344,9 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 		try {
 			while (fPlayerThread.isAlive()) {
 				cp.quit();
-				fPlayerThread.join(1000);
+				fPlayerThread.join(10000);
+				// This is only the last option, if the player can not be
+				// stopped clean
 				fPlayerThread.interrupt();
 			}
 		} catch (InterruptedException e) {

@@ -198,12 +198,14 @@ public class JSIDPlay2UI implements UIEventListener {
 					new DiskCollection.Mags(getPlayer(), getConfig()));
 			tabbedPane.add(swix.getLocalizer().getString("GAMEBASE"),
 					new GameBase(getPlayer(), getConfig()));
-			tabbedPane.add(swix.getLocalizer().getString("FAVORITES"),
-					new FavoritesView(em, getPlayer(), getConfig(), hvsc, cgsc));
-			tabbedPane.add(swix.getLocalizer().getString("PRINTER"),
-					new PrinterView(getPlayer()));
+			tabbedPane
+					.add(swix.getLocalizer().getString("FAVORITES"),
+							new FavoritesView(em, getPlayer(), getConfig(),
+									hvsc, cgsc));
 			tabbedPane.add(swix.getLocalizer().getString("CONFIG"),
 					new ConfigView(em, getPlayer(), getConfig()));
+			tabbedPane.add(swix.getLocalizer().getString("PRINTER"),
+					new PrinterView(getPlayer()));
 			tabbedPane.add(swix.getLocalizer().getString("CONSOLE"),
 					new ConsoleView());
 

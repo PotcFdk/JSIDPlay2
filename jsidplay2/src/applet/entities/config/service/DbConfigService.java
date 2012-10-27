@@ -1,12 +1,20 @@
 package applet.entities.config.service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import sidplay.ini.IniConfig;
 import sidplay.ini.intf.IConfig;
@@ -29,6 +37,19 @@ public class DbConfigService {
 	public DbConfigService(EntityManager em) {
 		this.em = em;
 	};
+
+	public DbConfig get() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DbConfig> q = cb.createQuery(DbConfig.class);
+		Root<DbConfig> h = q.from(DbConfig.class);
+		q.select(h);
+		List<DbConfig> resultList = em.createQuery(q).setMaxResults(1)
+				.getResultList();
+		if (resultList.size() != 0) {
+			return resultList.get(0);
+		}
+		return null;
+	}
 
 	public IFavoritesSection addFavorite(IConfig config, String title) {
 		DbConfig dbConfig = (DbConfig) config;
@@ -279,6 +300,34 @@ public class DbConfigService {
 				em.getTransaction().rollback();
 			}
 		}
+	}
+
+	public DbConfig restore(DbConfig config) {
+		try {
+			// import configuration from file
+			JAXBContext jaxbContext = JAXBContext.newInstance(DbConfig.class);
+			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			Object obj = unmarshaller.unmarshal(new File(config
+					.getReconfigFilename()));
+			if (obj instanceof DbConfig) {
+				DbConfig detachedDbConfig = (DbConfig) obj;
+
+				// remove old configuration from DB
+				em.getTransaction().begin();
+				em.remove(config);
+				em.flush();
+				em.clear();
+				// restore configuration in DB
+				DbConfig mergedDbConfig = em.merge(detachedDbConfig);
+				em.persist(mergedDbConfig);
+				em.flush();
+				em.getTransaction().commit();
+				return mergedDbConfig;
+			}
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		return config;
 	}
 
 }

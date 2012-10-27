@@ -10,6 +10,7 @@ import javax.swing.tree.DefaultTreeModel;
 import org.swixml.Localizer;
 
 import sidplay.ini.intf.IConfig;
+import applet.config.annotations.ConfigTransient;
 
 public class ConfigModel extends DefaultTreeModel {
 
@@ -118,9 +119,7 @@ public class ConfigModel extends DefaultTreeModel {
 	}
 
 	private boolean isIgnorableField(Field field) {
-		return field.getName().equals("dbConfig")
-				|| field.getName().equals("filename")
-				|| field.getName().equals("id");
+		return field.getAnnotation(ConfigTransient.class) != null;
 	}
 
 }

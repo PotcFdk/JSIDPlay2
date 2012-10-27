@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.IFilterSection;
 import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigTransient;
 
 @Entity
 @ConfigClass(getBundleKey = "FILTER")
@@ -23,6 +24,7 @@ public class DbFilterSection implements IFilterSection {
 
 	@ManyToOne
 	@XmlIDREF
+	@ConfigTransient
 	public DbConfig dbConfig;
 
 	@XmlTransient

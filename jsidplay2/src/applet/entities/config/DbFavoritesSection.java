@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import sidplay.ini.intf.IFavoritesSection;
 import applet.config.annotations.ConfigClass;
 import applet.config.annotations.ConfigMethod;
+import applet.config.annotations.ConfigTransient;
 
 @Entity
 @ConfigClass(getBundleKey = "FAVORITE")
@@ -25,6 +26,7 @@ public class DbFavoritesSection implements IFavoritesSection {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@ConfigTransient
 	private int id;
 
 	public int getId() {
@@ -67,6 +69,7 @@ public class DbFavoritesSection implements IFavoritesSection {
 	}
 
 	@Column
+	@ConfigTransient
 	private String filename;
 
 	/**
@@ -80,6 +83,7 @@ public class DbFavoritesSection implements IFavoritesSection {
 
 	@ManyToOne
 	@XmlIDREF
+	@ConfigTransient
 	public DbConfig dbConfig;
 
 	@XmlTransient

@@ -28,6 +28,7 @@ import sidplay.ini.intf.IPrinterSection;
 import sidplay.ini.intf.ISidPlay2Section;
 import applet.config.annotations.ConfigClass;
 import applet.config.annotations.ConfigMethod;
+import applet.config.annotations.ConfigTransient;
 
 @Entity
 @XmlRootElement(name = "config")
@@ -38,6 +39,7 @@ public class DbConfig implements IConfig {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlID
 	@XmlJavaTypeAdapter(IntegerAdapter.class)
+	@ConfigTransient
 	private Integer id;
 
 	@XmlTransient
@@ -47,6 +49,18 @@ public class DbConfig implements IConfig {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	@XmlTransient
+	@ConfigTransient
+	private String reconfigFilename;
+
+	public String getReconfigFilename() {
+		return reconfigFilename;
+	}
+
+	public void setReconfigFilename(String reconfigFilename) {
+		this.reconfigFilename = reconfigFilename;
 	}
 
 	@Embedded

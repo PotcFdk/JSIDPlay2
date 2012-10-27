@@ -25,7 +25,6 @@ import javax.swing.tree.TreePath;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
@@ -55,7 +54,6 @@ public class ConfigView extends TuneTab {
 	protected JComboBox<Enum<?>> combo;
 
 	private IConfig config;
-	private EntityManager em;
 	protected File lastDir;
 	protected FileFilter configFilter = new ConfigFileFilter();
 
@@ -67,7 +65,6 @@ public class ConfigView extends TuneTab {
 	protected int fileChooserFilter;
 
 	public ConfigView(EntityManager em, Player player, IConfig config) {
-		this.em = em;
 		this.config = config;
 		try {
 			swix = new SwingEngine(this);
@@ -277,7 +274,7 @@ public class ConfigView extends TuneTab {
 		}
 	};
 
-	public Action doLoad = new AbstractAction() {
+	public Action doImport = new AbstractAction() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -289,26 +286,15 @@ public class ConfigView extends TuneTab {
 			if (rc == JFileChooser.APPROVE_OPTION
 					&& fileDialog.getSelectedFile() != null) {
 				lastDir = fileDialog.getSelectedFile();
-				try {
-					File file = fileDialog.getSelectedFile();
-					JAXBContext jaxbContext = JAXBContext
-							.newInstance(DbConfig.class);
-					Unmarshaller unmarshaller = jaxbContext
-							.createUnmarshaller();
-					Object obj = unmarshaller.unmarshal(file);
-					if (obj instanceof DbConfig) {
-						DbConfig dbc = (DbConfig) obj;
-						em.merge(dbc);
-						update();
-					}
-				} catch (JAXBException e1) {
-					e1.printStackTrace();
-				}
+				File file = fileDialog.getSelectedFile();
+				JOptionPane.showMessageDialog(ConfigView.this, swix
+						.getLocalizer().getString("PLEASE_RESTART"));
+				((DbConfig) config).setReconfigFilename(file.getAbsolutePath());
 			}
 		}
 	};
 
-	public Action doSaveAs = new AbstractAction() {
+	public Action doExport = new AbstractAction() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
