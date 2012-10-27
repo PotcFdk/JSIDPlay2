@@ -286,6 +286,8 @@ public class DbConfigService {
 			newFilterList.add(newFilter);
 		}
 		dbConfig.setFilter(newFilterList);
+		em.persist(dbConfig);
+		flush();
 		return dbConfig;
 	}
 
