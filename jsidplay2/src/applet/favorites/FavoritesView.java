@@ -344,6 +344,24 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 			for (IFavoritesSection favorite : favorites) {
 				addTab(favorite, favorite.getName());
 			}
+			if (favorites.size() == 0) {
+				// No favorites? Create an empty tab
+				getUiEvents().fireEvent(IAddFavoritesTab.class,
+						new IAddFavoritesTab() {
+
+							@Override
+							public String getTitle() {
+								return getSwix().getLocalizer().getString(
+										"NEW_TAB");
+							}
+
+							@Override
+							public void setFavorites(IFavorites favorites) {
+
+							}
+
+						});
+			}
 			String title = config.getCurrentFavorite();
 			int index1 = 0;
 			if (title != null) {
