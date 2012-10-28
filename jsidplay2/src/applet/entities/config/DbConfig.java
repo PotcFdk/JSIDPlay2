@@ -78,6 +78,21 @@ public class DbConfig implements IConfig {
 	}
 
 	@Embedded
+	@XmlElement(name = "online")
+	private DbOnlineSection online;
+
+	@Override
+	@XmlTransient
+	@ConfigMethod(getBundleKey = "ONLINE")
+	public DbOnlineSection getOnline() {
+		return online;
+	}
+
+	public void setOnline(DbOnlineSection online) {
+		this.online = online;
+	}
+
+	@Embedded
 	@XmlElement(name = "c1541")
 	private DbC1541Section c1541;
 

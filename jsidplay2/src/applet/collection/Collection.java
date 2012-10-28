@@ -197,9 +197,8 @@ public abstract class Collection extends TuneTab implements
 				autoConfiguration.setEnabled(false);
 				try {
 					DownloadThread downloadThread = new DownloadThread(config,
-							new HVSCListener(), new URL(
-									JSIDPlay2.DEPLOYMENT_URL
-											+ "online/hvsc/C64Music.zip"));
+							new HVSCListener(), new URL(config.getOnline()
+									.getHvscUrl()));
 					downloadThread.start();
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
@@ -276,9 +275,8 @@ public abstract class Collection extends TuneTab implements
 				autoConfiguration.setEnabled(false);
 				try {
 					DownloadThread downloadThread = new DownloadThread(config,
-							new CGSCListener(), new URL(
-									JSIDPlay2.DEPLOYMENT_URL
-											+ "online/cgsc/CGSC.zip"));
+							new CGSCListener(), new URL(config.getOnline()
+									.getCgscUrl()));
 					downloadThread.start();
 				} catch (MalformedURLException e) {
 					e.printStackTrace();

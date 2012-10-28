@@ -268,7 +268,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.getSidplay2().setSoasc6581R2(dwnlUrl6581R2.getText());
+			config.getOnline().setSoasc6581R2(dwnlUrl6581R2.getText());
 		}
 	};
 
@@ -276,7 +276,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			final String url = config.getSidplay2().getSoasc6581R2();
+			final String url = config.getOnline().getSoasc6581R2();
 			downloadStart(MessageFormat.format(url, hvscName, currentSong));
 		}
 	};
@@ -285,7 +285,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.getSidplay2().setSoasc6581R4(dwnlUrl6581R4.getText());
+			config.getOnline().setSoasc6581R4(dwnlUrl6581R4.getText());
 		}
 	};
 
@@ -293,7 +293,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			final String url = config.getSidplay2().getSoasc6581R4();
+			final String url = config.getOnline().getSoasc6581R4();
 			downloadStart(MessageFormat.format(url, hvscName, currentSong));
 		}
 	};
@@ -302,7 +302,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			config.getSidplay2().setSoasc6581R4(dwnlUrl8580R5.getText());
+			config.getOnline().setSoasc6581R4(dwnlUrl8580R5.getText());
 		}
 	};
 
@@ -310,7 +310,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			final String url = config.getSidplay2().getSoasc8580R5();
+			final String url = config.getOnline().getSoasc8580R5();
 			downloadStart(MessageFormat.format(url, hvscName, currentSong));
 		}
 	};
@@ -462,9 +462,9 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 					.getProxyHostname());
 			proxyPort.setText(String.valueOf(consolePl.getConfig()
 					.getSidplay2().getProxyPort()));
-			dwnlUrl6581R2.setText(config.getSidplay2().getSoasc6581R2());
-			dwnlUrl6581R4.setText(config.getSidplay2().getSoasc6581R4());
-			dwnlUrl8580R5.setText(config.getSidplay2().getSoasc8580R5());
+			dwnlUrl6581R2.setText(config.getOnline().getSoasc6581R2());
+			dwnlUrl6581R4.setText(config.getOnline().getSoasc6581R4());
+			dwnlUrl8580R5.setText(config.getOnline().getSoasc8580R5());
 		}
 	}
 

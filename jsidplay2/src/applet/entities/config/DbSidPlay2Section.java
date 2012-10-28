@@ -135,42 +135,6 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.single = isSingle;
 	}
 
-	private String soasc6581R2;
-
-	@Override
-	public String getSoasc6581R2() {
-		return soasc6581R2;
-	}
-
-	@Override
-	public void setSoasc6581R2(String soasc6581r2) {
-		soasc6581R2 = soasc6581r2;
-	}
-
-	private String soasc6581R4;
-
-	@Override
-	public String getSoasc6581R4() {
-		return soasc6581R4;
-	}
-
-	@Override
-	public void setSoasc6581R4(String soasc6581r4) {
-		soasc6581R4 = soasc6581r4;
-	}
-
-	private String soasc8580R5;
-
-	@Override
-	public String getSoasc8580R5() {
-		return soasc8580R5;
-	}
-
-	@Override
-	public void setSoasc8580R5(String soasc8580r5) {
-		soasc8580R5 = soasc8580r5;
-	}
-
 	private boolean enableProxy;
 
 	@Override

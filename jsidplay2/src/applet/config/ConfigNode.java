@@ -74,7 +74,8 @@ public class ConfigNode extends DefaultMutableTreeNode {
 			return method.invoke(objectToInvokeMethod);
 		} catch (Exception e) {
 			throw new RuntimeException(String.format(
-					"Could not get Value: for field %s", field.getName()));
+					"Could not get Value: for field %s (undefined method %s?)",
+					field.getName(), getterMethod));
 		}
 	}
 

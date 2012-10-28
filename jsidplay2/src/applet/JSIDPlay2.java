@@ -263,9 +263,28 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				// No configuration in database found?
 				return createConfigurationFromINIFile();
 			}
-			if (config.getReconfigFilename() != null) {
-				// restore configuration (flagged by configuration viewer)
+			boolean hasReconfigurationFilename = config.getReconfigFilename() != null;
+			if (hasReconfigurationFilename) {
+				// import configuration (flagged by configuration viewer)
 				config = dbConfigService.restore(config);
+			}
+			// Configuration version check
+			if (!dbConfigService.isExpectedVersion(config)) {
+				// Wrong configuration version
+				if (hasReconfigurationFilename) {
+					System.err.println("Imported configuration version "
+							+ config.getSidplay2().getVersion()
+							+ " is too old, expected version is "
+							+ IConfig.REQUIRED_CONFIG_VERSION + ": Ignored!");
+				} else {
+					System.err.println("Configuration version "
+							+ config.getSidplay2().getVersion()
+							+ " is too old, expected version is "
+							+ IConfig.REQUIRED_CONFIG_VERSION
+							+ ": Create a new one!");
+					dbConfigService.remove(config);
+					return createConfigurationFromINIFile();
+				}
 			}
 			return config;
 		}
@@ -281,9 +300,12 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * 
 	 * @return created jsidplay2 configuration
 	 */
-	private IConfig createConfigurationFromINIFile() {
+	private DbConfig createConfigurationFromINIFile() {
 		System.out.println("Import INI file!");
-		return dbConfigService.importIniConfig(new IniConfig());
+		DbConfig importedConfig = dbConfigService
+				.importIniConfig(new IniConfig());
+		dbConfigService.setExpectedVersion(importedConfig);
+		return importedConfig;
 	}
 
 	/**

@@ -32,6 +32,7 @@ import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFavoritesSection;
 import sidplay.ini.intf.IFilterSection;
 import sidplay.ini.intf.IJoystickSection;
+import sidplay.ini.intf.IOnlineSection;
 import sidplay.ini.intf.IPrinterSection;
 import sidplay.ini.intf.ISidPlay2Section;
 
@@ -43,9 +44,6 @@ import sidplay.ini.intf.ISidPlay2Section;
  * 
  */
 public class IniConfig implements IConfig {
-	/** Bump this each time you want to invalidate sidplay2.ini files on disk */
-	protected static final int REQUIRED_CONFIG_VERSION = 18;
-
 	/** Name of our config file. */
 	private static final String FILE_NAME = "sidplay2.ini";
 
@@ -53,6 +51,7 @@ public class IniConfig implements IConfig {
 	private final File iniPath;
 
 	private ISidPlay2Section sidplay2Section;
+	private IOnlineSection onlineSection;
 	private IC1541Section c1541Section;
 	private IPrinterSection printerSection;
 	private IJoystickSection joystickSection;
@@ -64,6 +63,7 @@ public class IniConfig implements IConfig {
 
 	private void clear() {
 		sidplay2Section = new IniSidplay2Section(iniReader);
+		onlineSection = new IniOnlineSection(iniReader);
 		c1541Section = new IniC1541Section(iniReader);
 		printerSection = new IniPrinterSection(iniReader);
 		joystickSection = new IniJoystickSection(iniReader);
@@ -236,6 +236,11 @@ public class IniConfig implements IConfig {
 	@Override
 	public final ISidPlay2Section getSidplay2() {
 		return sidplay2Section;
+	}
+
+	@Override
+	public IOnlineSection getOnline() {
+		return onlineSection;
 	}
 
 	@Override

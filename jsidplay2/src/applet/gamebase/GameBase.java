@@ -35,7 +35,6 @@ import libsidplay.sidtune.SidTune;
 import org.swixml.SwingEngine;
 
 import sidplay.ini.intf.IConfig;
-import applet.JSIDPlay2;
 import applet.TuneTab;
 import applet.collection.Picture;
 import applet.download.DownloadThread;
@@ -172,16 +171,16 @@ public class GameBase extends TuneTab {
 								.println("Version is different or database is broken,"
 										+ " re-download");
 						disconnect();
-						downloadStart(JSIDPlay2.DEPLOYMENT_URL
-								+ "online/gamebase/gb64.jar",
+						downloadStart(config.getOnline()
+								.getGamebaseUrl(),
 								new GameBaseListener(GameBase.this));
 					}
 
 				} else {
 					// First time, the database is downloaded
-					downloadStart(JSIDPlay2.DEPLOYMENT_URL
-							+ "online/gamebase/gb64.jar", new GameBaseListener(
-							GameBase.this));
+					downloadStart(
+							config.getOnline().getGamebaseUrl(),
+							new GameBaseListener(GameBase.this));
 				}
 			}
 		}

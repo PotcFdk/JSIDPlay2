@@ -4,26 +4,31 @@ import java.util.List;
 
 public interface IConfig {
 
-	public ISidPlay2Section getSidplay2();
+	/** Bump this each time you want to invalidate the configuration */
+	int REQUIRED_CONFIG_VERSION = 18;
 
-	public IC1541Section getC1541();
+	ISidPlay2Section getSidplay2();
 
-	public IPrinterSection getPrinter();
+	IOnlineSection getOnline();
 
-	public IJoystickSection getJoystick();
+	IC1541Section getC1541();
 
-	public IConsoleSection getConsole();
+	IPrinterSection getPrinter();
 
-	public IAudioSection getAudio();
+	IJoystickSection getJoystick();
 
-	public IEmulationSection getEmulation();
+	IConsoleSection getConsole();
 
-	public String getCurrentFavorite();
+	IAudioSection getAudio();
 
-	public void setCurrentFavorite(String currentFavorite);
+	IEmulationSection getEmulation();
 
-	public List<? extends IFavoritesSection> getFavorites();
+	String getCurrentFavorite();
 
-	public List<? extends IFilterSection> getFilter();
+	void setCurrentFavorite(String currentFavorite);
+
+	List<? extends IFavoritesSection> getFavorites();
+
+	List<? extends IFilterSection> getFilter();
 
 }

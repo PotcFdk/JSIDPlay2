@@ -42,7 +42,6 @@ import libsidutils.zip.ZipFileProxy;
 import org.swixml.SwingEngine;
 
 import sidplay.ini.intf.IConfig;
-import applet.JSIDPlay2;
 import applet.PathUtils;
 import applet.TuneTab;
 import applet.download.DownloadThread;
@@ -63,8 +62,7 @@ public abstract class DiskCollection extends TuneTab implements
 	public static final class HVMEC extends DiskCollection {
 
 		public HVMEC(final Player pl, final IConfig cfg) {
-			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL + "online/hvmec/HVMEC",
-					"HVMEC");
+			super(pl, cfg, cfg.getOnline().getHvmecUrl(), "HVMEC");
 			// Initially configure Demos
 			if (config.getSidplay2().getHVMEC() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
@@ -125,8 +123,7 @@ public abstract class DiskCollection extends TuneTab implements
 	public static final class Demos extends DiskCollection {
 
 		public Demos(final Player pl, final IConfig cfg) {
-			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL + "online/demos/Demos",
-					"Demos");
+			super(pl, cfg, cfg.getOnline().getDemosUrl(), "Demos");
 			// Initially configure Demos
 			if (config.getSidplay2().getDemos() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
@@ -186,8 +183,7 @@ public abstract class DiskCollection extends TuneTab implements
 	public static final class Mags extends DiskCollection {
 
 		public Mags(final Player pl, final IConfig cfg) {
-			super(pl, cfg, JSIDPlay2.DEPLOYMENT_URL
-					+ "online/mags/C64Magazines", "C64Magazines");
+			super(pl, cfg, cfg.getOnline().getMagazinesUrl(), "C64Magazines");
 			// Initially configure Mags
 			if (config.getSidplay2().getMags() != null) {
 				getUiEvents().fireEvent(ICollectionChanged.class,
@@ -280,7 +276,7 @@ public abstract class DiskCollection extends TuneTab implements
 				autoConfiguration.setEnabled(false);
 				try {
 					DownloadThread downloadThread = new DownloadThread(config,
-							new DemosListener(), new URL(downloadUrl + ".zip"));
+							new DemosListener(), new URL(downloadUrl));
 					downloadThread.start();
 				} catch (MalformedURLException e2) {
 					e2.printStackTrace();
