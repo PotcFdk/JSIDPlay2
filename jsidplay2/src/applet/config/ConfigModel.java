@@ -37,27 +37,27 @@ public class ConfigModel extends DefaultTreeModel {
 	public int getChildCount(Object parent) {
 		ConfigNode treeNode = (ConfigNode) parent;
 		try {
+			Object obj;
 			if (treeNode.getUserObject() instanceof Method) {
 				Method method = (Method) treeNode.getUserObject();
 				Object methodObject = treeNode.getMethodObject();
-				Object object = method.invoke(methodObject);
-				if (object instanceof List) {
-					List<?> list = (List<?>) object;
+				obj = method.invoke(methodObject);
+				if (obj instanceof List) {
+					List<?> list = (List<?>) obj;
 					return list.size();
 				}
-				return object.getClass().getDeclaredFields().length;
 			} else {
-				Object obj = treeNode.getUserObject();
-				Field[] declaredFields = obj.getClass().getDeclaredFields();
-				int fieldCount = 0;
-				for (Field field : declaredFields) {
-					if (isIgnorableField(field)) {
-						continue;
-					}
-					fieldCount++;
-				}
-				return fieldCount;
+				obj = treeNode.getUserObject();
 			}
+			Field[] declaredFields = obj.getClass().getDeclaredFields();
+			int fieldCount = 0;
+			for (Field field : declaredFields) {
+				if (isIgnorableField(field)) {
+					continue;
+				}
+				fieldCount++;
+			}
+			return fieldCount;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -68,35 +68,34 @@ public class ConfigModel extends DefaultTreeModel {
 	public Object getChild(Object parent, int index) {
 		ConfigNode treeNode = (ConfigNode) parent;
 		try {
+			Object obj;
 			if (treeNode.getUserObject() instanceof Method) {
 				Method method = (Method) treeNode.getUserObject();
 				Object methodObject = treeNode.getMethodObject();
-				Object object = method.invoke(methodObject);
-				if (object instanceof List) {
-					List<?> list = (List<?>) object;
-					return new ConfigNode(object, list.get(index), localizer);
+				obj = method.invoke(methodObject);
+				if (obj instanceof List) {
+					List<?> list = (List<?>) obj;
+					return new ConfigNode(obj, list.get(index), localizer);
 				}
-				return new ConfigNode(object, object.getClass()
-						.getDeclaredFields()[index], localizer);
 			} else {
-				Object obj = treeNode.getUserObject();
-				Field[] fields = obj.getClass().getDeclaredFields();
-				Object[] childs = new Object[fields.length];
-				int fieldCount = 0;
-				for (Field field : fields) {
-					if (isIgnorableField(field)) {
-						continue;
-					}
-					if (isSimpleField(field.getType())) {
-						childs[fieldCount++] = field;
-					} else {
-						Method method = obj.getClass().getMethod(
-								ConfigNode.getGetterMethod(field, true));
-						childs[fieldCount++] = method;
-					}
-				}
-				return new ConfigNode(obj, childs[index], localizer);
+				obj = treeNode.getUserObject();
 			}
+			Field[] fields = obj.getClass().getDeclaredFields();
+			Object[] childs = new Object[fields.length];
+			int fieldCount = 0;
+			for (Field field : fields) {
+				if (isIgnorableField(field)) {
+					continue;
+				}
+				if (isSimpleField(field.getType())) {
+					childs[fieldCount++] = field;
+				} else {
+					Method method = obj.getClass().getMethod(
+							ConfigNode.getGetterMethod(field, true));
+					childs[fieldCount++] = method;
+				}
+			}
+			return new ConfigNode(obj, childs[index], localizer);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -114,7 +113,7 @@ public class ConfigModel extends DefaultTreeModel {
 	}
 
 	private boolean isSimpleField(Class<?> cls) {
-		return cls.isPrimitive()
+		return cls.isEnum() || cls.isPrimitive()
 				|| cls.getPackage().getName().startsWith("java.lang");
 	}
 
