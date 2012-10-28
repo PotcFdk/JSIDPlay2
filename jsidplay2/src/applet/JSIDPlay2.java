@@ -234,6 +234,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		dbConfigService.write(getConfig());
 		em.close();
 		em.getEntityManagerFactory().close();
 	}
