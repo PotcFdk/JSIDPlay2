@@ -1,5 +1,6 @@
 package sidplay.ini;
 
+import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.ISidPlay2Section;
 
 /**
@@ -28,7 +29,13 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	@Override
 	public final int getVersion() {
 		return iniReader.getPropertyInt("SIDPlay2", "Version",
-				IniConfig.REQUIRED_CONFIG_VERSION);
+				IConfig.REQUIRED_CONFIG_VERSION);
+	}
+
+	@Override
+	public void setVersion(int version) {
+		/* Set the current version so that we detect old versions in future. */
+		iniReader.setProperty("SIDPlay2", "Version", version);
 	}
 
 	/**

@@ -10,6 +10,14 @@ public interface ISidPlay2Section {
 	public int getVersion();
 
 	/**
+	 * Set configuration version
+	 * 
+	 * @param version
+	 *            configuration version
+	 */
+	public void setVersion(int version);
+
+	/**
 	 * Getter of the enable of the Songlengths database.
 	 * 
 	 * @return Is the Songlengths database enabled?

@@ -213,8 +213,7 @@ public class IniConfig implements IConfig {
 			iniReader = new IniReader(is);
 			clear();
 			/* Set the current version so that we detect old versions in future. */
-			iniReader.setProperty("SIDPlay2", "Version",
-					REQUIRED_CONFIG_VERSION);
+			sidplay2Section.setVersion(REQUIRED_CONFIG_VERSION);
 			is.close();
 		} catch (final IOException e) {
 			return;

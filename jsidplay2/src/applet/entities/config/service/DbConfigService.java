@@ -39,23 +39,34 @@ public class DbConfigService {
 		this.em = em;
 	};
 
-	public boolean isExpectedVersion(IConfig config) {
-		return config != null
-				&& config.getSidplay2().getVersion() == IConfig.REQUIRED_CONFIG_VERSION;
+	public boolean shouldBeRestored(DbConfig config) {
+		return config.getReconfigFilename() != null;
 	}
 
-	public void setExpectedVersion(DbConfig config) {
-		((DbSidPlay2Section) config.getSidplay2())
-				.setVersion(IConfig.REQUIRED_CONFIG_VERSION);
-	}
+	public DbConfig restore(DbConfig config) {
+		try {
+			// import configuration from file
+			JAXBContext jaxbContext = JAXBContext.newInstance(DbConfig.class);
+			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			Object obj = unmarshaller.unmarshal(new File(config
+					.getReconfigFilename()));
+			if (obj instanceof DbConfig) {
+				DbConfig detachedDbConfig = (DbConfig) obj;
 
-	public void remove(DbConfig config) {
-		// remove old configuration from DB
-		em.getTransaction().begin();
-		em.remove(config);
-		em.flush();
-		em.clear();
-		em.getTransaction().commit();
+				remove(config);
+
+				// restore configuration in DB
+				DbConfig mergedDbConfig = em.merge(detachedDbConfig);
+				em.getTransaction().begin();
+				em.persist(mergedDbConfig);
+				em.flush();
+				em.getTransaction().commit();
+				return mergedDbConfig;
+			}
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		return config;
 	}
 
 	public DbConfig get() {
@@ -69,6 +80,15 @@ public class DbConfigService {
 			return resultList.get(0);
 		}
 		return null;
+	}
+
+	public void remove(DbConfig config) {
+		// remove old configuration from DB
+		em.getTransaction().begin();
+		em.remove(config);
+		em.flush();
+		em.clear();
+		em.getTransaction().commit();
 	}
 
 	public IFavoritesSection addFavorite(IConfig config, String title) {
@@ -297,32 +317,6 @@ public class DbConfigService {
 				em.getTransaction().rollback();
 			}
 		}
-	}
-
-	public DbConfig restore(DbConfig config) {
-		try {
-			// import configuration from file
-			JAXBContext jaxbContext = JAXBContext.newInstance(DbConfig.class);
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			Object obj = unmarshaller.unmarshal(new File(config
-					.getReconfigFilename()));
-			if (obj instanceof DbConfig) {
-				DbConfig detachedDbConfig = (DbConfig) obj;
-
-				remove(config);
-
-				// restore configuration in DB
-				DbConfig mergedDbConfig = em.merge(detachedDbConfig);
-				em.getTransaction().begin();
-				em.persist(mergedDbConfig);
-				em.flush();
-				em.getTransaction().commit();
-				return mergedDbConfig;
-			}
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-		return config;
 	}
 
 }

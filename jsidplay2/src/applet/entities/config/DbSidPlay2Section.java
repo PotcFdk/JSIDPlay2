@@ -7,10 +7,12 @@ import javax.swing.JFileChooser;
 
 import sidplay.ini.intf.ISidPlay2Section;
 import applet.config.annotations.ConfigField;
+import applet.config.annotations.ConfigTransient;
 
 @Embeddable
 public class DbSidPlay2Section implements ISidPlay2Section {
 
+	@ConfigTransient
 	private int version;
 
 	@Override
@@ -18,6 +20,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		return version;
 	}
 
+	@Override
 	public void setVersion(int version) {
 		this.version = version;
 	}

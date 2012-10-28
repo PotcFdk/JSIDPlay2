@@ -3,6 +3,7 @@ package applet;
 import static sidplay.ConsolePlayer.playerExit;
 import static sidplay.ConsolePlayer.playerFast;
 import static sidplay.ConsolePlayer.playerRestart;
+import static sidplay.ini.intf.IConfig.REQUIRED_CONFIG_VERSION;
 
 import java.awt.Component;
 import java.awt.Desktop;
@@ -263,25 +264,24 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				// No configuration in database found?
 				return createConfigurationFromINIFile();
 			}
-			boolean hasReconfigurationFilename = config.getReconfigFilename() != null;
-			if (hasReconfigurationFilename) {
+			boolean shouldBeRestored = dbConfigService.shouldBeRestored(config);
+			if (shouldBeRestored) {
 				// import configuration (flagged by configuration viewer)
 				config = dbConfigService.restore(config);
 			}
 			// Configuration version check
-			if (!dbConfigService.isExpectedVersion(config)) {
+			if (config.getSidplay2().getVersion() != REQUIRED_CONFIG_VERSION) {
 				// Wrong configuration version
-				if (hasReconfigurationFilename) {
+				if (shouldBeRestored) {
 					System.err.println("Imported configuration version "
 							+ config.getSidplay2().getVersion()
 							+ " is too old, expected version is "
-							+ IConfig.REQUIRED_CONFIG_VERSION + ": Ignored!");
+							+ REQUIRED_CONFIG_VERSION + ": Ignored!");
 				} else {
 					System.err.println("Configuration version "
 							+ config.getSidplay2().getVersion()
 							+ " is too old, expected version is "
-							+ IConfig.REQUIRED_CONFIG_VERSION
-							+ ": Create a new one!");
+							+ REQUIRED_CONFIG_VERSION + ": Create a new one!");
 					dbConfigService.remove(config);
 					return createConfigurationFromINIFile();
 				}
@@ -304,7 +304,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 		System.out.println("Import INI file!");
 		DbConfig importedConfig = dbConfigService
 				.importIniConfig(new IniConfig());
-		dbConfigService.setExpectedVersion(importedConfig);
+		importedConfig.getSidplay2()
+				.setVersion(IConfig.REQUIRED_CONFIG_VERSION);
 		return importedConfig;
 	}
 
