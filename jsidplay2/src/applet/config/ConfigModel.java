@@ -75,7 +75,8 @@ public class ConfigModel extends DefaultTreeModel {
 				obj = method.invoke(methodObject);
 				if (obj instanceof List) {
 					List<?> list = (List<?>) obj;
-					return new ConfigNode(obj, list.get(index), localizer);
+					return new ConfigNode(treeNode, obj, list.get(index),
+							localizer);
 				}
 			} else {
 				obj = treeNode.getUserObject();
@@ -95,7 +96,7 @@ public class ConfigModel extends DefaultTreeModel {
 					childs[fieldCount++] = method;
 				}
 			}
-			return new ConfigNode(obj, childs[index], localizer);
+			return new ConfigNode(treeNode, obj, childs[index], localizer);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -109,7 +110,7 @@ public class ConfigModel extends DefaultTreeModel {
 
 	public void setRootUserObject(Localizer localizer, IConfig config) {
 		this.localizer = localizer;
-		setRoot(new ConfigNode(null, config, localizer));
+		setRoot(new ConfigNode(null, null, config, localizer));
 	}
 
 	private boolean isSimpleField(Class<?> cls) {

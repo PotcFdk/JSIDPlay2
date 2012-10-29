@@ -12,11 +12,13 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
@@ -89,10 +91,13 @@ public class ConfigView extends TuneTab {
 						configNode = (ConfigNode) pathComponent;
 						try {
 							parent.removeAll();
+							parent.setBorder(null);
+							String category = String.valueOf(configNode
+									.getParent());
 							if (configNode.getUserObject() instanceof String) {
 								String uiTypeName = getUITypeName(configNode
 										.getUserObject().getClass());
-								createEditorForType(uiTypeName);
+								createEditorForType(category, null, uiTypeName);
 								textField.setText(configNode.getUserObject()
 										.toString());
 								textField.setEditable(false);
@@ -113,17 +118,20 @@ public class ConfigView extends TuneTab {
 										uiTypeName = getUITypeName(field
 												.getType());
 									}
-									createEditorForType(uiTypeName);
+									createEditorForType(category, field,
+											uiTypeName);
 									initTextField();
 								} else if (isCheckBoxType(field)) {
 									String uiTypeName = getUITypeName(field
 											.getType());
-									createEditorForType(uiTypeName);
+									createEditorForType(category, field,
+											uiTypeName);
 									initCheckBox();
 								} else if (isEnumType(field)) {
 									String uiTypeName = getUITypeName(field
 											.getType());
-									createEditorForType(uiTypeName);
+									createEditorForType(category, field,
+											uiTypeName);
 									initEnumComboBox(field);
 								}
 							}
@@ -183,11 +191,16 @@ public class ConfigView extends TuneTab {
 					}
 				}
 
-				private void createEditorForType(String uiTypeName)
-						throws Exception {
-					parent.add(
-							swix.render(ConfigView.class.getResource("editors/"
-									+ uiTypeName + ".xml")), BorderLayout.NORTH);
+				private void createEditorForType(String category, Field field,
+						String uiTypeName) throws Exception {
+					parent.setBorder(new TitledBorder(category));
+					JComponent editor = (JComponent) swix
+							.render(ConfigView.class.getResource("editors/"
+									+ uiTypeName + ".xml"));
+					if (field != null) {
+						editor.setBorder(new TitledBorder(field.getName()));
+					}
+					parent.add(editor, BorderLayout.NORTH);
 				}
 
 				private String getUITypeName(Class<?> fieldType) {

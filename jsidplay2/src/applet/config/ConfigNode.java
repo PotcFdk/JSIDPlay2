@@ -24,10 +24,11 @@ public class ConfigNode extends DefaultMutableTreeNode {
 	 * @param localizer
 	 *            localizer to localize language dependent messages
 	 */
-	public ConfigNode(Object methodObject, Object userObject,
-			Localizer localizer) {
+	public ConfigNode(ConfigNode parent, Object methodObject,
+			Object userObject, Localizer localizer) {
 		// while user object is a field or method or object (List item)...
 		super(userObject);
+		setParent(parent);
 		// ...this object can be used to invoke methods
 		this.objectToInvokeMethod = methodObject;
 		// localizer for bundle keys

@@ -1,7 +1,7 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- String Configuration -->
 <panel layout="BorderLayout" bundle="applet.config.ConfigTexts">
-	<hbox constraints="BorderLayout.NORTH" border="TitledBorder(ENUM_CONFIG)">
+	<hbox constraints="BorderLayout.NORTH">
 		<combobox id="combo" action="doSetEnum"/>
 	</hbox>
 </panel>
