@@ -283,7 +283,7 @@ public class ConsolePlayer {
 		}
 
 		case EMU_HARDSID:
-			final HardSIDBuilder hs = new HardSIDBuilder();
+			final HardSIDBuilder hs = new HardSIDBuilder(iniCfg);
 			if (!hs.bool()) {
 				displayError(hs.error());
 				return false;

@@ -60,11 +60,6 @@ import applet.events.UIEventListener;
 public class JSIDPlay2 extends JApplet implements UIEventListener {
 
 	/**
-	 * URL where the JSIDPlay2 is deploy to.
-	 */
-	public static final String DEPLOYMENT_URL = "http://kenchis.t15.org/jsidplay2/";
-
-	/**
 	 * Filename of the jsidplay2 configuration database.
 	 */
 	public static final String CONFIG_DATABASE = "JSIDPLAY2";
@@ -292,6 +287,24 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	}
 
 	/**
+	 * Search for the database file (the players configuration). Search in CWD
+	 * and in the HOME folder.
+	 * 
+	 * @return absolute path name of the database properties file
+	 */
+	private File getDbPath() {
+		File configPlace = null;
+		for (final String s : new String[] { System.getProperty("user.dir"),
+				System.getProperty("user.home"), }) {
+			configPlace = new File(s, CONFIG_DATABASE + ".properties");
+			if (configPlace.exists()) {
+				return configPlace;
+			}
+		}
+		return configPlace;
+	}
+
+	/**
 	 * Create the players configuration based on the already existing INI file
 	 * (use internal INI configuration, if absent).
 	 * 
@@ -311,24 +324,6 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	}
 
 	/**
-	 * Search for the database file (the players configuration). Search in CWD
-	 * and in the HOME folder.
-	 * 
-	 * @return absolute path name of the database properties file
-	 */
-	private File getDbPath() {
-		File configPlace = null;
-		for (final String s : new String[] { System.getProperty("user.dir"),
-				System.getProperty("user.home"), }) {
-			configPlace = new File(s, CONFIG_DATABASE + ".properties");
-			if (configPlace.exists()) {
-				return configPlace;
-			}
-		}
-		return configPlace;
-	}
-
-	/**
 	 * Create temp directory, if not exists (default is user home dir).
 	 * 
 	 * Note: system property jsidplay2.tmpdir is set accordingly.
@@ -341,7 +336,6 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 		if (!tmpDir.exists()) {
 			tmpDir.mkdirs();
 		}
-		System.setProperty("jsidplay2.tmpdir", tmpDirPath);
 	}
 
 	/**
@@ -349,7 +343,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 */
 	private void createUI() {
 		// Create main window
-		ui = new JSIDPlay2UI(em, this, cp);
+		ui = new JSIDPlay2UI(em, this, cp, getConfig());
 	}
 
 	/**
@@ -402,9 +396,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 			final Component component) throws IOException {
 		if (!selectedTape.getName().toLowerCase().endsWith(".tap")) {
 			// Everything, which is not a tape convert to tape first
-			final File convertedTape = new File(
-					System.getProperty("jsidplay2.tmpdir"),
-					selectedTape.getName() + ".tap");
+			final File convertedTape = new File(getConfig().getSidplay2()
+					.getTmpDir(), selectedTape.getName() + ".tap");
 			convertedTape.deleteOnExit();
 			String[] args = new String[] { selectedTape.getAbsolutePath(),
 					convertedTape.getAbsolutePath() };
@@ -648,8 +641,9 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				if (mediaFile instanceof ZipEntryFileProxy) {
 					// Extract ZIP file
 					ZipEntryFileProxy zipEntryFileProxy = (ZipEntryFileProxy) mediaFile;
-					mediaFile = ZipEntryFileProxy
-							.extractFromZip((ZipEntryFileProxy) mediaFile);
+					mediaFile = ZipEntryFileProxy.extractFromZip(
+							(ZipEntryFileProxy) mediaFile, getConfig().getSidplay2()
+									.getTmpDir());
 					getConfig().getSidplay2().setLastDirectory(
 							zipEntryFileProxy.getZip().getAbsolutePath());
 				} else {
@@ -658,7 +652,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				}
 				if (mediaFile.getName().endsWith(".gz")) {
 					// Extract GZ file
-					mediaFile = ZipEntryFileProxy.extractFromGZ(mediaFile);
+					mediaFile = ZipEntryFileProxy.extractFromGZ(mediaFile,
+							getConfig().getSidplay2().getTmpDir());
 				}
 				switch (ifObj.getMediaType()) {
 				case TAPE:

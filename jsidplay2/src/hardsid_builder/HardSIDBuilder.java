@@ -52,28 +52,35 @@ public class HardSIDBuilder extends SIDBuilder {
 
 	private static HsidDLL2 hsid2;
 	private int sid6581, sid8580;
+	/**
+	 * Configuration
+	 */
+	private IConfig config;
 
 	private int init() {
 		{
 			// Extract fake HardSID driver recognizing fake and real devices
 			m_status = false;
-			final String driverPath = extract("/hardsid/cpp/Debug/", "HardSID.dll");
+			final String driverPath = extract("/hardsid/cpp/Debug/",
+					"HardSID.dll");
 			if (driverPath == null) {
 				m_status = false;
 				m_errorBuffer = String
-				.format("HARDSID ERROR: HardSID.dll not found");
+						.format("HARDSID ERROR: HardSID.dll not found");
 				return -1;
 			}
 			// Extract original HardSID4U driver, loaded by the driver above
-			final String origDriverPath = extract("/hardsid/cpp/Debug/", "HardSID_orig.dll");
+			final String origDriverPath = extract("/hardsid/cpp/Debug/",
+					"HardSID_orig.dll");
 			if (origDriverPath == null) {
 				m_status = false;
 				m_errorBuffer = String
-				.format("HARDSID ERROR: HardSID_orig.dll not found");
+						.format("HARDSID ERROR: HardSID_orig.dll not found");
 				return -1;
 			}
 			// Extract JNI driver wrapper
-			final String jniDriverPath = extract("/hardsid_builder/cpp/Debug/", "JHardSID.dll");
+			final String jniDriverPath = extract("/hardsid_builder/cpp/Debug/",
+					"JHardSID.dll");
 			try {
 				if (jniDriverPath != null) {
 					System.load(jniDriverPath);
@@ -82,7 +89,7 @@ public class HardSIDBuilder extends SIDBuilder {
 				}
 			} catch (final UnsatisfiedLinkError e) {
 				m_errorBuffer = String
-				.format("HARDSID ERROR: JHardSID.dll not found!");
+						.format("HARDSID ERROR: JHardSID.dll not found!");
 				return -1;
 			}
 			// Go and use JNI driver wrapper
@@ -108,10 +115,8 @@ public class HardSIDBuilder extends SIDBuilder {
 			// Check minor version
 			if (version < HSID_VERSION_MIN) {
 				m_errorBuffer = String
-				.format(
-						"HARDSID ERROR: HardSID.dll must be V%02d.%02d or greater",
-						HSID_VERSION_MIN >> 8,
-						HSID_VERSION_MIN & 0xff);
+						.format("HARDSID ERROR: HardSID.dll must be V%02d.%02d or greater",
+								HSID_VERSION_MIN >> 8, HSID_VERSION_MIN & 0xff);
 				return -1;
 			}
 		}
@@ -125,7 +130,8 @@ public class HardSIDBuilder extends SIDBuilder {
 			final InputStream str = getClass().getResourceAsStream(
 					path + libName);
 			try {
-				File f = new File(new File(System.getProperty("jsidplay2.tmpdir")), libName);
+				File f = new File(new File(config.getSidplay2().getTmpDir()),
+						libName);
 				f.deleteOnExit();
 				// install new library
 				System.out.println("Save library: " + f.getAbsolutePath());
@@ -143,7 +149,8 @@ public class HardSIDBuilder extends SIDBuilder {
 		}
 	}
 
-	private void copyFile(final InputStream in, final OutputStream out) throws IOException {
+	private void copyFile(final InputStream in, final OutputStream out)
+			throws IOException {
 		// Transfer bytes from in to out
 		final byte[] buf = new byte[1024];
 		int len;
@@ -154,7 +161,8 @@ public class HardSIDBuilder extends SIDBuilder {
 		out.close();
 	}
 
-	public HardSIDBuilder() {
+	public HardSIDBuilder(IConfig iniCfg) {
+		this.config = iniCfg;
 		m_errorBuffer = "N/A";
 		m_status = true;
 
@@ -169,17 +177,18 @@ public class HardSIDBuilder extends SIDBuilder {
 	public int devices() {
 		return hsid2.GetHardSIDCount();
 	}
-	
+
 	@Override
 	public SIDEmu lock(final EventScheduler context, final ChipModel model) {
-		HardSID hsid = new HardSID(context, hsid2, model == ChipModel.MOS6581 ? sid6581 : sid8580, model);
+		HardSID hsid = new HardSID(context, hsid2,
+				model == ChipModel.MOS6581 ? sid6581 : sid8580, model);
 		if (hsid.bool()) {
 			if (hsid.lock(true)) {
 				sidobjs.add(hsid);
 				return hsid;
 			}
 		}
-		
+
 		// Unable to locate free SID
 		m_status = false;
 		m_errorBuffer = "HardSID ERROR: No available SIDs to lock";
@@ -189,7 +198,7 @@ public class HardSIDBuilder extends SIDBuilder {
 	public boolean bool() {
 		return m_status;
 	}
-	
+
 	@Override
 	public void unlock(final SIDEmu device) {
 		if (sidobjs.remove(device)) {

@@ -229,7 +229,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private File createLocalFile(URL currentURL) {
-		return new File(System.getProperty("jsidplay2.tmpdir"), new File(
+		return new File(config.getSidplay2().getTmpDir(), new File(
 				currentURL.getPath()).getName());
 	}
 

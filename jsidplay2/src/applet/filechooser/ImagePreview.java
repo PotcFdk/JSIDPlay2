@@ -160,7 +160,7 @@ public class ImagePreview extends JPanel implements PropertyChangeListener {
 	public void setConfig(final IConfig config) {
 		this.config = config;
 	}
-	
+
 	public void loadPreview() {
 		if (file == null) {
 			return;
@@ -170,7 +170,8 @@ public class ImagePreview extends JPanel implements PropertyChangeListener {
 			if (file instanceof ZipEntryFileProxy) {
 				// Load file entry from ZIP
 				ZipEntryFileProxy zipEntry = (ZipEntryFileProxy) file;
-				file = ZipEntryFileProxy.extractFromZip(zipEntry);
+				file = ZipEntryFileProxy.extractFromZip(zipEntry, config
+						.getSidplay2().getTmpDir());
 			}
 
 			Vector<String> rowData;
@@ -231,6 +232,7 @@ public class ImagePreview extends JPanel implements PropertyChangeListener {
 		return buf.toString();
 	}
 
+	@Override
 	public void propertyChange(final PropertyChangeEvent e) {
 		boolean update = false;
 		final String prop = e.getPropertyName();
@@ -252,6 +254,7 @@ public class ImagePreview extends JPanel implements PropertyChangeListener {
 				loadPreview();
 				repaint();
 				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						getScrollPane().getVerticalScrollBar().setValue(0);
 					}
@@ -278,9 +281,9 @@ public class ImagePreview extends JPanel implements PropertyChangeListener {
 					if (row < dirEntries.size()) {
 						try {
 							DirEntry dirEntry = dirEntries.get(row);
-							File autostartFile = new File(
-									System.getProperty("jsidplay2.tmpdir"),
-									dirEntry.getValidFilename() + ".prg");
+							File autostartFile = new File(config.getSidplay2()
+									.getTmpDir(), dirEntry.getValidFilename()
+									+ ".prg");
 							autostartFile.deleteOnExit();
 							dirEntry.save(autostartFile);
 							firePropertyChange(PROP_AUTOSTART_PRG, null,

@@ -53,7 +53,7 @@ public class SidTuneConverter {
 		}
 		File tmpFile = null;
 		try {
-			tmpFile = new File(System.getProperty("jsidplay2.tmpdir"),
+			tmpFile = new File(config.getSidplay2().getTmpDir(),
 					PathUtils.getBaseNameNoExt(file) + ".prg.tmp");
 			if (!psid64.save(tmpFile.getAbsolutePath())) {
 				System.err.println("filename: " + filename);

@@ -439,12 +439,14 @@ public abstract class DiskCollection extends TuneTab implements
 			File pdfFile = selectedFile;
 			if (pdfFile instanceof ZipEntryFileProxy) {
 				// Extract ZIP file
-				pdfFile = ZipEntryFileProxy
-						.extractFromZip((ZipEntryFileProxy) selectedFile);
+				pdfFile = ZipEntryFileProxy.extractFromZip(
+						(ZipEntryFileProxy) selectedFile, config.getSidplay2()
+								.getTmpDir());
 			}
 			if (pdfFile.getName().endsWith(".gz")) {
 				// Extract GZ file
-				pdfFile = ZipEntryFileProxy.extractFromGZ(pdfFile);
+				pdfFile = ZipEntryFileProxy.extractFromGZ(pdfFile, config
+						.getSidplay2().getTmpDir());
 			}
 			if (pdfFile.exists()) {
 				if (Desktop.isDesktopSupported()) {
@@ -557,13 +559,14 @@ public abstract class DiskCollection extends TuneTab implements
 			try {
 				if (theScreenShot instanceof ZipEntryFileProxy) {
 					// Extract ZIP file
-					theScreenShot = ZipEntryFileProxy
-							.extractFromZip((ZipEntryFileProxy) theScreenShot);
+					theScreenShot = ZipEntryFileProxy.extractFromZip(
+							(ZipEntryFileProxy) theScreenShot, config
+									.getSidplay2().getTmpDir());
 				}
 				if (theScreenShot.getName().endsWith(".gz")) {
 					// Extract GZ file
-					theScreenShot = ZipEntryFileProxy
-							.extractFromGZ(theScreenShot);
+					theScreenShot = ZipEntryFileProxy.extractFromGZ(
+							theScreenShot, config.getSidplay2().getTmpDir());
 				}
 				is = new FileInputStream(theScreenShot);
 				ByteArrayOutputStream os = new ByteArrayOutputStream();

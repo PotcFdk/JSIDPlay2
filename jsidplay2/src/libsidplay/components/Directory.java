@@ -137,7 +137,8 @@ public class Directory {
 
 	protected static Directory gzToDir(final File file, final IConfig cfg)
 			throws IOException {
-		final File outFile = ZipEntryFileProxy.extractFromGZ(file);
+		final File outFile = ZipEntryFileProxy.extractFromGZ(file, cfg
+				.getSidplay2().getTmpDir());
 		return getDirectory(outFile, cfg);
 	}
 

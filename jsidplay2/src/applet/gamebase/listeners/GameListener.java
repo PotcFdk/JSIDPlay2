@@ -52,8 +52,7 @@ public class GameListener extends ProgressListener {
 						&& (entry.getName().toLowerCase().endsWith(".t64") || entry
 								.getName().toLowerCase().endsWith(".d64"))) {
 					InputStream is = zip.getInputStream(entry);
-					File mediaFile = new File(
-							System.getProperty("jsidplay2.tmpdir"),
+					File mediaFile = new File(config.getSidplay2().getTmpDir(),
 							entry.getName());
 					mediaFile.deleteOnExit();
 					OutputStream os = new FileOutputStream(mediaFile);

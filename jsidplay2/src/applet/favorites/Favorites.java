@@ -276,7 +276,10 @@ public class Favorites extends JPanel implements IFavorites {
 										if (file instanceof ZipEntryFileProxy) {
 											// Extract ZIP file
 											file = ZipEntryFileProxy
-													.extractFromZip((ZipEntryFileProxy) file);
+													.extractFromZip(
+															(ZipEntryFileProxy) file,
+															config.getSidplay2()
+																	.getTmpDir());
 										}
 										PathUtils.copyFile(file,
 												new File(fc.getSelectedFile(),

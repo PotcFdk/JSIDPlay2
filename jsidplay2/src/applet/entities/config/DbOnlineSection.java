@@ -3,13 +3,18 @@ package applet.entities.config;
 import javax.persistence.Embeddable;
 
 import sidplay.ini.intf.IOnlineSection;
-import applet.JSIDPlay2;
+import applet.config.annotations.ConfigTransient;
 
 @Embeddable
 public class DbOnlineSection implements IOnlineSection {
 
-	private String hvscUrl = JSIDPlay2.DEPLOYMENT_URL
-			+ "online/hvsc/C64Music.zip";
+	/**
+	 * URL where the JSIDPlay2 is deployed to.
+	 */
+	@ConfigTransient
+	private static final String DEPLOYMENT_URL = "http://kenchis.t15.org/jsidplay2/";
+
+	private String hvscUrl = DEPLOYMENT_URL + "online/hvsc/C64Music.zip";
 
 	@Override
 	public String getHvscUrl() {
@@ -20,7 +25,7 @@ public class DbOnlineSection implements IOnlineSection {
 		this.hvscUrl = hvscUrl;
 	}
 
-	private String cgscUrl = JSIDPlay2.DEPLOYMENT_URL + "online/cgsc/CGSC.zip";
+	private String cgscUrl = DEPLOYMENT_URL + "online/cgsc/CGSC.zip";
 
 	@Override
 	public String getCgscUrl() {
@@ -31,8 +36,7 @@ public class DbOnlineSection implements IOnlineSection {
 		this.cgscUrl = cgscUrl;
 	}
 
-	private String hvmecUrl = JSIDPlay2.DEPLOYMENT_URL
-			+ "online/hvmec/HVMEC.zip";
+	private String hvmecUrl = DEPLOYMENT_URL + "online/hvmec/HVMEC.zip";
 
 	@Override
 	public String getHvmecUrl() {
@@ -43,8 +47,7 @@ public class DbOnlineSection implements IOnlineSection {
 		this.hvmecUrl = hvmecUrl;
 	}
 
-	private String demosUrl = JSIDPlay2.DEPLOYMENT_URL
-			+ "online/demos/Demos.zip";
+	private String demosUrl = DEPLOYMENT_URL + "online/demos/Demos.zip";
 
 	@Override
 	public String getDemosUrl() {
@@ -55,7 +58,7 @@ public class DbOnlineSection implements IOnlineSection {
 		this.demosUrl = demosUrl;
 	}
 
-	private String magazinesUrl = JSIDPlay2.DEPLOYMENT_URL
+	private String magazinesUrl = DEPLOYMENT_URL
 			+ "online/mags/C64Magazines.zip";
 
 	@Override
@@ -67,8 +70,7 @@ public class DbOnlineSection implements IOnlineSection {
 		this.magazinesUrl = magazinesUrl;
 	}
 
-	private String gamebaseUrl = JSIDPlay2.DEPLOYMENT_URL
-			+ "online/gamebase/gb64.jar";
+	private String gamebaseUrl = DEPLOYMENT_URL + "online/gamebase/gb64.jar";
 
 	@Override
 	public String getGamebaseUrl() {

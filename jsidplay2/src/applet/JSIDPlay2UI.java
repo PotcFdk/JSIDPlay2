@@ -150,6 +150,10 @@ public class JSIDPlay2UI implements UIEventListener {
 	 */
 	protected ConsolePlayer cp;
 	/**
+	 * Configuration
+	 */
+	private IConfig config;
+	/**
 	 * Old disk motor state.
 	 */
 	protected boolean oldDiskMotor;
@@ -163,9 +167,10 @@ public class JSIDPlay2UI implements UIEventListener {
 	protected ScreenRecorder screenRecorder;
 
 	public JSIDPlay2UI(final EntityManager em, final Container container,
-			final ConsolePlayer player) {
+			final ConsolePlayer player, IConfig config) {
 		this.parent = container;
 		this.cp = player;
+		this.config = config;
 		uiEvents.addListener(this);
 		// create GUI
 		try {
@@ -397,9 +402,8 @@ public class JSIDPlay2UI implements UIEventListener {
 						&& fileDialog.getSelectedFile() != null) {
 					getPlayer().getC64().insertCartridge(
 							fileDialog.getSelectedFile());
-					final File tmpFile = new File(
-							System.getProperty("jsidplay2.tmpdir"),
-							"nuvieplayer-v1.0.prg");
+					final File tmpFile = new File(config.getSidplay2()
+							.getTmpDir(), "nuvieplayer-v1.0.prg");
 					tmpFile.deleteOnExit();
 					InputStream is = JSIDPlay2.class.getClassLoader()
 							.getResourceAsStream(
@@ -1250,14 +1254,13 @@ public class JSIDPlay2UI implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				// Create a hardcopy of the Video screen
-				final String outputDir = System.getProperty("jsidplay2.tmpdir");
 				videoScreen
 						.getC64Canvas()
 						.getScreenCanvas()
 						.hardCopy(
 								"bmp",
-								new File(outputDir, "screenshot")
-										.getAbsolutePath());
+								new File(config.getSidplay2().getTmpDir(),
+										"screenshot").getAbsolutePath());
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -1270,14 +1273,13 @@ public class JSIDPlay2UI implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				// Create a hardcopy of the Video screen
-				final String outputDir = System.getProperty("jsidplay2.tmpdir");
 				videoScreen
 						.getC64Canvas()
 						.getScreenCanvas()
 						.hardCopy(
 								"gif",
-								new File(outputDir, "screenshot")
-										.getAbsolutePath());
+								new File(config.getSidplay2().getTmpDir(),
+										"screenshot").getAbsolutePath());
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -1290,14 +1292,13 @@ public class JSIDPlay2UI implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				// Create a hardcopy of the Video screen
-				final String outputDir = System.getProperty("jsidplay2.tmpdir");
 				videoScreen
 						.getC64Canvas()
 						.getScreenCanvas()
 						.hardCopy(
 								"jpg",
-								new File(outputDir, "screenshot")
-										.getAbsolutePath());
+								new File(config.getSidplay2().getTmpDir(),
+										"screenshot").getAbsolutePath());
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -1310,14 +1311,13 @@ public class JSIDPlay2UI implements UIEventListener {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				// Create a hardcopy of the Video screen
-				final String outputDir = System.getProperty("jsidplay2.tmpdir");
 				videoScreen
 						.getC64Canvas()
 						.getScreenCanvas()
 						.hardCopy(
 								"png",
-								new File(outputDir, "screenshot")
-										.getAbsolutePath());
+								new File(config.getSidplay2().getTmpDir(),
+										"screenshot").getAbsolutePath());
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

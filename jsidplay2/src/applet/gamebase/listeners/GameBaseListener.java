@@ -8,15 +8,18 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import sidplay.ini.intf.IConfig;
 import applet.gamebase.GameBase;
 import applet.gamebase.GameBasePage;
 
 public class GameBaseListener extends ProgressListener {
 
 	private final GameBase gameBase;
+	private IConfig config;
 
-	public GameBaseListener(GameBase gameBase) {
+	public GameBaseListener(GameBase gameBase, IConfig config) {
 		this.gameBase = gameBase;
+		this.config = config;
 	}
 
 	@Override
@@ -27,7 +30,6 @@ public class GameBaseListener extends ProgressListener {
 		}
 		try {
 			File output = null;
-			final String outputDir = System.getProperty("jsidplay2.tmpdir");
 			byte[] b = new byte[1024];
 			ZipFile zip = new ZipFile(downloadedFile);
 			@SuppressWarnings("rawtypes")
@@ -35,7 +37,8 @@ public class GameBaseListener extends ProgressListener {
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry) entries.nextElement();
 				long size = entry.getSize();
-				output = new File(outputDir, entry.getName());
+				output = new File(config.getSidplay2().getTmpDir(),
+						entry.getName());
 				if (output.isDirectory()) {
 					output.mkdirs();
 				} else {

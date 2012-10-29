@@ -62,8 +62,8 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 	private SwingEngine swix;
 
-	protected JTextField defaultTime, mp3, tmpdir, proxyHost, proxyPort,
-			dwnlUrl6581R2, dwnlUrl6581R4, dwnlUrl8580R5;
+	protected JTextField defaultTime, mp3, proxyHost, proxyPort, dwnlUrl6581R2,
+			dwnlUrl6581R4, dwnlUrl8580R5;
 	protected JCheckBox enableSldb, singleSong, proxyEnable;
 	protected JComboBox<String> soundDevice, samplingRate;
 	protected JComboBox<Integer> hardsid6581, hardsid8580;
@@ -214,24 +214,6 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 				// replay last tune
 				uiEvents.fireEvent(IReplayTune.class, new IReplayTune() {
 				});
-			}
-		}
-	};
-
-	public Action doSetTmpDir = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			final JFileChooser fc = new JFileChooser();
-			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			final int result = fc.showOpenDialog(SoundSettings.this);
-			if (result == JFileChooser.APPROVE_OPTION
-					&& fc.getSelectedFile() != null) {
-				tmpdir.setText(fc.getSelectedFile().getAbsolutePath());
-				config.getSidplay2().setTmpDir(
-						PathUtils.getPath(fc.getSelectedFile()));
-				System.setProperty("jsidplay2.tmpdir",
-						PathUtils.getPath(fc.getSelectedFile()));
 			}
 		}
 	};
@@ -453,8 +435,6 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 			mp3.setText(config.getAudio().getMp3File());
 			playMP3.setSelected(config.getAudio().isPlayOriginal());
 			playEmulation.setSelected(!config.getAudio().isPlayOriginal());
-
-			tmpdir.setText(config.getSidplay2().getTmpDir());
 
 			proxyEnable.setSelected(consolePl.getConfig().getSidplay2()
 					.isEnableProxy());

@@ -11,11 +11,11 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import libsidutils.zip.ZipEntryFileProxy;
-
 import sidplay.ini.intf.IConfig;
 import applet.filechooser.zip.ZipFileSystemView;
 
-public class ImageFileChooser extends JFileChooser implements PropertyChangeListener {
+public class ImageFileChooser extends JFileChooser implements
+		PropertyChangeListener {
 
 	private IConfig config;
 	private File autostartFile;
@@ -32,7 +32,6 @@ public class ImageFileChooser extends JFileChooser implements PropertyChangeList
 		setAccessory(imagePreview);
 	}
 
-
 	@Override
 	public int showDialog(Component parent, String approveButtonText)
 			throws HeadlessException {
@@ -43,7 +42,8 @@ public class ImageFileChooser extends JFileChooser implements PropertyChangeList
 				if (selectedFile instanceof ZipEntryFileProxy) {
 					// Load file entry from ZIP
 					ZipEntryFileProxy zipEntry = (ZipEntryFileProxy) selectedFile;
-					setSelectedFile(ZipEntryFileProxy.extractFromZip(zipEntry));
+					setSelectedFile(ZipEntryFileProxy.extractFromZip(zipEntry,
+							config.getSidplay2().getTmpDir()));
 					config.getSidplay2().setLastDirectory(
 							zipEntry.getZip().getAbsolutePath());
 				} else {
@@ -60,11 +60,10 @@ public class ImageFileChooser extends JFileChooser implements PropertyChangeList
 	public void setAutoStartFile(File file) {
 		autostartFile = file;
 	}
-	
+
 	public File getAutostartFile() {
 		return autostartFile;
 	}
-
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -73,7 +72,7 @@ public class ImageFileChooser extends JFileChooser implements PropertyChangeList
 			setAutoStartFile(file);
 			// Insert media
 			approveSelection();
-		}else if (ImagePreview.PROP_ATTACH_IMAGE.equals(evt.getPropertyName())) {
+		} else if (ImagePreview.PROP_ATTACH_IMAGE.equals(evt.getPropertyName())) {
 			setAutoStartFile(null);
 		}
 	}

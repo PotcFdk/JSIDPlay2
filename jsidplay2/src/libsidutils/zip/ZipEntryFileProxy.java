@@ -131,11 +131,11 @@ public class ZipEntryFileProxy extends File {
 		if (zip.hash.get(path) == null) {
 			return new File[0];
 		}
-		Map<String, String> children = (Map<String, String>) zip.hash.get(path);
+		Map<String, String> children = zip.hash.get(path);
 		ArrayList<File> files = new ArrayList<File>();
 		Iterator<String> it = children.keySet().iterator();
 		while (it.hasNext()) {
-			final String name = (String) it.next();
+			final String name = it.next();
 			if (filter == null || filter.accept(new File(name) {
 				@Override
 				public boolean isDirectory() {
@@ -158,20 +158,21 @@ public class ZipEntryFileProxy extends File {
 	 * 
 	 * @param zipEntry
 	 *            ZIP entry to extract
+	 * @param targetDir
 	 * @param prefix
 	 *            temp file prefix
 	 * @return temp file with the contents of ZIP file entry
 	 * @throws IOException
 	 *             I/O error
 	 */
-	public static final File extractFromZip(final ZipEntryFileProxy zipEntry)
-			throws IOException {
+	public static final File extractFromZip(final ZipEntryFileProxy zipEntry,
+			String targetDir) throws IOException {
 		final String newName = zipEntry.getName();
 		File tmpFile = null;
 		InputStream is = null;
 		OutputStream os = null;
 		try {
-			tmpFile = new File(System.getProperty("jsidplay2.tmpdir"), newName);
+			tmpFile = new File(targetDir, newName);
 			tmpFile.deleteOnExit();
 			is = zipEntry.getInputStream();
 			os = new FileOutputStream(tmpFile);
@@ -200,18 +201,20 @@ public class ZipEntryFileProxy extends File {
 	 * 
 	 * @param file
 	 *            file to extract
+	 * @param targetDir
 	 * @return temp file with the contents of GZ file entry
 	 * @throws IOException
 	 *             I/O error
 	 */
-	public static final File extractFromGZ(final File file) throws IOException {
+	public static final File extractFromGZ(final File file, String targetDir)
+			throws IOException {
 		final String newName = file.getName().substring(0,
 				file.getName().length() - 3);
 		File tmpFile = null;
 		InputStream is = null;
 		OutputStream os = null;
 		try {
-			tmpFile = new File(System.getProperty("jsidplay2.tmpdir"), newName);
+			tmpFile = new File(targetDir, newName);
 			tmpFile.deleteOnExit();
 			is = new GZIPInputStream(new FileInputStream(file));
 			os = new FileOutputStream(tmpFile);

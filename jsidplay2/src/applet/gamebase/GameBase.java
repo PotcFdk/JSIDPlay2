@@ -150,13 +150,14 @@ public class GameBase extends TuneTab {
 		public void actionPerformed(ActionEvent e) {
 			if (enableGameBase.isSelected()) {
 				enableGameBase.setEnabled(false);
-				final String outputDir = System.getProperty("jsidplay2.tmpdir");
-				File dbFile = new File(outputDir, "GB64.properties");
+				File dbFile = new File(config.getSidplay2().getTmpDir(),
+						"GB64.properties");
 				if (dbFile.exists()) {
 					// There is already a database file downloaded earlier.
 					// Therefore we try to connect
 
-					connect(new File(outputDir, "GB64").getAbsolutePath());
+					connect(new File(config.getSidplay2().getTmpDir(), "GB64")
+							.getAbsolutePath());
 
 					// Check version of GB64
 					if (configService.checkVersion()) {
@@ -171,16 +172,14 @@ public class GameBase extends TuneTab {
 								.println("Version is different or database is broken,"
 										+ " re-download");
 						disconnect();
-						downloadStart(config.getOnline()
-								.getGamebaseUrl(),
-								new GameBaseListener(GameBase.this));
+						downloadStart(config.getOnline().getGamebaseUrl(),
+								new GameBaseListener(GameBase.this, config));
 					}
 
 				} else {
 					// First time, the database is downloaded
-					downloadStart(
-							config.getOnline().getGamebaseUrl(),
-							new GameBaseListener(GameBase.this));
+					downloadStart(config.getOnline().getGamebaseUrl(),
+							new GameBaseListener(GameBase.this, config));
 				}
 			}
 		}
