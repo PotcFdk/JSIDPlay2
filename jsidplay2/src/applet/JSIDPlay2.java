@@ -390,7 +390,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	}
 
 	/**
-	 * Ask the user to insert a tape.
+	 * Insert a tape.
 	 */
 	private void insertTape(final File selectedTape, final File autostartFile,
 			final Component component) throws IOException {
@@ -428,7 +428,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	}
 
 	/**
-	 * Ask the user to insert a disk.
+	 * Insert a disk.
 	 */
 	private void insertDisk(final File selectedDisk, final File autostartFile,
 			final Component component) throws IOException {
@@ -485,7 +485,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	}
 
 	/**
-	 * Ask the user to insert a cartridge.
+	 * Insert a cartridge.
 	 * 
 	 * @throws IOException
 	 *             cannot read cartridge file
@@ -642,8 +642,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 					// Extract ZIP file
 					ZipEntryFileProxy zipEntryFileProxy = (ZipEntryFileProxy) mediaFile;
 					mediaFile = ZipEntryFileProxy.extractFromZip(
-							(ZipEntryFileProxy) mediaFile, getConfig().getSidplay2()
-									.getTmpDir());
+							(ZipEntryFileProxy) mediaFile, getConfig()
+									.getSidplay2().getTmpDir());
 					getConfig().getSidplay2().setLastDirectory(
 							zipEntryFileProxy.getZip().getAbsolutePath());
 				} else {
