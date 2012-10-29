@@ -50,7 +50,8 @@ public class Psid64 {
 	 * Number of spaces before EOT.
 	 */
 	public static final int STIL_EOT_SPACES = 10;
-	public static final String DOCUMENTS_STIL_TXT = "DOCUMENTS" + System.getProperty("file.separator") + "STIL.txt";
+	public static final String DOCUMENTS_STIL_TXT = "DOCUMENTS"
+			+ System.getProperty("file.separator") + "STIL.txt";
 
 	public static final String txt_relocOverlapsImage = "PSID64: relocation information overlaps the load image";
 	public static final String txt_notEnoughC64Memory = "PSID64: C64 memory has no space for driver code";
@@ -61,7 +62,7 @@ public class Psid64 {
 	//
 	// configuration options
 	//
-	
+
 	private boolean m_blankScreen;
 	private int m_initialSong;
 	private final boolean m_verbose;
@@ -75,7 +76,7 @@ public class Psid64 {
 	//
 	// conversion data
 	//
-	
+
 	private Screen m_screen;
 	private String m_stilText;
 	/**
@@ -135,8 +136,7 @@ public class Psid64 {
 		m_tune = null;
 		try {
 			m_tune = SidTune.load(file);
-		}
-		catch (final Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			m_statusString = txt_noSidTuneLoaded;
 			m_file = null;
@@ -218,7 +218,9 @@ public class Psid64 {
 		m_tune.placeProgramInMemory(c64buf);
 		blocks[numBlocks].data = c64buf;
 		blocks[numBlocks].dataOff = tuneInfo.loadAddr;
-		System.arraycopy(c64buf, tuneInfo.loadAddr, blocks[numBlocks].data, blocks[numBlocks].dataOff, blocks[numBlocks].data.length - blocks[numBlocks].dataOff);
+		System.arraycopy(c64buf, tuneInfo.loadAddr, blocks[numBlocks].data,
+				blocks[numBlocks].dataOff, blocks[numBlocks].data.length
+						- blocks[numBlocks].dataOff);
 		blocks[numBlocks].description = "Music data";
 		++numBlocks;
 
@@ -247,6 +249,7 @@ public class Psid64 {
 
 		Arrays.sort(blocks, 0, numBlocks, new Comparator<block_t>() {
 
+			@Override
 			public int compare(final block_t a, final block_t b) {
 				if (a.load < b.load) {
 					return -1;
@@ -265,16 +268,22 @@ public class Psid64 {
 		if (m_verbose) {
 			int charset = m_charPage << 8;
 
-			System.err.println("C64 memory map:");
+			System.out.println("C64 memory map:");
 			for (int i = 0; i < numBlocks; ++i) {
 				if (charset != 0 && blocks[i].load > charset) {
-					System.err.println("  $" + toHexWord(charset) + "-$" + toHexWord(charset + 256 * NUM_CHAR_PAGES) + "  Character set");
+					System.out.println("  $" + toHexWord(charset) + "-$"
+							+ toHexWord(charset + 256 * NUM_CHAR_PAGES)
+							+ "  Character set");
 					charset = 0;
 				}
-				System.err.println("  $" + toHexWord(blocks[i].load) + "-$" + toHexWord(blocks[i].load + blocks[i].size) + "  " + blocks[i].description);
+				System.out.println("  $" + toHexWord(blocks[i].load) + "-$"
+						+ toHexWord(blocks[i].load + blocks[i].size) + "  "
+						+ blocks[i].description);
 			}
 			if (charset != 0) {
-				System.err.println("  $" + toHexWord(charset) + "-$" + toHexWord(charset + 256 * NUM_CHAR_PAGES) + "  Character set");
+				System.out.println("  $" + toHexWord(charset) + "-$"
+						+ toHexWord(charset + 256 * NUM_CHAR_PAGES)
+						+ "  Character set");
 			}
 		}
 
@@ -306,20 +315,47 @@ public class Psid64 {
 		m_programData[destPos + song] = (byte) (initialSong - 1 & 0xff);
 
 		final int eof = 0x0801 + boot_size - 2 + size;
-		m_programData[destPos + addr++] = (byte) (eof & 0xff); // end of C64 file
+		m_programData[destPos + addr++] = (byte) (eof & 0xff); // end of C64
+																// file
 		m_programData[destPos + addr++] = (byte) (eof >> 8);
-		m_programData[destPos + addr++] = (byte) (0x10000 & 0xff); // end of high memory
+		m_programData[destPos + addr++] = (byte) (0x10000 & 0xff); // end of
+																	// high
+																	// memory
 		m_programData[destPos + addr++] = (byte) (0x10000 >> 8);
-		m_programData[destPos + addr++] = (byte) (size + 0xff >> 8); // number of pages to copy
-		m_programData[destPos + addr++] = (byte) (0x10000 - size & 0xff); // start of blocks after moving
+		m_programData[destPos + addr++] = (byte) (size + 0xff >> 8); // number
+																		// of
+																		// pages
+																		// to
+																		// copy
+		m_programData[destPos + addr++] = (byte) (0x10000 - size & 0xff); // start
+																			// of
+																			// blocks
+																			// after
+																			// moving
 		m_programData[destPos + addr++] = (byte) (0x10000 - size >> 8);
-		m_programData[destPos + addr++] = (byte) (numBlocks - 1); // number of blocks - 1
-		m_programData[destPos + addr++] = (byte) m_charPage; // page for character set, or 0
+		m_programData[destPos + addr++] = (byte) (numBlocks - 1); // number of
+																	// blocks -
+																	// 1
+		m_programData[destPos + addr++] = (byte) m_charPage; // page for
+																// character
+																// set, or 0
 		final int jmpAddr = m_driverPage << 8;
-		m_programData[destPos + addr++] = (byte) (jmpAddr & 0xff); // start address of driver
+		m_programData[destPos + addr++] = (byte) (jmpAddr & 0xff); // start
+																	// address
+																	// of driver
 		m_programData[destPos + addr++] = (byte) (jmpAddr >> 8);
-		m_programData[destPos + addr++] = (byte) (jmpAddr + 3 & 0xff); // address of new stop vector
-		m_programData[destPos + addr++] = (byte) (jmpAddr + 3 >> 8); // for tunes that call $a7ae during init
+		m_programData[destPos + addr++] = (byte) (jmpAddr + 3 & 0xff); // address
+																		// of
+																		// new
+																		// stop
+																		// vector
+		m_programData[destPos + addr++] = (byte) (jmpAddr + 3 >> 8); // for
+																		// tunes
+																		// that
+																		// call
+																		// $a7ae
+																		// during
+																		// init
 
 		// copy block data to psidboot.a65 parameters
 		for (int i = 0; i < numBlocks; ++i) {
@@ -334,7 +370,8 @@ public class Psid64 {
 
 		// copy blocks to c64 program file
 		for (int i = 0; i < numBlocks; ++i) {
-			System.arraycopy(blocks[i].data, blocks[i].dataOff, m_programData, destPos, blocks[i].size);
+			System.arraycopy(blocks[i].data, blocks[i].dataOff, m_programData,
+					destPos, blocks[i].size);
 			destPos += blocks[i].size;
 		}
 
@@ -363,8 +400,9 @@ public class Psid64 {
 
 		// print memory map
 		if (m_verbose) {
-			System.err.println("C64 memory map:");
-			System.err.println("  $" + toHexWord(load) + "-$" + toHexWord(end) + "  BASIC program");
+			System.out.println("C64 memory map:");
+			System.out.println("  $" + toHexWord(load) + "-$" + toHexWord(end)
+					+ "  BASIC program");
 		}
 
 		return true;
@@ -442,10 +480,12 @@ public class Psid64 {
 		addr = 6;
 
 		// Store parameters for PSID player.
-		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.initAddr != 0 ? 0x4c : 0x60);
+		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.initAddr != 0 ? 0x4c
+				: 0x60);
 		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.initAddr & 0xff);
 		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.initAddr >> 8);
-		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.playAddr != 0 ? 0x4c : 0x60);
+		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.playAddr != 0 ? 0x4c
+				: 0x60);
 		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.playAddr & 0xff);
 		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.playAddr >> 8);
 		psid_reloc[reloc_driverPos + addr++] = (byte) tuneInfo.songs;
@@ -457,7 +497,8 @@ public class Psid64 {
 		psid_reloc[reloc_driverPos + addr++] = (byte) (speed >> 16 & 0xff);
 		psid_reloc[reloc_driverPos + addr++] = (byte) (speed >> 24);
 
-		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.loadAddr < 0x31a ? 0xff : 0x05);
+		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.loadAddr < 0x31a ? 0xff
+				: 0x05);
 		psid_reloc[reloc_driverPos + addr++] = iomap(tuneInfo.initAddr);
 		psid_reloc[reloc_driverPos + addr++] = iomap(tuneInfo.playAddr);
 
@@ -528,13 +569,16 @@ public class Psid64 {
 		m_screen.move(0, 4);
 		m_screen.write("Name   : ");
 		final SidTuneInfo tuneInfo = m_tune.getInfo();
-		m_screen.write(tuneInfo.infoString[0].substring(0, Math.min(tuneInfo.infoString[0].length(), 31)));
+		m_screen.write(tuneInfo.infoString[0].substring(0,
+				Math.min(tuneInfo.infoString[0].length(), 31)));
 
 		m_screen.write("\nAuthor : ");
-		m_screen.write(tuneInfo.infoString[1].substring(0, Math.min(tuneInfo.infoString[1].length(), 31)));
+		m_screen.write(tuneInfo.infoString[1].substring(0,
+				Math.min(tuneInfo.infoString[1].length(), 31)));
 
 		m_screen.write("\nRelease: ");
-		m_screen.write(tuneInfo.infoString[2].substring(0, Math.min(tuneInfo.infoString[2].length(), 31)));
+		m_screen.write(tuneInfo.infoString[2].substring(0,
+				Math.min(tuneInfo.infoString[2].length(), 31)));
 
 		m_screen.write("\nLoad   : $");
 		m_screen.write(toHexWord(tuneInfo.loadAddr));
@@ -587,7 +631,8 @@ public class Psid64 {
 			m_screen.write(" [1-0, A");
 		} else {
 			m_screen.write("[1-0, A-");
-			m_screen.putchar(tuneInfo.songs <= 36 ? tuneInfo.songs - 11 + 'A' : 'Z');
+			m_screen.putchar(tuneInfo.songs <= 36 ? tuneInfo.songs - 11 + 'A'
+					: 'Z');
 		}
 		m_screen.write("] Select song [+] Next song\n");
 		m_screen.write("  [-] Previous song [DEL] Blank screen\n");
@@ -696,7 +741,8 @@ public class Psid64 {
 				buffer.append(entry.globalComment.trim());
 			}
 			final Iterator<Info> subtuneEntryIt = entry.infos.iterator();
-			for (final Iterator<Info> subTuneIterator = subtuneEntryIt; subTuneIterator.hasNext();) {
+			for (final Iterator<Info> subTuneIterator = subtuneEntryIt; subTuneIterator
+					.hasNext();) {
 				final Info info = subTuneIterator.next();
 				buffer.append(" SubTune #" + subTuneNo + ": ");
 				if (info.name != null) {
@@ -722,13 +768,17 @@ public class Psid64 {
 			}
 			subTuneNo++;
 		}
-		return buffer.append("                                        ").toString();
+		return buffer.append("                                        ")
+				.toString();
 	}
 
-	private short findStilSpace(final boolean pages[], final short scr, final short chars, final short driver, final int size) {
+	private short findStilSpace(final boolean pages[], final short scr,
+			final short chars, final short driver, final int size) {
 		int firstPage = 0;
 		for (int i = 0; i < MAX_PAGES; ++i) {
-			if (pages[i] || scr != 0 && scr <= i && i < scr + NUM_SCREEN_PAGES || chars != 0 && chars <= i && i < chars + NUM_CHAR_PAGES || driver <= i && i < driver + NUM_EXTDRV_PAGES) {
+			if (pages[i] || scr != 0 && scr <= i && i < scr + NUM_SCREEN_PAGES
+					|| chars != 0 && chars <= i && i < chars + NUM_CHAR_PAGES
+					|| driver <= i && i < driver + NUM_EXTDRV_PAGES) {
 				if (i - firstPage >= size) {
 					return (short) firstPage;
 				}
@@ -739,10 +789,12 @@ public class Psid64 {
 		return 0;
 	}
 
-	private short findDriverSpace(final boolean pages[], final short scr, final short chars, final int size) {
+	private short findDriverSpace(final boolean pages[], final short scr,
+			final short chars, final int size) {
 		short firstPage = 0;
 		for (int i = 0; i < MAX_PAGES; ++i) {
-			if (pages[i] || scr != 0 && scr <= i && i < scr + NUM_SCREEN_PAGES || chars != 0 && chars <= i && i < chars + NUM_CHAR_PAGES) {
+			if (pages[i] || scr != 0 && scr <= i && i < scr + NUM_SCREEN_PAGES
+					|| chars != 0 && chars <= i && i < chars + NUM_CHAR_PAGES) {
 				if (i - firstPage >= size) {
 					return firstPage;
 				}
@@ -794,7 +846,7 @@ public class Psid64 {
 		if (startp == 0x00) {
 			// Used memory ranges.
 			final int used[] = { 0x00, 0x03, 0xa0, 0xbf, 0xd0, 0xff, 0x00, 0x00 // calculated
-					// below
+			// below
 			};
 
 			// Finish initialization by setting start and end pages.
@@ -816,7 +868,9 @@ public class Psid64 {
 
 			// check that the relocation information does not use the following
 			// memory areas: 0x0000-0x03FF, 0xA000-0xBFFF and 0xD000-0xFFFF
-			if (startp < 0x04 || 0xa0 <= startp && startp <= 0xbf || startp >= 0xd0 || endp - 1 < 0x04 || 0xa0 <= endp - 1 && endp - 1 <= 0xbf || endp - 1 >= 0xd0) {
+			if (startp < 0x04 || 0xa0 <= startp && startp <= 0xbf
+					|| startp >= 0xd0 || endp - 1 < 0x04 || 0xa0 <= endp - 1
+					&& endp - 1 <= 0xbf || endp - 1 >= 0xd0) {
 				return;
 			}
 
@@ -846,7 +900,8 @@ public class Psid64 {
 
 				// check if screen area is available
 				scr = (short) (bank + j);
-				if (pages[scr] || pages[scr + 1] || pages[scr + 2] || pages[scr + 3]) {
+				if (pages[scr] || pages[scr + 1] || pages[scr + 2]
+						|| pages[scr + 3]) {
 					continue;
 				}
 
@@ -862,28 +917,35 @@ public class Psid64 {
 
 						// check if character rom area is available
 						chars = (short) (bank + k);
-						if (pages[chars] || pages[chars + 1] || pages[chars + 2] || pages[chars + 3] || pages[chars + 4] || pages[chars + 5] || pages[chars + 6] || pages[chars + 7]) {
+						if (pages[chars] || pages[chars + 1]
+								|| pages[chars + 2] || pages[chars + 3]
+								|| pages[chars + 4] || pages[chars + 5]
+								|| pages[chars + 6] || pages[chars + 7]) {
 							continue;
 						}
 
-						driver = findDriverSpace(pages, scr, chars, NUM_EXTDRV_PAGES);
+						driver = findDriverSpace(pages, scr, chars,
+								NUM_EXTDRV_PAGES);
 						if (driver != 0) {
 							m_driverPage = driver;
 							m_screenPage = scr;
 							m_charPage = chars;
 							if (stilSize != 0) {
-								m_stilPage = findStilSpace(pages, scr, chars, driver, stilSize);
+								m_stilPage = findStilSpace(pages, scr, chars,
+										driver, stilSize);
 							}
 							return;
 						}
 					}
 				} else {
-					driver = findDriverSpace(pages, scr, (short) 0, NUM_EXTDRV_PAGES);
+					driver = findDriverSpace(pages, scr, (short) 0,
+							NUM_EXTDRV_PAGES);
 					if (driver != 0) {
 						m_driverPage = driver;
 						m_screenPage = scr;
 						if (stilSize != 0) {
-							m_stilPage = findStilSpace(pages, scr, (short) 0, driver, stilSize);
+							m_stilPage = findStilSpace(pages, scr, (short) 0,
+									driver, stilSize);
 						}
 						return;
 					}
@@ -892,7 +954,8 @@ public class Psid64 {
 		}
 
 		if (driver == 0) {
-			driver = findDriverSpace(pages, (short) 0, (short) 0, NUM_MINDRV_PAGES);
+			driver = findDriverSpace(pages, (short) 0, (short) 0,
+					NUM_MINDRV_PAGES);
 			m_driverPage = driver;
 		}
 	}

@@ -163,7 +163,7 @@ public abstract class Collection extends TuneTab implements
 		@Override
 		protected void setRootDir(final File rootFile) {
 			if (rootFile.exists()) {
-				config.getSidplay2().setHvsc(PathUtils.getPath(rootFile));
+				config.getSidplay2().setHvsc(rootFile.getAbsolutePath());
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
@@ -240,7 +240,7 @@ public abstract class Collection extends TuneTab implements
 		protected void setRootDir(final File rootFile) {
 			if (rootFile.exists()) {
 				// save settings
-				config.getSidplay2().setCgsc(PathUtils.getPath(rootFile));
+				config.getSidplay2().setCgsc(rootFile.getAbsolutePath());
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 

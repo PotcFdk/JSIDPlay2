@@ -621,8 +621,7 @@ public class Favorites extends JPanel implements IFavorites {
 			converted = true;
 		}
 		if (!converted && fileToConvert.isAbsolute()) {
-			String relativePath = PathUtils.getPath(fileToConvert);
-			result = relativePath != null ? relativePath : result;
+			result = fileToConvert.getAbsolutePath();
 		}
 		return result;
 	}

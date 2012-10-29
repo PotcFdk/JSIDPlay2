@@ -34,7 +34,6 @@ import libsidplay.sidtune.SidTune;
 import org.swixml.SwingEngine;
 
 import sidplay.ini.intf.IConfig;
-import applet.PathUtils;
 import applet.TuneTab;
 import applet.config.annotations.ConfigField;
 import applet.config.editors.CharTextField;
@@ -345,7 +344,7 @@ public class ConfigView extends TuneTab {
 					&& fileDialog.getSelectedFile() != null) {
 				lastDir = fileDialog.getSelectedFile();
 				File file = fileDialog.getSelectedFile();
-				textField.setText(PathUtils.getPath(file));
+				textField.setText(file.getAbsolutePath());
 			}
 		}
 	};

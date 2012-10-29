@@ -42,7 +42,6 @@ import libsidutils.zip.ZipFileProxy;
 import org.swixml.SwingEngine;
 
 import sidplay.ini.intf.IConfig;
-import applet.PathUtils;
 import applet.TuneTab;
 import applet.download.DownloadThread;
 import applet.download.IDownloadListener;
@@ -84,7 +83,7 @@ public abstract class DiskCollection extends TuneTab implements
 		@Override
 		protected void setRootDir(final File rootFile) {
 			if (rootFile.exists()) {
-				config.getSidplay2().setHVMEC(PathUtils.getPath(rootFile));
+				config.getSidplay2().setHVMEC(rootFile.getAbsolutePath());
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
@@ -145,7 +144,7 @@ public abstract class DiskCollection extends TuneTab implements
 		@Override
 		protected void setRootDir(final File rootFile) {
 			if (rootFile.exists()) {
-				config.getSidplay2().setDemos(PathUtils.getPath(rootFile));
+				config.getSidplay2().setDemos(rootFile.getAbsolutePath());
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
@@ -205,7 +204,7 @@ public abstract class DiskCollection extends TuneTab implements
 		@Override
 		protected void setRootDir(final File rootFile) {
 			if (rootFile.exists()) {
-				config.getSidplay2().setMags(PathUtils.getPath(rootFile));
+				config.getSidplay2().setMags(rootFile.getAbsolutePath());
 				getUiEvents().fireEvent(ICollectionChanged.class,
 						new ICollectionChanged() {
 
