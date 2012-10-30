@@ -23,6 +23,14 @@ public class ConfigService {
 		this.em = em;
 	};
 
+	public IConfig create() {
+		Configuration config = new Configuration();
+		config.getSidplay2().setVersion(IConfig.REQUIRED_CONFIG_VERSION);
+		em.persist(config);
+		flush();
+		return config;
+	}
+
 	public Configuration get() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Configuration> q = cb.createQuery(Configuration.class);
@@ -36,16 +44,7 @@ public class ConfigService {
 		return null;
 	}
 
-	public IConfig create() {
-		Configuration config = new Configuration();
-		config.getSidplay2().setVersion(IConfig.REQUIRED_CONFIG_VERSION);
-		em.persist(config);
-		flush();
-		return config;
-	}
-
 	public void remove(Configuration config) {
-		// remove old configuration from DB
 		em.getTransaction().begin();
 		em.remove(config);
 		em.flush();
@@ -59,7 +58,6 @@ public class ConfigService {
 
 	public Configuration restore(Configuration config) {
 		try {
-			// import configuration from file
 			JAXBContext jaxbContext = JAXBContext
 					.newInstance(Configuration.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -70,7 +68,6 @@ public class ConfigService {
 
 				remove(config);
 
-				// restore configuration in DB
 				Configuration mergedConfig = em.merge(detachedConfig);
 				em.getTransaction().begin();
 				em.persist(mergedConfig);
@@ -97,8 +94,8 @@ public class ConfigService {
 
 	public void removeFavorite(IConfig cfg, int index) {
 		Configuration configuration = (Configuration) cfg;
-		FavoritesSection toRemove = (FavoritesSection) configuration.getFavorites()
-				.get(index);
+		FavoritesSection toRemove = (FavoritesSection) configuration
+				.getFavorites().get(index);
 		toRemove.setConfiguration(null);
 		configuration.getFavorites().remove(index);
 		em.remove(toRemove);
