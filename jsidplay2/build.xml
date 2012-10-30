@@ -269,7 +269,7 @@
           Create extra online content of JSIDPlay2, that is Gamebase64 and HVSC for example.
           Everything is deployed to the web hoster.
          ================================= -->
-	<target name="deployOnlineContent" depends="init,gb64_import,hvsc_import,cgsc_import,demos,hvmec_import" description="Deploy extra online content to the Web Hoster" />
+	<target name="deployOnlineContent" depends="init,gb64_import,hvsc_import,cgsc_import,demos,hvmec_import,upload" description="Deploy extra online content to the Web Hoster" />
 
 	<!-- ================================= 
           target: build              
