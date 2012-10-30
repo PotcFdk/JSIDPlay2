@@ -25,14 +25,14 @@ public class FilterSection implements IFilterSection {
 	@ManyToOne
 	@XmlIDREF
 	@ConfigTransient
-	public Config config;
+	public Configuration config;
 
 	@XmlTransient
-	public Config getDbConfig() {
+	public Configuration getDbConfig() {
 		return config;
 	}
 
-	public void setDbConfig(Config dbConfig) {
+	public void setDbConfig(Configuration dbConfig) {
 		this.config = dbConfig;
 	}
 

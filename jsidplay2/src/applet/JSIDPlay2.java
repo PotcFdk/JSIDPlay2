@@ -37,7 +37,7 @@ import sidplay.ConsolePlayer;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.ISidPlay2Section;
 import applet.entities.PersistenceProperties;
-import applet.entities.config.Config;
+import applet.entities.config.Configuration;
 import applet.entities.config.service.ConfigService;
 import applet.events.IGotoURL;
 import applet.events.IInsertMedia;
@@ -252,7 +252,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 			// No database found?
 			return configService.create();
 		} else {
-			Config config = configService.get();
+			Configuration config = configService.get();
 			if (config == null) {
 				// No configuration in database found?
 				return configService.create();

@@ -34,7 +34,7 @@ import applet.config.annotations.ConfigTransient;
 @Entity
 @XmlRootElement(name = "config")
 @ConfigClass(getBundleKey = "CONFIG")
-public class Config implements IConfig {
+public class Configuration implements IConfig {
 
 	@Transient
 	@XmlTransient

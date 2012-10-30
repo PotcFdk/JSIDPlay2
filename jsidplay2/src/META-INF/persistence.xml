@@ -29,7 +29,7 @@
 
 		<class>applet.entities.config.AudioSection</class>
 		<class>applet.entities.config.C1541Section</class>
-		<class>applet.entities.config.Config</class>
+		<class>applet.entities.config.Configuration</class>
 		<class>applet.entities.config.ConsoleSection</class>
 		<class>applet.entities.config.EmulationSection</class>
 		<class>applet.entities.config.FavoritesSection</class>

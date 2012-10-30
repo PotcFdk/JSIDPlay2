@@ -13,7 +13,7 @@ import javax.xml.bind.Unmarshaller;
 
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFavoritesSection;
-import applet.entities.config.Config;
+import applet.entities.config.Configuration;
 import applet.entities.config.FavoritesSection;
 
 public class ConfigService {
@@ -23,12 +23,12 @@ public class ConfigService {
 		this.em = em;
 	};
 
-	public Config get() {
+	public Configuration get() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Config> q = cb.createQuery(Config.class);
-		Root<Config> h = q.from(Config.class);
+		CriteriaQuery<Configuration> q = cb.createQuery(Configuration.class);
+		Root<Configuration> h = q.from(Configuration.class);
 		q.select(h);
-		List<Config> resultList = em.createQuery(q).setMaxResults(1)
+		List<Configuration> resultList = em.createQuery(q).setMaxResults(1)
 				.getResultList();
 		if (resultList.size() != 0) {
 			return resultList.get(0);
@@ -37,14 +37,14 @@ public class ConfigService {
 	}
 
 	public IConfig create() {
-		Config config = new Config();
+		Configuration config = new Configuration();
 		config.getSidplay2().setVersion(IConfig.REQUIRED_CONFIG_VERSION);
 		em.persist(config);
 		flush();
 		return config;
 	}
 
-	public void remove(Config config) {
+	public void remove(Configuration config) {
 		// remove old configuration from DB
 		em.getTransaction().begin();
 		em.remove(config);
@@ -53,24 +53,24 @@ public class ConfigService {
 		em.getTransaction().commit();
 	}
 
-	public boolean shouldBeRestored(Config config) {
+	public boolean shouldBeRestored(Configuration config) {
 		return config.getReconfigFilename() != null;
 	}
 
-	public Config restore(Config config) {
+	public Configuration restore(Configuration config) {
 		try {
 			// import configuration from file
-			JAXBContext jaxbContext = JAXBContext.newInstance(Config.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			Object obj = unmarshaller.unmarshal(new File(config
 					.getReconfigFilename()));
-			if (obj instanceof Config) {
-				Config detachedDbConfig = (Config) obj;
+			if (obj instanceof Configuration) {
+				Configuration detachedDbConfig = (Configuration) obj;
 
 				remove(config);
 
 				// restore configuration in DB
-				Config mergedDbConfig = em.merge(detachedDbConfig);
+				Configuration mergedDbConfig = em.merge(detachedDbConfig);
 				em.getTransaction().begin();
 				em.persist(mergedDbConfig);
 				em.flush();
@@ -84,7 +84,7 @@ public class ConfigService {
 	}
 
 	public IFavoritesSection addFavorite(IConfig config, String title) {
-		Config dbConfig = (Config) config;
+		Configuration dbConfig = (Configuration) config;
 		FavoritesSection toAdd = new FavoritesSection();
 		toAdd.setDbConfig(dbConfig);
 		toAdd.setName(title);
@@ -95,7 +95,7 @@ public class ConfigService {
 	}
 
 	public void removeFavorite(IConfig config, int index) {
-		Config dbConfig = (Config) config;
+		Configuration dbConfig = (Configuration) config;
 		FavoritesSection toRemove = (FavoritesSection) dbConfig
 				.getFavorites().get(index);
 		toRemove.setDbConfig(null);
