@@ -88,7 +88,7 @@
 	<property name="cgsc_dir" location="${result_dir}/online/cgsc" />
 	<property name="cgsc_zip" value="CGSC.zip" />
 	<property name="cgsc_crc" value="CGSC.crc" />
-	<property name="cgsc_subfolder" location="CGSC" />
+	<property name="cgsc_subfolder" value="CGSC" />
 	<!-- HVMEC -->
 	<property name="hvmec_dir" location="${result_dir}/online/hvmec" />
 	<property name="hvmec_zip" value="HVMEC.zip" />
@@ -269,7 +269,7 @@
           Create extra online content of JSIDPlay2, that is Gamebase64 and HVSC for example.
           Everything is deployed to the web hoster.
          ================================= -->
-	<target name="deployOnlineContent" depends="init,gb64_import,hvsc_import,cgsc_import,demos,hvmec_import,upload" description="Deploy extra online content to the Web Hoster" />
+	<target name="deployOnlineContent" depends="init,gb64_import,hvsc_import,cgsc_import,demos,hvmec_import" description="Deploy extra online content to the Web Hoster" />
 
 	<!-- ================================= 
           target: build              
