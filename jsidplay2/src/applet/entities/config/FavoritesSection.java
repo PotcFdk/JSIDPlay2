@@ -84,15 +84,15 @@ public class FavoritesSection implements IFavoritesSection {
 	@ManyToOne
 	@XmlIDREF
 	@ConfigTransient
-	public Configuration config;
+	public Configuration configuration;
 
 	@XmlTransient
-	public Configuration getDbConfig() {
-		return config;
+	public Configuration getConfiguration() {
+		return configuration;
 	}
 
-	public void setDbConfig(Configuration dbConfig) {
-		this.config = dbConfig;
+	public void setConfiguration(Configuration configuration) {
+		this.configuration = configuration;
 	}
 
 }

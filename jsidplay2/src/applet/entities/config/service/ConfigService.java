@@ -60,22 +60,23 @@ public class ConfigService {
 	public Configuration restore(Configuration config) {
 		try {
 			// import configuration from file
-			JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
+			JAXBContext jaxbContext = JAXBContext
+					.newInstance(Configuration.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			Object obj = unmarshaller.unmarshal(new File(config
 					.getReconfigFilename()));
 			if (obj instanceof Configuration) {
-				Configuration detachedDbConfig = (Configuration) obj;
+				Configuration detachedConfig = (Configuration) obj;
 
 				remove(config);
 
 				// restore configuration in DB
-				Configuration mergedDbConfig = em.merge(detachedDbConfig);
+				Configuration mergedConfig = em.merge(detachedConfig);
 				em.getTransaction().begin();
-				em.persist(mergedDbConfig);
+				em.persist(mergedConfig);
 				em.flush();
 				em.getTransaction().commit();
-				return mergedDbConfig;
+				return mergedConfig;
 			}
 		} catch (JAXBException e) {
 			e.printStackTrace();
@@ -83,23 +84,23 @@ public class ConfigService {
 		return config;
 	}
 
-	public IFavoritesSection addFavorite(IConfig config, String title) {
-		Configuration dbConfig = (Configuration) config;
+	public IFavoritesSection addFavorite(IConfig cfg, String title) {
+		Configuration configuration = (Configuration) cfg;
 		FavoritesSection toAdd = new FavoritesSection();
-		toAdd.setDbConfig(dbConfig);
+		toAdd.setConfiguration(configuration);
 		toAdd.setName(title);
-		dbConfig.getFavoritesInternal().add(toAdd);
+		configuration.getFavoritesInternal().add(toAdd);
 		em.persist(toAdd);
 		flush();
 		return toAdd;
 	}
 
-	public void removeFavorite(IConfig config, int index) {
-		Configuration dbConfig = (Configuration) config;
-		FavoritesSection toRemove = (FavoritesSection) dbConfig
-				.getFavorites().get(index);
-		toRemove.setDbConfig(null);
-		dbConfig.getFavorites().remove(index);
+	public void removeFavorite(IConfig cfg, int index) {
+		Configuration configuration = (Configuration) cfg;
+		FavoritesSection toRemove = (FavoritesSection) configuration.getFavorites()
+				.get(index);
+		toRemove.setConfiguration(null);
+		configuration.getFavorites().remove(index);
 		em.remove(toRemove);
 		flush();
 	}
