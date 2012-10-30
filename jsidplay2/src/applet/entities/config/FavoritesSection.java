@@ -22,7 +22,7 @@ import applet.config.annotations.ConfigTransient;
 
 @Entity
 @ConfigClass(getBundleKey = "FAVORITE")
-public class DbFavoritesSection implements IFavoritesSection {
+public class FavoritesSection implements IFavoritesSection {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -84,15 +84,15 @@ public class DbFavoritesSection implements IFavoritesSection {
 	@ManyToOne
 	@XmlIDREF
 	@ConfigTransient
-	public DbConfig dbConfig;
+	public Config config;
 
 	@XmlTransient
-	public DbConfig getDbConfig() {
-		return dbConfig;
+	public Config getDbConfig() {
+		return config;
 	}
 
-	public void setDbConfig(DbConfig dbConfig) {
-		this.dbConfig = dbConfig;
+	public void setDbConfig(Config dbConfig) {
+		this.config = dbConfig;
 	}
 
 }

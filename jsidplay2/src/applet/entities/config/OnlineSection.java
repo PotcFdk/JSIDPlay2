@@ -6,7 +6,7 @@ import sidplay.ini.intf.IOnlineSection;
 import applet.config.annotations.ConfigTransient;
 
 @Embeddable
-public class DbOnlineSection implements IOnlineSection {
+public class OnlineSection implements IOnlineSection {
 
 	/**
 	 * URL where the JSIDPlay2 is deployed to.

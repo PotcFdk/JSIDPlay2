@@ -12,7 +12,7 @@ import applet.config.annotations.ConfigTransient;
 
 @Entity
 @ConfigClass(getBundleKey = "FILTER")
-public class DbFilterSection implements IFilterSection {
+public class FilterSection implements IFilterSection {
 
 	@Id
 	private String name;
@@ -25,15 +25,15 @@ public class DbFilterSection implements IFilterSection {
 	@ManyToOne
 	@XmlIDREF
 	@ConfigTransient
-	public DbConfig dbConfig;
+	public Config config;
 
 	@XmlTransient
-	public DbConfig getDbConfig() {
-		return dbConfig;
+	public Config getDbConfig() {
+		return config;
 	}
 
-	public void setDbConfig(DbConfig dbConfig) {
-		this.dbConfig = dbConfig;
+	public void setDbConfig(Config dbConfig) {
+		this.config = dbConfig;
 	}
 
 	@Override

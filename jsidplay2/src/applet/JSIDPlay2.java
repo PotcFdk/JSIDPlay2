@@ -37,8 +37,8 @@ import sidplay.ConsolePlayer;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.ISidPlay2Section;
 import applet.entities.PersistenceProperties;
-import applet.entities.config.DbConfig;
-import applet.entities.config.service.DbConfigService;
+import applet.entities.config.Config;
+import applet.entities.config.service.ConfigService;
 import applet.events.IGotoURL;
 import applet.events.IInsertMedia;
 import applet.events.IPlayTune;
@@ -88,9 +88,9 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	protected EntityManager em;
 
 	/**
-	 * DbConfig service class.
+	 * Config service class.
 	 */
-	protected DbConfigService dbConfigService;
+	protected ConfigService configService;
 
 	/**
 	 * Applet constructor.
@@ -226,7 +226,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		dbConfigService.write(getConfig());
+		configService.write(getConfig());
 		em.close();
 		em.getEntityManagerFactory().close();
 	}
@@ -247,20 +247,20 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				PersistenceProperties.CONFIG_DS,
 				new PersistenceProperties(new File(dbFile.getParent(),
 						CONFIG_DATABASE))).createEntityManager();
-		dbConfigService = new DbConfigService(em);
+		configService = new ConfigService(em);
 		if (!dbFileExists) {
 			// No database found?
-			return dbConfigService.create();
+			return configService.create();
 		} else {
-			DbConfig config = dbConfigService.get();
+			Config config = configService.get();
 			if (config == null) {
 				// No configuration in database found?
-				return dbConfigService.create();
+				return configService.create();
 			}
-			boolean shouldBeRestored = dbConfigService.shouldBeRestored(config);
+			boolean shouldBeRestored = configService.shouldBeRestored(config);
 			if (shouldBeRestored) {
 				// import configuration (flagged by configuration viewer)
-				config = dbConfigService.restore(config);
+				config = configService.restore(config);
 			}
 			// Configuration version check
 			if (config.getSidplay2().getVersion() != REQUIRED_CONFIG_VERSION) {
@@ -275,8 +275,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 							+ config.getSidplay2().getVersion()
 							+ " is too old, expected version is "
 							+ REQUIRED_CONFIG_VERSION + ": Create a new one!");
-					dbConfigService.remove(config);
-					return dbConfigService.create();
+					configService.remove(config);
+					return configService.create();
 				}
 			}
 			return config;

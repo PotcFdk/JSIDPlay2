@@ -5,7 +5,7 @@ import javax.persistence.Embeddable;
 import sidplay.ini.intf.IPrinterSection;
 
 @Embeddable
-public class DbPrinterSection implements IPrinterSection {
+public class PrinterSection implements IPrinterSection {
 
 	private boolean printerOn;
 

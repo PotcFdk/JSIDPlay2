@@ -13,22 +13,22 @@ import javax.xml.bind.Unmarshaller;
 
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFavoritesSection;
-import applet.entities.config.DbConfig;
-import applet.entities.config.DbFavoritesSection;
+import applet.entities.config.Config;
+import applet.entities.config.FavoritesSection;
 
-public class DbConfigService {
+public class ConfigService {
 	private EntityManager em;
 
-	public DbConfigService(EntityManager em) {
+	public ConfigService(EntityManager em) {
 		this.em = em;
 	};
 
-	public DbConfig get() {
+	public Config get() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DbConfig> q = cb.createQuery(DbConfig.class);
-		Root<DbConfig> h = q.from(DbConfig.class);
+		CriteriaQuery<Config> q = cb.createQuery(Config.class);
+		Root<Config> h = q.from(Config.class);
 		q.select(h);
-		List<DbConfig> resultList = em.createQuery(q).setMaxResults(1)
+		List<Config> resultList = em.createQuery(q).setMaxResults(1)
 				.getResultList();
 		if (resultList.size() != 0) {
 			return resultList.get(0);
@@ -37,14 +37,14 @@ public class DbConfigService {
 	}
 
 	public IConfig create() {
-		DbConfig config = new DbConfig();
+		Config config = new Config();
 		config.getSidplay2().setVersion(IConfig.REQUIRED_CONFIG_VERSION);
 		em.persist(config);
 		flush();
 		return config;
 	}
 
-	public void remove(DbConfig config) {
+	public void remove(Config config) {
 		// remove old configuration from DB
 		em.getTransaction().begin();
 		em.remove(config);
@@ -53,24 +53,24 @@ public class DbConfigService {
 		em.getTransaction().commit();
 	}
 
-	public boolean shouldBeRestored(DbConfig config) {
+	public boolean shouldBeRestored(Config config) {
 		return config.getReconfigFilename() != null;
 	}
 
-	public DbConfig restore(DbConfig config) {
+	public Config restore(Config config) {
 		try {
 			// import configuration from file
-			JAXBContext jaxbContext = JAXBContext.newInstance(DbConfig.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(Config.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			Object obj = unmarshaller.unmarshal(new File(config
 					.getReconfigFilename()));
-			if (obj instanceof DbConfig) {
-				DbConfig detachedDbConfig = (DbConfig) obj;
+			if (obj instanceof Config) {
+				Config detachedDbConfig = (Config) obj;
 
 				remove(config);
 
 				// restore configuration in DB
-				DbConfig mergedDbConfig = em.merge(detachedDbConfig);
+				Config mergedDbConfig = em.merge(detachedDbConfig);
 				em.getTransaction().begin();
 				em.persist(mergedDbConfig);
 				em.flush();
@@ -84,8 +84,8 @@ public class DbConfigService {
 	}
 
 	public IFavoritesSection addFavorite(IConfig config, String title) {
-		DbConfig dbConfig = (DbConfig) config;
-		DbFavoritesSection toAdd = new DbFavoritesSection();
+		Config dbConfig = (Config) config;
+		FavoritesSection toAdd = new FavoritesSection();
 		toAdd.setDbConfig(dbConfig);
 		toAdd.setName(title);
 		dbConfig.getFavoritesInternal().add(toAdd);
@@ -95,8 +95,8 @@ public class DbConfigService {
 	}
 
 	public void removeFavorite(IConfig config, int index) {
-		DbConfig dbConfig = (DbConfig) config;
-		DbFavoritesSection toRemove = (DbFavoritesSection) dbConfig
+		Config dbConfig = (Config) config;
+		FavoritesSection toRemove = (FavoritesSection) dbConfig
 				.getFavorites().get(index);
 		toRemove.setDbConfig(null);
 		dbConfig.getFavorites().remove(index);

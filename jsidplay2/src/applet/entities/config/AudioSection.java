@@ -12,7 +12,7 @@ import sidplay.ini.intf.IAudioSection;
 import applet.config.annotations.ConfigField;
 
 @Embeddable
-public class DbAudioSection implements IAudioSection {
+public class AudioSection implements IAudioSection {
 
 	private int frequency = 48000;
 

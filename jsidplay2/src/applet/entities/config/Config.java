@@ -34,62 +34,62 @@ import applet.config.annotations.ConfigTransient;
 @Entity
 @XmlRootElement(name = "config")
 @ConfigClass(getBundleKey = "CONFIG")
-public class DbConfig implements IConfig {
+public class Config implements IConfig {
 
 	@Transient
 	@XmlTransient
 	@ConfigTransient
-	private final List<DbFilterSection> INITIAL_FILTERS;
+	private final List<FilterSection> INITIAL_FILTERS;
 	{
-		INITIAL_FILTERS = new ArrayList<DbFilterSection>();
-		DbFilterSection dbFilterSection;
-		dbFilterSection = new DbFilterSection();
+		INITIAL_FILTERS = new ArrayList<FilterSection>();
+		FilterSection dbFilterSection;
+		dbFilterSection = new FilterSection();
 		dbFilterSection.setDbConfig(this);
 		dbFilterSection.setName("FilterLight8580");
 		dbFilterSection.setFilter8580CurvePosition(13400);
 		INITIAL_FILTERS.add(dbFilterSection);
-		dbFilterSection = new DbFilterSection();
+		dbFilterSection = new FilterSection();
 		dbFilterSection.setDbConfig(this);
 		dbFilterSection.setName("FilterAverage8580");
 		dbFilterSection.setFilter8580CurvePosition(12500);
 		INITIAL_FILTERS.add(dbFilterSection);
-		dbFilterSection = new DbFilterSection();
+		dbFilterSection = new FilterSection();
 		dbFilterSection.setDbConfig(this);
 		dbFilterSection.setName("FilterDark8580");
 		dbFilterSection.setFilter8580CurvePosition(11700);
 		INITIAL_FILTERS.add(dbFilterSection);
 
-		dbFilterSection = new DbFilterSection();
+		dbFilterSection = new FilterSection();
 		dbFilterSection.setDbConfig(this);
 		dbFilterSection.setName("FilterLightest6581");
 		dbFilterSection.setFilter6581CurvePosition(0.1f);
 		INITIAL_FILTERS.add(dbFilterSection);
-		dbFilterSection = new DbFilterSection();
+		dbFilterSection = new FilterSection();
 		dbFilterSection.setDbConfig(this);
 		dbFilterSection.setName("FilterLighter6581");
 		dbFilterSection.setFilter6581CurvePosition(0.3f);
 		INITIAL_FILTERS.add(dbFilterSection);
-		dbFilterSection = new DbFilterSection();
+		dbFilterSection = new FilterSection();
 		dbFilterSection.setDbConfig(this);
 		dbFilterSection.setName("FilterLight6581");
 		dbFilterSection.setFilter6581CurvePosition(0.4f);
 		INITIAL_FILTERS.add(dbFilterSection);
-		dbFilterSection = new DbFilterSection();
+		dbFilterSection = new FilterSection();
 		dbFilterSection.setDbConfig(this);
 		dbFilterSection.setName("FilterAverage6581");
 		dbFilterSection.setFilter6581CurvePosition(0.5f);
 		INITIAL_FILTERS.add(dbFilterSection);
-		dbFilterSection = new DbFilterSection();
+		dbFilterSection = new FilterSection();
 		dbFilterSection.setDbConfig(this);
 		dbFilterSection.setName("FilterDark6581");
 		dbFilterSection.setFilter6581CurvePosition(0.6f);
 		INITIAL_FILTERS.add(dbFilterSection);
-		dbFilterSection = new DbFilterSection();
+		dbFilterSection = new FilterSection();
 		dbFilterSection.setDbConfig(this);
 		dbFilterSection.setName("FilterDarker6581");
 		dbFilterSection.setFilter6581CurvePosition(0.7f);
 		INITIAL_FILTERS.add(dbFilterSection);
-		dbFilterSection = new DbFilterSection();
+		dbFilterSection = new FilterSection();
 		dbFilterSection.setDbConfig(this);
 		dbFilterSection.setName("FilterDarkest6581");
 		dbFilterSection.setFilter6581CurvePosition(0.9f);
@@ -126,9 +126,9 @@ public class DbConfig implements IConfig {
 
 	@Embedded
 	@XmlElement(name = "sidplay2")
-	private DbSidPlay2Section sidplay2 = new DbSidPlay2Section();
+	private SidPlay2Section sidplay2 = new SidPlay2Section();
 
-	public void setSidplay2(DbSidPlay2Section sidplay2) {
+	public void setSidplay2(SidPlay2Section sidplay2) {
 		this.sidplay2 = sidplay2;
 	}
 
@@ -140,24 +140,24 @@ public class DbConfig implements IConfig {
 
 	@Embedded
 	@XmlElement(name = "online")
-	private DbOnlineSection online = new DbOnlineSection();
+	private OnlineSection online = new OnlineSection();
 
 	@Override
 	@XmlTransient
 	@ConfigMethod(getBundleKey = "ONLINE")
-	public DbOnlineSection getOnline() {
+	public OnlineSection getOnline() {
 		return online;
 	}
 
-	public void setOnline(DbOnlineSection online) {
+	public void setOnline(OnlineSection online) {
 		this.online = online;
 	}
 
 	@Embedded
 	@XmlElement(name = "c1541")
-	private DbC1541Section c1541 = new DbC1541Section();
+	private C1541Section c1541 = new C1541Section();
 
-	public void setC1541(DbC1541Section c1541) {
+	public void setC1541(C1541Section c1541) {
 		this.c1541 = c1541;
 	}
 
@@ -169,9 +169,9 @@ public class DbConfig implements IConfig {
 
 	@Embedded
 	@XmlElement(name = "printer")
-	private DbPrinterSection printer = new DbPrinterSection();
+	private PrinterSection printer = new PrinterSection();
 
-	public void setPrinter(DbPrinterSection printer) {
+	public void setPrinter(PrinterSection printer) {
 		this.printer = printer;
 	}
 
@@ -183,9 +183,9 @@ public class DbConfig implements IConfig {
 
 	@Embedded
 	@XmlElement(name = "joystick")
-	private DbJoystickSection joystick = new DbJoystickSection();
+	private JoystickSection joystick = new JoystickSection();
 
-	public void setJoystick(DbJoystickSection joystick) {
+	public void setJoystick(JoystickSection joystick) {
 		this.joystick = joystick;
 	}
 
@@ -197,9 +197,9 @@ public class DbConfig implements IConfig {
 
 	@Embedded
 	@XmlElement(name = "console")
-	private DbConsoleSection console = new DbConsoleSection();
+	private ConsoleSection console = new ConsoleSection();
 
-	public void setConsole(DbConsoleSection console) {
+	public void setConsole(ConsoleSection console) {
 		this.console = console;
 	}
 
@@ -211,9 +211,9 @@ public class DbConfig implements IConfig {
 
 	@Embedded
 	@XmlElement(name = "audio")
-	private DbAudioSection audio = new DbAudioSection();
+	private AudioSection audio = new AudioSection();
 
-	public void setAudio(DbAudioSection audio) {
+	public void setAudio(AudioSection audio) {
 		this.audio = audio;
 	}
 
@@ -225,9 +225,9 @@ public class DbConfig implements IConfig {
 
 	@Embedded
 	@XmlElement(name = "emulation")
-	private DbEmulationSection emulation = new DbEmulationSection();
+	private EmulationSection emulation = new EmulationSection();
 
-	public void setEmulation(DbEmulationSection emulation) {
+	public void setEmulation(EmulationSection emulation) {
 		this.emulation = emulation;
 	}
 
@@ -251,9 +251,9 @@ public class DbConfig implements IConfig {
 
 	@OneToMany(mappedBy = "dbConfig", cascade = CascadeType.ALL)
 	@XmlElement(name = "favorites")
-	private List<DbFavoritesSection> favorites;
+	private List<FavoritesSection> favorites;
 
-	public void setFavorites(List<DbFavoritesSection> favorites) {
+	public void setFavorites(List<FavoritesSection> favorites) {
 		this.favorites = favorites;
 	}
 
@@ -261,23 +261,23 @@ public class DbConfig implements IConfig {
 	@ConfigMethod(getBundleKey = "FAVORITES")
 	public List<? extends IFavoritesSection> getFavorites() {
 		if (favorites == null) {
-			favorites = new ArrayList<DbFavoritesSection>();
+			favorites = new ArrayList<FavoritesSection>();
 		}
 		return favorites;
 	}
 
-	public List<DbFavoritesSection> getFavoritesInternal() {
+	public List<FavoritesSection> getFavoritesInternal() {
 		if (favorites == null) {
-			favorites = new ArrayList<DbFavoritesSection>();
+			favorites = new ArrayList<FavoritesSection>();
 		}
 		return favorites;
 	}
 
 	@OneToMany(mappedBy = "dbConfig", cascade = CascadeType.ALL)
 	@XmlElement(name = "filter")
-	private List<DbFilterSection> filter = INITIAL_FILTERS;
+	private List<FilterSection> filter = INITIAL_FILTERS;
 
-	public void setFilter(List<DbFilterSection> filter) {
+	public void setFilter(List<FilterSection> filter) {
 		this.filter = filter;
 	}
 
@@ -285,7 +285,7 @@ public class DbConfig implements IConfig {
 	@ConfigMethod(getBundleKey = "FILTERS")
 	public List<? extends IFilterSection> getFilter() {
 		if (filter == null) {
-			filter = new ArrayList<DbFilterSection>();
+			filter = new ArrayList<FilterSection>();
 		}
 		return filter;
 	}

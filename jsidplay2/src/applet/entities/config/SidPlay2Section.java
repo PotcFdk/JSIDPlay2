@@ -10,7 +10,7 @@ import applet.config.annotations.ConfigField;
 import applet.config.annotations.ConfigTransient;
 
 @Embeddable
-public class DbSidPlay2Section implements ISidPlay2Section {
+public class SidPlay2Section implements ISidPlay2Section {
 
 	@ConfigTransient
 	private int version;

@@ -9,7 +9,7 @@ import resid_builder.resid.ISIDDefs.ChipModel;
 import sidplay.ini.intf.IEmulationSection;
 
 @Embeddable
-public class DbEmulationSection implements IEmulationSection {
+public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	private Clock defaultClockSpeed = Clock.PAL;

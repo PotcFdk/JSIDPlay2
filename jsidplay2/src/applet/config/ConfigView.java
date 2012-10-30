@@ -39,7 +39,7 @@ import applet.config.annotations.ConfigField;
 import applet.config.editors.CharTextField;
 import applet.config.editors.FloatTextField;
 import applet.config.editors.IntTextField;
-import applet.entities.config.DbConfig;
+import applet.entities.config.Config;
 import applet.events.IUpdateUI;
 import applet.events.UIEvent;
 import applet.filefilter.ConfigFileFilter;
@@ -301,7 +301,7 @@ public class ConfigView extends TuneTab {
 				File file = fileDialog.getSelectedFile();
 				JOptionPane.showMessageDialog(ConfigView.this, swix
 						.getLocalizer().getString("PLEASE_RESTART"));
-				((DbConfig) config).setReconfigFilename(file.getAbsolutePath());
+				((Config) config).setReconfigFilename(file.getAbsolutePath());
 			}
 		}
 	};
@@ -321,7 +321,7 @@ public class ConfigView extends TuneTab {
 				try {
 					File file = fileDialog.getSelectedFile();
 					JAXBContext jaxbContext = JAXBContext
-							.newInstance(DbConfig.class);
+							.newInstance(Config.class);
 					Marshaller marshaller = jaxbContext.createMarshaller();
 					marshaller.marshal(config, file);
 				} catch (JAXBException e1) {

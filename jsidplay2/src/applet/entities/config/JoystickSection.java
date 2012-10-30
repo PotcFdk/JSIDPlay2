@@ -5,7 +5,7 @@ import javax.persistence.Embeddable;
 import sidplay.ini.intf.IJoystickSection;
 
 @Embeddable
-public class DbJoystickSection implements IJoystickSection {
+public class JoystickSection implements IJoystickSection {
 
 	private String deviceName1;
 

@@ -9,7 +9,7 @@ import libsidplay.components.c1541.ExtendImagePolicy;
 import sidplay.ini.intf.IC1541Section;
 
 @Embeddable
-public class DbC1541Section implements IC1541Section {
+public class C1541Section implements IC1541Section {
 
 	private boolean driveOn;
 

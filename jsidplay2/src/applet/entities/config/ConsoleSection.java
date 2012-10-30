@@ -5,7 +5,7 @@ import javax.persistence.Embeddable;
 import sidplay.ini.intf.IConsoleSection;
 
 @Embeddable
-public class DbConsoleSection implements IConsoleSection {
+public class ConsoleSection implements IConsoleSection {
 
 	private char topLeft = '+';
 
