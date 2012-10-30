@@ -14,7 +14,7 @@ import applet.config.annotations.ConfigField;
 @Embeddable
 public class DbAudioSection implements IAudioSection {
 
-	private int frequency;
+	private int frequency = 48000;
 
 	@Override
 	public int getFrequency() {
@@ -27,7 +27,7 @@ public class DbAudioSection implements IAudioSection {
 	}
 
 	@Enumerated(EnumType.STRING)
-	private SamplingMethod sampling;
+	private SamplingMethod sampling = SamplingMethod.DECIMATE;
 
 	@Override
 	public SamplingMethod getSampling() {
@@ -64,7 +64,7 @@ public class DbAudioSection implements IAudioSection {
 		this.mp3File = recording;
 	}
 
-	private float leftVolume;
+	private float leftVolume = 6.0f;
 
 	@Override
 	public float getLeftVolume() {
@@ -76,7 +76,7 @@ public class DbAudioSection implements IAudioSection {
 		this.leftVolume = volume;
 	}
 
-	private float rightVolume;
+	private float rightVolume = 6.0f;
 
 	@Override
 	public float getRightVolume() {

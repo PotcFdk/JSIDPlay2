@@ -25,7 +25,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.version = version;
 	}
 
-	private boolean enableDatabase;
+	private boolean enableDatabase = true;
 
 	@Override
 	public boolean isEnableDatabase() {
@@ -162,7 +162,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.proxyHostname = proxyHostname;
 	}
 
-	private int proxyPort;
+	private int proxyPort = 80;
 
 	@Override
 	public int getProxyPort() {
@@ -188,7 +188,8 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 	}
 
 	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.DIRECTORIES_ONLY)
-	private String tmpDir;
+	private String tmpDir = System.getProperty("user.home")
+			+ System.getProperty("file.separator") + ".jsidplay2";
 
 	@Override
 	public String getTmpDir() {
@@ -224,7 +225,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.frameY = frameY;
 	}
 
-	private int frameWidth;
+	private int frameWidth = 1024;
 
 	@Override
 	public int getFrameWidth() {
@@ -236,7 +237,7 @@ public class DbSidPlay2Section implements ISidPlay2Section {
 		this.frameWidth = frameWidth;
 	}
 
-	private int frameHeight;
+	private int frameHeight = 768;
 
 	@Override
 	public int getFrameHeight() {

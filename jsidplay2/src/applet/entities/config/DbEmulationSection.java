@@ -12,7 +12,7 @@ import sidplay.ini.intf.IEmulationSection;
 public class DbEmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
-	private Clock defaultClockSpeed;
+	private Clock defaultClockSpeed = Clock.PAL;
 
 	@Override
 	public Clock getDefaultClockSpeed() {
@@ -37,7 +37,7 @@ public class DbEmulationSection implements IEmulationSection {
 		this.userClockSpeed = userClockSpeed;
 	}
 
-	private ChipModel defaultSidModel;
+	private ChipModel defaultSidModel = ChipModel.MOS6581;
 
 	@Override
 	public ChipModel getDefaultSidModel() {
@@ -61,7 +61,7 @@ public class DbEmulationSection implements IEmulationSection {
 		this.userSidModel = userSidModel;
 	}
 
-	private int hardsid6581;
+	private int hardsid6581 = 1;
 
 	@Override
 	public int getHardsid6581() {
@@ -73,7 +73,7 @@ public class DbEmulationSection implements IEmulationSection {
 		this.hardsid6581 = hardsid6581;
 	}
 
-	private int hardsid8580;
+	private int hardsid8580 = 2;
 
 	@Override
 	public int getHardsid8580() {
@@ -85,7 +85,7 @@ public class DbEmulationSection implements IEmulationSection {
 		this.hardsid8580 = hardsid8580;
 	}
 
-	private boolean filter;
+	private boolean filter = true;
 
 	@Override
 	public boolean isFilter() {
@@ -97,7 +97,7 @@ public class DbEmulationSection implements IEmulationSection {
 		this.filter = isFilter;
 	}
 
-	private String filter6581;
+	private String filter6581 = "FilterAverage6581";
 
 	@Override
 	public String getFilter6581() {
@@ -109,7 +109,7 @@ public class DbEmulationSection implements IEmulationSection {
 		this.filter6581 = filter6581;
 	}
 
-	private String filter8580;
+	private String filter8580 = "FilterAverage8580";
 
 	@Override
 	public String getFilter8580() {
@@ -133,7 +133,7 @@ public class DbEmulationSection implements IEmulationSection {
 		this.digiBoosted8580 = isDigiBoosted8580;
 	}
 
-	private int dualSidBase;
+	private int dualSidBase = 0xd420;
 
 	@Override
 	public int getDualSidBase() {

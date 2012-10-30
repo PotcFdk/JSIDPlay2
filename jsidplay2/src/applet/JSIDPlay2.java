@@ -34,7 +34,6 @@ import libsidutils.zip.ZipEntryFileProxy;
 import org.swixml.SwingEngine;
 
 import sidplay.ConsolePlayer;
-import sidplay.ini.IniConfig;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.ISidPlay2Section;
 import applet.entities.PersistenceProperties;
@@ -146,8 +145,6 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 					// Don't forget to close
 					cp.close();
 				}
-				// save configuration (auto save after the tune gets stopped)
-				dbConfigService.write(getConfig());
 
 				// "Play it once, Sam. For old times' sake."
 				if ((cp.getState() & ~playerFast) == playerRestart) {
@@ -253,12 +250,12 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 		dbConfigService = new DbConfigService(em);
 		if (!dbFileExists) {
 			// No database found?
-			return createConfigurationFromINIFile();
+			return dbConfigService.create();
 		} else {
 			DbConfig config = dbConfigService.get();
 			if (config == null) {
 				// No configuration in database found?
-				return createConfigurationFromINIFile();
+				return dbConfigService.create();
 			}
 			boolean shouldBeRestored = dbConfigService.shouldBeRestored(config);
 			if (shouldBeRestored) {
@@ -279,7 +276,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 							+ " is too old, expected version is "
 							+ REQUIRED_CONFIG_VERSION + ": Create a new one!");
 					dbConfigService.remove(config);
-					return createConfigurationFromINIFile();
+					return dbConfigService.create();
 				}
 			}
 			return config;
@@ -302,25 +299,6 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 			}
 		}
 		return configPlace;
-	}
-
-	/**
-	 * Create the players configuration based on the already existing INI file
-	 * (use internal INI configuration, if absent).
-	 * 
-	 * Note: Internally the IniConfig class is no more used. Importing INI file
-	 * is only done for migration purposes and initially, if no INI file is
-	 * present. Instead of INI files we now use persistent entities.
-	 * 
-	 * @return created jsidplay2 configuration
-	 */
-	private DbConfig createConfigurationFromINIFile() {
-		System.out.println("Import INI file!");
-		DbConfig importedConfig = dbConfigService
-				.importIniConfig(new IniConfig());
-		importedConfig.getSidplay2()
-				.setVersion(IConfig.REQUIRED_CONFIG_VERSION);
-		return importedConfig;
 	}
 
 	/**
@@ -534,15 +512,9 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 			// Set default position and size
 			final ISidPlay2Section section = sidplayApplet.getConfig()
 					.getSidplay2();
-			if (section.getFrameX() != -1 && section.getFrameY() != -1) {
-				// Restore saved coordinates
-				window.setLocation(section.getFrameX(), section.getFrameY());
-				window.setSize(section.getFrameWidth(),
-						section.getFrameHeight());
-			} else {
-				// Initialize using reasonable defaults
-				window.setSize(1024, 768);
-			}
+			// Restore saved coordinates
+			window.setLocation(section.getFrameX(), section.getFrameY());
+			window.setSize(section.getFrameWidth(), section.getFrameHeight());
 
 			// Handle close button: execute applet's stop()/destroy()
 			window.addWindowListener(new WindowAdapter() {

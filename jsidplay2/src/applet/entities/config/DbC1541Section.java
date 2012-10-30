@@ -23,7 +23,7 @@ public class DbC1541Section implements IC1541Section {
 		this.driveOn = on;
 	}
 
-	private boolean driveSoundOn;
+	private boolean driveSoundOn = true;
 
 	@Override
 	public boolean isDriveSoundOn() {
@@ -108,7 +108,7 @@ public class DbC1541Section implements IC1541Section {
 	}
 
 	@Enumerated(EnumType.STRING)
-	private ExtendImagePolicy extendImagePolicy;
+	private ExtendImagePolicy extendImagePolicy = ExtendImagePolicy.EXTEND_ACCESS;
 
 	@Override
 	public void setExtendImagePolicy(ExtendImagePolicy policy) {
@@ -121,7 +121,7 @@ public class DbC1541Section implements IC1541Section {
 	}
 
 	@Enumerated(EnumType.STRING)
-	private FloppyType floppyType;
+	private FloppyType floppyType = FloppyType.C1541;
 
 	@Override
 	public void setFloppyType(FloppyType floppyType) {

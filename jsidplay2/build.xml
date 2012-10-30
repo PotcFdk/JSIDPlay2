@@ -857,16 +857,16 @@
 		</delete>
 
 		<!-- create a CRC file -->
-		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
+		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum_gb64">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
 			<arg path="${gamebase_dir}/${gamebase_jar}" />
 		</java>
-		<length property="filesize" file="${gamebase_dir}/${gamebase_jar}" />
+		<length property="filesize_gb64" file="${gamebase_dir}/${gamebase_jar}" />
 		<propertyfile file="${gamebase_dir}/${gamebase_crc}">
 			<entry operation="=" type="string" key="filename" value="${gamebase_jar}" />
-			<entry operation="=" type="string" key="size" value="${filesize}" />
-			<entry operation="=" type="string" key="crc32" value="${checksum}" />
+			<entry operation="=" type="string" key="size" value="${filesize_gb64}" />
+			<entry operation="=" type="string" key="crc32" value="${checksum_gb64}" />
 		</propertyfile>
 	</target>
 
@@ -897,16 +897,16 @@
 		<delete dir="${hvsc_dir}/${hvsc_subfolder}" />
 
 		<!-- create a CRC file -->
-		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
+		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum_hvsc">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
 			<arg path="${hvsc_dir}/${hvsc_zip}" />
 		</java>
-		<length property="filesize" file="${hvsc_dir}/${hvsc_zip}" />
+		<length property="filesize_hvsc" file="${hvsc_dir}/${hvsc_zip}" />
 		<propertyfile file="${hvsc_dir}/${hvsc_crc}">
 			<entry operation="=" type="string" key="filename" value="${hvsc_zip}" />
-			<entry operation="=" type="string" key="size" value="${filesize}" />
-			<entry operation="=" type="string" key="crc32" value="${checksum}" />
+			<entry operation="=" type="string" key="size" value="${filesize_hvsc}" />
+			<entry operation="=" type="string" key="crc32" value="${checksum_hvsc}" />
 		</propertyfile>
 
 		<!-- Split ZIP file (sourceforge has a maximum file size limit) -->
@@ -944,16 +944,16 @@
 		<delete dir="${cgsc_dir}/${cgsc_subfolder}" />
 
 		<!-- create a CRC file -->
-		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
+		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum_cgsc">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
 			<arg path="${cgsc_dir}/${cgsc_zip}" />
 		</java>
-		<length property="filesize" file="${cgsc_dir}/${cgsc_zip}" />
+		<length property="filesize_cgsc" file="${cgsc_dir}/${cgsc_zip}" />
 		<propertyfile file="${cgsc_dir}/${cgsc_crc}">
 			<entry operation="=" type="string" key="filename" value="${cgsc_zip}" />
-			<entry operation="=" type="string" key="size" value="${filesize}" />
-			<entry operation="=" type="string" key="crc32" value="${checksum}" />
+			<entry operation="=" type="string" key="size" value="${filesize_cgsc}" />
+			<entry operation="=" type="string" key="crc32" value="${checksum_cgsc}" />
 		</propertyfile>
 	</target>
 
@@ -1003,16 +1003,16 @@
 		<delete dir="${hvmec_dir}/HVMEC" />
 
 		<!-- create a CRC file -->
-		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum">
+		<java fork="true" classname="applet.download.DownloadThread" outputproperty="checksum_hvmec">
 			<classpath refid="class.path" />
 			<classpath location="${bin}" />
 			<arg path="${hvmec_dir}/${hvmec_zip}" />
 		</java>
-		<length property="filesize" file="${hvmec_dir}/${hvmec_zip}" />
+		<length property="filesize_hvmec" file="${hvmec_dir}/${hvmec_zip}" />
 		<propertyfile file="${hvmec_dir}/${hvmec_crc}">
 			<entry operation="=" type="string" key="filename" value="${hvmec_zip}" />
-			<entry operation="=" type="string" key="size" value="${filesize}" />
-			<entry operation="=" type="string" key="crc32" value="${checksum}" />
+			<entry operation="=" type="string" key="size" value="${filesize_hvmec}" />
+			<entry operation="=" type="string" key="crc32" value="${checksum_hvmec}" />
 		</propertyfile>
 	</target>
 

@@ -7,8 +7,9 @@ import sidplay.ini.intf.IConsoleSection;
 @Embeddable
 public class DbConsoleSection implements IConsoleSection {
 
-	private char topLeft;
+	private char topLeft = '+';
 
+	@Override
 	public void setTopLeft(char topLeft) {
 		this.topLeft = topLeft;
 	}
@@ -18,8 +19,9 @@ public class DbConsoleSection implements IConsoleSection {
 		return this.topLeft;
 	}
 
-	private char topRight;
+	private char topRight = '+';
 
+	@Override
 	public void setTopRight(char topRight) {
 		this.topRight = topRight;
 	}
@@ -29,8 +31,9 @@ public class DbConsoleSection implements IConsoleSection {
 		return this.topRight;
 	}
 
-	private char bottomLeft;
+	private char bottomLeft = '+';
 
+	@Override
 	public void setBottomLeft(char bottomLeft) {
 		this.bottomLeft = bottomLeft;
 	}
@@ -40,8 +43,9 @@ public class DbConsoleSection implements IConsoleSection {
 		return this.bottomLeft;
 	}
 
-	private char bottomRight;
+	private char bottomRight = '+';
 
+	@Override
 	public void setBottomRight(char bottomRight) {
 		this.bottomRight = bottomRight;
 	}
@@ -51,8 +55,9 @@ public class DbConsoleSection implements IConsoleSection {
 		return this.bottomRight;
 	}
 
-	private char vertical;
+	private char vertical = '|';
 
+	@Override
 	public void setVertical(char vertical) {
 		this.vertical = vertical;
 	}
@@ -62,8 +67,9 @@ public class DbConsoleSection implements IConsoleSection {
 		return this.vertical;
 	}
 
-	private char horizontal;
+	private char horizontal = '-';
 
+	@Override
 	public void setHorizontal(char horizontal) {
 		this.horizontal = horizontal;
 	}
@@ -73,8 +79,9 @@ public class DbConsoleSection implements IConsoleSection {
 		return this.horizontal;
 	}
 
-	private char junctionLeft;
+	private char junctionLeft = '+';
 
+	@Override
 	public void setJunctionLeft(char junctionLeft) {
 		this.junctionLeft = junctionLeft;
 	}
@@ -84,8 +91,9 @@ public class DbConsoleSection implements IConsoleSection {
 		return junctionLeft;
 	}
 
-	private char junctionRight;
+	private char junctionRight = '+';
 
+	@Override
 	public void setJunctionRight(char junctionRight) {
 		this.junctionRight = junctionRight;
 	}
