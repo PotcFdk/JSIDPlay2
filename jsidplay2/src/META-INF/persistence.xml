@@ -27,15 +27,15 @@
 		<description>HSQLDB Persistence Unit</description>
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
-		<class>applet.entities.config.DbAudioSection</class>
-		<class>applet.entities.config.DbC1541Section</class>
-		<class>applet.entities.config.DbConfig</class>
-		<class>applet.entities.config.DbConsoleSection</class>
-		<class>applet.entities.config.DbEmulationSection</class>
-		<class>applet.entities.config.DbFavoritesSection</class>
-		<class>applet.entities.config.DbFilterSection</class>
-		<class>applet.entities.config.DbJoystickSection</class>
-		<class>applet.entities.config.DbPrinterSection</class>
-		<class>applet.entities.config.DbSidPlay2Section</class>
+		<class>applet.entities.config.AudioSection</class>
+		<class>applet.entities.config.C1541Section</class>
+		<class>applet.entities.config.Config</class>
+		<class>applet.entities.config.ConsoleSection</class>
+		<class>applet.entities.config.EmulationSection</class>
+		<class>applet.entities.config.FavoritesSection</class>
+		<class>applet.entities.config.FilterSection</class>
+		<class>applet.entities.config.JoystickSection</class>
+		<class>applet.entities.config.PrinterSection</class>
+		<class>applet.entities.config.SidPlay2Section</class>
 	</persistence-unit>
 </persistence>
