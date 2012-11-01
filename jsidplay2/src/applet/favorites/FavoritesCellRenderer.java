@@ -28,7 +28,8 @@ public class FavoritesCellRenderer extends DefaultTableCellRenderer {
 			boolean isSelected, boolean hasFocus, int row, int column) {
 		if (column == 0) {
 			if (value != null) {
-				File file = model.getFile(row);
+				int row1 = table.getRowSorter().convertRowIndexToModel(row);
+				File file = model.getFile(row1);
 				if (!file.exists()) {
 					setBackground(Color.RED);
 					setToolTipText("File not found!");
