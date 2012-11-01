@@ -1,6 +1,5 @@
 package applet.config;
 
-import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,12 +9,13 @@ import java.lang.reflect.Field;
 import javax.persistence.EntityManager;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.border.TitledBorder;
@@ -35,6 +35,7 @@ import org.swixml.SwingEngine;
 
 import sidplay.ini.intf.IConfig;
 import applet.TuneTab;
+import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigField;
 import applet.config.editors.CharTextField;
 import applet.config.editors.FloatTextField;
@@ -49,10 +50,11 @@ public class ConfigView extends TuneTab {
 	private SwingEngine swix;
 
 	private JTree configTree;
-	protected JPanel parent;
+	protected Box parent;
 	protected JTextField textField;
 	protected JCheckBox checkbox;
 	protected JComboBox<Enum<?>> combo;
+	protected JTextArea description;
 
 	private IConfig config;
 	protected File lastDir;
@@ -89,56 +91,82 @@ public class ConfigView extends TuneTab {
 					if (pathComponent instanceof ConfigNode) {
 						configNode = (ConfigNode) pathComponent;
 						try {
-							parent.removeAll();
-							parent.setBorder(null);
-							String category = String.valueOf(configNode
-									.getParent());
+							removeOldEditor();
+							TreeNode parentConfigNode = configNode.getParent();
 							if (configNode.getUserObject() instanceof String) {
 								String uiTypeName = getUITypeName(configNode
 										.getUserObject().getClass());
-								createEditorForType(category, null, uiTypeName);
+								createEditor(parentConfigNode, null, uiTypeName);
 								textField.setText(configNode.getUserObject()
 										.toString());
 								textField.setEditable(false);
 							} else if (configNode.getUserObject() instanceof Field) {
 								Field field = (Field) configNode
 										.getUserObject();
+								JComponent component = null;
 								if (isTextFieldType(field)) {
 									ConfigField uiConfig = field
 											.getAnnotation(ConfigField.class);
 									String uiTypeName;
 									if (uiConfig != null
-											&& uiConfig.getUIClass() != null) {
-										fileChooserFilter = uiConfig
-												.getFilter();
+											&& uiConfig.uiClass() != null) {
+										fileChooserFilter = uiConfig.filter();
 										uiTypeName = getUITypeName(uiConfig
-												.getUIClass());
+												.uiClass());
 									} else {
 										uiTypeName = getUITypeName(field
 												.getType());
 									}
-									createEditorForType(category, field,
-											uiTypeName);
-									initTextField();
+									createEditor(parentConfigNode,
+											field.getName(), uiTypeName);
+									component = initTextField();
 								} else if (isCheckBoxType(field)) {
 									String uiTypeName = getUITypeName(field
 											.getType());
-									createEditorForType(category, field,
-											uiTypeName);
-									initCheckBox();
+									createEditor(parentConfigNode,
+											field.getName(), uiTypeName);
+									component = initCheckBox();
 								} else if (isEnumType(field)) {
 									String uiTypeName = getUITypeName(field
 											.getType());
-									createEditorForType(category, field,
-											uiTypeName);
-									initEnumComboBox(field);
+									createEditor(parentConfigNode,
+											field.getName(), uiTypeName);
+									component = initEnumComboBox(field);
 								}
+								ConfigDescription uiDesc = field
+										.getAnnotation(ConfigDescription.class);
+								if (uiDesc != null) {
+									description.setText(swix.getLocalizer()
+											.getString(uiDesc.descriptionKey()));
+									if (component != null) {
+										component.setToolTipText(swix
+												.getLocalizer().getString(
+														uiDesc.toolTipKey()));
+									}
+								}
+							} else {
+								createEditor(parentConfigNode,
+										String.valueOf(configNode),
+										"NoParameter");
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
 					parent.repaint();
+				}
+
+				private void removeOldEditor() {
+					if (parent.getComponentCount() > 1
+							&& parent.getComponent(0) != null) {
+						JComponent oldEditor = (JComponent) parent
+								.getComponent(0);
+						parent.remove(oldEditor);
+						oldEditor.setToolTipText(swix.getLocalizer().getString(
+								"NO_TOOLTIP"));
+					}
+					description.setText(swix.getLocalizer()
+							.getString("NO_DESC"));
 				}
 
 				private boolean isEnumType(Field field) {
@@ -160,18 +188,20 @@ public class ConfigView extends TuneTab {
 									.getType() == char.class);
 				}
 
-				private void initTextField() {
+				private JComponent initTextField() {
 					textField.setText(configNode.getValue() != null ? configNode
 							.getValue().toString() : "");
+					return textField;
 				}
 
-				private void initCheckBox() {
+				private JComponent initCheckBox() {
 					checkbox.setSelected(configNode.getValue() != null ? Boolean
 							.valueOf(configNode.getValue().toString()) : false);
+					return checkbox;
 				}
 
 				@SuppressWarnings({ "rawtypes", "unchecked" })
-				private void initEnumComboBox(Field field) {
+				private JComponent initEnumComboBox(Field field) {
 					ActionListener[] actionListeners = combo
 							.getActionListeners();
 					for (ActionListener actionListener : actionListeners) {
@@ -188,18 +218,19 @@ public class ConfigView extends TuneTab {
 					for (ActionListener actionListener : actionListeners) {
 						combo.addActionListener(actionListener);
 					}
+					return combo;
 				}
 
-				private void createEditorForType(String category, Field field,
-						String uiTypeName) throws Exception {
+				private void createEditor(TreeNode parentConfigNode,
+						String fieldName, String uiTypeName) throws Exception {
+					String category = parentConfigNode != null ? parentConfigNode
+							.toString() : "";
 					parent.setBorder(new TitledBorder(category));
 					JComponent editor = (JComponent) swix
 							.render(ConfigView.class.getResource("editors/"
 									+ uiTypeName + ".xml"));
-					if (field != null) {
-						editor.setBorder(new TitledBorder(field.getName()));
-					}
-					parent.add(editor, BorderLayout.NORTH);
+					editor.setBorder(new TitledBorder(fieldName));
+					parent.add(editor, 0);
 				}
 
 				private String getUITypeName(Class<?> fieldType) {
@@ -301,7 +332,8 @@ public class ConfigView extends TuneTab {
 				File file = fileDialog.getSelectedFile();
 				JOptionPane.showMessageDialog(ConfigView.this, swix
 						.getLocalizer().getString("PLEASE_RESTART"));
-				((Configuration) config).setReconfigFilename(file.getAbsolutePath());
+				((Configuration) config).setReconfigFilename(file
+						.getAbsolutePath());
 			}
 		}
 	};

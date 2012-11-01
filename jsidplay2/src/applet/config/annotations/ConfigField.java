@@ -15,13 +15,13 @@ public @interface ConfigField {
 	 * 
 	 * @return configurable field is a filename
 	 */
-	Class<?> getUIClass();
+	Class<?> uiClass();
 
 	/**
 	 * Get files and/or folders mode
 	 * 
 	 * @return e.g. JFileChooser.DIRECTORIES_ONLY
 	 */
-	int getFilter();
+	int filter();
 
 }

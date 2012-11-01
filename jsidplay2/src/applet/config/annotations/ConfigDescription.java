@@ -7,13 +7,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Documented
-@Target(ElementType.METHOD)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConfigMethod {
+public @interface ConfigDescription {
 	/**
 	 * Get key for bundle to be localized and displayed in the UI.
 	 * 
 	 * @return key to get a language dependent message
 	 */
-	String nameKey();
+	String descriptionKey();
+
+	/**
+	 * Get key for bundle to be localized and displayed in the UI.
+	 * 
+	 * @return key to get a language dependent message
+	 */
+	String toolTipKey();
 }

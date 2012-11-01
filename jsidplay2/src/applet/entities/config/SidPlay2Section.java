@@ -6,6 +6,7 @@ import javax.persistence.Embeddable;
 import javax.swing.JFileChooser;
 
 import sidplay.ini.intf.ISidPlay2Section;
+import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigField;
 import applet.config.annotations.ConfigTransient;
 
@@ -25,6 +26,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.version = version;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_ENABLE_DATABASE_DESC", toolTipKey = "JSIDPLAY2_ENABLE_DATABASE_TOOLTIP")
 	private boolean enableDatabase = true;
 
 	@Override
@@ -37,6 +39,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.enableDatabase = isEnableDatabase;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_PLAY_LENGTH_DESC", toolTipKey = "JSIDPLAY2_PLAY_LENGTH_TOOLTIP")
 	private int playLength;
 
 	@Override
@@ -49,6 +52,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.playLength = playLength;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_RECORD_LENGTH_DESC", toolTipKey = "JSIDPLAY2_RECORD_LENGTH_TOOLTIP")
 	private int recordLength;
 
 	@Override
@@ -61,7 +65,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.recordLength = recordLength;
 	}
 
-	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_AND_DIRECTORIES)
+	@ConfigField(uiClass = File.class, filter = JFileChooser.FILES_AND_DIRECTORIES)
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_HVMEC_DESC", toolTipKey = "JSIDPLAY2_HVMEC_TOOLTIP")
 	private String HVMEC;
 
 	@Override
@@ -74,7 +79,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		HVMEC = hVMEC;
 	}
 
-	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_AND_DIRECTORIES)
+	@ConfigField(uiClass = File.class, filter = JFileChooser.FILES_AND_DIRECTORIES)
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_DEMOS_DESC", toolTipKey = "JSIDPLAY2_DEMOS_TOOLTIP")
 	private String demos;
 
 	@Override
@@ -87,7 +93,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.demos = demos;
 	}
 
-	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_AND_DIRECTORIES)
+	@ConfigField(uiClass = File.class, filter = JFileChooser.FILES_AND_DIRECTORIES)
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_MAGS_DESC", toolTipKey = "JSIDPLAY2_MAGS_TOOLTIP")
 	private String mags;
 
 	@Override
@@ -100,7 +107,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.mags = mags;
 	}
 
-	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_AND_DIRECTORIES)
+	@ConfigField(uiClass = File.class, filter = JFileChooser.FILES_AND_DIRECTORIES)
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_CGSC_DESC", toolTipKey = "JSIDPLAY2_CGSC_TOOLTIP")
 	private String cgsc;
 
 	@Override
@@ -113,7 +121,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.cgsc = cgsc;
 	}
 
-	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_AND_DIRECTORIES)
+	@ConfigField(uiClass = File.class, filter = JFileChooser.FILES_AND_DIRECTORIES)
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_HVSC_DESC", toolTipKey = "JSIDPLAY2_HVSC_TOOLTIP")
 	private String hvsc;
 
 	@Override
@@ -126,6 +135,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.hvsc = hvsc;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_SINGLE_DESC", toolTipKey = "JSIDPLAY2_SINGLE_TOOLTIP")
 	private boolean single;
 
 	@Override
@@ -138,6 +148,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.single = isSingle;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_ENABLE_PROXY_DESC", toolTipKey = "JSIDPLAY2_ENABLE_PROXY_TOOLTIP")
 	private boolean enableProxy;
 
 	@Override
@@ -150,6 +161,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.enableProxy = isEnableProxy;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_PROXY_HOSTNAME_DESC", toolTipKey = "JSIDPLAY2_PROXY_HOSTNAME_TOOLTIP")
 	private String proxyHostname;
 
 	@Override
@@ -162,6 +174,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.proxyHostname = proxyHostname;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_PROXY_PORT_DESC", toolTipKey = "JSIDPLAY2_PROXY_PORT_TOOLTIP")
 	private int proxyPort = 80;
 
 	@Override
@@ -174,7 +187,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.proxyPort = proxyPort;
 	}
 
-	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.DIRECTORIES_ONLY)
+	@ConfigField(uiClass = File.class, filter = JFileChooser.DIRECTORIES_ONLY)
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_LAST_DIRECTORY_DESC", toolTipKey = "JSIDPLAY2_LAST_DIRECTORY_TOOLTIP")
 	private String lastDirectory;
 
 	@Override
@@ -187,7 +201,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.lastDirectory = lastDirectory;
 	}
 
-	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.DIRECTORIES_ONLY)
+	@ConfigField(uiClass = File.class, filter = JFileChooser.DIRECTORIES_ONLY)
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_TMP_DIR_DESC", toolTipKey = "JSIDPLAY2_TMP_DIR_TOOLTIP")
 	private String tmpDir = System.getProperty("user.home")
 			+ System.getProperty("file.separator") + ".jsidplay2";
 
@@ -201,6 +216,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.tmpDir = tmpDir;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_FRAME_X_DESC", toolTipKey = "JSIDPLAY2_FRAME_X_TOOLTIP")
 	private int frameX;
 
 	@Override
@@ -213,6 +229,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.frameX = frameX;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_FRAME_Y_DESC", toolTipKey = "JSIDPLAY2_FRAME_Y_TOOLTIP")
 	private int frameY;
 
 	@Override
@@ -225,6 +242,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.frameY = frameY;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_FRAME_WIDTH_DESC", toolTipKey = "JSIDPLAY2_FRAME_WIDTH_TOOLTIP")
 	private int frameWidth = 1024;
 
 	@Override
@@ -237,6 +255,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.frameWidth = frameWidth;
 	}
 
+	@ConfigDescription(descriptionKey = "JSIDPLAY2_FRAME_HEIGHT_DESC", toolTipKey = "JSIDPLAY2_FRAME_HEIGHT_TOOLTIP")
 	private int frameHeight = 768;
 
 	@Override

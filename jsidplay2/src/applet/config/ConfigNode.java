@@ -119,14 +119,14 @@ public class ConfigNode extends DefaultMutableTreeNode {
 			Method method = (Method) getUserObject();
 			ConfigMethod uiConfig = method.getAnnotation(ConfigMethod.class);
 			if (uiConfig != null) {
-				return localizer.getString(uiConfig.getBundleKey());
+				return localizer.getString(uiConfig.nameKey());
 			}
 		} else {
 			// Other objects are displayed using annotation at class level
 			ConfigClass uiConfig = getUserObject().getClass().getAnnotation(
 					ConfigClass.class);
 			if (uiConfig != null) {
-				return localizer.getString(uiConfig.getBundleKey());
+				return localizer.getString(uiConfig.bundleKey());
 			}
 		}
 		// Annotation is missing!

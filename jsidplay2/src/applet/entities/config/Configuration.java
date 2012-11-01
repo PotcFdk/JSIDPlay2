@@ -33,7 +33,7 @@ import applet.config.annotations.ConfigTransient;
 
 @Entity
 @XmlRootElement(name = "configuration")
-@ConfigClass(getBundleKey = "CONFIGURATION")
+@ConfigClass(bundleKey = "CONFIGURATION")
 public class Configuration implements IConfig {
 
 	@Transient
@@ -133,7 +133,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(getBundleKey = "JSIDPLAY2")
+	@ConfigMethod(nameKey = "JSIDPLAY2")
 	public ISidPlay2Section getSidplay2() {
 		return sidplay2;
 	}
@@ -144,7 +144,7 @@ public class Configuration implements IConfig {
 
 	@Override
 	@XmlTransient
-	@ConfigMethod(getBundleKey = "ONLINE")
+	@ConfigMethod(nameKey = "ONLINE")
 	public OnlineSection getOnline() {
 		return online;
 	}
@@ -162,7 +162,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(getBundleKey = "C1541")
+	@ConfigMethod(nameKey = "C1541")
 	public IC1541Section getC1541() {
 		return c1541;
 	}
@@ -176,7 +176,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(getBundleKey = "PRINTER")
+	@ConfigMethod(nameKey = "PRINTER")
 	public IPrinterSection getPrinter() {
 		return printer;
 	}
@@ -190,7 +190,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(getBundleKey = "JOYSTICK")
+	@ConfigMethod(nameKey = "JOYSTICK")
 	public IJoystickSection getJoystick() {
 		return joystick;
 	}
@@ -204,7 +204,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(getBundleKey = "CONSOLE")
+	@ConfigMethod(nameKey = "CONSOLE")
 	public IConsoleSection getConsole() {
 		return console;
 	}
@@ -218,7 +218,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(getBundleKey = "AUDIO")
+	@ConfigMethod(nameKey = "AUDIO")
 	public IAudioSection getAudio() {
 		return audio;
 	}
@@ -232,7 +232,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(getBundleKey = "EMULATION")
+	@ConfigMethod(nameKey = "EMULATION")
 	public IEmulationSection getEmulation() {
 		return emulation;
 	}
@@ -258,7 +258,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(getBundleKey = "FAVORITES")
+	@ConfigMethod(nameKey = "FAVORITES")
 	public List<? extends IFavoritesSection> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<FavoritesSection>();
@@ -282,7 +282,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(getBundleKey = "FILTERS")
+	@ConfigMethod(nameKey = "FILTERS")
 	public List<? extends IFilterSection> getFilter() {
 		if (filter == null) {
 			filter = new ArrayList<FilterSection>();

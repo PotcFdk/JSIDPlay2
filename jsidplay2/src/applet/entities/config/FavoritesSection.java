@@ -21,7 +21,7 @@ import applet.config.annotations.ConfigMethod;
 import applet.config.annotations.ConfigTransient;
 
 @Entity
-@ConfigClass(getBundleKey = "FAVORITE")
+@ConfigClass(bundleKey = "FAVORITE")
 public class FavoritesSection implements IFavoritesSection {
 
 	@Id
@@ -60,7 +60,7 @@ public class FavoritesSection implements IFavoritesSection {
 
 	@Override
 	@XmlTransient
-	@ConfigMethod(getBundleKey = "FILENAME")
+	@ConfigMethod(nameKey = "FILENAME")
 	public List<String> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<String>();

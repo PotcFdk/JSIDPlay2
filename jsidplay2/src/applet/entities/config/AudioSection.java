@@ -51,7 +51,7 @@ public class AudioSection implements IAudioSection {
 		this.playOriginal = original;
 	}
 
-	@ConfigField(getUIClass = File.class, getFilter = JFileChooser.FILES_ONLY)
+	@ConfigField(uiClass = File.class, filter = JFileChooser.FILES_ONLY)
 	private String mp3File;
 
 	@Override

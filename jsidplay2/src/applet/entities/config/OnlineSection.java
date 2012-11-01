@@ -3,6 +3,7 @@ package applet.entities.config;
 import javax.persistence.Embeddable;
 
 import sidplay.ini.intf.IOnlineSection;
+import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigTransient;
 
 @Embeddable
@@ -14,6 +15,7 @@ public class OnlineSection implements IOnlineSection {
 	@ConfigTransient
 	private static final String DEPLOYMENT_URL = "http://kenchis.t15.org/jsidplay2/";
 
+	@ConfigDescription(descriptionKey = "ONLINE_HVSC_URL_DESC", toolTipKey = "ONLINE_HVSC_URL_TOOLTIP")
 	private String hvscUrl = DEPLOYMENT_URL + "online/hvsc/C64Music.zip";
 
 	@Override
@@ -25,6 +27,7 @@ public class OnlineSection implements IOnlineSection {
 		this.hvscUrl = hvscUrl;
 	}
 
+	@ConfigDescription(descriptionKey = "ONLINE_CGSC_URL_DESC", toolTipKey = "ONLINE_CGSC_URL_TOOLTIP")
 	private String cgscUrl = DEPLOYMENT_URL + "online/cgsc/CGSC.zip";
 
 	@Override
@@ -36,6 +39,7 @@ public class OnlineSection implements IOnlineSection {
 		this.cgscUrl = cgscUrl;
 	}
 
+	@ConfigDescription(descriptionKey = "ONLINE_HVMEC_URL_DESC", toolTipKey = "ONLINE_HVMEC_URL_TOOLTIP")
 	private String hvmecUrl = DEPLOYMENT_URL + "online/hvmec/HVMEC.zip";
 
 	@Override
@@ -47,6 +51,7 @@ public class OnlineSection implements IOnlineSection {
 		this.hvmecUrl = hvmecUrl;
 	}
 
+	@ConfigDescription(descriptionKey = "ONLINE_DEMOS_URL_DESC", toolTipKey = "ONLINE_DEMOS_URL_TOOLTIP")
 	private String demosUrl = DEPLOYMENT_URL + "online/demos/Demos.zip";
 
 	@Override
@@ -58,6 +63,7 @@ public class OnlineSection implements IOnlineSection {
 		this.demosUrl = demosUrl;
 	}
 
+	@ConfigDescription(descriptionKey = "ONLINE_MAGS_URL_DESC", toolTipKey = "ONLINE_MAGS_URL_TOOLTIP")
 	private String magazinesUrl = DEPLOYMENT_URL
 			+ "online/mags/C64Magazines.zip";
 
@@ -70,6 +76,7 @@ public class OnlineSection implements IOnlineSection {
 		this.magazinesUrl = magazinesUrl;
 	}
 
+	@ConfigDescription(descriptionKey = "ONLINE_GAMEBASE_URL_DESC", toolTipKey = "ONLINE_GAMEBASE_URL_TOOLTIP")
 	private String gamebaseUrl = DEPLOYMENT_URL + "online/gamebase/gb64.jar";
 
 	@Override
@@ -81,6 +88,7 @@ public class OnlineSection implements IOnlineSection {
 		this.gamebaseUrl = gamebaseUrl;
 	}
 
+	@ConfigDescription(descriptionKey = "ONLINE_SOASC_6581R2_DESC", toolTipKey = "ONLINE_SOASC_6581R2_TOOLTIP")
 	private String soasc6581R2 = "http://ftp.df.lth.se/pub/media/soasc/soasc_mp3{0}_T{1,number,00}.sid_MOS6581R2.mp3";
 
 	@Override
@@ -93,6 +101,7 @@ public class OnlineSection implements IOnlineSection {
 		soasc6581R2 = soasc6581r2;
 	}
 
+	@ConfigDescription(descriptionKey = "ONLINE_SOASC_6581R4_DESC", toolTipKey = "ONLINE_SOASC_6581R4_TOOLTIP")
 	private String soasc6581R4 = "http://ftp.df.lth.se/pub/media/soasc/soasc_mp3{0}_T{1,number,00}.sid_MOS6581R4.mp3";
 
 	@Override
@@ -105,6 +114,7 @@ public class OnlineSection implements IOnlineSection {
 		soasc6581R4 = soasc6581r4;
 	}
 
+	@ConfigDescription(descriptionKey = "ONLINE_SOASC_8580R5_DESC", toolTipKey = "ONLINE_SOASC_8580R5_TOOLTIP")
 	private String soasc8580R5 = "http://ftp.df.lth.se/pub/media/soasc/soasc_mp3{0}_T{1,number,00}.sid_CSG8580R5.mp3";
 
 	@Override

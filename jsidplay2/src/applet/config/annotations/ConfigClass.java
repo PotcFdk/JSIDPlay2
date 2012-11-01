@@ -15,5 +15,5 @@ public @interface ConfigClass {
 	 * 
 	 * @return key to get a language dependent message
 	 */
-	String getBundleKey();
+	String bundleKey();
 }

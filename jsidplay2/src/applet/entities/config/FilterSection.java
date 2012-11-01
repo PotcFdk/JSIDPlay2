@@ -11,7 +11,7 @@ import applet.config.annotations.ConfigClass;
 import applet.config.annotations.ConfigTransient;
 
 @Entity
-@ConfigClass(getBundleKey = "FILTER")
+@ConfigClass(bundleKey = "FILTER")
 public class FilterSection implements IFilterSection {
 
 	@Id
