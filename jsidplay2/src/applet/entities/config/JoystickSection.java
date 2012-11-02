@@ -3,10 +3,12 @@ package applet.entities.config;
 import javax.persistence.Embeddable;
 
 import sidplay.ini.intf.IJoystickSection;
+import applet.config.annotations.ConfigDescription;
 
 @Embeddable
 public class JoystickSection implements IJoystickSection {
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_DEVICE_NAME1_DESC", toolTipKey = "JOYSTICK_DEVICE_NAME1_TOOLTIP")
 	private String deviceName1;
 
 	@Override
@@ -19,6 +21,7 @@ public class JoystickSection implements IJoystickSection {
 		this.deviceName1 = deviceName;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_DEVICE_NAME2_DESC", toolTipKey = "JOYSTICK_DEVICE_NAME2_TOOLTIP")
 	private String deviceName2;
 
 	@Override
@@ -31,6 +34,7 @@ public class JoystickSection implements IJoystickSection {
 		this.deviceName2 = deviceName;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_NAME_UP1_DESC", toolTipKey = "JOYSTICK_COMPONENT_NAME_UP1_TOOLTIP")
 	private String componentNameUp1;
 
 	@Override
@@ -43,6 +47,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameUp1 = componentNameUp;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_NAME_UP2_DESC", toolTipKey = "JOYSTICK_COMPONENT_NAME_UP2_TOOLTIP")
 	private String componentNameUp2;
 
 	@Override
@@ -55,6 +60,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameUp2 = componentNameUp;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_NAME_DOWN1_DESC", toolTipKey = "JOYSTICK_COMPONENT_NAME_DOWN1_TOOLTIP")
 	private String componentNameDown1;
 
 	@Override
@@ -67,6 +73,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameDown1 = componentNameDown;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_NAME_DOWN2_DESC", toolTipKey = "JOYSTICK_COMPONENT_NAME_DOWN2_TOOLTIP")
 	private String componentNameDown2;
 
 	@Override
@@ -79,6 +86,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameDown2 = componentNameDown;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_NAME_LEFT1_DESC", toolTipKey = "JOYSTICK_COMPONENT_NAME_LEFT1_TOOLTIP")
 	private String componentNameLeft1;
 
 	@Override
@@ -91,6 +99,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameLeft1 = componentNameLeft;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_NAME_LEFT2_DESC", toolTipKey = "JOYSTICK_COMPONENT_NAME_LEFT2_TOOLTIP")
 	private String componentNameLeft2;
 
 	@Override
@@ -103,6 +112,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameLeft2 = componentNameLeft;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_NAME_RIGHT1_DESC", toolTipKey = "JOYSTICK_COMPONENT_NAME_RIGHT1_TOOLTIP")
 	private String componentNameRight1;
 
 	@Override
@@ -115,6 +125,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameRight1 = componentNameRight;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_NAME_RIGHT2_DESC", toolTipKey = "JOYSTICK_COMPONENT_NAME_RIGHT2_TOOLTIP")
 	private String componentNameRight2;
 
 	@Override
@@ -127,6 +138,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameRight2 = componentNameRight;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_NAME_BUTTON1_DESC", toolTipKey = "JOYSTICK_COMPONENT_NAME_BUTTON1_TOOLTIP")
 	private String componentNameBtn1;
 
 	@Override
@@ -139,6 +151,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameBtn1 = componentNameBtn;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_NAME_BUTTON2_DESC", toolTipKey = "JOYSTICK_COMPONENT_NAME_BUTTON2_TOOLTIP")
 	private String componentNameBtn2;
 
 	@Override
@@ -151,6 +164,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameBtn2 = componentNameBtn;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_VALUE_UP1_DESC", toolTipKey = "JOYSTICK_COMPONENT_VALUE_UP1_TOOLTIP")
 	private float componentValueUp1;
 
 	@Override
@@ -163,6 +177,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueUp1 = componentValueUp;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_VALUE_UP2_DESC", toolTipKey = "JOYSTICK_COMPONENT_VALUE_UP2_TOOLTIP")
 	private float componentValueUp2;
 
 	@Override
@@ -175,6 +190,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueUp2 = componentValueUp;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_VALUE_DOWN1_DESC", toolTipKey = "JOYSTICK_COMPONENT_VALUE_DOWN1_TOOLTIP")
 	private float componentValueDown1;
 
 	@Override
@@ -187,6 +203,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueDown1 = componentValueDown;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_VALUE_DOWN2_DESC", toolTipKey = "JOYSTICK_COMPONENT_VALUE_DOWN2_TOOLTIP")
 	private float componentValueDown2;
 
 	@Override
@@ -199,6 +216,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueDown2 = componentValueDown;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_VALUE_LEFT1_DESC", toolTipKey = "JOYSTICK_COMPONENT_VALUE_LEFT1_TOOLTIP")
 	private float componentValueLeft1;
 
 	@Override
@@ -211,6 +229,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueLeft1 = componentValueLeft;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_VALUE_LEFT2_DESC", toolTipKey = "JOYSTICK_COMPONENT_VALUE_LEFT2_TOOLTIP")
 	private float componentValueLeft2;
 
 	@Override
@@ -223,6 +242,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueLeft2 = componentValueLeft;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_VALUE_RIGHT1_DESC", toolTipKey = "JOYSTICK_COMPONENT_VALUE_RIGHT1_TOOLTIP")
 	private float componentValueRight1;
 
 	@Override
@@ -235,6 +255,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueRight1 = componentValueRight;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_VALUE_RIGHT2_DESC", toolTipKey = "JOYSTICK_COMPONENT_VALUE_RIGHT2_TOOLTIP")
 	private float componentValueRight2;
 
 	@Override
@@ -247,6 +268,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueRight2 = componentValueRight;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_VALUE_BUTTON1_DESC", toolTipKey = "JOYSTICK_COMPONENT_VALUE_BUTTON1_TOOLTIP")
 	private float componentValueBtn1;
 
 	@Override
@@ -259,6 +281,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueBtn1 = componentValueBtn;
 	}
 
+	@ConfigDescription(descriptionKey = "JOYSTICK_COMPONENT_VALUE_BUTTON2_DESC", toolTipKey = "JOYSTICK_COMPONENT_VALUE_BUTTON2_TOOLTIP")
 	private float componentValueBtn2;
 
 	@Override

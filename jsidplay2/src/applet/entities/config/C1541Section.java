@@ -7,10 +7,12 @@ import javax.persistence.Enumerated;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import sidplay.ini.intf.IC1541Section;
+import applet.config.annotations.ConfigDescription;
 
 @Embeddable
 public class C1541Section implements IC1541Section {
 
+	@ConfigDescription(descriptionKey = "1541_DRIVE_ON_DESC", toolTipKey = "1541_DRIVE_ON_TOOLTIP")
 	private boolean driveOn;
 
 	@Override
@@ -23,6 +25,7 @@ public class C1541Section implements IC1541Section {
 		this.driveOn = on;
 	}
 
+	@ConfigDescription(descriptionKey = "1541_DRIVE_SOUND_ON_DESC", toolTipKey = "1541_DRIVE_SOUND_ON_TOOLTIP")
 	private boolean driveSoundOn = true;
 
 	@Override
@@ -35,6 +38,7 @@ public class C1541Section implements IC1541Section {
 		this.driveSoundOn = on;
 	}
 
+	@ConfigDescription(descriptionKey = "1541_PARALLEL_CABLE_DESC", toolTipKey = "1541_PARALLEL_CABLE_TOOLTIP")
 	private boolean parallelCable;
 
 	@Override
@@ -47,6 +51,7 @@ public class C1541Section implements IC1541Section {
 		this.parallelCable = on;
 	}
 
+	@ConfigDescription(descriptionKey = "1541_RAM_EXPANSION_ENABLED_0_DESC", toolTipKey = "1541_RAM_EXPANSION_ENABLED_0_TOOLTIP")
 	private boolean ramExpansionEnabled0;
 
 	@Override
@@ -59,6 +64,7 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled0 = on;
 	}
 
+	@ConfigDescription(descriptionKey = "1541_RAM_EXPANSION_ENABLED_1_DESC", toolTipKey = "1541_RAM_EXPANSION_ENABLED_1_TOOLTIP")
 	private boolean ramExpansionEnabled1;
 
 	@Override
@@ -71,6 +77,7 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled1 = on;
 	}
 
+	@ConfigDescription(descriptionKey = "1541_RAM_EXPANSION_ENABLED_2_DESC", toolTipKey = "1541_RAM_EXPANSION_ENABLED_2_TOOLTIP")
 	private boolean ramExpansionEnabled2;
 
 	@Override
@@ -83,6 +90,7 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled2 = on;
 	}
 
+	@ConfigDescription(descriptionKey = "1541_RAM_EXPANSION_ENABLED_3_DESC", toolTipKey = "1541_RAM_EXPANSION_ENABLED_3_TOOLTIP")
 	private boolean ramExpansionEnabled3;
 
 	@Override
@@ -95,6 +103,7 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled3 = on;
 	}
 
+	@ConfigDescription(descriptionKey = "1541_RAM_EXPANSION_ENABLED_4_DESC", toolTipKey = "1541_RAM_EXPANSION_ENABLED_4_TOOLTIP")
 	private boolean ramExpansionEnabled4;
 
 	@Override
@@ -107,6 +116,7 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled4 = on;
 	}
 
+	@ConfigDescription(descriptionKey = "1541_EXTEND_IMAGE_POLICY_DESC", toolTipKey = "1541_EXTEND_IMAGE_POLICY_TOOLTIP")
 	@Enumerated(EnumType.STRING)
 	private ExtendImagePolicy extendImagePolicy = ExtendImagePolicy.EXTEND_ACCESS;
 
@@ -121,6 +131,7 @@ public class C1541Section implements IC1541Section {
 	}
 
 	@Enumerated(EnumType.STRING)
+	@ConfigDescription(descriptionKey = "1541_FLOPPY_TYPE_DESC", toolTipKey = "1541_FLOPPY_TYPE_TOOLTIP")
 	private FloppyType floppyType = FloppyType.C1541;
 
 	@Override
