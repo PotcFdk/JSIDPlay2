@@ -9,11 +9,13 @@ import javax.swing.JFileChooser;
 
 import resid_builder.resid.ISIDDefs.SamplingMethod;
 import sidplay.ini.intf.IAudioSection;
+import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigField;
 
 @Embeddable
 public class AudioSection implements IAudioSection {
 
+	@ConfigDescription(descriptionKey = "AUDIO_FREQUENCY_DESC", toolTipKey = "AUDIO_FREQUENCY_TOOLTIP")
 	private int frequency = 48000;
 
 	@Override
@@ -27,6 +29,7 @@ public class AudioSection implements IAudioSection {
 	}
 
 	@Enumerated(EnumType.STRING)
+	@ConfigDescription(descriptionKey = "AUDIO_SAMPLING_DESC", toolTipKey = "AUDIO_SAMPLING_TOOLTIP")
 	private SamplingMethod sampling = SamplingMethod.DECIMATE;
 
 	@Override
@@ -39,6 +42,7 @@ public class AudioSection implements IAudioSection {
 		this.sampling = method;
 	}
 
+	@ConfigDescription(descriptionKey = "AUDIO_PLAY_ORIGINAL_DESC", toolTipKey = "AUDIO_PLAY_ORIGINAL_TOOLTIP")
 	private boolean playOriginal;
 
 	@Override
@@ -52,6 +56,7 @@ public class AudioSection implements IAudioSection {
 	}
 
 	@ConfigField(uiClass = File.class, filter = JFileChooser.FILES_ONLY)
+	@ConfigDescription(descriptionKey = "AUDIO_MP3_FILE_DESC", toolTipKey = "AUDIO_MP3_FILE_TOOLTIP")
 	private String mp3File;
 
 	@Override
@@ -64,6 +69,7 @@ public class AudioSection implements IAudioSection {
 		this.mp3File = recording;
 	}
 
+	@ConfigDescription(descriptionKey = "AUDIO_LEFT_VOLUME_DESC", toolTipKey = "AUDIO_LEFT_VOLUME_TOOLTIP")
 	private float leftVolume = 6.0f;
 
 	@Override
@@ -76,6 +82,7 @@ public class AudioSection implements IAudioSection {
 		this.leftVolume = volume;
 	}
 
+	@ConfigDescription(descriptionKey = "AUDIO_RIGHT_VOLUME_DESC", toolTipKey = "AUDIO_RIGHT_VOLUME_TOOLTIP")
 	private float rightVolume = 6.0f;
 
 	@Override

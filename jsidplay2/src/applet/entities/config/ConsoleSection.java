@@ -3,10 +3,12 @@ package applet.entities.config;
 import javax.persistence.Embeddable;
 
 import sidplay.ini.intf.IConsoleSection;
+import applet.config.annotations.ConfigDescription;
 
 @Embeddable
 public class ConsoleSection implements IConsoleSection {
 
+	@ConfigDescription(descriptionKey = "CONSOLE_TOP_LEFT_DESC", toolTipKey = "CONSOLE_TOP_LEFT_TOOLTIP")
 	private char topLeft = '+';
 
 	@Override
@@ -19,6 +21,7 @@ public class ConsoleSection implements IConsoleSection {
 		return this.topLeft;
 	}
 
+	@ConfigDescription(descriptionKey = "CONSOLE_TOP_RIGHT_DESC", toolTipKey = "CONSOLE_TOP_RIGHT_TOOLTIP")
 	private char topRight = '+';
 
 	@Override
@@ -31,6 +34,7 @@ public class ConsoleSection implements IConsoleSection {
 		return this.topRight;
 	}
 
+	@ConfigDescription(descriptionKey = "CONSOLE_BOTTOM_LEFT_DESC", toolTipKey = "CONSOLE_BOTTOM_LEFT_TOOLTIP")
 	private char bottomLeft = '+';
 
 	@Override
@@ -43,6 +47,7 @@ public class ConsoleSection implements IConsoleSection {
 		return this.bottomLeft;
 	}
 
+	@ConfigDescription(descriptionKey = "CONSOLE_BOTTOM_RIGHT_DESC", toolTipKey = "CONSOLE_BOTTOM_RIGHT_TOOLTIP")
 	private char bottomRight = '+';
 
 	@Override
@@ -55,6 +60,7 @@ public class ConsoleSection implements IConsoleSection {
 		return this.bottomRight;
 	}
 
+	@ConfigDescription(descriptionKey = "CONSOLE_VERTICAL_DESC", toolTipKey = "CONSOLE_VERTICAL_TOOLTIP")
 	private char vertical = '|';
 
 	@Override
@@ -67,6 +73,7 @@ public class ConsoleSection implements IConsoleSection {
 		return this.vertical;
 	}
 
+	@ConfigDescription(descriptionKey = "CONSOLE_HORIZONTAL_DESC", toolTipKey = "CONSOLE_HORIZONTAL_TOOLTIP")
 	private char horizontal = '-';
 
 	@Override
@@ -79,6 +86,7 @@ public class ConsoleSection implements IConsoleSection {
 		return this.horizontal;
 	}
 
+	@ConfigDescription(descriptionKey = "CONSOLE_JUNCTION_LEFT_DESC", toolTipKey = "CONSOLE_JUNCTION_LEFT_TOOLTIP")
 	private char junctionLeft = '+';
 
 	@Override
@@ -91,6 +99,7 @@ public class ConsoleSection implements IConsoleSection {
 		return junctionLeft;
 	}
 
+	@ConfigDescription(descriptionKey = "CONSOLE_JUNCTION_RIGHT_DESC", toolTipKey = "CONSOLE_JUNCTION_RIGHT_TOOLTIP")
 	private char junctionRight = '+';
 
 	@Override
