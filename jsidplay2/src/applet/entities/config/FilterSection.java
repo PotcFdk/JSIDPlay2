@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.IFilterSection;
 import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigTransient;
 
 @Entity
@@ -15,6 +16,7 @@ import applet.config.annotations.ConfigTransient;
 public class FilterSection implements IFilterSection {
 
 	@Id
+	@ConfigDescription(descriptionKey = "FILTER_NAME_DESC", toolTipKey = "FILTER_NAME_TOOLTIP")
 	private String name;
 
 	@Override
@@ -41,6 +43,7 @@ public class FilterSection implements IFilterSection {
 		this.name = name;
 	}
 
+	@ConfigDescription(descriptionKey = "FILTER_FILTER8580_CURVE_POSITION_DESC", toolTipKey = "FILTER_FILTER8580_CURVE_POSITION_TOOLTIP")
 	private float filter8580CurvePosition;
 
 	@Override
@@ -53,6 +56,7 @@ public class FilterSection implements IFilterSection {
 		this.filter8580CurvePosition = filter8580CurvePosition;
 	}
 
+	@ConfigDescription(descriptionKey = "FILTER_FILTER6581_CURVE_POSITION_DESC", toolTipKey = "FILTER_FILTER6581_CURVE_POSITION_TOOLTIP")
 	private float filter6581CurvePosition;
 
 	@Override

@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.IFavoritesSection;
 import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigMethod;
 import applet.config.annotations.ConfigTransient;
 
@@ -37,6 +38,7 @@ public class FavoritesSection implements IFavoritesSection {
 		this.id = id;
 	}
 
+	@ConfigDescription(descriptionKey = "FAVORITES_NAME_DESC", toolTipKey = "FAVORITES_NAME_TOOLTIP")
 	private String name;
 
 	@Override

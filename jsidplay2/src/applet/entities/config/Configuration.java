@@ -28,6 +28,7 @@ import sidplay.ini.intf.IJoystickSection;
 import sidplay.ini.intf.IPrinterSection;
 import sidplay.ini.intf.ISidPlay2Section;
 import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigMethod;
 import applet.config.annotations.ConfigTransient;
 
@@ -237,6 +238,7 @@ public class Configuration implements IConfig {
 		return emulation;
 	}
 
+	@ConfigDescription(descriptionKey = "CURRENT_FAVORITE_DESC", toolTipKey = "CURRENT_FAVORITE_TOOLTIP")
 	private String currentFavorite;
 
 	@Override
