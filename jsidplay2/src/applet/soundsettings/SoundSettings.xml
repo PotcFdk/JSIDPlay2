@@ -151,7 +151,7 @@
 					weightx="1" weighty="1" gridwidth="1" gridx="2" gridy="4" />
 			</button>
 		</panel>
-		<panel border="TitledBorder(OPTIONS)" layout="GridBagLayout">
+		<panel border="TitledBorder(INFOS)" layout="GridBagLayout">
 			<label text="PLAYER">
 				<gridbagconstraints weightx="1" weighty="1"
 					fill="GridBagConstraints.HORIZONTAL" anchor="GridBagConstraints.WEST"
