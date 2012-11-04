@@ -304,8 +304,6 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	/**
 	 * Create temp directory, if not exists (default is user home dir).
 	 * 
-	 * Note: system property jsidplay2.tmpdir is set accordingly.
-	 * 
 	 * @param config
 	 */
 	private void initializeTmpDir(IConfig config) {
