@@ -1,6 +1,6 @@
 package sidplay.ini.intf;
 
-import libsidplay.common.ISID2Types.Clock;
+import libsidplay.common.ISID2Types.CPUClock;
 import resid_builder.resid.ISIDDefs.ChipModel;
 
 public interface IEmulationSection {
@@ -10,7 +10,7 @@ public interface IEmulationSection {
 	 * 
 	 * @return the default clock speed
 	 */
-	public Clock getDefaultClockSpeed();
+	public CPUClock getDefaultClockSpeed();
 
 	/**
 	 * Setter of the default clock speed.
@@ -18,14 +18,14 @@ public interface IEmulationSection {
 	 * @param speed
 	 *            default clock speed
 	 */
-	public void setDefaultClockSpeed(Clock speed);
+	public void setDefaultClockSpeed(CPUClock speed);
 
 	/**
 	 * Getter of user the clock speed.
 	 * 
 	 * @return the user clock speed
 	 */
-	public Clock getUserClockSpeed();
+	public CPUClock getUserClockSpeed();
 
 	/**
 	 * Setter of the user clock speed.
@@ -33,7 +33,7 @@ public interface IEmulationSection {
 	 * @param speed
 	 *            user clock speed
 	 */
-	public void setUserClockSpeed(Clock speed);
+	public void setUserClockSpeed(CPUClock speed);
 
 	/**
 	 * Getter of the default SID model.

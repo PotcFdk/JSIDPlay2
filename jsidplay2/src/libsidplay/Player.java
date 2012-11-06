@@ -29,7 +29,7 @@ import java.io.InputStream;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.ISID2Types.Clock;
+import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1530.Datasette.Control;
@@ -198,7 +198,7 @@ public class Player {
 	 * @param cpuFreq
 	 *            frequency (PAL/NTSC)
 	 */
-	public void setClock(final Clock cpuFreq) {
+	public void setClock(final CPUClock cpuFreq) {
 		c64.setClock(cpuFreq);
 		c1541Runner.setClockDivider(cpuFreq);
 		for (SerialIECDevice device : serialDevices) {
@@ -661,7 +661,7 @@ abstract class C1541Runner extends Event {
 		return wholeClocks;
 	}
 
-	protected void setClockDivider(final Clock clock) {
+	protected void setClockDivider(final CPUClock clock) {
 		conversionFactor = (int) (1000000.0 / clock.getCpuFrequency() * 65536.0 + 0.5);
 	}
 

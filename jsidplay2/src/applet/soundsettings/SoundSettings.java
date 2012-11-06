@@ -478,7 +478,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 			C64 c64 = player.getC64();
 
 			final EventScheduler ctx = c64.getEventScheduler();
-			final ISID2Types.Clock systemClock = c64.getClock();
+			final ISID2Types.CPUClock systemClock = c64.getClock();
 			if (systemClock != null) {
 				final double waitClocks = systemClock.getCpuFrequency();
 

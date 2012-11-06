@@ -1,0 +1,7 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- String Configuration -->
+<panel layout="BorderLayout" bundle="applet.config.ConfigTexts">
+	<hbox constraints="BorderLayout.NORTH">
+		<shorttextfield columns="20" id="textField" action="doSetValue"/>
+	</hbox>
+</panel>

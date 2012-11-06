@@ -1,6 +1,6 @@
 package applet;
 
-import libsidplay.common.ISID2Types.Clock;
+import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.components.c1541.C1541.FloppyType;
 
 /**
@@ -37,7 +37,7 @@ public interface IMenuListener {
 	 * @param standard
 	 *            video standard
 	 */
-	void setVideoStandard(Clock standard);
+	void setVideoStandard(CPUClock standard);
 
 	/**
 	 * Open sound settings.

@@ -1,6 +1,6 @@
 package sidplay.ini;
 
-import libsidplay.common.ISID2Types.Clock;
+import libsidplay.common.ISID2Types.CPUClock;
 import resid_builder.resid.ISIDDefs.ChipModel;
 import sidplay.ini.intf.IEmulationSection;
 
@@ -21,8 +21,8 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 * @return the default clock speed
 	 */
 	@Override
-	public final Clock getDefaultClockSpeed() {
-		return iniReader.getPropertyEnum("Emulation", "DefaultClockSpeed", Clock.PAL);
+	public final CPUClock getDefaultClockSpeed() {
+		return iniReader.getPropertyEnum("Emulation", "DefaultClockSpeed", CPUClock.PAL);
 	}
 
 	/**
@@ -32,7 +32,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 *            default clock speed
 	 */
 	@Override
-	public final void setDefaultClockSpeed(final Clock speed) {
+	public final void setDefaultClockSpeed(final CPUClock speed) {
 		iniReader.setProperty("Emulation", "DefaultClockSpeed", speed);
 	}
 
@@ -42,8 +42,8 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 * @return the user clock speed
 	 */
 	@Override
-	public final Clock getUserClockSpeed() {
-		return iniReader.getPropertyEnum("Emulation", "UserClockSpeed", null, Clock.class);
+	public final CPUClock getUserClockSpeed() {
+		return iniReader.getPropertyEnum("Emulation", "UserClockSpeed", null, CPUClock.class);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 *            user clock speed
 	 */
 	@Override
-	public final void setUserClockSpeed(final Clock speed) {
+	public final void setUserClockSpeed(final CPUClock speed) {
 		iniReader.setProperty("Emulation", "UserClockSpeed", speed);
 	}
 

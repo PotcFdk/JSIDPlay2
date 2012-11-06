@@ -8,6 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -15,10 +17,26 @@ import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
+import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigMethod;
+import applet.config.annotations.ConfigTransient;
 
 @Entity
+@ConfigClass(bundleKey = "HVSC_ENTRY")
 public class HVSCEntry {
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@ConfigTransient
+	private Integer id;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 	private String path;
 
 	public String getPath() {
@@ -79,7 +97,7 @@ public class HVSCEntry {
 		this.format = format;
 	}
 
-	@Column(length=2048)
+	@Column(length = 2048)
 	private String playerId;
 
 	public String getPlayerId() {
@@ -255,6 +273,7 @@ public class HVSCEntry {
 		this.playerAddress = playerAddress;
 	}
 
+	@ConfigTransient
 	private Date fileDate;
 
 	public Date getFileDate() {
@@ -305,7 +324,7 @@ public class HVSCEntry {
 		this.relocNoPages = relocNoPages;
 	}
 
-	@Column(length=4096)
+	@Column(length = 4096)
 	private String stilGlbComment;
 
 	public String getStilGlbComment() {
@@ -319,6 +338,7 @@ public class HVSCEntry {
 	@OneToMany(mappedBy = "hvscEntry")
 	private List<STIL> stil;
 
+	@ConfigMethod(nameKey = "STIL_ENTRIES")
 	public List<STIL> getStil() {
 		if (stil == null) {
 			stil = new ArrayList<STIL>();

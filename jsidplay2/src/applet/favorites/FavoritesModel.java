@@ -1,25 +1,45 @@
 package applet.favorites;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
+import javax.persistence.EntityManager;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreeModel;
+
+import org.swixml.Localizer;
 
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFavoritesSection;
 import applet.collection.Collection;
 import applet.collection.CollectionTreeModel;
-import applet.sidtuneinfo.SidTuneInfoCache;
+import applet.entities.collection.HVSCEntry;
+import applet.entities.collection.service.HVSCEntryService;
 
 @SuppressWarnings("serial")
 public class FavoritesModel extends DefaultTableModel {
 
+	public static final String[] COLUMNS = new String[] { "PATH", "TITLE",
+			"AUTHOR", "RELEASED", "FORMAT", "PLAYER_ID", "NO_OF_SONGS",
+			"START_SONG", "CLOCK_FREQ", "SPEED", "SID_MODEL_1", "SID_MODEL_2",
+			"COMPATIBILITY", "TUNE_LENGTH", "AUDIO", "SID_CHIP_BASE_1",
+			"SID_CHIP_BASE_2", "DRIVER_ADDRESS", "LOAD_ADDRESS", "LOAD_LENGTH",
+			"INIT_ADDRESS", "PLAYER_ADDRESS", "FILE_DATE", "FILE_SIZE_KB",
+			"TUNE_SIZE_B", "RELOC_START_PAGE", "RELOC_NO_PAGES" };
+
+	public static Class<?> COLUMN_TYPES[] = new Class[] { String.class,
+			String.class, String.class, String.class, String.class,
+			String.class, Integer.class, Integer.class, Enum.class, Enum.class,
+			Enum.class, Enum.class, Enum.class, Long.class, String.class,
+			Integer.class, Integer.class, Integer.class, Integer.class,
+			Integer.class, Integer.class, Integer.class, Date.class,
+			Integer.class, Integer.class, Integer.class, Integer.class };
+
 	public static final String HVSC_PREFIX = "<HVSC>";
 
 	public static final String CGSC_PREFIX = "<CGSC>";
-
-	private SidTuneInfoCache infoCache;
 
 	ArrayList<Integer> propertyIndices = new ArrayList<Integer>(1);
 
@@ -28,15 +48,21 @@ public class FavoritesModel extends DefaultTableModel {
 
 	private IFavoritesSection favorite;
 
+	private Localizer localizer;
+
+	private HVSCEntryService hvscEntryService;
+
 	public FavoritesModel() {
 		super(new Object[] { "Filename" }, 0);
 	}
 
-	public void setConfig(IConfig cfg, IFavoritesSection favorite) {
+	public void setConfig(IConfig cfg, IFavoritesSection favorite,
+			Localizer localizer, EntityManager em) {
 		this.config = cfg;
 		this.favorite = favorite;
-		infoCache = new SidTuneInfoCache(config);
+		this.localizer = localizer;
 		propertyIndices.add(0);
+		this.hvscEntryService = new HVSCEntryService(em);
 	}
 
 	public void setCollections(Collection hvsc, Collection cgsc) {
@@ -47,32 +73,102 @@ public class FavoritesModel extends DefaultTableModel {
 	@Override
 	public String getColumnName(int column) {
 		int modelColumn = propertyIndices.get(column);
-		if (modelColumn == 0) {
-			return "Path name";
-		} else {
-			return infoCache.getLocalizer().getString(
-					SidTuneInfoCache.SIDTUNE_INFOS[modelColumn - 1]);
-		}
+		return localizer.getString(COLUMNS[modelColumn]);
 	}
 
 	@Override
 	public Class<?> getColumnClass(int column) {
-		if (column == 0) {
-			return super.getColumnClass(column);
-		}
 		int modelColumn = propertyIndices.get(column);
-		return SidTuneInfoCache.SIDTUNE_TYPES[modelColumn - 1];
+		return COLUMN_TYPES[modelColumn];
 	}
 
 	@Override
 	public Object getValueAt(int row, int column) {
-		if (column == 0) {
-			return favorite.getFavorites().get(row);
-		}
 		int modelColumn = propertyIndices.get(column);
-		if (infoCache.getInfo(getFile(row)) != null) {
-			return infoCache.getInfo(getFile(row))[modelColumn - 1];
-		} else {
+		HVSCEntry entry = favorite.getFavorites().get(row);
+		switch (modelColumn) {
+		case 0:
+			return entry.getPath();
+
+		case 1:
+			return entry.getTitle();
+
+		case 2:
+			return entry.getAuthor();
+
+		case 3:
+			return entry.getReleased();
+
+		case 4:
+			return entry.getFormat();
+
+		case 5:
+			return entry.getPlayerId();
+
+		case 6:
+			return entry.getNoOfSongs();
+
+		case 7:
+			return entry.getStartSong();
+
+		case 8:
+			return entry.getClockFreq();
+
+		case 9:
+			return entry.getSpeed();
+
+		case 10:
+			return entry.getSidModel1();
+
+		case 11:
+			return entry.getSidModel2();
+
+		case 12:
+			return entry.getCompatibility();
+
+		case 13:
+			return entry.getTuneLength();
+
+		case 14:
+			return entry.getAudio();
+
+		case 15:
+			return entry.getSidChipBase1();
+
+		case 16:
+			return entry.getSidChipBase2();
+
+		case 17:
+			return entry.getDriverAddress();
+
+		case 18:
+			return entry.getLoadAddress();
+
+		case 19:
+			return entry.getLoadLength();
+
+		case 20:
+			return entry.getInitAddress();
+
+		case 21:
+			return entry.getPlayerAddress();
+
+		case 22:
+			return entry.getFileDate();
+
+		case 23:
+			return entry.getFileSizeKb();
+
+		case 24:
+			return entry.getTuneSizeB();
+
+		case 25:
+			return entry.getRelocStartPage();
+
+		case 26:
+			return entry.getRelocNoPages();
+
+		default:
 			return "";
 		}
 	}
@@ -85,9 +181,9 @@ public class FavoritesModel extends DefaultTableModel {
 	@Override
 	public void addColumn(Object columnName) {
 		int modelIndex = 1;
-		for (int i = 0; i < SidTuneInfoCache.SIDTUNE_INFOS.length; i++) {
-			if (columnName.equals(SidTuneInfoCache.SIDTUNE_INFOS[i])) {
-				modelIndex = i + 1;
+		for (int i = 0; i < COLUMNS.length; i++) {
+			if (columnName.equals(COLUMNS[i])) {
+				modelIndex = i;
 			}
 		}
 		propertyIndices.add(modelIndex);
@@ -121,7 +217,12 @@ public class FavoritesModel extends DefaultTableModel {
 	}
 
 	public File getFile(int row) {
-		String filename = favorite.getFavorites().get(row);
+		HVSCEntry hvscEntry = favorite.getFavorites().get(row);
+		String filename = hvscEntry.getPath();
+		return getFile(filename);
+	}
+
+	private File getFile(String filename) {
 		if (filename.startsWith(HVSC_PREFIX)) {
 			TreeModel model = hvsc.getFileBrowser().getModel();
 			if (model instanceof CollectionTreeModel) {
@@ -150,7 +251,13 @@ public class FavoritesModel extends DefaultTableModel {
 
 	public void add(String path) {
 		if (!favorite.getFavorites().contains(path)) {
-			favorite.getFavorites().add(path);
+			try {
+				File tuneFile = getFile(path);
+				HVSCEntry entry = hvscEntryService.add(config, path, tuneFile);
+				favorite.getFavorites().add(entry);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -170,7 +277,7 @@ public class FavoritesModel extends DefaultTableModel {
 	}
 
 	public void move(int start, int to) {
-		String tmp = favorite.getFavorites().get(start);
+		HVSCEntry tmp = favorite.getFavorites().get(start);
 		favorite.getFavorites().set(start, favorite.getFavorites().get(to));
 		favorite.getFavorites().set(to, tmp);
 	}

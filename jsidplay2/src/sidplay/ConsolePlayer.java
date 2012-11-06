@@ -15,7 +15,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.List;
 
 import libsidplay.Player;
-import libsidplay.common.ISID2Types.Clock;
+import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.c1541.C1541;
@@ -338,7 +338,7 @@ public class ConsolePlayer {
 			file = tuneInfo.file;
 		}
 
-		Clock cpuFreq = iniCfg.getEmulation().getUserClockSpeed();
+		CPUClock cpuFreq = iniCfg.getEmulation().getUserClockSpeed();
 		if (cpuFreq == null) {
 			cpuFreq = iniCfg.getEmulation().getDefaultClockSpeed();
 			if (tuneInfo != null) {
@@ -349,7 +349,7 @@ public class ConsolePlayer {
 					break;
 				case PAL:
 				case NTSC:
-					cpuFreq = Clock.valueOf(tuneInfo.clockSpeed.toString());
+					cpuFreq = CPUClock.valueOf(tuneInfo.clockSpeed.toString());
 					break;
 				}
 			}
@@ -961,13 +961,13 @@ public class ConsolePlayer {
 
 				// Video/Verbose Options
 				else if (argv[i].equals("-vnf")) {
-					iniCfg.getEmulation().setUserClockSpeed(Clock.NTSC);
+					iniCfg.getEmulation().setUserClockSpeed(CPUClock.NTSC);
 				} else if (argv[i].equals("-vpf")) {
-					iniCfg.getEmulation().setUserClockSpeed(Clock.PAL);
+					iniCfg.getEmulation().setUserClockSpeed(CPUClock.PAL);
 				} else if (argv[i].equals("-vn")) {
-					iniCfg.getEmulation().setDefaultClockSpeed(Clock.NTSC);
+					iniCfg.getEmulation().setDefaultClockSpeed(CPUClock.NTSC);
 				} else if (argv[i].equals("-vp")) {
-					iniCfg.getEmulation().setDefaultClockSpeed(Clock.PAL);
+					iniCfg.getEmulation().setDefaultClockSpeed(CPUClock.PAL);
 				} else if (argv[i].startsWith("-v")) {
 					if (argv[i].length() == 2) {
 						verboseLevel = 1;

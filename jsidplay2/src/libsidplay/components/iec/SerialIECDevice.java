@@ -28,7 +28,7 @@ package libsidplay.components.iec;
 
 import java.util.Arrays;
 
-import libsidplay.common.ISID2Types.Clock;
+import libsidplay.common.ISID2Types.CPUClock;
 
 public abstract class SerialIECDevice {
 
@@ -118,7 +118,7 @@ public abstract class SerialIECDevice {
 		return prnr;
 	}
 
-	public void setClock(Clock cpuFreq) {
+	public void setClock(CPUClock cpuFreq) {
 		serialIECDeviceCyclesPerUs = cpuFreq.getCpuFrequency() / 1000000.0;
 	}
 

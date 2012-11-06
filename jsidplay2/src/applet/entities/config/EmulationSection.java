@@ -4,7 +4,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import libsidplay.common.ISID2Types.Clock;
+import libsidplay.common.ISID2Types.CPUClock;
 import resid_builder.resid.ISIDDefs.ChipModel;
 import sidplay.ini.intf.IEmulationSection;
 import applet.config.annotations.ConfigDescription;
@@ -14,29 +14,29 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@ConfigDescription(descriptionKey = "EMULATION_DEFAULT_CLOCK_SPEED_DESC", toolTipKey = "EMULATION_DEFAULT_CLOCK_SPEED_TOOLTIP")
-	private Clock defaultClockSpeed = Clock.PAL;
+	private CPUClock defaultClockSpeed = CPUClock.PAL;
 
 	@Override
-	public Clock getDefaultClockSpeed() {
+	public CPUClock getDefaultClockSpeed() {
 		return this.defaultClockSpeed;
 	}
 
 	@Override
-	public void setDefaultClockSpeed(Clock speed) {
+	public void setDefaultClockSpeed(CPUClock speed) {
 		this.defaultClockSpeed = speed;
 	}
 
 	@Enumerated(EnumType.STRING)
 	@ConfigDescription(descriptionKey = "EMULATION_USER_CLOCK_SPEED_DESC", toolTipKey = "EMULATION_USER_CLOCK_SPEED_TOOLTIP")
-	private Clock userClockSpeed;
+	private CPUClock userClockSpeed;
 
 	@Override
-	public Clock getUserClockSpeed() {
+	public CPUClock getUserClockSpeed() {
 		return userClockSpeed;
 	}
 
 	@Override
-	public void setUserClockSpeed(Clock userClockSpeed) {
+	public void setUserClockSpeed(CPUClock userClockSpeed) {
 		this.userClockSpeed = userClockSpeed;
 	}
 

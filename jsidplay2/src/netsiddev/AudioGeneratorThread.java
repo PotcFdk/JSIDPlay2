@@ -42,7 +42,7 @@ public class AudioGeneratorThread extends Thread {
 	private SID[] sid;
 
 	/** Currently active clocking value */
-	private ISID2Types.Clock[] sidClocking;
+	private ISID2Types.CPUClock[] sidClocking;
 
 	/** Currently active sampling method */
 	private SamplingMethod[] sidSampling;
@@ -282,7 +282,7 @@ public class AudioGeneratorThread extends Thread {
 	 * 
 	 * @param clock
 	 */
-	public void setClocking(ISID2Types.Clock clock) {
+	public void setClocking(ISID2Types.CPUClock clock) {
 		Arrays.fill(sidClocking, clock);
 		refreshParams();
 	}
@@ -380,8 +380,8 @@ public class AudioGeneratorThread extends Thread {
 	public void setSidArray(SID[] sid) {
 		this.sid = sid;
 
-		sidClocking = new ISID2Types.Clock[sid.length];
-		Arrays.fill(sidClocking, ISID2Types.Clock.PAL);
+		sidClocking = new ISID2Types.CPUClock[sid.length];
+		Arrays.fill(sidClocking, ISID2Types.CPUClock.PAL);
 
 		sidSampling = new SamplingMethod[sid.length];
 		Arrays.fill(sidSampling, SamplingMethod.DECIMATE);

@@ -11,7 +11,7 @@ import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.IReSIDExtension;
-import libsidplay.common.ISID2Types.Clock;
+import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.OvImageIcon;
 import libsidplay.components.c1530.DatasetteEnvironment;
@@ -55,7 +55,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	private static final MOS6526.Model CIAMODEL = MOS6526.Model.MOS6526;
 
 	/** System clock */
-	protected Clock clock;
+	protected CPUClock clock;
 
 	/** MMU chip */
 	protected final PLA pla;
@@ -612,7 +612,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 * @return VIC chip
 	 */
 	public VIC getVIC() {
-		return clock == Clock.PAL ? palVic : ntscVic;
+		return clock == CPUClock.PAL ? palVic : ntscVic;
 	}
 
 	/**
@@ -621,7 +621,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 * @param clock
 	 *            system clock (PAL/NTSC)
 	 */
-	public void setClock(final Clock clock) {
+	public void setClock(final CPUClock clock) {
 		this.clock = clock;
 
 		context.setCyclesPerSecond(clock.getCpuFrequency());
@@ -635,7 +635,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 * 
 	 * @return system clock (PAL/NTSC)
 	 */
-	public Clock getClock() {
+	public CPUClock getClock() {
 		return clock;
 	}
 

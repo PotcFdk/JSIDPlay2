@@ -7,12 +7,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigTransient;
+
 @Entity
+@ConfigClass(bundleKey = "STIL_ENTRY")
 public class STIL {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@ConfigTransient
 	private int id;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -22,6 +27,7 @@ public class STIL {
 	}
 
 	@ManyToOne
+	@ConfigTransient
 	private HVSCEntry hvscEntry;
 
 	public HVSCEntry getHvscEntry() {
@@ -33,7 +39,7 @@ public class STIL {
 	}
 
 	private String stilName;
-	
+
 	public String getStilName() {
 		return stilName;
 	}
@@ -53,7 +59,7 @@ public class STIL {
 	}
 
 	private String stilTitle;
-	
+
 	public String getStilTitle() {
 		return stilTitle;
 	}
@@ -63,7 +69,7 @@ public class STIL {
 	}
 
 	private String stilArtist;
-	
+
 	public String getStilArtist() {
 		return stilArtist;
 	}
@@ -72,7 +78,7 @@ public class STIL {
 		this.stilArtist = artist;
 	}
 
-	@Column(length=4096)
+	@Column(length = 4096)
 	private String stilComment;
 
 	public String getStilComment() {
@@ -82,5 +88,5 @@ public class STIL {
 	public void setStilComment(String comment) {
 		this.stilComment = comment;
 	}
-	
+
 }

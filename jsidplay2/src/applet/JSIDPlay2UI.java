@@ -43,7 +43,7 @@ import javax.swing.UIManager;
 
 import libsidplay.C64;
 import libsidplay.Player;
-import libsidplay.common.ISID2Types.Clock;
+import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
@@ -303,7 +303,7 @@ public class JSIDPlay2UI implements UIEventListener {
 
 	private void setDefaultsAndActions() {
 		normalSpeed.setSelected(true);
-		Clock defClk = getConfig().getEmulation().getDefaultClockSpeed();
+		CPUClock defClk = getConfig().getEmulation().getDefaultClockSpeed();
 		if (defClk != null) {
 			switch (defClk) {
 			case NTSC:
@@ -522,7 +522,7 @@ public class JSIDPlay2UI implements UIEventListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getConfig().getEmulation().setDefaultClockSpeed(Clock.PAL);
+			getConfig().getEmulation().setDefaultClockSpeed(CPUClock.PAL);
 			reset();
 		}
 	};
@@ -531,7 +531,7 @@ public class JSIDPlay2UI implements UIEventListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getConfig().getEmulation().setDefaultClockSpeed(Clock.NTSC);
+			getConfig().getEmulation().setDefaultClockSpeed(CPUClock.NTSC);
 			reset();
 		}
 	};

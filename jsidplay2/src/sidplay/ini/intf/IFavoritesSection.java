@@ -2,6 +2,8 @@ package sidplay.ini.intf;
 
 import java.util.List;
 
+import applet.entities.collection.HVSCEntry;
+
 public interface IFavoritesSection {
 
 	/**
@@ -19,13 +21,6 @@ public interface IFavoritesSection {
 	 */
 	void setName(String name);
 
-	/**
-	 * Getter of the favorites browser filenames.
-	 * 
-	 * @return the favorites browser filenames
-	 */
-	String getFilename();
-
-	List<String> getFavorites();
+	List<HVSCEntry> getFavorites();
 
 }

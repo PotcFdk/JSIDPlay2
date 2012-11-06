@@ -21,8 +21,8 @@ public class STILService {
 		this.em = em;
 	};
 
-	public void add(final IConfig config, final File root,
-			final File tuneFile, HVSCEntry hvscEntry) {
+	public void add(final IConfig config, final File tuneFile,
+			HVSCEntry hvscEntry) {
 		final STILEntry stilEntry = getSTIL(config, tuneFile);
 		if (stilEntry != null) {
 			// get STIL Global Comment

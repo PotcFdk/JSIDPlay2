@@ -708,6 +708,14 @@ public abstract class Collection extends TuneTab implements
 
 	protected void setRootFile(final File rootFile) {
 		if (rootFile.exists()) {
+			em = Persistence.createEntityManagerFactory(
+					PersistenceProperties.COLLECTION_DS,
+					new PersistenceProperties(new File(
+							rootFile.getParentFile(), dbName)))
+					.createEntityManager();
+
+			versionService = new VersionService(em);
+
 			collectionDir.setText(rootFile.getAbsolutePath());
 			fileBrowser.setModel(collectionTreeModel = new CollectionTreeModel(
 					rootFile));
@@ -716,13 +724,6 @@ public abstract class Collection extends TuneTab implements
 						.getRoot()));
 			}
 
-			em = Persistence.createEntityManagerFactory(
-					PersistenceProperties.COLLECTION_DS,
-					new PersistenceProperties(new File(
-							rootFile.getParentFile(), dbName)))
-					.createEntityManager();
-
-			versionService = new VersionService(em);
 			setRootDir(rootFile);
 		}
 		resetSearch();

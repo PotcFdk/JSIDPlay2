@@ -3,14 +3,14 @@ package applet.entities.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
@@ -20,6 +20,7 @@ import applet.config.annotations.ConfigClass;
 import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigMethod;
 import applet.config.annotations.ConfigTransient;
+import applet.entities.collection.HVSCEntry;
 
 @Entity
 @ConfigClass(bundleKey = "FAVORITE")
@@ -53,37 +54,24 @@ public class FavoritesSection implements IFavoritesSection {
 
 	@XmlElement(name = "favorite")
 	@ElementCollection
-	@CollectionTable(name = "favorites")
-	private List<String> favorites;
+	@OneToMany
+	private List<HVSCEntry> favorites;
 
-	public void setFavorites(List<String> favorites) {
+	public void setFavorites(List<HVSCEntry> favorites) {
 		this.favorites = favorites;
 	}
 
 	@Override
 	@XmlTransient
-	@ConfigMethod(nameKey = "FILENAME")
-	public List<String> getFavorites() {
+	@ConfigMethod(nameKey = "HVSC_ENTRIES")
+	public List<HVSCEntry> getFavorites() {
 		if (favorites == null) {
-			favorites = new ArrayList<String>();
+			favorites = new ArrayList<HVSCEntry>();
 		}
 		return favorites;
 	}
 
-	@Column
-	@ConfigTransient
-	private String filename;
-
-	/**
-	 * Favorites are persisted, please use getFavorites() instead.
-	 */
-	@Deprecated
-	@Override
-	public String getFilename() {
-		return filename;
-	}
-
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@XmlIDREF
 	@ConfigTransient
 	public Configuration configuration;

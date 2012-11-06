@@ -17,13 +17,13 @@ package libsidplay.common;
 
 
 public interface ISID2Types {
-	enum Clock {
+	enum CPUClock {
 		PAL(985248.4, 50), NTSC(1022727.14, 60);
 		
 		private final double frequency;
 		private final double refresh;
 		
-		Clock(double frequency, double refresh) {
+		CPUClock(double frequency, double refresh) {
 			this.frequency = frequency;
 			this.refresh = refresh;
 		}

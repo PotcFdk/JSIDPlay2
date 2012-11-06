@@ -40,6 +40,8 @@ import applet.config.annotations.ConfigField;
 import applet.config.editors.CharTextField;
 import applet.config.editors.FloatTextField;
 import applet.config.editors.IntTextField;
+import applet.config.editors.LongTextField;
+import applet.config.editors.ShortTextField;
 import applet.entities.config.Configuration;
 import applet.events.IUpdateUI;
 import applet.events.UIEvent;
@@ -71,7 +73,10 @@ public class ConfigView extends TuneTab {
 		this.config = config;
 		try {
 			swix = new SwingEngine(this);
+			swix.getTaglib()
+					.registerTag("shorttextfield", ShortTextField.class);
 			swix.getTaglib().registerTag("inttextfield", IntTextField.class);
+			swix.getTaglib().registerTag("longtextfield", LongTextField.class);
 			swix.getTaglib()
 					.registerTag("floattextfield", FloatTextField.class);
 			swix.getTaglib().registerTag("chartextfield", CharTextField.class);
@@ -180,8 +185,12 @@ public class ConfigView extends TuneTab {
 
 				private boolean isTextFieldType(Field field) {
 					return field.getType() == String.class
+							|| (field.getType() == Long.class || field
+									.getType() == long.class)
 							|| (field.getType() == Integer.class || field
 									.getType() == int.class)
+							|| (field.getType() == Short.class || field
+									.getType() == short.class)
 							|| (field.getType() == Float.class || field
 									.getType() == float.class)
 							|| (field.getType() == Character.class || field
@@ -236,9 +245,15 @@ public class ConfigView extends TuneTab {
 				private String getUITypeName(Class<?> fieldType) {
 					if (fieldType == String.class) {
 						return String.class.getSimpleName();
+					} else if (fieldType == Short.class
+							|| fieldType == short.class) {
+						return Short.class.getSimpleName();
 					} else if (fieldType == Integer.class
 							|| fieldType == int.class) {
 						return Integer.class.getSimpleName();
+					} else if (fieldType == Long.class
+							|| fieldType == long.class) {
+						return Long.class.getSimpleName();
 					} else if (fieldType == Boolean.class
 							|| fieldType == boolean.class) {
 						return Boolean.class.getSimpleName();
@@ -272,9 +287,15 @@ public class ConfigView extends TuneTab {
 				String value = textField.getText();
 				if (field.getType() == String.class) {
 					configNode.setValue(value);
+				} else if (field.getType() == Short.class
+						|| field.getType() == short.class) {
+					configNode.setValue(Short.valueOf(value).shortValue());
 				} else if (field.getType() == Integer.class
 						|| field.getType() == int.class) {
 					configNode.setValue(Integer.valueOf(value).intValue());
+				} else if (field.getType() == Long.class
+						|| field.getType() == long.class) {
+					configNode.setValue(Long.valueOf(value).longValue());
 				} else if (field.getType() == Float.class
 						|| field.getType() == float.class) {
 					configNode.setValue(Float.valueOf(value).floatValue());

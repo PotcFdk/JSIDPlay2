@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import libsidplay.Player;
-import libsidplay.common.ISID2Types.Clock;
+import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.sidtune.SidTune;
 import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
@@ -55,7 +55,7 @@ public class Test {
 		}
 
 		// Customize player configuration
-		player.setClock(Clock.PAL);
+		player.setClock(CPUClock.PAL);
 
 		// Get sound driver and apply to the player
 		final AudioDriver driver = new JavaSound();

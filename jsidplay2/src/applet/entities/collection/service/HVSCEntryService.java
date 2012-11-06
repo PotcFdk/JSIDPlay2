@@ -18,7 +18,6 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
-import libsidutils.zip.ZipEntryFileProxy;
 import sidplay.ini.intf.IConfig;
 import applet.entities.collection.HVSCEntry;
 import applet.sidtuneinfo.SidTuneInfoCache;
@@ -63,10 +62,10 @@ public class HVSCEntryService {
 		this.stilService = new STILService(em);
 	};
 
-	public HVSCEntry add(final IConfig config, final File root,
+	public HVSCEntry add(final IConfig config, final String path,
 			final File tuneFile) throws IOException {
 		HVSCEntry hvscEntry = new HVSCEntry();
-		hvscEntry.setPath(makeRelative(root, tuneFile));
+		hvscEntry.setPath(path);
 		hvscEntry.setName(tuneFile.getName());
 		try {
 			final SidTune tune = SidTune.load(tuneFile);
@@ -83,6 +82,8 @@ public class HVSCEntryService {
 				hvscEntry.setStartSong(info.startSong);
 				hvscEntry.setClockFreq(info.clockSpeed);
 				hvscEntry.setSpeed(tune.getSongSpeed(1));
+				hvscEntry.setSidModel1(info.sid1Model);
+				hvscEntry.setSidModel2(info.sid2Model);
 				hvscEntry.setCompatibility(info.compatibility);
 				hvscEntry.setTuneLength(getTuneLength(config, tune));
 				hvscEntry.setAudio(getAudio(info.sidChipBase2));
@@ -94,8 +95,8 @@ public class HVSCEntryService {
 				hvscEntry.setInitAddress(info.initAddr);
 				hvscEntry.setPlayerAddress(info.playAddr);
 				hvscEntry.setFileDate(new Date(tuneFile.lastModified()));
-				hvscEntry.setFileSizeKb(tuneFile.length());
-				hvscEntry.setTuneLength(tuneFile.length());
+				hvscEntry.setFileSizeKb(tuneFile.length() >> 10);
+				hvscEntry.setTuneSizeB(tuneFile.length());
 				hvscEntry.setRelocStartPage(info.relocStartPage);
 				hvscEntry.setRelocNoPages(info.relocPages);
 			}
@@ -103,7 +104,7 @@ public class HVSCEntryService {
 			// Ignore invalid tunes!
 		}
 
-		stilService.add(config, root, tuneFile, hvscEntry);
+		stilService.add(config, tuneFile, hvscEntry);
 
 		try {
 			em.persist(hvscEntry);
@@ -112,25 +113,6 @@ public class HVSCEntryService {
 			System.err.println(e.getMessage());
 		}
 		return hvscEntry;
-	}
-
-	private String makeRelative(final File root, final File matchFile)
-			throws IOException {
-		if (matchFile instanceof ZipEntryFileProxy) {
-			final String path = ((ZipEntryFileProxy) matchFile).getPath();
-			return path.substring(path.indexOf('/') + 1);
-		}
-		final String canonicalPath = matchFile.getCanonicalPath();
-		final String rootCanonicalPath = root.getCanonicalPath();
-		if (canonicalPath.startsWith(rootCanonicalPath)) {
-			final String name = canonicalPath.substring(
-					rootCanonicalPath.length())
-					.replace(File.separatorChar, '/');
-			if (name.startsWith("/")) {
-				return name.substring(1);
-			}
-		}
-		return matchFile.getCanonicalPath();
 	}
 
 	private String getPlayer(SidTune tune) {
@@ -206,8 +188,8 @@ public class HVSCEntryService {
 				Root<HVSCEntry> person = q.from(HVSCEntry.class);
 				Path<String> path = person.get("path");
 				q.select(path).distinct(true);
-				Join<HVSCEntry, applet.entities.collection.STIL> stil = person.join(
-						"stil", JoinType.INNER);
+				Join<HVSCEntry, applet.entities.collection.STIL> stil = person
+						.join("stil", JoinType.INNER);
 				Path<String> fieldName = stil
 						.<String> get(convertSearchCriteriaToEntityFieldName(STIL.STIL_INFOS[stilIdx]));
 				Predicate like = fieldNameLikeFieldValue(cb, fieldName,

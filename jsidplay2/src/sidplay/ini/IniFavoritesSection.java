@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sidplay.ini.intf.IFavoritesSection;
+import applet.entities.collection.HVSCEntry;
 
 /**
  * Favorites section of the INI file.
@@ -30,19 +31,8 @@ public class IniFavoritesSection extends IniSection implements
 		this.name = name;
 	}
 
-	private String filename;
-
 	@Override
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String favoritesFilename) {
-		this.filename = favoritesFilename;
-	}
-
-	@Override
-	public List<String> getFavorites() {
-		return new ArrayList<String>();
+	public List<HVSCEntry> getFavorites() {
+		return new ArrayList<HVSCEntry>();
 	}
 }

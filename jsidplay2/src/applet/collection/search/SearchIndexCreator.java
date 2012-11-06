@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.persistence.EntityManager;
 
 import sidplay.ini.intf.IConfig;
+import applet.PathUtils;
 import applet.entities.collection.service.HVSCEntryService;
 import applet.entities.collection.service.STILService;
 import applet.entities.collection.service.VersionService;
@@ -43,7 +44,11 @@ public final class SearchIndexCreator implements ISearchListener {
 	@Override
 	public void searchHit(final File matchFile) {
 		try {
-			hvscEntryService.add(config, root, matchFile);
+			String collectionRelName = PathUtils.getCollectionRelName(
+					matchFile, root.getAbsolutePath());
+			if (collectionRelName != null) {
+				hvscEntryService.add(config, collectionRelName, matchFile);
+			}
 		} catch (final IOException e) {
 			System.err.println("Indexing failure on: "
 					+ matchFile.getAbsolutePath() + ": " + e.getMessage());

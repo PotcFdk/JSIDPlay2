@@ -76,12 +76,14 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 	protected Favorites currentlyPlayedFavorites;
 	protected final Random random = new Random();
 
+	private EntityManager em;
 	private ConfigService configService;
 
 	public FavoritesView(EntityManager em, Player pl, IConfig cfg,
 			Collection hvsc, Collection cgsc) {
 		this.player = pl;
 		this.config = cfg;
+		this.em = em;
 		this.hvsc = hvsc;
 		this.cgsc = cgsc;
 		configService = new ConfigService(em);
@@ -410,7 +412,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 	private IFavorites addTab(IFavoritesSection favorite, String newTitle) {
 		final int lastIndex = favoriteList.getTabCount() - 1;
-		final Favorites favorites = new Favorites(player, config, this,
+		final Favorites favorites = new Favorites(player, config, em, this,
 				favorite);
 		favorites.getPlayListTable().getSelectionModel()
 				.addListSelectionListener(this);

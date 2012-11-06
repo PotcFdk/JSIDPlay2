@@ -321,7 +321,7 @@ class ClientContext {
 				break;
 			}
 			
-			eventConsumerThread.setClocking(ISID2Types.Clock.values()[dataRead.get(4)]);
+			eventConsumerThread.setClocking(ISID2Types.CPUClock.values()[dataRead.get(4)]);
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;
 			

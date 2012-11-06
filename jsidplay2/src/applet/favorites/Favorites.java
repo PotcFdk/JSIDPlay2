@@ -23,6 +23,7 @@ import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.persistence.EntityManager;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -63,7 +64,6 @@ import applet.events.IPlayTune;
 import applet.events.UIEventFactory;
 import applet.events.favorites.IFavoriteTabNames;
 import applet.filefilter.TuneFileFilter;
-import applet.sidtuneinfo.SidTuneInfoCache;
 import applet.stil.STIL;
 import applet.ui.JNiceButton;
 
@@ -89,8 +89,8 @@ public class Favorites extends JPanel implements IFavorites {
 	protected File lastDir;
 	protected Random randomPlayback = new Random();
 
-	public Favorites(Player pl, IConfig cfg, final FavoritesView favoritesView,
-			IFavoritesSection favorite) {
+	public Favorites(Player pl, IConfig cfg, EntityManager em,
+			final FavoritesView favoritesView, IFavoritesSection favorite) {
 		this.favoritesView = favoritesView;
 		this.player = pl;
 		this.config = cfg;
@@ -102,7 +102,7 @@ public class Favorites extends JPanel implements IFavorites {
 			swix.insert(Favorites.class.getResource("Favorites.xml"), this);
 
 			favoritesModel = (FavoritesModel) playListTable.getModel();
-			favoritesModel.setConfig(cfg, favorite);
+			favoritesModel.setConfig(cfg, favorite, swix.getLocalizer(), em);
 			favoritesModel.setCollections(favoritesView.getHvsc(),
 					favoritesView.getCgsc());
 			((FavoritesCellRenderer) playListTable
@@ -140,23 +140,27 @@ public class Favorites extends JPanel implements IFavorites {
 					}
 				});
 				headerPopup.add(removeColumn);
-				for (final String element : SidTuneInfoCache.SIDTUNE_INFOS) {
-					JMenuItem menuItem = new JMenuItem(String.format(getSwix()
-							.getLocalizer().getString("ADD_COLUMN"), element));
-					menuItem.addActionListener(new ActionListener() {
+				for (final String element : FavoritesModel.COLUMNS) {
+					if (!element.equals(FavoritesModel.COLUMNS[0])) {
+						JMenuItem menuItem = new JMenuItem(String.format(
+								getSwix().getLocalizer()
+										.getString("ADD_COLUMN"), getSwix()
+										.getLocalizer().getString(element)));
+						menuItem.addActionListener(new ActionListener() {
 
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							try {
-								playListTable.getColumn(element);
-								// if column already exist, do nothing
-							} catch (IllegalArgumentException e1) {
-								favoritesModel.addColumn(element);
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								try {
+									playListTable.getColumn(element);
+									// if column already exist, do nothing
+								} catch (IllegalArgumentException e1) {
+									favoritesModel.addColumn(element);
+								}
+
 							}
-
-						}
-					});
-					headerPopup.add(menuItem);
+						});
+						headerPopup.add(menuItem);
+					}
 				}
 
 			}
