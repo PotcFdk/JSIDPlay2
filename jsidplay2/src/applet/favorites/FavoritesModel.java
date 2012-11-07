@@ -35,7 +35,7 @@ public class FavoritesModel extends DefaultTableModel {
 			Enum.class, Enum.class, Enum.class, Long.class, String.class,
 			Integer.class, Integer.class, Integer.class, Integer.class,
 			Integer.class, Integer.class, Integer.class, Date.class,
-			Integer.class, Integer.class, Integer.class, Integer.class };
+			Integer.class, Integer.class, Short.class, Short.class };
 
 	public static final String HVSC_PREFIX = "<HVSC>";
 
