@@ -186,8 +186,10 @@ public class FavoritesModel extends DefaultTableModel {
 				modelIndex = i;
 			}
 		}
-		propertyIndices.add(modelIndex);
-		super.addColumn(columnName);
+		if (!propertyIndices.contains(modelIndex)) {
+			propertyIndices.add(modelIndex);
+			super.addColumn(columnName);
+		}
 	}
 
 	public void removeColumn(int column) {
