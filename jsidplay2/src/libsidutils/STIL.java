@@ -16,17 +16,13 @@ import libsidutils.zip.ZipEntryFileProxy;
 import libsidutils.zip.ZipFileProxy;
 
 public class STIL {
-	public static final String STIL_INFOS[] = new String[] {
-		"STIL_GLB_COMMENT", "STIL_NAME", "STIL_AUTHOR", "STIL_TITLE",
-		"STIL_ARTIST", "STIL_COMMENT" };
-
 	public static class Info {
 		public String name;
 		public String author;
 		public String title;
 		public String artist;
 		public String comment;
-		
+
 		@Override
 		public String toString() {
 			return "info";
@@ -65,7 +61,7 @@ public class STIL {
 
 	private static STIL theStil;
 	private static String theHVSCRoot;
-	
+
 	public static STIL getInstance(String hvscRoot) {
 		if (theStil == null && hvscRoot != null && hvscRoot.length() != 0
 				&& hvscRoot != theHVSCRoot) {
@@ -80,8 +76,9 @@ public class STIL {
 
 	private STIL(final File file) {
 		fastMap.clear();
-		
-		Pattern p = Pattern.compile("(NAME|AUTHOR|TITLE|ARTIST|COMMENT): *(.*)");
+
+		Pattern p = Pattern
+				.compile("(NAME|AUTHOR|TITLE|ARTIST|COMMENT): *(.*)");
 
 		BufferedReader r = null;
 		try {
@@ -105,7 +102,7 @@ public class STIL {
 					cmts.append(line.trim() + "\n");
 					continue;
 				}
-				
+
 				/* New entry? */
 				if (line.startsWith("/")) {
 					entry = new STILEntry(line);
@@ -113,29 +110,30 @@ public class STIL {
 
 					entry.comment = cmts.toString();
 					cmts.delete(0, cmts.length());
-					
+
 					lastInfo = new Info();
 					entry.infos.add(lastInfo);
 
 					tuneEntry = null;
 					lastProp = null;
-					continue;	
+					continue;
 				}
-				
+
 				if (line.startsWith("(#")) {
 					if (entry == null) {
-						throw new RuntimeException("Invalid format in STIL file: '(#' before '/'.");
+						throw new RuntimeException(
+								"Invalid format in STIL file: '(#' before '/'.");
 					}
-					
+
 					// subtune
 					int end = line.indexOf(")");
 					int tuneNo = Integer.parseInt(line.substring(2, end));
-					
+
 					// subtune number
 					tuneEntry = new TuneEntry();
 					tuneEntry.tuneNo = tuneNo;
 					entry.subtunes.add(tuneEntry);
-					
+
 					lastInfo = new Info();
 					tuneEntry.infos.add(lastInfo);
 
@@ -149,19 +147,22 @@ public class STIL {
 				}
 
 				if (entry == null) {
-					throw new RuntimeException("No entry to put data in: " + line);
+					throw new RuntimeException("No entry to put data in: "
+							+ line);
 				}
-				
+
 				if (lastInfo == null) {
-					throw new RuntimeException("No context to put data in: " + line);
+					throw new RuntimeException("No context to put data in: "
+							+ line);
 				}
-				
+
 				Matcher m = p.matcher(line);
 				if (m.matches()) {
 					lastProp = m.group(1);
 
 					/* If a field repeats, that starts a new tuneinfo structure. */
-					Field f = lastInfo.getClass().getField(lastProp.toLowerCase());
+					Field f = lastInfo.getClass().getField(
+							lastProp.toLowerCase());
 					if (f.get(lastInfo) != null) {
 						lastInfo = new Info();
 						if (tuneEntry != null) {
@@ -173,7 +174,8 @@ public class STIL {
 					f.set(lastInfo, m.group(2));
 				} else if (lastProp != null) {
 					/* Concat more shit after the previous line */
-					Field f = lastInfo.getClass().getField(lastProp.toLowerCase());
+					Field f = lastInfo.getClass().getField(
+							lastProp.toLowerCase());
 					f.set(lastInfo, f.get(lastInfo) + "\n" + line);
 				}
 			}
