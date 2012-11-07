@@ -2,6 +2,9 @@ package applet.entities.collection.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -13,12 +16,35 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import libsidutils.STIL;
+import libsidplay.sidtune.SidTune.Clock;
+import libsidplay.sidtune.SidTune.Compatibility;
+import libsidplay.sidtune.SidTune.Model;
+import libsidplay.sidtune.SidTune.Speed;
 import sidplay.ini.intf.IConfig;
 import applet.entities.collection.HVSCEntry;
-import applet.sidtuneinfo.SidTuneInfoCache;
 
 public class HVSCEntryService {
+	public static final String[] SEARCH_FIELDS = new String[] { "FILE_NAME",
+			"FULL_PATH", "TITLE", "AUTHOR", "RELEASED", "FORMAT", "PLAYER_ID",
+			"NO_OF_SONGS", "START_SONG", "CLOCK_FREQ", "SPEED", "SID_MODEL_1",
+			"SID_MODEL_2", "COMPATIBILITY", "TUNE_LENGTH", "AUDIO",
+			"SID_CHIP_BASE_1", "SID_CHIP_BASE_2", "DRIVER_ADDRESS",
+			"LOAD_ADDRESS", "LOAD_LENGTH", "INIT_ADDRESS", "PLAYER_ADDRESS",
+			"FILE_DATE", "FILE_SIZE_KB", "TUNE_SIZE_B", "RELOC_START_PAGE",
+			"RELOC_NO_PAGES", "STIL_GLB_COMMENT", "STIL_NAME", "STIL_AUTHOR",
+			"STIL_TITLE", "STIL_ARTIST", "STIL_COMMENT" };
+
+	public static Class<?> SEARCH_FIELD_TYPES[] = new Class[] { String.class,
+			String.class, String.class, String.class, String.class,
+			String.class, String.class, Integer.class, Integer.class,
+			Clock.class, Speed.class, Model.class, Model.class,
+			Compatibility.class, Long.class, String.class, Integer.class,
+			Integer.class, Integer.class, Integer.class, Integer.class,
+			Integer.class, Integer.class, Date.class, Integer.class,
+			Integer.class, Short.class, Short.class, String.class,
+			String.class, String.class, String.class, String.class,
+			String.class, };
+
 	public class HVSCEntries {
 		HVSCEntries(List<String> list, boolean fForward) {
 			this.list = list;
@@ -73,45 +99,43 @@ public class HVSCEntryService {
 		return hvscEntry;
 	}
 
-	public HVSCEntries search(int field, String fieldValue,
+	public HVSCEntries search(int fieldIdx, String fieldValue,
 			boolean caseSensitive, boolean fForward) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> q = cb.createQuery(String.class);
 
-		if (field == 0) {
+		if (fieldIdx == 0) {
 			// SELECT distinct h.path FROM HVSCEntry h WHERE h.name LIKE <value>
 			Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
 			Path<String> fieldName = h.get("name");
 			Predicate like = fieldNameLikeFieldValue(cb, fieldName, fieldValue,
-					caseSensitive);
+					caseSensitive, SEARCH_FIELD_TYPES[fieldIdx]);
 			q.where(like);
-		} else if (field == 1) {
+		} else if (fieldIdx == 1) {
 			// SELECT distinct h.path FROM HVSCEntry h WHERE h.path LIKE <value>
 			Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
 			Path<String> fieldName = h.get("path");
 			Predicate like = fieldNameLikeFieldValue(cb, fieldName, fieldValue,
-					caseSensitive);
+					caseSensitive, SEARCH_FIELD_TYPES[fieldIdx]);
 			q.where(like);
-		} else if (field - 2 < SidTuneInfoCache.SIDTUNE_INFOS.length) {
+		} else if (fieldIdx < 28) {
 			// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName> LIKE
 			// <value>
 			Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
 			Path<String> fieldName = h
-					.get(convertSearchCriteriaToEntityFieldName(SidTuneInfoCache.SIDTUNE_INFOS[field - 2]));
+					.get(convertSearchCriteriaToEntityFieldName(SEARCH_FIELDS[fieldIdx]));
 			Predicate like = fieldNameLikeFieldValue(cb, fieldName, fieldValue,
-					caseSensitive);
+					caseSensitive, SEARCH_FIELD_TYPES[fieldIdx]);
 			q.where(like);
-		} else if (field - 2 < SidTuneInfoCache.SIDTUNE_INFOS.length
-				+ STIL.STIL_INFOS.length) {
-			int stilIdx = field - 2 - SidTuneInfoCache.SIDTUNE_INFOS.length;
-			if (stilIdx == 0) {
+		} else if (fieldIdx < SEARCH_FIELDS.length) {
+			if (SEARCH_FIELDS[fieldIdx].equals("STIL_GLB_COMMENT")) {
 				// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName>
 				// LIKE <value>
 				Root<HVSCEntry> h = selectDistinctPathFromHVSCEntry(q);
 				Path<String> fieldName = h
-						.get(convertSearchCriteriaToEntityFieldName(STIL.STIL_INFOS[stilIdx]));
+						.get(convertSearchCriteriaToEntityFieldName(SEARCH_FIELDS[fieldIdx]));
 				Predicate like = fieldNameLikeFieldValue(cb, fieldName,
-						fieldValue, caseSensitive);
+						fieldValue, caseSensitive, SEARCH_FIELD_TYPES[fieldIdx]);
 				q.where(like);
 			} else {
 				// SELECT distinct h.path FROM HVSCEntry h INNER JOIN h.stil s
@@ -122,14 +146,14 @@ public class HVSCEntryService {
 				Join<HVSCEntry, applet.entities.collection.STIL> stil = person
 						.join("stil", JoinType.INNER);
 				Path<String> fieldName = stil
-						.<String> get(convertSearchCriteriaToEntityFieldName(STIL.STIL_INFOS[stilIdx]));
+						.<String> get(convertSearchCriteriaToEntityFieldName(SEARCH_FIELDS[fieldIdx]));
 				Predicate like = fieldNameLikeFieldValue(cb, fieldName,
-						fieldValue, caseSensitive);
+						fieldValue, caseSensitive, SEARCH_FIELD_TYPES[fieldIdx]);
 				q.where(like);
 			}
 		} else {
 			throw new RuntimeException("Search criteria is not supported: "
-					+ field);
+					+ fieldIdx);
 		}
 		return new HVSCEntries(em.createQuery(q).getResultList(), fForward);
 	}
@@ -143,13 +167,49 @@ public class HVSCEntryService {
 	}
 
 	private Predicate fieldNameLikeFieldValue(CriteriaBuilder cb,
-			Path<String> fieldNm, String fieldValue, boolean caseSensitive) {
+			Path<String> fieldNm, String fieldValue, boolean caseSensitive,
+			Class<?> type) {
 		Predicate like;
-		if (!caseSensitive) {
-			like = cb.like(cb.lower(fieldNm), "%" + fieldValue.toLowerCase()
-					+ "%");
+		if (type == String.class) {
+			if (!caseSensitive) {
+				like = cb.like(cb.lower(fieldNm),
+						"%" + fieldValue.toLowerCase() + "%");
+			} else {
+				like = cb.like(fieldNm, "%" + fieldValue + "%");
+			}
+		} else if (type == Short.class) {
+			like = cb.equal(fieldNm, Short.valueOf(fieldValue));
+		} else if (type == Integer.class) {
+			like = cb.equal(fieldNm, Integer.valueOf(fieldValue));
+		} else if (type == Long.class) {
+			like = cb.equal(fieldNm, Long.valueOf(fieldValue));
+		} else if (Enum.class.isAssignableFrom(type)) {
+			if (type == Clock.class) {
+				like = cb.equal(fieldNm, Clock.valueOf(fieldValue));
+			} else if (type == Speed.class) {
+				like = cb.equal(fieldNm, Speed.valueOf(fieldValue));
+			} else if (type == Model.class) {
+				like = cb.equal(fieldNm, Model.valueOf(fieldValue));
+			} else if (type == Compatibility.class) {
+				like = cb.equal(fieldNm, Compatibility.valueOf(fieldValue));
+			} else {
+				throw new RuntimeException("Enum type is not supported: "
+						+ type);
+			}
+		} else if (type == Date.class) {
+			try {
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+						"DD.MM.YYYY");
+				Date date = simpleDateFormat.parse(fieldValue);
+				like = cb.equal(fieldNm, date);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				System.err.println("Illegal Date Format (DD.MM.YYYY): "
+						+ fieldValue);
+				like = cb.equal(fieldNm, new Date());
+			}
 		} else {
-			like = cb.like(fieldNm, "%" + fieldValue + "%");
+			throw new RuntimeException("Search type is not supported: " + type);
 		}
 		return like;
 	}

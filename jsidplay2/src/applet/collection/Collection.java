@@ -43,7 +43,6 @@ import javax.swing.tree.TreeSelectionModel;
 
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
-import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
 
 import org.swixml.SwingEngine;
@@ -60,6 +59,7 @@ import applet.collection.search.SearchIndexerThread;
 import applet.collection.search.SearchThread;
 import applet.download.DownloadThread;
 import applet.entities.PersistenceProperties;
+import applet.entities.collection.service.HVSCEntryService;
 import applet.entities.collection.service.VersionService;
 import applet.events.ICollectionChanged;
 import applet.events.ICollectionChanged.CollectionType;
@@ -73,7 +73,6 @@ import applet.events.favorites.IGetFavorites;
 import applet.favorites.IFavorites;
 import applet.filefilter.CollectionFileFilter;
 import applet.gamebase.listeners.ProgressListener;
-import applet.sidtuneinfo.SidTuneInfoCache;
 import applet.ui.JNiceButton;
 
 /**
@@ -341,8 +340,6 @@ public abstract class Collection extends TuneTab implements
 	protected IFavorites favoritesToAddSearchResult;
 	protected int currentProgress;
 
-	private SidTuneInfoCache cache;
-
 	public Action doAutoConfiguration = new AbstractAction() {
 
 		@Override
@@ -478,13 +475,13 @@ public abstract class Collection extends TuneTab implements
 			swix.getTaglib().registerTag("link", JLinkButton.class);
 			swix.insert(Collection.class.getResource("Collection.xml"), this);
 
-			cache = new SidTuneInfoCache(config);
 			fillComboBoxes();
 			setDefaultsAndActions();
 
 			TuneInfoTableModel tuneInfoModel = (TuneInfoTableModel) tuneInfoTable
 					.getModel();
-			tuneInfoModel.setSidTuneInfoCache(cache);
+			tuneInfoModel.setConfig(config);
+			tuneInfoModel.setLocalizer(swix.getLocalizer());
 
 			fileBrowser.setModel(new DefaultTreeModel(
 					new DefaultMutableTreeNode(swix.getLocalizer().getString(
@@ -688,21 +685,9 @@ public abstract class Collection extends TuneTab implements
 		searchResult.addItem(getSwix().getLocalizer().getString(
 				"ADD_TO_A_NEW_PLAYLIST"));
 
-		int criteriaCount = 2 + SidTuneInfoCache.SIDTUNE_INFOS.length
-				+ STIL.STIL_INFOS.length;
-		for (int i = 0; i < criteriaCount; i++) {
-			if (i < 2) {
-				searchCriteria.addItem(i == 0 ? getSwix().getLocalizer()
-						.getString("FILE_NAME") : getSwix().getLocalizer()
-						.getString("FULL_PATH"));
-			} else if (i - 2 < SidTuneInfoCache.SIDTUNE_INFOS.length) {
-				searchCriteria.addItem(cache.getLocalizer().getString(
-						SidTuneInfoCache.SIDTUNE_INFOS[i - 2]));
-			} else {
-				searchCriteria.addItem(getSwix().getLocalizer().getString(
-						STIL.STIL_INFOS[i - 2
-								- SidTuneInfoCache.SIDTUNE_INFOS.length]));
-			}
+		for (String searchProperty : HVSCEntryService.SEARCH_FIELDS) {
+			searchCriteria.addItem(getSwix().getLocalizer().getString(
+					searchProperty));
 		}
 	}
 
@@ -758,13 +743,12 @@ public abstract class Collection extends TuneTab implements
 	protected void showPhoto() {
 		TuneInfoTableModel tuneInfoModel = (TuneInfoTableModel) tuneInfoTable
 				.getModel();
-		Object authorInfo = tuneInfoModel.getValueAt(
-				SidTuneInfoCache.INFO_AUTHOR, 1);
+		String authorInfo = tuneInfoModel.getAuthor();
 		if (authorInfo == null) {
 			// author not available
 			return;
 		}
-		String photoRes = sidAuthors.getProperty(authorInfo.toString());
+		String photoRes = sidAuthors.getProperty(authorInfo);
 
 		picture.setComposerImage(null);
 
