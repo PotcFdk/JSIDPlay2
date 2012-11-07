@@ -29,7 +29,7 @@ import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
 import libsidutils.zip.ZipEntryFileProxy;
 import sidplay.ini.intf.IConfig;
-import applet.sidtuneinfo.SidTuneInfoCache;
+import applet.entities.collection.HVSCEntry;
 
 /**
  * @author Ken Händel
@@ -215,7 +215,7 @@ public abstract class SidTune {
 			throws IOException, FileNotFoundException {
 		final InputStream stream;
 		if (f instanceof ZipEntryFileProxy) {
-			stream = ((ZipEntryFileProxy)f).getInputStream();
+			stream = ((ZipEntryFileProxy) f).getInputStream();
 		} else {
 			stream = new FileInputStream(f);
 		}
@@ -412,12 +412,7 @@ public abstract class SidTune {
 	 * Return delay in C64 clocks before song init is done.
 	 */
 	public abstract long getInitDelay();
-	
-	/**
-	 * Support to gather SID tune information.
-	 */
-	private static SidTuneInfoCache cache;
-	
+
 	public static Directory getDirectory(File file, IConfig cfg)
 			throws IOException {
 		Directory dir = new Directory();
@@ -430,37 +425,64 @@ public abstract class SidTune {
 		} catch (SidTuneError e) {
 			throw new IOException();
 		}
-		SidTuneInfo tuneInfo = tune.getInfo();
-		final String title;
-		if (tuneInfo.infoString[0] != null) {
-			title = tuneInfo.infoString[0];
-		} else {
-			title = file.getName();
-		}
+
+		HVSCEntry entry = HVSCEntry.create(cfg, file.getAbsolutePath(), file);
+		final String title = entry.getTitle() != null ? entry.getTitle()
+				: entry.getName();
+
 		// Directory title: tune title or filename
 		dir.setTitle(DirEntry.asciiTopetscii(title, 16));
 		// Directory id: start song '/' song count
-		dir.setId((String.valueOf(tuneInfo.startSong) + "/" + String
-				.valueOf(Math.max(1, tuneInfo.songs))).getBytes(ISO88591));
+		dir.setId((String.valueOf(entry.getStartSong()) + "/" + String
+				.valueOf(Math.max(1, entry.getNoOfSongs()))).getBytes(ISO88591));
 		List<DirEntry> entries = dir.getDirEntries();
-		if (cache == null) {
-			cache = new SidTuneInfoCache(cfg);
-		}
-		Object[] infos = cache.getInfo(file);
-		for (int i = 0; infos != null && i < infos.length; i++) {
-			final String property = SidTuneInfoCache.SIDTUNE_INFOS[i];
-			final String value = infos[i] != null ? infos[i].toString()
-					: "?";
-			byte[] filename = DirEntry.asciiTopetscii(property + "="
-					+ value, 20);
-			// Pseudo directory entry: tune property '=' value
-			entries.add(new DirEntry(0, filename, (byte) -1) {
-				@Override
-				public void save(File autostartFile) throws IOException {
-				}
-			});
-		}
+
+		addProperty(entries, "TITLE", entry.getTitle());
+		addProperty(entries, "AUTHOR", entry.getAuthor());
+		addProperty(entries, "RELEASED", entry.getReleased());
+		addProperty(entries, "FORMAT", entry.getFormat());
+		addProperty(entries, "PLAYERID", entry.getPlayerId());
+		addProperty(entries, "NO_SONGS", String.valueOf(entry.getNoOfSongs()));
+		addProperty(entries, "STARTSONG", String.valueOf(entry.getStartSong()));
+		addProperty(entries, "CLOCKFREQ", String.valueOf(entry.getClockFreq()));
+		addProperty(entries, "SPEED", String.valueOf(entry.getSpeed()));
+		addProperty(entries, "SIDMODEL1", String.valueOf(entry.getSidModel1()));
+		addProperty(entries, "SIDMODEL2", String.valueOf(entry.getSidModel2()));
+		addProperty(entries, "COMPAT", String.valueOf(entry.getCompatibility()));
+		addProperty(entries, "TUNE_LGTH", String.valueOf(entry.getTuneLength()));
+		addProperty(entries, "AUDIO", entry.getAudio());
+		addProperty(entries, "CHIP_BASE1",
+				String.valueOf(entry.getSidChipBase1()));
+		addProperty(entries, "CHIP_BASE2",
+				String.valueOf(entry.getSidChipBase2()));
+		addProperty(entries, "DRV_ADDR",
+				String.valueOf(entry.getDriverAddress()));
+		addProperty(entries, "LOAD_ADDR",
+				String.valueOf(entry.getLoadAddress()));
+		addProperty(entries, "LOAD_LGTH", String.valueOf(entry.getLoadLength()));
+		addProperty(entries, "INIT_ADDR",
+				String.valueOf(entry.getInitAddress()));
+		addProperty(entries, "PLY_ADDR",
+				String.valueOf(entry.getPlayerAddress()));
+		addProperty(entries, "FILE_DATE", String.valueOf(entry.getFileDate()));
+		addProperty(entries, "SIZE_KB", String.valueOf(entry.getFileSizeKb()));
+		addProperty(entries, "SIZE_B", String.valueOf(entry.getTuneSizeB()));
+		addProperty(entries, "RELOC_PAGE",
+				String.valueOf(entry.getRelocStartPage()));
+		addProperty(entries, "RELOC_PAGES",
+				String.valueOf(entry.getRelocNoPages()));
+
 		return dir;
 	}
 
+	private static void addProperty(List<DirEntry> entries, String property,
+			String value) {
+		byte[] filename = DirEntry.asciiTopetscii(property + "=" + value, 20);
+		// Pseudo directory entry: tune property '=' value
+		entries.add(new DirEntry(0, filename, (byte) -1) {
+			@Override
+			public void save(File autostartFile) throws IOException {
+			}
+		});
+	}
 }

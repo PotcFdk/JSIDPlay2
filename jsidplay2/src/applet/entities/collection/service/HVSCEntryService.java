@@ -2,7 +2,6 @@ package applet.entities.collection.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -14,10 +13,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import libsidplay.sidtune.SidTune;
-import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.STIL;
-import libsidutils.SidDatabase;
 import sidplay.ini.intf.IConfig;
 import applet.entities.collection.HVSCEntry;
 import applet.sidtuneinfo.SidTuneInfoCache;
@@ -64,45 +60,7 @@ public class HVSCEntryService {
 
 	public HVSCEntry add(final IConfig config, final String path,
 			final File tuneFile) throws IOException {
-		HVSCEntry hvscEntry = new HVSCEntry();
-		hvscEntry.setPath(path);
-		hvscEntry.setName(tuneFile.getName());
-		try {
-			final SidTune tune = SidTune.load(tuneFile);
-			if (tune != null) {
-				tune.selectSong(1);
-				SidTuneInfo info = tune.getInfo();
-
-				hvscEntry.setTitle(info.infoString[0]);
-				hvscEntry.setAuthor(info.infoString[1]);
-				hvscEntry.setReleased(info.infoString[2]);
-				hvscEntry.setFormat(tune.getClass().getSimpleName());
-				hvscEntry.setPlayerId(getPlayer(tune));
-				hvscEntry.setNoOfSongs(info.songs);
-				hvscEntry.setStartSong(info.startSong);
-				hvscEntry.setClockFreq(info.clockSpeed);
-				hvscEntry.setSpeed(tune.getSongSpeed(1));
-				hvscEntry.setSidModel1(info.sid1Model);
-				hvscEntry.setSidModel2(info.sid2Model);
-				hvscEntry.setCompatibility(info.compatibility);
-				hvscEntry.setTuneLength(getTuneLength(config, tune));
-				hvscEntry.setAudio(getAudio(info.sidChipBase2));
-				hvscEntry.setSidChipBase1(info.sidChipBase1);
-				hvscEntry.setSidChipBase2(info.sidChipBase2);
-				hvscEntry.setDriverAddress(info.determinedDriverAddr);
-				hvscEntry.setLoadAddress(info.loadAddr);
-				hvscEntry.setLoadLength(info.c64dataLen);
-				hvscEntry.setInitAddress(info.initAddr);
-				hvscEntry.setPlayerAddress(info.playAddr);
-				hvscEntry.setFileDate(new Date(tuneFile.lastModified()));
-				hvscEntry.setFileSizeKb(tuneFile.length() >> 10);
-				hvscEntry.setTuneSizeB(tuneFile.length());
-				hvscEntry.setRelocStartPage(info.relocStartPage);
-				hvscEntry.setRelocNoPages(info.relocPages);
-			}
-		} catch (Exception e) {
-			// Ignore invalid tunes!
-		}
+		HVSCEntry hvscEntry = HVSCEntry.create(config, path, tuneFile);
 
 		stilService.add(config, tuneFile, hvscEntry);
 
@@ -113,33 +71,6 @@ public class HVSCEntryService {
 			System.err.println(e.getMessage());
 		}
 		return hvscEntry;
-	}
-
-	private String getPlayer(SidTune tune) {
-		StringBuilder ids = new StringBuilder();
-		for (String s : tune.identify()) {
-			if (ids.length() > 0) {
-				ids.append(", ");
-			}
-			ids.append(s);
-		}
-		return ids.toString();
-	}
-
-	private long getTuneLength(final IConfig config, final SidTune tune) {
-		final SidDatabase sldb = SidDatabase.getInstance(config.getSidplay2()
-				.getHvsc());
-		long fullLength;
-		if (sldb != null) {
-			fullLength = sldb.getFullSongLength(tune);
-		} else {
-			fullLength = 0;
-		}
-		return fullLength;
-	}
-
-	private String getAudio(int sidChipBase2) {
-		return sidChipBase2 != 0 ? "Stereo" : "Mono";
 	}
 
 	public HVSCEntries search(int field, String fieldValue,
