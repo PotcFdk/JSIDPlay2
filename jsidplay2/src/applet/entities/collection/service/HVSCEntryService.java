@@ -202,7 +202,6 @@ public class HVSCEntryService {
 				Date date = simpleDateFormat.parse(fieldValue);
 				predicate = cb.equal(fieldNm, date);
 			} catch (ParseException e) {
-				e.printStackTrace();
 				System.err
 						.println("Illegal Date Format (yyyy-MM-dd HH:mm:ss): "
 								+ fieldValue);
