@@ -140,9 +140,7 @@ public class HVSCEntryService {
 			} else {
 				// SELECT distinct h.path FROM HVSCEntry h INNER JOIN h.stil s
 				// WHERE s.<fieldName> Like <value>
-				Root<HVSCEntry> person = q.from(HVSCEntry.class);
-				Path<String> path = person.get("path");
-				q.select(path).distinct(true);
+				Root<HVSCEntry> person = selectDistinctPathFromHVSCEntry(q);
 				Join<HVSCEntry, applet.entities.collection.STIL> stil = person
 						.join("stil", JoinType.INNER);
 				Path<String> fieldName = stil
@@ -169,29 +167,30 @@ public class HVSCEntryService {
 	private Predicate fieldNameLikeFieldValue(CriteriaBuilder cb,
 			Path<String> fieldNm, String fieldValue, boolean caseSensitive,
 			Class<?> type) {
-		Predicate like;
+		Predicate predicate;
 		if (type == String.class) {
 			if (!caseSensitive) {
-				like = cb.like(cb.lower(fieldNm),
+				predicate = cb.like(cb.lower(fieldNm),
 						"%" + fieldValue.toLowerCase() + "%");
 			} else {
-				like = cb.like(fieldNm, "%" + fieldValue + "%");
+				predicate = cb.like(fieldNm, "%" + fieldValue + "%");
 			}
 		} else if (type == Short.class) {
-			like = cb.equal(fieldNm, Short.valueOf(fieldValue));
+			predicate = cb.equal(fieldNm, Short.valueOf(fieldValue));
 		} else if (type == Integer.class) {
-			like = cb.equal(fieldNm, Integer.valueOf(fieldValue));
+			predicate = cb.equal(fieldNm, Integer.valueOf(fieldValue));
 		} else if (type == Long.class) {
-			like = cb.equal(fieldNm, Long.valueOf(fieldValue));
+			predicate = cb.equal(fieldNm, Long.valueOf(fieldValue));
 		} else if (Enum.class.isAssignableFrom(type)) {
 			if (type == Clock.class) {
-				like = cb.equal(fieldNm, Clock.valueOf(fieldValue));
+				predicate = cb.equal(fieldNm, Clock.valueOf(fieldValue));
 			} else if (type == Speed.class) {
-				like = cb.equal(fieldNm, Speed.valueOf(fieldValue));
+				predicate = cb.equal(fieldNm, Speed.valueOf(fieldValue));
 			} else if (type == Model.class) {
-				like = cb.equal(fieldNm, Model.valueOf(fieldValue));
+				predicate = cb.equal(fieldNm, Model.valueOf(fieldValue));
 			} else if (type == Compatibility.class) {
-				like = cb.equal(fieldNm, Compatibility.valueOf(fieldValue));
+				predicate = cb
+						.equal(fieldNm, Compatibility.valueOf(fieldValue));
 			} else {
 				throw new RuntimeException("Enum type is not supported: "
 						+ type);
@@ -199,19 +198,20 @@ public class HVSCEntryService {
 		} else if (type == Date.class) {
 			try {
 				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-						"DD.MM.YYYY");
+						"yyyy-MM-dd HH:mm:ss");
 				Date date = simpleDateFormat.parse(fieldValue);
-				like = cb.equal(fieldNm, date);
+				predicate = cb.equal(fieldNm, date);
 			} catch (ParseException e) {
 				e.printStackTrace();
-				System.err.println("Illegal Date Format (DD.MM.YYYY): "
-						+ fieldValue);
-				like = cb.equal(fieldNm, new Date());
+				System.err
+						.println("Illegal Date Format (yyyy-MM-dd HH:mm:ss): "
+								+ fieldValue);
+				predicate = cb.equal(fieldNm, new Date());
 			}
 		} else {
 			throw new RuntimeException("Search type is not supported: " + type);
 		}
-		return like;
+		return predicate;
 	}
 
 	private String convertSearchCriteriaToEntityFieldName(String fieldName) {
