@@ -162,7 +162,6 @@ public class Favorites extends JPanel implements IFavorites {
 				});
 				headerPopup.add(removeColumn);
 
-				addAddColumnMenuItem(HVSCEntry_.path);
 				addAddColumnMenuItem(HVSCEntry_.title);
 				addAddColumnMenuItem(HVSCEntry_.author);
 				addAddColumnMenuItem(HVSCEntry_.released);

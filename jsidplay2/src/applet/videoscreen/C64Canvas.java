@@ -34,10 +34,9 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import applet.JSIDPlay2;
-
 import libsidplay.C64;
 import libsidplay.components.mos656x.VIC;
+import applet.JSIDPlay2;
 
 /**
  * The actual Swing canvas that shows the C64 Screen.
@@ -58,7 +57,7 @@ public class C64Canvas extends JLayeredPane {
 		//
 		// Hardcopy fields
 		//
-		
+
 		/**
 		 * Flag hardcopy function.
 		 */
@@ -88,9 +87,13 @@ public class C64Canvas extends JLayeredPane {
 			memoryImageSource.setAnimated(true);
 			memoryImageSource.setFullBufferUpdates(true);
 			screenImage = createImage(memoryImageSource);
-			
-			monitorImage = new ImageIcon(
-					JSIDPlay2.class.getResource("icons/monitor.png")).getImage();
+
+			URL resource = JSIDPlay2.class.getResource("icons/monitor.png");
+			if (resource != null) {
+				monitorImage = new ImageIcon(resource).getImage();
+			} else {
+				monitorImage = null;
+			}
 		}
 
 		/**
@@ -114,9 +117,12 @@ public class C64Canvas extends JLayeredPane {
 		@Override
 		public void paintComponent(final Graphics g) {
 			// Sigh. Can't really afford this stuff for memory images.
-			//((Graphics2D) g).setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			// ((Graphics2D)
+			// g).setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+			// RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 			if (c64Image == null) {
-				g.drawImage(screenImage, 35*scale, 25*scale, getWidth()-70*scale, getHeight()-58*scale, this);
+				g.drawImage(screenImage, 35 * scale, 25 * scale, getWidth()
+						- 70 * scale, getHeight() - 58 * scale, this);
 				g.drawImage(monitorImage, 0, 0, getWidth(), getHeight(), this);
 			} else {
 				g.drawImage(c64Image.getImage(), 0, 0, getWidth(), getHeight(),
@@ -124,6 +130,7 @@ public class C64Canvas extends JLayeredPane {
 			}
 		}
 
+		@Override
 		public void propertyChange(final PropertyChangeEvent evt) {
 			if ("pixels".equals(evt.getPropertyName())) {
 				memoryImageSource.newPixels();
@@ -131,14 +138,16 @@ public class C64Canvas extends JLayeredPane {
 				synchronized (doHardCopy) {
 					if (doHardCopy.booleanValue()) {
 						doHardCopy = new Boolean(false);
-						BufferedImage bufferedImage = new BufferedImage(vic.getBorderWidth(),
-								vic.getBorderHeight(), BufferedImage.TYPE_INT_RGB);
+						BufferedImage bufferedImage = new BufferedImage(
+								vic.getBorderWidth(), vic.getBorderHeight(),
+								BufferedImage.TYPE_INT_RGB);
 						// Paint the image onto the buffered image
 						Graphics g = bufferedImage.createGraphics();
 						g.drawImage(screenImage, 0, 0, null);
 						g.dispose();
 						try {
-							ImageIO.write(bufferedImage, format, new File(outputName));
+							ImageIO.write(bufferedImage, format, new File(
+									outputName));
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -159,14 +168,15 @@ public class C64Canvas extends JLayeredPane {
 		 * Save a hardcopy of the Video screen.
 		 * 
 		 * @param format
-		 *            graphics format (e.g. "bmp", "gif", "jpg", "jpeg", "png" or
-		 *            "wbmp")
+		 *            graphics format (e.g. "bmp", "gif", "jpg", "jpeg", "png"
+		 *            or "wbmp")
 		 * @param output
 		 *            output filename of the graphics file
 		 * @throws IOException
 		 *             error writing image
 		 */
-		public void hardCopy(final String format, String outputName) throws IOException {
+		public void hardCopy(final String format, String outputName)
+				throws IOException {
 			synchronized (doHardCopy) {
 				this.doHardCopy = new Boolean(true);
 				this.format = format;
@@ -189,18 +199,22 @@ public class C64Canvas extends JLayeredPane {
 	public C64Canvas() {
 		setLayout(null);
 		addComponentListener(new ComponentListener() {
+			@Override
 			public void componentShown(ComponentEvent e) {
 			}
 
+			@Override
 			public void componentResized(ComponentEvent e) {
 				if (screenCanvas != null) {
 					screenCanvas.calculateNewSize(getWidth(), getHeight());
 				}
 			}
 
+			@Override
 			public void componentMoved(ComponentEvent e) {
 			}
 
+			@Override
 			public void componentHidden(ComponentEvent e) {
 			}
 		});
@@ -215,34 +229,37 @@ public class C64Canvas extends JLayeredPane {
 		screenCanvas = new VICDisplay(c64.getVIC());
 		screenCanvas.calculateNewSize(getWidth(), getHeight());
 		add(screenCanvas);
-		
-		keyboardFrame = new JInternalFrame("Virtual Keyboard (Normal-Key Layout)");
+
+		keyboardFrame = new JInternalFrame(
+				"Virtual Keyboard (Normal-Key Layout)");
 		keyboardFrame.addComponentListener(new ComponentAdapter() {
-			
+
 			@Override
 			public void componentHidden(ComponentEvent e) {
 				// otherwise keyboard does not work anymore!
 				C64Canvas.this.requestFocus();
 			}
 		});
-		URL url = C64Canvas.class.getResource("/applet/icons/commodore_logo.png");
+		URL url = C64Canvas.class
+				.getResource("/applet/icons/commodore_logo.png");
 		keyboardFrame.setFrameIcon(new ImageIcon(url));
 		keyboardFrame.setOpaque(false);
 		keyboardFrame.setLayout(null);
 		keyboardFrame.setVisible(false);
 		keyboardFrame.setClosable(true);
-		final JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 100, opacity );
+		final JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 100, opacity);
 		slider.setOpaque(false);
 		slider.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				keyboardFrame.setBackground(new Color(0, 0, 0, slider.getValue()));
+				keyboardFrame.setBackground(new Color(0, 0, 0, slider
+						.getValue()));
 				opacity = slider.getValue();
 			}
 		});
 		keyboardFrame.add(slider);
-		
+
 		keyboardFrame.setBackground(new Color(0, 0, 0, slider.getValue()));
 		keyboardFrame.setBorder(BorderFactory.createLoweredBevelBorder());
 		add(keyboardFrame, JLayeredPane.POPUP_LAYER);
@@ -251,14 +268,15 @@ public class C64Canvas extends JLayeredPane {
 		normalKeyboard.createUI(keyboardFrame, c64, slider);
 		shiftedKeyboard = new ShiftedKeyBoard();
 		Rectangle bounds = shiftedKeyboard.createUI(keyboardFrame, c64, slider);
-		slider.setBounds(0, 0, bounds.width - 20, slider.getMinimumSize().height);
+		slider.setBounds(0, 0, bounds.width - 20,
+				slider.getMinimumSize().height);
 		commodoreKeyboard = new CommodoreKeyBoard();
 		commodoreKeyboard.createUI(keyboardFrame, c64, slider);
 	}
 
 	private int mode;
 	protected JInternalFrame keyboardFrame;
-	
+
 	public void switchKeyboard() {
 		if (!keyboardFrame.isVisible()) {
 			mode = 3;

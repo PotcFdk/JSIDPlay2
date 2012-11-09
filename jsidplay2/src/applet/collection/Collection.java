@@ -991,8 +991,17 @@ public abstract class Collection extends TuneTab implements
 			fileBrowser.setModel(collectionTreeModel = new CollectionTreeModel(
 					rootFile));
 			if (((File) collectionTreeModel.getRoot()).exists()) {
-				fileBrowser.setSelectionPath(new TreePath(collectionTreeModel
-						.getRoot()));
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						fileBrowser.setSelectionPath(new TreePath(
+								collectionTreeModel.getRoot()));
+						showPhoto();
+						updateUI();
+					}
+
+				});
 			}
 
 			setRootDir(rootFile);
@@ -1111,13 +1120,15 @@ public abstract class Collection extends TuneTab implements
 						.substring(path.indexOf('/') + 1));
 				final TreePath treePath = new TreePath(
 						pathSegs.toArray(new File[pathSegs.size()]));
-				fileBrowser.setSelectionPath(treePath);
 				SwingUtilities.invokeLater(new Runnable() {
 
 					@Override
 					public void run() {
+						fileBrowser.setSelectionPath(treePath);
 						fileBrowser.scrollPathToVisible(fileBrowser
 								.getSelectionPath());
+						showPhoto();
+						updateUI();
 					}
 
 				});
