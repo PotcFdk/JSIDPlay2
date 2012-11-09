@@ -117,30 +117,28 @@ public class HVSCEntryService {
 						.get((SingularAttribute<HVSCEntry, Object>) field);
 				like = cb.equal(fieldName, fieldValue);
 			}
-		} else {
-			if (entityType == StilEntry.class) {
-				assert (fieldValue.getClass() == String.class);
-				// SELECT distinct h.path FROM STIL s INNER JOIN s.hvscEntry h
-				Root<StilEntry> s = q.from(StilEntry.class);
-				Join<applet.entities.collection.StilEntry, HVSCEntry> h = s
-						.join("hvscEntry", JoinType.INNER);
-				Path<String> path = h.get("path");
-				q.select(path).distinct(true);
+		} else if (entityType == StilEntry.class) {
+			assert (fieldValue.getClass() == String.class);
+			// SELECT distinct h.path FROM STIL s INNER JOIN s.hvscEntry h
+			Root<StilEntry> s = q.from(StilEntry.class);
+			Join<applet.entities.collection.StilEntry, HVSCEntry> h = s.join(
+					"hvscEntry", JoinType.INNER);
+			Path<String> path = h.get("path");
+			q.select(path).distinct(true);
 
-				if (fieldType == String.class) {
-					assert (fieldValue.getClass() == String.class);
-					Path<String> fieldName = s
-							.get((SingularAttribute<StilEntry, String>) field);
-					like = fieldNameLikeFieldValue(cb, fieldName,
-							fieldValue.toString(), caseSensitive, fieldType);
-				} else {
-					throw new RuntimeException("Unsupported field type: "
-							+ fieldType);
-				}
+			if (fieldType == String.class) {
+				assert (fieldValue.getClass() == String.class);
+				Path<String> fieldName = s
+						.get((SingularAttribute<StilEntry, String>) field);
+				like = fieldNameLikeFieldValue(cb, fieldName,
+						fieldValue.toString(), caseSensitive, fieldType);
 			} else {
-				throw new RuntimeException(
-						"Unsupported entity type for search: " + entityType);
+				throw new RuntimeException("Unsupported field type: "
+						+ fieldType);
 			}
+		} else {
+			throw new RuntimeException("Unsupported entity type for search: "
+					+ entityType);
 		}
 		return new HVSCEntries(em.createQuery(q.where(like)).getResultList(),
 				fForward);
