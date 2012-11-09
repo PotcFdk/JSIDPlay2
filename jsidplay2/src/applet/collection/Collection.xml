@@ -30,7 +30,7 @@
 			<panel layout="FlowLayout" constraints="FlowLayout.LEFT">
 				<label text="SEARCH_FOR" />
 				<combobox id="searchCriteria" action="searchCategory" />
-				<textfield id="searchFor" columns="20" action="searchText"></textfield>
+				<panel id="searchParent"/>
 				<NiceButton id="startSearch" icon="applet/icons/search.png"
 					ToolTipText="SEARCH_NEXT" action="doStartSearch" />
 				<NiceButton id="stopSearch" icon="applet/icons/mini/stop.png"

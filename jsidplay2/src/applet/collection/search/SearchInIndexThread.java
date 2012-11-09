@@ -14,7 +14,7 @@ public class SearchInIndexThread extends SearchThread {
 	private final CollectionTreeModel fModel;
 
 	private int field;
-	private String fieldValue;
+	private Object fieldValue;
 	private boolean caseSensitive;
 
 	private HVSCEntryService hvscEntryService;
@@ -62,7 +62,7 @@ public class SearchInIndexThread extends SearchThread {
 	@Override
 	public void setSearchState(Object state) {
 		if (state instanceof HVSCEntries)
-		this.state = (HVSCEntries) state;
+			this.state = (HVSCEntries) state;
 	}
 
 	public int getField() {
@@ -73,12 +73,12 @@ public class SearchInIndexThread extends SearchThread {
 		this.field = index;
 	}
 
-	public String getFieldValue() {
+	public Object getFieldValue() {
 		return fieldValue;
 	}
 
-	public void setFieldValue(String fieldValue) {
-		this.fieldValue = fieldValue;
+	public void setFieldValue(Object searchForValue) {
+		this.fieldValue = searchForValue;
 	}
 
 	public boolean isCaseSensitive() {

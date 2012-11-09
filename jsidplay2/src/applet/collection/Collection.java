@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
@@ -24,6 +25,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -57,6 +59,12 @@ import applet.collection.search.SearchInIndexThread;
 import applet.collection.search.SearchIndexCreator;
 import applet.collection.search.SearchIndexerThread;
 import applet.collection.search.SearchThread;
+import applet.config.ConfigView;
+import applet.config.editors.CharTextField;
+import applet.config.editors.FloatTextField;
+import applet.config.editors.IntTextField;
+import applet.config.editors.LongTextField;
+import applet.config.editors.ShortTextField;
 import applet.download.DownloadThread;
 import applet.entities.PersistenceProperties;
 import applet.entities.collection.service.HVSCEntryService;
@@ -308,18 +316,23 @@ public abstract class Collection extends TuneTab implements
 	/**
 	 * XML based Swing support
 	 */
-	private SwingEngine swix;
+	private SwingEngine swix, swixSearchEditor;
 
 	protected JCheckBox autoConfiguration;
 	protected JTable tuneInfoTable;
-	protected JPanel photograph;
+	protected JPanel photograph, searchParent;
 	protected Picture picture;
 	protected JTree fileBrowser;
 	protected JComboBox<String> searchCriteria, searchScope, searchResult;
 	protected JButton startSearch, stopSearch, resetSearch, createSearchIndex,
 			browse;
-	protected JTextField searchFor, collectionDir;
+	protected JTextField collectionDir;
 	protected JLinkButton linkCollectionURL;
+
+	protected JTextField textField;
+	protected JCheckBox checkbox;
+	protected JComboBox<Enum<?>> combo;
+	protected MyDateSpinner spinner;
 
 	protected Player player;
 	protected IConfig config;
@@ -333,7 +346,7 @@ public abstract class Collection extends TuneTab implements
 
 	protected SearchThread searchThread;
 	protected Object savedState;
-	protected String recentlySearchedText;
+	protected Object searchForValue, recentlySearchedForValue;
 	protected int recentlySearchedCriteria;
 	protected boolean searchOptionsChanged;
 	protected File lastDir;
@@ -357,18 +370,6 @@ public abstract class Collection extends TuneTab implements
 				searchOptionsChanged = true;
 				recentlySearchedCriteria = searchCriteria.getSelectedIndex();
 			}
-		}
-	};
-
-	public Action searchText = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (!searchFor.getText().equals(recentlySearchedText)) {
-				searchOptionsChanged = true;
-				recentlySearchedText = searchFor.getText();
-			}
-			startSearch(false);
 		}
 	};
 
@@ -451,6 +452,58 @@ public abstract class Collection extends TuneTab implements
 		}
 	};
 
+	public Action doSetDate = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			setSearchValue();
+			if (!searchForValue.equals(recentlySearchedForValue)) {
+				searchOptionsChanged = true;
+				recentlySearchedForValue = searchForValue;
+			}
+			startSearch(false);
+		}
+	};
+
+	public Action doSetValue = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			setSearchValue();
+			if (!searchForValue.equals(recentlySearchedForValue)) {
+				searchOptionsChanged = true;
+				recentlySearchedForValue = searchForValue;
+			}
+			startSearch(false);
+		}
+	};
+
+	public Action doSetBoolean = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			setSearchValue();
+			if (!searchForValue.equals(recentlySearchedForValue)) {
+				searchOptionsChanged = true;
+				recentlySearchedForValue = searchForValue;
+			}
+			startSearch(false);
+		}
+	};
+
+	public Action doSetEnum = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			setSearchValue();
+			if (!searchForValue.equals(recentlySearchedForValue)) {
+				searchOptionsChanged = true;
+				recentlySearchedForValue = searchForValue;
+			}
+			startSearch(false);
+		}
+	};
+
 	public Collection(Player pl, IConfig cfg, final String title,
 			final String sourceURL, final String message, final String dbName) {
 		this.player = pl;
@@ -474,6 +527,20 @@ public abstract class Collection extends TuneTab implements
 			swix.getTaglib().registerTag("nicebutton", JNiceButton.class);
 			swix.getTaglib().registerTag("link", JLinkButton.class);
 			swix.insert(Collection.class.getResource("Collection.xml"), this);
+
+			swixSearchEditor = new SwingEngine(this);
+			swixSearchEditor.getTaglib().registerTag("shorttextfield",
+					ShortTextField.class);
+			swixSearchEditor.getTaglib().registerTag("inttextfield",
+					IntTextField.class);
+			swixSearchEditor.getTaglib().registerTag("longtextfield",
+					LongTextField.class);
+			swixSearchEditor.getTaglib().registerTag("floattextfield",
+					FloatTextField.class);
+			swixSearchEditor.getTaglib().registerTag("chartextfield",
+					CharTextField.class);
+			swixSearchEditor.getTaglib().registerTag("datetextfield",
+					MyDateSpinner.class);
 
 			fillComboBoxes();
 			setDefaultsAndActions();
@@ -502,6 +569,29 @@ public abstract class Collection extends TuneTab implements
 
 	private void setDefaultsAndActions() {
 		{
+			searchCriteria.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					int selectedIndex = searchCriteria.getSelectedIndex();
+					if (selectedIndex != -1) {
+						searchParent.removeAll();
+						Class<?> fieldType = HVSCEntryService.SEARCH_FIELD_TYPES[selectedIndex];
+						String uiTypeName = getUITypeName(fieldType);
+						try {
+							createEditor(searchParent, uiTypeName);
+							if (Enum.class.isAssignableFrom(fieldType)) {
+								initEnumComboBox(fieldType);
+							}
+							setSearchValue();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+			searchCriteria.setSelectedIndex(0);
+
 			// Listen for when the selection changes.
 			fileBrowser.addTreeSelectionListener(this);
 			fileBrowser.addKeyListener(new KeyAdapter() {
@@ -688,6 +778,104 @@ public abstract class Collection extends TuneTab implements
 		for (String searchProperty : HVSCEntryService.SEARCH_FIELDS) {
 			searchCriteria.addItem(getSwix().getLocalizer().getString(
 					searchProperty));
+		}
+	}
+
+	private String getUITypeName(Class<?> fieldType) {
+		if (fieldType == String.class) {
+			return String.class.getSimpleName();
+		} else if (fieldType == Short.class || fieldType == short.class) {
+			return Short.class.getSimpleName();
+		} else if (fieldType == Integer.class || fieldType == int.class) {
+			return Integer.class.getSimpleName();
+		} else if (fieldType == Long.class || fieldType == long.class) {
+			return Long.class.getSimpleName();
+		} else if (fieldType == Boolean.class || fieldType == boolean.class) {
+			return Boolean.class.getSimpleName();
+		} else if (Enum.class.isAssignableFrom(fieldType)) {
+			return Enum.class.getSimpleName();
+		} else if (fieldType == Float.class || fieldType == float.class) {
+			return Float.class.getSimpleName();
+		} else if (fieldType == Character.class || fieldType == char.class) {
+			return Character.class.getSimpleName();
+		} else if (fieldType == File.class) {
+			return File.class.getSimpleName();
+		} else if (fieldType == Date.class) {
+			return Date.class.getSimpleName();
+		} else {
+			throw new RuntimeException("unsupported type: "
+					+ fieldType.getSimpleName());
+		}
+	}
+
+	private void createEditor(JComponent parent, String uiTypeName)
+			throws Exception {
+		JComponent editor = (JComponent) swixSearchEditor
+				.render(ConfigView.class.getResource("editors/" + uiTypeName
+						+ ".xml"));
+		parent.add(editor, 0);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private JComponent initEnumComboBox(Class<?> cls) {
+		ActionListener[] actionListeners = combo.getActionListeners();
+		for (ActionListener actionListener : actionListeners) {
+			combo.removeActionListener(actionListener);
+		}
+		Class<? extends Enum> en = (Class<? extends Enum>) cls;
+		for (Enum val : en.getEnumConstants()) {
+			combo.addItem(val);
+		}
+		for (ActionListener actionListener : actionListeners) {
+			combo.addActionListener(actionListener);
+		}
+		return combo;
+	}
+
+	private void setSearchValue() {
+		Class<?> type = HVSCEntryService.SEARCH_FIELD_TYPES[searchCriteria
+				.getSelectedIndex()];
+		if (type == Character.class) {
+			String text = textField.getText();
+			searchForValue = text.length() > 0 ? text.charAt(0) : 0;
+		} else if (type == Float.class) {
+			String text = textField.getText();
+			try {
+				searchForValue = Float.parseFloat(text);
+			} catch (NumberFormatException e1) {
+				searchForValue = Float.valueOf(0);
+			}
+		} else if (type == Integer.class) {
+			String text = textField.getText();
+			try {
+				searchForValue = Integer.parseInt(text);
+			} catch (NumberFormatException e1) {
+				searchForValue = Integer.valueOf(0);
+			}
+		} else if (type == Long.class) {
+			String text = textField.getText();
+			try {
+				searchForValue = Long.parseLong(text);
+			} catch (NumberFormatException e1) {
+				searchForValue = Long.valueOf(0);
+			}
+		} else if (type == Short.class) {
+			String text = textField.getText();
+			try {
+				searchForValue = Short.parseShort(text);
+			} catch (NumberFormatException e1) {
+				searchForValue = Short.valueOf((short) 0);
+			}
+		} else if (Enum.class.isAssignableFrom(type)) {
+			searchForValue = combo.getSelectedItem();
+		} else if (type == Boolean.class) {
+			searchForValue = checkbox.isSelected();
+		} else if (type == Date.class) {
+			Date date = (Date) spinner.getValue();
+			searchForValue = date;
+		} else if (type == String.class) {
+			String text = textField.getText();
+			searchForValue = text;
 		}
 	}
 
@@ -900,7 +1088,7 @@ public abstract class Collection extends TuneTab implements
 					searchScope.getSelectedIndex() != 1);
 			t.addSearchListener(this);
 			t.setField(searchCriteria.getSelectedIndex());
-			t.setFieldValue(searchFor.getText());
+			t.setFieldValue(searchForValue);
 			t.setCaseSensitive(false);
 			if (searchOptionsChanged) {
 				resetSearch();
