@@ -12,7 +12,7 @@ import applet.config.annotations.ConfigTransient;
 
 @Entity
 @ConfigClass(bundleKey = "STIL_ENTRY")
-public class STIL {
+public class StilEntry {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@ConfigTransient

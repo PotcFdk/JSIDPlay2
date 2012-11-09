@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -53,7 +52,6 @@ public class FavoritesSection implements IFavoritesSection {
 	}
 
 	@XmlElement(name = "favorite")
-	@ElementCollection
 	@OneToMany
 	private List<HVSCEntry> favorites;
 
@@ -74,7 +72,7 @@ public class FavoritesSection implements IFavoritesSection {
 	@ManyToOne(cascade = CascadeType.ALL)
 	@XmlIDREF
 	@ConfigTransient
-	public Configuration configuration;
+	private Configuration configuration;
 
 	@XmlTransient
 	public Configuration getConfiguration() {

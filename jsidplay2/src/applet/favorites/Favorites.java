@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -60,6 +61,7 @@ import sidplay.ini.intf.IFavoritesSection;
 import applet.PathUtils;
 import applet.SidTuneConverter;
 import applet.dnd.FileDrop;
+import applet.entities.collection.HVSCEntry_;
 import applet.events.IPlayTune;
 import applet.events.UIEventFactory;
 import applet.events.favorites.IFavoriteTabNames;
@@ -69,6 +71,25 @@ import applet.ui.JNiceButton;
 
 @SuppressWarnings("serial")
 public class Favorites extends JPanel implements IFavorites {
+
+	private final class AddColumnAction implements ActionListener {
+		private final Object element;
+
+		private AddColumnAction(Object element) {
+			this.element = element;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				playListTable.getColumn(element);
+				// if column already exist, do nothing
+			} catch (IllegalArgumentException e1) {
+				favoritesModel.addColumn(element);
+			}
+
+		}
+	}
 
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 	private SwingEngine swix;
@@ -140,29 +161,46 @@ public class Favorites extends JPanel implements IFavorites {
 					}
 				});
 				headerPopup.add(removeColumn);
-				for (final String element : FavoritesModel.COLUMNS) {
-					if (!element.equals(FavoritesModel.COLUMNS[0])) {
-						JMenuItem menuItem = new JMenuItem(String.format(
-								getSwix().getLocalizer()
-										.getString("ADD_COLUMN"), getSwix()
-										.getLocalizer().getString(element)));
-						menuItem.addActionListener(new ActionListener() {
 
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								try {
-									playListTable.getColumn(element);
-									// if column already exist, do nothing
-								} catch (IllegalArgumentException e1) {
-									favoritesModel.addColumn(element);
-								}
+				addAddColumnMenuItem(HVSCEntry_.path);
+				addAddColumnMenuItem(HVSCEntry_.title);
+				addAddColumnMenuItem(HVSCEntry_.author);
+				addAddColumnMenuItem(HVSCEntry_.released);
+				addAddColumnMenuItem(HVSCEntry_.format);
+				addAddColumnMenuItem(HVSCEntry_.playerId);
+				addAddColumnMenuItem(HVSCEntry_.noOfSongs);
+				addAddColumnMenuItem(HVSCEntry_.startSong);
+				addAddColumnMenuItem(HVSCEntry_.clockFreq);
+				addAddColumnMenuItem(HVSCEntry_.speed);
+				addAddColumnMenuItem(HVSCEntry_.sidModel1);
+				addAddColumnMenuItem(HVSCEntry_.sidModel2);
+				addAddColumnMenuItem(HVSCEntry_.compatibility);
+				addAddColumnMenuItem(HVSCEntry_.tuneLength);
+				addAddColumnMenuItem(HVSCEntry_.audio);
+				addAddColumnMenuItem(HVSCEntry_.sidChipBase1);
+				addAddColumnMenuItem(HVSCEntry_.sidChipBase2);
+				addAddColumnMenuItem(HVSCEntry_.driverAddress);
+				addAddColumnMenuItem(HVSCEntry_.loadAddress);
+				addAddColumnMenuItem(HVSCEntry_.loadLength);
+				addAddColumnMenuItem(HVSCEntry_.initAddress);
+				addAddColumnMenuItem(HVSCEntry_.playerAddress);
+				addAddColumnMenuItem(HVSCEntry_.fileDate);
+				addAddColumnMenuItem(HVSCEntry_.fileSizeKb);
+				addAddColumnMenuItem(HVSCEntry_.tuneSizeB);
+				addAddColumnMenuItem(HVSCEntry_.relocStartPage);
+				addAddColumnMenuItem(HVSCEntry_.relocNoPages);
 
-							}
-						});
-						headerPopup.add(menuItem);
-					}
-				}
+			}
 
+			private void addAddColumnMenuItem(SingularAttribute<?, ?> field) {
+				JMenuItem menuItem = new JMenuItem(String.format(
+						getSwix().getLocalizer().getString("ADD_COLUMN"),
+						getSwix().getLocalizer().getString(
+								field.getDeclaringType().getJavaType()
+										.getSimpleName()
+										+ "." + field.getName())));
+				menuItem.addActionListener(new AddColumnAction(field));
+				headerPopup.add(menuItem);
 			}
 
 			@Override

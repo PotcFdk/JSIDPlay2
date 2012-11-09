@@ -15,36 +15,13 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.SingularAttribute;
 
-import libsidplay.sidtune.SidTune.Clock;
-import libsidplay.sidtune.SidTune.Compatibility;
-import libsidplay.sidtune.SidTune.Model;
-import libsidplay.sidtune.SidTune.Speed;
 import sidplay.ini.intf.IConfig;
 import applet.entities.collection.HVSCEntry;
-import applet.entities.collection.STIL;
+import applet.entities.collection.StilEntry;
 
 public class HVSCEntryService {
-	public static final String[] SEARCH_FIELDS = new String[] { "NAME", "PATH",
-			"TITLE", "AUTHOR", "RELEASED", "FORMAT", "PLAYER_ID",
-			"NO_OF_SONGS", "START_SONG", "CLOCK_FREQ", "SPEED", "SID_MODEL_1",
-			"SID_MODEL_2", "COMPATIBILITY", "TUNE_LENGTH", "AUDIO",
-			"SID_CHIP_BASE_1", "SID_CHIP_BASE_2", "DRIVER_ADDRESS",
-			"LOAD_ADDRESS", "LOAD_LENGTH", "INIT_ADDRESS", "PLAYER_ADDRESS",
-			"FILE_DATE", "FILE_SIZE_KB", "TUNE_SIZE_B", "RELOC_START_PAGE",
-			"RELOC_NO_PAGES", "STIL_GLB_COMMENT", "STIL_NAME", "STIL_AUTHOR",
-			"STIL_TITLE", "STIL_ARTIST", "STIL_COMMENT" };
-
-	public static Class<?> SEARCH_FIELD_TYPES[] = new Class[] { String.class,
-			String.class, String.class, String.class, String.class,
-			String.class, String.class, Integer.class, Integer.class,
-			Clock.class, Speed.class, Model.class, Model.class,
-			Compatibility.class, Long.class, String.class, Integer.class,
-			Integer.class, Integer.class, Integer.class, Integer.class,
-			Integer.class, Integer.class, Date.class, Integer.class,
-			Integer.class, Short.class, Short.class, String.class,
-			String.class, String.class, String.class, String.class,
-			String.class, };
 
 	public class HVSCEntries {
 		HVSCEntries(List<String> list, boolean fForward) {
@@ -100,57 +77,70 @@ public class HVSCEntryService {
 		return hvscEntry;
 	}
 
-	public HVSCEntries search(int fieldIdx, Object fieldValue,
+	@SuppressWarnings("unchecked")
+	public HVSCEntries search(SingularAttribute<?, ?> field, Object fieldValue,
 			boolean caseSensitive, boolean fForward) {
+		Class<?> entityType = field.getDeclaringType().getJavaType();
+		Class<?> fieldType = field.getJavaType();
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> q = cb.createQuery(String.class);
 		Predicate like;
 
-		if (fieldIdx < 29) {
-			// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName> LIKE
-			// <value>
+		if (entityType == HVSCEntry.class) {
 			Root<HVSCEntry> h = q.from(HVSCEntry.class);
 			Path<String> path = h.get("path");
 			q.select(path).distinct(true);
-			if (SEARCH_FIELD_TYPES[fieldIdx] == Date.class) {
+			if (fieldType == Date.class) {
 				assert (fieldValue.getClass() == Date.class);
-				// for dates: compare year, only
+				// SELECT distinct h.path FROM HVSCEntry h WHERE
+				// YEAR(h.<fieldName>) = <value>
 				Path<Date> fieldName = h
-						.get(convertSearchCriteriaToEntityFieldName(SEARCH_FIELDS[fieldIdx]));
+						.get((SingularAttribute<HVSCEntry, Date>) field);
 				Expression<Integer> year = cb.function("YEAR", Integer.class,
 						fieldName);
 				Calendar cal = Calendar.getInstance();
 				cal.setTime((Date) fieldValue);
 				like = cb.equal(year, cal.get(Calendar.YEAR));
-			} else if (SEARCH_FIELD_TYPES[fieldIdx] == String.class) {
+			} else if (fieldType == String.class) {
 				assert (fieldValue.getClass() == String.class);
+				// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName>
+				// LIKE <value>
 				Path<String> fieldName = h
-						.get(convertSearchCriteriaToEntityFieldName(SEARCH_FIELDS[fieldIdx]));
+						.get((SingularAttribute<HVSCEntry, String>) field);
 				like = fieldNameLikeFieldValue(cb, fieldName,
-						fieldValue.toString(), caseSensitive,
-						SEARCH_FIELD_TYPES[fieldIdx]);
+						fieldValue.toString(), caseSensitive, fieldType);
 			} else {
+				// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName> =
+				// <value>
 				Path<Object> fieldName = h
-						.get(convertSearchCriteriaToEntityFieldName(SEARCH_FIELDS[fieldIdx]));
+						.get((SingularAttribute<HVSCEntry, Object>) field);
 				like = cb.equal(fieldName, fieldValue);
 			}
-		} else if (fieldIdx < SEARCH_FIELDS.length) {
-			assert (fieldValue.getClass() == String.class);
-			// SELECT distinct h.path FROM STIL s INNER JOIN s.hvscEntry h
-			Root<STIL> s = q.from(STIL.class);
-			Join<applet.entities.collection.STIL, HVSCEntry> h = s.join(
-					"hvscEntry", JoinType.INNER);
-			Path<String> path = h.get("path");
-			q.select(path).distinct(true);
-
-			Path<String> fieldName = s
-					.get(convertSearchCriteriaToEntityFieldName(SEARCH_FIELDS[fieldIdx]));
-			like = fieldNameLikeFieldValue(cb, fieldName,
-					fieldValue.toString(), caseSensitive,
-					SEARCH_FIELD_TYPES[fieldIdx]);
 		} else {
-			throw new RuntimeException("Search criteria is not supported: "
-					+ fieldIdx);
+			if (entityType == StilEntry.class) {
+				assert (fieldValue.getClass() == String.class);
+				// SELECT distinct h.path FROM STIL s INNER JOIN s.hvscEntry h
+				Root<StilEntry> s = q.from(StilEntry.class);
+				Join<applet.entities.collection.StilEntry, HVSCEntry> h = s
+						.join("hvscEntry", JoinType.INNER);
+				Path<String> path = h.get("path");
+				q.select(path).distinct(true);
+
+				if (fieldType == String.class) {
+					assert (fieldValue.getClass() == String.class);
+					Path<String> fieldName = s
+							.get((SingularAttribute<StilEntry, String>) field);
+					like = fieldNameLikeFieldValue(cb, fieldName,
+							fieldValue.toString(), caseSensitive, fieldType);
+				} else {
+					throw new RuntimeException("Unsupported field type: "
+							+ fieldType);
+				}
+			} else {
+				throw new RuntimeException(
+						"Unsupported entity type for search: " + entityType);
+			}
 		}
 		return new HVSCEntries(em.createQuery(q.where(like)).getResultList(),
 				fForward);
@@ -165,23 +155,6 @@ public class HVSCEntryService {
 		} else {
 			return cb.like(fieldNm, "%" + fieldValue + "%");
 		}
-	}
-
-	private String convertSearchCriteriaToEntityFieldName(String fieldName) {
-		String[] fieldNameParts = fieldName.toLowerCase().split("_");
-		StringBuilder fieldNameResult = new StringBuilder();
-		boolean first = true;
-		for (String fieldNamePart : fieldNameParts) {
-			if (!first) {
-				fieldNameResult.append(
-						Character.toUpperCase(fieldNamePart.charAt(0))).append(
-						fieldNamePart.substring(1));
-			} else {
-				fieldNameResult.append(fieldNamePart);
-			}
-			first = false;
-		}
-		return fieldNameResult.toString();
 	}
 
 	public void clear() {

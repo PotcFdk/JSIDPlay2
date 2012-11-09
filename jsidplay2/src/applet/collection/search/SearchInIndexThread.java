@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
+import javax.persistence.metamodel.SingularAttribute;
 
 import applet.collection.CollectionTreeModel;
 import applet.entities.collection.service.HVSCEntryService;
@@ -13,7 +14,7 @@ public class SearchInIndexThread extends SearchThread {
 
 	private final CollectionTreeModel fModel;
 
-	private int field;
+	private SingularAttribute<?, ?> field;
 	private Object fieldValue;
 	private boolean caseSensitive;
 
@@ -65,12 +66,12 @@ public class SearchInIndexThread extends SearchThread {
 			this.state = (HVSCEntries) state;
 	}
 
-	public int getField() {
+	public SingularAttribute<?, ?> getField() {
 		return field;
 	}
 
-	public void setField(int index) {
-		this.field = index;
+	public void setField(SingularAttribute<?, ?> searchCriteria) {
+		this.field = searchCriteria;
 	}
 
 	public Object getFieldValue() {

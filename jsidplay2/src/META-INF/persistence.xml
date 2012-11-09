@@ -2,7 +2,7 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-	<persistence-unit name="gamebase-ds" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="jsidplay2-ds" transaction-type="RESOURCE_LOCAL">
 		<description>HSQLDB Persistence Unit</description>
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
@@ -14,19 +14,9 @@
 		<class>applet.entities.gamebase.Programmers</class>
 		<class>applet.entities.gamebase.Publishers</class>
 		<class>applet.entities.gamebase.Years</class>
-	</persistence-unit>
-	<persistence-unit name="collection-ds" transaction-type="RESOURCE_LOCAL">
-		<description>HSQLDB Persistence Unit</description>
-		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-
 		<class>applet.entities.collection.HVSCEntry</class>
-		<class>applet.entities.collection.STIL</class>
+		<class>applet.entities.collection.StilEntry</class>
 		<class>applet.entities.collection.Version</class>
-	</persistence-unit>
-	<persistence-unit name="jsidplay2-ds" transaction-type="RESOURCE_LOCAL">
-		<description>HSQLDB Persistence Unit</description>
-		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-
 		<class>applet.entities.config.AudioSection</class>
 		<class>applet.entities.config.C1541Section</class>
 		<class>applet.entities.config.Configuration</class>
@@ -37,5 +27,6 @@
 		<class>applet.entities.config.JoystickSection</class>
 		<class>applet.entities.config.PrinterSection</class>
 		<class>applet.entities.config.SidPlay2Section</class>
+		<class>applet.entities.config.OnlineSection</class>
 	</persistence-unit>
 </persistence>

@@ -50,7 +50,7 @@ public class STILService {
 	private void addSTILInfo(HVSCEntry hvscEntry, ArrayList<Info> infos,
 			File tuneFile) {
 		for (Info info : infos) {
-			applet.entities.collection.STIL stil = new applet.entities.collection.STIL();
+			applet.entities.collection.StilEntry stil = new applet.entities.collection.StilEntry();
 			stil.setStilName(info.name);
 			stil.setStilAuthor(info.author);
 			stil.setStilTitle(info.title);

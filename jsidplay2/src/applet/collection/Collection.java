@@ -19,6 +19,7 @@ import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -45,6 +46,10 @@ import javax.swing.tree.TreeSelectionModel;
 
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTune.Clock;
+import libsidplay.sidtune.SidTune.Compatibility;
+import libsidplay.sidtune.SidTune.Model;
+import libsidplay.sidtune.SidTune.Speed;
 import libsidutils.STIL.STILEntry;
 
 import org.swixml.SwingEngine;
@@ -68,7 +73,10 @@ import applet.config.editors.ShortTextField;
 import applet.config.editors.YearTextField;
 import applet.download.DownloadThread;
 import applet.entities.PersistenceProperties;
-import applet.entities.collection.service.HVSCEntryService;
+import applet.entities.collection.HVSCEntry;
+import applet.entities.collection.HVSCEntry_;
+import applet.entities.collection.StilEntry;
+import applet.entities.collection.StilEntry_;
 import applet.entities.collection.service.VersionService;
 import applet.events.ICollectionChanged;
 import applet.events.ICollectionChanged.CollectionType;
@@ -293,6 +301,25 @@ public abstract class Collection extends TuneTab implements
 		}
 	}
 
+	public class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
+		public SearchCriteria(SingularAttribute<DECLARING_CLASS, JAVA_TYPE> att) {
+			this.attribute = att;
+		}
+
+		private SingularAttribute<DECLARING_CLASS, JAVA_TYPE> attribute;
+
+		public SingularAttribute<DECLARING_CLASS, JAVA_TYPE> getAttribute() {
+			return attribute;
+		}
+
+		@Override
+		public String toString() {
+			return getSwix().getLocalizer().getString(
+					attribute.getDeclaringType().getJavaType().getSimpleName()
+							+ "." + attribute.getName());
+		}
+	}
+
 	/**
 	 * Contains a mapping: Author to picture resource path.
 	 */
@@ -324,7 +351,8 @@ public abstract class Collection extends TuneTab implements
 	protected JPanel photograph, searchParent;
 	protected Picture picture;
 	protected JTree fileBrowser;
-	protected JComboBox<String> searchCriteria, searchScope, searchResult;
+	protected JComboBox<SearchCriteria<?, ?>> searchCriteria;
+	protected JComboBox<String> searchScope, searchResult;
 	protected JButton startSearch, stopSearch, resetSearch, createSearchIndex,
 			browse;
 	protected JTextField collectionDir;
@@ -577,7 +605,7 @@ public abstract class Collection extends TuneTab implements
 					int selectedIndex = searchCriteria.getSelectedIndex();
 					if (selectedIndex != -1) {
 						searchParent.removeAll();
-						Class<?> fieldType = HVSCEntryService.SEARCH_FIELD_TYPES[selectedIndex];
+						Class<?> fieldType = getSelectedField().getJavaType();
 						String uiTypeName = getUITypeName(fieldType);
 						try {
 							createEditor(searchParent, uiTypeName);
@@ -771,15 +799,80 @@ public abstract class Collection extends TuneTab implements
 	private void fillComboBoxes() {
 		searchScope.addItem(getSwix().getLocalizer().getString("FORWARD"));
 		searchScope.addItem(getSwix().getLocalizer().getString("BACKWARD"));
+
 		searchResult.addItem(getSwix().getLocalizer().getString(
 				"SHOW_NEXT_MATCH"));
 		searchResult.addItem(getSwix().getLocalizer().getString(
 				"ADD_TO_A_NEW_PLAYLIST"));
 
-		for (String searchProperty : HVSCEntryService.SEARCH_FIELDS) {
-			searchCriteria.addItem(getSwix().getLocalizer().getString(
-					searchProperty));
-		}
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, String>(
+				HVSCEntry_.path));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, String>(
+				HVSCEntry_.name));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, String>(
+				HVSCEntry_.title));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, String>(
+				HVSCEntry_.author));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, String>(
+				HVSCEntry_.released));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, String>(
+				HVSCEntry_.format));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, String>(
+				HVSCEntry_.playerId));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Integer>(
+				HVSCEntry_.noOfSongs));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Integer>(
+				HVSCEntry_.startSong));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Clock>(
+				HVSCEntry_.clockFreq));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Speed>(
+				HVSCEntry_.speed));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Model>(
+				HVSCEntry_.sidModel1));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Model>(
+				HVSCEntry_.sidModel2));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Compatibility>(
+				HVSCEntry_.compatibility));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Long>(
+				HVSCEntry_.tuneLength));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, String>(
+				HVSCEntry_.audio));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Integer>(
+				HVSCEntry_.sidChipBase1));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Integer>(
+				HVSCEntry_.sidChipBase2));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Integer>(
+				HVSCEntry_.driverAddress));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Integer>(
+				HVSCEntry_.loadAddress));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Integer>(
+				HVSCEntry_.loadLength));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Integer>(
+				HVSCEntry_.initAddress));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Integer>(
+				HVSCEntry_.playerAddress));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Date>(
+				HVSCEntry_.fileDate));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Long>(
+				HVSCEntry_.fileSizeKb));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Long>(
+				HVSCEntry_.tuneSizeB));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Short>(
+				HVSCEntry_.relocStartPage));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, Short>(
+				HVSCEntry_.relocNoPages));
+		searchCriteria.addItem(new SearchCriteria<HVSCEntry, String>(
+				HVSCEntry_.stilGlbComment));
+		searchCriteria.addItem(new SearchCriteria<StilEntry, String>(
+				StilEntry_.stilName));
+		searchCriteria.addItem(new SearchCriteria<StilEntry, String>(
+				StilEntry_.stilAuthor));
+		searchCriteria.addItem(new SearchCriteria<StilEntry, String>(
+				StilEntry_.stilTitle));
+		searchCriteria.addItem(new SearchCriteria<StilEntry, String>(
+				StilEntry_.stilArtist));
+		searchCriteria.addItem(new SearchCriteria<StilEntry, String>(
+				StilEntry_.stilComment));
 	}
 
 	private String getUITypeName(Class<?> fieldType) {
@@ -834,8 +927,7 @@ public abstract class Collection extends TuneTab implements
 	}
 
 	private void setSearchValue() {
-		Class<?> type = HVSCEntryService.SEARCH_FIELD_TYPES[searchCriteria
-				.getSelectedIndex()];
+		Class<?> type = getSelectedField().getJavaType();
 		if (type == Character.class) {
 			String text = textField.getText();
 			searchForValue = text.length() > 0 ? text.charAt(0) : 0;
@@ -878,6 +970,11 @@ public abstract class Collection extends TuneTab implements
 			String text = textField.getText();
 			searchForValue = text;
 		}
+	}
+
+	private SingularAttribute<?, ?> getSelectedField() {
+		return ((SearchCriteria<?, ?>) searchCriteria.getSelectedItem())
+				.getAttribute();
 	}
 
 	protected void setRootFile(final File rootFile) {
@@ -1088,7 +1185,7 @@ public abstract class Collection extends TuneTab implements
 					collectionTreeModel, em,
 					searchScope.getSelectedIndex() != 1);
 			t.addSearchListener(this);
-			t.setField(searchCriteria.getSelectedIndex());
+			t.setField(getSelectedField());
 			t.setFieldValue(searchForValue);
 			t.setCaseSensitive(false);
 			if (searchOptionsChanged) {

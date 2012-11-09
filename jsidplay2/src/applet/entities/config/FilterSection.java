@@ -27,7 +27,7 @@ public class FilterSection implements IFilterSection {
 	@ManyToOne
 	@XmlIDREF
 	@ConfigTransient
-	public Configuration configuration;
+	private Configuration configuration;
 
 	@XmlTransient
 	public Configuration getConfiguration() {

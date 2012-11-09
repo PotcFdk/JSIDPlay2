@@ -341,12 +341,12 @@ public class HVSCEntry {
 	}
 
 	@OneToMany(mappedBy = "hvscEntry")
-	private List<STIL> stil;
+	private List<StilEntry> stil;
 
 	@ConfigMethod(nameKey = "STIL_ENTRIES")
-	public List<STIL> getStil() {
+	public List<StilEntry> getStil() {
 		if (stil == null) {
-			stil = new ArrayList<STIL>();
+			stil = new ArrayList<StilEntry>();
 		}
 		return stil;
 	}
