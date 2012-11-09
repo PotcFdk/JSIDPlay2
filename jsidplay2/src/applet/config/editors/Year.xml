@@ -1,7 +1,7 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
-<!-- Date Configuration -->
+<!-- Year Configuration -->
 <panel layout="BorderLayout" bundle="applet.config.ConfigTexts">
 	<hbox constraints="BorderLayout.NORTH">
-		<datetextfield id="spinner" action="doSetDate"/>
+		<yeartextfield id="spinner" action="doSetYear"/>
 	</hbox>
 </panel>

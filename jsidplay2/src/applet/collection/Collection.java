@@ -65,6 +65,7 @@ import applet.config.editors.FloatTextField;
 import applet.config.editors.IntTextField;
 import applet.config.editors.LongTextField;
 import applet.config.editors.ShortTextField;
+import applet.config.editors.YearTextField;
 import applet.download.DownloadThread;
 import applet.entities.PersistenceProperties;
 import applet.entities.collection.service.HVSCEntryService;
@@ -332,7 +333,7 @@ public abstract class Collection extends TuneTab implements
 	protected JTextField textField;
 	protected JCheckBox checkbox;
 	protected JComboBox<Enum<?>> combo;
-	protected MyDateSpinner spinner;
+	protected YearTextField spinner;
 
 	protected Player player;
 	protected IConfig config;
@@ -452,7 +453,7 @@ public abstract class Collection extends TuneTab implements
 		}
 	};
 
-	public Action doSetDate = new AbstractAction() {
+	public Action doSetYear = new AbstractAction() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -539,8 +540,8 @@ public abstract class Collection extends TuneTab implements
 					FloatTextField.class);
 			swixSearchEditor.getTaglib().registerTag("chartextfield",
 					CharTextField.class);
-			swixSearchEditor.getTaglib().registerTag("datetextfield",
-					MyDateSpinner.class);
+			swixSearchEditor.getTaglib().registerTag("yeartextfield",
+					YearTextField.class);
 
 			fillComboBoxes();
 			setDefaultsAndActions();
@@ -801,7 +802,7 @@ public abstract class Collection extends TuneTab implements
 		} else if (fieldType == File.class) {
 			return File.class.getSimpleName();
 		} else if (fieldType == Date.class) {
-			return Date.class.getSimpleName();
+			return "Year";
 		} else {
 			throw new RuntimeException("unsupported type: "
 					+ fieldType.getSimpleName());

@@ -1,4 +1,4 @@
-package applet.collection;
+package applet.config.editors;
 
 import java.awt.event.ActionEvent;
 import java.text.ParseException;
@@ -9,20 +9,18 @@ import java.util.Date;
 import javax.swing.Action;
 import javax.swing.JFormattedTextField;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class MyDateSpinner extends JSpinner {
+public class YearTextField extends JSpinner {
+	private static final String PATTERN = "yyyy";
 
-	public MyDateSpinner() {
-		String pattern = "yyyy";
-
+	public YearTextField() {
 		// Set current year as default
 		Date defaultDate = new Date();
 		int year = Calendar.getInstance().get(Calendar.YEAR);
-		SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+		SimpleDateFormat formatter = new SimpleDateFormat(PATTERN);
 		try {
 			defaultDate = formatter.parse(String.valueOf(year));
 		} catch (ParseException e) {
@@ -30,16 +28,14 @@ public class MyDateSpinner extends JSpinner {
 		}
 
 		setModel(new SpinnerDateModel());
-		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(this, pattern);
+		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(this, PATTERN);
 		setEditor(dateEditor);
 
-		// Tweak the spinner's formatted text field.
 		JFormattedTextField ftf = ((JSpinner.DefaultEditor) dateEditor)
 				.getTextField();
 		if (ftf != null) {
 			ftf.setEditable(false);
-			ftf.setColumns(4);
-			ftf.setHorizontalAlignment(JTextField.RIGHT);
+			ftf.setColumns(PATTERN.length());
 		}
 		setValue(defaultDate);
 	}
@@ -49,9 +45,9 @@ public class MyDateSpinner extends JSpinner {
 				new ChangeListener() {
 
 					@Override
-					public void stateChanged(ChangeEvent arg0) {
-						action.actionPerformed(new ActionEvent(
-								arg0.getSource(), 0, null));
+					public void stateChanged(ChangeEvent event) {
+						action.actionPerformed(new ActionEvent(event
+								.getSource(), 0, null));
 					}
 				});
 	}
