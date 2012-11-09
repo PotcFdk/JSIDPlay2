@@ -68,7 +68,7 @@ public class STILService {
 	}
 
 	public void clear() {
-		em.createQuery("DELETE from STIL").executeUpdate();
+		em.createQuery("DELETE from StilEntry").executeUpdate();
 	}
 
 }
