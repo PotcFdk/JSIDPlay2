@@ -12,10 +12,11 @@
 			<tree initclass="applet.config.ConfigModel"
 				ExpandsSelectedPaths="true" ScrollsOnExpand="true" id="configTree" />
 		</scrollpane>
-		<vbox constraints="BorderLayout.SOUTH"
-			id="parent" border="TitledBorder(EDITOR)">
+		<vbox constraints="BorderLayout.SOUTH" border="TitledBorder(EDITOR)">
+			<panel id="parent" />
 			<panel layout="BorderLayout" border="TitledBorder(DESCRIPTION)">
-				<textarea Editable="false" LineWrap="true" WrapStyleWord="true" id="description" />	
+				<textarea Editable="false" LineWrap="true" WrapStyleWord="true"
+					id="description" />
 			</panel>
 		</vbox>
 	</panel>

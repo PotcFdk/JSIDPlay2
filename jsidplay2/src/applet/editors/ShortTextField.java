@@ -1,4 +1,4 @@
-package applet.config.editors;
+package applet.editors;
 
 import javax.swing.JTextField;
 import javax.swing.text.AttributeSet;

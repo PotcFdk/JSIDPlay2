@@ -1,20 +1,21 @@
 package applet.config;
 
 import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.reflect.Field;
 
 import javax.persistence.EntityManager;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
@@ -37,11 +38,7 @@ import sidplay.ini.intf.IConfig;
 import applet.TuneTab;
 import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigField;
-import applet.config.editors.CharTextField;
-import applet.config.editors.FloatTextField;
-import applet.config.editors.IntTextField;
-import applet.config.editors.LongTextField;
-import applet.config.editors.ShortTextField;
+import applet.editors.EditorUtils;
 import applet.entities.config.Configuration;
 import applet.events.IUpdateUI;
 import applet.events.UIEvent;
@@ -52,11 +49,16 @@ public class ConfigView extends TuneTab {
 	private SwingEngine swix;
 
 	private JTree configTree;
-	protected Box parent;
+	protected JPanel parent;
+
+	private EditorUtils editorUtils;
+
 	protected JTextField textField;
 	protected JCheckBox checkbox;
 	protected JComboBox<Enum<?>> combo;
 	protected JTextArea description;
+
+	private JComponent editor;
 
 	private IConfig config;
 	protected File lastDir;
@@ -71,15 +73,9 @@ public class ConfigView extends TuneTab {
 
 	public ConfigView(EntityManager em, Player player, IConfig config) {
 		this.config = config;
+		editorUtils = new EditorUtils(this);
 		try {
 			swix = new SwingEngine(this);
-			swix.getTaglib()
-					.registerTag("shorttextfield", ShortTextField.class);
-			swix.getTaglib().registerTag("inttextfield", IntTextField.class);
-			swix.getTaglib().registerTag("longtextfield", LongTextField.class);
-			swix.getTaglib()
-					.registerTag("floattextfield", FloatTextField.class);
-			swix.getTaglib().registerTag("chartextfield", CharTextField.class);
 			swix.insert(ConfigView.class.getResource("Config.xml"), this);
 			configModel = (ConfigModel) configTree.getModel();
 			configModel.setRootUserObject(swix.getLocalizer(), config);
@@ -96,12 +92,17 @@ public class ConfigView extends TuneTab {
 					if (pathComponent instanceof ConfigNode) {
 						configNode = (ConfigNode) pathComponent;
 						try {
-							removeOldEditor();
+							parent.removeAll();
+							if (editor != null) {
+								editor.setToolTipText(swix.getLocalizer()
+										.getString("NO_TOOLTIP"));
+							}
+							description.setText(swix.getLocalizer().getString(
+									"NO_DESC"));
 							TreeNode parentConfigNode = configNode.getParent();
 							if (configNode.getUserObject() instanceof String) {
-								String uiTypeName = getUITypeName(configNode
-										.getUserObject().getClass());
-								createEditor(parentConfigNode, null, uiTypeName);
+								createEditor(parentConfigNode, configNode
+										.getUserObject().getClass(), null);
 								textField.setText(configNode.getUserObject()
 										.toString());
 								textField.setEditable(false);
@@ -112,30 +113,25 @@ public class ConfigView extends TuneTab {
 								if (isTextFieldType(field)) {
 									ConfigField uiConfig = field
 											.getAnnotation(ConfigField.class);
-									String uiTypeName;
 									if (uiConfig != null
 											&& uiConfig.uiClass() != null) {
 										fileChooserFilter = uiConfig.filter();
-										uiTypeName = getUITypeName(uiConfig
-												.uiClass());
+										createEditor(parentConfigNode,
+												uiConfig.uiClass(),
+												field.getName());
 									} else {
-										uiTypeName = getUITypeName(field
-												.getType());
+										createEditor(parentConfigNode,
+												field.getType(),
+												field.getName());
 									}
-									createEditor(parentConfigNode,
-											field.getName(), uiTypeName);
 									component = initTextField();
 								} else if (isCheckBoxType(field)) {
-									String uiTypeName = getUITypeName(field
-											.getType());
 									createEditor(parentConfigNode,
-											field.getName(), uiTypeName);
+											field.getType(), field.getName());
 									component = initCheckBox();
 								} else if (isEnumType(field)) {
-									String uiTypeName = getUITypeName(field
-											.getType());
 									createEditor(parentConfigNode,
-											field.getName(), uiTypeName);
+											field.getType(), field.getName());
 									component = initEnumComboBox(field);
 								}
 								ConfigDescription uiDesc = field
@@ -150,28 +146,14 @@ public class ConfigView extends TuneTab {
 									}
 								}
 							} else {
-								createEditor(parentConfigNode,
-										String.valueOf(configNode),
-										"NoParameter");
+								createEditor(parentConfigNode, null,
+										String.valueOf(configNode));
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
 					parent.repaint();
-				}
-
-				private void removeOldEditor() {
-					if (parent.getComponentCount() > 1
-							&& parent.getComponent(0) != null) {
-						JComponent oldEditor = (JComponent) parent
-								.getComponent(0);
-						parent.remove(oldEditor);
-						oldEditor.setToolTipText(swix.getLocalizer().getString(
-								"NO_TOOLTIP"));
-					}
-					description.setText(swix.getLocalizer()
-							.getString("NO_DESC"));
 				}
 
 				private boolean isEnumType(Field field) {
@@ -209,69 +191,28 @@ public class ConfigView extends TuneTab {
 					return checkbox;
 				}
 
-				@SuppressWarnings({ "rawtypes", "unchecked" })
+				@SuppressWarnings({ "rawtypes" })
 				private JComponent initEnumComboBox(Field field) {
-					ActionListener[] actionListeners = combo
-							.getActionListeners();
-					for (ActionListener actionListener : actionListeners) {
-						combo.removeActionListener(actionListener);
-					}
-					combo.addItem(null);
-					Class<? extends Enum> en = (Class<? extends Enum>) field
-							.getType();
-					for (Enum val : en.getEnumConstants()) {
-						combo.addItem(val);
-					}
 					combo.setSelectedItem(configNode.getValue() != null ? (Enum) configNode
 							.getValue() : null);
-					for (ActionListener actionListener : actionListeners) {
-						combo.addActionListener(actionListener);
-					}
 					return combo;
 				}
 
 				private void createEditor(TreeNode parentConfigNode,
-						String fieldName, String uiTypeName) throws Exception {
+						Class<?> type, String fieldName) throws Exception {
+					editor = editorUtils.render(type);
+					editor.setBorder(new TitledBorder(fieldName));
 					String category = parentConfigNode != null ? parentConfigNode
 							.toString() : "";
 					parent.setBorder(new TitledBorder(category));
-					JComponent editor = (JComponent) swix
-							.render(ConfigView.class.getResource("editors/"
-									+ uiTypeName + ".xml"));
-					editor.setBorder(new TitledBorder(fieldName));
-					parent.add(editor, 0);
+					parent.setLayout(new GridBagLayout());
+					GridBagConstraints gbc = new GridBagConstraints();
+					gbc.weightx = 1;
+					gbc.weighty = 1;
+					gbc.fill = GridBagConstraints.BOTH;
+					parent.add(editor, gbc);
 				}
 
-				private String getUITypeName(Class<?> fieldType) {
-					if (fieldType == String.class) {
-						return String.class.getSimpleName();
-					} else if (fieldType == Short.class
-							|| fieldType == short.class) {
-						return Short.class.getSimpleName();
-					} else if (fieldType == Integer.class
-							|| fieldType == int.class) {
-						return Integer.class.getSimpleName();
-					} else if (fieldType == Long.class
-							|| fieldType == long.class) {
-						return Long.class.getSimpleName();
-					} else if (fieldType == Boolean.class
-							|| fieldType == boolean.class) {
-						return Boolean.class.getSimpleName();
-					} else if (Enum.class.isAssignableFrom(fieldType)) {
-						return Enum.class.getSimpleName();
-					} else if (fieldType == Float.class
-							|| fieldType == float.class) {
-						return Float.class.getSimpleName();
-					} else if (fieldType == Character.class
-							|| fieldType == char.class) {
-						return Character.class.getSimpleName();
-					} else if (fieldType == File.class) {
-						return File.class.getSimpleName();
-					} else {
-						throw new RuntimeException("unsupported type: "
-								+ fieldType.getSimpleName());
-					}
-				}
 			});
 		} catch (Exception e) {
 			e.printStackTrace();

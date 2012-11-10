@@ -1,13 +1,13 @@
-package applet.config.editors;
+package applet.editors;
 
 import javax.swing.JTextField;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-public class LongTextField extends JTextField {
+public class IntTextField extends JTextField {
 
-	public LongTextField() {
+	public IntTextField() {
 		setDocument(new IntTextDocument());
 	}
 
@@ -21,7 +21,7 @@ public class LongTextField extends JTextField {
 			String newString = oldString.substring(0, offs) + str
 					+ oldString.substring(offs);
 			try {
-				Long.parseLong(newString + "0");
+				Integer.parseInt(newString + "0");
 				super.insertString(offs, str, a);
 			} catch (NumberFormatException e) {
 			}

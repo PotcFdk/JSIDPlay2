@@ -1,0 +1,5 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- String Configuration -->
+<hbox bundle="applet.editors.EditorsTexts">
+	<longtextfield columns="20" id="textField" action="doSetValue" />
+</hbox>

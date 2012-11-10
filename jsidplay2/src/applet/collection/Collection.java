@@ -64,14 +64,9 @@ import applet.collection.search.SearchInIndexThread;
 import applet.collection.search.SearchIndexCreator;
 import applet.collection.search.SearchIndexerThread;
 import applet.collection.search.SearchThread;
-import applet.config.ConfigView;
-import applet.config.editors.CharTextField;
-import applet.config.editors.FloatTextField;
-import applet.config.editors.IntTextField;
-import applet.config.editors.LongTextField;
-import applet.config.editors.ShortTextField;
-import applet.config.editors.YearTextField;
 import applet.download.DownloadThread;
+import applet.editors.EditorUtils;
+import applet.editors.YearTextField;
 import applet.entities.PersistenceProperties;
 import applet.entities.collection.HVSCEntry;
 import applet.entities.collection.HVSCEntry_;
@@ -344,7 +339,7 @@ public abstract class Collection extends TuneTab implements
 	/**
 	 * XML based Swing support
 	 */
-	private SwingEngine swix, swixSearchEditor;
+	private SwingEngine swix;
 
 	protected JCheckBox autoConfiguration;
 	protected JTable tuneInfoTable;
@@ -358,6 +353,7 @@ public abstract class Collection extends TuneTab implements
 	protected JTextField collectionDir;
 	protected JLinkButton linkCollectionURL;
 
+	private EditorUtils editorUtils;
 	protected JTextField textField;
 	protected JCheckBox checkbox;
 	protected JComboBox<Enum<?>> combo;
@@ -510,6 +506,7 @@ public abstract class Collection extends TuneTab implements
 	}
 
 	protected void createContents() {
+		editorUtils = new EditorUtils(this);
 		try {
 			swix = new SwingEngine(this);
 			swix.getTaglib().registerTag("tuneinfotable", TuneInfoTable.class);
@@ -517,20 +514,6 @@ public abstract class Collection extends TuneTab implements
 			swix.getTaglib().registerTag("nicebutton", JNiceButton.class);
 			swix.getTaglib().registerTag("link", JLinkButton.class);
 			swix.insert(Collection.class.getResource("Collection.xml"), this);
-
-			swixSearchEditor = new SwingEngine(this);
-			swixSearchEditor.getTaglib().registerTag("shorttextfield",
-					ShortTextField.class);
-			swixSearchEditor.getTaglib().registerTag("inttextfield",
-					IntTextField.class);
-			swixSearchEditor.getTaglib().registerTag("longtextfield",
-					LongTextField.class);
-			swixSearchEditor.getTaglib().registerTag("floattextfield",
-					FloatTextField.class);
-			swixSearchEditor.getTaglib().registerTag("chartextfield",
-					CharTextField.class);
-			swixSearchEditor.getTaglib().registerTag("yeartextfield",
-					YearTextField.class);
 
 			fillComboBoxes();
 			setDefaultsAndActions();
@@ -566,17 +549,9 @@ public abstract class Collection extends TuneTab implements
 					int selectedIndex = searchCriteria.getSelectedIndex();
 					if (selectedIndex != -1) {
 						searchParent.removeAll();
-						Class<?> fieldType = getSelectedField().getJavaType();
-						String uiTypeName = getUITypeName(fieldType);
-						try {
-							createEditor(searchParent, uiTypeName);
-							if (Enum.class.isAssignableFrom(fieldType)) {
-								initEnumComboBox(fieldType);
-							}
-							setSearchValue();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+						JComponent editor = editorUtils
+								.render(getSelectedField().getJavaType());
+						searchParent.add(editor);
 					}
 				}
 			});
@@ -834,57 +809,6 @@ public abstract class Collection extends TuneTab implements
 				StilEntry_.stilArtist));
 		searchCriteria.addItem(new SearchCriteria<StilEntry, String>(
 				StilEntry_.stilComment));
-	}
-
-	private String getUITypeName(Class<?> fieldType) {
-		if (fieldType == String.class) {
-			return String.class.getSimpleName();
-		} else if (fieldType == Short.class || fieldType == short.class) {
-			return Short.class.getSimpleName();
-		} else if (fieldType == Integer.class || fieldType == int.class) {
-			return Integer.class.getSimpleName();
-		} else if (fieldType == Long.class || fieldType == long.class) {
-			return Long.class.getSimpleName();
-		} else if (fieldType == Boolean.class || fieldType == boolean.class) {
-			return Boolean.class.getSimpleName();
-		} else if (Enum.class.isAssignableFrom(fieldType)) {
-			return Enum.class.getSimpleName();
-		} else if (fieldType == Float.class || fieldType == float.class) {
-			return Float.class.getSimpleName();
-		} else if (fieldType == Character.class || fieldType == char.class) {
-			return Character.class.getSimpleName();
-		} else if (fieldType == File.class) {
-			return File.class.getSimpleName();
-		} else if (fieldType == Date.class) {
-			return "Year";
-		} else {
-			throw new RuntimeException("unsupported type: "
-					+ fieldType.getSimpleName());
-		}
-	}
-
-	private void createEditor(JComponent parent, String uiTypeName)
-			throws Exception {
-		JComponent editor = (JComponent) swixSearchEditor
-				.render(ConfigView.class.getResource("editors/" + uiTypeName
-						+ ".xml"));
-		parent.add(editor, 0);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private JComponent initEnumComboBox(Class<?> cls) {
-		ActionListener[] actionListeners = combo.getActionListeners();
-		for (ActionListener actionListener : actionListeners) {
-			combo.removeActionListener(actionListener);
-		}
-		Class<? extends Enum> en = (Class<? extends Enum>) cls;
-		for (Enum val : en.getEnumConstants()) {
-			combo.addItem(val);
-		}
-		for (ActionListener actionListener : actionListeners) {
-			combo.addActionListener(actionListener);
-		}
-		return combo;
 	}
 
 	private void setSearchValue() {

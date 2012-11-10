@@ -1,0 +1,6 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- String Configuration -->
+<hbox bundle="applet.editors.EditorsTexts">
+	<textfield columns="20" id="textField" action="doSetValue" />
+	<button text="BROWSE" icon="applet/icons/browse.png" action="doBrowse" />
+</hbox>

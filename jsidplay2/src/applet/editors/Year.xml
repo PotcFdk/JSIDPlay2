@@ -1,0 +1,5 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- Year Configuration -->
+<hbox bundle="applet.editors.EditorsTexts">
+	<yeartextfield id="spinner" action="doSetValue" />
+</hbox>

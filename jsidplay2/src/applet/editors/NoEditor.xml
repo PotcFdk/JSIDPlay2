@@ -1,0 +1,5 @@
+<!-- http://www.swixml.org - Swing UI XML based -->
+<!-- String Configuration -->
+<hbox bundle="applet.editors.EditorsTexts">
+	<textfield Editable="false" text="NO_EDITOR" />
+</hbox>

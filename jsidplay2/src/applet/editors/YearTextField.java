@@ -1,4 +1,4 @@
-package applet.config.editors;
+package applet.editors;
 
 import java.awt.event.ActionEvent;
 import java.text.ParseException;
