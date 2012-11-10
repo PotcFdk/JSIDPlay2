@@ -2,6 +2,6 @@
 <!-- String Configuration -->
 <panel layout="BorderLayout" bundle="applet.config.ConfigTexts">
 	<hbox constraints="BorderLayout.NORTH">
-		<combobox id="combo" action="doSetEnum"/>
+		<combobox id="combo" action="doSetValue"/>
 	</hbox>
 </panel>

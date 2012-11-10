@@ -2,6 +2,6 @@
 <!-- String Configuration -->
 <panel layout="BorderLayout" bundle="applet.config.ConfigTexts">
 	<hbox constraints="BorderLayout.NORTH">
-		<checkbox id="checkbox" action="doSetBoolean"/>
+		<checkbox id="checkbox" action="doSetValue"/>
 	</hbox>
 </panel>

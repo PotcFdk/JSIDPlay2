@@ -481,46 +481,7 @@ public abstract class Collection extends TuneTab implements
 		}
 	};
 
-	public Action doSetYear = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			setSearchValue();
-			if (!searchForValue.equals(recentlySearchedForValue)) {
-				searchOptionsChanged = true;
-				recentlySearchedForValue = searchForValue;
-			}
-			startSearch(false);
-		}
-	};
-
 	public Action doSetValue = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			setSearchValue();
-			if (!searchForValue.equals(recentlySearchedForValue)) {
-				searchOptionsChanged = true;
-				recentlySearchedForValue = searchForValue;
-			}
-			startSearch(false);
-		}
-	};
-
-	public Action doSetBoolean = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			setSearchValue();
-			if (!searchForValue.equals(recentlySearchedForValue)) {
-				searchOptionsChanged = true;
-				recentlySearchedForValue = searchForValue;
-			}
-			startSearch(false);
-		}
-	};
-
-	public Action doSetEnum = new AbstractAction() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

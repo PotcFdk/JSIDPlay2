@@ -284,55 +284,40 @@ public class ConfigView extends TuneTab {
 		public void actionPerformed(ActionEvent e) {
 			if (configNode.getUserObject() instanceof Field) {
 				Field field = (Field) configNode.getUserObject();
-				String value = textField.getText();
 				if (field.getType() == String.class) {
-					configNode.setValue(value);
+					configNode.setValue(textField.getText());
+				} else if (Enum.class.isAssignableFrom(field.getType())) {
+					configNode.setValue((Enum<?>) combo.getSelectedItem());
+				} else if (field.getType() == Boolean.class
+						|| field.getType() == boolean.class) {
+					configNode.setValue(checkbox.isSelected());
 				} else if (field.getType() == Short.class
 						|| field.getType() == short.class) {
-					configNode.setValue(Short.valueOf(value).shortValue());
+					configNode.setValue(Short.valueOf(textField.getText())
+							.shortValue());
 				} else if (field.getType() == Integer.class
 						|| field.getType() == int.class) {
-					configNode.setValue(Integer.valueOf(value).intValue());
+					configNode.setValue(Integer.valueOf(textField.getText())
+							.intValue());
 				} else if (field.getType() == Long.class
 						|| field.getType() == long.class) {
-					configNode.setValue(Long.valueOf(value).longValue());
+					configNode.setValue(Long.valueOf(textField.getText())
+							.longValue());
 				} else if (field.getType() == Float.class
 						|| field.getType() == float.class) {
-					configNode.setValue(Float.valueOf(value).floatValue());
+					configNode.setValue(Float.valueOf(textField.getText())
+							.floatValue());
 				} else if (field.getType() == Character.class
 						|| field.getType() == char.class) {
 					final char ch;
-					if (value == null || value.length() == 0) {
+					if (textField.getText() == null
+							|| textField.getText().length() == 0) {
 						ch = (char) 0;
 					} else {
-						ch = value.charAt(0);
+						ch = textField.getText().charAt(0);
 					}
 					configNode.setValue(Character.valueOf(ch).charValue());
 				}
-				update();
-			}
-		}
-	};
-
-	public Action doSetBoolean = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (configNode.getUserObject() instanceof Field) {
-				Boolean value = checkbox.isSelected();
-				configNode.setValue(Boolean.valueOf(value).booleanValue());
-				update();
-			}
-		}
-	};
-
-	public Action doSetEnum = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (configNode.getUserObject() instanceof Field) {
-				Enum<?> value = (Enum<?>) combo.getSelectedItem();
-				configNode.setValue(value);
 				update();
 			}
 		}

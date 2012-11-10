@@ -2,6 +2,6 @@
 <!-- Year Configuration -->
 <panel layout="BorderLayout" bundle="applet.config.ConfigTexts">
 	<hbox constraints="BorderLayout.NORTH">
-		<yeartextfield id="spinner" action="doSetYear"/>
+		<yeartextfield id="spinner" action="doSetValue"/>
 	</hbox>
 </panel>
