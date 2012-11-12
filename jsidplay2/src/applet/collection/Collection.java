@@ -51,6 +51,7 @@ import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
 import libsidutils.STIL.STILEntry;
+import libsidutils.zip.ZipFileProxy;
 
 import org.swixml.SwingEngine;
 
@@ -910,7 +911,7 @@ public abstract class Collection extends TuneTab implements
 		final Object pathComponent = treePath.getLastPathComponent();
 		if (pathComponent instanceof File) {
 			final File file = (File) pathComponent;
-			if (file.isFile()) {
+			if (file.isFile() && !(file instanceof ZipFileProxy)) {
 				TuneInfoTableModel tuneInfoModel = (TuneInfoTableModel) tuneInfoTable
 						.getModel();
 				tuneInfoModel.setFile(file);

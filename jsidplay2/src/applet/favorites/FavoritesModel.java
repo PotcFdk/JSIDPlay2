@@ -2,6 +2,7 @@ package applet.favorites;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
@@ -73,61 +74,9 @@ public class FavoritesModel extends DefaultTableModel {
 	public Object getValueAt(int row, int column) {
 		SingularAttribute<?, ?> field = propertyIndices.get(column);
 		HVSCEntry entry = favorite.getFavorites().get(row);
-		if (field == HVSCEntry_.path) {
-			return entry.getPath();
-		} else if (field == HVSCEntry_.title) {
-			return entry.getTitle();
-		} else if (field == HVSCEntry_.author) {
-			return entry.getAuthor();
-		} else if (field == HVSCEntry_.released) {
-			return entry.getReleased();
-		} else if (field == HVSCEntry_.format) {
-			return entry.getFormat();
-		} else if (field == HVSCEntry_.playerId) {
-			return entry.getPlayerId();
-		} else if (field == HVSCEntry_.noOfSongs) {
-			return entry.getNoOfSongs();
-		} else if (field == HVSCEntry_.startSong) {
-			return entry.getStartSong();
-		} else if (field == HVSCEntry_.clockFreq) {
-			return entry.getClockFreq();
-		} else if (field == HVSCEntry_.speed) {
-			return entry.getSpeed();
-		} else if (field == HVSCEntry_.sidModel1) {
-			return entry.getSidModel1();
-		} else if (field == HVSCEntry_.sidModel2) {
-			return entry.getSidModel2();
-		} else if (field == HVSCEntry_.compatibility) {
-			return entry.getCompatibility();
-		} else if (field == HVSCEntry_.tuneLength) {
-			return entry.getTuneLength();
-		} else if (field == HVSCEntry_.audio) {
-			return entry.getAudio();
-		} else if (field == HVSCEntry_.sidChipBase1) {
-			return entry.getSidChipBase1();
-		} else if (field == HVSCEntry_.sidChipBase2) {
-			return entry.getSidChipBase2();
-		} else if (field == HVSCEntry_.driverAddress) {
-			return entry.getDriverAddress();
-		} else if (field == HVSCEntry_.loadAddress) {
-			return entry.getLoadAddress();
-		} else if (field == HVSCEntry_.loadLength) {
-			return entry.getLoadLength();
-		} else if (field == HVSCEntry_.initAddress) {
-			return entry.getInitAddress();
-		} else if (field == HVSCEntry_.playerAddress) {
-			return entry.getPlayerAddress();
-		} else if (field == HVSCEntry_.fileDate) {
-			return entry.getFileDate();
-		} else if (field == HVSCEntry_.fileSizeKb) {
-			return entry.getFileSizeKb();
-		} else if (field == HVSCEntry_.tuneSizeB) {
-			return entry.getTuneSizeB();
-		} else if (field == HVSCEntry_.relocStartPage) {
-			return entry.getRelocStartPage();
-		} else if (field == HVSCEntry_.relocNoPages) {
-			return entry.getRelocNoPages();
-		} else {
+		try {
+			return ((Field) field.getJavaMember()).get(entry);
+		} catch (Exception e) {
 			return entry.getPath();
 		}
 	}
