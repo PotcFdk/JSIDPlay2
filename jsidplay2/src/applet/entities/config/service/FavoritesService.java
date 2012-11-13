@@ -3,7 +3,6 @@ package applet.entities.config.service;
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.SingularAttribute;
 
-import sidplay.ini.intf.IFavoritesSection;
 import applet.entities.config.FavoriteColumn;
 import applet.entities.config.FavoritesSection;
 
@@ -14,9 +13,9 @@ public class FavoritesService {
 		this.em = em;
 	}
 
-	public void addColumn(IFavoritesSection favorite,
+	public void addColumn(FavoritesSection favorite,
 			SingularAttribute<?, ?> field) {
-		FavoritesSection favoritesSection = ((FavoritesSection) favorite);
+		FavoritesSection favoritesSection = (favorite);
 		FavoriteColumn column = new FavoriteColumn();
 		column.setColumnProperty(field.getJavaMember().getName());
 		column.setFavoritesSection(favoritesSection);
@@ -24,9 +23,9 @@ public class FavoritesService {
 		em.persist(column);
 	}
 
-	public void removeColumn(IFavoritesSection favorite,
+	public void removeColumn(FavoritesSection favorite,
 			SingularAttribute<?, ?> field) {
-		FavoritesSection favoritesSection = ((FavoritesSection) favorite);
+		FavoritesSection favoritesSection = (favorite);
 		for (FavoriteColumn column : favoritesSection.getColumns()) {
 			if (column.getColumnProperty().equals(
 					field.getJavaMember().getName())) {

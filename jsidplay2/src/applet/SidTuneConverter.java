@@ -6,10 +6,11 @@ import java.io.IOException;
 import javax.swing.filechooser.FileFilter;
 
 import libpsid64.Psid64;
+import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
 import libsidutils.pucrunch.PUCrunch;
-import sidplay.ini.intf.IConfig;
+import applet.entities.config.Configuration;
 import applet.filefilter.TuneFileFilter;
 
 public class SidTuneConverter {
@@ -18,9 +19,9 @@ public class SidTuneConverter {
 	 */
 	private final FileFilter fFileFilter = new TuneFileFilter();
 
-	protected IConfig config;
+	protected Configuration config;
 
-	public SidTuneConverter(IConfig cfg) {
+	public SidTuneConverter(Configuration cfg) {
 		config = cfg;
 	}
 
@@ -76,7 +77,8 @@ public class SidTuneConverter {
 	}
 
 	private STILEntry getSTIL(final File file) {
-		final String name = PathUtils.getHVSCName(config, file);
+		final String name = PathUtils.getHVSCName(config.getSidplay2()
+				.getHvsc(), file);
 		if (null != name) {
 			STIL stil = STIL.getInstance(config.getSidplay2().getHvsc());
 			if (stil != null) {

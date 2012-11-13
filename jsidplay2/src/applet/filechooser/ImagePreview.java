@@ -28,8 +28,8 @@ import libsidutils.zip.ZipEntryFileProxy;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.intf.IConfig;
 import applet.JSIDPlay2;
+import applet.entities.config.Configuration;
 
 public class ImagePreview extends JPanel implements PropertyChangeListener {
 	/**
@@ -80,7 +80,7 @@ public class ImagePreview extends JPanel implements PropertyChangeListener {
 	protected JScrollPane scrollPane;
 	protected JTable directory;
 
-	private IConfig config;
+	private Configuration config;
 
 	/**
 	 * File to preview.
@@ -157,7 +157,7 @@ public class ImagePreview extends JPanel implements PropertyChangeListener {
 		}
 	}
 
-	public void setConfig(final IConfig config) {
+	public void setConfig(final Configuration config) {
 		this.config = config;
 	}
 

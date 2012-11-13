@@ -8,9 +8,9 @@ import javax.swing.table.AbstractTableModel;
 
 import org.swixml.Localizer;
 
-import sidplay.ini.intf.IConfig;
 import applet.entities.collection.HVSCEntry;
 import applet.entities.collection.HVSCEntry_;
+import applet.entities.config.Configuration;
 
 public final class TuneInfoTableModel extends AbstractTableModel {
 
@@ -22,9 +22,9 @@ public final class TuneInfoTableModel extends AbstractTableModel {
 		this.author = entry.getAuthor();
 	}
 
-	private IConfig config;
+	private Configuration config;
 
-	public void setConfig(IConfig config) {
+	public void setConfig(Configuration config) {
 		this.config = config;
 	}
 

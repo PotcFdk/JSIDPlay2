@@ -9,8 +9,6 @@ public interface IConfig {
 
 	ISidPlay2Section getSidplay2();
 
-	IOnlineSection getOnline();
-
 	IC1541Section getC1541();
 
 	IPrinterSection getPrinter();
@@ -22,12 +20,6 @@ public interface IConfig {
 	IAudioSection getAudio();
 
 	IEmulationSection getEmulation();
-
-	String getCurrentFavorite();
-
-	void setCurrentFavorite(String currentFavorite);
-
-	List<? extends IFavoritesSection> getFavorites();
 
 	List<? extends IFilterSection> getFilter();
 

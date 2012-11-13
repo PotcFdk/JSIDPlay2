@@ -34,12 +34,12 @@ import libsidplay.sidtune.SidTune;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.intf.IConfig;
 import applet.TuneTab;
 import applet.collection.Picture;
 import applet.download.DownloadThread;
 import applet.download.IDownloadListener;
 import applet.entities.PersistenceProperties;
+import applet.entities.config.Configuration;
 import applet.entities.gamebase.Games;
 import applet.entities.gamebase.service.ConfigService;
 import applet.entities.gamebase.service.GamesService;
@@ -106,7 +106,7 @@ public class GameBase extends TuneTab {
 	/**
 	 * INI settings.
 	 */
-	public IConfig config;
+	public Configuration config;
 
 	/**
 	 * C64 environment.
@@ -185,7 +185,7 @@ public class GameBase extends TuneTab {
 		}
 	};
 
-	public GameBase(Player player, IConfig config) {
+	public GameBase(Player player, Configuration config) {
 		this.config = config;
 		this.player = player;
 		try {

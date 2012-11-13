@@ -23,8 +23,9 @@ import java.util.Properties;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
-import sidplay.ini.intf.IConfig;
-import applet.PathUtils;
+import libsidutils.PathUtils;
+
+import applet.entities.config.Configuration;
 
 /**
  * DownloadManager downloads a large file from a server. If the file is splitted
@@ -64,13 +65,13 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	public static final int MAX_BUFFER_SIZE = 1 << 20;
 	private static final int MAX_TRY_COUNT = 3;
 
-	private final IConfig config;
+	private final Configuration config;
 	private final URL url;
 	private final IDownloadListener listener;
 
 	private Proxy proxy;
 
-	public DownloadThread(IConfig cfg, IDownloadListener listener, URL url) {
+	public DownloadThread(Configuration cfg, IDownloadListener listener, URL url) {
 		this.config = cfg;
 		this.url = url;
 		this.listener = listener;

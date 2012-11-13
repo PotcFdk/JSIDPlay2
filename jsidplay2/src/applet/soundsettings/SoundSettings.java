@@ -30,6 +30,7 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.ISID2Types;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
+import libsidutils.PathUtils;
 
 import org.swixml.SwingEngine;
 import org.swixml.XDialog;
@@ -41,10 +42,9 @@ import sidplay.ConsolePlayer.OUTPUTS;
 import sidplay.ConsolePlayer.SIDEMUS;
 import sidplay.audio.CmpMP3File;
 import sidplay.ini.IniReader;
-import sidplay.ini.intf.IConfig;
-import applet.PathUtils;
 import applet.download.DownloadThread;
 import applet.download.IDownloadListener;
+import applet.entities.config.Configuration;
 import applet.events.IMadeProgress;
 import applet.events.IReplayTune;
 import applet.events.IUpdateUI;
@@ -57,7 +57,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		UIEventListener {
 	protected ConsolePlayer consolePl;
 	protected Player player;
-	protected IConfig config;
+	protected Configuration config;
 
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 	private SwingEngine swix;
@@ -297,7 +297,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		}
 	};
 
-	public SoundSettings(ConsolePlayer cp, Player pl, IConfig cfg) {
+	public SoundSettings(ConsolePlayer cp, Player pl, Configuration cfg) {
 		this.consolePl = cp;
 		this.player = pl;
 		this.config = cfg;
@@ -455,8 +455,8 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 			return;
 		}
 		final SidTuneInfo tuneInfo = sidTuneMod.getInfo();
-		final String name = PathUtils.getHVSCName(config,
-				sidTuneMod.getInfo().file);
+		final String name = PathUtils.getHVSCName(config.getSidplay2()
+				.getHvsc(), sidTuneMod.getInfo().file);
 		if (name != null) {
 			hvscName = name.replace(".sid", "");
 			currentSong = tuneInfo.currentSong;

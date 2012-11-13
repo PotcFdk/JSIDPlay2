@@ -34,7 +34,6 @@ import libsidplay.sidtune.SidTune;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.intf.IConfig;
 import applet.TuneTab;
 import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigField;
@@ -60,7 +59,7 @@ public class ConfigView extends TuneTab {
 
 	private JComponent editor;
 
-	private IConfig config;
+	private Configuration config;
 	protected File lastDir;
 	protected FileFilter configFilter = new ConfigFileFilter();
 
@@ -71,7 +70,7 @@ public class ConfigView extends TuneTab {
 
 	protected int fileChooserFilter;
 
-	public ConfigView(EntityManager em, Player player, IConfig config) {
+	public ConfigView(EntityManager em, Player player, Configuration config) {
 		this.config = config;
 		editorUtils = new EditorUtils(this);
 		try {
@@ -279,8 +278,7 @@ public class ConfigView extends TuneTab {
 				File file = fileDialog.getSelectedFile();
 				JOptionPane.showMessageDialog(ConfigView.this, swix
 						.getLocalizer().getString("PLEASE_RESTART"));
-				((Configuration) config).setReconfigFilename(file
-						.getAbsolutePath());
+				config.setReconfigFilename(file.getAbsolutePath());
 			}
 		}
 	};

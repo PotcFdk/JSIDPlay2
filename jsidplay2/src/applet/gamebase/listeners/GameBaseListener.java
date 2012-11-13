@@ -8,16 +8,16 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import sidplay.ini.intf.IConfig;
+import applet.entities.config.Configuration;
 import applet.gamebase.GameBase;
 import applet.gamebase.GameBasePage;
 
 public class GameBaseListener extends ProgressListener {
 
 	private final GameBase gameBase;
-	private IConfig config;
+	private Configuration config;
 
-	public GameBaseListener(GameBase gameBase, IConfig config) {
+	public GameBaseListener(GameBase gameBase, Configuration config) {
 		this.gameBase = gameBase;
 		this.config = config;
 	}

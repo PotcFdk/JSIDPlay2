@@ -13,14 +13,14 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import resid_builder.resid.FilterModelConfig;
-import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFilterSection;
+import applet.entities.config.Configuration;
 import applet.events.IChangeFilter;
 import applet.events.UIEvent;
 import applet.events.UIEventListener;
 
 public class CurveFit extends JPanel implements UIEventListener {
-	protected IConfig config;
+	protected Configuration config;
 
 	private static final int XMIN = 0;
 	private static final int XMAX = 2048;
@@ -41,7 +41,7 @@ public class CurveFit extends JPanel implements UIEventListener {
 	public CurveFit() {
 	}
 
-	public final void setConfig(IConfig cfg) {
+	public final void setConfig(Configuration cfg) {
 		this.config = cfg;
 	}
 

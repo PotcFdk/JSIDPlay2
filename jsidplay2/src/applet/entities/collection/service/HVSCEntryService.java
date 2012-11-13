@@ -17,9 +17,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
-import sidplay.ini.intf.IConfig;
 import applet.entities.collection.HVSCEntry;
 import applet.entities.collection.StilEntry;
+import applet.entities.config.Configuration;
 
 public class HVSCEntryService {
 
@@ -62,7 +62,7 @@ public class HVSCEntryService {
 		this.stilService = new STILService(em);
 	};
 
-	public HVSCEntry add(final IConfig config, final String path,
+	public HVSCEntry add(final Configuration config, final String path,
 			final File tuneFile) throws IOException {
 		HVSCEntry hvscEntry = HVSCEntry.create(config, path, tuneFile);
 

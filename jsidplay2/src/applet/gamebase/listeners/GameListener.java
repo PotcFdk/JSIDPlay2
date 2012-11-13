@@ -13,7 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import libsidplay.Player;
-import sidplay.ini.intf.IConfig;
+import applet.entities.config.Configuration;
 import applet.events.IInsertMedia;
 import applet.events.Reset;
 
@@ -22,14 +22,14 @@ public class GameListener extends ProgressListener {
 	private String fileToRun;
 	protected Component parent;
 	protected Player player;
-	protected IConfig config;
+	protected Configuration config;
 
 	/**
 	 * Last downloaded game file.
 	 */
 	public List<File> lastMedia = new ArrayList<File>();
 
-	public GameListener(Component parent, Player player, IConfig config) {
+	public GameListener(Component parent, Player player, Configuration config) {
 		this.parent = parent;
 		this.config = config;
 		this.player = player;

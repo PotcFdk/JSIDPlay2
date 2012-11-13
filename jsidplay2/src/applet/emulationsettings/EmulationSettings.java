@@ -26,8 +26,8 @@ import resid_builder.ReSID;
 import resid_builder.resid.ISIDDefs.ChipModel;
 import resid_builder.resid.SID;
 import sidplay.ConsolePlayer;
-import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFilterSection;
+import applet.entities.config.Configuration;
 import applet.events.IChangeFilter;
 import applet.events.IReplayTune;
 import applet.events.UIEvent;
@@ -50,7 +50,7 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 
 	protected ConsolePlayer consolePl;
 	protected Player player;
-	protected IConfig config;
+	protected Configuration config;
 
 	public Action setSid1Model = new AbstractAction() {
 
@@ -138,7 +138,7 @@ public class EmulationSettings extends XDialog implements ChangeListener,
 		}
 	};
 
-	public EmulationSettings(ConsolePlayer cp, Player pl, IConfig cfg) {
+	public EmulationSettings(ConsolePlayer cp, Player pl, Configuration cfg) {
 		this.consolePl = cp;
 		this.player = pl;
 		this.config = cfg;

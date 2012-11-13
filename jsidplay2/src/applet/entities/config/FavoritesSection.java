@@ -16,7 +16,6 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import sidplay.ini.intf.IFavoritesSection;
 import applet.config.annotations.ConfigClass;
 import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigMethod;
@@ -25,7 +24,7 @@ import applet.entities.collection.HVSCEntry;
 
 @Entity
 @ConfigClass(bundleKey = "FAVORITE")
-public class FavoritesSection implements IFavoritesSection {
+public class FavoritesSection {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -46,12 +45,10 @@ public class FavoritesSection implements IFavoritesSection {
 	@ConfigDescription(descriptionKey = "FAVORITES_NAME_DESC", toolTipKey = "FAVORITES_NAME_TOOLTIP")
 	private String name;
 
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -79,7 +76,6 @@ public class FavoritesSection implements IFavoritesSection {
 		this.favorites = favorites;
 	}
 
-	@Override
 	@XmlTransient
 	@ConfigMethod(nameKey = "HVSC_ENTRIES")
 	public List<HVSCEntry> getFavorites() {

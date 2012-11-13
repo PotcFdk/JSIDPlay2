@@ -34,7 +34,7 @@ import org.swixml.XDialog;
 
 import sidplay.audio.AudioConfig;
 import sidplay.ini.IniReader;
-import sidplay.ini.intf.IConfig;
+import applet.entities.config.Configuration;
 import applet.events.IPlayTune;
 import applet.events.IStopTune;
 import applet.events.ITuneStateChanged;
@@ -56,7 +56,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 	protected libsidplay.Player player;
-	protected IConfig config;
+	protected Configuration config;
 	protected final SidTune tune;
 	protected libsidutils.SIDDump siddump = new libsidutils.SIDDump();
 	protected File fLastDir;
@@ -193,7 +193,7 @@ public class SIDDump extends XDialog implements UIEventListener {
 		}
 	};
 
-	public SIDDump(libsidplay.Player pl, IConfig cfg) {
+	public SIDDump(libsidplay.Player pl, Configuration cfg) {
 		this.player = pl;
 		this.config = cfg;
 		this.tune = pl.getTune();

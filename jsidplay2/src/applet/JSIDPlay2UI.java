@@ -54,13 +54,13 @@ import libsidutils.SidDatabase;
 import org.swixml.SwingEngine;
 
 import sidplay.ConsolePlayer;
-import sidplay.ini.intf.IConfig;
 import applet.collection.Collection;
 import applet.config.ConfigView;
 import applet.console.ConsoleView;
 import applet.demos.DiskCollection;
 import applet.disassembler.Disassembler;
 import applet.emulationsettings.EmulationSettings;
+import applet.entities.config.Configuration;
 import applet.events.IInsertMedia;
 import applet.events.IMadeProgress;
 import applet.events.IPlayTune;
@@ -152,7 +152,7 @@ public class JSIDPlay2UI implements UIEventListener {
 	/**
 	 * Configuration
 	 */
-	private IConfig config;
+	private Configuration config;
 	/**
 	 * Old disk motor state.
 	 */
@@ -167,7 +167,7 @@ public class JSIDPlay2UI implements UIEventListener {
 	protected ScreenRecorder screenRecorder;
 
 	public JSIDPlay2UI(final EntityManager em, final Container container,
-			final ConsolePlayer player, IConfig config) {
+			final ConsolePlayer player, Configuration config) {
 		this.parent = container;
 		this.cp = player;
 		this.config = config;
@@ -1420,8 +1420,8 @@ public class JSIDPlay2UI implements UIEventListener {
 		}
 	}
 
-	public IConfig getConfig() {
-		return cp.getConfig();
+	public Configuration getConfig() {
+		return config;
 	}
 
 	public Player getPlayer() {

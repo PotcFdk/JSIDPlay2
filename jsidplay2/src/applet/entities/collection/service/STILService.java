@@ -5,13 +5,13 @@ import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
 
+import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
-import sidplay.ini.intf.IConfig;
-import applet.PathUtils;
 import applet.entities.collection.HVSCEntry;
+import applet.entities.config.Configuration;
 
 public class STILService {
 
@@ -21,7 +21,7 @@ public class STILService {
 		this.em = em;
 	};
 
-	public void add(final IConfig config, final File tuneFile,
+	public void add(final Configuration config, final File tuneFile,
 			HVSCEntry hvscEntry) {
 		final STILEntry stilEntry = getSTIL(config, tuneFile);
 		if (stilEntry != null) {
@@ -36,8 +36,9 @@ public class STILService {
 		}
 	}
 
-	private STILEntry getSTIL(final IConfig config, final File tuneFile) {
-		final String name = PathUtils.getHVSCName(config, tuneFile);
+	private STILEntry getSTIL(final Configuration config, final File tuneFile) {
+		final String name = PathUtils.getHVSCName(config.getSidplay2()
+				.getHvsc(), tuneFile);
 		if (null != name) {
 			STIL stil = STIL.getInstance(config.getSidplay2().getHvsc());
 			if (stil != null) {

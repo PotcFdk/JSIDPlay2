@@ -1,4 +1,4 @@
-package applet;
+package libsidutils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +12,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import libsidutils.zip.ZipEntryFileProxy;
-import sidplay.ini.intf.IConfig;
 
 /**
  * This class provides a function used to generate a path name. JSIDPlay uses
@@ -25,13 +24,11 @@ import sidplay.ini.intf.IConfig;
 public class PathUtils {
 	private static final int COPY_FILE_BUFFER_SIZE = 1 << 20;
 
-	public static String getHVSCName(final IConfig config, final File file) {
-		String hvsc = config.getSidplay2().getHvsc();
+	public static String getHVSCName(final String hvsc, final File file) {
 		return getCollectionRelName(file, hvsc);
 	}
 
-	public static String getCGSCName(final IConfig config, final File file) {
-		String cgsc = config.getSidplay2().getCgsc();
+	public static String getCGSCName(final String cgsc, final File file) {
 		return getCollectionRelName(file, cgsc);
 	}
 

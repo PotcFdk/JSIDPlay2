@@ -3,7 +3,6 @@ package applet;
 import static sidplay.ConsolePlayer.playerExit;
 import static sidplay.ConsolePlayer.playerFast;
 import static sidplay.ConsolePlayer.playerRestart;
-import static sidplay.ini.intf.IConfig.REQUIRED_CONFIG_VERSION;
 
 import java.awt.Component;
 import java.awt.Desktop;
@@ -34,7 +33,6 @@ import libsidutils.zip.ZipEntryFileProxy;
 import org.swixml.SwingEngine;
 
 import sidplay.ConsolePlayer;
-import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.ISidPlay2Section;
 import applet.entities.PersistenceProperties;
 import applet.entities.config.Configuration;
@@ -67,6 +65,10 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * Console player
 	 */
 	protected final ConsolePlayer cp;
+	/**
+	 * Configuration
+	 */
+	private Configuration config;
 	/**
 	 * Console player thread.
 	 */
@@ -103,7 +105,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * Application constructor.
 	 */
 	public JSIDPlay2(final String[] args) {
-		IConfig config = getConfiguration();
+		config = getConfiguration();
 		initializeTmpDir(config);
 
 		uiEvents.addListener(this);
@@ -240,7 +242,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * 
 	 * @return the players configuration to be used
 	 */
-	private IConfig getConfiguration() {
+	private Configuration getConfiguration() {
 		File dbFile = getDbPath();
 		boolean dbFileExists = dbFile.exists();
 		em = Persistence.createEntityManagerFactory(
@@ -263,18 +265,20 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				config = configService.restore(config);
 			}
 			// Configuration version check
-			if (config.getSidplay2().getVersion() != REQUIRED_CONFIG_VERSION) {
+			if (config.getSidplay2().getVersion() != Configuration.REQUIRED_CONFIG_VERSION) {
 				// Wrong configuration version
 				if (shouldBeRestored) {
 					System.err.println("Imported configuration version "
 							+ config.getSidplay2().getVersion()
 							+ " is too old, expected version is "
-							+ REQUIRED_CONFIG_VERSION + ": Ignored!");
+							+ Configuration.REQUIRED_CONFIG_VERSION
+							+ ": Ignored!");
 				} else {
 					System.err.println("Configuration version "
 							+ config.getSidplay2().getVersion()
 							+ " is too old, expected version is "
-							+ REQUIRED_CONFIG_VERSION + ": Create a new one!");
+							+ Configuration.REQUIRED_CONFIG_VERSION
+							+ ": Create a new one!");
 					configService.remove(config);
 					return configService.create();
 				}
@@ -306,7 +310,7 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * 
 	 * @param config
 	 */
-	private void initializeTmpDir(IConfig config) {
+	private void initializeTmpDir(Configuration config) {
 		String tmpDirPath = config.getSidplay2().getTmpDir();
 		File tmpDir = new File(tmpDirPath);
 		if (!tmpDir.exists()) {
@@ -656,8 +660,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * 
 	 * @return INI file configuration
 	 */
-	public IConfig getConfig() {
-		return cp.getConfig();
+	public Configuration getConfig() {
+		return config;
 	}
 
 	/**

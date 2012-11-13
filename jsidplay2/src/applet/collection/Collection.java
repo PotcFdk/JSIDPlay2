@@ -50,14 +50,13 @@ import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
+import libsidutils.PathUtils;
 import libsidutils.STIL.STILEntry;
 import libsidutils.zip.ZipFileProxy;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.intf.IConfig;
 import applet.JSIDPlay2;
-import applet.PathUtils;
 import applet.SidTuneConverter;
 import applet.TuneTab;
 import applet.collection.search.ISearchListener;
@@ -74,6 +73,7 @@ import applet.entities.collection.HVSCEntry_;
 import applet.entities.collection.StilEntry;
 import applet.entities.collection.StilEntry_;
 import applet.entities.collection.service.VersionService;
+import applet.entities.config.Configuration;
 import applet.events.ICollectionChanged;
 import applet.events.ICollectionChanged.CollectionType;
 import applet.events.IGotoURL;
@@ -146,7 +146,7 @@ public abstract class Collection extends TuneTab implements
 
 	@SuppressWarnings("serial")
 	public static class HVSC extends Collection {
-		public HVSC(final Player pl, final IConfig cfg) {
+		public HVSC(final Player pl, final Configuration cfg) {
 			super(pl, cfg, "High Voltage SID Collection",
 					"http://www.hvsc.de/", "PLEASE_SELECT_HVSC", "HVSC");
 		}
@@ -221,7 +221,7 @@ public abstract class Collection extends TuneTab implements
 
 	@SuppressWarnings("serial")
 	public static class CGSC extends Collection {
-		public CGSC(final Player pl, final IConfig cfg) {
+		public CGSC(final Player pl, final Configuration cfg) {
 			super(pl, cfg, "Compute's Gazette Sid Collection",
 					"http://www.btinternet.com/~pweighill/music/",
 					"PLEASE_SELECT_CGSC", "CGSC");
@@ -361,7 +361,7 @@ public abstract class Collection extends TuneTab implements
 	protected YearTextField spinner;
 
 	protected Player player;
-	protected IConfig config;
+	protected Configuration config;
 
 	private EntityManager em;
 	private VersionService versionService;
@@ -491,7 +491,7 @@ public abstract class Collection extends TuneTab implements
 		}
 	};
 
-	public Collection(Player pl, IConfig cfg, final String title,
+	public Collection(Player pl, Configuration cfg, final String title,
 			final String sourceURL, final String message, final String dbName) {
 		this.player = pl;
 		this.config = cfg;
@@ -1106,7 +1106,8 @@ public abstract class Collection extends TuneTab implements
 	}
 
 	protected STILEntry getSTIL(final File file) {
-		final String name = PathUtils.getHVSCName(config, file);
+		final String name = PathUtils.getHVSCName(config.getSidplay2()
+				.getHvsc(), file);
 		if (null != name) {
 			libsidutils.STIL stil = libsidutils.STIL.getInstance(config
 					.getSidplay2().getHvsc());

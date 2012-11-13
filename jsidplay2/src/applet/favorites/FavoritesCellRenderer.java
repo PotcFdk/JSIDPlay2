@@ -10,11 +10,11 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import libsidplay.Player;
+import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
-import sidplay.ini.intf.IConfig;
 import applet.JSIDPlay2;
-import applet.PathUtils;
+import applet.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class FavoritesCellRenderer extends DefaultTableCellRenderer {
@@ -65,7 +65,8 @@ public class FavoritesCellRenderer extends DefaultTableCellRenderer {
 	}
 
 	private STILEntry getSTIL(final File file) {
-		final String name = PathUtils.getHVSCName(config, file);
+		final String name = PathUtils.getHVSCName(config.getSidplay2()
+				.getHvsc(), file);
 		if (null != name) {
 			STIL stil = STIL.getInstance(config.getSidplay2().getHvsc());
 			if (stil != null) {
@@ -76,7 +77,7 @@ public class FavoritesCellRenderer extends DefaultTableCellRenderer {
 	}
 
 	private Player player;
-	private IConfig config;
+	private Configuration config;
 	private FavoritesModel model;
 
 	public FavoritesCellRenderer(FavoritesModel dm) {
@@ -87,7 +88,7 @@ public class FavoritesCellRenderer extends DefaultTableCellRenderer {
 		this.player = player;
 	}
 
-	public void setConfig(IConfig config) {
+	public void setConfig(Configuration config) {
 		this.config = config;
 	}
 

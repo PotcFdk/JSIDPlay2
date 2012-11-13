@@ -11,16 +11,16 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import libsidutils.zip.ZipEntryFileProxy;
-import sidplay.ini.intf.IConfig;
+import applet.entities.config.Configuration;
 import applet.filechooser.zip.ZipFileSystemView;
 
 public class ImageFileChooser extends JFileChooser implements
 		PropertyChangeListener {
 
-	private IConfig config;
+	private Configuration config;
 	private File autostartFile;
 
-	public ImageFileChooser(final IConfig cfg, final FileFilter filter) {
+	public ImageFileChooser(final Configuration cfg, final FileFilter filter) {
 		super(cfg.getSidplay2().getLastDirectory(), new ZipFileSystemView());
 		this.config = cfg;
 		setFileFilter(filter);

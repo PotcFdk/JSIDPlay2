@@ -51,17 +51,17 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import libsidplay.Player;
+import libsidutils.PathUtils;
 import libsidutils.STIL.STILEntry;
 import libsidutils.zip.ZipEntryFileProxy;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IFavoritesSection;
-import applet.PathUtils;
 import applet.SidTuneConverter;
 import applet.dnd.FileDrop;
 import applet.entities.collection.HVSCEntry_;
+import applet.entities.config.Configuration;
+import applet.entities.config.FavoritesSection;
 import applet.events.IPlayTune;
 import applet.events.UIEventFactory;
 import applet.events.favorites.IFavoriteTabNames;
@@ -104,14 +104,14 @@ public class Favorites extends JPanel implements IFavorites {
 
 	protected final FavoritesView favoritesView;
 	protected Player player;
-	protected IConfig config;
+	protected Configuration config;
 
 	protected int headerColumnToRemove;
 	protected File lastDir;
 	protected Random randomPlayback = new Random();
 
-	public Favorites(Player pl, IConfig cfg, EntityManager em,
-			final FavoritesView favoritesView, IFavoritesSection favorite) {
+	public Favorites(Player pl, Configuration cfg, EntityManager em,
+			final FavoritesView favoritesView, FavoritesSection favorite) {
 		this.favoritesView = favoritesView;
 		this.player = pl;
 		this.config = cfg;
@@ -254,7 +254,8 @@ public class Favorites extends JPanel implements IFavorites {
 			private JPopupMenu tablePopup;
 
 			protected STILEntry getSTIL(final File file) {
-				final String name = PathUtils.getHVSCName(config, file);
+				final String name = PathUtils.getHVSCName(config.getSidplay2()
+						.getHvsc(), file);
 				if (null != name) {
 					libsidutils.STIL stil = libsidutils.STIL.getInstance(config
 							.getSidplay2().getHvsc());
@@ -653,12 +654,14 @@ public class Favorites extends JPanel implements IFavorites {
 	protected String createRelativePath(File fileToConvert) {
 		boolean converted = false;
 		String result = fileToConvert.getAbsolutePath();
-		String hvscName = PathUtils.getHVSCName(config, fileToConvert);
+		String hvscName = PathUtils.getHVSCName(config.getSidplay2().getHvsc(),
+				fileToConvert);
 		if (hvscName != null) {
 			result = FavoritesModel.HVSC_PREFIX + hvscName;
 			converted = true;
 		}
-		String cgscName = PathUtils.getCGSCName(config, fileToConvert);
+		String cgscName = PathUtils.getCGSCName(config.getSidplay2().getCgsc(),
+				fileToConvert);
 		if (!converted && cgscName != null) {
 			result = FavoritesModel.CGSC_PREFIX + cgscName;
 			converted = true;

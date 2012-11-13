@@ -22,7 +22,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import org.swixml.SwingEngine;
 import org.swixml.XDialog;
 
-import sidplay.ini.intf.IConfig;
+import applet.entities.config.Configuration;
 
 public class Disassembler extends XDialog {
 
@@ -34,9 +34,9 @@ public class Disassembler extends XDialog {
 	protected JScrollPane memorytablescrollPane;
 
 	protected Player player;
-	protected IConfig config;
+	protected Configuration config;
 
-	public Disassembler(final Player pl, final IConfig cfg) {
+	public Disassembler(final Player pl, final Configuration cfg) {
 		this.player = pl;
 		this.config = cfg;
 		try {

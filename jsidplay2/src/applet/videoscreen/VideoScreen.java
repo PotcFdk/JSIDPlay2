@@ -42,9 +42,9 @@ import libsidplay.sidtune.SidTune;
 import org.swixml.SwingEngine;
 
 import resid_builder.resid.ISIDDefs.ChipModel;
-import sidplay.ini.intf.IConfig;
 import applet.JSIDPlay2;
 import applet.TuneTab;
+import applet.entities.config.Configuration;
 import applet.events.IInsertMedia;
 import applet.events.IUpdateUI;
 import applet.events.UIEvent;
@@ -95,7 +95,7 @@ public class VideoScreen extends TuneTab {
 			offset, tint, blur, bleed;
 
 	protected Player player;
-	protected IConfig config;
+	protected Configuration config;
 
 	protected Keyboard keyboard;
 	protected int moveCounter, keyLocation;
@@ -377,7 +377,7 @@ public class VideoScreen extends TuneTab {
 				| InputEvent.CTRL_DOWN_MASK, true), "r" + name);
 	}
 
-	public VideoScreen(final Player pl, final IConfig cfg) {
+	public VideoScreen(final Player pl, final Configuration cfg) {
 		this.player = pl;
 		this.config = cfg;
 		this.keyboard = player.getC64().getKeyboard();

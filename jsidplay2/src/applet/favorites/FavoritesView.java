@@ -28,14 +28,14 @@ import javax.swing.filechooser.FileFilter;
 
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
+import libsidutils.PathUtils;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IFavoritesSection;
-import applet.PathUtils;
 import applet.TuneTab;
 import applet.collection.Collection;
+import applet.entities.config.Configuration;
+import applet.entities.config.FavoritesSection;
 import applet.entities.config.service.ConfigService;
 import applet.events.IPlayTune;
 import applet.events.ITuneStateChanged;
@@ -69,7 +69,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 	protected JRadioButton normal, randomOne, randomAll, repeatOne;
 
 	protected Player player;
-	protected IConfig config;
+	protected Configuration config;
 	protected Collection hvsc, cgsc;
 
 	protected File lastDir;
@@ -79,7 +79,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 	private EntityManager em;
 	private ConfigService configService;
 
-	public FavoritesView(EntityManager em, Player pl, IConfig cfg,
+	public FavoritesView(EntityManager em, Player pl, Configuration cfg,
 			Collection hvsc, Collection cgsc) {
 		this.player = pl;
 		this.config = cfg;
@@ -342,8 +342,8 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 					}));
 
-			List<? extends IFavoritesSection> favorites = config.getFavorites();
-			for (IFavoritesSection favorite : favorites) {
+			List<? extends FavoritesSection> favorites = config.getFavorites();
+			for (FavoritesSection favorite : favorites) {
 				addTab(favorite, favorite.getName());
 			}
 			if (favorites.size() == 0) {
@@ -410,7 +410,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 		// nothing to do
 	}
 
-	private IFavorites addTab(IFavoritesSection favorite, String newTitle) {
+	private IFavorites addTab(FavoritesSection favorite, String newTitle) {
 		final int lastIndex = favoriteList.getTabCount() - 1;
 		final Favorites favorites = new Favorites(player, config, em, this,
 				favorite);
@@ -558,7 +558,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 			final IAddFavoritesTab ifObj = (IAddFavoritesTab) event
 					.getUIEventImpl();
 
-			IFavoritesSection favoritesSection = configService.addFavorite(
+			FavoritesSection favoritesSection = configService.addFavorite(
 					config, ifObj.getTitle());
 
 			IFavorites newTab = addTab(favoritesSection, ifObj.getTitle());
@@ -575,7 +575,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 					.getUIEventImpl();
 			changeTab(ifObj);
 
-			IFavoritesSection toChange = config.getFavorites().get(
+			FavoritesSection toChange = config.getFavorites().get(
 					ifObj.getIndex());
 			toChange.setName(ifObj.getTitle());
 

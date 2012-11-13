@@ -15,11 +15,11 @@ import java.util.Iterator;
 import libsidplay.Reloc65;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
+import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
-import applet.PathUtils;
 
 public class Psid64 {
 	public static final String PACKAGE = "psid64";

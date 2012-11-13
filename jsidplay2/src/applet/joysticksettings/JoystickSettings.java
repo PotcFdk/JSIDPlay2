@@ -23,7 +23,7 @@ import net.java.games.input.ControllerEnvironment;
 import org.swixml.SwingEngine;
 import org.swixml.XDialog;
 
-import sidplay.ini.intf.IConfig;
+import applet.entities.config.Configuration;
 import applet.events.IUpdateUI;
 import applet.events.UIEvent;
 import applet.events.UIEventFactory;
@@ -44,7 +44,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 	protected JTable testTable1, testTable2;
 
 	protected Player player;
-	protected IConfig config;
+	protected Configuration config;
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 
 	protected static ControllerEnvironment fControllerEnv = ControllerEnvironment
@@ -337,7 +337,7 @@ public class JoystickSettings extends XDialog implements UIEventListener {
 		}
 	};
 
-	public JoystickSettings(Player pl, IConfig cfg) {
+	public JoystickSettings(Player pl, Configuration cfg) {
 		this.player = pl;
 		this.config = cfg;
 		uiEvents.addListener(this);

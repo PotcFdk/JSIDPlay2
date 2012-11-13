@@ -9,8 +9,8 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.swixml.Localizer;
 
-import sidplay.ini.intf.IConfig;
 import applet.config.annotations.ConfigTransient;
+import applet.entities.config.Configuration;
 
 public class ConfigModel extends DefaultTreeModel {
 
@@ -108,7 +108,7 @@ public class ConfigModel extends DefaultTreeModel {
 		return super.getIndexOfChild(parent, child);
 	}
 
-	public void setRootUserObject(Localizer localizer, IConfig config) {
+	public void setRootUserObject(Localizer localizer, Configuration config) {
 		this.localizer = localizer;
 		setRoot(new ConfigNode(null, null, config, localizer));
 	}

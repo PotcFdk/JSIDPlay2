@@ -11,8 +11,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IFavoritesSection;
 import applet.entities.config.Configuration;
 import applet.entities.config.FavoritesSection;
 
@@ -23,9 +21,9 @@ public class ConfigService {
 		this.em = em;
 	};
 
-	public IConfig create() {
+	public Configuration create() {
 		Configuration config = new Configuration();
-		config.getSidplay2().setVersion(IConfig.REQUIRED_CONFIG_VERSION);
+		config.getSidplay2().setVersion(Configuration.REQUIRED_CONFIG_VERSION);
 		em.persist(config);
 		flush();
 		return config;
@@ -81,28 +79,27 @@ public class ConfigService {
 		return config;
 	}
 
-	public IFavoritesSection addFavorite(IConfig cfg, String title) {
-		Configuration configuration = (Configuration) cfg;
+	public FavoritesSection addFavorite(Configuration cfg, String title) {
+		Configuration configuration = cfg;
 		FavoritesSection toAdd = new FavoritesSection();
 		toAdd.setConfiguration(configuration);
 		toAdd.setName(title);
-		configuration.getFavoritesInternal().add(toAdd);
+		configuration.getFavorites().add(toAdd);
 		em.persist(toAdd);
 		flush();
 		return toAdd;
 	}
 
-	public void removeFavorite(IConfig cfg, int index) {
-		Configuration configuration = (Configuration) cfg;
-		FavoritesSection toRemove = (FavoritesSection) configuration
-				.getFavorites().get(index);
+	public void removeFavorite(Configuration cfg, int index) {
+		Configuration configuration = cfg;
+		FavoritesSection toRemove = configuration.getFavorites().get(index);
 		toRemove.setConfiguration(null);
 		configuration.getFavorites().remove(index);
 		em.remove(toRemove);
 		flush();
 	}
 
-	public void write(IConfig iConfig) {
+	public void write(Configuration iConfig) {
 		em.getTransaction().begin();
 		try {
 			em.persist(iConfig);

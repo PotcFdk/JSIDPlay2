@@ -22,17 +22,14 @@ import java.io.InputStream;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IC1541Section;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IConsoleSection;
 import sidplay.ini.intf.IEmulationSection;
-import sidplay.ini.intf.IFavoritesSection;
 import sidplay.ini.intf.IFilterSection;
 import sidplay.ini.intf.IJoystickSection;
-import sidplay.ini.intf.IOnlineSection;
 import sidplay.ini.intf.IPrinterSection;
 import sidplay.ini.intf.ISidPlay2Section;
 
@@ -51,7 +48,6 @@ public class IniConfig implements IConfig {
 	private final File iniPath;
 
 	private ISidPlay2Section sidplay2Section;
-	private IOnlineSection onlineSection;
 	private IC1541Section c1541Section;
 	private IPrinterSection printerSection;
 	private IJoystickSection joystickSection;
@@ -63,50 +59,12 @@ public class IniConfig implements IConfig {
 
 	private void clear() {
 		sidplay2Section = new IniSidplay2Section(iniReader);
-		onlineSection = new IniOnlineSection(iniReader);
 		c1541Section = new IniC1541Section(iniReader);
 		printerSection = new IniPrinterSection(iniReader);
 		joystickSection = new IniJoystickSection(iniReader);
 		consoleSection = new IniConsoleSection(iniReader);
 		audioSection = new IniAudioSection(iniReader);
 		emulationSection = new IniEmulationSection(iniReader);
-	}
-
-	private String currentFavorite;
-
-	@Override
-	public String getCurrentFavorite() {
-		return currentFavorite;
-	}
-
-	@Override
-	public void setCurrentFavorite(String currentFavorite) {
-		this.currentFavorite = currentFavorite;
-	}
-
-	@Override
-	public List<? extends IFavoritesSection> getFavorites() {
-		final List<IFavoritesSection> favorites = new ArrayList<IFavoritesSection>();
-
-		String titles = iniReader
-				.getPropertyString("Favorites", "Titles", null);
-		String filenames = iniReader.getPropertyString("Favorites",
-				"Filenames", null);
-		if (titles != null && filenames != null) {
-			Scanner sc = new Scanner(titles);
-			sc.useDelimiter(",");
-			while (sc.hasNext()) {
-				String title = sc.next();
-				IniFavoritesSection newFavorite = new IniFavoritesSection(
-						iniReader);
-				newFavorite.setName(title);
-				favorites.add(newFavorite);
-			}
-			sc.close();
-		}
-		setCurrentFavorite(iniReader.getPropertyString("Favorites", "Current",
-				null));
-		return favorites;
 	}
 
 	@Override
@@ -230,11 +188,6 @@ public class IniConfig implements IConfig {
 	@Override
 	public final ISidPlay2Section getSidplay2() {
 		return sidplay2Section;
-	}
-
-	@Override
-	public IOnlineSection getOnline() {
-		return onlineSection;
 	}
 
 	@Override

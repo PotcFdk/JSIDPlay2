@@ -41,10 +41,10 @@ import libsidutils.zip.ZipFileProxy;
 
 import org.swixml.SwingEngine;
 
-import sidplay.ini.intf.IConfig;
 import applet.TuneTab;
 import applet.download.DownloadThread;
 import applet.download.IDownloadListener;
+import applet.entities.config.Configuration;
 import applet.events.ICollectionChanged;
 import applet.events.ICollectionChanged.CollectionType;
 import applet.events.IInsertMedia;
@@ -60,7 +60,7 @@ public abstract class DiskCollection extends TuneTab implements
 		PropertyChangeListener {
 	public static final class HVMEC extends DiskCollection {
 
-		public HVMEC(final Player pl, final IConfig cfg) {
+		public HVMEC(final Player pl, final Configuration cfg) {
 			super(pl, cfg, cfg.getOnline().getHvmecUrl(), "HVMEC");
 			// Initially configure Demos
 			if (config.getSidplay2().getHVMEC() != null) {
@@ -121,7 +121,7 @@ public abstract class DiskCollection extends TuneTab implements
 
 	public static final class Demos extends DiskCollection {
 
-		public Demos(final Player pl, final IConfig cfg) {
+		public Demos(final Player pl, final Configuration cfg) {
 			super(pl, cfg, cfg.getOnline().getDemosUrl(), "Demos");
 			// Initially configure Demos
 			if (config.getSidplay2().getDemos() != null) {
@@ -181,7 +181,7 @@ public abstract class DiskCollection extends TuneTab implements
 
 	public static final class Mags extends DiskCollection {
 
-		public Mags(final Player pl, final IConfig cfg) {
+		public Mags(final Player pl, final Configuration cfg) {
 			super(pl, cfg, cfg.getOnline().getMagazinesUrl(), "C64Magazines");
 			// Initially configure Mags
 			if (config.getSidplay2().getMags() != null) {
@@ -244,7 +244,7 @@ public abstract class DiskCollection extends TuneTab implements
 
 	protected SwingEngine swix;
 
-	protected IConfig config;
+	protected Configuration config;
 	protected Player player;
 
 	protected JSplitPane verticalSplit, horizontalSplit;
@@ -305,7 +305,7 @@ public abstract class DiskCollection extends TuneTab implements
 		}
 	};
 
-	public DiskCollection(Player pl, IConfig cfg, String downloadUrl,
+	public DiskCollection(Player pl, Configuration cfg, String downloadUrl,
 			String zipName) {
 		this.player = pl;
 		this.config = cfg;

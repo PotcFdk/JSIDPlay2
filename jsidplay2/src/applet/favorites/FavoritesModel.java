@@ -13,13 +13,12 @@ import javax.swing.tree.TreeModel;
 
 import org.swixml.Localizer;
 
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IFavoritesSection;
 import applet.collection.Collection;
 import applet.collection.CollectionTreeModel;
 import applet.entities.collection.HVSCEntry;
 import applet.entities.collection.HVSCEntry_;
 import applet.entities.collection.service.HVSCEntryService;
+import applet.entities.config.Configuration;
 import applet.entities.config.FavoriteColumn;
 import applet.entities.config.FavoritesSection;
 import applet.entities.config.service.FavoritesService;
@@ -31,10 +30,10 @@ public class FavoritesModel extends DefaultTableModel {
 
 	public static final String CGSC_PREFIX = "<CGSC>";
 
-	protected IConfig config;
+	protected Configuration config;
 	protected Collection hvsc, cgsc;
 
-	private IFavoritesSection favorite;
+	private FavoritesSection favorite;
 
 	private Localizer localizer;
 
@@ -48,7 +47,7 @@ public class FavoritesModel extends DefaultTableModel {
 		super(new Object[] { "Filename" }, 0);
 	}
 
-	public void setConfig(IConfig cfg, IFavoritesSection favorite,
+	public void setConfig(Configuration cfg, FavoritesSection favorite,
 			Localizer localizer, EntityManager em) {
 		this.config = cfg;
 		this.favorite = favorite;
@@ -57,7 +56,7 @@ public class FavoritesModel extends DefaultTableModel {
 		this.favoritesService = new FavoritesService(em);
 
 		this.attributes.add(HVSCEntry_.path);
-		FavoritesSection favoritesSection = ((FavoritesSection) favorite);
+		FavoritesSection favoritesSection = (favorite);
 		for (FavoriteColumn column : favoritesSection.getColumns()) {
 			String columnProperty = column.getColumnProperty();
 			try {
@@ -173,7 +172,7 @@ public class FavoritesModel extends DefaultTableModel {
 		if (fromIndex < 1 || toIndex < 1 || fromIndex == toIndex) {
 			return;
 		}
-		FavoritesSection favoritesSection = ((FavoritesSection) favorite);
+		FavoritesSection favoritesSection = (favorite);
 		Collections.swap(attributes, fromIndex, toIndex);
 		Collections.swap(favoritesSection.getColumns(), fromIndex - 1,
 				toIndex - 1);

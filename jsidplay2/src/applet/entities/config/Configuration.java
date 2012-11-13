@@ -22,7 +22,6 @@ import sidplay.ini.intf.IC1541Section;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IConsoleSection;
 import sidplay.ini.intf.IEmulationSection;
-import sidplay.ini.intf.IFavoritesSection;
 import sidplay.ini.intf.IFilterSection;
 import sidplay.ini.intf.IJoystickSection;
 import sidplay.ini.intf.IPrinterSection;
@@ -36,6 +35,10 @@ import applet.config.annotations.ConfigTransient;
 @XmlRootElement(name = "configuration")
 @ConfigClass(bundleKey = "CONFIGURATION")
 public class Configuration implements IConfig {
+
+	/** Bump this each time you want to invalidate the configuration */
+	@ConfigTransient
+	public static final int REQUIRED_CONFIG_VERSION = 19;
 
 	@Transient
 	@XmlTransient
@@ -143,7 +146,6 @@ public class Configuration implements IConfig {
 	@XmlElement(name = "online")
 	private OnlineSection online = new OnlineSection();
 
-	@Override
 	@XmlTransient
 	@ConfigMethod(nameKey = "ONLINE")
 	public OnlineSection getOnline() {
@@ -241,12 +243,10 @@ public class Configuration implements IConfig {
 	@ConfigDescription(descriptionKey = "CURRENT_FAVORITE_DESC", toolTipKey = "CURRENT_FAVORITE_TOOLTIP")
 	private String currentFavorite;
 
-	@Override
 	public String getCurrentFavorite() {
 		return currentFavorite;
 	}
 
-	@Override
 	public void setCurrentFavorite(String currentFavorite) {
 		this.currentFavorite = currentFavorite;
 	}
@@ -259,16 +259,8 @@ public class Configuration implements IConfig {
 		this.favorites = favorites;
 	}
 
-	@Override
 	@ConfigMethod(nameKey = "FAVORITES")
-	public List<? extends IFavoritesSection> getFavorites() {
-		if (favorites == null) {
-			favorites = new ArrayList<FavoritesSection>();
-		}
-		return favorites;
-	}
-
-	public List<FavoritesSection> getFavoritesInternal() {
+	public List<FavoritesSection> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<FavoritesSection>();
 		}
