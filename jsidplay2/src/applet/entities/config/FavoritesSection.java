@@ -11,8 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import sidplay.ini.intf.IFavoritesSection;
 import applet.config.annotations.ConfigClass;
@@ -27,14 +29,17 @@ public class FavoritesSection implements IFavoritesSection {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@XmlID
+	@XmlJavaTypeAdapter(IntegerAdapter.class)
 	@ConfigTransient
-	private int id;
+	private Integer id;
 
-	public int getId() {
+	@XmlTransient
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -49,6 +54,21 @@ public class FavoritesSection implements IFavoritesSection {
 	@Override
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@OneToMany
+	private List<FavoriteColumn> columns;
+
+	@ConfigMethod(nameKey = "FAVORITES_COLUMNS")
+	public List<FavoriteColumn> getColumns() {
+		if (columns == null) {
+			columns = new ArrayList<FavoriteColumn>();
+		}
+		return columns;
+	}
+
+	public void setColumns(List<FavoriteColumn> columns) {
+		this.columns = columns;
 	}
 
 	@XmlElement(name = "favorite")

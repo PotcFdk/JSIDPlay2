@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.SingularAttribute;
@@ -19,6 +20,9 @@ import applet.collection.CollectionTreeModel;
 import applet.entities.collection.HVSCEntry;
 import applet.entities.collection.HVSCEntry_;
 import applet.entities.collection.service.HVSCEntryService;
+import applet.entities.config.FavoriteColumn;
+import applet.entities.config.FavoritesSection;
+import applet.entities.config.service.FavoritesService;
 
 @SuppressWarnings("serial")
 public class FavoritesModel extends DefaultTableModel {
@@ -27,9 +31,6 @@ public class FavoritesModel extends DefaultTableModel {
 
 	public static final String CGSC_PREFIX = "<CGSC>";
 
-	ArrayList<SingularAttribute<?, ?>> propertyIndices = new ArrayList<SingularAttribute<?, ?>>(
-			1);
-
 	protected IConfig config;
 	protected Collection hvsc, cgsc;
 
@@ -37,7 +38,11 @@ public class FavoritesModel extends DefaultTableModel {
 
 	private Localizer localizer;
 
+	private ArrayList<SingularAttribute<?, ?>> attributes = new ArrayList<SingularAttribute<?, ?>>();
+
 	private HVSCEntryService hvscEntryService;
+
+	private FavoritesService favoritesService;
 
 	public FavoritesModel() {
 		super(new Object[] { "Filename" }, 0);
@@ -48,8 +53,26 @@ public class FavoritesModel extends DefaultTableModel {
 		this.config = cfg;
 		this.favorite = favorite;
 		this.localizer = localizer;
-		this.propertyIndices.add(HVSCEntry_.path);
 		this.hvscEntryService = new HVSCEntryService(em);
+		this.favoritesService = new FavoritesService(em);
+
+		this.attributes.add(HVSCEntry_.path);
+		FavoritesSection favoritesSection = ((FavoritesSection) favorite);
+		for (FavoriteColumn column : favoritesSection.getColumns()) {
+			String columnProperty = column.getColumnProperty();
+			try {
+				Field field = HVSCEntry_.class.getDeclaredField(columnProperty);
+				SingularAttribute<?, ?> attribute = (SingularAttribute<?, ?>) field
+						.get(null);
+				if (!attributes.contains(attribute)) {
+					attributes.add(attribute);
+					super.addColumn(attribute);
+				}
+			} catch (Exception e) {
+				// ignore missing or miss-configured columns
+			}
+		}
+
 	}
 
 	public void setCollections(Collection hvsc, Collection cgsc) {
@@ -59,7 +82,7 @@ public class FavoritesModel extends DefaultTableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		SingularAttribute<?, ?> field = propertyIndices.get(column);
+		SingularAttribute<?, ?> field = attributes.get(column);
 		return localizer.getString(field.getDeclaringType().getJavaType()
 				.getSimpleName()
 				+ "." + field.getName());
@@ -67,12 +90,12 @@ public class FavoritesModel extends DefaultTableModel {
 
 	@Override
 	public Class<?> getColumnClass(int column) {
-		return propertyIndices.get(column).getJavaType();
+		return attributes.get(column).getJavaType();
 	}
 
 	@Override
 	public Object getValueAt(int row, int column) {
-		SingularAttribute<?, ?> field = propertyIndices.get(column);
+		SingularAttribute<?, ?> field = attributes.get(column);
 		HVSCEntry entry = favorite.getFavorites().get(row);
 		try {
 			return ((Field) field.getJavaMember()).get(entry);
@@ -87,28 +110,13 @@ public class FavoritesModel extends DefaultTableModel {
 	}
 
 	@Override
-	public void addColumn(Object columnName) {
-		SingularAttribute<?, ?> field = (SingularAttribute<?, ?>) columnName;
-		if (!propertyIndices.contains(field)) {
-			propertyIndices.add(field);
-			super.addColumn(columnName);
-		}
-	}
-
-	public void removeColumn(int column) {
-		SingularAttribute<?, ?> field = propertyIndices.get(column);
-		propertyIndices.remove(field);
-		setColumnCount(getColumnCount() - 1);
-	}
-
-	@Override
 	public int getRowCount() {
 		return size();
 	}
 
 	@Override
 	public int getColumnCount() {
-		return propertyIndices.size();
+		return attributes.size();
 	}
 
 	public File getFile(int row) {
@@ -144,6 +152,33 @@ public class FavoritesModel extends DefaultTableModel {
 	// von aussen sichtbar!
 	//
 
+	@Override
+	public void addColumn(Object columnName) {
+		SingularAttribute<?, ?> field = (SingularAttribute<?, ?>) columnName;
+		if (!attributes.contains(field)) {
+			attributes.add(field);
+			favoritesService.addColumn(favorite, field);
+			super.addColumn(columnName);
+		}
+	}
+
+	public void removeColumn(int column) {
+		SingularAttribute<?, ?> field = attributes.get(column);
+		attributes.remove(field);
+		favoritesService.removeColumn(favorite, field);
+		setColumnCount(getColumnCount() - 1);
+	}
+
+	public void moveColumn(int fromIndex, int toIndex) {
+		if (fromIndex < 1 || toIndex < 1 || fromIndex == toIndex) {
+			return;
+		}
+		FavoritesSection favoritesSection = ((FavoritesSection) favorite);
+		Collections.swap(attributes, fromIndex, toIndex);
+		Collections.swap(favoritesSection.getColumns(), fromIndex - 1,
+				toIndex - 1);
+	}
+
 	public void add(String path) {
 		if (!favorite.getFavorites().contains(path)) {
 			try {
@@ -171,10 +206,8 @@ public class FavoritesModel extends DefaultTableModel {
 		return favorite.getFavorites().size();
 	}
 
-	public void move(int start, int to) {
-		HVSCEntry tmp = favorite.getFavorites().get(start);
-		favorite.getFavorites().set(start, favorite.getFavorites().get(to));
-		favorite.getFavorites().set(to, tmp);
+	public void move(int from, int to) {
+		Collections.swap(favorite.getFavorites(), from, to);
 	}
 
 	public void layoutChanged() {

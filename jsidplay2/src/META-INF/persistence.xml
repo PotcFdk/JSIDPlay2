@@ -23,6 +23,7 @@
 		<class>applet.entities.config.ConsoleSection</class>
 		<class>applet.entities.config.EmulationSection</class>
 		<class>applet.entities.config.FavoritesSection</class>
+		<class>applet.entities.config.FavoriteColumn</class>
 		<class>applet.entities.config.FilterSection</class>
 		<class>applet.entities.config.JoystickSection</class>
 		<class>applet.entities.config.PrinterSection</class>

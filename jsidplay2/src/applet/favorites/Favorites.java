@@ -130,6 +130,8 @@ public class Favorites extends JPanel implements IFavorites {
 					.getDefaultRenderer(Object.class)).setConfig(cfg);
 			((FavoritesCellRenderer) playListTable
 					.getDefaultRenderer(Object.class)).setPlayer(pl);
+			playListTable.setColumnModel(new FixedFirstColumnColumnModel(
+					favoritesModel));
 			favoritesModel.layoutChanged();
 
 			fillComboBoxes();
