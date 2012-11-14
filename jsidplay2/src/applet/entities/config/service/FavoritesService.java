@@ -1,5 +1,7 @@
 package applet.entities.config.service;
 
+import java.util.Collections;
+
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.SingularAttribute;
 
@@ -35,6 +37,11 @@ public class FavoritesService {
 				break;
 			}
 		}
+	}
+
+	public void moveColumn(FavoritesSection favorite, int fromIndex, int toIndex) {
+		Collections.swap(favorite.getColumns(), fromIndex, toIndex);
+		em.persist(favorite);
 	}
 
 }

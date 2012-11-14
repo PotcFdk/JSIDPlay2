@@ -39,8 +39,9 @@ import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigField;
 import applet.editors.EditorUtils;
 import applet.entities.config.Configuration;
-import applet.events.IUpdateUI;
 import applet.events.UIEvent;
+import applet.events.favorites.IAddFavoritesTab;
+import applet.events.favorites.IRemoveFavoritesTab;
 import applet.filefilter.ConfigFileFilter;
 
 public class ConfigView extends TuneTab {
@@ -65,8 +66,6 @@ public class ConfigView extends TuneTab {
 
 	private ConfigModel configModel;
 	protected ConfigNode configNode;
-
-	private int refreshCounter = 0;
 
 	protected int fileChooserFilter;
 
@@ -334,12 +333,9 @@ public class ConfigView extends TuneTab {
 
 	@Override
 	public void notify(UIEvent evt) {
-		if (!evt.isOfType(IUpdateUI.class)) {
-			if (refreshCounter++ % 10 == 0) {
-				if (configModel != null) {
-					update();
-				}
-			}
+		if (evt.isOfType(IAddFavoritesTab.class)
+				|| evt.isOfType(IRemoveFavoritesTab.class)) {
+			update();
 		}
 	}
 

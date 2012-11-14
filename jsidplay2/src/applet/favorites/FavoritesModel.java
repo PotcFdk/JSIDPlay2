@@ -172,10 +172,7 @@ public class FavoritesModel extends DefaultTableModel {
 		if (fromIndex < 1 || toIndex < 1 || fromIndex == toIndex) {
 			return;
 		}
-		FavoritesSection favoritesSection = (favorite);
-		Collections.swap(attributes, fromIndex, toIndex);
-		Collections.swap(favoritesSection.getColumns(), fromIndex - 1,
-				toIndex - 1);
+		favoritesService.moveColumn(favorite, fromIndex - 1, toIndex - 1);
 	}
 
 	public void add(String path) {

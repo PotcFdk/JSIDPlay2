@@ -393,6 +393,7 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 		{
 			enableSldb.setEnabled(!"".equals(config.getSidplay2().getHvsc()));
 			enableSldb.setSelected(config.getSidplay2().isEnableDatabase());
+			singleSong.setSelected(config.getSidplay2().isSingle());
 		}
 		{
 			soundDevice.removeActionListener(setSoundDevice);
