@@ -53,7 +53,7 @@ public class FavoritesSection {
 		this.name = name;
 	}
 
-	@OneToMany
+	@OneToMany(mappedBy = "favoritesSection", cascade = CascadeType.ALL)
 	private List<FavoriteColumn> columns;
 
 	@ConfigMethod(nameKey = "FAVORITES_COLUMNS")

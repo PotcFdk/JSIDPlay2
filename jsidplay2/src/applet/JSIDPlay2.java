@@ -34,7 +34,7 @@ import org.swixml.SwingEngine;
 
 import sidplay.ConsolePlayer;
 import sidplay.ini.intf.ISidPlay2Section;
-import applet.entities.PersistenceProperties;
+import applet.entities.PersistenceUtil;
 import applet.entities.config.Configuration;
 import applet.entities.config.service.ConfigService;
 import applet.events.IGotoURL;
@@ -243,18 +243,24 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * @return the players configuration to be used
 	 */
 	private Configuration getConfiguration() {
-		File dbFile = getDbPath();
+		File dbFile = PersistenceUtil.getDbPath(CONFIG_DATABASE);
 		boolean dbFileExists = dbFile.exists();
 		em = Persistence.createEntityManagerFactory(
-				PersistenceProperties.CONFIG_DS,
-				new PersistenceProperties(new File(dbFile.getParent(),
+				PersistenceUtil.CONFIG_DS,
+				new PersistenceUtil(new File(dbFile.getParent(),
 						CONFIG_DATABASE))).createEntityManager();
 		configService = new ConfigService(em);
 		if (!dbFileExists) {
 			// No database found?
 			return configService.create();
 		} else {
-			Configuration config = configService.get();
+			Configuration config = null;
+			try {
+				config = configService.get();
+			} catch (Throwable e) {
+				// fatal database error?
+				removeOldDatabaseAndExit(dbFile);
+			}
 			if (config == null) {
 				// No configuration in database found?
 				return configService.create();
@@ -270,39 +276,25 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 				if (shouldBeRestored) {
 					System.err.println("Imported configuration version "
 							+ config.getSidplay2().getVersion()
-							+ " is too old, expected version is "
+							+ " is wrong, expected version is "
 							+ Configuration.REQUIRED_CONFIG_VERSION
 							+ ": Ignored!");
 				} else {
 					System.err.println("Configuration version "
 							+ config.getSidplay2().getVersion()
-							+ " is too old, expected version is "
-							+ Configuration.REQUIRED_CONFIG_VERSION
-							+ ": Create a new one!");
-					configService.remove(config);
-					return configService.create();
+							+ " is wrong, expected version is "
+							+ Configuration.REQUIRED_CONFIG_VERSION);
+					removeOldDatabaseAndExit(dbFile);
 				}
 			}
 			return config;
 		}
 	}
 
-	/**
-	 * Search for the database file (the players configuration). Search in CWD
-	 * and in the HOME folder.
-	 * 
-	 * @return absolute path name of the database properties file
-	 */
-	private File getDbPath() {
-		File configPlace = null;
-		for (final String s : new String[] { System.getProperty("user.dir"),
-				System.getProperty("user.home"), }) {
-			configPlace = new File(s, CONFIG_DATABASE + ".properties");
-			if (configPlace.exists()) {
-				return configPlace;
-			}
-		}
-		return configPlace;
+	private void removeOldDatabaseAndExit(File dbFile) {
+		PersistenceUtil.databaseDeleteOnExit(dbFile, CONFIG_DATABASE);
+		System.err.println("Please restart!");
+		System.exit(0);
 	}
 
 	/**

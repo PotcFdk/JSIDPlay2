@@ -38,7 +38,7 @@ import applet.TuneTab;
 import applet.collection.Picture;
 import applet.download.DownloadThread;
 import applet.download.IDownloadListener;
-import applet.entities.PersistenceProperties;
+import applet.entities.PersistenceUtil;
 import applet.entities.config.Configuration;
 import applet.entities.gamebase.Games;
 import applet.entities.gamebase.service.ConfigService;
@@ -285,8 +285,8 @@ public class GameBase extends TuneTab {
 		disconnect();
 
 		em = Persistence.createEntityManagerFactory(
-				PersistenceProperties.GAMEBASE_DS,
-				new PersistenceProperties(new File(dbFile)))
+				PersistenceUtil.GAMEBASE_DS,
+				new PersistenceUtil(new File(dbFile)))
 				.createEntityManager();
 
 		gamesService = new GamesService(em);

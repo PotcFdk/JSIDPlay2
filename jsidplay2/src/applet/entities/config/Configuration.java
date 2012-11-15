@@ -259,6 +259,7 @@ public class Configuration implements IConfig {
 		this.favorites = favorites;
 	}
 
+	@XmlTransient
 	@ConfigMethod(nameKey = "FAVORITES")
 	public List<FavoritesSection> getFavorites() {
 		if (favorites == null) {

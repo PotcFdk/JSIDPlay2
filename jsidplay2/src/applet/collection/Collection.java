@@ -67,7 +67,7 @@ import applet.collection.search.SearchThread;
 import applet.download.DownloadThread;
 import applet.editors.EditorUtils;
 import applet.editors.YearTextField;
-import applet.entities.PersistenceProperties;
+import applet.entities.PersistenceUtil;
 import applet.entities.collection.HVSCEntry;
 import applet.entities.collection.HVSCEntry_;
 import applet.entities.collection.StilEntry;
@@ -866,8 +866,8 @@ public abstract class Collection extends TuneTab implements
 	protected void setRootFile(final File rootFile) {
 		if (rootFile.exists()) {
 			em = Persistence.createEntityManagerFactory(
-					PersistenceProperties.COLLECTION_DS,
-					new PersistenceProperties(new File(
+					PersistenceUtil.COLLECTION_DS,
+					new PersistenceUtil(new File(
 							rootFile.getParentFile(), dbName)))
 					.createEntityManager();
 

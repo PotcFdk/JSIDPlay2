@@ -82,7 +82,7 @@ public class Favorites extends JPanel implements IFavorites {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				playListTable.getColumn(element);
+				favoritesTable.getColumn(element);
 				// if column already exist, do nothing
 			} catch (IllegalArgumentException e1) {
 				favoritesModel.addColumn(element);
@@ -94,7 +94,7 @@ public class Favorites extends JPanel implements IFavorites {
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 	private SwingEngine swix;
 
-	protected JTable playListTable;
+	protected FavoritesTable favoritesTable;
 	protected JTextField filterField;
 	protected JNiceButton unsort, moveUp, moveDown;
 
@@ -119,18 +119,19 @@ public class Favorites extends JPanel implements IFavorites {
 		try {
 			swix = new SwingEngine(this);
 			swix.getTaglib().registerTag("nicebutton", JNiceButton.class);
-			swix.getTaglib().registerTag("playlisttable", FavoritesTable.class);
+			swix.getTaglib()
+					.registerTag("favoritestable", FavoritesTable.class);
 			swix.insert(Favorites.class.getResource("Favorites.xml"), this);
 
-			favoritesModel = (FavoritesModel) playListTable.getModel();
+			favoritesModel = (FavoritesModel) favoritesTable.getModel();
 			favoritesModel.setConfig(cfg, favorite, swix.getLocalizer(), em);
 			favoritesModel.setCollections(favoritesView.getHvsc(),
 					favoritesView.getCgsc());
-			((FavoritesCellRenderer) playListTable
+			((FavoritesCellRenderer) favoritesTable
 					.getDefaultRenderer(Object.class)).setConfig(cfg);
-			((FavoritesCellRenderer) playListTable
+			((FavoritesCellRenderer) favoritesTable
 					.getDefaultRenderer(Object.class)).setPlayer(pl);
-			playListTable.setColumnModel(new FixedFirstColumnColumnModel(
+			favoritesTable.setColumnModel(new FixedFirstColumnColumnModel(
 					favoritesModel));
 			favoritesModel.layoutChanged();
 
@@ -146,7 +147,7 @@ public class Favorites extends JPanel implements IFavorites {
 	}
 
 	private void setDefaultsAndActions() {
-		JTableHeader header = playListTable.getTableHeader();
+		JTableHeader header = favoritesTable.getTableHeader();
 		header.addMouseListener(new MouseAdapter() {
 			private final JPopupMenu headerPopup;
 			private JMenuItem removeColumn;
@@ -210,7 +211,7 @@ public class Favorites extends JPanel implements IFavorites {
 					JTableHeader popupHeader = (JTableHeader) e.getSource();
 					headerColumnToRemove = popupHeader.columnAtPoint(new Point(
 							e.getPoint()));
-					int columnModelIndex = playListTable
+					int columnModelIndex = favoritesTable
 							.convertColumnIndexToModel(headerColumnToRemove);
 					if (columnModelIndex == 0) {
 						removeColumn.setEnabled(false);
@@ -232,8 +233,8 @@ public class Favorites extends JPanel implements IFavorites {
 			}
 
 		});
-		playListTable.setRowSorter(rowSorter);
-		playListTable.addKeyListener(new KeyAdapter() {
+		favoritesTable.setRowSorter(rowSorter);
+		favoritesTable.addKeyListener(new KeyAdapter() {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -249,7 +250,7 @@ public class Favorites extends JPanel implements IFavorites {
 			}
 
 		});
-		playListTable.addMouseListener(new MouseAdapter() {
+		favoritesTable.addMouseListener(new MouseAdapter() {
 
 			private JPopupMenu tablePopup;
 
@@ -273,7 +274,7 @@ public class Favorites extends JPanel implements IFavorites {
 					playSelectedRow();
 				} else if (mouseEvent.getButton() == MouseEvent.BUTTON3
 						&& mouseEvent.getClickCount() == 1
-						&& playListTable.getSelectionModel()
+						&& favoritesTable.getSelectionModel()
 								.getMinSelectionIndex() != -1) {
 
 					tablePopup = new JPopupMenu(getSwix().getLocalizer()
@@ -282,7 +283,7 @@ public class Favorites extends JPanel implements IFavorites {
 							.getString("SHOW_STIL"));
 					mi.setEnabled(false);
 					tablePopup.add(mi);
-					int[] rows = playListTable.getSelectedRows();
+					int[] rows = favoritesTable.getSelectedRows();
 					if (rows.length == 1) {
 						int row = rowSorter.convertRowIndexToModel(rows[0]);
 						File tuneFile = favoritesModel.getFile(row);
@@ -311,7 +312,7 @@ public class Favorites extends JPanel implements IFavorites {
 							if (result == JFileChooser.APPROVE_OPTION
 									&& fc.getSelectedFile() != null) {
 								lastDir = fc.getSelectedFile();
-								int[] rows = playListTable.getSelectedRows();
+								int[] rows = favoritesTable.getSelectedRows();
 								for (int row1 : rows) {
 									int row = rowSorter
 											.convertRowIndexToModel(row1);
@@ -435,7 +436,7 @@ public class Favorites extends JPanel implements IFavorites {
 
 		});
 
-		playListTable.getSelectionModel().addListSelectionListener(
+		favoritesTable.getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 
 					@Override
@@ -486,7 +487,7 @@ public class Favorites extends JPanel implements IFavorites {
 	}
 
 	public JTable getPlayListTable() {
-		return playListTable;
+		return favoritesTable;
 	}
 
 	private void fillComboBoxes() {
@@ -509,7 +510,7 @@ public class Favorites extends JPanel implements IFavorites {
 	}
 
 	protected void playSelectedRow() {
-		int selectedRow = playListTable.getSelectedRow();
+		int selectedRow = favoritesTable.getSelectedRow();
 		if (selectedRow == -1) {
 			return;
 		}
@@ -539,7 +540,7 @@ public class Favorites extends JPanel implements IFavorites {
 
 	@Override
 	public void removeSelectedRows() {
-		int[] rows = playListTable.getSelectedRows();
+		int[] rows = favoritesTable.getSelectedRows();
 		if (rows.length == 0) {
 			return;
 		}
@@ -591,7 +592,7 @@ public class Favorites extends JPanel implements IFavorites {
 
 	@Override
 	public void deselectFavorites() {
-		playListTable.getSelectionModel().clearSelection();
+		favoritesTable.getSelectionModel().clearSelection();
 		String[] selection = new String[0];
 		setMoveEnabledState(selection);
 	}
@@ -615,7 +616,7 @@ public class Favorites extends JPanel implements IFavorites {
 		if (favoritesModel.size() == 0) {
 			return;
 		}
-		playListTable.getSelectionModel().setSelectionInterval(0,
+		favoritesTable.getSelectionModel().setSelectionInterval(0,
 				favoritesModel.size() - 1);
 	}
 
@@ -631,11 +632,11 @@ public class Favorites extends JPanel implements IFavorites {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int row = playListTable.getSelectedRow();
+			int row = favoritesTable.getSelectedRow();
 			int start = row;
 			int to = row > 0 ? row - 1 : row;
 			favoritesModel.move(start, to);
-			playListTable.getSelectionModel().setSelectionInterval(to, to);
+			favoritesTable.getSelectionModel().setSelectionInterval(to, to);
 		}
 	};
 
@@ -643,11 +644,11 @@ public class Favorites extends JPanel implements IFavorites {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int row = playListTable.getSelectedRow();
+			int row = favoritesTable.getSelectedRow();
 			int start = row;
 			int to = row < favoritesModel.size() - 1 ? row + 1 : row;
 			favoritesModel.move(start, to);
-			playListTable.getSelectionModel().setSelectionInterval(to, to);
+			favoritesTable.getSelectionModel().setSelectionInterval(to, to);
 		}
 	};
 
@@ -673,7 +674,7 @@ public class Favorites extends JPanel implements IFavorites {
 	}
 
 	protected void removeColumn() {
-		int columnModelIndex = playListTable
+		int columnModelIndex = favoritesTable
 				.convertColumnIndexToModel(headerColumnToRemove);
 		if (columnModelIndex == 0) {
 			// do not remove filenames
@@ -690,7 +691,7 @@ public class Favorites extends JPanel implements IFavorites {
 		// target panel
 		IFavorites panel = (IFavorites) pane.getComponentAt(index);
 
-		int[] rows = playListTable.getSelectedRows();
+		int[] rows = favoritesTable.getSelectedRows();
 		for (int i = 0; i < rows.length; i++) {
 			int row = rowSorter.convertRowIndexToModel(rows[i]);
 			// add next row to target tab
@@ -708,7 +709,7 @@ public class Favorites extends JPanel implements IFavorites {
 
 	protected void convertSelectedTunes() {
 		final ArrayList<File> files = new ArrayList<File>();
-		int[] rows = playListTable.getSelectedRows();
+		int[] rows = favoritesTable.getSelectedRows();
 		for (int row1 : rows) {
 			int row = rowSorter.convertRowIndexToModel(row1);
 			files.add(favoritesModel.getFile(row));
@@ -721,7 +722,7 @@ public class Favorites extends JPanel implements IFavorites {
 	@Override
 	public File getNextFile(File file) {
 		int playedRow = -1;
-		int rowCount = playListTable.getRowCount();
+		int rowCount = favoritesTable.getRowCount();
 		for (int i = 0; i < rowCount; i++) {
 			int row = rowSorter.convertRowIndexToModel(i);
 			File currFile = favoritesModel.getFile(row);
@@ -731,7 +732,7 @@ public class Favorites extends JPanel implements IFavorites {
 			}
 		}
 		final int nextRow = playedRow + 1;
-		if (nextRow == playListTable.getRowCount()) {
+		if (nextRow == favoritesTable.getRowCount()) {
 			return null;
 		}
 		int row = rowSorter.convertRowIndexToModel(nextRow);
@@ -739,7 +740,7 @@ public class Favorites extends JPanel implements IFavorites {
 
 			@Override
 			public void run() {
-				playListTable.scrollRectToVisible(playListTable.getCellRect(
+				favoritesTable.scrollRectToVisible(favoritesTable.getCellRect(
 						nextRow, 0, true));
 			}
 
@@ -749,7 +750,7 @@ public class Favorites extends JPanel implements IFavorites {
 
 	@Override
 	public File getNextRandomFile(File file) {
-		int rowCount = playListTable.getRowCount();
+		int rowCount = favoritesTable.getRowCount();
 		final int randomRow = Math.abs(randomPlayback
 				.nextInt(Integer.MAX_VALUE)) % rowCount;
 		int row = rowSorter.convertRowIndexToModel(randomRow);
@@ -757,7 +758,7 @@ public class Favorites extends JPanel implements IFavorites {
 
 			@Override
 			public void run() {
-				playListTable.scrollRectToVisible(playListTable.getCellRect(
+				favoritesTable.scrollRectToVisible(favoritesTable.getCellRect(
 						randomRow, 0, true));
 			}
 
@@ -767,7 +768,7 @@ public class Favorites extends JPanel implements IFavorites {
 
 	@Override
 	public String[] getSelection() {
-		int[] rows = playListTable.getSelectedRows();
+		int[] rows = favoritesTable.getSelectedRows();
 		if (rows.length == 0) {
 			return new String[0];
 		}

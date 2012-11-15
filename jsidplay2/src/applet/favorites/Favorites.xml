@@ -11,7 +11,7 @@
 		</panel>
 	</panel>
 	<scrollpane constraints="BorderLayout.CENTER">
-		<playlisttable id="playListTable" initclass="applet.favorites.FavoritesModel"></playlisttable>
+		<favoritestable id="favoritesTable" initclass="applet.favorites.FavoritesModel" />
 	</scrollpane>
 	<vbox constraints="BorderLayout.EAST">
 		<NiceButton ToolTipText="UNSORT_FAVORITES" ActionCommand="Unsort"

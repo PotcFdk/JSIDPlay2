@@ -42,7 +42,7 @@ public class ConfigService {
 		return null;
 	}
 
-	public void remove(Configuration config) {
+	private void remove(Configuration config) {
 		em.getTransaction().begin();
 		em.remove(config);
 		em.flush();
