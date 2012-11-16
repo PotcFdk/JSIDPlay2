@@ -242,7 +242,9 @@ public class C64Canvas extends JLayeredPane {
 		});
 		URL url = C64Canvas.class
 				.getResource("/applet/icons/commodore_logo.png");
-		keyboardFrame.setFrameIcon(new ImageIcon(url));
+		if (url != null) {
+			keyboardFrame.setFrameIcon(new ImageIcon(url));
+		}
 		keyboardFrame.setOpaque(false);
 		keyboardFrame.setLayout(null);
 		keyboardFrame.setVisible(false);
