@@ -258,7 +258,7 @@ public class ConfigView extends TuneTab {
 					}
 					configNode.setValue(Character.valueOf(ch).charValue());
 				}
-				update();
+				repaint();
 			}
 		}
 	};
