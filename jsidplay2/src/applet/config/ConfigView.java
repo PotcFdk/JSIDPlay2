@@ -25,9 +25,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
@@ -39,6 +36,7 @@ import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigField;
 import applet.editors.EditorUtils;
 import applet.entities.config.Configuration;
+import applet.entities.config.service.ConfigService;
 import applet.events.UIEvent;
 import applet.events.favorites.IAddFavoritesTab;
 import applet.events.favorites.IRemoveFavoritesTab;
@@ -69,7 +67,10 @@ public class ConfigView extends TuneTab {
 
 	protected int fileChooserFilter;
 
+	private ConfigService configService;
+
 	public ConfigView(EntityManager em, Player player, Configuration config) {
+		this.configService = new ConfigService(em);
 		this.config = config;
 		editorUtils = new EditorUtils(this);
 		try {
@@ -294,15 +295,7 @@ public class ConfigView extends TuneTab {
 			if (rc == JFileChooser.APPROVE_OPTION
 					&& fileDialog.getSelectedFile() != null) {
 				lastDir = fileDialog.getSelectedFile();
-				try {
-					File file = fileDialog.getSelectedFile();
-					JAXBContext jaxbContext = JAXBContext
-							.newInstance(Configuration.class);
-					Marshaller marshaller = jaxbContext.createMarshaller();
-					marshaller.marshal(config, file);
-				} catch (JAXBException e1) {
-					e1.printStackTrace();
-				}
+				configService.backup(config, fileDialog.getSelectedFile());
 			}
 		}
 	};

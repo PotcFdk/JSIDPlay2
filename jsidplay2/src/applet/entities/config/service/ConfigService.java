@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import applet.entities.config.Configuration;
@@ -44,6 +45,17 @@ public class ConfigService {
 			return resultList.get(0);
 		}
 		return create(null);
+	}
+
+	public void backup(Configuration config, File file) {
+		try {
+			JAXBContext jaxbContext = JAXBContext
+					.newInstance(Configuration.class);
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.marshal(config, file);
+		} catch (JAXBException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	public boolean shouldBeRestored(Configuration config) {
