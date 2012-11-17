@@ -18,7 +18,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
 import applet.entities.collection.HVSCEntry;
+import applet.entities.collection.HVSCEntry_;
 import applet.entities.collection.StilEntry;
+import applet.entities.collection.StilEntry_;
 import applet.entities.config.Configuration;
 
 public class HVSCEntryService {
@@ -83,13 +85,15 @@ public class HVSCEntryService {
 		Class<?> entityType = field.getDeclaringType().getJavaType();
 		Class<?> fieldType = field.getJavaType();
 
+		assert (entityType == HVSCEntry.class || entityType == StilEntry.class);
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> q = cb.createQuery(String.class);
-		Predicate like;
+		Predicate predicate;
 
 		if (entityType == HVSCEntry.class) {
 			Root<HVSCEntry> h = q.from(HVSCEntry.class);
-			Path<String> path = h.get("path");
+			Path<String> path = h.get(HVSCEntry_.path);
 			q.select(path).distinct(true);
 			if (fieldType == Date.class) {
 				assert (fieldValue.getClass() == Date.class);
@@ -101,47 +105,49 @@ public class HVSCEntryService {
 						fieldName);
 				Calendar cal = Calendar.getInstance();
 				cal.setTime((Date) fieldValue);
-				like = cb.equal(year, cal.get(Calendar.YEAR));
+				predicate = cb.equal(year, cal.get(Calendar.YEAR));
 			} else if (fieldType == String.class) {
 				assert (fieldValue.getClass() == String.class);
 				// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName>
 				// LIKE <value>
 				Path<String> fieldName = h
 						.get((SingularAttribute<HVSCEntry, String>) field);
-				like = fieldNameLikeFieldValue(cb, fieldName,
+				predicate = fieldNameLikeFieldValue(cb, fieldName,
 						fieldValue.toString(), caseSensitive, fieldType);
 			} else {
 				// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName> =
 				// <value>
 				Path<Object> fieldName = h
 						.get((SingularAttribute<HVSCEntry, Object>) field);
-				like = cb.equal(fieldName, fieldValue);
+				predicate = cb.equal(fieldName, fieldValue);
 			}
-		} else if (entityType == StilEntry.class) {
+		} else {
+			// if (entityType == StilEntry.class)
 			assert (fieldValue.getClass() == String.class);
-			// SELECT distinct h.path FROM STIL s INNER JOIN s.hvscEntry h
 			Root<StilEntry> s = q.from(StilEntry.class);
 			Join<applet.entities.collection.StilEntry, HVSCEntry> h = s.join(
-					"hvscEntry", JoinType.INNER);
-			Path<String> path = h.get("path");
+					StilEntry_.hvscEntry, JoinType.INNER);
+			Path<String> path = h.get(HVSCEntry_.path);
 			q.select(path).distinct(true);
 
 			if (fieldType == String.class) {
 				assert (fieldValue.getClass() == String.class);
+				// SELECT distinct h.path FROM STIL s INNER JOIN s.hvscEntry h
+				// WHERE s.<fieldName> LIKE <value>
 				Path<String> fieldName = s
 						.get((SingularAttribute<StilEntry, String>) field);
-				like = fieldNameLikeFieldValue(cb, fieldName,
+				predicate = fieldNameLikeFieldValue(cb, fieldName,
 						fieldValue.toString(), caseSensitive, fieldType);
 			} else {
-				throw new RuntimeException("Unsupported field type: "
-						+ fieldType);
+				// SELECT distinct h.path FROM STIL s INNER JOIN s.hvscEntry h
+				// WHERE s.<fieldName> = <value>
+				Path<Object> fieldName = s
+						.get((SingularAttribute<StilEntry, Object>) field);
+				predicate = cb.equal(fieldName, fieldValue);
 			}
-		} else {
-			throw new RuntimeException("Unsupported entity type for search: "
-					+ entityType);
 		}
-		return new HVSCEntries(em.createQuery(q.where(like)).getResultList(),
-				fForward);
+		return new HVSCEntries(em.createQuery(q.where(predicate))
+				.getResultList(), fForward);
 	}
 
 	private Predicate fieldNameLikeFieldValue(CriteriaBuilder cb,
