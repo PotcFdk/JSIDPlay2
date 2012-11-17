@@ -21,7 +21,11 @@ public class ConfigService {
 		this.em = em;
 	};
 
-	public Configuration create() {
+	public Configuration create(Configuration oldConfiguration) {
+		if (oldConfiguration != null) {
+			remove(oldConfiguration);
+		}
+
 		Configuration config = new Configuration();
 		config.getSidplay2().setVersion(Configuration.REQUIRED_CONFIG_VERSION);
 		em.persist(config);
@@ -29,7 +33,7 @@ public class ConfigService {
 		return config;
 	}
 
-	public Configuration get() {
+	public Configuration getOrCreate() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Configuration> q = cb.createQuery(Configuration.class);
 		Root<Configuration> h = q.from(Configuration.class);
@@ -39,44 +43,38 @@ public class ConfigService {
 		if (resultList.size() != 0) {
 			return resultList.get(0);
 		}
-		return null;
-	}
-
-	private void remove(Configuration config) {
-		em.getTransaction().begin();
-		em.remove(config);
-		em.flush();
-		em.clear();
-		em.getTransaction().commit();
+		return create(null);
 	}
 
 	public boolean shouldBeRestored(Configuration config) {
 		return config.getReconfigFilename() != null;
 	}
 
-	public Configuration restore(Configuration config) {
+	public Configuration restore(Configuration oldConfiguration) {
 		try {
 			JAXBContext jaxbContext = JAXBContext
 					.newInstance(Configuration.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			Object obj = unmarshaller.unmarshal(new File(config
+			Object obj = unmarshaller.unmarshal(new File(oldConfiguration
 					.getReconfigFilename()));
 			if (obj instanceof Configuration) {
 				Configuration detachedConfig = (Configuration) obj;
 
-				remove(config);
+				remove(oldConfiguration);
 
 				Configuration mergedConfig = em.merge(detachedConfig);
-				em.getTransaction().begin();
 				em.persist(mergedConfig);
-				em.flush();
-				em.getTransaction().commit();
+				flush();
+
 				return mergedConfig;
 			}
 		} catch (JAXBException e) {
 			e.printStackTrace();
+		} finally {
+			// Reset restoration flag
+			oldConfiguration.setReconfigFilename(null);
 		}
-		return config;
+		return oldConfiguration;
 	}
 
 	public FavoritesSection addFavorite(Configuration cfg, String title) {
@@ -110,6 +108,12 @@ public class ConfigService {
 				em.getTransaction().rollback();
 			}
 		}
+	}
+
+	private void remove(Configuration config) {
+		em.remove(config);
+		flush();
+		em.clear();
 	}
 
 	private void flush() {

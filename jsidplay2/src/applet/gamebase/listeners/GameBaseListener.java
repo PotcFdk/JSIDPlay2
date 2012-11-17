@@ -67,8 +67,7 @@ public class GameBaseListener extends ProgressListener {
 					nameNoExt = output.getName().substring(0,
 							nameNoExt.lastIndexOf('.'));
 				}
-				String dbName = output.getParent() + "/" + nameNoExt;
-				this.gameBase.connect(dbName);
+				this.gameBase.connect(new File(output.getParent(), nameNoExt));
 				this.gameBase.setLettersEnabled(true);
 				GameBasePage page = this.gameBase.pages.get(0);
 				page.setRows(this.gameBase.getGamesService().select(

@@ -156,8 +156,7 @@ public class GameBase extends TuneTab {
 					// There is already a database file downloaded earlier.
 					// Therefore we try to connect
 
-					connect(new File(config.getSidplay2().getTmpDir(), "GB64")
-							.getAbsolutePath());
+					connect(new File(config.getSidplay2().getTmpDir(), "GB64"));
 
 					// Check version of GB64
 					if (configService.checkVersion()) {
@@ -277,18 +276,11 @@ public class GameBase extends TuneTab {
 		}
 	}
 
-	public void connect(String dbFile) {
-		if (!new File(dbFile + ".properties").exists()) {
-			System.err.println("Database does not exist: " + dbFile);
-			return;
-		}
+	public void connect(File dbFile) {
 		disconnect();
-
 		em = Persistence.createEntityManagerFactory(
-				PersistenceUtil.GAMEBASE_DS,
-				new PersistenceUtil(new File(dbFile)))
+				PersistenceUtil.GAMEBASE_DS, new PersistenceUtil(dbFile))
 				.createEntityManager();
-
 		gamesService = new GamesService(em);
 		configService = new ConfigService(em);
 	}

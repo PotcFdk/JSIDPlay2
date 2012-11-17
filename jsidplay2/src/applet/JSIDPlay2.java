@@ -243,58 +243,52 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 * @return the players configuration to be used
 	 */
 	private Configuration getConfiguration() {
-		File dbFile = PersistenceUtil.getDbPath(CONFIG_DATABASE);
-		boolean dbFileExists = dbFile.exists();
-		em = Persistence.createEntityManagerFactory(
-				PersistenceUtil.CONFIG_DS,
-				new PersistenceUtil(new File(dbFile.getParent(),
-						CONFIG_DATABASE))).createEntityManager();
-		configService = new ConfigService(em);
-		if (!dbFileExists) {
-			// No database found?
-			return configService.create();
-		} else {
-			Configuration config = null;
-			try {
-				config = configService.get();
-			} catch (Throwable e) {
-				// fatal database error?
-				removeOldDatabaseAndExit(dbFile);
-			}
-			if (config == null) {
-				// No configuration in database found?
-				return configService.create();
-			}
-			boolean shouldBeRestored = configService.shouldBeRestored(config);
-			if (shouldBeRestored) {
-				// import configuration (flagged by configuration viewer)
+		try {
+			em = Persistence.createEntityManagerFactory(
+					PersistenceUtil.CONFIG_DS,
+					new PersistenceUtil(getConfigDatabasePath()))
+					.createEntityManager();
+			configService = new ConfigService(em);
+			// Import configuration (flagged by configuration viewer)
+			Configuration config = configService.getOrCreate();
+			if (configService.shouldBeRestored(config)) {
+				System.out.println("Import Configuration!");
 				config = configService.restore(config);
 			}
 			// Configuration version check
 			if (config.getSidplay2().getVersion() != Configuration.REQUIRED_CONFIG_VERSION) {
-				// Wrong configuration version
-				if (shouldBeRestored) {
-					System.err.println("Imported configuration version "
-							+ config.getSidplay2().getVersion()
-							+ " is wrong, expected version is "
-							+ Configuration.REQUIRED_CONFIG_VERSION
-							+ ": Ignored!");
-				} else {
-					System.err.println("Configuration version "
-							+ config.getSidplay2().getVersion()
-							+ " is wrong, expected version is "
-							+ Configuration.REQUIRED_CONFIG_VERSION);
-					removeOldDatabaseAndExit(dbFile);
-				}
+				System.err.println("Configuration version "
+						+ config.getSidplay2().getVersion()
+						+ " is wrong, expected version is "
+						+ Configuration.REQUIRED_CONFIG_VERSION);
+				return configService.create(config);
 			}
 			return config;
+		} catch (Throwable e) {
+			System.err.println(e.getMessage());
+			// fatal database error? Delete it for the next startup!
+			PersistenceUtil.databaseDeleteOnExit(getConfigDatabasePath());
+			System.exit(0);
+			return null;
 		}
 	}
 
-	private void removeOldDatabaseAndExit(File dbFile) {
-		PersistenceUtil.databaseDeleteOnExit(dbFile, CONFIG_DATABASE);
-		System.err.println("Please restart!");
-		System.exit(0);
+	/**
+	 * Search for the database (the players configuration). Search in CWD and in
+	 * the HOME folder.
+	 * 
+	 * @return absolute path name of the database
+	 */
+	private File getConfigDatabasePath() {
+		for (final String s : new String[] { System.getProperty("user.dir"),
+				System.getProperty("user.home"), }) {
+			File configPlace = new File(s, CONFIG_DATABASE + ".properties");
+			if (configPlace.exists()) {
+				return new File(configPlace.getParent(), CONFIG_DATABASE);
+			}
+		}
+		// default directory
+		return new File(System.getProperty("user.home"), CONFIG_DATABASE);
 	}
 
 	/**
