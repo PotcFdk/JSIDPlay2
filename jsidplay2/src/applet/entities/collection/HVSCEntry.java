@@ -13,6 +13,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Clock;
@@ -25,15 +28,19 @@ import sidplay.ini.intf.IConfig;
 import applet.config.annotations.ConfigClass;
 import applet.config.annotations.ConfigMethod;
 import applet.config.annotations.ConfigTransient;
+import applet.entities.config.IntegerAdapter;
 
 @Entity
 @ConfigClass(bundleKey = "HVSC_ENTRY")
 public class HVSCEntry {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@XmlID
+	@XmlJavaTypeAdapter(IntegerAdapter.class)
 	@ConfigTransient
 	private Integer id;
 
+	@XmlTransient
 	public Integer getId() {
 		return id;
 	}

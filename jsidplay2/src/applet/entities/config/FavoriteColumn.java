@@ -1,13 +1,10 @@
 package applet.entities.config;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -43,20 +40,6 @@ public class FavoriteColumn {
 
 	public void setColumnProperty(String columnProperty) {
 		this.columnProperty = columnProperty;
-	}
-
-	@ManyToOne(cascade = CascadeType.ALL)
-	@XmlIDREF
-	@ConfigTransient
-	private FavoritesSection favoritesSection;
-
-	@XmlTransient
-	public FavoritesSection getFavoritesSection() {
-		return favoritesSection;
-	}
-
-	public void setFavoritesSection(FavoritesSection favoritesSection) {
-		this.favoritesSection = favoritesSection;
 	}
 
 }

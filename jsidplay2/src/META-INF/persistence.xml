@@ -29,5 +29,13 @@
 		<class>applet.entities.config.PrinterSection</class>
 		<class>applet.entities.config.SidPlay2Section</class>
 		<class>applet.entities.config.OnlineSection</class>
+		<properties>
+			<!-- property name="hibernate.show_sql" value="true"/-->
+			<!-- property name="hibernate.format_sql" value="true"/-->
+			<property name="hibernate.connection.username" value=""/>
+			<property name="hibernate.connection.password" value=""/>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
+		</properties>
 	</persistence-unit>
 </persistence>

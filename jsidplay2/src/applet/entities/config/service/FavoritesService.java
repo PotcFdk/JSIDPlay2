@@ -20,7 +20,6 @@ public class FavoritesService {
 		FavoritesSection favoritesSection = (favorite);
 		FavoriteColumn column = new FavoriteColumn();
 		column.setColumnProperty(field.getJavaMember().getName());
-		column.setFavoritesSection(favoritesSection);
 		favoritesSection.getColumns().add(column);
 		em.persist(column);
 	}
@@ -31,7 +30,6 @@ public class FavoritesService {
 		for (FavoriteColumn column : favoritesSection.getColumns()) {
 			if (column.getColumnProperty().equals(
 					field.getJavaMember().getName())) {
-				column.setFavoritesSection(null);
 				favoritesSection.getColumns().remove(column);
 				em.remove(column);
 				break;

@@ -53,7 +53,7 @@ public class FavoritesSection {
 		this.name = name;
 	}
 
-	@OneToMany(mappedBy = "favoritesSection", cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<FavoriteColumn> columns;
 
 	@ConfigMethod(nameKey = "FAVORITES_COLUMNS")
@@ -69,7 +69,7 @@ public class FavoritesSection {
 	}
 
 	@XmlElement(name = "favorite")
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<HVSCEntry> favorites;
 
 	public void setFavorites(List<HVSCEntry> favorites) {
@@ -85,7 +85,7 @@ public class FavoritesSection {
 		return favorites;
 	}
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@XmlIDREF
 	@ConfigTransient
 	private Configuration configuration;

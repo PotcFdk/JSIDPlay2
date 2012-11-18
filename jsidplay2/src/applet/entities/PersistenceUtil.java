@@ -15,22 +15,11 @@ public class PersistenceUtil extends HashMap<String, String> {
 		put("hibernate.connection.url",
 				"jdbc:hsqldb:file:" + databaseFile.getAbsolutePath()
 						+ ";shutdown=true");
-		common();
 	}
 
 	public PersistenceUtil(String driver, String jdbcURL) {
 		put("hibernate.connection.driver_class", driver);
 		put("hibernate.connection.url", jdbcURL);
-		common();
-	}
-
-	private void common() {
-		put("hibernate.connection.username", "");
-		put("hibernate.connection.password", "");
-		put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-		put("hibernate.hbm2ddl.auto", "update");
-		// put("hibernate.show_sql", "true");
-		// put("hibernate.format_sql", "true");
 	}
 
 	public static void databaseDeleteOnExit(final File dbFile) {
