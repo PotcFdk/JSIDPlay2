@@ -2,14 +2,10 @@ package applet.entities.config;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.IFilterSection;
 import applet.config.annotations.ConfigClass;
 import applet.config.annotations.ConfigDescription;
-import applet.config.annotations.ConfigTransient;
 
 @Entity
 @ConfigClass(bundleKey = "FILTER")
@@ -22,20 +18,6 @@ public class FilterSection implements IFilterSection {
 	@Override
 	public String getName() {
 		return name;
-	}
-
-	@ManyToOne
-	@XmlIDREF
-	@ConfigTransient
-	private Configuration configuration;
-
-	@XmlTransient
-	public Configuration getConfiguration() {
-		return configuration;
-	}
-
-	public void setConfiguration(Configuration configuration) {
-		this.configuration = configuration;
 	}
 
 	@Override

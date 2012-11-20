@@ -10,7 +10,7 @@ import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
 
-@Generated(value="Dali", date="2012-11-18T21:49:52.215+0100")
+@Generated(value="Dali", date="2012-11-20T21:11:08.525+0100")
 @StaticMetamodel(HVSCEntry.class)
 public class HVSCEntry_ {
 	public static volatile SingularAttribute<HVSCEntry, Integer> id;

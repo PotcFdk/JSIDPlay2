@@ -8,13 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import applet.config.annotations.ConfigClass;
 import applet.config.annotations.ConfigDescription;
@@ -28,8 +24,6 @@ public class FavoritesSection {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@XmlID
-	@XmlJavaTypeAdapter(IntegerAdapter.class)
 	@ConfigTransient
 	private Integer id;
 
@@ -83,20 +77,6 @@ public class FavoritesSection {
 			favorites = new ArrayList<HVSCEntry>();
 		}
 		return favorites;
-	}
-
-	@ManyToOne
-	@XmlIDREF
-	@ConfigTransient
-	private Configuration configuration;
-
-	@XmlTransient
-	public Configuration getConfiguration() {
-		return configuration;
-	}
-
-	public void setConfiguration(Configuration configuration) {
-		this.configuration = configuration;
 	}
 
 }

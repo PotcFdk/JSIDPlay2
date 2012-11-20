@@ -49,6 +49,8 @@ public class ConfigService {
 
 	public void backup(Configuration config, File file) {
 		try {
+			em.persist(config);
+			flush();
 			JAXBContext jaxbContext = JAXBContext
 					.newInstance(Configuration.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
@@ -92,7 +94,6 @@ public class ConfigService {
 	public FavoritesSection addFavorite(Configuration cfg, String title) {
 		Configuration configuration = cfg;
 		FavoritesSection toAdd = new FavoritesSection();
-		toAdd.setConfiguration(configuration);
 		toAdd.setName(title);
 		configuration.getFavorites().add(toAdd);
 		em.persist(toAdd);
@@ -103,7 +104,6 @@ public class ConfigService {
 	public void removeFavorite(Configuration cfg, int index) {
 		Configuration configuration = cfg;
 		FavoritesSection toRemove = configuration.getFavorites().get(index);
-		toRemove.setConfiguration(null);
 		configuration.getFavorites().remove(index);
 		em.remove(toRemove);
 		flush();

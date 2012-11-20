@@ -12,10 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IC1541Section;
@@ -48,53 +46,43 @@ public class Configuration implements IConfig {
 		INITIAL_FILTERS = new ArrayList<FilterSection>();
 		FilterSection dbFilterSection;
 		dbFilterSection = new FilterSection();
-		dbFilterSection.setConfiguration(this);
 		dbFilterSection.setName("FilterLight8580");
 		dbFilterSection.setFilter8580CurvePosition(13400);
 		INITIAL_FILTERS.add(dbFilterSection);
 		dbFilterSection = new FilterSection();
-		dbFilterSection.setConfiguration(this);
 		dbFilterSection.setName("FilterAverage8580");
 		dbFilterSection.setFilter8580CurvePosition(12500);
 		INITIAL_FILTERS.add(dbFilterSection);
 		dbFilterSection = new FilterSection();
-		dbFilterSection.setConfiguration(this);
 		dbFilterSection.setName("FilterDark8580");
 		dbFilterSection.setFilter8580CurvePosition(11700);
 		INITIAL_FILTERS.add(dbFilterSection);
 
 		dbFilterSection = new FilterSection();
-		dbFilterSection.setConfiguration(this);
 		dbFilterSection.setName("FilterLightest6581");
 		dbFilterSection.setFilter6581CurvePosition(0.1f);
 		INITIAL_FILTERS.add(dbFilterSection);
 		dbFilterSection = new FilterSection();
-		dbFilterSection.setConfiguration(this);
 		dbFilterSection.setName("FilterLighter6581");
 		dbFilterSection.setFilter6581CurvePosition(0.3f);
 		INITIAL_FILTERS.add(dbFilterSection);
 		dbFilterSection = new FilterSection();
-		dbFilterSection.setConfiguration(this);
 		dbFilterSection.setName("FilterLight6581");
 		dbFilterSection.setFilter6581CurvePosition(0.4f);
 		INITIAL_FILTERS.add(dbFilterSection);
 		dbFilterSection = new FilterSection();
-		dbFilterSection.setConfiguration(this);
 		dbFilterSection.setName("FilterAverage6581");
 		dbFilterSection.setFilter6581CurvePosition(0.5f);
 		INITIAL_FILTERS.add(dbFilterSection);
 		dbFilterSection = new FilterSection();
-		dbFilterSection.setConfiguration(this);
 		dbFilterSection.setName("FilterDark6581");
 		dbFilterSection.setFilter6581CurvePosition(0.6f);
 		INITIAL_FILTERS.add(dbFilterSection);
 		dbFilterSection = new FilterSection();
-		dbFilterSection.setConfiguration(this);
 		dbFilterSection.setName("FilterDarker6581");
 		dbFilterSection.setFilter6581CurvePosition(0.7f);
 		INITIAL_FILTERS.add(dbFilterSection);
 		dbFilterSection = new FilterSection();
-		dbFilterSection.setConfiguration(this);
 		dbFilterSection.setName("FilterDarkest6581");
 		dbFilterSection.setFilter6581CurvePosition(0.9f);
 		INITIAL_FILTERS.add(dbFilterSection);
@@ -102,8 +90,6 @@ public class Configuration implements IConfig {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@XmlID
-	@XmlJavaTypeAdapter(IntegerAdapter.class)
 	@ConfigTransient
 	private Integer id;
 
@@ -251,7 +237,7 @@ public class Configuration implements IConfig {
 		this.currentFavorite = currentFavorite;
 	}
 
-	@OneToMany(mappedBy = "configuration", cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "favorites")
 	private List<FavoritesSection> favorites;
 
@@ -268,7 +254,7 @@ public class Configuration implements IConfig {
 		return favorites;
 	}
 
-	@OneToMany(mappedBy = "configuration", cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "filter")
 	private List<FilterSection> filter = INITIAL_FILTERS;
 
