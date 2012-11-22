@@ -142,6 +142,9 @@
 			<keep access="public" name="lowlevel.LameDecoder">
 				<method access="public" name="**" />
 			</keep>
+			<keep access="public" name="mp3.MPEGMode">
+				<method access="public" name="**" />
+			</keep>
 		</proguard>
 		<move file="${result_dir}/jump3r_shrinked.jar" tofile="${result_dir}/${mainJar}" />
 	</target>
