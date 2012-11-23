@@ -1,7 +1,6 @@
 package libsidplay.sidtune;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -52,13 +51,13 @@ public class MP3Tune extends SidTune {
 		s.info.startSong = 1;
 		s.info.songs = 1;
 		ID3V2Decoder decoder = new ID3V2Decoder();
-		try {
-			decoder.read(new RandomAccessFile(f, "r"));
+		try (RandomAccessFile randomAccessFile = new RandomAccessFile(f, "r")) {
+			decoder.read(randomAccessFile);
 			s.info.infoString[0] = decoder.getTitle();
 			s.info.infoString[1] = decoder.getAlbumInterpret();
 			s.info.infoString[2] = decoder.getAlbum();
 			s.info.startSong = Integer.valueOf(decoder.getTrack());
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
