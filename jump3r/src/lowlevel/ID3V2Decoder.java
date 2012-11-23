@@ -162,6 +162,8 @@ public class ID3V2Decoder {
 	}
 
 	private boolean readTag(final RandomAccessFile is) throws IOException {
+
+		// currently unsupported
 		byte[] type = new byte[4];
 		is.readFully(type);
 		if (type[0] == 0) {
@@ -169,7 +171,6 @@ public class ID3V2Decoder {
 			return true;
 		}
 		String entryType = getType(type);
-		System.out.println(entryType);
 
 		byte[] lenbuf = new byte[4];
 		is.readFully(lenbuf);
@@ -178,7 +179,8 @@ public class ID3V2Decoder {
 		if ("APIC".equals(entryType)) {
 			readImage(is, readLength(lenbuf));
 		} else if ("COMM".equals(entryType)) {
-			readComment(is, readLength(lenbuf), enc);
+			return true;
+			// readComment(is, readLength(lenbuf), enc);
 		} else {
 			String fieldValue = readField(is, entryType, readLength(lenbuf),
 					enc);
@@ -206,8 +208,12 @@ public class ID3V2Decoder {
 	}
 
 	private int readLength(byte[] lenbuf) {
-		return (((((lenbuf[0] << 8) + lenbuf[1]) << 8) + lenbuf[2]) << 8)
-				+ lenbuf[3];
+
+		int val = (lenbuf[0] & 0xff) << 8;
+		val += (lenbuf[1] & 0xff) << 8;
+		val += (lenbuf[2] & 0xff) << 8;
+		val += (lenbuf[3] & 0xff);
+		return val;
 	}
 
 	private String readField(final RandomAccessFile is, String type, int len,
@@ -231,6 +237,7 @@ public class ID3V2Decoder {
 		String language = new String(lang);
 		setCommentLanguage(language);
 		String fieldValue;
+		is.read();
 		fieldValue = readString(is, len, enc);
 		// System.out.println(fieldValue);
 		fieldValue = readString(is, len, enc);
@@ -240,7 +247,6 @@ public class ID3V2Decoder {
 	private String readString(final RandomAccessFile is, int len, int enc)
 			throws IOException {
 		if (enc == 0 || enc == 3) {
-			len -= 5;
 			byte[] bytes = new byte[len];
 			int pos = 0;
 			int ch;
@@ -289,4 +295,15 @@ public class ID3V2Decoder {
 				+ String.valueOf((char) type[3]);
 	}
 
+	public static void main(String[] args) {
+		try {
+			ID3V2Decoder id3v2Decoder = new ID3V2Decoder();
+			id3v2Decoder
+					.read(new RandomAccessFile(
+							"c:/Users/Ken/Music/a-ha/Hunting High and Low/01 Take on Me.mp3",
+							"r"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

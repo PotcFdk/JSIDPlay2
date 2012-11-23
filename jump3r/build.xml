@@ -142,6 +142,9 @@
 			<keep access="public" name="lowlevel.LameDecoder">
 				<method access="public" name="**" />
 			</keep>
+			<keep access="public" name="lowlevel.ID3V2Decoder">
+				<method access="public" name="**" />
+			</keep>
 			<keep access="public" name="mp3.MPEGMode">
 				<method access="public" name="**" />
 			</keep>
