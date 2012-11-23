@@ -1,8 +1,12 @@
 package libsidplay.sidtune;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
+
+import lowlevel.ID3V2Decoder;
 
 /**
  * Special MP3 tune implementation. This is not a program present in the C64
@@ -47,6 +51,17 @@ public class MP3Tune extends SidTune {
 		s.info.file = f;
 		s.info.startSong = 1;
 		s.info.songs = 1;
+		ID3V2Decoder decoder = new ID3V2Decoder();
+		try {
+			decoder.read(new RandomAccessFile(f, "r"));
+			s.info.infoString[0] = decoder.getTitle();
+			s.info.infoString[1] = decoder.getAlbumInterpret();
+			s.info.infoString[2] = decoder.getAlbum();
+			s.info.startSong = Integer.valueOf(decoder.getTrack());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
 		return s;
 	}
 
