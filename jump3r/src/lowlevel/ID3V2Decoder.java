@@ -298,10 +298,8 @@ public class ID3V2Decoder {
 	public static void main(String[] args) {
 		try {
 			ID3V2Decoder id3v2Decoder = new ID3V2Decoder();
-			id3v2Decoder
-					.read(new RandomAccessFile(
-							"c:/Users/Ken/Music/a-ha/Hunting High and Low/01 Take on Me.mp3",
-							"r"));
+			id3v2Decoder.read(new RandomAccessFile(args[0], "r"));
+			System.out.println();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
