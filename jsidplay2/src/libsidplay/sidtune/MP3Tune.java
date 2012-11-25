@@ -72,7 +72,11 @@ public class MP3Tune extends SidTune {
 			if (genre != null) {
 				s.info.infoString[2] += " / " + genre;
 			}
-			s.info.startSong = Integer.valueOf(decoder.getTrack());
+			try {
+				s.info.startSong = Integer.valueOf(decoder.getTrack());
+			} catch (NumberFormatException e) {
+				// ignore
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
