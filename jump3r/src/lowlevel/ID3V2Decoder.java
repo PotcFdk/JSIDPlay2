@@ -1,6 +1,8 @@
 package lowlevel;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -175,13 +177,14 @@ public class ID3V2Decoder {
 		byte[] lenbuf = new byte[4];
 		is.readFully(lenbuf);
 		is.skipBytes(2);
-		int enc = is.read();
 		if ("APIC".equals(entryType)) {
 			readImage(is, readLength(lenbuf));
 		} else if ("COMM".equals(entryType)) {
-			return true;
+			// not yet supported
+			is.skipBytes(readLength(lenbuf));
 			// readComment(is, readLength(lenbuf), enc);
 		} else {
+			int enc = is.read();
 			String fieldValue = readField(is, entryType, readLength(lenbuf),
 					enc);
 			if (entryType.equals("TALB")) {
@@ -274,6 +277,7 @@ public class ID3V2Decoder {
 
 	private void readImage(final RandomAccessFile is, int len)
 			throws IOException, FileNotFoundException {
+		int c = is.read();
 		int ch;
 		StringBuilder mime = new StringBuilder();
 		do {
@@ -300,6 +304,9 @@ public class ID3V2Decoder {
 			ID3V2Decoder id3v2Decoder = new ID3V2Decoder();
 			id3v2Decoder.read(new RandomAccessFile(args[0], "r"));
 			System.out.println();
+			FileOutputStream os = new FileOutputStream(new File("d:/out.jpg"));
+			os.write(id3v2Decoder.getImageBytes());
+			os.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
