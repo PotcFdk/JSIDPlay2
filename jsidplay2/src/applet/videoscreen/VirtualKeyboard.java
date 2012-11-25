@@ -28,6 +28,8 @@ public abstract class VirtualKeyboard {
 
 	public class TranspButton extends JButton {
 		float transparency = 0.5f;
+
+		@Override
 		protected void paintComponent(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
 			Composite alpha = AlphaComposite.getInstance(
@@ -57,6 +59,7 @@ public abstract class VirtualKeyboard {
 		public KeyTableEntry getEntry() {
 			return entry;
 		}
+
 		public void setEntry(KeyTableEntry entry) {
 			this.entry = entry;
 		}
@@ -106,8 +109,10 @@ public abstract class VirtualKeyboard {
 			// Use custom CBM font
 			InputStream fontStream = JSIDPlay2.class
 					.getResourceAsStream(FONT_NAME);
-			cbmFont = Font.createFont(Font.TRUETYPE_FONT, fontStream)
-					.deriveFont(Font.PLAIN, FONT_SIZE);
+			if (fontStream != null) {
+				cbmFont = Font.createFont(Font.TRUETYPE_FONT, fontStream)
+						.deriveFont(Font.PLAIN, FONT_SIZE);
+			}
 		} catch (FontFormatException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -130,7 +135,7 @@ public abstract class VirtualKeyboard {
 		button.setFont(cbmFont);
 		button.setRolloverEnabled(false);
 		slider.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				button.setTransparency(slider.getValue());
@@ -140,7 +145,7 @@ public abstract class VirtualKeyboard {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (key==KeyTableEntry.RESTORE) {
+				if (key == KeyTableEntry.RESTORE) {
 					c64.getKeyboard().restore();
 				} else {
 					c64.getEventScheduler().scheduleThreadSafe(

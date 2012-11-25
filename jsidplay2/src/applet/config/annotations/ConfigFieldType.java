@@ -7,13 +7,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Documented
-@Target(ElementType.METHOD)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConfigMethod {
+public @interface ConfigFieldType {
 	/**
-	 * Get key for bundle to be localized and displayed in the UI.
+	 * Is the configurable field a filename?
 	 * 
-	 * @return key to get a language dependent message
+	 * @return configurable field is a filename
 	 */
-	String nameKey();
+	Class<?> uiClass();
+
+	/**
+	 * Get files and/or folders mode
+	 * 
+	 * @return e.g. JFileChooser.DIRECTORIES_ONLY
+	 */
+	int filter();
+
 }

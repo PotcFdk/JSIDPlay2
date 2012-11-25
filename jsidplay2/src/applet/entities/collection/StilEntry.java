@@ -7,11 +7,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigTypeName;
 import applet.config.annotations.ConfigTransient;
 
 @Entity
-@ConfigClass(bundleKey = "STIL_ENTRY")
+@ConfigTypeName(bundleKey = "STIL_ENTRY")
 public class StilEntry {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

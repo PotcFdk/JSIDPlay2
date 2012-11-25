@@ -13,7 +13,7 @@ import applet.config.annotations.ConfigDescription;
 public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
-	@ConfigDescription(descriptionKey = "EMULATION_DEFAULT_CLOCK_SPEED_DESC", toolTipKey = "EMULATION_DEFAULT_CLOCK_SPEED_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_DEFAULT_CLOCK_SPEED_DESC", toolTipBundleKey = "EMULATION_DEFAULT_CLOCK_SPEED_TOOLTIP")
 	private CPUClock defaultClockSpeed = CPUClock.PAL;
 
 	@Override
@@ -27,7 +27,7 @@ public class EmulationSection implements IEmulationSection {
 	}
 
 	@Enumerated(EnumType.STRING)
-	@ConfigDescription(descriptionKey = "EMULATION_USER_CLOCK_SPEED_DESC", toolTipKey = "EMULATION_USER_CLOCK_SPEED_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_USER_CLOCK_SPEED_DESC", toolTipBundleKey = "EMULATION_USER_CLOCK_SPEED_TOOLTIP")
 	private CPUClock userClockSpeed;
 
 	@Override
@@ -41,7 +41,7 @@ public class EmulationSection implements IEmulationSection {
 	}
 
 	@Enumerated(EnumType.STRING)
-	@ConfigDescription(descriptionKey = "EMULATION_DEFAULT_SID_MODEL_DESC", toolTipKey = "EMULATION_DEFAULT_SID_MODEL_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_DEFAULT_SID_MODEL_DESC", toolTipBundleKey = "EMULATION_DEFAULT_SID_MODEL_TOOLTIP")
 	private ChipModel defaultSidModel = ChipModel.MOS6581;
 
 	@Override
@@ -55,7 +55,7 @@ public class EmulationSection implements IEmulationSection {
 	}
 
 	@Enumerated(EnumType.STRING)
-	@ConfigDescription(descriptionKey = "EMULATION_USER_SID_MODEL_DESC", toolTipKey = "EMULATION_USER_SID_MODEL_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_USER_SID_MODEL_DESC", toolTipBundleKey = "EMULATION_USER_SID_MODEL_TOOLTIP")
 	private ChipModel userSidModel;
 
 	@Override
@@ -68,7 +68,7 @@ public class EmulationSection implements IEmulationSection {
 		this.userSidModel = userSidModel;
 	}
 
-	@ConfigDescription(descriptionKey = "EMULATION_HARDSID6581_DESC", toolTipKey = "EMULATION_HARDSID6581_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_HARDSID6581_DESC", toolTipBundleKey = "EMULATION_HARDSID6581_TOOLTIP")
 	private int hardsid6581 = 1;
 
 	@Override
@@ -81,7 +81,7 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid6581 = hardsid6581;
 	}
 
-	@ConfigDescription(descriptionKey = "EMULATION_HARDSID8580_DESC", toolTipKey = "EMULATION_HARDSID8580_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_HARDSID8580_DESC", toolTipBundleKey = "EMULATION_HARDSID8580_TOOLTIP")
 	private int hardsid8580 = 2;
 
 	@Override
@@ -94,7 +94,7 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid8580 = hardsid8580;
 	}
 
-	@ConfigDescription(descriptionKey = "EMULATION_FILTER_DESC", toolTipKey = "EMULATION_FILTER_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_FILTER_DESC", toolTipBundleKey = "EMULATION_FILTER_TOOLTIP")
 	private boolean filter = true;
 
 	@Override
@@ -107,7 +107,7 @@ public class EmulationSection implements IEmulationSection {
 		this.filter = isFilter;
 	}
 
-	@ConfigDescription(descriptionKey = "EMULATION_FILTER6581_DESC", toolTipKey = "EMULATION_FILTER6581_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_FILTER6581_DESC", toolTipBundleKey = "EMULATION_FILTER6581_TOOLTIP")
 	private String filter6581 = "FilterAverage6581";
 
 	@Override
@@ -120,7 +120,7 @@ public class EmulationSection implements IEmulationSection {
 		this.filter6581 = filter6581;
 	}
 
-	@ConfigDescription(descriptionKey = "EMULATION_FILTER8580_DESC", toolTipKey = "EMULATION_FILTER8580_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_FILTER8580_DESC", toolTipBundleKey = "EMULATION_FILTER8580_TOOLTIP")
 	private String filter8580 = "FilterAverage8580";
 
 	@Override
@@ -133,7 +133,7 @@ public class EmulationSection implements IEmulationSection {
 		this.filter8580 = filter8580;
 	}
 
-	@ConfigDescription(descriptionKey = "EMULATION_DIGI_BOOSTED8580_DESC", toolTipKey = "EMULATION_DIGI_BOOSTED8580_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_DIGI_BOOSTED8580_DESC", toolTipBundleKey = "EMULATION_DIGI_BOOSTED8580_TOOLTIP")
 	private boolean digiBoosted8580;
 
 	@Override
@@ -146,7 +146,7 @@ public class EmulationSection implements IEmulationSection {
 		this.digiBoosted8580 = isDigiBoosted8580;
 	}
 
-	@ConfigDescription(descriptionKey = "EMULATION_DUAL_SID_BASE_DESC", toolTipKey = "EMULATION_DUAL_SID_BASE_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_DUAL_SID_BASE_DESC", toolTipBundleKey = "EMULATION_DUAL_SID_BASE_TOOLTIP")
 	private int dualSidBase = 0xd420;
 
 	@Override
@@ -159,7 +159,7 @@ public class EmulationSection implements IEmulationSection {
 		this.dualSidBase = dualSidBase;
 	}
 
-	@ConfigDescription(descriptionKey = "EMULATION_FORCE_STEREO_TUNE_DESC", toolTipKey = "EMULATION_FORCE_STEREO_TUNE_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_FORCE_STEREO_TUNE_DESC", toolTipBundleKey = "EMULATION_FORCE_STEREO_TUNE_TOOLTIP")
 	private boolean forceStereoTune;
 
 	@Override
@@ -173,7 +173,7 @@ public class EmulationSection implements IEmulationSection {
 	}
 
 	@Enumerated(EnumType.STRING)
-	@ConfigDescription(descriptionKey = "EMULATION_STEREO_SID_MODEL_DESC", toolTipKey = "EMULATION_STEREO_SID_MODEL_TOOLTIP")
+	@ConfigDescription(bundleKey = "EMULATION_STEREO_SID_MODEL_DESC", toolTipBundleKey = "EMULATION_STEREO_SID_MODEL_TOOLTIP")
 	private ChipModel stereoSidModel;
 
 	@Override

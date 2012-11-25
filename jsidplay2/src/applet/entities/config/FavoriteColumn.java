@@ -6,12 +6,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlTransient;
 
-import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigTypeName;
 import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigTransient;
 
 @Entity
-@ConfigClass(bundleKey = "FAVORITE_COLUMN")
+@ConfigTypeName(bundleKey = "FAVORITE_COLUMN")
 public class FavoriteColumn {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -27,7 +27,7 @@ public class FavoriteColumn {
 		this.id = id;
 	}
 
-	@ConfigDescription(descriptionKey = "FAVORITES_COLUMNS_COLUMN_PROPERTY_DESC", toolTipKey = "FAVORITES_COLUMNS_COLUMN_PROPERTY_TOOLTIP")
+	@ConfigDescription(bundleKey = "FAVORITES_COLUMNS_COLUMN_PROPERTY_DESC", toolTipBundleKey = "FAVORITES_COLUMNS_COLUMN_PROPERTY_TOOLTIP")
 	private String columnProperty;
 
 	public String getColumnProperty() {

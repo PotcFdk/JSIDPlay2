@@ -23,12 +23,12 @@ import libsidplay.sidtune.SidTune.Speed;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.SidDatabase;
 import sidplay.ini.intf.IConfig;
-import applet.config.annotations.ConfigClass;
-import applet.config.annotations.ConfigMethod;
+import applet.config.annotations.ConfigTypeName;
+import applet.config.annotations.ConfigSectionName;
 import applet.config.annotations.ConfigTransient;
 
 @Entity
-@ConfigClass(bundleKey = "HVSC_ENTRY")
+@ConfigTypeName(bundleKey = "HVSC_ENTRY")
 public class HVSCEntry {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -345,7 +345,7 @@ public class HVSCEntry {
 	@OneToMany(mappedBy = "hvscEntry")
 	private List<StilEntry> stil;
 
-	@ConfigMethod(nameKey = "STIL_ENTRIES")
+	@ConfigSectionName(bundleKey = "STIL_ENTRIES")
 	public List<StilEntry> getStil() {
 		if (stil == null) {
 			stil = new ArrayList<StilEntry>();

@@ -4,15 +4,15 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import sidplay.ini.intf.IFilterSection;
-import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigTypeName;
 import applet.config.annotations.ConfigDescription;
 
 @Entity
-@ConfigClass(bundleKey = "FILTER")
+@ConfigTypeName(bundleKey = "FILTER")
 public class FilterSection implements IFilterSection {
 
 	@Id
-	@ConfigDescription(descriptionKey = "FILTER_NAME_DESC", toolTipKey = "FILTER_NAME_TOOLTIP")
+	@ConfigDescription(bundleKey = "FILTER_NAME_DESC", toolTipBundleKey = "FILTER_NAME_TOOLTIP")
 	private String name;
 
 	@Override
@@ -25,7 +25,7 @@ public class FilterSection implements IFilterSection {
 		this.name = name;
 	}
 
-	@ConfigDescription(descriptionKey = "FILTER_FILTER8580_CURVE_POSITION_DESC", toolTipKey = "FILTER_FILTER8580_CURVE_POSITION_TOOLTIP")
+	@ConfigDescription(bundleKey = "FILTER_FILTER8580_CURVE_POSITION_DESC", toolTipBundleKey = "FILTER_FILTER8580_CURVE_POSITION_TOOLTIP")
 	private float filter8580CurvePosition;
 
 	@Override
@@ -38,7 +38,7 @@ public class FilterSection implements IFilterSection {
 		this.filter8580CurvePosition = filter8580CurvePosition;
 	}
 
-	@ConfigDescription(descriptionKey = "FILTER_FILTER6581_CURVE_POSITION_DESC", toolTipKey = "FILTER_FILTER6581_CURVE_POSITION_TOOLTIP")
+	@ConfigDescription(bundleKey = "FILTER_FILTER6581_CURVE_POSITION_DESC", toolTipBundleKey = "FILTER_FILTER6581_CURVE_POSITION_TOOLTIP")
 	private float filter6581CurvePosition;
 
 	@Override

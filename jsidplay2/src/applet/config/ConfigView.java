@@ -33,7 +33,7 @@ import org.swixml.SwingEngine;
 
 import applet.TuneTab;
 import applet.config.annotations.ConfigDescription;
-import applet.config.annotations.ConfigField;
+import applet.config.annotations.ConfigFieldType;
 import applet.editors.EditorUtils;
 import applet.entities.config.Configuration;
 import applet.entities.config.service.ConfigService;
@@ -110,8 +110,8 @@ public class ConfigView extends TuneTab {
 										.getUserObject();
 								JComponent component = null;
 								if (isTextFieldType(field)) {
-									ConfigField uiConfig = field
-											.getAnnotation(ConfigField.class);
+									ConfigFieldType uiConfig = field
+											.getAnnotation(ConfigFieldType.class);
 									if (uiConfig != null
 											&& uiConfig.uiClass() != null) {
 										fileChooserFilter = uiConfig.filter();
@@ -137,11 +137,11 @@ public class ConfigView extends TuneTab {
 										.getAnnotation(ConfigDescription.class);
 								if (uiDesc != null) {
 									description.setText(swix.getLocalizer()
-											.getString(uiDesc.descriptionKey()));
+											.getString(uiDesc.bundleKey()));
 									if (component != null) {
 										component.setToolTipText(swix
 												.getLocalizer().getString(
-														uiDesc.toolTipKey()));
+														uiDesc.toolTipBundleKey()));
 									}
 								}
 							} else {

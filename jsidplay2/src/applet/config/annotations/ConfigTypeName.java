@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConfigClass {
+public @interface ConfigTypeName {
 	/**
 	 * Get key for bundle to be localized and displayed in the UI.
 	 * 

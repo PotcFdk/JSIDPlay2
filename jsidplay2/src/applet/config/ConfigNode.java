@@ -7,8 +7,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.swixml.Localizer;
 
-import applet.config.annotations.ConfigClass;
-import applet.config.annotations.ConfigMethod;
+import applet.config.annotations.ConfigTypeName;
+import applet.config.annotations.ConfigSectionName;
 
 public class ConfigNode extends DefaultMutableTreeNode {
 	private Object objectToInvokeMethod;
@@ -117,14 +117,14 @@ public class ConfigNode extends DefaultMutableTreeNode {
 		} else if (getUserObject() instanceof Method) {
 			// Methods are displayed using annotation at getter method level
 			Method method = (Method) getUserObject();
-			ConfigMethod uiConfig = method.getAnnotation(ConfigMethod.class);
+			ConfigSectionName uiConfig = method.getAnnotation(ConfigSectionName.class);
 			if (uiConfig != null) {
-				return localizer.getString(uiConfig.nameKey());
+				return localizer.getString(uiConfig.bundleKey());
 			}
 		} else {
 			// Other objects are displayed using annotation at class level
-			ConfigClass uiConfig = getUserObject().getClass().getAnnotation(
-					ConfigClass.class);
+			ConfigTypeName uiConfig = getUserObject().getClass().getAnnotation(
+					ConfigTypeName.class);
 			if (uiConfig != null) {
 				return localizer.getString(uiConfig.bundleKey());
 			}

@@ -33,36 +33,36 @@
 				<gridbagconstraints gridx="0" gridy="0"
 					gridwidth="4" gridheight="1" fill="GridBagConstraints.BOTH" />
 			</label>
-			<checkbox label="PLAYBACK_ON_OFF" id="playbackEnable"
-				action="enablePlayback">
-				<gridbagconstraints gridx="0" gridy="1" weightx="1"
-					weighty="1" fill="GridBagConstraints.BOTH" />
-			</checkbox>
 			<buttongroup>
-				<radiobutton label="NORMAL" Selected="true" Enabled="false"
-					id="normal">
+				<radiobutton label="OFF" Selected="true" 
+					action="enablePlayback" id="off">
+					<gridbagconstraints gridx="0" gridy="1" weightx="1"
+						weighty="1" fill="GridBagConstraints.BOTH" />
+				</radiobutton>
+				<radiobutton label="NORMAL" 
+					action="enablePlayback" id="normal">
 					<gridbagconstraints gridx="1" gridy="1" weightx="1"
 						weighty="1" fill="GridBagConstraints.BOTH" />
 				</radiobutton>
-				<radiobutton label="RANDOM_ONE_PLAYLIST" Enabled="false"
-					id="randomOne">
+				<radiobutton label="RANDOM_ONE_PLAYLIST" 
+					action="enablePlayback" id="randomOne">
 					<gridbagconstraints gridx="2" gridy="1" weightx="1"
 						weighty="1" fill="GridBagConstraints.BOTH" />
 				</radiobutton>
-				<radiobutton label="RANDOM_ALL_PLAYLISTS" Enabled="false"
-					id="randomAll">
+				<radiobutton label="RANDOM_ALL_PLAYLISTS" 
+					action="enablePlayback" id="randomAll">
 					<gridbagconstraints gridx="3" gridy="1" weightx="1"
 						weighty="1" fill="GridBagConstraints.BOTH" />
 				</radiobutton>
 			</buttongroup>
-			<checkbox label="REPEAT_ON_OFF" Enable="false" id="repeatEnable"
-				action="enableRepeat">
-				<gridbagconstraints gridx="0" gridy="2" weightx="1"
-					weighty="1" fill="GridBagConstraints.BOTH" />
-			</checkbox>
 			<buttongroup>
-				<radiobutton label="REPEAT_ONE_TUNE" Selected="true"
-					Enabled="false" id="repeatOne">
+				<radiobutton label="REPEAT_OFF" Selected="true"
+					id="repeatOff" action="enableRepeat">
+					<gridbagconstraints gridx="0" gridy="2" weightx="1"
+						weighty="1" fill="GridBagConstraints.BOTH" />
+				</radiobutton>
+				<radiobutton label="REPEAT_ONE_TUNE"
+					id="repeatOne" action="enableRepeat">
 					<gridbagconstraints gridx="1" gridy="2" weightx="1"
 						weighty="1" fill="GridBagConstraints.BOTH" />
 				</radiobutton>

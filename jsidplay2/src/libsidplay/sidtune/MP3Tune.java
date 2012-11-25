@@ -54,8 +54,24 @@ public class MP3Tune extends SidTune {
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(f, "r")) {
 			decoder.read(randomAccessFile);
 			s.info.infoString[0] = decoder.getTitle();
-			s.info.infoString[1] = decoder.getAlbumInterpret();
-			s.info.infoString[2] = decoder.getAlbum();
+			String interpret = decoder.getInterpret();
+			String albumInterpret = decoder.getAlbumInterpret();
+			String genre = decoder.getGenre();
+			if (interpret != null) {
+				s.info.infoString[1] = interpret;
+			} else {
+				s.info.infoString[1] = albumInterpret;
+			}
+			String album = decoder.getAlbum();
+			String year = decoder.getYear();
+			if (album != null && year != null) {
+				s.info.infoString[2] = album + "(" + year + ")";
+			} else {
+				s.info.infoString[2] = album;
+			}
+			if (genre != null) {
+				s.info.infoString[2] += " / " + genre;
+			}
 			s.info.startSong = Integer.valueOf(decoder.getTrack());
 		} catch (IOException e) {
 			e.printStackTrace();

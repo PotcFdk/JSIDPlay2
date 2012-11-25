@@ -24,14 +24,14 @@ import sidplay.ini.intf.IFilterSection;
 import sidplay.ini.intf.IJoystickSection;
 import sidplay.ini.intf.IPrinterSection;
 import sidplay.ini.intf.ISidPlay2Section;
-import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigTypeName;
 import applet.config.annotations.ConfigDescription;
-import applet.config.annotations.ConfigMethod;
+import applet.config.annotations.ConfigSectionName;
 import applet.config.annotations.ConfigTransient;
 
 @Entity
 @XmlRootElement(name = "configuration")
-@ConfigClass(bundleKey = "CONFIGURATION")
+@ConfigTypeName(bundleKey = "CONFIGURATION")
 public class Configuration implements IConfig {
 
 	/** Bump this each time you want to invalidate the configuration */
@@ -123,7 +123,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(nameKey = "JSIDPLAY2")
+	@ConfigSectionName(bundleKey = "GENERAL")
 	public ISidPlay2Section getSidplay2() {
 		return sidplay2;
 	}
@@ -133,7 +133,7 @@ public class Configuration implements IConfig {
 	private OnlineSection online = new OnlineSection();
 
 	@XmlTransient
-	@ConfigMethod(nameKey = "ONLINE")
+	@ConfigSectionName(bundleKey = "ONLINE")
 	public OnlineSection getOnline() {
 		return online;
 	}
@@ -151,7 +151,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(nameKey = "C1541")
+	@ConfigSectionName(bundleKey = "C1541")
 	public IC1541Section getC1541() {
 		return c1541;
 	}
@@ -165,7 +165,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(nameKey = "PRINTER")
+	@ConfigSectionName(bundleKey = "PRINTER")
 	public IPrinterSection getPrinter() {
 		return printer;
 	}
@@ -179,7 +179,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(nameKey = "JOYSTICK")
+	@ConfigSectionName(bundleKey = "JOYSTICK")
 	public IJoystickSection getJoystick() {
 		return joystick;
 	}
@@ -193,7 +193,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(nameKey = "CONSOLE")
+	@ConfigSectionName(bundleKey = "CONSOLE")
 	public IConsoleSection getConsole() {
 		return console;
 	}
@@ -207,7 +207,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(nameKey = "AUDIO")
+	@ConfigSectionName(bundleKey = "AUDIO")
 	public IAudioSection getAudio() {
 		return audio;
 	}
@@ -221,12 +221,12 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(nameKey = "EMULATION")
+	@ConfigSectionName(bundleKey = "EMULATION")
 	public IEmulationSection getEmulation() {
 		return emulation;
 	}
 
-	@ConfigDescription(descriptionKey = "CURRENT_FAVORITE_DESC", toolTipKey = "CURRENT_FAVORITE_TOOLTIP")
+	@ConfigDescription(bundleKey = "CURRENT_FAVORITE_DESC", toolTipBundleKey = "CURRENT_FAVORITE_TOOLTIP")
 	private String currentFavorite;
 
 	public String getCurrentFavorite() {
@@ -246,7 +246,7 @@ public class Configuration implements IConfig {
 	}
 
 	@XmlTransient
-	@ConfigMethod(nameKey = "FAVORITES")
+	@ConfigSectionName(bundleKey = "FAVORITES")
 	public List<FavoritesSection> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<FavoritesSection>();
@@ -263,7 +263,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	@ConfigMethod(nameKey = "FILTERS")
+	@ConfigSectionName(bundleKey = "FILTERS")
 	public List<? extends IFilterSection> getFilter() {
 		if (filter == null) {
 			filter = new ArrayList<FilterSection>();

@@ -12,14 +12,14 @@ import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import applet.config.annotations.ConfigClass;
+import applet.config.annotations.ConfigTypeName;
 import applet.config.annotations.ConfigDescription;
-import applet.config.annotations.ConfigMethod;
+import applet.config.annotations.ConfigSectionName;
 import applet.config.annotations.ConfigTransient;
 import applet.entities.collection.HVSCEntry;
 
 @Entity
-@ConfigClass(bundleKey = "FAVORITE")
+@ConfigTypeName(bundleKey = "FAVORITE")
 public class FavoritesSection {
 
 	@Id
@@ -36,7 +36,7 @@ public class FavoritesSection {
 		this.id = id;
 	}
 
-	@ConfigDescription(descriptionKey = "FAVORITES_NAME_DESC", toolTipKey = "FAVORITES_NAME_TOOLTIP")
+	@ConfigDescription(bundleKey = "FAVORITES_NAME_DESC", toolTipBundleKey = "FAVORITES_NAME_TOOLTIP")
 	private String name;
 
 	public String getName() {
@@ -50,7 +50,7 @@ public class FavoritesSection {
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<FavoriteColumn> columns;
 
-	@ConfigMethod(nameKey = "FAVORITES_COLUMNS")
+	@ConfigSectionName(bundleKey = "FAVORITES_COLUMNS")
 	public List<FavoriteColumn> getColumns() {
 		if (columns == null) {
 			columns = new ArrayList<FavoriteColumn>();
@@ -71,7 +71,7 @@ public class FavoritesSection {
 	}
 
 	@XmlTransient
-	@ConfigMethod(nameKey = "HVSC_ENTRIES")
+	@ConfigSectionName(bundleKey = "HVSC_ENTRIES")
 	public List<HVSCEntry> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<HVSCEntry>();

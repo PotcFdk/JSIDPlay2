@@ -14,7 +14,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
@@ -36,6 +35,7 @@ import applet.TuneTab;
 import applet.collection.Collection;
 import applet.entities.config.Configuration;
 import applet.entities.config.FavoritesSection;
+import applet.entities.config.SidPlay2Section;
 import applet.entities.config.service.ConfigService;
 import applet.events.IPlayTune;
 import applet.events.ITuneStateChanged;
@@ -64,9 +64,9 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 	private SwingEngine swix;
 
 	protected JButton add, remove, selectAll, deselectAll, load, save, saveAs;
-	protected JCheckBox playbackEnable, repeatEnable;
 	protected JTabbedPane favoriteList;
-	protected JRadioButton normal, randomOne, randomAll, repeatOne;
+	protected JRadioButton off, normal, randomOne, randomAll, repeatOff,
+			repeatOne;
 
 	protected Player player;
 	protected Configuration config;
@@ -293,14 +293,11 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			boolean playbackSelected = playbackEnable.isSelected();
-			normal.setEnabled(playbackSelected);
-			randomOne.setEnabled(playbackSelected);
-			randomAll.setEnabled(playbackSelected);
-			repeatEnable.setEnabled(playbackSelected);
-			repeatOne.setEnabled(playbackSelected);
-			boolean repeatSelected = repeatEnable.isSelected();
-			repeatOne.setEnabled(repeatSelected);
+			SidPlay2Section sidplay2 = (SidPlay2Section) config.getSidplay2();
+			sidplay2.setPlaybackType(off.isSelected() ? PlaybackType.PLAYBACK_OFF
+					: normal.isSelected() ? PlaybackType.NORMAL : randomOne
+							.isSelected() ? PlaybackType.RANDOM_ONE
+							: PlaybackType.RANDOM_ALL);
 		}
 	};
 
@@ -308,9 +305,9 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			boolean repeatSelected = repeatEnable.isSelected();
-			repeatOne.setEnabled(repeatSelected);
-			repeatOne.setSelected(repeatSelected);
+			SidPlay2Section sidplay2 = (SidPlay2Section) config.getSidplay2();
+			sidplay2.setRepeatType(repeatOff.isSelected() ? RepeatType.REPEAT_OFF
+					: RepeatType.REPEAT_ONE);
 		}
 	};
 
@@ -404,6 +401,43 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 				}
 			});
 		}
+		SidPlay2Section sidplay2 = (SidPlay2Section) config.getSidplay2();
+		PlaybackType playbackType = sidplay2.getPlaybackType();
+		if (playbackType != null) {
+			switch (playbackType) {
+			case PLAYBACK_OFF:
+				off.setSelected(true);
+				break;
+			case NORMAL:
+				normal.setSelected(true);
+				break;
+
+			case RANDOM_ONE:
+				randomOne.setSelected(true);
+				break;
+
+			case RANDOM_ALL:
+				randomAll.setSelected(true);
+				break;
+			default:
+				break;
+			}
+		}
+		RepeatType repeatType = sidplay2.getRepeatType();
+		if (repeatType != null) {
+			switch (repeatType) {
+			case REPEAT_OFF:
+				repeatOff.setSelected(true);
+				break;
+
+			case REPEAT_ONE:
+				repeatOne.setSelected(true);
+				break;
+
+			default:
+				break;
+			}
+		}
 	}
 
 	private void fillComboBoxes() {
@@ -486,69 +520,63 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 	}
 
 	private void playNextTune(ITuneStateChanged stateChanged) {
-		if (playbackEnable == null) {
-			// gui not created yet, ignore!
+		if (off == null) {
 			return;
 		}
-		if (playbackEnable.isSelected()) {
-			File tune = stateChanged.getTune();
-			File nextFile = null;
-			if (currentlyPlayedFavorites != null && repeatEnable.isSelected()
-					&& repeatOne.isSelected()) {
-				// repeat one tune
-				setPlayingIcon(currentlyPlayedFavorites);
-				nextFile = tune;
-			} else if (randomAll.isSelected()) {
-				// random all playlists
-				int index = Math.abs(random.nextInt(Integer.MAX_VALUE))
-						% (favoriteList.getTabCount() - 1);
-				Component comp = favoriteList.getComponentAt(index);
-				setPlayingIcon(comp);
-				favoriteList.setSelectedComponent(comp);
-				IFavorites fav = (IFavorites) comp;
-				nextFile = fav.getNextRandomFile(tune);
-			} else if (currentlyPlayedFavorites != null
-					&& randomOne.isSelected()) {
-				// random one playlist
-				IFavorites fav = currentlyPlayedFavorites;
-				setPlayingIcon(currentlyPlayedFavorites);
-				nextFile = fav.getNextRandomFile(tune);
-			} else if (currentlyPlayedFavorites != null
-					&& !repeatEnable.isSelected()) {
-				// normal playback
-				IFavorites fav = currentlyPlayedFavorites;
-				setPlayingIcon(currentlyPlayedFavorites);
-				nextFile = fav.getNextFile(tune);
-			}
-			if (nextFile != null) {
-				// System.err.println("Play Next File: " + nextFilename);
-				final File file = nextFile;
-				SwingUtilities.invokeLater(new Runnable() {
+		File tune = stateChanged.getTune();
+		File nextFile = null;
+		if (currentlyPlayedFavorites != null && repeatOne.isSelected()) {
+			// repeat one tune
+			setPlayingIcon(currentlyPlayedFavorites);
+			nextFile = tune;
+		} else if (randomAll.isSelected()) {
+			// random all playlists
+			int index = Math.abs(random.nextInt(Integer.MAX_VALUE))
+					% (favoriteList.getTabCount() - 1);
+			Component comp = favoriteList.getComponentAt(index);
+			setPlayingIcon(comp);
+			favoriteList.setSelectedComponent(comp);
+			IFavorites fav = (IFavorites) comp;
+			nextFile = fav.getNextRandomFile(tune);
+		} else if (currentlyPlayedFavorites != null && randomOne.isSelected()) {
+			// random one playlist
+			IFavorites fav = currentlyPlayedFavorites;
+			setPlayingIcon(currentlyPlayedFavorites);
+			nextFile = fav.getNextRandomFile(tune);
+		} else if (currentlyPlayedFavorites != null && !off.isSelected()
+				&& repeatOff.isSelected()) {
+			// normal playback
+			IFavorites fav = currentlyPlayedFavorites;
+			setPlayingIcon(currentlyPlayedFavorites);
+			nextFile = fav.getNextFile(tune);
+		}
+		if (nextFile != null) {
+			// System.err.println("Play Next File: " + nextFilename);
+			final File file = nextFile;
+			SwingUtilities.invokeLater(new Runnable() {
 
-					@Override
-					public void run() {
-						// play tune
-						getUiEvents().fireEvent(IPlayTune.class,
-								new IPlayTune() {
-									@Override
-									public boolean switchToVideoTab() {
-										return false;
-									}
+				@Override
+				public void run() {
+					// play tune
+					getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
+						@Override
+						public boolean switchToVideoTab() {
+							return false;
+						}
 
-									@Override
-									public File getFile() {
-										return file;
-									}
+						@Override
+						public File getFile() {
+							return file;
+						}
 
-									@Override
-									public Component getComponent() {
-										return FavoritesView.this;
-									}
-								});
-					}
+						@Override
+						public Component getComponent() {
+							return FavoritesView.this;
+						}
+					});
+				}
 
-				});
-			}
+			});
 		}
 	}
 

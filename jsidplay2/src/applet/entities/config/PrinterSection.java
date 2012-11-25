@@ -8,7 +8,7 @@ import applet.config.annotations.ConfigDescription;
 @Embeddable
 public class PrinterSection implements IPrinterSection {
 
-	@ConfigDescription(descriptionKey = "PRINTER_PRINTER_ON_DESC", toolTipKey = "PRINTER_PRINTER_ON_TOOLTIP")
+	@ConfigDescription(bundleKey = "PRINTER_PRINTER_ON_DESC", toolTipBundleKey = "PRINTER_PRINTER_ON_TOOLTIP")
 	private boolean printerOn;
 
 	@Override

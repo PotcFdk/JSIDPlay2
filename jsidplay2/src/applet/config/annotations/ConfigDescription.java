@@ -15,12 +15,12 @@ public @interface ConfigDescription {
 	 * 
 	 * @return key to get a language dependent message
 	 */
-	String descriptionKey();
+	String bundleKey();
 
 	/**
 	 * Get key for bundle to be localized and displayed in the UI.
 	 * 
 	 * @return key to get a language dependent message
 	 */
-	String toolTipKey();
+	String toolTipBundleKey();
 }
