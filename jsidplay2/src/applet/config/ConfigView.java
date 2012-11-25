@@ -140,7 +140,8 @@ public class ConfigView extends TuneTab {
 											.getString(uiDesc.bundleKey()));
 									if (component != null) {
 										component.setToolTipText(swix
-												.getLocalizer().getString(
+												.getLocalizer()
+												.getString(
 														uiDesc.toolTipBundleKey()));
 									}
 								}
@@ -295,7 +296,16 @@ public class ConfigView extends TuneTab {
 			if (rc == JFileChooser.APPROVE_OPTION
 					&& fileDialog.getSelectedFile() != null) {
 				lastDir = fileDialog.getSelectedFile();
-				configService.backup(config, fileDialog.getSelectedFile());
+				final File file;
+				if (!fileDialog.getSelectedFile().getName()
+						.endsWith(ConfigFileFilter.EXT_CONFIGURATION)) {
+					file = new File(fileDialog.getSelectedFile()
+							.getAbsolutePath()
+							+ ConfigFileFilter.EXT_CONFIGURATION);
+				} else {
+					file = fileDialog.getSelectedFile();
+				}
+				configService.backup(config, file);
 			}
 		}
 	};

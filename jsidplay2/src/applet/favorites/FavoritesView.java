@@ -5,6 +5,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -33,6 +34,7 @@ import org.swixml.SwingEngine;
 
 import applet.TuneTab;
 import applet.collection.Collection;
+import applet.entities.collection.HVSCEntry_;
 import applet.entities.config.Configuration;
 import applet.entities.config.FavoritesSection;
 import applet.entities.config.SidPlay2Section;
@@ -117,11 +119,11 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int index = favoriteList.getSelectedIndex();
+			final int index = favoriteList.getSelectedIndex();
 			Component comp = favoriteList.getComponentAt(index);
 			if (comp instanceof IFavorites) {
 				IFavorites fav = (IFavorites) comp;
-				JFileChooser fileDialog = new JFileChooser(lastDir);
+				final JFileChooser fileDialog = new JFileChooser(lastDir);
 				fileDialog.setFileFilter(fTuneFilter);
 				fileDialog.setMultiSelectionEnabled(true);
 				fileDialog
@@ -132,6 +134,29 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 					lastDir = fileDialog.getSelectedFile().getParentFile();
 					File files[] = fileDialog.getSelectedFiles();
 					fav.addToFavorites(files);
+					if (getSwix().getLocalizer().getString("NEW_TAB")
+							.equals(favoriteList.getTitleAt(index))) {
+						// Not named, yet? Rename tab title
+						getUiEvents().fireEvent(IChangeFavoritesTab.class,
+								new IChangeFavoritesTab() {
+									@Override
+									public int getIndex() {
+										return index;
+									}
+
+									@Override
+									public String getTitle() {
+										return PathUtils
+												.getBaseNameNoExt(fileDialog
+														.getSelectedFile());
+									}
+
+									@Override
+									public boolean isSelected() {
+										return false;
+									}
+								});
+					}
 				}
 			}
 		}
@@ -217,26 +242,31 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 					} else {
 						name = fileDialog.getSelectedFile().getAbsolutePath();
 					}
-					fav.loadFavorites(name);
+					try {
+						fav.loadFavorites(name);
+						getUiEvents().fireEvent(IChangeFavoritesTab.class,
+								new IChangeFavoritesTab() {
+									@Override
+									public int getIndex() {
+										return index;
+									}
+
+									@Override
+									public String getTitle() {
+										return PathUtils
+												.getBaseNameNoExt(fileDialog
+														.getSelectedFile());
+									}
+
+									@Override
+									public boolean isSelected() {
+										return false;
+									}
+								});
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 				}
-				getUiEvents().fireEvent(IChangeFavoritesTab.class,
-						new IChangeFavoritesTab() {
-							@Override
-							public int getIndex() {
-								return index;
-							}
-
-							@Override
-							public String getTitle() {
-								return PathUtils.getBaseNameNoExt(fileDialog
-										.getSelectedFile());
-							}
-
-							@Override
-							public boolean isSelected() {
-								return false;
-							}
-						});
 			}
 		}
 	};
@@ -265,26 +295,31 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 					} else {
 						name = fileDialog.getSelectedFile().getAbsolutePath();
 					}
-					fav.saveFavorites(name);
+					try {
+						fav.saveFavorites(name);
+						getUiEvents().fireEvent(IChangeFavoritesTab.class,
+								new IChangeFavoritesTab() {
+									@Override
+									public int getIndex() {
+										return index;
+									}
+
+									@Override
+									public String getTitle() {
+										return PathUtils
+												.getBaseNameNoExt(fileDialog
+														.getSelectedFile());
+									}
+
+									@Override
+									public boolean isSelected() {
+										return false;
+									}
+								});
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 				}
-				getUiEvents().fireEvent(IChangeFavoritesTab.class,
-						new IChangeFavoritesTab() {
-							@Override
-							public int getIndex() {
-								return index;
-							}
-
-							@Override
-							public String getTitle() {
-								return PathUtils.getBaseNameNoExt(fileDialog
-										.getSelectedFile());
-							}
-
-							@Override
-							public boolean isSelected() {
-								return false;
-							}
-						});
 			}
 		}
 	};
@@ -317,6 +352,8 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 					favoriteList, "", "icons/addtab.png", swix.getLocalizer()
 							.getString("ADD_A_NEW_TAB"), new ActionListener() {
 
+						private IFavorites addedFavorites;
+
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							getUiEvents().fireEvent(IAddFavoritesTab.class,
@@ -331,10 +368,17 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 										@Override
 										public void setFavorites(
 												IFavorites favorites) {
-
+											addedFavorites = favorites;
 										}
 
 									});
+							// Add default columns
+							addedFavorites.getFavoritesModel().addColumn(
+									HVSCEntry_.title);
+							addedFavorites.getFavoritesModel().addColumn(
+									HVSCEntry_.author);
+							addedFavorites.getFavoritesModel().addColumn(
+									HVSCEntry_.released);
 						}
 
 					}));

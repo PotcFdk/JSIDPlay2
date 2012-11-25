@@ -1,11 +1,12 @@
 package applet.favorites;
 
 import java.io.File;
+import java.io.IOException;
 
 public interface IFavorites {
-	void loadFavorites(String filename);
+	void loadFavorites(String filename) throws IOException;
 
-	void saveFavorites(String filename);
+	void saveFavorites(String filename) throws IOException;
 
 	void addToFavorites(File[] files);
 
@@ -22,4 +23,6 @@ public interface IFavorites {
 	String[] getSelection();
 
 	boolean isEmpty();
+
+	FavoritesModel getFavoritesModel();
 }

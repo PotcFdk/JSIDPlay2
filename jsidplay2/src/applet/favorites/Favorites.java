@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -563,7 +562,7 @@ public class Favorites extends JPanel implements IFavorites {
 	}
 
 	@Override
-	public void loadFavorites(String filename) {
+	public void loadFavorites(String filename) throws IOException {
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(
 				new FileInputStream(filename), "ISO-8859-1"))) {
 			// new favorites file format
@@ -572,21 +571,15 @@ public class Favorites extends JPanel implements IFavorites {
 			while ((line = r.readLine()) != null) {
 				favoritesModel.add(line);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void saveFavorites(String filename) {
+	public void saveFavorites(String filename) throws IOException {
 		try (PrintStream p = new PrintStream(filename, "ISO-8859-1")) {
 			for (int i = 0; i < favoritesModel.size(); i++) {
 				p.println(createRelativePath(favoritesModel.getFile(i)));
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -784,6 +777,11 @@ public class Favorites extends JPanel implements IFavorites {
 	@Override
 	public boolean isEmpty() {
 		return favoritesModel.size() == 0;
+	}
+
+	@Override
+	public FavoritesModel getFavoritesModel() {
+		return favoritesModel;
 	}
 
 }
