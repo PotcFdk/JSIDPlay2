@@ -417,8 +417,13 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 			if (title != null) {
 				index1 = favoriteList.indexOfTab(title);
 			}
-			favoriteList.setSelectedIndex(Math.max(index1, 0));
-
+			int index = Math.max(index1, 0);
+			favoriteList.setSelectedIndex(index);
+			Component comp = favoriteList.getComponentAt(index);
+			if (comp instanceof IFavorites) {
+				IFavorites fav = (IFavorites) comp;
+				fav.showSelectedPhoto();
+			}
 			favoriteList.addChangeListener(new ChangeListener() {
 
 				@Override

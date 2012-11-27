@@ -494,16 +494,22 @@ public abstract class Favorites extends JPanel implements IFavorites {
 
 		});
 		restoreSelectedRows();
-		showSelectedPhoto();
+		// showSelectedPhoto();
 	}
 
 	private void saveSelectedRows() {
 		ListSelectionModel selectionModel = favoritesTable.getSelectionModel();
 		if (selectionModel.getMinSelectionIndex() != -1) {
-			favorite.setSelectedRowFrom(selectionModel.getMinSelectionIndex());
+			final int selectedModelRowFrom = rowSorter
+					.convertRowIndexToModel(selectionModel
+							.getMinSelectionIndex());
+			favorite.setSelectedRowFrom(selectedModelRowFrom);
 		}
 		if (selectionModel.getMaxSelectionIndex() != -1) {
-			favorite.setSelectedRowTo(selectionModel.getMaxSelectionIndex());
+			final int selectedModelRowTo = rowSorter
+					.convertRowIndexToModel(selectionModel
+							.getMaxSelectionIndex());
+			favorite.setSelectedRowTo(selectedModelRowTo);
 		}
 	}
 
@@ -511,10 +517,14 @@ public abstract class Favorites extends JPanel implements IFavorites {
 		Integer selectedRowFrom = favorite.getSelectedRowFrom();
 		Integer selectedRowTo = favorite.getSelectedRowTo();
 		if (selectedRowFrom != null && selectedRowTo != null) {
+			final int selectedViewRowFrom = rowSorter
+					.convertRowIndexToView(selectedRowFrom);
 			favoritesTable.setRowSelectionInterval(selectedRowFrom,
-					selectedRowTo);
+					selectedViewRowFrom);
+			final int selectedViewRowTo = rowSorter
+					.convertRowIndexToView(selectedRowTo);
 			favoritesTable.scrollRectToVisible(favoritesTable.getCellRect(
-					selectedRowFrom, 0, true));
+					selectedViewRowTo, 0, true));
 		}
 	}
 
