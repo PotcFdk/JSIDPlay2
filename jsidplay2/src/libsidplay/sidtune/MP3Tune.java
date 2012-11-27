@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+
 import lowlevel.ID3V2Decoder;
 
 /**
@@ -16,6 +18,9 @@ import lowlevel.ID3V2Decoder;
  * 
  */
 public class MP3Tune extends SidTune {
+
+	private ID3V2Decoder decoder = new ID3V2Decoder();
+	private ImageIcon imageIcon;
 
 	@Override
 	public int placeProgramInMemory(byte[] c64buf) {
@@ -50,20 +55,19 @@ public class MP3Tune extends SidTune {
 		s.info.file = f;
 		s.info.startSong = 1;
 		s.info.songs = 1;
-		ID3V2Decoder decoder = new ID3V2Decoder();
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(f, "r")) {
-			decoder.read(randomAccessFile);
-			s.info.infoString[0] = decoder.getTitle();
-			String interpret = decoder.getInterpret();
-			String albumInterpret = decoder.getAlbumInterpret();
-			String genre = decoder.getGenre();
+			s.decoder.read(randomAccessFile);
+			s.info.infoString[0] = s.decoder.getTitle();
+			String interpret = s.decoder.getInterpret();
+			String albumInterpret = s.decoder.getAlbumInterpret();
+			String genre = s.decoder.getGenre();
 			if (interpret != null) {
 				s.info.infoString[1] = interpret;
 			} else {
 				s.info.infoString[1] = albumInterpret;
 			}
-			String album = decoder.getAlbum();
-			String year = decoder.getYear();
+			String album = s.decoder.getAlbum();
+			String year = s.decoder.getYear();
 			if (album != null && year != null) {
 				s.info.infoString[2] = album + "(" + year + ")";
 			} else {
@@ -73,9 +77,12 @@ public class MP3Tune extends SidTune {
 				s.info.infoString[2] += " / " + genre;
 			}
 			try {
-				s.info.startSong = Integer.valueOf(decoder.getTrack());
+				s.info.startSong = Integer.valueOf(s.decoder.getTrack());
 			} catch (NumberFormatException e) {
 				// ignore
+			}
+			if (s.decoder.getImageBytes() != null) {
+				s.imageIcon = new ImageIcon(s.decoder.getImageBytes());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -84,4 +91,8 @@ public class MP3Tune extends SidTune {
 		return s;
 	}
 
+	@Override
+	public ImageIcon getImageIcon() {
+		return imageIcon;
+	}
 }

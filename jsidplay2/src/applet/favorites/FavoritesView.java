@@ -14,9 +14,11 @@ import javax.persistence.EntityManager;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -28,12 +30,14 @@ import javax.swing.filechooser.FileFilter;
 
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 
 import org.swixml.SwingEngine;
 
 import applet.TuneTab;
 import applet.collection.Collection;
+import applet.collection.Picture;
 import applet.entities.collection.HVSCEntry_;
 import applet.entities.config.Configuration;
 import applet.entities.config.FavoritesSection;
@@ -65,6 +69,8 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 	private SwingEngine swix;
 
+	protected JPanel photograph;
+	protected Picture picture;
 	protected JButton add, remove, selectAll, deselectAll, load, save, saveAs;
 	protected JTabbedPane favoriteList;
 	protected JRadioButton off, normal, randomOne, randomAll, repeatOff,
@@ -104,6 +110,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 	private void createContents() {
 		try {
 			swix = new SwingEngine(this);
+			swix.getTaglib().registerTag("picture", Picture.class);
 			swix.insert(FavoritesView.class.getResource("FavoritesView.xml"),
 					this);
 
@@ -424,6 +431,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 					if (comp instanceof IFavorites) {
 						IFavorites fav = (IFavorites) comp;
 						remove.setEnabled(fav.getSelection().length > 0);
+						fav.showSelectedPhoto();
 					}
 					getUiEvents().fireEvent(IChangeFavoritesTab.class,
 							new IChangeFavoritesTab() {
@@ -491,7 +499,26 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 	private IFavorites addTab(FavoritesSection favorite, String newTitle) {
 		final int lastIndex = favoriteList.getTabCount() - 1;
 		final Favorites favorites = new Favorites(player, config, em, this,
-				favorite);
+				favorite) {
+			@Override
+			public void showPhoto(File tuneFile) {
+				picture.setComposerImage(null);
+				if (tuneFile != null) {
+					try {
+						ImageIcon imageIcon = SidTune.load(tuneFile)
+								.getImageIcon();
+						if (imageIcon != null) {
+							picture.setComposerImage(imageIcon.getImage());
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (SidTuneError e) {
+						e.printStackTrace();
+					}
+				}
+				photograph.repaint();
+			}
+		};
 		favorites.getPlayListTable().getSelectionModel()
 				.addListSelectionListener(this);
 		favoriteList.insertTab(newTitle, null, favorites, null, lastIndex);

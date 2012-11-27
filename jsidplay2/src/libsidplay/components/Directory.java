@@ -201,8 +201,8 @@ public class Directory {
 		} catch (SidTuneError e) {
 			throw new IOException();
 		}
-
-		HVSCEntry entry = HVSCEntry.create(cfg, file.getAbsolutePath(), file);
+		HVSCEntry entry = HVSCEntry.create(cfg, file.getAbsolutePath(), file,
+				tune);
 		final String title = entry.getTitle() != null ? entry.getTitle()
 				: entry.getName();
 

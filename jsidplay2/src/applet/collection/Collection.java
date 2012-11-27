@@ -10,19 +10,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -50,13 +47,13 @@ import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
+import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.STIL.STILEntry;
 import libsidutils.zip.ZipFileProxy;
 
 import org.swixml.SwingEngine;
 
-import applet.JSIDPlay2;
 import applet.SidTuneConverter;
 import applet.TuneTab;
 import applet.collection.search.ISearchListener;
@@ -313,27 +310,6 @@ public abstract class Collection extends TuneTab implements
 			return getSwix().getLocalizer().getString(
 					attribute.getDeclaringType().getJavaType().getSimpleName()
 							+ "." + attribute.getName());
-		}
-	}
-
-	/**
-	 * Contains a mapping: Author to picture resource path.
-	 */
-	private static final Properties sidAuthors = new Properties();
-
-	static {
-		InputStream is = Collection.class
-				.getResourceAsStream("pictures.properties");
-		try {
-			sidAuthors.load(is);
-		} catch (IOException e) {
-			throw new ExceptionInInitializerError(e);
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				throw new ExceptionInInitializerError(e);
-			}
 		}
 	}
 
@@ -867,9 +843,8 @@ public abstract class Collection extends TuneTab implements
 		if (rootFile.exists()) {
 			em = Persistence.createEntityManagerFactory(
 					PersistenceUtil.COLLECTION_DS,
-					new PersistenceUtil(new File(
-							rootFile.getParentFile(), dbName)))
-					.createEntityManager();
+					new PersistenceUtil(new File(rootFile.getParentFile(),
+							dbName))).createEntityManager();
 
 			versionService = new VersionService(em);
 
@@ -881,9 +856,10 @@ public abstract class Collection extends TuneTab implements
 
 					@Override
 					public void run() {
-						fileBrowser.setSelectionPath(new TreePath(
-								collectionTreeModel.getRoot()));
-						showPhoto();
+						TreePath treePath = new TreePath(collectionTreeModel
+								.getRoot());
+						fileBrowser.setSelectionPath(treePath);
+						showPhoto(treePath);
 						updateUI();
 					}
 
@@ -905,6 +881,10 @@ public abstract class Collection extends TuneTab implements
 	@Override
 	public void valueChanged(final TreeSelectionEvent treeselectionevent) {
 		final TreePath treePath = treeselectionevent.getNewLeadSelectionPath();
+		showPhoto(treePath);
+	}
+
+	protected void showPhoto(TreePath treePath) {
 		if (treePath == null) {
 			return;
 		}
@@ -914,31 +894,26 @@ public abstract class Collection extends TuneTab implements
 			if (file.isFile() && !(file instanceof ZipFileProxy)) {
 				TuneInfoTableModel tuneInfoModel = (TuneInfoTableModel) tuneInfoTable
 						.getModel();
-				tuneInfoModel.setFile(file);
-				showPhoto();
-				tuneInfoTable.updateUI();
+				try {
+					tuneInfoModel.setFile(file);
+					SidTune sidTune = tuneInfoModel.getSidTune();
+					if (sidTune == null) {
+						return;
+					}
+					picture.setComposerImage(null);
+					if (sidTune.getImageIcon() != null) {
+						picture.setComposerImage(sidTune.getImageIcon()
+								.getImage());
+					}
+					photograph.repaint();
+					tuneInfoTable.updateUI();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (SidTuneError e) {
+					e.printStackTrace();
+				}
 			}
 		}
-	}
-
-	protected void showPhoto() {
-		TuneInfoTableModel tuneInfoModel = (TuneInfoTableModel) tuneInfoTable
-				.getModel();
-		String authorInfo = tuneInfoModel.getAuthor();
-		if (authorInfo == null) {
-			// author not available
-			return;
-		}
-		String photoRes = sidAuthors.getProperty(authorInfo);
-
-		picture.setComposerImage(null);
-
-		if (photoRes != null) {
-			photoRes = "Photos/" + photoRes;
-			final URL resource = JSIDPlay2.class.getResource(photoRes);
-			picture.setComposerImage(new ImageIcon(resource).getImage());
-		}
-		photograph.repaint();
 	}
 
 	@Override
@@ -1013,7 +988,7 @@ public abstract class Collection extends TuneTab implements
 						fileBrowser.setSelectionPath(treePath);
 						fileBrowser.scrollPathToVisible(fileBrowser
 								.getSelectionPath());
-						showPhoto();
+						showPhoto(treePath);
 						updateUI();
 					}
 

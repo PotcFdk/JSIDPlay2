@@ -181,12 +181,12 @@ public class ID3V2Decoder {
 			readImage(is, readLength(lenbuf));
 		} else if ("COMM".equals(entryType)) {
 			// not yet supported
-			is.skipBytes(readLength(lenbuf));
+			is.skipBytes((int) readLength(lenbuf));
 			// readComment(is, readLength(lenbuf), enc);
 		} else {
 			int enc = is.read();
-			String fieldValue = readField(is, entryType, readLength(lenbuf),
-					enc);
+			String fieldValue = readField(is, entryType,
+					(int) readLength(lenbuf), enc);
 			if (entryType.equals("TALB")) {
 				setAlbum(fieldValue);
 			} else if (entryType.equals("TPE1")) {
@@ -210,10 +210,9 @@ public class ID3V2Decoder {
 		return false;
 	}
 
-	private int readLength(byte[] lenbuf) {
-
-		int val = (lenbuf[0] & 0xff) << 8;
-		val += (lenbuf[1] & 0xff) << 8;
+	private long readLength(byte[] lenbuf) {
+		long val = (lenbuf[0] & 0xff) << 24;
+		val += (lenbuf[1] & 0xff) << 16;
 		val += (lenbuf[2] & 0xff) << 8;
 		val += (lenbuf[3] & 0xff);
 		return val;
@@ -275,7 +274,7 @@ public class ID3V2Decoder {
 		}
 	}
 
-	private void readImage(final RandomAccessFile is, int len)
+	private void readImage(final RandomAccessFile is, long len)
 			throws IOException, FileNotFoundException {
 		int c = is.read();
 		int ch;
@@ -288,7 +287,7 @@ public class ID3V2Decoder {
 		} while (ch > 0);
 		setImageMimeType(mime.toString());
 		is.skipBytes(2);
-		byte[] pic = new byte[len - mime.length() - 4];
+		byte[] pic = new byte[(int) (len - mime.length() - 4)];
 		is.readFully(pic);
 		setImageBytes(pic);
 	}

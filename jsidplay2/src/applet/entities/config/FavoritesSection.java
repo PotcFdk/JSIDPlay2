@@ -12,10 +12,10 @@ import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import applet.config.annotations.ConfigTypeName;
 import applet.config.annotations.ConfigDescription;
 import applet.config.annotations.ConfigSectionName;
 import applet.config.annotations.ConfigTransient;
+import applet.config.annotations.ConfigTypeName;
 import applet.entities.collection.HVSCEntry;
 
 @Entity
@@ -45,6 +45,28 @@ public class FavoritesSection {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@ConfigDescription(bundleKey = "FAVORITES_SELECTED_ROW_FROM_DESC", toolTipBundleKey = "FAVORITES_SELECTED_ROW_FROM_TOOLTIP")
+	private Integer selectedRowFrom = 0;
+
+	public Integer getSelectedRowFrom() {
+		return selectedRowFrom;
+	}
+
+	public void setSelectedRowFrom(Integer selectedRowFrom) {
+		this.selectedRowFrom = selectedRowFrom;
+	}
+
+	@ConfigDescription(bundleKey = "FAVORITES_SELECTED_ROW_TO_DESC", toolTipBundleKey = "FAVORITES_SELECTED_ROW_TO_TOOLTIP")
+	private Integer selectedRowTo = 0;
+
+	public Integer getSelectedRowTo() {
+		return selectedRowTo;
+	}
+
+	public void setSelectedRowTo(Integer selectedRowTo) {
+		this.selectedRowTo = selectedRowTo;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)

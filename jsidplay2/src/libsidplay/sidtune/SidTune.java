@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.swing.ImageIcon;
+
 import libsidutils.zip.ZipEntryFileProxy;
 
 /**
@@ -402,5 +404,9 @@ public abstract class SidTune {
 	 * Return delay in C64 clocks before song init is done.
 	 */
 	public abstract long getInitDelay();
+
+	public ImageIcon getImageIcon() {
+		return null;
+	}
 
 }

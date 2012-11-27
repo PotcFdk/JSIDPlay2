@@ -23,9 +23,9 @@ import libsidplay.sidtune.SidTune.Speed;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.SidDatabase;
 import sidplay.ini.intf.IConfig;
-import applet.config.annotations.ConfigTypeName;
 import applet.config.annotations.ConfigSectionName;
 import applet.config.annotations.ConfigTransient;
+import applet.config.annotations.ConfigTypeName;
 
 @Entity
 @ConfigTypeName(bundleKey = "HVSC_ENTRY")
@@ -354,45 +354,40 @@ public class HVSCEntry {
 	}
 
 	public static HVSCEntry create(final IConfig config, final String path,
-			final File tuneFile) {
+			final File tuneFile, SidTune tune) {
 		HVSCEntry hvscEntry = new HVSCEntry();
 		hvscEntry.setPath(path);
 		hvscEntry.setName(tuneFile.getName());
-		try {
-			final SidTune tune = SidTune.load(tuneFile);
-			if (tune != null) {
-				tune.selectSong(1);
-				SidTuneInfo info = tune.getInfo();
+		if (tune != null) {
+			tune.selectSong(1);
+			SidTuneInfo info = tune.getInfo();
 
-				hvscEntry.setTitle(info.infoString[0]);
-				hvscEntry.setAuthor(info.infoString[1]);
-				hvscEntry.setReleased(info.infoString[2]);
-				hvscEntry.setFormat(tune.getClass().getSimpleName());
-				hvscEntry.setPlayerId(getPlayer(tune));
-				hvscEntry.setNoOfSongs(info.songs);
-				hvscEntry.setStartSong(info.startSong);
-				hvscEntry.setClockFreq(info.clockSpeed);
-				hvscEntry.setSpeed(tune.getSongSpeed(1));
-				hvscEntry.setSidModel1(info.sid1Model);
-				hvscEntry.setSidModel2(info.sid2Model);
-				hvscEntry.setCompatibility(info.compatibility);
-				hvscEntry.setTuneLength(getTuneLength(config, tune));
-				hvscEntry.setAudio(getAudio(info.sidChipBase2));
-				hvscEntry.setSidChipBase1(info.sidChipBase1);
-				hvscEntry.setSidChipBase2(info.sidChipBase2);
-				hvscEntry.setDriverAddress(info.determinedDriverAddr);
-				hvscEntry.setLoadAddress(info.loadAddr);
-				hvscEntry.setLoadLength(info.c64dataLen);
-				hvscEntry.setInitAddress(info.initAddr);
-				hvscEntry.setPlayerAddress(info.playAddr);
-				hvscEntry.setFileDate(new Date(tuneFile.lastModified()));
-				hvscEntry.setFileSizeKb(tuneFile.length() >> 10);
-				hvscEntry.setTuneSizeB(tuneFile.length());
-				hvscEntry.setRelocStartPage(info.relocStartPage);
-				hvscEntry.setRelocNoPages(info.relocPages);
-			}
-		} catch (Exception e) {
-			// Ignore invalid tunes!
+			hvscEntry.setTitle(info.infoString[0]);
+			hvscEntry.setAuthor(info.infoString[1]);
+			hvscEntry.setReleased(info.infoString[2]);
+			hvscEntry.setFormat(tune.getClass().getSimpleName());
+			hvscEntry.setPlayerId(getPlayer(tune));
+			hvscEntry.setNoOfSongs(info.songs);
+			hvscEntry.setStartSong(info.startSong);
+			hvscEntry.setClockFreq(info.clockSpeed);
+			hvscEntry.setSpeed(tune.getSongSpeed(1));
+			hvscEntry.setSidModel1(info.sid1Model);
+			hvscEntry.setSidModel2(info.sid2Model);
+			hvscEntry.setCompatibility(info.compatibility);
+			hvscEntry.setTuneLength(getTuneLength(config, tune));
+			hvscEntry.setAudio(getAudio(info.sidChipBase2));
+			hvscEntry.setSidChipBase1(info.sidChipBase1);
+			hvscEntry.setSidChipBase2(info.sidChipBase2);
+			hvscEntry.setDriverAddress(info.determinedDriverAddr);
+			hvscEntry.setLoadAddress(info.loadAddr);
+			hvscEntry.setLoadLength(info.c64dataLen);
+			hvscEntry.setInitAddress(info.initAddr);
+			hvscEntry.setPlayerAddress(info.playAddr);
+			hvscEntry.setFileDate(new Date(tuneFile.lastModified()));
+			hvscEntry.setFileSizeKb(tuneFile.length() >> 10);
+			hvscEntry.setTuneSizeB(tuneFile.length());
+			hvscEntry.setRelocStartPage(info.relocStartPage);
+			hvscEntry.setRelocNoPages(info.relocPages);
 		}
 		return hvscEntry;
 	}

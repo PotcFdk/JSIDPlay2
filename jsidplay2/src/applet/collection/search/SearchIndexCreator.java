@@ -4,12 +4,10 @@
 package applet.collection.search;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.persistence.EntityManager;
 
 import libsidutils.PathUtils;
-
 import applet.entities.collection.service.HVSCEntryService;
 import applet.entities.collection.service.STILService;
 import applet.entities.collection.service.VersionService;
@@ -50,7 +48,7 @@ public final class SearchIndexCreator implements ISearchListener {
 			if (collectionRelName != null) {
 				hvscEntryService.add(config, collectionRelName, matchFile);
 			}
-		} catch (final IOException e) {
+		} catch (final Exception e) {
 			System.err.println("Indexing failure on: "
 					+ matchFile.getAbsolutePath() + ": " + e.getMessage());
 		}

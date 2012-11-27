@@ -1,10 +1,14 @@
 package applet.collection;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 import javax.persistence.metamodel.SingularAttribute;
 import javax.swing.table.AbstractTableModel;
+
+import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 
 import org.swixml.Localizer;
 
@@ -15,11 +19,12 @@ import applet.entities.config.Configuration;
 public final class TuneInfoTableModel extends AbstractTableModel {
 
 	private HVSCEntry entry;
+	private SidTune sidTune;
 
-	public void setFile(final File tuneFile) {
+	public void setFile(final File tuneFile) throws IOException, SidTuneError {
+		this.sidTune = SidTune.load(tuneFile);
 		this.entry = HVSCEntry.create(config, tuneFile.getAbsolutePath(),
-				tuneFile);
-		this.author = entry.getAuthor();
+				tuneFile, sidTune);
 	}
 
 	private Configuration config;
@@ -29,8 +34,6 @@ public final class TuneInfoTableModel extends AbstractTableModel {
 	}
 
 	private Localizer localizer;
-
-	private String author;
 
 	public void setLocalizer(Localizer localizer) {
 		this.localizer = localizer;
@@ -156,7 +159,7 @@ public final class TuneInfoTableModel extends AbstractTableModel {
 		return 2;
 	}
 
-	public String getAuthor() {
-		return author;
+	public SidTune getSidTune() {
+		return sidTune;
 	}
 }

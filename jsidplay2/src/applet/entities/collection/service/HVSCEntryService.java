@@ -17,6 +17,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
+import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import applet.entities.collection.HVSCEntry;
 import applet.entities.collection.HVSCEntry_;
 import applet.entities.collection.StilEntry;
@@ -65,8 +67,9 @@ public class HVSCEntryService {
 	};
 
 	public HVSCEntry add(final Configuration config, final String path,
-			final File tuneFile) throws IOException {
-		HVSCEntry hvscEntry = HVSCEntry.create(config, path, tuneFile);
+			final File tuneFile) throws IOException, SidTuneError {
+		final SidTune tune = SidTune.load(tuneFile);
+		HVSCEntry hvscEntry = HVSCEntry.create(config, path, tuneFile, tune);
 
 		stilService.add(config, tuneFile, hvscEntry);
 

@@ -1,7 +1,6 @@
 package applet.favorites;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -181,7 +180,7 @@ public class FavoritesModel extends DefaultTableModel {
 				File tuneFile = getFile(path);
 				HVSCEntry entry = hvscEntryService.add(config, path, tuneFile);
 				favorite.getFavorites().add(entry);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

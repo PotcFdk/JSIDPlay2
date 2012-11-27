@@ -35,6 +35,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.RowSorter;
 import javax.swing.RowSorter.SortKey;
@@ -69,7 +70,7 @@ import applet.stil.STIL;
 import applet.ui.JNiceButton;
 
 @SuppressWarnings("serial")
-public class Favorites extends JPanel implements IFavorites {
+public abstract class Favorites extends JPanel implements IFavorites {
 
 	private final class AddColumnAction implements ActionListener {
 		private final Object element;
@@ -108,12 +109,14 @@ public class Favorites extends JPanel implements IFavorites {
 	protected int headerColumnToRemove;
 	protected File lastDir;
 	protected Random randomPlayback = new Random();
+	private FavoritesSection favorite;
 
 	public Favorites(Player pl, Configuration cfg, EntityManager em,
 			final FavoritesView favoritesView, FavoritesSection favorite) {
 		this.favoritesView = favoritesView;
 		this.player = pl;
 		this.config = cfg;
+		this.favorite = favorite;
 
 		try {
 			swix = new SwingEngine(this);
@@ -244,6 +247,9 @@ public class Favorites extends JPanel implements IFavorites {
 				} else if (e.getModifiers() == 0
 						&& KeyEvent.VK_ENTER == e.getKeyCode()) {
 					playSelectedRow();
+				} else if (e.getModifiers() == 0) {
+					saveSelectedRows();
+					showSelectedPhoto();
 				}
 
 			}
@@ -269,6 +275,10 @@ public class Favorites extends JPanel implements IFavorites {
 			@Override
 			public void mouseClicked(MouseEvent mouseEvent) {
 				if (mouseEvent.getButton() == MouseEvent.BUTTON1
+						&& mouseEvent.getClickCount() == 1) {
+					saveSelectedRows();
+					showSelectedPhoto();
+				} else if (mouseEvent.getButton() == MouseEvent.BUTTON1
 						&& mouseEvent.getClickCount() == 2) {
 					playSelectedRow();
 				} else if (mouseEvent.getButton() == MouseEvent.BUTTON3
@@ -483,7 +493,45 @@ public class Favorites extends JPanel implements IFavorites {
 			}
 
 		});
+		restoreSelectedRows();
+		showSelectedPhoto();
 	}
+
+	private void saveSelectedRows() {
+		ListSelectionModel selectionModel = favoritesTable.getSelectionModel();
+		if (selectionModel.getMinSelectionIndex() != -1) {
+			favorite.setSelectedRowFrom(selectionModel.getMinSelectionIndex());
+		}
+		if (selectionModel.getMaxSelectionIndex() != -1) {
+			favorite.setSelectedRowTo(selectionModel.getMaxSelectionIndex());
+		}
+	}
+
+	private void restoreSelectedRows() {
+		Integer selectedRowFrom = favorite.getSelectedRowFrom();
+		Integer selectedRowTo = favorite.getSelectedRowTo();
+		if (selectedRowFrom != null && selectedRowTo != null) {
+			favoritesTable.setRowSelectionInterval(selectedRowFrom,
+					selectedRowTo);
+			favoritesTable.scrollRectToVisible(favoritesTable.getCellRect(
+					selectedRowFrom, 0, true));
+		}
+	}
+
+	@Override
+	public void showSelectedPhoto() {
+		showPhoto(null);
+		int selectedRow = favoritesTable.getSelectedRow();
+		if (selectedRow != -1) {
+			final int selectedModelRow = rowSorter
+					.convertRowIndexToModel(selectedRow);
+			if (selectedModelRow != -1) {
+				showPhoto(favoritesModel.getFile(selectedModelRow));
+			}
+		}
+	}
+
+	public abstract void showPhoto(File tuneFile);
 
 	public JTable getPlayListTable() {
 		return favoritesTable;

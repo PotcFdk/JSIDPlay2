@@ -25,4 +25,6 @@ public interface IFavorites {
 	boolean isEmpty();
 
 	FavoritesModel getFavoritesModel();
+
+	void showSelectedPhoto();
 }
