@@ -507,21 +507,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 				favorite) {
 			@Override
 			public void showPhoto(File tuneFile) {
-				picture.setComposerImage(null);
-				if (tuneFile != null) {
-					try {
-						ImageIcon imageIcon = SidTune.load(tuneFile)
-								.getImageIcon();
-						if (imageIcon != null) {
-							picture.setComposerImage(imageIcon.getImage());
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (SidTuneError e) {
-						e.printStackTrace();
-					}
-				}
-				photograph.repaint();
+				FavoritesView.this.showPhoto(tuneFile);
 			}
 		};
 		favorites.getPlayListTable().getSelectionModel()
@@ -585,6 +571,23 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 		return favorites;
 	}
 
+	protected void showPhoto(File tuneFile) {
+		picture.setComposerImage(null);
+		if (tuneFile != null) {
+			try {
+				ImageIcon imageIcon = SidTune.load(tuneFile).getImageIcon();
+				if (imageIcon != null) {
+					picture.setComposerImage(imageIcon.getImage());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (SidTuneError e) {
+				e.printStackTrace();
+			}
+		}
+		photograph.repaint();
+	}
+
 	private void removeTab(int index) {
 		favoriteList.removeTabAt(index);
 		favoriteList.setSelectedIndex(index > 0 ? index - 1 : 0);
@@ -627,6 +630,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 			nextFile = fav.getNextFile(tune);
 		}
 		if (nextFile != null) {
+			showPhoto(nextFile);
 			// System.err.println("Play Next File: " + nextFilename);
 			final File file = nextFile;
 			SwingUtilities.invokeLater(new Runnable() {
