@@ -1,12 +1,15 @@
 package applet.favorites;
 
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Field;
 
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableModel;
+
+import applet.entities.collection.HVSCEntry;
 
 @SuppressWarnings("serial")
 public class FavoritesTable extends JTable {
@@ -21,8 +24,9 @@ public class FavoritesTable extends JTable {
 		FavoritesCellRenderer favoritesCellRenderer = new FavoritesCellRenderer(
 				(FavoritesModel) dm);
 		setDefaultRenderer(Object.class, favoritesCellRenderer);
-		setDefaultRenderer(String.class, favoritesCellRenderer);
-		setDefaultRenderer(Integer.class, favoritesCellRenderer);
+		for (Field field : HVSCEntry.class.getDeclaredFields()) {
+			setDefaultRenderer(field.getType(), favoritesCellRenderer);
+		}
 	}
-	
+
 }
