@@ -248,7 +248,10 @@ public abstract class Favorites extends JPanel implements IFavorites {
 						&& KeyEvent.VK_ENTER == e.getKeyCode()) {
 					playSelectedRow();
 				} else if (e.getModifiers() == 0) {
-					saveSelectedRows();
+					ListSelectionModel selectionModel = favoritesTable
+							.getSelectionModel();
+					saveRows(selectionModel.getMinSelectionIndex(),
+							selectionModel.getMaxSelectionIndex());
 					showSelectedPhoto();
 				}
 
@@ -276,7 +279,10 @@ public abstract class Favorites extends JPanel implements IFavorites {
 			public void mouseClicked(MouseEvent mouseEvent) {
 				if (mouseEvent.getButton() == MouseEvent.BUTTON1
 						&& mouseEvent.getClickCount() == 1) {
-					saveSelectedRows();
+					ListSelectionModel selectionModel = favoritesTable
+							.getSelectionModel();
+					saveRows(selectionModel.getMinSelectionIndex(),
+							selectionModel.getMaxSelectionIndex());
 					showSelectedPhoto();
 				} else if (mouseEvent.getButton() == MouseEvent.BUTTON1
 						&& mouseEvent.getClickCount() == 2) {
@@ -493,30 +499,27 @@ public abstract class Favorites extends JPanel implements IFavorites {
 			}
 
 		});
-		restoreSelectedRows();
-		// showSelectedPhoto();
+		restoreRows();
 	}
 
-	private void saveSelectedRows() {
-		ListSelectionModel selectionModel = favoritesTable.getSelectionModel();
-		if (selectionModel.getMinSelectionIndex() != -1) {
+	private void saveRows(int rowMin, int rowMax) {
+		if (rowMin != -1) {
 			final int selectedModelRowFrom = rowSorter
-					.convertRowIndexToModel(selectionModel
-							.getMinSelectionIndex());
+					.convertRowIndexToModel(rowMin);
 			favorite.setSelectedRowFrom(selectedModelRowFrom);
 		}
-		if (selectionModel.getMaxSelectionIndex() != -1) {
+		if (rowMax != -1) {
 			final int selectedModelRowTo = rowSorter
-					.convertRowIndexToModel(selectionModel
-							.getMaxSelectionIndex());
+					.convertRowIndexToModel(rowMax);
 			favorite.setSelectedRowTo(selectedModelRowTo);
 		}
 	}
 
-	private void restoreSelectedRows() {
+	private void restoreRows() {
 		Integer selectedRowFrom = favorite.getSelectedRowFrom();
 		Integer selectedRowTo = favorite.getSelectedRowTo();
-		if (selectedRowFrom != null && selectedRowTo != null) {
+		if (selectedRowFrom != null && selectedRowFrom != -1
+				&& selectedRowTo != null && selectedRowTo != -1) {
 			final int selectedViewRowFrom = rowSorter
 					.convertRowIndexToView(selectedRowFrom);
 			favoritesTable.setRowSelectionInterval(selectedRowFrom,
@@ -530,18 +533,15 @@ public abstract class Favorites extends JPanel implements IFavorites {
 
 	@Override
 	public void showSelectedPhoto() {
-		showPhoto(null);
+		showPhoto(null, this);
 		int selectedRow = favoritesTable.getSelectedRow();
 		if (selectedRow != -1) {
-			final int selectedModelRow = rowSorter
-					.convertRowIndexToModel(selectedRow);
-			if (selectedModelRow != -1) {
-				showPhoto(favoritesModel.getFile(selectedModelRow));
-			}
+			showPhoto(favoritesModel.getFile(rowSorter
+					.convertRowIndexToModel(selectedRow)), this);
 		}
 	}
 
-	public abstract void showPhoto(File tuneFile);
+	public abstract void showPhoto(File tuneFile, Favorites favorites);
 
 	public JTable getPlayListTable() {
 		return favoritesTable;
@@ -786,7 +786,7 @@ public abstract class Favorites extends JPanel implements IFavorites {
 		if (nextRow == favoritesTable.getRowCount()) {
 			return null;
 		}
-		int row = rowSorter.convertRowIndexToModel(nextRow);
+		saveRows(nextRow, nextRow);
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
@@ -796,7 +796,10 @@ public abstract class Favorites extends JPanel implements IFavorites {
 			}
 
 		});
-		return favoritesModel.getFile(row);
+		File nextFile = favoritesModel.getFile(rowSorter
+				.convertRowIndexToModel(nextRow));
+		showPhoto(nextFile, this);
+		return nextFile;
 	}
 
 	@Override
@@ -804,7 +807,7 @@ public abstract class Favorites extends JPanel implements IFavorites {
 		int rowCount = favoritesTable.getRowCount();
 		final int randomRow = Math.abs(randomPlayback
 				.nextInt(Integer.MAX_VALUE)) % rowCount;
-		int row = rowSorter.convertRowIndexToModel(randomRow);
+		saveRows(randomRow, randomRow);
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
@@ -814,7 +817,10 @@ public abstract class Favorites extends JPanel implements IFavorites {
 			}
 
 		});
-		return favoritesModel.getFile(row);
+		File nextFile = favoritesModel.getFile(rowSorter
+				.convertRowIndexToModel(randomRow));
+		showPhoto(nextFile, this);
+		return nextFile;
 	}
 
 	@Override

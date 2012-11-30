@@ -48,7 +48,7 @@ public class FavoritesSection {
 	}
 
 	@ConfigDescription(bundleKey = "FAVORITES_SELECTED_ROW_FROM_DESC", toolTipBundleKey = "FAVORITES_SELECTED_ROW_FROM_TOOLTIP")
-	private Integer selectedRowFrom = 0;
+	private Integer selectedRowFrom = -1;
 
 	public Integer getSelectedRowFrom() {
 		return selectedRowFrom;
@@ -59,7 +59,7 @@ public class FavoritesSection {
 	}
 
 	@ConfigDescription(bundleKey = "FAVORITES_SELECTED_ROW_TO_DESC", toolTipBundleKey = "FAVORITES_SELECTED_ROW_TO_TOOLTIP")
-	private Integer selectedRowTo = 0;
+	private Integer selectedRowTo = -1;
 
 	public Integer getSelectedRowTo() {
 		return selectedRowTo;

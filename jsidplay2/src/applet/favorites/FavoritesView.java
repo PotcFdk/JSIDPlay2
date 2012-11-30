@@ -126,10 +126,9 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			IFavorites fav = getSelectedFavorites();
 			final int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
+			if (fav != null) {
 				final JFileChooser fileDialog = new JFileChooser(lastDir);
 				fileDialog.setFileFilter(fTuneFilter);
 				fileDialog.setMultiSelectionEnabled(true);
@@ -173,10 +172,8 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
+			IFavorites fav = getSelectedFavorites();
+			if (fav != null) {
 				fav.removeSelectedRows();
 			}
 		}
@@ -186,10 +183,8 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
+			IFavorites fav = getSelectedFavorites();
+			if (fav != null) {
 				fav.selectFavorites();
 			}
 		}
@@ -199,10 +194,8 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int index = favoriteList.getSelectedIndex();
-			Component comp = favoriteList.getComponentAt(index);
-			if (comp instanceof IFavorites) {
-				IFavorites fav = (IFavorites) comp;
+			IFavorites fav = getSelectedFavorites();
+			if (fav != null) {
 				fav.deselectFavorites();
 			}
 		}
@@ -237,10 +230,8 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 						});
 
-				final int index = favoriteList.getSelectedIndex();
-				Component comp = favoriteList.getComponentAt(index);
-				if (comp instanceof IFavorites) {
-					IFavorites fav = (IFavorites) comp;
+				IFavorites fav = getSelectedFavorites();
+				if (fav != null) {
 					final String name;
 					if (!fileDialog.getSelectedFile().getAbsolutePath()
 							.endsWith(FavoritesFileFilter.EXT_FAVORITES)) {
@@ -255,7 +246,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 								new IChangeFavoritesTab() {
 									@Override
 									public int getIndex() {
-										return index;
+										return favoriteList.getSelectedIndex();
 									}
 
 									@Override
@@ -290,10 +281,8 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 			if (rc == JFileChooser.APPROVE_OPTION
 					&& fileDialog.getSelectedFile() != null) {
 				lastDir = fileDialog.getSelectedFile().getParentFile();
-				final int index = favoriteList.getSelectedIndex();
-				Component comp = favoriteList.getComponentAt(index);
-				if (comp instanceof IFavorites) {
-					IFavorites fav = (IFavorites) comp;
+				IFavorites fav = getSelectedFavorites();
+				if (fav != null) {
 					final String name;
 					if (!fileDialog.getSelectedFile().getAbsolutePath()
 							.endsWith(FavoritesFileFilter.EXT_FAVORITES)) {
@@ -308,7 +297,7 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 								new IChangeFavoritesTab() {
 									@Override
 									public int getIndex() {
-										return index;
+										return favoriteList.getSelectedIndex();
 									}
 
 									@Override
@@ -428,13 +417,9 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 				@Override
 				public void stateChanged(ChangeEvent e) {
+					IFavorites fav = getSelectedFavorites();
 					final int index = favoriteList.getSelectedIndex();
-					if (index == -1 || index == favoriteList.getTabCount() - 1) {
-						return;
-					}
-					Component comp = favoriteList.getComponentAt(index);
-					if (comp instanceof IFavorites) {
-						IFavorites fav = (IFavorites) comp;
+					if (fav != null) {
 						remove.setEnabled(fav.getSelection().length > 0);
 						fav.showSelectedPhoto();
 					}
@@ -506,8 +491,26 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 		final Favorites favorites = new Favorites(player, config, em, this,
 				favorite) {
 			@Override
-			public void showPhoto(File tuneFile) {
-				FavoritesView.this.showPhoto(tuneFile);
+			public void showPhoto(File tuneFile, Favorites favorites) {
+				if (!getSelectedFavorites().equals(favorites)) {
+					return;
+				}
+				FavoritesView.this.picture.setComposerImage(null);
+				if (tuneFile != null) {
+					try {
+						ImageIcon imageIcon = SidTune.load(tuneFile)
+								.getImageIcon();
+						if (imageIcon != null) {
+							FavoritesView.this.picture
+									.setComposerImage(imageIcon.getImage());
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (SidTuneError e) {
+						e.printStackTrace();
+					}
+				}
+				FavoritesView.this.photograph.repaint();
 			}
 		};
 		favorites.getPlayListTable().getSelectionModel()
@@ -571,23 +574,6 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 		return favorites;
 	}
 
-	protected void showPhoto(File tuneFile) {
-		picture.setComposerImage(null);
-		if (tuneFile != null) {
-			try {
-				ImageIcon imageIcon = SidTune.load(tuneFile).getImageIcon();
-				if (imageIcon != null) {
-					picture.setComposerImage(imageIcon.getImage());
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (SidTuneError e) {
-				e.printStackTrace();
-			}
-		}
-		photograph.repaint();
-	}
-
 	private void removeTab(int index) {
 		favoriteList.removeTabAt(index);
 		favoriteList.setSelectedIndex(index > 0 ? index - 1 : 0);
@@ -630,7 +616,6 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 			nextFile = fav.getNextFile(tune);
 		}
 		if (nextFile != null) {
-			showPhoto(nextFile);
 			// System.err.println("Play Next File: " + nextFilename);
 			final File file = nextFile;
 			SwingUtilities.invokeLater(new Runnable() {
@@ -753,6 +738,17 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 
 	public SwingEngine getSwix() {
 		return swix;
+	}
+
+	protected IFavorites getSelectedFavorites() {
+		final int index = favoriteList.getSelectedIndex();
+		if (index != -1) {
+			Component comp = favoriteList.getComponentAt(index);
+			if (comp instanceof IFavorites) {
+				return (IFavorites) comp;
+			}
+		}
+		return null;
 	}
 
 }
