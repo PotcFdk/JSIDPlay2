@@ -84,7 +84,7 @@ public abstract class SidTune {
 		String fileName = f.getAbsolutePath();
 		// ancient .mus and whatnot support.
 		final byte[] fileBuf1 = loadFile(f);
-		if (fileBuf1 == null) {
+		if (fileBuf1 == null || fileBuf1.length == 0) {
 			/* no file found? return error. */
 			return null;
 		}
@@ -126,7 +126,7 @@ public abstract class SidTune {
 			File stereoTune = getStereoTune(f);
 			if (stereoTune != null) {
 				final byte[] fileBuf2 = loadFile(stereoTune);
-				if (fileBuf2 != null) {
+				if (fileBuf2 != null && fileBuf2.length > 0) {
 					s = Mus.load(fileBuf1, fileBuf2);
 					if (s != null) {
 						s.info.dataFileLen = fileBuf1.length;

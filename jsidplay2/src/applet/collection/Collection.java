@@ -1053,6 +1053,7 @@ public abstract class Collection extends TuneTab implements
 				break;
 			}
 
+			setSearchValue();
 			final SearchInIndexThread t = new SearchInIndexThread(
 					collectionTreeModel, em,
 					searchScope.getSelectedIndex() != 1);
