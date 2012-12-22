@@ -15,6 +15,6 @@
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_TARGETS" value="deploy,install,"/>
 <booleanAttribute key="org.eclipse.ui.externaltools.ATTR_HIDE_INTERNAL_TARGETS" value="true"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/jsidplay2/build.xml}"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-Dlaunch4j.bindir=&quot;C:\Program Files (x86)\Launch4j&quot; -Dupx.bindir=&quot;d:\Downloads\UPX\upx308w&quot; -D7zip.home=&quot;c:\Program Files\7-Zip&quot; -Dgb64.mdbfile=&quot;D:\Downloads\gb64\GBC_v09\GBC_v09.mdb&quot; -Dhvsc.zip=&quot;D:\Downloads\HVSC_57-all-of-them.zip&quot; -Dcgsc.7z=&quot;d:\Downloads\CGSC_v122.7z&quot; -Dhvmec.bz2=&quot;d:\Downloads\C64 HMEC\hvmec-1.0-all.tar.bz2&quot;"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-Dlaunch4j.bindir=&quot;C:\Program Files (x86)\Launch4j&quot; -Dupx.bindir=&quot;d:\Downloads\UPX\upx308w&quot; -D7zip.home=&quot;c:\Program Files\7-Zip&quot; -Dgb64.mdbfile=&quot;D:\Downloads\gb64\GBC_v09\GBC_v09.mdb&quot; -Dhvsc.zip=&quot;d:\Downloads\HVSC_58-all-of-them.zip&quot; -Dcgsc.7z=&quot;d:\Downloads\CGSC_v122.7z&quot; -Dhvmec.bz2=&quot;d:\Downloads\C64 HMEC\hvmec-1.0-all.tar.bz2&quot;"/>
 <stringAttribute key="process_factory_id" value="org.eclipse.ant.ui.remoteAntProcessFactory"/>
 </launchConfiguration>
