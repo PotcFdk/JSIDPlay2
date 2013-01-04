@@ -324,6 +324,7 @@ public class ConfigView extends TuneTab {
 				lastDir = fileDialog.getSelectedFile();
 				File file = fileDialog.getSelectedFile();
 				textField.setText(file.getAbsolutePath());
+				doSetValue.actionPerformed(e);
 			}
 		}
 	};
