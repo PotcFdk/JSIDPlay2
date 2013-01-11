@@ -12,6 +12,6 @@
 <intAttribute key="org.eclipse.jdt.launching.APPLET_WIDTH" value="1024"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="applet.JSIDPlay2"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jsidplay2"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx128M"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx512M"/>
 <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="C:\Temp"/>
 </launchConfiguration>
