@@ -66,6 +66,10 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	 */
 	protected final ConsolePlayer cp;
 	/**
+	 * Current tune to play.
+	 */
+	protected File tuneFile;
+	/**
 	 * Configuration
 	 */
 	private Configuration config;
@@ -122,6 +126,12 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	private transient final Runnable playerRunnable = new Runnable() {
 		@Override
 		public void run() {
+			// Load tune
+			cp.loadTune(tuneFile);
+			if (tuneFile != null) {
+				System.out.println("Play File: <" + tuneFile.getAbsolutePath()
+						+ ">");
+			}
 			// Run until the player gets stopped
 			while (true) {
 				try {
@@ -346,11 +356,8 @@ public class JSIDPlay2 extends JApplet implements UIEventListener {
 	protected void playTune(final File file) {
 		// Stop previous run
 		stopC64();
-		// Load tune
-		cp.loadTune(file);
-		if (file != null) {
-			System.out.println("Play File: <" + file.getAbsolutePath() + ">");
-		}
+		// Set tune to play
+		this.tuneFile = file;
 		// Start emulation
 		startC64();
 	}
