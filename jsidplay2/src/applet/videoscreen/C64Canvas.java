@@ -237,7 +237,7 @@ public class C64Canvas extends JLayeredPane {
 			@Override
 			public void componentHidden(ComponentEvent e) {
 				// otherwise keyboard does not work anymore!
-				C64Canvas.this.requestFocus();
+				C64Canvas.this.transferFocus();
 			}
 		});
 		URL url = C64Canvas.class
