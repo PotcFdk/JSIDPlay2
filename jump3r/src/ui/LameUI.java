@@ -62,14 +62,16 @@ public class LameUI extends JFrame {
 	protected String pictureFilename;
 	protected JButton doRemove, doEncodeDecode, saveTags;
 	protected JTable files;
-	protected JComboBox presets, cbr, abr, vbr, algorithm;
+	protected JComboBox<String> presets, vbr, algorithm;
+	protected JComboBox<Integer> cbr, abr;
 	protected JRadioButton setCBR, setABR, setVBR;
 	protected JRadioButton setStereo, setJointStereo, setForcedJointStereo,
 			setDualChannels, setMono, setAuto;
 	protected JRadioButton outputIsInput, customOutputDir;
 	protected JTextField outputDir;
 	protected JCheckBox overwrite;
-	protected JComboBox title, artist, album, year, track, genre, comment;
+	protected JComboBox<String> title, artist, album, year, track, genre,
+			comment;
 
 	protected int inUse;
 
@@ -420,6 +422,7 @@ public class LameUI extends JFrame {
 			ID3Tag id3 = new ID3Tag();
 			id3.id3tag_genre_list(new GenreListHandler() {
 
+				@Override
 				public void genre_list_handler(int num, String name) {
 					genre.addItem(name);
 				}

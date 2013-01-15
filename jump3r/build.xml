@@ -99,7 +99,7 @@
 	<target name="compile">
 		<delete dir="${bin}" />
 		<mkdir dir="${bin}" />
-		<javac debug="true" debuglevel="lines,vars,source" srcdir="${src}" destdir="${bin}" encoding="${src_encoding}">
+		<javac debug="true" debuglevel="lines,vars,source" includeantruntime="false" srcdir="${src}" destdir="${bin}" encoding="${src_encoding}">
 			<classpath refid="class.path" />
 		</javac>
 		<copy todir="${bin}">
