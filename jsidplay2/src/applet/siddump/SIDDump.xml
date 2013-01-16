@@ -1,8 +1,10 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- SID Dump dialogue -->
-<dialog size="600, 640" bundle="applet.siddump.SIDDumpTexts"
-	title="SID_DUMP" defaultCloseOperation="JFrame.DISPOSE_ON_CLOSE"
-	Visible="true" IconImage="ICON">
+<dialog xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	size="600, 640" bundle="applet.siddump.SIDDumpTexts" title="SID_DUMP"
+	defaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" visible="true"
+	iconImage="ICON">
 	<panel layout="GridBagLayout">
 		<hbox>
 			<gridbagconstraints gridx="0" gridy="0" gridwidth="4" />
@@ -15,18 +17,18 @@
 			<button text="REPLAY_SELECTED" id="replaySelected"
 				icon="applet/icons/siddump_replay.png" action="doReplaySelected" />
 		</hbox>
-		<checkbox label="START_STOP_RECORDING" ToolTipText="START_STOP_RECORDING_TIP"
+		<checkbox label="START_STOP_RECORDING" toolTipText="START_STOP_RECORDING_TIP"
 			font="Georgia-BOLD-12" id="startStop" action="doStartStop">
 			<gridbagconstraints anchor="GridBagConstraints.WEST"
 				gridx="0" gridy="1" />
 		</checkbox>
-		<checkbox label="TIME_IN_SECONDS" ToolTipText="TIME_IN_SECONDS_TIP"
+		<checkbox label="TIME_IN_SECONDS" toolTipText="TIME_IN_SECONDS_TIP"
 			font="Georgia-BOLD-12" id="timeInSeconds">
 			<gridbagconstraints anchor="GridBagConstraints.WEST"
 				gridx="1" gridy="1" />
 		</checkbox>
 		<checkbox label="LOW_RESOLUTION_MODE" font="Georgia-BOLD-12"
-			ToolTipText="LOW_RESOLUTION_MODE_TIP" id="lowResolutionMode">
+			toolTipText="LOW_RESOLUTION_MODE_TIP" id="lowResolutionMode">
 			<gridbagconstraints anchor="GridBagConstraints.WEST"
 				gridx="2" gridy="1" />
 		</checkbox>
@@ -36,85 +38,85 @@
 			<label text="FIRST_FRAME" font="Georgia-BOLD-12">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="0" gridy="0" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</label>
-			<textfield ToolTipText="FIRST_FRAME_TIP" id="firstFrame">
+			<textfield toolTipText="FIRST_FRAME_TIP" id="firstFrame">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="1" gridy="0" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</textfield>
 			<label text="NOTE_SPACING" font="Georgia-BOLD-12">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="2" gridy="0" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</label>
-			<textfield ToolTipText="NOTE_SPACING_TIP" id="noteSpacing">
+			<textfield toolTipText="NOTE_SPACING_TIP" id="noteSpacing">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="3" gridy="0" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</textfield>
 
 			<label text="MAX_RECORD_LENGTH" font="Georgia-BOLD-12">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="0" gridy="1" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</label>
-			<textfield ToolTipText="MAX_RECORD_LENGTH_TIP" id="maxRecordLength">
+			<textfield toolTipText="MAX_RECORD_LENGTH_TIP" id="maxRecordLength">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="1" gridy="1" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</textfield>
 			<label text="PATTERN_SPACING" font="Georgia-BOLD-12">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="2" gridy="1" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</label>
-			<textfield ToolTipText="PATTERN_SPACING_TIP" id="patternSpacing">
+			<textfield toolTipText="PATTERN_SPACING_TIP" id="patternSpacing">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="3" gridy="1" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</textfield>
 
 			<label text="OLD_NOTE_FACTOR" font="Georgia-BOLD-12">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="0" gridy="2" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</label>
-			<textfield ToolTipText="OLD_NOTE_FACTOR_TIP" id="oldNoteFactor">
+			<textfield toolTipText="OLD_NOTE_FACTOR_TIP" id="oldNoteFactor">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="1" gridy="2" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</textfield>
 			<label text="TABLE_FONT_SIZE" font="Georgia-BOLD-12">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="2" gridy="2" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</label>
-			<textfield ToolTipText="TABLE_FONT_SIZE_TIP" id="tableFontSize">
+			<textfield toolTipText="TABLE_FONT_SIZE_TIP" id="tableFontSize">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="3" gridy="2" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</textfield>
 
 			<label text="BASE_FREQ" font="Georgia-BOLD-12">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="0" gridy="3" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</label>
-			<textfield ToolTipText="BASE_FREQ_TIP" id="baseFreq">
+			<textfield toolTipText="BASE_FREQ_TIP" id="baseFreq">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="1" gridy="3" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</textfield>
 			<label text="BASE_NOTE" font="Georgia-BOLD-12">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="2" gridy="3" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</label>
-			<textfield ToolTipText="BASE_NOTE_TIP" id="baseNote">
+			<textfield toolTipText="BASE_NOTE_TIP" id="baseNote">
 				<gridbagconstraints anchor="GridBagConstraints.WEST"
 					fill="GridBagConstraints.BOTH" gridx="3" gridy="3" weightx="1"
-					weighty="1" Insets="5,5,5,5" />
+					weighty="1" insets="5,5,5,5" />
 			</textfield>
 		</panel>
 		<panel layout="GridBagLayout" border="TitledBorder(REPLAY_OPTIONS)">
@@ -130,7 +132,7 @@
 			<label text="CALLS_PER_FRAME" font="Georgia-BOLD-12">
 				<gridbagconstraints gridx="2" gridy="0" insets="2,2,2,2" />
 			</label>
-			<textfield text="1" ToolTipText="CALLS_PER_FRAME_TIP"
+			<textfield text="1" toolTipText="CALLS_PER_FRAME_TIP"
 				columns="3" id="callsPerFrame">
 				<gridbagconstraints gridx="3" gridy="0" insets="2,2,2,2" />
 			</textfield>

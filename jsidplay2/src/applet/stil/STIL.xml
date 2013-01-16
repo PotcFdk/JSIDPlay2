@@ -1,16 +1,18 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- STIL -->
-<dialog title="TITLE" bundle="applet.stil.STILTexts"
-	DefaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" Visible="true">
+<dialog xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	title="TITLE" bundle="applet.stil.STILTexts" defaultCloseOperation="JFrame.DISPOSE_ON_CLOSE"
+	visible="true">
 	<panel layout="GridLayout(1, 2)">
-		<splitpane orientation="VERTICAL" OneTouchExpandable="true"
-			DividerLocation="100">
+		<splitpane orientation="VERTICAL" oneTouchExpandable="true"
+			dividerLocation="100">
 			<scrollpane>
-				<tree initclass="applet.stil.STILTreeModel"
-					SelectionMode="TreeSelectionModel.SINGLE_TREE_SELECTION" id="tree"></tree>
+				<tree initclass="applet.stil.STILTreeModel" selectionModel="TreeSelectionModel.SINGLE_TREE_SELECTION"
+					id="tree"></tree>
 			</scrollpane>
 			<scrollpane>
-				<textpane Editable="false" id="textpane"></textpane>
+				<textpane editable="false" id="textpane"></textpane>
 			</scrollpane>
 		</splitpane>
 	</panel>

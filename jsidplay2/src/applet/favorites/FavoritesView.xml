@@ -1,9 +1,11 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- Favorites -->
-<panel layout="GridLayout" bundle="applet.favorites.FavoritesViewTexts">
+<panel xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	layout="GridLayout" bundle="applet.favorites.FavoritesViewTexts">
 	<vbox>
 		<label text="HINT" font="Georgia-ITALIC-12" constraints="BorderLayout.NORTH" />
-^		<panel layout="BorderLayout">
+		<panel layout="BorderLayout">
 			<panel layout="GridLayout(1,1)" id="photograph" constraints="BorderLayout.WEST">
 				<picture id="picture" />
 			</panel>
@@ -11,7 +13,7 @@
 				<hbox>
 					<button text="ADD" id="add" icon="applet/icons/add.png"
 						action="addFavorites" />
-					<button text="REMOVE" Enabled="false" icon="applet/icons/remove.png"
+					<button text="REMOVE" enabled="false" icon="applet/icons/remove.png"
 						id="remove" action="removeFavorites" />
 					<button text="SELECT_ALL" id="selectAll" icon="applet/icons/selectall.png"
 						action="selectAllFavorites" />
@@ -26,18 +28,18 @@
 				</hbox>
 			</vbox>
 		</panel>
-		<tabbedpane titles="" TabLayoutPolicy="WRAP_TAB_LAYOUT" id="favoriteList"
+		<tabbedpane titles="" tabLayoutPolicy="WRAP_TAB_LAYOUT" id="favoriteList"
 			border="TitledBorder(PLAYLISTS)">
 			<label text="HINT_PLAYLISTS" />
 		</tabbedpane>
 		<panel layout="GridBagLayout" border="TitledBorder(PLAYBACK_OPTIONS)">
 			<label text="PLAYBACK_HINT" font="Georgia-ITALIC-12"
-				Foreground="BLUE">
+				foreground="BLUE">
 				<gridbagconstraints gridx="0" gridy="0"
 					gridwidth="4" gridheight="1" fill="GridBagConstraints.BOTH" />
 			</label>
 			<buttongroup>
-				<radiobutton label="OFF" Selected="true" action="enablePlayback"
+				<radiobutton label="OFF" selected="true" action="enablePlayback"
 					id="off">
 					<gridbagconstraints gridx="0" gridy="1" weightx="1"
 						weighty="1" fill="GridBagConstraints.BOTH" />
@@ -58,7 +60,7 @@
 				</radiobutton>
 			</buttongroup>
 			<buttongroup>
-				<radiobutton label="REPEAT_OFF" Selected="true" id="repeatOff"
+				<radiobutton label="REPEAT_OFF" selected="true" id="repeatOff"
 					action="enableRepeat">
 					<gridbagconstraints gridx="0" gridy="2" weightx="1"
 						weighty="1" fill="GridBagConstraints.BOTH" />

@@ -1,6 +1,8 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- Configuration -->
-<panel layout="BorderLayout" bundle="applet.config.ConfigTexts">
+<panel xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	layout="BorderLayout" bundle="applet.config.ConfigTexts">
 	<panel layout="BorderLayout">
 		<panel constraints="BorderLayout.NORTH">
 			<hbox>
@@ -10,12 +12,12 @@
 		</panel>
 		<scrollpane constraints="BorderLayout.CENTER" border="TitledBorder(CONFIGURATION)">
 			<tree initclass="applet.config.ConfigModel"
-				ExpandsSelectedPaths="true" ScrollsOnExpand="true" id="configTree" />
+				expandsSelectedPaths="true" scrollsOnExpand="true" id="configTree" />
 		</scrollpane>
 		<vbox constraints="BorderLayout.SOUTH" border="TitledBorder(EDITOR)">
 			<panel id="parent" />
 			<panel layout="BorderLayout" border="TitledBorder(DESCRIPTION)">
-				<textarea Editable="false" LineWrap="true" WrapStyleWord="true"
+				<textarea editable="false" lineWrap="true" wrapStyleWord="true"
 					id="description" />
 			</panel>
 		</vbox>

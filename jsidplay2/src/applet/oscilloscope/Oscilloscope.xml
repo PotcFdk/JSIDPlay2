@@ -1,6 +1,8 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- Oscilloscope -->
-<panel layout="GridBagLayout" bundle="applet.oscilloscope.OscilloscopeTexts">
+<panel xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	layout="GridBagLayout" bundle="applet.oscilloscope.OscilloscopeTexts">
 	<panel layout="GridLayout(2,6)" border="TitledBorder(VOICE_CONTROL)">
 		<gridbagconstraints weightx="1"
 			fill="GridBagConstraints.BOTH" gridwidth="GridBagConstraints.REMAINDER" />

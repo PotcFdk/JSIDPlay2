@@ -1,11 +1,13 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- SID Registers dialogue -->
-<dialog size="600, 640" bundle="applet.sidreg.SidRegTexts" title="SID_REGISTERS"
-	defaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" Visible="true"
-	IconImage="ICON">
+<dialog xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	size="600, 640" bundle="applet.sidreg.SidRegTexts" title="SID_REGISTERS"
+	defaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" visible="true"
+	iconImage="ICON">
 	<panel border="TitledBorder(SID_REGISTERS)" layout="GridLayout">
 		<vbox>
-			<checkbox label="START_STOP_RECORDING" ToolTipText="On/off SID register dump"
+			<checkbox label="START_STOP_RECORDING" toolTipText="On/off SID register dump"
 				font="Georgia-BOLD-12" id="startStop" action="doStartStop">
 			</checkbox>
 			<panel layout="GridLayout(5,5)" border="TitledBorder(VIEWER_FILTER)">

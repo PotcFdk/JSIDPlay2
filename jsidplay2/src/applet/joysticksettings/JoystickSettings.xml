@@ -1,8 +1,10 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- Joystick settings dialogue -->
-<dialog size="600, 640" bundle="applet.joysticksettings.JoystickSettingsTexts"
+<dialog xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	size="600, 640" bundle="applet.joysticksettings.JoystickSettingsTexts"
 	title="JOYSTICK_SETTINGS" defaultCloseOperation="JFrame.DISPOSE_ON_CLOSE"
-	Visible="true" IconImage="ICON">
+	visible="true" iconImage="ICON">
 	<panel layout="GridBagLayout">
 		<checkbox label="JOYSTICK_IN_PORT_1_ENABLED" font="Georgia-BOLD-12"
 			id="activateJoy1" action="doActivateJoy1">

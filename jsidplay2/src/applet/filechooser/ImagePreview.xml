@@ -1,14 +1,15 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- ImagePreview -->
-<panel layout="BorderLayout" PreferredSize="320, 200"
+<panel xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	layout="BorderLayout" preferredSize="320, 200"
 	bundle="applet.filechooser.ImagePreviewTexts">
-	<button Text="SWITCH_FONT" Focusable="false" constraints="BorderLayout.NORTH"
+	<button text="SWITCH_FONT" focusable="false" constraints="BorderLayout.NORTH"
 		action="doSwitchFont" />
-	<scrollpane id="scrollPane" VerticalScrollBarPolicy="JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED"
-		HorizontalScrollBarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED">
-		<table constraints="BorderLayout.CENTER" SelectionMode="ListSelectionModel.SINGLE_SELECTION"
-			Editable="false" ShowGrid="false" initclass="applet.filechooser.ImageTableModel"
-			id="directory">
+	<scrollpane id="scrollPane" verticalScrollBarPolicy="JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED"
+		horizontalScrollBarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED">
+		<table constraints="BorderLayout.CENTER" selectionMode="ListSelectionModel.SINGLE_SELECTION"
+			showGrid="false" initclass="applet.filechooser.ImageTableModel" id="directory">
 		</table>
 	</scrollpane>
 </panel>

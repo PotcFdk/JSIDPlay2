@@ -1,8 +1,12 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- Collection -->
-<panel layout="GridBagLayout" bundle="applet.collection.CollectionTexts">
-	<checkbox label="AUTO_CONFIGURATION" id="autoConfiguration" action="doAutoConfiguration">
-		<gridbagconstraints fill="GridBagConstraints.BOTH" gridx="0" gridy="0" gridwidth="2"/>
+<panel xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	layout="GridBagLayout" bundle="applet.collection.CollectionTexts">
+	<checkbox label="AUTO_CONFIGURATION" id="autoConfiguration"
+		action="doAutoConfiguration">
+		<gridbagconstraints fill="GridBagConstraints.BOTH"
+			gridx="0" gridy="0" gridwidth="2" />
 	</checkbox>
 	<scrollpane border="TitledBorder(TUNE_INFO)">
 		<gridbagconstraints gridx="0" gridy="1" weightx="1"
@@ -21,7 +25,7 @@
 	<scrollpane>
 		<gridbagconstraints gridx="1" gridy="1" weightx="1"
 			gridheight="2" weighty="1" fill="GridBagConstraints.BOTH" />
-		<tree ExpandsSelectedPaths="true" ScrollsOnExpand="true" id="fileBrowser" />
+		<tree expandsSelectedPaths="true" scrollsOnExpand="true" id="fileBrowser" />
 	</scrollpane>
 	<panel border="TitledBorder(SEARCH)">
 		<gridbagconstraints gridx="0" gridy="3" gridwidth="2"
@@ -30,7 +34,7 @@
 			<panel layout="FlowLayout" constraints="FlowLayout.LEFT">
 				<label text="SEARCH_FOR" />
 				<combobox id="searchCriteria" action="searchCategory" />
-				<panel id="searchParent"/>
+				<panel id="searchParent" />
 				<NiceButton id="startSearch" icon="applet/icons/search.png"
 					ToolTipText="SEARCH_NEXT" action="doStartSearch" />
 				<NiceButton id="stopSearch" icon="applet/icons/mini/stop.png"
@@ -56,7 +60,7 @@
 		<vbox>
 			<panel layout="FlowLayout" constraints="FlowLayout.LEFT">
 				<label text="BASE_DIR"></label>
-				<textfield id="collectionDir" Enabled="false" />
+				<textfield id="collectionDir" enabled="false" />
 				<button text="BROWSE" id="browse" icon="applet/icons/browse.png"
 					action="doBrowse"></button>
 				<link id="linkCollectionURL" action="gotoURL"></link>

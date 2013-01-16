@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<panel layout="BorderLayout" bundle="applet.JSIDPlay2UITexts">
+<panel xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	layout="BorderLayout" bundle="applet.JSIDPlay2UITexts">
 	<menubar id="menuBar">
 		<menu text="FILE" mnemonic="VK_FILE">
-			<menuitem Name="Load" text="LOAD" mnemonic="VK_LOAD"
+			<menuitem name="Load" text="LOAD" mnemonic="VK_LOAD"
 				accelerator="ACC_LOAD" action="load" />
 			<menuitem text="LOAD_REU_VIDEO" mnemonic="VK_LOAD_REU_VIDEO"
 				accelerator="ACC_LOAD_REU_VIDEO" action="video" />
@@ -30,7 +32,7 @@
 		</menu>
 		<menu text="CAPTURE" mnemonic="VK_CAPTURE">
 			<buttongroup>
-				<checkboxmenuitem text="START_CAPTURE" ToolTipText="START_CAPTURE_TIP"
+				<checkboxmenuitem text="START_CAPTURE" toolTipText="START_CAPTURE_TIP"
 					mnemonic="VK_START_CAPTURE" accelerator="ACC_START_CAPTURE" action="doStartCapture"
 					id="startCapture" />
 				<checkboxmenuitem text="STOP_CAPTURE" mnemonic="VK_STOP_CAPTURE"
@@ -57,7 +59,7 @@
 				</buttongroup>
 			</menu>
 			<menuitem text="SOUND_SETTINGS" action="soundSettings" />
-			<menuitem Name="EmulationSettings" text="EMULATION_SETTINGS"
+			<menuitem name="EmulationSettings" text="EMULATION_SETTINGS"
 				action="emulationSettings" />
 			<menuitem text="JOYSTICK_SETTINGS" action="joystickSettings" />
 		</menu>
@@ -151,27 +153,27 @@
 			<menuitem text="ABOUT" action="about" />
 		</menu>
 		<glue />
-		<button focusable="false" Opaque="false"
-			icon="applet/icons/playback_prev.png" ToolTipText="PREVIOUS" action="previousSong"
+		<button focusable="false" opaque="false"
+			icon="applet/icons/playback_prev.png" toolTipText="PREVIOUS" action="previousSong"
 			id="previous2" />
-		<togglebutton focusable="false" Opaque="false"
-			icon="applet/icons/playback_pause.png" SelectedIcon="applet/icons/playback_start.png"
-			ToolTipText="PAUSE" action="pause" id="pauseContinue2" />
-		<button focusable="false" Opaque="false"
-			icon="applet/icons/playback_next.png" ToolTipText="NEXT" action="nextSong"
+		<togglebutton focusable="false" opaque="false"
+			icon="applet/icons/playback_pause.png" selectedIcon="applet/icons/playback_start.png"
+			toolTipText="PAUSE" action="pause" id="pauseContinue2" />
+		<button focusable="false" opaque="false"
+			icon="applet/icons/playback_next.png" toolTipText="NEXT" action="nextSong"
 			id="next2" />
-		<button focusable="false" Opaque="false"
-			icon="applet/icons/playback_stop.png" ToolTipText="STOP" action="stopSong" />
+		<button focusable="false" opaque="false"
+			icon="applet/icons/playback_stop.png" toolTipText="STOP" action="stopSong" />
 		<glue />
 		<glue />
 	</menubar>
 	<panel layout="BorderLayout">
-		<tabbedPane Focusable="false" id="tabbedPane" constraints="BorderLayout.CENTER" />
-		<hbox Background="Color.LIGHT_GRAY" constraints="BorderLayout.SOUTH">
+		<tabbedpane focusable="false" id="tabbedPane" constraints="BorderLayout.CENTER" />
+		<hbox background="Color.LIGHT_GRAY" constraints="BorderLayout.SOUTH">
 			<glue />
 			<label id="status" />
 			<glue />
-			<progressbar Minimum="0" Maximum="100" id="progress" />
+			<progressbar minimum="0" maximum="100" id="progress" />
 		</hbox>
 	</panel>
 </panel>

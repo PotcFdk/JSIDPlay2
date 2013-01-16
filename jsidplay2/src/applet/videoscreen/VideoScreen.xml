@@ -1,12 +1,15 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- Video Screen -->
-<panel layout="BorderLayout" bundle="applet.videoscreen.VideoScreenTexts"
+<panel xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+	layout="BorderLayout" bundle="applet.videoscreen.VideoScreenTexts"
 	focusable="true">
-	<splitpane ResizeWeight="1" orientation="VERTICAL"
+	<splitpane resizeWeight="1" orientation="VERTICAL"
 		constraints="BorderLayout.CENTER" id="splitpane">
 		<C64Canvas id="c64" />
 		<panel layout="GridLayout(4,1)">
-			<NiceButton id="virtualKeyboard" action="showVirtualKeyboard" icon="applet/icons/keyboard.png" />
+			<NiceButton id="virtualKeyboard" action="showVirtualKeyboard"
+				icon="applet/icons/keyboard.png" />
 			<NiceButton id="datasette" action="insertTape"></NiceButton>
 			<NiceButton name="Floppy" id="floppy" action="insertDisk"></NiceButton>
 			<NiceButton id="cartridge" action="insertCartridge"></NiceButton>
