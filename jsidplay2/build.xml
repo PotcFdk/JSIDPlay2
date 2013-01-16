@@ -303,8 +303,12 @@
 	<target name="compile">
 		<delete dir="${bin}" />
 		<mkdir dir="${bin}" />
+		<replace token="http://kenchis.t15.org/jsidplay2/" value="${server_url}">
+			<fileset dir="${src}" includes="**/*.xml" />
+		</replace>
 		<javac includeantruntime="false" debug="true" debuglevel="lines,vars,source" srcdir="${src}" destdir="${bin}" encoding="${src_encoding}">
 			<classpath refid="class.path" />
+
 		</javac>
 		<copy todir="${bin}">
 			<fileset dir="${src}">
