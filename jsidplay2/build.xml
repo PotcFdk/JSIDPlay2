@@ -415,6 +415,7 @@
 				<include name="*.jpg" />
 				<include name="*.gif" />
 				<include name="*.png" />
+				<include name="*.xsd" />
 			</fileset>
 		</copy>
 	</target>
