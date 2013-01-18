@@ -498,11 +498,13 @@ public class FavoritesView extends TuneTab implements ListSelectionListener {
 				FavoritesView.this.picture.setComposerImage(null);
 				if (tuneFile != null) {
 					try {
-						ImageIcon imageIcon = SidTune.load(tuneFile)
-								.getImageIcon();
-						if (imageIcon != null) {
-							FavoritesView.this.picture
-									.setComposerImage(imageIcon.getImage());
+						SidTune sidTune = SidTune.load(tuneFile);
+						if (sidTune != null) {
+							ImageIcon imageIcon = sidTune.getImageIcon();
+							if (imageIcon != null) {
+								FavoritesView.this.picture
+										.setComposerImage(imageIcon.getImage());
+							}
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
