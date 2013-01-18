@@ -178,7 +178,7 @@ public class ImagePreview extends JPanel implements PropertyChangeListener {
 			ImageTableModel model = (ImageTableModel) directory.getModel();
 			model.setRowCount(0);
 			try {
-				Directory dir = Directory.getDirectory(file, config);
+				Directory dir = DirectoryUtil.getDirectory(file, config);
 				if (dir != null) {
 					// Print directory title/id
 					model.setColumnName(0, print(dir.toString(), fontSetHeader));
@@ -275,7 +275,7 @@ public class ImagePreview extends JPanel implements PropertyChangeListener {
 		int row = directory.getSelectedRow();
 		if (row != -1) {
 			try {
-				Directory dir = Directory.getDirectory(file, config);
+				Directory dir = DirectoryUtil.getDirectory(file, config);
 				if (dir != null) {
 					List<DirEntry> dirEntries = dir.getDirEntries();
 					if (row < dirEntries.size()) {
