@@ -3,7 +3,6 @@ package applet.entities.gamebase.service;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import applet.entities.gamebase.Config;
 
@@ -22,8 +21,7 @@ public class ConfigService {
 	public boolean checkVersion() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Config> query = cb.createQuery(Config.class);
-		Root<Config> config = query.from(Config.class);
-		query.select(config);
+		query.select(query.from(Config.class));
 		Config cfg = em.createQuery(query).getSingleResult();
 		return cfg.getMajorVersion() == EXPCT_MAJOR_VERSION
 				&& cfg.getMinorVersion() == EXPCT_MINOR_VERSION
