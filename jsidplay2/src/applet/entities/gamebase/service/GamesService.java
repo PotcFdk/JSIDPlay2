@@ -10,6 +10,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import applet.entities.gamebase.Games;
+import applet.entities.gamebase.Games_;
 
 public class GamesService {
 	private EntityManager em;
@@ -22,7 +23,7 @@ public class GamesService {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Games> query = cb.createQuery(Games.class);
 		Root<Games> games = query.from(Games.class);
-		Path<String> name = games.<String> get("name");
+		Path<String> name = games.<String> get(Games_.name);
 		final Predicate predicate;
 		if (Character.isLetter(firstLetter)) {
 			predicate = cb.like(cb.lower(name),
@@ -33,9 +34,7 @@ public class GamesService {
 					cb.notLike(cb.lower(name), "a%"),
 					cb.notLike(cb.lower(name), "z%"));
 		}
-		query.where(predicate);
-		query.orderBy(cb.asc(name));
-		query.select(games);
+		query.where(predicate).orderBy(cb.asc(name)).select(games);
 		return em.createQuery(query).getResultList();
 	}
 }
