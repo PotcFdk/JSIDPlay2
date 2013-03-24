@@ -419,9 +419,9 @@ public class SoundSettings extends XDialog implements IDownloadListener,
 			hardsid6581.removeActionListener(setSid6581);
 			hardsid8580.removeActionListener(setSid8580);
 			hardsid6581Num = config.getEmulation().getHardsid6581();
-			hardsid6581.setSelectedIndex(hardsid6581Num);
+			hardsid6581.setSelectedItem(hardsid6581Num);
 			hardsid8580Num = config.getEmulation().getHardsid8580();
-			hardsid8580.setSelectedIndex(hardsid8580Num);
+			hardsid8580.setSelectedItem(hardsid8580Num);
 			hardsid6581.addActionListener(setSid6581);
 			hardsid8580.addActionListener(setSid8580);
 
