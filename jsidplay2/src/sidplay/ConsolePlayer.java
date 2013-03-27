@@ -1506,18 +1506,13 @@ public class ConsolePlayer {
 	private void updateSIDEmu(final int chipNum, final ChipModel model) {
 		SIDEmu s = player.getC64().getSID(chipNum);
 
-		if (s == null) {
+		if (s == null & sidEmuFactory != null) {
 			s = sidEmuFactory.lock(player.getC64().getEventScheduler(), model);
 		}
 
 		if (s instanceof HardSID) {
-			((HardSID) s).write(0x18, (byte) 0x00);
-			((HardSID) s).flush();
-			s.reset((byte) 0);
-
-			/* Change SID because we are probably switching from 6581 to 8580. */
-			sidEmuFactory.unlock(s);
-			s = sidEmuFactory.lock(player.getC64().getEventScheduler(), model);
+			// To change the HardSID it is necessary to restart!
+			restart();
 		}
 
 		if (s instanceof ReSID) {

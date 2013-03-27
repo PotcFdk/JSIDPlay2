@@ -179,12 +179,27 @@ public class HardSIDBuilder extends SIDBuilder {
 	}
 
 	@Override
-	public SIDEmu lock(final EventScheduler context, final ChipModel model) {
+	public SIDEmu lock(final EventScheduler context, ChipModel model) {
+		ChipModel alreadyUsedModel = null;
+		if (sidobjs.size() > 0) {
+			// Stereo? Use a HardSID different to the first SID
+			alreadyUsedModel = sidobjs.get(0).getChipModel();
+			if (model == alreadyUsedModel) {
+				if (model == ChipModel.MOS6581) {
+					model = ChipModel.MOS8580;
+				} else {
+					model = ChipModel.MOS6581;
+				}
+			}
+		}
 		HardSID hsid = new HardSID(context, hsid2,
 				model == ChipModel.MOS6581 ? sid6581 : sid8580, model);
 		if (hsid.bool()) {
 			if (hsid.lock(true)) {
 				sidobjs.add(hsid);
+				for (HardSID hardSid : sidobjs) {
+					hardSid.setChipsUsed(sidobjs.size());
+				}
 				return hsid;
 			}
 		}
@@ -201,6 +216,9 @@ public class HardSIDBuilder extends SIDBuilder {
 
 	@Override
 	public void unlock(final SIDEmu device) {
+		for (HardSID hardSid : sidobjs) {
+			hardSid.setChipsUsed(sidobjs.size() - 1);
+		}
 		if (sidobjs.remove(device)) {
 			((HardSID) device).lock(false);
 		}

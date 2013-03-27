@@ -39,7 +39,6 @@ public class HardSID extends SIDEmu {
 	private final int chipNum;
 
 	private final ChipModel model;
-	
 
 	// Generic variables
 	private String m_errorBuffer;
@@ -47,7 +46,10 @@ public class HardSID extends SIDEmu {
 	private boolean m_status;
 	private boolean m_locked;
 
-	public HardSID(EventScheduler context, final HsidDLL2 hsid2, final int sid, final ChipModel model) {
+	private int chipsUsed;
+
+	public HardSID(EventScheduler context, final HsidDLL2 hsid2, final int sid,
+			final ChipModel model) {
 		super(context);
 		this.hsid2 = hsid2;
 		this.model = model;
@@ -87,19 +89,20 @@ public class HardSID extends SIDEmu {
 	public byte read(int addr) {
 		addr &= 0x1f;
 		clock();
-		/* Workaround: If real HardSID4U devices are
-		 * used in addition to the fake devices ->
-		 * drop read support. Otherwise HardSID 4U won't
-		 * play for some unknown reason.
+		/*
+		 * Workaround: If real HardSID4U devices are used in addition to the
+		 * fake devices -> drop read support. Otherwise HardSID 4U won't play
+		 * for some unknown reason.
 		 */
 		if (hsid2.HardSID_Devices() > SID_DEVICES) {
 			return (byte) 0xff;
 		}
-		/* HardSID4U does not support reads. This works against
-		 * jsidplay2 faking to be hardsid, of course. But we should
-		 * have some way to ask if the chip can or can't do a proper
-		 * read operation. For now, it's better just to do this and
-		 * maybe get it right, than never do it and always get it wrong.
+		/*
+		 * HardSID4U does not support reads. This works against jsidplay2 faking
+		 * to be hardsid, of course. But we should have some way to ask if the
+		 * chip can or can't do a proper read operation. For now, it's better
+		 * just to do this and maybe get it right, than never do it and always
+		 * get it wrong.
 		 */
 		int cycles = clocksSinceLastAccess();
 		while (cycles > 0xFFFF) {
@@ -116,7 +119,7 @@ public class HardSID extends SIDEmu {
 		clock();
 		super.write(addr, data);
 		int cycles = clocksSinceLastAccess();
-		
+
 		while (cycles > 0xFFFF) {
 			hsid2.HardSID_Delay(chipNum, 0xFFFF);
 			cycles -= 0xFFFF;
@@ -158,7 +161,7 @@ public class HardSID extends SIDEmu {
 
 	// Must lock the SID before using the standard functions.
 	public boolean lock(final boolean lock) {
-		if (! lock) {
+		if (!lock) {
 			reset((byte) 0);
 			if (!m_locked) {
 				return false;
@@ -173,7 +176,7 @@ public class HardSID extends SIDEmu {
 				return false;
 			}
 			if (hsid2.HardSID_Version() >= HardSIDBuilder.HSID_VERSION_204) {
-				// If  the player switches to the next song of a tune
+				// If the player switches to the next song of a tune
 				// the device will never get unlocked.
 				// Therefore preemptive unlocking here!
 				hsid2.HardSID_Unlock(chipNum);
@@ -190,12 +193,16 @@ public class HardSID extends SIDEmu {
 
 	protected void event() {
 		final int cycles = clocksSinceLastAccess();
-		hsid2.HardSID_Delay(chipNum, cycles);
+		hsid2.HardSID_Delay(chipNum, cycles / chipsUsed);
 		context.schedule(event, HARDSID_DELAY_CYCLES, Event.Phase.PHI2);
 	}
-	
+
 	@Override
 	public ChipModel getChipModel() {
 		return model;
+	}
+
+	public void setChipsUsed(int size) {
+		chipsUsed = size;
 	}
 }
