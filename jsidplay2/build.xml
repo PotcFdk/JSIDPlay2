@@ -261,7 +261,15 @@
           The keystore file, the keystore password and the key password is required.
           Everything is then deployed to the web hoster.
          ================================= -->
-	<target name="deploy" depends="build,jsiddevice_zip,c64jukebox,native_libs_jar,sign,jsidplay2_webresources,jsidplay2_jnlp,upload" description="Deploy JSIDPlay2 to the Web Hoster" />
+	<target name="deploy" depends="deployInternal,upload" description="Deploy JSIDPlay2 to the Web Hoster" />
+
+	<!-- ================================= 
+          target: deployInternal
+          Description:
+          Create JSIDPlay2. Also all JARs are signed.
+          The keystore file, the keystore password and the key password is required.
+         ================================= -->
+	<target name="deployInternal" depends="build,jsiddevice_zip,c64jukebox,native_libs_jar,sign,jsidplay2_webresources,jsidplay2_jnlp" description="Deploy JSIDPlay2 to the Web Hoster" />
 
 	<!-- ================================= 
           target: deployOnlineContent
