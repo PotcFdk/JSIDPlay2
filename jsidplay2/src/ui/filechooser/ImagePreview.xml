@@ -1,15 +1,14 @@
 <!-- http://www.swixml.org - Swing UI XML based -->
 <!-- ImagePreview -->
-<panel xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
+<panel xmlns="http://www.swixml.org/2007/Swixml"
 	layout="BorderLayout" preferredSize="320, 200"
-	bundle="applet.filechooser.ImagePreviewTexts">
+	bundle="ui.filechooser.ImagePreviewTexts">
 	<button text="SWITCH_FONT" focusable="false" constraints="BorderLayout.NORTH"
 		action="doSwitchFont" />
 	<scrollpane id="scrollPane" verticalScrollBarPolicy="JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED"
 		horizontalScrollBarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED">
 		<table constraints="BorderLayout.CENTER" selectionMode="ListSelectionModel.SINGLE_SELECTION"
-			showGrid="false" initclass="applet.filechooser.ImageTableModel" id="directory">
+			showGrid="false" initclass="ui.filechooser.ImageTableModel" id="directory">
 		</table>
 	</scrollpane>
 </panel>
