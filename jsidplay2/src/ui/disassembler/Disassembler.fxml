@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.GridPane?>
+
+<Scene xmlns:fx="http://javafx.com/fxml">
+	<HBox>
+		<TableView fx:id="memoryTable">
+			<columns>
+				<TableColumn text="%COL_ADDRESS" prefWidth="50">
+					<cellValueFactory>
+						<PropertyValueFactory property="address" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="%COL_BYTES" prefWidth="100">
+					<cellValueFactory>
+						<PropertyValueFactory property="bytes" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="%COL_MNEMONIC" prefWidth="100">
+					<cellValueFactory>
+						<PropertyValueFactory property="mnemonic" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="%COL_OPERANDS" prefWidth="100">
+					<cellValueFactory>
+						<PropertyValueFactory property="operands" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="%COL_CYCLES" prefWidth="50">
+					<cellValueFactory>
+						<PropertyValueFactory property="cycles" />
+					</cellValueFactory>
+				</TableColumn>
+			</columns>
+		</TableView>
+		<VBox>
+			<TitledPane text="%JUMP">
+				<GridPane>
+					<Label text="%ADDRESS" GridPane.rowIndex="0"
+						GridPane.columnIndex="0"></Label>
+					<Button text="0x0000" GridPane.rowIndex="0"
+						GridPane.columnIndex="1" onAction="#gotoMemStart"></Button>
+					<Label text="%ADDRESS" GridPane.rowIndex="1"
+						GridPane.columnIndex="0"></Label>
+					<TextField text="0x0000" GridPane.rowIndex="1"
+						GridPane.columnIndex="1" fx:id="address" onAction="#gotoAddress">
+					</TextField>
+					<Label text="%DRIVER_ADDRESS" GridPane.rowIndex="2"
+						GridPane.columnIndex="0"></Label>
+					<Button text="?" GridPane.rowIndex="2" GridPane.columnIndex="1"
+						fx:id="driverAddress" onAction="#gotoDriverAddress"></Button>
+					<Label text="%LOAD_ADDRESS" GridPane.rowIndex="3"
+						GridPane.columnIndex="0"></Label>
+					<Button text="?" GridPane.rowIndex="3" GridPane.columnIndex="1"
+						fx:id="loadAddress" onAction="#gotoLoadAddress"></Button>
+					<Label text="%INIT_ADDRESS" GridPane.rowIndex="4"
+						GridPane.columnIndex="0"></Label>
+					<Button text="?" GridPane.rowIndex="4" GridPane.columnIndex="1"
+						fx:id="initAddress" onAction="#gotoInitAddress"></Button>
+					<Label text="%PLAYER_ADDRESS" GridPane.rowIndex="5"
+						GridPane.columnIndex="0"></Label>
+					<Button text="?" GridPane.rowIndex="5" GridPane.columnIndex="1"
+						fx:id="playerAddress" onAction="#gotoPlayerAddress"></Button>
+				</GridPane>
+			</TitledPane>
+			<TitledPane text="%SAVE_MEMORY">
+				<GridPane>
+					<Label text="%START" GridPane.rowIndex="0"
+						GridPane.columnIndex="0"></Label>
+					<TextField GridPane.rowIndex="0" GridPane.columnIndex="1"
+						fx:id="startAddress"></TextField>
+					<Label text="%END" GridPane.rowIndex="1"
+						GridPane.columnIndex="0"></Label>
+					<TextField GridPane.rowIndex="1" GridPane.columnIndex="1"
+						fx:id="endAddress"></TextField>
+					<Button text="%SAVE" GridPane.rowIndex="2"
+						GridPane.columnIndex="0" GridPane.columnSpan="2" fx:id="save"
+						onAction="#saveMemory"></Button>
+				</GridPane>
+			</TitledPane>
+		</VBox>
+	</HBox>
+</Scene>
+

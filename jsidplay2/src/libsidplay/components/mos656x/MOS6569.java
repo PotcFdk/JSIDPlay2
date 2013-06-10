@@ -90,7 +90,7 @@ public final class MOS6569 extends VIC {
 			}
 			return;
 		}
-			
+
 		default: {
 			/* 1, 25-63 */
 			int address = 0x3fff;
@@ -102,11 +102,12 @@ public final class MOS6569 extends VIC {
 					address &= bitmapMemBase | vc << 3 | rc;
 				} else {
 					int n = lineCycle == 1 ? 39 : lineCycle - 25;
-					address &= charMemBase | (videoMatrixData[n] & 0xff) << 3 | rc;
+					address &= charMemBase | (videoMatrixData[n] & 0xff) << 3
+							| rc;
 				}
 				vc = vc + 1 & 0x3ff;
 			}
-			
+
 			phi1Data = vicReadMemoryPHI1(address);
 			return;
 		}
@@ -287,12 +288,14 @@ public final class MOS6569 extends VIC {
 						previousLineDecodedColor[i] = linePaletteCurrent[0];
 					}
 				}
-				linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven : linePaletteOdd;
-				combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven : combinedLinesOdd;
-				
+				linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven
+						: linePaletteOdd;
+				combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven
+						: combinedLinesOdd;
+
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
-					support.firePropertyChange("pixels", null, pixels);
+					support.firePropertyChange(PROP_PIXELS, null, pixels);
 				}
 
 				// reset collision pointer to first pixel in line
@@ -426,7 +429,6 @@ public final class MOS6569 extends VIC {
 		lineCycle = 9; // preincremented at event
 		context.schedule(event, 0, Phase.PHI1);
 	}
-	
 
 	@Override
 	protected void lightpenEdgeDetector() {
@@ -447,11 +449,16 @@ public final class MOS6569 extends VIC {
 
 	@Override
 	public void updatePalette() {
-		palette.calculatePalette(Palette.buildPaletteVariant(VIC.Model.MOS6567R8));
-		System.arraycopy(palette.getEvenLines(), 0, combinedLinesEven, 0, combinedLinesEven.length);
-		System.arraycopy(palette.getOddLines(), 0, combinedLinesOdd, 0, combinedLinesOdd.length);
-		System.arraycopy(palette.getEvenFiltered(), 0, linePaletteEven, 0, linePaletteEven.length);
-		System.arraycopy(palette.getOddFiltered(), 0, linePaletteOdd, 0, linePaletteOdd.length);
+		palette.calculatePalette(Palette
+				.buildPaletteVariant(VIC.Model.MOS6567R8));
+		System.arraycopy(palette.getEvenLines(), 0, combinedLinesEven, 0,
+				combinedLinesEven.length);
+		System.arraycopy(palette.getOddLines(), 0, combinedLinesOdd, 0,
+				combinedLinesOdd.length);
+		System.arraycopy(palette.getEvenFiltered(), 0, linePaletteEven, 0,
+				linePaletteEven.length);
+		System.arraycopy(palette.getOddFiltered(), 0, linePaletteOdd, 0,
+				linePaletteOdd.length);
 	}
 
 	@Override

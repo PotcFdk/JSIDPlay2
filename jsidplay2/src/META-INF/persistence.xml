@@ -6,29 +6,30 @@
 		<description>HSQLDB Persistence Unit</description>
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
-		<class>applet.entities.gamebase.Config</class>
-		<class>applet.entities.gamebase.Games</class>
-		<class>applet.entities.gamebase.Genres</class>
-		<class>applet.entities.gamebase.Musicians</class>
-		<class>applet.entities.gamebase.PGenres</class>
-		<class>applet.entities.gamebase.Programmers</class>
-		<class>applet.entities.gamebase.Publishers</class>
-		<class>applet.entities.gamebase.Years</class>
-		<class>applet.entities.collection.HVSCEntry</class>
-		<class>applet.entities.collection.StilEntry</class>
-		<class>applet.entities.collection.Version</class>
-		<class>applet.entities.config.AudioSection</class>
-		<class>applet.entities.config.C1541Section</class>
-		<class>applet.entities.config.Configuration</class>
-		<class>applet.entities.config.ConsoleSection</class>
-		<class>applet.entities.config.EmulationSection</class>
-		<class>applet.entities.config.FavoritesSection</class>
-		<class>applet.entities.config.FavoriteColumn</class>
-		<class>applet.entities.config.FilterSection</class>
-		<class>applet.entities.config.JoystickSection</class>
-		<class>applet.entities.config.PrinterSection</class>
-		<class>applet.entities.config.SidPlay2Section</class>
-		<class>applet.entities.config.OnlineSection</class>
+		<class>ui.entities.gamebase.Config</class>
+		<class>ui.entities.gamebase.Games</class>
+		<class>ui.entities.gamebase.Genres</class>
+		<class>ui.entities.gamebase.Musicians</class>
+		<class>ui.entities.gamebase.PGenres</class>
+		<class>ui.entities.gamebase.Programmers</class>
+		<class>ui.entities.gamebase.Publishers</class>
+		<class>ui.entities.gamebase.Years</class>
+		<class>ui.entities.collection.HVSCEntry</class>
+		<class>ui.entities.collection.StilEntry</class>
+		<class>ui.entities.collection.Version</class>
+		<class>ui.entities.config.AudioSection</class>
+		<class>ui.entities.config.C1541Section</class>
+		<class>ui.entities.config.Configuration</class>
+		<class>ui.entities.config.ConsoleSection</class>
+		<class>ui.entities.config.EmulationSection</class>
+		<class>ui.entities.config.FavoritesSection</class>
+		<class>ui.entities.config.FavoriteColumn</class>
+		<class>ui.entities.config.FilterSection</class>
+		<class>ui.entities.config.JoystickSection</class>
+		<class>ui.entities.config.PrinterSection</class>
+		<class>ui.entities.config.SidPlay2Section</class>
+		<class>ui.entities.config.OnlineSection</class>
+		<class>ui.entities.config.KeyTableEntity</class>
 		<properties>
 			<!-- property name="hibernate.show_sql" value="true"/-->
 			<!-- property name="hibernate.format_sql" value="true"/-->

@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.components.OvImageIcon;
 import libsidplay.components.cart.Cartridge;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos656x.VIC;
@@ -25,12 +24,6 @@ import libsidplay.mem.IKernal;
  * @author Antti Lankila
  */
 public final class PLA {
-	/**
-	 * Icon: Cartridge.
-	 */
-	private static final OvImageIcon cart = new OvImageIcon(
-			Cartridge.class.getResource("icons/cartridge.png"));
-
 	private static final Bank characterRomBank = new Bank() {
 		@Override
 		public byte read(final int address) {
@@ -39,7 +32,8 @@ public final class PLA {
 
 		@Override
 		public void write(final int address, final byte value) {
-			throw new RuntimeException("This bank should never be mapped to W mode");
+			throw new RuntimeException(
+					"This bank should never be mapped to W mode");
 		}
 	};
 
@@ -51,7 +45,8 @@ public final class PLA {
 
 		@Override
 		public void write(final int address, final byte value) {
-			throw new RuntimeException("This bank should never be mapped to W mode");
+			throw new RuntimeException(
+					"This bank should never be mapped to W mode");
 		}
 	};
 
@@ -63,10 +58,11 @@ public final class PLA {
 
 		@Override
 		public void write(final int address, final byte value) {
-			throw new RuntimeException("This bank should never be mapped to W mode");
+			throw new RuntimeException(
+					"This bank should never be mapped to W mode");
 		}
 	};
-	
+
 	/** Replacement of the Kernal ROM */
 	private Bank customKernalRomBank;
 
@@ -79,13 +75,14 @@ public final class PLA {
 	public void setCustomKernalRomBank(final Bank kernalRom) {
 		this.customKernalRomBank = kernalRom;
 	}
-	
+
 	protected final ColorRAMBank colorRamBank = new ColorRAMBank();
 
 	private final Bank colorRamDisconnectedBusBank = new Bank() {
 		@Override
 		public byte read(final int address) {
-			return (byte) (colorRamBank.read(address) | disconnectedBusBank.read(address) & 0xf0);
+			return (byte) (colorRamBank.read(address) | disconnectedBusBank
+					.read(address) & 0xf0);
 		}
 
 		@Override
@@ -116,6 +113,7 @@ public final class PLA {
 			map[address >> 8 & 0xf].write(address, value);
 		}
 	}
+
 	private final IOBank ioBank = new IOBank();
 
 	/** CPU port signals */
@@ -176,11 +174,8 @@ public final class PLA {
 	/** Cartridge DMA */
 	private boolean cartridgeDma;
 
-	public PLA(final EventScheduler context,
-			final Bank sid,
-			final Bank zeroRAMBank,
-			final Bank ramBank
-	) {
+	public PLA(final EventScheduler context, final Bank sid,
+			final Bank zeroRAMBank, final Bank ramBank) {
 		this.context = context;
 		this.ramBank = ramBank;
 		nullCartridge = Cartridge.nullCartridge(this);
@@ -230,7 +225,8 @@ public final class PLA {
 		setGameExrom(game, exrom, game, exrom);
 	}
 
-	public void setGameExrom(final boolean gamephi1, final boolean exromphi1, final boolean gamephi2, final boolean exromphi2) {
+	public void setGameExrom(final boolean gamephi1, final boolean exromphi1,
+			final boolean gamephi2, final boolean exromphi2) {
 		gamePHI1 = gamephi1;
 		exromPHI1 = exromphi1;
 		updateMappingPHI1();
@@ -255,7 +251,7 @@ public final class PLA {
 		oldBAState = state;
 
 		/* Signal changes in BA to interested parties */
-		if (! cartridgeDma) {
+		if (!cartridgeDma) {
 			cpu.setRDY(state);
 		}
 		cartridge.changedBA(state);
@@ -303,9 +299,9 @@ public final class PLA {
 				cpu.triggerNMI();
 				cartridge.changedNMI(true);
 			}
-			nmiCount ++;
+			nmiCount++;
 		} else {
-			nmiCount --;
+			nmiCount--;
 			if (nmiCount == 0) {
 				cartridge.changedNMI(false);
 			}
@@ -325,9 +321,9 @@ public final class PLA {
 				cpu.triggerIRQ();
 				cartridge.changedIRQ(true);
 			}
-			irqCount ++;
+			irqCount++;
 		} else {
-			irqCount --;
+			irqCount--;
 			if (irqCount == 0) {
 				cpu.clearIRQ();
 				cartridge.changedIRQ(false);
@@ -341,10 +337,12 @@ public final class PLA {
 			for (int i : new int[] { 1, 2, 3, 4, 5, 6, 7, 0xa, 0xb, 0xc }) {
 				cpuReadMap[i] = cpuWriteMap[i] = cartridge.getUltimaxMemory();
 			}
-			cpuReadMap[0x8] = cpuReadMap[0x9] = cpuWriteMap[0x8] = cpuWriteMap[0x9] = cartridge.getRoml();
+			cpuReadMap[0x8] = cpuReadMap[0x9] = cpuWriteMap[0x8] = cpuWriteMap[0x9] = cartridge
+					.getRoml();
 			cpuReadMap[0xd] = ioBank;
 			cpuWriteMap[0xd] = ioBank;
-			cpuReadMap[0xe] = cpuReadMap[0xf] = cpuWriteMap[0xe] = cpuWriteMap[0xf] = cartridge.getRomh();
+			cpuReadMap[0xe] = cpuReadMap[0xf] = cpuWriteMap[0xe] = cpuWriteMap[0xf] = cartridge
+					.getRomh();
 		} else {
 			for (int i : new int[] { 1, 2, 3, 4, 5, 6, 7, 0xc }) {
 				cpuReadMap[i] = cpuWriteMap[i] = ramBank;
@@ -353,48 +351,63 @@ public final class PLA {
 			cpuWriteMap[0xa] = cpuWriteMap[0xb] = ramBank;
 			cpuWriteMap[0xe] = cpuWriteMap[0xf] = ramBank;
 
-			// !ROML = (_LORAM & _HIRAM & A15 & !A14 & !A13 & !_AEC & R__W & !_EXROM
-			//        #                   A15 & !A14 & !A13 & !_AEC &         _EXROM & !_GAME );
+			// !ROML = (_LORAM & _HIRAM & A15 & !A14 & !A13 & !_AEC & R__W &
+			// !_EXROM
+			// # A15 & !A14 & !A13 & !_AEC & _EXROM & !_GAME );
 			if (basic && kernal && !exromPHI2) {
 				cpuReadMap[0x8] = cpuReadMap[0x9] = cartridge.getRoml();
 			} else {
 				cpuReadMap[0x8] = cpuReadMap[0x9] = ramBank;
 			}
 
-			//!ROMH = (_HIRAM & A15 & !A14 & A13 & !_AEC & R__W & !_EXROM & !_GAME  // $a000-$bfff
-			//       #          A15 &  A14 & A13 & !_AEC        &  _EXROM & !_GAME  // $e000-$ffff
-			//       #                              _AEC        &  _EXROM & !_GAME & VA13 & VA12);
+			// !ROMH = (_HIRAM & A15 & !A14 & A13 & !_AEC & R__W & !_EXROM &
+			// !_GAME // $a000-$bfff
+			// # A15 & A14 & A13 & !_AEC & _EXROM & !_GAME // $e000-$ffff
+			// # _AEC & _EXROM & !_GAME & VA13 & VA12);
 			if (kernal && !exromPHI2 && !gamePHI2) {
 				cpuReadMap[0xa] = cpuReadMap[0xb] = cartridge.getRomh();
-				//!BASIC = (_LORAM & _HIRAM & A15 & !A14 & A13 & !_AEC  & R__W & _GAME );
+				// !BASIC = (_LORAM & _HIRAM & A15 & !A14 & A13 & !_AEC & R__W &
+				// _GAME );
 			} else if (basic && kernal & gamePHI2) {
 				cpuReadMap[0xa] = cpuReadMap[0xb] = basicRomBank;
 			} else {
 				cpuReadMap[0xa] = cpuReadMap[0xb] = ramBank;
 			}
 
-			//!I_O = (_HIRAM & _CHAREN & A15 & A14 & !A13 & A12 & BA & !_AEC &  R__W &            _GAME
-			//      # _HIRAM & _CHAREN & A15 & A14 & !A13 & A12 &      !_AEC & !R__W &            _GAME
-			//	  	# _LORAM & _CHAREN & A15 & A14 & !A13 & A12 & BA & !_AEC &  R__W &            _GAME
-			//	  	# _LORAM & _CHAREN & A15 & A14 & !A13 & A12 &      !_AEC & !R__W &            _GAME
-			//	  	# _HIRAM & _CHAREN & A15 & A14 & !A13 & A12 & BA & !_AEC &  R__W & !_EXROM & !_GAME
-			//      # _HIRAM & _CHAREN & A15 & A14 & !A13 & A12 &      !_AEC & !R__W & !_EXROM & !_GAME
-			//	  	# _LORAM & _CHAREN & A15 & A14 & !A13 & A12 & BA & !_AEC &  R__W & !_EXROM & !_GAME
-			//      # _LORAM & _CHAREN & A15 & A14 & !A13 & A12 &      !_AEC & !R__W & !_EXROM & !_GAME
-			//	  	#                    A15 & A14 & !A13 & A12 & BA & !_AEC &  R__W &  _EXROM & !_GAME
-			//	  	#                    A15 & A14 & !A13 & A12 &      !_AEC & !R__W &  _EXROM & !_GAME);
+			// !I_O = (_HIRAM & _CHAREN & A15 & A14 & !A13 & A12 & BA & !_AEC &
+			// R__W & _GAME
+			// # _HIRAM & _CHAREN & A15 & A14 & !A13 & A12 & !_AEC & !R__W &
+			// _GAME
+			// # _LORAM & _CHAREN & A15 & A14 & !A13 & A12 & BA & !_AEC & R__W &
+			// _GAME
+			// # _LORAM & _CHAREN & A15 & A14 & !A13 & A12 & !_AEC & !R__W &
+			// _GAME
+			// # _HIRAM & _CHAREN & A15 & A14 & !A13 & A12 & BA & !_AEC & R__W &
+			// !_EXROM & !_GAME
+			// # _HIRAM & _CHAREN & A15 & A14 & !A13 & A12 & !_AEC & !R__W &
+			// !_EXROM & !_GAME
+			// # _LORAM & _CHAREN & A15 & A14 & !A13 & A12 & BA & !_AEC & R__W &
+			// !_EXROM & !_GAME
+			// # _LORAM & _CHAREN & A15 & A14 & !A13 & A12 & !_AEC & !R__W &
+			// !_EXROM & !_GAME
+			// # A15 & A14 & !A13 & A12 & BA & !_AEC & R__W & _EXROM & !_GAME
+			// # A15 & A14 & !A13 & A12 & !_AEC & !R__W & _EXROM & !_GAME);
 
 			/* i/o or character */
-			if (io && (basic || kernal) && (gamePHI2 || !gamePHI2 && !exromPHI2)) {
+			if (io && (basic || kernal)
+					&& (gamePHI2 || !gamePHI2 && !exromPHI2)) {
 				cpuReadMap[0xd] = cpuWriteMap[0xd] = ioBank;
-				// !CHAROM = (_HIRAM & !_CHAREN & A15 & A14 & !A13 & A12 & !_AEC  & R__W &             _GAME
-				//          # _LORAM & !_CHAREN & A15 & A14 & !A13 & A12 & !_AEC  & R__W &             _GAME
-				//          # _HIRAM & !_CHAREN & A15 & A14 & !A13 & A12 & !_AEC  & R__W & !_EXROM  & !_GAME
-				//          # _VA14  & _AEC &  _GAME  & !VA13  & VA12
-				//          # _VA14  & _AEC & !_EXROM & !_GAME  & !VA13  & VA12 );
-			} else if (!io &&
-					((basic || kernal) && gamePHI2
-							|| kernal && !gamePHI2 && !exromPHI2)) {
+				// !CHAROM = (_HIRAM & !_CHAREN & A15 & A14 & !A13 & A12 & !_AEC
+				// & R__W & _GAME
+				// # _LORAM & !_CHAREN & A15 & A14 & !A13 & A12 & !_AEC & R__W &
+				// _GAME
+				// # _HIRAM & !_CHAREN & A15 & A14 & !A13 & A12 & !_AEC & R__W &
+				// !_EXROM & !_GAME
+				// # _VA14 & _AEC & _GAME & !VA13 & VA12
+				// # _VA14 & _AEC & !_EXROM & !_GAME & !VA13 & VA12 );
+			} else if (!io
+					&& ((basic || kernal) && gamePHI2 || kernal && !gamePHI2
+							&& !exromPHI2)) {
 				cpuReadMap[0xd] = characterRomBank;
 				cpuWriteMap[0xd] = ramBank;
 			} else {
@@ -402,8 +415,8 @@ public final class PLA {
 				cpuWriteMap[0xd] = ramBank;
 			}
 
-			//!KERNAL = (_HIRAM & A15 & A14 & A13 & !_AEC & R__W &            _GAME
-			//          #_HIRAM & A15 & A14 & A13 & !_AEC & R__W & !_EXROM & !_GAME );
+			// !KERNAL = (_HIRAM & A15 & A14 & A13 & !_AEC & R__W & _GAME
+			// #_HIRAM & A15 & A14 & A13 & !_AEC & R__W & !_EXROM & !_GAME );
 			if (kernal & (gamePHI2 || !gamePHI2 && !exromPHI2)) {
 				cpuReadMap[0xe] = cpuReadMap[0xf] = customKernalRomBank != null ? customKernalRomBank
 						: kernalRomBank;
@@ -462,8 +475,8 @@ public final class PLA {
 	}
 
 	/**
-	 * Set VIC address lines VA14 and VA15. Value for base
-	 * should be one of $0000, $4000, $8000, $c000.
+	 * Set VIC address lines VA14 and VA15. Value for base should be one of
+	 * $0000, $4000, $8000, $c000.
 	 * 
 	 * @param base
 	 */
@@ -472,8 +485,8 @@ public final class PLA {
 	}
 
 	/**
-	 * Access memory as seen by VIC.
-	 * The address should only contain the bottom 14 bits.
+	 * Access memory as seen by VIC. The address should only contain the bottom
+	 * 14 bits.
 	 */
 	public byte vicReadMemoryPHI1(int addr) {
 		addr |= vicMemBase;
@@ -481,12 +494,12 @@ public final class PLA {
 	}
 
 	/**
-	 * Access memory as seen by VIC.
-	 * The address should only contain the bottom 14 bits.
+	 * Access memory as seen by VIC. The address should only contain the bottom
+	 * 14 bits.
 	 * 
-	 * If AEC is still high (CPU is connected to the bus),
-	 * the 0xff read is emulated, as the VIC has tristated
-	 * itself from the bus. Otherwise, the access goes like in PHI1.
+	 * If AEC is still high (CPU is connected to the bus), the 0xff read is
+	 * emulated, as the VIC has tristated itself from the bus. Otherwise, the
+	 * access goes like in PHI1.
 	 */
 	public byte vicReadMemoryPHI2(final int addr) {
 		if (aecDuringPhi2) {
@@ -497,12 +510,10 @@ public final class PLA {
 	}
 
 	/**
-	 * Access color RAM from VIC.
-	 * The address should be between 0 - 0x3ff.
+	 * Access color RAM from VIC. The address should be between 0 - 0x3ff.
 	 * 
-	 * If AEC is still high, the bottom 4 bits of the value CPU is
-	 * stalled on reading will be acquired instead. These data lines
-	 * are not tristated.
+	 * If AEC is still high, the bottom 4 bits of the value CPU is stalled on
+	 * reading will be acquired instead. These data lines are not tristated.
 	 */
 	public byte vicReadColorMemoryPHI2(final int addr) {
 		if (aecDuringPhi2) {
@@ -522,11 +533,6 @@ public final class PLA {
 			cartridge = nullCartridge;
 		}
 		this.cartridge = cartridge;
-		updateIcons();
-	}
-
-	private void updateIcons() {
-		cart.setImageName(this.cartridge.toString());
 	}
 
 	public void setCpu(final MOS6510 cpu) {
@@ -560,10 +566,6 @@ public final class PLA {
 
 	public Cartridge getCartridge() {
 		return cartridge;
-	}
-
-	public OvImageIcon getIcon() {
-		return cart;
 	}
 
 }

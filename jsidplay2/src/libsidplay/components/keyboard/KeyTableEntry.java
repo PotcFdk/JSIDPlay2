@@ -3,116 +3,30 @@ package libsidplay.components.keyboard;
 /**
  * Data structure for an entry on the key table of the C64 keyboard
  */
-public class KeyTableEntry {
-	public static final KeyTableEntry ARROW_LEFT = new KeyTableEntry(7, 1);
-	public static final KeyTableEntry ONE = new KeyTableEntry(7, 0);
-	public static final KeyTableEntry TWO = new KeyTableEntry(7, 3);
-	public static final KeyTableEntry THREE = new KeyTableEntry(1, 0);
-	public static final KeyTableEntry FOUR = new KeyTableEntry(1, 3);
-	public static final KeyTableEntry FIVE = new KeyTableEntry(2, 0);
-	public static final KeyTableEntry SIX = new KeyTableEntry(2, 3);
-	public static final KeyTableEntry SEVEN = new KeyTableEntry(3, 0);
-	public static final KeyTableEntry EIGHT = new KeyTableEntry(3, 3);
-	public static final KeyTableEntry NINE = new KeyTableEntry(4, 0);
-	public static final KeyTableEntry ZERO = new KeyTableEntry(4, 3);
-	public static final KeyTableEntry PLUS = new KeyTableEntry(5, 0);
-	public static final KeyTableEntry MINUS = new KeyTableEntry(5, 3);
-	public static final KeyTableEntry POUND = new KeyTableEntry(6, 0);
-	public static final KeyTableEntry CLEAR_HOME = new KeyTableEntry(6, 3);
-	public static final KeyTableEntry INS_DEL = new KeyTableEntry(0, 0);
-	public static final KeyTableEntry CTRL = new KeyTableEntry(7, 2);
-	public static final KeyTableEntry Q = new KeyTableEntry(7, 6);
-	public static final KeyTableEntry W = new KeyTableEntry(1, 1);
-	public static final KeyTableEntry E = new KeyTableEntry(1, 6);
-	public static final KeyTableEntry R = new KeyTableEntry(2, 1);
-	public static final KeyTableEntry T = new KeyTableEntry(2, 6);
-	public static final KeyTableEntry Y = new KeyTableEntry(3, 1);
-	public static final KeyTableEntry U = new KeyTableEntry(3, 6);
-	public static final KeyTableEntry I = new KeyTableEntry(4, 1);
-	public static final KeyTableEntry O = new KeyTableEntry(4, 6);
-	public static final KeyTableEntry P = new KeyTableEntry(5, 1);
-	public static final KeyTableEntry AT = new KeyTableEntry(5, 6);
-	public static final KeyTableEntry STAR = new KeyTableEntry(6, 1);
-	public static final KeyTableEntry ARROW_UP = new KeyTableEntry(6, 6);
-	public static final KeyTableEntry RUN_STOP = new KeyTableEntry(7, 7);
-	public static final KeyTableEntry A = new KeyTableEntry(1, 2);
-	public static final KeyTableEntry S = new KeyTableEntry(1, 5);
-	public static final KeyTableEntry D = new KeyTableEntry(2, 2);
-	public static final KeyTableEntry F = new KeyTableEntry(2, 5);
-	public static final KeyTableEntry G = new KeyTableEntry(3, 2);
-	public static final KeyTableEntry H = new KeyTableEntry(3, 5);
-	public static final KeyTableEntry J = new KeyTableEntry(4, 2);
-	public static final KeyTableEntry K = new KeyTableEntry(4, 5);
-	public static final KeyTableEntry L = new KeyTableEntry(5, 2);
-	public static final KeyTableEntry COLON = new KeyTableEntry(5, 5);
-	public static final KeyTableEntry SEMICOLON = new KeyTableEntry(6, 2);
-	public static final KeyTableEntry EQUALS = new KeyTableEntry(6, 5);
-	public static final KeyTableEntry RETURN = new KeyTableEntry(0, 1);
-	public static final KeyTableEntry COMMODORE = new KeyTableEntry(7, 5);
-	public static final KeyTableEntry SHIFT_LEFT = new KeyTableEntry(1, 7);
-	public static final KeyTableEntry Z = new KeyTableEntry(1, 4);
-	public static final KeyTableEntry X = new KeyTableEntry(2, 7);
-	public static final KeyTableEntry C = new KeyTableEntry(2, 4);
-	public static final KeyTableEntry V = new KeyTableEntry(3, 7);
-	public static final KeyTableEntry B = new KeyTableEntry(3, 4);
-	public static final KeyTableEntry N = new KeyTableEntry(4, 7);
-	public static final KeyTableEntry M = new KeyTableEntry(4, 4);
-	public static final KeyTableEntry COMMA = new KeyTableEntry(5, 7);
-	public static final KeyTableEntry PERIOD = new KeyTableEntry(5, 4);
-	public static final KeyTableEntry SLASH = new KeyTableEntry(6, 7);
-	public static final KeyTableEntry SHIFT_RIGHT = new KeyTableEntry(6, 4);
-	public static final KeyTableEntry CURSOR_UP_DOWN = new KeyTableEntry(0, 7);
-	public static final KeyTableEntry CURSOR_LEFT_RIGHT = new KeyTableEntry(0, 2);
-	public static final KeyTableEntry SPACE = new KeyTableEntry(7, 4);
-	public static final KeyTableEntry F1 = new KeyTableEntry(0, 4);
-	public static final KeyTableEntry F3 = new KeyTableEntry(0, 5);
-	public static final KeyTableEntry F5 = new KeyTableEntry(0, 6);
-	public static final KeyTableEntry F7 = new KeyTableEntry(0, 3);
-	public static final KeyTableEntry RESTORE = new KeyTableEntry(-1, -1);
+public enum KeyTableEntry {
+	ARROW_LEFT(7, 1), ONE(7, 0), TWO(7, 3), THREE(1, 0), FOUR(1, 3), FIVE(2, 0), SIX(
+			2, 3), SEVEN(3, 0), EIGHT(3, 3), NINE(4, 0), ZERO(4, 3), PLUS(5, 0), MINUS(
+			5, 3), POUND(6, 0), CLEAR_HOME(6, 3), INS_DEL(0, 0), CTRL(7, 2), Q(
+			7, 6), W(1, 1), E(1, 6), R(2, 1), T(2, 6), Y(3, 1), U(3, 6), I(4, 1), O(
+			4, 6), P(5, 1), AT(5, 6), STAR(6, 1), ARROW_UP(6, 6), RUN_STOP(7, 7), A(
+			1, 2), S(1, 5), D(2, 2), F(2, 5), G(3, 2), H(3, 5), J(4, 2), K(4, 5), L(
+			5, 2), COLON(5, 5), SEMICOLON(6, 2), EQUALS(6, 5), RETURN(0, 1), COMMODORE(
+			7, 5), SHIFT_LEFT(1, 7), Z(1, 4), X(2, 7), C(2, 4), V(3, 7), B(3, 4), N(
+			4, 7), M(4, 4), COMMA(5, 7), PERIOD(5, 4), SLASH(6, 7), SHIFT_RIGHT(
+			6, 4), CURSOR_UP_DOWN(0, 7), CURSOR_LEFT_RIGHT(0, 2), SPACE(7, 4), F1(
+			0, 4), F3(0, 5), F5(0, 6), F7(0, 3), RESTORE(-1, -1);
 
-	/**
-	 * key row, column and code
-	 */
-	private final int row,  col;
+	private final int row, col;
 
-	/**
-	 * Force commodore state for this key.
-	 */
-	private final Boolean autoshift;
-
-	/**
-	 * Force commodore state for this key.
-	 */
-	private final Boolean commodore;
-
-	public KeyTableEntry(final int row, final int col) {
+	private KeyTableEntry(final int row, final int col) {
 		this.row = row;
 		this.col = col;
-		this.autoshift = null;
-		this.commodore = null;
-	}
-	/**
-	 * Create a new KeyTableEntry
-	 * @param   row row where the key is located
-	 * @param   col column where the key is located
-	 * @param   autoshift   automatically activate shift when the key is used?
-	 */
-	public KeyTableEntry(final KeyTableEntry in, final Boolean autoshift) {
-		this.row = in.getRow();
-		this.col = in.getCol();
-		this.autoshift = autoshift;
-		this.commodore = null;
-	}
-	public KeyTableEntry(final KeyTableEntry in, final Boolean autoshift, final Boolean commodore) {
-		this.row = in.getRow();
-		this.col = in.getCol();
-		this.autoshift = autoshift;
-		this.commodore = commodore;
 	}
 
 	@Override
 	public final String toString() {
-		return this.getClass().getName() + "( " + this.getRow() + ", " + this.getCol() + ", " + this.autoshift + ", " + this.commodore + " )";
+		return this.getClass().getName() + "( " + this.getRow() + ", "
+				+ this.getCol() + " )";
 	}
 
 	public int getRow() {
@@ -123,18 +37,4 @@ public class KeyTableEntry {
 		return col;
 	}
 
-	public boolean hasShiftPreference() {
-		return autoshift != null;
-	}
-
-	public boolean hasCommodorePreference() {
-		return commodore != null;
-	}
-
-	public boolean shiftDown() {
-		return autoshift;
-	}
-	public boolean commodoreDown() {
-		return commodore;
-	}
 }

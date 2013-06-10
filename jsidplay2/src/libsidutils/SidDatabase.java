@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import libsidplay.sidtune.SidTune;
 import libsidutils.zip.ZipEntryFileProxy;
-import libsidutils.zip.ZipFileProxy;
 import sidplay.ini.IniReader;
 
 public class SidDatabase {
@@ -20,18 +20,17 @@ public class SidDatabase {
 	private final IniReader database;
 
 	private static SidDatabase theSLDB;
-	private static String theHVSCRoot;
+	private static File theHVSCRoot;
 	
-	public static SidDatabase getInstance(final String hvscRoot) {
-		if (theSLDB == null && hvscRoot != null && hvscRoot.length() != 0
-				&& hvscRoot != theHVSCRoot) {
+	public static SidDatabase getInstance(final File hvsc) {
+		if (theSLDB == null && hvsc != null && !hvsc.equals(theHVSCRoot)) {
 			try {
 				theSLDB = AccessController
 						.doPrivileged(new PrivilegedExceptionAction<SidDatabase>() {
 
 							@Override
 							public SidDatabase run() throws Exception {
-								File sldbFile = getSLDBFilename(hvscRoot);
+								File sldbFile = getSLDBFilename(hvsc);
 								if (sldbFile != null && sldbFile.exists()) {
 									return new SidDatabase(sldbFile);
 								}
@@ -39,7 +38,7 @@ public class SidDatabase {
 							}
 						});
 				if (theSLDB != null) {
-					theHVSCRoot = hvscRoot;
+					theHVSCRoot = hvsc;
 				}
 			} catch (PrivilegedActionException e) {
 				// Only "checked" exceptions will be "wrapped" in a
@@ -95,22 +94,13 @@ public class SidDatabase {
 		return parseTimeStamp(times[song - 1]);
 	}
 
-	protected static File getSLDBFilename(String hvscRoot) {
-		if (hvscRoot.toLowerCase().endsWith(".zip")) {
-			if (new File(hvscRoot).exists()) {
-				ZipFileProxy root = new ZipFileProxy(new File(hvscRoot));
-				File[] docs = root.getFileChildren("C64Music/DOCUMENTS/");
-				for (int i = 0; i < docs.length; i++) {
-					if (docs[i].getName().equals("Songlengths.txt")) {
-						return docs[i];
-					}
-				}
-			}
-			return null;
-		} else {
-			return new File(hvscRoot + File.separator + "DOCUMENTS"
-					+ File.separator + "Songlengths.txt");
+	protected static File getSLDBFilename(File hvscRoot) {
+		List<File> docs = PathUtils.getFiles("DOCUMENTS/Songlengths.txt", hvscRoot,
+				null);
+		if (docs.size() > 0) {
+			return docs.get(docs.size() - 1);
 		}
+		return null;
 	}
 
 	public int getFullSongLength(final SidTune currentTune) {

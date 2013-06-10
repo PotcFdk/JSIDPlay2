@@ -140,7 +140,7 @@ public class IniConfig implements IConfig {
 			}
 			return configPlace;
 		} catch (final AccessControlException e) {
-			// No external config file in the applet version
+			// No external config file in the ui version
 			return null;
 		}
 

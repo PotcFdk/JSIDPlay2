@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Button?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml">
+	<BorderPane>
+		<top>
+			<Button text="%CLEAR_PAPER" onAction="#clearPaper"/>
+		</top>
+		<bottom>
+			<ScrollPane prefWidth="480" prefHeight="600">
+				<Canvas fx:id="paper" cache="true" cacheHint="SPEED" width="480"
+					height="600" />
+			</ScrollPane>
+		</bottom>
+	</BorderPane>
+</AnchorPane>
+

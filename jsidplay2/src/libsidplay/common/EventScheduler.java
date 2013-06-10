@@ -21,19 +21,19 @@ import java.util.List;
 import libsidplay.common.Event.Phase;
 
 /**
- * Fast EventScheduler, which maintains a linked list of Events.
- * This scheduler takes neglible time even when it is used to
- * schedule events for nearly every clock.
+ * Fast EventScheduler, which maintains a linked list of Events. This scheduler
+ * takes neglible time even when it is used to schedule events for nearly every
+ * clock.
  * 
- * Events occur on an internal clock which is 2x the visible clock.
- * The visible clock is divided to two phases called phi1 and phi2.
+ * Events occur on an internal clock which is 2x the visible clock. The visible
+ * clock is divided to two phases called phi1 and phi2.
  * 
  * The phi1 clocks are used by VIC and CIA chips, phi2 clocks by CPU.
  * 
- * Scheduling an event for a phi1 clock when system is in phi2 causes the
- * event to be moved to the next phi1 cycle. Correspondingly, requesting
- * a phi1 time when system is in phi2 returns the value of the next phi1.
- *
+ * Scheduling an event for a phi1 clock when system is in phi2 causes the event
+ * to be moved to the next phi1 cycle. Correspondingly, requesting a phi1 time
+ * when system is in phi2 returns the value of the next phi1.
+ * 
  * @author Antti S. Lankila
  */
 public final class EventScheduler {
@@ -41,16 +41,19 @@ public final class EventScheduler {
 	private long currentTime;
 
 	private double cyclesPerSecond;
-	
+
 	/**
 	 * The tail event, always after every other event.
 	 */
 	private final Event lastEvent = new Event("Tail") {
-		{ triggerTime = Long.MAX_VALUE; }
+		{
+			triggerTime = Long.MAX_VALUE;
+		}
 
 		@Override
 		public void event() {
-			throw new RuntimeException("Event scheduler ran out of events to execute");
+			throw new RuntimeException(
+					"Event scheduler ran out of events to execute");
 		}
 	};
 
@@ -64,14 +67,16 @@ public final class EventScheduler {
 
 		@Override
 		public void event() {
-			throw new RuntimeException("Event scheduler executed the root event");
+			throw new RuntimeException(
+					"Event scheduler executed the root event");
 		}
 	};
 
 	/**
 	 * Periodic thread-safe event scheduling mechanism.
 	 */
-	private final Event threadSafeQueueingEvent = new Event("Inject events in thread-safe manner.") {
+	private final Event threadSafeQueueingEvent = new Event(
+			"Inject events in thread-safe manner.") {
 		@Override
 		public void event() throws InterruptedException {
 			synchronized (threadSafeQueue) {
@@ -79,7 +84,7 @@ public final class EventScheduler {
 					threadSafeQueue.remove(0).event();
 				}
 			}
-			schedule(this, 100000);
+			schedule(this, 50000);
 		}
 	};
 
@@ -88,11 +93,12 @@ public final class EventScheduler {
 	/**
 	 * Schedule an event in a thread-safe manner.
 	 * 
-	 * The thread-safe queue is moved to the unsafe queue periodically,
-	 * and specific execution time is unpredictable, but will always
-	 * occur during the PHI1 phase.
+	 * The thread-safe queue is moved to the unsafe queue periodically, and
+	 * specific execution time is unpredictable, but will always occur during
+	 * the PHI1 phase.
 	 * 
-	 * @param event The event to schedule.
+	 * @param event
+	 *            The event to schedule.
 	 */
 	public void scheduleThreadSafe(final Event event) {
 		synchronized (threadSafeQueue) {
@@ -104,24 +110,34 @@ public final class EventScheduler {
 		reset();
 	}
 
-	/** Add event to pending queue.
+	/**
+	 * Add event to pending queue.
 	 * 
 	 * At PHI2, specify cycles=0 and Phase=PHI1 to fire on the very next PHI1.
 	 * 
-	 * @param event The event to add
-	 * @param cycles How many cycles from now to fire
-	 * @param phase The phase when to fire the event.
+	 * @param event
+	 *            The event to add
+	 * @param cycles
+	 *            How many cycles from now to fire
+	 * @param phase
+	 *            The phase when to fire the event.
 	 */
-	public void schedule(final Event event, final long cycles, final Event.Phase phase) {
-		// this strange formulation always selects the next available slot regardless of specified phase.
-		event.triggerTime = (cycles << 1) + currentTime + (currentTime & 1 ^ (phase == Event.Phase.PHI1 ? 0 : 1));
+	public void schedule(final Event event, final long cycles,
+			final Event.Phase phase) {
+		// this strange formulation always selects the next available slot
+		// regardless of specified phase.
+		event.triggerTime = (cycles << 1) + currentTime
+				+ (currentTime & 1 ^ (phase == Event.Phase.PHI1 ? 0 : 1));
 		addEventToSchedule(event);
 	}
 
-	/** Add event to pending queue in the same phase as current event.
+	/**
+	 * Add event to pending queue in the same phase as current event.
 	 * 
-	 * @param event The event to add
-	 * @param cycles How many cycles from now to fire.
+	 * @param event
+	 *            The event to add
+	 * @param cycles
+	 *            How many cycles from now to fire.
 	 */
 	public void schedule(final Event event, final long cycles) {
 		event.triggerTime = (cycles << 1) + currentTime;
@@ -131,19 +147,24 @@ public final class EventScheduler {
 	/**
 	 * Schedule event to occur at some absolute time.
 	 * 
-	 * @param event The event to add
-	 * @param absoluteCycles When to fire
-	 * @param phase Phase when event fires
+	 * @param event
+	 *            The event to add
+	 * @param absoluteCycles
+	 *            When to fire
+	 * @param phase
+	 *            Phase when event fires
 	 */
 	public void scheduleAbsolute(Event event, long absoluteCycles, Phase phase) {
-		event.triggerTime = (absoluteCycles << 1) + (phase == Phase.PHI2 ? 1 : 0);
+		event.triggerTime = (absoluteCycles << 1)
+				+ (phase == Phase.PHI2 ? 1 : 0);
 		addEventToSchedule(event);
 	}
-	
+
 	/**
 	 * Scan the event queue and schedule event for execution.
 	 * 
-	 * @param event The event to add
+	 * @param event
+	 *            The event to add
 	 */
 	private void addEventToSchedule(final Event event) {
 		Event scan = firstEvent;
@@ -160,9 +181,11 @@ public final class EventScheduler {
 		}
 	}
 
-	/** Cancel the specified event.
+	/**
+	 * Cancel the specified event.
 	 * 
-	 * @param event The event to cancel
+	 * @param event
+	 *            The event to cancel
 	 * @return true if an event was actually removed
 	 */
 	public boolean cancel(final Event event) {
@@ -190,8 +213,11 @@ public final class EventScheduler {
 		schedule(threadSafeQueueingEvent, 0, Event.Phase.PHI1);
 	}
 
-	/** Fire next event, advance system time to that event 
-	 * @throws InterruptedException */
+	/**
+	 * Fire next event, advance system time to that event
+	 * 
+	 * @throws InterruptedException
+	 */
 	public void clock() throws InterruptedException {
 		final Event event = firstEvent.next;
 		firstEvent.next = event.next;
@@ -199,10 +225,12 @@ public final class EventScheduler {
 		event.event();
 	}
 
-	/** Is the event pending in this scheduler?
+	/**
+	 * Is the event pending in this scheduler?
 	 * 
-	 *  @param event the event
-	 *  @return true when pending
+	 * @param event
+	 *            the event
+	 * @return true when pending
 	 */
 	public boolean isPending(final Event event) {
 		Event scan = firstEvent.next;
@@ -215,17 +243,20 @@ public final class EventScheduler {
 		return false;
 	}
 
-	/** Get time with respect to a specific clock phase
+	/**
+	 * Get time with respect to a specific clock phase
 	 * 
-	 * @param phase The phase
+	 * @param phase
+	 *            The phase
 	 * @return the time according to specified phase.
 	 */
 	public long getTime(final Event.Phase phase) {
 		return currentTime + (phase == Event.Phase.PHI1 ? 1 : 0) >> 1;
 	}
 
-	/** Return current clock phase
-	 *
+	/**
+	 * Return current clock phase
+	 * 
 	 * @return The current phase
 	 */
 	public Event.Phase phase() {

@@ -90,6 +90,11 @@ public class SIDDump {
 			return fRegs.toArray(new Byte[fRegs.size()]);
 		}
 
+		@Override
+		public String toString() {
+			return getName();
+		}
+
 		void add(String reg) {
 			fRegs.add(name2reg(reg));
 		}
@@ -150,7 +155,8 @@ public class SIDDump {
 			} else if ("FILTERCTRL".equals(reg)) {
 				return FILTERCTRL;
 			} else {
-				throw new RuntimeException("Invalid siddump database entry: " + reg);
+				throw new RuntimeException("Invalid siddump database entry: "
+						+ reg);
 			}
 		}
 	}
@@ -162,8 +168,7 @@ public class SIDDump {
 	public SIDDump() {
 		try {
 			open(findConfigFile());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -196,7 +201,8 @@ public class SIDDump {
 			if (!sidDumpFile.exists()) {
 
 				is = SIDDump.class.getResourceAsStream(FILE_NAME);
-				System.out.println("Using internal SIDDump file: libsidutils/" + FILE_NAME);
+				System.out.println("Using internal SIDDump file: libsidutils/"
+						+ FILE_NAME);
 				return is;
 			}
 		}
@@ -205,7 +211,8 @@ public class SIDDump {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Using SIDDump file: " + sidDumpFile.getAbsolutePath());
+		System.out.println("Using SIDDump file: "
+				+ sidDumpFile.getAbsolutePath());
 
 		return is;
 	}

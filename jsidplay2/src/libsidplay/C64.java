@@ -13,7 +13,6 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.IReSIDExtension;
 import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.common.SIDEmu;
-import libsidplay.components.OvImageIcon;
 import libsidplay.components.c1530.DatasetteEnvironment;
 import libsidplay.components.c1541.C1541Environment;
 import libsidplay.components.c1541.IParallelCable;
@@ -110,6 +109,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 * 
 	 */
 	protected static final class DisconnectedJoystick implements IJoystick {
+		@Override
 		public byte getValue() {
 			return (byte) 0xff;
 		}
@@ -826,13 +826,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		return !joystickPort[portNumber].equals(disconnectedJoystick);
 	}
 
-	/**
-	 * Get current cartridge icon.
-	 * 
-	 * @return current cartridge icon
-	 */
-	public OvImageIcon getIcon() {
-		return pla.getIcon();
+	public PLA getPla() {
+		return pla;
 	}
-
 }

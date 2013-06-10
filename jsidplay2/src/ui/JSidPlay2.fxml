@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.input.KeyCombination?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Tab?>
+<?import ui.musiccollection.MusicCollection?>
+<?import ui.diskcollection.DiskCollection?>
+<?import ui.oscilloscope.Oscilloscope?>
+<?import ui.videoscreen.Video?>
+<?import ui.gamebase.GameBase?>
+<?import ui.favorites.Favorites?>
+<?import ui.printer.Printer?>
+<?import ui.console.Console?>
+<Scene>
+	<BorderPane xmlns:fx="http://javafx.com/fxml">
+		<top>
+			<HBox>
+				<fx:define>
+					<ToggleGroup fx:id="playSpeedGroup" />
+					<ToggleGroup fx:id="videoCaptureGroup" />
+					<ToggleGroup fx:id="videoStandardGroup" />
+					<ToggleGroup fx:id="floppyGroup" />
+					<ToggleGroup fx:id="extensionGroup" />
+				</fx:define>
+				<MenuBar fx:id="menuBar">
+					<menus>
+						<Menu text="%FILE">
+							<items>
+								<MenuItem text="%LOAD" onAction="#load" fx:id="load" />
+								<MenuItem text="%LOAD_REU_VIDEO" onAction="#video"
+									fx:id="video" />
+								<MenuItem text="%RESET" onAction="#reset" fx:id="reset" />
+								<SeparatorMenuItem />
+								<MenuItem text="%QUIT" onAction="#quit" fx:id="quit" />
+							</items>
+						</Menu>
+						<Menu text="%PLAYER">
+							<items>
+								<CheckMenuItem text="%PAUSE" onAction="#pause"
+									fx:id="pauseContinue" />
+								<MenuItem text="%PREVIOUS" onAction="#previousSong"
+									fx:id="previous" />
+								<MenuItem text="%NEXT" onAction="#nextSong" fx:id="next" />
+								<RadioMenuItem text="%NORMAL_SPEED" selected="true"
+									toggleGroup="$playSpeedGroup" onAction="#playNormalSpeed"
+									fx:id="normalSpeed" />
+								<RadioMenuItem text="%FAST_FORWARD" toggleGroup="$playSpeedGroup"
+									onAction="#playFastForward" fx:id="fastForward" />
+								<MenuItem text="%STOP" onAction="#stopSong" fx:id="stop" />
+							</items>
+						</Menu>
+						<Menu text="%HARDCOPY">
+							<MenuItem text="%HARDCOPY_GIF" onAction="#doHardcopyGif" />
+							<MenuItem text="%HARDCOPY_JPG" onAction="#doHardcopyJpg" />
+							<MenuItem text="%HARDCOPY_PNG" onAction="#doHardcopyPng"
+								fx:id="hardcopyPng" />
+						</Menu>
+						<Menu text="%OPTIONS">
+							<Menu text="%VIDEO_STANDARD">
+								<RadioMenuItem text="%PAL" toggleGroup="$videoStandardGroup"
+									onAction="#videoStandardPal" fx:id="pal" />
+								<RadioMenuItem text="%NTSC" toggleGroup="$videoStandardGroup"
+									onAction="#videoStandardNtsc" fx:id="ntsc" />
+							</Menu>
+							<MenuItem text="%SOUND_SETTINGS" onAction="#soundSettings" />
+							<MenuItem text="%EMULATION_SETTINGS" onAction="#emulationSettings" />
+							<MenuItem text="%JOYSTICK_SETTINGS" onAction="#joystickSettings" />
+						</Menu>
+						<Menu text="%DEVICES">
+							<Menu text="%DATASETTE">
+								<MenuItem text="%RECORD" onAction="#record" />
+								<MenuItem text="%PLAY" onAction="#play" />
+								<MenuItem text="%REWIND" onAction="#rewind" />
+								<MenuItem text="%FORWARD" onAction="#forward" />
+								<MenuItem text="%STOP" onAction="#stop" />
+								<MenuItem text="%RESET_COUNTER" onAction="#resetCounter" />
+								<MenuItem text="%INSERT_TAPE" onAction="#insertTape"
+									fx:id="insertTape" />
+								<MenuItem text="%EJECT_TAPE" onAction="#ejectTape" />
+							</Menu>
+							<Menu text="%FLOPPY">
+								<CheckMenuItem text="%TURN_DRIVE_ON" onAction="#turnDriveOn"
+									fx:id="driveOn" />
+								<CheckMenuItem text="%DRIVE_SOUND" onAction="#driveSound"
+									fx:id="driveSoundOn" />
+								<CheckMenuItem text="%PARALLEL_CABLE" onAction="#parallelCable"
+									fx:id="parCable" />
+								<Menu text="%FLOPPY_TYPE">
+									<RadioMenuItem text="%C1541" toggleGroup="$floppyGroup"
+										onAction="#floppyTypeC1541" fx:id="c1541" />
+									<RadioMenuItem text="%C1541-II" toggleGroup="$floppyGroup"
+										onAction="#floppyTypeC1541_II" fx:id="c1541_II" />
+								</Menu>
+								<Menu text="%40_TRACK_HANDLING">
+									<RadioMenuItem text="%NEVER_EXTEND" toggleGroup="$extensionGroup"
+										onAction="#extendNever" fx:id="neverExtend" />
+									<RadioMenuItem text="%ASK_ON_EXTEND" toggleGroup="$extensionGroup"
+										onAction="#extendAsk" fx:id="askExtend" />
+									<RadioMenuItem text="%EXTEND_ON_ACCESS"
+										toggleGroup="$extensionGroup" onAction="#extendAccess" fx:id="accessExtend" />
+								</Menu>
+								<CheckMenuItem text="%8K_RAM_EXPANSION_0X2000"
+									onAction="#expansion0x2000" fx:id="expand2000" />
+								<CheckMenuItem text="%8K_RAM_EXPANSION_0X4000"
+									onAction="#expansion0x4000" fx:id="expand4000" />
+								<CheckMenuItem text="%8K_RAM_EXPANSION_0X6000"
+									onAction="#expansion0x6000" fx:id="expand6000" />
+								<CheckMenuItem text="%8K_RAM_EXPANSION_0X8000"
+									onAction="#expansion0x8000" fx:id="expand8000" />
+								<CheckMenuItem text="%8K_RAM_EXPANSION_0XA000"
+									onAction="#expansion0xA000" fx:id="expandA000" />
+								<MenuItem text="%INSERT_DISK" onAction="#insertDisk"
+									fx:id="insertDisk" />
+								<MenuItem text="%EJECT_DISK" onAction="#ejectDisk" />
+								<MenuItem text="%RESET_DRIVE" onAction="#resetDrive" />
+							</Menu>
+							<Menu text="%PRINTER">
+								<CheckMenuItem text="%TURN_PRINTER_ON" onAction="#printer"
+									fx:id="turnPrinterOn" />
+							</Menu>
+							<Menu text="%CARTRIDGE">
+								<MenuItem text="%INSERT_CARTRIDGE" onAction="#insertCartridge"
+									fx:id="insertCartridge" />
+								<Menu text="%GEORAM">
+									<MenuItem text="%INSERT_GEORAM" onAction="#insertGeoRAM" />
+									<MenuItem text="%INSERT_GEORAM_(64KB)" onAction="#insertGeoRAM64" />
+									<MenuItem text="%INSERT_GEORAM_(128KB)" onAction="#insertGeoRAM128" />
+									<MenuItem text="%INSERT_GEORAM_(256KB)" onAction="#insertGeoRAM256" />
+									<MenuItem text="%INSERT_GEORAM_(512KB)" onAction="#insertGeoRAM512" />
+									<MenuItem text="%INSERT_GEORAM_(1024KB)" onAction="#insertGeoRAM1024" />
+									<MenuItem text="%INSERT_GEORAM_(2048KB)" onAction="#insertGeoRAM2048" />
+								</Menu>
+								<Menu text="%REU">
+									<MenuItem text="%INSERT_REU_(128KB)" onAction="#insertREU128" />
+									<MenuItem text="%INSERT_REU_(256KB)" onAction="#insertREU256" />
+									<MenuItem text="%INSERT_REU_(512KB)" onAction="#insertREU512" />
+									<MenuItem text="%INSERT_REU_(2MB)" onAction="#insertREU2048" />
+									<MenuItem text="%INSERT_REU_(16MB)" onAction="#insertREU16384" />
+								</Menu>
+								<MenuItem text="%EJECT_CARTRIDGE" onAction="#ejectCartridge" />
+								<MenuItem text="%FREEZE" onAction="#freezeCartridge" />
+							</Menu>
+							<MenuItem text="%INSTALL_JIFFYDOS" onAction="#installJiffyDos" />
+							<MenuItem text="%UNINSTALL_JIFFYDOS" onAction="#uninstallJiffyDos" />
+						</Menu>
+						<Menu text="%TOOLS">
+							<MenuItem text="%MEMORY" onAction="#memory" />
+							<MenuItem text="%SID_DUMP" onAction="#sidDump" />
+							<MenuItem text="%SID_REGISTERS" onAction="#sidRegisters" />
+						</Menu>
+						<Menu text="%HELP">
+							<MenuItem text="%ABOUT" onAction="#about" />
+						</Menu>
+					</menus>
+				</MenuBar>
+				<Button focusTraversable="false" onAction="#previousSong"
+					fx:id="previous2">
+					<tooltip>
+						<Tooltip text="%PREVIOUS2" fx:id="previous2ToolTip" />
+					</tooltip>
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/playback_prev.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Button>
+				<ToggleButton focusTraversable="false" onAction="#pause"
+					fx:id="pauseContinue2">
+					<tooltip>
+						<Tooltip text="%PAUSE2" />
+					</tooltip>
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/playback_pause.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</ToggleButton>
+				<Button focusTraversable="false" onAction="#nextSong" fx:id="next2">
+					<tooltip>
+						<Tooltip text="%NEXT2" fx:id="next2ToolTip" />
+					</tooltip>
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/playback_next.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Button>
+				<Button focusTraversable="false" onAction="#stopSong">
+					<tooltip>
+						<Tooltip text="%STOP2" />
+					</tooltip>
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/playback_stop.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Button>
+			</HBox>
+		</top>
+		<center>
+			<TabPane focusTraversable="false" fx:id="tabbedPane"
+				tabClosingPolicy="UNAVAILABLE">
+				<tabs>
+					<Video text="%VIDEO" fx:id="videoScreen" />
+					<Oscilloscope text="%OSCILLOSCOPE" />
+					<MusicCollection type="HVSC" text="%HVSC"
+						collectionURL="http://www.hvsc.de/" dbName="HVSC" />
+					<MusicCollection type="CGSC" text="%CGSC"
+						collectionURL="http://www.btinternet.com/~pweighill/music/"
+						dbName="CGSC" />
+					<DiskCollection type="HVMEC" text="%HVMEC" />
+					<DiskCollection type="DEMOS" text="%DEMOS" />
+					<DiskCollection type="MAGS" text="%MAGS" />
+					<GameBase text="%GAMEBASE" />
+					<Favorites text="%FAVORITES" />
+					<Printer text="%PRINTER" />
+					<Console text="%CONSOLE" />
+				</tabs>
+			</TabPane>
+		</center>
+		<bottom>
+			<HBox>
+				<Label fx:id="status" />
+				<ProgressBar fx:id="progress" />
+			</HBox>
+		</bottom>
+	</BorderPane>
+</Scene>
+

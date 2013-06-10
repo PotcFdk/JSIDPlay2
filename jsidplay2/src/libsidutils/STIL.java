@@ -9,11 +9,11 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import libsidutils.zip.ZipEntryFileProxy;
-import libsidutils.zip.ZipFileProxy;
 
 public class STIL {
 	public static class Info {
@@ -60,11 +60,11 @@ public class STIL {
 	private final HashMap<String, STILEntry> fastMap = new HashMap<String, STILEntry>();
 
 	private static STIL theStil;
-	private static String theHVSCRoot;
+	private static File theHVSCRoot;
 
-	public static STIL getInstance(String hvscRoot) {
-		if (theStil == null && hvscRoot != null && hvscRoot.length() != 0
-				&& hvscRoot != theHVSCRoot) {
+	public static STIL getInstance(File hvscRoot) {
+		if (theStil == null && hvscRoot != null
+				&& !hvscRoot.equals(theHVSCRoot)) {
 			File stilFile = getSTILFile(hvscRoot);
 			if (stilFile != null && stilFile.exists()) {
 				theStil = new STIL(stilFile);
@@ -72,6 +72,17 @@ public class STIL {
 			}
 		}
 		return theStil;
+	}
+
+	public static STILEntry getSTIL(File hvsc, final File file) {
+		final String name = PathUtils.getCollectionName(hvsc, file);
+		if (null != name) {
+			libsidutils.STIL stil = getInstance(hvsc);
+			if (stil != null) {
+				return stil.getSTIL(name);
+			}
+		}
+		return null;
 	}
 
 	private STIL(final File file) {
@@ -192,20 +203,13 @@ public class STIL {
 		}
 	}
 
-	private static File getSTILFile(String hvscRoot) {
-		if (hvscRoot.toLowerCase().endsWith(".zip")) {
-			ZipFileProxy root = new ZipFileProxy(new File(hvscRoot));
-			File[] docs = root.getFileChildren("C64Music/DOCUMENTS/");
-			for (int i = 0; i < docs.length; i++) {
-				if (docs[i].getName().equals("STIL.txt")) {
-					return docs[i];
-				}
-			}
-			return null;
-		} else {
-			return new File(hvscRoot + File.separator + "DOCUMENTS"
-					+ File.separator + "STIL.txt");
+	private static File getSTILFile(File hvscRoot) {
+		List<File> docs = PathUtils.getFiles("DOCUMENTS/STIL.txt", hvscRoot,
+				null);
+		if (docs.size() > 0) {
+			return docs.get(docs.size() - 1);
 		}
+		return null;
 	}
 
 	public STILEntry getSTIL(String name) {

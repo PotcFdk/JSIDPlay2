@@ -144,7 +144,7 @@ public class HardSIDBuilder extends SIDBuilder {
 				return null;
 			}
 		} catch (final AccessControlException e) {
-			// unsigned applet.
+			// unsigned ui.
 			return null;
 		}
 	}

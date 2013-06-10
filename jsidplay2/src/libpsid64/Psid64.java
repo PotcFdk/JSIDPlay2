@@ -15,7 +15,6 @@ import java.util.Iterator;
 import libsidplay.Reloc65;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
@@ -66,7 +65,6 @@ public class Psid64 {
 	private boolean m_blankScreen;
 	private int m_initialSong;
 	private final boolean m_verbose;
-	private String m_hvscRoot;
 
 	private SidTune m_tune;
 	private File m_file;
@@ -160,7 +158,7 @@ public class Psid64 {
 		return true;
 	}
 
-	public boolean convert() {
+	public boolean convert(File hvscRoot) {
 		final block_t blocks[] = new block_t[MAX_BLOCKS];
 		for (int i = 0; i < blocks.length; i++) {
 			blocks[i] = new block_t();
@@ -178,7 +176,7 @@ public class Psid64 {
 		}
 
 		// retrieve STIL entry for this SID tune
-		if (!formatStilText()) {
+		if (!formatStilText(hvscRoot)) {
 			return false;
 		}
 
@@ -646,19 +644,12 @@ public class Psid64 {
 		m_screen.write("Website: http://psid64.sourceforge.net");
 	}
 
-	private boolean formatStilText() {
+	private boolean formatStilText(File hvscRoot) {
 		m_stilText = "";
 
 		String str = "";
 		if (m_stilEntry == null && m_file != null) {
-			final String name = PathUtils.getCollectionRelName(m_file,
-					m_hvscRoot);
-			if (null != name) {
-				STIL stil = STIL.getInstance(m_hvscRoot);
-				if (stil != null) {
-					m_stilEntry = stil.getSTIL(name);
-				}
-			}
+			m_stilEntry = STIL.getSTIL(hvscRoot, m_file);
 		}
 		if (m_stilEntry != null) {
 			str += writeEntry(m_stilEntry);
@@ -983,10 +974,6 @@ public class Psid64 {
 
 		out.close();
 		return true;
-	}
-
-	public void setHVSC(final String root) {
-		m_hvscRoot = root;
 	}
 
 	public void setStilEntry(final STILEntry stilEntry) {

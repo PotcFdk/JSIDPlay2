@@ -32,7 +32,6 @@ import java.io.IOException;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
-import libsidplay.components.OvImageIcon;
 
 /**
  * Implementation of a C1530 Datasette.
@@ -41,23 +40,9 @@ import libsidplay.components.OvImageIcon;
  * 
  */
 public abstract class Datasette {
-	/**
-	 * Icon: Datasette turned off.
-	 */
-	private static final OvImageIcon datasette = new OvImageIcon(
-			Datasette.class.getResource("icons/datassette.png"));
-
-	/**
-	 * Icon: Datasette is loading.
-	 */
-	private static final OvImageIcon datasette_g = new OvImageIcon(
-			Datasette.class.getResource("icons/datassette_g.png"));
-
-	/**
-	 * Icon: Datasette is saving.
-	 */
-	private static final OvImageIcon datasette_r = new OvImageIcon(
-			Datasette.class.getResource("icons/datassette_r.png"));
+	public enum DatasetteStatus {
+		OFF, LOAD, SAVE
+	}
 
 	/**
 	 * Counter is c=g*(sqrt(v*t/d*pi+r^2/d^2)-r/d). Maximum counter value.
@@ -123,7 +108,6 @@ public abstract class Datasette {
 	public final void insertTape(final File tapeFile) throws IOException {
 		ejectTape();
 		img.imageAttach(this, tapeFile);
-		updateIcons();
 	}
 
 	/**
@@ -134,13 +118,6 @@ public abstract class Datasette {
 	 */
 	public final void ejectTape() throws IOException {
 		img.imageDetach(this);
-		updateIcons();
-	}
-
-	private void updateIcons() {
-		datasette.setImageName(img.toString());
-		datasette_g.setImageName(img.toString());
-		datasette_r.setImageName(img.toString());
 	}
 
 	/**
@@ -344,9 +321,9 @@ public abstract class Datasette {
 			return;
 		}
 		currentImage.counter = (MAX_COUNTER - counterOffset + (int) (DS_G * (Math
-				.sqrt(currentImage.cycleCounter / context.getCyclesPerSecond() * DS_C1
-						+ DS_C2) - DS_C3)))
-						% MAX_COUNTER;
+				.sqrt(currentImage.cycleCounter / context.getCyclesPerSecond()
+						* DS_C1 + DS_C2) - DS_C3)))
+				% MAX_COUNTER;
 
 		if (lastCounter != currentImage.counter) {
 			lastCounter = currentImage.counter;
@@ -361,9 +338,9 @@ public abstract class Datasette {
 			return;
 		}
 		counterOffset = (MAX_COUNTER + (int) (DS_G * (Math
-				.sqrt(currentImage.cycleCounter / context.getCyclesPerSecond() * DS_C1
-						+ DS_C2) - DS_C3)))
-						% MAX_COUNTER;
+				.sqrt(currentImage.cycleCounter / context.getCyclesPerSecond()
+						* DS_C1 + DS_C2) - DS_C3)))
+				% MAX_COUNTER;
 		updateCounter();
 	}
 
@@ -414,8 +391,8 @@ public abstract class Datasette {
 				nextTap = currentImage.currentFilePosition;
 			}
 			try {
-				currentImage.fd.seek(currentImage.currentFilePosition
-						- nextTap + currentImage.offset);
+				currentImage.fd.seek(currentImage.currentFilePosition - nextTap
+						+ currentImage.offset);
 			} catch (IOException e) {
 				System.err.println("Cannot read in tap-file.");
 				return false;
@@ -456,8 +433,8 @@ public abstract class Datasette {
 			}
 			gd.dir *= 4;
 			gd.gap = (tapBuffer[(int) (readTap + 1)] & 0xff)
-			+ ((tapBuffer[(int) (readTap + 2)] & 0xff) << 8)
-			+ ((tapBuffer[(int) (readTap + 3)] & 0xff) << 16);
+					+ ((tapBuffer[(int) (readTap + 2)] & 0xff) << 8)
+					+ ((tapBuffer[(int) (readTap + 3)] & 0xff) << 16);
 		}
 
 		if (0 == gd.gap) {
@@ -502,8 +479,7 @@ public abstract class Datasette {
 		nextTap -= 4;
 
 		int nonZerosInARow = 0;
-		while (nonZerosInARow < 3
-				&& currentImage.currentFilePosition != 0) {
+		while (nonZerosInARow < 3 && currentImage.currentFilePosition != 0) {
 			if (!moveBufferBack(-1)) {
 				return readTap;
 			}
@@ -687,23 +663,23 @@ public abstract class Datasette {
 		case FORWARD:
 			direction = 1;
 			speedOfTape = DS_RPS_FAST
-			/ DS_G
-			* Math.sqrt(4 * Math.PI * DS_D * DS_V_PLAY
-					/ context.getCyclesPerSecond() * currentImage.cycleCounter
-					+ 4 * Math.PI * Math.PI * DS_R * DS_R);
+					/ DS_G
+					* Math.sqrt(4 * Math.PI * DS_D * DS_V_PLAY
+							/ context.getCyclesPerSecond()
+							* currentImage.cycleCounter + 4 * Math.PI * Math.PI
+							* DS_R * DS_R);
 			break;
 		case REWIND:
 			direction = -1;
 			speedOfTape = DS_RPS_FAST
-			/ DS_G
-			* Math
-			.sqrt(4
-					* Math.PI
-					* DS_D
-					* DS_V_PLAY
-					/ context.getCyclesPerSecond()
-					* (currentImage.cycleCounterTotal - currentImage.cycleCounter)
-					+ 4 * Math.PI * Math.PI * DS_R * DS_R);
+					/ DS_G
+					* Math.sqrt(4
+							* Math.PI
+							* DS_D
+							* DS_V_PLAY
+							/ context.getCyclesPerSecond()
+							* (currentImage.cycleCounterTotal - currentImage.cycleCounter)
+							+ 4 * Math.PI * Math.PI * DS_R * DS_R);
 			break;
 		case RECORD:
 		case STOP:
@@ -807,8 +783,7 @@ public abstract class Datasette {
 	 */
 	protected void internalReset() throws IOException {
 		if (currentImage != null) {
-			if (mode == Control.START
-					|| mode == Control.FORWARD
+			if (mode == Control.START || mode == Control.FORWARD
 					|| mode == Control.REWIND) {
 				this.context.cancel(event);
 			}
@@ -915,8 +890,7 @@ public abstract class Datasette {
 
 					/* clear the tap-buffer */
 					lastTap = nextTap = 0;
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -947,7 +921,8 @@ public abstract class Datasette {
 			if (!flag && motor && motorStopClk == 0) {
 				motorStopClk = context.getTime(Phase.PHI1) + MOTOR_DELAY;
 				if (!context.isPending(event)) {
-					this.context.scheduleAbsolute(event, motorStopClk, Phase.PHI1);
+					this.context.scheduleAbsolute(event, motorStopClk,
+							Phase.PHI1);
 				}
 			}
 		}
@@ -981,8 +956,10 @@ public abstract class Datasette {
 		} else {
 			lastWriteClk = clk;
 
-			/* write long gap designation, or just a placeholder for a long gap,
-			 * if we are version 0. */
+			/*
+			 * write long gap designation, or just a placeholder for a long gap,
+			 * if we are version 0.
+			 */
 			try {
 				currentImage.fd.write((byte) 0);
 			} catch (IOException e) {
@@ -1025,8 +1002,7 @@ public abstract class Datasette {
 	 *            toggle state
 	 */
 	public final void toggleWriteBit(final boolean writeBit) {
-		if (currentImage != null && writeBit
-				&& mode == Control.RECORD) {
+		if (currentImage != null && writeBit && mode == Control.RECORD) {
 			if (motor) {
 				if (lastWriteClk == 0) {
 					lastWriteClk = context.getTime(Phase.PHI2);
@@ -1086,14 +1062,17 @@ public abstract class Datasette {
 	 * 
 	 * @return icon to show
 	 */
-	public OvImageIcon getIcon() {
+	public DatasetteStatus getStatus() {
 		if (motor && mode == Control.START) {
-			return datasette_g;
+			return DatasetteStatus.LOAD;
 		} else if (motor && mode == Control.RECORD) {
-			return datasette_r;
+			return DatasetteStatus.SAVE;
 		} else {
-			return datasette;
+			return DatasetteStatus.OFF;
 		}
 	}
 
+	public TapeImage getTapeImage() {
+		return img;
+	}
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.TitledPane?>
+
+<TitledPane xmlns:fx="http://javafx.com/fxml" fx:id="border"
+	text=" " collapsible="false">
+	<Canvas fx:id="area" width="150" height="100" cache="true"
+		cacheHint="SPEED" />
+</TitledPane>

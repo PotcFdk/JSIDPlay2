@@ -7,11 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.List;
 
 import libsidplay.Player;
@@ -22,8 +18,10 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.components.mos6510.IMOS6510Disassembler;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Model;
+import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.SidDatabase;
+import libsidutils.cpuparser.CPUParser;
 import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ISIDDefs.ChipModel;
@@ -42,7 +40,6 @@ import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IConsoleSection;
 import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
-import applet.disassembler.CPUParser;
 
 public class ConsolePlayer {
 	/** Previous song select timeout (3 secs) **/
@@ -256,12 +253,18 @@ public class ConsolePlayer {
 	private boolean lastPlayOriginal;
 	private boolean lastTimeMP3;
 
+	private SidDatabase sidDatabase;
+
 	public ConsolePlayer(IConfig config) {
 		state = playerStopped;
 		iniCfg = config;
 		final IEmulationSection emulation = iniCfg.getEmulation();
 		filterEnable = emulation.isFilter();
 		track.single = iniCfg.getSidplay2().isSingle();
+		String hvscRoot = iniCfg.getSidplay2().getHvsc();
+		if (hvscRoot != null) {
+			sidDatabase = SidDatabase.getInstance(new File(hvscRoot));
+		}
 	}
 
 	/**
@@ -419,12 +422,10 @@ public class ConsolePlayer {
 		}
 
 		if (sidEmuFactory instanceof ReSIDBuilder) {
-			((ReSIDBuilder) sidEmuFactory).setSIDVolume(0, dB2factor(iniCfg
-					.getAudio().getLeftVolume()));
-			((ReSIDBuilder) sidEmuFactory).setSIDVolume(1, dB2factor(iniCfg
-					.getAudio().getRightVolume()));
-			((ReSIDBuilder) sidEmuFactory).setOutput(OUTPUTS.OUT_NULL
-					.getDriver());
+			ReSIDBuilder reSIDBuilder = (ReSIDBuilder) sidEmuFactory;
+			reSIDBuilder.setSIDVolume(0, dB2Factor(iniCfg.getAudio().getLeftVolume()));
+			reSIDBuilder.setSIDVolume(1, dB2Factor(iniCfg.getAudio().getRightVolume()));
+			reSIDBuilder.setOutput(OUTPUTS.OUT_NULL.getDriver());
 		}
 
 		// According to the configuration, the SIDs must be updated.
@@ -513,11 +514,9 @@ public class ConsolePlayer {
 		// As yet we don't have a required songlength
 		// so try the songlength database
 		if (tune != null) {
-			SidDatabase database = SidDatabase.getInstance(iniCfg.getSidplay2()
-					.getHvsc());
-			if (database != null && !timer.valid
+			if (sidDatabase != null && !timer.valid
 					&& iniCfg.getSidplay2().isEnableDatabase()) {
-				final int length = database.length(tune);
+				final int length = sidDatabase.length(tune);
 				if (length >= 0) {
 					// length==0 means forever
 					// this is used for tunes
@@ -546,10 +545,6 @@ public class ConsolePlayer {
 		timer.current = ~0;
 		state = playerRunning;
 		return true;
-	}
-
-	private float dB2factor(float volume) {
-		return (float) Math.pow(10, volume / 20.0f);
 	}
 
 	public void close() {
@@ -603,10 +598,8 @@ public class ConsolePlayer {
 	public void setSLDb(final boolean enableSLDb) {
 		if (!timer.valid) {
 			if (enableSLDb && tune != null) {
-				SidDatabase database = SidDatabase.getInstance(iniCfg
-						.getSidplay2().getHvsc());
-				final int length = database.length(tune);
-				if (length > 0) {
+				final int length = sidDatabase.length(tune);
+				if (length >= 0) {
 					timer.defaultLength = length;
 					timer.stop = timer.defaultLength;
 				}
@@ -1047,12 +1040,19 @@ public class ConsolePlayer {
 		}
 		try {
 			if (new URL(argv[infile]).getProtocol().equals("file")) {
-				tune = loadTune(new File(argv[infile]));
+				// load from file
+				loadTune(SidTune.load(new File(argv[infile])));
 			} else {
-				tune = loadTune(new URL(argv[infile]));
+				try (InputStream stream = new URL(argv[infile])
+						.openConnection().getInputStream()) {
+					// load from URL (ui version)
+					loadTune(SidTune.load(stream));
+					// XXX what to set if URL?
+					tune.getInfo().file = null;
+				}
 			}
-		} catch (MalformedURLException e) {
-			tune = loadTune(new File(argv[infile]));
+		} catch (IOException | SidTuneError e) {
+			e.printStackTrace();
 		}
 		if (tune == null) {
 			return -1;
@@ -1086,70 +1086,22 @@ public class ConsolePlayer {
 		return 1;
 	}
 
-	public SidTune loadTune(final URL url) {
-		// Load the tune
-		try {
-			InputStream stream = null;
-			try {
-				// load from URL (applet version)
-				stream = AccessController
-						.doPrivileged(new PrivilegedExceptionAction<InputStream>() {
-							@Override
-							public InputStream run() throws IOException {
-								return url.openConnection().getInputStream();
-							}
-						});
-				tune = SidTune.load(stream);
-				// XXX what to set if URL?
-				tune.getInfo().file = null;
-			} catch (PrivilegedActionException e) {
-				// e.getException() should be an instance of
-				// IOException,
-				// as only "checked" exceptions will be "wrapped" in a
-				// PrivilegedActionException.
-				throw e.getException();
-			} finally {
-				if (stream != null) {
-					stream.close();
-				}
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-			tune = null;
-			return null;
-		}
-		return tune;
-	}
-
 	/**
-	 * Load a tune, this is either an absolute path name or a URL of an applet
+	 * Load a tune, this is either an absolute path name or a URL of an ui
 	 * version.
 	 * 
 	 * @param resource
 	 *            URL or filename
 	 * @return 0 - OK, -1 means load error
 	 */
-	public SidTune loadTune(final File f) {
+	public void loadTune(final SidTune t) {
 		// Next time player is used, the track is reset
 		resetTrack();
-
-		if (f == null) {
-			tune = null;
+		tune = t;
+		if (t == null) {
 			track.first = 1;
 			track.songs = 0;
-			return tune;
 		}
-
-		// Load the tune
-		try {
-			// load from file
-			tune = SidTune.load(f);
-		} catch (final Exception e) {
-			e.printStackTrace();
-			tune = null;
-			return null;
-		}
-		return tune;
 	}
 
 	@SuppressWarnings("resource")
@@ -1535,9 +1487,19 @@ public class ConsolePlayer {
 		player.getC64().setSID(chipNum, s);
 	}
 
-	public void setSIDVolume(int i, float volume) {
+	public void setSIDVolume(int i, float volumeDb) {
 		if (sidEmuFactory instanceof ReSIDBuilder) {
-			((ReSIDBuilder) sidEmuFactory).setSIDVolume(i, volume);
+			((ReSIDBuilder) sidEmuFactory).setSIDVolume(i, dB2Factor(volumeDb));
 		}
 	}
+
+	private float dB2Factor(final float dB) {
+		return (float) Math.pow(10, dB / 20);
+	}
+
+	public void setSidDatabase(File hvscRoot) {
+		this.sidDatabase = SidDatabase.getInstance(hvscRoot);
+	}
+
 }
+

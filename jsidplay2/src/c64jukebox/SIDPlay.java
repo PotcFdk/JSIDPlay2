@@ -4,11 +4,14 @@ import static sidplay.ConsolePlayer.playerFast;
 import static sidplay.ConsolePlayer.playerRestart;
 
 import java.applet.Applet;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import sidplay.ConsolePlayer;
 import sidplay.ConsolePlayer.OUTPUTS;
 import sidplay.ConsolePlayer.SIDEMUS;
@@ -64,7 +67,7 @@ public class SIDPlay extends Applet implements Runnable {
 
 	@Override
 	public void stop() {
-		while (fPlayerThread!=null && fPlayerThread.isAlive()) {
+		while (fPlayerThread != null && fPlayerThread.isAlive()) {
 			fExit = true;
 			try {
 				Thread.sleep(500);
@@ -91,7 +94,7 @@ public class SIDPlay extends Applet implements Runnable {
 		try {
 			if (isapplet && getAppletContext() != null) {
 				getAppletContext()
-				.showDocument(new URL("javascript:destroy()"));
+						.showDocument(new URL("javascript:destroy()"));
 			}
 		} catch (final MalformedURLException e) {
 			e.printStackTrace();
@@ -107,6 +110,7 @@ public class SIDPlay extends Applet implements Runnable {
 	 * 
 	 * @see java.lang.Runnable#run()
 	 */
+	@Override
 	public void run() {
 		fExit = false;
 		String[] args;
@@ -130,8 +134,7 @@ public class SIDPlay extends Applet implements Runnable {
 					if (cp.getState() == ConsolePlayer.playerPaused) {
 						try {
 							Thread.sleep(250);
-						}
-						catch (InterruptedException e) {
+						} catch (InterruptedException e) {
 							break;
 						}
 					}
@@ -287,7 +290,7 @@ public class SIDPlay extends Applet implements Runnable {
 	public int getCurrentSong() {
 		return cp.getTrack().getCurrentSong();
 	}
-	
+
 	/**
 	 * Get the current time of the song that is currently played.
 	 * 
@@ -309,11 +312,14 @@ public class SIDPlay extends Applet implements Runnable {
 		if (sidTuneMod != null) {
 			return sidTuneMod;
 		}
-		try {
-			sidTuneMod = cp.loadTune(new URL(path));
-		} catch (MalformedURLException e) {
+		try (InputStream stream = new URL(path).openConnection()
+				.getInputStream()) {
+			// load from URL (ui version)
+			sidTuneMod = SidTune.load(stream);
+			// XXX what to set if URL?
+			sidTuneMod.getInfo().file = null;
+		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
-			return null;
 		}
 		if (sidTuneMod == null) {
 			return null;

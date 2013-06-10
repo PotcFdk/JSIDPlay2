@@ -1,6 +1,7 @@
 package libsidutils;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,6 +11,11 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import libsidutils.zip.ZipEntryFileProxy;
 
@@ -21,55 +27,77 @@ import libsidutils.zip.ZipEntryFileProxy;
  * 
  * @author Ken Haendel
  */
+@SuppressWarnings("resource")
 public class PathUtils {
 	private static final int COPY_FILE_BUFFER_SIZE = 1 << 20;
 
-	public static String getHVSCName(final String hvsc, final File file) {
-		return getCollectionRelName(file, hvsc);
+	/**
+	 * ZIP entries uses slash, Windows uses backslash.
+	 */
+	private static Pattern separator = Pattern.compile("[/\\\\]");
+
+	public static String getCollectionName(final File collectionRoot,
+			final File file) {
+		return toPath(getFiles(file.getPath(), collectionRoot, null));
 	}
 
-	public static String getCGSCName(final String cgsc, final File file) {
-		return getCollectionRelName(file, cgsc);
-	}
-
-	public static String getCollectionRelName(final File file,
-			String collectionRoot) {
-		try {
-			if (collectionRoot == null || collectionRoot.length() == 0) {
-				return null;
-			}
-			if (file instanceof ZipEntryFileProxy) {
-				final int indexOf = file.getPath().indexOf('/');
-				if (indexOf == -1) {
-					return null;
-				}
-				return file.getPath().substring(indexOf);
-			}
-			final String canonicalPath = file.getCanonicalPath();
-			final String collCanonicalPath = new File(collectionRoot)
-					.getCanonicalPath();
-			if (canonicalPath.startsWith(collCanonicalPath)) {
-				final String name = canonicalPath.substring(
-						collCanonicalPath.length()).replace('\\', '/');
-				if (name.startsWith("/")) {
-					return name;
-				}
-			}
-		} catch (final IOException e) {
-			e.printStackTrace();
+	private static String toPath(List<File> files) {
+		StringBuilder result = new StringBuilder();
+		for (File pathSeg : files) {
+			Scanner scanner = new Scanner(pathSeg.getName()).useDelimiter("/");
+			result.append("/").append(scanner.next());
 		}
-		return null;
+		return result.toString();
+	}
+
+	public static List<File> getFiles(String filePath, File rootFile,
+			FileFilter fileFilter) {
+		if (rootFile == null) {
+			return Collections.emptyList();
+		}
+		String rootPath = rootFile.getPath();
+		if (filePath.startsWith(rootPath)) {
+			// remove root folder and separator
+			// not for ZIP file entries
+			filePath = filePath.substring(rootPath.length());
+			if (filePath.length() > 0) {
+				filePath = filePath.substring(1);
+			}
+		}
+		final ArrayList<File> pathSegs = new ArrayList<File>();
+		File curFile = rootFile;
+		Scanner scanner = new Scanner(filePath).useDelimiter(separator);
+		outer: while (scanner.hasNext()) {
+			final String pathSeg = scanner.next();
+			File[] childFiles = fileFilter != null ? curFile
+					.listFiles(fileFilter) : curFile.listFiles();
+			if (childFiles != null) {
+				for (File childFile : childFiles) {
+					Scanner childFileScanner = new Scanner(childFile.getName())
+							.useDelimiter(separator);
+					if (childFileScanner.next().equals(pathSeg)) {
+						curFile = childFile;
+						pathSegs.add(curFile);
+						continue outer;
+					}
+				}
+			}
+			return Collections.emptyList();
+		}
+		return pathSegs;
 	}
 
 	public static void copyFile(File inputFile, File outputFile)
 			throws IOException {
-		final InputStream input = new FileInputStream(inputFile);
-		final OutputStream output = new FileOutputStream(outputFile);
-		final ReadableByteChannel inputChannel = Channels.newChannel(input);
-		final WritableByteChannel outputChannel = Channels.newChannel(output);
-		PathUtils.fastChannelCopy(inputChannel, outputChannel);
-		inputChannel.close();
-		outputChannel.close();
+		try (InputStream input = (inputFile instanceof ZipEntryFileProxy) ? ((ZipEntryFileProxy) inputFile)
+				.getInputStream() : new FileInputStream(inputFile);
+				OutputStream output = new FileOutputStream(outputFile)) {
+
+			final ReadableByteChannel inputChannel = Channels.newChannel(input);
+			final WritableByteChannel outputChannel = Channels
+					.newChannel(output);
+			PathUtils.fastChannelCopy(inputChannel, outputChannel);
+		}
 	}
 
 	private static void fastChannelCopy(final ReadableByteChannel src,

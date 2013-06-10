@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml">
+	<TableView fx:id="gamebaseTable" minWidth="620" minHeight="520">
+		<columns>
+			<TableColumn text="%GAME" prefWidth="620">
+				<cellValueFactory>
+					<PropertyValueFactory property="name"/>
+				</cellValueFactory>
+			</TableColumn>
+		</columns>
+	</TableView>
+</AnchorPane>
+

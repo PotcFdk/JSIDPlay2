@@ -114,7 +114,7 @@ public abstract class MPS803 extends SerialIECDevice implements
 	/**
 	 * Maximum number of dots horizontally (6 pixels * 80 characters).
 	 */
-	protected static final int MAX_WIDTH = COLUMN_WIDTH * CHAR_WIDTH;
+	public static final int MAX_WIDTH = COLUMN_WIDTH * CHAR_WIDTH;
 
 	//
 	// Special printer commands.

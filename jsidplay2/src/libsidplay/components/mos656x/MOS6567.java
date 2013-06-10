@@ -263,12 +263,14 @@ public class MOS6567 extends VIC {
 						previousLineDecodedColor[i] = linePaletteCurrent[0];
 					}
 				}
-				linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven : linePaletteOdd;
-				combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven : combinedLinesOdd;
+				linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven
+						: linePaletteOdd;
+				combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven
+						: combinedLinesOdd;
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
-					support.firePropertyChange("pixels", null, pixels);
+					support.firePropertyChange(PROP_PIXELS, null, pixels);
 				}
 				setBA(!sprites[3].isDMA() && !sprites[4].isDMA()
 						&& !sprites[5].isDMA());
@@ -400,7 +402,7 @@ public class MOS6567 extends VIC {
 				setBA(!sprites[0].isDMA());
 				break;
 			}
-			
+
 			context.schedule(this, 1);
 		}
 	};
@@ -431,11 +433,16 @@ public class MOS6567 extends VIC {
 
 	@Override
 	public void updatePalette() {
-		palette.calculatePalette(Palette.buildPaletteVariant(VIC.Model.MOS6567R8));
-		System.arraycopy(palette.getEvenLines(), 0, combinedLinesEven, 0, combinedLinesEven.length);
-		System.arraycopy(palette.getOddLines(), 0, combinedLinesOdd, 0, combinedLinesOdd.length);
-		System.arraycopy(palette.getEvenFiltered(), 0, linePaletteEven, 0, linePaletteEven.length);
-		System.arraycopy(palette.getOddFiltered(), 0, linePaletteOdd, 0, linePaletteOdd.length);
+		palette.calculatePalette(Palette
+				.buildPaletteVariant(VIC.Model.MOS6567R8));
+		System.arraycopy(palette.getEvenLines(), 0, combinedLinesEven, 0,
+				combinedLinesEven.length);
+		System.arraycopy(palette.getOddLines(), 0, combinedLinesOdd, 0,
+				combinedLinesOdd.length);
+		System.arraycopy(palette.getEvenFiltered(), 0, linePaletteEven, 0,
+				linePaletteEven.length);
+		System.arraycopy(palette.getOddFiltered(), 0, linePaletteOdd, 0,
+				linePaletteOdd.length);
 	}
 
 	@Override

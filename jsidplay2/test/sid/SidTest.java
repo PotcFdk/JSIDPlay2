@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.swixml.SwingEngine;
 
-import applet.JSIDPlay2;
+import applet.JSIDPlay2Main;
 
 @GUITest
 @RunWith(GUITestRunner.class)

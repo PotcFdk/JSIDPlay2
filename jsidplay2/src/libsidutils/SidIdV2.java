@@ -499,7 +499,7 @@ public final class SidIdV2 {
 				}
 			}
 		} catch (AccessControlException e) {
-			// access denied in the applet version
+			// access denied in the ui version
 		}
 		return null;
 	}

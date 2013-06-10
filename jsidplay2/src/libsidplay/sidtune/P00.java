@@ -75,6 +75,9 @@ class P00 extends Prg {
 		final int lastIndexOf = fileName.lastIndexOf(".");
 		final String ext = lastIndexOf != -1 ? fileName.substring(lastIndexOf) : "";
 
+		if (dataBuf.length < X00Header.SIZE) {
+			return null;
+		}
 		final X00Header pHeader = new X00Header(dataBuf);
 		final int bufLen = dataBuf.length;
 

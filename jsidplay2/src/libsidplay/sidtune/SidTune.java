@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javafx.scene.image.Image;
+
 import javax.swing.ImageIcon;
 
 import libsidutils.zip.ZipEntryFileProxy;
@@ -406,6 +408,10 @@ public abstract class SidTune {
 	public abstract long getInitDelay();
 
 	public ImageIcon getImageIcon() {
+		return null;
+	}
+	
+	public Image getImage() {
 		return null;
 	}
 

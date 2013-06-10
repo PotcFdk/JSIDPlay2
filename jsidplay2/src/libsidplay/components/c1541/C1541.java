@@ -15,7 +15,6 @@ import java.util.Arrays;
 
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.components.OvImageIcon;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.mos6510.MOS6510;
 
@@ -38,36 +37,9 @@ import libsidplay.components.mos6510.MOS6510;
  * @author Ken Händel
  */
 public final class C1541 {
-	/**
-	 * Icon: C1541 turned off.
-	 */
-	protected static final OvImageIcon FLOPPYICON = new OvImageIcon(
-			C1541.class.getResource("icons/cbm1541c.png"));
-	/**
-	 * Icon: C1541 turned on.
-	 */
-	protected static final OvImageIcon FLOPPYICON_G = new OvImageIcon(
-			C1541.class.getResource("icons/cbm1541c_g.png"));
-	/**
-	 * Icon: C1541 turned on and disk activity.
-	 */
-	protected static final OvImageIcon FLOPPYICON_RG = new OvImageIcon(
-			C1541.class.getResource("icons/cbm1541c_rg.png"));
-	/**
-	 * Icon: C1541-II turned off.
-	 */
-	protected static final OvImageIcon FLOPPYICON_II = new OvImageIcon(
-			C1541.class.getResource("icons/1541_ii.png"));
-	/**
-	 * Icon: C1541-II turned on.
-	 */
-	protected static final OvImageIcon FLOPPYICON_II_R = new OvImageIcon(
-			C1541.class.getResource("icons/1541_ii_r.png"));
-	/**
-	 * Icon: C1541-II turned on and disk activity.
-	 */
-	protected static final OvImageIcon FLOPPYICON_II_RG = new OvImageIcon(
-			C1541.class.getResource("icons/1541_ii_rg.png"));
+	public enum FloppyStatus {
+		OFF, ON, LOAD,
+	}
 
 	/**
 	 * Size of the floppy ROM.
@@ -145,7 +117,7 @@ public final class C1541 {
 	 * Custom Kernal ROM to be used.
 	 */
 	private byte[] customC1541Rom;
-	
+
 	/**
 	 * Array of 8KB RAM expansions (0x2000-0x3FFF, 0x4000-0x5FFF, 0x6000-0x7FFF,
 	 * 0x8000-0x9FFF and 0xA000-0xBFFF).
@@ -159,6 +131,8 @@ public final class C1541 {
 	 * Number of VIA chips asserting IRQ.
 	 */
 	private int irqCount;
+
+	private String diskName;
 
 	/**
 	 * Create a new C1541 instance.
@@ -289,6 +263,7 @@ public final class C1541 {
 		};
 		// Create the Disk Controller
 		viaDc = new VIA6522DC(deviceID, cpu) {
+
 			@Override
 			protected long cpuClk() {
 				return getEventScheduler().getTime(Event.Phase.PHI2);
@@ -312,13 +287,7 @@ public final class C1541 {
 
 			@Override
 			public void diskAttachedDetached(String imageName, boolean attached) {
-				final String name = attached ? imageName : null;
-				FLOPPYICON.setImageName(name);
-				FLOPPYICON_G.setImageName(name);
-				FLOPPYICON_RG.setImageName(name);
-				FLOPPYICON_II.setImageName(name);
-				FLOPPYICON_II_R.setImageName(name);
-				FLOPPYICON_II_RG.setImageName(name);
+				diskName = attached ? imageName : null;
 			}
 		};
 
@@ -507,34 +476,29 @@ public final class C1541 {
 	public final void setCustomKernalRom(final byte[] c1541Rom) {
 		customC1541Rom = c1541Rom;
 	}
-	
+
 	/**
 	 * Get a status icon to display the floppies activity.
 	 * 
 	 * @return icon to show
 	 */
-	public final OvImageIcon getIcon() {
-		if (floppyType == FloppyType.C1541) {
-			if (powerOn) {
-				if (viaDc.isLEDOn()) {
-					return FLOPPYICON_RG;
-				} else {
-					return FLOPPYICON_G;
-				}
+	public final FloppyStatus getStatus() {
+		if (powerOn) {
+			if (viaDc.isLEDOn()) {
+				return FloppyStatus.LOAD;
 			} else {
-				return FLOPPYICON;
+				return FloppyStatus.ON;
 			}
 		} else {
-			if (powerOn) {
-				if (viaDc.isLEDOn()) {
-					return FLOPPYICON_II_RG;
-				} else {
-					return FLOPPYICON_II_R;
-				}
-			} else {
-				return FLOPPYICON_II;
-			}
+			return FloppyStatus.OFF;
 		}
 	}
 
+	public FloppyType getFloppyType() {
+		return floppyType;
+	}
+
+	public String getDiskName() {
+		return diskName;
+	}
 }

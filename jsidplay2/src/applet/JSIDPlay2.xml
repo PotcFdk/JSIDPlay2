@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<frame xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
-	title="TITLE" bundle="applet.JSIDPlay2Texts" iconImage="ICON"
-	defaultCloseOperation="JFrame.EXIT_ON_CLOSE" visible="true">
-</frame>

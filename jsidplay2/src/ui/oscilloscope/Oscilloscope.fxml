@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+<?import ui.oscilloscope.EnvelopeGauge?>
+<?import ui.oscilloscope.FilterGauge?>
+<?import ui.oscilloscope.FrequencyGauge?>
+<?import ui.oscilloscope.ResonanceGauge?>
+<?import ui.oscilloscope.VolumeGauge?>
+<?import ui.oscilloscope.WaveGauge?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml">
+	<VBox>
+		<HBox>
+			<TitledPane text="%VOICE_CONTROL" collapsible="false"
+				HBox.hgrow="ALWAYS">
+				<GridPane>
+					<Label text="%MONO_SID_" GridPane.columnIndex="0"
+						GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" />
+					<CheckBox fx:id="muteVoice1" onAction="#doMuteVoice1"
+						text="%MUTE_VOICE_1" GridPane.columnIndex="1" GridPane.rowIndex="0"
+						GridPane.hgrow="ALWAYS" />
+					<CheckBox fx:id="muteVoice2" onAction="#doMuteVoice2"
+						text="%MUTE_VOICE_2" GridPane.columnIndex="2" GridPane.rowIndex="0"
+						GridPane.hgrow="ALWAYS" />
+					<CheckBox fx:id="muteVoice3" onAction="#doMuteVoice3"
+						text="%MUTE_VOICE_3" GridPane.columnIndex="3" GridPane.rowIndex="0"
+						GridPane.hgrow="ALWAYS" />
+					<Label text="%STEREO_SID_" GridPane.columnIndex="0"
+						GridPane.rowIndex="1" />
+					<CheckBox fx:id="muteVoice4" onAction="#doMuteVoice4"
+						text="%MUTE_VOICE_1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+					<CheckBox fx:id="muteVoice5" onAction="#doMuteVoice5"
+						text="%MUTE_VOICE_2" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+					<CheckBox fx:id="muteVoice6" onAction="#doMuteVoice6"
+						text="%MUTE_VOICE_3" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+				</GridPane>
+			</TitledPane>
+		</HBox>
+		<HBox>
+			<TitledPane text="%MONO_SID" collapsible="false">
+				<GridPane>
+					<WaveGauge fx:id="waveMono_0" text="%WAVE"
+						GridPane.columnIndex="0" GridPane.rowIndex="0" />
+					<EnvelopeGauge fx:id="envMono_0" text="%ENVELOPE"
+						GridPane.columnIndex="1" GridPane.rowIndex="0" />
+					<FrequencyGauge fx:id="freqMono_0" text="%FREQUENCY"
+						GridPane.columnIndex="2" GridPane.rowIndex="0" />
+					<WaveGauge fx:id="waveMono_1" text="%WAVE" voice="1"
+						GridPane.columnIndex="0" GridPane.rowIndex="1" />
+					<EnvelopeGauge fx:id="envMono_1" text="%ENVELOPE"
+						voice="1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+					<FrequencyGauge fx:id="freqMono_1" text="%FREQUENCY"
+						voice="1" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+					<WaveGauge fx:id="waveMono_2" text="%WAVE" voice="2"
+						GridPane.columnIndex="0" GridPane.rowIndex="2" />
+					<EnvelopeGauge fx:id="envMono_2" text="%ENVELOPE"
+						voice="2" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+					<FrequencyGauge fx:id="freqMono_2" text="%FREQUENCY"
+						voice="2" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+					<VolumeGauge fx:id="volumeMono" text="%MASTER_VOLUME"
+						GridPane.columnIndex="0" GridPane.rowIndex="3" />
+					<ResonanceGauge fx:id="resonanceMono" text="%RESONANCE"
+						GridPane.columnIndex="1" GridPane.rowIndex="3" />
+					<FilterGauge fx:id="filterMono" text="%FILTER"
+						GridPane.columnIndex="2" GridPane.rowIndex="3" />
+				</GridPane>
+			</TitledPane>
+			<TitledPane text="%STEREO_SID" collapsible="false">
+				<GridPane>
+					<WaveGauge fx:id="waveStereo_0" text="%WAVE"
+						GridPane.columnIndex="0" GridPane.rowIndex="0" />
+					<EnvelopeGauge fx:id="envStereo_0" text="%ENVELOPE"
+						GridPane.columnIndex="1" GridPane.rowIndex="0" />
+					<FrequencyGauge fx:id="freqStereo_0" text="%FREQUENCY"
+						GridPane.columnIndex="2" GridPane.rowIndex="0" />
+					<WaveGauge fx:id="waveStereo_1" text="%WAVE" voice="1"
+						GridPane.columnIndex="0" GridPane.rowIndex="1" />
+					<EnvelopeGauge fx:id="envStereo_1" text="%ENVELOPE"
+						voice="1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+					<FrequencyGauge fx:id="freqStereo_1" text="%FREQUENCY"
+						voice="1" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+					<WaveGauge fx:id="waveStereo_2" text="%WAVE" voice="2"
+						GridPane.columnIndex="0" GridPane.rowIndex="2" />
+					<EnvelopeGauge fx:id="envStereo_2" text="%ENVELOPE"
+						voice="2" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+					<FrequencyGauge fx:id="freqStereo_2" text="%FREQUENCY"
+						voice="2" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+					<VolumeGauge fx:id="volumeStereo" text="%MASTER_VOLUME"
+						GridPane.columnIndex="0" GridPane.rowIndex="3" />
+					<ResonanceGauge fx:id="resonanceStereo" text="%RESONANCE"
+						GridPane.columnIndex="1" GridPane.rowIndex="3" />
+					<FilterGauge fx:id="filterStereo" text="%FILTER"
+						GridPane.columnIndex="2" GridPane.rowIndex="3" />
+				</GridPane>
+			</TitledPane>
+		</HBox>
+	</VBox>
+</AnchorPane>

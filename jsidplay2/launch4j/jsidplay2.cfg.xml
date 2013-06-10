@@ -18,7 +18,7 @@
     <windowTitle>Error</windowTitle>
   </singleInstance>
   <classPath>
-    <mainClass>applet.JSIDPlay2</mainClass>
+    <mainClass>applet.JSIDPlay2Main</mainClass>
     <cp>hsqldb.jar</cp>
     <cp>jinput.jar</cp>
     <cp>photos.jar</cp>

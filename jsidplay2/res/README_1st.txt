@@ -87,7 +87,7 @@ or Type "java -jar jsidlay2_console.jar" (Linux, Mac OS X)
 or grant them proper access rights.
   - Applet with UI:
 <APPLET width="1024" height="768" align="left"
-        archive="hsqldb.jar,jinput.jar,photos.jar,jump3r.jar,swixml.jar,jsidplay2.jar,ScreenRecorder.jar" code="applet.JSIDPlay2.class">
+        archive="hsqldb.jar,jinput.jar,photos.jar,jump3r.jar,swixml.jar,jsidplay2.jar,ScreenRecorder.jar" code="applet.JSIDPlay2Main.class">
 </APPLET>
   - Hidden Applet (without UI) playing a SID:
 <APPLET name="jsidplay" code="c64jukebox.SIDPlay" archive="c64jukebox.jar" WIDTH=0 HEIGHT=0 MAYSCRIPT >

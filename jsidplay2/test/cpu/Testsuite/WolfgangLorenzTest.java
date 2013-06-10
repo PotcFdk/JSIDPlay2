@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.swixml.SwingEngine;
 
-import applet.JSIDPlay2;
+import applet.JSIDPlay2Main;
 
 /**
  * This test executes the Wolfgang Lorenz Test Suite. All 3 disks are loaded and

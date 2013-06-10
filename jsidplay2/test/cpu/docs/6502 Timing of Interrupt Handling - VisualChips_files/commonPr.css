@@ -120,9 +120,9 @@ ul {
 
 #content {
     background: none;
-    border: none ! important;
-    padding: 0 ! important;
-    margin: 0 ! important;
+    border: none;
+    padding: 0;
+    margin: 0;
 }
 #footer {
 	background : white;
@@ -135,12 +135,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p, .documentDescription {
-    margin: 1em 0 ! important;
+    margin: 1em 0;
     line-height: 1.2em;
 }
 
 .tocindent p {
-	margin: 0 0 0 0 ! important;
+	margin: 0 0 0 0;
 }
 
 pre {
@@ -196,14 +196,14 @@ a:link, a:visited {
 }
 /* MSIE/Win doesn't understand 'inherit' */
 a, a.external, a.new, a.stub {
-	color: black ! important;
-	text-decoration: none ! important;
+	color: black;
+	text-decoration: none;
 }
 
 /* Continue ... */
 a, a.external, a.new, a.stub {
-	color: inherit ! important;
-	text-decoration: inherit ! important;
+	color: inherit;
+	text-decoration: inherit;
 }
 
 img { border: none; }
