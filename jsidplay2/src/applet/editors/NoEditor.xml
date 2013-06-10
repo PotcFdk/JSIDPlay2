@@ -1,7 +1,0 @@
-<!-- http://www.swixml.org - Swing UI XML based -->
-<!-- String Configuration -->
-<hbox xmlns="http://www.swixml.org/2007/Swixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.swixml.org/2007/Swixml http://kenchis.t15.org/jsidplay2//swixml2-schema-2.6-SNAPSHOT.xsd"
-	bundle="applet.editors.EditorsTexts">
-	<textfield editable="false" text="NO_EDITOR" />
-</hbox>
