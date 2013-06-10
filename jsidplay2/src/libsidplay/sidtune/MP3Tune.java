@@ -1,12 +1,12 @@
 package libsidplay.sidtune;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
-
+import javafx.scene.image.Image;
 import lowlevel.ID3V2Decoder;
 
 /**
@@ -20,7 +20,8 @@ import lowlevel.ID3V2Decoder;
 public class MP3Tune extends SidTune {
 
 	private ID3V2Decoder decoder = new ID3V2Decoder();
-	private ImageIcon imageIcon;
+
+	private Image image;
 
 	@Override
 	public int placeProgramInMemory(byte[] c64buf) {
@@ -82,7 +83,7 @@ public class MP3Tune extends SidTune {
 				// ignore
 			}
 			if (s.decoder.getImageBytes() != null) {
-				s.imageIcon = new ImageIcon(s.decoder.getImageBytes());
+				s.image = new Image(new ByteArrayInputStream(s.decoder.getImageBytes()));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -92,7 +93,7 @@ public class MP3Tune extends SidTune {
 	}
 
 	@Override
-	public ImageIcon getImageIcon() {
-		return imageIcon;
+	public Image getImage() {
+		return image;
 	}
 }

@@ -30,8 +30,6 @@ import java.util.Properties;
 
 import javafx.scene.image.Image;
 
-import javax.swing.ImageIcon;
-
 import libsidplay.Reloc65;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.mem.IPSIDDrv;
@@ -258,8 +256,7 @@ class PSid extends Prg {
 
 	private final byte[] driver = new byte[IPSIDDrv.PSIDDRV.length];
 
-	private ImageIcon imageIcon;
-	private Image imageIcon2;
+	private Image image;
 
 	protected PSid() {
 		// Reloc65 modifies the driver code, for that reason a copy of
@@ -633,9 +630,7 @@ class PSid extends Prg {
 
 		if (photoRes != null) {
 			photoRes = "Photos/" + photoRes;
-			sidtune.imageIcon = new ImageIcon(
-					SidTune.class.getResource(photoRes));
-			sidtune.imageIcon2 = new Image(SidTune.class.getResource(photoRes)
+			sidtune.image = new Image(SidTune.class.getResource(photoRes)
 					.toString());
 		}
 
@@ -794,12 +789,7 @@ class PSid extends Prg {
 	}
 
 	@Override
-	public ImageIcon getImageIcon() {
-		return imageIcon;
-	}
-
-	@Override
 	public Image getImage() {
-		return imageIcon2;
+		return image;
 	}
 }
