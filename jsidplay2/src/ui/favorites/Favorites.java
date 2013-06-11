@@ -83,9 +83,11 @@ public class Favorites extends C64Tab {
 		// Initially select last selected tab
 		String currentFavorite = ((Configuration) getConfig())
 				.getCurrentFavorite();
-		for (Tab tab : favoritesList.getTabs()) {
-			if (tab.getText().equals(currentFavorite)) {
-				favoritesList.getSelectionModel().select(tab);
+		if (currentFavorite != null) {
+			for (Tab tab : favoritesList.getTabs()) {
+				if (tab.getText().equals(currentFavorite)) {
+					favoritesList.getSelectionModel().select(tab);
+				}
 			}
 		}
 	}

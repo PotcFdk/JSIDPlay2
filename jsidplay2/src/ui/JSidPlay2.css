@@ -2,9 +2,11 @@
 	-fx-effect: null;
 }
 .toggle-button:selected {
-	-fx-background-image:url("icons/playback_start.png");
-	-fx-background-size:stretch;
-	-fx-background-repeat:no-repeat;
+	-fx-graphic: url("icons/playback_start.png");
+}
+
+.toggle-button {
+	-fx-graphic: url("icons/playback_pause.png");
 }
 
 .slider.knobStyle {
@@ -46,4 +48,12 @@
 .fileNotFoundCellValue
 {
 	-fx-background-color:red;
+}
+
+.errorConsole {
+	-fx-text-fill: red;
+}
+
+.outputConsole {
+	-fx-text-fill: black;
 }
