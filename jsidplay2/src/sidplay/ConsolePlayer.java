@@ -1458,7 +1458,7 @@ public class ConsolePlayer {
 	private void updateSIDEmu(final int chipNum, final ChipModel model) {
 		SIDEmu s = player.getC64().getSID(chipNum);
 
-		if (s == null & sidEmuFactory != null) {
+		if (s == null && sidEmuFactory != null) {
 			s = sidEmuFactory.lock(player.getC64().getEventScheduler(), model);
 		}
 
