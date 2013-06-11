@@ -37,12 +37,12 @@ public class FavoritesCellFactory implements
 			@Override
 			public void updateItem(Object value, boolean empty) {
 				super.updateItem(value, empty);
-				int columnIndex = column.getTableView().getColumns()
-						.indexOf(column);
 				if (!empty) {
 					String text = value.toString();
 					setText(text);
 					if (config != null) {
+						int columnIndex = column.getTableView().getColumns()
+								.indexOf(column);
 						if (columnIndex == 0) {
 							File file = FavoritesTab.getFile(config, text);
 							if (!file.exists()

@@ -50,11 +50,14 @@ import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
+import libsidplay.components.c1541.DiskImage;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.PRG2TAP;
 import libsidutils.SidDatabase;
+import libsidutils.zip.ZipEntryFileProxy;
 import sidplay.ConsolePlayer;
 import ui.about.About;
 import ui.common.C64Stage;
@@ -489,31 +492,16 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 						getConfig(), hvscRoot, new TapeFileFilter());
 				final int rc = fileDialog.showDialog(null, getBundle()
 						.getString("INSERT_TAPE"));
-				if (rc == JFileChooser.APPROVE_OPTION
-						&& fileDialog.getSelectedFile() != null) {
-					getUiEvents().fireEvent(IInsertMedia.class,
-							new IInsertMedia() {
-
-								@Override
-								public MediaType getMediaType() {
-									return MediaType.TAPE;
-								}
-
-								@Override
-								public File getSelectedMedia() {
-									return fileDialog.getSelectedFile();
-								}
-
-								@Override
-								public File getAutostartFile() {
-									return fileDialog.getAutostartFile();
-								}
-
-								@Override
-								public Object getComponent() {
-									return videoScreen;
-								}
-							});
+				File selectedFile = fileDialog.getSelectedFile();
+				if (rc == JFileChooser.APPROVE_OPTION && selectedFile != null) {
+					try {
+						insertTape(selectedFile, fileDialog.getAutostartFile(),
+								videoScreen);
+					} catch (IOException e) {
+						System.err.println(String.format(
+								"Cannot attach file '%s'.",
+								selectedFile.getAbsolutePath()));
+					}
 				}
 			}
 		});
@@ -616,31 +604,16 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 						getConfig(), hvscRoot, new DiskFileFilter());
 				final int rc = fileDialog.showDialog(null, getBundle()
 						.getString("INSERT_DISK"));
-				if (rc == JFileChooser.APPROVE_OPTION
-						&& fileDialog.getSelectedFile() != null) {
-					getUiEvents().fireEvent(IInsertMedia.class,
-							new IInsertMedia() {
-
-								@Override
-								public MediaType getMediaType() {
-									return MediaType.DISK;
-								}
-
-								@Override
-								public File getSelectedMedia() {
-									return fileDialog.getSelectedFile();
-								}
-
-								@Override
-								public File getAutostartFile() {
-									return fileDialog.getAutostartFile();
-								}
-
-								@Override
-								public Object getComponent() {
-									return videoScreen;
-								}
-							});
+				File selectedFile = fileDialog.getSelectedFile();
+				if (rc == JFileChooser.APPROVE_OPTION && selectedFile != null) {
+					try {
+						insertDisk(selectedFile, fileDialog.getAutostartFile(),
+								videoScreen);
+					} catch (IOException e) {
+						System.err.println(String.format(
+								"Cannot attach file '%s'.",
+								selectedFile.getAbsolutePath()));
+					}
 				}
 			}
 		});
@@ -677,31 +650,15 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 						getConfig(), hvscRoot, new CartFileFilter());
 				final int rc = fileDialog.showDialog(null, getBundle()
 						.getString("INSERT_CARTRIDGE"));
-				if (rc == JFileChooser.APPROVE_OPTION
-						&& fileDialog.getSelectedFile() != null) {
-					getUiEvents().fireEvent(IInsertMedia.class,
-							new IInsertMedia() {
-
-								@Override
-								public MediaType getMediaType() {
-									return MediaType.CART;
-								}
-
-								@Override
-								public File getSelectedMedia() {
-									return fileDialog.getSelectedFile();
-								}
-
-								@Override
-								public File getAutostartFile() {
-									return null;
-								}
-
-								@Override
-								public Object getComponent() {
-									return videoScreen;
-								}
-							});
+				File selectedFile = fileDialog.getSelectedFile();
+				if (rc == JFileChooser.APPROVE_OPTION && selectedFile != null) {
+					try {
+						insertCartridge(selectedFile, videoScreen);
+					} catch (IOException e) {
+						System.err.println(String.format(
+								"Cannot attach file '%s'.",
+								selectedFile.getAbsolutePath()));
+					}
 				}
 			}
 		});
@@ -957,6 +914,105 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	}
 
+	private void insertDisk(final File selectedDisk, final File autostartFile,
+			final Object component) throws IOException {
+		// automatically turn drive on
+		getPlayer().enableFloppyDiskDrives(true);
+		getConfig().getC1541().setDriveOn(true);
+		// attach selected disk into the first disk drive
+		DiskImage disk = getPlayer().getFloppies()[0].getDiskController()
+				.insertDisk(selectedDisk);
+		disk.setExtendImagePolicy(this);
+		if (autostartFile != null) {
+			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
+
+				@Override
+				public boolean switchToVideoTab() {
+					return true;
+				}
+
+				@Override
+				public SidTune getSidTune() {
+					try {
+						return SidTune.load(autostartFile);
+					} catch (IOException | SidTuneError e) {
+						e.printStackTrace();
+						return null;
+					}
+				}
+
+				@Override
+				public Object getComponent() {
+					return component;
+				}
+			});
+		}
+	}
+
+	private void insertTape(final File selectedTape, final File autostartFile,
+			final Object component) throws IOException {
+		if (!selectedTape.getName().toLowerCase().endsWith(".tap")) {
+			// Everything, which is not a tape convert to tape first
+			final File convertedTape = new File(getConfig().getSidplay2()
+					.getTmpDir(), selectedTape.getName() + ".tap");
+			convertedTape.deleteOnExit();
+			String[] args = new String[] { selectedTape.getAbsolutePath(),
+					convertedTape.getAbsolutePath() };
+			PRG2TAP.main(args);
+			getPlayer().getDatasette().insertTape(convertedTape);
+		} else {
+			getPlayer().getDatasette().insertTape(selectedTape);
+		}
+		if (autostartFile != null) {
+			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
+
+				@Override
+				public boolean switchToVideoTab() {
+					return true;
+				}
+
+				@Override
+				public SidTune getSidTune() {
+					try {
+						return SidTune.load(autostartFile);
+					} catch (IOException | SidTuneError e) {
+						e.printStackTrace();
+						return null;
+					}
+				}
+
+				@Override
+				public Object getComponent() {
+					return component;
+				}
+			});
+		}
+	}
+
+	private void insertCartridge(final File selectedFile, final Object component)
+			throws IOException {
+		// Insert a cartridge
+		getPlayer().getC64().insertCartridge(selectedFile);
+		// reset required after inserting the cartridge
+		getUiEvents().fireEvent(Reset.class, new Reset() {
+
+			@Override
+			public boolean switchToVideoTab() {
+				return false;
+			}
+
+			@Override
+			public String getCommand() {
+				return null;
+			}
+
+			@Override
+			public Object getComponent() {
+				return component;
+			}
+		});
+	}
+
 	private void updatePlayerButtons() {
 		SidTune tune = getPlayer().getTune();
 		final int startSong, maxSong;
@@ -1156,11 +1212,48 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		} else if (evt.isOfType(IInsertMedia.class)) {
 			// Insert a disk/tape or cartridge
 			IInsertMedia ifObj = (IInsertMedia) evt.getUIEventImpl();
-			switch (ifObj.getMediaType()) {
-			case DISK:
-				// automatically turn drive on
-				driveOn.setSelected(true);
-			default:
+			File mediaFile = ifObj.getSelectedMedia();
+			try {
+				if (mediaFile instanceof ZipEntryFileProxy) {
+					// Extract ZIP file
+					ZipEntryFileProxy zipEntryFileProxy = (ZipEntryFileProxy) mediaFile;
+					mediaFile = ZipEntryFileProxy.extractFromZip(
+							(ZipEntryFileProxy) mediaFile, getConfig()
+									.getSidplay2().getTmpDir());
+					getConfig().getSidplay2().setLastDirectory(
+							zipEntryFileProxy.getZip().getAbsolutePath());
+				} else {
+					getConfig().getSidplay2().setLastDirectory(
+							mediaFile.getParentFile().getAbsolutePath());
+				}
+				if (mediaFile.getName().endsWith(".gz")) {
+					// Extract GZ file
+					mediaFile = ZipEntryFileProxy.extractFromGZ(mediaFile,
+							getConfig().getSidplay2().getTmpDir());
+				}
+				switch (ifObj.getMediaType()) {
+				case TAPE:
+					insertTape(mediaFile, ifObj.getAutostartFile(),
+							ifObj.getComponent());
+					break;
+
+				case DISK:
+					// automatically turn drive on
+					driveOn.setSelected(true);
+					insertDisk(mediaFile, ifObj.getAutostartFile(),
+							ifObj.getComponent());
+					break;
+
+				case CART:
+					insertCartridge(mediaFile, ifObj.getComponent());
+					break;
+
+				default:
+					break;
+				}
+			} catch (IOException e) {
+				System.err.println(String.format("Cannot attach file '%s'.",
+						mediaFile.getAbsolutePath()));
 			}
 		}
 	}

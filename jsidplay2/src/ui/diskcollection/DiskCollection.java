@@ -247,13 +247,15 @@ public class DiskCollection extends C64Tab {
 				}
 			}
 		});
-		Platform.runLater(new Runnable() {
+		if (demosFile != null) {
+			Platform.runLater(new Runnable() {
 
-			@Override
-			public void run() {
-				setRootFile(demosFile);
-			}
-		});
+				@Override
+				public void run() {
+					setRootFile(demosFile);
+				}
+			});
+		}
 	}
 
 	// TODO JavaFX solution?

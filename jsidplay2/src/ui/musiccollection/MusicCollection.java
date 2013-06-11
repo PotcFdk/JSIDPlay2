@@ -513,13 +513,15 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 				}
 			}
 		});
-		Platform.runLater(new Runnable() {
-
-			@Override
-			public void run() {
-				setRoot(collectionFile);
-			}
-		});
+		if (collectionFile != null) {
+			Platform.runLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					setRoot(collectionFile);
+				}
+			});
+		}
 	}
 
 	@FXML
