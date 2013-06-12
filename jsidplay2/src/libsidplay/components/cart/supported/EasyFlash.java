@@ -1,4 +1,5 @@
 /**
+
  * easyflash.c - Cartridge handling of the easyflash cart.
  *
  * Written by
@@ -157,7 +158,7 @@ public class EasyFlash extends Cartridge {
 
 	private boolean easyflashCheckEmpty(final byte[] data, int dataPos) {
 		for (int i = 0; i < 0x2000; i++) {
-			if (data[dataPos + i] != 0xff) {
+			if ((data[dataPos + i] & 0xff) != 0xff) {
 				return false;
 			}
 		}
