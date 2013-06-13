@@ -28,11 +28,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
-
-import javax.swing.JFileChooser;
-
 import libsidplay.C64;
 import libsidplay.common.Event;
 import libsidplay.components.c1530.Datasette.DatasetteStatus;
@@ -48,10 +46,9 @@ import ui.entities.config.SidPlay2Section;
 import ui.events.IInsertMedia;
 import ui.events.IPlayerPlays;
 import ui.events.UIEvent;
-import ui.filechooser.ImageFileChooser;
-import ui.filefilter.CartFileFilter;
-import ui.filefilter.DiskFileFilter;
-import ui.filefilter.TapeFileFilter;
+import ui.filefilter.CartFileExtensions;
+import ui.filefilter.DiskFileExtensions;
+import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 
 public class Video extends C64Tab implements PropertyChangeListener {
@@ -78,6 +75,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	private Label tapeName, diskName, cartridgeName;
 
+	private File fLastDir;
 	private WritableImage vicImage;
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
@@ -241,125 +239,119 @@ public class Video extends C64Tab implements PropertyChangeListener {
 
 	@FXML
 	private void insertTape() {
-		openUsingSwing(new Runnable() {
-			@Override
-			public void run() {
-				File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-						.getHvscFile();
-				final ImageFileChooser fileDialog = new ImageFileChooser(
-						getConfig(), hvscRoot, new TapeFileFilter());
-				final int rc = fileDialog.showDialog(null, getBundle()
-						.getString("INSERT_TAPE"));
-				if (rc == JFileChooser.APPROVE_OPTION
-						&& fileDialog.getSelectedFile() != null) {
-					getUiEvents().fireEvent(IInsertMedia.class,
-							new IInsertMedia() {
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
+						TapeFileExtensions.EXTENSIONS));
+		fileDialog.setTitle(getBundle().getString("INSERT_TAPE"));
+		final File file = fileDialog.showOpenDialog(screen.getScene().getWindow());
+		if (file != null) {
+			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
+			getUiEvents().fireEvent(IInsertMedia.class,
+					new IInsertMedia() {
 
-								@Override
-								public MediaType getMediaType() {
-									return MediaType.TAPE;
-								}
+						@Override
+						public MediaType getMediaType() {
+							return MediaType.TAPE;
+						}
 
-								@Override
-								public File getSelectedMedia() {
-									return fileDialog.getSelectedFile();
-								}
+						@Override
+						public File getSelectedMedia() {
+							return file;
+						}
 
-								@Override
-								public File getAutostartFile() {
-									return fileDialog.getAutostartFile();
-								}
+						@Override
+						public File getAutostartFile() {
+							return null;
+						}
 
-								@Override
-								public Object getComponent() {
-									return Video.this;
-								}
-							});
-				}
-			}
-		});
+						@Override
+						public Object getComponent() {
+							return Video.this;
+						}
+					});
+		}
 	}
 
 	@FXML
 	private void insertDisk() {
-		openUsingSwing(new Runnable() {
-			@Override
-			public void run() {
-				File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-						.getHvscFile();
-				final ImageFileChooser fileDialog = new ImageFileChooser(
-						getConfig(), hvscRoot, new DiskFileFilter());
-				final int rc = fileDialog.showDialog(null, getBundle()
-						.getString("INSERT_DISK"));
-				if (rc == JFileChooser.APPROVE_OPTION
-						&& fileDialog.getSelectedFile() != null) {
-					getUiEvents().fireEvent(IInsertMedia.class,
-							new IInsertMedia() {
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
+						DiskFileExtensions.EXTENSIONS));
+		fileDialog.setTitle(getBundle().getString("INSERT_DISK"));
+		final File file = fileDialog.showOpenDialog(screen.getScene().getWindow());
+		if (file != null) {
+			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
+			getUiEvents().fireEvent(IInsertMedia.class,
+					new IInsertMedia() {
 
-								@Override
-								public MediaType getMediaType() {
-									return MediaType.DISK;
-								}
+						@Override
+						public MediaType getMediaType() {
+							return MediaType.DISK;
+						}
 
-								@Override
-								public File getSelectedMedia() {
-									return fileDialog.getSelectedFile();
-								}
+						@Override
+						public File getSelectedMedia() {
+							return file;
+						}
 
-								@Override
-								public File getAutostartFile() {
-									return fileDialog.getAutostartFile();
-								}
+						@Override
+						public File getAutostartFile() {
+							return null;
+						}
 
-								@Override
-								public Object getComponent() {
-									return Video.this;
-								}
-							});
-				}
-			}
-		});
+						@Override
+						public Object getComponent() {
+							return Video.this;
+						}
+					});
+		}
 	}
 
 	@FXML
 	private void insertCartridge() {
-		openUsingSwing(new Runnable() {
-			@Override
-			public void run() {
-				File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-						.getHvscFile();
-				final JFileChooser fileDialog = new ImageFileChooser(
-						getConfig(), hvscRoot, new CartFileFilter());
-				final int rc = fileDialog.showDialog(null, getBundle()
-						.getString("INSERT_CARTRIDGE"));
-				if (rc == JFileChooser.APPROVE_OPTION
-						&& fileDialog.getSelectedFile() != null) {
-					getUiEvents().fireEvent(IInsertMedia.class,
-							new IInsertMedia() {
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
+						CartFileExtensions.EXTENSIONS));
+		fileDialog.setTitle(getBundle().getString("INSERT_CARTRIDGE"));
+		final File file = fileDialog.showOpenDialog(screen.getScene().getWindow());
+		if (file != null) {
+			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
+			getUiEvents().fireEvent(IInsertMedia.class,
+					new IInsertMedia() {
 
-								@Override
-								public MediaType getMediaType() {
-									return MediaType.CART;
-								}
+						@Override
+						public MediaType getMediaType() {
+							return MediaType.CART;
+						}
 
-								@Override
-								public File getSelectedMedia() {
-									return fileDialog.getSelectedFile();
-								}
+						@Override
+						public File getSelectedMedia() {
+							return file;
+						}
 
-								@Override
-								public File getAutostartFile() {
-									return null;
-								}
+						@Override
+						public File getAutostartFile() {
+							return null;
+						}
 
-								@Override
-								public Object getComponent() {
-									return Video.this;
-								}
-							});
-				}
-			}
-		});
+						@Override
+						public Object getComponent() {
+							return Video.this;
+						}
+					});
+		}
 	}
 
 	@FXML
@@ -564,18 +556,6 @@ public class Video extends C64Tab implements PropertyChangeListener {
 
 	public WritableImage getVicImage() {
 		return vicImage;
-	}
-
-	// TODO JavaFX solution?
-	private void openUsingSwing(Runnable runnable) {
-		Stage stage = (Stage) screen.getScene().getWindow();
-		stage.hide();
-		try {
-			java.awt.EventQueue.invokeAndWait(runnable);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		stage.show();
 	}
 
 	private VIC getVIC() {

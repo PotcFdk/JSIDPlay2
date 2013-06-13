@@ -594,8 +594,6 @@ public class Player {
 				+ "\thttp://www.gb64.com/\n");
 		credits.append("MP3 downloads from Stone Oakvalley's Authentic SID MusicCollection (SOASC=):\n"
 				+ "\thttp://www.6581-8580.com/\n");
-		credits.append("This product includes software developed by the SWIXML Project\n"
-				+ "\thttp://www.swixml.org/\n");
 		credits.append("PSID to PRG converter (PSID64 v0.9):\n"
 				+ "\tCopyright (C) 2001-2007  Roland Hermans\n"
 				+ "\thttp://sourceforge.net/projects/psid64/\n");

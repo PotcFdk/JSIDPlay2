@@ -28,7 +28,7 @@ import ui.events.IReplayTune;
 import ui.events.ITuneStateChanged;
 import ui.events.UIEvent;
 import ui.events.favorites.IAddFavoritesTab;
-import ui.events.favorites.IFavoriteTab;
+import ui.events.favorites.IGetFavoritesTabs;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileExtensions;
 
@@ -249,8 +249,8 @@ public class Favorites extends C64Tab {
 
 	@Override
 	public void notify(UIEvent event) {
-		if (event.isOfType(IFavoriteTab.class)) {
-			IFavoriteTab ifObj = (IFavoriteTab) event.getUIEventImpl();
+		if (event.isOfType(IGetFavoritesTabs.class)) {
+			IGetFavoritesTabs ifObj = (IGetFavoritesTabs) event.getUIEventImpl();
 			// Inform about all tabs
 			List<FavoritesTab> result = new ArrayList<FavoritesTab>();
 			for (Tab tab : favoritesList.getTabs()) {

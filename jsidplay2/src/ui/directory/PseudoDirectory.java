@@ -1,4 +1,4 @@
-package ui.filechooser;
+package ui.directory;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import ui.entities.collection.HVSCEntry;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.TuneFileFilter;
 
-public class DirectoryUtil {
+public class PseudoDirectory {
 
 	/**
 	 * Char-set for string to byte conversions.
@@ -61,14 +61,14 @@ public class DirectoryUtil {
 		return null;
 	}
 
-	protected static Directory gzToDir(File hvscRoot, final File file,
+	private static Directory gzToDir(File hvscRoot, final File file,
 			final IConfig cfg) throws IOException {
 		final File outFile = ZipEntryFileProxy.extractFromGZ(file, cfg
 				.getSidplay2().getTmpDir());
 		return getDirectory(hvscRoot, outFile, cfg);
 	}
 
-	protected static Directory zipToDir(final File file) throws ZipException,
+	private static Directory zipToDir(final File file) throws ZipException,
 			IOException {
 		Directory dir = new Directory();
 		dir.setId(null);
@@ -98,7 +98,7 @@ public class DirectoryUtil {
 		return dir;
 	}
 
-	public static Directory getTuneAsDirectory(File hvscRoot, File file, IConfig cfg)
+	private static Directory getTuneAsDirectory(File hvscRoot, File file, IConfig cfg)
 			throws IOException {
 		Directory dir = new Directory();
 		SidTune tune;
@@ -171,7 +171,7 @@ public class DirectoryUtil {
 		});
 	}
 
-	protected static String getShortenedString(String str, int max) {
+	private static String getShortenedString(String str, int max) {
 		int extIdx = str.lastIndexOf('.');
 		if (str.length() > max && extIdx != -1) {
 			str = str.substring(0,

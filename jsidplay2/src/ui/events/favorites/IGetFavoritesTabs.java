@@ -13,7 +13,7 @@ import ui.favorites.FavoritesTab;
  * @author Ken Händel
  * 
  */
-public interface IFavoriteTab extends IEvent {
+public interface IGetFavoritesTabs extends IEvent {
 	/**
 	 * @param tabs
 	 *            all known favorite tabs

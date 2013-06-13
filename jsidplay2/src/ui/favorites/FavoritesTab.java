@@ -56,7 +56,7 @@ import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IPlayTune;
 import ui.events.UIEvent;
-import ui.events.favorites.IFavoriteTab;
+import ui.events.favorites.IGetFavoritesTabs;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileFilter;
 import ui.stil.STIL;
@@ -214,7 +214,7 @@ public class FavoritesTab extends C64Tab {
 						.getSelectedItem();
 				showStil.setDisable(hvscEntry == null
 						|| getStilEntry(getConfig(), hvscEntry.getPath()) == null);
-				getUiEvents().fireEvent(IFavoriteTab.class, new IFavoriteTab() {
+				getUiEvents().fireEvent(IGetFavoritesTabs.class, new IGetFavoritesTabs() {
 					@Override
 					public void setFavoriteTabs(List<FavoritesTab> tabs,
 							String selected) {

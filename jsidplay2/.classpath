@@ -17,7 +17,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/photos.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/swixml.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-core-4.1.8.Final.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-entitymanager-4.1.8.Final.jar"/>
 	<classpathentry kind="output" path="bin"/>

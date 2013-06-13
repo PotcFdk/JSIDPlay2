@@ -46,7 +46,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -54,6 +53,7 @@ import libsidutils.PathUtils;
 import ui.common.C64Tab;
 import ui.common.SidTuneConverter;
 import ui.common.TypeTextField;
+import ui.common.dialog.YesNoDialog;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
 import ui.entities.PersistenceUtil;
@@ -68,7 +68,7 @@ import ui.events.IPlayTune;
 import ui.events.IPlayerPlays;
 import ui.events.UIEvent;
 import ui.events.favorites.IAddFavoritesTab;
-import ui.events.favorites.IFavoriteTab;
+import ui.events.favorites.IGetFavoritesTabs;
 import ui.favorites.FavoritesTab;
 import ui.filefilter.CollectionFileFilter;
 import ui.filefilter.TuneFileFilter;
@@ -100,7 +100,7 @@ import ui.stil.STIL;
  */
 public class MusicCollection extends C64Tab implements ISearchListener {
 
-	public class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
+	private class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
 		public SearchCriteria(SingularAttribute<DECLARING_CLASS, JAVA_TYPE> att) {
 			this.attribute = att;
 		}
@@ -352,7 +352,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 				convertToPSID64.setDisable(selectedItem == null);
 
 				addToFavorites.setDisable(true);
-				getUiEvents().fireEvent(IFavoriteTab.class, new IFavoriteTab() {
+				getUiEvents().fireEvent(IGetFavoritesTabs.class, new IGetFavoritesTabs() {
 					@Override
 					public void setFavoriteTabs(List<FavoritesTab> tabs,
 							String selected) {
@@ -481,19 +481,24 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	@FXML
 	private void doCreateSearchIndex() {
-		openUsingSwing(new Runnable() {
+		YesNoDialog dialog = new YesNoDialog();
+		dialog.setTitle(getBundle().getString("CREATE_SEARCH_DATABASE"));
+		dialog.setText(String.format(
+				getBundle().getString("RECREATE_DATABASE"), dbName));
+		dialog.getConfirmed().addListener(new ChangeListener<Boolean>() {
 			@Override
-			public void run() {
-				final int response = JOptionPane.showConfirmDialog(null, String
-						.format(getBundle().getString("RECREATE_DATABASE"),
-								dbName),
-						getBundle().getString("CREATE_SEARCH_DATABASE"),
-						JOptionPane.YES_NO_OPTION);
-				if (response == JOptionPane.YES_OPTION) {
+			public void changed(ObservableValue<? extends Boolean> observable,
+					Boolean oldValue, Boolean newValue) {
+				if (newValue) {
 					startSearch(true);
 				}
 			}
 		});
+		try {
+			dialog.open();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -515,7 +520,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		});
 		if (collectionFile != null) {
 			Platform.runLater(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					setRoot(collectionFile);

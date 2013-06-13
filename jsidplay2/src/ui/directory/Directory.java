@@ -22,7 +22,6 @@ import libsidutils.zip.ZipEntryFileProxy;
 import ui.common.C64AnchorPane;
 import ui.entities.config.SidPlay2Section;
 import ui.events.UIEvent;
-import ui.filechooser.DirectoryUtil;
 
 public class Directory extends C64AnchorPane {
 
@@ -147,7 +146,7 @@ public class Directory extends C64AnchorPane {
 			dirColumn.setText(file.getName());
 			directoryEntries.clear();
 			try {
-				libsidplay.components.Directory dir = DirectoryUtil
+				libsidplay.components.Directory dir = PseudoDirectory
 						.getDirectory(((SidPlay2Section) getConfig()
 								.getSidplay2()).getHvscFile(), file,
 								getConfig());

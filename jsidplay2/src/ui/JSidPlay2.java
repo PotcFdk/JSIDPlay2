@@ -42,8 +42,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 import libsidplay.C64;
 import libsidplay.common.ISID2Types.CPUClock;
@@ -62,6 +60,7 @@ import sidplay.ConsolePlayer;
 import ui.about.About;
 import ui.common.C64Stage;
 import ui.common.C64Tab;
+import ui.common.dialog.YesNoDialog;
 import ui.disassembler.Disassembler;
 import ui.emulationsettings.EmulationSettings;
 import ui.entities.config.SidPlay2Section;
@@ -72,12 +71,10 @@ import ui.events.IPlayerPlays;
 import ui.events.ITuneStateChanged;
 import ui.events.Reset;
 import ui.events.UIEvent;
-import ui.filechooser.ImageFileChooser;
 import ui.filefilter.CartFileExtensions;
-import ui.filefilter.CartFileFilter;
-import ui.filefilter.DiskFileFilter;
+import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.RomFileExtensions;
-import ui.filefilter.TapeFileFilter;
+import ui.filefilter.TapeFileExtensions;
 import ui.filefilter.TuneFileExtensions;
 import ui.joysticksettings.JoystickSettings;
 import ui.siddump.SidDump;
@@ -136,7 +133,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private Timeline timer;
 	private int oldHalfTrack;
 	private Scene scene;
-	private int isAllowed;
 	private int hardcopyCounter;
 
 	@Override
@@ -251,6 +247,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
 			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
 				@Override
 				public boolean switchToVideoTab() {
@@ -281,10 +279,12 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		fileDialog.setInitialDirectory(fLastDir);
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
-						TuneFileExtensions.EXTENSIONS));
+						CartFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
 			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			try {
 				getPlayer().getC64().insertCartridge(file);
 				final File tmpFile = new File(getConfig().getSidplay2()
@@ -483,28 +483,24 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void insertTape() {
-		openUsingSwing(new Runnable() {
-			@Override
-			public void run() {
-				File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-						.getHvscFile();
-				final ImageFileChooser fileDialog = new ImageFileChooser(
-						getConfig(), hvscRoot, new TapeFileFilter());
-				final int rc = fileDialog.showDialog(null, getBundle()
-						.getString("INSERT_TAPE"));
-				File selectedFile = fileDialog.getSelectedFile();
-				if (rc == JFileChooser.APPROVE_OPTION && selectedFile != null) {
-					try {
-						insertTape(selectedFile, fileDialog.getAutostartFile(),
-								videoScreen);
-					} catch (IOException e) {
-						System.err.println(String.format(
-								"Cannot attach file '%s'.",
-								selectedFile.getAbsolutePath()));
-					}
-				}
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
+						TapeFileExtensions.EXTENSIONS));
+		fileDialog.setTitle(getBundle().getString("INSERT_TAPE"));
+		final File file = fileDialog.showOpenDialog(scene.getWindow());
+		if (file != null) {
+			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
+			try {
+				insertTape(file, null, videoScreen);
+			} catch (IOException e) {
+				System.err.println(String.format("Cannot attach file '%s'.",
+						file.getAbsolutePath()));
 			}
-		});
+		}
 	}
 
 	@FXML
@@ -595,28 +591,24 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void insertDisk() {
-		openUsingSwing(new Runnable() {
-			@Override
-			public void run() {
-				File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-						.getHvscFile();
-				final ImageFileChooser fileDialog = new ImageFileChooser(
-						getConfig(), hvscRoot, new DiskFileFilter());
-				final int rc = fileDialog.showDialog(null, getBundle()
-						.getString("INSERT_DISK"));
-				File selectedFile = fileDialog.getSelectedFile();
-				if (rc == JFileChooser.APPROVE_OPTION && selectedFile != null) {
-					try {
-						insertDisk(selectedFile, fileDialog.getAutostartFile(),
-								videoScreen);
-					} catch (IOException e) {
-						System.err.println(String.format(
-								"Cannot attach file '%s'.",
-								selectedFile.getAbsolutePath()));
-					}
-				}
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
+						DiskFileExtensions.EXTENSIONS));
+		fileDialog.setTitle(getBundle().getString("INSERT_DISK"));
+		final File file = fileDialog.showOpenDialog(scene.getWindow());
+		if (file != null) {
+			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
+			try {
+				insertDisk(file, null, videoScreen);
+			} catch (IOException e) {
+				System.err.println(String.format("Cannot attach file '%s'.",
+						file.getAbsolutePath()));
 			}
-		});
+		}
 	}
 
 	@FXML
@@ -641,27 +633,24 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void insertCartridge() {
-		openUsingSwing(new Runnable() {
-			@Override
-			public void run() {
-				File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-						.getHvscFile();
-				final JFileChooser fileDialog = new ImageFileChooser(
-						getConfig(), hvscRoot, new CartFileFilter());
-				final int rc = fileDialog.showDialog(null, getBundle()
-						.getString("INSERT_CARTRIDGE"));
-				File selectedFile = fileDialog.getSelectedFile();
-				if (rc == JFileChooser.APPROVE_OPTION && selectedFile != null) {
-					try {
-						insertCartridge(selectedFile, videoScreen);
-					} catch (IOException e) {
-						System.err.println(String.format(
-								"Cannot attach file '%s'.",
-								selectedFile.getAbsolutePath()));
-					}
-				}
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
+						CartFileExtensions.EXTENSIONS));
+		fileDialog.setTitle(getBundle().getString("INSERT_CARTRIDGE"));
+		final File file = fileDialog.showOpenDialog(scene.getWindow());
+		if (file != null) {
+			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
+			try {
+				insertCartridge(file, videoScreen);
+			} catch (IOException e) {
+				System.err.println(String.format("Cannot attach file '%s'.",
+						file.getAbsolutePath()));
 			}
-		});
+		}
 	}
 
 	@FXML
@@ -670,7 +659,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		fileDialog.setInitialDirectory(fLastDir);
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
-						TuneFileExtensions.EXTENSIONS));
+						CartFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
 			fLastDir = file.getParentFile();
@@ -798,7 +787,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		fileDialog.setTitle(getBundle().getString("CHOOSE_C64_KERNAL_ROM"));
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(RomFileExtensions.DESCRIPTION,
-						TuneFileExtensions.EXTENSIONS));
+						RomFileExtensions.EXTENSIONS));
 		fileDialog.setInitialDirectory(fLastDir);
 		final File c64kernalFile = fileDialog.showOpenDialog(scene.getWindow());
 		if (c64kernalFile != null) {
@@ -812,7 +801,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			c1541FileDialog.setInitialDirectory(fLastDir);
 			fileDialog.getExtensionFilters().add(
 					new ExtensionFilter(RomFileExtensions.DESCRIPTION,
-							TuneFileExtensions.EXTENSIONS));
+							RomFileExtensions.EXTENSIONS));
 			final File c1541kernalFile = c1541FileDialog.showOpenDialog(scene
 					.getWindow());
 			if (c1541kernalFile != null) {
@@ -1150,18 +1139,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		return -1;
 	}
 
-	// TODO JavaFX solution?
-	private void openUsingSwing(Runnable runnable) {
-		Stage stage = (Stage) scene.getWindow();
-		stage.hide();
-		try {
-			java.awt.EventQueue.invokeAndWait(runnable);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		stage.show();
-	}
-
 	private C1541 getFirstFloppy() {
 		return getPlayer().getFloppies()[0];
 	}
@@ -1260,19 +1237,18 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@Override
 	public boolean isAllowed() {
-		// TODO JavaFX solution?
 		if (getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ASK) {
 			// EXTEND_ASK
-			openUsingSwing(new Runnable() {
-				@Override
-				public void run() {
-					isAllowed = JOptionPane.showConfirmDialog(null, getBundle()
-							.getString("EXTEND_DISK_IMAGE_TO_40_TRACKS"),
-							getBundle().getString("EXTEND_DISK_IMAGE"),
-							JOptionPane.YES_NO_OPTION);
-				}
-			});
-			return JOptionPane.YES_OPTION == isAllowed;
+			YesNoDialog dialog = new YesNoDialog();
+			dialog.setTitle(getBundle().getString("EXTEND_DISK_IMAGE"));
+			dialog.setText(getBundle().getString(
+					"EXTEND_DISK_IMAGE_TO_40_TRACKS"));
+			try {
+				dialog.open();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return dialog.getConfirmed().get();
 		} else if (getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ACCESS) {
 			// EXTEND_ACCESS
 			return true;

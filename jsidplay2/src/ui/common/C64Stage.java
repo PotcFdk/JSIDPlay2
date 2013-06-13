@@ -16,6 +16,7 @@ import ui.events.UIEventFactory;
 public abstract class C64Stage extends Stage implements UIPart {
 
 	private UIUtil util = new UIUtil();
+	private boolean wait;
 
 	public void open() throws IOException {
 		open(this);
@@ -36,9 +37,21 @@ public abstract class C64Stage extends Stage implements UIPart {
 				doCloseWindow();
 			}
 		});
-		stage.show();
+		if (wait) {
+			stage.showAndWait();
+		} else {
+			stage.show();
+		}
 	}
 
+	public boolean isWait() {
+		return wait;
+	}
+	
+	public void setWait(boolean wait) {
+		this.wait = wait;
+	}
+	
 	protected ResourceBundle getBundle() {
 		return util.getBundle();
 	}
