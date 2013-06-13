@@ -305,8 +305,7 @@ public abstract class SidTune {
 	 * Does not affect status of object, and therefore can be used to load
 	 * files. Error string is put into info.statusString, though.
 	 * 
-	 * @param fileName
-	 * @param bufferRef
+	 * @param f
 	 * @return
 	 * @throws FileNotFoundException
 	 */
@@ -327,7 +326,6 @@ public abstract class SidTune {
 	 * Convert 32-bit PSID-style speed word to internal tables.
 	 * 
 	 * @param speed
-	 * @param clock
 	 */
 	protected void convertOldStyleSpeedToTables(long speed) {
 		for (int s = 0; s < SIDTUNE_MAX_SONGS; s++) {

@@ -39,7 +39,7 @@ public interface IOnlineSection {
 	/**
 	 * Setter of the download URL for SOASC MOS6581R4.
 	 * 
-	 * @param soascr6581R4
+	 * @param soasc6581R4
 	 *            the download URL for SOASC MOS6581R4
 	 */
 	public void setSoasc6581R4(String soasc6581R4);

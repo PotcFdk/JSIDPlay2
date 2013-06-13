@@ -63,8 +63,7 @@ public final class Voice {
 
 	/**
 	 * Register functions.
-	 * 
-	 * @param ring_modulator Ring modulator for waveform
+	 *
 	 * @param control Control register value.
 	 */
 	public void writeCONTROL_REG(final byte control) {

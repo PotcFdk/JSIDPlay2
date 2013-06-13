@@ -32,8 +32,11 @@ public class Zaxxon extends Cartridge {
 	/**
 	 * Load a Zaxxon cartridge.
 	 * 
-	 * @param is
+	 * @param dis
 	 *            stream to load from
+	 *
+	 * @param pla
+	 *
 	 * @throws IOException
 	 *             load error
 	 */

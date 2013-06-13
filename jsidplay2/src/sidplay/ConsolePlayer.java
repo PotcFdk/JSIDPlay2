@@ -271,7 +271,8 @@ public class ConsolePlayer {
 	 * Create the sid emulation
 	 * 
 	 * @param emu
-	 * @param tuneInfo
+	 * @param audioConfig
+	 * @param cpuFrequency
 	 * @return
 	 */
 	public boolean createSidEmu(final SIDEMUS emu, AudioConfig audioConfig,
@@ -808,7 +809,6 @@ public class ConsolePlayer {
 	 * Convert time from integer
 	 * 
 	 * @param str
-	 * @param time
 	 * @return
 	 */
 	long parseTime(final String str) {
@@ -1090,8 +1090,8 @@ public class ConsolePlayer {
 	 * Load a tune, this is either an absolute path name or a URL of an ui
 	 * version.
 	 * 
-	 * @param resource
-	 *            URL or filename
+	 * @param t
+	 *            SidTune to load.
 	 * @return 0 - OK, -1 means load error
 	 */
 	public void loadTune(final SidTune t) {

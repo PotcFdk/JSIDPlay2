@@ -54,8 +54,6 @@ public class TapeImage {
 	 *            datasette to attach image
 	 * @param tapeFile
 	 *            tape image file
-	 * @param tapName
-	 *            filename of the tap file
 	 * @return tape image read error
 	 * @throws IOException
 	 *             cannot read tape image

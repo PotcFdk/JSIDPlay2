@@ -379,8 +379,7 @@ class PSid extends Prg {
 
 	/**
 	 * Common address resolution procedure
-	 * 
-	 * @param c64data
+	 *
 	 * @return
 	 * @throws SidTuneError
 	 */

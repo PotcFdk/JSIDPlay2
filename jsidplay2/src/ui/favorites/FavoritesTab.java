@@ -553,8 +553,8 @@ public class FavoritesTab extends C64Tab {
 	}
 
 	/**
-	 * @param hvscEntry
-	 *            one tune entry
+	 * @param config
+	 * @param path
 	 * @return file handle of the given entry
 	 */
 	static File getFile(Configuration config, String path) {

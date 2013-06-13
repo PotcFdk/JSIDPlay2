@@ -22,7 +22,7 @@ public class UIEvent {
 	 * 
 	 * @param iface
 	 *            UI event
-	 * @param ifaceName
+	 * @param ifaceType
 	 *            UI event class
 	 */
 	public UIEvent(final IEvent iface, final Class<? extends IEvent> ifaceType) {

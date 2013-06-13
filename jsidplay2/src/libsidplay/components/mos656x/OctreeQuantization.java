@@ -280,7 +280,7 @@ class OctreeQuantization {
 	 * is distributed to the buckets at granularity of 2 bits
 	 * per component (4 * 4 * 4 = 64 buckets in total).
 	 * 
-	 * @param color
+	 * @param node
 	 */
 	private void bucketStore(Node node) {
 		int color = node.toPacked();

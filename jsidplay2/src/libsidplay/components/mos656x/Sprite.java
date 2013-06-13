@@ -153,8 +153,8 @@ public final class Sprite extends Event {
 
 	/**
 	 * Get the Y-coordinate of the sprite
-	 * 
-	 * @param Y-coordinate
+	 *
+	 * @return Y-coordinate
 	 */
 	public final int getY() {
 		return y;
@@ -172,7 +172,7 @@ public final class Sprite extends Event {
 	/**
 	 * Set whether the sprite has priority over the screen background
 	 * 
-	 * @param hasPriority
+	 * @param priority
 	 *            true if the sprite has priority over the screen content
 	 */
 	public final void setPriorityOverForegroundGraphics(final boolean priority) {
@@ -273,8 +273,8 @@ public final class Sprite extends Event {
 	/**
 	 * Set the address we read the sprite data from
 	 * 
-	 * @param pointer
-	 *            address to read from
+	 * @param pointerByte
+	 *              address to read from
 	 */
 	public final void setPointerByte(final byte pointerByte) {
 		this.pointerByte = pointerByte;

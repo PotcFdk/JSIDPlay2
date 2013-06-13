@@ -401,9 +401,6 @@ public abstract class MOS6510 {
 
 	/**
 	 * Push P on stack, decrement S
-	 * 
-	 * @param newFlagB
-	 *            new value for B flag to set on CPU and write to RAM
 	 */
 	protected void PushSR() {
 		cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff, getStatusRegister());

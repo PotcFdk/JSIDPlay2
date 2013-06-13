@@ -4,9 +4,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get name of the device for Joystick.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return name of the Joystick device
 	 */
 	public String getDeviceName1();
@@ -15,9 +13,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set name of the device for Joystick.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param deviceName
 	 *            name of the Joystick device
 	 */
@@ -27,9 +23,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get component name of Joystick direction up.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component name of Joystick direction up
 	 */
 	public String getComponentNameUp1();
@@ -38,9 +32,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set component name of Joystick direction up.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentName
 	 *            component name of Joystick direction up
 	 */
@@ -50,9 +42,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get component name of Joystick direction down.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component name of Joystick direction down
 	 */
 	public String getComponentNameDown1();
@@ -61,9 +51,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set component name of Joystick direction down.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentName
 	 *            component name of Joystick direction down
 	 */
@@ -73,9 +61,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get component name of Joystick direction left.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component name of Joystick direction ledt
 	 */
 	public String getComponentNameLeft1();
@@ -84,9 +70,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set component name of Joystick direction left.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentName
 	 *            component name of Joystick direction left
 	 */
@@ -96,9 +80,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get component name of Joystick direction right.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component name of Joystick direction right
 	 */
 	public String getComponentNameRight1();
@@ -107,9 +89,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set component name of Joystick direction right.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentName
 	 *            component name of Joystick direction right
 	 */
@@ -119,9 +99,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get component name of Joystick fire button.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component name of Joystick fire button
 	 */
 	public String getComponentNameBtn1();
@@ -130,9 +108,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set component name of Joystick fire button.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentName
 	 *            component name of Joystick fire button
 	 */
@@ -142,9 +118,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get component value of Joystick direction up.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component value of Joystick direction up
 	 */
 	public float getComponentValueUp1();
@@ -153,9 +127,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set component value of Joystick direction up.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentValue
 	 *            component value of Joystick direction up
 	 */
@@ -165,9 +137,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get component value of Joystick direction down.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component value of Joystick direction down
 	 */
 	public float getComponentValueDown1();
@@ -176,9 +146,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set component value of Joystick direction down.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentValue
 	 *            component value of Joystick direction down
 	 */
@@ -188,9 +156,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get component value of Joystick direction left.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component value of Joystick direction ledt
 	 */
 	public float getComponentValueLeft1();
@@ -199,9 +165,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set component value of Joystick direction left.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentValue
 	 *            component value of Joystick direction left
 	 */
@@ -211,9 +175,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get component value of Joystick direction right.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component value of Joystick direction right
 	 */
 	public float getComponentValueRight1();
@@ -222,9 +184,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set component value of Joystick direction right.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentValue
 	 *            component value of Joystick direction right
 	 */
@@ -234,9 +194,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Get component value of Joystick fire button.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component value of Joystick fire button
 	 */
 	public float getComponentValueBtn1();
@@ -245,9 +203,7 @@ public interface IJoystickSection {
 
 	/**
 	 * Set component value of Joystick fire button.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentValue
 	 *            component value of Joystick fire button
 	 */

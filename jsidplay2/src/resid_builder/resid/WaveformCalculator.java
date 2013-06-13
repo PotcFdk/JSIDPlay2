@@ -82,7 +82,6 @@ public final class WaveformCalculator {
 	 * width set to 0x000 (always triggered).
 	 * 
 	 * @param model Chip model to use
-	 * @param nonlinearity Nonlinearity factor for 6581 tables, 1.0 for 8580
 	 * @return Table suite
 	 */
 	protected static short[][] buildTable(ChipModel model) {
@@ -112,11 +111,9 @@ public final class WaveformCalculator {
 	/**
 	 * Generate bitstate based on emulation of combined waves.
 	 * 
-	 * @param o bitstate (output)
-	 * @param model Chip model
+	 * @param config
 	 * @param waveform the waveform to emulate, 1 .. 7
-	 * @param accumulator the accumulator value
-	 * @param pw pulse width value.
+	 * @param accumulator the accumulator value.
 	 */
 	private static short calculateCombinedWaveform(CombinedWaveformConfig config, int waveform, int accumulator) {
 		final float[] o = new float[12];

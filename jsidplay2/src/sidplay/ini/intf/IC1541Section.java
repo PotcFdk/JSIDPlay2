@@ -30,7 +30,7 @@ public interface IC1541Section {
 	/**
 	 * Turn drive sound on.
 	 * 
-	 * @param driveSound
+	 * @param on
 	 *            drive sound turned on?
 	 */
 	public void setDriveSoundOn(boolean on);
@@ -45,17 +45,14 @@ public interface IC1541Section {
 	/**
 	 * Plug in parallel cable.
 	 * 
-	 * @param cable
+	 * @param on
 	 *            parallel cable plugged in?
 	 */
 	public void setParallelCable(boolean on);
 
 	/**
 	 * Is RAM expansion at some particular slot enabled
-	 * 
-	 * @param selector
-	 *            which 8KB RAM bank to expand (0-5), starting at 0x2000
-	 *            increasing in 8KB steps up to 0xA000.
+	 *
 	 * @return state
 	 * 			  enabled?
 	 */
@@ -67,11 +64,8 @@ public interface IC1541Section {
 
 	/**
 	 * Enable 8K Ram expansion.
-	 * 
-	 * @param selector
-	 *            which 8KB RAM bank to expand (0-5), starting at 0x2000
-	 *            increasing in 8KB steps up to 0xA000.
-	 * @param state
+	 *
+	 * @param on
 	 *            enable 8K Ram expansion
 	 */
 	public void setRamExpansion0(boolean on);

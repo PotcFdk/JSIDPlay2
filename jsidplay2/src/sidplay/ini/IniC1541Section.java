@@ -50,7 +50,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	/**
 	 * Turn drive sound on.
 	 * 
-	 * @param driveSound
+	 * @param on
 	 *            drive sound turned on?
 	 */
 	@Override
@@ -71,7 +71,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	/**
 	 * Plug in parallel cable.
 	 * 
-	 * @param cable
+	 * @param on
 	 *            parallel cable plugged in?
 	 */
 	@Override
@@ -81,10 +81,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 
 	/**
 	 * Is RAM expansion at some particular slot enabled
-	 * 
-	 * @param selector
-	 *            which 8KB RAM bank to expand (0-5), starting at 0x2000
-	 *            increasing in 8KB steps up to 0xA000.
+	 *
 	 * @return state
 	 * 			  enabled?
 	 */
@@ -111,11 +108,8 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 
 	/**
 	 * Enable 8K Ram expansion.
-	 * 
-	 * @param selector
-	 *            which 8KB RAM bank to expand (0-5), starting at 0x2000
-	 *            increasing in 8KB steps up to 0xA000.
-	 * @param state
+	 *
+	 * @param on
 	 *            enable 8K Ram expansion
 	 */
 	@Override

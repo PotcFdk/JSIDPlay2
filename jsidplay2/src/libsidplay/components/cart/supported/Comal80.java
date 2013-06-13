@@ -27,8 +27,9 @@ public class Comal80 extends Cartridge {
 	/**
 	 * Load a Comal80 cartridge.
 	 * 
-	 * @param is
+	 * @param dis
 	 *            stream to load from
+	 * @param pla
 	 * @throws IOException
 	 *             load error
 	 */

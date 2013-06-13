@@ -30,7 +30,6 @@ public abstract class AudioDriver {
 	 * The audio parameters may be manipulated by open().
 	 * 
 	 * @param cfg Configuration requested.
-	 * @param name Optional name for output file, if supported.
 	 * @throws LineUnavailableException
 	 * @throws UnsupportedAudioFileException
 	 * @throws IOException

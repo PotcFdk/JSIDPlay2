@@ -129,8 +129,8 @@ public final class SincResampler implements Resampler {
 	 * E.g. for a 44.1kHz sampling rate the end of passband frequency is limited to slightly below 20kHz. This constraint ensures that the FIR table is not overfilled.
 	 * 
 	 * @param clockFrequency System clock frequency at Hz
-	 * @param method sampling method to use
 	 * @param samplingFrequency Desired output sampling rate
+	 * @param highestAccurateFrequency
 	 * @return success
 	 */
 	public SincResampler(final double clockFrequency, final double samplingFrequency, final double highestAccurateFrequency) {

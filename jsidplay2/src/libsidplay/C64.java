@@ -713,7 +713,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 * 
 	 * @param type
 	 *            RAM expansion type
-	 * @param filename
+	 * @param file
 	 *            filename to load the RAM contents
 	 * @throws IOException
 	 *             image read error

@@ -226,8 +226,6 @@ public class HsidDLL2 {
 	/**
 	 * typedef BYTE (CALLBACK* HsidDLL2_GetHardSIDCount_t) ();<BR>
 	 * GetHardSIDCount = (HsidDLL2_GetHardSIDCount_t) GetProcAddress(hardsiddll, "GetHardSIDCount");
-	 * 
-	 * @param debug
 	 */
 	public native int GetHardSIDCount();
 	

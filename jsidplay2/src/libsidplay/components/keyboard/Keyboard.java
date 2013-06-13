@@ -33,7 +33,7 @@ public abstract class Keyboard {
 	/**
 	 * Handle a pressed key
 	 * 
-	 * @param key
+	 * @param ktEntry
 	 *            key that was pressed
 	 */
 	public synchronized void keyPressed(final KeyTableEntry ktEntry) {
@@ -46,7 +46,7 @@ public abstract class Keyboard {
 	/**
 	 * Handle a released key
 	 * 
-	 * @param key
+	 * @param ktEntry
 	 *            key to release
 	 */
 	public synchronized void keyReleased(final KeyTableEntry ktEntry) {
@@ -59,10 +59,9 @@ public abstract class Keyboard {
 	/**
 	 * Get read adjustment for CIA 1 register PRA or PRB
 	 * 
-	 * @param testRegisterValue
-	 *            register value from PRA or PRB
-	 * @param matrix$
-	 *            either activeColumnsMatrix or activeRowsMatrix
+	 * @param selected
+	 * @param wantRow
+	 *
 	 * @return read adjustment, to be AND connected to the normal register
 	 *         output
 	 */
@@ -87,8 +86,8 @@ public abstract class Keyboard {
 	/**
 	 * Get read adjustment for CIA 1 register PRA
 	 * 
-	 * @param rows
-	 *            to read
+	 * @param selected
+	 *
 	 * @return selected keyboard columns
 	 */
 	public byte readColumn(byte selected) {

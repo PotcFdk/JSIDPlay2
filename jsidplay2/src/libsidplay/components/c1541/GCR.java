@@ -483,8 +483,11 @@ public final class GCR {
 	/**
 	 * Set the current GCR data track position.
 	 * 
-	 * @param track
+	 * @param num
 	 *            half-track to set
+	 *
+	 * @param  oldTrackSize
+	 * @param  currentTrackSize
 	 */
 	protected final void setHalfTrack(final int num, final int oldTrackSize,
 			final int currentTrackSize) {

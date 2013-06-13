@@ -73,7 +73,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	/**
 	 * Setter of the default play length.
 	 * 
-	 * @param length
+	 * @param playLength
 	 *            default play length
 	 */
 	@Override

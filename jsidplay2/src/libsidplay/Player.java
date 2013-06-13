@@ -542,7 +542,7 @@ public class Player {
 	/**
 	 * Enter basic command after reset.
 	 * 
-	 * @param command
+	 * @param cmd
 	 *            basic command after reset
 	 */
 	public void setCommand(final String cmd) {

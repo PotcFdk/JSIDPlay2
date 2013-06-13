@@ -288,7 +288,7 @@ public class NetworkSIDDevice {
 	 * Construct the SID object suite.
 	 * TODO: we should read these things off configuration file.
 	 * 
-	 * @param sid array where to store SIDs to
+	 * @param sidNumber
 	 */
 	protected static SID getSidConfig(int sidNumber) {
 		SID sid = new SID();

@@ -106,7 +106,7 @@ public class AudioConfig {
 	/**
 	 * Set filename of the tune.
 	 * 
-	 * @param filename
+	 * @param file
 	 *            tune filename
 	 */
 	public final void setTuneFilename(final File file) {

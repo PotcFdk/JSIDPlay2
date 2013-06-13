@@ -91,7 +91,7 @@ public final class WaveformGenerator {
 	 * 1.0 means perfect 8580-like linearity, values between 0.95 - 0.97
 	 * are probably realistic 6581 nonlinearity values.
 	 * 
-	 * @param nonLinearity
+	 * @param chipModel
 	 */
 	protected void setChipModel(final ChipModel chipModel) {
 		final double dacBits[] = new double[12];
@@ -303,8 +303,7 @@ public final class WaveformGenerator {
 
 	/**
 	 * Register functions.
-	 * 
-	 * @param ring_modulator ring-modulator modulating me.
+	 *
 	 * @param control control register value
 	 */
 	protected void writeCONTROL_REG(final byte control) {
@@ -358,8 +357,7 @@ public final class WaveformGenerator {
 
 	/**
 	 * Read OSC3 value (6581, not latched/delayed version)
-	 * 
-	 * @param ring_modulator The ring modulating partner of this waveform
+	 *
 	 * @return OSC3 value
 	 */
 	public byte readOSC() {

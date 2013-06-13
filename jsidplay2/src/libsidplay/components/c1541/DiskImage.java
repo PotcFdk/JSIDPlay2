@@ -199,8 +199,6 @@ public abstract class DiskImage {
 	 * 
 	 * @param track
 	 *            dirty track
-	 * @param extendImageListener
-	 *            listener, if track number exceeds the maximum
 	 * @throws IOException
 	 */
 	public abstract void gcrDataWriteback(final int track) throws IOException;

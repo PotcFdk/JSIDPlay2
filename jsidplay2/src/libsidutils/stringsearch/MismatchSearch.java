@@ -191,8 +191,8 @@ abstract class MismatchSearch extends StringSearch {
 	 * @param text
 	 *            the <code>byte</code> array containing the text, may not be
 	 *            <code>null</code>
-	 * @param textStart
-	 *            at which position in the text the comparing should start
+	 * @param textEnd
+	 *            at which position in the text the comparing should end
 	 * @param pattern
 	 *            the <code>byte</code> array containing the pattern, may not be
 	 *            <code>null</code>
@@ -216,8 +216,8 @@ abstract class MismatchSearch extends StringSearch {
 	 * @param text
 	 *            the <code>byte</code> array containing the text, may not be
 	 *            <code>null</code>
-	 * @param textStart
-	 *            at which position in the text the comparing should start
+	 * @param textEnd
+	 *            at which position in the text the comparing should end
 	 * @param pattern
 	 *            the pattern to search for, may not be <code>null</code>
 	 * @param processed
@@ -352,10 +352,6 @@ abstract class MismatchSearch extends StringSearch {
 	 *            at which position in the text the comparing should start
 	 * @param pattern
 	 *            the pattern to search for, may not be <code>null</code>
-	 * @param processed
-	 *            an Object as returned from {@link #processChars(char[], int)}
-	 *            or {@link #processString(String), int}, may not be
-	 *            <code>null</code>
 	 * @param k
 	 *            the maximum number of mismatches (the editing distance)
 	 * @return the position in the text or -1 if the pattern was not found

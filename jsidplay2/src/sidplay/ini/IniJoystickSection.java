@@ -16,9 +16,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get name of the device for Joystick.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return name of the Joystick device
 	 */
 	@Override
@@ -33,9 +31,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set name of the device for Joystick.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param deviceName
 	 *            name of the Joystick device
 	 */
@@ -51,9 +47,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get component name of Joystick direction up.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component name of Joystick direction up
 	 */
 	@Override
@@ -68,9 +62,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set component name of Joystick direction up.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentName
 	 *            component name of Joystick direction up
 	 */
@@ -86,9 +78,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get component name of Joystick direction down.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component name of Joystick direction down
 	 */
 	@Override
@@ -103,9 +93,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set component name of Joystick direction down.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentName
 	 *            component name of Joystick direction down
 	 */
@@ -121,10 +109,8 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get component name of Joystick direction left.
-	 * 
-	 * @param port
-	 *            port 1..2
-	 * @return component name of Joystick direction ledt
+	 *
+	 * @return component name of Joystick direction left
 	 */
 	@Override
 	public final String getComponentNameLeft1() {
@@ -138,9 +124,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set component name of Joystick direction left.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentName
 	 *            component name of Joystick direction left
 	 */
@@ -156,9 +140,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get component name of Joystick direction right.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component name of Joystick direction right
 	 */
 	@Override
@@ -173,9 +155,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set component name of Joystick direction right.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentName
 	 *            component name of Joystick direction right
 	 */
@@ -191,9 +171,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get component name of Joystick fire button.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component name of Joystick fire button
 	 */
 	@Override
@@ -208,9 +186,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set component name of Joystick fire button.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentName
 	 *            component name of Joystick fire button
 	 */
@@ -226,9 +202,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get component value of Joystick direction up.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component value of Joystick direction up
 	 */
 	@Override
@@ -243,9 +217,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set component value of Joystick direction up.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentValue
 	 *            component value of Joystick direction up
 	 */
@@ -261,9 +233,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get component value of Joystick direction down.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component value of Joystick direction down
 	 */
 	@Override
@@ -278,9 +248,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set component value of Joystick direction down.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentValue
 	 *            component value of Joystick direction down
 	 */
@@ -296,9 +264,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get component value of Joystick direction left.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component value of Joystick direction ledt
 	 */
 	@Override
@@ -313,9 +279,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set component value of Joystick direction left.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentValue
 	 *            component value of Joystick direction left
 	 */
@@ -331,9 +295,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get component value of Joystick direction right.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component value of Joystick direction right
 	 */
 	@Override
@@ -348,9 +310,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set component value of Joystick direction right.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentValue
 	 *            component value of Joystick direction right
 	 */
@@ -366,9 +326,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Get component value of Joystick fire button.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @return component value of Joystick fire button
 	 */
 	@Override
@@ -383,9 +341,7 @@ public class IniJoystickSection extends IniSection implements IJoystickSection {
 
 	/**
 	 * Set component value of Joystick fire button.
-	 * 
-	 * @param port
-	 *            port 1..2
+	 *
 	 * @param componentValue
 	 *            component value of Joystick fire button
 	 */

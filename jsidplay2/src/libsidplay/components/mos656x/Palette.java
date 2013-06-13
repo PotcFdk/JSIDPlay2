@@ -303,7 +303,8 @@ public class Palette {
 	 * Find closest color according to root mean square from palette.
 	 * 
 	 * @param filtered
-	 * @param yuvPalette
+	 * @param q
+	 * @param colorIndex
 	 */
 	private static byte[] replaceColorsByPalette(final int[] filtered,
 			final OctreeQuantization q,

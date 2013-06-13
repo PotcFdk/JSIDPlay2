@@ -47,7 +47,7 @@ public class GameBaseCopier {
 	 * 
 	 * @param table
 	 *            The name of the table to create.
-	 * @throws DatabaseException
+	 * @throws SQLException
 	 *             If a database error occurs.
 	 */
 	public void createTable(String table) throws SQLException {
@@ -70,7 +70,7 @@ public class GameBaseCopier {
 	 * Create all of the tables in the database. This is done by looping over
 	 * the list of tables and calling createTable for each.
 	 * 
-	 * @throws DatabaseException
+	 * @throws SQLException
 	 *             If an error occurs.
 	 */
 	private void createTables() throws SQLException {

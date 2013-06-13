@@ -42,7 +42,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Setter of the default play length.
 	 * 
-	 * @param length
+	 * @param playLength
 	 *            default play length
 	 */
 	public void setPlayLength(int playLength);

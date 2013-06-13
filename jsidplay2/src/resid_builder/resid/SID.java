@@ -106,10 +106,9 @@ public final class SID {
 	 * chiefly in the emulation of the lacking termination of the 2R ladder, which
 	 * destroys the output with respect to the low bits of the DAC.
 	 * 
-	 * @param input digital value to convert to analog
+	 * @param dac digital value to convert to analog
 	 * @param _2R_div_R nonlinearity parameter, 1.0 for perfect linearity.
-	 * @param bits highest bit that may be set in input.
-	 * @param termi is the dac terminated by a 2R resistor? (6581 DACs are not)
+	 * @param term is the dac terminated by a 2R resistor? (6581 DACs are not)
 	 * 
 	 * @return the analog value as modeled from the R-2R network.
 	 */
@@ -170,8 +169,6 @@ public final class SID {
 
 	/**
 	 * Constructor.
-	 *
-	 * @param count chip number
 	 */
 	public SID() {
 		reset();
@@ -457,7 +454,7 @@ public final class SID {
 	/**
 	 * Clock SID forward using chosen output sampling algorithm.
 	 * 
-	 * @param delta_t c64 clocks to clock
+	 * @param cycles c64 clocks to clock
 	 * @param buf audio output buffer
 	 * @param pos where to begin audio writing
 	 * @return
@@ -515,7 +512,7 @@ public final class SID {
 	 * clock() because components that don't affect OSC3/ENV3 are not
 	 * emulated.
 	 * 
-	 * @param delta_t c64 clocks to clock.
+	 * @param cycles c64 clocks to clock.
 	 */
 	public void clockSilent(int cycles) {
 		ageBusValue(cycles);

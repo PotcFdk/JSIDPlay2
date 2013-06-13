@@ -74,7 +74,7 @@ final class ExternalFilter {
 	/**
 	 * Setup of the external filter sampling parameters.
 	 * 
-	 * @param clock
+	 * @param frequency
 	 */
 	protected void setClockFrequency(final double frequency) {
 		// Low-pass: R = 10kOhm, C = 1000pF; w0l = 1/RC = 1/(1e4*1e-9) = 100000

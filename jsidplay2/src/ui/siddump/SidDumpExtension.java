@@ -380,8 +380,6 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	 * 
 	 * @param cpuTime
 	 *            time in CPU
-	 * @param register_ProgramCounter
-	 *            current program counter
 	 */
 	@Override
 	public void fetch(final long cpuTime) {

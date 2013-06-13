@@ -243,8 +243,9 @@ public abstract class VIC extends Bank {
 	/**
 	 * Creates a new instance of VIC6569
 	 * 
-	 * @param c64
-	 *            the C64 the VIC works for
+	 * @param pla
+	 * @param context
+	 * @param cpl
 	 */
 	public VIC(PLA pla, final EventScheduler context, int cpl) {
 		this.pla = pla;
@@ -1071,8 +1072,7 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Schedule the rendering to begin
-	 * 
-	 * @param cyclesSinceFirstDisplayedCycle
+	 *
 	 * @param sprite
 	 */
 	private void handleSpriteVisibilityEvent(final Sprite sprite) {

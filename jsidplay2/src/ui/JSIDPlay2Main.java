@@ -342,7 +342,7 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 	/**
 	 * Play tune.
 	 * 
-	 * @param file
+	 * @param sidTune
 	 *            file to play the tune (null means just reset C64)
 	 */
 	private void playTune(final SidTune sidTune) {

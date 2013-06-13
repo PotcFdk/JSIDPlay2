@@ -83,7 +83,6 @@ public abstract class Filter {
 	 * @param v1 voice 1 in
 	 * @param v2 voice 2 in
 	 * @param v3 voice 3 in
-	 * @param vE external audio in
 	 * @return filtered output
 	 */
 	protected abstract int clock(int v1, int v2, int v3);

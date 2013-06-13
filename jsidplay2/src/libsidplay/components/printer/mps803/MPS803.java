@@ -296,7 +296,7 @@ public abstract class MPS803 extends SerialIECDevice implements
 	/**
 	 * Turn on/off printer. The paper is opened or closed.
 	 * 
-	 * @param true (on), false (off)
+	 * @param on true (on), false (off)
 	 */
 	public void turnPrinterOnOff(final boolean on) {
 		if (on) {
@@ -657,8 +657,8 @@ public abstract class MPS803 extends SerialIECDevice implements
 	/**
 	 * Signal busy printer.
 	 * 
-	 * @param busy
-	 *            flag
+	 * @param flag
+	 *             busy flag
 	 */
 	public abstract void setBusy(final boolean flag);
 

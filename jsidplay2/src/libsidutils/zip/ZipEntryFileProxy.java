@@ -159,8 +159,6 @@ public class ZipEntryFileProxy extends File {
 	 * @param zipEntry
 	 *            ZIP entry to extract
 	 * @param targetDir
-	 * @param prefix
-	 *            temp file prefix
 	 * @return temp file with the contents of ZIP file entry
 	 * @throws IOException
 	 *             I/O error

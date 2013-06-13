@@ -97,10 +97,8 @@ public abstract class Datasette {
 	/**
 	 * Insert a tape image into the datasette. A previously attached tape is
 	 * ejected first.
-	 * 
-	 * @param name
-	 *            of the image
-	 * @param fn
+	 *
+	 * @param tapeFile
 	 *            filename of the tape image
 	 * @throws IOException
 	 *             cannot read tape

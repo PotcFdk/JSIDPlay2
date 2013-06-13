@@ -334,8 +334,7 @@ public abstract class MOS6526 extends Bank {
 		/**
 		 * Create a new timer.
 		 * 
-		 * @param timerA
-		 *            Timer A or B?
+		 * @param eventName
 		 */
 		public Timer(final String eventName) {
 			super(eventName);
@@ -842,8 +841,8 @@ public abstract class MOS6526 extends Bank {
 	/**
 	 * External interrupt control.
 	 * 
-	 * @param interrupt
-	 *            flag
+	 * @param flag
+	 *             Interrupt flag
 	 */
 	public void setFlag(final boolean flag) {
 		if (flag) {
