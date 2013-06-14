@@ -167,6 +167,10 @@
 							<MenuItem text="%SID_DUMP" onAction="#sidDump" />
 							<MenuItem text="%SID_REGISTERS" onAction="#sidRegisters" />
 						</Menu>
+						<Menu text="%SETTINGS">
+							<MenuItem text="%IMPORT" onAction="#importConfiguration" />
+							<MenuItem text="%EXPORT" onAction="#exportConfiguration" />
+						</Menu>
 						<Menu text="%HELP">
 							<MenuItem text="%ABOUT" onAction="#about" />
 						</Menu>

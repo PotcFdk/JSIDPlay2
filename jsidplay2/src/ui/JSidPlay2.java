@@ -42,6 +42,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import libsidplay.C64;
 import libsidplay.common.ISID2Types.CPUClock;
@@ -63,6 +66,7 @@ import ui.common.C64Tab;
 import ui.common.dialog.YesNoDialog;
 import ui.disassembler.Disassembler;
 import ui.emulationsettings.EmulationSettings;
+import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IInsertMedia;
 import ui.events.IMadeProgress;
@@ -72,6 +76,7 @@ import ui.events.ITuneStateChanged;
 import ui.events.Reset;
 import ui.events.UIEvent;
 import ui.filefilter.CartFileExtensions;
+import ui.filefilter.ConfigFileExtension;
 import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.RomFileExtensions;
 import ui.filefilter.TapeFileExtensions;
@@ -885,6 +890,55 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			window.open();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	private void exportConfiguration() {
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(ConfigFileExtension.DESCRIPTION,
+						ConfigFileExtension.EXTENSIONS));
+		final File file = fileDialog.showSaveDialog(scene.getWindow());
+		if (file != null) {
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
+			try {
+				JAXBContext jaxbContext = JAXBContext
+						.newInstance(Configuration.class);
+				Marshaller marshaller = jaxbContext.createMarshaller();
+				marshaller.marshal(getConfig(), file);
+			} catch (JAXBException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@FXML
+	private void importConfiguration() {
+		YesNoDialog dialog = new YesNoDialog();
+		dialog.setTitle(getBundle().getString("IMPORT_CONFIGURATION"));
+		dialog.setText(getBundle().getString("PLEASE_RESTART"));
+		try {
+			dialog.open();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (dialog.getConfirmed().get()) {
+			final FileChooser fileDialog = new FileChooser();
+			fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+					.getSidplay2())).getLastDirectoryFile());
+			fileDialog.getExtensionFilters().add(
+					new ExtensionFilter(ConfigFileExtension.DESCRIPTION,
+							ConfigFileExtension.EXTENSIONS));
+			final File file = fileDialog.showOpenDialog(scene.getWindow());
+			if (file != null) {
+				getConfig().getSidplay2().setLastDirectory(
+						file.getParentFile().getAbsolutePath());
+				getConfig().setReconfigFilename(file.getAbsolutePath());
+			}
 		}
 	}
 

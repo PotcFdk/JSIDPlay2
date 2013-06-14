@@ -269,7 +269,8 @@ public class Configuration implements IConfig {
 	@XmlTransient
 	private final List<KeyTableEntity> INITIAL_KEYCODES;
 	{
-		INITIAL_KEYCODES = Arrays
+		INITIAL_KEYCODES = new ArrayList<KeyTableEntity>();
+		List<KeyTableEntity> keyCodes = Arrays
 				.asList(new KeyTableEntity(KeyCode.A.getName(), KeyTableEntry.A),
 						new KeyTableEntity(KeyCode.BACK_SLASH.getName(),
 								KeyTableEntry.ARROW_LEFT),
@@ -368,12 +369,14 @@ public class Configuration implements IConfig {
 						new KeyTableEntity(KeyCode.F5.getName(),
 								KeyTableEntry.F5), new KeyTableEntity(
 								KeyCode.F7.getName(), KeyTableEntry.F7));
+		INITIAL_KEYCODES.addAll(keyCodes);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "keyCodeMap")
 	private List<KeyTableEntity> keyCodeMap = INITIAL_KEYCODES;
 
+	@XmlTransient
 	public List<KeyTableEntity> getKeyCodeMap() {
 		return keyCodeMap;
 	}
@@ -382,7 +385,6 @@ public class Configuration implements IConfig {
 		this.keyCodeMap = keyCodeMap;
 	}
 
-	@XmlTransient
 	public KeyTableEntry getKeyTabEntry(String key) {
 		for (KeyTableEntity keyCode : keyCodeMap) {
 			if (keyCode.getKeyCodeName().equals(key)) {
