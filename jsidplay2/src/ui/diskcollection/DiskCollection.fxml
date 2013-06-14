@@ -38,7 +38,16 @@
 			<HBox>
 				<Label text="%BASE_DIR" />
 				<TextField fx:id="collectionDir" disable="true" />
-				<Button text="%BROWSE" fx:id="browse" onAction="#doBrowse">
+				<Button text="%BROWSE" onAction="#doBrowse">
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/browse.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Button>
+				<Button text="%BROWSE_ZIP" onAction="#doBrowseZip">
 					<graphic>
 						<ImageView>
 							<image>

@@ -1,9 +1,8 @@
 package ui.common;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
-
-import javax.swing.filechooser.FileFilter;
 
 import ui.entities.config.Configuration;
 import ui.filefilter.TuneFileFilter;

@@ -75,7 +75,6 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	private Label tapeName, diskName, cartridgeName;
 
-	private File fLastDir;
 	private WritableImage vicImage;
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
@@ -240,117 +239,117 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
 						TapeFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(getBundle().getString("INSERT_TAPE"));
-		final File file = fileDialog.showOpenDialog(screen.getScene().getWindow());
+		final File file = fileDialog.showOpenDialog(screen.getScene()
+				.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getUiEvents().fireEvent(IInsertMedia.class,
-					new IInsertMedia() {
+			getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
 
-						@Override
-						public MediaType getMediaType() {
-							return MediaType.TAPE;
-						}
+				@Override
+				public MediaType getMediaType() {
+					return MediaType.TAPE;
+				}
 
-						@Override
-						public File getSelectedMedia() {
-							return file;
-						}
+				@Override
+				public File getSelectedMedia() {
+					return file;
+				}
 
-						@Override
-						public File getAutostartFile() {
-							return null;
-						}
+				@Override
+				public File getAutostartFile() {
+					return null;
+				}
 
-						@Override
-						public Object getComponent() {
-							return Video.this;
-						}
-					});
+				@Override
+				public Object getComponent() {
+					return Video.this;
+				}
+			});
 		}
 	}
 
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
 						DiskFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(getBundle().getString("INSERT_DISK"));
-		final File file = fileDialog.showOpenDialog(screen.getScene().getWindow());
+		final File file = fileDialog.showOpenDialog(screen.getScene()
+				.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getUiEvents().fireEvent(IInsertMedia.class,
-					new IInsertMedia() {
+			getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
 
-						@Override
-						public MediaType getMediaType() {
-							return MediaType.DISK;
-						}
+				@Override
+				public MediaType getMediaType() {
+					return MediaType.DISK;
+				}
 
-						@Override
-						public File getSelectedMedia() {
-							return file;
-						}
+				@Override
+				public File getSelectedMedia() {
+					return file;
+				}
 
-						@Override
-						public File getAutostartFile() {
-							return null;
-						}
+				@Override
+				public File getAutostartFile() {
+					return null;
+				}
 
-						@Override
-						public Object getComponent() {
-							return Video.this;
-						}
-					});
+				@Override
+				public Object getComponent() {
+					return Video.this;
+				}
+			});
 		}
 	}
 
 	@FXML
 	private void insertCartridge() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(getBundle().getString("INSERT_CARTRIDGE"));
-		final File file = fileDialog.showOpenDialog(screen.getScene().getWindow());
+		final File file = fileDialog.showOpenDialog(screen.getScene()
+				.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getUiEvents().fireEvent(IInsertMedia.class,
-					new IInsertMedia() {
+			getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
 
-						@Override
-						public MediaType getMediaType() {
-							return MediaType.CART;
-						}
+				@Override
+				public MediaType getMediaType() {
+					return MediaType.CART;
+				}
 
-						@Override
-						public File getSelectedMedia() {
-							return file;
-						}
+				@Override
+				public File getSelectedMedia() {
+					return file;
+				}
 
-						@Override
-						public File getAutostartFile() {
-							return null;
-						}
+				@Override
+				public File getAutostartFile() {
+					return null;
+				}
 
-						@Override
-						public Object getComponent() {
-							return Video.this;
-						}
-					});
+				@Override
+				public Object getComponent() {
+					return Video.this;
+				}
+			});
 		}
 	}
 

@@ -214,6 +214,9 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	private String lastDirectory;
+	
+	@Transient
+	private volatile File lastDirectoryFile;
 
 	@Override
 	public String getLastDirectory() {
@@ -223,8 +226,13 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	public void setLastDirectory(String lastDirectory) {
 		this.lastDirectory = lastDirectory;
+		lastDirectoryFile = new File(lastDirectory);
 	}
 
+	public File getLastDirectoryFile() {
+		return lastDirectoryFile;
+	}
+	
 	private String tmpDir = System.getProperty("user.home")
 			+ System.getProperty("file.separator") + ".jsidplay2";
 

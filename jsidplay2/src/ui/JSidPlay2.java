@@ -129,7 +129,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private ProgressBar progress;
 
 	private boolean duringInitialization;
-	private File fLastDir;
 	private Timeline timer;
 	private int oldHalfTrack;
 	private Scene scene;
@@ -240,13 +239,13 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void load() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TuneFileExtensions.DESCRIPTION,
 						TuneFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
 			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
@@ -276,13 +275,13 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void video() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
 			try {
@@ -484,14 +483,14 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
 						TapeFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(getBundle().getString("INSERT_TAPE"));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
 			try {
@@ -592,14 +591,14 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
 						DiskFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(getBundle().getString("INSERT_DISK"));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
 			try {
@@ -634,14 +633,14 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertCartridge() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(getBundle().getString("INSERT_CARTRIDGE"));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
 			try {
@@ -656,13 +655,13 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
 			try {
@@ -788,24 +787,23 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(RomFileExtensions.DESCRIPTION,
 						RomFileExtensions.EXTENSIONS));
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		final File c64kernalFile = fileDialog.showOpenDialog(scene.getWindow());
 		if (c64kernalFile != null) {
-			fLastDir = c64kernalFile.getParentFile();
 			getConfig().getSidplay2().setLastDirectory(
 					c64kernalFile.getParentFile().getAbsolutePath());
-
 			final FileChooser c1541FileDialog = new FileChooser();
 			c1541FileDialog.setTitle(getBundle().getString(
 					"CHOOSE_C1541_KERNAL_ROM"));
-			c1541FileDialog.setInitialDirectory(fLastDir);
+			fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+					.getSidplay2())).getLastDirectoryFile());
 			fileDialog.getExtensionFilters().add(
 					new ExtensionFilter(RomFileExtensions.DESCRIPTION,
 							RomFileExtensions.EXTENSIONS));
 			final File c1541kernalFile = c1541FileDialog.showOpenDialog(scene
 					.getWindow());
 			if (c1541kernalFile != null) {
-				fLastDir = c1541kernalFile.getParentFile();
 				getConfig().getSidplay2().setLastDirectory(
 						c1541kernalFile.getParentFile().getAbsolutePath());
 				try (FileInputStream c64KernalStream = new FileInputStream(

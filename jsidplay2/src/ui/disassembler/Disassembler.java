@@ -19,6 +19,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.cpuparser.CPUCommand;
 import libsidutils.cpuparser.CPUParser;
 import ui.common.C64Stage;
+import ui.entities.config.SidPlay2Section;
 import ui.events.IPlayTune;
 import ui.events.UIEvent;
 
@@ -35,7 +36,6 @@ public class Disassembler extends C64Stage {
 	private ObservableList<AssemblyLine> assemblyLines = FXCollections
 			.<AssemblyLine> observableArrayList();
 
-	private File fLastDir;
 
 	private static Map<Integer, CPUCommand> fCommands = CPUParser
 			.getCpuCommands();
@@ -193,11 +193,13 @@ public class Disassembler extends C64Stage {
 	@FXML
 	private void saveMemory() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		final File file = fileDialog
 				.showSaveDialog(save.getScene().getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			FileOutputStream fos = null;
 			try {
 				fos = new FileOutputStream(file);

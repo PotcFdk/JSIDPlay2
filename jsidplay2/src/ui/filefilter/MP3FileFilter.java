@@ -1,15 +1,9 @@
 package ui.filefilter;
 
 import java.io.File;
+import java.io.FileFilter;
 
-import javax.swing.filechooser.FileFilter;
-
-public class MP3FileFilter extends FileFilter {
-
-	@Override
-	public String getDescription() {
-		return "MP3 file";
-	}
+public class MP3FileFilter implements FileFilter {
 
 	@Override
 	public boolean accept(final File f) {

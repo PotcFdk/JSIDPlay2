@@ -1,17 +1,11 @@
 package ui.filefilter;
 
 import java.io.File;
+import java.io.FileFilter;
 
-import javax.swing.filechooser.FileFilter;
-
-public class DocsFileFilter extends FileFilter {
+public class DocsFileFilter implements FileFilter {
 
 	public static final String defaultFileNameExt[] = new String[] { ".pdf" };
-
-	@Override
-	public String getDescription() {
-		return "Documents (PDF)";
-	}
 
 	@Override
 	public boolean accept(File file) {

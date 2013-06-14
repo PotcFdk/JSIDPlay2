@@ -1,10 +1,9 @@
 package ui.filefilter;
 
 import java.io.File;
+import java.io.FileFilter;
 
-import javax.swing.filechooser.FileFilter;
-
-public class DiskFileFilter extends FileFilter implements java.io.FileFilter {
+public class DiskFileFilter implements FileFilter {
 
 	@Override
 	public boolean accept(File file) {
@@ -18,11 +17,6 @@ public class DiskFileFilter extends FileFilter implements java.io.FileFilter {
 				|| file.getName().toLowerCase().endsWith(".d64.gz")
 				|| file.getName().toLowerCase().endsWith(".g64.gz")
 				|| file.getName().toLowerCase().endsWith(".nib.gz");
-	}
-
-	@Override
-	public String getDescription() {
-		return "Disk Image (D64, G64, NIB, GZ or ZIP)";
 	}
 
 }

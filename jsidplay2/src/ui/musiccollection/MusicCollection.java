@@ -38,14 +38,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.swing.JFileChooser;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -70,8 +70,8 @@ import ui.events.UIEvent;
 import ui.events.favorites.IAddFavoritesTab;
 import ui.events.favorites.IGetFavoritesTabs;
 import ui.favorites.FavoritesTab;
-import ui.filefilter.CollectionFileFilter;
 import ui.filefilter.TuneFileFilter;
+import ui.filefilter.ZipFileExtensions;
 import ui.musiccollection.search.ISearchListener;
 import ui.musiccollection.search.SearchInIndexThread;
 import ui.musiccollection.search.SearchIndexCreator;
@@ -133,7 +133,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private ComboBox<String> searchScope, searchResult;
 	@FXML
 	private Button startSearch, stopSearch, resetSearch, createSearchIndex,
-			browse, linkCollectionURL;
+			linkCollectionURL;
 	@FXML
 	private TextField collectionDir;
 	@FXML
@@ -172,7 +172,6 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private SearchCriteria<?, ?> recentlySearchedCriteria;
 	private boolean searchOptionsChanged;
 
-	private File lastConvertDir, lastBrowseDir, collectionFile;
 	private FavoritesTab favoritesToAddSearchResult;
 	private int currentProgress;
 
@@ -352,28 +351,29 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 				convertToPSID64.setDisable(selectedItem == null);
 
 				addToFavorites.setDisable(true);
-				getUiEvents().fireEvent(IGetFavoritesTabs.class, new IGetFavoritesTabs() {
-					@Override
-					public void setFavoriteTabs(List<FavoritesTab> tabs,
-							String selected) {
-						addToFavorites.getItems().clear();
-						for (final FavoritesTab tab : tabs) {
-							MenuItem item = new MenuItem(tab.getText());
-							item.setOnAction(new EventHandler<ActionEvent>() {
+				getUiEvents().fireEvent(IGetFavoritesTabs.class,
+						new IGetFavoritesTabs() {
+							@Override
+							public void setFavoriteTabs(
+									List<FavoritesTab> tabs, String selected) {
+								addToFavorites.getItems().clear();
+								for (final FavoritesTab tab : tabs) {
+									MenuItem item = new MenuItem(tab.getText());
+									item.setOnAction(new EventHandler<ActionEvent>() {
 
-								@Override
-								public void handle(ActionEvent arg0) {
-									tab.addFavorites(Collections
-											.singletonList(selectedItem
-													.getValue()));
+										@Override
+										public void handle(ActionEvent arg0) {
+											tab.addFavorites(Collections
+													.singletonList(selectedItem
+															.getValue()));
+										}
+									});
+									addToFavorites.getItems().add(item);
 								}
-							});
-							addToFavorites.getItems().add(item);
-						}
-						addToFavorites.setDisable(addToFavorites.getItems()
-								.size() == 0);
-					}
-				});
+								addToFavorites.setDisable(addToFavorites
+										.getItems().size() == 0);
+							}
+						});
 			}
 		});
 
@@ -405,15 +405,17 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	@FXML
 	private void convertToPSID64() {
 		DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(lastConvertDir);
-		final File file = fileDialog.showDialog(fileBrowser.getScene()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
+		final File directory = fileDialog.showDialog(fileBrowser.getScene()
 				.getWindow());
-		lastConvertDir = file;
-		if (file != null) {
+		if (directory != null) {
+			getConfig().getSidplay2().setLastDirectory(
+					directory.getAbsolutePath());
 			SidTuneConverter c = new SidTuneConverter(getConfig());
 			c.convertFiles(fileBrowser.getRoot().getValue(),
 					new File[] { fileBrowser.getSelectionModel()
-							.getSelectedItem().getValue() }, file);
+							.getSelectedItem().getValue() }, directory);
 		}
 	}
 
@@ -502,30 +504,33 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	}
 
 	@FXML
+	private void doBrowseZip() {
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(ZipFileExtensions.DESCRIPTION,
+						ZipFileExtensions.EXTENSIONS));
+		final File file = fileDialog.showOpenDialog(autoConfiguration
+				.getScene().getWindow());
+		if (file != null) {
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
+			setRoot(file);
+		}
+	}
+
+	@FXML
 	private void doBrowse() {
-		openUsingSwing(new Runnable() {
-			@Override
-			public void run() {
-				final JFileChooser fc = new JFileChooser(lastBrowseDir);
-				fc.setFileFilter(new CollectionFileFilter());
-				fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				final int result = fc.showOpenDialog(null);
-				if (result == JFileChooser.APPROVE_OPTION
-						&& fc.getSelectedFile() != null) {
-					lastBrowseDir = fc.getSelectedFile().getParentFile();
-					collectionFile = fc.getSelectedFile();
-
-				}
-			}
-		});
-		if (collectionFile != null) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					setRoot(collectionFile);
-				}
-			});
+		final DirectoryChooser fileDialog = new DirectoryChooser();
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
+		File directory = fileDialog.showDialog(autoConfiguration.getScene()
+				.getWindow());
+		if (directory != null) {
+			getConfig().getSidplay2().setLastDirectory(
+					directory.getAbsolutePath());
+			setRoot(directory);
 		}
 	}
 
@@ -626,18 +631,6 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private SingularAttribute<?, ?> getSelectedField() {
 		return ((SearchCriteria<?, ?>) searchCriteria.getSelectionModel()
 				.getSelectedItem()).getAttribute();
-	}
-
-	// TODO JavaFX solution?
-	private void openUsingSwing(Runnable runnable) {
-		Stage stage = (Stage) autoConfiguration.getScene().getWindow();
-		stage.hide();
-		try {
-			java.awt.EventQueue.invokeAndWait(runnable);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		stage.show();
 	}
 
 	private void setRoot(final File rootFile) {

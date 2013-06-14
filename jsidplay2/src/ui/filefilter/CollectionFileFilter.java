@@ -1,10 +1,9 @@
 package ui.filefilter;
 
 import java.io.File;
+import java.io.FileFilter;
 
-import javax.swing.filechooser.FileFilter;
-
-public class CollectionFileFilter extends FileFilter {
+public class CollectionFileFilter implements FileFilter {
 
 	@Override
 	public boolean accept(File file) {
@@ -12,11 +11,6 @@ public class CollectionFileFilter extends FileFilter {
 			return true;
 		}
 		return file.getName().toLowerCase().endsWith(".zip");
-	}
-
-	@Override
-	public String getDescription() {
-		return "MusicCollection (Directory or ZIP)";
 	}
 
 }

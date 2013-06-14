@@ -24,6 +24,7 @@ import libsidutils.PathUtils;
 import ui.common.C64Tab;
 import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
+import ui.entities.config.SidPlay2Section;
 import ui.events.IReplayTune;
 import ui.events.ITuneStateChanged;
 import ui.events.UIEvent;
@@ -44,7 +45,6 @@ public class Favorites extends C64Tab {
 	private RadioButton off, normal, randomOne, randomAll, repeatOff,
 			repeatOne;
 
-	private File fLastDir;
 	private FavoritesTab currentlyPlayedFavorites;
 	protected Random random = new Random();
 
@@ -95,17 +95,21 @@ public class Favorites extends C64Tab {
 	@FXML
 	private void addFavorites() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TuneFileExtensions.DESCRIPTION,
 						TuneFileExtensions.EXTENSIONS));
 		final List<File> files = fileDialog
 				.showOpenMultipleDialog(favoritesList.getScene().getWindow());
 		if (files != null && files.size() > 0) {
-			fLastDir = files.get(0).getParentFile();
+			File file = files.get(0);
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			FavoritesTab selectedTab = getSelectedTab();
 			selectedTab.addFavorites(files);
-			renameTab(selectedTab, PathUtils.getBaseNameNoExt(fLastDir));
+			renameTab(selectedTab,
+					PathUtils.getBaseNameNoExt(file.getParentFile()));
 		}
 	}
 
@@ -127,14 +131,16 @@ public class Favorites extends C64Tab {
 	@FXML
 	private void loadFavorites() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(FavoritesExtension.DESCRIPTION,
 						FavoritesExtension.EXTENSION));
 		final File file = fileDialog.showOpenDialog(favoritesList.getScene()
 				.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			try {
 				getSelectedTab().loadFavorites(file);
 			} catch (IOException e1) {
@@ -146,14 +152,16 @@ public class Favorites extends C64Tab {
 	@FXML
 	private void saveFavoritesAs() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(FavoritesExtension.DESCRIPTION,
 						FavoritesExtension.EXTENSION));
 		final File file = fileDialog.showSaveDialog(favoritesList.getScene()
 				.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			// then load the favorites
 			try {
 				getSelectedTab().saveFavorites(file);
@@ -250,7 +258,8 @@ public class Favorites extends C64Tab {
 	@Override
 	public void notify(UIEvent event) {
 		if (event.isOfType(IGetFavoritesTabs.class)) {
-			IGetFavoritesTabs ifObj = (IGetFavoritesTabs) event.getUIEventImpl();
+			IGetFavoritesTabs ifObj = (IGetFavoritesTabs) event
+					.getUIEventImpl();
 			// Inform about all tabs
 			List<FavoritesTab> result = new ArrayList<FavoritesTab>();
 			for (Tab tab : favoritesList.getTabs()) {

@@ -2,6 +2,7 @@ package ui.favorites;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -40,7 +41,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
 
 import javax.persistence.metamodel.SingularAttribute;
-import javax.swing.filechooser.FileFilter;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -88,7 +88,6 @@ public class FavoritesTab extends C64Tab {
 	private FavoritesSection favoritesSection;
 
 	private Object component;
-	private File fLastDir;
 
 	@Override
 	public String getBundleName() {
@@ -214,49 +213,56 @@ public class FavoritesTab extends C64Tab {
 						.getSelectedItem();
 				showStil.setDisable(hvscEntry == null
 						|| getStilEntry(getConfig(), hvscEntry.getPath()) == null);
-				getUiEvents().fireEvent(IGetFavoritesTabs.class, new IGetFavoritesTabs() {
-					@Override
-					public void setFavoriteTabs(List<FavoritesTab> tabs,
-							String selected) {
-						moveToTab.getItems().clear();
-						copyToTab.getItems().clear();
-						for (final FavoritesTab tab : tabs) {
-							if (tab.equals(FavoritesTab.this)) {
-								continue;
+				getUiEvents().fireEvent(IGetFavoritesTabs.class,
+						new IGetFavoritesTabs() {
+							@Override
+							public void setFavoriteTabs(
+									List<FavoritesTab> tabs, String selected) {
+								moveToTab.getItems().clear();
+								copyToTab.getItems().clear();
+								for (final FavoritesTab tab : tabs) {
+									if (tab.equals(FavoritesTab.this)) {
+										continue;
+									}
+									final String name = tab.getText();
+									MenuItem moveToTabItem = new MenuItem(name);
+									moveToTabItem
+											.setOnAction(new EventHandler<ActionEvent>() {
+
+												@Override
+												public void handle(
+														ActionEvent arg0) {
+													ObservableList<HVSCEntry> selectedItems = favoritesTable
+															.getSelectionModel()
+															.getSelectedItems();
+													copyToTab(selectedItems,
+															tab);
+													removeFavorites(selectedItems);
+												}
+											});
+									moveToTab.getItems().add(moveToTabItem);
+									MenuItem copyToTabItem = new MenuItem(name);
+									copyToTabItem
+											.setOnAction(new EventHandler<ActionEvent>() {
+
+												@Override
+												public void handle(
+														ActionEvent arg0) {
+													ObservableList<HVSCEntry> selectedItems = favoritesTable
+															.getSelectionModel()
+															.getSelectedItems();
+													copyToTab(selectedItems,
+															tab);
+												}
+											});
+									copyToTab.getItems().add(copyToTabItem);
+								}
+								moveToTab.setDisable(moveToTab.getItems()
+										.size() == 0);
+								copyToTab.setDisable(copyToTab.getItems()
+										.size() == 0);
 							}
-							final String name = tab.getText();
-							MenuItem moveToTabItem = new MenuItem(name);
-							moveToTabItem
-									.setOnAction(new EventHandler<ActionEvent>() {
-
-										@Override
-										public void handle(ActionEvent arg0) {
-											ObservableList<HVSCEntry> selectedItems = favoritesTable
-													.getSelectionModel()
-													.getSelectedItems();
-											copyToTab(selectedItems, tab);
-											removeFavorites(selectedItems);
-										}
-									});
-							moveToTab.getItems().add(moveToTabItem);
-							MenuItem copyToTabItem = new MenuItem(name);
-							copyToTabItem
-									.setOnAction(new EventHandler<ActionEvent>() {
-
-										@Override
-										public void handle(ActionEvent arg0) {
-											ObservableList<HVSCEntry> selectedItems = favoritesTable
-													.getSelectionModel()
-													.getSelectedItems();
-											copyToTab(selectedItems, tab);
-										}
-									});
-							copyToTab.getItems().add(copyToTabItem);
-						}
-						moveToTab.setDisable(moveToTab.getItems().size() == 0);
-						copyToTab.setDisable(copyToTab.getItems().size() == 0);
-					}
-				});
+						});
 			}
 		});
 
@@ -301,11 +307,13 @@ public class FavoritesTab extends C64Tab {
 	@FXML
 	private void exportToDir() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		File directory = fileDialog.showDialog(favoritesTable.getScene()
 				.getWindow());
 		if (directory != null) {
-			fLastDir = directory;
+			getConfig().getSidplay2().setLastDirectory(
+					directory.getAbsolutePath());
 			for (HVSCEntry hvscEntry : favoritesTable.getSelectionModel()
 					.getSelectedItems()) {
 				File file = getFile(getConfig(), hvscEntry.getPath());
@@ -343,11 +351,13 @@ public class FavoritesTab extends C64Tab {
 	@FXML
 	private void convertToPsid64() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		File directory = fileDialog.showDialog(favoritesTable.getScene()
 				.getWindow());
 		if (directory != null) {
-			fLastDir = directory;
+			getConfig().getSidplay2().setLastDirectory(
+					directory.getAbsolutePath());
 			final ArrayList<File> files = new ArrayList<File>();
 			for (HVSCEntry hvscEntry : favoritesTable.getSelectionModel()
 					.getSelectedItems()) {

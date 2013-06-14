@@ -24,11 +24,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Callback;
-
-import javax.swing.JFileChooser;
-
 import libsidutils.PathUtils;
 import libsidutils.zip.ZipEntryFileProxy;
 import libsidutils.zip.ZipFileProxy;
@@ -36,14 +35,15 @@ import ui.common.C64Tab;
 import ui.directory.Directory;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
+import ui.entities.config.SidPlay2Section;
 import ui.events.IInsertMedia;
 import ui.events.Reset;
 import ui.events.UIEvent;
-import ui.filefilter.DemosFileFilter;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.DocsFileFilter;
 import ui.filefilter.ScreenshotFileFilter;
 import ui.filefilter.TapeFileFilter;
+import ui.filefilter.ZipFileExtensions;
 
 public class DiskCollection extends C64Tab {
 
@@ -60,8 +60,6 @@ public class DiskCollection extends C64Tab {
 
 	private DiscCollectionType type;
 	private String downloadUrl;
-
-	private File demosFile;
 
 	private final FileFilter screenshotsFileFilter = new ScreenshotFileFilter();
 	private final FileFilter diskFileFilter = new DiskFileFilter();
@@ -233,41 +231,34 @@ public class DiskCollection extends C64Tab {
 	}
 
 	@FXML
-	private void doBrowse() {
-		openUsingSwing(new Runnable() {
-			@Override
-			public void run() {
-				final JFileChooser fc = new JFileChooser(demosFile);
-				fc.setFileFilter(new DemosFileFilter());
-				fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				final int result = fc.showOpenDialog(null);
-				if (result == JFileChooser.APPROVE_OPTION
-						&& fc.getSelectedFile() != null) {
-					demosFile = fc.getSelectedFile();
-				}
-			}
-		});
-		if (demosFile != null) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					setRootFile(demosFile);
-				}
-			});
+	private void doBrowseZip() {
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(ZipFileExtensions.DESCRIPTION,
+						ZipFileExtensions.EXTENSIONS));
+		final File file = fileDialog.showOpenDialog(autoConfiguration
+				.getScene().getWindow());
+		if (file != null) {
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
+			setRootFile(file);
 		}
 	}
 
-	// TODO JavaFX solution?
-	private void openUsingSwing(Runnable runnable) {
-		Stage stage = (Stage) autoConfiguration.getScene().getWindow();
-		stage.hide();
-		try {
-			java.awt.EventQueue.invokeAndWait(runnable);
-		} catch (Exception e) {
-			e.printStackTrace();
+	@FXML
+	private void doBrowse() {
+		final DirectoryChooser fileDialog = new DirectoryChooser();
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
+		File directory = fileDialog.showDialog(autoConfiguration.getScene()
+				.getWindow());
+		if (directory != null) {
+			getConfig().getSidplay2().setLastDirectory(
+					directory.getAbsolutePath());
+			setRootFile(directory);
 		}
-		stage.show();
 	}
 
 	private void setRootFile(final File rootFile) {

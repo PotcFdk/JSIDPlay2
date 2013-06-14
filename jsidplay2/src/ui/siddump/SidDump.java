@@ -54,7 +54,6 @@ public class SidDump extends C64Stage {
 
 	private SidDumpExtension sidDumpExtension;
 
-	private File fLastDir;
 	private int loadAddress, initAddress, playerAddress, subTune, seconds;
 
 	private Thread fPlayerThread;
@@ -114,11 +113,13 @@ public class SidDump extends C64Stage {
 	@FXML
 	private void doLoadDump() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		final File file = fileDialog.showOpenDialog(loadDump.getScene()
 				.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			sidDumpExtension.load(file.getAbsolutePath());
 			noteSpacing.setText(String.valueOf(sidDumpExtension
 					.getNoteSpacing()));
@@ -138,11 +139,13 @@ public class SidDump extends C64Stage {
 	@FXML
 	private void doSaveDump() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(fLastDir);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFile());
 		final File file = fileDialog.showSaveDialog(saveDump.getScene()
 				.getWindow());
 		if (file != null) {
-			fLastDir = file.getParentFile();
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			sidDumpExtension.save(file.getAbsolutePath(), sidDumpOutputs);
 		}
 	}

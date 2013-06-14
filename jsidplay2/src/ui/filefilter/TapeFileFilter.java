@@ -1,19 +1,13 @@
 package ui.filefilter;
 
 import java.io.File;
+import java.io.FileFilter;
 
-import javax.swing.filechooser.FileFilter;
-
-public class TapeFileFilter extends FileFilter {
+public class TapeFileFilter implements FileFilter {
 
 	public static final String defaultFileNameExt[] = new String[] { ".tap",
 			".t64", ".prg", ".p00", ".zip", ".tap.gz", ".t64.gz", ".prg.gz",
 			".p00.gz" };
-
-	@Override
-	public String getDescription() {
-		return "Tape Image (TAP, T64, PRG, P00, GZ or ZIP)";
-	}
 
 	@Override
 	public boolean accept(File file) {
