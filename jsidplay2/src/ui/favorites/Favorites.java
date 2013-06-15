@@ -25,6 +25,7 @@ import ui.common.C64Tab;
 import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
+import ui.events.IPlayTune;
 import ui.events.IReplayTune;
 import ui.events.ITuneStateChanged;
 import ui.events.UIEvent;
@@ -275,6 +276,12 @@ public class Favorites extends C64Tab {
 					favoritesList.getTabs().size() - 1);
 			newTab.setText(ifObj.getTitle());
 			ifObj.setFavorites(newTab);
+		} else if (event.isOfType(IPlayTune.class)) {
+			IPlayTune ifObj = (IPlayTune) event
+					.getUIEventImpl();
+			if (ifObj.getComponent().equals(this)) {
+				currentlyPlayedFavorites = getSelectedTab();
+			}
 		} else if (event.isOfType(ITuneStateChanged.class)) {
 			ITuneStateChanged ifObj = (ITuneStateChanged) event
 					.getUIEventImpl();

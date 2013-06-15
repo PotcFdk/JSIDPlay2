@@ -1140,13 +1140,11 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		String statusTime = String.format("%02d:%02d",
 				getPlayer().time() / 60 % 100, getPlayer().time() % 60);
 		String statusSongLength = "";
-		if (getPlayer().getTune() != null) {
-			final int songLength = getSongLength(getPlayer().getTune());
-			// song length well-known?
-			if (songLength > 0) {
-				statusSongLength = String.format("/%02d:%02d",
-						(songLength / 60 % 100), (songLength % 60));
-			}
+		final int songLength = getSongLength(getPlayer().getTune());
+		// song length well-known?
+		if (songLength > 0) {
+			statusSongLength = String.format("/%02d:%02d",
+					(songLength / 60 % 100), (songLength % 60));
 		}
 		// Memory usage
 		Runtime runtime = Runtime.getRuntime();
@@ -1185,7 +1183,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
 				.getHvscFile();
 		SidDatabase database = SidDatabase.getInstance(hvscRoot);
-		if (database != null) {
+		getConsolePlayer().setSidDatabase(database);
+		if (database != null && sidTune != null) {
 			return database.length(sidTune);
 		}
 		return -1;

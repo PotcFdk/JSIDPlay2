@@ -598,7 +598,7 @@ public class ConsolePlayer {
 	 */
 	public void setSLDb(final boolean enableSLDb) {
 		if (!timer.valid) {
-			if (enableSLDb && tune != null) {
+			if (enableSLDb && tune != null && sidDatabase != null) {
 				final int length = sidDatabase.length(tune);
 				if (length >= 0) {
 					timer.defaultLength = length;
@@ -1497,8 +1497,8 @@ public class ConsolePlayer {
 		return (float) Math.pow(10, dB / 20);
 	}
 
-	public void setSidDatabase(File hvscRoot) {
-		this.sidDatabase = SidDatabase.getInstance(hvscRoot);
+	public void setSidDatabase(SidDatabase sidDatabase) {
+		this.sidDatabase = sidDatabase;
 	}
 
 }
