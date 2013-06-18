@@ -6,11 +6,16 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<TableView fx:id="gamebaseTable" minWidth="620" minHeight="520">
+	<TableView fx:id="gamebaseTable" AnchorPane.bottomAnchor="10"
+		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+		AnchorPane.topAnchor="10">
+		<columnResizePolicy>
+			<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+		</columnResizePolicy>
 		<columns>
-			<TableColumn text="%GAME" prefWidth="620">
+			<TableColumn text="%GAME">
 				<cellValueFactory>
-					<PropertyValueFactory property="name"/>
+					<PropertyValueFactory property="name" />
 				</cellValueFactory>
 			</TableColumn>
 		</columns>

@@ -23,123 +23,123 @@
 		<ToggleGroup fx:id="playbackGroup" />
 		<ToggleGroup fx:id="repeatGroup" />
 	</fx:define>
-	<VBox minWidth="950">
-		<BorderPane>
-			<top>
+	<BorderPane AnchorPane.bottomAnchor="10"
+		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+		AnchorPane.topAnchor="10">
+		<top>
+			<VBox>
+				<HBox alignment="CENTER">
+					<Button text="%ADD" fx:id="add" onAction="#addFavorites">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/add.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Button text="%REMOVE" fx:id="remove" onAction="#removeFavorites">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/remove.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Button text="%SELECT_ALL" fx:id="selectAll" onAction="#selectAllFavorites">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/selectall.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Button text="%DESELECT_ALL" fx:id="deselectAll" onAction="#clearSelection">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/deselectall.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+				</HBox>
+				<HBox alignment="CENTER">
+					<Button text="%LOAD" fx:id="load" onAction="#loadFavorites">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/load.png" />
+								</image>
+							</ImageView>
+						</graphic>
+
+					</Button>
+					<Button text="%SAVEAS" fx:id="saveAs" onAction="#saveFavoritesAs">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/save.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+				</HBox>
+			</VBox>
+		</top>
+		<center>
+			<TitledPane text="%PLAYLISTS" BorderPane.alignment="TOP_LEFT"
+				collapsible="false">
 				<VBox>
-					<HBox alignment="CENTER">
-						<Button text="%ADD" fx:id="add" onAction="#addFavorites">
+					<HBox spacing="5">
+						<Button onAction="#addTab" prefWidth="20" prefHeight="20">
+							<tooltip>
+								<Tooltip text="%ADD_A_NEW_TAB" />
+							</tooltip>
 							<graphic>
 								<ImageView>
 									<image>
-										<Image url="@/ui/icons/add.png" />
+										<Image url="@/ui/icons/addtab.png" />
 									</image>
 								</ImageView>
 							</graphic>
 						</Button>
-						<Button text="%REMOVE" fx:id="remove" onAction="#removeFavorites">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/remove.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button text="%SELECT_ALL" fx:id="selectAll" onAction="#selectAllFavorites">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/selectall.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button text="%DESELECT_ALL" fx:id="deselectAll" onAction="#clearSelection">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/deselectall.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
+						<Label text="%RENAME_TAB" />
+						<TextField fx:id="renameTab" onAction="#renameTab" />
 					</HBox>
-					<HBox alignment="CENTER">
-						<Button text="%LOAD" fx:id="load" onAction="#loadFavorites">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/load.png" />
-									</image>
-								</ImageView>
-							</graphic>
-
-						</Button>
-						<Button text="%SAVEAS" fx:id="saveAs" onAction="#saveFavoritesAs">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/save.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-					</HBox>
+					<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS" />
 				</VBox>
-			</top>
-			<center>
-				<TitledPane text="%PLAYLISTS" BorderPane.alignment="TOP_LEFT"
-					collapsible="false">
-					<VBox>
-						<HBox spacing="5">
-							<Button onAction="#addTab" prefWidth="20" prefHeight="20">
-								<tooltip>
-									<Tooltip text="%ADD_A_NEW_TAB" />
-								</tooltip>
-								<graphic>
-									<ImageView>
-										<image>
-											<Image url="@/ui/icons/addtab.png" />
-										</image>
-									</ImageView>
-								</graphic>
-							</Button>
-							<Label text="%RENAME_TAB" />
-							<TextField fx:id="renameTab" onAction="#renameTab" />
-						</HBox>
-						<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS" />
-					</VBox>
-				</TitledPane>
-			</center>
-			<bottom>
-				<TitledPane text="%PLAYBACK_OPTIONS" collapsible="false">
-					<GridPane>
-						<Label text="%PLAYBACK_HINT" GridPane.rowIndex="0"
-							GridPane.columnIndex="0" GridPane.columnSpan="4" />
-						<RadioButton text="%OFF" selected="true" onAction="#enablePlayback"
-							toggleGroup="$playbackGroup" fx:id="off" GridPane.rowIndex="1"
-							GridPane.columnIndex="0" />
-						<RadioButton text="%NORMAL" onAction="#enablePlayback"
-							toggleGroup="$playbackGroup" fx:id="normal" GridPane.rowIndex="1"
-							GridPane.columnIndex="1" />
-						<RadioButton text="%RANDOM_ONE_PLAYLIST" onAction="#enablePlayback"
-							toggleGroup="$playbackGroup" fx:id="randomOne" GridPane.rowIndex="1"
-							GridPane.columnIndex="2" />
-						<RadioButton text="%RANDOM_ALL_PLAYLISTS" onAction="#enablePlayback"
-							toggleGroup="$playbackGroup" fx:id="randomAll" GridPane.rowIndex="1"
-							GridPane.columnIndex="3" />
+			</TitledPane>
+		</center>
+		<bottom>
+			<TitledPane text="%PLAYBACK_OPTIONS" collapsible="false">
+				<GridPane>
+					<Label text="%PLAYBACK_HINT" GridPane.rowIndex="0"
+						GridPane.columnIndex="0" GridPane.columnSpan="4" />
+					<RadioButton text="%OFF" selected="true" onAction="#enablePlayback"
+						toggleGroup="$playbackGroup" fx:id="off" GridPane.rowIndex="1"
+						GridPane.columnIndex="0" />
+					<RadioButton text="%NORMAL" onAction="#enablePlayback"
+						toggleGroup="$playbackGroup" fx:id="normal" GridPane.rowIndex="1"
+						GridPane.columnIndex="1" />
+					<RadioButton text="%RANDOM_ONE_PLAYLIST" onAction="#enablePlayback"
+						toggleGroup="$playbackGroup" fx:id="randomOne" GridPane.rowIndex="1"
+						GridPane.columnIndex="2" />
+					<RadioButton text="%RANDOM_ALL_PLAYLISTS" onAction="#enablePlayback"
+						toggleGroup="$playbackGroup" fx:id="randomAll" GridPane.rowIndex="1"
+						GridPane.columnIndex="3" />
 
-						<RadioButton text="%REPEAT_OFF" selected="true"
-							onAction="#enableRepeat" toggleGroup="$repeatGroup" fx:id="repeatOff"
-							GridPane.rowIndex="2" GridPane.columnIndex="0" />
-						<RadioButton text="%REPEAT_ONE_TUNE" onAction="#enableRepeat"
-							toggleGroup="$repeatGroup" fx:id="repeatOne" GridPane.rowIndex="2"
-							GridPane.columnIndex="1" />
-					</GridPane>
-				</TitledPane>
-			</bottom>
-		</BorderPane>
-	</VBox>
+					<RadioButton text="%REPEAT_OFF" selected="true"
+						onAction="#enableRepeat" toggleGroup="$repeatGroup" fx:id="repeatOff"
+						GridPane.rowIndex="2" GridPane.columnIndex="0" />
+					<RadioButton text="%REPEAT_ONE_TUNE" onAction="#enableRepeat"
+						toggleGroup="$repeatGroup" fx:id="repeatOne" GridPane.rowIndex="2"
+						GridPane.columnIndex="1" />
+				</GridPane>
+			</TitledPane>
+		</bottom>
+	</BorderPane>
 </AnchorPane>
 

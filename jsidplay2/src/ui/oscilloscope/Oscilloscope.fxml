@@ -16,7 +16,8 @@
 <?import ui.oscilloscope.WaveGauge?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<VBox>
+	<VBox AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 		<HBox>
 			<TitledPane text="%VOICE_CONTROL" collapsible="false"
 				HBox.hgrow="ALWAYS">

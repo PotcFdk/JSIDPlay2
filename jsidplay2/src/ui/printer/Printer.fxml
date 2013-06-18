@@ -6,10 +6,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.Button?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml">
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+	AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+	AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 	<BorderPane>
 		<top>
-			<Button text="%CLEAR_PAPER" onAction="#clearPaper"/>
+			<Button text="%CLEAR_PAPER" onAction="#clearPaper" />
 		</top>
 		<bottom>
 			<ScrollPane prefWidth="480" prefHeight="600">

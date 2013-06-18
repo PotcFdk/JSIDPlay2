@@ -19,7 +19,9 @@
 <?import ui.favorites.FavoritesCellFactory?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<BorderPane>
+	<BorderPane AnchorPane.bottomAnchor="10"
+		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+		AnchorPane.topAnchor="10">
 		<top>
 			<HBox>
 				<Label text="%REG_EXPR_FILTER" />
@@ -27,11 +29,11 @@
 			</HBox>
 		</top>
 		<center>
-			<TableView fx:id="favoritesTable" minWidth="820" minHeight="350" maxHeight="350">
+			<TableView fx:id="favoritesTable">
 				<columns>
 					<TableColumn text="%FILENAME" prefWidth="150">
 						<cellValueFactory>
-							<PropertyValueFactory property="path"/>
+							<PropertyValueFactory property="path" />
 						</cellValueFactory>
 						<cellFactory>
 							<FavoritesCellFactory />
@@ -39,7 +41,8 @@
 						<contextMenu>
 							<ContextMenu fx:id="contextMenuHeader">
 								<items>
-									<MenuItem fx:id="removeColumn" text="%REMOVE_COLUMN" onAction="#removeColumn" />
+									<MenuItem fx:id="removeColumn" text="%REMOVE_COLUMN"
+										onAction="#removeColumn" />
 									<Menu fx:id="addColumnMenu" text="%ADD_COLUMN" />
 								</items>
 							</ContextMenu>

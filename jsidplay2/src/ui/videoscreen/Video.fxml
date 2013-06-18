@@ -19,7 +19,9 @@
 <?import javafx.scene.control.Label?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<BorderPane>
+	<BorderPane AnchorPane.bottomAnchor="0"
+		AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+		AnchorPane.topAnchor="0">
 		<left>
 			<TitledPane fx:id="monitor" text="%MONITOR" collapsible="false">
 				<StackPane>
@@ -42,11 +44,11 @@
 				</StackPane>
 			</TitledPane>
 		</left>
-		<center>
+		<right>
 			<VBox alignment="CENTER_RIGHT">
 				<Button fx:id="keyboard" onAction="#showVirtualKeyboard">
 					<graphic>
-						<ImageView preserveRatio="true" fitWidth="150">
+						<ImageView preserveRatio="true">
 							<image>
 								<Image url="@/ui/icons/keyboard.png" />
 							</image>
@@ -57,19 +59,19 @@
 					<graphic>
 						<StackPane>
 							<ImageView fx:id="datasetteOff" preserveRatio="true"
-								fitWidth="150" visible="false">
+								visible="false">
 								<image>
 									<Image url="@/libsidplay/components/c1530/icons/datassette.png" />
 								</image>
 							</ImageView>
 							<ImageView fx:id="datasetteLoad" preserveRatio="true"
-								fitWidth="150" visible="false">
+								visible="false">
 								<image>
 									<Image url="@/libsidplay/components/c1530/icons/datassette_g.png" />
 								</image>
 							</ImageView>
 							<ImageView fx:id="datasetteSave" preserveRatio="true"
-								fitWidth="150" visible="false">
+								visible="false">
 								<image>
 									<Image url="@/libsidplay/components/c1530/icons/datassette_r.png" />
 								</image>
@@ -82,37 +84,37 @@
 					<graphic>
 						<StackPane>
 							<ImageView fx:id="c1541Off" preserveRatio="true"
-								fitWidth="150" visible="false">
+								visible="false">
 								<image>
 									<Image url="@/libsidplay/components/c1541/icons/cbm1541c.png" />
 								</image>
 							</ImageView>
 							<ImageView fx:id="c1541On" preserveRatio="true"
-								fitWidth="150" visible="false">
+								visible="false">
 								<image>
 									<Image url="@/libsidplay/components/c1541/icons/cbm1541c_g.png" />
 								</image>
 							</ImageView>
 							<ImageView fx:id="c1541Load" preserveRatio="true"
-								fitWidth="150" visible="false">
+								visible="false">
 								<image>
 									<Image url="@/libsidplay/components/c1541/icons/cbm1541c_rg.png" />
 								</image>
 							</ImageView>
 							<ImageView fx:id="c1541IIOff" preserveRatio="true"
-								fitWidth="150" visible="false">
+								visible="false">
 								<image>
 									<Image url="@/libsidplay/components/c1541/icons/1541_ii.png" />
 								</image>
 							</ImageView>
 							<ImageView fx:id="c1541IIOn" preserveRatio="true"
-								fitWidth="150" visible="false">
+								visible="false">
 								<image>
 									<Image url="@/libsidplay/components/c1541/icons/1541_ii_r.png" />
 								</image>
 							</ImageView>
 							<ImageView fx:id="c1541IILoad" preserveRatio="true"
-								fitWidth="150" visible="false">
+								visible="false">
 								<image>
 									<Image url="@/libsidplay/components/c1541/icons/1541_ii_rg.png" />
 								</image>
@@ -124,7 +126,7 @@
 				<Button fx:id="cartridge" onAction="#insertCartridge">
 					<graphic>
 						<StackPane>
-							<ImageView preserveRatio="true" fitWidth="150">
+							<ImageView preserveRatio="true">
 								<image>
 									<Image url="@/libsidplay/components/cart/icons/cartridge.png" />
 								</image>
@@ -134,7 +136,7 @@
 					</graphic>
 				</Button>
 			</VBox>
-		</center>
+		</right>
 		<bottom>
 			<TitledPane text="%MONITOR_SETTINGS" expanded="false">
 				<HBox>

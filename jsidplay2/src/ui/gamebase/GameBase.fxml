@@ -14,7 +14,8 @@
 <?import ui.gamebase.GameBasePage?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<GridPane>
+	<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 		<CheckBox text="%ENABLE_GAMEBASE" fx:id="enableGameBase"
 			onAction="#doEnableGameBase" GridPane.rowIndex="0"
 			GridPane.columnIndex="0" GridPane.columnSpan="2" />
@@ -24,42 +25,41 @@
 		</HBox>
 		<TitledPane text="%INDEX" collapsible="false"
 			GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.rowSpan="7"
-			minWidth="620" GridPane.vgrow="ALWAYS" GridPane.valignment="TOP">
+			GridPane.valignment="TOP" minWidth="400" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
 			<TabPane focusTraversable="false" fx:id="letter"
-				tabClosingPolicy="UNAVAILABLE" minHeight="520">
-				<GameBasePage text="#" disable="true"/>
-				<GameBasePage text="A" disable="true"/>
-				<GameBasePage text="B" disable="true"/>
-				<GameBasePage text="C" disable="true"/>
-				<GameBasePage text="D" disable="true"/>
-				<GameBasePage text="E" disable="true"/>
-				<GameBasePage text="F" disable="true"/>
-				<GameBasePage text="G" disable="true"/>
-				<GameBasePage text="H" disable="true"/>
-				<GameBasePage text="I" disable="true"/>
-				<GameBasePage text="J" disable="true"/>
-				<GameBasePage text="K" disable="true"/>
-				<GameBasePage text="L" disable="true"/>
-				<GameBasePage text="M" disable="true"/>
-				<GameBasePage text="N" disable="true"/>
-				<GameBasePage text="O" disable="true"/>
-				<GameBasePage text="P" disable="true"/>
-				<GameBasePage text="Q" disable="true"/>
-				<GameBasePage text="R" disable="true"/>
-				<GameBasePage text="S" disable="true"/>
-				<GameBasePage text="T" disable="true"/>
-				<GameBasePage text="U" disable="true"/>
-				<GameBasePage text="V" disable="true"/>
-				<GameBasePage text="W" disable="true"/>
-				<GameBasePage text="X" disable="true"/>
-				<GameBasePage text="Y" disable="true"/>
-				<GameBasePage text="Z" disable="true"/>
+				tabClosingPolicy="UNAVAILABLE">
+				<GameBasePage text="#" disable="true" />
+				<GameBasePage text="A" disable="true" />
+				<GameBasePage text="B" disable="true" />
+				<GameBasePage text="C" disable="true" />
+				<GameBasePage text="D" disable="true" />
+				<GameBasePage text="E" disable="true" />
+				<GameBasePage text="F" disable="true" />
+				<GameBasePage text="G" disable="true" />
+				<GameBasePage text="H" disable="true" />
+				<GameBasePage text="I" disable="true" />
+				<GameBasePage text="J" disable="true" />
+				<GameBasePage text="K" disable="true" />
+				<GameBasePage text="L" disable="true" />
+				<GameBasePage text="M" disable="true" />
+				<GameBasePage text="N" disable="true" />
+				<GameBasePage text="O" disable="true" />
+				<GameBasePage text="P" disable="true" />
+				<GameBasePage text="Q" disable="true" />
+				<GameBasePage text="R" disable="true" />
+				<GameBasePage text="S" disable="true" />
+				<GameBasePage text="T" disable="true" />
+				<GameBasePage text="U" disable="true" />
+				<GameBasePage text="V" disable="true" />
+				<GameBasePage text="W" disable="true" />
+				<GameBasePage text="X" disable="true" />
+				<GameBasePage text="Y" disable="true" />
+				<GameBasePage text="Z" disable="true" />
 			</TabPane>
 		</TitledPane>
 		<TitledPane text="%SCREENSHOT" collapsible="false"
-			GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="320"
-			minHeight="200">
-			<ImageView fx:id="screenshot" fitWidth="320" fitHeight="200"
+			GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="320">
+			<ImageView fx:id="screenshot" fitWidth="160" fitHeight="100"
 				preserveRatio="true" />
 		</TitledPane>
 		<TitledPane text="%INFOS" collapsible="false"
@@ -80,9 +80,9 @@
 		</TitledPane>
 		<TitledPane text="%COMMENT" collapsible="false"
 			GridPane.rowIndex="7" GridPane.columnIndex="1" maxWidth="320">
-			<TextArea fx:id="comment" maxWidth="320" maxHeight="50" />
+			<TextArea fx:id="comment" maxWidth="320" maxHeight="40" />
 		</TitledPane>
 		<Button text="%MUSIC_GET" fx:id="linkMusic" onAction="#downloadMusic"
-			GridPane.rowIndex="8" GridPane.columnIndex="1" maxWidth="320" />
+			GridPane.rowIndex="8" GridPane.columnIndex="1" minWidth="320" />
 	</GridPane>
 </AnchorPane>
