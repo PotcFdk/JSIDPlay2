@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import ui.directory.DirectoryCellFactory?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
+<?scenebuilder-preview-i18n-resource Directory.properties?>
 
 <VBox xmlns:fx="http://javafx.com/fxml">
 	<Button text="%SWITCH_FONT" focusTraversable="false" onAction="#doSwitchFont" />

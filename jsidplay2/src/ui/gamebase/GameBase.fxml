@@ -12,6 +12,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.TextArea?>
 <?import ui.gamebase.GameBasePage?>
+<?scenebuilder-preview-i18n-resource GameBase.properties?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"

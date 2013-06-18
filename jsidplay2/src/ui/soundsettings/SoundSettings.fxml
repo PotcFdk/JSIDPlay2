@@ -21,6 +21,7 @@
 <?import java.lang.String?>
 <?import java.lang.Integer?>
 <?import resid_builder.resid.ISIDDefs.SamplingMethod?>
+<?scenebuilder-preview-i18n-resource SoundSettings.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<VBox>

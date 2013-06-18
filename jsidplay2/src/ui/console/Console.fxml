@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import ui.console.ConsoleOutput?>
 <?import javafx.scene.layout.BorderPane?>
+<?scenebuilder-preview-i18n-resource Console.properties?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<BorderPane AnchorPane.bottomAnchor="10"

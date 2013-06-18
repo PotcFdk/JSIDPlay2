@@ -14,6 +14,7 @@
 <?import ui.oscilloscope.ResonanceGauge?>
 <?import ui.oscilloscope.VolumeGauge?>
 <?import ui.oscilloscope.WaveGauge?>
+<?scenebuilder-preview-i18n-resource Oscilloscope.properties?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<VBox AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"

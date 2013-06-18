@@ -20,6 +20,7 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.cell.MapValueFactory?>
 <?import ui.siddump.SidDumpCellFactory?>
+<?scenebuilder-preview-i18n-resource SidDump.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<VBox fx:id="root">

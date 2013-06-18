@@ -15,6 +15,7 @@
 <?import javafx.collections.FXCollections?> 
 <?import javafx.scene.control.ToggleButton?>
 <?import ui.sidreg.SidRegWrite?>
+<?scenebuilder-preview-i18n-resource SidReg.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<VBox fx:id="vbox">

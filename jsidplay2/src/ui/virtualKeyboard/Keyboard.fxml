@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.paint.*?>
+<?scenebuilder-preview-i18n-resource VirtualKeyboard.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<BorderPane>

@@ -17,6 +17,8 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import ui.common.KnobSkin?>
 <?import ui.emulationsettings.LogarithmicAxis?>
+<?scenebuilder-preview-i18n-resource EmulationSettings.properties?>
+
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<VBox>
 		<TitledPane text="%VOLUME_CONTROL" collapsible="false">

@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.Button?>
+<?scenebuilder-preview-i18n-resource Printer.properties?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
 	AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"

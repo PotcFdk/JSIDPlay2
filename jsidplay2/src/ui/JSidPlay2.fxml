@@ -30,6 +30,8 @@
 <?import ui.favorites.Favorites?>
 <?import ui.printer.Printer?>
 <?import ui.console.Console?>
+<?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
+
 <Scene>
 	<BorderPane xmlns:fx="http://javafx.com/fxml">
 		<top>

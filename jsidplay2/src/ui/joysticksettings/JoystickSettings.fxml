@@ -12,6 +12,7 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.GridPane?>
 <?import ui.common.TypeTextField?>
+<?scenebuilder-preview-i18n-resource JoystickSettings.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<HBox>

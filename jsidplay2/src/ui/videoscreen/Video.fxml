@@ -17,6 +17,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.Label?>
+<?scenebuilder-preview-i18n-resource Video.properties?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<BorderPane AnchorPane.bottomAnchor="0"

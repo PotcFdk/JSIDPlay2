@@ -2,6 +2,7 @@
 
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.TitledPane?>
+<?scenebuilder-preview-i18n-resource Gauge.properties?>
 
 <TitledPane xmlns:fx="http://javafx.com/fxml" fx:id="border"
 	text=" " collapsible="false">
