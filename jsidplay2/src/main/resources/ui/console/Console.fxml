@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.VBox?>
+<?import ui.console.ConsoleOutput?>
+<?import javafx.scene.layout.BorderPane?>
+<?scenebuilder-preview-i18n-resource Console.properties?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml">
+	<BorderPane AnchorPane.bottomAnchor="10"
+		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+		AnchorPane.topAnchor="10">
+		<top>
+			<ConsoleOutput fx:id="out" />
+		</top>
+		<bottom>
+			<ConsoleOutput fx:id="err" />
+		</bottom>
+	</BorderPane>
+</AnchorPane>
+

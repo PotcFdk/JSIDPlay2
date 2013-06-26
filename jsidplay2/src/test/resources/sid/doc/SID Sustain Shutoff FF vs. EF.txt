@@ -1,0 +1,125 @@
+Date:  28-Nov-96 10:04:14  MsgID: 315-39611  ToID: 100112.220
+From:  Stephen Judd >INTERNET:judd@stratus.esam.nwu.edu
+Subj:  If it's not 3D graphics it must be SID
+Chrg:  $0.00   Imp: Norm   Sens: Std    Receipt: No 
+
+Sender: c64-hackers-owner@nic.funet.fi
+Received: from nic.funet.fi (nic.funet.fi [128.214.248.6]) by arl-img-2.compuserve.com (8.6.10/5.950515)
+	id JAA04429; Thu, 28 Nov 1996 09:59:28 -0500
+Received: from stratus.esam.nwu.edu ([129.105.28.28]) by nic.funet.fi with ESMTP id <60997-13798>; Thu, 28 Nov 1996 16:57:10 +0200
+Received: by stratus.esam.nwu.edu
+	(1.37.109.16/16.2) id AA150492995; Thu, 28 Nov 1996 08:56:35 -0600
+From: Stephen Judd <judd@stratus.esam.nwu.edu>
+Subject: If it's not 3D graphics it must be SID
+To: c64-hackers@nic.funet.fi
+Date: 	Thu, 28 Nov 96 8:56:35 CST
+Mailer: Elm [revision: 70.85]
+Message-Id: <96Nov28.165710+0200_eet.60997-13798+158@nic.funet.fi>
+
+Try the following:
+
+POKE 54273,60		       (Freq)
+POKE 54278,255:POKE 54276,15   (Decay/Release=15, vol=15)
+POKE 54276,17		       (Triangle, set gate)
+
+Now enter:
+
+POKE 54276,16:POKE 54276,17
+
+The idea is to toggle the gate bit and restart the sound, but instead
+it turns it off!  Re-enter the above line, and suddenly the sound
+re-appears!
+
+Now repeat the experiment, but with POKE 54278,249.  No problem.
+Clearing/setting the test bit does not alter the outcome.
+
+So as far as I can tell, it is related to the decay cycle.  My guess
+is that the gate is re-enabled before the first decrement of the gate
+cycle, and that SID somehow gets confused.  And, in point of fact, this
+only happens for decay=15.  Try the following:
+
+$1000:
+	LDA #$40
+	STA $D401
+	LDA #$FF	;Decay/Release
+	STA $D406
+	LDA #$0F
+	STA $D418
+	LDA #$11
+	STA $D404
+	RTS
+	LDA #$10	;($1015)
+	STA $D404
+	LDA #$11
+	STA $D404
+	RTS
+
+G 1000 and then G 1015 a few times.  Now change the decay to LDA #$EF and
+repeat the experiment -- no sound shutoff!
+
+This is on a 128D, not sure of the SID revision (a later one :).
+
+Is this known, documented, whatever?  Any suggestions for getting around
+it?  (set/clear of the test bit also fails).  The other observation is
+that when the sound restarts, it restarts from the beginning, i.e if
+you also set a long attack rate, when the sound restarts it will
+restart from zero amplitude.
+
+Unfortunately for my music player, this can have the effect of
+completely shutting off a voice when the music restarts (I guess I'll
+have to skip initializing SID).
+
+Ah well, any comments would be appreciated.
+
+	-Steve
+
+P.S. Happy Thanksgiving to everyone in the States :)  Gobble gobble gobble!
+
+
+
+
+Date:  28-Nov-96 12:48:00  MsgID: 315-41708  ToID: 100112.220
+From:  Oliver Klee >INTERNET:klee@athene.informatik.uni-bonn.de
+Subj:  Re: If it's not 3D graphics it must be SID
+Chrg:  $0.00   Imp: Norm   Sens: Std    Receipt: No 
+
+Sender: c64-hackers-owner@nic.funet.fi
+Received: from nic.funet.fi (nic.funet.fi [128.214.248.6]) by arl-img-2.compuserve.com (8.6.10/5.950515)
+	id MAA06080; Thu, 28 Nov 1996 12:34:02 -0500
+Received: from athene.informatik.uni-bonn.de ([131.220.4.21]) by nic.funet.fi with ESMTP id <73832-10127>; Thu, 28 Nov 1996 19:33:13 +0200
+Received: from gelb.informatik.uni-bonn.de (klee@gelb.informatik.uni-bonn.de [131.220.5.43]) by athene.informatik.uni-bonn.de (8.8.3/8.8.2) with ESMTP id SAA11606; Thu, 28 Nov 1996 18:34:13 +0100 (MET)
+Received: (klee@localhost) by gelb.informatik.uni-bonn.de (8.8.3/8.6.12) id SAA01938; Thu, 28 Nov 1996 18:33:08 +0100
+Date: 	Thu, 28 Nov 1996 18:33:08 +0100 (MET)
+From: Oliver Klee <klee@athene.informatik.uni-bonn.de>
+To: Stephen Judd <judd@stratus.esam.nwu.edu>
+cc: c64-hackers@nic.funet.fi
+Subject: Re: If it's not 3D graphics it must be SID
+In-Reply-To: <96Nov28.165710+0200_eet.60997-13798+158@nic.funet.fi>
+Message-ID: <Pine.LNX.3.91.961128182905.1872D-100000@gelb.informatik.uni-bonn.de>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+> The idea is to toggle the gate bit and restart the sound, but instead
+> it turns it off!  Re-enter the above line, and suddenly the sound
+> re-appears!
+
+I have encountered similiar problems while working with my music player / 
+editor (The Cyberlogic Sound Studio). As far as I know, it does _not_ 
+depend on the SID version you're working with.  I still have not found 
+any solution nor explanation to this.
+
+Mostly, I try to avoid this problem by not using some special envelopes 
+that are affected by this phenomenon, or I use a sound with AD/SR set to 
+$00 and wave set to $09 a few frames before. That should reset the voice 
+so far that the volume progression of the next note won't be unpredictable.
+
+    -----------------------------------------
+   /   Oliver Klee / Masters' Design Group   \
+  /          musician and programmer          \
+ /student of computer science and music science\
+/              klee@cs.uni-bonn.de              \
+-------------------------------------------------
+
+
+**CCs to:
+  INTERNET:C64-HACKERS@NIC.FUNET.FI

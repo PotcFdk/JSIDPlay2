@@ -1,0 +1,5 @@
+HardSID driver:
+===============
+It makes it possible to use HardSID sound cards (http://www.hardsid.com/)
+by Java programs using the Java Native Interface (JNI).
+It is just a wrapper around the platform dependent HardSID driver API.

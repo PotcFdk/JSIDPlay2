@@ -1,0 +1,10 @@
+Check if the device is turned on:
+
+1. Load devices_test.prg without autostart into Ram.
+2. set y=8              - set device ID
+3. gosub 2000           - check floppy drive is turned on/off
+4. print g$             - print result
+
+Use gosub 3000 to test printer
+
+Source: http://c64.tricos.de/code-floppy.php

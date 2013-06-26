@@ -1,0 +1,432 @@
+
+---------------
+Abbreviations
+---------------
+    BA: back arrow
+   TMP: Turbo Macro Pro
+ OriTA: original Turbo Assembler
+OriTAM: oriignal Turbo Assembler Macro
+[xxxx]: feature/bug/issue id
+
+
+-------------------------------------
+Turbo Macro Pro, Sep'06
+-------------------------------------
+
+  * TMP+REU  v1.2
+  * TMP      v1.2
+  * TMP(X2)  v1.2
+  * TMP(R2)  v1.2
+  * TMP+DTV  v1.2
+  * TMP+PTV  v1.2
+
+    FEAT: IDE64 compatibility. All disk-related functionality of TMP should
+           now operate correctly with modern IDE64 hardware/ROM combinations
+           (i.e. v3.x hardware using the most recent ROM image). As a first
+           attempt by someone who doesn't own any real IDE64 hardware, this
+           capability comes without guarentees, but has been tested both on
+           VICE and on a real v3.2 board w/ a 2006 ROM image. Note that TMP
+           continues to work just fine on non-IDE64 devices. [0000026]
+    FEAT: Illegal opcodes are added. Fourteen (14) of the eighteen (18)
+           added mnemonics correspond with those most popularized by Adam
+           Vardy's 1995 Internet documentation which was itself based on
+           several sources including legendary Transactor magazine:
+              ALR ($4B)
+              ANC ($0B)
+              ARR ($6B)
+              DCP ($C3, $C7, $CF, $D3, $D7, $DB, $DF)
+              ISC ($E3, $E7, $EF, $F3, $F7, $FB, $FF)
+              LAS ($BB)
+              LAX ($A3, $A7, $AF, $B3, $B7, $BF)
+              RLA ($23, $27, $2F, $33, $37, $3B, $3F)
+              RRA ($63, $67, $6F, $73, $77, $7B, $7F)
+              SAX ($83, $87, $8F, $97)
+              SLO ($03, $07, $0F, $13, $1B, $1F)
+              SRE ($43, $47, $4F, $53, $57, $5B, $5F)
+              TAS ($9B)
+              XAA ($8B)
+          Four mnemonics correspond with those renamed from the Vardy
+           document by Graham/Oxyron in his recent opcode summary:            
+              SHY instead of SAY ($9c)
+              SHX instead of XAS ($9e)
+              AHX instead of AXA ($93, $9f)
+              AXS instead of SAX ($CB)
+          As well, this additional naming modifications by Graham from the
+           Vardy document are taken:
+              LAX instead of OAL ($AB)
+          See http://www.ffd2.com/fridge/docs/6502-NMOS.extra.opcodes
+           or http://www.oxyron.de/html/opcodes02.html for additional
+           info. [0000023]
+    FEAT: The five new PTV opcodes ($02, $12, $22, $32, $42) are added using
+           mnemonics CLN, BRA, RTD, SAC, SIR respectively (BRA as designated
+           by Jeri; SAC/SIR as coined by tlr, and CLN/RTD as coined here and
+           which *may* only be useful on the handful of prototype boards out
+           there - but since two belong to Style members...).
+    FEAT: Hitting RUN/STOP in the main editor will now swap the status line
+           between the default line and a new, secondary status line which
+           displays the current number of labels and the remaining free
+           label memory; also shown is the remaining free source code
+           memory. Therefore the secondary status line acts as a kind of
+           free memory status - use caution regarding source memory, as
+           actually assembling source code will use at least ~$200 and
+           more bytes for very "pseudo-op intensive" sources. [0000028]
+    FEAT: New in the RAM submenu is option 'd', for direct-load-to-ram, which
+           can be used to load object files into the object bank which do not
+           have a load address as the first two bytes of the file, such as
+           so-called "level-packed" files, etc. [0000049]
+    FEAT: New input keystrokes for prompt fields: hitting CLR will blank the
+           current field; hitting HOME will place the cursor at the leftmost
+           character of the field; hitting RUN/STOP will cancel input (to
+           effectively cancel input before required deleting all characters
+           in the field and hitting return; RUN/STOP now cancels regardless
+           of what the field currently contains). [0000005]
+    FEAT: Tool uses 20mhz mode setting for assembling when there's a SCPU
+           present, which works the same way as 2mhz/VIC blanking
+           introduced in v1.1 (see below). [0000036]
+    FEAT: Hitting HOME in the main editor places the cursor at the return
+           tab stop (set with BA+7) on the current line. [0000030]
+    FEAT: Hitting CLR in the main editor unsets both the start and end mark,
+           which should be a handy way to clear these block-defining marks
+           instead of using the normal kill-mark method on each. [0000030]
+    FEAT: Cursor line positioning after a block-kill now behaves much more
+           like one might expect - generally speaking whatever line of source
+           code you were currently editing at the time block-kill is invoked
+           should remain the same after the block has been removed. Same will
+           be true for block-move.
+    BUG:  .include now no longer gets into an infinite loop when a disk
+           error occurs such as file not found. [OriTAM]
+    BUG:  .include output colors were a bit odd and not at all nice
+           looking, this is fixed to match the rest of the assembler
+           output. [TMP:0000044]
+    BUG:  The granddaddy bug...  block-kill on line zero, which formerly
+           corrupted source and/or crashed both the original Turbo Assembler
+           and Turbo Assembler Macro (as well as all other variants), is now
+           properly fixed. Also, a number of additional rare and hard to
+           duplicate cases where block-kill could potentially corrupt source
+           memory have been fixed. Former versions of TMP would ignore any
+           attempt to kill a block that included line zero. [OriTAM:0000007]
+    BUG:  After attempting to load a file into a RAM bank using the RAM menu
+           load function (BA+R,l) where a disk error occurs (e.g. file not
+           found), several prompts would become messed up. [TMP:0000071]
+    BUG:  Add/Subtract (BA++/BA+-) was corrupting the current line edit
+           buffer in some circumstances. [TMP:0000017]
+    BUG:  The plain c64 mods were not re-initializing CIA/VIC upon editor
+           re-entry; certain code disabling CIA timer interrupts would then
+           cause the keyboard to be unresponsive after jmp $8000. [TMP]
+    BUG:  Default start address is now $1000; v1.1 fixed this for some cases
+           but not all (e.g. try: start OriTAM, don't add any code and
+           immediately assemble). Now the assembler will always assume a
+           start of $1000 if not set by "*=". [OriTAM:0000010] 
+    DELE: Preferences (BA+p) have been removed from the main tool; but see
+           below for info on the new "TMPPREFS" utility!
+    CHNG: OriTA/OriTAM both save between $0 and $200 extra 'trash bytes' at
+           the end of source code files. TMP now more properly saves only
+           what is really necessary to store all source code data and still
+           maintain backwards compatibility (both with loading/saving old
+           sources and for other Turbo Assembler Macro based versions to
+           load sources saved from TMP). The end result is that your
+           source files should be between 0 and 2 disk blocks shorter
+           from now on. [0000053]
+
+  * TMP+DTV  v1.2
+
+    FEAT: DTV palette at $d200 is now reverted to the startup palette when
+           TMP is entered (jmp $8000). [0000052] 
+
+  * TMP+PTV  v1.2
+
+    FEAT: Bad lines are disabled during assembly to provide a speed up that
+           should be similar to VIC blanking on flat c64 but without the
+           actual blanked screen...
+    FEAT: Skip-cycle and burst mode are also activated during assembly; both
+           this and the previous speed up behave identically to the 2mhz/VIC
+           blanking described below. This was actually present in v1.1 but
+           not documented in the change log...
+    INFO: Be aware that the PTV mod also, of course, works with your hacked
+           Hummer wheels.
+
+  * TMPPREFS v1.2
+  
+    INFO: First release of a separate preferences editor. To use, load the
+           prefs editor, then use familiar TMP controls to load any existing
+           TMP v1.2 binary (wtih BA+l). Once loaded, you can use:
+              BA+c = alter color preferences, works like v1.1; you need to
+                     hit CTRL or CBM and a number key just like you were
+                     setting the current cursor color!
+              BA+o = flip through color sets from some well known versions
+              BA+2 = alter 4 character separator template
+              BA+j = alter jumpback location
+              BA+k = alter function key definitions
+              BA+7 = alter return tab (column that cursor sits after return)
+              BA+8 = alter source tab (column that opcodes/pseudos start)
+            Each change should be reflected in the example source screen.
+            Once you're satisfied with your preferences, use BA+s to save
+            the new binary (use a different filename!). Remember, the v1.2
+            prefs editor will only work with v1.2 binaries from the Sep'06
+            release! Also note that using this tool changes the defaults
+            used by TMP; source codes you previously saved will still
+            retain their own return/source tab settings and function key
+            definitions, until you reset those and resave those sources.
+            Finally, BA+d and BA+* have the same effect as from within
+            TMP: increment-device and view-directory. [0000054]
+
+
+-------------------------------------
+Turbo Macro Pro, Oct'05
+-------------------------------------
+
+  * TMP+REU v1.1
+  * TMP     v1.1
+  * TMP(X2) v1.1
+  * TMP(R2) v1.1
+
+    BUG : The list-labels (BA+u) function was broken when outputting to a
+           file - instead of being sent to the current serial device,
+           output was thrown to the screen. [TMP:0000031]
+    BUG : The .include pseudo was utterly broken, as reported at least
+           twice to comp.sys.cbm. The fix restores this functionality as
+           intended, working with SEQ files - it will not include from a
+           binary/PRG source file! [TMP:0000033]
+    BUG : Poor behavior was seen when starting TMP when there were no
+           serial devices present at all on the bus (devices 8-15); this
+           was particularly troublesome for the DTV mods. TMP now acts
+           better when this occurs. [TMP:0000034]
+    FEAT: Tool uses 2mhz mode setting during assembly phase; this will only
+           affect operation on a c128 of course. 2mhz mode is turned off at
+           the first error during assembly enabling user to view the
+           error reports; also turns off when including a file. [0000003]
+    FEAT: Tool also uses VIC screen blanking during assembly phase, which
+           behaves identical to 2mhz mode above. [0000004]
+    FEAT: A variant of list-labels was added - list-labels-vice (BA+U) will
+           output the label table in a format compatible for loading into
+           the VICE emulator monitor. [0000027]
+    CHNG: PLEASE NOTE THIS CHANGE! The jumpback routine in all applicable
+           versions of TMP has changed it's default location from $0180 to
+           $0140. Be sure and update any code you had that relied on the
+           location of the jumpback code. And as it has ever been in TMP,
+           the location is still configurable using the RAM submenu, which
+           is invoked with BA+R - then use j to set the jumpback location.
+    DOC : Added more details of the preferences system (BA+p). [0000015]
+    DOC : Generally rewrote/reworded almost the entire set of documentation
+           and along the way corrected some minor mistakes.
+
+  * TMP+DTV v1.1
+
+    BUG : There was another problem in bank swapping, as not all memory was
+           swapped in as expected. [TMP+DTV v1.0a]
+
+  * TMP+PTV v1.1
+
+    INFO: First release for the DTV v2 (or PTV, as in PAL) joystick system.
+           This mod behaves in respect to the PTV's extra memory (2 megs)
+           identical to the REU mod, using the eight (8) highest 64k banks
+           of RAM for assembly, object data, and source code. The tweaks
+           made to the DTV mod like the default color scheme and remapped
+           page up/down keys are also active in this mod. The extra RAM
+           commands are activated with BA+R just as in the REU and DTV
+           mods. [0000032]
+
+
+-------------------------------------
+Turbo Macro Pro+DTV, Dec'04
+-------------------------------------
+
+  * TMP+DTV v1.0a
+
+    BUG : A potentially source-corrupting bug that got introduced into the
+           DTV version was fixed; this is not present in any other version
+           of TMP. [TMP+DTV v1.0]
+    BUG : Discovered that DTV himem locations $1d800-$1dbff are actually
+           mapped to color RAM at $d800, meaning those locations are
+           volatile and overwritten whenever $d800 is written to. This
+           could cause additional source corruption on larger sources so
+           to prevent it, for now the DTV mod maximum line limit was
+           reduced to 3,069 (plain Turbo allows 4,093 and TMP allows
+           5,117). [TMP+DTV v1.0]
+    BUG : Editing a line and then immediately assembling (without moving
+           the cursor off the line) would cause the edits to the line to
+           be lost. [TMP:0000002]
+    BUG : During make-data, if the c64 is reset or TMP is otherwise 
+           interrupted, once TMP was restarted the make-data operation
+           would commence where it left off. The fix stops this from
+           occurring. [TMP:0000001]
+    FEAT: During make-data, run/stop can now be used to abort.
+    FEAT: The make-data (BA+6) function now reads from the DTV himem.
+
+
+-------------------------------------
+Turbo Macro Pro+DTV, Dec'04
+-------------------------------------
+
+  * TMP+DTV v1.00
+
+    INFO: First release for the DTV joystick system. Utilizes the extra 64k
+           in the DTV as a combined assembly and object bank in a similar
+           manner as the REU version, allowing full use of the DTV regular
+           memory for assembled code. [0000016]
+    FEAT: The REU commands (BA+R) invokes a similar menu operating on the
+           DTV memory with load-object-file and set-jumpback functions.
+    FEAT: The PS/2 keyboard's page up and page down buttons translate to
+           britpound and uparrow, which are normally invoke the copy-buffer
+           and paste-buffer functions. In the DTV mod, these keys now
+           operate as one might expect, bumping the cursor up or down
+           by 20 lines. The old functions are now invoked by
+           BA+{shift-britpound} and BA+{shift-uparrow}.
+    CHNG: A different editor color scheme is in effect, more appealing with
+           the DTV's slightly different looking (dimmer) colors.
+
+
+-------------------------------------
+Turbo Macro Pro, Oct'97
+-------------------------------------
+
+  * TMP+REU v1.05
+  * TMP     v1.02
+
+    BUG : Fixed misc problems that resulted from the absence of a Super
+           Snapshot cartridge. [TMP]
+    BUG : Fixed a bug when detecting and loading 'plain Turbo' binary
+           source files. [TMP]
+    CHNG: Tidier cleanup of zeropage upon a turbo cold start.
+    CHNG: Available devices detected increased from 8-11 to 8-15.
+    DOC : Added description and example for using the .offs pseudo-op.
+
+  * TMP(X2) v1.00
+  * TMP(R2) v1.00
+
+    INFO: First releases for 'dual c64' systems. Incorporates all mods
+           and bug fixes to date, where applicable. Uses BA+% to 
+           assemble across the wire to the slave c64. The R2 mod is
+           a completely unique concept that combines the dual c64
+           capability with the REU mod's bank switching features.
+
+
+-------------------------------------
+Turbo Macro Pro, Mar'97
+-------------------------------------
+
+  * TMP+REU v1.03
+
+    BUG : Performing a block-kill (BA+b k) while the first line of the
+           source code was included in the current block results in
+           corrupted source code. The partial fix simply ignores when
+           block-kill is invoked in this situation. [OriTA, OriTAM]
+    FEAT: Output during assembly was significantly altered to conserve
+           vertical space - the pass start/end info was reduced from
+           3 lines to 1; error output was reduced from 3 lines per error
+           to 2 lines.
+    FEAT: Source code that was saved with the famous Panoramic Designs
+           mod which are located at $a000 will now be recognized and
+           loaded transparently, just like regular 'plain Turbo' source.
+    CHNG: All input prompts accepting a filename are reduced in length
+           to 16 characters (was formerly varied, usually 20 or more)
+
+  * TMP(64) v1.0
+
+    INFO: First release for plain (non-REU expanded) c64 systems, with
+           all features and bug fixes to date; main difference is lack
+           of the REU commands function. 
+
+
+-------------------------------------
+Turbo Macro Pro, Jan'97
+-------------------------------------
+
+  * TMP+REU v1.0
+
+    INFO: First release for REU expanded systems.
+    BUG : During input when the cursor is at the first character of the
+           input field, pressing delete wraps around, placing the cursor
+           at the last character of the input field, but wasn't deleting
+           the character in the last position. [OriTA, OriTAM]
+    BUG : During an enter-seq (BA+e), literal returns inside quotes such
+           as:
+               .text "line 1[M]line 2[M]"
+           were taken as a syntactic newline, resulting in an incorrect
+           split line in the editor. The fix changes enter-file to track
+           quoted literal text and read it in correctly. [OriTA, OriTAM]
+    FEAT: Rewritten REU functions that allow on the fly bank swapping to
+           store and access multiple sources at any time, fully integrated
+           into the tool. Removed the separate 'REU menu' and replaced
+           with BA+R to invoke the REU commands. Furthermore replaced
+           all REU bank swapping code from the ATT mod with new code,
+           reducing the required number of banks from 3 to 2 (enabling
+           128K units to be used).
+    FEAT: Added assemble-to-object (BA+#) which assembles the current
+           source directly into the object bank instead of the assembly
+           bank.
+    CHNG: Changed list-labels from BA++ to BA+u.
+    BUG : The list-labels function was corrupting the line buffer as seen
+           when doing paste-buffer after the list. [OriTA, OriTAM]
+    CHNG: Changed disk-command from BA+d to BA+@.
+    FEAT: Entering @ by itself during disk-command reads the drive status;
+           this was formerly accomplished by BA+@.
+    FEAT: Added increment-device (BA+d) which selects the next available
+           device number between 8 and 11.
+    FEAT: Added current drive number to the status line.
+    FEAT: Added current REU source/object bank numbers to the status line.
+    FEAT: Added a block-move function (BA+b m) which performs the same as
+           block-copy followed by block-kill.
+    FEAT: The view-directory (BA+*) can now be paused by holding CBM
+           or aborted by hitting run/stop.
+    FEAT: Added cursor-right-edge (BA+{crsr-right}) to push the cursor to
+           the rightmost column.
+    FEAT: Added cursor-left-edge (BA+{crsr-left}) to push the cursor to
+           the leftmost column (same as BA+q).
+    FEAT: Added view-seq (BA+!) which displays the contents of a SEQ file
+           from disk to the screen; CBM pauses and run/stop aborts.
+    FEAT: Added add-hex (BA++) and sub-hex (BA+-) which displays the
+           result as both hex and decimal.
+    FEAT: Added paste-separator (BA+2), a function common in most mods of
+           TA but not present in the original TA and TAM; unlike other
+           mods the separator is composed of a repeated sequence of 4
+           characters rather than only one character; however the default
+           sequence is '----' which results in typical separators.
+    FEAT: Added make-data (BA+6), another function common in most TA mods
+           but not present in the original TA and TAM. This version reads
+           data from the current REU object bank instead of plain c64
+           memory.
+    FEAT: Preferences editor has been added which allows changing all
+           seven colors ($d020, $d021, regular text, error text, highlight
+           text, message line, and status line) as well as the four
+           characters used for the separator function. Also enables the
+           user to save a copy of the customized program ($8000-$ca00) to
+           disk. The preferences editor is invoked with BA+p.
+    FEAT: Source code files from 'plain Turbo' (starting at $9000) are
+           automatically recognized and loaded safely and transparently.
+    FEAT: Holding down the CBM key when starting up the editor will force
+           a cold start.
+    FEAT: Added a separate stand alone prg that detects instances of TMP
+           in the REU and allows user to jump to any turbo bank; this is
+           basically a 'rescue' tool if the c64 memory becomes utterly
+           corrupted...
+    FEAT: Displays size of detected REU in message line at startup.
+    DELE: Removed the other-colors function (BA+o).
+    CHNG: Changed fkey-reset from BA+f1 to BA+K.
+    CHNG: New function key defaults:
+           f3 = cursor up 200
+           f4 = assemble (BA+3)
+           f5 = cursor down 200
+           f3 = REU commands (BA+R)
+    CHNG: The jumpback code (the short routine placed in memory after
+           choosing to execute the assembled code) was shortened and does
+           reset the VIC now in comparison to the jumpback code in the
+           MO mod.
+    CHNG: Input fields for find-string and replace-string were reduced in
+           length from 24 to 20 characters.
+    CHNG: Most input prompts were altered to use consistent wording and
+           styling.
+
+
+-------------------------------------
+Turbo Assembler Macro++ REU, 1993
+-------------------------------------
+
+    INFO: Modification by Massive Onslaught/Style that was based from
+           Antitrack's earlier mod of Turbo Assembler Macro (TAM) for
+           REU support. MO added an invocable REU menu to allow loading
+           of object data into the object bank, as well as inserting a
+           small routine into memory ($0180) to re-swap the Turbo+source
+           into c64 memory after testing assembled code. This modification
+           was the one which was re-sourced and from which Turbo Macro Pro
+           was derived.

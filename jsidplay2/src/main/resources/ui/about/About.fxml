@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?scenebuilder-preview-i18n-resource About.properties?>
+
+<Scene xmlns:fx="http://javafx.com/fxml" width="1024" height="768">
+	<BorderPane>
+		<center>
+			<TextArea
+				editable="false" wrapText="false" fx:id="credits"></TextArea>
+		</center>
+		<bottom>
+			<HBox alignment="BASELINE_CENTER">
+				<Button text="%OK" onAction="#okPressed"></Button>
+			</HBox>
+		</bottom>
+	</BorderPane>
+</Scene>

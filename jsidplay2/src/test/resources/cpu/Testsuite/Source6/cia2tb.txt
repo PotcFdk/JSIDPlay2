@@ -1,0 +1,1476 @@
+
+                          *= $0801
+0801 4C 14 08 00 97
+                          .BYTE $4C,$14,$08,$00,$97
+               TURBOASS   = 780
+0806 37 38 30             .TEXT "780"
+0809 2C 30 3A 9E 32 30
+                          .BYTE $2C,$30,$3A,$9E,$32,$30
+080F 37 33 00 00 00
+                          .BYTE $37,$33,$00,$00,$00
+0814 A9 01                LDA #1
+0816 8D 0C 03             STA TURBOASS
+0819 4C F8 08             JMP MAIN
+
+
+               PRINT
+                          .BLOCK
+081C 68                   PLA
+081D 8D 27 08             STA PRINT0+1
+0820 68                   PLA
+0821 8D 28 08             STA PRINT0+2
+0824 A2 01                LDX #1
+               PRINT0
+0826 BD 26 08             LDA !*,X
+0829 F0 06                BEQ PRINT1
+082B 20 D2 FF             JSR $FFD2
+082E E8                   INX
+082F D0 F5                BNE PRINT0
+               PRINT1
+0831 38                   SEC
+0832 8A                   TXA
+0833 6D 27 08             ADC PRINT0+1
+0836 8D 42 08             STA PRINT2+1
+0839 A9 00                LDA #0
+083B 6D 28 08             ADC PRINT0+2
+083E 8D 43 08             STA PRINT2+2
+               PRINT2
+0841 4C 41 08             JMP !*
+                          .BEND
+
+
+               PRINTHB
+                          .BLOCK
+0844 48                   PHA
+0845 4A                   LSR A
+0846 4A                   LSR A
+0847 4A                   LSR A
+0848 4A                   LSR A
+0849 20 4F 08             JSR PRINTHN
+084C 68                   PLA
+084D 29 0F                AND #$0F
+               PRINTHN
+084F 09 30                ORA #$30
+0851 C9 3A                CMP #$3A
+0853 90 02                BCC PRINTHN0
+0855 69 06                ADC #6
+               PRINTHN0
+0857 20 D2 FF             JSR $FFD2
+085A 60                   RTS
+                          .BEND
+
+
+               WAITBORDER
+                          .BLOCK
+085B AD 11 D0             LDA $D011
+085E 30 07                BMI OK
+               WAIT
+0860 AD 12 D0             LDA $D012
+0863 C9 1E                CMP #30
+0865 B0 F9                BCS WAIT
+               OK
+0867 60                   RTS
+                          .BEND
+
+
+               WAITKEY
+                          .BLOCK
+0868 20 A3 FD             JSR $FDA3
+               WAIT
+086B 20 E4 FF             JSR $FFE4
+086E F0 FB                BEQ WAIT
+0870 C9 03                CMP #3
+0872 F0 01                BEQ STOP
+0874 60                   RTS
+               STOP
+0875 AD 0C 03             LDA TURBOASS
+0878 F0 03                BEQ BASIC
+087A 4C 00 80             JMP $8000
+               BASIC
+087D 4C 74 A4             JMP $A474
+                          .BEND
+
+
+               REPORT
+                          .BLOCK
+0880 8D C9 08             STA SAVEA+1
+0883 8E BF 08             STX SAVEX+1
+0886 8C D9 08             STY SAVEY+1
+0889 A9 0D                LDA #13
+088B 20 D2 FF             JSR $FFD2
+088E 20 D2 FF             JSR $FFD2
+0891 68                   PLA
+0892 8D 9C 08             STA PRINT0+1
+0895 68                   PLA
+0896 8D 9D 08             STA PRINT0+2
+0899 A2 01                LDX #1
+               PRINT0
+089B BD 9B 08             LDA !*,X
+089E F0 06                BEQ PRINT1
+08A0 20 D2 FF             JSR $FFD2
+08A3 E8                   INX
+08A4 D0 F5                BNE PRINT0
+               PRINT1
+08A6 38                   SEC
+08A7 8A                   TXA
+08A8 6D 9C 08             ADC PRINT0+1
+08AB 8D E1 08             STA PRINT2+1
+08AE A9 00                LDA #0
+08B0 6D 9D 08             ADC PRINT0+2
+08B3 8D E2 08             STA PRINT2+2
+08B6 20 1C 08             JSR PRINT
+08B9 0D                   .BYTE 13
+08BA 49 44 58             .TEXT "IDX"
+08BD 00                   .BYTE 0
+               SAVEX
+08BE A9 11                LDA #$11
+08C0 20 44 08             JSR PRINTHB
+08C3 A9 20                LDA #32
+08C5 20 D2 FF             JSR $FFD2
+               SAVEA
+08C8 A9 11                LDA #$11
+08CA 20 44 08             JSR PRINTHB
+08CD 20 1C 08             JSR PRINT
+08D0 0D                   .BYTE 13
+08D1 52 49 47 48 54 20
+                          .TEXT "RIGHT "
+08D7 00                   .BYTE 0
+               SAVEY
+08D8 A9 11                LDA #$11
+08DA 20 44 08             JSR PRINTHB
+08DD 20 68 08             JSR WAITKEY
+               PRINT2
+08E0 4C E0 08             JMP !*
+                          .BEND
+
+
+
+               ;COMBINATIONS TESTED
+               ;BEFORE
+               ;  4/6 0 LATCH LOW
+               ;  4/6 1 LATCH LOW
+               ;  4/6 2 LATCH LOW
+               ;  4/6 7 LATCH LOW
+               ;  E/F 0 STOPPED/RUNNING
+               ;  E/F 3 CONTINUOUS/ONE SHOT
+               ;AFTER
+               ;  4/6 0 LATCH LOW
+               ;  4/6 1 LATCH LOW
+               ;  4/6 2 LATCH LOW
+               ;  E/F 0 STOPPED/RUNNING
+               ;  E/F 3 CONTINUOUS/ONE SHOT
+               ;  E/F 4 NO FORCE LOAD/FORCE LOAD
+               ;CHECK
+               ;  4/6 COUNTER LOW
+               ;  5/7 COUNTER HIGH
+               ;  D/D ICR
+               ;  E/F CONTROL
+
+08E3 00        IEINDEX    .BYTE 0
+08E4 00        BEINDEX    .BYTE 0
+08E5 00 01 08 09
+               BETAB      .BYTE $00,$01,$08,$09
+08E9 10 11 18 19
+               IETAB      .BYTE $10,$11,$18,$19
+08ED 00        I4         .BYTE 0
+08EE 00        IE         .BYTE 0
+08EF 00        B4         .BYTE 0
+08F0 00        BE         .BYTE 0
+08F1 00        A4         .BYTE 0
+08F2 00        AD         .BYTE 0
+08F3 00        AE         .BYTE 0
+08F4 00        R4         .BYTE 0
+08F5 00        RD         .BYTE 0
+08F6 00        RE         .BYTE 0
+
+
+               NMI
+08F7 40                   RTI
+
+               MAIN
+08F8 20 1C 08             JSR PRINT
+08FB 0D                   .BYTE 13
+08FC 91 43 49 41 32 54 42
+                          .TEXT "‘CIA2TB"
+0903 00                   .BYTE 0
+
+                          .BLOCK
+0904 A9 1E                LDA #30
+0906 8D ED 08             STA I4
+0909 A9 14                LDA #20
+090B 8D EF 08             STA B4
+090E A9 00                LDA #0
+0910 8D E3 08             STA IEINDEX
+0913 8D E4 08             STA BEINDEX
+               LOOP
+0916 78                   SEI
+0917 A9 F7                LDA #<NMI
+0919 8D 18 03             STA $0318
+091C A9 08                LDA #>NMI
+091E 8D 19 03             STA $0319
+0921 A9 7F                LDA #$7F
+0923 8D 0D DD             STA $DD0D
+0926 A9 82                LDA #$82
+0928 8D 0D DD             STA $DD0D
+092B 20 5B 08             JSR WAITBORDER
+092E A9 00                LDA #0
+0930 8D 0F DD             STA $DD0F
+0933 8D 07 DD             STA $DD07
+0936 AE E3 08             LDX IEINDEX
+0939 BD E9 08             LDA IETAB,X
+093C 8D EE 08             STA IE
+093F AE E4 08             LDX BEINDEX
+0942 BC E5 08             LDY BETAB,X
+0945 8C F0 08             STY BE
+0948 AE ED 08             LDX I4
+094B 8E 06 DD             STX $DD06
+094E A2 10                LDX #$10
+0950 8E 0F DD             STX $DD0F
+0953 2C 0D DD             BIT $DD0D
+0956 8D 0F DD             STA $DD0F
+0959 AD EF 08             LDA B4
+095C 8D 06 DD             STA $DD06
+095F 8C 0F DD             STY $DD0F
+0962 AD 06 DD             LDA $DD06
+0965 AE 0D DD             LDX $DD0D
+0968 AC 0F DD             LDY $DD0F
+096B 8D F1 08             STA A4
+096E 8E F2 08             STX AD
+0971 8C F3 08             STY AE
+0974 20 A3 FD             JSR $FDA3
+0977 A9 47                LDA #$47
+0979 8D 18 03             STA $0318
+097C A9 FE                LDA #$FE
+097E 8D 19 03             STA $0319
+0981 2C 0D DD             BIT $DD0D
+0984 58                   CLI
+
+0985 AD E3 08             LDA IEINDEX
+0988 0A                   ASL A
+0989 0A                   ASL A
+098A 0A                   ASL A
+098B 0D E4 08             ORA BEINDEX
+098E 0A                   ASL A
+098F AA                   TAX
+0990 BD 9D 09             LDA JUMPTAB+0,X
+0993 85 AC                STA 172
+0995 BD 9E 09             LDA JUMPTAB+1,X
+0998 85 AD                STA 173
+099A 6C AC 00             JMP (172)
+
+099D DD 09 F1 09 DD 09 2B 0A
+               JUMPTAB    .WORD X000,X001,X008,X009
+09A5 63 0A 79 0A 63 0A AD 0A
+                          .WORD X010,X011,X018,X019
+09AD F1 0A AC 0B F1 0A 8A 0C
+                          .WORD X100,X101,X108,X109
+09B5 95 0D B4 0D 95 0D 28 0E
+                          .WORD X110,X111,X118,X119
+09BD DD 09 F1 09 DD 09 2B 0A
+                          .WORD X800,X801,X808,X809
+09C5 63 0A 79 0A 63 0A AD 0A
+                          .WORD X810,X811,X818,X819
+09CD 43 0F 65 0F 43 0F 0B 10
+                          .WORD X900,X901,X908,X909
+09D5 A0 10 BF 10 A0 10 2E 11
+                          .WORD X910,X911,X918,X919
+
+
+               X000
+               X008
+               X800
+               X808
+                          .BLOCK
+09DD AD ED 08             LDA I4
+09E0 8D F4 08             STA R4
+09E3 A9 00                LDA #$00
+09E5 8D F5 08             STA RD
+09E8 AD F0 08             LDA BE
+09EB 8D F6 08             STA RE
+09EE 4C BF 11             JMP COMPARE
+                          .BEND
+
+
+               X001
+               X801
+                          .BLOCK
+09F1 AD ED 08             LDA I4
+09F4 38                   SEC
+09F5 E9 02                SBC #2
+09F7 AE ED 08             LDX I4
+09FA E0 03                CPX #3
+09FC B0 0E                BCS NOLOAD
+09FE AD EF 08             LDA B4
+0A01 E0 00                CPX #0
+0A03 D0 07                BNE NODEC
+0A05 C9 02                CMP #2
+0A07 90 03                BCC NODEC
+0A09 38                   SEC
+0A0A E9 01                SBC #1
+               NODEC
+               NOLOAD
+0A0C 8D F4 08             STA R4
+0A0F A9 00                LDA #$00
+0A11 AE ED 08             LDX I4
+0A14 E0 07                CPX #7
+0A16 B0 02                BCS NOBIT0
+0A18 09 02                ORA #$02
+               NOBIT0
+0A1A E0 06                CPX #6
+0A1C B0 02                BCS NOBIT7
+0A1E 09 80                ORA #$80
+               NOBIT7
+0A20 8D F5 08             STA RD
+0A23 A9 01                LDA #$01
+0A25 8D F6 08             STA RE
+0A28 4C BF 11             JMP COMPARE
+                          .BEND
+
+
+               X009
+               X809
+                          .BLOCK
+0A2B AD ED 08             LDA I4
+0A2E 38                   SEC
+0A2F E9 02                SBC #2
+0A31 AE ED 08             LDX I4
+0A34 E0 03                CPX #3
+0A36 B0 03                BCS NOLOAD
+0A38 AD EF 08             LDA B4
+               NOLOAD
+0A3B 8D F4 08             STA R4
+0A3E A9 00                LDA #$00
+0A40 AE ED 08             LDX I4
+0A43 E0 07                CPX #7
+0A45 B0 02                BCS NOBIT0
+0A47 09 02                ORA #$02
+               NOBIT0
+0A49 E0 06                CPX #6
+0A4B B0 02                BCS NOBIT7
+0A4D 09 80                ORA #$80
+               NOBIT7
+0A4F 8D F5 08             STA RD
+0A52 A9 09                LDA #$09
+0A54 AE ED 08             LDX I4
+0A57 E0 0B                CPX #$0B
+0A59 B0 02                BCS NOSTOP
+0A5B 29 08                AND #$08
+               NOSTOP
+0A5D 8D F6 08             STA RE
+0A60 4C BF 11             JMP COMPARE
+                          .BEND
+
+
+               X010
+               X018
+               X810
+               X818
+                          .BLOCK
+0A63 AD EF 08             LDA B4
+0A66 8D F4 08             STA R4
+0A69 A9 00                LDA #$00
+0A6B 8D F5 08             STA RD
+0A6E AD F0 08             LDA BE
+0A71 29 09                AND #$09
+0A73 8D F6 08             STA RE
+0A76 4C BF 11             JMP COMPARE
+                          .BEND
+
+
+               X011
+               X811
+                          .BLOCK
+0A79 AE EF 08             LDX B4
+0A7C E0 02                CPX #2
+0A7E 90 01                BCC NODEC
+0A80 CA                   DEX
+               NODEC
+0A81 8E F4 08             STX R4
+0A84 A9 00                LDA #$00
+0A86 AE EF 08             LDX B4
+0A89 E0 06                CPX #6
+0A8B B0 02                BCS NOBIT0
+0A8D 09 02                ORA #$02
+               NOBIT0
+0A8F E0 05                CPX #5
+0A91 B0 02                BCS NOBIT7
+0A93 09 80                ORA #$80
+               NOBIT7
+0A95 AE ED 08             LDX I4
+0A98 D0 02                BNE NOBIT07
+0A9A 09 82                ORA #$82
+               NOBIT07
+0A9C 8D F5 08             STA RD
+0A9F 8D F5 08             STA RD
+0AA2 AD F0 08             LDA BE
+0AA5 29 09                AND #$09
+0AA7 8D F6 08             STA RE
+0AAA 4C BF 11             JMP COMPARE
+                          .BEND
+
+
+               X019
+               X819
+                          .BLOCK
+0AAD AE EF 08             LDX B4
+0AB0 E0 02                CPX #2
+0AB2 90 06                BCC NODEC
+0AB4 AD ED 08             LDA I4
+0AB7 F0 01                BEQ NODEC
+0AB9 CA                   DEX
+               NODEC
+0ABA 8E F4 08             STX R4
+0ABD A9 00                LDA #$00
+0ABF AE EF 08             LDX B4
+0AC2 E0 06                CPX #6
+0AC4 B0 02                BCS NOBIT0
+0AC6 09 02                ORA #$02
+               NOBIT0
+0AC8 E0 05                CPX #5
+0ACA B0 02                BCS NOBIT7
+0ACC 09 80                ORA #$80
+               NOBIT7
+0ACE AE ED 08             LDX I4
+0AD1 D0 02                BNE NOBIT07
+0AD3 09 82                ORA #$82
+               NOBIT07
+0AD5 8D F5 08             STA RD
+0AD8 8D F5 08             STA RD
+0ADB A9 09                LDA #$09
+0ADD AE ED 08             LDX I4
+0AE0 F0 07                BEQ STOP
+0AE2 AE EF 08             LDX B4
+0AE5 E0 0A                CPX #$0A
+0AE7 B0 02                BCS NOSTOP
+               STOP
+0AE9 29 08                AND #$08
+               NOSTOP
+0AEB 8D F6 08             STA RE
+0AEE 4C BF 11             JMP COMPARE
+                          .BEND
+
+
+               X100
+               X108
+                          .BLOCK
+0AF1 AD ED 08             LDA I4
+0AF4 A2 00                LDX #$00
+0AF6 38                   SEC
+0AF7 E9 0B                SBC #$0B
+0AF9 B0 2F                BCS NOLOAD
+0AFB AD EF 08             LDA B4
+0AFE AE ED 08             LDX I4
+0B01 E0 0A                CPX #$0A
+0B03 B0 23                BCS NOSUB
+0B05 38                   SEC
+0B06 FD 82 0B             SBC SUBTAB,X
+0B09 B0 1D                BCS NOSUB
+0B0B AD ED 08             LDA I4
+0B0E 0A                   ASL A
+0B0F 0A                   ASL A
+0B10 0A                   ASL A
+0B11 0A                   ASL A
+0B12 0D EF 08             ORA B4
+0B15 A2 0F                LDX #CORR-SPECIAL-1
+               SEARCH
+0B17 DD 8C 0B             CMP SPECIAL,X
+0B1A F0 09                BEQ FOUND
+0B1C CA                   DEX
+0B1D 10 F8                BPL SEARCH
+0B1F AD EF 08             LDA B4
+0B22 4C 28 0B             JMP NOSUB
+               FOUND
+0B25 BD 9C 0B             LDA CORR,X
+               NOSUB
+0B28 A2 82                LDX #$82
+               NOLOAD
+0B2A 8D F4 08             STA R4
+0B2D 8E F5 08             STX RD
+0B30 AD F0 08             LDA BE
+0B33 8D F6 08             STA RE
+0B36 AD ED 08             LDA I4
+0B39 F0 1A                BEQ NONMI
+0B3B C9 03                CMP #3
+0B3D B0 09                BCS NOTAB12
+0B3F AE EF 08             LDX B4
+0B42 BD 6D 0B             LDA TAB12,X
+0B45 4C 50 0B             JMP CORRNMI
+               NOTAB12
+0B48 D0 0B                BNE NONMI
+0B4A AE EF 08             LDX B4
+0B4D BD 58 0B             LDA TAB3,X
+               CORRNMI
+0B50 30 03                BMI NONMI
+0B52 8D F4 08             STA R4
+               NONMI
+0B55 4C BF 11             JMP COMPARE
+0B58 FF FF 00 FF FF
+               TAB3       .BYTE $FF,$FF,$00,$FF,$FF
+0B5D 00 04 00 03 FF
+                          .BYTE $00,$04,$00,$03,$FF
+0B62 09 00 02 04 06
+                          .BYTE $09,$00,$02,$04,$06
+0B67 08 0A 0C 0E 10
+                          .BYTE $08,$0A,$0C,$0E,$10
+0B6C 12                   .BYTE $12
+0B6D FF FF 01 FF FF
+               TAB12      .BYTE $FF,$FF,$01,$FF,$FF
+0B72 04 02 06 01 FF
+                          .BYTE $04,$02,$06,$01,$FF
+0B77 07 0A 00 02 04
+                          .BYTE $07,$0A,$00,$02,$04
+0B7C 06 08 0A 0C FF
+                          .BYTE $06,$08,$0A,$0C,$FF
+0B81 10                   .BYTE $10
+0B82 05 05 05 03 01 05 04 03 02 01
+               SUBTAB     .BYTE 5,5,5,3,1,5,4,3,2,1
+0B8C 71 62 53 52 51
+               SPECIAL    .BYTE $71,$62,$53,$52,$51
+0B91 31 23 22 21 13
+                          .BYTE $31,$23,$22,$21,$13
+0B96 12 11 03 02 01
+                          .BYTE $12,$11,$03,$02,$01
+0B9B 00                   .BYTE $00
+0B9C 00 01 02 00 00
+               CORR       .BYTE $00,$01,$02,$00,$00
+0BA1 00 02 00 00 02
+                          .BYTE $00,$02,$00,$00,$02
+0BA6 00 00 02 00 00
+                          .BYTE $00,$00,$02,$00,$00
+0BAB 00                   .BYTE $00
+                          .BEND
+
+
+               X101
+                          .BLOCK
+0BAC AD ED 08             LDA I4
+0BAF 38                   SEC
+0BB0 E9 0D                SBC #$0D
+0BB2 F0 12                BEQ LOAD81
+0BB4 90 10                BCC LOAD81
+0BB6 C9 04                CMP #$04
+0BB8 90 3B                BCC SET81
+0BBA F0 05                BEQ SET01
+0BBC A2 00                LDX #$00
+0BBE 4C F7 0B             JMP SET
+               SET01
+0BC1 A2 02                LDX #$02
+0BC3 4C F7 0B             JMP SET
+               LOAD81
+0BC6 AD EF 08             LDA B4
+0BC9 AE ED 08             LDX I4
+0BCC E0 0C                CPX #$0C
+0BCE B0 25                BCS SET81
+0BD0 38                   SEC
+0BD1 FD 5C 0C             SBC SUBTAB,X
+0BD4 F0 02                BEQ TEST
+0BD6 B0 1D                BCS SET81
+               TEST
+0BD8 AD ED 08             LDA I4
+0BDB 0A                   ASL A
+0BDC 0A                   ASL A
+0BDD 0A                   ASL A
+0BDE 0A                   ASL A
+0BDF 0D EF 08             ORA B4
+0BE2 A2 10                LDX #CORR-SPECIAL-1
+               SEARCH
+0BE4 DD 68 0C             CMP SPECIAL,X
+0BE7 F0 09                BEQ FOUND
+0BE9 CA                   DEX
+0BEA 10 F8                BPL SEARCH
+0BEC AD EF 08             LDA B4
+0BEF 4C F5 0B             JMP SET81
+               FOUND
+0BF2 BD 79 0C             LDA CORR,X
+               SET81
+0BF5 A2 82                LDX #$82
+               SET
+0BF7 8D F4 08             STA R4
+0BFA 8E F5 08             STX RD
+0BFD A9 01                LDA #$01
+0BFF 8D F6 08             STA RE
+0C02 AC ED 08             LDY I4
+0C05 F0 2D                BEQ NONMI
+0C07 C0 08                CPY #$08
+0C09 B0 29                BCS NONMI
+0C0B AE EF 08             LDX B4
+0C0E BD 47 0C             LDA NMITAB,X
+0C11 30 21                BMI NONMI
+0C13 E0 0C                CPX #$0C
+0C15 D0 08                BNE NONMIC
+0C17 B9 37 0C             LDA CTAB,Y
+0C1A 10 15                BPL NONMILOAD
+0C1C BD 47 0C             LDA NMITAB,X
+               NONMIC
+0C1F 18                   CLC
+0C20 79 3F 0C             ADC NMISUBTAB,Y
+0C23 8D 29 0C             STA NMISUB+1
+0C26 8A                   TXA
+0C27 38                   SEC
+               NMISUB
+0C28 E9 11                SBC #$11
+0C2A F0 02                BEQ NMILOAD
+0C2C B0 03                BCS NONMILOAD
+               NMILOAD
+0C2E AD EF 08             LDA B4
+               NONMILOAD
+0C31 8D F4 08             STA R4
+               NONMI
+0C34 4C BF 11             JMP COMPARE
+0C37 FF 0B 0B FF 02
+               CTAB       .BYTE $FF,$0B,$0B,$FF,$02
+0C3C 0B 0C FF             .BYTE $0B,$0C,$FF
+0C3F 00 02 02 00 FE 02 01 00
+               NMISUBTAB  .BYTE 0,2,2,0,254,2,1,0
+0C47 FF FF 01 FF FF
+               NMITAB     .BYTE $FF,$FF,$01,$FF,$FF
+0C4C 01 04 01 07 FF
+                          .BYTE $01,$04,$01,$07,$FF
+0C51 03 01 00 0B 0A
+                          .BYTE $03,$01,$00,$0B,$0A
+0C56 09 08 07 06 FF
+                          .BYTE $09,$08,$07,$06,$FF
+0C5B 04                   .BYTE $04
+0C5C 07 07 07 05 03 07 06 05 04 03 02
+               SUBTAB     .BYTE 7,7,7,5,3,7,6,5,4,3,2
+0C67 01                   .BYTE 1
+0C68 82 73 64 63 55
+               SPECIAL    .BYTE $82,$73,$64,$63,$55
+0C6D 54 52 33 25 24
+                          .BYTE $54,$52,$33,$25,$24
+0C72 22 15 14 12 05
+                          .BYTE $22,$15,$14,$12,$05
+0C77 04 02                .BYTE $04,$02
+0C79 01 02 03 01 04
+               CORR       .BYTE $01,$02,$03,$01,$04
+0C7E 02 01 02 04 02
+                          .BYTE $02,$01,$02,$04,$02
+0C83 01 04 02 01 04
+                          .BYTE $01,$04,$02,$01,$04
+0C88 02 01                .BYTE $02,$01
+                          .BEND
+
+
+               X109
+                          .BLOCK
+0C8A AD ED 08             LDA I4
+0C8D 38                   SEC
+0C8E E9 0D                SBC #$0D
+0C90 F0 12                BEQ LOAD81
+0C92 90 10                BCC LOAD81
+0C94 C9 04                CMP #$04
+0C96 90 21                BCC SET81
+0C98 F0 05                BEQ SET01
+0C9A A2 00                LDX #$00
+0C9C 4C BB 0C             JMP SET
+               SET01
+0C9F A2 02                LDX #$02
+0CA1 4C BB 0C             JMP SET
+               LOAD81
+0CA4 AD EF 08             LDA B4
+0CA7 AE ED 08             LDX I4
+0CAA E0 0C                CPX #$0C
+0CAC B0 0B                BCS SET81
+0CAE 38                   SEC
+0CAF FD 7F 0D             SBC SUBTAB,X
+0CB2 F0 02                BEQ RELOAD
+0CB4 B0 03                BCS SET81
+               RELOAD
+0CB6 AD EF 08             LDA B4
+               SET81
+0CB9 A2 82                LDX #$82
+               SET
+0CBB 8D F4 08             STA R4
+0CBE 8E F5 08             STX RD
+0CC1 A0 08                LDY #$08
+0CC3 AE ED 08             LDX I4
+0CC6 E0 16                CPX #$16
+0CC8 B0 0C                BCS START
+0CCA E0 0A                CPX #$0A
+0CCC B0 0A                BCS SETE
+0CCE AD EF 08             LDA B4
+0CD1 DD 8B 0D             CMP B4COMP,X
+0CD4 90 02                BCC SETE
+               START
+0CD6 A0 09                LDY #$09
+               SETE
+0CD8 8C F6 08             STY RE
+0CDB AD ED 08             LDA I4
+0CDE C9 0A                CMP #$0A
+0CE0 B0 0C                BCS NONMI
+0CE2 AD EF 08             LDA B4
+0CE5 C9 0B                CMP #$0B
+0CE7 90 05                BCC NONMI
+0CE9 A9 08                LDA #$08
+0CEB 8D F6 08             STA RE
+               NONMI
+0CEE AD ED 08             LDA I4
+0CF1 C9 08                CMP #$08
+0CF3 B0 06                BCS NONMIRELOAD
+0CF5 AD EF 08             LDA B4
+0CF8 8D F4 08             STA R4
+               NONMIRELOAD
+0CFB AD ED 08             LDA I4
+0CFE D0 1C                BNE NO0
+0D00 AD EF 08             LDA B4
+0D03 38                   SEC
+0D04 E9 07                SBC #$07
+0D06 F0 4A                BEQ NOTAB
+0D08 90 48                BCC NOTAB
+0D0A 8D F4 08             STA R4
+0D0D AD EF 08             LDA B4
+0D10 C9 10                CMP #$10
+0D12 90 3E                BCC NOTAB
+0D14 A9 09                LDA #$09
+0D16 8D F6 08             STA RE
+0D19 4C 52 0D             JMP NOTAB
+               NO0
+0D1C C9 03                CMP #3
+0D1E D0 15                BNE NOTAB3
+0D20 AE EF 08             LDX B4
+0D23 BD 6A 0D             LDA TAB3,X
+0D26 8D F4 08             STA R4
+0D29 E0 11                CPX #$11
+0D2B 90 25                BCC NOTAB
+0D2D A9 09                LDA #$09
+0D2F 8D F6 08             STA RE
+0D32 4C 52 0D             JMP NOTAB
+               NOTAB3
+0D35 C9 02                CMP #2
+0D37 D0 15                BNE NOTAB2
+               DOTAB12
+0D39 AE EF 08             LDX B4
+0D3C BD 55 0D             LDA TAB12,X
+0D3F 8D F4 08             STA R4
+0D42 E0 12                CPX #$12
+0D44 90 0C                BCC NOTAB
+0D46 A9 09                LDA #$09
+0D48 8D F6 08             STA RE
+0D4B 4C 52 0D             JMP NOTAB
+               NOTAB2
+0D4E C9 01                CMP #1
+0D50 F0 E7                BEQ DOTAB12
+               NOTAB
+0D52 4C BF 11             JMP COMPARE
+0D55 00 01 02 03 04
+               TAB12      .BYTE $00,$01,$02,$03,$04
+0D5A 02 06 04 08 02
+                          .BYTE $02,$06,$04,$08,$02
+0D5F 05 08 0C 0D 02
+                          .BYTE $05,$08,$0C,$0D,$02
+0D64 04 06 08 0A 0C
+                          .BYTE $04,$06,$08,$0A,$0C
+0D69 0E                   .BYTE $0E
+0D6A 00 01 02 03 04
+               TAB3       .BYTE $00,$01,$02,$03,$04
+0D6F 05 02 07 01 04
+                          .BYTE $05,$02,$07,$01,$04
+0D74 07 0B 0C 02 04
+                          .BYTE $07,$0B,$0C,$02,$04
+0D79 06 08 0A 0C 0E
+                          .BYTE $06,$08,$0A,$0C,$0E
+0D7E 10                   .BYTE $10
+0D7F 07 07 07 05 03 07 06 05 04 03 00
+               SUBTAB     .BYTE 7,7,7,5,3,7,6,5,4,3,0
+0D8A 00                   .BYTE 0
+0D8B 10 10 10 0E 0C
+               B4COMP     .BYTE $10,$10,$10,$0E,$0C
+0D90 10 0F 0E 0D 0C
+                          .BYTE $10,$0F,$0E,$0D,$0C
+                          .BEND
+
+
+               X110
+               X118
+                          .BLOCK
+0D95 AD EF 08             LDA B4
+0D98 8D F4 08             STA R4
+0D9B A9 00                LDA #$00
+0D9D AE ED 08             LDX I4
+0DA0 E0 0B                CPX #$0B
+0DA2 B0 02                BCS NOFIRE
+0DA4 A9 82                LDA #$82
+               NOFIRE
+0DA6 8D F5 08             STA RD
+0DA9 AD F0 08             LDA BE
+0DAC 29 09                AND #$09
+0DAE 8D F6 08             STA RE
+0DB1 4C BF 11             JMP COMPARE
+                          .BEND
+
+
+               X111
+                          .BLOCK
+0DB4 AE EF 08             LDX B4
+0DB7 E0 02                CPX #2
+0DB9 90 01                BCC NODEC
+0DBB CA                   DEX
+               NODEC
+0DBC 8E F4 08             STX R4
+0DBF A9 00                LDA #$00
+0DC1 AE EF 08             LDX B4
+0DC4 E0 06                CPX #6
+0DC6 B0 02                BCS NOBIT0
+0DC8 09 02                ORA #$02
+               NOBIT0
+0DCA E0 05                CPX #5
+0DCC B0 02                BCS NOBIT7
+0DCE 09 80                ORA #$80
+               NOBIT7
+0DD0 AE ED 08             LDX I4
+0DD3 D0 02                BNE NOBIT07
+0DD5 09 82                ORA #$82
+               NOBIT07
+0DD7 AE ED 08             LDX I4
+0DDA E0 0C                CPX #$0C
+0DDC B0 02                BCS NOFIRE
+0DDE A9 82                LDA #$82
+               NOFIRE
+0DE0 8D F5 08             STA RD
+0DE3 AD F0 08             LDA BE
+0DE6 29 09                AND #$09
+0DE8 8D F6 08             STA RE
+0DEB AD ED 08             LDA I4
+0DEE F0 20                BEQ NONMI
+0DF0 C9 04                CMP #$04
+0DF2 B0 0D                BCS NO3
+0DF4 AD EF 08             LDA B4
+0DF7 F0 14                BEQ NMILOAD
+0DF9 AA                   TAX
+0DFA CA                   DEX
+0DFB F0 10                BEQ NMILOAD
+0DFD 8A                   TXA
+0DFE 4C 0D 0E             JMP NMILOAD
+               NO3
+0E01 C9 08                CMP #$08
+0E03 B0 0B                BCS NONMI
+0E05 AE EF 08             LDX B4
+0E08 BD 13 0E             LDA NMITAB,X
+0E0B 30 03                BMI NONMI
+               NMILOAD
+0E0D 8D F4 08             STA R4
+               NONMI
+0E10 4C BF 11             JMP COMPARE
+0E13 FF FF 02 FF FF
+               NMITAB     .BYTE $FF,$FF,$02,$FF,$FF
+0E18 02 06 02 05 08
+                          .BYTE $02,$06,$02,$05,$08
+0E1D 0A 02 04 06 08
+                          .BYTE $0A,$02,$04,$06,$08
+0E22 0A 0C 0E 10 FF
+                          .BYTE $0A,$0C,$0E,$10,$FF
+0E27 14                   .BYTE $14
+                          .BEND
+
+
+               X119
+                          .BLOCK
+0E28 AE EF 08             LDX B4
+0E2B E0 02                CPX #2
+0E2D 90 21                BCC NODEC
+0E2F AD ED 08             LDA I4
+0E32 C9 0C                CMP #$0C
+0E34 B0 19                BCS DODEC
+0E36 C9 0A                CMP #$0A
+0E38 B0 16                BCS NODEC
+0E3A E0 0F                CPX #$0F
+0E3C B0 11                BCS DODEC
+0E3E 0A                   ASL A
+0E3F 0A                   ASL A
+0E40 0A                   ASL A
+0E41 0A                   ASL A
+0E42 0D EF 08             ORA B4
+0E45 A0 12                LDY #$12
+               SEARCH
+0E47 D9 30 0F             CMP NODECTAB,Y
+0E4A F0 04                BEQ NODEC
+0E4C 88                   DEY
+0E4D 10 F8                BPL SEARCH
+               DODEC
+0E4F CA                   DEX
+               NODEC
+0E50 8E F4 08             STX R4
+0E53 A9 00                LDA #$00
+0E55 AE EF 08             LDX B4
+0E58 E0 06                CPX #6
+0E5A B0 02                BCS NOBIT0
+0E5C 09 02                ORA #$02
+               NOBIT0
+0E5E E0 05                CPX #5
+0E60 B0 02                BCS NOBIT7
+0E62 09 80                ORA #$80
+               NOBIT7
+0E64 AE ED 08             LDX I4
+0E67 E0 0C                CPX #$0C
+0E69 B0 02                BCS NOBIT07
+0E6B 09 82                ORA #$82
+               NOBIT07
+0E6D 8D F5 08             STA RD
+0E70 A9 09                LDA #$09
+0E72 AE ED 08             LDX I4
+0E75 E0 0A                CPX #$0A
+0E77 90 04                BCC TESTSTOP
+0E79 E0 0C                CPX #$0C
+0E7B 90 07                BCC STOP
+               TESTSTOP
+0E7D AC EF 08             LDY B4
+0E80 C0 0A                CPY #$0A
+0E82 B0 02                BCS NOSTOP
+               STOP
+0E84 A9 08                LDA #$08
+               NOSTOP
+0E86 8D F6 08             STA RE
+0E89 AD ED 08             LDA I4
+0E8C C9 0A                CMP #$0A
+0E8E B0 0C                BCS NONMI
+0E90 AD EF 08             LDA B4
+0E93 C9 0A                CMP #$0A
+0E95 90 05                BCC NONMI
+0E97 A9 08                LDA #$08
+0E99 8D F6 08             STA RE
+               NONMI
+0E9C AD ED 08             LDA I4
+0E9F C9 04                CMP #$04
+0EA1 B0 16                BCS NONMIDEC
+0EA3 AD EF 08             LDA B4
+0EA6 C9 0B                CMP #$0B
+0EA8 F0 16                BEQ NMIRELOAD
+0EAA C9 07                CMP #$07
+0EAC 90 12                BCC NMIRELOAD
+0EAE 38                   SEC
+0EAF E9 01                SBC #$01
+0EB1 A2 09                LDX #$09
+0EB3 8E F6 08             STX RE
+0EB6 4C C0 0E             JMP NMIRELOAD
+               NONMIDEC
+0EB9 C9 08                CMP #$08
+0EBB B0 36                BCS NONMIATALL
+0EBD AD EF 08             LDA B4
+               NMIRELOAD
+0EC0 8D F4 08             STA R4
+               NONMIRELOAD
+0EC3 AD EF 08             LDA B4
+0EC6 C9 10                CMP #$10
+0EC8 B0 29                BCS NONMIATALL
+0ECA AD ED 08             LDA I4
+0ECD 0A                   ASL A
+0ECE 0A                   ASL A
+0ECF 0A                   ASL A
+0ED0 0A                   ASL A
+0ED1 0D EF 08             ORA B4
+0ED4 A2 1C                LDX #NMIREP-NMITAB-1
+               NMISEARCH
+0ED6 DD F6 0E             CMP NMITAB,X
+0ED9 F0 06                BEQ NMIFOUND
+0EDB CA                   DEX
+0EDC 10 F8                BPL NMISEARCH
+0EDE 4C F3 0E             JMP NONMIATALL
+               NMIFOUND
+0EE1 BD 13 0F             LDA NMIREP,X
+0EE4 4A                   LSR A
+0EE5 4A                   LSR A
+0EE6 4A                   LSR A
+0EE7 4A                   LSR A
+0EE8 8D F4 08             STA R4
+0EEB BD 13 0F             LDA NMIREP,X
+0EEE 29 0F                AND #$0F
+0EF0 8D F6 08             STA RE
+               NONMIATALL
+0EF3 4C BF 11             JMP COMPARE
+0EF6 39 38 37 36 34
+               NMITAB     .BYTE $39,$38,$37,$36,$34
+0EFB 2C 2B 29 28 27
+                          .BYTE $2C,$2B,$29,$28,$27
+0F00 26 25 23 22 1C
+                          .BYTE $26,$25,$23,$22,$1C
+0F05 1B 19 18 17 16
+                          .BYTE $1B,$19,$18,$17,$16
+0F0A 15 13 12 0B 09
+                          .BYTE $15,$13,$12,$0B,$09
+0F0F 08 07 06 03
+                          .BYTE $08,$07,$06,$03
+0F13 88 78 78 58 38
+               NMIREP     .BYTE $88,$78,$78,$58,$38
+0F18 C8 A9 88 78 68
+                          .BYTE $C8,$A9,$88,$78,$68
+0F1D 58 48 28 18 C8
+                          .BYTE $58,$48,$28,$18,$C8
+0F22 A9 88 78 68 58
+                          .BYTE $A9,$88,$78,$68,$58
+0F27 48 28 18 A9 88
+                          .BYTE $48,$28,$18,$A9,$88
+0F2C 78 68 58 28
+                          .BYTE $78,$68,$58,$28
+0F30 82 73 72 64 63
+               NODECTAB   .BYTE $82,$73,$72,$64,$63
+0F35 55 54 52 33 32
+                          .BYTE $55,$54,$52,$33,$32
+0F3A 25 24 22 15 14
+                          .BYTE $25,$24,$22,$15,$14
+0F3F 12 05 04 02
+                          .BYTE $12,$05,$04,$02
+                          .BEND
+
+
+               X900
+               X908
+                          .BLOCK
+0F43 AD ED 08             LDA I4
+0F46 C9 05                CMP #$05
+0F48 90 0A                BCC SET81
+0F4A A2 00                LDX #$00
+0F4C 38                   SEC
+0F4D E9 0B                SBC #$0B
+0F4F B0 05                BCS NOLOAD
+0F51 AD EF 08             LDA B4
+               SET81
+0F54 A2 82                LDX #$82
+               NOLOAD
+0F56 8D F4 08             STA R4
+0F59 8E F5 08             STX RD
+0F5C AD F0 08             LDA BE
+0F5F 8D F6 08             STA RE
+0F62 4C BF 11             JMP COMPARE
+                          .BEND
+
+
+               X901
+                          .BLOCK
+0F65 AD ED 08             LDA I4
+0F68 C9 0E                CMP #$0E
+0F6A B0 1A                BCS SUBD
+0F6C C9 04                CMP #$04
+0F6E F0 1C                BEQ SUB2
+0F70 C9 03                CMP #$03
+0F72 F0 18                BEQ SUB2
+0F74 AA                   TAX
+0F75 AD EF 08             LDA B4
+0F78 38                   SEC
+0F79 FD FD 0F             SBC SUBTAB,X
+0F7C F0 02                BEQ LOAD
+0F7E B0 0F                BCS SET4
+               LOAD
+0F80 AD EF 08             LDA B4
+0F83 4C 8F 0F             JMP SET4
+               SUBD
+0F86 38                   SEC
+0F87 E9 0D                SBC #$0D
+0F89 4C 8F 0F             JMP SET4
+               SUB2
+0F8C 38                   SEC
+0F8D E9 02                SBC #$02
+               SET4
+0F8F 8D F4 08             STA R4
+
+0F92 A2 00                LDX #$00
+0F94 AD ED 08             LDA I4
+0F97 C9 11                CMP #$11
+0F99 D0 02                BNE NOBIT0
+0F9B A2 02                LDX #$02
+               NOBIT0
+0F9D B0 02                BCS NOBIT7
+0F9F A2 82                LDX #$82
+               NOBIT7
+0FA1 8E F5 08             STX RD
+0FA4 A9 01                LDA #$01
+0FA6 AE ED 08             LDX I4
+0FA9 E0 0A                CPX #$0A
+0FAB D0 02                BNE NOSTOP
+0FAD A9 00                LDA #$00
+               NOSTOP
+0FAF 8D F6 08             STA RE
+0FB2 AD ED 08             LDA I4
+0FB5 C9 08                CMP #$08
+0FB7 B0 17                BCS NONMI
+0FB9 AE EF 08             LDX B4
+0FBC C9 04                CMP #$04
+0FBE 90 10                BCC NONMI
+0FC0 F0 06                BEQ NMI4
+0FC2 BD D3 0F             LDA NMITAB567,X
+0FC5 4C CB 0F             JMP TESTNMI
+               NMI4
+0FC8 BD E8 0F             LDA NMITAB4,X
+               TESTNMI
+0FCB 30 03                BMI NONMI
+0FCD 8D F4 08             STA R4
+               NONMI
+0FD0 4C BF 11             JMP COMPARE
+0FD3 FF FF 01 FF FF
+               NMITAB567  .BYTE $FF,$FF,$01,$FF,$FF
+0FD8 01 05 01 04 FF
+                          .BYTE $01,$05,$01,$04,$FF
+0FDD 0A 01 03 05 07
+                          .BYTE $0A,$01,$03,$05,$07
+0FE2 09 0B 0D 0F FF
+                          .BYTE $09,$0B,$0D,$0F,$FF
+0FE7 13                   .BYTE $13
+0FE8 00 01 FF FF FF
+               NMITAB4    .BYTE $00,$01,$FF,$FF,$FF
+0FED 05 03 06 08 FF
+                          .BYTE $05,$03,$06,$08,$FF
+0FF2 04 06 08 0A 0C
+                          .BYTE $04,$06,$08,$0A,$0C
+0FF7 0E 10 11 01 FF
+                          .BYTE $0E,$10,$11,$01,$FF
+0FFC 03                   .BYTE $03
+0FFD 01 00 00 00 00 02 02 02 02 02
+               SUBTAB     .BYTE 1,0,0,0,0,2,2,2,2,2
+1007 00 01 00 00
+                          .BYTE 0,1,0,0
+                          .BEND
+
+
+               X909
+                          .BLOCK
+100B AD ED 08             LDA I4
+100E C9 04                CMP #4
+1010 F0 1F                BEQ SUB2
+1012 C9 03                CMP #3
+1014 F0 1B                BEQ SUB2
+1016 38                   SEC
+1017 E9 0D                SBC #$0D
+1019 F0 02                BEQ LOAD
+101B B0 17                BCS NOLOAD
+               LOAD
+101D AE ED 08             LDX I4
+1020 AD EF 08             LDA B4
+1023 38                   SEC
+1024 FD 92 10             SBC SUBTAB,X
+1027 F0 02                BEQ RELOAD
+1029 B0 09                BCS NOLOAD
+               RELOAD
+102B AD EF 08             LDA B4
+102E 4C 34 10             JMP NOLOAD
+               SUB2
+1031 38                   SEC
+1032 E9 02                SBC #2
+               NOLOAD
+1034 8D F4 08             STA R4
+1037 A9 00                LDA #$00
+1039 AE ED 08             LDX I4
+103C E0 11                CPX #$11
+103E D0 02                BNE NOBIT0
+1040 A9 02                LDA #$02
+               NOBIT0
+1042 B0 02                BCS NOBIT7
+1044 A9 82                LDA #$82
+               NOBIT7
+1046 8D F5 08             STA RD
+1049 A9 08                LDA #$08
+104B AE ED 08             LDX I4
+104E E0 16                CPX #$16
+1050 B0 0F                BCS START
+1052 E0 0A                CPX #$0A
+1054 B0 0D                BCS SETE
+1056 E0 05                CPX #$05
+1058 90 09                BCC SETE
+105A AE EF 08             LDX B4
+105D E0 0B                CPX #$0B
+105F 90 02                BCC SETE
+               START
+1061 A9 09                LDA #$09
+               SETE
+1063 8D F6 08             STA RE
+1066 AD ED 08             LDA I4
+1069 C9 0A                CMP #$0A
+106B B0 0C                BCS NONMI
+106D AD EF 08             LDA B4
+1070 C9 0B                CMP #$0B
+1072 90 05                BCC NONMI
+1074 A9 08                LDA #$08
+1076 8D F6 08             STA RE
+               NONMI
+1079 AD ED 08             LDA I4
+107C C9 03                CMP #$03
+107E D0 05                BNE NOSET1
+1080 A9 01                LDA #1
+1082 4C 8C 10             JMP NMIRELOAD
+               NOSET1
+1085 C9 08                CMP #$08
+1087 B0 06                BCS NONMIRELOAD
+1089 AD EF 08             LDA B4
+               NMIRELOAD
+108C 8D F4 08             STA R4
+               NONMIRELOAD
+108F 4C BF 11             JMP COMPARE
+1092 00 00 00 00 00 02 02 02 02 02
+               SUBTAB     .BYTE 0,0,0,0,0,2,2,2,2,2
+109C 00 00 00 00
+                          .BYTE 0,0,0,0
+                          .BEND
+
+
+               X910
+               X918
+                          .BLOCK
+10A0 AD EF 08             LDA B4
+10A3 8D F4 08             STA R4
+10A6 A9 00                LDA #$00
+10A8 AE ED 08             LDX I4
+10AB E0 0B                CPX #$0B
+10AD B0 02                BCS SETD
+10AF A9 82                LDA #$82
+               SETD
+10B1 8D F5 08             STA RD
+10B4 AD F0 08             LDA BE
+10B7 29 09                AND #$09
+10B9 8D F6 08             STA RE
+10BC 4C BF 11             JMP COMPARE
+                          .BEND
+
+
+               X911
+                          .BLOCK
+10BF AD EF 08             LDA B4
+10C2 AE ED 08             LDX I4
+10C5 E0 0A                CPX #$0A
+10C7 F0 0A                BEQ NOLOAD
+10C9 38                   SEC
+10CA E9 01                SBC #$01
+10CC F0 02                BEQ LOAD
+10CE B0 03                BCS NOLOAD
+               LOAD
+10D0 AD EF 08             LDA B4
+               NOLOAD
+10D3 8D F4 08             STA R4
+10D6 AD ED 08             LDA I4
+10D9 C9 0C                CMP #$0C
+10DB 90 0D                BCC SET81
+10DD A9 00                LDA #$00
+10DF AE EF 08             LDX B4
+10E2 E0 05                CPX #$05
+10E4 D0 02                BNE NOBIT0
+10E6 A9 02                LDA #$02
+               NOBIT0
+10E8 B0 02                BCS NOBIT7
+               SET81
+10EA A9 82                LDA #$82
+               NOBIT7
+10EC 8D F5 08             STA RD
+10EF AD F0 08             LDA BE
+10F2 29 09                AND #$09
+10F4 AE ED 08             LDX I4
+10F7 E0 0A                CPX #$0A
+10F9 D0 02                BNE NOSTOP
+10FB A9 00                LDA #$00
+               NOSTOP
+10FD 8D F6 08             STA RE
+1100 AD ED 08             LDA I4
+1103 C9 08                CMP #$08
+1105 B0 0F                BCS NONMI
+1107 C9 04                CMP #$04
+1109 90 0B                BCC NONMI
+110B AE EF 08             LDX B4
+110E BD 19 11             LDA NMITAB,X
+1111 30 03                BMI NONMI
+1113 8D F4 08             STA R4
+               NONMI
+1116 4C BF 11             JMP COMPARE
+1119 FF FF 02 FF FF
+               NMITAB     .BYTE $FF,$FF,$02,$FF,$FF
+111E 02 06 02 05 FF
+                          .BYTE $02,$06,$02,$05,$FF
+1123 0A 02 04 06 08
+                          .BYTE $0A,$02,$04,$06,$08
+1128 0A 0C 0E 10 FF
+                          .BYTE $0A,$0C,$0E,$10,$FF
+112D 14                   .BYTE $14
+                          .BEND
+
+
+               X919
+                          .BLOCK
+112E AE ED 08             LDX I4
+1131 F0 12                BEQ LOAD
+1133 E0 0B                CPX #$0B
+1135 F0 0E                BEQ LOAD
+1137 E0 0A                CPX #$0A
+1139 F0 0A                BEQ LOAD
+113B AD EF 08             LDA B4
+113E 38                   SEC
+113F E9 01                SBC #$01
+1141 F0 02                BEQ LOAD
+1143 B0 03                BCS NOLOAD
+               LOAD
+1145 AD EF 08             LDA B4
+               NOLOAD
+1148 8D F4 08             STA R4
+114B AE ED 08             LDX I4
+114E E0 0C                CPX #$0C
+1150 90 0D                BCC SET81
+1152 A9 00                LDA #$00
+1154 AE EF 08             LDX B4
+1157 E0 05                CPX #$05
+1159 D0 02                BNE NOBIT0
+115B A9 02                LDA #$02
+               NOBIT0
+115D B0 02                BCS NOBIT7
+               SET81
+115F A9 82                LDA #$82
+               NOBIT7
+1161 8D F5 08             STA RD
+1164 A9 09                LDA #$09
+1166 AE ED 08             LDX I4
+1169 F0 0F                BEQ STOP
+116B E0 0A                CPX #$0A
+116D 90 04                BCC TESTB
+116F E0 0C                CPX #$0C
+1171 90 07                BCC STOP
+               TESTB
+1173 AE EF 08             LDX B4
+1176 E0 0A                CPX #$0A
+1178 B0 02                BCS NOSTOP
+               STOP
+117A A9 08                LDA #$08
+               NOSTOP
+117C 8D F6 08             STA RE
+117F AD ED 08             LDA I4
+1182 C9 0A                CMP #$0A
+1184 B0 0C                BCS NONMI
+1186 AD EF 08             LDA B4
+1189 C9 0A                CMP #$0A
+118B 90 05                BCC NONMI
+118D A9 08                LDA #$08
+118F 8D F6 08             STA RE
+               NONMI
+1192 AD ED 08             LDA I4
+1195 F0 25                BEQ NONMIRELOAD
+1197 C9 04                CMP #$04
+1199 B0 17                BCS NOSUB1
+119B AE EF 08             LDX B4
+119E F0 16                BEQ NMIRELOAD
+11A0 E0 0A                CPX #$0A
+11A2 90 05                BCC NOSET9
+11A4 A9 09                LDA #$09
+11A6 8D F6 08             STA RE
+               NOSET9
+11A9 CA                   DEX
+11AA F0 0A                BEQ NMIRELOAD
+11AC 8E F4 08             STX R4
+11AF 4C BC 11             JMP NONMIRELOAD
+               NOSUB1
+11B2 C9 08                CMP #$08
+11B4 B0 06                BCS NONMIRELOAD
+               NMIRELOAD
+11B6 AD EF 08             LDA B4
+11B9 8D F4 08             STA R4
+               NONMIRELOAD
+11BC 4C BF 11             JMP COMPARE
+                          .BEND
+
+
+               COMPARE
+11BF AD F1 08             LDA A4
+11C2 CD F4 08             CMP R4
+11C5 D0 43                BNE ERROR
+11C7 AD F2 08             LDA AD
+11CA CD F5 08             CMP RD
+11CD D0 3B                BNE ERROR
+11CF AD F3 08             LDA AE
+11D2 CD F6 08             CMP RE
+11D5 D0 33                BNE ERROR
+               NOERROR
+11D7 EE E4 08             INC BEINDEX
+11DA AD E4 08             LDA BEINDEX
+11DD C9 08                CMP #8
+11DF 90 26                BCC JMPLOOP
+11E1 A9 00                LDA #0
+11E3 8D E4 08             STA BEINDEX
+11E6 EE E3 08             INC IEINDEX
+11E9 AD E3 08             LDA IEINDEX
+11EC C9 04                CMP #4
+11EE 90 17                BCC JMPLOOP
+11F0 A9 00                LDA #0
+11F2 8D E3 08             STA IEINDEX
+11F5 CE EF 08             DEC B4
+11F8 10 0D                BPL JMPLOOP
+11FA A9 14                LDA #20
+11FC 8D EF 08             STA B4
+11FF CE ED 08             DEC I4
+1202 10 03                BPL JMPLOOP
+1204 4C 91 12             JMP FINISH
+               JMPLOOP
+1207 4C 16 09             JMP LOOP
+               ERROR
+120A 20 1C 08             JSR PRINT
+120D 0D 0D                .BYTE 13,13
+120F 49 4E 49 54 20 20
+                          .TEXT "INIT  "
+1215 00                   .BYTE 0
+1216 AD ED 08             LDA I4
+1219 20 44 08             JSR PRINTHB
+121C A9 20                LDA #32
+121E 20 D2 FF             JSR $FFD2
+1221 AD EF 08             LDA B4
+1224 20 44 08             JSR PRINTHB
+1227 A9 20                LDA #32
+1229 20 D2 FF             JSR $FFD2
+122C AD EE 08             LDA IE
+122F 20 44 08             JSR PRINTHB
+1232 A9 20                LDA #32
+1234 20 D2 FF             JSR $FFD2
+1237 AD F0 08             LDA BE
+123A 20 44 08             JSR PRINTHB
+123D 20 1C 08             JSR PRINT
+1240 0D                   .BYTE 13
+1241 41 46 54 45 52 20
+                          .TEXT "AFTER "
+1247 00                   .BYTE 0
+1248 AD F1 08             LDA A4
+124B 20 44 08             JSR PRINTHB
+124E A9 20                LDA #32
+1250 20 D2 FF             JSR $FFD2
+1253 AD F2 08             LDA AD
+1256 20 44 08             JSR PRINTHB
+1259 A9 20                LDA #32
+125B 20 D2 FF             JSR $FFD2
+125E AD F3 08             LDA AE
+1261 20 44 08             JSR PRINTHB
+1264 20 1C 08             JSR PRINT
+1267 0D                   .BYTE 13
+1268 52 49 47 48 54 20
+                          .TEXT "RIGHT "
+126E 00                   .BYTE 0
+126F AD F4 08             LDA R4
+1272 20 44 08             JSR PRINTHB
+1275 A9 20                LDA #32
+1277 20 D2 FF             JSR $FFD2
+127A AD F5 08             LDA RD
+127D 20 44 08             JSR PRINTHB
+1280 A9 20                LDA #32
+1282 20 D2 FF             JSR $FFD2
+1285 AD F6 08             LDA RE
+1288 20 44 08             JSR PRINTHB
+128B 20 68 08             JSR WAITKEY
+128E 4C D7 11             JMP NOERROR
+               FINISH
+                          .BEND
+
+
+1291 20 1C 08             JSR PRINT
+1294 20 2D 20 4F 4B
+                          .TEXT " - OK"
+1299 0D 00                .BYTE 13,0
+129B AD 0C 03             LDA TURBOASS
+129E F0 06                BEQ LOAD
+12A0 20 68 08             JSR WAITKEY
+12A3 4C 00 80             JMP $8000
+               LOAD
+12A6 20 1C 08             JSR PRINT
+12A9 46 49 4E 49 53 48
+               NAME       .TEXT "FINISH"
+               NAMELEN    = *-NAME
+12AF 00                   .BYTE 0
+12B0 A9 00                LDA #0
+12B2 85 0A                STA $0A
+12B4 85 B9                STA $B9
+12B6 A9 06                LDA #NAMELEN
+12B8 85 B7                STA $B7
+12BA A9 A9                LDA #<NAME
+12BC 85 BB                STA $BB
+12BE A9 12                LDA #>NAME
+12C0 85 BC                STA $BC
+12C2 68                   PLA
+12C3 68                   PLA
+12C4 4C 6F E1             JMP $E16F
+

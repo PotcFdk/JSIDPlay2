@@ -1,0 +1,55 @@
+Hello!
+
+
+Since nobody has replied this, I'll have to take the effort. :-)
+
+> 	I am looking for an authoritative answer on the following: what
+> does SID do when you select multiple waveforms for a single voice?  Most
+> books say that the waveforms are logically ANDed together, except for
+> Mapping The 128, which says this isn't what happens, and that the creator
+> of SID has also stated this is not the case.
+
+You'll get the only authoritative answer from the SID chip himself. Just
+switch on the waveforms on the 3rd oscillator and read the 8-bit values from
+the OSC3 register.
+
+The SID works digitally. It has three 8-bit channels, which are converted
+to analog in the chip. But you can't change these channels directly; they
+are changed by the waveform logic.
+
+As you should know, the SID output frequency is
+
+
+    f = system_clock * freq_value / 16777216
+
+where system_clock is 17734472/18 Hz on PAL-G systems and 14318181/14 Hz on
+NTSC-M systems.  And freq_value is the value that you write to the
+frequency registers.
+
+So, it's most accurate to read the OSC3 values with a loop that is exactly
+32 cycles long (unless you have a REU, which can read OSC3 on every cycle),
+and to make the freq_value such that the OSC3 values changes every 32 cycles.
+
+At full rate, the noise waveform changes every 16 cycles, and it repeats
+itself after 2^23 changes. Other waveforms are much shorter. Sawtooth and
+triangle both take 512 steps. (Sawtooth needs to change only at half rate
+of the triangle waveform.) Pulse also takes these 512 "steps": the change
+point from $ff to 0 just depends on the pulse width.
+
+As you see, a good freq_value would be 16777216 / 512 / 32 = 1024, if your
+sampling loop is 32 cycles long.  BTW, remember to use different delays for
+the case that a page boundary is crossed in the destination address.
+
+I tried to analyze these multiple waveforms, but I gave up. They are
+definitely not ANDed, that is a rumour created by Commodore in their
+C64 Programmer's Reference Guide. Good luck with your investigations.
+
+> 	(I want to write a program to simulate SID, on the 64, so that
+> I can visually inspect and experiment with waveforms etc.  So a related
+> question would be: how do emulators deal with multiple waveforms?)
+
+They might use 512-byte samples for all waveforms.  I bet that they won't
+use a 8-megabyte sample for the noise waveform. :-)
+
+
+	Marko

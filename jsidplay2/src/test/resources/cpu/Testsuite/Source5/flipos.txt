@@ -1,0 +1,342 @@
+               ;---------------------------------------
+               ;FLIPOS.ASM - THIS FILE IS PART
+               ;OF THE √64 ≈MULATOR ‘EST ”UITE
+               ;PUBLIC DOMAIN, NO COPYRIGHT
+
+                          *= $0801
+0801 4C 14 08 00 97
+                          .BYTE $4C,$14,$08,$00,$97
+               TURBOASS   = 780
+0806 37 38 30             .TEXT "780"
+0809 2C 30 3A 9E 32 30
+                          .BYTE $2C,$30,$3A,$9E,$32,$30
+080F 37 33 00 00 00
+                          .BYTE $37,$33,$00,$00,$00
+                          .BLOCK
+0814 A9 01                LDA #1
+0816 8D 0C 03             STA TURBOASS
+0819 A2 00                LDX #0
+081B 86 D3                STX $D3
+081D AD EC 08             LDA THISNAME
+               PRINTTHIS
+0820 20 D2 FF             JSR $FFD2
+0823 E8                   INX
+0824 BD EC 08             LDA THISNAME,X
+0827 D0 F7                BNE PRINTTHIS
+0829 20 FB 08             JSR MAIN
+082C A9 37                LDA #$37
+082E 85 01                STA 1
+0830 A9 2F                LDA #$2F
+0832 85 00                STA 0
+0834 20 15 FD             JSR $FD15
+0837 20 A3 FD             JSR $FDA3
+083A 20 7A 08             JSR PRINT
+083D 20 2D 20 4F 4B
+                          .TEXT " - OK"
+0842 0D 00                .BYTE 13,0
+0844 AD 0C 03             LDA TURBOASS
+0847 F0 06                BEQ LOADNEXT
+0849 20 C5 08             JSR WAITKEY
+084C 4C 00 80             JMP $8000
+                          .BEND
+               LOADNEXT
+                          .BLOCK
+084F A2 F8                LDX #$F8
+0851 9A                   TXS
+0852 AD F3 08             LDA NEXTNAME
+0855 C9 2D                CMP #"-"
+0857 D0 03                BNE NOTEMPTY
+0859 4C 74 A4             JMP $A474
+               NOTEMPTY
+085C A2 00                LDX #0
+               PRINTNEXT
+085E 20 D2 FF             JSR $FFD2
+0861 E8                   INX
+0862 BD F3 08             LDA NEXTNAME,X
+0865 D0 F7                BNE PRINTNEXT
+0867 A9 00                LDA #0
+0869 85 0A                STA $0A
+086B 85 B9                STA $B9
+086D 86 B7                STX $B7
+086F A9 F3                LDA #<NEXTNAME
+0871 85 BB                STA $BB
+0873 A9 08                LDA #>NEXTNAME
+0875 85 BC                STA $BC
+0877 4C 6F E1             JMP $E16F
+                          .BEND
+
+               ;---------------------------------------
+               ;PRINT TEXT WHICH IMMEDIATELY FOLLOWS
+               ;THE  ”“ AND RETURN TO ADDRESS AFTER 0
+
+               PRINT
+                          .BLOCK
+087A 68                   PLA
+087B 8D 85 08             STA NEXT+1
+087E 68                   PLA
+087F 8D 86 08             STA NEXT+2
+0882 A2 01                LDX #1
+               NEXT
+0884 BD 11 11             LDA $1111,X
+0887 F0 06                BEQ END
+0889 20 D2 FF             JSR $FFD2
+088C E8                   INX
+088D D0 F5                BNE NEXT
+               END
+088F 38                   SEC
+0890 8A                   TXA
+0891 6D 85 08             ADC NEXT+1
+0894 8D A0 08             STA RETURN+1
+0897 A9 00                LDA #0
+0899 6D 86 08             ADC NEXT+2
+089C 8D A1 08             STA RETURN+2
+               RETURN
+089F 4C 11 11             JMP $1111
+                          .BEND
+
+               ;---------------------------------------
+               ;PRINT HEX BYTE
+
+               PRINTHB
+                          .BLOCK
+08A2 48                   PHA
+08A3 4A                   LSR A
+08A4 4A                   LSR A
+08A5 4A                   LSR A
+08A6 4A                   LSR A
+08A7 20 AD 08             JSR PRINTHN
+08AA 68                   PLA
+08AB 29 0F                AND #$0F
+               PRINTHN
+08AD 09 30                ORA #$30
+08AF C9 3A                CMP #$3A
+08B1 90 02                BCC NOLETTER
+08B3 69 06                ADC #6
+               NOLETTER
+08B5 4C D2 FF             JMP $FFD2
+                          .BEND
+
+               ;---------------------------------------
+               ;WAIT UNTIL RASTER LINE IS IN BORDER
+               ;TO PREVENT GETTING DISTURBED BY ƒÕ¡S
+
+               WAITBORDER
+                          .BLOCK
+08B8 AD 11 D0             LDA $D011
+08BB 30 07                BMI OK
+               WAIT
+08BD AD 12 D0             LDA $D012
+08C0 C9 1E                CMP #30
+08C2 B0 F9                BCS WAIT
+               OK
+08C4 60                   RTS
+                          .BEND
+
+               ;---------------------------------------
+               ;WAIT FOR A KEY AND CHECK FOR ”‘œ–
+
+               WAITKEY
+                          .BLOCK
+08C5 20 15 FD             JSR $FD15
+08C8 20 A3 FD             JSR $FDA3
+08CB 58                   CLI
+               WAIT
+08CC 20 E4 FF             JSR $FFE4
+08CF F0 FB                BEQ WAIT
+08D1 C9 03                CMP #3
+08D3 F0 01                BEQ STOP
+08D5 60                   RTS
+               STOP
+08D6 AD 0C 03             LDA TURBOASS
+08D9 F0 03                BEQ LOAD
+08DB 4C 00 80             JMP $8000
+               LOAD
+08DE 20 7A 08             JSR PRINT
+08E1 0D                   .BYTE 13
+08E2 42 52 45 41 4B
+                          .TEXT "BREAK"
+08E7 0D 00                .BYTE 13,0
+08E9 4C 4F 08             JMP LOADNEXT
+                          .BEND
+
+               ;---------------------------------------
+
+08EC 46 4C 49 50 4F 53 00
+               THISNAME   .NULL "FLIPOS"
+08F3 4F 4E 45 53 48 4F 54 00
+               NEXTNAME   .NULL "ONESHOT"
+
+               MAIN
+
+               ;---------------------------------------
+               ;SET ONESHOT AT UNDERFLOW-1
+
+                          .BLOCK
+08FB 78                   SEI
+08FC A9 00                LDA #0
+08FE 8D 0E DC             STA $DC0E
+0901 8D 0F DC             STA $DC0F
+0904 A9 7F                LDA #$7F
+0906 8D 0D DC             STA $DC0D
+0909 2C 0D DC             BIT $DC0D
+090C A9 03                LDA #3
+090E 8D 04 DC             STA $DC04
+0911 A9 00                LDA #0
+0913 8D 05 DC             STA $DC05
+0916 A9 21                LDA #%00100001
+0918 8D 0E DC             STA $DC0E
+091B A9 FF                LDA #255
+091D 8D 04 DC             STA $DC04
+0920 8D 05 DC             STA $DC05
+0923 A9 00                LDA #%00000000
+0925 8D 0E DC             STA $DC0E
+0928 20 B8 08             JSR WAITBORDER
+092B A9 01                LDA #%00000001
+092D A2 09                LDX #%00001001
+092F 8D 0E DC             STA $DC0E
+0932 8E 0E DC             STX $DC0E
+0935 AD 04 DC             LDA $DC04
+0938 2D 05 DC             AND $DC05
+093B C9 FF                CMP #255
+093D F0 2F                BEQ OK1
+093F 20 7A 08             JSR PRINT
+0942 0D                   .BYTE 13
+0943 53 45 54 20 4F 4E 45 53 48 4F 54 20 41 54 20 54 2D 31 20
+                          .TEXT "SET ONESHOT AT T-1 "
+0956 44 49 44 20 4E 4F 54 20 53 54 4F 50 20 43 4F 55 4E 54 45 52
+                          .TEXT "DID NOT STOP COUNTER"
+096A 00                   .BYTE 0
+096B 20 C5 08             JSR WAITKEY
+               OK1
+                          .BEND
+
+               ;---------------------------------------
+               ;SET ONESHOT AT UNDERFLOW
+
+                          .BLOCK
+096E 78                   SEI
+096F A9 00                LDA #0
+0971 8D 0E DC             STA $DC0E
+0974 8D 0F DC             STA $DC0F
+0977 A9 7F                LDA #$7F
+0979 8D 0D DC             STA $DC0D
+097C 2C 0D DC             BIT $DC0D
+097F A9 02                LDA #2
+0981 8D 04 DC             STA $DC04
+0984 A9 00                LDA #0
+0986 8D 05 DC             STA $DC05
+0989 A9 21                LDA #%00100001
+098B 8D 0E DC             STA $DC0E
+098E A9 FF                LDA #255
+0990 8D 04 DC             STA $DC04
+0993 8D 05 DC             STA $DC05
+0996 A9 00                LDA #%00000000
+0998 8D 0E DC             STA $DC0E
+099B 20 B8 08             JSR WAITBORDER
+099E A9 01                LDA #%00000001
+09A0 A2 09                LDX #%00001001
+09A2 8D 0E DC             STA $DC0E
+09A5 8E 0E DC             STX $DC0E
+09A8 AD 04 DC             LDA $DC04
+09AB 2D 05 DC             AND $DC05
+09AE 8D 00 40             STA 16384
+09B1 C9 FC                CMP #252
+09B3 F0 2D                BEQ OK1
+09B5 20 7A 08             JSR PRINT
+09B8 0D                   .BYTE 13
+09B9 53 45 54 20 4F 4E 45 53 48 4F 54 20 41 54 20 54 20
+                          .TEXT "SET ONESHOT AT T "
+09CA 4D 41 59 20 4E 4F 54 20 53 54 4F 50 20 43 4F 55 4E 54 45 52
+                          .TEXT "MAY NOT STOP COUNTER"
+09DE 00                   .BYTE 0
+09DF 20 C5 08             JSR WAITKEY
+               OK1
+                          .BEND
+
+               ;---------------------------------------
+               ;CLEAR ONESHOT AT UNDERFLOW-1
+
+                          .BLOCK
+09E2 78                   SEI
+09E3 A9 00                LDA #0
+09E5 8D 0E DC             STA $DC0E
+09E8 8D 0F DC             STA $DC0F
+09EB A9 7F                LDA #$7F
+09ED 8D 0D DC             STA $DC0D
+09F0 2C 0D DC             BIT $DC0D
+09F3 A9 03                LDA #3
+09F5 8D 04 DC             STA $DC04
+09F8 A9 00                LDA #0
+09FA 8D 05 DC             STA $DC05
+09FD A9 21                LDA #%00100001
+09FF 8D 0E DC             STA $DC0E
+0A02 A9 FF                LDA #255
+0A04 8D 04 DC             STA $DC04
+0A07 8D 05 DC             STA $DC05
+0A0A A9 00                LDA #%00000000
+0A0C 8D 0E DC             STA $DC0E
+0A0F 20 B8 08             JSR WAITBORDER
+0A12 A9 09                LDA #%00001001
+0A14 A2 01                LDX #%00000001
+0A16 8D 0E DC             STA $DC0E
+0A19 8E 0E DC             STX $DC0E
+0A1C AD 04 DC             LDA $DC04
+0A1F 2D 05 DC             AND $DC05
+0A22 C9 FF                CMP #255
+0A24 F0 2F                BEQ OK1
+0A26 20 7A 08             JSR PRINT
+0A29 0D                   .BYTE 13
+0A2A 43 4C 52 20 4F 4E 45 53 48 4F 54 20 41 54 20 54 2D 31 20
+                          .TEXT "CLR ONESHOT AT T-1 "
+0A3D 44 49 44 20 4E 4F 54 20 53 54 4F 50 20 43 4F 55 4E 54 45 52
+                          .TEXT "DID NOT STOP COUNTER"
+0A51 00                   .BYTE 0
+0A52 20 C5 08             JSR WAITKEY
+               OK1
+                          .BEND
+
+               ;---------------------------------------
+               ;CLEAR ONESHOT AT UNDERFLOW-2
+
+                          .BLOCK
+0A55 78                   SEI
+0A56 A9 00                LDA #0
+0A58 8D 0E DC             STA $DC0E
+0A5B 8D 0F DC             STA $DC0F
+0A5E A9 7F                LDA #$7F
+0A60 8D 0D DC             STA $DC0D
+0A63 2C 0D DC             BIT $DC0D
+0A66 A9 04                LDA #4
+0A68 8D 04 DC             STA $DC04
+0A6B A9 00                LDA #0
+0A6D 8D 05 DC             STA $DC05
+0A70 A9 21                LDA #%00100001
+0A72 8D 0E DC             STA $DC0E
+0A75 A9 FF                LDA #255
+0A77 8D 04 DC             STA $DC04
+0A7A 8D 05 DC             STA $DC05
+0A7D A9 00                LDA #%00000000
+0A7F 8D 0E DC             STA $DC0E
+0A82 20 B8 08             JSR WAITBORDER
+0A85 A9 09                LDA #%00001001
+0A87 A2 01                LDX #%00000001
+0A89 8D 0E DC             STA $DC0E
+0A8C 8E 0E DC             STX $DC0E
+0A8F AD 04 DC             LDA $DC04
+0A92 2D 05 DC             AND $DC05
+0A95 C9 FE                CMP #254
+0A97 F0 2F                BEQ OK1
+0A99 20 7A 08             JSR PRINT
+0A9C 0D                   .BYTE 13
+0A9D 43 4C 52 20 4F 4E 45 53 48 4F 54 20 41 54 20 54 2D 32 20
+                          .TEXT "CLR ONESHOT AT T-2 "
+0AB0 4D 41 59 20 4E 4F 54 20 53 54 4F 50 20 43 4F 55 4E 54 45 52
+                          .TEXT "MAY NOT STOP COUNTER"
+0AC4 00                   .BYTE 0
+0AC5 20 C5 08             JSR WAITKEY
+               OK1
+                          .BEND
+
+               ;---------------------------------------
+
+0AC8 60                   RTS

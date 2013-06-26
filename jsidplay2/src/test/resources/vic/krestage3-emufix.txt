@@ -1,0 +1,4 @@
+The krestage3 demo (running on a real C64) shows at least:
+- 50 pixels wide sprites instead of 24 (48 in expanded mode)
+- 9 Sprites in a row instead of only 8 (Sprite0 duplication trick)
+- FLI picture with a multicolor picture scrolling from the left

@@ -1,0 +1,38 @@
+#root {
+	-fx-padding:5.0;
+	-fx-spacing:5.0;
+	-fx-hgap:5.0;
+	-fx-vgap:5.0;
+	-fx-font-family:Georgia;
+	-fx-font-size:12.0px;
+}
+
+#dumpTable {
+	-fx-font-family:Courier;
+}
+
+.cellValueOk {
+	-fx-background-color:white;
+}
+
+.cellValueError {
+	-fx-background-color:red;
+}
+
+.normalCellValue {
+}
+
+.unchangedCellValue {
+}
+
+.voice1CellValue {
+	-fx-background-color:lightgreen ;
+}
+
+.voice2CellValue {
+	-fx-background-color:aquamarine ;
+}
+
+.voice3CellValue {
+	-fx-background-color:bisque ;
+}

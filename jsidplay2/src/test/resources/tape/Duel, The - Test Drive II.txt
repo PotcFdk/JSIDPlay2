@@ -1,0 +1,3 @@
+REM Load instructions:
+load " ",1
+run

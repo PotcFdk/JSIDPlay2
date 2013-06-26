@@ -1,0 +1,563 @@
+Date:  20-Sep-96 17:12:01  MsgID: 294-13927  ToID: 100112,220
+From:  =?ISO-8859-1?Q?Marko_M=E4kel=E4?= >INTERNET:Marko.Makela@HUT.FI
+Subj:  Combined SID waveforms?
+Chrg:  $0.00   Imp: Norm   Sens: Std    Receipt: No 
+
+Sender: msmakela@sranje.tky.hut.fi
+Received: from sranje.tky.hut.fi (sranje.tky.hut.fi [130.233.36.105]) by arl-img-7.compuserve.com (8.6.10/5.950515)
+	id RAA04887; Fri, 20 Sep 1996 17:06:32 -0400
+Received: (from msmakela@localhost) by sranje.tky.hut.fi (8.6.12/8.6.9) id AAA00974; Sat, 21 Sep 1996 00:04:14 +0200
+Date: Sat, 21 Sep 1996 00:04:14 +0200
+Message-Id: <199609202204.AAA00974@sranje.tky.hut.fi>
+From: =?ISO-8859-1?Q?Marko_M=E4kel=E4?= <Marko.Makela@HUT.FI>
+Organization: Helsinki University of Technology, Finland.
+To: sjudd@nwu.edu, boose@misa.extern.fh-hannover.de, alstrup@diku.dk,
+        3schwend@informatik.uni-hamburg.de, 100112.220@compuserve.com
+Subject: Combined SID waveforms?
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+
+Hello all!
+
+Well, while we are adding recipients to this list, I added Wolfgang
+Lorenz this time.  Maybe we should switch to German, as half of us
+speaks it as the native language. :-) Wolfgang, vielleicht solltest Du
+zuerst den Interview vom SID-Autor Bob Yannes in
+http://stud1.tuwien.ac.at/~e9426444/yannes.html lesen, um etwas Neues
+|ber den SID zu lernen.
+
+Wolfgang had some questions about the SID a while ago.  I think that
+he measured the Attack, Decay and Release times and found there some
+inconsistencies (the internal counters could not be fully
+initialized).  If you cannot remember reading his article in the
+c64-hackers@lists.funet.fi list (where we should actually be
+discussing this), you should maybe ask him to repost it.
+
+Steve quoted the interview in the March 1985 IEEE Spectrum article:
+
+IEEE> "That would have taken too much silicon."  So if more than one
+IEEE> waveform is selected, the internal nodes of the output
+IEEE> multiplexer are discharged, and what emerges is the minimum of
+IEEE> amplitudes.
+
+This must be false, or "minimum of amplitudes" must have a really
+weird definition.
+
+I think that the best way to research the waveforms is to record the
+data from the OSC3 register (the 8-bit output of the 3rd oscillator).
+A REU could scan the register on every clock cycle, which would keep
+up even with the highest note frequency.  But you won't need REU for
+such measurements.  Just write a 32 cycles long loop that reads the
+OSC3 register into memory.  Remember that the loop must be 32 cycles
+even when a page boundary is being crossed.  And choose such a
+frequency that the OSC3 output is changing on every 32nd cycle, e.g.
+
+
+	         value
+	freq = -------- * Phi0
+	       16777216
+
+
+=>	value = 16777216 * freq / Phi0
+
+and by setting freq/Phi0 = 1/32/(256 samples/cycle) we get
+
+	value = 16777216 / 32 / 256 = 2048
+
+So, use a note value of 2048, and make the loop 32 cycles long.  This
+will optimally record the triangle wave (which has the highest
+changing frequency).  If you try to record the sawtooth wave with the
+same setup, you will always get two equal samples.  And the noise
+waveform would produce groups of 16 equal samples.  The triangle
+waveform will repeat it after 512 samples, and so would do the
+sawtooth and pulse waves.  But the noise would take a bit longer: 16
+duplicates * (2^23 - 1) samples.  (If you were to research the noise
+waveform, you should use a frequency value of 2048/16 to optimize the
+memory usage.  But you would still need 8 megs of memory in this
+case.)
+
+I did some measurements with this in 1993 or so.  I recorded the
+cycles of the combined waveforms, but couldn't find any sense in them.
+I still might have the results somewhere, but it would be better if
+some of you would write your own measurement programs and do the tests
+again.  I only have some old SID chips; not the newer ones.
+
+Steve> You can certainly set noise simultaneously with other
+Steve> waveforms, but the result soon goes to zero (at least if we
+Steve> accept the "minimum amplitude" explanation above).
+
+I might also have tried to measure the combined waveforms with noise,
+but I don't remember the results any more.  It would be interesting if
+it would take some time before the noise wave would die out.  With
+very careful analysis of the values, we could maybe find out some
+details about how the connections were realized.
+
+Steve> Incidentally, I have written a small program for exploring SID,
+Steve> if anyone wants it.  It just gives a convenient way of changing
+Steve> the settings and hearing/seeing the result (i.e. the voice 3
+Steve> register).
+
+The 6567R56A (64 cycles/line, 262 lines) would probably be the best
+videochip to use with such a program.  That way, you could use a
+32-cycle loop to store the OSC3 values in a table, or to represent
+them on the screen by storing them to a sprite X register.  Both ways
+you could use the same frequency, and the screen output wouldn't be
+distorted, like with PAL chips (63 cycles/line) or newer NTSC chips
+(65 cycles/line). :-)
+
+Michael> At least, the $51-waveform combination is too complex to be
+Michael> easily stored in a table. Sampling the sound with half
+Michael> pulsewidth doesn't work either, because frequency-shifting or
+Michael> phase-based scaling alters the resulting waves too much.
+
+How would you store it?  By digitizing the SID chip output again, or
+by reading it from OSC3 in a synchronized loop?  Write the program (or
+tell me to write it, if it is too much trouble), and scan the results
+of all SIDs you have access to.  That info should definitely be put on
+Andreas' SID homepage.
+
+Yet another thing to find out would be the filter behaviour.  Like
+Yannes said, his solution regarding the filters caused different
+manufacturing lots to behave differently.  Now the question is if all
+chips of the same revision were created in the same (or similar
+enough) process, e.g. if all 6569R1s sound the same etc.  Well, the
+answer is quite obviously "no", I think.  For instance, there are
+differences between 6569R3 video chips manufactured at different
+times.
+
+
+	Marko
+
+**Primary Recipients:
+  100112,220
+  INTERNET:SJUDD@NWU.EDU
+  INTERNET:BOOSE@MISA.EXTERN.FH-HANNOVER.DE
+  INTERNET:ALSTRUP@DIKU.DK
+  INTERNET:3SCHWEND@INFORMATIK.UNI-HAMBURG.DE
+
+
+
+---------------------------------------------------------------------------
+
+
+
+Date:  21-Sep-96 16:58:14  MsgID: 296-5413  ToID: 100112,220
+From:  Stephen Judd >INTERNET:judd@merle.acns.nwu.edu
+Subj:  Re: SID internals
+Chrg:  $0.00   Imp: Norm   Sens: Std    Receipt: No 
+
+Sender: judd@merle.acns.nwu.edu
+Received: from merle.acns.nwu.edu (merle.acns.nwu.edu [129.105.16.57]) by dub-img-2.compuserve.com (8.6.10/5.950515)
+	id QAA14317; Sat, 21 Sep 1996 16:48:32 -0400
+Received: by merle.acns.nwu.edu
+	(1.40.112.8/16.2) id AA090918882; Sat, 21 Sep 1996 15:48:02 -0500
+From: judd@merle.acns.nwu.edu (Stephen Judd)
+Message-Id: <199609212048.AA090918882@merle.acns.nwu.edu>
+Subject: Re: SID internals
+To: boose@unixserv.rz.fh-hannover.de (Andreas Boose)
+Date: Sat, 21 Sep 1996 15:48:02 -0500 (CDT)
+Cc: Marko.Makela@HUT.FI, e9426444@stud1.tuwien.ac.at, alstrup@diku.dk,
+        3schwend@informatik.uni-hamburg.dk, 100112.220@compuserve.com
+Reply-To: sjudd@nwu.edu (Stephen Judd)
+In-Reply-To: <Pine.3.89.9609212009.A22803-0100000@unixserv.rz.fh-hannover.de> from "Andreas Boose" at Sep 21, 96 08:53:09 pm
+Reply-To: sjudd@nwu.edu (Stephen Judd)
+X-Mailer: ELM [version 2.4 PL25]
+Content-Type: text
+Content-Length: 6184      
+
+> Hi guys!
+
+Hello Andreas #2!
+
+> >	But the real reason for this message is for my own benefit.  First
+> >of all he refers to "phase accumulating oscillators".  I can guess how
+> >one might work, but could either of you explain to me how a phase
+> >accumulating oscillator really works?
+> 
+> Stephen, that's very simple - no PLL, no VCO, no clock doubling, no 
+> 64GHz involved. It's just a 24 bit accu which is increased by the 16 bit 
+> value of the frequency register every phi2 cycle. And like Bob said, the 
+> upper 12 bits of this accu are sent to waveform generators.
+
+Thank you!  I feel like an idiot now!  :)  Lucky for me I have had years
+of practice. :)
+
+> Note that although he uses 12 bit, the resulting *resolution* of this 
+> signal is only 12 bit on lower frequencies, if the frequency register is 
+> smaller than 4096. On higher frequencies the resolution drops down
+> to nearly 8 bit when the frequency register is at its max value (65535).
+
+Ah yes, I had not thought of that.
+
+> You will get zillions of frequencies ring modulating non continuous 
+> functions. I will ask someone of our electronic communications laboratory
+> what the frequency spectrum is for a 180 degrees ring modulated triangle 
+> or sawtooth function. I forgot anything of this analog rubbish since I
+> passed this laboratory.
+
+I believe I now understand what SID does quite well.  One thing I would like
+to know is if this is a clever thing Yannes did.  It seems mighty clever
+to me, but perhaps it is a common technique in the chip designing world?
+(I am referring to the way he implemented ring modulation on SID).
+
+One other thing I would be interested in is any reactions you all might have
+had while reading the interview... any surprises?  Disagreements?  New
+insights?  A new outlook on the world, fire pouring down from the heavans
+as the working of the entire universe suddenly becomes crystal clear?
+
+Oh yes, one more thing... I think a good way to gain insight into SID,
+in particular the waveform mixing, is to use a very low frequency (set
+the register to something like 1 or 2) and simply print the voice 3
+oscillator output to the screen.  You can't hear notes at these
+frequencies of course, but you will hear any discontinuities in the
+waveform (e.g. when something jumps from/drops to zero).
+
+I found it useful to "trap" the pulse waveform at $FF -- that is,
+change the pulse width until the waveform outputs FF, then set the
+PW to zero so it stays there.  Now this FF may be combined with
+another waveform, e.g. sawtooth.  The result is periodic (with the
+fundamental period), and quite bizarre... sometimes the sawtooth
+starts to break through, but most of the time it sits at zero.  My
+intuition, such as it is, suggests to me that there is some really
+nontrivial effect going on inside the multiplexer, like one where you
+might need to solve the quantum mechanical equations to really understand
+what is going on.
+
+What the heck...  Attached is a little program I wrote as an instrument
+editor for a music composer that I am writing.  I find it useful for
+performing simple SID experiments.  Keys 1,2, and 3 select voice 123,
+cursor keys move, +/- keys move values up/down, shift +/- moves high
+byte up/down (i.e. moves by large increments), and space toggles.
+
+	-Steve
+
+begin 600 wave3.run
+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
+-BI'^R*7\&&DPD?[(8*(O
+`
+end
+
+**CCs to:
+  100112,220
+  INTERNET:MARKO.MAKELA@HUT.FI
+  INTERNET:E9426444@STUD1.TUWIEN.AC.AT
+  INTERNET:ALSTRUP@DIKU.DK
+  INTERNET:3SCHWEND@INFORMATIK.UNI-HAMBURG.DK
+
+
+-----------------------------------------------------------------------
+
+
+>> Wolfgang had some questions about the SID a while ago.  I think that
+he measured the Attack, Decay and Release times and found there some
+inconsistencies (the internal counters could not be fully
+initialized). <<
+
+My guess at this time was that the SID contains a cascade of divisor latches to get the signal for incrementing/decrementing the 8 bit ENV register, and that some of them are not reset correctly by the GATE bit. The original messages follow. But because there are so many bugs in PC64Win, I didn't research that further.
+
+Besides, did you know that the Pentium caches JMP [MEM] in a branch prediction buffer? If you measure this in a loop, it takes only 2 clocks. But in a real application, these are 5 to 11 clocks! No wonder that PC64Win [more exactly: cycle based emulation] is so slow, as half of the performance is just used for jumps. Optimizing for Pentium pairing is a very time and energy consuming job. So I don't have the time for SID researches now. But this is a well known problem among us emulator writers: If A finds something in the SID, B is just implementing the undocumented CPU commands, and C is about to learn DirectDraw. Well...
+
+Wolfgang
+
+-----------------------------------------------------------------------
+
+
+The following program examines the Attack envelope in SID register ENV3 at $D41C. It measures the system clocks from setting the gate bit to 1 until ENV3 reaches $FF. The results are rather confusing:
+
+attack  clocks
+----------------------------------
+0       2323  2330
+1       8161  8189  8196
+2       16099  16092  16036
+3       24261  24163  24254
+4       38023  37883  38030
+5       55915  56125  56132
+6       67850  68116  67857
+7       79848  79540  79841
+8       99602  99994  99987
+9       249164  249171  248191
+10      498301  496355  496348
+11      797159  797166  794037
+12      996316  992410  992417
+13      2976917  2988635  2988628
+14      4980688  4980695  4961165
+15      7969037  7937789  7969030
+
+There are three different times at 100 runs. This shouldn't happen as everything depends from the system clock.
+
+What the hell is happening here? Is there an uninitialized counter in the SID? The difference of 7 clocks is the loop, and the large difference is always 1/255th, as if the counter starts sometimes at 1 and not at 0. The measuring program is OK, try to replace the waiting for $FF by a fixed loop LDX #0 : WAIT INX : BNE WAIT
+
+Wolfgang
+
+
+1 sys 36864
+2 .opt oo
+3 *=$8000
+4 :
+100 jsr inittimer
+101 jsr starttimer
+201 lda 2:sta $d413:lda #$f0:sta $d414
+202 lda #$01:sta $d412
+203 lda #$ff
+204 wait cmp $d41c
+205 bne wait
+206 lda #0
+207 sta $d412
+208 jsr stoptimer
+209 rts
+698 corr *=*+4
+699 :
+700 inittimer lda #0
+701 sta corr+0
+702 sta corr+1
+703 sta corr+2
+704 sta corr+3
+705 jsr starttimer
+706 jsr stoptimer
+708 ldx #3
+709 setcorr lda 247,x
+711 sta corr,x
+712 dex
+713 bpl setcorr
+714 rts
+715 :
+800 starttimer sei
+801 lda $d011
+802 and #%11101111
+803 sta $d011
+804 stwait lda $d011
+805 bpl stwait
+806 lda #%01111111
+807 sta $dd0d
+808 lda #0
+809 sta $dd0e
+810 sta $dd0f
+811 lda #-1
+812 sta $dd04
+813 sta $dd05
+814 sta $dd06
+815 sta $dd07
+816 lda #%01010001
+817 sta $dd0f
+818 lda #%00010001
+819 sta $dd0e
+820 rts
+821 :
+900 stoptimer lda #0
+901 sta $dd0e
+902 sec
+903 lda $dd04
+904 eor #-1
+905 sbc corr+0
+906 sta 247
+907 lda $dd05
+908 eor #-1
+909 sbc corr+1
+910 sta 248
+913 lda $dd06
+914 eor #-1
+915 sbc corr+2
+916 sta 249
+917 lda $dd07
+918 eor #-1
+919 sbc corr+3
+920 sta 250
+950 cli
+951 lda $d011
+952 ora #%00010000
+953 sta $d011
+954 rts
+955 :
+998 .end
+999 print
+1000 dim l(5)
+1001 for a=0 to 15
+1002 print
+1003 print a;
+1010 poke 2,a*16
+1020 for i=1 to 100
+1030 sys 32768
+1040 x=peek(247)+peek(248)*256+peek(249)*65536+peek(250)*16777216
+1050 j=0
+1060 if x=l(j) then 1140
+1070 j=j+1
+1080 if j<=5 then 1060
+1090 print x;
+1100 for j=0 to 4
+1110 l(j)=l(j+1)
+1120 next
+1130 l(5)=x
+1140 next
+1150 next
+
+
+-----------------------------------------------------------------------
+
+
+[stuff deleted]
+
+I checked the program on my C128D (with 6581, I don't remember the revision),
+and got similar results.  I think that someone should scan the ENV3 output
+with a REU to better explain this.  Or you could make a 2^n cycles long loop
+that scans the output; it could be accurate enough.
+
+I noticed that adding a lda#$ff:sta$d412 at beginning of line 202
+and changing the value to be stored changed the results.
+
+
+	Marko
+
+**CCs to:
+  INTERNET:C64-HACKERS@NIC.FUNET.FI
+
+
+-----------------------------------------------------------------------
+
+
+
+>> I noticed that adding a lda#$ff:sta$d412 at beginning of line 202 and changing the value to be stored changed the results. <<
+
+Aside from adding 6 cycles to the timing loop, did you use any other value than $01 in:
+
+  201 lda #$ff:sta $d412 : lda #$01:sta $d412
+
+I've tried $11 and $ff, and both values caused the same result as the $01.
+
+I've also checked ENV3 at the beginning of the code in line 100, and it has always been 0.
+
+Then I changed the compare value of $ff to $01 to detect *where* this increment to ENV3 is added. Still more strange results now:
+
+0 : 40  33
+1 : 61  68
+2 : 96  89
+3 : 124  131  33
+4 : 180  173
+5 : 250
+6 : 299  292
+7 : 348  341  33
+8 : 418  425
+9 : 1013  1006
+10 : 1979  1986  33
+11 : 3155  3162
+12 : 3932  3939
+13 : 11751  11744  33
+14 : 19563  19556
+15 : 31281
+
+In the lines with the value of 33, the additional increment is from 0 to 1. But why the hell is there only one value at 5 and 15? And why only two at some others? Probably the additional increment happens *not* always from 0 to 1, and only if the compare value is $ff, there is always one additional increment in 100 runs.
+
+This leads to the conclusion, that is is not an initialisation problem, but more like the old values from previous runs in a Bresenham counter. Or the whole increment of ENV3 is done via a chain of clock divisors. Shit! This is not compatible with the current SID envelope implementation in PC64Win:
+
+    ////////////////////////////////////////////////////////////
+    // envelope
+
+    // exponential curve for decay and release, needs further research
+    static const byte abEnvCurveFactor[256] = {
+      0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,
+      0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x04,0x04,0x04,0x04,
+      0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,
+      0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,
+      0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,
+      0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,0x02,
+      0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+      0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+      0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+      0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+      0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+      0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+      0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+      0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+      0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+      0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01
+    };
+
+    aiEnvCounter[i] -= iClocksSinceLastSample;
+
+    // attack
+    if (afEnvIncrement[i]) {
+      while (aiEnvCounter[i] < 0) {
+        aiEnvCounter[i] += aiAttack[i];
+        aiEnvelope[i]++;
+      }
+      if (aiEnvelope[i] >= 0xFF) {
+        aiEnvelope[i] = 0xFF;
+        afEnvIncrement[i] = false;
+      }
+
+    // decay
+    } else if ((abControl[i] & fKey) != 0) {
+      while (aiEnvCounter[i] < 0) {
+        aiEnvCounter[i] += aiDecay[i] * abEnvCurveFactor[aiEnvelope[i]];
+
+        // sustain
+        if ((aiEnvelope[i] != 0) && (aiEnvelope[i] != aiSustain[i])) {
+          aiEnvelope[i]--;
+        }
+      }
+
+    // release
+    } else {
+      while (aiEnvCounter[i] < 0) {
+        aiEnvCounter[i] += aiRelease[i] * abEnvCurveFactor[aiEnvelope[i]];
+        if (aiEnvelope[i] != 0) {
+          aiEnvelope[i]--;
+        }
+      }
+    }
+
+
+To simulate this behaviour, aiEnvCounter[i] should not be reset to 0 when the key bit goes from 0 to 1. But then the time would depend from the previous value of the envelope register, and the test above has shown that it is constant (33). Argh!
+
+Maybe I should initialize aiEnvCounter[i] with the Attack start value, and only sometimes with 0.
+
+And then there is still the second delay of 1..7 cycles. I cannot measure exactly how long it is because I don't have a REU. As the system clock divisor for attack 0 is 1:9, this cannot be the reason. Otherwise there were 3 values, not just 1 or 2.
+
+
+** CCs to:
+  {P}C64-HACKERS INTERNET:C64-HACKERS@NIC.FUNET.FI

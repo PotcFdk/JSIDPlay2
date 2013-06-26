@@ -1,0 +1,2 @@
+This demo only starts up, if the VIC detection routine succeeds.
+It seems, it is very hard to emulate.

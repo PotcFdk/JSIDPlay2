@@ -1,0 +1,220 @@
+               ;---------------------------------------
+               ;CNTO2.ASM - THIS FILE IS PART
+               ;OF THE √64 ≈MULATOR ‘EST ”UITE
+               ;PUBLIC DOMAIN, NO COPYRIGHT
+
+                          *= $0801
+0801 4C 14 08 00 97
+                          .BYTE $4C,$14,$08,$00,$97
+               TURBOASS   = 780
+0806 37 38 30             .TEXT "780"
+0809 2C 30 3A 9E 32 30
+                          .BYTE $2C,$30,$3A,$9E,$32,$30
+080F 37 33 00 00 00
+                          .BYTE $37,$33,$00,$00,$00
+                          .BLOCK
+0814 A9 01                LDA #1
+0816 8D 0C 03             STA TURBOASS
+0819 A2 00                LDX #0
+081B 86 D3                STX $D3
+081D AD EC 08             LDA THISNAME
+               PRINTTHIS
+0820 20 D2 FF             JSR $FFD2
+0823 E8                   INX
+0824 BD EC 08             LDA THISNAME,X
+0827 D0 F7                BNE PRINTTHIS
+0829 20 F8 08             JSR MAIN
+082C A9 37                LDA #$37
+082E 85 01                STA 1
+0830 A9 2F                LDA #$2F
+0832 85 00                STA 0
+0834 20 15 FD             JSR $FD15
+0837 20 A3 FD             JSR $FDA3
+083A 20 7A 08             JSR PRINT
+083D 20 2D 20 4F 4B
+                          .TEXT " - OK"
+0842 0D 00                .BYTE 13,0
+0844 AD 0C 03             LDA TURBOASS
+0847 F0 06                BEQ LOADNEXT
+0849 20 C5 08             JSR WAITKEY
+084C 4C 00 80             JMP $8000
+                          .BEND
+               LOADNEXT
+                          .BLOCK
+084F A2 F8                LDX #$F8
+0851 9A                   TXS
+0852 AD F2 08             LDA NEXTNAME
+0855 C9 2D                CMP #"-"
+0857 D0 03                BNE NOTEMPTY
+0859 4C 74 A4             JMP $A474
+               NOTEMPTY
+085C A2 00                LDX #0
+               PRINTNEXT
+085E 20 D2 FF             JSR $FFD2
+0861 E8                   INX
+0862 BD F2 08             LDA NEXTNAME,X
+0865 D0 F7                BNE PRINTNEXT
+0867 A9 00                LDA #0
+0869 85 0A                STA $0A
+086B 85 B9                STA $B9
+086D 86 B7                STX $B7
+086F A9 F2                LDA #<NEXTNAME
+0871 85 BB                STA $BB
+0873 A9 08                LDA #>NEXTNAME
+0875 85 BC                STA $BC
+0877 4C 6F E1             JMP $E16F
+                          .BEND
+
+               ;---------------------------------------
+               ;PRINT TEXT WHICH IMMEDIATELY FOLLOWS
+               ;THE  ”“ AND RETURN TO ADDRESS AFTER 0
+
+               PRINT
+                          .BLOCK
+087A 68                   PLA
+087B 8D 85 08             STA NEXT+1
+087E 68                   PLA
+087F 8D 86 08             STA NEXT+2
+0882 A2 01                LDX #1
+               NEXT
+0884 BD 11 11             LDA $1111,X
+0887 F0 06                BEQ END
+0889 20 D2 FF             JSR $FFD2
+088C E8                   INX
+088D D0 F5                BNE NEXT
+               END
+088F 38                   SEC
+0890 8A                   TXA
+0891 6D 85 08             ADC NEXT+1
+0894 8D A0 08             STA RETURN+1
+0897 A9 00                LDA #0
+0899 6D 86 08             ADC NEXT+2
+089C 8D A1 08             STA RETURN+2
+               RETURN
+089F 4C 11 11             JMP $1111
+                          .BEND
+
+               ;---------------------------------------
+               ;PRINT HEX BYTE
+
+               PRINTHB
+                          .BLOCK
+08A2 48                   PHA
+08A3 4A                   LSR A
+08A4 4A                   LSR A
+08A5 4A                   LSR A
+08A6 4A                   LSR A
+08A7 20 AD 08             JSR PRINTHN
+08AA 68                   PLA
+08AB 29 0F                AND #$0F
+               PRINTHN
+08AD 09 30                ORA #$30
+08AF C9 3A                CMP #$3A
+08B1 90 02                BCC NOLETTER
+08B3 69 06                ADC #6
+               NOLETTER
+08B5 4C D2 FF             JMP $FFD2
+                          .BEND
+
+               ;---------------------------------------
+               ;WAIT UNTIL RASTER LINE IS IN BORDER
+               ;TO PREVENT GETTING DISTURBED BY ƒÕ¡S
+
+               WAITBORDER
+                          .BLOCK
+08B8 AD 11 D0             LDA $D011
+08BB 30 07                BMI OK
+               WAIT
+08BD AD 12 D0             LDA $D012
+08C0 C9 1E                CMP #30
+08C2 B0 F9                BCS WAIT
+               OK
+08C4 60                   RTS
+                          .BEND
+
+               ;---------------------------------------
+               ;WAIT FOR A KEY AND CHECK FOR ”‘œ–
+
+               WAITKEY
+                          .BLOCK
+08C5 20 15 FD             JSR $FD15
+08C8 20 A3 FD             JSR $FDA3
+08CB 58                   CLI
+               WAIT
+08CC 20 E4 FF             JSR $FFE4
+08CF F0 FB                BEQ WAIT
+08D1 C9 03                CMP #3
+08D3 F0 01                BEQ STOP
+08D5 60                   RTS
+               STOP
+08D6 AD 0C 03             LDA TURBOASS
+08D9 F0 03                BEQ LOAD
+08DB 4C 00 80             JMP $8000
+               LOAD
+08DE 20 7A 08             JSR PRINT
+08E1 0D                   .BYTE 13
+08E2 42 52 45 41 4B
+                          .TEXT "BREAK"
+08E7 0D 00                .BYTE 13,0
+08E9 4C 4F 08             JMP LOADNEXT
+                          .BEND
+
+               ;---------------------------------------
+
+08EC 43 4E 54 4F 32 00
+               THISNAME   .NULL "CNTO2"
+08F2 49 43 52 30 31 00
+               NEXTNAME   .NULL "ICR01"
+
+               MAIN
+
+               ;---------------------------------------
+               ;SWITCH FROM CNT TO O2 AND BACK
+
+                          .BLOCK
+08F8 78                   SEI
+08F9 A9 00                LDA #0
+08FB 8D 0E DC             STA $DC0E
+08FE 8D 0F DC             STA $DC0F
+0901 A9 7F                LDA #$7F
+0903 8D 0D DC             STA $DC0D
+0906 2C 0D DC             BIT $DC0D
+0909 A9 FF                LDA #255
+090B 8D 04 DC             STA $DC04
+090E 8D 05 DC             STA $DC05
+0911 A9 21                LDA #%00100001
+0913 8D 0E DC             STA $DC0E
+0916 20 B8 08             JSR WAITBORDER
+0919 A9 01                LDA #%00000001
+091B A2 21                LDX #%00100001
+091D 8D 0E DC             STA $DC0E
+0920 AD 04 DC             LDA $DC04
+0923 8E 0E DC             STX $DC0E
+0926 AE 04 DC             LDX $DC04
+0929 C9 FD                CMP #253
+092B F0 29                BEQ OK1
+092D 20 7A 08             JSR PRINT
+0930 0D                   .BYTE 13
+0931 43 4E 54 20 54 4F 20 4F 32 20 44 4F 45 53 20 4E 4F 54 20
+                          .TEXT "CNT TO O2 DOES NOT "
+0944 44 45 4C 41 59 20 32 20 43 4C 4F 43 4B 53
+                          .TEXT "DELAY 2 CLOCKS"
+0952 00                   .BYTE 0
+0953 20 C5 08             JSR WAITKEY
+               OK1
+0956 E0 F7                CPX #247
+0958 F0 29                BEQ OK2
+095A 20 7A 08             JSR PRINT
+095D 0D                   .BYTE 13
+095E 4F 32 20 54 4F 20 43 4E 54 20 44 4F 45 53 20 4E 4F 54 20
+                          .TEXT "O2 TO CNT DOES NOT "
+0971 44 45 4C 41 59 20 32 20 43 4C 4F 43 4B 53
+                          .TEXT "DELAY 2 CLOCKS"
+097F 00                   .BYTE 0
+0980 20 C5 08             JSR WAITKEY
+               OK2
+                          .BEND
+
+               ;---------------------------------------
+
+0983 60                   RTS

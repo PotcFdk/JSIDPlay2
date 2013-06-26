@@ -1,0 +1,2 @@
+
+D017-54.PRG and D017-57.PRG both should display a sprite with only 23 lines.

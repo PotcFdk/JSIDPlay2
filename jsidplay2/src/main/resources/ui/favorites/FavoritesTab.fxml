@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import ui.favorites.FavoritesCellFactory?>
+<?scenebuilder-preview-i18n-resource FavoritesTab.properties?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml">
+	<BorderPane AnchorPane.bottomAnchor="10"
+		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+		AnchorPane.topAnchor="10">
+		<top>
+			<HBox>
+				<Label text="%REG_EXPR_FILTER" />
+				<TextField fx:id="filterField" />
+			</HBox>
+		</top>
+		<center>
+			<TableView fx:id="favoritesTable">
+				<columns>
+					<TableColumn text="%FILENAME" prefWidth="150">
+						<cellValueFactory>
+							<PropertyValueFactory property="path" />
+						</cellValueFactory>
+						<cellFactory>
+							<FavoritesCellFactory />
+						</cellFactory>
+						<contextMenu>
+							<ContextMenu fx:id="contextMenuHeader">
+								<items>
+									<MenuItem fx:id="removeColumn" text="%REMOVE_COLUMN"
+										onAction="#removeColumn" />
+									<Menu fx:id="addColumnMenu" text="%ADD_COLUMN" />
+								</items>
+							</ContextMenu>
+						</contextMenu>
+					</TableColumn>
+				</columns>
+				<contextMenu>
+					<ContextMenu fx:id="contextMenu">
+						<items>
+							<MenuItem fx:id="showStil" text="%SHOW_STIL" onAction="#showStil" />
+							<MenuItem text="%EXPORT_TO_DIR" onAction="#exportToDir" />
+							<Menu fx:id="moveToTab" text="%MOVE_TO_TAB" />
+							<Menu fx:id="copyToTab" text="%COPY_TO_TAB" />
+							<Menu text="%CONVERT_TO">
+								<MenuItem text="%PSID64" onAction="#convertToPsid64" />
+							</Menu>
+						</items>
+					</ContextMenu>
+				</contextMenu>
+			</TableView>
+		</center>
+		<right>
+			<VBox>
+				<Button onAction="#doMoveUp" prefWidth="20" prefHeight="20"
+					disable="true" fx:id="moveUp">
+					<tooltip>
+						<Tooltip text="%MOVE_UP_FAVORITE" />
+					</tooltip>
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/up.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Button>
+				<Button onAction="#doMoveDown" prefWidth="20" prefHeight="20"
+					disable="true" fx:id="moveDown">
+					<tooltip>
+						<Tooltip text="%MOVE_DOWN_FAVORITE" />
+					</tooltip>
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/down.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Button>
+			</VBox>
+		</right>
+	</BorderPane>
+</AnchorPane>
+

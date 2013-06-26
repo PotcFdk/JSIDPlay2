@@ -1,0 +1,571 @@
+               ;---------------------------------------
+               ;CIA2PB6.ASM - THIS FILE IS PART
+               ;OF THE Ã64 ÅMULATOR ÔEST ÓUITE
+               ;PUBLIC DOMAIN, NO COPYRIGHT
+
+                          *= $0801
+0801 4C 14 08 00 97
+                          .BYTE $4C,$14,$08,$00,$97
+               TURBOASS   = 780
+0806 37 38 30             .TEXT "780"
+0809 2C 30 3A 9E 32 30
+                          .BYTE $2C,$30,$3A,$9E,$32,$30
+080F 37 33 00 00 00
+                          .BYTE $37,$33,$00,$00,$00
+                          .BLOCK
+0814 A9 01                LDA #1
+0816 8D 0C 03             STA TURBOASS
+0819 A2 00                LDX #0
+081B 86 D3                STX $D3
+081D AD EC 08             LDA THISNAME
+               PRINTTHIS
+0820 20 D2 FF             JSR $FFD2
+0823 E8                   INX
+0824 BD EC 08             LDA THISNAME,X
+0827 D0 F7                BNE PRINTTHIS
+0829 20 FC 08             JSR MAIN
+082C A9 37                LDA #$37
+082E 85 01                STA 1
+0830 A9 2F                LDA #$2F
+0832 85 00                STA 0
+0834 20 15 FD             JSR $FD15
+0837 20 A3 FD             JSR $FDA3
+083A 20 7A 08             JSR PRINT
+083D 20 2D 20 4F 4B
+                          .TEXT " - OK"
+0842 0D 00                .BYTE 13,0
+0844 AD 0C 03             LDA TURBOASS
+0847 F0 06                BEQ LOADNEXT
+0849 20 C5 08             JSR WAITKEY
+084C 4C 00 80             JMP $8000
+                          .BEND
+               LOADNEXT
+                          .BLOCK
+084F A2 F8                LDX #$F8
+0851 9A                   TXS
+0852 AD F4 08             LDA NEXTNAME
+0855 C9 2D                CMP #"-"
+0857 D0 03                BNE NOTEMPTY
+0859 4C 74 A4             JMP $A474
+               NOTEMPTY
+085C A2 00                LDX #0
+               PRINTNEXT
+085E 20 D2 FF             JSR $FFD2
+0861 E8                   INX
+0862 BD F4 08             LDA NEXTNAME,X
+0865 D0 F7                BNE PRINTNEXT
+0867 A9 00                LDA #0
+0869 85 0A                STA $0A
+086B 85 B9                STA $B9
+086D 86 B7                STX $B7
+086F A9 F4                LDA #<NEXTNAME
+0871 85 BB                STA $BB
+0873 A9 08                LDA #>NEXTNAME
+0875 85 BC                STA $BC
+0877 4C 6F E1             JMP $E16F
+                          .BEND
+
+               ;---------------------------------------
+               ;PRINT TEXT WHICH IMMEDIATELY FOLLOWS
+               ;THE ÊÓÒ AND RETURN TO ADDRESS AFTER 0
+
+               PRINT
+                          .BLOCK
+087A 68                   PLA
+087B 8D 85 08             STA NEXT+1
+087E 68                   PLA
+087F 8D 86 08             STA NEXT+2
+0882 A2 01                LDX #1
+               NEXT
+0884 BD 11 11             LDA $1111,X
+0887 F0 06                BEQ END
+0889 20 D2 FF             JSR $FFD2
+088C E8                   INX
+088D D0 F5                BNE NEXT
+               END
+088F 38                   SEC
+0890 8A                   TXA
+0891 6D 85 08             ADC NEXT+1
+0894 8D A0 08             STA RETURN+1
+0897 A9 00                LDA #0
+0899 6D 86 08             ADC NEXT+2
+089C 8D A1 08             STA RETURN+2
+               RETURN
+089F 4C 11 11             JMP $1111
+                          .BEND
+
+               ;---------------------------------------
+               ;PRINT HEX BYTE
+
+               PRINTHB
+                          .BLOCK
+08A2 48                   PHA
+08A3 4A                   LSR A
+08A4 4A                   LSR A
+08A5 4A                   LSR A
+08A6 4A                   LSR A
+08A7 20 AD 08             JSR PRINTHN
+08AA 68                   PLA
+08AB 29 0F                AND #$0F
+               PRINTHN
+08AD 09 30                ORA #$30
+08AF C9 3A                CMP #$3A
+08B1 90 02                BCC NOLETTER
+08B3 69 06                ADC #6
+               NOLETTER
+08B5 4C D2 FF             JMP $FFD2
+                          .BEND
+
+               ;---------------------------------------
+               ;WAIT UNTIL RASTER LINE IS IN BORDER
+               ;TO PREVENT GETTING DISTURBED BY ÄÍÁS
+
+               WAITBORDER
+                          .BLOCK
+08B8 AD 11 D0             LDA $D011
+08BB 30 07                BMI OK
+               WAIT
+08BD AD 12 D0             LDA $D012
+08C0 C9 1E                CMP #30
+08C2 B0 F9                BCS WAIT
+               OK
+08C4 60                   RTS
+                          .BEND
+
+               ;---------------------------------------
+               ;WAIT FOR A KEY AND CHECK FOR ÓÔÏÐ
+
+               WAITKEY
+                          .BLOCK
+08C5 20 15 FD             JSR $FD15
+08C8 20 A3 FD             JSR $FDA3
+08CB 58                   CLI
+               WAIT
+08CC 20 E4 FF             JSR $FFE4
+08CF F0 FB                BEQ WAIT
+08D1 C9 03                CMP #3
+08D3 F0 01                BEQ STOP
+08D5 60                   RTS
+               STOP
+08D6 AD 0C 03             LDA TURBOASS
+08D9 F0 03                BEQ LOAD
+08DB 4C 00 80             JMP $8000
+               LOAD
+08DE 20 7A 08             JSR PRINT
+08E1 0D                   .BYTE 13
+08E2 42 52 45 41 4B
+                          .TEXT "BREAK"
+08E7 0D 00                .BYTE 13,0
+08E9 4C 4F 08             JMP LOADNEXT
+                          .BEND
+
+               ;---------------------------------------
+
+08EC 43 49 41 32 50 42 36 00
+               THISNAME   .NULL "CIA2PB6"
+08F4 43 49 41 32 50 42 37 00
+               NEXTNAME   .NULL "CIA2PB7"
+
+               MAIN
+
+               ;---------------------------------------
+               ;OLD CRA 0 START
+               ;    CRA 1 PB6OUT
+               ;    CRA 2 PB6TOGGLE
+               ;NEW CRA 0 START
+               ;    CRA 1 PB6OUT
+               ;    CRA 2 PB6TOGGLE
+               ;    CRA 4 FORCE LOAD
+
+                          .BLOCK
+08FC 4C 83 09             JMP START
+
+08FF 00        I          .BYTE 0
+0900 00        OLD        .BYTE 0
+0901 00        NEW        .BYTE 0
+0902 00        OR         .BYTE 0
+0903 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D
+               RIGHT      .TEXT "----------------"
+0913 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30
+                          .TEXT "0000000000000000"
+0923 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D
+                          .TEXT "----------------"
+0933 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31
+                          .TEXT "1111111111111111"
+0943 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D
+                          .TEXT "----------------"
+0953 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30
+                          .TEXT "0000000000000000"
+0963 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D
+                          .TEXT "----------------"
+0973 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31
+                          .TEXT "1111111111111111"
+
+               START
+0983 A9 00                LDA #0
+0985 8D FF 08             STA I
+               LOOP
+0988 A9 40                LDA #$40
+098A 8D 03 DD             STA $DD03
+098D A9 00                LDA #0
+098F 8D 01 DD             STA $DD01
+0992 8D 0E DD             STA $DD0E
+0995 8D 0F DD             STA $DD0F
+0998 A9 7F                LDA #127
+099A 8D 0D DD             STA $DD0D
+099D 2C 0D DD             BIT $DD0D
+09A0 A9 FF                LDA #$FF
+09A2 8D 04 DD             STA $DD04
+09A5 8D 05 DD             STA $DD05
+09A8 AD FF 08             LDA I
+09AB 29 07                AND #%00000111
+09AD 8D 0E DD             STA $DD0E
+09B0 8D 00 09             STA OLD
+09B3 AD FF 08             LDA I
+09B6 4A                   LSR A
+09B7 4A                   LSR A
+09B8 48                   PHA
+09B9 29 10                AND #%00010000
+09BB 8D 02 09             STA OR
+09BE 68                   PLA
+09BF 4A                   LSR A
+09C0 29 07                AND #%00000111
+09C2 0D 02 09             ORA OR
+09C5 8D 0E DD             STA $DD0E
+09C8 8D 01 09             STA NEW
+09CB AD 01 DD             LDA $DD01
+09CE 49 40                EOR #$40
+09D0 8D 01 DD             STA $DD01
+09D3 CD 01 DD             CMP $DD01
+09D6 F0 0A                BEQ MINUS
+09D8 49 40                EOR #$40
+09DA 0A                   ASL A
+09DB 0A                   ASL A
+09DC A9 18                LDA #"0"/2
+09DE 2A                   ROL A
+09DF 4C E4 09             JMP NOMINUS
+               MINUS
+09E2 A9 2D                LDA #"-"
+               NOMINUS
+09E4 AE FF 08             LDX I
+09E7 DD 03 09             CMP RIGHT,X
+09EA F0 30                BEQ OK
+09EC 48                   PHA
+09ED 20 7A 08             JSR PRINT
+09F0 0D                   .BYTE 13
+09F1 4F 4C 44 20 4E 45 57 20 50 42 36 20 20
+                          .TEXT "OLD NEW PB6  "
+09FE 00                   .BYTE 0
+09FF AD 00 09             LDA OLD
+0A02 20 A2 08             JSR PRINTHB
+0A05 A9 20                LDA #32
+0A07 20 D2 FF             JSR $FFD2
+0A0A AD 01 09             LDA NEW
+0A0D 20 A2 08             JSR PRINTHB
+0A10 A9 20                LDA #32
+0A12 20 D2 FF             JSR $FFD2
+0A15 68                   PLA
+0A16 20 D2 FF             JSR $FFD2
+0A19 20 C5 08             JSR WAITKEY
+               OK
+0A1C EE FF 08             INC I
+0A1F 30 03                BMI END
+0A21 4C 88 09             JMP LOOP
+               END
+                          .BEND
+
+               ;---------------------------------------
+               ;TOGGLE PB6, CRA ONE SHOT, START TIMER
+               ;-> PB6 MUST BE HIGH
+               ;WAIT UNTIL CRA HAS STOPPED
+               ;-> PB6 MUST BE LOW
+               ;WRITE CRA, WRITE TA LOW/HIGH, FORCE
+               ;LOAD, PB6ON, PB6TOGGLE
+               ;-> PB6 MUST REMAIN LOW
+               ;START
+               ;-> PB6 MUST GO HIGH
+
+                          .BLOCK
+0A24 A9 00                LDA #0
+0A26 8D 0E DD             STA $DD0E
+0A29 A2 64                LDX #100
+0A2B 8E 04 DD             STX $DD04
+0A2E 8D 05 DD             STA $DD05
+0A31 78                   SEI
+0A32 20 B8 08             JSR WAITBORDER
+0A35 A9 0F                LDA #$0F
+0A37 8D 0E DD             STA $DD0E
+0A3A A9 40                LDA #$40
+0A3C 2C 01 DD             BIT $DD01
+0A3F D0 17                BNE OK1
+0A41 20 7A 08             JSR PRINT
+0A44 0D                   .BYTE 13
+0A45 50 42 36 20 49 53 20 4E 4F 54 20 48 49 47 48 00
+                          .NULL "PB6 IS NOT HIGH"
+0A55 20 C5 08             JSR WAITKEY
+               OK1
+0A58 A9 01                LDA #$01
+               WAIT
+0A5A 2C 0E DD             BIT $DD0E
+0A5D D0 FB                BNE WAIT
+0A5F A9 40                LDA #$40
+0A61 2C 01 DD             BIT $DD01
+0A64 F0 16                BEQ OK2
+0A66 20 7A 08             JSR PRINT
+0A69 0D                   .BYTE 13
+0A6A 50 42 36 20 49 53 20 4E 4F 54 20 4C 4F 57 00
+                          .NULL "PB6 IS NOT LOW"
+0A79 20 C5 08             JSR WAITKEY
+               OK2
+0A7C A9 0E                LDA #$0E
+0A7E 8D 0E DD             STA $DD0E
+0A81 A9 40                LDA #$40
+0A83 2C 01 DD             BIT $DD01
+0A86 F0 28                BEQ OK3
+0A88 20 7A 08             JSR PRINT
+0A8B 0D                   .BYTE 13
+0A8C 57 52 49 54 49 4E 47 20 43 52 41 20 4D 41 59 20
+                          .TEXT "WRITING CRA MAY "
+0A9C 4E 4F 54 20 53 45 54 20 50 42 36 20 48 49 47 48
+                          .TEXT "NOT SET PB6 HIGH"
+0AAC 00                   .BYTE 0
+0AAD 20 C5 08             JSR WAITKEY
+               OK3
+0AB0 A9 64                LDA #100
+0AB2 8D 04 DD             STA $DD04
+0AB5 A9 40                LDA #$40
+0AB7 2C 01 DD             BIT $DD01
+0ABA F0 2B                BEQ OK4
+0ABC 20 7A 08             JSR PRINT
+0ABF 0D                   .BYTE 13
+0AC0 57 52 49 54 49 4E 47 20 54 41 20 4C 4F 57 20 4D 41 59 20
+                          .TEXT "WRITING TA LOW MAY "
+0AD3 4E 4F 54 20 53 45 54 20 50 42 36 20 48 49 47 48
+                          .TEXT "NOT SET PB6 HIGH"
+0AE3 00                   .BYTE 0
+0AE4 20 C5 08             JSR WAITKEY
+               OK4
+0AE7 A9 00                LDA #0
+0AE9 8D 05 DD             STA $DD05
+0AEC A9 40                LDA #$40
+0AEE 2C 01 DD             BIT $DD01
+0AF1 F0 2C                BEQ OK5
+0AF3 20 7A 08             JSR PRINT
+0AF6 0D                   .BYTE 13
+0AF7 57 52 49 54 49 4E 47 20 54 41 20 48 49 47 48 20 4D 41 59 20
+                          .TEXT "WRITING TA HIGH MAY "
+0B0B 4E 4F 54 20 53 45 54 20 50 42 36 20 48 49 47 48
+                          .TEXT "NOT SET PB6 HIGH"
+0B1B 00                   .BYTE 0
+0B1C 20 C5 08             JSR WAITKEY
+               OK5
+0B1F A9 1E                LDA #$1E
+0B21 8D 0E DD             STA $DD0E
+0B24 A9 40                LDA #$40
+0B26 2C 01 DD             BIT $DD01
+0B29 F0 27                BEQ OK6
+0B2B 20 7A 08             JSR PRINT
+0B2E 0D                   .BYTE 13
+0B2F 46 4F 52 43 45 20 4C 4F 41 44 20 4D 41 59 20
+                          .TEXT "FORCE LOAD MAY "
+0B3E 4E 4F 54 20 53 45 54 20 50 42 36 20 48 49 47 48
+                          .TEXT "NOT SET PB6 HIGH"
+0B4E 00                   .BYTE 0
+0B4F 20 C5 08             JSR WAITKEY
+               OK6
+0B52 A9 0A                LDA #%00001010
+0B54 8D 0E DD             STA $DD0E
+0B57 A9 0E                LDA #%00001110
+0B59 8D 0E DD             STA $DD0E
+0B5C A9 40                LDA #$40
+0B5E 2C 01 DD             BIT $DD01
+0B61 F0 2D                BEQ OK7
+0B63 20 7A 08             JSR PRINT
+0B66 0D                   .BYTE 13
+0B67 53 57 49 54 43 48 49 4E 47 20 54 4F 47 47 4C 45 20
+                          .TEXT "SWITCHING TOGGLE "
+0B78 4D 41 59 20 4E 4F 54 20 53 45 54 20 50 42 36 20 48 49 47 48
+                          .TEXT "MAY NOT SET PB6 HIGH"
+0B8C 00                   .BYTE 0
+0B8D 20 C5 08             JSR WAITKEY
+               OK7
+0B90 A9 0C                LDA #%00001100
+0B92 8D 0E DD             STA $DD0E
+0B95 A9 0E                LDA #%00001110
+0B97 8D 0E DD             STA $DD0E
+0B9A A9 40                LDA #$40
+0B9C 2C 01 DD             BIT $DD01
+0B9F F0 2C                BEQ OK8
+0BA1 20 7A 08             JSR PRINT
+0BA4 0D                   .BYTE 13
+0BA5 53 57 49 54 43 48 49 4E 47 20 50 42 36 4F 4E 20
+                          .TEXT "SWITCHING PB6ON "
+0BB5 4D 41 59 20 4E 4F 54 20 53 45 54 20 50 42 36 20 48 49 47 48
+                          .TEXT "MAY NOT SET PB6 HIGH"
+0BC9 00                   .BYTE 0
+0BCA 20 C5 08             JSR WAITKEY
+               OK8
+0BCD 78                   SEI
+0BCE 20 B8 08             JSR WAITBORDER
+0BD1 A9 07                LDA #%00000111
+0BD3 8D 0E DD             STA $DD0E
+0BD6 A9 40                LDA #$40
+0BD8 2C 01 DD             BIT $DD01
+0BDB D0 1F                BNE OK9
+0BDD 20 7A 08             JSR PRINT
+0BE0 0D                   .BYTE 13
+0BE1 53 54 41 52 54 20 4D 55 53 54 20 53 45 54 20
+                          .TEXT "START MUST SET "
+0BF0 50 42 36 20 48 49 47 48
+                          .TEXT "PB6 HIGH"
+0BF8 00                   .BYTE 0
+0BF9 20 C5 08             JSR WAITKEY
+               OK9
+0BFC A9 40                LDA #$40
+0BFE A2 00                LDX #0
+               WAITLOW0
+0C00 CA                   DEX
+0C01 F0 20                BEQ TIMEOUT
+0C03 2C 01 DD             BIT $DD01
+0C06 D0 F8                BNE WAITLOW0
+               WAITHIGH0
+0C08 CA                   DEX
+0C09 F0 18                BEQ TIMEOUT
+0C0B 2C 01 DD             BIT $DD01
+0C0E F0 F8                BEQ WAITHIGH0
+               WAITLOW1
+0C10 CA                   DEX
+0C11 F0 10                BEQ TIMEOUT
+0C13 2C 01 DD             BIT $DD01
+0C16 D0 F8                BNE WAITLOW1
+               WAITHIGH1
+0C18 CA                   DEX
+0C19 F0 08                BEQ TIMEOUT
+0C1B 2C 01 DD             BIT $DD01
+0C1E F0 F8                BEQ WAITHIGH1
+0C20 4C 3F 0C             JMP OK
+               TIMEOUT
+0C23 20 7A 08             JSR PRINT
+0C26 0D                   .BYTE 13
+0C27 50 42 36 20 54 4F 47 47 4C 45 20 54 49 4D 45 44 20 4F 55 54 00
+                          .NULL "PB6 TOGGLE TIMED OUT"
+0C3C 20 C5 08             JSR WAITKEY
+               OK
+                          .BEND
+
+               ;---------------------------------------
+               ;CRA PB6ON/TOGGLE 4 COMBINATIONS
+               ;WAIT UNTIL UNDERFLOW
+               ;SET BOTH PB6ON AND TOGGLE
+               ;-> PB6 MUST BE INDEPENDENT FROM
+               ;   PB6ON/TOGGLE STATE AT UNDERFLOW
+
+                          .BLOCK
+0C3F 4C 43 0C             JMP START
+
+0C42 00        I          .BYTE 0
+
+               START
+0C43 A9 03                LDA #3
+0C45 8D 42 0C             STA I
+               LOOP
+0C48 A9 00                LDA #0
+0C4A 8D 0E DD             STA $DD0E
+0C4D A9 0F                LDA #15
+0C4F 8D 04 DD             STA $DD04
+0C52 A9 00                LDA #0
+0C54 8D 05 DD             STA $DD05
+0C57 78                   SEI
+0C58 20 B8 08             JSR WAITBORDER
+0C5B AD 42 0C             LDA I
+0C5E 38                   SEC
+0C5F 2A                   ROL A
+0C60 8D 0E DD             STA $DD0E
+0C63 A2 07                LDX #$07
+0C65 8E 0E DD             STX $DD0E
+0C68 AC 01 DD             LDY $DD01
+0C6B 8D 0E DD             STA $DD0E
+0C6E A2 07                LDX #$07
+0C70 8E 0E DD             STX $DD0E
+0C73 AD 01 DD             LDA $DD01
+0C76 29 40                AND #$40
+0C78 D0 05                BNE ERROR
+0C7A 98                   TYA
+0C7B 29 40                AND #$40
+0C7D D0 2E                BNE OK
+               ERROR
+0C7F 20 7A 08             JSR PRINT
+0C82 0D                   .BYTE 13
+0C83 54 4F 47 47 4C 45 20 53 54 41 54 45 20 49 53 20 4E 4F 54 20
+                          .TEXT "TOGGLE STATE IS NOT "
+0C97 49 4E 44 45 50 45 4E 44 45 4E 54 20 00
+                          .NULL "INDEPENDENT "
+0CA4 AD 42 0C             LDA I
+0CA7 20 A2 08             JSR PRINTHB
+0CAA 20 C5 08             JSR WAITKEY
+               OK
+0CAD CE 42 0C             DEC I
+0CB0 10 96                BPL LOOP
+                          .BEND
+
+               ;---------------------------------------
+               ;CHECK PB6 TIMING
+
+                          .BLOCK
+0CB2 4C E0 0C             JMP START
+
+0CB5 07 07 07 07 07 07
+               SETTAB     .BYTE 7,7,7,7,7,7
+0CBB 03 03 03 03 03 03 03 03
+                          .BYTE 3,3,3,3,3,3,3,3
+0CC3 07 06 03 02 01 00
+               LOADTAB    .BYTE 7,6,3,2,1,0
+0CC9 07 06 05 04 03 02 01 00
+                          .BYTE 7,6,5,4,3,2,1,0
+0CD1 01 00 00 01 00 00
+               COMPTAB    .BYTE 1,0,0,1,0,0
+0CD7 00 01 00 00 00 00 00 01
+                          .BYTE 0,1,0,0,0,0,0,1
+
+0CDF 00        I          .BYTE 0
+
+               START
+0CE0 A9 0D                LDA #LOADTAB-SETTAB-1
+0CE2 8D DF 0C             STA I
+               LOOP
+0CE5 A9 00                LDA #0
+0CE7 8D 0E DD             STA $DD0E
+0CEA AE DF 0C             LDX I
+0CED BD C3 0C             LDA LOADTAB,X
+0CF0 8D 04 DD             STA $DD04
+0CF3 A9 00                LDA #0
+0CF5 8D 05 DD             STA $DD05
+0CF8 78                   SEI
+0CF9 20 B8 08             JSR WAITBORDER
+0CFC AE DF 0C             LDX I
+0CFF BD B5 0C             LDA SETTAB,X
+0D02 8D 0E DD             STA $DD0E
+0D05 EA                   NOP
+0D06 EA                   NOP
+0D07 AD 01 DD             LDA $DD01
+0D0A 0A                   ASL A
+0D0B 0A                   ASL A
+0D0C A9 00                LDA #0
+0D0E 2A                   ROL A
+0D0F DD D1 0C             CMP COMPTAB,X
+0D12 F0 21                BEQ OK
+0D14 20 7A 08             JSR PRINT
+0D17 0D                   .BYTE 13
+0D18 54 49 4D 49 4E 47 20 45 52 52 4F 52 20 49 4E 44 45 58 20 00
+                          .NULL "TIMING ERROR INDEX "
+0D2C AD DF 0C             LDA I
+0D2F 20 A2 08             JSR PRINTHB
+0D32 20 C5 08             JSR WAITKEY
+               OK
+0D35 CE DF 0C             DEC I
+0D38 10 AB                BPL LOOP
+                          .BEND
+
+               ;---------------------------------------
+
+0D3A 60                   RTS

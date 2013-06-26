@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import ui.directory.DirectoryCellFactory?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?scenebuilder-preview-i18n-resource Directory.properties?>
+
+<VBox xmlns:fx="http://javafx.com/fxml">
+	<Button text="%SWITCH_FONT" focusTraversable="false" onAction="#doSwitchFont" />
+	<TableView fx:id="directory" minHeight="500">
+		<columns>
+			<TableColumn fx:id="dirColumn" text="" editable="false"
+				sortable="false" prefWidth="320">
+				<cellValueFactory>
+					<PropertyValueFactory property="text" />
+				</cellValueFactory>
+				<cellFactory>
+					<DirectoryCellFactory />
+				</cellFactory>
+			</TableColumn>
+		</columns>
+	</TableView>
+</VBox>
+

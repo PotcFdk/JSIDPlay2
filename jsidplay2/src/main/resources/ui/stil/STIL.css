@@ -1,0 +1,32 @@
+.styleFilename {
+	-fx-font-weight:bold;
+}
+
+.styleComment {
+	-fx-font-style:italic;
+}
+
+.styleName {
+	-fx-font-weight:bold;
+}
+
+.styleTitle {
+	-fx-font-weight:bold;
+}
+
+.styleAuthor {
+	-fx-font-weight:bold;
+}
+
+.styleArtist {
+	-fx-font-weight:bold;
+}
+
+.styleSubtune {
+	-fx-font-weight:bold;
+	-fx-font-style:italic;
+}
+
+.styleNormal {
+	-fx-font-style:normal;
+}

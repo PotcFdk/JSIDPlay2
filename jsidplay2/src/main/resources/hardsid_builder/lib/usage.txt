@@ -1,0 +1,89 @@
+Most of the functions return a HSID_USB_WSTATE that must be definied like this:
+
+typedef enum {HSID_USB_WSTATE_OK = 1, HSID_USB_WSTATE_BUSY,
+              HSID_USB_WSTATE_ERROR, HSID_USB_WSTATE_END} HSID_USB_WSTATE;
+
+Importing the functions:
+
+extern "C" {
+	// initializes the managament library in sync or async mode
+	// and selects SIDPlay mode on the device (sysmode=1)
+	bool hardsid_usb_init (BOOL syncmode, BYTE sysmode);
+
+	// closes the managament library
+	void hardsid_usb_close ( void );
+
+	// returns the number of USB HardSID devices plugged into the computer
+	BYTE hardsid_usb_getdevcount ( void );
+
+	// returns the number of detected SID chips on the given device
+	BYTE hardsid_usb_getsidcount ( BYTE dev_id );
+
+	// schedules a write command
+	HSID_USB_WSTATE hardsid_usb_write (BYTE dev_id, BYTE reg, BYTE data);
+
+	// plays the remaining data from the buffer
+	HSID_USB_WSTATE hardsid_usb_flush( BYTE dev_id );
+
+	// schedules a delay command
+	HSID_USB_WSTATE hardsid_usb_delay(BYTE dev_id, WORD cycles);
+
+	//aborts the playback ASAP
+	void hardsid_usb_abortplay ( BYTE dev_id );
+}
+
+Using these functions:
+
+1. Initializing the library
+hardsid_usb_init(true, 1); //init in sync+SIDPlay mode
+
+2. Uninitializing the library
+hardsid_usb_close();
+
+3. Detecting USB HardSIDs
+	BYTE usbdevs = hardsid_usb_getdevcount();
+	for (usbdev=0;usbdev<usbdevs;usbdev++) {
+		BYTE sids = hardsid_usb_getsidcount(usbdev);
+		for (sid=0;sid<sids;sid++) {
+                        //....
+			HSID_DEVICES++;
+		}
+	}
+
+4. Writing data to a SID register / using delays
+Always think like you were on a real C64:
+- Always use delays between writes
+- Never use delays shorter than 4 cycles (STA $d4xx)
+
+//issues a write
+//if the hardware buffer is full, sleeps the thread until there is some space for this write
+while (hardsid_usb_write(usb_dev_id, reg|(socket<<5), data)==HSID_USB_WSTATE_BUSY)
+	Sleep(0);
+
+//issues a delay
+//if the hardware buffer is full, sleeps the thread until there is some space for this delay
+if (cycles>0) {
+	while (hardsid_usb_delay(usb_dev_id, cycles)==HSID_USB_WSTATE_BUSY)
+		Sleep(0);
+}
+
+If the required delay is too long for a 16-bit value, do it like this:
+
+while (cycles>65535) {
+	while (hardsid_usb_delay(usb_dev_id, 65535)==HSID_USB_WSTATE_BUSY)
+		Sleep(0);
+	cycles-=65536;
+}
+
+if (cycles>0) {
+	while (hardsid_usb_delay(usb_dev_id, cycles)==HSID_USB_WSTATE_BUSY)
+		Sleep(0);
+}
+
+5. Flushing the software/hardware buffer (playing all of its contents)
+while (hardsid_usb_flush(usb_dev_id)==HSID_USB_WSTATE_BUSY)
+	Sleep(0);
+
+6. Aborting playback ASAP (dropping any pre-buffered data)
+hardsid_usb_abortplay(usb_dev_id);
+
