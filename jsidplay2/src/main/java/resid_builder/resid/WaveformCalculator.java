@@ -70,11 +70,11 @@ public final class WaveformCalculator {
 
 	/**
 	 * Build waveform tables for use by WaveformGenerator. The method returns 3
-	 * tables in an Object[] wrapper:
+	 * tables in an Object[] wrapper:
 	 * 
 	 * 1. float[11][4096] wftable: the analog values in the waveform table
 	 * 2. float[12] dac table for values of the nonlinear bits used in waveforms.
-	 * 3. byte[11][4096] wfdigital: the digital values in the waveform table.
+	 * 3. byte[11][4096] wfdigital: the digital values in the waveform table.
 	 * 
 	 * The wf* tables are structured as follows: indices 0 .. 6 correspond
 	 * to SID waveforms of 1 to 7 with pulse width value set to 0x1000 (never
@@ -111,7 +111,7 @@ public final class WaveformCalculator {
 	/**
 	 * Generate bitstate based on emulation of combined waves.
 	 * 
-	 * @param config
+	 * @param config the {@link CombinedWaveformConfig} to use.
 	 * @param waveform the waveform to emulate, 1 .. 7
 	 * @param accumulator the accumulator value.
 	 */
@@ -149,12 +149,12 @@ public final class WaveformCalculator {
 
 		/* ST, P* waveform? */
 		if (waveform == 3 || waveform > 4) {
-			final float distancetable[] = new float[12 * 2 + 1];
+			final float[] distancetable = new float[12 * 2 + 1];
 			for (int i = 0; i <= 12; i++) {
 				distancetable[12 + i] = distancetable[12 - i] = 1.f / (1.f + i * i * config.distance);
 			}
 
-			final float tmp[] = new float[12];
+			final float[] tmp = new float[12];
 			for (int i = 0; i < 12; i++) {
 				float avg = 0;
 				float n = 0;

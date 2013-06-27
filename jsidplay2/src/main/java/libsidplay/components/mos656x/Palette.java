@@ -198,8 +198,12 @@ public class Palette {
 
 		/**
 		 * Convert to RGB with parameters
-		 * 
-		 * @return
+		 *
+		 * @param brightness Brightness
+		 * @param contrast   Contrast
+		 * @param gamma      Gamma
+		 *
+		 * @return The parameters as RGB.
 		 */
 		protected int toRGB(final float brightness, final float contrast, final float gamma) {
 			float rf = y                + 1.13983f * v;

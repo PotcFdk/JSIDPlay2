@@ -436,7 +436,7 @@ public abstract class MOS6510 {
 	/**
 	 * Acquire the value of V flag.
 	 * 
-	 * @return
+	 * @return The V flag value.
 	 */
 	public boolean getFlagV() {
 		return flagV;
@@ -2311,7 +2311,7 @@ public abstract class MOS6510 {
 	/**
 	 * Force CPU to start execution at given address
 	 * 
-	 * @param address
+	 * @param address The address to start CPU execution at.
 	 */
 	public void forcedJump(final int address) {
 		cycleCount = (NOPn << 3) + 1;
@@ -2476,7 +2476,7 @@ public abstract class MOS6510 {
 	/**
 	 * Get data from system environment
 	 * 
-	 * @param address
+	 * @param address The address to read the data from.
 	 * @return data byte CPU requested
 	 */
 	protected abstract byte cpuRead(int address);
@@ -2484,8 +2484,8 @@ public abstract class MOS6510 {
 	/**
 	 * Write data to system environment
 	 * 
-	 * @param address
-	 * @param value
+	 * @param address The system address to write the value to.
+	 * @param value   The value to write to the system address.
 	 */
 	protected abstract void cpuWrite(int address, byte value);
 }

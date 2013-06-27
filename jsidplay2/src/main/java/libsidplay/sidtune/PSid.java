@@ -380,7 +380,7 @@ class PSid extends Prg {
 	/**
 	 * Common address resolution procedure
 	 *
-	 * @return
+	 * @return True if the addresses could be resolved.
 	 * @throws SidTuneError
 	 */
 	private boolean resolveAddrs() throws SidTuneError {

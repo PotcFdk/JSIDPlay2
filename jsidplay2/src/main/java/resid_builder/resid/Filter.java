@@ -90,7 +90,7 @@ public abstract class Filter {
 	/**
 	 * Enable filter.
 	 * 
-	 * @param enable
+	 * @param enable Enable/Disable the filter.
 	 */
 	public void enable(final boolean enable) {
 		enabled = enable;

@@ -52,7 +52,7 @@ import resid_builder.ReSID;
  * The player contains a C64 computer and additional peripherals.<BR>
  * It is meant as a complete setup (C64, tape/disk drive, carts and more).
  * 
- * @author Ken
+ * @author Ken Händel
  * 
  */
 public class Player {
@@ -641,7 +641,7 @@ abstract class C1541Runner extends Event {
 	 * @param offset
 	 *            adjust C64 cycles
 	 * 
-	 * @return
+	 * @return The number of clock ticks that 1541 should advance.
 	 */
 	protected int updateSlaveTicks(long offset) {
 		final long oldC64Last = c64LastTime;

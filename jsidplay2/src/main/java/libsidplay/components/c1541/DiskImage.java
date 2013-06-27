@@ -206,7 +206,7 @@ public abstract class DiskImage {
 	/**
 	 * Is the disk image mounted read-only?
 	 * 
-	 * @return
+	 * @return True if the mounted disk image is read-only; false otherwise.
 	 */
 	public final boolean isReadOnly() {
 		return readOnly;

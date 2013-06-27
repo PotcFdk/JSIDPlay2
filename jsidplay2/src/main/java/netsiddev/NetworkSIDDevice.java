@@ -107,7 +107,7 @@ import sidplay.ini.intf.IFilterSection;
  *     <li>returns BUSY until audio quiescent, otherwise OK.
  *   </ul>
  *
- * <li>TRY_DELAY (4): inform emulation that no events have occured for a given count of cycles
+ * <li>TRY_DELAY (4): inform emulation that no events have occurred for a given count of cycles
  *   <ul>
  *     <li>data packet must be 16-bit unsigned value interpreted as delay in C64 clocks. 0 is not allowed.
  *     <li>allows audio generation in absence of other activity.
@@ -219,7 +219,7 @@ import sidplay.ini.intf.IFilterSection;
  * 
  * VERSION HISTORY
  * <ul>
- * <li>Version 1 contains all commmands up to 7 (VERSION). There were 8 SID devices
+ * <li>Version 1 contains all commands up to 7 (VERSION). There were 8 SID devices
  * where bit 0 gave 6581/8580, bit 1 PAL/NTSC and bit 2 RESAMPLE/DECIMATE mode of operation.
  * <li>Version 2 contains commands SAMPLING and CLOCKING. There are 4 different SID
  * devices, 3x 6581 and 1x 8580. The commands SAMPLING and CLOCKING can be used to set
@@ -264,9 +264,9 @@ public class NetworkSIDDevice {
 	private static JSIDDeviceConfig config;
 
 	/**
-	 * Return the number of known configurations.
+	 * Gets the number of known configurations.
 	 * 
-	 * @return
+	 * @return The number of known SID configurations.
 	 */
 	public static byte getSidCount() {
 		String[] sid = config.getFilterList();
@@ -276,8 +276,8 @@ public class NetworkSIDDevice {
 	/**
 	 * Return the name of the requested SID.
 	 * 
-	 * @param sidNum
-	 * @return sid name string
+	 * @param sidNum The SID to get the name of.
+	 * @return SID name string
 	 */
 	protected static String getSidName(int sidNum) {
 		String[] sid = config.getFilterList();

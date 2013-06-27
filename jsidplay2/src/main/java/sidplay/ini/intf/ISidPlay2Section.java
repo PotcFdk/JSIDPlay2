@@ -55,9 +55,7 @@ public interface ISidPlay2Section {
 	public int getRecordLength();
 
 	/**
-	 * Getter of the record length.
-	 * 
-	 * @return the record length
+	 * Sets the record length.
 	 */
 	public void setRecordLength(int playLength);
 

@@ -118,7 +118,7 @@ public final class SincResampler implements Resampler {
 	}
 
 	/**
-	 * Use a clock freqency of 985248Hz for PAL C64, 1022730Hz for NTSC C64. The default end of passband frequency is pass_freq = 0.9*sample_freq/2 for sample frequencies up to ~ 44.1kHz, and 20kHz
+	 * Use a clock frequency of 985248Hz for PAL C64, 1022730Hz for NTSC C64. The default end of passband frequency is pass_freq = 0.9*sample_freq/2 for sample frequencies up to ~ 44.1kHz, and 20kHz
 	 * for higher sample frequencies.
 	 * <P>
 	 * For resampling, the ratio between the clock frequency and the sample frequency is limited as follows: 125*clock_freq/sample_freq < 16384 E.g. provided a clock frequency of ~ 1MHz, the sample
@@ -131,7 +131,6 @@ public final class SincResampler implements Resampler {
 	 * @param clockFrequency System clock frequency at Hz
 	 * @param samplingFrequency Desired output sampling rate
 	 * @param highestAccurateFrequency
-	 * @return success
 	 */
 	public SincResampler(final double clockFrequency, final double samplingFrequency, final double highestAccurateFrequency) {
 		cyclesPerSample = (int) (clockFrequency / samplingFrequency * 1024f);
@@ -208,7 +207,14 @@ public final class SincResampler implements Resampler {
 			}
 		}
 	}
-	
+
+	/**
+	 * Inputs a given sample into this SincResampler.
+	 *
+	 * @param input The sample to input into this resampler.
+	 *
+	 * @return True if the sample is ready to output.
+	 */
 	public boolean input(int input) {
 		boolean ready = false;
 
@@ -224,11 +230,19 @@ public final class SincResampler implements Resampler {
 
 		return ready;
 	}
-	
+
+	/**
+	 * Gets the current output sample.
+	 *
+	 * @return The current output sample.
+	 */
 	public int output() {
 		return output;
 	}
-	
+
+	/**
+	 * Resets this SincResampler.
+	 */
 	public void reset() {
 		Arrays.fill(sample, 0);
 		sampleOffset = 0;
@@ -263,7 +277,7 @@ public final class SincResampler implements Resampler {
 	 * Simple sin waveform in, power output measurement function.
 	 * It would be far better to use FFT.
 	 * 
-	 * @param args
+	 * @param args Arguments
 	 */
 	public static void main(String[] args) {
 		double RATE = 985248.4;

@@ -1053,7 +1053,7 @@ public abstract class VIC extends Bank {
 	 * fetch for sprite data, the data fetched is set from the interaction with
 	 * CPU.
 	 * 
-	 * @param data
+	 * @param data The {@link Sprite} data to set.
 	 */
 	private void setSpriteDataFromCPU(byte data) {
 		if (lineCycle >= 4 && lineCycle < 20) {
@@ -1073,7 +1073,7 @@ public abstract class VIC extends Bank {
 	/**
 	 * Schedule the rendering to begin
 	 *
-	 * @param sprite
+	 * @param sprite The {@link Sprite} to handle the visibility event of.
 	 */
 	private void handleSpriteVisibilityEvent(final Sprite sprite) {
 		/* New coordinate in pipeline: cancel any pending event... */
@@ -1107,6 +1107,9 @@ public abstract class VIC extends Bank {
 		context.schedule(sprite, count, Event.Phase.PHI2);
 	}
 
+	/**
+	 * Resets this VIC II Chip.
+	 */
 	public void reset() {
 		spriteLinkedListHead.nextVisibleSprite = null;
 		for (final Sprite s : sprites) {
@@ -1139,6 +1142,11 @@ public abstract class VIC extends Bank {
 		determineVideoMemoryBaseAddresses();
 	}
 
+	/**
+	 * Gets the credit string.
+	 *
+	 * @return The credit string.
+	 */
 	public static String credits() {
 		return credit;
 	}
@@ -1149,15 +1157,30 @@ public abstract class VIC extends Bank {
 		support.addPropertyChangeListener(listener);
 	}
 
+	/**
+	 * Gets the currently used palette.
+	 *
+	 * @return The currently used palette.
+	 */
 	public abstract Palette getPalette();
 
+	/**
+	 * Updates the palette
+	 */
 	public abstract void updatePalette();
 
+	/**
+	 * Trigger the lightpen.
+	 * Sets the lightpen usage flag.
+	 */
 	public void triggerLightpen() {
 		lpAsserted = true;
 		lightpenEdgeDetector();
 	}
 
+	/**
+	 * Clears the lightpen usage flag.
+	 */
 	public void clearLightpen() {
 		lpAsserted = false;
 	}

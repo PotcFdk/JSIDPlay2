@@ -1041,7 +1041,7 @@ public abstract class Datasette {
 	/**
 	 * Read state of button press.
 	 * 
-	 * @return
+	 * @return The read state of a button press.
 	 */
 	public boolean getTapeSense() {
 		return mode != Control.STOP;

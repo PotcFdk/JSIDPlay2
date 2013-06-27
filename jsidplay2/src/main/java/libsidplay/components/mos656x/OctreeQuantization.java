@@ -320,7 +320,8 @@ class OctreeQuantization {
 	/**
 	 * Do a nearest-node scan looking for best match.
 	 * 
-	 * @param color
+	 * @param color Color to get the best match of.
+	 *
 	 * @return best node from simple scan
 	 */
 	public int lookup(final int color) {

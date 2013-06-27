@@ -63,7 +63,7 @@ public final class EnvelopeGenerator {
 	private int rate_period;
 
 	/**
-	 * During release mode, the SID arpproximates envelope decay via piecewise
+	 * During release mode, the SID approximates envelope decay via piecewise
 	 * linear decay rate.
 	 */
 	private int exponential_counter;
@@ -163,7 +163,7 @@ public final class EnvelopeGenerator {
 	 * The CPU can be synchronized with ENV3 by first synchronizing with the rate counter by setting A=0 and wait in a carefully timed loop for the envelope counter _not_ to change for 9 cycles. We
 	 * can then wait for a specific value of ENV3 with another timed loop to fully synchronize with ENV3.
 	 * <P>
-	 * At the first period when an exponential counter period larger than one is used (decay or relase), one extra cycle is spent before the envelope is decremented. The envelope output is then
+	 * At the first period when an exponential counter period larger than one is used (decay or release), one extra cycle is spent before the envelope is decremented. The envelope output is then
 	 * delayed one cycle until the state is changed to attack. Now one cycle less will be spent before the envelope is incremented, and the situation is normalized.
 	 * <P>
 	 * The delay is probably caused by the comparison with the exponential counter, and does not seem to affect the rate counter. This has been verified by timing 256 consecutive complete envelopes
@@ -180,7 +180,7 @@ public final class EnvelopeGenerator {
 	/**
 	 * Emulated nonlinearity of the envelope DAC.
 	 * 
-	 * @See SID.kinked_dac
+	 * @see SID#kinkedDac(double[], double, boolean)
 	 */
 	private final short[] dac = new short[256];
 
@@ -189,11 +189,11 @@ public final class EnvelopeGenerator {
 	 * 1.0 means perfect 8580-like linearity, values between 0.95 - 0.97
 	 * are probably realistic 6581 nonlinearity values.
 	 * 
-	 * @param chipModel
+	 * @param chipModel The chip model to use.
 	 */
 	protected void setChipModel(final ChipModel chipModel) {
 		final double dacBits[] = new double[8];
-		SID.kinkedDac(dacBits, chipModel == ChipModel.MOS6581 ? 2.30 : 2.00, chipModel == ChipModel.MOS8580);
+		SID.kinkedDac(dacBits, (chipModel == ChipModel.MOS6581) ? 2.30 : 2.00, chipModel == ChipModel.MOS8580);
 		for (int i = 0; i < 256; i++) {
 			double dacValue = 0;
 			for (int j = 0; j < 8; j ++) {

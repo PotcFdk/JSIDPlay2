@@ -73,7 +73,7 @@ public abstract class AudioDriver {
 	 * Set fast forward factor for drivers that support it.
 	 * (Only JavaSound to fast-forward emulation quickly.)
 	 * 
-	 * @param factor
+	 * @param factor The factor to fast forward by.
 	 */
 	public synchronized void setFastForward(int factor) {
 		fastForward = factor;

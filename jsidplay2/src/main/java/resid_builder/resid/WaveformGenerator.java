@@ -91,7 +91,7 @@ public final class WaveformGenerator {
 	 * 1.0 means perfect 8580-like linearity, values between 0.95 - 0.97
 	 * are probably realistic 6581 nonlinearity values.
 	 * 
-	 * @param chipModel
+	 * @param chipModel The {@link ChipModel} to use.
 	 */
 	protected void setChipModel(final ChipModel chipModel) {
 		final double dacBits[] = new double[12];

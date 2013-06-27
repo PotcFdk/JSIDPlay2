@@ -36,11 +36,10 @@ public class AudioConfig {
 	/**
 	 * This instance represents the requested audio configuration
 	 * 
-	 * @param frameRate
-	 * @param channels
+	 * @param frameRate The desired audio framerate.
+	 * @param channels  The number of audio channels to use.
 	 */
-	public AudioConfig(int frameRate, int channels,
-			SamplingMethod samplingMethod) {
+	public AudioConfig(int frameRate, int channels, SamplingMethod samplingMethod) {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.samplingMethod = samplingMethod;
@@ -49,7 +48,7 @@ public class AudioConfig {
 	/**
 	 * Return a detached AudioConfig instance corresponding to current parameters.
 	 * 
-	 * @param channels
+	 * @param channels The number of audio channels to use.
 	 * @return AudioConfig for current specification
 	 */
 	public static AudioConfig getInstance(IAudioSection audio, int channels) {
@@ -57,9 +56,9 @@ public class AudioConfig {
 	}
 
 	/**
-	 * Return currently requested framerate.
+	 * Gets the audio framerate of this AudioConfig.
 	 * 
-	 * @return framerate
+	 * @return The audio framerate of this AudioConfig.
 	 */
 	public int getFrameRate() {
 		return frameRate;
@@ -77,18 +76,18 @@ public class AudioConfig {
 	}
 
 	/**
-	 * Return size of audio buffer in frames.
+	 * Gets the size of this AudioConfig's audio buffer in frames.
 	 * 
-	 * @return
+	 * @return The size of this AudioConfig's audio buffer in frames.
 	 */
 	public int getBufferFrames() {
 		return bufferFrames;
 	}
 
 	/**
-	 * SID sampling method
+	 * Gets the SID sampling method used by this AudioConfig.
 	 * 
-	 * @return
+	 * @return The SID sampling method used by this AudioConfig.
 	 */
 	public SamplingMethod getSamplingMethod() {
 		return samplingMethod;

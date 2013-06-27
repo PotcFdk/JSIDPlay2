@@ -16,10 +16,10 @@ public final class SIDWrite {
 	 * This command is a general write command to SID.
 	 * Reg must be between 0 .. 0x1f and cycles > 0.
 	 * 
-	 * @param chip
-	 * @param reg
-	 * @param data
-	 * @param cycles
+	 * @param chip    The specified SID chip to write to.
+	 * @param reg     The SID register to write to.
+	 * @param data    The data to write to the specified SID register.
+	 * @param cycles  Cycles to spend on writing the data.
 	 * @throws InvalidCommandException
 	 */
 	public SIDWrite(final int chip, final byte reg, final byte data, final int cycles) throws InvalidCommandException {
@@ -58,9 +58,10 @@ public final class SIDWrite {
 	 * This command instructs AudioGeneratorThread about the need to execute a pure delay on specified SID.
 	 * Throws if cycles < 0.
 	 * 
-	 * @param sid
-	 * @param cycles
-	 * @return
+	 * @param sid    The SID to execute a pure delay on.
+	 * @param cycles Amount of cycles to execute the pure delay for.
+	 *
+	 * @return A new SIDWrite instance.
 	 * @throws InvalidCommandException
 	 */
 	public static SIDWrite makePureDelay(final int sid, final int cycles) throws InvalidCommandException {
@@ -70,7 +71,7 @@ public final class SIDWrite {
 	/**
 	 * Is command a no-write command?
 	 * 
-	 * @return
+	 * @return True if the command is a no-write command; false otherwise.
 	 */
 	protected boolean isPureDelay() {
 		return reg == PURE_DELAY;
@@ -79,7 +80,7 @@ public final class SIDWrite {
 	/**
 	 * This command instructs AudioGeneratorThread to exit cleanly.
 	 * 
-	 * @return
+	 * @return A new SIDWrite instance.
 	 */
 	public static SIDWrite makeEnd() {
 		return new SIDWrite(0, END);
@@ -88,24 +89,44 @@ public final class SIDWrite {
 	/**
 	 * Is an "END" command?
 	 * 
-	 * @return
+	 * @return True if the reg is an END command; false otherwise.
 	 */
 	protected boolean isEnd() {
 		return reg == END;
 	}
-	
+
+	/**
+	 * Gets the SID chip being used in this SIDWrite instance.
+	 *
+	 * @return The SID chip being used in this SIDWrite instance.
+	 */
 	protected int getChip() {
 		return chip;
 	}
-	
+
+	/**
+	 * Gets the register being written to in this SIDWrite instance.
+	 *
+	 * @return The register being written to in this SIDWrite instance.
+	 */
 	protected byte getRegister() {
 		return reg;
 	}
-	
+
+	/**
+	 * Gets the value being written to the register in this SIDWrite instance.
+	 *
+	 * @return The value being written to the register in this SIDWrite instance.
+	 */
 	protected byte getValue() {
 		return value;
 	}
-	
+
+	/**
+	 * Gets the number of cycles writing will take in this SIDWrite instance.
+	 *
+	 * @return The number of cycles writing will take in this SIDWrite instance.
+	 */
 	protected int getCycles() {
 		return cycles;
 	}

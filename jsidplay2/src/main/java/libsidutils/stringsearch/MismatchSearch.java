@@ -59,7 +59,7 @@ abstract class MismatchSearch extends StringSearch {
 	 * @param pattern
 	 *            the <code>byte</code> array containing the pattern, may not be
 	 *            <code>null</code>
-	 * @see com.eaio.stringsearch.StringSearch#processBytes(byte[])
+	 * @see StringSearch#processBytes(byte[])
 	 * @see #processBytes(byte[], int)
 	 */
 	@Override
@@ -89,7 +89,7 @@ abstract class MismatchSearch extends StringSearch {
 	 *            <code>null</code>
 	 * @return an Object
 	 * @see #processChars(char[], int)
-	 * @see com.eaio.stringsearch.StringSearch#processChars(char[])
+	 * @see StringSearch#processChars(char[])
 	 */
 	@Override
 	public final Object processChars(char[] pattern) {
@@ -129,8 +129,7 @@ abstract class MismatchSearch extends StringSearch {
 	 */
 
 	/**
-	 * @see com.eaio.stringsearch.StringSearch#searchBytes(byte[], int, int,
-	 *      byte[], Object)
+	 * @see StringSearch#searchBytes(byte[], int, int, byte[], Object)
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
 	@Override

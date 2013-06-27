@@ -596,7 +596,7 @@ public abstract class MPS803 extends SerialIECDevice implements
 	/**
 	 * Bit image printing.
 	 * 
-	 * @param c
+	 * @param c The bitmask to print.
 	 */
 	private void printBitmask(final byte c) {
 		for (int y = 0; y < CHAR_HEIGHT; y++) {

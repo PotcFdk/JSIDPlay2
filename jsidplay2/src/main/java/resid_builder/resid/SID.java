@@ -99,18 +99,18 @@ public final class SID {
 	/**
 	 * Estimate DAC nonlinearity. The SID contains R-2R ladder, and some likely errors
 	 * in the resistor lengths which result in errors depending on the bits chosen.
-	 * 
+	 * <P>
 	 * This model was derived by Dag Lem, and is port of the upcoming reSID version.
 	 * In average, it shows a value higher than the target by a value that depends
 	 * on the _2R_div_R parameter. It differs from the version written by Antti Lankila
 	 * chiefly in the emulation of the lacking termination of the 2R ladder, which
 	 * destroys the output with respect to the low bits of the DAC.
-	 * 
+	 * <P>
+	 * Returns the analog value as modeled from the R-2R network.
+	 *
 	 * @param dac digital value to convert to analog
 	 * @param _2R_div_R nonlinearity parameter, 1.0 for perfect linearity.
 	 * @param term is the dac terminated by a 2R resistor? (6581 DACs are not)
-	 * 
-	 * @return the analog value as modeled from the R-2R network.
 	 */
 	public static void kinkedDac(final double[] dac, final double _2R_div_R, final boolean term) {
 		final double INFINITY = 1e6;
@@ -413,12 +413,11 @@ public final class SID {
 	 * @param clockFrequency System clock frequency at Hz
 	 * @param method sampling method to use
 	 * @param samplingFrequency Desired output sampling rate
-	 * @return success
 	 */
 	public void setSamplingParameters(final double clockFrequency, final SamplingMethod method, final double samplingFrequency, final double highestAccurateFrequency) {
 		filter6581.setClockFrequency(clockFrequency);
 		filter8580.setClockFrequency(clockFrequency);
-		externalFilter.setClockFrequency(clockFrequency);		
+		externalFilter.setClockFrequency(clockFrequency);
 
 		switch (method) {
 		case DECIMATE:

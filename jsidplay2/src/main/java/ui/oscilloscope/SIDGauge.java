@@ -14,14 +14,14 @@ abstract class SIDGauge extends Gauge {
 	/**
 	 * Sample audio from provided SID.
 	 * 
-	 * @param sid
+	 * @param sid The SID to sample audio from.
 	 */
 	public abstract void sample(SIDEmu sid);
 
 	/**
 	 * Redraw gauge. SID is passed to maybe update label etc.
 	 * 
-	 * @param sid
+	 * @param sid SID to redraw the gauge for.
 	 */
 	public void updateGauge(SIDEmu sid) {
 		updateGauge();

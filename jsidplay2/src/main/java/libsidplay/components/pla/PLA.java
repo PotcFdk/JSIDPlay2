@@ -241,7 +241,7 @@ public final class PLA {
 	 * 
 	 * Calls permitted during PHI1.
 	 * 
-	 * @param state
+	 * @param state BA state.
 	 */
 	public void setBA(final boolean state) {
 		/* only react to changes in state */
@@ -269,7 +269,7 @@ public final class PLA {
 	 * 
 	 * Calls permitted during PHI1.
 	 * 
-	 * @param state
+	 * @param state DMA state.
 	 */
 	public void setDMA(final boolean state) {
 		cartridgeDma = state;
@@ -291,7 +291,7 @@ public final class PLA {
 	 * 
 	 * Calls permitted any time, but normally originated by chips at PHI1.
 	 * 
-	 * @param state
+	 * @param state NMI state.
 	 */
 	public void setNMI(final boolean state) {
 		if (state) {
@@ -313,7 +313,7 @@ public final class PLA {
 	 * 
 	 * Calls permitted any time, but normally originated by chips at PHI1.
 	 * 
-	 * @param state
+	 * @param state IRQ state.
 	 */
 	public void setIRQ(final boolean state) {
 		if (state) {

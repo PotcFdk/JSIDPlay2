@@ -53,14 +53,23 @@ public abstract class SidTune {
 		}
 	}
 
+	/**
+	 * Possible clock speeds of a SidTune.
+	 */
 	public enum Clock {
 		UNKNOWN, PAL, NTSC, ANY
 	}
 
+	/**
+	 * Possible models the SidTunes were meant to play on.
+	 */
 	public enum Model {
 		UNKNOWN, MOS6581, MOS8580, ANY
 	}
 
+	/**
+	 * SID types the SidTune may be compatible with.
+	 */
 	public enum Compatibility {
 		PSIDv3, PSIDv2, PSIDv1, RSID, RSID_BASIC
 	}
@@ -70,13 +79,25 @@ public abstract class SidTune {
 	protected final Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
 
 	/** Known SID names. MUS loader scans for these. */
-	private static final String defaultMusNames[] = new String[] { ".mus",
-			".str" };
+	private static final String defaultMusNames[] = new String[] { ".mus", ".str" };
 
+	/**
+	 * Constructor
+	 */
 	protected SidTune() {
 		Arrays.fill(songSpeed, Speed.VBI);
 	}
 
+	/**
+	 * Loads a file into a SidTune.
+	 *
+	 * @param f The file to load.
+	 *
+	 * @return A SidTune instance of the specified file to load.
+	 *
+	 * @throws IOException
+	 * @throws SidTuneError
+	 */
 	public static SidTune load(final File f) throws IOException, SidTuneError {
 		if (f.getName().toLowerCase().endsWith(".mp3")) {
 			return MP3Tune.load(f);
@@ -203,8 +224,7 @@ public abstract class SidTune {
 	 * @throws FileNotFoundException
 	 *             file not found
 	 */
-	protected static InputStream getInputStream(final File f)
-			throws IOException, FileNotFoundException {
+	protected static InputStream getInputStream(final File f) throws IOException, FileNotFoundException {
 		final InputStream stream;
 		if (f instanceof ZipEntryFileProxy) {
 			stream = ((ZipEntryFileProxy) f).getInputStream();
@@ -214,8 +234,17 @@ public abstract class SidTune {
 		return stream;
 	}
 
-	public static SidTune load(final InputStream stream) throws IOException,
-			SidTuneError {
+	/**
+	 * Loads an InputStream into a SidTune.
+	 *
+	 * @param stream The InputStream to load.
+	 *
+	 * @return A SidTune of the specified InputStream.
+	 *
+	 * @throws IOException  If the stream cannot be read.
+	 * @throws SidTuneError
+	 */
+	public static SidTune load(final InputStream stream) throws IOException, SidTuneError {
 		// ancient .mus and whatnot support.
 		final int maxLength = 65536;
 		final byte[] fileBuf1 = new byte[65536];
@@ -253,8 +282,9 @@ public abstract class SidTune {
 	 * Select sub-song (0 = default starting song) and return active song number
 	 * out of [1,2,..,SIDTUNE_MAX_SONGS].
 	 * 
-	 * @param selectedSong
-	 * @return
+	 * @param selectedSong The chosen song.
+	 *
+	 * @return The active song number.
 	 */
 	public int selectSong(final int selectedSong) {
 		int song = selectedSong;
@@ -268,7 +298,7 @@ public abstract class SidTune {
 	/**
 	 * Retrieve sub-song specific information. Beware! Still member-wise copy!
 	 * 
-	 * @return
+	 * @return Sub-song specific information about the currently loaded tune.
 	 */
 	public final SidTuneInfo getInfo() {
 		return info;
@@ -284,7 +314,7 @@ public abstract class SidTune {
 	public abstract int placeProgramInMemory(final byte[] c64buf);
 
 	/**
-	 * @param destFileName
+	 * @param destFileName Destination for the file.
 	 * @param overWriteFlag
 	 *            true = Overwrite existing file, false = Default<BR>
 	 *            One could imagine an "Are you sure ?"-checkbox before
@@ -305,9 +335,11 @@ public abstract class SidTune {
 	 * Does not affect status of object, and therefore can be used to load
 	 * files. Error string is put into info.statusString, though.
 	 * 
-	 * @param f
-	 * @return
-	 * @throws FileNotFoundException
+	 * @param f The file to load.
+	 *
+	 * @return The data of the loaded file.
+	 *
+	 * @throws FileNotFoundException if the file could not be found.
 	 */
 	private static byte[] loadFile(final File f) throws IOException {
 		final InputStream stream = getInputStream(f);
@@ -325,7 +357,7 @@ public abstract class SidTune {
 	/**
 	 * Convert 32-bit PSID-style speed word to internal tables.
 	 * 
-	 * @param speed
+	 * @param speed The speed to convert.
 	 */
 	protected void convertOldStyleSpeedToTables(long speed) {
 		for (int s = 0; s < SIDTUNE_MAX_SONGS; s++) {
@@ -338,8 +370,15 @@ public abstract class SidTune {
 		}
 	}
 
-	protected static String convertPetsciiToAscii(final byte[] petscii,
-			final int startOffset) {
+	/**
+	 * Converts Petscii to Ascii.
+	 *
+	 * @param petscii     The Petscii encoded data.
+	 * @param startOffset The offset to begin converting the Petscii data to Ascii.
+	 *
+	 * @return The Petscii data converted to ASCII.
+	 */
+	protected static String convertPetsciiToAscii(final byte[] petscii, final int startOffset) {
 		StringBuilder result = new StringBuilder();
 		for (int idx = startOffset; idx < petscii.length; idx++) {
 			final short out = _sidtune_CHRtab[petscii[idx] & 0xff];
@@ -394,6 +433,13 @@ public abstract class SidTune {
 		return speed;
 	}
 
+	/**
+	 * Gets the speed of the selected song.
+	 *
+	 * @param selected The song to get the speed of.
+	 *
+	 * @return The speed of the selected song.
+	 */
 	public Speed getSongSpeed(int selected) {
 		return songSpeed[selected - 1];
 	}

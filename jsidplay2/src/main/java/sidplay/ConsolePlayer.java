@@ -268,15 +268,15 @@ public class ConsolePlayer {
 	}
 
 	/**
-	 * Create the sid emulation
+	 * Create the SID emulation.
 	 * 
-	 * @param emu
-	 * @param audioConfig
-	 * @param cpuFrequency
-	 * @return
+	 * @param emu          The SID emulation to use (ReSID, HardSID, etc).
+	 * @param audioConfig  The {@link AudioConfig} to use for the SID emulation.
+	 * @param cpuFrequency The CPU frequency to use for the SID.
+	 *
+	 * @return True if the SID emulation could be created; false otherwise.
 	 */
-	public boolean createSidEmu(final SIDEMUS emu, AudioConfig audioConfig,
-			double cpuFrequency) {
+	public boolean createSidEmu(final SIDEMUS emu, AudioConfig audioConfig, double cpuFrequency) {
 		sidEmuFactory = null;
 
 		switch (emu) {
@@ -806,10 +806,10 @@ public class ConsolePlayer {
 	}
 
 	/**
-	 * Convert time from integer
+	 * Convert time from integer.
 	 * 
-	 * @param str
-	 * @return
+	 * @param str The time string to parse.
+	 * @return The time as an integer.
 	 */
 	long parseTime(final String str) {
 		int sep;
@@ -845,7 +845,7 @@ public class ConsolePlayer {
 	/**
 	 * Parse command line arguments
 	 * 
-	 * @param argv
+	 * @param argv The command line arguments.
 	 * @return
 	 */
 	public int args(final String[] argv) {
@@ -1092,7 +1092,6 @@ public class ConsolePlayer {
 	 * 
 	 * @param t
 	 *            SidTune to load.
-	 * @return 0 - OK, -1 means load error
 	 */
 	public void loadTune(final SidTune t) {
 		// Next time player is used, the track is reset

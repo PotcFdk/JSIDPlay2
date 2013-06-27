@@ -334,7 +334,7 @@ public abstract class MOS6526 extends Bank {
 		/**
 		 * Create a new timer.
 		 * 
-		 * @param eventName
+		 * @param eventName The name of the new timer.
 		 */
 		public Timer(final String eventName) {
 			super(eventName);
@@ -344,7 +344,7 @@ public abstract class MOS6526 extends Bank {
 		 * Set CRA/CRB control register.
 		 * 
 		 * @param cr
-		 *            control register value
+		 *          Control register value
 		 */
 		public final void setControlRegister(final byte cr) {
 			state &= ~CIAT_CR_MASK;
@@ -1076,7 +1076,7 @@ public abstract class MOS6526 extends Bank {
 	}
 
 	/**
-	 * Set day-of-time event occurence of rate.
+	 * Set day-of-time event occurrence of rate.
 	 * 
 	 * @param clock
 	 */

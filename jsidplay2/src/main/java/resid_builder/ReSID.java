@@ -27,6 +27,9 @@ import resid_builder.resid.ISIDDefs.SamplingMethod;
 import resid_builder.resid.SID;
 import sidplay.ini.intf.IFilterSection;
 
+/**
+ * ReSID emulation.
+ */
 public class ReSID extends SIDEmu {
 	private static final Logger RESID = Logger.getLogger(ReSID.class.getName());
 
@@ -38,10 +41,16 @@ public class ReSID extends SIDEmu {
 
 	protected int position;
 	
-	protected int buffer[];
+	protected int[] buffer;
 
 	private final ReSIDBuilder.MixerEvent mixerEvent;
-	
+
+	/**
+	 * Constructor
+	 *
+	 * @param context    {@link EventScheduler} context to use.
+	 * @param mixerEvent {@link MixerEvent} to use.
+	 */
 	public ReSID(EventScheduler context, MixerEvent mixerEvent) {
 		super(context);
 		this.mixerEvent = mixerEvent;
@@ -112,20 +121,31 @@ public class ReSID extends SIDEmu {
 		sid.mute(num, mute);
 	}
 
-	public void sampling(final double systemclock, final float freq, final SamplingMethod method) {
-		sid.setSamplingParameters(systemclock, method, freq, 20000);
+	/**
+	 * Sets the SID sampling parameters.
+	 *
+	 * @param systemClock System clock to use for the SID.
+	 * @param freq        Frequency to use for the SID.
+	 * @param method      {@link SamplingMethod} to use for the SID.
+	 */
+	public void sampling(final double systemClock, final float freq, final SamplingMethod method) {
+		sid.setSamplingParameters(systemClock, method, freq, 20000);
 	}
 
 	/**
 	 * Set the emulated SID model
 	 * 
-	 * @param model
+	 * @param model The emulated SID chip model to use.
 	 */
 	public void model(final ChipModel model) {
 		sid.setChipModel(model);
 	}
 
-	// Standard component functions
+	/**
+	 * Credits string.
+	 *
+	 * @return String of credits.
+	 */
 	public static final String credits() {
 		String m_credit = "ReSID V" + VERSION + " Engine:\n";
 		m_credit += "\tCopyright (C) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
@@ -135,6 +155,13 @@ public class ReSID extends SIDEmu {
 		return m_credit;
 	}
 
+	// Getters and setters.
+
+	/**
+	 * Gets the {@link SID} instance being used.
+	 *
+	 * @return The {@link SID} instance being used.
+	 */
 	public SID sid() {
 		return sid;
 	}
@@ -143,14 +170,30 @@ public class ReSID extends SIDEmu {
 	public ChipModel getChipModel() {
 		return sid.getChipModel();
 	}
-	
+
+	/**
+	 * Gets the current position that audio is being written to.
+	 *
+	 * @return The current position that audio is being written to.
+	 */
 	public int getPosition() {
 		return position;
 	}
+
+	/**
+	 * Sets the position to write audio to the buffer.
+	 *
+	 * @param position The new position to start at.
+	 */
 	public void setPosition(final int position) {
 		this.position = position;
 	}
 
+	/**
+	 * Gets the audio output sample buffer.
+	 *
+	 * @return The audio output sample buffer.
+	 */
 	public int[] getBuffer() {
 		return buffer;
 	}

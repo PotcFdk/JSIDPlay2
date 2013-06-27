@@ -87,6 +87,7 @@ public abstract class Keyboard {
 	 * Get read adjustment for CIA 1 register PRA
 	 * 
 	 * @param selected
+	 *            Columns to read.
 	 *
 	 * @return selected keyboard columns
 	 */
@@ -96,11 +97,10 @@ public abstract class Keyboard {
 
 	/**
 	 * Get read adjustment for CIA 1 register PRB
-	 * 
-	 * @param selected
-	 * 
+	 *
 	 * @param selected
 	 *            columns to read
+	 *
 	 * @return selected keyboard rows
 	 */
 	public byte readRow(byte selected) {
