@@ -15,6 +15,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -27,6 +29,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import libsidutils.PathUtils;
 import libsidutils.zip.ZipEntryFileProxy;
@@ -55,6 +58,10 @@ public class DiskCollection extends C64Tab {
 	private ImageView screenshot;
 	@FXML
 	private TreeView<File> fileBrowser;
+	@FXML
+	private ContextMenu contextMenu;
+	@FXML
+	private MenuItem start, attachDisk;
 	@FXML
 	private TextField collectionDir;
 
@@ -191,6 +198,19 @@ public class DiskCollection extends C64Tab {
 				}
 			}
 		});
+		contextMenu.setOnShown(new EventHandler<WindowEvent>() {
+
+			@Override
+			public void handle(WindowEvent event) {
+				TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
+						.getSelectedItem();
+				boolean disable = selectedItem == null
+						|| !selectedItem.getValue().isFile()
+						|| selectedItem.equals(fileBrowser.getRoot());
+				start.setDisable(disable);
+				attachDisk.setDisable(disable);
+			}
+		});
 	}
 
 	public DiscCollectionType getType() {
@@ -228,6 +248,18 @@ public class DiskCollection extends C64Tab {
 				e2.printStackTrace();
 			}
 		}
+	}
+
+	@FXML
+	private void attachDisk() {
+		insertMedia(IInsertMedia.MediaType.DISK, fileBrowser
+				.getSelectionModel().getSelectedItem().getValue(), null);
+	}
+
+	@FXML
+	private void start() {
+		attachAndRunDemo(fileBrowser.getSelectionModel().getSelectedItem()
+				.getValue(), null);
 	}
 
 	@FXML

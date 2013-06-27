@@ -135,6 +135,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	private boolean duringInitialization;
 	private Timeline timer;
+	private boolean oldMotorOn;
 	private int oldHalfTrack;
 	private Scene scene;
 	private int hardcopyCounter;
@@ -1104,36 +1105,20 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		// Get status information of the first disk drive
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
-		boolean motor = getConfig().getC1541().isDriveSoundOn()
+		boolean motorOn = getConfig().getC1541().isDriveSoundOn()
 				&& getConsolePlayer().getState() == ConsolePlayer.playerRunning
 				&& c1541.getDiskController().isMotorOn();
-		if (motor) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					MOTORSOUND_AUDIOCLIP.play();
-				}
-			});
-		} else {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					MOTORSOUND_AUDIOCLIP.stop();
-				}
-			});
+		if (!oldMotorOn && motorOn) {
+			MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);
+			MOTORSOUND_AUDIOCLIP.play();
+		} else if (oldMotorOn && !motorOn) {
+			MOTORSOUND_AUDIOCLIP.stop();
 		}
+		oldMotorOn = motorOn;
 		// Read/Write head position (half tracks)
 		final int halfTrack = c1541.getDiskController().getHalfTrack();
-		if (oldHalfTrack != halfTrack && motor) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					TRACKSOUND_AUDIOCLIP.play();
-				}
-			});
+		if (oldHalfTrack != halfTrack && motorOn) {
+			TRACKSOUND_AUDIOCLIP.play();
 		}
 		oldHalfTrack = halfTrack;
 		// Get status information of the datasette

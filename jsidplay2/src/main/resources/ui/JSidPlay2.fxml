@@ -239,8 +239,7 @@
 					<MusicCollection type="HVSC" text="%HVSC"
 						collectionURL="http://www.hvsc.de/" dbName="HVSC" />
 					<MusicCollection type="CGSC" text="%CGSC"
-						collectionURL="http://www.btinternet.com/~pweighill/music/"
-						dbName="CGSC" />
+						collectionURL="http://www.c64music.co.uk/" dbName="CGSC" />
 					<DiskCollection type="HVMEC" text="%HVMEC" />
 					<DiskCollection type="DEMOS" text="%DEMOS" />
 					<DiskCollection type="MAGS" text="%MAGS" />

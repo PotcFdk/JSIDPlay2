@@ -15,6 +15,8 @@
 <?import ui.directory.Directory?>
 <?import javafx.scene.control.ScrollPane?>
 <?scenebuilder-preview-i18n-resource DiskCollection.properties?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<GridPane>
@@ -27,7 +29,16 @@
 			<Directory fx:id="directory" />
 		</TitledPane>
 		<TreeView fx:id="fileBrowser" GridPane.rowIndex="1"
-			GridPane.columnIndex="1" minWidth="300" />
+			GridPane.columnIndex="1" minWidth="300">
+			<contextMenu>
+				<ContextMenu fx:id="contextMenu">
+					<items>
+						<MenuItem  fx:id="start" text="%START" onAction="#start" />
+						<MenuItem  fx:id="attachDisk" text="%ATTACH_DISK" onAction="#attachDisk" />
+					</items>
+				</ContextMenu>
+			</contextMenu>
+		</TreeView>
 		<TitledPane text="%SCREENSHOT" collapsible="false"
 			GridPane.rowIndex="1" GridPane.columnIndex="2" minWidth="320"
 			maxHeight="550">

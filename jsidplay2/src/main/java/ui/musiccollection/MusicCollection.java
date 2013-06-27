@@ -132,8 +132,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	@FXML
 	private ComboBox<String> searchScope, searchResult;
 	@FXML
-	private Button startSearch, stopSearch, resetSearch, createSearchIndex,
-			linkCollectionURL;
+	private Button startSearch, stopSearch, resetSearch, createSearchIndex;
 	@FXML
 	private TextField collectionDir;
 	@FXML

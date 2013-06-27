@@ -26,6 +26,7 @@
 <?import ui.common.TypeTextField?>
 <?import ui.musiccollection.TuneInfoRowFactory?>
 <?scenebuilder-preview-i18n-resource MusicCollection.properties?>
+<?import javafx.scene.control.Hyperlink?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<GridPane>
@@ -175,7 +176,8 @@
 						</ImageView>
 					</graphic>
 				</Button>
-				<Button text="%DOWNLOAD" fx:id="linkCollectionURL" onAction="#gotoURL" />
+				<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
+					onAction="#gotoURL" />
 			</HBox>
 		</TitledPane>
 	</GridPane>
