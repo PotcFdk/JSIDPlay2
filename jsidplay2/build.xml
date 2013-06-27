@@ -267,15 +267,6 @@
 	</target>
 
 	<!-- ================================= 
-          target: jsiddevice
-          Description:
-          Create a deployable form of JSIDDevice,
-          that is a Network SID Device of ACID64 player
-          (http://www.acid64.com).
-         ================================= -->
-	<target name="jsiddevice" depends="jsiddevice_jar,jsiddevice_shrink" description="Create a deployable form of JSIDDevice" />
-
-	<!-- ================================= 
           target: compress_exe
           Description:
           Shrink JSIDDevice, but
