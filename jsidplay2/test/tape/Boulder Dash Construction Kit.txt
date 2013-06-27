@@ -1,3 +1,0 @@
-REM Load instructions:
-load "construct kit",1
-run

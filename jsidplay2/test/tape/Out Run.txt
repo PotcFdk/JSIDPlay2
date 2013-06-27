@@ -1,3 +1,0 @@
-REM Load instructions:
-load "a route",1
-run

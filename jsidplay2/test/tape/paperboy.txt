@@ -1,3 +1,0 @@
-REM Load instructions:
-load "paperboy",1
-run

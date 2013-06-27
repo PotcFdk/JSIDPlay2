@@ -1,2 +1,0 @@
-REM Load instructions:
-load "spiky harold",1

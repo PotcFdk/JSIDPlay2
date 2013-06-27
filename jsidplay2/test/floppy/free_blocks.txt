@@ -1,7 +1,0 @@
-Get free blocks of currently inserted disk:
-
-1. Load free_blocks.prg without autostart into Ram.
-3. gosub 1050           - how many blocks are free?
-4. print fb             - print result
-
-Source: http://c64.tricos.de/code-floppy.php

@@ -1,8 +1,0 @@
-Get floppy error status:
-
-1. Load floppy_analysis.prg without autostart into Ram.
-2. o=8                - set device ID
-3. gosub 1090         - read floppy status
-4. print er$          - print error message
-
-Source: http://c64.tricos.de/code-floppy.php

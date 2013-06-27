@@ -1,2 +1,0 @@
-REM Load instructions:
-load "great escape",1
