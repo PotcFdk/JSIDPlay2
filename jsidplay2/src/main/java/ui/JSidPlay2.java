@@ -488,8 +488,10 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+		File lastDirectoryFile = ((SidPlay2Section) (getConfig().getSidplay2()))
+				.getLastDirectoryFile();
+		if (lastDirectoryFile != null && lastDirectoryFile.isDirectory())
+			fileDialog.setInitialDirectory(lastDirectoryFile);
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
 						TapeFileExtensions.EXTENSIONS));
@@ -596,8 +598,10 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+		File lastDirectoryFile = ((SidPlay2Section) (getConfig().getSidplay2()))
+				.getLastDirectoryFile();
+		if (lastDirectoryFile != null && lastDirectoryFile.isDirectory())
+			fileDialog.setInitialDirectory(lastDirectoryFile);
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
 						DiskFileExtensions.EXTENSIONS));
@@ -638,8 +642,10 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertCartridge() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+		File lastDirectoryFile = ((SidPlay2Section) (getConfig().getSidplay2()))
+				.getLastDirectoryFile();
+		if (lastDirectoryFile != null && lastDirectoryFile.isDirectory())
+			fileDialog.setInitialDirectory(lastDirectoryFile);
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
