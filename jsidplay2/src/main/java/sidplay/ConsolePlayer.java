@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -1039,17 +1040,13 @@ public class ConsolePlayer {
 			return -1;
 		}
 		try {
-			if (new URL(argv[infile]).getProtocol().equals("file")) {
+			try (InputStream stream = new URL(argv[infile])
+			.openConnection().getInputStream()) {
+					// load from URL
+					loadTune(SidTune.load(stream));
+			} catch (MalformedURLException e) {
 				// load from file
 				loadTune(SidTune.load(new File(argv[infile])));
-			} else {
-				try (InputStream stream = new URL(argv[infile])
-						.openConnection().getInputStream()) {
-					// load from URL (ui version)
-					loadTune(SidTune.load(stream));
-					// XXX what to set if URL?
-					tune.getInfo().file = null;
-				}
 			}
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
