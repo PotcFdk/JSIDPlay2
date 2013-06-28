@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+<?scenebuilder-preview-i18n-resource YesNoDialog.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<VBox alignment="CENTER">
