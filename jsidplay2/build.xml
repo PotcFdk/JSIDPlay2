@@ -12,72 +12,14 @@
 		Create deployable JARS from scratch, sign and upload to the Web hoster
     </description>
 
-	<!-- Additional tasks classloader definition -->
-	<typedef uri="antlib:net.jtools.classloadertask" resource="net/jtools/classloadertask/antlib.xml">
-		<classpath>
-			<fileset dir="${basedir}/antlib" includes="ant-classloadertask.jar" />
-		</classpath>
-	</typedef>
-	<cl:classloader loader="project">
-		<classpath>
-			<fileset dir="${basedir}/antlib" includes="jsch-0.1.45.jar" />
-			<fileset dir="${basedir}/antlib" includes="proguard.jar" />
-			<fileset dir="${basedir}/antlib" includes="commons-net-3.1.jar" />
-			<fileset dir="${launch4j.bindir}" includes="launch4j.jar" />
-			<fileset dir="${launch4j.bindir}/lib" includes="xstream.jar" />
-		</classpath>
-	</cl:classloader>
-
-	<!-- ProGuard task definition -->
-	<taskdef resource="proguard/ant/task.properties" loaderref="project" />
-
-	<!-- Applet infos -->
-	<property name="name" value="Java SIDPlay2 - Music Player &amp; C64 SID Chip Emulator" />
-	<property name="width" value="1024" />
-	<property name="height" value="768" />
-	<!-- JNLP main class -->
-	<property name="jnlp_main_class" value="applet.JSIDPlay2Main" />
-	<!-- Main class of manifest files -->
-	<property name="mf_main_class" value="applet.JSIDPlay2Main" />
-	<property name="mf_main_class_console" value="sidplay.ConsolePlayer" />
-	<!-- main jar name of the player -->
-	<property name="mainJar" value="jsidplay2.jar" />
-	<property name="mainJarConsole" value="jsidplay2_console.jar" />
-	<!-- Applet Browser Icon -->
-	<property name="icon">jsidplay2.png</property>
-	<!-- Name of the archive containing the release of JSIDPlay2 -->
-	<property name="releaseName" value="jsidplay2-2.5" />
-	<!-- alias name of the key in the keystore to sign the JARs -->
-	<property name="sign_key_alias" value="jsidplay2" />
-
 	<!-- source folder to compile -->
 	<property name="src" location="${basedir}/src" />
 	<!-- encoding of java source files -->
 	<property name="src_encoding" value="ISO-8859-1" />
-	<!-- resources folder -->
-	<property name="res" location="${basedir}/res" />
 	<!-- binary folder of class files and resources -->
 	<property name="bin" location="${basedir}/bin" />
-	<!-- test source folder to compile -->
-	<property name="test_src" location="${basedir}/test" />
-	<!-- binary test folder of class files and resources -->
-	<property name="test_bin" location="${basedir}/test_bin" />
 	<!-- build result directory with deployable form of JSIDPlay2 -->
 	<property name="result_dir" location="${basedir}/result" />
-	<!-- test results directory -->
-	<property name="target.junit.results.dir" location="${basedir}/test_results" />
-	<!-- test report directory -->
-	<property name="target.junit.report.dir" location="${target.junit.results.dir}/test_report" />
-	<!-- result directory of C64Jukebox applet version -->
-	<property name="c64jukebox_dir" location="${result_dir}/C64Jukebox" />
-	<!-- name of the C64 jukebox JAR -->
-	<property name="c64jukebox_jar" value="c64jukebox.jar" />
-
-	<!-- jsiddevice -->
-	<property name="jsiddevice_jar" value="jsiddevice.jar" />
-	<property name="jsiddevice_exe" value="jsiddevice.exe" />
-	<property name="jsiddevice_zip" value="jsiddevice.zip" />
-	<property name="jsiddevice_main_class" value="netsiddev.NetworkSIDDevice" />
 	<!-- HVSC -->
 	<property name="hvsc_dir" location="${result_dir}/online/hvsc" />
 	<property name="hvsc_zip" value="C64Music.zip" />
@@ -113,43 +55,6 @@
 	<path id="class.path">
 		<fileset refid="jars" />
 	</path>
-	<!-- Test Class path of JSIDPlay2 -->
-	<fileset id="testjars" dir="${basedir}">
-		<include name="test/lib/*.jar" />
-	</fileset>
-	<path id="test.class.path">
-		<fileset refid="testjars" />
-	</path>
-	<!-- FEST task definition -->
-	<taskdef resource="festjunittasks" classpathref="test.class.path" />
-
-	<!-- Class path to be included in the manifest file -->
-	<pathconvert property="mf_class_path" pathsep=" " dirsep="">
-		<path refid="class.path" />
-		<map from="${basedir}/lib" to="" />
-	</pathconvert>
-	<!-- Get list of sizes of all files (used to determine jar sizes within jnlp) -->
-	<scriptdef name="getLength" language="javascript">
-		<attribute name="files" />
-		<attribute name="path" />
-		<attribute name="property" />
-		<![CDATA[
-	            fileNames = attributes.get("files");
-				path = attributes.get("path");
-	            propName = attributes.get("property");
-				buf = new java.lang.StringBuffer();
-				tok = new java.util.StringTokenizer(fileNames, " ");
-				while (tok.hasMoreTokens()) {
-					fileName = tok.nextToken();
-        			file = new java.io.File(new java.io.File(path), fileName);
-					buf.append(new java.lang.Integer(file.length()));
-					if (tok.hasMoreTokens()) {
-						buf.append(" ");
-					}
-				}
-		        project.setNewProperty(propName, buf.toString());
-	        ]]>
-	</scriptdef>
 
 	<!-- ================================= 
           target: deployOnlineContent
@@ -196,22 +101,6 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-	</target>
-
-	<!-- ================================= 
-          target: compress_exe
-          Description:
-          Shrink JSIDDevice, but
-          only if property upx.bindir is set and pointing to a valid
-          UPX (upx.sourceforge.net) installation.
-         ================================= -->
-	<target name="compress_exe" if="upx.bindir">
-		<exec executable="${upx.bindir}/upx">
-			<arg value="--lzma" />
-			<arg value="--best" />
-			<arg value="--ultra-brute" />
-			<arg file="${result_dir}/${jsiddevice_exe}" />
-		</exec>
 	</target>
 
 	<!-- =================================================== -->
