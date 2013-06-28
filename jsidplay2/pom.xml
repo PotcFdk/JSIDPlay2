@@ -140,7 +140,7 @@
 				<version>2.4</version>
 				<executions>
 					<execution>
-						<id>jar-install</id>
+						<id>jsidplay2-jar</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
@@ -161,7 +161,7 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>console_jar-install</id>
+						<id>jsidplay2_console-jar</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
@@ -186,7 +186,7 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>jar</id>
+						<id>jsidplay2-deploy-jar</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
@@ -206,7 +206,7 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>netsiddev</id>
+						<id>netsiddev-jar</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
@@ -237,6 +237,69 @@
 									<url>${project.url}</url>
 								</manifestEntries>
 							</archive>
+						</configuration>
+					</execution>
+					<execution>
+						<id>c64jukebox-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/*</include>
+							</includes>
+							<excludes>
+								<exclude>ui/**</exclude>
+								<exclude>hardsid/**</exclude>
+								<exclude>hardsid_builder/driver/**</exclude>
+								<exclude>hardsid_builder/lib/**</exclude>
+								<exclude>libpsid64/**</exclude>
+							</excludes>
+							<outputDirectory>${project.build.directory}/c64jukebox</outputDirectory>
+							<finalName>c64jukebox</finalName>
+							<archive>
+								<manifestEntries>
+									<mode>development</mode>
+									<url>${project.url}</url>
+								</manifestEntries>
+							</archive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>jsidplay2-copy-resources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/deploy/jsidplay2</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>c64jukebox-copy-resources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/c64jukebox</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/deploy/c64jukebox</directory>
+								</resource>
+							</resources>
 						</configuration>
 					</execution>
 				</executions>
@@ -376,28 +439,6 @@
 							<includes>
 								<include>*.jar</include>
 							</includes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<!-- here the phase you need -->
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/main/deploy</directory>
-								</resource>
-							</resources>
 						</configuration>
 					</execution>
 				</executions>
