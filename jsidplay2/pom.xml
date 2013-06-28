@@ -12,6 +12,13 @@
 
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+		<!-- FTP upload coordinates -->
+		<ftp.username />
+		<ftp.password />
+		<ftp.server />
+		<ftp.remotedir />
+		<!-- Web Server URL to be replaced in web resources -->
+		<server.url />
 	</properties>
 
 	<repositories>
@@ -283,6 +290,16 @@
 							<resources>
 								<resource>
 									<directory>src/main/deploy/jsidplay2</directory>
+									<excludes>
+										<exclude>**/*.htm</exclude>
+									</excludes>
+								</resource>
+								<resource>
+									<directory>src/main/deploy/jsidplay2</directory>
+									<filtering>true</filtering>
+									<includes>
+										<include>**/*.htm</include>
+									</includes>
 								</resource>
 							</resources>
 						</configuration>
@@ -298,6 +315,16 @@
 							<resources>
 								<resource>
 									<directory>src/main/deploy/c64jukebox</directory>
+									<excludes>
+										<exclude>**/*.htm</exclude>
+									</excludes>
+								</resource>
+								<resource>
+									<directory>src/main/deploy/c64jukebox</directory>
+									<filtering>true</filtering>
+									<includes>
+										<include>**/*.htm</include>
+									</includes>
 								</resource>
 							</resources>
 						</configuration>
@@ -439,6 +466,36 @@
 							<includes>
 								<include>*.jar</include>
 							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.goldin</groupId>
+				<artifactId>copy-maven-plugin</artifactId>
+				<version>0.2.5</version>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<targetPath>ftp://${ftp.username}:${ftp.password}@${ftp.server}:${ftp.remotedir}</targetPath>
+									<directory>${project.build.directory}/deploy</directory>
+								</resource>
+								<resource>
+									<targetPath>ftp://${ftp.username}:${ftp.password}@${ftp.server}:${ftp.remotedir}</targetPath>
+									<directory>${project.build.directory}/netsiddev</directory>
+								</resource>
+								<resource>
+									<targetPath>ftp://${ftp.username}:${ftp.password}@${ftp.server}:${ftp.remotedir}</targetPath>
+									<directory>${project.build.directory}/c64jukebox</directory>
+								</resource>
+							</resources>
 						</configuration>
 					</execution>
 				</executions>
