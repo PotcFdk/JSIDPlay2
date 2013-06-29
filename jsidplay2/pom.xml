@@ -429,7 +429,7 @@
 
 								<taskdef name="jfxdeploy" classname="com.sun.javafx.tools.ant.DeployFXTask"
 									classpathref="maven.plugin.classpath" />
-								<jfxdeploy width="1024" height="768"
+								<jfxdeploy updatemode="always" width="1024" height="768"
 									outdir="${project.build.directory}/deploy" outfile="${project.build.finalName}">
 									<info title="${project.name}" license="GPL" vendor="Ken Händel"
 										copyright="Copyright (C) 2007-2013 Ken Händel"
@@ -440,6 +440,9 @@
 									<application name="${project.name}" mainClass="ui.JSIDPlay2Main" />
 									<permissions elevated="true" cacheCertificates="true" />
 									<preferences menu="true" shortcut="true" install="true" />
+									<platform javafx="2.1+" j2se="1.7+">
+										<jvmarg value="-Xms512m" />
+									</platform>
 									<resources>
 										<fileset dir="${project.build.directory}/deploy"
 											includes="${project.artifactId}-${project.version}.jar" />
@@ -453,9 +456,6 @@
 										<fileset type="native" dir="${project.build.directory}/dependency"
 											includes="*-natives-osx.jar" os="Mac OS" />
 									</resources>
-									<platform javafx="2.2+" j2se="7.0+">
-										<jvmarg value="-Xms512m" />
-									</platform>
 								</jfxdeploy>
 							</target>
 						</configuration>
