@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 
 	<name>jsidplay2</name>
-	<url>kenchis.t15.org/jsidplay2</url>
+	<url>${server.url}</url>
 
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -135,9 +135,6 @@
 						<goals>
 							<goal>copy-dependencies</goal>
 						</goals>
-						<configuration>
-							<excludeScope>system</excludeScope>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -186,26 +183,6 @@
 								</manifest>
 								<manifestEntries>
 									<Class-Path>${project.artifactId}-${project.version}.jar</Class-Path>
-									<mode>development</mode>
-									<url>${project.url}</url>
-								</manifestEntries>
-							</archive>
-						</configuration>
-					</execution>
-					<execution>
-						<id>jsidplay2-deploy-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
-							<archive>
-								<manifest>
-									<addClasspath>true</addClasspath>
-									<mainClass>ui.JSIDPlay2Main</mainClass>
-								</manifest>
-								<manifestEntries>
 									<mode>development</mode>
 									<url>${project.url}</url>
 								</manifestEntries>
@@ -415,19 +392,65 @@
 						</goals>
 						<configuration>
 							<target>
-								<taskdef name="jfxdeploy" classname="com.sun.javafx.tools.ant.DeployFXTask"
+								<taskdef name="jfxjar" classname="com.sun.javafx.tools.ant.FXJar"
 									classpathref="maven.plugin.classpath" />
+								<jfxjar
+									destfile="${project.build.directory}/deploy/${project.artifactId}-${project.version}.jar">
 
-								<jfxdeploy width="1024" height="768"
-									outdir="${project.build.directory}/deploy" outfile="${project.build.finalName}">
-									<info title="${project.name}" />
-									<application name="${project.name}" mainclass="ui.JSIDPlay2Main" />
-									<permissions elevated="true" cacheCertificates="true" />
+									<!-- Details about application -->
+									<application name="${project.name}" mainClass="ui.JSIDPlay2Main" />
+
+									<!-- Define what auxilary resources are needed -->
 									<resources>
 										<fileset dir="${project.build.directory}/dependency"
 											includes="*.jar" />
 									</resources>
-									<platform javafx="2.0">
+
+									<!-- What to include into result jar file? Everything in the build 
+										tree -->
+									<fileset dir="${project.build.directory}/classes" />
+
+									<!-- Customize jar manifest (optional) -->
+									<manifest>
+										<attribute name="Implementation-Vendor" value="Ken Händel" />
+										<attribute name="Implementation-Version" value="${project.version}" />
+									</manifest>
+								</jfxjar>
+								<taskdef name="signjar" classname="com.sun.javafx.tools.ant.FXSignJarTask"
+									classpathref="maven.plugin.classpath" />
+								<signjar keystore="${project.build.directory}/keystore.jks"
+									alias="jsidplay2" storepass="jsidplay2" keypass="jsidplay2">
+									<fileset dir="${project.build.directory}/deploy"
+										includes="*.jar" />
+								</signjar>
+
+								<taskdef name="jfxdeploy" classname="com.sun.javafx.tools.ant.DeployFXTask"
+									classpathref="maven.plugin.classpath" />
+								<jfxdeploy width="1024" height="768"
+									outdir="${project.build.directory}/deploy" outfile="${project.build.finalName}">
+									<info title="${project.name}" license="GPL" vendor="Ken Händel"
+										copyright="Copyright (C) 2007-2013 Ken Händel"
+										description="Java SIDPlay2 - Music Player &amp; C64 SID Chip Emulator">
+										<icon href="${server.url}jsidplay2.png" kind="shortcut" />
+										<splash href="${server.url}jsidplay2.jpg" />
+									</info>
+									<application name="${project.name}" mainClass="ui.JSIDPlay2Main" />
+									<permissions elevated="true" cacheCertificates="true" />
+									<preferences menu="true" shortcut="true" install="true" />
+									<resources>
+										<fileset dir="${project.build.directory}/deploy"
+											includes="${project.artifactId}-${project.version}.jar" />
+										<fileset dir="${project.build.directory}/dependency"
+											includes="*.jar" excludes="*-natives-*.jar" />
+										<fileset type="native" dir="${project.build.directory}/dependency"
+											includes="*-natives-windows.jar" os="Windows" arch="x86 x86_64 amd64" />
+										<fileset type="native" dir="${project.build.directory}/dependency"
+											includes="*-natives-linux.jar" os="Linux"
+											arch="x86 i386 ia64 x84_64 amd64" />
+										<fileset type="native" dir="${project.build.directory}/dependency"
+											includes="*-natives-osx.jar" os="Mac OS" />
+									</resources>
+									<platform javafx="2.2+" j2se="7.0+">
 										<jvmarg value="-Xms512m" />
 									</platform>
 								</jfxdeploy>
@@ -444,31 +467,6 @@
 						<scope>system</scope>
 					</dependency>
 				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jarsigner-plugin</artifactId>
-				<version>1.2</version>
-				<executions>
-					<execution>
-						<id>sign</id>
-						<phase>package</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-						<configuration>
-							<verbose>true</verbose>
-							<keystore>${project.build.directory}/keystore.jks</keystore>
-							<alias>jsidplay2</alias>
-							<storepass>jsidplay2</storepass>
-							<keypass>jsidplay2</keypass>
-							<archiveDirectory>${project.build.directory}/deploy</archiveDirectory>
-							<includes>
-								<include>*.jar</include>
-							</includes>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>com.github.goldin</groupId>
