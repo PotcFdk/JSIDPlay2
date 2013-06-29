@@ -416,12 +416,15 @@
 										<attribute name="Implementation-Version" value="${project.version}" />
 									</manifest>
 								</jfxjar>
+
 								<taskdef name="signjar" classname="com.sun.javafx.tools.ant.FXSignJarTask"
 									classpathref="maven.plugin.classpath" />
 								<signjar keystore="${project.build.directory}/keystore.jks"
 									alias="jsidplay2" storepass="jsidplay2" keypass="jsidplay2">
-									<fileset dir="${project.build.directory}/deploy"
+									<fileset dir="${project.build.directory}/dependency"
 										includes="*.jar" />
+									<fileset dir="${project.build.directory}/deploy"
+										includes="${project.artifactId}-${project.version}.jar" />
 								</signjar>
 
 								<taskdef name="jfxdeploy" classname="com.sun.javafx.tools.ant.DeployFXTask"
