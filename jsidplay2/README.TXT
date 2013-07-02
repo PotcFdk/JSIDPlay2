@@ -1,21 +1,18 @@
 mvn clean package
 =================
 creates:
-target/deploy		-	webstart version, javafx
-target/install		-	local PC version, javafx
-target/netsiddev	-	network sid device
-target/c64jukebox	-	c64jukebox applet version
+target/standalone	-	local PC version, javafx
+target/deploy		-	website version
 
 mvn clean install
 =================
 creates: everything mentioned above
-and uploads to web-server
+and uploads target/deploy to web-server
 
-Set properties:
-in Eclipse: Preferences/Run/Debug StringSubstitution
+Set the following properties in Eclipse: Preferences/Run/Debug StringSubstitution
 or at command line: using -D
 
-e.g.:
+e.g.
 -Dftp.username=XXX
 -Dftp.password=XXX
 -Dftp.server=ftp.kenchis.t15.org

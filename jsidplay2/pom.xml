@@ -109,7 +109,7 @@
 							<goal>copy</goal>
 						</goals>
 						<configuration>
-							<nativesTargetDir>${project.build.directory}/install</nativesTargetDir>
+							<nativesTargetDir>${project.build.directory}/standalone</nativesTargetDir>
 							<separateDirs>false</separateDirs>
 						</configuration>
 					</execution>
@@ -120,21 +120,15 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>copy-dependencies-install</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/install</outputDirectory>
-						</configuration>
-					</execution>
-					<execution>
 						<id>copy-dependencies</id>
 						<phase>package</phase>
 						<goals>
 							<goal>copy-dependencies</goal>
 						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
+							<excludeArtifactIds>jinput-platform,junit</excludeArtifactIds>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -144,38 +138,12 @@
 				<version>2.4</version>
 				<executions>
 					<execution>
-						<id>jsidplay2-jar</id>
+						<id>jar-console</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}/install</outputDirectory>
-							<archive>
-								<manifest>
-									<addClasspath>true</addClasspath>
-									<mainClass>ui.JSIDPlay2Main</mainClass>
-								</manifest>
-								<manifestEntries>
-									<Class-Path>jfxrt.jar</Class-Path>
-									<mode>development</mode>
-									<url>${project.url}</url>
-								</manifestEntries>
-							</archive>
-						</configuration>
-					</execution>
-					<execution>
-						<id>jsidplay2_console-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<excludes>
-								<exclude>**/*</exclude>
-							</excludes>
-							<finalName>jsidplay2_console</finalName>
-							<outputDirectory>${project.build.directory}/install</outputDirectory>
 							<archive>
 								<manifest>
 									<addClasspath>false</addClasspath>
@@ -183,10 +151,14 @@
 								</manifest>
 								<manifestEntries>
 									<Class-Path>${project.artifactId}-${project.version}.jar</Class-Path>
-									<mode>development</mode>
 									<url>${project.url}</url>
 								</manifestEntries>
 							</archive>
+							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
+							<finalName>${project.name}_console-${project.version}</finalName>
+							<excludes>
+								<exclude>**/*</exclude>
+							</excludes>
 						</configuration>
 					</execution>
 					<execution>
@@ -210,14 +182,14 @@
 								<include>sidplay/ini/IniAudioSection.class</include>
 								<include>sidplay/ini/IniFilterSection.class</include>
 							</includes>
-							<outputDirectory>${project.build.directory}/netsiddev</outputDirectory>
-							<finalName>jsiddevice_tmp</finalName>
+							<outputDirectory>${project.build.directory}/archive-tmp</outputDirectory>
+							<finalName>jsiddevice-${project.version}</finalName>
 							<archive>
 								<manifest>
+									<addClasspath>false</addClasspath>
 									<mainClass>netsiddev.NetworkSIDDevice</mainClass>
 								</manifest>
 								<manifestEntries>
-									<mode>development</mode>
 									<url>${project.url}</url>
 								</manifestEntries>
 							</archive>
@@ -240,24 +212,64 @@
 								<exclude>hardsid_builder/lib/**</exclude>
 								<exclude>libpsid64/**</exclude>
 							</excludes>
-							<outputDirectory>${project.build.directory}/c64jukebox</outputDirectory>
-							<finalName>c64jukebox</finalName>
+							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
+							<finalName>c64jukebox-${project.version}</finalName>
 							<archive>
+								<manifest>
+									<addClasspath>false</addClasspath>
+								</manifest>
 								<manifestEntries>
-									<mode>development</mode>
 									<url>${project.url}</url>
 								</manifestEntries>
 							</archive>
 						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>ui.JSIDPlay2Main</mainClass>
+						</manifest>
+						<manifestEntries>
+							<Class-Path>jfxrt.jar</Class-Path>
+							<url>${project.url}</url>
+						</manifestEntries>
+					</archive>
+					<outputDirectory>${project.build.directory}/standalone</outputDirectory>
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.6</version>
 				<executions>
 					<execution>
-						<id>jsidplay2-copy-resources</id>
+						<id>copy-resources-c64jukebox</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/deploy/c64jukebox</directory>
+									<excludes>
+										<exclude>**/*.htm</exclude>
+									</excludes>
+								</resource>
+								<resource>
+									<directory>src/main/deploy/c64jukebox</directory>
+									<filtering>true</filtering>
+									<includes>
+										<include>**/*.htm</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-resources-deploy</id>
 						<phase>package</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -281,29 +293,82 @@
 							</resources>
 						</configuration>
 					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<version>1.5.2</version>
+				<executions>
 					<execution>
-						<id>c64jukebox-copy-resources</id>
+						<id>launch4j</id>
 						<phase>package</phase>
 						<goals>
-							<goal>copy-resources</goal>
+							<goal>launch4j</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}/c64jukebox</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/main/deploy/c64jukebox</directory>
-									<excludes>
-										<exclude>**/*.htm</exclude>
-									</excludes>
-								</resource>
-								<resource>
-									<directory>src/main/deploy/c64jukebox</directory>
-									<filtering>true</filtering>
-									<includes>
-										<include>**/*.htm</include>
-									</includes>
-								</resource>
-							</resources>
+							<dontWrapJar>true</dontWrapJar>
+							<headerType>gui</headerType>
+							<jar>${project.artifactId}-${project.version}.jar</jar>
+							<outfile>${project.build.directory}/standalone/${project.name}-${project.version}.exe</outfile>
+							<errTitle>${project.name}</errTitle>
+							<chdir>.</chdir>
+							<priority>high</priority>
+							<downloadUrl>http://java.com/download</downloadUrl>
+							<supportUrl>http://jsidplay2.sourceforge.net/</supportUrl>
+							<customProcName>false</customProcName>
+							<stayAlive>false</stayAlive>
+							<icon>src/main/launch4j/jsidplay2.ico</icon>
+							<singleInstance>
+								<mutexName>${project.name}</mutexName>
+								<windowTitle>Error</windowTitle>
+							</singleInstance>
+							<classPath>
+								<mainClass>ui.JSIDPlay2Main</mainClass>
+								<jarLocation>.</jarLocation>
+								<preCp>jfxrt.jar</preCp>
+								<addDependencies>true</addDependencies>
+							</classPath>
+							<jre>
+								<minVersion>1.7.0_00</minVersion>
+								<jdkPreference>preferJre</jdkPreference>
+							</jre>
+							<splash>
+								<file>src/main/launch4j/jsidplay2.bmp</file>
+								<waitForWindow>true</waitForWindow>
+								<timeout>60</timeout>
+								<timeoutErr>true</timeoutErr>
+							</splash>
+						</configuration>
+					</execution>
+					<execution>
+						<id>launch4j-console</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<dontWrapJar>true</dontWrapJar>
+							<headerType>console</headerType>
+							<jar>${project.artifactId}-${project.version}.jar</jar>
+							<outfile>${project.build.directory}/standalone/${project.name}_console-${project.version}.exe</outfile>
+							<errTitle>JSIDPlay2</errTitle>
+							<chdir>.</chdir>
+							<priority>high</priority>
+							<downloadUrl>http://java.com/download</downloadUrl>
+							<supportUrl>http://jsidplay2.sourceforge.net/</supportUrl>
+							<customProcName>false</customProcName>
+							<stayAlive>false</stayAlive>
+							<icon>src/main/launch4j/jsidplay2.ico</icon>
+							<classPath>
+								<mainClass>sidplay.ConsolePlayer</mainClass>
+								<jarLocation>.</jarLocation>
+								<addDependencies>true</addDependencies>
+							</classPath>
+							<jre>
+								<minVersion>1.7.0_00</minVersion>
+								<jdkPreference>preferJre</jdkPreference>
+							</jre>
 						</configuration>
 					</execution>
 				</executions>
@@ -321,8 +386,8 @@
 						</goals>
 						<configuration>
 							<proguardVersion>4.9</proguardVersion>
-							<injar>netsiddev/jsiddevice_tmp.jar</injar>
-							<outjar>netsiddev/jsiddevice.jar</outjar>
+							<injar>archive-tmp/jsiddevice-${project.version}.jar</injar>
+							<outjar>deploy/jsiddevice-${project.version}.jar</outjar>
 							<libs>
 								<lib>${java.home}/lib/rt.jar</lib>
 							</libs>
@@ -358,118 +423,25 @@
 				</dependencies>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>keytool-maven-plugin</artifactId>
-				<version>1.3</version>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/zip.xml</descriptor>
+					</descriptors>
+					<outputDirectory>${project.build.directory}/deploy</outputDirectory>
+					<finalName>${project.name}-${project.version}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
 				<executions>
 					<execution>
-						<id>generateKeyPair</id>
+						<id>zip-standalone</id>
 						<phase>package</phase>
 						<goals>
-							<goal>generateKeyPair</goal>
+							<goal>single</goal>
 						</goals>
-						<configuration>
-							<skipIfExist>true</skipIfExist>
-							<keystore>${project.build.directory}/keystore.jks</keystore>
-							<alias>jsidplay2</alias>
-							<storepass>jsidplay2</storepass>
-							<keypass>jsidplay2</keypass>
-							<dname>cn=http://kenchis.t15.org/jsidplay2, ou=Open Source,
-								L=Berlin, ST=Berlin, o=JSIDPlay2, c=DE</dname>
-						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target>
-								<taskdef name="jfxjar" classname="com.sun.javafx.tools.ant.FXJar"
-									classpathref="maven.plugin.classpath" />
-								<jfxjar
-									destfile="${project.build.directory}/deploy/${project.artifactId}-${project.version}.jar">
-
-									<!-- Details about application -->
-									<application name="${project.name}" mainClass="ui.JSIDPlay2Main" />
-
-									<!-- Define what auxilary resources are needed -->
-									<resources>
-										<fileset dir="${project.build.directory}/dependency"
-											includes="*.jar" />
-									</resources>
-
-									<!-- What to include into result jar file? Everything in the build 
-										tree -->
-									<fileset dir="${project.build.directory}/classes" />
-
-									<!-- Customize jar manifest (optional) -->
-									<manifest>
-										<attribute name="Implementation-Vendor" value="Ken Händel" />
-										<attribute name="Implementation-Version" value="${project.version}" />
-									</manifest>
-								</jfxjar>
-
-								<taskdef name="signjar" classname="com.sun.javafx.tools.ant.FXSignJarTask"
-									classpathref="maven.plugin.classpath" />
-								<signjar keystore="${project.build.directory}/keystore.jks"
-									alias="jsidplay2" storepass="jsidplay2" keypass="jsidplay2">
-									<fileset dir="${project.build.directory}/dependency"
-										includes="*.jar" />
-									<fileset dir="${project.build.directory}/deploy"
-										includes="${project.artifactId}-${project.version}.jar" />
-								</signjar>
-
-								<taskdef name="jfxdeploy" classname="com.sun.javafx.tools.ant.DeployFXTask"
-									classpathref="maven.plugin.classpath" />
-								<jfxdeploy updatemode="always" width="1024" height="768"
-									outdir="${project.build.directory}/deploy" outfile="${project.build.finalName}">
-									<info title="${project.name}" license="GPL" vendor="Ken Händel"
-										copyright="Copyright (C) 2007-2013 Ken Händel"
-										description="Java SIDPlay2 - Music Player &amp; C64 SID Chip Emulator">
-										<icon href="${server.url}jsidplay2.png" kind="shortcut" />
-										<splash href="${server.url}jsidplay2.jpg" />
-									</info>
-									<application name="${project.name}" mainClass="ui.JSIDPlay2Main" />
-									<permissions elevated="true" cacheCertificates="true" />
-									<preferences menu="true" shortcut="true" install="true" />
-									<platform javafx="2.1+" j2se="1.7+">
-										<jvmarg value="-Xms512m" />
-									</platform>
-									<resources>
-										<fileset dir="${project.build.directory}/deploy"
-											includes="${project.artifactId}-${project.version}.jar" />
-										<fileset dir="${project.build.directory}/dependency"
-											includes="*.jar" excludes="*-natives-*.jar" />
-										<fileset type="native" dir="${project.build.directory}/dependency"
-											includes="*-natives-windows.jar" os="Windows" arch="x86 x86_64 amd64" />
-										<fileset type="native" dir="${project.build.directory}/dependency"
-											includes="*-natives-linux.jar" os="Linux"
-											arch="x86 i386 ia64 x84_64 amd64" />
-										<fileset type="native" dir="${project.build.directory}/dependency"
-											includes="*-natives-osx.jar" os="Mac OS" />
-									</resources>
-								</jfxdeploy>
-							</target>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>com.oracle.javafx</groupId>
-						<artifactId>ant-javafx</artifactId>
-						<version>2.0</version>
-						<systemPath>${java.home}/../lib/ant-javafx.jar</systemPath>
-						<scope>system</scope>
-					</dependency>
-				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>com.github.goldin</groupId>
@@ -487,14 +459,6 @@
 								<resource>
 									<targetPath>ftp://${ftp.username}:${ftp.password}@${ftp.server}:${ftp.remotedir}</targetPath>
 									<directory>${project.build.directory}/deploy</directory>
-								</resource>
-								<resource>
-									<targetPath>ftp://${ftp.username}:${ftp.password}@${ftp.server}:${ftp.remotedir}</targetPath>
-									<directory>${project.build.directory}/netsiddev</directory>
-								</resource>
-								<resource>
-									<targetPath>ftp://${ftp.username}:${ftp.password}@${ftp.server}:${ftp.remotedir}</targetPath>
-									<directory>${project.build.directory}/c64jukebox</directory>
 								</resource>
 							</resources>
 						</configuration>
