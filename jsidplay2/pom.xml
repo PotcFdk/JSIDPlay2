@@ -138,6 +138,26 @@
 				<version>2.4</version>
 				<executions>
 					<execution>
+						<id>jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<addClasspath>true</addClasspath>
+									<mainClass>ui.JSIDPlay2Main</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Class-Path>jfxrt.jar</Class-Path>
+									<url>${project.url}</url>
+								</manifestEntries>
+							</archive>
+							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
 						<id>jar-console</id>
 						<phase>package</phase>
 						<goals>
@@ -208,6 +228,7 @@
 							<excludes>
 								<exclude>ui/**</exclude>
 								<exclude>hardsid/**</exclude>
+								<exclude>netsiddev/**</exclude>
 								<exclude>hardsid_builder/driver/**</exclude>
 								<exclude>hardsid_builder/lib/**</exclude>
 								<exclude>libpsid64/**</exclude>
@@ -225,19 +246,6 @@
 						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<mainClass>ui.JSIDPlay2Main</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Class-Path>jfxrt.jar</Class-Path>
-							<url>${project.url}</url>
-						</manifestEntries>
-					</archive>
-					<outputDirectory>${project.build.directory}/standalone</outputDirectory>
-				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
