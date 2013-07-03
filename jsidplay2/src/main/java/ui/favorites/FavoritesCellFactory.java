@@ -12,14 +12,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
-public class FavoritesCellFactory implements
-		Callback<TableColumn<HVSCEntry, ?>, TableCell<HVSCEntry, ?>> {
+public class FavoritesCellFactory implements Callback<TableColumn<HVSCEntry, ?>, TableCell<HVSCEntry, ?>> {
 
-	private static final Image stilIcon = new Image(JSIDPlay2Main.class
-			.getResource("icons/stil.png").toString());
+	private static final Image stilIcon = new Image(JSIDPlay2Main.class.getResource("icons/stil.png").toString());
 
-	private static final Image noStilIcon = new Image(JSIDPlay2Main.class
-			.getResource("icons/stil_no.png").toString());
+	private static final Image noStilIcon = new Image(JSIDPlay2Main.class.getResource("icons/stil_no.png").toString());
 
 	private static final String FILE_NOT_FOUND_CELL_VALUE = "fileNotFoundCellValue";
 
@@ -41,13 +38,10 @@ public class FavoritesCellFactory implements
 					String text = value.toString();
 					setText(text);
 					if (config != null) {
-						int columnIndex = column.getTableView().getColumns()
-								.indexOf(column);
+						int columnIndex = column.getTableView().getColumns().indexOf(column);
 						if (columnIndex == 0) {
 							File file = FavoritesTab.getFile(config, text);
-							if (!file.exists()
-									&& !getStyleClass().contains(
-											FILE_NOT_FOUND_CELL_VALUE)) {
+							if (file != null && !file.exists()) {
 								getStyleClass().add(FILE_NOT_FOUND_CELL_VALUE);
 							}
 							if (FavoritesTab.getStilEntry(config, text) != null) {
