@@ -109,13 +109,13 @@ public class IniConsoleSection extends IniSection implements IConsoleSection {
 	@Override
 	public final char getHorizontal() {
 		return getChar(
-				iniReader.getPropertyString("Console", "Char Vertical", "'-'"),
+				iniReader.getPropertyString("Console", "Char Horizontal", "'-'"),
 				'-');
 	}
 
 	@Override
 	public void setHorizontal(char horizontal) {
-		iniReader.setProperty("Console", "Char Vertical",
+		iniReader.setProperty("Console", "Char Horizontal",
 				String.valueOf((int) horizontal));
 	}
 
