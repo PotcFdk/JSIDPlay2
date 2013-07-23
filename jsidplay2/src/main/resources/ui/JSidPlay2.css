@@ -45,9 +45,13 @@
 	-fx-font-size:12.0px;
 }
 
-.fileNotFoundCellValue
+.fileNotFoundRow
 {
 	-fx-background-color:red;
+}
+.currentlyPlayedRow
+{
+	-fx-text-fill: blue;
 }
 
 .errorConsole {

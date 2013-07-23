@@ -2,29 +2,25 @@ package ui.favorites;
 
 import java.io.File;
 
-import ui.JSIDPlay2Main;
-import ui.entities.collection.HVSCEntry;
-import ui.entities.config.Configuration;
-
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
+import ui.JSIDPlay2Main;
+import ui.entities.collection.HVSCEntry;
 
 public class FavoritesCellFactory implements Callback<TableColumn<HVSCEntry, ?>, TableCell<HVSCEntry, ?>> {
 
-	private static final Image stilIcon = new Image(JSIDPlay2Main.class.getResource("icons/stil.png").toString());
+	private static final Image STIL_ICON = new Image(JSIDPlay2Main.class.getResource("icons/stil.png").toString());
 
-	private static final Image noStilIcon = new Image(JSIDPlay2Main.class.getResource("icons/stil_no.png").toString());
+	private static final Image NO_STIL_ICON = new Image(JSIDPlay2Main.class.getResource("icons/stil_no.png").toString());
 
-	private static final String FILE_NOT_FOUND_CELL_VALUE = "fileNotFoundCellValue";
+	private static final String FILE_NOT_FOUND_ROW = "fileNotFoundRow";
 
-	private Configuration config;
+	private static final String CURRENTLY_PLAYED_FILE_ROW = "currentlyPlayedRow";
 
-	public void setConfig(Configuration config) {
-		this.config = config;
-	}
+	private FavoritesTab favoritesTab;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
@@ -35,19 +31,28 @@ public class FavoritesCellFactory implements Callback<TableColumn<HVSCEntry, ?>,
 			public void updateItem(Object value, boolean empty) {
 				super.updateItem(value, empty);
 				if (!empty) {
-					String text = value.toString();
-					setText(text);
-					if (config != null) {
-						int columnIndex = column.getTableView().getColumns().indexOf(column);
-						if (columnIndex == 0) {
-							File file = FavoritesTab.getFile(config, text);
-							if (file != null && !file.exists()) {
-								getStyleClass().add(FILE_NOT_FOUND_CELL_VALUE);
+					setText(value.toString());
+					if (getTableRow() != null) {
+						HVSCEntry hvscEntry = (HVSCEntry) getTableRow().getItem();
+						if (hvscEntry != null && favoritesTab != null) {
+							File file = favoritesTab.getFile(hvscEntry.getPath());
+							if (file != null) {
+								getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
+								getStyleClass().remove(FILE_NOT_FOUND_ROW);
+								if (file.equals(favoritesTab.getCurrentlyPlayedFile())) {
+									getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
+								}
+								if (!file.exists()) {
+									getStyleClass().add(FILE_NOT_FOUND_ROW);
+								}
 							}
-							if (FavoritesTab.getStilEntry(config, text) != null) {
-								setGraphic(new ImageView(stilIcon));
-							} else {
-								setGraphic(new ImageView(noStilIcon));
+							int columnIndex = column.getTableView().getColumns().indexOf(column);
+							if (columnIndex == 0) {
+								if (favoritesTab.getStilEntry(hvscEntry.getPath()) != null) {
+									setGraphic(new ImageView(STIL_ICON));
+								} else {
+									setGraphic(new ImageView(NO_STIL_ICON));
+								}
 							}
 						}
 					}
@@ -55,5 +60,9 @@ public class FavoritesCellFactory implements Callback<TableColumn<HVSCEntry, ?>,
 			}
 		};
 		return cell;
+	}
+
+	public void setFavoritesTab(FavoritesTab favoritesTab) {
+		this.favoritesTab = favoritesTab;
 	}
 }
