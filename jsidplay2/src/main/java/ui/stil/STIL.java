@@ -38,21 +38,6 @@ public class STIL extends C64Stage {
 	private STILEntry entry;
 
 	@Override
-	public String getBundleName() {
-		return STIL.class.getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(STIL.class.getSimpleName() + ".fxml");
-	}
-
-	@Override
-	protected String getStyleSheetName() {
-		return "/" + getClass().getName().replace('.', '/') + ".css";
-	}
-
-	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		splitPane.setDividerPosition(0, 0.3);
 		tree.getSelectionModel().selectedItemProperty()

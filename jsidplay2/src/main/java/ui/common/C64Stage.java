@@ -1,6 +1,7 @@
 package ui.common;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.event.EventHandler;
@@ -17,6 +18,16 @@ public abstract class C64Stage extends Stage implements UIPart {
 
 	private UIUtil util = new UIUtil();
 	private boolean wait;
+
+	@Override
+	public String getBundleName() {
+		return getClass().getName();
+	}
+
+	@Override
+	public URL getFxml() {
+		return getClass().getResource(getClass().getSimpleName() + ".fxml");
+	}
 
 	public void open() throws IOException {
 		open(this);
@@ -84,7 +95,9 @@ public abstract class C64Stage extends Stage implements UIPart {
 		util.setConsolePlayer(consolePlayer);
 	}
 
-	protected abstract String getStyleSheetName();
+	protected String getStyleSheetName() {
+		return "/" + getClass().getName().replace('.', '/') + ".css";
+	}
 
 	protected abstract void doCloseWindow();
 

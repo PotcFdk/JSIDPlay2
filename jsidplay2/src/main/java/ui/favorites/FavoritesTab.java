@@ -91,16 +91,6 @@ public class FavoritesTab extends C64Tab {
 	private File file;
 
 	@Override
-	public String getBundleName() {
-		return getClass().getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(getClass().getSimpleName() + ".fxml");
-	}
-
-	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		if (getPlayer() == null) {
 			// wait for second initialization, where properties have been set!

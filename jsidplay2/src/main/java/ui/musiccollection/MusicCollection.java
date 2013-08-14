@@ -175,17 +175,6 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private int currentProgress;
 
 	@Override
-	public String getBundleName() {
-		return MusicCollection.class.getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(
-				MusicCollection.class.getSimpleName() + ".fxml");
-	}
-
-	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		if (getPlayer() == null) {
 			// wait for second initialization, where properties have been set!

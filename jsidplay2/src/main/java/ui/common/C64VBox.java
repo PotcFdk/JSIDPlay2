@@ -1,5 +1,6 @@
 package ui.common;
 
+import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.scene.Node;
@@ -11,6 +12,16 @@ import ui.events.UIEventFactory;
 public abstract class C64VBox extends VBox implements UIPart {
 
 	private UIUtil util = new UIUtil();
+
+	@Override
+	public String getBundleName() {
+		return getClass().getName();
+	}
+
+	@Override
+	public URL getFxml() {
+		return getClass().getResource(getClass().getSimpleName() + ".fxml");
+	}
 
 	public C64VBox() {
 		getChildren().add((Node) util.parse(this));

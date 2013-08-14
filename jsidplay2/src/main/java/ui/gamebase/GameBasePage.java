@@ -40,17 +40,6 @@ public class GameBasePage extends C64Tab {
 	private GameListener gameListener;
 
 	@Override
-	public String getBundleName() {
-		return GameBasePage.class.getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(
-				GameBasePage.class.getSimpleName() + ".fxml");
-	}
-
-	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		if (getConfig() == null) {
 			// wait for second initialization, where properties have been set!

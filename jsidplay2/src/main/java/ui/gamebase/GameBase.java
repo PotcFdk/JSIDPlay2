@@ -67,16 +67,6 @@ public class GameBase extends C64Tab {
 	public List<File> lastScreenshot = new ArrayList<File>();
 
 	@Override
-	public String getBundleName() {
-		return GameBase.class.getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(GameBase.class.getSimpleName() + ".fxml");
-	}
-
-	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		if (getPlayer() == null) {
 			// wait for second initialization, where properties have been set!

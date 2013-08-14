@@ -34,16 +34,6 @@ public class Printer extends C64Tab implements IPaper {
 		getPlayer().getPrinter().setPaper(this);
 	}
 
-	@Override
-	public String getBundleName() {
-		return getClass().getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(getClass().getSimpleName() + ".fxml");
-	}
-
 	@FXML
 	private void clearPaper() {
 		paper.getGraphicsContext2D().clearRect(0, 0, paper.getWidth(),

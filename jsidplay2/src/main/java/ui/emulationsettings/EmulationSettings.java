@@ -65,21 +65,6 @@ public class EmulationSettings extends C64Stage {
 	private boolean duringInitialization;
 
 	@Override
-	public String getBundleName() {
-		return getClass().getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(getClass().getSimpleName() + ".fxml");
-	}
-
-	@Override
-	protected String getStyleSheetName() {
-		return "/" + getClass().getName().replace('.', '/') + ".css";
-	}
-
-	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		duringInitialization = true;
 

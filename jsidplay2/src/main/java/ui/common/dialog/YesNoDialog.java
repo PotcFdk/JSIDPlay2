@@ -19,23 +19,8 @@ public class YesNoDialog extends C64Stage {
 	
 	private String text;
 
-	BooleanProperty confirmed = new SimpleBooleanProperty();
+	private BooleanProperty confirmed = new SimpleBooleanProperty();
 	
-	@Override
-	public URL getFxml() {
-		return getClass().getResource("/ui/common/dialog/YesNoDialog.fxml");
-	}
-
-	@Override
-	public String getBundleName() {
-		return "ui/common/dialog/YesNoDialog";
-	}
-
-	@Override
-	protected String getStyleSheetName() {
-		return "/ui/common/dialog/YesNoDialog.css";
-	}
-
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		setWait(true);

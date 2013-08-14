@@ -84,21 +84,6 @@ public class SoundSettings extends C64Stage implements IDownloadListener {
 	private Timeline timer;
 
 	@Override
-	public String getBundleName() {
-		return getClass().getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(getClass().getSimpleName() + ".fxml");
-	}
-
-	@Override
-	protected String getStyleSheetName() {
-		return "/" + getClass().getName().replace('.', '/') + ".css";
-	}
-
-	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		duringInitialization = true;
 		final int seconds = getConfig().getSidplay2().getPlayLength();

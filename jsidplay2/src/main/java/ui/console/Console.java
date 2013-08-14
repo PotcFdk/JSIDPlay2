@@ -18,16 +18,6 @@ public class Console extends C64Tab implements Initializable {
 	private ConsoleOutput err;
 
 	@Override
-	public String getBundleName() {
-		return getClass().getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(getClass().getSimpleName() + ".fxml");
-	}
-
-	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		if (getPlayer() == null) {
 			// wait for second initialization, where properties have been set!

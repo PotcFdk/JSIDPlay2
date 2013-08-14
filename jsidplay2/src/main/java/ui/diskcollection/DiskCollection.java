@@ -87,17 +87,6 @@ public class DiskCollection extends C64Tab {
 	};
 
 	@Override
-	public String getBundleName() {
-		return DiskCollection.class.getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(
-				DiskCollection.class.getSimpleName() + ".fxml");
-	}
-
-	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		if (getPlayer() == null) {
 			// wait for second initialization, where properties have been set!

@@ -54,16 +54,6 @@ public class Favorites extends C64Tab {
 	protected Random random = new Random();
 
 	@Override
-	public String getBundleName() {
-		return getClass().getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(getClass().getSimpleName() + ".fxml");
-	}
-
-	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		if (getPlayer() == null) {
 			return;
