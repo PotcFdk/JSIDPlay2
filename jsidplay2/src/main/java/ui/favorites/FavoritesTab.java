@@ -55,7 +55,6 @@ import ui.entities.config.FavoriteColumn;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IPlayTune;
-import ui.events.UIEvent;
 import ui.events.favorites.IGetFavoritesTabs;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileFilter;
@@ -672,10 +671,6 @@ public class FavoritesTab extends C64Tab {
 				return component;
 			}
 		});
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 	public File getCurrentlyPlayedFile() {

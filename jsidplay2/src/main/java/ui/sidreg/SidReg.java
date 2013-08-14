@@ -48,10 +48,6 @@ public class SidReg extends C64Stage {
 		doUpdateFilter();
 	}
 
-	@Override
-	protected void doCloseWindow() {
-	}
-
 	@FXML
 	private void doStartStop() {
 		recordSidWrites(startStop.isSelected());

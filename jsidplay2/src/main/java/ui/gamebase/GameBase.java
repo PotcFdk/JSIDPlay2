@@ -37,7 +37,6 @@ import ui.entities.PersistenceUtil;
 import ui.entities.gamebase.Games;
 import ui.entities.gamebase.service.ConfigService;
 import ui.entities.gamebase.service.GamesService;
-import ui.events.UIEvent;
 import ui.gamebase.listeners.GameListener;
 import ui.gamebase.listeners.MusicListener;
 
@@ -297,10 +296,6 @@ public class GameBase extends C64Tab {
 	private void selectTab(GameBasePage page) {
 		page.setGames(gamesService.select(page.getText().charAt(0)));
 		filterField.setText("");
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 }

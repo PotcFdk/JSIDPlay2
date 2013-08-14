@@ -12,7 +12,6 @@ import javafx.scene.paint.Color;
 import libsidplay.components.printer.IPaper;
 import libsidplay.components.printer.mps803.MPS803;
 import ui.common.C64Tab;
-import ui.events.UIEvent;
 
 public class Printer extends C64Tab implements IPaper {
 
@@ -88,10 +87,6 @@ public class Printer extends C64Tab implements IPaper {
 
 	@Override
 	public void close() {
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 }

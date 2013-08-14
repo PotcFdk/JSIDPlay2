@@ -2,14 +2,12 @@ package ui.oscilloscope;
 
 import java.net.URL;
 import java.util.Arrays;
-import java.util.ResourceBundle;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TitledPane;
 import javafx.scene.paint.Color;
 import ui.common.C64VBox;
-import ui.events.UIEvent;
 
 public class Gauge extends C64VBox {
 	protected static final Color[] gaugeColors = new Color[256];
@@ -40,10 +38,6 @@ public class Gauge extends C64VBox {
 	@Override
 	public URL getFxml() {
 		return getClass().getResource(Gauge.class.getSimpleName() + ".fxml");
-	}
-
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
 	}
 
 	public int getVoice() {
@@ -166,10 +160,6 @@ public class Gauge extends C64VBox {
 
 	protected Canvas getArea() {
 		return null;
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 }

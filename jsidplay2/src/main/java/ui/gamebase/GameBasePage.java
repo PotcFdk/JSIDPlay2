@@ -19,7 +19,6 @@ import ui.common.C64Tab;
 import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
 import ui.entities.gamebase.Games;
-import ui.events.UIEvent;
 import ui.gamebase.listeners.GameListener;
 
 public class GameBasePage extends C64Tab {
@@ -130,10 +129,6 @@ public class GameBasePage extends C64Tab {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 }

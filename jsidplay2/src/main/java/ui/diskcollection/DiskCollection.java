@@ -41,7 +41,6 @@ import ui.download.ProgressListener;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IInsertMedia;
 import ui.events.Reset;
-import ui.events.UIEvent;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.DocsFileFilter;
 import ui.filefilter.ScreenshotFileFilter;
@@ -440,10 +439,6 @@ public class DiskCollection extends C64Tab {
 					.getSidplay2().getTmpDir());
 		}
 		return file;
-	}
-
-	@Override
-	public void notify(UIEvent event) {
 	}
 
 }

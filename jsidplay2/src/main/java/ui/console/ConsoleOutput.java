@@ -3,8 +3,6 @@ package ui.console;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -12,7 +10,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import ui.common.C64VBox;
-import ui.events.UIEvent;
 
 public class ConsoleOutput extends C64VBox implements Initializable {
 
@@ -20,14 +17,6 @@ public class ConsoleOutput extends C64VBox implements Initializable {
 	private TextArea console;
 	@FXML
 	private TitledPane titledPane;
-
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		if (getPlayer() == null) {
-			// wait for second initialization, where properties have been set!
-			return;
-		}
-	}
 
 	@FXML
 	private void clearConsole() {
@@ -59,10 +48,6 @@ public class ConsoleOutput extends C64VBox implements Initializable {
 				console.setText(console.getText() + str);
 			}
 		});
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 	public TitledPane getTitledPane() {

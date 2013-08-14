@@ -16,7 +16,6 @@ import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
 import ui.common.C64Stage;
-import ui.events.UIEvent;
 
 public class STIL extends C64Stage {
 	private static final String STYLE_NORMAL = "styleNormal";
@@ -53,10 +52,6 @@ public class STIL extends C64Stage {
 				});
 		tree.setRoot(new STILEntryTreeItem(entry));
 		tree.getSelectionModel().select(tree.getRoot());
-	}
-
-	@Override
-	protected void doCloseWindow() {
 	}
 
 	public void setEntry(STILEntry entry) {
@@ -153,10 +148,6 @@ public class STIL extends C64Stage {
 		line.getChildren().add(newline);
 
 		textArea.getChildren().add(line);
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 }

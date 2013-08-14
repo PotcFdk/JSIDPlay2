@@ -47,10 +47,6 @@ public class Disassembler extends C64Stage {
 		setTune();
 	}
 
-	@Override
-	protected void doCloseWindow() {
-	}
-
 	private void setTune() {
 		if (getPlayer().getTune() == null) {
 			return;

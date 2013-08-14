@@ -8,9 +8,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 import ui.common.C64Stage;
-import ui.events.UIEvent;
 
 public class YesNoDialog extends C64Stage {
 
@@ -45,14 +43,6 @@ public class YesNoDialog extends C64Stage {
 
 	public BooleanProperty getConfirmed() {
 		return confirmed;
-	}
-
-	@Override
-	protected void doCloseWindow() {
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 }

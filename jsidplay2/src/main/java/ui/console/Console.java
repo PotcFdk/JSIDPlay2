@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import ui.common.C64Tab;
-import ui.events.UIEvent;
 
 public class Console extends C64Tab implements Initializable {
 	private static final String STYLE_ERROR_CONSOLE = "errorConsole";
@@ -31,9 +30,6 @@ public class Console extends C64Tab implements Initializable {
 		err.getConsole().getStyleClass().add(STYLE_ERROR_CONSOLE);
 		System.setOut(out.getPrintStream(System.out));
 		System.setErr(err.getPrintStream(System.err));
-	}
-
-	public void notify(UIEvent evt) {
 	}
 
 }

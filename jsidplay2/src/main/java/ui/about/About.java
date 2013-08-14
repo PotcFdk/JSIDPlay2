@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import ui.common.C64Stage;
-import ui.events.UIEvent;
 
 public class About extends C64Stage {
 
@@ -20,17 +19,9 @@ public class About extends C64Stage {
 		credits.setText(getPlayer().getCredits());
 	}
 
-	@Override
-	protected void doCloseWindow() {
-	}
-
 	@FXML
 	private void okPressed(ActionEvent event) {
 		((Stage) credits.getScene().getWindow()).close();
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 }

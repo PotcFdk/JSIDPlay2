@@ -22,7 +22,6 @@ import net.java.games.input.ControllerEnvironment;
 import sidplay.ini.intf.IJoystickSection;
 import ui.common.C64Stage;
 import ui.common.TypeTextField;
-import ui.events.UIEvent;
 
 public class JoystickSettings extends C64Stage {
 
@@ -340,10 +339,6 @@ public class JoystickSettings extends C64Stage {
 	private void chooseFire2Value() {
 		getConfig().getJoystick().setComponentValueBtn2(
 				(float) fire2Value.getValue());
-	}
-
-	@Override
-	public void notify(final UIEvent evt) {
 	}
 
 }

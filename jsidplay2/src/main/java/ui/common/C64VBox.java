@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import libsidplay.Player;
 import ui.entities.config.Configuration;
+import ui.events.UIEvent;
 import ui.events.UIEventFactory;
 
 public abstract class C64VBox extends VBox implements UIPart {
@@ -21,6 +22,14 @@ public abstract class C64VBox extends VBox implements UIPart {
 	@Override
 	public URL getFxml() {
 		return getClass().getResource(getClass().getSimpleName() + ".fxml");
+	}
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+	}
+
+	@Override
+	public void notify(final UIEvent evt) {
 	}
 
 	public C64VBox() {

@@ -1,8 +1,5 @@
 package ui.virtualKeyboard;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
@@ -10,7 +7,6 @@ import libsidplay.C64;
 import libsidplay.common.Event;
 import libsidplay.components.keyboard.KeyTableEntry;
 import ui.common.C64Stage;
-import ui.events.UIEvent;
 
 public class Keyboard extends C64Stage {
 
@@ -24,14 +20,6 @@ public class Keyboard extends C64Stage {
 	@FXML
 	private ToggleButton runStop, shift, commodore, shiftLock, ctrl,
 			rightShift;
-
-	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
-	}
-
-	@Override
-	protected void doCloseWindow() {
-	}
 
 	@FXML
 	private void arrowLeft() {
@@ -468,10 +456,6 @@ public class Keyboard extends C64Stage {
 
 	private C64 getC64() {
 		return getPlayer().getC64();
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 }

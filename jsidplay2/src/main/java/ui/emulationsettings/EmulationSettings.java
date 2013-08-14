@@ -115,10 +115,6 @@ public class EmulationSettings extends C64Stage {
 		duringInitialization = false;
 	}
 
-	@Override
-	protected void doCloseWindow() {
-	}
-
 	@FXML
 	private void setSid1Model() {
 		if (sid1Model.getSelectionModel().getSelectedItem()

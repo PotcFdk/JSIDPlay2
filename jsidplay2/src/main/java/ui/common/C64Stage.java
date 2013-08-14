@@ -12,6 +12,7 @@ import javafx.stage.WindowEvent;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
 import ui.entities.config.Configuration;
+import ui.events.UIEvent;
 import ui.events.UIEventFactory;
 
 public abstract class C64Stage extends Stage implements UIPart {
@@ -27,6 +28,14 @@ public abstract class C64Stage extends Stage implements UIPart {
 	@Override
 	public URL getFxml() {
 		return getClass().getResource(getClass().getSimpleName() + ".fxml");
+	}
+
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+	}
+
+	@Override
+	public void notify(UIEvent evt) {
 	}
 
 	public void open() throws IOException {
@@ -99,6 +108,6 @@ public abstract class C64Stage extends Stage implements UIPart {
 		return "/" + getClass().getName().replace('.', '/') + ".css";
 	}
 
-	protected abstract void doCloseWindow();
-
+	protected void doCloseWindow() {
+	}
 }

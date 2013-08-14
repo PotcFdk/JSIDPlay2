@@ -21,7 +21,6 @@ import libsidplay.components.DirEntry;
 import libsidutils.zip.ZipEntryFileProxy;
 import ui.common.C64AnchorPane;
 import ui.entities.config.SidPlay2Section;
-import ui.events.UIEvent;
 
 public class Directory extends C64AnchorPane {
 
@@ -192,7 +191,4 @@ public class Directory extends C64AnchorPane {
 		}
 	}
 
-	@Override
-	public void notify(final UIEvent evt) {
-	}
 }

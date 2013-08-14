@@ -91,10 +91,6 @@ public class SidDump extends C64Stage {
 		setTune();
 	}
 
-	@Override
-	protected void doCloseWindow() {
-	}
-
 	@FXML
 	private void doLoadDump() {
 		final FileChooser fileDialog = new FileChooser();
