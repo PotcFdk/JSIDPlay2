@@ -490,7 +490,8 @@ public class FavoritesTab extends C64Tab {
 				playTune(hvscEntry);
 				break;
 			}
-			if (getFile(hvscEntry.getPath()).equals(file)) {
+			File hvscFile = getFile(hvscEntry.getPath());
+			if (hvscFile != null && hvscFile.equals(file)) {
 				recentlyPlayedFound = true;
 			}
 		}
