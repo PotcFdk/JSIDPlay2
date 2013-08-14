@@ -1173,13 +1173,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@Override
 	public void notify(final UIEvent evt) {
 		if (evt.isOfType(IPlayerPlays.class)) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					updatePlayerButtons();
-				}
-			});
+			updatePlayerButtons();
 		} else if (evt.isOfType(ITuneStateChanged.class)) {
 			pauseContinue.setSelected(false);
 			normalSpeed.setSelected(true);

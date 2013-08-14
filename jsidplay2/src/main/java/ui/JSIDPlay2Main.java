@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
@@ -104,7 +105,14 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 					if (!cp.open()) {
 						return;
 					}
-					uiEvents.fireEvent(IPlayerPlays.class, new IPlayerPlays() {
+					Platform.runLater(new Runnable() {
+
+						@Override
+						public void run() {
+							uiEvents.fireEvent(IPlayerPlays.class,
+									new IPlayerPlays() {
+									});
+						}
 					});
 					// Play next chunk of sound data, until it gets stopped
 					while (true) {
@@ -132,19 +140,25 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 
 			}
 			// Player has finished, play another favorite tune? Notify!
-			uiEvents.fireEvent(ITuneStateChanged.class,
-					new ITuneStateChanged() {
-						@Override
-						public File getTune() {
-							return getPlayer().getTune().getInfo().file;
-						}
+			Platform.runLater(new Runnable() {
 
-						@Override
-						public boolean naturalFinished() {
-							return cp.getState() == playerExit;
-						}
+				@Override
+				public void run() {
+					uiEvents.fireEvent(ITuneStateChanged.class,
+							new ITuneStateChanged() {
+								@Override
+								public File getTune() {
+									return getPlayer().getTune().getInfo().file;
+								}
 
-					});
+								@Override
+								public boolean naturalFinished() {
+									return cp.getState() == playerExit;
+								}
+
+							});
+				}
+			});
 		}
 
 	};

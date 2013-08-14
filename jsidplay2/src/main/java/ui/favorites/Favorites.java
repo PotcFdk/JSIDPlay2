@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -243,13 +244,19 @@ public class Favorites extends C64Tab {
 		} else if (event.isOfType(IPlayTune.class)) {
 			IPlayTune ifObj = (IPlayTune) event.getUIEventImpl();
 			if (ifObj.getComponent().equals(this)) {
-				currentlyPlayedFavorites = getSelectedTab();
-				if (currentlyPlayedFavorites != null) {
-					for (Tab tab : favoritesList.getTabs()) {
-						tab.setGraphic(null);
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						currentlyPlayedFavorites = getSelectedTab();
+						if (currentlyPlayedFavorites != null) {
+							for (Tab tab : favoritesList.getTabs()) {
+								tab.setGraphic(null);
+							}
+							currentlyPlayedFavorites.setGraphic(new ImageView(CURRENTLY_PLAYED_TAB));
+						}
 					}
-					currentlyPlayedFavorites.setGraphic(new ImageView(CURRENTLY_PLAYED_TAB));
-				}
+				});
 			}
 		} else if (event.isOfType(ITuneStateChanged.class)) {
 			ITuneStateChanged ifObj = (ITuneStateChanged) event.getUIEventImpl();
