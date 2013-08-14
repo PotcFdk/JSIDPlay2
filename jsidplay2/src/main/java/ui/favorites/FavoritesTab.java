@@ -651,27 +651,29 @@ public class FavoritesTab extends C64Tab {
 
 	private void playTune(final HVSCEntry hvscEntry) {
 		file = getFile(hvscEntry.getPath());
-		getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-			@Override
-			public boolean switchToVideoTab() {
-				return false;
-			}
-
-			@Override
-			public SidTune getSidTune() {
-				try {
-					return SidTune.load(file);
-				} catch (IOException | SidTuneError e) {
-					e.printStackTrace();
-					return null;
+		if (file!=null) {
+			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
+				@Override
+				public boolean switchToVideoTab() {
+					return false;
 				}
-			}
-
-			@Override
-			public Object getComponent() {
-				return component;
-			}
-		});
+				
+				@Override
+				public SidTune getSidTune() {
+					try {
+						return SidTune.load(file);
+					} catch (IOException | SidTuneError e) {
+						e.printStackTrace();
+						return null;
+					}
+				}
+				
+				@Override
+				public Object getComponent() {
+					return component;
+				}
+			});
+		}
 	}
 
 	public File getCurrentlyPlayedFile() {
