@@ -1,6 +1,5 @@
 package ui;
 
-import static sidplay.ConsolePlayer.playerExit;
 import static sidplay.ConsolePlayer.playerFast;
 import static sidplay.ConsolePlayer.playerRestart;
 
@@ -33,7 +32,6 @@ import ui.events.IPlayTune;
 import ui.events.IPlayerPlays;
 import ui.events.IReplayTune;
 import ui.events.IStopTune;
-import ui.events.ITuneStateChanged;
 import ui.events.Reset;
 import ui.events.UIEvent;
 import ui.events.UIEventFactory;
@@ -117,7 +115,7 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 					// Play next chunk of sound data, until it gets stopped
 					while (true) {
 						// Pause? sleep for awhile
-						if (cp.getState() == ConsolePlayer.playerPaused) {
+						if (cp.getState().get() == ConsolePlayer.playerPaused) {
 							Thread.sleep(250);
 						}
 						// Play a chunk
@@ -132,33 +130,13 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 				}
 
 				// "Play it once, Sam. For old times' sake."
-				if ((cp.getState() & ~playerFast) == playerRestart) {
+				if ((cp.getState().get() & ~playerFast) == playerRestart) {
 					continue;
 				}
 				// Stop it
 				break;
 
 			}
-			// Player has finished, play another favorite tune? Notify!
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					uiEvents.fireEvent(ITuneStateChanged.class,
-							new ITuneStateChanged() {
-								@Override
-								public File getTune() {
-									return getPlayer().getTune().getInfo().file;
-								}
-
-								@Override
-								public boolean naturalFinished() {
-									return cp.getState() == playerExit;
-								}
-
-							});
-				}
-			});
 		}
 
 	};
@@ -344,7 +322,7 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 		try {
 			while (fPlayerThread.isAlive()) {
 				cp.quit();
-				fPlayerThread.join(10000);
+				fPlayerThread.join(3000);
 				// This is only the last option, if the player can not be
 				// stopped clean
 				fPlayerThread.interrupt();

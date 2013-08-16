@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import libsidplay.Player;
 import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.common.SIDBuilder;
@@ -205,9 +207,9 @@ public class ConsolePlayer {
 
 	private SidTune tune;
 
-	private int state;
+	private IntegerProperty state = new SimpleIntegerProperty();
 
-	public final int getState() {
+	public final IntegerProperty getState() {
 		return state;
 	}
 
@@ -257,7 +259,7 @@ public class ConsolePlayer {
 	private SidDatabase sidDatabase;
 
 	public ConsolePlayer(IConfig config) {
-		state = playerStopped;
+		state.set(playerStopped);
 		iniCfg = config;
 		final IEmulationSection emulation = iniCfg.getEmulation();
 		filterEnable = emulation.isFilter();
@@ -316,8 +318,8 @@ public class ConsolePlayer {
 	}
 
 	public boolean open() throws InterruptedException {
-		if ((state & ~playerFast) == playerRestart) {
-			state = playerStopped;
+		if ((state.get() & ~playerFast) == playerRestart) {
+			state.set(playerStopped);
 		}
 
 		// Select the required song
@@ -545,12 +547,12 @@ public class ConsolePlayer {
 		}
 
 		timer.current = ~0;
-		state = playerRunning;
+		state.set(playerRunning);
 		return true;
 	}
 
 	public void close() {
-		if (state == playerExit) {
+		if (state.get() == playerExit) {
 			// Natural finish
 			if (sidEmuFactory instanceof HardSIDBuilder) {
 				((HardSIDBuilder) sidEmuFactory).flush();
@@ -636,16 +638,16 @@ public class ConsolePlayer {
 					&& seconds >= timer.stop) {
 				// Single song?
 				if (track.single) {
-					state = playerExit;
+					state.set(playerExit);
 				} else {
 					nextSong();
 
 					// Check play-list end
 					if (track.selected == track.first && !track.loop) {
-						state = playerExit;
+						state.set(playerExit);
 					}
 				}
-				if (state == playerExit) {
+				if (state.get() == playerExit) {
 					// Natural finish
 					if (sidEmuFactory instanceof HardSIDBuilder) {
 						((HardSIDBuilder) sidEmuFactory).flush();
@@ -655,16 +657,16 @@ public class ConsolePlayer {
 			}
 		}
 
-		if (state == playerRunning) {
+		if (state.get() == playerRunning) {
 			try {
 				player.play(10000);
 			} catch (NaturalFinishedException e) {
-				state = playerExit;
+				state.set(playerExit);
 				throw e;
 			}
 		}
 
-		return state == playerRunning || state == playerPaused;
+		return state.get() == playerRunning || state.get() == playerPaused;
 	}
 
 	private void decodeKeys() {
@@ -672,12 +674,12 @@ public class ConsolePlayer {
 			final int key = System.in.read();
 			switch (key) {
 			case 'h':
-				state = playerFastRestart;
+				state.set(playerFastRestart);
 				track.selected = 1;
 				break;
 
 			case 'e':
-				state = playerFastRestart;
+				state.set(playerFastRestart);
 				track.selected = track.songs;
 				break;
 
@@ -755,16 +757,16 @@ public class ConsolePlayer {
 	}
 
 	public void pause() {
-		if (state == playerPaused) {
-			state = playerRunning;
+		if (state.get() == playerPaused) {
+			state.set(playerRunning);
 		} else {
-			state = playerPaused;
+			state.set(playerPaused);
 			driver.getDevice().pause();
 		}
 	}
 
 	public void nextSong() {
-		state = playerFastRestart;
+		state.set(playerFastRestart);
 		track.selected++;
 		if (track.selected > track.songs) {
 			track.selected = 1;
@@ -772,7 +774,7 @@ public class ConsolePlayer {
 	}
 
 	public void previousSong() {
-		state = playerFastRestart;
+		state.set(playerFastRestart);
 		if (player.time() < SID2_PREV_SONG_TIMEOUT) {
 			track.selected--;
 			if (track.selected < 1) {
@@ -782,7 +784,7 @@ public class ConsolePlayer {
 	}
 
 	public void restart() {
-		state = playerFastRestart;
+		state.set(playerFastRestart);
 	}
 
 	public void fastForward() {
@@ -799,7 +801,7 @@ public class ConsolePlayer {
 	}
 
 	public void quit() {
-		state = playerFastExit;
+		state.set(playerFastExit);
 	}
 
 	public void displayError(final String error) {
@@ -1372,7 +1374,7 @@ public class ConsolePlayer {
 				}
 				try {
 					if (player.quietLevel < 2
-							&& (player.getState() == playerPaused || System.in
+							&& (player.getState().get() == playerPaused || System.in
 									.available() != 0)) {
 						player.decodeKeys();
 					}
@@ -1382,7 +1384,7 @@ public class ConsolePlayer {
 			}
 
 			player.close();
-			if ((player.getState() & ~playerFast) == playerRestart) {
+			if ((player.getState().get() & ~playerFast) == playerRestart) {
 				continue main_restart;
 			}
 			break;

@@ -1,5 +1,7 @@
 package ui.sidreg;
 
+import static sidplay.ConsolePlayer.playerExit;
+
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -7,6 +9,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,8 +19,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import ui.common.C64Stage;
-import ui.events.ITuneStateChanged;
-import ui.events.UIEvent;
 
 public class SidReg extends C64Stage {
 
@@ -44,6 +46,15 @@ public class SidReg extends C64Stage {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				if (arg2.intValue() == playerExit) {
+					recordSidWrites(false);
+				}
+			}
+		});
 		regTable.setItems(filteredSidRegWrites);
 		doUpdateFilter();
 	}
@@ -190,13 +201,6 @@ public class SidReg extends C64Stage {
 		if (getPlayer().getTune() != null
 				&& getPlayer().getTune().getInfo().sidChipBase2 != 0) {
 			getPlayer().getC64().setSidWriteListener(1, sidRegExtension);
-		}
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
-		if (evt.isOfType(ITuneStateChanged.class)) {
-			recordSidWrites(false);
 		}
 	}
 

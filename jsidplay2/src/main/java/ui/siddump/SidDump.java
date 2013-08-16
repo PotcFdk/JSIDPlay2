@@ -1,10 +1,14 @@
 package ui.siddump;
 
+import static sidplay.ConsolePlayer.playerExit;
+
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -25,8 +29,6 @@ import ui.common.C64Stage;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IPlayTune;
 import ui.events.IStopTune;
-import ui.events.ITuneStateChanged;
-import ui.events.UIEvent;
 
 public class SidDump extends C64Stage {
 	private static final String CELL_VALUE_OK = "cellValueOk";
@@ -60,6 +62,16 @@ public class SidDump extends C64Stage {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				if (arg2.intValue() == playerExit) {
+					replayAll.setDisable(false);
+					sidDumpExtension.stopRecording();
+				}
+			}
+		});
 		sidDumpExtension = new SidDumpExtension(getPlayer(), getConfig()) {
 
 			@Override
@@ -442,14 +454,6 @@ public class SidDump extends C64Stage {
 			return database.length(sidTuneMod);
 		}
 		return -1;
-	}
-
-	@Override
-	public void notify(final UIEvent evt) {
-		if (evt.isOfType(ITuneStateChanged.class)) {
-			replayAll.setDisable(false);
-			sidDumpExtension.stopRecording();
-		}
 	}
 
 }

@@ -1,5 +1,7 @@
 package ui;
 
+import static sidplay.ConsolePlayer.playerExit;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,6 +18,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.animation.TimelineBuilder;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -72,7 +76,6 @@ import ui.events.IInsertMedia;
 import ui.events.IMadeProgress;
 import ui.events.IPlayTune;
 import ui.events.IPlayerPlays;
-import ui.events.ITuneStateChanged;
 import ui.events.Reset;
 import ui.events.UIEvent;
 import ui.filefilter.CartFileExtensions;
@@ -145,6 +148,16 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		this.duringInitialization = true;
 		this.scene = tabbedPane.getScene();
 
+		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				if (arg2.intValue() == playerExit) {
+					pauseContinue.setSelected(false);
+					normalSpeed.setSelected(true);
+				}
+			}
+		});
 		this.load.setAccelerator(new KeyCodeCombination(KeyCode.L,
 				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
 		this.video.setAccelerator(new KeyCodeCombination(KeyCode.V,
@@ -204,6 +217,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				C64Tab theTab = (C64Tab) tab;
 				theTab.setConfig(getConfig());
 				theTab.setPlayer(getPlayer());
+				theTab.setConsolePlayer(getConsolePlayer());
 				theTab.initialize(location, resources);
 			}
 		}
@@ -865,6 +879,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private void sidDump() {
 		C64Stage window = new SidDump();
 		window.setPlayer(getPlayer());
+		window.setConsolePlayer(getConsolePlayer());
 		window.setConfig(getConfig());
 		try {
 			window.open();
@@ -877,6 +892,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private void sidRegisters() {
 		C64Stage window = new SidReg();
 		window.setPlayer(getPlayer());
+		window.setConsolePlayer(getConsolePlayer());
 		window.setConfig(getConfig());
 		try {
 			window.open();
@@ -1091,7 +1107,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
 		boolean motorOn = getConfig().getC1541().isDriveSoundOn()
-				&& getConsolePlayer().getState() == ConsolePlayer.playerRunning
+				&& getConsolePlayer().getState().get() == ConsolePlayer.playerRunning
 				&& c1541.getDiskController().isMotorOn();
 		if (!oldMotorOn && motorOn) {
 			MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);
@@ -1174,9 +1190,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	public void notify(final UIEvent evt) {
 		if (evt.isOfType(IPlayerPlays.class)) {
 			updatePlayerButtons();
-		} else if (evt.isOfType(ITuneStateChanged.class)) {
-			pauseContinue.setSelected(false);
-			normalSpeed.setSelected(true);
 		} else if (evt.isOfType(IMadeProgress.class)) {
 			// Show current progress
 			Platform.runLater(new Runnable() {

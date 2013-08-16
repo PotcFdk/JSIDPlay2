@@ -1,5 +1,7 @@
 package ui.favorites;
 
+import static sidplay.ConsolePlayer.playerExit;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -31,7 +33,6 @@ import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IPlayTune;
 import ui.events.IReplayTune;
-import ui.events.ITuneStateChanged;
 import ui.events.UIEvent;
 import ui.events.favorites.IAddFavoritesTab;
 import ui.events.favorites.IGetFavoritesTabs;
@@ -59,6 +60,15 @@ public class Favorites extends C64Tab {
 		if (getPlayer() == null) {
 			return;
 		}
+		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				if (arg2.intValue() == playerExit) {
+					playNextTune();
+				}
+			}
+		});
 		List<? extends FavoritesSection> favorites = getConfig().getFavorites();
 		for (FavoritesSection favorite : favorites) {
 			addTab(favorite);
@@ -205,7 +215,7 @@ public class Favorites extends C64Tab {
 		selectedTab.getFavoritesSection().setName(name);
 	}
 
-	private void playNextTune(final ITuneStateChanged stateChanged) {
+	protected void playNextTune() {
 		if (repeatOne.isSelected()) {
 			// repeat one tune
 			getUiEvents().fireEvent(IReplayTune.class, new IReplayTune() {
@@ -220,7 +230,7 @@ public class Favorites extends C64Tab {
 			currentlyPlayedFavorites.playNextRandom();
 		} else if (currentlyPlayedFavorites != null && !off.isSelected() && repeatOff.isSelected()) {
 			// normal playback
-			currentlyPlayedFavorites.playNext(stateChanged.getTune());
+			currentlyPlayedFavorites.playNext(getPlayer().getTune().getInfo().file);
 		}
 	}
 
@@ -257,11 +267,6 @@ public class Favorites extends C64Tab {
 						}
 					}
 				});
-			}
-		} else if (event.isOfType(ITuneStateChanged.class)) {
-			ITuneStateChanged ifObj = (ITuneStateChanged) event.getUIEventImpl();
-			if (ifObj.naturalFinished()) {
-				playNextTune(ifObj);
 			}
 		}
 

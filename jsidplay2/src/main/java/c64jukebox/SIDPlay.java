@@ -131,7 +131,7 @@ public class SIDPlay extends Applet implements Runnable {
 					return;
 				}
 				while (true) {
-					if (cp.getState() == ConsolePlayer.playerPaused) {
+					if (cp.getState().get() == ConsolePlayer.playerPaused) {
 						try {
 							Thread.sleep(250);
 						} catch (InterruptedException e) {
@@ -142,7 +142,7 @@ public class SIDPlay extends Applet implements Runnable {
 						break;
 					}
 				}
-				if (!fExit && (cp.getState() & ~playerFast) == playerRestart) {
+				if (!fExit && (cp.getState().get() & ~playerFast) == playerRestart) {
 					continue main_restart;
 				}
 				break;
@@ -242,7 +242,7 @@ public class SIDPlay extends Applet implements Runnable {
 	 * @return the player state
 	 */
 	public int stateSID() {
-		return cp.getState();
+		return cp.getState().get();
 	}
 
 	/**
