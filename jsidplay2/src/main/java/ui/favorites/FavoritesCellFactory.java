@@ -36,14 +36,13 @@ public class FavoritesCellFactory implements Callback<TableColumn<HVSCEntry, ?>,
 						HVSCEntry hvscEntry = (HVSCEntry) getTableRow().getItem();
 						if (hvscEntry != null && favoritesTab != null) {
 							File file = favoritesTab.getFile(hvscEntry.getPath());
-							if (file != null) {
-								getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
-								getStyleClass().remove(FILE_NOT_FOUND_ROW);
+							getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
+							getStyleClass().remove(FILE_NOT_FOUND_ROW);
+							if (file == null || !file.exists()) {
+								getStyleClass().add(FILE_NOT_FOUND_ROW);
+							} else {
 								if (file.equals(favoritesTab.getCurrentlyPlayedFile())) {
 									getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
-								}
-								if (!file.exists()) {
-									getStyleClass().add(FILE_NOT_FOUND_ROW);
 								}
 							}
 							int columnIndex = column.getTableView().getColumns().indexOf(column);
