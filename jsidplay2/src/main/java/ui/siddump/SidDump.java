@@ -66,8 +66,12 @@ public class SidDump extends C64Stage {
 			public void changed(ObservableValue<? extends Number> arg0,
 					Number arg1, Number arg2) {
 				if (arg2.intValue() == playerExit) {
-					replayAll.setDisable(false);
-					sidDumpExtension.stopRecording();
+					Platform.runLater(new Runnable() {
+						public void run() {
+							replayAll.setDisable(false);
+							sidDumpExtension.stopRecording();
+						}
+					});
 				}
 			}
 		});

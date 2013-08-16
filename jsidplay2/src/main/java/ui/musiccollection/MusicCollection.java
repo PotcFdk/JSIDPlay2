@@ -1,6 +1,7 @@
 package ui.musiccollection;
 
 import static sidplay.ConsolePlayer.playerRunning;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -185,8 +186,12 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					Number arg1, Number arg2) {
 				if (arg2.intValue() == playerRunning
 						&& getPlayer().getTune() != null) {
-					// auto-expand current selected tune
-					showNextHit(getPlayer().getTune().getInfo().file);
+					Platform.runLater(new Runnable() {
+						public void run() {
+							// auto-expand current selected tune
+							showNextHit(getPlayer().getTune().getInfo().file);
+						}
+					});
 				}
 			}
 		});

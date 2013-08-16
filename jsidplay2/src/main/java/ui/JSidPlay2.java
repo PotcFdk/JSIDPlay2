@@ -152,10 +152,18 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			public void changed(ObservableValue<? extends Number> arg0,
 					Number arg1, Number arg2) {
 				if (arg2.intValue() == playerExit) {
-					pauseContinue.setSelected(false);
-					normalSpeed.setSelected(true);
+					Platform.runLater(new Runnable() {
+						public void run() {
+							pauseContinue.setSelected(false);
+							normalSpeed.setSelected(true);
+						}
+					});
 				} else if (arg2.intValue() == playerRunning) {
-					updatePlayerButtons();
+					Platform.runLater(new Runnable() {
+						public void run() {
+							updatePlayerButtons();
+						}
+					});
 				}
 			}
 		});
