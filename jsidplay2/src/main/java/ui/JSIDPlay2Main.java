@@ -29,7 +29,6 @@ import ui.entities.config.service.ConfigService;
 import ui.events.IGotoURL;
 import ui.events.IPlayTune;
 import ui.events.IReplayTune;
-import ui.events.IStopTune;
 import ui.events.Reset;
 import ui.events.UIEvent;
 import ui.events.UIEventFactory;
@@ -385,9 +384,6 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 					}
 				}
 			}
-		} else if (evt.isOfType(IStopTune.class)) {
-			// Stop C64
-			stopC64();
 		}
 	}
 

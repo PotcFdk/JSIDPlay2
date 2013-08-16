@@ -28,7 +28,6 @@ import sidplay.ini.IniReader;
 import ui.common.C64Stage;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IPlayTune;
-import ui.events.IStopTune;
 
 public class SidDump extends C64Stage {
 	private static final String CELL_VALUE_OK = "cellValueOk";
@@ -195,8 +194,6 @@ public class SidDump extends C64Stage {
 		} else {
 			getPlayer().getC64().setPlayRoutineObserver(null);
 			sidDumpExtension.stopRecording();
-			getUiEvents().fireEvent(IStopTune.class, new IStopTune() {
-			});
 		}
 	}
 
