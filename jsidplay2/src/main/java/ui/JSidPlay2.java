@@ -1,6 +1,7 @@
 package ui;
 
 import static sidplay.ConsolePlayer.playerExit;
+import static sidplay.ConsolePlayer.playerRunning;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -75,7 +76,6 @@ import ui.entities.config.SidPlay2Section;
 import ui.events.IInsertMedia;
 import ui.events.IMadeProgress;
 import ui.events.IPlayTune;
-import ui.events.IPlayerPlays;
 import ui.events.Reset;
 import ui.events.UIEvent;
 import ui.filefilter.CartFileExtensions;
@@ -155,6 +155,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				if (arg2.intValue() == playerExit) {
 					pauseContinue.setSelected(false);
 					normalSpeed.setSelected(true);
+				} else if (arg2.intValue() == playerRunning) {
+					updatePlayerButtons();
 				}
 			}
 		});
@@ -1188,9 +1190,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@Override
 	public void notify(final UIEvent evt) {
-		if (evt.isOfType(IPlayerPlays.class)) {
-			updatePlayerButtons();
-		} else if (evt.isOfType(IMadeProgress.class)) {
+		if (evt.isOfType(IMadeProgress.class)) {
 			// Show current progress
 			Platform.runLater(new Runnable() {
 

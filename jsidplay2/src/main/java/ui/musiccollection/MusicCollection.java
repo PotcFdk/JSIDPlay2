@@ -1,5 +1,6 @@
 package ui.musiccollection;
 
+import static sidplay.ConsolePlayer.playerRunning;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -65,8 +66,6 @@ import ui.entities.config.SidPlay2Section;
 import ui.events.IGotoURL;
 import ui.events.IMadeProgress;
 import ui.events.IPlayTune;
-import ui.events.IPlayerPlays;
-import ui.events.UIEvent;
 import ui.events.favorites.IAddFavoritesTab;
 import ui.events.favorites.IGetFavoritesTabs;
 import ui.favorites.FavoritesTab;
@@ -180,6 +179,18 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
+		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				if (arg2.intValue() == playerRunning
+						&& getPlayer().getTune() != null) {
+					// auto-expand current selected tune
+					showNextHit(getPlayer().getTune().getInfo().file);
+				}
+			}
+		});
+
 		tuneInfoTable.setItems(tuneInfos);
 
 		searchScope.setItems(searchScopes);
@@ -859,14 +870,4 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	}
 
-	@Override
-	public void notify(UIEvent event) {
-		if (event.isOfType(IPlayerPlays.class)) {
-			if (getPlayer().getTune() == null) {
-				return;
-			}
-			// auto-expand current selected tune
-			showNextHit(getPlayer().getTune().getInfo().file);
-		}
-	}
 }

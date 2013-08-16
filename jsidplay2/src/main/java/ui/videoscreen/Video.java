@@ -1,5 +1,7 @@
 package ui.videoscreen;
 
+import static sidplay.ConsolePlayer.playerRunning;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -44,8 +46,6 @@ import resid_builder.resid.ISIDDefs.ChipModel;
 import ui.common.C64Tab;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IInsertMedia;
-import ui.events.IPlayerPlays;
-import ui.events.UIEvent;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.TapeFileExtensions;
@@ -86,6 +86,16 @@ public class Video extends C64Tab implements PropertyChangeListener {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
+		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				if (arg2.intValue() == playerRunning) {
+					setupVideoScreen();
+					setupScreenBasedOnChipType(getPlayer().getTune());
+				}
+			}
+		});
 		for (Slider slider : Arrays.asList(brightness, contrast, gamma,
 				saturation, phaseShift, offset, tint, blur, bleed)) {
 			slider.getStyleClass().add("knobStyle");
@@ -602,14 +612,6 @@ public class Video extends C64Tab implements PropertyChangeListener {
 
 				}
 			});
-		}
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
-		if (evt.isOfType(IPlayerPlays.class)) {
-			setupVideoScreen();
-			setupScreenBasedOnChipType(getPlayer().getTune());
 		}
 	}
 

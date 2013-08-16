@@ -1,5 +1,7 @@
 package ui.oscilloscope;
 
+import static sidplay.ConsolePlayer.playerRunning;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -17,7 +19,6 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import ui.common.C64Tab;
 import ui.events.IMuteVoice;
-import ui.events.IPlayerPlays;
 import ui.events.UIEvent;
 
 /**
@@ -93,6 +94,32 @@ public class Oscilloscope extends C64Tab {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
+		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				if (arg2.intValue() == playerRunning) {
+					final EventScheduler ctx = getPlayer().getC64().getEventScheduler();
+					/* sample oscillator buffer */
+					highResolutionEvent.beginScheduling(ctx);
+
+					for (int i = 0; i < gauges.length; i++) {
+						for (int j = 0; j < gauges[i].length; j++) {
+							for (int k = 0; k < gauges[i][j].length; k++) {
+								gauges[i][j][k].reset();
+							}
+						}
+					}
+
+					setVoiceMute(0, 0, muteVoice1.isSelected());
+					setVoiceMute(0, 1, muteVoice2.isSelected());
+					setVoiceMute(0, 2, muteVoice3.isSelected());
+					setVoiceMute(1, 0, muteVoice4.isSelected());
+					setVoiceMute(1, 1, muteVoice5.isSelected());
+					setVoiceMute(1, 2, muteVoice6.isSelected());
+				}
+			}
+		});
 		waveMono_0.setLocalizer(getBundle());
 		waveMono_1.setLocalizer(getBundle());
 		waveMono_2.setLocalizer(getBundle());
@@ -223,26 +250,7 @@ public class Oscilloscope extends C64Tab {
 
 	@Override
 	public void notify(final UIEvent evt) {
-		if (evt.isOfType(IPlayerPlays.class)) {
-			final EventScheduler ctx = getPlayer().getC64().getEventScheduler();
-			/* sample oscillator buffer */
-			highResolutionEvent.beginScheduling(ctx);
-
-			for (int i = 0; i < gauges.length; i++) {
-				for (int j = 0; j < gauges[i].length; j++) {
-					for (int k = 0; k < gauges[i][j].length; k++) {
-						gauges[i][j][k].reset();
-					}
-				}
-			}
-
-			setVoiceMute(0, 0, muteVoice1.isSelected());
-			setVoiceMute(0, 1, muteVoice2.isSelected());
-			setVoiceMute(0, 2, muteVoice3.isSelected());
-			setVoiceMute(1, 0, muteVoice4.isSelected());
-			setVoiceMute(1, 1, muteVoice5.isSelected());
-			setVoiceMute(1, 2, muteVoice6.isSelected());
-		} else if (evt.isOfType(IMuteVoice.class)) {
+		if (evt.isOfType(IMuteVoice.class)) {
 			final IMuteVoice muteVoice = (IMuteVoice) evt.getUIEventImpl();
 			final int sidNum = muteVoice.getSidNum();
 			final int voice = muteVoice.getVoice();

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
@@ -29,7 +28,6 @@ import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
 import ui.events.IGotoURL;
 import ui.events.IPlayTune;
-import ui.events.IPlayerPlays;
 import ui.events.IReplayTune;
 import ui.events.IStopTune;
 import ui.events.Reset;
@@ -103,15 +101,6 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 					if (!cp.open()) {
 						return;
 					}
-					Platform.runLater(new Runnable() {
-
-						@Override
-						public void run() {
-							uiEvents.fireEvent(IPlayerPlays.class,
-									new IPlayerPlays() {
-									});
-						}
-					});
 					// Play next chunk of sound data, until it gets stopped
 					while (true) {
 						// Pause? sleep for awhile
