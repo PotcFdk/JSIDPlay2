@@ -33,6 +33,7 @@ public class Oscilloscope extends C64Tab {
 
 		public void beginScheduling(final EventScheduler _ctx) {
 			ctx = _ctx;
+			ctx.cancel(this);
 			ctx.schedule(this, 0, Event.Phase.PHI2);
 		}
 
