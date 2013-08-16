@@ -18,8 +18,6 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import ui.common.C64Tab;
-import ui.events.IMuteVoice;
-import ui.events.UIEvent;
 
 /**
  * @author Ken Händel
@@ -111,12 +109,12 @@ public class Oscilloscope extends C64Tab {
 						}
 					}
 
-					setVoiceMute(0, 0, muteVoice1.isSelected());
-					setVoiceMute(0, 1, muteVoice2.isSelected());
-					setVoiceMute(0, 2, muteVoice3.isSelected());
-					setVoiceMute(1, 0, muteVoice4.isSelected());
-					setVoiceMute(1, 1, muteVoice5.isSelected());
-					setVoiceMute(1, 2, muteVoice6.isSelected());
+					getPlayer().mute(0, 0, muteVoice1.isSelected());
+					getPlayer().mute(0, 1, muteVoice2.isSelected());
+					getPlayer().mute(0, 2, muteVoice3.isSelected());
+					getPlayer().mute(1, 0, muteVoice4.isSelected());
+					getPlayer().mute(1, 1, muteVoice5.isSelected());
+					getPlayer().mute(1, 2, muteVoice6.isSelected());
 				}
 			}
 		});
@@ -197,81 +195,32 @@ public class Oscilloscope extends C64Tab {
 
 	@FXML
 	private void doMuteVoice1() {
-		setVoiceMute(0, 0, muteVoice1.isSelected());
+		getPlayer().mute(0, 0, muteVoice1.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice2() {
-		setVoiceMute(0, 1, muteVoice2.isSelected());
+		getPlayer().mute(0, 1, muteVoice2.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice3() {
-		setVoiceMute(0, 2, muteVoice3.isSelected());
+		getPlayer().mute(0, 2, muteVoice3.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice4() {
-		setVoiceMute(1, 0, muteVoice4.isSelected());
+		getPlayer().mute(1, 0, muteVoice4.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice5() {
-		setVoiceMute(1, 1, muteVoice5.isSelected());
+		getPlayer().mute(1, 1, muteVoice5.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice6() {
-		setVoiceMute(1, 2, muteVoice6.isSelected());
-	}
-
-	protected void setVoiceMute(final int sidNum, final int voiceNo,
-			final boolean mute) {
-		getPlayer().mute(sidNum, voiceNo, mute);
-		getUiEvents().fireEvent(IMuteVoice.class, new IMuteVoice() {
-
-			@Override
-			public int getSidNum() {
-				return sidNum;
-			}
-
-			@Override
-			public int getVoice() {
-				return voiceNo;
-			}
-
-			@Override
-			public boolean isMute() {
-				return mute;
-			}
-
-		});
-	}
-
-	@Override
-	public void notify(final UIEvent evt) {
-		if (evt.isOfType(IMuteVoice.class)) {
-			final IMuteVoice muteVoice = (IMuteVoice) evt.getUIEventImpl();
-			final int sidNum = muteVoice.getSidNum();
-			final int voice = muteVoice.getVoice();
-			if (sidNum == 0) {
-				if (voice == 0) {
-					muteVoice1.setSelected(muteVoice.isMute());
-				} else if (voice == 1) {
-					muteVoice2.setSelected(muteVoice.isMute());
-				} else if (voice == 2) {
-					muteVoice3.setSelected(muteVoice.isMute());
-				}
-			} else {
-				if (voice == 0) {
-					muteVoice4.setSelected(muteVoice.isMute());
-				} else if (voice == 1) {
-					muteVoice5.setSelected(muteVoice.isMute());
-				} else if (voice == 2) {
-					muteVoice6.setSelected(muteVoice.isMute());
-				}
-			}
-		}
+		getPlayer().mute(1, 2, muteVoice6.isSelected());
 	}
 
 }
