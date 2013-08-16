@@ -1068,7 +1068,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 			@Override
 			public Object getComponent() {
-				return null;
+				return component;
 			}
 		});
 	}
@@ -1217,16 +1217,17 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				@Override
 				public void run() {
 					IPlayTune ifObj = (IPlayTune) evt.getUIEventImpl();
-					Object component = ifObj.getComponent();
-					// set player icon
-					for (Tab tab : tabbedPane.getTabs()) {
-						tab.setGraphic(null);
-					}
 					if (ifObj.switchToVideoTab()) {
 						tabbedPane.getSelectionModel().select(videoScreen);
 					}
-					(component instanceof Tab ? (Tab) component : videoScreen)
-							.setGraphic(PLAY_ICON);
+					// set player icon
+					Object component = ifObj.getComponent();
+					if (component != null && component instanceof Tab) {
+						for (Tab tab : tabbedPane.getTabs()) {
+							tab.setGraphic(null);
+						}
+						((Tab) component).setGraphic(PLAY_ICON);
+					}
 				}
 			});
 		} else if (evt.isOfType(IInsertMedia.class)) {

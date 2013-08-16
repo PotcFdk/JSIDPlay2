@@ -25,6 +25,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import ui.JSIDPlay2Main;
 import ui.common.C64Tab;
@@ -32,7 +33,6 @@ import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IPlayTune;
-import ui.events.IReplayTune;
 import ui.events.UIEvent;
 import ui.events.favorites.IAddFavoritesTab;
 import ui.events.favorites.IGetFavoritesTabs;
@@ -218,7 +218,23 @@ public class Favorites extends C64Tab {
 	protected void playNextTune() {
 		if (repeatOne.isSelected()) {
 			// repeat one tune
-			getUiEvents().fireEvent(IReplayTune.class, new IReplayTune() {
+			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
+
+				@Override
+				public boolean switchToVideoTab() {
+					return false;
+				}
+
+				@Override
+				public Object getComponent() {
+					return null;
+				}
+
+				@Override
+				public SidTune getSidTune() {
+					return getPlayer().getTune() != null ? getPlayer()
+							.getTune() : null;
+				}
 			});
 		} else if (randomAll.isSelected()) {
 			// random all favorites tab
@@ -253,7 +269,7 @@ public class Favorites extends C64Tab {
 			ifObj.setFavorites(newTab);
 		} else if (event.isOfType(IPlayTune.class)) {
 			IPlayTune ifObj = (IPlayTune) event.getUIEventImpl();
-			if (ifObj.getComponent().equals(this)) {
+			if (this.equals(ifObj.getComponent())) {
 				Platform.runLater(new Runnable() {
 					
 					@Override

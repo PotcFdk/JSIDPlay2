@@ -43,7 +43,6 @@ import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
 import ui.events.IMadeProgress;
 import ui.events.IPlayTune;
-import ui.events.IReplayTune;
 import ui.events.UIEvent;
 
 public class SoundSettings extends C64Stage implements IDownloadListener {
@@ -384,7 +383,23 @@ public class SoundSettings extends C64Stage implements IDownloadListener {
 	private void restart() {
 		// replay last tune
 		if (!duringInitialization) {
-			getUiEvents().fireEvent(IReplayTune.class, new IReplayTune() {
+			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
+
+				@Override
+				public boolean switchToVideoTab() {
+					return false;
+				}
+
+				@Override
+				public Object getComponent() {
+					return null;
+				}
+
+				@Override
+				public SidTune getSidTune() {
+					return getPlayer().getTune() != null ? getPlayer()
+							.getTune() : null;
+				}
 			});
 		}
 	}

@@ -25,7 +25,6 @@ import resid_builder.resid.SID;
 import sidplay.ini.intf.IFilterSection;
 import ui.common.C64Stage;
 import ui.events.IPlayTune;
-import ui.events.IReplayTune;
 import ui.events.UIEvent;
 
 public class EmulationSettings extends C64Stage {
@@ -241,7 +240,24 @@ public class EmulationSettings extends C64Stage {
 	private void restart() {
 		// replay last tune
 		if (!duringInitialization) {
-			getUiEvents().fireEvent(IReplayTune.class, new IReplayTune() {
+			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
+
+				@Override
+				public boolean switchToVideoTab() {
+					return false;
+				}
+
+				@Override
+				public Object getComponent() {
+					return null;
+				}
+
+				@Override
+				public SidTune getSidTune() {
+					return getPlayer().getTune() != null ? getPlayer()
+							.getTune() : null;
+				}
+				
 			});
 		}
 	}

@@ -28,7 +28,6 @@ import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
 import ui.events.IGotoURL;
 import ui.events.IPlayTune;
-import ui.events.IReplayTune;
 import ui.events.UIEvent;
 import ui.events.UIEventFactory;
 import ui.events.UIEventListener;
@@ -351,14 +350,7 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 	 */
 	@Override
 	public void notify(final UIEvent evt) {
-		if (evt.isOfType(IReplayTune.class)) {
-			// Replay (restart) a tune
-			if (getPlayer().getTune() != null) {
-				playTune(sidTune);
-			} else {
-				playTune(null);
-			}
-		} else if (evt.isOfType(IPlayTune.class)) {
+		if (evt.isOfType(IPlayTune.class)) {
 			// Play a tune
 			IPlayTune ifObj = (IPlayTune) evt.getUIEventImpl();
 			playTune(ifObj.getSidTune());
