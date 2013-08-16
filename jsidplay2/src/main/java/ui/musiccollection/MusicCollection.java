@@ -668,6 +668,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private void showPhoto(SidTune sidTune) {
 		if (sidTune != null && sidTune.getImage() != null) {
 			photograph.setImage(sidTune.getImage());
+		} else {
+			photograph.setImage(null);
 		}
 	}
 
