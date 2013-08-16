@@ -31,6 +31,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.zip.ZipEntryFileProxy;
 import libsidutils.zip.ZipFileProxy;
@@ -40,7 +41,7 @@ import ui.download.DownloadThread;
 import ui.download.ProgressListener;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IInsertMedia;
-import ui.events.Reset;
+import ui.events.IPlayTune;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.DocsFileFilter;
 import ui.filefilter.ScreenshotFileFilter;
@@ -364,7 +365,8 @@ public class DiskCollection extends C64Tab {
 			command = "LOAD\rRUN\r";
 		}
 		// reset required after inserting the cartridge
-		getUiEvents().fireEvent(Reset.class, new Reset() {
+		getPlayer().setCommand(command);
+		getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
 
 			@Override
 			public boolean switchToVideoTab() {
@@ -372,13 +374,13 @@ public class DiskCollection extends C64Tab {
 			}
 
 			@Override
-			public String getCommand() {
-				return command;
+			public Object getComponent() {
+				return DiskCollection.this;
 			}
 
 			@Override
-			public Object getComponent() {
-				return DiskCollection.this;
+			public SidTune getSidTune() {
+				return null;
 			}
 		});
 	}

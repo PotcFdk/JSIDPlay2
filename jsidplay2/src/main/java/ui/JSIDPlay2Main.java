@@ -29,7 +29,6 @@ import ui.entities.config.service.ConfigService;
 import ui.events.IGotoURL;
 import ui.events.IPlayTune;
 import ui.events.IReplayTune;
-import ui.events.Reset;
 import ui.events.UIEvent;
 import ui.events.UIEventFactory;
 import ui.events.UIEventListener;
@@ -362,10 +361,6 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 		} else if (evt.isOfType(IPlayTune.class)) {
 			// Play a tune
 			IPlayTune ifObj = (IPlayTune) evt.getUIEventImpl();
-			if (evt.isOfType(Reset.class)) {
-				getPlayer().setCommand(
-						((Reset) evt.getUIEventImpl()).getCommand());
-			}
 			playTune(ifObj.getSidTune());
 		} else if (evt.isOfType(IGotoURL.class)) {
 			// Open a browser URL

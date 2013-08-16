@@ -3,14 +3,14 @@ package ui.gamebase.listeners;
 import java.io.File;
 import java.io.IOException;
 
+import libsidplay.Player;
+import libsidplay.sidtune.SidTune;
+import libsidutils.zip.ZipEntryFileProxy;
+import libsidutils.zip.ZipFileProxy;
 import ui.download.ProgressListener;
 import ui.entities.config.Configuration;
 import ui.events.IInsertMedia;
-import ui.events.Reset;
-
-import libsidplay.Player;
-import libsidutils.zip.ZipEntryFileProxy;
-import libsidutils.zip.ZipFileProxy;
+import ui.events.IPlayTune;
 
 public class GameListener extends ProgressListener {
 
@@ -108,7 +108,8 @@ public class GameListener extends ProgressListener {
 			command = null;
 		}
 		// reset required after inserting the cartridge
-		uiEvents.fireEvent(Reset.class, new Reset() {
+		player.setCommand(command);
+		uiEvents.fireEvent(IPlayTune.class, new IPlayTune() {
 
 			@Override
 			public boolean switchToVideoTab() {
@@ -116,13 +117,13 @@ public class GameListener extends ProgressListener {
 			}
 
 			@Override
-			public String getCommand() {
-				return command;
+			public Object getComponent() {
+				return parent;
 			}
 
 			@Override
-			public Object getComponent() {
-				return parent;
+			public SidTune getSidTune() {
+				return null;
 			}
 		});
 	}

@@ -76,7 +76,6 @@ import ui.entities.config.SidPlay2Section;
 import ui.events.IInsertMedia;
 import ui.events.IMadeProgress;
 import ui.events.IPlayTune;
-import ui.events.Reset;
 import ui.events.UIEvent;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.ConfigFileExtension;
@@ -347,11 +346,21 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void reset() {
 		if (!duringInitialization) {
-			getUiEvents().fireEvent(Reset.class, new Reset() {
+			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
 
 				@Override
 				public Object getComponent() {
 					return videoScreen;
+				}
+
+				@Override
+				public boolean switchToVideoTab() {
+					return false;
+				}
+
+				@Override
+				public SidTune getSidTune() {
+					return null;
 				}
 			});
 		}
@@ -1045,7 +1054,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		// Insert a cartridge
 		getPlayer().getC64().insertCartridge(selectedFile);
 		// reset required after inserting the cartridge
-		getUiEvents().fireEvent(Reset.class, new Reset() {
+		getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
 
 			@Override
 			public boolean switchToVideoTab() {
@@ -1053,13 +1062,13 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			}
 
 			@Override
-			public String getCommand() {
+			public SidTune getSidTune() {
 				return null;
 			}
 
 			@Override
 			public Object getComponent() {
-				return component;
+				return null;
 			}
 		});
 	}
