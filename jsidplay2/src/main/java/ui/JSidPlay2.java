@@ -1,6 +1,5 @@
 package ui;
 
-import static sidplay.ConsolePlayer.playerExit;
 import static sidplay.ConsolePlayer.playerRunning;
 
 import java.io.File;
@@ -74,7 +73,6 @@ import ui.emulationsettings.EmulationSettings;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IInsertMedia;
-import ui.events.IMadeProgress;
 import ui.events.IPlayTune;
 import ui.events.UIEvent;
 import ui.filefilter.CartFileExtensions;
@@ -151,22 +149,20 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0,
 					Number arg1, Number arg2) {
-				if (arg2.intValue() == playerExit) {
+				if (arg2.intValue() == playerRunning) {
 					Platform.runLater(new Runnable() {
 						public void run() {
 							pauseContinue.setSelected(false);
 							normalSpeed.setSelected(true);
-						}
-					});
-				} else if (arg2.intValue() == playerRunning) {
-					Platform.runLater(new Runnable() {
-						public void run() {
 							updatePlayerButtons();
 						}
 					});
 				}
 			}
 		});
+		pauseContinue.selectedProperty().bindBidirectional(
+				pauseContinue2.selectedProperty());
+
 		this.load.setAccelerator(new KeyCodeCombination(KeyCode.L,
 				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
 		this.video.setAccelerator(new KeyCodeCombination(KeyCode.V,
@@ -216,9 +212,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		expandA000.setSelected(getConfig().getC1541().isRamExpansionEnabled4());
 		turnPrinterOn.setSelected(getConfig().getPrinter().isPrinterOn());
 
-		pauseContinue.selectedProperty().bindBidirectional(
-				pauseContinue2.selectedProperty());
-
 		for (Tab tab : tabbedPane.getTabs()) {
 			// XXX JavaFX: better initialization support using constructor
 			// arguments?
@@ -228,6 +221,9 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				theTab.setPlayer(getPlayer());
 				theTab.setConsolePlayer(getConsolePlayer());
 				theTab.initialize(location, resources);
+				if (theTab.getProgressValue() != null) {
+					theTab.getProgressValue().addListener(progressUpdateListener());
+				}
 			}
 		}
 		this.duringInitialization = false;
@@ -248,6 +244,23 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@Override
 	protected void doCloseWindow() {
 		timer.stop();
+	}
+
+	private ChangeListener<Number> progressUpdateListener() {
+		return new ChangeListener<Number>() {
+			@Override
+			public void changed(
+					ObservableValue<? extends Number> arg0,
+					Number arg1, final Number arg2) {
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						progress.progressProperty().set(arg2.doubleValue() / 100.);
+					}
+				});
+			}
+		};
 	}
 
 	@FXML
@@ -442,6 +455,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		window.setConsolePlayer(getConsolePlayer());
 		window.setPlayer(getPlayer());
 		window.setConfig(getConfig());
+		window.getProgressValue().addListener(progressUpdateListener());
 		try {
 			window.open();
 		} catch (IOException e) {
@@ -1207,18 +1221,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@Override
 	public void notify(final UIEvent evt) {
-		if (evt.isOfType(IMadeProgress.class)) {
-			// Show current progress
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					IMadeProgress ifObj = (IMadeProgress) evt.getUIEventImpl();
-					progress.setProgress(ifObj.getPercentage() / 100f);
-				}
-			});
-		} else if (evt.isOfType(IPlayTune.class)) {
-			pauseContinue.setSelected(false);
+		if (evt.isOfType(IPlayTune.class)) {
 			// Play a tune
 			Platform.runLater(new Runnable() {
 

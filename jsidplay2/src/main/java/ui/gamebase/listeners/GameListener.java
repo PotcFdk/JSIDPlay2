@@ -3,6 +3,7 @@ package ui.gamebase.listeners;
 import java.io.File;
 import java.io.IOException;
 
+import javafx.beans.property.DoubleProperty;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidutils.zip.ZipEntryFileProxy;
@@ -11,15 +12,18 @@ import ui.download.ProgressListener;
 import ui.entities.config.Configuration;
 import ui.events.IInsertMedia;
 import ui.events.IPlayTune;
+import ui.events.UIEventFactory;
 
 public class GameListener extends ProgressListener {
+	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 
 	private String fileToRun;
 	protected Object parent;
 	protected Player player;
 	protected Configuration config;
 
-	public GameListener(Object parent, Player player, Configuration config) {
+	public GameListener(Object parent, DoubleProperty progress, Player player, Configuration config) {
+		super(progress);
 		this.parent = parent;
 		this.config = config;
 		this.player = player;

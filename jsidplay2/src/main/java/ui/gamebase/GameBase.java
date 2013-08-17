@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -42,6 +44,41 @@ import ui.gamebase.listeners.MusicListener;
 
 public class GameBase extends C64Tab {
 
+	private final class GameBaseListener extends ProgressListener {
+		private GameBaseListener(DoubleProperty progress) {
+			super(progress);
+		}
+
+		@Override
+		public void downloaded(File downloadedFile) {
+			if (downloadedFile == null) {
+				enableGameBase.setDisable(false);
+				return;
+			}
+			try {
+
+				ZipFileProxy zip = new ZipFileProxy(downloadedFile);
+				for (File zipEntry : zip.listFiles()) {
+					if (zipEntry.isFile()) {
+						ZipEntryFileProxy.extractFromZip(
+								(ZipEntryFileProxy) zipEntry, getConfig()
+										.getSidplay2().getTmpDir());
+					}
+				}
+				connect(new File(downloadedFile.getParent(),
+						PathUtils.getBaseNameNoExt(downloadedFile)));
+				setLettersDisable(false);
+				letter.getSelectionModel().selectFirst();
+				selectTab((GameBasePage) letter.getSelectionModel()
+						.getSelectedItem());
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				enableGameBase.setDisable(false);
+			}
+		}
+	}
+
 	private static final String GB64_MUSIC_DOWNLOAD_URL = "http://www.gb64.com/C64Music/";
 
 	@FXML
@@ -64,6 +101,12 @@ public class GameBase extends C64Tab {
 	private GamesService gamesService;
 
 	public List<File> lastScreenshot = new ArrayList<File>();
+
+	private DoubleProperty progress = new SimpleDoubleProperty();
+
+	public DoubleProperty getProgressValue() {
+		return progress;
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -95,7 +138,7 @@ public class GameBase extends C64Tab {
 			page.setPlayer(getPlayer());
 			page.initialize(location, resources);
 
-			page.setScreenShotListener(new ProgressListener() {
+			page.setScreenShotListener(new ProgressListener(progress) {
 
 				@Override
 				public void downloaded(File downloadedFile) {
@@ -124,7 +167,7 @@ public class GameBase extends C64Tab {
 					}
 				}
 			});
-			page.setGameListener(new GameListener(this, getPlayer(),
+			page.setGameListener(new GameListener(this, progress, getPlayer(),
 					getConfig()));
 			page.getGamebaseTable().getSelectionModel().selectedItemProperty()
 					.addListener(new ChangeListener<Games>() {
@@ -203,41 +246,7 @@ public class GameBase extends C64Tab {
 
 			}
 			downloadStart(getConfig().getOnline().getGamebaseUrl(),
-					new ProgressListener() {
-
-						@Override
-						public void downloaded(File downloadedFile) {
-							if (downloadedFile == null) {
-								enableGameBase.setDisable(false);
-								return;
-							}
-							try {
-
-								ZipFileProxy zip = new ZipFileProxy(
-										downloadedFile);
-								for (File zipEntry : zip.listFiles()) {
-									if (zipEntry.isFile()) {
-										ZipEntryFileProxy.extractFromZip(
-												(ZipEntryFileProxy) zipEntry,
-												getConfig().getSidplay2()
-														.getTmpDir());
-									}
-								}
-								connect(new File(
-										downloadedFile.getParent(),
-										PathUtils
-												.getBaseNameNoExt(downloadedFile)));
-								setLettersDisable(false);
-								letter.getSelectionModel().selectFirst();
-								selectTab((GameBasePage) letter
-										.getSelectionModel().getSelectedItem());
-							} catch (Exception e) {
-								e.printStackTrace();
-							} finally {
-								enableGameBase.setDisable(false);
-							}
-						}
-					});
+					new GameBaseListener(progress));
 		}
 	}
 
@@ -246,7 +255,7 @@ public class GameBase extends C64Tab {
 		downloadStart(
 				GB64_MUSIC_DOWNLOAD_URL
 						+ linkMusic.getText().replace('\\', '/'),
-				new MusicListener(this));
+				new MusicListener(this, progress));
 	}
 
 	private void downloadStart(String url, IDownloadListener listener) {

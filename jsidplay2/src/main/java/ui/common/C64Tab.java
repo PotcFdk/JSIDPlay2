@@ -3,6 +3,7 @@ package ui.common;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import libsidplay.Player;
@@ -69,4 +70,8 @@ public abstract class C64Tab extends Tab implements UIPart {
 		util.setConfig(config);
 	}
 
+	public DoubleProperty getProgressValue() {
+		return null;
+	}
+	
 }

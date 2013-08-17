@@ -3,17 +3,20 @@ package ui.gamebase.listeners;
 import java.io.File;
 import java.io.IOException;
 
+import javafx.beans.property.DoubleProperty;
 import ui.download.ProgressListener;
 import ui.events.IPlayTune;
-
+import ui.events.UIEventFactory;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 
 public class MusicListener extends ProgressListener {
+	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 
 	protected final Object parent;
 
-	public MusicListener(Object parent) {
+	public MusicListener(Object parent, DoubleProperty progress) {
+		super(progress);
 		this.parent = parent;
 	}
 

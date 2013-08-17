@@ -2,35 +2,26 @@ package ui.download;
 
 import java.io.File;
 
-import ui.events.IMadeProgress;
-import ui.events.UIEventFactory;
+import javafx.beans.property.DoubleProperty;
 
 
 public abstract class ProgressListener implements IDownloadListener {
-	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
+	private DoubleProperty progress;
 
+	public ProgressListener(DoubleProperty progress) {
+		this.progress = progress;
+	}
+	
 	@Override
 	public void downloadStep(final int pct) {
-		this.uiEvents.fireEvent(IMadeProgress.class, new IMadeProgress() {
-
-			@Override
-			public int getPercentage() {
-				return pct;
-			}
-		});
+		progress.set(pct);
 	}
 
 	@Override
 	public void downloadStop(File downloadedFile) {
 
 		if (downloadedFile == null) {
-			this.uiEvents.fireEvent(IMadeProgress.class, new IMadeProgress() {
-
-				@Override
-				public int getPercentage() {
-					return 100;
-				}
-			});
+			progress.set(0);
 		}
 		downloaded(downloadedFile);
 	}

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -85,6 +87,12 @@ public class DiskCollection extends C64Tab {
 					|| docsFileFilter.accept(file);
 		}
 	};
+
+	private DoubleProperty progress = new SimpleDoubleProperty();
+
+	public DoubleProperty getProgressValue() {
+		return progress;
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -216,7 +224,7 @@ public class DiskCollection extends C64Tab {
 			autoConfiguration.setDisable(true);
 			try {
 				DownloadThread downloadThread = new DownloadThread(getConfig(),
-						new ProgressListener() {
+						new ProgressListener(progress) {
 
 							@Override
 							public void downloaded(final File downloadedFile) {

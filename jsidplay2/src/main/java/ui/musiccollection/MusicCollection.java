@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -65,7 +67,6 @@ import ui.entities.collection.StilEntry_;
 import ui.entities.collection.service.VersionService;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IGotoURL;
-import ui.events.IMadeProgress;
 import ui.events.IPlayTune;
 import ui.events.favorites.IAddFavoritesTab;
 import ui.events.favorites.IGetFavoritesTabs;
@@ -172,7 +173,12 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private boolean searchOptionsChanged;
 
 	private FavoritesTab favoritesToAddSearchResult;
-	private int currentProgress;
+
+	private DoubleProperty progress = new SimpleDoubleProperty();
+
+	public DoubleProperty getProgressValue() {
+		return progress;
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -435,7 +441,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			autoConfiguration.setDisable(true);
 			try {
 				DownloadThread downloadThread = new DownloadThread(getConfig(),
-						new ProgressListener() {
+						new ProgressListener(progress) {
 
 							@Override
 							public void downloaded(final File downloadedFile) {
@@ -724,26 +730,14 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 		// remember search state
 		savedState = searchThread.getSearchState();
-		getUiEvents().fireEvent(IMadeProgress.class, new IMadeProgress() {
-
-			@Override
-			public int getPercentage() {
-				return 100;
-			}
-		});
+		progress.set(0);
 	}
 
 	@Override
 	public void searchHit(final File current) {
 		if (searchThread instanceof SearchIndexerThread) {
 			// if search index is created, do not show the next result
-			getUiEvents().fireEvent(IMadeProgress.class, new IMadeProgress() {
-
-				@Override
-				public int getPercentage() {
-					return ++currentProgress % 100;
-				}
-			});
+			progress.set((progress.get() + 1) % 100);
 			return;
 		}
 		switch (searchResult.getSelectionModel().getSelectedIndex()) {
@@ -808,7 +802,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			return;
 		}
 
-		currentProgress = 0;
+		progress.set(0);
 
 		/*
 		 * validate database: version is inserted only after successful create

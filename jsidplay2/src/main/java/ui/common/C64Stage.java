@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -110,4 +111,9 @@ public abstract class C64Stage extends Stage implements UIPart {
 
 	protected void doCloseWindow() {
 	}
+
+	public DoubleProperty getProgressValue() {
+		return null;
+	}
+
 }

@@ -1,3 +1,4 @@
+
 package ui.soundsettings;
 
 import java.io.File;
@@ -11,6 +12,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.animation.TimelineBuilder;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,6 +35,7 @@ import libsidplay.common.ISID2Types;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
+import libsidutils.zip.ZipFileProxy;
 import resid_builder.resid.ISIDDefs.SamplingMethod;
 import sidplay.ConsolePlayer.DriverSettings;
 import sidplay.ConsolePlayer.OUTPUTS;
@@ -40,12 +44,11 @@ import sidplay.audio.CmpMP3File;
 import sidplay.ini.IniReader;
 import ui.common.C64Stage;
 import ui.download.DownloadThread;
-import ui.download.IDownloadListener;
-import ui.events.IMadeProgress;
+import ui.download.ProgressListener;
 import ui.events.IPlayTune;
 import ui.events.UIEvent;
 
-public class SoundSettings extends C64Stage implements IDownloadListener {
+public class SoundSettings extends C64Stage {
 
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
@@ -81,6 +84,12 @@ public class SoundSettings extends C64Stage implements IDownloadListener {
 	private DownloadThread downloadThread;
 	private boolean duringInitialization;
 	private Timeline timer;
+
+	private DoubleProperty progress = new SimpleDoubleProperty();
+
+	public DoubleProperty getProgressValue() {
+		return progress;
+	}
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -363,8 +372,10 @@ public class SoundSettings extends C64Stage implements IDownloadListener {
 			return;
 		}
 		final SidTuneInfo tuneInfo = sidTune.getInfo();
-		String name = PathUtils.getCollectionName(new File(getConfig()
-				.getSidplay2().getHvsc()), tuneInfo.file);
+		File rootFile = new File(getConfig().getSidplay2().getHvsc());
+		final File theRootFile = rootFile.getName().toLowerCase()
+				.endsWith(".zip") ? new ZipFileProxy(rootFile) : rootFile;
+		String name = PathUtils.getCollectionName(theRootFile, tuneInfo.file);
 		if (name != null) {
 			hvscName = name.replace(".sid", "");
 			currentSong = tuneInfo.currentSong;
@@ -408,7 +419,28 @@ public class SoundSettings extends C64Stage implements IDownloadListener {
 		System.out.println("Download URL: <" + url + ">");
 		try {
 			downloadThread = new DownloadThread(getConfig(),
-					SoundSettings.this, new URL(url));
+					new ProgressListener(progress) {
+						
+						@Override
+						public void downloaded(final File downloadedFile) {
+							downloadThread = null;
+
+							if (downloadedFile != null) {
+								Platform.runLater(new Runnable() {
+									
+									@Override
+									public void run() {
+										soundDevice.getSelectionModel().select(4);
+										mp3.setText(downloadedFile.getAbsolutePath());
+										getConfig().getAudio().setMp3File(mp3.getText());
+										setPlayOriginal(true);
+										playMP3.setSelected(true);
+										restart();
+									}
+								});
+							}
+						}
+					}, new URL(url));
 			downloadThread.start();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -425,39 +457,6 @@ public class SoundSettings extends C64Stage implements IDownloadListener {
 		if (getConsolePlayer().getDriverSettings().getDevice() instanceof CmpMP3File) {
 			((CmpMP3File) getConsolePlayer().getDriverSettings().getDevice())
 					.setPlayOriginal(playOriginal);
-		}
-	}
-
-	@Override
-	public void downloadStep(final int pct) {
-		getUiEvents().fireEvent(IMadeProgress.class, new IMadeProgress() {
-
-			@Override
-			public int getPercentage() {
-				return pct;
-			}
-		});
-	}
-
-	@Override
-	public void downloadStop(File downloadedFile) {
-		downloadThread = null;
-
-		if (downloadedFile == null) {
-			getUiEvents().fireEvent(IMadeProgress.class, new IMadeProgress() {
-
-				@Override
-				public int getPercentage() {
-					return 100;
-				}
-			});
-		} else {
-			soundDevice.getSelectionModel().select(4);
-			mp3.setText(downloadedFile.getAbsolutePath());
-			getConfig().getAudio().setMp3File(mp3.getText());
-			setPlayOriginal(true);
-			playMP3.setSelected(true);
-			restart();
 		}
 	}
 
