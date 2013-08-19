@@ -83,6 +83,7 @@
 
 	<build>
 		<plugins>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -473,6 +474,32 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>online-content</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<ant antfile="${basedir}/build-resources.xml">
+									<property name="compile_classpath" refid="maven.compile.classpath" />
+									<property name="gb64.mdbfile">${gb64.mdbfile}</property>
+									<property name="hvsc.zip">${hvsc.zip}</property>
+									<property name="7zip.home">${7zip.home}</property>
+									<property name="cgsc.7z">${cgsc.7z}</property>
+									<property name="hvmec.bz2">${hvmec.bz2}</property>
+									<property name="result_dir" location="${project.build.directory}/deploy/online" />
+								</ant>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin><plugin>
 				<groupId>com.github.goldin</groupId>
 				<artifactId>copy-maven-plugin</artifactId>
 				<version>0.2.5</version>

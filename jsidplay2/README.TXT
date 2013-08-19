@@ -17,3 +17,10 @@ e.g.
 -Dftp.server=ftp.kenchis.t15.org
 -Dftp.remotedir=/javafx
 -Dserver.url=http://kenchis.t15.org/jsidplay2/javafx/
+
+Optional:
+-Dgb64.mdbfile=<pathToGameBase64.mdb>
+-Dhvsc.zip=<pathToHVSC.zip>
+-D7zip.home=<pathToPacker7zip>
+-Dcgsc.7z=<pathToCGSZ.7z>
+-Dhvmec.bz2=<pathToHVMEC.tar.bz2>
