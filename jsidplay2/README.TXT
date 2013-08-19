@@ -24,3 +24,22 @@ Optional:
 -D7zip.home=<pathToPacker7zip>
 -Dcgsc.7z=<pathToCGSZ.7z>
 -Dhvmec.bz2=<pathToHVMEC.tar.bz2>
+
+
+Tips:
+=====
+
+find out available JavaFX style classes of a node in the scene graph:
+	private void dump(Node n, int depth) {
+		for (int i = 0; i < depth; i++)
+			System.out.print("  ");
+		System.out.println(n);
+		if (n instanceof Parent)
+			for (Node c : ((Parent) n).getChildrenUnmodifiable())
+				dump(c, depth + 1);
+	}
+
+How to debug Java WebStart applications:
+set JAVAWS_VM_ARGS="-Xdebug -Dnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=8000"
+"c:\Program Files\Java\jdk1.7.0_07\bin\javaws.exe" http://kenchis.t15.org/jsidplay2/jsidplay2.jnlp
+	
