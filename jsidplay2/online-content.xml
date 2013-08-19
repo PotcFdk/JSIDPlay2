@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="build online content">
+<project name="build online content" default="all">
 	<description>
 		Create online content of JSIDPlay2
     </description>
