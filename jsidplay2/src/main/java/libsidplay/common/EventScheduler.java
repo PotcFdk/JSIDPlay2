@@ -168,7 +168,7 @@ public final class EventScheduler {
 	 */
 	private void addEventToSchedule(final Event event) {
 		Event scan = firstEvent;
-		while (!Thread.currentThread().isInterrupted()) {
+		while (true) {
 			final Event next = scan.next;
 			/* find the right spot where to tuck this new event */
 			if (next.triggerTime > event.triggerTime) {
@@ -192,7 +192,7 @@ public final class EventScheduler {
 		Event prev = firstEvent;
 		Event scan = firstEvent.next;
 
-		while (scan != lastEvent && !Thread.currentThread().isInterrupted()) {
+		while (scan != lastEvent) {
 			if (event == scan) {
 				prev.next = scan.next;
 				return true;

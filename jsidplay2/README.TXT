@@ -1,12 +1,11 @@
-mvn clean package
-=================
-creates:
-target/standalone	-	local PC version, javafx
-target/deploy		-	website version
-
 mvn clean install
 =================
-creates: everything mentioned above
+target/standalone	-	local PC version
+target/deploy		-	website version
+
+mvn clean deploy
+=================
+does mvn clean install
 and uploads target/deploy to web-server
 
 Set the following properties in Eclipse: Preferences/Run/Debug StringSubstitution

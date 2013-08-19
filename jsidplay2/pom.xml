@@ -13,14 +13,13 @@
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 		<!-- FTP upload coordinates -->
-		<ftp.username />
-		<ftp.password />
-		<ftp.server />
-		<ftp.remotedir />
+		<ftp.username>JohnDoe</ftp.username>
+		<ftp.password>secret</ftp.password>
+		<ftp.server>rainbow.org</ftp.server>
+		<ftp.remotedir>foobar</ftp.remotedir>
 		<!-- Web Server URL to be replaced in web resources -->
 		<server.url />
 	</properties>
-
 	<repositories>
 		<repository>
 			<id>lib</id>
@@ -138,7 +137,7 @@
 				<version>2.4</version>
 				<executions>
 					<execution>
-						<id>jar</id>
+						<id>default-jar</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
@@ -452,13 +451,35 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>default-install</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>com.github.goldin</groupId>
 				<artifactId>copy-maven-plugin</artifactId>
 				<version>0.2.5</version>
 				<executions>
 					<execution>
 						<id>copy</id>
-						<phase>install</phase>
+						<phase>deploy</phase>
 						<goals>
 							<goal>copy</goal>
 						</goals>
