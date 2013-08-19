@@ -83,7 +83,7 @@
 
 	<build>
 		<plugins>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -493,13 +493,15 @@
 									<property name="7zip.home">${7zip.home}</property>
 									<property name="cgsc.7z">${cgsc.7z}</property>
 									<property name="hvmec.bz2">${hvmec.bz2}</property>
-									<property name="result_dir" location="${project.build.directory}/deploy/online" />
+									<property name="result_dir"
+										location="${project.build.directory}/deploy/online" />
 								</ant>
 							</target>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin><plugin>
+			</plugin>
+			<plugin>
 				<groupId>com.github.goldin</groupId>
 				<artifactId>copy-maven-plugin</artifactId>
 				<version>0.2.5</version>
