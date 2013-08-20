@@ -10,9 +10,9 @@ public class OnlineSection implements IOnlineSection {
 	/**
 	 * URL where the JSIDPlay2 is deployed to.
 	 */
-	private static final String DEPLOYMENT_URL = "http://kenchis.t15.org/jsidplay2/";
+	private static final String DEPLOYMENT_URL = "http://kenchis.t15.org/jsidplay2/javafx/";
 
-	private String hvscUrl = DEPLOYMENT_URL + "online/hvsc/C64Music.zip";
+	private String hvscUrl = DEPLOYMENT_URL + "C64Music.zip";
 
 	@Override
 	public String getHvscUrl() {
@@ -23,7 +23,7 @@ public class OnlineSection implements IOnlineSection {
 		this.hvscUrl = hvscUrl;
 	}
 
-	private String cgscUrl = DEPLOYMENT_URL + "online/cgsc/CGSC.zip";
+	private String cgscUrl = DEPLOYMENT_URL + "CGSC.zip";
 
 	@Override
 	public String getCgscUrl() {
@@ -34,7 +34,7 @@ public class OnlineSection implements IOnlineSection {
 		this.cgscUrl = cgscUrl;
 	}
 
-	private String hvmecUrl = DEPLOYMENT_URL + "online/hvmec/HVMEC.zip";
+	private String hvmecUrl = DEPLOYMENT_URL + "HVMEC.zip";
 
 	@Override
 	public String getHvmecUrl() {
@@ -45,7 +45,7 @@ public class OnlineSection implements IOnlineSection {
 		this.hvmecUrl = hvmecUrl;
 	}
 
-	private String demosUrl = DEPLOYMENT_URL + "online/demos/Demos.zip";
+	private String demosUrl = DEPLOYMENT_URL + "Demos.zip";
 
 	@Override
 	public String getDemosUrl() {
@@ -56,8 +56,7 @@ public class OnlineSection implements IOnlineSection {
 		this.demosUrl = demosUrl;
 	}
 
-	private String magazinesUrl = DEPLOYMENT_URL
-			+ "online/mags/C64Magazines.zip";
+	private String magazinesUrl = DEPLOYMENT_URL + "C64Magazines.zip";
 
 	@Override
 	public String getMagazinesUrl() {
@@ -68,7 +67,7 @@ public class OnlineSection implements IOnlineSection {
 		this.magazinesUrl = magazinesUrl;
 	}
 
-	private String gamebaseUrl = DEPLOYMENT_URL + "online/gamebase/gb64.jar";
+	private String gamebaseUrl = DEPLOYMENT_URL + "gb64.jar";
 
 	@Override
 	public String getGamebaseUrl() {

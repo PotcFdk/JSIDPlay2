@@ -6,7 +6,11 @@
 <booleanAttribute key="M2_OFFLINE" value="false"/>
 <stringAttribute key="M2_PROFILES" value=""/>
 <listAttribute key="M2_PROPERTIES">
+<listEntry value="ftp.password=${ftp.password}"/>
+<listEntry value="ftp.username=${ftp.username}"/>
 <listEntry value="server.url=${server.url}"/>
+<listEntry value="ftp.server=${ftp.server}"/>
+<listEntry value="ftp.remotedir=${ftp.remotedir}"/>
 <listEntry value="gb64.mdbfile=${gb64.mdbfile}"/>
 <listEntry value="hvsc.zip=${hvsc.zip}"/>
 <listEntry value="7zip.home=${7zip.home}"/>
