@@ -2,10 +2,12 @@ package ui.musiccollection;
 
 import static sidplay.ConsolePlayer.playerRunning;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +66,6 @@ import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry_;
 import ui.entities.collection.service.VersionService;
 import ui.entities.config.SidPlay2Section;
-import ui.events.IGotoURL;
 import ui.events.IPlayTune;
 import ui.events.favorites.IAddFavoritesTab;
 import ui.events.favorites.IGetFavoritesTabs;
@@ -526,16 +527,21 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	@FXML
 	private void gotoURL() {
-		getUiEvents().fireEvent(IGotoURL.class, new IGotoURL() {
-			@Override
-			public URL getCollectionURL() {
+		// Open a browser URL
+
+		// As an application we open the default browser
+		if (Desktop.isDesktopSupported()) {
+			Desktop desktop = Desktop.getDesktop();
+			if (desktop.isSupported(Desktop.Action.BROWSE)) {
 				try {
-					return new URL(collectionURL);
-				} catch (MalformedURLException e) {
-					return null;
+					desktop.browse(new URL(collectionURL).toURI());
+				} catch (final IOException ioe) {
+					ioe.printStackTrace();
+				} catch (final URISyntaxException urie) {
+					urie.printStackTrace();
 				}
 			}
-		});
+		}
 	}
 
 	@FXML

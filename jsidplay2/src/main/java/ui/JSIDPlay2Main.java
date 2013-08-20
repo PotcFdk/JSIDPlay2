@@ -3,10 +3,8 @@ package ui;
 import static sidplay.ConsolePlayer.playerFast;
 import static sidplay.ConsolePlayer.playerRestart;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -26,7 +24,6 @@ import sidplay.ini.intf.ISidPlay2Section;
 import ui.entities.PersistenceUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
-import ui.events.IGotoURL;
 import ui.events.IPlayTune;
 import ui.events.UIEvent;
 import ui.events.UIEventFactory;
@@ -354,23 +351,6 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 			// Play a tune
 			IPlayTune ifObj = (IPlayTune) evt.getUIEventImpl();
 			playTune(ifObj.getSidTune());
-		} else if (evt.isOfType(IGotoURL.class)) {
-			// Open a browser URL
-			IGotoURL ifObj = (IGotoURL) evt.getUIEventImpl();
-
-			// As an application we open the default browser
-			if (Desktop.isDesktopSupported()) {
-				Desktop desktop = Desktop.getDesktop();
-				if (desktop.isSupported(Desktop.Action.BROWSE)) {
-					try {
-						desktop.browse(ifObj.getCollectionURL().toURI());
-					} catch (final IOException ioe) {
-						ioe.printStackTrace();
-					} catch (final URISyntaxException urie) {
-						urie.printStackTrace();
-					}
-				}
-			}
 		}
 	}
 
