@@ -221,12 +221,12 @@ public class GameBase extends C64Tab {
 		if (enableGameBase.isSelected()) {
 			enableGameBase.setDisable(true);
 			File dbFile = new File(getConfig().getSidplay2().getTmpDir(),
-					"GB64.properties");
+					"gb64.properties");
 			if (dbFile.exists()) {
 				// There is already a database file downloaded earlier.
 				// Therefore we try to connect
 
-				connect(new File(getConfig().getSidplay2().getTmpDir(), "GB64"));
+				connect(new File(getConfig().getSidplay2().getTmpDir(), "gb64"));
 
 				// Check version of GB64
 				if (configService.checkVersion()) {

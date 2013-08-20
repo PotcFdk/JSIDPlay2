@@ -345,7 +345,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	public static void main(String[] args) {
 		try {
 			long checksum = calculateCRC32(new File(args[0]));
-			System.out.println(String.format("%8X", checksum));
+			System.out.println(String.format("%8X", checksum).replace(' ', '0'));
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

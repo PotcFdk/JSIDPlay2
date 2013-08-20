@@ -44,7 +44,7 @@
 			<arg value="sourceDriver=sun.jdbc.odbc.JdbcOdbcDriver" />
 			<arg value="sourceURL=jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=${gb64.mdbfile}" />
 			<arg value="targetDriver=org.hsqldb.jdbcDriver" />
-			<arg value="targetURL=jdbc:hsqldb:file:${gamebase_dir}/gb64.idx;shutdown=true,create=true" />
+			<arg value="targetURL=jdbc:hsqldb:file:${gamebase_dir}/gb64;shutdown=true,create=true" />
 		</java>
 		<delete file="${gamebase_dir}/${gamebase_jar}" />
 		<jar destfile="${gamebase_dir}/${gamebase_jar}" compress="true">
