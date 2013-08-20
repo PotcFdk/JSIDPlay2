@@ -480,7 +480,7 @@
 				<executions>
 					<execution>
 						<id>online-content</id>
-						<phase>deploy</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
