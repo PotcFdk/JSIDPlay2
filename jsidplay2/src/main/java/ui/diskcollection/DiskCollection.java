@@ -29,8 +29,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import libsidplay.sidtune.SidTune;
@@ -48,7 +46,6 @@ import ui.filefilter.DiskFileFilter;
 import ui.filefilter.DocsFileFilter;
 import ui.filefilter.ScreenshotFileFilter;
 import ui.filefilter.TapeFileFilter;
-import ui.filefilter.ZipFileExtensions;
 
 public class DiskCollection extends C64Tab {
 
@@ -257,23 +254,6 @@ public class DiskCollection extends C64Tab {
 	private void start() {
 		attachAndRunDemo(fileBrowser.getSelectionModel().getSelectedItem()
 				.getValue(), null);
-	}
-
-	@FXML
-	private void doBrowseZip() {
-		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
-		fileDialog.getExtensionFilters().add(
-				new ExtensionFilter(ZipFileExtensions.DESCRIPTION,
-						ZipFileExtensions.EXTENSIONS));
-		final File file = fileDialog.showOpenDialog(autoConfiguration
-				.getScene().getWindow());
-		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
-			setRootFile(file);
-		}
 	}
 
 	@FXML

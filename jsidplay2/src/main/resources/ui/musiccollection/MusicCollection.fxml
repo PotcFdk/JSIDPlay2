@@ -167,15 +167,6 @@
 						</ImageView>
 					</graphic>
 				</Button>
-				<Button text="%BROWSE_ZIP" onAction="#doBrowseZip">
-					<graphic>
-						<ImageView>
-							<image>
-								<Image url="@/ui/icons/browse.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</Button>
 				<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
 					onAction="#gotoURL" />
 			</HBox>

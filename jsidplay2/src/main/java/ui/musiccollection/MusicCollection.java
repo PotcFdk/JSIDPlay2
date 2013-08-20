@@ -42,8 +42,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
@@ -72,7 +70,6 @@ import ui.events.favorites.IAddFavoritesTab;
 import ui.events.favorites.IGetFavoritesTabs;
 import ui.favorites.FavoritesTab;
 import ui.filefilter.TuneFileFilter;
-import ui.filefilter.ZipFileExtensions;
 import ui.musiccollection.search.ISearchListener;
 import ui.musiccollection.search.SearchInIndexThread;
 import ui.musiccollection.search.SearchIndexCreator;
@@ -510,23 +507,6 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			dialog.open();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
-
-	@FXML
-	private void doBrowseZip() {
-		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
-		fileDialog.getExtensionFilters().add(
-				new ExtensionFilter(ZipFileExtensions.DESCRIPTION,
-						ZipFileExtensions.EXTENSIONS));
-		final File file = fileDialog.showOpenDialog(autoConfiguration
-				.getScene().getWindow());
-		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
-			setRoot(file);
 		}
 	}
 
