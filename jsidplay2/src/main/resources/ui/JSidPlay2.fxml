@@ -236,13 +236,25 @@
 				<tabs>
 					<Video text="%VIDEO" fx:id="videoScreen" />
 					<Oscilloscope text="%OSCILLOSCOPE" />
-					<MusicCollection type="HVSC" text="%HVSC"
-						collectionURL="http://www.hvsc.de/" dbName="HVSC" />
-					<MusicCollection type="CGSC" text="%CGSC"
-						collectionURL="http://www.c64music.co.uk/" dbName="CGSC" />
-					<DiskCollection type="HVMEC" text="%HVMEC" />
-					<DiskCollection type="DEMOS" text="%DEMOS" />
-					<DiskCollection type="MAGS" text="%MAGS" />
+					<Tab text="%MUSIC_COLLECTIONS" fx:id="musicCollections">
+						<TabPane tabClosingPolicy="UNAVAILABLE" fx:id="musicCollTabbedPane">
+							<tabs>
+								<MusicCollection type="HVSC" text="%HVSC"
+									collectionURL="http://www.hvsc.de/" dbName="HVSC" />
+								<MusicCollection type="CGSC" text="%CGSC"
+									collectionURL="http://www.c64music.co.uk/" dbName="CGSC" />
+							</tabs>
+						</TabPane>
+					</Tab>
+					<Tab text="%DISC_COLLECTIONS" fx:id="diskCollections">
+						<TabPane tabClosingPolicy="UNAVAILABLE" fx:id="diskCollTabbedPane">
+							<tabs>
+								<DiskCollection type="HVMEC" text="%HVMEC" />
+								<DiskCollection type="DEMOS" text="%DEMOS" />
+								<DiskCollection type="MAGS" text="%MAGS" />
+							</tabs>
+						</TabPane>
+					</Tab>
 					<GameBase text="%GAMEBASE" />
 					<Favorites text="%FAVORITES" />
 					<Printer text="%PRINTER" />

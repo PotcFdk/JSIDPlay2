@@ -101,8 +101,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		}
 	}
 
-	private static final ImageView PLAY_ICON = new ImageView(
-			"/ui/icons/play.png");
+	private static final String PLAY_ICON = "/ui/icons/play.png";
 	private static final AudioClip MOTORSOUND_AUDIOCLIP = new AudioClip(
 			JSidPlay2.class.getResource("/ui/sounds/motor.wav").toString());
 	private static final AudioClip TRACKSOUND_AUDIOCLIP = new AudioClip(
@@ -125,7 +124,9 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private Tooltip previous2ToolTip, next2ToolTip;
 	@FXML
-	private TabPane tabbedPane;
+	private TabPane tabbedPane, musicCollTabbedPane, diskCollTabbedPane;
+	@FXML
+	private Tab musicCollections, diskCollections;
 	@FXML
 	private Video videoScreen;
 	@FXML
@@ -212,20 +213,9 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		expandA000.setSelected(getConfig().getC1541().isRamExpansionEnabled4());
 		turnPrinterOn.setSelected(getConfig().getPrinter().isPrinterOn());
 
-		for (Tab tab : tabbedPane.getTabs()) {
-			// XXX JavaFX: better initialization support using constructor
-			// arguments?
-			if (tab instanceof C64Tab) {
-				C64Tab theTab = (C64Tab) tab;
-				theTab.setConfig(getConfig());
-				theTab.setPlayer(getPlayer());
-				theTab.setConsolePlayer(getConsolePlayer());
-				theTab.initialize(location, resources);
-				if (theTab.getProgressValue() != null) {
-					theTab.getProgressValue().addListener(progressUpdateListener());
-				}
-			}
-		}
+		setModel(location, resources, tabbedPane);
+		setModel(location, resources, musicCollTabbedPane);
+		setModel(location, resources, diskCollTabbedPane);
 		this.duringInitialization = false;
 
 		final Duration oneFrameAmt = Duration.millis(1000);
@@ -241,6 +231,25 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		timer.playFromStart();
 	}
 
+	private void setModel(URL location, ResourceBundle resources,
+			TabPane tabPane) {
+		for (Tab tab : tabPane.getTabs()) {
+			// XXX JavaFX: better initialization support using constructor
+			// arguments?
+			if (tab instanceof C64Tab) {
+				C64Tab theTab = (C64Tab) tab;
+				theTab.setConfig(getConfig());
+				theTab.setPlayer(getPlayer());
+				theTab.setConsolePlayer(getConsolePlayer());
+				theTab.initialize(location, resources);
+				if (theTab.getProgressValue() != null) {
+					theTab.getProgressValue().addListener(
+							progressUpdateListener());
+				}
+			}
+		}
+	}
+
 	@Override
 	protected void doCloseWindow() {
 		timer.stop();
@@ -249,14 +258,14 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private ChangeListener<Number> progressUpdateListener() {
 		return new ChangeListener<Number>() {
 			@Override
-			public void changed(
-					ObservableValue<? extends Number> arg0,
+			public void changed(ObservableValue<? extends Number> arg0,
 					Number arg1, final Number arg2) {
 				Platform.runLater(new Runnable() {
-					
+
 					@Override
 					public void run() {
-						progress.progressProperty().set(arg2.doubleValue() / 100.);
+						progress.progressProperty().set(
+								arg2.doubleValue() / 100.);
 					}
 				});
 			}
@@ -1228,16 +1237,33 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				@Override
 				public void run() {
 					IPlayTune ifObj = (IPlayTune) evt.getUIEventImpl();
+					// goto video screen
 					if (ifObj.switchToVideoTab()) {
 						tabbedPane.getSelectionModel().select(videoScreen);
 					}
 					// set player icon
-					Object component = ifObj.getComponent();
+					setPlayerIcon(ifObj.getComponent());
+				}
+
+				private void setPlayerIcon(Object component) {
 					if (component != null && component instanceof Tab) {
 						for (Tab tab : tabbedPane.getTabs()) {
 							tab.setGraphic(null);
 						}
-						((Tab) component).setGraphic(PLAY_ICON);
+						for (Tab tab : musicCollTabbedPane.getTabs()) {
+							tab.setGraphic(null);
+						}
+						for (Tab tab : diskCollTabbedPane.getTabs()) {
+							tab.setGraphic(null);
+						}
+						((Tab) component).setGraphic(new ImageView(PLAY_ICON));
+						if (musicCollTabbedPane.getTabs().indexOf(
+								((Tab) component)) != -1) {
+							musicCollections.setGraphic(new ImageView(PLAY_ICON));
+						} else if (diskCollTabbedPane.getTabs().indexOf(
+								((Tab) component)) != -1) {
+							diskCollections.setGraphic(new ImageView(PLAY_ICON));
+						}
 					}
 				}
 			});
