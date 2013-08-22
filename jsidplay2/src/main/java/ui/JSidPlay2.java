@@ -300,36 +300,26 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			try {
-				getPlayer().getC64().insertCartridge(file);
-				final File tmpFile = new File(getConfig().getSidplay2()
-						.getTmpDir(), "nuvieplayer-v1.0.prg");
-				tmpFile.deleteOnExit();
-				InputStream is = JSIDPlay2Main.class.getClassLoader()
-						.getResourceAsStream(
-								"libsidplay/mem/nuvieplayer-v1.0.prg");
-				OutputStream os = null;
-				try {
-					os = new FileOutputStream(tmpFile);
-					byte[] b = new byte[1024];
-					while (is.available() > 0) {
-						int len = is.read(b);
-						if (len > 0) {
-							os.write(b, 0, len);
-						}
-					}
-				} finally {
-					if (is != null) {
-						is.close();
-					}
-					if (os != null) {
-						os.close();
+			final File tmpFile = new File(
+					getConfig().getSidplay2().getTmpDir(),
+					"nuvieplayer-v1.0.prg");
+			tmpFile.deleteOnExit();
+			try (OutputStream os = new FileOutputStream(tmpFile);
+					InputStream is = JSIDPlay2Main.class.getClassLoader()
+							.getResourceAsStream(
+									"libsidplay/mem/nuvieplayer-v1.0.prg")) {
+				byte[] b = new byte[1024];
+				while (is.available() > 0) {
+					int len = is.read(b);
+					if (len > 0) {
+						os.write(b, 0, len);
 					}
 				}
-				playTune(true, videoScreen, tmpFile);
+				getPlayer().getC64().insertCartridge(file);
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
+			playTune(true, videoScreen, tmpFile);
 		}
 	}
 
