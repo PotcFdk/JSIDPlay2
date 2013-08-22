@@ -119,11 +119,11 @@
           Import CGSC ZIP file (.7z)
           into a ZIP file.
          ================================= -->
-	<target name="cgsc_import" if="7zip.home">
+	<target name="cgsc_import" if="zip7.home">
 		<delete dir="${cgsc_dir}" />
 		<mkdir dir="${cgsc_dir}" />
 		<!-- Uncompress CGSC -->
-		<exec executable="${7zip.home}/7z" failonerror="true">
+		<exec executable="${zip7.home}/7z" failonerror="true">
 			<arg value="x" />
 			<arg value="-o${cgsc_dir}" />
 			<arg value="${cgsc.7z}" />

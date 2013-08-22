@@ -13,7 +13,7 @@
 <listEntry value="ftp.remotedir=${ftp.remotedir}"/>
 <listEntry value="gb64.mdbfile=${gb64.mdbfile}"/>
 <listEntry value="hvsc.zip=${hvsc.zip}"/>
-<listEntry value="7zip.home=${7zip.home}"/>
+<listEntry value="zip7.home=${zip7.home}"/>
 <listEntry value="cgsc.7z=${cgsc.7z}"/>
 <listEntry value="hvmec.bz2=${hvmec.bz2}"/>
 </listAttribute>

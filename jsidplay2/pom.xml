@@ -19,6 +19,12 @@
 		<ftp.remotedir>foobar</ftp.remotedir>
 		<!-- Web Server URL to be replaced in web resources -->
 		<server.url />
+		<!-- extra online content -->
+		<gb64.mdbfile />
+		<hvsc.zip />
+		<zip7.home />
+		<cgsc.7z />
+		<hvmec.bz2 />
 	</properties>
 	<repositories>
 		<repository>
@@ -490,7 +496,7 @@
 									<property name="compile_classpath" refid="maven.compile.classpath" />
 									<property name="gb64.mdbfile">${gb64.mdbfile}</property>
 									<property name="hvsc.zip">${hvsc.zip}</property>
-									<property name="7zip.home">${7zip.home}</property>
+									<property name="zip7.home">${zip7.home}</property>
 									<property name="cgsc.7z">${cgsc.7z}</property>
 									<property name="hvmec.bz2">${hvmec.bz2}</property>
 									<property name="result_dir"
