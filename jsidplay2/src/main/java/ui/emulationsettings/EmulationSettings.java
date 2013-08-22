@@ -253,6 +253,11 @@ public class EmulationSettings extends C64Stage {
 				}
 
 				@Override
+				public String getCommand() {
+					return null;
+				}
+				
+				@Override
 				public SidTune getSidTune() {
 					return getPlayer().getTune() != null ? getPlayer()
 							.getTune() : null;

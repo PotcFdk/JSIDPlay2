@@ -22,6 +22,20 @@ import ui.common.C64Stage;
 
 public class SidReg extends C64Stage {
 
+	private final class SidRegStop implements ChangeListener<Number> {
+		@Override
+		public void changed(ObservableValue<? extends Number> arg0,
+				Number arg1, Number arg2) {
+			if (arg2.intValue() == playerExit) {
+				Platform.runLater(new Runnable() {
+					public void run() {
+						recordSidWrites(false);
+					}
+				});
+			}
+		}
+	}
+
 	private static final int REFRESH_RATE = 1000;
 
 	@FXML
@@ -44,21 +58,20 @@ public class SidReg extends C64Stage {
 			.<SidRegWrite> observableArrayList();
 	private Set<String> filters = new HashSet<String>();
 
+	private SidRegStop sidRegStop = new SidRegStop();
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				if (arg2.intValue() == playerExit) {
-					recordSidWrites(false);
-				}
-			}
-		});
+		getConsolePlayer().getState().addListener(sidRegStop);
 		regTable.setItems(filteredSidRegWrites);
 		doUpdateFilter();
 	}
 
+	@Override
+	protected void doCloseWindow() {
+		getConsolePlayer().getState().removeListener(sidRegStop);
+	}
+	
 	@FXML
 	private void doStartStop() {
 		recordSidWrites(startStop.isSelected());

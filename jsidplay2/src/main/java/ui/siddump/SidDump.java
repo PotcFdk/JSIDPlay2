@@ -30,6 +30,21 @@ import ui.entities.config.SidPlay2Section;
 import ui.events.IPlayTune;
 
 public class SidDump extends C64Stage {
+	private final class SidDumpStop implements ChangeListener<Number> {
+		@Override
+		public void changed(ObservableValue<? extends Number> arg0,
+				Number arg1, Number arg2) {
+			if (arg2.intValue() == playerExit) {
+				Platform.runLater(new Runnable() {
+					public void run() {
+						replayAll.setDisable(false);
+						sidDumpExtension.stopRecording();
+					}
+				});
+			}
+		}
+	}
+
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
 
@@ -58,23 +73,11 @@ public class SidDump extends C64Stage {
 	private int loadAddress, initAddress, playerAddress, subTune, seconds;
 
 	private Thread fPlayerThread;
+	private SidDumpStop sidDumpStop = new SidDumpStop();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				if (arg2.intValue() == playerExit) {
-					Platform.runLater(new Runnable() {
-						public void run() {
-							replayAll.setDisable(false);
-							sidDumpExtension.stopRecording();
-						}
-					});
-				}
-			}
-		});
+		getConsolePlayer().getState().addListener(sidDumpStop);
 		sidDumpExtension = new SidDumpExtension(getPlayer(), getConfig()) {
 
 			@Override
@@ -106,6 +109,11 @@ public class SidDump extends C64Stage {
 		setTune();
 	}
 
+	@Override
+	protected void doCloseWindow() {
+		getConsolePlayer().getState().removeListener(sidDumpStop);
+	}
+	
 	@FXML
 	private void doLoadDump() {
 		final FileChooser fileDialog = new FileChooser();
@@ -182,15 +190,20 @@ public class SidDump extends C64Stage {
 				public boolean switchToVideoTab() {
 					return false;
 				}
-
-				@Override
-				public SidTune getSidTune() {
-					return getPlayer().getTune();
-				}
-
+				
 				@Override
 				public Object getComponent() {
 					return SidDump.this;
+				}
+
+				@Override
+				public String getCommand() {
+					return null;
+				}
+				
+				@Override
+				public SidTune getSidTune() {
+					return getPlayer().getTune();
 				}
 			});
 			setTune();

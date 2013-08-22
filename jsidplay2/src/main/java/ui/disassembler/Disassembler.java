@@ -1,5 +1,7 @@
 package ui.disassembler;
 
+import static sidplay.ConsolePlayer.playerRunning;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,6 +10,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,10 +24,22 @@ import libsidutils.cpuparser.CPUCommand;
 import libsidutils.cpuparser.CPUParser;
 import ui.common.C64Stage;
 import ui.entities.config.SidPlay2Section;
-import ui.events.IPlayTune;
-import ui.events.UIEvent;
 
 public class Disassembler extends C64Stage {
+
+	private final class DisassemblerRefresh implements ChangeListener<Number> {
+		@Override
+		public void changed(ObservableValue<? extends Number> arg0,
+				Number arg1, Number arg2) {
+			if (arg2.intValue() == playerRunning) {
+				Platform.runLater(new Runnable() {
+					public void run() {
+						setTune();
+					}
+				});
+			}
+		}
+	}
 
 	@FXML
 	private TextField address, startAddress, endAddress;
@@ -36,6 +52,7 @@ public class Disassembler extends C64Stage {
 	private ObservableList<AssemblyLine> assemblyLines = FXCollections
 			.<AssemblyLine> observableArrayList();
 
+	private DisassemblerRefresh disassemblerRefresh = new DisassemblerRefresh();
 
 	private static Map<Integer, CPUCommand> fCommands = CPUParser
 			.getCpuCommands();
@@ -45,6 +62,14 @@ public class Disassembler extends C64Stage {
 		memoryTable.setItems(assemblyLines);
 		disassemble(0);
 		setTune();
+
+		getConsolePlayer().getState().addListener(disassemblerRefresh);
+
+	}
+
+	@Override
+	protected void doCloseWindow() {
+		getConsolePlayer().getState().removeListener(disassemblerRefresh);
 	}
 
 	private void setTune() {
@@ -206,14 +231,6 @@ public class Disassembler extends C64Stage {
 					}
 				}
 			}
-		}
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
-		if (evt.isOfType(IPlayTune.class)) {
-			disassemble(0);
-			setTune();
 		}
 	}
 

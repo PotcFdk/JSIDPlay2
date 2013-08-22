@@ -284,27 +284,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-				@Override
-				public boolean switchToVideoTab() {
-					return true;
-				}
-
-				@Override
-				public SidTune getSidTune() {
-					try {
-						return SidTune.load(file);
-					} catch (IOException | SidTuneError e) {
-						e.printStackTrace();
-						return null;
-					}
-				}
-
-				@Override
-				public Object getComponent() {
-					return videoScreen;
-				}
-			});
+			playTune(true, videoScreen, file);
 		}
 	}
 
@@ -346,27 +326,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 						os.close();
 					}
 				}
-				getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-					@Override
-					public boolean switchToVideoTab() {
-						return true;
-					}
-
-					@Override
-					public SidTune getSidTune() {
-						try {
-							return SidTune.load(tmpFile);
-						} catch (IOException | SidTuneError e) {
-							e.printStackTrace();
-							return null;
-						}
-					}
-
-					@Override
-					public Object getComponent() {
-						return videoScreen;
-					}
-				});
+				playTune(true, videoScreen, tmpFile);
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
@@ -376,23 +336,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void reset() {
 		if (!duringInitialization) {
-			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-
-				@Override
-				public Object getComponent() {
-					return videoScreen;
-				}
-
-				@Override
-				public boolean switchToVideoTab() {
-					return false;
-				}
-
-				@Override
-				public SidTune getSidTune() {
-					return null;
-				}
-			});
+			playTune(false, videoScreen, null);
 		}
 	}
 
@@ -909,6 +853,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private void memory() {
 		C64Stage window = new Disassembler();
 		window.setPlayer(getPlayer());
+		window.setConsolePlayer(getConsolePlayer());
 		window.setConfig(getConfig());
 		try {
 			window.open();
@@ -1015,28 +960,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				.insertDisk(selectedDisk);
 		disk.setExtendImagePolicy(this);
 		if (autostartFile != null) {
-			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-
-				@Override
-				public boolean switchToVideoTab() {
-					return true;
-				}
-
-				@Override
-				public SidTune getSidTune() {
-					try {
-						return SidTune.load(autostartFile);
-					} catch (IOException | SidTuneError e) {
-						e.printStackTrace();
-						return null;
-					}
-				}
-
-				@Override
-				public Object getComponent() {
-					return component;
-				}
-			});
+			playTune(true, component, autostartFile);
 		}
 	}
 
@@ -1055,28 +979,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			getPlayer().getDatasette().insertTape(selectedTape);
 		}
 		if (autostartFile != null) {
-			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-
-				@Override
-				public boolean switchToVideoTab() {
-					return true;
-				}
-
-				@Override
-				public SidTune getSidTune() {
-					try {
-						return SidTune.load(autostartFile);
-					} catch (IOException | SidTuneError e) {
-						e.printStackTrace();
-						return null;
-					}
-				}
-
-				@Override
-				public Object getComponent() {
-					return component;
-				}
-			});
+			playTune(true, component, autostartFile);
 		}
 	}
 
@@ -1085,21 +988,36 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		// Insert a cartridge
 		getPlayer().getC64().insertCartridge(selectedFile);
 		// reset required after inserting the cartridge
+		playTune(false, component, null);
+	}
+
+	private void playTune(final boolean switchToVideoTab,
+			final Object component, final File file) {
 		getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
 
 			@Override
 			public boolean switchToVideoTab() {
-				return false;
-			}
-
-			@Override
-			public SidTune getSidTune() {
-				return null;
+				return switchToVideoTab;
 			}
 
 			@Override
 			public Object getComponent() {
 				return component;
+			}
+
+			@Override
+			public String getCommand() {
+				return null;
+			}
+
+			@Override
+			public SidTune getSidTune() {
+				try {
+					return SidTune.load(file);
+				} catch (IOException | SidTuneError e) {
+					e.printStackTrace();
+					return null;
+				}
 			}
 		});
 	}

@@ -352,8 +352,6 @@ public class DiskCollection extends C64Tab {
 			// load from tape
 			command = "LOAD\rRUN\r";
 		}
-		// reset required after inserting the cartridge
-		getPlayer().setCommand(command);
 		getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
 
 			@Override
@@ -366,6 +364,11 @@ public class DiskCollection extends C64Tab {
 				return DiskCollection.this;
 			}
 
+			@Override
+			public String getCommand() {
+				return command;
+			}
+			
 			@Override
 			public SidTune getSidTune() {
 				return null;

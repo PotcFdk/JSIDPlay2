@@ -231,6 +231,11 @@ public class Favorites extends C64Tab {
 				}
 
 				@Override
+				public String getCommand() {
+					return null;
+				}
+				
+				@Override
 				public SidTune getSidTune() {
 					return getPlayer().getTune() != null ? getPlayer()
 							.getTune() : null;

@@ -22,6 +22,11 @@ public interface IPlayTune extends IEvent {
 	Object getComponent();
 
 	/**
+	 * @return command to execute after playing the tune
+	 */
+	String getCommand();
+	
+	/**
 	 * Tune to play.
 	 * 
 	 * @return tune

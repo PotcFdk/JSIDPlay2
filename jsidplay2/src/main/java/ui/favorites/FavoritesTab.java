@@ -42,12 +42,12 @@ import javafx.stage.WindowEvent;
 
 import javax.persistence.metamodel.SingularAttribute;
 
+import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.STIL.STILEntry;
 import ui.common.C64Tab;
-import ui.common.SidTuneConverter;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.config.Configuration;
@@ -354,7 +354,8 @@ public class FavoritesTab extends C64Tab {
 				File file = getFile(hvscEntry.getPath());
 				files.add(file);
 			}
-			SidTuneConverter c = new SidTuneConverter(getConfig());
+			Psid64 c = new Psid64(getConfig().getSidplay2()
+					.getTmpDir());
 			File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
 					.getHvscFile();
 			c.convertFiles(hvscRoot, files.toArray(new File[0]), directory);
@@ -659,6 +660,16 @@ public class FavoritesTab extends C64Tab {
 				}
 				
 				@Override
+				public Object getComponent() {
+					return component;
+				}
+				
+				@Override
+				public String getCommand() {
+					return null;
+				}
+				
+				@Override
 				public SidTune getSidTune() {
 					try {
 						return SidTune.load(file);
@@ -666,11 +677,6 @@ public class FavoritesTab extends C64Tab {
 						e.printStackTrace();
 						return null;
 					}
-				}
-				
-				@Override
-				public Object getComponent() {
-					return component;
 				}
 			});
 		}

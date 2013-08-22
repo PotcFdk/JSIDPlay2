@@ -32,7 +32,17 @@ public class MusicListener extends ProgressListener {
 			public boolean switchToVideoTab() {
 				return false;
 			}
+			
+			@Override
+			public Object getComponent() {
+				return parent;
+			}
 
+			@Override
+			public String getCommand() {
+				return null;
+			}
+			
 			@Override
 			public SidTune getSidTune() {
 				try {
@@ -41,11 +51,6 @@ public class MusicListener extends ProgressListener {
 					e.printStackTrace();
 					return null;
 				}
-			}
-
-			@Override
-			public Object getComponent() {
-				return parent;
 			}
 		});
 	}

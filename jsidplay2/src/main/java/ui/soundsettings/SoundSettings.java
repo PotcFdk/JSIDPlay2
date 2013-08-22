@@ -14,6 +14,8 @@ import javafx.animation.TimelineBuilder;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -46,9 +48,22 @@ import ui.common.C64Stage;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
 import ui.events.IPlayTune;
-import ui.events.UIEvent;
 
 public class SoundSettings extends C64Stage {
+
+	private final class TuneChange implements ChangeListener<Number> {
+		@Override
+		public void changed(ObservableValue<? extends Number> arg0,
+				Number arg1, Number arg2) {
+			Platform.runLater(new Runnable() {
+
+				@Override
+				public void run() {
+					setTune(getPlayer().getTune());
+				}
+			});
+		}
+	}
 
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
@@ -85,6 +100,7 @@ public class SoundSettings extends C64Stage {
 	private boolean duringInitialization;
 	private Timeline timer;
 
+	private ChangeListener<? super Number> tuneChange = new TuneChange();
 	private DoubleProperty progress = new SimpleDoubleProperty();
 
 	public DoubleProperty getProgressValue() {
@@ -148,6 +164,7 @@ public class SoundSettings extends C64Stage {
 		dwnlUrl6581R4.setText(getConfig().getOnline().getSoasc6581R4());
 		dwnlUrl8580R5.setText(getConfig().getOnline().getSoasc8580R5());
 		setTune(getPlayer().getTune());
+		getConsolePlayer().getState().addListener(tuneChange);
 
 		final Duration oneFrameAmt = Duration.millis(1000);
 		final KeyFrame oneFrame = new KeyFrame(oneFrameAmt,
@@ -195,9 +212,11 @@ public class SoundSettings extends C64Stage {
 		duringInitialization = false;
 	}
 
+	
 	@Override
 	protected void doCloseWindow() {
 		timer.stop();
+		getConsolePlayer().getState().removeListener(tuneChange);
 	}
 
 	@FXML
@@ -407,6 +426,11 @@ public class SoundSettings extends C64Stage {
 				}
 
 				@Override
+				public String getCommand() {
+					return null;
+				}
+				
+				@Override
 				public SidTune getSidTune() {
 					return getPlayer().getTune() != null ? getPlayer()
 							.getTune() : null;
@@ -457,20 +481,6 @@ public class SoundSettings extends C64Stage {
 		if (getConsolePlayer().getDriverSettings().getDevice() instanceof CmpMP3File) {
 			((CmpMP3File) getConsolePlayer().getDriverSettings().getDevice())
 					.setPlayOriginal(playOriginal);
-		}
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
-		if (evt.isOfType(IPlayTune.class)) {
-			final IPlayTune ifObj = (IPlayTune) evt.getUIEventImpl();
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					setTune(ifObj.getSidTune());
-				}
-			});
 		}
 	}
 

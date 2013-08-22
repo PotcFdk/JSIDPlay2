@@ -99,6 +99,9 @@ public abstract class SidTune {
 	 * @throws SidTuneError
 	 */
 	public static SidTune load(final File f) throws IOException, SidTuneError {
+		if (f == null) {
+			return null;
+		}
 		if (f.getName().toLowerCase().endsWith(".mp3")) {
 			return MP3Tune.load(f);
 		}

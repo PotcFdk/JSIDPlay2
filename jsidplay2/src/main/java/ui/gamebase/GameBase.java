@@ -167,8 +167,7 @@ public class GameBase extends C64Tab {
 					}
 				}
 			});
-			page.setGameListener(new GameListener(this, progress, getPlayer(),
-					getConfig()));
+			page.setGameListener(new GameListener(this, progress, getConfig()));
 			page.getGamebaseTable().getSelectionModel().selectedItemProperty()
 					.addListener(new ChangeListener<Games>() {
 

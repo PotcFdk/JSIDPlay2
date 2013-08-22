@@ -15,10 +15,12 @@ import java.util.Iterator;
 import libsidplay.Reloc65;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
+import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
+import libsidutils.pucrunch.PUCrunch;
 
 public class Psid64 {
 	public static final String PACKAGE = "psid64";
@@ -102,6 +104,8 @@ public class Psid64 {
 	private int m_programSize;
 	private HashMap<String, Integer> globals;
 
+	private String tmpDir;
+
 	/**
 	 * Structure to describe a memory block in the C64's memory map.
 	 */
@@ -117,7 +121,8 @@ public class Psid64 {
 		/** < a short description */
 	}
 
-	public Psid64() {
+	public Psid64(String tmpDir) {
+		this.tmpDir = tmpDir;
 		m_verbose = true;
 		m_screen = new Screen();
 	}
@@ -982,6 +987,55 @@ public class Psid64 {
 
 	public String getStatus() {
 		return m_statusString;
+	}
+
+	public void convertFiles(File hvscRoot, final File[] files,
+			final File target) {
+		for (final File file : files) {
+			if (file.isDirectory()) {
+				convertFiles(hvscRoot, file.listFiles(), target);
+			} else {
+				convertToPSID64(hvscRoot, file, target);
+			}
+		}
+	}
+
+	private void convertToPSID64(File hvscRoot, final File file,
+			final File target) {
+		final String filename = file.getAbsolutePath();
+		setStilEntry(STIL.getSTIL(hvscRoot, file));
+		if (!load(file)) {
+			System.err.println("filename: " + filename);
+			System.err.println(getStatus());
+			return;
+		}
+		if (!convert(hvscRoot)) {
+			System.err.println("filename: " + filename);
+			System.err.println(getStatus());
+			return;
+		}
+		File tmpFile = null;
+		try {
+			tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file)
+					+ ".prg.tmp");
+			if (!save(tmpFile.getAbsolutePath())) {
+				System.err.println("filename: " + filename);
+				System.err.println(getStatus());
+				return;
+			}
+			// crunch result
+			PUCrunch crunch = new PUCrunch();
+			crunch.run(new String[] {
+					tmpFile.getAbsolutePath(),
+					new File(target, PathUtils.getBaseNameNoExt(file) + ".prg")
+							.getAbsolutePath() });
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (tmpFile != null) {
+				tmpFile.delete();
+			}
+		}
 	}
 
 }

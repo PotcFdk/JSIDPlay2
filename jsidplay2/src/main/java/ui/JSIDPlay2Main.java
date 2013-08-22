@@ -319,12 +319,14 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 	 * 
 	 * @param sidTune
 	 *            file to play the tune (null means just reset C64)
+	 * @param command 
 	 */
-	private void playTune(final SidTune sidTune) {
+	private void playTune(final SidTune sidTune, String command) {
 		// Stop previous run
 		stopC64();
 		// Set tune to play
 		this.sidTune = sidTune;
+		getPlayer().setCommand(command);
 		// Start emulation
 		startC64();
 	}
@@ -350,7 +352,7 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 		if (evt.isOfType(IPlayTune.class)) {
 			// Play a tune
 			IPlayTune ifObj = (IPlayTune) evt.getUIEventImpl();
-			playTune(ifObj.getSidTune());
+			playTune(ifObj.getSidTune(), ifObj.getCommand());
 		}
 	}
 

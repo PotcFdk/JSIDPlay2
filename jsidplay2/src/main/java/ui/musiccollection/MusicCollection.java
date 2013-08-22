@@ -51,11 +51,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.metamodel.SingularAttribute;
 
+import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import ui.common.C64Tab;
-import ui.common.SidTuneConverter;
 import ui.common.TypeTextField;
 import ui.common.dialog.YesNoDialog;
 import ui.download.DownloadThread;
@@ -266,29 +266,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 							&& !selectedItem.equals(fileBrowser.getRoot())
 							&& selectedItem.getValue().isFile()) {
 						final File file = selectedItem.getValue();
-						getUiEvents().fireEvent(IPlayTune.class,
-								new IPlayTune() {
-
-									@Override
-									public boolean switchToVideoTab() {
-										return false;
-									}
-
-									@Override
-									public SidTune getSidTune() {
-										try {
-											return SidTune.load(file);
-										} catch (IOException | SidTuneError e) {
-											e.printStackTrace();
-											return null;
-										}
-									}
-
-									@Override
-									public Object getComponent() {
-										return MusicCollection.this;
-									}
-								});
+						playTune(file);
 					}
 				}
 
@@ -324,27 +302,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 				if (selectedItem != null && selectedItem.getValue().isFile()
 						&& event.isPrimaryButtonDown()
 						&& event.getClickCount() > 1) {
-					getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-						@Override
-						public boolean switchToVideoTab() {
-							return false;
-						}
-
-						@Override
-						public SidTune getSidTune() {
-							try {
-								return SidTune.load(selectedItem.getValue());
-							} catch (IOException | SidTuneError e) {
-								e.printStackTrace();
-								return null;
-							}
-						}
-
-						@Override
-						public Object getComponent() {
-							return MusicCollection.this;
-						}
-					});
+					playTune(selectedItem.getValue());
 				}
 			}
 		});
@@ -420,7 +378,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		if (directory != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					directory.getAbsolutePath());
-			SidTuneConverter c = new SidTuneConverter(getConfig());
+			Psid64 c = new Psid64(getConfig().getSidplay2()
+					.getTmpDir());
 			c.convertFiles(fileBrowser.getRoot().getValue(),
 					new File[] { fileBrowser.getSelectionModel()
 							.getSelectedItem().getValue() }, directory);
@@ -855,6 +814,37 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			searchThread.start();
 		}
 
+	}
+
+	private void playTune(final File file) {
+		getUiEvents().fireEvent(IPlayTune.class,
+				new IPlayTune() {
+
+					@Override
+					public boolean switchToVideoTab() {
+						return false;
+					}
+					
+					@Override
+					public Object getComponent() {
+						return MusicCollection.this;
+					}
+
+					@Override
+					public String getCommand() {
+						return null;
+					}
+					
+					@Override
+					public SidTune getSidTune() {
+						try {
+							return SidTune.load(file);
+						} catch (IOException | SidTuneError e) {
+							e.printStackTrace();
+							return null;
+						}
+					}
+				});
 	}
 
 }

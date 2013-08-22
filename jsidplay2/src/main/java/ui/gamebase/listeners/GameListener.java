@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javafx.beans.property.DoubleProperty;
-import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidutils.zip.ZipEntryFileProxy;
 import libsidutils.zip.ZipFileProxy;
@@ -19,14 +18,12 @@ public class GameListener extends ProgressListener {
 
 	private String fileToRun;
 	protected Object parent;
-	protected Player player;
 	protected Configuration config;
 
-	public GameListener(Object parent, DoubleProperty progress, Player player, Configuration config) {
+	public GameListener(Object parent, DoubleProperty progress, Configuration config) {
 		super(progress);
 		this.parent = parent;
 		this.config = config;
-		this.player = player;
 	}
 
 	@Override
@@ -111,8 +108,6 @@ public class GameListener extends ProgressListener {
 		} else {
 			command = null;
 		}
-		// reset required after inserting the cartridge
-		player.setCommand(command);
 		uiEvents.fireEvent(IPlayTune.class, new IPlayTune() {
 
 			@Override
@@ -125,6 +120,11 @@ public class GameListener extends ProgressListener {
 				return parent;
 			}
 
+			@Override
+			public String getCommand() {
+				return command;
+			}
+			
 			@Override
 			public SidTune getSidTune() {
 				return null;
