@@ -191,8 +191,15 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 						&& getPlayer().getTune() != null) {
 					Platform.runLater(new Runnable() {
 						public void run() {
-							// auto-expand current selected tune
-							showNextHit(getPlayer().getTune().getInfo().file);
+							TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
+									.getSelectedItem();
+							if (selectedItem != null
+									&& !selectedItem.getValue()
+											.equals(getPlayer().getTune()
+													.getInfo().file)) {
+								// auto-expand current selected tune
+								showNextHit(getPlayer().getTune().getInfo().file);
+							}
 						}
 					});
 				}
