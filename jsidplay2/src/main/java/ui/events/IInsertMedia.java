@@ -34,11 +34,4 @@ public interface IInsertMedia extends IEvent {
 	 */
 	File getAutostartFile();
 
-	/**
-	 * Component requesting the media to insert.
-	 * 
-	 * @return requesting component
-	 */
-	Object getComponent();
-
 }

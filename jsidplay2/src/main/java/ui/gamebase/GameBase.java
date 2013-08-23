@@ -167,7 +167,8 @@ public class GameBase extends C64Tab {
 					}
 				}
 			});
-			page.setGameListener(new GameListener(this, progress, getConfig()));
+			page.setGameListener(new GameListener(progress, getConsolePlayer(),
+					getConfig()));
 			page.getGamebaseTable().getSelectionModel().selectedItemProperty()
 					.addListener(new ChangeListener<Games>() {
 
@@ -254,7 +255,7 @@ public class GameBase extends C64Tab {
 		downloadStart(
 				GB64_MUSIC_DOWNLOAD_URL
 						+ linkMusic.getText().replace('\\', '/'),
-				new MusicListener(this, progress));
+				new MusicListener(getConsolePlayer(), progress));
 	}
 
 	private void downloadStart(String url, IDownloadListener listener) {

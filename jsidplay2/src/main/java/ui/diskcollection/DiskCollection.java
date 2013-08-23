@@ -31,7 +31,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.zip.ZipEntryFileProxy;
 import libsidutils.zip.ZipFileProxy;
@@ -41,7 +40,6 @@ import ui.download.DownloadThread;
 import ui.download.ProgressListener;
 import ui.entities.config.SidPlay2Section;
 import ui.events.IInsertMedia;
-import ui.events.IPlayTune;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.DocsFileFilter;
 import ui.filefilter.ScreenshotFileFilter;
@@ -260,7 +258,7 @@ public class DiskCollection extends C64Tab {
 	private void doBrowse() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+				.getSidplay2())).getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene()
 				.getWindow());
 		if (directory != null) {
@@ -336,10 +334,6 @@ public class DiskCollection extends C64Tab {
 				return autoStartFile;
 			}
 
-			@Override
-			public Object getComponent() {
-				return DiskCollection.this;
-			}
 		});
 	}
 
@@ -352,28 +346,8 @@ public class DiskCollection extends C64Tab {
 			// load from tape
 			command = "LOAD\rRUN\r";
 		}
-		getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-
-			@Override
-			public boolean switchToVideoTab() {
-				return true;
-			}
-
-			@Override
-			public Object getComponent() {
-				return DiskCollection.this;
-			}
-
-			@Override
-			public String getCommand() {
-				return command;
-			}
-			
-			@Override
-			public SidTune getSidTune() {
-				return null;
-			}
-		});
+		setPlayedGraphics(fileBrowser);
+		getConsolePlayer().playTune(null, command);
 	}
 
 	private void showScreenshot(final File file) {

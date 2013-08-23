@@ -200,7 +200,7 @@ public class Disassembler extends C64Stage {
 	private void saveMemory() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+				.getSidplay2())).getLastDirectoryFolder());
 		final File file = fileDialog
 				.showSaveDialog(save.getScene().getWindow());
 		if (file != null) {

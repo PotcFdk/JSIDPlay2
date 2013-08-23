@@ -1,8 +1,5 @@
 package ui;
 
-import static sidplay.ConsolePlayer.playerFast;
-import static sidplay.ConsolePlayer.playerRestart;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -18,13 +15,11 @@ import javax.persistence.Persistence;
 
 import libsidplay.Player;
 import libsidplay.components.c1541.C1541;
-import libsidplay.sidtune.SidTune;
 import sidplay.ConsolePlayer;
 import sidplay.ini.intf.ISidPlay2Section;
 import ui.entities.PersistenceUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
-import ui.events.IPlayTune;
 import ui.events.UIEvent;
 import ui.events.UIEventFactory;
 import ui.events.UIEventListener;
@@ -47,17 +42,9 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 	 */
 	protected ConsolePlayer cp;
 	/**
-	 * Current tune to play.
-	 */
-	protected SidTune sidTune;
-	/**
 	 * Configuration
 	 */
 	private Configuration config;
-	/**
-	 * Console player thread.
-	 */
-	protected Thread fPlayerThread;
 
 	/**
 	 * Event management of UI events.
@@ -75,54 +62,6 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 	protected ConfigService configService;
 
 	private JSidPlay2 jSidplay2;
-
-	/**
-	 * Player runnable to play music in the background.
-	 */
-	private transient final Runnable playerRunnable = new Runnable() {
-		@Override
-		public void run() {
-			// Load tune
-			cp.loadTune(sidTune);
-			if (sidTune != null && sidTune.getInfo().file != null) {
-				System.out.println("Play File: <"
-						+ sidTune.getInfo().file.getAbsolutePath() + ">");
-			}
-			// Run until the player gets stopped
-			while (true) {
-				try {
-					// Open tune and play
-					if (!cp.open()) {
-						return;
-					}
-					// Play next chunk of sound data, until it gets stopped
-					while (true) {
-						// Pause? sleep for awhile
-						if (cp.getState().get() == ConsolePlayer.playerPaused) {
-							Thread.sleep(250);
-						}
-						// Play a chunk
-						if (!cp.play()) {
-							break;
-						}
-					}
-				} catch (InterruptedException e) {
-				} finally {
-					// Don't forget to close
-					cp.close();
-				}
-
-				// "Play it once, Sam. For old times' sake."
-				if ((cp.getState().get() & ~playerFast) == playerRestart) {
-					continue;
-				}
-				// Stop it
-				break;
-
-			}
-		}
-
-	};
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -193,13 +132,13 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 					getConfig().getSidplay2().setFrameY(newValue.intValue());
 				}
 			});
-			startC64();
+			cp.startC64();
 		}
 	}
 
 	@Override
 	public void stop() {
-		stopC64();
+		cp.stopC64();
 		// Eject medias: Make it possible to auto-delete temporary files
 		for (final C1541 floppy : getPlayer().getFloppies()) {
 			try {
@@ -290,48 +229,6 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 	}
 
 	/**
-	 * Start emulation (start player thread).
-	 */
-	private void startC64() {
-		fPlayerThread = new Thread(playerRunnable);
-		fPlayerThread.setPriority(Thread.MAX_PRIORITY);
-		fPlayerThread.start();
-	}
-
-	/**
-	 * Stop emulation (stop player thread).
-	 */
-	private void stopC64() {
-		try {
-			while (fPlayerThread.isAlive()) {
-				cp.quit();
-				fPlayerThread.join(3000);
-				// This is only the last option, if the player can not be
-				// stopped clean
-				fPlayerThread.interrupt();
-			}
-		} catch (InterruptedException e) {
-		}
-	}
-
-	/**
-	 * Play tune.
-	 * 
-	 * @param sidTune
-	 *            file to play the tune (null means just reset C64)
-	 * @param command 
-	 */
-	private void playTune(final SidTune sidTune, String command) {
-		// Stop previous run
-		stopC64();
-		// Set tune to play
-		this.sidTune = sidTune;
-		getPlayer().setCommand(command);
-		// Start emulation
-		startC64();
-	}
-
-	/**
 	 * Main method. Create an application frame and start emulation.
 	 * 
 	 * @param args
@@ -349,11 +246,6 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 	 */
 	@Override
 	public void notify(final UIEvent evt) {
-		if (evt.isOfType(IPlayTune.class)) {
-			// Play a tune
-			IPlayTune ifObj = (IPlayTune) evt.getUIEventImpl();
-			playTune(ifObj.getSidTune(), ifObj.getCommand());
-		}
 	}
 
 	/**

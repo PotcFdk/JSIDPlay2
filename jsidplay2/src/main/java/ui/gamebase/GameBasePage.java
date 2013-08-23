@@ -85,7 +85,12 @@ public class GameBasePage extends C64Tab {
 	}
 
 	private void startGame(Games game) {
+		if (game.getFilename().isEmpty()) {
+			System.out.println("Game is not available on GameBase64: " + game.getName());
+			return;
+		}
 		gameListener.setFileToRun(game.getFileToRun());
+		setPlayedGraphics(gamebaseTable);
 		downloadStart(
 				GB64_GAMES_DOWNLOAD_URL + game.getFilename().replace('\\', '/'),
 				gameListener);

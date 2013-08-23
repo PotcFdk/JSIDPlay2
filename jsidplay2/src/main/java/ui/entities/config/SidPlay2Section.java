@@ -229,7 +229,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 		lastDirectoryFile = new File(lastDirectory);
 	}
 
-	public File getLastDirectoryFile() {
+	public File getLastDirectoryFolder() {
+		if (lastDirectoryFile != null && lastDirectoryFile.isFile()) {
+			return lastDirectoryFile.getParentFile();
+		}
 		return lastDirectoryFile;
 	}
 	

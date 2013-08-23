@@ -27,7 +27,6 @@ import netsiddev.InvalidCommandException;
 import sidplay.ini.IniReader;
 import ui.common.C64Stage;
 import ui.entities.config.SidPlay2Section;
-import ui.events.IPlayTune;
 
 public class SidDump extends C64Stage {
 	private final class SidDumpStop implements ChangeListener<Number> {
@@ -106,19 +105,19 @@ public class SidDump extends C64Stage {
 		sidDumpPlayers.addAll(new libsidutils.SIDDump().getPlayers());
 		regPlayer.getSelectionModel().select(0);
 		doSetTableFontSize();
-		setTune();
+		setTune(getPlayer().getTune());
 	}
 
 	@Override
 	protected void doCloseWindow() {
 		getConsolePlayer().getState().removeListener(sidDumpStop);
 	}
-	
+
 	@FXML
 	private void doLoadDump() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+				.getSidplay2())).getLastDirectoryFolder());
 		final File file = fileDialog.showOpenDialog(loadDump.getScene()
 				.getWindow());
 		if (file != null) {
@@ -144,7 +143,7 @@ public class SidDump extends C64Stage {
 	private void doSaveDump() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+				.getSidplay2())).getLastDirectoryFolder());
 		final File file = fileDialog.showSaveDialog(saveDump.getScene()
 				.getWindow());
 		if (file != null) {
@@ -185,28 +184,8 @@ public class SidDump extends C64Stage {
 	private void doStartStopRecording() {
 		if (startStopRecording.isSelected()) {
 			// restart tune, before recording starts
-			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-				@Override
-				public boolean switchToVideoTab() {
-					return false;
-				}
-				
-				@Override
-				public Object getComponent() {
-					return SidDump.this;
-				}
-
-				@Override
-				public String getCommand() {
-					return null;
-				}
-				
-				@Override
-				public SidTune getSidTune() {
-					return getPlayer().getTune();
-				}
-			});
-			setTune();
+			getConsolePlayer().playTune(getPlayer().getTune(), null);
+			setTune(getPlayer().getTune());
 			getPlayer().getC64().setPlayRoutineObserver(sidDumpExtension);
 		} else {
 			getPlayer().getC64().setPlayRoutineObserver(null);
@@ -407,8 +386,7 @@ public class SidDump extends C64Stage {
 		}
 	}
 
-	private void setTune() {
-		SidTune tune = getPlayer().getTune();
+	private void setTune(SidTune tune) {
 		if (tune == null) {
 			startStopRecording.setDisable(true);
 			return;

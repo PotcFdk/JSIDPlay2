@@ -38,6 +38,10 @@ public abstract class C64Tab extends Tab implements UIPart {
 		setContent((Node) util.parse(this));
 	}
 
+	protected final void setPlayedGraphics(Node node) {
+		util.setPlayedGraphics(node);
+	}
+	
 	protected ResourceBundle getBundle() {
 		return util.getBundle();
 	}

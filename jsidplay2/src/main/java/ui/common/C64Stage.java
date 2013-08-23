@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -71,6 +72,10 @@ public abstract class C64Stage extends Stage implements UIPart {
 	
 	public void setWait(boolean wait) {
 		this.wait = wait;
+	}
+	
+	protected final void setPlayedGraphics(Node node) {
+		util.setPlayedGraphics(node);
 	}
 	
 	protected ResourceBundle getBundle() {

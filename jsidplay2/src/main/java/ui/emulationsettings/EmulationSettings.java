@@ -24,11 +24,48 @@ import resid_builder.resid.ISIDDefs.ChipModel;
 import resid_builder.resid.SID;
 import sidplay.ini.intf.IFilterSection;
 import ui.common.C64Stage;
-import ui.events.IPlayTune;
-import ui.events.UIEvent;
 
 public class EmulationSettings extends C64Stage {
 
+	private final class EmulationChange implements ChangeListener<Number> {
+		@Override
+		public void changed(ObservableValue<? extends Number> arg0,
+				Number arg1, Number arg2) {
+			Platform.runLater(new Runnable() {
+
+				@Override
+				public void run() {
+					ChipModel userSidModel = getConfig().getEmulation()
+							.getUserSidModel();
+					sid1Model.getSelectionModel().select(
+							userSidModel != null ? userSidModel : getBundle()
+									.getString("AUTO"));
+					if (userSidModel != null) {
+						addFilters(userSidModel);
+					} else {
+						SidTune sidTune = getPlayer().getTune();
+						if (sidTune != null) {
+							switch (sidTune.getInfo().sid1Model) {
+							case MOS6581:
+								addFilters(ChipModel.MOS6581);
+								break;
+							case MOS8580:
+								addFilters(ChipModel.MOS8580);
+								break;
+							default:
+								addFilters(getConfig().getEmulation()
+										.getDefaultSidModel());
+								break;
+							}
+						} else {
+							addFilters(getConfig().getEmulation()
+									.getDefaultSidModel());
+						}
+					}
+				}
+			});
+		}
+	}
 	/**
 	 * Max SID filter FC value.
 	 */
@@ -60,6 +97,8 @@ public class EmulationSettings extends C64Stage {
 			.<Object> observableArrayList();
 	private ObservableList<String> filters = FXCollections
 			.<String> observableArrayList();
+
+	private ChangeListener<? super Number> emulationChange = new EmulationChange();
 
 	private boolean duringInitialization;
 
@@ -111,7 +150,14 @@ public class EmulationSettings extends C64Stage {
 
 		calculateFilterCurve(filter.getSelectionModel().getSelectedItem());
 
+		getConsolePlayer().getState().addListener(emulationChange);
+
 		duringInitialization = false;
+	}
+
+	@Override
+	protected void doCloseWindow() {
+		getConsolePlayer().getState().removeListener(emulationChange);
 	}
 
 	@FXML
@@ -240,30 +286,7 @@ public class EmulationSettings extends C64Stage {
 	private void restart() {
 		// replay last tune
 		if (!duringInitialization) {
-			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-
-				@Override
-				public boolean switchToVideoTab() {
-					return false;
-				}
-
-				@Override
-				public Object getComponent() {
-					return null;
-				}
-
-				@Override
-				public String getCommand() {
-					return null;
-				}
-				
-				@Override
-				public SidTune getSidTune() {
-					return getPlayer().getTune() != null ? getPlayer()
-							.getTune() : null;
-				}
-				
-			});
+			getConsolePlayer().playTune(getPlayer().getTune(), null);
 		}
 	}
 
@@ -347,46 +370,6 @@ public class EmulationSettings extends C64Stage {
 			filter.getSelectionModel().select(item);
 		} else {
 			filter.getSelectionModel().select(0);
-		}
-	}
-
-	@Override
-	public void notify(final UIEvent event) {
-		if (event.isOfType(IPlayTune.class)) {
-			final IPlayTune ifObj = (IPlayTune) event.getUIEventImpl();
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					ChipModel userSidModel = getConfig().getEmulation()
-							.getUserSidModel();
-					sid1Model.getSelectionModel().select(
-							userSidModel != null ? userSidModel : getBundle()
-									.getString("AUTO"));
-					if (userSidModel != null) {
-						addFilters(userSidModel);
-					} else {
-						SidTune sidTune = ifObj.getSidTune();
-						if (sidTune != null) {
-							switch (sidTune.getInfo().sid1Model) {
-							case MOS6581:
-								addFilters(ChipModel.MOS6581);
-								break;
-							case MOS8580:
-								addFilters(ChipModel.MOS8580);
-								break;
-							default:
-								addFilters(getConfig().getEmulation()
-										.getDefaultSidModel());
-								break;
-							}
-						} else {
-							addFilters(getConfig().getEmulation()
-									.getDefaultSidModel());
-						}
-					}
-				}
-			});
 		}
 	}
 

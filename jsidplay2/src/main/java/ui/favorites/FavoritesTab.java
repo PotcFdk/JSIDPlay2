@@ -54,7 +54,6 @@ import ui.entities.config.Configuration;
 import ui.entities.config.FavoriteColumn;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
-import ui.events.IPlayTune;
 import ui.events.favorites.IGetFavoritesTabs;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileFilter;
@@ -86,7 +85,6 @@ public class FavoritesTab extends C64Tab {
 	private final FileFilter tuneFilter = new TuneFileFilter();
 	private FavoritesSection favoritesSection;
 
-	private Object component;
 	private File file;
 
 	@Override
@@ -132,8 +130,7 @@ public class FavoritesTab extends C64Tab {
 			public void handle(MouseEvent event) {
 				final HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
 						.getSelectedItem();
-				if (hvscEntry != null
-						&& getFile(hvscEntry.getPath()) != null
+				if (hvscEntry != null && getFile(hvscEntry.getPath()) != null
 						&& event.isPrimaryButtonDown()
 						&& event.getClickCount() > 1) {
 					playTune(hvscEntry);
@@ -298,7 +295,7 @@ public class FavoritesTab extends C64Tab {
 	private void exportToDir() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+				.getSidplay2())).getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(favoritesTable.getScene()
 				.getWindow());
 		if (directory != null) {
@@ -342,7 +339,7 @@ public class FavoritesTab extends C64Tab {
 	private void convertToPsid64() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+				.getSidplay2())).getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(favoritesTable.getScene()
 				.getWindow());
 		if (directory != null) {
@@ -354,21 +351,12 @@ public class FavoritesTab extends C64Tab {
 				File file = getFile(hvscEntry.getPath());
 				files.add(file);
 			}
-			Psid64 c = new Psid64(getConfig().getSidplay2()
-					.getTmpDir());
+			Psid64 c = new Psid64(getConfig().getSidplay2().getTmpDir());
 			File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
 					.getHvscFile();
 			c.convertFiles(hvscRoot, files.toArray(new File[0]), directory);
 		}
 
-	}
-
-	public Object getComponent() {
-		return component;
-	}
-
-	public void setComponent(Object component) {
-		this.component = component;
 	}
 
 	public FavoritesSection getFavoritesSection() {
@@ -566,13 +554,15 @@ public class FavoritesTab extends C64Tab {
 			return file;
 		}
 		List<File> files;
-		File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2()).getHvscFile();
+		File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
+				.getHvscFile();
 		files = PathUtils.getFiles(path, hvscRoot, null);
 		if (files.size() > 0) {
 			// relative path name of HVSC?
 			return files.get(files.size() - 1);
 		}
-		File cgscRoot = ((SidPlay2Section) getConfig().getSidplay2()).getCgscFile();
+		File cgscRoot = ((SidPlay2Section) getConfig().getSidplay2())
+				.getCgscFile();
 		files = PathUtils.getFiles(path, cgscRoot, null);
 		if (files.size() > 0) {
 			// relative path name of CGSC?
@@ -652,33 +642,13 @@ public class FavoritesTab extends C64Tab {
 
 	private void playTune(final HVSCEntry hvscEntry) {
 		file = getFile(hvscEntry.getPath());
-		if (file!=null) {
-			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-				@Override
-				public boolean switchToVideoTab() {
-					return false;
-				}
-				
-				@Override
-				public Object getComponent() {
-					return component;
-				}
-				
-				@Override
-				public String getCommand() {
-					return null;
-				}
-				
-				@Override
-				public SidTune getSidTune() {
-					try {
-						return SidTune.load(file);
-					} catch (IOException | SidTuneError e) {
-						e.printStackTrace();
-						return null;
-					}
-				}
-			});
+		if (file != null) {
+			setPlayedGraphics(favoritesTable);
+			try {
+				getConsolePlayer().playTune(SidTune.load(file), null);
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

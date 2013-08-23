@@ -4,25 +4,25 @@ import java.io.File;
 import java.io.IOException;
 
 import javafx.beans.property.DoubleProperty;
-import libsidplay.sidtune.SidTune;
 import libsidutils.zip.ZipEntryFileProxy;
 import libsidutils.zip.ZipFileProxy;
+import sidplay.ConsolePlayer;
 import ui.download.ProgressListener;
 import ui.entities.config.Configuration;
 import ui.events.IInsertMedia;
-import ui.events.IPlayTune;
 import ui.events.UIEventFactory;
 
 public class GameListener extends ProgressListener {
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 
 	private String fileToRun;
-	protected Object parent;
 	protected Configuration config;
 
-	public GameListener(Object parent, DoubleProperty progress, Configuration config) {
+	private ConsolePlayer cp;
+
+	public GameListener(DoubleProperty progress, ConsolePlayer cp, Configuration config) {
 		super(progress);
-		this.parent = parent;
+		this.cp = cp;
 		this.config = config;
 	}
 
@@ -75,10 +75,6 @@ public class GameListener extends ProgressListener {
 					return null;
 				}
 
-				@Override
-				public Object getComponent() {
-					return parent;
-				}
 			});
 			command = "LOAD\rRUN\r";
 		} else if (isDiskFile(selectedFile)) {
@@ -99,37 +95,12 @@ public class GameListener extends ProgressListener {
 					return null;
 				}
 
-				@Override
-				public Object getComponent() {
-					return parent;
-				}
 			});
 			command = "LOAD\"*\",8,1\rRUN\r";
 		} else {
 			command = null;
 		}
-		uiEvents.fireEvent(IPlayTune.class, new IPlayTune() {
-
-			@Override
-			public boolean switchToVideoTab() {
-				return true;
-			}
-
-			@Override
-			public Object getComponent() {
-				return parent;
-			}
-
-			@Override
-			public String getCommand() {
-				return command;
-			}
-			
-			@Override
-			public SidTune getSidTune() {
-				return null;
-			}
-		});
+		cp.playTune(null, command);
 	}
 
 	private boolean isTapeFile(final File selectedFile) {

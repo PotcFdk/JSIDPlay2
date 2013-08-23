@@ -66,7 +66,6 @@ import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry_;
 import ui.entities.collection.service.VersionService;
 import ui.entities.config.SidPlay2Section;
-import ui.events.IPlayTune;
 import ui.events.favorites.IAddFavoritesTab;
 import ui.events.favorites.IGetFavoritesTabs;
 import ui.favorites.FavoritesTab;
@@ -372,7 +371,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private void convertToPSID64() {
 		DirectoryChooser fileDialog = new DirectoryChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+				.getSidplay2())).getLastDirectoryFolder());
 		final File directory = fileDialog.showDialog(fileBrowser.getScene()
 				.getWindow());
 		if (directory != null) {
@@ -474,7 +473,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private void doBrowse() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFile());
+				.getSidplay2())).getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene()
 				.getWindow());
 		if (directory != null) {
@@ -817,34 +816,12 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	}
 
 	private void playTune(final File file) {
-		getUiEvents().fireEvent(IPlayTune.class,
-				new IPlayTune() {
-
-					@Override
-					public boolean switchToVideoTab() {
-						return false;
-					}
-					
-					@Override
-					public Object getComponent() {
-						return MusicCollection.this;
-					}
-
-					@Override
-					public String getCommand() {
-						return null;
-					}
-					
-					@Override
-					public SidTune getSidTune() {
-						try {
-							return SidTune.load(file);
-						} catch (IOException | SidTuneError e) {
-							e.printStackTrace();
-							return null;
-						}
-					}
-				});
+		setPlayedGraphics(fileBrowser);
+		try {
+			getConsolePlayer().playTune(SidTune.load(file), null);
+		} catch (IOException | SidTuneError e) {
+			e.printStackTrace();
+		}
 	}
 
 }

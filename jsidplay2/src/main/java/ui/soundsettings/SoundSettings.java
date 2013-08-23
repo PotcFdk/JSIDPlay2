@@ -47,7 +47,6 @@ import sidplay.ini.IniReader;
 import ui.common.C64Stage;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
-import ui.events.IPlayTune;
 
 public class SoundSettings extends C64Stage {
 
@@ -413,29 +412,7 @@ public class SoundSettings extends C64Stage {
 	private void restart() {
 		// replay last tune
 		if (!duringInitialization) {
-			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-
-				@Override
-				public boolean switchToVideoTab() {
-					return false;
-				}
-
-				@Override
-				public Object getComponent() {
-					return null;
-				}
-
-				@Override
-				public String getCommand() {
-					return null;
-				}
-				
-				@Override
-				public SidTune getSidTune() {
-					return getPlayer().getTune() != null ? getPlayer()
-							.getTune() : null;
-				}
-			});
+			getConsolePlayer().playTune(getPlayer().getTune(), null);
 		}
 	}
 

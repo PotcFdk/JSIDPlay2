@@ -239,10 +239,8 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		File lastDirectoryFile = ((SidPlay2Section) (getConfig().getSidplay2()))
-				.getLastDirectoryFile();
-		if (lastDirectoryFile != null && lastDirectoryFile.isDirectory())
-			fileDialog.setInitialDirectory(lastDirectoryFile);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
 						TapeFileExtensions.EXTENSIONS));
@@ -269,10 +267,6 @@ public class Video extends C64Tab implements PropertyChangeListener {
 					return null;
 				}
 
-				@Override
-				public Object getComponent() {
-					return Video.this;
-				}
 			});
 		}
 	}
@@ -280,10 +274,8 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		File lastDirectoryFile = ((SidPlay2Section) (getConfig().getSidplay2()))
-				.getLastDirectoryFile();
-		if (lastDirectoryFile != null && lastDirectoryFile.isDirectory())
-			fileDialog.setInitialDirectory(lastDirectoryFile);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
 						DiskFileExtensions.EXTENSIONS));
@@ -310,10 +302,6 @@ public class Video extends C64Tab implements PropertyChangeListener {
 					return null;
 				}
 
-				@Override
-				public Object getComponent() {
-					return Video.this;
-				}
 			});
 		}
 	}
@@ -321,10 +309,8 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	private void insertCartridge() {
 		final FileChooser fileDialog = new FileChooser();
-		File lastDirectoryFile = ((SidPlay2Section) (getConfig().getSidplay2()))
-				.getLastDirectoryFile();
-		if (lastDirectoryFile != null && lastDirectoryFile.isDirectory())
-			fileDialog.setInitialDirectory(lastDirectoryFile);
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
@@ -351,10 +337,6 @@ public class Video extends C64Tab implements PropertyChangeListener {
 					return null;
 				}
 
-				@Override
-				public Object getComponent() {
-					return Video.this;
-				}
 			});
 		}
 	}

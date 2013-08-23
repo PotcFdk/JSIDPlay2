@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -21,18 +20,13 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
-import ui.JSIDPlay2Main;
 import ui.common.C64Tab;
 import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
-import ui.events.IPlayTune;
 import ui.events.UIEvent;
 import ui.events.favorites.IAddFavoritesTab;
 import ui.events.favorites.IGetFavoritesTabs;
@@ -40,8 +34,6 @@ import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileExtensions;
 
 public class Favorites extends C64Tab {
-
-	private static final Image CURRENTLY_PLAYED_TAB = new Image(JSIDPlay2Main.class.getResource("icons/play.png").toString());
 
 	@FXML
 	private Button add, remove, selectAll, deselectAll, load, save, saveAs;
@@ -96,7 +88,8 @@ public class Favorites extends C64Tab {
 	@FXML
 	private void addFavorites() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig().getSidplay2())).getLastDirectoryFile());
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
 		final List<File> files = fileDialog.showOpenMultipleDialog(favoritesList.getScene().getWindow());
 		if (files != null && files.size() > 0) {
@@ -126,7 +119,8 @@ public class Favorites extends C64Tab {
 	@FXML
 	private void loadFavorites() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig().getSidplay2())).getLastDirectoryFile());
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSION));
 		final File file = fileDialog.showOpenDialog(favoritesList.getScene().getWindow());
 		if (file != null) {
@@ -142,7 +136,8 @@ public class Favorites extends C64Tab {
 	@FXML
 	private void saveFavoritesAs() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig().getSidplay2())).getLastDirectoryFile());
+		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSION));
 		final File file = fileDialog.showSaveDialog(favoritesList.getScene().getWindow());
 		if (file != null) {
@@ -191,7 +186,6 @@ public class Favorites extends C64Tab {
 		newTab.setText(favoritesSection.getName());
 		newTab.restoreColumns(favoritesSection);
 		newTab.setClosable(favoritesList.getTabs().size() != 0);
-		newTab.setComponent(this);
 		newTab.setOnClosed(new EventHandler<Event>() {
 
 			@Override
@@ -204,6 +198,7 @@ public class Favorites extends C64Tab {
 		// XXX JavaFX: better initialization support using constructor
 		// arguments?
 		newTab.setPlayer(getPlayer());
+		newTab.setConsolePlayer(getConsolePlayer());
 		newTab.setConfig(getConfig());
 		newTab.initialize(null, null);
 
@@ -218,29 +213,7 @@ public class Favorites extends C64Tab {
 	protected void playNextTune() {
 		if (repeatOne.isSelected()) {
 			// repeat one tune
-			getUiEvents().fireEvent(IPlayTune.class, new IPlayTune() {
-
-				@Override
-				public boolean switchToVideoTab() {
-					return false;
-				}
-
-				@Override
-				public Object getComponent() {
-					return null;
-				}
-
-				@Override
-				public String getCommand() {
-					return null;
-				}
-				
-				@Override
-				public SidTune getSidTune() {
-					return getPlayer().getTune() != null ? getPlayer()
-							.getTune() : null;
-				}
-			});
+			getConsolePlayer().playTune(getPlayer().getTune(), null);
 		} else if (randomAll.isSelected()) {
 			// random all favorites tab
 			favoritesList.getSelectionModel().select(Math.abs(random.nextInt(Integer.MAX_VALUE)) % favoritesList.getTabs().size());
@@ -272,23 +245,6 @@ public class Favorites extends C64Tab {
 			FavoritesTab newTab = (FavoritesTab) favoritesList.getTabs().get(favoritesList.getTabs().size() - 1);
 			newTab.setText(ifObj.getTitle());
 			ifObj.setFavorites(newTab);
-		} else if (event.isOfType(IPlayTune.class)) {
-			IPlayTune ifObj = (IPlayTune) event.getUIEventImpl();
-			if (this.equals(ifObj.getComponent())) {
-				Platform.runLater(new Runnable() {
-					
-					@Override
-					public void run() {
-						currentlyPlayedFavorites = getSelectedTab();
-						if (currentlyPlayedFavorites != null) {
-							for (Tab tab : favoritesList.getTabs()) {
-								tab.setGraphic(null);
-							}
-							currentlyPlayedFavorites.setGraphic(new ImageView(CURRENTLY_PLAYED_TAB));
-						}
-					}
-				});
-			}
 		}
 
 	}

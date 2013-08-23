@@ -258,6 +258,11 @@ public class ConsolePlayer {
 
 	private SidDatabase sidDatabase;
 
+	/**
+	 * Console player thread.
+	 */
+	private Thread fPlayerThread;
+
 	public ConsolePlayer(IConfig config) {
 		state.set(playerStopped);
 		iniCfg = config;
@@ -279,7 +284,7 @@ public class ConsolePlayer {
 	 *
 	 * @return True if the SID emulation could be created; false otherwise.
 	 */
-	public boolean createSidEmu(final SIDEMUS emu, AudioConfig audioConfig, double cpuFrequency) {
+	private boolean createSidEmu(final SIDEMUS emu, AudioConfig audioConfig, double cpuFrequency) {
 		sidEmuFactory = null;
 
 		switch (emu) {
@@ -783,7 +788,7 @@ public class ConsolePlayer {
 		}
 	}
 
-	public void restart() {
+	private void restart() {
 		state.set(playerFastRestart);
 	}
 
@@ -804,7 +809,7 @@ public class ConsolePlayer {
 		state.set(playerFastExit);
 	}
 
-	public void displayError(final String error) {
+	private void displayError(final String error) {
 		System.err.println(this + ": " + error);
 	}
 
@@ -814,7 +819,7 @@ public class ConsolePlayer {
 	 * @param str The time string to parse.
 	 * @return The time as an integer.
 	 */
-	long parseTime(final String str) {
+	private long parseTime(final String str) {
 		int sep;
 		long _time;
 
@@ -1092,7 +1097,7 @@ public class ConsolePlayer {
 	 * @param t
 	 *            SidTune to load.
 	 */
-	public void loadTune(final SidTune t) {
+	private void loadTune(final SidTune t) {
 		// Next time player is used, the track is reset
 		resetTrack();
 		tune = t;
@@ -1103,7 +1108,7 @@ public class ConsolePlayer {
 	}
 
 	@SuppressWarnings("resource")
-	void displayArgs(final String arg) {
+	private void displayArgs(final String arg) {
 		final PrintStream out = arg != null ? System.err : System.out;
 
 		if (arg != null) {
@@ -1167,7 +1172,7 @@ public class ConsolePlayer {
 		}
 	}
 
-	void displayDebugArgs() {
+	private void displayDebugArgs() {
 		final PrintStream out = System.out;
 
 		out.println("Debug Options:" + "\n"
@@ -1185,7 +1190,7 @@ public class ConsolePlayer {
 		}
 	}
 
-	void menu() {
+	private void menu() {
 		final SidTuneInfo tuneInfo = tune.getInfo();
 		if (quietLevel > 1) {
 			return;
@@ -1392,6 +1397,95 @@ public class ConsolePlayer {
 	}
 
 	/**
+	 * Player runnable to play music in the background.
+	 */
+	private transient final Runnable playerRunnable = new Runnable() {
+		@Override
+		public void run() {
+			if (tune != null && tune.getInfo().file != null) {
+				System.out.println("Play File: <"
+						+ tune.getInfo().file.getAbsolutePath() + ">");
+			}
+			// Run until the player gets stopped
+			while (true) {
+				try {
+					// Open tune and play
+					if (!open()) {
+						return;
+					}
+					// Play next chunk of sound data, until it gets stopped
+					while (true) {
+						// Pause? sleep for awhile
+						if (getState().get() == ConsolePlayer.playerPaused) {
+							Thread.sleep(250);
+						}
+						// Play a chunk
+						if (!play()) {
+							break;
+						}
+					}
+				} catch (InterruptedException e) {
+				} finally {
+					// Don't forget to close
+					close();
+				}
+
+				// "Play it once, Sam. For old times' sake."
+				if ((getState().get() & ~playerFast) == playerRestart) {
+					continue;
+				}
+				// Stop it
+				break;
+
+			}
+		}
+
+	};
+
+	/**
+	 * Start emulation (start player thread).
+	 */
+	public void startC64() {
+		fPlayerThread = new Thread(playerRunnable);
+		fPlayerThread.setPriority(Thread.MAX_PRIORITY);
+		fPlayerThread.start();
+	}
+
+	/**
+	 * Stop emulation (stop player thread).
+	 */
+	public void stopC64() {
+		try {
+			while (fPlayerThread.isAlive()) {
+				quit();
+				fPlayerThread.join(3000);
+				// This is only the last option, if the player can not be
+				// stopped clean
+				fPlayerThread.interrupt();
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+
+	/**
+	 * Play tune.
+	 * 
+	 * @param sidTune
+	 *            file to play the tune (null means just reset C64)
+	 * @param command 
+	 */
+	public void playTune(final SidTune sidTune, String command) {
+		// Stop previous run
+		stopC64();
+		// load tune
+		loadTune(sidTune);
+		// set command to type after reset
+		getPlayer().setCommand(command);
+		// Start emulation
+		startC64();
+	}
+
+	/**
 	 * Replace old SIDs with new SIDs.
 	 * 
 	 */
@@ -1424,7 +1518,7 @@ public class ConsolePlayer {
 	 * 
 	 * @return the SID model to be used
 	 */
-	public static ChipModel determineSIDModel(ChipModel userForcedChoice,
+	private ChipModel determineSIDModel(ChipModel userForcedChoice,
 			ChipModel defaultChoice, Model model) {
 		/* Determine SID type and construct them */
 		ChipModel chipModel = userForcedChoice;
