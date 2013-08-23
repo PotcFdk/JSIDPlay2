@@ -54,15 +54,13 @@ import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
-import libsidplay.components.c1541.DiskImage;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.PRG2TAP;
 import libsidutils.SidDatabase;
-import libsidutils.zip.ZipEntryFileProxy;
 import sidplay.ConsolePlayer;
+import sidplay.ConsolePlayer.MediaType;
 import ui.about.About;
 import ui.common.C64Stage;
 import ui.common.C64Tab;
@@ -71,8 +69,6 @@ import ui.disassembler.Disassembler;
 import ui.emulationsettings.EmulationSettings;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
-import ui.events.IInsertMedia;
-import ui.events.UIEvent;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.ConfigFileExtension;
 import ui.filefilter.DiskFileExtensions;
@@ -143,6 +139,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		this.duringInitialization = true;
 		this.scene = tabbedPane.getScene();
 
+		getConsolePlayer().setExtendImagePolicy(this);
+
 		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0,
@@ -209,7 +207,9 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		});
 		pauseContinue.selectedProperty().bindBidirectional(
 				pauseContinue2.selectedProperty());
-
+		driveOn.selectedProperty().bindBidirectional(
+				getPlayer().drivesEnabledProperty());
+		
 		this.load.setAccelerator(new KeyCodeCombination(KeyCode.L,
 				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
 		this.video.setAccelerator(new KeyCodeCombination(KeyCode.V,
@@ -242,7 +242,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		CPUClock defClk = getConfig().getEmulation().getDefaultClockSpeed();
 		(defClk != null ? defClk == CPUClock.NTSC ? ntsc : pal : pal)
 				.setSelected(true);
-		driveOn.setSelected(getConfig().getC1541().isDriveOn());
 		driveSoundOn.setSelected(getConfig().getC1541().isDriveSoundOn());
 		parCable.setSelected(getConfig().getC1541().isParallelCable());
 		FloppyType floppyType = getConfig().getC1541().getFloppyType();
@@ -520,12 +519,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			try {
-				insertTape(file, null);
-			} catch (IOException e) {
-				System.err.println(String.format("Cannot attach file '%s'.",
-						file.getAbsolutePath()));
-			}
+			getConsolePlayer().insertMedia(file, null, MediaType.TAPE);
 		}
 	}
 
@@ -628,12 +622,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			try {
-				insertDisk(file, null);
-			} catch (IOException e) {
-				System.err.println(String.format("Cannot attach file '%s'.",
-						file.getAbsolutePath()));
-			}
+			getConsolePlayer().insertMedia(file, null, MediaType.DISK);
 		}
 	}
 
@@ -670,12 +659,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			try {
-				insertCartridge(file);
-			} catch (IOException e) {
-				System.err.println(String.format("Cannot attach file '%s'.",
-						file.getAbsolutePath()));
-			}
+			getConsolePlayer().insertMedia(file, null, MediaType.CART);
 		}
 	}
 
@@ -980,46 +964,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	}
 
-	private void insertDisk(final File selectedDisk, final File autostartFile)
-			throws IOException {
-		// automatically turn drive on
-		getPlayer().enableFloppyDiskDrives(true);
-		getConfig().getC1541().setDriveOn(true);
-		// attach selected disk into the first disk drive
-		DiskImage disk = getPlayer().getFloppies()[0].getDiskController()
-				.insertDisk(selectedDisk);
-		disk.setExtendImagePolicy(this);
-		if (autostartFile != null) {
-			playTune(autostartFile);
-		}
-	}
-
-	private void insertTape(final File selectedTape, final File autostartFile)
-			throws IOException {
-		if (!selectedTape.getName().toLowerCase().endsWith(".tap")) {
-			// Everything, which is not a tape convert to tape first
-			final File convertedTape = new File(getConfig().getSidplay2()
-					.getTmpDir(), selectedTape.getName() + ".tap");
-			convertedTape.deleteOnExit();
-			String[] args = new String[] { selectedTape.getAbsolutePath(),
-					convertedTape.getAbsolutePath() };
-			PRG2TAP.main(args);
-			getPlayer().getDatasette().insertTape(convertedTape);
-		} else {
-			getPlayer().getDatasette().insertTape(selectedTape);
-		}
-		if (autostartFile != null) {
-			playTune(autostartFile);
-		}
-	}
-
-	private void insertCartridge(final File selectedFile) throws IOException {
-		// Insert a cartridge
-		getPlayer().getC64().insertCartridge(selectedFile);
-		// reset required after inserting the cartridge
-		playTune(null);
-	}
-
 	private void playTune(final File file) {
 		setPlayedGraphics(videoScreen.getContent());
 		try {
@@ -1114,55 +1058,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	private C1541 getFirstFloppy() {
 		return getPlayer().getFloppies()[0];
-	}
-
-	@Override
-	public void notify(final UIEvent evt) {
-		if (evt.isOfType(IInsertMedia.class)) {
-			// Insert a disk/tape or cartridge
-			IInsertMedia ifObj = (IInsertMedia) evt.getUIEventImpl();
-			File mediaFile = ifObj.getSelectedMedia();
-			try {
-				if (mediaFile instanceof ZipEntryFileProxy) {
-					// Extract ZIP file
-					ZipEntryFileProxy zipEntryFileProxy = (ZipEntryFileProxy) mediaFile;
-					mediaFile = ZipEntryFileProxy.extractFromZip(
-							(ZipEntryFileProxy) mediaFile, getConfig()
-									.getSidplay2().getTmpDir());
-					getConfig().getSidplay2().setLastDirectory(
-							zipEntryFileProxy.getZip().getAbsolutePath());
-				} else {
-					getConfig().getSidplay2().setLastDirectory(
-							mediaFile.getParentFile().getAbsolutePath());
-				}
-				if (mediaFile.getName().endsWith(".gz")) {
-					// Extract GZ file
-					mediaFile = ZipEntryFileProxy.extractFromGZ(mediaFile,
-							getConfig().getSidplay2().getTmpDir());
-				}
-				switch (ifObj.getMediaType()) {
-				case TAPE:
-					insertTape(mediaFile, ifObj.getAutostartFile());
-					break;
-
-				case DISK:
-					// automatically turn drive on
-					driveOn.setSelected(true);
-					insertDisk(mediaFile, ifObj.getAutostartFile());
-					break;
-
-				case CART:
-					insertCartridge(mediaFile);
-					break;
-
-				default:
-					break;
-				}
-			} catch (IOException e) {
-				System.err.println(String.format("Cannot attach file '%s'.",
-						mediaFile.getAbsolutePath()));
-			}
-		}
 	}
 
 	@Override

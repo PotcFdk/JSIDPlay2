@@ -26,6 +26,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -100,7 +102,7 @@ public class Player {
 	/**
 	 * Are the floppy disk drives enabled?
 	 */
-	protected boolean drivesEnabled;
+	protected BooleanProperty drivesEnabled = new SimpleBooleanProperty();
 
 	/**
 	 * Create a complete setup (C64, tape/disk drive, carts and more).
@@ -139,7 +141,7 @@ public class Player {
 
 			@Override
 			public byte readFromIECBus() {
-				if (drivesEnabled) {
+				if (drivesEnabled.get()) {
 					c1541Runner.synchronize(0);
 					return iecBus.readFromIECBus();
 				}
@@ -148,7 +150,7 @@ public class Player {
 
 			@Override
 			public void writeToIECBus(final byte data) {
-				if (drivesEnabled) {
+				if (drivesEnabled.get()) {
 					// more elegant solution to
 					// assure a one cycle write delay
 					c1541Runner.synchronize(1);
@@ -192,6 +194,10 @@ public class Player {
 		connectC64AndC1541WithParallelCable(false);
 	}
 
+	public BooleanProperty drivesEnabledProperty() {
+		return drivesEnabled;
+	}
+
 	/**
 	 * Set frequency (PAL/NTSC)
 	 * 
@@ -220,7 +226,7 @@ public class Player {
 		for (final C1541 floppy : floppies) {
 			floppy.reset();
 		}
-		enableFloppyDiskDrives(drivesEnabled);
+		enableFloppyDiskDrives(drivesEnabled.get());
 		// Reset IEC devices
 		for (final SerialIECDevice serialDevice : serialDevices) {
 			serialDevice.reset();
@@ -344,7 +350,7 @@ public class Player {
 						@Override
 						public void event() {
 							c1541Runner.reset();
-							drivesEnabled = on;
+							drivesEnabled.set(on);
 						}
 					});
 		} else {
@@ -353,7 +359,7 @@ public class Player {
 						@Override
 						public void event() {
 							c1541Runner.cancel();
-							drivesEnabled = on;
+							drivesEnabled.set(on);
 						}
 					});
 		}

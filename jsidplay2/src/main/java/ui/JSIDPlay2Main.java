@@ -20,9 +20,7 @@ import sidplay.ini.intf.ISidPlay2Section;
 import ui.entities.PersistenceUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
-import ui.events.UIEvent;
 import ui.events.UIEventFactory;
-import ui.events.UIEventListener;
 
 /**
  * @author Ken Händel
@@ -30,7 +28,7 @@ import ui.events.UIEventListener;
  * 
  *         SID Player main class
  */
-public class JSIDPlay2Main extends Application implements UIEventListener {
+public class JSIDPlay2Main extends Application {
 
 	/**
 	 * Filename of the jsidplay2 configuration database.
@@ -67,8 +65,6 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 	public void start(Stage primaryStage) {
 		config = getConfiguration();
 		initializeTmpDir(config);
-
-		uiEvents.addListener(this);
 
 		cp = new ConsolePlayer(config);
 		String[] args = getParameters().getRaw().toArray(new String[0]);
@@ -236,16 +232,6 @@ public class JSIDPlay2Main extends Application implements UIEventListener {
 	 */
 	public static void main(final String[] args) {
 		launch(args);
-	}
-
-	/**
-	 * Capture events to do certain tasks. Play tune, open browser, etc.
-	 * 
-	 * @param evt
-	 *            property change event
-	 */
-	@Override
-	public void notify(final UIEvent evt) {
 	}
 
 	/**

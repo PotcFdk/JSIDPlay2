@@ -18,13 +18,17 @@ import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.c1541.C1541;
+import libsidplay.components.c1541.DiskImage;
+import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.components.mos6510.IMOS6510Disassembler;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
+import libsidutils.PRG2TAP;
 import libsidutils.SidDatabase;
 import libsidutils.cpuparser.CPUParser;
+import libsidutils.zip.ZipEntryFileProxy;
 import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ISIDDefs.ChipModel;
@@ -1442,6 +1446,8 @@ public class ConsolePlayer {
 
 	};
 
+	private IExtendImageListener policy;
+
 	/**
 	 * Start emulation (start player thread).
 	 */
@@ -1483,6 +1489,106 @@ public class ConsolePlayer {
 		getPlayer().setCommand(command);
 		// Start emulation
 		startC64();
+	}
+
+	public enum MediaType {
+		DISK, TAPE, CART
+	}
+	
+	public void insertMedia(File mediaFile, File autostartFile,
+			MediaType mediaType) {
+		try {
+			if (mediaFile instanceof ZipEntryFileProxy) {
+				// Extract ZIP file
+				ZipEntryFileProxy zipEntryFileProxy = (ZipEntryFileProxy) mediaFile;
+				mediaFile = ZipEntryFileProxy.extractFromZip(
+						(ZipEntryFileProxy) mediaFile, getConfig()
+								.getSidplay2().getTmpDir());
+				getConfig().getSidplay2().setLastDirectory(
+						zipEntryFileProxy.getZip().getAbsolutePath());
+			} else {
+				getConfig().getSidplay2().setLastDirectory(
+						mediaFile.getParentFile().getAbsolutePath());
+			}
+			if (mediaFile.getName().endsWith(".gz")) {
+				// Extract GZ file
+				mediaFile = ZipEntryFileProxy.extractFromGZ(mediaFile,
+						getConfig().getSidplay2().getTmpDir());
+			}
+			switch (mediaType) {
+			case TAPE:
+				insertTape(mediaFile, autostartFile);
+				break;
+
+			case DISK:
+				insertDisk(mediaFile, autostartFile);
+				break;
+
+			case CART:
+				insertCartridge(mediaFile);
+				break;
+
+			default:
+				break;
+			}
+		} catch (IOException e) {
+			System.err.println(String.format("Cannot attach file '%s'.",
+					mediaFile.getAbsolutePath()));
+		}
+	}
+
+	private void insertDisk(final File selectedDisk, final File autostartFile)
+			throws IOException {
+		// automatically turn drive on
+		getPlayer().enableFloppyDiskDrives(true);
+		getConfig().getC1541().setDriveOn(true);
+		// attach selected disk into the first disk drive
+		DiskImage disk = getPlayer().getFloppies()[0].getDiskController()
+				.insertDisk(selectedDisk);
+		if (policy != null) {
+			disk.setExtendImagePolicy(policy);
+		}
+		if (autostartFile != null) {
+			try {
+				playTune(SidTune.load(autostartFile), null);
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void insertTape(final File selectedTape, final File autostartFile)
+			throws IOException {
+		if (!selectedTape.getName().toLowerCase().endsWith(".tap")) {
+			// Everything, which is not a tape convert to tape first
+			final File convertedTape = new File(getConfig().getSidplay2()
+					.getTmpDir(), selectedTape.getName() + ".tap");
+			convertedTape.deleteOnExit();
+			String[] args = new String[] { selectedTape.getAbsolutePath(),
+					convertedTape.getAbsolutePath() };
+			PRG2TAP.main(args);
+			getPlayer().getDatasette().insertTape(convertedTape);
+		} else {
+			getPlayer().getDatasette().insertTape(selectedTape);
+		}
+		if (autostartFile != null) {
+			try {
+				playTune(SidTune.load(autostartFile), null);
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void insertCartridge(final File selectedFile) throws IOException {
+		// Insert a cartridge
+		getPlayer().getC64().insertCartridge(selectedFile);
+		// reset required after inserting the cartridge
+		playTune(null, null);
+	}
+
+	public void setExtendImagePolicy(IExtendImageListener policy) {
+		this.policy = policy;
 	}
 
 	/**

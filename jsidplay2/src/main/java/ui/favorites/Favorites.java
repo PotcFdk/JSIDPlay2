@@ -197,6 +197,7 @@ public class Favorites extends C64Tab {
 
 		// XXX JavaFX: better initialization support using constructor
 		// arguments?
+		newTab.setFavorites(this);
 		newTab.setPlayer(getPlayer());
 		newTab.setConsolePlayer(getConsolePlayer());
 		newTab.setConfig(getConfig());
@@ -233,10 +234,7 @@ public class Favorites extends C64Tab {
 		if (event.isOfType(IGetFavoritesTabs.class)) {
 			IGetFavoritesTabs ifObj = (IGetFavoritesTabs) event.getUIEventImpl();
 			// Inform about all tabs
-			List<FavoritesTab> result = new ArrayList<FavoritesTab>();
-			for (Tab tab : favoritesList.getTabs()) {
-				result.add((FavoritesTab) tab);
-			}
+			List<FavoritesTab> result = getFavoriteTabs();
 			ifObj.setFavoriteTabs(result, getSelectedTab().getText());
 		} else if (event.isOfType(IAddFavoritesTab.class)) {
 			final IAddFavoritesTab ifObj = (IAddFavoritesTab) event.getUIEventImpl();
@@ -247,5 +245,13 @@ public class Favorites extends C64Tab {
 			ifObj.setFavorites(newTab);
 		}
 
+	}
+
+	public List<FavoritesTab> getFavoriteTabs() {
+		List<FavoritesTab> result = new ArrayList<FavoritesTab>();
+		for (Tab tab : favoritesList.getTabs()) {
+			result.add((FavoritesTab) tab);
+		}
+		return result;
 	}
 }

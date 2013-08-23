@@ -54,7 +54,6 @@ import ui.entities.config.Configuration;
 import ui.entities.config.FavoriteColumn;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
-import ui.events.favorites.IGetFavoritesTabs;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileFilter;
 import ui.stil.STIL;
@@ -86,6 +85,7 @@ public class FavoritesTab extends C64Tab {
 	private FavoritesSection favoritesSection;
 
 	private File file;
+	private Favorites favorites;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -200,56 +200,40 @@ public class FavoritesTab extends C64Tab {
 						.getSelectedItem();
 				showStil.setDisable(hvscEntry == null
 						|| getStilEntry(hvscEntry.getPath()) == null);
-				getUiEvents().fireEvent(IGetFavoritesTabs.class,
-						new IGetFavoritesTabs() {
-							@Override
-							public void setFavoriteTabs(
-									List<FavoritesTab> tabs, String selected) {
-								moveToTab.getItems().clear();
-								copyToTab.getItems().clear();
-								for (final FavoritesTab tab : tabs) {
-									if (tab.equals(FavoritesTab.this)) {
-										continue;
-									}
-									final String name = tab.getText();
-									MenuItem moveToTabItem = new MenuItem(name);
-									moveToTabItem
-											.setOnAction(new EventHandler<ActionEvent>() {
+				List<FavoritesTab> tabs = favorites.getFavoriteTabs();
+				moveToTab.getItems().clear();
+				copyToTab.getItems().clear();
+				for (final FavoritesTab tab : tabs) {
+					if (tab.equals(FavoritesTab.this)) {
+						continue;
+					}
+					final String name = tab.getText();
+					MenuItem moveToTabItem = new MenuItem(name);
+					moveToTabItem.setOnAction(new EventHandler<ActionEvent>() {
 
-												@Override
-												public void handle(
-														ActionEvent arg0) {
-													ObservableList<HVSCEntry> selectedItems = favoritesTable
-															.getSelectionModel()
-															.getSelectedItems();
-													copyToTab(selectedItems,
-															tab);
-													removeFavorites(selectedItems);
-												}
-											});
-									moveToTab.getItems().add(moveToTabItem);
-									MenuItem copyToTabItem = new MenuItem(name);
-									copyToTabItem
-											.setOnAction(new EventHandler<ActionEvent>() {
+						@Override
+						public void handle(ActionEvent arg0) {
+							ObservableList<HVSCEntry> selectedItems = favoritesTable
+									.getSelectionModel().getSelectedItems();
+							copyToTab(selectedItems, tab);
+							removeFavorites(selectedItems);
+						}
+					});
+					moveToTab.getItems().add(moveToTabItem);
+					MenuItem copyToTabItem = new MenuItem(name);
+					copyToTabItem.setOnAction(new EventHandler<ActionEvent>() {
 
-												@Override
-												public void handle(
-														ActionEvent arg0) {
-													ObservableList<HVSCEntry> selectedItems = favoritesTable
-															.getSelectionModel()
-															.getSelectedItems();
-													copyToTab(selectedItems,
-															tab);
-												}
-											});
-									copyToTab.getItems().add(copyToTabItem);
-								}
-								moveToTab.setDisable(moveToTab.getItems()
-										.size() == 0);
-								copyToTab.setDisable(copyToTab.getItems()
-										.size() == 0);
-							}
-						});
+						@Override
+						public void handle(ActionEvent arg0) {
+							ObservableList<HVSCEntry> selectedItems = favoritesTable
+									.getSelectionModel().getSelectedItems();
+							copyToTab(selectedItems, tab);
+						}
+					});
+					copyToTab.getItems().add(copyToTabItem);
+				}
+				moveToTab.setDisable(moveToTab.getItems().size() == 0);
+				copyToTab.setDisable(copyToTab.getItems().size() == 0);
 			}
 		});
 
@@ -654,6 +638,10 @@ public class FavoritesTab extends C64Tab {
 
 	public File getCurrentlyPlayedFile() {
 		return file;
+	}
+
+	public void setFavorites(Favorites favorites) {
+		this.favorites = favorites;
 	}
 
 }

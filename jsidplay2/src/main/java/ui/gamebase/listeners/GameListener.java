@@ -7,9 +7,9 @@ import javafx.beans.property.DoubleProperty;
 import libsidutils.zip.ZipEntryFileProxy;
 import libsidutils.zip.ZipFileProxy;
 import sidplay.ConsolePlayer;
+import sidplay.ConsolePlayer.MediaType;
 import ui.download.ProgressListener;
 import ui.entities.config.Configuration;
-import ui.events.IInsertMedia;
 import ui.events.UIEventFactory;
 
 public class GameListener extends ProgressListener {
@@ -58,44 +58,10 @@ public class GameListener extends ProgressListener {
 	private void insertMedia(final File selectedFile) {
 		final String command;
 		if (isTapeFile(selectedFile)) {
-			uiEvents.fireEvent(IInsertMedia.class, new IInsertMedia() {
-
-				@Override
-				public MediaType getMediaType() {
-					return MediaType.TAPE;
-				}
-
-				@Override
-				public File getSelectedMedia() {
-					return selectedFile;
-				}
-
-				@Override
-				public File getAutostartFile() {
-					return null;
-				}
-
-			});
+			cp.insertMedia(selectedFile, null, MediaType.TAPE);
 			command = "LOAD\rRUN\r";
 		} else if (isDiskFile(selectedFile)) {
-			uiEvents.fireEvent(IInsertMedia.class, new IInsertMedia() {
-
-				@Override
-				public MediaType getMediaType() {
-					return MediaType.DISK;
-				}
-
-				@Override
-				public File getSelectedMedia() {
-					return selectedFile;
-				}
-
-				@Override
-				public File getAutostartFile() {
-					return null;
-				}
-
-			});
+			cp.insertMedia(selectedFile, null, MediaType.DISK);
 			command = "LOAD\"*\",8,1\rRUN\r";
 		} else {
 			command = null;

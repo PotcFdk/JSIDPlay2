@@ -43,9 +43,9 @@ import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.ISIDDefs.ChipModel;
+import sidplay.ConsolePlayer.MediaType;
 import ui.common.C64Tab;
 import ui.entities.config.SidPlay2Section;
-import ui.events.IInsertMedia;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.TapeFileExtensions;
@@ -250,24 +250,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
-
-				@Override
-				public MediaType getMediaType() {
-					return MediaType.TAPE;
-				}
-
-				@Override
-				public File getSelectedMedia() {
-					return file;
-				}
-
-				@Override
-				public File getAutostartFile() {
-					return null;
-				}
-
-			});
+			getConsolePlayer().insertMedia(file, null, MediaType.TAPE);
 		}
 	}
 
@@ -285,24 +268,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
-
-				@Override
-				public MediaType getMediaType() {
-					return MediaType.DISK;
-				}
-
-				@Override
-				public File getSelectedMedia() {
-					return file;
-				}
-
-				@Override
-				public File getAutostartFile() {
-					return null;
-				}
-
-			});
+			getConsolePlayer().insertMedia(file, null, MediaType.DISK);
 		}
 	}
 
@@ -320,24 +286,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
-
-				@Override
-				public MediaType getMediaType() {
-					return MediaType.CART;
-				}
-
-				@Override
-				public File getSelectedMedia() {
-					return file;
-				}
-
-				@Override
-				public File getAutostartFile() {
-					return null;
-				}
-
-			});
+			getConsolePlayer().insertMedia(file, null, MediaType.CART);
 		}
 	}
 

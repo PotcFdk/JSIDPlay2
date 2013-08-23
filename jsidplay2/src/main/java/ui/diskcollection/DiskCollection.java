@@ -34,12 +34,12 @@ import javafx.util.Callback;
 import libsidutils.PathUtils;
 import libsidutils.zip.ZipEntryFileProxy;
 import libsidutils.zip.ZipFileProxy;
+import sidplay.ConsolePlayer.MediaType;
 import ui.common.C64Tab;
 import ui.directory.Directory;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
 import ui.entities.config.SidPlay2Section;
-import ui.events.IInsertMedia;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.DocsFileFilter;
 import ui.filefilter.ScreenshotFileFilter;
@@ -244,8 +244,9 @@ public class DiskCollection extends C64Tab {
 
 	@FXML
 	private void attachDisk() {
-		insertMedia(IInsertMedia.MediaType.DISK, fileBrowser
-				.getSelectionModel().getSelectedItem().getValue(), null);
+		File selectedFile = fileBrowser.getSelectionModel().getSelectedItem()
+				.getValue();
+		getConsolePlayer().insertMedia(selectedFile, null, MediaType.DISK);
 	}
 
 	@FXML
@@ -303,38 +304,16 @@ public class DiskCollection extends C64Tab {
 			}
 		} else {
 			if (diskFileFilter.accept(selectedFile)) {
-				insertMedia(IInsertMedia.MediaType.DISK, selectedFile,
-						autoStartFile);
+				getConsolePlayer().insertMedia(selectedFile, autoStartFile,
+						MediaType.DISK);
 			} else {
-				insertMedia(IInsertMedia.MediaType.TAPE, selectedFile,
-						autoStartFile);
+				getConsolePlayer().insertMedia(selectedFile, autoStartFile,
+						MediaType.TAPE);
 			}
 			if (autoStartFile == null) {
 				resetAndLoadDemo(selectedFile);
 			}
 		}
-	}
-
-	private void insertMedia(final IInsertMedia.MediaType mediaType,
-			final File selectedFile, final File autoStartFile) {
-		getUiEvents().fireEvent(IInsertMedia.class, new IInsertMedia() {
-
-			@Override
-			public MediaType getMediaType() {
-				return mediaType;
-			}
-
-			@Override
-			public File getSelectedMedia() {
-				return selectedFile;
-			}
-
-			@Override
-			public File getAutostartFile() {
-				return autoStartFile;
-			}
-
-		});
 	}
 
 	private void resetAndLoadDemo(final File selectedFile) {
