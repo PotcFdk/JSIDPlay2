@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -57,7 +58,11 @@ public class Favorites extends C64Tab {
 			public void changed(ObservableValue<? extends Number> arg0,
 					Number arg1, Number arg2) {
 				if (arg2.intValue() == playerExit) {
-					playNextTune();
+					Platform.runLater(new Runnable() {
+						public void run() {
+							playNextTune();
+						}
+					});
 				}
 			}
 		});
@@ -229,6 +234,11 @@ public class Favorites extends C64Tab {
 		}
 	}
 
+	public void setCurrentlyPlayedFavorites(
+			FavoritesTab currentlyPlayedFavorites) {
+		this.currentlyPlayedFavorites = currentlyPlayedFavorites;
+	}
+	
 	@Override
 	public void notify(UIEvent event) {
 		if (event.isOfType(IGetFavoritesTabs.class)) {

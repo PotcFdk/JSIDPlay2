@@ -625,6 +625,7 @@ public class FavoritesTab extends C64Tab {
 	}
 
 	private void playTune(final HVSCEntry hvscEntry) {
+		favorites.setCurrentlyPlayedFavorites(this);
 		file = getFile(hvscEntry.getPath());
 		if (file != null) {
 			setPlayedGraphics(favoritesTable);
