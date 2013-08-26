@@ -116,9 +116,9 @@ public class SIDPlay extends Applet {
 		if (cp.args(args) < 0) {
 			return;
 		}
-		cp.startC64();
 		cp.getDriverSettings().setOutput(fOut);
 		cp.getDriverSettings().setSid(fEmu);
+		cp.startC64();
 	}
 
 	/**
