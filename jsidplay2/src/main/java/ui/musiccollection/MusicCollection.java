@@ -172,6 +172,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private FavoritesTab favoritesToAddSearchResult;
 
 	private DoubleProperty progress = new SimpleDoubleProperty();
+	private List<TreeItem<File>> currentlyPlayedTreeItems;
 
 	public DoubleProperty getProgressValue() {
 		return progress;
@@ -191,15 +192,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 						&& getPlayer().getTune() != null) {
 					Platform.runLater(new Runnable() {
 						public void run() {
-							TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-									.getSelectedItem();
-							if (selectedItem != null
-									&& !selectedItem.getValue()
-											.equals(getPlayer().getTune()
-													.getInfo().file)) {
-								// auto-expand current selected tune
-								showNextHit(getPlayer().getTune().getInfo().file);
-							}
+							// auto-expand current selected tune
+							showNextHit(getPlayer().getTune().getInfo().file);
 						}
 					});
 				}
@@ -384,8 +378,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		if (directory != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					directory.getAbsolutePath());
-			Psid64 c = new Psid64(getConfig().getSidplay2()
-					.getTmpDir());
+			Psid64 c = new Psid64(getConfig().getSidplay2().getTmpDir());
 			c.convertFiles(fileBrowser.getRoot().getValue(),
 					new File[] { fileBrowser.getSelectionModel()
 							.getSelectedItem().getValue() }, directory);
@@ -611,16 +604,17 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 							rootFile.getAbsolutePath());
 					File theRootFile = ((SidPlay2Section) getConfig()
 							.getSidplay2()).getHvscFile();
-					fileBrowser.setRoot(new MusicCollectionTreeItem(
+					fileBrowser.setRoot(new MusicCollectionTreeItem(this,
 							theRootFile, theRootFile));
 				} else if (type == MusicCollectionType.CGSC) {
 					getConfig().getSidplay2().setCgsc(
 							rootFile.getAbsolutePath());
 					File theRootFile = ((SidPlay2Section) getConfig()
 							.getSidplay2()).getCgscFile();
-					fileBrowser.setRoot(new MusicCollectionTreeItem(
+					fileBrowser.setRoot(new MusicCollectionTreeItem(this,
 							theRootFile, theRootFile));
 				}
+				fileBrowser.setCellFactory(new MusicCollectionCellFactory());
 			}
 
 		}
@@ -736,9 +730,16 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					}
 				}
 				if (pathSegs.size() > 0) {
-					TreeItem<File> treeItem = pathSegs.get(pathSegs.size() - 1);
-					fileBrowser.getSelectionModel().select(treeItem);
-					fileBrowser.scrollTo(fileBrowser.getRow(treeItem));
+					currentlyPlayedTreeItems = pathSegs;
+					TreeItem<File> selectedItem = fileBrowser
+							.getSelectionModel().getSelectedItem();
+					if (selectedItem == null
+							|| !selectedItem.getValue().equals(
+									getPlayer().getTune().getInfo().file)) {
+						TreeItem<File> treeItem = pathSegs.get(pathSegs.size() - 1);
+						fileBrowser.getSelectionModel().select(treeItem);
+						fileBrowser.scrollTo(fileBrowser.getRow(treeItem));
+					}
 				}
 			}
 		});
@@ -831,4 +832,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		}
 	}
 
+	public List<TreeItem<File>> getCurrentlyPlayedTreeItems() {
+		return currentlyPlayedTreeItems;
+	}
 }

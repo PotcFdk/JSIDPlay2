@@ -9,7 +9,6 @@ import java.util.Comparator;
 
 import ui.JSIDPlay2Main;
 import ui.filefilter.TuneFileFilter;
-
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
@@ -43,14 +42,18 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 	private boolean isLeaf;
 	private boolean hasSTIL;
 
-	public MusicCollectionTreeItem(File file, File rootFile) {
+	private MusicCollection musicCollection;
+
+	public MusicCollectionTreeItem(MusicCollection musicCollection, File file,
+			File rootFile) {
 		super(file);
-		init(file, rootFile);
+		init(musicCollection, file, rootFile);
 	}
 
-	public MusicCollectionTreeItem(File file, File rootFile, Node icon) {
+	public MusicCollectionTreeItem(MusicCollection musicCollection, File file,
+			File rootFile, Node icon) {
 		super(file, icon);
-		init(file, rootFile);
+		init(musicCollection, file, rootFile);
 	}
 
 	@Override
@@ -73,7 +76,8 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		return hasSTIL;
 	}
 
-	private void init(File file, File rootFile) {
+	private void init(MusicCollection musicCollection, File file, File rootFile) {
+		this.musicCollection = musicCollection;
 		this.rootFile = rootFile;
 		this.isLeaf = file.isFile();
 		this.hasSTIL = isLeaf && STIL.getSTIL(rootFile, file) != null;
@@ -89,11 +93,15 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 				boolean childIsLeaf = file.isFile();
 				boolean childHasSTIL = childIsLeaf
 						&& STIL.getSTIL(rootFile, file) != null;
-				children.add(new MusicCollectionTreeItem(file, rootFile,
-						childHasSTIL ? new ImageView(stilIcon) : new ImageView(
-								noStilIcon)));
+				children.add(new MusicCollectionTreeItem(musicCollection, file,
+						rootFile, childHasSTIL ? new ImageView(stilIcon)
+								: new ImageView(noStilIcon)));
 			}
 		}
 		super.getChildren().setAll(children);
+	}
+
+	public MusicCollection getMusicCollection() {
+		return musicCollection;
 	}
 }
