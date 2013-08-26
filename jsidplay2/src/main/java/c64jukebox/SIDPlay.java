@@ -1,8 +1,5 @@
 package c64jukebox;
 
-import static sidplay.ConsolePlayer.playerFast;
-import static sidplay.ConsolePlayer.playerRestart;
-
 import java.applet.Applet;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +15,9 @@ import sidplay.ConsolePlayer.SIDEMUS;
 import sidplay.ini.IniConfig;
 
 @SuppressWarnings("serial")
-public class SIDPlay extends Applet implements Runnable {
+public class SIDPlay extends Applet {
 	private ConsolePlayer cp;
-	private boolean fExit;
-	private Thread fPlayerThread;
 	private String fUrlName;
-	private static final boolean isapplet = true;
 	private OUTPUTS fOut = OUTPUTS.OUT_SOUNDCARD;
 	private SIDEMUS fEmu = SIDEMUS.EMU_RESID;
 
@@ -42,7 +36,7 @@ public class SIDPlay extends Applet implements Runnable {
 	public void init() {
 		cp = new ConsolePlayer(new IniConfig());
 		try {
-			if (isapplet && getAppletContext() != null) {
+			if (getAppletContext() != null) {
 				getAppletContext().showDocument(new URL("javascript:init()"));
 			}
 		} catch (final MalformedURLException e) {
@@ -53,11 +47,11 @@ public class SIDPlay extends Applet implements Runnable {
 	@Override
 	public void start() {
 		// autostart if playsid parameter is set initially
-		if (isapplet && getParameter("playsid") != null) {
+		if (getAppletContext() != null && getParameter("playsid") != null) {
 			playSID(getParameter("playsid"), -1);
 		}
 		try {
-			if (isapplet && getAppletContext() != null) {
+			if (getAppletContext() != null) {
 				getAppletContext().showDocument(new URL("javascript:start()"));
 			}
 		} catch (final MalformedURLException e) {
@@ -67,20 +61,9 @@ public class SIDPlay extends Applet implements Runnable {
 
 	@Override
 	public void stop() {
-		while (fPlayerThread != null && fPlayerThread.isAlive()) {
-			fExit = true;
-			try {
-				Thread.sleep(500);
-			} catch (final InterruptedException e) {
-				// can happen, if IE window is closed, immediately
-				// so ignore it
-			}
-		}
-		if (cp != null) {
-			cp.quit();
-		}
+		cp.stopC64();
 		try {
-			if (isapplet && getAppletContext() != null) {
+			if (getAppletContext() != null) {
 				getAppletContext().showDocument(new URL("javascript:stop()"));
 			}
 		} catch (final MalformedURLException e) {
@@ -92,67 +75,13 @@ public class SIDPlay extends Applet implements Runnable {
 	public void destroy() {
 		super.destroy();
 		try {
-			if (isapplet && getAppletContext() != null) {
+			if (getAppletContext() != null) {
 				getAppletContext()
 						.showDocument(new URL("javascript:destroy()"));
 			}
 		} catch (final MalformedURLException e) {
 			e.printStackTrace();
 		}
-	}
-
-	//
-	// ConsolePlayer Runnable
-	//
-
-	/**
-	 * Player thread
-	 * 
-	 * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run() {
-		fExit = false;
-		String[] args;
-		if (fSong == -1) {
-			args = new String[] { fUrlName };
-		} else {
-			args = new String[] { "-o" + fSong, fUrlName };
-		}
-		if (cp.args(args) < 0) {
-			return;
-		}
-		try {
-			main_restart: while (true) {
-				cp.getDriverSettings().setOutput(fOut);
-				cp.getDriverSettings().setSid(fEmu);
-				if (!cp.open()) {
-					cp.close();
-					return;
-				}
-				while (true) {
-					if (cp.getState().get() == ConsolePlayer.playerPaused) {
-						try {
-							Thread.sleep(250);
-						} catch (InterruptedException e) {
-							break;
-						}
-					}
-					if (fExit || !cp.play()) {
-						break;
-					}
-				}
-				if (!fExit && (cp.getState().get() & ~playerFast) == playerRestart) {
-					continue main_restart;
-				}
-				break;
-			}
-		} catch (final Throwable t) {
-			t.printStackTrace();
-		} finally {
-			fExit = true;
-		}
-		cp.close();
 	}
 
 	//
@@ -168,8 +97,8 @@ public class SIDPlay extends Applet implements Runnable {
 	 *            song number to start with
 	 */
 	public void playSID(final String urlName, final int songNum) {
-		// eventually stop last thread
-		stopSID();
+		// eventually stop last run
+		cp.stopC64();
 
 		// Next time player is used, the track is reset
 		cp.resetTrack();
@@ -177,26 +106,26 @@ public class SIDPlay extends Applet implements Runnable {
 		// start new song
 		fUrlName = urlName;
 		fSong = songNum;
-		fPlayerThread = new Thread(this);
-		fPlayerThread.start();
+
+		String[] args;
+		if (fSong == -1) {
+			args = new String[] { fUrlName };
+		} else {
+			args = new String[] { "-o" + fSong, fUrlName };
+		}
+		if (cp.args(args) < 0) {
+			return;
+		}
+		cp.startC64();
+		cp.getDriverSettings().setOutput(fOut);
+		cp.getDriverSettings().setSid(fEmu);
 	}
 
 	/**
 	 * Stop Player.
 	 */
 	public void stopSID() {
-		if (fPlayerThread == null) {
-			return;
-		}
-		while (fPlayerThread.isAlive()) {
-			fExit = true;
-			try {
-				Thread.sleep(500);
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		cp.quit();
+		cp.stopC64();
 	}
 
 	/**
@@ -316,7 +245,6 @@ public class SIDPlay extends Applet implements Runnable {
 				.getInputStream()) {
 			// load from URL (ui version)
 			sidTuneMod = SidTune.load(stream);
-			// XXX what to set if URL?
 			sidTuneMod.getInfo().file = null;
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
