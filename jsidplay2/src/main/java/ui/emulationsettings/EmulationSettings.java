@@ -1,5 +1,7 @@
 package ui.emulationsettings;
 
+import static sidplay.ConsolePlayer.playerRunning;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -31,39 +33,41 @@ public class EmulationSettings extends C64Stage {
 		@Override
 		public void changed(ObservableValue<? extends Number> arg0,
 				Number arg1, Number arg2) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					ChipModel userSidModel = getConfig().getEmulation()
-							.getUserSidModel();
-					sid1Model.getSelectionModel().select(
-							userSidModel != null ? userSidModel : getBundle()
-									.getString("AUTO"));
-					if (userSidModel != null) {
-						addFilters(userSidModel);
-					} else {
-						SidTune sidTune = getPlayer().getTune();
-						if (sidTune != null) {
-							switch (sidTune.getInfo().sid1Model) {
-							case MOS6581:
-								addFilters(ChipModel.MOS6581);
-								break;
-							case MOS8580:
-								addFilters(ChipModel.MOS8580);
-								break;
-							default:
+			if (arg2.intValue() == playerRunning) {
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						ChipModel userSidModel = getConfig().getEmulation()
+								.getUserSidModel();
+						sid1Model.getSelectionModel().select(
+								userSidModel != null ? userSidModel : getBundle()
+										.getString("AUTO"));
+						if (userSidModel != null) {
+							addFilters(userSidModel);
+						} else {
+							SidTune sidTune = getPlayer().getTune();
+							if (sidTune != null) {
+								switch (sidTune.getInfo().sid1Model) {
+								case MOS6581:
+									addFilters(ChipModel.MOS6581);
+									break;
+								case MOS8580:
+									addFilters(ChipModel.MOS8580);
+									break;
+								default:
+									addFilters(getConfig().getEmulation()
+											.getDefaultSidModel());
+									break;
+								}
+							} else {
 								addFilters(getConfig().getEmulation()
 										.getDefaultSidModel());
-								break;
 							}
-						} else {
-							addFilters(getConfig().getEmulation()
-									.getDefaultSidModel());
 						}
 					}
-				}
-			});
+				});
+			}
 		}
 	}
 	/**

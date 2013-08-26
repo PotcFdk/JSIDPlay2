@@ -1,6 +1,8 @@
 
 package ui.soundsettings;
 
+import static sidplay.ConsolePlayer.playerRunning;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -54,13 +56,15 @@ public class SoundSettings extends C64Stage {
 		@Override
 		public void changed(ObservableValue<? extends Number> arg0,
 				Number arg1, Number arg2) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					setTune(getPlayer().getTune());
-				}
-			});
+			if (arg2.intValue() == playerRunning) {
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						setTune(getPlayer().getTune());
+					}
+				});
+			}
 		}
 	}
 
