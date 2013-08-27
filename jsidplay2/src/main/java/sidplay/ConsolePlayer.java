@@ -326,7 +326,7 @@ public class ConsolePlayer {
 		return true;
 	}
 
-	public boolean open() throws InterruptedException {
+	private boolean open() throws InterruptedException {
 		if ((state.get() & ~playerFast) == playerRestart) {
 			state.set(playerStopped);
 		}
@@ -560,7 +560,7 @@ public class ConsolePlayer {
 		return true;
 	}
 
-	public void close() {
+	private void close() {
 		if (state.get() == playerExit) {
 			// Natural finish
 			if (sidEmuFactory instanceof HardSIDBuilder) {

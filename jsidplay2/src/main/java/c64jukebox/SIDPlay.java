@@ -100,9 +100,6 @@ public class SIDPlay extends Applet {
 		// eventually stop last run
 		cp.stopC64();
 
-		// Next time player is used, the track is reset
-		cp.resetTrack();
-
 		// start new song
 		fUrlName = urlName;
 		fSong = songNum;
