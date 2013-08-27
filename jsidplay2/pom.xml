@@ -494,11 +494,12 @@
 							<target>
 								<ant antfile="${basedir}/online-content.xml">
 									<property name="compile_classpath" refid="maven.compile.classpath" />
-									<property name="gb64.mdbfile">${gb64.mdbfile}</property>
-									<property name="hvsc.zip">${hvsc.zip}</property>
-									<property name="zip7.home">${zip7.home}</property>
-									<property name="cgsc.7z">${cgsc.7z}</property>
-									<property name="hvmec.bz2">${hvmec.bz2}</property>
+									<property name="test_src" location="${basedir}/src/test/resources" />
+									<property name="gb64.mdbfile" value="${gb64.mdbfile}" />
+									<property name="hvsc.zip" value="${hvsc.zip}" />
+									<property name="zip7.home" value="${zip7.home}" />
+									<property name="cgsc.7z" value="${cgsc.7z}" />
+									<property name="hvmec.bz2" value="${hvmec.bz2}" />
 									<property name="result_dir"
 										location="${project.build.directory}/deploy/online" />
 								</ant>

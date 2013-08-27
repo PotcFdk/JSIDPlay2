@@ -29,7 +29,7 @@
 	<property name="gamebase_crc" value="gb64.crc" />
 	<property name="gamebase_name" value="gb64" />
 
-	<target name="all" depends="gb64_import,hvsc_import,cgsc_import,hvmec_import"/>
+	<target name="all" depends="demos,gb64_import,hvmec_import,cgsc_import,hvsc_import"/>
 
 	<!-- ================================= 
           target: gb64_import
@@ -37,7 +37,17 @@
           Import GameBase 64 database file (.mdb) via ODBC-JDBC bridge
           into a java-based HSQLDB database as a JAR.
          ================================= -->
-	<target name="gb64_import" if="gb64.mdbfile">
+	<target name="check.gb64.mdbfile">
+		<condition property="gb64.mdbfile.isset" value="true">
+			<and>
+				<isset property="gb64.mdbfile"/>
+				<not>
+					<equals arg1="${gb64.mdbfile}" arg2="" />
+				</not>
+			</and>
+		</condition>
+	</target>
+	<target name="gb64_import" if="gb64.mdbfile.isset" depends="check.gb64.mdbfile">
 		<mkdir dir="${gamebase_dir}" />
 		<java fork="true" classname="ui.gamebase.createdb.GameBaseUtility">
 			<classpath path="${compile_classpath}" />
@@ -78,7 +88,17 @@
           Import HVSC ZIP file (.zip) containing another ZIP file
           into a single high compressed ZIP file.
          ================================= -->
-	<target name="hvsc_import" if="hvsc.zip">
+	<target name="check.hvsc.zip">
+		<condition property="hvsc.zip.isset" value="true">
+			<and>
+				<isset property="hvsc.zip"/>
+				<not>
+					<equals arg1="${hvsc.zip}" arg2="" />
+				</not>
+			</and>
+		</condition>
+	</target>
+	<target name="hvsc_import" if="hvsc.zip.isset" depends="check.hvsc.zip">
 		<delete dir="${hvsc_dir}" />
 		<mkdir dir="${hvsc_dir}" />
 		<!-- Uncompress HVSC completely -->
@@ -119,7 +139,21 @@
           Import CGSC ZIP file (.7z)
           into a ZIP file.
          ================================= -->
-	<target name="cgsc_import" if="zip7.home">
+	<target name="check.cgsc.7z">
+		<condition property="cgsc.7z.isset" value="true">
+			<and>
+				<isset property="zip7.home"/>
+				<not>
+					<equals arg1="${zip7.home}" arg2="" />
+				</not>
+				<isset property="cgsc.7z"/>
+				<not>
+					<equals arg1="${cgsc.7z}" arg2="" />
+				</not>
+			</and>
+		</condition>
+	</target>
+	<target name="cgsc_import" if="cgsc.7z.isset" depends="check.cgsc.7z">
 		<delete dir="${cgsc_dir}" />
 		<mkdir dir="${cgsc_dir}" />
 		<!-- Uncompress CGSC -->
@@ -151,12 +185,54 @@
 	</target>
 
 	<!-- ================================= 
+          target: demos
+          Description:
+          Copy Demos ZIP file.
+         ================================= -->
+	<target name="check.test_src">
+		<condition property="test_src.isset" value="true">
+			<and>
+				<isset property="test_src"/>
+				<not>
+					<equals arg1="${test_src}" arg2="" />
+				</not>
+			</and>
+		</condition>
+	</target>
+	<target name="demos" if="test_src.isset" depends="check.test_src">
+		<delete dir="${demos_dir}" />
+		<mkdir dir="${demos_dir}" />
+		<copy todir="${demos_dir}" file="${test_src}/demos/${demos_zip}" />
+
+		<java fork="true" classname="ui.download.DownloadThread" outputproperty="checksum">
+			<classpath path="${compile_classpath}" />
+			<arg path="${demos_dir}/${demos_zip}" />
+		</java>
+		<length property="filesize" file="${demos_dir}/${demos_zip}" />
+		<propertyfile file="${demos_dir}/${demos_crc}">
+			<entry operation="=" type="string" key="filename" value="${demos_zip}" />
+			<entry operation="=" type="string" key="size" value="${filesize}" />
+			<entry operation="=" type="string" key="crc32" value="${checksum}" />
+		</propertyfile>
+	</target>
+
+	<!-- ================================= 
           target: hvmec
           Description:
           Import HVMEC BZ2 file (.bz2)
           into a ZIP file.
          ================================= -->
-	<target name="hvmec_import" if="hvmec.bz2">
+	<target name="check.hvmec.bz2">
+		<condition property="hvmec.bz2.isset" value="true">
+			<and>
+				<isset property="hvmec.bz2"/>
+				<not>
+					<equals arg1="${hvmec.bz2}" arg2="" />
+				</not>
+			</and>
+		</condition>
+	</target>
+	<target name="hvmec_import" if="hvmec.bz2.isset" depends="check.hvmec.bz2">
 		<delete dir="${hvmec_dir}" />
 		<mkdir dir="${hvmec_dir}" />
 		<untar src="${hvmec.bz2}" compression="gzip" dest="${hvmec_dir}" />
