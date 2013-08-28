@@ -365,7 +365,8 @@ public class DiskCollection extends C64Tab {
 		if (parentFiles.size() > 0) {
 			File parentFile = parentFiles.get(parentFiles.size() - 1);
 			for (File photoFile : parentFile.listFiles()) {
-				if (screenshotsFileFilter.accept(photoFile)) {
+				if (!photoFile.isDirectory()
+						&& screenshotsFileFilter.accept(photoFile)) {
 					return photoFile;
 				}
 			}
