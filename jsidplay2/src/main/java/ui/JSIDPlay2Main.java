@@ -187,7 +187,7 @@ public class JSIDPlay2Main extends Application {
 		} catch (Throwable e) {
 			System.err.println(e.getMessage());
 			// fatal database error? Delete it for the next startup!
-			PersistenceUtil.databaseDeleteOnExit(getConfigDatabasePath());
+			// PersistenceUtil.databaseDeleteOnExit(getConfigDatabasePath());
 			System.exit(0);
 			return null;
 		}
