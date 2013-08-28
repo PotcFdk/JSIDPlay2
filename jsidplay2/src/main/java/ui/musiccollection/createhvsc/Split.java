@@ -17,7 +17,8 @@ import java.io.IOException;
 public class Split {
 
 	/**
-	 * @param args Arguments
+	 * @param args
+	 *            Arguments
 	 */
 	public static void main(String[] args) {
 		new Split().doSplit(args);
@@ -47,12 +48,10 @@ public class Split {
 		output = createOutputFilename(filename, partNum);
 
 		byte[] buffer = new byte[1 << 20];
-		BufferedInputStream is = null;
 		BufferedOutputStream os = null;
-		try {
+		try (BufferedInputStream is = new BufferedInputStream(
+				new FileInputStream(new File(filename)), 1 << 20)) {
 			int bytesRead = 0, totalBytesRead = 0;
-			is = new BufferedInputStream(
-					new FileInputStream(new File(filename)), 1 << 20);
 			os = createOutputStream(output);
 			int len = Math.min(buffer.length, totalBytes - totalBytesRead);
 			while ((bytesRead = is.read(buffer, 0, len)) >= 0) {
@@ -70,13 +69,6 @@ public class Split {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 			if (os != null) {
 				try {
 					os.close();

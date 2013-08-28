@@ -16,7 +16,7 @@ import ui.common.C64Tab;
 public class Printer extends C64Tab implements IPaper {
 
 	@FXML
-	private Canvas paper;
+	protected Canvas paper;
 
 	private boolean[] currentPixelRow = new boolean[MPS803.MAX_WIDTH];
 	private int x, y;

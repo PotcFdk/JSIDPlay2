@@ -12,6 +12,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ZipFileProxy extends File {
+	private static final long serialVersionUID = 8749177420980777544L;
 	protected Map<String, HashMap<String, String>> hash;
 	private ZipFile zipfile;
 

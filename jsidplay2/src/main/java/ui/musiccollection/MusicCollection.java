@@ -118,13 +118,13 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	}
 
 	@FXML
-	private CheckBox autoConfiguration;
+	protected CheckBox autoConfiguration;
 	@FXML
 	private TableView<TuneInfo> tuneInfoTable;
 	@FXML
 	private ImageView photograph;
 	@FXML
-	private TreeView<File> fileBrowser;
+	protected TreeView<File> fileBrowser;
 	@FXML
 	private ComboBox<SearchCriteria<?, ?>> searchCriteria;
 	@FXML
@@ -141,9 +141,9 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	@FXML
 	private ContextMenu contextMenu;
 	@FXML
-	private MenuItem showStil, convertToPSID64;
+	protected MenuItem showStil, convertToPSID64;
 	@FXML
-	private Menu addToFavorites;
+	protected Menu addToFavorites;
 
 	private ObservableList<TuneInfo> tuneInfos = FXCollections
 			.<TuneInfo> observableArrayList();
@@ -162,17 +162,17 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private EntityManager em;
 	private VersionService versionService;
 
-	private TuneFileFilter fileFilter = new TuneFileFilter();
+	protected TuneFileFilter fileFilter = new TuneFileFilter();
 	private SearchThread searchThread;
 	private Object savedState;
 	private Object searchForValue, recentlySearchedForValue;
 	private SearchCriteria<?, ?> recentlySearchedCriteria;
 	private boolean searchOptionsChanged;
 
-	private FavoritesTab favoritesToAddSearchResult;
+	protected FavoritesTab favoritesToAddSearchResult;
 
 	private DoubleProperty progress = new SimpleDoubleProperty();
-	private List<TreeItem<File>> currentlyPlayedTreeItems;
+	protected List<TreeItem<File>> currentlyPlayedTreeItems;
 
 	public DoubleProperty getProgressValue() {
 		return progress;
@@ -587,7 +587,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 				.getSelectedItem()).getAttribute();
 	}
 
-	private void setRoot(final File rootFile) {
+	protected void setRoot(final File rootFile) {
 		if (rootFile.exists()) {
 			em = Persistence.createEntityManagerFactory(
 					PersistenceUtil.COLLECTION_DS,
@@ -621,7 +621,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		doResetSearch();
 	}
 
-	private void showPhoto(SidTune sidTune) {
+	protected void showPhoto(SidTune sidTune) {
 		if (sidTune != null && sidTune.getImage() != null) {
 			photograph.setImage(sidTune.getImage());
 		} else {
@@ -629,7 +629,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		}
 	}
 
-	private void showTuneInfos(File tuneFile, SidTune sidTune) {
+	protected void showTuneInfos(File tuneFile, SidTune sidTune) {
 		tuneInfos.clear();
 		HVSCEntry entry = HVSCEntry.create(fileBrowser.getRoot().getValue(),
 				tuneFile.getAbsolutePath(), tuneFile, sidTune);
@@ -704,7 +704,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	}
 
-	private void showNextHit(final File matchFile) {
+	protected void showNextHit(final File matchFile) {
 		Platform.runLater(new Runnable() {
 
 			@Override
@@ -745,7 +745,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		});
 	}
 
-	private void startSearch(boolean forceRecreate) {
+	protected void startSearch(boolean forceRecreate) {
 		if (searchThread != null && searchThread.isAlive()) {
 			return;
 		}
@@ -823,7 +823,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	}
 
-	private void playTune(final File file) {
+	protected void playTune(final File file) {
 		setPlayedGraphics(fileBrowser);
 		try {
 			getConsolePlayer().playTune(SidTune.load(file), null);

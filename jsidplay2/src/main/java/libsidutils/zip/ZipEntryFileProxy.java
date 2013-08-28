@@ -14,7 +14,10 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import libsidutils.PathUtils;
+
 public class ZipEntryFileProxy extends File {
+	private static final long serialVersionUID = -2926789689053926603L;
 	ZipFileProxy zip;
 	ZipFile zipfile;
 	String name, path;
@@ -165,30 +168,16 @@ public class ZipEntryFileProxy extends File {
 	 */
 	public static final File extractFromZip(final ZipEntryFileProxy zipEntry,
 			String targetDir) throws IOException {
-		final String newName = zipEntry.getName();
-		File tmpFile = null;
-		InputStream is = null;
-		OutputStream os = null;
-		try {
-			tmpFile = new File(targetDir, newName);
-			tmpFile.deleteOnExit();
-			is = zipEntry.getInputStream();
-			os = new FileOutputStream(tmpFile);
+		File tmpFile = new File(targetDir, zipEntry.getName());
+		tmpFile.deleteOnExit();
+		try (InputStream is = zipEntry.getInputStream();
+				OutputStream os = new FileOutputStream(tmpFile)) {
 			byte[] b = new byte[1024];
 			while (is.available() > 0) {
 				int len = is.read(b);
 				if (len > 0) {
 					os.write(b, 0, len);
 				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (is != null) {
-				is.close();
-			}
-			if (os != null) {
-				os.close();
 			}
 		}
 		return tmpFile;
@@ -206,31 +195,16 @@ public class ZipEntryFileProxy extends File {
 	 */
 	public static final File extractFromGZ(final File file, String targetDir)
 			throws IOException {
-		final String newName = file.getName().substring(0,
-				file.getName().length() - 3);
-		File tmpFile = null;
-		InputStream is = null;
-		OutputStream os = null;
-		try {
-			tmpFile = new File(targetDir, newName);
-			tmpFile.deleteOnExit();
-			is = new GZIPInputStream(new FileInputStream(file));
-			os = new FileOutputStream(tmpFile);
+		File tmpFile = new File(targetDir, PathUtils.getBaseNameNoExt(file));
+		tmpFile.deleteOnExit();
+		try (InputStream is = new GZIPInputStream(new FileInputStream(file));
+				OutputStream os = new FileOutputStream(tmpFile)) {
 			byte[] b = new byte[1024];
 			while (is.available() > 0) {
 				int len = is.read(b);
 				if (len > 0) {
 					os.write(b, 0, len);
 				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (is != null) {
-				is.close();
-			}
-			if (os != null) {
-				os.close();
 			}
 		}
 		return tmpFile;

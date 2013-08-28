@@ -26,7 +26,7 @@ import ui.common.TypeTextField;
 public class JoystickSettings extends C64Stage {
 
 	@FXML
-	private CheckBox activateJoy1, activateJoy2;
+	protected CheckBox activateJoy1, activateJoy2;
 	@FXML
 	private ComboBox<Controller> device1, device2;
 	@FXML
@@ -40,7 +40,7 @@ public class JoystickSettings extends C64Stage {
 	private TypeTextField up2Value, down2Value, left2Value, right2Value,
 			fire2Value;
 	@FXML
-	private TableView<Component> testTable1, testTable2;
+	protected TableView<Component> testTable1, testTable2;
 
 	private ObservableList<Controller> devices = FXCollections
 			.<Controller> observableArrayList();

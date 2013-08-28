@@ -304,21 +304,21 @@ public class Cartridge {
 	
 	public static Directory getDirectory(File file) throws IOException {
 		Directory dir = new Directory();
-		final InputStream is = new FileInputStream(file);
-		final DataInputStream dis = new DataInputStream(is);
-		
-		final byte[] header = new byte[0x40];
-		dis.readFully(header);
-		is.close();
-		
-		if (! new String(header, 0, 0x10, ISO88591).equals("C64 CARTRIDGE   ")) {
-			return dir;
+		try (DataInputStream dis = new DataInputStream(
+				new FileInputStream(file))) {
+			final byte[] header = new byte[0x40];
+			dis.readFully(header);
+			if (!new String(header, 0, 0x10, ISO88591)
+					.equals("C64 CARTRIDGE   ")) {
+				return dir;
+			}
+			Type type = Type.values()[(header[0x16] & 0xff) << 8
+					| (header[0x17] & 0xff)];
+			// directory title: cartridge type
+			dir.setTitle(type.toString().replace('_', '-').getBytes(ISO88591));
+			// directory id: size in KB
+			dir.setId(String.valueOf(file.length() >> 10).getBytes(ISO88591));
 		}
-		Type type = Type.values()[(header[0x16] & 0xff) << 8 | (header[0x17] & 0xff)];
-		// directory title: cartridge type
-		dir.setTitle(type.toString().replace('_', '-').getBytes(ISO88591));
-		// directory id: size in KB
-		dir.setId(String.valueOf(file.length() >> 10).getBytes(ISO88591));
 		return dir;
 	}
 }

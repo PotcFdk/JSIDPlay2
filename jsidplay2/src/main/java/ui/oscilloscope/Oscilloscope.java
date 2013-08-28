@@ -65,7 +65,7 @@ public class Oscilloscope extends C64Tab {
 	}
 
 	@FXML
-	private CheckBox muteVoice1, muteVoice2, muteVoice3, muteVoice4,
+	protected CheckBox muteVoice1, muteVoice2, muteVoice3, muteVoice4,
 			muteVoice5, muteVoice6;
 	@FXML
 	private WaveGauge waveMono_0, waveMono_1, waveMono_2, waveStereo_0,
@@ -83,9 +83,9 @@ public class Oscilloscope extends C64Tab {
 	@FXML
 	private FilterGauge filterMono, filterStereo;
 
-	private SIDGauge[][][] gauges;
-	private int repaint;
-	private final HighResolutionEvent highResolutionEvent = new HighResolutionEvent();
+	protected SIDGauge[][][] gauges;
+	protected int repaint;
+	protected final HighResolutionEvent highResolutionEvent = new HighResolutionEvent();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {

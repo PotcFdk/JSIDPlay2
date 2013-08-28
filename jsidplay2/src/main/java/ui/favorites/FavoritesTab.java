@@ -63,29 +63,29 @@ import com.sun.javafx.scene.control.skin.TableColumnHeader;
 public class FavoritesTab extends C64Tab {
 
 	@FXML
-	private TextField filterField;
+	protected TextField filterField;
 	@FXML
-	private TableView<HVSCEntry> favoritesTable;
+	protected TableView<HVSCEntry> favoritesTable;
 	@FXML
 	private ContextMenu contextMenuHeader, contextMenu;
 	@FXML
-	private Menu addColumnMenu, moveToTab, copyToTab;
+	protected Menu addColumnMenu, moveToTab, copyToTab;
 	@FXML
-	private MenuItem showStil, removeColumn;
+	protected MenuItem showStil, removeColumn;
 	@FXML
-	private Button moveUp, moveDown;
+	protected Button moveUp, moveDown;
 
-	private ObservableList<HVSCEntry> allFavorites = FXCollections
+	protected ObservableList<HVSCEntry> allFavorites = FXCollections
 			.<HVSCEntry> observableArrayList();
 
 	private ObservableList<HVSCEntry> filteredFavorites = FXCollections
 			.<HVSCEntry> observableArrayList();
 
 	private final FileFilter tuneFilter = new TuneFileFilter();
-	private FavoritesSection favoritesSection;
+	protected FavoritesSection favoritesSection;
 
 	private File file;
-	private Favorites favorites;
+	protected Favorites favorites;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -501,7 +501,7 @@ public class FavoritesTab extends C64Tab {
 		}
 	}
 
-	private void removeFavorites(ObservableList<HVSCEntry> selectedItems) {
+	protected void removeFavorites(ObservableList<HVSCEntry> selectedItems) {
 		allFavorites.removeAll(selectedItems);
 		favoritesSection.getFavorites().removeAll(selectedItems);
 		filter(filterField.getText());
@@ -556,7 +556,7 @@ public class FavoritesTab extends C64Tab {
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	private TableColumn getContextMenuColumn() {
+	protected TableColumn getContextMenuColumn() {
 		TableColumnHeader columnHeader = (TableColumnHeader) contextMenuHeader
 				.getOwnerNode();
 		return columnHeader.getTableColumn();
@@ -580,7 +580,7 @@ public class FavoritesTab extends C64Tab {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void addColumn(SingularAttribute<?, ?> attribute,
+	protected void addColumn(SingularAttribute<?, ?> attribute,
 			String columnProperty, FavoriteColumn favoriteColumn) {
 		String text = getBundle().getString(
 				attribute.getDeclaringType().getJavaType().getSimpleName()
@@ -597,7 +597,7 @@ public class FavoritesTab extends C64Tab {
 		favoritesTable.getColumns().add(tableColumn);
 	}
 
-	private void moveColumn() {
+	protected void moveColumn() {
 		Collection<FavoriteColumn> newOrderList = new ArrayList<FavoriteColumn>();
 		for (TableColumn<HVSCEntry, ?> tableColumn : favoritesTable
 				.getColumns()) {
@@ -611,20 +611,20 @@ public class FavoritesTab extends C64Tab {
 		favoritesSection.getColumns().addAll(newOrderList);
 	}
 
-	private void moveRow(int from, int to) {
+	protected void moveRow(int from, int to) {
 		Collections.swap(allFavorites, from, to);
 		Collections.swap(favoritesSection.getFavorites(), from, to);
 		filter(filterField.getText());
 		favoritesTable.getSelectionModel().select(to);
 	}
 
-	private void copyToTab(final List<HVSCEntry> toCopy, final FavoritesTab tab) {
+	protected void copyToTab(final List<HVSCEntry> toCopy, final FavoritesTab tab) {
 		for (HVSCEntry hvscEntry : toCopy) {
 			tab.addFavorite(getFile(hvscEntry.getPath()));
 		}
 	}
 
-	private void playTune(final HVSCEntry hvscEntry) {
+	protected void playTune(final HVSCEntry hvscEntry) {
 		favorites.setCurrentlyPlayedFavorites(this);
 		file = getFile(hvscEntry.getPath());
 		if (file != null) {

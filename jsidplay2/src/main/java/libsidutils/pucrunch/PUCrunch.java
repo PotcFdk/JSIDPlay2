@@ -1365,7 +1365,6 @@ public class PUCrunch implements IHeader {
 
 	private static final int MAXCODES = 20;
 
-	@SuppressWarnings("resource")
 	int UnPack(int loadAddr, final byte[] data, final String file, int flags) {
 		int size, startEsc, endAddr, execAddr, headerSize;
 		int startAddr, error = 0;
@@ -2851,7 +2850,6 @@ public class PUCrunch implements IHeader {
 		return 0;
 	}
 
-	@SuppressWarnings("resource")
 	public int run(String[] argv) throws IOException {
 		int n, execAddr = -1, ea = -1, newlen, startAddr = -1, startEscape;
 		int flags = F_2MHZ, lzlen = -1, buflen;

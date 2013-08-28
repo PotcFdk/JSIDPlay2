@@ -29,7 +29,7 @@ import ui.common.C64Stage;
 import ui.entities.config.SidPlay2Section;
 
 public class SidDump extends C64Stage {
-	private final class SidDumpStop implements ChangeListener<Number> {
+	protected final class SidDumpStop implements ChangeListener<Number> {
 		@Override
 		public void changed(ObservableValue<? extends Number> arg0,
 				Number arg1, Number arg2) {
@@ -50,7 +50,7 @@ public class SidDump extends C64Stage {
 	@FXML
 	private Button loadDump, saveDump, stop;
 	@FXML
-	private ToggleButton replayAll, startStopRecording;
+	protected ToggleButton replayAll, startStopRecording;
 	@FXML
 	private CheckBox timeInSeconds, lowResolutionMode;
 	@FXML
@@ -61,13 +61,13 @@ public class SidDump extends C64Stage {
 	@FXML
 	private TableView<SidDumpOutput> dumpTable;
 
-	private ObservableList<SidDumpOutput> sidDumpOutputs = FXCollections
+	protected ObservableList<SidDumpOutput> sidDumpOutputs = FXCollections
 			.<SidDumpOutput> observableArrayList();
 
 	private ObservableList<libsidutils.SIDDump.Player> sidDumpPlayers = FXCollections
 			.<libsidutils.SIDDump.Player> observableArrayList();
 
-	private SidDumpExtension sidDumpExtension;
+	protected SidDumpExtension sidDumpExtension;
 
 	private int loadAddress, initAddress, playerAddress, subTune, seconds;
 

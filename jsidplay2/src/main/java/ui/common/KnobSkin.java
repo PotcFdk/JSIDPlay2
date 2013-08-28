@@ -17,11 +17,11 @@ public class KnobSkin extends SkinBase<Slider, KnobBehavior> {
 	private double knobRadius;
 	private double minAngle = -140;
 	private double maxAngle = 140;
-	private double dragOffset;
+	protected double dragOffset;
 
-	private StackPane knob;
+	protected StackPane knob;
 	private StackPane knobOverlay;
-	private StackPane knobDot;
+	protected StackPane knobDot;
 
 	public KnobSkin(Slider slider) {
 		super(slider, new KnobBehavior(slider));
@@ -78,7 +78,7 @@ public class KnobSkin extends SkinBase<Slider, KnobBehavior> {
 		});
 	}
 
-	private double mouseToValue(double mouseX, double mouseY) {
+	protected double mouseToValue(double mouseX, double mouseY) {
 		double cx = getSkinnable().getWidth() / 2;
 		double cy = getSkinnable().getHeight() / 2;
 		double mouseAngle = Math.toDegrees(Math.atan((mouseY - cy)

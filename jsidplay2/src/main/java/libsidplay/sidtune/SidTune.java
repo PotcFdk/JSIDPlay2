@@ -345,16 +345,16 @@ public abstract class SidTune {
 	 * @throws FileNotFoundException if the file could not be found.
 	 */
 	private static byte[] loadFile(final File f) throws IOException {
-		final InputStream stream = getInputStream(f);
-		final int length = Math.min(65536, (int) f.length());
-		final byte[] data = new byte[length];
-		int count, pos = 0;
-		while (pos < length
-				&& (count = stream.read(data, pos, length - pos)) >= 0) {
-			pos += count;
+		try (InputStream stream = getInputStream(f)) {
+			final int length = Math.min(65536, (int) f.length());
+			final byte[] data = new byte[length];
+			int count, pos = 0;
+			while (pos < length
+					&& (count = stream.read(data, pos, length - pos)) >= 0) {
+				pos += count;
+			}
+			return data;
 		}
-		stream.close();
-		return data;
 	}
 
 	/**

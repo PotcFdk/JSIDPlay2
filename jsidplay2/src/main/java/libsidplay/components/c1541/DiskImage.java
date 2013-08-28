@@ -30,8 +30,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
-
 
 import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
@@ -124,46 +122,27 @@ public abstract class DiskImage {
 		assert file != null;
 
 		// Open image file
-		RandomAccessFile fd;
-		boolean readOnly = false;
-		try {
-			fd = new RandomAccessFile(file, "rw");
-		} catch (IOException e) {
-			/*
-			 * If we cannot open the image read/write, try to open it read only.
-			 */
-			fd = new RandomAccessFile(file, "r");
-			readOnly = true;
-		}
-		// Try to detect image type
-		final byte header[] = new byte[Math.max(G64.IMAGE_HEADER.length(),
-				NIB.IMAGE_HEADER.length())];
-		fd.readFully(header, 0, header.length);
-		fd.seek(0);
-		final String headerString;
-		try {
-			headerString = new String(header, "ISO-8859-1");
-		} catch (UnsupportedEncodingException e) {
-			fd.close();
-			throw new RuntimeException("No ISO-8859-1 encoding!");
-		}
-		// Create specific disk image
-		final DiskImage image;
-		if (headerString.startsWith(G64.IMAGE_HEADER)) {
-			image = new G64(gcr, file.getName(), fd, readOnly);
-		} else if (headerString.startsWith(NIB.IMAGE_HEADER)) {
-			image = new NIB(gcr, file.getName(), fd, readOnly);
-		} else {
-			image = new D64(gcr, file.getName(), fd, readOnly);
-		}
-
-		try {
+		boolean readOnly = !file.canWrite();
+		try (RandomAccessFile fd = new RandomAccessFile(file,
+				file.canWrite() ? "rw" : "r")) {
+			// Try to detect image type
+			final byte header[] = new byte[Math.max(G64.IMAGE_HEADER.length(),
+					NIB.IMAGE_HEADER.length())];
+			fd.readFully(header, 0, header.length);
+			fd.seek(0);
+			final String headerString = new String(header, "ISO-8859-1");
+			// Create specific disk image
+			final DiskImage image;
+			if (headerString.startsWith(G64.IMAGE_HEADER)) {
+				image = new G64(gcr, file.getName(), fd, readOnly);
+			} else if (headerString.startsWith(NIB.IMAGE_HEADER)) {
+				image = new NIB(gcr, file.getName(), fd, readOnly);
+			} else {
+				image = new D64(gcr, file.getName(), fd, readOnly);
+			}
 			image.attach();
-		} catch (IOException e) {
-			image.fd.close();
-			throw e;
+			return image;
 		}
-		return image;
 	}
 
 	/**
@@ -369,41 +348,40 @@ public abstract class DiskImage {
 
 	public final boolean save(final File file, final byte startTrack,
 			final byte startSector) throws IOException {
-		DataOutputStream dout = new DataOutputStream(new FileOutputStream(file));
-		byte[] currSector = new byte[GCR.SECTOR_SIZE];
-		byte nextTrack, nextSector;
-		int offset;
+		try (DataOutputStream dout = new DataOutputStream(new FileOutputStream(
+				file))) {
+			byte[] currSector = new byte[GCR.SECTOR_SIZE];
+			byte nextTrack, nextSector;
+			int offset;
 
-		int[] arrCyclicAccessInfo = new int[MAX_OVERALL_SECTORS];
-		for (int i = 0; i < arrCyclicAccessInfo.length; i++) {
-			arrCyclicAccessInfo[i] = 0;
-		}
-		nextTrack = startTrack;
-		nextSector = startSector;
-		while (true) {
-			if (!getDiskSector(nextTrack, nextSector, currSector)) {
-				dout.close();
-				return false;
+			int[] arrCyclicAccessInfo = new int[MAX_OVERALL_SECTORS];
+			for (int i = 0; i < arrCyclicAccessInfo.length; i++) {
+				arrCyclicAccessInfo[i] = 0;
 			}
+			nextTrack = startTrack;
+			nextSector = startSector;
+			while (true) {
+				if (!getDiskSector(nextTrack, nextSector, currSector)) {
+					return false;
+				}
 
-			// check if cyclic sector chain
-			offset = nextTrack * MAX_SECTORS_PER_TRACK + nextSector;
-			if (arrCyclicAccessInfo[offset] != 0) {
-				dout.close();
-				return false;
-			} else {
-				arrCyclicAccessInfo[offset]++; // mark sector as read
-			}
-			// last sector ??
-			if (currSector[1] == 0) {
+				// check if cyclic sector chain
+				offset = nextTrack * MAX_SECTORS_PER_TRACK + nextSector;
+				if (arrCyclicAccessInfo[offset] != 0) {
+					return false;
+				} else {
+					arrCyclicAccessInfo[offset]++; // mark sector as read
+				}
+				// last sector ??
+				if (currSector[1] == 0) {
+					dout.write(currSector, 3, 254);
+					return true;
+				}
+
 				dout.write(currSector, 3, 254);
-				dout.close();
-				return true;
+				nextTrack = currSector[1];
+				nextSector = currSector[2];
 			}
-
-			dout.write(currSector, 3, 254);
-			nextTrack = currSector[1];
-			nextSector = currSector[2];
 		}
 	}
 

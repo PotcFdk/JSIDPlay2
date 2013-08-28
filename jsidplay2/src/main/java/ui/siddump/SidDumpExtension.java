@@ -630,10 +630,8 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	public void load(final String filename) {
 		// first clear table
 		clear();
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new InputStreamReader(new FileInputStream(
-					filename)));
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(
+				new FileInputStream(filename)))) {
 			// ignore header
 			String lineContents;
 			for (int i = 0; i < 7; i++) {
@@ -762,114 +760,106 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 				}
 			}
 			// read rows and columns
-			final Scanner sc = new Scanner(br);
-			sc.useDelimiter(" ?\\| ?");
-			fNoteSpacing = 0;
-			fPatternSpacing = 0;
-			fLowRes = false;
-			fFetchedRow = 0;
-			fPatternNum = 1;
-			fNoteNum = 1;
+			try (final Scanner sc = new Scanner(br)) {
+				sc.useDelimiter(" ?\\| ?");
+				fNoteSpacing = 0;
+				fPatternSpacing = 0;
+				fLowRes = false;
+				fFetchedRow = 0;
+				fPatternNum = 1;
+				fNoteNum = 1;
 
-			int lastFrame = 0;
-			loop: do {
-				final SidDumpOutput sidDumpOutput = new SidDumpOutput();
-				int col = 0;
-				while (sc.hasNext()) {
-					final String next = sc.next();
-					if (next.trim().length() == 0) {
-						// line break
-						break;
-					}
-					switch (col) {
-					case 0:
-						if (next.startsWith("-") || next.startsWith("=")) {
-							sidDumpOutput.setTime(next);
+				int lastFrame = 0;
+				loop: do {
+					final SidDumpOutput sidDumpOutput = new SidDumpOutput();
+					int col = 0;
+					while (sc.hasNext()) {
+						final String next = sc.next();
+						if (next.trim().length() == 0) {
+							// line break
 							break;
 						}
-						// get frame of current row
-						lastFrame = Integer.parseInt(next.trim());
-						if (fFetchedRow == 1) {
-							// detect low-res recording
-							final int lowresdist = lastFrame;
-							if (lowresdist != 1) {
-								fLowRes = true;
-								fNoteSpacing = lowresdist;
+						switch (col) {
+						case 0:
+							if (next.startsWith("-") || next.startsWith("=")) {
+								sidDumpOutput.setTime(next);
+								break;
 							}
-						}
-						// e.g. Frame=" 0"
-						sidDumpOutput.setTime(next);
-						break;
-
-					case 1:
-					case 2:
-					case 3:
-						// e.g. Freq Note/Abs WF ADSR Pul = "0000 ... .. 09 00FD
-						// 808"
-						final String freq = next.substring(0, 4);
-						sidDumpOutput.setFreq(freq, col - 1);
-						final String note = next.substring(5, 13);
-						sidDumpOutput.setNote(note, col - 1);
-						final String wf = next.substring(14, 16);
-						sidDumpOutput.setWf(wf, col - 1);
-						final String adsr = next.substring(17, 21);
-						sidDumpOutput.setAdsr(adsr, col - 1);
-						final String pul = next.substring(22, 25);
-						sidDumpOutput.setPul(pul, col - 1);
-						break;
-
-					case 4:
-						// e.g. FCut RC Typ V = "3000 F2 Low F"
-						final String fcut = next.substring(0, 4);
-						sidDumpOutput.setFcut(fcut);
-						final String rc = next.substring(5, 7);
-						sidDumpOutput.setRc(rc);
-						final String typ = next.substring(8, 11);
-						sidDumpOutput.setTyp(typ);
-						final String v = next.substring(12, 13);
-						sidDumpOutput.setV(v);
-						break;
-
-					case 5:
-						add(sidDumpOutput);
-						if (next.trim().startsWith("+=")) {
-							if (fPatternSpacing == 0) {
-								final int nextFrame = lastFrame + fNoteSpacing;
-								fPatternSpacing = nextFrame / fNoteSpacing;
-							}
-							// pattern spacing?
-							addPatternSpacing();
-						} else if (next.trim().startsWith("+-")) {
-							if (fNoteSpacing == 0) {
-								if (!fLowRes) {
-									fNoteSpacing = fFetchedRow;
+							// get frame of current row
+							lastFrame = Integer.parseInt(next.trim());
+							if (fFetchedRow == 1) {
+								// detect low-res recording
+								final int lowresdist = lastFrame;
+								if (lowresdist != 1) {
+									fLowRes = true;
+									fNoteSpacing = lowresdist;
 								}
 							}
-							// note spacing?
-							addNoteSpacing();
-						}
-						continue loop;
+							// e.g. Frame=" 0"
+							sidDumpOutput.setTime(next);
+							break;
 
-					default:
-						break;
+						case 1:
+						case 2:
+						case 3:
+							// e.g. Freq Note/Abs WF ADSR Pul = "0000 ... .. 09
+							// 00FD
+							// 808"
+							final String freq = next.substring(0, 4);
+							sidDumpOutput.setFreq(freq, col - 1);
+							final String note = next.substring(5, 13);
+							sidDumpOutput.setNote(note, col - 1);
+							final String wf = next.substring(14, 16);
+							sidDumpOutput.setWf(wf, col - 1);
+							final String adsr = next.substring(17, 21);
+							sidDumpOutput.setAdsr(adsr, col - 1);
+							final String pul = next.substring(22, 25);
+							sidDumpOutput.setPul(pul, col - 1);
+							break;
+
+						case 4:
+							// e.g. FCut RC Typ V = "3000 F2 Low F"
+							final String fcut = next.substring(0, 4);
+							sidDumpOutput.setFcut(fcut);
+							final String rc = next.substring(5, 7);
+							sidDumpOutput.setRc(rc);
+							final String typ = next.substring(8, 11);
+							sidDumpOutput.setTyp(typ);
+							final String v = next.substring(12, 13);
+							sidDumpOutput.setV(v);
+							break;
+
+						case 5:
+							add(sidDumpOutput);
+							if (next.trim().startsWith("+=")) {
+								if (fPatternSpacing == 0) {
+									final int nextFrame = lastFrame
+											+ fNoteSpacing;
+									fPatternSpacing = nextFrame / fNoteSpacing;
+								}
+								// pattern spacing?
+								addPatternSpacing();
+							} else if (next.trim().startsWith("+-")) {
+								if (fNoteSpacing == 0) {
+									if (!fLowRes) {
+										fNoteSpacing = fFetchedRow;
+									}
+								}
+								// note spacing?
+								addNoteSpacing();
+							}
+							continue loop;
+
+						default:
+							break;
+						}
+						col++;
 					}
-					col++;
-				}
-				add(sidDumpOutput);
-			} while (sc.hasNext());
-			sc.close();
-		} catch (final FileNotFoundException e) {
-			e.printStackTrace();
+					add(sidDumpOutput);
+				} while (sc.hasNext());
+			}
 		} catch (final IOException e) {
 			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		stopRecording();
 	}
@@ -924,10 +914,8 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	 */
 	public void save(final String filename,
 			ObservableList<SidDumpOutput> sidDumpOutputs) {
-		try {
-			final PrintStream out = new PrintStream(new BufferedOutputStream(
-					new FileOutputStream(filename)));
-
+		try (final PrintStream out = new PrintStream(new BufferedOutputStream(
+				new FileOutputStream(filename)))) {
 			out.println(String
 					.format("Load address: $%04X Init address: $%04X Play address: $%04X",
 							fLoadAddress, fInitAddress, fPlayerAddress));
@@ -993,7 +981,6 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 				out.print(sidDumpOutput.getV());
 				out.println(" |");
 			}
-			out.close();
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}

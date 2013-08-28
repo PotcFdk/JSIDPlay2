@@ -4,7 +4,6 @@ import static sidplay.ConsolePlayer.playerRunning;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -27,7 +26,7 @@ import ui.entities.config.SidPlay2Section;
 
 public class Disassembler extends C64Stage {
 
-	private final class DisassemblerRefresh implements ChangeListener<Number> {
+	protected final class DisassemblerRefresh implements ChangeListener<Number> {
 		@Override
 		public void changed(ObservableValue<? extends Number> arg0,
 				Number arg1, Number arg2) {
@@ -44,17 +43,17 @@ public class Disassembler extends C64Stage {
 	@FXML
 	private TextField address, startAddress, endAddress;
 	@FXML
-	private Button driverAddress, loadAddress, initAddress, playerAddress,
+	protected Button driverAddress, loadAddress, initAddress, playerAddress,
 			save;
 	@FXML
 	private TableView<AssemblyLine> memoryTable;
 
-	private ObservableList<AssemblyLine> assemblyLines = FXCollections
+	protected ObservableList<AssemblyLine> assemblyLines = FXCollections
 			.<AssemblyLine> observableArrayList();
 
 	private DisassemblerRefresh disassemblerRefresh = new DisassemblerRefresh();
 
-	private static Map<Integer, CPUCommand> fCommands = CPUParser
+	protected static Map<Integer, CPUCommand> fCommands = CPUParser
 			.getCpuCommands();
 
 	@Override
@@ -72,7 +71,7 @@ public class Disassembler extends C64Stage {
 		getConsolePlayer().getState().removeListener(disassemblerRefresh);
 	}
 
-	private void setTune() {
+	protected void setTune() {
 		if (getPlayer().getTune() == null) {
 			return;
 		}
@@ -140,7 +139,7 @@ public class Disassembler extends C64Stage {
 		});
 	}
 
-	private AssemblyLine createAssemblyLine(byte[] ram, int startAddr,
+	protected AssemblyLine createAssemblyLine(byte[] ram, int startAddr,
 			CPUCommand cmd) {
 		AssemblyLine assemblyLine = new AssemblyLine();
 		assemblyLine.setAddress(String.format("%04X", startAddr & 0xffff));
@@ -206,9 +205,7 @@ public class Disassembler extends C64Stage {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			FileOutputStream fos = null;
-			try {
-				fos = new FileOutputStream(file);
+			try (FileOutputStream fos = new FileOutputStream(file)) {
 				int start = Integer.decode(startAddress.getText());
 				int end = Integer.decode(endAddress.getText()) + 1;
 				start &= 0xffff;
@@ -222,14 +219,6 @@ public class Disassembler extends C64Stage {
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
-			} finally {
-				if (fos != null) {
-					try {
-						fos.close();
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
-				}
 			}
 		}
 	}

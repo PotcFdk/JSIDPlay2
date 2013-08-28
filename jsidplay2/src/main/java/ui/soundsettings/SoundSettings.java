@@ -52,7 +52,7 @@ import ui.download.ProgressListener;
 
 public class SoundSettings extends C64Stage {
 
-	private final class TuneChange implements ChangeListener<Number> {
+	protected final class TuneChange implements ChangeListener<Number> {
 		@Override
 		public void changed(ObservableValue<? extends Number> arg0,
 				Number arg1, Number arg2) {
@@ -72,23 +72,23 @@ public class SoundSettings extends C64Stage {
 	private static final String CELL_VALUE_ERROR = "cellValueError";
 
 	@FXML
-	private TextField defaultTime, mp3, proxyHost, proxyPort, dwnlUrl6581R2,
+	protected TextField defaultTime, mp3, proxyHost, proxyPort, dwnlUrl6581R2,
 			dwnlUrl6581R4, dwnlUrl8580R5;
 	@FXML
 	private CheckBox enableSldb, singleSong, proxyEnable;
 	@FXML
-	private ComboBox<String> soundDevice;
+	protected ComboBox<String> soundDevice;
 	@FXML
 	private ComboBox<Integer> hardsid6581, hardsid8580, samplingRate;
 	@FXML
 	private ComboBox<SamplingMethod> samplingMethod;
 	@FXML
-	private RadioButton playMP3, playEmulation;
+	protected RadioButton playMP3, playEmulation;
 	@FXML
 	private Button mp3Browse, download6581R2Btn, download6581R4Btn,
 			download8580R5Btn;
 	@FXML
-	private Label playerId, tuneSpeed;
+	protected Label playerId, tuneSpeed;
 
 	private ObservableList<resid_builder.resid.ISIDDefs.SamplingMethod> samplingMethods = FXCollections
 			.<resid_builder.resid.ISIDDefs.SamplingMethod> observableArrayList();
@@ -96,10 +96,10 @@ public class SoundSettings extends C64Stage {
 	private ObservableList<String> soundDevices = FXCollections
 			.<String> observableArrayList();
 
-	private long lastUpdate;
+	protected long lastUpdate;
 	private String hvscName;
 	private int currentSong;
-	private DownloadThread downloadThread;
+	protected DownloadThread downloadThread;
 	private boolean duringInitialization;
 	private Timeline timer;
 
@@ -387,7 +387,7 @@ public class SoundSettings extends C64Stage {
 		}
 	}
 
-	private void setTune(SidTune sidTune) {
+	protected void setTune(SidTune sidTune) {
 		lastUpdate = 0;
 
 		if (sidTune == null) {
@@ -413,7 +413,7 @@ public class SoundSettings extends C64Stage {
 		playerId.setText(ids.toString());
 	}
 
-	private void restart() {
+	protected void restart() {
 		// replay last tune
 		if (!duringInitialization) {
 			getConsolePlayer().playTune(getPlayer().getTune(), null);
@@ -457,7 +457,7 @@ public class SoundSettings extends C64Stage {
 		getConsolePlayer().getDriverSettings().setSid(emu);
 	}
 
-	private void setPlayOriginal(final boolean playOriginal) {
+	protected void setPlayOriginal(final boolean playOriginal) {
 		getConfig().getAudio().setPlayOriginal(playOriginal);
 		if (getConsolePlayer().getDriverSettings().getDevice() instanceof CmpMP3File) {
 			((CmpMP3File) getConsolePlayer().getDriverSettings().getDevice())

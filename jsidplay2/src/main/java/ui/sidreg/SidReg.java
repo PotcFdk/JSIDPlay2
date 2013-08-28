@@ -22,7 +22,7 @@ import ui.common.C64Stage;
 
 public class SidReg extends C64Stage {
 
-	private final class SidRegStop implements ChangeListener<Number> {
+	protected final class SidRegStop implements ChangeListener<Number> {
 		@Override
 		public void changed(ObservableValue<? extends Number> arg0,
 				Number arg1, Number arg2) {
@@ -54,7 +54,7 @@ public class SidReg extends C64Stage {
 
 	private ObservableList<SidRegWrite> filteredSidRegWrites = FXCollections
 			.<SidRegWrite> observableArrayList();
-	private ObservableList<SidRegWrite> allSidRegWrites = FXCollections
+	protected ObservableList<SidRegWrite> allSidRegWrites = FXCollections
 			.<SidRegWrite> observableArrayList();
 	private Set<String> filters = new HashSet<String>();
 
@@ -79,7 +79,7 @@ public class SidReg extends C64Stage {
 	}
 
 	@FXML
-	private void doUpdateFilter() {
+	protected void doUpdateFilter() {
 		filters.clear();
 		if (freq1.isSelected()) {
 			filters.add(getBundle().getString("VOICE_1_FREQ_L"));
@@ -178,7 +178,7 @@ public class SidReg extends C64Stage {
 		doUpdateFilter();
 	}
 
-	private void recordSidWrites(final boolean enable) {
+	protected void recordSidWrites(final boolean enable) {
 		SidRegExtension sidRegExtension = null;
 		if (enable) {
 			sidRegExtension = new SidRegExtension() {

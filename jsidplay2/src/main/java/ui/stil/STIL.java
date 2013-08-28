@@ -62,7 +62,7 @@ public class STIL extends C64Stage {
 		return entry;
 	}
 
-	private void setTextAreaFromTree(final Object comp) {
+	protected void setTextAreaFromTree(final Object comp) {
 		textArea.getChildren().clear();
 		writeSTIL(comp);
 	}

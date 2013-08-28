@@ -101,31 +101,31 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			JSidPlay2.class.getResource("/ui/sounds/track.wav").toString());
 
 	@FXML
-	private CheckMenuItem pauseContinue, driveOn, driveSoundOn, parCable,
+	protected CheckMenuItem pauseContinue, driveOn, driveSoundOn, parCable,
 			expand2000, expand4000, expand6000, expand8000, expandA000,
 			turnPrinterOn;
 	@FXML
-	private RadioMenuItem normalSpeed, fastForward, ntsc, pal, c1541, c1541_II,
+	protected RadioMenuItem normalSpeed, fastForward, ntsc, pal, c1541, c1541_II,
 			neverExtend, askExtend, accessExtend;
 	@FXML
-	private MenuItem previous, next, load, video, reset, quit, stop,
+	protected MenuItem previous, next, load, video, reset, quit, stop,
 			hardcopyPng, insertTape, insertDisk, insertCartridge;
 	@FXML
 	private ToggleButton pauseContinue2;
 	@FXML
-	private Button previous2, next2;
+	protected Button previous2, next2;
 	@FXML
-	private Tooltip previous2ToolTip, next2ToolTip;
+	protected Tooltip previous2ToolTip, next2ToolTip;
 	@FXML
-	private TabPane tabbedPane, musicCollTabbedPane, diskCollTabbedPane;
+	protected TabPane tabbedPane, musicCollTabbedPane, diskCollTabbedPane;
 	@FXML
 	private Tab musicCollections, diskCollections;
 	@FXML
-	private Video videoScreen;
+	protected Video videoScreen;
 	@FXML
 	private Label status;
 	@FXML
-	private ProgressBar progress;
+	protected ProgressBar progress;
 
 	private boolean duringInitialization;
 	private Timeline timer;
@@ -976,7 +976,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	/**
 	 * Set all the internal information of the emulation in the status bar.
 	 */
-	private void setStatusLine() {
+	protected void setStatusLine() {
 		// Get status information of the first disk drive
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status

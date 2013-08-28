@@ -589,14 +589,13 @@ public class MMC64 extends Cartridge {
 
 	public static void main(String[] args) {
 		// create BIOS data from UPD file
-		try {
-			File file = new File(
-					"E:/usb/develop/workspace/jsidplay2/test/cart/mmc64/1.10/mmc64v1b.upd");
-			DataInputStream dis = new DataInputStream(new FileInputStream(file));
+		File file = new File(
+				"E:/usb/develop/workspace/jsidplay2/test/cart/mmc64/1.10/mmc64v1b.upd");
+		try (DataInputStream dis = new DataInputStream(
+				new FileInputStream(file))) {
 			byte[] b = new byte[(int) file.length()];
 			dis.readFully(b, 0, 0x419);
 			dis.readFully(b, 0, 0x2000);
-			dis.close();
 			for (int i = 0; i < 0x2000; i += 8) {
 				if ((i % 8) == 0) {
 					System.out.print("\n\t\t");

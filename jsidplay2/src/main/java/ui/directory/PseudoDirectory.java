@@ -75,31 +75,31 @@ public class PseudoDirectory {
 		byte[] diskName = DirEntry.asciiTopetscii(
 				getShortenedString(file.getName(), 20), Integer.MAX_VALUE);
 		dir.setTitle(diskName);
-		ZipFile zf = new ZipFile(file);
-		@SuppressWarnings("rawtypes")
-		Enumeration en = zf.entries();
-		while (en.hasMoreElements()) {
-			ZipEntry ze = (ZipEntry) en.nextElement();
-			String dirEntryStr = ze.getName();
-			dirEntryStr = getShortenedString(dirEntryStr, 20);
-			DirEntry dirEntry = new DirEntry(0, DirEntry.asciiTopetscii(
-					dirEntryStr, Integer.MAX_VALUE), (byte) -1) {
-				@Override
-				public void save(File autostartFile) throws IOException {
-				}
-			};
-			// Display a pseudo directory entry for each ZIP entry
-			dir.getDirEntries().add(dirEntry);
+		try (ZipFile zf = new ZipFile(file)) {
+			@SuppressWarnings("rawtypes")
+			Enumeration en = zf.entries();
+			while (en.hasMoreElements()) {
+				ZipEntry ze = (ZipEntry) en.nextElement();
+				String dirEntryStr = ze.getName();
+				dirEntryStr = getShortenedString(dirEntryStr, 20);
+				DirEntry dirEntry = new DirEntry(0, DirEntry.asciiTopetscii(
+						dirEntryStr, Integer.MAX_VALUE), (byte) -1) {
+					@Override
+					public void save(File autostartFile) throws IOException {
+					}
+				};
+				// Display a pseudo directory entry for each ZIP entry
+				dir.getDirEntries().add(dirEntry);
+			}
 		}
-		zf.close();
 		// Display a hint in the last line
 		String hint = "PLEASE ENTER ZIP LIKE A DIR.";
 		dir.setStatusLine(hint);
 		return dir;
 	}
 
-	private static Directory getTuneAsDirectory(File hvscRoot, File file, IConfig cfg)
-			throws IOException {
+	private static Directory getTuneAsDirectory(File hvscRoot, File file,
+			IConfig cfg) throws IOException {
 		Directory dir = new Directory();
 		SidTune tune;
 		try {

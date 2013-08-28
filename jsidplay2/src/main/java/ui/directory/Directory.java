@@ -42,7 +42,7 @@ public class Directory extends C64AnchorPane {
 	private static final int TRUE_TYPE_FONT_INVERSE_SMALL = 0xe300;
 
 	@FXML
-	private TableView<DirectoryItem> directory;
+	protected TableView<DirectoryItem> directory;
 	@FXML
 	private TableColumn<DirectoryItem, String> dirColumn;
 
@@ -103,7 +103,7 @@ public class Directory extends C64AnchorPane {
 		return autoStartFileProperty;
 	}
 
-	private void autoStartProgram() {
+	protected void autoStartProgram() {
 		try {
 			DirectoryItem dirItem = directory.getSelectionModel()
 					.getSelectedItem();

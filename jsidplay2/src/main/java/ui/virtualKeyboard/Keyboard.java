@@ -454,7 +454,7 @@ public class Keyboard extends C64Stage {
 				});
 	}
 
-	private C64 getC64() {
+	protected C64 getC64() {
 		return getPlayer().getC64();
 	}
 

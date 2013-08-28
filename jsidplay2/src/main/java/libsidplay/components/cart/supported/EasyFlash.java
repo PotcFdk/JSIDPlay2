@@ -250,14 +250,13 @@ public class EasyFlash extends Cartridge {
 		easyflashFiletype = 0;
 		Arrays.fill(rawcart, 0, 0x100000, (byte) 0xff);
 
-		RandomAccessFile fd = new RandomAccessFile(filename, "r");
-
-		int low = 0;
-		for (int i = 0; i < EASYFLASH_N_BANKS; i++, low += 0x2000) {
-			fd.read(rawcart, low, 0x2000);
-			fd.read(rawcart, low + 0x80000, 0x2000);
+		try (RandomAccessFile fd = new RandomAccessFile(filename, "r")) {
+			int low = 0;
+			for (int i = 0; i < EASYFLASH_N_BANKS; i++, low += 0x2000) {
+				fd.read(rawcart, low, 0x2000);
+				fd.read(rawcart, low + 0x80000, 0x2000);
+			}
 		}
-		fd.close();
 		easyflashFiletype = CARTRIDGE_FILETYPE_BIN;
 		easyflashCommonAttach(filename);
 	}
@@ -327,20 +326,10 @@ public class EasyFlash extends Cartridge {
 	public void easyflashBINSave(final String filename) throws IOException {
 		assert filename != null;
 
-		RandomAccessFile fd = null;
-		try {
-			fd = new RandomAccessFile(filename, "r");
+		try (RandomAccessFile fd = new RandomAccessFile(filename, "r")) {
 			for (int i = 0; i < EASYFLASH_N_BANKS; i++) {
 				fd.write(easyflashStateLow.flashData, i << 13, 0x2000);
 				fd.write(easyflashStateHigh.flashData, i << 13, 0x2000);
-			}
-		} finally {
-			if (fd != null) {
-				try {
-					fd.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 			}
 		}
 	}
@@ -348,9 +337,7 @@ public class EasyFlash extends Cartridge {
 	public void easyflashCRTSave(final String filename) throws IOException {
 		assert filename != null;
 
-		RandomAccessFile fd = null;
-		try {
-			fd = new RandomAccessFile(filename, "rw");
+		try (RandomAccessFile fd = new RandomAccessFile(filename, "r")) {
 
 			byte[] header = new byte[0x40];
 			byte[] chipheader = new byte[0x10];
@@ -380,14 +367,6 @@ public class EasyFlash extends Cartridge {
 				chipheader[0x0c] = (byte) 0xa0;
 				easyflashWriteChipIfNotEmpty(fd, chipheader,
 						easyflashStateHigh.flashData, i << 13);
-			}
-		} finally {
-			if (fd != null) {
-				try {
-					fd.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
 			}
 		}
 	}

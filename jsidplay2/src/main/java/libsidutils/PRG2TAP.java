@@ -68,8 +68,8 @@ public class PRG2TAP {
 				}
 				petsciiName = DirEntry.asciiTopetscii(filenameNoExt, 16);
 			}
-			System.arraycopy(petsciiName, 0, program.name, 0, Math.min(16,
-					petsciiName.length));
+			System.arraycopy(petsciiName, 0, program.name, 0,
+					Math.min(16, petsciiName.length));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SidTuneError e) {
@@ -86,7 +86,7 @@ public class PRG2TAP {
 			convertFromPrg(program, handle, threshold);
 
 			// TODO add several files?
-			// pause: prg2wav_set_pulse(params.file, 1000000); /* 1 sec silence */
+			// pause: prg2wav_set_pulse(params.file, 1000000); // 1 sec silence
 			// next file: convert_from_prg(program, handle, threshold);
 
 			tapfileWriteClose(handle);
@@ -217,24 +217,14 @@ public class PRG2TAP {
 		sizeHeader[1] = (byte) ((size >> 8) & 0xFF);
 		sizeHeader[2] = (byte) ((size >> 16) & 0xFF);
 		sizeHeader[3] = (byte) ((size >> 24) & 0xFF);
-		RandomAccessFile rnd = null;
-		try {
-			rnd = new RandomAccessFile(handle.fileHandle, "rw");
+		try (RandomAccessFile rnd = new RandomAccessFile(handle.fileHandle,
+				"rw")) {
 			rnd.seek(16);
 			rnd.write(sizeHeader);
 		} catch (IOException e) {
 			System.err
-					.printf(
-							"Cannot write to file, header won't have correct size: error %s\n",
+					.printf("Cannot write to file, header won't have correct size: error %s\n",
 							e.getMessage());
-		} finally {
-			if (rnd != null) {
-				try {
-					rnd.close();
-				} catch (IOException e2) {
-					e2.printStackTrace();
-				}
-			}
 		}
 	}
 
@@ -261,8 +251,8 @@ public class PRG2TAP {
 			c64TapHeader[12] = version;
 			handle.file.write(c64TapHeader);
 		} catch (IOException e) {
-			System.err.printf("Could not write to file: error %s\n", e
-					.getMessage());
+			System.err.printf("Could not write to file: error %s\n",
+					e.getMessage());
 			try {
 				handle.file.close();
 			} catch (IOException e1) {

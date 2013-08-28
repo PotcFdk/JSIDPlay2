@@ -13,10 +13,10 @@ import ui.entities.collection.HVSCEntry;
 public class FavoritesCellFactory implements
 		Callback<TableColumn<HVSCEntry, ?>, TableCell<HVSCEntry, ?>> {
 
-	private static final Image STIL_ICON = new Image(JSIDPlay2Main.class
+	protected static final Image STIL_ICON = new Image(JSIDPlay2Main.class
 			.getResource("icons/stil.png").toString());
 
-	private static final Image NO_STIL_ICON = new Image(JSIDPlay2Main.class
+	protected static final Image NO_STIL_ICON = new Image(JSIDPlay2Main.class
 			.getResource("icons/stil_no.png").toString());
 
 	private static final String FILE_NOT_FOUND_ROW = "fileNotFoundRow";
@@ -24,7 +24,7 @@ public class FavoritesCellFactory implements
 	private static final String CURRENTLY_PLAYED_FILE_ROW = "currentlyPlayedRow";
 
 	@SuppressWarnings("rawtypes")
-	private final class TableCellImpl extends TableCell {
+	protected final class TableCellImpl extends TableCell {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void updateItem(Object value, boolean empty) {
@@ -64,7 +64,7 @@ public class FavoritesCellFactory implements
 		return new TableCellImpl();
 	}
 
-	private FavoritesTab favoritesTab;
+	protected FavoritesTab favoritesTab;
 
 	public void setFavoritesTab(FavoritesTab favoritesTab) {
 		this.favoritesTab = favoritesTab;

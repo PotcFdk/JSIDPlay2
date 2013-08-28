@@ -14,7 +14,7 @@ import ui.common.C64VBox;
 public class ConsoleOutput extends C64VBox implements Initializable {
 
 	@FXML
-	private TextArea console;
+	protected TextArea console;
 	@FXML
 	private TitledPane titledPane;
 
@@ -44,7 +44,7 @@ public class ConsoleOutput extends C64VBox implements Initializable {
 				append(String.valueOf((char) ch));
 			}
 
-			private void append(String str) {
+			protected void append(String str) {
 				console.setText(console.getText() + str);
 			}
 		});

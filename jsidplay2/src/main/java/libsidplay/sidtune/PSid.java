@@ -41,18 +41,11 @@ class PSid extends Prg {
 	private static final Properties sidAuthors = new Properties();
 
 	static {
-		InputStream is = SidTune.class
-				.getResourceAsStream("pictures.properties");
-		try {
+		try (InputStream is = SidTune.class
+				.getResourceAsStream("pictures.properties")) {
 			sidAuthors.load(is);
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				throw new ExceptionInInitializerError(e);
-			}
 		}
 	}
 
@@ -658,82 +651,82 @@ class PSid extends Prg {
 	@Override
 	public void save(final String name, final boolean overWrite)
 			throws IOException {
-		final FileOutputStream fos = new FileOutputStream(name, overWrite);
-
-		final PHeader myHeader = new PHeader();
-		myHeader.id = "PSID".getBytes();
-		if (info.sidChipBase2 != 0) {
-			myHeader.version = 3;
-		} else {
-			myHeader.version = 2;
-		}
-		myHeader.data = PHeader.SIZE;
-		myHeader.songs = (short) info.songs;
-		myHeader.start = (short) info.startSong;
-		myHeader.speed = getSongSpeedArray();
-
-		short tmpFlags = 0;
-		myHeader.init = (short) info.initAddr;
-		myHeader.relocStartPage = (byte) info.relocStartPage;
-		myHeader.relocPages = (byte) info.relocPages;
-
-		switch (info.compatibility) {
-		case RSID_BASIC:
-			tmpFlags |= PSID_BASIC;
-			//$FALL-THROUGH$
-
-		case RSID:
-			myHeader.id = "RSID".getBytes();
-			myHeader.speed = 0;
-			break;
-
-		case PSIDv1:
-			tmpFlags |= PSID_SPECIFIC;
-			//$FALL-THROUGH$
-
-		default:
-			myHeader.play = (short) info.playAddr;
-			break;
-		}
-
-		// @FIXME@ Need better solution. Make it possible to override MUS
-		// strings
-		if (info.numberOfInfoStrings == 3) {
-			if (info.infoString[0].length() == 32) {
+		try (FileOutputStream fos = new FileOutputStream(name, overWrite)) {
+			final PHeader myHeader = new PHeader();
+			myHeader.id = "PSID".getBytes();
+			if (info.sidChipBase2 != 0) {
 				myHeader.version = 3;
-			} else if (info.infoString[1].length() == 32) {
-				myHeader.version = 3;
-			} else if (info.infoString[2].length() == 32) {
-				myHeader.version = 3;
+			} else {
+				myHeader.version = 2;
 			}
-
-			for (int i = 0; i < info.infoString[0].length(); i++) {
-				myHeader.name[i] = (byte) info.infoString[0].charAt(i); // ISO-8859-1
+			myHeader.data = PHeader.SIZE;
+			myHeader.songs = (short) info.songs;
+			myHeader.start = (short) info.startSong;
+			myHeader.speed = getSongSpeedArray();
+			
+			short tmpFlags = 0;
+			myHeader.init = (short) info.initAddr;
+			myHeader.relocStartPage = (byte) info.relocStartPage;
+			myHeader.relocPages = (byte) info.relocPages;
+			
+			switch (info.compatibility) {
+			case RSID_BASIC:
+				tmpFlags |= PSID_BASIC;
+				//$FALL-THROUGH$
+				
+			case RSID:
+				myHeader.id = "RSID".getBytes();
+				myHeader.speed = 0;
+				break;
+				
+			case PSIDv1:
+				tmpFlags |= PSID_SPECIFIC;
+				//$FALL-THROUGH$
+				
+			default:
+				myHeader.play = (short) info.playAddr;
+				break;
 			}
-			for (int i = 0; i < info.infoString[1].length(); i++) {
-				myHeader.author[i] = (byte) info.infoString[1].charAt(i); // ISO-8859-1
+			
+			// @FIXME@ Need better solution. Make it possible to override MUS
+			// strings
+			if (info.numberOfInfoStrings == 3) {
+				if (info.infoString[0].length() == 32) {
+					myHeader.version = 3;
+				} else if (info.infoString[1].length() == 32) {
+					myHeader.version = 3;
+				} else if (info.infoString[2].length() == 32) {
+					myHeader.version = 3;
+				}
+				
+				for (int i = 0; i < info.infoString[0].length(); i++) {
+					myHeader.name[i] = (byte) info.infoString[0].charAt(i); // ISO-8859-1
+				}
+				for (int i = 0; i < info.infoString[1].length(); i++) {
+					myHeader.author[i] = (byte) info.infoString[1].charAt(i); // ISO-8859-1
+				}
+				for (int i = 0; i < info.infoString[2].length(); i++) {
+					myHeader.released[i] = (byte) info.infoString[2].charAt(i); // ISO-8859-1
+				}
 			}
-			for (int i = 0; i < info.infoString[2].length(); i++) {
-				myHeader.released[i] = (byte) info.infoString[2].charAt(i); // ISO-8859-1
-			}
+			
+			tmpFlags |= info.clockSpeed.ordinal() << 2;
+			tmpFlags |= info.sid1Model.ordinal() << 4;
+			tmpFlags |= info.sid2Model.ordinal() << 6;
+			myHeader.flags = tmpFlags;
+			
+			fos.write(myHeader.getArray());
+			
+			final byte saveAddr[] = new byte[2];
+			saveAddr[0] = (byte) (info.loadAddr & 255);
+			saveAddr[1] = (byte) (info.loadAddr >> 8);
+			fos.write(saveAddr);
+			
+			// Data starts at: bufferaddr + fileoffset
+			// Data length: datafilelen - fileoffset
+			fos.write(program, fileOffset, info.dataFileLen - fileOffset);
 		}
 
-		tmpFlags |= info.clockSpeed.ordinal() << 2;
-		tmpFlags |= info.sid1Model.ordinal() << 4;
-		tmpFlags |= info.sid2Model.ordinal() << 6;
-		myHeader.flags = tmpFlags;
-
-		fos.write(myHeader.getArray());
-
-		final byte saveAddr[] = new byte[2];
-		saveAddr[0] = (byte) (info.loadAddr & 255);
-		saveAddr[1] = (byte) (info.loadAddr >> 8);
-		fos.write(saveAddr);
-
-		// Data starts at: bufferaddr + fileoffset
-		// Data length: datafilelen - fileoffset
-		fos.write(program, fileOffset, info.dataFileLen - fileOffset);
-		fos.close();
 	}
 
 	/**

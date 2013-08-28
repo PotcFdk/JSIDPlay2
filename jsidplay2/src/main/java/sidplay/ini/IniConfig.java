@@ -88,9 +88,7 @@ public class IniConfig implements IConfig {
 
 	private void read() {
 		if (iniPath != null && iniPath.exists()) {
-			FileInputStream is = null;
-			try {
-				is = new FileInputStream(iniPath);
+			try (FileInputStream is = new FileInputStream(iniPath)) {
 				iniReader = new IniReader(is);
 				clear();
 				/* validate loaded configuration */
@@ -99,14 +97,6 @@ public class IniConfig implements IConfig {
 				}
 			} catch (final Exception e) {
 				throw new RuntimeException(e);
-			} finally {
-				if (is != null) {
-					try {
-						is.close();
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				}
 			}
 			createINIBackup(iniPath);
 		}

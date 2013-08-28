@@ -29,7 +29,7 @@ import ui.common.C64Stage;
 
 public class EmulationSettings extends C64Stage {
 
-	private final class EmulationChange implements ChangeListener<Number> {
+	protected final class EmulationChange implements ChangeListener<Number> {
 		@Override
 		public void changed(ObservableValue<? extends Number> arg0,
 				Number arg1, Number arg2) {
@@ -83,7 +83,7 @@ public class EmulationSettings extends C64Stage {
 	private static final int STEP = 10;
 
 	@FXML
-	private ComboBox<Object> sid1Model, sid2Model;
+	protected ComboBox<Object> sid1Model, sid2Model;
 	@FXML
 	private ComboBox<String> filter;
 	@FXML
@@ -348,7 +348,7 @@ public class EmulationSettings extends C64Stage {
 		}
 	}
 
-	private void addFilters(final ChipModel model) {
+	protected void addFilters(final ChipModel model) {
 		final boolean enable = getConfig().getEmulation().isFilter();
 		String item = null;
 		if (enable) {

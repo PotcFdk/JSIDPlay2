@@ -15,7 +15,6 @@ import libsidplay.Player;
 import sidplay.ConsolePlayer;
 import ui.entities.config.Configuration;
 import ui.events.UIEvent;
-import ui.events.UIEventFactory;
 
 public abstract class C64Stage extends Stage implements UIPart {
 
@@ -55,7 +54,6 @@ public abstract class C64Stage extends Stage implements UIPart {
 
 			@Override
 			public void handle(WindowEvent event) {
-				getUiEvents().removeListener(C64Stage.this);
 				doCloseWindow();
 			}
 		});
@@ -78,12 +76,8 @@ public abstract class C64Stage extends Stage implements UIPart {
 		util.setPlayedGraphics(node);
 	}
 	
-	protected ResourceBundle getBundle() {
+	public ResourceBundle getBundle() {
 		return util.getBundle();
-	}
-
-	protected UIEventFactory getUiEvents() {
-		return util.getUiEvents();
 	}
 
 	public Configuration getConfig() {

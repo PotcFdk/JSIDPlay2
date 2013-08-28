@@ -44,8 +44,8 @@ import ui.gamebase.listeners.MusicListener;
 
 public class GameBase extends C64Tab {
 
-	private final class GameBaseListener extends ProgressListener {
-		private GameBaseListener(DoubleProperty progress) {
+	protected final class GameBaseListener extends ProgressListener {
+		protected GameBaseListener(DoubleProperty progress) {
 			super(progress);
 		}
 
@@ -82,19 +82,19 @@ public class GameBase extends C64Tab {
 	private static final String GB64_MUSIC_DOWNLOAD_URL = "http://www.gb64.com/C64Music/";
 
 	@FXML
-	private CheckBox enableGameBase;
+	protected CheckBox enableGameBase;
 	@FXML
-	private TextField dbFileField, filterField;
+	protected TextField dbFileField, filterField;
 	@FXML
-	private TabPane letter;
+	protected TabPane letter;
 	@FXML
 	private ImageView screenshot;
 	@FXML
-	private TextField infos, programmer, category, musician;
+	protected TextField infos, programmer, category, musician;
 	@FXML
-	private TextArea comment;
+	protected TextArea comment;
 	@FXML
-	private Button linkMusic;
+	protected Button linkMusic;
 
 	private EntityManager em;
 	private ConfigService configService;
@@ -268,13 +268,13 @@ public class GameBase extends C64Tab {
 		}
 	}
 
-	private void setLettersDisable(boolean b) {
+	protected void setLettersDisable(boolean b) {
 		for (Tab tab : letter.getTabs()) {
 			tab.setDisable(b);
 		}
 	}
 
-	private void connect(File dbFile) {
+	protected void connect(File dbFile) {
 		disconnect();
 		em = Persistence.createEntityManagerFactory(
 				PersistenceUtil.GAMEBASE_DS, new PersistenceUtil(dbFile))
@@ -295,14 +295,14 @@ public class GameBase extends C64Tab {
 		setLettersDisable(true);
 	}
 
-	private void showScreenshot(final URL resource) {
+	protected void showScreenshot(final URL resource) {
 		Image image = new Image(resource.toString());
 		if (image != null) {
 			screenshot.setImage(image);
 		}
 	}
 
-	private void selectTab(GameBasePage page) {
+	protected void selectTab(GameBasePage page) {
 		page.setGames(gamesService.select(page.getText().charAt(0)));
 		filterField.setText("");
 	}

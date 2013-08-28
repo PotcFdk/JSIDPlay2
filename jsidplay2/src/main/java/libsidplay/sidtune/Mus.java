@@ -50,9 +50,10 @@ class Mus extends PSid {
 
 	@Override
 	public void save(final String destFileName, final boolean overWriteFlag) throws IOException {
-		final FileOutputStream fMyOut = new FileOutputStream(destFileName, !overWriteFlag);
-		fMyOut.write(program);
-		fMyOut.close();
+		try (FileOutputStream fMyOut = new FileOutputStream(destFileName,
+				!overWriteFlag)) {
+			fMyOut.write(program);
+		}
 	}
 
 	private static boolean detect(final byte[] buffer, final int startIndex, final int[] voice3Index) {

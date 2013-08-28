@@ -60,25 +60,25 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	private TitledPane monitor;
 	@FXML
-	private Canvas screen;
+	protected Canvas screen;
 	@FXML
-	private ImageView monitorBorder, breadbox, pc64;
+	protected ImageView monitorBorder, breadbox, pc64;
 	@FXML
 	private Slider brightness, contrast, gamma, saturation, phaseShift, offset,
 			tint, blur, bleed;
 	@FXML
-	private Label brightnessValue, contrastValue, gammaValue, saturationValue,
+	protected Label brightnessValue, contrastValue, gammaValue, saturationValue,
 			phaseShiftValue, offsetValue, tintValue, blurValue, bleedValue;
 	@FXML
-	private ImageView datasetteOff, datasetteLoad, datasetteSave, c1541Off,
+	protected ImageView datasetteOff, datasetteLoad, datasetteSave, c1541Off,
 			c1541On, c1541Load, c1541IIOff, c1541IIOn, c1541IILoad;
 	@FXML
-	private Label tapeName, diskName, cartridgeName;
+	protected Label tapeName, diskName, cartridgeName;
 
-	private WritableImage vicImage;
+	protected WritableImage vicImage;
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
-	private boolean isVisible;
+	protected boolean isVisible;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -298,7 +298,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	/**
 	 * Connect VIC output with screen.
 	 */
-	private void setupVideoScreen() {
+	protected void setupVideoScreen() {
 		vicImage = new WritableImage(getVIC().getBorderWidth(), getVIC()
 				.getBorderHeight());
 		getVIC().addPropertyChangeListener(this);
@@ -337,7 +337,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		});
 	}
 
-	private float round(float f) {
+	protected float round(float f) {
 		return (int) (f * 100) / 100f;
 	}
 
@@ -421,7 +421,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		timer.playFromStart();
 	}
 
-	private void pressC64Key(final KeyTableEntry key) {
+	protected void pressC64Key(final KeyTableEntry key) {
 		getC64().getEventScheduler().scheduleThreadSafe(
 				new Event("Virtual Keyboard Key Pressed: " + key.name()) {
 					@Override
@@ -431,7 +431,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 				});
 	}
 
-	private void releaseC64Key(final KeyTableEntry key) {
+	protected void releaseC64Key(final KeyTableEntry key) {
 		getC64().getEventScheduler().scheduleThreadSafe(
 				new Event("Virtual Keyboard Key Released: " + key.name()) {
 					@Override
@@ -444,7 +444,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	/**
 	 * Make C64 image visible, if the internal player is used.
 	 */
-	private void setupScreenBasedOnChipType(final SidTune sidTune) {
+	protected void setupScreenBasedOnChipType(final SidTune sidTune) {
 		if (sidTune != null && sidTune.getInfo().playAddr != 0) {
 			if (getChipModel(sidTune) == ChipModel.MOS6581) {
 				// Old SID chip model? Show breadbox
@@ -494,11 +494,11 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		return vicImage;
 	}
 
-	private VIC getVIC() {
+	protected VIC getVIC() {
 		return getPlayer().getC64().getVIC();
 	}
 
-	private C64 getC64() {
+	protected C64 getC64() {
 		return getPlayer().getC64();
 	}
 

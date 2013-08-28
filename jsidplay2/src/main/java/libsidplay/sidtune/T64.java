@@ -118,52 +118,52 @@ public class T64 extends Prg {
 		// Load T64
 		final int length = (int) file.length();
 		t64.data = new byte[length];
-		RandomAccessFile fd = new RandomAccessFile(file, "r");
-		fd.readFully(t64.data, 0, t64.data.length);
-		fd.close();
-		// Get title
-		byte[] diskName = new byte[32];
-		System.arraycopy(t64.data, 0, diskName, 0, diskName.length);
-		dir.setTitle(new String(diskName, ISO88591).toUpperCase().getBytes(
-				ISO88591));
-		
-		int totalEntries = ((t64.data[35] & 0xff) << 8) | (t64.data[34] & 0xff);
-		final List<DirEntry> dirEntries = dir.getDirEntries();
-		for (int i = 1; i <= totalEntries; i++) {
-			if (!t64.getEntry(t64.data, i)) {
-				continue;
-			}
-			final int loadAddr = t64.info.loadAddr;
-			final int c64dataLen = t64.info.c64dataLen;
-			final int fileOffset = t64.fileOffset;
+		try (RandomAccessFile fd = new RandomAccessFile(file, "r")) {
+			fd.readFully(t64.data, 0, t64.data.length);
+			// Get title
+			byte[] diskName = new byte[32];
+			System.arraycopy(t64.data, 0, diskName, 0, diskName.length);
+			dir.setTitle(new String(diskName, ISO88591).toUpperCase().getBytes(
+					ISO88591));
 			
-			dirEntries.add(new DirEntry(t64.info.c64dataLen, t64
-					.getLastEntryName(), (byte) 0x82) {
-				/**
-				 * Save the program of this directory entry to the specified
-				 * file.
-				 * 
-				 * @param autostartFile
-				 *            file to save
-				 * @throws IOException
-				 *             File write error
-				 */
-				@Override
-				public void save(final File autostartFile) throws IOException {
-					t64.save(autostartFile, loadAddr, c64dataLen, fileOffset);
+			int totalEntries = ((t64.data[35] & 0xff) << 8) | (t64.data[34] & 0xff);
+			final List<DirEntry> dirEntries = dir.getDirEntries();
+			for (int i = 1; i <= totalEntries; i++) {
+				if (!t64.getEntry(t64.data, i)) {
+					continue;
 				}
-			});
+				final int loadAddr = t64.info.loadAddr;
+				final int c64dataLen = t64.info.c64dataLen;
+				final int fileOffset = t64.fileOffset;
+				
+				dirEntries.add(new DirEntry(t64.info.c64dataLen, t64
+						.getLastEntryName(), (byte) 0x82) {
+					/**
+					 * Save the program of this directory entry to the specified
+					 * file.
+					 * 
+					 * @param autostartFile
+					 *            file to save
+					 * @throws IOException
+					 *             File write error
+					 */
+					@Override
+					public void save(final File autostartFile) throws IOException {
+						t64.save(autostartFile, loadAddr, c64dataLen, fileOffset);
+					}
+				});
+			}
+			return dir;
 		}
-		return dir;
 	}
 
 	public void save(File file, final int loadAddr, final int c64dataLen,
 			final int fileOffset) throws IOException {
-		DataOutputStream dout = new DataOutputStream(new FileOutputStream(file));
-		dout.writeByte(loadAddr & 0xff);
-		int hiBytePart = loadAddr & 0xff00;
-		dout.writeByte((hiBytePart) >> 8);
-		dout.write(data, fileOffset, c64dataLen);
-		dout.close();
+		try (DataOutputStream dout = new DataOutputStream(new FileOutputStream(file))) {
+			dout.writeByte(loadAddr & 0xff);
+			int hiBytePart = loadAddr & 0xff00;
+			dout.writeByte((hiBytePart) >> 8);
+			dout.write(data, fileOffset, c64dataLen);
+		}
 	}
 }

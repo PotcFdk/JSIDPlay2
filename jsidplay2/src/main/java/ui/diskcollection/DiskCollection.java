@@ -48,25 +48,25 @@ import ui.filefilter.TapeFileFilter;
 public class DiskCollection extends C64Tab {
 
 	@FXML
-	private CheckBox autoConfiguration;
+	protected CheckBox autoConfiguration;
 	@FXML
-	private Directory directory;
+	protected Directory directory;
 	@FXML
 	private ImageView screenshot;
 	@FXML
-	private TreeView<File> fileBrowser;
+	protected TreeView<File> fileBrowser;
 	@FXML
 	private ContextMenu contextMenu;
 	@FXML
-	private MenuItem start, attachDisk;
+	protected MenuItem start, attachDisk;
 	@FXML
 	private TextField collectionDir;
 
-	private DiscCollectionType type;
+	protected DiscCollectionType type;
 	private String downloadUrl;
 
 	private final FileFilter screenshotsFileFilter = new ScreenshotFileFilter();
-	private final FileFilter diskFileFilter = new DiskFileFilter();
+	protected final FileFilter diskFileFilter = new DiskFileFilter();
 	private final FileFilter fileBrowserFileFilter = new FileFilter() {
 
 		private final TapeFileFilter tapeFileFilter = new TapeFileFilter();
@@ -269,7 +269,7 @@ public class DiskCollection extends C64Tab {
 		}
 	}
 
-	private void setRootFile(final File rootFile) {
+	protected void setRootFile(final File rootFile) {
 		if (rootFile.exists()) {
 			collectionDir.setText(rootFile.getAbsolutePath());
 
@@ -288,7 +288,7 @@ public class DiskCollection extends C64Tab {
 		}
 	}
 
-	private void attachAndRunDemo(File selectedFile, final File autoStartFile) {
+	protected void attachAndRunDemo(File selectedFile, final File autoStartFile) {
 		if (selectedFile.getName().toLowerCase().endsWith(".pdf")) {
 			try {
 				selectedFile = extractFile(selectedFile);
@@ -329,7 +329,7 @@ public class DiskCollection extends C64Tab {
 		getConsolePlayer().playTune(null, command);
 	}
 
-	private void showScreenshot(final File file) {
+	protected void showScreenshot(final File file) {
 		Image image = createImage(file);
 		if (image != null) {
 			screenshot.setImage(image);

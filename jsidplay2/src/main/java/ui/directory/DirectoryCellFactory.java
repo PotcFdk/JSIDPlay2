@@ -19,7 +19,7 @@ public class DirectoryCellFactory
 		implements
 		Callback<TableColumn<DirectoryItem, String>, TableCell<DirectoryItem, String>> {
 
-	private Font c64Font;
+	protected Font c64Font;
 	{
 		InputStream fontStream = JSIDPlay2Main.class
 				.getResourceAsStream("fonts/C64_Elite_Mono_v1.0-STYLE.ttf");

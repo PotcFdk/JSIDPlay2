@@ -287,7 +287,7 @@ public final class C1541 {
 
 			@Override
 			public void diskAttachedDetached(String imageName, boolean attached) {
-				diskName = attached ? imageName : null;
+				setDiskName(attached ? imageName : null);
 			}
 		};
 
@@ -500,5 +500,9 @@ public final class C1541 {
 
 	public String getDiskName() {
 		return diskName;
+	}
+	
+	public void setDiskName(String diskName) {
+		this.diskName = diskName;
 	}
 }

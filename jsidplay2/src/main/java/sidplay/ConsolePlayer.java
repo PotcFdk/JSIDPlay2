@@ -211,6 +211,10 @@ public class ConsolePlayer {
 
 	private SidTune tune;
 
+	public SidTune getTune() {
+		return tune;
+	}
+	
 	private IntegerProperty state = new SimpleIntegerProperty();
 
 	public final IntegerProperty getState() {
@@ -326,7 +330,7 @@ public class ConsolePlayer {
 		return true;
 	}
 
-	private boolean open() throws InterruptedException {
+	protected boolean open() throws InterruptedException {
 		if ((state.get() & ~playerFast) == playerRestart) {
 			state.set(playerStopped);
 		}
@@ -560,7 +564,7 @@ public class ConsolePlayer {
 		return true;
 	}
 
-	private void close() {
+	protected void close() {
 		if (state.get() == playerExit) {
 			// Natural finish
 			if (sidEmuFactory instanceof HardSIDBuilder) {
@@ -1406,9 +1410,9 @@ public class ConsolePlayer {
 	private transient final Runnable playerRunnable = new Runnable() {
 		@Override
 		public void run() {
-			if (tune != null && tune.getInfo().file != null) {
+			if (getTune() != null && getTune().getInfo().file != null) {
 				System.out.println("Play File: <"
-						+ tune.getInfo().file.getAbsolutePath() + ">");
+						+ getTune().getInfo().file.getAbsolutePath() + ">");
 			}
 			// Run until the player gets stopped
 			while (true) {

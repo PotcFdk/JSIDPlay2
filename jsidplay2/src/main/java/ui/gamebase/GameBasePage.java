@@ -35,7 +35,7 @@ public class GameBasePage extends C64Tab {
 	private ObservableList<Games> filteredGames = FXCollections
 			.<Games> observableArrayList();
 
-	private IDownloadListener screenShotListener;
+	protected IDownloadListener screenShotListener;
 	private GameListener gameListener;
 
 	@Override
@@ -84,7 +84,7 @@ public class GameBasePage extends C64Tab {
 				});
 	}
 
-	private void startGame(Games game) {
+	protected void startGame(Games game) {
 		if (game.getFilename().isEmpty()) {
 			System.out.println("Game is not available on GameBase64: " + game.getName());
 			return;
@@ -126,7 +126,7 @@ public class GameBasePage extends C64Tab {
 		this.gameListener = gameListener;
 	}
 
-	private void downloadStart(String url, IDownloadListener listener) {
+	protected void downloadStart(String url, IDownloadListener listener) {
 		try {
 			DownloadThread downloadThread = new DownloadThread(getConfig(),
 					listener, new URL(url));

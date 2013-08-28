@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 
 import libsidplay.common.Event;
@@ -721,10 +720,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	public void insertRAMExpansion(final RAMExpansion type, final File file)
 			throws IOException {
 		pla.setCartridge(null);
-		InputStream is = null;
-		try {
-			is = new FileInputStream(file);
-			final DataInputStream dis = new DataInputStream(is);
+		try (DataInputStream dis = new DataInputStream(
+				new FileInputStream(file))) {
 			final Cartridge cart;
 			switch (type) {
 			case GEORAM:
@@ -735,12 +732,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 				throw new RuntimeException("RAM expansion is not supported.");
 			}
 			pla.setCartridge(cart);
-		} catch (IOException e) {
-			throw e;
-		} finally {
-			if (is != null) {
-				is.close();
-			}
 		}
 	}
 
@@ -754,9 +745,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 */
 	public void insertCartridge(final File cartFile) throws IOException {
 		pla.setCartridge(null);
-		InputStream is = null;
-		try {
-			is = new FileInputStream(cartFile);
+		try (DataInputStream is = new DataInputStream(new FileInputStream(
+				cartFile))) {
 			final Cartridge cart;
 			if (cartFile.getName().toLowerCase().endsWith(".reu")) {
 				long length = cartFile.length();
@@ -767,12 +757,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 				cart = Cartridge.readImage(pla, is);
 			}
 			pla.setCartridge(cart);
-		} catch (IOException e) {
-			throw e;
-		} finally {
-			if (is != null) {
-				is.close();
-			}
 		}
 	}
 

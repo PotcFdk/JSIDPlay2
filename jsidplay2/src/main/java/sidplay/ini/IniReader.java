@@ -26,7 +26,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class can read properties files in Microsoft .ini file style and provides an interface to read string, integer and boolean values. The .ini files has the following structure:
+ * This class can read properties files in Microsoft .ini file style and
+ * provides an interface to read string, integer and boolean values. The .ini
+ * files has the following structure:
  * 
  * <pre>
  * ; one type of comment
@@ -39,10 +41,13 @@ import java.util.regex.Pattern;
  */
 public class IniReader {
 	private static final Pattern COMMENT = Pattern.compile("[;#].*");
-	private static final Pattern SECTION_HEADING = Pattern.compile("\\[(\\w+)\\]");
-	private static final Pattern KEY_VALUE = Pattern.compile("(\\w+(?:\\s+\\w+)*)\\s*=\\s*(.*)");
-	private static final Pattern TIME_VALUE = Pattern.compile("(?:([0-9]{1,2}):)?([0-9]{1,2})");
-	
+	private static final Pattern SECTION_HEADING = Pattern
+			.compile("\\[(\\w+)\\]");
+	private static final Pattern KEY_VALUE = Pattern
+			.compile("(\\w+(?:\\s+\\w+)*)\\s*=\\s*(.*)");
+	private static final Pattern TIME_VALUE = Pattern
+			.compile("(?:([0-9]{1,2}):)?([0-9]{1,2})");
+
 	private final Map<String, Map<String, String>> sections = new LinkedHashMap<String, Map<String, String>>();
 
 	private boolean dirty;
@@ -71,7 +76,7 @@ public class IniReader {
 		Map<String, String> section = null;
 		StringBuilder comment = new StringBuilder();
 		String line;
-		
+
 		while ((line = r.readLine()) != null) {
 			line = line.trim();
 			if (line.equals("")) {
@@ -79,7 +84,7 @@ public class IniReader {
 			}
 
 			Matcher m;
-			
+
 			m = COMMENT.matcher(line);
 			if (m.matches()) {
 				comment.append(line);
@@ -91,7 +96,7 @@ public class IniReader {
 			if (m.matches()) {
 				section = new LinkedHashMap<String, String>();
 				sections.put(m.group(1), section);
-				
+
 				if (comment.length() != 0) {
 					section.put("_", comment.toString());
 					comment.delete(0, comment.length());
@@ -99,7 +104,7 @@ public class IniReader {
 				continue;
 			}
 			assert section != null;
-			
+
 			m = KEY_VALUE.matcher(line);
 			if (m.matches()) {
 				String key = m.group(1);
@@ -110,47 +115,49 @@ public class IniReader {
 				}
 				continue;
 			}
-			
-			throw new RuntimeException(String.format("Unrecognized line in ini config: %s", line));
+
+			throw new RuntimeException(String.format(
+					"Unrecognized line in ini config: %s", line));
 		}
 	}
 
 	public void save(String outputname) throws IOException {
-		PrintWriter wr = new PrintWriter(new File(outputname));
-		for (String section : sections.keySet()) {
-			Map<String, String> unsaved = sections.get(section);
-			if (unsaved.isEmpty()) {
-				continue;
-			}
-
-			/* write section comment */
-			if (unsaved.containsKey("_")) {
-				wr.print(unsaved.get("_"));
-			}
-			// prevention to write empty sections (e.g. the default filter)
-			if (section.length() > 0) {
-				wr.println("[" + section + "]");
-
-				for (String key : unsaved.keySet()) {
-					if (key.startsWith("_")) {
-						continue;
-					}
-					/* write key comment */
-					if (unsaved.containsKey("_" + key)) {
-						wr.print(unsaved.get("_" + key));
-					}
-					wr.println(key + "=" + unsaved.get(key));
+		try (PrintWriter wr = new PrintWriter(new File(outputname))) {
+			for (String section : sections.keySet()) {
+				Map<String, String> unsaved = sections.get(section);
+				if (unsaved.isEmpty()) {
+					continue;
 				}
-				
-				wr.println("");
+
+				/* write section comment */
+				if (unsaved.containsKey("_")) {
+					wr.print(unsaved.get("_"));
+				}
+				// prevention to write empty sections (e.g. the default filter)
+				if (section.length() > 0) {
+					wr.println("[" + section + "]");
+
+					for (String key : unsaved.keySet()) {
+						if (key.startsWith("_")) {
+							continue;
+						}
+						/* write key comment */
+						if (unsaved.containsKey("_" + key)) {
+							wr.print(unsaved.get("_" + key));
+						}
+						wr.println(key + "=" + unsaved.get(key));
+					}
+
+					wr.println("");
+				}
 			}
 		}
-		wr.close();
-		
+
 		dirty = false;
 	}
 
-	public String getPropertyString(final String section, final String key, final String defaultValue) {
+	public String getPropertyString(final String section, final String key,
+			final String defaultValue) {
 		final Map<String, String> map = sections.get(section);
 		if (map != null) {
 			final String value = map.get(key);
@@ -161,7 +168,8 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public float getPropertyFloat(final String section, final String key, final float defaultValue) {
+	public float getPropertyFloat(final String section, final String key,
+			final float defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return Float.parseFloat(s);
@@ -169,7 +177,8 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public int getPropertyInt(final String section, final String key, final int defaultValue) {
+	public int getPropertyInt(final String section, final String key,
+			final int defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null && !s.equals("")) {
 			return Integer.decode(s);
@@ -177,7 +186,8 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public boolean getPropertyBool(final String section, final String key, final boolean defaultValue) {
+	public boolean getPropertyBool(final String section, final String key,
+			final boolean defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return Boolean.valueOf(s);
@@ -185,7 +195,8 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public int getPropertyTime(final String section, final String key, final int defaultValue) {
+	public int getPropertyTime(final String section, final String key,
+			final int defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return parseTime(s);
@@ -193,11 +204,14 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue) {
-		return getPropertyEnum(section, key, defaultValue, defaultValue.getClass());
+	public <T extends Enum<T>> T getPropertyEnum(String section, String key,
+			T defaultValue) {
+		return getPropertyEnum(section, key, defaultValue,
+				defaultValue.getClass());
 	}
 
-	public <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue, Class<?> class1) {
+	public <T extends Enum<T>> T getPropertyEnum(String section, String key,
+			T defaultValue, Class<?> class1) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			try {
@@ -209,7 +223,7 @@ public class IniReader {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		return defaultValue;
 	}
 
@@ -232,7 +246,7 @@ public class IniReader {
 			}
 		} else {
 			settings.put(key, newValue);
-			if (! newValue.equals(oldValue)) {
+			if (!newValue.equals(oldValue)) {
 				dirty = true;
 			}
 		}
@@ -241,23 +255,24 @@ public class IniReader {
 	/**
 	 * Convert time from string in mm:ss style
 	 * 
-	 * @param str time
+	 * @param str
+	 *            time
 	 * @return seconds
 	 */
 	public static int parseTime(final String str) {
 		Matcher m = TIME_VALUE.matcher(str);
-		if (! m.matches()) {
+		if (!m.matches()) {
 			return -1;
 		}
-		
+
 		int time = 0;
-		
+
 		if (m.group(1) != null) {
 			time += Integer.valueOf(m.group(1)) * 60;
 		}
-		
+
 		time += Integer.valueOf(m.group(2));
-		
+
 		return time;
 	}
 }
