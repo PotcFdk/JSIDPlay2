@@ -55,6 +55,7 @@ import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import libsidutils.STIL;
 import libsidutils.SidDatabase;
 import ui.common.C64Tab;
 import ui.common.TypeTextField;
@@ -76,7 +77,7 @@ import ui.musiccollection.search.SearchInIndexThread;
 import ui.musiccollection.search.SearchIndexCreator;
 import ui.musiccollection.search.SearchIndexerThread;
 import ui.musiccollection.search.SearchThread;
-import ui.stil.STIL;
+import ui.stilview.STILView;
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
 
@@ -359,10 +360,10 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private void showSTIL() {
 		TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
 				.getSelectedItem();
-		STIL stilInfo = new STIL();
+		STILView stilInfo = new STILView();
 		stilInfo.setPlayer(getPlayer());
 		stilInfo.setConfig(getConfig());
-		libsidutils.STIL stil = getConsolePlayer().getStil();
+		STIL stil = getConsolePlayer().getStil();
 		if (stil != null) {
 			File hvscFile = selectedItem.getValue();
 			stilInfo.setEntry(stil.getSTILEntry(hvscFile));
@@ -632,8 +633,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	private void setSTIL(File hvscRoot) {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
-				libsidutils.STIL.STIL_FILE))) {
-			getConsolePlayer().setSTIL(new libsidutils.STIL(hvscRoot, input));
+				STIL.STIL_FILE))) {
+			getConsolePlayer().setSTIL(new STIL(hvscRoot, input));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

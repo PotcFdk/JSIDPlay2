@@ -1,4 +1,4 @@
-package ui.stil;
+package ui.stilview;
 
 import javafx.scene.control.TreeItem;
 import libsidutils.STIL.Info;

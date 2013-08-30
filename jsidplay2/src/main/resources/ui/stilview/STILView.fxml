@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.ScrollPane?>
-<?scenebuilder-preview-i18n-resource STIL.properties?>
+<?scenebuilder-preview-i18n-resource STILView.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml" width="800" height="600">
 	<SplitPane orientation="HORIZONTAL" fx:id="splitPane">

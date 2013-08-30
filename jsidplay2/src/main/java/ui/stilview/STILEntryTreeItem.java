@@ -1,4 +1,4 @@
-package ui.stil;
+package ui.stilview;
 
 import java.util.ArrayList;
 import java.util.Collection;

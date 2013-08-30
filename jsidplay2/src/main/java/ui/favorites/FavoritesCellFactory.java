@@ -7,6 +7,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
+import libsidutils.STIL;
 import ui.JSIDPlay2Main;
 import ui.entities.collection.HVSCEntry;
 
@@ -46,7 +47,7 @@ public class FavoritesCellFactory implements
 						int columnIndex = getTableView().getColumns().indexOf(
 								getTableColumn());
 						if (columnIndex == 0) {
-							libsidutils.STIL stil = favoritesTab
+							STIL stil = favoritesTab
 									.getConsolePlayer().getStil();
 							if (stil != null && stil.getSTILEntry(file) != null) {
 								setGraphic(new ImageView(STIL_ICON));

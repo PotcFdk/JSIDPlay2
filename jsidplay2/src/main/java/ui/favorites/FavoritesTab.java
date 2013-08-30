@@ -46,6 +46,7 @@ import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import libsidutils.STIL;
 import ui.common.C64Tab;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
@@ -55,7 +56,7 @@ import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileFilter;
-import ui.stil.STIL;
+import ui.stilview.STILView;
 
 import com.sun.javafx.scene.control.skin.TableColumnHeader;
 
@@ -200,7 +201,7 @@ public class FavoritesTab extends C64Tab {
 				HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
 						.getSelectedItem();
 
-				libsidutils.STIL stil = getConsolePlayer().getStil();
+				STIL stil = getConsolePlayer().getStil();
 				showStil.setDisable(hvscEntry == null
 						|| stil == null
 						|| stil.getSTILEntry(getFile(hvscEntry.getPath())) == null);
@@ -309,10 +310,10 @@ public class FavoritesTab extends C64Tab {
 			return;
 		}
 
-		STIL stilInfo = new STIL();
+		STILView stilInfo = new STILView();
 		stilInfo.setPlayer(getPlayer());
 		stilInfo.setConfig(getConfig());
-		libsidutils.STIL stil = getConsolePlayer().getStil();
+		STIL stil = getConsolePlayer().getStil();
 		if (stil != null) {
 			stilInfo.setEntry(stil.getSTILEntry(getFile(hvscEntry.getPath())));
 		}

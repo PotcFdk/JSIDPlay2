@@ -1,4 +1,4 @@
-package ui.stil;
+package ui.stilview;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,7 +17,7 @@ import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
 import ui.common.C64Stage;
 
-public class STIL extends C64Stage {
+public class STILView extends C64Stage {
 	private static final String STYLE_NORMAL = "styleNormal";
 	private static final String STYLE_FILENAME = "styleFilename";
 	private static final String STYLE_COMMENT = "styleComment";

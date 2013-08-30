@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import libsidutils.STIL;
 import ui.JSIDPlay2Main;
 import ui.filefilter.TuneFileFilter;
 
@@ -40,10 +41,10 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 	private boolean hasSTIL;
 
 	private MusicCollection musicCollection;
-	private libsidutils.STIL stil;
+	private STIL stil;
 
 	public MusicCollectionTreeItem(MusicCollection musicCollection,
-			libsidutils.STIL stil, File file) {
+			STIL stil, File file) {
 		super(file);
 		this.musicCollection = musicCollection;
 		this.stil = stil;
