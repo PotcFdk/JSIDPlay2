@@ -761,11 +761,10 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					currentlyPlayedTreeItems = pathSegs;
 					TreeItem<File> selectedItem = fileBrowser
 							.getSelectionModel().getSelectedItem();
+					TreeItem<File> treeItem = pathSegs.get(pathSegs.size() - 1);
 					if (selectedItem == null
-							|| getPlayer().getTune() == null
-							|| !selectedItem.getValue().equals(
-									getPlayer().getTune().getInfo().file)) {
-						TreeItem<File> treeItem = pathSegs.get(pathSegs.size() - 1);
+							|| !treeItem.getValue().equals(
+									selectedItem.getValue())) {
 						fileBrowser.getSelectionModel().select(treeItem);
 						fileBrowser.scrollTo(fileBrowser.getRow(treeItem));
 					}
