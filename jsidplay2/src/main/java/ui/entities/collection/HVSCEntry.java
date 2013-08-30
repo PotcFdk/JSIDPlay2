@@ -21,7 +21,7 @@ import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
 import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.SidDatabase;
+import sidplay.ConsolePlayer;
 
 @Entity
 public class HVSCEntry {
@@ -345,7 +345,7 @@ public class HVSCEntry {
 		return stil;
 	}
 
-	public static HVSCEntry create(final File root, final String path,
+	public static HVSCEntry create(final ConsolePlayer cp, final String path,
 			final File tuneFile, SidTune tune) {
 		HVSCEntry hvscEntry = new HVSCEntry();
 		hvscEntry.setPath(path);
@@ -366,7 +366,8 @@ public class HVSCEntry {
 			hvscEntry.setSidModel1(info.sid1Model);
 			hvscEntry.setSidModel2(info.sid2Model);
 			hvscEntry.setCompatibility(info.compatibility);
-			hvscEntry.setTuneLength(getTuneLength(root, tune));
+			long fullLength = cp.getFullSongLength(tune);
+			hvscEntry.setTuneLength(fullLength);
 			hvscEntry.setAudio(getAudio(info.sidChipBase2));
 			hvscEntry.setSidChipBase1(info.sidChipBase1);
 			hvscEntry.setSidChipBase2(info.sidChipBase2);
@@ -393,17 +394,6 @@ public class HVSCEntry {
 			ids.append(s);
 		}
 		return ids.toString();
-	}
-
-	private static long getTuneLength(final File hvsc, final SidTune tune) {
-		final SidDatabase sldb = SidDatabase.getInstance(hvsc);
-		long fullLength;
-		if (sldb != null) {
-			fullLength = sldb.getFullSongLength(tune);
-		} else {
-			fullLength = 0;
-		}
-		return fullLength;
 	}
 
 	private static String getAudio(int sidChipBase2) {

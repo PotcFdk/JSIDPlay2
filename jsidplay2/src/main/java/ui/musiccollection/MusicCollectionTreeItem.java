@@ -7,14 +7,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 
-import ui.JSIDPlay2Main;
-import ui.filefilter.TuneFileFilter;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import libsidutils.STIL;
+import ui.JSIDPlay2Main;
+import ui.filefilter.TuneFileFilter;
 
 public class MusicCollectionTreeItem extends TreeItem<File> {
 	private static final Comparator<File> FILE_COMPARATOR_IGNORE_CASE = new Comparator<File>() {
@@ -37,30 +35,25 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 			.getResource("icons/stil_no.png").toString());
 
 	private final FileFilter fFileFilter = new TuneFileFilter();
-	private File rootFile;
 	private boolean hasLoadedChildren;
 	private boolean isLeaf;
 	private boolean hasSTIL;
 
 	private MusicCollection musicCollection;
+	private libsidutils.STIL stil;
 
-	public MusicCollectionTreeItem(MusicCollection musicCollection, File file,
-			File rootFile) {
+	public MusicCollectionTreeItem(MusicCollection musicCollection,
+			libsidutils.STIL stil, File file) {
 		super(file);
-		init(musicCollection, file, rootFile);
-	}
-
-	public MusicCollectionTreeItem(MusicCollection musicCollection, File file,
-			File rootFile, Node icon) {
-		super(file, icon);
-		init(musicCollection, file, rootFile);
+		this.musicCollection = musicCollection;
+		this.stil = stil;
+		this.isLeaf = file.isFile();
+		this.hasSTIL = isLeaf && stil != null
+				&& stil.getSTILEntry(file) != null;
 	}
 
 	@Override
 	public boolean isLeaf() {
-		if (getValue().getName().toLowerCase().endsWith("zip")) {
-			return false;
-		}
 		return isLeaf;
 	}
 
@@ -76,13 +69,6 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		return hasSTIL;
 	}
 
-	private void init(MusicCollection musicCollection, File file, File rootFile) {
-		this.musicCollection = musicCollection;
-		this.rootFile = rootFile;
-		this.isLeaf = file.isFile();
-		this.hasSTIL = isLeaf && STIL.getSTIL(rootFile, file) != null;
-	}
-
 	private void loadChildren() {
 		hasLoadedChildren = true;
 		Collection<MusicCollectionTreeItem> children = new ArrayList<MusicCollectionTreeItem>();
@@ -90,12 +76,14 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		if (listFiles != null) {
 			Arrays.sort(listFiles, FILE_COMPARATOR_IGNORE_CASE);
 			for (File file : listFiles) {
-				boolean childIsLeaf = file.isFile();
-				boolean childHasSTIL = childIsLeaf
-						&& STIL.getSTIL(rootFile, file) != null;
-				children.add(new MusicCollectionTreeItem(musicCollection, file,
-						rootFile, childHasSTIL ? new ImageView(stilIcon)
-								: new ImageView(noStilIcon)));
+				MusicCollectionTreeItem childItem = new MusicCollectionTreeItem(
+						musicCollection, stil, file);
+				children.add(childItem);
+				if (childItem.hasSTIL()) {
+					childItem.setGraphic(new ImageView(stilIcon));
+				} else {
+					childItem.setGraphic(new ImageView(noStilIcon));
+				}
 			}
 		}
 		super.getChildren().setAll(children);

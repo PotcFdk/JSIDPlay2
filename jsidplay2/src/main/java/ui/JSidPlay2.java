@@ -58,7 +58,6 @@ import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.SidDatabase;
 import sidplay.ConsolePlayer;
 import sidplay.ConsolePlayer.MediaType;
 import ui.about.About;
@@ -80,6 +79,7 @@ import ui.siddump.SidDump;
 import ui.sidreg.SidReg;
 import ui.soundsettings.SoundSettings;
 import ui.videoscreen.Video;
+import de.schlichtherle.truezip.file.TFile;
 
 public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
@@ -105,8 +105,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			expand2000, expand4000, expand6000, expand8000, expandA000,
 			turnPrinterOn;
 	@FXML
-	protected RadioMenuItem normalSpeed, fastForward, ntsc, pal, c1541, c1541_II,
-			neverExtend, askExtend, accessExtend;
+	protected RadioMenuItem normalSpeed, fastForward, ntsc, pal, c1541,
+			c1541_II, neverExtend, askExtend, accessExtend;
 	@FXML
 	protected MenuItem previous, next, load, video, reset, quit, stop,
 			hardcopyPng, insertTape, insertDisk, insertCartridge;
@@ -209,7 +209,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				pauseContinue2.selectedProperty());
 		driveOn.selectedProperty().bindBidirectional(
 				getPlayer().drivesEnabledProperty());
-		
+
 		this.load.setAccelerator(new KeyCodeCombination(KeyCode.L,
 				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
 		this.video.setAccelerator(new KeyCodeCombination(KeyCode.V,
@@ -519,7 +519,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(file, null, MediaType.TAPE);
+			getConsolePlayer().insertMedia(new TFile(file), null,
+					MediaType.TAPE);
 		}
 	}
 
@@ -622,7 +623,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(file, null, MediaType.DISK);
+			getConsolePlayer().insertMedia(new TFile(file), null,
+					MediaType.DISK);
 		}
 	}
 
@@ -659,7 +661,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(file, null, MediaType.CART);
+			getConsolePlayer().insertMedia(new TFile(file), null,
+					MediaType.CART);
 		}
 	}
 
@@ -1006,7 +1009,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		String statusTime = String.format("%02d:%02d",
 				getPlayer().time() / 60 % 100, getPlayer().time() % 60);
 		String statusSongLength = "";
-		final int songLength = getSongLength(getPlayer().getTune());
+		int songLength = getConsolePlayer().getSongLength(getPlayer().getTune());
 		// song length well-known?
 		if (songLength > 0) {
 			statusSongLength = String.format("/%02d:%02d",
@@ -1036,24 +1039,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Get song length.
-	 * 
-	 * @param sidTune
-	 *            tune to get song length for
-	 * @return song length in seconds (0 means unknown, -1 means unconfigured)
-	 */
-	private int getSongLength(final SidTune sidTune) {
-		File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-				.getHvscFile();
-		SidDatabase database = SidDatabase.getInstance(hvscRoot);
-		getConsolePlayer().setSidDatabase(database);
-		if (database != null && sidTune != null) {
-			return database.length(sidTune);
-		}
-		return -1;
 	}
 
 	private C1541 getFirstFloppy() {

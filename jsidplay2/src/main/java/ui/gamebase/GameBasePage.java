@@ -74,6 +74,12 @@ public class GameBasePage extends C64Tab {
 							ObservableValue<? extends Games> observable,
 							Games oldValue, Games newValue) {
 						if (newValue != null) {
+							if (newValue.getScreenshotFilename().isEmpty()) {
+								System.out
+										.println("Screenshot is not available on GameBase64: "
+												+ newValue.getName());
+								return;
+							}
 							downloadStart(
 									GB64_SCREENSHOT_DOWNLOAD_URL
 											+ newValue.getScreenshotFilename()
@@ -86,7 +92,8 @@ public class GameBasePage extends C64Tab {
 
 	protected void startGame(Games game) {
 		if (game.getFilename().isEmpty()) {
-			System.out.println("Game is not available on GameBase64: " + game.getName());
+			System.out.println("Game is not available on GameBase64: "
+					+ game.getName());
 			return;
 		}
 		gameListener.setFileToRun(game.getFileToRun());
