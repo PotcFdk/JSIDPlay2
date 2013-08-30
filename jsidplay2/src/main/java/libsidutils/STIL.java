@@ -2,20 +2,17 @@ package libsidutils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import libsidutils.zip.ZipEntryFileProxy;
-
 public class STIL {
+	public static final String STIL_FILE = "DOCUMENTS/STIL.txt";
+
 	public static class Info {
 		public String name;
 		public String author;
@@ -58,57 +55,26 @@ public class STIL {
 	}
 
 	private final HashMap<String, STILEntry> fastMap = new HashMap<String, STILEntry>();
+	private File hvscRoot;
 
-	private static STIL theStil;
-	private static File theHVSCRoot;
-
-	public static STIL getInstance(File hvscRoot) {
-		if (theStil == null && hvscRoot != null
-				&& !hvscRoot.equals(theHVSCRoot)) {
-			File stilFile = getSTILFile(hvscRoot);
-			if (stilFile != null && stilFile.exists()) {
-				theStil = new STIL(stilFile);
-				theHVSCRoot = hvscRoot;
-			}
-		}
-		return theStil;
-	}
-
-	public static STILEntry getSTIL(File hvsc, final File file) {
-		final String name = PathUtils.getCollectionName(hvsc, file);
-		if (null != name) {
-			libsidutils.STIL stil = getInstance(hvsc);
-			if (stil != null) {
-				return stil.getSTIL(name);
-			}
-		}
-		return null;
-	}
-
-	private STIL(final File file) {
+	public STIL(File hvscRoot, InputStream input) throws Exception {
+		this.hvscRoot = hvscRoot;
 		fastMap.clear();
 
 		Pattern p = Pattern
 				.compile("(NAME|AUTHOR|TITLE|ARTIST|COMMENT): *(.*)");
 
-		BufferedReader r = null;
-		try {
-			final InputStream is;
-			if (file instanceof ZipEntryFileProxy) {
-				is = ((ZipEntryFileProxy) file).getInputStream();
-			} else {
-				is = new FileInputStream(file);
-			}
-			r = new BufferedReader(new InputStreamReader(is));
+		STILEntry entry = null;
+		TuneEntry tuneEntry = null;
+		Info lastInfo = null;
+		String lastProp = null;
+		StringBuilder cmts = new StringBuilder();
 
-			STILEntry entry = null;
-			TuneEntry tuneEntry = null;
-			Info lastInfo = null;
-			String lastProp = null;
-			StringBuilder cmts = new StringBuilder();
-
+		try (@SuppressWarnings("resource")
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(
+				input))) {
 			String line;
-			while ((line = r.readLine()) != null) {
+			while ((line = reader.readLine()) != null) {
 				if (line.startsWith("#")) {
 					cmts.append(line.trim() + "\n");
 					continue;
@@ -190,29 +156,11 @@ public class STIL {
 					f.set(lastInfo, f.get(lastInfo) + "\n" + line);
 				}
 			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (r != null) {
-				try {
-					r.close();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
 		}
 	}
 
-	private static File getSTILFile(File hvscRoot) {
-		List<File> docs = PathUtils.getFiles("DOCUMENTS/STIL.txt", hvscRoot,
-				null);
-		if (docs.size() > 0) {
-			return docs.get(docs.size() - 1);
-		}
-		return null;
+	public STILEntry getSTILEntry(File file) {
+		return fastMap.get(PathUtils.getCollectionName(hvscRoot, file));
 	}
 
-	public STILEntry getSTIL(String name) {
-		return fastMap.get(name);
-	}
 }

@@ -29,8 +29,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import libsidutils.PathUtils;
-import libsidutils.zip.ZipEntryFileProxy;
-import libsidutils.zip.ZipFileProxy;
 import ui.common.C64Tab;
 import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
@@ -41,6 +39,7 @@ import ui.entities.gamebase.service.ConfigService;
 import ui.entities.gamebase.service.GamesService;
 import ui.gamebase.listeners.GameListener;
 import ui.gamebase.listeners.MusicListener;
+import de.schlichtherle.truezip.file.TFile;
 
 public class GameBase extends C64Tab {
 
@@ -56,13 +55,11 @@ public class GameBase extends C64Tab {
 				return;
 			}
 			try {
-
-				ZipFileProxy zip = new ZipFileProxy(downloadedFile);
+				TFile zip = new TFile(downloadedFile);
 				for (File zipEntry : zip.listFiles()) {
 					if (zipEntry.isFile()) {
-						ZipEntryFileProxy.extractFromZip(
-								(ZipEntryFileProxy) zipEntry, getConfig()
-										.getSidplay2().getTmpDir());
+						TFile.cp(zipEntry, new File(getConfig().getSidplay2()
+								.getTmpDir(), zipEntry.getName()));
 					}
 				}
 				connect(new File(downloadedFile.getParent(),

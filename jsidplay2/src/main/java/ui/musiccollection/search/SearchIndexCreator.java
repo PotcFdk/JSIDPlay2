@@ -7,12 +7,12 @@ import java.io.File;
 
 import javax.persistence.EntityManager;
 
+import libsidutils.PathUtils;
+import sidplay.ConsolePlayer;
 import ui.entities.collection.service.HVSCEntryService;
 import ui.entities.collection.service.STILService;
 import ui.entities.collection.service.VersionService;
 import ui.entities.config.Configuration;
-
-import libsidutils.PathUtils;
 
 public final class SearchIndexCreator implements ISearchListener {
 
@@ -22,12 +22,15 @@ public final class SearchIndexCreator implements ISearchListener {
 	private VersionService versionService;
 
 	protected Configuration config;
+	private ConsolePlayer cp;
 	private File root;
 
 	public SearchIndexCreator(File root, final Configuration cfg,
+			final ConsolePlayer cp,
 			final EntityManager em) {
 		this.root = root;
 		this.config = cfg;
+		this.cp = cp;
 		this.em = em;
 		this.hvscEntryService = new HVSCEntryService(em);
 		this.stilService = new STILService(em);
@@ -47,7 +50,7 @@ public final class SearchIndexCreator implements ISearchListener {
 			String collectionRelName = PathUtils.getCollectionName(root,
 					matchFile);
 			if (collectionRelName != null) {
-				hvscEntryService.add(config, root, collectionRelName, matchFile);
+				hvscEntryService.add(config, cp, collectionRelName, matchFile);
 			}
 		} catch (final Exception e) {
 			System.err.println("Indexing failure on: "

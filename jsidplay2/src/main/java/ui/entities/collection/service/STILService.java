@@ -5,13 +5,12 @@ import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
 
-import ui.entities.collection.HVSCEntry;
-import ui.entities.config.Configuration;
-
 import libsidutils.STIL;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
+import ui.entities.collection.HVSCEntry;
+import ui.entities.config.Configuration;
 
 public class STILService {
 
@@ -21,10 +20,10 @@ public class STILService {
 		this.em = em;
 	};
 
-	public void add(final Configuration config, final File tuneFile,
-			File root, HVSCEntry hvscEntry) {
-		final STILEntry stilEntry = STIL.getSTIL(root, tuneFile);
-		if (stilEntry != null) {
+	public void add(final Configuration config, STIL stil, final File tuneFile,
+			HVSCEntry hvscEntry) {
+		if (stil != null && stil.getSTILEntry(tuneFile) != null) {
+			STILEntry stilEntry = stil.getSTILEntry(tuneFile);
 			// get STIL Global Comment
 			hvscEntry.setStilGlbComment(stilEntry.globalComment);
 			// add tune infos

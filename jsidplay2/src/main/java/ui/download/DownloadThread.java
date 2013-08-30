@@ -24,8 +24,7 @@ import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
 import ui.entities.config.Configuration;
-
-import libsidutils.PathUtils;
+import de.schlichtherle.truezip.file.TFile;
 
 
 /**
@@ -245,7 +244,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 			}
 		}
 		File resultFile = createLocalFile(url);
-		PathUtils.copyFile(mergedFile, resultFile);
+		TFile.cp(mergedFile, resultFile);
 		return resultFile;
 	}
 

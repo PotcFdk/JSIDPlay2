@@ -55,6 +55,7 @@ import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import libsidutils.SidDatabase;
 import ui.common.C64Tab;
 import ui.common.TypeTextField;
 import ui.common.dialog.YesNoDialog;
@@ -76,6 +77,8 @@ import ui.musiccollection.search.SearchIndexCreator;
 import ui.musiccollection.search.SearchIndexerThread;
 import ui.musiccollection.search.SearchThread;
 import ui.stil.STIL;
+import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 
 /**
  * Common view base for HVSC and CGSC collections. Loosely based on Rhythmbox,
@@ -356,13 +359,16 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private void showSTIL() {
 		TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
 				.getSelectedItem();
-		STIL stil = new STIL();
-		stil.setPlayer(getPlayer());
-		stil.setConfig(getConfig());
-		stil.setEntry(libsidutils.STIL.getSTIL(
-				fileBrowser.getRoot().getValue(), selectedItem.getValue()));
+		STIL stilInfo = new STIL();
+		stilInfo.setPlayer(getPlayer());
+		stilInfo.setConfig(getConfig());
+		libsidutils.STIL stil = getConsolePlayer().getStil();
+		if (stil != null) {
+			File hvscFile = selectedItem.getValue();
+			stilInfo.setEntry(stil.getSTILEntry(hvscFile));
+		}
 		try {
-			stil.open();
+			stilInfo.open();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -378,10 +384,11 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		if (directory != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					directory.getAbsolutePath());
+			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
+					.getSelectedItem();
 			Psid64 c = new Psid64(getConfig().getSidplay2().getTmpDir());
-			c.convertFiles(fileBrowser.getRoot().getValue(),
-					new File[] { fileBrowser.getSelectionModel()
-							.getSelectedItem().getValue() }, directory);
+			c.convertFiles(getConsolePlayer().getStil(),
+					new File[] { selectedItem.getValue() }, directory);
 		}
 	}
 
@@ -604,21 +611,41 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 							rootFile.getAbsolutePath());
 					File theRootFile = ((SidPlay2Section) getConfig()
 							.getSidplay2()).getHvscFile();
+					setSongLengthDatabase(theRootFile);
+					setSTIL(theRootFile);
 					fileBrowser.setRoot(new MusicCollectionTreeItem(this,
-							theRootFile, theRootFile));
+							getConsolePlayer().getStil(), theRootFile));
 				} else if (type == MusicCollectionType.CGSC) {
 					getConfig().getSidplay2().setCgsc(
 							rootFile.getAbsolutePath());
 					File theRootFile = ((SidPlay2Section) getConfig()
 							.getSidplay2()).getCgscFile();
 					fileBrowser.setRoot(new MusicCollectionTreeItem(this,
-							theRootFile, theRootFile));
+							getConsolePlayer().getStil(), theRootFile));
 				}
 				fileBrowser.setCellFactory(new MusicCollectionCellFactory());
 			}
 
 		}
 		doResetSearch();
+	}
+
+	private void setSTIL(File hvscRoot) {
+		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
+				libsidutils.STIL.STIL_FILE))) {
+			getConsolePlayer().setSTIL(new libsidutils.STIL(hvscRoot, input));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setSongLengthDatabase(File hvscRoot) {
+		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
+				SidDatabase.SONGLENGTHS_FILE))) {
+			getConsolePlayer().setSidDatabase(new SidDatabase(input));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void showPhoto(SidTune sidTune) {
@@ -631,7 +658,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	protected void showTuneInfos(File tuneFile, SidTune sidTune) {
 		tuneInfos.clear();
-		HVSCEntry entry = HVSCEntry.create(fileBrowser.getRoot().getValue(),
+		HVSCEntry entry = HVSCEntry.create(getConsolePlayer(),
 				tuneFile.getAbsolutePath(), tuneFile, sidTune);
 
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
@@ -770,8 +797,10 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			final File root = fileBrowser.getRoot().getValue();
 			searchThread = new SearchIndexerThread(root);
 			searchThread.addSearchListener(this);
-			searchThread.addSearchListener(new SearchIndexCreator(fileBrowser
-					.getRoot().getValue(), getConfig(), em));
+			searchThread
+					.addSearchListener(new SearchIndexCreator(fileBrowser
+							.getRoot().getValue(), getConfig(),
+							getConsolePlayer(), em));
 
 			searchThread.start();
 		} else {

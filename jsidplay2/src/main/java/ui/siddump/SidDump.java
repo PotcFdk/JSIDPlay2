@@ -22,7 +22,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
 import libsidplay.sidtune.SidTune;
-import libsidutils.SidDatabase;
 import netsiddev.InvalidCommandException;
 import sidplay.ini.IniReader;
 import ui.common.C64Stage;
@@ -403,7 +402,7 @@ public class SidDump extends C64Stage {
 		sidDumpExtension.setCurrentSong(subTune);
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
-			int songLength = getSongLength(tune);
+			int songLength = getConsolePlayer().getSongLength(tune);
 			if (songLength <= 0) {
 				songLength = getConfig().getSidplay2().getPlayLength();
 				if (songLength == 0) {
@@ -436,16 +435,6 @@ public class SidDump extends C64Stage {
 			startStopRecording.setTooltip(new Tooltip(null));
 		}
 		sidDumpExtension.init();
-	}
-
-	private int getSongLength(final SidTune sidTuneMod) {
-		File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-				.getHvscFile();
-		SidDatabase database = SidDatabase.getInstance(hvscRoot);
-		if (database != null) {
-			return database.length(sidTuneMod);
-		}
-		return -1;
 	}
 
 }

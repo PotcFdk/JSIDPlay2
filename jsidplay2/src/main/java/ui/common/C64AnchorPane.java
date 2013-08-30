@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import libsidplay.Player;
+import sidplay.ConsolePlayer;
 import ui.entities.config.Configuration;
 import ui.events.UIEvent;
 import ui.events.UIEventFactory;
@@ -58,6 +59,14 @@ public abstract class C64AnchorPane extends AnchorPane implements UIPart {
 
 	public void setConfig(Configuration config) {
 		util.setConfig(config);
+	}
+
+	public ConsolePlayer getConsolePlayer() {
+		return util.getConsolePlayer();
+	}
+
+	public void setConsolePlayer(ConsolePlayer cp) {
+		util.setConsolePlayer(cp);
 	}
 
 }

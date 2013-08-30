@@ -11,7 +11,7 @@ public class ConfigService {
 
 	private static final int EXPCT_MAJOR_VERSION = 2;
 	private static final int EXPCT_MINOR_VERSION = 8;
-	private static final int EXPCT_OFFICIAL_UPDATE = 9;
+	private static final int EXPCT_OFFICIAL_UPDATE = 10;
 
 	private EntityManager em;
 

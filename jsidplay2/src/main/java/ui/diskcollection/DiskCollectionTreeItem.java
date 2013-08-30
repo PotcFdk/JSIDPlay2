@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Comparator;
 
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 
 public class DiskCollectionTreeItem extends TreeItem<File> {
@@ -34,16 +33,6 @@ public class DiskCollectionTreeItem extends TreeItem<File> {
 	public DiskCollectionTreeItem(File file, File rootFile,
 			FileFilter fileFilter) {
 		super(file);
-		init(file, rootFile, fileFilter);
-	}
-
-	public DiskCollectionTreeItem(File file, File rootFile, Node icon,
-			FileFilter fileFilter) {
-		super(file, icon);
-		init(file, rootFile, fileFilter);
-	}
-
-	private void init(File file, File rootFile, FileFilter fileFilter) {
 		this.rootFile = rootFile;
 		this.isLeaf = file.isFile();
 		this.fileFilter = fileFilter;
@@ -51,9 +40,6 @@ public class DiskCollectionTreeItem extends TreeItem<File> {
 
 	@Override
 	public boolean isLeaf() {
-		if (getValue().getName().toLowerCase().endsWith("zip")) {
-			return false;
-		}
 		return isLeaf;
 	}
 

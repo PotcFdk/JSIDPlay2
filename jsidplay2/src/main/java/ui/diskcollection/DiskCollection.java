@@ -4,10 +4,12 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.zip.GZIPInputStream;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -32,8 +34,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import libsidutils.PathUtils;
-import libsidutils.zip.ZipEntryFileProxy;
-import libsidutils.zip.ZipFileProxy;
 import sidplay.ConsolePlayer.MediaType;
 import ui.common.C64Tab;
 import ui.directory.Directory;
@@ -44,8 +44,13 @@ import ui.filefilter.DiskFileFilter;
 import ui.filefilter.DocsFileFilter;
 import ui.filefilter.ScreenshotFileFilter;
 import ui.filefilter.TapeFileFilter;
+import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 
 public class DiskCollection extends C64Tab {
+
+	private static final String HVMEC_DATA = "DATA";
+	private static final String HVMEC_CONTROL = "CONTROL";
 
 	@FXML
 	protected CheckBox autoConfiguration;
@@ -75,7 +80,7 @@ public class DiskCollection extends C64Tab {
 		@Override
 		public boolean accept(File file) {
 			if (type == DiscCollectionType.HVMEC && file.isDirectory()
-					&& file.getName().equals("HVMEC/CONTROL/")) {
+					&& file.getName().equals(HVMEC_CONTROL)) {
 				return false;
 			}
 			return diskFileFilter.accept(file) || tapeFileFilter.accept(file)
@@ -116,6 +121,8 @@ public class DiskCollection extends C64Tab {
 		// XXX JavaFX: better initialization support using constructor
 		// arguments?
 		directory.setConfig(getConfig());
+		directory.setPlayer(getPlayer());
+		directory.setConsolePlayer(getConsolePlayer());
 		directory.initialize(location, resources);
 
 		directory.getAutoStartFileProperty().addListener(
@@ -155,7 +162,7 @@ public class DiskCollection extends C64Tab {
 								&& newValue.getValue().isFile()) {
 							File file = newValue.getValue();
 							showScreenshot(file);
-							directory.loadPreview(file);
+							directory.loadPreview(extract(file));
 						}
 					}
 
@@ -246,7 +253,8 @@ public class DiskCollection extends C64Tab {
 	private void attachDisk() {
 		File selectedFile = fileBrowser.getSelectionModel().getSelectedItem()
 				.getValue();
-		getConsolePlayer().insertMedia(selectedFile, null, MediaType.DISK);
+		getConsolePlayer().insertMedia(extract(selectedFile), null,
+				MediaType.DISK);
 	}
 
 	@FXML
@@ -273,8 +281,7 @@ public class DiskCollection extends C64Tab {
 		if (rootFile.exists()) {
 			collectionDir.setText(rootFile.getAbsolutePath());
 
-			final File theRootFile = rootFile.getName().toLowerCase()
-					.endsWith(".zip") ? new ZipFileProxy(rootFile) : rootFile;
+			final File theRootFile = new TFile(rootFile);
 			fileBrowser.setRoot(new DiskCollectionTreeItem(theRootFile,
 					theRootFile, fileBrowserFileFilter));
 
@@ -288,13 +295,12 @@ public class DiskCollection extends C64Tab {
 		}
 	}
 
-	protected void attachAndRunDemo(File selectedFile, final File autoStartFile) {
-		if (selectedFile.getName().toLowerCase().endsWith(".pdf")) {
+	protected void attachAndRunDemo(File file, final File autoStartFile) {
+		if (file.getName().toLowerCase().endsWith(".pdf")) {
 			try {
-				selectedFile = extractFile(selectedFile);
-				if (selectedFile.exists()) {
+				if (file.exists()) {
 					if (Desktop.isDesktopSupported()) {
-						Desktop.getDesktop().open(selectedFile);
+						Desktop.getDesktop().open(file);
 					} else {
 						System.out.println("Awt Desktop is not supported!");
 					}
@@ -303,22 +309,23 @@ public class DiskCollection extends C64Tab {
 				ex.printStackTrace();
 			}
 		} else {
-			if (diskFileFilter.accept(selectedFile)) {
-				getConsolePlayer().insertMedia(selectedFile, autoStartFile,
+			File extractedFile = extract(file);
+			if (diskFileFilter.accept(file)) {
+				getConsolePlayer().insertMedia(extractedFile, autoStartFile,
 						MediaType.DISK);
 			} else {
-				getConsolePlayer().insertMedia(selectedFile, autoStartFile,
+				getConsolePlayer().insertMedia(extractedFile, autoStartFile,
 						MediaType.TAPE);
 			}
 			if (autoStartFile == null) {
-				resetAndLoadDemo(selectedFile);
+				resetAndLoadDemo(extractedFile);
 			}
 		}
 	}
 
-	private void resetAndLoadDemo(final File selectedFile) {
+	private void resetAndLoadDemo(final File file) {
 		final String command;
-		if (diskFileFilter.accept(selectedFile)) {
+		if (diskFileFilter.accept(file)) {
 			// load from disk
 			command = "LOAD\"*\",8,1\rRUN\r";
 		} else {
@@ -340,10 +347,10 @@ public class DiskCollection extends C64Tab {
 		try {
 			File screenshot = findScreenshot(file);
 			if (screenshot != null) {
-				screenshot = extractFile(screenshot);
 				if (screenshot.exists()) {
-					return new Image(screenshot.toURI().toURL()
-							.toExternalForm());
+					try (TFileInputStream is = new TFileInputStream(screenshot)) {
+						return new Image(is);
+					}
 				}
 			}
 		} catch (IOException e) {
@@ -358,7 +365,7 @@ public class DiskCollection extends C64Tab {
 			return null;
 		}
 		String parentPath = type == DiscCollectionType.HVMEC ? file
-				.getParentFile().getPath().replace("/DATA/", "/CONTROL/")
+				.getParentFile().getPath().replace(HVMEC_DATA, HVMEC_CONTROL)
 				: file.getParentFile().getPath();
 		List<File> parentFiles = PathUtils.getFiles(parentPath,
 				rootItem.getValue(), null);
@@ -374,18 +381,29 @@ public class DiskCollection extends C64Tab {
 		return null;
 	}
 
-	private File extractFile(File file) throws IOException {
-		if (file instanceof ZipEntryFileProxy) {
-			// Extract ZIP file
-			file = ZipEntryFileProxy.extractFromZip((ZipEntryFileProxy) file,
-					getConfig().getSidplay2().getTmpDir());
-		}
+	protected File extract(File file) {
 		if (file.getName().endsWith(".gz")) {
-			// Extract GZ file
-			file = ZipEntryFileProxy.extractFromGZ(file, getConfig()
-					.getSidplay2().getTmpDir());
+			File dst = new File(getConfig().getSidplay2().getTmpDir(),
+					PathUtils.getBaseNameNoExt(file));
+			dst.deleteOnExit();
+			try (InputStream is = new GZIPInputStream(
+					new TFileInputStream(file))) {
+				TFile.cp(is, dst);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return dst;
+		} else {
+			File dst = new File(getConfig().getSidplay2().getTmpDir(),
+					file.getName());
+			dst.deleteOnExit();
+			try {
+				new TFile(file).cp(dst);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return dst;
 		}
-		return file;
 	}
 
 }

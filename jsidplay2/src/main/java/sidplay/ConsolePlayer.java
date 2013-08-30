@@ -4,6 +4,7 @@ import hardsid_builder.HardSID;
 import hardsid_builder.HardSIDBuilder;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -26,9 +27,9 @@ import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PRG2TAP;
+import libsidutils.STIL;
 import libsidutils.SidDatabase;
 import libsidutils.cpuparser.CPUParser;
-import libsidutils.zip.ZipEntryFileProxy;
 import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ISIDDefs.ChipModel;
@@ -214,7 +215,7 @@ public class ConsolePlayer {
 	public SidTune getTune() {
 		return tune;
 	}
-	
+
 	private IntegerProperty state = new SimpleIntegerProperty();
 
 	public final IntegerProperty getState() {
@@ -265,6 +266,7 @@ public class ConsolePlayer {
 	private boolean lastTimeMP3;
 
 	private SidDatabase sidDatabase;
+	private STIL stil;
 
 	/**
 	 * Console player thread.
@@ -279,20 +281,29 @@ public class ConsolePlayer {
 		track.single = iniCfg.getSidplay2().isSingle();
 		String hvscRoot = iniCfg.getSidplay2().getHvsc();
 		if (hvscRoot != null) {
-			sidDatabase = SidDatabase.getInstance(new File(hvscRoot));
+			File file = new File(hvscRoot, SidDatabase.SONGLENGTHS_FILE);
+			try (FileInputStream input = new FileInputStream(file)) {
+				setSidDatabase(new SidDatabase(input));
+			} catch (IOException e) {
+				// silently ignored!
+			}
 		}
 	}
 
 	/**
 	 * Create the SID emulation.
 	 * 
-	 * @param emu          The SID emulation to use (ReSID, HardSID, etc).
-	 * @param audioConfig  The {@link AudioConfig} to use for the SID emulation.
-	 * @param cpuFrequency The CPU frequency to use for the SID.
-	 *
+	 * @param emu
+	 *            The SID emulation to use (ReSID, HardSID, etc).
+	 * @param audioConfig
+	 *            The {@link AudioConfig} to use for the SID emulation.
+	 * @param cpuFrequency
+	 *            The CPU frequency to use for the SID.
+	 * 
 	 * @return True if the SID emulation could be created; false otherwise.
 	 */
-	private boolean createSidEmu(final SIDEMUS emu, AudioConfig audioConfig, double cpuFrequency) {
+	private boolean createSidEmu(final SIDEMUS emu, AudioConfig audioConfig,
+			double cpuFrequency) {
 		sidEmuFactory = null;
 
 		switch (emu) {
@@ -440,8 +451,10 @@ public class ConsolePlayer {
 
 		if (sidEmuFactory instanceof ReSIDBuilder) {
 			ReSIDBuilder reSIDBuilder = (ReSIDBuilder) sidEmuFactory;
-			reSIDBuilder.setSIDVolume(0, dB2Factor(iniCfg.getAudio().getLeftVolume()));
-			reSIDBuilder.setSIDVolume(1, dB2Factor(iniCfg.getAudio().getRightVolume()));
+			reSIDBuilder.setSIDVolume(0, dB2Factor(iniCfg.getAudio()
+					.getLeftVolume()));
+			reSIDBuilder.setSIDVolume(1, dB2Factor(iniCfg.getAudio()
+					.getRightVolume()));
 			reSIDBuilder.setOutput(OUTPUTS.OUT_NULL.getDriver());
 		}
 
@@ -533,7 +546,7 @@ public class ConsolePlayer {
 		if (tune != null) {
 			if (sidDatabase != null && !timer.valid
 					&& iniCfg.getSidplay2().isEnableDatabase()) {
-				final int length = sidDatabase.length(tune);
+				final int length = getSongLength(tune);
 				if (length >= 0) {
 					// length==0 means forever
 					// this is used for tunes
@@ -615,7 +628,7 @@ public class ConsolePlayer {
 	public void setSLDb(final boolean enableSLDb) {
 		if (!timer.valid) {
 			if (enableSLDb && tune != null && sidDatabase != null) {
-				final int length = sidDatabase.length(tune);
+				final int length = getSongLength(tune);
 				if (length >= 0) {
 					timer.defaultLength = length;
 					timer.stop = timer.defaultLength;
@@ -824,7 +837,8 @@ public class ConsolePlayer {
 	/**
 	 * Convert time from integer.
 	 * 
-	 * @param str The time string to parse.
+	 * @param str
+	 *            The time string to parse.
 	 * @return The time as an integer.
 	 */
 	private long parseTime(final String str) {
@@ -861,7 +875,8 @@ public class ConsolePlayer {
 	/**
 	 * Parse command line arguments
 	 * 
-	 * @param argv The command line arguments.
+	 * @param argv
+	 *            The command line arguments.
 	 * @return
 	 */
 	public int args(final String[] argv) {
@@ -1055,10 +1070,10 @@ public class ConsolePlayer {
 			return -1;
 		}
 		try {
-			try (InputStream stream = new URL(argv[infile])
-			.openConnection().getInputStream()) {
-					// load from URL
-					loadTune(SidTune.load(stream));
+			try (InputStream stream = new URL(argv[infile]).openConnection()
+					.getInputStream()) {
+				// load from URL
+				loadTune(SidTune.load(stream));
 			} catch (MalformedURLException e) {
 				// load from file
 				loadTune(SidTune.load(new File(argv[infile])));
@@ -1482,7 +1497,7 @@ public class ConsolePlayer {
 	 * 
 	 * @param sidTune
 	 *            file to play the tune (null means just reset C64)
-	 * @param command 
+	 * @param command
 	 */
 	public void playTune(final SidTune sidTune, String command) {
 		// Stop previous run
@@ -1498,27 +1513,12 @@ public class ConsolePlayer {
 	public enum MediaType {
 		DISK, TAPE, CART
 	}
-	
+
 	public void insertMedia(File mediaFile, File autostartFile,
 			MediaType mediaType) {
 		try {
-			if (mediaFile instanceof ZipEntryFileProxy) {
-				// Extract ZIP file
-				ZipEntryFileProxy zipEntryFileProxy = (ZipEntryFileProxy) mediaFile;
-				mediaFile = ZipEntryFileProxy.extractFromZip(
-						(ZipEntryFileProxy) mediaFile, getConfig()
-								.getSidplay2().getTmpDir());
-				getConfig().getSidplay2().setLastDirectory(
-						zipEntryFileProxy.getZip().getAbsolutePath());
-			} else {
-				getConfig().getSidplay2().setLastDirectory(
-						mediaFile.getParentFile().getAbsolutePath());
-			}
-			if (mediaFile.getName().endsWith(".gz")) {
-				// Extract GZ file
-				mediaFile = ZipEntryFileProxy.extractFromGZ(mediaFile,
-						getConfig().getSidplay2().getTmpDir());
-			}
+			getConfig().getSidplay2().setLastDirectory(
+					mediaFile.getParentFile().getAbsolutePath());
 			switch (mediaType) {
 			case TAPE:
 				insertTape(mediaFile, autostartFile);
@@ -1703,5 +1703,26 @@ public class ConsolePlayer {
 		this.sidDatabase = sidDatabase;
 	}
 
-}
+	public int getSongLength(SidTune t) {
+		if (t != null && sidDatabase != null) {
+			return sidDatabase.length(t);
+		}
+		return -1;
+	}
 
+	public int getFullSongLength(SidTune t) {
+		if (t != null && sidDatabase != null) {
+			return sidDatabase.getFullSongLength(t);
+		}
+		return 0;
+	}
+
+	public void setSTIL(STIL stil) {
+		this.stil = stil;
+	}
+
+	public STIL getStil() {
+		return stil;
+	}
+	
+}

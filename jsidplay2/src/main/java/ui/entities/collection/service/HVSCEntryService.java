@@ -17,14 +17,14 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
+import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
+import sidplay.ConsolePlayer;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry;
 import ui.entities.collection.StilEntry_;
 import ui.entities.config.Configuration;
-
-import libsidplay.sidtune.SidTune;
-import libsidplay.sidtune.SidTuneError;
 
 public class HVSCEntryService {
 
@@ -67,12 +67,13 @@ public class HVSCEntryService {
 		this.stilService = new STILService(em);
 	};
 
-	public HVSCEntry add(final Configuration config, File root, final String path,
-			final File tuneFile) throws IOException, SidTuneError {
+	public HVSCEntry add(final Configuration config, ConsolePlayer cp,
+			final String path, final File tuneFile) throws IOException,
+			SidTuneError {
 		final SidTune tune = tuneFile.isFile() ? SidTune.load(tuneFile) : null;
-		HVSCEntry hvscEntry = HVSCEntry.create(root, path, tuneFile, tune);
+		HVSCEntry hvscEntry = HVSCEntry.create(cp, path, tuneFile, tune);
 
-		stilService.add(config, tuneFile, root, hvscEntry);
+		stilService.add(config, cp.getStil(), tuneFile, hvscEntry);
 
 		try {
 			em.persist(hvscEntry);

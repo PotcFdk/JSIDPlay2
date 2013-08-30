@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import libsidplay.Player;
+import sidplay.ConsolePlayer;
 import ui.entities.config.Configuration;
 import ui.events.UIEvent;
 import ui.events.UIEventFactory;
@@ -54,6 +55,14 @@ public abstract class C64VBox extends VBox implements UIPart {
 
 	public Configuration getConfig() {
 		return util.getConfig();
+	}
+
+	public ConsolePlayer getConsolePlayer() {
+		return util.getConsolePlayer();
+	}
+
+	public void setConsolePlayer(ConsolePlayer cp) {
+		util.setConsolePlayer(cp);
 	}
 
 	public void setConfig(Configuration config) {

@@ -18,9 +18,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import libsidplay.components.DirEntry;
-import libsidutils.zip.ZipEntryFileProxy;
 import ui.common.C64AnchorPane;
-import ui.entities.config.SidPlay2Section;
 
 public class Directory extends C64AnchorPane {
 
@@ -124,55 +122,43 @@ public class Directory extends C64AnchorPane {
 		if (file == null) {
 			return;
 		}
+		this.file = file;
+		dirColumn.setText(file.getName());
+		directoryEntries.clear();
 		try {
-			if (file instanceof ZipEntryFileProxy) {
-				// Load file entry from ZIP
-				ZipEntryFileProxy zipEntry = (ZipEntryFileProxy) file;
-				file = ZipEntryFileProxy.extractFromZip(zipEntry, getConfig()
-						.getSidplay2().getTmpDir());
-			}
-			this.file = file;
-			dirColumn.setText(file.getName());
-			directoryEntries.clear();
-			try {
-				libsidplay.components.Directory dir = PseudoDirectory
-						.getDirectory(((SidPlay2Section) getConfig()
-								.getSidplay2()).getHvscFile(), file,
-								getConfig());
-				if (dir != null) {
-					// Print directory title/id
-					DirectoryItem headerItem = new DirectoryItem();
-					headerItem.setText(print(dir.toString(), fontSetHeader));
-					directoryEntries.add(headerItem);
-					List<DirEntry> dirEntries = dir.getDirEntries();
-					// Print directory entries
-					for (DirEntry dirEntry : dirEntries) {
-						DirectoryItem dirItem = new DirectoryItem();
-						dirItem.setText(print(dirEntry.toString(), fontSet));
-						dirItem.setDirEntry(dirEntry);
-						directoryEntries.add(dirItem);
-					}
-					// Print directory result
-					if (dir.getStatusLine() != null) {
-						DirectoryItem dirItem = new DirectoryItem();
-						dirItem.setText(print(dir.getStatusLine(), fontSet));
-						directoryEntries.add(dirItem);
-					}
-				} else {
-					throw new IOException();
+			libsidplay.components.Directory dir = PseudoDirectory.getDirectory(
+					getConsolePlayer(), file, getConfig());
+			if (dir != null) {
+				// Print directory title/id
+				DirectoryItem headerItem = new DirectoryItem();
+				headerItem.setText(print(dir.toString(), fontSetHeader));
+				directoryEntries.add(headerItem);
+				List<DirEntry> dirEntries = dir.getDirEntries();
+				// Print directory entries
+				for (DirEntry dirEntry : dirEntries) {
+					DirectoryItem dirItem = new DirectoryItem();
+					dirItem.setText(print(dirEntry.toString(), fontSet));
+					dirItem.setDirEntry(dirEntry);
+					directoryEntries.add(dirItem);
 				}
-			} catch (IOException ioE) {
-				DirectoryItem dirItem = new DirectoryItem();
-				dirItem.setText(print("SORRY, NO PREVIEW AVAILABLE!",
-						TRUE_TYPE_FONT_BIG));
-				directoryEntries.add(dirItem);
+				// Print directory result
+				if (dir.getStatusLine() != null) {
+					DirectoryItem dirItem = new DirectoryItem();
+					dirItem.setText(print(dir.getStatusLine(), fontSet));
+					directoryEntries.add(dirItem);
+				}
+			} else {
+				throw new IOException();
 			}
+		} catch (IOException ioE) {
 			DirectoryItem dirItem = new DirectoryItem();
-			dirItem.setText(print("READY.", TRUE_TYPE_FONT_BIG));
+			dirItem.setText(print("SORRY, NO PREVIEW AVAILABLE!",
+					TRUE_TYPE_FONT_BIG));
 			directoryEntries.add(dirItem);
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+		DirectoryItem dirItem = new DirectoryItem();
+		dirItem.setText(print("READY.", TRUE_TYPE_FONT_BIG));
+		directoryEntries.add(dirItem);
 	}
 
 	private String print(final String s, int fontSet) {

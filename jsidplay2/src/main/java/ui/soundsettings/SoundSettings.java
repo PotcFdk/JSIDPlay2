@@ -1,4 +1,3 @@
-
 package ui.soundsettings;
 
 import static sidplay.ConsolePlayer.playerRunning;
@@ -39,7 +38,6 @@ import libsidplay.common.ISID2Types;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
-import libsidutils.zip.ZipFileProxy;
 import resid_builder.resid.ISIDDefs.SamplingMethod;
 import sidplay.ConsolePlayer.DriverSettings;
 import sidplay.ConsolePlayer.OUTPUTS;
@@ -49,6 +47,7 @@ import sidplay.ini.IniReader;
 import ui.common.C64Stage;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
+import de.schlichtherle.truezip.file.TFile;
 
 public class SoundSettings extends C64Stage {
 
@@ -58,7 +57,7 @@ public class SoundSettings extends C64Stage {
 				Number arg1, Number arg2) {
 			if (arg2.intValue() == playerRunning) {
 				Platform.runLater(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						setTune(getPlayer().getTune());
@@ -215,7 +214,6 @@ public class SoundSettings extends C64Stage {
 		duringInitialization = false;
 	}
 
-	
 	@Override
 	protected void doCloseWindow() {
 		timer.stop();
@@ -395,9 +393,8 @@ public class SoundSettings extends C64Stage {
 		}
 		final SidTuneInfo tuneInfo = sidTune.getInfo();
 		File rootFile = new File(getConfig().getSidplay2().getHvsc());
-		final File theRootFile = rootFile.getName().toLowerCase()
-				.endsWith(".zip") ? new ZipFileProxy(rootFile) : rootFile;
-		String name = PathUtils.getCollectionName(theRootFile, tuneInfo.file);
+		String name = PathUtils.getCollectionName(new TFile(rootFile),
+				tuneInfo.file);
 		if (name != null) {
 			hvscName = name.replace(".sid", "");
 			currentSong = tuneInfo.currentSong;
@@ -425,19 +422,22 @@ public class SoundSettings extends C64Stage {
 		try {
 			downloadThread = new DownloadThread(getConfig(),
 					new ProgressListener(progress) {
-						
+
 						@Override
 						public void downloaded(final File downloadedFile) {
 							downloadThread = null;
 
 							if (downloadedFile != null) {
 								Platform.runLater(new Runnable() {
-									
+
 									@Override
 									public void run() {
-										soundDevice.getSelectionModel().select(4);
-										mp3.setText(downloadedFile.getAbsolutePath());
-										getConfig().getAudio().setMp3File(mp3.getText());
+										soundDevice.getSelectionModel().select(
+												4);
+										mp3.setText(downloadedFile
+												.getAbsolutePath());
+										getConfig().getAudio().setMp3File(
+												mp3.getText());
 										setPlayOriginal(true);
 										playMP3.setSelected(true);
 										restart();

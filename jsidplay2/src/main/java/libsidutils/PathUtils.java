@@ -2,22 +2,11 @@ package libsidutils;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
-
-import libsidutils.zip.ZipEntryFileProxy;
 
 /**
  * This class provides a function used to generate a path name. JSIDPlay uses
@@ -29,8 +18,6 @@ import libsidutils.zip.ZipEntryFileProxy;
  */
 @SuppressWarnings("resource")
 public class PathUtils {
-	private static final int COPY_FILE_BUFFER_SIZE = 1 << 20;
-
 	/**
 	 * ZIP entries uses slash, Windows uses backslash.
 	 */
@@ -85,40 +72,6 @@ public class PathUtils {
 			return Collections.emptyList();
 		}
 		return pathSegs;
-	}
-
-	public static void copyFile(File inputFile, File outputFile)
-			throws IOException {
-		try (InputStream input = (inputFile instanceof ZipEntryFileProxy) ? ((ZipEntryFileProxy) inputFile)
-				.getInputStream() : new FileInputStream(inputFile);
-				OutputStream output = new FileOutputStream(outputFile)) {
-
-			final ReadableByteChannel inputChannel = Channels.newChannel(input);
-			final WritableByteChannel outputChannel = Channels
-					.newChannel(output);
-			PathUtils.fastChannelCopy(inputChannel, outputChannel);
-		}
-	}
-
-	private static void fastChannelCopy(final ReadableByteChannel src,
-			final WritableByteChannel dest) throws IOException {
-		final ByteBuffer buffer = ByteBuffer
-				.allocateDirect(COPY_FILE_BUFFER_SIZE);
-		while (src.read(buffer) != -1) {
-			// prepare the buffer to be drained
-			buffer.flip();
-			// write to the channel, may block
-			dest.write(buffer);
-			// If partial transfer, shift remainder down
-			// If buffer is empty, same as doing clear()
-			buffer.compact();
-		}
-		// EOF will leave buffer in fill state
-		buffer.flip();
-		// make sure the buffer is fully drained.
-		while (buffer.hasRemaining()) {
-			dest.write(buffer);
-		}
 	}
 
 	public static String getBaseNameNoExt(final File file) {

@@ -163,7 +163,7 @@ public class Psid64 {
 		return true;
 	}
 
-	public boolean convert(File hvscRoot) {
+	public boolean convert() {
 		final block_t blocks[] = new block_t[MAX_BLOCKS];
 		for (int i = 0; i < blocks.length; i++) {
 			blocks[i] = new block_t();
@@ -181,7 +181,7 @@ public class Psid64 {
 		}
 
 		// retrieve STIL entry for this SID tune
-		if (!formatStilText(hvscRoot)) {
+		if (!formatStilText(m_stilEntry)) {
 			return false;
 		}
 
@@ -649,12 +649,12 @@ public class Psid64 {
 		m_screen.write("Website: http://psid64.sourceforge.net");
 	}
 
-	private boolean formatStilText(File hvscRoot) {
+	private boolean formatStilText(STILEntry stil) {
 		m_stilText = "";
 
 		String str = "";
 		if (m_stilEntry == null && m_file != null) {
-			m_stilEntry = STIL.getSTIL(hvscRoot, m_file);
+			m_stilEntry = stil;
 		}
 		if (m_stilEntry != null) {
 			str += writeEntry(m_stilEntry);
@@ -989,28 +989,27 @@ public class Psid64 {
 		return m_statusString;
 	}
 
-	public void convertFiles(File hvscRoot, final File[] files,
+	public void convertFiles(STIL stil, final File[] files,
 			final File target) {
 		for (final File file : files) {
 			if (file.isDirectory()) {
-				convertFiles(hvscRoot, file.listFiles(), target);
+				convertFiles(stil, file.listFiles(), target);
 			} else {
-				convertToPSID64(hvscRoot, file, target);
+				convertToPSID64(stil, file, target);
 			}
 		}
 	}
 
-	private void convertToPSID64(File hvscRoot, final File file,
+	private void convertToPSID64(STIL stil, final File file,
 			final File target) {
-		final String filename = file.getAbsolutePath();
-		setStilEntry(STIL.getSTIL(hvscRoot, file));
+		setStilEntry(stil != null ? stil.getSTILEntry(file) : null);
 		if (!load(file)) {
-			System.err.println("filename: " + filename);
+			System.err.println("filename: " + file.getAbsolutePath());
 			System.err.println(getStatus());
 			return;
 		}
-		if (!convert(hvscRoot)) {
-			System.err.println("filename: " + filename);
+		if (!convert()) {
+			System.err.println("filename: " + file.getAbsolutePath());
 			System.err.println(getStatus());
 			return;
 		}
@@ -1019,7 +1018,7 @@ public class Psid64 {
 			tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file)
 					+ ".prg.tmp");
 			if (!save(tmpFile.getAbsolutePath())) {
-				System.err.println("filename: " + filename);
+				System.err.println("filename: " + file.getAbsolutePath());
 				System.err.println(getStatus());
 				return;
 			}

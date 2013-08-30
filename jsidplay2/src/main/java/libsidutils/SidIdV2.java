@@ -292,13 +292,13 @@ public final class SidIdV2 {
 	 *             read error
 	 */
 	private byte[] load(final String name) throws IOException {
-		final DataInputStream in = new DataInputStream(
-				new FileInputStream(name));
-		final int length = (int) new File(name).length();
-		final byte[] buffer = new byte[length];
-		in.readFully(buffer);
-		in.close();
-		return buffer;
+		try (final DataInputStream in = new DataInputStream(
+				new FileInputStream(name))) {
+			final int length = (int) new File(name).length();
+			final byte[] buffer = new byte[length];
+			in.readFully(buffer);
+			return buffer;
+		}
 	}
 
 	/**
@@ -448,13 +448,12 @@ public final class SidIdV2 {
 	 * @return the contents
 	 */
 	private byte[] readInternal() {
-		final InputStream inputStream = getClass().getClassLoader()
-		.getResourceAsStream(SID_ID_PKG + FNAME);
-		if (inputStream == null) {
-			throw new RuntimeException("Internal SIDID not found: "
-					+ SID_ID_PKG + FNAME);
-		}
-		try {
+		try (final InputStream inputStream = getClass().getClassLoader()
+				.getResourceAsStream(SID_ID_PKG + FNAME)) {
+			if (inputStream == null) {
+				throw new RuntimeException("Internal SIDID not found: "
+						+ SID_ID_PKG + FNAME);
+			}
 			final int length = inputStream.available();
 			final byte[] data = new byte[length];
 			int count, pos = 0;
@@ -470,12 +469,6 @@ public final class SidIdV2 {
 			e.printStackTrace();
 			throw new RuntimeException("Internal SIDID not found: "
 					+ SID_ID_PKG + FNAME);
-		} finally {
-			try {
-				inputStream.close();
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 

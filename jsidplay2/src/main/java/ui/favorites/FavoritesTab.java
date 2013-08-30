@@ -46,7 +46,6 @@ import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
-import libsidutils.STIL.STILEntry;
 import ui.common.C64Tab;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
@@ -59,6 +58,8 @@ import ui.filefilter.TuneFileFilter;
 import ui.stil.STIL;
 
 import com.sun.javafx.scene.control.skin.TableColumnHeader;
+
+import de.schlichtherle.truezip.file.TFile;
 
 public class FavoritesTab extends C64Tab {
 
@@ -198,8 +199,11 @@ public class FavoritesTab extends C64Tab {
 			public void handle(WindowEvent event) {
 				HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
 						.getSelectedItem();
+
+				libsidutils.STIL stil = getConsolePlayer().getStil();
 				showStil.setDisable(hvscEntry == null
-						|| getStilEntry(hvscEntry.getPath()) == null);
+						|| stil == null
+						|| stil.getSTILEntry(getFile(hvscEntry.getPath())) == null);
 				List<FavoritesTab> tabs = favorites.getFavoriteTabs();
 				moveToTab.getItems().clear();
 				copyToTab.getItems().clear();
@@ -289,8 +293,7 @@ public class FavoritesTab extends C64Tab {
 					.getSelectedItems()) {
 				File file = getFile(hvscEntry.getPath());
 				try {
-					PathUtils.copyFile(file,
-							new File(directory, file.getName()));
+					TFile.cp(file, new File(directory, file.getName()));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -305,17 +308,18 @@ public class FavoritesTab extends C64Tab {
 		if (hvscEntry == null) {
 			return;
 		}
-		STILEntry stilEntry = getStilEntry(hvscEntry.getPath());
-		if (stilEntry != null) {
-			STIL stil = new STIL();
-			stil.setPlayer(getPlayer());
-			stil.setConfig(getConfig());
-			stil.setEntry(stilEntry);
-			try {
-				stil.open();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+
+		STIL stilInfo = new STIL();
+		stilInfo.setPlayer(getPlayer());
+		stilInfo.setConfig(getConfig());
+		libsidutils.STIL stil = getConsolePlayer().getStil();
+		if (stil != null) {
+			stilInfo.setEntry(stil.getSTILEntry(getFile(hvscEntry.getPath())));
+		}
+		try {
+			stilInfo.open();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -336,9 +340,8 @@ public class FavoritesTab extends C64Tab {
 				files.add(file);
 			}
 			Psid64 c = new Psid64(getConfig().getSidplay2().getTmpDir());
-			File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-					.getHvscFile();
-			c.convertFiles(hvscRoot, files.toArray(new File[0]), directory);
+			c.convertFiles(getConsolePlayer().getStil(),
+					files.toArray(new File[0]), directory);
 		}
 
 	}
@@ -491,8 +494,8 @@ public class FavoritesTab extends C64Tab {
 		SidTune sidTune;
 		try {
 			sidTune = SidTune.load(file);
-			HVSCEntry entry = HVSCEntry.create(file, file.getAbsolutePath(),
-					file, sidTune);
+			HVSCEntry entry = HVSCEntry.create(getConsolePlayer(),
+					file.getAbsolutePath(), file, sidTune);
 			allFavorites.add(entry);
 			filteredFavorites.add(entry);
 			favoritesSection.getFavorites().add(entry);
@@ -513,17 +516,6 @@ public class FavoritesTab extends C64Tab {
 		SingularAttribute<?, ?> singleAttribute = (SingularAttribute<?, ?>) field
 				.get(null);
 		return singleAttribute;
-	}
-
-	STILEntry getStilEntry(String path) {
-		File file = getFile(path);
-		if (file != null) {
-			File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-					.getHvscFile();
-			STILEntry stilEntry = libsidutils.STIL.getSTIL(hvscRoot, file);
-			return stilEntry;
-		}
-		return null;
 	}
 
 	/**
@@ -618,7 +610,8 @@ public class FavoritesTab extends C64Tab {
 		favoritesTable.getSelectionModel().select(to);
 	}
 
-	protected void copyToTab(final List<HVSCEntry> toCopy, final FavoritesTab tab) {
+	protected void copyToTab(final List<HVSCEntry> toCopy,
+			final FavoritesTab tab) {
 		for (HVSCEntry hvscEntry : toCopy) {
 			tab.addFavorite(getFile(hvscEntry.getPath()));
 		}

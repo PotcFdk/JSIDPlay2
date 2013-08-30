@@ -1,16 +1,14 @@
 package ui.gamebase.listeners;
 
 import java.io.File;
-import java.io.IOException;
 
 import javafx.beans.property.DoubleProperty;
-import libsidutils.zip.ZipEntryFileProxy;
-import libsidutils.zip.ZipFileProxy;
 import sidplay.ConsolePlayer;
 import sidplay.ConsolePlayer.MediaType;
 import ui.download.ProgressListener;
 import ui.entities.config.Configuration;
 import ui.events.UIEventFactory;
+import de.schlichtherle.truezip.file.TFile;
 
 public class GameListener extends ProgressListener {
 	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
@@ -20,7 +18,8 @@ public class GameListener extends ProgressListener {
 
 	private ConsolePlayer cp;
 
-	public GameListener(DoubleProperty progress, ConsolePlayer cp, Configuration config) {
+	public GameListener(DoubleProperty progress, ConsolePlayer cp,
+			Configuration config) {
 		super(progress);
 		this.cp = cp;
 		this.config = config;
@@ -31,37 +30,29 @@ public class GameListener extends ProgressListener {
 		if (downloadedFile == null) {
 			return;
 		}
-		try {
-			ZipFileProxy zip = new ZipFileProxy(downloadedFile);
-			for (File zipEntry : zip.listFiles()) {
-				if (isTapeFile(zipEntry) || isDiskFile(zipEntry)) {
-					File mediaFile = ZipEntryFileProxy.extractFromZip(
-							(ZipEntryFileProxy) zipEntry, config.getSidplay2()
-									.getTmpDir());
-					mediaFile.deleteOnExit();
-					if (fileToRun.length() == 0
-							|| fileToRun.equals(zipEntry.getName())) {
-						insertMedia(mediaFile);
-					}
+		TFile zip = new TFile(downloadedFile);
+		for (TFile zipEntry : zip.listFiles()) {
+			if (isTapeFile(zipEntry) || isDiskFile(zipEntry)) {
+				zipEntry.deleteOnExit();
+				if (fileToRun.length() == 0
+						|| fileToRun.equals(zipEntry.getName())) {
+					insertMedia(zipEntry);
 				}
 			}
-			downloadedFile.deleteOnExit();
-			// Make it possible to choose a file from ZIP next time
-			// the file chooser opens
-			config.getSidplay2().setLastDirectory(
-					downloadedFile.getAbsolutePath());
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+		downloadedFile.deleteOnExit();
+		// Make it possible to choose a file from ZIP next time
+		// the file chooser opens
+		config.getSidplay2().setLastDirectory(downloadedFile.getAbsolutePath());
 	}
 
-	private void insertMedia(final File selectedFile) {
+	private void insertMedia(final TFile file) {
 		final String command;
-		if (isTapeFile(selectedFile)) {
-			cp.insertMedia(selectedFile, null, MediaType.TAPE);
+		if (isTapeFile(file)) {
+			cp.insertMedia(file, null, MediaType.TAPE);
 			command = "LOAD\rRUN\r";
-		} else if (isDiskFile(selectedFile)) {
-			cp.insertMedia(selectedFile, null, MediaType.DISK);
+		} else if (isDiskFile(file)) {
+			cp.insertMedia(file, null, MediaType.DISK);
 			command = "LOAD\"*\",8,1\rRUN\r";
 		} else {
 			command = null;

@@ -7,10 +7,10 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
-import libsidutils.zip.ZipFileProxy;
 import sidplay.ini.intf.ISidPlay2Section;
 import ui.favorites.PlaybackType;
 import ui.favorites.RepeatType;
+import de.schlichtherle.truezip.file.TFile;
 
 @Embeddable
 public class SidPlay2Section implements ISidPlay2Section {
@@ -131,9 +131,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	public void setCgsc(String cgsc) {
 		this.cgsc = cgsc;
-		File file = new File(cgsc);
-		this.cgscFile = file.getName().toLowerCase().endsWith(".zip") ? new ZipFileProxy(
-				file) : file;
+		this.cgscFile = new TFile(cgsc);
 	}
 
 	@Transient
@@ -153,9 +151,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	public void setHvsc(String hvsc) {
 		this.hvsc = hvsc;
-		File file = new File(hvsc);
-		this.hvscFile = file.getName().toLowerCase().endsWith(".zip") ? new ZipFileProxy(
-				file) : file;
+		this.hvscFile= new TFile(hvsc);
 	}
 
 	@Transient
@@ -226,7 +222,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	public void setLastDirectory(String lastDirectory) {
 		this.lastDirectory = lastDirectory;
-		lastDirectoryFile = new File(lastDirectory);
+		lastDirectoryFile = new TFile(lastDirectory);
 	}
 
 	public File getLastDirectoryFolder() {

@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
+import de.schlichtherle.truezip.file.TFile;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -67,8 +68,9 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	private Slider brightness, contrast, gamma, saturation, phaseShift, offset,
 			tint, blur, bleed;
 	@FXML
-	protected Label brightnessValue, contrastValue, gammaValue, saturationValue,
-			phaseShiftValue, offsetValue, tintValue, blurValue, bleedValue;
+	protected Label brightnessValue, contrastValue, gammaValue,
+			saturationValue, phaseShiftValue, offsetValue, tintValue,
+			blurValue, bleedValue;
 	@FXML
 	protected ImageView datasetteOff, datasetteLoad, datasetteSave, c1541Off,
 			c1541On, c1541Load, c1541IIOff, c1541IIOn, c1541IILoad;
@@ -250,7 +252,8 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(file, null, MediaType.TAPE);
+			getConsolePlayer().insertMedia(new TFile(file), null,
+					MediaType.TAPE);
 		}
 	}
 
@@ -268,7 +271,8 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(file, null, MediaType.DISK);
+			getConsolePlayer().insertMedia(new TFile(file), null,
+					MediaType.DISK);
 		}
 	}
 
@@ -286,7 +290,8 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(file, null, MediaType.CART);
+			getConsolePlayer().insertMedia(new TFile(file), null,
+					MediaType.CART);
 		}
 	}
 

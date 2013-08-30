@@ -64,7 +64,7 @@ public class IniReader {
 		this(new InputStreamReader(input));
 	}
 
-	private IniReader(final Reader input) throws IOException {
+	public IniReader(final Reader input) throws IOException {
 		initialize(new BufferedReader(input));
 	}
 

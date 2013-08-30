@@ -3,11 +3,7 @@ package ui.directory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 
 import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
@@ -16,7 +12,7 @@ import libsidplay.components.cart.Cartridge;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.T64;
-import libsidutils.zip.ZipEntryFileProxy;
+import sidplay.ConsolePlayer;
 import sidplay.ini.intf.IConfig;
 import ui.entities.collection.HVSCEntry;
 import ui.filefilter.DiskFileFilter;
@@ -43,62 +39,21 @@ public class PseudoDirectory {
 	 * @throws IOException
 	 *             can not open file
 	 */
-	public static final Directory getDirectory(File hvscRoot, final File file,
-			final IConfig cfg) throws IOException {
-		if (file.getName().toLowerCase().endsWith(".gz")) {
-			return gzToDir(hvscRoot, file, cfg);
-		} else if (file.getName().toLowerCase().endsWith(".zip")) {
-			return zipToDir(file);
-		} else if (diskFilter.accept(file)) {
+	public static final Directory getDirectory(ConsolePlayer cp,
+			final File file, final IConfig cfg) throws IOException {
+		if (diskFilter.accept(file)) {
 			return DiskImage.getDirectory(file);
 		} else if (file.getName().toLowerCase().endsWith(".t64")) {
 			return T64.getDirectory(file);
 		} else if (file.getName().toLowerCase().endsWith(".crt")) {
 			return Cartridge.getDirectory(file);
 		} else if (tuneFilter.accept(file)) {
-			return getTuneAsDirectory(hvscRoot, file, cfg);
+			return getTuneAsDirectory(cp, file, cfg);
 		}
 		return null;
 	}
 
-	private static Directory gzToDir(File hvscRoot, final File file,
-			final IConfig cfg) throws IOException {
-		final File outFile = ZipEntryFileProxy.extractFromGZ(file, cfg
-				.getSidplay2().getTmpDir());
-		return getDirectory(hvscRoot, outFile, cfg);
-	}
-
-	private static Directory zipToDir(final File file) throws ZipException,
-			IOException {
-		Directory dir = new Directory();
-		dir.setId(null);
-		byte[] diskName = DirEntry.asciiTopetscii(
-				getShortenedString(file.getName(), 20), Integer.MAX_VALUE);
-		dir.setTitle(diskName);
-		try (ZipFile zf = new ZipFile(file)) {
-			@SuppressWarnings("rawtypes")
-			Enumeration en = zf.entries();
-			while (en.hasMoreElements()) {
-				ZipEntry ze = (ZipEntry) en.nextElement();
-				String dirEntryStr = ze.getName();
-				dirEntryStr = getShortenedString(dirEntryStr, 20);
-				DirEntry dirEntry = new DirEntry(0, DirEntry.asciiTopetscii(
-						dirEntryStr, Integer.MAX_VALUE), (byte) -1) {
-					@Override
-					public void save(File autostartFile) throws IOException {
-					}
-				};
-				// Display a pseudo directory entry for each ZIP entry
-				dir.getDirEntries().add(dirEntry);
-			}
-		}
-		// Display a hint in the last line
-		String hint = "PLEASE ENTER ZIP LIKE A DIR.";
-		dir.setStatusLine(hint);
-		return dir;
-	}
-
-	private static Directory getTuneAsDirectory(File hvscRoot, File file,
+	private static Directory getTuneAsDirectory(ConsolePlayer cp, File file,
 			IConfig cfg) throws IOException {
 		Directory dir = new Directory();
 		SidTune tune;
@@ -110,8 +65,8 @@ public class PseudoDirectory {
 		} catch (SidTuneError e) {
 			throw new IOException();
 		}
-		HVSCEntry entry = HVSCEntry.create(hvscRoot, file.getAbsolutePath(),
-				file, tune);
+		HVSCEntry entry = HVSCEntry.create(cp, file.getAbsolutePath(), file,
+				tune);
 		final String title = entry.getTitle() != null ? entry.getTitle()
 				: entry.getName();
 
@@ -169,16 +124,6 @@ public class PseudoDirectory {
 			public void save(File autostartFile) throws IOException {
 			}
 		});
-	}
-
-	private static String getShortenedString(String str, int max) {
-		int extIdx = str.lastIndexOf('.');
-		if (str.length() > max && extIdx != -1) {
-			str = str.substring(0,
-					Math.min(max - str.substring(extIdx).length(), extIdx))
-					+ str.substring(extIdx);
-		}
-		return str;
 	}
 
 }

@@ -30,7 +30,7 @@ public class MusicCollectionCellFactory implements
 								musicCollection.getCurrentlyPlayedTreeItems())) {
 					getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
 				}
-				setText(file.toString());
+				setText(file.getName());
 				setGraphic(getTreeItem().getGraphic());
 			}
 		}
