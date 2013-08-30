@@ -1,6 +1,7 @@
 package ui.gamebase.listeners;
 
 import java.io.File;
+import java.io.IOException;
 
 import javafx.beans.property.DoubleProperty;
 import sidplay.ConsolePlayer;
@@ -32,18 +33,27 @@ public class GameListener extends ProgressListener {
 		}
 		TFile zip = new TFile(downloadedFile);
 		for (TFile zipEntry : zip.listFiles()) {
-			if (isTapeFile(zipEntry) || isDiskFile(zipEntry)) {
-				zipEntry.deleteOnExit();
-				if (fileToRun.length() == 0
-						|| fileToRun.equals(zipEntry.getName())) {
-					insertMedia(zipEntry);
+			if (zipEntry.isFile()) {
+				try {
+					TFile dst = new TFile(config.getSidplay2().getTmpDir(),
+							zipEntry.getName());
+					dst.deleteOnExit();
+					TFile.cp(zipEntry, dst);
+					if (isTapeFile(dst) || isDiskFile(dst)) {
+						if (fileToRun.length() == 0
+								|| fileToRun.equals(dst.getName())) {
+							insertMedia(dst);
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
 		downloadedFile.deleteOnExit();
 		// Make it possible to choose a file from ZIP next time
 		// the file chooser opens
-		config.getSidplay2().setLastDirectory(downloadedFile.getAbsolutePath());
+		config.getSidplay2().setLastDirectory(downloadedFile.getParent());
 	}
 
 	private void insertMedia(final TFile file) {
