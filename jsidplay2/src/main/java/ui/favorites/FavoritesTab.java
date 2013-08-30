@@ -454,7 +454,7 @@ public class FavoritesTab extends C64Tab {
 		favoritesFile = addFileExtension(favoritesFile);
 		try (PrintStream p = new PrintStream(favoritesFile)) {
 			for (HVSCEntry hvscEntry : allFavorites) {
-				p.println(hvscEntry.getPath());
+				p.println(new TFile(hvscEntry.getPath()).getPath());
 			}
 		}
 
@@ -486,7 +486,8 @@ public class FavoritesTab extends C64Tab {
 			extension = extension.substring(1);
 		}
 		if (!favoritesFile.getName().endsWith(extension)) {
-			favoritesFile = new File(favoritesFile.getName() + extension);
+			favoritesFile = new File(favoritesFile.getParentFile(),
+					favoritesFile.getName() + extension);
 		}
 		return favoritesFile;
 	}
@@ -525,7 +526,7 @@ public class FavoritesTab extends C64Tab {
 	 * @return file handle of the given entry
 	 */
 	File getFile(String path) {
-		File file = new File(path);
+		File file = new TFile(path);
 		if (file.isAbsolute()) {
 			// absolute path name?
 			return file;
