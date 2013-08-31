@@ -12,8 +12,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import libsidplay.Player;
 import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.common.SIDBuilder;
@@ -34,14 +34,15 @@ import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ISIDDefs.ChipModel;
 import sidplay.audio.AudioConfig;
-import sidplay.audio.AudioDriver;
-import sidplay.audio.AudioNull;
 import sidplay.audio.CmpMP3File;
-import sidplay.audio.JavaSound;
-import sidplay.audio.MP3File;
 import sidplay.audio.NaturalFinishedException;
-import sidplay.audio.ProxyDriver;
-import sidplay.audio.WavFile;
+import sidplay.consoleplayer.DriverSettings;
+import sidplay.consoleplayer.Emulation;
+import sidplay.consoleplayer.MediaType;
+import sidplay.consoleplayer.Output;
+import sidplay.consoleplayer.State;
+import sidplay.consoleplayer.Timer;
+import sidplay.consoleplayer.Track;
 import sidplay.ini.IniConfig;
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
@@ -50,235 +51,48 @@ import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
 
 public class ConsolePlayer {
-	/** Previous song select timeout (3 secs) **/
-	public static final int SID2_PREV_SONG_TIMEOUT = 4;
-
-	// Player states
-
-	public static final int playerRunning = 1;
-	public static final int playerPaused = 2;
-	public static final int playerStopped = 3;
-	public static final int playerRestart = 4;
-	public static final int playerExit = 5;
-	public static final int playerFast = 128;
-	public static final int playerFastRestart = playerRestart | playerFast;
-	public static final int playerFastExit = playerExit | playerFast;
-
-	public enum SIDEMUS {
-		/* Same as EMU_DEFAULT except no soundcard. Still allows wav generation */
-		EMU_NONE,
-		/* The following require a soundcard */
-		EMU_RESID,
-		/* The following should disable the soundcard */
-		EMU_HARDSID
-	}
-
-	public enum OUTPUTS {
-		/**
-		 * No audio.
-		 */
-		OUT_NULL(false, new AudioNull()),
-		/**
-		 * Java Sound API.
-		 */
-		OUT_SOUNDCARD(false, new JavaSound()),
-		/**
-		 * WAV file write.
-		 */
-		OUT_WAV(true, new WavFile()),
-		/**
-		 * MP3 file write.
-		 */
-		OUT_MP3(true, new MP3File()),
-		/**
-		 * Java Sound API plus WAV file write.
-		 */
-		OUT_LIVE_WAV(true, new ProxyDriver(new JavaSound(), new WavFile())),
-		/**
-		 * Java Sound API and MP3 file write.
-		 */
-		OUT_LIVE_MP3(true, new ProxyDriver(new JavaSound(), new MP3File())),
-		/**
-		 * Java Sound API plus recording playback.
-		 */
-		OUT_COMPARE(false, new CmpMP3File());
-
-		private final boolean fileBased;
-		private final AudioDriver drv;
-
-		OUTPUTS(boolean fileBased, AudioDriver drv) {
-			this.fileBased = fileBased;
-			this.drv = drv;
-		}
-
-		public boolean isFileBased() {
-			return fileBased;
-		}
-
-		public AudioDriver getDriver() {
-			return drv;
-		}
-	}
-
-	public static class DriverSettings {
-		/** Default SID emulation */
-		protected SIDEMUS sid = SIDEMUS.EMU_RESID;
-		/** Default output */
-		protected OUTPUTS output = OUTPUTS.OUT_SOUNDCARD;
-		/** Number of output channels */
-		protected int channels;
-
-		public final SIDEMUS getSid() {
-			return sid;
-		}
-
-		public final void setSid(final SIDEMUS sid) {
-			this.sid = sid;
-		}
-
-		public final OUTPUTS getOutput() {
-			return output;
-		}
-
-		public final void setOutput(final OUTPUTS output) {
-			this.output = output;
-		}
-
-		public final AudioDriver getDevice() {
-			return output.getDriver();
-		}
-	}
-
-	public static class Timer {
-		protected long start;
-		protected long current;
-		protected long stop;
-		protected long defaultLength; // 0 - FOREVER
-		protected boolean valid;
-
-		public void setDefaultLength(final long length) {
-			this.defaultLength = length;
-		}
-	}
-
-	public static class Track {
-		/**
-		 * First song number of the play-list. 0 is used, to reset the play-list
-		 * start to the start tune, if a different tune is loaded.
-		 */
-		protected int first;
-		/**
-		 * Current song number. If first > 0 it wraps around the count of songs
-		 * 0 means use start song of the tune file.
-		 */
-		protected int selected;
-		/**
-		 * Number of songs in the play-list.
-		 */
-		protected int songs;
-		/**
-		 * Loop, if the play-list is played.
-		 */
-		protected boolean loop;
-		/**
-		 * Always plays a single song (start song)
-		 */
-		protected boolean single;
-
-		public int getCurrentSong() {
-			return selected;
-		}
-
-		public int getCurrentSongCount() {
-			return songs;
-		}
-
-		public void setCurrentSingle(boolean s) {
-			single = s;
-		}
-
-	}
-
-	protected static class Speed {
-		protected short current = 1;
-		protected final short max = 32;
-	}
-
-	private final Player player = new Player();
-
-	public final Player getPlayer() {
-		return player;
-	}
+	/** Previous song select timeout (< 4 secs) **/
+	private static final int SID2_PREV_SONG_TIMEOUT = 4;
+	private static final int MAX_SPEED = 32;
 
 	private SidTune tune;
-
-	public SidTune getTune() {
-		return tune;
-	}
-
-	private IntegerProperty state = new SimpleIntegerProperty();
-
-	public final IntegerProperty getState() {
-		return state;
-	}
-
-	private String outputFilename;
-
 	private IConfig iniCfg;
-
-	public final IConfig getConfig() {
-		return iniCfg;
-	}
-
-	private final DriverSettings driver = new DriverSettings();
-
-	public final DriverSettings getDriverSettings() {
-		return driver;
-	}
+	private final Player player = new Player();
+	private ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>();
 
 	private final Timer timer = new Timer();
-
-	public final Timer getTimer() {
-		return timer;
-	}
-
 	private final Track track = new Track();
+	private final DriverSettings driverSettings = new DriverSettings();
 
-	public final Track getTrack() {
-		return track;
-	}
-
-	private final Speed speed = new Speed();
-
+	private String outputFilename;
+	private int currentSpeed = 1;
 	private int quietLevel;
 	private int verboseLevel;
 
 	private boolean v1mute, v2mute, v3mute;
 	private boolean filterEnable;
 
-	private IMOS6510Disassembler disassembler;
-	private SIDBuilder sidEmuFactory;
+	private Thread fPlayerThread;
 
+	private STIL stil;
+	private SidDatabase sidDatabase;
+	private SIDBuilder sidEmuFactory;
+	private IMOS6510Disassembler disassembler;
+	
+	private IExtendImageListener policy;
+	
 	// MP3 saved settings:
-	private OUTPUTS lastOutput;
-	private SIDEMUS lastSidEmu;
+	private Output lastOutput;
+	private Emulation lastSidEmu;
 	private boolean lastPlayOriginal;
 	private boolean lastTimeMP3;
 
-	private SidDatabase sidDatabase;
-	private STIL stil;
-
-	/**
-	 * Console player thread.
-	 */
-	private Thread fPlayerThread;
-
 	public ConsolePlayer(IConfig config) {
-		state.set(playerStopped);
+		stateProperty.set(State.STOPPED);
 		iniCfg = config;
 		final IEmulationSection emulation = iniCfg.getEmulation();
 		filterEnable = emulation.isFilter();
-		track.single = iniCfg.getSidplay2().isSingle();
+		track.setSingle(iniCfg.getSidplay2().isSingle());
 		String hvscRoot = iniCfg.getSidplay2().getHvsc();
 		if (hvscRoot != null) {
 			File file = new File(hvscRoot, SidDatabase.SONGLENGTHS_FILE);
@@ -288,6 +102,42 @@ public class ConsolePlayer {
 				// silently ignored!
 			}
 		}
+	}
+
+	public SidTune getTune() {
+		return tune;
+	}
+
+	public final IConfig getConfig() {
+		return iniCfg;
+	}
+
+	public final Player getPlayer() {
+		return player;
+	}
+
+	public final ObjectProperty<State> stateProperty() {
+		return stateProperty;
+	}
+
+	public final DriverSettings getDriverSettings() {
+		return driverSettings;
+	}
+
+	public final Timer getTimer() {
+		return timer;
+	}
+
+	public final Track getTrack() {
+		return track;
+	}
+
+	public int getCurrentSpeed() {
+		return currentSpeed;
+	}
+
+	public void setCurrentSpeed(int current) {
+		this.currentSpeed = current;
 	}
 
 	/**
@@ -302,7 +152,7 @@ public class ConsolePlayer {
 	 * 
 	 * @return True if the SID emulation could be created; false otherwise.
 	 */
-	private boolean createSidEmu(final SIDEMUS emu, AudioConfig audioConfig,
+	private boolean createSidEmu(final Emulation emu, AudioConfig audioConfig,
 			double cpuFrequency) {
 		sidEmuFactory = null;
 
@@ -342,18 +192,18 @@ public class ConsolePlayer {
 	}
 
 	protected boolean open() throws InterruptedException {
-		if ((state.get() & ~playerFast) == playerRestart) {
-			state.set(playerStopped);
+		if (stateProperty.get() == State.RESTART) {
+			stateProperty.set(State.STOPPED);
 		}
 
 		// Select the required song
 		SidTuneInfo tuneInfo = null;
 		if (tune != null) {
-			track.selected = tune.selectSong(track.selected);
-			if (track.first == 0) {
+			track.setSelected(tune.selectSong(track.getSelected()));
+			if (track.getFirst() == 0) {
 				// A different tune is opened (resetTrack was called)?
 				// We mark a new play-list start
-				track.first = track.selected;
+				track.setFirst(track.getSelected());
 			}
 			tuneInfo = tune.getInfo();
 		}
@@ -363,7 +213,7 @@ public class ConsolePlayer {
 		int currentSong = 1;
 		File file = null;
 		if (tuneInfo != null) {
-			track.songs = tuneInfo.songs;
+			track.setSongs(tuneInfo.songs);
 			songs = tuneInfo.songs;
 			currentSong = tuneInfo.currentSong;
 			file = tuneInfo.file;
@@ -390,33 +240,33 @@ public class ConsolePlayer {
 		final IAudioSection audio = iniCfg.getAudio();
 		if (lastTimeMP3) {
 			// restore settings after MP3 has been played last time
-			driver.setOutput(lastOutput);
-			driver.setSid(lastSidEmu);
+			driverSettings.setOutput(lastOutput);
+			driverSettings.setEmulation(lastSidEmu);
 			audio.setPlayOriginal(lastPlayOriginal);
 			lastTimeMP3 = false;
 		}
 		if (file != null && file.getName().toLowerCase().endsWith(".mp3")) {
 			// MP3 play-back? Save settings, then change to MP3 compare driver
-			lastOutput = driver.getOutput();
-			lastSidEmu = driver.getSid();
+			lastOutput = driverSettings.getOutput();
+			lastSidEmu = driverSettings.getEmulation();
 			lastPlayOriginal = audio.isPlayOriginal();
 			lastTimeMP3 = true;
-			driver.setOutput(OUTPUTS.OUT_COMPARE);
-			driver.setSid(SIDEMUS.EMU_RESID);
+			driverSettings.setOutput(Output.OUT_COMPARE);
+			driverSettings.setEmulation(Emulation.EMU_RESID);
 			audio.setPlayOriginal(true);
 			audio.setMp3File(file.getAbsolutePath());
 		}
-		if (driver.getDevice() instanceof CmpMP3File) {
+		if (driverSettings.getDevice() instanceof CmpMP3File) {
 			// Set MP3 comparison settings
-			((CmpMP3File) driver.getDevice()).setPlayOriginal(audio
+			((CmpMP3File) driverSettings.getDevice()).setPlayOriginal(audio
 					.isPlayOriginal());
-			((CmpMP3File) driver.getDevice()).setMp3File(new File(audio
+			((CmpMP3File) driverSettings.getDevice()).setMp3File(new File(audio
 					.getMp3File()));
 		}
 
 		/* Determine number of SIDs */
 		int secondAddress = 0;
-		driver.channels = 1;
+		driverSettings.setChannels(1);
 		{
 			if (iniCfg.getEmulation().isForceStereoTune()) {
 				secondAddress = iniCfg.getEmulation().getDualSidBase();
@@ -428,24 +278,25 @@ public class ConsolePlayer {
 		}
 
 		if (secondAddress != 0) {
-			driver.channels = 2;
+			driverSettings.setChannels(2);
 			if (secondAddress != 0xd400) {
 				player.getC64().setSecondSIDAddress(secondAddress);
 			}
 		}
 		final AudioConfig audioConfig = AudioConfig.getInstance(
-				iniCfg.getAudio(), driver.channels);
+				iniCfg.getAudio(), driverSettings.getChannels());
 		audioConfig.setTuneFilename(file);
 		audioConfig.setSongCount(songs);
 		audioConfig.setCurrentSong(currentSong);
 		audioConfig.setOutputfilename(outputFilename);
 		try {
-			driver.getDevice().open(audioConfig);
+			driverSettings.getDevice().open(audioConfig);
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
 
-		if (!createSidEmu(driver.sid, audioConfig, cpuFreq.getCpuFrequency())) {
+		if (!createSidEmu(driverSettings.getEmulation(), audioConfig,
+				cpuFreq.getCpuFrequency())) {
 			return false;
 		}
 
@@ -455,7 +306,7 @@ public class ConsolePlayer {
 					.getLeftVolume()));
 			reSIDBuilder.setSIDVolume(1, dB2Factor(iniCfg.getAudio()
 					.getRightVolume()));
-			reSIDBuilder.setOutput(OUTPUTS.OUT_NULL.getDriver());
+			reSIDBuilder.setOutput(Output.OUT_NULL.getDriver());
 		}
 
 		// According to the configuration, the SIDs must be updated.
@@ -515,8 +366,8 @@ public class ConsolePlayer {
 
 		// Start the player. Do this by fast
 		// forwarding to the start position
-		speed.current = speed.max;
-		driver.getDevice().setFastForward(speed.current);
+		setCurrentSpeed(MAX_SPEED);
+		driverSettings.getDevice().setFastForward(getCurrentSpeed());
 		v1mute = v2mute = v3mute = false;
 
 		player.reset();
@@ -544,41 +395,41 @@ public class ConsolePlayer {
 		// As yet we don't have a required songlength
 		// so try the songlength database
 		if (tune != null) {
-			if (sidDatabase != null && !timer.valid
+			if (sidDatabase != null && !timer.isValid()
 					&& iniCfg.getSidplay2().isEnableDatabase()) {
 				final int length = getSongLength(tune);
 				if (length >= 0) {
 					// length==0 means forever
 					// this is used for tunes
 					// of unknown length
-					timer.defaultLength = length;
+					timer.setDefaultLength(length);
 				}
 			}
 		} else {
 			// normal reset? Disable timer
-			timer.defaultLength = 0;
+			timer.setDefaultLength(0);
 		}
 		// Set up the play timer
-		timer.stop = 0;
-		timer.stop += timer.defaultLength;
-		if (timer.valid) {
+		timer.setStop(0);
+		timer.setStop(timer.getStop() + timer.getDefaultLength());
+		if (timer.isValid()) {
 			// Length relative to start
-			timer.stop += timer.start;
+			timer.setStop(timer.getStop() + timer.getStart());
 		} else {
 			// Check to make start time dosen't exceed end
-			if ((timer.stop & (timer.start >= timer.stop ? 1 : 0)) != 0) {
+			if ((timer.getStop() & (timer.getStart() >= timer.getStop() ? 1 : 0)) != 0) {
 				displayError("ERROR: Start time exceeds song length!");
 				return false;
 			}
 		}
 
-		timer.current = ~0;
-		state.set(playerRunning);
+		timer.setCurrent(~0);
+		stateProperty.set(State.RUNNING);
 		return true;
 	}
 
 	protected void close() {
-		if (state.get() == playerExit) {
+		if (stateProperty.get() == State.EXIT) {
 			// Natural finish
 			if (sidEmuFactory instanceof HardSIDBuilder) {
 				((HardSIDBuilder) sidEmuFactory).flush();
@@ -597,7 +448,7 @@ public class ConsolePlayer {
 		}
 		sidEmuFactory = null;
 
-		driver.getDevice().close();
+		driverSettings.getDevice().close();
 	}
 
 	public final int getHardSIDCount() {
@@ -610,32 +461,22 @@ public class ConsolePlayer {
 	}
 
 	/**
-	 * Reset track is called to play a different tune file
-	 */
-	public void resetTrack() {
-		// 0 means set first song of play-list, next time open() is called
-		track.first = 0;
-		// 0 means use start song next time open() is called
-		track.selected = 0;
-	}
-
-	/**
 	 * Enable/disable song length database
 	 * 
 	 * @param enableSLDb
 	 *            enable SLDb
 	 */
 	public void setSLDb(final boolean enableSLDb) {
-		if (!timer.valid) {
+		if (!timer.isValid()) {
 			if (enableSLDb && tune != null && sidDatabase != null) {
 				final int length = getSongLength(tune);
 				if (length >= 0) {
-					timer.defaultLength = length;
-					timer.stop = timer.defaultLength;
+					timer.setDefaultLength(length);
+					timer.setStop(timer.getDefaultLength());
 				}
 			} else {
-				timer.defaultLength = 0;
-				timer.stop = 0;
+				timer.setDefaultLength(0);
+				timer.setStop(0);
 			}
 		}
 	}
@@ -648,32 +489,33 @@ public class ConsolePlayer {
 	public boolean play() throws InterruptedException {
 		/* handle switches to next song etc. */
 		final int seconds = player.time();
-		if (seconds != timer.current) {
-			timer.current = seconds;
+		if (seconds != timer.getCurrent()) {
+			timer.setCurrent(seconds);
 
-			if (seconds == timer.start) {
+			if (seconds == timer.getStart()) {
 				normalSpeed();
 				player.setDebug(disassembler);
 				if (sidEmuFactory instanceof ReSIDBuilder) {
-					((ReSIDBuilder) sidEmuFactory)
-							.setOutput(driver.getDevice());
+					((ReSIDBuilder) sidEmuFactory).setOutput(driverSettings
+							.getDevice());
 				}
 			}
 
-			if (iniCfg.getSidplay2().isEnableDatabase() && timer.stop != 0
-					&& seconds >= timer.stop) {
+			if (iniCfg.getSidplay2().isEnableDatabase() && timer.getStop() != 0
+					&& seconds >= timer.getStop()) {
 				// Single song?
-				if (track.single) {
-					state.set(playerExit);
+				if (track.isSingle()) {
+					stateProperty.set(State.EXIT);
 				} else {
 					nextSong();
 
 					// Check play-list end
-					if (track.selected == track.first && !track.loop) {
-						state.set(playerExit);
+					if (track.getSelected() == track.getFirst()
+							&& !track.isLoop()) {
+						stateProperty.set(State.EXIT);
 					}
 				}
-				if (state.get() == playerExit) {
+				if (stateProperty.get() == State.EXIT) {
 					// Natural finish
 					if (sidEmuFactory instanceof HardSIDBuilder) {
 						((HardSIDBuilder) sidEmuFactory).flush();
@@ -683,16 +525,17 @@ public class ConsolePlayer {
 			}
 		}
 
-		if (state.get() == playerRunning) {
+		if (stateProperty.get() == State.RUNNING) {
 			try {
 				player.play(10000);
 			} catch (NaturalFinishedException e) {
-				state.set(playerExit);
+				stateProperty.set(State.EXIT);
 				throw e;
 			}
 		}
 
-		return state.get() == playerRunning || state.get() == playerPaused;
+		return stateProperty.get() == State.RUNNING
+				|| stateProperty.get() == State.PAUSED;
 	}
 
 	private void decodeKeys() {
@@ -700,13 +543,13 @@ public class ConsolePlayer {
 			final int key = System.in.read();
 			switch (key) {
 			case 'h':
-				state.set(playerFastRestart);
-				track.selected = 1;
+				stateProperty.set(State.RESTART);
+				track.setSelected(1);
 				break;
 
 			case 'e':
-				state.set(playerFastRestart);
-				track.selected = track.songs;
+				stateProperty.set(State.RESTART);
+				track.setSelected(track.getSongs());
 				break;
 
 			case '>':
@@ -783,51 +626,51 @@ public class ConsolePlayer {
 	}
 
 	public void pause() {
-		if (state.get() == playerPaused) {
-			state.set(playerRunning);
+		if (stateProperty.get() == State.PAUSED) {
+			stateProperty.set(State.RUNNING);
 		} else {
-			state.set(playerPaused);
-			driver.getDevice().pause();
+			stateProperty.set(State.PAUSED);
+			driverSettings.getDevice().pause();
 		}
 	}
 
 	public void nextSong() {
-		state.set(playerFastRestart);
-		track.selected++;
-		if (track.selected > track.songs) {
-			track.selected = 1;
+		stateProperty.set(State.RESTART);
+		track.setSelected(track.getSelected() + 1);
+		if (track.getSelected() > track.getSongs()) {
+			track.setSelected(1);
 		}
 	}
 
 	public void previousSong() {
-		state.set(playerFastRestart);
+		stateProperty.set(State.RESTART);
 		if (player.time() < SID2_PREV_SONG_TIMEOUT) {
-			track.selected--;
-			if (track.selected < 1) {
-				track.selected = track.songs;
+			track.setSelected(track.getSelected() - 1);
+			if (track.getSelected() < 1) {
+				track.setSelected(track.getSongs());
 			}
 		}
 	}
 
 	private void restart() {
-		state.set(playerFastRestart);
+		stateProperty.set(State.RESTART);
 	}
 
 	public void fastForward() {
-		speed.current *= 2;
-		if (speed.current > speed.max) {
-			speed.current = speed.max;
+		setCurrentSpeed(getCurrentSpeed() * 2);
+		if (getCurrentSpeed() > MAX_SPEED) {
+			setCurrentSpeed(MAX_SPEED);
 		}
-		driver.getDevice().setFastForward(speed.current);
+		driverSettings.getDevice().setFastForward(getCurrentSpeed());
 	}
 
 	public void normalSpeed() {
-		speed.current = 1;
-		driver.getDevice().setFastForward(1);
+		setCurrentSpeed(1);
+		driverSettings.getDevice().setFastForward(1);
 	}
 
 	public void quit() {
-		state.set(playerFastExit);
+		stateProperty.set(State.QUIT);
 	}
 
 	private void displayError(final String error) {
@@ -890,8 +733,8 @@ public class ConsolePlayer {
 		}
 
 		// default arg options
-		driver.output = OUTPUTS.OUT_SOUNDCARD;
-		driver.sid = SIDEMUS.EMU_RESID;
+		driverSettings.setOutput(Output.OUT_SOUNDCARD);
+		driverSettings.setEmulation(Emulation.EMU_RESID);
 
 		// parse command line arguments
 		while (i < argv.length) {
@@ -910,7 +753,7 @@ public class ConsolePlayer {
 					if (time == -1) {
 						err = true;
 					}
-					timer.start = time;
+					timer.setStart(time);
 				} else if (argv[i].equals("-fd")) {
 					// Override sidTune and enable the second sid
 					iniCfg.getEmulation().setForceStereoTune(true);
@@ -948,21 +791,21 @@ public class ConsolePlayer {
 
 				// Track options
 				else if (argv[i].startsWith("-nols")) {
-					track.loop = true;
-					track.single = true;
-					track.first = Integer.valueOf(argv[i].substring(4));
+					track.setLoop(true);
+					track.setSingle(true);
+					track.setFirst(Integer.valueOf(argv[i].substring(4)));
 				} else if (argv[i].startsWith("-ol")) {
-					track.loop = true;
-					track.first = Integer.valueOf(argv[i].substring(3));
+					track.setLoop(true);
+					track.setFirst(Integer.valueOf(argv[i].substring(3)));
 				} else if (argv[i].startsWith("-os")) {
-					track.single = true;
-					track.first = Integer.valueOf(argv[i].substring(3));
+					track.setLoop(true);
+					track.setFirst(Integer.valueOf(argv[i].substring(3)));
 				} else if (argv[i].startsWith("-o")) {
 					// User forgot track number ?
 					if (argv[i].length() == 2) {
 						err = true;
 					}
-					track.first = Integer.valueOf(argv[i].substring(2));
+					track.setFirst(Integer.valueOf(argv[i].substring(2)));
 				}
 
 				else if (argv[i].startsWith("-q")) {
@@ -978,8 +821,8 @@ public class ConsolePlayer {
 					if (time == -1) {
 						err = true;
 					}
-					timer.defaultLength = time;
-					timer.valid = true;
+					timer.setDefaultLength(time);
+					timer.setValid(true);
 					iniCfg.getSidplay2().setEnableDatabase(true);
 				}
 
@@ -1002,33 +845,33 @@ public class ConsolePlayer {
 
 				// File format conversions
 				else if (argv[i].equals("-m")) {
-					driver.output = OUTPUTS.OUT_MP3;
+					driverSettings.setOutput(Output.OUT_MP3);
 					outputFilename = argv[++i];
 				} else if (argv[i].equals("-w") || argv[i].equals("--wav")) {
-					driver.output = OUTPUTS.OUT_WAV;
+					driverSettings.setOutput(Output.OUT_WAV);
 					outputFilename = argv[++i];
 				} else if (argv[i].equals("-lm")) {
-					driver.output = OUTPUTS.OUT_LIVE_MP3;
+					driverSettings.setOutput(Output.OUT_LIVE_MP3);
 					i++;
 					outputFilename = argv[i];
 				} else if (argv[i].equals("-lw") || argv[i].equals("-l")) {
-					driver.output = OUTPUTS.OUT_LIVE_WAV;
+					driverSettings.setOutput(Output.OUT_LIVE_WAV);
 					i++;
 					outputFilename = argv[i];
 				}
 
 				// Hardware selection
 				else if (argv[i].equals("--hardsid")) {
-					driver.sid = SIDEMUS.EMU_HARDSID;
-					driver.output = OUTPUTS.OUT_NULL;
+					driverSettings.setEmulation(Emulation.EMU_HARDSID);
+					driverSettings.setOutput(Output.OUT_NULL);
 				}
 
 				// These are for debug
 				else if (argv[i].equals("--none")) {
-					driver.sid = SIDEMUS.EMU_NONE;
-					driver.output = OUTPUTS.OUT_NULL;
+					driverSettings.setEmulation(Emulation.EMU_NONE);
+					driverSettings.setOutput(Output.OUT_NULL);
 				} else if (argv[i].equals("--nosid")) {
-					driver.sid = SIDEMUS.EMU_NONE;
+					driverSettings.setEmulation(Emulation.EMU_NONE);
 				} else if (argv[i].equals("--cpu-debug")) {
 					disassembler = CPUParser.getInstance();
 				}
@@ -1055,13 +898,14 @@ public class ConsolePlayer {
 		}
 
 		// Can only loop if not creating audio files
-		if (driver.output.isFileBased()) {
-			track.loop = false;
+		if (driverSettings.getOutput().isFileBased()) {
+			track.setLoop(false);
 		}
 
 		// Check to see if we are trying to generate an audio file
 		// whilst using a hardware emulation
-		if (driver.output.isFileBased() && driver.sid == SIDEMUS.EMU_HARDSID) {
+		if (driverSettings.getOutput().isFileBased()
+				&& driverSettings.getEmulation() == Emulation.EMU_HARDSID) {
 			displayError("ERROR: Cannot generate audio files using hardware emulations");
 			return -1;
 		}
@@ -1087,26 +931,26 @@ public class ConsolePlayer {
 
 		// Select the desired track
 		// and also mark the play-list start
-		track.first = tune.selectSong(track.first);
-		track.selected = track.first;
-		if (track.single) {
-			track.songs = 1;
+		track.setFirst(tune.selectSong(track.getFirst()));
+		track.setSelected(track.getFirst());
+		if (track.isSingle()) {
+			track.setSongs(1);
 		}
 
 		// If user provided no time then load songlength database
 		// and set default lengths incase it's not found in there.
 		{
-			if (driver.output.isFileBased() && timer.valid
-					&& timer.defaultLength == 0) {
+			if (driverSettings.getOutput().isFileBased() && timer.isValid()
+					&& timer.getDefaultLength() == 0) {
 				// Time of 0 provided for wav generation
 				displayError("ERROR: -t0 invalid in record mode");
 				return -1;
 			}
-			if (!timer.valid) {
-				timer.defaultLength = iniCfg.getSidplay2().getPlayLength();
-				if (driver.output.isFileBased()) {
-					timer.defaultLength = iniCfg.getSidplay2()
-							.getRecordLength();
+			if (!timer.isValid()) {
+				timer.setDefaultLength(iniCfg.getSidplay2().getPlayLength());
+				if (driverSettings.getOutput().isFileBased()) {
+					timer.setDefaultLength(iniCfg.getSidplay2()
+							.getRecordLength());
 				}
 			}
 		}
@@ -1122,11 +966,15 @@ public class ConsolePlayer {
 	 */
 	private void loadTune(final SidTune t) {
 		// Next time player is used, the track is reset
-		resetTrack();
+		// 0 means set first song of play-list, next time open() is called
+		track.setFirst(0);
+		// 0 means use start song next time open() is called
+		track.setSelected(0);
+		
 		tune = t;
 		if (t == null) {
-			track.first = 1;
-			track.songs = 0;
+			track.setFirst(1);
+			track.setSongs(0);
 		}
 	}
 
@@ -1264,34 +1112,37 @@ public class ConsolePlayer {
 				console.getVertical()));
 		{ // This will be the format used for playlists
 			int i = 1;
-			if (!track.single) {
-				i = track.selected;
-				i -= track.first - 1;
+			if (!track.isSingle()) {
+				i = track.getSelected();
+				i -= track.getFirst() - 1;
 				if (i < 1) {
-					i += track.songs;
+					i += track.getSongs();
 				}
 			}
-			System.out.println(String.format("%37s %c", i + "/" + track.songs
-					+ " (tune " + tuneInfo.currentSong + "/" + tuneInfo.songs
-					+ "[" + tuneInfo.startSong + "])"
-					+ (track.loop ? " [LOOPING]" : ""), console.getVertical()));
+			System.out.println(String.format("%37s %c",
+					i + "/" + track.getSongs() + " (tune "
+							+ tuneInfo.currentSong + "/" + tuneInfo.songs + "["
+							+ tuneInfo.startSong + "])"
+							+ (track.isLoop() ? " [LOOPING]" : ""),
+					console.getVertical()));
 		}
 		if (verboseLevel > 0) {
 			System.out.println(String.format("%c%s%c", console.getBottomLeft(),
 					setfill(console.getHorizontal(), 54),
 					console.getBottomRight()));
 			System.out.println(String.format("%c Song Speed   : %37s %c",
-					console.getVertical(), tune.getSongSpeed(track.selected),
+					console.getVertical(),
+					tune.getSongSpeed(track.getSelected()),
 					console.getVertical()));
 		}
 		System.out.print(String.format("%c Song Length  : ",
 				console.getVertical()));
-		if (timer.stop != 0) {
+		if (timer.getStop() != 0) {
 			final String time = String.format("%02d:%02d",
-					(timer.stop / 60 % 100), (timer.stop % 60));
+					(timer.getStop() / 60 % 100), (timer.getStop() % 60));
 			System.out.print(String.format("%37s %c", "" + time,
 					console.getVertical()));
-		} else if (timer.valid) {
+		} else if (timer.isValid()) {
 			System.out.print(String.format("%37s %c", "FOREVER",
 					console.getVertical()));
 		} else {
@@ -1402,7 +1253,7 @@ public class ConsolePlayer {
 				}
 				try {
 					if (player.quietLevel < 2
-							&& (player.getState().get() == playerPaused || System.in
+							&& (player.stateProperty().get() == State.PAUSED || System.in
 									.available() != 0)) {
 						player.decodeKeys();
 					}
@@ -1412,7 +1263,7 @@ public class ConsolePlayer {
 			}
 
 			player.close();
-			if ((player.getState().get() & ~playerFast) == playerRestart) {
+			if (player.stateProperty().get() == State.RESTART) {
 				continue main_restart;
 			}
 			break;
@@ -1439,7 +1290,7 @@ public class ConsolePlayer {
 					// Play next chunk of sound data, until it gets stopped
 					while (true) {
 						// Pause? sleep for awhile
-						if (getState().get() == ConsolePlayer.playerPaused) {
+						if (stateProperty().get() == State.PAUSED) {
 							Thread.sleep(250);
 						}
 						// Play a chunk
@@ -1454,7 +1305,7 @@ public class ConsolePlayer {
 				}
 
 				// "Play it once, Sam. For old times' sake."
-				if ((getState().get() & ~playerFast) == playerRestart) {
+				if (stateProperty().get() == State.RESTART) {
 					continue;
 				}
 				// Stop it
@@ -1464,8 +1315,6 @@ public class ConsolePlayer {
 		}
 
 	};
-
-	private IExtendImageListener policy;
 
 	/**
 	 * Start emulation (start player thread).
@@ -1508,10 +1357,6 @@ public class ConsolePlayer {
 		getPlayer().setCommand(command);
 		// Start emulation
 		startC64();
-	}
-
-	public enum MediaType {
-		DISK, TAPE, CART
 	}
 
 	public void insertMedia(File mediaFile, File autostartFile,
@@ -1609,7 +1454,7 @@ public class ConsolePlayer {
 					tune != null ? tune.getInfo().sid1Model : null);
 			updateSIDEmu(0, chipModel);
 
-			if (driver.channels == 2) {
+			if (driverSettings.getChannels() == 2) {
 				ChipModel stereoChipModel = determineSIDModel(iniCfg
 						.getEmulation().getStereoSidModel(), chipModel,
 						Model.valueOf(chipModel.toString()));
@@ -1724,5 +1569,5 @@ public class ConsolePlayer {
 	public STIL getStil() {
 		return stil;
 	}
-	
+
 }

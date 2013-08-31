@@ -1,7 +1,5 @@
 package ui.disassembler;
 
-import static sidplay.ConsolePlayer.playerRunning;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
@@ -21,16 +19,17 @@ import javafx.stage.FileChooser;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.cpuparser.CPUCommand;
 import libsidutils.cpuparser.CPUParser;
+import sidplay.consoleplayer.State;
 import ui.common.C64Stage;
 import ui.entities.config.SidPlay2Section;
 
 public class Disassembler extends C64Stage {
 
-	protected final class DisassemblerRefresh implements ChangeListener<Number> {
+	protected final class DisassemblerRefresh implements ChangeListener<State> {
 		@Override
-		public void changed(ObservableValue<? extends Number> arg0,
-				Number arg1, Number arg2) {
-			if (arg2.intValue() == playerRunning) {
+		public void changed(ObservableValue<? extends State> arg0,
+				State arg1, State arg2) {
+			if (arg2 == State.RUNNING) {
 				Platform.runLater(new Runnable() {
 					public void run() {
 						setTune();
@@ -62,13 +61,13 @@ public class Disassembler extends C64Stage {
 		disassemble(0);
 		setTune();
 
-		getConsolePlayer().getState().addListener(disassemblerRefresh);
+		getConsolePlayer().stateProperty().addListener(disassemblerRefresh);
 
 	}
 
 	@Override
 	protected void doCloseWindow() {
-		getConsolePlayer().getState().removeListener(disassemblerRefresh);
+		getConsolePlayer().stateProperty().removeListener(disassemblerRefresh);
 	}
 
 	protected void setTune() {

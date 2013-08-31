@@ -1,7 +1,5 @@
 package ui.musiccollection;
 
-import static sidplay.ConsolePlayer.playerRunning;
-
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +55,7 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
+import sidplay.consoleplayer.State;
 import ui.common.C64Tab;
 import ui.common.TypeTextField;
 import ui.common.dialog.YesNoDialog;
@@ -188,12 +187,11 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
-		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+		getConsolePlayer().stateProperty().addListener(new ChangeListener<State>() {
 			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				if (arg2.intValue() == playerRunning
-						&& getPlayer().getTune() != null) {
+			public void changed(ObservableValue<? extends State> arg0,
+					State arg1, State arg2) {
+				if (arg2 == State.RUNNING && getPlayer().getTune() != null) {
 					Platform.runLater(new Runnable() {
 						public void run() {
 							// auto-expand current selected tune

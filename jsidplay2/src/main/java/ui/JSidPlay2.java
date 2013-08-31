@@ -1,7 +1,5 @@
 package ui;
 
-import static sidplay.ConsolePlayer.playerRunning;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -58,8 +56,8 @@ import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import sidplay.ConsolePlayer;
-import sidplay.ConsolePlayer.MediaType;
+import sidplay.consoleplayer.MediaType;
+import sidplay.consoleplayer.State;
 import ui.about.About;
 import ui.common.C64Stage;
 import ui.common.C64Tab;
@@ -141,70 +139,73 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 		getConsolePlayer().setExtendImagePolicy(this);
 
-		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				if (arg2.intValue() == playerRunning) {
-					Platform.runLater(new Runnable() {
-						public void run() {
-							pauseContinue.setSelected(false);
-							normalSpeed.setSelected(true);
-							updatePlayerButtons();
+		getConsolePlayer().stateProperty().addListener(
+				new ChangeListener<State>() {
+					@Override
+					public void changed(ObservableValue<? extends State> arg0,
+							State arg1, final State state) {
+						if (state == State.EXIT || state == State.RUNNING) {
+							Platform.runLater(new Runnable() {
+								public void run() {
+									updatePlayerButtons(state);
 
-							SidTune sidTune = getPlayer().getTune();
-							if (sidTune == null
-									|| sidTune.getInfo().playAddr == 0) {
-								tabbedPane.getSelectionModel().select(
-										videoScreen);
-							}
+									SidTune sidTune = getPlayer().getTune();
+									if (sidTune == null
+											|| sidTune.getInfo().playAddr == 0) {
+										tabbedPane.getSelectionModel().select(
+												videoScreen);
+									}
+								}
+
+							});
+						}
+					}
+
+					protected void updatePlayerButtons(State state) {
+						pauseContinue.setSelected(false);
+						normalSpeed.setSelected(true);
+
+						SidTune tune = getPlayer().getTune();
+						final int startSong, maxSong;
+						final int currentSong;
+						if (tune != null) {
+							startSong = tune.getInfo().startSong;
+							maxSong = tune.getInfo().songs;
+							currentSong = tune.getInfo().currentSong;
+						} else {
+							maxSong = 0;
+							currentSong = 0;
+							startSong = 0;
 						}
 
-						private void updatePlayerButtons() {
-							SidTune tune = getPlayer().getTune();
-							final int startSong, maxSong;
-							final int currentSong;
-							if (tune != null) {
-								startSong = tune.getInfo().startSong;
-								maxSong = tune.getInfo().songs;
-								currentSong = tune.getInfo().currentSong;
-							} else {
-								maxSong = 0;
-								currentSong = 0;
-								startSong = 0;
-							}
-
-							int prevSong = currentSong - 1;
-							if (prevSong < 1) {
-								prevSong = maxSong;
-							}
-							int nextSong = currentSong + 1;
-							if (nextSong > maxSong) {
-								nextSong = 1;
-							}
-
-							previous.setDisable(maxSong == 0
-									|| currentSong == startSong);
-							previous2.setDisable(previous.isDisable());
-							next.setDisable(maxSong == 0
-									|| nextSong == startSong);
-							next2.setDisable(next.isDisable());
-
-							previous.setText(String.format(getBundle()
-									.getString("PREVIOUS2") + " (%d/%d)",
-									prevSong, maxSong));
-							previous2ToolTip.setText(previous.getText());
-
-							next.setText(String
-									.format(getBundle().getString("NEXT2")
-											+ " (%d/%d)", nextSong, maxSong));
-							next2ToolTip.setText(next.getText());
+						int prevSong = currentSong - 1;
+						if (prevSong < 1) {
+							prevSong = maxSong;
+						}
+						int nextSong = currentSong + 1;
+						if (nextSong > maxSong) {
+							nextSong = 1;
 						}
 
-					});
-				}
-			}
-		});
+						previous.setDisable(state == State.EXIT || maxSong == 0
+								|| currentSong == startSong);
+						previous2.setDisable(previous.isDisable());
+						next.setDisable(state == State.EXIT || maxSong == 0
+								|| nextSong == startSong);
+						next2.setDisable(next.isDisable());
+
+						previous.setText(String
+								.format(getBundle().getString("PREVIOUS2")
+										+ " (%d/%d)", prevSong, maxSong));
+						previous2ToolTip.setText(previous.getText());
+
+						next.setText(String.format(
+								getBundle().getString("NEXT2") + " (%d/%d)",
+								nextSong, maxSong));
+						next2ToolTip.setText(next.getText());
+					}
+
+				});
 		pauseContinue.selectedProperty().bindBidirectional(
 				pauseContinue2.selectedProperty());
 		driveOn.selectedProperty().bindBidirectional(
@@ -984,7 +985,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
 		boolean motorOn = getConfig().getC1541().isDriveSoundOn()
-				&& getConsolePlayer().getState().get() == ConsolePlayer.playerRunning
+				&& getConsolePlayer().stateProperty().get() == State.RUNNING
 				&& c1541.getDiskController().isMotorOn();
 		if (!oldMotorOn && motorOn) {
 			MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);
@@ -1009,7 +1010,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		String statusTime = String.format("%02d:%02d",
 				getPlayer().time() / 60 % 100, getPlayer().time() % 60);
 		String statusSongLength = "";
-		int songLength = getConsolePlayer().getSongLength(getPlayer().getTune());
+		int songLength = getConsolePlayer()
+				.getSongLength(getPlayer().getTune());
 		// song length well-known?
 		if (songLength > 0) {
 			statusSongLength = String.format("/%02d:%02d",

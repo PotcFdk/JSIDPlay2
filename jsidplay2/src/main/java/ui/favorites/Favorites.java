@@ -1,7 +1,5 @@
 package ui.favorites;
 
-import static sidplay.ConsolePlayer.playerExit;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -24,6 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidutils.PathUtils;
+import sidplay.consoleplayer.State;
 import ui.common.C64Tab;
 import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
@@ -53,11 +52,11 @@ public class Favorites extends C64Tab {
 		if (getPlayer() == null) {
 			return;
 		}
-		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+		getConsolePlayer().stateProperty().addListener(new ChangeListener<State>() {
 			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				if (arg2.intValue() == playerExit) {
+			public void changed(ObservableValue<? extends State> arg0,
+					State arg1, State arg2) {
+				if (arg2 == State.EXIT) {
 					Platform.runLater(new Runnable() {
 						public void run() {
 							playNextTune();

@@ -1,7 +1,5 @@
 package ui.emulationsettings;
 
-import static sidplay.ConsolePlayer.playerRunning;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -24,16 +22,17 @@ import resid_builder.ReSID;
 import resid_builder.resid.FilterModelConfig;
 import resid_builder.resid.ISIDDefs.ChipModel;
 import resid_builder.resid.SID;
+import sidplay.consoleplayer.State;
 import sidplay.ini.intf.IFilterSection;
 import ui.common.C64Stage;
 
 public class EmulationSettings extends C64Stage {
 
-	protected final class EmulationChange implements ChangeListener<Number> {
+	protected final class EmulationChange implements ChangeListener<State> {
 		@Override
-		public void changed(ObservableValue<? extends Number> arg0,
-				Number arg1, Number arg2) {
-			if (arg2.intValue() == playerRunning) {
+		public void changed(ObservableValue<? extends State> arg0,
+				State arg1, State arg2) {
+			if (arg2 == State.RUNNING) {
 				Platform.runLater(new Runnable() {
 					
 					@Override
@@ -102,7 +101,7 @@ public class EmulationSettings extends C64Stage {
 	private ObservableList<String> filters = FXCollections
 			.<String> observableArrayList();
 
-	private ChangeListener<? super Number> emulationChange = new EmulationChange();
+	private ChangeListener<State> emulationChange = new EmulationChange();
 
 	private boolean duringInitialization;
 
@@ -154,14 +153,14 @@ public class EmulationSettings extends C64Stage {
 
 		calculateFilterCurve(filter.getSelectionModel().getSelectedItem());
 
-		getConsolePlayer().getState().addListener(emulationChange);
+		getConsolePlayer().stateProperty().addListener(emulationChange);
 
 		duringInitialization = false;
 	}
 
 	@Override
 	protected void doCloseWindow() {
-		getConsolePlayer().getState().removeListener(emulationChange);
+		getConsolePlayer().stateProperty().removeListener(emulationChange);
 	}
 
 	@FXML

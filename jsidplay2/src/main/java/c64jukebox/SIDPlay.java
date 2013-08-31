@@ -10,16 +10,16 @@ import java.util.HashMap;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.ConsolePlayer;
-import sidplay.ConsolePlayer.OUTPUTS;
-import sidplay.ConsolePlayer.SIDEMUS;
+import sidplay.consoleplayer.Emulation;
+import sidplay.consoleplayer.Output;
 import sidplay.ini.IniConfig;
 
 @SuppressWarnings("serial")
 public class SIDPlay extends Applet {
 	private ConsolePlayer cp;
 	private String fUrlName;
-	private OUTPUTS fOut = OUTPUTS.OUT_SOUNDCARD;
-	private SIDEMUS fEmu = SIDEMUS.EMU_RESID;
+	private Output fOut = Output.OUT_SOUNDCARD;
+	private Emulation fEmu = Emulation.EMU_RESID;
 
 	private final HashMap<String, SidTune> map = new HashMap<String, SidTune>();
 
@@ -114,7 +114,7 @@ public class SIDPlay extends Applet {
 			return;
 		}
 		cp.getDriverSettings().setOutput(fOut);
-		cp.getDriverSettings().setSid(fEmu);
+		cp.getDriverSettings().setEmulation(fEmu);
 		cp.startC64();
 	}
 
@@ -143,16 +143,16 @@ public class SIDPlay extends Applet {
 	 * Use JSIDPlay2 emulation for the next song.
 	 */
 	public void useEmulation() {
-		fOut = OUTPUTS.OUT_SOUNDCARD;
-		fEmu = SIDEMUS.EMU_RESID;
+		fOut = Output.OUT_SOUNDCARD;
+		fEmu = Emulation.EMU_RESID;
 	}
 
 	/**
 	 * Use HardSID4U for the next song.
 	 */
 	public void useHardSID() {
-		fOut = OUTPUTS.OUT_NULL;
-		fEmu = SIDEMUS.EMU_HARDSID;
+		fOut = Output.OUT_NULL;
+		fEmu = Emulation.EMU_HARDSID;
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class SIDPlay extends Applet {
 	 * @return the player state
 	 */
 	public int stateSID() {
-		return cp.getState().get();
+		return cp.stateProperty().get().ordinal();
 	}
 
 	/**

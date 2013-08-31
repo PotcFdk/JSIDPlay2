@@ -1,7 +1,5 @@
 package ui.sidreg;
 
-import static sidplay.ConsolePlayer.playerExit;
-
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,15 +16,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
+import sidplay.consoleplayer.State;
 import ui.common.C64Stage;
 
 public class SidReg extends C64Stage {
 
-	protected final class SidRegStop implements ChangeListener<Number> {
+	protected final class SidRegStop implements ChangeListener<State> {
 		@Override
-		public void changed(ObservableValue<? extends Number> arg0,
-				Number arg1, Number arg2) {
-			if (arg2.intValue() == playerExit) {
+		public void changed(ObservableValue<? extends State> arg0, State arg1,
+				State arg2) {
+			if (arg2 == State.EXIT) {
 				Platform.runLater(new Runnable() {
 					public void run() {
 						recordSidWrites(false);
@@ -62,16 +61,16 @@ public class SidReg extends C64Stage {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		getConsolePlayer().getState().addListener(sidRegStop);
+		getConsolePlayer().stateProperty().addListener(sidRegStop);
 		regTable.setItems(filteredSidRegWrites);
 		doUpdateFilter();
 	}
 
 	@Override
 	protected void doCloseWindow() {
-		getConsolePlayer().getState().removeListener(sidRegStop);
+		getConsolePlayer().stateProperty().removeListener(sidRegStop);
 	}
-	
+
 	@FXML
 	private void doStartStop() {
 		recordSidWrites(startStop.isSelected());

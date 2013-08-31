@@ -1,7 +1,5 @@
 package ui.siddump;
 
-import static sidplay.ConsolePlayer.playerExit;
-
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -23,16 +21,17 @@ import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
 import libsidplay.sidtune.SidTune;
 import netsiddev.InvalidCommandException;
+import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
 import ui.common.C64Stage;
 import ui.entities.config.SidPlay2Section;
 
 public class SidDump extends C64Stage {
-	protected final class SidDumpStop implements ChangeListener<Number> {
+	protected final class SidDumpStop implements ChangeListener<State> {
 		@Override
-		public void changed(ObservableValue<? extends Number> arg0,
-				Number arg1, Number arg2) {
-			if (arg2.intValue() == playerExit) {
+		public void changed(ObservableValue<? extends State> arg0, State arg1,
+				State arg2) {
+			if (arg2 == State.EXIT) {
 				Platform.runLater(new Runnable() {
 					public void run() {
 						replayAll.setDisable(false);
@@ -75,7 +74,7 @@ public class SidDump extends C64Stage {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		getConsolePlayer().getState().addListener(sidDumpStop);
+		getConsolePlayer().stateProperty().addListener(sidDumpStop);
 		sidDumpExtension = new SidDumpExtension(getPlayer(), getConfig()) {
 
 			@Override
@@ -109,7 +108,7 @@ public class SidDump extends C64Stage {
 
 	@Override
 	protected void doCloseWindow() {
-		getConsolePlayer().getState().removeListener(sidDumpStop);
+		getConsolePlayer().stateProperty().removeListener(sidDumpStop);
 	}
 
 	@FXML

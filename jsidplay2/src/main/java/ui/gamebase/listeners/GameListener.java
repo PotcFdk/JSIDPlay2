@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import javafx.beans.property.DoubleProperty;
 import sidplay.ConsolePlayer;
-import sidplay.ConsolePlayer.MediaType;
+import sidplay.consoleplayer.MediaType;
 import ui.download.ProgressListener;
 import ui.entities.config.Configuration;
 import ui.events.UIEventFactory;

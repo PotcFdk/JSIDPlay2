@@ -1,7 +1,5 @@
 package ui.videoscreen;
 
-import static sidplay.ConsolePlayer.playerRunning;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -10,7 +8,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-import de.schlichtherle.truezip.file.TFile;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -44,13 +41,15 @@ import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.ISIDDefs.ChipModel;
-import sidplay.ConsolePlayer.MediaType;
+import sidplay.consoleplayer.MediaType;
+import sidplay.consoleplayer.State;
 import ui.common.C64Tab;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
+import de.schlichtherle.truezip.file.TFile;
 
 public class Video extends C64Tab implements PropertyChangeListener {
 	private static final double MONITOR_MARGIN_LEFT = 35;
@@ -88,11 +87,11 @@ public class Video extends C64Tab implements PropertyChangeListener {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
-		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+		getConsolePlayer().stateProperty().addListener(new ChangeListener<State>() {
 			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				if (arg2.intValue() == playerRunning) {
+			public void changed(ObservableValue<? extends State> arg0,
+					State arg1, State arg2) {
+				if (arg2 == State.RUNNING) {
 					setupVideoScreen();
 					setupScreenBasedOnChipType(getPlayer().getTune());
 				}

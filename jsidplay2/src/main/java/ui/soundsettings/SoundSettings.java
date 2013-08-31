@@ -1,7 +1,5 @@
 package ui.soundsettings;
 
-import static sidplay.ConsolePlayer.playerRunning;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,10 +37,11 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import resid_builder.resid.ISIDDefs.SamplingMethod;
-import sidplay.ConsolePlayer.DriverSettings;
-import sidplay.ConsolePlayer.OUTPUTS;
-import sidplay.ConsolePlayer.SIDEMUS;
 import sidplay.audio.CmpMP3File;
+import sidplay.consoleplayer.DriverSettings;
+import sidplay.consoleplayer.Emulation;
+import sidplay.consoleplayer.Output;
+import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
 import ui.common.C64Stage;
 import ui.download.DownloadThread;
@@ -51,11 +50,11 @@ import de.schlichtherle.truezip.file.TFile;
 
 public class SoundSettings extends C64Stage {
 
-	protected final class TuneChange implements ChangeListener<Number> {
+	protected final class TuneChange implements ChangeListener<State> {
 		@Override
-		public void changed(ObservableValue<? extends Number> arg0,
-				Number arg1, Number arg2) {
-			if (arg2.intValue() == playerRunning) {
+		public void changed(ObservableValue<? extends State> arg0, State arg1,
+				State arg2) {
+			if (arg2 == State.RUNNING) {
 				Platform.runLater(new Runnable() {
 
 					@Override
@@ -102,7 +101,7 @@ public class SoundSettings extends C64Stage {
 	private boolean duringInitialization;
 	private Timeline timer;
 
-	private ChangeListener<? super Number> tuneChange = new TuneChange();
+	private ChangeListener<? super State> tuneChange = new TuneChange();
 	private DoubleProperty progress = new SimpleDoubleProperty();
 
 	public DoubleProperty getProgressValue() {
@@ -124,17 +123,17 @@ public class SoundSettings extends C64Stage {
 				getBundle().getString("MP3_RECORDER"),
 				getBundle().getString("COMPARE_TO_MP3"));
 		DriverSettings driverSettings = getConsolePlayer().getDriverSettings();
-		OUTPUTS out = driverSettings.getOutput();
-		SIDEMUS sid = driverSettings.getSid();
-		if (out == OUTPUTS.OUT_SOUNDCARD && sid == SIDEMUS.EMU_RESID) {
+		Output out = driverSettings.getOutput();
+		Emulation sid = driverSettings.getEmulation();
+		if (out == Output.OUT_SOUNDCARD && sid == Emulation.EMU_RESID) {
 			soundDevice.getSelectionModel().select(0);
-		} else if (out == OUTPUTS.OUT_NULL && sid == SIDEMUS.EMU_HARDSID) {
+		} else if (out == Output.OUT_NULL && sid == Emulation.EMU_HARDSID) {
 			soundDevice.getSelectionModel().select(1);
-		} else if (out == OUTPUTS.OUT_LIVE_WAV && sid == SIDEMUS.EMU_RESID) {
+		} else if (out == Output.OUT_LIVE_WAV && sid == Emulation.EMU_RESID) {
 			soundDevice.getSelectionModel().select(2);
-		} else if (out == OUTPUTS.OUT_LIVE_MP3 && sid == SIDEMUS.EMU_RESID) {
+		} else if (out == Output.OUT_LIVE_MP3 && sid == Emulation.EMU_RESID) {
 			soundDevice.getSelectionModel().select(3);
-		} else if (out == OUTPUTS.OUT_COMPARE && sid == SIDEMUS.EMU_RESID) {
+		} else if (out == Output.OUT_COMPARE && sid == Emulation.EMU_RESID) {
 			soundDevice.getSelectionModel().select(4);
 		} else {
 			soundDevice.getSelectionModel().select(0);
@@ -166,7 +165,7 @@ public class SoundSettings extends C64Stage {
 		dwnlUrl6581R4.setText(getConfig().getOnline().getSoasc6581R4());
 		dwnlUrl8580R5.setText(getConfig().getOnline().getSoasc8580R5());
 		setTune(getPlayer().getTune());
-		getConsolePlayer().getState().addListener(tuneChange);
+		getConsolePlayer().stateProperty().addListener(tuneChange);
 
 		final Duration oneFrameAmt = Duration.millis(1000);
 		final KeyFrame oneFrame = new KeyFrame(oneFrameAmt,
@@ -217,7 +216,7 @@ public class SoundSettings extends C64Stage {
 	@Override
 	protected void doCloseWindow() {
 		timer.stop();
-		getConsolePlayer().getState().removeListener(tuneChange);
+		getConsolePlayer().stateProperty().removeListener(tuneChange);
 	}
 
 	@FXML
@@ -236,22 +235,22 @@ public class SoundSettings extends C64Stage {
 	private void setSoundDevice() {
 		switch (soundDevice.getSelectionModel().getSelectedIndex()) {
 		case 0:
-			setOutputDevice(OUTPUTS.OUT_SOUNDCARD, SIDEMUS.EMU_RESID);
+			setOutputDevice(Output.OUT_SOUNDCARD, Emulation.EMU_RESID);
 			break;
 
 		case 1:
-			setOutputDevice(OUTPUTS.OUT_NULL, SIDEMUS.EMU_HARDSID);
+			setOutputDevice(Output.OUT_NULL, Emulation.EMU_HARDSID);
 			break;
 
 		case 2:
-			setOutputDevice(OUTPUTS.OUT_LIVE_WAV, SIDEMUS.EMU_RESID);
+			setOutputDevice(Output.OUT_LIVE_WAV, Emulation.EMU_RESID);
 			break;
 
 		case 3:
-			setOutputDevice(OUTPUTS.OUT_LIVE_MP3, SIDEMUS.EMU_RESID);
+			setOutputDevice(Output.OUT_LIVE_MP3, Emulation.EMU_RESID);
 			break;
 		case 4:
-			setOutputDevice(OUTPUTS.OUT_COMPARE, SIDEMUS.EMU_RESID);
+			setOutputDevice(Output.OUT_COMPARE, Emulation.EMU_RESID);
 			break;
 
 		}
@@ -452,9 +451,9 @@ public class SoundSettings extends C64Stage {
 		}
 	}
 
-	private void setOutputDevice(final OUTPUTS device, final SIDEMUS emu) {
+	private void setOutputDevice(final Output device, final Emulation emu) {
 		getConsolePlayer().getDriverSettings().setOutput(device);
-		getConsolePlayer().getDriverSettings().setSid(emu);
+		getConsolePlayer().getDriverSettings().setEmulation(emu);
 	}
 
 	protected void setPlayOriginal(final boolean playOriginal) {

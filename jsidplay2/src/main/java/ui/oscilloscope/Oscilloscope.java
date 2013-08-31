@@ -1,7 +1,5 @@
 package ui.oscilloscope;
 
-import static sidplay.ConsolePlayer.playerRunning;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -17,6 +15,7 @@ import javafx.util.Duration;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
+import sidplay.consoleplayer.State;
 import ui.common.C64Tab;
 
 /**
@@ -93,12 +92,13 @@ public class Oscilloscope extends C64Tab {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
-		getConsolePlayer().getState().addListener(new ChangeListener<Number>() {
+		getConsolePlayer().stateProperty().addListener(new ChangeListener<State>() {
 			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				if (arg2.intValue() == playerRunning) {
-					final EventScheduler ctx = getPlayer().getC64().getEventScheduler();
+			public void changed(ObservableValue<? extends State> arg0,
+					State arg1, State arg2) {
+				if (arg2 == State.RUNNING) {
+					final EventScheduler ctx = getPlayer().getC64()
+							.getEventScheduler();
 					/* sample oscillator buffer */
 					highResolutionEvent.beginScheduling(ctx);
 

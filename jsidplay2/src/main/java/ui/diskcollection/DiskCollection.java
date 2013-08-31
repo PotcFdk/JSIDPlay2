@@ -34,7 +34,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import libsidutils.PathUtils;
-import sidplay.ConsolePlayer.MediaType;
+import sidplay.consoleplayer.MediaType;
 import ui.common.C64Tab;
 import ui.directory.Directory;
 import ui.download.DownloadThread;
