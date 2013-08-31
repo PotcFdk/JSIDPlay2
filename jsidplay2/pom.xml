@@ -361,7 +361,7 @@
 							<splash>
 								<file>src/main/launch4j/jsidplay2.bmp</file>
 								<waitForWindow>true</waitForWindow>
-								<timeout>60</timeout>
+								<timeout>120</timeout>
 								<timeoutErr>true</timeoutErr>
 							</splash>
 						</configuration>
