@@ -60,9 +60,7 @@ public class PathUtils {
 					.listFiles(fileFilter) : curFile.listFiles();
 			if (childFiles != null) {
 				for (File childFile : childFiles) {
-					Scanner childFileScanner = new Scanner(childFile.getName())
-							.useDelimiter(separator);
-					if (childFileScanner.next().equals(pathSeg)) {
+					if (childFile.getName().equals(pathSeg)) {
 						curFile = childFile;
 						pathSegs.add(curFile);
 						continue outer;
