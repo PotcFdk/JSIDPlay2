@@ -119,25 +119,20 @@
 				<GridPane>
 					<Label text="%PLAYBACK_HINT" GridPane.rowIndex="0"
 						GridPane.columnIndex="0" GridPane.columnSpan="4" />
-					<RadioButton text="%OFF" selected="true" onAction="#enablePlayback"
-						toggleGroup="$playbackGroup" fx:id="off" GridPane.rowIndex="1"
-						GridPane.columnIndex="0" />
-					<RadioButton text="%NORMAL" onAction="#enablePlayback"
-						toggleGroup="$playbackGroup" fx:id="normal" GridPane.rowIndex="1"
-						GridPane.columnIndex="1" />
-					<RadioButton text="%RANDOM_ONE_PLAYLIST" onAction="#enablePlayback"
-						toggleGroup="$playbackGroup" fx:id="randomOne" GridPane.rowIndex="1"
-						GridPane.columnIndex="2" />
-					<RadioButton text="%RANDOM_ALL_PLAYLISTS" onAction="#enablePlayback"
-						toggleGroup="$playbackGroup" fx:id="randomAll" GridPane.rowIndex="1"
-						GridPane.columnIndex="3" />
+					<RadioButton text="%OFF" selected="true" toggleGroup="$playbackGroup"
+						fx:id="off" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+					<RadioButton text="%NORMAL" toggleGroup="$playbackGroup"
+						fx:id="normal" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+					<RadioButton text="%RANDOM_ONE_PLAYLIST" toggleGroup="$playbackGroup"
+						fx:id="randomOne" GridPane.rowIndex="1" GridPane.columnIndex="2" />
+					<RadioButton text="%RANDOM_ALL_PLAYLISTS" toggleGroup="$playbackGroup"
+						fx:id="randomAll" GridPane.rowIndex="1" GridPane.columnIndex="3" />
 
 					<RadioButton text="%REPEAT_OFF" selected="true"
-						onAction="#enableRepeat" toggleGroup="$repeatGroup" fx:id="repeatOff"
-						GridPane.rowIndex="2" GridPane.columnIndex="0" />
-					<RadioButton text="%REPEAT_ONE_TUNE" onAction="#enableRepeat"
-						toggleGroup="$repeatGroup" fx:id="repeatOne" GridPane.rowIndex="2"
-						GridPane.columnIndex="1" />
+						toggleGroup="$repeatGroup" fx:id="repeatOff" GridPane.rowIndex="2"
+						GridPane.columnIndex="0" />
+					<RadioButton text="%REPEAT_ONE_TUNE" toggleGroup="$repeatGroup"
+						fx:id="repeatOne" GridPane.rowIndex="2" GridPane.columnIndex="1" />
 				</GridPane>
 			</TitledPane>
 		</bottom>

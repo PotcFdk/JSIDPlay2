@@ -30,6 +30,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -203,10 +204,10 @@ public class FavoritesTab extends C64Tab {
 				showStil.setDisable(hvscEntry == null
 						|| stil == null
 						|| stil.getSTILEntry(getFile(hvscEntry.getPath())) == null);
-				List<FavoritesTab> tabs = favorites.getFavoriteTabs();
+				List<Tab> tabs = favorites.getFavoriteTabs();
 				moveToTab.getItems().clear();
 				copyToTab.getItems().clear();
-				for (final FavoritesTab tab : tabs) {
+				for (final Tab tab : tabs) {
 					if (tab.equals(FavoritesTab.this)) {
 						continue;
 					}
@@ -218,7 +219,7 @@ public class FavoritesTab extends C64Tab {
 						public void handle(ActionEvent arg0) {
 							ObservableList<HVSCEntry> selectedItems = favoritesTable
 									.getSelectionModel().getSelectedItems();
-							copyToTab(selectedItems, tab);
+							copyToTab(selectedItems, (FavoritesTab) tab);
 							removeFavorites(selectedItems);
 						}
 					});
@@ -230,7 +231,7 @@ public class FavoritesTab extends C64Tab {
 						public void handle(ActionEvent arg0) {
 							ObservableList<HVSCEntry> selectedItems = favoritesTable
 									.getSelectionModel().getSelectedItems();
-							copyToTab(selectedItems, tab);
+							copyToTab(selectedItems, (FavoritesTab) tab);
 						}
 					});
 					copyToTab.getItems().add(copyToTabItem);

@@ -3,7 +3,6 @@ package ui.favorites;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -12,6 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -181,19 +181,7 @@ public class Favorites extends C64Tab {
 
 	@FXML
 	private void renameTab() {
-		FavoritesTab selectedTab = getSelectedTab();
-		String name = renameTab.getText();
-		renameTab(selectedTab, name);
-	}
-
-	@FXML
-	private void enablePlayback() {
-
-	}
-
-	@FXML
-	private void enableRepeat() {
-
+		renameTab(getSelectedTab(), renameTab.getText());
 	}
 
 	private FavoritesTab getSelectedTab() {
@@ -237,7 +225,7 @@ public class Favorites extends C64Tab {
 		} else if (randomAll.isSelected()) {
 			// random all favorites tab
 			favoritesList.getSelectionModel().select(Math.abs(random.nextInt(Integer.MAX_VALUE)) % favoritesList.getTabs().size());
-			currentlyPlayedFavorites = (FavoritesTab) favoritesList.getSelectionModel().getSelectedItem();
+			currentlyPlayedFavorites = getSelectedTab();
 			currentlyPlayedFavorites.playNextRandom();
 		} else if (currentlyPlayedFavorites != null && randomOne.isSelected()) {
 			// random one favorites tab
@@ -248,16 +236,12 @@ public class Favorites extends C64Tab {
 		}
 	}
 
-	public void setCurrentlyPlayedFavorites(
+	void setCurrentlyPlayedFavorites(
 			FavoritesTab currentlyPlayedFavorites) {
 		this.currentlyPlayedFavorites = currentlyPlayedFavorites;
 	}
 	
-	public List<FavoritesTab> getFavoriteTabs() {
-		List<FavoritesTab> result = new ArrayList<FavoritesTab>();
-		for (Tab tab : favoritesList.getTabs()) {
-			result.add((FavoritesTab) tab);
-		}
-		return result;
+	ObservableList<Tab> getFavoriteTabs() {
+		return favoritesList.getTabs();
 	}
 }
