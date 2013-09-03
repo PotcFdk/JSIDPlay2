@@ -20,7 +20,6 @@ import sidplay.ini.intf.ISidPlay2Section;
 import ui.entities.PersistenceUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
-import ui.events.UIEventFactory;
 
 /**
  * @author Ken Händel
@@ -43,11 +42,6 @@ public class JSIDPlay2Main extends Application {
 	 * Configuration
 	 */
 	private Configuration config;
-
-	/**
-	 * Event management of UI events.
-	 */
-	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 
 	/**
 	 * Database support.

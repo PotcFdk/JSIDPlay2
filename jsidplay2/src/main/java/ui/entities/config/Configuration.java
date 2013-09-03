@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
 
 import javax.persistence.CascadeType;
@@ -235,7 +238,11 @@ public class Configuration implements IConfig {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "favorites")
-	private List<FavoritesSection> favorites = INITIAL_FAVORITES;
+	protected List<FavoritesSection> favorites = INITIAL_FAVORITES;
+
+	@Transient
+	@XmlTransient
+	protected ObservableList<FavoritesSection> observableFavorites;
 
 	public void setFavorites(List<FavoritesSection> favorites) {
 		this.favorites = favorites;
@@ -246,7 +253,17 @@ public class Configuration implements IConfig {
 		if (favorites == null) {
 			favorites = new ArrayList<FavoritesSection>();
 		}
-		return favorites;
+		return getObservableFavorites();
+	}
+
+	@XmlTransient
+	public ObservableList<FavoritesSection> getObservableFavorites() {
+		if (observableFavorites == null) {
+			observableFavorites = FXCollections
+					.<FavoritesSection> observableArrayList(favorites);
+			Bindings.bindContent(favorites, observableFavorites);
+		}
+		return observableFavorites;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)

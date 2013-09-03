@@ -2,6 +2,7 @@ package ui.musiccollection;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
@@ -66,10 +67,9 @@ import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry_;
 import ui.entities.collection.service.VersionService;
+import ui.entities.config.Configuration;
+import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
-import ui.events.favorites.IAddFavoritesTab;
-import ui.events.favorites.IGetFavoritesTabs;
-import ui.favorites.FavoritesTab;
 import ui.filefilter.TuneFileFilter;
 import ui.musiccollection.search.ISearchListener;
 import ui.musiccollection.search.SearchInIndexThread;
@@ -172,7 +172,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private SearchCriteria<?, ?> recentlySearchedCriteria;
 	private boolean searchOptionsChanged;
 
-	protected FavoritesTab favoritesToAddSearchResult;
+	protected FavoritesSection favoritesToAddSearchResult;
 
 	private DoubleProperty progress = new SimpleDoubleProperty();
 	protected List<TreeItem<File>> currentlyPlayedTreeItems;
@@ -187,20 +187,22 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
-		getConsolePlayer().stateProperty().addListener(new ChangeListener<State>() {
-			@Override
-			public void changed(ObservableValue<? extends State> arg0,
-					State arg1, State arg2) {
-				if (arg2 == State.RUNNING && getPlayer().getTune() != null) {
-					Platform.runLater(new Runnable() {
-						public void run() {
-							// auto-expand current selected tune
-							showNextHit(getPlayer().getTune().getInfo().file);
+		getConsolePlayer().stateProperty().addListener(
+				new ChangeListener<State>() {
+					@Override
+					public void changed(ObservableValue<? extends State> arg0,
+							State arg1, State arg2) {
+						if (arg2 == State.RUNNING
+								&& getPlayer().getTune() != null) {
+							Platform.runLater(new Runnable() {
+								public void run() {
+									// auto-expand current selected tune
+									showNextHit(getPlayer().getTune().getInfo().file);
+								}
+							});
 						}
-					});
-				}
-			}
-		});
+					}
+				});
 
 		tuneInfoTable.setItems(tuneInfos);
 
@@ -318,30 +320,40 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 						|| !((MusicCollectionTreeItem) selectedItem).hasSTIL());
 				convertToPSID64.setDisable(selectedItem == null);
 
-				addToFavorites.setDisable(true);
-				getUiEvents().fireEvent(IGetFavoritesTabs.class,
-						new IGetFavoritesTabs() {
-							@Override
-							public void setFavoriteTabs(
-									List<FavoritesTab> tabs, String selected) {
-								addToFavorites.getItems().clear();
-								for (final FavoritesTab tab : tabs) {
-									MenuItem item = new MenuItem(tab.getText());
-									item.setOnAction(new EventHandler<ActionEvent>() {
+				List<FavoritesSection> favorites = ((Configuration) getConfig())
+						.getFavorites();
+				addToFavorites.getItems().clear();
+				for (final FavoritesSection section : favorites) {
+					MenuItem item = new MenuItem(section.getName());
+					item.setOnAction(new EventHandler<ActionEvent>() {
 
-										@Override
-										public void handle(ActionEvent arg0) {
-											tab.addFavorites(Collections
-													.singletonList(selectedItem
-															.getValue()));
-										}
-									});
-									addToFavorites.getItems().add(item);
+						private final FileFilter tuneFilter = new TuneFileFilter();
+
+						@Override
+						public void handle(ActionEvent arg0) {
+							addFavorites(Collections.singletonList(selectedItem
+									.getValue()));
+						}
+
+						public void addFavorites(List<File> files) {
+							for (int i = 0; files != null && i < files.size(); i++) {
+								final File file = files.get(i);
+								if (file.isDirectory()) {
+									addFavorites(Arrays.asList(file.listFiles()));
+								} else {
+									if (tuneFilter.accept(file)) {
+										addFavorite(section, file);
+									}
 								}
-								addToFavorites.setDisable(addToFavorites
-										.getItems().size() == 0);
 							}
-						});
+						}
+
+					});
+					addToFavorites.getItems().add(item);
+				}
+				addToFavorites
+						.setDisable(addToFavorites.getItems().size() == 0);
+
 			}
 		});
 
@@ -720,14 +732,24 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			break;
 
 		case 1:
-			favoritesToAddSearchResult.addFavorites(Collections
-					.singletonList(current));
+			addFavorite(favoritesToAddSearchResult, current);
 			break;
 
 		default:
 			break;
 		}
 
+	}
+
+	protected void addFavorite(FavoritesSection section, File file) {
+		try {
+			SidTune sidTune = SidTune.load(file);
+			HVSCEntry entry = HVSCEntry.create(getConsolePlayer(),
+					file.getAbsolutePath(), file, sidTune);
+			section.getFavorites().add(entry);
+		} catch (IOException | SidTuneError e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void showNextHit(final File matchFile) {
@@ -807,20 +829,12 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			case 1:
 				// Add result to favorites?
 				// Create new favorites tab
-				getUiEvents().fireEvent(IAddFavoritesTab.class,
-						new IAddFavoritesTab() {
-
-							@Override
-							public String getTitle() {
-								return getBundle().getString("NEW_TAB");
-							}
-
-							@Override
-							public void setFavorites(
-									final FavoritesTab favorites) {
-								favoritesToAddSearchResult = favorites;
-							}
-						});
+				List<FavoritesSection> favorites = ((Configuration) getConfig())
+						.getFavorites();
+				FavoritesSection newFavorites = new FavoritesSection();
+				newFavorites.setName(getBundle().getString("NEW_TAB"));
+				favoritesToAddSearchResult = newFavorites;
+				favorites.add(newFavorites);
 				break;
 
 			default:

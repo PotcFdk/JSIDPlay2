@@ -8,8 +8,6 @@ import javafx.scene.layout.AnchorPane;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
 import ui.entities.config.Configuration;
-import ui.events.UIEvent;
-import ui.events.UIEventFactory;
 
 public abstract class C64AnchorPane extends AnchorPane implements UIPart {
 
@@ -29,20 +27,12 @@ public abstract class C64AnchorPane extends AnchorPane implements UIPart {
 	public void initialize(URL location, ResourceBundle resources) {
 	}
 	
-	@Override
-	public void notify(final UIEvent evt) {
-	}
-
 	public C64AnchorPane() {
 		getChildren().add((Node) util.parse(this));
 	}
 
 	protected ResourceBundle getBundle() {
 		return util.getBundle();
-	}
-
-	protected UIEventFactory getUiEvents() {
-		return util.getUiEvents();
 	}
 
 	public Player getPlayer() {

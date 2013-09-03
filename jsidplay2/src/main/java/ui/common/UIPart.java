@@ -3,9 +3,8 @@ package ui.common;
 import java.net.URL;
 
 import javafx.fxml.Initializable;
-import ui.events.UIEventListener;
 
-public interface UIPart extends UIEventListener, Initializable {
+public interface UIPart extends Initializable {
 
 	String getBundleName();
 

@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -27,9 +28,6 @@ import ui.common.C64Tab;
 import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
-import ui.events.UIEvent;
-import ui.events.favorites.IAddFavoritesTab;
-import ui.events.favorites.IGetFavoritesTabs;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileExtensions;
 
@@ -69,6 +67,24 @@ public class Favorites extends C64Tab {
 		for (FavoritesSection favorite : favorites) {
 			addTab(favorite);
 		}
+		getConfig().getObservableFavorites().addListener(
+				new ListChangeListener<FavoritesSection>() {
+
+					@Override
+					public void onChanged(Change<? extends FavoritesSection> change) {
+						while (change.next()) {
+							if (change.wasPermutated() || change.wasUpdated()) {
+								continue;
+							}
+							if (change.wasAdded()) {
+								List<? extends FavoritesSection> addedSubList = change.getAddedSubList();
+								for (FavoritesSection favoritesSection : addedSubList) {
+									addTab(favoritesSection);
+								}
+							}
+						}
+					}
+				});
 		favoritesList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 			@Override
 			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
@@ -161,7 +177,6 @@ public class Favorites extends C64Tab {
 		FavoritesSection favoritesSection = new FavoritesSection();
 		favoritesSection.setName(getBundle().getString("NEW_TAB"));
 		favorites.add(favoritesSection);
-		addTab(favoritesSection);
 	}
 
 	@FXML
@@ -185,7 +200,7 @@ public class Favorites extends C64Tab {
 		return (FavoritesTab) favoritesList.getSelectionModel().getSelectedItem();
 	}
 
-	private void addTab(final FavoritesSection favoritesSection) {
+	protected void addTab(final FavoritesSection favoritesSection) {
 		final FavoritesTab newTab = new FavoritesTab();
 		newTab.setText(favoritesSection.getName());
 		newTab.restoreColumns(favoritesSection);
@@ -238,24 +253,6 @@ public class Favorites extends C64Tab {
 		this.currentlyPlayedFavorites = currentlyPlayedFavorites;
 	}
 	
-	@Override
-	public void notify(UIEvent event) {
-		if (event.isOfType(IGetFavoritesTabs.class)) {
-			IGetFavoritesTabs ifObj = (IGetFavoritesTabs) event.getUIEventImpl();
-			// Inform about all tabs
-			List<FavoritesTab> result = getFavoriteTabs();
-			ifObj.setFavoriteTabs(result, getSelectedTab().getText());
-		} else if (event.isOfType(IAddFavoritesTab.class)) {
-			final IAddFavoritesTab ifObj = (IAddFavoritesTab) event.getUIEventImpl();
-			// Add a new tab
-			addTab();
-			FavoritesTab newTab = (FavoritesTab) favoritesList.getTabs().get(favoritesList.getTabs().size() - 1);
-			newTab.setText(ifObj.getTitle());
-			ifObj.setFavorites(newTab);
-		}
-
-	}
-
 	public List<FavoritesTab> getFavoriteTabs() {
 		List<FavoritesTab> result = new ArrayList<FavoritesTab>();
 		for (Tab tab : favoritesList.getTabs()) {

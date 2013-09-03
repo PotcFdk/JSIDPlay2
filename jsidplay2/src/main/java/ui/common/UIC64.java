@@ -3,18 +3,12 @@ package ui.common;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
 import ui.entities.config.Configuration;
-import ui.events.UIEventFactory;
 
 public class UIC64 {
 
-	private UIEventFactory uiEvents = UIEventFactory.getInstance();
 	private Configuration config;
 	private Player player;
 	private ConsolePlayer consolePlayer;
-
-	protected UIEventFactory getUiEvents() {
-		return uiEvents;
-	}
 
 	protected Configuration getConfig() {
 		return config;

@@ -8,11 +8,9 @@ import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.MediaType;
 import ui.download.ProgressListener;
 import ui.entities.config.Configuration;
-import ui.events.UIEventFactory;
 import de.schlichtherle.truezip.file.TFile;
 
 public class GameListener extends ProgressListener {
-	protected UIEventFactory uiEvents = UIEventFactory.getInstance();
 
 	private String fileToRun;
 	protected Configuration config;

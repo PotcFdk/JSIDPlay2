@@ -14,7 +14,6 @@ import javafx.stage.WindowEvent;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
 import ui.entities.config.Configuration;
-import ui.events.UIEvent;
 
 public abstract class C64Stage extends Stage implements UIPart {
 
@@ -33,10 +32,6 @@ public abstract class C64Stage extends Stage implements UIPart {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-	}
-
-	@Override
-	public void notify(UIEvent evt) {
 	}
 
 	public void open() throws IOException {

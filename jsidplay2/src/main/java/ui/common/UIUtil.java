@@ -30,7 +30,6 @@ public class UIUtil extends UIC64 {
 		fxmlLoader.setBuilderFactory(javaFXBuilderFactory);
 		bundle = ResourceBundle.getBundle(part.getBundleName());
 		fxmlLoader.setResources(bundle);
-		getUiEvents().addListener(part);
 		fxmlLoader.setController(part);
 		try (InputStream is = fxml.openStream()) {
 			return fxmlLoader.load(is);

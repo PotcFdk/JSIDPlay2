@@ -9,8 +9,6 @@ import javafx.scene.control.Tab;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
 import ui.entities.config.Configuration;
-import ui.events.UIEvent;
-import ui.events.UIEventFactory;
 
 public abstract class C64Tab extends Tab implements UIPart {
 
@@ -30,10 +28,6 @@ public abstract class C64Tab extends Tab implements UIPart {
 	public void initialize(URL location, ResourceBundle resources) {
 	}
 	
-	@Override
-	public void notify(final UIEvent evt) {
-	}
-
 	public C64Tab() {
 		setContent((Node) util.parse(this));
 	}
@@ -44,10 +38,6 @@ public abstract class C64Tab extends Tab implements UIPart {
 	
 	public ResourceBundle getBundle() {
 		return util.getBundle();
-	}
-
-	public UIEventFactory getUiEvents() {
-		return util.getUiEvents();
 	}
 
 	public Player getPlayer() {
