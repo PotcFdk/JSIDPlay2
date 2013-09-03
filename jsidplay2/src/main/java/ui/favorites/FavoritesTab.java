@@ -77,9 +77,6 @@ public class FavoritesTab extends C64Tab {
 	@FXML
 	private ContextMenu contextMenuHeader, contextMenu;
 
-	protected ObservableList<HVSCEntry> allFavorites = FXCollections
-			.<HVSCEntry> observableArrayList();
-
 	protected ObservableList<HVSCEntry> filteredFavorites = FXCollections
 			.<HVSCEntry> observableArrayList();
 
@@ -123,7 +120,8 @@ public class FavoritesTab extends C64Tab {
 								|| newValue.intValue() == 0
 								|| favoritesTable.getSortOrder().size() > 0);
 						moveDown.setDisable(newValue == null
-								|| newValue.intValue() == allFavorites.size() - 1
+								|| newValue.intValue() == favoritesSection
+										.getFavorites().size() - 1
 								|| favoritesTable.getSortOrder().size() > 0);
 					}
 				});
@@ -367,8 +365,7 @@ public class FavoritesTab extends C64Tab {
 	void restoreColumns(FavoritesSection favoritesSection) {
 		this.favoritesSection = favoritesSection;
 		setText(favoritesSection.getName());
-		allFavorites.addAll(favoritesSection.getFavorites());
-		filteredFavorites.addAll(allFavorites);
+		filteredFavorites.addAll(favoritesSection.getFavorites());
 
 		// Restore persisted columns
 		for (FavoriteColumn favoriteColumn : favoritesSection.getColumns()) {
@@ -391,11 +388,10 @@ public class FavoritesTab extends C64Tab {
 								continue;
 							}
 							if (change.wasAdded()) {
-								filteredFavorites.addAll(change.getAddedSubList());
-								allFavorites.addAll(change.getAddedSubList());
+								filteredFavorites.addAll(change
+										.getAddedSubList());
 							} else if (change.wasRemoved()) {
 								filteredFavorites.removeAll(change.getRemoved());
-								allFavorites.removeAll(change.getRemoved());
 							}
 						}
 					}
@@ -414,9 +410,9 @@ public class FavoritesTab extends C64Tab {
 	void filter(String filterText) {
 		filteredFavorites.clear();
 		if (filterText.trim().length() == 0) {
-			filteredFavorites.addAll(allFavorites);
+			filteredFavorites.addAll(favoritesSection.getFavorites());
 		} else {
-			outer: for (HVSCEntry hvscEntry : allFavorites) {
+			outer: for (HVSCEntry hvscEntry : favoritesSection.getFavorites()) {
 				for (TableColumn<HVSCEntry, ?> tableColumn : favoritesTable
 						.getColumns()) {
 					FavoriteColumn favoriteColumn = (FavoriteColumn) tableColumn
@@ -470,7 +466,7 @@ public class FavoritesTab extends C64Tab {
 	void saveFavorites(File favoritesFile) throws IOException {
 		favoritesFile = addFileExtension(favoritesFile);
 		try (PrintStream p = new PrintStream(favoritesFile)) {
-			for (HVSCEntry hvscEntry : allFavorites) {
+			for (HVSCEntry hvscEntry : favoritesSection.getFavorites()) {
 				p.println(new TFile(hvscEntry.getPath()).getPath());
 			}
 		}
@@ -479,7 +475,7 @@ public class FavoritesTab extends C64Tab {
 
 	void playNext(File file) {
 		boolean recentlyPlayedFound = false;
-		for (HVSCEntry hvscEntry : allFavorites) {
+		for (HVSCEntry hvscEntry : favoritesSection.getFavorites()) {
 			if (recentlyPlayedFound) {
 				playTune(hvscEntry);
 				break;
@@ -492,8 +488,9 @@ public class FavoritesTab extends C64Tab {
 	}
 
 	void playNextRandom() {
-		HVSCEntry hvscEntry = allFavorites.get(Math.abs(new Random()
-				.nextInt(Integer.MAX_VALUE)) % allFavorites.size());
+		HVSCEntry hvscEntry = favoritesSection.getFavorites().get(
+				Math.abs(new Random().nextInt(Integer.MAX_VALUE))
+						% favoritesSection.getFavorites().size());
 		playTune(hvscEntry);
 	}
 
@@ -620,7 +617,6 @@ public class FavoritesTab extends C64Tab {
 	}
 
 	void moveRow(int from, int to) {
-		Collections.swap(allFavorites, from, to);
 		Collections.swap(favoritesSection.getFavorites(), from, to);
 		filter(filterField.getText());
 		favoritesTable.getSelectionModel().select(to);
