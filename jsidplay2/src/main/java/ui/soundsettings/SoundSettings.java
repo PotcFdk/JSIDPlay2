@@ -228,7 +228,7 @@ public class SoundSettings extends C64Stage {
 	@FXML
 	private void playSingleSong() {
 		getConfig().getSidplay2().setSingle(singleSong.isSelected());
-		getConsolePlayer().getTrack().setCurrentSingle(singleSong.isSelected());
+		getConsolePlayer().getTrack().setSingle(singleSong.isSelected());
 	}
 
 	@FXML

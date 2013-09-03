@@ -214,7 +214,7 @@ public class SIDPlay extends Applet {
 	 * @return current song number
 	 */
 	public int getCurrentSong() {
-		return cp.getTrack().getCurrentSong();
+		return cp.getTrack().getSelected();
 	}
 
 	/**
