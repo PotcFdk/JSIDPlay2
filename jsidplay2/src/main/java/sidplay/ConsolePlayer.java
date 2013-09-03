@@ -78,9 +78,9 @@ public class ConsolePlayer {
 	private SidDatabase sidDatabase;
 	private SIDBuilder sidEmuFactory;
 	private IMOS6510Disassembler disassembler;
-	
+
 	private IExtendImageListener policy;
-	
+
 	// MP3 saved settings:
 	private Output lastOutput;
 	private Emulation lastSidEmu;
@@ -157,11 +157,9 @@ public class ConsolePlayer {
 		sidEmuFactory = null;
 
 		switch (emu) {
-		case EMU_RESID: {
-			final ReSIDBuilder rs = new ReSIDBuilder(audioConfig, cpuFrequency);
-			sidEmuFactory = rs;
+		case EMU_RESID:
+			sidEmuFactory = new ReSIDBuilder(audioConfig, cpuFrequency);
 			break;
-		}
 
 		case EMU_HARDSID:
 			final HardSIDBuilder hs = new HardSIDBuilder(iniCfg);
@@ -169,18 +167,11 @@ public class ConsolePlayer {
 				displayError(hs.error());
 				return false;
 			}
-
 			hs.setDevicesToUse(iniCfg);
 			if (!hs.bool()) {
 				displayError(hs.error());
 				return false;
 			}
-
-			if (!hs.bool()) {
-				displayError(hs.error());
-				return false;
-			}
-
 			sidEmuFactory = hs;
 			break;
 
@@ -258,10 +249,9 @@ public class ConsolePlayer {
 		}
 		if (driverSettings.getDevice() instanceof CmpMP3File) {
 			// Set MP3 comparison settings
-			((CmpMP3File) driverSettings.getDevice()).setPlayOriginal(audio
-					.isPlayOriginal());
-			((CmpMP3File) driverSettings.getDevice()).setMp3File(new File(audio
-					.getMp3File()));
+			CmpMP3File cmpMp3Driver = (CmpMP3File) driverSettings.getDevice();
+			cmpMp3Driver.setPlayOriginal(audio.isPlayOriginal());
+			cmpMp3Driver.setMp3File(new File(audio.getMp3File()));
 		}
 
 		/* Determine number of SIDs */
@@ -367,7 +357,7 @@ public class ConsolePlayer {
 		// Start the player. Do this by fast
 		// forwarding to the start position
 		setCurrentSpeed(MAX_SPEED);
-		driverSettings.getDevice().setFastForward(getCurrentSpeed());
+		driverSettings.getDevice().setFastForward(MAX_SPEED);
 		v1mute = v2mute = v3mute = false;
 
 		player.reset();
@@ -410,8 +400,7 @@ public class ConsolePlayer {
 			timer.setDefaultLength(0);
 		}
 		// Set up the play timer
-		timer.setStop(0);
-		timer.setStop(timer.getStop() + timer.getDefaultLength());
+		timer.setStop(timer.getDefaultLength());
 		if (timer.isValid()) {
 			// Length relative to start
 			timer.setStop(timer.getStop() + timer.getStart());
@@ -422,7 +411,6 @@ public class ConsolePlayer {
 				return false;
 			}
 		}
-
 		timer.setCurrent(~0);
 		stateProperty.set(State.RUNNING);
 		return true;
@@ -447,7 +435,6 @@ public class ConsolePlayer {
 			}
 		}
 		sidEmuFactory = null;
-
 		driverSettings.getDevice().close();
 	}
 
@@ -970,7 +957,7 @@ public class ConsolePlayer {
 		track.setFirst(0);
 		// 0 means use start song next time open() is called
 		track.setSelected(0);
-		
+
 		tune = t;
 		if (t == null) {
 			track.setFirst(1);
