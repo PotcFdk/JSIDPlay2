@@ -312,19 +312,6 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	 * Connect Keyboard with C64 keyboard.
 	 */
 	private void setupKeyboard() {
-		monitor.setOnKeyTyped(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				KeyTableEntry keyTableEntry = getConfig().getKeyTabEntry(
-						event.getCode().getName());
-
-				if (keyTableEntry != null) {
-					pressC64Key(keyTableEntry);
-					releaseC64Key(keyTableEntry);
-					event.consume();
-				}
-			}
-		});
 		monitor.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {

@@ -378,6 +378,9 @@ public class Configuration implements IConfig {
 						new KeyTableEntity(KeyCode.LEFT.getName(),
 								KeyTableEntry.CURSOR_LEFT_RIGHT, true),
 
+						new KeyTableEntity(KeyCode.SPACE.getName(),
+								KeyTableEntry.SPACE, true),
+
 						new KeyTableEntity(KeyCode.F1.getName(),
 								KeyTableEntry.F1), new KeyTableEntity(
 								KeyCode.F3.getName(), KeyTableEntry.F3),
