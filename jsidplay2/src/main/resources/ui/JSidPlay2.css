@@ -51,7 +51,7 @@
 }
 .currentlyPlayedRow
 {
-	-fx-text-fill: blue;
+	-fx-background-color: lightgreen;
 }
 
 .errorConsole {
@@ -60,4 +60,17 @@
 
 .outputConsole {
 	-fx-text-fill: black;
+}
+
+#status {
+	-fx-font-size: 14;
+}
+
+
+.cellValueOk {
+	-fx-background-color:white;
+}
+
+.cellValueError {
+	-fx-background-color:red;
 }

@@ -17,6 +17,7 @@
 <?import ui.favorites.FavoritesTab?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.CheckBox?>
 <?scenebuilder-preview-i18n-resource Favorites.properties?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
@@ -117,8 +118,21 @@
 		<bottom>
 			<TitledPane text="%PLAYBACK_OPTIONS" collapsible="false">
 				<GridPane>
-					<Label text="%PLAYBACK_HINT" GridPane.rowIndex="0"
-						GridPane.columnIndex="0" GridPane.columnSpan="4" />
+					<CheckBox text="%RESPECT_SONG_LENGTH" GridPane.columnIndex="0"
+						GridPane.rowIndex="0" fx:id="enableSldb" onAction="#doEnableSldb">
+					</CheckBox>
+					<CheckBox  text="%SINGLE_SONG" GridPane.columnIndex="1"
+						GridPane.rowIndex="0" fx:id="singleSong" onAction="#playSingleSong">
+					</CheckBox>
+					<Label text="%DEFAULT_LENGTH" GridPane.columnIndex="2"
+						GridPane.rowIndex="0">
+					</Label>
+					<TextField GridPane.columnIndex="3" GridPane.rowIndex="0"
+						fx:id="defaultTime" onAction="#setDefaultTime">
+						<tooltip>
+							<Tooltip text="%DEFAULT_LENGTH_TIP"></Tooltip>
+						</tooltip>
+					</TextField>
 					<RadioButton text="%OFF" selected="true" toggleGroup="$playbackGroup"
 						fx:id="off" GridPane.rowIndex="1" GridPane.columnIndex="0" />
 					<RadioButton text="%NORMAL" toggleGroup="$playbackGroup"

@@ -48,6 +48,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import libsidplay.C64;
+import libsidplay.common.Event;
+import libsidplay.common.Event.Phase;
+import libsidplay.common.EventScheduler;
+import libsidplay.common.ISID2Types;
 import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
@@ -131,6 +135,9 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private int oldHalfTrack;
 	private Scene scene;
 	private int hardcopyCounter;
+	protected long lastUpdate;
+	private String tuneSpeed;
+	private String playerId;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -147,6 +154,9 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 						if (state == State.EXIT || state == State.RUNNING) {
 							Platform.runLater(new Runnable() {
 								public void run() {
+									lastUpdate = getPlayer().getC64()
+											.getEventScheduler()
+											.getTime(Phase.PHI1);
 									updatePlayerButtons(state);
 
 									SidTune sidTune = getPlayer().getTune();
@@ -1021,15 +1031,71 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		Runtime runtime = Runtime.getRuntime();
 		int totalMemory = (int) (runtime.totalMemory() / (1 << 20));
 		int freeMemory = (int) (runtime.freeMemory() / (1 << 20));
+		// tune speed
+		determineTuneSpeed();
+		// playerID
+		getPlayerId();
 		// final status bar text
 		String text = String.format(getBundle().getString("DATASETTE_COUNTER")
 				+ " %03d, " + getBundle().getString("FLOPPY_TRACK") + " %02d, "
 				+ getBundle().getString("DATE") + " %s, "
-				+ getBundle().getString("TIME") + " %s%s, "
+				+ getBundle().getString("TIME") + " %s%s, %s%s"
 				+ getBundle().getString("MEM") + " %d/%d MB",
 				datasette.getCounter(), halfTrack >> 1, DATE, statusTime,
-				statusSongLength, (totalMemory - freeMemory), totalMemory);
+				statusSongLength, tuneSpeed, playerId,
+				(totalMemory - freeMemory), totalMemory);
 		status.setText(text);
+	}
+
+	private void getPlayerId() {
+		if (getPlayer().getTune() != null) {
+			final StringBuilder ids = new StringBuilder();
+			for (final String s : getPlayer().getTune().identify()) {
+				if (ids.length() > 0) {
+					ids.append(", ");
+				}
+				ids.append(s);
+			}
+			if (ids.length() > 0) {
+				playerId = getBundle().getString("PLAYER") + " "
+						+ ids.toString().substring(0, Math.min(ids.length(), 16));
+				if (ids.length() > 16) {
+					playerId += "...";
+				}
+				playerId += ", ";
+			} else {
+				playerId = "";
+			}
+		} else {
+			playerId = "";
+		}
+	}
+
+	private void determineTuneSpeed() {
+		if (getPlayer().getTune() != null) {
+			C64 c64 = getPlayer().getC64();
+			final EventScheduler ctx = c64.getEventScheduler();
+			final ISID2Types.CPUClock systemClock = c64.getClock();
+			final double waitClocks = systemClock.getCpuFrequency();
+			final long now = ctx.getTime(Event.Phase.PHI1);
+			final double interval = now - lastUpdate;
+			if (interval >= waitClocks) {
+				lastUpdate = now;
+
+				final double callsSinceLastRead = c64
+						.callsToPlayRoutineSinceLastTime()
+						* waitClocks
+						/ interval;
+				/* convert to number of calls per frame */
+				tuneSpeed = getBundle().getString("SPEED")
+						+ " "
+						+ String.format("%.1f", callsSinceLastRead
+								/ systemClock.getRefresh());
+				tuneSpeed += "x, ";
+			}
+		} else {
+			tuneSpeed = "";
+		}
 	}
 
 	private void createHardCopy(String format) {

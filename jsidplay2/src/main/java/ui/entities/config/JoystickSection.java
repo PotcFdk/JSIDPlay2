@@ -151,7 +151,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentNameBtn2 = componentNameBtn;
 	}
 
-	private float componentValueUp1;
+	private float componentValueUp1 = 1.0f;
 
 	@Override
 	public float getComponentValueUp1() {
@@ -163,7 +163,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueUp1 = componentValueUp;
 	}
 
-	private float componentValueUp2;
+	private float componentValueUp2 = 1.0f;
 
 	@Override
 	public float getComponentValueUp2() {
@@ -175,7 +175,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueUp2 = componentValueUp;
 	}
 
-	private float componentValueDown1;
+	private float componentValueDown1 = 1.0f;
 
 	@Override
 	public float getComponentValueDown1() {
@@ -187,7 +187,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueDown1 = componentValueDown;
 	}
 
-	private float componentValueDown2;
+	private float componentValueDown2 = 1.0f;
 
 	@Override
 	public float getComponentValueDown2() {
@@ -199,7 +199,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueDown2 = componentValueDown;
 	}
 
-	private float componentValueLeft1;
+	private float componentValueLeft1 = 1.0f;
 
 	@Override
 	public float getComponentValueLeft1() {
@@ -211,7 +211,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueLeft1 = componentValueLeft;
 	}
 
-	private float componentValueLeft2;
+	private float componentValueLeft2 = 1.0f;
 
 	@Override
 	public float getComponentValueLeft2() {
@@ -223,7 +223,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueLeft2 = componentValueLeft;
 	}
 
-	private float componentValueRight1;
+	private float componentValueRight1 = 1.0f;
 
 	@Override
 	public float getComponentValueRight1() {
@@ -235,7 +235,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueRight1 = componentValueRight;
 	}
 
-	private float componentValueRight2;
+	private float componentValueRight2 = 1.0f;
 
 	@Override
 	public float getComponentValueRight2() {
@@ -247,7 +247,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueRight2 = componentValueRight;
 	}
 
-	private float componentValueBtn1;
+	private float componentValueBtn1 = 1.0f;
 
 	@Override
 	public float getComponentValueBtn1() {
@@ -259,7 +259,7 @@ public class JoystickSection implements IJoystickSection {
 		this.componentValueBtn1 = componentValueBtn;
 	}
 
-	private float componentValueBtn2;
+	private float componentValueBtn2 = 1.0f;
 
 	@Override
 	public float getComponentValueBtn2() {

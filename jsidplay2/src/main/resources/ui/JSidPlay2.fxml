@@ -22,6 +22,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Tab?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import ui.musiccollection.MusicCollection?>
 <?import ui.diskcollection.DiskCollection?>
 <?import ui.oscilloscope.Oscilloscope?>
@@ -35,7 +36,7 @@
 <Scene>
 	<BorderPane xmlns:fx="http://javafx.com/fxml">
 		<top>
-			<HBox>
+			<AnchorPane>
 				<fx:define>
 					<ToggleGroup fx:id="playSpeedGroup" />
 					<ToggleGroup fx:id="videoCaptureGroup" />
@@ -43,7 +44,7 @@
 					<ToggleGroup fx:id="floppyGroup" />
 					<ToggleGroup fx:id="extensionGroup" />
 				</fx:define>
-				<MenuBar fx:id="menuBar">
+				<MenuBar fx:id="menuBar" AnchorPane.leftAnchor="10">
 					<menus>
 						<Menu text="%FILE">
 							<items>
@@ -178,57 +179,59 @@
 						</Menu>
 					</menus>
 				</MenuBar>
-				<Button focusTraversable="false" onAction="#previousSong"
-					fx:id="previous2">
-					<tooltip>
-						<Tooltip text="%PREVIOUS2" fx:id="previous2ToolTip" />
-					</tooltip>
-					<graphic>
-						<ImageView>
-							<image>
-								<Image url="@/ui/icons/playback_prev.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</Button>
-				<ToggleButton focusTraversable="false" onAction="#pause"
-					fx:id="pauseContinue2">
-					<tooltip>
-						<Tooltip text="%PAUSE2" />
-					</tooltip>
-					<graphic>
-						<ImageView>
-							<image>
-								<Image url="@/ui/icons/playback_pause.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</ToggleButton>
-				<Button focusTraversable="false" onAction="#nextSong" fx:id="next2">
-					<tooltip>
-						<Tooltip text="%NEXT2" fx:id="next2ToolTip" />
-					</tooltip>
-					<graphic>
-						<ImageView>
-							<image>
-								<Image url="@/ui/icons/playback_next.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</Button>
-				<Button focusTraversable="false" onAction="#stopSong">
-					<tooltip>
-						<Tooltip text="%STOP2" />
-					</tooltip>
-					<graphic>
-						<ImageView>
-							<image>
-								<Image url="@/ui/icons/playback_stop.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</Button>
-			</HBox>
+				<HBox AnchorPane.rightAnchor="10">
+					<Button focusTraversable="false" onAction="#previousSong"
+						fx:id="previous2">
+						<tooltip>
+							<Tooltip text="%PREVIOUS2" fx:id="previous2ToolTip" />
+						</tooltip>
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/playback_prev.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<ToggleButton focusTraversable="false" onAction="#pause"
+						fx:id="pauseContinue2">
+						<tooltip>
+							<Tooltip text="%PAUSE2" />
+						</tooltip>
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/playback_pause.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</ToggleButton>
+					<Button focusTraversable="false" onAction="#nextSong" fx:id="next2">
+						<tooltip>
+							<Tooltip text="%NEXT2" fx:id="next2ToolTip" />
+						</tooltip>
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/playback_next.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Button focusTraversable="false" onAction="#stopSong">
+						<tooltip>
+							<Tooltip text="%STOP2" />
+						</tooltip>
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/playback_stop.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+				</HBox>
+			</AnchorPane>
 		</top>
 		<center>
 			<TabPane focusTraversable="false" fx:id="tabbedPane"
@@ -263,10 +266,10 @@
 			</TabPane>
 		</center>
 		<bottom>
-			<HBox>
-				<Label fx:id="status" />
-				<ProgressBar fx:id="progress" />
-			</HBox>
+			<AnchorPane>
+				<Label fx:id="status" AnchorPane.leftAnchor="10" />
+				<ProgressBar fx:id="progress" AnchorPane.rightAnchor="10" />
+			</AnchorPane>
 		</bottom>
 	</BorderPane>
 </Scene>

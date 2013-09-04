@@ -25,25 +25,6 @@
 
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<VBox>
-		<TitledPane collapsible="false" text="%TIMER">
-			<GridPane>
-				<Label text="%DEFAULT_LENGTH" GridPane.columnIndex="0"
-					GridPane.rowIndex="0">
-				</Label>
-				<TextField GridPane.columnIndex="1" GridPane.rowIndex="0"
-					fx:id="defaultTime" onAction="#setDefaultTime">
-					<tooltip>
-						<Tooltip text="%DEFAULT_LENGTH_TIP"></Tooltip>
-					</tooltip>
-				</TextField>
-				<CheckBox text="%RESPECT_SONG_LENGTH" GridPane.columnIndex="0"
-					GridPane.rowIndex="1" fx:id="enableSldb" onAction="#doEnableSldb">
-				</CheckBox>
-				<CheckBox text="%SINGLE_SONG" GridPane.columnIndex="1"
-					GridPane.rowIndex="1" fx:id="singleSong" onAction="#playSingleSong">
-				</CheckBox>
-			</GridPane>
-		</TitledPane>
 		<TitledPane collapsible="false" text="%OUTPUT_DEVICE">
 			<GridPane>
 				<Label text="%DEVICE" GridPane.columnIndex="0"
@@ -196,18 +177,6 @@
 					GridPane.rowIndex="4" fx:id="download8580R5Btn" onAction="#startDownload8580R5">
 				</Button>
 			</GridPane>
-		</TitledPane>
-		<TitledPane collapsible="false" text="%INFOS">
-			<Label text="%PLAYER" GridPane.columnIndex="0"
-				GridPane.rowIndex="2">
-			</Label>
-			<Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="playerId">
-			</Label>
-			<Label text="%SONG_SPEED" GridPane.columnIndex="2"
-				GridPane.rowIndex="2">
-			</Label>
-			<Label GridPane.columnIndex="3" GridPane.rowIndex="2" fx:id="tuneSpeed">
-			</Label>
 		</TitledPane>
 	</VBox>
 </Scene>

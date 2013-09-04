@@ -16,14 +16,17 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidutils.PathUtils;
 import sidplay.consoleplayer.State;
+import sidplay.ini.IniReader;
 import ui.common.C64Tab;
 import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
@@ -33,12 +36,17 @@ import ui.filefilter.TuneFileExtensions;
 
 public class Favorites extends C64Tab {
 
+	private static final String CELL_VALUE_OK = "cellValueOk";
+	private static final String CELL_VALUE_ERROR = "cellValueError";
+
 	@FXML
 	private Button add, remove, selectAll, deselectAll, load, save, saveAs;
 	@FXML
-	private TextField renameTab;
-	@FXML
 	private TabPane favoritesList;
+	@FXML
+	private TextField defaultTime, renameTab;
+	@FXML
+	private CheckBox enableSldb, singleSong;
 	@FXML
 	private RadioButton off, normal, randomOne, randomAll, repeatOff, repeatOne;
 
@@ -50,6 +58,11 @@ public class Favorites extends C64Tab {
 		if (getPlayer() == null) {
 			return;
 		}
+		final int seconds = getConfig().getSidplay2().getPlayLength();
+		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
+				seconds % 60));
+		enableSldb.setSelected(getConfig().getSidplay2().isEnableDatabase());
+		singleSong.setSelected(getConfig().getSidplay2().isSingle());
 		getConsolePlayer().stateProperty().addListener(new ChangeListener<State>() {
 			@Override
 			public void changed(ObservableValue<? extends State> arg0,
@@ -168,6 +181,36 @@ public class Favorites extends C64Tab {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+		}
+	}
+
+	@FXML
+	private void doEnableSldb() {
+		getConfig().getSidplay2().setEnableDatabase(enableSldb.isSelected());
+		getConsolePlayer().setSLDb(enableSldb.isSelected());
+	}
+
+	@FXML
+	private void playSingleSong() {
+		getConfig().getSidplay2().setSingle(singleSong.isSelected());
+		getConsolePlayer().getTrack().setSingle(singleSong.isSelected());
+	}
+
+	@FXML
+	private void setDefaultTime() {
+		final Tooltip tooltip = new Tooltip();
+		defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		final int secs = IniReader.parseTime(defaultTime.getText());
+		if (secs != -1) {
+			getConsolePlayer().getTimer().setDefaultLength(secs);
+			getConfig().getSidplay2().setPlayLength(secs);
+			tooltip.setText(getBundle().getString("DEFAULT_LENGTH_TIP"));
+			defaultTime.setTooltip(tooltip);
+			defaultTime.getStyleClass().add(CELL_VALUE_OK);
+		} else {
+			tooltip.setText(getBundle().getString("DEFAULT_LENGTH_FORMAT"));
+			defaultTime.setTooltip(tooltip);
+			defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
 		}
 	}
 
