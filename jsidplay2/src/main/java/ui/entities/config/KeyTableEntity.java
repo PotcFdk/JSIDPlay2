@@ -6,11 +6,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 import libsidplay.components.keyboard.KeyTableEntry;
 
 @Entity
+@XmlAccessorType(XmlAccessType.FIELD)
 public class KeyTableEntity {
 
 	public KeyTableEntity() {
@@ -29,7 +31,6 @@ public class KeyTableEntity {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
-	@XmlTransient
 	public Integer getId() {
 		return id;
 	}

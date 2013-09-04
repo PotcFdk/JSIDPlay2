@@ -17,6 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -34,6 +36,7 @@ import sidplay.ini.intf.ISidPlay2Section;
 
 @Entity
 @XmlRootElement(name = "configuration")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Configuration implements IConfig {
 
 	/** Bump this each time you want to invalidate the configuration */
@@ -92,7 +95,6 @@ public class Configuration implements IConfig {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
-	@XmlTransient
 	public Integer getId() {
 		return id;
 	}
@@ -101,7 +103,6 @@ public class Configuration implements IConfig {
 		this.id = id;
 	}
 
-	@XmlTransient
 	private String reconfigFilename;
 
 	public String getReconfigFilename() {
@@ -129,7 +130,6 @@ public class Configuration implements IConfig {
 	@XmlElement(name = "online")
 	private OnlineSection online = new OnlineSection();
 
-	@XmlTransient
 	public OnlineSection getOnline() {
 		return online;
 	}
@@ -248,7 +248,6 @@ public class Configuration implements IConfig {
 		this.favorites = favorites;
 	}
 
-	@XmlTransient
 	public List<FavoritesSection> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<FavoritesSection>();
@@ -256,7 +255,6 @@ public class Configuration implements IConfig {
 		return getObservableFavorites();
 	}
 
-	@XmlTransient
 	public ObservableList<FavoritesSection> getObservableFavorites() {
 		if (observableFavorites == null) {
 			observableFavorites = FXCollections
@@ -393,7 +391,6 @@ public class Configuration implements IConfig {
 	@XmlElement(name = "keyCodeMap")
 	private List<KeyTableEntity> keyCodeMap = INITIAL_KEYCODES;
 
-	@XmlTransient
 	public List<KeyTableEntity> getKeyCodeMap() {
 		return keyCodeMap;
 	}
