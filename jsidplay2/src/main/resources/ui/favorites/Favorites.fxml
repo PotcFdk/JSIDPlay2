@@ -125,7 +125,7 @@
 						GridPane.rowIndex="0" fx:id="singleSong" onAction="#playSingleSong">
 					</CheckBox>
 					<Label text="%DEFAULT_LENGTH" GridPane.columnIndex="2"
-						GridPane.rowIndex="0">
+						GridPane.rowIndex="0" GridPane.halignment="RIGHT">
 					</Label>
 					<TextField GridPane.columnIndex="3" GridPane.rowIndex="0"
 						fx:id="defaultTime" onAction="#setDefaultTime">
