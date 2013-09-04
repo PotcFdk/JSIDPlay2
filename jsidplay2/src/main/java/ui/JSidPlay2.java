@@ -1057,7 +1057,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				ids.append(s);
 			}
 			if (ids.length() > 0) {
-				playerId = getBundle().getString("PLAYER") + " "
+				playerId = getBundle().getString("PLAYER_ID") + " "
 						+ ids.toString().substring(0, Math.min(ids.length(), 16));
 				if (ids.length() > 16) {
 					playerId += "...";
