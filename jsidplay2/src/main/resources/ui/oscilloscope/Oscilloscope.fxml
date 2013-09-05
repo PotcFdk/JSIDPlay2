@@ -74,6 +74,7 @@
 						GridPane.columnIndex="2" GridPane.rowIndex="3" />
 				</GridPane>
 			</TitledPane>
+			<HBox HBox.hgrow="ALWAYS"/>
 			<TitledPane text="%STEREO_SID" collapsible="false">
 				<GridPane>
 					<WaveGauge fx:id="waveStereo_0" text="%WAVE"
