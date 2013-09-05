@@ -52,6 +52,7 @@
 .currentlyPlayedRow
 {
 	-fx-background-color: lightgreen;
+	-fx-text-fill: black;
 }
 
 .errorConsole {

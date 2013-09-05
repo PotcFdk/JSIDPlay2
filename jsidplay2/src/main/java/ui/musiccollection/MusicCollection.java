@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,6 +36,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -53,10 +55,12 @@ import javax.persistence.metamodel.SingularAttribute;
 import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
 import sidplay.consoleplayer.State;
+import sidplay.ini.IniReader;
 import ui.common.C64Tab;
 import ui.common.TypeTextField;
 import ui.common.dialog.YesNoDialog;
@@ -101,6 +105,9 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  */
 public class MusicCollection extends C64Tab implements ISearchListener {
 
+	private static final String CELL_VALUE_OK = "cellValueOk";
+	private static final String CELL_VALUE_ERROR = "cellValueError";
+
 	private class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
 		public SearchCriteria(SingularAttribute<DECLARING_CLASS, JAVA_TYPE> att) {
 			this.attribute = att;
@@ -121,7 +128,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	}
 
 	@FXML
-	protected CheckBox autoConfiguration;
+	protected CheckBox autoConfiguration, enableSldb, singleSong;
 	@FXML
 	private TableView<TuneInfo> tuneInfoTable;
 	@FXML
@@ -135,7 +142,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	@FXML
 	private Button startSearch, stopSearch, resetSearch, createSearchIndex;
 	@FXML
-	private TextField collectionDir;
+	protected TextField collectionDir, defaultTime;
 	@FXML
 	private TypeTextField stringTextField, integerTextField, longTextField,
 			shortTextField;
@@ -144,7 +151,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	@FXML
 	private ContextMenu contextMenu;
 	@FXML
-	protected MenuItem showStil, convertToPSID64;
+	protected MenuItem showStil, convertToPSID64, soasc6581R2, soasc6581R4,
+			soasc8580R5;
 	@FXML
 	protected Menu addToFavorites;
 
@@ -171,6 +179,9 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private Object searchForValue, recentlySearchedForValue;
 	private SearchCriteria<?, ?> recentlySearchedCriteria;
 	private boolean searchOptionsChanged;
+	protected String hvscName;
+	protected int currentSong;
+	protected DownloadThread downloadThread;
 
 	protected FavoritesSection favoritesToAddSearchResult;
 
@@ -187,6 +198,40 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
+		final int seconds = getConfig().getSidplay2().getPlayLength();
+		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
+				seconds % 60));
+		((SidPlay2Section) getConfig().getSidplay2()).playLengthProperty().addListener(new ChangeListener<Number>() {
+			
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				int seconds = arg2.intValue();
+				defaultTime.setText(String.format("%02d:%02d", seconds / 60,
+						seconds % 60));
+			}
+
+		});
+		
+		enableSldb.setSelected(getConfig().getSidplay2().isEnableDatabase());
+		((SidPlay2Section) getConfig().getSidplay2()).enableDatabaseProperty().addListener(new ChangeListener<Boolean>() {
+			
+			@Override
+			public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1,
+					Boolean arg2) {
+				enableSldb.setSelected(arg2);
+			}
+		});
+		
+		singleSong.setSelected(getConfig().getSidplay2().isSingle());
+		((SidPlay2Section) getConfig().getSidplay2()).singleProperty().addListener(new ChangeListener<Boolean>() {
+			
+			@Override
+			public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1,
+					Boolean arg2) {
+				singleSong.setSelected(arg2);
+			}
+		});
 		getConsolePlayer().stateProperty().addListener(
 				new ChangeListener<State>() {
 					@Override
@@ -203,7 +248,6 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 						}
 					}
 				});
-
 		tuneInfoTable.setItems(tuneInfos);
 
 		searchScope.setItems(searchScopes);
@@ -283,6 +327,10 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					public void changed(
 							ObservableValue<? extends TreeItem<File>> observable,
 							TreeItem<File> oldValue, TreeItem<File> newValue) {
+						for (MenuItem item : Arrays.asList(soasc6581R2,
+								soasc6581R4, soasc8580R5)) {
+							item.setDisable(true);
+						}
 						if (newValue != null
 								&& !newValue.equals(fileBrowser.getRoot())
 								&& newValue.getValue().isFile()) {
@@ -291,8 +339,26 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 								SidTune sidTune = SidTune.load(tuneFile);
 								showPhoto(sidTune);
 								showTuneInfos(tuneFile, sidTune);
+								getSOASCURL(sidTune);
 							} catch (IOException | SidTuneError e) {
 								e.printStackTrace();
+							}
+						}
+					}
+
+					private void getSOASCURL(SidTune sidTune) {
+						if (sidTune != null) {
+							final SidTuneInfo tuneInfo = sidTune.getInfo();
+							File rootFile = new File(getConfig().getSidplay2().getHvsc());
+							String name = PathUtils.getCollectionName(new TFile(rootFile),
+									tuneInfo.file);
+							if (name != null) {
+								hvscName = name.replace(".sid", "");
+								currentSong = tuneInfo.currentSong;
+								for (MenuItem item : Arrays.asList(soasc6581R2,
+										soasc6581R4, soasc8580R5)) {
+									item.setDisable(false);
+								}
 							}
 						}
 					}
@@ -401,6 +467,24 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			c.convertFiles(getConsolePlayer().getStil(),
 					new File[] { selectedItem.getValue() }, directory);
 		}
+	}
+
+	@FXML
+	private void startDownload6581R2() {
+		final String url = getConfig().getOnline().getSoasc6581R2();
+		downloadStart(MessageFormat.format(url, hvscName, currentSong));
+	}
+
+	@FXML
+	private void startDownload6581R4() {
+		final String url = getConfig().getOnline().getSoasc6581R4();
+		downloadStart(MessageFormat.format(url, hvscName, currentSong));
+	}
+
+	@FXML
+	private void startDownload8580R5() {
+		final String url = getConfig().getOnline().getSoasc8580R5();
+		downloadStart(MessageFormat.format(url, hvscName, currentSong));
 	}
 
 	@FXML
@@ -529,6 +613,36 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			recentlySearchedForValue = searchForValue;
 		}
 		startSearch(false);
+	}
+
+	@FXML
+	private void doEnableSldb() {
+		getConfig().getSidplay2().setEnableDatabase(enableSldb.isSelected());
+		getConsolePlayer().setSLDb(enableSldb.isSelected());
+	}
+
+	@FXML
+	private void playSingleSong() {
+		getConfig().getSidplay2().setSingle(singleSong.isSelected());
+		getConsolePlayer().getTrack().setSingle(singleSong.isSelected());
+	}
+
+	@FXML
+	private void setDefaultTime() {
+		final Tooltip tooltip = new Tooltip();
+		defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		final int secs = IniReader.parseTime(defaultTime.getText());
+		if (secs != -1) {
+			getConsolePlayer().getTimer().setDefaultLength(secs);
+			getConfig().getSidplay2().setPlayLength(secs);
+			tooltip.setText(getBundle().getString("DEFAULT_LENGTH_TIP"));
+			defaultTime.setTooltip(tooltip);
+			defaultTime.getStyleClass().add(CELL_VALUE_OK);
+		} else {
+			tooltip.setText(getBundle().getString("DEFAULT_LENGTH_FORMAT"));
+			defaultTime.setTooltip(tooltip);
+			defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
+		}
 	}
 
 	public String getCollectionURL() {
@@ -758,7 +872,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			@Override
 			public void run() {
 				TreeItem<File> rootItem = fileBrowser.getRoot();
-				if (rootItem == null) {
+				if (rootItem == null
+						|| matchFile.getName().toLowerCase().endsWith(".mp3")) {
 					return;
 				}
 				List<TreeItem<File>> pathSegs = new ArrayList<TreeItem<File>>();
@@ -863,6 +978,33 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			searchThread.start();
 		}
 
+	}
+
+	private void downloadStart(String url) {
+		System.out.println("Download URL: <" + url + ">");
+		try {
+			downloadThread = new DownloadThread(getConfig(),
+					new ProgressListener(progress) {
+
+						@Override
+						public void downloaded(final File downloadedFile) {
+							downloadThread = null;
+
+							if (downloadedFile != null) {
+								Platform.runLater(new Runnable() {
+									
+									@Override
+									public void run() {
+										playTune(downloadedFile);
+									}
+								});
+							}
+						}
+					}, new URL(url));
+			downloadThread.start();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void playTune(final File file) {

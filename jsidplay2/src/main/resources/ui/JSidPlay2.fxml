@@ -239,7 +239,6 @@
 				<tabs>
 					<Video text="%VIDEO" fx:id="videoScreen" />
 					<Oscilloscope text="%OSCILLOSCOPE" />
-					<Favorites text="%FAVORITES" />
 					<Tab text="%MUSIC_COLLECTIONS" fx:id="musicCollections">
 						<TabPane tabClosingPolicy="UNAVAILABLE" fx:id="musicCollTabbedPane">
 							<tabs>
@@ -250,6 +249,7 @@
 							</tabs>
 						</TabPane>
 					</Tab>
+					<Favorites text="%FAVORITES" />
 					<Tab text="%DISC_COLLECTIONS" fx:id="diskCollections">
 						<TabPane tabClosingPolicy="UNAVAILABLE" fx:id="diskCollTabbedPane">
 							<tabs>

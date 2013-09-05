@@ -44,9 +44,9 @@ public class Favorites extends C64Tab {
 	@FXML
 	private TabPane favoritesList;
 	@FXML
-	private TextField defaultTime, renameTab;
+	protected TextField defaultTime, renameTab;
 	@FXML
-	private CheckBox enableSldb, singleSong;
+	protected CheckBox enableSldb, singleSong;
 	@FXML
 	private RadioButton off, normal, randomOne, randomAll, repeatOff, repeatOne;
 
@@ -61,8 +61,36 @@ public class Favorites extends C64Tab {
 		final int seconds = getConfig().getSidplay2().getPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
 				seconds % 60));
+		((SidPlay2Section) getConfig().getSidplay2()).playLengthProperty().addListener(new ChangeListener<Number>() {
+			
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				int seconds = arg2.intValue();
+				defaultTime.setText(String.format("%02d:%02d", seconds / 60,
+						seconds % 60));
+			}
+
+		});
+
 		enableSldb.setSelected(getConfig().getSidplay2().isEnableDatabase());
+		((SidPlay2Section) getConfig().getSidplay2()).enableDatabaseProperty().addListener(new ChangeListener<Boolean>() {
+			
+			@Override
+			public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1,
+					Boolean arg2) {
+				enableSldb.setSelected(arg2);
+			}
+		});
 		singleSong.setSelected(getConfig().getSidplay2().isSingle());
+		((SidPlay2Section) getConfig().getSidplay2()).singleProperty().addListener(new ChangeListener<Boolean>() {
+			
+			@Override
+			public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1,
+					Boolean arg2) {
+				singleSong.setSelected(arg2);
+			}
+		});
 		getConsolePlayer().stateProperty().addListener(new ChangeListener<State>() {
 			@Override
 			public void changed(ObservableValue<? extends State> arg0,

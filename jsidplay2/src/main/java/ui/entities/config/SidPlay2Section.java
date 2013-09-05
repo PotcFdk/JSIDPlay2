@@ -2,10 +2,16 @@ package ui.entities.config;
 
 import java.io.File;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.ISidPlay2Section;
 import ui.favorites.PlaybackType;
@@ -29,28 +35,54 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private boolean enableDatabase = true;
 
+	@Transient
+	@XmlTransient
+	private BooleanProperty enableDatabaseProperty;
+	
 	@Override
 	public boolean isEnableDatabase() {
-		return enableDatabase;
+		if (enableDatabaseProperty == null) {
+			enableDatabaseProperty = new SimpleBooleanProperty();
+			enableDatabaseProperty.set(enableDatabase);
+		}
+		return enableDatabaseProperty.get();
 	}
 
 	@Override
 	public void setEnableDatabase(boolean isEnableDatabase) {
+		enableDatabaseProperty.set(isEnableDatabase);
 		this.enableDatabase = isEnableDatabase;
 	}
 
+	public BooleanProperty enableDatabaseProperty() {
+		return enableDatabaseProperty;
+	}
+	
+	@Transient
+	@XmlTransient
+	private IntegerProperty playLengthProperty;
+	
 	private int playLength;
 
 	@Override
 	public int getPlayLength() {
-		return playLength;
+		if (playLengthProperty == null) {
+			playLengthProperty = new SimpleIntegerProperty();
+			playLengthProperty.set(playLength);
+		}
+		return playLengthProperty.get();
 	}
 
 	@Override
 	public void setPlayLength(int playLength) {
+		playLengthProperty.set(playLength);
 		this.playLength = playLength;
 	}
 
+	public IntegerProperty playLengthProperty() {
+		return playLengthProperty;
+	}
+	
 	private int recordLength;
 
 	@Override
@@ -161,18 +193,31 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return hvscFile;
 	}
 
+	@Transient
+	@XmlTransient
+	private BooleanProperty singleProperty;
+
 	private boolean single;
 
 	@Override
 	public boolean isSingle() {
+		if (singleProperty == null) {
+			singleProperty = new SimpleBooleanProperty();
+			singleProperty.set(single);
+		}
 		return single;
 	}
 
 	@Override
 	public void setSingle(boolean isSingle) {
+		singleProperty.set(isSingle);
 		this.single = isSingle;
 	}
 
+	public BooleanProperty singleProperty() {
+		return singleProperty;
+	}
+	
 	private boolean enableProxy;
 
 	@Override

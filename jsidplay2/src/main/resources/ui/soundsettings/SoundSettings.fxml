@@ -131,7 +131,7 @@
 				</Button>
 			</GridPane>
 		</TitledPane>
-		<TitledPane collapsible="false" text="%SOASC">
+		<TitledPane collapsible="false" text="%PROXY">
 			<GridPane>
 				<CheckBox text="%ENABLE_PROXY" GridPane.columnIndex="0"
 					GridPane.rowIndex="0" GridPane.columnSpan="3" fx:id="proxyEnable"
@@ -146,36 +146,6 @@
 				<TextField text="80" GridPane.columnIndex="2"
 					GridPane.rowIndex="1" fx:id="proxyPort" onAction="#setProxyPort">
 				</TextField>
-
-				<Label text="%DOWNLOAD_URL_R2" GridPane.columnIndex="0"
-					GridPane.rowIndex="2">
-				</Label>
-				<TextField GridPane.columnIndex="1" GridPane.rowIndex="2"
-					fx:id="dwnlUrl6581R2" onAction="#setDownloadUrl6581R2">
-				</TextField>
-				<Button text="%DOWNLOAD_R2" GridPane.columnIndex="2"
-					GridPane.rowIndex="2" fx:id="download6581R2Btn" onAction="#startDownload6581R2">
-				</Button>
-
-				<Label text="%DOWNLOAD_URL_R4" GridPane.columnIndex="0"
-					GridPane.rowIndex="3">
-				</Label>
-				<TextField GridPane.columnIndex="1" GridPane.rowIndex="3"
-					fx:id="dwnlUrl6581R4" onAction="#setDownloadUrl6581R4">
-				</TextField>
-				<Button text="%DOWNLOAD_R4" GridPane.columnIndex="2"
-					GridPane.rowIndex="3" fx:id="download6581R4Btn" onAction="#startDownload6581R4">
-				</Button>
-
-				<Label text="%DOWNLOAD_URL_R5" GridPane.columnIndex="0"
-					GridPane.rowIndex="4">
-				</Label>
-				<TextField GridPane.columnIndex="1" GridPane.rowIndex="4"
-					fx:id="dwnlUrl8580R5" onAction="#setDownloadUrl8580R5">
-				</TextField>
-				<Button text="%DOWNLOAD_R5" GridPane.columnIndex="2"
-					GridPane.rowIndex="4" fx:id="download8580R5Btn" onAction="#startDownload8580R5">
-				</Button>
 			</GridPane>
 		</TitledPane>
 	</VBox>

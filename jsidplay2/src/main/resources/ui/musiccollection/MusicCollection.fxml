@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -23,10 +24,11 @@
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.RadioButton?>
 <?import ui.common.TypeTextField?>
 <?import ui.musiccollection.TuneInfoRowFactory?>
 <?scenebuilder-preview-i18n-resource MusicCollection.properties?>
-<?import javafx.scene.control.Hyperlink?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<GridPane>
@@ -67,6 +69,12 @@
 								onAction="#convertToPSID64" />
 						</Menu>
 						<Menu fx:id="addToFavorites" text="%ADD_TO_FAVORITES" />
+						<MenuItem fx:id="soasc6581R2" text="%DOWNLOAD_R2"
+							onAction="#startDownload6581R2" />
+						<MenuItem fx:id="soasc6581R4" text="%DOWNLOAD_R4"
+							onAction="#startDownload6581R4" />
+						<MenuItem fx:id="soasc8580R5" text="%DOWNLOAD_R5"
+							onAction="#startDownload8580R5" />
 					</items>
 				</ContextMenu>
 			</contextMenu>
@@ -167,6 +175,26 @@
 				<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
 					onAction="#gotoURL" />
 			</HBox>
+		</TitledPane>
+		<TitledPane text="%PLAYBACK_OPTIONS" collapsible="false"
+			GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="3">
+			<GridPane>
+				<CheckBox text="%RESPECT_SONG_LENGTH" GridPane.columnIndex="0"
+					GridPane.rowIndex="0" fx:id="enableSldb" onAction="#doEnableSldb">
+				</CheckBox>
+				<CheckBox text="%SINGLE_SONG" GridPane.columnIndex="1"
+					GridPane.rowIndex="0" fx:id="singleSong" onAction="#playSingleSong">
+				</CheckBox>
+				<Label text="%DEFAULT_LENGTH" GridPane.columnIndex="2"
+					GridPane.rowIndex="0" GridPane.halignment="RIGHT">
+				</Label>
+				<TextField GridPane.columnIndex="3" GridPane.rowIndex="0"
+					fx:id="defaultTime" onAction="#setDefaultTime">
+					<tooltip>
+						<Tooltip text="%DEFAULT_LENGTH_TIP"></Tooltip>
+					</tooltip>
+				</TextField>
+			</GridPane>
 		</TitledPane>
 	</GridPane>
 </AnchorPane>

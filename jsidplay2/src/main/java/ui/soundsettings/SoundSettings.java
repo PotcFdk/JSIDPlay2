@@ -1,16 +1,11 @@
 package ui.soundsettings;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,41 +15,17 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import libsidplay.sidtune.SidTune;
-import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.PathUtils;
 import resid_builder.resid.ISIDDefs.SamplingMethod;
 import sidplay.audio.CmpMP3File;
 import sidplay.consoleplayer.DriverSettings;
 import sidplay.consoleplayer.Emulation;
 import sidplay.consoleplayer.Output;
-import sidplay.consoleplayer.State;
 import ui.common.C64Stage;
-import ui.download.DownloadThread;
-import ui.download.ProgressListener;
-import de.schlichtherle.truezip.file.TFile;
 
 public class SoundSettings extends C64Stage {
 
-	protected final class TuneChange implements ChangeListener<State> {
-		@Override
-		public void changed(ObservableValue<? extends State> arg0, State arg1,
-				State arg2) {
-			if (arg2 == State.RUNNING) {
-				Platform.runLater(new Runnable() {
-
-					@Override
-					public void run() {
-						setTune(getPlayer().getTune());
-					}
-				});
-			}
-		}
-	}
-
 	@FXML
-	protected TextField mp3, proxyHost, proxyPort, dwnlUrl6581R2,
-			dwnlUrl6581R4, dwnlUrl8580R5;
+	protected TextField mp3, proxyHost, proxyPort;
 	@FXML
 	private CheckBox proxyEnable;
 	@FXML
@@ -75,12 +46,8 @@ public class SoundSettings extends C64Stage {
 	private ObservableList<String> soundDevices = FXCollections
 			.<String> observableArrayList();
 
-	private String hvscName;
-	private int currentSong;
-	protected DownloadThread downloadThread;
 	private boolean duringInitialization;
 
-	private ChangeListener<? super State> tuneChange = new TuneChange();
 	private DoubleProperty progress = new SimpleDoubleProperty();
 
 	public DoubleProperty getProgressValue() {
@@ -134,18 +101,8 @@ public class SoundSettings extends C64Stage {
 		proxyPort.setText(String.valueOf(getConsolePlayer().getConfig()
 				.getSidplay2().getProxyPort()));
 		proxyPort.setEditable(proxyEnable.isSelected());
-		dwnlUrl6581R2.setText(getConfig().getOnline().getSoasc6581R2());
-		dwnlUrl6581R4.setText(getConfig().getOnline().getSoasc6581R4());
-		dwnlUrl8580R5.setText(getConfig().getOnline().getSoasc8580R5());
-		setTune(getPlayer().getTune());
-		getConsolePlayer().stateProperty().addListener(tuneChange);
 
 		duringInitialization = false;
-	}
-
-	@Override
-	protected void doCloseWindow() {
-		getConsolePlayer().stateProperty().removeListener(tuneChange);
 	}
 
 	@FXML
@@ -250,92 +207,10 @@ public class SoundSettings extends C64Stage {
 						.getText()) : 80);
 	}
 
-	@FXML
-	private void setDownloadUrl6581R2() {
-		getConfig().getOnline().setSoasc6581R2(dwnlUrl6581R2.getText());
-	}
-
-	@FXML
-	private void startDownload6581R2() {
-		final String url = getConfig().getOnline().getSoasc6581R2();
-		downloadStart(MessageFormat.format(url, hvscName, currentSong));
-	}
-
-	@FXML
-	private void setDownloadUrl6581R4() {
-		getConfig().getOnline().setSoasc6581R4(dwnlUrl6581R4.getText());
-	}
-
-	@FXML
-	private void startDownload6581R4() {
-		final String url = getConfig().getOnline().getSoasc6581R4();
-		downloadStart(MessageFormat.format(url, hvscName, currentSong));
-	}
-
-	@FXML
-	private void setDownloadUrl8580R5() {
-		getConfig().getOnline().setSoasc6581R4(dwnlUrl8580R5.getText());
-	}
-
-	@FXML
-	private void startDownload8580R5() {
-		final String url = getConfig().getOnline().getSoasc8580R5();
-		downloadStart(MessageFormat.format(url, hvscName, currentSong));
-	}
-
-	protected void setTune(SidTune sidTune) {
-		if (sidTune == null) {
-			return;
-		}
-		final SidTuneInfo tuneInfo = sidTune.getInfo();
-		File rootFile = new File(getConfig().getSidplay2().getHvsc());
-		String name = PathUtils.getCollectionName(new TFile(rootFile),
-				tuneInfo.file);
-		if (name != null) {
-			hvscName = name.replace(".sid", "");
-			currentSong = tuneInfo.currentSong;
-		}
-	}
-
 	protected void restart() {
 		// replay last tune
 		if (!duringInitialization) {
 			getConsolePlayer().playTune(getPlayer().getTune(), null);
-		}
-	}
-
-	private void downloadStart(String url) {
-		System.out.println("Download URL: <" + url + ">");
-		try {
-			downloadThread = new DownloadThread(getConfig(),
-					new ProgressListener(progress) {
-
-						@Override
-						public void downloaded(final File downloadedFile) {
-							downloadThread = null;
-
-							if (downloadedFile != null) {
-								Platform.runLater(new Runnable() {
-
-									@Override
-									public void run() {
-										soundDevice.getSelectionModel().select(
-												4);
-										mp3.setText(downloadedFile
-												.getAbsolutePath());
-										getConfig().getAudio().setMp3File(
-												mp3.getText());
-										setPlayOriginal(true);
-										playMP3.setSelected(true);
-										restart();
-									}
-								});
-							}
-						}
-					}, new URL(url));
-			downloadThread.start();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
 		}
 	}
 
