@@ -17,7 +17,6 @@ import libsidplay.components.c1541.C1541Environment;
 import libsidplay.components.c1541.IParallelCable;
 import libsidplay.components.cart.Cartridge;
 import libsidplay.components.cart.supported.GeoRAM;
-import libsidplay.components.cart.supported.MMC64;
 import libsidplay.components.cart.supported.REU;
 import libsidplay.components.joystick.IJoystick;
 import libsidplay.components.keyboard.Keyboard;
@@ -751,8 +750,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 			if (cartFile.getName().toLowerCase().endsWith(".reu")) {
 				long length = cartFile.length();
 				cart = REU.readImage(pla, is, (int) (length >> 10));
-			} else if (cartFile.getName().toLowerCase().endsWith(".ima")) {
-				cart = new MMC64(pla, cartFile);
 			} else {
 				cart = Cartridge.readImage(pla, is);
 			}

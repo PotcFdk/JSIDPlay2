@@ -273,8 +273,6 @@ public class Favorites extends C64Tab {
 
 		});
 
-		// XXX JavaFX: better initialization support using constructor
-		// arguments?
 		newTab.setFavorites(this);
 		newTab.setPlayer(getPlayer());
 		newTab.setConsolePlayer(getConsolePlayer());

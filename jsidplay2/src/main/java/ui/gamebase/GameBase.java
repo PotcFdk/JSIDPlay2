@@ -129,8 +129,6 @@ public class GameBase extends C64Tab {
 		for (Tab tab : letter.getTabs()) {
 			GameBasePage page = (GameBasePage) tab;
 
-			// XXX JavaFX: better initialization support using constructor
-			// arguments?
 			page.setConfig(getConfig());
 			page.setPlayer(getPlayer());
 			page.initialize(location, resources);

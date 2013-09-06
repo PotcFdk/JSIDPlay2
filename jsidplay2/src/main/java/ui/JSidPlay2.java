@@ -290,8 +290,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private void setModel(URL location, ResourceBundle resources,
 			TabPane tabPane) {
 		for (Tab tab : tabPane.getTabs()) {
-			// XXX JavaFX: better initialization support using constructor
-			// arguments?
 			if (tab instanceof C64Tab) {
 				C64Tab theTab = (C64Tab) tab;
 				theTab.setConfig(getConfig());

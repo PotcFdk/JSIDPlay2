@@ -241,8 +241,6 @@ public class FavoritesTab extends C64Tab {
 			}
 		});
 
-		// XXX JavaFX: better initialization support using constructor
-		// arguments?
 		for (@SuppressWarnings("rawtypes")
 		TableColumn column : favoritesTable.getColumns()) {
 			FavoritesCellFactory cellFactory = (FavoritesCellFactory) column

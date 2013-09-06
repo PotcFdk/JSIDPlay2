@@ -331,9 +331,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 								soasc6581R4, soasc8580R5)) {
 							item.setDisable(true);
 						}
-						if (newValue != null
-								&& !newValue.equals(fileBrowser.getRoot())
-								&& newValue.getValue().isFile()) {
+						if (newValue != null && newValue.getValue().isFile()) {
 							File tuneFile = newValue.getValue();
 							try {
 								SidTune sidTune = SidTune.load(tuneFile);
@@ -417,8 +415,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					});
 					addToFavorites.getItems().add(item);
 				}
-				addToFavorites
-						.setDisable(addToFavorites.getItems().size() == 0);
+				addToFavorites.setDisable(addToFavorites.getItems().isEmpty());
 
 			}
 		});
@@ -601,6 +598,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					urie.printStackTrace();
 				}
 			}
+		} else {
+			System.err.println("Awt Desktop is not supported!");
 		}
 	}
 

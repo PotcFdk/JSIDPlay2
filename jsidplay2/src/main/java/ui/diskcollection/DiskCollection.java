@@ -118,8 +118,6 @@ public class DiskCollection extends C64Tab {
 			setRootFile(new File(initialRoot));
 		}
 
-		// XXX JavaFX: better initialization support using constructor
-		// arguments?
 		directory.setConfig(getConfig());
 		directory.setPlayer(getPlayer());
 		directory.setConsolePlayer(getConsolePlayer());
@@ -157,9 +155,7 @@ public class DiskCollection extends C64Tab {
 					public void changed(
 							ObservableValue<? extends TreeItem<File>> observable,
 							TreeItem<File> oldValue, TreeItem<File> newValue) {
-						if (newValue != null
-								&& !newValue.equals(fileBrowser.getRoot())
-								&& newValue.getValue().isFile()) {
+						if (newValue != null && newValue.getValue().isFile()) {
 							File file = newValue.getValue();
 							showScreenshot(file);
 							directory.loadPreview(extract(file));
@@ -174,8 +170,7 @@ public class DiskCollection extends C64Tab {
 				TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
 						.getSelectedItem();
 				if (event.getCode() == KeyCode.ENTER && selectedItem != null) {
-					if (!selectedItem.equals(fileBrowser.getRoot())
-							&& selectedItem.getValue().isFile()) {
+					if (selectedItem.getValue().isFile()) {
 						File file = selectedItem.getValue();
 						if (file.isFile()) {
 							attachAndRunDemo(selectedItem.getValue(), null);
@@ -204,8 +199,7 @@ public class DiskCollection extends C64Tab {
 				TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
 						.getSelectedItem();
 				boolean disable = selectedItem == null
-						|| !selectedItem.getValue().isFile()
-						|| selectedItem.equals(fileBrowser.getRoot());
+						|| !selectedItem.getValue().isFile();
 				start.setDisable(disable);
 				attachDisk.setDisable(disable);
 			}
@@ -297,16 +291,14 @@ public class DiskCollection extends C64Tab {
 
 	protected void attachAndRunDemo(File file, final File autoStartFile) {
 		if (file.getName().toLowerCase().endsWith(".pdf")) {
-			try {
-				if (file.exists()) {
-					if (Desktop.isDesktopSupported()) {
-						Desktop.getDesktop().open(file);
-					} else {
-						System.out.println("Awt Desktop is not supported!");
-					}
+			if (Desktop.isDesktopSupported()) {
+				try {
+					Desktop.getDesktop().open(file);
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} else {
+				System.err.println("Awt Desktop is not supported!");
 			}
 		} else {
 			File extractedFile = extract(file);
@@ -346,11 +338,9 @@ public class DiskCollection extends C64Tab {
 	private Image createImage(final File file) {
 		try {
 			File screenshot = findScreenshot(file);
-			if (screenshot != null) {
-				if (screenshot.exists()) {
-					try (TFileInputStream is = new TFileInputStream(screenshot)) {
-						return new Image(is);
-					}
+			if (screenshot != null && screenshot.exists()) {
+				try (TFileInputStream is = new TFileInputStream(screenshot)) {
+					return new Image(is);
 				}
 			}
 		} catch (IOException e) {
