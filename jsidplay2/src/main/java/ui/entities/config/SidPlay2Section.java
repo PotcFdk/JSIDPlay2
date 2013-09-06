@@ -326,7 +326,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.frameWidth = frameWidth;
 	}
 
-	private int frameHeight = 768;
+	private int frameHeight = 830;
 
 	@Override
 	public int getFrameHeight() {
