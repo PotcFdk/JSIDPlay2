@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.AccessControlException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import libsidutils.stringsearch.BNDMWildcards;
@@ -316,7 +317,7 @@ public final class SidIdV2 {
 				final StringTokenizer stok = new StringTokenizer(line, " ");
 				while (stok.hasMoreTokens()) {
 					final String origToken = stok.nextToken();
-					final String token = origToken.toLowerCase();
+					final String token = origToken.toLowerCase(Locale.ENGLISH);
 					if (token.length() > 0) {
 						if ("??".equals(token)) {
 							// Add wild-card

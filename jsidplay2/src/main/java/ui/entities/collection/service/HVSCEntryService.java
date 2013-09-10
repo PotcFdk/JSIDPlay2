@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -159,7 +160,7 @@ public class HVSCEntryService {
 			Path<String> fieldNm, String fieldValue, boolean caseSensitive,
 			Class<?> type) {
 		if (!caseSensitive) {
-			return cb.like(cb.lower(fieldNm), "%" + fieldValue.toLowerCase()
+			return cb.like(cb.lower(fieldNm), "%" + fieldValue.toLowerCase(Locale.GERMAN)
 					+ "%");
 		} else {
 			return cb.like(fieldNm, "%" + fieldValue + "%");

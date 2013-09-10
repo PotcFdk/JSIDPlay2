@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -872,7 +873,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			public void run() {
 				TreeItem<File> rootItem = fileBrowser.getRoot();
 				if (rootItem == null
-						|| matchFile.getName().toLowerCase().endsWith(".mp3")) {
+						|| matchFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 					return;
 				}
 				List<TreeItem<File>> pathSegs = new ArrayList<TreeItem<File>>();

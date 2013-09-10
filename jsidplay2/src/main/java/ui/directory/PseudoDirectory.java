@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Locale;
 
 import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
@@ -43,9 +44,9 @@ public class PseudoDirectory {
 			final File file, final IConfig cfg) throws IOException {
 		if (diskFilter.accept(file)) {
 			return DiskImage.getDirectory(file);
-		} else if (file.getName().toLowerCase().endsWith(".t64")) {
+		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".t64")) {
 			return T64.getDirectory(file);
-		} else if (file.getName().toLowerCase().endsWith(".crt")) {
+		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".crt")) {
 			return Cartridge.getDirectory(file);
 		} else if (tuneFilter.accept(file)) {
 			return getTuneAsDirectory(cp, file, cfg);

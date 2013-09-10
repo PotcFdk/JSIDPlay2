@@ -5,6 +5,7 @@ package ui.filefilter;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.Locale;
 
 public final class TuneFileFilter implements FileFilter {
 
@@ -16,7 +17,7 @@ public final class TuneFileFilter implements FileFilter {
 		if (file.isDirectory()) {
 			return true;
 		}
-		String name = file.getName().toLowerCase();
+		String name = file.getName().toLowerCase(Locale.ENGLISH);
 		String[] exts = defaultFileNameExt;
 		for (String ext : exts) {
 			if (name.endsWith(ext)) {

@@ -21,6 +21,9 @@ public class Keyboard extends C64Stage {
 	private ToggleButton runStop, shift, commodore, shiftLock, ctrl,
 			rightShift;
 
+	public Keyboard() {
+		setResizable(false);
+	}
 	@FXML
 	private void arrowLeft() {
 		pressC64Key(KeyTableEntry.ARROW_LEFT);

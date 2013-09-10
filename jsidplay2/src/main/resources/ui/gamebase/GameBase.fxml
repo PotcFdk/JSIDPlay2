@@ -26,7 +26,8 @@
 		</HBox>
 		<TitledPane text="%INDEX" collapsible="false"
 			GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.rowSpan="7"
-			GridPane.valignment="TOP" minWidth="400" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+			GridPane.valignment="TOP" minWidth="400" GridPane.hgrow="ALWAYS"
+			GridPane.vgrow="ALWAYS">
 			<TabPane focusTraversable="false" fx:id="letter"
 				tabClosingPolicy="UNAVAILABLE">
 				<GameBasePage text="#" disable="true" />
@@ -60,7 +61,7 @@
 		</TitledPane>
 		<TitledPane text="%SCREENSHOT" collapsible="false"
 			GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="320">
-			<ImageView fx:id="screenshot" fitWidth="160" fitHeight="100"
+			<ImageView fx:id="screenshot" fitWidth="320" fitHeight="200"
 				preserveRatio="true" />
 		</TitledPane>
 		<TitledPane text="%INFOS" collapsible="false"

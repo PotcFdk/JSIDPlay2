@@ -19,7 +19,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.CheckBox?>
 <?scenebuilder-preview-i18n-resource Favorites.properties?>
-
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<fx:define>
 		<ToggleGroup fx:id="playbackGroup" />
@@ -118,10 +117,11 @@
 		<bottom>
 			<TitledPane text="%PLAYBACK_OPTIONS" collapsible="false">
 				<GridPane>
-					<CheckBox text="%RESPECT_SONG_LENGTH" GridPane.columnIndex="0"
-						GridPane.rowIndex="0" fx:id="enableSldb" onAction="#doEnableSldb">
+					<CheckBox text="%RESPECT_SONG_LENGTH"
+						GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="enableSldb"
+						onAction="#doEnableSldb">
 					</CheckBox>
-					<CheckBox  text="%SINGLE_SONG" GridPane.columnIndex="1"
+					<CheckBox text="%SINGLE_SONG" GridPane.columnIndex="1"
 						GridPane.rowIndex="0" fx:id="singleSong" onAction="#playSingleSong">
 					</CheckBox>
 					<Label text="%DEFAULT_LENGTH" GridPane.columnIndex="2"
@@ -134,19 +134,24 @@
 						</tooltip>
 					</TextField>
 					<RadioButton text="%OFF" selected="true" toggleGroup="$playbackGroup"
-						fx:id="off" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+						fx:id="off" GridPane.rowIndex="1" GridPane.columnIndex="0"
+						onAction="#off" />
 					<RadioButton text="%NORMAL" toggleGroup="$playbackGroup"
-						fx:id="normal" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+						fx:id="normal" GridPane.rowIndex="1" GridPane.columnIndex="1"
+						onAction="#normal" />
 					<RadioButton text="%RANDOM_ONE_PLAYLIST" toggleGroup="$playbackGroup"
-						fx:id="randomOne" GridPane.rowIndex="1" GridPane.columnIndex="2" />
+						fx:id="randomOne" GridPane.rowIndex="1" GridPane.columnIndex="2"
+						onAction="#randomOne" />
 					<RadioButton text="%RANDOM_ALL_PLAYLISTS" toggleGroup="$playbackGroup"
-						fx:id="randomAll" GridPane.rowIndex="1" GridPane.columnIndex="3" />
+						fx:id="randomAll" GridPane.rowIndex="1" GridPane.columnIndex="3"
+						onAction="#randomAll" />
 
 					<RadioButton text="%REPEAT_OFF" selected="true"
 						toggleGroup="$repeatGroup" fx:id="repeatOff" GridPane.rowIndex="2"
-						GridPane.columnIndex="0" />
+						GridPane.columnIndex="0" onAction="#repeatOff" />
 					<RadioButton text="%REPEAT_ONE_TUNE" toggleGroup="$repeatGroup"
-						fx:id="repeatOne" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+						fx:id="repeatOne" GridPane.rowIndex="2" GridPane.columnIndex="1"
+						onAction="#repeatOne" />
 				</GridPane>
 			</TitledPane>
 		</bottom>

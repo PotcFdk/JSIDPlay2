@@ -48,7 +48,8 @@ public class Favorites extends C64Tab {
 	@FXML
 	protected CheckBox enableSldb, singleSong;
 	@FXML
-	private RadioButton off, normal, randomOne, randomAll, repeatOff, repeatOne;
+	private RadioButton off, normal, randomOne, randomAll, repeatOff,
+			repeatOne;
 
 	private FavoritesTab currentlyPlayedFavorites;
 	protected Random random = new Random();
@@ -61,49 +62,87 @@ public class Favorites extends C64Tab {
 		final int seconds = getConfig().getSidplay2().getPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
 				seconds % 60));
-		((SidPlay2Section) getConfig().getSidplay2()).playLengthProperty().addListener(new ChangeListener<Number>() {
-			
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				int seconds = arg2.intValue();
-				defaultTime.setText(String.format("%02d:%02d", seconds / 60,
-						seconds % 60));
-			}
+		((SidPlay2Section) getConfig().getSidplay2()).playLengthProperty()
+				.addListener(new ChangeListener<Number>() {
 
-		});
+					@Override
+					public void changed(ObservableValue<? extends Number> arg0,
+							Number arg1, Number arg2) {
+						int seconds = arg2.intValue();
+						defaultTime.setText(String.format("%02d:%02d",
+								seconds / 60, seconds % 60));
+					}
+
+				});
 
 		enableSldb.setSelected(getConfig().getSidplay2().isEnableDatabase());
-		((SidPlay2Section) getConfig().getSidplay2()).enableDatabaseProperty().addListener(new ChangeListener<Boolean>() {
-			
-			@Override
-			public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1,
-					Boolean arg2) {
-				enableSldb.setSelected(arg2);
-			}
-		});
+		((SidPlay2Section) getConfig().getSidplay2()).enableDatabaseProperty()
+				.addListener(new ChangeListener<Boolean>() {
+
+					@Override
+					public void changed(
+							ObservableValue<? extends Boolean> arg0,
+							Boolean arg1, Boolean arg2) {
+						enableSldb.setSelected(arg2);
+					}
+				});
 		singleSong.setSelected(getConfig().getSidplay2().isSingle());
-		((SidPlay2Section) getConfig().getSidplay2()).singleProperty().addListener(new ChangeListener<Boolean>() {
-			
-			@Override
-			public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1,
-					Boolean arg2) {
-				singleSong.setSelected(arg2);
-			}
-		});
-		getConsolePlayer().stateProperty().addListener(new ChangeListener<State>() {
-			@Override
-			public void changed(ObservableValue<? extends State> arg0,
-					State arg1, State arg2) {
-				if (arg2 == State.EXIT) {
-					Platform.runLater(new Runnable() {
-						public void run() {
-							playNextTune();
+		((SidPlay2Section) getConfig().getSidplay2()).singleProperty()
+				.addListener(new ChangeListener<Boolean>() {
+
+					@Override
+					public void changed(
+							ObservableValue<? extends Boolean> arg0,
+							Boolean arg1, Boolean arg2) {
+						singleSong.setSelected(arg2);
+					}
+				});
+		PlaybackType pt = ((SidPlay2Section) getConfig().getSidplay2())
+				.getPlaybackType();
+		switch (pt) {
+		case PLAYBACK_OFF:
+			off.setSelected(true);
+			break;
+		case NORMAL:
+			normal.setSelected(true);
+			break;
+		case RANDOM_ONE:
+			randomOne.setSelected(true);
+			break;
+		case RANDOM_ALL:
+			randomAll.setSelected(true);
+			break;
+		default:
+			off.setSelected(true);
+			break;
+		}
+		RepeatType rt = ((SidPlay2Section) getConfig().getSidplay2())
+				.getRepeatType();
+		switch (rt) {
+		case REPEAT_OFF:
+			repeatOff.setSelected(true);
+			break;
+		case REPEAT_ONE:
+			repeatOne.setSelected(true);
+			break;
+		default:
+			repeatOff.setSelected(true);
+			break;
+		}
+		getConsolePlayer().stateProperty().addListener(
+				new ChangeListener<State>() {
+					@Override
+					public void changed(ObservableValue<? extends State> arg0,
+							State arg1, State arg2) {
+						if (arg2 == State.EXIT) {
+							Platform.runLater(new Runnable() {
+								public void run() {
+									playNextTune();
+								}
+							});
 						}
-					});
-				}
-			}
-		});
+					}
+				});
 		List<? extends FavoritesSection> favorites = getConfig().getFavorites();
 		for (FavoritesSection favorite : favorites) {
 			addTab(favorite);
@@ -112,13 +151,15 @@ public class Favorites extends C64Tab {
 				new ListChangeListener<FavoritesSection>() {
 
 					@Override
-					public void onChanged(Change<? extends FavoritesSection> change) {
+					public void onChanged(
+							Change<? extends FavoritesSection> change) {
 						while (change.next()) {
 							if (change.wasPermutated() || change.wasUpdated()) {
 								continue;
 							}
 							if (change.wasAdded()) {
-								List<? extends FavoritesSection> addedSubList = change.getAddedSubList();
+								List<? extends FavoritesSection> addedSubList = change
+										.getAddedSubList();
 								for (FavoritesSection favoritesSection : addedSubList) {
 									addTab(favoritesSection);
 								}
@@ -126,17 +167,22 @@ public class Favorites extends C64Tab {
 						}
 					}
 				});
-		favoritesList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-			@Override
-			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
-				// Save last selected tab
-				if (newValue != null) {
-					((Configuration) getConfig()).setCurrentFavorite(newValue.getText());
-				}
-			}
-		});
+		favoritesList.getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener<Tab>() {
+					@Override
+					public void changed(
+							ObservableValue<? extends Tab> observable,
+							Tab oldValue, Tab newValue) {
+						// Save last selected tab
+						if (newValue != null) {
+							((Configuration) getConfig())
+									.setCurrentFavorite(newValue.getText());
+						}
+					}
+				});
 		// Initially select last selected tab
-		String currentFavorite = ((Configuration) getConfig()).getCurrentFavorite();
+		String currentFavorite = ((Configuration) getConfig())
+				.getCurrentFavorite();
 		if (currentFavorite != null) {
 			for (Tab tab : favoritesList.getTabs()) {
 				if (tab.getText().equals(currentFavorite)) {
@@ -151,14 +197,19 @@ public class Favorites extends C64Tab {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
-		fileDialog.getExtensionFilters().add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
-		final List<File> files = fileDialog.showOpenMultipleDialog(favoritesList.getScene().getWindow());
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(TuneFileExtensions.DESCRIPTION,
+						TuneFileExtensions.EXTENSIONS));
+		final List<File> files = fileDialog
+				.showOpenMultipleDialog(favoritesList.getScene().getWindow());
 		if (files != null && files.size() > 0) {
 			File file = files.get(0);
-			getConfig().getSidplay2().setLastDirectory(file.getParentFile().getAbsolutePath());
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			FavoritesTab selectedTab = getSelectedTab();
 			selectedTab.addFavorites(files);
-			renameTab(selectedTab, PathUtils.getBaseNameNoExt(file.getParentFile()));
+			renameTab(selectedTab,
+					PathUtils.getBaseNameNoExt(file.getParentFile()));
 		}
 	}
 
@@ -182,10 +233,14 @@ public class Favorites extends C64Tab {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
-		fileDialog.getExtensionFilters().add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSION));
-		final File file = fileDialog.showOpenDialog(favoritesList.getScene().getWindow());
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(FavoritesExtension.DESCRIPTION,
+						FavoritesExtension.EXTENSION));
+		final File file = fileDialog.showOpenDialog(favoritesList.getScene()
+				.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(file.getParentFile().getAbsolutePath());
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			try {
 				getSelectedTab().loadFavorites(file);
 			} catch (IOException e1) {
@@ -199,10 +254,14 @@ public class Favorites extends C64Tab {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
-		fileDialog.getExtensionFilters().add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSION));
-		final File file = fileDialog.showSaveDialog(favoritesList.getScene().getWindow());
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(FavoritesExtension.DESCRIPTION,
+						FavoritesExtension.EXTENSION));
+		final File file = fileDialog.showSaveDialog(favoritesList.getScene()
+				.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(file.getParentFile().getAbsolutePath());
+			getConfig().getSidplay2().setLastDirectory(
+					file.getParentFile().getAbsolutePath());
 			// then load the favorites
 			try {
 				getSelectedTab().saveFavorites(file);
@@ -244,7 +303,8 @@ public class Favorites extends C64Tab {
 
 	@FXML
 	private void addTab() {
-		List<FavoritesSection> favorites = ((Configuration) getConfig()).getFavorites();
+		List<FavoritesSection> favorites = ((Configuration) getConfig())
+				.getFavorites();
 		FavoritesSection favoritesSection = new FavoritesSection();
 		favoritesSection.setName(getBundle().getString("NEW_TAB"));
 		favorites.add(favoritesSection);
@@ -255,8 +315,45 @@ public class Favorites extends C64Tab {
 		renameTab(getSelectedTab(), renameTab.getText());
 	}
 
+	@FXML
+	private void off() {
+		((SidPlay2Section) getConfig().getSidplay2())
+				.setPlaybackType(PlaybackType.PLAYBACK_OFF);
+	}
+
+	@FXML
+	private void normal() {
+		((SidPlay2Section) getConfig().getSidplay2())
+				.setPlaybackType(PlaybackType.NORMAL);
+	}
+
+	@FXML
+	private void randomOne() {
+		((SidPlay2Section) getConfig().getSidplay2())
+				.setPlaybackType(PlaybackType.RANDOM_ONE);
+	}
+
+	@FXML
+	private void randomAll() {
+		((SidPlay2Section) getConfig().getSidplay2())
+				.setPlaybackType(PlaybackType.RANDOM_ALL);
+	}
+
+	@FXML
+	private void repeatOff() {
+		((SidPlay2Section) getConfig().getSidplay2())
+				.setRepeatType(RepeatType.REPEAT_OFF);
+	}
+
+	@FXML
+	private void repeatOne() {
+		((SidPlay2Section) getConfig().getSidplay2())
+				.setRepeatType(RepeatType.REPEAT_ONE);
+	}
+
 	private FavoritesTab getSelectedTab() {
-		return (FavoritesTab) favoritesList.getSelectionModel().getSelectedItem();
+		return (FavoritesTab) favoritesList.getSelectionModel()
+				.getSelectedItem();
 	}
 
 	protected void addTab(final FavoritesSection favoritesSection) {
@@ -288,28 +385,37 @@ public class Favorites extends C64Tab {
 	}
 
 	protected void playNextTune() {
-		if (repeatOne.isSelected()) {
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+				.getSidplay2();
+		PlaybackType pt = sidPlay2Section.getPlaybackType();
+		RepeatType rt = sidPlay2Section.getRepeatType();
+
+		if (rt == RepeatType.REPEAT_ONE) {
 			// repeat one tune
 			getConsolePlayer().playTune(getPlayer().getTune(), null);
-		} else if (randomAll.isSelected()) {
+		} else if (pt == PlaybackType.RANDOM_ALL) {
 			// random all favorites tab
-			favoritesList.getSelectionModel().select(Math.abs(random.nextInt(Integer.MAX_VALUE)) % favoritesList.getTabs().size());
+			favoritesList.getSelectionModel().select(
+					Math.abs(random.nextInt(Integer.MAX_VALUE))
+							% favoritesList.getTabs().size());
 			currentlyPlayedFavorites = getSelectedTab();
 			currentlyPlayedFavorites.playNextRandom();
-		} else if (currentlyPlayedFavorites != null && randomOne.isSelected()) {
+		} else if (currentlyPlayedFavorites != null
+				&& pt == PlaybackType.RANDOM_ONE) {
 			// random one favorites tab
 			currentlyPlayedFavorites.playNextRandom();
-		} else if (currentlyPlayedFavorites != null && !off.isSelected() && repeatOff.isSelected()) {
+		} else if (currentlyPlayedFavorites != null
+				&& pt != PlaybackType.PLAYBACK_OFF) {
 			// normal playback
-			currentlyPlayedFavorites.playNext(getPlayer().getTune().getInfo().file);
+			currentlyPlayedFavorites
+					.playNext(getPlayer().getTune().getInfo().file);
 		}
 	}
 
-	void setCurrentlyPlayedFavorites(
-			FavoritesTab currentlyPlayedFavorites) {
+	void setCurrentlyPlayedFavorites(FavoritesTab currentlyPlayedFavorites) {
 		this.currentlyPlayedFavorites = currentlyPlayedFavorites;
 	}
-	
+
 	ObservableList<Tab> getFavoriteTabs() {
 		return favoritesList.getTabs();
 	}

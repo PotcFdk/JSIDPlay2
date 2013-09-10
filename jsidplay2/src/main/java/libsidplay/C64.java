@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Locale;
 
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -747,7 +748,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		try (DataInputStream is = new DataInputStream(new FileInputStream(
 				cartFile))) {
 			final Cartridge cart;
-			if (cartFile.getName().toLowerCase().endsWith(".reu")) {
+			if (cartFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".reu")) {
 				long length = cartFile.length();
 				cart = REU.readImage(pla, is, (int) (length >> 10));
 			} else {

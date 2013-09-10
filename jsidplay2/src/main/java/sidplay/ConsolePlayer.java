@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -236,7 +237,7 @@ public class ConsolePlayer {
 			audio.setPlayOriginal(lastPlayOriginal);
 			lastTimeMP3 = false;
 		}
-		if (file != null && file.getName().toLowerCase().endsWith(".mp3")) {
+		if (file != null && file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			// MP3 play-back? Save settings, then change to MP3 compare driver
 			lastOutput = driverSettings.getOutput();
 			lastSidEmu = driverSettings.getEmulation();
@@ -1395,7 +1396,7 @@ public class ConsolePlayer {
 
 	private void insertTape(final File selectedTape, final File autostartFile)
 			throws IOException {
-		if (!selectedTape.getName().toLowerCase().endsWith(".tap")) {
+		if (!selectedTape.getName().toLowerCase(Locale.ENGLISH).endsWith(".tap")) {
 			// Everything, which is not a tape convert to tape first
 			final File convertedTape = new File(getConfig().getSidplay2()
 					.getTmpDir(), selectedTape.getName() + ".tap");

@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.zip.GZIPInputStream;
 
@@ -290,7 +291,7 @@ public class DiskCollection extends C64Tab {
 	}
 
 	protected void attachAndRunDemo(File file, final File autoStartFile) {
-		if (file.getName().toLowerCase().endsWith(".pdf")) {
+		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".pdf")) {
 			if (Desktop.isDesktopSupported()) {
 				try {
 					Desktop.getDesktop().open(file);

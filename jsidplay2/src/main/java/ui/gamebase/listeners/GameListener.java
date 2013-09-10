@@ -2,6 +2,7 @@ package ui.gamebase.listeners;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import javafx.beans.property.DoubleProperty;
 import sidplay.ConsolePlayer;
@@ -69,13 +70,13 @@ public class GameListener extends ProgressListener {
 	}
 
 	private boolean isTapeFile(final File selectedFile) {
-		return selectedFile.getName().toLowerCase().endsWith(".tap")
-				|| selectedFile.getName().toLowerCase().endsWith(".t64");
+		return selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".tap")
+				|| selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".t64");
 	}
 
 	private boolean isDiskFile(final File selectedFile) {
-		return selectedFile.getName().toLowerCase().endsWith(".d64")
-				|| selectedFile.getName().toLowerCase().endsWith(".g64");
+		return selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".d64")
+				|| selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".g64");
 	}
 
 	public void setFileToRun(String valueOf) {

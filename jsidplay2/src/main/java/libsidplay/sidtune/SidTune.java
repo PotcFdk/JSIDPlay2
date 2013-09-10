@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 import javafx.scene.image.Image;
 import de.schlichtherle.truezip.file.TFileInputStream;
@@ -103,7 +104,7 @@ public abstract class SidTune {
 		if (f == null) {
 			return null;
 		}
-		if (f.getName().toLowerCase().endsWith(".mp3")) {
+		if (f.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			return MP3Tune.load(f);
 		}
 		String fileName = f.getAbsolutePath();
@@ -191,8 +192,8 @@ public abstract class SidTune {
 
 		// try to load a MUS stereo tune by _a.mus / _b.mus naming
 		// convention.
-		if (fileName.toLowerCase().endsWith("_a.mus")) {
-			final String fileName2 = fileName.toLowerCase().replace("_a.mus",
+		if (fileName.toLowerCase(Locale.ENGLISH).endsWith("_a.mus")) {
+			final String fileName2 = fileName.toLowerCase(Locale.ENGLISH).replace("_a.mus",
 					"_b.mus");
 			for (int i = 0; i < childs.length; i++) {
 				if (!fileName.equalsIgnoreCase(fileName2)
@@ -201,8 +202,8 @@ public abstract class SidTune {
 					return childs[i];
 				}
 			}
-		} else if (fileName.toLowerCase().endsWith("_b.mus")) {
-			final String fileName2 = fileName.toLowerCase().replace("_b.mus",
+		} else if (fileName.toLowerCase(Locale.ENGLISH).endsWith("_b.mus")) {
+			final String fileName2 = fileName.toLowerCase(Locale.ENGLISH).replace("_b.mus",
 					"_a.mus");
 			for (int i = 0; i < childs.length; i++) {
 				if (!fileName.equalsIgnoreCase(fileName2)

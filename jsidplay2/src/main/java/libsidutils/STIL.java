@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -139,7 +140,7 @@ public class STIL {
 
 					/* If a field repeats, that starts a new tuneinfo structure. */
 					Field f = lastInfo.getClass().getField(
-							lastProp.toLowerCase());
+							lastProp.toLowerCase(Locale.ENGLISH));
 					if (f.get(lastInfo) != null) {
 						lastInfo = new Info();
 						if (tuneEntry != null) {
@@ -152,7 +153,7 @@ public class STIL {
 				} else if (lastProp != null) {
 					/* Concat more shit after the previous line */
 					Field f = lastInfo.getClass().getField(
-							lastProp.toLowerCase());
+							lastProp.toLowerCase(Locale.ENGLISH));
 					f.set(lastInfo, f.get(lastInfo) + "\n" + line);
 				}
 			}

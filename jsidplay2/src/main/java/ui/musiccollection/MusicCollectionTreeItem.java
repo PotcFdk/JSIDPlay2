@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Locale;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
@@ -22,8 +23,8 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 			Integer aw = a.isFile() ? 1 : 0;
 			Integer bw = b.isFile() ? 1 : 0;
 			if (aw.equals(bw)) {
-				return a.getName().toLowerCase()
-						.compareTo(b.getName().toLowerCase());
+				return a.getName().toLowerCase(Locale.ENGLISH)
+						.compareTo(b.getName().toLowerCase(Locale.ENGLISH));
 			}
 			return aw.compareTo(bw);
 		}
