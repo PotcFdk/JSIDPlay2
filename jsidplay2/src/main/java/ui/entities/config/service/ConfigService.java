@@ -13,8 +13,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import ui.entities.config.Configuration;
-import ui.entities.config.FavoritesSection;
-
 
 public class ConfigService {
 	private EntityManager em;
@@ -48,16 +46,14 @@ public class ConfigService {
 		return create(null);
 	}
 
-	public void backup(Configuration config, File file) {
+	public void exportCfg(Configuration config, File file) {
 		try {
-			em.persist(config);
-			flush();
 			JAXBContext jaxbContext = JAXBContext
 					.newInstance(Configuration.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.marshal(config, file);
-		} catch (JAXBException e1) {
-			e1.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -65,7 +61,7 @@ public class ConfigService {
 		return config.getReconfigFilename() != null;
 	}
 
-	public Configuration restore(Configuration oldConfiguration) {
+	public Configuration importCfg(Configuration oldConfiguration) {
 		try {
 			JAXBContext jaxbContext = JAXBContext
 					.newInstance(Configuration.class);
@@ -92,28 +88,10 @@ public class ConfigService {
 		return oldConfiguration;
 	}
 
-	public FavoritesSection addFavorite(Configuration cfg, String title) {
-		Configuration configuration = cfg;
-		FavoritesSection toAdd = new FavoritesSection();
-		toAdd.setName(title);
-		configuration.getFavorites().add(toAdd);
-		em.persist(toAdd);
-		flush();
-		return toAdd;
-	}
-
-	public void removeFavorite(Configuration cfg, int index) {
-		Configuration configuration = cfg;
-		FavoritesSection toRemove = configuration.getFavorites().get(index);
-		configuration.getFavorites().remove(index);
-		em.remove(toRemove);
-		flush();
-	}
-
-	public void write(Configuration iConfig) {
+	public void write(Configuration config) {
 		em.getTransaction().begin();
 		try {
-			em.persist(iConfig);
+			em.persist(config);
 			em.getTransaction().commit();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -33,7 +33,7 @@ import ui.common.C64Tab;
 import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
 import ui.download.ProgressListener;
-import ui.entities.PersistenceUtil;
+import ui.entities.PersistenceProperties;
 import ui.entities.gamebase.Games;
 import ui.entities.gamebase.service.ConfigService;
 import ui.entities.gamebase.service.GamesService;
@@ -272,7 +272,7 @@ public class GameBase extends C64Tab {
 	protected void connect(File dbFile) {
 		disconnect();
 		em = Persistence.createEntityManagerFactory(
-				PersistenceUtil.GAMEBASE_DS, new PersistenceUtil(dbFile))
+				PersistenceProperties.GAMEBASE_DS, new PersistenceProperties(dbFile))
 				.createEntityManager();
 		gamesService = new GamesService(em);
 		configService = new ConfigService(em);

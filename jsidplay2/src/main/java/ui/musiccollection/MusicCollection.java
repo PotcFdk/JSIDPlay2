@@ -67,7 +67,7 @@ import ui.common.TypeTextField;
 import ui.common.dialog.YesNoDialog;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
-import ui.entities.PersistenceUtil;
+import ui.entities.PersistenceProperties;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry_;
@@ -722,8 +722,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	protected void setRoot(final File rootFile) {
 		if (rootFile.exists()) {
 			em = Persistence.createEntityManagerFactory(
-					PersistenceUtil.COLLECTION_DS,
-					new PersistenceUtil(new File(rootFile.getParentFile(),
+					PersistenceProperties.COLLECTION_DS,
+					new PersistenceProperties(new File(rootFile.getParentFile(),
 							dbName))).createEntityManager();
 
 			versionService = new VersionService(em);

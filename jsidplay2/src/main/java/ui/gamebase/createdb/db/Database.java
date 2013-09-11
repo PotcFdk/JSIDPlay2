@@ -18,7 +18,7 @@ import org.hibernate.Session;
 import org.hibernate.jdbc.ReturningWork;
 import org.hibernate.jdbc.Work;
 
-import ui.entities.PersistenceUtil;
+import ui.entities.PersistenceProperties;
 
 
 public abstract class Database {
@@ -34,8 +34,8 @@ public abstract class Database {
 
 	public void connect(String driver, String jdbcURL) {
 		em = Persistence.createEntityManagerFactory(
-				PersistenceUtil.GAMEBASE_DS,
-				new PersistenceUtil(driver, jdbcURL))
+				PersistenceProperties.GAMEBASE_DS,
+				new PersistenceProperties(driver, jdbcURL))
 				.createEntityManager();
 	}
 

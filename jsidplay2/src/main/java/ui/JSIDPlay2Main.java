@@ -17,7 +17,7 @@ import libsidplay.Player;
 import libsidplay.components.c1541.C1541;
 import sidplay.ConsolePlayer;
 import sidplay.ini.intf.ISidPlay2Section;
-import ui.entities.PersistenceUtil;
+import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
 
@@ -67,6 +67,7 @@ public class JSIDPlay2Main extends Application {
 		}
 
 		jSidplay2 = new JSidPlay2();
+		jSidplay2.setConfigService(configService);
 		jSidplay2.setConsolePlayer(cp);
 		jSidplay2.setPlayer(getPlayer());
 		jSidplay2.setConfig(getConfig());
@@ -159,15 +160,15 @@ public class JSIDPlay2Main extends Application {
 	private Configuration getConfiguration() {
 		try {
 			em = Persistence.createEntityManagerFactory(
-					PersistenceUtil.CONFIG_DS,
-					new PersistenceUtil(getConfigDatabasePath()))
+					PersistenceProperties.CONFIG_DS,
+					new PersistenceProperties(getConfigDatabasePath()))
 					.createEntityManager();
 			configService = new ConfigService(em);
-			// Import configuration (flagged by configuration viewer)
 			Configuration config = configService.getOrCreate();
+			// Import configuration (if flagged)
 			if (configService.shouldBeRestored(config)) {
 				System.out.println("Import Configuration!");
-				config = configService.restore(config);
+				config = configService.importCfg(config);
 			}
 			// Configuration version check
 			if (config.getSidplay2().getVersion() != Configuration.REQUIRED_CONFIG_VERSION) {
@@ -179,9 +180,8 @@ public class JSIDPlay2Main extends Application {
 			}
 			return config;
 		} catch (Throwable e) {
-			System.err.println(e.getMessage());
-			// fatal database error? Delete it for the next startup!
-			// PersistenceUtil.databaseDeleteOnExit(getConfigDatabasePath());
+			e.printStackTrace();
+			// fatal database error?
 			System.exit(0);
 			return null;
 		}

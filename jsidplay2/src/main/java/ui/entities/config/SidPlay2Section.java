@@ -50,6 +50,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	@Override
 	public void setEnableDatabase(boolean isEnableDatabase) {
+		isEnableDatabase();
 		enableDatabaseProperty.set(isEnableDatabase);
 		this.enableDatabase = isEnableDatabase;
 	}
@@ -75,6 +76,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	@Override
 	public void setPlayLength(int playLength) {
+		getPlayLength();
 		playLengthProperty.set(playLength);
 		this.playLength = playLength;
 	}
@@ -210,6 +212,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	@Override
 	public void setSingle(boolean isSingle) {
+		isSingle();
 		singleProperty.set(isSingle);
 		this.single = isSingle;
 	}

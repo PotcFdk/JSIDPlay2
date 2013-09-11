@@ -48,6 +48,7 @@ public class Split {
 		output = createOutputFilename(filename, partNum);
 
 		byte[] buffer = new byte[1 << 20];
+		@SuppressWarnings("resource")
 		BufferedOutputStream os = null;
 		try (BufferedInputStream is = new BufferedInputStream(
 				new FileInputStream(new File(filename)), 1 << 20)) {

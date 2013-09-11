@@ -43,9 +43,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import libsidplay.C64;
 import libsidplay.common.Event;
@@ -68,8 +65,8 @@ import ui.common.C64Tab;
 import ui.common.dialog.YesNoDialog;
 import ui.disassembler.Disassembler;
 import ui.emulationsettings.EmulationSettings;
-import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
+import ui.entities.config.service.ConfigService;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.ConfigFileExtension;
 import ui.filefilter.DiskFileExtensions;
@@ -128,6 +125,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private Label status;
 	@FXML
 	protected ProgressBar progress;
+
+	private ConfigService configService;
 
 	private boolean duringInitialization;
 	private Timeline timer;
@@ -926,14 +925,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			try {
-				JAXBContext jaxbContext = JAXBContext
-						.newInstance(Configuration.class);
-				Marshaller marshaller = jaxbContext.createMarshaller();
-				marshaller.marshal(getConfig(), file);
-			} catch (JAXBException e) {
-				e.printStackTrace();
-			}
+			configService.exportCfg(getConfig(), file);
 		}
 	}
 
@@ -1132,6 +1124,10 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			// EXTEND_NEVER
 			return false;
 		}
+	}
+
+	public void setConfigService(ConfigService configService) {
+		this.configService = configService;
 	}
 
 }
