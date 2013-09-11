@@ -32,4 +32,13 @@ public class FavoriteColumn {
 		this.columnProperty = columnProperty;
 	}
 
+	private Double width;
+	
+	public Double getWidth() {
+		return width;
+	}
+	
+	public void setWidth(Double width) {
+		this.width = width;
+	}
 }

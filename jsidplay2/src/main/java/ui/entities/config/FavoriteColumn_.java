@@ -9,4 +9,5 @@ import javax.persistence.metamodel.StaticMetamodel;
 public class FavoriteColumn_ {
 	public static volatile SingularAttribute<FavoriteColumn, Integer> id;
 	public static volatile SingularAttribute<FavoriteColumn, String> columnProperty;
+	public static volatile SingularAttribute<FavoriteColumn, Double> width;
 }

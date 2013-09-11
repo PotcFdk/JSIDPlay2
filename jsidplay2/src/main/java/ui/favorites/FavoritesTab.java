@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -361,7 +362,7 @@ public class FavoritesTab extends C64Tab {
 		}
 	}
 
-	void restoreColumns(FavoritesSection favoritesSection) {
+	void restoreColumns(final FavoritesSection favoritesSection) {
 		this.favoritesSection = favoritesSection;
 		setText(favoritesSection.getName());
 		filteredFavorites.addAll(favoritesSection.getFavorites());
@@ -375,6 +376,27 @@ public class FavoritesTab extends C64Tab {
 			} catch (NoSuchFieldException | SecurityException
 					| IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
+			}
+		}
+		Iterator<TableColumn<HVSCEntry, ?>> columnsIt = favoritesTable
+				.getColumns().iterator();
+		TableColumn<HVSCEntry, ?> pathColumn = columnsIt.next();
+		pathColumn.widthProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				favoritesSection.setWidth(arg2.doubleValue());
+			}
+		});
+		Double width = favoritesSection.getWidth();
+		if (width != null) {
+			pathColumn.setPrefWidth(width.doubleValue());
+		}
+		for (FavoriteColumn favoriteColumn : favoritesSection.getColumns()) {
+			TableColumn<HVSCEntry, ?> column = columnsIt.next();
+			width = favoriteColumn.getWidth();
+			if (width != null) {
+				column.setPrefWidth(width.doubleValue());
 			}
 		}
 		favoritesSection.getObservableFavorites().addListener(
@@ -585,7 +607,7 @@ public class FavoritesTab extends C64Tab {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void addColumn(SingularAttribute<?, ?> attribute, String columnProperty,
-			FavoriteColumn favoriteColumn) {
+			final FavoriteColumn favoriteColumn) {
 		String text = getBundle().getString(
 				attribute.getDeclaringType().getJavaType().getSimpleName()
 						+ "." + columnProperty);
@@ -598,6 +620,13 @@ public class FavoritesTab extends C64Tab {
 		favoritesCellFactory.setFavoritesTab(this);
 		tableColumn.setCellFactory(favoritesCellFactory);
 		tableColumn.setContextMenu(contextMenuHeader);
+		tableColumn.widthProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> arg0,
+					Number arg1, Number arg2) {
+				favoriteColumn.setWidth(arg2.doubleValue());
+			}
+		});
 		favoritesTable.getColumns().add(tableColumn);
 	}
 

@@ -50,6 +50,16 @@ public class FavoritesSection {
 		this.name = name;
 	}
 
+	private Double width;
+	
+	public Double getWidth() {
+		return width;
+	}
+	
+	public void setWidth(Double width) {
+		this.width = width;
+	}
+
 	private Integer selectedRowFrom = -1;
 
 	public Integer getSelectedRowFrom() {

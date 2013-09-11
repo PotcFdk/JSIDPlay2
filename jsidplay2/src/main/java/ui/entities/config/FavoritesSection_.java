@@ -11,6 +11,7 @@ import ui.entities.collection.HVSCEntry;
 public class FavoritesSection_ {
 	public static volatile SingularAttribute<FavoritesSection, Integer> id;
 	public static volatile SingularAttribute<FavoritesSection, String> name;
+	public static volatile SingularAttribute<FavoritesSection, Double> width;
 	public static volatile SingularAttribute<FavoritesSection, Integer> selectedRowFrom;
 	public static volatile SingularAttribute<FavoritesSection, Integer> selectedRowTo;
 	public static volatile ListAttribute<FavoritesSection, FavoriteColumn> columns;
