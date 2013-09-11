@@ -25,7 +25,6 @@ import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry;
 import ui.entities.collection.StilEntry_;
-import ui.entities.config.Configuration;
 
 public class HVSCEntryService {
 
@@ -68,13 +67,12 @@ public class HVSCEntryService {
 		this.stilService = new STILService(em);
 	};
 
-	public HVSCEntry add(final Configuration config, ConsolePlayer cp,
-			final String path, final File tuneFile) throws IOException,
-			SidTuneError {
+	public HVSCEntry add(ConsolePlayer cp, final String path,
+			final File tuneFile) throws IOException, SidTuneError {
 		final SidTune tune = tuneFile.isFile() ? SidTune.load(tuneFile) : null;
 		HVSCEntry hvscEntry = HVSCEntry.create(cp, path, tuneFile, tune);
 
-		stilService.add(config, cp.getStil(), tuneFile, hvscEntry);
+		stilService.add(cp.getStil(), tuneFile, hvscEntry);
 
 		try {
 			em.persist(hvscEntry);
@@ -160,8 +158,8 @@ public class HVSCEntryService {
 			Path<String> fieldNm, String fieldValue, boolean caseSensitive,
 			Class<?> type) {
 		if (!caseSensitive) {
-			return cb.like(cb.lower(fieldNm), "%" + fieldValue.toLowerCase(Locale.GERMAN)
-					+ "%");
+			return cb.like(cb.lower(fieldNm),
+					"%" + fieldValue.toLowerCase(Locale.GERMAN) + "%");
 		} else {
 			return cb.like(fieldNm, "%" + fieldValue + "%");
 		}

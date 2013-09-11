@@ -10,7 +10,6 @@ import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
 import ui.entities.collection.HVSCEntry;
-import ui.entities.config.Configuration;
 
 public class STILService {
 
@@ -20,8 +19,7 @@ public class STILService {
 		this.em = em;
 	};
 
-	public void add(final Configuration config, STIL stil, final File tuneFile,
-			HVSCEntry hvscEntry) {
+	public void add(STIL stil, final File tuneFile, HVSCEntry hvscEntry) {
 		if (stil != null && stil.getSTILEntry(tuneFile) != null) {
 			STILEntry stilEntry = stil.getSTILEntry(tuneFile);
 			// get STIL Global Comment

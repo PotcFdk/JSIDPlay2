@@ -202,37 +202,42 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		final int seconds = getConfig().getSidplay2().getPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
 				seconds % 60));
-		((SidPlay2Section) getConfig().getSidplay2()).playLengthProperty().addListener(new ChangeListener<Number>() {
-			
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				int seconds = arg2.intValue();
-				defaultTime.setText(String.format("%02d:%02d", seconds / 60,
-						seconds % 60));
-			}
+		((SidPlay2Section) getConfig().getSidplay2()).playLengthProperty()
+				.addListener(new ChangeListener<Number>() {
 
-		});
-		
+					@Override
+					public void changed(ObservableValue<? extends Number> arg0,
+							Number arg1, Number arg2) {
+						int seconds = arg2.intValue();
+						defaultTime.setText(String.format("%02d:%02d",
+								seconds / 60, seconds % 60));
+					}
+
+				});
+
 		enableSldb.setSelected(getConfig().getSidplay2().isEnableDatabase());
-		((SidPlay2Section) getConfig().getSidplay2()).enableDatabaseProperty().addListener(new ChangeListener<Boolean>() {
-			
-			@Override
-			public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1,
-					Boolean arg2) {
-				enableSldb.setSelected(arg2);
-			}
-		});
-		
+		((SidPlay2Section) getConfig().getSidplay2()).enableDatabaseProperty()
+				.addListener(new ChangeListener<Boolean>() {
+
+					@Override
+					public void changed(
+							ObservableValue<? extends Boolean> arg0,
+							Boolean arg1, Boolean arg2) {
+						enableSldb.setSelected(arg2);
+					}
+				});
+
 		singleSong.setSelected(getConfig().getSidplay2().isSingle());
-		((SidPlay2Section) getConfig().getSidplay2()).singleProperty().addListener(new ChangeListener<Boolean>() {
-			
-			@Override
-			public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1,
-					Boolean arg2) {
-				singleSong.setSelected(arg2);
-			}
-		});
+		((SidPlay2Section) getConfig().getSidplay2()).singleProperty()
+				.addListener(new ChangeListener<Boolean>() {
+
+					@Override
+					public void changed(
+							ObservableValue<? extends Boolean> arg0,
+							Boolean arg1, Boolean arg2) {
+						singleSong.setSelected(arg2);
+					}
+				});
 		getConsolePlayer().stateProperty().addListener(
 				new ChangeListener<State>() {
 					@Override
@@ -348,9 +353,10 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					private void getSOASCURL(SidTune sidTune) {
 						if (sidTune != null) {
 							final SidTuneInfo tuneInfo = sidTune.getInfo();
-							File rootFile = new File(getConfig().getSidplay2().getHvsc());
-							String name = PathUtils.getCollectionName(new TFile(rootFile),
-									tuneInfo.file);
+							File rootFile = new File(getConfig().getSidplay2()
+									.getHvsc());
+							String name = PathUtils.getCollectionName(
+									new TFile(rootFile), tuneInfo.file);
 							if (name != null) {
 								hvscName = name.replace(".sid", "");
 								currentSong = tuneInfo.currentSong;
@@ -723,8 +729,9 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		if (rootFile.exists()) {
 			em = Persistence.createEntityManagerFactory(
 					PersistenceProperties.COLLECTION_DS,
-					new PersistenceProperties(new File(rootFile.getParentFile(),
-							dbName))).createEntityManager();
+					new PersistenceProperties(new File(
+							rootFile.getParentFile(), dbName)))
+					.createEntityManager();
 
 			versionService = new VersionService(em);
 
@@ -873,7 +880,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			public void run() {
 				TreeItem<File> rootItem = fileBrowser.getRoot();
 				if (rootItem == null
-						|| matchFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
+						|| matchFile.getName().toLowerCase(Locale.ENGLISH)
+								.endsWith(".mp3")) {
 					return;
 				}
 				List<TreeItem<File>> pathSegs = new ArrayList<TreeItem<File>>();
@@ -933,10 +941,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			final File root = fileBrowser.getRoot().getValue();
 			searchThread = new SearchIndexerThread(root);
 			searchThread.addSearchListener(this);
-			searchThread
-					.addSearchListener(new SearchIndexCreator(fileBrowser
-							.getRoot().getValue(), getConfig(),
-							getConsolePlayer(), em));
+			searchThread.addSearchListener(new SearchIndexCreator(fileBrowser
+					.getRoot().getValue(), getConsolePlayer(), em));
 
 			searchThread.start();
 		} else {
@@ -992,7 +998,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 							if (downloadedFile != null) {
 								Platform.runLater(new Runnable() {
-									
+
 									@Override
 									public void run() {
 										playTune(downloadedFile);
