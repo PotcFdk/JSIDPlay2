@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -109,6 +110,19 @@ public class Oscilloscope extends C64Tab {
 							}
 						}
 					}
+					Platform.runLater(new Runnable() {
+						
+						@Override
+						public void run() {
+							for (int i = 0; i < gauges.length; i++) {
+								for (int j = 0; j < gauges[i].length; j++) {
+									for (int k = 0; k < gauges[i][j].length; k++) {
+										gauges[i][j][k].updateGauge();
+									}
+								}
+							}
+						}
+					});
 
 					getPlayer().mute(0, 0, muteVoice1.isSelected());
 					getPlayer().mute(0, 1, muteVoice2.isSelected());
