@@ -119,7 +119,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	protected TabPane tabbedPane, musicCollTabbedPane, diskCollTabbedPane;
 	@FXML
-	private Tab musicCollections, diskCollections;
+	protected Tab musicCollections, favorites;
 	@FXML
 	protected Video videoScreen;
 	@FXML
@@ -136,8 +136,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private Scene scene;
 	private int hardcopyCounter;
 	protected long lastUpdate;
-	private String tuneSpeed;
-	private String playerId;
+	private StringBuilder tuneSpeed = new StringBuilder();
+	private StringBuilder playerId = new StringBuilder();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -161,9 +161,12 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 									SidTune sidTune = getPlayer().getTune();
 									if (sidTune == null
-											|| sidTune.getInfo().playAddr == 0) {
+											|| (sidTune.getInfo().playAddr == 0
+													&& !favorites.isSelected() && !musicCollections
+														.isSelected())) {
 										tabbedPane.getSelectionModel().select(
 												videoScreen);
+
 									}
 								}
 
@@ -1010,57 +1013,65 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			progress.setProgress(datasette.getProgress() / 100f);
 		}
 		// Current play time / well-known song length
-		String statusTime = String.format("%02d:%02d",
-				getPlayer().time() / 60 % 100, getPlayer().time() % 60);
-		String statusSongLength = "";
-		int songLength = getConsolePlayer()
-				.getSongLength(getPlayer().getTune());
-		// song length well-known?
-		if (songLength > 0) {
-			statusSongLength = String.format("/%02d:%02d",
-					(songLength / 60 % 100), (songLength % 60));
-		}
+		String statusTime = determinePlayTime();
+		String statusSongLength = determineSongLength();
 		// Memory usage
-		Runtime runtime = Runtime.getRuntime();
-		int totalMemory = (int) (runtime.totalMemory() / (1 << 20));
-		int freeMemory = (int) (runtime.freeMemory() / (1 << 20));
+		int totalMemory = determineMemusage(Runtime.getRuntime().totalMemory());
+		int freeMemory = determineMemusage(Runtime.getRuntime().freeMemory());
 		// tune speed
 		determineTuneSpeed();
 		// playerID
 		getPlayerId();
 		// final status bar text
-		String text = String.format(getBundle().getString("DATASETTE_COUNTER")
-				+ " %03d, " + getBundle().getString("FLOPPY_TRACK") + " %02d, "
-				+ getBundle().getString("DATE") + " %s, "
-				+ getBundle().getString("TIME") + " %s%s, %s%s"
-				+ getBundle().getString("MEM") + " %d/%d MB",
-				datasette.getCounter(), halfTrack >> 1, DATE, statusTime,
-				statusSongLength, tuneSpeed, playerId,
-				(totalMemory - freeMemory), totalMemory);
-		status.setText(text);
+		StringBuilder format = new StringBuilder();
+		format.append(getBundle().getString("RELEASE")).append(" %s, ")
+				.append(getBundle().getString("DATASETTE_COUNTER"))
+				.append(" %03d, ")
+				.append(getBundle().getString("FLOPPY_TRACK"))
+				.append(" %02d, ").append("%s%s")
+				.append(getBundle().getString("TIME")).append(" %s%s, ")
+				.append(getBundle().getString("MEM")).append(" %d/%d MB");
+		status.setText(String.format(format.toString(), DATE,
+				datasette.getCounter(), halfTrack >> 1, playerId, tuneSpeed,
+				statusTime, statusSongLength, (totalMemory - freeMemory),
+				totalMemory));
+	}
+
+	private String determinePlayTime() {
+		int time = getPlayer().time();
+		return String.format("%02d:%02d", time / 60 % 100, time % 60);
+	}
+
+	private String determineSongLength() {
+		int songLength = getConsolePlayer()
+				.getSongLength(getPlayer().getTune());
+		if (songLength > 0) {
+			// song length well-known?
+			return String.format("/%02d:%02d", (songLength / 60 % 100),
+					(songLength % 60));
+		}
+		return "";
+	}
+
+	private int determineMemusage(long mem) {
+		return (int) (mem / (1 << 20));
 	}
 
 	private void getPlayerId() {
+		playerId.setLength(0);
 		if (getPlayer().getTune() != null) {
-			final StringBuilder ids = new StringBuilder();
-			for (final String s : getPlayer().getTune().identify()) {
-				if (ids.length() > 0) {
-					ids.append(", ");
+			for (final String id : getPlayer().getTune().identify()) {
+				playerId.append(getBundle().getString("PLAYER_ID")).append(" ")
+						.append(id);
+				int length = id.length();
+				playerId.setLength(playerId.length()
+						- (Math.abs(length - Math.min(length, 14))));
+				if (length > 14) {
+					playerId.append("...");
 				}
-				ids.append(s);
+				playerId.append(", ");
+				break;
 			}
-			if (ids.length() > 0) {
-				playerId = getBundle().getString("PLAYER_ID") + " "
-						+ ids.toString().substring(0, Math.min(ids.length(), 16));
-				if (ids.length() > 16) {
-					playerId += "...";
-				}
-				playerId += ", ";
-			} else {
-				playerId = "";
-			}
-		} else {
-			playerId = "";
 		}
 	}
 
@@ -1074,20 +1085,18 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			final double interval = now - lastUpdate;
 			if (interval >= waitClocks) {
 				lastUpdate = now;
-
 				final double callsSinceLastRead = c64
 						.callsToPlayRoutineSinceLastTime()
 						* waitClocks
 						/ interval;
 				/* convert to number of calls per frame */
-				tuneSpeed = getBundle().getString("SPEED")
-						+ " "
-						+ String.format("%.1f", callsSinceLastRead
-								/ systemClock.getRefresh());
-				tuneSpeed += "x, ";
+				tuneSpeed.setLength(0);
+				tuneSpeed.append(getBundle().getString("SPEED")).append(
+						String.format(" %.1fx, ", callsSinceLastRead
+								/ systemClock.getRefresh()));
 			}
 		} else {
-			tuneSpeed = "";
+			tuneSpeed.setLength(0);
 		}
 	}
 

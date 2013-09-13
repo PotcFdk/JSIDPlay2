@@ -32,7 +32,6 @@
 <?import ui.printer.Printer?>
 <?import ui.console.Console?>
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
-
 <Scene>
 	<BorderPane xmlns:fx="http://javafx.com/fxml">
 		<top>
@@ -249,7 +248,7 @@
 							</tabs>
 						</TabPane>
 					</Tab>
-					<Favorites text="%FAVORITES" />
+					<Favorites text="%FAVORITES" fx:id="favorites" />
 					<Tab text="%DISC_COLLECTIONS" fx:id="diskCollections">
 						<TabPane tabClosingPolicy="UNAVAILABLE" fx:id="diskCollTabbedPane">
 							<tabs>
