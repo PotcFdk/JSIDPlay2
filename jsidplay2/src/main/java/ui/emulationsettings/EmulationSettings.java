@@ -109,6 +109,8 @@ public class EmulationSettings extends C64Stage {
 	public void initialize(URL location, ResourceBundle resources) {
 		duringInitialization = true;
 
+		leftVolume.setValue(getConfig().getAudio().getLeftVolume()
+				+ MAX_VOLUME_DB);
 		leftVolume.valueProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0,
@@ -118,6 +120,8 @@ public class EmulationSettings extends C64Stage {
 				getConsolePlayer().setSIDVolume(0, volumeDb);
 			}
 		});
+		rightVolume.setValue(getConfig().getAudio().getRightVolume()
+				+ MAX_VOLUME_DB);
 		rightVolume.valueProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0,

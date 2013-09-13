@@ -262,9 +262,11 @@ public class Favorites extends C64Tab {
 		if (file != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
+			File target = new File(file.getParentFile(),
+					PathUtils.getBaseNameNoExt(file) + ".js2");
 			// then load the favorites
 			try {
-				getSelectedTab().saveFavorites(file);
+				getSelectedTab().saveFavorites(target);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

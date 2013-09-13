@@ -57,6 +57,7 @@ import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.PathUtils;
 import sidplay.consoleplayer.MediaType;
 import sidplay.consoleplayer.State;
 import ui.about.About;
@@ -923,9 +924,11 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 						ConfigFileExtension.EXTENSIONS));
 		final File file = fileDialog.showSaveDialog(scene.getWindow());
 		if (file != null) {
+			File target = new File(file.getParentFile(),
+					PathUtils.getBaseNameNoExt(file) + ".xml");
 			getConfig().getSidplay2().setLastDirectory(
 					file.getParentFile().getAbsolutePath());
-			configService.exportCfg(getConfig(), file);
+			configService.exportCfg(getConfig(), target);
 		}
 	}
 
