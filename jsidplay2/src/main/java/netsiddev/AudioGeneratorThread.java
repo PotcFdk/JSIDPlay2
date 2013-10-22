@@ -406,7 +406,7 @@ public class AudioGeneratorThread extends Thread {
 	}
 
 	/**
-	 * Whether or not to enable Digiboost for all SID chips.
+	 * Whether or not to enable Digiboost for all SID chips of model 8580.
 	 *
 	 * @param selected Whether or not to enable Digiboost.
 	 */
