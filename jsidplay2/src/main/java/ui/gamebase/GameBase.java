@@ -150,13 +150,7 @@ public class GameBase extends C64Tab {
 							lastScreenshot.add(downloadedFile);
 						}
 						final URL resource = downloadedFile.toURI().toURL();
-						Platform.runLater(new Runnable() {
-
-							@Override
-							public void run() {
-								showScreenshot(resource);
-							}
-						});
+						Platform.runLater(() -> showScreenshot(resource));
 					} catch (MalformedURLException e) {
 						e.printStackTrace();
 					}
@@ -272,8 +266,8 @@ public class GameBase extends C64Tab {
 	protected void connect(File dbFile) {
 		disconnect();
 		em = Persistence.createEntityManagerFactory(
-				PersistenceProperties.GAMEBASE_DS, new PersistenceProperties(dbFile))
-				.createEntityManager();
+				PersistenceProperties.GAMEBASE_DS,
+				new PersistenceProperties(dbFile)).createEntityManager();
 		gamesService = new GamesService(em);
 		configService = new ConfigService(em);
 	}

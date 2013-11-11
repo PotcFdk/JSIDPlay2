@@ -18,7 +18,7 @@ public final class VolumeGauge extends SIDGauge {
 	}
 
 	@Override
-	protected TitledPane getBorder() {
+	protected TitledPane getTitledPane() {
 		return border;
 	}
 

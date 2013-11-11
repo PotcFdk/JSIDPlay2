@@ -30,45 +30,42 @@ public class EmulationSettings extends C64Stage {
 
 	protected final class EmulationChange implements ChangeListener<State> {
 		@Override
-		public void changed(ObservableValue<? extends State> arg0,
-				State arg1, State arg2) {
-			if (arg2 == State.RUNNING) {
-				Platform.runLater(new Runnable() {
-					
-					@Override
-					public void run() {
-						ChipModel userSidModel = getConfig().getEmulation()
-								.getUserSidModel();
-						sid1Model.getSelectionModel().select(
-								userSidModel != null ? userSidModel : getBundle()
-										.getString("AUTO"));
-						if (userSidModel != null) {
-							addFilters(userSidModel);
-						} else {
-							SidTune sidTune = getPlayer().getTune();
-							if (sidTune != null) {
-								switch (sidTune.getInfo().sid1Model) {
-								case MOS6581:
-									addFilters(ChipModel.MOS6581);
-									break;
-								case MOS8580:
-									addFilters(ChipModel.MOS8580);
-									break;
-								default:
-									addFilters(getConfig().getEmulation()
-											.getDefaultSidModel());
-									break;
-								}
-							} else {
+		public void changed(ObservableValue<? extends State> observable,
+				State oldValue, State newValue) {
+			if (newValue == State.RUNNING) {
+				Platform.runLater(() -> {
+					ChipModel userSidModel = getConfig().getEmulation()
+							.getUserSidModel();
+					sid1Model.getSelectionModel().select(
+							userSidModel != null ? userSidModel : getBundle()
+									.getString("AUTO"));
+					if (userSidModel != null) {
+						addFilters(userSidModel);
+					} else {
+						SidTune sidTune = getPlayer().getTune();
+						if (sidTune != null) {
+							switch (sidTune.getInfo().sid1Model) {
+							case MOS6581:
+								addFilters(ChipModel.MOS6581);
+								break;
+							case MOS8580:
+								addFilters(ChipModel.MOS8580);
+								break;
+							default:
 								addFilters(getConfig().getEmulation()
 										.getDefaultSidModel());
+								break;
 							}
+						} else {
+							addFilters(getConfig().getEmulation()
+									.getDefaultSidModel());
 						}
 					}
 				});
 			}
 		}
 	}
+
 	/**
 	 * Max SID filter FC value.
 	 */
@@ -79,7 +76,7 @@ public class EmulationSettings extends C64Stage {
 	 */
 	private static final float MAX_VOLUME_DB = 6.0f;
 
-	private static final int STEP = 10;
+	private static final int STEP = 3;
 
 	@FXML
 	protected ComboBox<Object> sid1Model, sid2Model;
@@ -111,25 +108,17 @@ public class EmulationSettings extends C64Stage {
 
 		leftVolume.setValue(getConfig().getAudio().getLeftVolume()
 				+ MAX_VOLUME_DB);
-		leftVolume.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number newValue) {
-				float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
-				getConfig().getAudio().setLeftVolume(volumeDb);
-				getConsolePlayer().setSIDVolume(0, volumeDb);
-			}
+		leftVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
+			float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
+			getConfig().getAudio().setLeftVolume(volumeDb);
+			getConsolePlayer().setSIDVolume(0, volumeDb);
 		});
 		rightVolume.setValue(getConfig().getAudio().getRightVolume()
 				+ MAX_VOLUME_DB);
-		rightVolume.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number newValue) {
-				float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
-				getConfig().getAudio().setRightVolume(volumeDb);
-				getConsolePlayer().setSIDVolume(1, volumeDb);
-			}
+		rightVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
+			float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
+			getConfig().getAudio().setRightVolume(volumeDb);
+			getConsolePlayer().setSIDVolume(1, volumeDb);
 		});
 
 		sid1Models.addAll(getBundle().getString("AUTO"), ChipModel.MOS6581,

@@ -80,7 +80,7 @@ public class Gauge extends C64VBox {
 	}
 
 	public void updateGauge() {
-		getBorder().setText(text);
+		getTitledPane().setText(text);
 
 		GraphicsContext g = getArea().getGraphicsContext2D();
 		final int width = (int) getArea().getWidth();
@@ -154,7 +154,7 @@ public class Gauge extends C64VBox {
 
 	}
 
-	protected TitledPane getBorder() {
+	protected TitledPane getTitledPane() {
 		return null;
 	}
 

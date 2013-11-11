@@ -47,7 +47,7 @@ public class MusicCollectionCellFactory implements
 	}
 
 	@Override
-	public TreeCell<File> call(TreeView<File> arg0) {
+	public TreeCell<File> call(TreeView<File> treeView) {
 		return new TextFieldTreeCellImpl();
 	}
 }

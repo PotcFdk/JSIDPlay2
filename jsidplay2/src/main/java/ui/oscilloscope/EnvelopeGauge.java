@@ -20,7 +20,7 @@ public final class EnvelopeGauge extends SIDGauge {
 	}
 
 	@Override
-	protected TitledPane getBorder() {
+	protected TitledPane getTitledPane() {
 		return border;
 	}
 

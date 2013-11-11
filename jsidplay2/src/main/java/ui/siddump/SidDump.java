@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,20 +26,6 @@ import ui.common.C64Stage;
 import ui.entities.config.SidPlay2Section;
 
 public class SidDump extends C64Stage {
-	protected final class SidDumpStop implements ChangeListener<State> {
-		@Override
-		public void changed(ObservableValue<? extends State> arg0, State arg1,
-				State arg2) {
-			if (arg2 == State.EXIT) {
-				Platform.runLater(new Runnable() {
-					public void run() {
-						replayAll.setDisable(false);
-						sidDumpExtension.stopRecording();
-					}
-				});
-			}
-		}
-	}
 
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
@@ -70,31 +55,22 @@ public class SidDump extends C64Stage {
 	private int loadAddress, initAddress, playerAddress, subTune, seconds;
 
 	private Thread fPlayerThread;
-	private SidDumpStop sidDumpStop = new SidDumpStop();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		getConsolePlayer().stateProperty().addListener(sidDumpStop);
+		getConsolePlayer().stateProperty().addListener(
+				(ObservableValue<? extends State> observable, State oldValue,
+						State newValue) -> doStop(newValue));
 		sidDumpExtension = new SidDumpExtension(getPlayer(), getConfig()) {
 
 			@Override
 			public void add(final SidDumpOutput output) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						sidDumpOutputs.add(output);
-					}
-				});
+				Platform.runLater(() -> sidDumpOutputs.add(output));
 			}
 
 			@Override
 			public void clear() {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						sidDumpOutputs.clear();
-					}
-				});
+				Platform.runLater(() -> sidDumpOutputs.clear());
 			}
 		};
 
@@ -108,7 +84,18 @@ public class SidDump extends C64Stage {
 
 	@Override
 	protected void doCloseWindow() {
-		getConsolePlayer().stateProperty().removeListener(sidDumpStop);
+		getConsolePlayer().stateProperty().removeListener(
+				(ObservableValue<? extends State> observable, State oldValue,
+						State newValue) -> doStop(newValue));
+	}
+
+	private void doStop(State state) {
+		if (state == State.EXIT) {
+			Platform.runLater(() -> {
+				replayAll.setDisable(false);
+				sidDumpExtension.stopRecording();
+			});
+		}
 	}
 
 	@FXML
@@ -164,14 +151,11 @@ public class SidDump extends C64Stage {
 		} catch (InterruptedException e1) {
 		}
 		if (replayAll.isSelected()) {
-			fPlayerThread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						sidDumpExtension.replay(sidDumpOutputs);
-					} catch (InvalidCommandException e) {
-						e.printStackTrace();
-					}
+			fPlayerThread = new Thread(() -> {
+				try {
+					sidDumpExtension.replay(sidDumpOutputs);
+				} catch (InvalidCommandException e) {
+					e.printStackTrace();
 				}
 			});
 			fPlayerThread.start();

@@ -63,7 +63,7 @@ public class FavoritesCellFactory implements
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
-	public TableCell<HVSCEntry, ?> call(final TableColumn<HVSCEntry, ?> arg0) {
+	public TableCell<HVSCEntry, ?> call(final TableColumn<HVSCEntry, ?> column) {
 		return new TableCellImpl();
 	}
 

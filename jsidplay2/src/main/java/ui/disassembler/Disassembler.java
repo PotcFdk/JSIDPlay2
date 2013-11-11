@@ -27,14 +27,10 @@ public class Disassembler extends C64Stage {
 
 	protected final class DisassemblerRefresh implements ChangeListener<State> {
 		@Override
-		public void changed(ObservableValue<? extends State> arg0,
-				State arg1, State arg2) {
-			if (arg2 == State.RUNNING) {
-				Platform.runLater(new Runnable() {
-					public void run() {
-						setTune();
-					}
-				});
+		public void changed(ObservableValue<? extends State> observable,
+				State oldValue, State newValue) {
+			if (newValue == State.RUNNING) {
+				Platform.runLater(() -> setTune());
 			}
 		}
 	}
@@ -74,67 +70,59 @@ public class Disassembler extends C64Stage {
 		if (getPlayer().getTune() == null) {
 			return;
 		}
-		Platform.runLater(new Runnable() {
-
-			@Override
-			public void run() {
-				final SidTuneInfo tuneInfo = getPlayer().getTune().getInfo();
-				driverAddress.setText(getDriverAddress(tuneInfo));
-				loadAddress.setText(getLoadAddress(tuneInfo));
-				initAddress.setText(getInitAddress(tuneInfo));
-				playerAddress.setText(getPlayerAddress(tuneInfo));
-			}
-
-			private String getPlayerAddress(final SidTuneInfo tuneInfo) {
-				if (tuneInfo.playAddr == 0xffff) {
-					return "N/A";
-				} else {
-					return String.format("0x%04x", tuneInfo.playAddr);
-				}
-			}
-
-			private String getInitAddress(final SidTuneInfo tuneInfo) {
-				if (tuneInfo.playAddr == 0xffff) {
-					return String.format("0x%04x", tuneInfo.initAddr);
-				} else {
-					return String.format("0x%04x", tuneInfo.initAddr);
-				}
-			}
-
-			private String getLoadAddress(final SidTuneInfo tuneInfo) {
-				return String.format("0x%04x - 0x%04x", tuneInfo.loadAddr,
-						tuneInfo.loadAddr + tuneInfo.c64dataLen - 1);
-			}
-
-			private String getDriverAddress(final SidTuneInfo tuneInfo) {
-				if (tuneInfo.determinedDriverAddr == 0) {
-					return "N/A";
-				} else {
-					return String.format("0x%04x - 0x%04x",
-							tuneInfo.determinedDriverAddr,
-							tuneInfo.determinedDriverAddr
-									+ tuneInfo.determinedDriverLength - 1);
-				}
-			}
+		Platform.runLater(() -> {
+			final SidTuneInfo tuneInfo = getPlayer().getTune().getInfo();
+			driverAddress.setText(getDriverAddress(tuneInfo));
+			loadAddress.setText(getLoadAddress(tuneInfo));
+			initAddress.setText(getInitAddress(tuneInfo));
+			playerAddress.setText(getPlayerAddress(tuneInfo));
 		});
 	}
 
-	private void disassemble(final int startAddr) {
-		Platform.runLater(new Runnable() {
+	private String getPlayerAddress(final SidTuneInfo tuneInfo) {
+		if (tuneInfo.playAddr == 0xffff) {
+			return "N/A";
+		} else {
+			return String.format("0x%04x", tuneInfo.playAddr);
+		}
+	}
 
-			@Override
-			public void run() {
-				assemblyLines.clear();
-				byte[] ram = getPlayer().getC64().getRAM();
-				int offset = startAddr;
-				do {
-					CPUCommand cmd = fCommands.get(ram[offset & 0xffff] & 0xff);
-					AssemblyLine assemblyLine = createAssemblyLine(ram,
-							offset & 0xffff, cmd);
-					assemblyLines.add(assemblyLine);
-					offset += cmd.getByteCount();
-				} while (offset <= 0xffff);
-			}
+	private String getInitAddress(final SidTuneInfo tuneInfo) {
+		if (tuneInfo.playAddr == 0xffff) {
+			return String.format("0x%04x", tuneInfo.initAddr);
+		} else {
+			return String.format("0x%04x", tuneInfo.initAddr);
+		}
+	}
+
+	private String getLoadAddress(final SidTuneInfo tuneInfo) {
+		return String.format("0x%04x - 0x%04x", tuneInfo.loadAddr,
+				tuneInfo.loadAddr + tuneInfo.c64dataLen - 1);
+	}
+
+	private String getDriverAddress(final SidTuneInfo tuneInfo) {
+		if (tuneInfo.determinedDriverAddr == 0) {
+			return "N/A";
+		} else {
+			return String.format("0x%04x - 0x%04x",
+					tuneInfo.determinedDriverAddr,
+					tuneInfo.determinedDriverAddr
+							+ tuneInfo.determinedDriverLength - 1);
+		}
+	}
+
+	private void disassemble(final int startAddr) {
+		Platform.runLater(() -> {
+			assemblyLines.clear();
+			byte[] ram = getPlayer().getC64().getRAM();
+			int offset = startAddr;
+			do {
+				CPUCommand cmd = fCommands.get(ram[offset & 0xffff] & 0xff);
+				AssemblyLine assemblyLine = createAssemblyLine(ram,
+						offset & 0xffff, cmd);
+				assemblyLines.add(assemblyLine);
+				offset += cmd.getByteCount();
+			} while (offset <= 0xffff);
 		});
 	}
 
@@ -196,14 +184,12 @@ public class Disassembler extends C64Stage {
 
 	@FXML
 	private void saveMemory() {
-		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
-		final File file = fileDialog
-				.showSaveDialog(save.getScene().getWindow());
+		FileChooser fileDialog = new FileChooser();
+		SidPlay2Section sidplay2 = (SidPlay2Section) getConfig().getSidplay2();
+		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
+		File file = fileDialog.showSaveDialog(save.getScene().getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
+			sidplay2.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try (FileOutputStream fos = new FileOutputStream(file)) {
 				int start = Integer.decode(startAddress.getText());
 				int end = Integer.decode(endAddress.getText()) + 1;

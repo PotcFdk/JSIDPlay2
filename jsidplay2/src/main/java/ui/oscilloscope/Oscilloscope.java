@@ -5,13 +5,8 @@ import java.util.ResourceBundle;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Tab;
 import javafx.util.Duration;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -93,46 +88,41 @@ public class Oscilloscope extends C64Tab {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
-		getConsolePlayer().stateProperty().addListener(new ChangeListener<State>() {
-			@Override
-			public void changed(ObservableValue<? extends State> arg0,
-					State arg1, State arg2) {
-				if (arg2 == State.RUNNING) {
-					final EventScheduler ctx = getPlayer().getC64()
-							.getEventScheduler();
-					/* sample oscillator buffer */
-					highResolutionEvent.beginScheduling(ctx);
+		getConsolePlayer()
+				.stateProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							if (newValue == State.RUNNING) {
+								final EventScheduler ctx = getPlayer().getC64()
+										.getEventScheduler();
+								/* sample oscillator buffer */
+								highResolutionEvent.beginScheduling(ctx);
 
-					for (int i = 0; i < gauges.length; i++) {
-						for (int j = 0; j < gauges[i].length; j++) {
-							for (int k = 0; k < gauges[i][j].length; k++) {
-								gauges[i][j][k].reset();
-							}
-						}
-					}
-					Platform.runLater(new Runnable() {
-						
-						@Override
-						public void run() {
-							for (int i = 0; i < gauges.length; i++) {
-								for (int j = 0; j < gauges[i].length; j++) {
-									for (int k = 0; k < gauges[i][j].length; k++) {
-										gauges[i][j][k].updateGauge();
+								for (int i = 0; i < gauges.length; i++) {
+									for (int j = 0; j < gauges[i].length; j++) {
+										for (int k = 0; k < gauges[i][j].length; k++) {
+											gauges[i][j][k].reset();
+										}
 									}
 								}
-							}
-						}
-					});
+								Platform.runLater(() -> {
+									for (int i = 0; i < gauges.length; i++) {
+										for (int j = 0; j < gauges[i].length; j++) {
+											for (int k = 0; k < gauges[i][j].length; k++) {
+												gauges[i][j][k].updateGauge();
+											}
+										}
+									}
+								});
 
-					getPlayer().mute(0, 0, muteVoice1.isSelected());
-					getPlayer().mute(0, 1, muteVoice2.isSelected());
-					getPlayer().mute(0, 2, muteVoice3.isSelected());
-					getPlayer().mute(1, 0, muteVoice4.isSelected());
-					getPlayer().mute(1, 1, muteVoice5.isSelected());
-					getPlayer().mute(1, 2, muteVoice6.isSelected());
-				}
-			}
-		});
+								getPlayer().mute(0, 0, muteVoice1.isSelected());
+								getPlayer().mute(0, 1, muteVoice2.isSelected());
+								getPlayer().mute(0, 2, muteVoice3.isSelected());
+								getPlayer().mute(1, 0, muteVoice4.isSelected());
+								getPlayer().mute(1, 1, muteVoice5.isSelected());
+								getPlayer().mute(1, 2, muteVoice6.isSelected());
+							}
+						});
 		waveMono_0.setLocalizer(getBundle());
 		waveMono_1.setLocalizer(getBundle());
 		waveMono_2.setLocalizer(getBundle());
@@ -171,41 +161,32 @@ public class Oscilloscope extends C64Tab {
 
 		final PauseTransition pt = new PauseTransition(Duration.millis(50));
 		pt.setCycleCount(1);
-		pt.setOnFinished(new EventHandler<ActionEvent>() {
+		pt.setOnFinished((ae) -> {
 
-			@Override
-			public void handle(ActionEvent ae) {
-
-				for (int i = 0; i < 2; i++) {
-					final SIDEmu sidemu = getPlayer().getC64().getSID(i);
-					if (sidemu == null) {
-						continue;
-					}
-					for (int j = 0; j < 4; j++) {
-						gauges[i][j][0].updateGauge(sidemu);
-						gauges[i][j][1].updateGauge(sidemu);
-						gauges[i][j][2].updateGauge(sidemu);
-					}
+			for (int i = 0; i < 2; i++) {
+				final SIDEmu sidemu = getPlayer().getC64().getSID(i);
+				if (sidemu == null) {
+					continue;
 				}
-				pt.play();
+				for (int j = 0; j < 4; j++) {
+					gauges[i][j][0].updateGauge(sidemu);
+					gauges[i][j][1].updateGauge(sidemu);
+					gauges[i][j][2].updateGauge(sidemu);
+				}
 			}
+			pt.play();
 		});
 		pt.play();
 		pt.pause();
 		getTabPane().getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<Tab>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends Tab> observable,
-							Tab oldValue, Tab newValue) {
-						// performance optimizations!
+				.addListener((observable, oldValue, newValue) -> {
+					// performance optimizations!
 						if (Oscilloscope.this.equals(newValue)) {
 							pt.play();
 						} else {
 							pt.pause();
 						}
-					}
-				});
+					});
 	}
 
 	@FXML

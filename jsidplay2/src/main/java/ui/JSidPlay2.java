@@ -14,13 +14,9 @@ import java.util.ResourceBundle;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.animation.TimelineBuilder;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -129,13 +125,11 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	private ConfigService configService;
 
-	private boolean duringInitialization;
-	private Timeline timer;
-	private boolean oldMotorOn;
-	private int oldHalfTrack;
 	private Scene scene;
-	private int hardcopyCounter;
+	private Timeline timer;
 	protected long lastUpdate;
+	private int oldHalfTrack, hardcopyCounter;
+	private boolean duringInitialization, oldMotorOn;
 	private StringBuilder tuneSpeed = new StringBuilder();
 	private StringBuilder playerId = new StringBuilder();
 
@@ -146,79 +140,27 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 		getConsolePlayer().setExtendImagePolicy(this);
 
-		getConsolePlayer().stateProperty().addListener(
-				new ChangeListener<State>() {
-					@Override
-					public void changed(ObservableValue<? extends State> arg0,
-							State arg1, final State state) {
-						if (state == State.EXIT || state == State.RUNNING) {
-							Platform.runLater(new Runnable() {
-								public void run() {
-									lastUpdate = getPlayer().getC64()
-											.getEventScheduler()
-											.getTime(Phase.PHI1);
-									updatePlayerButtons(state);
+		getConsolePlayer().stateProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue == State.EXIT || newValue == State.RUNNING) {
+				Platform.runLater(() -> {
+						lastUpdate = getPlayer().getC64().getEventScheduler()
+								.getTime(Phase.PHI1);
+						updatePlayerButtons(newValue);
 
-									SidTune sidTune = getPlayer().getTune();
-									if (sidTune == null
-											|| (sidTune.getInfo().playAddr == 0
-													&& !favorites.isSelected() && !musicCollections
-														.isSelected())) {
-										tabbedPane.getSelectionModel().select(
-												videoScreen);
-
-									}
-								}
-
-							});
+						SidTune sidTune = getPlayer().getTune();
+						if (sidTune == null
+								|| (sidTune.getInfo().playAddr == 0
+										&& !favorites.isSelected() && !musicCollections
+											.isSelected())) {
+							tabbedPane.getSelectionModel().select(videoScreen);
 						}
 					}
 
-					protected void updatePlayerButtons(State state) {
-						pauseContinue.setSelected(false);
-						normalSpeed.setSelected(true);
+				);
+			}
+		}
 
-						SidTune tune = getPlayer().getTune();
-						final int startSong, maxSong;
-						final int currentSong;
-						if (tune != null) {
-							startSong = tune.getInfo().startSong;
-							maxSong = tune.getInfo().songs;
-							currentSong = tune.getInfo().currentSong;
-						} else {
-							maxSong = 0;
-							currentSong = 0;
-							startSong = 0;
-						}
-
-						int prevSong = currentSong - 1;
-						if (prevSong < 1) {
-							prevSong = maxSong;
-						}
-						int nextSong = currentSong + 1;
-						if (nextSong > maxSong) {
-							nextSong = 1;
-						}
-
-						previous.setDisable(state == State.EXIT || maxSong == 0
-								|| currentSong == startSong);
-						previous2.setDisable(previous.isDisable());
-						next.setDisable(state == State.EXIT || maxSong == 0
-								|| nextSong == startSong);
-						next2.setDisable(next.isDisable());
-
-						previous.setText(String
-								.format(getBundle().getString("PREVIOUS2")
-										+ " (%d/%d)", prevSong, maxSong));
-						previous2ToolTip.setText(previous.getText());
-
-						next.setText(String.format(
-								getBundle().getString("NEXT2") + " (%d/%d)",
-								nextSong, maxSong));
-						next2ToolTip.setText(next.getText());
-					}
-
-				});
+		);
 		pauseContinue.selectedProperty().bindBidirectional(
 				pauseContinue2.selectedProperty());
 		driveOn.selectedProperty().bindBidirectional(
@@ -279,14 +221,9 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 		final Duration oneFrameAmt = Duration.millis(1000);
 		final KeyFrame oneFrame = new KeyFrame(oneFrameAmt,
-				new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent evt) {
-						setStatusLine();
-					}
-				});
-		timer = TimelineBuilder.create().cycleCount(Animation.INDEFINITE)
-				.keyFrames(oneFrame).build();
+				(evt) -> setStatusLine());
+		timer = new Timeline(oneFrame);
+		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
 	}
 
@@ -307,26 +244,59 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		}
 	}
 
+	private void updatePlayerButtons(State state) {
+		pauseContinue.setSelected(false);
+		normalSpeed.setSelected(true);
+
+		SidTune tune = getPlayer().getTune();
+		final int startSong, maxSong;
+		final int currentSong;
+		if (tune != null) {
+			startSong = tune.getInfo().startSong;
+			maxSong = tune.getInfo().songs;
+			currentSong = tune.getInfo().currentSong;
+		} else {
+			maxSong = 0;
+			currentSong = 0;
+			startSong = 0;
+		}
+
+		int prevSong = currentSong - 1;
+		if (prevSong < 1) {
+			prevSong = maxSong;
+		}
+		int nextSong = currentSong + 1;
+		if (nextSong > maxSong) {
+			nextSong = 1;
+		}
+
+		previous.setDisable(state == State.EXIT || maxSong == 0
+				|| currentSong == startSong);
+		previous2.setDisable(previous.isDisable());
+		next.setDisable(state == State.EXIT || maxSong == 0
+				|| nextSong == startSong);
+		next2.setDisable(next.isDisable());
+
+		previous.setText(String
+				.format(getBundle().getString("PREVIOUS2")
+						+ " (%d/%d)", prevSong, maxSong));
+		previous2ToolTip.setText(previous.getText());
+
+		next.setText(String.format(
+				getBundle().getString("NEXT2") + " (%d/%d)",
+				nextSong, maxSong));
+		next2ToolTip.setText(next.getText());
+	}
+
 	@Override
 	protected void doCloseWindow() {
 		timer.stop();
 	}
 
 	private ChangeListener<Number> progressUpdateListener() {
-		return new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, final Number arg2) {
-				Platform.runLater(new Runnable() {
-
-					@Override
-					public void run() {
-						progress.progressProperty().set(
-								arg2.doubleValue() / 100.);
-					}
-				});
-			}
-		};
+		return (observable, oldValue, newValue) -> Platform
+				.runLater(() -> progress.progressProperty().set(
+						newValue.doubleValue() / 100.));
 	}
 
 	@FXML

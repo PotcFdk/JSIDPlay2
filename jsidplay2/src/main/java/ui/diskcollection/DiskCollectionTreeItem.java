@@ -5,26 +5,12 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Locale;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
 public class DiskCollectionTreeItem extends TreeItem<File> {
-
-	private static final Comparator<File> FILE_COMPARATOR_IGNORE_CASE = new Comparator<File>() {
-		@Override
-		public int compare(File a, File b) {
-			Integer aw = a.isFile() ? 1 : 0;
-			Integer bw = b.isFile() ? 1 : 0;
-			if (aw.equals(bw)) {
-				return a.getName().toLowerCase(Locale.ENGLISH)
-						.compareTo(b.getName().toLowerCase(Locale.ENGLISH));
-			}
-			return aw.compareTo(bw);
-		}
-	};
 
 	private File rootFile;
 	private FileFilter fileFilter;
@@ -57,7 +43,20 @@ public class DiskCollectionTreeItem extends TreeItem<File> {
 		Collection<DiskCollectionTreeItem> children = new ArrayList<DiskCollectionTreeItem>();
 		File[] listFiles = getValue().listFiles(fileFilter);
 		if (listFiles != null) {
-			Arrays.sort(listFiles, FILE_COMPARATOR_IGNORE_CASE);
+			Arrays.sort(
+					listFiles,
+					(a, b) -> {
+						Integer aw = a.isFile() ? 1 : 0;
+						Integer bw = b.isFile() ? 1 : 0;
+						if (aw.equals(bw)) {
+							return a.getName()
+									.toLowerCase(Locale.ENGLISH)
+									.compareTo(
+											b.getName().toLowerCase(
+													Locale.ENGLISH));
+						}
+						return aw.compareTo(bw);
+					});
 			for (File file : listFiles) {
 				children.add(new DiskCollectionTreeItem(file, rootFile,
 						fileFilter));

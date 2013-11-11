@@ -3,12 +3,9 @@ package ui.stilview;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -40,14 +37,9 @@ public class STILView extends C64Stage {
 	public void initialize(URL location, ResourceBundle resources) {
 		splitPane.setDividerPosition(0, 0.3);
 		tree.getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<TreeItem<Object>>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends TreeItem<Object>> observable,
-							TreeItem<Object> oldValue, TreeItem<Object> newValue) {
-						if (newValue != null) {
-							setTextAreaFromTree(newValue.getValue());
-						}
+				.addListener((observable, oldValue, newValue) -> {
+					if (newValue != null) {
+						setTextAreaFromTree(newValue.getValue());
 					}
 				});
 		tree.setRoot(new STILEntryTreeItem(entry));

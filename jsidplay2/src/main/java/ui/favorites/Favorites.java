@@ -8,10 +8,8 @@ import java.util.Random;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -55,50 +53,30 @@ public class Favorites extends C64Tab {
 	protected Random random = new Random();
 
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL url, ResourceBundle bundle) {
 		if (getPlayer() == null) {
 			return;
 		}
-		final int seconds = getConfig().getSidplay2().getPlayLength();
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+				.getSidplay2();
+
+		final int seconds = sidPlay2Section.getPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
 				seconds % 60));
-		((SidPlay2Section) getConfig().getSidplay2()).playLengthProperty()
-				.addListener(new ChangeListener<Number>() {
+		sidPlay2Section.playLengthProperty().addListener(
+				(observable, oldValue, newValue) -> defaultTime.setText(String
+						.format("%02d:%02d", newValue.intValue() / 60,
+								newValue.intValue() % 60)));
 
-					@Override
-					public void changed(ObservableValue<? extends Number> arg0,
-							Number arg1, Number arg2) {
-						int seconds = arg2.intValue();
-						defaultTime.setText(String.format("%02d:%02d",
-								seconds / 60, seconds % 60));
-					}
-
-				});
-
-		enableSldb.setSelected(getConfig().getSidplay2().isEnableDatabase());
-		((SidPlay2Section) getConfig().getSidplay2()).enableDatabaseProperty()
-				.addListener(new ChangeListener<Boolean>() {
-
-					@Override
-					public void changed(
-							ObservableValue<? extends Boolean> arg0,
-							Boolean arg1, Boolean arg2) {
-						enableSldb.setSelected(arg2);
-					}
-				});
-		singleSong.setSelected(getConfig().getSidplay2().isSingle());
-		((SidPlay2Section) getConfig().getSidplay2()).singleProperty()
-				.addListener(new ChangeListener<Boolean>() {
-
-					@Override
-					public void changed(
-							ObservableValue<? extends Boolean> arg0,
-							Boolean arg1, Boolean arg2) {
-						singleSong.setSelected(arg2);
-					}
-				});
-		PlaybackType pt = ((SidPlay2Section) getConfig().getSidplay2())
-				.getPlaybackType();
+		enableSldb.setSelected(sidPlay2Section.isEnableDatabase());
+		sidPlay2Section.enableDatabaseProperty().addListener(
+				(observable, oldValue, newValue) -> enableSldb
+						.setSelected(newValue));
+		singleSong.setSelected(sidPlay2Section.isSingle());
+		sidPlay2Section.singleProperty().addListener(
+				(observable, oldValue, newValue) -> singleSong
+						.setSelected(newValue));
+		PlaybackType pt = sidPlay2Section.getPlaybackType();
 		switch (pt) {
 		case PLAYBACK_OFF:
 			off.setSelected(true);
@@ -116,8 +94,7 @@ public class Favorites extends C64Tab {
 			off.setSelected(true);
 			break;
 		}
-		RepeatType rt = ((SidPlay2Section) getConfig().getSidplay2())
-				.getRepeatType();
+		RepeatType rt = sidPlay2Section.getRepeatType();
 		switch (rt) {
 		case REPEAT_OFF:
 			repeatOff.setSelected(true);
@@ -130,56 +107,43 @@ public class Favorites extends C64Tab {
 			break;
 		}
 		getConsolePlayer().stateProperty().addListener(
-				new ChangeListener<State>() {
-					@Override
-					public void changed(ObservableValue<? extends State> arg0,
-							State arg1, State arg2) {
-						if (arg2 == State.EXIT) {
-							Platform.runLater(new Runnable() {
-								public void run() {
-									playNextTune();
-								}
-							});
-						}
+				(observable, oldValue, newValue) -> {
+					if (newValue == State.EXIT) {
+						Platform.runLater(() -> playNextTune());
 					}
 				});
 		List<? extends FavoritesSection> favorites = getConfig().getFavorites();
 		for (FavoritesSection favorite : favorites) {
 			addTab(favorite);
 		}
-		getConfig().getObservableFavorites().addListener(
-				new ListChangeListener<FavoritesSection>() {
-
-					@Override
-					public void onChanged(
-							Change<? extends FavoritesSection> change) {
-						while (change.next()) {
-							if (change.wasPermutated() || change.wasUpdated()) {
-								continue;
-							}
-							if (change.wasAdded()) {
-								List<? extends FavoritesSection> addedSubList = change
-										.getAddedSubList();
-								for (FavoritesSection favoritesSection : addedSubList) {
-									addTab(favoritesSection);
+		getConfig()
+				.getObservableFavorites()
+				.addListener(
+						(ListChangeListener.Change<? extends FavoritesSection> change) -> {
+							while (change.next()) {
+								if (change.wasPermutated()
+										|| change.wasUpdated()) {
+									continue;
+								}
+								if (change.wasAdded()) {
+									List<? extends FavoritesSection> addedSubList = change
+											.getAddedSubList();
+									for (FavoritesSection favoritesSection : addedSubList) {
+										addTab(favoritesSection);
+									}
 								}
 							}
-						}
-					}
-				});
-		favoritesList.getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<Tab>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends Tab> observable,
-							Tab oldValue, Tab newValue) {
-						// Save last selected tab
+						});
+		favoritesList
+				.getSelectionModel()
+				.selectedItemProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					// Save last selected tab
 						if (newValue != null) {
 							((Configuration) getConfig())
 									.setCurrentFavorite(newValue.getText());
 						}
-					}
-				});
+					});
 		// Initially select last selected tab
 		String currentFavorite = ((Configuration) getConfig())
 				.getCurrentFavorite();

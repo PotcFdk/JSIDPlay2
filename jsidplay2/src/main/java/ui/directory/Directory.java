@@ -10,13 +10,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import libsidplay.components.DirEntry;
 import ui.common.C64AnchorPane;
 
@@ -61,23 +58,16 @@ public class Directory extends C64AnchorPane {
 			return;
 		}
 		directory.setItems(directoryEntries);
-		directory.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent event) {
-				DirectoryItem selectedItem = directory.getSelectionModel()
-						.getSelectedItem();
-				if (event.getCode() == KeyCode.ENTER && selectedItem != null) {
-					autoStartProgram();
-				}
+		directory.setOnKeyPressed((event) -> {
+			DirectoryItem selectedItem = directory.getSelectionModel()
+					.getSelectedItem();
+			if (event.getCode() == KeyCode.ENTER && selectedItem != null) {
+				autoStartProgram();
 			}
 		});
-		directory.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
-					autoStartProgram();
-				}
+		directory.setOnMousePressed((event) -> {
+			if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+				autoStartProgram();
 			}
 		});
 	}

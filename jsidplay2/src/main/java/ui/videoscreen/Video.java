@@ -11,23 +11,16 @@ import java.util.ResourceBundle;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.animation.TimelineBuilder;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
@@ -87,104 +80,84 @@ public class Video extends C64Tab implements PropertyChangeListener {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
-		getConsolePlayer().stateProperty().addListener(new ChangeListener<State>() {
-			@Override
-			public void changed(ObservableValue<? extends State> arg0,
-					State arg1, State arg2) {
-				if (arg2 == State.RUNNING) {
+		getConsolePlayer().stateProperty().addListener((arg0, arg1, arg2) -> {
+			if (arg2 == State.RUNNING) {
+				Platform.runLater(() -> {
 					setupVideoScreen();
 					setupScreenBasedOnChipType(getPlayer().getTune());
-				}
+				});
 			}
 		});
 		for (Slider slider : Arrays.asList(brightness, contrast, gamma,
 				saturation, phaseShift, offset, tint, blur, bleed)) {
 			slider.getStyleClass().add("knobStyle");
 		}
-		brightness.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
-				float brightnessNewValue = round((newValue.floatValue() - 100.f) / 100.f);
-				brightnessValue.textProperty().set(
-						String.valueOf(brightnessNewValue));
-				getVIC().getPalette().setBrightness(brightnessNewValue);
-			}
+		brightness.valueProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							float brightnessNewValue = round((newValue
+									.floatValue() - 100.f) / 100.f);
+							brightnessValue.textProperty().set(
+									String.valueOf(brightnessNewValue));
+							getVIC().getPalette().setBrightness(
+									brightnessNewValue);
+						});
+		contrast.valueProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							float contrastNewValue = round(newValue
+									.floatValue() / 100.f);
+							contrastValue.textProperty().set(
+									String.valueOf(contrastNewValue));
+							getVIC().getPalette().setContrast(contrastNewValue);
+						});
+		gamma.valueProperty().addListener((observable, oldValue, newValue) -> {
+			float gammaNewValue = round((newValue.floatValue() + 180) / 100.f);
+			gammaValue.textProperty().set(String.valueOf(gammaNewValue));
+			getVIC().getPalette().setGamma(gammaNewValue);
 		});
-		contrast.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
-				float contrastNewValue = round(newValue.floatValue() / 100.f);
-				contrastValue.textProperty().set(
-						String.valueOf(contrastNewValue));
-				getVIC().getPalette().setContrast(contrastNewValue);
-			}
+		saturation.valueProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							float saturationNewValue = round(newValue
+									.floatValue() / 100.f);
+							saturationValue.textProperty().set(
+									String.valueOf(saturationNewValue));
+							getVIC().getPalette().setSaturation(
+									saturationNewValue);
+						});
+		phaseShift.valueProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							float phaseShiftNewValue = round((newValue
+									.floatValue() - 45.f) / 100.f);
+							phaseShiftValue.textProperty().set(
+									String.valueOf(phaseShiftNewValue));
+							getVIC().getPalette().setPhaseShift(
+									phaseShiftNewValue);
+						});
+		offset.valueProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							float offsetNewValue = round((newValue.floatValue() + 10.f) / 100.f);
+							offsetValue.textProperty().set(
+									String.valueOf(offsetNewValue));
+							getVIC().getPalette().setOffset(offsetNewValue);
+						});
+		tint.valueProperty().addListener((observable, oldValue, newValue) -> {
+			float tintNewValue = round((newValue.floatValue() - 10.f) / 100.f);
+			tintValue.textProperty().set(String.valueOf(tintNewValue));
+			getVIC().getPalette().setTint(tintNewValue);
 		});
-		gamma.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
-				float gammaNewValue = round((newValue.floatValue() + 180) / 100.f);
-				gammaValue.textProperty().set(String.valueOf(gammaNewValue));
-				getVIC().getPalette().setGamma(gammaNewValue);
-			}
+		blur.valueProperty().addListener((observable, oldValue, newValue) -> {
+			float blurNewValue = round((newValue.floatValue() + 50.f) / 100.f);
+			blurValue.textProperty().set(String.valueOf(blurNewValue));
+			getVIC().getPalette().setLuminanceC(blurNewValue);
 		});
-		saturation.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
-				float saturationNewValue = round(newValue.floatValue() / 100.f);
-				saturationValue.textProperty().set(
-						String.valueOf(saturationNewValue));
-				getVIC().getPalette().setSaturation(saturationNewValue);
-			}
-		});
-		phaseShift.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
-				float phaseShiftNewValue = round((newValue.floatValue() - 45.f) / 100.f);
-				phaseShiftValue.textProperty().set(
-						String.valueOf(phaseShiftNewValue));
-				getVIC().getPalette().setPhaseShift(phaseShiftNewValue);
-			}
-		});
-		offset.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
-				float offsetNewValue = round((newValue.floatValue() + 10.f) / 100.f);
-				offsetValue.textProperty().set(String.valueOf(offsetNewValue));
-				getVIC().getPalette().setOffset(offsetNewValue);
-			}
-		});
-		tint.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
-				float tintNewValue = round((newValue.floatValue() - 10.f) / 100.f);
-				tintValue.textProperty().set(String.valueOf(tintNewValue));
-				getVIC().getPalette().setTint(tintNewValue);
-			}
-		});
-		blur.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
-				float blurNewValue = round((newValue.floatValue() + 50.f) / 100.f);
-				blurValue.textProperty().set(String.valueOf(blurNewValue));
-				getVIC().getPalette().setLuminanceC(blurNewValue);
-			}
-		});
-		bleed.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
-				float bleedNewValue = round(newValue.floatValue() / 10.f);
-				bleedValue.textProperty().set(String.valueOf(bleedNewValue));
-				getVIC().getPalette().setDotCreep(bleedNewValue);
-			}
+		bleed.valueProperty().addListener((observable, oldValue, newValue) -> {
+			float bleedNewValue = round(newValue.floatValue() / 10.f);
+			bleedValue.textProperty().set(String.valueOf(bleedNewValue));
+			getVIC().getPalette().setDotCreep(bleedNewValue);
 		});
 		brightness.setValue(getVIC().getPalette().getBrightness() * 100 + 100.);
 		contrast.setValue(getVIC().getPalette().getContrast() * 100);
@@ -204,19 +177,14 @@ public class Video extends C64Tab implements PropertyChangeListener {
 
 		isVisible = true;
 		getTabPane().getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<Tab>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends Tab> observable,
-							Tab oldValue, Tab newValue) {
-						// performance optimizations!
+				.addListener((observable, oldValue, newValue) -> {
+					// performance optimizations!
 						if (Video.this.equals(newValue)) {
 							isVisible = true;
 						} else {
 							isVisible = false;
 						}
-					}
-				});
+					});
 	}
 
 	@FXML
@@ -312,31 +280,28 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	 * Connect Keyboard with C64 keyboard.
 	 */
 	private void setupKeyboard() {
-		monitor.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				KeyTableEntry keyTableEntry = getConfig().getKeyTabEntry(
-						event.getCode().getName());
+		monitor.setOnKeyPressed((event) -> {
+			KeyTableEntry keyTableEntry = getConfig().getKeyTabEntry(
+					event.getCode().getName());
 
-				if (event.isShiftDown()) {
-					pressC64Key(KeyTableEntry.SHIFT_LEFT);
-				}
-				if (event.isControlDown()) {
-					pressC64Key(KeyTableEntry.COMMODORE);
-				}
+			if (event.isShiftDown()) {
+				pressC64Key(KeyTableEntry.SHIFT_LEFT);
+			}
+			if (event.isControlDown()) {
+				pressC64Key(KeyTableEntry.COMMODORE);
+			}
 
-				if (keyTableEntry != null) {
-					pressC64Key(keyTableEntry);
-					releaseC64Key(keyTableEntry);
-					event.consume();
-				}
+			if (keyTableEntry != null) {
+				pressC64Key(keyTableEntry);
+				releaseC64Key(keyTableEntry);
+				event.consume();
+			}
 
-				if (event.isShiftDown()) {
-					releaseC64Key(KeyTableEntry.SHIFT_LEFT);
-				}
-				if (event.isControlDown()) {
-					releaseC64Key(KeyTableEntry.COMMODORE);
-				}
+			if (event.isShiftDown()) {
+				releaseC64Key(KeyTableEntry.SHIFT_LEFT);
+			}
+			if (event.isControlDown()) {
+				releaseC64Key(KeyTableEntry.COMMODORE);
 			}
 		});
 	}
@@ -347,81 +312,79 @@ public class Video extends C64Tab implements PropertyChangeListener {
 
 	private void updatePeripheralImages() {
 		final Duration duration = Duration.millis(1000);
-		final KeyFrame oneFrame = new KeyFrame(duration,
-				new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent evt) {
-						DatasetteStatus datasetteStatus = getPlayer()
-								.getDatasette().getStatus();
-						tapeName.setText(getPlayer().getDatasette()
-								.getTapeImage().getName());
-						switch (datasetteStatus) {
-						case OFF:
-							datasetteOff.setVisible(true);
-							for (ImageView imageView : Arrays.asList(
-									datasetteLoad, datasetteSave)) {
-								imageView.setVisible(false);
-							}
-							break;
-						case LOAD:
-							datasetteLoad.setVisible(true);
-							for (ImageView imageView : Arrays.asList(
-									datasetteOff, datasetteSave)) {
-								imageView.setVisible(false);
-							}
-							break;
-						case SAVE:
-							datasetteSave.setVisible(true);
-							for (ImageView imageView : Arrays.asList(
-									datasetteOff, datasetteLoad)) {
-								imageView.setVisible(false);
-							}
-							break;
-
-						default:
-							throw new RuntimeException(
-									"Unexpected datasette status: "
-											+ datasetteStatus);
+		final KeyFrame oneFrame = new KeyFrame(
+				duration,
+				(evt) -> {
+					DatasetteStatus datasetteStatus = getPlayer()
+							.getDatasette().getStatus();
+					tapeName.setText(getPlayer().getDatasette().getTapeImage()
+							.getName());
+					switch (datasetteStatus) {
+					case OFF:
+						datasetteOff.setVisible(true);
+						for (ImageView imageView : Arrays.asList(datasetteLoad,
+								datasetteSave)) {
+							imageView.setVisible(false);
 						}
-						final C1541 firstC1541 = getPlayer().getFloppies()[0];
-						diskName.setText(firstC1541.getDiskName());
-						FloppyStatus floppyStatus = firstC1541.getStatus();
-						switch (floppyStatus) {
-						case OFF:
-							c1541Off.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
-							c1541IIOff.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
-							for (ImageView imageView : Arrays.asList(c1541On,
-									c1541IIOn, c1541Load, c1541IILoad)) {
-								imageView.setVisible(false);
-							}
-							break;
-						case ON:
-							c1541On.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
-							c1541IIOn.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
-							for (ImageView imageView : Arrays.asList(c1541Off,
-									c1541IIOff, c1541Load, c1541IILoad)) {
-								imageView.setVisible(false);
-							}
-							break;
-						case LOAD:
-							c1541Load.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
-							c1541IILoad.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
-							for (ImageView imageView : Arrays.asList(c1541Off,
-									c1541IIOff, c1541On, c1541IIOn)) {
-								imageView.setVisible(false);
-							}
-							break;
-
-						default:
-							throw new RuntimeException(
-									"Unexpected floppy status: " + floppyStatus);
+						break;
+					case LOAD:
+						datasetteLoad.setVisible(true);
+						for (ImageView imageView : Arrays.asList(datasetteOff,
+								datasetteSave)) {
+							imageView.setVisible(false);
 						}
-						cartridgeName.setText(getC64().getPla().getCartridge()
-								.toString());
+						break;
+					case SAVE:
+						datasetteSave.setVisible(true);
+						for (ImageView imageView : Arrays.asList(datasetteOff,
+								datasetteLoad)) {
+							imageView.setVisible(false);
+						}
+						break;
+
+					default:
+						throw new RuntimeException(
+								"Unexpected datasette status: "
+										+ datasetteStatus);
 					}
+					final C1541 firstC1541 = getPlayer().getFloppies()[0];
+					diskName.setText(firstC1541.getDiskName());
+					FloppyStatus floppyStatus = firstC1541.getStatus();
+					switch (floppyStatus) {
+					case OFF:
+						c1541Off.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
+						c1541IIOff.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
+						for (ImageView imageView : Arrays.asList(c1541On,
+								c1541IIOn, c1541Load, c1541IILoad)) {
+							imageView.setVisible(false);
+						}
+						break;
+					case ON:
+						c1541On.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
+						c1541IIOn.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
+						for (ImageView imageView : Arrays.asList(c1541Off,
+								c1541IIOff, c1541Load, c1541IILoad)) {
+							imageView.setVisible(false);
+						}
+						break;
+					case LOAD:
+						c1541Load.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
+						c1541IILoad.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
+						for (ImageView imageView : Arrays.asList(c1541Off,
+								c1541IIOff, c1541On, c1541IIOn)) {
+							imageView.setVisible(false);
+						}
+						break;
+
+					default:
+						throw new RuntimeException("Unexpected floppy status: "
+								+ floppyStatus);
+					}
+					cartridgeName.setText(getC64().getPla().getCartridge()
+							.toString());
 				});
-		timer = TimelineBuilder.create().cycleCount(Animation.INDEFINITE)
-				.keyFrames(oneFrame).build();
+		timer = new Timeline(oneFrame);
+		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
 	}
 
@@ -509,43 +472,37 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (isVisible && VIC.PROP_PIXELS.equals(evt.getPropertyName())) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					double screenScale = ((SidPlay2Section) getConfig()
-							.getSidplay2()).getVideoScaling();
-					screen.setWidth(screenScale * getVIC().getBorderWidth());
-					screen.setHeight(screenScale * getVIC().getBorderHeight());
-					vicImage.getPixelWriter().setPixels(0, 0,
-							getVIC().getBorderWidth(),
-							getVIC().getBorderHeight(),
-							PixelFormat.getIntArgbInstance(),
-							getVIC().getPixels(), 0, getVIC().getBorderWidth());
-					screen.getGraphicsContext2D()
-							.drawImage(
-									vicImage,
-									0,
-									0,
-									getVIC().getBorderWidth(),
-									getVIC().getBorderHeight(),
-									MONITOR_MARGIN_LEFT * screenScale,
-									MONITOR_MARGIN_TOP * screenScale,
-									screen.getWidth()
-											- (MONITOR_MARGIN_LEFT + MONITOR_MARGIN_RIGHT)
-											* screenScale,
-									screen.getHeight()
-											- (MONITOR_MARGIN_TOP + MONITOR_MARGIN_BOTTOM)
-											* screenScale);
-					for (ImageView imageView : Arrays.asList(monitorBorder,
-							breadbox, pc64)) {
-						imageView.setScaleX(screen.getWidth()
-								/ imageView.getImage().getWidth());
-						imageView.setScaleY(screen.getHeight()
-								/ imageView.getImage().getHeight());
-					}
-
+			Platform.runLater(() -> {
+				double screenScale = ((SidPlay2Section) getConfig()
+						.getSidplay2()).getVideoScaling();
+				screen.setWidth(screenScale * getVIC().getBorderWidth());
+				screen.setHeight(screenScale * getVIC().getBorderHeight());
+				vicImage.getPixelWriter().setPixels(0, 0,
+						getVIC().getBorderWidth(), getVIC().getBorderHeight(),
+						PixelFormat.getIntArgbInstance(), getVIC().getPixels(),
+						0, getVIC().getBorderWidth());
+				screen.getGraphicsContext2D().drawImage(
+						vicImage,
+						0,
+						0,
+						getVIC().getBorderWidth(),
+						getVIC().getBorderHeight(),
+						MONITOR_MARGIN_LEFT * screenScale,
+						MONITOR_MARGIN_TOP * screenScale,
+						screen.getWidth()
+								- (MONITOR_MARGIN_LEFT + MONITOR_MARGIN_RIGHT)
+								* screenScale,
+						screen.getHeight()
+								- (MONITOR_MARGIN_TOP + MONITOR_MARGIN_BOTTOM)
+								* screenScale);
+				for (ImageView imageView : Arrays.asList(monitorBorder,
+						breadbox, pc64)) {
+					imageView.setScaleX(screen.getWidth()
+							/ imageView.getImage().getWidth());
+					imageView.setScaleY(screen.getHeight()
+							/ imageView.getImage().getHeight());
 				}
+
 			});
 		}
 	}

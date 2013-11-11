@@ -5,12 +5,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
 import ui.entities.config.Configuration;
@@ -31,7 +29,7 @@ public abstract class C64Stage extends Stage implements UIPart {
 	}
 
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL location, ResourceBundle resources) {
 	}
 
 	public void open() throws IOException {
@@ -45,13 +43,7 @@ public abstract class C64Stage extends Stage implements UIPart {
 		stage.setScene(scene);
 		stage.getIcons().add(new Image(getBundle().getString("ICON")));
 		stage.setTitle(getBundle().getString("TITLE"));
-		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-
-			@Override
-			public void handle(WindowEvent event) {
-				doCloseWindow();
-			}
-		});
+		stage.setOnCloseRequest((event) -> doCloseWindow());
 		if (wait) {
 			stage.showAndWait();
 		} else {

@@ -1,18 +1,16 @@
 package ui.common;
 
-import javafx.event.EventHandler;
+import javafx.scene.control.SkinBase;
 import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
-import com.sun.javafx.scene.control.skin.SkinBase;
-
+import com.sun.javafx.scene.control.behavior.SliderBehavior;
 /**
  * A simple knob skin for slider
  * 
  * @author Jasper Potts
  */
-public class KnobSkin extends SkinBase<Slider, KnobBehavior> {
+public class KnobSkin extends SkinBase<Slider> {
 
 	private double knobRadius;
 	private double minAngle = -140;
@@ -24,19 +22,14 @@ public class KnobSkin extends SkinBase<Slider, KnobBehavior> {
 	protected StackPane knobDot;
 
 	public KnobSkin(Slider slider) {
-		super(slider, new KnobBehavior(slider));
+		super(slider);
 		initialize();
-		requestLayout();
-		registerChangeListener(slider.minProperty(), "MIN");
-		registerChangeListener(slider.maxProperty(), "MAX");
-		registerChangeListener(slider.valueProperty(), "VALUE");
 	}
 
 	private void initialize() {
 		knob = new StackPane() {
 			@Override
 			protected void layoutChildren() {
-				// knobDot.autosize();
 				knobDot.setLayoutX((knob.getWidth() - knobDot.getWidth()) / 2);
 				knobDot.setLayoutY(5 + (knobDot.getHeight() / 2));
 			}
@@ -51,34 +44,29 @@ public class KnobSkin extends SkinBase<Slider, KnobBehavior> {
 		getChildren().setAll(knob, knobOverlay);
 		knob.getChildren().add(knobDot);
 
-		getSkinnable().setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent me) {
+		SliderBehavior behavior = new SliderBehavior(getSkinnable());
+		
+		getSkinnable().setOnKeyPressed((ke) -> getSkinnable().requestLayout());
+		getSkinnable().setOnKeyReleased((ke) -> getSkinnable().requestLayout());
+		getSkinnable().setOnMousePressed((me) -> {
 				double dragStart = mouseToValue(me.getX(), me.getY());
 				double zeroOneValue = (getSkinnable().getValue() - getSkinnable()
 						.getMin())
 						/ (getSkinnable().getMax() - getSkinnable().getMin());
 				dragOffset = zeroOneValue - dragStart;
-				getBehavior().knobPressed(me, dragStart);
+				behavior.thumbPressed(me, dragStart);
+				behavior.trackPress(me, dragStart);
 			}
-		});
-		getSkinnable().setOnMouseReleased(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent me) {
-				getBehavior().knobRelease(me,
-						mouseToValue(me.getX(), me.getY()));
-			}
-		});
-		getSkinnable().setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent me) {
-				getBehavior().knobDragged(me,
+		);
+		getSkinnable().setOnMouseReleased(
+				(me) -> behavior.thumbReleased(me));
+		getSkinnable().setOnMouseDragged(
+				(me) -> {behavior.thumbDragged(me,
 						mouseToValue(me.getX(), me.getY()) + dragOffset);
-			}
-		});
+		getSkinnable().requestLayout();});
 	}
 
-	protected double mouseToValue(double mouseX, double mouseY) {
+	private double mouseToValue(double mouseX, double mouseY) {
 		double cx = getSkinnable().getWidth() / 2;
 		double cy = getSkinnable().getHeight() / 2;
 		double mouseAngle = Math.toDegrees(Math.atan((mouseY - cy)
@@ -92,14 +80,8 @@ public class KnobSkin extends SkinBase<Slider, KnobBehavior> {
 		double value = 1 - ((topZeroAngle - minAngle) / (maxAngle - minAngle));
 		return value;
 	}
-
-	@Override
-	protected void handleControlPropertyChanged(String p) {
-		super.handleControlPropertyChanged(p);
-		requestLayout();
-	}
-
-	void rotateKnob() {
+	
+	private void rotateKnob() {
 		Slider s = getSkinnable();
 		double zeroOneValue = (s.getValue() - s.getMin())
 				/ (s.getMax() - s.getMin());
@@ -108,14 +90,9 @@ public class KnobSkin extends SkinBase<Slider, KnobBehavior> {
 	}
 
 	@Override
-	protected void layoutChildren() {
+	protected void layoutChildren(double x, double y, double w,
+			double h) {
 		// calculate the available space
-		double x = getInsets().getLeft();
-		double y = getInsets().getTop();
-		double w = getWidth()
-				- (getInsets().getLeft() + getInsets().getRight());
-		double h = getHeight()
-				- (getInsets().getTop() + getInsets().getBottom());
 		double cx = x + (w / 2);
 		double cy = y + (h / 2);
 
@@ -133,36 +110,39 @@ public class KnobSkin extends SkinBase<Slider, KnobBehavior> {
 	}
 
 	@Override
-	protected double computeMinWidth(double height) {
-		return (getInsets().getLeft() + knob.minWidth(-1) + getInsets()
-				.getRight());
+	protected double computeMinWidth(double height, double topInset,
+			double rightInset, double bottomInset, double leftInset) {
+		return (leftInset + knob.minWidth(-1) + rightInset);
 	}
 
 	@Override
-	protected double computeMinHeight(double width) {
-		return (getInsets().getTop() + knob.minHeight(-1) + getInsets()
-				.getBottom());
+	protected double computeMinHeight(double width, double topInset,
+			double rightInset, double bottomInset, double leftInset) {
+		return (topInset + knob.minHeight(-1) + bottomInset);
 	}
 
 	@Override
-	protected double computePrefWidth(double height) {
-		return (getInsets().getLeft() + knob.prefWidth(-1) + getInsets()
-				.getRight());
+	protected double computePrefWidth(double height, double topInset,
+			double rightInset, double bottomInset, double leftInset) {
+		return (leftInset + knob.prefWidth(-1) + rightInset);
 	}
 
 	@Override
-	protected double computePrefHeight(double width) {
-		return (getInsets().getTop() + knob.prefHeight(-1) + getInsets()
-				.getBottom());
+	protected double computePrefHeight(double width, double topInset,
+			double rightInset, double bottomInset, double leftInset) {
+		return (topInset + knob.prefHeight(-1) + bottomInset);
 	}
 
 	@Override
-	protected double computeMaxWidth(double height) {
+	protected double computeMaxWidth(double height, double topInset,
+			double rightInset, double bottomInset, double leftInset) {
 		return Double.MAX_VALUE;
 	}
 
 	@Override
-	protected double computeMaxHeight(double width) {
+	protected double computeMaxHeight(double width, double topInset,
+			double rightInset, double bottomInset, double leftInset) {
 		return Double.MAX_VALUE;
 	}
+	
 }

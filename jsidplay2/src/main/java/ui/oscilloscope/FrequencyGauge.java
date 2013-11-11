@@ -18,7 +18,7 @@ public final class FrequencyGauge extends SIDGauge {
 	}
 
 	@Override
-	protected TitledPane getBorder() {
+	protected TitledPane getTitledPane() {
 		return border;
 	}
 

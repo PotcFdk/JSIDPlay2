@@ -26,11 +26,7 @@ public class SidReg extends C64Stage {
 		public void changed(ObservableValue<? extends State> arg0, State arg1,
 				State arg2) {
 			if (arg2 == State.EXIT) {
-				Platform.runLater(new Runnable() {
-					public void run() {
-						recordSidWrites(false);
-					}
-				});
+				Platform.runLater(() -> recordSidWrites(false));
 			}
 		}
 	}
@@ -184,25 +180,17 @@ public class SidReg extends C64Stage {
 
 				@Override
 				public void sidWrite(final SidRegWrite output) {
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-							allSidRegWrites.add(output);
-							if (allSidRegWrites.size() % REFRESH_RATE == 0) {
-								doUpdateFilter();
-							}
+					Platform.runLater(() -> {
+						allSidRegWrites.add(output);
+						if (allSidRegWrites.size() % REFRESH_RATE == 0) {
+							doUpdateFilter();
 						}
 					});
 				}
 
 				@Override
 				public void clear() {
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-							allSidRegWrites.clear();
-						}
-					});
+					Platform.runLater(() -> allSidRegWrites.clear());
 				}
 
 			};
@@ -215,5 +203,4 @@ public class SidReg extends C64Stage {
 			getPlayer().getC64().setSidWriteListener(1, sidRegExtension);
 		}
 	}
-
 }

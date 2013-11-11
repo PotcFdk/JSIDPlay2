@@ -1,6 +1,5 @@
 package ui.gamebase.createdb.db;
 
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,11 +14,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
 import org.hibernate.Session;
-import org.hibernate.jdbc.ReturningWork;
-import org.hibernate.jdbc.Work;
 
 import ui.entities.PersistenceProperties;
-
 
 public abstract class Database {
 	private EntityManager em;
@@ -123,136 +119,119 @@ public abstract class Database {
 
 	public ResultSet executeQuery(final String sql) throws SQLException {
 		Session session = em.unwrap(Session.class);
-		return session.doReturningWork(new ReturningWork<ResultSet>() {
-			@Override
-			public ResultSet execute(Connection connection) throws SQLException {
-				Statement stmt = connection.createStatement();
-				return stmt.executeQuery(sql);
-			}
+		return session.doReturningWork((connection) -> {
+			Statement stmt = connection.createStatement();
+			return stmt.executeQuery(sql);
 		});
 	}
 
 	public void execute(final String sql) throws SQLException {
 		Session session = em.unwrap(Session.class);
-		session.doWork(new Work() {
-			@Override
-			public void execute(Connection connection) throws SQLException {
-				Statement stmt = connection.createStatement();
-				stmt.executeUpdate(sql);
-			}
+		session.doWork((connection) -> {
+			Statement stmt = connection.createStatement();
+			stmt.executeUpdate(sql);
 		});
 	}
 
 	public Collection<String> listTables() throws SQLException {
 		Session session = em.unwrap(Session.class);
-		return session.doReturningWork(new ReturningWork<Collection<String>>() {
-			@Override
-			public Collection<String> execute(Connection connection)
-					throws SQLException {
-				Collection<String> result = new ArrayList<String>();
-				DatabaseMetaData dbm = connection.getMetaData();
-				ResultSet rs = dbm.getTables(null, null, "%",
-						new String[] { "TABLE" });
-				while (rs.next()) {
-					String str = rs.getString("TABLE_NAME");
-					result.add(str);
-				}
-				return result;
+		return session.doReturningWork((connection) -> {
+			Collection<String> result = new ArrayList<String>();
+			DatabaseMetaData dbm = connection.getMetaData();
+			ResultSet rs = dbm.getTables(null, null, "%",
+					new String[] { "TABLE" });
+			while (rs.next()) {
+				String str = rs.getString("TABLE_NAME");
+				result.add(str);
 			}
+			return result;
 		});
 	}
 
 	public Collection<String> listColumns(final String table)
 			throws SQLException {
 		Session session = em.unwrap(Session.class);
-		return session.doReturningWork(new ReturningWork<Collection<String>>() {
-			@Override
-			public Collection<String> execute(Connection connection)
-					throws SQLException {
-				Collection<String> result = new ArrayList<String>();
-				DatabaseMetaData dbm = connection.getMetaData();
-				ResultSet rs = dbm.getColumns(null, null, table, null);
-				while (rs.next()) {
-					result.add(rs.getString("COLUMN_NAME"));
-				}
-				return result;
+		return session.doReturningWork((connection) -> {
+			Collection<String> result = new ArrayList<String>();
+			DatabaseMetaData dbm = connection.getMetaData();
+			ResultSet rs = dbm.getColumns(null, null, table, null);
+			while (rs.next()) {
+				result.add(rs.getString("COLUMN_NAME"));
 			}
+			return result;
 		});
 	}
 
 	public void copy(final Database source, final String table) {
 		Session session = em.unwrap(Session.class);
-		session.doWork(new Work() {
-			@Override
-			public void execute(Connection connection) {
-				try {
-					StringBuffer selectSQL = new StringBuffer();
-					StringBuffer insertSQL = new StringBuffer();
-					StringBuffer values = new StringBuffer();
+		session.doWork((connection) -> {
+			try {
+				StringBuffer selectSQL = new StringBuffer();
+				StringBuffer insertSQL = new StringBuffer();
+				StringBuffer values = new StringBuffer();
 
-					Collection<String> columns = source.listColumns(table);
+				Collection<String> columns = source.listColumns(table);
 
-					selectSQL.append("SELECT ");
-					insertSQL.append("INSERT INTO ");
-					insertSQL.append(table);
-					insertSQL.append("(");
+				selectSQL.append("SELECT ");
+				insertSQL.append("INSERT INTO ");
+				insertSQL.append(table);
+				insertSQL.append("(");
 
-					boolean first = true;
-					for (String column : columns) {
-						if (!first) {
-							selectSQL.append(",");
-							insertSQL.append(",");
-							values.append(",");
-						} else
-							first = false;
+				boolean first = true;
+				for (String column : columns) {
+					if (!first) {
+						selectSQL.append(",");
+						insertSQL.append(",");
+						values.append(",");
+					} else
+						first = false;
 
-						selectSQL.append(column);
-						insertSQL.append(column);
-						values.append("?");
-					}
-					selectSQL.append(" FROM ");
-					selectSQL.append(table);
+					selectSQL.append(column);
+					insertSQL.append(column);
+					values.append("?");
+				}
+				selectSQL.append(" FROM ");
+				selectSQL.append(table);
 
-					insertSQL.append(") VALUES (");
-					insertSQL.append(values);
-					insertSQL.append(")");
+				insertSQL.append(") VALUES (");
+				insertSQL.append(values);
+				insertSQL.append(")");
 
-					PreparedStatement statement = connection
-							.prepareStatement(insertSQL.toString());
-					ResultSet rs = source.executeQuery(selectSQL.toString());
+				PreparedStatement statement = connection
+						.prepareStatement(insertSQL.toString());
+				ResultSet rs = source.executeQuery(selectSQL.toString());
 
-					int rows = 0;
+				int rows = 0;
 
-					while (rs.next()) {
-						rows++;
-						for (int i = 1; i <= columns.size(); i++) {
-							int type = rs.getMetaData().getColumnType(i);
-							if (type == Types.INTEGER) {
-								try {
-									statement.setInt(i, rs.getInt(i));
-								} catch (Exception e2) {
-									System.err.println(e2.getMessage());
-								}
-							} else {
-								try {
-									statement.setString(i, rs.getString(i));
-								} catch (Exception e) {
-									// System.err.println(e.getMessage());
-								}
+				while (rs.next()) {
+					rows++;
+					for (int i = 1; i <= columns.size(); i++) {
+						int type = rs.getMetaData().getColumnType(i);
+						if (type == Types.INTEGER) {
+							try {
+								statement.setInt(i, rs.getInt(i));
+							} catch (Exception e2) {
+								System.err.println(e2.getMessage());
+							}
+						} else {
+							try {
+								statement.setString(i, rs.getString(i));
+							} catch (Exception e) {
+								// System.err.println(e.getMessage());
 							}
 						}
-						statement.executeUpdate();
-						if (statement.getWarnings() != null) {
-							System.err.println(statement.getWarnings());
-						}
 					}
-
-					System.out.println("Copied " + rows + " rows.");
-				} catch (SQLException e) {
-					e.printStackTrace();
+					statement.executeUpdate();
+					if (statement.getWarnings() != null) {
+						System.err.println(statement.getWarnings());
+					}
 				}
 
+				System.out.println("Copied " + rows + " rows.");
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
+
 		});
 	}
 

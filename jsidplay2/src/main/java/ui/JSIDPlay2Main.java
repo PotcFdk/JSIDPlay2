@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -13,7 +11,6 @@ import javafx.stage.Window;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-import libsidplay.Player;
 import libsidplay.components.c1541.C1541;
 import sidplay.ConsolePlayer;
 import sidplay.ini.intf.ISidPlay2Section;
@@ -37,7 +34,7 @@ public class JSIDPlay2Main extends Application {
 	/**
 	 * Console player
 	 */
-	protected ConsolePlayer cp;
+	private ConsolePlayer cp;
 	/**
 	 * Configuration
 	 */
@@ -46,12 +43,12 @@ public class JSIDPlay2Main extends Application {
 	/**
 	 * Database support.
 	 */
-	protected EntityManager em;
+	private EntityManager em;
 
 	/**
 	 * Config service class.
 	 */
-	protected ConfigService configService;
+	private ConfigService configService;
 
 	private JSidPlay2 jSidplay2;
 
@@ -69,15 +66,15 @@ public class JSIDPlay2Main extends Application {
 		jSidplay2 = new JSidPlay2();
 		jSidplay2.setConfigService(configService);
 		jSidplay2.setConsolePlayer(cp);
-		jSidplay2.setPlayer(getPlayer());
-		jSidplay2.setConfig(getConfig());
+		jSidplay2.setPlayer(cp.getPlayer());
+		jSidplay2.setConfig(config);
 		try {
 			jSidplay2.open(primaryStage);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		// Set default position and size
-		final ISidPlay2Section section = getConfig().getSidplay2();
+		final ISidPlay2Section section = config.getSidplay2();
 		Scene scene = primaryStage.getScene();
 		if (scene != null) {
 			Window window = scene.getWindow();
@@ -85,44 +82,18 @@ public class JSIDPlay2Main extends Application {
 			window.setY(section.getFrameY());
 			window.setWidth(section.getFrameWidth());
 			window.setHeight(section.getFrameHeight());
-			window.widthProperty().addListener(new ChangeListener<Number>() {
-
-				@Override
-				public void changed(
-						ObservableValue<? extends Number> observable,
-						Number oldValue, Number newValue) {
-					getConfig().getSidplay2()
-							.setFrameWidth(newValue.intValue());
-				}
-			});
-			window.heightProperty().addListener(new ChangeListener<Number>() {
-
-				@Override
-				public void changed(
-						ObservableValue<? extends Number> observable,
-						Number oldValue, Number newValue) {
-					getConfig().getSidplay2().setFrameHeight(
-							newValue.intValue());
-				}
-			});
-			window.xProperty().addListener(new ChangeListener<Number>() {
-
-				@Override
-				public void changed(
-						ObservableValue<? extends Number> observable,
-						Number oldValue, Number newValue) {
-					getConfig().getSidplay2().setFrameX(newValue.intValue());
-				}
-			});
-			window.yProperty().addListener(new ChangeListener<Number>() {
-
-				@Override
-				public void changed(
-						ObservableValue<? extends Number> observable,
-						Number oldValue, Number newValue) {
-					getConfig().getSidplay2().setFrameY(newValue.intValue());
-				}
-			});
+			window.widthProperty().addListener(
+					(observable, oldValue, newValue) -> section
+							.setFrameWidth(newValue.intValue()));
+			window.heightProperty().addListener(
+					(observable, oldValue, newValue) -> section
+							.setFrameHeight(newValue.intValue()));
+			window.xProperty().addListener(
+					(observable, oldValue, newValue) -> section
+							.setFrameX(newValue.intValue()));
+			window.yProperty().addListener(
+					(observable, oldValue, newValue) -> section
+							.setFrameY(newValue.intValue()));
 			cp.startC64();
 		}
 	}
@@ -131,7 +102,7 @@ public class JSIDPlay2Main extends Application {
 	public void stop() {
 		cp.stopC64();
 		// Eject medias: Make it possible to auto-delete temporary files
-		for (final C1541 floppy : getPlayer().getFloppies()) {
+		for (final C1541 floppy : cp.getPlayer().getFloppies()) {
 			try {
 				floppy.getDiskController().ejectDisk();
 			} catch (IOException e) {
@@ -139,13 +110,12 @@ public class JSIDPlay2Main extends Application {
 			}
 		}
 		try {
-			getPlayer().getDatasette().ejectTape();
+			cp.getPlayer().getDatasette().ejectTape();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		configService.write(getConfig());
+		configService.write(config);
 		em.close();
-		em.getEntityManagerFactory().close();
 	}
 
 	//
@@ -226,24 +196,6 @@ public class JSIDPlay2Main extends Application {
 	 */
 	public static void main(final String[] args) {
 		launch(args);
-	}
-
-	/**
-	 * Get saved INI file configuration.
-	 * 
-	 * @return INI file configuration
-	 */
-	public Configuration getConfig() {
-		return config;
-	}
-
-	/**
-	 * Get player (C64 and peripherals).
-	 * 
-	 * @return the player
-	 */
-	public Player getPlayer() {
-		return cp.getPlayer();
 	}
 
 }

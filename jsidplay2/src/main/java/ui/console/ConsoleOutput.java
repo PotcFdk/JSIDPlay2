@@ -29,14 +29,7 @@ public class ConsoleOutput extends C64VBox implements Initializable {
 					final int len) throws IOException {
 				final String str = new String(b, off, len);
 				original.write(b, off, len);
-				Platform.runLater(new Runnable() {
-
-					@Override
-					public void run() {
-						append(str);
-					}
-
-				});
+				Platform.runLater(() -> append(str));
 			}
 
 			@Override

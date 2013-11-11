@@ -18,13 +18,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
@@ -33,14 +30,12 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.WindowEvent;
 
 import javax.persistence.metamodel.SingularAttribute;
 
@@ -88,8 +83,9 @@ public class FavoritesTab extends C64Tab {
 	private File file;
 	protected Favorites favorites;
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL url, ResourceBundle bundle) {
 		if (getPlayer() == null) {
 			// wait for second initialization, where properties have been set!
 			return;
@@ -97,61 +93,47 @@ public class FavoritesTab extends C64Tab {
 		favoritesTable.setItems(filteredFavorites);
 		favoritesTable.getSelectionModel().setSelectionMode(
 				SelectionMode.MULTIPLE);
-		favoritesTable.getColumns().addListener(
-				new ListChangeListener<TableColumn<HVSCEntry, ?>>() {
-					@Override
-					public void onChanged(
-							Change<? extends TableColumn<HVSCEntry, ?>> c) {
-						moveColumn();
+		favoritesTable
+				.getColumns()
+				.addListener(
+						(Change<? extends TableColumn<HVSCEntry, ?>> c) -> moveColumn());
+		favoritesTable
+				.getSelectionModel()
+				.selectedIndexProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (newValue != null && newValue.intValue() != -1) {
+						// Save last selected row
+						favoritesSection.setSelectedRowFrom(newValue.intValue());
+						favoritesSection.setSelectedRowTo(newValue.intValue());
+					}
+					moveUp.setDisable(newValue == null
+							|| newValue.intValue() == 0
+							|| favoritesTable.getSortOrder().size() > 0);
+					moveDown.setDisable(newValue == null
+							|| newValue.intValue() == favoritesSection
+									.getFavorites().size() - 1
+							|| favoritesTable.getSortOrder().size() > 0);
+				});
+		favoritesTable
+				.setOnMousePressed((event) -> {
+					final HVSCEntry hvscEntry = favoritesTable
+							.getSelectionModel().getSelectedItem();
+					if (hvscEntry != null
+							&& getFile(hvscEntry.getPath()) != null
+							&& event.isPrimaryButtonDown()
+							&& event.getClickCount() > 1) {
+						playTune(hvscEntry);
 					}
 				});
-		favoritesTable.getSelectionModel().selectedIndexProperty()
-				.addListener(new ChangeListener<Number>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends Number> observable,
-							Number oldValue, Number newValue) {
-						if (newValue != null && newValue.intValue() != -1) {
-							// Save last selected row
-							favoritesSection.setSelectedRowFrom(newValue
-									.intValue());
-							favoritesSection.setSelectedRowTo(newValue
-									.intValue());
-						}
-						moveUp.setDisable(newValue == null
-								|| newValue.intValue() == 0
-								|| favoritesTable.getSortOrder().size() > 0);
-						moveDown.setDisable(newValue == null
-								|| newValue.intValue() == favoritesSection
-										.getFavorites().size() - 1
-								|| favoritesTable.getSortOrder().size() > 0);
-					}
-				});
-		favoritesTable.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				final HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
-						.getSelectedItem();
-				if (hvscEntry != null && getFile(hvscEntry.getPath()) != null
-						&& event.isPrimaryButtonDown()
-						&& event.getClickCount() > 1) {
-					playTune(hvscEntry);
-				}
+		favoritesTable.setOnKeyPressed((event) -> {
+			final HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
+					.getSelectedItem();
+			if (event.getCode() == KeyCode.ENTER && hvscEntry != null
+					&& getFile(hvscEntry.getPath()) != null) {
+				playTune(hvscEntry);
 			}
-		});
-		favoritesTable.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent event) {
-				final HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
-						.getSelectedItem();
-				if (event.getCode() == KeyCode.ENTER && hvscEntry != null
-						&& getFile(hvscEntry.getPath()) != null) {
-					playTune(hvscEntry);
-				}
-				if (event.getCode() == KeyCode.DELETE) {
-					removeSelectedFavorites();
-				}
+			if (event.getCode() == KeyCode.DELETE) {
+				removeSelectedFavorites();
 			}
 		});
 		// Initially select last selected row
@@ -160,12 +142,8 @@ public class FavoritesTab extends C64Tab {
 			favoritesTable.getSelectionModel().select(from);
 		}
 
-		filterField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				filter(filterField.getText());
-			}
-
+		filterField.setOnKeyReleased((event) -> {
+			filter(filterField.getText());
 		});
 
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
@@ -182,68 +160,55 @@ public class FavoritesTab extends C64Tab {
 				e.printStackTrace();
 			}
 		}
-		contextMenuHeader.setOnShown(new EventHandler<WindowEvent>() {
-
-			@SuppressWarnings("rawtypes")
-			@Override
-			public void handle(WindowEvent event) {
-				TableColumn tableColumn = getContextMenuColumn();
-				// never remove the first column
+		contextMenuHeader.setOnShown((event) -> {
+			TableColumnBase tableColumn = getContextMenuColumn();
+			// never remove the first column
 				removeColumn.setDisable(favoritesTable.getColumns().indexOf(
 						tableColumn) == 0);
-			}
-		});
+			});
 
-		contextMenu.setOnShown(new EventHandler<WindowEvent>() {
+		contextMenu
+				.setOnShown((event) -> {
+					HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
+							.getSelectedItem();
 
-			@Override
-			public void handle(WindowEvent event) {
-				HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
-						.getSelectedItem();
-
-				STIL stil = getConsolePlayer().getStil();
-				showStil.setDisable(hvscEntry == null
-						|| stil == null
-						|| stil.getSTILEntry(getFile(hvscEntry.getPath())) == null);
-				List<Tab> tabs = favorites.getFavoriteTabs();
-				moveToTab.getItems().clear();
-				copyToTab.getItems().clear();
-				for (final Tab tab : tabs) {
-					if (tab.equals(FavoritesTab.this)) {
-						continue;
+					STIL stil = getConsolePlayer().getStil();
+					showStil.setDisable(hvscEntry == null
+							|| stil == null
+							|| stil.getSTILEntry(getFile(hvscEntry.getPath())) == null);
+					List<Tab> tabs = favorites.getFavoriteTabs();
+					moveToTab.getItems().clear();
+					copyToTab.getItems().clear();
+					for (final Tab tab : tabs) {
+						if (tab.equals(FavoritesTab.this)) {
+							continue;
+						}
+						final String name = tab.getText();
+						MenuItem moveToTabItem = new MenuItem(name);
+						moveToTabItem
+								.setOnAction((event2) -> {
+									ObservableList<HVSCEntry> selectedItems = favoritesTable
+											.getSelectionModel()
+											.getSelectedItems();
+									copyToTab(selectedItems, (FavoritesTab) tab);
+									removeFavorites(selectedItems);
+								});
+						moveToTab.getItems().add(moveToTabItem);
+						MenuItem copyToTabItem = new MenuItem(name);
+						copyToTabItem
+								.setOnAction((event2) -> {
+									ObservableList<HVSCEntry> selectedItems = favoritesTable
+											.getSelectionModel()
+											.getSelectedItems();
+									copyToTab(selectedItems, (FavoritesTab) tab);
+								});
+						copyToTab.getItems().add(copyToTabItem);
 					}
-					final String name = tab.getText();
-					MenuItem moveToTabItem = new MenuItem(name);
-					moveToTabItem.setOnAction(new EventHandler<ActionEvent>() {
+					moveToTab.setDisable(moveToTab.getItems().size() == 0);
+					copyToTab.setDisable(copyToTab.getItems().size() == 0);
+				});
 
-						@Override
-						public void handle(ActionEvent arg0) {
-							ObservableList<HVSCEntry> selectedItems = favoritesTable
-									.getSelectionModel().getSelectedItems();
-							copyToTab(selectedItems, (FavoritesTab) tab);
-							removeFavorites(selectedItems);
-						}
-					});
-					moveToTab.getItems().add(moveToTabItem);
-					MenuItem copyToTabItem = new MenuItem(name);
-					copyToTabItem.setOnAction(new EventHandler<ActionEvent>() {
-
-						@Override
-						public void handle(ActionEvent arg0) {
-							ObservableList<HVSCEntry> selectedItems = favoritesTable
-									.getSelectionModel().getSelectedItems();
-							copyToTab(selectedItems, (FavoritesTab) tab);
-						}
-					});
-					copyToTab.getItems().add(copyToTabItem);
-				}
-				moveToTab.setDisable(moveToTab.getItems().size() == 0);
-				copyToTab.setDisable(copyToTab.getItems().size() == 0);
-			}
-		});
-
-		for (@SuppressWarnings("rawtypes")
-		TableColumn column : favoritesTable.getColumns()) {
+		for (TableColumn column : favoritesTable.getColumns()) {
 			FavoritesCellFactory cellFactory = (FavoritesCellFactory) column
 					.getCellFactory();
 			cellFactory.setFavoritesTab(this);
@@ -271,7 +236,7 @@ public class FavoritesTab extends C64Tab {
 	@SuppressWarnings({ "rawtypes" })
 	@FXML
 	private void removeColumn() {
-		TableColumn tableColumn = getContextMenuColumn();
+		TableColumnBase tableColumn = getContextMenuColumn();
 		FavoriteColumn favoriteColumn = (FavoriteColumn) tableColumn
 				.getUserData();
 		favoritesTable.getColumns().remove(tableColumn);
@@ -381,12 +346,8 @@ public class FavoritesTab extends C64Tab {
 		Iterator<TableColumn<HVSCEntry, ?>> columnsIt = favoritesTable
 				.getColumns().iterator();
 		TableColumn<HVSCEntry, ?> pathColumn = columnsIt.next();
-		pathColumn.widthProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				favoritesSection.setWidth(arg2.doubleValue());
-			}
+		pathColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
+			favoritesSection.setWidth(newValue.doubleValue());
 		});
 		Double width = favoritesSection.getWidth();
 		if (width != null) {
@@ -399,24 +360,18 @@ public class FavoritesTab extends C64Tab {
 				column.setPrefWidth(width.doubleValue());
 			}
 		}
-		favoritesSection.getObservableFavorites().addListener(
-				new ListChangeListener<HVSCEntry>() {
-
-					@Override
-					public void onChanged(Change<? extends HVSCEntry> change) {
-						while (change.next()) {
-							if (change.wasPermutated() || change.wasUpdated()) {
-								continue;
-							}
-							if (change.wasAdded()) {
-								filteredFavorites.addAll(change
-										.getAddedSubList());
-							} else if (change.wasRemoved()) {
-								filteredFavorites.removeAll(change.getRemoved());
-							}
-						}
-					}
-				});
+		favoritesSection.getObservableFavorites().addListener((ListChangeListener.Change<? extends HVSCEntry>change) -> {
+			while (change.next()) {
+				if (change.wasPermutated() || change.wasUpdated()) {
+					continue;
+				}
+				if (change.wasAdded()) {
+					filteredFavorites.addAll(change.getAddedSubList());
+				} else if (change.wasRemoved()) {
+					filteredFavorites.removeAll(change.getRemoved());
+				}
+			}
+		});
 	}
 
 	void removeSelectedFavorites() {
@@ -581,8 +536,7 @@ public class FavoritesTab extends C64Tab {
 		return null;
 	}
 
-	@SuppressWarnings({ "rawtypes" })
-	TableColumn getContextMenuColumn() {
+	TableColumnBase getContextMenuColumn() {
 		TableColumnHeader columnHeader = (TableColumnHeader) contextMenuHeader
 				.getOwnerNode();
 		return columnHeader.getTableColumn();
@@ -592,15 +546,11 @@ public class FavoritesTab extends C64Tab {
 			final SingularAttribute<?, ?> attribute) {
 		MenuItem menuItem = new MenuItem();
 		menuItem.setText(attribute.getName());
-		menuItem.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent arg0) {
-				FavoriteColumn favoriteColumn = new FavoriteColumn();
-				favoriteColumn.setColumnProperty(attribute.getName());
-				favoritesSection.getColumns().add(favoriteColumn);
-				addColumn(attribute, attribute.getName(), favoriteColumn);
-			}
+		menuItem.setOnAction((event) -> {
+			FavoriteColumn favoriteColumn = new FavoriteColumn();
+			favoriteColumn.setColumnProperty(attribute.getName());
+			favoritesSection.getColumns().add(favoriteColumn);
+			addColumn(attribute, attribute.getName(), favoriteColumn);
 		});
 		addColumnMenu.getItems().add(menuItem);
 	}
@@ -620,12 +570,8 @@ public class FavoritesTab extends C64Tab {
 		favoritesCellFactory.setFavoritesTab(this);
 		tableColumn.setCellFactory(favoritesCellFactory);
 		tableColumn.setContextMenu(contextMenuHeader);
-		tableColumn.widthProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> arg0,
-					Number arg1, Number arg2) {
-				favoriteColumn.setWidth(arg2.doubleValue());
-			}
+		tableColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
+			favoriteColumn.setWidth(newValue.doubleValue());
 		});
 		favoritesTable.getColumns().add(tableColumn);
 	}

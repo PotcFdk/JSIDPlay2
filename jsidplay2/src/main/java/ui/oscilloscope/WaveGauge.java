@@ -25,7 +25,7 @@ public final class WaveGauge extends SIDGauge implements Initializable {
 	}
 
 	@Override
-	protected TitledPane getBorder() {
+	protected TitledPane getTitledPane() {
 		return border;
 	}
 

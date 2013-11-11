@@ -15,25 +15,17 @@ import java.util.zip.GZIPInputStream;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.WindowEvent;
-import javafx.util.Callback;
 import libsidutils.PathUtils;
 import sidplay.consoleplayer.MediaType;
 import ui.common.C64Tab;
@@ -101,109 +93,78 @@ public class DiskCollection extends C64Tab {
 			// wait for second initialization, where properties have been set!
 			return;
 		}
-		this.downloadUrl = type == DiscCollectionType.HVMEC ? getConfig()
-				.getOnline().getHvmecUrl()
-				: type == DiscCollectionType.DEMOS ? getConfig().getOnline()
-						.getDemosUrl()
-						: type == DiscCollectionType.MAGS ? getConfig()
-								.getOnline().getMagazinesUrl() : null;
+		String initialRoot;
+		switch (type) {
+		case HVMEC:
+			this.downloadUrl = getConfig().getOnline().getHvmecUrl();
+			initialRoot = getConfig().getSidplay2().getHVMEC();
+			break;
 
-		final String initialRoot = type == DiscCollectionType.HVMEC ? getConfig()
-				.getSidplay2().getHVMEC()
-				: type == DiscCollectionType.DEMOS ? getConfig().getSidplay2()
-						.getDemos()
-						: type == DiscCollectionType.MAGS ? getConfig()
-								.getSidplay2().getMags() : null;
+		case DEMOS:
+			this.downloadUrl = getConfig().getOnline().getDemosUrl();
+			initialRoot = getConfig().getSidplay2().getDemos();
+			break;
 
+		case MAGS:
+			this.downloadUrl = getConfig().getOnline().getMagazinesUrl();
+			initialRoot = getConfig().getSidplay2().getMags();
+			break;
+
+		default:
+			throw new RuntimeException("Illegal disk collection type : " + type);
+		}
 		if (initialRoot != null) {
 			setRootFile(new File(initialRoot));
 		}
-
 		directory.setConfig(getConfig());
 		directory.setPlayer(getPlayer());
 		directory.setConsolePlayer(getConsolePlayer());
 		directory.initialize(location, resources);
 
 		directory.getAutoStartFileProperty().addListener(
-				new ChangeListener<File>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends File> observable,
-							File oldValue, File newValue) {
-						attachAndRunDemo(fileBrowser.getSelectionModel()
-								.getSelectedItem().getValue(), newValue);
-					}
-				});
-		fileBrowser
-				.setCellFactory(new Callback<TreeView<File>, TreeCell<File>>() {
-					@Override
-					public TreeCell<File> call(TreeView<File> arg0) {
-						return new TreeCell<File>() {
-							@Override
-							protected void updateItem(File item, boolean empty) {
-								super.updateItem(item, empty);
-								if (!empty) {
-									setText(item.getName());
-									setGraphic(getTreeItem().getGraphic());
-								}
-							}
-						};
-					}
+				(observable, oldValue, newValue) -> {
+					attachAndRunDemo(fileBrowser.getSelectionModel()
+							.getSelectedItem().getValue(), newValue);
 				});
 		fileBrowser.getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<TreeItem<File>>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends TreeItem<File>> observable,
-							TreeItem<File> oldValue, TreeItem<File> newValue) {
-						if (newValue != null && newValue.getValue().isFile()) {
-							File file = newValue.getValue();
-							showScreenshot(file);
-							directory.loadPreview(extract(file));
-						}
+				.addListener((observable, oldValue, newValue) -> {
+					if (newValue != null && newValue.getValue().isFile()) {
+						File file = newValue.getValue();
+						showScreenshot(file);
+						directory.loadPreview(extract(file));
 					}
-
 				});
-		fileBrowser.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent event) {
-				TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-						.getSelectedItem();
-				if (event.getCode() == KeyCode.ENTER && selectedItem != null) {
-					if (selectedItem.getValue().isFile()) {
-						File file = selectedItem.getValue();
-						if (file.isFile()) {
-							attachAndRunDemo(selectedItem.getValue(), null);
-						}
+		fileBrowser.setOnKeyPressed((event) -> {
+			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
+					.getSelectedItem();
+			if (event.getCode() == KeyCode.ENTER && selectedItem != null) {
+				if (selectedItem.getValue().isFile()) {
+					File file = selectedItem.getValue();
+					if (file.isFile()) {
+						attachAndRunDemo(selectedItem.getValue(), null);
 					}
 				}
 			}
 		});
-		fileBrowser.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				final TreeItem<File> selectedItem = fileBrowser
-						.getSelectionModel().getSelectedItem();
-				if (selectedItem != null && selectedItem.getValue().isFile()
-						&& event.isPrimaryButtonDown()
-						&& event.getClickCount() > 1) {
-					attachAndRunDemo(fileBrowser.getSelectionModel()
-							.getSelectedItem().getValue(), null);
-				}
-			}
-		});
-		contextMenu.setOnShown(new EventHandler<WindowEvent>() {
-
-			@Override
-			public void handle(WindowEvent event) {
-				TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-						.getSelectedItem();
-				boolean disable = selectedItem == null
-						|| !selectedItem.getValue().isFile();
-				start.setDisable(disable);
-				attachDisk.setDisable(disable);
-			}
+		fileBrowser
+				.setOnMousePressed((event) -> {
+					final TreeItem<File> selectedItem = fileBrowser
+							.getSelectionModel().getSelectedItem();
+					if (selectedItem != null
+							&& selectedItem.getValue().isFile()
+							&& event.isPrimaryButtonDown()
+							&& event.getClickCount() > 1) {
+						attachAndRunDemo(fileBrowser.getSelectionModel()
+								.getSelectedItem().getValue(), null);
+					}
+				});
+		contextMenu.setOnShown((event) -> {
+			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
+					.getSelectedItem();
+			boolean disable = selectedItem == null
+					|| !selectedItem.getValue().isFile();
+			start.setDisable(disable);
+			attachDisk.setDisable(disable);
 		});
 	}
 
@@ -225,14 +186,10 @@ public class DiskCollection extends C64Tab {
 
 							@Override
 							public void downloaded(final File downloadedFile) {
-								Platform.runLater(new Runnable() {
-
-									@Override
-									public void run() {
-										autoConfiguration.setDisable(false);
-										if (downloadedFile != null) {
-											setRootFile(downloadedFile);
-										}
+								Platform.runLater(() -> {
+									autoConfiguration.setDisable(false);
+									if (downloadedFile != null) {
+										setRootFile(downloadedFile);
 									}
 								});
 							}
@@ -260,14 +217,13 @@ public class DiskCollection extends C64Tab {
 
 	@FXML
 	private void doBrowse() {
-		final DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+		DirectoryChooser fileDialog = new DirectoryChooser();
+		SidPlay2Section sidplay2 = (SidPlay2Section) getConfig().getSidplay2();
+		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene()
 				.getWindow());
 		if (directory != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					directory.getAbsolutePath());
+			sidplay2.setLastDirectory(directory.getAbsolutePath());
 			setRootFile(directory);
 		}
 	}

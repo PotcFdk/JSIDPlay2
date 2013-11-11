@@ -20,7 +20,7 @@ public class YesNoDialog extends C64Stage {
 	private BooleanProperty confirmed = new SimpleBooleanProperty();
 	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL location, ResourceBundle resources) {
 		setWait(true);
 		message.setText(text);
 	}

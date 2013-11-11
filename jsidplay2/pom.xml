@@ -33,13 +33,6 @@
 		</repository>
 	</repositories>
 	<dependencies>
-		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>javafx</artifactId>
-			<version>2.0</version>
-			<scope>system</scope>
-			<systemPath>${java.home}/lib/jfxrt.jar</systemPath>
-		</dependency>
 
 		<dependency>
 			<groupId>jsidplay2</groupId>
@@ -66,7 +59,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.2.2.Final</version>
+			<version>4.3.0.Beta4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
@@ -104,13 +97,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>2.3.1</version>
 				<configuration>
 					<debug>true</debug>
 					<encoding>ISO-8859-1</encoding>
 					<debuglevel>lines,vars,source</debuglevel>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -167,7 +160,6 @@
 									<mainClass>ui.JSIDPlay2Main</mainClass>
 								</manifest>
 								<manifestEntries>
-									<Class-Path>jfxrt.jar</Class-Path>
 									<url>${project.url}</url>
 								</manifestEntries>
 							</archive>
@@ -351,7 +343,6 @@
 							<classPath>
 								<mainClass>ui.JSIDPlay2Main</mainClass>
 								<jarLocation>.</jarLocation>
-								<preCp>jfxrt.jar</preCp>
 								<addDependencies>true</addDependencies>
 							</classPath>
 							<jre>
@@ -391,14 +382,14 @@
 								<addDependencies>true</addDependencies>
 							</classPath>
 							<jre>
-								<minVersion>1.7.0_00</minVersion>
+								<minVersion>1.8.0_00</minVersion>
 								<jdkPreference>preferJre</jdkPreference>
 							</jre>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!-- plugin>
 				<groupId>com.github.wvengen</groupId>
 				<artifactId>proguard-maven-plugin</artifactId>
 				<version>2.0.5</version>
@@ -446,7 +437,7 @@
 						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
-			</plugin>
+			</plugin -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>

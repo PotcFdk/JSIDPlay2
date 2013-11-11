@@ -56,16 +56,11 @@ public class Printer extends C64Tab implements IPaper {
 			final int paperY = y;
 			y++;
 			if (paperY < paper.getHeight()) {
-				Platform.runLater(new Runnable() {
-
-					@Override
-					public void run() {
-						GraphicsContext g = paper.getGraphicsContext2D();
-						for (int paperX = 0; paperX < toPrint.length; paperX++) {
-							g.setStroke(toPrint[paperX] ? Color.BLACK
-									: Color.WHITE);
-							g.strokeLine(paperX, paperY, paperX, paperY);
-						}
+				Platform.runLater(() -> {
+					GraphicsContext g = paper.getGraphicsContext2D();
+					for (int paperX = 0; paperX < toPrint.length; paperX++) {
+						g.setStroke(toPrint[paperX] ? Color.BLACK : Color.WHITE);
+						g.strokeLine(paperX, paperY, paperX, paperY);
 					}
 				});
 			}

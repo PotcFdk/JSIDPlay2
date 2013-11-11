@@ -5,7 +5,6 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Locale;
 
 import javafx.collections.ObservableList;
@@ -17,18 +16,6 @@ import ui.JSIDPlay2Main;
 import ui.filefilter.TuneFileFilter;
 
 public class MusicCollectionTreeItem extends TreeItem<File> {
-	private static final Comparator<File> FILE_COMPARATOR_IGNORE_CASE = new Comparator<File>() {
-		@Override
-		public int compare(File a, File b) {
-			Integer aw = a.isFile() ? 1 : 0;
-			Integer bw = b.isFile() ? 1 : 0;
-			if (aw.equals(bw)) {
-				return a.getName().toLowerCase(Locale.ENGLISH)
-						.compareTo(b.getName().toLowerCase(Locale.ENGLISH));
-			}
-			return aw.compareTo(bw);
-		}
-	};
 
 	private static final Image stilIcon = new Image(JSIDPlay2Main.class
 			.getResource("icons/stil.png").toString());
@@ -44,8 +31,8 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 	private MusicCollection musicCollection;
 	private STIL stil;
 
-	public MusicCollectionTreeItem(MusicCollection musicCollection,
-			STIL stil, File file) {
+	public MusicCollectionTreeItem(MusicCollection musicCollection, STIL stil,
+			File file) {
 		super(file);
 		this.musicCollection = musicCollection;
 		this.stil = stil;
@@ -76,7 +63,20 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		Collection<MusicCollectionTreeItem> children = new ArrayList<MusicCollectionTreeItem>();
 		File[] listFiles = getValue().listFiles(fFileFilter);
 		if (listFiles != null) {
-			Arrays.sort(listFiles, FILE_COMPARATOR_IGNORE_CASE);
+			Arrays.sort(
+					listFiles,
+					(a, b) -> {
+						Integer aw = a.isFile() ? 1 : 0;
+						Integer bw = b.isFile() ? 1 : 0;
+						if (aw.equals(bw)) {
+							return a.getName()
+									.toLowerCase(Locale.ENGLISH)
+									.compareTo(
+											b.getName().toLowerCase(
+													Locale.ENGLISH));
+						}
+						return aw.compareTo(bw);
+					});
 			for (File file : listFiles) {
 				MusicCollectionTreeItem childItem = new MusicCollectionTreeItem(
 						musicCollection, stil, file);

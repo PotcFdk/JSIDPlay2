@@ -6,11 +6,8 @@ import java.util.ResourceBundle;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.animation.TimelineBuilder;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -113,24 +110,20 @@ public class JoystickSettings extends C64Stage {
 
 		// periodically update joystick test tables
 		final Duration oneFrameAmt = Duration.millis(1000);
-		final KeyFrame oneFrame = new KeyFrame(oneFrameAmt,
-				new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent evt) {
-						if (activateJoy1.isSelected()) {
-							// XXX better way to update table?
-							testTable1.getColumns().get(1).setVisible(false);
-							testTable1.getColumns().get(1).setVisible(true);
-						}
-						if (activateJoy2.isSelected()) {
-							// XXX better way to update table?
-							testTable2.getColumns().get(1).setVisible(false);
-							testTable2.getColumns().get(1).setVisible(true);
-						}
-					}
-				});
-		timer = TimelineBuilder.create().cycleCount(Animation.INDEFINITE)
-				.keyFrames(oneFrame).build();
+		final KeyFrame oneFrame = new KeyFrame(oneFrameAmt, (evt) -> {
+			if (activateJoy1.isSelected()) {
+				// XXX better way to update table?
+				testTable1.getColumns().get(1).setVisible(false);
+				testTable1.getColumns().get(1).setVisible(true);
+			}
+			if (activateJoy2.isSelected()) {
+				// XXX better way to update table?
+				testTable2.getColumns().get(1).setVisible(false);
+				testTable2.getColumns().get(1).setVisible(true);
+			}
+		});
+		timer = new Timeline(oneFrame);
+		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
 	}
 
