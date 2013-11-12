@@ -2,6 +2,8 @@ package netsiddev;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -513,7 +515,17 @@ class ClientContext {
 							 * stuff like apps exiting or closing connection. Other stuff is important, though.
 							 */
 							if (! (e instanceof IOException)) {
-								NetworkSIDDevice.alert(e);
+								StringWriter sw = new StringWriter();
+								e.printStackTrace(new PrintWriter(sw));
+								
+								Alert alert = new Alert();
+								alert.setMessage(sw.toString());
+								alert.setWait(true);
+								try {
+									alert.open();
+								} catch (Exception e1) {
+								}
+								System.exit(0);
 							}
 							continue;
 						}

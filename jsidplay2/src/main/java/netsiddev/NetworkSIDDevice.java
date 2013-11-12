@@ -1,7 +1,6 @@
 package netsiddev;
 
 import java.awt.AWTException;
-import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -14,9 +13,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.Stage;
 import netsiddev.ini.JSIDDeviceConfig;
 import resid_builder.resid.ISIDDefs.ChipModel;
 import resid_builder.resid.SID;
@@ -250,17 +249,7 @@ import sidplay.ini.intf.IFilterSection;
  * @author Antti S. Lankila
  * @author Wilfred Bos
  */
-public class NetworkSIDDevice {
-	protected static final String TITLE = "About jsiddevice";
-	protected static final String CREDITS = "JSIDDevice v1.1 - SID Network Device\n\n" +
-										  "JSIDDevice uses parts of JSidplay2 which are\ncopyrighted to:\n\n" +
-										  "Network Interface:\n  Copyright © 2007-2011 Ken Händel,\n" +
-										  "  Antti S. Lankila and Wilfred Bos\n" +
-										  "Distortion Simulation and 6581/8580 emulation:\n  Copyright © 2005-2011 Antti S. Lankila\n" +
-										  "ReSID engine and 6581/8580 emulation:\n  Copyright © 1999-2011 Dag Lem\n\n" +
-										  "Source code can be found at:\n" +
-										  "  http://sourceforge.net/projects/jsidplay2/";
-
+public class NetworkSIDDevice extends Application {
 	private static JSIDDeviceConfig config;
 
 	/**
@@ -305,88 +294,121 @@ public class NetworkSIDDevice {
 		return sid;
 	}
 	
-	public static void alert(Exception e) {
-		StringWriter sw = new StringWriter();
-		e.printStackTrace(new PrintWriter(sw));
-		JOptionPane.showMessageDialog(null, sw, "Fatal Exception", JOptionPane.ERROR_MESSAGE);
-	}
-	
+	/**
+	 * Main method. Create an application frame and start emulation.
+	 * 
+	 * @param args
+	 *            command line arguments
+	 */
 	public static void main(final String[] args) {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-		}
-		
+		launch(args);
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
 		config = new JSIDDeviceConfig();
 		
-		final Thread mainThread = Thread.currentThread();
-		
-		Runnable runner = new Runnable() {
-			protected final AboutBox abox = new AboutBox(TITLE, CREDITS);
+		if (SystemTray.isSupported()) {
+			Platform.setImplicitExit(false);
+			createSystemTrayMenu();
+		} else {
+			System.err.println("Tray unavailable; ctrl-C to quit.");
+		}
+
+		new Thread(new Runnable() {
 			
-			protected final SettingsDialog settingsDialog = new SettingsDialog();
-			
+			@Override
 			public void run() {
-				if (SystemTray.isSupported()) {
-					createSystemTrayMenu();
-				} else {
-					System.err.println("Tray unavailable; ctrl-C to quit.");
-				}
-			}
-			
-			private void createSystemTrayMenu() {
-				final SystemTray tray = SystemTray.getSystemTray();
-				
-				PopupMenu popup = new PopupMenu();
-				URL url = getClass().getResource("jsidplay2.png");
-				Image image = Toolkit.getDefaultToolkit().getImage(url);
-
-				final TrayIcon trayIcon = new TrayIcon(image, "SID Network Device", popup);
-				trayIcon.setImageAutoSize(true);
-	
-				MenuItem aboutItem = new MenuItem("About");
-				aboutItem.addActionListener(new ActionListener() {
-					synchronized public void actionPerformed(ActionEvent e) {
-						abox.setVisible(true);
-					}
-				});
-				popup.add(aboutItem);
-				
-				MenuItem settingsItem = new MenuItem("Settings...");
-				settingsItem.addActionListener(new ActionListener() {
-					synchronized public void actionPerformed(ActionEvent e) {
-						settingsDialog.setVisible(true);
-					}
-				});
-				popup.add(settingsItem);
-				
-				popup.addSeparator();				
-				
-				MenuItem exitItem = new MenuItem("Exit");
-				exitItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						mainThread.interrupt();
-					}
-				});
-				popup.add(exitItem);
-
 				try {
-					tray.add(trayIcon);
-				} catch (AWTException e) {
-					throw new RuntimeException(e);
+					ClientContext.listenForClients(config);
+				}
+				catch (Exception e) {
+					 Platform.runLater(new Runnable() {
+						 
+		                    @Override
+		                    public void run() {
+		    					StringWriter sw = new StringWriter();
+		    					e.printStackTrace(new PrintWriter(sw));
+		    					
+		    					Alert alert = new Alert();
+		    					alert.setMessage(sw.toString());
+		    					alert.setWait(true);
+		    					try {
+		    						alert.open();
+		    					} catch (Exception e1) {
+		    					}
+		    					System.exit(0);
+		                    }
+		                });
 				}
 			}
-		};
-		EventQueue.invokeLater(runner);
+		}).start();
+		
+	}
+	
+	private void createSystemTrayMenu() {
+		final SystemTray tray = SystemTray.getSystemTray();
+		
+		PopupMenu popup = new PopupMenu();
+		URL url = getClass().getResource("jsidplay2.png");
+		Image image = Toolkit.getDefaultToolkit().getImage(url);
+
+		final TrayIcon trayIcon = new TrayIcon(image, "SID Network Device", popup);
+		trayIcon.setImageAutoSize(true);
+
+		MenuItem aboutItem = new MenuItem("About");
+		aboutItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				 Platform.runLater(new Runnable() {
+					 
+	                    @Override
+	                    public void run() {
+	                		About abox = new About();
+	                		try {
+	                			abox.open();
+	                		} catch (Exception e1) {
+	                		}
+	                    }
+	                });
+			}
+		});
+		popup.add(aboutItem);
+		
+		MenuItem settingsItem = new MenuItem("Settings...");
+		settingsItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				 Platform.runLater(new Runnable() {
+					 
+	                    @Override
+	                    public void run() {
+	                    	Settings settings = new Settings();
+	                		try {
+	                			settings.open();
+	                		} catch (Exception e1) {
+	                		}
+	                    }
+	                });
+			}
+		});
+		popup.add(settingsItem);
+		
+		popup.addSeparator();				
+		
+		MenuItem exitItem = new MenuItem("Exit");
+		exitItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		popup.add(exitItem);
 
 		try {
-			ClientContext.listenForClients(config);
+			tray.add(trayIcon);
+		} catch (AWTException e) {
+			throw new RuntimeException(e);
 		}
-		catch (Exception e) {
-			alert(e);
-		}
-		
-		/* Required to terminate Swing threads */
-		System.exit(0);
 	}
+
 }

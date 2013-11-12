@@ -1,6 +1,8 @@
 package netsiddev;
 
 public class InvalidCommandException extends Exception {
+	private static final long serialVersionUID = 8471931791732460074L;
+
 	private final int dataLen;
 
 	public InvalidCommandException(String string) {
