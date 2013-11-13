@@ -7,11 +7,9 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -250,6 +248,12 @@ import sidplay.ini.intf.IFilterSection;
  * @author Wilfred Bos
  */
 public class NetworkSIDDevice extends Application {
+	private static final String TRAY_ICON = "jsidplay2.png";
+	private static final String TRAY_TOOLTIP = "SID Network Device";
+	private static final String MENU_ABOUT = "About";
+	private static final String MENU_SETTINGS = "Settings...";
+	private static final String MENU_EXIT = "Exit";
+
 	private static JSIDDeviceConfig config;
 
 	/**
@@ -300,115 +304,96 @@ public class NetworkSIDDevice extends Application {
 	 * @param args
 	 *            command line arguments
 	 */
-	public static void main(final String[] args) {
+	public static final void main(final String[] args) {
 		launch(args);
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		config = new JSIDDeviceConfig();
-		
 		if (SystemTray.isSupported()) {
 			Platform.setImplicitExit(false);
+			config = new JSIDDeviceConfig();
 			createSystemTrayMenu();
-		} else {
-			System.err.println("Tray unavailable; ctrl-C to quit.");
-		}
-
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
+			new Thread(() -> {
 				try {
 					ClientContext.listenForClients(config);
+				} catch (Exception e) {
+					Platform.runLater(() -> {
+						StringWriter sw = new StringWriter();
+						e.printStackTrace(new PrintWriter(sw));
+						printErrorAndExit(sw.toString());
+					});
 				}
-				catch (Exception e) {
-					 Platform.runLater(new Runnable() {
-						 
-		                    @Override
-		                    public void run() {
-		    					StringWriter sw = new StringWriter();
-		    					e.printStackTrace(new PrintWriter(sw));
-		    					
-		    					Alert alert = new Alert();
-		    					alert.setMessage(sw.toString());
-		    					alert.setWait(true);
-		    					try {
-		    						alert.open();
-		    					} catch (Exception e1) {
-		    					}
-		    					System.exit(0);
-		                    }
-		                });
-				}
-			}
-		}).start();
-		
-	}
-	
-	private void createSystemTrayMenu() {
-		final SystemTray tray = SystemTray.getSystemTray();
-		
-		PopupMenu popup = new PopupMenu();
-		URL url = getClass().getResource("jsidplay2.png");
-		Image image = Toolkit.getDefaultToolkit().getImage(url);
+			}).start();
+		} else {
+			printErrorAndExit("Sorry, System Tray is not yet supported on your platform!");
+		}
 
-		final TrayIcon trayIcon = new TrayIcon(image, "SID Network Device", popup);
+	}
+
+	private void createSystemTrayMenu() {
+		// XXX unfortunately system tray is not directly supported by JavaFX!
+		final SystemTray tray = SystemTray.getSystemTray();
+
+		PopupMenu popup = new PopupMenu();
+		Image image = Toolkit.getDefaultToolkit().getImage(
+				getClass().getResource(TRAY_ICON));
+
+		final TrayIcon trayIcon = new TrayIcon(image, TRAY_TOOLTIP, popup);
 		trayIcon.setImageAutoSize(true);
 
-		MenuItem aboutItem = new MenuItem("About");
-		aboutItem.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				 Platform.runLater(new Runnable() {
-					 
-	                    @Override
-	                    public void run() {
-	                		About abox = new About();
-	                		try {
-	                			abox.open();
-	                		} catch (Exception e1) {
-	                		}
-	                    }
-	                });
-			}
+		MenuItem aboutItem = new MenuItem(MENU_ABOUT);
+		aboutItem.addActionListener((e) -> {
+			Platform.runLater(() -> {
+				About about = new About();
+				try {
+					about.open();
+				} catch (IOException e1) {
+				}
+			});
 		});
 		popup.add(aboutItem);
-		
-		MenuItem settingsItem = new MenuItem("Settings...");
-		settingsItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				 Platform.runLater(new Runnable() {
-					 
-	                    @Override
-	                    public void run() {
-	                    	Settings settings = new Settings();
-	                		try {
-	                			settings.open();
-	                		} catch (Exception e1) {
-	                		}
-	                    }
-	                });
-			}
+
+		MenuItem settingsItem = new MenuItem(MENU_SETTINGS);
+		settingsItem.addActionListener((e) -> {
+			Platform.runLater(() -> {
+				Settings settings = new Settings();
+				try {
+					settings.open();
+				} catch (IOException e1) {
+				}
+			});
 		});
 		popup.add(settingsItem);
-		
-		popup.addSeparator();				
-		
-		MenuItem exitItem = new MenuItem("Exit");
-		exitItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+
+		popup.addSeparator();
+
+		MenuItem exitItem = new MenuItem(MENU_EXIT);
+		exitItem.addActionListener((e) -> {
+			Platform.runLater(() -> {
 				System.exit(0);
-			}
+			});
 		});
 		popup.add(exitItem);
 
 		try {
 			tray.add(trayIcon);
 		} catch (AWTException e) {
-			throw new RuntimeException(e);
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			printErrorAndExit(sw.toString());
 		}
+	}
+
+	private void printErrorAndExit(String msg) {
+		Alert alert = new Alert();
+		alert.setMessage(msg);
+		alert.setWait(true);
+		try {
+			alert.open();
+		} catch (IOException e1) {
+		}
+		System.exit(0);
 	}
 
 }
