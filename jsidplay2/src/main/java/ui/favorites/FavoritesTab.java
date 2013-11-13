@@ -338,7 +338,7 @@ public class FavoritesTab extends C64Tab {
 				String columnProperty = favoriteColumn.getColumnProperty();
 				SingularAttribute<?, ?> attribute = getAttribute(columnProperty);
 				addColumn(attribute, columnProperty, favoriteColumn);
-			} catch (NoSuchFieldException | SecurityException
+			} catch (NoSuchFieldException
 					| IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
@@ -404,8 +404,7 @@ public class FavoritesTab extends C64Tab {
 							filteredFavorites.add(hvscEntry);
 							continue outer;
 						}
-					} catch (IllegalArgumentException | IllegalAccessException
-							| NoSuchFieldException | SecurityException e) {
+					} catch (IllegalAccessException | NoSuchFieldException e) {
 						e.printStackTrace();
 					}
 				}
