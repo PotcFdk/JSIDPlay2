@@ -2,10 +2,6 @@
 <?import javafx.scene.Scene?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.BorderPane?>
 <?scenebuilder-preview-i18n-resource Alert.properties?>
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<Group>
