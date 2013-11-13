@@ -49,7 +49,6 @@
 			<arg value="${jsiddevice_jar}" />
 		</exec>
 		<delete file="${jsiddevice_jar}.pack.gz" />
-		<copy file="${jsiddevice_jar}" todir="${result_dir}" />
 	</target>
 	
 	<!-- ================================= 

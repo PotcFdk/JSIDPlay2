@@ -211,7 +211,7 @@
 								<include>sidplay/ini/IniAudioSection.class</include>
 								<include>sidplay/ini/IniFilterSection.class</include>
 							</includes>
-							<outputDirectory>${project.build.directory}/archive-tmp</outputDirectory>
+							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
 							<finalName>jsiddevice-${project.version}</finalName>
 							<archive>
 								<manifest>
@@ -448,7 +448,7 @@
 								<ant antfile="${basedir}/online-content.xml">
 									<property name="compile_classpath" refid="maven.compile.classpath" />
 									<property name="test_src" location="${basedir}/src/test/resources" />
-									<property name="jsiddevice_jar" value="${project.build.directory}/archive-tmp/jsiddevice-${project.version}.jar" />
+									<property name="jsiddevice_jar" value="${project.build.directory}/deploy/jsiddevice-${project.version}.jar" />
 									<property name="gb64.mdbfile" value="${gb64.mdbfile}" />
 									<property name="hvsc.zip" value="${hvsc.zip}" />
 									<property name="zip7.home" value="${zip7.home}" />
