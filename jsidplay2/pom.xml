@@ -389,55 +389,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- plugin>
-				<groupId>com.github.wvengen</groupId>
-				<artifactId>proguard-maven-plugin</artifactId>
-				<version>2.0.5</version>
-				<executions>
-					<execution>
-						<id>shrink netsiddev</id>
-						<phase>package</phase>
-						<goals>
-							<goal>proguard</goal>
-						</goals>
-						<configuration>
-							<proguardVersion>4.9</proguardVersion>
-							<injar>archive-tmp/jsiddevice-${project.version}.jar</injar>
-							<outjar>deploy/jsiddevice-${project.version}.jar</outjar>
-							<libs>
-								<lib>${java.home}/lib/rt.jar</lib>
-							</libs>
-							<options>
-								<option>-overloadaggressively</option>
-								<option>-allowaccessmodification</option>
-								<option>
-									-keep public class netsiddev.NetworkSIDDevice {
-									public
-									static void main(java.lang.String[]);
-									}
-								</option>
-								<option>
-									-keepclassmembers enum * {
-									public static **[] values();
-									public static ** valueOf(java.lang.String);
-									}
-								</option>
-								<option>
-									-adaptresourcefilenames **.png
-								</option>
-							</options>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>net.sf.proguard</groupId>
-						<artifactId>proguard-base</artifactId>
-						<version>4.9</version>
-						<scope>runtime</scope>
-					</dependency>
-				</dependencies>
-			</plugin -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
@@ -497,6 +448,7 @@
 								<ant antfile="${basedir}/online-content.xml">
 									<property name="compile_classpath" refid="maven.compile.classpath" />
 									<property name="test_src" location="${basedir}/src/test/resources" />
+									<property name="jsiddevice_jar" value="${project.build.directory}/archive-tmp/jsiddevice-${project.version}.jar" />
 									<property name="gb64.mdbfile" value="${gb64.mdbfile}" />
 									<property name="hvsc.zip" value="${hvsc.zip}" />
 									<property name="zip7.home" value="${zip7.home}" />

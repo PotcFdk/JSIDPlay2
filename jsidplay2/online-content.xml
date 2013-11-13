@@ -28,9 +28,30 @@
 	<property name="gamebase_jar" value="gb64.jar" />
 	<property name="gamebase_crc" value="gb64.crc" />
 	<property name="gamebase_name" value="gb64" />
+	<!-- jsiddevice -->
+	<property name="jsiddevice_jar" value="jsiddevice.jar" />
 
-	<target name="all" depends="demos,gb64_import,hvmec_import,cgsc_import,hvsc_import"/>
+	<target name="all" depends="jsiddevice,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import"/>
 
+	<!-- ================================= 
+          target: jsiddevice
+          Description:
+          Shrink JAR filesize.
+         ================================= -->
+	<target name="jsiddevice">
+		<exec executable="${java.home}/bin/pack200" failonerror="true">
+			<arg value="--strip-debug" />
+			<arg value="${jsiddevice_jar}.pack.gz" />
+			<arg value="${jsiddevice_jar}" />
+		</exec>
+		<exec executable="${java.home}/bin/unpack200" failonerror="true">
+			<arg value="${jsiddevice_jar}.pack.gz" />
+			<arg value="${jsiddevice_jar}" />
+		</exec>
+		<delete file="${jsiddevice_jar}.pack.gz" />
+		<copy file="${jsiddevice_jar}" todir="${result_dir}" />
+	</target>
+	
 	<!-- ================================= 
           target: gb64_import
           Description:
