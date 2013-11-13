@@ -1318,7 +1318,7 @@ public class ConsolePlayer {
 	 */
 	public void stopC64() {
 		try {
-			while (fPlayerThread.isAlive()) {
+			while (fPlayerThread != null && fPlayerThread.isAlive()) {
 				quit();
 				fPlayerThread.join(3000);
 				// This is only the last option, if the player can not be
