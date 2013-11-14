@@ -726,6 +726,17 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	}
 
 	@FXML
+	private void insertGeoRAM2048() {
+		try {
+			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.GEORAM,
+					2048);
+			reset();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	@FXML
 	private void insertREU128() {
 		try {
 			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.REU, 128);
@@ -820,17 +831,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private void uninstallJiffyDos() {
 		try {
 			getPlayer().uninstallJiffyDOS();
-			reset();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	@FXML
-	private void insertGeoRAM2048() {
-		try {
-			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.GEORAM,
-					2048);
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
