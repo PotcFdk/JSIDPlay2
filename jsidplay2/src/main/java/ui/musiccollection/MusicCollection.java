@@ -768,47 +768,52 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	@Override
 	public void searchStart() {
-		startSearch.setDisable(true);
-		stopSearch.setDisable(false);
-		resetSearch.setDisable(true);
-		createSearchIndex.setDisable(true);
+		Platform.runLater(() -> {
+			startSearch.setDisable(true);
+			stopSearch.setDisable(false);
+			resetSearch.setDisable(true);
+			createSearchIndex.setDisable(true);
+		});
 	}
 
 	@Override
 	public void searchStop(final boolean canceled) {
-		startSearch.setDisable(false);
-		stopSearch.setDisable(true);
-		resetSearch.setDisable(false);
-		createSearchIndex.setDisable(false);
+		Platform.runLater(() -> {
+			startSearch.setDisable(false);
+			stopSearch.setDisable(true);
+			resetSearch.setDisable(false);
+			createSearchIndex.setDisable(false);
 
-		// remember search state
-		savedState = searchThread.getSearchState();
-		progress.set(0);
+			// remember search state
+			savedState = searchThread.getSearchState();
+			progress.set(0);
+		});
 	}
 
 	@Override
 	public void searchHit(final File current) {
-		if (searchThread instanceof SearchIndexerThread) {
-			// if search index is created, do not show the next result
-			progress.set((progress.get() + 1) % 100);
-			return;
-		}
-		switch (searchResult.getSelectionModel().getSelectedIndex()) {
-		case 0:
-			searchThread.setAborted(true);
-			searchStop(true);
+		Platform.runLater(() -> {
+			if (searchThread instanceof SearchIndexerThread) {
+				// if search index is created, do not show the next result
+				progress.set((progress.get() + 1) % 100);
+				return;
+			}
+			switch (searchResult.getSelectionModel().getSelectedIndex()) {
+			case 0:
+				searchThread.setAborted(true);
+				searchStop(true);
 
-			showNextHit(current);
-			break;
+				showNextHit(current);
+				break;
 
-		case 1:
-			addFavorite(favoritesToAddSearchResult, current);
-			break;
+			case 1:
+				addFavorite(favoritesToAddSearchResult, current);
+				break;
 
-		default:
-			break;
-		}
-
+			default:
+				break;
+			}
+		});
 	}
 
 	protected void addFavorite(FavoritesSection section, File file) {
@@ -823,40 +828,38 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	}
 
 	protected void showNextHit(final File matchFile) {
-		Platform.runLater(() -> {
-			TreeItem<File> rootItem = fileBrowser.getRoot();
-			if (rootItem == null
-					|| matchFile.getName().toLowerCase(Locale.ENGLISH)
-							.endsWith(".mp3")) {
-				return;
-			}
-			List<TreeItem<File>> pathSegs = new ArrayList<TreeItem<File>>();
-			pathSegs.add(rootItem);
+		TreeItem<File> rootItem = fileBrowser.getRoot();
+		if (rootItem == null
+				|| matchFile.getName().toLowerCase(Locale.ENGLISH)
+						.endsWith(".mp3")) {
+			return;
+		}
+		List<TreeItem<File>> pathSegs = new ArrayList<TreeItem<File>>();
+		pathSegs.add(rootItem);
 
-			File rootFile = rootItem.getValue();
-			String filePath = matchFile.getPath();
-			TreeItem<File> curItem = rootItem;
-			for (File file : PathUtils.getFiles(filePath, rootFile, fileFilter)) {
-				for (TreeItem<File> childItem : curItem.getChildren()) {
-					if (file.equals(childItem.getValue())) {
-						pathSegs.add(childItem);
-						curItem = childItem;
-						childItem.setExpanded(true);
-					}
+		File rootFile = rootItem.getValue();
+		String filePath = matchFile.getPath();
+		TreeItem<File> curItem = rootItem;
+		for (File file : PathUtils.getFiles(filePath, rootFile, fileFilter)) {
+			for (TreeItem<File> childItem : curItem.getChildren()) {
+				if (file.equals(childItem.getValue())) {
+					pathSegs.add(childItem);
+					curItem = childItem;
+					childItem.setExpanded(true);
 				}
 			}
-			if (pathSegs.size() > 0) {
-				currentlyPlayedTreeItems = pathSegs;
-				TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-						.getSelectedItem();
-				TreeItem<File> treeItem = pathSegs.get(pathSegs.size() - 1);
-				if (selectedItem == null
-						|| !treeItem.getValue().equals(selectedItem.getValue())) {
-					fileBrowser.getSelectionModel().select(treeItem);
-					fileBrowser.scrollTo(fileBrowser.getRow(treeItem));
-				}
+		}
+		if (pathSegs.size() > 0) {
+			currentlyPlayedTreeItems = pathSegs;
+			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
+					.getSelectedItem();
+			TreeItem<File> treeItem = pathSegs.get(pathSegs.size() - 1);
+			if (selectedItem == null
+					|| !treeItem.getValue().equals(selectedItem.getValue())) {
+				fileBrowser.getSelectionModel().select(treeItem);
+				fileBrowser.scrollTo(fileBrowser.getRow(treeItem));
 			}
-		});
+		}
 	}
 
 	protected void startSearch(boolean forceRecreate) {

@@ -463,6 +463,9 @@ public class FavoritesTab extends C64Tab {
 	}
 
 	void playNextRandom() {
+		if (favoritesSection.getFavorites().size() == 0) {
+			return;
+		}
 		HVSCEntry hvscEntry = favoritesSection.getFavorites().get(
 				Math.abs(new Random().nextInt(Integer.MAX_VALUE))
 						% favoritesSection.getFavorites().size());
