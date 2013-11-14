@@ -17,16 +17,10 @@ import sidplay.ini.IniConfig;
 @SuppressWarnings("serial")
 public class SIDPlay extends Applet {
 	private ConsolePlayer cp;
-	private String fUrlName;
 	private Output fOut = Output.OUT_SOUNDCARD;
 	private Emulation fEmu = Emulation.EMU_RESID;
 
 	private final HashMap<String, SidTune> map = new HashMap<String, SidTune>();
-
-	/**
-	 * Start song number or -1 (default song)
-	 */
-	private int fSong;
 
 	//
 	// Applet methods
@@ -35,52 +29,36 @@ public class SIDPlay extends Applet {
 	@Override
 	public void init() {
 		cp = new ConsolePlayer(new IniConfig());
-		try {
-			if (getAppletContext() != null) {
-				getAppletContext().showDocument(new URL("javascript:init()"));
-			}
-		} catch (final MalformedURLException e) {
-			e.printStackTrace();
-		}
+		callJavaScript("javascript:init()");
 	}
 
 	@Override
 	public void start() {
 		// autostart if playsid parameter is set initially
-		if (getAppletContext() != null && getParameter("playsid") != null) {
+		if (getAppletContext() != null) {
 			playSID(getParameter("playsid"), -1);
 		}
-		try {
-			if (getAppletContext() != null) {
-				getAppletContext().showDocument(new URL("javascript:start()"));
-			}
-		} catch (final MalformedURLException e) {
-			e.printStackTrace();
-		}
+		callJavaScript("javascript:start()");
 	}
 
 	@Override
 	public void stop() {
 		cp.stopC64();
-		try {
-			if (getAppletContext() != null) {
-				getAppletContext().showDocument(new URL("javascript:stop()"));
-			}
-		} catch (final MalformedURLException e) {
-			e.printStackTrace();
-		}
+		callJavaScript("javascript:stop()");
 	}
 
 	@Override
 	public void destroy() {
-		super.destroy();
+		callJavaScript("javascript:destroy()");
+	}
+
+	private void callJavaScript(String spec) {
 		try {
 			if (getAppletContext() != null) {
-				getAppletContext()
-						.showDocument(new URL("javascript:destroy()"));
+				getAppletContext().showDocument(new URL(spec));
 			}
 		} catch (final MalformedURLException e) {
-			e.printStackTrace();
+			// ignore silently
 		}
 	}
 
@@ -97,18 +75,18 @@ public class SIDPlay extends Applet {
 	 *            song number to start with
 	 */
 	public void playSID(final String urlName, final int songNum) {
+		if (urlName == null) {
+			return;
+		}
 		// eventually stop last run
 		cp.stopC64();
 
 		// start new song
-		fUrlName = urlName;
-		fSong = songNum;
-
 		String[] args;
-		if (fSong == -1) {
-			args = new String[] { fUrlName };
+		if (songNum == -1) {
+			args = new String[] { urlName };
 		} else {
-			args = new String[] { "-o" + fSong, fUrlName };
+			args = new String[] { "-o" + songNum, urlName };
 		}
 		if (cp.args(args) < 0) {
 			return;
