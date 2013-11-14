@@ -42,6 +42,9 @@ public final class SearchIndexCreator implements ISearchListener {
 
 	@Override
 	public void searchHit(final File matchFile) {
+		if (!matchFile.isFile()) {
+			return;
+		}
 		try {
 			String collectionRelName = PathUtils.getCollectionName(root,
 					matchFile);

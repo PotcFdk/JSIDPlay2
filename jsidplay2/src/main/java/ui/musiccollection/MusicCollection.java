@@ -778,42 +778,43 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	@Override
 	public void searchStop(final boolean canceled) {
+		// remember search state
+		savedState = searchThread.getSearchState();
+		progress.set(0);
+
 		Platform.runLater(() -> {
 			startSearch.setDisable(false);
 			stopSearch.setDisable(true);
 			resetSearch.setDisable(false);
 			createSearchIndex.setDisable(false);
-
-			// remember search state
-			savedState = searchThread.getSearchState();
-			progress.set(0);
 		});
 	}
 
 	@Override
 	public void searchHit(final File current) {
+		if (!current.isFile()) {
+			// ignore directories
+			return;
+		}
+		if (searchThread instanceof SearchInIndexThread
+				&& searchResult.getSelectionModel().isSelected(0)) {
+			searchThread.setAborted(true);
+			searchStop(true);
+		}
 		Platform.runLater(() -> {
 			if (searchThread instanceof SearchIndexerThread) {
-				// if search index is created, do not show the next result
+				// search index is created
 				progress.set((progress.get() + 1) % 100);
-				return;
-			}
-			switch (searchResult.getSelectionModel().getSelectedIndex()) {
-			case 0:
-				searchThread.setAborted(true);
-				searchStop(true);
-
-				showNextHit(current);
-				break;
-
-			case 1:
-				if (current.isFile()) {
+			} else {
+				switch (searchResult.getSelectionModel().getSelectedIndex()) {
+				case 1:
 					addFavorite(favoritesToAddSearchResult, current);
+					break;
+					
+				default:
+					showNextHit(current);
+					break;
 				}
-				break;
-
-			default:
-				break;
 			}
 		});
 	}
