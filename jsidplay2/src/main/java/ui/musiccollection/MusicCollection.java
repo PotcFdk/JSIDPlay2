@@ -807,7 +807,9 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 				break;
 
 			case 1:
-				addFavorite(favoritesToAddSearchResult, current);
+				if (current.isFile()) {
+					addFavorite(favoritesToAddSearchResult, current);
+				}
 				break;
 
 			default:
