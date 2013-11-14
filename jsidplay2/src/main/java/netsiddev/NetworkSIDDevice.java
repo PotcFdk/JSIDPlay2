@@ -265,39 +265,44 @@ public class NetworkSIDDevice extends Application {
 		String[] sid = config.getFilterList();
 		return (byte) sid.length;
 	}
-	
+
 	/**
 	 * Return the name of the requested SID.
 	 * 
-	 * @param sidNum The SID to get the name of.
+	 * @param sidNum
+	 *            The SID to get the name of.
 	 * @return SID name string
 	 */
 	protected static String getSidName(int sidNum) {
 		String[] sid = config.getFilterList();
 		return sid[sidNum];
 	}
-	
+
 	/**
 	 * Construct the SID object suite.
+	 * 
 	 * TODO: we should read these things off configuration file.
 	 * 
 	 * @param sidNumber
 	 */
 	protected static SID getSidConfig(int sidNumber) {
 		SID sid = new SID();
-		IFilterSection iniFilter = config.getFilter(config.getFilterList()[sidNumber]);
+		IFilterSection iniFilter = config
+				.getFilter(config.getFilterList()[sidNumber]);
 
 		if (iniFilter.getFilter8580CurvePosition() == 0) {
 			sid.setChipModel(ChipModel.MOS6581);
-			sid.getFilter6581().setFilterCurve(iniFilter.getFilter6581CurvePosition());
+			sid.getFilter6581().setFilterCurve(
+					iniFilter.getFilter6581CurvePosition());
 		} else {
 			sid.setChipModel(ChipModel.MOS8580);
-			sid.getFilter8580().setFilterCurve(iniFilter.getFilter8580CurvePosition());
+			sid.getFilter8580().setFilterCurve(
+					iniFilter.getFilter8580CurvePosition());
 		}
-		
+
 		return sid;
 	}
-	
+
 	/**
 	 * Main method. Create an application frame and start emulation.
 	 * 
@@ -310,24 +315,21 @@ public class NetworkSIDDevice extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		if (SystemTray.isSupported()) {
-			Platform.setImplicitExit(false);
-			config = new JSIDDeviceConfig();
-			createSystemTrayMenu();
-			new Thread(() -> {
-				try {
-					ClientContext.listenForClients(config);
-				} catch (Exception e) {
-					Platform.runLater(() -> {
-						StringWriter sw = new StringWriter();
-						e.printStackTrace(new PrintWriter(sw));
-						printErrorAndExit(sw.toString());
-					});
-				}
-			}).start();
-		} else {
+		if (!SystemTray.isSupported()) {
 			printErrorAndExit("Sorry, System Tray is not yet supported on your platform!");
 		}
+
+		Platform.setImplicitExit(false);
+		config = new JSIDDeviceConfig();
+		createSystemTrayMenu();
+		new Thread(
+				() -> {
+					try {
+						ClientContext.listenForClients(config);
+					} catch (Exception e) {
+						Platform.runLater(() -> printErrorAndExit(exceptionToString(e)));
+					}
+				}).start();
 
 	}
 
@@ -343,45 +345,35 @@ public class NetworkSIDDevice extends Application {
 		trayIcon.setImageAutoSize(true);
 
 		MenuItem aboutItem = new MenuItem(MENU_ABOUT);
-		aboutItem.addActionListener((e) -> {
-			Platform.runLater(() -> {
-				About about = new About();
-				try {
-					about.open();
-				} catch (IOException e1) {
-				}
-			});
-		});
+		aboutItem.addActionListener((e) -> Platform.runLater(() -> {
+			try {
+				new About().open();
+			} catch (IOException e1) {
+				printErrorAndExit(exceptionToString(e1));
+			}
+		}));
 		popup.add(aboutItem);
 
 		MenuItem settingsItem = new MenuItem(MENU_SETTINGS);
-		settingsItem.addActionListener((e) -> {
-			Platform.runLater(() -> {
-				Settings settings = new Settings();
-				try {
-					settings.open();
-				} catch (IOException e1) {
-				}
-			});
-		});
+		settingsItem.addActionListener((e) -> Platform.runLater(() -> {
+			try {
+				new Settings().open();
+			} catch (IOException e1) {
+				printErrorAndExit(exceptionToString(e1));
+			}
+		}));
 		popup.add(settingsItem);
 
 		popup.addSeparator();
 
 		MenuItem exitItem = new MenuItem(MENU_EXIT);
-		exitItem.addActionListener((e) -> {
-			Platform.runLater(() -> {
-				System.exit(0);
-			});
-		});
+		exitItem.addActionListener((e) -> System.exit(0));
 		popup.add(exitItem);
 
 		try {
 			tray.add(trayIcon);
 		} catch (AWTException e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			printErrorAndExit(sw.toString());
+			printErrorAndExit(exceptionToString(e));
 		}
 	}
 
@@ -392,8 +384,15 @@ public class NetworkSIDDevice extends Application {
 		try {
 			alert.open();
 		} catch (IOException e1) {
+		} finally {
+			System.exit(0);
 		}
-		System.exit(0);
+	}
+
+	private String exceptionToString(Exception e) {
+		StringWriter sw = new StringWriter();
+		e.printStackTrace(new PrintWriter(sw));
+		return sw.toString();
 	}
 
 }
