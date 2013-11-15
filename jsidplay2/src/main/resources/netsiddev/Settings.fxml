@@ -4,6 +4,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -14,13 +15,13 @@
 		<TitledPane text="%AUDIO_SETTINGS" collapsible="false">
 			<HBox spacing="10">
 				<Label text="%DEVICE" />
-				<ComboBox fx:id="device" onAction="#setDevice" />
+				<ComboBox fx:id="audioDevice" onAction="#setAudioDevice" />
 			</HBox>
 		</TitledPane>
 		<TitledPane text="%EMULATION_SETTINGS" collapsible="false">
 			<HBox spacing="10">
 				<Label text="%DIGI_BOOST" />
-				<ComboBox fx:id="digiBoost" onAction="#setDigiBoost" />
+				<CheckBox fx:id="digiBoost" onAction="#setDigiBoost" />
 			</HBox>
 		</TitledPane>
 		<HBox alignment="BASELINE_CENTER" spacing="10">

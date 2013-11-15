@@ -4,7 +4,7 @@ import java.net.URL;
 
 import javafx.fxml.Initializable;
 
-public interface SIDDevice extends Initializable {
+public interface SIDDeviceUIPart extends Initializable {
 
 	String getBundleName();
 
