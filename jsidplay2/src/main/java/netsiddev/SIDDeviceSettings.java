@@ -36,26 +36,19 @@ public class SIDDeviceSettings {
 	 * @return device index. If not found then null is returned.
 	 */
 	public synchronized int getDeviceIndex() {
-		Integer deviceIndex;
-		final String deviceIndexString = props
-				.getProperty(PROPERTY_DEVICE_INDEX);
 		try {
-			deviceIndex = Integer.valueOf(deviceIndexString);
+			return Integer.valueOf(props.getProperty(PROPERTY_DEVICE_INDEX));
 		} catch (NumberFormatException nfe) {
-			deviceIndex = 0;
+			return 0;
 		}
-		return deviceIndex;
 	}
 
 	/**
 	 * @return digi boost value from the settings.
 	 */
 	public synchronized boolean getDigiBoostEnabled() {
-		Boolean digiBoostEnabled;
-		final String digiBoostString = props.getProperty(PROPERTY_DIGI_BOOST);
-		digiBoostEnabled = Boolean.valueOf(digiBoostString);
-		return digiBoostEnabled == null ? false : digiBoostEnabled
-				.booleanValue();
+		return Boolean.TRUE.equals(Boolean.valueOf(
+				props.getProperty(PROPERTY_DIGI_BOOST)).booleanValue());
 	}
 
 	/**
@@ -72,11 +65,11 @@ public class SIDDeviceSettings {
 	}
 
 	/**
-	 * @param enabled
+	 * @param digiBoost
 	 *            specifies if digiBoost should be enabled for 8580 model
 	 */
-	public synchronized void saveDigiBoost(boolean enabled) {
-		props.setProperty(PROPERTY_DIGI_BOOST, String.valueOf(enabled));
+	public synchronized void saveDigiBoost(boolean digiBoost) {
+		props.setProperty(PROPERTY_DIGI_BOOST, String.valueOf(digiBoost));
 		try {
 			props.store(new FileOutputStream(FILE_NAME_PROPERTIES),
 					PROPERTY_DEVICE_INDEX_COMMENT);
