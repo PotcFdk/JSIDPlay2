@@ -8,6 +8,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
@@ -40,6 +41,11 @@ public abstract class C64Stage extends Stage implements UIPart {
 	public void open(Stage stage) throws IOException {
 		Scene scene = (Scene) util.parse(this);
 		scene.getStylesheets().add(getStyleSheetName());
+		scene.setOnKeyPressed((ke) -> {
+			if (ke.getCode() == KeyCode.ESCAPE) {
+				stage.close();
+			}
+		});
 		stage.setScene(scene);
 		stage.getIcons().add(new Image(getBundle().getString("ICON")));
 		stage.setTitle(getBundle().getString("TITLE"));
