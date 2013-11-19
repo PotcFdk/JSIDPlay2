@@ -39,6 +39,7 @@ import javafx.stage.DirectoryChooser;
 
 import javax.persistence.metamodel.SingularAttribute;
 
+import libpsid64.NotEnoughC64MemException;
 import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -303,9 +304,15 @@ public class FavoritesTab extends C64Tab {
 				File file = getFile(hvscEntry.getPath());
 				files.add(file);
 			}
-			Psid64 c = new Psid64(getConfig().getSidplay2().getTmpDir());
-			c.convertFiles(getConsolePlayer().getStil(),
-					files.toArray(new File[0]), directory);
+			Psid64 c = new Psid64();
+			c.setTmpDir(getConfig().getSidplay2().getTmpDir());
+			c.setVerbose(true);
+			try {
+				c.convertFiles(getConsolePlayer().getStil(),
+						files.toArray(new File[0]), directory);
+			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

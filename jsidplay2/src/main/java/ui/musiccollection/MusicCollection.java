@@ -45,6 +45,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.metamodel.SingularAttribute;
 
+import libpsid64.NotEnoughC64MemException;
 import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -419,9 +420,15 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					directory.getAbsolutePath());
 			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
 					.getSelectedItem();
-			Psid64 c = new Psid64(getConfig().getSidplay2().getTmpDir());
-			c.convertFiles(getConsolePlayer().getStil(),
-					new File[] { selectedItem.getValue() }, directory);
+			Psid64 c = new Psid64();
+			c.setTmpDir(getConfig().getSidplay2().getTmpDir());
+			c.setVerbose(true);
+			try {
+				c.convertFiles(getConsolePlayer().getStil(),
+						new File[] { selectedItem.getValue() }, directory);
+			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

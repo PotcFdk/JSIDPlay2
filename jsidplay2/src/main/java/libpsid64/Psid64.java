@@ -8,12 +8,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import libsidplay.Reloc65;
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
@@ -23,265 +22,144 @@ import libsidutils.STIL.TuneEntry;
 import libsidutils.pucrunch.PUCrunch;
 
 public class Psid64 {
-	public static final String PACKAGE = "psid64";
-	public static final String VERSION = "0.9";
+	private static final String PACKAGE = "PSID64";
+	private static final String VERSION = "0.9";
 
-	public static final int MAX_BLOCKS = 4;
+	/**
+	 * Maximum memory block count required for tune driver
+	 */
+	private static final int MAX_BLOCKS = 4;
 	/**
 	 * Number of memory pages.
 	 */
-	public static final int MAX_PAGES = 256;
+	private static final int MAX_PAGES = 256;
 	/**
 	 * Driver without screen display.
 	 */
-	public static final int NUM_MINDRV_PAGES = 2;
+	private static final int NUM_MINDRV_PAGES = 2;
 	/**
 	 * Driver with screen display.
 	 */
-	public static final int NUM_EXTDRV_PAGES = 5;
+	private static final int NUM_EXTDRV_PAGES = 5;
 	/**
 	 * Size of screen in pages.
 	 */
-	public static final int NUM_SCREEN_PAGES = 4;
+	private static final int NUM_SCREEN_PAGES = 4;
 	/**
 	 * Size of char-set in pages.
 	 */
-	public static final int NUM_CHAR_PAGES = 8;
+	private static final int NUM_CHAR_PAGES = 8;
 	/**
 	 * Number of spaces before EOT.
 	 */
-	public static final int STIL_EOT_SPACES = 10;
-	public static final String DOCUMENTS_STIL_TXT = "DOCUMENTS"
-			+ System.getProperty("file.separator") + "STIL.txt";
+	private static final int STIL_EOT_SPACES = 10;
 
-	public static final String txt_relocOverlapsImage = "PSID64: relocation information overlaps the load image";
-	public static final String txt_notEnoughC64Memory = "PSID64: C64 memory has no space for driver code";
-	public static final String txt_fileIoError = "PSID64: File I/O error";
-	public static final String txt_noSidTuneLoaded = "PSID64: No SID tune loaded";
-	public static final String txt_noSidTuneConverted = "PSID64: No SID tune converted";
-
-	//
-	// configuration options
-	//
-
-	private boolean m_blankScreen;
-	private int m_initialSong;
-	private final boolean m_verbose;
-
-	private SidTune m_tune;
-	private File m_file;
-	private String m_statusString;
-	private STILEntry m_stilEntry;
-
-	//
-	// conversion data
-	//
-
-	private Screen m_screen;
-	private String m_stilText;
-	/**
-	 * Start page of driver, 0 means no driver.
-	 */
-	private short m_driverPage;
-	/**
-	 * Start page of screen, 0 means no screen.
-	 */
-	private short m_screenPage;
-	/**
-	 * Start page of chars, 0 means no chars.
-	 */
-	private short m_charPage;
-	/**
-	 * Start page of STIL, 0 means no STIL.
-	 */
-	private short m_stilPage;
-
-	//
-	// converted file
-	//
-
-	private byte m_programData[];
-	private int m_programSize;
-	private HashMap<String, Integer> globals;
-
+	private SidTune tune;
+	private STILEntry stilEntry;
 	private String tmpDir;
+	private boolean verbose, blankScreen;
 
-	/**
-	 * Structure to describe a memory block in the C64's memory map.
-	 */
-	protected static class block_t {
-		protected int load;
-		/** < start address */
-		protected int size;
-		/** < size of the memory block in bytes */
-		protected byte[] data;
-		protected int dataOff;
-		/** < data to be stored */
-		protected String description;
-		/** < a short description */
-	}
-
-	public Psid64(String tmpDir) {
+	public void setTmpDir(String tmpDir) {
 		this.tmpDir = tmpDir;
-		m_verbose = true;
-		m_screen = new Screen();
 	}
 
-	public void setInitialSong(final int songNo) {
-		m_initialSong = songNo;
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
 	}
 
-	public void setBlankScreen(final boolean blank) {
-		m_blankScreen = blank;
+	public void setBlankScreen(boolean blankScreen) {
+		this.blankScreen = blankScreen;
 	}
 
-	public boolean load(final File file) {
-		m_tune = null;
-		try {
-			m_tune = SidTune.load(file);
-		} catch (final Exception e) {
-			e.printStackTrace();
-			m_statusString = txt_noSidTuneLoaded;
-			m_file = null;
-			return false;
-		}
-		if (m_tune == null) {
-			m_statusString = txt_noSidTuneLoaded;
-			m_file = null;
-			return false;
-		}
-
-		m_tune.selectSong(0);
-		m_file = file;
-
-		return true;
-	}
-
-	public boolean load(final SidTune sidTune) {
-		m_tune = sidTune;
-		m_file = null;
-		return true;
-	}
-
-	public boolean convert() {
-		final block_t blocks[] = new block_t[MAX_BLOCKS];
-		for (int i = 0; i < blocks.length; i++) {
-			blocks[i] = new block_t();
-		}
-		int numBlocks;
-		byte[] psid_mem;
-		int driver_size;
-		final int boot_size = psid_boot.length;
-		int size;
-
+	private byte[] convert() throws NotEnoughC64MemException {
 		// handle special treatment of tunes programmed in BASIC
-		final SidTuneInfo tuneInfo = m_tune.getInfo();
+		final SidTuneInfo tuneInfo = tune.getInfo();
 		if (tuneInfo.compatibility == SidTune.Compatibility.RSID_BASIC) {
 			return convertBASIC();
 		}
 
 		// retrieve STIL entry for this SID tune
-		if (!formatStilText(m_stilEntry)) {
-			return false;
-		}
+		String stilText = formatStilText().toString();
 
 		// find space for driver and screen (optional)
-		findFreeSpace();
-		if (m_driverPage == 0x00) {
-			m_statusString = txt_notEnoughC64Memory;
-			return false;
-		}
+		FreeMemPages freePages = findFreeSpace(stilText);
 
 		// use minimal driver if screen blanking is enabled
-		if (m_blankScreen) {
-			m_screenPage = (short) 0x00;
-			m_charPage = (short) 0x00;
-			m_stilPage = (short) 0x00;
+		if (blankScreen) {
+			freePages.setScreenPage((short) 0x00);
+			freePages.setCharPage((short) 0x00);
+			freePages.setStilPage((short) 0x00);
 		}
 
 		// relocate and initialize the driver
-		final DriverInfo driverInfo = new DriverInfo();
-		initDriver(driverInfo);
-		psid_mem = driverInfo.mem;
-		final int reloc_driverPos = driverInfo.reloc_driverPos;
-		driver_size = driverInfo.n;
-
+		final DriverInfo driverInfo = initDriver(freePages);
 		// fill the blocks structure
-		numBlocks = 0;
-		blocks[numBlocks].load = m_driverPage << 8;
-		blocks[numBlocks].size = driver_size;
-		blocks[numBlocks].data = psid_mem;
-		blocks[numBlocks].dataOff = reloc_driverPos;
-		blocks[numBlocks].description = "Driver code";
+		final MemoryBlock memBlocks[] = new MemoryBlock[MAX_BLOCKS];
+		for (int i = 0; i < memBlocks.length; i++) {
+			memBlocks[i] = new MemoryBlock();
+		}
+		int numBlocks = 0;
+		memBlocks[numBlocks].startAddress = freePages.getDriverPage() << 8;
+		memBlocks[numBlocks].size = driverInfo.getSize();
+		memBlocks[numBlocks].data = driverInfo.getMemory();
+		memBlocks[numBlocks].dataOff = driverInfo.getRelocatedDriverPos();
+		memBlocks[numBlocks].description = "Driver code";
 		++numBlocks;
 
-		blocks[numBlocks].load = tuneInfo.loadAddr;
-		blocks[numBlocks].size = tuneInfo.c64dataLen;
+		memBlocks[numBlocks].startAddress = tuneInfo.loadAddr;
+		memBlocks[numBlocks].size = tuneInfo.c64dataLen;
 		final byte c64buf[] = new byte[65536];
-		m_tune.placeProgramInMemory(c64buf);
-		blocks[numBlocks].data = c64buf;
-		blocks[numBlocks].dataOff = tuneInfo.loadAddr;
-		System.arraycopy(c64buf, tuneInfo.loadAddr, blocks[numBlocks].data,
-				blocks[numBlocks].dataOff, blocks[numBlocks].data.length
-						- blocks[numBlocks].dataOff);
-		blocks[numBlocks].description = "Music data";
+		tune.placeProgramInMemory(c64buf);
+		memBlocks[numBlocks].data = c64buf;
+		memBlocks[numBlocks].dataOff = tuneInfo.loadAddr;
+		System.arraycopy(c64buf, tuneInfo.loadAddr, memBlocks[numBlocks].data,
+				memBlocks[numBlocks].dataOff, memBlocks[numBlocks].data.length
+						- memBlocks[numBlocks].dataOff);
+		memBlocks[numBlocks].description = "Music data";
 		++numBlocks;
 
-		if (m_screenPage != 0x00) {
-			drawScreen();
-			blocks[numBlocks].load = m_screenPage << 8;
-			blocks[numBlocks].size = m_screen.getDataSize();
-			blocks[numBlocks].data = m_screen.getData();
-			blocks[numBlocks].dataOff = 0;
-			blocks[numBlocks].description = "Screen";
+		if (freePages.getScreenPage() != 0x00) {
+			Screen screen = drawScreen();
+			memBlocks[numBlocks].startAddress = freePages.getScreenPage() << 8;
+			memBlocks[numBlocks].size = screen.getDataSize();
+			memBlocks[numBlocks].data = screen.getData();
+			memBlocks[numBlocks].dataOff = 0;
+			memBlocks[numBlocks].description = "Screen";
 			++numBlocks;
 		}
 
-		if (m_stilPage != 0x00) {
-			blocks[numBlocks].load = m_stilPage << 8;
-			blocks[numBlocks].size = m_stilText.length();
-			blocks[numBlocks].data = new byte[m_stilText.length() + 1];
-			for (int i = 0; i < m_stilText.length(); i++) {
-				blocks[numBlocks].data[i] = (byte) m_stilText.charAt(i);
-				blocks[numBlocks].dataOff = 0;
+		if (freePages.getStilPage() != 0x00) {
+			memBlocks[numBlocks].startAddress = freePages.getStilPage() << 8;
+			memBlocks[numBlocks].size = stilText.length();
+			memBlocks[numBlocks].data = new byte[stilText.length() + 1];
+			for (int i = 0; i < stilText.length(); i++) {
+				memBlocks[numBlocks].data[i] = (byte) stilText.charAt(i);
+				memBlocks[numBlocks].dataOff = 0;
 			}
-			blocks[numBlocks].data[m_stilText.length()] = 0;
-			blocks[numBlocks].description = "STIL text";
+			memBlocks[numBlocks].data[stilText.length()] = 0;
+			memBlocks[numBlocks].description = "STIL text";
 			++numBlocks;
 		}
-
-		Arrays.sort(blocks, 0, numBlocks, new Comparator<block_t>() {
-
-			@Override
-			public int compare(final block_t a, final block_t b) {
-				if (a.load < b.load) {
-					return -1;
-				}
-				if (a.load > b.load) {
-					return 1;
-				}
-
-				return 0;
-
-			}
-
-		});
+		Arrays.sort(memBlocks, 0, numBlocks, new MemoryBlockComparator());
 
 		// print memory map
-		if (m_verbose) {
-			int charset = m_charPage << 8;
-
+		if (verbose) {
 			System.out.println("C64 memory map:");
+
+			int charset = freePages.getCharPage() << 8;
 			for (int i = 0; i < numBlocks; ++i) {
-				if (charset != 0 && blocks[i].load > charset) {
+				if (charset != 0 && memBlocks[i].startAddress > charset) {
 					System.out.println("  $" + toHexWord(charset) + "-$"
 							+ toHexWord(charset + 256 * NUM_CHAR_PAGES)
 							+ "  Character set");
 					charset = 0;
 				}
-				System.out.println("  $" + toHexWord(blocks[i].load) + "-$"
-						+ toHexWord(blocks[i].load + blocks[i].size) + "  "
-						+ blocks[i].description);
+				System.out.println("  $"
+						+ toHexWord(memBlocks[i].startAddress)
+						+ "-$"
+						+ toHexWord(memBlocks[i].startAddress
+								+ memBlocks[i].size) + "  "
+						+ memBlocks[i].description);
 			}
 			if (charset != 0) {
 				System.out.println("  $" + toHexWord(charset) + "-$"
@@ -289,171 +167,106 @@ public class Psid64 {
 						+ "  Character set");
 			}
 		}
-
 		// calculate total size of the blocks
-		size = 0;
+		int size = 0;
 		for (int i = 0; i < numBlocks; ++i) {
-			size = size + blocks[i].size;
+			size += memBlocks[i].size;
 		}
-
-		m_programSize = boot_size + size;
-		m_programData = new byte[m_programSize];
-		int destPos = 0;
-		System.arraycopy(psid_boot, 0, m_programData, destPos, boot_size);
+		byte[] programData = new byte[psid_boot.length + size];
+		System.arraycopy(psid_boot, 0, programData, 0, psid_boot.length);
 
 		// the value 0x0801 is related to start of the code in psidboot.a65
 		int addr = 19;
 
 		// fill in the initial song number (passed in at boot time)
-		int song;
-		song = m_programData[destPos + addr] & 0xff;
-		song += (m_programData[destPos + addr + 1] & 0xff) << 8;
+		int song = programData[addr] & 0xff;
+		song += (programData[addr + 1] & 0xff) << 8;
 		song -= 0x0801 - 2;
-		int initialSong;
-		if (1 <= m_initialSong && m_initialSong <= tuneInfo.songs) {
-			initialSong = m_initialSong;
-		} else {
-			initialSong = tuneInfo.startSong;
-		}
-		m_programData[destPos + song] = (byte) (initialSong - 1 & 0xff);
+		programData[song] = (byte) (tuneInfo.currentSong - 1 & 0xff);
 
-		final int eof = 0x0801 + boot_size - 2 + size;
-		m_programData[destPos + addr++] = (byte) (eof & 0xff); // end of C64
-																// file
-		m_programData[destPos + addr++] = (byte) (eof >> 8);
-		m_programData[destPos + addr++] = (byte) (0x10000 & 0xff); // end of
-																	// high
-																	// memory
-		m_programData[destPos + addr++] = (byte) (0x10000 >> 8);
-		m_programData[destPos + addr++] = (byte) (size + 0xff >> 8); // number
-																		// of
-																		// pages
-																		// to
-																		// copy
-		m_programData[destPos + addr++] = (byte) (0x10000 - size & 0xff); // start
-																			// of
-																			// blocks
-																			// after
-																			// moving
-		m_programData[destPos + addr++] = (byte) (0x10000 - size >> 8);
-		m_programData[destPos + addr++] = (byte) (numBlocks - 1); // number of
-																	// blocks -
-																	// 1
-		m_programData[destPos + addr++] = (byte) m_charPage; // page for
-																// character
-																// set, or 0
-		final int jmpAddr = m_driverPage << 8;
-		m_programData[destPos + addr++] = (byte) (jmpAddr & 0xff); // start
-																	// address
-																	// of driver
-		m_programData[destPos + addr++] = (byte) (jmpAddr >> 8);
-		m_programData[destPos + addr++] = (byte) (jmpAddr + 3 & 0xff); // address
-																		// of
-																		// new
-																		// stop
-																		// vector
-		m_programData[destPos + addr++] = (byte) (jmpAddr + 3 >> 8); // for
-																		// tunes
-																		// that
-																		// call
-																		// $a7ae
-																		// during
-																		// init
+		final int eof = 0x0801 + psid_boot.length - 2 + size;
+		// end of C64 file
+		programData[addr++] = (byte) (eof & 0xff);
+		programData[addr++] = (byte) (eof >> 8);
+		// end of high memory
+		programData[addr++] = (byte) (0x10000 & 0xff);
+		programData[addr++] = (byte) (0x10000 >> 8);
+		// number of pages to copy
+		programData[addr++] = (byte) (size + 0xff >> 8);
+		// start of blocks after moving
+		programData[addr++] = (byte) (0x10000 - size & 0xff);
+		programData[addr++] = (byte) (0x10000 - size >> 8);
+		// number of blocks - 1
+		programData[addr++] = (byte) (numBlocks - 1);
+		// page for character set, or 0
+		programData[addr++] = (byte) freePages.getCharPage();
+		final int jmpAddr = freePages.getDriverPage() << 8;
+		// start address of driver
+		programData[addr++] = (byte) (jmpAddr & 0xff);
+		programData[addr++] = (byte) (jmpAddr >> 8);
+		// address of new stop vector
+		programData[addr++] = (byte) (jmpAddr + 3 & 0xff);
+		// for tunes that call $a7ae during init
+		programData[addr++] = (byte) (jmpAddr + 3 >> 8);
 
 		// copy block data to psidboot.a65 parameters
 		for (int i = 0; i < numBlocks; ++i) {
 			final int offs = addr + numBlocks - 1 - i;
-			m_programData[destPos + offs] = (byte) (blocks[i].load & 0xff);
-			m_programData[destPos + offs + MAX_BLOCKS] = (byte) (blocks[i].load >> 8);
-			m_programData[destPos + offs + 2 * MAX_BLOCKS] = (byte) (blocks[i].size & 0xff);
-			m_programData[destPos + offs + 3 * MAX_BLOCKS] = (byte) (blocks[i].size >> 8);
+			programData[offs] = (byte) (memBlocks[i].startAddress & 0xff);
+			programData[offs + MAX_BLOCKS] = (byte) (memBlocks[i].startAddress >> 8);
+			programData[offs + 2 * MAX_BLOCKS] = (byte) (memBlocks[i].size & 0xff);
+			programData[offs + 3 * MAX_BLOCKS] = (byte) (memBlocks[i].size >> 8);
 		}
 		addr = addr + 4 * MAX_BLOCKS;
-		destPos += boot_size;
 
 		// copy blocks to c64 program file
+		int destPos = psid_boot.length;
 		for (int i = 0; i < numBlocks; ++i) {
-			System.arraycopy(blocks[i].data, blocks[i].dataOff, m_programData,
-					destPos, blocks[i].size);
-			destPos += blocks[i].size;
+			System.arraycopy(memBlocks[i].data, memBlocks[i].dataOff,
+					programData, destPos, memBlocks[i].size);
+			destPos += memBlocks[i].size;
 		}
-
-		return true;
+		return programData;
 	}
 
-	private boolean convertBASIC() {
-		final SidTuneInfo tuneInfo = m_tune.getInfo();
-		final int load = tuneInfo.loadAddr;
-		final int end = load + tuneInfo.c64dataLen;
-		final int bootCodeSize = 0;
-
+	private byte[] convertBASIC() {
+		final SidTuneInfo tuneInfo = tune.getInfo();
 		// allocate space for BASIC program and boot code (optional)
-		m_programSize = 2 + tuneInfo.c64dataLen + bootCodeSize;
-		m_programData = null;
-		m_programData = new byte[m_programSize];
+		byte[] programData = new byte[2 + tuneInfo.c64dataLen + 0];
 
 		// first the load address
-		m_programData[0] = (byte) (load & 0xff);
-		m_programData[1] = (byte) (load >> 8);
+		programData[0] = (byte) (tuneInfo.loadAddr & 0xff);
+		programData[1] = (byte) (tuneInfo.loadAddr >> 8);
 
 		// then copy the BASIC program
 		final byte c64buf[] = new byte[65536];
-		m_tune.placeProgramInMemory(c64buf);
-		System.arraycopy(c64buf, load, m_programData, 2, tuneInfo.c64dataLen);
+		tune.placeProgramInMemory(c64buf);
+		System.arraycopy(c64buf, tuneInfo.loadAddr, programData, 2,
+				tuneInfo.c64dataLen);
 
 		// print memory map
-		if (m_verbose) {
+		if (verbose) {
 			System.out.println("C64 memory map:");
-			System.out.println("  $" + toHexWord(load) + "-$" + toHexWord(end)
+			System.out.println("  $" + toHexWord(tuneInfo.loadAddr) + "-$"
+					+ toHexWord(tuneInfo.loadAddr + tuneInfo.c64dataLen)
 					+ "  BASIC program");
 		}
-
-		return true;
+		return programData;
 	}
 
 	private String toHexWord(final int i) {
 		return String.format("%04x", i);
 	}
 
-	protected static class DriverInfo {
-		public byte[] mem;
-		public int reloc_driverPos;
-		public int n;
-	}
-
-	private DriverInfo initDriver(final DriverInfo result) {
-		final byte[] driver;
-		byte[] psid_mem;
-		byte[] psid_reloc;
-		int psid_size;
-		int reloc_addr;
-		int addr;
-		int vsa; // video screen address
-		int cba; // character memory base address
-
-		result.reloc_driverPos = 0;
-		result.n = 0;
-
-		// select driver
-		if (m_screenPage == 0x00) {
-			psid_size = IPsidDrv.psid_driver.length;
-			driver = IPsidDrv.psid_driver;
-		} else {
-			psid_size = IPsidExtDriver.psid_extdriver.length;
-			driver = IPsidExtDriver.psid_extdriver;
-		}
-
-		// Relocation of C64 PSID driver code.
-		psid_mem = psid_reloc = new byte[psid_size];
-		System.arraycopy(driver, 0, psid_reloc, 0, psid_size);
-		reloc_addr = m_driverPage << 8;
+	private DriverInfo initDriver(FreeMemPages freePages) {
+		final DriverInfo result = new DriverInfo();
 
 		// undefined references in the drive code need to be added to globals
-		globals = new HashMap<String, Integer>();
-		final int screen = m_screenPage << 8;
+		HashMap<String, Integer> globals = new HashMap<String, Integer>();
+		final int screen = freePages.getScreenPage() << 8;
 		globals.put("screen", screen);
 		int screen_songnum = 0;
-		final SidTuneInfo tuneInfo = m_tune.getInfo();
+		final SidTuneInfo tuneInfo = tune.getInfo();
 		if (tuneInfo.songs > 1) {
 			screen_songnum = screen + 10 * 40 + 24;
 			if (tuneInfo.songs >= 100) {
@@ -464,67 +277,81 @@ public class Psid64 {
 			}
 		}
 		globals.put("screen_songnum", screen_songnum);
-		globals.put("dd00", ((m_screenPage & 0xc0) >> 6 ^ 3 | 0x04));
-		vsa = (short) ((m_screenPage & 0x3c) << 2);
-		cba = (short) (m_charPage != 0 ? m_charPage >> 2 & 0x0e : 0x06);
+		globals.put("dd00",
+				((freePages.getScreenPage() & 0xc0) >> 6 ^ 3 | 0x04));
+		// video screen address
+		int vsa = (short) ((freePages.getScreenPage() & 0x3c) << 2);
+		// character memory base address
+		int cba = (short) (freePages.getCharPage() != 0 ? freePages
+				.getCharPage() >> 2 & 0x0e : 0x06);
 		globals.put("d018", vsa | cba);
 
+		byte[] psidMem;
+		// Relocation of C64 PSID driver code.
+		// select driver
+		if (freePages.getScreenPage() == 0x00) {
+			psidMem = new byte[IPsidDrv.psid_driver.length];
+			System.arraycopy(IPsidDrv.psid_driver, 0, psidMem, 0,
+					psidMem.length);
+		} else {
+			psidMem = new byte[IPsidExtDriver.psid_extdriver.length];
+			System.arraycopy(IPsidExtDriver.psid_extdriver, 0, psidMem, 0,
+					psidMem.length);
+		}
 		ByteBuffer bp;
 		final Reloc65 relocator = new Reloc65();
-		if ((bp = relocator.reloc65(psid_reloc, psid_size, reloc_addr, globals)) == null) {
-			System.err.println(PACKAGE + ": Relocation error.");
-			return result;
+		if ((bp = relocator.reloc65(psidMem, psidMem.length,
+				freePages.getDriverPage() << 8, globals)) == null) {
+			throw new RuntimeException(PACKAGE + ": Relocation error.");
 		}
-		psid_reloc = bp.array();
-		final int reloc_driverPos = bp.position();
-		psid_size = bp.limit();
+		byte[] psidReloc = bp.array();
+		final int relocDriverPos = bp.position();
+		int psidRelocSize = bp.limit();
 
 		// Skip JMP table
-		addr = 6;
+		int addr = 6;
 
 		// Store parameters for PSID player.
-		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.initAddr != 0 ? 0x4c
+		psidReloc[relocDriverPos + addr++] = (byte) (tuneInfo.initAddr != 0 ? 0x4c
 				: 0x60);
-		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.initAddr & 0xff);
-		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.initAddr >> 8);
-		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.playAddr != 0 ? 0x4c
+		psidReloc[relocDriverPos + addr++] = (byte) (tuneInfo.initAddr & 0xff);
+		psidReloc[relocDriverPos + addr++] = (byte) (tuneInfo.initAddr >> 8);
+		psidReloc[relocDriverPos + addr++] = (byte) (tuneInfo.playAddr != 0 ? 0x4c
 				: 0x60);
-		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.playAddr & 0xff);
-		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.playAddr >> 8);
-		psid_reloc[reloc_driverPos + addr++] = (byte) tuneInfo.songs;
+		psidReloc[relocDriverPos + addr++] = (byte) (tuneInfo.playAddr & 0xff);
+		psidReloc[relocDriverPos + addr++] = (byte) (tuneInfo.playAddr >> 8);
+		psidReloc[relocDriverPos + addr++] = (byte) tuneInfo.songs;
 
 		// get the speed bits (the driver only has space for the first 32 songs)
-		int speed = m_tune.getSongSpeedArray();
-		psid_reloc[reloc_driverPos + addr++] = (byte) (speed & 0xff);
-		psid_reloc[reloc_driverPos + addr++] = (byte) (speed >> 8 & 0xff);
-		psid_reloc[reloc_driverPos + addr++] = (byte) (speed >> 16 & 0xff);
-		psid_reloc[reloc_driverPos + addr++] = (byte) (speed >> 24);
+		int speed = tune.getSongSpeedArray();
+		psidReloc[relocDriverPos + addr++] = (byte) (speed & 0xff);
+		psidReloc[relocDriverPos + addr++] = (byte) (speed >> 8 & 0xff);
+		psidReloc[relocDriverPos + addr++] = (byte) (speed >> 16 & 0xff);
+		psidReloc[relocDriverPos + addr++] = (byte) (speed >> 24);
 
-		psid_reloc[reloc_driverPos + addr++] = (byte) (tuneInfo.loadAddr < 0x31a ? 0xff
+		psidReloc[relocDriverPos + addr++] = (byte) (tuneInfo.loadAddr < 0x31a ? 0xff
 				: 0x05);
-		psid_reloc[reloc_driverPos + addr++] = iomap(tuneInfo.initAddr);
-		psid_reloc[reloc_driverPos + addr++] = iomap(tuneInfo.playAddr);
+		psidReloc[relocDriverPos + addr++] = iomap(tuneInfo.initAddr);
+		psidReloc[relocDriverPos + addr++] = iomap(tuneInfo.playAddr);
 
-		if (m_screenPage != 0x00) {
-			psid_reloc[reloc_driverPos + addr++] = (byte) m_stilPage;
+		if (freePages.getScreenPage() != 0x00) {
+			psidReloc[relocDriverPos + addr++] = (byte) freePages.getStilPage();
 		}
-
-		result.mem = psid_mem;
-		result.reloc_driverPos = reloc_driverPos;
-		result.n = psid_size;
+		result.setMemory(psidMem);
+		result.setRelocatedDriverPos(relocDriverPos);
+		result.setSize(psidRelocSize);
 		return result;
 	}
 
-	// Input: A 16-bit effective address
-	// Output: A default bank-select value for $01.
+	/**
+	 * @param addr
+	 *            A 16-bit effective address
+	 * @return A default bank-select value for $01
+	 */
 	private byte iomap(final int addr) {
 		// Force Real C64 Compatibility
-		final SidTuneInfo tuneInfo = m_tune.getInfo();
-		if (tuneInfo.compatibility == SidTune.Compatibility.RSID) {
-			return 0; // Special case, converted to 0x37 later
-		}
-
-		if (addr == 0) {
+		final SidTuneInfo tuneInfo = tune.getInfo();
+		if (tuneInfo.compatibility == SidTune.Compatibility.RSID || addr == 0) {
 			return 0; // Special case, converted to 0x37 later
 		}
 		if (addr < 0xa000) {
@@ -539,149 +366,145 @@ public class Psid64 {
 		return 0x34; // RAM only
 	}
 
-	private boolean addFlag(boolean hasFlags, final String flagName) {
-		if (hasFlags) {
-			m_screen.write(", ");
-		} else {
-			hasFlags = true;
-		}
-		m_screen.write(flagName);
-		return hasFlags;
-	}
-
-	private void drawScreen() {
-		m_screen.clear();
-
+	private Screen drawScreen() {
+		Screen screen = new Screen();
 		// set title
-		m_screen.move(5, 1);
-		m_screen.write("PSID64 v" + VERSION + " by Roland Hermans!");
+		screen.move(5, 1);
+		screen.write(PACKAGE + " v" + VERSION + " by Roland Hermans!");
 
 		// characters for color line effect
-		m_screen.poke(4, 0, (short) 0x70);
-		m_screen.poke(35, 0, (short) 0x6e);
-		m_screen.poke(4, 1, (short) 0x5d);
-		m_screen.poke(35, 1, (short) 0x5d);
-		m_screen.poke(4, 2, (short) 0x6d);
-		m_screen.poke(35, 2, (short) 0x7d);
+		screen.poke(4, 0, (short) 0x70);
+		screen.poke(35, 0, (short) 0x6e);
+		screen.poke(4, 1, (short) 0x5d);
+		screen.poke(35, 1, (short) 0x5d);
+		screen.poke(4, 2, (short) 0x6d);
+		screen.poke(35, 2, (short) 0x7d);
 		for (int i = 0; i < 30; ++i) {
-			m_screen.poke(5 + i, 0, (short) 0x40);
-			m_screen.poke(5 + i, 2, (short) 0x40);
+			screen.poke(5 + i, 0, (short) 0x40);
+			screen.poke(5 + i, 2, (short) 0x40);
 		}
 
 		// information lines
-		m_screen.move(0, 4);
-		m_screen.write("Name   : ");
-		final SidTuneInfo tuneInfo = m_tune.getInfo();
-		m_screen.write(tuneInfo.infoString[0].substring(0,
+		screen.move(0, 4);
+		screen.write("Name   : ");
+		final SidTuneInfo tuneInfo = tune.getInfo();
+		screen.write(tuneInfo.infoString[0].substring(0,
 				Math.min(tuneInfo.infoString[0].length(), 31)));
 
-		m_screen.write("\nAuthor : ");
-		m_screen.write(tuneInfo.infoString[1].substring(0,
+		screen.write("\nAuthor : ");
+		screen.write(tuneInfo.infoString[1].substring(0,
 				Math.min(tuneInfo.infoString[1].length(), 31)));
 
-		m_screen.write("\nRelease: ");
-		m_screen.write(tuneInfo.infoString[2].substring(0,
+		screen.write("\nRelease: ");
+		screen.write(tuneInfo.infoString[2].substring(0,
 				Math.min(tuneInfo.infoString[2].length(), 31)));
 
-		m_screen.write("\nLoad   : $");
-		m_screen.write(toHexWord(tuneInfo.loadAddr));
-		m_screen.write("-$");
-		m_screen.write(toHexWord(tuneInfo.loadAddr + tuneInfo.c64dataLen));
+		screen.write("\nLoad   : $");
+		screen.write(toHexWord(tuneInfo.loadAddr));
+		screen.write("-$");
+		screen.write(toHexWord(tuneInfo.loadAddr + tuneInfo.c64dataLen));
 
-		m_screen.write("\nInit   : $");
-		m_screen.write(toHexWord(tuneInfo.initAddr));
+		screen.write("\nInit   : $");
+		screen.write(toHexWord(tuneInfo.initAddr));
 
-		m_screen.write("\nPlay   : ");
+		screen.write("\nPlay   : ");
 		if (tuneInfo.playAddr != 0) {
-			m_screen.write("$");
-			m_screen.write(toHexWord(tuneInfo.playAddr));
+			screen.write("$");
+			screen.write(toHexWord(tuneInfo.playAddr));
 		} else {
-			m_screen.write("N/A");
+			screen.write("N/A");
 		}
 
-		m_screen.write("\nSongs  : ");
-		m_screen.write(String.format("%d", tuneInfo.songs));
+		screen.write("\nSongs  : ");
+		screen.write(String.format("%d", tuneInfo.songs));
 		if (tuneInfo.songs > 1) {
-			m_screen.write(" (now playing");
+			screen.write(" (now playing");
 		}
 
 		boolean hasFlags = false;
-		m_screen.write("\nFlags  : ");
+		screen.write("\nFlags  : ");
 		if (tuneInfo.compatibility == SidTune.Compatibility.PSIDv1) {
-			hasFlags = addFlag(hasFlags, "PlaySID");
+			hasFlags = addFlag(screen, hasFlags, "PlaySID");
 		}
-		hasFlags = addFlag(hasFlags, tuneInfo.clockSpeed.toString());
-		hasFlags = addFlag(hasFlags, tuneInfo.sid1Model.toString());
+		hasFlags = addFlag(screen, hasFlags, tuneInfo.clockSpeed.toString());
+		hasFlags = addFlag(screen, hasFlags, tuneInfo.sid1Model.toString());
 		final int sid2midNibbles = (tuneInfo.sidChipBase2 >> 4) & 0xff;
 		if (((sid2midNibbles & 1) == 0)
 				&& (((0x42 <= sid2midNibbles) && (sid2midNibbles <= 0x7e)) || ((0xe0 <= sid2midNibbles) && (sid2midNibbles <= 0xfe)))) {
-			hasFlags = addFlag(hasFlags, tuneInfo.sid2Model.toString()
+			hasFlags = addFlag(screen, hasFlags, tuneInfo.sid2Model.toString()
 					+ " at $" + toHexWord(tuneInfo.sidChipBase2));
 		}
 		if (!hasFlags) {
-			m_screen.write("-");
+			screen.write("-");
 		}
-		m_screen.write("\nClock  :   :  :");
+		screen.write("\nClock  :   :  :");
 
 		// some additional text
-		m_screen.write("\n\n  ");
+		screen.write("\n\n  ");
 		if (tuneInfo.songs <= 1) {
-			m_screen.write("   [1");
+			screen.write("   [1");
 		} else if (tuneInfo.songs <= 10) {
-			m_screen.write("  [1-");
-			m_screen.putchar(tuneInfo.songs % 10 + '0');
+			screen.write("  [1-");
+			screen.putchar(tuneInfo.songs % 10 + '0');
 		} else if (tuneInfo.songs <= 11) {
-			m_screen.write(" [1-0, A");
+			screen.write(" [1-0, A");
 		} else {
-			m_screen.write("[1-0, A-");
-			m_screen.putchar(tuneInfo.songs <= 36 ? tuneInfo.songs - 11 + 'A'
+			screen.write("[1-0, A-");
+			screen.putchar(tuneInfo.songs <= 36 ? tuneInfo.songs - 11 + 'A'
 					: 'Z');
 		}
-		m_screen.write("] Select song [+] Next song\n");
-		m_screen.write("  [-] Previous song [DEL] Blank screen\n");
+		screen.write("] Select song [+] Next song\n");
+		screen.write("  [-] Previous song [DEL] Blank screen\n");
 		if (tuneInfo.playAddr != 0) {
-			m_screen.write("[~] Fast forward [LOCK] Show raster time\n");
+			screen.write("[~] Fast forward [LOCK] Show raster time\n");
 		}
-		m_screen.write("  [RUN/STOP] Stop [CTRL+CBM+DEL] Reset\n");
+		screen.write("  [RUN/STOP] Stop [CTRL+CBM+DEL] Reset\n");
 
 		// flashing bottom line (should be exactly 38 characters)
-		m_screen.move(1, 24);
-		m_screen.write("Website: http://psid64.sourceforge.net");
+		screen.move(1, 24);
+		screen.write("Website: http://psid64.sourceforge.net");
+		return screen;
 	}
 
-	private boolean formatStilText(STILEntry stil) {
-		m_stilText = "";
-
-		String str = "";
-		if (m_stilEntry == null && m_file != null) {
-			m_stilEntry = stil;
+	private boolean addFlag(Screen screen, boolean hasFlags,
+			final String flagName) {
+		if (hasFlags) {
+			screen.write(", ");
+		} else {
+			hasFlags = true;
 		}
-		if (m_stilEntry != null) {
-			str += writeEntry(m_stilEntry);
-		}
+		screen.write(flagName);
+		return hasFlags;
+	}
 
-		// convert the stil text and remove all double whitespace characters
-		final int n = str.length();
-		m_stilText = m_stilText.trim();
+	private StringBuffer formatStilText() {
+		StringBuffer result = new StringBuffer();
+		StringBuffer stilText = new StringBuffer();
+
+		if (stilEntry != null) {
+			stilText.append(writeSTILEntry(stilEntry).trim());
+		}
 
 		// start the scroll text with some space characters (to separate end
 		// from beginning and to make sure the color effect has reached the end
 		// of the line before the first character is visible)
 		for (int i = 0; i < STIL_EOT_SPACES - 1; ++i) {
-			m_stilText += (char) Screen.iso2scr((short) ' ');
+			result.append(Screen.iso2scr(' '));
 		}
 
+		// replace multiple white spaces by exactly one space bar
+		// and determine if the whole string is built on white-spaces
 		boolean space = true;
 		boolean realText = false;
-		for (int i = 0; i < n; ++i) {
-			if (Character.isWhitespace(str.charAt(i))) {
+		for (int i = 0; i < stilText.length(); ++i) {
+			if (Character.isWhitespace(stilText.charAt(i))) {
 				space = true;
 			} else {
 				if (space) {
-					m_stilText += (char) Screen.iso2scr((short) ' ');
+					result.append(Screen.iso2scr(' '));
 					space = false;
 				}
-				m_stilText += (char) Screen.iso2scr((short) str.charAt(i));
+				result.append(Screen.iso2scr(stilText.charAt(i)));
 				realText = true;
 			}
 		}
@@ -689,16 +512,15 @@ public class Psid64 {
 		// check if the message contained at least one graphical character
 		if (realText) {
 			// end-of-text marker
-			m_stilText += (char) 0xff;
+			result.append((char) 0xff);
 		} else {
 			// no STIL text at all
-			m_stilText = "";
+			return new StringBuffer();
 		}
-
-		return true;
+		return result;
 	}
 
-	private String writeEntry(final STILEntry stilEntry) {
+	private String writeSTILEntry(final STILEntry stilEntry) {
 		final StringBuffer buffer = new StringBuffer();
 		if (stilEntry.filename != null) {
 			buffer.append("Filename: ");
@@ -708,59 +530,17 @@ public class Psid64 {
 		if (stilEntry.globalComment != null) {
 			buffer.append(stilEntry.globalComment.trim());
 		}
-		final Iterator<Info> infosIt = stilEntry.infos.iterator();
-		for (final Iterator<Info> iterator = infosIt; iterator.hasNext();) {
-			final Info info = iterator.next();
-			if (info.comment != null) {
-				buffer.append(info.comment.trim());
-			}
-			if (info.name != null) {
-				buffer.append(" Name: ");
-				buffer.append(info.name.trim());
-			}
-			if (info.author != null) {
-				buffer.append(" Author: ");
-				buffer.append(info.author.trim());
-			}
-			if (info.title != null) {
-				buffer.append(" Title: ");
-				buffer.append(info.title.trim());
-			}
-			if (info.artist != null) {
-				buffer.append(" Artist: ");
-				buffer.append(info.artist.trim());
-			}
+		for (Info info : stilEntry.infos) {
+			getSTILInfo(buffer, info);
 		}
 		int subTuneNo = 1;
 		for (final TuneEntry entry : stilEntry.subtunes) {
 			if (entry.globalComment != null) {
 				buffer.append(entry.globalComment.trim());
 			}
-			final Iterator<Info> subtuneEntryIt = entry.infos.iterator();
-			for (final Iterator<Info> subTuneIterator = subtuneEntryIt; subTuneIterator
-					.hasNext();) {
-				final Info info = subTuneIterator.next();
+			for (Info info : entry.infos) {
 				buffer.append(" SubTune #" + subTuneNo + ": ");
-				if (info.name != null) {
-					buffer.append(" ");
-					buffer.append(info.name.trim());
-				}
-				if (info.author != null) {
-					buffer.append(" Author: ");
-					buffer.append(info.author.trim());
-				}
-				if (info.title != null) {
-					buffer.append(" Title: ");
-					buffer.append(info.title.trim());
-				}
-				if (info.artist != null) {
-					buffer.append(" Artist: ");
-					buffer.append(info.artist.trim());
-				}
-				if (info.comment != null) {
-					buffer.append(" Comment: ");
-					buffer.append(info.comment.trim());
-				}
+				getSTILInfo(buffer, info);
 			}
 			subTuneNo++;
 		}
@@ -768,7 +548,174 @@ public class Psid64 {
 				.toString();
 	}
 
-	private short findStilSpace(final boolean pages[], final short scr,
+	private void getSTILInfo(final StringBuffer buffer, Info info) {
+		if (info.name != null) {
+			buffer.append(" Name: ");
+			buffer.append(info.name.trim());
+		}
+		if (info.author != null) {
+			buffer.append(" Author: ");
+			buffer.append(info.author.trim());
+		}
+		if (info.title != null) {
+			buffer.append(" Title: ");
+			buffer.append(info.title.trim());
+		}
+		if (info.artist != null) {
+			buffer.append(" Artist: ");
+			buffer.append(info.artist.trim());
+		}
+		if (info.comment != null) {
+			buffer.append(" Comment: ");
+			buffer.append(info.comment.trim());
+		}
+	}
+
+	/**
+	 * Find free space in the C64 memory map for the screen and the driver code.
+	 * Of course the driver code takes priority over the screen.
+	 * 
+	 * @return free mem pages for driver/screen/char/stil
+	 * @throws NotEnoughC64MemException
+	 *             no free memory for driver
+	 */
+	private FreeMemPages findFreeSpace(String stilText)
+			throws NotEnoughC64MemException {
+		// calculate size of the STIL text in pages
+		final short stilSize = (short) (stilText.length() + 255 >> 8);
+
+		final boolean pages[] = new boolean[MAX_PAGES];
+		final SidTuneInfo tuneInfo = tune.getInfo();
+		if (tuneInfo.relocStartPage == 0x00) {
+			// Used memory ranges. calculated below
+			final int used[] = { 0x00, 0x03, 0xa0, 0xbf, 0xd0, 0xff,
+					tuneInfo.loadAddr >> 8,
+					tuneInfo.loadAddr + tuneInfo.c64dataLen - 1 >> 8 };
+
+			// Mark used pages in table.
+			for (int i = 0; i < MAX_PAGES; ++i) {
+				pages[i] = false;
+			}
+			for (int i = 0; i < used.length; i += 2) {
+				for (int j = used[i]; j <= used[i + 1]; ++j) {
+					pages[j] = true;
+				}
+			}
+		} else if (tuneInfo.relocStartPage != 0xff && tuneInfo.relocPages != 0) {
+			// the available pages have been specified in the PSID file
+			int endp = Math.min(
+					(tuneInfo.relocStartPage + tuneInfo.relocPages), MAX_PAGES);
+
+			// check that the relocation information does not use the following
+			// memory areas: 0x0000-0x03FF, 0xA000-0xBFFF and 0xD000-0xFFFF
+			if (tuneInfo.relocStartPage < 0x04
+					|| 0xa0 <= tuneInfo.relocStartPage
+					&& tuneInfo.relocStartPage <= 0xbf
+					|| tuneInfo.relocStartPage >= 0xd0 || endp - 1 < 0x04
+					|| 0xa0 <= endp - 1 && endp - 1 <= 0xbf || endp - 1 >= 0xd0) {
+				throw new NotEnoughC64MemException();
+			}
+
+			for (int i = 0; i < MAX_PAGES; ++i) {
+				pages[i] = tuneInfo.relocStartPage <= i && i < endp ? false
+						: true;
+			}
+		} else {
+			// not a single page is available
+			throw new NotEnoughC64MemException();
+		}
+
+		for (int i = 0; i < 4; ++i) {
+			// Calculate the VIC bank offset. Screens located inside banks 1 and
+			// 3 require a copy the character rom in ram. The code below uses a
+			// little trick to swap bank 1 and 2 so that bank 0 and 2 are
+			// checked before 1 and 3.
+			short bank = (short) (((i & 1 ^ i >> 1) != 0 ? i ^ 3 : i) << 6);
+
+			for (int j = 0; j < 0x40; j += 4) {
+				// screen may not reside within the char rom mirror areas
+				if ((bank & 0x40) == 0 && 0x10 <= j && j < 0x20) {
+					continue;
+				}
+
+				// check if screen area is available
+				short scr = (short) (bank + j);
+				if (pages[scr] || pages[scr + 1] || pages[scr + 2]
+						|| pages[scr + 3]) {
+					continue;
+				}
+
+				if ((bank & 0x40) != 0) {
+					// The char rom needs to be copied to RAM so let's try to
+					// find a suitable location.
+					for (int k = 0; k < 0x40; k += 8) {
+						// char rom area may not overlap with screen area
+						if (k == (j & 0x38)) {
+							continue;
+						}
+						// check if character rom area is available
+						short chars = (short) (bank + k);
+						if (pages[chars] || pages[chars + 1]
+								|| pages[chars + 2] || pages[chars + 3]
+								|| pages[chars + 4] || pages[chars + 5]
+								|| pages[chars + 6] || pages[chars + 7]) {
+							continue;
+						}
+						short driver = findDriverSpace(pages, scr, chars,
+								NUM_EXTDRV_PAGES);
+						if (driver != 0) {
+							FreeMemPages freePrages = new FreeMemPages();
+							freePrages.setScreenPage(scr);
+							freePrages.setCharPage(chars);
+							if (stilSize != 0) {
+								freePrages.setStilPage(findSTILSpace(pages,
+										scr, chars, driver, stilSize));
+							}
+							return freePrages;
+						}
+					}
+				} else {
+					short driver = findDriverSpace(pages, scr, (short) 0,
+							NUM_EXTDRV_PAGES);
+					if (driver != 0) {
+						FreeMemPages freePrages = new FreeMemPages();
+						freePrages.setDriverPage(driver);
+						freePrages.setScreenPage(scr);
+						if (stilSize != 0) {
+							freePrages.setStilPage(findSTILSpace(pages, scr,
+									(short) 0, driver, stilSize));
+						}
+						return freePrages;
+					}
+				}
+			}
+		}
+		short driver = findDriverSpace(pages, (short) 0, (short) 0,
+				NUM_MINDRV_PAGES);
+		if (driver != 0) {
+			FreeMemPages freePrages = new FreeMemPages();
+			freePrages.setDriverPage(driver);
+			return freePrages;
+		}
+		throw new NotEnoughC64MemException();
+	}
+
+	private short findDriverSpace(final boolean pages[], final short scr,
+			final short chars, final int size) {
+		short firstPage = 0;
+		for (int i = 0; i < MAX_PAGES; ++i) {
+			if (pages[i] || scr != 0 && scr <= i && i < scr + NUM_SCREEN_PAGES
+					|| chars != 0 && chars <= i && i < chars + NUM_CHAR_PAGES) {
+				if (i - firstPage >= size) {
+					return firstPage;
+				}
+				firstPage = (short) (i + 1);
+			}
+		}
+		return 0;
+	}
+
+	private short findSTILSpace(final boolean pages[], final short scr,
 			final short chars, final short driver, final int size) {
 		int firstPage = 0;
 		for (int i = 0; i < MAX_PAGES; ++i) {
@@ -785,212 +732,8 @@ public class Psid64 {
 		return 0;
 	}
 
-	private short findDriverSpace(final boolean pages[], final short scr,
-			final short chars, final int size) {
-		short firstPage = 0;
-		for (int i = 0; i < MAX_PAGES; ++i) {
-			if (pages[i] || scr != 0 && scr <= i && i < scr + NUM_SCREEN_PAGES
-					|| chars != 0 && chars <= i && i < chars + NUM_CHAR_PAGES) {
-				if (i - firstPage >= size) {
-					return firstPage;
-				}
-				firstPage = (short) (i + 1);
-			}
-		}
-
-		return 0;
-	}
-
-	private void findFreeSpace()
-	/*--------------------------------------------------------------------------*
-	   In          : -
-	   Out         : m_driverPage      startpage of driver, 0 means no driver
-	       m_screenPage      startpage of screen, 0 means no screen
-	       m_charPage      startpage of chars, 0 means no chars
-	       m_stilPage      startpage of stil, 0 means no stil
-	   Return value: -
-	   Description : Find free space in the C64 memory map for the screen and the
-	       driver code. Of course the driver code takes priority over
-	       the screen.
-	   Globals     : psid         PSID header and data
-	   History     : 15-AUG-2001  RH  Initial version
-	       21-SEP-2001  RH  Added support for screens located in the
-	              memory ranges $4000-$8000 and $c000-$d000.
-	 *--------------------------------------------------------------------------*/
-	{
-		final SidTuneInfo tuneInfo = m_tune.getInfo();
-		final boolean pages[] = new boolean[MAX_PAGES];
-		final int startp = tuneInfo.relocStartPage;
-		final int maxp = tuneInfo.relocPages;
-		int endp;
-		int i;
-		int j;
-		int k;
-		short bank;
-		short scr;
-		short chars;
-		short driver;
-
-		// calculate size of the STIL text in pages
-		final short stilSize = (short) (m_stilText.length() + 255 >> 8);
-
-		m_screenPage = (short) 0x00;
-		m_driverPage = (short) 0x00;
-		m_charPage = (short) 0x00;
-		m_stilPage = (short) 0x00;
-
-		if (startp == 0x00) {
-			// Used memory ranges.
-			final int used[] = { 0x00, 0x03, 0xa0, 0xbf, 0xd0, 0xff, 0x00, 0x00 // calculated
-			// below
-			};
-
-			// Finish initialization by setting start and end pages.
-			used[6] = tuneInfo.loadAddr >> 8;
-			used[7] = tuneInfo.loadAddr + tuneInfo.c64dataLen - 1 >> 8;
-
-			// Mark used pages in table.
-			for (i = 0; i < MAX_PAGES; ++i) {
-				pages[i] = false;
-			}
-			for (i = 0; i < used.length; i += 2) {
-				for (j = used[i]; j <= used[i + 1]; ++j) {
-					pages[j] = true;
-				}
-			}
-		} else if (startp != 0xff && maxp != 0) {
-			// the available pages have been specified in the PSID file
-			endp = Math.min((startp + maxp), MAX_PAGES);
-
-			// check that the relocation information does not use the following
-			// memory areas: 0x0000-0x03FF, 0xA000-0xBFFF and 0xD000-0xFFFF
-			if (startp < 0x04 || 0xa0 <= startp && startp <= 0xbf
-					|| startp >= 0xd0 || endp - 1 < 0x04 || 0xa0 <= endp - 1
-					&& endp - 1 <= 0xbf || endp - 1 >= 0xd0) {
-				return;
-			}
-
-			for (i = 0; i < MAX_PAGES; ++i) {
-				pages[i] = startp <= i && i < endp ? false : true;
-			}
-		} else {
-			// not a single page is available
-			return;
-		}
-
-		driver = 0;
-		for (i = 0; i < 4; ++i) {
-			// Calculate the VIC bank offset. Screens located inside banks 1 and
-			// 3
-			// require a copy the character rom in ram. The code below uses a
-			// little trick to swap bank 1 and 2 so that bank 0 and 2 are
-			// checked
-			// before 1 and 3.
-			bank = (short) (((i & 1 ^ i >> 1) != 0 ? i ^ 3 : i) << 6);
-
-			for (j = 0; j < 0x40; j += 4) {
-				// screen may not reside within the char rom mirror areas
-				if ((bank & 0x40) == 0 && 0x10 <= j && j < 0x20) {
-					continue;
-				}
-
-				// check if screen area is available
-				scr = (short) (bank + j);
-				if (pages[scr] || pages[scr + 1] || pages[scr + 2]
-						|| pages[scr + 3]) {
-					continue;
-				}
-
-				if ((bank & 0x40) != 0) {
-					// The char rom needs to be copied to RAM so let's try to
-					// find
-					// a suitable location.
-					for (k = 0; k < 0x40; k += 8) {
-						// char rom area may not overlap with screen area
-						if (k == (j & 0x38)) {
-							continue;
-						}
-
-						// check if character rom area is available
-						chars = (short) (bank + k);
-						if (pages[chars] || pages[chars + 1]
-								|| pages[chars + 2] || pages[chars + 3]
-								|| pages[chars + 4] || pages[chars + 5]
-								|| pages[chars + 6] || pages[chars + 7]) {
-							continue;
-						}
-
-						driver = findDriverSpace(pages, scr, chars,
-								NUM_EXTDRV_PAGES);
-						if (driver != 0) {
-							m_driverPage = driver;
-							m_screenPage = scr;
-							m_charPage = chars;
-							if (stilSize != 0) {
-								m_stilPage = findStilSpace(pages, scr, chars,
-										driver, stilSize);
-							}
-							return;
-						}
-					}
-				} else {
-					driver = findDriverSpace(pages, scr, (short) 0,
-							NUM_EXTDRV_PAGES);
-					if (driver != 0) {
-						m_driverPage = driver;
-						m_screenPage = scr;
-						if (stilSize != 0) {
-							m_stilPage = findStilSpace(pages, scr, (short) 0,
-									driver, stilSize);
-						}
-						return;
-					}
-				}
-			}
-		}
-
-		if (driver == 0) {
-			driver = findDriverSpace(pages, (short) 0, (short) 0,
-					NUM_MINDRV_PAGES);
-			m_driverPage = driver;
-		}
-	}
-
-	public boolean save(final String fileName) {
-		// Open binary output file stream.
-		try {
-			final OutputStream outfile = new FileOutputStream(fileName);
-			return write(outfile);
-		} catch (final IOException e) {
-			m_statusString = txt_fileIoError + ": " + e.getMessage();
-			return false;
-		}
-	}
-
-	public boolean write(final OutputStream out) throws IOException {
-		if (m_programData == null) {
-			m_statusString = txt_noSidTuneConverted;
-			return false;
-		}
-
-		for (int i = 0; i < m_programSize; i++) {
-			out.write(m_programData[i]);
-		}
-
-		out.close();
-		return true;
-	}
-
-	public void setStilEntry(final STILEntry stilEntry) {
-		m_stilEntry = stilEntry;
-	}
-
-	public String getStatus() {
-		return m_statusString;
-	}
-
-	public void convertFiles(STIL stil, final File[] files,
-			final File target) {
+	public void convertFiles(STIL stil, final File[] files, final File target)
+			throws NotEnoughC64MemException, IOException, SidTuneError {
 		for (final File file : files) {
 			if (file.isDirectory()) {
 				convertFiles(stil, file.listFiles(), target);
@@ -1000,41 +743,24 @@ public class Psid64 {
 		}
 	}
 
-	private void convertToPSID64(STIL stil, final File file,
-			final File target) {
-		setStilEntry(stil != null ? stil.getSTILEntry(file) : null);
-		if (!load(file)) {
-			System.err.println("filename: " + file.getAbsolutePath());
-			System.err.println(getStatus());
-			return;
+	private void convertToPSID64(STIL stil, final File file, final File target)
+			throws NotEnoughC64MemException, IOException, SidTuneError {
+		tune = SidTune.load(file);
+		tune.selectSong(tune.getInfo().startSong);
+		stilEntry = stil != null ? stil.getSTILEntry(file) : null;
+
+		File tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file)
+				+ ".prg.tmp");
+		tmpFile.deleteOnExit();
+		try (OutputStream outfile = new FileOutputStream(tmpFile)) {
+			// convert to PSID64
+			outfile.write(convert());
 		}
-		if (!convert()) {
-			System.err.println("filename: " + file.getAbsolutePath());
-			System.err.println(getStatus());
-			return;
-		}
-		File tmpFile = null;
-		try {
-			tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file)
-					+ ".prg.tmp");
-			if (!save(tmpFile.getAbsolutePath())) {
-				System.err.println("filename: " + file.getAbsolutePath());
-				System.err.println(getStatus());
-				return;
-			}
-			// crunch result
-			PUCrunch crunch = new PUCrunch();
-			crunch.run(new String[] {
-					tmpFile.getAbsolutePath(),
-					new File(target, PathUtils.getBaseNameNoExt(file) + ".prg")
-							.getAbsolutePath() });
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (tmpFile != null) {
-				tmpFile.delete();
-			}
-		}
+		// crunch result
+		new PUCrunch().run(new String[] {
+				tmpFile.getAbsolutePath(),
+				new File(target, PathUtils.getBaseNameNoExt(file) + ".prg")
+						.getAbsolutePath() });
 	}
 
 }
