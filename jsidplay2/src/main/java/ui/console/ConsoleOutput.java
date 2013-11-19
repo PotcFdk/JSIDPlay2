@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -37,7 +38,7 @@ public class ConsoleOutput extends C64VBox implements Initializable {
 			}
 
 			private void append(String str) {
-				console.setText(console.getText() + str);
+				Platform.runLater(() -> console.appendText(str));
 			}
 		});
 	}
