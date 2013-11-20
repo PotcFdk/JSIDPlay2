@@ -13,6 +13,8 @@ import ui.common.C64VBox;
 
 public class ConsoleOutput extends C64VBox implements Initializable {
 
+	private static final String NEWLiNE = System.getProperty("line.separator");
+
 	@FXML
 	protected TextArea console;
 	@FXML
@@ -25,20 +27,31 @@ public class ConsoleOutput extends C64VBox implements Initializable {
 
 	public PrintStream getPrintStream(final OutputStream original) {
 		return new PrintStream(new OutputStream() {
+
+			private StringBuffer contents = new StringBuffer();
+			
 			public synchronized void write(final byte[] b, final int off,
 					final int len) throws IOException {
-				final String str = new String(b, off, len);
 				original.write(b, off, len);
-				append(str);
+				final String str = new String(b, off, len);
+				contents.append(str);
+				if (str.endsWith(NEWLiNE)) {
+					flush();
+				}
 			}
 
 			@Override
 			public synchronized void write(int ch) throws IOException {
-				append(String.valueOf((char) ch));
+				contents.append((char) ch);
 			}
 
-			private void append(String str) {
-				Platform.runLater(() -> console.appendText(str));
+			@Override
+			public synchronized void flush() throws IOException {
+				super.flush();
+				Platform.runLater(() -> {
+					console.appendText(contents.toString());
+					contents.setLength(0);
+				});
 			}
 		});
 	}

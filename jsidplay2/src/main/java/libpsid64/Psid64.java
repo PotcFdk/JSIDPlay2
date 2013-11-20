@@ -95,49 +95,47 @@ public class Psid64 {
 		final DriverInfo driverInfo = initDriver(freePages);
 		// fill the blocks structure
 		final MemoryBlock memBlocks[] = new MemoryBlock[MAX_BLOCKS];
-		for (int i = 0; i < memBlocks.length; i++) {
-			memBlocks[i] = new MemoryBlock();
-		}
 		int numBlocks = 0;
-		memBlocks[numBlocks].startAddress = freePages.getDriverPage() << 8;
-		memBlocks[numBlocks].size = driverInfo.getSize();
-		memBlocks[numBlocks].data = driverInfo.getMemory();
-		memBlocks[numBlocks].dataOff = driverInfo.getRelocatedDriverPos();
-		memBlocks[numBlocks].description = "Driver code";
+		memBlocks[numBlocks] = new MemoryBlock();
+		memBlocks[numBlocks].setStartAddress(freePages.getDriverPage() << 8);
+		memBlocks[numBlocks].setSize(driverInfo.getSize());
+		memBlocks[numBlocks].setData(driverInfo.getMemory());
+		memBlocks[numBlocks].setDataOff(driverInfo.getRelocatedDriverPos());
+		memBlocks[numBlocks].setDescription("Driver code");
 		++numBlocks;
 
-		memBlocks[numBlocks].startAddress = tuneInfo.loadAddr;
-		memBlocks[numBlocks].size = tuneInfo.c64dataLen;
 		final byte c64buf[] = new byte[65536];
 		tune.placeProgramInMemory(c64buf);
-		memBlocks[numBlocks].data = c64buf;
-		memBlocks[numBlocks].dataOff = tuneInfo.loadAddr;
-		System.arraycopy(c64buf, tuneInfo.loadAddr, memBlocks[numBlocks].data,
-				memBlocks[numBlocks].dataOff, memBlocks[numBlocks].data.length
-						- memBlocks[numBlocks].dataOff);
-		memBlocks[numBlocks].description = "Music data";
+		memBlocks[numBlocks] = new MemoryBlock();
+		memBlocks[numBlocks].setStartAddress(tuneInfo.loadAddr);
+		memBlocks[numBlocks].setSize(tuneInfo.c64dataLen);
+		memBlocks[numBlocks].setData(c64buf);
+		memBlocks[numBlocks].setDataOff(tuneInfo.loadAddr);
+		memBlocks[numBlocks].setDescription("Music data");
 		++numBlocks;
 
 		if (freePages.getScreenPage() != 0x00) {
 			Screen screen = drawScreen();
-			memBlocks[numBlocks].startAddress = freePages.getScreenPage() << 8;
-			memBlocks[numBlocks].size = screen.getDataSize();
-			memBlocks[numBlocks].data = screen.getData();
-			memBlocks[numBlocks].dataOff = 0;
-			memBlocks[numBlocks].description = "Screen";
+			memBlocks[numBlocks] = new MemoryBlock();
+			memBlocks[numBlocks].setStartAddress(freePages.getScreenPage() << 8);
+			memBlocks[numBlocks].setSize(screen.getDataSize());
+			memBlocks[numBlocks].setData(screen.getData());
+			memBlocks[numBlocks].setDataOff(0);
+			memBlocks[numBlocks].setDescription("Screen");
 			++numBlocks;
 		}
 
 		if (freePages.getStilPage() != 0x00) {
-			memBlocks[numBlocks].startAddress = freePages.getStilPage() << 8;
-			memBlocks[numBlocks].size = stilText.length();
-			memBlocks[numBlocks].data = new byte[stilText.length() + 1];
+			byte[] data = new byte[stilText.length()];
 			for (int i = 0; i < stilText.length(); i++) {
-				memBlocks[numBlocks].data[i] = (byte) stilText.charAt(i);
-				memBlocks[numBlocks].dataOff = 0;
+				data[i] = (byte) stilText.charAt(i);
 			}
-			memBlocks[numBlocks].data[stilText.length()] = 0;
-			memBlocks[numBlocks].description = "STIL text";
+			memBlocks[numBlocks] = new MemoryBlock();
+			memBlocks[numBlocks].setStartAddress(freePages.getStilPage() << 8);
+			memBlocks[numBlocks].setSize(data.length);
+			memBlocks[numBlocks].setData(data);
+			memBlocks[numBlocks].setDataOff(0);
+			memBlocks[numBlocks].setDescription("STIL text");
 			++numBlocks;
 		}
 		Arrays.sort(memBlocks, 0, numBlocks, new MemoryBlockComparator());
@@ -148,18 +146,18 @@ public class Psid64 {
 
 			int charset = freePages.getCharPage() << 8;
 			for (int i = 0; i < numBlocks; ++i) {
-				if (charset != 0 && memBlocks[i].startAddress > charset) {
+				if (charset != 0 && memBlocks[i].getStartAddress() > charset) {
 					System.out.println("  $" + toHexWord(charset) + "-$"
 							+ toHexWord(charset + 256 * NUM_CHAR_PAGES)
 							+ "  Character set");
 					charset = 0;
 				}
 				System.out.println("  $"
-						+ toHexWord(memBlocks[i].startAddress)
+						+ toHexWord(memBlocks[i].getStartAddress())
 						+ "-$"
-						+ toHexWord(memBlocks[i].startAddress
-								+ memBlocks[i].size) + "  "
-						+ memBlocks[i].description);
+						+ toHexWord(memBlocks[i].getStartAddress()
+								+ memBlocks[i].getSize()) + "  "
+						+ memBlocks[i].getDescription());
 			}
 			if (charset != 0) {
 				System.out.println("  $" + toHexWord(charset) + "-$"
@@ -170,7 +168,7 @@ public class Psid64 {
 		// calculate total size of the blocks
 		int size = 0;
 		for (int i = 0; i < numBlocks; ++i) {
-			size += memBlocks[i].size;
+			size += memBlocks[i].getSize();
 		}
 		byte[] programData = new byte[psid_boot.length + size];
 		System.arraycopy(psid_boot, 0, programData, 0, psid_boot.length);
@@ -212,19 +210,19 @@ public class Psid64 {
 		// copy block data to psidboot.a65 parameters
 		for (int i = 0; i < numBlocks; ++i) {
 			final int offs = addr + numBlocks - 1 - i;
-			programData[offs] = (byte) (memBlocks[i].startAddress & 0xff);
-			programData[offs + MAX_BLOCKS] = (byte) (memBlocks[i].startAddress >> 8);
-			programData[offs + 2 * MAX_BLOCKS] = (byte) (memBlocks[i].size & 0xff);
-			programData[offs + 3 * MAX_BLOCKS] = (byte) (memBlocks[i].size >> 8);
+			programData[offs] = (byte) (memBlocks[i].getStartAddress() & 0xff);
+			programData[offs + MAX_BLOCKS] = (byte) (memBlocks[i].getStartAddress() >> 8);
+			programData[offs + 2 * MAX_BLOCKS] = (byte) (memBlocks[i].getSize() & 0xff);
+			programData[offs + 3 * MAX_BLOCKS] = (byte) (memBlocks[i].getSize() >> 8);
 		}
 		addr = addr + 4 * MAX_BLOCKS;
 
 		// copy blocks to c64 program file
 		int destPos = psid_boot.length;
 		for (int i = 0; i < numBlocks; ++i) {
-			System.arraycopy(memBlocks[i].data, memBlocks[i].dataOff,
-					programData, destPos, memBlocks[i].size);
-			destPos += memBlocks[i].size;
+			System.arraycopy(memBlocks[i].getData(), memBlocks[i].getDataOff(),
+					programData, destPos, memBlocks[i].getSize());
+			destPos += memBlocks[i].getSize();
 		}
 		return programData;
 	}
