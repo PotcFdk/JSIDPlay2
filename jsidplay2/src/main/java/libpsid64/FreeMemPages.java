@@ -4,49 +4,49 @@ class FreeMemPages {
 	/**
 	 * Start page of driver, 0 means no driver.
 	 */
-	private short driverPage;
+	private Short driverPage;
 	/**
 	 * Start page of screen, 0 means no screen.
 	 */
-	private short screenPage;
+	private Short screenPage;
 	/**
 	 * Start page of chars, 0 means no chars.
 	 */
-	private short charPage;
+	private Short charPage;
 	/**
 	 * Start page of STIL, 0 means no STIL.
 	 */
-	private short stilPage;
+	private Short stilPage;
 	
-	public short getDriverPage() {
+	public Short getDriverPage() {
 		return driverPage;
 	}
 	
-	public void setDriverPage(short driverPage) {
+	public void setDriverPage(Short driverPage) {
 		this.driverPage = driverPage;
 	}
 	
-	public short getScreenPage() {
+	public Short getScreenPage() {
 		return screenPage;
 	}
 	
-	public void setScreenPage(short screenPage) {
+	public void setScreenPage(Short screenPage) {
 		this.screenPage = screenPage;
 	}
 	
-	public short getCharPage() {
+	public Short getCharPage() {
 		return charPage;
 	}
 	
-	public void setCharPage(short charPage) {
+	public void setCharPage(Short charPage) {
 		this.charPage = charPage;
 	}
 	
-	public short getStilPage() {
+	public Short getStilPage() {
 		return stilPage;
 	}
 	
-	public void setStilPage(short stilPage) {
+	public void setStilPage(Short stilPage) {
 		this.stilPage = stilPage;
 	}
 }

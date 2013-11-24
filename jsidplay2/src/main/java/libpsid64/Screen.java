@@ -14,9 +14,8 @@ public class Screen {
 	}
 	
 	public void clear() {
-		char c = iso2scr(' ');
 		for (int i = 0; i < SCREEN_SIZE; ++i) {
-			screen[i] = (byte) c;
+			screen[i] = iso2scr(' ');
 		}
 	}
 
@@ -119,8 +118,8 @@ public class Screen {
        0x0f, 0x15, 0x15, 0x15, 0x15, 0x19, (byte) 0xbf, 0x19  // 0xf8 øùúûüýþÿ
    };
 
-	public static char iso2scr(char c) {
-		return (char) scrtab[c & 0xff];
+	public static byte iso2scr(char c) {
+		return (byte) scrtab[c & 0xff];
 	}
 
 	private int offset(int x, int y) {
