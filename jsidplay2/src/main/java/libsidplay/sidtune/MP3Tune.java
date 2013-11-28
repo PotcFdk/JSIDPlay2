@@ -70,7 +70,7 @@ public class MP3Tune extends SidTune {
 			String album = s.decoder.getAlbum();
 			String year = s.decoder.getYear();
 			if (album != null && year != null) {
-				s.info.infoString[2] = album + "(" + year + ")";
+				s.info.infoString[2] = album + " (" + year + ")";
 			} else {
 				s.info.infoString[2] = album;
 			}
