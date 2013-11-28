@@ -25,7 +25,7 @@
 		<ToggleGroup fx:id="repeatGroup" />
 	</fx:define>
 	<BorderPane AnchorPane.bottomAnchor="10"
-		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+		AnchorPane.leftAnchor="10"
 		AnchorPane.topAnchor="10">
 		<top>
 			<VBox>
@@ -110,7 +110,7 @@
 						<Label text="%RENAME_TAB" />
 						<TextField fx:id="renameTab" onAction="#renameTab" />
 					</HBox>
-					<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS" />
+					<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS"/>
 				</VBox>
 			</TitledPane>
 		</center>

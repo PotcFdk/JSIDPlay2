@@ -48,10 +48,10 @@ public class Screen {
 		}
 	}
 
-	public void poke(int x, int y, short value) {
+	public void poke(int x, int y, int value) {
 		if ((x < WIDTH) && (y < HEIGHT)) {
 			int offs = offset(x, y);
-			screen[offs] = (byte) value;
+			screen[offs] = (byte) (value & 0xff);
 		}
 	}
 
