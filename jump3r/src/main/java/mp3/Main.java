@@ -212,11 +212,13 @@ public class Main {
 								skip_end);
 		}
 
-		System.out.print("|");
-		for (int j = 0; j < MAX_WIDTH - 2; j++) {
-			System.out.print("=");
+		if (!lame.getParser().embedded) {
+			System.out.print("|");
+			for (int j = 0; j < MAX_WIDTH - 2; j++) {
+				System.out.print("=");
+			}
+			System.out.println("|");
 		}
-		System.out.println("|");
 		oldPercent = curPercent = oldConsoleX = 0;
 
 		if (!lame.getParser().disable_wav_header)
@@ -240,7 +242,7 @@ public class Main {
 										/ lame.getParser().getMp3InputData().getFrameSize());
 				wavsize += iread;
 
-				if (lame.getParser().silent <= 0) {
+				if (lame.getParser().silent <= 0 || lame.getParser().embedded) {
 					timestatus(lame.getParser().getMp3InputData().getFramesDecodedCounter(),
 							lame.getParser().getMp3InputData().getTotalFrames());
 				}
@@ -312,11 +314,13 @@ public class Main {
 			rf.close();
 		}
 
-		System.out.print("|");
-		for (int j = 0; j < MAX_WIDTH - 2; j++) {
-			System.out.print("=");
+		if (!lame.getParser().embedded) {
+			System.out.print("|");
+			for (int j = 0; j < MAX_WIDTH - 2; j++) {
+				System.out.print("=");
+			}
+			System.out.println("|");
 		}
-		System.out.println("|");
 	}
 
 	private void print_lame_tag_leading_info() {
@@ -802,11 +806,13 @@ public class Main {
 			if (lame.getParser().silent <= -10) {
 				lame.lame_print_internals();
 			}
-			System.out.print("|");
-			for (int i = 0; i < MAX_WIDTH - 2; i++) {
-				System.out.print("=");
+			if (!lame.getParser().embedded) {
+				System.out.print("|");
+				for (int i = 0; i < MAX_WIDTH - 2; i++) {
+					System.out.print("=");
+				}
+				System.out.println("|");
 			}
-			System.out.println("|");
 			oldPercent = curPercent = oldConsoleX = 0;
 		}
 	}
@@ -852,11 +858,13 @@ public class Main {
 			if (lame.getParser().brhist) {
 				lame.getHist().brhist_disp(lame.getFlags());
 			}
-			System.out.print("|");
-			for (int i = 0; i < MAX_WIDTH - 2; i++) {
-				System.out.print("=");
+			if (!lame.getParser().embedded) {
+				System.out.print("|");
+				for (int i = 0; i < MAX_WIDTH - 2; i++) {
+					System.out.print("=");
+				}
+				System.out.println("|");
 			}
-			System.out.println("|");
 		}
 	}
 
@@ -881,7 +889,7 @@ public class Main {
 	private void progressStep() {
 		curPercent++;
 		float consoleX = (float) curPercent * MAX_WIDTH / 100f;
-		if ((int) consoleX != oldConsoleX)
+		if ((int) consoleX != oldConsoleX && !lame.getParser().embedded)
 			System.out.print(".");
 		oldConsoleX = (int) consoleX;
 		support.firePropertyChange("progress", oldPercent, curPercent);

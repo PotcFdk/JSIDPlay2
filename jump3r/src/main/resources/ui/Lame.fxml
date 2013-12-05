@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.cell.ProgressBarTableCell?>
+<?import javafx.scene.image.ImageView?>
+<?scenebuilder-preview-i18n-resource Lame.properties?>
+
+<Scene>
+	<BorderPane xmlns:fx="http://javafx.com/fxml">
+		<center>
+			<BorderPane>
+				<top>
+					<HBox>
+						<Button text="%ADD" onAction="#add" />
+						<Button text="%REMOVE" onAction="#remove" fx:id="doRemove" />
+						<Button text="%ENCODE_DECODE" onAction="#encodeDecode"
+							fx:id="doEncodeDecode" />
+					</HBox>
+				</top>
+				<center>
+					<TabPane>
+						<Tab text="%INPUT_OUTPUT">
+							<VBox>
+								<TitledPane text="%INPUT_FILES">
+									<TableView fx:id="files">
+										<columns>
+											<TableColumn text="%NO" prefWidth="50">
+												<cellValueFactory>
+													<PropertyValueFactory property="no" />
+												</cellValueFactory>
+											</TableColumn>
+											<TableColumn text="%FILENAME" prefWidth="100">
+												<cellValueFactory>
+													<PropertyValueFactory property="filename" />
+												</cellValueFactory>
+
+											</TableColumn>
+											<TableColumn text="%TYPE" prefWidth="50">
+												<cellValueFactory>
+													<PropertyValueFactory property="type" />
+												</cellValueFactory>
+											</TableColumn>
+											<TableColumn text="%PROGRESS" prefWidth="100" fx:id="progressColumn">
+												<cellValueFactory>
+													<PropertyValueFactory property="progress" />
+												</cellValueFactory>
+											</TableColumn>
+											<TableColumn text="%STATUS" prefWidth="100">
+												<cellValueFactory>
+													<PropertyValueFactory property="message" />
+												</cellValueFactory>
+											</TableColumn>
+										</columns>
+									</TableView>
+								</TitledPane>
+								<TitledPane text="%OUTPUT_DIR">
+									<VBox>
+										<RadioButton text="%OUT_DIR_IN_DIR" selected="true"
+											fx:id="outputIsInput" />
+										<RadioButton text="%USE_BELOW" fx:id="customOutputDir" />
+										<HBox>
+											<TextField editable="false" fx:id="outputDir" />
+											<Button text="%BROWSE" onAction="#chooseOutputDir" />
+										</HBox>
+									</VBox>
+								</TitledPane>
+								<CheckBox text="%OVERWRITE" fx:id="overwrite" />
+							</VBox>
+						</Tab>
+						<Tab text="%LAME_SETTINGS">
+							<VBox>
+								<GridPane>
+									<RadioButton text="%PRESETS" selected="true"
+										onAction="#setPresets" GridPane.columnIndex="0"
+										GridPane.rowIndex="0" />
+									<Label text="%PRESET" GridPane.columnIndex="1"
+										GridPane.rowIndex="0" />
+									<ComboBox fx:id="presets" GridPane.columnIndex="2"
+										GridPane.rowIndex="0" />
+
+									<RadioButton text="%CUSTOM" onAction="#setCustom"
+										GridPane.columnIndex="0" GridPane.rowIndex="1" />
+									<RadioButton text="%VBR" fx:id="setVBR" disable="true"
+										GridPane.columnIndex="1" GridPane.rowIndex="1" />
+									<ComboBox fx:id="vbr" disable="true"
+										GridPane.columnIndex="2" GridPane.rowIndex="1" />
+
+									<RadioButton text="%ABR" fx:id="setABR" disable="true"
+										GridPane.columnIndex="1" GridPane.rowIndex="2" />
+									<ComboBox fx:id="abr" disable="true"
+										GridPane.columnIndex="2" GridPane.rowIndex="2" />
+
+									<RadioButton text="%CBR" fx:id="setCBR" disable="true"
+										GridPane.columnIndex="1" GridPane.rowIndex="3" />
+									<ComboBox fx:id="cbr" disable="true"
+										GridPane.columnIndex="2" GridPane.rowIndex="3" />
+								</GridPane>
+								<TitledPane text="%CHANNEL_MODE">
+									<HBox>
+										<RadioButton text="%STEREO" selected="true" fx:id="stereo" />
+										<RadioButton text="%JOINT_STEREO" fx:id="jointStereo" />
+										<RadioButton text="%FORCED_JOINT_STEREO" fx:id="forcedJointStereo" />
+										<RadioButton text="%DUAL_CHANNELS" fx:id="dualChannels" />
+										<RadioButton text="%MONO" fx:id="mono" />
+										<RadioButton text="%AUTO" fx:id="auto" />
+									</HBox>
+								</TitledPane>
+								<TitledPane text="%ALGORITHM">
+									<HBox>
+										<ComboBox fx:id="algorithm"></ComboBox>
+									</HBox>
+								</TitledPane>
+							</VBox>
+						</Tab>
+					</TabPane>
+				</center>
+			</BorderPane>
+		</center>
+		<left>
+			<VBox>
+				<TitledPane text="%TAG_SETTINGS">
+					<VBox>
+						<HBox>
+							<Label text="%TITLE" />
+							<ComboBox editable="true" fx:id="title" />
+						</HBox>
+						<HBox>
+							<Label text="%ARTIST" />
+							<ComboBox editable="true" fx:id="artist" />
+						</HBox>
+						<HBox>
+							<Label text="%ALBUM" />
+							<ComboBox editable="true" fx:id="album" />
+						</HBox>
+						<HBox>
+							<Label text="%YEAR" />
+							<ComboBox editable="true" fx:id="year" />
+							<Label text="%TRACK" />
+							<ComboBox editable="true" fx:id="track" />
+							<Label text="%GENRE" />
+							<ComboBox editable="false" fx:id="genre" />
+						</HBox>
+						<Separator />
+						<HBox>
+							<Label text="%COMMENT" />
+							<ComboBox editable="true" fx:id="comment" />
+						</HBox>
+						<Separator />
+						<HBox>
+							<Label text="%ALBUM_INTERPRET" />
+							<ComboBox disable="true" editable="true" fx:id="comment" />
+						</HBox>
+						<HBox>
+							<Label text="%AUTHOR" />
+							<ComboBox disable="true" editable="true" fx:id="author" />
+						</HBox>
+						<HBox>
+							<Label text="%CD_NUMBER" />
+							<ComboBox disable="true" editable="true" fx:id="cdNumber" />
+						</HBox>
+						<ImageView fx:id="cover" onMouseClicked="#setPicture" fitWidth="128" fitHeight="128"/>
+						<Button text="%SAVE" disable="true" onAction="#doSaveTags"
+							fx:id="saveTags" />
+					</VBox>
+				</TitledPane>
+			</VBox>
+		</left>
+	</BorderPane>
+</Scene>
+

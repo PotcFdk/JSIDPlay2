@@ -78,6 +78,7 @@ public class Parse {
 	 * Verbosity
 	 */
 	public int silent;
+	public boolean embedded;
 	/**
 	 * Ignore errors in values passed for tags
 	 */
@@ -521,6 +522,7 @@ public class Parse {
 		outPath.setLength(0);
 		/* turn on display options. user settings may turn them off below */
 		silent = 0;
+		embedded = false;
 		ignore_tag_errors = false;
 		brhist = true;
 		mp3_delay = 0;
@@ -1022,6 +1024,9 @@ public class Parse {
 							"brief")) {
 						silent = -5; /* print few info on screen */
 
+					} else if (token.substring(tokenPos).equalsIgnoreCase(
+							"embedded")) {
+						embedded = true;
 					} else if (token.substring(tokenPos).equalsIgnoreCase(
 							"verbose")) {
 						silent = -10; /* print a lot on screen */
