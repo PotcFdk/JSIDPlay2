@@ -77,7 +77,7 @@
 							<headerType>console</headerType>
 							<jar>${project.artifactId}-${project.version}.jar</jar>
 							<outfile>${project.build.directory}/${project.name}-${project.version}.exe</outfile>
-							<errTitle>JSIDPlay2</errTitle>
+							<errTitle>jump3r</errTitle>
 							<chdir>.</chdir>
 							<priority>high</priority>
 							<downloadUrl>http://java.com/download</downloadUrl>
