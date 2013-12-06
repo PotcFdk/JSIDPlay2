@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -27,10 +25,12 @@ import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import mp3.GenreListHandler;
 import mp3.ID3Tag;
 
 public class Lame extends UIStage {
+	private static final URL DEFAULT_PICTURE = Lame.class
+			.getResource("picture.png");
+
 	@FXML
 	private ImageView cover;
 	@FXML
@@ -73,7 +73,7 @@ public class Lame extends UIStage {
 	private ObservableList<String> genreList = FXCollections
 			.<String> observableArrayList();
 
-	private String pictureFilename;
+	private String coverFilename;
 	private File lastDir;
 	private ExtensionFilter musicFilter = new ExtensionFilter(
 			"MUSIC (WAV, MP3)", "*.wav", "*.mp3");
@@ -88,13 +88,9 @@ public class Lame extends UIStage {
 		if (selectedFiles != null) {
 			lastDir = selectedFiles.get(0).getParentFile();
 			for (File file : selectedFiles) {
-				String ext = file.getName().substring(
-						file.getName().lastIndexOf('.') + 1);
 				ConversionTask convertableFile = new ConversionTask();
 				convertableFile.setNo(convertableFiles.size());
-				convertableFile.setFilename(file.getAbsolutePath());
-				convertableFile.setType(ext);
-				convertableFile.setFilename(file.getAbsolutePath());
+				convertableFile.setFile(file);
 				convertableFiles.add(convertableFile);
 			}
 		}
@@ -120,8 +116,8 @@ public class Lame extends UIStage {
 	private void encodeDecode() {
 		for (ConversionTask service : files.getItems()) {
 			try {
-				service.setCmd(getCommand(service.getFilename()));
-				service.restart();
+				service.setCmd(getCommand(service.getFile()));
+				service.start();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -149,15 +145,16 @@ public class Lame extends UIStage {
 				new ExtensionFilter("JPG file", "*.jpg"));
 		final File selectedFile = fileDialog.showOpenDialog(files.getScene()
 				.getWindow());
+		coverFilename = null;
+		cover.setImage(new Image(DEFAULT_PICTURE.toString()));
 		if (selectedFile != null) {
 			lastDir = selectedFile.getParentFile();
 			try {
-				pictureFilename = selectedFile.getAbsolutePath();
+				coverFilename = selectedFile.getAbsolutePath();
 				cover.setImage(new Image(selectedFile.toURI().toURL()
 						.toString()));
 			} catch (MalformedURLException e1) {
 				e1.printStackTrace();
-				pictureFilename = null;
 			}
 		}
 	}
@@ -165,17 +162,15 @@ public class Lame extends UIStage {
 	@FXML
 	private void doSaveTags() {
 		for (ConversionTask service : files.getItems()) {
-			if ("wav".equals(service.getType())) {
+			if (!"mp3".equals(service.getType())) {
 				continue;
 			}
-			final String filename = service.getFilename();
-			final String newFilename = filename.substring(0,
-					filename.lastIndexOf('.'))
-					+ ".new.mp3";
+			File file = service.getFile();
+			File newFile = new File(file.getParentFile(), file.getName()
+					.substring(0, file.getName().lastIndexOf('.')) + ".new.mp3");
 			try {
-				service.setCmd(getSaveTagsCommand(filename, new File(
-						newFilename)));
-				service.restart();
+				service.setCmd(getSaveTagsCommand(file, newFile));
+				service.start();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -228,29 +223,20 @@ public class Lame extends UIStage {
 				getBundle().getString("ALG_9"),
 				getBundle().getString("ALG_AUTO"));
 		algorithm.getSelectionModel().select(getBundle().getString("ALG_2"));
+
 		genreList.add("");
 		ID3Tag id3 = new ID3Tag();
-		id3.id3tag_genre_list(new GenreListHandler() {
+		id3.id3tag_genre_list((int num, String name) -> genreList.add(name));
 
-			@Override
-			public void genre_list_handler(int num, String name) {
-				genreList.add(name);
-			}
+		files.getSelectionModel()
+				.selectedItemProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> saveTags
+								.setDisable(files.getSelectionModel()
+										.getSelectedItems().size() == 0)
 
-		});
-
-		files.getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<ConversionTask>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends ConversionTask> observable,
-							ConversionTask oldValue, ConversionTask newValue) {
-						saveTags.setDisable(files.getSelectionModel()
-								.getSelectedItems().size() == 0);
-					}
-				});
-		final URL resource = Lame.class.getResource("picture.png");
-		cover.setImage(new Image(resource.toString()));
+				);
+		cover.setImage(new Image(DEFAULT_PICTURE.toString()));
 	}
 
 	private void setPresetsOrCustom(boolean isPresets) {
@@ -263,8 +249,8 @@ public class Lame extends UIStage {
 		vbr.setDisable(isPresets);
 	}
 
-	private ArrayList<String> getSaveTagsCommand(final String filename,
-			final File tmp) throws IOException {
+	private ArrayList<String> getSaveTagsCommand(final File file,
+			final File newFile) throws IOException {
 		ArrayList<String> cmd = new ArrayList<String>();
 		cmd.add("--space-id3v1");
 		if (title.getSelectionModel().getSelectedItem() != null) {
@@ -295,19 +281,18 @@ public class Lame extends UIStage {
 			cmd.add("--tc");
 			cmd.add(comment.getSelectionModel().getSelectedItem());
 		}
-		if (pictureFilename != null) {
+		if (coverFilename != null) {
 			cmd.add("--ti");
-			cmd.add(pictureFilename);
+			cmd.add(coverFilename);
 		}
-		cmd.add(filename);
-		cmd.add(tmp.getAbsolutePath());
+		cmd.add(file.getAbsolutePath());
+		cmd.add(newFile.getAbsolutePath());
 		return cmd;
 	}
 
-	private ArrayList<String> getCommand(String filename) throws IOException {
+	private ArrayList<String> getCommand(File file) throws IOException {
 		ArrayList<String> cmd = new ArrayList<String>();
-		if (new File(filename).getName().toLowerCase(Locale.US)
-				.endsWith(".mp3")) {
+		if (file.getName().toLowerCase(Locale.US).endsWith(".mp3")) {
 			cmd.add("--decode");
 		}
 		cmd.add("--embedded");
@@ -372,43 +357,28 @@ public class Lame extends UIStage {
 			cmd.add("m");
 		}
 
-		cmd.add(filename);
+		cmd.add(file.getAbsolutePath());
+
+		String outDir;
+		String outName = file.getName();
+		if (outName.toLowerCase(Locale.US).endsWith(".mp3")) {
+			outName = outName.substring(0, outName.lastIndexOf('.')) + ".wav";
+		} else {
+			outName = outName.substring(0, outName.lastIndexOf('.')) + ".mp3";
+		}
 		if (!outputIsInput.isSelected()) {
-			String outDir = outputDir.getText();
+			outDir = outputDir.getText();
 			if (outDir.length() == 0) {
 				outDir = System.getProperty("user.dir");
 			}
-			String outName = new File(filename).getName();
-			if (outName.toLowerCase(Locale.US).endsWith(".mp3")) {
-				outName = outName.substring(0, outName.lastIndexOf('.'))
-						+ ".wav";
-			} else {
-				// outName.toLowerCase(Locale.US).endsWith(".wav")
-				outName = outName.substring(0, outName.lastIndexOf('.'))
-						+ ".mp3";
-			}
-			cmd.add(new File(outDir, outName).getAbsolutePath());
-			if (!overwrite.isSelected() && new File(outDir, outName).exists()) {
-				throw new IOException("Output file "
-						+ new File(outDir, outName) + " already exists!");
-			}
 		} else {
 			// Custom output dir
-			String outName = new File(filename).getName();
-			if (outName.toLowerCase(Locale.US).endsWith(".mp3")) {
-				outName = outName.substring(0, outName.lastIndexOf('.'))
-						+ ".wav";
-			} else {
-				// outName.toLowerCase(Locale.US).endsWith(".wav")
-				outName = outName.substring(0, outName.lastIndexOf('.'))
-						+ ".mp3";
-			}
-			String outDir = new File(filename).getParent();
-			cmd.add(new File(outDir, outName).getAbsolutePath());
-			if (!overwrite.isSelected() && new File(outDir, outName).exists()) {
-				throw new IOException("Output file "
-						+ new File(outDir, outName) + " already exists!");
-			}
+			outDir = file.getParent();
+		}
+		cmd.add(new File(outDir, outName).getAbsolutePath());
+		if (!overwrite.isSelected() && new File(outDir, outName).exists()) {
+			throw new IOException("Output file " + new File(outDir, outName)
+					+ " already exists!");
 		}
 		return cmd;
 	}

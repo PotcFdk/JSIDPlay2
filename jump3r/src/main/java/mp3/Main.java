@@ -820,7 +820,7 @@ public class Main {
     private double last_time = 0.0;
 
 	private void encoder_progress() {
-		if (lame.getParser().silent <= 0) {
+		if (lame.getParser().silent <= 0 || lame.getParser().embedded) {
 			int frames = lame.getFlags().frameNum;
 			if (lame.getParser().update_interval <= 0) {
 				/* most likely --disptime x not used */
@@ -850,7 +850,7 @@ public class Main {
 	}
 
 	private void encoder_progress_end() {
-		if (lame.getParser().silent <= 0) {
+		if (lame.getParser().silent <= 0 || lame.getParser().embedded) {
 			if (lame.getParser().brhist) {
 				lame.getHist().brhist_jump_back();
 			}

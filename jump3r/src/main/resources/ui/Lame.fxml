@@ -48,9 +48,8 @@
 											</TableColumn>
 											<TableColumn text="%FILENAME" prefWidth="100">
 												<cellValueFactory>
-													<PropertyValueFactory property="filename" />
+													<PropertyValueFactory property="file" />
 												</cellValueFactory>
-
 											</TableColumn>
 											<TableColumn text="%TYPE" prefWidth="50">
 												<cellValueFactory>

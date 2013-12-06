@@ -1,7 +1,6 @@
 package ui;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 
 import javafx.concurrent.Service;
@@ -12,7 +11,7 @@ import mp3.Main;
 public class ConversionTask extends Service<Void> {
 
 	private int no;
-	private String filename;
+	private File file;
 	private String type;
 	private ArrayList<String> cmd;
 
@@ -24,20 +23,18 @@ public class ConversionTask extends Service<Void> {
 		this.no = no;
 	}
 
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public File getFile() {
+		return file;
 	}
 
 	public String getType() {
 		return type;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setFile(File file) {
+		this.file = file;
+		this.type = file.getName().substring(
+				file.getName().lastIndexOf('.') + 1);
 	}
 
 	public ArrayList<String> getCmd() {
@@ -57,28 +54,25 @@ public class ConversionTask extends Service<Void> {
 				updateMessage("Waiting...");
 
 				final Main main = new Main();
-				PropertyChangeListener listener = new PropertyChangeListener() {
-
-					@Override
-					public void propertyChange(final PropertyChangeEvent evt) {
-						if ("progress".equals(evt.getPropertyName())) {
-							updateMessage("Running...");
-							Integer valueOf = Integer.valueOf(evt.getNewValue()
-									.toString());
-							updateProgress(valueOf, 100);
-							if (valueOf == 100) {
-								updateMessage("Done");
-								updateProgress(1, 1);
+				main.getSupport().addPropertyChangeListener(
+						(evt) -> {
+							if ("progress".equals(evt.getPropertyName())) {
+								updateMessage("Running...");
+								updateProgress(Integer.valueOf(evt
+										.getNewValue().toString()), 100);
 							}
-						}
-					}
-				};
-				main.getSupport().addPropertyChangeListener(listener);
+						});
 				for (String arg : cmd) {
 					System.out.print(arg + " ");
 				}
 				System.out.println();
-				main.run(cmd.toArray(new String[cmd.size()]));
+				if (0 != main.run(cmd.toArray(new String[cmd.size()]))) {
+					updateProgress(ProgressIndicator.INDETERMINATE_PROGRESS, 1);
+					updateMessage("Waiting...");
+				} else {
+					updateMessage("Done");
+					updateProgress(1, 1);
+				}
 				return null;
 			}
 
