@@ -9,6 +9,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.CheckBox?>
@@ -24,6 +25,11 @@
 
 <Scene>
 	<BorderPane xmlns:fx="http://javafx.com/fxml">
+		<fx:define>
+			<ToggleGroup fx:id="presetsCustomGroup" />
+			<ToggleGroup fx:id="vbrAbrCbrGroup" />
+			<ToggleGroup fx:id="monoStereoGroup" />
+		</fx:define>
 		<center>
 			<BorderPane>
 				<top>
@@ -56,7 +62,8 @@
 													<PropertyValueFactory property="type" />
 												</cellValueFactory>
 											</TableColumn>
-											<TableColumn text="%PROGRESS" prefWidth="100" fx:id="progressColumn">
+											<TableColumn text="%PROGRESS" prefWidth="100"
+												fx:id="progressColumn">
 												<cellValueFactory>
 													<PropertyValueFactory property="progress" />
 												</cellValueFactory>
@@ -88,37 +95,45 @@
 								<GridPane>
 									<RadioButton text="%PRESETS" selected="true"
 										onAction="#setPresets" GridPane.columnIndex="0"
-										GridPane.rowIndex="0" />
+										GridPane.rowIndex="0" toggleGroup="$presetsCustomGroup" />
 									<Label text="%PRESET" GridPane.columnIndex="1"
 										GridPane.rowIndex="0" />
 									<ComboBox fx:id="presets" GridPane.columnIndex="2"
 										GridPane.rowIndex="0" />
 
 									<RadioButton text="%CUSTOM" onAction="#setCustom"
-										GridPane.columnIndex="0" GridPane.rowIndex="1" />
+										GridPane.columnIndex="0" GridPane.rowIndex="1"
+										toggleGroup="$presetsCustomGroup" />
 									<RadioButton text="%VBR" fx:id="setVBR" disable="true"
-										GridPane.columnIndex="1" GridPane.rowIndex="1" />
+										selected="true" GridPane.columnIndex="1" GridPane.rowIndex="1"
+										toggleGroup="$vbrAbrCbrGroup" />
 									<ComboBox fx:id="vbr" disable="true"
 										GridPane.columnIndex="2" GridPane.rowIndex="1" />
 
 									<RadioButton text="%ABR" fx:id="setABR" disable="true"
-										GridPane.columnIndex="1" GridPane.rowIndex="2" />
+										GridPane.columnIndex="1" GridPane.rowIndex="2" toggleGroup="$vbrAbrCbrGroup" />
 									<ComboBox fx:id="abr" disable="true"
 										GridPane.columnIndex="2" GridPane.rowIndex="2" />
 
 									<RadioButton text="%CBR" fx:id="setCBR" disable="true"
-										GridPane.columnIndex="1" GridPane.rowIndex="3" />
+										GridPane.columnIndex="1" GridPane.rowIndex="3" toggleGroup="$vbrAbrCbrGroup" />
 									<ComboBox fx:id="cbr" disable="true"
 										GridPane.columnIndex="2" GridPane.rowIndex="3" />
 								</GridPane>
 								<TitledPane text="%CHANNEL_MODE">
 									<HBox>
-										<RadioButton text="%STEREO" selected="true" fx:id="stereo" />
-										<RadioButton text="%JOINT_STEREO" fx:id="jointStereo" />
-										<RadioButton text="%FORCED_JOINT_STEREO" fx:id="forcedJointStereo" />
-										<RadioButton text="%DUAL_CHANNELS" fx:id="dualChannels" />
-										<RadioButton text="%MONO" fx:id="mono" />
-										<RadioButton text="%AUTO" fx:id="auto" />
+										<RadioButton text="%STEREO" selected="true" fx:id="stereo"
+											toggleGroup="$monoStereoGroup" />
+										<RadioButton text="%JOINT_STEREO" fx:id="jointStereo"
+											toggleGroup="$monoStereoGroup" />
+										<RadioButton text="%FORCED_JOINT_STEREO" fx:id="forcedJointStereo"
+											toggleGroup="$monoStereoGroup" />
+										<RadioButton text="%DUAL_CHANNELS" fx:id="dualChannels"
+											toggleGroup="$monoStereoGroup" />
+										<RadioButton text="%MONO" fx:id="mono"
+											toggleGroup="$monoStereoGroup" />
+										<RadioButton text="%AUTO" fx:id="auto"
+											toggleGroup="$monoStereoGroup" />
 									</HBox>
 								</TitledPane>
 								<TitledPane text="%ALGORITHM">
@@ -174,7 +189,8 @@
 							<Label text="%CD_NUMBER" />
 							<ComboBox disable="true" editable="true" fx:id="cdNumber" />
 						</HBox>
-						<ImageView fx:id="cover" onMouseClicked="#setPicture" fitWidth="128" fitHeight="128"/>
+						<ImageView fx:id="cover" onMouseClicked="#setPicture"
+							fitWidth="128" fitHeight="128" />
 						<Button text="%SAVE" disable="true" onAction="#doSaveTags"
 							fx:id="saveTags" />
 					</VBox>
