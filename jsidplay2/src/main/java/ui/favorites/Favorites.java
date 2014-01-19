@@ -1,9 +1,11 @@
 package ui.favorites;
 
+import java.util.List;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -154,6 +156,28 @@ public class Favorites extends C64Tab {
 				}
 			}
 		}
+		Platform.runLater(() -> {
+			favoritesList.getScene().setOnDragOver((event) -> {
+				Dragboard db = event.getDragboard();
+				if (db.hasFiles()) {
+					event.acceptTransferModes(TransferMode.COPY);
+				} else {
+					event.consume();
+				}
+			});
+			favoritesList.getScene().setOnDragDropped((event) -> {
+				Dragboard db = event.getDragboard();
+				boolean success = false;
+				if (db.hasFiles()) {
+					success = true;
+					List<File> files = db.getFiles();
+					FavoritesTab selectedTab = getSelectedTab();
+					selectedTab.addFavorites(files);
+				}
+				event.setDropCompleted(success);
+				event.consume();
+			});
+		});
 	}
 
 	@FXML
