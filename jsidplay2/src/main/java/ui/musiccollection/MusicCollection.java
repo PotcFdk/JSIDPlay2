@@ -685,14 +685,16 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	protected void setRoot(final File rootFile) {
 		if (rootFile.exists()) {
-			em = Persistence.createEntityManagerFactory(
-					PersistenceProperties.COLLECTION_DS,
-					new PersistenceProperties(new File(
-							rootFile.getParentFile(), dbName)))
-					.createEntityManager();
+			if (em != null) {
+				em.getEntityManagerFactory().close();
+			}
+			em = Persistence
+					.createEntityManagerFactory(
+							PersistenceProperties.COLLECTION_DS,
+							new PersistenceProperties(new File(rootFile
+									.getParentFile(), dbName))).createEntityManager();
 
 			versionService = new VersionService(em);
-
 			collectionDir.setText(rootFile.getAbsolutePath());
 
 			if (rootFile.exists()) {
@@ -718,6 +720,12 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 		}
 		doResetSearch();
+	}
+
+	public void doCloseWindow() {
+		if (em != null) {
+			em.getEntityManagerFactory().close();
+		}
 	}
 
 	private void setSTIL(File hvscRoot) {
@@ -817,7 +825,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 				case 1:
 					addFavorite(favoritesToAddSearchResult, current);
 					break;
-					
+
 				default:
 					showNextHit(current);
 					break;

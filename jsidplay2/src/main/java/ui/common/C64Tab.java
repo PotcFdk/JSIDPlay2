@@ -68,4 +68,6 @@ public abstract class C64Tab extends Tab implements UIPart {
 		return null;
 	}
 	
+	public void doCloseWindow() {
+	}
 }

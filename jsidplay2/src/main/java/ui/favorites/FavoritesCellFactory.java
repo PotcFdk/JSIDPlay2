@@ -30,7 +30,7 @@ public class FavoritesCellFactory implements
 		@Override
 		public void updateItem(Object value, boolean empty) {
 			super.updateItem(value, empty);
-			if (!empty) {
+			if (!empty && value != null) {
 				setText(value.toString());
 				if (getTableRow() != null) {
 					HVSCEntry hvscEntry = (HVSCEntry) getTableRow().getItem();

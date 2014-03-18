@@ -25,7 +25,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import libsidutils.PathUtils;
@@ -273,15 +272,17 @@ public class GameBase extends C64Tab {
 	}
 
 	private void disconnect() {
-		if (em != null && em.isOpen()) {
-			em.close();
-			EntityManagerFactory emf = em.getEntityManagerFactory();
-			if (emf != null && emf.isOpen()) {
-				emf.close();
-			}
+		if (em != null) {
+			em.getEntityManagerFactory().close();
 		}
 		enableGameBase.setDisable(false);
 		setLettersDisable(true);
+	}
+
+	public void doCloseWindow() {
+		if (em != null) {
+			em.getEntityManagerFactory().close();
+		}
 	}
 
 	protected void showScreenshot(final URL resource) {

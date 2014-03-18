@@ -104,8 +104,8 @@ public class GameBasePage extends C64Tab {
 	}
 
 	void setGames(List<Games> games) {
-		allGames.addAll(games);
-		filteredGames.addAll(allGames);
+		allGames.setAll(games);
+		filteredGames.setAll(allGames);
 	}
 
 	void filter(String filterText) {

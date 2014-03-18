@@ -99,6 +99,7 @@ public class ConfigService {
 				em.getTransaction().rollback();
 			}
 		}
+		flush();
 	}
 
 	private void remove(Configuration config) {

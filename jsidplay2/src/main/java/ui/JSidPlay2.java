@@ -291,6 +291,20 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@Override
 	protected void doCloseWindow() {
 		timer.stop();
+		for (Tab tab : musicCollTabbedPane.getTabs()) {
+			C64Tab theTab = (C64Tab) tab;
+			theTab.doCloseWindow();
+		}
+		for (Tab tab : diskCollTabbedPane.getTabs()) {
+			C64Tab theTab = (C64Tab) tab;
+			theTab.doCloseWindow();
+		}
+		for (Tab tab : tabbedPane.getTabs()) {
+			if (tab instanceof C64Tab) {
+				C64Tab theTab = (C64Tab) tab;
+				theTab.doCloseWindow();
+			}
+		}
 	}
 
 	private ChangeListener<Number> progressUpdateListener() {

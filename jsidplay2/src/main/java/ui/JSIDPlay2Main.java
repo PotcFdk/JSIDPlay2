@@ -115,7 +115,7 @@ public class JSIDPlay2Main extends Application {
 			e.printStackTrace();
 		}
 		configService.write(config);
-		em.close();
+		em.getEntityManagerFactory().close();
 	}
 
 	//
