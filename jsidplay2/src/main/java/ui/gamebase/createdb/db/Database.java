@@ -28,9 +28,9 @@ public abstract class Database {
 
 	public abstract boolean isAutoIncrementSupported();
 
-	public void connect(String driver, String jdbcURL) {
+	public void connect(String driver, String jdbcURL, String datasource) {
 		em = Persistence.createEntityManagerFactory(
-				PersistenceProperties.GAMEBASE_DS,
+				datasource,
 				new PersistenceProperties(driver, jdbcURL))
 				.createEntityManager();
 	}
@@ -81,7 +81,7 @@ public abstract class Database {
 					md.getPrecision(i));
 			result.append(type);
 
-			if (type.indexOf("INT") == -1) {
+			if (type.indexOf("INT") == -1 && type.indexOf("BOOL") == -1) {
 				result.append('(');
 				result.append(md.getPrecision(i));
 				if (md.getScale(i) > 0) {
@@ -139,7 +139,7 @@ public abstract class Database {
 			Collection<String> result = new ArrayList<String>();
 			DatabaseMetaData dbm = connection.getMetaData();
 			ResultSet rs = dbm.getTables(null, null, "%",
-					new String[] { "TABLE" });
+					null);
 			while (rs.next()) {
 				String str = rs.getString("TABLE_NAME");
 				result.add(str);
@@ -237,11 +237,11 @@ public abstract class Database {
 
 	public void flush() {
 		em.getTransaction().begin();
+		em.flush();
 		em.getTransaction().commit();
 	}
 
 	public void close() {
-		em.close();
 		em.getEntityManagerFactory().close();
 		// Workaround a bug, when tha database contents is not flushed until
 		// System.exit()

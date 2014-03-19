@@ -1,8 +1,8 @@
 package ui.gamebase.createdb;
 
-import java.io.File;
 import java.sql.SQLException;
 
+import ui.entities.PersistenceProperties;
 import ui.gamebase.createdb.db.Database;
 import ui.gamebase.createdb.db.HSSQL;
 import ui.gamebase.createdb.db.MSAccess;
@@ -49,20 +49,10 @@ public class GameBaseUtility {
 		GameBaseCopier mover = new GameBaseCopier();
 
 		Database source = new MSAccess();
-		int mdbNameIdx = sourceURL.indexOf("DBQ=");
-		if (mdbNameIdx != -1) {
-			File mdbFile = new File(sourceURL.substring(mdbNameIdx
-					+ "DBQ=".length()));
-			if (!mdbFile.exists()) {
-				System.err.println("MDB file does not exist: "
-						+ mdbFile.getAbsolutePath());
-				return;
-			}
-		}
-		source.connect(sourceDriver, sourceURL);
+		source.connect(sourceDriver, sourceURL, PersistenceProperties.MDB_DS);
 
 		Database target = new HSSQL();
-		target.connect(targetDriver, targetURL);
+		target.connect(targetDriver, targetURL, PersistenceProperties.MDB_DS);
 
 		mover.setSource(source);
 		mover.setTarget(target);
@@ -71,10 +61,11 @@ public class GameBaseUtility {
 			mover.exportDatabse();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			source.close();
+			target.flush();
+			target.close();
 		}
-		source.close();
-		target.flush();
-		target.close();
 	}
 
 	public static void main(String args[]) {

@@ -71,8 +71,8 @@
 		<mkdir dir="${gamebase_dir}" />
 		<java fork="true" classname="ui.gamebase.createdb.GameBaseUtility">
 			<classpath path="${compile_classpath}" />
-			<arg value="sourceDriver=sun.jdbc.odbc.JdbcOdbcDriver" />
-			<arg value="sourceURL=jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=${gb64.mdbfile}" />
+			<arg value="sourceDriver=net.ucanaccess.jdbc.UcanaccessDriver" />
+			<arg value="sourceURL=jdbc:ucanaccess://${gb64.mdbfile};showschema=true" />
 			<arg value="targetDriver=org.hsqldb.jdbcDriver" />
 			<arg value="targetURL=jdbc:hsqldb:file:${gamebase_dir}/gb64;shutdown=true,create=true" />
 		</java>
@@ -123,6 +123,12 @@
 		<mkdir dir="${hvsc_dir}" />
 		<!-- Uncompress HVSC completely -->
 		<unzip dest="${hvsc_dir}" src="${hvsc.zip}" />
+		<unzip dest="${hvsc_dir}" src="${hvsc_dir}/${hvsc_zip}" />
+		<delete>
+			<fileset dir="${hvsc_dir}">
+				<include name="*.zip" />
+			</fileset>
+		</delete>
 		<!-- Compress HVSC -->
 		<zip level="9" destfile="${hvsc_dir}/${hvsc_zip}" compress="true" update="false">
 			<fileset dir="${hvsc_dir}/${hvsc_subfolder}">

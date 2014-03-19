@@ -39,4 +39,16 @@
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
 		</properties>
 	</persistence-unit>
+	<persistence-unit name="mdb-ds" transaction-type="RESOURCE_LOCAL">
+		<description>HSQLDB Persistence Unit</description>
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+
+		<properties>
+			<!-- property name="hibernate.show_sql" value="true"/-->
+			<!-- property name="hibernate.format_sql" value="true"/-->
+			<property name="hibernate.connection.username" value=""/>
+			<property name="hibernate.connection.password" value=""/>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+		</properties>
+	</persistence-unit>
 </persistence>
