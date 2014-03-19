@@ -63,14 +63,18 @@ public class GameBase extends C64Tab {
 				}
 				connect(new File(downloadedFile.getParent(),
 						PathUtils.getBaseNameNoExt(downloadedFile)));
-				setLettersDisable(false);
-				letter.getSelectionModel().selectFirst();
-				selectTab((GameBasePage) letter.getSelectionModel()
-						.getSelectedItem());
+				Platform.runLater(() -> {
+					setLettersDisable(false);
+					letter.getSelectionModel().selectFirst();
+					selectTab((GameBasePage) letter.getSelectionModel()
+							.getSelectedItem());
+				});
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				enableGameBase.setDisable(false);
+				Platform.runLater(() -> {
+					enableGameBase.setDisable(false);
+				});
 			}
 		}
 	}
@@ -275,8 +279,11 @@ public class GameBase extends C64Tab {
 		if (em != null) {
 			em.getEntityManagerFactory().close();
 		}
-		enableGameBase.setDisable(false);
-		setLettersDisable(true);
+		Platform.runLater(() -> {
+			enableGameBase.setDisable(false);
+			setLettersDisable(true);
+		});
+		
 	}
 
 	public void doCloseWindow() {

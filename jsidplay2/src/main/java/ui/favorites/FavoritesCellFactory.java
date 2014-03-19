@@ -49,7 +49,7 @@ public class FavoritesCellFactory implements
 						if (columnIndex == 0) {
 							STIL stil = favoritesTab
 									.getConsolePlayer().getStil();
-							if (stil != null && stil.getSTILEntry(file) != null) {
+							if (stil != null && file != null && stil.getSTILEntry(file) != null) {
 								setGraphic(new ImageView(STIL_ICON));
 							} else {
 								setGraphic(new ImageView(NO_STIL_ICON));
