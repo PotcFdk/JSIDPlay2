@@ -688,11 +688,11 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			if (em != null) {
 				em.getEntityManagerFactory().close();
 			}
-			em = Persistence
-					.createEntityManagerFactory(
-							PersistenceProperties.COLLECTION_DS,
-							new PersistenceProperties(new File(rootFile
-									.getParentFile(), dbName))).createEntityManager();
+			em = Persistence.createEntityManagerFactory(
+					PersistenceProperties.COLLECTION_DS,
+					new PersistenceProperties(new File(
+							rootFile.getParentFile(), dbName)))
+					.createEntityManager();
 
 			versionService = new VersionService(em);
 			collectionDir.setText(rootFile.getAbsolutePath());

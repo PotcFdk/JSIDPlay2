@@ -34,7 +34,6 @@ import ui.download.IDownloadListener;
 import ui.download.ProgressListener;
 import ui.entities.PersistenceProperties;
 import ui.entities.gamebase.Games;
-import ui.entities.gamebase.service.ConfigService;
 import ui.entities.gamebase.service.GamesService;
 import ui.gamebase.listeners.GameListener;
 import ui.gamebase.listeners.MusicListener;
@@ -49,11 +48,10 @@ public class GameBase extends C64Tab {
 
 		@Override
 		public void downloaded(File downloadedFile) {
-			if (downloadedFile == null) {
-				enableGameBase.setDisable(false);
-				return;
-			}
 			try {
+				if (downloadedFile == null) {
+					return;
+				}
 				TFile zip = new TFile(downloadedFile);
 				for (File zipEntry : zip.listFiles()) {
 					if (zipEntry.isFile()) {
@@ -61,6 +59,11 @@ public class GameBase extends C64Tab {
 								.getTmpDir(), zipEntry.getName()));
 					}
 				}
+				Platform.runLater(() -> {
+					enableGameBase.setDisable(true);
+					setLettersDisable(true);
+				});
+
 				connect(new File(downloadedFile.getParent(),
 						PathUtils.getBaseNameNoExt(downloadedFile)));
 				Platform.runLater(() -> {
@@ -97,7 +100,6 @@ public class GameBase extends C64Tab {
 	protected Button linkMusic;
 
 	private EntityManager em;
-	private ConfigService configService;
 	private GamesService gamesService;
 
 	public List<File> lastScreenshot = new ArrayList<File>();
@@ -211,7 +213,6 @@ public class GameBase extends C64Tab {
 	@FXML
 	private void doEnableGameBase() {
 		if (enableGameBase.isSelected()) {
-			enableGameBase.setDisable(true);
 			File dbFile = new File(getConfig().getSidplay2().getTmpDir(),
 					"gb64.properties");
 			if (dbFile.exists()) {
@@ -220,25 +221,16 @@ public class GameBase extends C64Tab {
 
 				connect(new File(getConfig().getSidplay2().getTmpDir(), "gb64"));
 
-				// Check version of GB64
-				if (configService.checkVersion()) {
-					// Version check is positive
-					enableGameBase.setDisable(false);
-					setLettersDisable(false);
-					letter.getSelectionModel().selectFirst();
-					selectTab((GameBasePage) letter.getSelectionModel()
-							.getSelectedItem());
-					return;
-				} else {
-					System.err
-							.println("Version is different or database is broken,"
-									+ " re-download");
-					disconnect();
-				}
-
+				enableGameBase.setDisable(false);
+				setLettersDisable(false);
+				letter.getSelectionModel().selectFirst();
+				selectTab((GameBasePage) letter.getSelectionModel()
+						.getSelectedItem());
+			} else {
+				enableGameBase.setDisable(true);
+				downloadStart(getConfig().getOnline().getGamebaseUrl(),
+						new GameBaseListener(progress));
 			}
-			downloadStart(getConfig().getOnline().getGamebaseUrl(),
-					new GameBaseListener(progress));
 		}
 	}
 
@@ -267,23 +259,13 @@ public class GameBase extends C64Tab {
 	}
 
 	protected void connect(File dbFile) {
-		disconnect();
+		if (em != null) {
+			em.getEntityManagerFactory().close();
+		}
 		em = Persistence.createEntityManagerFactory(
 				PersistenceProperties.GAMEBASE_DS,
 				new PersistenceProperties(dbFile)).createEntityManager();
 		gamesService = new GamesService(em);
-		configService = new ConfigService(em);
-	}
-
-	private void disconnect() {
-		if (em != null) {
-			em.getEntityManagerFactory().close();
-		}
-		Platform.runLater(() -> {
-			enableGameBase.setDisable(false);
-			setLettersDisable(true);
-		});
-		
 	}
 
 	public void doCloseWindow() {
