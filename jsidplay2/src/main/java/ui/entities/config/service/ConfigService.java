@@ -119,6 +119,14 @@ public class ConfigService {
 				em.getTransaction().rollback();
 			}
 		}
+		// Workaround a bug, when the database contents is not flushed after
+		// exit of the application (write delay?)
+		System.gc();
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
