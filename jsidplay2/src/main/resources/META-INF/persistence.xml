@@ -2,21 +2,10 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-	<persistence-unit name="jsidplay2-ds" transaction-type="RESOURCE_LOCAL">
-		<description>HSQLDB Persistence Unit</description>
+	<persistence-unit name="configuration-ds" transaction-type="RESOURCE_LOCAL">
+		<description>JSIDPlay2 Configuration Entities</description>
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
-		<class>ui.entities.gamebase.Config</class>
-		<class>ui.entities.gamebase.Games</class>
-		<class>ui.entities.gamebase.Genres</class>
-		<class>ui.entities.gamebase.Musicians</class>
-		<class>ui.entities.gamebase.PGenres</class>
-		<class>ui.entities.gamebase.Programmers</class>
-		<class>ui.entities.gamebase.Publishers</class>
-		<class>ui.entities.gamebase.Years</class>
-		<class>ui.entities.collection.HVSCEntry</class>
-		<class>ui.entities.collection.StilEntry</class>
-		<class>ui.entities.collection.Version</class>
 		<class>ui.entities.config.AudioSection</class>
 		<class>ui.entities.config.C1541Section</class>
 		<class>ui.entities.config.Configuration</class>
@@ -30,46 +19,51 @@
 		<class>ui.entities.config.SidPlay2Section</class>
 		<class>ui.entities.config.OnlineSection</class>
 		<class>ui.entities.config.KeyTableEntity</class>
+		<class>ui.entities.collection.HVSCEntry</class>
+		<class>ui.entities.collection.StilEntry</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		
 		<properties>
-			<!-- property name="hibernate.show_sql" value="true"/-->
-			<!-- property name="hibernate.format_sql" value="true"/-->
 			<property name="hibernate.connection.username" value=""/>
 			<property name="hibernate.connection.password" value=""/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
 		</properties>
 	</persistence-unit>
-	<persistence-unit name="mdb-ds" transaction-type="RESOURCE_LOCAL">
-		<description>HSQLDB Persistence Unit</description>
-		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-
-		<properties>
-			<!-- property name="hibernate.show_sql" value="true"/-->
-			<!-- property name="hibernate.format_sql" value="true"/-->
-			<property name="hibernate.connection.username" value=""/>
-			<property name="hibernate.connection.password" value=""/>
-			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
-		</properties>
-	</persistence-unit>
 	<persistence-unit name="gamebase-ds" transaction-type="RESOURCE_LOCAL">
-		<description>HSQLDB Persistence Unit</description>
+		<description>GameBase64 Entities</description>
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
+		<class>ui.entities.gamebase.Config</class>
+		<class>ui.entities.gamebase.Games</class>
+		<class>ui.entities.gamebase.Genres</class>
+		<class>ui.entities.gamebase.Musicians</class>
+		<class>ui.entities.gamebase.PGenres</class>
+		<class>ui.entities.gamebase.Programmers</class>
+		<class>ui.entities.gamebase.Publishers</class>
+		<class>ui.entities.gamebase.Years</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
 		<properties>
-			<!-- property name="hibernate.show_sql" value="true"/-->
-			<!-- property name="hibernate.format_sql" value="true"/-->
 			<property name="hibernate.connection.username" value=""/>
 			<property name="hibernate.connection.password" value=""/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
 		</properties>
 	</persistence-unit>
 	<persistence-unit name="collection-ds" transaction-type="RESOURCE_LOCAL">
-		<description>HSQLDB Persistence Unit</description>
+		<description>HVSC Entities</description>
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
+		<class>ui.entities.collection.Version</class>
+		<class>ui.entities.collection.HVSCEntry</class>
+		<class>ui.entities.collection.StilEntry</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
 		<properties>
-			<!-- property name="hibernate.show_sql" value="true"/-->
-			<!-- property name="hibernate.format_sql" value="true"/-->
 			<property name="hibernate.connection.username" value=""/>
 			<property name="hibernate.connection.password" value=""/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>

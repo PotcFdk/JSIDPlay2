@@ -49,10 +49,10 @@ public class GameBaseUtility {
 		GameBaseCopier mover = new GameBaseCopier();
 
 		Database source = new MSAccess();
-		source.connect(sourceDriver, sourceURL, PersistenceProperties.MDB_DS);
+		source.connect(sourceDriver, sourceURL, PersistenceProperties.GAMEBASE_DS);
 
 		Database target = new HSSQL();
-		target.connect(targetDriver, targetURL, PersistenceProperties.MDB_DS);
+		target.connect(targetDriver, targetURL, PersistenceProperties.GAMEBASE_DS);
 
 		mover.setSource(source);
 		mover.setTarget(target);
