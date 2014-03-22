@@ -88,7 +88,13 @@ public class ConfigService {
 		return oldConfiguration;
 	}
 
-	public void write(Configuration config) {
+	private void remove(Configuration config) {
+		em.remove(config);
+		flush();
+		em.clear();
+	}
+	
+	public void commit(Configuration config) {
 		em.getTransaction().begin();
 		try {
 			em.persist(config);
@@ -99,13 +105,6 @@ public class ConfigService {
 				em.getTransaction().rollback();
 			}
 		}
-		flush();
-	}
-
-	private void remove(Configuration config) {
-		em.remove(config);
-		flush();
-		em.clear();
 	}
 
 	private void flush() {
@@ -118,14 +117,6 @@ public class ConfigService {
 			if (em.getTransaction().isActive()) {
 				em.getTransaction().rollback();
 			}
-		}
-		// Workaround a bug, when the database contents is not flushed after
-		// exit of the application (write delay?)
-		System.gc();
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 
