@@ -38,7 +38,7 @@ public class GameListener extends ProgressListener {
 							zipEntry.getName());
 					dst.deleteOnExit();
 					TFile.cp(zipEntry, dst);
-					if (isTapeFile(dst) || isDiskFile(dst)) {
+					if (isTapeFile(dst) || isDiskFile(dst) || isCRT(dst)) {
 						if (fileToRun.length() == 0
 								|| fileToRun.equals(dst.getName())) {
 							insertMedia(dst);
@@ -58,15 +58,19 @@ public class GameListener extends ProgressListener {
 	private void insertMedia(final TFile file) {
 		final String command;
 		if (isTapeFile(file)) {
+			cp.getPlayer().getC64().ejectCartridge();
 			cp.insertMedia(file, null, MediaType.TAPE);
 			command = "LOAD\rRUN\r";
+			cp.playTune(null, command);
 		} else if (isDiskFile(file)) {
+			cp.getPlayer().getC64().ejectCartridge();
 			cp.insertMedia(file, null, MediaType.DISK);
 			command = "LOAD\"*\",8,1\rRUN\r";
+			cp.playTune(null, command);
 		} else {
+			cp.insertMedia(file, null, MediaType.CART);
 			command = null;
 		}
-		cp.playTune(null, command);
 	}
 
 	private boolean isTapeFile(final File selectedFile) {
@@ -77,6 +81,10 @@ public class GameListener extends ProgressListener {
 	private boolean isDiskFile(final File selectedFile) {
 		return selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".d64")
 				|| selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".g64");
+	}
+
+	private boolean isCRT(final File selectedFile) {
+		return selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".crt");
 	}
 
 	public void setFileToRun(String valueOf) {
