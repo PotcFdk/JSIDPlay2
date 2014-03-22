@@ -32,6 +32,7 @@ import ui.common.C64Tab;
 import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
 import ui.download.ProgressListener;
+import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.gamebase.Games;
 import ui.entities.gamebase.service.GamesService;
@@ -65,7 +66,7 @@ public class GameBase extends C64Tab {
 				});
 
 				connect(new File(downloadedFile.getParent(),
-						PathUtils.getBaseNameNoExt(downloadedFile)));
+						PathUtils.getBaseNameNoExt(downloadedFile) + ".mdb"));
 				Platform.runLater(() -> {
 					setLettersDisable(false);
 					letter.getSelectionModel().selectFirst();
@@ -214,12 +215,12 @@ public class GameBase extends C64Tab {
 	private void doEnableGameBase() {
 		if (enableGameBase.isSelected()) {
 			File dbFile = new File(getConfig().getSidplay2().getTmpDir(),
-					"gb64.properties");
+					"GameBase64.mdb");
 			if (dbFile.exists()) {
 				// There is already a database file downloaded earlier.
 				// Therefore we try to connect
 
-				connect(new File(getConfig().getSidplay2().getTmpDir(), "gb64"));
+				connect(new File(getConfig().getSidplay2().getTmpDir(), dbFile.getName()));
 
 				enableGameBase.setDisable(false);
 				setLettersDisable(false);
@@ -264,7 +265,8 @@ public class GameBase extends C64Tab {
 		}
 		em = Persistence.createEntityManagerFactory(
 				PersistenceProperties.GAMEBASE_DS,
-				new PersistenceProperties(dbFile)).createEntityManager();
+				new PersistenceProperties(dbFile, Database.MSACCESS))
+				.createEntityManager();
 		gamesService = new GamesService(em);
 	}
 

@@ -25,9 +25,9 @@
 	<property name="demos_crc" value="Demos.crc" />
 	<!-- Gamebase64 -->
 	<property name="gamebase_dir" location="${result_dir}/gamebase" />
-	<property name="gamebase_jar" value="gb64.jar" />
-	<property name="gamebase_crc" value="gb64.crc" />
-	<property name="gamebase_name" value="gb64" />
+	<property name="gamebase_zip" value="GameBase64.zip" />
+	<property name="gamebase_crc" value="GameBase64.crc" />
+	<property name="gamebase_name" value="GameBase64" />
 	<!-- jsiddevice -->
 	<property name="jsiddevice_jar" value="jsiddevice.jar" />
 
@@ -69,34 +69,28 @@
 	</target>
 	<target name="gb64_import" if="gb64.mdbfile.isset" depends="check.gb64.mdbfile">
 		<mkdir dir="${gamebase_dir}" />
-		<java fork="true" classname="ui.gamebase.createdb.GameBaseUtility">
-			<classpath path="${compile_classpath}" />
-			<arg value="sourceDriver=net.ucanaccess.jdbc.UcanaccessDriver" />
-			<arg value="sourceURL=jdbc:ucanaccess://${gb64.mdbfile};showschema=true" />
-			<arg value="targetDriver=org.hsqldb.jdbcDriver" />
-			<arg value="targetURL=jdbc:hsqldb:file:${gamebase_dir}/gb64;shutdown=true,create=true" />
-		</java>
-		<delete file="${gamebase_dir}/${gamebase_jar}" />
-		<jar destfile="${gamebase_dir}/${gamebase_jar}" compress="true">
+		<copy file="${gb64.mdbfile}" tofile="${gamebase_dir}/${gamebase_name}.mdb" />
+		<delete file="${gamebase_dir}/${gamebase_zip}" />
+		<zip level="9" destfile="${gamebase_dir}/${gamebase_zip}" compress="true">
 			<fileset dir="${gamebase_dir}">
-				<include name="${gamebase_name}.*" />
+				<include name="${gamebase_name}.mdb" />
 			</fileset>
-		</jar>
+		</zip>
 		<delete includeemptydirs="true">
 			<fileset dir="${gamebase_dir}">
 				<include name="${gamebase_name}.*" />
-				<exclude name="${gamebase_name}.jar" />
+				<exclude name="${gamebase_name}.zip" />
 			</fileset>
 		</delete>
 
 		<!-- create a CRC file -->
 		<java fork="true" classname="ui.download.DownloadThread" outputproperty="checksum_gb64">
 			<classpath path="${compile_classpath}" />
-			<arg path="${gamebase_dir}/${gamebase_jar}" />
+			<arg path="${gamebase_dir}/${gamebase_zip}" />
 		</java>
-		<length property="filesize_gb64" file="${gamebase_dir}/${gamebase_jar}" />
+		<length property="filesize_gb64" file="${gamebase_dir}/${gamebase_zip}" />
 		<propertyfile file="${gamebase_dir}/${gamebase_crc}">
-			<entry operation="=" type="string" key="filename" value="${gamebase_jar}" />
+			<entry operation="=" type="string" key="filename" value="${gamebase_zip}" />
 			<entry operation="=" type="string" key="size" value="${filesize_gb64}" />
 			<entry operation="=" type="string" key="crc32" value="${checksum_gb64}" />
 		</propertyfile>

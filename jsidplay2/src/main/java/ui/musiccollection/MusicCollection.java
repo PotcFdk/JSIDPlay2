@@ -60,6 +60,7 @@ import ui.common.TypeTextField;
 import ui.common.dialog.YesNoDialog;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
+import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
@@ -691,7 +692,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			em = Persistence.createEntityManagerFactory(
 					PersistenceProperties.COLLECTION_DS,
 					new PersistenceProperties(new File(
-							rootFile.getParentFile(), dbName)))
+							rootFile.getParentFile(), dbName), Database.HSQL))
 					.createEntityManager();
 
 			versionService = new VersionService(em);

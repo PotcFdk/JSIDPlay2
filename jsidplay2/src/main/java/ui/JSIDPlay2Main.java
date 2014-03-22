@@ -14,6 +14,7 @@ import javax.persistence.Persistence;
 import libsidplay.components.c1541.C1541;
 import sidplay.ConsolePlayer;
 import sidplay.ini.intf.ISidPlay2Section;
+import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
@@ -131,8 +132,8 @@ public class JSIDPlay2Main extends Application {
 		try {
 			em = Persistence.createEntityManagerFactory(
 					PersistenceProperties.CONFIG_DS,
-					new PersistenceProperties(getConfigDatabasePath()))
-					.createEntityManager();
+					new PersistenceProperties(getConfigDatabasePath(),
+							Database.HSQL)).createEntityManager();
 			configService = new ConfigService(em);
 			Configuration config = configService.getOrCreate();
 			// Import configuration (if flagged)

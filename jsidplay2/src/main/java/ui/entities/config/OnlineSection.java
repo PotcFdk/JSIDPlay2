@@ -67,7 +67,7 @@ public class OnlineSection implements IOnlineSection {
 		this.magazinesUrl = magazinesUrl;
 	}
 
-	private String gamebaseUrl = DEPLOYMENT_URL + "gb64.jar";
+	private String gamebaseUrl = DEPLOYMENT_URL + "GameBase64.zip";
 
 	@Override
 	public String getGamebaseUrl() {

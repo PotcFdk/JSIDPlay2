@@ -10,16 +10,11 @@ public class PersistenceProperties extends HashMap<String, String> {
 	public static final String COLLECTION_DS = "collection-ds";
 	public static final String GAMEBASE_DS = "gamebase-ds";
 
-	public PersistenceProperties(File databaseFile) {
-		put("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
+	public PersistenceProperties(File databaseFile, Database type) {
+		put("hibernate.connection.driver_class", type.getJdbcDriver());
 		put("hibernate.connection.url",
-				"jdbc:hsqldb:file:" + databaseFile.getAbsolutePath()
-						+ ";shutdown=true");
-	}
-
-	public PersistenceProperties(String driver, String jdbcURL) {
-		put("hibernate.connection.driver_class", driver);
-		put("hibernate.connection.url", jdbcURL);
+				type.getJdbcUrl().replace("${file}",
+						databaseFile.getAbsolutePath()));
 	}
 
 }
