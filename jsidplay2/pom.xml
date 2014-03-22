@@ -87,17 +87,17 @@
 			<version>2.0.5</version>
 			<classifier>natives-windows</classifier>
 		</dependency>
+		<dependency>
+			<groupId>com.healthmarketscience.jackcess</groupId>
+			<artifactId>jackcess</artifactId>
+			<version>2.0.3</version>
+		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.healthmarketscience.jackcess</groupId>
-			<artifactId>jackcess</artifactId>
-			<version>2.0.3</version>
 		</dependency>
 	</dependencies>
 
