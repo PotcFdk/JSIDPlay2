@@ -195,6 +195,24 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return hvscFile;
 	}
 
+	private String gameBase64;
+
+	public String getGameBase64() {
+		return gameBase64;
+	}
+
+	public void setGameBase64(String gameBase64) {
+		this.gameBase64 = gameBase64;
+		this.gameBase64File= new TFile(gameBase64);
+	}
+
+	@Transient
+	private volatile File gameBase64File;
+
+	public File getGameBase64File() {
+		return gameBase64File;
+	}
+
 	@Transient
 	@XmlTransient
 	private BooleanProperty singleProperty;

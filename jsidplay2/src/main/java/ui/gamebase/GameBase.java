@@ -1,7 +1,10 @@
 package ui.gamebase;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -34,8 +39,10 @@ import ui.download.IDownloadListener;
 import ui.download.ProgressListener;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
+import ui.entities.config.SidPlay2Section;
 import ui.entities.gamebase.Games;
 import ui.entities.gamebase.service.GamesService;
+import ui.filefilter.MDBFileExtensions;
 import ui.gamebase.listeners.GameListener;
 import ui.gamebase.listeners.MusicListener;
 import de.schlichtherle.truezip.file.TFile;
@@ -65,13 +72,15 @@ public class GameBase extends C64Tab {
 					setLettersDisable(true);
 				});
 
-				connect(new File(downloadedFile.getParent(),
-						PathUtils.getBaseNameNoExt(downloadedFile) + ".mdb"));
+				File dbFile = new File(downloadedFile.getParent(),
+						PathUtils.getBaseNameNoExt(downloadedFile) + ".mdb");
+				SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+						.getSidplay2();
+				sidPlay2Section.setGameBase64(dbFile.getAbsolutePath());
+				connect(dbFile);
 				Platform.runLater(() -> {
-					setLettersDisable(false);
-					letter.getSelectionModel().selectFirst();
-					selectTab((GameBasePage) letter.getSelectionModel()
-							.getSelectedItem());
+					gameBaseFile.setText(dbFile.getAbsolutePath());
+					enableGameBaseUI();
 				});
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -82,6 +91,8 @@ public class GameBase extends C64Tab {
 			}
 		}
 	}
+
+	private static final String GB64_URL = "http://www.gb64.com";
 
 	private static final String GB64_MUSIC_DOWNLOAD_URL = "http://www.gb64.com/C64Music/";
 
@@ -99,6 +110,8 @@ public class GameBase extends C64Tab {
 	protected TextArea comment;
 	@FXML
 	protected Button linkMusic;
+	@FXML
+	protected TextField gameBaseFile;
 
 	private EntityManager em;
 	private GamesService gamesService;
@@ -209,6 +222,13 @@ public class GameBase extends C64Tab {
 						selectTab((GameBasePage) newValue);
 					}
 				});
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+				.getSidplay2();
+		String initialRoot = sidPlay2Section.getGameBase64();
+		if (initialRoot != null && new File(initialRoot).exists()) {
+			gameBaseFile.setText(initialRoot);
+			setRoot(new File(initialRoot));
+		}
 	}
 
 	@FXML
@@ -220,13 +240,11 @@ public class GameBase extends C64Tab {
 				// There is already a database file downloaded earlier.
 				// Therefore we try to connect
 
-				connect(new File(getConfig().getSidplay2().getTmpDir(), dbFile.getName()));
-
-				enableGameBase.setDisable(false);
-				setLettersDisable(false);
-				letter.getSelectionModel().selectFirst();
-				selectTab((GameBasePage) letter.getSelectionModel()
-						.getSelectedItem());
+				SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+						.getSidplay2();
+				sidPlay2Section.setGameBase64(dbFile.getAbsolutePath());
+				gameBaseFile.setText(dbFile.getAbsolutePath());
+				setRoot(dbFile);
 			} else {
 				enableGameBase.setDisable(true);
 				downloadStart(getConfig().getOnline().getGamebaseUrl(),
@@ -241,6 +259,57 @@ public class GameBase extends C64Tab {
 				GB64_MUSIC_DOWNLOAD_URL
 						+ linkMusic.getText().replace('\\', '/'),
 				new MusicListener(getConsolePlayer(), progress));
+	}
+
+	@FXML
+	private void doBrowse() {
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(MDBFileExtensions.DESCRIPTION,
+						MDBFileExtensions.EXTENSIONS));
+		File file = fileDialog.showOpenDialog(letter.getScene().getWindow());
+		if (file != null) {
+			gameBaseFile.setText(file.getAbsolutePath());
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+					.getSidplay2();
+			sidPlay2Section.setGameBase64(file.getAbsolutePath());
+			File theRootFile = sidPlay2Section.getGameBase64File();
+			gameBaseFile.setText(file.getAbsolutePath());
+			setRoot(theRootFile);
+		}
+	}
+
+	@FXML
+	private void gotoURL() {
+		// Open a browser URL
+
+		// As an application we open the default browser
+		if (Desktop.isDesktopSupported()) {
+			Desktop desktop = Desktop.getDesktop();
+			if (desktop.isSupported(Desktop.Action.BROWSE)) {
+				try {
+					desktop.browse(new URL(GB64_URL).toURI());
+				} catch (final IOException ioe) {
+					ioe.printStackTrace();
+				} catch (final URISyntaxException urie) {
+					urie.printStackTrace();
+				}
+			}
+		} else {
+			System.err.println("Awt Desktop is not supported!");
+		}
+	}
+
+	private void setRoot(File file) {
+		connect(file);
+		enableGameBaseUI();
+	}
+
+	private void enableGameBaseUI() {
+		enableGameBase.setDisable(false);
+		setLettersDisable(false);
+		letter.getSelectionModel().selectFirst();
+		selectTab((GameBasePage) letter.getSelectionModel().getSelectedItem());
 	}
 
 	private void downloadStart(String url, IDownloadListener listener) {

@@ -13,6 +13,8 @@
 <?import javafx.scene.control.TextArea?>
 <?import ui.gamebase.GameBasePage?>
 <?scenebuilder-preview-i18n-resource GameBase.properties?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Hyperlink?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
@@ -86,5 +88,23 @@
 		</TitledPane>
 		<Button text="%MUSIC_GET" fx:id="linkMusic" onAction="#downloadMusic"
 			GridPane.rowIndex="8" GridPane.columnIndex="1" minWidth="320" />
+		<TitledPane text="%CONFIGURATION" collapsible="false"
+			GridPane.rowIndex="9" GridPane.columnIndex="0" GridPane.columnSpan="3">
+			<HBox>
+				<Label text="%BASE_DIR" />
+				<TextField fx:id="gameBaseFile" disable="true" />
+				<Button text="%BROWSE" onAction="#doBrowse">
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/browse.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Button>
+				<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
+					onAction="#gotoURL" />
+			</HBox>
+		</TitledPane>
 	</GridPane>
 </AnchorPane>
