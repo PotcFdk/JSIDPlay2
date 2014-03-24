@@ -13,8 +13,6 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -40,7 +38,6 @@ import ui.download.ProgressListener;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.SidPlay2Section;
-import ui.entities.gamebase.Games;
 import ui.entities.gamebase.service.GamesService;
 import ui.filefilter.MDBFileExtensions;
 import ui.gamebase.listeners.GameListener;
@@ -177,50 +174,43 @@ public class GameBase extends C64Tab {
 			});
 			page.setGameListener(new GameListener(progress, getConsolePlayer(),
 					getConfig()));
-			page.getGamebaseTable().getSelectionModel().selectedItemProperty()
-					.addListener(new ChangeListener<Games>() {
-
-						@Override
-						public void changed(
-								ObservableValue<? extends Games> observable,
-								Games oldValue, Games newValue) {
-							if (newValue != null) {
-								comment.setText(newValue.getComment());
-								String genre = newValue.getGenres().getGenre();
-								String pGenre = newValue.getGenres()
-										.getParentGenres().getParentGenre();
-								if (pGenre != null && pGenre.length() != 0) {
-									category.setText(pGenre + "-" + genre);
-								} else {
-									category.setText(genre);
+			page.getGamebaseTable()
+					.getSelectionModel()
+					.selectedItemProperty()
+					.addListener(
+							(observable, oldValue, newValue) -> {
+								if (newValue != null) {
+									comment.setText(newValue.getComment());
+									String genre = newValue.getGenres()
+											.getGenre();
+									String pGenre = newValue.getGenres()
+											.getParentGenres().getParentGenre();
+									if (pGenre != null && pGenre.length() != 0) {
+										category.setText(pGenre + "-" + genre);
+									} else {
+										category.setText(genre);
+									}
+									infos.setText(String.format(getBundle()
+											.getString("PUBLISHER"), newValue
+											.getYears().getYear(), newValue
+											.getPublishers().getPublisher()));
+									musician.setText(newValue.getMusicians()
+											.getMusician());
+									programmer.setText(newValue
+											.getProgrammers().getProgrammer());
+									String sidFilename = newValue
+											.getSidFilename();
+									linkMusic
+											.setText(sidFilename != null ? sidFilename
+													: "");
+									linkMusic.setDisable(sidFilename == null
+											|| sidFilename.length() == 0);
 								}
-								infos.setText(String.format(getBundle()
-										.getString("PUBLISHER"), newValue
-										.getYears().getYear(), newValue
-										.getPublishers().getPublisher()));
-								musician.setText(newValue.getMusicians()
-										.getMusician());
-								programmer.setText(newValue.getProgrammers()
-										.getProgrammer());
-								String sidFilename = newValue.getSidFilename();
-								linkMusic
-										.setText(sidFilename != null ? sidFilename
-												: "");
-								linkMusic.setDisable(sidFilename == null
-										|| sidFilename.length() == 0);
-							}
-						}
-					});
+							});
 		}
 		letter.getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<Tab>() {
-
-					@Override
-					public void changed(
-							ObservableValue<? extends Tab> observable,
-							Tab oldValue, Tab newValue) {
-						selectTab((GameBasePage) newValue);
-					}
+				.addListener((observable, oldValue, newValue) -> {
+					selectTab((GameBasePage) newValue);
 				});
 		SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
 				.getSidplay2();

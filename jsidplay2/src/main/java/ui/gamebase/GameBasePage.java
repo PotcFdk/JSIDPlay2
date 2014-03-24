@@ -5,16 +5,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import ui.common.C64Tab;
 import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
@@ -45,49 +40,38 @@ public class GameBasePage extends C64Tab {
 			return;
 		}
 		gamebaseTable.setItems(filteredGames);
-		gamebaseTable.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent event) {
-				if (event.getCode() == KeyCode.ENTER) {
-					Games game = gamebaseTable.getSelectionModel()
-							.getSelectedItem();
-					startGame(game);
-				}
+		gamebaseTable.setOnKeyPressed((event) -> {
+			if (event.getCode() == KeyCode.ENTER) {
+				Games game = gamebaseTable.getSelectionModel()
+						.getSelectedItem();
+				startGame(game);
 			}
 		});
-		gamebaseTable.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
-					Games game = gamebaseTable.getSelectionModel()
-							.getSelectedItem();
-					startGame(game);
-				}
+		gamebaseTable.setOnMousePressed((event) -> {
+			if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+				Games game = gamebaseTable.getSelectionModel()
+						.getSelectedItem();
+				startGame(game);
 			}
 		});
-		gamebaseTable.getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<Games>() {
-
-					@Override
-					public void changed(
-							ObservableValue<? extends Games> observable,
-							Games oldValue, Games newValue) {
-						if (newValue != null) {
-							if (newValue.getScreenshotFilename().isEmpty()) {
-								System.out
-										.println("Screenshot is not available on GameBase64: "
-												+ newValue.getName());
-								return;
-							}
-							downloadStart(
-									GB64_SCREENSHOT_DOWNLOAD_URL
+		gamebaseTable
+				.getSelectionModel()
+				.selectedItemProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							if (newValue != null) {
+								if (newValue.getScreenshotFilename().isEmpty()) {
+									System.out
+											.println("Screenshot is not available on GameBase64: "
+													+ newValue.getName());
+								} else {
+									downloadStart(GB64_SCREENSHOT_DOWNLOAD_URL
 											+ newValue.getScreenshotFilename()
 													.replace('\\', '/'),
-									screenShotListener);
-						}
-					}
-				});
+											screenShotListener);
+								}
+							}
+						});
 	}
 
 	protected void startGame(Games game) {

@@ -170,8 +170,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	protected TuneFileFilter fileFilter = new TuneFileFilter();
 	private SearchThread searchThread;
-	private Object savedState;
-	private Object searchForValue, recentlySearchedForValue;
+	private Object savedState, searchForValue, recentlySearchedForValue;
 	private SearchCriteria<?, ?> recentlySearchedCriteria;
 	private boolean searchOptionsChanged;
 	protected String hvscName;
@@ -379,7 +378,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			File rootFile = new File(getConfig().getSidplay2().getHvsc());
 			String name = PathUtils.getCollectionName(new TFile(rootFile),
 					tuneInfo.file);
-			if (name != null) {
+			if (name != null && type == MusicCollectionType.HVSC) {
 				hvscName = name.replace(".sid", "");
 				currentSong = tuneInfo.currentSong;
 				for (MenuItem item : Arrays.asList(soasc6581R2, soasc6581R4,
