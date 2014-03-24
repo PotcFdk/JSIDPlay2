@@ -79,7 +79,9 @@ public class JSIDPlay2Main extends Application {
 		}
 		// Set default position and size
 		final SidPlay2Section section = (SidPlay2Section) config.getSidplay2();
-		primaryStage.setFullScreen(Boolean.valueOf(section.getFullScreen()));
+		if (section.getFullScreen() != null) {
+			primaryStage.setFullScreen(section.getFullScreen());
+		}
 		primaryStage.fullScreenProperty().addListener(
 				(observable, oldValue, newValue) -> section
 						.setFullScreen(newValue));
