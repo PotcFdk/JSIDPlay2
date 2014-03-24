@@ -962,10 +962,11 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 							downloadThread = null;
 
 							if (downloadedFile != null) {
+								downloadedFile.deleteOnExit();
 								Platform.runLater(() -> playTune(downloadedFile));
 							}
 						}
-					}, new URL(url));
+					}, new URL(url.trim()));
 			downloadThread.start();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

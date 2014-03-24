@@ -173,7 +173,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private HttpURLConnection getConnection(URL currentURL) throws IOException,
 			ProtocolException {
-		HttpURLConnection.setFollowRedirects(false);
+		HttpURLConnection.setFollowRedirects(true);
 		HttpURLConnection connection;
 		connection = (HttpURLConnection) currentURL.openConnection(proxy);
 		connection.setRequestMethod("HEAD");
@@ -231,7 +231,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private File createLocalFile(URL currentURL) {
 		return new File(config.getSidplay2().getTmpDir(), new File(
-				currentURL.getPath()).getName());
+				currentURL.toString()).getName());
 	}
 
 	private File mergeChunks(List<File> chunks) throws IOException {

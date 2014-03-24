@@ -439,7 +439,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		window.setConsolePlayer(getConsolePlayer());
 		window.setPlayer(getPlayer());
 		window.setConfig(getConfig());
-		window.getProgressValue().addListener(progressUpdateListener());
 		try {
 			window.open();
 		} catch (IOException e) {

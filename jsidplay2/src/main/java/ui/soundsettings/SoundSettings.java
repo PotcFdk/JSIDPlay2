@@ -4,8 +4,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -37,8 +35,7 @@ public class SoundSettings extends C64Stage {
 	@FXML
 	protected RadioButton playMP3, playEmulation;
 	@FXML
-	private Button mp3Browse, download6581R2Btn, download6581R4Btn,
-			download8580R5Btn;
+	private Button mp3Browse;
 
 	private ObservableList<resid_builder.resid.ISIDDefs.SamplingMethod> samplingMethods = FXCollections
 			.<resid_builder.resid.ISIDDefs.SamplingMethod> observableArrayList();
@@ -47,12 +44,6 @@ public class SoundSettings extends C64Stage {
 			.<String> observableArrayList();
 
 	private boolean duringInitialization;
-
-	private DoubleProperty progress = new SimpleDoubleProperty();
-
-	public DoubleProperty getProgressValue() {
-		return progress;
-	}
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
