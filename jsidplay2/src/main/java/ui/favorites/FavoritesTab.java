@@ -257,11 +257,27 @@ public class FavoritesTab extends C64Tab {
 			for (HVSCEntry hvscEntry : favoritesTable.getSelectionModel()
 					.getSelectedItems()) {
 				File file = getFile(hvscEntry.getPath());
-				try {
-					TFile.cp(file, new File(directory, file.getName()));
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+				String name = file.getName();
+				copyToUniqueName(file, directory, name, 1);
+			}
+		}
+	}
+
+	private void copyToUniqueName(File file, File directory, String name,
+			int number) {
+		String newName = name;
+		if (number > 1) {
+			newName = PathUtils.getBaseNameNoExt(new File(directory, name)) + "_"
+					+ number + PathUtils.getExtension(name);
+		}
+		File newFile = new File(directory, newName);
+		if (newFile.exists()) {
+			copyToUniqueName(file, directory, name, ++number);
+		} else {
+			try {
+				TFile.cp(file, newFile);
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 		}
 	}
@@ -345,17 +361,18 @@ public class FavoritesTab extends C64Tab {
 				String columnProperty = favoriteColumn.getColumnProperty();
 				SingularAttribute<?, ?> attribute = getAttribute(columnProperty);
 				addColumn(attribute, columnProperty, favoriteColumn);
-			} catch (NoSuchFieldException
-					| IllegalArgumentException | IllegalAccessException e) {
+			} catch (NoSuchFieldException | IllegalArgumentException
+					| IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
 		Iterator<TableColumn<HVSCEntry, ?>> columnsIt = favoritesTable
 				.getColumns().iterator();
 		TableColumn<HVSCEntry, ?> pathColumn = columnsIt.next();
-		pathColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
-			favoritesSection.setWidth(newValue.doubleValue());
-		});
+		pathColumn.widthProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					favoritesSection.setWidth(newValue.doubleValue());
+				});
 		Double width = favoritesSection.getWidth();
 		if (width != null) {
 			pathColumn.setPrefWidth(width.doubleValue());
@@ -367,18 +384,19 @@ public class FavoritesTab extends C64Tab {
 				column.setPrefWidth(width.doubleValue());
 			}
 		}
-		favoritesSection.getObservableFavorites().addListener((ListChangeListener.Change<? extends HVSCEntry>change) -> {
-			while (change.next()) {
-				if (change.wasPermutated() || change.wasUpdated()) {
-					continue;
-				}
-				if (change.wasAdded()) {
-					filteredFavorites.addAll(change.getAddedSubList());
-				} else if (change.wasRemoved()) {
-					filteredFavorites.removeAll(change.getRemoved());
-				}
-			}
-		});
+		favoritesSection.getObservableFavorites().addListener(
+				(ListChangeListener.Change<? extends HVSCEntry> change) -> {
+					while (change.next()) {
+						if (change.wasPermutated() || change.wasUpdated()) {
+							continue;
+						}
+						if (change.wasAdded()) {
+							filteredFavorites.addAll(change.getAddedSubList());
+						} else if (change.wasRemoved()) {
+							filteredFavorites.removeAll(change.getRemoved());
+						}
+					}
+				});
 	}
 
 	void removeSelectedFavorites() {
@@ -579,9 +597,10 @@ public class FavoritesTab extends C64Tab {
 		favoritesCellFactory.setFavoritesTab(this);
 		tableColumn.setCellFactory(favoritesCellFactory);
 		tableColumn.setContextMenu(contextMenuHeader);
-		tableColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
-			favoriteColumn.setWidth(newValue.doubleValue());
-		});
+		tableColumn.widthProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					favoriteColumn.setWidth(newValue.doubleValue());
+				});
 		favoritesTable.getColumns().add(tableColumn);
 	}
 

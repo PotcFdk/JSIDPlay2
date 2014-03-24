@@ -84,4 +84,15 @@ public class PathUtils {
 		return basename;
 	}
 
+	public static String getExtension(final String filename) {
+		int lastIndexOf = filename.lastIndexOf('.');
+		final String ext;
+		if (lastIndexOf != -1) {
+			ext = filename.substring(lastIndexOf);
+		} else {
+			ext = "";
+		}
+		return ext;
+	}
+
 }
