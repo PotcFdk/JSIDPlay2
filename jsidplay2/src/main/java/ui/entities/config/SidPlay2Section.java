@@ -359,6 +359,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.frameHeight = frameHeight;
 	}
 
+	private Boolean fullScreen;
+	
+	public Boolean getFullScreen() {
+		return fullScreen;
+	}
+
+	public void setFullScreen(Boolean fullScreen) {
+		this.fullScreen = fullScreen;
+	}
+
 	private double videoScaling = 2.0;
 
 	public double getVideoScaling() {

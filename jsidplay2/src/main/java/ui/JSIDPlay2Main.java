@@ -16,10 +16,10 @@ import libsidplay.components.c1541.C1541;
 import org.hsqldb.DatabaseManager;
 
 import sidplay.ConsolePlayer;
-import sidplay.ini.intf.ISidPlay2Section;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
+import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 
 /**
@@ -78,7 +78,11 @@ public class JSIDPlay2Main extends Application {
 			e.printStackTrace();
 		}
 		// Set default position and size
-		final ISidPlay2Section section = config.getSidplay2();
+		final SidPlay2Section section = (SidPlay2Section) config.getSidplay2();
+		primaryStage.setFullScreen(Boolean.valueOf(section.getFullScreen()));
+		primaryStage.fullScreenProperty().addListener(
+				(observable, oldValue, newValue) -> section
+						.setFullScreen(newValue));
 		Scene scene = primaryStage.getScene();
 		if (scene != null) {
 			Window window = scene.getWindow();
