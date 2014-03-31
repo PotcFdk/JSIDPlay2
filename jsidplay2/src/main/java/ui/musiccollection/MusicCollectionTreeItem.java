@@ -28,13 +28,10 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 	private boolean isLeaf;
 	private boolean hasSTIL;
 
-	private MusicCollection musicCollection;
 	private STIL stil;
 
-	public MusicCollectionTreeItem(MusicCollection musicCollection, STIL stil,
-			File file) {
+	public MusicCollectionTreeItem(STIL stil, File file) {
 		super(file);
-		this.musicCollection = musicCollection;
 		this.stil = stil;
 		this.isLeaf = file.isFile();
 		this.hasSTIL = isLeaf && stil != null
@@ -79,7 +76,7 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 					});
 			for (File file : listFiles) {
 				MusicCollectionTreeItem childItem = new MusicCollectionTreeItem(
-						musicCollection, stil, file);
+						stil, file);
 				children.add(childItem);
 				if (childItem.hasSTIL()) {
 					childItem.setGraphic(new ImageView(stilIcon));
@@ -91,7 +88,4 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		super.getChildren().setAll(children);
 	}
 
-	public MusicCollection getMusicCollection() {
-		return musicCollection;
-	}
 }

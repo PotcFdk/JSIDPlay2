@@ -1,8 +1,9 @@
 package ui.musiccollection;
 
 import java.io.File;
-import java.util.List;
 
+import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -13,42 +14,58 @@ public class MusicCollectionCellFactory implements
 
 	private static final String CURRENTLY_PLAYED_FILE_ROW = "currentlyPlayedRow";
 
+	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems;
+
+	public void setCurrentlyPlayedTreeItems(
+			ObservableList<TreeItem<File>> currentlyPlayedTreeItems) {
+		this.currentlyPlayedTreeItems = currentlyPlayedTreeItems;
+	}
+
 	public class TextFieldTreeCellImpl extends TreeCell<File> {
+
+		public TextFieldTreeCellImpl() {
+			super();
+			currentlyPlayedTreeItems.addListener((
+					Change<? extends TreeItem<File>> c) -> {
+				setCellStyle();
+			});
+		}
+
 		@Override
 		protected void updateItem(File file, boolean empty) {
 			super.updateItem(file, empty);
+			setCellStyle();
 
 			if (!empty) {
-				getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
-				MusicCollectionTreeItem item = (MusicCollectionTreeItem) getTreeItem();
-				MusicCollection musicCollection = item.getMusicCollection();
-				if (musicCollection.getCurrentlyPlayedTreeItems() != null
-						&& isCurrentlyPlayed(file,
-								musicCollection.getCurrentlyPlayedTreeItems())) {
-					getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
-				}
-				setText(file.getName());
+				setText(file != null ? file.getName() : "");
 				setGraphic(getTreeItem().getGraphic());
 			} else {
 				setText(null);
 				setGraphic(null);
-				getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
 			}
 		}
 
-		private boolean isCurrentlyPlayed(File file,
-				List<TreeItem<File>> currentlyPlayedFiles) {
-			for (TreeItem<File> treeItem : currentlyPlayedFiles) {
-				if (file.equals(treeItem.getValue())) {
+		private void setCellStyle() {
+			getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
+			if (isCurrentlyPlayed()) {
+				getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
+			}
+		}
+
+		private boolean isCurrentlyPlayed() {
+			for (TreeItem<File> treeItem : currentlyPlayedTreeItems) {
+				if (treeItem.getValue().equals(getItem())) {
 					return true;
 				}
 			}
 			return false;
 		}
+
 	}
 
 	@Override
 	public TreeCell<File> call(TreeView<File> treeView) {
 		return new TextFieldTreeCellImpl();
 	}
+
 }

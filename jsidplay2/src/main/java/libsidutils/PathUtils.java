@@ -37,6 +37,21 @@ public class PathUtils {
 		return result.toString();
 	}
 
+	public static File getFile(String path, File hvscRoot, File cgscRoot) {
+		List<File> files;
+		files = PathUtils.getFiles(path, hvscRoot, null);
+		if (files.size() > 0) {
+			// relative path name of HVSC?
+			return files.get(files.size() - 1);
+		}
+		files = PathUtils.getFiles(path, cgscRoot, null);
+		if (files.size() > 0) {
+			// relative path name of CGSC?
+			return files.get(files.size() - 1);
+		}
+		return new File(path);
+	}
+
 	public static List<File> getFiles(String filePath, File rootFile,
 			FileFilter fileFilter) {
 		if (rootFile == null) {

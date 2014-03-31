@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
@@ -63,26 +65,26 @@ import de.schlichtherle.truezip.file.TFile;
 public class FavoritesTab extends C64Tab {
 
 	@FXML
-	protected TextField filterField;
+	private TextField filterField;
 	@FXML
-	protected TableView<HVSCEntry> favoritesTable;
+	private TableView<HVSCEntry> favoritesTable;
 	@FXML
-	protected Menu addColumnMenu, moveToTab, copyToTab;
+	private Menu addColumnMenu, moveToTab, copyToTab;
 	@FXML
-	protected MenuItem showStil, removeColumn;
+	private MenuItem showStil, removeColumn;
 	@FXML
-	protected Button moveUp, moveDown;
+	private Button moveUp, moveDown;
 	@FXML
 	private ContextMenu contextMenuHeader, contextMenu;
 
-	protected ObservableList<HVSCEntry> filteredFavorites = FXCollections
+	private ObservableList<HVSCEntry> filteredFavorites = FXCollections
 			.<HVSCEntry> observableArrayList();
 
-	private final FileFilter tuneFilter = new TuneFileFilter();
-	protected FavoritesSection favoritesSection;
+	private FileFilter tuneFilter = new TuneFileFilter();
+	private FavoritesSection favoritesSection;
 
-	private File file;
-	protected Favorites favorites;
+	private ObjectProperty<File> currentlyPlayedFileProperty = new SimpleObjectProperty<File>();
+	private Favorites favorites;
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -119,8 +121,12 @@ public class FavoritesTab extends C64Tab {
 				.setOnMousePressed((event) -> {
 					final HVSCEntry hvscEntry = favoritesTable
 							.getSelectionModel().getSelectedItem();
+					SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+							.getSidplay2();
 					if (hvscEntry != null
-							&& getFile(hvscEntry.getPath()) != null
+							&& PathUtils.getFile(hvscEntry.getPath(),
+									sidPlay2Section.getHvscFile(),
+									sidPlay2Section.getCgscFile()) != null
 							&& event.isPrimaryButtonDown()
 							&& event.getClickCount() > 1) {
 						playTune(hvscEntry);
@@ -129,8 +135,13 @@ public class FavoritesTab extends C64Tab {
 		favoritesTable.setOnKeyPressed((event) -> {
 			final HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
 					.getSelectedItem();
-			if (event.getCode() == KeyCode.ENTER && hvscEntry != null
-					&& getFile(hvscEntry.getPath()) != null) {
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+					.getSidplay2();
+			if (event.getCode() == KeyCode.ENTER
+					&& hvscEntry != null
+					&& PathUtils.getFile(hvscEntry.getPath(),
+							sidPlay2Section.getHvscFile(),
+							sidPlay2Section.getCgscFile()) != null) {
 				playTune(hvscEntry);
 			}
 			if (event.getCode() == KeyCode.DELETE) {
@@ -168,51 +179,53 @@ public class FavoritesTab extends C64Tab {
 						tableColumn) == 0);
 			});
 
-		contextMenu
-				.setOnShown((event) -> {
-					HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
-							.getSelectedItem();
+		contextMenu.setOnShown((event) -> {
+			HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
+					.getSelectedItem();
 
-					STIL stil = getConsolePlayer().getStil();
-					showStil.setDisable(hvscEntry == null
-							|| stil == null
-							|| stil.getSTILEntry(getFile(hvscEntry.getPath())) == null);
-					List<Tab> tabs = favorites.getFavoriteTabs();
-					moveToTab.getItems().clear();
-					copyToTab.getItems().clear();
-					for (final Tab tab : tabs) {
-						if (tab.equals(FavoritesTab.this)) {
-							continue;
-						}
-						final String name = tab.getText();
-						MenuItem moveToTabItem = new MenuItem(name);
-						moveToTabItem
-								.setOnAction((event2) -> {
-									ObservableList<HVSCEntry> selectedItems = favoritesTable
-											.getSelectionModel()
-											.getSelectedItems();
-									copyToTab(selectedItems, (FavoritesTab) tab);
-									removeFavorites(selectedItems);
-								});
-						moveToTab.getItems().add(moveToTabItem);
-						MenuItem copyToTabItem = new MenuItem(name);
-						copyToTabItem
-								.setOnAction((event2) -> {
-									ObservableList<HVSCEntry> selectedItems = favoritesTable
-											.getSelectionModel()
-											.getSelectedItems();
-									copyToTab(selectedItems, (FavoritesTab) tab);
-								});
-						copyToTab.getItems().add(copyToTabItem);
-					}
-					moveToTab.setDisable(moveToTab.getItems().size() == 0);
-					copyToTab.setDisable(copyToTab.getItems().size() == 0);
+			STIL stil = getConsolePlayer().getStil();
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+					.getSidplay2();
+			showStil.setDisable(hvscEntry == null
+					|| stil == null
+					|| stil.getSTILEntry(PathUtils.getFile(hvscEntry.getPath(),
+							sidPlay2Section.getHvscFile(),
+							sidPlay2Section.getCgscFile())) == null);
+			List<Tab> tabs = favorites.getFavoriteTabs();
+			moveToTab.getItems().clear();
+			copyToTab.getItems().clear();
+			for (final Tab tab : tabs) {
+				if (tab.equals(FavoritesTab.this)) {
+					continue;
+				}
+				final String name = tab.getText();
+				MenuItem moveToTabItem = new MenuItem(name);
+				moveToTabItem.setOnAction((event2) -> {
+					ObservableList<HVSCEntry> selectedItems = favoritesTable
+							.getSelectionModel().getSelectedItems();
+					copyToTab(selectedItems, (FavoritesTab) tab);
+					removeFavorites(selectedItems);
 				});
+				moveToTab.getItems().add(moveToTabItem);
+				MenuItem copyToTabItem = new MenuItem(name);
+				copyToTabItem.setOnAction((event2) -> {
+					ObservableList<HVSCEntry> selectedItems = favoritesTable
+							.getSelectionModel().getSelectedItems();
+					copyToTab(selectedItems, (FavoritesTab) tab);
+				});
+				copyToTab.getItems().add(copyToTabItem);
+			}
+			moveToTab.setDisable(moveToTab.getItems().size() == 0);
+			copyToTab.setDisable(copyToTab.getItems().size() == 0);
+		});
 
 		for (TableColumn column : favoritesTable.getColumns()) {
 			FavoritesCellFactory cellFactory = (FavoritesCellFactory) column
 					.getCellFactory();
-			cellFactory.setFavoritesTab(this);
+			cellFactory.setConfig(getConfig());
+			cellFactory.setConsolePlayer(getConsolePlayer());
+			cellFactory
+					.setCurrentlyPlayedFileProperty(currentlyPlayedFileProperty);
 		}
 	}
 
@@ -254,9 +267,13 @@ public class FavoritesTab extends C64Tab {
 		if (directory != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					directory.getAbsolutePath());
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+					.getSidplay2();
 			for (HVSCEntry hvscEntry : favoritesTable.getSelectionModel()
 					.getSelectedItems()) {
-				File file = getFile(hvscEntry.getPath());
+				File file = PathUtils.getFile(hvscEntry.getPath(),
+						sidPlay2Section.getHvscFile(),
+						sidPlay2Section.getCgscFile());
 				String name = file.getName();
 				copyToUniqueName(file, directory, name, 1);
 			}
@@ -267,8 +284,8 @@ public class FavoritesTab extends C64Tab {
 			int number) {
 		String newName = name;
 		if (number > 1) {
-			newName = PathUtils.getBaseNameNoExt(new File(directory, name)) + "_"
-					+ number + PathUtils.getExtension(name);
+			newName = PathUtils.getBaseNameNoExt(new File(directory, name))
+					+ "_" + number + PathUtils.getExtension(name);
 		}
 		File newFile = new File(directory, newName);
 		if (newFile.exists()) {
@@ -295,7 +312,11 @@ public class FavoritesTab extends C64Tab {
 		stilInfo.setConfig(getConfig());
 		STIL stil = getConsolePlayer().getStil();
 		if (stil != null) {
-			stilInfo.setEntry(stil.getSTILEntry(getFile(hvscEntry.getPath())));
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+					.getSidplay2();
+			stilInfo.setEntry(stil.getSTILEntry(PathUtils.getFile(
+					hvscEntry.getPath(), sidPlay2Section.getHvscFile(),
+					sidPlay2Section.getCgscFile())));
 		}
 		try {
 			stilInfo.open();
@@ -314,10 +335,14 @@ public class FavoritesTab extends C64Tab {
 		if (directory != null) {
 			getConfig().getSidplay2().setLastDirectory(
 					directory.getAbsolutePath());
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+					.getSidplay2();
 			final ArrayList<File> files = new ArrayList<File>();
 			for (HVSCEntry hvscEntry : favoritesTable.getSelectionModel()
 					.getSelectedItems()) {
-				File file = getFile(hvscEntry.getPath());
+				File file = PathUtils.getFile(hvscEntry.getPath(),
+						sidPlay2Section.getHvscFile(),
+						sidPlay2Section.getCgscFile());
 				files.add(file);
 			}
 			Psid64 c = new Psid64();
@@ -450,12 +475,16 @@ public class FavoritesTab extends C64Tab {
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(
 				new FileInputStream(favoritesFile), "ISO-8859-1"))) {
 			String line;
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+					.getSidplay2();
 			while ((line = r.readLine()) != null) {
 				if (line.startsWith("<HVSC>/") || line.startsWith("<CGSC>/")) {
 					// backward compatibility
 					line = line.substring(7);
 				}
-				File file = getFile(line);
+				File file = PathUtils.getFile(line,
+						sidPlay2Section.getHvscFile(),
+						sidPlay2Section.getCgscFile());
 				if (file != null) {
 					addFavorite(file);
 				}
@@ -475,12 +504,16 @@ public class FavoritesTab extends C64Tab {
 
 	void playNext(File file) {
 		boolean recentlyPlayedFound = false;
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+				.getSidplay2();
 		for (HVSCEntry hvscEntry : favoritesSection.getFavorites()) {
 			if (recentlyPlayedFound) {
 				playTune(hvscEntry);
 				break;
 			}
-			File hvscFile = getFile(hvscEntry.getPath());
+			File hvscFile = PathUtils.getFile(hvscEntry.getPath(),
+					sidPlay2Section.getHvscFile(),
+					sidPlay2Section.getCgscFile());
 			if (hvscFile != null && hvscFile.equals(file)) {
 				recentlyPlayedFound = true;
 			}
@@ -534,35 +567,6 @@ public class FavoritesTab extends C64Tab {
 		return singleAttribute;
 	}
 
-	/**
-	 * @param config
-	 * @param path
-	 * @return file handle of the given entry
-	 */
-	File getFile(String path) {
-		File file = new TFile(path);
-		if (file.isAbsolute()) {
-			// absolute path name?
-			return file;
-		}
-		List<File> files;
-		File hvscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-				.getHvscFile();
-		files = PathUtils.getFiles(path, hvscRoot, null);
-		if (files.size() > 0) {
-			// relative path name of HVSC?
-			return files.get(files.size() - 1);
-		}
-		File cgscRoot = ((SidPlay2Section) getConfig().getSidplay2())
-				.getCgscFile();
-		files = PathUtils.getFiles(path, cgscRoot, null);
-		if (files.size() > 0) {
-			// relative path name of CGSC?
-			return files.get(files.size() - 1);
-		}
-		return null;
-	}
-
 	TableColumnBase getContextMenuColumn() {
 		TableColumnHeader columnHeader = (TableColumnHeader) contextMenuHeader
 				.getOwnerNode();
@@ -593,9 +597,11 @@ public class FavoritesTab extends C64Tab {
 		tableColumn.setText(text);
 		tableColumn
 				.setCellValueFactory(new PropertyValueFactory(columnProperty));
-		FavoritesCellFactory favoritesCellFactory = new FavoritesCellFactory();
-		favoritesCellFactory.setFavoritesTab(this);
-		tableColumn.setCellFactory(favoritesCellFactory);
+		FavoritesCellFactory cellFactory = new FavoritesCellFactory();
+		cellFactory.setConfig(getConfig());
+		cellFactory.setConsolePlayer(getConsolePlayer());
+		cellFactory.setCurrentlyPlayedFileProperty(currentlyPlayedFileProperty);
+		tableColumn.setCellFactory(cellFactory);
 		tableColumn.setContextMenu(contextMenuHeader);
 		tableColumn.widthProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -625,26 +631,30 @@ public class FavoritesTab extends C64Tab {
 	}
 
 	void copyToTab(final List<HVSCEntry> toCopy, final FavoritesTab tab) {
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+				.getSidplay2();
 		for (HVSCEntry hvscEntry : toCopy) {
-			tab.addFavorite(getFile(hvscEntry.getPath()));
+			tab.addFavorite(PathUtils.getFile(hvscEntry.getPath(),
+					sidPlay2Section.getHvscFile(),
+					sidPlay2Section.getCgscFile()));
 		}
 	}
 
 	void playTune(final HVSCEntry hvscEntry) {
 		favorites.setCurrentlyPlayedFavorites(this);
-		file = getFile(hvscEntry.getPath());
-		if (file != null) {
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
+				.getSidplay2();
+		currentlyPlayedFileProperty.set(PathUtils.getFile(hvscEntry.getPath(),
+				sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile()));
+		if (currentlyPlayedFileProperty.get() != null) {
 			setPlayedGraphics(favoritesTable);
 			try {
-				getConsolePlayer().playTune(SidTune.load(file), null);
+				getConsolePlayer().playTune(
+						SidTune.load(currentlyPlayedFileProperty.get()), null);
 			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public File getCurrentlyPlayedFile() {
-		return file;
 	}
 
 	public void setFavorites(Favorites favorites) {

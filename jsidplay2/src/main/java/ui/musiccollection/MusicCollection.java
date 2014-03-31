@@ -180,7 +180,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	protected FavoritesSection favoritesToAddSearchResult;
 
 	private DoubleProperty progress = new SimpleDoubleProperty();
-	protected List<TreeItem<File>> currentlyPlayedTreeItems;
+	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems = FXCollections
+			.<TreeItem<File>> observableArrayList();
 
 	public DoubleProperty getProgressValue() {
 		return progress;
@@ -709,16 +710,19 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					File theRootFile = sidPlay2Section.getHvscFile();
 					setSongLengthDatabase(theRootFile);
 					setSTIL(theRootFile);
-					fileBrowser.setRoot(new MusicCollectionTreeItem(this,
+					fileBrowser.setRoot(new MusicCollectionTreeItem(
 							getConsolePlayer().getStil(), theRootFile));
 				} else if (type == MusicCollectionType.CGSC) {
 					getConfig().getSidplay2().setCgsc(
 							rootFile.getAbsolutePath());
 					File theRootFile = sidPlay2Section.getCgscFile();
-					fileBrowser.setRoot(new MusicCollectionTreeItem(this,
+					fileBrowser.setRoot(new MusicCollectionTreeItem(
 							getConsolePlayer().getStil(), theRootFile));
 				}
-				fileBrowser.setCellFactory(new MusicCollectionCellFactory());
+				MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
+				cellFactory
+						.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItems);
+				fileBrowser.setCellFactory(cellFactory);
 			}
 
 		}
@@ -871,7 +875,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			}
 		}
 		if (pathSegs.size() > 0) {
-			currentlyPlayedTreeItems = pathSegs;
+			currentlyPlayedTreeItems.setAll(pathSegs);
 			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
 					.getSelectedItem();
 			TreeItem<File> treeItem = pathSegs.get(pathSegs.size() - 1);
@@ -984,7 +988,4 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		}
 	}
 
-	public List<TreeItem<File>> getCurrentlyPlayedTreeItems() {
-		return currentlyPlayedTreeItems;
-	}
 }
