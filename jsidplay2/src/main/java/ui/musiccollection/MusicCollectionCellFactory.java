@@ -18,10 +18,7 @@ public class MusicCollectionCellFactory implements
 		protected void updateItem(File file, boolean empty) {
 			super.updateItem(file, empty);
 
-			if (empty) {
-				setText(null);
-				setGraphic(null);
-			} else {
+			if (!empty) {
 				getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
 				MusicCollectionTreeItem item = (MusicCollectionTreeItem) getTreeItem();
 				MusicCollection musicCollection = item.getMusicCollection();
@@ -32,6 +29,10 @@ public class MusicCollectionCellFactory implements
 				}
 				setText(file.getName());
 				setGraphic(getTreeItem().getGraphic());
+			} else {
+				setText(null);
+				setGraphic(null);
+				getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
 			}
 		}
 

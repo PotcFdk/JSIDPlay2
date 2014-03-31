@@ -267,6 +267,9 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					if (!empty) {
 						setText(item.getName());
 						setGraphic(getTreeItem().getGraphic());
+					} else {
+						setText("");
+						setGraphic(null);
 					}
 				}
 			};

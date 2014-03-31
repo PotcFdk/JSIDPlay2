@@ -57,6 +57,11 @@ public class FavoritesCellFactory implements
 						}
 					}
 				}
+			} else {
+				setText("");
+				setGraphic(new ImageView(NO_STIL_ICON));
+				getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
+				getStyleClass().remove(FILE_NOT_FOUND_ROW);
 			}
 		}
 	}

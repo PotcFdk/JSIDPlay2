@@ -35,8 +35,10 @@ public class DirectoryCellFactory
 				super.updateItem(value, empty);
 				if (!empty) {
 					setText(value);
-					setFont(c64Font);
+				} else {
+					setText("");
 				}
+				setFont(c64Font);
 			}
 		};
 		return cell;

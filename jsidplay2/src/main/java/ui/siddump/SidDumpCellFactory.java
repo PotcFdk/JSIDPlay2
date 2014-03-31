@@ -25,6 +25,8 @@ public class SidDumpCellFactory
 						.indexOf(column);
 				if (!empty) {
 					setText(value);
+				} else {
+					setText("");
 				}
 
 				if (columnIndex == 0 || columnIndex > 15) {
