@@ -342,7 +342,7 @@
 							<chdir>.</chdir>
 							<priority>high</priority>
 							<downloadUrl>http://java.com/download</downloadUrl>
-							<supportUrl>http://jsidplay2.sourceforge.net/</supportUrl>
+							<supportUrl>http://sourceforge.net/projects/jsidplay2/</supportUrl>
 							<customProcName>false</customProcName>
 							<stayAlive>false</stayAlive>
 							<icon>src/main/launch4j/jsidplay2.ico</icon>
@@ -356,13 +356,13 @@
 								<addDependencies>true</addDependencies>
 							</classPath>
 							<jre>
-								<minVersion>1.7.0_00</minVersion>
+								<minVersion>1.8.0_00</minVersion>
 								<jdkPreference>preferJre</jdkPreference>
 							</jre>
 							<splash>
 								<file>src/main/launch4j/jsidplay2.bmp</file>
 								<waitForWindow>true</waitForWindow>
-								<timeout>120</timeout>
+								<timeout>240</timeout>
 								<timeoutErr>true</timeoutErr>
 							</splash>
 						</configuration>
@@ -382,7 +382,7 @@
 							<chdir>.</chdir>
 							<priority>high</priority>
 							<downloadUrl>http://java.com/download</downloadUrl>
-							<supportUrl>http://jsidplay2.sourceforge.net/</supportUrl>
+							<supportUrl>http://sourceforge.net/projects/jsidplay2/</supportUrl>
 							<customProcName>false</customProcName>
 							<stayAlive>false</stayAlive>
 							<icon>src/main/launch4j/jsidplay2.ico</icon>
