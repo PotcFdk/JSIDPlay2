@@ -356,8 +356,7 @@
 								<addDependencies>true</addDependencies>
 							</classPath>
 							<jre>
-								<minVersion>1.8.0_00</minVersion>
-								<jdkPreference>preferJre</jdkPreference>
+								<minVersion>1.8.0</minVersion>
 							</jre>
 							<splash>
 								<file>src/main/launch4j/jsidplay2.bmp</file>
@@ -392,8 +391,7 @@
 								<addDependencies>true</addDependencies>
 							</classPath>
 							<jre>
-								<minVersion>1.8.0_00</minVersion>
-								<jdkPreference>preferJre</jdkPreference>
+								<minVersion>1.8.0</minVersion>
 							</jre>
 						</configuration>
 					</execution>
