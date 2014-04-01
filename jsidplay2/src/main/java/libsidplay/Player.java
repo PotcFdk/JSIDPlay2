@@ -581,8 +581,8 @@ public class Player {
 	 */
 	public String getCredits() {
 		final StringBuffer credits = new StringBuffer();
-		credits.append("Java Version and User Interface (v2.5):\n"
-				+ "\tCopyright (C) 2007-2013 Ken Händel\n"
+		credits.append("Java Version and User Interface v3.0:\n"
+				+ "\tCopyright (C) 2007-2014 Ken Händel\n"
 				+ "\thttp://sourceforge.net/projects/jsidplay2/\n");
 		credits.append("Distortion Simulation and development: Antti S. Lankila\n"
 				+ "\thttp://bel.fi/~alankila/c64-sw/\n");
