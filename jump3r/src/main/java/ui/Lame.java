@@ -7,7 +7,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -177,8 +176,8 @@ public class Lame extends UIStage {
 		}
 	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	@FXML
+	private void initialize() {
 		progressColumn.setCellFactory(ProgressBarTableCell
 				.<ConversionTask> forTableColumn());
 
@@ -190,39 +189,39 @@ public class Lame extends UIStage {
 		algorithm.setItems(algorithmList);
 		genre.setItems(genreList);
 
-		presetsList.addAll(getBundle().getString("PRESET_MEDIUM"), getBundle()
+		presetsList.addAll(util.getBundle().getString("PRESET_MEDIUM"), util.getBundle()
 				.getString("PRESET_STANDARD"),
-				getBundle().getString("PRESET_EXTREME"),
-				getBundle().getString("PRESET_INSANE"),
-				getBundle().getString("PRESET_STANDARD"));
+				util.getBundle().getString("PRESET_EXTREME"),
+				util.getBundle().getString("PRESET_INSANE"),
+				util.getBundle().getString("PRESET_STANDARD"));
 		presets.getSelectionModel().select(
-				getBundle().getString("PRESET_STANDARD"));
+				util.getBundle().getString("PRESET_STANDARD"));
 
 		cbrList.addAll(320, 256, 224, 192, 160, 128, 112, 96, 80, 64, 56, 48,
 				40, 32, 192);
 		cbr.getSelectionModel().select(Integer.valueOf(192));
 
-		vbrList.addAll(getBundle().getString("VBR_0"),
-				getBundle().getString("VBR_1"), getBundle().getString("VBR_2"),
-				getBundle().getString("VBR_3"), getBundle().getString("VBR_4"),
-				getBundle().getString("VBR_5"), getBundle().getString("VBR_6"),
-				getBundle().getString("VBR_7"), getBundle().getString("VBR_8"),
-				getBundle().getString("VBR_9"));
-		vbr.getSelectionModel().select(getBundle().getString("VBR_2"));
+		vbrList.addAll(util.getBundle().getString("VBR_0"),
+				util.getBundle().getString("VBR_1"), util.getBundle().getString("VBR_2"),
+				util.getBundle().getString("VBR_3"), util.getBundle().getString("VBR_4"),
+				util.getBundle().getString("VBR_5"), util.getBundle().getString("VBR_6"),
+				util.getBundle().getString("VBR_7"), util.getBundle().getString("VBR_8"),
+				util.getBundle().getString("VBR_9"));
+		vbr.getSelectionModel().select(util.getBundle().getString("VBR_2"));
 
 		for (int i = 310; i >= 8; i--) {
 			abrList.add(i);
 		}
 		abr.getSelectionModel().select(Integer.valueOf(192));
 
-		algorithmList.addAll(getBundle().getString("ALG_0"), getBundle()
-				.getString("ALG_1"), getBundle().getString("ALG_2"),
-				getBundle().getString("ALG_3"), getBundle().getString("ALG_4"),
-				getBundle().getString("ALG_5"), getBundle().getString("ALG_6"),
-				getBundle().getString("ALG_7"), getBundle().getString("ALG_8"),
-				getBundle().getString("ALG_9"),
-				getBundle().getString("ALG_AUTO"));
-		algorithm.getSelectionModel().select(getBundle().getString("ALG_2"));
+		algorithmList.addAll(util.getBundle().getString("ALG_0"), util.getBundle()
+				.getString("ALG_1"), util.getBundle().getString("ALG_2"),
+				util.getBundle().getString("ALG_3"), util.getBundle().getString("ALG_4"),
+				util.getBundle().getString("ALG_5"), util.getBundle().getString("ALG_6"),
+				util.getBundle().getString("ALG_7"), util.getBundle().getString("ALG_8"),
+				util.getBundle().getString("ALG_9"),
+				util.getBundle().getString("ALG_AUTO"));
+		algorithm.getSelectionModel().select(util.getBundle().getString("ALG_2"));
 
 		genreList.add("");
 		ID3Tag id3 = new ID3Tag();
