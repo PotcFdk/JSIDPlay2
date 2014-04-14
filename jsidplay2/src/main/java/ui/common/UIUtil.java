@@ -34,18 +34,21 @@ public class UIUtil {
 
 		@Override
 		public Builder<?> getBuilder(Class<?> type) {
-			try {
-				// JSIDPlay2 components do not use the default constructor
-				Constructor<?> constructor = type
-						.getConstructor(new Class[] { ConsolePlayer.class,
-								Player.class, Configuration.class });
-				return (Builder<?>) constructor.newInstance(consolePlayer,
-						player, config);
-			} catch (NoSuchMethodException | SecurityException
-					| InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException e) {
-				return defaultBuilderFactory.getBuilder(type);
+			if (UIPart.class.isAssignableFrom(type)) {
+				try {
+					// JSIDPlay2 components do not use the default constructor
+					Constructor<?> constructor = type
+							.getConstructor(new Class[] { ConsolePlayer.class,
+									Player.class, Configuration.class });
+					return (Builder<?>) constructor.newInstance(consolePlayer,
+							player, config);
+				} catch (NoSuchMethodException | SecurityException
+						| InstantiationException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
 			}
+			return defaultBuilderFactory.getBuilder(type);
 		}
 	}
 
