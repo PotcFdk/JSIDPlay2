@@ -2,11 +2,23 @@ package ui.common;
 
 import java.net.URL;
 
-import javafx.fxml.Initializable;
+import javafx.util.Builder;
 
-public interface UIPart extends Initializable {
+public interface UIPart extends Builder<Object> {
 
-	String getBundleName();
+	default String getBundleName() {
+		return getClass().getName();
+	}
 
-	URL getFxml();
+	default URL getFxml() {
+		return getClass().getResource(getClass().getSimpleName() + ".fxml");
+	}
+
+	default Object build() {
+		return this;
+	}
+
+	default void doCloseWindow() {
+	}
+
 }

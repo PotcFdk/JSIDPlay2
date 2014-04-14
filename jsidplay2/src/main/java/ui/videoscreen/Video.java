@@ -4,9 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
-import java.util.ResourceBundle;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -17,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
@@ -25,6 +24,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
 import libsidplay.C64;
+import libsidplay.Player;
 import libsidplay.common.Event;
 import libsidplay.components.c1530.Datasette.DatasetteStatus;
 import libsidplay.components.c1541.C1541;
@@ -34,9 +34,12 @@ import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.ISIDDefs.ChipModel;
+import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.MediaType;
 import sidplay.consoleplayer.State;
-import ui.common.C64Tab;
+import ui.common.UIPart;
+import ui.common.UIUtil;
+import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.DiskFileExtensions;
@@ -44,7 +47,7 @@ import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 import de.schlichtherle.truezip.file.TFile;
 
-public class Video extends C64Tab implements PropertyChangeListener {
+public class Video extends Tab implements UIPart, PropertyChangeListener {
 	private static final double MONITOR_MARGIN_LEFT = 35;
 	private static final double MONITOR_MARGIN_RIGHT = 35;
 	private static final double MONITOR_MARGIN_TOP = 28;
@@ -69,25 +72,32 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	protected Label tapeName, diskName, cartridgeName;
 
+	private UIUtil util;
+
 	protected WritableImage vicImage;
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
-	protected boolean isVisible;
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		if (getPlayer() == null) {
-			// wait for second initialization, where properties have been set!
-			return;
-		}
-		getConsolePlayer().stateProperty().addListener((arg0, arg1, arg2) -> {
-			if (arg2 == State.RUNNING) {
-				Platform.runLater(() -> {
-					setupVideoScreen();
-					setupScreenBasedOnChipType(getPlayer().getTune());
-				});
-			}
-		});
+	public Video(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		util = new UIUtil(consolePlayer, player, config);
+		setContent((Node) util.parse(this));
+	}
+
+	@FXML
+	private void initialize() {
+		util.getConsolePlayer()
+				.stateProperty()
+				.addListener(
+						(arg0, arg1, arg2) -> {
+							if (arg2 == State.RUNNING) {
+								Platform.runLater(() -> {
+									setupVideoScreen();
+									setupScreenBasedOnChipType(util.getPlayer()
+											.getTune());
+								});
+							}
+						});
 		for (Slider slider : Arrays.asList(brightness, contrast, gamma,
 				saturation, phaseShift, offset, tint, blur, bleed)) {
 			slider.getStyleClass().add("knobStyle");
@@ -174,26 +184,14 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		setupKeyboard();
 
 		updatePeripheralImages();
-
-		isVisible = true;
-		getTabPane().getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					// performance optimizations!
-						if (Video.this.equals(newValue)) {
-							isVisible = true;
-						} else {
-							isVisible = false;
-						}
-					});
 	}
 
 	@FXML
 	private void showVirtualKeyboard() {
 		try {
 			if (virtualKeyboard == null) {
-				virtualKeyboard = new Keyboard();
-				virtualKeyboard.setPlayer(getPlayer());
-				virtualKeyboard.setConfig(getConfig());
+				virtualKeyboard = new Keyboard(util.getConsolePlayer(),
+						util.getPlayer(), util.getConfig());
 				virtualKeyboard.open();
 			} else if (virtualKeyboard.isShowing()) {
 				virtualKeyboard.hide();
@@ -208,18 +206,18 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
 						TapeFileExtensions.EXTENSIONS));
-		fileDialog.setTitle(getBundle().getString("INSERT_TAPE"));
+		fileDialog.setTitle(util.getBundle().getString("INSERT_TAPE"));
 		final File file = fileDialog.showOpenDialog(screen.getScene()
 				.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(new TFile(file), null,
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConsolePlayer().insertMedia(new TFile(file), null,
 					MediaType.TAPE);
 		}
 	}
@@ -227,18 +225,18 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
 						DiskFileExtensions.EXTENSIONS));
-		fileDialog.setTitle(getBundle().getString("INSERT_DISK"));
+		fileDialog.setTitle(util.getBundle().getString("INSERT_DISK"));
 		final File file = fileDialog.showOpenDialog(screen.getScene()
 				.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(new TFile(file), null,
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConsolePlayer().insertMedia(new TFile(file), null,
 					MediaType.DISK);
 		}
 	}
@@ -246,18 +244,18 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	@FXML
 	private void insertCartridge() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
-		fileDialog.setTitle(getBundle().getString("INSERT_CARTRIDGE"));
+		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));
 		final File file = fileDialog.showOpenDialog(screen.getScene()
 				.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(new TFile(file), null,
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConsolePlayer().insertMedia(new TFile(file), null,
 					MediaType.CART);
 		}
 	}
@@ -281,7 +279,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	 */
 	private void setupKeyboard() {
 		monitor.setOnKeyPressed((event) -> {
-			KeyTableEntry keyTableEntry = getConfig().getKeyTabEntry(
+			KeyTableEntry keyTableEntry = util.getConfig().getKeyTabEntry(
 					event.getCode().getName());
 
 			if (event.isShiftDown()) {
@@ -315,10 +313,10 @@ public class Video extends C64Tab implements PropertyChangeListener {
 		final KeyFrame oneFrame = new KeyFrame(
 				duration,
 				(evt) -> {
-					DatasetteStatus datasetteStatus = getPlayer()
+					DatasetteStatus datasetteStatus = util.getPlayer()
 							.getDatasette().getStatus();
-					tapeName.setText(getPlayer().getDatasette().getTapeImage()
-							.getName());
+					tapeName.setText(util.getPlayer().getDatasette()
+							.getTapeImage().getName());
 					switch (datasetteStatus) {
 					case OFF:
 						datasetteOff.setVisible(true);
@@ -347,7 +345,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 								"Unexpected datasette status: "
 										+ datasetteStatus);
 					}
-					final C1541 firstC1541 = getPlayer().getFloppies()[0];
+					final C1541 firstC1541 = util.getPlayer().getFloppies()[0];
 					diskName.setText(firstC1541.getDiskName());
 					FloppyStatus floppyStatus = firstC1541.getStatus();
 					switch (floppyStatus) {
@@ -409,7 +407,7 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	}
 
 	/**
-	 * Make C64 image visible, if the internal player is used.
+	 * Make C64 image visible, if the internal util.getPlayer() is used.
 	 */
 	protected void setupScreenBasedOnChipType(final SidTune sidTune) {
 		if (sidTune != null && sidTune.getInfo().playAddr != 0) {
@@ -438,7 +436,8 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	}
 
 	private ChipModel getChipModel(SidTune sidTune) {
-		ChipModel userSidModel = getConfig().getEmulation().getUserSidModel();
+		ChipModel userSidModel = util.getConfig().getEmulation()
+				.getUserSidModel();
 		if (userSidModel != null) {
 			return userSidModel;
 		} else {
@@ -449,10 +448,10 @@ public class Video extends C64Tab implements PropertyChangeListener {
 				case MOS8580:
 					return ChipModel.MOS8580;
 				default:
-					return getConfig().getEmulation().getDefaultSidModel();
+					return util.getConfig().getEmulation().getDefaultSidModel();
 				}
 			} else {
-				return getConfig().getEmulation().getDefaultSidModel();
+				return util.getConfig().getEmulation().getDefaultSidModel();
 			}
 		}
 	}
@@ -462,18 +461,21 @@ public class Video extends C64Tab implements PropertyChangeListener {
 	}
 
 	protected VIC getVIC() {
-		return getPlayer().getC64().getVIC();
+		return util.getPlayer().getC64().getVIC();
 	}
 
 	protected C64 getC64() {
-		return getPlayer().getC64();
+		return util.getPlayer().getC64();
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		if (isVisible && VIC.PROP_PIXELS.equals(evt.getPropertyName())) {
+		if (VIC.PROP_PIXELS.equals(evt.getPropertyName())) {
 			Platform.runLater(() -> {
-				double screenScale = ((SidPlay2Section) getConfig()
+				if (!isSelected()) {
+					return;
+				}
+				double screenScale = ((SidPlay2Section) util.getConfig()
 						.getSidplay2()).getVideoScaling();
 				screen.setWidth(screenScale * getVIC().getBorderWidth());
 				screen.setHeight(screenScale * getVIC().getBorderHeight());
@@ -506,5 +508,4 @@ public class Video extends C64Tab implements PropertyChangeListener {
 			});
 		}
 	}
-
 }

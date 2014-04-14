@@ -67,11 +67,8 @@ public class JSIDPlay2Main extends Application {
 			cp.args(args);
 		}
 
-		jSidplay2 = new JSidPlay2();
+		jSidplay2 = new JSidPlay2(cp, cp.getPlayer(), config);
 		jSidplay2.setConfigService(configService);
-		jSidplay2.setConsolePlayer(cp);
-		jSidplay2.setPlayer(cp.getPlayer());
-		jSidplay2.setConfig(config);
 		try {
 			jSidplay2.open(primaryStage);
 		} catch (IOException e) {

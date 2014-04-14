@@ -2,9 +2,7 @@ package ui.disassembler;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.URL;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -16,11 +14,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import libsidplay.Player;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.cpuparser.CPUCommand;
 import libsidutils.cpuparser.CPUParser;
+import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
 import ui.common.C64Stage;
+import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 
 public class Disassembler extends C64Stage {
@@ -38,40 +39,46 @@ public class Disassembler extends C64Stage {
 	@FXML
 	private TextField address, startAddress, endAddress;
 	@FXML
-	protected Button driverAddress, loadAddress, initAddress, playerAddress,
+	private Button driverAddress, loadAddress, initAddress, playerAddress,
 			save;
 	@FXML
 	private TableView<AssemblyLine> memoryTable;
 
-	protected ObservableList<AssemblyLine> assemblyLines = FXCollections
-			.<AssemblyLine> observableArrayList();
+	protected ObservableList<AssemblyLine> assemblyLines;
 
-	private DisassemblerRefresh disassemblerRefresh = new DisassemblerRefresh();
+	private DisassemblerRefresh disassemblerRefresh;
 
 	protected static Map<Integer, CPUCommand> fCommands = CPUParser
 			.getCpuCommands();
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public Disassembler(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
+	}
+
+	@FXML
+	private void initialize() {
+		assemblyLines = FXCollections.<AssemblyLine> observableArrayList();
 		memoryTable.setItems(assemblyLines);
 		disassemble(0);
 		setTune();
 
-		getConsolePlayer().stateProperty().addListener(disassemblerRefresh);
+		disassemblerRefresh = new DisassemblerRefresh();
+		util.getConsolePlayer().stateProperty().addListener(disassemblerRefresh);
 
 	}
 
 	@Override
-	protected void doCloseWindow() {
-		getConsolePlayer().stateProperty().removeListener(disassemblerRefresh);
+	public void doCloseWindow() {
+		util.getConsolePlayer().stateProperty().removeListener(disassemblerRefresh);
 	}
 
 	protected void setTune() {
-		if (getPlayer().getTune() == null) {
+		if (util.getPlayer().getTune() == null) {
 			return;
 		}
 		Platform.runLater(() -> {
-			final SidTuneInfo tuneInfo = getPlayer().getTune().getInfo();
+			final SidTuneInfo tuneInfo = util.getPlayer().getTune().getInfo();
 			driverAddress.setText(getDriverAddress(tuneInfo));
 			loadAddress.setText(getLoadAddress(tuneInfo));
 			initAddress.setText(getInitAddress(tuneInfo));
@@ -114,7 +121,7 @@ public class Disassembler extends C64Stage {
 	private void disassemble(final int startAddr) {
 		Platform.runLater(() -> {
 			assemblyLines.clear();
-			byte[] ram = getPlayer().getC64().getRAM();
+			byte[] ram = util.getPlayer().getC64().getRAM();
 			int offset = startAddr;
 			do {
 				CPUCommand cmd = fCommands.get(ram[offset & 0xffff] & 0xff);
@@ -185,7 +192,7 @@ public class Disassembler extends C64Stage {
 	@FXML
 	private void saveMemory() {
 		FileChooser fileDialog = new FileChooser();
-		SidPlay2Section sidplay2 = (SidPlay2Section) getConfig().getSidplay2();
+		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig().getSidplay2();
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File file = fileDialog.showSaveDialog(save.getScene().getWindow());
 		if (file != null) {
@@ -197,7 +204,7 @@ public class Disassembler extends C64Stage {
 				end &= 0xffff;
 				fos.write(start & 0xff);
 				fos.write(start >> 8);
-				byte[] ram = getPlayer().getC64().getRAM();
+				byte[] ram = util.getPlayer().getC64().getRAM();
 				while (start != end) {
 					fos.write(ram[start]);
 					start = start + 1 & 0xffff;

@@ -93,6 +93,9 @@ public class FavoritesCellFactory implements
 		private void setCellStyle() {
 			getStyleClass().removeAll(CURRENTLY_PLAYED_FILE_ROW,
 					FILE_NOT_FOUND_ROW);
+			if (getTableRow() == null) {
+				return;
+			}
 			HVSCEntry hvscEntry = (HVSCEntry) getTableRow().getItem();
 			if (hvscEntry != null) {
 				SidPlay2Section sidPlay2Section = (SidPlay2Section) config

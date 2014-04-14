@@ -1,26 +1,31 @@
 package ui.common.dialog;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import libsidplay.Player;
+import sidplay.ConsolePlayer;
 import ui.common.C64Stage;
+import ui.entities.config.Configuration;
 
 public class YesNoDialog extends C64Stage {
 
 	@FXML
 	private Text message;
-	
-	private String text;
 
-	private BooleanProperty confirmed = new SimpleBooleanProperty();
+	private String text;
 	
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	private BooleanProperty confirmed = new SimpleBooleanProperty();
+
+	public YesNoDialog(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
+	}
+
+	@FXML
+	private void initialize() {
 		setWait(true);
 		message.setText(text);
 	}
@@ -38,7 +43,7 @@ public class YesNoDialog extends C64Stage {
 	}
 
 	public void setText(String str) {
-		text = str;
+		this.text = str;
 	}
 
 	public BooleanProperty getConfirmed() {

@@ -1,8 +1,6 @@
 package ui.siddump;
 
 import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -18,11 +16,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
+import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import netsiddev.InvalidCommandException;
+import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
 import ui.common.C64Stage;
+import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 
 public class SidDump extends C64Stage {
@@ -56,12 +57,20 @@ public class SidDump extends C64Stage {
 
 	private Thread fPlayerThread;
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		getConsolePlayer().stateProperty().addListener(
-				(ObservableValue<? extends State> observable, State oldValue,
-						State newValue) -> doStop(newValue));
-		sidDumpExtension = new SidDumpExtension(getPlayer(), getConfig()) {
+	public SidDump(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
+	}
+
+	@FXML
+	private void initialize() {
+		util.getConsolePlayer()
+				.stateProperty()
+				.addListener(
+						(ObservableValue<? extends State> observable,
+								State oldValue, State newValue) -> doStop(newValue));
+		sidDumpExtension = new SidDumpExtension(util.getPlayer(),
+				util.getConfig()) {
 
 			@Override
 			public void add(final SidDumpOutput output) {
@@ -79,14 +88,16 @@ public class SidDump extends C64Stage {
 		sidDumpPlayers.addAll(new libsidutils.SIDDump().getPlayers());
 		regPlayer.getSelectionModel().select(0);
 		doSetTableFontSize();
-		setTune(getPlayer().getTune());
+		setTune(util.getPlayer().getTune());
 	}
 
 	@Override
-	protected void doCloseWindow() {
-		getConsolePlayer().stateProperty().removeListener(
-				(ObservableValue<? extends State> observable, State oldValue,
-						State newValue) -> doStop(newValue));
+	public void doCloseWindow() {
+		util.getConsolePlayer()
+				.stateProperty()
+				.removeListener(
+						(ObservableValue<? extends State> observable,
+								State oldValue, State newValue) -> doStop(newValue));
 	}
 
 	private void doStop(State state) {
@@ -101,13 +112,13 @@ public class SidDump extends C64Stage {
 	@FXML
 	private void doLoadDump() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		final File file = fileDialog.showOpenDialog(loadDump.getScene()
 				.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			sidDumpExtension.load(file.getAbsolutePath());
 			noteSpacing.setText(String.valueOf(sidDumpExtension
 					.getNoteSpacing()));
@@ -127,13 +138,13 @@ public class SidDump extends C64Stage {
 	@FXML
 	private void doSaveDump() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		final File file = fileDialog.showSaveDialog(saveDump.getScene()
 				.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			sidDumpExtension.save(file.getAbsolutePath(), sidDumpOutputs);
 		}
 	}
@@ -166,11 +177,11 @@ public class SidDump extends C64Stage {
 	private void doStartStopRecording() {
 		if (startStopRecording.isSelected()) {
 			// restart tune, before recording starts
-			getConsolePlayer().playTune(getPlayer().getTune(), null);
-			setTune(getPlayer().getTune());
-			getPlayer().getC64().setPlayRoutineObserver(sidDumpExtension);
+			util.getConsolePlayer().playTune(util.getPlayer().getTune(), null);
+			setTune(util.getPlayer().getTune());
+			util.getPlayer().getC64().setPlayRoutineObserver(sidDumpExtension);
 		} else {
-			getPlayer().getC64().setPlayRoutineObserver(null);
+			util.getPlayer().getC64().setPlayRoutineObserver(null);
 			sidDumpExtension.stopRecording();
 		}
 	}
@@ -188,14 +199,14 @@ public class SidDump extends C64Stage {
 			noteSpacing.getStyleClass().removeAll(CELL_VALUE_OK,
 					CELL_VALUE_ERROR);
 			if (Integer.parseInt(noteSpacing.getText()) >= 0) {
-				tooltip.setText(getBundle().getString("NOTE_SPACING_TIP"));
+				tooltip.setText(util.getBundle().getString("NOTE_SPACING_TIP"));
 				noteSpacing.setTooltip(tooltip);
 				noteSpacing.getStyleClass().add(CELL_VALUE_OK);
 			} else {
 				throw new NumberFormatException();
 			}
 		} catch (final NumberFormatException e) {
-			tooltip.setText(getBundle().getString("NOTE_SPACING_NEG"));
+			tooltip.setText(util.getBundle().getString("NOTE_SPACING_NEG"));
 			noteSpacing.setTooltip(tooltip);
 			noteSpacing.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -208,11 +219,12 @@ public class SidDump extends C64Stage {
 				CELL_VALUE_ERROR);
 		seconds = IniReader.parseTime(maxRecordLength.getText());
 		if (seconds != -1) {
-			tooltip.setText(getBundle().getString("MAX_RECORD_LENGTH_TIP"));
+			tooltip.setText(util.getBundle().getString("MAX_RECORD_LENGTH_TIP"));
 			maxRecordLength.setTooltip(tooltip);
 			maxRecordLength.getStyleClass().add(CELL_VALUE_OK);
 		} else {
-			tooltip.setText(getBundle().getString("MAX_RECORD_LENGTH_FORMAT"));
+			tooltip.setText(util.getBundle().getString(
+					"MAX_RECORD_LENGTH_FORMAT"));
 			maxRecordLength.setTooltip(tooltip);
 			maxRecordLength.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -225,14 +237,15 @@ public class SidDump extends C64Stage {
 			patternSpacing.getStyleClass().removeAll(CELL_VALUE_OK,
 					CELL_VALUE_ERROR);
 			if (Integer.parseInt(patternSpacing.getText()) >= 0) {
-				tooltip.setText(getBundle().getString("PATTERN_SPACING_TIP"));
+				tooltip.setText(util.getBundle().getString(
+						"PATTERN_SPACING_TIP"));
 				patternSpacing.setTooltip(tooltip);
 				patternSpacing.getStyleClass().add(CELL_VALUE_OK);
 			} else {
 				throw new NumberFormatException();
 			}
 		} catch (final NumberFormatException e) {
-			tooltip.setText(getBundle().getString("PATTERN_SPACING_NEG"));
+			tooltip.setText(util.getBundle().getString("PATTERN_SPACING_NEG"));
 			patternSpacing.setTooltip(tooltip);
 			patternSpacing.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -245,14 +258,15 @@ public class SidDump extends C64Stage {
 			oldNoteFactor.getStyleClass().removeAll(CELL_VALUE_OK,
 					CELL_VALUE_ERROR);
 			if (Float.parseFloat(oldNoteFactor.getText()) >= 1) {
-				tooltip.setText(getBundle().getString("OLD_NOTE_FACTOR_TIP"));
+				tooltip.setText(util.getBundle().getString(
+						"OLD_NOTE_FACTOR_TIP"));
 				oldNoteFactor.setTooltip(tooltip);
 				oldNoteFactor.getStyleClass().add(CELL_VALUE_OK);
 			} else {
 				throw new NumberFormatException();
 			}
 		} catch (final NumberFormatException e) {
-			tooltip.setText(getBundle().getString("OLD_NOTE_FACTOR_NEG"));
+			tooltip.setText(util.getBundle().getString("OLD_NOTE_FACTOR_NEG"));
 			oldNoteFactor.setTooltip(tooltip);
 			oldNoteFactor.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -264,14 +278,14 @@ public class SidDump extends C64Stage {
 		try {
 			baseFreq.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 			if (Integer.decode(baseFreq.getText()) >= 0) {
-				tooltip.setText(getBundle().getString("BASE_FREQ_TIP"));
+				tooltip.setText(util.getBundle().getString("BASE_FREQ_TIP"));
 				baseFreq.setTooltip(tooltip);
 				baseFreq.getStyleClass().add(CELL_VALUE_OK);
 			} else {
 				throw new NumberFormatException();
 			}
 		} catch (final NumberFormatException e) {
-			tooltip.setText(getBundle().getString("BASE_FREQ_HEX"));
+			tooltip.setText(util.getBundle().getString("BASE_FREQ_HEX"));
 			baseFreq.setTooltip(tooltip);
 			baseFreq.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -285,7 +299,8 @@ public class SidDump extends C64Stage {
 					CELL_VALUE_ERROR);
 			int fontSizeVal = Integer.parseInt(tableFontSize.getText());
 			if (fontSizeVal > 0 && fontSizeVal <= 24) {
-				tooltip.setText(getBundle().getString("TABLE_FONT_SIZE_TIP"));
+				tooltip.setText(util.getBundle().getString(
+						"TABLE_FONT_SIZE_TIP"));
 				tableFontSize.setTooltip(tooltip);
 				tableFontSize.getStyleClass().add(CELL_VALUE_OK);
 				dumpTable.setStyle(String.format("-fx-font-size:%d.0px;}",
@@ -300,7 +315,7 @@ public class SidDump extends C64Stage {
 				throw new NumberFormatException();
 			}
 		} catch (final NumberFormatException e) {
-			tooltip.setText(getBundle().getString("TABLE_FONT_SIZE_NEG"));
+			tooltip.setText(util.getBundle().getString("TABLE_FONT_SIZE_NEG"));
 			tableFontSize.setTooltip(tooltip);
 			tableFontSize.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -313,14 +328,14 @@ public class SidDump extends C64Stage {
 			baseNote.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 			int baseNoteVal = Integer.decode(baseNote.getText());
 			if (baseNoteVal >= 128 && baseNoteVal <= 223) {
-				tooltip.setText(getBundle().getString("BASE_NOTE_TIP"));
+				tooltip.setText(util.getBundle().getString("BASE_NOTE_TIP"));
 				baseNote.setTooltip(tooltip);
 				baseNote.getStyleClass().add(CELL_VALUE_OK);
 			} else {
 				throw new NumberFormatException();
 			}
 		} catch (final NumberFormatException e) {
-			tooltip.setText(getBundle().getString("BASE_NOTE_HEX"));
+			tooltip.setText(util.getBundle().getString("BASE_NOTE_HEX"));
 			baseNote.setTooltip(tooltip);
 			baseNote.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -334,7 +349,8 @@ public class SidDump extends C64Stage {
 					CELL_VALUE_ERROR);
 			final int speed = Integer.parseInt(callsPerFrame.getText());
 			if (speed >= 1) {
-				tooltip.setText(getBundle().getString("CALLS_PER_FRAME_TIP"));
+				tooltip.setText(util.getBundle().getString(
+						"CALLS_PER_FRAME_TIP"));
 				callsPerFrame.setTooltip(tooltip);
 				callsPerFrame.getStyleClass().add(CELL_VALUE_OK);
 				sidDumpExtension.setReplayFrequency(speed * 50);
@@ -342,7 +358,7 @@ public class SidDump extends C64Stage {
 				throw new NumberFormatException();
 			}
 		} catch (final NumberFormatException e) {
-			tooltip.setText(getBundle().getString("CALLS_PER_FRAME_NEG"));
+			tooltip.setText(util.getBundle().getString("CALLS_PER_FRAME_NEG"));
 			callsPerFrame.setTooltip(tooltip);
 			callsPerFrame.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -355,14 +371,14 @@ public class SidDump extends C64Stage {
 			firstFrame.getStyleClass().removeAll(CELL_VALUE_OK,
 					CELL_VALUE_ERROR);
 			if (Long.parseLong(firstFrame.getText()) >= 0) {
-				tooltip.setText(getBundle().getString("FIRST_FRAME_TIP"));
+				tooltip.setText(util.getBundle().getString("FIRST_FRAME_TIP"));
 				firstFrame.setTooltip(tooltip);
 				firstFrame.getStyleClass().add(CELL_VALUE_OK);
 			} else {
 				throw new NumberFormatException();
 			}
 		} catch (final NumberFormatException e) {
-			tooltip.setText(getBundle().getString("FIRST_FRAME_NEG"));
+			tooltip.setText(util.getBundle().getString("FIRST_FRAME_NEG"));
 			firstFrame.setTooltip(tooltip);
 			firstFrame.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -385,9 +401,9 @@ public class SidDump extends C64Stage {
 		sidDumpExtension.setCurrentSong(subTune);
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
-			int songLength = getConsolePlayer().getSongLength(tune);
+			int songLength = util.getConsolePlayer().getSongLength(tune);
 			if (songLength <= 0) {
-				songLength = getConfig().getSidplay2().getPlayLength();
+				songLength = util.getConfig().getSidplay2().getPlayLength();
 				if (songLength == 0) {
 					// default
 					songLength = 60;
@@ -412,8 +428,8 @@ public class SidDump extends C64Stage {
 
 		if (tune.getInfo().playAddr == 0) {
 			startStopRecording.setSelected(false);
-			startStopRecording.setTooltip(new Tooltip(getBundle().getString(
-					"NOT_AVAILABLE")));
+			startStopRecording.setTooltip(new Tooltip(util.getBundle()
+					.getString("NOT_AVAILABLE")));
 		} else {
 			startStopRecording.setTooltip(new Tooltip(null));
 		}

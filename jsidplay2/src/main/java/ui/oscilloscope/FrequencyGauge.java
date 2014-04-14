@@ -1,8 +1,11 @@
 package ui.oscilloscope;
 
+import sidplay.ConsolePlayer;
+import ui.entities.config.Configuration;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
+import libsidplay.Player;
 import libsidplay.common.SIDEmu;
 
 public final class FrequencyGauge extends SIDGauge {
@@ -11,6 +14,11 @@ public final class FrequencyGauge extends SIDGauge {
 	private TitledPane border;
 	@FXML
 	private Canvas area;
+
+	public FrequencyGauge(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
+	}
 
 	@Override
 	protected Canvas getArea() {

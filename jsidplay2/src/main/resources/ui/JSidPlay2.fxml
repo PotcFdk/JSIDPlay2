@@ -242,9 +242,9 @@
 						<TabPane tabClosingPolicy="UNAVAILABLE" fx:id="musicCollTabbedPane">
 							<tabs>
 								<MusicCollection type="HVSC" text="%HVSC"
-									collectionURL="http://www.hvsc.de/" dbName="HVSC" />
+									collectionURL="http://www.hvsc.de/" />
 								<MusicCollection type="CGSC" text="%CGSC"
-									collectionURL="http://www.c64music.co.uk/" dbName="CGSC" />
+									collectionURL="http://www.c64music.co.uk/" />
 							</tabs>
 						</TabPane>
 					</Tab>

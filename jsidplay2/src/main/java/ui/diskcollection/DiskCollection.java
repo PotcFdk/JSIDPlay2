@@ -9,16 +9,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.zip.GZIPInputStream;
 
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -26,12 +27,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
+import libsidplay.Player;
 import libsidutils.PathUtils;
+import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.MediaType;
-import ui.common.C64Tab;
+import ui.common.UIPart;
+import ui.common.UIUtil;
 import ui.directory.Directory;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
+import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.DocsFileFilter;
@@ -40,27 +45,38 @@ import ui.filefilter.TapeFileFilter;
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
 
-public class DiskCollection extends C64Tab {
+public class DiskCollection extends Tab implements UIPart {
 
 	private static final String HVMEC_DATA = "DATA";
 	private static final String HVMEC_CONTROL = "CONTROL";
 
 	@FXML
-	protected CheckBox autoConfiguration;
+	private CheckBox autoConfiguration;
 	@FXML
-	protected Directory directory;
+	private Directory directory;
 	@FXML
 	private ImageView screenshot;
 	@FXML
-	protected TreeView<File> fileBrowser;
+	private TreeView<File> fileBrowser;
 	@FXML
 	private ContextMenu contextMenu;
 	@FXML
-	protected MenuItem start, attachDisk;
+	private MenuItem start, attachDisk;
 	@FXML
 	private TextField collectionDir;
 
-	protected DiscCollectionType type;
+	private UIUtil util;
+
+	private ObjectProperty<DiscCollectionType> type;
+
+	public DiscCollectionType getType() {
+		return type.get();
+	}
+
+	public void setType(DiscCollectionType type) {
+		this.type.set(type);
+	}
+
 	private String downloadUrl;
 
 	private final FileFilter screenshotsFileFilter = new ScreenshotFileFilter();
@@ -72,7 +88,7 @@ public class DiskCollection extends C64Tab {
 
 		@Override
 		public boolean accept(File file) {
-			if (type == DiscCollectionType.HVMEC && file.isDirectory()
+			if (type.get() == DiscCollectionType.HVMEC && file.isDirectory()
 					&& file.getName().equals(HVMEC_CONTROL)) {
 				return false;
 			}
@@ -81,46 +97,14 @@ public class DiskCollection extends C64Tab {
 		}
 	};
 
-	private DoubleProperty progress = new SimpleDoubleProperty();
-
-	public DoubleProperty getProgressValue() {
-		return progress;
+	public DiskCollection(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		util = new UIUtil(consolePlayer, player, config);
+		setContent((Node) util.parse(this));
 	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		if (getPlayer() == null) {
-			// wait for second initialization, where properties have been set!
-			return;
-		}
-		String initialRoot;
-		switch (type) {
-		case HVMEC:
-			this.downloadUrl = getConfig().getOnline().getHvmecUrl();
-			initialRoot = getConfig().getSidplay2().getHVMEC();
-			break;
-
-		case DEMOS:
-			this.downloadUrl = getConfig().getOnline().getDemosUrl();
-			initialRoot = getConfig().getSidplay2().getDemos();
-			break;
-
-		case MAGS:
-			this.downloadUrl = getConfig().getOnline().getMagazinesUrl();
-			initialRoot = getConfig().getSidplay2().getMags();
-			break;
-
-		default:
-			throw new RuntimeException("Illegal disk collection type : " + type);
-		}
-		if (initialRoot != null) {
-			setRootFile(new File(initialRoot));
-		}
-		directory.setConfig(getConfig());
-		directory.setPlayer(getPlayer());
-		directory.setConsolePlayer(getConsolePlayer());
-		directory.initialize(location, resources);
-
+	@FXML
+	private void initialize() {
 		directory.getAutoStartFileProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					attachAndRunDemo(fileBrowser.getSelectionModel()
@@ -166,14 +150,34 @@ public class DiskCollection extends C64Tab {
 			start.setDisable(disable);
 			attachDisk.setDisable(disable);
 		});
-	}
+		type = new SimpleObjectProperty<>();
+		type.addListener((observable, oldValue, newValue) -> {
+			String initialRoot;
+			switch (type.get()) {
+			case HVMEC:
+				this.downloadUrl = util.getConfig().getOnline().getHvmecUrl();
+				initialRoot = util.getConfig().getSidplay2().getHVMEC();
+				break;
 
-	public DiscCollectionType getType() {
-		return type;
-	}
+			case DEMOS:
+				this.downloadUrl = util.getConfig().getOnline().getDemosUrl();
+				initialRoot = util.getConfig().getSidplay2().getDemos();
+				break;
 
-	public void setType(DiscCollectionType type) {
-		this.type = type;
+			case MAGS:
+				this.downloadUrl = util.getConfig().getOnline()
+						.getMagazinesUrl();
+				initialRoot = util.getConfig().getSidplay2().getMags();
+				break;
+
+			default:
+				throw new RuntimeException("Illegal disk collection type : "
+						+ type);
+			}
+			if (initialRoot != null) {
+				setRootFile(new File(initialRoot));
+			}
+		});
 	}
 
 	@FXML
@@ -181,8 +185,9 @@ public class DiskCollection extends C64Tab {
 		if (autoConfiguration.isSelected()) {
 			autoConfiguration.setDisable(true);
 			try {
-				DownloadThread downloadThread = new DownloadThread(getConfig(),
-						new ProgressListener(progress) {
+				DownloadThread downloadThread = new DownloadThread(
+						util.getConfig(), new ProgressListener(util,
+								fileBrowser) {
 
 							@Override
 							public void downloaded(final File downloadedFile) {
@@ -205,7 +210,7 @@ public class DiskCollection extends C64Tab {
 	private void attachDisk() {
 		File selectedFile = fileBrowser.getSelectionModel().getSelectedItem()
 				.getValue();
-		getConsolePlayer().insertMedia(extract(selectedFile), null,
+		util.getConsolePlayer().insertMedia(extract(selectedFile), null,
 				MediaType.DISK);
 	}
 
@@ -218,7 +223,8 @@ public class DiskCollection extends C64Tab {
 	@FXML
 	private void doBrowse() {
 		DirectoryChooser fileDialog = new DirectoryChooser();
-		SidPlay2Section sidplay2 = (SidPlay2Section) getConfig().getSidplay2();
+		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
+				.getSidplay2();
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene()
 				.getWindow());
@@ -236,12 +242,15 @@ public class DiskCollection extends C64Tab {
 			fileBrowser.setRoot(new DiskCollectionTreeItem(theRootFile,
 					theRootFile, fileBrowserFileFilter));
 
-			if (type == DiscCollectionType.HVMEC) {
-				getConfig().getSidplay2().setHVMEC(rootFile.getAbsolutePath());
-			} else if (type == DiscCollectionType.DEMOS) {
-				getConfig().getSidplay2().setDemos(rootFile.getAbsolutePath());
-			} else if (type == DiscCollectionType.MAGS) {
-				getConfig().getSidplay2().setMags(rootFile.getAbsolutePath());
+			if (type.get() == DiscCollectionType.HVMEC) {
+				util.getConfig().getSidplay2()
+						.setHVMEC(rootFile.getAbsolutePath());
+			} else if (type.get() == DiscCollectionType.DEMOS) {
+				util.getConfig().getSidplay2()
+						.setDemos(rootFile.getAbsolutePath());
+			} else if (type.get() == DiscCollectionType.MAGS) {
+				util.getConfig().getSidplay2()
+						.setMags(rootFile.getAbsolutePath());
 			}
 		}
 	}
@@ -260,11 +269,11 @@ public class DiskCollection extends C64Tab {
 		} else {
 			File extractedFile = extract(file);
 			if (diskFileFilter.accept(file)) {
-				getConsolePlayer().insertMedia(extractedFile, autoStartFile,
-						MediaType.DISK);
+				util.getConsolePlayer().insertMedia(extractedFile,
+						autoStartFile, MediaType.DISK);
 			} else {
-				getConsolePlayer().insertMedia(extractedFile, autoStartFile,
-						MediaType.TAPE);
+				util.getConsolePlayer().insertMedia(extractedFile,
+						autoStartFile, MediaType.TAPE);
 			}
 			if (autoStartFile == null) {
 				resetAndLoadDemo(extractedFile);
@@ -281,8 +290,8 @@ public class DiskCollection extends C64Tab {
 			// load from tape
 			command = "LOAD\rRUN\r";
 		}
-		setPlayedGraphics(fileBrowser);
-		getConsolePlayer().playTune(null, command);
+		util.setPlayedGraphics(fileBrowser);
+		util.getConsolePlayer().playTune(null, command);
 	}
 
 	protected void showScreenshot(final File file) {
@@ -311,7 +320,7 @@ public class DiskCollection extends C64Tab {
 		if (rootItem == null) {
 			return null;
 		}
-		String parentPath = type == DiscCollectionType.HVMEC ? file
+		String parentPath = type.get() == DiscCollectionType.HVMEC ? file
 				.getParentFile().getPath().replace(HVMEC_DATA, HVMEC_CONTROL)
 				: file.getParentFile().getPath();
 		List<File> parentFiles = PathUtils.getFiles(parentPath,
@@ -330,7 +339,7 @@ public class DiskCollection extends C64Tab {
 
 	protected File extract(File file) {
 		if (file.getName().endsWith(".gz")) {
-			File dst = new File(getConfig().getSidplay2().getTmpDir(),
+			File dst = new File(util.getConfig().getSidplay2().getTmpDir(),
 					PathUtils.getBaseNameNoExt(file));
 			dst.deleteOnExit();
 			try (InputStream is = new GZIPInputStream(
@@ -341,7 +350,7 @@ public class DiskCollection extends C64Tab {
 			}
 			return dst;
 		} else {
-			File dst = new File(getConfig().getSidplay2().getTmpDir(),
+			File dst = new File(util.getConfig().getSidplay2().getTmpDir(),
 					file.getName());
 			dst.deleteOnExit();
 			try {

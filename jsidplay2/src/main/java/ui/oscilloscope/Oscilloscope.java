@@ -1,23 +1,26 @@
 package ui.oscilloscope;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Tab;
 import javafx.util.Duration;
+import libsidplay.Player;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
+import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
-import ui.common.C64Tab;
+import ui.common.UIPart;
+import ui.common.UIUtil;
+import ui.entities.config.Configuration;
 
 /**
  * @author Ken Händel
  */
-public class Oscilloscope extends C64Tab {
+public class Oscilloscope extends Tab implements UIPart {
 
 	protected class HighResolutionEvent extends Event {
 		private EventScheduler ctx;
@@ -35,7 +38,7 @@ public class Oscilloscope extends C64Tab {
 		@Override
 		public void event() {
 			for (int i = 0; i < 2; i++) {
-				final SIDEmu sidemu = getPlayer().getC64().getSID(i);
+				final SIDEmu sidemu = util.getPlayer().getC64().getSID(i);
 				if (sidemu == null) {
 					continue;
 				}
@@ -78,23 +81,27 @@ public class Oscilloscope extends C64Tab {
 	@FXML
 	private FilterGauge filterMono, filterStereo;
 
+	private UIUtil util;
+
 	protected SIDGauge[][][] gauges;
 	protected int repaint;
 	protected final HighResolutionEvent highResolutionEvent = new HighResolutionEvent();
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		if (getPlayer() == null) {
-			// wait for second initialization, where properties have been set!
-			return;
-		}
-		getConsolePlayer()
+	public Oscilloscope(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		util = new UIUtil(consolePlayer, player, config);
+		setContent((Node) util.parse(this));
+	}
+
+	@FXML
+	private void initialize() {
+		util.getConsolePlayer()
 				.stateProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
 							if (newValue == State.RUNNING) {
-								final EventScheduler ctx = getPlayer().getC64()
-										.getEventScheduler();
+								final EventScheduler ctx = util.getPlayer()
+										.getC64().getEventScheduler();
 								/* sample oscillator buffer */
 								highResolutionEvent.beginScheduling(ctx);
 
@@ -115,20 +122,26 @@ public class Oscilloscope extends C64Tab {
 									}
 								});
 
-								getPlayer().mute(0, 0, muteVoice1.isSelected());
-								getPlayer().mute(0, 1, muteVoice2.isSelected());
-								getPlayer().mute(0, 2, muteVoice3.isSelected());
-								getPlayer().mute(1, 0, muteVoice4.isSelected());
-								getPlayer().mute(1, 1, muteVoice5.isSelected());
-								getPlayer().mute(1, 2, muteVoice6.isSelected());
+								util.getPlayer().mute(0, 0,
+										muteVoice1.isSelected());
+								util.getPlayer().mute(0, 1,
+										muteVoice2.isSelected());
+								util.getPlayer().mute(0, 2,
+										muteVoice3.isSelected());
+								util.getPlayer().mute(1, 0,
+										muteVoice4.isSelected());
+								util.getPlayer().mute(1, 1,
+										muteVoice5.isSelected());
+								util.getPlayer().mute(1, 2,
+										muteVoice6.isSelected());
 							}
 						});
-		waveMono_0.setLocalizer(getBundle());
-		waveMono_1.setLocalizer(getBundle());
-		waveMono_2.setLocalizer(getBundle());
-		waveStereo_0.setLocalizer(getBundle());
-		waveStereo_1.setLocalizer(getBundle());
-		waveStereo_2.setLocalizer(getBundle());
+		waveMono_0.setLocalizer(util.getBundle());
+		waveMono_1.setLocalizer(util.getBundle());
+		waveMono_2.setLocalizer(util.getBundle());
+		waveStereo_0.setLocalizer(util.getBundle());
+		waveStereo_1.setLocalizer(util.getBundle());
+		waveStereo_2.setLocalizer(util.getBundle());
 
 		// Mono SID gauges
 		gauges = new SIDGauge[2][4][3];
@@ -164,7 +177,7 @@ public class Oscilloscope extends C64Tab {
 		pt.setOnFinished((ae) -> {
 
 			for (int i = 0; i < 2; i++) {
-				final SIDEmu sidemu = getPlayer().getC64().getSID(i);
+				final SIDEmu sidemu = util.getPlayer().getC64().getSID(i);
 				if (sidemu == null) {
 					continue;
 				}
@@ -177,46 +190,36 @@ public class Oscilloscope extends C64Tab {
 			pt.play();
 		});
 		pt.play();
-		pt.pause();
-		getTabPane().getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					// performance optimizations!
-						if (Oscilloscope.this.equals(newValue)) {
-							pt.play();
-						} else {
-							pt.pause();
-						}
-					});
 	}
 
 	@FXML
 	private void doMuteVoice1() {
-		getPlayer().mute(0, 0, muteVoice1.isSelected());
+		util.getPlayer().mute(0, 0, muteVoice1.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice2() {
-		getPlayer().mute(0, 1, muteVoice2.isSelected());
+		util.getPlayer().mute(0, 1, muteVoice2.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice3() {
-		getPlayer().mute(0, 2, muteVoice3.isSelected());
+		util.getPlayer().mute(0, 2, muteVoice3.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice4() {
-		getPlayer().mute(1, 0, muteVoice4.isSelected());
+		util.getPlayer().mute(1, 0, muteVoice4.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice5() {
-		getPlayer().mute(1, 1, muteVoice5.isSelected());
+		util.getPlayer().mute(1, 1, muteVoice5.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice6() {
-		getPlayer().mute(1, 2, muteVoice6.isSelected());
+		util.getPlayer().mute(1, 2, muteVoice6.isSelected());
 	}
 
 }

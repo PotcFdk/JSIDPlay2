@@ -1,8 +1,6 @@
 package netsiddev;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -11,21 +9,11 @@ import javafx.stage.Stage;
 
 public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 
-	private SIDDeviceUIUtil util = new SIDDeviceUIUtil();
+	protected SIDDeviceUIUtil util;
 	private boolean wait;
 
-	@Override
-	public String getBundleName() {
-		return getClass().getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(getClass().getSimpleName() + ".fxml");
-	}
-
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public SIDDeviceStage() {
+		util = new SIDDeviceUIUtil();
 	}
 
 	public void open() throws IOException {
@@ -42,8 +30,8 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 			}
 		});
 		stage.setScene(scene);
-		stage.getIcons().add(new Image(getBundle().getString("ICON")));
-		stage.setTitle(getBundle().getString("TITLE"));
+		stage.getIcons().add(new Image(util.getBundle().getString("ICON")));
+		stage.setTitle(util.getBundle().getString("TITLE"));
 		if (wait) {
 			stage.showAndWait();
 		} else {
@@ -57,10 +45,6 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 
 	public void setWait(boolean wait) {
 		this.wait = wait;
-	}
-
-	public ResourceBundle getBundle() {
-		return util.getBundle();
 	}
 
 	protected String getStyleSheetName() {

@@ -1,36 +1,44 @@
 package ui.printer;
 
-import java.net.URL;
 import java.util.Arrays;
-import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
+import libsidplay.Player;
 import libsidplay.components.printer.IPaper;
 import libsidplay.components.printer.mps803.MPS803;
-import ui.common.C64Tab;
+import sidplay.ConsolePlayer;
+import ui.common.UIPart;
+import ui.common.UIUtil;
+import ui.entities.config.Configuration;
 
-public class Printer extends C64Tab implements IPaper {
+public class Printer extends Tab implements UIPart, IPaper {
 
 	@FXML
 	protected Canvas paper;
 
+	private UIUtil util;
+
 	private boolean[] currentPixelRow = new boolean[MPS803.MAX_WIDTH];
 	private int x, y;
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		if (getPlayer() == null) {
-			// wait for second initialization, where properties have been set!
-			return;
-		}
+	public Printer(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		util = new UIUtil(consolePlayer, player, config);
+		setContent((Node) util.parse(this));
+	}
+
+	@FXML
+	private void initialize() {
 		// paper.setScaleX(2);
 		// paper.setScaleY(2);
 		paper.setWidth(MPS803.MAX_WIDTH);
-		getPlayer().getPrinter().setPaper(this);
+		util.getPlayer().getPrinter().setPaper(this);
 	}
 
 	@FXML

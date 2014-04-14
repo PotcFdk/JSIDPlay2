@@ -1,8 +1,5 @@
 package netsiddev;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
@@ -15,8 +12,8 @@ public class Alert extends SIDDeviceStage {
 	
 	private String msg;
 	
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	@FXML
+	private void initialize() {
 		message.setText(msg);
 	}
 

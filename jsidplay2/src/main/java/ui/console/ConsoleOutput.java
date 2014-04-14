@@ -6,12 +6,17 @@ import java.io.PrintStream;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
-import ui.common.C64VBox;
+import javafx.scene.layout.VBox;
+import libsidplay.Player;
+import sidplay.ConsolePlayer;
+import ui.common.UIPart;
+import ui.common.UIUtil;
+import ui.entities.config.Configuration;
 
-public class ConsoleOutput extends C64VBox implements Initializable {
+public class ConsoleOutput extends VBox implements UIPart {
 
 	private static final String NEWLiNE = System.getProperty("line.separator");
 
@@ -20,16 +25,24 @@ public class ConsoleOutput extends C64VBox implements Initializable {
 	@FXML
 	private TitledPane titledPane;
 
+	private UIUtil util;
+
 	@FXML
 	private void clearConsole() {
 		console.clear();
+	}
+
+	public ConsoleOutput(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		util = new UIUtil(consolePlayer, player, config);
+		getChildren().add((Node) util.parse(this));
 	}
 
 	public PrintStream getPrintStream(final OutputStream original) {
 		return new PrintStream(new OutputStream() {
 
 			private StringBuffer contents = new StringBuffer();
-			
+
 			public synchronized void write(final byte[] b, final int off,
 					final int len) throws IOException {
 				original.write(b, off, len);

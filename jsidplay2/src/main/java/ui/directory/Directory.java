@@ -2,22 +2,26 @@ package ui.directory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.AnchorPane;
+import libsidplay.Player;
 import libsidplay.components.DirEntry;
-import ui.common.C64AnchorPane;
+import sidplay.ConsolePlayer;
+import ui.common.UIPart;
+import ui.common.UIUtil;
+import ui.entities.config.Configuration;
 
-public class Directory extends C64AnchorPane {
+public class Directory extends AnchorPane implements UIPart {
 
 	/**
 	 * Upper case letters.
@@ -41,8 +45,9 @@ public class Directory extends C64AnchorPane {
 	@FXML
 	private TableColumn<DirectoryItem, String> dirColumn;
 
-	private ObservableList<DirectoryItem> directoryEntries = FXCollections
-			.<DirectoryItem> observableArrayList();
+	private UIUtil util;
+
+	private ObservableList<DirectoryItem> directoryEntries;
 
 	private ObjectProperty<File> autoStartFileProperty = new SimpleObjectProperty<File>();
 
@@ -51,12 +56,15 @@ public class Directory extends C64AnchorPane {
 
 	private File file;
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		if (getConfig() == null) {
-			// wait for second initialization, where properties have been set!
-			return;
-		}
+	public Directory(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		util = new UIUtil(consolePlayer, player, config);
+		getChildren().add((Node) util.parse(this));
+	}
+
+	@FXML
+	private void initialize() {
+		directoryEntries = FXCollections.<DirectoryItem> observableArrayList();
 		directory.setItems(directoryEntries);
 		directory.setOnKeyPressed((event) -> {
 			DirectoryItem selectedItem = directory.getSelectionModel()
@@ -97,7 +105,7 @@ public class Directory extends C64AnchorPane {
 					.getSelectedItem();
 			DirEntry dirEntry = dirItem.getDirEntry();
 			if (dirEntry != null) {
-				File autoStartFile = new File(getConfig().getSidplay2()
+				File autoStartFile = new File(util.getConfig().getSidplay2()
 						.getTmpDir(), dirEntry.getValidFilename() + ".prg");
 				autoStartFile.deleteOnExit();
 				dirEntry.save(autoStartFile);
@@ -117,7 +125,7 @@ public class Directory extends C64AnchorPane {
 		directoryEntries.clear();
 		try {
 			libsidplay.components.Directory dir = PseudoDirectory.getDirectory(
-					getConsolePlayer(), file, getConfig());
+					util.getConsolePlayer(), file, util.getConfig());
 			if (dir != null) {
 				// Print directory title/id
 				DirectoryItem headerItem = new DirectoryItem();

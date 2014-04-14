@@ -1,8 +1,6 @@
 package netsiddev;
 
-import java.net.URL;
 import java.util.Collections;
-import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,15 +23,16 @@ public class Settings extends SIDDeviceStage {
 	@FXML
 	private CheckBox digiBoost;
 
-	private ObservableList<AudioDevice> audioDevices = FXCollections
-			.<AudioDevice> observableArrayList();
+	private ObservableList<AudioDevice> audioDevices;
 
-	private SIDDeviceSettings settings = SIDDeviceSettings.getInstance();
+	private SIDDeviceSettings settings;
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	@FXML
+	private void initialize() {
+		audioDevices = FXCollections.<AudioDevice> observableArrayList();
 		audioDevice.setItems(audioDevices);
 
+		settings = SIDDeviceSettings.getInstance();
 		AudioDeviceCompare cmp = new AudioDeviceCompare();
 		AudioDevice selectedAudioDeviceItem = null;
 		int deviceIndex = 0;
@@ -41,16 +40,14 @@ public class Settings extends SIDDeviceStage {
 			Mixer mixer = AudioSystem.getMixer(info);
 			Line.Info lineInfo = new Line.Info(SourceDataLine.class);
 			if (mixer.isLineSupported(lineInfo)) {
-				AudioDevice audioDeviceItem = new AudioDevice(
-						deviceIndex, info);
+				AudioDevice audioDeviceItem = new AudioDevice(deviceIndex, info);
 				audioDevices.add(audioDeviceItem);
 				if (deviceIndex == 0) {
 					// first device name is the primary device driver which can
 					// be translated on some systems
 					cmp.setPrimaryDeviceName(info.getName());
 				}
-				if (audioDeviceItem.getIndex() == settings
-						.getDeviceIndex()) {
+				if (audioDeviceItem.getIndex() == settings.getDeviceIndex()) {
 					selectedAudioDeviceItem = audioDeviceItem;
 				}
 			}

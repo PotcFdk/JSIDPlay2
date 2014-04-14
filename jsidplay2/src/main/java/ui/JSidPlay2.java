@@ -9,13 +9,11 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.ResourceBundle;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -41,6 +39,7 @@ import javafx.util.Duration;
 import javax.imageio.ImageIO;
 
 import libsidplay.C64;
+import libsidplay.Player;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -54,14 +53,15 @@ import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.MediaType;
 import sidplay.consoleplayer.State;
 import ui.about.About;
 import ui.common.C64Stage;
-import ui.common.C64Tab;
 import ui.common.dialog.YesNoDialog;
 import ui.disassembler.Disassembler;
 import ui.emulationsettings.EmulationSettings;
+import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 import ui.filefilter.CartFileExtensions;
@@ -133,38 +133,50 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private StringBuilder tuneSpeed = new StringBuilder();
 	private StringBuilder playerId = new StringBuilder();
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public JSidPlay2(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
+	}
+
+	@FXML
+	private void initialize() {
 		this.duringInitialization = true;
 		this.scene = tabbedPane.getScene();
 
-		getConsolePlayer().setExtendImagePolicy(this);
+		util.getConsolePlayer().setExtendImagePolicy(this);
 
-		getConsolePlayer().stateProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue == State.EXIT || newValue == State.RUNNING) {
-				Platform.runLater(() -> {
-						lastUpdate = getPlayer().getC64().getEventScheduler()
-								.getTime(Phase.PHI1);
-						updatePlayerButtons(newValue);
+		util.getConsolePlayer()
+				.stateProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							if (newValue == State.EXIT
+									|| newValue == State.RUNNING) {
+								Platform.runLater(() -> {
+									lastUpdate = util.getPlayer().getC64()
+											.getEventScheduler()
+											.getTime(Phase.PHI1);
+									updatePlayerButtons(newValue);
 
-						SidTune sidTune = getPlayer().getTune();
-						if (sidTune == null
-								|| (sidTune.getInfo().playAddr == 0
-										&& !favorites.isSelected() && !musicCollections
-											.isSelected())) {
-							tabbedPane.getSelectionModel().select(videoScreen);
+									SidTune sidTune = util.getPlayer()
+											.getTune();
+									if (sidTune == null
+											|| (sidTune.getInfo().playAddr == 0
+													&& !favorites.isSelected() && !musicCollections
+														.isSelected())) {
+										tabbedPane.getSelectionModel().select(
+												videoScreen);
+									}
+								}
+
+								);
+							}
 						}
-					}
 
 				);
-			}
-		}
-
-		);
 		pauseContinue.selectedProperty().bindBidirectional(
 				pauseContinue2.selectedProperty());
 		driveOn.selectedProperty().bindBidirectional(
-				getPlayer().drivesEnabledProperty());
+				util.getPlayer().drivesEnabledProperty());
 
 		this.load.setAccelerator(new KeyCodeCombination(KeyCode.L,
 				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
@@ -195,28 +207,31 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		this.insertCartridge.setAccelerator(new KeyCodeCombination(KeyCode.C,
 				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
 
-		CPUClock defClk = getConfig().getEmulation().getDefaultClockSpeed();
+		CPUClock defClk = util.getConfig().getEmulation()
+				.getDefaultClockSpeed();
 		(defClk != null ? defClk == CPUClock.NTSC ? ntsc : pal : pal)
 				.setSelected(true);
-		driveSoundOn.setSelected(getConfig().getC1541().isDriveSoundOn());
-		parCable.setSelected(getConfig().getC1541().isParallelCable());
-		FloppyType floppyType = getConfig().getC1541().getFloppyType();
+		driveSoundOn.setSelected(util.getConfig().getC1541().isDriveSoundOn());
+		parCable.setSelected(util.getConfig().getC1541().isParallelCable());
+		FloppyType floppyType = util.getConfig().getC1541().getFloppyType();
 		(floppyType == FloppyType.C1541 ? c1541 : c1541_II).setSelected(true);
-		ExtendImagePolicy extendImagePolicy = getConfig().getC1541()
+		ExtendImagePolicy extendImagePolicy = util.getConfig().getC1541()
 				.getExtendImagePolicy();
 		(extendImagePolicy == ExtendImagePolicy.EXTEND_NEVER ? neverExtend
 				: extendImagePolicy == ExtendImagePolicy.EXTEND_ACCESS ? askExtend
 						: accessExtend).setSelected(true);
-		expand2000.setSelected(getConfig().getC1541().isRamExpansionEnabled0());
-		expand4000.setSelected(getConfig().getC1541().isRamExpansionEnabled1());
-		expand6000.setSelected(getConfig().getC1541().isRamExpansionEnabled2());
-		expand8000.setSelected(getConfig().getC1541().isRamExpansionEnabled3());
-		expandA000.setSelected(getConfig().getC1541().isRamExpansionEnabled4());
-		turnPrinterOn.setSelected(getConfig().getPrinter().isPrinterOn());
+		expand2000.setSelected(util.getConfig().getC1541()
+				.isRamExpansionEnabled0());
+		expand4000.setSelected(util.getConfig().getC1541()
+				.isRamExpansionEnabled1());
+		expand6000.setSelected(util.getConfig().getC1541()
+				.isRamExpansionEnabled2());
+		expand8000.setSelected(util.getConfig().getC1541()
+				.isRamExpansionEnabled3());
+		expandA000.setSelected(util.getConfig().getC1541()
+				.isRamExpansionEnabled4());
+		turnPrinterOn.setSelected(util.getConfig().getPrinter().isPrinterOn());
 
-		setModel(location, resources, tabbedPane);
-		setModel(location, resources, musicCollTabbedPane);
-		setModel(location, resources, diskCollTabbedPane);
 		this.duringInitialization = false;
 
 		final Duration oneFrameAmt = Duration.millis(1000);
@@ -227,28 +242,11 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		timer.playFromStart();
 	}
 
-	private void setModel(URL location, ResourceBundle resources,
-			TabPane tabPane) {
-		for (Tab tab : tabPane.getTabs()) {
-			if (tab instanceof C64Tab) {
-				C64Tab theTab = (C64Tab) tab;
-				theTab.setConfig(getConfig());
-				theTab.setPlayer(getPlayer());
-				theTab.setConsolePlayer(getConsolePlayer());
-				theTab.initialize(location, resources);
-				if (theTab.getProgressValue() != null) {
-					theTab.getProgressValue().addListener(
-							progressUpdateListener());
-				}
-			}
-		}
-	}
-
 	private void updatePlayerButtons(State state) {
 		pauseContinue.setSelected(false);
 		normalSpeed.setSelected(true);
 
-		SidTune tune = getPlayer().getTune();
+		SidTune tune = util.getPlayer().getTune();
 		final int startSong, maxSong;
 		final int currentSong;
 		if (tune != null) {
@@ -277,54 +275,32 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				|| nextSong == startSong);
 		next2.setDisable(next.isDisable());
 
-		previous.setText(String
-				.format(getBundle().getString("PREVIOUS2")
-						+ " (%d/%d)", prevSong, maxSong));
+		previous.setText(String.format(util.getBundle().getString("PREVIOUS2")
+				+ " (%d/%d)", prevSong, maxSong));
 		previous2ToolTip.setText(previous.getText());
 
-		next.setText(String.format(
-				getBundle().getString("NEXT2") + " (%d/%d)",
-				nextSong, maxSong));
+		next.setText(String.format(util.getBundle().getString("NEXT2")
+				+ " (%d/%d)", nextSong, maxSong));
 		next2ToolTip.setText(next.getText());
 	}
 
 	@Override
-	protected void doCloseWindow() {
+	public void doCloseWindow() {
 		timer.stop();
-		for (Tab tab : musicCollTabbedPane.getTabs()) {
-			C64Tab theTab = (C64Tab) tab;
-			theTab.doCloseWindow();
-		}
-		for (Tab tab : diskCollTabbedPane.getTabs()) {
-			C64Tab theTab = (C64Tab) tab;
-			theTab.doCloseWindow();
-		}
-		for (Tab tab : tabbedPane.getTabs()) {
-			if (tab instanceof C64Tab) {
-				C64Tab theTab = (C64Tab) tab;
-				theTab.doCloseWindow();
-			}
-		}
-	}
-
-	private ChangeListener<Number> progressUpdateListener() {
-		return (observable, oldValue, newValue) -> Platform
-				.runLater(() -> progress.progressProperty().set(
-						newValue.doubleValue() / 100.));
 	}
 
 	@FXML
 	private void load() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TuneFileExtensions.DESCRIPTION,
 						TuneFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			playTune(file);
 		}
 	}
@@ -332,18 +308,17 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void video() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
-			final File tmpFile = new File(
-					getConfig().getSidplay2().getTmpDir(),
-					"nuvieplayer-v1.0.prg");
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			final File tmpFile = new File(util.getConfig().getSidplay2()
+					.getTmpDir(), "nuvieplayer-v1.0.prg");
 			tmpFile.deleteOnExit();
 			try (OutputStream os = new FileOutputStream(tmpFile);
 					InputStream is = JSIDPlay2Main.class.getClassLoader()
@@ -356,7 +331,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 						os.write(b, 0, len);
 					}
 				}
-				getPlayer().getC64().insertCartridge(file);
+				util.getPlayer().getC64().insertCartridge(file);
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
@@ -378,32 +353,32 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void pause() {
-		getConsolePlayer().pause();
+		util.getConsolePlayer().pause();
 	}
 
 	@FXML
 	private void previousSong() {
-		getConsolePlayer().previousSong();
+		util.getConsolePlayer().previousSong();
 	}
 
 	@FXML
 	private void nextSong() {
-		getConsolePlayer().nextSong();
+		util.getConsolePlayer().nextSong();
 	}
 
 	@FXML
 	private void playNormalSpeed() {
-		getConsolePlayer().normalSpeed();
+		util.getConsolePlayer().normalSpeed();
 	}
 
 	@FXML
 	private void playFastForward() {
-		getConsolePlayer().fastForward();
+		util.getConsolePlayer().fastForward();
 	}
 
 	@FXML
 	private void stopSong() {
-		getConsolePlayer().quit();
+		util.getConsolePlayer().quit();
 	}
 
 	@FXML
@@ -423,22 +398,20 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void videoStandardPal() {
-		getConfig().getEmulation().setDefaultClockSpeed(CPUClock.PAL);
+		util.getConfig().getEmulation().setDefaultClockSpeed(CPUClock.PAL);
 		reset();
 	}
 
 	@FXML
 	private void videoStandardNtsc() {
-		getConfig().getEmulation().setDefaultClockSpeed(CPUClock.NTSC);
+		util.getConfig().getEmulation().setDefaultClockSpeed(CPUClock.NTSC);
 		reset();
 	}
 
 	@FXML
 	private void soundSettings() {
-		C64Stage window = new SoundSettings();
-		window.setConsolePlayer(getConsolePlayer());
-		window.setPlayer(getPlayer());
-		window.setConfig(getConfig());
+		C64Stage window = new SoundSettings(util.getConsolePlayer(),
+				util.getPlayer(), util.getConfig());
 		try {
 			window.open();
 		} catch (IOException e) {
@@ -448,10 +421,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void emulationSettings() {
-		C64Stage window = new EmulationSettings();
-		window.setConsolePlayer(getConsolePlayer());
-		window.setPlayer(getPlayer());
-		window.setConfig(getConfig());
+		C64Stage window = new EmulationSettings(util.getConsolePlayer(),
+				util.getPlayer(), util.getConfig());
 		try {
 			window.open();
 		} catch (IOException e) {
@@ -461,9 +432,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void joystickSettings() {
-		C64Stage window = new JoystickSettings();
-		window.setPlayer(getPlayer());
-		window.setConfig(getConfig());
+		C64Stage window = new JoystickSettings(util.getConsolePlayer(),
+				util.getPlayer(), util.getConfig());
 		try {
 			window.open();
 		} catch (IOException e) {
@@ -473,48 +443,49 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void record() {
-		getPlayer().getDatasette().control(Datasette.Control.RECORD);
+		util.getPlayer().getDatasette().control(Datasette.Control.RECORD);
 	}
 
 	@FXML
 	private void play() {
-		getPlayer().getDatasette().control(Datasette.Control.START);
+		util.getPlayer().getDatasette().control(Datasette.Control.START);
 	}
 
 	@FXML
 	private void rewind() {
-		getPlayer().getDatasette().control(Datasette.Control.REWIND);
+		util.getPlayer().getDatasette().control(Datasette.Control.REWIND);
 	}
 
 	@FXML
 	private void forward() {
-		getPlayer().getDatasette().control(Datasette.Control.FORWARD);
+		util.getPlayer().getDatasette().control(Datasette.Control.FORWARD);
 	}
 
 	@FXML
 	private void stop() {
-		getPlayer().getDatasette().control(Datasette.Control.STOP);
+		util.getPlayer().getDatasette().control(Datasette.Control.STOP);
 	}
 
 	@FXML
 	private void resetCounter() {
-		getPlayer().getDatasette().control(Datasette.Control.RESET_COUNTER);
+		util.getPlayer().getDatasette()
+				.control(Datasette.Control.RESET_COUNTER);
 	}
 
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
 						TapeFileExtensions.EXTENSIONS));
-		fileDialog.setTitle(getBundle().getString("INSERT_TAPE"));
+		fileDialog.setTitle(util.getBundle().getString("INSERT_TAPE"));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(new TFile(file), null,
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConsolePlayer().insertMedia(new TFile(file), null,
 					MediaType.TAPE);
 		}
 	}
@@ -522,7 +493,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void ejectTape() {
 		try {
-			getPlayer().getDatasette().ejectTape();
+			util.getPlayer().getDatasette().ejectTape();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -530,95 +501,96 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void turnDriveOn() {
-		getPlayer().enableFloppyDiskDrives(driveOn.isSelected());
-		getConfig().getC1541().setDriveOn(driveOn.isSelected());
+		util.getPlayer().enableFloppyDiskDrives(driveOn.isSelected());
+		util.getConfig().getC1541().setDriveOn(driveOn.isSelected());
 	}
 
 	@FXML
 	private void driveSound() {
-		getConfig().getC1541().setDriveSoundOn(driveSoundOn.isSelected());
+		util.getConfig().getC1541().setDriveSoundOn(driveSoundOn.isSelected());
 	}
 
 	@FXML
 	private void parallelCable() {
-		getPlayer().connectC64AndC1541WithParallelCable(parCable.isSelected());
-		getConfig().getC1541().setParallelCable(parCable.isSelected());
+		util.getPlayer().connectC64AndC1541WithParallelCable(
+				parCable.isSelected());
+		util.getConfig().getC1541().setParallelCable(parCable.isSelected());
 	}
 
 	@FXML
 	private void floppyTypeC1541() {
 		getFirstFloppy().setFloppyType(FloppyType.C1541);
-		getConfig().getC1541().setFloppyType(FloppyType.C1541);
+		util.getConfig().getC1541().setFloppyType(FloppyType.C1541);
 	}
 
 	@FXML
 	private void floppyTypeC1541_II() {
 		getFirstFloppy().setFloppyType(FloppyType.C1541_II);
-		getConfig().getC1541().setFloppyType(FloppyType.C1541_II);
+		util.getConfig().getC1541().setFloppyType(FloppyType.C1541_II);
 	}
 
 	@FXML
 	private void extendNever() {
-		getConfig().getC1541().setExtendImagePolicy(
-				ExtendImagePolicy.EXTEND_NEVER);
+		util.getConfig().getC1541()
+				.setExtendImagePolicy(ExtendImagePolicy.EXTEND_NEVER);
 	}
 
 	@FXML
 	private void extendAsk() {
-		getConfig().getC1541().setExtendImagePolicy(
-				ExtendImagePolicy.EXTEND_ASK);
+		util.getConfig().getC1541()
+				.setExtendImagePolicy(ExtendImagePolicy.EXTEND_ASK);
 	}
 
 	@FXML
 	private void extendAccess() {
-		getConfig().getC1541().setExtendImagePolicy(
-				ExtendImagePolicy.EXTEND_ACCESS);
+		util.getConfig().getC1541()
+				.setExtendImagePolicy(ExtendImagePolicy.EXTEND_ACCESS);
 	}
 
 	@FXML
 	private void expansion0x2000() {
 		getFirstFloppy().setRamExpansion(0, expand2000.isSelected());
-		getConfig().getC1541().setRamExpansion0(expand2000.isSelected());
+		util.getConfig().getC1541().setRamExpansion0(expand2000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x4000() {
 		getFirstFloppy().setRamExpansion(1, expand4000.isSelected());
-		getConfig().getC1541().setRamExpansion1(expand4000.isSelected());
+		util.getConfig().getC1541().setRamExpansion1(expand4000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x6000() {
 		getFirstFloppy().setRamExpansion(2, expand6000.isSelected());
-		getConfig().getC1541().setRamExpansion2(expand6000.isSelected());
+		util.getConfig().getC1541().setRamExpansion2(expand6000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x8000() {
 		getFirstFloppy().setRamExpansion(3, expand8000.isSelected());
-		getConfig().getC1541().setRamExpansion3(expand8000.isSelected());
+		util.getConfig().getC1541().setRamExpansion3(expand8000.isSelected());
 	}
 
 	@FXML
 	private void expansion0xA000() {
 		getFirstFloppy().setRamExpansion(4, expandA000.isSelected());
-		getConfig().getC1541().setRamExpansion4(expandA000.isSelected());
+		util.getConfig().getC1541().setRamExpansion4(expandA000.isSelected());
 	}
 
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
 						DiskFileExtensions.EXTENSIONS));
-		fileDialog.setTitle(getBundle().getString("INSERT_DISK"));
+		fileDialog.setTitle(util.getBundle().getString("INSERT_DISK"));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(new TFile(file), null,
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConsolePlayer().insertMedia(new TFile(file), null,
 					MediaType.DISK);
 		}
 	}
@@ -639,24 +611,24 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void printer() {
-		getPlayer().turnPrinterOnOff(turnPrinterOn.isSelected());
-		getConfig().getPrinter().setPrinterOn(turnPrinterOn.isSelected());
+		util.getPlayer().turnPrinterOnOff(turnPrinterOn.isSelected());
+		util.getConfig().getPrinter().setPrinterOn(turnPrinterOn.isSelected());
 	}
 
 	@FXML
 	private void insertCartridge() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
-		fileDialog.setTitle(getBundle().getString("INSERT_CARTRIDGE"));
+		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
-			getConsolePlayer().insertMedia(new TFile(file), null,
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConsolePlayer().insertMedia(new TFile(file), null,
 					MediaType.CART);
 		}
 	}
@@ -664,18 +636,18 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				getPlayer().getC64().insertRAMExpansion(
-						C64.RAMExpansion.GEORAM, file);
+				util.getPlayer().getC64()
+						.insertRAMExpansion(C64.RAMExpansion.GEORAM, file);
 				reset();
 			} catch (IOException ex) {
 				ex.printStackTrace();
@@ -686,7 +658,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM64() {
 		try {
-			getPlayer().getC64()
+			util.getPlayer().getC64()
 					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 64);
 			reset();
 		} catch (IOException ex) {
@@ -697,8 +669,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM128() {
 		try {
-			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.GEORAM,
-					128);
+			util.getPlayer().getC64()
+					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 128);
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -708,8 +680,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM256() {
 		try {
-			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.GEORAM,
-					256);
+			util.getPlayer().getC64()
+					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 256);
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -719,8 +691,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM512() {
 		try {
-			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.GEORAM,
-					512);
+			util.getPlayer().getC64()
+					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 512);
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -730,8 +702,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM1024() {
 		try {
-			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.GEORAM,
-					1024);
+			util.getPlayer().getC64()
+					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 1024);
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -741,8 +713,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM2048() {
 		try {
-			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.GEORAM,
-					2048);
+			util.getPlayer().getC64()
+					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 2048);
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -752,7 +724,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertREU128() {
 		try {
-			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.REU, 128);
+			util.getPlayer().getC64()
+					.insertRAMExpansion(C64.RAMExpansion.REU, 128);
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -762,7 +735,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertREU256() {
 		try {
-			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.REU, 256);
+			util.getPlayer().getC64()
+					.insertRAMExpansion(C64.RAMExpansion.REU, 256);
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -772,7 +746,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertREU512() {
 		try {
-			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.REU, 512);
+			util.getPlayer().getC64()
+					.insertRAMExpansion(C64.RAMExpansion.REU, 512);
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -782,7 +757,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertREU2048() {
 		try {
-			getPlayer().getC64().insertRAMExpansion(C64.RAMExpansion.REU, 2048);
+			util.getPlayer().getC64()
+					.insertRAMExpansion(C64.RAMExpansion.REU, 2048);
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -792,7 +768,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void insertREU16384() {
 		try {
-			getPlayer().getC64()
+			util.getPlayer().getC64()
 					.insertRAMExpansion(C64.RAMExpansion.REU, 16384);
 			reset();
 		} catch (IOException ex) {
@@ -803,20 +779,23 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void installJiffyDos() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setTitle(getBundle().getString("CHOOSE_C64_KERNAL_ROM"));
+		fileDialog
+				.setTitle(util.getBundle().getString("CHOOSE_C64_KERNAL_ROM"));
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(RomFileExtensions.DESCRIPTION,
 						RomFileExtensions.EXTENSIONS));
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		final File c64kernalFile = fileDialog.showOpenDialog(scene.getWindow());
 		if (c64kernalFile != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					c64kernalFile.getParentFile().getAbsolutePath());
+			util.getConfig()
+					.getSidplay2()
+					.setLastDirectory(
+							c64kernalFile.getParentFile().getAbsolutePath());
 			final FileChooser c1541FileDialog = new FileChooser();
-			c1541FileDialog.setTitle(getBundle().getString(
+			c1541FileDialog.setTitle(util.getBundle().getString(
 					"CHOOSE_C1541_KERNAL_ROM"));
-			fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+			fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 					.getSidplay2())).getLastDirectoryFolder());
 			fileDialog.getExtensionFilters().add(
 					new ExtensionFilter(RomFileExtensions.DESCRIPTION,
@@ -824,13 +803,16 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			final File c1541kernalFile = c1541FileDialog.showOpenDialog(scene
 					.getWindow());
 			if (c1541kernalFile != null) {
-				getConfig().getSidplay2().setLastDirectory(
-						c1541kernalFile.getParentFile().getAbsolutePath());
+				util.getConfig()
+						.getSidplay2()
+						.setLastDirectory(
+								c1541kernalFile.getParentFile()
+										.getAbsolutePath());
 				try (FileInputStream c64KernalStream = new FileInputStream(
 						c64kernalFile);
 						FileInputStream c1541KernalStream = new FileInputStream(
 								c1541kernalFile)) {
-					getPlayer().installJiffyDOS(c64KernalStream,
+					util.getPlayer().installJiffyDOS(c64KernalStream,
 							c1541KernalStream);
 					reset();
 				} catch (IOException ex) {
@@ -843,7 +825,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void uninstallJiffyDos() {
 		try {
-			getPlayer().uninstallJiffyDOS();
+			util.getPlayer().uninstallJiffyDOS();
 			reset();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -852,21 +834,19 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void ejectCartridge() {
-		getPlayer().getC64().ejectCartridge();
+		util.getPlayer().getC64().ejectCartridge();
 		reset();
 	}
 
 	@FXML
 	private void freezeCartridge() {
-		getPlayer().getC64().getCartridge().freeze();
+		util.getPlayer().getC64().getCartridge().freeze();
 	}
 
 	@FXML
 	private void memory() {
-		C64Stage window = new Disassembler();
-		window.setPlayer(getPlayer());
-		window.setConsolePlayer(getConsolePlayer());
-		window.setConfig(getConfig());
+		C64Stage window = new Disassembler(util.getConsolePlayer(),
+				util.getPlayer(), util.getConfig());
 		try {
 			window.open();
 		} catch (IOException e) {
@@ -876,10 +856,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void sidDump() {
-		C64Stage window = new SidDump();
-		window.setPlayer(getPlayer());
-		window.setConsolePlayer(getConsolePlayer());
-		window.setConfig(getConfig());
+		C64Stage window = new SidDump(util.getConsolePlayer(),
+				util.getPlayer(), util.getConfig());
 		try {
 			window.open();
 		} catch (IOException e) {
@@ -889,10 +867,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void sidRegisters() {
-		C64Stage window = new SidReg();
-		window.setPlayer(getPlayer());
-		window.setConsolePlayer(getConsolePlayer());
-		window.setConfig(getConfig());
+		C64Stage window = new SidReg(util.getConsolePlayer(), util.getPlayer(),
+				util.getConfig());
 		try {
 			window.open();
 		} catch (IOException e) {
@@ -903,7 +879,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void exportConfiguration() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(ConfigFileExtension.DESCRIPTION,
@@ -912,17 +888,18 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		if (file != null) {
 			File target = new File(file.getParentFile(),
 					PathUtils.getBaseNameNoExt(file) + ".xml");
-			getConfig().getSidplay2().setLastDirectory(
-					file.getParentFile().getAbsolutePath());
-			configService.exportCfg(getConfig(), target);
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			configService.exportCfg(util.getConfig(), target);
 		}
 	}
 
 	@FXML
 	private void importConfiguration() {
-		YesNoDialog dialog = new YesNoDialog();
-		dialog.setTitle(getBundle().getString("IMPORT_CONFIGURATION"));
-		dialog.setText(getBundle().getString("PLEASE_RESTART"));
+		YesNoDialog dialog = new YesNoDialog(util.getConsolePlayer(),
+				util.getPlayer(), util.getConfig());
+		dialog.setTitle(util.getBundle().getString("IMPORT_CONFIGURATION"));
+		dialog.setText(util.getBundle().getString("PLEASE_RESTART"));
 		try {
 			dialog.open();
 		} catch (IOException e) {
@@ -930,25 +907,26 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		}
 		if (dialog.getConfirmed().get()) {
 			final FileChooser fileDialog = new FileChooser();
-			fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+			fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 					.getSidplay2())).getLastDirectoryFolder());
 			fileDialog.getExtensionFilters().add(
 					new ExtensionFilter(ConfigFileExtension.DESCRIPTION,
 							ConfigFileExtension.EXTENSIONS));
 			final File file = fileDialog.showOpenDialog(scene.getWindow());
 			if (file != null) {
-				getConfig().getSidplay2().setLastDirectory(
-						file.getParentFile().getAbsolutePath());
-				getConfig().setReconfigFilename(file.getAbsolutePath());
+				util.getConfig()
+						.getSidplay2()
+						.setLastDirectory(
+								file.getParentFile().getAbsolutePath());
+				util.getConfig().setReconfigFilename(file.getAbsolutePath());
 			}
 		}
 	}
 
 	@FXML
 	private void about() {
-		C64Stage window = new About();
-		window.setPlayer(getPlayer());
-		window.setConfig(getConfig());
+		C64Stage window = new About(util.getConsolePlayer(), util.getPlayer(),
+				util.getConfig());
 		try {
 			window.open();
 		} catch (IOException e) {
@@ -958,9 +936,9 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	}
 
 	private void playTune(final File file) {
-		setPlayedGraphics(videoScreen.getContent());
+		util.setPlayedGraphics(videoScreen.getContent());
 		try {
-			getConsolePlayer().playTune(SidTune.load(file), null);
+			util.getConsolePlayer().playTune(SidTune.load(file), null);
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
 		}
@@ -973,8 +951,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		// Get status information of the first disk drive
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
-		boolean motorOn = getConfig().getC1541().isDriveSoundOn()
-				&& getConsolePlayer().stateProperty().get() == State.RUNNING
+		boolean motorOn = util.getConfig().getC1541().isDriveSoundOn()
+				&& util.getConsolePlayer().stateProperty().get() == State.RUNNING
 				&& c1541.getDiskController().isMotorOn();
 		if (!oldMotorOn && motorOn) {
 			MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);
@@ -990,7 +968,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		}
 		oldHalfTrack = halfTrack;
 		// Get status information of the datasette
-		final Datasette datasette = getPlayer().getDatasette();
+		final Datasette datasette = util.getPlayer().getDatasette();
 		// Datasette tape progress
 		if (datasette.getMotor()) {
 			progress.setProgress(datasette.getProgress() / 100f);
@@ -1007,13 +985,13 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 		getPlayerId();
 		// final status bar text
 		StringBuilder format = new StringBuilder();
-		format.append(getBundle().getString("RELEASE")).append(" %s, ")
-				.append(getBundle().getString("DATASETTE_COUNTER"))
+		format.append(util.getBundle().getString("RELEASE")).append(" %s, ")
+				.append(util.getBundle().getString("DATASETTE_COUNTER"))
 				.append(" %03d, ")
-				.append(getBundle().getString("FLOPPY_TRACK"))
+				.append(util.getBundle().getString("FLOPPY_TRACK"))
 				.append(" %02d, ").append("%s%s")
-				.append(getBundle().getString("TIME")).append(" %s%s, ")
-				.append(getBundle().getString("MEM")).append(" %d/%d MB");
+				.append(util.getBundle().getString("TIME")).append(" %s%s, ")
+				.append(util.getBundle().getString("MEM")).append(" %d/%d MB");
 		status.setText(String.format(format.toString(), DATE,
 				datasette.getCounter(), halfTrack >> 1, playerId, tuneSpeed,
 				statusTime, statusSongLength, (totalMemory - freeMemory),
@@ -1021,13 +999,13 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	}
 
 	private String determinePlayTime() {
-		int time = getPlayer().time();
+		int time = util.getPlayer().time();
 		return String.format("%02d:%02d", time / 60 % 100, time % 60);
 	}
 
 	private String determineSongLength() {
-		int songLength = getConsolePlayer()
-				.getSongLength(getPlayer().getTune());
+		int songLength = util.getConsolePlayer().getSongLength(
+				util.getPlayer().getTune());
 		if (songLength > 0) {
 			// song length well-known?
 			return String.format("/%02d:%02d", (songLength / 60 % 100),
@@ -1042,10 +1020,10 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	private void getPlayerId() {
 		playerId.setLength(0);
-		if (getPlayer().getTune() != null) {
-			for (final String id : getPlayer().getTune().identify()) {
-				playerId.append(getBundle().getString("PLAYER_ID")).append(" ")
-						.append(id);
+		if (util.getPlayer().getTune() != null) {
+			for (final String id : util.getPlayer().getTune().identify()) {
+				playerId.append(util.getBundle().getString("PLAYER_ID"))
+						.append(" ").append(id);
 				int length = id.length();
 				playerId.setLength(playerId.length()
 						- (length - Math.min(length, 14)));
@@ -1059,8 +1037,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	}
 
 	private void determineTuneSpeed() {
-		if (getPlayer().getTune() != null) {
-			C64 c64 = getPlayer().getC64();
+		if (util.getPlayer().getTune() != null) {
+			C64 c64 = util.getPlayer().getC64();
 			final EventScheduler ctx = c64.getEventScheduler();
 			final ISID2Types.CPUClock systemClock = c64.getClock();
 			final double waitClocks = systemClock.getCpuFrequency();
@@ -1074,7 +1052,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 						/ interval;
 				/* convert to number of calls per frame */
 				tuneSpeed.setLength(0);
-				tuneSpeed.append(getBundle().getString("SPEED")).append(
+				tuneSpeed.append(util.getBundle().getString("SPEED")).append(
 						String.format(" %.1fx, ", callsSinceLastRead
 								/ systemClock.getRefresh()));
 			}
@@ -1086,7 +1064,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private void createHardCopy(String format) {
 		try {
 			ImageIO.write(SwingFXUtils.fromFXImage(videoScreen.getVicImage(),
-					null), format, new File(getConfig().getSidplay2()
+					null), format, new File(util.getConfig().getSidplay2()
 					.getTmpDir(), "screenshot" + (++hardcopyCounter) + "."
 					+ format));
 		} catch (IOException e) {
@@ -1095,16 +1073,17 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	}
 
 	private C1541 getFirstFloppy() {
-		return getPlayer().getFloppies()[0];
+		return util.getPlayer().getFloppies()[0];
 	}
 
 	@Override
 	public boolean isAllowed() {
-		if (getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ASK) {
+		if (util.getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ASK) {
 			// EXTEND_ASK
-			YesNoDialog dialog = new YesNoDialog();
-			dialog.setTitle(getBundle().getString("EXTEND_DISK_IMAGE"));
-			dialog.setText(getBundle().getString(
+			YesNoDialog dialog = new YesNoDialog(util.getConsolePlayer(),
+					util.getPlayer(), util.getConfig());
+			dialog.setTitle(util.getBundle().getString("EXTEND_DISK_IMAGE"));
+			dialog.setText(util.getBundle().getString(
 					"EXTEND_DISK_IMAGE_TO_40_TRACKS"));
 			try {
 				dialog.open();
@@ -1112,7 +1091,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				e.printStackTrace();
 			}
 			return dialog.getConfirmed().get();
-		} else if (getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ACCESS) {
+		} else if (util.getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ACCESS) {
 			// EXTEND_ACCESS
 			return true;
 		} else {

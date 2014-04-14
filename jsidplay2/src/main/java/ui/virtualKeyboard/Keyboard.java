@@ -4,9 +4,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import libsidplay.C64;
+import libsidplay.Player;
 import libsidplay.common.Event;
 import libsidplay.components.keyboard.KeyTableEntry;
+import sidplay.ConsolePlayer;
 import ui.common.C64Stage;
+import ui.entities.config.Configuration;
 
 public class Keyboard extends C64Stage {
 
@@ -21,9 +24,12 @@ public class Keyboard extends C64Stage {
 	private ToggleButton runStop, shift, commodore, shiftLock, ctrl,
 			rightShift;
 
-	public Keyboard() {
+	public Keyboard(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
 		setResizable(false);
 	}
+
 	@FXML
 	private void arrowLeft() {
 		pressC64Key(KeyTableEntry.ARROW_LEFT);
@@ -209,7 +215,7 @@ public class Keyboard extends C64Stage {
 
 	@FXML
 	private void restore() {
-		getPlayer().getC64().getKeyboard().restore();
+		util.getPlayer().getC64().getKeyboard().restore();
 	}
 
 	@FXML
@@ -458,7 +464,7 @@ public class Keyboard extends C64Stage {
 	}
 
 	protected C64 getC64() {
-		return getPlayer().getC64();
+		return util.getPlayer().getC64();
 	}
 
 }

@@ -1,11 +1,7 @@
 package ui.common;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -16,21 +12,12 @@ import ui.entities.config.Configuration;
 
 public abstract class C64Stage extends Stage implements UIPart {
 
-	private UIUtil util = new UIUtil();
+	protected UIUtil util;
 	private boolean wait;
 
-	@Override
-	public String getBundleName() {
-		return getClass().getName();
-	}
-
-	@Override
-	public URL getFxml() {
-		return getClass().getResource(getClass().getSimpleName() + ".fxml");
-	}
-
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public C64Stage(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		util = new UIUtil(consolePlayer, player, config);
 	}
 
 	public void open() throws IOException {
@@ -47,9 +34,12 @@ public abstract class C64Stage extends Stage implements UIPart {
 			}
 		});
 		stage.setScene(scene);
-		stage.getIcons().add(new Image(getBundle().getString("ICON")));
-		stage.setTitle(getBundle().getString("TITLE"));
-		stage.setOnCloseRequest((event) -> doCloseWindow());
+		stage.getIcons().add(new Image(util.getBundle().getString("ICON")));
+		stage.setTitle(util.getBundle().getString("TITLE"));
+		stage.setOnCloseRequest((event) -> {
+			util.doCloseWindow(scene.getRoot());
+			doCloseWindow();
+		});
 		if (wait) {
 			stage.showAndWait();
 		} else {
@@ -60,52 +50,13 @@ public abstract class C64Stage extends Stage implements UIPart {
 	public boolean isWait() {
 		return wait;
 	}
-	
+
 	public void setWait(boolean wait) {
 		this.wait = wait;
 	}
-	
-	protected final void setPlayedGraphics(Node node) {
-		util.setPlayedGraphics(node);
-	}
-	
-	public ResourceBundle getBundle() {
-		return util.getBundle();
-	}
 
-	public Configuration getConfig() {
-		return util.getConfig();
-	}
-
-	public void setConfig(Configuration config) {
-		util.setConfig(config);
-	}
-
-	public Player getPlayer() {
-		return util.getPlayer();
-	}
-
-	public void setPlayer(Player player) {
-		util.setPlayer(player);
-	}
-
-	public ConsolePlayer getConsolePlayer() {
-		return util.getConsolePlayer();
-	}
-
-	public void setConsolePlayer(ConsolePlayer consolePlayer) {
-		util.setConsolePlayer(consolePlayer);
-	}
-
-	protected String getStyleSheetName() {
+	private String getStyleSheetName() {
 		return "/" + getClass().getName().replace('.', '/') + ".css";
-	}
-
-	protected void doCloseWindow() {
-	}
-
-	public DoubleProperty getProgressValue() {
-		return null;
 	}
 
 }

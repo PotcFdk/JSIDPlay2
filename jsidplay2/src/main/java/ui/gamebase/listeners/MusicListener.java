@@ -3,19 +3,20 @@ package ui.gamebase.listeners;
 import java.io.File;
 import java.io.IOException;
 
-import javafx.beans.property.DoubleProperty;
+import javafx.scene.Node;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.ConsolePlayer;
+import ui.common.UIUtil;
 import ui.download.ProgressListener;
 
 public class MusicListener extends ProgressListener {
 
 	private ConsolePlayer cp;
 
-	public MusicListener(ConsolePlayer cp, DoubleProperty progress) {
-		super(progress);
-		this.cp = cp;
+	public MusicListener(UIUtil util, Node node, ConsolePlayer consolePlayer) {
+		super(util, node);
+		this.cp = consolePlayer;
 	}
 
 	@Override

@@ -1,18 +1,17 @@
 package ui.oscilloscope;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
+import libsidplay.Player;
 import libsidplay.common.SIDEmu;
 import resid_builder.ReSID;
 import resid_builder.resid.SID;
 import resid_builder.resid.WaveformGenerator;
+import sidplay.ConsolePlayer;
+import ui.entities.config.Configuration;
 
-public final class WaveGauge extends SIDGauge implements Initializable {
+public final class WaveGauge extends SIDGauge {
 
 	@FXML
 	private TitledPane border;
@@ -22,6 +21,11 @@ public final class WaveGauge extends SIDGauge implements Initializable {
 	@Override
 	protected Canvas getArea() {
 		return area;
+	}
+
+	public WaveGauge(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
 	}
 
 	@Override
@@ -55,8 +59,4 @@ public final class WaveGauge extends SIDGauge implements Initializable {
 		}
 	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		// TODO Auto-generated method stub
-	}
 }

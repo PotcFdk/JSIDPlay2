@@ -3,13 +3,19 @@ package ui.oscilloscope;
 import java.net.URL;
 import java.util.Arrays;
 
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import ui.common.C64VBox;
+import libsidplay.Player;
+import sidplay.ConsolePlayer;
+import ui.common.UIPart;
+import ui.common.UIUtil;
+import ui.entities.config.Configuration;
 
-public class Gauge extends C64VBox {
+public class Gauge extends VBox implements UIPart {
 	protected static final Color[] gaugeColors = new Color[256];
 
 	static {
@@ -20,8 +26,16 @@ public class Gauge extends C64VBox {
 		}
 	}
 
+	private UIUtil util;
+
 	private String text;
 	private int voice;
+
+	public Gauge(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		util = new UIUtil(consolePlayer, player, config);
+		getChildren().add((Node) util.parse(this));
+	}
 
 	/** data plots normalized between -1 .. 1 */
 	private float[] dataMin = new float[256];

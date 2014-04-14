@@ -1,18 +1,18 @@
 package ui.stilview;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import libsidplay.Player;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
+import sidplay.ConsolePlayer;
 import ui.common.C64Stage;
+import ui.entities.config.Configuration;
 
 public class STILView extends C64Stage {
 	private static final String STYLE_NORMAL = "styleNormal";
@@ -33,8 +33,13 @@ public class STILView extends C64Stage {
 
 	private STILEntry entry;
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public STILView(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
+	}
+
+	@FXML
+	private void initialize() {
 		splitPane.setDividerPosition(0, 0.3);
 		tree.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> {
@@ -82,7 +87,7 @@ public class STILView extends C64Stage {
 	}
 
 	private void writeEntry(final STILEntry entry) {
-		addText(getBundle().getString("FILENAME"), entry.filename,
+		addText(util.getBundle().getString("FILENAME"), entry.filename,
 				STYLE_FILENAME);
 		if (entry.globalComment != null) {
 			addText("", entry.globalComment.trim(), STYLE_NORMAL);
@@ -91,7 +96,7 @@ public class STILView extends C64Stage {
 
 	private void writeSubTune(final TuneEntry tuneEntry) {
 		addNewLine();
-		addText(getBundle().getString("SUBTUNE"),
+		addText(util.getBundle().getString("SUBTUNE"),
 				String.valueOf(tuneEntry.tuneNo) + " ", STYLE_SUBTUNE);
 		if (tuneEntry.globalComment != null) {
 			addText("", tuneEntry.globalComment.trim(), STYLE_COMMENT);
@@ -103,16 +108,19 @@ public class STILView extends C64Stage {
 			addText("", info.comment.trim(), STYLE_NORMAL);
 		}
 		if (info.name != null) {
-			addText(getBundle().getString("NAME"), info.name, STYLE_NAME);
+			addText(util.getBundle().getString("NAME"), info.name, STYLE_NAME);
 		}
 		if (info.author != null) {
-			addText(getBundle().getString("AUTHOR"), info.author, STYLE_AUTHOR);
+			addText(util.getBundle().getString("AUTHOR"), info.author,
+					STYLE_AUTHOR);
 		}
 		if (info.title != null) {
-			addText(getBundle().getString("TITLE"), info.title, STYLE_TITLE);
+			addText(util.getBundle().getString("TITLE"), info.title,
+					STYLE_TITLE);
 		}
 		if (info.artist != null) {
-			addText(getBundle().getString("ARTIST"), info.artist, STYLE_ARTIST);
+			addText(util.getBundle().getString("ARTIST"), info.artist,
+					STYLE_ARTIST);
 		}
 	}
 

@@ -16,11 +16,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -31,6 +30,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -47,16 +47,19 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import libpsid64.NotEnoughC64MemException;
 import libpsid64.Psid64;
+import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
+import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
-import ui.common.C64Tab;
 import ui.common.TypeTextField;
+import ui.common.UIPart;
+import ui.common.UIUtil;
 import ui.common.dialog.YesNoDialog;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
@@ -98,7 +101,7 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  * @author Ken Händel
  * @author Antti Lankila
  */
-public class MusicCollection extends C64Tab implements ISearchListener {
+public class MusicCollection extends Tab implements UIPart, ISearchListener {
 
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
@@ -116,20 +119,20 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 		@Override
 		public String toString() {
-			return getBundle().getString(
+			return util.getBundle().getString(
 					attribute.getDeclaringType().getJavaType().getSimpleName()
 							+ "." + attribute.getName());
 		}
 	}
 
 	@FXML
-	protected CheckBox autoConfiguration, enableSldb, singleSong;
+	private CheckBox autoConfiguration, enableSldb, singleSong;
 	@FXML
 	private TableView<TuneInfo> tuneInfoTable;
 	@FXML
 	private ImageView photograph;
 	@FXML
-	protected TreeView<File> fileBrowser;
+	private TreeView<File> fileBrowser;
 	@FXML
 	private ComboBox<SearchCriteria<?, ?>> searchCriteria;
 	@FXML
@@ -137,7 +140,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	@FXML
 	private Button startSearch, stopSearch, resetSearch, createSearchIndex;
 	@FXML
-	protected TextField collectionDir, defaultTime;
+	private TextField collectionDir, defaultTime;
 	@FXML
 	private TypeTextField stringTextField, integerTextField, longTextField,
 			shortTextField;
@@ -146,54 +149,58 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	@FXML
 	private ContextMenu contextMenu;
 	@FXML
-	protected MenuItem showStil, convertToPSID64, soasc6581R2, soasc6581R4,
+	private MenuItem showStil, convertToPSID64, soasc6581R2, soasc6581R4,
 			soasc8580R5;
 	@FXML
-	protected Menu addToFavorites;
+	private Menu addToFavorites;
 
-	private ObservableList<TuneInfo> tuneInfos = FXCollections
-			.<TuneInfo> observableArrayList();
-	private ObservableList<String> searchScopes = FXCollections
-			.<String> observableArrayList();
-	private ObservableList<String> searchResults = FXCollections
-			.<String> observableArrayList();
-	private ObservableList<SearchCriteria<?, ?>> searchCriterias = FXCollections
-			.<SearchCriteria<?, ?>> observableArrayList();
-	private ObservableList<Enum<?>> comboItems = FXCollections
-			.<Enum<?>> observableArrayList();
+	private UIUtil util;
 
-	private MusicCollectionType type;
-	private String collectionURL, dbName;
+	private ObservableList<TuneInfo> tuneInfos;
+	private ObservableList<String> searchScopes;
+	private ObservableList<String> searchResults;
+	private ObservableList<SearchCriteria<?, ?>> searchCriterias;
+	private ObservableList<Enum<?>> comboItems;
+
+	private ObjectProperty<MusicCollectionType> type;
+
+	public MusicCollectionType getType() {
+		return type.get();
+	}
+
+	public void setType(MusicCollectionType type) {
+		this.type.set(type);
+	}
+
+	private String collectionURL;
 
 	private EntityManager em;
 	private VersionService versionService;
 
-	protected TuneFileFilter fileFilter = new TuneFileFilter();
+	private TuneFileFilter fileFilter = new TuneFileFilter();
 	private SearchThread searchThread;
 	private Object savedState, searchForValue, recentlySearchedForValue;
 	private SearchCriteria<?, ?> recentlySearchedCriteria;
 	private boolean searchOptionsChanged;
-	protected String hvscName;
-	protected int currentSong;
-	protected DownloadThread downloadThread;
+	private String hvscName;
+	private int currentSong;
+	private DownloadThread downloadThread;
 
-	protected FavoritesSection favoritesToAddSearchResult;
+	private FavoritesSection favoritesToAddSearchResult;
 
-	private DoubleProperty progress = new SimpleDoubleProperty();
 	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems = FXCollections
 			.<TreeItem<File>> observableArrayList();
 
-	public DoubleProperty getProgressValue() {
-		return progress;
+	public MusicCollection(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		util = new UIUtil(consolePlayer, player, config);
+		setContent((Node) util.parse(this));
 	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		if (getPlayer() == null) {
-			// wait for second initialization, where properties have been set!
-			return;
-		}
-		SidPlay2Section sidplay2 = (SidPlay2Section) getConfig().getSidplay2();
+	@FXML
+	private void initialize() {
+		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
+				.getSidplay2();
 
 		int seconds = sidplay2.getPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
@@ -212,27 +219,35 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		sidplay2.singleProperty().addListener(
 				(observable, oldValue, newValue) -> singleSong
 						.setSelected(newValue));
-		getConsolePlayer().stateProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					if (newValue == State.RUNNING
-							&& getPlayer().getTune() != null) {
-						Platform.runLater(() ->
-						// auto-expand current selected tune
-						showNextHit(getPlayer().getTune().getInfo().file));
-					}
-				});
+		util.getConsolePlayer()
+				.stateProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							if (newValue == State.RUNNING
+									&& util.getPlayer().getTune() != null) {
+								Platform.runLater(() ->
+								// auto-expand current selected tune
+								showNextHit(util.getPlayer().getTune()
+										.getInfo().file));
+							}
+						});
+		tuneInfos = FXCollections.<TuneInfo> observableArrayList();
 		tuneInfoTable.setItems(tuneInfos);
 
+		searchScopes = FXCollections.<String> observableArrayList();
 		searchScope.setItems(searchScopes);
-		searchScopes.addAll(getBundle().getString("FORWARD"), getBundle()
-				.getString("BACKWARD"));
+		searchScopes.addAll(util.getBundle().getString("FORWARD"), util
+				.getBundle().getString("BACKWARD"));
 		searchScope.getSelectionModel().select(0);
 
+		searchResults = FXCollections.<String> observableArrayList();
 		searchResult.setItems(searchResults);
-		searchResults.addAll(getBundle().getString("SHOW_NEXT_MATCH"),
-				getBundle().getString("ADD_TO_A_NEW_PLAYLIST"));
+		searchResults.addAll(util.getBundle().getString("SHOW_NEXT_MATCH"),
+				util.getBundle().getString("ADD_TO_A_NEW_PLAYLIST"));
 		searchResult.getSelectionModel().select(0);
 
+		searchCriterias = FXCollections
+				.<SearchCriteria<?, ?>> observableArrayList();
 		searchCriteria.setItems(searchCriterias);
 		for (SingularAttribute<? extends Object, ?> singularAttribute : Arrays
 				.asList(HVSCEntry_.path, HVSCEntry_.name, HVSCEntry_.title,
@@ -258,6 +273,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		}
 		searchCriteria.getSelectionModel().select(0);
 
+		comboItems = FXCollections.<Enum<?>> observableArrayList();
 		combo.setItems(comboItems);
 
 		fileBrowser.setCellFactory((value) -> {
@@ -327,8 +343,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 					|| !((MusicCollectionTreeItem) selectedItem).hasSTIL());
 			convertToPSID64.setDisable(selectedItem == null);
 
-			List<FavoritesSection> favorites = ((Configuration) getConfig())
-					.getFavorites();
+			List<FavoritesSection> favorites = ((Configuration) util
+					.getConfig()).getFavorites();
 			addToFavorites.getItems().clear();
 			for (final FavoritesSection section : favorites) {
 				MenuItem item = new MenuItem(section.getName());
@@ -343,22 +359,26 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 		});
 
-		String initialRoot;
-		switch (type) {
-		case HVSC:
-			initialRoot = getConfig().getSidplay2().getHvsc();
-			break;
+		type = new SimpleObjectProperty<>();
+		type.addListener((observable, oldValue, newValue) -> {
+			String initialRoot;
+			switch (getType()) {
+			case HVSC:
+				initialRoot = util.getConfig().getSidplay2().getHvsc();
+				break;
 
-		case CGSC:
-			initialRoot = getConfig().getSidplay2().getCgsc();
-			break;
+			case CGSC:
+				initialRoot = util.getConfig().getSidplay2().getCgsc();
+				break;
 
-		default:
-			throw new RuntimeException("Illegal music collection type: " + type);
-		}
-		if (initialRoot != null) {
-			setRoot(new File(initialRoot));
-		}
+			default:
+				throw new RuntimeException("Illegal music collection type: "
+						+ type);
+			}
+			if (initialRoot != null) {
+				setRoot(new File(initialRoot));
+			}
+		});
 	}
 
 	private final FileFilter tuneFilter = new TuneFileFilter();
@@ -379,10 +399,10 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private void getSOASCURL(SidTune sidTune) {
 		if (sidTune != null) {
 			final SidTuneInfo tuneInfo = sidTune.getInfo();
-			File rootFile = new File(getConfig().getSidplay2().getHvsc());
+			File rootFile = new File(util.getConfig().getSidplay2().getHvsc());
 			String name = PathUtils.getCollectionName(new TFile(rootFile),
 					tuneInfo.file);
-			if (name != null && type == MusicCollectionType.HVSC) {
+			if (name != null && getType() == MusicCollectionType.HVSC) {
 				hvscName = name.replace(".sid", "");
 				currentSong = tuneInfo.currentSong;
 				for (MenuItem item : Arrays.asList(soasc6581R2, soasc6581R4,
@@ -397,10 +417,9 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private void showSTIL() {
 		TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
 				.getSelectedItem();
-		STILView stilInfo = new STILView();
-		stilInfo.setPlayer(getPlayer());
-		stilInfo.setConfig(getConfig());
-		STIL stil = getConsolePlayer().getStil();
+		STILView stilInfo = new STILView(util.getConsolePlayer(),
+				util.getPlayer(), util.getConfig());
+		STIL stil = util.getConsolePlayer().getStil();
 		if (stil != null) {
 			File hvscFile = selectedItem.getValue();
 			stilInfo.setEntry(stil.getSTILEntry(hvscFile));
@@ -415,20 +434,20 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	@FXML
 	private void convertToPSID64() {
 		DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		final File directory = fileDialog.showDialog(fileBrowser.getScene()
 				.getWindow());
 		if (directory != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					directory.getAbsolutePath());
+			util.getConfig().getSidplay2()
+					.setLastDirectory(directory.getAbsolutePath());
 			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
 					.getSelectedItem();
 			Psid64 c = new Psid64();
-			c.setTmpDir(getConfig().getSidplay2().getTmpDir());
+			c.setTmpDir(util.getConfig().getSidplay2().getTmpDir());
 			c.setVerbose(true);
 			try {
-				c.convertFiles(getConsolePlayer().getStil(),
+				c.convertFiles(util.getConsolePlayer().getStil(),
 						new File[] { selectedItem.getValue() }, directory);
 			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
 				e.printStackTrace();
@@ -438,32 +457,32 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	@FXML
 	private void startDownload6581R2() {
-		final String url = getConfig().getOnline().getSoasc6581R2();
+		final String url = util.getConfig().getOnline().getSoasc6581R2();
 		downloadStart(MessageFormat.format(url, hvscName, currentSong));
 	}
 
 	@FXML
 	private void startDownload6581R4() {
-		final String url = getConfig().getOnline().getSoasc6581R4();
+		final String url = util.getConfig().getOnline().getSoasc6581R4();
 		downloadStart(MessageFormat.format(url, hvscName, currentSong));
 	}
 
 	@FXML
 	private void startDownload8580R5() {
-		final String url = getConfig().getOnline().getSoasc8580R5();
+		final String url = util.getConfig().getOnline().getSoasc8580R5();
 		downloadStart(MessageFormat.format(url, hvscName, currentSong));
 	}
 
 	@FXML
 	private void doAutoConfiguration() {
 		String url;
-		switch (type) {
+		switch (getType()) {
 		case HVSC:
-			url = getConfig().getOnline().getHvscUrl();
+			url = util.getConfig().getOnline().getHvscUrl();
 			break;
 
 		case CGSC:
-			url = getConfig().getOnline().getCgscUrl();
+			url = util.getConfig().getOnline().getCgscUrl();
 			break;
 
 		default:
@@ -472,8 +491,9 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		if (autoConfiguration.isSelected()) {
 			autoConfiguration.setDisable(true);
 			try {
-				DownloadThread downloadThread = new DownloadThread(getConfig(),
-						new ProgressListener(progress) {
+				DownloadThread downloadThread = new DownloadThread(
+						util.getConfig(), new ProgressListener(util,
+								fileBrowser) {
 
 							@Override
 							public void downloaded(final File downloadedFile) {
@@ -521,10 +541,12 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	@FXML
 	private void doCreateSearchIndex() {
-		YesNoDialog dialog = new YesNoDialog();
-		dialog.setTitle(getBundle().getString("CREATE_SEARCH_DATABASE"));
+		YesNoDialog dialog = new YesNoDialog(util.getConsolePlayer(),
+				util.getPlayer(), util.getConfig());
+		dialog.setTitle(util.getBundle().getString("CREATE_SEARCH_DATABASE"));
 		dialog.setText(String.format(
-				getBundle().getString("RECREATE_DATABASE"), dbName));
+				util.getBundle().getString("RECREATE_DATABASE"), type.get()
+						.toString()));
 		dialog.getConfirmed().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
 				startSearch(true);
@@ -540,13 +562,13 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	@FXML
 	private void doBrowse() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (getConfig()
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene()
 				.getWindow());
 		if (directory != null) {
-			getConfig().getSidplay2().setLastDirectory(
-					directory.getAbsolutePath());
+			util.getConfig().getSidplay2()
+					.setLastDirectory(directory.getAbsolutePath());
 			setRoot(directory);
 		}
 	}
@@ -585,14 +607,15 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	@FXML
 	private void doEnableSldb() {
-		getConfig().getSidplay2().setEnableDatabase(enableSldb.isSelected());
-		getConsolePlayer().setSLDb(enableSldb.isSelected());
+		util.getConfig().getSidplay2()
+				.setEnableDatabase(enableSldb.isSelected());
+		util.getConsolePlayer().setSLDb(enableSldb.isSelected());
 	}
 
 	@FXML
 	private void playSingleSong() {
-		getConfig().getSidplay2().setSingle(singleSong.isSelected());
-		getConsolePlayer().getTrack().setSingle(singleSong.isSelected());
+		util.getConfig().getSidplay2().setSingle(singleSong.isSelected());
+		util.getConsolePlayer().getTrack().setSingle(singleSong.isSelected());
 	}
 
 	@FXML
@@ -601,13 +624,13 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 		final int secs = IniReader.parseTime(defaultTime.getText());
 		if (secs != -1) {
-			getConsolePlayer().getTimer().setDefaultLength(secs);
-			getConfig().getSidplay2().setPlayLength(secs);
-			tooltip.setText(getBundle().getString("DEFAULT_LENGTH_TIP"));
+			util.getConsolePlayer().getTimer().setDefaultLength(secs);
+			util.getConfig().getSidplay2().setPlayLength(secs);
+			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
 			defaultTime.setTooltip(tooltip);
 			defaultTime.getStyleClass().add(CELL_VALUE_OK);
 		} else {
-			tooltip.setText(getBundle().getString("DEFAULT_LENGTH_FORMAT"));
+			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_FORMAT"));
 			defaultTime.setTooltip(tooltip);
 			defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -619,22 +642,6 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	public void setCollectionURL(String collectionURL) {
 		this.collectionURL = collectionURL;
-	}
-
-	public String getDbName() {
-		return dbName;
-	}
-
-	public void setDbName(String dbName) {
-		this.dbName = dbName;
-	}
-
-	public MusicCollectionType getType() {
-		return type;
-	}
-
-	public void setType(MusicCollectionType type) {
-		this.type = type;
 	}
 
 	private void setSearchEditorVisible() {
@@ -695,29 +702,29 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			em = Persistence.createEntityManagerFactory(
 					PersistenceProperties.COLLECTION_DS,
 					new PersistenceProperties(new File(
-							rootFile.getParentFile(), dbName), Database.HSQL))
-					.createEntityManager();
+							rootFile.getParentFile(), type.get().toString()),
+							Database.HSQL)).createEntityManager();
 
 			versionService = new VersionService(em);
 			collectionDir.setText(rootFile.getAbsolutePath());
 
 			if (rootFile.exists()) {
-				SidPlay2Section sidPlay2Section = (SidPlay2Section) getConfig()
-						.getSidplay2();
-				if (type == MusicCollectionType.HVSC) {
-					getConfig().getSidplay2().setHvsc(
-							rootFile.getAbsolutePath());
+				SidPlay2Section sidPlay2Section = (SidPlay2Section) util
+						.getConfig().getSidplay2();
+				if (getType() == MusicCollectionType.HVSC) {
+					util.getConfig().getSidplay2()
+							.setHvsc(rootFile.getAbsolutePath());
 					File theRootFile = sidPlay2Section.getHvscFile();
 					setSongLengthDatabase(theRootFile);
 					setSTIL(theRootFile);
-					fileBrowser.setRoot(new MusicCollectionTreeItem(
-							getConsolePlayer().getStil(), theRootFile));
-				} else if (type == MusicCollectionType.CGSC) {
-					getConfig().getSidplay2().setCgsc(
-							rootFile.getAbsolutePath());
+					fileBrowser.setRoot(new MusicCollectionTreeItem(util
+							.getConsolePlayer().getStil(), theRootFile));
+				} else if (getType() == MusicCollectionType.CGSC) {
+					util.getConfig().getSidplay2()
+							.setCgsc(rootFile.getAbsolutePath());
 					File theRootFile = sidPlay2Section.getCgscFile();
-					fileBrowser.setRoot(new MusicCollectionTreeItem(
-							getConsolePlayer().getStil(), theRootFile));
+					fileBrowser.setRoot(new MusicCollectionTreeItem(util
+							.getConsolePlayer().getStil(), theRootFile));
 				}
 				MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
 				cellFactory
@@ -738,7 +745,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private void setSTIL(File hvscRoot) {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
 				STIL.STIL_FILE))) {
-			getConsolePlayer().setSTIL(new STIL(hvscRoot, input));
+			util.getConsolePlayer().setSTIL(new STIL(hvscRoot, input));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -747,7 +754,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private void setSongLengthDatabase(File hvscRoot) {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
 				SidDatabase.SONGLENGTHS_FILE))) {
-			getConsolePlayer().setSidDatabase(new SidDatabase(input));
+			util.getConsolePlayer().setSidDatabase(new SidDatabase(input));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -761,7 +768,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 
 	protected void showTuneInfos(File tuneFile, SidTune sidTune) {
 		tuneInfos.clear();
-		HVSCEntry entry = HVSCEntry.create(getConsolePlayer(),
+		HVSCEntry entry = HVSCEntry.create(util.getConsolePlayer(),
 				tuneFile.getAbsolutePath(), tuneFile, sidTune);
 
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
@@ -772,7 +779,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 				continue;
 			}
 			TuneInfo tuneInfo = new TuneInfo();
-			String name = getBundle().getString(
+			String name = util.getBundle().getString(
 					HVSCEntry.class.getSimpleName() + "." + field.getName());
 			tuneInfo.setName(name);
 			try {
@@ -802,8 +809,6 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	public void searchStop(final boolean canceled) {
 		// remember search state
 		savedState = searchThread.getSearchState();
-		progress.set(0);
-
 		Platform.runLater(() -> {
 			startSearch.setDisable(false);
 			stopSearch.setDisable(true);
@@ -826,7 +831,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 		Platform.runLater(() -> {
 			if (searchThread instanceof SearchIndexerThread) {
 				// search index is created
-				progress.set((progress.get() + 1) % 100);
+				util.progressProperty(fileBrowser).set(
+						(util.progressProperty(fileBrowser).get() + 1) % 100);
 			} else {
 				switch (searchResult.getSelectionModel().getSelectedIndex()) {
 				case 1:
@@ -844,7 +850,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	protected void addFavorite(FavoritesSection section, File file) {
 		try {
 			SidTune sidTune = SidTune.load(file);
-			HVSCEntry entry = HVSCEntry.create(getConsolePlayer(),
+			HVSCEntry entry = HVSCEntry.create(util.getConsolePlayer(),
 					file.getAbsolutePath(), file, sidTune);
 			section.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
@@ -896,8 +902,6 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			return;
 		}
 
-		progress.set(0);
-
 		/*
 		 * validate database: version is inserted only after successful create
 		 * completes.
@@ -913,7 +917,7 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			searchThread = new SearchIndexerThread(root);
 			searchThread.addSearchListener(this);
 			searchThread.addSearchListener(new SearchIndexCreator(fileBrowser
-					.getRoot().getValue(), getConsolePlayer(), em));
+					.getRoot().getValue(), util.getConsolePlayer(), em));
 
 			searchThread.start();
 		} else {
@@ -921,10 +925,10 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 			case 1:
 				// Add result to favorites?
 				// Create new favorites tab
-				List<FavoritesSection> favorites = ((Configuration) getConfig())
-						.getFavorites();
+				List<FavoritesSection> favorites = ((Configuration) util
+						.getConfig()).getFavorites();
 				FavoritesSection newFavorites = new FavoritesSection();
-				newFavorites.setName(getBundle().getString("NEW_TAB"));
+				newFavorites.setName(util.getBundle().getString("NEW_TAB"));
 				favoritesToAddSearchResult = newFavorites;
 				favorites.add(newFavorites);
 				break;
@@ -960,8 +964,8 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	private void downloadStart(String url) {
 		System.out.println("Download URL: <" + url + ">");
 		try {
-			downloadThread = new DownloadThread(getConfig(),
-					new ProgressListener(progress) {
+			downloadThread = new DownloadThread(util.getConfig(),
+					new ProgressListener(util, fileBrowser) {
 
 						@Override
 						public void downloaded(final File downloadedFile) {
@@ -980,9 +984,9 @@ public class MusicCollection extends C64Tab implements ISearchListener {
 	}
 
 	protected void playTune(final File file) {
-		setPlayedGraphics(fileBrowser);
+		util.setPlayedGraphics(fileBrowser);
 		try {
-			getConsolePlayer().playTune(SidTune.load(file), null);
+			util.getConsolePlayer().playTune(SidTune.load(file), null);
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
 		}

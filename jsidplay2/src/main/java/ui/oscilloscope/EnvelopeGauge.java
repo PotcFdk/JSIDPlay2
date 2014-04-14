@@ -3,9 +3,12 @@ package ui.oscilloscope;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
+import libsidplay.Player;
 import libsidplay.common.SIDEmu;
 import resid_builder.ReSID;
 import resid_builder.resid.SID;
+import sidplay.ConsolePlayer;
+import ui.entities.config.Configuration;
 
 public final class EnvelopeGauge extends SIDGauge {
 
@@ -13,6 +16,11 @@ public final class EnvelopeGauge extends SIDGauge {
 	private TitledPane border;
 	@FXML
 	private Canvas area;
+
+	public EnvelopeGauge(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
+	}
 
 	@Override
 	protected Canvas getArea() {

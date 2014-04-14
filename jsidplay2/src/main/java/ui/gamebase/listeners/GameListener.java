@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
-import javafx.beans.property.DoubleProperty;
+import javafx.scene.Node;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.MediaType;
+import ui.common.UIUtil;
 import ui.download.ProgressListener;
 import ui.entities.config.Configuration;
 import de.schlichtherle.truezip.file.TFile;
@@ -18,9 +19,9 @@ public class GameListener extends ProgressListener {
 
 	private ConsolePlayer cp;
 
-	public GameListener(DoubleProperty progress, ConsolePlayer cp,
+	public GameListener(UIUtil util, Node node, ConsolePlayer cp,
 			Configuration config) {
-		super(progress);
+		super(util, node);
 		this.cp = cp;
 		this.config = config;
 	}
@@ -74,17 +75,22 @@ public class GameListener extends ProgressListener {
 	}
 
 	private boolean isTapeFile(final File selectedFile) {
-		return selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".tap")
-				|| selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".t64");
+		return selectedFile.getName().toLowerCase(Locale.ENGLISH)
+				.endsWith(".tap")
+				|| selectedFile.getName().toLowerCase(Locale.ENGLISH)
+						.endsWith(".t64");
 	}
 
 	private boolean isDiskFile(final File selectedFile) {
-		return selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".d64")
-				|| selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".g64");
+		return selectedFile.getName().toLowerCase(Locale.ENGLISH)
+				.endsWith(".d64")
+				|| selectedFile.getName().toLowerCase(Locale.ENGLISH)
+						.endsWith(".g64");
 	}
 
 	private boolean isCRT(final File selectedFile) {
-		return selectedFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".crt");
+		return selectedFile.getName().toLowerCase(Locale.ENGLISH)
+				.endsWith(".crt");
 	}
 
 	public void setFileToRun(String valueOf) {

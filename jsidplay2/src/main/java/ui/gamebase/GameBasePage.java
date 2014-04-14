@@ -3,42 +3,51 @@ package ui.gamebase;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
-import ui.common.C64Tab;
+import libsidplay.Player;
+import sidplay.ConsolePlayer;
+import ui.common.UIPart;
+import ui.common.UIUtil;
 import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
+import ui.entities.config.Configuration;
 import ui.entities.gamebase.Games;
 import ui.gamebase.listeners.GameListener;
 
-public class GameBasePage extends C64Tab {
+public class GameBasePage extends Tab implements UIPart {
 
 	private static final String GB64_SCREENSHOT_DOWNLOAD_URL = "http://www.gb64.com/Screenshots/";
 	private static final String GB64_GAMES_DOWNLOAD_URL = "http://gamebase64.hardabasht.com/games/";
 
 	@FXML
-	protected TableView<Games> gamebaseTable;
+	private TableView<Games> gamebaseTable;
 
-	private ObservableList<Games> allGames = FXCollections
-			.<Games> observableArrayList();
+	private UIUtil util;
 
-	private ObservableList<Games> filteredGames = FXCollections
-			.<Games> observableArrayList();
+	private ObservableList<Games> allGames;
 
-	protected IDownloadListener screenShotListener;
+	private ObservableList<Games> filteredGames;
+
+	private IDownloadListener screenShotListener;
 	private GameListener gameListener;
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		if (getConfig() == null) {
-			// wait for second initialization, where properties have been set!
-			return;
-		}
+	public GameBasePage(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		util = new UIUtil(consolePlayer, player, config);
+		setContent((Node) util.parse(this));
+	}
+
+	@FXML
+	private void initialize() {
+		allGames = FXCollections.<Games> observableArrayList();
+		filteredGames = FXCollections.<Games> observableArrayList();
 		gamebaseTable.setItems(filteredGames);
 		gamebaseTable.setOnKeyPressed((event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
@@ -81,7 +90,7 @@ public class GameBasePage extends C64Tab {
 			return;
 		}
 		gameListener.setFileToRun(game.getFileToRun());
-		setPlayedGraphics(gamebaseTable);
+		util.setPlayedGraphics(gamebaseTable);
 		downloadStart(
 				GB64_GAMES_DOWNLOAD_URL + game.getFilename().replace('\\', '/'),
 				gameListener);
@@ -119,8 +128,8 @@ public class GameBasePage extends C64Tab {
 
 	protected void downloadStart(String url, IDownloadListener listener) {
 		try {
-			DownloadThread downloadThread = new DownloadThread(getConfig(),
-					listener, new URL(url));
+			DownloadThread downloadThread = new DownloadThread(
+					util.getConfig(), listener, new URL(url));
 			downloadThread.start();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

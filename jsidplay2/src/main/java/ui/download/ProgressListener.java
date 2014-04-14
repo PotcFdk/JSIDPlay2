@@ -2,26 +2,29 @@ package ui.download;
 
 import java.io.File;
 
-import javafx.beans.property.DoubleProperty;
-
+import javafx.application.Platform;
+import javafx.scene.Node;
+import ui.common.UIUtil;
 
 public abstract class ProgressListener implements IDownloadListener {
-	private DoubleProperty progress;
+	private UIUtil util;
+	private Node node;
 
-	public ProgressListener(DoubleProperty progress) {
-		this.progress = progress;
+	public ProgressListener(UIUtil util, Node node) {
+		this.util = util;
+		this.node = node;
 	}
-	
+
 	@Override
 	public void downloadStep(final int pct) {
-		progress.set(pct);
+		Platform.runLater(() -> util.progressProperty(node).set(pct / 100.));
 	}
 
 	@Override
 	public void downloadStop(File downloadedFile) {
 
 		if (downloadedFile == null) {
-			progress.set(0);
+			Platform.runLater(() -> util.progressProperty(node).set(0));
 		}
 		downloaded(downloadedFile);
 	}

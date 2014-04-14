@@ -1,9 +1,7 @@
 package ui.sidreg;
 
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import javafx.application.Platform;
@@ -16,8 +14,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
+import libsidplay.Player;
+import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
 import ui.common.C64Stage;
+import ui.entities.config.Configuration;
 
 public class SidReg extends C64Stage {
 
@@ -55,16 +56,21 @@ public class SidReg extends C64Stage {
 
 	private SidRegStop sidRegStop = new SidRegStop();
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		getConsolePlayer().stateProperty().addListener(sidRegStop);
+	public SidReg(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
+	}
+
+	@FXML
+	private void initialize() {
+		util.getConsolePlayer().stateProperty().addListener(sidRegStop);
 		regTable.setItems(filteredSidRegWrites);
 		doUpdateFilter();
 	}
 
 	@Override
-	protected void doCloseWindow() {
-		getConsolePlayer().stateProperty().removeListener(sidRegStop);
+	public void doCloseWindow() {
+		util.getConsolePlayer().stateProperty().removeListener(sidRegStop);
 	}
 
 	@FXML
@@ -77,73 +83,73 @@ public class SidReg extends C64Stage {
 	protected void doUpdateFilter() {
 		filters.clear();
 		if (freq1.isSelected()) {
-			filters.add(getBundle().getString("VOICE_1_FREQ_L"));
-			filters.add(getBundle().getString("VOICE_1_FREQ_H"));
+			filters.add(util.getBundle().getString("VOICE_1_FREQ_L"));
+			filters.add(util.getBundle().getString("VOICE_1_FREQ_H"));
 		}
 		if (freq2.isSelected()) {
-			filters.add(getBundle().getString("VOICE_2_FREQ_L"));
-			filters.add(getBundle().getString("VOICE_2_FREQ_H"));
+			filters.add(util.getBundle().getString("VOICE_2_FREQ_L"));
+			filters.add(util.getBundle().getString("VOICE_2_FREQ_H"));
 		}
 		if (freq3.isSelected()) {
-			filters.add(getBundle().getString("VOICE_3_FREQ_L"));
-			filters.add(getBundle().getString("VOICE_3_FREQ_H"));
+			filters.add(util.getBundle().getString("VOICE_3_FREQ_L"));
+			filters.add(util.getBundle().getString("VOICE_3_FREQ_H"));
 		}
 		if (pulse1.isSelected()) {
-			filters.add(getBundle().getString("VOICE_1_PULSE_L"));
-			filters.add(getBundle().getString("VOICE_1_PULSE_H"));
+			filters.add(util.getBundle().getString("VOICE_1_PULSE_L"));
+			filters.add(util.getBundle().getString("VOICE_1_PULSE_H"));
 		}
 		if (pulse2.isSelected()) {
-			filters.add(getBundle().getString("VOICE_2_PULSE_L"));
-			filters.add(getBundle().getString("VOICE_2_PULSE_H"));
+			filters.add(util.getBundle().getString("VOICE_2_PULSE_L"));
+			filters.add(util.getBundle().getString("VOICE_2_PULSE_H"));
 		}
 		if (pulse3.isSelected()) {
-			filters.add(getBundle().getString("VOICE_3_PULSE_L"));
-			filters.add(getBundle().getString("VOICE_3_PULSE_H"));
+			filters.add(util.getBundle().getString("VOICE_3_PULSE_L"));
+			filters.add(util.getBundle().getString("VOICE_3_PULSE_H"));
 		}
 		if (ctrl1.isSelected()) {
-			filters.add(getBundle().getString("VOICE_1_CTRL"));
+			filters.add(util.getBundle().getString("VOICE_1_CTRL"));
 		}
 		if (ctrl2.isSelected()) {
-			filters.add(getBundle().getString("VOICE_2_CTRL"));
+			filters.add(util.getBundle().getString("VOICE_2_CTRL"));
 		}
 		if (ctrl3.isSelected()) {
-			filters.add(getBundle().getString("VOICE_3_CTRL"));
+			filters.add(util.getBundle().getString("VOICE_3_CTRL"));
 		}
 		if (ad1.isSelected()) {
-			filters.add(getBundle().getString("VOICE_1_AD"));
+			filters.add(util.getBundle().getString("VOICE_1_AD"));
 		}
 		if (ad2.isSelected()) {
-			filters.add(getBundle().getString("VOICE_2_AD"));
+			filters.add(util.getBundle().getString("VOICE_2_AD"));
 		}
 		if (ad3.isSelected()) {
-			filters.add(getBundle().getString("VOICE_3_AD"));
+			filters.add(util.getBundle().getString("VOICE_3_AD"));
 		}
 		if (sr1.isSelected()) {
-			filters.add(getBundle().getString("VOICE_1_SR"));
+			filters.add(util.getBundle().getString("VOICE_1_SR"));
 		}
 		if (sr2.isSelected()) {
-			filters.add(getBundle().getString("VOICE_2_SR"));
+			filters.add(util.getBundle().getString("VOICE_2_SR"));
 		}
 		if (sr3.isSelected()) {
-			filters.add(getBundle().getString("VOICE_3_SR"));
+			filters.add(util.getBundle().getString("VOICE_3_SR"));
 		}
 		if (filter.isSelected()) {
-			filters.add(getBundle().getString("FCUT_L"));
-			filters.add(getBundle().getString("FCUT_H"));
-			filters.add(getBundle().getString("FRES"));
+			filters.add(util.getBundle().getString("FCUT_L"));
+			filters.add(util.getBundle().getString("FCUT_H"));
+			filters.add(util.getBundle().getString("FRES"));
 		}
 		if (vol.isSelected()) {
-			filters.add(getBundle().getString("FVOL"));
+			filters.add(util.getBundle().getString("FVOL"));
 		}
 		if (paddles.isSelected()) {
-			filters.add(getBundle().getString("PADDLE1"));
-			filters.add(getBundle().getString("PADDLE2"));
+			filters.add(util.getBundle().getString("PADDLE1"));
+			filters.add(util.getBundle().getString("PADDLE2"));
 		}
 		if (osc3.isSelected()) {
-			filters.add(getBundle().getString("OSC3"));
+			filters.add(util.getBundle().getString("OSC3"));
 		}
 		if (env3.isSelected()) {
-			filters.add(getBundle().getString("ENV3"));
+			filters.add(util.getBundle().getString("ENV3"));
 		}
 		filteredSidRegWrites.clear();
 		for (SidRegWrite sidRegWrite : allSidRegWrites) {
@@ -194,13 +200,13 @@ public class SidReg extends C64Stage {
 				}
 
 			};
-			sidRegExtension.setbundle(getBundle());
+			sidRegExtension.setbundle(util.getBundle());
 			sidRegExtension.init();
 		}
-		getPlayer().getC64().setSidWriteListener(0, sidRegExtension);
-		if (getPlayer().getTune() != null
-				&& getPlayer().getTune().getInfo().sidChipBase2 != 0) {
-			getPlayer().getC64().setSidWriteListener(1, sidRegExtension);
+		util.getPlayer().getC64().setSidWriteListener(0, sidRegExtension);
+		if (util.getPlayer().getTune() != null
+				&& util.getPlayer().getTune().getInfo().sidChipBase2 != 0) {
+			util.getPlayer().getC64().setSidWriteListener(1, sidRegExtension);
 		}
 	}
 }

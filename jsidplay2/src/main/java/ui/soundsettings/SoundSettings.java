@@ -1,8 +1,6 @@
 package ui.soundsettings;
 
 import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,12 +11,15 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import libsidplay.Player;
 import resid_builder.resid.ISIDDefs.SamplingMethod;
+import sidplay.ConsolePlayer;
 import sidplay.audio.CmpMP3File;
 import sidplay.consoleplayer.DriverSettings;
 import sidplay.consoleplayer.Emulation;
 import sidplay.consoleplayer.Output;
 import ui.common.C64Stage;
+import ui.entities.config.Configuration;
 
 public class SoundSettings extends C64Stage {
 
@@ -45,15 +46,22 @@ public class SoundSettings extends C64Stage {
 
 	private boolean duringInitialization;
 
-	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public SoundSettings(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
+	}
+
+	@FXML
+	private void initialize() {
 		duringInitialization = true;
 		soundDevice.setItems(soundDevices);
-		soundDevices.addAll(getBundle().getString("SOUNDCARD"), getBundle()
-				.getString("HARDSID4U"), getBundle().getString("WAV_RECORDER"),
-				getBundle().getString("MP3_RECORDER"),
-				getBundle().getString("COMPARE_TO_MP3"));
-		DriverSettings driverSettings = getConsolePlayer().getDriverSettings();
+		soundDevices.addAll(util.getBundle().getString("SOUNDCARD"), util
+				.getBundle().getString("HARDSID4U"), util.getBundle()
+				.getString("WAV_RECORDER"),
+				util.getBundle().getString("MP3_RECORDER"), util.getBundle()
+						.getString("COMPARE_TO_MP3"));
+		DriverSettings driverSettings = util.getConsolePlayer()
+				.getDriverSettings();
 		Output out = driverSettings.getOutput();
 		Emulation sid = driverSettings.getEmulation();
 		if (out == Output.OUT_SOUNDCARD && sid == Emulation.EMU_RESID) {
@@ -70,27 +78,28 @@ public class SoundSettings extends C64Stage {
 			soundDevice.getSelectionModel().select(0);
 		}
 		hardsid6581.getSelectionModel().select(
-				Integer.valueOf(getConfig().getEmulation().getHardsid6581()));
+				Integer.valueOf(util.getConfig().getEmulation()
+						.getHardsid6581()));
 		hardsid8580.getSelectionModel().select(
-				Integer.valueOf(getConfig().getEmulation().getHardsid8580()));
+				Integer.valueOf(util.getConfig().getEmulation()
+						.getHardsid8580()));
 		samplingRate.getSelectionModel().select(
-				Integer.valueOf(getConfig().getAudio().getFrequency()));
+				Integer.valueOf(util.getConfig().getAudio().getFrequency()));
 		samplingMethod.setItems(samplingMethods);
 		samplingMethods
 				.addAll(SamplingMethod.DECIMATE, SamplingMethod.RESAMPLE);
 		samplingMethod.getSelectionModel().select(
-				getConfig().getAudio().getSampling());
-		mp3.setText(getConfig().getAudio().getMp3File());
-		playMP3.setSelected(getConfig().getAudio().isPlayOriginal());
-		playEmulation.setSelected(!getConfig().getAudio().isPlayOriginal());
+				util.getConfig().getAudio().getSampling());
+		mp3.setText(util.getConfig().getAudio().getMp3File());
+		playMP3.setSelected(util.getConfig().getAudio().isPlayOriginal());
+		playEmulation
+				.setSelected(!util.getConfig().getAudio().isPlayOriginal());
 
-		proxyEnable.setSelected(getConsolePlayer().getConfig().getSidplay2()
-				.isEnableProxy());
-		proxyHost.setText(getConsolePlayer().getConfig().getSidplay2()
-				.getProxyHostname());
+		proxyEnable.setSelected(util.getConfig().getSidplay2().isEnableProxy());
+		proxyHost.setText(util.getConfig().getSidplay2().getProxyHostname());
 		proxyHost.setEditable(proxyEnable.isSelected());
-		proxyPort.setText(String.valueOf(getConsolePlayer().getConfig()
-				.getSidplay2().getProxyPort()));
+		proxyPort.setText(String.valueOf(util.getConfig().getSidplay2()
+				.getProxyPort()));
 		proxyPort.setEditable(proxyEnable.isSelected());
 
 		duringInitialization = false;
@@ -124,30 +133,38 @@ public class SoundSettings extends C64Stage {
 
 	@FXML
 	private void setSid6581() {
-		getConfig().getEmulation().setHardsid6581(
-				hardsid6581.getSelectionModel().getSelectedItem());
+		util.getConfig()
+				.getEmulation()
+				.setHardsid6581(
+						hardsid6581.getSelectionModel().getSelectedItem());
 		restart();
 	}
 
 	@FXML
 	private void setSid8580() {
-		getConfig().getEmulation().setHardsid8580(
-				hardsid8580.getSelectionModel().getSelectedItem());
+		util.getConfig()
+				.getEmulation()
+				.setHardsid8580(
+						hardsid8580.getSelectionModel().getSelectedItem());
 		restart();
 	}
 
 	@FXML
 	private void setSamplingRate() {
-		getConfig().getAudio().setFrequency(
-				samplingRate.getSelectionModel().getSelectedItem());
+		util.getConfig()
+				.getAudio()
+				.setFrequency(
+						samplingRate.getSelectionModel().getSelectedItem());
 		restart();
 	}
 
 	@FXML
 	private void setSamplingMethod() {
-		getConfig().getAudio().setSampling(
-				samplingMethod.getSelectionModel().getSelectedItem());
-		getConsolePlayer().updateSidEmulation();
+		util.getConfig()
+				.getAudio()
+				.setSampling(
+						samplingMethod.getSelectionModel().getSelectedItem());
+		util.getConsolePlayer().updateSidEmulation();
 	}
 
 	@FXML
@@ -162,7 +179,7 @@ public class SoundSettings extends C64Stage {
 
 	@FXML
 	private void setRecording() {
-		getConfig().getAudio().setMp3File(mp3.getText());
+		util.getConfig().getAudio().setMp3File(mp3.getText());
 	}
 
 	@FXML
@@ -174,7 +191,7 @@ public class SoundSettings extends C64Stage {
 		final File file = fileDialog.showOpenDialog(mp3.getScene().getWindow());
 		if (file != null) {
 			mp3.setText(file.getAbsolutePath());
-			getConfig().getAudio().setMp3File(mp3.getText());
+			util.getConfig().getAudio().setMp3File(mp3.getText());
 			restart();
 		}
 	}
@@ -183,38 +200,40 @@ public class SoundSettings extends C64Stage {
 	private void setEnableProxy() {
 		proxyHost.setEditable(proxyEnable.isSelected());
 		proxyPort.setEditable(proxyEnable.isSelected());
-		getConfig().getSidplay2().setEnableProxy(proxyEnable.isSelected());
+		util.getConfig().getSidplay2().setEnableProxy(proxyEnable.isSelected());
 	}
 
 	@FXML
 	private void setProxyHost() {
-		getConfig().getSidplay2().setProxyHostname(proxyHost.getText());
+		util.getConfig().getSidplay2().setProxyHostname(proxyHost.getText());
 	}
 
 	@FXML
 	private void setProxyPort() {
-		getConfig().getSidplay2().setProxyPort(
-				proxyPort.getText().length() > 0 ? Integer.valueOf(proxyPort
-						.getText()) : 80);
+		util.getConfig()
+				.getSidplay2()
+				.setProxyPort(
+						proxyPort.getText().length() > 0 ? Integer
+								.valueOf(proxyPort.getText()) : 80);
 	}
 
 	protected void restart() {
 		// replay last tune
 		if (!duringInitialization) {
-			getConsolePlayer().playTune(getPlayer().getTune(), null);
+			util.getConsolePlayer().playTune(util.getPlayer().getTune(), null);
 		}
 	}
 
 	private void setOutputDevice(final Output device, final Emulation emu) {
-		getConsolePlayer().getDriverSettings().setOutput(device);
-		getConsolePlayer().getDriverSettings().setEmulation(emu);
+		util.getConsolePlayer().getDriverSettings().setOutput(device);
+		util.getConsolePlayer().getDriverSettings().setEmulation(emu);
 	}
 
 	protected void setPlayOriginal(final boolean playOriginal) {
-		getConfig().getAudio().setPlayOriginal(playOriginal);
-		if (getConsolePlayer().getDriverSettings().getDevice() instanceof CmpMP3File) {
-			((CmpMP3File) getConsolePlayer().getDriverSettings().getDevice())
-					.setPlayOriginal(playOriginal);
+		util.getConfig().getAudio().setPlayOriginal(playOriginal);
+		if (util.getConsolePlayer().getDriverSettings().getDevice() instanceof CmpMP3File) {
+			((CmpMP3File) util.getConsolePlayer().getDriverSettings()
+					.getDevice()).setPlayOriginal(playOriginal);
 		}
 	}
 

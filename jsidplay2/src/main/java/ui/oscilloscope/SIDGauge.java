@@ -2,10 +2,18 @@ package ui.oscilloscope;
 
 import java.util.ResourceBundle;
 
+import sidplay.ConsolePlayer;
+import ui.entities.config.Configuration;
+import libsidplay.Player;
 import libsidplay.common.SIDEmu;
 
 abstract class SIDGauge extends Gauge {
 	protected ResourceBundle localizer;
+
+	public SIDGauge(ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		super(consolePlayer, player, config);
+	}
 
 	@Override
 	public void sample() {

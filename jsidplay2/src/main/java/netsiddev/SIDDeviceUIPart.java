@@ -2,11 +2,14 @@ package netsiddev;
 
 import java.net.URL;
 
-import javafx.fxml.Initializable;
+public interface SIDDeviceUIPart {
 
-public interface SIDDeviceUIPart extends Initializable {
+	default String getBundleName() {
+		return getClass().getName();
+	}
 
-	String getBundleName();
+	default URL getFxml() {
+		return getClass().getResource(getClass().getSimpleName() + ".fxml");
+	}
 
-	URL getFxml();
 }
