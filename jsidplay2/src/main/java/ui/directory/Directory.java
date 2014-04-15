@@ -58,8 +58,8 @@ public class Directory extends AnchorPane implements UIPart {
 
 	public Directory(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config);
-		getChildren().add((Node) util.parse(this));
+		util = new UIUtil(consolePlayer, player, config, this);
+		getChildren().add((Node) util.parse());
 	}
 
 	@FXML

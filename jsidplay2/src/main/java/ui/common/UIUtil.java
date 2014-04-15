@@ -36,7 +36,6 @@ public class UIUtil {
 		public Builder<?> getBuilder(Class<?> type) {
 			if (UIPart.class.isAssignableFrom(type)) {
 				try {
-					// JSIDPlay2 components do not use the default constructor
 					Constructor<?> constructor = type
 							.getConstructor(new Class[] { ConsolePlayer.class,
 									Player.class, Configuration.class });
@@ -45,62 +44,46 @@ public class UIUtil {
 				} catch (NoSuchMethodException | SecurityException
 						| InstantiationException | IllegalAccessException
 						| IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
+					throw new RuntimeException(
+							"UIPart implementations needs a 3-arg constructor to provide the model");
 				}
 			}
 			return defaultBuilderFactory.getBuilder(type);
 		}
 	}
 
+	/** Model **/
 	private ConsolePlayer consolePlayer;
 	private Player player;
 	private Configuration config;
-
+	/** View */
 	private ResourceBundle bundle;
+	/** Controller */
+	private UIPart controller;
 
 	private DoubleProperty progressProperty;
 
 	public UIUtil(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
+			Configuration config, UIPart controller) {
 		this.consolePlayer = consolePlayer;
 		this.player = player;
 		this.config = config;
+		this.controller = controller;
+		this.bundle = ResourceBundle.getBundle(controller.getBundleName());
 	}
 
-	public Object parse(final UIPart part) {
+	public Object parse() {
 		FXMLLoader fxmlLoader = new FXMLLoader();
-		URL fxml = part.getFxml();
+		URL fxml = this.controller.getFxml();
 		fxmlLoader.setLocation(fxml);
 		fxmlLoader.setBuilderFactory(new BuilderFactoryImplementation());
-		this.bundle = ResourceBundle.getBundle(part.getBundleName());
 		fxmlLoader.setResources(this.bundle);
-		fxmlLoader.setController(part);
+		fxmlLoader.setController(this.controller);
 		try (InputStream is = fxml.openStream()) {
 			return fxmlLoader.load(is);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
-		}
-	}
-
-	void doCloseWindow(Node n) {
-		if (n instanceof TabPane) {
-			TabPane theTabPane = (TabPane) n;
-			for (Tab tab : theTabPane.getTabs()) {
-				if (tab instanceof UIPart) {
-					UIPart theTab = (UIPart) tab;
-					theTab.doCloseWindow();
-				}
-			}
-		}
-		if (n instanceof UIPart) {
-			UIPart theTab = (UIPart) n;
-			theTab.doCloseWindow();
-		}
-		if (n instanceof Parent) {
-			for (Node c : ((Parent) n).getChildrenUnmodifiable()) {
-				doCloseWindow(c);
-			}
+			throw new RuntimeException("Unparsable View: " + fxml);
 		}
 	}
 
@@ -123,24 +106,27 @@ public class UIUtil {
 		if (progressProperty == null) {
 			ProgressBar progressBar = (ProgressBar) node.getScene().lookup(
 					"#progress");
+			if (progressBar == null) {
+				throw new RuntimeException("Progress Bar does not exist!");
+			}
 			progressProperty = progressBar.progressProperty();
 		}
 		return progressProperty;
 	}
 
-	public ConsolePlayer getConsolePlayer() {
+	public final ConsolePlayer getConsolePlayer() {
 		return consolePlayer;
 	}
 
-	public Player getPlayer() {
+	public final Player getPlayer() {
 		return player;
 	}
 
-	public Configuration getConfig() {
+	public final Configuration getConfig() {
 		return config;
 	}
 
-	public ResourceBundle getBundle() {
+	public final ResourceBundle getBundle() {
 		return bundle;
 	}
 

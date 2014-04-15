@@ -38,11 +38,9 @@ public class SoundSettings extends C64Stage {
 	@FXML
 	private Button mp3Browse;
 
-	private ObservableList<resid_builder.resid.ISIDDefs.SamplingMethod> samplingMethods = FXCollections
-			.<resid_builder.resid.ISIDDefs.SamplingMethod> observableArrayList();
+	private ObservableList<resid_builder.resid.ISIDDefs.SamplingMethod> samplingMethods;
 
-	private ObservableList<String> soundDevices = FXCollections
-			.<String> observableArrayList();
+	private ObservableList<String> soundDevices;
 
 	private boolean duringInitialization;
 
@@ -54,6 +52,7 @@ public class SoundSettings extends C64Stage {
 	@FXML
 	private void initialize() {
 		duringInitialization = true;
+		soundDevices = FXCollections.<String> observableArrayList();
 		soundDevice.setItems(soundDevices);
 		soundDevices.addAll(util.getBundle().getString("SOUNDCARD"), util
 				.getBundle().getString("HARDSID4U"), util.getBundle()
@@ -85,6 +84,8 @@ public class SoundSettings extends C64Stage {
 						.getHardsid8580()));
 		samplingRate.getSelectionModel().select(
 				Integer.valueOf(util.getConfig().getAudio().getFrequency()));
+		samplingMethods = FXCollections
+				.<resid_builder.resid.ISIDDefs.SamplingMethod> observableArrayList();
 		samplingMethod.setItems(samplingMethods);
 		samplingMethods
 				.addAll(SamplingMethod.DECIMATE, SamplingMethod.RESAMPLE);

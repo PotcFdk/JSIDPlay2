@@ -34,8 +34,8 @@ public class ConsoleOutput extends VBox implements UIPart {
 
 	public ConsoleOutput(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config);
-		getChildren().add((Node) util.parse(this));
+		util = new UIUtil(consolePlayer, player, config, this);
+		getChildren().add((Node) util.parse());
 	}
 
 	public PrintStream getPrintStream(final OutputStream original) {

@@ -99,8 +99,8 @@ public class DiskCollection extends Tab implements UIPart {
 
 	public DiskCollection(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config);
-		setContent((Node) util.parse(this));
+		util = new UIUtil(consolePlayer, player, config, this);
+		setContent((Node) util.parse());
 	}
 
 	@FXML

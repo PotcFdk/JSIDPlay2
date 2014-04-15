@@ -127,7 +127,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	private Scene scene;
 	private Timeline timer;
-	protected long lastUpdate;
+	private long lastUpdate;
 	private int oldHalfTrack, hardcopyCounter;
 	private boolean duringInitialization, oldMotorOn;
 	private StringBuilder tuneSpeed = new StringBuilder();

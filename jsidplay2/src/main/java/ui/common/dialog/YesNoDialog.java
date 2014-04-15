@@ -15,8 +15,6 @@ public class YesNoDialog extends C64Stage {
 	@FXML
 	private Text message;
 
-	private String text;
-	
 	private BooleanProperty confirmed = new SimpleBooleanProperty();
 
 	public YesNoDialog(ConsolePlayer consolePlayer, Player player,
@@ -27,7 +25,6 @@ public class YesNoDialog extends C64Stage {
 	@FXML
 	private void initialize() {
 		setWait(true);
-		message.setText(text);
 	}
 
 	@FXML
@@ -42,8 +39,8 @@ public class YesNoDialog extends C64Stage {
 		confirmed.set(false);
 	}
 
-	public void setText(String str) {
-		this.text = str;
+	public void setText(String text) {
+		message.setText(text);
 	}
 
 	public BooleanProperty getConfirmed() {

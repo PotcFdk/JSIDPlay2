@@ -2,7 +2,11 @@ package ui.common;
 
 import java.io.IOException;
 
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -13,11 +17,15 @@ import ui.entities.config.Configuration;
 public abstract class C64Stage extends Stage implements UIPart {
 
 	protected UIUtil util;
+
+	private Scene scene;
+
 	private boolean wait;
 
 	public C64Stage(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config);
+		util = new UIUtil(consolePlayer, player, config, this);
+		scene = (Scene) util.parse();
 	}
 
 	public void open() throws IOException {
@@ -26,7 +34,6 @@ public abstract class C64Stage extends Stage implements UIPart {
 	}
 
 	public void open(Stage stage) throws IOException {
-		Scene scene = (Scene) util.parse(this);
 		scene.getStylesheets().add(getStyleSheetName());
 		scene.setOnKeyPressed((ke) -> {
 			if (ke.getCode() == KeyCode.ESCAPE) {
@@ -35,15 +42,38 @@ public abstract class C64Stage extends Stage implements UIPart {
 		});
 		stage.setScene(scene);
 		stage.getIcons().add(new Image(util.getBundle().getString("ICON")));
-		stage.setTitle(util.getBundle().getString("TITLE"));
+		if (stage.getTitle() == null) {
+			stage.setTitle(util.getBundle().getString("TITLE"));
+		}
 		stage.setOnCloseRequest((event) -> {
-			util.doCloseWindow(scene.getRoot());
+			doCloseWindow(scene.getRoot());
 			doCloseWindow();
 		});
 		if (wait) {
 			stage.showAndWait();
 		} else {
 			stage.show();
+		}
+	}
+
+	private void doCloseWindow(Node n) {
+		if (n instanceof TabPane) {
+			TabPane theTabPane = (TabPane) n;
+			for (Tab tab : theTabPane.getTabs()) {
+				if (tab instanceof UIPart) {
+					UIPart theTab = (UIPart) tab;
+					theTab.doCloseWindow();
+				}
+			}
+		}
+		if (n instanceof UIPart) {
+			UIPart theTab = (UIPart) n;
+			theTab.doCloseWindow();
+		}
+		if (n instanceof Parent) {
+			for (Node c : ((Parent) n).getChildrenUnmodifiable()) {
+				doCloseWindow(c);
+			}
 		}
 	}
 

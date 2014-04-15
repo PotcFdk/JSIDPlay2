@@ -26,7 +26,7 @@ import ui.entities.config.SidPlay2Section;
 
 public class Disassembler extends C64Stage {
 
-	protected final class DisassemblerRefresh implements ChangeListener<State> {
+	private final class DisassemblerRefresh implements ChangeListener<State> {
 		@Override
 		public void changed(ObservableValue<? extends State> observable,
 				State oldValue, State newValue) {
@@ -44,11 +44,11 @@ public class Disassembler extends C64Stage {
 	@FXML
 	private TableView<AssemblyLine> memoryTable;
 
-	protected ObservableList<AssemblyLine> assemblyLines;
+	private ObservableList<AssemblyLine> assemblyLines;
 
 	private DisassemblerRefresh disassemblerRefresh;
 
-	protected static Map<Integer, CPUCommand> fCommands = CPUParser
+	private static final Map<Integer, CPUCommand> fCommands = CPUParser
 			.getCpuCommands();
 
 	public Disassembler(ConsolePlayer consolePlayer, Player player,
@@ -64,13 +64,15 @@ public class Disassembler extends C64Stage {
 		setTune();
 
 		disassemblerRefresh = new DisassemblerRefresh();
-		util.getConsolePlayer().stateProperty().addListener(disassemblerRefresh);
+		util.getConsolePlayer().stateProperty()
+				.addListener(disassemblerRefresh);
 
 	}
 
 	@Override
 	public void doCloseWindow() {
-		util.getConsolePlayer().stateProperty().removeListener(disassemblerRefresh);
+		util.getConsolePlayer().stateProperty()
+				.removeListener(disassemblerRefresh);
 	}
 
 	protected void setTune() {
@@ -192,7 +194,8 @@ public class Disassembler extends C64Stage {
 	@FXML
 	private void saveMemory() {
 		FileChooser fileDialog = new FileChooser();
-		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig().getSidplay2();
+		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
+				.getSidplay2();
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File file = fileDialog.showSaveDialog(save.getScene().getWindow());
 		if (file != null) {

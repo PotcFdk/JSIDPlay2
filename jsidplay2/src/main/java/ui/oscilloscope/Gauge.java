@@ -33,8 +33,8 @@ public class Gauge extends VBox implements UIPart {
 
 	public Gauge(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config);
-		getChildren().add((Node) util.parse(this));
+		util = new UIUtil(consolePlayer, player, config, this);
+		getChildren().add((Node) util.parse());
 	}
 
 	/** data plots normalized between -1 .. 1 */

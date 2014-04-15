@@ -91,14 +91,11 @@ public class EmulationSettings extends C64Stage {
 	@FXML
 	private LineChart<Number, Number> filterCurve;
 
-	private ObservableList<Object> sid1Models = FXCollections
-			.<Object> observableArrayList();
-	private ObservableList<Object> sid2Models = FXCollections
-			.<Object> observableArrayList();
-	private ObservableList<String> filters = FXCollections
-			.<String> observableArrayList();
+	private ObservableList<Object> sid1Models;
+	private ObservableList<Object> sid2Models;
+	private ObservableList<String> filters;
 
-	private ChangeListener<State> emulationChange = new EmulationChange();
+	private ChangeListener<State> emulationChange;
 
 	private boolean duringInitialization;
 
@@ -110,6 +107,9 @@ public class EmulationSettings extends C64Stage {
 	@FXML
 	private void initialize() {
 		duringInitialization = true;
+
+		filters = FXCollections.<String> observableArrayList();
+		filter.setItems(filters);
 
 		leftVolume.setValue(util.getConfig().getAudio().getLeftVolume()
 				+ MAX_VOLUME_DB);
@@ -128,9 +128,11 @@ public class EmulationSettings extends C64Stage {
 					util.getConsolePlayer().setSIDVolume(1, volumeDb);
 				});
 
+		sid1Models = FXCollections.<Object> observableArrayList();
 		sid1Models.addAll(util.getBundle().getString("AUTO"),
 				ChipModel.MOS6581, ChipModel.MOS8580);
 		sid1Model.setItems(sid1Models);
+		sid2Models = FXCollections.<Object> observableArrayList();
 		sid2Models.addAll(util.getBundle().getString("LIKE_1ST_SID"),
 				ChipModel.MOS6581, ChipModel.MOS8580);
 		sid2Model.setItems(sid2Models);
@@ -152,10 +154,10 @@ public class EmulationSettings extends C64Stage {
 				.isForceStereoTune());
 		boosted8580.setSelected(util.getConfig().getEmulation()
 				.isDigiBoosted8580());
-		filter.setItems(filters);
 
 		calculateFilterCurve(filter.getSelectionModel().getSelectedItem());
 
+		emulationChange = new EmulationChange();
 		util.getConsolePlayer().stateProperty().addListener(emulationChange);
 
 		duringInitialization = false;

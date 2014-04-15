@@ -45,11 +45,9 @@ public class SidDump extends C64Stage {
 	@FXML
 	private TableView<SidDumpOutput> dumpTable;
 
-	protected ObservableList<SidDumpOutput> sidDumpOutputs = FXCollections
-			.<SidDumpOutput> observableArrayList();
+	protected ObservableList<SidDumpOutput> sidDumpOutputs;
 
-	private ObservableList<libsidutils.SIDDump.Player> sidDumpPlayers = FXCollections
-			.<libsidutils.SIDDump.Player> observableArrayList();
+	private ObservableList<libsidutils.SIDDump.Player> sidDumpPlayers;
 
 	protected SidDumpExtension sidDumpExtension;
 
@@ -83,7 +81,10 @@ public class SidDump extends C64Stage {
 			}
 		};
 
+		sidDumpOutputs = FXCollections.<SidDumpOutput> observableArrayList();
 		dumpTable.setItems(sidDumpOutputs);
+		sidDumpPlayers = FXCollections
+				.<libsidutils.SIDDump.Player> observableArrayList();
 		regPlayer.setItems(sidDumpPlayers);
 		sidDumpPlayers.addAll(new libsidutils.SIDDump().getPlayers());
 		regPlayer.getSelectionModel().select(0);

@@ -39,14 +39,11 @@ public class JoystickSettings extends C64Stage {
 	@FXML
 	protected TableView<Component> testTable1, testTable2;
 
-	private ObservableList<Controller> devices = FXCollections
-			.<Controller> observableArrayList();
+	private ObservableList<Controller> devices;
 
-	private ObservableList<Component> components1 = FXCollections
-			.<Component> observableArrayList();
+	private ObservableList<Component> components1;
 
-	private ObservableList<Component> components2 = FXCollections
-			.<Component> observableArrayList();
+	private ObservableList<Component> components2;
 
 	private Timeline timer;
 
@@ -57,7 +54,9 @@ public class JoystickSettings extends C64Stage {
 
 	@FXML
 	private void initialize() {
+		components1 = FXCollections.<Component> observableArrayList();
 		testTable1.setItems(components1);
+		devices = FXCollections.<Controller> observableArrayList();
 		device1.setItems(devices);
 		up1.setItems(components1);
 		down1.setItems(components1);
@@ -65,6 +64,7 @@ public class JoystickSettings extends C64Stage {
 		right1.setItems(components1);
 		fire1.setItems(components1);
 
+		components2 = FXCollections.<Component> observableArrayList();
 		testTable2.setItems(components2);
 		up2.setItems(components2);
 		down2.setItems(components2);
@@ -81,7 +81,8 @@ public class JoystickSettings extends C64Stage {
 
 		IJoystickSection joystickSettings = util.getConfig().getJoystick();
 
-		activateJoy1.setSelected(util.getPlayer().getC64().isJoystickConnected(0));
+		activateJoy1.setSelected(util.getPlayer().getC64()
+				.isJoystickConnected(0));
 		select(controllers, joystickSettings.getDeviceName1(), device1);
 
 		Controller controller1 = device1.getSelectionModel().getSelectedItem();
@@ -97,7 +98,8 @@ public class JoystickSettings extends C64Stage {
 		right1Value.setValue(joystickSettings.getComponentValueRight1());
 		fire1Value.setValue(joystickSettings.getComponentValueBtn1());
 
-		activateJoy2.setSelected(util.getPlayer().getC64().isJoystickConnected(1));
+		activateJoy2.setSelected(util.getPlayer().getC64()
+				.isJoystickConnected(1));
 		select(controllers, joystickSettings.getDeviceName2(), device2);
 
 		Controller controller2 = device2.getSelectionModel().getSelectedItem();
@@ -163,19 +165,22 @@ public class JoystickSettings extends C64Stage {
 
 	@FXML
 	private void doActivateJoy1() {
-		util.getPlayer().getC64().setJoystick(
-				0,
-				activateJoy1.isSelected() ? new JoystickReader(device1
-						.getSelectionModel().getSelectedItem(), up1
-						.getSelectionModel().getSelectedItem(), down1
-						.getSelectionModel().getSelectedItem(), left1
-						.getSelectionModel().getSelectedItem(), right1
-						.getSelectionModel().getSelectedItem(), fire1
-						.getSelectionModel().getSelectedItem(),
-						(float) up1Value.getValue(), (float) down1Value
-								.getValue(), (float) left1Value.getValue(),
-						(float) right1Value.getValue(), (float) fire1Value
-								.getValue()) : null);
+		util.getPlayer()
+				.getC64()
+				.setJoystick(
+						0,
+						activateJoy1.isSelected() ? new JoystickReader(device1
+								.getSelectionModel().getSelectedItem(), up1
+								.getSelectionModel().getSelectedItem(), down1
+								.getSelectionModel().getSelectedItem(), left1
+								.getSelectionModel().getSelectedItem(), right1
+								.getSelectionModel().getSelectedItem(), fire1
+								.getSelectionModel().getSelectedItem(),
+								(float) up1Value.getValue(), (float) down1Value
+										.getValue(), (float) left1Value
+										.getValue(), (float) right1Value
+										.getValue(), (float) fire1Value
+										.getValue()) : null);
 	}
 
 	@FXML
@@ -187,84 +192,97 @@ public class JoystickSettings extends C64Stage {
 
 	@FXML
 	private void chooseUp1() {
-		util.getConfig().getJoystick().setComponentNameUp1(
-				up1.getSelectionModel().getSelectedItem().getIdentifier()
-						.getName());
+		util.getConfig()
+				.getJoystick()
+				.setComponentNameUp1(
+						up1.getSelectionModel().getSelectedItem()
+								.getIdentifier().getName());
 	}
 
 	@FXML
 	private void chooseUp1Value() {
-		util.getConfig().getJoystick().setComponentValueUp1(
-				(float) up1Value.getValue());
+		util.getConfig().getJoystick()
+				.setComponentValueUp1((float) up1Value.getValue());
 	}
 
 	@FXML
 	private void chooseDown1() {
-		util.getConfig().getJoystick().setComponentNameDown1(
-				down1.getSelectionModel().getSelectedItem().getIdentifier()
-						.getName());
+		util.getConfig()
+				.getJoystick()
+				.setComponentNameDown1(
+						down1.getSelectionModel().getSelectedItem()
+								.getIdentifier().getName());
 	}
 
 	@FXML
 	private void chooseDown1Value() {
-		util.getConfig().getJoystick().setComponentValueDown1(
-				(float) down1Value.getValue());
+		util.getConfig().getJoystick()
+				.setComponentValueDown1((float) down1Value.getValue());
 	}
 
 	@FXML
 	private void chooseLeft1() {
-		util.getConfig().getJoystick().setComponentNameLeft1(
-				left1.getSelectionModel().getSelectedItem().getIdentifier()
-						.getName());
+		util.getConfig()
+				.getJoystick()
+				.setComponentNameLeft1(
+						left1.getSelectionModel().getSelectedItem()
+								.getIdentifier().getName());
 	}
 
 	@FXML
 	private void chooseLeft1Value() {
-		util.getConfig().getJoystick().setComponentValueLeft1(
-				(float) left1Value.getValue());
+		util.getConfig().getJoystick()
+				.setComponentValueLeft1((float) left1Value.getValue());
 	}
 
 	@FXML
 	private void chooseRight1() {
-		util.getConfig().getJoystick().setComponentNameRight1(
-				right1.getSelectionModel().getSelectedItem().getIdentifier()
-						.getName());
+		util.getConfig()
+				.getJoystick()
+				.setComponentNameRight1(
+						right1.getSelectionModel().getSelectedItem()
+								.getIdentifier().getName());
 	}
 
 	@FXML
 	private void chooseRight1Value() {
-		util.getConfig().getJoystick().setComponentValueRight1(
-				(float) right1Value.getValue());
+		util.getConfig().getJoystick()
+				.setComponentValueRight1((float) right1Value.getValue());
 	}
 
 	@FXML
 	private void chooseFire1() {
-		util.getConfig().getJoystick().setComponentNameBtn1(
-				fire1.getSelectionModel().getSelectedItem().getIdentifier()
-						.getName());
+		util.getConfig()
+				.getJoystick()
+				.setComponentNameBtn1(
+						fire1.getSelectionModel().getSelectedItem()
+								.getIdentifier().getName());
 	}
 
 	@FXML
 	private void chooseFire1Value() {
-		util.getConfig().getJoystick().setComponentValueBtn1(
-				(float) fire1Value.getValue());
+		util.getConfig().getJoystick()
+				.setComponentValueBtn1((float) fire1Value.getValue());
 	}
 
 	@FXML
 	private void doActivateJoy2() {
-		util.getPlayer().getC64().setJoystick(
-				1,
-				activateJoy2.isSelected() ? new JoystickReader(device2
-						.getSelectionModel().getSelectedItem(), up2
-						.getSelectionModel().getSelectedItem(), down2
-						.getSelectionModel().getSelectedItem(), left2
-						.getSelectionModel().getSelectedItem(), right2
-						.getSelectionModel().getSelectedItem(), fire2
-						.getSelectionModel().getSelectedItem(),
-						(float) up2Value.getValue(), (float) down2Value
-								.getValue(), (float) left2Value.getValue(),
-						(float) right2Value.getValue(), (float) fire2Value
-								.getValue()) : null);
+		util.getPlayer()
+				.getC64()
+				.setJoystick(
+						1,
+						activateJoy2.isSelected() ? new JoystickReader(device2
+								.getSelectionModel().getSelectedItem(), up2
+								.getSelectionModel().getSelectedItem(), down2
+								.getSelectionModel().getSelectedItem(), left2
+								.getSelectionModel().getSelectedItem(), right2
+								.getSelectionModel().getSelectedItem(), fire2
+								.getSelectionModel().getSelectedItem(),
+								(float) up2Value.getValue(), (float) down2Value
+										.getValue(), (float) left2Value
+										.getValue(), (float) right2Value
+										.getValue(), (float) fire2Value
+										.getValue()) : null);
 	}
 
 	@FXML
@@ -276,67 +294,77 @@ public class JoystickSettings extends C64Stage {
 
 	@FXML
 	private void chooseUp2() {
-		util.getConfig().getJoystick().setComponentNameUp2(
-				up2.getSelectionModel().getSelectedItem().getIdentifier()
-						.getName());
+		util.getConfig()
+				.getJoystick()
+				.setComponentNameUp2(
+						up2.getSelectionModel().getSelectedItem()
+								.getIdentifier().getName());
 	}
 
 	@FXML
 	private void chooseUp2Value() {
-		util.getConfig().getJoystick().setComponentValueUp2(
-				(float) up2Value.getValue());
+		util.getConfig().getJoystick()
+				.setComponentValueUp2((float) up2Value.getValue());
 	}
 
 	@FXML
 	private void chooseDown2() {
-		util.getConfig().getJoystick().setComponentNameDown2(
-				down2.getSelectionModel().getSelectedItem().getIdentifier()
-						.getName());
+		util.getConfig()
+				.getJoystick()
+				.setComponentNameDown2(
+						down2.getSelectionModel().getSelectedItem()
+								.getIdentifier().getName());
 	}
 
 	@FXML
 	private void chooseDown2Value() {
-		util.getConfig().getJoystick().setComponentValueDown2(
-				(float) down2Value.getValue());
+		util.getConfig().getJoystick()
+				.setComponentValueDown2((float) down2Value.getValue());
 	}
 
 	@FXML
 	private void chooseLeft2() {
-		util.getConfig().getJoystick().setComponentNameLeft2(
-				left2.getSelectionModel().getSelectedItem().getIdentifier()
-						.getName());
+		util.getConfig()
+				.getJoystick()
+				.setComponentNameLeft2(
+						left2.getSelectionModel().getSelectedItem()
+								.getIdentifier().getName());
 	}
 
 	@FXML
 	private void chooseLeft2Value() {
-		util.getConfig().getJoystick().setComponentValueLeft2(
-				(float) left2Value.getValue());
+		util.getConfig().getJoystick()
+				.setComponentValueLeft2((float) left2Value.getValue());
 	}
 
 	@FXML
 	private void chooseRight2() {
-		util.getConfig().getJoystick().setComponentNameRight2(
-				right2.getSelectionModel().getSelectedItem().getIdentifier()
-						.getName());
+		util.getConfig()
+				.getJoystick()
+				.setComponentNameRight2(
+						right2.getSelectionModel().getSelectedItem()
+								.getIdentifier().getName());
 	}
 
 	@FXML
 	private void chooseRight2Value() {
-		util.getConfig().getJoystick().setComponentValueRight2(
-				(float) right2Value.getValue());
+		util.getConfig().getJoystick()
+				.setComponentValueRight2((float) right2Value.getValue());
 	}
 
 	@FXML
 	private void chooseFire2() {
-		util.getConfig().getJoystick().setComponentNameBtn2(
-				fire2.getSelectionModel().getSelectedItem().getIdentifier()
-						.getName());
+		util.getConfig()
+				.getJoystick()
+				.setComponentNameBtn2(
+						fire2.getSelectionModel().getSelectedItem()
+								.getIdentifier().getName());
 	}
 
 	@FXML
 	private void chooseFire2Value() {
-		util.getConfig().getJoystick().setComponentValueBtn2(
-				(float) fire2Value.getValue());
+		util.getConfig().getJoystick()
+				.setComponentValueBtn2((float) fire2Value.getValue());
 	}
 
 }

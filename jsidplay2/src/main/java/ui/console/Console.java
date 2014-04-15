@@ -20,8 +20,8 @@ public class Console extends Tab implements UIPart {
 
 	public Console(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config);
-		setContent((Node) util.parse(this));
+		util = new UIUtil(consolePlayer, player, config, this);
+		setContent((Node) util.parse());
 	}
 
 	@FXML

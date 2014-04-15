@@ -31,8 +31,6 @@ public class STILView extends C64Stage {
 	@FXML
 	private SplitPane splitPane;
 
-	private STILEntry entry;
-
 	public STILView(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
 		super(consolePlayer, player, config);
@@ -47,16 +45,12 @@ public class STILView extends C64Stage {
 						setTextAreaFromTree(newValue.getValue());
 					}
 				});
-		tree.setRoot(new STILEntryTreeItem(entry));
-		tree.getSelectionModel().select(tree.getRoot());
 	}
 
 	public void setEntry(STILEntry entry) {
-		this.entry = entry;
-	}
-
-	public STILEntry getEntry() {
-		return entry;
+		STILEntryTreeItem root = new STILEntryTreeItem(entry);
+		tree.setRoot(root);
+		tree.getSelectionModel().select(root);
 	}
 
 	protected void setTextAreaFromTree(final Object comp) {

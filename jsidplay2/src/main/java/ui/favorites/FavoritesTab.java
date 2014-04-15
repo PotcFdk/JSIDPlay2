@@ -91,8 +91,8 @@ public class FavoritesTab extends Tab implements UIPart {
 
 	public FavoritesTab(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config);
-		setContent((Node) util.parse(this));
+		util = new UIUtil(consolePlayer, player, config, this);
+		setContent((Node) util.parse());
 	}
 
 	@SuppressWarnings("rawtypes")

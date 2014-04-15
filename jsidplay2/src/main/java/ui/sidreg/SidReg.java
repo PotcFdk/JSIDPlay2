@@ -48,13 +48,11 @@ public class SidReg extends C64Stage {
 	@FXML
 	private TableView<SidRegWrite> regTable;
 
-	private ObservableList<SidRegWrite> filteredSidRegWrites = FXCollections
-			.<SidRegWrite> observableArrayList();
-	protected ObservableList<SidRegWrite> allSidRegWrites = FXCollections
-			.<SidRegWrite> observableArrayList();
-	private Set<String> filters = new HashSet<String>();
+	private ObservableList<SidRegWrite> filteredSidRegWrites;
+	private ObservableList<SidRegWrite> allSidRegWrites;
+	private Set<String> filters;
 
-	private SidRegStop sidRegStop = new SidRegStop();
+	private SidRegStop sidRegStop;
 
 	public SidReg(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
@@ -63,8 +61,13 @@ public class SidReg extends C64Stage {
 
 	@FXML
 	private void initialize() {
+		sidRegStop = new SidRegStop();
 		util.getConsolePlayer().stateProperty().addListener(sidRegStop);
+		filteredSidRegWrites = FXCollections
+				.<SidRegWrite> observableArrayList();
 		regTable.setItems(filteredSidRegWrites);
+		allSidRegWrites = FXCollections.<SidRegWrite> observableArrayList();
+		filters = new HashSet<String>();
 		doUpdateFilter();
 	}
 
