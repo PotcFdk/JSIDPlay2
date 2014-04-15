@@ -26,6 +26,7 @@ public abstract class C64Stage extends Stage implements UIPart {
 			Configuration config) {
 		util = new UIUtil(consolePlayer, player, config, this);
 		scene = (Scene) util.parse();
+		scene.getStylesheets().add(getStyleSheetName());
 	}
 
 	public void open() throws IOException {
@@ -34,17 +35,16 @@ public abstract class C64Stage extends Stage implements UIPart {
 	}
 
 	public void open(Stage stage) throws IOException {
-		scene.getStylesheets().add(getStyleSheetName());
-		scene.setOnKeyPressed((ke) -> {
-			if (ke.getCode() == KeyCode.ESCAPE) {
-				stage.close();
-			}
-		});
 		stage.setScene(scene);
 		stage.getIcons().add(new Image(util.getBundle().getString("ICON")));
 		if (stage.getTitle() == null) {
 			stage.setTitle(util.getBundle().getString("TITLE"));
 		}
+		scene.setOnKeyPressed((ke) -> {
+			if (ke.getCode() == KeyCode.ESCAPE) {
+				stage.close();
+			}
+		});
 		stage.setOnCloseRequest((event) -> {
 			doCloseWindow(scene.getRoot());
 			doCloseWindow();

@@ -130,8 +130,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private long lastUpdate;
 	private int oldHalfTrack, hardcopyCounter;
 	private boolean duringInitialization, oldMotorOn;
-	private StringBuilder tuneSpeed = new StringBuilder();
-	private StringBuilder playerId = new StringBuilder();
+	private StringBuilder tuneSpeed;
+	private StringBuilder playerId;
 
 	public JSidPlay2(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
@@ -141,10 +141,12 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	@FXML
 	private void initialize() {
 		this.duringInitialization = true;
+
+		this.tuneSpeed = new StringBuilder();
+		this.playerId = new StringBuilder();
 		this.scene = tabbedPane.getScene();
 
 		util.getConsolePlayer().setExtendImagePolicy(this);
-
 		util.getConsolePlayer()
 				.stateProperty()
 				.addListener(
