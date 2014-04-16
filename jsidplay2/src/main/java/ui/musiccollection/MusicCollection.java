@@ -101,7 +101,7 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  * @author Ken Händel
  * @author Antti Lankila
  */
-public class MusicCollection extends Tab implements UIPart, ISearchListener {
+public class MusicCollection extends Tab implements UIPart {
 
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
@@ -136,7 +136,9 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 	@FXML
 	private ComboBox<SearchCriteria<?, ?>> searchCriteria;
 	@FXML
-	private ComboBox<String> searchScope, searchResult;
+	private ComboBox<SearchScope> searchScope;
+	@FXML
+	private ComboBox<SearchResult> searchResult;
 	@FXML
 	private Button startSearch, stopSearch, resetSearch, createSearchIndex;
 	@FXML
@@ -152,13 +154,13 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 	private MenuItem showStil, convertToPSID64, soasc6581R2, soasc6581R4,
 			soasc8580R5;
 	@FXML
-	private Menu addToFavorites;
+	private Menu addToFavoritesMenu;
 
 	private UIUtil util;
 
 	private ObservableList<TuneInfo> tuneInfos;
-	private ObservableList<String> searchScopes;
-	private ObservableList<String> searchResults;
+	private ObservableList<SearchScope> searchScopes;
+	private ObservableList<SearchResult> searchResults;
 	private ObservableList<SearchCriteria<?, ?>> searchCriterias;
 	private ObservableList<Enum<?>> comboItems;
 
@@ -234,17 +236,29 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 		tuneInfos = FXCollections.<TuneInfo> observableArrayList();
 		tuneInfoTable.setItems(tuneInfos);
 
-		searchScopes = FXCollections.<String> observableArrayList();
+		SearchScope forward = new SearchScope(util.getBundle().getString(
+				"FORWARD"), () -> true);
+		SearchScope backward = new SearchScope(util.getBundle().getString(
+				"BACKWARD"), () -> false);
+		searchScopes = FXCollections.<SearchScope> observableArrayList(forward,
+				backward);
 		searchScope.setItems(searchScopes);
-		searchScopes.addAll(util.getBundle().getString("FORWARD"), util
-				.getBundle().getString("BACKWARD"));
-		searchScope.getSelectionModel().select(0);
+		searchScope.getSelectionModel().select(forward);
 
-		searchResults = FXCollections.<String> observableArrayList();
+		SearchResult addToFavorites = new SearchResult(util.getBundle()
+				.getString("ADD_TO_A_NEW_PLAYLIST"),
+				(file) -> createNewFavoritesTab(), (file) -> addFavorite(
+						favoritesToAddSearchResult, file));
+		SearchResult showNextHit = new SearchResult(util.getBundle().getString(
+				"SHOW_NEXT_MATCH"), (file) -> {
+		}, (file) -> {
+			stopSearch(file);
+			Platform.runLater(() -> showNextHit(file));
+		});
+		searchResults = FXCollections.<SearchResult> observableArrayList(
+				addToFavorites, showNextHit);
 		searchResult.setItems(searchResults);
-		searchResults.addAll(util.getBundle().getString("SHOW_NEXT_MATCH"),
-				util.getBundle().getString("ADD_TO_A_NEW_PLAYLIST"));
-		searchResult.getSelectionModel().select(0);
+		searchResult.getSelectionModel().select(showNextHit);
 
 		searchCriterias = FXCollections
 				.<SearchCriteria<?, ?>> observableArrayList();
@@ -345,7 +359,7 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 
 			List<FavoritesSection> favorites = ((Configuration) util
 					.getConfig()).getFavorites();
-			addToFavorites.getItems().clear();
+			addToFavoritesMenu.getItems().clear();
 			for (final FavoritesSection section : favorites) {
 				MenuItem item = new MenuItem(section.getName());
 				item.setOnAction((event2) -> {
@@ -353,9 +367,10 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 							Collections.singletonList(selectedItem.getValue()),
 							section);
 				});
-				addToFavorites.getItems().add(item);
+				addToFavoritesMenu.getItems().add(item);
 			}
-			addToFavorites.setDisable(addToFavorites.getItems().isEmpty());
+			addToFavoritesMenu.setDisable(addToFavoritesMenu.getItems()
+					.isEmpty());
 
 		});
 
@@ -694,7 +709,7 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 				.getSelectedItem()).getAttribute();
 	}
 
-	protected void setRoot(final File rootFile) {
+	private void setRoot(final File rootFile) {
 		if (rootFile.exists()) {
 			if (em != null) {
 				em.getEntityManagerFactory().close();
@@ -760,13 +775,13 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 		}
 	}
 
-	protected void showPhoto(SidTune sidTune) {
+	private void showPhoto(SidTune sidTune) {
 		photograph
 				.setImage(sidTune != null && sidTune.getImage() != null ? sidTune
 						.getImage() : null);
 	}
 
-	protected void showTuneInfos(File tuneFile, SidTune sidTune) {
+	private void showTuneInfos(File tuneFile, SidTune sidTune) {
 		tuneInfos.clear();
 		HVSCEntry entry = HVSCEntry.create(util.getConsolePlayer(),
 				tuneFile.getAbsolutePath(), tuneFile, sidTune);
@@ -795,8 +810,109 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 
 	}
 
-	@Override
-	public void searchStart() {
+	private void startSearch(boolean forceRecreate) {
+		if (searchThread != null && searchThread.isAlive()) {
+			return;
+		}
+
+		if (!new File(collectionDir.getText()).exists()) {
+			return;
+		}
+
+		/*
+		 * validate database: version is inserted only after successful create
+		 * completes.
+		 */
+		if (!forceRecreate) {
+			if (!versionService.isExpectedVersion()) {
+				forceRecreate = true;
+			}
+		}
+
+		if (forceRecreate) {
+			final File root = fileBrowser.getRoot().getValue();
+			searchThread = new SearchIndexerThread(root);
+			searchThread.addSearchListener(new ISearchListener() {
+				@Override
+				public void searchStart() {
+					disableSearch();
+				}
+
+				@Override
+				public void searchHit(File match) {
+					// search index is created
+					Platform.runLater(() -> {
+						util.progressProperty(fileBrowser)
+								.set((util.progressProperty(fileBrowser).get() + 1) % 100);
+					});
+				}
+
+				@Override
+				public void searchStop(boolean canceled) {
+					enableSearch();
+				}
+
+			});
+			searchThread.addSearchListener(new SearchIndexCreator(fileBrowser
+					.getRoot().getValue(), util.getConsolePlayer(), em));
+
+			searchThread.start();
+		} else {
+			searchResult.getSelectionModel().getSelectedItem().getSearchStart()
+					.accept(forceRecreate);
+			setSearchValue();
+			final SearchInIndexThread t = new SearchInIndexThread(em,
+					searchScope.getSelectionModel().getSelectedItem()
+							.getForward().getAsBoolean()) {
+				@Override
+				public List<File> getFiles(String filePath) {
+					return PathUtils.getFiles(filePath, fileBrowser.getRoot()
+							.getValue(), fileFilter);
+				}
+			};
+			t.addSearchListener(new ISearchListener() {
+				@Override
+				public void searchStart() {
+					disableSearch();
+				}
+
+				@Override
+				public void searchHit(File match) {
+					searchResult.getSelectionModel().getSelectedItem()
+							.getSearchHit().accept(match);
+				}
+
+				@Override
+				public void searchStop(boolean canceled) {
+					enableSearch();
+				}
+
+			});
+			t.setField(getSelectedField());
+			t.setFieldValue(searchForValue);
+			t.setCaseSensitive(false);
+			if (searchOptionsChanged) {
+				doResetSearch();
+				searchOptionsChanged = false;
+			}
+			searchThread = t;
+			searchThread.setSearchState(savedState);
+			searchThread.start();
+		}
+
+	}
+
+	private void stopSearch(File current) {
+		if (!current.isFile()) {
+			// ignore directories
+			return;
+		}
+		searchThread.setAborted(true);
+		enableSearch();
+	
+	}
+
+	private void disableSearch() {
 		Platform.runLater(() -> {
 			startSearch.setDisable(true);
 			stopSearch.setDisable(false);
@@ -805,8 +921,7 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 		});
 	}
 
-	@Override
-	public void searchStop(final boolean canceled) {
+	private void enableSearch() {
 		// remember search state
 		savedState = searchThread.getSearchState();
 		Platform.runLater(() -> {
@@ -817,48 +932,11 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 		});
 	}
 
-	@Override
-	public void searchHit(final File current) {
-		if (!current.isFile()) {
+	private void showNextHit(final File matchFile) {
+		if (!matchFile.isFile()) {
 			// ignore directories
 			return;
 		}
-		if (searchThread instanceof SearchInIndexThread
-				&& searchResult.getSelectionModel().isSelected(0)) {
-			searchThread.setAborted(true);
-			searchStop(true);
-		}
-		Platform.runLater(() -> {
-			if (searchThread instanceof SearchIndexerThread) {
-				// search index is created
-				util.progressProperty(fileBrowser).set(
-						(util.progressProperty(fileBrowser).get() + 1) % 100);
-			} else {
-				switch (searchResult.getSelectionModel().getSelectedIndex()) {
-				case 1:
-					addFavorite(favoritesToAddSearchResult, current);
-					break;
-
-				default:
-					showNextHit(current);
-					break;
-				}
-			}
-		});
-	}
-
-	protected void addFavorite(FavoritesSection section, File file) {
-		try {
-			SidTune sidTune = SidTune.load(file);
-			HVSCEntry entry = HVSCEntry.create(util.getConsolePlayer(),
-					file.getAbsolutePath(), file, sidTune);
-			section.getFavorites().add(entry);
-		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
-		}
-	}
-
-	protected void showNextHit(final File matchFile) {
 		TreeItem<File> rootItem = fileBrowser.getRoot();
 		if (rootItem == null
 				|| matchFile.getName().toLowerCase(Locale.ENGLISH)
@@ -893,72 +971,26 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 		}
 	}
 
-	protected void startSearch(boolean forceRecreate) {
-		if (searchThread != null && searchThread.isAlive()) {
+	private void createNewFavoritesTab() {
+		FavoritesSection newFavorites = new FavoritesSection();
+		newFavorites.setName(util.getBundle().getString("NEW_TAB"));
+		favoritesToAddSearchResult = newFavorites;
+		((Configuration) util.getConfig()).getFavorites().add(newFavorites);
+	}
+
+	private void addFavorite(FavoritesSection section, File file) {
+		if (!file.isFile()) {
+			// ignore directories
 			return;
 		}
-
-		if (!new File(collectionDir.getText()).exists()) {
-			return;
+		try {
+			SidTune sidTune = SidTune.load(file);
+			HVSCEntry entry = HVSCEntry.create(util.getConsolePlayer(),
+					file.getAbsolutePath(), file, sidTune);
+			section.getFavorites().add(entry);
+		} catch (IOException | SidTuneError e) {
+			e.printStackTrace();
 		}
-
-		/*
-		 * validate database: version is inserted only after successful create
-		 * completes.
-		 */
-		if (!forceRecreate) {
-			if (!versionService.isExpectedVersion()) {
-				forceRecreate = true;
-			}
-		}
-
-		if (forceRecreate) {
-			final File root = fileBrowser.getRoot().getValue();
-			searchThread = new SearchIndexerThread(root);
-			searchThread.addSearchListener(this);
-			searchThread.addSearchListener(new SearchIndexCreator(fileBrowser
-					.getRoot().getValue(), util.getConsolePlayer(), em));
-
-			searchThread.start();
-		} else {
-			switch (searchResult.getSelectionModel().getSelectedIndex()) {
-			case 1:
-				// Add result to favorites?
-				// Create new favorites tab
-				List<FavoritesSection> favorites = ((Configuration) util
-						.getConfig()).getFavorites();
-				FavoritesSection newFavorites = new FavoritesSection();
-				newFavorites.setName(util.getBundle().getString("NEW_TAB"));
-				favoritesToAddSearchResult = newFavorites;
-				favorites.add(newFavorites);
-				break;
-
-			default:
-				break;
-			}
-
-			setSearchValue();
-			final SearchInIndexThread t = new SearchInIndexThread(em,
-					searchScope.getSelectionModel().getSelectedIndex() != 1) {
-				@Override
-				public List<File> getFiles(String filePath) {
-					return PathUtils.getFiles(filePath, fileBrowser.getRoot()
-							.getValue(), fileFilter);
-				}
-			};
-			t.addSearchListener(this);
-			t.setField(getSelectedField());
-			t.setFieldValue(searchForValue);
-			t.setCaseSensitive(false);
-			if (searchOptionsChanged) {
-				doResetSearch();
-				searchOptionsChanged = false;
-			}
-			searchThread = t;
-			searchThread.setSearchState(savedState);
-			searchThread.start();
-		}
-
 	}
 
 	private void downloadStart(String url) {
@@ -983,7 +1015,7 @@ public class MusicCollection extends Tab implements UIPart, ISearchListener {
 		}
 	}
 
-	protected void playTune(final File file) {
+	private void playTune(final File file) {
 		util.setPlayedGraphics(fileBrowser);
 		try {
 			util.getConsolePlayer().playTune(SidTune.load(file), null);

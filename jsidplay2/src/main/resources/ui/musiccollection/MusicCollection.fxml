@@ -68,7 +68,7 @@
 							<MenuItem fx:id="convertToPSID64" text="%PSID64"
 								onAction="#convertToPSID64" />
 						</Menu>
-						<Menu fx:id="addToFavorites" text="%ADD_TO_FAVORITES" />
+						<Menu fx:id="addToFavoritesMenu" text="%ADD_TO_FAVORITES" />
 						<MenuItem fx:id="soasc6581R2" text="%DOWNLOAD_R2"
 							onAction="#startDownload6581R2" />
 						<MenuItem fx:id="soasc6581R4" text="%DOWNLOAD_R4"
