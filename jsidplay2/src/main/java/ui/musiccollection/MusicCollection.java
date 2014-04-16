@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -430,19 +431,17 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void showSTIL() {
-		TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-				.getSelectedItem();
-		STILView stilInfo = new STILView(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
-		STIL stil = util.getConsolePlayer().getStil();
-		if (stil != null) {
-			File hvscFile = selectedItem.getValue();
-			stilInfo.setEntry(stil.getSTILEntry(hvscFile));
-		}
-		try {
-			stilInfo.open();
-		} catch (IOException e) {
-			e.printStackTrace();
+		MusicCollectionTreeItem selectedItem = (MusicCollectionTreeItem) fileBrowser
+				.getSelectionModel().getSelectedItem();
+		if (selectedItem != null && selectedItem.hasSTIL()) {
+			STILView stilInfo = new STILView(util.getConsolePlayer(),
+					util.getPlayer(), util.getConfig());
+			stilInfo.setEntry(selectedItem.getStilEntry());
+			try {
+				stilInfo.open();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -840,10 +839,10 @@ public class MusicCollection extends Tab implements UIPart {
 
 				@Override
 				public void searchHit(File match) {
-					// search index is created
 					Platform.runLater(() -> {
-						util.progressProperty(fileBrowser)
-								.set((util.progressProperty(fileBrowser).get() + 1) % 100);
+						DoubleProperty progressProperty = util
+								.progressProperty(fileBrowser);
+						progressProperty.set((progressProperty.get() + 1) % 100);
 					});
 				}
 
@@ -909,7 +908,7 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 		searchThread.setAborted(true);
 		enableSearch();
-	
+
 	}
 
 	private void disableSearch() {

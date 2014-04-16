@@ -12,6 +12,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import libsidutils.STIL;
+import libsidutils.STIL.STILEntry;
 import ui.JSIDPlay2Main;
 import ui.filefilter.TuneFileFilter;
 
@@ -29,13 +30,16 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 	private boolean hasSTIL;
 
 	private STIL stil;
+	private STILEntry stilEntry;
 
 	public MusicCollectionTreeItem(STIL stil, File file) {
 		super(file);
 		this.stil = stil;
 		this.isLeaf = file.isFile();
-		this.hasSTIL = isLeaf && stil != null
-				&& stil.getSTILEntry(file) != null;
+		if (isLeaf && stil != null) {
+			this.stilEntry = stil.getSTILEntry(file);
+			this.hasSTIL = stilEntry != null;
+		}
 	}
 
 	@Override
@@ -55,6 +59,10 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		return hasSTIL;
 	}
 
+	public STILEntry getStilEntry() {
+		return stilEntry;
+	}
+	
 	private void loadChildren() {
 		hasLoadedChildren = true;
 		Collection<MusicCollectionTreeItem> children = new ArrayList<MusicCollectionTreeItem>();
