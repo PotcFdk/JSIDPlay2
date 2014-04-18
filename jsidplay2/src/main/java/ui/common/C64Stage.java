@@ -1,10 +1,9 @@
 package ui.common;
 
-import javafx.scene.Node;
-import javafx.scene.Parent;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javafx.scene.Scene;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -17,12 +16,14 @@ public abstract class C64Stage extends Stage implements UIPart {
 	protected UIUtil util;
 
 	private Scene scene;
-
 	private boolean wait;
+
+	/** All UI pieces of this Stage */
+	private final Collection<UIPart> uiParts = new ArrayList<>();
 
 	public C64Stage(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config, this);
+		util = new UIUtil(this, consolePlayer, player, config, this);
 		scene = (Scene) util.parse();
 		scene.getStylesheets().add(getStyleSheetName());
 	}
@@ -44,34 +45,14 @@ public abstract class C64Stage extends Stage implements UIPart {
 			}
 		});
 		stage.setOnCloseRequest((event) -> {
-			doCloseWindow(scene.getRoot());
-			doCloseWindow();
+			for (UIPart part : uiParts) {
+				part.doClose();
+			}
 		});
 		if (wait) {
 			stage.showAndWait();
 		} else {
 			stage.show();
-		}
-	}
-
-	private void doCloseWindow(Node n) {
-		if (n instanceof TabPane) {
-			TabPane theTabPane = (TabPane) n;
-			for (Tab tab : theTabPane.getTabs()) {
-				if (tab instanceof UIPart) {
-					UIPart theTab = (UIPart) tab;
-					theTab.doCloseWindow();
-				}
-			}
-		}
-		if (n instanceof UIPart) {
-			UIPart theTab = (UIPart) n;
-			theTab.doCloseWindow();
-		}
-		if (n instanceof Parent) {
-			for (Node c : ((Parent) n).getChildrenUnmodifiable()) {
-				doCloseWindow(c);
-			}
 		}
 	}
 
@@ -87,4 +68,8 @@ public abstract class C64Stage extends Stage implements UIPart {
 		return "/" + getClass().getName().replace('.', '/') + ".css";
 	}
 
+	public Collection<UIPart> getUiParts() {
+		return uiParts;
+	}
+	
 }

@@ -8,6 +8,7 @@ import libsidplay.common.SIDEmu;
 import resid_builder.ReSID;
 import resid_builder.resid.SID;
 import sidplay.ConsolePlayer;
+import ui.common.C64Stage;
 import ui.entities.config.Configuration;
 
 public final class EnvelopeGauge extends SIDGauge {
@@ -17,9 +18,9 @@ public final class EnvelopeGauge extends SIDGauge {
 	@FXML
 	private Canvas area;
 
-	public EnvelopeGauge(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		super(consolePlayer, player, config);
+	public EnvelopeGauge(C64Stage c64Stage, ConsolePlayer consolePlayer,
+			Player player, Configuration config) {
+		super(c64Stage, consolePlayer, player, config);
 	}
 
 	@Override

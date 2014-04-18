@@ -13,6 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
+import ui.common.C64Stage;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.download.DownloadThread;
@@ -38,9 +39,9 @@ public class GameBasePage extends Tab implements UIPart {
 	private IDownloadListener screenShotListener;
 	private GameListener gameListener;
 
-	public GameBasePage(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config, this);
+	public GameBasePage(C64Stage c64Stage, ConsolePlayer consolePlayer,
+			Player player, Configuration config) {
+		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 
@@ -90,7 +91,7 @@ public class GameBasePage extends Tab implements UIPart {
 			return;
 		}
 		gameListener.setFileToRun(game.getFileToRun());
-		util.setPlayedGraphics(gamebaseTable);
+		util.setPlayingTab(this);
 		downloadStart(
 				GB64_GAMES_DOWNLOAD_URL + game.getFilename().replace('\\', '/'),
 				gameListener);

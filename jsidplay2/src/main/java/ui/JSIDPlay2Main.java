@@ -13,8 +13,6 @@ import javax.persistence.Persistence;
 
 import libsidplay.components.c1541.C1541;
 
-import org.hsqldb.DatabaseManager;
-
 import sidplay.ConsolePlayer;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
@@ -119,10 +117,11 @@ public class JSIDPlay2Main extends Application {
 		}
 		configService.commit(config);
 
-		// Really persist the databases
-		DatabaseManager.closeDatabases(0);
-		
 		em.getEntityManagerFactory().close();
+		
+		// Really persist the databases
+		org.hsqldb.DatabaseManager
+				.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);
 	}
 
 	//

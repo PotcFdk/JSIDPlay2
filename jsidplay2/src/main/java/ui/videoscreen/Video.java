@@ -36,6 +36,7 @@ import resid_builder.resid.ISIDDefs.ChipModel;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.MediaType;
 import sidplay.consoleplayer.State;
+import ui.common.C64Stage;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.Configuration;
@@ -77,9 +78,9 @@ public class Video extends Tab implements UIPart, PropertyChangeListener {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	public Video(ConsolePlayer consolePlayer, Player player,
+	public Video(C64Stage c64Stage, ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config, this);
+		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 

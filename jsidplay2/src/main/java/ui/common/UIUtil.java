@@ -24,31 +24,35 @@ public class UIUtil {
 	private static final Image PLAYED_ICON = new Image(JSIDPlay2Main.class
 			.getResource("icons/play.png").toString());
 
-	/** Model **/
+	private C64Stage c64Stage;
+	/** Model */
 	private ConsolePlayer consolePlayer;
 	private Player player;
 	private Configuration config;
-	/** View */
+	/** View localization */
 	private ResourceBundle bundle;
 	/** Controller */
 	private UIPart controller;
 
+	/** Progress bar support */
 	private DoubleProperty progressProperty;
 
-	public UIUtil(ConsolePlayer consolePlayer, Player player,
-			Configuration config, UIPart controller) {
+	public UIUtil(C64Stage c64Stage, ConsolePlayer consolePlayer,
+			Player player, Configuration config, UIPart controller) {
+		this.c64Stage = c64Stage;
 		this.consolePlayer = consolePlayer;
 		this.player = player;
 		this.config = config;
 		this.controller = controller;
 		this.bundle = ResourceBundle.getBundle(controller.getBundleName());
+		c64Stage.getUiParts().add(controller);
 	}
 
 	public Object parse() {
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		URL fxml = this.controller.getFxml();
 		fxmlLoader.setLocation(fxml);
-		fxmlLoader.setBuilderFactory(new UIBuilder(
+		fxmlLoader.setBuilderFactory(new UIBuilder(this.c64Stage,
 				this.consolePlayer, this.player, this.config));
 		fxmlLoader.setResources(this.bundle);
 		fxmlLoader.setController(this.controller);
@@ -60,18 +64,31 @@ public class UIUtil {
 		}
 	}
 
-	public final void setPlayedGraphics(Node node) {
-		Parent p = node.getParent();
+	public final void setPlayingTab(Tab tab) {
+		resetPlayingTab(tab.getTabPane().getScene().getRoot());
+		tab.setGraphic(new ImageView(PLAYED_ICON));
+		Parent p = tab.getTabPane().getParent();
 		while (p != null) {
 			if (p instanceof TabPane) {
 				TabPane tabPane = (TabPane) p;
-				for (Tab tab : tabPane.getTabs()) {
-					tab.setGraphic(null);
-				}
 				tabPane.getSelectionModel().selectedItemProperty().get()
 						.setGraphic(new ImageView(PLAYED_ICON));
 			}
 			p = p.getParent();
+		}
+	}
+
+	private void resetPlayingTab(Node n) {
+		if (n instanceof TabPane) {
+			TabPane tabPane = (TabPane) n;
+			for (Tab tab : tabPane.getTabs()) {
+				tab.setGraphic(null);
+			}
+		}
+		if (n instanceof Parent) {
+			for (Node c : ((Parent) n).getChildrenUnmodifiable()) {
+				resetPlayingTab(c);
+			}
 		}
 	}
 

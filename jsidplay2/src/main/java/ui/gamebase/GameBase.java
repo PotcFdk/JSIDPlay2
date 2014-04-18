@@ -29,6 +29,7 @@ import javax.persistence.Persistence;
 import libsidplay.Player;
 import libsidutils.PathUtils;
 import sidplay.ConsolePlayer;
+import ui.common.C64Stage;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.download.DownloadThread;
@@ -115,9 +116,9 @@ public class GameBase extends Tab implements UIPart {
 	private EntityManager em;
 	private GamesService gamesService;
 
-	public GameBase(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config, this);
+	public GameBase(C64Stage c64Stage, ConsolePlayer consolePlayer,
+			Player player, Configuration config) {
+		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 
@@ -314,7 +315,7 @@ public class GameBase extends Tab implements UIPart {
 		gamesService = new GamesService(em);
 	}
 
-	public void doCloseWindow() {
+	public void doClose() {
 		if (em != null) {
 			em.getEntityManagerFactory().close();
 		}

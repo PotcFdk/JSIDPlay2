@@ -72,7 +72,7 @@ public class SidReg extends C64Stage {
 	}
 
 	@Override
-	public void doCloseWindow() {
+	public void doClose() {
 		util.getConsolePlayer().stateProperty().removeListener(sidRegStop);
 	}
 

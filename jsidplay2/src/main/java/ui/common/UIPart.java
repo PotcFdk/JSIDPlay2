@@ -18,7 +18,7 @@ public interface UIPart extends Builder<Object> {
 		return this;
 	}
 
-	default void doCloseWindow() {
+	default void doClose() {
 	}
 
 }

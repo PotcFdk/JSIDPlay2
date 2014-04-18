@@ -48,6 +48,7 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
 import sidplay.ConsolePlayer;
+import ui.common.C64Stage;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.collection.HVSCEntry;
@@ -89,9 +90,9 @@ public class FavoritesTab extends Tab implements UIPart {
 	private ObjectProperty<File> currentlyPlayedFileProperty;
 	private Favorites favorites;
 
-	public FavoritesTab(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config, this);
+	public FavoritesTab(C64Stage c64Stage, ConsolePlayer consolePlayer,
+			Player player, Configuration config) {
+		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 
@@ -653,7 +654,7 @@ public class FavoritesTab extends Tab implements UIPart {
 		currentlyPlayedFileProperty.set(PathUtils.getFile(hvscEntry.getPath(),
 				sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile()));
 		if (currentlyPlayedFileProperty.get() != null) {
-			util.setPlayedGraphics(favoritesTable);
+			util.setPlayingTab(this);
 			try {
 				util.getConsolePlayer().playTune(
 						SidTune.load(currentlyPlayedFileProperty.get()), null);

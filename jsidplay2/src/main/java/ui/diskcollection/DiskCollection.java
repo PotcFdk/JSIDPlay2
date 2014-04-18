@@ -31,6 +31,7 @@ import libsidplay.Player;
 import libsidutils.PathUtils;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.MediaType;
+import ui.common.C64Stage;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.directory.Directory;
@@ -97,9 +98,9 @@ public class DiskCollection extends Tab implements UIPart {
 		}
 	};
 
-	public DiskCollection(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config, this);
+	public DiskCollection(C64Stage c64Stage, ConsolePlayer consolePlayer,
+			Player player, Configuration config) {
+		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 
@@ -290,7 +291,7 @@ public class DiskCollection extends Tab implements UIPart {
 			// load from tape
 			command = "LOAD\rRUN\r";
 		}
-		util.setPlayedGraphics(fileBrowser);
+		util.setPlayingTab(this);
 		util.getConsolePlayer().playTune(null, command);
 	}
 

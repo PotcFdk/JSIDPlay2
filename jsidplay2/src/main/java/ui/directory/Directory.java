@@ -17,6 +17,7 @@ import javafx.scene.layout.AnchorPane;
 import libsidplay.Player;
 import libsidplay.components.DirEntry;
 import sidplay.ConsolePlayer;
+import ui.common.C64Stage;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.Configuration;
@@ -56,9 +57,9 @@ public class Directory extends AnchorPane implements UIPart {
 
 	private File file;
 
-	public Directory(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config, this);
+	public Directory(C64Stage c64Stage, ConsolePlayer consolePlayer,
+			Player player, Configuration config) {
+		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
 		getChildren().add((Node) util.parse());
 	}
 

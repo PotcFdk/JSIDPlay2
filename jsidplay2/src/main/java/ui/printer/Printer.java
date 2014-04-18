@@ -13,6 +13,7 @@ import libsidplay.Player;
 import libsidplay.components.printer.IPaper;
 import libsidplay.components.printer.mps803.MPS803;
 import sidplay.ConsolePlayer;
+import ui.common.C64Stage;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.Configuration;
@@ -27,9 +28,9 @@ public class Printer extends Tab implements UIPart, IPaper {
 	private boolean[] currentPixelRow = new boolean[MPS803.MAX_WIDTH];
 	private int x, y;
 
-	public Printer(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config, this);
+	public Printer(C64Stage c64Stage, ConsolePlayer consolePlayer,
+			Player player, Configuration config) {
+		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 

@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
+import ui.common.C64Stage;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.Configuration;
@@ -18,9 +19,9 @@ public class Console extends Tab implements UIPart {
 
 	private UIUtil util;
 
-	public Console(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config, this);
+	public Console(C64Stage c64Stage, ConsolePlayer consolePlayer,
+			Player player, Configuration config) {
+		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 

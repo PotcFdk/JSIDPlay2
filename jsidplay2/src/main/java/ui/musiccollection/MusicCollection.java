@@ -58,6 +58,7 @@ import libsidutils.SidDatabase;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
+import ui.common.C64Stage;
 import ui.common.TypeTextField;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -194,9 +195,9 @@ public class MusicCollection extends Tab implements UIPart {
 	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems = FXCollections
 			.<TreeItem<File>> observableArrayList();
 
-	public MusicCollection(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		util = new UIUtil(consolePlayer, player, config, this);
+	public MusicCollection(C64Stage c64Stage, ConsolePlayer consolePlayer,
+			Player player, Configuration config) {
+		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 
@@ -742,7 +743,7 @@ public class MusicCollection extends Tab implements UIPart {
 		doResetSearch();
 	}
 
-	public void doCloseWindow() {
+	public void doClose() {
 		if (em != null) {
 			em.getEntityManagerFactory().close();
 		}
@@ -1007,7 +1008,7 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void playTune(final File file) {
-		util.setPlayedGraphics(fileBrowser);
+		util.setPlayingTab(this);
 		try {
 			util.getConsolePlayer().playTune(SidTune.load(file), null);
 		} catch (IOException | SidTuneError e) {

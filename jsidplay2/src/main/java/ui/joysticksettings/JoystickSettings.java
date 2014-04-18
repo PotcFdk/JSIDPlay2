@@ -135,7 +135,7 @@ public class JoystickSettings extends C64Stage {
 	}
 
 	@Override
-	public void doCloseWindow() {
+	public void doClose() {
 		timer.stop();
 	}
 

@@ -255,7 +255,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	}
 
 	@Override
-	public void doCloseWindow() {
+	public void doClose() {
 		timer.stop();
 	}
 
@@ -874,7 +874,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	}
 
 	private void playTune(final File file) {
-		util.setPlayedGraphics(videoScreen.getContent());
+		util.setPlayingTab(videoScreen);
 		try {
 			util.getConsolePlayer().playTune(SidTune.load(file), null);
 		} catch (IOException | SidTuneError e) {
