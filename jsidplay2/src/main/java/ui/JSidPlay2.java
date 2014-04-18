@@ -27,9 +27,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.media.AudioClip;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -179,35 +176,6 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				pauseContinue2.selectedProperty());
 		driveOn.selectedProperty().bindBidirectional(
 				util.getPlayer().drivesEnabledProperty());
-
-		this.load.setAccelerator(new KeyCodeCombination(KeyCode.L,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.video.setAccelerator(new KeyCodeCombination(KeyCode.V,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.reset.setAccelerator(new KeyCodeCombination(KeyCode.R,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.quit.setAccelerator(new KeyCodeCombination(KeyCode.Q,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.pauseContinue.setAccelerator(new KeyCodeCombination(KeyCode.P,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.previous.setAccelerator(new KeyCodeCombination(KeyCode.MINUS,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.next.setAccelerator(new KeyCodeCombination(KeyCode.PLUS,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.normalSpeed.setAccelerator(new KeyCodeCombination(KeyCode.COMMA,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.fastForward.setAccelerator(new KeyCodeCombination(KeyCode.DECIMAL,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.stop.setAccelerator(new KeyCodeCombination(KeyCode.T,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.hardcopyPng.setAccelerator(new KeyCodeCombination(KeyCode.N,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.insertTape.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT1,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.insertDisk.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT8,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
-		this.insertCartridge.setAccelerator(new KeyCodeCombination(KeyCode.C,
-				KeyCombination.CONTROL_DOWN, KeyCombination.SHORTCUT_DOWN));
 
 		CPUClock defClk = util.getConfig().getEmulation()
 				.getDefaultClockSpeed();
