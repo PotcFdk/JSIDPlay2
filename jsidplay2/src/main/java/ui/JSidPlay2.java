@@ -414,33 +414,21 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private void soundSettings() {
 		C64Stage window = new SoundSettings(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
-		try {
-			window.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		window.open();
 	}
 
 	@FXML
 	private void emulationSettings() {
 		C64Stage window = new EmulationSettings(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
-		try {
-			window.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		window.open();
 	}
 
 	@FXML
 	private void joystickSettings() {
 		C64Stage window = new JoystickSettings(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
-		try {
-			window.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		window.open();
 	}
 
 	@FXML
@@ -849,33 +837,21 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private void memory() {
 		C64Stage window = new Disassembler(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
-		try {
-			window.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		window.open();
 	}
 
 	@FXML
 	private void sidDump() {
 		C64Stage window = new SidDump(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
-		try {
-			window.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		window.open();
 	}
 
 	@FXML
 	private void sidRegisters() {
 		C64Stage window = new SidReg(util.getConsolePlayer(), util.getPlayer(),
 				util.getConfig());
-		try {
-			window.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		window.open();
 	}
 
 	@FXML
@@ -902,11 +878,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 				util.getPlayer(), util.getConfig());
 		dialog.setTitle(util.getBundle().getString("IMPORT_CONFIGURATION"));
 		dialog.setText(util.getBundle().getString("PLEASE_RESTART"));
-		try {
-			dialog.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		dialog.open();
 		if (dialog.getConfirmed().get()) {
 			final FileChooser fileDialog = new FileChooser();
 			fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
@@ -929,11 +901,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private void about() {
 		C64Stage window = new About(util.getConsolePlayer(), util.getPlayer(),
 				util.getConfig());
-		try {
-			window.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		window.open();
 
 	}
 
@@ -1087,11 +1055,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			dialog.setTitle(util.getBundle().getString("EXTEND_DISK_IMAGE"));
 			dialog.setText(util.getBundle().getString(
 					"EXTEND_DISK_IMAGE_TO_40_TRACKS"));
-			try {
-				dialog.open();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			dialog.open();
 			return dialog.getConfirmed().get();
 		} else if (util.getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ACCESS) {
 			// EXTEND_ACCESS

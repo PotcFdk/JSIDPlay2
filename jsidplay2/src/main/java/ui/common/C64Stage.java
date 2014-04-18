@@ -1,7 +1,5 @@
 package ui.common;
 
-import java.io.IOException;
-
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,12 +27,12 @@ public abstract class C64Stage extends Stage implements UIPart {
 		scene.getStylesheets().add(getStyleSheetName());
 	}
 
-	public void open() throws IOException {
+	public void open() {
 		open(this);
 		centerOnScreen();
 	}
 
-	public void open(Stage stage) throws IOException {
+	public void open(Stage stage) {
 		stage.setScene(scene);
 		stage.getIcons().add(new Image(util.getBundle().getString("ICON")));
 		if (stage.getTitle() == null) {

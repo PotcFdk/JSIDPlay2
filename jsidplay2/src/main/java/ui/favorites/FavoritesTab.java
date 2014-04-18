@@ -322,11 +322,7 @@ public class FavoritesTab extends Tab implements UIPart {
 					hvscEntry.getPath(), sidPlay2Section.getHvscFile(),
 					sidPlay2Section.getCgscFile())));
 		}
-		try {
-			stilInfo.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		stilInfo.open();
 	}
 
 	@FXML

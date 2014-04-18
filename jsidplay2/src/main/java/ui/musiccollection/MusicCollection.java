@@ -437,11 +437,7 @@ public class MusicCollection extends Tab implements UIPart {
 			STILView stilInfo = new STILView(util.getConsolePlayer(),
 					util.getPlayer(), util.getConfig());
 			stilInfo.setEntry(selectedItem.getStilEntry());
-			try {
-				stilInfo.open();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			stilInfo.open();
 		}
 	}
 
@@ -566,11 +562,7 @@ public class MusicCollection extends Tab implements UIPart {
 				startSearch(true);
 			}
 		});
-		try {
-			dialog.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		dialog.open();
 	}
 
 	@FXML

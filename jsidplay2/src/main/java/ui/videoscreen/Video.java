@@ -3,7 +3,6 @@ package ui.videoscreen;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 
 import javafx.animation.Animation;
@@ -188,18 +187,14 @@ public class Video extends Tab implements UIPart, PropertyChangeListener {
 
 	@FXML
 	private void showVirtualKeyboard() {
-		try {
-			if (virtualKeyboard == null) {
-				virtualKeyboard = new Keyboard(util.getConsolePlayer(),
-						util.getPlayer(), util.getConfig());
-				virtualKeyboard.open();
-			} else if (virtualKeyboard.isShowing()) {
-				virtualKeyboard.hide();
-			} else {
-				virtualKeyboard.show();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (virtualKeyboard == null) {
+			virtualKeyboard = new Keyboard(util.getConsolePlayer(),
+					util.getPlayer(), util.getConfig());
+			virtualKeyboard.open();
+		} else if (virtualKeyboard.isShowing()) {
+			virtualKeyboard.hide();
+		} else {
+			virtualKeyboard.show();
 		}
 	}
 

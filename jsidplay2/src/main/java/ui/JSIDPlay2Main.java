@@ -69,11 +69,7 @@ public class JSIDPlay2Main extends Application {
 
 		jSidplay2 = new JSidPlay2(cp, cp.getPlayer(), config);
 		jSidplay2.setConfigService(configService);
-		try {
-			jSidplay2.open(primaryStage);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		jSidplay2.open(primaryStage);
 		// Set default position and size
 		final SidPlay2Section section = (SidPlay2Section) config.getSidplay2();
 		if (section.getFullScreen() != null) {
