@@ -44,15 +44,17 @@ public abstract class C64Stage extends Stage implements UIPart {
 				stage.close();
 			}
 		});
-		stage.setOnCloseRequest((event) -> {
-			for (UIPart part : uiParts) {
-				part.doClose();
-			}
-		});
+		stage.setOnCloseRequest((event) -> internalClose());
 		if (wait) {
 			stage.showAndWait();
 		} else {
 			stage.show();
+		}
+	}
+
+	protected void internalClose() {
+		for (UIPart part : uiParts) {
+			part.doClose();
 		}
 	}
 
@@ -71,5 +73,5 @@ public abstract class C64Stage extends Stage implements UIPart {
 	public Collection<UIPart> getUiParts() {
 		return uiParts;
 	}
-	
+
 }

@@ -30,7 +30,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.media.AudioClip;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
@@ -318,7 +317,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void quit() {
-		((Stage) scene.getWindow()).close();
+		internalClose();
+		Platform.exit();
 	}
 
 	@FXML
