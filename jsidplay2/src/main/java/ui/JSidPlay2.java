@@ -101,8 +101,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	protected RadioMenuItem normalSpeed, fastForward, ntsc, pal, c1541,
 			c1541_II, neverExtend, askExtend, accessExtend;
 	@FXML
-	protected MenuItem previous, next, load, video, reset, quit, stop,
-			hardcopyPng, insertTape, insertDisk, insertCartridge;
+	protected MenuItem previous, next;
 	@FXML
 	private ToggleButton pauseContinue2;
 	@FXML
@@ -110,7 +109,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	protected Tooltip previous2ToolTip, next2ToolTip;
 	@FXML
-	protected TabPane tabbedPane, musicCollTabbedPane, diskCollTabbedPane;
+	protected TabPane tabbedPane;
 	@FXML
 	protected Tab musicCollections, favorites;
 	@FXML

@@ -47,27 +47,26 @@
 					<menus>
 						<Menu text="%FILE">
 							<items>
-								<MenuItem text="%LOAD" onAction="#load" fx:id="load">
+								<MenuItem text="%LOAD" onAction="#load">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="L"
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
 									</accelerator>
 								</MenuItem>
-								<MenuItem text="%LOAD_REU_VIDEO" onAction="#video"
-									fx:id="video">
+								<MenuItem text="%LOAD_REU_VIDEO" onAction="#video">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="V"
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
 									</accelerator>
 								</MenuItem>
-								<MenuItem text="%RESET" onAction="#reset" fx:id="reset">
+								<MenuItem text="%RESET" onAction="#reset">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="R"
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
 									</accelerator>
 								</MenuItem>
 								<SeparatorMenuItem />
-								<MenuItem text="%QUIT" onAction="#quit" fx:id="quit">
+								<MenuItem text="%QUIT" onAction="#quit">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="Q"
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
@@ -112,7 +111,7 @@
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
 									</accelerator>
 								</RadioMenuItem>
-								<MenuItem text="%STOP" onAction="#stopSong" fx:id="stop">
+								<MenuItem text="%STOP" onAction="#stopSong">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="T"
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
@@ -123,8 +122,7 @@
 						<Menu text="%HARDCOPY">
 							<MenuItem text="%HARDCOPY_GIF" onAction="#doHardcopyGif" />
 							<MenuItem text="%HARDCOPY_JPG" onAction="#doHardcopyJpg" />
-							<MenuItem text="%HARDCOPY_PNG" onAction="#doHardcopyPng"
-								fx:id="hardcopyPng">
+							<MenuItem text="%HARDCOPY_PNG" onAction="#doHardcopyPng">
 								<accelerator>
 									<KeyCodeCombination alt="UP" code="N"
 										control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
@@ -150,8 +148,7 @@
 								<MenuItem text="%FORWARD" onAction="#forward" />
 								<MenuItem text="%STOP" onAction="#stop" />
 								<MenuItem text="%RESET_COUNTER" onAction="#resetCounter" />
-								<MenuItem text="%INSERT_TAPE" onAction="#insertTape"
-									fx:id="insertTape">
+								<MenuItem text="%INSERT_TAPE" onAction="#insertTape">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="DIGIT1"
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
@@ -190,8 +187,7 @@
 									onAction="#expansion0x8000" fx:id="expand8000" />
 								<CheckMenuItem text="%8K_RAM_EXPANSION_0XA000"
 									onAction="#expansion0xA000" fx:id="expandA000" />
-								<MenuItem text="%INSERT_DISK" onAction="#insertDisk"
-									fx:id="insertDisk">
+								<MenuItem text="%INSERT_DISK" onAction="#insertDisk">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="DIGIT8"
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
@@ -205,8 +201,7 @@
 									fx:id="turnPrinterOn" />
 							</Menu>
 							<Menu text="%CARTRIDGE">
-								<MenuItem text="%INSERT_CARTRIDGE" onAction="#insertCartridge"
-									fx:id="insertCartridge">
+								<MenuItem text="%INSERT_CARTRIDGE" onAction="#insertCartridge">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="C"
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
@@ -309,7 +304,7 @@
 					<Video text="%VIDEO" fx:id="videoScreen" />
 					<Oscilloscope text="%OSCILLOSCOPE" />
 					<Tab text="%MUSIC_COLLECTIONS" fx:id="musicCollections">
-						<TabPane tabClosingPolicy="UNAVAILABLE" fx:id="musicCollTabbedPane">
+						<TabPane tabClosingPolicy="UNAVAILABLE">
 							<tabs>
 								<MusicCollection type="HVSC" text="%HVSC"
 									collectionURL="http://www.hvsc.de/" />
@@ -320,7 +315,7 @@
 					</Tab>
 					<Favorites text="%FAVORITES" fx:id="favorites" />
 					<Tab text="%DISC_COLLECTIONS" fx:id="diskCollections">
-						<TabPane tabClosingPolicy="UNAVAILABLE" fx:id="diskCollTabbedPane">
+						<TabPane tabClosingPolicy="UNAVAILABLE">
 							<tabs>
 								<DiskCollection type="HVMEC" text="%HVMEC" />
 								<DiskCollection type="DEMOS" text="%DEMOS" />
