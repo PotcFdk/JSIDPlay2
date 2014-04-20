@@ -65,9 +65,9 @@ public class JSIDPlay2Main extends Application {
 			cp.args(args);
 		}
 
-		jSidplay2 = new JSidPlay2(cp, cp.getPlayer(), config);
+		jSidplay2 = new JSidPlay2(primaryStage, cp, cp.getPlayer(), config);
 		jSidplay2.setConfigService(configService);
-		jSidplay2.open(primaryStage);
+		jSidplay2.open();
 		// Set default position and size
 		final SidPlay2Section section = (SidPlay2Section) config.getSidplay2();
 		if (section.getFullScreen() != null) {
@@ -118,7 +118,7 @@ public class JSIDPlay2Main extends Application {
 		configService.commit(config);
 
 		em.getEntityManagerFactory().close();
-		
+
 		// Really persist the databases
 		org.hsqldb.DatabaseManager
 				.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);

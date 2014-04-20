@@ -4,13 +4,12 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 
-public class YesNoDialog extends C64Stage {
+public class YesNoDialog extends C64Window {
 
 	@FXML
 	private Text message;
@@ -29,13 +28,13 @@ public class YesNoDialog extends C64Stage {
 
 	@FXML
 	private void yes() {
-		((Stage) message.getScene().getWindow()).close();
+		close();
 		confirmed.set(true);
 	}
 
 	@FXML
 	private void no() {
-		((Stage) message.getScene().getWindow()).close();
+		close();
 		confirmed.set(false);
 	}
 

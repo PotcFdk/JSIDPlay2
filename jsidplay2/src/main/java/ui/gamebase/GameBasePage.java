@@ -13,7 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.download.DownloadThread;
@@ -39,9 +39,9 @@ public class GameBasePage extends Tab implements UIPart {
 	private IDownloadListener screenShotListener;
 	private GameListener gameListener;
 
-	public GameBasePage(C64Stage c64Stage, ConsolePlayer consolePlayer,
+	public GameBasePage(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
-		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
+		util = new UIUtil(window, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 

@@ -8,10 +8,10 @@ import libsidplay.Player;
 import libsidplay.common.Event;
 import libsidplay.components.keyboard.KeyTableEntry;
 import sidplay.ConsolePlayer;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 
-public class Keyboard extends C64Stage {
+public class Keyboard extends C64Window {
 
 	@FXML
 	private Button arrowLeft, one, two, three, four, five, six, seven, eight,
@@ -27,7 +27,7 @@ public class Keyboard extends C64Stage {
 	public Keyboard(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
 		super(consolePlayer, player, config);
-		setResizable(false);
+		getStage().setResizable(false);
 	}
 
 	@FXML

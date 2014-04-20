@@ -48,7 +48,7 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
 import sidplay.ConsolePlayer;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.collection.HVSCEntry;
@@ -90,9 +90,9 @@ public class FavoritesTab extends Tab implements UIPart {
 	private ObjectProperty<File> currentlyPlayedFileProperty;
 	private Favorites favorites;
 
-	public FavoritesTab(C64Stage c64Stage, ConsolePlayer consolePlayer,
+	public FavoritesTab(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
-		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
+		util = new UIUtil(window, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 

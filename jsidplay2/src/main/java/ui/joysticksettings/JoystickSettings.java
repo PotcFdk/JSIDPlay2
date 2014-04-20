@@ -16,11 +16,11 @@ import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 import sidplay.ConsolePlayer;
 import sidplay.ini.intf.IJoystickSection;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.common.TypeTextField;
 import ui.entities.config.Configuration;
 
-public class JoystickSettings extends C64Stage {
+public class JoystickSettings extends C64Window {
 
 	@FXML
 	protected CheckBox activateJoy1, activateJoy2;

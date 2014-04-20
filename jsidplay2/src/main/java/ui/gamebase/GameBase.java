@@ -29,7 +29,7 @@ import javax.persistence.Persistence;
 import libsidplay.Player;
 import libsidutils.PathUtils;
 import sidplay.ConsolePlayer;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.download.DownloadThread;
@@ -116,9 +116,9 @@ public class GameBase extends Tab implements UIPart {
 	private EntityManager em;
 	private GamesService gamesService;
 
-	public GameBase(C64Stage c64Stage, ConsolePlayer consolePlayer,
+	public GameBase(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
-		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
+		util = new UIUtil(window, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 

@@ -28,7 +28,7 @@ import libsidutils.PathUtils;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.Configuration;
@@ -58,12 +58,12 @@ public class Favorites extends Tab implements UIPart {
 
 	private FavoritesTab currentlyPlayedFavorites;
 	protected Random random = new Random();
-	private C64Stage c64Stage;
+	private C64Window window;
 
-	public Favorites(C64Stage c64Stage, ConsolePlayer consolePlayer,
+	public Favorites(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
-		this.c64Stage = c64Stage;
-		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
+		this.window = window;
+		util = new UIUtil(window, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 
@@ -359,7 +359,7 @@ public class Favorites extends Tab implements UIPart {
 	}
 
 	protected void addTab(final FavoritesSection favoritesSection) {
-		final FavoritesTab newTab = new FavoritesTab(this.c64Stage,
+		final FavoritesTab newTab = new FavoritesTab(this.window,
 				util.getConsolePlayer(), util.getPlayer(), util.getConfig());
 		newTab.setText(favoritesSection.getName());
 		newTab.restoreColumns(favoritesSection);

@@ -30,6 +30,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.media.AudioClip;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
@@ -53,7 +54,7 @@ import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.MediaType;
 import sidplay.consoleplayer.State;
 import ui.about.About;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.common.dialog.YesNoDialog;
 import ui.disassembler.Disassembler;
 import ui.emulationsettings.EmulationSettings;
@@ -73,7 +74,7 @@ import ui.soundsettings.SoundSettings;
 import ui.videoscreen.Video;
 import de.schlichtherle.truezip.file.TFile;
 
-public class JSidPlay2 extends C64Stage implements IExtendImageListener {
+public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	/** Build date calculated from our own modify time */
 	private static String DATE = "unknown";
@@ -129,9 +130,9 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private StringBuilder tuneSpeed;
 	private StringBuilder playerId;
 
-	public JSidPlay2(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		super(consolePlayer, player, config);
+	public JSidPlay2(Stage primaryStage, ConsolePlayer consolePlayer,
+			Player player, Configuration config) {
+		super(primaryStage, consolePlayer, player, config);
 	}
 
 	@FXML
@@ -317,7 +318,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void quit() {
-		internalClose();
+		close();
 		Platform.exit();
 	}
 
@@ -380,21 +381,21 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void soundSettings() {
-		C64Stage window = new SoundSettings(util.getConsolePlayer(),
+		C64Window window = new SoundSettings(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
 		window.open();
 	}
 
 	@FXML
 	private void emulationSettings() {
-		C64Stage window = new EmulationSettings(util.getConsolePlayer(),
+		C64Window window = new EmulationSettings(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
 		window.open();
 	}
 
 	@FXML
 	private void joystickSettings() {
-		C64Stage window = new JoystickSettings(util.getConsolePlayer(),
+		C64Window window = new JoystickSettings(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
 		window.open();
 	}
@@ -803,21 +804,21 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void memory() {
-		C64Stage window = new Disassembler(util.getConsolePlayer(),
+		C64Window window = new Disassembler(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
 		window.open();
 	}
 
 	@FXML
 	private void sidDump() {
-		C64Stage window = new SidDump(util.getConsolePlayer(),
+		C64Window window = new SidDump(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
 		window.open();
 	}
 
 	@FXML
 	private void sidRegisters() {
-		C64Stage window = new SidReg(util.getConsolePlayer(), util.getPlayer(),
+		C64Window window = new SidReg(util.getConsolePlayer(), util.getPlayer(),
 				util.getConfig());
 		window.open();
 	}
@@ -844,7 +845,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 	private void importConfiguration() {
 		YesNoDialog dialog = new YesNoDialog(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
-		dialog.setTitle(util.getBundle().getString("IMPORT_CONFIGURATION"));
+		dialog.getStage().setTitle(
+				util.getBundle().getString("IMPORT_CONFIGURATION"));
 		dialog.setText(util.getBundle().getString("PLEASE_RESTART"));
 		dialog.open();
 		if (dialog.getConfirmed().get()) {
@@ -867,7 +869,7 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 
 	@FXML
 	private void about() {
-		C64Stage window = new About(util.getConsolePlayer(), util.getPlayer(),
+		C64Window window = new About(util.getConsolePlayer(), util.getPlayer(),
 				util.getConfig());
 		window.open();
 
@@ -1020,7 +1022,8 @@ public class JSidPlay2 extends C64Stage implements IExtendImageListener {
 			// EXTEND_ASK
 			YesNoDialog dialog = new YesNoDialog(util.getConsolePlayer(),
 					util.getPlayer(), util.getConfig());
-			dialog.setTitle(util.getBundle().getString("EXTEND_DISK_IMAGE"));
+			dialog.getStage().setTitle(
+					util.getBundle().getString("EXTEND_DISK_IMAGE"));
 			dialog.setText(util.getBundle().getString(
 					"EXTEND_DISK_IMAGE_TO_40_TRACKS"));
 			dialog.open();

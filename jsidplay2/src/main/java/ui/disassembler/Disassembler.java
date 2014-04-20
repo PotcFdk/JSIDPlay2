@@ -20,11 +20,11 @@ import libsidutils.cpuparser.CPUCommand;
 import libsidutils.cpuparser.CPUParser;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 
-public class Disassembler extends C64Stage {
+public class Disassembler extends C64Window {
 
 	private final class DisassemblerRefresh implements ChangeListener<State> {
 		@Override

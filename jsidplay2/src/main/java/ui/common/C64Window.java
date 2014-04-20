@@ -11,40 +11,49 @@ import libsidplay.Player;
 import sidplay.ConsolePlayer;
 import ui.entities.config.Configuration;
 
-public abstract class C64Stage extends Stage implements UIPart {
+public abstract class C64Window implements UIPart {
 
 	protected UIUtil util;
 
+	private Stage stage;
 	private Scene scene;
 	private boolean wait;
 
 	/** All UI pieces of this Stage */
 	private final Collection<UIPart> uiParts = new ArrayList<>();
 
-	public C64Stage(ConsolePlayer consolePlayer, Player player,
+	/**
+	 * Create a scene in a new stage.
+	 */
+	public C64Window(ConsolePlayer consolePlayer, Player player,
 			Configuration config) {
+		this(new Stage(), consolePlayer, player, config);
+		this.stage.centerOnScreen();
+	}
+
+	/**
+	 * Create a scene in the existing primary stage.
+	 */
+	public C64Window(Stage stage, ConsolePlayer consolePlayer, Player player,
+			Configuration config) {
+		this.stage = stage;
 		util = new UIUtil(this, consolePlayer, player, config, this);
 		scene = (Scene) util.parse();
 		scene.getStylesheets().add(getStyleSheetName());
-	}
-
-	public void open() {
-		open(this);
-		centerOnScreen();
-	}
-
-	public void open(Stage stage) {
-		stage.setScene(scene);
+		scene.setOnKeyPressed((ke) -> {
+			if (ke.getCode() == KeyCode.ESCAPE) {
+				close();
+			}
+		});
 		stage.getIcons().add(new Image(util.getBundle().getString("ICON")));
 		if (stage.getTitle() == null) {
 			stage.setTitle(util.getBundle().getString("TITLE"));
 		}
-		scene.setOnKeyPressed((ke) -> {
-			if (ke.getCode() == KeyCode.ESCAPE) {
-				stage.close();
-			}
-		});
-		stage.setOnCloseRequest((event) -> internalClose());
+		stage.setOnCloseRequest((event) -> close());
+		stage.setScene(scene);
+	}
+
+	public void open() {
 		if (wait) {
 			stage.showAndWait();
 		} else {
@@ -52,10 +61,15 @@ public abstract class C64Stage extends Stage implements UIPart {
 		}
 	}
 
-	protected void internalClose() {
+	protected void close() {
+		stage.close();
 		for (UIPart part : uiParts) {
 			part.doClose();
 		}
+	}
+
+	public Stage getStage() {
+		return stage;
 	}
 
 	public boolean isWait() {
@@ -70,7 +84,7 @@ public abstract class C64Stage extends Stage implements UIPart {
 		return "/" + getClass().getName().replace('.', '/') + ".css";
 	}
 
-	public Collection<UIPart> getUiParts() {
+	Collection<UIPart> getUiParts() {
 		return uiParts;
 	}
 

@@ -24,7 +24,7 @@ public class UIUtil {
 	private static final Image PLAYED_ICON = new Image(JSIDPlay2Main.class
 			.getResource("icons/play.png").toString());
 
-	private C64Stage c64Stage;
+	private C64Window window;
 	/** Model */
 	private ConsolePlayer consolePlayer;
 	private Player player;
@@ -37,22 +37,22 @@ public class UIUtil {
 	/** Progress bar support */
 	private DoubleProperty progressProperty;
 
-	public UIUtil(C64Stage c64Stage, ConsolePlayer consolePlayer,
+	public UIUtil(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config, UIPart controller) {
-		this.c64Stage = c64Stage;
+		this.window = window;
 		this.consolePlayer = consolePlayer;
 		this.player = player;
 		this.config = config;
 		this.controller = controller;
 		this.bundle = ResourceBundle.getBundle(controller.getBundleName());
-		c64Stage.getUiParts().add(controller);
+		window.getUiParts().add(controller);
 	}
 
 	public Object parse() {
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		URL fxml = this.controller.getFxml();
 		fxmlLoader.setLocation(fxml);
-		fxmlLoader.setBuilderFactory(new UIBuilder(this.c64Stage,
+		fxmlLoader.setBuilderFactory(new UIBuilder(this.window,
 				this.consolePlayer, this.player, this.config));
 		fxmlLoader.setResources(this.bundle);
 		fxmlLoader.setController(this.controller);

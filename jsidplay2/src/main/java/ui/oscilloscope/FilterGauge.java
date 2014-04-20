@@ -1,7 +1,7 @@
 package ui.oscilloscope;
 
 import sidplay.ConsolePlayer;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -16,9 +16,9 @@ public final class FilterGauge extends SIDGauge {
 	@FXML
 	private Canvas area;
 
-	public FilterGauge(C64Stage c64Stage, ConsolePlayer consolePlayer,
+	public FilterGauge(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
-		super(c64Stage, consolePlayer, player, config);
+		super(window, consolePlayer, player, config);
 	}
 
 	@Override

@@ -11,10 +11,10 @@ import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
 import sidplay.ConsolePlayer;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 
-public class STILView extends C64Stage {
+public class STILView extends C64Window {
 	private static final String STYLE_NORMAL = "styleNormal";
 	private static final String STYLE_FILENAME = "styleFilename";
 	private static final String STYLE_COMMENT = "styleComment";

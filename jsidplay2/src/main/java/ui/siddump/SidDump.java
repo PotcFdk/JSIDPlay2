@@ -22,11 +22,11 @@ import netsiddev.InvalidCommandException;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 
-public class SidDump extends C64Stage {
+public class SidDump extends C64Window {
 
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";

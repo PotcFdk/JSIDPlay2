@@ -58,7 +58,7 @@ import libsidutils.SidDatabase;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.common.TypeTextField;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -195,9 +195,9 @@ public class MusicCollection extends Tab implements UIPart {
 	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems = FXCollections
 			.<TreeItem<File>> observableArrayList();
 
-	public MusicCollection(C64Stage c64Stage, ConsolePlayer consolePlayer,
+	public MusicCollection(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
-		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
+		util = new UIUtil(window, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 
@@ -554,7 +554,8 @@ public class MusicCollection extends Tab implements UIPart {
 	private void doCreateSearchIndex() {
 		YesNoDialog dialog = new YesNoDialog(util.getConsolePlayer(),
 				util.getPlayer(), util.getConfig());
-		dialog.setTitle(util.getBundle().getString("CREATE_SEARCH_DATABASE"));
+		dialog.getStage().setTitle(
+				util.getBundle().getString("CREATE_SEARCH_DATABASE"));
 		dialog.setText(String.format(
 				util.getBundle().getString("RECREATE_DATABASE"), type.get()
 						.toString()));

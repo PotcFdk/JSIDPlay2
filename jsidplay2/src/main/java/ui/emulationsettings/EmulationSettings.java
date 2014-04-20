@@ -23,10 +23,10 @@ import resid_builder.resid.SID;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
 import sidplay.ini.intf.IFilterSection;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 
-public class EmulationSettings extends C64Stage {
+public class EmulationSettings extends C64Window {
 
 	protected final class EmulationChange implements ChangeListener<State> {
 		@Override

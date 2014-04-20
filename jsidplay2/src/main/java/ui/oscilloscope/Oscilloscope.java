@@ -13,7 +13,7 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.Configuration;
@@ -88,9 +88,9 @@ public class Oscilloscope extends Tab implements UIPart {
 	protected int repaint;
 	protected final HighResolutionEvent highResolutionEvent = new HighResolutionEvent();
 
-	public Oscilloscope(C64Stage c64Stage, ConsolePlayer consolePlayer,
+	public Oscilloscope(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
-		util = new UIUtil(c64Stage, consolePlayer, player, config, this);
+		util = new UIUtil(window, consolePlayer, player, config, this);
 		setContent((Node) util.parse());
 	}
 

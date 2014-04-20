@@ -18,10 +18,10 @@ import sidplay.audio.CmpMP3File;
 import sidplay.consoleplayer.DriverSettings;
 import sidplay.consoleplayer.Emulation;
 import sidplay.consoleplayer.Output;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 
-public class SoundSettings extends C64Stage {
+public class SoundSettings extends C64Window {
 
 	@FXML
 	protected TextField mp3, proxyHost, proxyPort;

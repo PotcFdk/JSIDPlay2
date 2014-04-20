@@ -17,10 +17,10 @@ import javafx.scene.control.ToggleButton;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 
-public class SidReg extends C64Stage {
+public class SidReg extends C64Window {
 
 	protected final class SidRegStop implements ChangeListener<State> {
 		@Override

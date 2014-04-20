@@ -9,7 +9,7 @@ import resid_builder.ReSID;
 import resid_builder.resid.SID;
 import resid_builder.resid.WaveformGenerator;
 import sidplay.ConsolePlayer;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 
 public final class WaveGauge extends SIDGauge {
@@ -24,9 +24,9 @@ public final class WaveGauge extends SIDGauge {
 		return area;
 	}
 
-	public WaveGauge(C64Stage c64Stage, ConsolePlayer consolePlayer,
+	public WaveGauge(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
-		super(c64Stage, consolePlayer, player, config);
+		super(window, consolePlayer, player, config);
 	}
 
 	@Override

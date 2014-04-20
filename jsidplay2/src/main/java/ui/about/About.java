@@ -3,13 +3,12 @@ package ui.about;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
 import libsidplay.Player;
 import sidplay.ConsolePlayer;
-import ui.common.C64Stage;
+import ui.common.C64Window;
 import ui.entities.config.Configuration;
 
-public class About extends C64Stage {
+public class About extends C64Window {
 
 	@FXML
 	private TextArea credits;
@@ -26,7 +25,7 @@ public class About extends C64Stage {
 
 	@FXML
 	private void okPressed(ActionEvent event) {
-		((Stage) credits.getScene().getWindow()).close();
+		close();
 	}
 
 }

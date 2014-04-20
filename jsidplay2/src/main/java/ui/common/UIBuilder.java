@@ -12,7 +12,7 @@ import ui.entities.config.Configuration;
 
 final class UIBuilder implements BuilderFactory {
 
-	private C64Stage c64Stage;
+	private C64Window window;
 
 	private ConsolePlayer consolePlayer;
 	private Player player;
@@ -20,9 +20,9 @@ final class UIBuilder implements BuilderFactory {
 
 	private JavaFXBuilderFactory defaultBuilderFactory = new JavaFXBuilderFactory();
 
-	public UIBuilder(C64Stage c64Stage, ConsolePlayer consolePlayer,
+	public UIBuilder(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
-		this.c64Stage = c64Stage;
+		this.window = window;
 		this.consolePlayer = consolePlayer;
 		this.player = player;
 		this.config = config;
@@ -33,9 +33,9 @@ final class UIBuilder implements BuilderFactory {
 		if (UIPart.class.isAssignableFrom(type)) {
 			try {
 				Constructor<?> constructor = type.getConstructor(new Class[] {
-						C64Stage.class, ConsolePlayer.class, Player.class,
+						C64Window.class, ConsolePlayer.class, Player.class,
 						Configuration.class });
-				return (Builder<?>) constructor.newInstance(this.c64Stage,
+				return (Builder<?>) constructor.newInstance(this.window,
 						this.consolePlayer, this.player, this.config);
 			} catch (NoSuchMethodException | SecurityException
 					| InstantiationException | IllegalAccessException
