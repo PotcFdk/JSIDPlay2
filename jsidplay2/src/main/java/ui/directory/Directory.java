@@ -55,7 +55,7 @@ public class Directory extends AnchorPane implements UIPart {
 	private int fontSet = TRUE_TYPE_FONT_BIG;
 	private int fontSetHeader = TRUE_TYPE_FONT_INVERSE_BIG;
 
-	private File file;
+	private File previewFile;
 
 	public Directory(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
@@ -83,17 +83,11 @@ public class Directory extends AnchorPane implements UIPart {
 
 	@FXML
 	private void doSwitchFont() {
-		if (fontSet == TRUE_TYPE_FONT_BIG) {
-			fontSet = TRUE_TYPE_FONT_SMALL;
-		} else {
-			fontSet = TRUE_TYPE_FONT_BIG;
-		}
-		if (fontSetHeader == TRUE_TYPE_FONT_INVERSE_BIG) {
-			fontSetHeader = TRUE_TYPE_FONT_INVERSE_SMALL;
-		} else {
-			fontSetHeader = TRUE_TYPE_FONT_INVERSE_BIG;
-		}
-		loadPreview(file);
+		fontSet = fontSet == TRUE_TYPE_FONT_BIG ? TRUE_TYPE_FONT_SMALL
+				: TRUE_TYPE_FONT_BIG;
+		fontSetHeader = fontSetHeader == TRUE_TYPE_FONT_INVERSE_BIG ? TRUE_TYPE_FONT_INVERSE_SMALL
+				: TRUE_TYPE_FONT_INVERSE_BIG;
+		loadPreview(previewFile);
 	}
 
 	public ObjectProperty<File> getAutoStartFileProperty() {
@@ -117,16 +111,16 @@ public class Directory extends AnchorPane implements UIPart {
 		}
 	}
 
-	public void loadPreview(File file) {
-		if (file == null) {
+	public void loadPreview(File previewFile) {
+		if (previewFile == null) {
 			return;
 		}
-		this.file = file;
-		dirColumn.setText(file.getName());
+		this.previewFile = previewFile;
+		dirColumn.setText(previewFile.getName());
 		directoryEntries.clear();
 		try {
 			libsidplay.components.Directory dir = PseudoDirectory.getDirectory(
-					util.getConsolePlayer(), file, util.getConfig());
+					util.getConsolePlayer(), previewFile, util.getConfig());
 			if (dir != null) {
 				// Print directory title/id
 				DirectoryItem headerItem = new DirectoryItem();

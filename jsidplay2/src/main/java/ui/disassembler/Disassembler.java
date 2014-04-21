@@ -97,11 +97,7 @@ public class Disassembler extends C64Window {
 	}
 
 	private String getInitAddress(final SidTuneInfo tuneInfo) {
-		if (tuneInfo.playAddr == 0xffff) {
-			return String.format("0x%04x", tuneInfo.initAddr);
-		} else {
-			return String.format("0x%04x", tuneInfo.initAddr);
-		}
+		return String.format("0x%04x", tuneInfo.initAddr);
 	}
 
 	private String getLoadAddress(final SidTuneInfo tuneInfo) {
@@ -121,7 +117,7 @@ public class Disassembler extends C64Window {
 	}
 
 	private void disassemble(final int startAddr) {
-		Platform.runLater(() -> {
+//		Platform.runLater(() -> {
 			assemblyLines.clear();
 			byte[] ram = util.getPlayer().getC64().getRAM();
 			int offset = startAddr;
@@ -132,7 +128,7 @@ public class Disassembler extends C64Window {
 				assemblyLines.add(assemblyLine);
 				offset += cmd.getByteCount();
 			} while (offset <= 0xffff);
-		});
+//		});
 	}
 
 	protected AssemblyLine createAssemblyLine(byte[] ram, int startAddr,
@@ -187,7 +183,7 @@ public class Disassembler extends C64Window {
 	private void gotoMem(final String destination) {
 		try {
 			disassemble(Integer.decode(destination.substring(0, 6)) & 0xffff);
-		} catch (final NumberFormatException e) {
+		} catch (final NumberFormatException | StringIndexOutOfBoundsException e) {
 		}
 	}
 
