@@ -27,9 +27,9 @@ import libsidplay.common.EventScheduler;
 /**
  * Cycle-exact 6502/6510 emulation core.
  * 
- * Code is based on work by Simon A. White <sidplay2@yahoo.com>.
- * Original Java port by Ken Händel. Later on, it has been hacked to
- * improve compatibility with Lorenz suite on VICE's test suite.
+ * Code is based on work by Simon A. White <sidplay2@yahoo.com>. Original Java
+ * port by Ken Händel. Later on, it has been hacked to improve compatibility
+ * with Lorenz suite on VICE's test suite.
  * 
  * @author alankila
  */
@@ -41,29 +41,31 @@ public abstract class MOS6510 {
 	protected static final byte SP_PAGE = 0x01;
 
 	/** Logger for MOS6510 class */
-	protected static final Logger MOS6510 = Logger.getLogger(MOS6510.class.getName());
+	protected static final Logger MOS6510 = Logger.getLogger(MOS6510.class
+			.getName());
 
-	/** IRQ/NMI magic limit values. Need to be larger than about 0x103 << 3, but can't be min/max for Integer type. */
+	/**
+	 * IRQ/NMI magic limit values. Need to be larger than about 0x103 << 3, but
+	 * can't be min/max for Integer type.
+	 */
 	private static final int MAX = 65536;
-	
+
 	/** Our event context copy. */
 	protected final EventScheduler context;
 
 	/** RDY pin state (stop CPU on read) */
 	private boolean rdy;
 
-	/** Represents an instruction subcycle that reads */
-	private interface ProcessorCycle {
-		/** Implementation of the operation during this cpu instruction subcycle. */
-		abstract void invoke();
-	}
-
-	/** Represents an instruction subcycle that writes */
-	private interface ProcessorCycleNoSteal extends ProcessorCycle {
+	/**
+	 * Represents an instruction subcycle that writes. Whereas pure Runnables
+	 * represent an instruction subcycle that reads. Implementation of the
+	 * operation during this cpu instruction subcycle.
+	 */
+	private interface ProcessorCycleNoSteal extends Runnable {
 	}
 
 	/** Table of CPU opcode implementations */
-	protected final ProcessorCycle[] instrTable = new ProcessorCycle[0x101 << 3];
+	protected final Runnable[] instrTable = new Runnable[0x101 << 3];
 
 	/** Current instruction and subcycle within instruction */
 	protected int cycleCount;
@@ -94,16 +96,19 @@ public abstract class MOS6510 {
 
 	/** IRQ asserted on CPU */
 	protected boolean irqAssertedOnPin;
-		
-	/** When IRQ was triggered. -MAX means "during some previous instruction", MAX means "no IRQ" */
+
+	/**
+	 * When IRQ was triggered. -MAX means "during some previous instruction",
+	 * MAX means "no IRQ"
+	 */
 	protected int interruptCycle;
 
 	/** NMI requested? */
 	protected boolean nmiFlag;
-	
+
 	/** RST requested? */
 	protected boolean rstFlag;
-	
+
 	/**
 	 * Evaluate when to execute an interrupt. Calling this method can also
 	 * result in the decision that no interrupt at all needs to be scheduled.
@@ -122,7 +127,7 @@ public abstract class MOS6510 {
 		/** Run CPU until AEC goes low. */
 		@Override
 		public void event() {
-			instrTable[cycleCount ++].invoke();
+			instrTable[cycleCount++].run();
 			context.schedule(this, 1);
 		}
 	};
@@ -133,18 +138,20 @@ public abstract class MOS6510 {
 		@Override
 		public void event() {
 			if (instrTable[cycleCount] instanceof ProcessorCycleNoSteal) {
-				instrTable[cycleCount ++].invoke();
+				instrTable[cycleCount++].run();
 				context.schedule(this, 1);
 			} else {
-				/* Even while stalled, the CPU can still process first clock of
-				 * interrupt delay, but only the first one. */
+				/*
+				 * Even while stalled, the CPU can still process first clock of
+				 * interrupt delay, but only the first one.
+				 */
 				if (interruptCycle == cycleCount) {
-					interruptCycle --;
+					interruptCycle--;
 				}
 			}
 		}
 	};
-	
+
 	/** Opcode stringifier */
 	protected IMOS6510Disassembler disassembler;
 
@@ -167,7 +174,7 @@ public abstract class MOS6510 {
 		nmiFlag = false;
 		rstFlag = false;
 		interruptCycle = MAX;
-		
+
 		// Signals
 		rdy = true;
 		context.schedule(eventWithoutSteals, 0, Phase.PHI2);
@@ -191,14 +198,14 @@ public abstract class MOS6510 {
 			fetchNextOpcode();
 		}
 	}
-	
+
 	protected void fetchNextOpcode() {
 		if (disassembler != null && MOS6510.isLoggable(Level.FINE)) {
 			MOS6510Debug.dumpState(context.getTime(Phase.PHI2), this);
 		}
 		// Next line used for Debug
 		instrStartPC = Register_ProgramCounter;
-		
+
 		cycleCount = (cpuRead(Register_ProgramCounter) & 0xff) << 3;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
 
@@ -207,8 +214,8 @@ public abstract class MOS6510 {
 		}
 		if (interruptCycle != MAX) {
 			interruptCycle = -MAX;
- 		}
- 	}
+		}
+	}
 
 	/**
 	 * Fetch low address byte, increment PC<BR>
@@ -285,8 +292,10 @@ public abstract class MOS6510 {
 	 */
 	protected void FetchHighAddrX() {
 		FetchHighAddr();
-		Cycle_HighByteWrongEffectiveAddress = Cycle_EffectiveAddress & 0xff00 | Cycle_EffectiveAddress + Register_X & 0xff;
-		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_X & 0xff) & 0xffff;
+		Cycle_HighByteWrongEffectiveAddress = Cycle_EffectiveAddress & 0xff00
+				| Cycle_EffectiveAddress + Register_X & 0xff;
+		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_X & 0xff)
+				& 0xffff;
 	}
 
 	/**
@@ -301,8 +310,10 @@ public abstract class MOS6510 {
 	 */
 	protected void FetchHighAddrY() {
 		FetchHighAddr();
-		Cycle_HighByteWrongEffectiveAddress = Cycle_EffectiveAddress & 0xff00 | Cycle_EffectiveAddress + Register_Y & 0xff;
-		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_Y & 0xff) & 0xffff;
+		Cycle_HighByteWrongEffectiveAddress = Cycle_EffectiveAddress & 0xff00
+				| Cycle_EffectiveAddress + Register_Y & 0xff;
+		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_Y & 0xff)
+				& 0xffff;
 	}
 
 	/**
@@ -343,8 +354,10 @@ public abstract class MOS6510 {
 	 */
 	protected void FetchHighEffAddrY() {
 		FetchHighEffAddr();
-		Cycle_HighByteWrongEffectiveAddress = Cycle_EffectiveAddress & 0xff00 | Cycle_EffectiveAddress + Register_Y & 0xff;
-		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_Y & 0xff) & 0xffff;
+		Cycle_HighByteWrongEffectiveAddress = Cycle_EffectiveAddress & 0xff00
+				| Cycle_EffectiveAddress + Register_Y & 0xff;
+		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_Y & 0xff)
+				& 0xffff;
 	}
 
 	/**
@@ -387,7 +400,8 @@ public abstract class MOS6510 {
 	 * Push Program Counter Low Byte on stack, decrement S
 	 */
 	protected void PushLowPC() {
-		cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff, (byte) (Register_ProgramCounter & 0xff));
+		cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff,
+				(byte) (Register_ProgramCounter & 0xff));
 		Register_StackPointer--;
 	}
 
@@ -395,7 +409,8 @@ public abstract class MOS6510 {
 	 * Push Program Counter High Byte on stack, decrement S
 	 */
 	protected void PushHighPC() {
-		cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff, (byte) (Register_ProgramCounter >> 8));
+		cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff,
+				(byte) (Register_ProgramCounter >> 8));
 		Register_StackPointer--;
 	}
 
@@ -403,7 +418,8 @@ public abstract class MOS6510 {
 	 * Push P on stack, decrement S
 	 */
 	protected void PushSR() {
-		cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff, getStatusRegister());
+		cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff,
+				getStatusRegister());
 		Register_StackPointer--;
 	}
 
@@ -412,7 +428,8 @@ public abstract class MOS6510 {
 	 */
 	protected void PopLowPC() {
 		Register_StackPointer++;
-		Cycle_EffectiveAddress = cpuRead(SP_PAGE << 8 | Register_StackPointer & 0xff) & 0xff;
+		Cycle_EffectiveAddress = cpuRead(SP_PAGE << 8 | Register_StackPointer
+				& 0xff) & 0xff;
 	}
 
 	/**
@@ -420,7 +437,8 @@ public abstract class MOS6510 {
 	 */
 	protected void PopHighPC() {
 		Register_StackPointer++;
-		Cycle_EffectiveAddress |= (cpuRead(SP_PAGE << 8 | Register_StackPointer & 0xff) & 0xff) << 8;
+		Cycle_EffectiveAddress |= (cpuRead(SP_PAGE << 8 | Register_StackPointer
+				& 0xff) & 0xff) << 8;
 	}
 
 	/**
@@ -445,7 +463,8 @@ public abstract class MOS6510 {
 	/**
 	 * Set the value of V flag (often related to the SO pin)
 	 * 
-	 * @param flag new V flag state
+	 * @param flag
+	 *            new V flag state
 	 */
 	public void setFlagV(boolean flag) {
 		flagV = flag;
@@ -545,20 +564,14 @@ public abstract class MOS6510 {
 	}
 
 	private void buildInstr() {
-		final ProcessorCycle wastedStealable = new ProcessorCycle() {
-			public void invoke() {
-			}
+		final Runnable wastedStealable = () -> {
 		};
 
 		/* issue throw-away read. Some people use these to ACK CIA IRQs. */
-		final ProcessorCycle throwAwayReadStealable = new ProcessorCycle() {
-			public void invoke() {
-				cpuRead(Cycle_HighByteWrongEffectiveAddress);
-			}
-		};
+		final Runnable throwAwayReadStealable = () -> cpuRead(Cycle_HighByteWrongEffectiveAddress);
 
-		final ProcessorCycle writeToEffectiveAddress = new ProcessorCycleNoSteal() {
-			public void invoke() {
+		final Runnable writeToEffectiveAddress = new ProcessorCycleNoSteal() {
+			public void run() {
 				PutEffAddrDataByte();
 			}
 		};
@@ -572,10 +585,10 @@ public abstract class MOS6510 {
 			 * So: what cycles are marked as stealable? Rules are:
 			 * 
 			 * - CPU performs either read or write at every cycle. Reads are
-			 *   always stealable. Writes are rare.
+			 * always stealable. Writes are rare.
 			 * 
-			 * - Every instruction begins with a sequence of reads. Writes,
-			 *   if any, are at the end for most instructions.
+			 * - Every instruction begins with a sequence of reads. Writes, if
+			 * any, are at the end for most instructions.
 			 */
 
 			AccessMode access = AccessMode.WRITE;
@@ -617,14 +630,10 @@ public abstract class MOS6510 {
 			case TXSn:
 			case TYAn:
 				/* read the next opcode byte from memory (and throw it away) */
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						cpuRead(Register_ProgramCounter);
-					}
-				};
+				instrTable[buildCycle++] = () -> cpuRead(Register_ProgramCounter);
 				break;
 
-				// Immediate and Relative Addressing Mode Handler
+			// Immediate and Relative Addressing Mode Handler
 			case ADCb:
 			case ANDb:
 			case ANCb:
@@ -660,17 +669,15 @@ public abstract class MOS6510 {
 			case SBCb:
 			case SBCb_1:
 			case SBXb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						Cycle_Data = cpuRead(Register_ProgramCounter);
-						if (flagB) {
-							Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
-						}
+				instrTable[buildCycle++] = () -> {
+					Cycle_Data = cpuRead(Register_ProgramCounter);
+					if (flagB) {
+						Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
 					}
 				};
 				break;
 
-				// Zero Page Addressing Mode Handler - Read & RMW
+			// Zero Page Addressing Mode Handler - Read & RMW
 			case ADCz:
 			case ANDz:
 			case BITz:
@@ -706,17 +713,13 @@ public abstract class MOS6510 {
 			case STAz:
 			case STXz:
 			case STYz:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowAddr();
 				break;
 
-				// Zero Page with X and Y Offset Addressing Mode Handler
-				// these issue extra reads on the 0 page, but we don't care about it
-				// because there are no detectable effects from them. These reads
-				// occur during the "wasted" cycle.
+			// Zero Page with X and Y Offset Addressing Mode Handler
+			// these issue extra reads on the 0 page, but we don't care about it
+			// because there are no detectable effects from them. These reads
+			// occur during the "wasted" cycle.
 			case ADCzx:
 			case ANDzx:
 			case CMPzx:
@@ -748,17 +751,13 @@ public abstract class MOS6510 {
 
 			case STAzx:
 			case STYzx:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowAddrX();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowAddrX();
 
 				// operates on 0 page in read mode. Truly side-effect free.
 				instrTable[buildCycle++] = wastedStealable;
 				break;
 
-				// Zero Page with Y Offset Addressing Mode Handler
+			// Zero Page with Y Offset Addressing Mode Handler
 			case LDXzy:
 			case LAXzy:
 				access = AccessMode.READ;
@@ -766,17 +765,13 @@ public abstract class MOS6510 {
 
 			case STXzy:
 			case SAXzy:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowAddrY();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowAddrY();
 
 				// operates on 0 page in read mode. Truly side-effect free.
 				instrTable[buildCycle++] = wastedStealable;
 				break;
 
-				// Absolute Addressing Mode Handler
+			// Absolute Addressing Mode Handler
 			case ADCa:
 			case ANDa:
 			case BITa:
@@ -811,28 +806,16 @@ public abstract class MOS6510 {
 			case STAa:
 			case STXa:
 			case STYa:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowAddr();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {					
-					public void invoke() {
-						FetchHighAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchHighAddr();
 				break;
 
 			case JSRw:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowAddr();
 				break;
 
-				// Absolute With X Offset Addressing Mode Handler (Read)
+			// Absolute With X Offset Addressing Mode Handler (Read)
 			case ADCax:
 			case ANDax:
 			case CMPax:
@@ -849,18 +832,12 @@ public abstract class MOS6510 {
 			case SBCax:
 				access = AccessMode.READ;
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowAddr();
-					}
-				};
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchHighAddrX();
-						// Handle page boundary crossing
-						if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
-							cycleCount++;
-						}
+				instrTable[buildCycle++] = () -> FetchLowAddr();
+				instrTable[buildCycle++] = () -> {
+					FetchHighAddrX();
+					// Handle page boundary crossing
+					if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
+						cycleCount++;
 					}
 				};
 
@@ -869,8 +846,8 @@ public abstract class MOS6510 {
 				instrTable[buildCycle++] = throwAwayReadStealable;
 				break;
 
-				// Absolute X (RMW; no page crossing handled, always reads before
-				// writing)
+			// Absolute X (RMW; no page crossing handled, always reads before
+			// writing)
 			case ASLax:
 			case DCPax:
 			case DECax:
@@ -888,22 +865,14 @@ public abstract class MOS6510 {
 
 			case SHYax:
 			case STAax:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowAddr();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchHighAddrX();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchHighAddrX();
 
 				instrTable[buildCycle++] = throwAwayReadStealable;
 				break;
 
-				// Absolute With Y Offset Addressing Mode Handler (Read)
+			// Absolute With Y Offset Addressing Mode Handler (Read)
 			case ADCay:
 			case ANDay:
 			case CMPay:
@@ -916,25 +885,19 @@ public abstract class MOS6510 {
 			case SBCay:
 				access = AccessMode.READ;
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowAddr();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchHighAddrY();
-						if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
-							cycleCount++;
-						}
+				instrTable[buildCycle++] = () -> {
+					FetchHighAddrY();
+					if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
+						cycleCount++;
 					}
 				};
 
 				instrTable[buildCycle++] = throwAwayReadStealable;
 				break;
 
-				// Absolute Y (No page crossing handled)
+			// Absolute Y (No page crossing handled)
 			case DCPay:
 			case ISBay:
 			case RLAay:
@@ -948,49 +911,25 @@ public abstract class MOS6510 {
 			case SHSay:
 			case SHXay:
 			case STAay:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowAddr();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchHighAddrY();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchHighAddrY();
 
 				instrTable[buildCycle++] = throwAwayReadStealable;
 				break;
 
-				// Absolute Indirect Addressing Mode Handler
+			// Absolute Indirect Addressing Mode Handler
 			case JMPi:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowPointer();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowPointer();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchHighPointer();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchHighPointer();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowEffAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowEffAddr();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchHighEffAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchHighEffAddr();
 				break;
 
-				// Indexed with X Preinc Addressing Mode Handler
+			// Indexed with X Preinc Addressing Mode Handler
 			case ADCix:
 			case ANDix:
 			case CMPix:
@@ -1010,32 +949,17 @@ public abstract class MOS6510 {
 
 			case SAXix:
 			case STAix:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowPointer();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowPointer();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						Cycle_Pointer = Cycle_Pointer + Register_X & 0xFF;
-					}
-				};
+				instrTable[buildCycle++] = () -> Cycle_Pointer = Cycle_Pointer
+						+ Register_X & 0xFF;
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowEffAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowEffAddr();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchHighEffAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchHighEffAddr();
 				break;
 
-				// Indexed with Y Postinc Addressing Mode Handler (Read)
+			// Indexed with Y Postinc Addressing Mode Handler (Read)
 			case ADCiy:
 			case ANDiy:
 			case CMPiy:
@@ -1046,31 +970,21 @@ public abstract class MOS6510 {
 			case SBCiy:
 				access = AccessMode.READ;
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowPointer();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowPointer();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchLowEffAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowEffAddr();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchHighEffAddrY();
-						if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
-							cycleCount++;
-						}
+				instrTable[buildCycle++] = () -> {
+					FetchHighEffAddrY();
+					if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
+						cycleCount++;
 					}
 				};
 
 				instrTable[buildCycle++] = throwAwayReadStealable;
 				break;
 
-				// Indexed Y (No page crossing handled)
+			// Indexed Y (No page crossing handled)
 			case DCPiy:
 			case ISBiy:
 			case RLAiy:
@@ -1082,26 +996,11 @@ public abstract class MOS6510 {
 
 			case SHAiy:
 			case STAiy:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					
-					public void invoke() {
-						FetchLowPointer();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowPointer();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					
-					public void invoke() {
-						FetchLowEffAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchLowEffAddr();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					
-					public void invoke() {
-						FetchHighEffAddrY();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchHighEffAddrY();
 
 				instrTable[buildCycle++] = throwAwayReadStealable;
 				break;
@@ -1112,11 +1011,7 @@ public abstract class MOS6510 {
 			}
 
 			if (access == AccessMode.READ) {
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						Cycle_Data = cpuRead(Cycle_EffectiveAddress);
-					}
-				};
+				instrTable[buildCycle++] = () -> Cycle_Data = cpuRead(Cycle_EffectiveAddress);
 			}
 
 			// ---------------------------------------------------------------------------------------
@@ -1131,23 +1026,18 @@ public abstract class MOS6510 {
 			case ADCix:
 			case ADCiy:
 			case ADCb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						doADC();
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					doADC();
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case ANCb:
 			case ANCb_1:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					
-					public void invoke() {
-						setFlagsNZ(Register_Accumulator &= Cycle_Data);
-						flagC = flagN;
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_Accumulator &= Cycle_Data);
+					flagC = flagN;
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1159,86 +1049,77 @@ public abstract class MOS6510 {
 			case ANDix:
 			case ANDiy:
 			case ANDb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_Accumulator &= Cycle_Data);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_Accumulator &= Cycle_Data);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case ANEb: // Also known as XAA
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						/**
-						 * The result of the ANE opcode is A = ((A | CONST) & X
-						 * & IMM), with CONST apparently being both chip- and
-						 * temperature dependent.
-						 * 
-						 * The commonly used value for CONST in various
-						 * documents is 0xee, which is however not to be taken
-						 * for granted (as it is unstable). see here:
-						 * http://visual6502
-						 * .org/wiki/index.php?title=6502_Opcode_8B_(XAA,_ANE)
-						 * 
-						 * as seen in the list, there are several possible
-						 * values, and its origin is still kinda unknown.
-						 * instead of the commonly used 0xee we use 0xff here,
-						 * since this will make the only known occurance of this
-						 * opcode in actual code work. see here:
-						 * https://sourceforge
-						 * .net/tracker/?func=detail&aid=2110948
-						 * &group_id=223021&atid=1057617
-						 * 
-						 * FIXME: in the unlikely event that other code surfaces
-						 * that depends on another CONST value, it probably has
-						 * to be made configureable somehow if no value can be
-						 * found that works for both.
-						 */
-						setFlagsNZ(Register_Accumulator = (byte) ((Register_Accumulator | 0xff) & Register_X & Cycle_Data));
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					/**
+					 * The result of the ANE opcode is A = ((A | CONST) & X &
+					 * IMM), with CONST apparently being both chip- and
+					 * temperature dependent.
+					 * 
+					 * The commonly used value for CONST in various documents is
+					 * 0xee, which is however not to be taken for granted (as it
+					 * is unstable). see here: http://visual6502
+					 * .org/wiki/index.php?title=6502_Opcode_8B_(XAA,_ANE)
+					 * 
+					 * as seen in the list, there are several possible values,
+					 * and its origin is still kinda unknown. instead of the
+					 * commonly used 0xee we use 0xff here, since this will make
+					 * the only known occurance of this opcode in actual code
+					 * work. see here: https://sourceforge
+					 * .net/tracker/?func=detail&aid=2110948
+					 * &group_id=223021&atid=1057617
+					 * 
+					 * FIXME: in the unlikely event that other code surfaces
+					 * that depends on another CONST value, it probably has to
+					 * be made configureable somehow if no value can be found
+					 * that works for both.
+					 */
+					setFlagsNZ(Register_Accumulator = (byte) ((Register_Accumulator | 0xff)
+							& Register_X & Cycle_Data));
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case ARRb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						final int data = Cycle_Data & Register_Accumulator & 0xff;
-						Register_Accumulator = (byte) (data >> 1);
-						if (flagC) {
-							Register_Accumulator |= 0x80;
-						}
-
-						if (flagD) {
-							flagN = flagC;
-							flagZ = Register_Accumulator == 0;
-							setFlagV(((data ^ Register_Accumulator) & 0x40) != 0);
-
-							if ((data & 0x0f) + (data & 0x01) > 5) {
-								Register_Accumulator = (byte) (Register_Accumulator & 0xf0 | Register_Accumulator + 6 & 0x0f);
-							}
-							flagC = (data + (data & 0x10) & 0x1f0) > 0x50;
-							if (flagC) {
-								Register_Accumulator = (byte) (Register_Accumulator + 0x60 & 0xff);
-							}
-						} else {
-							setFlagsNZ(Register_Accumulator);
-							flagC = (Register_Accumulator & 0x40) != 0;
-							setFlagV((Register_Accumulator & 0x40 ^ (Register_Accumulator & 0x20) << 1) != 0);
-						}
-						interruptsAndNextOpcode();
+				instrTable[buildCycle++] = () -> {
+					final int data = Cycle_Data & Register_Accumulator & 0xff;
+					Register_Accumulator = (byte) (data >> 1);
+					if (flagC) {
+						Register_Accumulator |= 0x80;
 					}
+
+					if (flagD) {
+						flagN = flagC;
+						flagZ = Register_Accumulator == 0;
+						setFlagV(((data ^ Register_Accumulator) & 0x40) != 0);
+
+						if ((data & 0x0f) + (data & 0x01) > 5) {
+							Register_Accumulator = (byte) (Register_Accumulator & 0xf0 | Register_Accumulator + 6 & 0x0f);
+						}
+						flagC = (data + (data & 0x10) & 0x1f0) > 0x50;
+						if (flagC) {
+							Register_Accumulator = (byte) (Register_Accumulator + 0x60 & 0xff);
+						}
+					} else {
+						setFlagsNZ(Register_Accumulator);
+						flagC = (Register_Accumulator & 0x40) != 0;
+						setFlagV((Register_Accumulator & 0x40 ^ (Register_Accumulator & 0x20) << 1) != 0);
+					}
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case ASLn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						flagC = Register_Accumulator < 0;
-						setFlagsNZ(Register_Accumulator <<= 1);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					flagC = Register_Accumulator < 0;
+					setFlagsNZ(Register_Accumulator <<= 1);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1247,7 +1128,7 @@ public abstract class MOS6510 {
 			case ASLa:
 			case ASLax:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PutEffAddrDataByte();
 						flagC = Cycle_Data < 0;
 						setFlagsNZ(Cycle_Data <<= 1);
@@ -1258,15 +1139,13 @@ public abstract class MOS6510 {
 				break;
 
 			case ASRb: // Also known as ALR
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						Register_Accumulator &= Cycle_Data;
-						flagC = (Register_Accumulator & 0x01) != 0;
-						Register_Accumulator >>= 1;
-						Register_Accumulator &= 0x7f;
-						setFlagsNZ(Register_Accumulator);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					Register_Accumulator &= Cycle_Data;
+					flagC = (Register_Accumulator & 0x01) != 0;
+					Register_Accumulator >>= 1;
+					Register_Accumulator &= 0x7f;
+					setFlagsNZ(Register_Accumulator);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1279,68 +1158,80 @@ public abstract class MOS6510 {
 			case BVCr:
 			case BVSr: {
 				final int _i = i;
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					
-					public void invoke() {
-						final boolean condition;
-						switch (_i) {
-						case BCSr:
-							condition = flagC;
-							break;
-						case BCCr:
-							condition = !flagC;
-							break;
-						case BEQr:
-							condition = flagZ;
-							break;
-						case BNEr:
-							condition = !flagZ;
-							break;
-						case BMIr:
-							condition = flagN;
-							break;
-						case BPLr:
-							condition = !flagN;
-							break;
-						case BVCr:
-							condition = !getFlagV();
-							break;
-						case BVSr:
-							condition = getFlagV();
-							break;
-						default:
-							throw new RuntimeException("non-branch opcode: " + _i);
-						}
+				instrTable[buildCycle++] = () -> {
+					final boolean condition;
+					switch (_i) {
+					case BCSr:
+						condition = flagC;
+						break;
+					case BCCr:
+						condition = !flagC;
+						break;
+					case BEQr:
+						condition = flagZ;
+						break;
+					case BNEr:
+						condition = !flagZ;
+						break;
+					case BMIr:
+						condition = flagN;
+						break;
+					case BPLr:
+						condition = !flagN;
+						break;
+					case BVCr:
+						condition = !getFlagV();
+						break;
+					case BVSr:
+						condition = getFlagV();
+						break;
+					default:
+						throw new RuntimeException("non-branch opcode: " + _i);
+					}
 
-						/*
-						 * 2 cycles spent before arriving here. spend 0 - 2 cycles here;
-						 * - condition false: Continue immediately to FetchNextInstr (return true).
-						 * 
-						 * Otherwise read the byte following the opcode (which is already scheduled to occur on this cycle).
-						 * This effort is wasted. Then calculate address of the branch target. If branch is on same page,
-						 * then continue at that insn on next cycle (this delays IRQs by 1 clock for some reason, allegedly).
-						 * 
-						 * If the branch is on different memory page, issue a spurious read with wrong high byte before
-						 * continuing at the correct address.
-						 */
-						if (condition) {
-							/* issue the spurious read for next insn here. */
-							cpuRead(Register_ProgramCounter);
+					/*
+					 * 2 cycles spent before arriving here. spend 0 - 2 cycles
+					 * here; - condition false: Continue immediately to
+					 * FetchNextInstr (return true).
+					 * 
+					 * Otherwise read the byte following the opcode (which is
+					 * already scheduled to occur on this cycle). This effort is
+					 * wasted. Then calculate address of the branch target. If
+					 * branch is on same page, then continue at that insn on
+					 * next cycle (this delays IRQs by 1 clock for some reason,
+					 * allegedly).
+					 * 
+					 * If the branch is on different memory page, issue a
+					 * spurious read with wrong high byte before continuing at
+					 * the correct address.
+					 */
+					if (condition) {
+						/* issue the spurious read for next insn here. */
+						cpuRead(Register_ProgramCounter);
 
-							Cycle_HighByteWrongEffectiveAddress = Register_ProgramCounter & 0xff00 | Register_ProgramCounter + Cycle_Data & 0xff;
-							Cycle_EffectiveAddress = Register_ProgramCounter + Cycle_Data & 0xffff;
-							if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
-								cycleCount += 1;
-								/* Hack: delay the interrupt past this instruction. */
-								if (interruptCycle >> 3 == cycleCount >> 3) {
-									interruptCycle += 2;
-								}
+						Cycle_HighByteWrongEffectiveAddress = Register_ProgramCounter
+								& 0xff00
+								| Register_ProgramCounter
+								+ Cycle_Data
+								& 0xff;
+						Cycle_EffectiveAddress = Register_ProgramCounter
+								+ Cycle_Data & 0xffff;
+						if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
+							cycleCount += 1;
+							/*
+							 * Hack: delay the interrupt past this instruction.
+							 */
+							if (interruptCycle >> 3 == cycleCount >> 3) {
+								interruptCycle += 2;
 							}
-							Register_ProgramCounter = Cycle_EffectiveAddress;
-						} else {
-							/* branch not taken: skip the following spurious read insn and go to FetchNextInstr immediately. */
-							interruptsAndNextOpcode();
 						}
+						Register_ProgramCounter = Cycle_EffectiveAddress;
+					} else {
+						/*
+						 * branch not taken: skip the following spurious read
+						 * insn and go to FetchNextInstr immediately.
+						 */
+						interruptsAndNextOpcode();
 					}
 				};
 
@@ -1350,25 +1241,23 @@ public abstract class MOS6510 {
 
 			case BITz:
 			case BITa:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						flagZ = (Register_Accumulator & Cycle_Data) == 0;
-						flagN = Cycle_Data < 0;
-						setFlagV((Cycle_Data & 0x40) != 0);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					flagZ = (Register_Accumulator & Cycle_Data) == 0;
+					flagN = Cycle_Data < 0;
+					setFlagV((Cycle_Data & 0x40) != 0);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case BRKn:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PushHighPC();
 					}
 				};
 
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PushLowPC();
 						if (rstFlag) {
 							/* rst = %10x */
@@ -1387,66 +1276,46 @@ public abstract class MOS6510 {
 				};
 
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PushSR();
 						flagB = true;
 						flagI = true;
 					}
 				};
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						Register_ProgramCounter = cpuRead(Cycle_EffectiveAddress) & 0xff;
-					}
-				};
+				instrTable[buildCycle++] = () -> Register_ProgramCounter = cpuRead(Cycle_EffectiveAddress) & 0xff;
 
-				instrTable[buildCycle++] = new ProcessorCycle() {					
-					public void invoke() {
-						Register_ProgramCounter |= (cpuRead(Cycle_EffectiveAddress + 1) & 0xff) << 8;
-					}
-				};
+				instrTable[buildCycle++] = () -> Register_ProgramCounter |= (cpuRead(Cycle_EffectiveAddress + 1) & 0xff) << 8;
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						fetchNextOpcode();
-					}
-				};
+				instrTable[buildCycle++] = () -> fetchNextOpcode();
 				break;
 
 			case CLCn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						flagC = false;
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					flagC = false;
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case CLDn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						flagD = false;
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					flagD = false;
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case CLIn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						flagI = false;
-						calculateInterruptTriggerCycle();
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					flagI = false;
+					calculateInterruptTriggerCycle();
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case CLVn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagV(false);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagV(false);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1458,36 +1327,30 @@ public abstract class MOS6510 {
 			case CMPix:
 			case CMPiy:
 			case CMPb:
-				instrTable[buildCycle++] = new ProcessorCycle() {					
-					public void invoke() {
-						setFlagsNZ((byte) (Register_Accumulator - Cycle_Data));
-						flagC = (Register_Accumulator & 0xff) >= (Cycle_Data & 0xff);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ((byte) (Register_Accumulator - Cycle_Data));
+					flagC = (Register_Accumulator & 0xff) >= (Cycle_Data & 0xff);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case CPXz:
 			case CPXa:
 			case CPXb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ((byte) (Register_X - Cycle_Data));
-						flagC = (Register_X & 0xff) >= (Cycle_Data & 0xff);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ((byte) (Register_X - Cycle_Data));
+					flagC = (Register_X & 0xff) >= (Cycle_Data & 0xff);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case CPYz:
 			case CPYa:
 			case CPYb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ((byte) (Register_Y - Cycle_Data));
-						flagC = (Register_Y & 0xff) >= (Cycle_Data & 0xff);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ((byte) (Register_Y - Cycle_Data));
+					flagC = (Register_Y & 0xff) >= (Cycle_Data & 0xff);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1499,7 +1362,7 @@ public abstract class MOS6510 {
 			case DCPix:
 			case DCPiy: // Also known as DCM
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PutEffAddrDataByte();
 						Cycle_Data--;
 						setFlagsNZ((byte) (Register_Accumulator - Cycle_Data));
@@ -1515,7 +1378,7 @@ public abstract class MOS6510 {
 			case DECa:
 			case DECax:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PutEffAddrDataByte();
 						setFlagsNZ(--Cycle_Data);
 					}
@@ -1525,20 +1388,16 @@ public abstract class MOS6510 {
 				break;
 
 			case DEXn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(--Register_X);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(--Register_X);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case DEYn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(--Register_Y);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(--Register_Y);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1550,11 +1409,9 @@ public abstract class MOS6510 {
 			case EORix:
 			case EORiy:
 			case EORb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_Accumulator ^= Cycle_Data);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_Accumulator ^= Cycle_Data);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1563,7 +1420,7 @@ public abstract class MOS6510 {
 			case INCa:
 			case INCax:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PutEffAddrDataByte();
 						setFlagsNZ(++Cycle_Data);
 					}
@@ -1573,20 +1430,16 @@ public abstract class MOS6510 {
 				break;
 
 			case INXn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(++Register_X);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(++Register_X);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case INYn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(++Register_Y);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(++Register_Y);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1598,7 +1451,7 @@ public abstract class MOS6510 {
 			case ISBix:
 			case ISBiy: // Also known as INS
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PutEffAddrDataByte();
 						setFlagsNZ(++Cycle_Data);
 						doSBC();
@@ -1613,44 +1466,36 @@ public abstract class MOS6510 {
 				// Truly side-effect free.
 				instrTable[buildCycle++] = wastedStealable;
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					
-					public void invoke() {
+
+					public void run() {
 						PushHighPC();
 					}
 				};
 
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PushLowPC();
 					}
 				};
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						FetchHighAddr();
-					}
-				};
+				instrTable[buildCycle++] = () -> FetchHighAddr();
 				// $FALL-THROUGH$
 
 			case JMPw:
 			case JMPi:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						doJSR();
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					doJSR();
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case LASay:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Cycle_Data &= Register_StackPointer);
-						Register_Accumulator = Cycle_Data;
-						Register_X = Cycle_Data;
-						Register_StackPointer = Cycle_Data;
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Cycle_Data &= Register_StackPointer);
+					Register_Accumulator = Cycle_Data;
+					Register_X = Cycle_Data;
+					Register_StackPointer = Cycle_Data;
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1660,11 +1505,9 @@ public abstract class MOS6510 {
 			case LAXay:
 			case LAXix:
 			case LAXiy:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_Accumulator = Register_X = Cycle_Data);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_Accumulator = Register_X = Cycle_Data);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1676,11 +1519,9 @@ public abstract class MOS6510 {
 			case LDAix:
 			case LDAiy:
 			case LDAb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_Accumulator = Cycle_Data);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_Accumulator = Cycle_Data);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1689,11 +1530,9 @@ public abstract class MOS6510 {
 			case LDXa:
 			case LDXay:
 			case LDXb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_X = Cycle_Data);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_X = Cycle_Data);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1702,23 +1541,19 @@ public abstract class MOS6510 {
 			case LDYa:
 			case LDYax:
 			case LDYb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_Y = Cycle_Data);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_Y = Cycle_Data);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case LSRn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						flagC = (Register_Accumulator & 0x01) != 0;
-						Register_Accumulator >>= 1;
-						Register_Accumulator &= 0x7f;
-						setFlagsNZ(Register_Accumulator);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					flagC = (Register_Accumulator & 0x01) != 0;
+					Register_Accumulator >>= 1;
+					Register_Accumulator &= 0x7f;
+					setFlagsNZ(Register_Accumulator);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1727,12 +1562,12 @@ public abstract class MOS6510 {
 			case LSRa:
 			case LSRax:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PutEffAddrDataByte();
 						flagC = (Cycle_Data & 0x01) != 0;
 						Cycle_Data >>= 1;
-							Cycle_Data &= 0x7f;
-							setFlagsNZ(Cycle_Data);
+						Cycle_Data &= 0x7f;
+						setFlagsNZ(Cycle_Data);
 					}
 				};
 
@@ -1772,11 +1607,9 @@ public abstract class MOS6510 {
 				break;
 
 			case LXAb: // Also known as OAL
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_X = Register_Accumulator = (byte) (Cycle_Data & (Register_Accumulator | 0xee)));
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_X = Register_Accumulator = (byte) (Cycle_Data & (Register_Accumulator | 0xee)));
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1788,18 +1621,17 @@ public abstract class MOS6510 {
 			case ORAix:
 			case ORAiy:
 			case ORAb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_Accumulator |= Cycle_Data);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_Accumulator |= Cycle_Data);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case PHAn:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
-						cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff, Register_Accumulator);
+					public void run() {
+						cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff,
+								Register_Accumulator);
 						Register_StackPointer--;
 					}
 				};
@@ -1807,7 +1639,7 @@ public abstract class MOS6510 {
 
 			case PHPn:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PushSR();
 					}
 				};
@@ -1818,11 +1650,10 @@ public abstract class MOS6510 {
 				// Truly side-effect free.
 				instrTable[buildCycle++] = wastedStealable;
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						Register_StackPointer++;
-						setFlagsNZ(Register_Accumulator = cpuRead(SP_PAGE << 8 | Register_StackPointer & 0xff));
-					}
+				instrTable[buildCycle++] = () -> {
+					Register_StackPointer++;
+					setFlagsNZ(Register_Accumulator = cpuRead(SP_PAGE << 8
+							| Register_StackPointer & 0xff));
 				};
 				break;
 
@@ -1831,18 +1662,12 @@ public abstract class MOS6510 {
 				// Truly side-effect free.
 				instrTable[buildCycle++] = wastedStealable;
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						PopSR();
-						calculateInterruptTriggerCycle();
-					}
+				instrTable[buildCycle++] = () -> {
+					PopSR();
+					calculateInterruptTriggerCycle();
 				};
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						interruptsAndNextOpcode();
-					}
-				};
+				instrTable[buildCycle++] = () -> interruptsAndNextOpcode();
 
 				break;
 
@@ -1854,7 +1679,7 @@ public abstract class MOS6510 {
 			case RLAay:
 			case RLAiy:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						final boolean newC = Cycle_Data < 0;
 						PutEffAddrDataByte();
 						Cycle_Data <<= 1;
@@ -1870,17 +1695,15 @@ public abstract class MOS6510 {
 				break;
 
 			case ROLn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						final boolean newC = Register_Accumulator < 0;
-						Register_Accumulator <<= 1;
-						if (flagC) {
-							Register_Accumulator |= 0x01;
-						}
-						setFlagsNZ(Register_Accumulator);
-						flagC = newC;
-						interruptsAndNextOpcode();
+				instrTable[buildCycle++] = () -> {
+					final boolean newC = Register_Accumulator < 0;
+					Register_Accumulator <<= 1;
+					if (flagC) {
+						Register_Accumulator |= 0x01;
 					}
+					setFlagsNZ(Register_Accumulator);
+					flagC = newC;
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1889,7 +1712,7 @@ public abstract class MOS6510 {
 			case ROLa:
 			case ROLax:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						final boolean newC = Cycle_Data < 0;
 						PutEffAddrDataByte();
 						Cycle_Data <<= 1;
@@ -1905,19 +1728,17 @@ public abstract class MOS6510 {
 				break;
 
 			case RORn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						final boolean newC = (Register_Accumulator & 0x01) != 0;
-						Register_Accumulator >>= 1;
-						if (flagC) {
-							Register_Accumulator |= 0x80;
-						} else {
-							Register_Accumulator &= 0x7f;
-						}
-						setFlagsNZ(Register_Accumulator);
-						flagC = newC;
-						interruptsAndNextOpcode();
+				instrTable[buildCycle++] = () -> {
+					final boolean newC = (Register_Accumulator & 0x01) != 0;
+					Register_Accumulator >>= 1;
+					if (flagC) {
+						Register_Accumulator |= 0x80;
+					} else {
+						Register_Accumulator &= 0x7f;
 					}
+					setFlagsNZ(Register_Accumulator);
+					flagC = newC;
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -1926,7 +1747,7 @@ public abstract class MOS6510 {
 			case RORa:
 			case RORax:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						final boolean newC = (Cycle_Data & 0x01) != 0;
 						PutEffAddrDataByte();
 						Cycle_Data >>= 1;
@@ -1951,7 +1772,7 @@ public abstract class MOS6510 {
 			case RRAix:
 			case RRAiy:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						final boolean newC = (Cycle_Data & 0x01) != 0;
 						PutEffAddrDataByte();
 						Cycle_Data >>= 1;
@@ -1973,36 +1794,22 @@ public abstract class MOS6510 {
 				// Truly side-effect free.
 				instrTable[buildCycle++] = wastedStealable;
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						PopSR();
-						calculateInterruptTriggerCycle();
-					}
+				instrTable[buildCycle++] = () -> {
+					PopSR();
+					calculateInterruptTriggerCycle();
 				};
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						PopLowPC();
-					}
-				};
+				instrTable[buildCycle++] = () -> PopLowPC();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						PopHighPC();
-					}
-				};
+				instrTable[buildCycle++] = () -> PopHighPC();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						if (MOS6510.isLoggable(Level.FINE)) {
-							if (disassembler != null) {
-								MOS6510.fine("****************************************************");
-							}
-						}
-
-						Register_ProgramCounter = Cycle_EffectiveAddress;
-						interruptsAndNextOpcode();
+				instrTable[buildCycle++] = () -> {
+					if (disassembler != null && MOS6510.isLoggable(Level.FINE)) {
+						MOS6510.fine("****************************************************");
 					}
+
+					Register_ProgramCounter = Cycle_EffectiveAddress;
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -2011,23 +1818,13 @@ public abstract class MOS6510 {
 				// Truly side-effect free.
 				instrTable[buildCycle++] = wastedStealable;
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						PopLowPC();
-					}
-				};
+				instrTable[buildCycle++] = () -> PopLowPC();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						PopHighPC();
-					}
-				};
+				instrTable[buildCycle++] = () -> PopHighPC();
 
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						cpuRead(Cycle_EffectiveAddress);
-						Register_ProgramCounter = Cycle_EffectiveAddress + 1 & 0xffff;
-					}
+				instrTable[buildCycle++] = () -> {
+					cpuRead(Cycle_EffectiveAddress);
+					Register_ProgramCounter = Cycle_EffectiveAddress + 1 & 0xffff;
 				};
 				break;
 
@@ -2036,7 +1833,7 @@ public abstract class MOS6510 {
 			case SAXa:
 			case SAXix: // Also known as AXS
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						Cycle_Data = (byte) (Register_Accumulator & Register_X);
 						PutEffAddrDataByte();
 					}
@@ -2052,51 +1849,42 @@ public abstract class MOS6510 {
 			case SBCiy:
 			case SBCb:
 			case SBCb_1:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						doSBC();
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					doSBC();
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case SBXb:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						final int tmp = (Register_X & Register_Accumulator & 0xff) - (Cycle_Data & 0xff);
-						setFlagsNZ(Register_X = (byte) tmp);
-						flagC = tmp >= 0;
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					final int tmp = (Register_X & Register_Accumulator & 0xff)
+							- (Cycle_Data & 0xff);
+					setFlagsNZ(Register_X = (byte) tmp);
+					flagC = tmp >= 0;
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case SECn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						flagC = true;
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					flagC = true;
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case SEDn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						flagD = true;
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					flagD = true;
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case SEIn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						flagI = true;
-						interruptsAndNextOpcode();
-						if (!rstFlag && !nmiFlag && interruptCycle != MAX) {
-							interruptCycle = MAX;
-						}
+				instrTable[buildCycle++] = () -> {
+					flagI = true;
+					interruptsAndNextOpcode();
+					if (!rstFlag && !nmiFlag && interruptCycle != MAX) {
+						interruptCycle = MAX;
 					}
 				};
 				break;
@@ -2104,10 +1892,11 @@ public abstract class MOS6510 {
 			case SHAay:
 			case SHAiy: // Also known as AXA
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						Cycle_Data = (byte) (Register_X & Register_Accumulator & (Cycle_EffectiveAddress >> 8) + 1);
 						if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8 | Cycle_EffectiveAddress & 0xff;
+							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
+									| Cycle_EffectiveAddress & 0xff;
 						}
 						PutEffAddrDataByte();
 					}
@@ -2116,11 +1905,13 @@ public abstract class MOS6510 {
 
 			case SHSay: // Also known as TAS
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						Register_StackPointer = (byte) (Register_Accumulator & Register_X);
-						Cycle_Data = (byte) ((Cycle_EffectiveAddress >> 8) + 1 & Register_StackPointer & 0xff);
+						Cycle_Data = (byte) ((Cycle_EffectiveAddress >> 8) + 1
+								& Register_StackPointer & 0xff);
 						if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8 | Cycle_EffectiveAddress & 0xff;
+							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
+									| Cycle_EffectiveAddress & 0xff;
 						}
 						PutEffAddrDataByte();
 					}
@@ -2129,10 +1920,11 @@ public abstract class MOS6510 {
 
 			case SHXay: // Also known as XAS
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						Cycle_Data = (byte) (Register_X & (Cycle_EffectiveAddress >> 8) + 1);
 						if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8 | Cycle_EffectiveAddress & 0xff;
+							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
+									| Cycle_EffectiveAddress & 0xff;
 						}
 						PutEffAddrDataByte();
 					}
@@ -2141,10 +1933,11 @@ public abstract class MOS6510 {
 
 			case SHYax: // Also known as SAY
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						Cycle_Data = (byte) (Register_Y & (Cycle_EffectiveAddress >> 8) + 1);
 						if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8 | Cycle_EffectiveAddress & 0xff;
+							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
+									| Cycle_EffectiveAddress & 0xff;
 						}
 						PutEffAddrDataByte();
 					}
@@ -2159,7 +1952,7 @@ public abstract class MOS6510 {
 			case SLOix:
 			case SLOiy: // Also known as ASO
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PutEffAddrDataByte();
 						flagC = Cycle_Data < 0;
 						Cycle_Data <<= 1;
@@ -2178,7 +1971,7 @@ public abstract class MOS6510 {
 			case SREix:
 			case SREiy: // Also known as LSE
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						PutEffAddrDataByte();
 						flagC = (Cycle_Data & 0x01) != 0;
 						Cycle_Data >>= 1;
@@ -2198,7 +1991,7 @@ public abstract class MOS6510 {
 			case STAix:
 			case STAiy:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						Cycle_Data = Register_Accumulator;
 						PutEffAddrDataByte();
 					}
@@ -2209,7 +2002,7 @@ public abstract class MOS6510 {
 			case STXzy:
 			case STXa:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						Cycle_Data = Register_X;
 						PutEffAddrDataByte();
 					}
@@ -2220,7 +2013,7 @@ public abstract class MOS6510 {
 			case STYzx:
 			case STYa:
 				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void invoke() {
+					public void run() {
 						Cycle_Data = Register_Y;
 						PutEffAddrDataByte();
 					}
@@ -2228,56 +2021,44 @@ public abstract class MOS6510 {
 				break;
 
 			case TAXn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_X = Register_Accumulator);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_X = Register_Accumulator);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case TAYn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_Y = Register_Accumulator);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_Y = Register_Accumulator);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case TSXn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_X = Register_StackPointer);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_X = Register_StackPointer);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case TXAn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_Accumulator = Register_X);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_Accumulator = Register_X);
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case TXSn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						Register_StackPointer = Register_X;
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					Register_StackPointer = Register_X;
+					interruptsAndNextOpcode();
 				};
 				break;
 
 			case TYAn:
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						setFlagsNZ(Register_Accumulator = Register_Y);
-						interruptsAndNextOpcode();
-					}
+				instrTable[buildCycle++] = () -> {
+					setFlagsNZ(Register_Accumulator = Register_Y);
+					interruptsAndNextOpcode();
 				};
 				break;
 
@@ -2291,19 +2072,11 @@ public abstract class MOS6510 {
 			 * invalid. Thse are normally called HLT instructions. In the
 			 * hardware, the CPU state machine locks up and will never recover.
 			 */
-			if (! (legalMode && legalInstr)) {
-				instrTable[buildCycle++] = new ProcessorCycle() {
-					public void invoke() {
-						cycleCount --;
-					}
-				};
+			if (!(legalMode && legalInstr)) {
+				instrTable[buildCycle++] = () -> cycleCount--;
 			}
 
-			instrTable[buildCycle++] = new ProcessorCycle() {
-				public void invoke() {
-					interruptsAndNextOpcode();
-				}
-			};
+			instrTable[buildCycle++] = () -> interruptsAndNextOpcode();
 
 		}
 	}
@@ -2311,7 +2084,8 @@ public abstract class MOS6510 {
 	/**
 	 * Force CPU to start execution at given address
 	 * 
-	 * @param address The address to start CPU execution at.
+	 * @param address
+	 *            The address to start CPU execution at.
 	 */
 	public void forcedJump(final int address) {
 		cycleCount = (NOPn << 3) + 1;
@@ -2324,20 +2098,20 @@ public abstract class MOS6510 {
 	 * @return credit string
 	 */
 	public static String credits() {
-		return "MOS6510 CPU\n"
-		+ "\t(C) 2000 Simon A. White\n"
-		+ "\t(C) 2008-2010 Antti S. Lankila\n";
+		return "MOS6510 CPU\n" + "\t(C) 2000 Simon A. White\n"
+				+ "\t(C) 2008-2010 Antti S. Lankila\n";
 	}
 
 	/**
-	 * Handle bus access signal. When RDY line is asserted, the CPU
-	 * will pause when executing the next read operation.
+	 * Handle bus access signal. When RDY line is asserted, the CPU will pause
+	 * when executing the next read operation.
 	 * 
-	 * @param rdy new state for RDY signal
+	 * @param rdy
+	 *            new state for RDY signal
 	 */
 	public final void setRDY(final boolean rdy) {
 		this.rdy = rdy;
-		
+
 		if (rdy) {
 			context.cancel(eventWithSteals);
 			context.schedule(eventWithoutSteals, 0, Phase.PHI2);
@@ -2348,11 +2122,11 @@ public abstract class MOS6510 {
 	}
 
 	/**
-	 * This forces the CPU to abort whatever it is doing and immediately
-	 * enter the RST interrupt handling sequence. The implementation is
-	 * not compatible: instructions actually get aborted mid-execution.
-	 * However, there is no possible way to trigger this signal from
-	 * programs, so it's OK.
+	 * This forces the CPU to abort whatever it is doing and immediately enter
+	 * the RST interrupt handling sequence. The implementation is not
+	 * compatible: instructions actually get aborted mid-execution. However,
+	 * there is no possible way to trigger this signal from programs, so it's
+	 * OK.
 	 */
 	public final void triggerRST() {
 		Initialise();
@@ -2362,29 +2136,28 @@ public abstract class MOS6510 {
 	}
 
 	/**
-	 * Trigger NMI interrupt on the CPU. Calling this method
-	 * flags that CPU must enter the NMI routine at earliest
-	 * opportunity. There is no way to cancel NMI request once
-	 * given.
+	 * Trigger NMI interrupt on the CPU. Calling this method flags that CPU must
+	 * enter the NMI routine at earliest opportunity. There is no way to cancel
+	 * NMI request once given.
 	 */
 	public final void triggerNMI() {
 		nmiFlag = true;
 		calculateInterruptTriggerCycle();
-		
+
 		/* maybe process 1 clock of interrupt delay. */
-		if (! rdy) {
+		if (!rdy) {
 			context.cancel(eventWithSteals);
 			context.schedule(eventWithSteals, 0, Phase.PHI2);
 		}
 	}
-	
+
 	/** Pull IRQ line low on CPU. */
 	public final void triggerIRQ() {
 		irqAssertedOnPin = true;
 		calculateInterruptTriggerCycle();
 
 		/* maybe process 1 clock of interrupt delay. */
-		if (! rdy && interruptCycle == cycleCount) {
+		if (!rdy && interruptCycle == cycleCount) {
 			context.cancel(eventWithSteals);
 			context.schedule(eventWithSteals, 0, Phase.PHI2);
 		}
@@ -2399,7 +2172,8 @@ public abstract class MOS6510 {
 	/**
 	 * Set N and Z flag values.
 	 * 
-	 * @param value to set flags from
+	 * @param value
+	 *            to set flags from
 	 */
 	protected final void setFlagsNZ(final byte value) {
 		flagZ = value == 0;
@@ -2456,12 +2230,12 @@ public abstract class MOS6510 {
 	}
 
 	/**
-	 * When stalled by BA but not yet tristated by AEC, the CPU generates
-	 * read requests to the PLA chip. These reads likely concern whatever
-	 * byte the CPU's current subcycle would need, but full emulation can
-	 * be really tricky. We normally have this case only immediately after
-	 * a write opcode, and thus the next read will concern the next opcode.
-	 * Therefore, we fake it by reading the byte under the PC.
+	 * When stalled by BA but not yet tristated by AEC, the CPU generates read
+	 * requests to the PLA chip. These reads likely concern whatever byte the
+	 * CPU's current subcycle would need, but full emulation can be really
+	 * tricky. We normally have this case only immediately after a write opcode,
+	 * and thus the next read will concern the next opcode. Therefore, we fake
+	 * it by reading the byte under the PC.
 	 * 
 	 * @return the value under PC
 	 */
@@ -2476,7 +2250,8 @@ public abstract class MOS6510 {
 	/**
 	 * Get data from system environment
 	 * 
-	 * @param address The address to read the data from.
+	 * @param address
+	 *            The address to read the data from.
 	 * @return data byte CPU requested
 	 */
 	protected abstract byte cpuRead(int address);
@@ -2484,8 +2259,10 @@ public abstract class MOS6510 {
 	/**
 	 * Write data to system environment
 	 * 
-	 * @param address The system address to write the value to.
-	 * @param value   The value to write to the system address.
+	 * @param address
+	 *            The system address to write the value to.
+	 * @param value
+	 *            The value to write to the system address.
 	 */
 	protected abstract void cpuWrite(int address, byte value);
 }
