@@ -50,22 +50,45 @@ public abstract class MOS6510 {
 	 */
 	private static final int MAX = 65536;
 
+	/**
+	 * The result of the ANE opcode is A = ((A | CONST) & X &
+	 * IMM), with CONST apparently being both chip- and
+	 * temperature dependent.
+	 * 
+	 * The commonly used value for CONST in various documents is
+	 * 0xee, which is however not to be taken for granted (as it
+	 * is unstable). see here: http://visual6502
+	 * .org/wiki/index.php?title=6502_Opcode_8B_(XAA,_ANE)
+	 * 
+	 * as seen in the list, there are several possible values,
+	 * and its origin is still kinda unknown. instead of the
+	 * commonly used 0xee we use 0xff here, since this will make
+	 * the only known occurance of this opcode in actual code
+	 * work. see here: https://sourceforge
+	 * .net/tracker/?func=detail&aid=2110948
+	 * &group_id=223021&atid=1057617
+	 * 
+	 * FIXME: in the unlikely event that other code surfaces
+	 * that depends on another CONST value, it probably has to
+	 * be made configurable somehow if no value can be found
+	 * that works for both.
+	 */
+	private static final int ANE_CONST = 0xee;
+
 	/** Our event context copy. */
-	protected final EventScheduler context;
+	private final EventScheduler context;
 
 	/** RDY pin state (stop CPU on read) */
 	private boolean rdy;
 
-	/**
-	 * Represents an instruction subcycle that writes. Whereas pure Runnables
-	 * represent an instruction subcycle that reads. Implementation of the
-	 * operation during this cpu instruction subcycle.
-	 */
-	private interface ProcessorCycleNoSteal extends Runnable {
-	}
-
 	/** Table of CPU opcode implementations */
-	protected final Runnable[] instrTable = new Runnable[0x101 << 3];
+	private final Runnable[] instrTable = new Runnable[0x101 << 3];
+
+	/**
+	 * true - Represents an instruction subcycle that writes. Whereas false -
+	 * represents an instruction subcycle that reads.
+	 */
+	private final boolean[] processorCycleNoSteal = new boolean[instrTable.length];
 
 	/** Current instruction and subcycle within instruction */
 	protected int cycleCount;
@@ -137,7 +160,7 @@ public abstract class MOS6510 {
 		/** Stall CPU when no more cycles are executable. */
 		@Override
 		public void event() {
-			if (instrTable[cycleCount] instanceof ProcessorCycleNoSteal) {
+			if (processorCycleNoSteal[cycleCount]) {
 				instrTable[cycleCount++].run();
 				context.schedule(this, 1);
 			} else {
@@ -570,11 +593,7 @@ public abstract class MOS6510 {
 		/* issue throw-away read. Some people use these to ACK CIA IRQs. */
 		final Runnable throwAwayReadStealable = () -> cpuRead(Cycle_HighByteWrongEffectiveAddress);
 
-		final Runnable writeToEffectiveAddress = new ProcessorCycleNoSteal() {
-			public void run() {
-				PutEffAddrDataByte();
-			}
-		};
+		final Runnable writeToEffectiveAddress = () -> PutEffAddrDataByte();
 
 		// ----------------------------------------------------------------------
 		// Build up the processor instruction table
@@ -1057,30 +1076,7 @@ public abstract class MOS6510 {
 
 			case ANEb: // Also known as XAA
 				instrTable[buildCycle++] = () -> {
-					/**
-					 * The result of the ANE opcode is A = ((A | CONST) & X &
-					 * IMM), with CONST apparently being both chip- and
-					 * temperature dependent.
-					 * 
-					 * The commonly used value for CONST in various documents is
-					 * 0xee, which is however not to be taken for granted (as it
-					 * is unstable). see here: http://visual6502
-					 * .org/wiki/index.php?title=6502_Opcode_8B_(XAA,_ANE)
-					 * 
-					 * as seen in the list, there are several possible values,
-					 * and its origin is still kinda unknown. instead of the
-					 * commonly used 0xee we use 0xff here, since this will make
-					 * the only known occurance of this opcode in actual code
-					 * work. see here: https://sourceforge
-					 * .net/tracker/?func=detail&aid=2110948
-					 * &group_id=223021&atid=1057617
-					 * 
-					 * FIXME: in the unlikely event that other code surfaces
-					 * that depends on another CONST value, it probably has to
-					 * be made configureable somehow if no value can be found
-					 * that works for both.
-					 */
-					setFlagsNZ(Register_Accumulator = (byte) ((Register_Accumulator | 0xff)
+					setFlagsNZ(Register_Accumulator = (byte) ((Register_Accumulator | ANE_CONST)
 							& Register_X & Cycle_Data));
 					interruptsAndNextOpcode();
 				};
@@ -1127,14 +1123,14 @@ public abstract class MOS6510 {
 			case ASLzx:
 			case ASLa:
 			case ASLax:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PutEffAddrDataByte();
-						flagC = Cycle_Data < 0;
-						setFlagsNZ(Cycle_Data <<= 1);
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					PutEffAddrDataByte();
+					flagC = Cycle_Data < 0;
+					setFlagsNZ(Cycle_Data <<= 1);
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1250,37 +1246,32 @@ public abstract class MOS6510 {
 				break;
 
 			case BRKn:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PushHighPC();
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> PushHighPC();
+
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					PushLowPC();
+					if (rstFlag) {
+						/* rst = %10x */
+						Cycle_EffectiveAddress = 0xfffc;
+					} else if (nmiFlag) {
+						/* nmi = %01x */
+						Cycle_EffectiveAddress = 0xfffa;
+					} else {
+						/* irq = %11x */
+						Cycle_EffectiveAddress = 0xfffe;
 					}
+					rstFlag = false;
+					nmiFlag = false;
+					calculateInterruptTriggerCycle();
 				};
 
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PushLowPC();
-						if (rstFlag) {
-							/* rst = %10x */
-							Cycle_EffectiveAddress = 0xfffc;
-						} else if (nmiFlag) {
-							/* nmi = %01x */
-							Cycle_EffectiveAddress = 0xfffa;
-						} else {
-							/* irq = %11x */
-							Cycle_EffectiveAddress = 0xfffe;
-						}
-						rstFlag = false;
-						nmiFlag = false;
-						calculateInterruptTriggerCycle();
-					}
-				};
-
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PushSR();
-						flagB = true;
-						flagI = true;
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					PushSR();
+					flagB = true;
+					flagI = true;
 				};
 
 				instrTable[buildCycle++] = () -> Register_ProgramCounter = cpuRead(Cycle_EffectiveAddress) & 0xff;
@@ -1361,15 +1352,15 @@ public abstract class MOS6510 {
 			case DCPay:
 			case DCPix:
 			case DCPiy: // Also known as DCM
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PutEffAddrDataByte();
-						Cycle_Data--;
-						setFlagsNZ((byte) (Register_Accumulator - Cycle_Data));
-						flagC = (Register_Accumulator & 0xff) >= (Cycle_Data & 0xff);
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					PutEffAddrDataByte();
+					Cycle_Data--;
+					setFlagsNZ((byte) (Register_Accumulator - Cycle_Data));
+					flagC = (Register_Accumulator & 0xff) >= (Cycle_Data & 0xff);
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1377,13 +1368,13 @@ public abstract class MOS6510 {
 			case DECzx:
 			case DECa:
 			case DECax:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PutEffAddrDataByte();
-						setFlagsNZ(--Cycle_Data);
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					PutEffAddrDataByte();
+					setFlagsNZ(--Cycle_Data);
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1419,13 +1410,13 @@ public abstract class MOS6510 {
 			case INCzx:
 			case INCa:
 			case INCax:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PutEffAddrDataByte();
-						setFlagsNZ(++Cycle_Data);
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					PutEffAddrDataByte();
+					setFlagsNZ(++Cycle_Data);
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1450,14 +1441,14 @@ public abstract class MOS6510 {
 			case ISBay:
 			case ISBix:
 			case ISBiy: // Also known as INS
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PutEffAddrDataByte();
-						setFlagsNZ(++Cycle_Data);
-						doSBC();
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					PutEffAddrDataByte();
+					setFlagsNZ(++Cycle_Data);
+					doSBC();
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1465,18 +1456,11 @@ public abstract class MOS6510 {
 				// should read the value at current stack register.
 				// Truly side-effect free.
 				instrTable[buildCycle++] = wastedStealable;
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> PushHighPC();
 
-					public void run() {
-						PushHighPC();
-					}
-				};
-
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PushLowPC();
-					}
-				};
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> PushLowPC();
 
 				instrTable[buildCycle++] = () -> FetchHighAddr();
 				// $FALL-THROUGH$
@@ -1561,16 +1545,16 @@ public abstract class MOS6510 {
 			case LSRzx:
 			case LSRa:
 			case LSRax:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PutEffAddrDataByte();
-						flagC = (Cycle_Data & 0x01) != 0;
-						Cycle_Data >>= 1;
-						Cycle_Data &= 0x7f;
-						setFlagsNZ(Cycle_Data);
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					PutEffAddrDataByte();
+					flagC = (Cycle_Data & 0x01) != 0;
+					Cycle_Data >>= 1;
+					Cycle_Data &= 0x7f;
+					setFlagsNZ(Cycle_Data);
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1628,21 +1612,17 @@ public abstract class MOS6510 {
 				break;
 
 			case PHAn:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff,
-								Register_Accumulator);
-						Register_StackPointer--;
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff,
+							Register_Accumulator);
+					Register_StackPointer--;
 				};
 				break;
 
 			case PHPn:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PushSR();
-					}
-				};
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> PushSR();
 				break;
 
 			case PLAn:
@@ -1678,19 +1658,19 @@ public abstract class MOS6510 {
 			case RLAax:
 			case RLAay:
 			case RLAiy:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						final boolean newC = Cycle_Data < 0;
-						PutEffAddrDataByte();
-						Cycle_Data <<= 1;
-						if (flagC) {
-							Cycle_Data |= 0x01;
-						}
-						flagC = newC;
-						setFlagsNZ(Register_Accumulator &= Cycle_Data);
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					final boolean newC = Cycle_Data < 0;
+					PutEffAddrDataByte();
+					Cycle_Data <<= 1;
+					if (flagC) {
+						Cycle_Data |= 0x01;
 					}
+					flagC = newC;
+					setFlagsNZ(Register_Accumulator &= Cycle_Data);
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1711,19 +1691,19 @@ public abstract class MOS6510 {
 			case ROLzx:
 			case ROLa:
 			case ROLax:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						final boolean newC = Cycle_Data < 0;
-						PutEffAddrDataByte();
-						Cycle_Data <<= 1;
-						if (flagC) {
-							Cycle_Data |= 0x01;
-						}
-						setFlagsNZ(Cycle_Data);
-						flagC = newC;
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					final boolean newC = Cycle_Data < 0;
+					PutEffAddrDataByte();
+					Cycle_Data <<= 1;
+					if (flagC) {
+						Cycle_Data |= 0x01;
 					}
+					setFlagsNZ(Cycle_Data);
+					flagC = newC;
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1746,21 +1726,21 @@ public abstract class MOS6510 {
 			case RORzx:
 			case RORa:
 			case RORax:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						final boolean newC = (Cycle_Data & 0x01) != 0;
-						PutEffAddrDataByte();
-						Cycle_Data >>= 1;
-						if (flagC) {
-							Cycle_Data |= 0x80;
-						} else {
-							Cycle_Data &= 0x7f;
-						}
-						setFlagsNZ(Cycle_Data);
-						flagC = newC;
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					final boolean newC = (Cycle_Data & 0x01) != 0;
+					PutEffAddrDataByte();
+					Cycle_Data >>= 1;
+					if (flagC) {
+						Cycle_Data |= 0x80;
+					} else {
+						Cycle_Data &= 0x7f;
 					}
+					setFlagsNZ(Cycle_Data);
+					flagC = newC;
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1771,21 +1751,21 @@ public abstract class MOS6510 {
 			case RRAzx:
 			case RRAix:
 			case RRAiy:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						final boolean newC = (Cycle_Data & 0x01) != 0;
-						PutEffAddrDataByte();
-						Cycle_Data >>= 1;
-						if (flagC) {
-							Cycle_Data |= 0x80;
-						} else {
-							Cycle_Data &= 0x7f;
-						}
-						flagC = newC;
-						doADC();
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					final boolean newC = (Cycle_Data & 0x01) != 0;
+					PutEffAddrDataByte();
+					Cycle_Data >>= 1;
+					if (flagC) {
+						Cycle_Data |= 0x80;
+					} else {
+						Cycle_Data &= 0x7f;
 					}
+					flagC = newC;
+					doADC();
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1832,11 +1812,10 @@ public abstract class MOS6510 {
 			case SAXzy:
 			case SAXa:
 			case SAXix: // Also known as AXS
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						Cycle_Data = (byte) (Register_Accumulator & Register_X);
-						PutEffAddrDataByte();
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					Cycle_Data = (byte) (Register_Accumulator & Register_X);
+					PutEffAddrDataByte();
 				};
 				break;
 
@@ -1891,56 +1870,52 @@ public abstract class MOS6510 {
 
 			case SHAay:
 			case SHAiy: // Also known as AXA
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						Cycle_Data = (byte) (Register_X & Register_Accumulator & (Cycle_EffectiveAddress >> 8) + 1);
-						if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
-									| Cycle_EffectiveAddress & 0xff;
-						}
-						PutEffAddrDataByte();
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					Cycle_Data = (byte) (Register_X & Register_Accumulator & (Cycle_EffectiveAddress >> 8) + 1);
+					if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
+						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
+								| Cycle_EffectiveAddress & 0xff;
 					}
+					PutEffAddrDataByte();
 				};
 				break;
 
 			case SHSay: // Also known as TAS
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						Register_StackPointer = (byte) (Register_Accumulator & Register_X);
-						Cycle_Data = (byte) ((Cycle_EffectiveAddress >> 8) + 1
-								& Register_StackPointer & 0xff);
-						if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
-									| Cycle_EffectiveAddress & 0xff;
-						}
-						PutEffAddrDataByte();
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					Register_StackPointer = (byte) (Register_Accumulator & Register_X);
+					Cycle_Data = (byte) ((Cycle_EffectiveAddress >> 8) + 1
+							& Register_StackPointer & 0xff);
+					if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
+						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
+								| Cycle_EffectiveAddress & 0xff;
 					}
+					PutEffAddrDataByte();
 				};
 				break;
 
 			case SHXay: // Also known as XAS
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						Cycle_Data = (byte) (Register_X & (Cycle_EffectiveAddress >> 8) + 1);
-						if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
-									| Cycle_EffectiveAddress & 0xff;
-						}
-						PutEffAddrDataByte();
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					Cycle_Data = (byte) (Register_X & (Cycle_EffectiveAddress >> 8) + 1);
+					if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
+						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
+								| Cycle_EffectiveAddress & 0xff;
 					}
+					PutEffAddrDataByte();
 				};
 				break;
 
 			case SHYax: // Also known as SAY
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						Cycle_Data = (byte) (Register_Y & (Cycle_EffectiveAddress >> 8) + 1);
-						if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-							Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
-									| Cycle_EffectiveAddress & 0xff;
-						}
-						PutEffAddrDataByte();
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					Cycle_Data = (byte) (Register_Y & (Cycle_EffectiveAddress >> 8) + 1);
+					if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
+						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
+								| Cycle_EffectiveAddress & 0xff;
 					}
+					PutEffAddrDataByte();
 				};
 				break;
 
@@ -1951,15 +1926,15 @@ public abstract class MOS6510 {
 			case SLOay:
 			case SLOix:
 			case SLOiy: // Also known as ASO
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PutEffAddrDataByte();
-						flagC = Cycle_Data < 0;
-						Cycle_Data <<= 1;
-						setFlagsNZ(Register_Accumulator |= Cycle_Data);
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					PutEffAddrDataByte();
+					flagC = Cycle_Data < 0;
+					Cycle_Data <<= 1;
+					setFlagsNZ(Register_Accumulator |= Cycle_Data);
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1970,16 +1945,16 @@ public abstract class MOS6510 {
 			case SREay:
 			case SREix:
 			case SREiy: // Also known as LSE
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						PutEffAddrDataByte();
-						flagC = (Cycle_Data & 0x01) != 0;
-						Cycle_Data >>= 1;
-						Cycle_Data &= 0x7f;
-						setFlagsNZ(Register_Accumulator ^= Cycle_Data);
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					PutEffAddrDataByte();
+					flagC = (Cycle_Data & 0x01) != 0;
+					Cycle_Data >>= 1;
+					Cycle_Data &= 0x7f;
+					setFlagsNZ(Register_Accumulator ^= Cycle_Data);
 				};
 
+				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = writeToEffectiveAddress;
 				break;
 
@@ -1990,33 +1965,30 @@ public abstract class MOS6510 {
 			case STAay:
 			case STAix:
 			case STAiy:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						Cycle_Data = Register_Accumulator;
-						PutEffAddrDataByte();
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					Cycle_Data = Register_Accumulator;
+					PutEffAddrDataByte();
 				};
 				break;
 
 			case STXz:
 			case STXzy:
 			case STXa:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						Cycle_Data = Register_X;
-						PutEffAddrDataByte();
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					Cycle_Data = Register_X;
+					PutEffAddrDataByte();
 				};
 				break;
 
 			case STYz:
 			case STYzx:
 			case STYa:
-				instrTable[buildCycle++] = new ProcessorCycleNoSteal() {
-					public void run() {
-						Cycle_Data = Register_Y;
-						PutEffAddrDataByte();
-					}
+				processorCycleNoSteal[buildCycle] = true;
+				instrTable[buildCycle++] = () -> {
+					Cycle_Data = Register_Y;
+					PutEffAddrDataByte();
 				};
 				break;
 
