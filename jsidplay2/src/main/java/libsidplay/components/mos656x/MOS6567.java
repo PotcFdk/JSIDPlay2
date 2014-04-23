@@ -270,7 +270,7 @@ public class MOS6567 extends VIC {
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
-					support.firePropertyChange(PROP_PIXELS, null, pixels);
+					pixels.set(pixels.get().clone());
 				}
 				setBA(!sprites[3].isDMA() && !sprites[4].isDMA()
 						&& !sprites[5].isDMA());

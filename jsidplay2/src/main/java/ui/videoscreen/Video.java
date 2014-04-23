@@ -1,7 +1,5 @@
 package ui.videoscreen;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Arrays;
 
@@ -9,6 +7,8 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -47,7 +47,7 @@ import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 import de.schlichtherle.truezip.file.TFile;
 
-public class Video extends Tab implements UIPart, PropertyChangeListener {
+public class Video extends Tab implements UIPart, ChangeListener<int[]> {
 	private static final double MONITOR_MARGIN_LEFT = 35;
 	private static final double MONITOR_MARGIN_RIGHT = 35;
 	private static final double MONITOR_MARGIN_TOP = 28;
@@ -93,8 +93,8 @@ public class Video extends Tab implements UIPart, PropertyChangeListener {
 							if (arg2 == State.RUNNING) {
 								Platform.runLater(() -> {
 									setupVideoScreen();
-									setupScreenBasedOnChipType(util.getPlayer()
-											.getTune());
+									setVisibilityBasedOnChipType(util
+											.getPlayer().getTune());
 								});
 							}
 						});
@@ -264,10 +264,21 @@ public class Video extends Tab implements UIPart, PropertyChangeListener {
 	/**
 	 * Connect VIC output with screen.
 	 */
-	protected void setupVideoScreen() {
+	private void setupVideoScreen() {
+		double screenScale = ((SidPlay2Section) util.getConfig().getSidplay2())
+				.getVideoScaling();
+		screen.setWidth(screenScale * getVIC().getBorderWidth());
+		screen.setHeight(screenScale * getVIC().getBorderHeight());
+		for (ImageView imageView : Arrays.asList(monitorBorder, breadbox, pc64)) {
+			imageView.setScaleX(screen.getWidth()
+					/ imageView.getImage().getWidth());
+			imageView.setScaleY(screen.getHeight()
+					/ imageView.getImage().getHeight());
+		}
 		vicImage = new WritableImage(getVIC().getBorderWidth(), getVIC()
 				.getBorderHeight());
-		getVIC().addPropertyChangeListener(this);
+		getVIC().pixelsProperty().removeListener(this);
+		getVIC().pixelsProperty().addListener(this);
 	}
 
 	/**
@@ -298,6 +309,26 @@ public class Video extends Tab implements UIPart, PropertyChangeListener {
 				releaseC64Key(KeyTableEntry.COMMODORE);
 			}
 		});
+	}
+
+	private void pressC64Key(final KeyTableEntry key) {
+		getC64().getEventScheduler().scheduleThreadSafe(
+				new Event("Virtual Keyboard Key Pressed: " + key.name()) {
+					@Override
+					public void event() throws InterruptedException {
+						getC64().getKeyboard().keyPressed(key);
+					}
+				});
+	}
+
+	private void releaseC64Key(final KeyTableEntry key) {
+		getC64().getEventScheduler().scheduleThreadSafe(
+				new Event("Virtual Keyboard Key Released: " + key.name()) {
+					@Override
+					public void event() throws InterruptedException {
+						getC64().getKeyboard().keyReleased(key);
+					}
+				});
 	}
 
 	protected float round(float f) {
@@ -382,30 +413,10 @@ public class Video extends Tab implements UIPart, PropertyChangeListener {
 		timer.playFromStart();
 	}
 
-	protected void pressC64Key(final KeyTableEntry key) {
-		getC64().getEventScheduler().scheduleThreadSafe(
-				new Event("Virtual Keyboard Key Pressed: " + key.name()) {
-					@Override
-					public void event() throws InterruptedException {
-						getC64().getKeyboard().keyPressed(key);
-					}
-				});
-	}
-
-	protected void releaseC64Key(final KeyTableEntry key) {
-		getC64().getEventScheduler().scheduleThreadSafe(
-				new Event("Virtual Keyboard Key Released: " + key.name()) {
-					@Override
-					public void event() throws InterruptedException {
-						getC64().getKeyboard().keyReleased(key);
-					}
-				});
-	}
-
 	/**
 	 * Make C64 image visible, if the internal util.getPlayer() is used.
 	 */
-	protected void setupScreenBasedOnChipType(final SidTune sidTune) {
+	protected void setVisibilityBasedOnChipType(final SidTune sidTune) {
 		if (sidTune != null && sidTune.getInfo().playAddr != 0) {
 			if (getChipModel(sidTune) == ChipModel.MOS6581) {
 				// Old SID chip model? Show breadbox
@@ -457,7 +468,7 @@ public class Video extends Tab implements UIPart, PropertyChangeListener {
 	}
 
 	protected VIC getVIC() {
-		return util.getPlayer().getC64().getVIC();
+		return getC64().getVIC();
 	}
 
 	protected C64 getC64() {
@@ -465,43 +476,30 @@ public class Video extends Tab implements UIPart, PropertyChangeListener {
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (VIC.PROP_PIXELS.equals(evt.getPropertyName())) {
-			Platform.runLater(() -> {
-				if (!isSelected()) {
-					return;
-				}
-				double screenScale = ((SidPlay2Section) util.getConfig()
-						.getSidplay2()).getVideoScaling();
-				screen.setWidth(screenScale * getVIC().getBorderWidth());
-				screen.setHeight(screenScale * getVIC().getBorderHeight());
-				vicImage.getPixelWriter().setPixels(0, 0,
-						getVIC().getBorderWidth(), getVIC().getBorderHeight(),
-						PixelFormat.getIntArgbInstance(), getVIC().getPixels(),
-						0, getVIC().getBorderWidth());
-				screen.getGraphicsContext2D().drawImage(
-						vicImage,
-						0,
-						0,
-						getVIC().getBorderWidth(),
-						getVIC().getBorderHeight(),
-						MONITOR_MARGIN_LEFT * screenScale,
-						MONITOR_MARGIN_TOP * screenScale,
-						screen.getWidth()
-								- (MONITOR_MARGIN_LEFT + MONITOR_MARGIN_RIGHT)
-								* screenScale,
-						screen.getHeight()
-								- (MONITOR_MARGIN_TOP + MONITOR_MARGIN_BOTTOM)
-								* screenScale);
-				for (ImageView imageView : Arrays.asList(monitorBorder,
-						breadbox, pc64)) {
-					imageView.setScaleX(screen.getWidth()
-							/ imageView.getImage().getWidth());
-					imageView.setScaleY(screen.getHeight()
-							/ imageView.getImage().getHeight());
-				}
-
-			});
-		}
+	public void changed(ObservableValue<? extends int[]> observable,
+			int[] oldValue, int[] newValue) {
+		Platform.runLater(() -> {
+			double screenScale = ((SidPlay2Section) util.getConfig()
+					.getSidplay2()).getVideoScaling();
+			vicImage.getPixelWriter().setPixels(0, 0,
+					getVIC().getBorderWidth(), getVIC().getBorderHeight(),
+					PixelFormat.getIntArgbInstance(), newValue, 0,
+					getVIC().getBorderWidth());
+			screen.getGraphicsContext2D().drawImage(
+					vicImage,
+					0,
+					0,
+					getVIC().getBorderWidth(),
+					getVIC().getBorderHeight(),
+					MONITOR_MARGIN_LEFT * screenScale,
+					MONITOR_MARGIN_TOP * screenScale,
+					screen.getWidth()
+							- (MONITOR_MARGIN_LEFT + MONITOR_MARGIN_RIGHT)
+							* screenScale,
+					screen.getHeight()
+							- (MONITOR_MARGIN_TOP + MONITOR_MARGIN_BOTTOM)
+							* screenScale);
+		});
 	}
+
 }

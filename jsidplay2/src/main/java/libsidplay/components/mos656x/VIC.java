@@ -6,10 +6,10 @@
  */
 package libsidplay.components.mos656x;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -70,8 +70,6 @@ public abstract class VIC extends Bank {
 		MOS6569R4, /* PAL */
 		MOS6569R5, /* PAL */
 	}
-
-	public static final String PROP_PIXELS = "pixels";
 
 	/** First line when we check for bad lines */
 	protected static final int FIRST_DMA_LINE = 0x30;
@@ -136,9 +134,6 @@ public abstract class VIC extends Bank {
 
 	/** PLA chip */
 	private final PLA pla;
-
-	/** Property change support */
-	protected final PropertyChangeSupport support;
 
 	/** Credits */
 	private static final String credit = "MOS656X (cycle-exact VICII) Emulation:\n"
@@ -216,7 +211,7 @@ public abstract class VIC extends Bank {
 	 * Output ARGB screen buffer as int32 array. MSB to LSB -> alpha, red,
 	 * green, blue
 	 */
-	protected final int[] pixels = new int[48 * 312 * 8];
+	protected final ObjectProperty<int[]> pixels = new SimpleObjectProperty<>(new int[48 * 312 * 8]);
 	/** Index of next pixel to paint */
 	protected int nextPixel;
 	/** Current visible line */
@@ -253,8 +248,6 @@ public abstract class VIC extends Bank {
 
 		CYCLES_PER_LINE = cpl;
 
-		support = new PropertyChangeSupport(this);
-
 		for (int i = 0; i < sprites.length; i++) {
 			sprites[i] = new Sprite(spriteLinkedListHead, i);
 		}
@@ -265,7 +258,7 @@ public abstract class VIC extends Bank {
 	 * 
 	 * @return C64 screen pixels as RGB data
 	 */
-	public final int[] getPixels() {
+	public final ObjectProperty<int[]> pixelsProperty() {
 		return pixels;
 	}
 
@@ -609,7 +602,7 @@ public abstract class VIC extends Bank {
 				oldGraphicsData <<= 4;
 				final byte lineColor = linePaletteCurrent[oldGraphicsData >>> 16];
 				final byte previousLineColor = previousLineDecodedColor[previousLineIndex];
-				pixels[nextPixel++] = ALPHA
+				pixels.get()[nextPixel++] = ALPHA
 						| combinedLinesCurrent[lineColor & 0xff
 								| previousLineColor << 8 & 0xff00];
 				previousLineDecodedColor[previousLineIndex++] = lineColor;
@@ -1117,8 +1110,8 @@ public abstract class VIC extends Bank {
 		}
 
 		// clear the screen
-		for (int i = 0; i < pixels.length; ++i) {
-			pixels[i] = ALPHA;
+		for (int i = 0; i < pixels.get().length; ++i) {
+			pixels.get()[i] = ALPHA;
 		}
 		graphicsRendering = false;
 
@@ -1149,12 +1142,6 @@ public abstract class VIC extends Bank {
 	 */
 	public static String credits() {
 		return credit;
-	}
-
-	public final void addPropertyChangeListener(
-			final PropertyChangeListener listener) {
-		support.removePropertyChangeListener(listener);
-		support.addPropertyChangeListener(listener);
 	}
 
 	/**

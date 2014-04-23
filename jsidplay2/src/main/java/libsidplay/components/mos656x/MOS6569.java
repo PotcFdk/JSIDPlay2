@@ -295,7 +295,7 @@ public final class MOS6569 extends VIC {
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
-					support.firePropertyChange(PROP_PIXELS, null, pixels);
+					pixels.set(pixels.get().clone());
 				}
 
 				// reset collision pointer to first pixel in line
