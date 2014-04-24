@@ -10,13 +10,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * <pre>
  * Implements the C64's keyboard.<br>
  * <br>
- * For documentation on the C64 keyboard handling, see <a href=
- * 'http://www.zimmers.net/anonftp/pub/cbm/c64/programming/documents/keymatrix.txt'>http://www.zimmers.net/anonftp/pub/cbm/c64/programming/documents/keymatrix.txt<
- * / a > or <a href=
- * 'http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg'>http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg</
- * a > .
+ * For documentation on the C64 keyboard handling, see
+ * <a href='http://www.zimmers.net/anonftp/pub/cbm/c64/programming/documents/keymatrix.txt'>http://www.zimmers.net/anonftp/pub/cbm/c64/programming/documents/keymatrix.txt</a> or
+ * <a href='http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg'>http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg</a>.
+ * </pre>
  * 
  * @author Joerg Jahnke (joergjahnke@users.sourceforge.net)
  */
