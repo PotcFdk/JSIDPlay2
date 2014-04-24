@@ -212,15 +212,9 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 
 	@FXML
 	private void showVirtualKeyboard() {
-		if (virtualKeyboard == null) {
-			virtualKeyboard = new Keyboard(util.getConsolePlayer(),
-					util.getPlayer(), util.getConfig());
-			virtualKeyboard.open();
-		} else if (virtualKeyboard.getStage().isShowing()) {
-			virtualKeyboard.getStage().hide();
-		} else {
-			virtualKeyboard.getStage().show();
-		}
+		virtualKeyboard = new Keyboard(util.getConsolePlayer(),
+				util.getPlayer(), util.getConfig());
+		virtualKeyboard.open();
 	}
 
 	@FXML
