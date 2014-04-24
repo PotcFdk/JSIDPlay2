@@ -263,7 +263,6 @@ public class Favorites extends Tab implements UIPart {
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			File target = new File(file.getParentFile(),
 					PathUtils.getBaseNameNoExt(file) + ".js2");
-			// then load the favorites
 			try {
 				getSelectedTab().saveFavorites(target);
 			} catch (IOException e1) {
