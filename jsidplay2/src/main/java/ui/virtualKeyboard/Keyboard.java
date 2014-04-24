@@ -30,6 +30,15 @@ public class Keyboard extends C64Window {
 		getStage().setResizable(false);
 	}
 
+	@Override
+	public void doClose() {
+		releaseC64Key(KeyTableEntry.RUN_STOP);
+		releaseC64Key(KeyTableEntry.SHIFT_LEFT);
+		releaseC64Key(KeyTableEntry.COMMODORE);
+		releaseC64Key(KeyTableEntry.CTRL);
+		releaseC64Key(KeyTableEntry.SHIFT_RIGHT);
+	}
+
 	@FXML
 	private void arrowLeft() {
 		pressC64Key(KeyTableEntry.ARROW_LEFT);

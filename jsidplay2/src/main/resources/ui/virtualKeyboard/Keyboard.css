@@ -1,3 +1,11 @@
 .button {
 	-fx-opacity: 0.5;
+	-fx-background-color: azure;
+}
+
+.toggle-button {
+	-fx-background-color: aqua ;
+}
+.toggle-button:selected {
+	-fx-opacity: 0.7;
 }

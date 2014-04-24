@@ -17,7 +17,7 @@
 				<children>
 					<ImageView>
 						<image>
-							<Image url="@/ui/icons/c64.png" preserveRatio="false"
+							<Image url="@/ui/icons/c64.png"
 								smooth="false" />
 						</image>
 					</ImageView>
