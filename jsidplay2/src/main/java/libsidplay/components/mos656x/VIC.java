@@ -40,15 +40,16 @@ import libsidplay.components.pla.PLA;
  * Implements the functionality of the C64's VIC II chip
  * 
  * For a good German documentation on the MOS 6567/6569 Videocontroller
- * (VIC-II), see <a href=
- * 'http://www.minet.uni-jena.de/~andreasg/c64/vic_artikel/vic_artikel_1.htm'>http://www.minet.uni-jena.de/~andreasg/c64/vic_artikel/vic_artikel_1.htm</
- * a > , <a href=
- * 'http://cbmmuseum.kuto.de/zusatz_6569_vic2.html'>http://cbmmuseum.kuto.de/zusatz_6569_vic2.html</
- * a > or <a href=
- * 'http://unusedino.de/ec64/technical/misc/vic656x/vic656x-german.html'>http://unusedino.de/ec64/technical/misc/vic656x/vic656x-german.html</a
- * > . An English version of the documentation you can find at <a href=
- * 'http://www.unusedino.de/ec64/technical/misc/vic656x/vic656x.html'>http://www.unusedino.de/ec64/technical/misc/vic656x/vic656x.html</
- * a > .<br>
+ * (VIC-II), see
+ * 
+ * <pre>
+ * <a href='http://www.minet.uni-jena.de/~andreasg/c64/vic_artikel/vic_artikel_1.htm'>http://www.minet.uni-jena.de/~andreasg/c64/vic_artikel/vic_artikel_1.htm</a>,
+ * <a href='http://cbmmuseum.kuto.de/zusatz_6569_vic2.html'>http://cbmmuseum.kuto.de/zusatz_6569_vic2.html</a> or
+ * <a href='http://unusedino.de/ec64/technical/misc/vic656x/vic656x-german.html'>http://unusedino.de/ec64/technical/misc/vic656x/vic656x-german.html</a>.
+ * An English version of the documentation you can find at
+ * <a href='http://www.unusedino.de/ec64/technical/misc/vic656x/vic656x.html'>http://www.unusedino.de/ec64/technical/misc/vic656x/vic656x.html</a>.
+ * </pre>
+ * 
  * 
  * @author Joerg Jahnke (joergjahnke@users.sourceforge.net)
  * @author Antti S. Lankila (alankila@bel.fi)
@@ -211,7 +212,7 @@ public abstract class VIC extends Bank {
 	 * Output ARGB screen buffer as int32 array. MSB to LSB -> alpha, red,
 	 * green, blue
 	 */
-	protected final ObjectProperty<int[]> pixels = new SimpleObjectProperty<>(new int[48 * 312 * 8]);
+	protected final int[] pixels = new int[48 * 312 * 8];
 	/** Index of next pixel to paint */
 	protected int nextPixel;
 	/** Current visible line */
@@ -253,13 +254,25 @@ public abstract class VIC extends Bank {
 		}
 	}
 
+	private final int[] pixelsLastScreenRefresh = new int[pixels.length];
+	private final ObjectProperty<int[]> pixelsProperty = new SimpleObjectProperty<>(
+			new int[pixels.length]);
+
 	/**
-	 * Get screen as RGB data
+	 * Get screen as ARGB data
 	 * 
-	 * @return C64 screen pixels as RGB data
+	 * @return C64 screen pixels as ARGB data
 	 */
 	public final ObjectProperty<int[]> pixelsProperty() {
-		return pixels;
+		return pixelsProperty;
+	}
+
+	protected void notifyListeners() {
+		// force notification using alternate buffers
+		System.arraycopy(pixels, 0, pixelsLastScreenRefresh, 0, pixels.length);
+		pixelsProperty
+				.set(pixelsProperty.get() == pixels ? pixelsLastScreenRefresh
+						: pixels);
 	}
 
 	/**
@@ -602,7 +615,7 @@ public abstract class VIC extends Bank {
 				oldGraphicsData <<= 4;
 				final byte lineColor = linePaletteCurrent[oldGraphicsData >>> 16];
 				final byte previousLineColor = previousLineDecodedColor[previousLineIndex];
-				pixels.get()[nextPixel++] = ALPHA
+				pixels[nextPixel++] = ALPHA
 						| combinedLinesCurrent[lineColor & 0xff
 								| previousLineColor << 8 & 0xff00];
 				previousLineDecodedColor[previousLineIndex++] = lineColor;
@@ -1046,7 +1059,8 @@ public abstract class VIC extends Bank {
 	 * fetch for sprite data, the data fetched is set from the interaction with
 	 * CPU.
 	 * 
-	 * @param data The {@link Sprite} data to set.
+	 * @param data
+	 *            The {@link Sprite} data to set.
 	 */
 	private void setSpriteDataFromCPU(byte data) {
 		if (lineCycle >= 4 && lineCycle < 20) {
@@ -1066,7 +1080,8 @@ public abstract class VIC extends Bank {
 	/**
 	 * Schedule the rendering to begin
 	 *
-	 * @param sprite The {@link Sprite} to handle the visibility event of.
+	 * @param sprite
+	 *            The {@link Sprite} to handle the visibility event of.
 	 */
 	private void handleSpriteVisibilityEvent(final Sprite sprite) {
 		/* New coordinate in pipeline: cancel any pending event... */
@@ -1110,8 +1125,8 @@ public abstract class VIC extends Bank {
 		}
 
 		// clear the screen
-		for (int i = 0; i < pixels.get().length; ++i) {
-			pixels.get()[i] = ALPHA;
+		for (int i = 0; i < pixels.length; ++i) {
+			pixels[i] = ALPHA;
 		}
 		graphicsRendering = false;
 
@@ -1157,8 +1172,7 @@ public abstract class VIC extends Bank {
 	public abstract void updatePalette();
 
 	/**
-	 * Trigger the lightpen.
-	 * Sets the lightpen usage flag.
+	 * Trigger the lightpen. Sets the lightpen usage flag.
 	 */
 	public void triggerLightpen() {
 		lpAsserted = true;

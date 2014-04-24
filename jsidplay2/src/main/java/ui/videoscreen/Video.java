@@ -7,8 +7,8 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -30,7 +30,6 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyStatus;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.keyboard.KeyTableEntry;
-import libsidplay.components.mos656x.VIC;
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.ISIDDefs.ChipModel;
 import sidplay.ConsolePlayer;
@@ -47,7 +46,7 @@ import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 import de.schlichtherle.truezip.file.TFile;
 
-public class Video extends Tab implements UIPart, ChangeListener<int[]> {
+public class Video extends Tab implements UIPart, InvalidationListener {
 	private static final double MONITOR_MARGIN_LEFT = 35;
 	private static final double MONITOR_MARGIN_RIGHT = 35;
 	private static final double MONITOR_MARGIN_TOP = 28;
@@ -109,8 +108,10 @@ public class Video extends Tab implements UIPart, ChangeListener<int[]> {
 									.floatValue() - 100.f) / 100.f);
 							brightnessValue.textProperty().set(
 									String.valueOf(brightnessNewValue));
-							getVIC().getPalette().setBrightness(
-									brightnessNewValue);
+							getC64().getPalVIC().getPalette()
+									.setBrightness(brightnessNewValue);
+							getC64().getNtscVIC().getPalette()
+									.setBrightness(brightnessNewValue);
 						});
 		contrast.valueProperty()
 				.addListener(
@@ -119,12 +120,16 @@ public class Video extends Tab implements UIPart, ChangeListener<int[]> {
 									.floatValue() / 100.f);
 							contrastValue.textProperty().set(
 									String.valueOf(contrastNewValue));
-							getVIC().getPalette().setContrast(contrastNewValue);
+							getC64().getPalVIC().getPalette()
+									.setContrast(contrastNewValue);
+							getC64().getNtscVIC().getPalette()
+									.setContrast(contrastNewValue);
 						});
 		gamma.valueProperty().addListener((observable, oldValue, newValue) -> {
 			float gammaNewValue = round((newValue.floatValue() + 180) / 100.f);
 			gammaValue.textProperty().set(String.valueOf(gammaNewValue));
-			getVIC().getPalette().setGamma(gammaNewValue);
+			getC64().getPalVIC().getPalette().setGamma(gammaNewValue);
+			getC64().getNtscVIC().getPalette().setGamma(gammaNewValue);
 		});
 		saturation.valueProperty()
 				.addListener(
@@ -133,8 +138,10 @@ public class Video extends Tab implements UIPart, ChangeListener<int[]> {
 									.floatValue() / 100.f);
 							saturationValue.textProperty().set(
 									String.valueOf(saturationNewValue));
-							getVIC().getPalette().setSaturation(
-									saturationNewValue);
+							getC64().getPalVIC().getPalette()
+									.setSaturation(saturationNewValue);
+							getC64().getNtscVIC().getPalette()
+									.setSaturation(saturationNewValue);
 						});
 		phaseShift.valueProperty()
 				.addListener(
@@ -143,8 +150,10 @@ public class Video extends Tab implements UIPart, ChangeListener<int[]> {
 									.floatValue() - 45.f) / 100.f);
 							phaseShiftValue.textProperty().set(
 									String.valueOf(phaseShiftNewValue));
-							getVIC().getPalette().setPhaseShift(
-									phaseShiftNewValue);
+							getC64().getPalVIC().getPalette()
+									.setPhaseShift(phaseShiftNewValue);
+							getC64().getNtscVIC().getPalette()
+									.setPhaseShift(phaseShiftNewValue);
 						});
 		offset.valueProperty()
 				.addListener(
@@ -152,38 +161,53 @@ public class Video extends Tab implements UIPart, ChangeListener<int[]> {
 							float offsetNewValue = round((newValue.floatValue() + 10.f) / 100.f);
 							offsetValue.textProperty().set(
 									String.valueOf(offsetNewValue));
-							getVIC().getPalette().setOffset(offsetNewValue);
+							getC64().getPalVIC().getPalette()
+									.setOffset(offsetNewValue);
+							getC64().getNtscVIC().getPalette()
+									.setOffset(offsetNewValue);
 						});
 		tint.valueProperty().addListener((observable, oldValue, newValue) -> {
 			float tintNewValue = round((newValue.floatValue() - 10.f) / 100.f);
 			tintValue.textProperty().set(String.valueOf(tintNewValue));
-			getVIC().getPalette().setTint(tintNewValue);
+			getC64().getPalVIC().getPalette().setTint(tintNewValue);
+			getC64().getNtscVIC().getPalette().setTint(tintNewValue);
 		});
 		blur.valueProperty().addListener((observable, oldValue, newValue) -> {
 			float blurNewValue = round((newValue.floatValue() + 50.f) / 100.f);
 			blurValue.textProperty().set(String.valueOf(blurNewValue));
-			getVIC().getPalette().setLuminanceC(blurNewValue);
+			getC64().getPalVIC().getPalette().setLuminanceC(blurNewValue);
+			getC64().getNtscVIC().getPalette().setLuminanceC(blurNewValue);
 		});
 		bleed.valueProperty().addListener((observable, oldValue, newValue) -> {
 			float bleedNewValue = round(newValue.floatValue() / 10.f);
 			bleedValue.textProperty().set(String.valueOf(bleedNewValue));
-			getVIC().getPalette().setDotCreep(bleedNewValue);
+			getC64().getPalVIC().getPalette().setDotCreep(bleedNewValue);
+			getC64().getNtscVIC().getPalette().setDotCreep(bleedNewValue);
 		});
-		brightness.setValue(getVIC().getPalette().getBrightness() * 100 + 100.);
-		contrast.setValue(getVIC().getPalette().getContrast() * 100);
-		gamma.setValue(getVIC().getPalette().getGamma() * 100 - 180.);
-		saturation.setValue(getVIC().getPalette().getSaturation() * 100);
-		phaseShift.setValue(getVIC().getPalette().getPhaseShift() + 45.);
-		offset.setValue(getVIC().getPalette().getOffset() * 100 - 10.);
-		tint.setValue(getVIC().getPalette().getTint() * 100 + 10.);
-		blur.setValue(getVIC().getPalette().getLuminanceC() * 100 - 50.);
-		bleed.setValue(getVIC().getPalette().getDotCreep() * 10);
+		brightness
+				.setValue(getC64().getPalVIC().getPalette().getBrightness() * 100 + 100.);
+		contrast.setValue(getC64().getPalVIC().getPalette().getContrast() * 100);
+		gamma.setValue(getC64().getPalVIC().getPalette().getGamma() * 100 - 180.);
+		saturation
+				.setValue(getC64().getPalVIC().getPalette().getSaturation() * 100);
+		phaseShift
+				.setValue(getC64().getPalVIC().getPalette().getPhaseShift() + 45.);
+		offset.setValue(getC64().getPalVIC().getPalette().getOffset() * 100 - 10.);
+		tint.setValue(getC64().getPalVIC().getPalette().getTint() * 100 + 10.);
+		blur.setValue(getC64().getPalVIC().getPalette().getLuminanceC() * 100 - 50.);
+		bleed.setValue(getC64().getPalVIC().getPalette().getDotCreep() * 10);
 
 		setupVideoScreen();
 
 		setupKeyboard();
 
 		updatePeripheralImages();
+	}
+
+	@Override
+	public void doClose() {
+		getC64().getPalVIC().pixelsProperty().removeListener(this);
+		getC64().getNtscVIC().pixelsProperty().removeListener(this);
 	}
 
 	@FXML
@@ -258,7 +282,8 @@ public class Video extends Tab implements UIPart, ChangeListener<int[]> {
 
 	@FXML
 	private void updatePalette() {
-		getVIC().updatePalette();
+		getC64().getPalVIC().updatePalette();
+		getC64().getNtscVIC().updatePalette();
 	}
 
 	/**
@@ -267,18 +292,19 @@ public class Video extends Tab implements UIPart, ChangeListener<int[]> {
 	private void setupVideoScreen() {
 		double screenScale = ((SidPlay2Section) util.getConfig().getSidplay2())
 				.getVideoScaling();
-		screen.setWidth(screenScale * getVIC().getBorderWidth());
-		screen.setHeight(screenScale * getVIC().getBorderHeight());
+		screen.setWidth(screenScale * getC64().getVIC().getBorderWidth());
+		screen.setHeight(screenScale * getC64().getVIC().getBorderHeight());
 		for (ImageView imageView : Arrays.asList(monitorBorder, breadbox, pc64)) {
 			imageView.setScaleX(screen.getWidth()
 					/ imageView.getImage().getWidth());
 			imageView.setScaleY(screen.getHeight()
 					/ imageView.getImage().getHeight());
 		}
-		vicImage = new WritableImage(getVIC().getBorderWidth(), getVIC()
-				.getBorderHeight());
-		getVIC().pixelsProperty().removeListener(this);
-		getVIC().pixelsProperty().addListener(this);
+		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(),
+				getC64().getVIC().getBorderHeight());
+		getC64().getPalVIC().pixelsProperty().removeListener(this);
+		getC64().getNtscVIC().pixelsProperty().removeListener(this);
+		getC64().getVIC().pixelsProperty().addListener(this);
 	}
 
 	/**
@@ -463,43 +489,43 @@ public class Video extends Tab implements UIPart, ChangeListener<int[]> {
 		}
 	}
 
+	@Override
+	public void invalidated(Observable observable) {
+		double screenScale = ((SidPlay2Section) util.getConfig().getSidplay2())
+				.getVideoScaling();
+		Platform.runLater(() -> {
+			// consistency check required, if video mode changes are made
+			if (vicImage.getHeight() == getC64().getVIC().getBorderHeight()) {
+				vicImage.getPixelWriter().setPixels(0, 0,
+						getC64().getVIC().getBorderWidth(),
+						getC64().getVIC().getBorderHeight(),
+						PixelFormat.getIntArgbInstance(),
+						getC64().getVIC().pixelsProperty().get(), 0,
+						getC64().getVIC().getBorderWidth());
+				screen.getGraphicsContext2D().drawImage(
+						vicImage,
+						0,
+						0,
+						getC64().getVIC().getBorderWidth(),
+						getC64().getVIC().getBorderHeight(),
+						MONITOR_MARGIN_LEFT * screenScale,
+						MONITOR_MARGIN_TOP * screenScale,
+						screen.getWidth()
+								- (MONITOR_MARGIN_LEFT + MONITOR_MARGIN_RIGHT)
+								* screenScale,
+						screen.getHeight()
+								- (MONITOR_MARGIN_TOP + MONITOR_MARGIN_BOTTOM)
+								* screenScale);
+			}
+		});
+	}
+
 	public WritableImage getVicImage() {
 		return vicImage;
 	}
 
-	protected VIC getVIC() {
-		return getC64().getVIC();
-	}
-
 	protected C64 getC64() {
 		return util.getPlayer().getC64();
-	}
-
-	@Override
-	public void changed(ObservableValue<? extends int[]> observable,
-			int[] oldValue, int[] newValue) {
-		Platform.runLater(() -> {
-			double screenScale = ((SidPlay2Section) util.getConfig()
-					.getSidplay2()).getVideoScaling();
-			vicImage.getPixelWriter().setPixels(0, 0,
-					getVIC().getBorderWidth(), getVIC().getBorderHeight(),
-					PixelFormat.getIntArgbInstance(), newValue, 0,
-					getVIC().getBorderWidth());
-			screen.getGraphicsContext2D().drawImage(
-					vicImage,
-					0,
-					0,
-					getVIC().getBorderWidth(),
-					getVIC().getBorderHeight(),
-					MONITOR_MARGIN_LEFT * screenScale,
-					MONITOR_MARGIN_TOP * screenScale,
-					screen.getWidth()
-							- (MONITOR_MARGIN_LEFT + MONITOR_MARGIN_RIGHT)
-							* screenScale,
-					screen.getHeight()
-							- (MONITOR_MARGIN_TOP + MONITOR_MARGIN_BOTTOM)
-							* screenScale);
-		});
 	}
 
 }

@@ -295,7 +295,7 @@ public final class MOS6569 extends VIC {
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
-					pixels.set(pixels.get().clone());
+					notifyListeners();
 				}
 
 				// reset collision pointer to first pixel in line
@@ -465,4 +465,5 @@ public final class MOS6569 extends VIC {
 	public Palette getPalette() {
 		return palette;
 	}
+
 }

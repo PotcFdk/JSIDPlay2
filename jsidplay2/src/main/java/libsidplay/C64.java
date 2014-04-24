@@ -611,9 +611,17 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 * @return VIC chip
 	 */
 	public VIC getVIC() {
-		return clock == CPUClock.PAL ? palVic : ntscVic;
+		return clock == CPUClock.NTSC ? ntscVic : palVic;
 	}
 
+	public final VIC getPalVIC() {
+		return palVic;
+	}
+	
+	public final VIC getNtscVIC() {
+		return ntscVic;
+	}
+	
 	/**
 	 * Set system clock (PAL/NTSC).
 	 * 
