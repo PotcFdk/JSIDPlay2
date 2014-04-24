@@ -457,7 +457,7 @@ public abstract class VIC extends Bank {
 			if (((videoModeColorDecoderOffset & 4) != 0 && !(videoModeColorDecoderOffset == 4 && videoModeColors[COL_CBUF] < 8))) {
 
 				/*
-				 * It would be great if the below expressoin could be SIMDified,
+				 * It would be great if the below expression could be SIMDified,
 				 * but that has proven to be very difficult.
 				 */
 				while (pixel < end) {

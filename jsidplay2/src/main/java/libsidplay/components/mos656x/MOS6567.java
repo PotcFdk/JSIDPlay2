@@ -158,7 +158,7 @@ public class MOS6567 extends VIC {
 					sprite.initDmaAccess();
 				}
 				fetchSpritePointer(0);
-				// already done: env.signalAEC(!sprites[0].isDMA() &&
+				// already done: setBA(!sprites[0].isDMA() &&
 				// !sprites[1].isDMA());
 				break;
 
