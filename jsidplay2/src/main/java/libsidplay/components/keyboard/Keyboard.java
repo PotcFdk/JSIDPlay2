@@ -37,9 +37,6 @@ public abstract class Keyboard {
 	 *            key that was pressed
 	 */
 	public synchronized void keyPressed(final KeyTableEntry ktEntry) {
-		if (keysDown.contains(ktEntry)) {
-			return;
-		}
 		keysDown.add(ktEntry);
 	}
 
@@ -50,9 +47,6 @@ public abstract class Keyboard {
 	 *            key to release
 	 */
 	public synchronized void keyReleased(final KeyTableEntry ktEntry) {
-		if (!keysDown.contains(ktEntry)) {
-			return;
-		}
 		keysDown.remove(ktEntry);
 	}
 
