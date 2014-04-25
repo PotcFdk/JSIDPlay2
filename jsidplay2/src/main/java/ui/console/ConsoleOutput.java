@@ -19,7 +19,7 @@ import ui.entities.config.Configuration;
 
 public class ConsoleOutput extends VBox implements UIPart {
 
-	private static final String NEWLiNE = System.getProperty("line.separator");
+	private static final String NEWLINE = System.getProperty("line.separator");
 
 	@FXML
 	protected TextArea console;
@@ -28,17 +28,17 @@ public class ConsoleOutput extends VBox implements UIPart {
 
 	private UIUtil util;
 
-	@FXML
-	private void clearConsole() {
-		console.clear();
-	}
-
 	public ConsoleOutput(C64Window window, ConsolePlayer consolePlayer,
 			Player player, Configuration config) {
 		util = new UIUtil(window, consolePlayer, player, config, this);
 		getChildren().add((Node) util.parse());
 	}
 
+	@FXML
+	private void clearConsole() {
+		console.clear();
+	}
+	
 	public PrintStream getPrintStream(final OutputStream original) {
 		return new PrintStream(new OutputStream() {
 
@@ -49,7 +49,7 @@ public class ConsoleOutput extends VBox implements UIPart {
 				original.write(b, off, len);
 				final String str = new String(b, off, len);
 				contents.append(str);
-				if (str.endsWith(NEWLiNE)) {
+				if (str.endsWith(NEWLINE)) {
 					flush();
 				}
 			}
