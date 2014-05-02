@@ -21,7 +21,6 @@
  */
 package resid_builder.resid;
 
-import resid_builder.resid.ISIDDefs.ChipModel;
 
 /**
  * A 15 bit counter is used to implement the envelope rates, in effect dividing

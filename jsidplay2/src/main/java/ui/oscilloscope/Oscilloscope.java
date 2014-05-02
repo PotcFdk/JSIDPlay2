@@ -123,17 +123,17 @@ public class Oscilloscope extends Tab implements UIPart {
 									}
 								});
 
-								util.getPlayer().mute(0, 0,
+								util.getConsolePlayer().setMute(0, 0,
 										muteVoice1.isSelected());
-								util.getPlayer().mute(0, 1,
+								util.getConsolePlayer().setMute(0, 1,
 										muteVoice2.isSelected());
-								util.getPlayer().mute(0, 2,
+								util.getConsolePlayer().setMute(0, 2,
 										muteVoice3.isSelected());
-								util.getPlayer().mute(1, 0,
+								util.getConsolePlayer().setMute(1, 0,
 										muteVoice4.isSelected());
-								util.getPlayer().mute(1, 1,
+								util.getConsolePlayer().setMute(1, 1,
 										muteVoice5.isSelected());
-								util.getPlayer().mute(1, 2,
+								util.getConsolePlayer().setMute(1, 2,
 										muteVoice6.isSelected());
 							}
 						});
@@ -195,32 +195,32 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	@FXML
 	private void doMuteVoice1() {
-		util.getPlayer().mute(0, 0, muteVoice1.isSelected());
+		util.getConsolePlayer().setMute(0, 0, muteVoice1.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice2() {
-		util.getPlayer().mute(0, 1, muteVoice2.isSelected());
+		util.getConsolePlayer().setMute(0, 1, muteVoice2.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice3() {
-		util.getPlayer().mute(0, 2, muteVoice3.isSelected());
+		util.getConsolePlayer().setMute(0, 2, muteVoice3.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice4() {
-		util.getPlayer().mute(1, 0, muteVoice4.isSelected());
+		util.getConsolePlayer().setMute(1, 0, muteVoice4.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice5() {
-		util.getPlayer().mute(1, 1, muteVoice5.isSelected());
+		util.getConsolePlayer().setMute(1, 1, muteVoice5.isSelected());
 	}
 
 	@FXML
 	private void doMuteVoice6() {
-		util.getPlayer().mute(1, 2, muteVoice6.isSelected());
+		util.getConsolePlayer().setMute(1, 2, muteVoice6.isSelected());
 	}
 
 }

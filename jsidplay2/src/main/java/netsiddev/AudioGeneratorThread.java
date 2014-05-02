@@ -13,10 +13,10 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 
-import libsidplay.common.ISID2Types;
-import resid_builder.resid.ISIDDefs.ChipModel;
-import resid_builder.resid.ISIDDefs.SamplingMethod;
+import libsidplay.common.CPUClock;
+import resid_builder.resid.ChipModel;
 import resid_builder.resid.SID;
+import resid_builder.resid.SamplingMethod;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 
@@ -42,7 +42,7 @@ public class AudioGeneratorThread extends Thread {
 	private SID[] sid;
 
 	/** Currently active clocking value */
-	private ISID2Types.CPUClock[] sidClocking;
+	private CPUClock[] sidClocking;
 
 	/** Currently active sampling method */
 	private SamplingMethod[] sidSampling;
@@ -282,7 +282,7 @@ public class AudioGeneratorThread extends Thread {
 	 * 
 	 * @param clock The specified clock value to set.
 	 */
-	public void setClocking(ISID2Types.CPUClock clock) {
+	public void setClocking(CPUClock clock) {
 		Arrays.fill(sidClocking, clock);
 		refreshParams();
 	}
@@ -380,8 +380,8 @@ public class AudioGeneratorThread extends Thread {
 	public void setSidArray(SID[] sid) {
 		this.sid = sid;
 
-		sidClocking = new ISID2Types.CPUClock[sid.length];
-		Arrays.fill(sidClocking, ISID2Types.CPUClock.PAL);
+		sidClocking = new CPUClock[sid.length];
+		Arrays.fill(sidClocking, CPUClock.PAL);
 
 		sidSampling = new SamplingMethod[sid.length];
 		Arrays.fill(sidSampling, SamplingMethod.DECIMATE);

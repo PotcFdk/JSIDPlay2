@@ -3,8 +3,9 @@ package ui.entities.config;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
-import libsidplay.common.ISID2Types.CPUClock;
-import resid_builder.resid.ISIDDefs.ChipModel;
+
+import libsidplay.common.CPUClock;
+import resid_builder.resid.ChipModel;
 
 @Generated(value="Dali", date="2012-11-09T20:55:57.992+0100")
 @StaticMetamodel(EmulationSection.class)

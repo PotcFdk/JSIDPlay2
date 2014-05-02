@@ -1,7 +1,7 @@
 package sidplay.ini.intf;
 
-import libsidplay.common.ISID2Types.CPUClock;
-import resid_builder.resid.ISIDDefs.ChipModel;
+import libsidplay.common.CPUClock;
+import resid_builder.resid.ChipModel;
 
 public interface IEmulationSection {
 

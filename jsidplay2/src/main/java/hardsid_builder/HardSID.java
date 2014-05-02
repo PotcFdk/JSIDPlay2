@@ -3,7 +3,9 @@ package hardsid_builder;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import resid_builder.resid.ISIDDefs.ChipModel;
+import resid_builder.resid.ChipModel;
+import resid_builder.resid.SamplingMethod;
+import sidplay.ini.intf.IConfig;
 
 /**
  * <pre>
@@ -38,7 +40,7 @@ public class HardSID extends SIDEmu {
 
 	private final int chipNum;
 
-	private final ChipModel model;
+	private ChipModel model;
 
 	// Generic variables
 	private String m_errorBuffer;
@@ -140,13 +142,16 @@ public class HardSID extends SIDEmu {
 		return m_status;
 	}
 
+	public void setFilter(IConfig config) {
+	}
+
 	@Override
 	public void setFilter(final boolean enable) {
 		hsid2.HardSID_Filter(chipNum, enable);
 	}
 
 	@Override
-	public void setEnabled(final int num, final boolean mute) {
+	public void setVoiceMute(final int num, final boolean mute) {
 		if (hsid2.HardSID_Version() >= HardSIDBuilder.HSID_VERSION_207) {
 			hsid2.HardSID_Mute2(chipNum, num, mute, false);
 		} else {
@@ -202,6 +207,20 @@ public class HardSID extends SIDEmu {
 		return model;
 	}
 
+	public void setChipModel(final ChipModel model) {
+		this.model = model;
+	}
+
+	@Override
+	public void setSampling(double cpuFrequency, float frequency,
+			SamplingMethod sampling) {
+	}
+
+	
+	@Override
+	public void input(int input) {
+	}
+	
 	public void setChipsUsed(int size) {
 		chipsUsed = size;
 	}

@@ -24,9 +24,10 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
-import resid_builder.resid.ISIDDefs.ChipModel;
+import resid_builder.resid.ChipModel;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
+import sidplay.consoleplayer.Output;
 
 public class ReSIDBuilder extends SIDBuilder {
 	/** Current audio configuration */
@@ -34,37 +35,41 @@ public class ReSIDBuilder extends SIDBuilder {
 
 	/** Current output driver */
 	protected AudioDriver output;
-	
+
 	/** List of SID instances */
 	protected List<ReSID> sids = new ArrayList<ReSID>();
 
 	/** Mixing algorithm */
 	private final MixerEvent mixerEvent = new MixerEvent();
-	
+
 	/** C64 system frequency */
 	private final double systemFrequency;
-	
-	public ReSIDBuilder(AudioConfig audioConfig, double systemFrequency) {
+
+	public ReSIDBuilder(AudioConfig audioConfig, double systemFrequency,
+			float leftVolumeInDB, float rightVolumeInDB) {
 		this.audioConfig = audioConfig;
 		this.systemFrequency = systemFrequency;
+		setSIDVolume(0, leftVolumeInDB);
+		setSIDVolume(1, rightVolumeInDB);
+		setOutput(Output.OUT_NULL.getDriver());
 	}
-	
+
 	protected class MixerEvent extends Event {
-		/** Random source for triangular dithering */	
+		/** Random source for triangular dithering */
 		private final Random RANDOM = new Random();
 		/** State of HP-TPDF. */
 		private int oldRandomValue;
 
 		private final int[] volume = new int[] { 1024, 1024 };
 		private EventScheduler context;
-		
+
 		protected void setVolume(int i, float v) {
 			volume[i] = (int) (v * 1024f);
 		}
 
 		/**
-		 * Triangularly shaped noise source for audio applications.
-		 * Output of this PRNG is between ]-1, 1[.
+		 * Triangularly shaped noise source for audio applications. Output of
+		 * this PRNG is between ]-1, 1[.
 		 * 
 		 * @return triangular noise sample
 		 */
@@ -77,12 +82,12 @@ public class ReSIDBuilder extends SIDBuilder {
 		protected MixerEvent() {
 			super("Mixer");
 		}
-		
+
 		@Override
 		public void event() throws InterruptedException {
 			final ReSID chip1 = sids.get(0);
 			final ReSID chip2 = sids.size() >= 2 ? sids.get(1) : null;
-			
+
 			/* this clocks the SID to the present moment, if it isn't already. */
 			chip1.clock();
 			final int[] buf1 = chip1.getBuffer();
@@ -91,14 +96,19 @@ public class ReSIDBuilder extends SIDBuilder {
 				chip2.clock();
 				buf2 = chip2.getBuffer();
 			}
-			
-			/* extract buffer info now that the SID is updated.
-			 * clock() may update bufferpos. */
+
+			/*
+			 * extract buffer info now that the SID is updated. clock() may
+			 * update bufferpos.
+			 */
 			final int samples = chip1.getPosition();
-			/* If chip2 exists, its bufferpos is expected to be identical to chip1's. */
-			
+			/*
+			 * If chip2 exists, its bufferpos is expected to be identical to
+			 * chip1's.
+			 */
+
 			final ByteBuffer soundBuffer = output.buffer();
-			for (int i = 0; i < samples; i ++) {
+			for (int i = 0; i < samples; i++) {
 				int dither = triangularDithering();
 				int value = (buf1[i] * volume[0] + dither) >> 10;
 				if (value > 32767) {
@@ -117,10 +127,10 @@ public class ReSIDBuilder extends SIDBuilder {
 					if (value < -32768) {
 						value = -32768;
 					}
-					
+
 					soundBuffer.putShort((short) value);
 				}
-				
+
 				if (soundBuffer.remaining() == 0) {
 					output.write();
 					soundBuffer.clear();
@@ -131,7 +141,7 @@ public class ReSIDBuilder extends SIDBuilder {
 			if (chip2 != null) {
 				chip2.setPosition(0);
 			}
-			
+
 			context.schedule(this, 10000);
 		}
 
@@ -146,8 +156,9 @@ public class ReSIDBuilder extends SIDBuilder {
 	@Override
 	public SIDEmu lock(final EventScheduler env, final ChipModel model) {
 		final ReSID sid = new ReSID(env, mixerEvent);
-		sid.model(model);
-		sid.sampling(systemFrequency, audioConfig.getFrameRate(), audioConfig.getSamplingMethod());
+		sid.setChipModel(model);
+		sid.setSampling(systemFrequency, audioConfig.getFrameRate(),
+				audioConfig.getSamplingMethod());
 		sids.add(sid);
 		return sid;
 	}
@@ -160,11 +171,22 @@ public class ReSIDBuilder extends SIDBuilder {
 		sids.remove(sid);
 	}
 
-	public void setSIDVolume(int i, float volume) {
-		mixerEvent.setVolume(i, volume);
+	@Override
+	public void setSIDVolume(int i, float volumeInDB) {
+		mixerEvent.setVolume(i, (float) Math.pow(10, volumeInDB / 20));
+	}
+
+	@Override
+	public int getNumDevices() {
+		return sids.size();
 	}
 
 	public void setOutput(AudioDriver driver) {
 		output = driver;
+		try {
+			output.open(audioConfig);
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

@@ -15,7 +15,9 @@
  */
 package libsidplay.common;
 
-import resid_builder.resid.ISIDDefs.ChipModel;
+import resid_builder.resid.ChipModel;
+import resid_builder.resid.SamplingMethod;
+import sidplay.ini.intf.IConfig;
 
 public abstract class SIDEmu {
 	/** Event context */
@@ -52,9 +54,18 @@ public abstract class SIDEmu {
 
 	public abstract void clock();
 
-	public abstract void setEnabled(int num, boolean mute);
+	public abstract void setVoiceMute(int num, boolean mute);
+
+	public abstract void setFilter(IConfig config);
 
 	public abstract void setFilter(boolean enable);
-	
+
 	public abstract ChipModel getChipModel();
+
+	public abstract void setChipModel(final ChipModel model);
+
+	public abstract void setSampling(double cpuFrequency, float frequency,
+			SamplingMethod sampling);
+
+	public abstract void input(int input);
 }

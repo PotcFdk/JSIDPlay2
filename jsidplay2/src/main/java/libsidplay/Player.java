@@ -28,10 +28,10 @@ import java.io.InputStream;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1530.Datasette.Control;
@@ -49,6 +49,9 @@ import libsidplay.components.mos656x.VIC;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.sidtune.SidTune;
 import resid_builder.ReSID;
+import resid_builder.resid.ChipModel;
+import resid_builder.resid.SamplingMethod;
+import sidplay.ini.intf.IConfig;
 
 /**
  * The player contains a C64 computer and additional peripherals.<BR>
@@ -102,7 +105,9 @@ public class Player {
 	/**
 	 * Are the floppy disk drives enabled?
 	 */
-	protected BooleanProperty drivesEnabled = new SimpleBooleanProperty();
+	protected BooleanProperty drivesEnabledProperty = new SimpleBooleanProperty();
+
+	protected BooleanProperty connectC64AndC1541WithParallelCableProperty = new SimpleBooleanProperty();
 
 	/**
 	 * Create a complete setup (C64, tape/disk drive, carts and more).
@@ -141,7 +146,7 @@ public class Player {
 
 			@Override
 			public byte readFromIECBus() {
-				if (drivesEnabled.get()) {
+				if (drivesEnabledProperty.get()) {
 					c1541Runner.synchronize(0);
 					return iecBus.readFromIECBus();
 				}
@@ -150,7 +155,7 @@ public class Player {
 
 			@Override
 			public void writeToIECBus(final byte data) {
-				if (drivesEnabled.get()) {
+				if (drivesEnabledProperty.get()) {
 					// more elegant solution to
 					// assure a one cycle write delay
 					c1541Runner.synchronize(1);
@@ -195,9 +200,12 @@ public class Player {
 	}
 
 	public BooleanProperty drivesEnabledProperty() {
-		return drivesEnabled;
+		return drivesEnabledProperty;
 	}
 
+	public BooleanProperty connectC64AndC1541WithParallelCableProperty() {
+		return connectC64AndC1541WithParallelCableProperty;
+	}
 	/**
 	 * Set frequency (PAL/NTSC)
 	 * 
@@ -226,7 +234,8 @@ public class Player {
 		for (final C1541 floppy : floppies) {
 			floppy.reset();
 		}
-		enableFloppyDiskDrives(drivesEnabled.get());
+		enableFloppyDiskDrives(drivesEnabledProperty.get());
+		connectC64AndC1541WithParallelCable(connectC64AndC1541WithParallelCableProperty.get());
 		// Reset IEC devices
 		for (final SerialIECDevice serialDevice : serialDevices) {
 			serialDevice.reset();
@@ -312,23 +321,6 @@ public class Player {
 		return (int) (c.getTime(Phase.PHI2) / c.getCyclesPerSecond());
 	}
 
-	/**
-	 * Mute a specific voice of a SID chip
-	 * 
-	 * @param sidNum
-	 *            SID chip number (0..1)
-	 * @param voice
-	 *            voice to mute (0..2)
-	 * @param enable
-	 *            mute enable
-	 */
-	public void mute(final int sidNum, final int voice, final boolean enable) {
-		final SIDEmu s = c64.getSID(sidNum);
-		if (s != null) {
-			s.setEnabled(voice, enable);
-		}
-	}
-
 	public void turnPrinterOnOff(final boolean on) {
 		printerEnabled = on;
 		printer.turnPrinterOnOff(on);
@@ -350,7 +342,7 @@ public class Player {
 						@Override
 						public void event() {
 							c1541Runner.reset();
-							drivesEnabled.set(on);
+							drivesEnabledProperty.set(on);
 						}
 					});
 		} else {
@@ -359,7 +351,7 @@ public class Player {
 						@Override
 						public void event() {
 							c1541Runner.cancel();
-							drivesEnabled.set(on);
+							drivesEnabledProperty.set(on);
 						}
 					});
 		}
@@ -389,24 +381,24 @@ public class Player {
 	 */
 	private final IParallelCable makeCableBetweenC64AndC1541() {
 		return new IParallelCable() {
-	
+
 			protected byte parallelCableCpuValue = (byte) 0xff;
 			protected final byte parallelCableDriveValue[] = { (byte) 0xff,
 					(byte) 0xff, (byte) 0xff, (byte) 0xff };
-	
+
 			@Override
 			public void driveWrite(final byte data, final boolean handshake,
 					final int dnr) {
 				c64.cia2.setFlag(handshake);
 				parallelCableDriveValue[dnr & ~0x08] = data;
 			}
-	
+
 			@Override
 			public byte driveRead(final boolean handshake) {
 				c64.cia2.setFlag(handshake);
 				return parallelCableValue();
 			}
-	
+
 			/**
 			 * Return the current state of the parallel cable.
 			 * 
@@ -414,25 +406,25 @@ public class Player {
 			 */
 			private byte parallelCableValue() {
 				byte val = parallelCableCpuValue;
-	
+
 				for (final C1541 floppy : floppies) {
 					val &= parallelCableDriveValue[floppy.getID() & ~0x08];
 				}
 				return val;
 			}
-	
+
 			@Override
 			public void c64Write(final byte data) {
 				c1541Runner.synchronize(0);
 				parallelCableCpuValue = data;
 			}
-	
+
 			@Override
 			public byte c64Read() {
 				c1541Runner.synchronize(0);
 				return parallelCableValue();
 			}
-	
+
 			@Override
 			public void pulse() {
 				c1541Runner.synchronize(0);
@@ -464,7 +456,7 @@ public class Player {
 		try {
 			dis = new DataInputStream(c64KernalStream);
 			dis.readFully(c64Kernal);
-			getC64().setCustomKernal(c64Kernal);
+			c64.setCustomKernal(c64Kernal);
 		} catch (IOException e) {
 			throw e;
 		} finally {
@@ -493,7 +485,7 @@ public class Player {
 	 * Uninstall Jiffy DOS floppy speeder.
 	 */
 	public void uninstallJiffyDOS() throws IOException {
-		getC64().setCustomKernal(null);
+		c64.setCustomKernal(null);
 		for (final C1541 floppy : floppies) {
 			floppy.setCustomKernalRom(null);
 		}
@@ -624,6 +616,80 @@ public class Player {
 		credits.append(HardSIDBuilder.credits());
 		credits.append(ReSID.credits());
 		return credits.toString();
+	}
+
+	/** Stereo SID at 0xd400 hack */
+	public void handleStereoSIDConflict(Integer secondAddress) {
+		if (Integer.valueOf(0xd400).equals(secondAddress)) {
+			final SIDEmu s1 = c64.getSID(0);
+			final SIDEmu s2 = c64.getSID(1);
+			getC64().setSID(0, new SIDEmu(getC64().getEventScheduler()) {
+				@Override
+				public void reset(byte volume) {
+					s1.reset(volume);
+				}
+
+				@Override
+				public byte read(int addr) {
+					return s1.read(addr);
+				}
+
+				@Override
+				public void write(int addr, byte data) {
+					s1.write(addr, data);
+					s2.write(addr, data);
+				}
+
+				@Override
+				public byte readInternalRegister(int addr) {
+					return s1.readInternalRegister(addr);
+				}
+
+				@Override
+				public void clock() {
+					s1.clock();
+				}
+
+				@Override
+				public void setVoiceMute(int num, boolean mute) {
+					s1.setVoiceMute(num, mute);
+				}
+
+				@Override
+				public void setFilter(IConfig config) {
+					s1.setFilter(config);
+				}
+				
+				@Override
+				public void setFilter(boolean enable) {
+					s1.setFilter(enable);
+				}
+
+				@Override
+				public ChipModel getChipModel() {
+					return s1.getChipModel();
+				}
+
+				@Override
+				public void setChipModel(ChipModel model) {
+					s1.setChipModel(model);
+					s2.setChipModel(model);
+				}
+				
+				@Override
+				public void setSampling(double cpuFrequency, float frequency,
+						SamplingMethod sampling) {
+					s1.setSampling(cpuFrequency, frequency, sampling);
+					s2.setSampling(cpuFrequency, frequency, sampling);
+				}
+				
+				@Override
+				public void input(int input) {
+					s1.input(input);
+					s2.input(input);
+				}
+			});
+		}
 	}
 
 }

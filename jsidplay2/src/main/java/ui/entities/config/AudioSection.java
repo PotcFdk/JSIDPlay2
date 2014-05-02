@@ -4,7 +4,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import resid_builder.resid.ISIDDefs.SamplingMethod;
+import resid_builder.resid.SamplingMethod;
 import sidplay.ini.intf.IAudioSection;
 
 @Embeddable

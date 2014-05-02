@@ -16,6 +16,7 @@ import sidplay.ini.IniConfig;
 
 @SuppressWarnings("serial")
 public class SIDPlay extends Applet {
+	private IniConfig config;
 	private ConsolePlayer cp;
 	private Output fOut = Output.OUT_SOUNDCARD;
 	private Emulation fEmu = Emulation.EMU_RESID;
@@ -28,7 +29,8 @@ public class SIDPlay extends Applet {
 
 	@Override
 	public void init() {
-		cp = new ConsolePlayer(new IniConfig());
+		config = new IniConfig();
+		cp = new ConsolePlayer(config);
 		callJavaScript("javascript:init()");
 	}
 
@@ -91,8 +93,8 @@ public class SIDPlay extends Applet {
 		if (cp.args(args) < 0) {
 			return;
 		}
-		cp.getDriverSettings().setOutput(fOut);
-		cp.getDriverSettings().setEmulation(fEmu);
+		cp.setOutput(fOut);
+		cp.setEmulation(fEmu);
 		cp.startC64();
 	}
 
@@ -158,8 +160,8 @@ public class SIDPlay extends Applet {
 	 *            device number to be used for 8580
 	 */
 	public void setChipDevice(final int hardsid6581, final int hardsid8580) {
-		cp.getConfig().getEmulation().setHardsid6581(hardsid6581);
-		cp.getConfig().getEmulation().setHardsid8580(hardsid8580);
+		config.getEmulation().setHardsid6581(hardsid6581);
+		config.getEmulation().setHardsid8580(hardsid8580);
 	}
 
 	/**
@@ -192,7 +194,7 @@ public class SIDPlay extends Applet {
 	 * @return current song number
 	 */
 	public int getCurrentSong() {
-		return cp.getTrack().getSelected();
+		return cp.getSelected();
 	}
 
 	/**

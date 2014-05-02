@@ -60,10 +60,6 @@ public class JSIDPlay2Main extends Application {
 		initializeTmpDir(config);
 
 		cp = new ConsolePlayer(config);
-		String[] args = getParameters().getRaw().toArray(new String[0]);
-		if (args.length != 0) {
-			cp.args(args);
-		}
 
 		jSidplay2 = new JSidPlay2(primaryStage, cp, cp.getPlayer(), config);
 		jSidplay2.setConfigService(configService);

@@ -28,7 +28,7 @@ package libsidplay.components.iec;
 
 import java.util.Arrays;
 
-import libsidplay.common.ISID2Types.CPUClock;
+import libsidplay.common.CPUClock;
 
 public abstract class SerialIECDevice {
 

@@ -12,14 +12,9 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import libsidplay.C64;
 import libsidplay.Player;
-import libsidplay.common.SIDEmu;
-import libsidplay.sidtune.SidTune;
-import resid_builder.ReSID;
+import resid_builder.resid.ChipModel;
 import resid_builder.resid.FilterModelConfig;
-import resid_builder.resid.ISIDDefs.ChipModel;
-import resid_builder.resid.SID;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.State;
 import sidplay.ini.intf.IFilterSection;
@@ -39,27 +34,17 @@ public class EmulationSettings extends C64Window {
 					sid1Model.getSelectionModel().select(
 							userSidModel != null ? userSidModel : util
 									.getBundle().getString("AUTO"));
+					ChipModel stereoSidModel = util.getConfig().getEmulation()
+							.getStereoSidModel();
+					sid2Model.getSelectionModel().select(
+							stereoSidModel != null ? stereoSidModel : util
+									.getBundle().getString("LIKE_1ST_SID"));
 					if (userSidModel != null) {
 						addFilters(userSidModel);
 					} else {
-						SidTune sidTune = util.getPlayer().getTune();
-						if (sidTune != null) {
-							switch (sidTune.getInfo().sid1Model) {
-							case MOS6581:
-								addFilters(ChipModel.MOS6581);
-								break;
-							case MOS8580:
-								addFilters(ChipModel.MOS8580);
-								break;
-							default:
-								addFilters(util.getConfig().getEmulation()
-										.getDefaultSidModel());
-								break;
-							}
-						} else {
-							addFilters(util.getConfig().getEmulation()
-									.getDefaultSidModel());
-						}
+						ChipModel model = ChipModel.getChipModel(
+								util.getConfig(), util.getPlayer().getTune());
+						addFilters(model);
 					}
 				});
 			}
@@ -173,37 +158,16 @@ public class EmulationSettings extends C64Window {
 		if (sid1Model.getSelectionModel().getSelectedItem()
 				.equals(util.getBundle().getString("AUTO"))) {
 			util.getConfig().getEmulation().setUserSidModel(null);
-			if (util.getPlayer().getTune() != null) {
-				switch (util.getPlayer().getTune().getInfo().sid1Model) {
-				case MOS6581:
-					setChipModel(ChipModel.MOS6581);
-					addFilters(ChipModel.MOS6581);
-					break;
-				case MOS8580:
-					setChipModel(ChipModel.MOS8580);
-					addFilters(ChipModel.MOS8580);
-					break;
-				default:
-					setChipModel(util.getConfig().getEmulation()
-							.getDefaultSidModel());
-					addFilters(util.getConfig().getEmulation()
-							.getDefaultSidModel());
-					break;
-				}
-			} else {
-				ChipModel defaultModel = util.getConfig().getEmulation()
-						.getDefaultSidModel();
-				setChipModel(defaultModel);
-				addFilters(defaultModel);
-			}
+			ChipModel model = ChipModel.getChipModel(util.getConfig(), util
+					.getPlayer().getTune());
+			addFilters(model);
 		} else {
 			ChipModel userSidModel = (ChipModel) sid1Model.getSelectionModel()
 					.getSelectedItem();
 			util.getConfig().getEmulation().setUserSidModel(userSidModel);
-			setChipModel(userSidModel);
 			addFilters(userSidModel);
 		}
-		util.getConsolePlayer().updateSidEmulation();
+		util.getConsolePlayer().updateChipModelAndFilter();
 	}
 
 	@FXML
@@ -216,7 +180,7 @@ public class EmulationSettings extends C64Window {
 					.getSelectionModel().getSelectedItem();
 			util.getConfig().getEmulation().setStereoSidModel(stereoSidModel);
 		}
-		util.getConsolePlayer().updateSidEmulation();
+		util.getConsolePlayer().updateChipModelAndFilter();
 	}
 
 	@FXML
@@ -237,13 +201,7 @@ public class EmulationSettings extends C64Window {
 	private void setDigiBoost() {
 		boolean selected = boosted8580.isSelected();
 		util.getConfig().getEmulation().setDigiBoosted8580(selected);
-		final int input = selected ? 0x7FF : 0;
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			SID sid = getSID(i);
-			if (sid != null) {
-				sid.input(input);
-			}
-		}
+		util.getConsolePlayer().setDigiBoost(selected);
 	}
 
 	@FXML
@@ -252,42 +210,22 @@ public class EmulationSettings extends C64Window {
 		final boolean filterDisabled = "".equals(filterName);
 
 		util.getConfig().getEmulation().setFilter(!filterDisabled);
-		if (!filterDisabled) {
-			final SIDEmu sid = util.getPlayer().getC64().getSID(0);
-			if (sid != null) {
-				final ChipModel model = sid.getChipModel();
-				if (model == ChipModel.MOS6581) {
-					util.getConfig().getEmulation().setFilter6581(filterName);
-				} else {
-					util.getConfig().getEmulation().setFilter8580(filterName);
-				}
-			}
+
+		ChipModel model;
+		if (sid1Model.getSelectionModel().getSelectedItem()
+				.equals(util.getBundle().getString("AUTO"))) {
+			model = ChipModel.getChipModel(util.getConfig(), util.getPlayer()
+					.getTune());
+		} else {
+			model = (ChipModel) sid1Model.getSelectionModel().getSelectedItem();
+		}
+		if (model == ChipModel.MOS6581) {
+			util.getConfig().getEmulation().setFilter6581(filterName);
+		} else {
+			util.getConfig().getEmulation().setFilter8580(filterName);
 		}
 
-		IFilterSection[] filters = new IFilterSection[2];
-		for (IFilterSection filter : util.getConfig().getFilter()) {
-			if (filters[0] == null
-					&& filter.getName().equals(
-							util.getConfig().getEmulation().getFilter6581())
-					&& filter.getFilter8580CurvePosition() == 0) {
-				filters[0] = filter;
-			} else if (filters[1] == null
-					&& filter.getName().equals(
-							util.getConfig().getEmulation().getFilter8580())
-					&& filter.getFilter8580CurvePosition() != 0) {
-				filters[1] = filter;
-			}
-		}
-
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			final SIDEmu resid = util.getPlayer().getC64().getSID(i);
-			if (resid != null) {
-				resid.setFilter(!filterDisabled);
-				if (resid instanceof ReSID) {
-					((ReSID) resid).filter(filters[0], filters[1]);
-				}
-			}
-		}
+		util.getConsolePlayer().updateChipModelAndFilter();
 		if (!duringInitialization) {
 			calculateFilterCurve(filterName);
 		}
@@ -336,25 +274,7 @@ public class EmulationSettings extends C64Window {
 		}
 	}
 
-	private void setChipModel(ChipModel m) {
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			SID sid = getSID(i);
-			if (sid != null) {
-				sid.setChipModel(m);
-			}
-		}
-	}
-
-	private SID getSID(final int num) {
-		final SIDEmu sid = util.getPlayer().getC64().getSID(num);
-		if (sid instanceof ReSID) {
-			return ((ReSID) sid).sid();
-		} else {
-			return null;
-		}
-	}
-
-	protected void addFilters(final ChipModel model) {
+	private void addFilters(final ChipModel model) {
 		final boolean enable = util.getConfig().getEmulation().isFilter();
 		String item = null;
 		if (enable) {
@@ -364,15 +284,13 @@ public class EmulationSettings extends C64Window {
 				item = util.getConfig().getEmulation().getFilter8580();
 			}
 		}
+
 		filters.clear();
 		filters.add("");
-
-		if (model != null) {
-			for (IFilterSection filter : util.getConfig().getFilter()) {
-				if (filter.getFilter8580CurvePosition() != 0
-						^ model == ChipModel.MOS6581) {
-					filters.add(filter.getName());
-				}
+		for (IFilterSection filter : util.getConfig().getFilter()) {
+			if (filter.getFilter8580CurvePosition() != 0
+					^ model == ChipModel.MOS6581) {
+				filters.add(filter.getName());
 			}
 		}
 

@@ -15,6 +15,7 @@
  */
 package resid_builder;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,9 +23,10 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import resid_builder.ReSIDBuilder.MixerEvent;
-import resid_builder.resid.ISIDDefs.ChipModel;
-import resid_builder.resid.ISIDDefs.SamplingMethod;
+import resid_builder.resid.ChipModel;
 import resid_builder.resid.SID;
+import resid_builder.resid.SamplingMethod;
+import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFilterSection;
 
 /**
@@ -35,12 +37,14 @@ public class ReSID extends SIDEmu {
 
 	private static final String VERSION = "0.0.2";
 
-	private static final int OUTPUTBUFFERSIZE = 5000; /* supports 5 ms chunk at 96 kHz */
-
+	/*
+	 * supports 5 ms chunk at 96 kHz
+	 */
+	private static final int OUTPUTBUFFERSIZE = 5000;
 	private final SID sid = new SID();
 
 	protected int position;
-	
+
 	protected int[] buffer;
 
 	private final ReSIDBuilder.MixerEvent mixerEvent;
@@ -48,8 +52,10 @@ public class ReSID extends SIDEmu {
 	/**
 	 * Constructor
 	 *
-	 * @param context    {@link EventScheduler} context to use.
-	 * @param mixerEvent {@link MixerEvent} to use.
+	 * @param context
+	 *            {@link EventScheduler} context to use.
+	 * @param mixerEvent
+	 *            {@link MixerEvent} to use.
 	 */
 	public ReSID(EventScheduler context, MixerEvent mixerEvent) {
 		super(context);
@@ -64,9 +70,11 @@ public class ReSID extends SIDEmu {
 		clocksSinceLastAccess();
 		sid.reset();
 		sid.write(0x18, volume);
-		/* No matter how many chips are in use,
-		 * mixerEvent is singleton with respect to them.
-		 * Only one will be scheduled. This is a bit dirty, though. */
+		/*
+		 * No matter how many chips are in use, mixerEvent is singleton with
+		 * respect to them. Only one will be scheduled. This is a bit dirty,
+		 * though.
+		 */
 		context.cancel(mixerEvent);
 		mixerEvent.setContext(context);
 		context.schedule(mixerEvent, 0, Event.Phase.PHI2);
@@ -88,7 +96,7 @@ public class ReSID extends SIDEmu {
 		if (RESID.isLoggable(Level.FINE)) {
 			RESID.fine(String.format("write 0x%02x=0x%02x", addr, data));
 		}
-		
+
 		clock();
 		sid.write(addr, data);
 	}
@@ -105,40 +113,71 @@ public class ReSID extends SIDEmu {
 		sid.getFilter8580().enable(enable);
 	}
 
-	public void filter(final IFilterSection filter6581, final IFilterSection filter8580) {
+	public void setFilter(IConfig config) {
+		IFilterSection f6581 = null;
+		IFilterSection f8580 = null;
+		String filter6581 = config.getEmulation().getFilter6581();
+		String filter8580 = config.getEmulation().getFilter8580();
+		List<? extends IFilterSection> filters = config.getFilter();
+		for (IFilterSection filter : filters) {
+			if (filter.getName().equals(filter6581)
+					&& filter.getFilter8580CurvePosition() == 0) {
+				f6581 = filter;
+			} else if (filter.getName().equals(filter8580)
+					&& filter.getFilter8580CurvePosition() != 0) {
+				f8580 = filter;
+			}
+		}
+		setFilter(config.getEmulation().isFilter());
+		setFilter(f6581, f8580);
+	}
+
+	private void setFilter(final IFilterSection filter6581,
+			final IFilterSection filter8580) {
 		if (filter6581 != null) {
-			sid.getFilter6581().setFilterCurve(filter6581.getFilter6581CurvePosition());
+			sid.getFilter6581().setFilterCurve(
+					filter6581.getFilter6581CurvePosition());
 		}
 
 		if (filter8580 != null) {
-			sid.getFilter8580().setFilterCurve(filter8580.getFilter8580CurvePosition());
+			sid.getFilter8580().setFilterCurve(
+					filter8580.getFilter8580CurvePosition());
 		}
 	}
 
-
 	@Override
-	public void setEnabled(final int num, final boolean mute) {
+	public void setVoiceMute(final int num, final boolean mute) {
 		sid.mute(num, mute);
 	}
 
 	/**
 	 * Sets the SID sampling parameters.
 	 *
-	 * @param systemClock System clock to use for the SID.
-	 * @param freq        Frequency to use for the SID.
-	 * @param method      {@link SamplingMethod} to use for the SID.
+	 * @param systemClock
+	 *            System clock to use for the SID.
+	 * @param freq
+	 *            Frequency to use for the SID.
+	 * @param method
+	 *            {@link SamplingMethod} to use for the SID.
 	 */
-	public void sampling(final double systemClock, final float freq, final SamplingMethod method) {
+	public void setSampling(final double systemClock, final float freq,
+			final SamplingMethod method) {
 		sid.setSamplingParameters(systemClock, method, freq, 20000);
 	}
 
 	/**
 	 * Set the emulated SID model
 	 * 
-	 * @param model The emulated SID chip model to use.
+	 * @param model
+	 *            The emulated SID chip model to use.
 	 */
-	public void model(final ChipModel model) {
+	public void setChipModel(final ChipModel model) {
 		sid.setChipModel(model);
+	}
+
+	@Override
+	public void input(int input) {
+		sid.input(input);
 	}
 
 	/**
@@ -165,7 +204,7 @@ public class ReSID extends SIDEmu {
 	public SID sid() {
 		return sid;
 	}
-	
+
 	@Override
 	public ChipModel getChipModel() {
 		return sid.getChipModel();
@@ -183,7 +222,8 @@ public class ReSID extends SIDEmu {
 	/**
 	 * Sets the position to write audio to the buffer.
 	 *
-	 * @param position The new position to start at.
+	 * @param position
+	 *            The new position to start at.
 	 */
 	public void setPosition(final int position) {
 		this.position = position;

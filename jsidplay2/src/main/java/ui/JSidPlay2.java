@@ -37,11 +37,10 @@ import javax.imageio.ImageIO;
 
 import libsidplay.C64;
 import libsidplay.Player;
+import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.ISID2Types;
-import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
@@ -150,6 +149,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 							if (newValue == State.EXIT
 									|| newValue == State.RUNNING) {
 								Platform.runLater(() -> {
+									getPlayerId();
 									lastUpdate = util.getPlayer().getC64()
 											.getEventScheduler()
 											.getTime(Phase.PHI1);
@@ -920,8 +920,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		int freeMemory = determineMemusage(Runtime.getRuntime().freeMemory());
 		// tune speed
 		determineTuneSpeed();
-		// playerID
-		getPlayerId();
 		// final status bar text
 		StringBuilder format = new StringBuilder();
 		format.append(util.getBundle().getString("RELEASE")).append(" %s, ")
@@ -979,7 +977,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		if (util.getPlayer().getTune() != null) {
 			C64 c64 = util.getPlayer().getC64();
 			final EventScheduler ctx = c64.getEventScheduler();
-			final ISID2Types.CPUClock systemClock = c64.getClock();
+			final CPUClock systemClock = c64.getClock();
 			final double waitClocks = systemClock.getCpuFrequency();
 			final long now = ctx.getTime(Event.Phase.PHI1);
 			final double interval = now - lastUpdate;

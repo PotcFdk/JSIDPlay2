@@ -54,7 +54,7 @@ public class Timer {
 	public void setValid(boolean valid) {
 		this.valid = valid;
 	}
-
+	
 	public long getDefaultLength() {
 		return defaultLength;
 	}

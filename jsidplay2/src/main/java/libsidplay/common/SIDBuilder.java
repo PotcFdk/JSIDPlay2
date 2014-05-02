@@ -15,7 +15,7 @@
  */
 package libsidplay.common;
 
-import resid_builder.resid.ISIDDefs.ChipModel;
+import resid_builder.resid.ChipModel;
 
 /**
  * @author Ken Händel
@@ -25,4 +25,6 @@ import resid_builder.resid.ISIDDefs.ChipModel;
 public abstract class SIDBuilder {
 	public abstract SIDEmu lock(EventScheduler context, ChipModel model);
 	public abstract void unlock(SIDEmu device);
+	public abstract void setSIDVolume(int sidNum, float volumnInDb);
+	public abstract int getNumDevices();
 }

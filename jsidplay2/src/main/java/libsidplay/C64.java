@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
+import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.IReSIDExtension;
-import libsidplay.common.ISID2Types.CPUClock;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.c1530.DatasetteEnvironment;
 import libsidplay.components.c1541.C1541Environment;

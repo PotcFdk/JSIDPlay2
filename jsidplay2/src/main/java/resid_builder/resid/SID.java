@@ -21,8 +21,6 @@
  */
 package resid_builder.resid;
 
-import resid_builder.resid.ISIDDefs.ChipModel;
-import resid_builder.resid.ISIDDefs.SamplingMethod;
 import resid_builder.resid.resample.Resampler;
 import resid_builder.resid.resample.TwoPassSincResampler;
 import resid_builder.resid.resample.ZeroOrderResampler;

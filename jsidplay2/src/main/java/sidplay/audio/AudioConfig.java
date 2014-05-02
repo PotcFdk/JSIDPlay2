@@ -17,7 +17,7 @@ package sidplay.audio;
 
 import java.io.File;
 
-import resid_builder.resid.ISIDDefs.SamplingMethod;
+import resid_builder.resid.SamplingMethod;
 import sidplay.ini.intf.IAudioSection;
 
 public class AudioConfig {

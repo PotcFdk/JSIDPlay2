@@ -15,7 +15,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import netsiddev.ini.JSIDDeviceConfig;
-import resid_builder.resid.ISIDDefs.ChipModel;
+import resid_builder.resid.ChipModel;
 import resid_builder.resid.SID;
 import sidplay.ini.intf.IFilterSection;
 

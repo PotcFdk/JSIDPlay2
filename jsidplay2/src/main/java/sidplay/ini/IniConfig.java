@@ -82,11 +82,15 @@ public class IniConfig implements IConfig {
 	}
 
 	public IniConfig() {
-		iniPath = getINIPath();
-		read();
+		this(false);
 	}
 
-	private void read() {
+	public IniConfig(boolean createIfNotExists) {
+		iniPath = getINIPath(createIfNotExists);
+		read(createIfNotExists);
+	}
+
+	private void read(boolean createIfNotExists) {
 		if (iniPath != null && iniPath.exists()) {
 			try (FileInputStream is = new FileInputStream(iniPath)) {
 				iniReader = new IniReader(is);
@@ -102,6 +106,9 @@ public class IniConfig implements IConfig {
 		}
 
 		readInternal();
+		if (iniPath != null && !iniPath.exists() && createIfNotExists) {
+			write();
+		}
 	}
 
 	/**
@@ -113,20 +120,19 @@ public class IniConfig implements IConfig {
 	 * 
 	 * @return the absolute path name of the INI file to use
 	 */
-	private File getINIPath() {
+	private File getINIPath(boolean createIfNotExists) {
 		try {
 			File configPlace = null;
 			for (final String s : new String[] {
 					System.getProperty("user.dir"),
 					System.getProperty("user.home"), }) {
-				if (s == null) {
-					continue;
-				}
-
 				configPlace = new File(s, FILE_NAME);
 				if (configPlace.exists()) {
 					return configPlace;
 				}
+			}
+			if (createIfNotExists) {
+				return new File(System.getProperty("user.home"), FILE_NAME);
 			}
 			return configPlace;
 		} catch (final AccessControlException e) {

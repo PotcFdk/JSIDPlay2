@@ -12,10 +12,9 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import libsidplay.Player;
-import resid_builder.resid.ISIDDefs.SamplingMethod;
+import resid_builder.resid.SamplingMethod;
 import sidplay.ConsolePlayer;
 import sidplay.audio.CmpMP3File;
-import sidplay.consoleplayer.DriverSettings;
 import sidplay.consoleplayer.Emulation;
 import sidplay.consoleplayer.Output;
 import ui.common.C64Window;
@@ -38,7 +37,7 @@ public class SoundSettings extends C64Window {
 	@FXML
 	private Button mp3Browse;
 
-	private ObservableList<resid_builder.resid.ISIDDefs.SamplingMethod> samplingMethods;
+	private ObservableList<resid_builder.resid.SamplingMethod> samplingMethods;
 
 	private ObservableList<String> soundDevices;
 
@@ -59,10 +58,8 @@ public class SoundSettings extends C64Window {
 				.getString("WAV_RECORDER"),
 				util.getBundle().getString("MP3_RECORDER"), util.getBundle()
 						.getString("COMPARE_TO_MP3"));
-		DriverSettings driverSettings = util.getConsolePlayer()
-				.getDriverSettings();
-		Output out = driverSettings.getOutput();
-		Emulation sid = driverSettings.getEmulation();
+		Output out = util.getConsolePlayer().getOutput();
+		Emulation sid = util.getConsolePlayer().getEmulation();
 		if (out == Output.OUT_SOUNDCARD && sid == Emulation.EMU_RESID) {
 			soundDevice.getSelectionModel().select(0);
 		} else if (out == Output.OUT_NULL && sid == Emulation.EMU_HARDSID) {
@@ -85,7 +82,7 @@ public class SoundSettings extends C64Window {
 		samplingRate.getSelectionModel().select(
 				Integer.valueOf(util.getConfig().getAudio().getFrequency()));
 		samplingMethods = FXCollections
-				.<resid_builder.resid.ISIDDefs.SamplingMethod> observableArrayList();
+				.<resid_builder.resid.SamplingMethod> observableArrayList();
 		samplingMethod.setItems(samplingMethods);
 		samplingMethods
 				.addAll(SamplingMethod.DECIMATE, SamplingMethod.RESAMPLE);
@@ -165,7 +162,8 @@ public class SoundSettings extends C64Window {
 				.getAudio()
 				.setSampling(
 						samplingMethod.getSelectionModel().getSelectedItem());
-		util.getConsolePlayer().updateSidEmulation();
+		util.getConsolePlayer().setSampling(
+				samplingMethod.getSelectionModel().getSelectedItem());
 	}
 
 	@FXML
@@ -226,15 +224,15 @@ public class SoundSettings extends C64Window {
 	}
 
 	private void setOutputDevice(final Output device, final Emulation emu) {
-		util.getConsolePlayer().getDriverSettings().setOutput(device);
-		util.getConsolePlayer().getDriverSettings().setEmulation(emu);
+		util.getConsolePlayer().setOutput(device);
+		util.getConsolePlayer().setEmulation(emu);
 	}
 
 	protected void setPlayOriginal(final boolean playOriginal) {
 		util.getConfig().getAudio().setPlayOriginal(playOriginal);
-		if (util.getConsolePlayer().getDriverSettings().getDevice() instanceof CmpMP3File) {
-			((CmpMP3File) util.getConsolePlayer().getDriverSettings()
-					.getDevice()).setPlayOriginal(playOriginal);
+		if (util.getConsolePlayer().getOutput().getDriver() instanceof CmpMP3File) {
+			((CmpMP3File) util.getConsolePlayer().getOutput().getDriver())
+					.setPlayOriginal(playOriginal);
 		}
 	}
 

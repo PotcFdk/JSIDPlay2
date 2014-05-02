@@ -31,7 +31,7 @@ import libsidplay.components.c1541.C1541.FloppyStatus;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.sidtune.SidTune;
-import resid_builder.resid.ISIDDefs.ChipModel;
+import resid_builder.resid.ChipModel;
 import sidplay.ConsolePlayer;
 import sidplay.consoleplayer.MediaType;
 import sidplay.consoleplayer.State;

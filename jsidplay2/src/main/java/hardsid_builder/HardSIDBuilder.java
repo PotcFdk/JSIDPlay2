@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
-import resid_builder.resid.ISIDDefs.ChipModel;
+import resid_builder.resid.ChipModel;
 import sidplay.ini.intf.IConfig;
 
 /**
@@ -44,7 +44,6 @@ public class HardSIDBuilder extends SIDBuilder {
 	/* New, since HardSID4U */
 	public static final int HSID_VERSION_301 = 0x0301;
 
-	private static boolean m_initialised = false;
 	private String m_errorBuffer;
 	private final ArrayList<HardSID> sidobjs = new ArrayList<HardSID>(4);
 
@@ -52,10 +51,8 @@ public class HardSIDBuilder extends SIDBuilder {
 
 	private static HsidDLL2 hsid2;
 	private int sid6581, sid8580;
-	/**
-	 * Configuration
-	 */
-	private IConfig config;
+
+	private IConfig iniCfg;
 
 	private int init() {
 		{
@@ -97,7 +94,7 @@ public class HardSIDBuilder extends SIDBuilder {
 			// JNI driver wrapper loads the fake HardSID driver
 			// (that internally loads the original HardSID driver)
 			if (!hsid2.LoadLibrary(driverPath)) {
-				System.err.println(driverPath + " could not be loaded!");
+				m_errorBuffer = driverPath + " could not be loaded!";
 				return -1;
 			}
 			hsid2.InitHardSID_Mapper();
@@ -130,7 +127,7 @@ public class HardSIDBuilder extends SIDBuilder {
 			final InputStream str = getClass().getResourceAsStream(
 					path + libName);
 			try {
-				File f = new File(new File(config.getSidplay2().getTmpDir()),
+				File f = new File(new File(iniCfg.getSidplay2().getTmpDir()),
 						libName);
 				f.deleteOnExit();
 				// install new library
@@ -162,20 +159,15 @@ public class HardSIDBuilder extends SIDBuilder {
 	}
 
 	public HardSIDBuilder(IConfig iniCfg) {
-		this.config = iniCfg;
+		this.iniCfg = iniCfg;
+		sid8580 = iniCfg.getEmulation().getHardsid8580() - 1;
+		sid6581 = iniCfg.getEmulation().getHardsid6581() - 1;
 		m_errorBuffer = "N/A";
 		m_status = true;
 
-		if (!m_initialised) {
-			if (init() < 0) {
-				return;
-			}
-			m_initialised = true;
+		if (init() < 0) {
+			System.err.println(error());
 		}
-	}
-
-	public int devices() {
-		return hsid2.GetHardSIDCount();
 	}
 
 	@Override
@@ -218,12 +210,23 @@ public class HardSIDBuilder extends SIDBuilder {
 	public void unlock(final SIDEmu device) {
 		for (HardSID hardSid : sidobjs) {
 			hardSid.setChipsUsed(sidobjs.size() - 1);
+			hardSid.flush();
+			hardSid.reset((byte) 0);
 		}
 		if (sidobjs.remove(device)) {
 			((HardSID) device).lock(false);
 		}
 	}
 
+	@Override
+	public void setSIDVolume(int sidNum, float volumnInDb) {
+	}
+
+	@Override
+	public int getNumDevices() {
+		return hsid2.GetHardSIDCount();
+	}
+	
 	public String error() {
 		return m_errorBuffer;
 	}
@@ -232,23 +235,6 @@ public class HardSIDBuilder extends SIDBuilder {
 		String credit = String.format("HardSID V%s Engine:\n", VERSION);
 		credit += "\tCopyright (C) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
 		return credit;
-	}
-
-	public void flush() {
-		for (HardSID hsid : sidobjs) {
-			hsid.flush();
-		}
-	}
-
-	public void reset() {
-		for (HardSID hsid : sidobjs) {
-			hsid.reset((byte) 0);
-		}
-	}
-
-	public void setDevicesToUse(final IConfig m_iniCfg) {
-		sid8580 = m_iniCfg.getEmulation().getHardsid8580() - 1;
-		sid6581 = m_iniCfg.getEmulation().getHardsid6581() - 1;
 	}
 
 }

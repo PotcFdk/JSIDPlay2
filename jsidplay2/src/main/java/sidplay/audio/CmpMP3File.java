@@ -5,7 +5,7 @@ import java.io.File;
 import javax.sound.sampled.LineUnavailableException;
 
 import lowlevel.LameDecoder;
-import resid_builder.resid.ISIDDefs.SamplingMethod;
+import resid_builder.resid.SamplingMethod;
 
 /**
  * Sound driver to listen to emulation and MP3 recording in parallel.

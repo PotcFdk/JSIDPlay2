@@ -3,7 +3,8 @@ package ui.entities.config;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
-import resid_builder.resid.ISIDDefs.SamplingMethod;
+
+import resid_builder.resid.SamplingMethod;
 
 @Generated(value="Dali", date="2012-11-09T20:55:57.976+0100")
 @StaticMetamodel(AudioSection.class)

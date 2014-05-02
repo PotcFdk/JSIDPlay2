@@ -18,11 +18,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sound.sampled.Mixer;
 
-import libsidplay.common.ISID2Types;
+import libsidplay.common.CPUClock;
 import netsiddev.ini.JSIDDeviceConfig;
-import resid_builder.resid.ISIDDefs.ChipModel;
-import resid_builder.resid.ISIDDefs.SamplingMethod;
+import resid_builder.resid.ChipModel;
 import resid_builder.resid.SID;
+import resid_builder.resid.SamplingMethod;
 import sidplay.audio.AudioConfig;
 
 /**
@@ -323,7 +323,7 @@ class ClientContext {
 				break;
 			}
 			
-			eventConsumerThread.setClocking(ISID2Types.CPUClock.values()[dataRead.get(4)]);
+			eventConsumerThread.setClocking(CPUClock.values()[dataRead.get(4)]);
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;
 			

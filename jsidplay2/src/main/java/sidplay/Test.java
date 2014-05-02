@@ -1,20 +1,18 @@
 package sidplay;
 
 import java.io.File;
-import java.util.List;
 
 import libsidplay.Player;
-import libsidplay.common.ISID2Types.CPUClock;
+import libsidplay.common.CPUClock;
 import libsidplay.sidtune.SidTune;
 import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
-import resid_builder.resid.ISIDDefs.ChipModel;
+import resid_builder.resid.ChipModel;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.JavaSound;
 import sidplay.ini.IniConfig;
 import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IFilterSection;
 
 /**
  * This test class demonstrates the use of the ReSID engine. It has only minimum
@@ -39,43 +37,29 @@ public class Test {
 		Player player = new Player();
 		player.setTune(tune);
 
-		// Read filter settings and create filter
-		final IConfig iniCfg = new IniConfig();
-		IFilterSection filter6581 = null;
-		IFilterSection filter8580 = null;
-		List<? extends IFilterSection> filters = iniCfg.getFilter();
-		for (IFilterSection iFilterSection : filters) {
-			if (iFilterSection.getName().equals(
-					iniCfg.getEmulation().getFilter6581())) {
-				filter6581 = iFilterSection;
-			} else if (iFilterSection.getName().equals(
-					iniCfg.getEmulation().getFilter8580())) {
-				filter8580 = iFilterSection;
-			}
-		}
+		// Create default configuration
+		final IConfig config = new IniConfig();
 
 		// Customize player configuration
 		player.setClock(CPUClock.PAL);
 
 		// Get sound driver and apply to the player
 		final AudioDriver driver = new JavaSound();
-		final AudioConfig config = AudioConfig
-				.getInstance(iniCfg.getAudio(), 1);
-		driver.open(config);
+		final AudioConfig audioConfig = AudioConfig.getInstance(
+				config.getAudio(), 1);
 
 		// Setup the SID emulation (not part of the player)
-		final ReSIDBuilder rs = new ReSIDBuilder(config, player.getC64()
-				.getClock().getCpuFrequency());
+		final ReSIDBuilder rs = new ReSIDBuilder(audioConfig, player.getC64()
+				.getClock().getCpuFrequency(), 0f, 0f);
 		rs.setOutput(driver);
 
 		// Create SID chip of desired model (mono tunes need exactly one)
 		final ReSID sid = (ReSID) rs.lock(player.getC64().getEventScheduler(),
 				ChipModel.MOS6581);
-		// Enable/apply filter to the SID emulation
-		sid.setFilter(true);
-		sid.filter(filter6581, filter8580);
-		sid.sampling(player.getC64().getClock().getCpuFrequency(), iniCfg
-				.getAudio().getFrequency(), iniCfg.getAudio().getSampling());
+		// Apply filter to the SID emulation
+		sid.setFilter(config);
+		sid.setSampling(player.getC64().getClock().getCpuFrequency(), config
+				.getAudio().getFrequency(), config.getAudio().getSampling());
 
 		// Apply mono SID chip to the C64, then reset
 		player.getC64().setSID(0, sid);
