@@ -167,7 +167,8 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setUserSidModel(userSidModel);
 			addFilters(userSidModel);
 		}
-		util.getConsolePlayer().updateChipModelAndFilter();
+		util.getConsolePlayer().updateChipModel();
+		util.getPlayer().setFilter(util.getConfig());
 	}
 
 	@FXML
@@ -180,7 +181,8 @@ public class EmulationSettings extends C64Window {
 					.getSelectionModel().getSelectedItem();
 			util.getConfig().getEmulation().setStereoSidModel(stereoSidModel);
 		}
-		util.getConsolePlayer().updateChipModelAndFilter();
+		util.getConsolePlayer().updateChipModel();
+		util.getPlayer().setFilter(util.getConfig());
 	}
 
 	@FXML
@@ -201,7 +203,7 @@ public class EmulationSettings extends C64Window {
 	private void setDigiBoost() {
 		boolean selected = boosted8580.isSelected();
 		util.getConfig().getEmulation().setDigiBoosted8580(selected);
-		util.getConsolePlayer().setDigiBoost(selected);
+		util.getPlayer().setDigiBoost(selected);
 	}
 
 	@FXML
@@ -225,7 +227,8 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setFilter8580(filterName);
 		}
 
-		util.getConsolePlayer().updateChipModelAndFilter();
+		util.getConsolePlayer().updateChipModel();
+		util.getPlayer().setFilter(util.getConfig());
 		if (!duringInitialization) {
 			calculateFilterCurve(filterName);
 		}

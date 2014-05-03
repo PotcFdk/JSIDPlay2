@@ -12,11 +12,13 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import libsidplay.Player;
+import libsidplay.common.CPUClock;
 import resid_builder.resid.SamplingMethod;
 import sidplay.ConsolePlayer;
 import sidplay.audio.CmpMP3File;
 import sidplay.consoleplayer.Emulation;
 import sidplay.consoleplayer.Output;
+import sidplay.ini.intf.IAudioSection;
 import ui.common.C64Window;
 import ui.entities.config.Configuration;
 
@@ -162,7 +164,10 @@ public class SoundSettings extends C64Window {
 				.getAudio()
 				.setSampling(
 						samplingMethod.getSelectionModel().getSelectedItem());
-		util.getConsolePlayer().setSampling(
+		IAudioSection audio = util.getConfig().getAudio();
+		CPUClock systemFrequency = CPUClock.getCPUClock(util.getConfig(), util
+				.getPlayer().getTune());
+		util.getPlayer().setSampling(systemFrequency, audio.getFrequency(),
 				samplingMethod.getSelectionModel().getSelectedItem());
 	}
 

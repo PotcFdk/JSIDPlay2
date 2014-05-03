@@ -32,7 +32,6 @@ import libsidutils.SidDatabase;
 import libsidutils.cpuparser.CPUParser;
 import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ChipModel;
-import resid_builder.resid.SamplingMethod;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.NaturalFinishedException;
 import sidplay.consoleplayer.CmdParser;
@@ -160,7 +159,8 @@ public class ConsolePlayer {
 				cpuFreq.getCpuFrequency());
 
 		// According to the configuration, the SIDs must be updated.
-		updateChipModelAndFilter();
+		updateChipModel();
+		getPlayer().setFilter(config);
 
 		/* We should have our SIDs configured now. */
 
@@ -734,7 +734,7 @@ public class ConsolePlayer {
 		stopC64();
 		// load tune
 		configureTrack(sidTune);
-//		track.
+		// track.
 		// set command to type after reset
 		getPlayer().setCommand(command);
 		// Start emulation
@@ -850,31 +850,30 @@ public class ConsolePlayer {
 	}
 
 	/**
-	 * Set/Update chip model and filter settings according to the configuration
+	 * Set/Update chip model according to the configuration
 	 */
-	public void updateChipModelAndFilter() {
+	public void updateChipModel() {
 		if (sidBuilder != null) {
 			ChipModel chipModel = ChipModel.getChipModel(this.config, tune);
-			updateChipModelAndFilter(0, chipModel);
+			updateChipModel(0, chipModel);
 
 			if (driverSettings.getChannels() == 2) {
 				ChipModel stereoChipModel = ChipModel.getStereoSIDModel(
 						this.config, tune);
-				updateChipModelAndFilter(1, stereoChipModel);
+				updateChipModel(1, stereoChipModel);
 			}
 		}
 	}
 
 	/**
-	 * Update SID model and filter according to the settings.
+	 * Update SID model according to the settings.
 	 * 
 	 * @param chipNum
 	 *            chip number (0 - mono, 1 - stereo)
 	 * @param model
 	 *            chip model to use
 	 */
-	private void updateChipModelAndFilter(final int chipNum,
-			final ChipModel model) {
+	private void updateChipModel(final int chipNum, final ChipModel model) {
 		SIDEmu s = player.getC64().getSID(chipNum);
 
 		if (s instanceof HardSID) {
@@ -887,47 +886,8 @@ public class ConsolePlayer {
 		} else {
 			s.setChipModel(model);
 		}
-		s.setFilter(this.config);
 
 		player.getC64().setSID(chipNum, s);
-	}
-
-	public void setSampling(SamplingMethod method) {
-		IAudioSection audio = config.getAudio();
-		CPUClock systemFrequency = CPUClock.getCPUClock(config, tune);
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			final SIDEmu s = player.getC64().getSID(i);
-			if (s != null) {
-				s.setSampling(systemFrequency.getCpuFrequency(),
-						audio.getFrequency(), audio.getSampling());
-			}
-		}
-	}
-
-	public void setDigiBoost(boolean selected) {
-		final int input = selected ? 0x7FF : 0;
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			final SIDEmu s = player.getC64().getSID(i);
-			if (s != null) {
-				s.input(input);
-			}
-		}
-	}
-
-	public void setFilterEnable(boolean filterEnable) {
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			final SIDEmu s = player.getC64().getSID(i);
-			if (s != null) {
-				s.setFilter(filterEnable);
-			}
-		}
-	}
-
-	public void setMute(int chipNum, int voiceNum, boolean mute) {
-		final SIDEmu s = player.getC64().getSID(chipNum);
-		if (s != null) {
-			s.setVoiceMute(voiceNum, mute);
-		}
 	}
 
 	public void setSIDVolume(int i, float volumeDb) {

@@ -206,6 +206,7 @@ public class Player {
 	public BooleanProperty connectC64AndC1541WithParallelCableProperty() {
 		return connectC64AndC1541WithParallelCableProperty;
 	}
+
 	/**
 	 * Set frequency (PAL/NTSC)
 	 * 
@@ -235,7 +236,8 @@ public class Player {
 			floppy.reset();
 		}
 		enableFloppyDiskDrives(drivesEnabledProperty.get());
-		connectC64AndC1541WithParallelCable(connectC64AndC1541WithParallelCableProperty.get());
+		connectC64AndC1541WithParallelCable(connectC64AndC1541WithParallelCableProperty
+				.get());
 		// Reset IEC devices
 		for (final SerialIECDevice serialDevice : serialDevices) {
 			serialDevice.reset();
@@ -659,7 +661,7 @@ public class Player {
 				public void setFilter(IConfig config) {
 					s1.setFilter(config);
 				}
-				
+
 				@Override
 				public void setFilter(boolean enable) {
 					s1.setFilter(enable);
@@ -675,20 +677,66 @@ public class Player {
 					s1.setChipModel(model);
 					s2.setChipModel(model);
 				}
-				
+
 				@Override
 				public void setSampling(double cpuFrequency, float frequency,
 						SamplingMethod sampling) {
 					s1.setSampling(cpuFrequency, frequency, sampling);
 					s2.setSampling(cpuFrequency, frequency, sampling);
 				}
-				
+
 				@Override
 				public void input(int input) {
 					s1.input(input);
 					s2.input(input);
 				}
 			});
+		}
+	}
+
+	public void setSampling(CPUClock systemFrequency, float cpuFreq,
+			SamplingMethod method) {
+		for (int i = 0; i < C64.MAX_SIDS; i++) {
+			final SIDEmu s = c64.getSID(i);
+			if (s != null) {
+				s.setSampling(systemFrequency.getCpuFrequency(), cpuFreq,
+						method);
+			}
+		}
+	}
+
+	public void setDigiBoost(boolean selected) {
+		final int input = selected ? 0x7FF : 0;
+		for (int i = 0; i < C64.MAX_SIDS; i++) {
+			final SIDEmu s = c64.getSID(i);
+			if (s != null) {
+				s.input(input);
+			}
+		}
+	}
+
+	public void setFilterEnable(boolean filterEnable) {
+		for (int i = 0; i < C64.MAX_SIDS; i++) {
+			final SIDEmu s = c64.getSID(i);
+			if (s != null) {
+				s.setFilter(filterEnable);
+			}
+		}
+	}
+
+	public void setFilter(IConfig config) {
+		for (int i = 0; i < C64.MAX_SIDS; i++) {
+			final SIDEmu s = c64.getSID(i);
+			if (s != null) {
+				s.setFilter(config);
+			}
+		}
+	}
+
+	public void setMute(int chipNum, int voiceNum, boolean mute) {
+		final SIDEmu s = c64.getSID(chipNum);
+		if (s != null) {
+			s.setVoiceMute(voiceNum, mute);
 		}
 	}
 

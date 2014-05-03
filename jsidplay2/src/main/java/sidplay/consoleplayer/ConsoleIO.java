@@ -223,37 +223,37 @@ public class ConsoleIO {
 
 			case '1':
 				v1mute = !v1mute;
-				this.player.setMute(0, 0, v1mute);
+				this.player.getPlayer().setMute(0, 0, v1mute);
 				break;
 
 			case '2':
 				v2mute = !v2mute;
-				this.player.setMute(0, 1, v2mute);
+				this.player.getPlayer().setMute(0, 1, v2mute);
 				break;
 
 			case '3':
 				v3mute = !v3mute;
-				this.player.setMute(0, 2, v3mute);
+				this.player.getPlayer().setMute(0, 2, v3mute);
 				break;
 
 			case '4':
 				v1mute = !v1mute;
-				this.player.setMute(1, 0, v1mute);
+				this.player.getPlayer().setMute(1, 0, v1mute);
 				break;
 
 			case '5':
 				v2mute = !v2mute;
-				this.player.setMute(1, 1, v2mute);
+				this.player.getPlayer().setMute(1, 1, v2mute);
 				break;
 
 			case '6':
 				v3mute = !v3mute;
-				this.player.setMute(1, 2, v3mute);
+				this.player.getPlayer().setMute(1, 2, v3mute);
 				break;
 
 			case 'f': {
 				filterEnable ^= true;
-				this.player.setFilterEnable(filterEnable);
+				this.player.getPlayer().setFilterEnable(filterEnable);
 				break;
 			}
 
