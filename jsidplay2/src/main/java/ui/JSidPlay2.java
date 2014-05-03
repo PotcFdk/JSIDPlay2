@@ -57,7 +57,9 @@ import ui.common.C64Window;
 import ui.common.dialog.YesNoDialog;
 import ui.disassembler.Disassembler;
 import ui.emulationsettings.EmulationSettings;
+import ui.entities.config.C1541Section;
 import ui.entities.config.Configuration;
+import ui.entities.config.PrinterSection;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 import ui.filefilter.CartFileExtensions;
@@ -173,15 +175,22 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 				);
 		pauseContinue.selectedProperty().bindBidirectional(
 				pauseContinue2.selectedProperty());
-		driveOn.selectedProperty().bindBidirectional(
-				util.getPlayer().drivesEnabledProperty());
 
+		C1541Section c1541Section = (C1541Section) util.getConfig().getC1541();
+		driveOn.selectedProperty().bindBidirectional(
+				c1541Section.driveOnProperty());
+		parCable.selectedProperty().bindBidirectional(
+				c1541Section.parallelCableProperty());
+		driveSoundOn.selectedProperty().bindBidirectional(
+				c1541Section.driveSoundOnProperty());
+		PrinterSection printer = (PrinterSection) util.getConfig().getPrinter();
+		turnPrinterOn.selectedProperty().bindBidirectional(
+				printer.printerOnProperty());
+		
 		CPUClock defClk = util.getConfig().getEmulation()
 				.getDefaultClockSpeed();
 		(defClk != null ? defClk == CPUClock.NTSC ? ntsc : pal : pal)
 				.setSelected(true);
-		driveSoundOn.setSelected(util.getConfig().getC1541().isDriveSoundOn());
-		parCable.setSelected(util.getConfig().getC1541().isParallelCable());
 		FloppyType floppyType = util.getConfig().getC1541().getFloppyType();
 		(floppyType == FloppyType.C1541 ? c1541 : c1541_II).setSelected(true);
 		ExtendImagePolicy extendImagePolicy = util.getConfig().getC1541()
@@ -199,7 +208,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 				.isRamExpansionEnabled3());
 		expandA000.setSelected(util.getConfig().getC1541()
 				.isRamExpansionEnabled4());
-		turnPrinterOn.setSelected(util.getConfig().getPrinter().isPrinterOn());
 
 		this.duringInitialization = false;
 
@@ -459,8 +467,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void turnDriveOn() {
-		util.getPlayer().enableFloppyDiskDrives(driveOn.isSelected());
 		util.getConfig().getC1541().setDriveOn(driveOn.isSelected());
+		util.getPlayer().enableFloppyDiskDrives(driveOn.isSelected());
 	}
 
 	@FXML
@@ -569,8 +577,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void printer() {
-		util.getPlayer().turnPrinterOnOff(turnPrinterOn.isSelected());
 		util.getConfig().getPrinter().setPrinterOn(turnPrinterOn.isSelected());
+		util.getPlayer().enablePrinter(turnPrinterOn.isSelected());
 	}
 
 	@FXML
@@ -817,8 +825,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void sidRegisters() {
-		C64Window window = new SidReg(util.getConsolePlayer(), util.getPlayer(),
-				util.getConfig());
+		C64Window window = new SidReg(util.getConsolePlayer(),
+				util.getPlayer(), util.getConfig());
 		window.open();
 	}
 

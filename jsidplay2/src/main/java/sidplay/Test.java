@@ -33,12 +33,12 @@ public class Test {
 		final SidTune tune = SidTune.load(new File(filename));
 		tune.selectSong(1);
 
-		// Create player and apply the tune
-		Player player = new Player();
-		player.setTune(tune);
-
 		// Create default configuration
 		final IConfig config = new IniConfig();
+		
+		// Create player and apply the tune
+		Player player = new Player(config);
+		player.setTune(tune);
 
 		// Customize player configuration
 		player.setClock(CPUClock.PAL);

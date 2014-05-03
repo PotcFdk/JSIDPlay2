@@ -10,13 +10,18 @@ import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
 
 public class DriverSettings {
-	/** Default SID emulation */
-	protected Emulation emulation = Emulation.EMU_RESID;
-	/** Default output */
-	protected Output output = Output.OUT_SOUNDCARD;
+	/** SID emulation */
+	protected Emulation emulation;
+	/** output */
+	protected Output output;
 	/** Number of output channels */
 	private int channels;
 	private Integer secondAddress;
+
+	public DriverSettings() {
+		this.emulation = Emulation.EMU_RESID;
+		this.output = Output.OUT_SOUNDCARD;
+	}
 
 	public final Emulation getEmulation() {
 		return emulation;
@@ -43,13 +48,13 @@ public class DriverSettings {
 	}
 
 	/** Determine number of SIDs */
-	public void configure(IConfig iniCfg, SidTune tune, Player player) {
+	public void configure(IConfig config, SidTune tune, Player player) {
 		SidTuneInfo tuneInfo = tune != null && tune.getInfo() != null ? tune
 				.getInfo() : null;
 		secondAddress = null;
 		this.channels = 1;
-		if (iniCfg.getEmulation().isForceStereoTune()) {
-			secondAddress = iniCfg.getEmulation().getDualSidBase();
+		if (config.getEmulation().isForceStereoTune()) {
+			secondAddress = config.getEmulation().getDualSidBase();
 		} else if (tuneInfo != null && tuneInfo.sidChipBase2 != 0) {
 			secondAddress = tuneInfo.sidChipBase2;
 		}
@@ -62,7 +67,7 @@ public class DriverSettings {
 
 		if (output.getDriver() instanceof CmpMP3File) {
 			// Set MP3 comparison settings
-			IAudioSection audio = iniCfg.getAudio();
+			IAudioSection audio = config.getAudio();
 			CmpMP3File cmpMp3Driver = (CmpMP3File) output.getDriver();
 			cmpMp3Driver.setPlayOriginal(audio.isPlayOriginal());
 			cmpMp3Driver.setMp3File(new File(audio.getMp3File()));

@@ -19,13 +19,10 @@ import libsidplay.Player;
 import libsidplay.common.CPUClock;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
-import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.DiskImage;
 import libsidplay.components.c1541.IExtendImageListener;
-import libsidplay.components.mos6510.IMOS6510Disassembler;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PRG2TAP;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
@@ -54,15 +51,17 @@ public class ConsolePlayer {
 	private static final int MAX_SPEED = 32;
 
 	private final IConfig config;
-	private final Player player = new Player();
+	private final Player player;
 	private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
 			State.STOPPED);
 
 	private final Timer timer = new Timer();
 	private final Track track = new Track();
 	private final DriverSettings driverSettings = new DriverSettings();
+	private DriverSettings oldDriverSettings;
 
 	private SidTune tune;
+	private String filename;
 	private String outputFilename;
 	private int currentSpeed = 1;
 	private int quietLevel;
@@ -73,15 +72,12 @@ public class ConsolePlayer {
 	private STIL stil;
 	private SidDatabase sidDatabase;
 	private SIDBuilder sidBuilder;
-	private IMOS6510Disassembler disassembler;
 
 	private IExtendImageListener policy;
 
-	protected String filename;
-	private DriverSettings oldDriverSettings;
-
 	public ConsolePlayer(IConfig config) {
 		this.config = config;
+		player = new Player(config);
 	}
 
 	public final Player getPlayer() {
@@ -97,29 +93,22 @@ public class ConsolePlayer {
 			stateProperty.set(State.STOPPED);
 		}
 
-		track.setSingle(this.config.getSidplay2().isSingle());
 		// Select the required song
-		SidTuneInfo tuneInfo = null;
+		int songs = 1;
+		int currentSong = 1;
 		if (tune != null) {
 			track.setSelected(tune.selectSong(track.getSelected()));
 			if (track.getFirst() == 0) {
-				// A different tune is opened (resetTrack was called)?
+				// A different tune is opened?
 				// We mark a new play-list start
 				track.setFirst(track.getSelected());
 			}
-			tuneInfo = tune.getInfo();
+			songs = tune.getInfo().songs;
+			currentSong = tune.getInfo().currentSong;
+			track.setSongs(songs);
 		}
+		track.setSingle(config.getSidplay2().isSingle());
 		player.setTune(tune);
-
-		int songs = 1;
-		int currentSong = 1;
-		File file = null;
-		if (tuneInfo != null) {
-			track.setSongs(tuneInfo.songs);
-			songs = tuneInfo.songs;
-			currentSong = tuneInfo.currentSong;
-			file = tuneInfo.file;
-		}
 
 		CPUClock cpuFreq = CPUClock.getCPUClock(this.config, tune);
 		player.setClock(cpuFreq);
@@ -130,22 +119,23 @@ public class ConsolePlayer {
 			driverSettings.restore(oldDriverSettings);
 			oldDriverSettings = null;
 		}
-		if (file != null
-				&& file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
+		if (tune != null
+				&& tune.getInfo().file.getName().toLowerCase(Locale.ENGLISH)
+						.endsWith(".mp3")) {
 			// MP3 play-back? Save settings, then change to MP3 compare driver
 			oldDriverSettings = driverSettings.save();
 
 			driverSettings.setOutput(Output.OUT_COMPARE);
 			driverSettings.setEmulation(Emulation.EMU_RESID);
 			audio.setPlayOriginal(true);
-			audio.setMp3File(file.getAbsolutePath());
+			audio.setMp3File(tune.getInfo().file.getAbsolutePath());
 		}
 
 		driverSettings.configure(this.config, tune, player);
 
 		final AudioConfig audioConfig = AudioConfig.getInstance(
 				this.config.getAudio(), driverSettings.getChannels());
-		audioConfig.setTuneFilename(file);
+		audioConfig.setTuneFilename(tune != null ? tune.getInfo().file : null);
 		audioConfig.setSongCount(songs);
 		audioConfig.setCurrentSong(currentSong);
 		audioConfig.setOutputfilename(outputFilename);
@@ -171,27 +161,7 @@ public class ConsolePlayer {
 		this.currentSpeed = MAX_SPEED;
 		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
 
-		player.drivesEnabledProperty().set(this.config.getC1541().isDriveOn());
-		player.connectC64AndC1541WithParallelCableProperty().set(
-				this.config.getC1541().isParallelCable());
-
 		player.reset();
-
-		// Initialize floppies
-		for (C1541 floppy : player.getFloppies()) {
-			floppy.setFloppyType(this.config.getC1541().getFloppyType());
-			floppy.setRamExpansion(0, this.config.getC1541()
-					.isRamExpansionEnabled0());
-			floppy.setRamExpansion(1, this.config.getC1541()
-					.isRamExpansionEnabled1());
-			floppy.setRamExpansion(2, this.config.getC1541()
-					.isRamExpansionEnabled2());
-			floppy.setRamExpansion(3, this.config.getC1541()
-					.isRamExpansionEnabled3());
-			floppy.setRamExpansion(4, this.config.getC1541()
-					.isRamExpansionEnabled4());
-		}
-		player.turnPrinterOnOff(this.config.getPrinter().isPrinterOn());
 
 		// As yet we don't have a required songlength
 		// so try the songlength database
@@ -296,7 +266,6 @@ public class ConsolePlayer {
 
 			if (seconds == timer.getStart()) {
 				normalSpeed();
-				player.setDebug(disassembler);
 				if (sidBuilder instanceof ReSIDBuilder) {
 					((ReSIDBuilder) sidBuilder).setOutput(getOutput()
 							.getDriver());
@@ -435,7 +404,7 @@ public class ConsolePlayer {
 	}
 
 	public void setDebug(boolean debug) {
-		disassembler = CPUParser.getInstance();
+		player.setDebug(CPUParser.getInstance());
 	}
 
 	public Output getOutput() {
@@ -771,8 +740,8 @@ public class ConsolePlayer {
 	private void insertDisk(final File selectedDisk, final File autostartFile)
 			throws IOException {
 		// automatically turn drive on
-		getPlayer().enableFloppyDiskDrives(true);
 		this.config.getC1541().setDriveOn(true);
+		getPlayer().enableFloppyDiskDrives(true);
 		// attach selected disk into the first disk drive
 		DiskImage disk = getPlayer().getFloppies()[0].getDiskController()
 				.insertDisk(selectedDisk);

@@ -26,8 +26,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -98,21 +96,14 @@ public class Player {
 	 * Autostart command to be typed-in after reset.
 	 */
 	protected String command;
-	/**
-	 * Is the printer enabled?
-	 */
-	protected boolean printerEnabled;
-	/**
-	 * Are the floppy disk drives enabled?
-	 */
-	protected BooleanProperty drivesEnabledProperty = new SimpleBooleanProperty();
 
-	protected BooleanProperty connectC64AndC1541WithParallelCableProperty = new SimpleBooleanProperty();
+	private IConfig config;
 
 	/**
 	 * Create a complete setup (C64, tape/disk drive, carts and more).
 	 */
-	public Player() {
+	public Player(IConfig config) {
+		this.config = config;
 		iecBus = new IECBus();
 
 		printer = new MPS803(iecBus, (byte) 4, (byte) 7) {
@@ -132,21 +123,21 @@ public class Player {
 
 			@Override
 			public void printerUserportWriteData(final byte data) {
-				if (printerEnabled) {
+				if (config.getPrinter().isPrinterOn()) {
 					printer.printerUserportWriteData(data);
 				}
 			}
 
 			@Override
 			public void printerUserportWriteStrobe(final boolean strobe) {
-				if (printerEnabled) {
+				if (config.getPrinter().isPrinterOn()) {
 					printer.printerUserportWriteStrobe(strobe);
 				}
 			}
 
 			@Override
 			public byte readFromIECBus() {
-				if (drivesEnabledProperty.get()) {
+				if (config.getC1541().isDriveOn()) {
 					c1541Runner.synchronize(0);
 					return iecBus.readFromIECBus();
 				}
@@ -155,7 +146,7 @@ public class Player {
 
 			@Override
 			public void writeToIECBus(final byte data) {
-				if (drivesEnabledProperty.get()) {
+				if (config.getC1541().isDriveOn()) {
 					// more elegant solution to
 					// assure a one cycle write delay
 					c1541Runner.synchronize(1);
@@ -196,15 +187,6 @@ public class Player {
 		iecBus.setSerialDevices(serialDevices);
 		c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(),
 				c1541.getEventScheduler());
-		connectC64AndC1541WithParallelCable(false);
-	}
-
-	public BooleanProperty drivesEnabledProperty() {
-		return drivesEnabledProperty;
-	}
-
-	public BooleanProperty connectC64AndC1541WithParallelCableProperty() {
-		return connectC64AndC1541WithParallelCableProperty;
 	}
 
 	/**
@@ -234,10 +216,22 @@ public class Player {
 		// Reset Floppies
 		for (final C1541 floppy : floppies) {
 			floppy.reset();
+			floppy.setFloppyType(config.getC1541().getFloppyType());
+			floppy.setRamExpansion(0, config.getC1541()
+					.isRamExpansionEnabled0());
+			floppy.setRamExpansion(1, config.getC1541()
+					.isRamExpansionEnabled1());
+			floppy.setRamExpansion(2, config.getC1541()
+					.isRamExpansionEnabled2());
+			floppy.setRamExpansion(3, config.getC1541()
+					.isRamExpansionEnabled3());
+			floppy.setRamExpansion(4, config.getC1541()
+					.isRamExpansionEnabled4());
 		}
-		enableFloppyDiskDrives(drivesEnabledProperty.get());
-		connectC64AndC1541WithParallelCable(connectC64AndC1541WithParallelCableProperty
-				.get());
+		enablePrinter(config.getPrinter().isPrinterOn());
+
+		enableFloppyDiskDrives(config.getC1541().isDriveOn());
+		connectC64AndC1541WithParallelCable(config.getC1541().isParallelCable());
 		// Reset IEC devices
 		for (final SerialIECDevice serialDevice : serialDevices) {
 			serialDevice.reset();
@@ -323,11 +317,6 @@ public class Player {
 		return (int) (c.getTime(Phase.PHI2) / c.getCyclesPerSecond());
 	}
 
-	public void turnPrinterOnOff(final boolean on) {
-		printerEnabled = on;
-		printer.turnPrinterOnOff(on);
-	}
-
 	/**
 	 * Enable floppy disk drives.
 	 * 
@@ -344,7 +333,6 @@ public class Player {
 						@Override
 						public void event() {
 							c1541Runner.reset();
-							drivesEnabledProperty.set(on);
 						}
 					});
 		} else {
@@ -353,7 +341,6 @@ public class Player {
 						@Override
 						public void event() {
 							c1541Runner.cancel();
-							drivesEnabledProperty.set(on);
 						}
 					});
 		}
@@ -491,6 +478,10 @@ public class Player {
 		for (final C1541 floppy : floppies) {
 			floppy.setCustomKernalRom(null);
 		}
+	}
+
+	public void enablePrinter(boolean printerOn) {
+		printer.turnPrinterOnOff(printerOn);
 	}
 
 	/**

@@ -56,6 +56,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public BooleanProperty enableDatabaseProperty() {
+		isEnableDatabase();
 		return enableDatabaseProperty;
 	}
 	
@@ -82,6 +83,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public IntegerProperty playLengthProperty() {
+		getPlayLength();
 		return playLengthProperty;
 	}
 	
@@ -236,6 +238,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public BooleanProperty singleProperty() {
+		isSingle();
 		return singleProperty;
 	}
 	

@@ -1,6 +1,11 @@
 package ui.entities.config;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.IPrinterSection;
 
@@ -8,15 +13,30 @@ import sidplay.ini.intf.IPrinterSection;
 public class PrinterSection implements IPrinterSection {
 
 	private boolean printerOn;
-
+	
+	@Transient
+	@XmlTransient
+	private BooleanProperty printerOnProperty;
+	
 	@Override
 	public boolean isPrinterOn() {
-		return printerOn;
+		if (printerOnProperty == null) {
+			printerOnProperty = new SimpleBooleanProperty();
+			printerOnProperty.set(printerOn);
+		}
+		return printerOnProperty.get();
 	}
 
 	@Override
-	public void setPrinterOn(boolean isPrinterOn) {
-		this.printerOn = isPrinterOn;
+	public void setPrinterOn(boolean printerOn) {
+		isPrinterOn();
+		printerOnProperty.set(printerOn);
+		this.printerOn = printerOn;
 	}
 
+	public BooleanProperty printerOnProperty() {
+		isPrinterOn();
+		return printerOnProperty;
+	}
+	
 }

@@ -1,8 +1,13 @@
 package ui.entities.config;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
@@ -12,41 +17,86 @@ import sidplay.ini.intf.IC1541Section;
 public class C1541Section implements IC1541Section {
 
 	private boolean driveOn;
-
+	
+	@Transient
+	@XmlTransient
+	private BooleanProperty driveOnProperty;
+	
 	@Override
 	public boolean isDriveOn() {
-		return this.driveOn;
+		if (driveOnProperty == null) {
+			driveOnProperty = new SimpleBooleanProperty();
+			driveOnProperty.set(driveOn);
+		}
+		return driveOnProperty.get();
 	}
 
 	@Override
-	public void setDriveOn(boolean on) {
-		this.driveOn = on;
+	public void setDriveOn(boolean driveOn) {
+		isDriveOn();
+		driveOnProperty.set(driveOn);
+		this.driveOn = driveOn;
 	}
 
-	private boolean driveSoundOn = true;
-
+	public BooleanProperty driveOnProperty() {
+		isDriveOn();
+		return driveOnProperty;
+	}
+	
+	private boolean driveSoundOn;
+	
+	@Transient
+	@XmlTransient
+	private BooleanProperty driveSoundOnProperty;
+	
 	@Override
 	public boolean isDriveSoundOn() {
-		return this.driveSoundOn;
+		if (driveSoundOnProperty == null) {
+			driveSoundOnProperty = new SimpleBooleanProperty();
+			driveSoundOnProperty.set(driveSoundOn);
+		}
+		return driveSoundOnProperty.get();
 	}
 
 	@Override
-	public void setDriveSoundOn(boolean on) {
-		this.driveSoundOn = on;
+	public void setDriveSoundOn(boolean driveSoundOn) {
+		isDriveSoundOn();
+		driveSoundOnProperty.set(driveSoundOn);
+		this.driveSoundOn = driveSoundOn;
 	}
 
+	public BooleanProperty driveSoundOnProperty() {
+		isDriveSoundOn();
+		return driveSoundOnProperty;
+	}
+	
 	private boolean parallelCable;
-
+	
+	@Transient
+	@XmlTransient
+	private BooleanProperty parallelCableProperty;
+	
 	@Override
 	public boolean isParallelCable() {
-		return this.parallelCable;
+		if (parallelCableProperty == null) {
+			parallelCableProperty = new SimpleBooleanProperty();
+			parallelCableProperty.set(parallelCable);
+		}
+		return parallelCableProperty.get();
 	}
 
 	@Override
-	public void setParallelCable(boolean on) {
-		this.parallelCable = on;
+	public void setParallelCable(boolean parallelCable) {
+		isParallelCable();
+		parallelCableProperty.set(parallelCable);
+		this.parallelCable = parallelCable;
 	}
 
+	public BooleanProperty parallelCableProperty() {
+		isParallelCable();
+		return parallelCableProperty;
+	}
+	
 	private boolean ramExpansionEnabled0;
 
 	@Override
