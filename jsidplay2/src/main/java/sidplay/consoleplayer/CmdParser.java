@@ -11,16 +11,24 @@ import libsidplay.common.CPUClock;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import resid_builder.resid.ChipModel;
-import sidplay.ConsolePlayer;
 import sidplay.ini.intf.IConfig;
 
 public class CmdParser {
 
-	private ConsolePlayer player;
 	private IConfig config;
+	
+	private SidTune tune;
+	private Output output;
+	private String outputFilename;
+	private Emulation emulation;
+	private int startTime;
+	private boolean disableFilters;
+	private int first;
+	private int quietLevel;
+	private int verboseLevel;
+	private boolean debug;
 
-	public CmdParser(ConsolePlayer player, IConfig config) {
-		this.player = player;
+	public CmdParser(IConfig config) {
 		this.config = config;
 	}
 
@@ -35,7 +43,6 @@ public class CmdParser {
 		int i = 0;
 		boolean err = false;
 
-		int startTime = 0;
 		int userPlayLength = 0;
 		boolean recordMode = false;
 
@@ -46,8 +53,8 @@ public class CmdParser {
 		}
 
 		// default arg options
-		this.player.setOutput(Output.OUT_SOUNDCARD);
-		this.player.setEmulation(Emulation.EMU_RESID);
+		output = Output.OUT_SOUNDCARD;
+		emulation = Emulation.EMU_RESID;
 
 		// parse command line arguments
 		while (i < argv.length) {
@@ -66,7 +73,6 @@ public class CmdParser {
 					if (startTime == -1) {
 						err = true;
 					}
-					this.player.setStartTime(startTime);
 				} else if (argv[i].equals("-fd")) {
 					// Override sidTune and enable the second sid
 					config.getEmulation().setForceStereoTune(true);
@@ -81,7 +87,7 @@ public class CmdParser {
 				// New/No filter options
 				else if (argv[i].startsWith("-nf")) {
 					if (argv[i].length() == 3) {
-						this.player.setDisableFilters();
+						disableFilters = true;
 					}
 				}
 
@@ -106,15 +112,15 @@ public class CmdParser {
 				else if (argv[i].startsWith("-ols")) {
 					config.getSidplay2().setLoop(true);
 					config.getSidplay2().setSingle(true);
-					this.player.setFirst(Integer.valueOf(argv[i].substring(4)));
+					first = Integer.valueOf(argv[i].substring(4));
 				} else if (argv[i].startsWith("-ol")) {
 					config.getSidplay2().setLoop(true);
 					config.getSidplay2().setSingle(false);
-					this.player.setFirst(Integer.valueOf(argv[i].substring(3)));
+					first = Integer.valueOf(argv[i].substring(3));
 				} else if (argv[i].startsWith("-os")) {
 					config.getSidplay2().setLoop(false);
 					config.getSidplay2().setSingle(true);
-					this.player.setFirst(Integer.valueOf(argv[i].substring(3)));
+					first = Integer.valueOf(argv[i].substring(3));
 				} else if (argv[i].startsWith("-o")) {
 					// User forgot track number ?
 					if (argv[i].length() == 2) {
@@ -122,15 +128,14 @@ public class CmdParser {
 					}
 					config.getSidplay2().setLoop(false);
 					config.getSidplay2().setSingle(false);
-					this.player.setFirst(Integer.valueOf(argv[i].substring(2)));
+					first = Integer.valueOf(argv[i].substring(2));
 				}
 
 				else if (argv[i].startsWith("-q")) {
 					if (argv[i].length() == 2) {
-						this.player.setQuietLevel(1);
+						quietLevel = 1;
 					} else {
-						this.player.setQuietLevel(Integer.valueOf(argv[i]
-								.substring(2)));
+						quietLevel = Integer.valueOf(argv[i].substring(2));
 					}
 				}
 
@@ -153,47 +158,46 @@ public class CmdParser {
 					config.getEmulation().setDefaultClockSpeed(CPUClock.PAL);
 				} else if (argv[i].startsWith("-v")) {
 					if (argv[i].length() == 2) {
-						this.player.setVerboseLevel(1);
+						verboseLevel = 1;
 					} else {
-						this.player.setVerboseLevel(Integer.valueOf(argv[i]
-								.substring(2)));
+						verboseLevel = Integer.valueOf(argv[i].substring(2));
 					}
 				}
 
 				// File format conversions
 				else if (argv[i].equals("-m")) {
-					this.player.setOutput(Output.OUT_MP3);
-					this.player.setOutputFilename(argv[++i]);
+					output = Output.OUT_MP3;
+					outputFilename = argv[++i];
 					recordMode = true;
 				} else if (argv[i].equals("-w") || argv[i].equals("--wav")) {
-					this.player.setOutput(Output.OUT_WAV);
-					this.player.setOutputFilename(argv[++i]);
+					output = Output.OUT_WAV;
+					outputFilename = argv[++i];
 					recordMode = true;
 				} else if (argv[i].equals("-lm")) {
-					this.player.setOutput(Output.OUT_LIVE_MP3);
+					output = Output.OUT_LIVE_MP3;
 					i++;
-					this.player.setOutputFilename(argv[i]);
+					outputFilename = argv[i];
 					recordMode = true;
 				} else if (argv[i].equals("-lw") || argv[i].equals("-l")) {
-					this.player.setOutput(Output.OUT_LIVE_WAV);
-					this.player.setOutputFilename(argv[++i]);
+					output = Output.OUT_LIVE_WAV;
+					outputFilename = argv[++i];
 					recordMode = true;
 				}
 
 				// Hardware selection
 				else if (argv[i].equals("--hardsid")) {
-					this.player.setEmulation(Emulation.EMU_HARDSID);
-					this.player.setOutput(Output.OUT_NULL);
+					emulation = Emulation.EMU_HARDSID;
+					output = Output.OUT_NULL;
 				}
 
 				// These are for debug
 				else if (argv[i].equals("--none")) {
-					this.player.setEmulation(Emulation.EMU_NONE);
-					this.player.setOutput(Output.OUT_NULL);
+					emulation = Emulation.EMU_NONE;
+					output = Output.OUT_NULL;
 				} else if (argv[i].equals("--nosid")) {
-					this.player.setEmulation(Emulation.EMU_NONE);
+					emulation = Emulation.EMU_NONE;
 				} else if (argv[i].equals("--cpu-debug")) {
-					this.player.setDebug(true);
+					debug = true;
 				}
 
 				else {
@@ -232,10 +236,10 @@ public class CmdParser {
 			try (InputStream stream = new URL(filename).openConnection()
 					.getInputStream()) {
 				// load from URL
-				player.setTune(SidTune.load(stream));
+				tune = SidTune.load(stream);
 			} catch (MalformedURLException e) {
 				// load from file
-				player.setTune(SidTune.load(new File(filename)));
+				tune = SidTune.load(new File(filename));
 			}
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
@@ -356,4 +360,34 @@ public class CmdParser {
 		}
 	}
 
+	public SidTune getTune() {
+		return tune;
+	}
+	public Output getOutput() {
+		return output;
+	}
+	public String getOutputFilename() {
+		return outputFilename;
+	}
+	public Emulation getEmulation() {
+		return emulation;
+	}
+	public int getStartTime() {
+		return startTime;
+	}
+	public boolean isDisableFilters() {
+		return disableFilters;
+	}
+	public int getFirst() {
+		return first;
+	}
+	public int getQuietLevel() {
+		return quietLevel;
+	}
+	public int getVerboseLevel() {
+		return verboseLevel;
+	}
+	public boolean isDebug() {
+		return debug;
+	}
 }

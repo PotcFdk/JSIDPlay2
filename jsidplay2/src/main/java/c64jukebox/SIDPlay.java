@@ -5,21 +5,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.Emulation;
-import sidplay.consoleplayer.Output;
 import sidplay.ini.IniConfig;
 
 @SuppressWarnings("serial")
 public class SIDPlay extends Applet {
 	private IniConfig config;
 	private ConsolePlayer cp;
-	private Output fOut = Output.OUT_SOUNDCARD;
-	private Emulation fEmu = Emulation.EMU_RESID;
+	private boolean useHardSid;
 
 	private final HashMap<String, SidTune> map = new HashMap<String, SidTune>();
 
@@ -84,18 +83,25 @@ public class SIDPlay extends Applet {
 		cp.stopC64();
 
 		// start new song
-		String[] args;
-		if (songNum == -1) {
-			args = new String[] { urlName };
-		} else {
-			args = new String[] { "-o" + songNum, urlName };
-		}
+		String[] args = getArgs(urlName, songNum);
 		if (!cp.args(args)) {
 			return;
 		}
-		cp.setOutput(fOut);
-		cp.setEmulation(fEmu);
 		cp.startC64();
+	}
+
+	private String[] getArgs(String urlName, int songNum) {
+		Collection<String> args = new ArrayList<>();
+		if (songNum == -1) {
+			args.add(urlName);
+		} else {
+			args.add("-o");
+			args.add(String.valueOf(songNum));
+		}
+		if (useHardSid) {
+			args.add("--hardsid");
+		}
+		return args.toArray(new String[args.size()]);
 	}
 
 	/**
@@ -123,16 +129,14 @@ public class SIDPlay extends Applet {
 	 * Use JSIDPlay2 emulation for the next song.
 	 */
 	public void useEmulation() {
-		fOut = Output.OUT_SOUNDCARD;
-		fEmu = Emulation.EMU_RESID;
+		useHardSid = false;
 	}
 
 	/**
 	 * Use HardSID4U for the next song.
 	 */
 	public void useHardSID() {
-		fOut = Output.OUT_NULL;
-		fEmu = Emulation.EMU_HARDSID;
+		useHardSid = true;
 	}
 
 	/**

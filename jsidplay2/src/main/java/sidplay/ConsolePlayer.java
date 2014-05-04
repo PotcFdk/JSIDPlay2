@@ -104,10 +104,10 @@ public class ConsolePlayer {
 		}
 		player.setTune(tune);
 
-		CPUClock cpuFreq = CPUClock.getCPUClock(this.config, tune);
+		CPUClock cpuFreq = CPUClock.getCPUClock(config, tune);
 		player.setClock(cpuFreq);
 
-		final IAudioSection audio = this.config.getAudio();
+		final IAudioSection audio = config.getAudio();
 		if (oldDriverSettings != null) {
 			// restore settings after MP3 has been played last time
 			driverSettings.restore(oldDriverSettings);
@@ -125,10 +125,10 @@ public class ConsolePlayer {
 			audio.setMp3File(tune.getInfo().file.getAbsolutePath());
 		}
 
-		driverSettings.configure(this.config, tune, player);
+		driverSettings.configure(config, tune, player);
 
 		final AudioConfig audioConfig = AudioConfig.getInstance(
-				this.config.getAudio(), driverSettings.getChannels());
+				config.getAudio(), driverSettings.getChannels());
 		audioConfig.setTuneFilename(tune != null ? tune.getInfo().file : null);
 		audioConfig.setSongCount(songs);
 		audioConfig.setCurrentSong(currentSong);
@@ -152,7 +152,7 @@ public class ConsolePlayer {
 
 		// Start the player. Do this by fast
 		// forwarding to the start position
-		this.currentSpeed = MAX_SPEED;
+		currentSpeed = MAX_SPEED;
 		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
 
 		player.reset();
@@ -187,13 +187,13 @@ public class ConsolePlayer {
 		sidBuilder = null;
 		switch (emu) {
 		case EMU_RESID:
-			sidBuilder = new ReSIDBuilder(audioConfig, cpuFrequency,
-					this.config.getAudio().getLeftVolume(), this.config
-							.getAudio().getRightVolume());
+			sidBuilder = new ReSIDBuilder(audioConfig, cpuFrequency, config
+					.getAudio().getLeftVolume(), config.getAudio()
+					.getRightVolume());
 			break;
 
 		case EMU_HARDSID:
-			sidBuilder = new HardSIDBuilder(this.config);
+			sidBuilder = new HardSIDBuilder(config);
 			break;
 
 		default:
@@ -252,11 +252,10 @@ public class ConsolePlayer {
 			if (seconds == timer.getStart()) {
 				normalSpeed();
 				if (sidBuilder instanceof ReSIDBuilder) {
-					((ReSIDBuilder) sidBuilder).setOutput(getOutput()
-							.getDriver());
+					((ReSIDBuilder) sidBuilder).setOutput(driverSettings
+							.getOutput().getDriver());
 				}
 			}
-
 			// Only for tunes: if play time is over loop or exit (single song or
 			// whole tune)
 			if (tune != null && timer.getStop() != 0
@@ -275,7 +274,6 @@ public class ConsolePlayer {
 				}
 			}
 		}
-
 		if (stateProperty.get() == State.RUNNING) {
 			try {
 				player.play(10000);
@@ -284,7 +282,6 @@ public class ConsolePlayer {
 				throw e;
 			}
 		}
-
 		return stateProperty.get() == State.RUNNING
 				|| stateProperty.get() == State.PAUSED;
 	}
@@ -317,56 +314,20 @@ public class ConsolePlayer {
 	}
 
 	public void fastForward() {
-		this.currentSpeed = currentSpeed * 2;
+		currentSpeed = currentSpeed * 2;
 		if (currentSpeed > MAX_SPEED) {
-			this.currentSpeed = MAX_SPEED;
+			currentSpeed = MAX_SPEED;
 		}
 		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
 	}
 
 	public void normalSpeed() {
-		this.currentSpeed = 1;
+		currentSpeed = 1;
 		driverSettings.getOutput().getDriver().setFastForward(1);
 	}
 
 	public void quit() {
 		stateProperty.set(State.QUIT);
-	}
-
-	/**
-	 * Configure track according to the tune songs.
-	 */
-	private void configureTrack(final SidTune tune) {
-		// Next time player is used, the track is reset
-		// 0 means set first song of play-list, next time open() is called
-		track.setFirst(0);
-		// 0 means use start song next time open() is called
-		track.setSelected(0);
-
-		if (tune == null) {
-			track.setFirst(1);
-			track.setSongs(0);
-		}
-	}
-
-	public void setStartTime(long time) {
-		timer.setStart(time);
-	}
-
-	public void setFirst(Integer first) {
-		track.setFirst(first);
-	}
-
-	public void setSelected(int selected) {
-		track.setSelected(selected);
-	}
-
-	public void setOutputFilename(String filename) {
-		outputFilename = filename;
-	}
-
-	public void setDebug(boolean debug) {
-		player.setDebug(CPUParser.getInstance());
 	}
 
 	public Output getOutput() {
@@ -385,41 +346,24 @@ public class ConsolePlayer {
 		driverSettings.setEmulation(emu);
 	}
 
-	public void setDisableFilters() {
-		config.getEmulation().setFilter(false);
-	}
-
-	public int getQuietLevel() {
-		return quietLevel;
-	}
-
-	public void setQuietLevel(Integer valueOf) {
-		quietLevel = valueOf;
-	}
-
-	public int getVerboseLevel() {
-		return verboseLevel;
-	}
-
-	public void setVerboseLevel(Integer valueOf) {
-		verboseLevel = valueOf;
-	}
-
-	public void setTune(SidTune tune) {
-		this.tune = tune;
-	}
-
 	public boolean args(String[] args) {
-		if (!new CmdParser(this, config).args(args)) {
+		CmdParser cmdParser = new CmdParser(config);
+		if (!cmdParser.args(args)) {
 			return false;
 		}
-		if (tune == null) {
-			return false;
-		}
+		tune = cmdParser.getTune();
+		driverSettings.setOutput(cmdParser.getOutput());
+		outputFilename = cmdParser.getOutputFilename();
+		driverSettings.setEmulation(cmdParser.getEmulation());
+		timer.setStart(cmdParser.getStartTime());
+		config.getEmulation().setFilter(!cmdParser.isDisableFilters());
+		quietLevel = cmdParser.getQuietLevel();
+		verboseLevel = cmdParser.getVerboseLevel();
+		player.setDebug(cmdParser.isDebug() ? CPUParser.getInstance() : null);
 
 		// Select the desired track
 		// and also mark the play-list start
-		track.setFirst(tune.selectSong(track.getFirst()));
+		track.setFirst(tune.selectSong(cmdParser.getFirst()));
 		track.setSelected(track.getFirst());
 		if (config.getSidplay2().isSingle()) {
 			track.setSongs(1);
@@ -437,24 +381,8 @@ public class ConsolePlayer {
 	private Consumer<Player> interactivityHook = (player) -> {
 	};
 
-	public SidTune.Speed getSongSpeed(int selected) {
-		return tune.getSongSpeed(selected);
-	}
-
-	public int getSongs() {
-		return track.getSongs();
-	}
-
-	public int getFirst() {
-		return track.getFirst();
-	}
-
 	public int getSelected() {
 		return track.getSelected();
-	}
-
-	public long getStop() {
-		return timer.getStop();
 	}
 
 	public void selectFirstTrack() {
@@ -468,7 +396,7 @@ public class ConsolePlayer {
 	}
 
 	public static void main(final String[] args) throws InterruptedException {
-		IniConfig config = new IniConfig(true);
+		final IniConfig config = new IniConfig(true);
 		final ConsolePlayer player = new ConsolePlayer(config);
 		if (!player.args(args)) {
 			System.exit(1);
@@ -484,9 +412,10 @@ public class ConsolePlayer {
 				}
 			}
 		}
-		ConsoleIO consoleIO = new ConsoleIO(player);
-		player.menuHook = (obj) -> consoleIO.menu(player.config,
-				player.tune.getInfo());
+		ConsoleIO consoleIO = new ConsoleIO(player.config, player,
+				player.quietLevel, player.verboseLevel);
+		player.menuHook = (obj) -> consoleIO.menu(player.tune, player.track,
+				player.timer);
 
 		player.interactivityHook = (obj) -> {
 			try {
@@ -582,9 +511,15 @@ public class ConsolePlayer {
 		tune = sidTune;
 		// Stop previous run
 		stopC64();
-		// load tune
-		configureTrack(sidTune);
-		// track.
+		// 0 means use start song next time open() is called
+		track.setSelected(0);
+		if (tune == null) {
+			track.setFirst(1);
+			track.setSongs(0);
+		} else {
+			// 0 means set first song of play-list, next time open() is called
+			track.setFirst(0);
+		}
 		// set command to type after reset
 		getPlayer().setCommand(command);
 		// Start emulation
@@ -594,7 +529,7 @@ public class ConsolePlayer {
 	public void insertMedia(File mediaFile, File autostartFile,
 			MediaType mediaType) {
 		try {
-			this.config.getSidplay2().setLastDirectory(
+			config.getSidplay2().setLastDirectory(
 					mediaFile.getParentFile().getAbsolutePath());
 			switch (mediaType) {
 			case TAPE:
@@ -621,7 +556,7 @@ public class ConsolePlayer {
 	private void insertDisk(final File selectedDisk, final File autostartFile)
 			throws IOException {
 		// automatically turn drive on
-		this.config.getC1541().setDriveOn(true);
+		config.getC1541().setDriveOn(true);
 		getPlayer().enableFloppyDiskDrives(true);
 		// attach selected disk into the first disk drive
 		DiskImage disk = getPlayer().getFloppies()[0].getDiskController()
@@ -643,7 +578,7 @@ public class ConsolePlayer {
 		if (!selectedTape.getName().toLowerCase(Locale.ENGLISH)
 				.endsWith(".tap")) {
 			// Everything, which is not a tape convert to tape first
-			final File convertedTape = new File(this.config.getSidplay2()
+			final File convertedTape = new File(config.getSidplay2()
 					.getTmpDir(), selectedTape.getName() + ".tap");
 			convertedTape.deleteOnExit();
 			String[] args = new String[] { selectedTape.getAbsolutePath(),
@@ -704,12 +639,12 @@ public class ConsolePlayer {
 	 */
 	public void updateChipModel() {
 		if (sidBuilder != null) {
-			ChipModel chipModel = ChipModel.getChipModel(this.config, tune);
+			ChipModel chipModel = ChipModel.getChipModel(config, tune);
 			updateChipModel(0, chipModel);
 
 			if (driverSettings.getChannels() == 2) {
-				ChipModel stereoChipModel = ChipModel.getStereoSIDModel(
-						this.config, tune);
+				ChipModel stereoChipModel = ChipModel.getStereoSIDModel(config,
+						tune);
 				updateChipModel(1, stereoChipModel);
 			}
 		}
@@ -725,18 +660,15 @@ public class ConsolePlayer {
 	 */
 	private void updateChipModel(final int chipNum, final ChipModel model) {
 		SIDEmu s = player.getC64().getSID(chipNum);
-
 		if (s instanceof HardSID) {
 			sidBuilder.unlock(s);
 			s = null;
 		}
-
 		if (s == null) {
 			s = sidBuilder.lock(player.getC64().getEventScheduler(), model);
 		} else {
 			s.setChipModel(model);
 		}
-
 		player.getC64().setSID(chipNum, s);
 	}
 
