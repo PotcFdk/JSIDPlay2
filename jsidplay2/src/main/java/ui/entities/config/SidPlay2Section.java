@@ -63,7 +63,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@XmlTransient
 	private IntegerProperty defaultPlayLengthProperty;
 	
-	private int defaultPlayLength;
+	private int defaultPlayLength = 3 * 60;
 
 	@Override
 	public int getDefaultPlayLength() {

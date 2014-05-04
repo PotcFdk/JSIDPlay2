@@ -50,8 +50,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	public final int getUserPlayLength() {
-		return iniReader.getPropertyTime("SIDPlay2", "User Play Length",
-				3 * 60 + 30);
+		return iniReader.getPropertyTime("SIDPlay2", "User Play Length", 0);
 	}
 
 	@Override
@@ -63,7 +62,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	@Override
 	public final int getDefaultPlayLength() {
 		return iniReader.getPropertyTime("SIDPlay2", "Default Play Length",
-				3 * 60 + 30);
+				3 * 60);
 	}
 
 	@Override

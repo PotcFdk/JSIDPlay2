@@ -19,7 +19,8 @@ public class CmdParser {
 	private ConsolePlayer player;
 	private IConfig config;
 
-	public CmdParser(IConfig config) {
+	public CmdParser(ConsolePlayer player, IConfig config) {
+		this.player = player;
 		this.config = config;
 	}
 
@@ -108,8 +109,10 @@ public class CmdParser {
 					this.player.setFirst(Integer.valueOf(argv[i].substring(4)));
 				} else if (argv[i].startsWith("-ol")) {
 					config.getSidplay2().setLoop(true);
+					config.getSidplay2().setSingle(false);
 					this.player.setFirst(Integer.valueOf(argv[i].substring(3)));
 				} else if (argv[i].startsWith("-os")) {
+					config.getSidplay2().setLoop(false);
 					config.getSidplay2().setSingle(true);
 					this.player.setFirst(Integer.valueOf(argv[i].substring(3)));
 				} else if (argv[i].startsWith("-o")) {
@@ -117,6 +120,8 @@ public class CmdParser {
 					if (argv[i].length() == 2) {
 						err = true;
 					}
+					config.getSidplay2().setLoop(false);
+					config.getSidplay2().setSingle(false);
 					this.player.setFirst(Integer.valueOf(argv[i].substring(2)));
 				}
 

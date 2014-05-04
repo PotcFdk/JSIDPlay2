@@ -410,10 +410,9 @@ public class ConsolePlayer {
 	}
 
 	public boolean args(String[] args) {
-		if (!new CmdParser(config).args(args)) {
+		if (!new CmdParser(this, config).args(args)) {
 			return false;
 		}
-		configureTrack(tune);
 		if (tune == null) {
 			return false;
 		}
