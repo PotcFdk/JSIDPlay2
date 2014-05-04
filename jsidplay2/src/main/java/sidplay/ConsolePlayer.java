@@ -231,7 +231,7 @@ public class ConsolePlayer {
 	 * 
 	 * @throws InterruptedException
 	 */
-	public boolean play() throws InterruptedException {
+	private boolean play() throws InterruptedException {
 		/* handle switches to next song etc. */
 		final int seconds = player.time();
 		if (seconds != timer.getCurrent()) {
