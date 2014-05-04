@@ -1,5 +1,6 @@
 package sidplay.ini.intf;
 
+
 public interface ISidPlay2Section {
 
 	/**
@@ -33,31 +34,38 @@ public interface ISidPlay2Section {
 	public void setEnableDatabase(boolean enable);
 
 	/**
-	 * Getter of the default play length.
+	 * Getter of the user defined fixed play length.
 	 * 
 	 * @return default play length
 	 */
-	public int getPlayLength();
+	public int getUserPlayLength();
 
 	/**
-	 * Setter of the default play length.
+	 * Setter of the user defined fixed play length.
 	 * 
 	 * @param playLength
 	 *            default play length
 	 */
-	public void setPlayLength(int playLength);
+	public void setUserPlayLength(int playLength);
 
 	/**
-	 * Getter of the record length.
+	 * Getter of the default play length (if the song length is unknown).
 	 * 
-	 * @return the record length
+	 * @return default play length
 	 */
-	public int getRecordLength();
+	public int getDefaultPlayLength();
 
 	/**
-	 * Sets the record length.
+	 * Setter of the default play length (if the song length is unknown).
+	 * 
+	 * @param playLength
+	 *            default play length
 	 */
-	public void setRecordLength(int playLength);
+	public void setDefaultPlayLength(int playLength);
+
+	public boolean isLoop();
+
+	public void setLoop(boolean loop);
 
 	/**
 	 * Getter of the HVMEC collection directory.

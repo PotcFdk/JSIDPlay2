@@ -38,65 +38,46 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 		iniReader.setProperty("SIDPlay2", "Version", version);
 	}
 
-	/**
-	 * Getter of the enable of the Songlengths database.
-	 * 
-	 * @return Is the Songlengths database enabled?
-	 */
 	@Override
 	public final boolean isEnableDatabase() {
 		return iniReader.getPropertyBool("SIDPlay2", "EnableDatabase", true);
 	}
 
-	/**
-	 * Setter of the enable of the Songlengths database.
-	 * 
-	 * @param enable
-	 *            the enable of the Songlengths database
-	 */
 	@Override
 	public final void setEnableDatabase(final boolean enable) {
 		iniReader.setProperty("SIDPlay2", "EnableDatabase", enable);
 	}
 
-	/**
-	 * Getter of the default play length.
-	 * 
-	 * @return default play length
-	 */
 	@Override
-	public final int getPlayLength() {
+	public final int getUserPlayLength() {
+		return iniReader.getPropertyTime("SIDPlay2", "User Play Length",
+				3 * 60 + 30);
+	}
+
+	@Override
+	public final void setUserPlayLength(final int playLength) {
+		iniReader.setProperty("SIDPlay2", "User Play Length", String.format(
+				"%02d:%02d", (playLength / 60), (playLength % 60)));
+	}
+
+	@Override
+	public final int getDefaultPlayLength() {
 		return iniReader.getPropertyTime("SIDPlay2", "Default Play Length",
 				3 * 60 + 30);
 	}
 
-	/**
-	 * Setter of the default play length.
-	 * 
-	 * @param playLength
-	 *            default play length
-	 */
 	@Override
-	public final void setPlayLength(final int playLength) {
+	public final void setDefaultPlayLength(final int playLength) {
 		iniReader.setProperty("SIDPlay2", "Default Play Length", String.format(
 				"%02d:%02d", (playLength / 60), (playLength % 60)));
 	}
 
-	/**
-	 * Getter of the record length.
-	 * 
-	 * @return the record length
-	 */
-	@Override
-	public final int getRecordLength() {
-		return iniReader.getPropertyTime("SIDPlay2", "Default Record Length",
-				3 * 60 + 30);
+	public boolean isLoop() {
+		return iniReader.getPropertyBool("SIDPlay2", "Loop", false);
 	}
 
-	@Override
-	public final void setRecordLength(int playLength) {
-		iniReader.setProperty("SIDPlay2", "Default Record Length", String
-				.format("%02d:%02d", (playLength / 60), (playLength % 60)));
+	public void setLoop(boolean loop) {
+		iniReader.setProperty("SIDPlay2", "Loop", loop);
 	}
 
 	/**

@@ -1,21 +1,28 @@
 package sidplay.consoleplayer;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import libsidplay.common.CPUClock;
+import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import resid_builder.resid.ChipModel;
 import sidplay.ConsolePlayer;
+import sidplay.ini.intf.IConfig;
 
 public class CmdParser {
 
 	private ConsolePlayer player;
-	private Integer frequency;
+	private IConfig config;
 
-	public CmdParser(ConsolePlayer player) {
-		this.player = player;
+	public CmdParser(IConfig config) {
+		this.config = config;
 	}
-	
+
 	/**
 	 * Parse command line arguments
 	 * 
@@ -23,14 +30,18 @@ public class CmdParser {
 	 *            The command line arguments.
 	 * @return
 	 */
-	public int args(final String[] argv) {
-		int infile = -1;
+	public boolean args(final String[] argv) {
 		int i = 0;
 		boolean err = false;
 
+		int startTime = 0;
+		int userPlayLength = 0;
+		boolean recordMode = false;
+
+		String filename = null;
 		if (argv.length == 0) {
 			displayArgs(null);
-			return -1;
+			return false;
 		}
 
 		// default arg options
@@ -43,27 +54,27 @@ public class CmdParser {
 				// help options
 				if (argv[i].charAt(1) == 'h' || argv[i].equals("--help")) {
 					displayArgs(null);
-					return 0;
+					return true;
 				} else if (argv[i].equals("--help-debug")) {
 					displayDebugArgs();
-					return 0;
+					return true;
 				}
 
 				else if (argv[i].charAt(1) == 'b') {
-					final long time = parseTime(argv[i].substring(2));
-					if (time == -1) {
+					startTime = parseTime(argv[i].substring(2));
+					if (startTime == -1) {
 						err = true;
 					}
-					this.player.setStartTime(time);
+					this.player.setStartTime(startTime);
 				} else if (argv[i].equals("-fd")) {
 					// Override sidTune and enable the second sid
-					this.player.setForceStereoTune(true);
+					config.getEmulation().setForceStereoTune(true);
 				} else if (argv[i].startsWith("-f")) {
 					if (argv[i].length() == 2) {
 						err = true;
 					}
-					frequency = Integer.valueOf(argv[i].substring(2));
-					this.player.setFrequency(frequency);
+					config.getAudio().setFrequency(
+							Integer.valueOf(argv[i].substring(2)));
 				}
 
 				// New/No filter options
@@ -77,11 +88,13 @@ public class CmdParser {
 				else if (argv[i].startsWith("-ns")) {
 					switch (argv[i].charAt(3)) {
 					case '1':
-						this.player.setUserSidModel(ChipModel.MOS8580);
+						config.getEmulation()
+								.setUserSidModel(ChipModel.MOS8580);
 						break;
 					// No new sid so use old one (6581)
 					case '0':
-						this.player.setUserSidModel(ChipModel.MOS6581);
+						config.getEmulation()
+								.setUserSidModel(ChipModel.MOS6581);
 						break;
 					default:
 						err = true;
@@ -89,15 +102,15 @@ public class CmdParser {
 				}
 
 				// Track options
-				else if (argv[i].startsWith("-nols")) {
-					this.player.setLoop(true);
-					this.player.setSingle(true);
+				else if (argv[i].startsWith("-ols")) {
+					config.getSidplay2().setLoop(true);
+					config.getSidplay2().setSingle(true);
 					this.player.setFirst(Integer.valueOf(argv[i].substring(4)));
 				} else if (argv[i].startsWith("-ol")) {
-					this.player.setLoop(true);
+					config.getSidplay2().setLoop(true);
 					this.player.setFirst(Integer.valueOf(argv[i].substring(3)));
 				} else if (argv[i].startsWith("-os")) {
-					this.player.setLoop(true);
+					config.getSidplay2().setSingle(true);
 					this.player.setFirst(Integer.valueOf(argv[i].substring(3)));
 				} else if (argv[i].startsWith("-o")) {
 					// User forgot track number ?
@@ -111,33 +124,34 @@ public class CmdParser {
 					if (argv[i].length() == 2) {
 						this.player.setQuietLevel(1);
 					} else {
-						this.player.setQuietLevel(Integer.valueOf(argv[i].substring(2)));
+						this.player.setQuietLevel(Integer.valueOf(argv[i]
+								.substring(2)));
 					}
 				}
 
 				else if (argv[i].startsWith("-t")) {
-					final long time = parseTime(argv[i].substring(2));
-					if (time == -1) {
+					userPlayLength = parseTime(argv[i].substring(2));
+					if (userPlayLength == -1) {
 						err = true;
 					}
-					this.player.setDefaultLength(time);
-					this.player.setEnableDatabase(true);
+					config.getSidplay2().setUserPlayLength(userPlayLength);
 				}
 
 				// Video/Verbose Options
 				else if (argv[i].equals("-vnf")) {
-					this.player.setUserClockSpeed(CPUClock.NTSC);
+					config.getEmulation().setUserClockSpeed(CPUClock.NTSC);
 				} else if (argv[i].equals("-vpf")) {
-					this.player.setUserClockSpeed(CPUClock.PAL);
+					config.getEmulation().setUserClockSpeed(CPUClock.PAL);
 				} else if (argv[i].equals("-vn")) {
-					this.player.setDefaultClockSpeed(CPUClock.NTSC);
+					config.getEmulation().setDefaultClockSpeed(CPUClock.NTSC);
 				} else if (argv[i].equals("-vp")) {
-					this.player.setDefaultClockSpeed(CPUClock.PAL);
+					config.getEmulation().setDefaultClockSpeed(CPUClock.PAL);
 				} else if (argv[i].startsWith("-v")) {
 					if (argv[i].length() == 2) {
 						this.player.setVerboseLevel(1);
 					} else {
-						this.player.setVerboseLevel(Integer.valueOf(argv[i].substring(2)));
+						this.player.setVerboseLevel(Integer.valueOf(argv[i]
+								.substring(2)));
 					}
 				}
 
@@ -145,17 +159,20 @@ public class CmdParser {
 				else if (argv[i].equals("-m")) {
 					this.player.setOutput(Output.OUT_MP3);
 					this.player.setOutputFilename(argv[++i]);
+					recordMode = true;
 				} else if (argv[i].equals("-w") || argv[i].equals("--wav")) {
 					this.player.setOutput(Output.OUT_WAV);
 					this.player.setOutputFilename(argv[++i]);
+					recordMode = true;
 				} else if (argv[i].equals("-lm")) {
 					this.player.setOutput(Output.OUT_LIVE_MP3);
 					i++;
 					this.player.setOutputFilename(argv[i]);
+					recordMode = true;
 				} else if (argv[i].equals("-lw") || argv[i].equals("-l")) {
 					this.player.setOutput(Output.OUT_LIVE_WAV);
-					i++;
-					this.player.setOutputFilename(argv[i]);
+					this.player.setOutputFilename(argv[++i]);
+					recordMode = true;
 				}
 
 				// Hardware selection
@@ -180,22 +197,46 @@ public class CmdParser {
 
 			} else {
 				// Reading file name
-				if (infile == -1) {
-					this.player.setInFile(argv[i]);
-				} else {
-					err = true;
-				}
+				filename = argv[i];
 			}
 
 			if (err) {
 				displayArgs(argv[i]);
-				return -1;
+				return false;
 			}
 
 			i++; // next index
 		}
 
-		return 1;
+		if (recordMode && userPlayLength == 0) {
+			System.err.println("ERROR: -t0 invalid in record mode");
+			return false;
+		}
+		if (userPlayLength != 0 && startTime >= userPlayLength) {
+			System.err.println("ERROR: Start time exceeds song length!");
+			return false;
+		}
+		// Can only loop if not creating audio files
+		if (recordMode) {
+			config.getSidplay2().setLoop(false);
+		}
+		if (filename == null) {
+			return false;
+		}
+		try {
+			try (InputStream stream = new URL(filename).openConnection()
+					.getInputStream()) {
+				// load from URL
+				player.setTune(SidTune.load(stream));
+			} catch (MalformedURLException e) {
+				// load from file
+				player.setTune(SidTune.load(new File(filename)));
+			}
+		} catch (IOException | SidTuneError e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -205,9 +246,9 @@ public class CmdParser {
 	 *            The time string to parse.
 	 * @return The time as an integer.
 	 */
-	private long parseTime(final String str) {
+	private int parseTime(final String str) {
 		int sep;
-		long _time;
+		int _time;
 
 		// Check for empty string
 		if (str.length() == 0) {
@@ -225,7 +266,7 @@ public class CmdParser {
 			if (val < 0 || val > 99) {
 				return -1;
 			}
-			_time = (long) val * 60;
+			_time = val * 60;
 			val = Integer.valueOf(str.substring(sep + 1));
 			if (val < 0 || val > 59) {
 				return -1;
@@ -252,7 +293,7 @@ public class CmdParser {
 				+ "\n"
 
 				+ " -f<num>      set frequency in Hz (default: "
-				+ frequency
+				+ config.getAudio().getFrequency()
 				+ ")"
 				+ "\n"
 				+ " -fd          force dual sid environment"
@@ -263,9 +304,7 @@ public class CmdParser {
 				+ " -ns[0|1]     (no) MOS 8580 waveforms (default: from tune or cfg)"
 				+ "\n"
 
-				+ " -o<l|s>      looping and/or single track"
-				+ "\n"
-				+ " -o<num>      start track (default: preset)"
+				+ " -o[l|s]<num>      start track (default: preset), looping and/or single track"
 				+ "\n"
 
 				+ " -t<num>      set play length in [m:]s format (0 is endless)"

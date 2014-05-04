@@ -206,10 +206,10 @@ public class MusicCollection extends Tab implements UIPart {
 		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
 				.getSidplay2();
 
-		int seconds = sidplay2.getPlayLength();
+		int seconds = sidplay2.getDefaultPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
 				seconds % 60));
-		sidplay2.playLengthProperty().addListener(
+		sidplay2.defaultPlayLengthProperty().addListener(
 				(observable, oldValue, newValue) -> defaultTime.setText(String
 						.format("%02d:%02d", newValue.intValue() / 60,
 								newValue.intValue() % 60)));
@@ -617,13 +617,12 @@ public class MusicCollection extends Tab implements UIPart {
 	private void doEnableSldb() {
 		util.getConfig().getSidplay2()
 				.setEnableDatabase(enableSldb.isSelected());
-		util.getConsolePlayer().setSongLengthTimer(enableSldb.isSelected());
+		util.getConsolePlayer().setStopTime(enableSldb.isSelected());
 	}
 
 	@FXML
 	private void playSingleSong() {
 		util.getConfig().getSidplay2().setSingle(singleSong.isSelected());
-		util.getConsolePlayer().setSingle(singleSong.isSelected());
 	}
 
 	@FXML
@@ -632,8 +631,7 @@ public class MusicCollection extends Tab implements UIPart {
 		defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 		final int secs = IniReader.parseTime(defaultTime.getText());
 		if (secs != -1) {
-			util.getConsolePlayer().setDefaultLength(secs);
-			util.getConfig().getSidplay2().setPlayLength(secs);
+			util.getConfig().getSidplay2().setDefaultPlayLength(secs);
 			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
 			defaultTime.setTooltip(tooltip);
 			defaultTime.getStyleClass().add(CELL_VALUE_OK);

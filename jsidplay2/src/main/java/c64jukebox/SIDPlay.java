@@ -90,7 +90,7 @@ public class SIDPlay extends Applet {
 		} else {
 			args = new String[] { "-o" + songNum, urlName };
 		}
-		if (cp.args(args) < 0) {
+		if (!cp.args(args)) {
 			return;
 		}
 		cp.setOutput(fOut);

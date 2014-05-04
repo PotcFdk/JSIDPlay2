@@ -15,7 +15,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.ISidPlay2Section;
 import ui.favorites.PlaybackType;
-import ui.favorites.RepeatType;
 import de.schlichtherle.truezip.file.TFile;
 
 @Embeddable
@@ -62,43 +61,58 @@ public class SidPlay2Section implements ISidPlay2Section {
 	
 	@Transient
 	@XmlTransient
-	private IntegerProperty playLengthProperty;
+	private IntegerProperty defaultPlayLengthProperty;
 	
-	private int playLength;
+	private int defaultPlayLength;
 
 	@Override
-	public int getPlayLength() {
-		if (playLengthProperty == null) {
-			playLengthProperty = new SimpleIntegerProperty();
-			playLengthProperty.set(playLength);
+	public int getDefaultPlayLength() {
+		if (defaultPlayLengthProperty == null) {
+			defaultPlayLengthProperty = new SimpleIntegerProperty();
+			defaultPlayLengthProperty.set(defaultPlayLength);
 		}
-		return playLengthProperty.get();
+		return defaultPlayLengthProperty.get();
 	}
 
 	@Override
-	public void setPlayLength(int playLength) {
-		getPlayLength();
-		playLengthProperty.set(playLength);
-		this.playLength = playLength;
+	public void setDefaultPlayLength(int defaultPlayLength) {
+		getDefaultPlayLength();
+		defaultPlayLengthProperty.set(defaultPlayLength);
+		this.defaultPlayLength = defaultPlayLength;
 	}
 
-	public IntegerProperty playLengthProperty() {
-		getPlayLength();
-		return playLengthProperty;
+	public IntegerProperty defaultPlayLengthProperty() {
+		getDefaultPlayLength();
+		return defaultPlayLengthProperty;
 	}
 	
-	private int recordLength;
+	@Transient
+	@XmlTransient
+	private IntegerProperty userPlayLengthProperty;
+	
+	private int userPlayLength;
 
 	@Override
-	public int getRecordLength() {
-		return recordLength;
+	public int getUserPlayLength() {
+		if (userPlayLengthProperty == null) {
+			userPlayLengthProperty = new SimpleIntegerProperty();
+			userPlayLengthProperty.set(userPlayLength);
+		}
+		return userPlayLengthProperty.get();
 	}
 
 	@Override
-	public void setRecordLength(int recordLength) {
-		this.recordLength = recordLength;
+	public void setUserPlayLength(int userPlayLength) {
+		getUserPlayLength();
+		userPlayLengthProperty.set(userPlayLength);
+		this.userPlayLength = userPlayLength;
 	}
 
+	public IntegerProperty userPlayLengthProperty() {
+		getUserPlayLength();
+		return userPlayLengthProperty;
+	}
+	
 	@Enumerated(EnumType.STRING)
 	private PlaybackType playbackType = PlaybackType.NORMAL;
 
@@ -110,15 +124,14 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.playbackType = playbackType;
 	}
 
-	@Enumerated(EnumType.STRING)
-	private RepeatType repeatType = RepeatType.REPEAT_OFF;
+	private boolean loop;
 
-	public RepeatType getRepeatType() {
-		return repeatType;
+	public boolean isLoop() {
+		return loop;
 	}
 
-	public void setRepeatType(RepeatType repeatType) {
-		this.repeatType = repeatType;
+	public void setLoop(boolean loop) {
+		this.loop = loop;
 	}
 
 	private String HVMEC;

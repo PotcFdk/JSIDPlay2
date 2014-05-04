@@ -20,11 +20,10 @@ public class ConsoleIO {
 	public ConsoleIO(ConsolePlayer player) {
 		this.player = player;
 	}
-	
-	public void menu(IConfig iniCfg,
-			SidTuneInfo tuneInfo) {
-		final IConsoleSection console = iniCfg.getConsole();
-		final IEmulationSection emulation = iniCfg.getEmulation();
+
+	public void menu(IConfig config, SidTuneInfo tuneInfo) {
+		final IConsoleSection console = config.getConsole();
+		final IEmulationSection emulation = config.getEmulation();
 		filterEnable = emulation.isFilter();
 		if (this.player.getQuietLevel() > 1) {
 			return;
@@ -73,38 +72,46 @@ public class ConsoleIO {
 				console.getVertical()));
 		{ // This will be the format used for playlists
 			int i = 1;
-			if (!this.player.isSingle()) {
+			if (!config.getSidplay2().isSingle()) {
 				i = this.player.getSelected();
 				i -= this.player.getFirst() - 1;
 				if (i < 1) {
 					i += this.player.getSongs();
 				}
 			}
-			System.out.println(String.format("%37s %c", i + "/" + this.player.getSongs()
-					+ " (tune " + tuneInfo.currentSong + "/" + tuneInfo.songs
-					+ "[" + tuneInfo.startSong + "])"
-					+ (this.player.isLoop() ? " [LOOPING]" : ""), console.getVertical()));
+			System.out.println(String.format("%37s %c",
+					i
+							+ "/"
+							+ this.player.getSongs()
+							+ " (tune "
+							+ tuneInfo.currentSong
+							+ "/"
+							+ tuneInfo.songs
+							+ "["
+							+ tuneInfo.startSong
+							+ "])"
+							+ (config.getSidplay2().isLoop() ? " [LOOPING]"
+									: ""), console.getVertical()));
 		}
 		if (this.player.getVerboseLevel() > 0) {
 			System.out.println(String.format("%c%s%c", console.getBottomLeft(),
 					setfill(console.getHorizontal(), 54),
 					console.getBottomRight()));
 			System.out.println(String.format("%c Song Speed   : %37s %c",
-					console.getVertical(), this.player.getSongSpeed(this.player.getSelected()),
+					console.getVertical(),
+					this.player.getSongSpeed(this.player.getSelected()),
 					console.getVertical()));
 		}
 		System.out.print(String.format("%c Song Length  : ",
 				console.getVertical()));
 		if (this.player.getStop() != 0) {
 			final String time = String.format("%02d:%02d",
-					(this.player.getStop() / 60 % 100), (this.player.getStop() % 60));
+					(this.player.getStop() / 60 % 100),
+					(this.player.getStop() % 60));
 			System.out.print(String.format("%37s %c", "" + time,
 					console.getVertical()));
-		} else if (this.player.isValid()) {
-			System.out.print(String.format("%37s %c", "FOREVER",
-					console.getVertical()));
 		} else {
-			System.out.print(String.format("%37s %c", "UNKNOWN",
+			System.out.print(String.format("%37s %c", "FOREVER",
 					console.getVertical()));
 		}
 		System.out.println();

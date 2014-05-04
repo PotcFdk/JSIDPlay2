@@ -72,10 +72,10 @@ public class Favorites extends Tab implements UIPart {
 		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig()
 				.getSidplay2();
 
-		final int seconds = sidPlay2Section.getPlayLength();
+		final int seconds = sidPlay2Section.getDefaultPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
 				seconds % 60));
-		sidPlay2Section.playLengthProperty().addListener(
+		sidPlay2Section.defaultPlayLengthProperty().addListener(
 				(observable, oldValue, newValue) -> defaultTime.setText(String
 						.format("%02d:%02d", newValue.intValue() / 60,
 								newValue.intValue() % 60)));
@@ -106,17 +106,10 @@ public class Favorites extends Tab implements UIPart {
 			off.setSelected(true);
 			break;
 		}
-		RepeatType rt = sidPlay2Section.getRepeatType();
-		switch (rt) {
-		case REPEAT_OFF:
-			repeatOff.setSelected(true);
-			break;
-		case REPEAT_ONE:
+		if (util.getConfig().getSidplay2().isLoop()) {
 			repeatOne.setSelected(true);
-			break;
-		default:
+		} else {
 			repeatOff.setSelected(true);
-			break;
 		}
 		util.getConsolePlayer().stateProperty()
 				.addListener((observable, oldValue, newValue) -> {
@@ -275,13 +268,12 @@ public class Favorites extends Tab implements UIPart {
 	private void doEnableSldb() {
 		util.getConfig().getSidplay2()
 				.setEnableDatabase(enableSldb.isSelected());
-		util.getConsolePlayer().setSongLengthTimer(enableSldb.isSelected());
+		util.getConsolePlayer().setStopTime(enableSldb.isSelected());
 	}
 
 	@FXML
 	private void playSingleSong() {
 		util.getConfig().getSidplay2().setSingle(singleSong.isSelected());
-		util.getConsolePlayer().setSingle(singleSong.isSelected());
 	}
 
 	@FXML
@@ -290,8 +282,7 @@ public class Favorites extends Tab implements UIPart {
 		defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 		final int secs = IniReader.parseTime(defaultTime.getText());
 		if (secs != -1) {
-			util.getConsolePlayer().setDefaultLength(secs);
-			util.getConfig().getSidplay2().setPlayLength(secs);
+			util.getConfig().getSidplay2().setDefaultPlayLength(secs);
 			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
 			defaultTime.setTooltip(tooltip);
 			defaultTime.getStyleClass().add(CELL_VALUE_OK);
@@ -342,14 +333,12 @@ public class Favorites extends Tab implements UIPart {
 
 	@FXML
 	private void repeatOff() {
-		((SidPlay2Section) util.getConfig().getSidplay2())
-				.setRepeatType(RepeatType.REPEAT_OFF);
+		util.getConfig().getSidplay2().setLoop(false);
 	}
 
 	@FXML
 	private void repeatOne() {
-		((SidPlay2Section) util.getConfig().getSidplay2())
-				.setRepeatType(RepeatType.REPEAT_ONE);
+		util.getConfig().getSidplay2().setLoop(true);
 	}
 
 	private FavoritesTab getSelectedTab() {
@@ -385,27 +374,26 @@ public class Favorites extends Tab implements UIPart {
 		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig()
 				.getSidplay2();
 		PlaybackType pt = sidPlay2Section.getPlaybackType();
-		RepeatType rt = sidPlay2Section.getRepeatType();
 
-		if (rt == RepeatType.REPEAT_ONE) {
-			// repeat one tune
-			util.getConsolePlayer().playTune(util.getPlayer().getTune(), null);
-		} else if (pt == PlaybackType.RANDOM_ALL) {
-			// random all favorites tab
-			favoritesList.getSelectionModel().select(
-					Math.abs(random.nextInt(Integer.MAX_VALUE))
-							% favoritesList.getTabs().size());
-			currentlyPlayedFavorites = getSelectedTab();
-			currentlyPlayedFavorites.playNextRandom();
-		} else if (currentlyPlayedFavorites != null
-				&& pt == PlaybackType.RANDOM_ONE) {
-			// random one favorites tab
-			currentlyPlayedFavorites.playNextRandom();
-		} else if (currentlyPlayedFavorites != null
-				&& pt != PlaybackType.PLAYBACK_OFF) {
-			// normal playback
-			currentlyPlayedFavorites.playNext(util.getPlayer().getTune()
-					.getInfo().file);
+		if (!util.getConfig().getSidplay2().isLoop()) {
+			if (pt == PlaybackType.RANDOM_ALL) {
+				// random all favorites tab
+				favoritesList.getSelectionModel().select(
+						Math.abs(random.nextInt(Integer.MAX_VALUE))
+								% favoritesList.getTabs().size());
+				currentlyPlayedFavorites = getSelectedTab();
+				currentlyPlayedFavorites.playNextRandom();
+			} else if (currentlyPlayedFavorites != null
+					&& pt == PlaybackType.RANDOM_ONE) {
+				// random one favorites tab
+				currentlyPlayedFavorites.playNextRandom();
+			} else if (currentlyPlayedFavorites != null
+					&& util.getPlayer().getTune() != null
+					&& pt != PlaybackType.PLAYBACK_OFF) {
+				// normal playback
+				currentlyPlayedFavorites.playNext(util.getPlayer().getTune()
+						.getInfo().file);
+			}
 		}
 	}
 

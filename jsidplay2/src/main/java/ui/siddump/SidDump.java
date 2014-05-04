@@ -404,7 +404,7 @@ public class SidDump extends C64Window {
 		if (seconds == 0) {
 			int songLength = util.getConsolePlayer().getSongLength(tune);
 			if (songLength <= 0) {
-				songLength = util.getConfig().getSidplay2().getPlayLength();
+				songLength = util.getConfig().getSidplay2().getDefaultPlayLength();
 				if (songLength == 0) {
 					// default
 					songLength = 60;

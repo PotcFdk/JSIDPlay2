@@ -6,9 +6,6 @@ import hardsid_builder.HardSIDBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -43,7 +40,6 @@ import sidplay.consoleplayer.Track;
 import sidplay.ini.IniConfig;
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
 
 public class ConsolePlayer {
 	/** Previous song select timeout (< 4 secs) **/
@@ -61,7 +57,6 @@ public class ConsolePlayer {
 	private DriverSettings oldDriverSettings;
 
 	private SidTune tune;
-	private String filename;
 	private String outputFilename;
 	private int currentSpeed = 1;
 	private int quietLevel;
@@ -107,7 +102,6 @@ public class ConsolePlayer {
 			currentSong = tune.getInfo().currentSong;
 			track.setSongs(songs);
 		}
-		track.setSingle(config.getSidplay2().isSingle());
 		player.setTune(tune);
 
 		CPUClock cpuFreq = CPUClock.getCPUClock(this.config, tune);
@@ -163,19 +157,13 @@ public class ConsolePlayer {
 
 		player.reset();
 
-		// As yet we don't have a required songlength
-		// so try the songlength database
-		setSongLengthTimer(this.config.getSidplay2().isEnableDatabase());
-
-		if (timer.isValid()) {
-			// Length relative to start
-			timer.setStop(timer.getStop() + timer.getStart());
+		if (config.getSidplay2().getUserPlayLength() != 0) {
+			// Use user defined fixed song length
+			timer.setStop(config.getSidplay2().getUserPlayLength()
+					+ timer.getStart());
 		} else {
-			// Check to make start time dosen't exceed end
-			if (timer.getStop() > 0 && timer.getStart() >= timer.getStop()) {
-				displayError("ERROR: Start time exceeds song length!");
-				return false;
-			}
+			// Try the song length database
+			setStopTime(config.getSidplay2().isEnableDatabase());
 		}
 		timer.setCurrent(-1);
 		stateProperty.set(State.RUNNING);
@@ -232,25 +220,22 @@ public class ConsolePlayer {
 	}
 
 	/**
-	 * Enable/disable song length timer according to the song length database.
+	 * Set stop time according to the song length database (or use default
+	 * length)
 	 * 
-	 * @param enable
-	 *            enable song length timer
+	 * @param enableSongLengthDatabase
+	 *            enable song length database
 	 */
-	public void setSongLengthTimer(boolean enable) {
-		if (enable) {
+	public void setStopTime(boolean enableSongLengthDatabase) {
+		// play default length or forever (0) ...
+		timer.setStop(config.getSidplay2().getDefaultPlayLength());
+		if (enableSongLengthDatabase) {
 			final int length = getSongLength(tune);
-			if (length >= 0 && !timer.isValid()) {
-				// length==0 means forever
-				// this is used for tunes
-				// of unknown length
-				timer.setDefaultLength(length);
+			if (length > 0) {
+				// ... or use song length of song length database
+				timer.setStop(length);
 			}
-		} else {
-			timer.setDefaultLength(0);
 		}
-		// Set up the play timer
-		timer.setStop(timer.getDefaultLength());
 	}
 
 	/**
@@ -272,18 +257,20 @@ public class ConsolePlayer {
 				}
 			}
 
-			if (this.config.getSidplay2().isEnableDatabase()
-					&& timer.getStop() != 0 && seconds >= timer.getStop()) {
-				// Single song?
-				if (track.isSingle()) {
-					stateProperty.set(State.EXIT);
+			// Only for tunes: if play time is over loop or exit (single song or
+			// whole tune)
+			if (tune != null && timer.getStop() != 0
+					&& seconds >= timer.getStop()) {
+				State endState = config.getSidplay2().isLoop() ? State.RESTART
+						: State.EXIT;
+				if (config.getSidplay2().isSingle()) {
+					stateProperty.set(endState);
 				} else {
 					nextSong();
 
 					// Check play-list end
-					if (track.getSelected() == track.getFirst()
-							&& !track.isLoop()) {
-						stateProperty.set(State.EXIT);
+					if (track.getSelected() == track.getFirst()) {
+						stateProperty.set(endState);
 					}
 				}
 			}
@@ -346,10 +333,6 @@ public class ConsolePlayer {
 		stateProperty.set(State.QUIT);
 	}
 
-	private void displayError(final String error) {
-		System.err.println(this + ": " + error);
-	}
-
 	/**
 	 * Configure track according to the tune songs.
 	 */
@@ -374,29 +357,8 @@ public class ConsolePlayer {
 		track.setFirst(first);
 	}
 
-	public void setSingle(boolean single) {
-		track.setSingle(single);
-	}
-
-	public void setLoop(boolean loop) {
-		track.setLoop(loop);
-	}
-
-	public void setSongs(int songs) {
-		track.setSongs(songs);
-	}
-
 	public void setSelected(int selected) {
 		track.setSelected(selected);
-	}
-
-	public void setDefaultLength(long time) {
-		timer.setDefaultLength(time);
-		timer.setValid(true);
-	}
-
-	public void setEnableDatabase(boolean enable) {
-		this.config.getSidplay2().setEnableDatabase(true);
 	}
 
 	public void setOutputFilename(String filename) {
@@ -424,8 +386,7 @@ public class ConsolePlayer {
 	}
 
 	public void setDisableFilters() {
-		final IEmulationSection emulation = this.config.getEmulation();
-		emulation.setFilter(false);
+		config.getEmulation().setFilter(false);
 	}
 
 	public int getQuietLevel() {
@@ -444,96 +405,27 @@ public class ConsolePlayer {
 		verboseLevel = valueOf;
 	}
 
-	public void setForceStereoTune(boolean force) {
-		this.config.getEmulation().setForceStereoTune(force);
+	public void setTune(SidTune tune) {
+		this.tune = tune;
 	}
 
-	public void setFrequency(Integer frequency) {
-		this.config.getAudio().setFrequency(frequency);
-	}
-
-	public void setUserSidModel(ChipModel chipModel) {
-		this.config.getEmulation().setUserSidModel(chipModel);
-	}
-
-	public void setUserClockSpeed(CPUClock cpuClock) {
-		this.config.getEmulation().setUserClockSpeed(cpuClock);
-	}
-
-	public void setDefaultClockSpeed(CPUClock cpuClock) {
-		this.config.getEmulation().setDefaultClockSpeed(cpuClock);
-	}
-
-	public void setInFile(String infile) {
-		filename = infile;
-	}
-
-	public int args(String[] args) {
-		int rc = new CmdParser(this).args(args);
-
-		if (rc != 1) {
-			return rc;
-		}
-		// Can only loop if not creating audio files
-		if (driverSettings.getOutput().isFileBased()) {
-			track.setLoop(false);
-		}
-
-		// Check to see if we are trying to generate an audio file
-		// whilst using a hardware emulation
-		if (driverSettings.getOutput().isFileBased()
-				&& driverSettings.getEmulation() == Emulation.EMU_HARDSID) {
-			displayError("ERROR: Cannot generate audio files using hardware emulations");
-			return -1;
-		}
-
-		if (filename == null) {
-			return -1;
-		}
-		try {
-			try (InputStream stream = new URL(filename).openConnection()
-					.getInputStream()) {
-				// load from URL
-				tune = SidTune.load(stream);
-			} catch (MalformedURLException e) {
-				// load from file
-				tune = SidTune.load(new File(filename));
-			}
-		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
+	public boolean args(String[] args) {
+		if (!new CmdParser(config).args(args)) {
+			return false;
 		}
 		configureTrack(tune);
 		if (tune == null) {
-			return -1;
+			return false;
 		}
 
 		// Select the desired track
 		// and also mark the play-list start
 		track.setFirst(tune.selectSong(track.getFirst()));
 		track.setSelected(track.getFirst());
-		if (track.isSingle()) {
+		if (config.getSidplay2().isSingle()) {
 			track.setSongs(1);
 		}
-
-		// If user provided no time then load songlength database
-		// and set default lengths incase it's not found in there.
-		{
-			if (driverSettings.getOutput().isFileBased() && timer.isValid()
-					&& timer.getDefaultLength() == 0) {
-				// Time of 0 provided for wav generation
-				displayError("ERROR: -t0 invalid in record mode");
-				return -1;
-			}
-			if (!timer.isValid()) {
-				timer.setDefaultLength(this.config.getSidplay2()
-						.getPlayLength());
-				if (driverSettings.getOutput().isFileBased()) {
-					timer.setDefaultLength(this.config.getSidplay2()
-							.getRecordLength());
-				}
-			}
-		}
-		return 0;
+		return true;
 	}
 
 	private Consumer<Player> menuHook = (player) -> {
@@ -550,10 +442,6 @@ public class ConsolePlayer {
 		return tune.getSongSpeed(selected);
 	}
 
-	public boolean isLoop() {
-		return track.isLoop();
-	}
-
 	public int getSongs() {
 		return track.getSongs();
 	}
@@ -566,16 +454,8 @@ public class ConsolePlayer {
 		return track.getSelected();
 	}
 
-	public boolean isSingle() {
-		return track.isSingle();
-	}
-
 	public long getStop() {
 		return timer.getStop();
-	}
-
-	public boolean isValid() {
-		return timer.isValid();
 	}
 
 	public void selectFirstTrack() {
@@ -591,16 +471,18 @@ public class ConsolePlayer {
 	public static void main(final String[] args) throws InterruptedException {
 		IniConfig config = new IniConfig(true);
 		final ConsolePlayer player = new ConsolePlayer(config);
-		if (player.args(args) < 0) {
+		if (!player.args(args)) {
 			System.exit(1);
 		}
-		String hvscRoot = config.getSidplay2().getHvsc();
-		if (hvscRoot != null) {
-			File file = new File(hvscRoot, SidDatabase.SONGLENGTHS_FILE);
-			try (FileInputStream input = new FileInputStream(file)) {
-				player.setSidDatabase(new SidDatabase(input));
-			} catch (IOException e) {
-				// silently ignored!
+		if (config.getSidplay2().getUserPlayLength() == 0) {
+			String hvscRoot = config.getSidplay2().getHvsc();
+			if (hvscRoot != null) {
+				File file = new File(hvscRoot, SidDatabase.SONGLENGTHS_FILE);
+				try (FileInputStream input = new FileInputStream(file)) {
+					player.setSidDatabase(new SidDatabase(input));
+				} catch (IOException e) {
+					// silently ignored!
+				}
 			}
 		}
 		ConsoleIO consoleIO = new ConsoleIO(player);

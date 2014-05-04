@@ -15,14 +15,6 @@ public class Track {
 	 * Number of songs in the play-list.
 	 */
 	private int songs;
-	/**
-	 * Loop, if the play-list is played.
-	 */
-	private boolean loop;
-	/**
-	 * Always plays a single song (start song)
-	 */
-	private boolean single;
 
 	public int getFirst() {
 		return first;
@@ -46,22 +38,6 @@ public class Track {
 
 	public void setSongs(int songs) {
 		this.songs = songs;
-	}
-
-	public boolean isLoop() {
-		return loop;
-	}
-
-	public void setLoop(boolean loop) {
-		this.loop = loop;
-	}
-
-	public boolean isSingle() {
-		return single;
-	}
-
-	public void setSingle(boolean single) {
-		this.single = single;
 	}
 
 }
