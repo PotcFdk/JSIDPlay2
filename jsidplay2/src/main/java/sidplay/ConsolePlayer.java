@@ -38,7 +38,6 @@ import sidplay.consoleplayer.State;
 import sidplay.consoleplayer.Timer;
 import sidplay.consoleplayer.Track;
 import sidplay.ini.IniConfig;
-import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
 
 public class ConsolePlayer {
@@ -72,7 +71,7 @@ public class ConsolePlayer {
 
 	public ConsolePlayer(IConfig config) {
 		this.config = config;
-		player = new Player(config);
+		this.player = new Player(config);
 	}
 
 	public final Player getPlayer() {
@@ -83,14 +82,12 @@ public class ConsolePlayer {
 		return stateProperty;
 	}
 
-	private boolean open() throws InterruptedException {
+	private void open() throws InterruptedException {
 		if (stateProperty.get() == State.RESTART) {
 			stateProperty.set(State.STOPPED);
 		}
 
 		// Select the required song
-		int songs = 1;
-		int currentSong = 1;
 		if (tune != null) {
 			track.setSelected(tune.selectSong(track.getSelected()));
 			if (track.getFirst() == 0) {
@@ -98,16 +95,12 @@ public class ConsolePlayer {
 				// We mark a new play-list start
 				track.setFirst(track.getSelected());
 			}
-			songs = tune.getInfo().songs;
-			currentSong = tune.getInfo().currentSong;
-			track.setSongs(songs);
 		}
 		player.setTune(tune);
 
 		CPUClock cpuFreq = CPUClock.getCPUClock(config, tune);
 		player.setClock(cpuFreq);
 
-		final IAudioSection audio = config.getAudio();
 		if (oldDriverSettings != null) {
 			// restore settings after MP3 has been played last time
 			driverSettings.restore(oldDriverSettings);
@@ -121,18 +114,14 @@ public class ConsolePlayer {
 
 			driverSettings.setOutput(Output.OUT_COMPARE);
 			driverSettings.setEmulation(Emulation.EMU_RESID);
-			audio.setPlayOriginal(true);
-			audio.setMp3File(tune.getInfo().file.getAbsolutePath());
+			config.getAudio().setPlayOriginal(true);
+			config.getAudio().setMp3File(tune.getInfo().file.getAbsolutePath());
 		}
-
 		driverSettings.configure(config, tune, player);
 
 		final AudioConfig audioConfig = AudioConfig.getInstance(
 				config.getAudio(), driverSettings.getChannels());
-		audioConfig.setTuneFilename(tune != null ? tune.getInfo().file : null);
-		audioConfig.setSongCount(songs);
-		audioConfig.setCurrentSong(currentSong);
-		audioConfig.setOutputfilename(outputFilename);
+		audioConfig.configure(tune, outputFilename);
 		try {
 			driverSettings.getOutput().getDriver().open(audioConfig);
 		} catch (final Exception e) {
@@ -167,7 +156,6 @@ public class ConsolePlayer {
 		}
 		timer.setCurrent(-1);
 		stateProperty.set(State.RUNNING);
-		return true;
 	}
 
 	/**
@@ -365,6 +353,7 @@ public class ConsolePlayer {
 		// and also mark the play-list start
 		track.setFirst(tune.selectSong(cmdParser.getFirst()));
 		track.setSelected(track.getFirst());
+		track.setSongs(tune.getInfo().songs);
 		if (config.getSidplay2().isSingle()) {
 			track.setSongs(1);
 		}
@@ -441,9 +430,7 @@ public class ConsolePlayer {
 			while (true) {
 				try {
 					// Open tune and play
-					if (!open()) {
-						return;
-					}
+					open();
 					menuHook.accept(player);
 					// Play next chunk of sound data, until it gets stopped
 					while (true) {
@@ -469,10 +456,8 @@ public class ConsolePlayer {
 				}
 				// Stop it
 				break;
-
 			}
 		}
-
 	};
 
 	/**
@@ -513,12 +498,14 @@ public class ConsolePlayer {
 		stopC64();
 		// 0 means use start song next time open() is called
 		track.setSelected(0);
-		if (tune == null) {
+		if (tune != null) {
+			// A different tune is opened?
+			// We mark a new play-list start
+			track.setFirst(0);
+			track.setSongs(tune.getInfo().songs);
+		} else {
 			track.setFirst(1);
 			track.setSongs(0);
-		} else {
-			// 0 means set first song of play-list, next time open() is called
-			track.setFirst(0);
 		}
 		// set command to type after reset
 		getPlayer().setCommand(command);

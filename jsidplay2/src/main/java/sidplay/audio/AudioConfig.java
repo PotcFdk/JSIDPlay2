@@ -17,6 +17,7 @@ package sidplay.audio;
 
 import java.io.File;
 
+import libsidplay.sidtune.SidTune;
 import resid_builder.resid.SamplingMethod;
 import sidplay.ini.intf.IAudioSection;
 
@@ -36,23 +37,29 @@ public class AudioConfig {
 	/**
 	 * This instance represents the requested audio configuration
 	 * 
-	 * @param frameRate The desired audio framerate.
-	 * @param channels  The number of audio channels to use.
+	 * @param frameRate
+	 *            The desired audio framerate.
+	 * @param channels
+	 *            The number of audio channels to use.
 	 */
-	public AudioConfig(int frameRate, int channels, SamplingMethod samplingMethod) {
+	public AudioConfig(int frameRate, int channels,
+			SamplingMethod samplingMethod) {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.samplingMethod = samplingMethod;
 	}
 
 	/**
-	 * Return a detached AudioConfig instance corresponding to current parameters.
+	 * Return a detached AudioConfig instance corresponding to current
+	 * parameters.
 	 * 
-	 * @param channels The number of audio channels to use.
+	 * @param channels
+	 *            The number of audio channels to use.
 	 * @return AudioConfig for current specification
 	 */
 	public static AudioConfig getInstance(IAudioSection audio, int channels) {
-		return new AudioConfig(audio.getFrequency(), channels, audio.getSampling());
+		return new AudioConfig(audio.getFrequency(), channels,
+				audio.getSampling());
 	}
 
 	/**
@@ -103,32 +110,12 @@ public class AudioConfig {
 	}
 
 	/**
-	 * Set filename of the tune.
-	 * 
-	 * @param file
-	 *            tune filename
-	 */
-	public final void setTuneFilename(final File file) {
-		tuneFile = file;
-	}
-
-	/**
 	 * Get song count of the tune.
 	 * 
 	 * @return song count
 	 */
 	public final int getSongCount() {
 		return songCount;
-	}
-
-	/**
-	 * Set song count of the tune.
-	 * 
-	 * @param count
-	 *            number of songs
-	 */
-	public final void setSongCount(final int count) {
-		songCount = count;
 	}
 
 	/**
@@ -141,16 +128,6 @@ public class AudioConfig {
 	}
 
 	/**
-	 * Set the current song number.
-	 * 
-	 * @param current
-	 *            the current song number
-	 */
-	public final void setCurrentSong(final int current) {
-		currentSong = current;
-	}
-
-	/**
 	 * Get an output filename proposal.
 	 * 
 	 * @return output filename
@@ -159,13 +136,10 @@ public class AudioConfig {
 		return outputFilename;
 	}
 
-	/**
-	 * Set an output filename proposal.
-	 * 
-	 * @param filename
-	 *            output filename proposal
-	 */
-	public final void setOutputfilename(final String filename) {
-		outputFilename = filename;
+	public void configure(SidTune tune, String outputFilename) {
+		tuneFile = tune != null ? tune.getInfo().file : null;
+		songCount = tune != null ? tune.getInfo().songs : 1;
+		currentSong = tune != null ? tune.getInfo().currentSong : 1;
+		this.outputFilename = outputFilename;
 	}
 }
