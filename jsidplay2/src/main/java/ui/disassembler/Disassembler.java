@@ -15,7 +15,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import libsidplay.Player;
-import libsidplay.State;
+import libsidplay.player.State;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.cpuparser.CPUCommand;
 import libsidutils.cpuparser.CPUParser;

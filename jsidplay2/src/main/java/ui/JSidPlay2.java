@@ -36,9 +36,7 @@ import javafx.util.Duration;
 import javax.imageio.ImageIO;
 
 import libsidplay.C64;
-import libsidplay.MediaType;
 import libsidplay.Player;
-import libsidplay.State;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -48,6 +46,8 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
+import libsidplay.player.MediaType;
+import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;

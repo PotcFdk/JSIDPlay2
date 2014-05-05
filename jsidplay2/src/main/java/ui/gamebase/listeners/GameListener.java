@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.Locale;
 
 import javafx.scene.Node;
-import libsidplay.MediaType;
 import libsidplay.Player;
+import libsidplay.player.MediaType;
 import ui.common.UIUtil;
 import ui.download.ProgressListener;
 import de.schlichtherle.truezip.file.TFile;

@@ -7,9 +7,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
-import libsidplay.DriverSettings;
-import libsidplay.Emulation;
 import libsidplay.Player;
+import libsidplay.player.DriverSettings;
+import libsidplay.player.Emulation;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.audio.Output;

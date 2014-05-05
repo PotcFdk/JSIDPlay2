@@ -1,4 +1,4 @@
-package libsidplay;
+package libsidplay.player;
 
 public enum State {
 	/** Player is currently playing a song */

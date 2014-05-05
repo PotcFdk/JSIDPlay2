@@ -15,7 +15,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import libsidplay.Player;
-import libsidplay.State;
+import libsidplay.player.State;
 import ui.common.C64Window;
 
 public class SidReg extends C64Window {

@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import libsidplay.Player;
-import libsidplay.State;
+import libsidplay.player.State;
 import libsidutils.SidDatabase;
 import libsidutils.cpuparser.CPUParser;
 import sidplay.consoleplayer.CmdParser;

@@ -3,8 +3,8 @@ package sidplay.consoleplayer;
 import java.io.IOException;
 
 import libsidplay.Player;
-import libsidplay.Timer;
-import libsidplay.Track;
+import libsidplay.player.Timer;
+import libsidplay.player.Track;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Model;
 import sidplay.ini.intf.IConfig;

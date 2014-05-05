@@ -1,4 +1,4 @@
-package libsidplay;
+package libsidplay.player;
 
 public class Timer {
 	/**

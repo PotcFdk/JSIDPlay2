@@ -24,7 +24,7 @@ import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.Player;
-import libsidplay.State;
+import libsidplay.player.State;
 import libsidutils.PathUtils;
 import sidplay.ini.IniReader;
 import ui.common.C64Window;

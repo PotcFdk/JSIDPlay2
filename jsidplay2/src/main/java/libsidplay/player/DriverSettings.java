@@ -1,4 +1,4 @@
-package libsidplay;
+package libsidplay.player;
 
 import sidplay.audio.Output;
 

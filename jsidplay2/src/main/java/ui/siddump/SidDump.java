@@ -17,7 +17,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
 import libsidplay.Player;
-import libsidplay.State;
+import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import netsiddev.InvalidCommandException;
 import sidplay.ini.IniReader;

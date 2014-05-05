@@ -49,7 +49,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import libpsid64.NotEnoughC64MemException;
 import libpsid64.Psid64;
 import libsidplay.Player;
-import libsidplay.State;
+import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;

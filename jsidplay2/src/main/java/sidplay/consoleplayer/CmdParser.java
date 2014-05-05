@@ -7,9 +7,9 @@ import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import libsidplay.DriverSettings;
-import libsidplay.Emulation;
 import libsidplay.common.CPUClock;
+import libsidplay.player.DriverSettings;
+import libsidplay.player.Emulation;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import resid_builder.resid.ChipModel;
