@@ -8,8 +8,6 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import libsidplay.Player;
-import sidplay.ConsolePlayer;
-import ui.entities.config.Configuration;
 
 public abstract class C64Window implements UIPart {
 
@@ -25,19 +23,17 @@ public abstract class C64Window implements UIPart {
 	/**
 	 * Create a scene in a new stage.
 	 */
-	public C64Window(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		this(new Stage(), consolePlayer, player, config);
+	public C64Window(Player player) {
+		this(new Stage(), player);
 		this.stage.centerOnScreen();
 	}
 
 	/**
 	 * Create a scene in the existing primary stage.
 	 */
-	public C64Window(Stage stage, ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
+	public C64Window(Stage stage, Player player) {
 		this.stage = stage;
-		util = new UIUtil(this, consolePlayer, player, config, this);
+		util = new UIUtil(this, player, this);
 		scene = (Scene) util.parse();
 		scene.getStylesheets().add(getStyleSheetName());
 		scene.setOnKeyPressed((ke) -> {

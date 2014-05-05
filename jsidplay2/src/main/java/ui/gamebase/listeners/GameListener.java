@@ -5,25 +5,21 @@ import java.io.IOException;
 import java.util.Locale;
 
 import javafx.scene.Node;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.MediaType;
+import libsidplay.MediaType;
+import libsidplay.Player;
 import ui.common.UIUtil;
 import ui.download.ProgressListener;
-import ui.entities.config.Configuration;
 import de.schlichtherle.truezip.file.TFile;
 
 public class GameListener extends ProgressListener {
 
 	private String fileToRun;
-	protected Configuration config;
 
-	private ConsolePlayer cp;
+	private Player player;
 
-	public GameListener(UIUtil util, Node node, ConsolePlayer cp,
-			Configuration config) {
+	public GameListener(UIUtil util, Node node, Player player) {
 		super(util, node);
-		this.cp = cp;
-		this.config = config;
+		this.player = player;
 	}
 
 	@Override
@@ -35,7 +31,7 @@ public class GameListener extends ProgressListener {
 		for (TFile zipEntry : zip.listFiles()) {
 			if (zipEntry.isFile()) {
 				try {
-					TFile dst = new TFile(config.getSidplay2().getTmpDir(),
+					TFile dst = new TFile(player.getConfig().getSidplay2().getTmpDir(),
 							zipEntry.getName());
 					dst.deleteOnExit();
 					TFile.cp(zipEntry, dst);
@@ -53,23 +49,23 @@ public class GameListener extends ProgressListener {
 		downloadedFile.deleteOnExit();
 		// Make it possible to choose a file from ZIP next time
 		// the file chooser opens
-		config.getSidplay2().setLastDirectory(downloadedFile.getParent());
+		player.getConfig().getSidplay2().setLastDirectory(downloadedFile.getParent());
 	}
 
 	private void insertMedia(final TFile file) {
 		final String command;
 		if (isTapeFile(file)) {
-			cp.getPlayer().getC64().ejectCartridge();
-			cp.insertMedia(file, null, MediaType.TAPE);
+			player.getC64().ejectCartridge();
+			player.insertMedia(file, null, MediaType.TAPE);
 			command = "LOAD\rRUN\r";
-			cp.playTune(null, command);
+			player.playTune(null, command);
 		} else if (isDiskFile(file)) {
-			cp.getPlayer().getC64().ejectCartridge();
-			cp.insertMedia(file, null, MediaType.DISK);
+			player.getC64().ejectCartridge();
+			player.insertMedia(file, null, MediaType.DISK);
 			command = "LOAD\"*\",8,1\rRUN\r";
-			cp.playTune(null, command);
+			player.playTune(null, command);
 		} else {
-			cp.insertMedia(file, null, MediaType.CART);
+			player.insertMedia(file, null, MediaType.CART);
 			command = null;
 		}
 	}

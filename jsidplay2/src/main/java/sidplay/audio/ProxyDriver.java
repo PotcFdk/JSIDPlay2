@@ -30,10 +30,10 @@ public class ProxyDriver extends AudioDriver {
 	}
 
 	@Override
-	public void open(final AudioConfig cfg) throws LineUnavailableException,
+	public void open(final AudioConfig cfg, String outDir) throws LineUnavailableException,
 			IOException, UnsupportedAudioFileException {
-		driverOne.open(cfg);
-		driverTwo.open(cfg);
+		driverOne.open(cfg, outDir);
+		driverTwo.open(cfg, outDir);
 	}
 
 	@Override

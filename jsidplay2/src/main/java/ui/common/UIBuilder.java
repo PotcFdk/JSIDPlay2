@@ -7,25 +7,18 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.util.Builder;
 import javafx.util.BuilderFactory;
 import libsidplay.Player;
-import sidplay.ConsolePlayer;
-import ui.entities.config.Configuration;
 
 final class UIBuilder implements BuilderFactory {
 
 	private C64Window window;
 
-	private ConsolePlayer consolePlayer;
 	private Player player;
-	private Configuration config;
 
 	private JavaFXBuilderFactory defaultBuilderFactory = new JavaFXBuilderFactory();
 
-	public UIBuilder(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
+	public UIBuilder(C64Window window, Player player) {
 		this.window = window;
-		this.consolePlayer = consolePlayer;
 		this.player = player;
-		this.config = config;
 	}
 
 	@Override
@@ -33,10 +26,9 @@ final class UIBuilder implements BuilderFactory {
 		if (UIPart.class.isAssignableFrom(type)) {
 			try {
 				Constructor<?> constructor = type.getConstructor(new Class[] {
-						C64Window.class, ConsolePlayer.class, Player.class,
-						Configuration.class });
+						C64Window.class, Player.class });
 				return (Builder<?>) constructor.newInstance(this.window,
-						this.consolePlayer, this.player, this.config);
+						this.player);
 			} catch (NoSuchMethodException | SecurityException
 					| InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException e) {

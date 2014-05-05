@@ -27,17 +27,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
+import libsidplay.MediaType;
 import libsidplay.Player;
 import libsidutils.PathUtils;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.MediaType;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.directory.Directory;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
-import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.DocsFileFilter;
@@ -98,9 +96,8 @@ public class DiskCollection extends Tab implements UIPart {
 		}
 	};
 
-	public DiskCollection(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public DiskCollection(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 
@@ -211,7 +208,7 @@ public class DiskCollection extends Tab implements UIPart {
 	private void attachDisk() {
 		File selectedFile = fileBrowser.getSelectionModel().getSelectedItem()
 				.getValue();
-		util.getConsolePlayer().insertMedia(extract(selectedFile), null,
+		util.getPlayer().insertMedia(extract(selectedFile), null,
 				MediaType.DISK);
 	}
 
@@ -270,11 +267,11 @@ public class DiskCollection extends Tab implements UIPart {
 		} else {
 			File extractedFile = extract(file);
 			if (diskFileFilter.accept(file)) {
-				util.getConsolePlayer().insertMedia(extractedFile,
-						autoStartFile, MediaType.DISK);
+				util.getPlayer().insertMedia(extractedFile, autoStartFile,
+						MediaType.DISK);
 			} else {
-				util.getConsolePlayer().insertMedia(extractedFile,
-						autoStartFile, MediaType.TAPE);
+				util.getPlayer().insertMedia(extractedFile, autoStartFile,
+						MediaType.TAPE);
 			}
 			if (autoStartFile == null) {
 				resetAndLoadDemo(extractedFile);
@@ -292,7 +289,7 @@ public class DiskCollection extends Tab implements UIPart {
 			command = "LOAD\rRUN\r";
 		}
 		util.setPlayingTab(this);
-		util.getConsolePlayer().playTune(null, command);
+		util.getPlayer().playTune(null, command);
 	}
 
 	protected void showScreenshot(final File file) {

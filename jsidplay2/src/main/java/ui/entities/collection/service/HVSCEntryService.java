@@ -18,9 +18,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
+import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import sidplay.ConsolePlayer;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry;
@@ -67,12 +67,12 @@ public class HVSCEntryService {
 		this.stilService = new STILService(em);
 	};
 
-	public HVSCEntry add(ConsolePlayer cp, final String path,
+	public HVSCEntry add(Player player, final String path,
 			final File tuneFile) throws IOException, SidTuneError {
 		final SidTune tune = tuneFile.isFile() ? SidTune.load(tuneFile) : null;
-		HVSCEntry hvscEntry = HVSCEntry.create(cp, path, tuneFile, tune);
+		HVSCEntry hvscEntry = HVSCEntry.create(player, path, tuneFile, tune);
 
-		stilService.add(cp.getStil(), tuneFile, hvscEntry);
+		stilService.add(player.getStil(), tuneFile, hvscEntry);
 
 		try {
 			em.persist(hvscEntry);

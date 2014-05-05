@@ -34,7 +34,7 @@ public abstract class AudioDriver {
 	 * @throws UnsupportedAudioFileException
 	 * @throws IOException
 	 */
-	public abstract void open(AudioConfig cfg)
+	public abstract void open(AudioConfig cfg, String outDir)
 	throws LineUnavailableException, UnsupportedAudioFileException, IOException;
 
 	/**

@@ -47,7 +47,6 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
-import sidplay.ConsolePlayer;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -90,9 +89,8 @@ public class FavoritesTab extends Tab implements UIPart {
 	private ObjectProperty<File> currentlyPlayedFileProperty;
 	private Favorites favorites;
 
-	public FavoritesTab(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public FavoritesTab(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 
@@ -188,7 +186,7 @@ public class FavoritesTab extends Tab implements UIPart {
 			HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
 					.getSelectedItem();
 
-			STIL stil = util.getConsolePlayer().getStil();
+			STIL stil = util.getPlayer().getStil();
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
 					.getConfig().getSidplay2();
 			showStil.setDisable(hvscEntry == null
@@ -228,8 +226,7 @@ public class FavoritesTab extends Tab implements UIPart {
 		for (TableColumn column : favoritesTable.getColumns()) {
 			FavoritesCellFactory cellFactory = (FavoritesCellFactory) column
 					.getCellFactory();
-			cellFactory.setConfig(util.getConfig());
-			cellFactory.setConsolePlayer(util.getConsolePlayer());
+			cellFactory.setPlayer(util.getPlayer());
 			cellFactory
 					.setCurrentlyPlayedFileProperty(currentlyPlayedFileProperty);
 		}
@@ -313,9 +310,8 @@ public class FavoritesTab extends Tab implements UIPart {
 			return;
 		}
 
-		STILView stilInfo = new STILView(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
-		STIL stil = util.getConsolePlayer().getStil();
+		STILView stilInfo = new STILView(util.getPlayer());
+		STIL stil = util.getPlayer().getStil();
 		if (stil != null) {
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
 					.getConfig().getSidplay2();
@@ -350,7 +346,7 @@ public class FavoritesTab extends Tab implements UIPart {
 			c.setTmpDir(util.getConfig().getSidplay2().getTmpDir());
 			c.setVerbose(true);
 			try {
-				c.convertFiles(util.getConsolePlayer().getStil(),
+				c.convertFiles(util.getPlayer().getStil(),
 						files.toArray(new File[0]), directory);
 			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
 				e.printStackTrace();
@@ -553,7 +549,7 @@ public class FavoritesTab extends Tab implements UIPart {
 		SidTune sidTune;
 		try {
 			sidTune = SidTune.load(file);
-			HVSCEntry entry = HVSCEntry.create(util.getConsolePlayer(),
+			HVSCEntry entry = HVSCEntry.create(util.getPlayer(),
 					file.getAbsolutePath(), file, sidTune);
 			favoritesSection.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
@@ -605,8 +601,7 @@ public class FavoritesTab extends Tab implements UIPart {
 		tableColumn
 				.setCellValueFactory(new PropertyValueFactory(columnProperty));
 		FavoritesCellFactory cellFactory = new FavoritesCellFactory();
-		cellFactory.setConfig(util.getConfig());
-		cellFactory.setConsolePlayer(util.getConsolePlayer());
+		cellFactory.setPlayer(util.getPlayer());
 		cellFactory.setCurrentlyPlayedFileProperty(currentlyPlayedFileProperty);
 		tableColumn.setCellFactory(cellFactory);
 		tableColumn.setContextMenu(contextMenuHeader);
@@ -656,7 +651,7 @@ public class FavoritesTab extends Tab implements UIPart {
 		if (currentlyPlayedFileProperty.get() != null) {
 			util.setPlayingTab(this);
 			try {
-				util.getConsolePlayer().playTune(
+				util.getPlayer().playTune(
 						SidTune.load(currentlyPlayedFileProperty.get()), null);
 			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();

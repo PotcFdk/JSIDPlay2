@@ -49,14 +49,13 @@ import javax.persistence.metamodel.SingularAttribute;
 import libpsid64.NotEnoughC64MemException;
 import libpsid64.Psid64;
 import libsidplay.Player;
+import libsidplay.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
 import ui.common.C64Window;
 import ui.common.TypeTextField;
@@ -195,9 +194,8 @@ public class MusicCollection extends Tab implements UIPart {
 	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems = FXCollections
 			.<TreeItem<File>> observableArrayList();
 
-	public MusicCollection(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public MusicCollection(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 
@@ -223,7 +221,7 @@ public class MusicCollection extends Tab implements UIPart {
 		sidplay2.singleProperty().addListener(
 				(observable, oldValue, newValue) -> singleSong
 						.setSelected(newValue));
-		util.getConsolePlayer()
+		util.getPlayer()
 				.stateProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
@@ -435,8 +433,7 @@ public class MusicCollection extends Tab implements UIPart {
 		MusicCollectionTreeItem selectedItem = (MusicCollectionTreeItem) fileBrowser
 				.getSelectionModel().getSelectedItem();
 		if (selectedItem != null && selectedItem.hasSTIL()) {
-			STILView stilInfo = new STILView(util.getConsolePlayer(),
-					util.getPlayer(), util.getConfig());
+			STILView stilInfo = new STILView(util.getPlayer());
 			stilInfo.setEntry(selectedItem.getStilEntry());
 			stilInfo.open();
 		}
@@ -458,7 +455,7 @@ public class MusicCollection extends Tab implements UIPart {
 			c.setTmpDir(util.getConfig().getSidplay2().getTmpDir());
 			c.setVerbose(true);
 			try {
-				c.convertFiles(util.getConsolePlayer().getStil(),
+				c.convertFiles(util.getPlayer().getStil(),
 						new File[] { selectedItem.getValue() }, directory);
 			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
 				e.printStackTrace();
@@ -552,8 +549,7 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void doCreateSearchIndex() {
-		YesNoDialog dialog = new YesNoDialog(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
+		YesNoDialog dialog = new YesNoDialog(util.getPlayer());
 		dialog.getStage().setTitle(
 				util.getBundle().getString("CREATE_SEARCH_DATABASE"));
 		dialog.setText(String.format(
@@ -617,7 +613,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void doEnableSldb() {
 		util.getConfig().getSidplay2()
 				.setEnableDatabase(enableSldb.isSelected());
-		util.getConsolePlayer().setStopTime(enableSldb.isSelected());
+		util.getPlayer().setStopTime(enableSldb.isSelected());
 	}
 
 	@FXML
@@ -724,13 +720,13 @@ public class MusicCollection extends Tab implements UIPart {
 					setSongLengthDatabase(theRootFile);
 					setSTIL(theRootFile);
 					fileBrowser.setRoot(new MusicCollectionTreeItem(util
-							.getConsolePlayer().getStil(), theRootFile));
+							.getPlayer().getStil(), theRootFile));
 				} else if (getType() == MusicCollectionType.CGSC) {
 					util.getConfig().getSidplay2()
 							.setCgsc(rootFile.getAbsolutePath());
 					File theRootFile = sidPlay2Section.getCgscFile();
 					fileBrowser.setRoot(new MusicCollectionTreeItem(util
-							.getConsolePlayer().getStil(), theRootFile));
+							.getPlayer().getStil(), theRootFile));
 				}
 				MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
 				cellFactory
@@ -751,7 +747,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void setSTIL(File hvscRoot) {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
 				STIL.STIL_FILE))) {
-			util.getConsolePlayer().setSTIL(new STIL(hvscRoot, input));
+			util.getPlayer().setSTIL(new STIL(hvscRoot, input));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -760,7 +756,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void setSongLengthDatabase(File hvscRoot) {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
 				SidDatabase.SONGLENGTHS_FILE))) {
-			util.getConsolePlayer().setSidDatabase(new SidDatabase(input));
+			util.getPlayer().setSidDatabase(new SidDatabase(input));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -774,7 +770,7 @@ public class MusicCollection extends Tab implements UIPart {
 
 	private void showTuneInfos(File tuneFile, SidTune sidTune) {
 		tuneInfos.clear();
-		HVSCEntry entry = HVSCEntry.create(util.getConsolePlayer(),
+		HVSCEntry entry = HVSCEntry.create(util.getPlayer(),
 				tuneFile.getAbsolutePath(), tuneFile, sidTune);
 
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
@@ -845,7 +841,7 @@ public class MusicCollection extends Tab implements UIPart {
 
 			});
 			searchThread.addSearchListener(new SearchIndexCreator(fileBrowser
-					.getRoot().getValue(), util.getConsolePlayer(), em));
+					.getRoot().getValue(), util.getPlayer(), em));
 
 			searchThread.start();
 		} else {
@@ -976,7 +972,7 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 		try {
 			SidTune sidTune = SidTune.load(file);
-			HVSCEntry entry = HVSCEntry.create(util.getConsolePlayer(),
+			HVSCEntry entry = HVSCEntry.create(util.getPlayer(),
 					file.getAbsolutePath(), file, sidTune);
 			section.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
@@ -1009,7 +1005,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void playTune(final File file) {
 		util.setPlayingTab(this);
 		try {
-			util.getConsolePlayer().playTune(SidTune.load(file), null);
+			util.getPlayer().playTune(SidTune.load(file), null);
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
 		}

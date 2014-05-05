@@ -10,9 +10,7 @@ import libsidplay.Player;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
-import sidplay.ConsolePlayer;
 import ui.common.C64Window;
-import ui.entities.config.Configuration;
 
 public class STILView extends C64Window {
 	private static final String STYLE_NORMAL = "styleNormal";
@@ -31,9 +29,8 @@ public class STILView extends C64Window {
 	@FXML
 	private SplitPane splitPane;
 
-	public STILView(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		super(consolePlayer, player, config);
+	public STILView(Player player) {
+		super(player);
 	}
 
 	@FXML

@@ -15,7 +15,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import libsidplay.Player;
-import sidplay.ConsolePlayer;
 import ui.JSIDPlay2Main;
 import ui.entities.config.Configuration;
 
@@ -26,9 +25,7 @@ public class UIUtil {
 
 	private C64Window window;
 	/** Model */
-	private ConsolePlayer consolePlayer;
 	private Player player;
-	private Configuration config;
 	/** View localization */
 	private ResourceBundle bundle;
 	/** Controller */
@@ -37,12 +34,9 @@ public class UIUtil {
 	/** Progress bar support */
 	private DoubleProperty progressProperty;
 
-	public UIUtil(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config, UIPart controller) {
+	public UIUtil(C64Window window, Player player, UIPart controller) {
 		this.window = window;
-		this.consolePlayer = consolePlayer;
 		this.player = player;
-		this.config = config;
 		this.controller = controller;
 		this.bundle = ResourceBundle.getBundle(controller.getBundleName());
 		window.getUiParts().add(controller);
@@ -52,8 +46,7 @@ public class UIUtil {
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		URL fxml = this.controller.getFxml();
 		fxmlLoader.setLocation(fxml);
-		fxmlLoader.setBuilderFactory(new UIBuilder(this.window,
-				this.consolePlayer, this.player, this.config));
+		fxmlLoader.setBuilderFactory(new UIBuilder(this.window, this.player));
 		fxmlLoader.setResources(this.bundle);
 		fxmlLoader.setController(this.controller);
 		try (InputStream is = fxml.openStream()) {
@@ -104,16 +97,12 @@ public class UIUtil {
 		return progressProperty;
 	}
 
-	public final ConsolePlayer getConsolePlayer() {
-		return consolePlayer;
-	}
-
 	public final Player getPlayer() {
 		return player;
 	}
 
 	public final Configuration getConfig() {
-		return config;
+		return (Configuration) player.getConfig();
 	}
 
 	public final ResourceBundle getBundle() {

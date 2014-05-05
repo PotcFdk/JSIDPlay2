@@ -78,6 +78,8 @@ public abstract class SidTune {
 
 	protected final Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
 
+	private String outputFilename;
+
 	/** Known SID names. MUS loader scans for these. */
 	private static final String defaultMusNames[] = new String[] { ".mus",
 			".str" };
@@ -453,6 +455,14 @@ public abstract class SidTune {
 
 	public Image getImage() {
 		return null;
+	}
+
+	public void setOutputFilename(String outputFilename) {
+		this.outputFilename = outputFilename;
+	}
+	
+	public String getOutputFilename() {
+		return outputFilename;
 	}
 
 }

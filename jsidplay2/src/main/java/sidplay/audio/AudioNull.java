@@ -9,7 +9,7 @@ public class AudioNull extends AudioDriver {
 	}
 
 	@Override
-	public void open(final AudioConfig cfg) {
+	public void open(final AudioConfig cfg, String outDir) {
 		sampleBuffer = ByteBuffer.allocateDirect(cfg.getChunkFrames());
 	}
 

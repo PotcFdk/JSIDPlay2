@@ -15,13 +15,13 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlTransient;
 
+import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
 import libsidplay.sidtune.SidTuneInfo;
-import sidplay.ConsolePlayer;
 
 @Entity
 public class HVSCEntry {
@@ -345,7 +345,7 @@ public class HVSCEntry {
 		return stil;
 	}
 
-	public static HVSCEntry create(final ConsolePlayer cp, final String path,
+	public static HVSCEntry create(final Player player, final String path,
 			final File tuneFile, SidTune tune) {
 		HVSCEntry hvscEntry = new HVSCEntry();
 		hvscEntry.setPath(path);
@@ -366,8 +366,8 @@ public class HVSCEntry {
 			hvscEntry.setSidModel1(info.sid1Model);
 			hvscEntry.setSidModel2(info.sid2Model);
 			hvscEntry.setCompatibility(info.compatibility);
-			long fullLength = cp.getFullSongLength(tune);
-			hvscEntry.setTuneLength(fullLength);
+			hvscEntry
+					.setTuneLength(Long.valueOf(player.getFullSongLength(tune)));
 			hvscEntry.setAudio(getAudio(info.sidChipBase2));
 			hvscEntry.setSidChipBase1(info.sidChipBase1);
 			hvscEntry.setSidChipBase2(info.sidChipBase2);

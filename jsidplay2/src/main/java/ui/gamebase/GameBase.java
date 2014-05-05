@@ -28,7 +28,6 @@ import javax.persistence.Persistence;
 
 import libsidplay.Player;
 import libsidutils.PathUtils;
-import sidplay.ConsolePlayer;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -37,7 +36,6 @@ import ui.download.IDownloadListener;
 import ui.download.ProgressListener;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
-import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.gamebase.service.GamesService;
 import ui.filefilter.MDBFileExtensions;
@@ -116,9 +114,8 @@ public class GameBase extends Tab implements UIPart {
 	private EntityManager em;
 	private GamesService gamesService;
 
-	public GameBase(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public GameBase(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 
@@ -157,7 +154,7 @@ public class GameBase extends Tab implements UIPart {
 				}
 			});
 			page.setGameListener(new GameListener(util, letter, util
-					.getConsolePlayer(), util.getConfig()));
+					.getPlayer()));
 			page.getGamebaseTable()
 					.getSelectionModel()
 					.selectedItemProperty()
@@ -234,7 +231,7 @@ public class GameBase extends Tab implements UIPart {
 		downloadStart(
 				GB64_MUSIC_DOWNLOAD_URL
 						+ linkMusic.getText().replace('\\', '/'),
-				new MusicListener(util, letter, util.getConsolePlayer()));
+				new MusicListener(util, letter, util.getPlayer()));
 	}
 
 	@FXML

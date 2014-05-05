@@ -16,43 +16,49 @@ public class JavaSound extends AudioDriver {
 
 	protected ByteBuffer sampleBuffer;
 	private AudioConfig cfg;
-	
+
 	@Override
-	public synchronized void open(final AudioConfig cfg) throws LineUnavailableException {
-		open(cfg, null);
+	public synchronized void open(final AudioConfig cfg, String outDir)
+			throws LineUnavailableException {
+		open(cfg, outDir, null);
 	}
-		
-	public synchronized void open(final AudioConfig cfg, final Mixer.Info info) throws LineUnavailableException {
+
+	public synchronized void open(final AudioConfig cfg, String outDir,
+			final Mixer.Info info) throws LineUnavailableException {
 		this.cfg = cfg;
-		audioFormat = new AudioFormat(cfg.frameRate, 16, cfg.channels, true, false);
+		audioFormat = new AudioFormat(cfg.frameRate, 16, cfg.channels, true,
+				false);
 
 		setAudioDevice(info);
 	}
-	
-	public synchronized void setAudioDevice(final Mixer.Info info) throws LineUnavailableException {
+
+	public synchronized void setAudioDevice(final Mixer.Info info)
+			throws LineUnavailableException {
 		// first close previous dataLine when it already present
 		close();
-		
+
 		if (info == null) {
 			dataLine = AudioSystem.getSourceDataLine(audioFormat);
 		} else {
 			dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
-		}	
-	
+		}
+
 		dataLine.open(dataLine.getFormat(), cfg.bufferFrames * 2 * cfg.channels);
 		cfg.bufferFrames = dataLine.getBufferSize() / 2 / cfg.channels;
-		
-		/* Write to audio device often.
-		 * We make the sample buffer size divisible by 64 to ensure that all
-		 * fast forward factors can be handled. (32x speed, 2 channels)
+
+		/*
+		 * Write to audio device often. We make the sample buffer size divisible
+		 * by 64 to ensure that all fast forward factors can be handled. (32x
+		 * speed, 2 channels)
 		 */
-		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * 2 * cfg.channels);
+		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * 2
+				* cfg.channels);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
 	}
 
 	@Override
 	public synchronized void write() throws InterruptedException {
-		if (! dataLine.isActive()) {
+		if (!dataLine.isActive()) {
 			dataLine.start();
 		}
 
@@ -65,17 +71,21 @@ public class JavaSound extends AudioDriver {
 			/* for each short-formatted sample in the buffer... */
 			while (sampleBuffer.position() < sampleBuffer.capacity()) {
 				/* accumulate each interleaved channel into its own accumulator */
-				for (int c = 0; c < audioFormat.getChannels(); c ++) {
+				for (int c = 0; c < audioFormat.getChannels(); c++) {
 					val[c] += sampleBuffer.getShort();
 				}
 
-				/* once enough samples have been accumulated, write one to output */
-				j ++;
+				/*
+				 * once enough samples have been accumulated, write one to
+				 * output
+				 */
+				j++;
 				if (j == fastForward) {
 					j = 0;
 
-					for (int c = 0; c < audioFormat.getChannels(); c ++) {
-						sampleBuffer.putShort(newLen, (short) (val[c] / fastForward));
+					for (int c = 0; c < audioFormat.getChannels(); c++) {
+						sampleBuffer.putShort(newLen,
+								(short) (val[c] / fastForward));
 						newLen += 2;
 					}
 
@@ -106,7 +116,7 @@ public class JavaSound extends AudioDriver {
 		int framesNotYetPlayed = framesTotal - framesPlayed;
 		return framesNotYetPlayed * 1000 / framesTotal;
 	}
-	
+
 	@Override
 	public synchronized void pause() {
 		if (dataLine.isActive()) {
@@ -126,7 +136,10 @@ public class JavaSound extends AudioDriver {
 			dataLine.stop();
 		}
 		if (dataLine.isOpen()) {
-			/* Fails with PulseAudio. Workaround, don't know why, might not matter. */
+			/*
+			 * Fails with PulseAudio. Workaround, don't know why, might not
+			 * matter.
+			 */
 			try {
 				dataLine.close();
 			} catch (RuntimeException rte) {
@@ -137,7 +150,7 @@ public class JavaSound extends AudioDriver {
 	public AudioFormat getAudioFormat() {
 		return audioFormat;
 	}
-	
+
 	@Override
 	public ByteBuffer buffer() {
 		return sampleBuffer;

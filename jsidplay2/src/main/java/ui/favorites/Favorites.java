@@ -24,9 +24,8 @@ import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.Player;
+import libsidplay.State;
 import libsidutils.PathUtils;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -60,10 +59,9 @@ public class Favorites extends Tab implements UIPart {
 	protected Random random = new Random();
 	private C64Window window;
 
-	public Favorites(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
+	public Favorites(C64Window window, Player player) {
 		this.window = window;
-		util = new UIUtil(window, consolePlayer, player, config, this);
+		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 
@@ -111,7 +109,7 @@ public class Favorites extends Tab implements UIPart {
 		} else {
 			repeatOff.setSelected(true);
 		}
-		util.getConsolePlayer().stateProperty()
+		util.getPlayer().stateProperty()
 				.addListener((observable, oldValue, newValue) -> {
 					if (newValue == State.EXIT) {
 						Platform.runLater(() -> playNextTune());
@@ -268,7 +266,7 @@ public class Favorites extends Tab implements UIPart {
 	private void doEnableSldb() {
 		util.getConfig().getSidplay2()
 				.setEnableDatabase(enableSldb.isSelected());
-		util.getConsolePlayer().setStopTime(enableSldb.isSelected());
+		util.getPlayer().setStopTime(enableSldb.isSelected());
 	}
 
 	@FXML
@@ -348,7 +346,7 @@ public class Favorites extends Tab implements UIPart {
 
 	protected void addTab(final FavoritesSection favoritesSection) {
 		final FavoritesTab newTab = new FavoritesTab(this.window,
-				util.getConsolePlayer(), util.getPlayer(), util.getConfig());
+				util.getPlayer());
 		newTab.setText(favoritesSection.getName());
 		newTab.restoreColumns(favoritesSection);
 		newTab.setClosable(favoritesList.getTabs().size() != 0);

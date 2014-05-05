@@ -23,7 +23,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
 import libsidplay.C64;
+import libsidplay.MediaType;
 import libsidplay.Player;
+import libsidplay.State;
 import libsidplay.common.Event;
 import libsidplay.components.c1530.Datasette.DatasetteStatus;
 import libsidplay.components.c1541.C1541;
@@ -32,13 +34,9 @@ import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.ChipModel;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.MediaType;
-import sidplay.consoleplayer.State;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.DiskFileExtensions;
@@ -77,26 +75,21 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	public Video(C64Window window, ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public Video(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 
 	@FXML
 	private void initialize() {
-		util.getConsolePlayer()
-				.stateProperty()
-				.addListener(
-						(arg0, arg1, arg2) -> {
-							if (arg2 == State.RUNNING) {
-								Platform.runLater(() -> {
-									setupVideoScreen();
-									setVisibilityBasedOnChipType(util
-											.getPlayer().getTune());
-								});
-							}
-						});
+		util.getPlayer().stateProperty().addListener((arg0, arg1, arg2) -> {
+			if (arg2 == State.RUNNING) {
+				Platform.runLater(() -> {
+					setupVideoScreen();
+					setVisibilityBasedOnChipType(util.getPlayer().getTune());
+				});
+			}
+		});
 		for (Slider slider : Arrays.asList(brightness, contrast, gamma,
 				saturation, phaseShift, offset, tint, blur, bleed)) {
 			slider.getStyleClass().add("knobStyle");
@@ -212,8 +205,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 
 	@FXML
 	private void showVirtualKeyboard() {
-		virtualKeyboard = new Keyboard(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
+		virtualKeyboard = new Keyboard(util.getPlayer());
 		virtualKeyboard.open();
 	}
 
@@ -231,8 +223,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getConsolePlayer().insertMedia(new TFile(file), null,
-					MediaType.TAPE);
+			util.getPlayer().insertMedia(new TFile(file), null, MediaType.TAPE);
 		}
 	}
 
@@ -250,8 +241,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getConsolePlayer().insertMedia(new TFile(file), null,
-					MediaType.DISK);
+			util.getPlayer().insertMedia(new TFile(file), null, MediaType.DISK);
 		}
 	}
 
@@ -269,8 +259,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getConsolePlayer().insertMedia(new TFile(file), null,
-					MediaType.CART);
+			util.getPlayer().insertMedia(new TFile(file), null, MediaType.CART);
 		}
 	}
 

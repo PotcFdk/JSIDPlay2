@@ -16,11 +16,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import libsidplay.Player;
 import libsidplay.components.DirEntry;
-import sidplay.ConsolePlayer;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.entities.config.Configuration;
 
 public class Directory extends AnchorPane implements UIPart {
 
@@ -57,9 +55,8 @@ public class Directory extends AnchorPane implements UIPart {
 
 	private File previewFile;
 
-	public Directory(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public Directory(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		getChildren().add((Node) util.parse());
 	}
 
@@ -120,7 +117,7 @@ public class Directory extends AnchorPane implements UIPart {
 		directoryEntries.clear();
 		try {
 			libsidplay.components.Directory dir = PseudoDirectory.getDirectory(
-					util.getConsolePlayer(), previewFile, util.getConfig());
+					util.getPlayer(), previewFile, util.getConfig());
 			if (dir != null) {
 				// Print directory title/id
 				DirectoryItem headerItem = new DirectoryItem();

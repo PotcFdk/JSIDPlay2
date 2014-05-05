@@ -2,6 +2,7 @@ package ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -11,9 +12,8 @@ import javafx.stage.Window;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
+import libsidplay.Player;
 import libsidplay.components.c1541.C1541;
-
-import sidplay.ConsolePlayer;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
@@ -34,9 +34,20 @@ public class JSIDPlay2Main extends Application {
 	public static final String CONFIG_DATABASE = "JSIDPLAY2";
 
 	/**
-	 * Console player
+	 * Player
 	 */
-	private ConsolePlayer cp;
+	private Player player;
+	
+	private Consumer<Player> menuHook = (player) -> {
+		if (player.getTune() != null && player.getTune().getInfo().file != null) {
+			System.out.println("Play File: <"
+					+ player.getTune().getInfo().file.getAbsolutePath() + ">");
+		}
+	};
+	
+	private Consumer<Player> interactivityHook = (player) -> {
+	};
+	
 	/**
 	 * Configuration
 	 */
@@ -59,9 +70,11 @@ public class JSIDPlay2Main extends Application {
 		config = getConfiguration();
 		initializeTmpDir(config);
 
-		cp = new ConsolePlayer(config);
+		player = new Player(config);
+		player.setMenuHook(menuHook);
+		player.setInteractivityHook(interactivityHook);
 
-		jSidplay2 = new JSidPlay2(primaryStage, cp, cp.getPlayer(), config);
+		jSidplay2 = new JSidPlay2(primaryStage, player);
 		jSidplay2.setConfigService(configService);
 		jSidplay2.open();
 		// Set default position and size
@@ -91,15 +104,15 @@ public class JSIDPlay2Main extends Application {
 			window.yProperty().addListener(
 					(observable, oldValue, newValue) -> section
 							.setFrameY(newValue.intValue()));
-			cp.startC64();
+			player.startC64();
 		}
 	}
 
 	@Override
 	public void stop() {
-		cp.stopC64();
+		player.stopC64();
 		// Eject medias: Make it possible to auto-delete temporary files
-		for (final C1541 floppy : cp.getPlayer().getFloppies()) {
+		for (final C1541 floppy : player.getFloppies()) {
 			try {
 				floppy.getDiskController().ejectDisk();
 			} catch (IOException e) {
@@ -107,7 +120,7 @@ public class JSIDPlay2Main extends Application {
 			}
 		}
 		try {
-			cp.getPlayer().getDatasette().ejectTape();
+			player.getDatasette().ejectTape();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

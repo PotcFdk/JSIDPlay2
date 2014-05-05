@@ -14,11 +14,9 @@ import libsidplay.Player;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
-import sidplay.ConsolePlayer;
 import sidplay.ini.intf.IJoystickSection;
 import ui.common.C64Window;
 import ui.common.TypeTextField;
-import ui.entities.config.Configuration;
 
 public class JoystickSettings extends C64Window {
 
@@ -47,9 +45,8 @@ public class JoystickSettings extends C64Window {
 
 	private Timeline timer;
 
-	public JoystickSettings(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		super(consolePlayer, player, config);
+	public JoystickSettings(Player player) {
+		super(player);
 	}
 
 	@FXML

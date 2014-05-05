@@ -36,7 +36,9 @@ import javafx.util.Duration;
 import javax.imageio.ImageIO;
 
 import libsidplay.C64;
+import libsidplay.MediaType;
 import libsidplay.Player;
+import libsidplay.State;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -49,16 +51,12 @@ import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.MediaType;
-import sidplay.consoleplayer.State;
 import ui.about.About;
 import ui.common.C64Window;
 import ui.common.dialog.YesNoDialog;
 import ui.disassembler.Disassembler;
 import ui.emulationsettings.EmulationSettings;
 import ui.entities.config.C1541Section;
-import ui.entities.config.Configuration;
 import ui.entities.config.PrinterSection;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
@@ -130,9 +128,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	private StringBuilder tuneSpeed;
 	private StringBuilder playerId;
 
-	public JSidPlay2(Stage primaryStage, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		super(primaryStage, consolePlayer, player, config);
+	public JSidPlay2(Stage primaryStage, Player player) {
+		super(primaryStage, player);
 	}
 
 	@FXML
@@ -143,8 +140,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		this.playerId = new StringBuilder();
 		this.scene = tabbedPane.getScene();
 
-		util.getConsolePlayer().setExtendImagePolicy(this);
-		util.getConsolePlayer()
+		util.getPlayer().setExtendImagePolicy(this);
+		util.getPlayer()
 				.stateProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
@@ -186,7 +183,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		PrinterSection printer = (PrinterSection) util.getConfig().getPrinter();
 		turnPrinterOn.selectedProperty().bindBidirectional(
 				printer.printerOnProperty());
-		
+
 		CPUClock defClk = util.getConfig().getEmulation()
 				.getDefaultClockSpeed();
 		(defClk != null ? defClk == CPUClock.NTSC ? ntsc : pal : pal)
@@ -331,32 +328,32 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void pause() {
-		util.getConsolePlayer().pause();
+		util.getPlayer().pause();
 	}
 
 	@FXML
 	private void previousSong() {
-		util.getConsolePlayer().previousSong();
+		util.getPlayer().previousSong();
 	}
 
 	@FXML
 	private void nextSong() {
-		util.getConsolePlayer().nextSong();
+		util.getPlayer().nextSong();
 	}
 
 	@FXML
 	private void playNormalSpeed() {
-		util.getConsolePlayer().normalSpeed();
+		util.getPlayer().normalSpeed();
 	}
 
 	@FXML
 	private void playFastForward() {
-		util.getConsolePlayer().fastForward();
+		util.getPlayer().fastForward();
 	}
 
 	@FXML
 	private void stopSong() {
-		util.getConsolePlayer().quit();
+		util.getPlayer().quit();
 	}
 
 	@FXML
@@ -388,22 +385,19 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void soundSettings() {
-		C64Window window = new SoundSettings(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
+		C64Window window = new SoundSettings(util.getPlayer());
 		window.open();
 	}
 
 	@FXML
 	private void emulationSettings() {
-		C64Window window = new EmulationSettings(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
+		C64Window window = new EmulationSettings(util.getPlayer());
 		window.open();
 	}
 
 	@FXML
 	private void joystickSettings() {
-		C64Window window = new JoystickSettings(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
+		C64Window window = new JoystickSettings(util.getPlayer());
 		window.open();
 	}
 
@@ -451,8 +445,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getConsolePlayer().insertMedia(new TFile(file), null,
-					MediaType.TAPE);
+			util.getPlayer().insertMedia(new TFile(file), null, MediaType.TAPE);
 		}
 	}
 
@@ -556,8 +549,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getConsolePlayer().insertMedia(new TFile(file), null,
-					MediaType.DISK);
+			util.getPlayer().insertMedia(new TFile(file), null, MediaType.DISK);
 		}
 	}
 
@@ -594,8 +586,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getConsolePlayer().insertMedia(new TFile(file), null,
-					MediaType.CART);
+			util.getPlayer().insertMedia(new TFile(file), null, MediaType.CART);
 		}
 	}
 
@@ -811,22 +802,19 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void memory() {
-		C64Window window = new Disassembler(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
+		C64Window window = new Disassembler(util.getPlayer());
 		window.open();
 	}
 
 	@FXML
 	private void sidDump() {
-		C64Window window = new SidDump(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
+		C64Window window = new SidDump(util.getPlayer());
 		window.open();
 	}
 
 	@FXML
 	private void sidRegisters() {
-		C64Window window = new SidReg(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
+		C64Window window = new SidReg(util.getPlayer());
 		window.open();
 	}
 
@@ -850,8 +838,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void importConfiguration() {
-		YesNoDialog dialog = new YesNoDialog(util.getConsolePlayer(),
-				util.getPlayer(), util.getConfig());
+		YesNoDialog dialog = new YesNoDialog(util.getPlayer());
 		dialog.getStage().setTitle(
 				util.getBundle().getString("IMPORT_CONFIGURATION"));
 		dialog.setText(util.getBundle().getString("PLEASE_RESTART"));
@@ -876,8 +863,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void about() {
-		C64Window window = new About(util.getConsolePlayer(), util.getPlayer(),
-				util.getConfig());
+		C64Window window = new About(util.getPlayer());
 		window.open();
 
 	}
@@ -885,7 +871,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	private void playTune(final File file) {
 		util.setPlayingTab(videoScreen);
 		try {
-			util.getConsolePlayer().playTune(SidTune.load(file), null);
+			util.getPlayer().playTune(SidTune.load(file), null);
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
 		}
@@ -899,7 +885,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
 		boolean motorOn = util.getConfig().getC1541().isDriveSoundOn()
-				&& util.getConsolePlayer().stateProperty().get() == State.RUNNING
+				&& util.getPlayer().stateProperty().get() == State.RUNNING
 				&& c1541.getDiskController().isMotorOn();
 		if (!oldMotorOn && motorOn) {
 			MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);
@@ -949,7 +935,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	}
 
 	private String determineSongLength() {
-		int songLength = util.getConsolePlayer().getSongLength(
+		int songLength = util.getPlayer().getSongLength(
 				util.getPlayer().getTune());
 		if (songLength > 0) {
 			// song length well-known?
@@ -1025,8 +1011,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	public boolean isAllowed() {
 		if (util.getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ASK) {
 			// EXTEND_ASK
-			YesNoDialog dialog = new YesNoDialog(util.getConsolePlayer(),
-					util.getPlayer(), util.getConfig());
+			YesNoDialog dialog = new YesNoDialog(util.getPlayer());
 			dialog.getStage().setTitle(
 					util.getBundle().getString("EXTEND_DISK_IMAGE"));
 			dialog.setText(util.getBundle().getString(

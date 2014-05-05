@@ -102,9 +102,9 @@ public class AudioGeneratorThread extends Thread {
 		try {
 			if (deviceIndex >= 0 && deviceIndex < aInfos.length) {
 				mixerInfo = aInfos[deviceIndex];
-				driver.open(audioConfig, mixerInfo);
+				driver.open(audioConfig, null, mixerInfo);
 			} else {
-				driver.open(audioConfig);
+				driver.open(audioConfig, null);
 			}
 
 			/* Do sound 10 ms at a time. */

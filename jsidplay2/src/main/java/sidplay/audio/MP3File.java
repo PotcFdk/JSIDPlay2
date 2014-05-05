@@ -1,5 +1,6 @@
 package sidplay.audio;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,7 +12,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import lowlevel.LameEncoder;
-
 
 /**
  * File based driver to create a MP3 file.
@@ -35,7 +35,7 @@ public class MP3File extends AudioDriver {
 	private LameEncoder jump3r;
 
 	@Override
-	public void open(final AudioConfig cfg)
+	public void open(final AudioConfig cfg, String outDir)
 			throws LineUnavailableException, UnsupportedAudioFileException,
 			IOException {
 		final int channels = cfg.channels;
@@ -47,7 +47,7 @@ public class MP3File extends AudioDriver {
 		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, 16,
 				cfg.channels, true, false);
 		jump3r = new LameEncoder(audioFormat);
-		out = new FileOutputStream(getFilename(cfg));
+		out = new FileOutputStream(new File(outDir, getFilename(cfg)));
 	}
 
 	@Override

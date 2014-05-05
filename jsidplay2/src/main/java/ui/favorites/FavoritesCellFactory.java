@@ -8,12 +8,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
+import libsidplay.Player;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
-import sidplay.ConsolePlayer;
 import ui.JSIDPlay2Main;
 import ui.entities.collection.HVSCEntry;
-import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 
 public class FavoritesCellFactory implements
@@ -29,16 +28,11 @@ public class FavoritesCellFactory implements
 
 	private static final String CURRENTLY_PLAYED_FILE_ROW = "currentlyPlayedRow";
 
-	private Configuration config;
-	private ConsolePlayer consolePlayer;
+	private Player player;
 	private ObjectProperty<File> currentlyPlayedFileProperty;
 
-	public void setConfig(Configuration config) {
-		this.config = config;
-	}
-
-	public void setConsolePlayer(ConsolePlayer consolePlayer) {
-		this.consolePlayer = consolePlayer;
+	public void setPlayer(Player player) {
+		this.player = player;
 	}
 
 	public void setCurrentlyPlayedFileProperty(
@@ -69,9 +63,9 @@ public class FavoritesCellFactory implements
 				int columnIndex = getTableView().getColumns().indexOf(
 						getTableColumn());
 				if (columnIndex == 0) {
-					STIL stil = consolePlayer.getStil();
-					SidPlay2Section sidPlay2Section = (SidPlay2Section) config
-							.getSidplay2();
+					STIL stil = player.getStil();
+					SidPlay2Section sidPlay2Section = (SidPlay2Section) player
+							.getConfig().getSidplay2();
 					File file = PathUtils.getFile(path,
 							sidPlay2Section.getHvscFile(),
 							sidPlay2Section.getCgscFile());
@@ -98,8 +92,8 @@ public class FavoritesCellFactory implements
 			}
 			HVSCEntry hvscEntry = (HVSCEntry) getTableRow().getItem();
 			if (hvscEntry != null) {
-				SidPlay2Section sidPlay2Section = (SidPlay2Section) config
-						.getSidplay2();
+				SidPlay2Section sidPlay2Section = (SidPlay2Section) player
+						.getConfig().getSidplay2();
 				File file = PathUtils.getFile(hvscEntry.getPath(),
 						sidPlay2Section.getHvscFile(),
 						sidPlay2Section.getCgscFile());

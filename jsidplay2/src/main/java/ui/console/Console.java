@@ -4,11 +4,9 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import libsidplay.Player;
-import sidplay.ConsolePlayer;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.entities.config.Configuration;
 
 public class Console extends Tab implements UIPart {
 	private static final String STYLE_ERROR_CONSOLE = "errorConsole";
@@ -19,9 +17,8 @@ public class Console extends Tab implements UIPart {
 
 	private UIUtil util;
 
-	public Console(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public Console(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 

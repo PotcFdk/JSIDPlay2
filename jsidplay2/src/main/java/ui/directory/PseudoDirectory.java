@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Locale;
 
+import libsidplay.Player;
 import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
 import libsidplay.components.c1541.DiskImage;
@@ -13,7 +14,6 @@ import libsidplay.components.cart.Cartridge;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.T64;
-import sidplay.ConsolePlayer;
 import sidplay.ini.intf.IConfig;
 import ui.entities.collection.HVSCEntry;
 import ui.filefilter.DiskFileFilter;
@@ -40,7 +40,7 @@ public class PseudoDirectory {
 	 * @throws IOException
 	 *             can not open file
 	 */
-	public static final Directory getDirectory(ConsolePlayer cp,
+	public static final Directory getDirectory(Player player,
 			final File file, final IConfig cfg) throws IOException {
 		if (diskFilter.accept(file)) {
 			return DiskImage.getDirectory(file);
@@ -49,12 +49,12 @@ public class PseudoDirectory {
 		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".crt")) {
 			return Cartridge.getDirectory(file);
 		} else if (tuneFilter.accept(file)) {
-			return getTuneAsDirectory(cp, file, cfg);
+			return getTuneAsDirectory(player, file, cfg);
 		}
 		return null;
 	}
 
-	private static Directory getTuneAsDirectory(ConsolePlayer cp, File file,
+	private static Directory getTuneAsDirectory(Player player, File file,
 			IConfig cfg) throws IOException {
 		Directory dir = new Directory();
 		SidTune tune;
@@ -66,7 +66,7 @@ public class PseudoDirectory {
 		} catch (SidTuneError e) {
 			throw new IOException();
 		}
-		HVSCEntry entry = HVSCEntry.create(cp, file.getAbsolutePath(), file,
+		HVSCEntry entry = HVSCEntry.create(player, file.getAbsolutePath(), file,
 				tune);
 		final String title = entry.getTitle() != null ? entry.getTitle()
 				: entry.getName();

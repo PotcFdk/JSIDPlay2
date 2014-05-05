@@ -1,4 +1,4 @@
-package sidplay.consoleplayer;
+package libsidplay;
 
 public class Timer {
 	/**

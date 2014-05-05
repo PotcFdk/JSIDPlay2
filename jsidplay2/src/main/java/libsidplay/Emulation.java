@@ -1,4 +1,4 @@
-package sidplay.consoleplayer;
+package libsidplay;
 
 public enum Emulation {
 	/** No soundcard. Still allows wav generation */

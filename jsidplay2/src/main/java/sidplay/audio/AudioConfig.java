@@ -136,10 +136,10 @@ public class AudioConfig {
 		return outputFilename;
 	}
 
-	public void configure(SidTune tune, String outputFilename) {
+	public void configure(SidTune tune) {
 		tuneFile = tune != null ? tune.getInfo().file : null;
 		songCount = tune != null ? tune.getInfo().songs : 1;
 		currentSong = tune != null ? tune.getInfo().currentSong : 1;
-		this.outputFilename = outputFilename;
+		this.outputFilename = tune != null ? tune.getOutputFilename() : null;
 	}
 }

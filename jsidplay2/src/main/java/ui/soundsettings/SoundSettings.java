@@ -11,16 +11,15 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import libsidplay.DriverSettings;
+import libsidplay.Emulation;
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
 import resid_builder.resid.SamplingMethod;
-import sidplay.ConsolePlayer;
 import sidplay.audio.CmpMP3File;
-import sidplay.consoleplayer.Emulation;
-import sidplay.consoleplayer.Output;
+import sidplay.audio.Output;
 import sidplay.ini.intf.IAudioSection;
 import ui.common.C64Window;
-import ui.entities.config.Configuration;
 
 public class SoundSettings extends C64Window {
 
@@ -45,9 +44,8 @@ public class SoundSettings extends C64Window {
 
 	private boolean duringInitialization;
 
-	public SoundSettings(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		super(consolePlayer, player, config);
+	public SoundSettings(Player player) {
+		super(player);
 	}
 
 	@FXML
@@ -60,17 +58,17 @@ public class SoundSettings extends C64Window {
 				.getString("WAV_RECORDER"),
 				util.getBundle().getString("MP3_RECORDER"), util.getBundle()
 						.getString("COMPARE_TO_MP3"));
-		Output out = util.getConsolePlayer().getOutput();
-		Emulation sid = util.getConsolePlayer().getEmulation();
-		if (out == Output.OUT_SOUNDCARD && sid == Emulation.EMU_RESID) {
+		Output output = util.getPlayer().getDriverSettings().getOutput();
+		Emulation sid = util.getPlayer().getDriverSettings().getEmulation();
+		if (output == Output.OUT_SOUNDCARD && sid == Emulation.EMU_RESID) {
 			soundDevice.getSelectionModel().select(0);
-		} else if (out == Output.OUT_NULL && sid == Emulation.EMU_HARDSID) {
+		} else if (output == Output.OUT_NULL && sid == Emulation.EMU_HARDSID) {
 			soundDevice.getSelectionModel().select(1);
-		} else if (out == Output.OUT_LIVE_WAV && sid == Emulation.EMU_RESID) {
+		} else if (output == Output.OUT_LIVE_WAV && sid == Emulation.EMU_RESID) {
 			soundDevice.getSelectionModel().select(2);
-		} else if (out == Output.OUT_LIVE_MP3 && sid == Emulation.EMU_RESID) {
+		} else if (output == Output.OUT_LIVE_MP3 && sid == Emulation.EMU_RESID) {
 			soundDevice.getSelectionModel().select(3);
-		} else if (out == Output.OUT_COMPARE && sid == Emulation.EMU_RESID) {
+		} else if (output == Output.OUT_COMPARE && sid == Emulation.EMU_RESID) {
 			soundDevice.getSelectionModel().select(4);
 		} else {
 			soundDevice.getSelectionModel().select(0);
@@ -109,22 +107,34 @@ public class SoundSettings extends C64Window {
 	private void setSoundDevice() {
 		switch (soundDevice.getSelectionModel().getSelectedIndex()) {
 		case 0:
-			setOutputDevice(Output.OUT_SOUNDCARD, Emulation.EMU_RESID);
+			util.getPlayer().setDriverSettings(
+					new DriverSettings(Output.OUT_SOUNDCARD,
+							Emulation.EMU_RESID));
 			break;
 
 		case 1:
-			setOutputDevice(Output.OUT_NULL, Emulation.EMU_HARDSID);
+			util.getPlayer().setDriverSettings(
+					new DriverSettings(Output.OUT_NULL, Emulation.EMU_HARDSID));
 			break;
 
 		case 2:
-			setOutputDevice(Output.OUT_LIVE_WAV, Emulation.EMU_RESID);
+			util.getPlayer()
+					.setDriverSettings(
+							new DriverSettings(Output.OUT_LIVE_WAV,
+									Emulation.EMU_RESID));
 			break;
 
 		case 3:
-			setOutputDevice(Output.OUT_LIVE_MP3, Emulation.EMU_RESID);
+			util.getPlayer()
+					.setDriverSettings(
+							new DriverSettings(Output.OUT_LIVE_MP3,
+									Emulation.EMU_RESID));
 			break;
 		case 4:
-			setOutputDevice(Output.OUT_COMPARE, Emulation.EMU_RESID);
+			util.getPlayer()
+					.setDriverSettings(
+							new DriverSettings(Output.OUT_COMPARE,
+									Emulation.EMU_RESID));
 			break;
 
 		}
@@ -224,20 +234,15 @@ public class SoundSettings extends C64Window {
 	protected void restart() {
 		// replay last tune
 		if (!duringInitialization) {
-			util.getConsolePlayer().playTune(util.getPlayer().getTune(), null);
+			util.getPlayer().playTune(util.getPlayer().getTune(), null);
 		}
-	}
-
-	private void setOutputDevice(final Output device, final Emulation emu) {
-		util.getConsolePlayer().setOutput(device);
-		util.getConsolePlayer().setEmulation(emu);
 	}
 
 	protected void setPlayOriginal(final boolean playOriginal) {
 		util.getConfig().getAudio().setPlayOriginal(playOriginal);
-		if (util.getConsolePlayer().getOutput().getDriver() instanceof CmpMP3File) {
-			((CmpMP3File) util.getConsolePlayer().getOutput().getDriver())
-					.setPlayOriginal(playOriginal);
+		if (util.getPlayer().getDriverSettings().getOutput().getDriver() instanceof CmpMP3File) {
+			((CmpMP3File) util.getPlayer().getDriverSettings().getOutput()
+					.getDriver()).setPlayOriginal(playOriginal);
 		}
 	}
 

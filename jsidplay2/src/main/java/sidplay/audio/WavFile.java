@@ -1,5 +1,6 @@
 package sidplay.audio;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -66,7 +67,7 @@ public class WavFile extends AudioDriver {
 	private RandomAccessFile file;
 
 	@Override
-	public void open(final AudioConfig cfg) throws IOException {
+	public void open(final AudioConfig cfg, String outDir) throws IOException {
 		final int channels = cfg.channels;
 		final int freq = cfg.frameRate;
 		final int blockAlign = 2 * channels;
@@ -85,7 +86,7 @@ public class WavFile extends AudioDriver {
 		wavHdr.blockAlign = (short) blockAlign;
 		wavHdr.bitsPerSample = 16;
 
-		file = new RandomAccessFile(getFilename(cfg), "rw");
+		file = new RandomAccessFile(new File(outDir, getFilename(cfg)), "rw");
 		file.setLength(0);
 		file.write(wavHdr.getBytes());
 	}

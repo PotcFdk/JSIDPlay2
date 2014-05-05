@@ -20,23 +20,34 @@
  */
 package libsidplay;
 
+import hardsid_builder.HardSID;
 import hardsid_builder.HardSIDBuilder;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
+import java.util.function.Consumer;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1530.Datasette.Control;
 import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
+import libsidplay.components.c1541.C1541Runner;
 import libsidplay.components.c1541.DisconnectedParallelCable;
+import libsidplay.components.c1541.DiskImage;
+import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.components.c1541.IParallelCable;
+import libsidplay.components.c1541.SameThreadC1541Runner;
 import libsidplay.components.c1541.VIACore;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
@@ -46,19 +57,34 @@ import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
+import libsidutils.PRG2TAP;
+import libsidutils.STIL;
+import libsidutils.SidDatabase;
 import resid_builder.ReSID;
+import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ChipModel;
 import resid_builder.resid.SamplingMethod;
+import sidplay.audio.AudioConfig;
+import sidplay.audio.CmpMP3File;
+import sidplay.audio.NaturalFinishedException;
+import sidplay.audio.Output;
 import sidplay.ini.intf.IConfig;
 
 /**
  * The player contains a C64 computer and additional peripherals.<BR>
- * It is meant as a complete setup (C64, tape/disk drive, carts and more).
+ * It is meant as a complete setup (C64, tape/disk drive, carts and more).<BR>
+ * It also has some music player capabilities.
  * 
  * @author Ken Händel
  * 
  */
 public class Player {
+	/** Previous song select timeout (< 4 secs) **/
+	private static final int SID2_PREV_SONG_TIMEOUT = 4;
+	private static final int MAX_SPEED = 32;
+
+	private IConfig config;
 
 	/**
 	 * C64 computer.
@@ -97,7 +123,22 @@ public class Player {
 	 */
 	protected String command;
 
-	private IConfig config;
+	private Thread fPlayerThread;
+	private Consumer<Player> menuHook, interactivityHook;
+	private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
+			State.STOPPED);
+	private final Timer timer = new Timer();
+	private final Track track = new Track();
+	private int currentSpeed = 1;
+
+	private DriverSettings driverSettings = new DriverSettings(
+			Output.OUT_SOUNDCARD, Emulation.EMU_RESID);
+	private DriverSettings oldDriverSettings;
+	private SIDBuilder sidBuilder;
+
+	private STIL stil;
+	private SidDatabase sidDatabase;
+	private IExtendImageListener policy;
 
 	/**
 	 * Create a complete setup (C64, tape/disk drive, carts and more).
@@ -187,6 +228,10 @@ public class Player {
 		iecBus.setSerialDevices(serialDevices);
 		c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(),
 				c1541.getEventScheduler());
+	}
+
+	public IConfig getConfig() {
+		return config;
 	}
 
 	/**
@@ -550,6 +595,14 @@ public class Player {
 		this.tune = tune;
 	}
 
+	public Track getTrack() {
+		return track;
+	}
+
+	public Timer getTimer() {
+		return timer;
+	}
+
 	/**
 	 * Get the currently played program.
 	 * 
@@ -616,7 +669,7 @@ public class Player {
 		if (Integer.valueOf(0xd400).equals(secondAddress)) {
 			final SIDEmu s1 = c64.getSID(0);
 			final SIDEmu s2 = c64.getSID(1);
-			getC64().setSID(0, new SIDEmu(getC64().getEventScheduler()) {
+			c64.setSID(0, new SIDEmu(c64.getEventScheduler()) {
 				@Override
 				public void reset(byte volume) {
 					s1.reset(volume);
@@ -731,111 +784,527 @@ public class Player {
 		}
 	}
 
-}
-
-abstract class C1541Runner extends Event {
-	protected final EventScheduler c64Context, c1541Context;
-	private int conversionFactor, accum;
-	private long c64LastTime;
-
-	public C1541Runner(final EventScheduler c64Context,
-			final EventScheduler c1541Context) {
-		super("C64 permits C1541 to continue");
-		this.c64Context = c64Context;
-		this.c1541Context = c1541Context;
-		this.c64LastTime = c64Context.getTime(Phase.PHI2);
+	/**
+	 * Start emulation (start player thread).
+	 */
+	public void startC64() {
+		fPlayerThread = new Thread(playerRunnable);
+		fPlayerThread.setPriority(Thread.MAX_PRIORITY);
+		fPlayerThread.start();
 	}
 
 	/**
-	 * Return the number of clock ticks that 1541 should advance.
-	 * 
-	 * @param offset
-	 *            adjust C64 cycles
-	 * 
-	 * @return The number of clock ticks that 1541 should advance.
+	 * Stop emulation (stop player thread).
 	 */
-	protected int updateSlaveTicks(long offset) {
-		final long oldC64Last = c64LastTime;
-		c64LastTime = c64Context.getTime(Phase.PHI2) + offset;
-
-		accum += conversionFactor * (int) (c64LastTime - oldC64Last);
-		int wholeClocks = accum >> 16;
-		accum &= 0xffff;
-
-		return wholeClocks;
+	public void stopC64() {
+		try {
+			while (fPlayerThread != null && fPlayerThread.isAlive()) {
+				quit();
+				fPlayerThread.join(3000);
+				// This is only the last option, if the player can not be
+				// stopped clean
+				fPlayerThread.interrupt();
+			}
+		} catch (InterruptedException e) {
+		}
 	}
 
-	protected void setClockDivider(final CPUClock clock) {
-		conversionFactor = (int) (1000000.0 / clock.getCpuFrequency() * 65536.0 + 0.5);
+	public void setMenuHook(Consumer<Player> menuHook) {
+		this.menuHook = menuHook;
 	}
 
-	protected void reset() {
-		c64LastTime = c64Context.getTime(Phase.PHI2);
+	public void setInteractivityHook(Consumer<Player> interactivityHook) {
+		this.interactivityHook = interactivityHook;
 	}
 
-	abstract protected void cancel();
+	public void setDriverSettings(DriverSettings driverSettings) {
+		this.driverSettings = driverSettings;
+	}
 
-	abstract protected void synchronize(long offset);
-}
+	public DriverSettings getDriverSettings() {
+		return driverSettings;
+	}
 
-class SameThreadC1541Runner extends C1541Runner {
-	protected boolean notTerminated;
+	public final ObjectProperty<State> stateProperty() {
+		return stateProperty;
+	}
 
-	private final Event terminationEvent = new Event("Pause C1541") {
+	/**
+	 * Player runnable to play music in the background.
+	 */
+	private transient final Runnable playerRunnable = new Runnable() {
 		@Override
-		public void event() {
-			notTerminated = false;
+		public void run() {
+			// Run until the player gets stopped
+			while (true) {
+				try {
+					// Open tune and play
+					open();
+					menuHook.accept(Player.this);
+					// Play next chunk of sound data, until it gets stopped
+					while (true) {
+						// Pause? sleep for awhile
+						if (stateProperty.get() == State.PAUSED) {
+							Thread.sleep(250);
+						}
+						// Play a chunk
+						if (!play()) {
+							break;
+						}
+						interactivityHook.accept(Player.this);
+					}
+				} catch (InterruptedException e) {
+				} finally {
+					// Don't forget to close
+					close();
+				}
+
+				// "Play it once, Sam. For old times' sake."
+				if (stateProperty.get() == State.RESTART) {
+					continue;
+				}
+				// Stop it
+				break;
+			}
 		}
 	};
 
-	protected SameThreadC1541Runner(final EventScheduler c64Context,
-			final EventScheduler c1541Context) {
-		super(c64Context, c1541Context);
+	/**
+	 * Out play loop to be externally called
+	 * 
+	 * @throws InterruptedException
+	 */
+	private boolean play() throws InterruptedException {
+		/* handle switches to next song etc. */
+		final int seconds = time();
+		if (seconds != timer.getCurrent()) {
+			timer.setCurrent(seconds);
+
+			if (seconds == timer.getStart()) {
+				normalSpeed();
+				sidBuilder.setDriver(driverSettings.getOutput().getDriver(),
+						config.getSidplay2().getTmpDir());
+			}
+			// Only for tunes: if play time is over loop or exit (single song or
+			// whole tune)
+			if (tune != null && timer.getStop() != 0
+					&& seconds >= timer.getStop()) {
+				State endState = config.getSidplay2().isLoop() ? State.RESTART
+						: State.EXIT;
+				if (config.getSidplay2().isSingle()) {
+					stateProperty.set(endState);
+				} else {
+					nextSong();
+
+					// Check play-list end
+					if (track.getSelected() == track.getFirst()) {
+						stateProperty.set(endState);
+					}
+				}
+			}
+		}
+		if (stateProperty.get() == State.RUNNING) {
+			try {
+				play(10000);
+			} catch (NaturalFinishedException e) {
+				stateProperty.set(State.EXIT);
+				throw e;
+			}
+		}
+		return stateProperty.get() == State.RUNNING
+				|| stateProperty.get() == State.PAUSED;
 	}
 
-	private void clockC1541Context(long offset) {
-		final int targetTime = updateSlaveTicks(offset);
-		if (targetTime <= 0) {
-			return;
+	private void open() throws InterruptedException {
+		if (stateProperty.get() == State.RESTART) {
+			stateProperty.set(State.STOPPED);
 		}
 
-		c1541Context.schedule(terminationEvent, targetTime, Event.Phase.PHI2);
-		notTerminated = true;
-
-		/*
-		 * This should actually never throw InterruptedException, because the
-		 * only kind of Events that throw it are related to audio production.
-		 */
-		try {
-			while (notTerminated) {
-				c1541Context.clock();
+		// Select the required song
+		if (tune != null) {
+			track.setSelected(tune.selectSong(track.getSelected()));
+			if (track.getFirst() == 0) {
+				// A different tune is opened?
+				// We mark a new play-list start
+				track.setFirst(track.getSelected());
 			}
-		} catch (final InterruptedException e) {
+		}
+		setTune(tune);
+
+		CPUClock cpuFreq = CPUClock.getCPUClock(config, tune);
+		setClock(cpuFreq);
+
+		if (oldDriverSettings != null) {
+			// restore settings after MP3 has been played last time
+			driverSettings.restore(oldDriverSettings);
+			oldDriverSettings = null;
+		}
+		if (tune != null
+				&& tune.getInfo().file.getName().toLowerCase(Locale.ENGLISH)
+						.endsWith(".mp3")) {
+			// MP3 play-back? Save settings, then change to MP3 compare driver
+			oldDriverSettings = driverSettings.save();
+
+			driverSettings.setOutput(Output.OUT_COMPARE);
+			driverSettings.setEmulation(Emulation.EMU_RESID);
+			config.getAudio().setPlayOriginal(true);
+			config.getAudio().setMp3File(tune.getInfo().file.getAbsolutePath());
+		}
+		if (driverSettings.getOutput().getDriver() instanceof CmpMP3File) {
+			// Set MP3 comparison settings
+			CmpMP3File cmpMp3Driver = (CmpMP3File) driverSettings.getOutput()
+					.getDriver();
+			cmpMp3Driver.setPlayOriginal(config.getAudio().isPlayOriginal());
+			cmpMp3Driver.setMp3File(new File(config.getAudio().getMp3File()));
+		}
+		int channels = isStereo() ? 2 : 1;
+		final AudioConfig audioConfig = AudioConfig.getInstance(
+				config.getAudio(), channels);
+		audioConfig.configure(tune);
+		try {
+			driverSettings.getOutput().getDriver()
+					.open(audioConfig, config.getSidplay2().getTmpDir());
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
+
+		sidBuilder = null;
+		switch (driverSettings.getEmulation()) {
+		case EMU_RESID:
+			sidBuilder = new ReSIDBuilder(audioConfig,
+					cpuFreq.getCpuFrequency(), config.getAudio()
+							.getLeftVolume(), config.getAudio()
+							.getRightVolume());
+			break;
+
+		case EMU_HARDSID:
+			sidBuilder = new HardSIDBuilder(config);
+			break;
+
+		default:
+			break;
+		}
+
+		// According to the configuration, the SIDs must be updated.
+		updateChipModel();
+		setFilter(config);
+
+		/* We should have our SIDs configured now. */
+
+		Integer secondAddress = getSecondAddress();
+		if (secondAddress != null && secondAddress != 0xd400) {
+			c64.setSecondSIDAddress(secondAddress);
+		}
+
+		handleStereoSIDConflict(secondAddress);
+
+		// Start the player. Do this by fast
+		// forwarding to the start position
+		currentSpeed = MAX_SPEED;
+		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
+
+		reset();
+
+		if (config.getSidplay2().getUserPlayLength() != 0) {
+			// Use user defined fixed song length
+			timer.setStop(config.getSidplay2().getUserPlayLength()
+					+ timer.getStart());
+		} else {
+			// Try the song length database
+			setStopTime(config.getSidplay2().isEnableDatabase());
+		}
+		timer.setCurrent(-1);
+		stateProperty.set(State.RUNNING);
 	}
 
-	@Override
-	protected void reset() {
-		super.reset();
-		cancel();
-		c64Context.schedule(this, 0, Event.Phase.PHI2);
+	public boolean isStereo() {
+		return config.getEmulation().isForceStereoTune() || tune != null
+				&& tune.getInfo().sidChipBase2 != 0;
 	}
 
-	@Override
-	protected void cancel() {
-		c64Context.cancel(this);
+	private Integer getSecondAddress() {
+		if (isStereo()) {
+			if (config.getEmulation().isForceStereoTune()) {
+				return config.getEmulation().getDualSidBase();
+			} else if (tune != null && tune.getInfo().sidChipBase2 != 0) {
+				return tune.getInfo().sidChipBase2;
+			}
+		}
+		return null;
 	}
 
-	@Override
-	protected void synchronize(long offset) {
-		clockC1541Context(offset);
+	/**
+	 * Set/Update chip model according to the configuration
+	 */
+	public void updateChipModel() {
+		if (sidBuilder != null) {
+			ChipModel chipModel = ChipModel.getChipModel(config, tune);
+			updateChipModel(0, chipModel);
+
+			if (isStereo()) {
+				ChipModel stereoChipModel = ChipModel.getStereoSIDModel(config,
+						tune);
+				updateChipModel(1, stereoChipModel);
+			}
+		}
 	}
 
-	@Override
-	public void event() throws InterruptedException {
-		synchronize(0);
-		c64Context.schedule(this, 2000);
+	/**
+	 * Update SID model according to the settings.
+	 * 
+	 * @param chipNum
+	 *            chip number (0 - mono, 1 - stereo)
+	 * @param model
+	 *            chip model to use
+	 */
+	private void updateChipModel(final int chipNum, final ChipModel model) {
+		SIDEmu s = c64.getSID(chipNum);
+		if (s instanceof HardSID) {
+			sidBuilder.unlock(s);
+			s = null;
+		}
+		if (s == null) {
+			s = sidBuilder.lock(c64.getEventScheduler(), model);
+		} else {
+			s.setChipModel(model);
+		}
+		c64.setSID(chipNum, s);
+	}
+
+	/**
+	 * Set stop time according to the song length database (or use default
+	 * length)
+	 * 
+	 * @param enableSongLengthDatabase
+	 *            enable song length database
+	 */
+	public void setStopTime(boolean enableSongLengthDatabase) {
+		// play default length or forever (0) ...
+		timer.setStop(config.getSidplay2().getDefaultPlayLength());
+		if (enableSongLengthDatabase) {
+			final int length = getSongLength(tune);
+			if (length > 0) {
+				// ... or use song length of song length database
+				timer.setStop(length);
+			}
+		}
+	}
+
+	private void close() {
+		if (sidBuilder != null) {
+			for (int i = 0; i < C64.MAX_SIDS; i++) {
+				SIDEmu s = c64.getSID(i);
+				if (s != null) {
+					sidBuilder.unlock(s);
+					c64.setSID(i, null);
+				}
+			}
+		}
+		driverSettings.getOutput().getDriver().close();
+	}
+
+	/**
+	 * Play tune.
+	 * 
+	 * @param sidTune
+	 *            file to play the tune (null means just reset C64)
+	 * @param command
+	 */
+	public void playTune(final SidTune sidTune, String command) {
+		tune = sidTune;
+		// Stop previous run
+		stopC64();
+		// 0 means use start song next time open() is called
+		track.setSelected(0);
+		if (tune != null) {
+			// A different tune is opened?
+			// We mark a new play-list start
+			track.setFirst(0);
+			track.setSongs(tune.getInfo().songs);
+		} else {
+			track.setFirst(1);
+			track.setSongs(0);
+		}
+		// set command to type after reset
+		setCommand(command);
+		// Start emulation
+		startC64();
+	}
+
+	public void pause() {
+		if (stateProperty.get() == State.PAUSED) {
+			stateProperty.set(State.RUNNING);
+		} else {
+			stateProperty.set(State.PAUSED);
+			driverSettings.getOutput().getDriver().pause();
+		}
+	}
+
+	public void nextSong() {
+		stateProperty.set(State.RESTART);
+		track.setSelected(track.getSelected() + 1);
+		if (track.getSelected() > track.getSongs()) {
+			track.setSelected(1);
+		}
+	}
+
+	public void previousSong() {
+		stateProperty.set(State.RESTART);
+		if (time() < SID2_PREV_SONG_TIMEOUT) {
+			track.setSelected(track.getSelected() - 1);
+			if (track.getSelected() < 1) {
+				track.setSelected(track.getSongs());
+			}
+		}
+	}
+
+	public void fastForward() {
+		currentSpeed = currentSpeed * 2;
+		if (currentSpeed > MAX_SPEED) {
+			currentSpeed = MAX_SPEED;
+		}
+		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
+	}
+
+	public void normalSpeed() {
+		currentSpeed = 1;
+		driverSettings.getOutput().getDriver().setFastForward(1);
+	}
+
+	public void selectFirstTrack() {
+		stateProperty.set(State.RESTART);
+		track.setSelected(1);
+	}
+
+	public void selectLastTrack() {
+		stateProperty.set(State.RESTART);
+		track.setSelected(track.getSongs());
+	}
+
+	public int getCurrentSong() {
+		return track.getSelected();
+	}
+
+	public final int getNumDevices() {
+		return sidBuilder != null ? sidBuilder.getNumDevices() : 0;
+	}
+
+	public void quit() {
+		stateProperty.set(State.QUIT);
+	}
+
+	public void setSIDVolume(int i, float volumeDb) {
+		if (sidBuilder != null) {
+			sidBuilder.setSIDVolume(i, volumeDb);
+		}
+	}
+
+	public void setSidDatabase(SidDatabase sidDatabase) {
+		this.sidDatabase = sidDatabase;
+	}
+
+	public int getSongLength(SidTune t) {
+		if (t != null && sidDatabase != null) {
+			return sidDatabase.length(t);
+		}
+		return -1;
+	}
+
+	public int getFullSongLength(SidTune t) {
+		if (t != null && sidDatabase != null) {
+			return sidDatabase.getFullSongLength(t);
+		}
+		return 0;
+	}
+
+	public void setSTIL(STIL stil) {
+		this.stil = stil;
+	}
+
+	public STIL getStil() {
+		return stil;
+	}
+
+	public void setExtendImagePolicy(IExtendImageListener policy) {
+		this.policy = policy;
+	}
+
+	public void insertMedia(File mediaFile, File autostartFile,
+			MediaType mediaType) {
+		try {
+			config.getSidplay2().setLastDirectory(
+					mediaFile.getParentFile().getAbsolutePath());
+			switch (mediaType) {
+			case TAPE:
+				insertTape(mediaFile, autostartFile);
+				break;
+
+			case DISK:
+				insertDisk(mediaFile, autostartFile);
+				break;
+
+			case CART:
+				insertCartridge(mediaFile);
+				break;
+
+			default:
+				break;
+			}
+		} catch (IOException e) {
+			System.err.println(String.format("Cannot attach file '%s'.",
+					mediaFile.getAbsolutePath()));
+		}
+	}
+
+	private void insertDisk(final File selectedDisk, final File autostartFile)
+			throws IOException {
+		// automatically turn drive on
+		config.getC1541().setDriveOn(true);
+		enableFloppyDiskDrives(true);
+		// attach selected disk into the first disk drive
+		DiskImage disk = getFloppies()[0].getDiskController().insertDisk(
+				selectedDisk);
+		if (policy != null) {
+			disk.setExtendImagePolicy(policy);
+		}
+		if (autostartFile != null) {
+			try {
+				playTune(SidTune.load(autostartFile), null);
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void insertTape(final File selectedTape, final File autostartFile)
+			throws IOException {
+		if (!selectedTape.getName().toLowerCase(Locale.ENGLISH)
+				.endsWith(".tap")) {
+			// Everything, which is not a tape convert to tape first
+			final File convertedTape = new File(config.getSidplay2()
+					.getTmpDir(), selectedTape.getName() + ".tap");
+			convertedTape.deleteOnExit();
+			String[] args = new String[] { selectedTape.getAbsolutePath(),
+					convertedTape.getAbsolutePath() };
+			PRG2TAP.main(args);
+			getDatasette().insertTape(convertedTape);
+		} else {
+			getDatasette().insertTape(selectedTape);
+		}
+		if (autostartFile != null) {
+			try {
+				playTune(SidTune.load(autostartFile), null);
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void insertCartridge(final File selectedFile) throws IOException {
+		// Insert a cartridge
+		c64.insertCartridge(selectedFile);
+		// reset required after inserting the cartridge
+		playTune(null, null);
 	}
 
 }

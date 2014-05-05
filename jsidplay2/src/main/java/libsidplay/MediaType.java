@@ -1,4 +1,4 @@
-package sidplay.consoleplayer;
+package libsidplay;
 
 public enum MediaType {
 	DISK, TAPE, CART

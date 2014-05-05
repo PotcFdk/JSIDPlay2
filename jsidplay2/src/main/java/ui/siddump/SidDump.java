@@ -17,13 +17,11 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
 import libsidplay.Player;
+import libsidplay.State;
 import libsidplay.sidtune.SidTune;
 import netsiddev.InvalidCommandException;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.State;
 import sidplay.ini.IniReader;
 import ui.common.C64Window;
-import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 
 public class SidDump extends C64Window {
@@ -55,14 +53,13 @@ public class SidDump extends C64Window {
 
 	private Thread fPlayerThread;
 
-	public SidDump(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		super(consolePlayer, player, config);
+	public SidDump(Player player) {
+		super(player);
 	}
 
 	@FXML
 	private void initialize() {
-		util.getConsolePlayer()
+		util.getPlayer()
 				.stateProperty()
 				.addListener(
 						(ObservableValue<? extends State> observable,
@@ -94,7 +91,7 @@ public class SidDump extends C64Window {
 
 	@Override
 	public void doClose() {
-		util.getConsolePlayer()
+		util.getPlayer()
 				.stateProperty()
 				.removeListener(
 						(ObservableValue<? extends State> observable,
@@ -178,7 +175,7 @@ public class SidDump extends C64Window {
 	private void doStartStopRecording() {
 		if (startStopRecording.isSelected()) {
 			// restart tune, before recording starts
-			util.getConsolePlayer().playTune(util.getPlayer().getTune(), null);
+			util.getPlayer().playTune(util.getPlayer().getTune(), null);
 			setTune(util.getPlayer().getTune());
 			util.getPlayer().getC64().setPlayRoutineObserver(sidDumpExtension);
 		} else {
@@ -402,9 +399,10 @@ public class SidDump extends C64Window {
 		sidDumpExtension.setCurrentSong(subTune);
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
-			int songLength = util.getConsolePlayer().getSongLength(tune);
+			int songLength = util.getPlayer().getSongLength(tune);
 			if (songLength <= 0) {
-				songLength = util.getConfig().getSidplay2().getDefaultPlayLength();
+				songLength = util.getConfig().getSidplay2()
+						.getDefaultPlayLength();
 				if (songLength == 0) {
 					// default
 					songLength = 60;

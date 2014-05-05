@@ -2,9 +2,11 @@ package sidplay.consoleplayer;
 
 import java.io.IOException;
 
+import libsidplay.Player;
+import libsidplay.Timer;
+import libsidplay.Track;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Model;
-import sidplay.ConsolePlayer;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IConsoleSection;
 import sidplay.ini.intf.IEmulationSection;
@@ -12,7 +14,7 @@ import sidplay.ini.intf.IEmulationSection;
 public class ConsoleIO {
 
 	private IConfig config;
-	private ConsolePlayer player;
+	private Player player;
 
 	private boolean v1mute, v2mute, v3mute;
 
@@ -21,7 +23,7 @@ public class ConsoleIO {
 	private int quietLevel;
 	private int verboseLevel;
 
-	public ConsoleIO(IConfig config, ConsolePlayer player, int quietLevel, int verboseLevel) {
+	public ConsoleIO(IConfig config, Player player, int quietLevel, int verboseLevel) {
 		this.config = config;
 		this.player = player;
 		this.quietLevel = quietLevel;
@@ -242,37 +244,37 @@ public class ConsoleIO {
 
 			case '1':
 				v1mute = !v1mute;
-				this.player.getPlayer().setMute(0, 0, v1mute);
+				this.player.setMute(0, 0, v1mute);
 				break;
 
 			case '2':
 				v2mute = !v2mute;
-				this.player.getPlayer().setMute(0, 1, v2mute);
+				this.player.setMute(0, 1, v2mute);
 				break;
 
 			case '3':
 				v3mute = !v3mute;
-				this.player.getPlayer().setMute(0, 2, v3mute);
+				this.player.setMute(0, 2, v3mute);
 				break;
 
 			case '4':
 				v1mute = !v1mute;
-				this.player.getPlayer().setMute(1, 0, v1mute);
+				this.player.setMute(1, 0, v1mute);
 				break;
 
 			case '5':
 				v2mute = !v2mute;
-				this.player.getPlayer().setMute(1, 1, v2mute);
+				this.player.setMute(1, 1, v2mute);
 				break;
 
 			case '6':
 				v3mute = !v3mute;
-				this.player.getPlayer().setMute(1, 2, v3mute);
+				this.player.setMute(1, 2, v3mute);
 				break;
 
 			case 'f': {
 				filterEnable ^= true;
-				this.player.getPlayer().setFilterEnable(filterEnable);
+				this.player.setFilterEnable(filterEnable);
 				break;
 			}
 

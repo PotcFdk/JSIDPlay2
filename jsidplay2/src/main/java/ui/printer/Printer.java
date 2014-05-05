@@ -12,11 +12,9 @@ import javafx.scene.paint.Color;
 import libsidplay.Player;
 import libsidplay.components.printer.IPaper;
 import libsidplay.components.printer.mps803.MPS803;
-import sidplay.ConsolePlayer;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.entities.config.Configuration;
 
 public class Printer extends Tab implements UIPart, IPaper {
 
@@ -28,9 +26,8 @@ public class Printer extends Tab implements UIPart, IPaper {
 	private boolean[] currentPixelRow = new boolean[MPS803.MAX_WIDTH];
 	private int x, y;
 
-	public Printer(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public Printer(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 

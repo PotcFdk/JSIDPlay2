@@ -27,7 +27,7 @@ import libsidplay.common.SIDEmu;
 import resid_builder.resid.ChipModel;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
-import sidplay.consoleplayer.Output;
+import sidplay.audio.Output;
 
 public class ReSIDBuilder extends SIDBuilder {
 	/** Current audio configuration */
@@ -51,7 +51,7 @@ public class ReSIDBuilder extends SIDBuilder {
 		this.systemFrequency = systemFrequency;
 		setSIDVolume(0, leftVolumeInDB);
 		setSIDVolume(1, rightVolumeInDB);
-		setOutput(Output.OUT_NULL.getDriver());
+		setDriver(Output.OUT_NULL.getDriver(), null);
 	}
 
 	protected class MixerEvent extends Event {
@@ -181,10 +181,11 @@ public class ReSIDBuilder extends SIDBuilder {
 		return sids.size();
 	}
 
-	public void setOutput(AudioDriver driver) {
+	@Override
+	public void setDriver(AudioDriver driver, String outDir) {
 		output = driver;
 		try {
-			output.open(audioConfig);
+			output.open(audioConfig, outDir);
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}

@@ -7,16 +7,19 @@ import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import libsidplay.DriverSettings;
+import libsidplay.Emulation;
 import libsidplay.common.CPUClock;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import resid_builder.resid.ChipModel;
+import sidplay.audio.Output;
 import sidplay.ini.intf.IConfig;
 
 public class CmdParser {
 
 	private IConfig config;
-	
+
 	private SidTune tune;
 	private Output output;
 	private String outputFilename;
@@ -27,6 +30,8 @@ public class CmdParser {
 	private int quietLevel;
 	private int verboseLevel;
 	private boolean debug;
+
+	private boolean recordMode;
 
 	public CmdParser(IConfig config) {
 		this.config = config;
@@ -44,7 +49,6 @@ public class CmdParser {
 		boolean err = false;
 
 		int userPlayLength = 0;
-		boolean recordMode = false;
 
 		String filename = null;
 		if (argv.length == 0) {
@@ -217,10 +221,6 @@ public class CmdParser {
 			i++; // next index
 		}
 
-		if (recordMode && userPlayLength == 0) {
-			System.err.println("ERROR: -t0 invalid in record mode");
-			return false;
-		}
 		if (userPlayLength != 0 && startTime >= userPlayLength) {
 			System.err.println("ERROR: Start time exceeds song length!");
 			return false;
@@ -245,6 +245,7 @@ public class CmdParser {
 			e.printStackTrace();
 			return false;
 		}
+		tune.setOutputFilename(outputFilename);
 		return true;
 	}
 
@@ -363,31 +364,36 @@ public class CmdParser {
 	public SidTune getTune() {
 		return tune;
 	}
-	public Output getOutput() {
-		return output;
+
+	public DriverSettings createDriverSettings() {
+		return new DriverSettings(output, emulation);
 	}
-	public String getOutputFilename() {
-		return outputFilename;
-	}
-	public Emulation getEmulation() {
-		return emulation;
-	}
+
 	public int getStartTime() {
 		return startTime;
 	}
+
 	public boolean isDisableFilters() {
 		return disableFilters;
 	}
+
 	public int getFirst() {
 		return first;
 	}
+
 	public int getQuietLevel() {
 		return quietLevel;
 	}
+
 	public int getVerboseLevel() {
 		return verboseLevel;
 	}
+
 	public boolean isDebug() {
 		return debug;
+	}
+
+	public boolean isRecordMode() {
+		return recordMode;
 	}
 }

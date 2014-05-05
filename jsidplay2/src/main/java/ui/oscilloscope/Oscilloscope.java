@@ -8,15 +8,13 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Tab;
 import javafx.util.Duration;
 import libsidplay.Player;
+import libsidplay.State;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.State;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.entities.config.Configuration;
 
 /**
  * @author Ken Händel
@@ -88,15 +86,14 @@ public class Oscilloscope extends Tab implements UIPart {
 	protected int repaint;
 	protected final HighResolutionEvent highResolutionEvent = new HighResolutionEvent();
 
-	public Oscilloscope(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public Oscilloscope(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 
 	@FXML
 	private void initialize() {
-		util.getConsolePlayer()
+		util.getPlayer()
 				.stateProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {

@@ -10,11 +10,9 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import libsidplay.Player;
-import sidplay.ConsolePlayer;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.entities.config.Configuration;
 
 public class Gauge extends VBox implements UIPart {
 	protected static final Color[] gaugeColors = new Color[256];
@@ -32,9 +30,8 @@ public class Gauge extends VBox implements UIPart {
 	private String text;
 	private int voice;
 
-	public Gauge(C64Window window, ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public Gauge(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		getChildren().add((Node) util.parse());
 	}
 

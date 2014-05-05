@@ -5,20 +5,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
+import libsidplay.DriverSettings;
+import libsidplay.Emulation;
+import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import sidplay.ConsolePlayer;
+import sidplay.audio.Output;
 import sidplay.ini.IniConfig;
 
 @SuppressWarnings("serial")
 public class SIDPlay extends Applet {
 	private IniConfig config;
-	private ConsolePlayer cp;
-	private boolean useHardSid;
+	private Player player;
+	private Output output;
+	private Emulation emulation;
 
 	private final HashMap<String, SidTune> map = new HashMap<String, SidTune>();
 
@@ -29,7 +31,7 @@ public class SIDPlay extends Applet {
 	@Override
 	public void init() {
 		config = new IniConfig();
-		cp = new ConsolePlayer(config);
+		player = new Player(config);
 		callJavaScript("javascript:init()");
 	}
 
@@ -44,7 +46,7 @@ public class SIDPlay extends Applet {
 
 	@Override
 	public void stop() {
-		cp.stopC64();
+		player.stopC64();
 		callJavaScript("javascript:stop()");
 	}
 
@@ -80,70 +82,66 @@ public class SIDPlay extends Applet {
 			return;
 		}
 		// eventually stop last run
-		cp.stopC64();
+		player.stopC64();
 
-		// start new song
-		String[] args = getArgs(urlName, songNum);
-		if (!cp.args(args)) {
+		player.setDriverSettings(new DriverSettings(output, emulation));
+		player.getTrack().setFirst(player.getTune().selectSong(songNum));
+		player.getTrack().setSelected(player.getTrack().getFirst());
+		player.getTrack().setSongs(1);
+		try (InputStream stream = new URL(urlName).openConnection()
+				.getInputStream()) {
+			// load from URL
+			player.setTune(SidTune.load(stream));
+		} catch (IOException | SidTuneError e) {
+			e.printStackTrace();
 			return;
 		}
-		cp.startC64();
-	}
 
-	private String[] getArgs(String urlName, int songNum) {
-		Collection<String> args = new ArrayList<>();
-		if (songNum == -1) {
-			args.add(urlName);
-		} else {
-			args.add("-o");
-			args.add(String.valueOf(songNum));
-		}
-		if (useHardSid) {
-			args.add("--hardsid");
-		}
-		return args.toArray(new String[args.size()]);
+		player.startC64();
 	}
 
 	/**
 	 * Stop Player.
 	 */
 	public void stopSID() {
-		cp.stopC64();
+		player.stopC64();
 	}
 
 	/**
 	 * Go to next song number.
 	 */
 	public void nextSong() {
-		cp.nextSong();
+		player.nextSong();
 	}
 
 	/**
 	 * Go to previous song number.
 	 */
 	public void previousSong() {
-		cp.previousSong();
+		player.previousSong();
 	}
 
 	/**
 	 * Use JSIDPlay2 emulation for the next song.
 	 */
 	public void useEmulation() {
-		useHardSid = false;
+		emulation = Emulation.EMU_HARDSID;
+		output = Output.OUT_NULL;
 	}
 
 	/**
 	 * Use HardSID4U for the next song.
 	 */
 	public void useHardSID() {
-		useHardSid = true;
+		output = Output.OUT_SOUNDCARD;
+		emulation = Emulation.EMU_RESID;
 	}
 
 	/**
 	 * Pause/Continue the player.
 	 */
 	public void pauseOrContinueSID() {
-		cp.pause();
+		player.pause();
 	}
 
 	/**
@@ -152,7 +150,7 @@ public class SIDPlay extends Applet {
 	 * @return the player state
 	 */
 	public int stateSID() {
-		return cp.stateProperty().get().ordinal();
+		return player.stateProperty().get().ordinal();
 	}
 
 	/**
@@ -198,7 +196,7 @@ public class SIDPlay extends Applet {
 	 * @return current song number
 	 */
 	public int getCurrentSong() {
-		return cp.getSelected();
+		return player.getCurrentSong();
 	}
 
 	/**
@@ -207,11 +205,11 @@ public class SIDPlay extends Applet {
 	 * @return current time
 	 */
 	public int getCurrentTime() {
-		return cp.getPlayer().time();
+		return player.time();
 	}
 
 	public int getHardSID_SID_Count() {
-		return cp.getHardSIDCount();
+		return player.getNumDevices();
 	}
 
 	//

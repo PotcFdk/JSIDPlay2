@@ -11,11 +11,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import libsidplay.Player;
-import sidplay.ConsolePlayer;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.entities.config.Configuration;
 
 public class ConsoleOutput extends VBox implements UIPart {
 
@@ -28,9 +26,8 @@ public class ConsoleOutput extends VBox implements UIPart {
 
 	private UIUtil util;
 
-	public ConsoleOutput(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public ConsoleOutput(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		getChildren().add((Node) util.parse());
 	}
 

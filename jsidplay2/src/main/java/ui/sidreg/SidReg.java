@@ -15,10 +15,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import libsidplay.Player;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.State;
+import libsidplay.State;
 import ui.common.C64Window;
-import ui.entities.config.Configuration;
 
 public class SidReg extends C64Window {
 
@@ -54,15 +52,14 @@ public class SidReg extends C64Window {
 
 	private SidRegStop sidRegStop;
 
-	public SidReg(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		super(consolePlayer, player, config);
+	public SidReg(Player player) {
+		super(player);
 	}
 
 	@FXML
 	private void initialize() {
 		sidRegStop = new SidRegStop();
-		util.getConsolePlayer().stateProperty().addListener(sidRegStop);
+		util.getPlayer().stateProperty().addListener(sidRegStop);
 		filteredSidRegWrites = FXCollections
 				.<SidRegWrite> observableArrayList();
 		regTable.setItems(filteredSidRegWrites);
@@ -73,7 +70,7 @@ public class SidReg extends C64Window {
 
 	@Override
 	public void doClose() {
-		util.getConsolePlayer().stateProperty().removeListener(sidRegStop);
+		util.getPlayer().stateProperty().removeListener(sidRegStop);
 	}
 
 	@FXML

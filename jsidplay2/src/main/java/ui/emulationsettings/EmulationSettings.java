@@ -13,13 +13,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import libsidplay.Player;
+import libsidplay.State;
 import resid_builder.resid.ChipModel;
 import resid_builder.resid.FilterModelConfig;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.State;
 import sidplay.ini.intf.IFilterSection;
 import ui.common.C64Window;
-import ui.entities.config.Configuration;
 
 public class EmulationSettings extends C64Window {
 
@@ -84,9 +82,8 @@ public class EmulationSettings extends C64Window {
 
 	private boolean duringInitialization;
 
-	public EmulationSettings(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		super(consolePlayer, player, config);
+	public EmulationSettings(Player player) {
+		super(player);
 	}
 
 	@FXML
@@ -102,7 +99,7 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
 					util.getConfig().getAudio().setLeftVolume(volumeDb);
-					util.getConsolePlayer().setSIDVolume(0, volumeDb);
+					util.getPlayer().setSIDVolume(0, volumeDb);
 				});
 		rightVolume.setValue(util.getConfig().getAudio().getRightVolume()
 				+ MAX_VOLUME_DB);
@@ -110,7 +107,7 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
 					util.getConfig().getAudio().setRightVolume(volumeDb);
-					util.getConsolePlayer().setSIDVolume(1, volumeDb);
+					util.getPlayer().setSIDVolume(1, volumeDb);
 				});
 
 		sid1Models = FXCollections.<Object> observableArrayList();
@@ -143,14 +140,14 @@ public class EmulationSettings extends C64Window {
 		calculateFilterCurve(filter.getSelectionModel().getSelectedItem());
 
 		emulationChange = new EmulationChange();
-		util.getConsolePlayer().stateProperty().addListener(emulationChange);
+		util.getPlayer().stateProperty().addListener(emulationChange);
 
 		duringInitialization = false;
 	}
 
 	@Override
 	public void doClose() {
-		util.getConsolePlayer().stateProperty().removeListener(emulationChange);
+		util.getPlayer().stateProperty().removeListener(emulationChange);
 	}
 
 	@FXML
@@ -167,7 +164,7 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setUserSidModel(userSidModel);
 			addFilters(userSidModel);
 		}
-		util.getConsolePlayer().updateChipModel();
+		util.getPlayer().updateChipModel();
 		util.getPlayer().setFilter(util.getConfig());
 	}
 
@@ -181,7 +178,7 @@ public class EmulationSettings extends C64Window {
 					.getSelectionModel().getSelectedItem();
 			util.getConfig().getEmulation().setStereoSidModel(stereoSidModel);
 		}
-		util.getConsolePlayer().updateChipModel();
+		util.getPlayer().updateChipModel();
 		util.getPlayer().setFilter(util.getConfig());
 	}
 
@@ -227,7 +224,7 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setFilter8580(filterName);
 		}
 
-		util.getConsolePlayer().updateChipModel();
+		util.getPlayer().updateChipModel();
 		util.getPlayer().setFilter(util.getConfig());
 		if (!duringInitialization) {
 			calculateFilterCurve(filterName);
@@ -237,7 +234,7 @@ public class EmulationSettings extends C64Window {
 	private void restart() {
 		// replay last tune
 		if (!duringInitialization) {
-			util.getConsolePlayer().playTune(util.getPlayer().getTune(), null);
+			util.getPlayer().playTune(util.getPlayer().getTune(), null);
 		}
 	}
 

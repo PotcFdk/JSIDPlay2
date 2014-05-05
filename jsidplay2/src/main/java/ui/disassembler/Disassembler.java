@@ -15,13 +15,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import libsidplay.Player;
+import libsidplay.State;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.cpuparser.CPUCommand;
 import libsidutils.cpuparser.CPUParser;
-import sidplay.ConsolePlayer;
-import sidplay.consoleplayer.State;
 import ui.common.C64Window;
-import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 
 public class Disassembler extends C64Window {
@@ -51,9 +49,8 @@ public class Disassembler extends C64Window {
 	private static final Map<Integer, CPUCommand> fCommands = CPUParser
 			.getCpuCommands();
 
-	public Disassembler(ConsolePlayer consolePlayer, Player player,
-			Configuration config) {
-		super(consolePlayer, player, config);
+	public Disassembler(Player player) {
+		super(player);
 	}
 
 	@FXML
@@ -64,15 +61,13 @@ public class Disassembler extends C64Window {
 		setTune();
 
 		disassemblerRefresh = new DisassemblerRefresh();
-		util.getConsolePlayer().stateProperty()
-				.addListener(disassemblerRefresh);
+		util.getPlayer().stateProperty().addListener(disassemblerRefresh);
 
 	}
 
 	@Override
 	public void doClose() {
-		util.getConsolePlayer().stateProperty()
-				.removeListener(disassemblerRefresh);
+		util.getPlayer().stateProperty().removeListener(disassemblerRefresh);
 	}
 
 	protected void setTune() {
@@ -117,18 +112,18 @@ public class Disassembler extends C64Window {
 	}
 
 	private void disassemble(final int startAddr) {
-//		Platform.runLater(() -> {
-			assemblyLines.clear();
-			byte[] ram = util.getPlayer().getC64().getRAM();
-			int offset = startAddr;
-			do {
-				CPUCommand cmd = fCommands.get(ram[offset & 0xffff] & 0xff);
-				AssemblyLine assemblyLine = createAssemblyLine(ram,
-						offset & 0xffff, cmd);
-				assemblyLines.add(assemblyLine);
-				offset += cmd.getByteCount();
-			} while (offset <= 0xffff);
-//		});
+		// Platform.runLater(() -> {
+		assemblyLines.clear();
+		byte[] ram = util.getPlayer().getC64().getRAM();
+		int offset = startAddr;
+		do {
+			CPUCommand cmd = fCommands.get(ram[offset & 0xffff] & 0xff);
+			AssemblyLine assemblyLine = createAssemblyLine(ram,
+					offset & 0xffff, cmd);
+			assemblyLines.add(assemblyLine);
+			offset += cmd.getByteCount();
+		} while (offset <= 0xffff);
+		// });
 	}
 
 	protected AssemblyLine createAssemblyLine(byte[] ram, int startAddr,

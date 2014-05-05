@@ -12,13 +12,11 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import libsidplay.Player;
-import sidplay.ConsolePlayer;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
-import ui.entities.config.Configuration;
 import ui.entities.gamebase.Games;
 import ui.gamebase.listeners.GameListener;
 
@@ -39,9 +37,8 @@ public class GameBasePage extends Tab implements UIPart {
 	private IDownloadListener screenShotListener;
 	private GameListener gameListener;
 
-	public GameBasePage(C64Window window, ConsolePlayer consolePlayer,
-			Player player, Configuration config) {
-		util = new UIUtil(window, consolePlayer, player, config, this);
+	public GameBasePage(C64Window window, Player player) {
+		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 

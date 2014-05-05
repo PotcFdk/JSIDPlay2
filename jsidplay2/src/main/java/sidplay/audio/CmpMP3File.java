@@ -34,23 +34,25 @@ public class CmpMP3File extends JavaSound {
 	protected JavaSound mp3Driver = new JavaSound();
 
 	@Override
-	public void open(final AudioConfig cfg) throws LineUnavailableException {
-		super.open(cfg);
+	public void open(final AudioConfig cfg, String outDir)
+			throws LineUnavailableException {
+		super.open(cfg, outDir);
 
 		jump3r = new LameDecoder(mp3File.getAbsolutePath());
 
-		mp3Driver.open(new AudioConfig(jump3r.getSampleRate(), jump3r.getChannels(),
-				SamplingMethod.RESAMPLE) {
-			@Override
-			public int getChunkFrames() {
-				return jump3r.getFrameSize();
-			}
+		mp3Driver.open(
+				new AudioConfig(jump3r.getSampleRate(), jump3r.getChannels(),
+						SamplingMethod.RESAMPLE) {
+					@Override
+					public int getChunkFrames() {
+						return jump3r.getFrameSize();
+					}
 
-			@Override
-			public int getFrameRate() {
-				return jump3r.getSampleRate();
-			}
-		});
+					@Override
+					public int getFrameRate() {
+						return jump3r.getSampleRate();
+					}
+				}, outDir);
 	}
 
 	@Override
@@ -70,7 +72,7 @@ public class CmpMP3File extends JavaSound {
 		super.pause();
 		mp3Driver.pause();
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

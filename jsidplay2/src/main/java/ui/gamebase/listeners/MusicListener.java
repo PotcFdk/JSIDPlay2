@@ -4,19 +4,18 @@ import java.io.File;
 import java.io.IOException;
 
 import javafx.scene.Node;
+import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import sidplay.ConsolePlayer;
 import ui.common.UIUtil;
 import ui.download.ProgressListener;
 
 public class MusicListener extends ProgressListener {
 
-	private ConsolePlayer cp;
+	private Player player;
 
-	public MusicListener(UIUtil util, Node node, ConsolePlayer consolePlayer) {
+	public MusicListener(UIUtil util, Node node, Player player) {
 		super(util, node);
-		this.cp = consolePlayer;
 	}
 
 	@Override
@@ -27,7 +26,7 @@ public class MusicListener extends ProgressListener {
 		downloadedFile.deleteOnExit();
 		// play tune
 		try {
-			cp.playTune(SidTune.load(downloadedFile), null);
+			player.playTune(SidTune.load(downloadedFile), null);
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
 		}
