@@ -474,8 +474,10 @@ public class Layer3 {
 					r0c = common.getbits_fast(mp, 4);
 					r1c = common.getbits_fast(mp, 3);
 					gr_infos.region1start = bandInfo[sfreq].longIdx[r0c + 1] >> 1;
-					gr_infos.region2start = bandInfo[sfreq].longIdx[r0c + 1
-							+ r1c + 1] >> 1;
+					gr_infos.region2start = r0c + 1 + r1c + 1 < bandInfo[sfreq].longIdx.length ? bandInfo[sfreq].longIdx[r0c
+							+ 1 + r1c + 1] >> 1
+							: bandInfo[sfreq].longDiff[r0c + 1 + r1c + 1
+									- bandInfo[sfreq].longIdx.length] >> 1;
 					gr_infos.block_type = 0;
 					gr_infos.mixed_block_flag = 0;
 				}
