@@ -72,7 +72,6 @@ import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ChipModel;
 import resid_builder.resid.SamplingMethod;
 import sidplay.audio.AudioConfig;
-import sidplay.audio.CmpMP3File;
 import sidplay.audio.NaturalFinishedException;
 import sidplay.audio.Output;
 import sidplay.ini.intf.IConfig;
@@ -142,7 +141,6 @@ public class Player {
 
 	private DriverSettings driverSettings = new DriverSettings(
 			Output.OUT_SOUNDCARD, Emulation.EMU_RESID);
-	private DriverSettings oldDriverSettings;
 	private SIDBuilder sidBuilder;
 
 	private STIL stil;
@@ -674,80 +672,6 @@ public class Player {
 		return credits.toString();
 	}
 
-	/** Stereo SID at 0xd400 hack */
-	private void handleStereoSIDConflict(Integer secondAddress) {
-		if (Integer.valueOf(0xd400).equals(secondAddress)) {
-			final SIDEmu s1 = c64.getSID(0);
-			final SIDEmu s2 = c64.getSID(1);
-			c64.setSID(0, new SIDEmu(c64.getEventScheduler()) {
-				@Override
-				public void reset(byte volume) {
-					s1.reset(volume);
-				}
-
-				@Override
-				public byte read(int addr) {
-					return s1.read(addr);
-				}
-
-				@Override
-				public void write(int addr, byte data) {
-					s1.write(addr, data);
-					s2.write(addr, data);
-				}
-
-				@Override
-				public byte readInternalRegister(int addr) {
-					return s1.readInternalRegister(addr);
-				}
-
-				@Override
-				public void clock() {
-					s1.clock();
-				}
-
-				@Override
-				public void setVoiceMute(int num, boolean mute) {
-					s1.setVoiceMute(num, mute);
-				}
-
-				@Override
-				public void setFilter(IConfig config) {
-					s1.setFilter(config);
-				}
-
-				@Override
-				public void setFilter(boolean enable) {
-					s1.setFilter(enable);
-				}
-
-				@Override
-				public ChipModel getChipModel() {
-					return s1.getChipModel();
-				}
-
-				@Override
-				public void setChipModel(ChipModel model) {
-					s1.setChipModel(model);
-					s2.setChipModel(model);
-				}
-
-				@Override
-				public void setSampling(double cpuFrequency, float frequency,
-						SamplingMethod sampling) {
-					s1.setSampling(cpuFrequency, frequency, sampling);
-					s2.setSampling(cpuFrequency, frequency, sampling);
-				}
-
-				@Override
-				public void input(int input) {
-					s1.input(input);
-					s2.input(input);
-				}
-			});
-		}
-	}
-
 	public final void setSampling(CPUClock systemFrequency, float cpuFreq,
 			SamplingMethod method) {
 		for (int i = 0; i < C64.MAX_SIDS; i++) {
@@ -848,7 +772,7 @@ public class Player {
 			// Run until the player gets stopped
 			while (true) {
 				try {
-					// Open tune and play
+					// Open tune
 					open();
 					menuHook.accept(Player.this);
 					// Play next chunk of sound data, until it gets stopped
@@ -939,80 +863,23 @@ public class Player {
 				track.setFirst(track.getSelected());
 			}
 		}
-		setTune(tune);
 
 		CPUClock cpuFreq = CPUClock.getCPUClock(config, tune);
 		setClock(cpuFreq);
 
-		if (oldDriverSettings != null) {
-			// restore settings after MP3 has been played last time
-			driverSettings.restore(oldDriverSettings);
-			oldDriverSettings = null;
-		}
-		if (tune != null
-				&& tune.getInfo().file != null
-				&& tune.getInfo().file.getName().toLowerCase(Locale.ENGLISH)
-						.endsWith(".mp3")) {
-			// MP3 play-back? Save settings, then change to MP3 compare driver
-			oldDriverSettings = driverSettings.save();
+		AudioConfig audioConfig = AudioConfig.create(config, tune);
 
-			driverSettings.setOutput(Output.OUT_COMPARE);
-			driverSettings.setEmulation(Emulation.EMU_RESID);
-			config.getAudio().setPlayOriginal(true);
-			config.getAudio().setMp3File(tune.getInfo().file.getAbsolutePath());
-		}
-		if (driverSettings.getOutput().getDriver() instanceof CmpMP3File) {
-			// Set MP3 comparison settings
-			CmpMP3File cmpMp3Driver = (CmpMP3File) driverSettings.getOutput()
-					.getDriver();
-			cmpMp3Driver.setPlayOriginal(config.getAudio().isPlayOriginal());
-			cmpMp3Driver.setMp3File(new File(config.getAudio().getMp3File()));
-		}
-		int channels = isStereo() ? 2 : 1;
-		final AudioConfig audioConfig = AudioConfig.getInstance(
-				config.getAudio(), channels);
-		audioConfig.configure(tune);
-		try {
-			driverSettings.getOutput().getDriver()
-					.open(audioConfig, config.getSidplay2().getTmpDir());
-		} catch (final Exception e) {
-			throw new RuntimeException(e);
-		}
+		// Fast forwarding to the start position
+		currentSpeed = MAX_SPEED;
+		driverSettings.configure(config, tune, currentSpeed, audioConfig);
 
-		sidBuilder = null;
-		switch (driverSettings.getEmulation()) {
-		case EMU_RESID:
-			sidBuilder = new ReSIDBuilder(audioConfig,
-					cpuFreq.getCpuFrequency(), config.getAudio()
-							.getLeftVolume(), config.getAudio()
-							.getRightVolume());
-			break;
-
-		case EMU_HARDSID:
-			sidBuilder = new HardSIDBuilder(config);
-			break;
-
-		default:
-			break;
-		}
+		sidBuilder = createSIDBuilder(cpuFreq, audioConfig);
 
 		// According to the configuration, the SIDs must be updated.
 		updateChipModel();
 		setFilter();
 
-		/* We should have our SIDs configured now. */
-
-		Integer secondAddress = getSecondAddress();
-		if (secondAddress != null && secondAddress != 0xd400) {
-			c64.setSecondSIDAddress(secondAddress);
-		}
-
-		handleStereoSIDConflict(secondAddress);
-
-		// Start the player. Do this by fast
-		// forwarding to the start position
-		currentSpeed = MAX_SPEED;
-		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
+		setSecondSIDAddress();
 
 		reset();
 
@@ -1028,20 +895,110 @@ public class Player {
 		stateProperty.set(State.RUNNING);
 	}
 
-	private boolean isStereo() {
-		return config.getEmulation().isForceStereoTune() || tune != null
-				&& tune.getInfo().sidChipBase2 != 0;
+	private SIDBuilder createSIDBuilder(CPUClock cpuFreq,
+			AudioConfig audioConfig) {
+		SIDBuilder sidBuilder = null;
+		switch (driverSettings.getEmulation()) {
+		case EMU_RESID:
+			sidBuilder = new ReSIDBuilder(audioConfig,
+					cpuFreq.getCpuFrequency(), config.getAudio()
+							.getLeftVolume(), config.getAudio()
+							.getRightVolume());
+			break;
+
+		case EMU_HARDSID:
+			sidBuilder = new HardSIDBuilder(config);
+			break;
+
+		default:
+			break;
+		}
+		return sidBuilder;
 	}
 
-	private Integer getSecondAddress() {
-		if (isStereo()) {
+	private void setSecondSIDAddress() {
+		Integer secondAddress = null;
+		if (AudioConfig.isStereo(config, tune)) {
 			if (config.getEmulation().isForceStereoTune()) {
-				return config.getEmulation().getDualSidBase();
+				secondAddress = config.getEmulation().getDualSidBase();
 			} else if (tune != null && tune.getInfo().sidChipBase2 != 0) {
-				return tune.getInfo().sidChipBase2;
+				secondAddress = tune.getInfo().sidChipBase2;
 			}
 		}
-		return null;
+		if (secondAddress != null && secondAddress != 0xd400) {
+			c64.setSecondSIDAddress(secondAddress);
+		}
+		/** Stereo SID at 0xd400 hack */
+		if (Integer.valueOf(0xd400).equals(secondAddress)) {
+			final SIDEmu s1 = c64.getSID(0);
+			final SIDEmu s2 = c64.getSID(1);
+			c64.setSID(0, new SIDEmu(c64.getEventScheduler()) {
+				@Override
+				public void reset(byte volume) {
+					s1.reset(volume);
+				}
+
+				@Override
+				public byte read(int addr) {
+					return s1.read(addr);
+				}
+
+				@Override
+				public void write(int addr, byte data) {
+					s1.write(addr, data);
+					s2.write(addr, data);
+				}
+
+				@Override
+				public byte readInternalRegister(int addr) {
+					return s1.readInternalRegister(addr);
+				}
+
+				@Override
+				public void clock() {
+					s1.clock();
+				}
+
+				@Override
+				public void setVoiceMute(int num, boolean mute) {
+					s1.setVoiceMute(num, mute);
+				}
+
+				@Override
+				public void setFilter(IConfig config) {
+					s1.setFilter(config);
+				}
+
+				@Override
+				public void setFilter(boolean enable) {
+					s1.setFilter(enable);
+				}
+
+				@Override
+				public ChipModel getChipModel() {
+					return s1.getChipModel();
+				}
+
+				@Override
+				public void setChipModel(ChipModel model) {
+					s1.setChipModel(model);
+					s2.setChipModel(model);
+				}
+
+				@Override
+				public void setSampling(double cpuFrequency, float frequency,
+						SamplingMethod sampling) {
+					s1.setSampling(cpuFrequency, frequency, sampling);
+					s2.setSampling(cpuFrequency, frequency, sampling);
+				}
+
+				@Override
+				public void input(int input) {
+					s1.input(input);
+					s2.input(input);
+				}
+			});
+		}
 	}
 
 	/**
@@ -1052,7 +1009,7 @@ public class Player {
 			ChipModel chipModel = ChipModel.getChipModel(config, tune);
 			updateChipModel(0, chipModel);
 
-			if (isStereo()) {
+			if (AudioConfig.isStereo(config, tune)) {
 				ChipModel stereoChipModel = ChipModel.getStereoSIDModel(config,
 						tune);
 				updateChipModel(1, stereoChipModel);

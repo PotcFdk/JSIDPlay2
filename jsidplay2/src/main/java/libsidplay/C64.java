@@ -47,7 +47,7 @@ import libsidplay.components.ram.SystemRAMBank;
 public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		UserportPrinterEnvironment {
 	/** Maximum number of supported SIDs (mono and stereo) */
-	public final static int MAX_SIDS = 2;
+	final static int MAX_SIDS = 2;
 
 	/** Currently active CIA model. */
 	private static final MOS6526.Model CIAMODEL = MOS6526.Model.MOS6526;

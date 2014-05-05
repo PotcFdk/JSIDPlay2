@@ -105,6 +105,7 @@ public class SoundSettings extends C64Window {
 
 	@FXML
 	private void setSoundDevice() {
+		stop();
 		switch (soundDevice.getSelectionModel().getSelectedIndex()) {
 		case 0:
 			util.getPlayer().setDriverSettings(
@@ -229,6 +230,13 @@ public class SoundSettings extends C64Window {
 				.setProxyPort(
 						proxyPort.getText().length() > 0 ? Integer
 								.valueOf(proxyPort.getText()) : 80);
+	}
+
+	protected void stop() {
+		// stop for safe replacement of the audio driver
+		if (!duringInitialization) {
+			util.getPlayer().stopC64();
+		}
 	}
 
 	protected void restart() {

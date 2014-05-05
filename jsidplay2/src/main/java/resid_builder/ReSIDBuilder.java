@@ -34,7 +34,7 @@ public class ReSIDBuilder extends SIDBuilder {
 	final AudioConfig audioConfig;
 
 	/** Current output driver */
-	protected AudioDriver output;
+	protected AudioDriver driver;
 
 	/** List of SID instances */
 	protected List<ReSID> sids = new ArrayList<ReSID>();
@@ -51,7 +51,7 @@ public class ReSIDBuilder extends SIDBuilder {
 		this.systemFrequency = systemFrequency;
 		setSIDVolume(0, leftVolumeInDB);
 		setSIDVolume(1, rightVolumeInDB);
-		setDriver(Output.OUT_NULL.getDriver(), null);
+		driver = Output.OUT_NULL.getDriver();
 	}
 
 	protected class MixerEvent extends Event {
@@ -107,7 +107,7 @@ public class ReSIDBuilder extends SIDBuilder {
 			 * chip1's.
 			 */
 
-			final ByteBuffer soundBuffer = output.buffer();
+			final ByteBuffer soundBuffer = driver.buffer();
 			for (int i = 0; i < samples; i++) {
 				int dither = triangularDithering();
 				int value = (buf1[i] * volume[0] + dither) >> 10;
@@ -132,7 +132,7 @@ public class ReSIDBuilder extends SIDBuilder {
 				}
 
 				if (soundBuffer.remaining() == 0) {
-					output.write();
+					driver.write();
 					soundBuffer.clear();
 				}
 			}
@@ -183,9 +183,9 @@ public class ReSIDBuilder extends SIDBuilder {
 
 	@Override
 	public void setDriver(AudioDriver driver, String outDir) {
-		output = driver;
+		this.driver = driver;
 		try {
-			output.open(audioConfig, outDir);
+			driver.open(audioConfig, outDir);
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}

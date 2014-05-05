@@ -20,6 +20,7 @@ import java.io.File;
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.SamplingMethod;
 import sidplay.ini.intf.IAudioSection;
+import sidplay.ini.intf.IConfig;
 
 public class AudioConfig {
 	protected int frameRate = 48000;
@@ -60,6 +61,22 @@ public class AudioConfig {
 	public static AudioConfig getInstance(IAudioSection audio, int channels) {
 		return new AudioConfig(audio.getFrequency(), channels,
 				audio.getSampling());
+	}
+
+	public static AudioConfig create(IConfig config, SidTune tune) {
+		AudioConfig audioConfig = getInstance(config.getAudio(),
+				isStereo(config, tune) ? 2 : 1);
+		audioConfig.tuneFile = tune != null ? tune.getInfo().file : null;
+		audioConfig.songCount = tune != null ? tune.getInfo().songs : 1;
+		audioConfig.currentSong = tune != null ? tune.getInfo().currentSong : 1;
+		audioConfig.outputFilename = tune != null ? tune.getOutputFilename()
+				: null;
+		return audioConfig;
+	}
+
+	public static boolean isStereo(IConfig config, SidTune tune) {
+		return config.getEmulation().isForceStereoTune() || tune != null
+				&& tune.getInfo().sidChipBase2 != 0;
 	}
 
 	/**
@@ -136,10 +153,4 @@ public class AudioConfig {
 		return outputFilename;
 	}
 
-	public void configure(SidTune tune) {
-		tuneFile = tune != null ? tune.getInfo().file : null;
-		songCount = tune != null ? tune.getInfo().songs : 1;
-		currentSong = tune != null ? tune.getInfo().currentSong : 1;
-		this.outputFilename = tune != null ? tune.getOutputFilename() : null;
-	}
 }
