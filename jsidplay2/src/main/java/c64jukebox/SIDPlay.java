@@ -19,8 +19,8 @@ import sidplay.ini.IniConfig;
 public class SIDPlay extends Applet {
 	private IniConfig config;
 	private Player player;
-	private Output output;
-	private Emulation emulation;
+	private Output output = Output.OUT_SOUNDCARD;
+	private Emulation emulation = Emulation.EMU_RESID;
 
 	private final HashMap<String, SidTune> map = new HashMap<String, SidTune>();
 
@@ -39,7 +39,7 @@ public class SIDPlay extends Applet {
 	public void start() {
 		// autostart if playsid parameter is set initially
 		if (getAppletContext() != null) {
-			playSID(getParameter("playsid"), -1);
+			playSID(getParameter("playsid"), 0);
 		}
 		callJavaScript("javascript:start()");
 	}
@@ -83,19 +83,11 @@ public class SIDPlay extends Applet {
 		}
 		// eventually stop last run
 		player.stopC64();
-
+		player.setTune(getTune(urlName));
 		player.setDriverSettings(new DriverSettings(output, emulation));
 		player.getTrack().setFirst(player.getTune().selectSong(songNum));
 		player.getTrack().setSelected(player.getTrack().getFirst());
 		player.getTrack().setSongs(1);
-		try (InputStream stream = new URL(urlName).openConnection()
-				.getInputStream()) {
-			// load from URL
-			player.setTune(SidTune.load(stream));
-		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
-			return;
-		}
 
 		player.startC64();
 	}

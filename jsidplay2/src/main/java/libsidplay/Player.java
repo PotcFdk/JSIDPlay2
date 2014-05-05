@@ -130,7 +130,10 @@ public class Player {
 	private String command;
 
 	private Thread fPlayerThread;
-	private Consumer<Player> menuHook, interactivityHook;
+	private Consumer<Player> menuHook = (player) -> {
+	};
+	private Consumer<Player> interactivityHook = (player) -> {
+	};
 	private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
 			State.STOPPED);
 	private final Timer timer = new Timer();
@@ -947,6 +950,7 @@ public class Player {
 			oldDriverSettings = null;
 		}
 		if (tune != null
+				&& tune.getInfo().file != null
 				&& tune.getInfo().file.getName().toLowerCase(Locale.ENGLISH)
 						.endsWith(".mp3")) {
 			// MP3 play-back? Save settings, then change to MP3 compare driver

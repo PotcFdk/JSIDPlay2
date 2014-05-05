@@ -45,9 +45,6 @@ public class JSIDPlay2Main extends Application {
 		}
 	};
 	
-	private Consumer<Player> interactivityHook = (player) -> {
-	};
-	
 	/**
 	 * Configuration
 	 */
@@ -72,7 +69,6 @@ public class JSIDPlay2Main extends Application {
 
 		player = new Player(config);
 		player.setMenuHook(menuHook);
-		player.setInteractivityHook(interactivityHook);
 
 		jSidplay2 = new JSidPlay2(primaryStage, player);
 		jSidplay2.setConfigService(configService);
