@@ -121,7 +121,7 @@ public class Player {
 	/**
 	 * Autostart command to be typed-in after reset.
 	 */
-	protected String command;
+	private String command;
 
 	private Thread fPlayerThread;
 	private Consumer<Player> menuHook, interactivityHook;
@@ -230,7 +230,7 @@ public class Player {
 				c1541.getEventScheduler());
 	}
 
-	public IConfig getConfig() {
+	public final IConfig getConfig() {
 		return config;
 	}
 
@@ -240,7 +240,7 @@ public class Player {
 	 * @param cpuFreq
 	 *            frequency (PAL/NTSC)
 	 */
-	public void setClock(final CPUClock cpuFreq) {
+	public final void setClock(final CPUClock cpuFreq) {
 		c64.setClock(cpuFreq);
 		c1541Runner.setClockDivider(cpuFreq);
 		for (SerialIECDevice device : serialDevices) {
@@ -253,7 +253,7 @@ public class Player {
 	 * 
 	 * @throws InterruptedException
 	 */
-	public void reset() throws InterruptedException {
+	public final void reset() throws InterruptedException {
 		c64.reset();
 		iecBus.reset();
 		datasette.reset();
@@ -346,7 +346,7 @@ public class Player {
 	 * 
 	 * @throws InterruptedException
 	 */
-	public void play(final int numOfEvents) throws InterruptedException {
+	public final void play(final int numOfEvents) throws InterruptedException {
 		for (int i = 0; i < numOfEvents; i++) {
 			c64.getEventScheduler().clock();
 		}
@@ -357,7 +357,7 @@ public class Player {
 	 * 
 	 * @return the current playing time
 	 */
-	public int time() {
+	public final int time() {
 		final EventScheduler c = c64.getEventScheduler();
 		return (int) (c.getTime(Phase.PHI2) / c.getCyclesPerSecond());
 	}
@@ -368,7 +368,7 @@ public class Player {
 	 * @param on
 	 *            floppy disk drives enable
 	 */
-	public void enableFloppyDiskDrives(final boolean on) {
+	public final void enableFloppyDiskDrives(final boolean on) {
 		for (final C1541 floppy : floppies) {
 			floppy.setPowerOn(on);
 		}
@@ -398,7 +398,8 @@ public class Player {
 	 * @param connected
 	 *            connected enable
 	 */
-	public void connectC64AndC1541WithParallelCable(final boolean connected) {
+	public final void connectC64AndC1541WithParallelCable(
+			final boolean connected) {
 		final IParallelCable cable = connected ? makeCableBetweenC64AndC1541()
 				: new DisconnectedParallelCable();
 		c64.setParallelCable(cable);
@@ -413,7 +414,7 @@ public class Player {
 	 * 
 	 * @return parallel cable
 	 */
-	private final IParallelCable makeCableBetweenC64AndC1541() {
+	private IParallelCable makeCableBetweenC64AndC1541() {
 		return new IParallelCable() {
 
 			protected byte parallelCableCpuValue = (byte) 0xff;
@@ -483,7 +484,7 @@ public class Player {
 	 * @throws IOException
 	 *             error reading the ROMs
 	 */
-	public void installJiffyDOS(final InputStream c64KernalStream,
+	public final void installJiffyDOS(final InputStream c64KernalStream,
 			final InputStream c1541KernalStream) throws IOException {
 		DataInputStream dis = null;
 		byte[] c64Kernal = new byte[0x2000];
@@ -518,14 +519,14 @@ public class Player {
 	/**
 	 * Uninstall Jiffy DOS floppy speeder.
 	 */
-	public void uninstallJiffyDOS() throws IOException {
+	public final void uninstallJiffyDOS() throws IOException {
 		c64.setCustomKernal(null);
 		for (final C1541 floppy : floppies) {
 			floppy.setCustomKernalRom(null);
 		}
 	}
 
-	public void enablePrinter(boolean printerOn) {
+	public final void enablePrinter(boolean printerOn) {
 		printer.turnPrinterOnOff(printerOn);
 	}
 
@@ -553,7 +554,7 @@ public class Player {
 	 * 
 	 * @return C1530 datasette
 	 */
-	public Datasette getDatasette() {
+	public final Datasette getDatasette() {
 		return datasette;
 	}
 
@@ -562,7 +563,7 @@ public class Player {
 	 * 
 	 * @return C1541 floppies
 	 */
-	public C1541[] getFloppies() {
+	public final C1541[] getFloppies() {
 		return floppies;
 	}
 
@@ -581,7 +582,7 @@ public class Player {
 	 * @param cmd
 	 *            basic command after reset
 	 */
-	public void setCommand(final String cmd) {
+	public final void setCommand(final String cmd) {
 		this.command = cmd;
 	}
 
@@ -591,15 +592,15 @@ public class Player {
 	 * @param tune
 	 *            program to play
 	 */
-	public void setTune(final SidTune tune) {
+	public final void setTune(final SidTune tune) {
 		this.tune = tune;
 	}
 
-	public Track getTrack() {
+	public final Track getTrack() {
 		return track;
 	}
 
-	public Timer getTimer() {
+	public final Timer getTimer() {
 		return timer;
 	}
 
@@ -617,7 +618,7 @@ public class Player {
 	 * 
 	 * @return the credits
 	 */
-	public String getCredits() {
+	public final String getCredits() {
 		final StringBuffer credits = new StringBuffer();
 		credits.append("Java Version and User Interface v3.0:\n"
 				+ "\tCopyright (C) 2007-2014 Ken Händel\n"
@@ -665,7 +666,7 @@ public class Player {
 	}
 
 	/** Stereo SID at 0xd400 hack */
-	public void handleStereoSIDConflict(Integer secondAddress) {
+	private void handleStereoSIDConflict(Integer secondAddress) {
 		if (Integer.valueOf(0xd400).equals(secondAddress)) {
 			final SIDEmu s1 = c64.getSID(0);
 			final SIDEmu s2 = c64.getSID(1);
@@ -738,7 +739,7 @@ public class Player {
 		}
 	}
 
-	public void setSampling(CPUClock systemFrequency, float cpuFreq,
+	public final void setSampling(CPUClock systemFrequency, float cpuFreq,
 			SamplingMethod method) {
 		for (int i = 0; i < C64.MAX_SIDS; i++) {
 			final SIDEmu s = c64.getSID(i);
@@ -749,7 +750,7 @@ public class Player {
 		}
 	}
 
-	public void setDigiBoost(boolean selected) {
+	public final void setDigiBoost(boolean selected) {
 		final int input = selected ? 0x7FF : 0;
 		for (int i = 0; i < C64.MAX_SIDS; i++) {
 			final SIDEmu s = c64.getSID(i);
@@ -759,7 +760,7 @@ public class Player {
 		}
 	}
 
-	public void setFilterEnable(boolean filterEnable) {
+	public final void setFilterEnable(boolean filterEnable) {
 		for (int i = 0; i < C64.MAX_SIDS; i++) {
 			final SIDEmu s = c64.getSID(i);
 			if (s != null) {
@@ -768,7 +769,7 @@ public class Player {
 		}
 	}
 
-	public void setFilter(IConfig config) {
+	public final void setFilter() {
 		for (int i = 0; i < C64.MAX_SIDS; i++) {
 			final SIDEmu s = c64.getSID(i);
 			if (s != null) {
@@ -777,7 +778,7 @@ public class Player {
 		}
 	}
 
-	public void setMute(int chipNum, int voiceNum, boolean mute) {
+	public final void setMute(int chipNum, int voiceNum, boolean mute) {
 		final SIDEmu s = c64.getSID(chipNum);
 		if (s != null) {
 			s.setVoiceMute(voiceNum, mute);
@@ -787,7 +788,7 @@ public class Player {
 	/**
 	 * Start emulation (start player thread).
 	 */
-	public void startC64() {
+	public final void startC64() {
 		fPlayerThread = new Thread(playerRunnable);
 		fPlayerThread.setPriority(Thread.MAX_PRIORITY);
 		fPlayerThread.start();
@@ -796,7 +797,7 @@ public class Player {
 	/**
 	 * Stop emulation (stop player thread).
 	 */
-	public void stopC64() {
+	public final void stopC64() {
 		try {
 			while (fPlayerThread != null && fPlayerThread.isAlive()) {
 				quit();
@@ -809,19 +810,19 @@ public class Player {
 		}
 	}
 
-	public void setMenuHook(Consumer<Player> menuHook) {
+	public final void setMenuHook(Consumer<Player> menuHook) {
 		this.menuHook = menuHook;
 	}
 
-	public void setInteractivityHook(Consumer<Player> interactivityHook) {
+	public final void setInteractivityHook(Consumer<Player> interactivityHook) {
 		this.interactivityHook = interactivityHook;
 	}
 
-	public void setDriverSettings(DriverSettings driverSettings) {
+	public final void setDriverSettings(DriverSettings driverSettings) {
 		this.driverSettings = driverSettings;
 	}
 
-	public DriverSettings getDriverSettings() {
+	public final DriverSettings getDriverSettings() {
 		return driverSettings;
 	}
 
@@ -987,7 +988,7 @@ public class Player {
 
 		// According to the configuration, the SIDs must be updated.
 		updateChipModel();
-		setFilter(config);
+		setFilter();
 
 		/* We should have our SIDs configured now. */
 
@@ -1017,7 +1018,7 @@ public class Player {
 		stateProperty.set(State.RUNNING);
 	}
 
-	public boolean isStereo() {
+	private boolean isStereo() {
 		return config.getEmulation().isForceStereoTune() || tune != null
 				&& tune.getInfo().sidChipBase2 != 0;
 	}
@@ -1036,7 +1037,7 @@ public class Player {
 	/**
 	 * Set/Update chip model according to the configuration
 	 */
-	public void updateChipModel() {
+	public final void updateChipModel() {
 		if (sidBuilder != null) {
 			ChipModel chipModel = ChipModel.getChipModel(config, tune);
 			updateChipModel(0, chipModel);
@@ -1078,7 +1079,7 @@ public class Player {
 	 * @param enableSongLengthDatabase
 	 *            enable song length database
 	 */
-	public void setStopTime(boolean enableSongLengthDatabase) {
+	public final void setStopTime(boolean enableSongLengthDatabase) {
 		// play default length or forever (0) ...
 		timer.setStop(config.getSidplay2().getDefaultPlayLength());
 		if (enableSongLengthDatabase) {
@@ -1110,7 +1111,7 @@ public class Player {
 	 *            file to play the tune (null means just reset C64)
 	 * @param command
 	 */
-	public void playTune(final SidTune sidTune, String command) {
+	public final void playTune(final SidTune sidTune, String command) {
 		tune = sidTune;
 		// Stop previous run
 		stopC64();
@@ -1131,7 +1132,7 @@ public class Player {
 		startC64();
 	}
 
-	public void pause() {
+	public final void pause() {
 		if (stateProperty.get() == State.PAUSED) {
 			stateProperty.set(State.RUNNING);
 		} else {
@@ -1140,7 +1141,7 @@ public class Player {
 		}
 	}
 
-	public void nextSong() {
+	public final void nextSong() {
 		stateProperty.set(State.RESTART);
 		track.setSelected(track.getSelected() + 1);
 		if (track.getSelected() > track.getSongs()) {
@@ -1148,7 +1149,7 @@ public class Player {
 		}
 	}
 
-	public void previousSong() {
+	public final void previousSong() {
 		stateProperty.set(State.RESTART);
 		if (time() < SID2_PREV_SONG_TIMEOUT) {
 			track.setSelected(track.getSelected() - 1);
@@ -1158,7 +1159,7 @@ public class Player {
 		}
 	}
 
-	public void fastForward() {
+	public final void fastForward() {
 		currentSpeed = currentSpeed * 2;
 		if (currentSpeed > MAX_SPEED) {
 			currentSpeed = MAX_SPEED;
@@ -1166,22 +1167,22 @@ public class Player {
 		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
 	}
 
-	public void normalSpeed() {
+	public final void normalSpeed() {
 		currentSpeed = 1;
 		driverSettings.getOutput().getDriver().setFastForward(1);
 	}
 
-	public void selectFirstTrack() {
+	public final void selectFirstTrack() {
 		stateProperty.set(State.RESTART);
 		track.setSelected(1);
 	}
 
-	public void selectLastTrack() {
+	public final void selectLastTrack() {
 		stateProperty.set(State.RESTART);
 		track.setSelected(track.getSongs());
 	}
 
-	public int getCurrentSong() {
+	public final int getCurrentSong() {
 		return track.getSelected();
 	}
 
@@ -1189,47 +1190,47 @@ public class Player {
 		return sidBuilder != null ? sidBuilder.getNumDevices() : 0;
 	}
 
-	public void quit() {
+	public final void quit() {
 		stateProperty.set(State.QUIT);
 	}
 
-	public void setSIDVolume(int i, float volumeDb) {
+	public final void setSIDVolume(int i, float volumeDb) {
 		if (sidBuilder != null) {
 			sidBuilder.setSIDVolume(i, volumeDb);
 		}
 	}
 
-	public void setSidDatabase(SidDatabase sidDatabase) {
+	public final void setSidDatabase(SidDatabase sidDatabase) {
 		this.sidDatabase = sidDatabase;
 	}
 
-	public int getSongLength(SidTune t) {
+	public final int getSongLength(SidTune t) {
 		if (t != null && sidDatabase != null) {
 			return sidDatabase.length(t);
 		}
 		return -1;
 	}
 
-	public int getFullSongLength(SidTune t) {
+	public final int getFullSongLength(SidTune t) {
 		if (t != null && sidDatabase != null) {
 			return sidDatabase.getFullSongLength(t);
 		}
 		return 0;
 	}
 
-	public void setSTIL(STIL stil) {
+	public final void setSTIL(STIL stil) {
 		this.stil = stil;
 	}
 
-	public STIL getStil() {
+	public final STIL getStil() {
 		return stil;
 	}
 
-	public void setExtendImagePolicy(IExtendImageListener policy) {
+	public final void setExtendImagePolicy(IExtendImageListener policy) {
 		this.policy = policy;
 	}
 
-	public void insertMedia(File mediaFile, File autostartFile,
+	public final void insertMedia(File mediaFile, File autostartFile,
 			MediaType mediaType) {
 		try {
 			config.getSidplay2().setLastDirectory(

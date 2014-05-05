@@ -165,7 +165,7 @@ public class EmulationSettings extends C64Window {
 			addFilters(userSidModel);
 		}
 		util.getPlayer().updateChipModel();
-		util.getPlayer().setFilter(util.getConfig());
+		util.getPlayer().setFilter();
 	}
 
 	@FXML
@@ -179,7 +179,7 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setStereoSidModel(stereoSidModel);
 		}
 		util.getPlayer().updateChipModel();
-		util.getPlayer().setFilter(util.getConfig());
+		util.getPlayer().setFilter();
 	}
 
 	@FXML
@@ -225,7 +225,7 @@ public class EmulationSettings extends C64Window {
 		}
 
 		util.getPlayer().updateChipModel();
-		util.getPlayer().setFilter(util.getConfig());
+		util.getPlayer().setFilter();
 		if (!duringInitialization) {
 			calculateFilterCurve(filterName);
 		}
