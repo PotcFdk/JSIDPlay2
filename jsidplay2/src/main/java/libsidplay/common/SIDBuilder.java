@@ -16,7 +16,6 @@
 package libsidplay.common;
 
 import resid_builder.resid.ChipModel;
-import sidplay.audio.AudioDriver;
 
 /**
  * @author Ken Händel
@@ -28,5 +27,5 @@ public abstract class SIDBuilder {
 	public abstract void unlock(SIDEmu device);
 	public abstract void setSIDVolume(int sidNum, float volumnInDb);
 	public abstract int getNumDevices();
-	public void setDriver(AudioDriver driver,String outDir) {};
+	public void activate() {};
 }

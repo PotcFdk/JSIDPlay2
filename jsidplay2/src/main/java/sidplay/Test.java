@@ -4,13 +4,14 @@ import java.io.File;
 
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
+import libsidplay.player.DriverSettings;
+import libsidplay.player.Emulation;
 import libsidplay.sidtune.SidTune;
 import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ChipModel;
 import sidplay.audio.AudioConfig;
-import sidplay.audio.AudioDriver;
-import sidplay.audio.JavaSound;
+import sidplay.audio.Output;
 import sidplay.ini.IniConfig;
 import sidplay.ini.intf.IConfig;
 
@@ -35,7 +36,7 @@ public class Test {
 
 		// Create default configuration
 		final IConfig config = new IniConfig();
-		
+
 		// Create player and apply the tune
 		Player player = new Player(config);
 		player.setTune(tune);
@@ -44,14 +45,14 @@ public class Test {
 		player.setClock(CPUClock.PAL);
 
 		// Get sound driver and apply to the player
-		final AudioDriver driver = new JavaSound();
+		DriverSettings driverSettings = new DriverSettings(
+				Output.OUT_SOUNDCARD, Emulation.EMU_RESID);
 		final AudioConfig audioConfig = AudioConfig.getInstance(
 				config.getAudio(), 1);
 
 		// Setup the SID emulation (not part of the player)
-		final ReSIDBuilder rs = new ReSIDBuilder(audioConfig, player.getC64()
-				.getClock().getCpuFrequency(), 0f, 0f);
-		rs.setDriver(driver, null);
+		final ReSIDBuilder rs = new ReSIDBuilder(config, driverSettings,
+				audioConfig, player.getC64().getClock().getCpuFrequency());
 
 		// Create SID chip of desired model (mono tunes need exactly one)
 		final ReSID sid = (ReSID) rs.lock(player.getC64().getEventScheduler(),
@@ -66,6 +67,7 @@ public class Test {
 		player.reset();
 
 		// Play forever
+		rs.activate();
 		while (true) {
 			player.play(10000);
 		}

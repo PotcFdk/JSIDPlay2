@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Locale;
 
 import libsidplay.sidtune.SidTune;
-import sidplay.audio.AudioConfig;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.Output;
 import sidplay.ini.intf.IConfig;
@@ -38,20 +37,7 @@ public class DriverSettings {
 		this.output = output;
 	}
 
-	public DriverSettings save() {
-		return new DriverSettings(this.output, this.emulation);
-	}
-
-	public void restore(DriverSettings oldDriverSettings) {
-		this.output = oldDriverSettings.output;
-		this.emulation = oldDriverSettings.emulation;
-	}
-
-	public final void configure(IConfig config, SidTune tune, int currentSpeed,
-			AudioConfig audioConfig) {
-		// prepare fast forward
-		output.getDriver().setFastForward(currentSpeed);
-
+	public final void handleMP3(IConfig config, SidTune tune) {
 		if (oldDriverSettings != null) {
 			// restore settings after MP3 has been played last time
 			restore(oldDriverSettings);
@@ -62,7 +48,7 @@ public class DriverSettings {
 				&& tune.getInfo().file.getName().toLowerCase(Locale.ENGLISH)
 						.endsWith(".mp3")) {
 			// MP3 play-back? Save settings, then change to MP3 compare driver
-			oldDriverSettings = new DriverSettings(output, emulation);
+			oldDriverSettings = save();
 
 			output = Output.OUT_COMPARE;
 			emulation = Emulation.EMU_RESID;
@@ -75,11 +61,15 @@ public class DriverSettings {
 			cmpMp3Driver.setPlayOriginal(config.getAudio().isPlayOriginal());
 			cmpMp3Driver.setMp3File(new File(config.getAudio().getMp3File()));
 		}
-		try {
-			output.getDriver().open(audioConfig,
-					config.getSidplay2().getTmpDir());
-		} catch (final Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
+
+	private DriverSettings save() {
+		return new DriverSettings(this.output, this.emulation);
+	}
+
+	private void restore(DriverSettings oldDriverSettings) {
+		this.output = oldDriverSettings.output;
+		this.emulation = oldDriverSettings.emulation;
+	}
+
 }

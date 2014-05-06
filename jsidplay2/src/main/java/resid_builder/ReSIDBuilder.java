@@ -24,17 +24,20 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
+import libsidplay.player.DriverSettings;
 import resid_builder.resid.ChipModel;
 import sidplay.audio.AudioConfig;
-import sidplay.audio.AudioDriver;
 import sidplay.audio.Output;
+import sidplay.ini.intf.IConfig;
 
 public class ReSIDBuilder extends SIDBuilder {
 	/** Current audio configuration */
-	final AudioConfig audioConfig;
+	private final AudioConfig audioConfig;
+	private final IConfig config;
+	private final DriverSettings driverSettings;
 
-	/** Current output driver */
-	protected AudioDriver driver;
+	/** output driver (for temporary storage while fast forwarding tune) */
+	protected Output output;
 
 	/** List of SID instances */
 	protected List<ReSID> sids = new ArrayList<ReSID>();
@@ -45,13 +48,18 @@ public class ReSIDBuilder extends SIDBuilder {
 	/** C64 system frequency */
 	private final double systemFrequency;
 
-	public ReSIDBuilder(AudioConfig audioConfig, double systemFrequency,
-			float leftVolumeInDB, float rightVolumeInDB) {
+	public ReSIDBuilder(IConfig config, DriverSettings driverSettings,
+			AudioConfig audioConfig, double systemFrequency) {
+		this.config = config;
+		this.driverSettings = driverSettings;
 		this.audioConfig = audioConfig;
 		this.systemFrequency = systemFrequency;
-		setSIDVolume(0, leftVolumeInDB);
-		setSIDVolume(1, rightVolumeInDB);
-		driver = Output.OUT_NULL.getDriver();
+		setSIDVolume(0, config.getAudio().getLeftVolume());
+		setSIDVolume(1, config.getAudio().getRightVolume());
+		// save original driver
+		output = driverSettings.getOutput();
+		// switch to NIL driver for fast forward
+		driverSettings.setOutput(Output.OUT_NULL);
 	}
 
 	protected class MixerEvent extends Event {
@@ -107,7 +115,8 @@ public class ReSIDBuilder extends SIDBuilder {
 			 * chip1's.
 			 */
 
-			final ByteBuffer soundBuffer = driver.buffer();
+			final ByteBuffer soundBuffer = driverSettings.getOutput()
+					.getDriver().buffer();
 			for (int i = 0; i < samples; i++) {
 				int dither = triangularDithering();
 				int value = (buf1[i] * volume[0] + dither) >> 10;
@@ -132,7 +141,7 @@ public class ReSIDBuilder extends SIDBuilder {
 				}
 
 				if (soundBuffer.remaining() == 0) {
-					driver.write();
+					driverSettings.getOutput().getDriver().write();
 					soundBuffer.clear();
 				}
 			}
@@ -182,10 +191,14 @@ public class ReSIDBuilder extends SIDBuilder {
 	}
 
 	@Override
-	public void setDriver(AudioDriver driver, String outDir) {
-		this.driver = driver;
+	public void activate() {
+		// close NIL driver
+		this.driverSettings.getOutput().getDriver().close();
+		// restore original driver
+		this.driverSettings.setOutput(output);
 		try {
-			driver.open(audioConfig, outDir);
+			this.driverSettings.getOutput().getDriver()
+					.open(audioConfig, config.getSidplay2().getTmpDir());
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}

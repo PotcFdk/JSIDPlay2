@@ -803,52 +803,6 @@ public class Player {
 		}
 	};
 
-	/**
-	 * Out play loop to be externally called
-	 * 
-	 * @throws InterruptedException
-	 */
-	private boolean play() throws InterruptedException {
-		/* handle switches to next song etc. */
-		final int seconds = time();
-		if (seconds != timer.getCurrent()) {
-			timer.setCurrent(seconds);
-
-			if (seconds == timer.getStart()) {
-				normalSpeed();
-				sidBuilder.setDriver(driverSettings.getOutput().getDriver(),
-						config.getSidplay2().getTmpDir());
-			}
-			// Only for tunes: if play time is over loop or exit (single song or
-			// whole tune)
-			if (tune != null && timer.getStop() != 0
-					&& seconds >= timer.getStop()) {
-				State endState = config.getSidplay2().isLoop() ? State.RESTART
-						: State.EXIT;
-				if (config.getSidplay2().isSingle()) {
-					stateProperty.set(endState);
-				} else {
-					nextSong();
-
-					// Check play-list end
-					if (track.getSelected() == track.getFirst()) {
-						stateProperty.set(endState);
-					}
-				}
-			}
-		}
-		if (stateProperty.get() == State.RUNNING) {
-			try {
-				play(10000);
-			} catch (NaturalFinishedException e) {
-				stateProperty.set(State.EXIT);
-				throw e;
-			}
-		}
-		return stateProperty.get() == State.RUNNING
-				|| stateProperty.get() == State.PAUSED;
-	}
-
 	private void open() throws InterruptedException {
 		if (stateProperty.get() == State.RESTART) {
 			stateProperty.set(State.STOPPED);
@@ -863,57 +817,55 @@ public class Player {
 				track.setFirst(track.getSelected());
 			}
 		}
-
 		CPUClock cpuFreq = CPUClock.getCPUClock(config, tune);
 		setClock(cpuFreq);
 
 		AudioConfig audioConfig = AudioConfig.create(config, tune);
 
-		// Fast forwarding to the start position
-		currentSpeed = MAX_SPEED;
-		driverSettings.configure(config, tune, currentSpeed, audioConfig);
+		// 1. handle MP3 play-back (may replace audio driver and emulation)
+		driverSettings.handleMP3(config, tune);
 
+		// 2. Create SIDbuilder (may change audio driver to NIL driver)
 		sidBuilder = createSIDBuilder(cpuFreq, audioConfig);
+
+		// 3. Fast forwarding the eventually modified NIL driver to the start position
+		currentSpeed = MAX_SPEED;
+		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
+		
+		// 3. open audio driver
+		try {
+			driverSettings.getOutput().getDriver()
+					.open(audioConfig, config.getSidplay2().getTmpDir());
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
 
 		// According to the configuration, the SIDs must be updated.
 		updateChipModel();
 		setFilter();
-
 		setSecondSIDAddress();
+
+		updateStopTime();
+		timer.setCurrent(-1);
 
 		reset();
 
-		if (config.getSidplay2().getUserPlayLength() != 0) {
-			// Use user defined fixed song length
-			timer.setStop(config.getSidplay2().getUserPlayLength()
-					+ timer.getStart());
-		} else {
-			// Try the song length database
-			setStopTime(config.getSidplay2().isEnableDatabase());
-		}
-		timer.setCurrent(-1);
 		stateProperty.set(State.RUNNING);
 	}
 
 	private SIDBuilder createSIDBuilder(CPUClock cpuFreq,
 			AudioConfig audioConfig) {
-		SIDBuilder sidBuilder = null;
 		switch (driverSettings.getEmulation()) {
 		case EMU_RESID:
-			sidBuilder = new ReSIDBuilder(audioConfig,
-					cpuFreq.getCpuFrequency(), config.getAudio()
-							.getLeftVolume(), config.getAudio()
-							.getRightVolume());
-			break;
+			return new ReSIDBuilder(config, driverSettings, audioConfig,
+					cpuFreq.getCpuFrequency());
 
 		case EMU_HARDSID:
-			sidBuilder = new HardSIDBuilder(config);
-			break;
+			return new HardSIDBuilder(config);
 
 		default:
-			break;
+			return null;
 		}
-		return sidBuilder;
 	}
 
 	private void setSecondSIDAddress() {
@@ -1041,21 +993,69 @@ public class Player {
 
 	/**
 	 * Set stop time according to the song length database (or use default
-	 * length)
-	 * 
-	 * @param enableSongLengthDatabase
-	 *            enable song length database
+	 * length). User play length means use always a fixed play length
 	 */
-	public final void setStopTime(boolean enableSongLengthDatabase) {
-		// play default length or forever (0) ...
-		timer.setStop(config.getSidplay2().getDefaultPlayLength());
-		if (enableSongLengthDatabase) {
-			final int length = getSongLength(tune);
-			if (length > 0) {
-				// ... or use song length of song length database
-				timer.setStop(length);
+	public final void updateStopTime() {
+		if (config.getSidplay2().getUserPlayLength() != 0) {
+			// Use user defined fixed song length
+			timer.setStop(config.getSidplay2().getUserPlayLength()
+					+ timer.getStart());
+		} else {
+			// default play default length or forever (0) ...
+			timer.setStop(config.getSidplay2().getDefaultPlayLength());
+			if (config.getSidplay2().isEnableDatabase()) {
+				final int length = getSongLength(tune);
+				if (length > 0) {
+					// ... or use song length of song length database
+					timer.setStop(length);
+				}
 			}
 		}
+	}
+
+	/**
+	 * Out play loop to be externally called
+	 * 
+	 * @throws InterruptedException
+	 */
+	private boolean play() throws InterruptedException {
+		/* handle switches to next song etc. */
+		final int seconds = time();
+		if (seconds != timer.getCurrent()) {
+			timer.setCurrent(seconds);
+
+			if (seconds == timer.getStart()) {
+				normalSpeed();
+				sidBuilder.activate();
+			}
+			// Only for tunes: if play time is over loop or exit (single song or
+			// whole tune)
+			if (tune != null && timer.getStop() != 0
+					&& seconds >= timer.getStop()) {
+				State endState = config.getSidplay2().isLoop() ? State.RESTART
+						: State.EXIT;
+				if (config.getSidplay2().isSingle()) {
+					stateProperty.set(endState);
+				} else {
+					nextSong();
+
+					// Check play-list end
+					if (track.getSelected() == track.getFirst()) {
+						stateProperty.set(endState);
+					}
+				}
+			}
+		}
+		if (stateProperty.get() == State.RUNNING) {
+			try {
+				play(10000);
+			} catch (NaturalFinishedException e) {
+				stateProperty.set(State.EXIT);
+				throw e;
+			}
+		}
+		return stateProperty.get() == State.RUNNING
+				|| stateProperty.get() == State.PAUSED;
 	}
 
 	private void close() {
