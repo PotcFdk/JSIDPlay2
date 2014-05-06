@@ -221,10 +221,6 @@ public class CmdParser {
 			i++; // next index
 		}
 
-		if (userPlayLength != 0 && startTime >= userPlayLength) {
-			System.err.println("ERROR: Start time exceeds song length!");
-			return false;
-		}
 		// Can only loop if not creating audio files
 		if (recordMode) {
 			config.getSidplay2().setLoop(false);
