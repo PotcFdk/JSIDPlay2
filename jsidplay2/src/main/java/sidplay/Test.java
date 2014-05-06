@@ -53,6 +53,7 @@ public class Test {
 		// Setup the SID emulation (not part of the player)
 		final ReSIDBuilder rs = new ReSIDBuilder(config, driverSettings,
 				audioConfig, player.getC64().getClock().getCpuFrequency());
+		rs.activate();
 
 		// Create SID chip of desired model (mono tunes need exactly one)
 		final ReSID sid = (ReSID) rs.lock(player.getC64().getEventScheduler(),
@@ -67,7 +68,6 @@ public class Test {
 		player.reset();
 
 		// Play forever
-		rs.activate();
 		while (true) {
 			player.play(10000);
 		}
