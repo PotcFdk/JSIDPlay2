@@ -1,6 +1,7 @@
 package ui.videoscreen;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 import javafx.animation.Animation;
@@ -30,9 +31,9 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyStatus;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.keyboard.KeyTableEntry;
-import libsidplay.player.MediaType;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import resid_builder.resid.ChipModel;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -223,7 +224,13 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getPlayer().insertMedia(new TFile(file), null, MediaType.TAPE);
+			try {
+				util.getPlayer().insertTape(new TFile(file), null);
+			} catch (IOException | SidTuneError e) {
+				System.err.println(String.format(
+						"Cannot insert media file '%s'.",
+						file.getAbsolutePath()));
+			}
 		}
 	}
 
@@ -241,7 +248,13 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getPlayer().insertMedia(new TFile(file), null, MediaType.DISK);
+			try {
+				util.getPlayer().insertDisk(new TFile(file), null);
+			} catch (IOException | SidTuneError e) {
+				System.err.println(String.format(
+						"Cannot insert media file '%s'.",
+						file.getAbsolutePath()));
+			}
 		}
 	}
 
@@ -259,7 +272,14 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getPlayer().insertMedia(new TFile(file), null, MediaType.CART);
+			try {
+				util.getPlayer().insertCartridge(new TFile(file));
+				util.getPlayer().playTune(null);
+			} catch (IOException e) {
+				System.err.println(String.format(
+						"Cannot insert media file '%s'.",
+						file.getAbsolutePath()));
+			}
 		}
 	}
 

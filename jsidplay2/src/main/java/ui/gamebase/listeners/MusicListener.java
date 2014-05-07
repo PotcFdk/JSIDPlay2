@@ -16,6 +16,7 @@ public class MusicListener extends ProgressListener {
 
 	public MusicListener(UIUtil util, Node node, Player player) {
 		super(util, node);
+		this.player = player;
 	}
 
 	@Override
@@ -26,7 +27,7 @@ public class MusicListener extends ProgressListener {
 		downloadedFile.deleteOnExit();
 		// play tune
 		try {
-			player.playTune(SidTune.load(downloadedFile), null);
+			player.playTune(SidTune.load(downloadedFile));
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
 		}

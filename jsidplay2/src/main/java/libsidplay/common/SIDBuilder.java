@@ -23,7 +23,7 @@ import resid_builder.resid.ChipModel;
  * Inherit this class to create a new SID emulations for libsidplay2.
  */
 public abstract class SIDBuilder {
-	public abstract SIDEmu lock(EventScheduler context, ChipModel model);
+	public abstract SIDEmu lock(EventScheduler context, SIDEmu device, ChipModel model);
 	public abstract void unlock(SIDEmu device);
 	public abstract void setSIDVolume(int sidNum, float volumnInDb);
 	public abstract int getNumDevices();

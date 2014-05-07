@@ -6,7 +6,7 @@ import java.util.Locale;
 
 import javafx.scene.Node;
 import libsidplay.Player;
-import libsidplay.player.MediaType;
+import libsidplay.sidtune.SidTuneError;
 import ui.common.UIUtil;
 import ui.download.ProgressListener;
 import de.schlichtherle.truezip.file.TFile;
@@ -31,8 +31,8 @@ public class GameListener extends ProgressListener {
 		for (TFile zipEntry : zip.listFiles()) {
 			if (zipEntry.isFile()) {
 				try {
-					TFile dst = new TFile(player.getConfig().getSidplay2().getTmpDir(),
-							zipEntry.getName());
+					TFile dst = new TFile(player.getConfig().getSidplay2()
+							.getTmpDir(), zipEntry.getName());
 					dst.deleteOnExit();
 					TFile.cp(zipEntry, dst);
 					if (isTapeFile(dst) || isDiskFile(dst) || isCRT(dst)) {
@@ -49,24 +49,34 @@ public class GameListener extends ProgressListener {
 		downloadedFile.deleteOnExit();
 		// Make it possible to choose a file from ZIP next time
 		// the file chooser opens
-		player.getConfig().getSidplay2().setLastDirectory(downloadedFile.getParent());
+		player.getConfig().getSidplay2()
+				.setLastDirectory(downloadedFile.getParent());
 	}
 
 	private void insertMedia(final TFile file) {
 		final String command;
-		if (isTapeFile(file)) {
-			player.getC64().ejectCartridge();
-			player.insertMedia(file, null, MediaType.TAPE);
-			command = "LOAD\rRUN\r";
-			player.playTune(null, command);
-		} else if (isDiskFile(file)) {
-			player.getC64().ejectCartridge();
-			player.insertMedia(file, null, MediaType.DISK);
-			command = "LOAD\"*\",8,1\rRUN\r";
-			player.playTune(null, command);
-		} else {
-			player.insertMedia(file, null, MediaType.CART);
-			command = null;
+		player.getConfig().getSidplay2()
+				.setLastDirectory(file.getParentFile().getAbsolutePath());
+		try {
+			if (isTapeFile(file)) {
+				player.getC64().ejectCartridge();
+				player.insertTape(file, null);
+				command = "LOAD\rRUN\r";
+				player.setCommand(command);
+				player.playTune(null);
+			} else if (isDiskFile(file)) {
+				player.getC64().ejectCartridge();
+				player.insertDisk(file, null);
+				command = "LOAD\"*\",8,1\rRUN\r";
+				player.setCommand(command);
+				player.playTune(null);
+			} else {
+				player.insertCartridge(file);
+				player.playTune(null);
+			}
+		} catch (IOException | SidTuneError e) {
+			System.err.println(String.format("Cannot insert media file '%s'.",
+					file.getAbsolutePath()));
 		}
 	}
 

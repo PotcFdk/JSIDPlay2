@@ -46,7 +46,6 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
-import libsidplay.player.MediaType;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -275,7 +274,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			playTune(file);
+			try {
+				playTune(SidTune.load(file));
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -305,11 +308,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 						os.write(b, 0, len);
 					}
 				}
-				util.getPlayer().getC64().insertCartridge(file);
-			} catch (IOException ex) {
-				ex.printStackTrace();
+				util.getPlayer().insertCartridge(file);
+				playTune(SidTune.load(tmpFile));
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
 			}
-			playTune(tmpFile);
 		}
 	}
 
@@ -445,7 +448,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getPlayer().insertMedia(new TFile(file), null, MediaType.TAPE);
+			try {
+				util.getPlayer().insertTape(new TFile(file), null);
+			} catch (IOException | SidTuneError e) {
+				System.err.println(String.format(
+						"Cannot insert media file '%s'.",
+						file.getAbsolutePath()));
+			}
 		}
 	}
 
@@ -549,7 +558,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getPlayer().insertMedia(new TFile(file), null, MediaType.DISK);
+			try {
+				util.getPlayer().insertDisk(new TFile(file), null);
+			} catch (IOException | SidTuneError e) {
+				System.err.println(String.format(
+						"Cannot insert media file '%s'.",
+						file.getAbsolutePath()));
+			}
 		}
 	}
 
@@ -586,7 +601,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		if (file != null) {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			util.getPlayer().insertMedia(new TFile(file), null, MediaType.CART);
+			try {
+				util.getPlayer().insertCartridge(new TFile(file));
+				playTune(null);
+			} catch (IOException e) {
+				System.err.println(String.format(
+						"Cannot insert media file '%s'.",
+						file.getAbsolutePath()));
+			}
 		}
 	}
 
@@ -868,13 +890,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	}
 
-	private void playTune(final File file) {
+	private void playTune(final SidTune tune) {
 		util.setPlayingTab(videoScreen);
-		try {
-			util.getPlayer().playTune(SidTune.load(file), null);
-		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
-		}
+		util.getPlayer().playTune(tune);
 	}
 
 	/**

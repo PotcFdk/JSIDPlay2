@@ -15,11 +15,16 @@
  */
 package resid_builder;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
@@ -49,11 +54,11 @@ public class ReSIDBuilder extends SIDBuilder {
 	private final double systemFrequency;
 
 	public ReSIDBuilder(IConfig config, DriverSettings driverSettings,
-			AudioConfig audioConfig, double systemFrequency) {
+			AudioConfig audioConfig, CPUClock cpuClock) {
 		this.config = config;
 		this.driverSettings = driverSettings;
 		this.audioConfig = audioConfig;
-		this.systemFrequency = systemFrequency;
+		this.systemFrequency = cpuClock.getCpuFrequency();
 		setSIDVolume(0, config.getAudio().getLeftVolume());
 		setSIDVolume(1, config.getAudio().getRightVolume());
 		// save original driver
@@ -159,11 +164,21 @@ public class ReSIDBuilder extends SIDBuilder {
 		}
 	}
 
+	@Override
+	public SIDEmu lock(final EventScheduler evt, SIDEmu device,
+			ChipModel model) {
+		if (device == null) {
+			device = lock(evt, model);
+		} else {
+			device.setChipModel(model);
+		}
+		return device;
+	}
+
 	/**
 	 * Make a new SID of right type
 	 */
-	@Override
-	public SIDEmu lock(final EventScheduler env, final ChipModel model) {
+	private SIDEmu lock(final EventScheduler env, final ChipModel model) {
 		final ReSID sid = new ReSID(env, mixerEvent);
 		sid.setChipModel(model);
 		sid.setSampling(systemFrequency, audioConfig.getFrameRate(),
@@ -199,7 +214,8 @@ public class ReSIDBuilder extends SIDBuilder {
 		try {
 			this.driverSettings.getOutput().getDriver()
 					.open(audioConfig, config.getSidplay2().getTmpDir());
-		} catch (final Exception e) {
+		} catch (LineUnavailableException | UnsupportedAudioFileException
+				| IOException e) {
 			throw new RuntimeException(e);
 		}
 	}

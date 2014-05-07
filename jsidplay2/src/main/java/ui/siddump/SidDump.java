@@ -175,7 +175,7 @@ public class SidDump extends C64Window {
 	private void doStartStopRecording() {
 		if (startStopRecording.isSelected()) {
 			// restart tune, before recording starts
-			util.getPlayer().playTune(util.getPlayer().getTune(), null);
+			util.getPlayer().playTune(util.getPlayer().getTune());
 			setTune(util.getPlayer().getTune());
 			util.getPlayer().getC64().setPlayRoutineObserver(sidDumpExtension);
 		} else {
@@ -400,7 +400,7 @@ public class SidDump extends C64Window {
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
 			int songLength = util.getPlayer().getSongLength(tune);
-			if (songLength <= 0) {
+			if (songLength == 0) {
 				songLength = util.getConfig().getSidplay2()
 						.getDefaultPlayLength();
 				if (songLength == 0) {

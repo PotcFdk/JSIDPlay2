@@ -234,7 +234,7 @@ public class EmulationSettings extends C64Window {
 	private void restart() {
 		// replay last tune
 		if (!duringInitialization) {
-			util.getPlayer().playTune(util.getPlayer().getTune(), null);
+			util.getPlayer().playTune(util.getPlayer().getTune());
 		}
 	}
 

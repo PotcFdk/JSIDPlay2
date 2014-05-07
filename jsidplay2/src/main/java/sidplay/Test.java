@@ -28,7 +28,7 @@ public class Test {
 		final Player player = new Player(new IniConfig());
 
 		// start C64
-		player.playTune(tune, null);
+		player.playTune(tune);
 	}
 
 	public static void main(final String[] args) throws Exception {

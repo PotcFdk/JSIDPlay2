@@ -103,17 +103,19 @@ public class HardSIDBuilder extends SIDBuilder {
 	}
 
 	@Override
-	public SIDEmu lock(final EventScheduler context, ChipModel model) {
+	public SIDEmu lock(EventScheduler evt, SIDEmu device, ChipModel model) {
+		unlock(device);
+		return lock(evt, model);
+	}
+
+	private SIDEmu lock(final EventScheduler context, ChipModel model) {
 		ChipModel alreadyUsedModel = null;
 		if (sidobjs.size() > 0) {
 			// Stereo? Use a HardSID different to the first SID
 			alreadyUsedModel = sidobjs.get(0).getChipModel();
 			if (model == alreadyUsedModel) {
-				if (model == ChipModel.MOS6581) {
-					model = ChipModel.MOS8580;
-				} else {
-					model = ChipModel.MOS6581;
-				}
+				model = (model == ChipModel.MOS6581) ? ChipModel.MOS8580
+						: ChipModel.MOS6581;
 			}
 		}
 		HardSID hsid = new HardSID(context, hsid2,

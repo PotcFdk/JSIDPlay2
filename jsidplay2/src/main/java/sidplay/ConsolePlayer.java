@@ -52,7 +52,7 @@ public class ConsolePlayer {
 			}
 			if (cmdParser.isRecordMode()
 					&& (!player.getConfig().getSidplay2().isEnableDatabase() || player
-							.getSongLength(player.getTune()) <= 0)) {
+							.getSongLength(player.getTune()) == 0)) {
 				System.err
 						.println("ERROR: unknown song length in record mode"
 								+ " (please use option -t or configure song length database)");

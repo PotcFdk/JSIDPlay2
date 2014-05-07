@@ -20,7 +20,6 @@
  */
 package libsidplay;
 
-import hardsid_builder.HardSID;
 import hardsid_builder.HardSIDBuilder;
 
 import java.io.DataInputStream;
@@ -32,6 +31,10 @@ import java.util.function.Consumer;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -58,7 +61,6 @@ import libsidplay.components.mos656x.VIC;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
-import libsidplay.player.MediaType;
 import libsidplay.player.State;
 import libsidplay.player.Timer;
 import libsidplay.player.Track;
@@ -85,6 +87,8 @@ import sidplay.ini.intf.IConfig;
  * 
  */
 public class Player {
+	private static final int PAUSE_SLEEP_TIME = 250;
+	private static final int NUM_EVENTS_TO_PLAY = 10000;
 	/** Previous song select timeout (< 4 secs) **/
 	private static final int SID2_PREV_SONG_TIMEOUT = 4;
 	private static final int MAX_SPEED = 32;
@@ -188,6 +192,7 @@ public class Player {
 	 */
 	public Player(IConfig config) {
 		this.config = config;
+		initializeTmpDir();
 		this.iecBus = new IECBus();
 
 		this.printer = new MPS803(this.iecBus, (byte) 4, (byte) 7) {
@@ -271,6 +276,16 @@ public class Player {
 		this.iecBus.setSerialDevices(serialDevices);
 		this.c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(),
 				c1541.getEventScheduler());
+	}
+
+	/**
+	 * Create temp directory, if it does not exist.
+	 */
+	private void initializeTmpDir() {
+		File tmpDir = new File(config.getSidplay2().getTmpDir());
+		if (!tmpDir.exists()) {
+			tmpDir.mkdirs();
+		}
 	}
 
 	public final IConfig getConfig() {
@@ -696,13 +711,12 @@ public class Player {
 		return credits.toString();
 	}
 
-	public final void setSampling(CPUClock systemFrequency, float cpuFreq,
+	public final void setSampling(CPUClock cpuClock, float frequency,
 			SamplingMethod method) {
 		for (int i = 0; i < C64.MAX_SIDS; i++) {
 			final SIDEmu s = c64.getSID(i);
 			if (s != null) {
-				s.setSampling(systemFrequency.getCpuFrequency(), cpuFreq,
-						method);
+				s.setSampling(cpuClock.getCpuFrequency(), frequency, method);
 			}
 		}
 	}
@@ -759,8 +773,7 @@ public class Player {
 			while (fPlayerThread != null && fPlayerThread.isAlive()) {
 				quit();
 				fPlayerThread.join(3000);
-				// This is only the last option, if the player can not be
-				// stopped clean
+				// If the player can not be stopped clean:
 				fPlayerThread.interrupt();
 			}
 		} catch (InterruptedException e) {
@@ -806,7 +819,7 @@ public class Player {
 					while (true) {
 						// Pause? sleep for awhile
 						if (stateProperty.get() == State.PAUSED) {
-							Thread.sleep(250);
+							Thread.sleep(PAUSE_SLEEP_TIME);
 						}
 						// Play a chunk
 						if (!play()) {
@@ -834,7 +847,7 @@ public class Player {
 		if (stateProperty.get() == State.RESTART) {
 			stateProperty.set(State.STOPPED);
 		}
-		// Select the required song
+		// Select song
 		if (tune != null) {
 			track.setSelected(tune.selectSong(track.getSelected()));
 			if (track.getFirst() == 0) {
@@ -843,8 +856,8 @@ public class Player {
 				track.setFirst(track.getSelected());
 			}
 		}
-		CPUClock cpuFreq = CPUClock.getCPUClock(config, tune);
-		setClock(cpuFreq);
+		CPUClock cpuClock = CPUClock.getCPUClock(config, tune);
+		setClock(cpuClock);
 
 		AudioConfig audioConfig = AudioConfig.create(config, tune);
 
@@ -852,18 +865,19 @@ public class Player {
 		driverSettings.handleMP3(config, tune);
 
 		// 2. Create SIDbuilder (may change audio driver to NIL audio driver)
-		sidBuilder = createSIDBuilder(cpuFreq, audioConfig);
+		sidBuilder = createSIDBuilder(cpuClock, audioConfig);
 
 		// 3. Fast forwarding the eventually modified NIL audio driver to the
 		// timer start
 		currentSpeed = MAX_SPEED;
 		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
 
-		// 3. open the eventually modified NIL audio driver
+		// 3. open audio driver (eventually NIL audio driver)
 		try {
 			driverSettings.getOutput().getDriver()
 					.open(audioConfig, config.getSidplay2().getTmpDir());
-		} catch (final Exception e) {
+		} catch (LineUnavailableException | UnsupportedAudioFileException
+				| IOException e) {
 			throw new RuntimeException(e);
 		}
 
@@ -882,12 +896,12 @@ public class Player {
 		stateProperty.set(State.RUNNING);
 	}
 
-	private SIDBuilder createSIDBuilder(CPUClock cpuFreq,
+	private SIDBuilder createSIDBuilder(CPUClock cpuClock,
 			AudioConfig audioConfig) {
 		switch (driverSettings.getEmulation()) {
 		case EMU_RESID:
 			return new ReSIDBuilder(config, driverSettings, audioConfig,
-					cpuFreq.getCpuFrequency());
+					cpuClock);
 
 		case EMU_HARDSID:
 			return new HardSIDBuilder(config);
@@ -963,20 +977,17 @@ public class Player {
 				@Override
 				public void setChipModel(ChipModel model) {
 					s1.setChipModel(model);
-					s2.setChipModel(model);
 				}
 
 				@Override
 				public void setSampling(double cpuFrequency, float frequency,
 						SamplingMethod sampling) {
 					s1.setSampling(cpuFrequency, frequency, sampling);
-					s2.setSampling(cpuFrequency, frequency, sampling);
 				}
 
 				@Override
 				public void input(int input) {
 					s1.input(input);
-					s2.input(input);
 				}
 			});
 		}
@@ -1008,15 +1019,7 @@ public class Player {
 	 */
 	private void updateChipModel(final int chipNum, final ChipModel model) {
 		SIDEmu s = c64.getSID(chipNum);
-		if (s instanceof HardSID) {
-			sidBuilder.unlock(s);
-			s = null;
-		}
-		if (s == null) {
-			s = sidBuilder.lock(c64.getEventScheduler(), model);
-		} else {
-			s.setChipModel(model);
-		}
+		s = sidBuilder.lock(c64.getEventScheduler(), s, model);
 		c64.setSID(chipNum, s);
 	}
 
@@ -1043,12 +1046,11 @@ public class Player {
 	}
 
 	/**
-	 * Out play loop to be externally called
+	 * Out play loop to be externally called (handle switches to next song etc.)
 	 * 
 	 * @throws InterruptedException
 	 */
 	private boolean play() throws InterruptedException {
-		/* handle switches to next song etc. */
 		final int seconds = time();
 		if (seconds != timer.getCurrent()) {
 			timer.setCurrent(seconds);
@@ -1057,34 +1059,35 @@ public class Player {
 				normalSpeed();
 				sidBuilder.open();
 			}
-			// Only for tunes: if play time is over loop or exit (single song or
-			// whole tune)
+			// Only for tunes: if play time is over loop or exit
 			if (tune != null && timer.getStop() != 0
 					&& seconds >= timer.getStop()) {
-				State endState = config.getSidplay2().isLoop() ? State.RESTART
-						: State.EXIT;
 				if (config.getSidplay2().isSingle()) {
-					stateProperty.set(endState);
+					stateProperty.set(getEndState());
 				} else {
 					nextSong();
 
 					// Check play-list end
 					if (track.getSelected() == track.getFirst()) {
-						stateProperty.set(endState);
+						stateProperty.set(getEndState());
 					}
 				}
 			}
 		}
 		if (stateProperty.get() == State.RUNNING) {
 			try {
-				play(10000);
+				play(NUM_EVENTS_TO_PLAY);
 			} catch (NaturalFinishedException e) {
-				stateProperty.set(State.EXIT);
+				stateProperty.set(getEndState());
 				throw e;
 			}
 		}
 		return stateProperty.get() == State.RUNNING
 				|| stateProperty.get() == State.PAUSED;
+	}
+
+	private State getEndState() {
+		return config.getSidplay2().isLoop() ? State.RESTART : State.EXIT;
 	}
 
 	private void close() {
@@ -1105,25 +1108,21 @@ public class Player {
 	 * 
 	 * @param sidTune
 	 *            file to play the tune (null means just reset C64)
-	 * @param command
 	 */
-	public final void playTune(final SidTune sidTune, String command) {
+	public final void playTune(final SidTune sidTune) {
 		tune = sidTune;
 		// Stop previous run
 		stopC64();
 		// 0 means use start song next time open() is called
 		track.setSelected(0);
 		if (tune != null) {
-			// A different tune is opened?
-			// We mark a new play-list start
+			// we mark a new play-list start
 			track.setFirst(0);
 			track.setSongs(tune.getInfo().songs);
 		} else {
 			track.setFirst(1);
 			track.setSongs(0);
 		}
-		// set command to type after reset
-		setCommand(command);
 		// Start emulation
 		startC64();
 	}
@@ -1165,7 +1164,7 @@ public class Player {
 
 	public final void normalSpeed() {
 		currentSpeed = 1;
-		driverSettings.getOutput().getDriver().setFastForward(1);
+		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
 	}
 
 	public final void selectFirstTrack() {
@@ -1200,7 +1199,7 @@ public class Player {
 		if (t != null && sidDatabase != null) {
 			return sidDatabase.length(t);
 		}
-		return -1;
+		return 0;
 	}
 
 	public final int getFullSongLength(SidTune t) {
@@ -1222,55 +1221,24 @@ public class Player {
 		this.policy = policy;
 	}
 
-	public final void insertMedia(File mediaFile, File autostartFile,
-			MediaType mediaType) {
-		try {
-			config.getSidplay2().setLastDirectory(
-					mediaFile.getParentFile().getAbsolutePath());
-			switch (mediaType) {
-			case TAPE:
-				insertTape(mediaFile, autostartFile);
-				break;
-
-			case DISK:
-				insertDisk(mediaFile, autostartFile);
-				break;
-
-			case CART:
-				insertCartridge(mediaFile);
-				break;
-
-			default:
-				break;
-			}
-		} catch (IOException e) {
-			System.err.println(String.format("Cannot attach file '%s'.",
-					mediaFile.getAbsolutePath()));
-		}
-	}
-
-	private void insertDisk(final File selectedDisk, final File autostartFile)
-			throws IOException {
+	public final void insertDisk(final File selectedDisk,
+			final File autostartFile) throws IOException, SidTuneError {
 		// automatically turn drive on
 		config.getC1541().setDriveOn(true);
 		enableFloppyDiskDrives(true);
 		// attach selected disk into the first disk drive
-		DiskImage disk = getFloppies()[0].getDiskController().insertDisk(
+		DiskImage disk = floppies[0].getDiskController().insertDisk(
 				selectedDisk);
 		if (policy != null) {
 			disk.setExtendImagePolicy(policy);
 		}
 		if (autostartFile != null) {
-			try {
-				playTune(SidTune.load(autostartFile), null);
-			} catch (IOException | SidTuneError e) {
-				e.printStackTrace();
-			}
+			playTune(SidTune.load(autostartFile));
 		}
 	}
 
-	private void insertTape(final File selectedTape, final File autostartFile)
-			throws IOException {
+	public final void insertTape(final File selectedTape,
+			final File autostartFile) throws IOException, SidTuneError {
 		if (!selectedTape.getName().toLowerCase(Locale.ENGLISH)
 				.endsWith(".tap")) {
 			// Everything, which is not a tape convert to tape first
@@ -1280,24 +1248,18 @@ public class Player {
 			String[] args = new String[] { selectedTape.getAbsolutePath(),
 					convertedTape.getAbsolutePath() };
 			PRG2TAP.main(args);
-			getDatasette().insertTape(convertedTape);
+			datasette.insertTape(convertedTape);
 		} else {
-			getDatasette().insertTape(selectedTape);
+			datasette.insertTape(selectedTape);
 		}
 		if (autostartFile != null) {
-			try {
-				playTune(SidTune.load(autostartFile), null);
-			} catch (IOException | SidTuneError e) {
-				e.printStackTrace();
-			}
+			playTune(SidTune.load(autostartFile));
 		}
 	}
 
-	private void insertCartridge(final File selectedFile) throws IOException {
-		// Insert a cartridge
+	public final void insertCartridge(final File selectedFile)
+			throws IOException {
 		c64.insertCartridge(selectedFile);
-		// reset required after inserting the cartridge
-		playTune(null, null);
 	}
 
 }

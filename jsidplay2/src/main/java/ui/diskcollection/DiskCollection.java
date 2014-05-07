@@ -28,7 +28,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import libsidplay.Player;
-import libsidplay.player.MediaType;
+import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -108,14 +108,24 @@ public class DiskCollection extends Tab implements UIPart {
 					attachAndRunDemo(fileBrowser.getSelectionModel()
 							.getSelectedItem().getValue(), newValue);
 				});
-		fileBrowser.getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					if (newValue != null && newValue.getValue().isFile()) {
-						File file = newValue.getValue();
-						showScreenshot(file);
-						directory.loadPreview(extract(file));
-					}
-				});
+		fileBrowser
+				.getSelectionModel()
+				.selectedItemProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							if (newValue != null
+									&& newValue.getValue().isFile()) {
+								File file = newValue.getValue();
+								showScreenshot(file);
+								try {
+									directory.loadPreview(extract(file));
+								} catch (Exception e) {
+									System.err.println(String.format(
+											"Cannot insert media file '%s'.",
+											file.getAbsolutePath()));
+								}
+							}
+						});
 		fileBrowser.setOnKeyPressed((event) -> {
 			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
 					.getSelectedItem();
@@ -206,10 +216,20 @@ public class DiskCollection extends Tab implements UIPart {
 
 	@FXML
 	private void attachDisk() {
-		File selectedFile = fileBrowser.getSelectionModel().getSelectedItem()
+		File file = fileBrowser.getSelectionModel().getSelectedItem()
 				.getValue();
-		util.getPlayer().insertMedia(extract(selectedFile), null,
-				MediaType.DISK);
+		try {
+			File extractedFile = extract(file);
+			util.getPlayer()
+					.getConfig()
+					.getSidplay2()
+					.setLastDirectory(
+							extractedFile.getParentFile().getAbsolutePath());
+			util.getPlayer().insertDisk(extractedFile, null);
+		} catch (IOException | SidTuneError e) {
+			System.err.println(String.format("Cannot insert media file '%s'.",
+					file.getAbsolutePath()));
+		}
 	}
 
 	@FXML
@@ -265,16 +285,25 @@ public class DiskCollection extends Tab implements UIPart {
 				System.err.println("Awt Desktop is not supported!");
 			}
 		} else {
-			File extractedFile = extract(file);
-			if (diskFileFilter.accept(file)) {
-				util.getPlayer().insertMedia(extractedFile, autoStartFile,
-						MediaType.DISK);
-			} else {
-				util.getPlayer().insertMedia(extractedFile, autoStartFile,
-						MediaType.TAPE);
-			}
-			if (autoStartFile == null) {
-				resetAndLoadDemo(extractedFile);
+			try {
+				File extractedFile = extract(file);
+				util.getPlayer()
+						.getConfig()
+						.getSidplay2()
+						.setLastDirectory(
+								extractedFile.getParentFile().getAbsolutePath());
+				if (diskFileFilter.accept(file)) {
+					util.getPlayer().insertDisk(extractedFile, autoStartFile);
+				} else {
+					util.getPlayer().insertTape(extractedFile, autoStartFile);
+				}
+				if (autoStartFile == null) {
+					resetAndLoadDemo(extractedFile);
+				}
+			} catch (IOException | SidTuneError e) {
+				System.err.println(String.format(
+						"Cannot insert media file '%s'.",
+						file.getAbsolutePath()));
 			}
 		}
 	}
@@ -289,7 +318,8 @@ public class DiskCollection extends Tab implements UIPart {
 			command = "LOAD\rRUN\r";
 		}
 		util.setPlayingTab(this);
-		util.getPlayer().playTune(null, command);
+		util.getPlayer().setCommand(command);
+		util.getPlayer().playTune(null);
 	}
 
 	protected void showScreenshot(final File file) {
@@ -335,7 +365,7 @@ public class DiskCollection extends Tab implements UIPart {
 		return null;
 	}
 
-	protected File extract(File file) {
+	protected File extract(File file) throws IOException {
 		if (file.getName().endsWith(".gz")) {
 			File dst = new File(util.getConfig().getSidplay2().getTmpDir(),
 					PathUtils.getBaseNameNoExt(file));
@@ -343,19 +373,13 @@ public class DiskCollection extends Tab implements UIPart {
 			try (InputStream is = new GZIPInputStream(
 					new TFileInputStream(file))) {
 				TFile.cp(is, dst);
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 			return dst;
 		} else {
 			File dst = new File(util.getConfig().getSidplay2().getTmpDir(),
 					file.getName());
 			dst.deleteOnExit();
-			try {
-				new TFile(file).cp(dst);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			new TFile(file).cp(dst);
 			return dst;
 		}
 	}

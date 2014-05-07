@@ -37,18 +37,13 @@ public class JSIDPlay2Main extends Application {
 	 * Player
 	 */
 	private Player player;
-	
+
 	private Consumer<Player> menuHook = (player) -> {
 		if (player.getTune() != null && player.getTune().getInfo().file != null) {
 			System.out.println("Play File: <"
 					+ player.getTune().getInfo().file.getAbsolutePath() + ">");
 		}
 	};
-	
-	/**
-	 * Configuration
-	 */
-	private Configuration config;
 
 	/**
 	 * Database support.
@@ -64,17 +59,15 @@ public class JSIDPlay2Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		config = getConfiguration();
-		initializeTmpDir(config);
-
-		player = new Player(config);
+		player = new Player(getConfiguration());
 		player.setMenuHook(menuHook);
 
 		jSidplay2 = new JSidPlay2(primaryStage, player);
 		jSidplay2.setConfigService(configService);
 		jSidplay2.open();
 		// Set default position and size
-		final SidPlay2Section section = (SidPlay2Section) config.getSidplay2();
+		final SidPlay2Section section = (SidPlay2Section) player.getConfig()
+				.getSidplay2();
 		if (section.getFullScreen() != null) {
 			primaryStage.setFullScreen(section.getFullScreen());
 		}
@@ -120,7 +113,7 @@ public class JSIDPlay2Main extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		configService.commit(config);
+		configService.commit((Configuration) player.getConfig());
 
 		em.getEntityManagerFactory().close();
 
@@ -184,19 +177,6 @@ public class JSIDPlay2Main extends Application {
 		}
 		// default directory
 		return new File(System.getProperty("user.home"), CONFIG_DATABASE);
-	}
-
-	/**
-	 * Create temp directory, if not exists (default is user home dir).
-	 * 
-	 * @param config
-	 */
-	private void initializeTmpDir(Configuration config) {
-		String tmpDirPath = config.getSidplay2().getTmpDir();
-		File tmpDir = new File(tmpDirPath);
-		if (!tmpDir.exists()) {
-			tmpDir.mkdirs();
-		}
 	}
 
 	/**

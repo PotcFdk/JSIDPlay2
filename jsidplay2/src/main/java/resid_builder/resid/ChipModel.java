@@ -11,7 +11,7 @@ public enum ChipModel {
 	/**
 	 * Select Mono chip model by configuration and tune
 	 * <OL>
-	 * <LI>locked user defined model
+	 * <LI>user locked model
 	 * <LI>model provided by tune information
 	 * <LI>default model
 	 * </OL>
@@ -42,7 +42,7 @@ public enum ChipModel {
 	/**
 	 * Select Stereo chip model by configuration and tune
 	 * <OL>
-	 * <LI>locked user defined model
+	 * <LI>user locked defined stereo model
 	 * <LI>model provided by tune information
 	 * <LI>same model as Mono SID
 	 * </OL>

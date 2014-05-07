@@ -751,7 +751,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 * @throws IOException
 	 *             cartridge file read-error
 	 */
-	public void insertCartridge(final File cartFile) throws IOException {
+	void insertCartridge(final File cartFile) throws IOException {
 		pla.setCartridge(null);
 		try (DataInputStream is = new DataInputStream(new FileInputStream(
 				cartFile))) {
