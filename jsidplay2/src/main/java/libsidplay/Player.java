@@ -89,7 +89,10 @@ public class Player {
 	private static final int SID2_PREV_SONG_TIMEOUT = 4;
 	private static final int MAX_SPEED = 32;
 
-	private IConfig config;
+	/**
+	 * Configuration.
+	 */
+	protected final IConfig config;
 
 	/**
 	 * C64 computer.
@@ -120,41 +123,74 @@ public class Player {
 	 */
 	protected final MPS803 printer;
 	/**
+	 * Music player state.
+	 */
+	protected final ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
+			State.STOPPED);
+	/**
+	 * Play timer.
+	 */
+	protected final Timer timer = new Timer();
+	/**
+	 * Play list.
+	 */
+	protected final Track track = new Track();
+	/**
 	 * Currently played tune.
 	 */
 	protected SidTune tune;
 	/**
 	 * Autostart command to be typed-in after reset.
 	 */
-	private String command;
-
-	private Thread fPlayerThread;
-	private Consumer<Player> menuHook = (player) -> {
+	protected String command;
+	/**
+	 * Music player thread.
+	 */
+	protected Thread fPlayerThread;
+	/**
+	 * Called each time a tune starts to play.
+	 */
+	protected Consumer<Player> menuHook = (player) -> {
 	};
-	private Consumer<Player> interactivityHook = (player) -> {
+	/**
+	 * Called each time a chunk of music data has been played.
+	 */
+	protected Consumer<Player> interactivityHook = (player) -> {
 	};
-	private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
-			State.STOPPED);
-	private final Timer timer = new Timer();
-	private final Track track = new Track();
-	private int currentSpeed = 1;
-
-	private DriverSettings driverSettings = new DriverSettings(
+	/**
+	 * Fast forward factor.
+	 */
+	protected int currentSpeed = 1;
+	/**
+	 * Audio driver and emulation setting.
+	 */
+	protected DriverSettings driverSettings = new DriverSettings(
 			Output.OUT_SOUNDCARD, Emulation.EMU_RESID);
-	private SIDBuilder sidBuilder;
-
-	private STIL stil;
-	private SidDatabase sidDatabase;
-	private IExtendImageListener policy;
+	/**
+	 * SID builder being used to create SID chips (real hardware or emulation).
+	 */
+	protected SIDBuilder sidBuilder;
+	/**
+	 * SID tune information list.
+	 */
+	protected STIL stil;
+	/**
+	 * Song length database.
+	 */
+	protected SidDatabase sidDatabase;
+	/**
+	 * Disk image extension policy (&gt;35 tracks).
+	 */
+	protected IExtendImageListener policy;
 
 	/**
 	 * Create a complete setup (C64, tape/disk drive, carts and more).
 	 */
 	public Player(IConfig config) {
 		this.config = config;
-		iecBus = new IECBus();
+		this.iecBus = new IECBus();
 
-		printer = new MPS803(iecBus, (byte) 4, (byte) 7) {
+		this.printer = new MPS803(this.iecBus, (byte) 4, (byte) 7) {
 			@Override
 			public void setBusy(final boolean flag) {
 				c64.cia2.setFlag(flag);
@@ -167,7 +203,7 @@ public class Player {
 
 		};
 
-		c64 = new C64() {
+		this.c64 = new C64() {
 
 			@Override
 			public void printerUserportWriteData(final byte data) {
@@ -219,7 +255,7 @@ public class Player {
 
 		};
 
-		datasette = new Datasette(c64.getEventScheduler()) {
+		this.datasette = new Datasette(c64.getEventScheduler()) {
 			@Override
 			public void setFlag(final boolean flag) {
 				c64.cia1.setFlag(flag);
@@ -228,12 +264,12 @@ public class Player {
 
 		final C1541 c1541 = new C1541(iecBus, 8, FloppyType.C1541);
 
-		floppies = new C1541[] { c1541 };
-		serialDevices = new SerialIECDevice[] { printer };
+		this.floppies = new C1541[] { c1541 };
+		this.serialDevices = new SerialIECDevice[] { printer };
 
-		iecBus.setFloppies(floppies);
-		iecBus.setSerialDevices(serialDevices);
-		c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(),
+		this.iecBus.setFloppies(floppies);
+		this.iecBus.setSerialDevices(serialDevices);
+		this.c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(),
 				c1541.getEventScheduler());
 	}
 
@@ -493,33 +529,21 @@ public class Player {
 	 */
 	public final void installJiffyDOS(final InputStream c64KernalStream,
 			final InputStream c1541KernalStream) throws IOException {
-		DataInputStream dis = null;
-		byte[] c64Kernal = new byte[0x2000];
-		try {
-			dis = new DataInputStream(c64KernalStream);
+		try (DataInputStream dis = new DataInputStream(c64KernalStream)) {
+			byte[] c64Kernal = new byte[0x2000];
 			dis.readFully(c64Kernal);
 			c64.setCustomKernal(c64Kernal);
 		} catch (IOException e) {
 			throw e;
-		} finally {
-			if (dis != null) {
-				dis.close();
-			}
 		}
-		dis = null;
-		byte[] c1541Kernal = new byte[0x4000];
-		try {
-			dis = new DataInputStream(c1541KernalStream);
+		try (DataInputStream dis = new DataInputStream(c1541KernalStream)) {
+			byte[] c1541Kernal = new byte[0x4000];
 			dis.readFully(c1541Kernal);
 			for (final C1541 floppy : floppies) {
 				floppy.setCustomKernalRom(c1541Kernal);
 			}
 		} catch (IOException e) {
 			throw e;
-		} finally {
-			if (dis != null) {
-				dis.close();
-			}
 		}
 	}
 
@@ -751,6 +775,9 @@ public class Player {
 		this.interactivityHook = interactivityHook;
 	}
 
+	/**
+	 * Note: Before calling, you must safely call stopC64()!
+	 */
 	public final void setDriverSettings(DriverSettings driverSettings) {
 		this.driverSettings = driverSettings;
 	}
@@ -807,7 +834,6 @@ public class Player {
 		if (stateProperty.get() == State.RESTART) {
 			stateProperty.set(State.STOPPED);
 		}
-
 		// Select the required song
 		if (tune != null) {
 			track.setSelected(tune.selectSong(track.getSelected()));
@@ -822,17 +848,18 @@ public class Player {
 
 		AudioConfig audioConfig = AudioConfig.create(config, tune);
 
-		// 1. handle MP3 play-back (may replace audio driver and emulation)
+		// 1. handle MP3 play-back (replaces audio driver and emulation)
 		driverSettings.handleMP3(config, tune);
 
-		// 2. Create SIDbuilder (may change audio driver to NIL driver)
+		// 2. Create SIDbuilder (may change audio driver to NIL audio driver)
 		sidBuilder = createSIDBuilder(cpuFreq, audioConfig);
 
-		// 3. Fast forwarding the eventually modified NIL driver to the start position
+		// 3. Fast forwarding the eventually modified NIL audio driver to the
+		// timer start
 		currentSpeed = MAX_SPEED;
 		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
-		
-		// 3. open audio driver
+
+		// 3. open the eventually modified NIL audio driver
 		try {
 			driverSettings.getOutput().getDriver()
 					.open(audioConfig, config.getSidplay2().getTmpDir());
@@ -842,6 +869,8 @@ public class Player {
 
 		// According to the configuration, the SIDs must be updated.
 		updateChipModel();
+
+		// apply filter settings and stereo SID chip address
 		setFilter();
 		setSecondSIDAddress();
 
@@ -1026,7 +1055,7 @@ public class Player {
 
 			if (seconds == timer.getStart()) {
 				normalSpeed();
-				sidBuilder.activate();
+				sidBuilder.open();
 			}
 			// Only for tunes: if play time is over loop or exit (single song or
 			// whole tune)
@@ -1147,10 +1176,6 @@ public class Player {
 	public final void selectLastTrack() {
 		stateProperty.set(State.RESTART);
 		track.setSelected(track.getSongs());
-	}
-
-	public final int getCurrentSong() {
-		return track.getSelected();
 	}
 
 	public final int getNumDevices() {

@@ -27,5 +27,5 @@ public abstract class SIDBuilder {
 	public abstract void unlock(SIDEmu device);
 	public abstract void setSIDVolume(int sidNum, float volumnInDb);
 	public abstract int getNumDevices();
-	public void activate() {};
+	public void open() {};
 }

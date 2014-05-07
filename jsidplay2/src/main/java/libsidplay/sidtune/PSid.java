@@ -28,8 +28,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
 
+import javafx.application.Platform;
 import javafx.scene.image.Image;
-
 import libsidplay.Reloc65;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.mem.IPSIDDrv;
@@ -620,7 +620,7 @@ class PSid extends Prg {
 		String authorInfo = sidtune.info.infoString[1];
 		String photoRes = sidAuthors.getProperty(authorInfo);
 
-		if (photoRes != null) {
+		if (photoRes != null && Platform.isFxApplicationThread()) {
 			photoRes = "Photos/" + photoRes;
 			sidtune.image = new Image(SidTune.class.getResource(photoRes)
 					.toString());
@@ -663,31 +663,31 @@ class PSid extends Prg {
 			myHeader.songs = (short) info.songs;
 			myHeader.start = (short) info.startSong;
 			myHeader.speed = getSongSpeedArray();
-			
+
 			short tmpFlags = 0;
 			myHeader.init = (short) info.initAddr;
 			myHeader.relocStartPage = (byte) info.relocStartPage;
 			myHeader.relocPages = (byte) info.relocPages;
-			
+
 			switch (info.compatibility) {
 			case RSID_BASIC:
 				tmpFlags |= PSID_BASIC;
 				//$FALL-THROUGH$
-				
+
 			case RSID:
 				myHeader.id = "RSID".getBytes();
 				myHeader.speed = 0;
 				break;
-				
+
 			case PSIDv1:
 				tmpFlags |= PSID_SPECIFIC;
 				//$FALL-THROUGH$
-				
+
 			default:
 				myHeader.play = (short) info.playAddr;
 				break;
 			}
-			
+
 			// @FIXME@ Need better solution. Make it possible to override MUS
 			// strings
 			if (info.numberOfInfoStrings == 3) {
@@ -698,7 +698,7 @@ class PSid extends Prg {
 				} else if (info.infoString[2].length() == 32) {
 					myHeader.version = 3;
 				}
-				
+
 				for (int i = 0; i < info.infoString[0].length(); i++) {
 					myHeader.name[i] = (byte) info.infoString[0].charAt(i); // ISO-8859-1
 				}
@@ -709,19 +709,19 @@ class PSid extends Prg {
 					myHeader.released[i] = (byte) info.infoString[2].charAt(i); // ISO-8859-1
 				}
 			}
-			
+
 			tmpFlags |= info.clockSpeed.ordinal() << 2;
 			tmpFlags |= info.sid1Model.ordinal() << 4;
 			tmpFlags |= info.sid2Model.ordinal() << 6;
 			myHeader.flags = tmpFlags;
-			
+
 			fos.write(myHeader.getArray());
-			
+
 			final byte saveAddr[] = new byte[2];
 			saveAddr[0] = (byte) (info.loadAddr & 255);
 			saveAddr[1] = (byte) (info.loadAddr >> 8);
 			fos.write(saveAddr);
-			
+
 			// Data starts at: bufferaddr + fileoffset
 			// Data length: datafilelen - fileoffset
 			fos.write(program, fileOffset, info.dataFileLen - fileOffset);

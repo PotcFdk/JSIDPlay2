@@ -191,10 +191,10 @@ public class ReSIDBuilder extends SIDBuilder {
 	}
 
 	@Override
-	public void activate() {
+	public void open() {
 		// close NIL driver
 		this.driverSettings.getOutput().getDriver().close();
-		// restore original driver
+		// restore original driver and open
 		this.driverSettings.setOutput(output);
 		try {
 			this.driverSettings.getOutput().getDriver()

@@ -23,7 +23,8 @@ public class ConsoleIO {
 	private int quietLevel;
 	private int verboseLevel;
 
-	public ConsoleIO(IConfig config, Player player, int quietLevel, int verboseLevel) {
+	public ConsoleIO(IConfig config, Player player, int quietLevel,
+			int verboseLevel) {
 		this.config = config;
 		this.player = player;
 		this.quietLevel = quietLevel;
@@ -212,6 +213,9 @@ public class ConsoleIO {
 
 	public void decodeKeys() {
 		try {
+			if (System.in.available() == 0) {
+				return;
+			}
 			final int key = System.in.read();
 			switch (key) {
 			case 'h':

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import lowlevel.ID3V2Decoder;
 
@@ -82,7 +83,7 @@ public class MP3Tune extends SidTune {
 			} catch (NumberFormatException e) {
 				// ignore
 			}
-			if (s.decoder.getImageBytes() != null) {
+			if (s.decoder.getImageBytes() != null && Platform.isFxApplicationThread()) {
 				s.image = new Image(new ByteArrayInputStream(s.decoder.getImageBytes()));
 			}
 		} catch (IOException e) {

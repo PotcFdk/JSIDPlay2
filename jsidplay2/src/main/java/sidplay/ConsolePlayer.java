@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import libsidplay.Player;
-import libsidplay.player.State;
 import libsidutils.SidDatabase;
 import libsidutils.cpuparser.CPUParser;
 import sidplay.consoleplayer.CmdParser;
@@ -34,9 +33,9 @@ public class ConsolePlayer {
 
 		// Select the desired track
 		// and also mark the play-list start
-		player.getTrack().setFirst(
+		player.getTrack().setSelected(
 				player.getTune().selectSong(cmdParser.getFirst()));
-		player.getTrack().setSelected(player.getTrack().getFirst());
+		player.getTrack().setFirst(0);
 		player.getTrack().setSongs(player.getTune().getInfo().songs);
 		if (player.getConfig().getSidplay2().isSingle()) {
 			player.getTrack().setSongs(1);
@@ -64,18 +63,8 @@ public class ConsolePlayer {
 				cmdParser.getQuietLevel(), cmdParser.getVerboseLevel());
 		player.setMenuHook((obj) -> consoleIO.menu(player.getTune(),
 				player.getTrack(), player.getTimer()));
+		player.setInteractivityHook((obj) -> consoleIO.decodeKeys());
 
-		player.setInteractivityHook((obj) -> {
-			try {
-				if (cmdParser.getQuietLevel() < 2
-						&& (player.stateProperty().get() == State.PAUSED || System.in
-								.available() != 0)) {
-					consoleIO.decodeKeys();
-				}
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-		});
 		player.startC64();
 	}
 

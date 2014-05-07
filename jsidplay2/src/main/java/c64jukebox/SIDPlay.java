@@ -85,8 +85,11 @@ public class SIDPlay extends Applet {
 		player.stopC64();
 		player.setTune(getTune(urlName));
 		player.setDriverSettings(new DriverSettings(output, emulation));
-		player.getTrack().setFirst(player.getTune().selectSong(songNum));
-		player.getTrack().setSelected(player.getTrack().getFirst());
+		// Select the desired track
+		// and also mark the play-list start
+		player.getTrack().setSelected(player.getTune().selectSong(songNum));
+		player.getTrack().setFirst(0);
+
 		player.getTrack().setSongs(1);
 
 		player.startC64();
@@ -188,7 +191,7 @@ public class SIDPlay extends Applet {
 	 * @return current song number
 	 */
 	public int getCurrentSong() {
-		return player.getCurrentSong();
+		return player.getTrack().getSelected();
 	}
 
 	/**
