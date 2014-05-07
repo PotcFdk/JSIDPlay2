@@ -79,6 +79,16 @@ public class AudioConfig {
 				&& tune.getInfo().sidChipBase2 != 0;
 	}
 
+	public static Integer getStereoAddress(IConfig config, SidTune tune) {
+		if (config.getEmulation().isForceStereoTune()) {
+			return config.getEmulation().getDualSidBase();
+		} else if (tune != null && tune.getInfo().sidChipBase2 != 0) {
+			return tune.getInfo().sidChipBase2;
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Gets the audio framerate of this AudioConfig.
 	 * 

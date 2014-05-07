@@ -108,40 +108,25 @@ public class ReSID extends SIDEmu {
 	}
 
 	@Override
-	public void setFilter(final boolean enable) {
+	public void setFilterEnable(final boolean enable) {
 		sid.getFilter6581().enable(enable);
 		sid.getFilter8580().enable(enable);
 	}
 
 	public void setFilter(IConfig config) {
-		IFilterSection f6581 = null;
-		IFilterSection f8580 = null;
-		String filter6581 = config.getEmulation().getFilter6581();
-		String filter8580 = config.getEmulation().getFilter8580();
+		String filterName6581 = config.getEmulation().getFilter6581();
+		String filterName8580 = config.getEmulation().getFilter8580();
 		List<? extends IFilterSection> filters = config.getFilter();
 		for (IFilterSection filter : filters) {
-			if (filter.getName().equals(filter6581)
+			if (filter.getName().equals(filterName6581)
 					&& filter.getFilter8580CurvePosition() == 0) {
-				f6581 = filter;
-			} else if (filter.getName().equals(filter8580)
+				sid.getFilter6581().setFilterCurve(
+						filter.getFilter6581CurvePosition());
+			} else if (filter.getName().equals(filterName8580)
 					&& filter.getFilter8580CurvePosition() != 0) {
-				f8580 = filter;
+				sid.getFilter8580().setFilterCurve(
+						filter.getFilter8580CurvePosition());
 			}
-		}
-		setFilter(config.getEmulation().isFilter());
-		setFilter(f6581, f8580);
-	}
-
-	private void setFilter(final IFilterSection filter6581,
-			final IFilterSection filter8580) {
-		if (filter6581 != null) {
-			sid.getFilter6581().setFilterCurve(
-					filter6581.getFilter6581CurvePosition());
-		}
-
-		if (filter8580 != null) {
-			sid.getFilter8580().setFilterCurve(
-					filter8580.getFilter8580CurvePosition());
 		}
 	}
 

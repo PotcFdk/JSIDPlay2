@@ -61,6 +61,7 @@ import libsidplay.components.mos656x.VIC;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
+import libsidplay.player.FakeStereo;
 import libsidplay.player.State;
 import libsidplay.player.Timer;
 import libsidplay.player.Track;
@@ -183,7 +184,7 @@ public class Player {
 	 */
 	protected SidDatabase sidDatabase;
 	/**
-	 * Disk image extension policy (&gt;35 tracks).
+	 * Disk image extension policy (track count greater than 35).
 	 */
 	protected IExtendImageListener policy;
 
@@ -311,7 +312,7 @@ public class Player {
 	 * 
 	 * @throws InterruptedException
 	 */
-	public final void reset() throws InterruptedException {
+	private final void reset() throws InterruptedException {
 		c64.reset();
 		iecBus.reset();
 		datasette.reset();
@@ -331,18 +332,19 @@ public class Player {
 			floppy.setRamExpansion(4, config.getC1541()
 					.isRamExpansionEnabled4());
 		}
-		enablePrinter(config.getPrinter().isPrinterOn());
-
 		enableFloppyDiskDrives(config.getC1541().isDriveOn());
 		connectC64AndC1541WithParallelCable(config.getC1541().isParallelCable());
+
 		// Reset IEC devices
 		for (final SerialIECDevice serialDevice : serialDevices) {
 			serialDevice.reset();
 		}
 
-		/* Autostart program, if we have one. */
+		enablePrinter(config.getPrinter().isPrinterOn());
+
+		// Autostart program, if we have one.
 		if (tune != null) {
-			/* Set playback addr to feedback call frames counter. */
+			// Set playback addr to feedback call frames counter.
 			c64.setPlayAddr(tune.getInfo().playAddr);
 			/*
 			 * This is a bit ugly: starting PRG must be done after C64 system
@@ -351,42 +353,23 @@ public class Player {
 			c64.getEventScheduler().schedule(new Event("Tune init event") {
 				@Override
 				public void event() throws InterruptedException {
-					final byte[] ram = c64.getRAM();
-					final int address = tune.placeProgramInMemory(ram);
+					final int address = tune.placeProgramInMemory(c64.getRAM());
 					if (address != -1) {
-						/*
-						 * Set initial volume for psid. Ideally the driver would
-						 * do this for us, but whatever...
-						 */
-						for (int i = 0; i < C64.MAX_SIDS; i++) {
-							final SIDEmu s = c64.getSID(i);
-							if (s != null) {
-								s.write(0x18, (byte) 0xf);
-							}
-						}
+						// Ideally the driver would set the volume, but whatever
+						setSIDVolume(0xf);
 						c64.getCPU().forcedJump(address);
 					} else {
-						ram[0x277] = (byte) 'R';
-						ram[0x278] = (byte) 'U';
-						ram[0x279] = (byte) 'N';
-						ram[0x27a] = (byte) ':';
-						ram[0x27b] = 13;
-						ram[0xc6] = 5;
+						typeInCommand("RUN:\r");
 					}
 				}
 			}, tune.getInitDelay());
 		} else {
-			// Normal reset code path
-			// However we want an autostart anyway
+			// Normal reset code path using auto-start
 			c64.getEventScheduler().schedule(new Event("Autostart event") {
 				@Override
 				public void event() throws InterruptedException {
 					if (command != null) {
-						final byte[] ram = c64.getRAM();
-						for (int i = 0; i < Math.min(command.length(), 16); i++) {
-							ram[0x277 + i] = (byte) command.charAt(i);
-						}
-						ram[0xc6] = (byte) Math.min(command.length(), 16);
+						typeInCommand(command);
 						if (command.startsWith("LOAD\r")) {
 							// Autostart tape needs someone to press play
 							datasette.control(Control.START);
@@ -399,15 +382,12 @@ public class Player {
 		}
 	}
 
-	/**
-	 * Run C64 emulation for a specific amount of events.
-	 * 
-	 * @throws InterruptedException
-	 */
-	public final void play(final int numOfEvents) throws InterruptedException {
-		for (int i = 0; i < numOfEvents; i++) {
-			c64.getEventScheduler().clock();
+	public final void typeInCommand(String runCommand) {
+		byte[] ram = c64.getRAM();
+		for (int i = 0; i < Math.min(runCommand.length(), 16); i++) {
+			ram[0x277 + i] = (byte) runCommand.charAt(i);
 		}
+		ram[0xc6] = (byte) Math.min(runCommand.length(), 16);
 	}
 
 	/**
@@ -548,8 +528,6 @@ public class Player {
 			byte[] c64Kernal = new byte[0x2000];
 			dis.readFully(c64Kernal);
 			c64.setCustomKernal(c64Kernal);
-		} catch (IOException e) {
-			throw e;
 		}
 		try (DataInputStream dis = new DataInputStream(c1541KernalStream)) {
 			byte[] c1541Kernal = new byte[0x4000];
@@ -557,8 +535,6 @@ public class Player {
 			for (final C1541 floppy : floppies) {
 				floppy.setCustomKernalRom(c1541Kernal);
 			}
-		} catch (IOException e) {
-			throw e;
 		}
 	}
 
@@ -722,11 +698,10 @@ public class Player {
 	}
 
 	public final void setDigiBoost(boolean selected) {
-		final int input = selected ? 0x7FF : 0;
 		for (int i = 0; i < C64.MAX_SIDS; i++) {
 			final SIDEmu s = c64.getSID(i);
 			if (s != null) {
-				s.input(input);
+				s.input(selected ? 0x7FF : 0);
 			}
 		}
 	}
@@ -735,7 +710,7 @@ public class Player {
 		for (int i = 0; i < C64.MAX_SIDS; i++) {
 			final SIDEmu s = c64.getSID(i);
 			if (s != null) {
-				s.setFilter(filterEnable);
+				s.setFilterEnable(filterEnable);
 			}
 		}
 	}
@@ -746,6 +721,21 @@ public class Player {
 			if (s != null) {
 				s.setFilter(config);
 			}
+		}
+	}
+
+	private void setSIDVolume(int volume) {
+		for (int i = 0; i < C64.MAX_SIDS; i++) {
+			final SIDEmu s = c64.getSID(i);
+			if (s != null) {
+				s.write(0x18, (byte) volume);
+			}
+		}
+	}
+
+	public final void setMixerVolume(int i, float volumeInDb) {
+		if (sidBuilder != null) {
+			sidBuilder.setMixerVolume(i, volumeInDb);
 		}
 	}
 
@@ -886,7 +876,8 @@ public class Player {
 
 		// apply filter settings and stereo SID chip address
 		setFilter();
-		setSecondSIDAddress();
+		setFilterEnable(config.getEmulation().isFilter());
+		setStereoSIDAddress();
 
 		updateStopTime();
 		timer.setCurrent(-1);
@@ -911,85 +902,20 @@ public class Player {
 		}
 	}
 
-	private void setSecondSIDAddress() {
-		Integer secondAddress = null;
-		if (AudioConfig.isStereo(config, tune)) {
-			if (config.getEmulation().isForceStereoTune()) {
-				secondAddress = config.getEmulation().getDualSidBase();
-			} else if (tune != null && tune.getInfo().sidChipBase2 != 0) {
-				secondAddress = tune.getInfo().sidChipBase2;
+	private void setStereoSIDAddress() {
+		Integer secondAddress = AudioConfig.getStereoAddress(config, tune);
+		if (secondAddress != null) {
+			if (Integer.valueOf(0xd400).equals(secondAddress)) {
+				/** Stereo SID at 0xd400 hack */
+				if (Integer.valueOf(0xd400).equals(secondAddress)) {
+					final SIDEmu s1 = c64.getSID(0);
+					final SIDEmu s2 = c64.getSID(1);
+					c64.setSID(0, new FakeStereo(c64.getEventScheduler(), s1,
+							s2));
+				}
+			} else {
+				c64.setSecondSIDAddress(secondAddress);
 			}
-		}
-		if (secondAddress != null && secondAddress != 0xd400) {
-			c64.setSecondSIDAddress(secondAddress);
-		}
-		/** Stereo SID at 0xd400 hack */
-		if (Integer.valueOf(0xd400).equals(secondAddress)) {
-			final SIDEmu s1 = c64.getSID(0);
-			final SIDEmu s2 = c64.getSID(1);
-			c64.setSID(0, new SIDEmu(c64.getEventScheduler()) {
-				@Override
-				public void reset(byte volume) {
-					s1.reset(volume);
-				}
-
-				@Override
-				public byte read(int addr) {
-					return s1.read(addr);
-				}
-
-				@Override
-				public void write(int addr, byte data) {
-					s1.write(addr, data);
-					s2.write(addr, data);
-				}
-
-				@Override
-				public byte readInternalRegister(int addr) {
-					return s1.readInternalRegister(addr);
-				}
-
-				@Override
-				public void clock() {
-					s1.clock();
-				}
-
-				@Override
-				public void setVoiceMute(int num, boolean mute) {
-					s1.setVoiceMute(num, mute);
-				}
-
-				@Override
-				public void setFilter(IConfig config) {
-					s1.setFilter(config);
-				}
-
-				@Override
-				public void setFilter(boolean enable) {
-					s1.setFilter(enable);
-				}
-
-				@Override
-				public ChipModel getChipModel() {
-					return s1.getChipModel();
-				}
-
-				@Override
-				public void setChipModel(ChipModel model) {
-					s1.setChipModel(model);
-				}
-
-				@Override
-				public void setSampling(double cpuFrequency, float frequency,
-						SamplingMethod sampling) {
-					s1.setSampling(cpuFrequency, frequency, sampling);
-				}
-
-				@Override
-				public void input(int input) {
-					s1.input(input);
-				}
-			});
 		}
 	}
 
@@ -1090,6 +1016,17 @@ public class Player {
 		return config.getSidplay2().isLoop() ? State.RESTART : State.EXIT;
 	}
 
+	/**
+	 * Run C64 emulation for a specific amount of events.
+	 * 
+	 * @throws InterruptedException
+	 */
+	private final void play(final int numOfEvents) throws InterruptedException {
+		for (int i = 0; i < numOfEvents; i++) {
+			c64.getEventScheduler().clock();
+		}
+	}
+
 	private void close() {
 		if (sidBuilder != null) {
 			for (int i = 0; i < C64.MAX_SIDS; i++) {
@@ -1110,9 +1047,9 @@ public class Player {
 	 *            file to play the tune (null means just reset C64)
 	 */
 	public final void playTune(final SidTune sidTune) {
-		tune = sidTune;
 		// Stop previous run
 		stopC64();
+		tune = sidTune;
 		// 0 means use start song next time open() is called
 		track.setSelected(0);
 		if (tune != null) {
@@ -1183,12 +1120,6 @@ public class Player {
 
 	public final void quit() {
 		stateProperty.set(State.QUIT);
-	}
-
-	public final void setSIDVolume(int i, float volumeDb) {
-		if (sidBuilder != null) {
-			sidBuilder.setSIDVolume(i, volumeDb);
-		}
 	}
 
 	public final void setSidDatabase(SidDatabase sidDatabase) {

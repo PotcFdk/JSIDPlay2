@@ -59,8 +59,8 @@ public class ReSIDBuilder extends SIDBuilder {
 		this.driverSettings = driverSettings;
 		this.audioConfig = audioConfig;
 		this.systemFrequency = cpuClock.getCpuFrequency();
-		setSIDVolume(0, config.getAudio().getLeftVolume());
-		setSIDVolume(1, config.getAudio().getRightVolume());
+		setMixerVolume(0, config.getAudio().getLeftVolume());
+		setMixerVolume(1, config.getAudio().getRightVolume());
 		// save original driver
 		output = driverSettings.getOutput();
 		// switch to NIL driver for fast forward
@@ -196,7 +196,7 @@ public class ReSIDBuilder extends SIDBuilder {
 	}
 
 	@Override
-	public void setSIDVolume(int i, float volumeInDB) {
+	public void setMixerVolume(int i, float volumeInDB) {
 		mixerEvent.setVolume(i, (float) Math.pow(10, volumeInDB / 20));
 	}
 

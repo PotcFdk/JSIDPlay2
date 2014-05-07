@@ -99,7 +99,7 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
 					util.getConfig().getAudio().setLeftVolume(volumeDb);
-					util.getPlayer().setSIDVolume(0, volumeDb);
+					util.getPlayer().setMixerVolume(0, volumeDb);
 				});
 		rightVolume.setValue(util.getConfig().getAudio().getRightVolume()
 				+ MAX_VOLUME_DB);
@@ -107,7 +107,7 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
 					util.getConfig().getAudio().setRightVolume(volumeDb);
-					util.getPlayer().setSIDVolume(1, volumeDb);
+					util.getPlayer().setMixerVolume(1, volumeDb);
 				});
 
 		sid1Models = FXCollections.<Object> observableArrayList();
@@ -166,6 +166,7 @@ public class EmulationSettings extends C64Window {
 		}
 		util.getPlayer().updateChipModel();
 		util.getPlayer().setFilter();
+		util.getPlayer().setFilterEnable(util.getConfig().getEmulation().isFilter());
 	}
 
 	@FXML
@@ -180,6 +181,7 @@ public class EmulationSettings extends C64Window {
 		}
 		util.getPlayer().updateChipModel();
 		util.getPlayer().setFilter();
+		util.getPlayer().setFilterEnable(util.getConfig().getEmulation().isFilter());
 	}
 
 	@FXML
@@ -226,6 +228,7 @@ public class EmulationSettings extends C64Window {
 
 		util.getPlayer().updateChipModel();
 		util.getPlayer().setFilter();
+		util.getPlayer().setFilterEnable(util.getConfig().getEmulation().isFilter());
 		if (!duringInitialization) {
 			calculateFilterCurve(filterName);
 		}

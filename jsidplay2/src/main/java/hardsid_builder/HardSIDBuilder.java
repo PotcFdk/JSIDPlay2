@@ -143,7 +143,7 @@ public class HardSIDBuilder extends SIDBuilder {
 	}
 
 	@Override
-	public void setSIDVolume(int sidNum, float volumnInDb) {
+	public void setMixerVolume(int sidNum, float volumnInDb) {
 	}
 
 	@Override

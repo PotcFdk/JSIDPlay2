@@ -133,7 +133,7 @@ public class HardSID extends SIDEmu {
 	}
 
 	@Override
-	public void setFilter(final boolean enable) {
+	public void setFilterEnable(final boolean enable) {
 		hsid2.HardSID_Filter(chipNum, enable);
 	}
 

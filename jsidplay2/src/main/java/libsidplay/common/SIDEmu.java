@@ -58,7 +58,7 @@ public abstract class SIDEmu {
 
 	public abstract void setFilter(IConfig config);
 
-	public abstract void setFilter(boolean enable);
+	public abstract void setFilterEnable(boolean enable);
 
 	public abstract ChipModel getChipModel();
 
