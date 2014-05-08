@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -335,7 +336,7 @@ public class HVSCEntry {
 		this.stilGlbComment = stilComment;
 	}
 
-	@OneToMany(mappedBy = "hvscEntry")
+	@OneToMany(mappedBy = "hvscEntry", fetch = FetchType.LAZY)
 	private List<StilEntry> stil;
 
 	public List<StilEntry> getStil() {

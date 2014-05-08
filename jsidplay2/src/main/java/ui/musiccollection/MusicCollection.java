@@ -455,7 +455,7 @@ public class MusicCollection extends Tab implements UIPart {
 			c.setTmpDir(util.getConfig().getSidplay2().getTmpDir());
 			c.setVerbose(true);
 			try {
-				c.convertFiles(util.getPlayer().getStil(),
+				c.convertFiles(util.getPlayer(),
 						new File[] { selectedItem.getValue() }, directory);
 			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
 				e.printStackTrace();
@@ -721,13 +721,13 @@ public class MusicCollection extends Tab implements UIPart {
 					setSongLengthDatabase(theRootFile);
 					setSTIL(theRootFile);
 					fileBrowser.setRoot(new MusicCollectionTreeItem(util
-							.getPlayer().getStil(), theRootFile));
+							.getPlayer(), theRootFile));
 				} else if (getType() == MusicCollectionType.CGSC) {
 					util.getConfig().getSidplay2()
 							.setCgsc(rootFile.getAbsolutePath());
 					File theRootFile = sidPlay2Section.getCgscFile();
 					fileBrowser.setRoot(new MusicCollectionTreeItem(util
-							.getPlayer().getStil(), theRootFile));
+							.getPlayer(), theRootFile));
 				}
 				MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
 				cellFactory

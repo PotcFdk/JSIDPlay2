@@ -46,7 +46,6 @@ import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
-import libsidutils.STIL;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -186,14 +185,13 @@ public class FavoritesTab extends Tab implements UIPart {
 			HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
 					.getSelectedItem();
 
-			STIL stil = util.getPlayer().getStil();
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
 					.getConfig().getSidplay2();
 			showStil.setDisable(hvscEntry == null
-					|| stil == null
-					|| stil.getSTILEntry(PathUtils.getFile(hvscEntry.getPath(),
-							sidPlay2Section.getHvscFile(),
-							sidPlay2Section.getCgscFile())) == null);
+					|| util.getPlayer().getStilEntry(
+							PathUtils.getFile(hvscEntry.getPath(),
+									sidPlay2Section.getHvscFile(),
+									sidPlay2Section.getCgscFile())) == null);
 			List<Tab> tabs = favorites.getFavoriteTabs();
 			moveToTab.getItems().clear();
 			copyToTab.getItems().clear();
@@ -311,14 +309,12 @@ public class FavoritesTab extends Tab implements UIPart {
 		}
 
 		STILView stilInfo = new STILView(util.getPlayer());
-		STIL stil = util.getPlayer().getStil();
-		if (stil != null) {
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2();
-			stilInfo.setEntry(stil.getSTILEntry(PathUtils.getFile(
-					hvscEntry.getPath(), sidPlay2Section.getHvscFile(),
-					sidPlay2Section.getCgscFile())));
-		}
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig()
+				.getSidplay2();
+		stilInfo.setEntry(util.getPlayer().getStilEntry(
+				PathUtils.getFile(hvscEntry.getPath(),
+						sidPlay2Section.getHvscFile(),
+						sidPlay2Section.getCgscFile())));
 		stilInfo.open();
 	}
 
@@ -346,8 +342,8 @@ public class FavoritesTab extends Tab implements UIPart {
 			c.setTmpDir(util.getConfig().getSidplay2().getTmpDir());
 			c.setVerbose(true);
 			try {
-				c.convertFiles(util.getPlayer().getStil(),
-						files.toArray(new File[0]), directory);
+				c.convertFiles(util.getPlayer(), files.toArray(new File[0]),
+						directory);
 			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
 				e.printStackTrace();
 			}

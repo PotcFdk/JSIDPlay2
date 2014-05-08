@@ -12,12 +12,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import libsidplay.Player;
 import libsidplay.Reloc65;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
-import libsidutils.STIL;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
@@ -720,22 +720,22 @@ public class Psid64 {
 		return null;
 	}
 
-	public void convertFiles(STIL stil, File[] files, File target)
+	public void convertFiles(Player player, File[] files, File target)
 			throws NotEnoughC64MemException, IOException, SidTuneError {
 		for (File file : files) {
 			if (file.isDirectory()) {
-				convertFiles(stil, file.listFiles(), target);
+				convertFiles(player, file.listFiles(), target);
 			} else {
-				convertToPSID64(stil, file, target);
+				convertToPSID64(player, file, target);
 			}
 		}
 	}
 
-	private void convertToPSID64(STIL stil, File file, File target)
+	private void convertToPSID64(Player player, File file, File target)
 			throws NotEnoughC64MemException, IOException, SidTuneError {
 		tune = SidTune.load(file);
 		tune.selectSong(tune.getInfo().startSong);
-		stilEntry = stil != null ? stil.getSTILEntry(file) : null;
+		stilEntry = player.getStilEntry(file);
 
 		File tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file)
 				+ ".prg.tmp");

@@ -69,6 +69,7 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PRG2TAP;
 import libsidutils.STIL;
+import libsidutils.STIL.STILEntry;
 import libsidutils.SidDatabase;
 import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
@@ -1144,8 +1145,8 @@ public class Player {
 		this.stil = stil;
 	}
 
-	public final STIL getStil() {
-		return stil;
+	public final STILEntry getStilEntry(File file) {
+		return stil != null && file != null ? stil.getSTILEntry(file) : null;
 	}
 
 	public final void setExtendImagePolicy(IExtendImageListener policy) {

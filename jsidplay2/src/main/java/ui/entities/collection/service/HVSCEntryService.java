@@ -72,7 +72,7 @@ public class HVSCEntryService {
 		final SidTune tune = tuneFile.isFile() ? SidTune.load(tuneFile) : null;
 		HVSCEntry hvscEntry = HVSCEntry.create(player, path, tuneFile, tune);
 
-		stilService.add(player.getStil(), tuneFile, hvscEntry);
+		stilService.add(player, tuneFile, hvscEntry);
 
 		try {
 			em.persist(hvscEntry);

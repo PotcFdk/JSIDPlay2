@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
 
-import libsidutils.STIL;
+import libsidplay.Player;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
@@ -19,9 +19,9 @@ public class STILService {
 		this.em = em;
 	};
 
-	public void add(STIL stil, final File tuneFile, HVSCEntry hvscEntry) {
-		if (stil != null && stil.getSTILEntry(tuneFile) != null) {
-			STILEntry stilEntry = stil.getSTILEntry(tuneFile);
+	public void add(Player player, final File tuneFile, HVSCEntry hvscEntry) {
+		STILEntry stilEntry = player.getStilEntry(tuneFile);
+		if (stilEntry != null) {
 			// get STIL Global Comment
 			hvscEntry.setStilGlbComment(stilEntry.globalComment);
 			// add tune infos

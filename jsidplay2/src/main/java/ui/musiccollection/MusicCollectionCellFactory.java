@@ -2,6 +2,7 @@ package ui.musiccollection;
 
 import java.io.File;
 
+import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeCell;
@@ -23,31 +24,29 @@ public class MusicCollectionCellFactory implements
 
 	public class TextFieldTreeCellImpl extends TreeCell<File> {
 
+		private ListChangeListener<TreeItem<File>> listChangeListener = (
+				Change<? extends TreeItem<File>> c) -> setCellStyle();
+
 		public TextFieldTreeCellImpl() {
-			super();
-			currentlyPlayedTreeItems.addListener((
-					Change<? extends TreeItem<File>> c) -> {
-				setCellStyle();
-			});
+			currentlyPlayedTreeItems.addListener(listChangeListener);
 		}
 
 		@Override
 		protected void updateItem(File file, boolean empty) {
 			super.updateItem(file, empty);
-			setCellStyle();
-
-			if (!empty) {
-				setText(file != null ? file.getName() : "");
+			if (!empty && file != null) {
+				setText(file.getName());
 				setGraphic(getTreeItem().getGraphic());
 			} else {
 				setText(null);
 				setGraphic(null);
 			}
+			setCellStyle();
 		}
 
 		private void setCellStyle() {
 			getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
-			if (isCurrentlyPlayed()) {
+			if (!isEmpty() && isCurrentlyPlayed()) {
 				getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
 			}
 		}
