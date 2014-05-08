@@ -3,7 +3,6 @@ package ui.musiccollection;
 import java.io.File;
 
 import javafx.collections.ListChangeListener;
-import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -24,8 +23,7 @@ public class MusicCollectionCellFactory implements
 
 	public class TextFieldTreeCellImpl extends TreeCell<File> {
 
-		private ListChangeListener<TreeItem<File>> listChangeListener = (
-				Change<? extends TreeItem<File>> c) -> setCellStyle();
+		private ListChangeListener<TreeItem<File>> listChangeListener = c -> setCellStyle();
 
 		public TextFieldTreeCellImpl() {
 			currentlyPlayedTreeItems.addListener(listChangeListener);
@@ -52,12 +50,9 @@ public class MusicCollectionCellFactory implements
 		}
 
 		private boolean isCurrentlyPlayed() {
-			for (TreeItem<File> treeItem : currentlyPlayedTreeItems) {
-				if (treeItem.getValue().equals(getItem())) {
-					return true;
-				}
-			}
-			return false;
+			return currentlyPlayedTreeItems.stream()
+					.filter(treeItem -> treeItem.getValue().equals(getItem()))
+					.findFirst().isPresent();
 		}
 
 	}
