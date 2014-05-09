@@ -65,6 +65,7 @@ public class FavoritesCellFactory implements
 			} else {
 				file = null;
 				setText(null);
+				setGraphic(null);
 			}
 			setCellStyle();
 		}
