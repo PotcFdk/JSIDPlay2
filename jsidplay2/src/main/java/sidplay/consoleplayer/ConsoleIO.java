@@ -16,16 +16,12 @@ public class ConsoleIO {
 	private IConfig config;
 	private Player player;
 
-	private boolean v1mute, v2mute, v3mute;
-
-	private boolean filterEnable;
-
-	private boolean quiet;
+	private boolean v1mute, v2mute, v3mute, filterEnable, quiet;
 	private int verboseLevel;
 
-	public ConsoleIO(IConfig config, Player player, boolean quiet,
+	public ConsoleIO(Player player, boolean quiet,
 			int verboseLevel) {
-		this.config = config;
+		this.config = player.getConfig();
 		this.player = player;
 		this.quiet = quiet;
 		this.verboseLevel = verboseLevel;
