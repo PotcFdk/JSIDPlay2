@@ -17,8 +17,6 @@ import ui.common.UIUtil;
 
 public class ConsoleOutput extends VBox implements UIPart {
 
-	private static final String NEWLINE = System.getProperty("line.separator");
-
 	@FXML
 	protected TextArea console;
 	@FXML
@@ -35,35 +33,26 @@ public class ConsoleOutput extends VBox implements UIPart {
 	private void clearConsole() {
 		console.clear();
 	}
-	
+
 	public PrintStream getPrintStream(final OutputStream original) {
 		return new PrintStream(new OutputStream() {
-
-			private StringBuffer contents = new StringBuffer();
 
 			public synchronized void write(final byte[] b, final int off,
 					final int len) throws IOException {
 				original.write(b, off, len);
-				final String str = new String(b, off, len);
-				contents.append(str);
-				if (str.endsWith(NEWLINE)) {
-					flush();
-				}
+				print(new String(b, off, len));
 			}
 
 			@Override
 			public synchronized void write(int ch) throws IOException {
-				contents.append((char) ch);
+				original.write(ch);
+				print(String.valueOf((char) ch));
 			}
 
-			@Override
-			public synchronized void flush() throws IOException {
-				super.flush();
-				Platform.runLater(() -> {
-					console.appendText(contents.toString());
-					contents.setLength(0);
-				});
+			private void print(String str) {
+				Platform.runLater(() -> console.appendText(str));
 			}
+
 		});
 	}
 

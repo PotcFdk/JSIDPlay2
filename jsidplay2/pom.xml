@@ -8,20 +8,18 @@
 	<packaging>jar</packaging>
 
 	<name>jsidplay2</name>
-	<url>${server.url}</url>
+	<url>http://kenchis.t15.org/jsidplay2/javafx/</url>
 	<description>This is a Commodore 64 emulator specialized for sound reproduction. It is also a SID player for music collections like HVSC and CGSC.
  It is a full C64 emulator and can play games of the GameBase64 project as well.</description>
 
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-		<!-- Web Server URL to be replaced in web resources -->
-		<server.url>http://kenchis.t15.org/jsidplay2/javafx/</server.url>
-		<!-- FTP upload coordinates -->
+		<!-- Optional: FTP upload coordinates -->
 		<ftp.username>JohnDoe</ftp.username>
 		<ftp.password>secret</ftp.password>
 		<ftp.server>rainbow.org</ftp.server>
 		<ftp.remotedir>foobar</ftp.remotedir>
-		<!-- extra online content -->
+		<!-- Optional: extra online content -->
 		<gb64.mdbfile />
 		<hvsc.zip />
 		<zip7.home />
@@ -163,7 +161,9 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
-							<excludeArtifactIds>jinput-platform,junit</excludeArtifactIds>
+							<includeScope>runtime</includeScope>
+							<excludeScope>provided</excludeScope>
+							<excludeArtifactIds>jinput-platform</excludeArtifactIds>
 						</configuration>
 					</execution>
 				</executions>

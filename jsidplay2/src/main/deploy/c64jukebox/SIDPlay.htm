@@ -1,6 +1,6 @@
 <html>
   <head>
-  	<link rel="shortcut icon" href="${server.url}jsidplay2.png"> 
+  	<link rel="shortcut icon" href="${project.url}jsidplay2.png"> 
   </head>
   <body>
 	<H1>C64 JukeBox (API-Test)</H1>
@@ -30,9 +30,9 @@
 	<!-- controls -->
 	<H2>Control Player</H2>
 	<!-- play a SID (-1 means default song number, >0 is song number) -->
-	<a href="javascript:document.jsidplay.playSID('${server.url}Turrican_2-The_Final_Fight.sid', 9)">Play Turrican_2-The_Final_Fight.sid (Song 9)</a><br>
-    <a href="javascript:document.jsidplay.playSID('${server.url}Tapeloader.sid', -1)">Play Tapeloader.sid (Default Song)</a><br>
-    <a href="javascript:document.jsidplay.playSID('${server.url}NEI_Intro.sid', -1)">Play NEI_Intro.sid (Default Song)</a><br>
+	<a href="javascript:document.jsidplay.playSID('${project.url}Turrican_2-The_Final_Fight.sid', 9)">Play Turrican_2-The_Final_Fight.sid (Song 9)</a><br>
+    <a href="javascript:document.jsidplay.playSID('${project.url}Tapeloader.sid', -1)">Play Tapeloader.sid (Default Song)</a><br>
+    <a href="javascript:document.jsidplay.playSID('${project.url}NEI_Intro.sid', -1)">Play NEI_Intro.sid (Default Song)</a><br>
 	<a href="javascript:document.jsidplay.nextSong()">Next Song</a><br>
 	<a href="javascript:document.jsidplay.previousSong()">Previous Song</a><br>
 	<!-- set flag to use emulation, you must call playSID after -->
@@ -46,9 +46,9 @@
 	<H2>Get Status</H2>
 	<!-- Get song count of the parametrized tune -->
 	<!-- Get the song count of the parametrized file, the file is read once and hashed -->
-	<a href="javascript:alert(document.jsidplay.getSongCount('${server.url}Turrican_2-The_Final_Fight.sid'))">Get Song Count of Turrican II</a><br>
+	<a href="javascript:alert(document.jsidplay.getSongCount('${project.url}Turrican_2-The_Final_Fight.sid'))">Get Song Count of Turrican II</a><br>
 	<!-- Get the default song of the parametrized tune, the file is read once and hashed -->
-	<a href="javascript:alert(document.jsidplay.getDefaultSong('${server.url}Tapeloader.sid'))">Get Default Song of Tapeloader</a><br>
+	<a href="javascript:alert(document.jsidplay.getDefaultSong('${project.url}Tapeloader.sid'))">Get Default Song of Tapeloader</a><br>
 	<!-- Get the song number that is currently played -->
 	<a href="javascript:alert(document.jsidplay.getCurrentSong())">Get Current Count</a><br>
 	<!-- Get the current time the song is playing -->
