@@ -973,7 +973,8 @@ public class Player {
 	}
 
 	/**
-	 * Out play loop to be externally called (handle switches to next song etc.)
+	 * Play routine emulating a number of events (handle switches to next song
+	 * etc.)
 	 * 
 	 * @throws InterruptedException
 	 */

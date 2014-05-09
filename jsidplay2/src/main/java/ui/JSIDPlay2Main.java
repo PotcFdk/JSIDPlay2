@@ -55,14 +55,12 @@ public class JSIDPlay2Main extends Application {
 	 */
 	private ConfigService configService;
 
-	private JSidPlay2 jSidplay2;
-
 	@Override
 	public void start(Stage primaryStage) {
 		player = new Player(getConfiguration());
 		player.setMenuHook(menuHook);
 
-		jSidplay2 = new JSidPlay2(primaryStage, player);
+		final JSidPlay2 jSidplay2 = new JSidPlay2(primaryStage, player);
 		jSidplay2.setConfigService(configService);
 		jSidplay2.open();
 		// Set default position and size
@@ -74,7 +72,7 @@ public class JSIDPlay2Main extends Application {
 		primaryStage.fullScreenProperty().addListener(
 				(observable, oldValue, newValue) -> section
 						.setFullScreen(newValue));
-		Scene scene = primaryStage.getScene();
+		final Scene scene = primaryStage.getScene();
 		if (scene != null) {
 			Window window = scene.getWindow();
 			window.setX(section.getFrameX());
@@ -93,8 +91,8 @@ public class JSIDPlay2Main extends Application {
 			window.yProperty().addListener(
 					(observable, oldValue, newValue) -> section
 							.setFrameY(newValue.intValue()));
-			player.startC64();
 		}
+		player.startC64();
 	}
 
 	@Override

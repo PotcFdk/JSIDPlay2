@@ -9,16 +9,18 @@
 
 	<name>jsidplay2</name>
 	<url>${server.url}</url>
+	<description>This is a Commodore 64 emulator specialized for sound reproduction. It is also a SID player for music collections like HVSC and CGSC.
+ It is a full C64 emulator and can play games of the GameBase64 project as well.</description>
 
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+		<!-- Web Server URL to be replaced in web resources -->
+		<server.url>http://kenchis.t15.org/jsidplay2/javafx/</server.url>
 		<!-- FTP upload coordinates -->
 		<ftp.username>JohnDoe</ftp.username>
 		<ftp.password>secret</ftp.password>
 		<ftp.server>rainbow.org</ftp.server>
 		<ftp.remotedir>foobar</ftp.remotedir>
-		<!-- Web Server URL to be replaced in web resources -->
-		<server.url />
 		<!-- extra online content -->
 		<gb64.mdbfile />
 		<hvsc.zip />
@@ -26,14 +28,22 @@
 		<cgsc.7z />
 		<hvmec.bz2 />
 	</properties>
+
+	<scm>
+		<url>http://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2</url>
+		<developerConnection>scm:svn:svn+ssh://kenchis@svn.code.sf.net/p/jsidplay2/code/trunk/jsidplay2</developerConnection>
+		<connection>scm:svn:http://svn.code.sf.net/p/jsidplay2/code/trunk/jsidplay2</connection>
+		<tag>HEAD</tag>
+	</scm>
+
 	<repositories>
 		<repository>
 			<id>lib</id>
 			<url>file://${basedir}/lib</url>
 		</repository>
 	</repositories>
-	<dependencies>
 
+	<dependencies>
 		<dependency>
 			<groupId>jsidplay2</groupId>
 			<artifactId>photos</artifactId>
@@ -456,7 +466,8 @@
 								<ant antfile="${basedir}/online-content.xml">
 									<property name="compile_classpath" refid="maven.compile.classpath" />
 									<property name="test_src" location="${basedir}/src/test/resources" />
-									<property name="jsiddevice_jar" value="${project.build.directory}/deploy/jsiddevice-${project.version}.jar" />
+									<property name="jsiddevice_jar"
+										value="${project.build.directory}/deploy/jsiddevice-${project.version}.jar" />
 									<property name="gb64.mdbfile" value="${gb64.mdbfile}" />
 									<property name="hvsc.zip" value="${hvsc.zip}" />
 									<property name="zip7.home" value="${zip7.home}" />

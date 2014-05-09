@@ -13,13 +13,8 @@ public class TuneInfoRowFactory implements
 			@Override
 			public void updateItem(TuneInfo item, boolean empty) {
 				super.updateItem(item, empty);
-				if (item == null) {
-					setTooltip(null);
-				} else {
-					Tooltip tooltip = new Tooltip();
-					tooltip.setText(getItem().getValue());
-					setTooltip(tooltip);
-				}
+				setTooltip(item != null ? new Tooltip(getItem().getValue())
+						: null);
 			}
 		};
 	}

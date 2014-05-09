@@ -124,8 +124,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	private long lastUpdate;
 	private int oldHalfTrack, hardcopyCounter;
 	private boolean duringInitialization, oldMotorOn;
-	private StringBuilder tuneSpeed;
-	private StringBuilder playerId;
+	private StringBuilder tuneSpeed, playerId;
 
 	public JSidPlay2(Stage primaryStage, Player player) {
 		super(primaryStage, player);

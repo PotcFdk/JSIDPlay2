@@ -68,8 +68,7 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		Collection<MusicCollectionTreeItem> children = new ArrayList<MusicCollectionTreeItem>();
 		File[] listFiles = getValue().listFiles(fFileFilter);
 		if (listFiles != null) {
-			Arrays.sort(
-					listFiles,
+			Arrays.stream(listFiles).sorted(
 					(a, b) -> {
 						Integer aw = a.isFile() ? 1 : 0;
 						Integer bw = b.isFile() ? 1 : 0;
