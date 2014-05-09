@@ -15,8 +15,7 @@ e.g.
 -Dftp.username=XXX
 -Dftp.password=XXX
 -Dftp.server=ftp.kenchis.t15.org
--Dftp.remotedir=/javafx
--Dserver.url=http://kenchis.t15.org/jsidplay2/javafx/
+-Dftp.remotedir=/jsidplay2/javafx
 
 Optional:
 -Dgb64.mdbfile=<pathToGameBase64.mdb>
