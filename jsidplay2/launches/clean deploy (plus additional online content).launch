@@ -8,7 +8,6 @@
 <listAttribute key="M2_PROPERTIES">
 <listEntry value="ftp.password=${ftp.password}"/>
 <listEntry value="ftp.username=${ftp.username}"/>
-<listEntry value="server.url=${server.url}"/>
 <listEntry value="ftp.server=${ftp.server}"/>
 <listEntry value="ftp.remotedir=${ftp.remotedir}"/>
 <listEntry value="gb64.mdbfile=${gb64.mdbfile}"/>

@@ -8,11 +8,19 @@
 	<packaging>jar</packaging>
 
 	<name>jump3r</name>
-	<url>${server.url}</url>
+	<url>http://kenchis.t15.org/jsidplay2/javafx/</url>
 
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 	</properties>
+
+	<scm>
+		<url>http://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jump3r</url>
+		<developerConnection>scm:svn:svn+ssh://kenchis@svn.code.sf.net/p/jsidplay2/code/trunk/jump3r</developerConnection>
+		<connection>scm:svn:http://svn.code.sf.net/p/jsidplay2/code/trunk/jump3r</connection>
+		<tag>HEAD</tag>
+	</scm>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -100,4 +108,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	<description>Java Unofficial MP3 EncodeR</description>
 </project>
