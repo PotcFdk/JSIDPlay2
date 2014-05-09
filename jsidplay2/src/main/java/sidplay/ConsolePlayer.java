@@ -151,10 +151,9 @@ public class ConsolePlayer {
 				exit(1);
 			}
 		}
-		ConsoleIO consoleIO = new ConsoleIO(player, quiet, verbose);
-		player.setMenuHook(obj -> consoleIO.menu(player.getTune(),
-				player.getTrack(), player.getTimer()));
-		player.setInteractivityHook(obj -> consoleIO.decodeKeys());
+		ConsoleIO consoleIO = new ConsoleIO(config, quiet, verbose);
+		player.setMenuHook(obj -> consoleIO.menu(obj));
+		player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
 
 		player.startC64();
 	}

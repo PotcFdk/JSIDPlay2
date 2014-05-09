@@ -644,7 +644,7 @@ public class Player {
 	public final String getCredits() {
 		final StringBuffer credits = new StringBuffer();
 		credits.append("Java Version and User Interface v3.0:\n"
-				+ "\tCopyright (C) 2007-2014 Ken Händel\n"
+				+ "\tCopyright (©) 2007-2014 Ken Händel\n"
 				+ "\thttp://sourceforge.net/projects/jsidplay2/\n");
 		credits.append("Distortion Simulation and development: Antti S. Lankila\n"
 				+ "\thttp://bel.fi/~alankila/c64-sw/\n");
@@ -653,32 +653,35 @@ public class Player {
 				+ "\thttp://www.acid64.com\n");
 		credits.append("Testing and Feedback: Nata, founder of proNoise\n"
 				+ "\thttp://www.nata.netau.net/\n");
-		credits.append("graphical output:\n" + "\t(C) 2007 Joakim Eriksson\n"
-				+ "\t(C) 2009, 2010 Antti S. Lankila\n");
+		credits.append("graphical output:\n" + "\t(©) 2007 Joakim Eriksson\n"
+				+ "\t(©) 2009, 2010 Antti S. Lankila\n");
 		credits.append("MP3 encoder/decoder (jump3r), based on Lame\n"
-				+ "\tCopyright (C) 2010-2011  Ken Händel\n"
+				+ "\tCopyright (©) 2010-2011  Ken Händel\n"
 				+ "\thttp://sourceforge.net/projects/jsidplay2/\n");
 		credits.append("This product uses the database of Game Base 64 (GB64)\n"
 				+ "\thttp://www.gb64.com/\n");
+		credits.append("Command Line Parser (JCommander):\n"
+				+ "\tCopyright (©) 2010-2014 Cédric Beust\n"
+				+ "\thttp://jcommander.org/\n");
 		credits.append("MP3 downloads from Stone Oakvalley's Authentic SID MusicCollection (SOASC=):\n"
 				+ "\thttp://www.6581-8580.com/\n");
 		credits.append("PSID to PRG converter (PSID64 v0.9):\n"
-				+ "\tCopyright (C) 2001-2007  Roland Hermans\n"
+				+ "\tCopyright (©) 2001-2007  Roland Hermans\n"
 				+ "\thttp://sourceforge.net/projects/psid64/\n");
 		credits.append("An Optimizing Hybrid LZ77 RLE Data Compression Program (Pucrunch 22.11.2008):\n"
-				+ "\tCopyright (C) 1997-2008 Pasi 'Albert' Ojala\n"
+				+ "\tCopyright (©) 1997-2008 Pasi 'Albert' Ojala\n"
 				+ "\thttp://www.cs.tut.fi/~albert/Dev/pucrunch/\n");
 		credits.append("SID dump file (SIDDump V1.04):\n"
-				+ "\tCopyright (C) 2007 Lasse Öörni\n");
+				+ "\tCopyright (©) 2007 Lasse Öörni\n");
 		credits.append("HVSC playroutine identity scanner (SIDId V1.07):\n"
-				+ "\tCopyright (C) 2007 Lasse Öörni\n");
+				+ "\tCopyright (©) 2007 Lasse Öörni\n");
 		credits.append("High Voltage Music Engine MusicCollection (HVMEC V1.0):\n"
-				+ "\tCopyright (C) 2011 by Stefano Tognon and Stephan Parth\n");
+				+ "\tCopyright (©) 2011 by Stefano Tognon and Stephan Parth\n");
 		credits.append("C1541 Floppy Disk Drive Emulation:\n"
-				+ "\tCopyright (C) 2010 VICE (the Versatile Commodore Emulator)\n"
+				+ "\tCopyright (©) 2010 VICE (the Versatile Commodore Emulator)\n"
 				+ "\thttp://www.viceteam.org/\n");
 		credits.append("Based on libsidplay v2.1.1 engine:\n"
-				+ "\tCopyright (C) 2000 Simon White sidplay2@yahoo.com\n"
+				+ "\tCopyright (©) 2000 Simon White sidplay2@yahoo.com\n"
 				+ "\thttp://sidplay2.sourceforge.net\n");
 		credits.append(MOS6510.credits());
 		credits.append(MOS6526.credits());

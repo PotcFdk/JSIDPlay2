@@ -1,6 +1,7 @@
 package sidplay.consoleplayer;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import libsidplay.Player;
 import libsidplay.player.Timer;
@@ -9,56 +10,57 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Model;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IConsoleSection;
-import sidplay.ini.intf.IEmulationSection;
 
 public class ConsoleIO {
 
-	private IConfig config;
-	private Player player;
+	private static final ResourceBundle BUNDLE = ResourceBundle
+			.getBundle("sidplay.consoleplayer.ConsolePlayer");
 
-	private boolean v1mute, v2mute, v3mute, filterEnable, quiet;
+	private IConfig config;
+
+	private boolean v1mute, v2mute, v3mute, quiet;
 	private int verboseLevel;
 
-	public ConsoleIO(Player player, boolean quiet,
-			int verboseLevel) {
-		this.config = player.getConfig();
-		this.player = player;
+	public ConsoleIO(IConfig config, boolean quiet, int verboseLevel) {
+		this.config = config;
 		this.quiet = quiet;
 		this.verboseLevel = verboseLevel;
 	}
 
-	public void menu(SidTune tune, Track track, Timer timer) {
-		final IConsoleSection console = config.getConsole();
-		final IEmulationSection emulation = config.getEmulation();
-		filterEnable = emulation.isFilter();
+	public void menu(Player player) {
 		if (quiet) {
 			return;
 		}
+		final IConsoleSection console = config.getConsole();
+
+		final SidTune tune = player.getTune();
+		final Track track = player.getTrack();
+		final Timer timer = player.getTimer();
 
 		System.out.println(String.format("%c%s%c", console.getTopLeft(),
 				setfill(console.getHorizontal(), 54), console.getTopRight()));
-		System.out.println(String.format("%c%54s%c", console.getVertical(),
-				" Java SIDPLAY - Music Player & C64 SID Chip Emulator  ",
-				console.getVertical()));
+		System.out.println(String.format("%c%54s%c", console.getVertical(), " "
+				+ BUNDLE.getString("HEADING") + "  ", console.getVertical()));
 		System.out.println(String.format("%c%s%c", console.getJunctionLeft(),
 				setfill(console.getHorizontal(), 54),
 				console.getJunctionRight()));
 		if (tune.getInfo().numberOfInfoStrings > 0) {
 			if (tune.getInfo().numberOfInfoStrings == 3) {
-				System.out.println(String.format("%c Title        : %37s %c",
-						console.getVertical(), tune.getInfo().infoString[0],
-						console.getVertical()));
-				System.out.println(String.format("%c Author       : %37s %c",
-						console.getVertical(), tune.getInfo().infoString[1],
-						console.getVertical()));
-				System.out.println(String.format("%c Released     : %37s %c",
-						console.getVertical(), tune.getInfo().infoString[2],
-						console.getVertical()));
+				System.out.println(String.format("%c %-12s : %37s %c",
+						console.getVertical(), BUNDLE.getString("TITLE"),
+						tune.getInfo().infoString[0], console.getVertical()));
+				System.out.println(String.format("%c %-12s : %37s %c",
+						console.getVertical(), BUNDLE.getString("AUTHOR"),
+						tune.getInfo().infoString[1], console.getVertical()));
+				System.out.println(String.format("%c %-12s : %37s %c",
+						console.getVertical(), BUNDLE.getString("AUTHOR"),
+						tune.getInfo().infoString[2], console.getVertical()));
 			} else {
 				for (int i = 0; i < tune.getInfo().numberOfInfoStrings; i++) {
 					System.out
-							.println(String.format("%c Description  : %37s %c",
+							.println(String.format("%c %-12s : %37s %c",
 									console.getVertical(),
+									BUNDLE.getString("DESCRIPTION"),
 									tune.getInfo().infoString[i],
 									console.getVertical()));
 				}
@@ -69,15 +71,16 @@ public class ConsoleIO {
 					console.getJunctionRight()));
 		}
 		if (verboseLevel != 0) {
-			System.out.println(String.format("%c File format  : %37s %c",
-					console.getVertical(), tune.getInfo().getClass()
-							.getSimpleName(), console.getVertical()));
-			System.out.println(String.format("%c Filename(s)  : %37s %c",
-					console.getVertical(), tune.getInfo().file.getName(),
+			System.out.println(String.format("%c %-12s : %37s %c",
+					console.getVertical(), BUNDLE.getString("FILE_FORMAT"),
+					tune.getInfo().getClass().getSimpleName(),
 					console.getVertical()));
+			System.out.println(String.format("%c %-12s : %37s %c",
+					console.getVertical(), BUNDLE.getString("FILENAMES"),
+					tune.getInfo().file.getName(), console.getVertical()));
 		}
-		System.out.print(String.format("%c Playlist     : ",
-				console.getVertical()));
+		System.out.print(String.format("%c %-12s : ", console.getVertical(),
+				BUNDLE.getString("PLAYLIST")));
 		{ // This will be the format used for playlists
 			int i = 1;
 			if (!config.getSidplay2().isSingle()) {
@@ -87,7 +90,8 @@ public class ConsoleIO {
 					i += track.getSongs();
 				}
 			}
-			System.out.println(String.format("%37s %c",
+			System.out.println(String.format(
+					"%37s %c",
 					i
 							+ "/"
 							+ track.getSongs()
@@ -98,28 +102,29 @@ public class ConsoleIO {
 							+ "["
 							+ tune.getInfo().startSong
 							+ "])"
-							+ (config.getSidplay2().isLoop() ? " [LOOPING]"
-									: ""), console.getVertical()));
+							+ (config.getSidplay2().isLoop() ? " ["
+									+ BUNDLE.getString("LOOPING") + "]" : ""),
+					console.getVertical()));
 		}
 		if (verboseLevel > 0) {
 			System.out.println(String.format("%c%s%c", console.getBottomLeft(),
 					setfill(console.getHorizontal(), 54),
 					console.getBottomRight()));
-			System.out.println(String.format("%c Song Speed   : %37s %c",
-					console.getVertical(),
+			System.out.println(String.format("%c %-12s : %37s %c",
+					console.getVertical(), BUNDLE.getString("SONG_SPEED"),
 					tune.getSongSpeed(track.getSelected()),
 					console.getVertical()));
 		}
-		System.out.print(String.format("%c Song Length  : ",
-				console.getVertical()));
+		System.out.print(String.format("%c %-12s : ", console.getVertical(),
+				BUNDLE.getString("SONG_LENGTH")));
 		if (timer.getStop() != 0) {
 			final String time = String.format("%02d:%02d",
 					(timer.getStop() / 60 % 100), (timer.getStop() % 60));
 			System.out.print(String.format("%37s %c", "" + time,
 					console.getVertical()));
 		} else {
-			System.out.print(String.format("%37s %c", "FOREVER",
-					console.getVertical()));
+			System.out.print(String.format("%37s %c",
+					BUNDLE.getString("UNLIMITED"), console.getVertical()));
 		}
 		System.out.println();
 		if (verboseLevel > 0) {
@@ -128,9 +133,9 @@ public class ConsoleIO {
 					console.getBottomRight()));
 			StringBuffer line = new StringBuffer();
 			// Display PSID Driver location
-			line.append("DRIVER = ");
+			line.append(BUNDLE.getString("DRIVER_ADDR") + " = ");
 			if (tune.getInfo().determinedDriverAddr == 0) {
-				line.append("NOT PRESENT");
+				line.append(BUNDLE.getString("NOT_PRESENT"));
 			} else {
 				line.append(String.format("$%04x",
 						tune.getInfo().determinedDriverAddr));
@@ -139,64 +144,60 @@ public class ConsoleIO {
 								+ tune.getInfo().determinedDriverLength - 1));
 			}
 			if (tune.getInfo().playAddr == 0xffff) {
-				line.append(String.format(", SYS = $%04x",
-						tune.getInfo().initAddr));
+				line.append(String.format(", " + BUNDLE.getString("SYS")
+						+ " = $%04x", tune.getInfo().initAddr));
 			} else {
-				line.append(String.format(", INIT = $%04x",
-						tune.getInfo().initAddr));
+				line.append(String.format(", " + BUNDLE.getString("INIT")
+						+ " = $%04x", tune.getInfo().initAddr));
 			}
 
-			System.out.println(String.format("%c Addresses    : %37s %c",
-					console.getVertical(), line.toString(),
-					console.getVertical()));
+			System.out.println(String.format("%c %-12s : %37s %c",
+					console.getVertical(), BUNDLE.getString("ADDRESSES"),
+					line.toString(), console.getVertical()));
 			line = new StringBuffer();
-			line.append(String.format("LOAD   = $%04x", tune.getInfo().loadAddr));
+			line.append(String.format(BUNDLE.getString("LOAD") + " = $%04x",
+					tune.getInfo().loadAddr));
 			line.append(String.format("-$%04x",
 					tune.getInfo().loadAddr + tune.getInfo().c64dataLen - 1));
 			if (tune.getInfo().playAddr != 0xffff) {
-				line.append(String.format(", PLAY = $%04x",
-						tune.getInfo().playAddr));
+				line.append(String.format(", %s = $%04x",
+						BUNDLE.getString("PLAY"), tune.getInfo().playAddr));
 			}
 			System.out.println(String.format("%c              : %37s %c",
 					console.getVertical(), line.toString(),
 					console.getVertical()));
 
 			line = new StringBuffer();
-			line.append(String.format("Filter = %s", (filterEnable ? "Yes"
-					: "No")));
+			line.append(String.format(BUNDLE.getString("FILTER") + " = %s",
+					(config.getEmulation().isFilter() ? "Yes" : "No")));
 			/* XXX ignores 2nd SID */
-			line.append(String.format(", Model = %s",
+			line.append(String.format(", " + BUNDLE.getString("MODEL")
+					+ " = %s",
 					(tune.getInfo().sid1Model == Model.MOS8580 ? "8580"
 							: "6581")));
-			System.out.println(String.format("%c SID Details  : %37s %c",
-					console.getVertical(), line.toString(),
-					console.getVertical()));
+			System.out.println(String.format("%c %-12s : %37s %c",
+					console.getVertical(), BUNDLE.getString("SID_DETAILS"),
+					line.toString(), console.getVertical()));
 
-			if (verboseLevel > 1) {
-				line = new StringBuffer();
-				System.out.println(String.format("%c Delay        : %37s %c",
-						console.getVertical(), line.toString(),
-						console.getVertical()));
-			}
 		}
 
 		System.out
 				.println(String.format("%c%s%c", console.getBottomLeft(),
 						setfill(console.getHorizontal(), 54),
 						console.getBottomRight()));
-		System.out.println("keyboard control (press enter after command):");
-		System.out.println("< > - play previous/next tune");
-		System.out.println(", . - normal/faster speed");
-		System.out.println("p   - pause/continue player");
-		System.out.println("h e - play first/last tune");
-		System.out.println("1   - mute voice 1");
-		System.out.println("2   - mute voice 2");
-		System.out.println("3   - mute voice 3");
-		System.out.println("4   - mute voice 1 (stereo)");
-		System.out.println("5   - mute voice 2 (stereo)");
-		System.out.println("6   - mute voice 3 (stereo)");
-		System.out.println("f   - enable/disable filter");
-		System.out.println("q   - quit player");
+		System.out.println(BUNDLE.getString("KEYBOARD_CONTROLS"));
+		System.out.println(BUNDLE.getString("FORWARD_REWIND"));
+		System.out.println(BUNDLE.getString("NORMAL_FAST"));
+		System.out.println(BUNDLE.getString("PAUSE_CONTINUE"));
+		System.out.println(BUNDLE.getString("FIRST_LAST"));
+		System.out.println(BUNDLE.getString("MUTE_1"));
+		System.out.println(BUNDLE.getString("MUTE_2"));
+		System.out.println(BUNDLE.getString("MUTE_3"));
+		System.out.println(BUNDLE.getString("MUTE_4"));
+		System.out.println(BUNDLE.getString("MUTE_5"));
+		System.out.println(BUNDLE.getString("MUTE_6"));
+		System.out.println(BUNDLE.getString("FILTER_ENABLE"));
+		System.out.println(BUNDLE.getString("QUIT"));
 	}
 
 	private String setfill(final char ch, final int length) {
@@ -207,7 +208,7 @@ public class ConsoleIO {
 		return ret.toString();
 	}
 
-	public void decodeKeys() {
+	public void decodeKeys(Player player) {
 		try {
 			if (System.in.available() == 0) {
 				return;
@@ -215,71 +216,72 @@ public class ConsoleIO {
 			final int key = System.in.read();
 			switch (key) {
 			case 'h':
-				this.player.selectFirstTrack();
+				player.selectFirstTrack();
 				break;
 
 			case 'e':
-				this.player.selectLastTrack();
+				player.selectLastTrack();
 				break;
 
 			case '>':
-				this.player.nextSong();
+				player.nextSong();
 				break;
 
 			case '<':
-				this.player.previousSong();
+				player.previousSong();
 				break;
 
 			case '.':
-				this.player.fastForward();
+				player.fastForward();
 				break;
 
 			case ',':
-				this.player.normalSpeed();
+				player.normalSpeed();
 				break;
 
 			case 'p':
-				this.player.pause();
+				player.pause();
 				break;
 
 			case '1':
 				v1mute = !v1mute;
-				this.player.setMute(0, 0, v1mute);
+				player.setMute(0, 0, v1mute);
 				break;
 
 			case '2':
 				v2mute = !v2mute;
-				this.player.setMute(0, 1, v2mute);
+				player.setMute(0, 1, v2mute);
 				break;
 
 			case '3':
 				v3mute = !v3mute;
-				this.player.setMute(0, 2, v3mute);
+				player.setMute(0, 2, v3mute);
 				break;
 
 			case '4':
 				v1mute = !v1mute;
-				this.player.setMute(1, 0, v1mute);
+				player.setMute(1, 0, v1mute);
 				break;
 
 			case '5':
 				v2mute = !v2mute;
-				this.player.setMute(1, 1, v2mute);
+				player.setMute(1, 1, v2mute);
 				break;
 
 			case '6':
 				v3mute = !v3mute;
-				this.player.setMute(1, 2, v3mute);
+				player.setMute(1, 2, v3mute);
 				break;
 
 			case 'f': {
-				filterEnable ^= true;
-				this.player.setFilterEnable(filterEnable);
+				boolean filterEnable = config.getEmulation().isFilter();
+				config.getEmulation().setFilter(filterEnable ^ true);
+				player.setFilterEnable(filterEnable);
 				break;
 			}
 
 			case 'q':
-				this.player.quit();
+				player.quit();
 				break;
 
 			default:
