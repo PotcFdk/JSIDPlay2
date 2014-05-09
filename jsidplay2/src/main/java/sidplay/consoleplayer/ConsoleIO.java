@@ -20,14 +20,14 @@ public class ConsoleIO {
 
 	private boolean filterEnable;
 
-	private int quietLevel;
+	private boolean quiet;
 	private int verboseLevel;
 
-	public ConsoleIO(IConfig config, Player player, int quietLevel,
+	public ConsoleIO(IConfig config, Player player, boolean quiet,
 			int verboseLevel) {
 		this.config = config;
 		this.player = player;
-		this.quietLevel = quietLevel;
+		this.quiet = quiet;
 		this.verboseLevel = verboseLevel;
 	}
 
@@ -35,7 +35,7 @@ public class ConsoleIO {
 		final IConsoleSection console = config.getConsole();
 		final IEmulationSection emulation = config.getEmulation();
 		filterEnable = emulation.isFilter();
-		if (quietLevel > 1) {
+		if (quiet) {
 			return;
 		}
 

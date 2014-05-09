@@ -985,7 +985,9 @@ public class Player {
 
 			if (seconds == timer.getStart()) {
 				normalSpeed();
-				sidBuilder.open();
+				if (sidBuilder != null) {
+					sidBuilder.open();
+				}
 			}
 			// Only for tunes: if play time is over loop or exit
 			if (tune != null && timer.getStop() != 0
