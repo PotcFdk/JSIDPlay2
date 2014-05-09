@@ -1,22 +1,20 @@
 package sidplay.consoleplayer;
 
-import resid_builder.resid.ChipModel;
-import sidplay.audio.Output;
+import sidplay.audio.Audio;
 
 import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.ParameterException;
 
-public class OutputConverter implements IStringConverter<Output> {
+public class OutputConverter implements IStringConverter<Audio> {
 	@Override
-	public Output convert(String value) throws ParameterException {
+	public Audio convert(String value) throws ParameterException {
 		try {
-			return Output.valueOf(value);
+			return Audio.valueOf(value);
 		} catch (Exception e) {
 			throw new ParameterException("Parameter value " + "should be "
-					+ Output.OUT_NULL + ", " + Output.OUT_SOUNDCARD + ", "
-					+ Output.OUT_WAV + ", " + Output.OUT_MP3 + ", "
-					+ Output.OUT_LIVE_WAV + ", " + Output.OUT_LIVE_MP3
-					+ " or " + ChipModel.MOS8580 + " (found " + value + ")");
+					+ Audio.NONE + ", " + Audio.SOUNDCARD + ", " + Audio.WAV
+					+ ", " + Audio.MP3 + ", " + Audio.LIVE_WAV + " or "
+					+ Audio.LIVE_MP3 + " (found " + value + ")");
 		}
 	}
 }

@@ -12,15 +12,15 @@ import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import sidplay.audio.Output;
+import sidplay.audio.Audio;
 import sidplay.ini.IniConfig;
 
 @SuppressWarnings("serial")
 public class SIDPlay extends Applet {
 	private IniConfig config;
 	private Player player;
-	private Output output = Output.OUT_SOUNDCARD;
-	private Emulation emulation = Emulation.EMU_RESID;
+	private Audio audio = Audio.SOUNDCARD;
+	private Emulation emulation = Emulation.RESID;
 
 	private final HashMap<String, SidTune> map = new HashMap<String, SidTune>();
 
@@ -84,7 +84,7 @@ public class SIDPlay extends Applet {
 		// eventually stop last run
 		player.stopC64();
 		player.setTune(getTune(urlName));
-		player.setDriverSettings(new DriverSettings(output, emulation));
+		player.setDriverSettings(new DriverSettings(audio, emulation));
 		// Select the desired track
 		// and also mark the play-list start
 		player.getTrack().setSelected(player.getTune().selectSong(songNum));
@@ -120,16 +120,16 @@ public class SIDPlay extends Applet {
 	 * Use JSIDPlay2 emulation for the next song.
 	 */
 	public void useEmulation() {
-		emulation = Emulation.EMU_HARDSID;
-		output = Output.OUT_NULL;
+		audio = Audio.NONE;
+		emulation = Emulation.HARDSID;
 	}
 
 	/**
 	 * Use HardSID4U for the next song.
 	 */
 	public void useHardSID() {
-		output = Output.OUT_SOUNDCARD;
-		emulation = Emulation.EMU_RESID;
+		audio = Audio.SOUNDCARD;
+		emulation = Emulation.RESID;
 	}
 
 	/**

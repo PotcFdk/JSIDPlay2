@@ -32,7 +32,7 @@ import libsidplay.common.SIDEmu;
 import libsidplay.player.DriverSettings;
 import resid_builder.resid.ChipModel;
 import sidplay.audio.AudioConfig;
-import sidplay.audio.Output;
+import sidplay.audio.Audio;
 import sidplay.ini.intf.IConfig;
 
 public class ReSIDBuilder extends SIDBuilder {
@@ -42,7 +42,7 @@ public class ReSIDBuilder extends SIDBuilder {
 	private final DriverSettings driverSettings;
 
 	/** output driver (for temporary storage while fast forwarding tune) */
-	protected Output output;
+	protected Audio audio;
 
 	/** List of SID instances */
 	protected List<ReSID> sids = new ArrayList<ReSID>();
@@ -62,9 +62,9 @@ public class ReSIDBuilder extends SIDBuilder {
 		setMixerVolume(0, config.getAudio().getLeftVolume());
 		setMixerVolume(1, config.getAudio().getRightVolume());
 		// save original driver
-		output = driverSettings.getOutput();
+		audio = driverSettings.getAudio();
 		// switch to NIL driver for fast forward
-		driverSettings.setOutput(Output.OUT_NULL);
+		driverSettings.setAudio(Audio.NONE);
 	}
 
 	protected class MixerEvent extends Event {
@@ -120,8 +120,8 @@ public class ReSIDBuilder extends SIDBuilder {
 			 * chip1's.
 			 */
 
-			final ByteBuffer soundBuffer = driverSettings.getOutput()
-					.getDriver().buffer();
+			final ByteBuffer soundBuffer = driverSettings.getAudio()
+					.getAudioDriver().buffer();
 			for (int i = 0; i < samples; i++) {
 				int dither = triangularDithering();
 				int value = (buf1[i] * volume[0] + dither) >> 10;
@@ -146,7 +146,7 @@ public class ReSIDBuilder extends SIDBuilder {
 				}
 
 				if (soundBuffer.remaining() == 0) {
-					driverSettings.getOutput().getDriver().write();
+					driverSettings.getAudio().getAudioDriver().write();
 					soundBuffer.clear();
 				}
 			}
@@ -208,11 +208,11 @@ public class ReSIDBuilder extends SIDBuilder {
 	@Override
 	public void open() {
 		// close NIL driver
-		this.driverSettings.getOutput().getDriver().close();
+		this.driverSettings.getAudio().getAudioDriver().close();
 		// restore original driver and open
-		this.driverSettings.setOutput(output);
+		this.driverSettings.setAudio(audio);
 		try {
-			this.driverSettings.getOutput().getDriver()
+			this.driverSettings.getAudio().getAudioDriver()
 					.open(audioConfig, config.getSidplay2().getTmpDir());
 		} catch (LineUnavailableException | UnsupportedAudioFileException
 				| IOException e) {

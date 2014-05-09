@@ -17,7 +17,7 @@ import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
 import resid_builder.resid.SamplingMethod;
 import sidplay.audio.CmpMP3File;
-import sidplay.audio.Output;
+import sidplay.audio.Audio;
 import sidplay.ini.intf.IAudioSection;
 import ui.common.C64Window;
 
@@ -58,17 +58,17 @@ public class SoundSettings extends C64Window {
 				.getString("WAV_RECORDER"),
 				util.getBundle().getString("MP3_RECORDER"), util.getBundle()
 						.getString("COMPARE_TO_MP3"));
-		Output output = util.getPlayer().getDriverSettings().getOutput();
+		Audio audio = util.getPlayer().getDriverSettings().getAudio();
 		Emulation sid = util.getPlayer().getDriverSettings().getEmulation();
-		if (output == Output.OUT_SOUNDCARD && sid == Emulation.EMU_RESID) {
+		if (audio == Audio.SOUNDCARD && sid == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(0);
-		} else if (output == Output.OUT_NULL && sid == Emulation.EMU_HARDSID) {
+		} else if (audio == Audio.NONE && sid == Emulation.HARDSID) {
 			soundDevice.getSelectionModel().select(1);
-		} else if (output == Output.OUT_LIVE_WAV && sid == Emulation.EMU_RESID) {
+		} else if (audio == Audio.LIVE_WAV && sid == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(2);
-		} else if (output == Output.OUT_LIVE_MP3 && sid == Emulation.EMU_RESID) {
+		} else if (audio == Audio.LIVE_MP3 && sid == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(3);
-		} else if (output == Output.OUT_COMPARE && sid == Emulation.EMU_RESID) {
+		} else if (audio == Audio.COMPARE && sid == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(4);
 		} else {
 			soundDevice.getSelectionModel().select(0);
@@ -109,33 +109,26 @@ public class SoundSettings extends C64Window {
 		switch (soundDevice.getSelectionModel().getSelectedIndex()) {
 		case 0:
 			util.getPlayer().setDriverSettings(
-					new DriverSettings(Output.OUT_SOUNDCARD,
-							Emulation.EMU_RESID));
+					new DriverSettings(Audio.SOUNDCARD, Emulation.RESID));
 			break;
 
 		case 1:
 			util.getPlayer().setDriverSettings(
-					new DriverSettings(Output.OUT_NULL, Emulation.EMU_HARDSID));
+					new DriverSettings(Audio.NONE, Emulation.HARDSID));
 			break;
 
 		case 2:
-			util.getPlayer()
-					.setDriverSettings(
-							new DriverSettings(Output.OUT_LIVE_WAV,
-									Emulation.EMU_RESID));
+			util.getPlayer().setDriverSettings(
+					new DriverSettings(Audio.LIVE_WAV, Emulation.RESID));
 			break;
 
 		case 3:
-			util.getPlayer()
-					.setDriverSettings(
-							new DriverSettings(Output.OUT_LIVE_MP3,
-									Emulation.EMU_RESID));
+			util.getPlayer().setDriverSettings(
+					new DriverSettings(Audio.LIVE_MP3, Emulation.RESID));
 			break;
 		case 4:
-			util.getPlayer()
-					.setDriverSettings(
-							new DriverSettings(Output.OUT_COMPARE,
-									Emulation.EMU_RESID));
+			util.getPlayer().setDriverSettings(
+					new DriverSettings(Audio.COMPARE, Emulation.RESID));
 			break;
 
 		}
@@ -248,9 +241,9 @@ public class SoundSettings extends C64Window {
 
 	protected void setPlayOriginal(final boolean playOriginal) {
 		util.getConfig().getAudio().setPlayOriginal(playOriginal);
-		if (util.getPlayer().getDriverSettings().getOutput().getDriver() instanceof CmpMP3File) {
-			((CmpMP3File) util.getPlayer().getDriverSettings().getOutput()
-					.getDriver()).setPlayOriginal(playOriginal);
+		if (util.getPlayer().getDriverSettings().getAudio().getAudioDriver() instanceof CmpMP3File) {
+			((CmpMP3File) util.getPlayer().getDriverSettings().getAudio()
+					.getAudioDriver()).setPlayOriginal(playOriginal);
 		}
 	}
 

@@ -13,9 +13,8 @@ import libsidplay.player.Emulation;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.SidDatabase;
-import libsidutils.cpuparser.CPUParser;
 import resid_builder.resid.ChipModel;
-import sidplay.audio.Output;
+import sidplay.audio.Audio;
 import sidplay.consoleplayer.CPUClockConverter;
 import sidplay.consoleplayer.ChipModelConverter;
 import sidplay.consoleplayer.ConsoleIO;
@@ -30,22 +29,22 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 
 public class ConsolePlayer {
-	@Parameter(names = { "--help", "-h" }, help = true)
+	@Parameter(names = { "--help", "-h" }, description = "Display usage", help = true)
 	private Boolean help = Boolean.FALSE;
 
 	@Parameter(names = "--cpuDebug", hidden = true, description = "Display cpu register and assembly dumps")
 	private Boolean cpuDebug = Boolean.FALSE;
 
-	@Parameter(names = "-driver", description = "Audio driver (OUT_NULL, OUT_SOUNDCARD, OUT_WAV, OUT_MP3, OUT_LIVE_WAV or OUT_LIVE_MP3)", converter = OutputConverter.class)
-	private Output driver = Output.OUT_SOUNDCARD;
+	@Parameter(names = "-driver", description = "Audio driver (NONE, SOUNDCARD, WAV, MP3, LIVE_WAV or LIVE_MP3)", converter = OutputConverter.class)
+	private Audio driver = Audio.SOUNDCARD;
 
-	@Parameter(names = "-emulation", description = "Emulation (EMU_NONE, EMU_RESID, EMU_HARDSID)", converter = EmulationConverter.class)
-	private Emulation emulation = Emulation.EMU_RESID;
+	@Parameter(names = "-emulation", description = "Emulation (NONE, RESID, HARDSID)", converter = EmulationConverter.class)
+	private Emulation emulation = Emulation.RESID;
 
 	@Parameter(names = "-output", description = "Output filename for recording")
 	private String output = "outfile.wav";
 
-	@Parameter(names = "-song", description = "start track (default: tune start song)")
+	@Parameter(names = "-song", description = "Start track (default: tune start song)")
 	private Integer song = 0;
 
 	@Parameter(names = "-loop", description = "Loop track")
@@ -54,7 +53,7 @@ public class ConsolePlayer {
 	@Parameter(names = "-single", description = "Single track")
 	private Boolean single = Boolean.FALSE;
 
-	@Parameter(names = "-frequency", description = "set frequency in Hz")
+	@Parameter(names = "-frequency", description = "Set frequency in Hz")
 	private Integer frequency = 48000;
 
 	@Parameter(names = "-dualSID", description = "Force dual sid environment")
@@ -90,10 +89,9 @@ public class ConsolePlayer {
 	@Parameter(description = "filename")
 	private List<String> filenames = new ArrayList<String>();
 
-	public ConsolePlayer(String[] args) throws IOException {
-		JCommander commander;
+	private ConsolePlayer(String[] args) throws IOException {
 		try {
-			commander = new JCommander(this, args);
+			JCommander commander = new JCommander(this, args);
 			commander.setProgramName(getClass().getName());
 			commander.setCaseSensitiveOptions(true);
 			if (help || filenames.size() != 1) {
@@ -124,13 +122,13 @@ public class ConsolePlayer {
 		final Player player = new Player(config);
 		try {
 			player.setTune(SidTune.load(new File(filenames.get(0))));
+			player.getTune().setOutputFilename(output);
 		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
+			e.getMessage();
 			exit(1);
 		}
-		player.setDebug(cpuDebug ? CPUParser.getInstance() : null);
+		player.setDebug(cpuDebug);
 		player.setDriverSettings(new DriverSettings(driver, emulation));
-		player.getTune().setOutputFilename(output);
 		// Select the desired track and also mark the play-list start
 		player.getTrack().setSelected(player.getTune().selectSong(song));
 		player.getTrack().setFirst(0);
@@ -141,15 +139,7 @@ public class ConsolePlayer {
 
 		// check song length
 		if (config.getSidplay2().getUserPlayLength() == 0) {
-			String hvscRoot = config.getSidplay2().getHvsc();
-			if (hvscRoot != null) {
-				File file = new File(hvscRoot, SidDatabase.SONGLENGTHS_FILE);
-				try (FileInputStream input = new FileInputStream(file)) {
-					player.setSidDatabase(new SidDatabase(input));
-				} catch (IOException e) {
-					// silently ignored!
-				}
-			}
+			setSIDDatabase(player);
 			if (isRecording()
 					&& (!config.getSidplay2().isEnableDatabase() || player
 							.getSongLength(player.getTune()) == 0)) {
@@ -160,11 +150,23 @@ public class ConsolePlayer {
 			}
 		}
 		ConsoleIO consoleIO = new ConsoleIO(config, player, quiet, verbose);
-		player.setMenuHook((obj) -> consoleIO.menu(player.getTune(),
+		player.setMenuHook(obj -> consoleIO.menu(player.getTune(),
 				player.getTrack(), player.getTimer()));
-		player.setInteractivityHook((obj) -> consoleIO.decodeKeys());
+		player.setInteractivityHook(obj -> consoleIO.decodeKeys());
 
 		player.startC64();
+	}
+
+	private void setSIDDatabase(final Player player) {
+		String hvscRoot = player.getConfig().getSidplay2().getHvsc();
+		if (hvscRoot != null) {
+			File file = new File(hvscRoot, SidDatabase.SONGLENGTHS_FILE);
+			try (FileInputStream input = new FileInputStream(file)) {
+				player.setSidDatabase(new SidDatabase(input));
+			} catch (IOException e) {
+				// silently ignored!
+			}
+		}
 	}
 
 	private void exit(int rc) throws IOException {
@@ -174,9 +176,8 @@ public class ConsolePlayer {
 	}
 
 	private boolean isRecording() {
-		return driver == Output.OUT_WAV || driver == Output.OUT_MP3
-				|| driver == Output.OUT_LIVE_WAV
-				|| driver == Output.OUT_LIVE_MP3;
+		return driver == Audio.WAV || driver == Audio.MP3
+				|| driver == Audio.LIVE_WAV || driver == Audio.LIVE_MP3;
 	}
 
 	public static void main(final String[] args) throws IOException {

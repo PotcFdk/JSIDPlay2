@@ -12,8 +12,8 @@ public class EmulationConverter implements IStringConverter<Emulation> {
 			return Emulation.valueOf(value);
 		} catch (Exception e) {
 			throw new ParameterException("Parameter value " + "should be "
-					+ Emulation.EMU_NONE + ", " + Emulation.EMU_RESID
-					+ " or " + Emulation.EMU_HARDSID + " (found " + value
+					+ Emulation.NONE + ", " + Emulation.RESID
+					+ " or " + Emulation.HARDSID + " (found " + value
 					+ ")");
 		}
 	}

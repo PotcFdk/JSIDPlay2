@@ -54,7 +54,6 @@ import libsidplay.components.c1541.SameThreadC1541Runner;
 import libsidplay.components.c1541.VIACore;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
-import libsidplay.components.mos6510.IMOS6510Disassembler;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
@@ -71,13 +70,14 @@ import libsidutils.PRG2TAP;
 import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
 import libsidutils.SidDatabase;
+import libsidutils.cpuparser.CPUParser;
 import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ChipModel;
 import resid_builder.resid.SamplingMethod;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.NaturalFinishedException;
-import sidplay.audio.Output;
+import sidplay.audio.Audio;
 import sidplay.ini.intf.IConfig;
 
 /**
@@ -171,7 +171,7 @@ public class Player {
 	 * Audio driver and emulation setting.
 	 */
 	protected DriverSettings driverSettings = new DriverSettings(
-			Output.OUT_SOUNDCARD, Emulation.EMU_RESID);
+			Audio.SOUNDCARD, Emulation.RESID);
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -556,11 +556,11 @@ public class Player {
 	/**
 	 * Enable CPU debugging (opcode stringifier).
 	 * 
-	 * @param disassembler
+	 * @param cpuDebug
 	 *            opcode stringifier to produce CPU debug output.
 	 */
-	public final void setDebug(final IMOS6510Disassembler disassembler) {
-		c64.getCPU().setDebug(disassembler);
+	public final void setDebug(final boolean cpuDebug) {
+		c64.getCPU().setDebug(cpuDebug ? CPUParser.getInstance() : null);
 	}
 
 	/**
@@ -861,11 +861,11 @@ public class Player {
 		// 3. Fast forwarding the eventually modified NIL audio driver to the
 		// timer start
 		currentSpeed = MAX_SPEED;
-		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
+		driverSettings.getAudio().getAudioDriver().setFastForward(currentSpeed);
 
 		// 3. open audio driver (eventually NIL audio driver)
 		try {
-			driverSettings.getOutput().getDriver()
+			driverSettings.getAudio().getAudioDriver()
 					.open(audioConfig, config.getSidplay2().getTmpDir());
 		} catch (LineUnavailableException | UnsupportedAudioFileException
 				| IOException e) {
@@ -891,11 +891,11 @@ public class Player {
 	private SIDBuilder createSIDBuilder(CPUClock cpuClock,
 			AudioConfig audioConfig) {
 		switch (driverSettings.getEmulation()) {
-		case EMU_RESID:
+		case RESID:
 			return new ReSIDBuilder(config, driverSettings, audioConfig,
 					cpuClock);
 
-		case EMU_HARDSID:
+		case HARDSID:
 			return new HardSIDBuilder(config);
 
 		default:
@@ -1041,7 +1041,7 @@ public class Player {
 				}
 			}
 		}
-		driverSettings.getOutput().getDriver().close();
+		driverSettings.getAudio().getAudioDriver().close();
 	}
 
 	/**
@@ -1073,7 +1073,7 @@ public class Player {
 			stateProperty.set(State.RUNNING);
 		} else {
 			stateProperty.set(State.PAUSED);
-			driverSettings.getOutput().getDriver().pause();
+			driverSettings.getAudio().getAudioDriver().pause();
 		}
 	}
 
@@ -1100,12 +1100,12 @@ public class Player {
 		if (currentSpeed > MAX_SPEED) {
 			currentSpeed = MAX_SPEED;
 		}
-		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
+		driverSettings.getAudio().getAudioDriver().setFastForward(currentSpeed);
 	}
 
 	public final void normalSpeed() {
 		currentSpeed = 1;
-		driverSettings.getOutput().getDriver().setFastForward(currentSpeed);
+		driverSettings.getAudio().getAudioDriver().setFastForward(currentSpeed);
 	}
 
 	public final void selectFirstTrack() {
