@@ -71,8 +71,7 @@ public class GameListener extends ProgressListener {
 				player.setCommand(command);
 				player.playTune(null);
 			} else {
-				player.insertCartridge(file);
-				player.playTune(null);
+				player.insertCartridge(file, null);
 			}
 		} catch (IOException | SidTuneError e) {
 			System.err.println(String.format("Cannot insert media file '%s'.",

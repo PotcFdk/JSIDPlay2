@@ -307,8 +307,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 						os.write(b, 0, len);
 					}
 				}
-				util.getPlayer().insertCartridge(file);
-				playTune(SidTune.load(tmpFile));
+				util.getPlayer().insertCartridge(file, tmpFile);
 			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();
 			}
@@ -601,9 +600,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertCartridge(new TFile(file));
-				playTune(null);
-			} catch (IOException e) {
+				util.getPlayer().insertCartridge(new TFile(file), null);
+			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
 						file.getAbsolutePath()));

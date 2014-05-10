@@ -1195,9 +1195,10 @@ public class Player {
 		}
 	}
 
-	public final void insertCartridge(final File selectedFile)
-			throws IOException {
+	public final void insertCartridge(final File selectedFile,
+			final File autostartFile) throws IOException, SidTuneError {
 		c64.insertCartridge(selectedFile);
+		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
 }

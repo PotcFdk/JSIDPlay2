@@ -273,9 +273,8 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertCartridge(new TFile(file));
-				util.getPlayer().playTune(null);
-			} catch (IOException e) {
+				util.getPlayer().insertCartridge(new TFile(file), null);
+			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
 						file.getAbsolutePath()));
