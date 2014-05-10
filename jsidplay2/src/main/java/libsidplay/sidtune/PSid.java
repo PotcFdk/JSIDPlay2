@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Properties;
 
 import javafx.application.Platform;
@@ -577,9 +578,6 @@ class PSid extends Prg {
 		// Create the speed/clock setting table.
 		sidtune.convertOldStyleSpeedToTables(speed);
 
-		// Copy info strings, so they will not get lost.
-		sidtune.info.numberOfInfoStrings = 3;
-
 		// Name
 		int i;
 		for (i = 0; i < pHeader.name.length; i++) {
@@ -587,8 +585,8 @@ class PSid extends Prg {
 				break;
 			}
 		}
-		sidtune.info.infoString[0] = makeString(pHeader.name, 0,
-				Math.min(i, pHeader.name.length));
+		sidtune.info.infoString.add(makeString(pHeader.name, 0,
+				Math.min(i, pHeader.name.length)));
 
 		// Author
 		for (i = 0; i < pHeader.author.length; i++) {
@@ -596,8 +594,9 @@ class PSid extends Prg {
 				break;
 			}
 		}
-		sidtune.info.infoString[1] = makeString(pHeader.author, 0,
+		String author = makeString(pHeader.author, 0,
 				Math.min(i, pHeader.author.length));
+		sidtune.info.infoString.add(author);
 
 		// Released
 		for (i = 0; i < pHeader.released.length; i++) {
@@ -605,20 +604,10 @@ class PSid extends Prg {
 				break;
 			}
 		}
-		sidtune.info.infoString[2] = makeString(pHeader.released, 0,
-				Math.min(i, pHeader.released.length));
+		sidtune.info.infoString.add(makeString(pHeader.released, 0,
+				Math.min(i, pHeader.released.length)));
 
-		// missing title, author,
-		// release fields
-		for (i = 0; i < 3; i++) {
-			if (sidtune.info.infoString[i].length() == 0) {
-				sidtune.info.infoString[i] = "<?>";
-				sidtune.info.infoString[i] = sidtune.info.infoString[i];
-			}
-		}
-
-		String authorInfo = sidtune.info.infoString[1];
-		String photoRes = sidAuthors.getProperty(authorInfo);
+		String photoRes = sidAuthors.getProperty(author);
 
 		if (photoRes != null && Platform.isFxApplicationThread()) {
 			photoRes = "Photos/" + photoRes;
@@ -641,6 +630,9 @@ class PSid extends Prg {
 	}
 
 	private static String makeString(byte[] bytes, int start, int len) {
+		if (len == 0) {
+			return "<?>";
+		}
 		try {
 			return new String(bytes, start, len, "ISO-8859-1");
 		} catch (UnsupportedEncodingException e) {
@@ -690,23 +682,23 @@ class PSid extends Prg {
 
 			// @FIXME@ Need better solution. Make it possible to override MUS
 			// strings
-			if (info.numberOfInfoStrings == 3) {
-				if (info.infoString[0].length() == 32) {
-					myHeader.version = 3;
-				} else if (info.infoString[1].length() == 32) {
-					myHeader.version = 3;
-				} else if (info.infoString[2].length() == 32) {
+			if (info.infoString.size() == 3) {
+				Iterator<String> descriptionIt = info.infoString.iterator();
+				String title = descriptionIt.next();
+				String author = descriptionIt.next();
+				String released = descriptionIt.next();
+				if (title.length() == 32 || author.length() == 32
+						|| released.length() == 32) {
 					myHeader.version = 3;
 				}
-
-				for (int i = 0; i < info.infoString[0].length(); i++) {
-					myHeader.name[i] = (byte) info.infoString[0].charAt(i); // ISO-8859-1
+				for (int i = 0; i < title.length(); i++) {
+					myHeader.name[i] = (byte) title.charAt(i); // ISO-8859-1
 				}
-				for (int i = 0; i < info.infoString[1].length(); i++) {
-					myHeader.author[i] = (byte) info.infoString[1].charAt(i); // ISO-8859-1
+				for (int i = 0; i < author.length(); i++) {
+					myHeader.author[i] = (byte) author.charAt(i); // ISO-8859-1
 				}
-				for (int i = 0; i < info.infoString[2].length(); i++) {
-					myHeader.released[i] = (byte) info.infoString[2].charAt(i); // ISO-8859-1
+				for (int i = 0; i < released.length(); i++) {
+					myHeader.released[i] = (byte) released.charAt(i); // ISO-8859-1
 				}
 			}
 

@@ -45,7 +45,6 @@ public class T64 extends Prg {
 		// Automatic settings
 		sidtune.info.songs = 1;
 		sidtune.info.startSong = 1;
-		sidtune.info.numberOfInfoStrings = 0;
 		sidtune.program = dataBuf;
 
 		// Create the speed/clock setting table.

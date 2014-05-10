@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import libsidplay.Player;
@@ -394,17 +395,23 @@ public class Psid64 {
 		screen.move(0, 4);
 		screen.write("Name   : ");
 		SidTuneInfo tuneInfo = tune.getInfo();
-		screen.write(tuneInfo.infoString[0].substring(0,
-				Math.min(tuneInfo.infoString[0].length(), 31)));
+		Iterator<String> descriptionIt = tuneInfo.infoString.iterator();
+		if (descriptionIt.hasNext()) {
+			String title = descriptionIt.next();
+			screen.write(title.substring(0, Math.min(title.length(), 31)));
+		}
 
 		screen.write("\nAuthor : ");
-		screen.write(tuneInfo.infoString[1].substring(0,
-				Math.min(tuneInfo.infoString[1].length(), 31)));
+		if (descriptionIt.hasNext()) {
+			String author = descriptionIt.next();
+			screen.write(author.substring(0, Math.min(author.length(), 31)));
+		}
 
 		screen.write("\nRelease: ");
-		screen.write(tuneInfo.infoString[2].substring(0,
-				Math.min(tuneInfo.infoString[2].length(), 31)));
-
+		if (descriptionIt.hasNext()) {
+			String released = descriptionIt.next();
+			screen.write(released.substring(0, Math.min(released.length(), 31)));
+		}
 		screen.write("\nLoad   : $");
 		screen.write(toHexWord(tuneInfo.loadAddr));
 		screen.write("-$");

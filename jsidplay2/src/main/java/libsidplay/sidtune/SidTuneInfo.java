@@ -16,6 +16,8 @@
 package libsidplay.sidtune;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
@@ -108,16 +110,10 @@ public class SidTuneInfo {
 	public Compatibility compatibility = Compatibility.RSID_BASIC;
 
 	/**
+	 * Holds text info from the format headers etc.
 	 * Song title, credits, ... 0 = Title, 1 = Author, 2 = Copyright/Publisher
-	 * 
-	 * the number of available text info lines
 	 */
-	public short numberOfInfoStrings;
-
-	/**
-	 * holds text info from the format headers etc.
-	 */
-	public String infoString[] = new String[SidTune.SIDTUNE_MAX_CREDIT_STRINGS];
+	public Collection<String> infoString = new ArrayList<>();
 
 	/**
 	 * Number of MUS comments (2 when STR also has comment)

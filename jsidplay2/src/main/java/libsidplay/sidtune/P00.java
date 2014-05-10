@@ -131,8 +131,7 @@ class P00 extends Prg {
 			throw new SidTuneError(_sidtune_truncated);
 		}
 
-		sidtune.info.infoString[0] = convertPetsciiToAscii(pHeader.name, 0);
-		sidtune.info.numberOfInfoStrings = 1;
+		sidtune.info.infoString.add(convertPetsciiToAscii(pHeader.name, 0));
 
 		// Automatic settings
 		sidtune.fileOffset = X00Header.SIZE + 2;

@@ -3,6 +3,7 @@ package ui.entities.collection;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -355,9 +356,19 @@ public class HVSCEntry {
 			tune.selectSong(1);
 			SidTuneInfo info = tune.getInfo();
 
-			hvscEntry.setTitle(info.infoString[0]);
-			hvscEntry.setAuthor(info.infoString[1]);
-			hvscEntry.setReleased(info.infoString[2]);
+			Iterator<String> descriptionIt = info.infoString.iterator();
+			if (descriptionIt.hasNext()) {
+				String title = descriptionIt.next();
+				hvscEntry.setTitle(title);
+			}
+			if (descriptionIt.hasNext()) {
+				String author = descriptionIt.next();
+				hvscEntry.setAuthor(author);
+			}
+			if (descriptionIt.hasNext()) {
+				String released = descriptionIt.next();
+				hvscEntry.setReleased(released);
+			}
 			hvscEntry.setFormat(tune.getClass().getSimpleName());
 			hvscEntry.setPlayerId(getPlayer(tune));
 			hvscEntry.setNoOfSongs(info.songs);

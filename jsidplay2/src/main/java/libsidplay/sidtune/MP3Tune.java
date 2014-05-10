@@ -59,32 +59,33 @@ public class MP3Tune extends SidTune {
 		s.info.songs = 1;
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(f, "r")) {
 			s.decoder.read(randomAccessFile);
-			s.info.infoString[0] = s.decoder.getTitle();
+			s.info.infoString.add(s.decoder.getTitle());
 			String interpret = s.decoder.getInterpret();
 			String albumInterpret = s.decoder.getAlbumInterpret();
 			String genre = s.decoder.getGenre();
 			if (interpret != null) {
-				s.info.infoString[1] = interpret;
+				s.info.infoString.add(interpret);
 			} else {
-				s.info.infoString[1] = albumInterpret;
+				s.info.infoString.add(albumInterpret);
 			}
 			String album = s.decoder.getAlbum();
 			String year = s.decoder.getYear();
 			if (album != null && year != null) {
-				s.info.infoString[2] = album + " (" + year + ")";
+				s.info.infoString.add(album + " (" + year + ")"
+						+ (genre != null ? " / " + genre : ""));
 			} else {
-				s.info.infoString[2] = album;
-			}
-			if (genre != null) {
-				s.info.infoString[2] += " / " + genre;
+				s.info.infoString.add(album
+						+ (genre != null ? " / " + genre : ""));
 			}
 			try {
 				s.info.startSong = Integer.valueOf(s.decoder.getTrack());
 			} catch (NumberFormatException e) {
 				// ignore
 			}
-			if (s.decoder.getImageBytes() != null && Platform.isFxApplicationThread()) {
-				s.image = new Image(new ByteArrayInputStream(s.decoder.getImageBytes()));
+			if (s.decoder.getImageBytes() != null
+					&& Platform.isFxApplicationThread()) {
+				s.image = new Image(new ByteArrayInputStream(
+						s.decoder.getImageBytes()));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

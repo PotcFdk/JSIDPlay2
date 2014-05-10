@@ -37,8 +37,8 @@ public class ConsolePlayer {
 	@Parameter(names = "--cpuDebug", hidden = true, descriptionKey = "DEBUG")
 	private Boolean cpuDebug = Boolean.FALSE;
 
-	@Parameter(names = "-driver", descriptionKey = "DRIVER", converter = OutputConverter.class)
-	private Audio driver = Audio.SOUNDCARD;
+	@Parameter(names = "-audio", descriptionKey = "DRIVER", converter = OutputConverter.class)
+	private Audio audio = Audio.SOUNDCARD;
 
 	@Parameter(names = "-emulation", descriptionKey = "EMULATION", converter = EmulationConverter.class)
 	private Emulation emulation = Emulation.RESID;
@@ -91,7 +91,7 @@ public class ConsolePlayer {
 	@Parameter(description = "filename")
 	private List<String> filenames = new ArrayList<String>();
 
-	private ConsolePlayer(String[] args) throws IOException {
+	private ConsolePlayer(String[] args) {
 		try {
 			JCommander commander = new JCommander(this, args);
 			commander.setProgramName(getClass().getName());
@@ -130,7 +130,7 @@ public class ConsolePlayer {
 			exit(1);
 		}
 		player.setDebug(cpuDebug);
-		player.setDriverSettings(new DriverSettings(driver, emulation));
+		player.setDriverSettings(new DriverSettings(audio, emulation));
 		// Select the desired track and also mark the play-list start
 		player.getTrack().setSelected(player.getTune().selectSong(song));
 		player.getTrack().setFirst(0);
@@ -152,7 +152,7 @@ public class ConsolePlayer {
 			}
 		}
 		ConsoleIO consoleIO = new ConsoleIO(config, quiet, verbose);
-		player.setMenuHook(obj -> consoleIO.menu(obj));
+		player.setMenuHook(obj -> consoleIO.menu(obj, System.out));
 		player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
 
 		player.startC64();
@@ -170,18 +170,23 @@ public class ConsolePlayer {
 		}
 	}
 
-	private void exit(int rc) throws IOException {
-		System.out.println("Press <enter> to exit the player!");
-		System.in.read();
-		System.exit(rc);
-	}
-
 	private boolean isRecording() {
-		return driver == Audio.WAV || driver == Audio.MP3
-				|| driver == Audio.LIVE_WAV || driver == Audio.LIVE_MP3;
+		return audio == Audio.WAV || audio == Audio.MP3
+				|| audio == Audio.LIVE_WAV || audio == Audio.LIVE_MP3;
 	}
 
-	public static void main(final String[] args) throws IOException {
+	private void exit(int rc) {
+		System.out.println("Press <enter> to exit the player!");
+		try {
+			System.in.read();
+			System.exit(rc);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			System.exit(1);
+		}
+	}
+
+	public static void main(final String[] args) {
 		new ConsolePlayer(args);
 	}
 
