@@ -15,15 +15,11 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.SidDatabase;
 import resid_builder.resid.ChipModel;
 import sidplay.audio.Audio;
-import sidplay.consoleplayer.CPUClockConverter;
-import sidplay.consoleplayer.ChipModelConverter;
 import sidplay.consoleplayer.ConsoleIO;
-import sidplay.consoleplayer.EmulationConverter;
-import sidplay.consoleplayer.OutputConverter;
-import sidplay.consoleplayer.TimeConverter;
-import sidplay.consoleplayer.VerboseValidator;
 import sidplay.ini.IniConfig;
 
+import com.beust.jcommander.IParameterValidator;
+import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -31,16 +27,44 @@ import com.beust.jcommander.Parameters;
 
 @Parameters(resourceBundle = "sidplay.consoleplayer.ConsolePlayer")
 public class ConsolePlayer {
+	/**
+	 * Parse [mm:]ss (parse time in minutes and seconds and store as seconds)
+	 */
+	public static class TimeConverter implements IStringConverter<Integer> {
+		@Override
+		public Integer convert(String value) {
+			String[] s = value.split(":");
+			if (s.length == 1) {
+				return Integer.parseInt(s[0]);
+			} else if (s.length == 2) {
+				return Integer.parseInt(s[0]) * 60 + Integer.parseInt(s[1]);
+			}
+			throw new ParameterException(
+					"Invalid time, expected [mm:]ss (found " + value + ")");
+		}
+	}
+
+	public static class VerboseValidator implements IParameterValidator {
+		public void validate(String name, String value)
+				throws ParameterException {
+			int n = Integer.parseInt(value);
+			if (n < 0 || n > 2) {
+				throw new ParameterException("Invalid " + name
+						+ " value, expected 0, 1 or 2 (found " + value + ")");
+			}
+		}
+	}
+
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
 	@Parameter(names = "--cpuDebug", hidden = true, descriptionKey = "DEBUG")
 	private Boolean cpuDebug = Boolean.FALSE;
 
-	@Parameter(names = "-audio", descriptionKey = "DRIVER", converter = OutputConverter.class)
+	@Parameter(names = "-audio", descriptionKey = "DRIVER")
 	private Audio audio = Audio.SOUNDCARD;
 
-	@Parameter(names = "-emulation", descriptionKey = "EMULATION", converter = EmulationConverter.class)
+	@Parameter(names = "-emulation", descriptionKey = "EMULATION")
 	private Emulation emulation = Emulation.RESID;
 
 	@Parameter(names = "-outputfile", descriptionKey = "OUTPUTFILE")
@@ -61,19 +85,19 @@ public class ConsolePlayer {
 	@Parameter(names = "-dualSID", descriptionKey = "DUAL_SID")
 	private Boolean dualSID = Boolean.FALSE;
 
-	@Parameter(names = "-forceClock", descriptionKey = "FORCE_CLOCK", converter = CPUClockConverter.class)
+	@Parameter(names = "-forceClock", descriptionKey = "FORCE_CLOCK")
 	private CPUClock forceClock = null;
 
-	@Parameter(names = "-defaultClock", descriptionKey = "DEFAULT_CLOCK", converter = CPUClockConverter.class)
+	@Parameter(names = "-defaultClock", descriptionKey = "DEFAULT_CLOCK")
 	private CPUClock defaultClock = CPUClock.PAL;
 
 	@Parameter(names = "-disableFilter", descriptionKey = "DISABLE_FILTER")
 	private Boolean disableFilter = Boolean.FALSE;
 
-	@Parameter(names = "-forceModel", descriptionKey = "FORCE_MODEL", converter = ChipModelConverter.class)
+	@Parameter(names = "-forceModel", descriptionKey = "FORCE_MODEL")
 	private ChipModel forceModel = null;
 
-	@Parameter(names = "-defaultModel", descriptionKey = "DEFAULT_MODEL", converter = ChipModelConverter.class)
+	@Parameter(names = "-defaultModel", descriptionKey = "DEFAULT_MODEL")
 	private ChipModel defaultModel = ChipModel.MOS6581;
 
 	@Parameter(names = "-startTime", descriptionKey = "START_TIME", converter = TimeConverter.class)
@@ -151,8 +175,9 @@ public class ConsolePlayer {
 				exit(1);
 			}
 		}
-		ConsoleIO consoleIO = new ConsoleIO(config, quiet, verbose);
-		player.setMenuHook(obj -> consoleIO.menu(obj, System.out));
+		ConsoleIO consoleIO = new ConsoleIO(config);
+		player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet,
+				System.out));
 		player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
 
 		player.startC64();
@@ -176,9 +201,11 @@ public class ConsolePlayer {
 	}
 
 	private void exit(int rc) {
-		System.out.println("Press <enter> to exit the player!");
 		try {
-			System.in.read();
+			if (rc == 0) {
+				System.out.println("Press <enter> to exit the player!");
+				System.in.read();
+			}
 			System.exit(rc);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());

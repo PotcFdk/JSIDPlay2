@@ -20,16 +20,14 @@ public class ConsoleIO {
 
 	private IConfig config;
 
-	private boolean v1mute, v2mute, v3mute, quiet;
-	private int verboseLevel;
+	private boolean v1mute, v2mute, v3mute;
 
-	public ConsoleIO(IConfig config, boolean quiet, int verboseLevel) {
+	public ConsoleIO(IConfig config) {
 		this.config = config;
-		this.quiet = quiet;
-		this.verboseLevel = verboseLevel;
 	}
 
-	public void menu(Player player, PrintStream out) {
+	public void menu(Player player, int verboseLevel, boolean quiet,
+			PrintStream out) {
 		if (quiet) {
 			return;
 		}
@@ -70,53 +68,53 @@ public class ConsoleIO {
 	}
 
 	private void printTopLine(PrintStream out, final IConsoleSection console) {
-		out.println(String.format("%c%s%c", console.getTopLeft(),
-				setFill(console.getHorizontal(), 54), console.getTopRight()));
+		out.printf("%c%s%c\n", console.getTopLeft(),
+				setFill(console.getHorizontal(), 54), console.getTopRight());
 	}
 
 	private void printHeading(PrintStream out, final IConsoleSection console) {
-		out.println(String.format("%c%54s%c", console.getVertical(), " "
-				+ BUNDLE.getString("HEADING") + "  ", console.getVertical()));
+		out.printf("%c%52s  %c\n", console.getVertical(),
+				BUNDLE.getString("HEADING"), console.getVertical());
 	}
 
 	private void printSeparatorLine(PrintStream out,
 			final IConsoleSection console) {
-		out.println(String.format("%c%s%c", console.getJunctionLeft(),
+		out.printf("%c%s%c\n", console.getJunctionLeft(),
 				setFill(console.getHorizontal(), 54),
-				console.getJunctionRight()));
+				console.getJunctionRight());
 	}
 
 	private void printTitleAutorReleased(PrintStream out,
 			final IConsoleSection console, final SidTune tune) {
 		Iterator<String> description = tune.getInfo().infoString.iterator();
-		out.println(String.format("%c %-12s : %37s %c", console.getVertical(),
+		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("TITLE"), description.next(),
-				console.getVertical()));
-		out.println(String.format("%c %-12s : %37s %c", console.getVertical(),
+				console.getVertical());
+		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("AUTHOR"), description.next(),
-				console.getVertical()));
-		out.println(String.format("%c %-12s : %37s %c", console.getVertical(),
+				console.getVertical());
+		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("RELEASED"), description.next(),
-				console.getVertical()));
+				console.getVertical());
 	}
 
 	private void printDecription(PrintStream out,
 			final IConsoleSection console, final SidTune tune) {
 		for (String description : tune.getInfo().infoString) {
-			out.println(String.format("%c %-12s : %37s %c",
-					console.getVertical(), BUNDLE.getString("DESCRIPTION"),
-					description, console.getVertical()));
+			out.printf("%c %-12s : %37s %c\n", console.getVertical(),
+					BUNDLE.getString("DESCRIPTION"), description,
+					console.getVertical());
 		}
 	}
 
 	private void printFileDetails(PrintStream out,
 			final IConsoleSection console, final SidTune tune) {
-		out.println(String.format("%c %-12s : %37s %c", console.getVertical(),
+		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("FILE_FORMAT"), tune.getInfo().getClass()
-						.getSimpleName(), console.getVertical()));
-		out.println(String.format("%c %-12s : %37s %c", console.getVertical(),
+						.getSimpleName(), console.getVertical());
+		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("FILENAMES"), tune.getInfo().file.getName(),
-				console.getVertical()));
+				console.getVertical());
 	}
 
 	private void printPlaylist(PrintStream out, final IConsoleSection console,
@@ -129,50 +127,44 @@ public class ConsoleIO {
 				i += track.getSongs();
 			}
 		}
-		out.print(String.format("%c %-12s : ", console.getVertical(),
-				BUNDLE.getString("PLAYLIST")));
-		out.println(String.format(
-				"%37s %c",
-				i
-						+ "/"
-						+ track.getSongs()
-						+ " (tune "
-						+ tune.getInfo().currentSong
-						+ "/"
-						+ tune.getInfo().songs
-						+ "["
-						+ tune.getInfo().startSong
-						+ "])"
-						+ (config.getSidplay2().isLoop() ? " ["
-								+ BUNDLE.getString("LOOPING") + "]" : ""),
-				console.getVertical()));
+		out.printf("%c %-12s : ", console.getVertical(),
+				BUNDLE.getString("PLAYLIST"));
+		StringBuffer trackList = new StringBuffer();
+		trackList.append(i).append("/").append(track.getSongs());
+		trackList.append(" (tune ").append(tune.getInfo().currentSong)
+				.append("/").append(tune.getInfo().songs);
+		trackList.append("[").append(tune.getInfo().startSong).append("])");
+		if (config.getSidplay2().isLoop()) {
+			trackList.append(" [" + BUNDLE.getString("LOOPING") + "]");
+		}
+		out.printf("%37s %c\n", trackList.toString(), console.getVertical());
 	}
 
 	private void printSongSpeedCIAorVBI(PrintStream out,
 			final IConsoleSection console, final SidTune tune, final Track track) {
-		out.println(String.format("%c %-12s : %37s %c", console.getVertical(),
+		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("SONG_SPEED"),
-				tune.getSongSpeed(track.getSelected()), console.getVertical()));
+				tune.getSongSpeed(track.getSelected()), console.getVertical());
 	}
 
 	private void printSongLength(PrintStream out,
 			final IConsoleSection console, final Timer timer) {
-		out.print(String.format("%c %-12s : ", console.getVertical(),
-				BUNDLE.getString("SONG_LENGTH")));
+		out.printf("%c %-12s : ", console.getVertical(),
+				BUNDLE.getString("SONG_LENGTH"));
 		if (timer.getStop() != 0) {
-			final String time = String.format("%02d:%02d",
+			String time = String.format("%02d:%02d",
 					(timer.getStop() / 60 % 100), (timer.getStop() % 60));
-			out.println(String.format("%37s %c", time, console.getVertical()));
+			out.printf("%37s %c\n", time, console.getVertical());
 		} else {
-			out.println(String.format("%37s %c", BUNDLE.getString("UNLIMITED"),
-					console.getVertical()));
+			out.printf("%37s %c\n", BUNDLE.getString("UNLIMITED"),
+					console.getVertical());
 		}
 	}
 
 	private void printHorizontalBottomLine(PrintStream out,
 			final IConsoleSection console) {
-		out.println(String.format("%c%s%c", console.getBottomLeft(),
-				setFill(console.getHorizontal(), 54), console.getBottomRight()));
+		out.printf("%c%s%c\n", console.getBottomLeft(),
+				setFill(console.getHorizontal(), 54), console.getBottomRight());
 	}
 
 	private void printAddresses(PrintStream out, final IConsoleSection console,
@@ -197,9 +189,9 @@ public class ConsoleIO {
 					+ " = $%04x", tune.getInfo().initAddr));
 		}
 
-		out.println(String.format("%c %-12s : %37s %c", console.getVertical(),
+		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("ADDRESSES"), line.toString(),
-				console.getVertical()));
+				console.getVertical());
 		line = new StringBuffer();
 		line.append(String.format(BUNDLE.getString("LOAD") + " = $%04x",
 				tune.getInfo().loadAddr));
@@ -209,8 +201,8 @@ public class ConsoleIO {
 			line.append(String.format(", %s = $%04x", BUNDLE.getString("PLAY"),
 					tune.getInfo().playAddr));
 		}
-		out.println(String.format("%c              : %37s %c",
-				console.getVertical(), line.toString(), console.getVertical()));
+		out.printf("%c              : %37s %c\n", console.getVertical(),
+				line.toString(), console.getVertical());
 	}
 
 	private void printSIDDetails(PrintStream out,
@@ -221,9 +213,9 @@ public class ConsoleIO {
 		/* XXX ignores 2nd SID */
 		line.append(String.format(", " + BUNDLE.getString("MODEL") + " = %s",
 				(tune.getInfo().sid1Model == Model.MOS8580 ? "8580" : "6581")));
-		out.println(String.format("%c %-12s : %37s %c", console.getVertical(),
+		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("SID_DETAILS"), line.toString(),
-				console.getVertical()));
+				console.getVertical());
 	}
 
 	private void printKeyboardControls(PrintStream out) {

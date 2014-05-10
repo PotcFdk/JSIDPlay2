@@ -18,11 +18,12 @@ public enum Audio {
 
 	private final AudioDriver audioDriver;
 
-	private Audio(AudioDriver drv) {
-		this.audioDriver = drv;
+	private Audio(AudioDriver audioDriver) {
+		this.audioDriver = audioDriver;
 	}
 
 	public final AudioDriver getAudioDriver() {
 		return audioDriver;
 	}
+
 }
