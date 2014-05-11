@@ -9,8 +9,10 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 
+
 import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
+import libsidutils.PathUtils;
 
 public class T64 extends Prg {
 	/**
@@ -24,17 +26,11 @@ public class T64 extends Prg {
 	private byte[] data;
 	private byte[] lastEntryName;
 	
-	protected static SidTune load(final String fileName, final byte[] dataBuf)
+	protected static SidTune load(final String path, final byte[] dataBuf)
 			throws SidTuneError {
-		if (fileName != null) {
-			final int lastIndexOf = fileName.lastIndexOf(".");
-			final String ext = lastIndexOf != -1 ? fileName
-					.substring(lastIndexOf) : "";
-			if (!ext.equalsIgnoreCase(".t64")) {
-				return null;
-			}
+		if (!PathUtils.getExtension(path).equalsIgnoreCase(".t64")) {
+			return null;
 		}
-
 		final T64 sidtune = new T64();
 		
 		// always load first entry:

@@ -210,24 +210,22 @@ public class SIDPlay extends Applet {
 	//
 	// Helpers
 	//
-	private SidTune getTune(final String path) {
-		SidTune sidTuneMod = map.get(path);
+	private SidTune getTune(final String url) {
+		SidTune sidTuneMod = map.get(url);
 		if (sidTuneMod != null) {
 			return sidTuneMod;
 		}
-		try (InputStream stream = new URL(path).openConnection()
+		try (InputStream stream = new URL(url).openConnection()
 				.getInputStream()) {
 			// load from URL (ui version)
-			sidTuneMod = SidTune.load(stream);
+			sidTuneMod = SidTune.load(stream, url);
 			sidTuneMod.getInfo().file = null;
+			map.put(url, sidTuneMod);
+			return sidTuneMod;
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
-		}
-		if (sidTuneMod == null) {
 			return null;
 		}
-		map.put(path, sidTuneMod);
-		return sidTuneMod;
 	}
 
 }

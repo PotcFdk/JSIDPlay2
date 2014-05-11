@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import libsidutils.PathUtils;
 import libsidutils.SidIdV2;
 
 class Prg extends SidTune {
@@ -37,15 +38,10 @@ class Prg extends SidTune {
 
 	protected byte[] program;
 
-	protected static SidTune load(final String fileName, final byte[] dataBuf) throws SidTuneError {
-		if (fileName != null) {
-			final int lastIndexOf = fileName.lastIndexOf(".");
-			final String ext = lastIndexOf != -1 ? fileName.substring(lastIndexOf) : "";
-			if (!ext.equalsIgnoreCase(".prg")) {
-				return null;
-			}
+	protected static SidTune load(final String path, final byte[] dataBuf) throws SidTuneError {
+		if (!PathUtils.getExtension(path).equalsIgnoreCase(".prg")) {
+			return null;
 		}
-
 		final Prg sidtune = new Prg();
 		if (dataBuf.length < 2) {
 			throw new SidTuneError(_sidtune_truncated);

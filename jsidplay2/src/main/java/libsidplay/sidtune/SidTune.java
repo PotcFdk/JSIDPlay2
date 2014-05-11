@@ -32,6 +32,8 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  * 
  */
 public abstract class SidTune {
+	private static final int MAX_MEM_64K = 65536;
+
 	/**
 	 * Also PSID file format limit.
 	 */
@@ -82,7 +84,7 @@ public abstract class SidTune {
 
 	/** Known SID names. MUS loader scans for these. */
 	private static final String defaultMusNames[] = new String[] { ".mus",
-			".str" };
+			".str", "_a.mus", "_b.mus" };
 
 	/**
 	 * Constructor
@@ -94,7 +96,7 @@ public abstract class SidTune {
 	/**
 	 * Loads a file into a SidTune.
 	 * 
-	 * @param f
+	 * @param file
 	 *            The file to load.
 	 * 
 	 * @return A SidTune instance of the specified file to load.
@@ -102,116 +104,70 @@ public abstract class SidTune {
 	 * @throws IOException
 	 * @throws SidTuneError
 	 */
-	public static SidTune load(final File f) throws IOException, SidTuneError {
-		if (f == null) {
-			return null;
+	public static SidTune load(final File file) throws IOException,
+			SidTuneError {
+		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
+			return MP3Tune.load(file);
 		}
-		if (f.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
-			return MP3Tune.load(f);
-		}
-		String fileName = f.getAbsolutePath();
-		// ancient .mus and whatnot support.
-		final byte[] fileBuf1 = loadFile(f);
-		if (fileBuf1 == null || fileBuf1.length == 0) {
-			/* no file found? return error. */
-			return null;
-		}
-
-		SidTune s = PSid.load(fileBuf1);
-		if (s != null) {
-			s.info.dataFileLen = fileBuf1.length;
-			s.info.file = f;
-			return s;
-		}
-
-		s = Prg.load(fileName, fileBuf1);
-		if (s != null) {
-			s.info.dataFileLen = fileBuf1.length;
-			s.info.file = f;
-			return s;
-		}
-
-		s = P00.load(fileName, fileBuf1);
-		if (s != null) {
-			s.info.dataFileLen = fileBuf1.length;
-			s.info.file = f;
-			return s;
-		}
-
-		s = T64.load(fileName, fileBuf1);
-		if (s != null) {
-			s.info.dataFileLen = fileBuf1.length;
-			s.info.file = f;
-			return s;
-		}
-
-		/* load MUS */
-		s = Mus.load(fileBuf1, null);
-		if (s != null) {
-			s.info.dataFileLen = fileBuf1.length;
-			s.info.file = f;
-
-			File stereoTune = getStereoTune(f);
-			if (stereoTune != null) {
-				final byte[] fileBuf2 = loadFile(stereoTune);
-				if (fileBuf2 != null && fileBuf2.length > 0) {
-					s = Mus.load(fileBuf1, fileBuf2);
-					if (s != null) {
-						s.info.dataFileLen = fileBuf1.length;
-						s.info.file = f;
-					}
-				}
+		// support of a lot of tunes here.
+		byte[] fileBuffer = getFileContents(file);
+		SidTune tune = null;
+		try {
+			tune = PSid.load(fileBuffer);
+			if (tune != null) {
+				return tune;
 			}
-			return s;
+			tune = Prg.load(file.getName(), fileBuffer);
+			if (tune != null) {
+				return tune;
+			}
+			tune = P00.load(file.getName(), fileBuffer);
+			if (tune != null) {
+				return tune;
+			}
+			tune = T64.load(file.getName(), fileBuffer);
+			if (tune != null) {
+				return tune;
+			}
+			/* load MUS and STR */
+			tune = Mus.load(fileBuffer, null);
+			File stereoFile = getStereoTune(file);
+			if (tune != null && stereoFile != null) {
+				tune = Mus.load(fileBuffer, getFileContents(stereoFile));
+			}
+			return tune;
+		} finally {
+			if (tune != null) {
+				tune.info.dataFileLen = fileBuffer.length;
+				tune.info.file = file;
+			}
 		}
-
-		return null;
 	}
 
 	/**
 	 * Get stereo music file by naming convention. Couples are *.mus/*.str or
 	 * *_a.mus/*_b.mus .
 	 * 
-	 * @param f
+	 * @param file
 	 *            file to get the stereo tune for.
 	 * @return stereo file
 	 */
-	public static File getStereoTune(final File f) {
-		final String fileName = f.getAbsolutePath();
-		final File[] childs = f.getParentFile().listFiles();
-		/* Try to load via .MUS / .STR naming convention */
-		for (final String extension : defaultMusNames) {
-			final String fileName2 = fileName.replaceFirst("\\.\\w+$",
-					extension);
-			for (int i = 0; i < childs.length; i++) {
-				if (!fileName.equalsIgnoreCase(fileName2)
-						&& childs[i].getAbsolutePath().equalsIgnoreCase(
-								fileName2) && childs[i].exists()) {
-					return childs[i];
-				}
-			}
-		}
-
-		// try to load a MUS stereo tune by _a.mus / _b.mus naming
-		// convention.
-		if (fileName.toLowerCase(Locale.ENGLISH).endsWith("_a.mus")) {
-			final String fileName2 = fileName.toLowerCase(Locale.ENGLISH).replace("_a.mus",
-					"_b.mus");
-			for (int i = 0; i < childs.length; i++) {
-				if (!fileName.equalsIgnoreCase(fileName2)
-						&& childs[i].getAbsolutePath().equalsIgnoreCase(
-								fileName2) && childs[i].exists()) {
-					return childs[i];
-				}
-			}
-		} else if (fileName.toLowerCase(Locale.ENGLISH).endsWith("_b.mus")) {
-			final String fileName2 = fileName.toLowerCase(Locale.ENGLISH).replace("_b.mus",
-					"_a.mus");
-			for (int i = 0; i < childs.length; i++) {
-				if (!fileName.equalsIgnoreCase(fileName2)
-						&& childs[i].getAbsolutePath().equalsIgnoreCase(
-								fileName2) && childs[i].exists()) {
-					return childs[i];
+	public static File getStereoTune(final File file) {
+		final String fileName = file.getAbsolutePath();
+		final File[] siblings = file.getParentFile().listFiles();
+		/*
+		 * Try to find stereo file by .MUS / .STR or _a.MUS/_b.MUS naming
+		 * convention
+		 */
+		for (String extension : defaultMusNames) {
+			String stereoFilename = fileName.replaceFirst(
+					"(_[aA]|_[bB])?\\.\\w+$", extension);
+			if (!fileName.equalsIgnoreCase(stereoFilename)) {
+				for (File sibling : siblings) {
+					if (sibling.getAbsolutePath().equalsIgnoreCase(
+							stereoFilename)) {
+						return sibling;
+					}
 				}
 			}
 		}
@@ -223,6 +179,8 @@ public abstract class SidTune {
 	 * 
 	 * @param stream
 	 *            The InputStream to load.
+	 * @param url
+	 *            URL of the given stream
 	 * 
 	 * @return A SidTune of the specified InputStream.
 	 * 
@@ -230,39 +188,28 @@ public abstract class SidTune {
 	 *             If the stream cannot be read.
 	 * @throws SidTuneError
 	 */
-	public static SidTune load(final InputStream stream) throws IOException,
-			SidTuneError {
-		// ancient .mus and whatnot support.
-		final int maxLength = 65536;
-		final byte[] fileBuf1 = new byte[65536];
-		int count, len = 0;
-		while (len < maxLength
-				&& (count = stream.read(fileBuf1, len, maxLength - len)) >= 0) {
-			len += count;
+	public static SidTune load(final InputStream stream, String url)
+			throws IOException, SidTuneError {
+		byte[] fileBuffer = getFileContents(stream);
+		SidTune tune;
+		tune = PSid.load(fileBuffer);
+		if (tune != null) {
+			return tune;
 		}
-
-		/* Avoid Arrays.copyOf(), not available on dalvik */
-		byte[] buffer = new byte[len];
-		for (int i = 0; i < len; i++) {
-			buffer[i] = fileBuf1[i];
+		tune = Prg.load(url, fileBuffer);
+		if (tune != null) {
+			return tune;
 		}
-
-		SidTune s = PSid.load(buffer);
-		if (s != null) {
-			return s;
+		tune = P00.load(url, fileBuffer);
+		if (tune != null) {
+			return tune;
 		}
-
-		s = Mus.load(buffer, null);
-		if (s != null) {
-			return s;
+		tune = T64.load(url, fileBuffer);
+		if (tune != null) {
+			return tune;
 		}
-
-		s = Prg.load(null, buffer);
-		if (s != null) {
-			return s;
-		}
-
-		return null;
+		tune = Mus.load(fileBuffer, null);
+		return tune;
 	}
 
 	/**
@@ -324,7 +271,7 @@ public abstract class SidTune {
 	 * Does not affect status of object, and therefore can be used to load
 	 * files. Error string is put into info.statusString, though.
 	 * 
-	 * @param f
+	 * @param file
 	 *            The file to load.
 	 * 
 	 * @return The data of the loaded file.
@@ -332,25 +279,30 @@ public abstract class SidTune {
 	 * @throws FileNotFoundException
 	 *             if the file could not be found.
 	 */
-	private static byte[] loadFile(final File f) throws IOException {
-		InputStream is;
+	private static byte[] getFileContents(final File file) throws IOException {
 		try {
 			Class.forName("de.schlichtherle.truezip.file.TFileInputStream");
-			is = new TFileInputStream(f);
+			try (InputStream is = new TFileInputStream(file)) {
+				return getFileContents(is);
+			}
 		} catch (ClassNotFoundException e) {
 			// skip ZIP support, if console player version without dependencies!
-			is = new FileInputStream(f);
-		}
-		try (InputStream stream = is) {
-			final int length = Math.min(65536, (int) f.length());
-			final byte[] data = new byte[length];
-			int count, pos = 0;
-			while (pos < length
-					&& (count = stream.read(data, pos, length - pos)) >= 0) {
-				pos += count;
+			try (InputStream is = new FileInputStream(file)) {
+				return getFileContents(is);
 			}
-			return data;
 		}
+	}
+
+	private static byte[] getFileContents(final InputStream stream)
+			throws IOException {
+		final byte[] fileBuf = new byte[MAX_MEM_64K];
+		int count, len = 0;
+		final int maxLength = fileBuf.length;
+		while (len < maxLength
+				&& (count = stream.read(fileBuf, len, maxLength - len)) >= 0) {
+			len += count;
+		}
+		return Arrays.copyOf(fileBuf, len);
 	}
 
 	/**
@@ -460,7 +412,7 @@ public abstract class SidTune {
 	public void setOutputFilename(String outputFilename) {
 		this.outputFilename = outputFilename;
 	}
-	
+
 	public String getOutputFilename() {
 		return outputFilename;
 	}

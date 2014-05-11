@@ -19,6 +19,8 @@ package libsidplay.sidtune;
 
 import java.nio.ByteBuffer;
 
+import libsidutils.PathUtils;
+
 class P00 extends Prg {
 
 	private static final int X00_ID_LEN = 8;
@@ -71,10 +73,8 @@ class P00 extends Prg {
 	protected P00() {
 	}
 
-	protected static SidTune load(final String fileName, final byte[] dataBuf) throws SidTuneError {
-		final int lastIndexOf = fileName.lastIndexOf(".");
-		final String ext = lastIndexOf != -1 ? fileName.substring(lastIndexOf) : "";
-
+	protected static SidTune load(final String path, final byte[] dataBuf) throws SidTuneError {
+		String ext = PathUtils.getExtension(path);
 		if (dataBuf.length < X00Header.SIZE) {
 			return null;
 		}
