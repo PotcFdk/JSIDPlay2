@@ -27,16 +27,12 @@ import libsidutils.PathUtils;
 class Mus extends PSid {
 
 	/** Known SID names. MUS loader scans for these. */
-	private static final String defaultMusNames[] = new String[] { ".mus",
+	private static final String DEFAULT_MUS_NAMES[] = new String[] { ".mus",
 			".str", "_a.mus", "_b.mus" };
 
-	//
-	// sidtune format errors
-	//
+	private static final String ERR_SIDTUNE_INVALID = "ERROR: File contains invalid data";
 
-	private static final String _sidtune_txt_invalid = "ERROR: File contains invalid data";
-
-	private static final String _sidtune_2nd_invalid = "ERROR: 2nd file contains invalid data";
+	private static final String SIDTUNE_2ND_INVALID = "ERROR: 2nd file contains invalid data";
 
 	private static final int MUS_HLT_CMD = 0x14F;
 
@@ -100,7 +96,7 @@ class Mus extends PSid {
 	private static File getStereoTune(final File file) {
 		final String fileName = file.getName();
 		final File[] siblings = file.getParentFile().listFiles();
-		for (String extension : defaultMusNames) {
+		for (String extension : DEFAULT_MUS_NAMES) {
 			String test = fileName.replaceFirst("(_[aA]|_[bB])?\\.\\w+$",
 					extension);
 			if (!fileName.equalsIgnoreCase(test)) {
@@ -131,7 +127,7 @@ class Mus extends PSid {
 			final File musFile) throws SidTuneError {
 		final int[] voice3Index = new int[1];
 		if (!detect(musBuf, fileOffset, voice3Index)) {
-			throw new SidTuneError(_sidtune_txt_invalid);
+			throw new SidTuneError(ERR_SIDTUNE_INVALID);
 		}
 
 		info.songs = info.startSong = 1;
@@ -140,12 +136,12 @@ class Mus extends PSid {
 		// Check setting compatibility for MUS playback
 		if (info.compatibility != Compatibility.PSIDv2
 				|| info.relocStartPage != 0 || info.relocPages != 0) {
-			throw new SidTuneError(_sidtune_txt_invalid);
+			throw new SidTuneError(ERR_SIDTUNE_INVALID);
 		}
 
 		for (int i = 0; i < info.songs; i++) {
 			if (songSpeed[i] != Speed.CIA_1A) {
-				throw new SidTuneError(_sidtune_txt_invalid);
+				throw new SidTuneError(ERR_SIDTUNE_INVALID);
 			}
 		}
 
@@ -189,7 +185,7 @@ class Mus extends PSid {
 
 		if (strBuf != null) {
 			if (!detect(strBuf, 0, voice3Index)) {
-				throw new RuntimeException(_sidtune_2nd_invalid);
+				throw new RuntimeException(SIDTUNE_2ND_INVALID);
 			}
 
 			infoStringLocation = voice3Index[0];

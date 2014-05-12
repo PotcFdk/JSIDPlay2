@@ -19,8 +19,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 import javafx.scene.image.Image;
 import de.schlichtherle.truezip.file.TFileInputStream;
@@ -30,6 +30,9 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  * 
  */
 public abstract class SidTune {
+	/**
+	 * Maximum possible file size of C64 programs to load.
+	 */
 	private static final int MAX_MEM_64K = 65536;
 
 	/**
@@ -37,19 +40,17 @@ public abstract class SidTune {
 	 */
 	protected static final int SIDTUNE_MAX_SONGS = 256;
 
-	protected static final int SIDTUNE_MAX_CREDIT_STRINGS = 10;
-
 	public enum Speed {
 		VBI(0), CIA_1A(60);
 
-		private int val;
+		private int speed;
 
-		Speed(int n) {
-			this.val = n;
+		private Speed(int speed) {
+			this.speed = speed;
 		}
 
 		public int speedValue() {
-			return val;
+			return speed;
 		}
 	}
 
@@ -102,7 +103,7 @@ public abstract class SidTune {
 			SidTuneError {
 		SidTune tune = null;
 		try {
-			tune = MP3Tune.load(file.getName(), file);
+			tune = MP3Tune.load(file);
 			if (tune != null) {
 				return tune;
 			}
@@ -226,7 +227,7 @@ public abstract class SidTune {
 	 * 
 	 * @return the player IDs as a list
 	 */
-	public abstract ArrayList<String> identify();
+	public abstract Collection<String> identify();
 
 	/**
 	 * Does not affect status of object, and therefore can be used to load
@@ -258,7 +259,7 @@ public abstract class SidTune {
 			throws IOException {
 		final byte[] fileBuf = new byte[MAX_MEM_64K];
 		int count, len = 0;
-		final int maxLength = fileBuf.length;
+		final int maxLength = MAX_MEM_64K;
 		while (len < maxLength
 				&& (count = stream.read(fileBuf, len, maxLength - len)) >= 0) {
 			len += count;

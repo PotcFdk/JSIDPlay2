@@ -19,7 +19,7 @@ package libsidplay.sidtune;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
 
 import libsidutils.PathUtils;
 import libsidutils.SidIdV2;
@@ -92,7 +92,7 @@ class Prg extends SidTune {
 	 * @return the player IDs as a list
 	 */
 	@Override
-	public ArrayList<String> identify() {
+	public Collection<String> identify() {
 		return sidId.identify(program);
 	}
 	

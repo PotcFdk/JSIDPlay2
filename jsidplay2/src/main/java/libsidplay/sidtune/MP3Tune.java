@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 
 import javafx.application.Platform;
@@ -21,8 +22,14 @@ import lowlevel.ID3V2Decoder;
  */
 public class MP3Tune extends SidTune {
 
+	/**
+	 * MP3 decoder.
+	 */
 	private ID3V2Decoder decoder = new ID3V2Decoder();
 
+	/**
+	 * Cover art stored inside MP3.
+	 */
 	private Image image;
 
 	@Override
@@ -34,12 +41,12 @@ public class MP3Tune extends SidTune {
 	@Override
 	public void save(String destFileName, boolean overWriteFlag)
 			throws IOException {
-		// Saving is not possible
+		throw new RuntimeException("Saving of this format is not possible!");
 	}
 
 	@Override
-	public ArrayList<String> identify() {
-		ArrayList<String> names = new ArrayList<String>();
+	public Collection<String> identify() {
+		Collection<String> names = new ArrayList<String>();
 		// The player is called jump3r ;-)
 		names.add("jump3r");
 		return names;
@@ -51,48 +58,48 @@ public class MP3Tune extends SidTune {
 		return 0;
 	}
 
-	public static final SidTune load(final String path, final File f) throws IOException,
+	public static final SidTune load(final File file) throws IOException,
 			SidTuneError {
-		if (!path.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
+		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			return null;
 		}
-		final MP3Tune s = new MP3Tune();
+		final MP3Tune sidTune = new MP3Tune();
 		// fill out some minimal information of an MP3 tune
-		s.info.file = f;
-		s.info.startSong = 1;
-		s.info.songs = 1;
-		try (RandomAccessFile randomAccessFile = new RandomAccessFile(f, "r")) {
-			s.decoder.read(randomAccessFile);
-			s.info.infoString.add(s.decoder.getTitle());
-			String interpret = s.decoder.getInterpret();
-			String albumInterpret = s.decoder.getAlbumInterpret();
-			String genre = s.decoder.getGenre();
+		sidTune.info.startSong = 1;
+		sidTune.info.songs = 1;
+		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
+			sidTune.decoder.read(randomAccessFile);
+			sidTune.info.infoString.add(sidTune.decoder.getTitle());
+			String interpret = sidTune.decoder.getInterpret();
+			String albumInterpret = sidTune.decoder.getAlbumInterpret();
+			String genre = sidTune.decoder.getGenre();
 			if (interpret != null) {
-				s.info.infoString.add(interpret);
+				sidTune.info.infoString.add(interpret);
 			} else {
-				s.info.infoString.add(albumInterpret);
+				sidTune.info.infoString.add(albumInterpret);
 			}
-			String album = s.decoder.getAlbum();
-			String year = s.decoder.getYear();
+			String album = sidTune.decoder.getAlbum();
+			String year = sidTune.decoder.getYear();
 			if (album != null && year != null) {
-				s.info.infoString.add(album + " (" + year + ")"
+				sidTune.info.infoString.add(album + " (" + year + ")"
 						+ (genre != null ? " / " + genre : ""));
 			} else {
-				s.info.infoString.add(album
+				sidTune.info.infoString.add(album
 						+ (genre != null ? " / " + genre : ""));
 			}
 			try {
-				s.info.startSong = Integer.valueOf(s.decoder.getTrack());
+				sidTune.info.startSong = Integer.valueOf(sidTune.decoder
+						.getTrack());
 			} catch (NumberFormatException e) {
 				// ignore
 			}
-			if (s.decoder.getImageBytes() != null
+			if (sidTune.decoder.getImageBytes() != null
 					&& Platform.isFxApplicationThread()) {
-				s.image = new Image(new ByteArrayInputStream(
-						s.decoder.getImageBytes()));
+				sidTune.image = new Image(new ByteArrayInputStream(
+						sidTune.decoder.getImageBytes()));
 			}
 		}
-		return s;
+		return sidTune;
 	}
 
 	@Override
