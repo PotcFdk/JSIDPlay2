@@ -483,8 +483,7 @@ class PSid extends Prg {
 		info.determinedDriverLength = relocatedBuffer.limit() - 10;
 	}
 
-	protected static final SidTune load(final byte[] dataBuf)
-			throws SidTuneError {
+	protected static SidTune load(final String path, final byte[] dataBuf) throws SidTuneError {
 		if (dataBuf.length < PHeader.SIZE) {
 			return null;
 		}
@@ -619,7 +618,8 @@ class PSid extends Prg {
 			final Mus mus = new Mus();
 			mus.info = sidtune.info;
 			mus.fileOffset = sidtune.fileOffset;
-			return Mus.loadWithProvidedMetadata(dataBuf, null, mus);
+			mus.loadWithProvidedMetadata(dataBuf, null);
+			return mus;
 		}
 
 		sidtune.program = dataBuf;
@@ -716,7 +716,7 @@ class PSid extends Prg {
 
 			// Data starts at: bufferaddr + fileoffset
 			// Data length: datafilelen - fileoffset
-			fos.write(program, fileOffset, info.dataFileLen - fileOffset);
+			fos.write(program, fileOffset, info.c64dataLen);
 		}
 
 	}

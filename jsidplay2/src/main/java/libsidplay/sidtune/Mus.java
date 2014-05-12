@@ -17,11 +17,18 @@
  */
 package libsidplay.sidtune;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import libsidutils.PathUtils;
+
 class Mus extends PSid {
+
+	/** Known SID names. MUS loader scans for these. */
+	private static final String defaultMusNames[] = new String[] { ".mus",
+			".str", "_a.mus", "_b.mus" };
 
 	//
 	// sidtune format errors
@@ -82,38 +89,68 @@ class Mus extends PSid {
 				&& ((buffer[voice3Index[0] - 1] & 0xff) + ((buffer[voice3Index[0] - 2] & 0xff) << 8)) == MUS_HLT_CMD;
 	}
 
-	public static SidTune load(final byte[] musBuf, final byte[] strBuf)
-			throws SidTuneError {
-		final Mus sidtune = new Mus();
-		sidtune.info.compatibility = Compatibility.PSIDv2;
-		return loadWithProvidedMetadata(musBuf, strBuf, sidtune);
+	/**
+	 * Get stereo music file by naming convention. Couples are *.mus/*.str or
+	 * *_a.mus/*_b.mus .
+	 * 
+	 * @param file
+	 *            file to get the stereo tune for.
+	 * @return stereo file
+	 */
+	private static File getStereoTune(final File file) {
+		final String fileName = file.getName();
+		final File[] siblings = file.getParentFile().listFiles();
+		for (String extension : defaultMusNames) {
+			String test = fileName.replaceFirst("(_[aA]|_[bB])?\\.\\w+$",
+					extension);
+			if (!fileName.equalsIgnoreCase(test)) {
+				for (File sibling : siblings) {
+					if (sibling.getName().equalsIgnoreCase(test)) {
+						return sibling;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
-	public static SidTune loadWithProvidedMetadata(final byte[] musBuf,
-			byte[] strBuf, final Mus sidtune) throws SidTuneError {
-		final int[] voice3Index = new int[1];
-		if (!detect(musBuf, sidtune.fileOffset, voice3Index)) {
+	protected static SidTune load(final File musFile, final byte[] dataBuf)
+			throws SidTuneError {
+		String extension = PathUtils.getExtension(musFile.getName());
+		if (!extension.equalsIgnoreCase(".mus")
+				&& !extension.equalsIgnoreCase(".str")) {
 			return null;
 		}
+		final Mus sidTune = new Mus();
+		sidTune.info.compatibility = Compatibility.PSIDv2;
+		sidTune.loadWithProvidedMetadata(dataBuf, musFile);
+		return sidTune;
+	}
 
-		sidtune.info.songs = sidtune.info.startSong = 1;
-		sidtune.convertOldStyleSpeedToTables(~0);
-
-		// Check setting compatibility for MUS playback
-		if (sidtune.info.compatibility != Compatibility.PSIDv2
-				|| sidtune.info.relocStartPage != 0
-				|| sidtune.info.relocPages != 0) {
+	protected void loadWithProvidedMetadata(final byte[] musBuf,
+			final File musFile) throws SidTuneError {
+		final int[] voice3Index = new int[1];
+		if (!detect(musBuf, fileOffset, voice3Index)) {
 			throw new SidTuneError(_sidtune_txt_invalid);
 		}
 
-		for (int i = 0; i < sidtune.info.songs; i++) {
-			if (sidtune.songSpeed[i] != Speed.CIA_1A) {
+		info.songs = info.startSong = 1;
+		convertOldStyleSpeedToTables(~0);
+
+		// Check setting compatibility for MUS playback
+		if (info.compatibility != Compatibility.PSIDv2
+				|| info.relocStartPage != 0 || info.relocPages != 0) {
+			throw new SidTuneError(_sidtune_txt_invalid);
+		}
+
+		for (int i = 0; i < info.songs; i++) {
+			if (songSpeed[i] != Speed.CIA_1A) {
 				throw new SidTuneError(_sidtune_txt_invalid);
 			}
 		}
 
-		sidtune.musDataLen = musBuf.length;
-		sidtune.info.loadAddr = MUS_DATA_ADDR;
+		musDataLen = musBuf.length;
+		info.loadAddr = MUS_DATA_ADDR;
 
 		int infoStringLocation = voice3Index[0];
 
@@ -127,8 +164,20 @@ class Mus extends PSid {
 			final String credit = convertPetsciiToAscii(musBuf,
 					infoStringLocation);
 			infoStringLocation += credit.length() + 1;
-			sidtune.info.commentString[0] = credit;
-			sidtune.info.numberOfCommentStrings = 1;
+			info.commentString[0] = credit;
+			info.numberOfCommentStrings = 1;
+		}
+
+		byte[] strBuf = null;
+		if (musFile != null) {
+			File stereoFile = getStereoTune(musFile);
+			if (stereoFile != null) {
+				try {
+					strBuf = getFileContents(stereoFile);
+				} catch (IOException e) {
+					// ignore missing stereo tune
+				}
+			}
 		}
 
 		// If we appear to have additional data at the end, check is it's
@@ -149,34 +198,30 @@ class Mus extends PSid {
 				final String credit = SidTune.convertPetsciiToAscii(strBuf,
 						infoStringLocation);
 				infoStringLocation += credit.length() + 1;
-				sidtune.info.commentString[1] = credit;
-				sidtune.info.numberOfCommentStrings = 2;
+				info.commentString[1] = credit;
+				info.numberOfCommentStrings = 2;
 			}
 
-			sidtune.info.sidChipBase2 = STR_SID2_ADDR;
-			sidtune.info.initAddr = 0xfc90;
-			sidtune.info.playAddr = 0xfc96;
+			info.sidChipBase2 = STR_SID2_ADDR;
+			info.initAddr = 0xfc90;
+			info.playAddr = 0xfc96;
 		} else {
-			sidtune.info.initAddr = 0xec60;
-			sidtune.info.playAddr = 0xec80;
+			info.initAddr = 0xec60;
+			info.playAddr = 0xec80;
 		}
 
-		sidtune.info.infoString.add("<?>");
-		sidtune.info.infoString.add("<?>");
-		sidtune.info.infoString.add("<?>");
+		info.infoString.add("<?>");
+		info.infoString.add("<?>");
+		info.infoString.add("<?>");
 
-		sidtune.program = new byte[musBuf.length
-				+ (strBuf != null ? strBuf.length : 0)];
-		sidtune.info.c64dataLen = sidtune.program.length - sidtune.fileOffset;
-		System.arraycopy(musBuf, 0, sidtune.program, 0, musBuf.length);
+		program = new byte[musBuf.length + (strBuf != null ? strBuf.length : 0)];
+		info.c64dataLen = program.length - fileOffset;
+		System.arraycopy(musBuf, 0, program, 0, musBuf.length);
 		if (strBuf != null) {
-			System.arraycopy(strBuf, 0, sidtune.program, musBuf.length,
-					strBuf.length);
+			System.arraycopy(strBuf, 0, program, musBuf.length, strBuf.length);
 		}
 
-		sidtune.findPlaceForDriver();
-
-		return sidtune;
+		findPlaceForDriver();
 	}
 
 	private static final byte _sidtune_sidplayer1[] = {

@@ -17,12 +17,10 @@ package libsidplay.sidtune;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Locale;
 
 import javafx.scene.image.Image;
 import de.schlichtherle.truezip.file.TFileInputStream;
@@ -82,10 +80,6 @@ public abstract class SidTune {
 
 	private String outputFilename;
 
-	/** Known SID names. MUS loader scans for these. */
-	private static final String defaultMusNames[] = new String[] { ".mus",
-			".str", "_a.mus", "_b.mus" };
-
 	/**
 	 * Constructor
 	 */
@@ -94,7 +88,7 @@ public abstract class SidTune {
 	}
 
 	/**
-	 * Loads a file into a SidTune.
+	 * Loads a file into a SidTune. Support of a lot of tunes here.
 	 * 
 	 * @param file
 	 *            The file to load.
@@ -106,14 +100,14 @@ public abstract class SidTune {
 	 */
 	public static SidTune load(final File file) throws IOException,
 			SidTuneError {
-		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
-			return MP3Tune.load(file);
-		}
-		// support of a lot of tunes here.
-		byte[] fileBuffer = getFileContents(file);
 		SidTune tune = null;
 		try {
-			tune = PSid.load(fileBuffer);
+			tune = MP3Tune.load(file.getName(), file);
+			if (tune != null) {
+				return tune;
+			}
+			byte[] fileBuffer = getFileContents(file);
+			tune = PSid.load(file.getName(), fileBuffer);
 			if (tune != null) {
 				return tune;
 			}
@@ -129,53 +123,21 @@ public abstract class SidTune {
 			if (tune != null) {
 				return tune;
 			}
-			/* load MUS and STR */
-			tune = Mus.load(fileBuffer, null);
-			File stereoFile = getStereoTune(file);
-			if (tune != null && stereoFile != null) {
-				tune = Mus.load(fileBuffer, getFileContents(stereoFile));
+			tune = Mus.load(file, fileBuffer);
+			if (tune != null) {
+				return tune;
 			}
-			return tune;
+			return null;
 		} finally {
 			if (tune != null) {
-				tune.info.dataFileLen = fileBuffer.length;
 				tune.info.file = file;
 			}
 		}
 	}
 
 	/**
-	 * Get stereo music file by naming convention. Couples are *.mus/*.str or
-	 * *_a.mus/*_b.mus .
-	 * 
-	 * @param file
-	 *            file to get the stereo tune for.
-	 * @return stereo file
-	 */
-	public static File getStereoTune(final File file) {
-		final String fileName = file.getAbsolutePath();
-		final File[] siblings = file.getParentFile().listFiles();
-		/*
-		 * Try to find stereo file by .MUS / .STR or _a.MUS/_b.MUS naming
-		 * convention
-		 */
-		for (String extension : defaultMusNames) {
-			String stereoFilename = fileName.replaceFirst(
-					"(_[aA]|_[bB])?\\.\\w+$", extension);
-			if (!fileName.equalsIgnoreCase(stereoFilename)) {
-				for (File sibling : siblings) {
-					if (sibling.getAbsolutePath().equalsIgnoreCase(
-							stereoFilename)) {
-						return sibling;
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Loads an InputStream into a SidTune.
+	 * Note: MUS/STR files are not supported (they require a stereo file)
 	 * 
 	 * @param stream
 	 *            The InputStream to load.
@@ -190,9 +152,9 @@ public abstract class SidTune {
 	 */
 	public static SidTune load(final InputStream stream, String url)
 			throws IOException, SidTuneError {
+		SidTune tune = null;
 		byte[] fileBuffer = getFileContents(stream);
-		SidTune tune;
-		tune = PSid.load(fileBuffer);
+		tune = PSid.load(url, fileBuffer);
 		if (tune != null) {
 			return tune;
 		}
@@ -208,7 +170,6 @@ public abstract class SidTune {
 		if (tune != null) {
 			return tune;
 		}
-		tune = Mus.load(fileBuffer, null);
 		return tune;
 	}
 
@@ -269,24 +230,24 @@ public abstract class SidTune {
 
 	/**
 	 * Does not affect status of object, and therefore can be used to load
-	 * files. Error string is put into info.statusString, though.
+	 * files.
 	 * 
 	 * @param file
 	 *            The file to load.
 	 * 
 	 * @return The data of the loaded file.
 	 * 
-	 * @throws FileNotFoundException
+	 * @throws IOException
 	 *             if the file could not be found.
 	 */
-	private static byte[] getFileContents(final File file) throws IOException {
+	protected static byte[] getFileContents(final File file) throws IOException {
 		try {
 			Class.forName("de.schlichtherle.truezip.file.TFileInputStream");
 			try (InputStream is = new TFileInputStream(file)) {
 				return getFileContents(is);
 			}
 		} catch (ClassNotFoundException e) {
-			// skip ZIP support, if console player version without dependencies!
+			// skip ZIP support, if not available!
 			try (InputStream is = new FileInputStream(file)) {
 				return getFileContents(is);
 			}

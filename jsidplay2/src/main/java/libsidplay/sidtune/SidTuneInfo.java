@@ -126,11 +126,6 @@ public class SidTuneInfo {
 	public String[] commentString = new String[2];
 
 	/**
-	 * length of single-file sidtune file
-	 */
-	public int dataFileLen;
-
-	/**
 	 * length of raw C64 data without load address
 	 */
 	public int c64dataLen;

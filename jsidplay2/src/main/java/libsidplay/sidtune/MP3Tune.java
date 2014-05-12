@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -50,10 +51,13 @@ public class MP3Tune extends SidTune {
 		return 0;
 	}
 
-	public static final SidTune load(final File f) throws SidTuneError {
+	public static final SidTune load(final String path, final File f) throws IOException,
+			SidTuneError {
+		if (!path.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
+			return null;
+		}
 		final MP3Tune s = new MP3Tune();
 		// fill out some minimal information of an MP3 tune
-		s.info.dataFileLen = (int) f.length();
 		s.info.file = f;
 		s.info.startSong = 1;
 		s.info.songs = 1;
@@ -87,10 +91,7 @@ public class MP3Tune extends SidTune {
 				s.image = new Image(new ByteArrayInputStream(
 						s.decoder.getImageBytes()));
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-
 		return s;
 	}
 
