@@ -89,7 +89,8 @@ public abstract class SidTune {
 	}
 
 	/**
-	 * Loads a file into a SidTune. Support of a lot of tunes here.
+	 * Loads a file into a SidTune. Support of a lot of tunes here. Note:
+	 * Formats MP3 and MUS (STR) require files!
 	 * 
 	 * @param file
 	 *            The file to load.
@@ -108,27 +109,12 @@ public abstract class SidTune {
 				return tune;
 			}
 			byte[] fileBuffer = getFileContents(file);
-			tune = PSid.load(file.getName(), fileBuffer);
-			if (tune != null) {
-				return tune;
-			}
-			tune = Prg.load(file.getName(), fileBuffer);
-			if (tune != null) {
-				return tune;
-			}
-			tune = P00.load(file.getName(), fileBuffer);
-			if (tune != null) {
-				return tune;
-			}
-			tune = T64.load(file.getName(), fileBuffer);
+			tune = loadCommon(file.getName(), fileBuffer);
 			if (tune != null) {
 				return tune;
 			}
 			tune = Mus.load(file, fileBuffer);
-			if (tune != null) {
-				return tune;
-			}
-			return null;
+			return tune;
 		} finally {
 			if (tune != null) {
 				tune.info.file = file;
@@ -137,13 +123,13 @@ public abstract class SidTune {
 	}
 
 	/**
-	 * Loads an InputStream into a SidTune.
-	 * Note: MUS/STR files are not supported (they require a stereo file)
+	 * Loads an InputStream into a SidTune. Note: MUS/STR files are not
+	 * supported (they require a stereo file)
 	 * 
-	 * @param stream
-	 *            The InputStream to load.
 	 * @param url
 	 *            URL of the given stream
+	 * @param stream
+	 *            The InputStream to load.
 	 * 
 	 * @return A SidTune of the specified InputStream.
 	 * 
@@ -151,27 +137,31 @@ public abstract class SidTune {
 	 *             If the stream cannot be read.
 	 * @throws SidTuneError
 	 */
-	public static SidTune load(final InputStream stream, String url)
+	public static SidTune load(String url, final InputStream stream)
 			throws IOException, SidTuneError {
-		SidTune tune = null;
-		byte[] fileBuffer = getFileContents(stream);
-		tune = PSid.load(url, fileBuffer);
+		return loadCommon(url, getFileContents(stream));
+	}
+
+	private static SidTune loadCommon(String name, byte[] fileBuffer)
+			throws SidTuneError {
+		SidTune tune;
+		tune = PSid.load(name, fileBuffer);
 		if (tune != null) {
 			return tune;
 		}
-		tune = Prg.load(url, fileBuffer);
+		tune = Prg.load(name, fileBuffer);
 		if (tune != null) {
 			return tune;
 		}
-		tune = P00.load(url, fileBuffer);
+		tune = P00.load(name, fileBuffer);
 		if (tune != null) {
 			return tune;
 		}
-		tune = T64.load(url, fileBuffer);
+		tune = T64.load(name, fileBuffer);
 		if (tune != null) {
 			return tune;
 		}
-		return tune;
+		return null;
 	}
 
 	/**

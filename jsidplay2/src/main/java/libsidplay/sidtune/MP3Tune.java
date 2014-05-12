@@ -22,6 +22,8 @@ import lowlevel.ID3V2Decoder;
  */
 public class MP3Tune extends SidTune {
 
+	private String mp3Filename;
+
 	/**
 	 * MP3 decoder.
 	 */
@@ -65,6 +67,7 @@ public class MP3Tune extends SidTune {
 		}
 		final MP3Tune sidTune = new MP3Tune();
 		// fill out some minimal information of an MP3 tune
+		sidTune.mp3Filename = file.getAbsolutePath();
 		sidTune.info.startSong = 1;
 		sidTune.info.songs = 1;
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
@@ -106,4 +109,9 @@ public class MP3Tune extends SidTune {
 	public Image getImage() {
 		return image;
 	}
+
+	public String getMP3Filename() {
+		return mp3Filename;
+	}
+	
 }

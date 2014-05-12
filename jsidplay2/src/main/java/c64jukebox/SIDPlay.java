@@ -218,8 +218,7 @@ public class SIDPlay extends Applet {
 		try (InputStream stream = new URL(url).openConnection()
 				.getInputStream()) {
 			// load from URL (ui version)
-			sidTuneMod = SidTune.load(stream, url);
-			sidTuneMod.getInfo().file = null;
+			sidTuneMod = SidTune.load(url, stream);
 			map.put(url, sidTuneMod);
 			return sidTuneMod;
 		} catch (IOException | SidTuneError e) {

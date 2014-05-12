@@ -1,11 +1,11 @@
 package libsidplay.player;
 
 import java.io.File;
-import java.util.Locale;
 
+import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
-import sidplay.audio.CmpMP3File;
 import sidplay.audio.Audio;
+import sidplay.audio.CmpMP3File;
 import sidplay.ini.intf.IConfig;
 
 public class DriverSettings {
@@ -43,17 +43,14 @@ public class DriverSettings {
 			restore(oldDriverSettings);
 			oldDriverSettings = null;
 		}
-		if (tune != null
-				&& tune.getInfo().file != null
-				&& tune.getInfo().file.getName().toLowerCase(Locale.ENGLISH)
-						.endsWith(".mp3")) {
+		if (tune != null && tune instanceof MP3Tune) {
 			// MP3 play-back? Save settings, then change to MP3 compare driver
 			oldDriverSettings = save();
 
 			audio = Audio.COMPARE;
 			emulation = Emulation.RESID;
 			config.getAudio().setPlayOriginal(true);
-			config.getAudio().setMp3File(tune.getInfo().file.getAbsolutePath());
+			config.getAudio().setMp3File(((MP3Tune) tune).getMP3Filename());
 		}
 		if (audio.getAudioDriver() instanceof CmpMP3File) {
 			// Set MP3 comparison settings
