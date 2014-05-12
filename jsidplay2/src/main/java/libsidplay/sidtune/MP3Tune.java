@@ -107,8 +107,7 @@ public class MP3Tune extends SidTune {
 
 	@Override
 	public String getMD5Digest() {
-		throw new RuntimeException(
-				"Unsupported operation to create MD5 checksum!");
+		return null;
 	}
 
 	@Override
