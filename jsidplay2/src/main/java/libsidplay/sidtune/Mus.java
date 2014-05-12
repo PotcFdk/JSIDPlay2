@@ -220,7 +220,7 @@ class Mus extends PSid {
 		findPlaceForDriver();
 	}
 
-	private static final byte _sidtune_sidplayer1[] = {
+	private static final byte SIDTUNE_SIDPLAYER1[] = {
 
 	(byte) 0x00, (byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 			(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
@@ -867,7 +867,7 @@ class Mus extends PSid {
 			(byte) 0xE3, (byte) 0xA9, (byte) 0x07, (byte) 0x8D, (byte) 0x00,
 			(byte) 0xE0, (byte) 0x60, };
 
-	private static final byte _sidtune_sidplayer2[] = {
+	private static final byte SIDTUNE_SIDPLAYER2[] = {
 
 	(byte) 0x00, (byte) 0xF0, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 			(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
@@ -1517,20 +1517,20 @@ class Mus extends PSid {
 			(byte) 0x80, (byte) 0xEC, (byte) 0x4C, (byte) 0x80, (byte) 0xFC, };
 
 	private void installPlayer(final byte[] c64buf) {
-		int dest = (_sidtune_sidplayer1[0] & 0xff)
-				+ ((_sidtune_sidplayer1[1] & 0xff) << 8);
-		System.arraycopy(_sidtune_sidplayer1, 2 + 0, c64buf, dest,
-				_sidtune_sidplayer1.length - 2);
+		int dest = (SIDTUNE_SIDPLAYER1[0] & 0xff)
+				+ ((SIDTUNE_SIDPLAYER1[1] & 0xff) << 8);
+		System.arraycopy(SIDTUNE_SIDPLAYER1, 2 + 0, c64buf, dest,
+				SIDTUNE_SIDPLAYER1.length - 2);
 		// Point player #1 to data #1.
 		c64buf[dest + 0xc6e] = MUS_DATA_ADDR + 2 & 0xFF;
 		c64buf[dest + 0xc70] = MUS_DATA_ADDR + 2 >> 8;
 
 		if (info.sidChipBase2 != 0) {
 			// Install MUS player #2.
-			dest = (_sidtune_sidplayer2[0] & 0xff)
-					+ ((_sidtune_sidplayer2[1] & 0xff) << 8);
-			System.arraycopy(_sidtune_sidplayer2, 2, c64buf, dest,
-					_sidtune_sidplayer2.length - 2);
+			dest = (SIDTUNE_SIDPLAYER2[0] & 0xff)
+					+ ((SIDTUNE_SIDPLAYER2[1] & 0xff) << 8);
+			System.arraycopy(SIDTUNE_SIDPLAYER2, 2, c64buf, dest,
+					SIDTUNE_SIDPLAYER2.length - 2);
 			// Point player #2 to data #2.
 			c64buf[dest + 0xc6e] = (byte) (MUS_DATA_ADDR + musDataLen + 2 & 0xFF);
 			c64buf[dest + 0xc70] = (byte) (MUS_DATA_ADDR + musDataLen + 2 >> 8);

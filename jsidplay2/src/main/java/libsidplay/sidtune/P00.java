@@ -54,24 +54,21 @@ class P00 extends Prg {
 		/**
 		 * C64File
 		 */
-		byte id[] = new byte[X00_ID_LEN];
+		public byte id[] = new byte[X00_ID_LEN];
 
 		/**
 		 * C64 name
 		 */
-		byte name[] = new byte[X00_NAME_LEN];
+		public byte name[] = new byte[X00_NAME_LEN];
 	}
 
-	enum X00Format {
+	private enum X00Format {
 		X00_UNKNOWN, X00_DEL, X00_SEQ, X00_PRG, X00_USR, X00_REL
 	}
 
 	private static final String _sidtune_id = "C64File";
 
 	private static final String _sidtune_truncated = "ERROR: File is most likely truncated";
-
-	protected P00() {
-	}
 
 	protected static SidTune load(final String path, final byte[] dataBuf) throws SidTuneError {
 		String ext = PathUtils.getExtension(path);

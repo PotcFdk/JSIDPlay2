@@ -333,7 +333,7 @@ public class MusicCollection extends Tab implements UIPart {
 									SidTune sidTune = SidTune.load(tuneFile);
 									showPhoto(sidTune);
 									showTuneInfos(tuneFile, sidTune);
-									getSOASCURL(sidTune);
+									getSOASCURL(sidTune, tuneFile);
 								} catch (IOException | SidTuneError e) {
 									e.printStackTrace();
 								}
@@ -411,12 +411,12 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 	}
 
-	private void getSOASCURL(SidTune sidTune) {
+	private void getSOASCURL(SidTune sidTune, File tuneFile) {
 		if (sidTune != null) {
 			final SidTuneInfo tuneInfo = sidTune.getInfo();
 			File rootFile = new File(util.getConfig().getSidplay2().getHvsc());
 			String name = PathUtils.getCollectionName(new TFile(rootFile),
-					tuneInfo.file);
+					tuneFile);
 			if (name != null && getType() == MusicCollectionType.HVSC) {
 				hvscName = name.replace(".sid", "");
 				currentSong = tuneInfo.currentSong;

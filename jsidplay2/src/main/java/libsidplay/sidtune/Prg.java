@@ -19,22 +19,36 @@ package libsidplay.sidtune;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
+import javafx.scene.image.Image;
 import libsidutils.PathUtils;
 import libsidutils.SidIdV2;
 
 class Prg extends SidTune {
 
-	private static final SidIdV2 sidId = new SidIdV2();
+	private static final MessageDigest MD5_DIGEST;
 
 	static {
-		sidId.readconfig();
-		sidId.setMultiScan(true);
+		try {
+			MD5_DIGEST = MessageDigest.getInstance("MD5");
+		} catch (final NoSuchAlgorithmException e) {
+			throw new ExceptionInInitializerError(e);
+		}
 	}
-	protected int fileOffset;
 
-	private static final String _sidtune_truncated = "ERROR: File is most likely truncated";
+	private static final SidIdV2 SID_ID = new SidIdV2();
+
+	static {
+		SID_ID.readconfig();
+		SID_ID.setMultiScan(true);
+	}
+
+	private static final String SIDTUNE_TRUNCATED = "ERROR: File is most likely truncated";
+	
+	protected int fileOffset;
 
 	protected byte[] program;
 
@@ -44,7 +58,7 @@ class Prg extends SidTune {
 		}
 		final Prg sidtune = new Prg();
 		if (dataBuf.length < 2) {
-			throw new SidTuneError(_sidtune_truncated);
+			throw new SidTuneError(SIDTUNE_TRUNCATED);
 		}
 
 		// Automatic settings
@@ -93,7 +107,19 @@ class Prg extends SidTune {
 	 */
 	@Override
 	public Collection<String> identify() {
-		return sidId.identify(program);
+		return SID_ID.identify(program);
+	}
+
+	@Override
+	public String getMD5Digest() {
+		byte[] myMD5 = new byte[info.c64dataLen];
+		System.arraycopy(program, info.loadAddr, myMD5, 0, info.c64dataLen);
+		StringBuilder md5 = new StringBuilder();
+		final byte[] encryptMsg = MD5_DIGEST.digest(myMD5);
+		for (final byte anEncryptMsg : encryptMsg) {
+			md5.append(String.format("%02x", anEncryptMsg & 0xff));
+		}
+		return md5.toString();
 	}
 	
 	@Override
@@ -102,4 +128,8 @@ class Prg extends SidTune {
 		return 2500000;
 	}
 
+	@Override
+	public Image getImage() {
+		return null;
+	}
 }

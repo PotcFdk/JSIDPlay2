@@ -1,5 +1,6 @@
 package sidplay.consoleplayer;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
@@ -20,10 +21,13 @@ public class ConsoleIO {
 
 	private IConfig config;
 
+	private String filename;
+
 	private boolean v1mute, v2mute, v3mute;
 
-	public ConsoleIO(IConfig config) {
+	public ConsoleIO(IConfig config, String filename) {
 		this.config = config;
+		this.filename = filename;
 	}
 
 	public void menu(Player player, int verboseLevel, boolean quiet,
@@ -113,7 +117,7 @@ public class ConsoleIO {
 				BUNDLE.getString("FILE_FORMAT"), tune.getInfo().getClass()
 						.getSimpleName(), console.getVertical());
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
-				BUNDLE.getString("FILENAMES"), tune.getInfo().file.getName(),
+				BUNDLE.getString("FILENAMES"), new File(filename).getName(),
 				console.getVertical());
 	}
 

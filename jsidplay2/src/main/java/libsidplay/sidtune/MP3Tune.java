@@ -106,6 +106,12 @@ public class MP3Tune extends SidTune {
 	}
 
 	@Override
+	public String getMD5Digest() {
+		throw new RuntimeException(
+				"Unsupported operation to create MD5 checksum!");
+	}
+
+	@Override
 	public Image getImage() {
 		return image;
 	}
@@ -113,5 +119,5 @@ public class MP3Tune extends SidTune {
 	public String getMP3Filename() {
 		return mp3Filename;
 	}
-	
+
 }

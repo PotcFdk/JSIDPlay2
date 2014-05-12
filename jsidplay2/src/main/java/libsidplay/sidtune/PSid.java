@@ -39,22 +39,22 @@ class PSid extends Prg {
 	/**
 	 * Contains a mapping: Author to picture resource path.
 	 */
-	private static final Properties sidAuthors = new Properties();
+	private static final Properties SID_AUTHORS = new Properties();
 
 	static {
 		try (InputStream is = SidTune.class
 				.getResourceAsStream("pictures.properties")) {
-			sidAuthors.load(is);
+			SID_AUTHORS.load(is);
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
 
-	private static final MessageDigest md5Digest;
+	private static final MessageDigest MD5_DIGEST;
 
 	static {
 		try {
-			md5Digest = MessageDigest.getInstance("MD5");
+			MD5_DIGEST = MessageDigest.getInstance("MD5");
 		} catch (final NoSuchAlgorithmException e) {
 			throw new ExceptionInInitializerError(e);
 		}
@@ -78,7 +78,7 @@ class PSid extends Prg {
 	 * 
 	 */
 	private static class PHeader {
-		protected static final int SIZE = 124;
+		public static final int SIZE = 124;
 
 		public PHeader(final byte[] s) {
 			final ByteBuffer b = ByteBuffer.wrap(s);
@@ -606,7 +606,7 @@ class PSid extends Prg {
 		sidtune.info.infoString.add(makeString(pHeader.released, 0,
 				Math.min(i, pHeader.released.length)));
 
-		String photoRes = sidAuthors.getProperty(author);
+		String photoRes = SID_AUTHORS.getProperty(author);
 
 		if (photoRes != null && Platform.isFxApplicationThread()) {
 			photoRes = "Photos/" + photoRes;
@@ -759,7 +759,7 @@ class PSid extends Prg {
 		}
 
 		StringBuilder md5 = new StringBuilder();
-		final byte[] encryptMsg = md5Digest.digest(myMD5);
+		final byte[] encryptMsg = MD5_DIGEST.digest(myMD5);
 		for (final byte anEncryptMsg : encryptMsg) {
 			md5.append(String.format("%02x", anEncryptMsg & 0xff));
 		}

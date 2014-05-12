@@ -175,7 +175,7 @@ public class ConsolePlayer {
 				exit(1);
 			}
 		}
-		ConsoleIO consoleIO = new ConsoleIO(config);
+		ConsoleIO consoleIO = new ConsoleIO(config, filenames.get(0));
 		player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet,
 				System.out));
 		player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
