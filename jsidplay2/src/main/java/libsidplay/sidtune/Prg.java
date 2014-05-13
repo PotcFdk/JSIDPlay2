@@ -113,7 +113,7 @@ class Prg extends SidTune {
 	@Override
 	public String getMD5Digest() {
 		byte[] myMD5 = new byte[info.c64dataLen];
-		System.arraycopy(program, info.loadAddr, myMD5, 0, info.c64dataLen);
+		System.arraycopy(program, fileOffset, myMD5, 0, info.c64dataLen);
 		StringBuilder md5 = new StringBuilder();
 		final byte[] encryptMsg = MD5_DIGEST.digest(myMD5);
 		for (final byte anEncryptMsg : encryptMsg) {
