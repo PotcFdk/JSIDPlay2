@@ -3,10 +3,6 @@ package ui.siddump;
 import java.io.File;
 import java.io.IOException;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
-
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -21,10 +17,18 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import libsidplay.Player;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
+import libsidutils.SIDDumpConfiguration;
+import libsidutils.SIDDumpConfiguration.SIDDumpPlayer;
 import netsiddev.InvalidCommandException;
+
+import org.xml.sax.SAXException;
+
 import sidplay.ini.IniReader;
 import ui.common.C64Window;
 import ui.entities.config.SidPlay2Section;
@@ -44,13 +48,13 @@ public class SidDump extends C64Window {
 	private TextField firstFrame, noteSpacing, maxRecordLength, patternSpacing,
 			oldNoteFactor, tableFontSize, baseFreq, baseNote, callsPerFrame;
 	@FXML
-	private ComboBox<libsidutils.SIDDump.Player> regPlayer;
+	private ComboBox<SIDDumpPlayer> regPlayer;
 	@FXML
 	private TableView<SidDumpOutput> dumpTable;
 
 	protected ObservableList<SidDumpOutput> sidDumpOutputs;
 
-	private ObservableList<libsidutils.SIDDump.Player> sidDumpPlayers;
+	private ObservableList<SIDDumpPlayer> sidDumpPlayers;
 
 	protected SidDumpExtension sidDumpExtension;
 
@@ -85,12 +89,11 @@ public class SidDump extends C64Window {
 
 		sidDumpOutputs = FXCollections.<SidDumpOutput> observableArrayList();
 		dumpTable.setItems(sidDumpOutputs);
-		sidDumpPlayers = FXCollections
-				.<libsidutils.SIDDump.Player> observableArrayList();
+		sidDumpPlayers = FXCollections.<SIDDumpPlayer> observableArrayList();
 		regPlayer.setItems(sidDumpPlayers);
-		libsidutils.SIDDump sidDump;
+		SIDDumpConfiguration sidDump;
 		try {
-			sidDump = new libsidutils.SIDDump();
+			sidDump = new SIDDumpConfiguration();
 			sidDumpPlayers.addAll(sidDump.getPlayers());
 			regPlayer.getSelectionModel().select(0);
 		} catch (IOException | ParserConfigurationException | SAXException e) {

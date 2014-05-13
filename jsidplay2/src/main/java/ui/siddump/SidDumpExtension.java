@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
@@ -17,7 +18,7 @@ import javafx.collections.ObservableList;
 import libsidplay.Player;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.mos6510.IMOS6510Extension;
-import libsidutils.SIDDump.SIDDumpReg;
+import libsidutils.SIDDumpConfiguration.SIDDumpReg;
 import netsiddev.AudioGeneratorThread;
 import netsiddev.InvalidCommandException;
 import netsiddev.SIDWrite;
@@ -96,7 +97,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	private final Channel fPrevChannel2[] = new Channel[3];
 
 	private Player player;
-	private AudioConfig config;
+	private AudioConfig audioConfig;
 	private AudioGeneratorThread agt;
 
 	private Filter fFilter;
@@ -171,7 +172,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	/**
 	 * Replay option: register write order
 	 */
-	private SIDDumpReg fRegOrder[] = null;
+	private Collection<SIDDumpReg> fRegOrder = null;
 
 	/**
 	 * Replay option: Frequency of player address calls
@@ -195,7 +196,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 	public SidDumpExtension(Player pl, Configuration cfg) {
 		this.player = pl;
-		this.config = AudioConfig.getInstance(cfg.getAudio(), 2);
+		this.audioConfig = AudioConfig.getInstance(cfg.getAudio(), 2);
 	}
 
 	public int getLoadAddress() {
@@ -286,8 +287,8 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		return fLowRes;
 	}
 
-	public void setRegOrder(final SIDDumpReg[] bytes) {
-		this.fRegOrder = bytes;
+	public void setRegOrder(final Collection<SIDDumpReg> collection) {
+		this.fRegOrder = collection;
 	}
 
 	public void setReplayFrequency(final int freq) {
@@ -1003,7 +1004,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		 * FIXME: support for HardSID playback of recordings is lost. Will fix
 		 * later.
 		 */
-		agt = new AudioGeneratorThread(config);
+		agt = new AudioGeneratorThread(audioConfig);
 		agt.setSidArray(new SID[] { sid });
 		BlockingQueue<SIDWrite> queue = agt.getSidCommandQueue();
 		agt.start();

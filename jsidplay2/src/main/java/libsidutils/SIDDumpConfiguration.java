@@ -2,9 +2,11 @@ package libsidutils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,8 +19,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class SIDDump {
-	protected static final String FILE_NAME = "siddump.xml";
+public class SIDDumpConfiguration {
+	private static final String FILE_NAME = "siddump.xml";
 
 	public enum SIDDumpReg {
 		FREQ_LO_1(0x00), FREQ_HI_1(0x01), PULSE_LO_1(0x02), PULSE_HI_1(0x03), WAVEFORM_1(
@@ -40,21 +42,21 @@ public class SIDDump {
 		}
 	}
 
-	public static class Player {
-		private final String fName;
-		private final ArrayList<SIDDumpReg> fRegs;
+	public static class SIDDumpPlayer {
+		private final String name;
+		private final Collection<SIDDumpReg> regs;
 
-		public Player(String name) {
-			this.fName = name;
-			this.fRegs = new ArrayList<SIDDumpReg>();
+		public SIDDumpPlayer(String name) {
+			this.name = name;
+			this.regs = new ArrayList<SIDDumpReg>();
 		}
 
 		public String getName() {
-			return fName;
+			return name;
 		}
 
-		public SIDDumpReg[] getRegs() {
-			return fRegs.toArray(new SIDDumpReg[fRegs.size()]);
+		public Collection<SIDDumpReg> getRegs() {
+			return regs;
 		}
 
 		@Override
@@ -63,50 +65,25 @@ public class SIDDump {
 		}
 
 		private void add(String reg) {
-			fRegs.add(SIDDumpReg.valueOf(reg));
+			regs.add(SIDDumpReg.valueOf(reg));
 		}
 
 	}
 
-	private ArrayList<Player> fPlayers;
+	private ArrayList<SIDDumpPlayer> fPlayers;
 
-	public SIDDump() throws IOException, ParserConfigurationException,
+	public SIDDumpConfiguration() throws IOException, ParserConfigurationException,
 			SAXException {
-		open();
+		configure();
 	}
 
-	public ArrayList<Player> getPlayers() {
+	public ArrayList<SIDDumpPlayer> getPlayers() {
 		return fPlayers;
 	}
 
-	private InputStream getConfigInputStream() throws IOException {
-		File file = null;
-		for (final String s : new String[] { System.getProperty("user.dir"),
-				System.getProperty("user.home"), }) {
-			File configPlace = new File(s, FILE_NAME);
-			if (configPlace.exists()) {
-				file = new File(configPlace.getParent(), FILE_NAME);
-				break;
-			}
-		}
-		// default directory
-		if (file == null) {
-			file = new File(System.getProperty("user.home"), FILE_NAME);
-		}
-
-		// at least use internal file
-		if (!file.exists()) {
-			System.out.println("Using internal SIDDump file: " + FILE_NAME);
-			return SIDDump.class.getResourceAsStream(FILE_NAME);
-		} else {
-			System.out.println("Using SIDDump file: " + file.getAbsolutePath());
-			return new FileInputStream(file);
-		}
-	}
-
-	private void open() throws ParserConfigurationException, SAXException,
+	private void configure() throws ParserConfigurationException, SAXException,
 			IOException {
-		try (InputStream is = getConfigInputStream()) {
+		try (InputStream is = getInputStream()) {
 			DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
 			fac.setIgnoringElementContentWhitespace(true);
 			fac.setIgnoringComments(true);
@@ -115,28 +92,43 @@ public class SIDDump {
 		}
 	}
 
+	private InputStream getInputStream() throws FileNotFoundException {
+		for (final String s : new String[] { System.getProperty("user.dir"),
+				System.getProperty("user.home"), }) {
+			File file = new File(s, FILE_NAME);
+			if (file.exists()) {
+				System.out.println("Using SIDDump file: "
+						+ file.getAbsolutePath());
+				return new FileInputStream(file);
+			}
+		}
+		System.out.println("Using internal SIDDump file: " + FILE_NAME);
+		return SIDDumpConfiguration.class.getResourceAsStream(FILE_NAME);
+	}
+
 	private void parse(Document siddump) {
 		Element root = siddump.getDocumentElement();
 		NodeList player = root.getElementsByTagName("PLAYER");
-		fPlayers = new ArrayList<Player>();
+		fPlayers = new ArrayList<SIDDumpPlayer>();
 		for (int i = 0; i < player.getLength(); i++) {
-			createPlayer((Element) player.item(i));
+			fPlayers.add(createPlayer((Element) player.item(i)));
 		}
 	}
 
-	private void createPlayer(Element player) {
-		NamedNodeMap atts = player.getAttributes();
+	private SIDDumpPlayer createPlayer(Element playerElement) {
+		NamedNodeMap atts = playerElement.getAttributes();
 		Node name = atts.getNamedItem("name");
 		if (name != null) {
-			Player pl = new Player(name.getNodeValue());
-			NodeList regs = player.getElementsByTagName("REGS");
+			SIDDumpPlayer player = new SIDDumpPlayer(name.getNodeValue());
+			NodeList regs = playerElement.getElementsByTagName("REGS");
 			NodeList reg = ((Element) regs.item(0)).getElementsByTagName("REG");
 			for (int i = 0; i < reg.getLength(); i++) {
 				if (reg.item(i).getFirstChild() != null) {
-					pl.add(reg.item(i).getFirstChild().getNodeValue());
+					player.add(reg.item(i).getFirstChild().getNodeValue());
 				}
 			}
-			fPlayers.add(pl);
+			return player;
 		}
+		throw new RuntimeException("Invalid SIDDump configuration!");
 	}
 }
