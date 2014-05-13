@@ -9,10 +9,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 /**
- * This class provides a function used to generate a path name. JSIDPlay uses
- * path names that are absolute but WITOUT a drive letter on Windows machines.
- * This makes it possible to use JSIDPlay2 on an USB stick without caring for
- * the actual drive letter that it is connected with.
+ * This class provides a general filename utility functions.
  * 
  * @author Ken Haendel
  */

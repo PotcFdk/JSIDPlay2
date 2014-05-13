@@ -1,6 +1,11 @@
 package ui.siddump;
 
 import java.io.File;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -83,8 +88,14 @@ public class SidDump extends C64Window {
 		sidDumpPlayers = FXCollections
 				.<libsidutils.SIDDump.Player> observableArrayList();
 		regPlayer.setItems(sidDumpPlayers);
-		sidDumpPlayers.addAll(new libsidutils.SIDDump().getPlayers());
-		regPlayer.getSelectionModel().select(0);
+		libsidutils.SIDDump sidDump;
+		try {
+			sidDump = new libsidutils.SIDDump();
+			sidDumpPlayers.addAll(sidDump.getPlayers());
+			regPlayer.getSelectionModel().select(0);
+		} catch (IOException | ParserConfigurationException | SAXException e) {
+			throw new RuntimeException(e.getMessage());
+		}
 		doSetTableFontSize();
 		setTune(util.getPlayer().getTune());
 	}
@@ -187,7 +198,7 @@ public class SidDump extends C64Window {
 	@FXML
 	private void doSetPlayer() {
 		sidDumpExtension.setRegOrder(regPlayer.getSelectionModel()
-				.getSelectedItem().getBytes());
+				.getSelectedItem().getRegs());
 	}
 
 	@FXML

@@ -1,31 +1,5 @@
 package ui.siddump;
 
-import static libsidutils.SIDDump.ATTACK_DECAY_1;
-import static libsidutils.SIDDump.ATTACK_DECAY_2;
-import static libsidutils.SIDDump.ATTACK_DECAY_3;
-import static libsidutils.SIDDump.FILTERCTRL;
-import static libsidutils.SIDDump.FILTERFREQ_HI;
-import static libsidutils.SIDDump.FILTERFREQ_LO;
-import static libsidutils.SIDDump.FREQ_HI_1;
-import static libsidutils.SIDDump.FREQ_HI_2;
-import static libsidutils.SIDDump.FREQ_HI_3;
-import static libsidutils.SIDDump.FREQ_LO_1;
-import static libsidutils.SIDDump.FREQ_LO_2;
-import static libsidutils.SIDDump.FREQ_LO_3;
-import static libsidutils.SIDDump.PULSE_HI_1;
-import static libsidutils.SIDDump.PULSE_HI_2;
-import static libsidutils.SIDDump.PULSE_HI_3;
-import static libsidutils.SIDDump.PULSE_LO_1;
-import static libsidutils.SIDDump.PULSE_LO_2;
-import static libsidutils.SIDDump.PULSE_LO_3;
-import static libsidutils.SIDDump.SUSTAIN_RELEASE_1;
-import static libsidutils.SIDDump.SUSTAIN_RELEASE_2;
-import static libsidutils.SIDDump.SUSTAIN_RELEASE_3;
-import static libsidutils.SIDDump.VOL;
-import static libsidutils.SIDDump.WAVEFORM_1;
-import static libsidutils.SIDDump.WAVEFORM_2;
-import static libsidutils.SIDDump.WAVEFORM_3;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -43,6 +17,7 @@ import javafx.collections.ObservableList;
 import libsidplay.Player;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.mos6510.IMOS6510Extension;
+import libsidutils.SIDDump.SIDDumpReg;
 import netsiddev.AudioGeneratorThread;
 import netsiddev.InvalidCommandException;
 import netsiddev.SIDWrite;
@@ -196,7 +171,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	/**
 	 * Replay option: register write order
 	 */
-	private Byte fRegOrder[] = null;
+	private SIDDumpReg fRegOrder[] = null;
 
 	/**
 	 * Replay option: Frequency of player address calls
@@ -311,7 +286,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		return fLowRes;
 	}
 
-	public void setRegOrder(final Byte[] bytes) {
+	public void setRegOrder(final SIDDumpReg[] bytes) {
 		this.fRegOrder = bytes;
 	}
 
@@ -398,23 +373,34 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		if (fFrames < fFirstframe + fSeconds * TUNE_SPEED) {
 			// Get SID parameters from each channel and the filter
 			for (int c = 0; c < 3; c++) {
-				fChannel[c].freq = fSid.readInternalRegister(FREQ_LO_1 + 7 * c)
+				fChannel[c].freq = fSid
+						.readInternalRegister(SIDDumpReg.FREQ_LO_1.getRegister()
+								+ 7 * c)
 						& 0xff
-						| (fSid.readInternalRegister(FREQ_HI_1 + 7 * c) & 0xff) << 8;
-				fChannel[c].pulse = (fSid.readInternalRegister(PULSE_LO_1 + 7
-						* c) & 0xff | (fSid.readInternalRegister(PULSE_HI_1 + 7
-						* c) & 0xff) << 8) & 0xfff;
+						| (fSid.readInternalRegister(SIDDumpReg.FREQ_HI_1
+								.getRegister() + 7 * c) & 0xff) << 8;
+				fChannel[c].pulse = (fSid
+						.readInternalRegister(SIDDumpReg.PULSE_LO_1.getRegister()
+								+ 7 * c) & 0xff | (fSid
+						.readInternalRegister(SIDDumpReg.PULSE_HI_1.getRegister()
+								+ 7 * c) & 0xff) << 8) & 0xfff;
 				fChannel[c].wave = fSid
-						.readInternalRegister(WAVEFORM_1 + 7 * c) & 0xff;
-				fChannel[c].adsr = fSid.readInternalRegister(SUSTAIN_RELEASE_1
-						+ 7 * c)
+						.readInternalRegister(SIDDumpReg.WAVEFORM_1.getRegister()
+								+ 7 * c) & 0xff;
+				fChannel[c].adsr = fSid
+						.readInternalRegister(SIDDumpReg.SUSTAIN_RELEASE_1
+								.getRegister() + 7 * c)
 						& 0xff
-						| (fSid.readInternalRegister(ATTACK_DECAY_1 + 7 * c) & 0xff) << 8;
+						| (fSid.readInternalRegister(SIDDumpReg.ATTACK_DECAY_1
+								.getRegister() + 7 * c) & 0xff) << 8;
 			}
-			fFilter.cutoff = (fSid.readInternalRegister(FILTERFREQ_LO) & 0xff) << 5
-					| (fSid.readInternalRegister(FILTERFREQ_HI) & 0xff) << 8;
-			fFilter.ctrl = fSid.readInternalRegister(FILTERCTRL) & 0xff;
-			fFilter.type = fSid.readInternalRegister(VOL) & 0xff;
+			fFilter.cutoff = (fSid
+					.readInternalRegister(SIDDumpReg.FILTERFREQ_LO.getRegister()) & 0xff) << 5
+					| (fSid.readInternalRegister(SIDDumpReg.FILTERFREQ_HI
+							.getRegister()) & 0xff) << 8;
+			fFilter.ctrl = fSid.readInternalRegister(SIDDumpReg.FILTERCTRL
+					.getRegister()) & 0xff;
+			fFilter.type = fSid.readInternalRegister(SIDDumpReg.VOL.getRegister()) & 0xff;
 
 			// Frame display if first frame to be recorded is reached
 			if (fFrames >= fFirstframe) {
@@ -1046,10 +1032,10 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 				int cmd = 0;
 				long time = 0;
-				for (final Byte aFRegOrder : fRegOrder) {
+				for (final SIDDumpReg aFRegOrder : fRegOrder) {
 					String col;
 					int coln;
-					byte register = aFRegOrder;
+					byte register = aFRegOrder.getRegister();
 
 					switch (aFRegOrder) {
 					case ATTACK_DECAY_1:
@@ -1059,7 +1045,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 					case ATTACK_DECAY_3:
 					case SUSTAIN_RELEASE_3:
 						// ADSR
-						coln = aFRegOrder / 7 * 5 + 4;
+						coln = register / 7 * 5 + 4;
 						col = getColumnValue(examineRows.get(coln), coln);
 						if (col.startsWith(".")) {
 							// ignore columns without a change
@@ -1067,7 +1053,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 						}
 
 						final int adsr = Integer.valueOf(col, 16);
-						if ((aFRegOrder + 2) % 7 == 0) {
+						if ((register + 2) % 7 == 0) {
 							// ATTACK/DECAY
 							queue.put(new SIDWrite(0, register,
 									(byte) (adsr >> 8), SID_WRITE_DELAY));
@@ -1086,14 +1072,14 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 					case FREQ_HI_3:
 					case FREQ_LO_3:
 						// FREQ
-						coln = aFRegOrder / 7 * 5 + 1;
+						coln = register / 7 * 5 + 1;
 						col = getColumnValue(examineRows.get(coln), coln);
 						if (col.startsWith(".")) {
 							// ignore columns without a change
 							break;
 						}
 						final int freq = Integer.valueOf(col, 16);
-						if (aFRegOrder % 7 == 0) {
+						if (register % 7 == 0) {
 							// FREQ_LO
 							queue.put(new SIDWrite(0, register, (byte) freq,
 									SID_WRITE_DELAY));
@@ -1112,7 +1098,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 					case PULSE_LO_3:
 					case PULSE_HI_3:
 						// PULSE
-						coln = aFRegOrder / 7 * 5 + 5;
+						coln = register / 7 * 5 + 5;
 						col = getColumnValue(examineRows.get(coln), coln);
 						if (col.startsWith(".")) {
 							// ignore columns without a change
@@ -1120,7 +1106,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 						}
 
 						final int pulse = Integer.valueOf(col.trim(), 16);
-						if ((aFRegOrder + 5) % 7 == 0) {
+						if ((register + 5) % 7 == 0) {
 							queue.put(new SIDWrite(0, register, (byte) pulse,
 									SID_WRITE_DELAY));
 						} else {
@@ -1134,7 +1120,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 					case WAVEFORM_2:
 					case WAVEFORM_3:
 						// WF
-						coln = aFRegOrder / 7 * 5 + 3;
+						coln = register / 7 * 5 + 3;
 						col = getColumnValue(examineRows.get(coln), coln);
 						if (col.startsWith(".")) {
 							// ignore columns without a change
@@ -1156,7 +1142,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 							break;
 						}
 						final int fcut = Integer.valueOf(col.trim(), 16);
-						if (aFRegOrder == FILTERFREQ_LO) {
+						if (aFRegOrder == SIDDumpReg.FILTERFREQ_LO) {
 							// FILTERFREQ_LO
 							queue.put(new SIDWrite(0, register,
 									(byte) (fcut >> 5 & 0x07), SID_WRITE_DELAY));
