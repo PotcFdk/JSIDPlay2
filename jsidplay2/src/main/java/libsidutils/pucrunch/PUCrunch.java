@@ -73,7 +73,7 @@ public class PUCrunch implements IHeader {
 	private int escBits = 2, escMask = 0xc0;
 	private int extraLZPosBits = 0, rleUsed = 15;
 
-	int memConfig = 0x37, intConfig = 0x58; /* cli */
+	private int memConfig = 0x37, intConfig = 0x58; /* cli */
 
 	/**
 	 * <PRE>
@@ -142,7 +142,7 @@ public class PUCrunch implements IHeader {
 	 * </PRE>
 	 */
 
-	void ListDecompressors(PrintStream fp) {
+	private void ListDecompressors(PrintStream fp) {
 		int dc = 0;
 
 		while (dc < fixStruct.length) {
@@ -151,7 +151,7 @@ public class PUCrunch implements IHeader {
 		}
 	}
 
-	FixStruct BestMatch(int type) {
+	private FixStruct BestMatch(int type) {
 		int dc = 0;
 		FixStruct best = null;
 
@@ -190,7 +190,7 @@ public class PUCrunch implements IHeader {
 		int intVal;
 	}
 
-	int GetHeaderSize(int type, IntContainer deCall) {
+	private int GetHeaderSize(int type, IntContainer deCall) {
 		FixStruct best;
 		if (deCall != null)
 			deCall.intVal = 0;
@@ -210,9 +210,10 @@ public class PUCrunch implements IHeader {
 		return best != null ? best.codeSize : 0;
 	}
 
-	int SavePack(int type, byte[] data, int size, String target, int start,
-			int exec, int escape, byte[] rleValues, int endAddr, int progEnd,
-			int extraLZPosBits, int enable2MHz, int memStart, int memEnd) {
+	private int SavePack(int type, byte[] data, int size, String target,
+			int start, int exec, int escape, byte[] rleValues, int endAddr,
+			int progEnd, int extraLZPosBits, int enable2MHz, int memStart,
+			int memEnd) {
 		PrintStream fp = null;
 		FixStruct dc;
 		byte[] header;
@@ -520,19 +521,19 @@ public class PUCrunch implements IHeader {
 	private final int MAXRLELEN = (((2 << maxGamma) - 2) * 256);
 	private final int DEFAULT_LZLEN = LRANGE;
 
-	int lrange, maxlzlen, maxrlelen;
+	private int lrange, maxlzlen, maxrlelen;
 
 	private static final int OUT_SIZE = 2000000;
-	byte outBuffer[] = new byte[OUT_SIZE];
-	int outPointer = 0;
-	int bitMask = 0x80;
+	private byte outBuffer[] = new byte[OUT_SIZE];
+	private int outPointer = 0;
+	private int bitMask = 0x80;
 
-	void FlushBits() {
+	private void FlushBits() {
 		if (bitMask != 0x80)
 			outPointer++;
 	}
 
-	void PutBit(int bit) {
+	private void PutBit(int bit) {
 		if (bit != 0 && outPointer < OUT_SIZE)
 			outBuffer[outPointer] |= bitMask;
 		bitMask >>= 1;
@@ -542,7 +543,7 @@ public class PUCrunch implements IHeader {
 		}
 	}
 
-	void PutValue(int value) {
+	private void PutValue(int value) {
 		int bits = 0, count = 0;
 
 		while (value > 1) {
@@ -559,7 +560,7 @@ public class PUCrunch implements IHeader {
 		}
 	}
 
-	int RealLenValue(int value) {
+	private int RealLenValue(int value) {
 		int count = 0;
 
 		if (value < 2) /* 1 */
@@ -586,30 +587,31 @@ public class PUCrunch implements IHeader {
 
 	int lenValue[] = new int[256];
 
-	void InitValueLen() {
+	private void InitValueLen() {
 		int i;
 		for (i = 1; i < 256; i++)
 			lenValue[i] = RealLenValue(i);
 	}
 
-	void PutNBits(int b, int bits) {
+	private void PutNBits(int b, int bits) {
 		while ((bits--) != 0)
 			PutBit((b & (1 << bits)));
 	}
 
-	int gainedEscaped = 0;
-	int gainedRle = 0, gainedSRle = 0, gainedLRle = 0;
-	int gainedLz = 0, gainedRlecode = 0;
+	private int gainedEscaped = 0;
+	private int gainedRle = 0, gainedSRle = 0, gainedLRle = 0;
+	private int gainedLz = 0, gainedRlecode = 0;
 
-	int gainedDLz = 0, timesDLz = 0;
+	private int gainedDLz = 0, timesDLz = 0;
 
-	int timesEscaped = 0, timesNormal = 0;
-	int timesRle = 0, timesSRle = 0, timesLRle = 0;
-	int timesLz = 0;
+	private int timesEscaped = 0, timesNormal = 0;
+	private int timesRle = 0, timesSRle = 0, timesLRle = 0;
+	private int timesLz = 0;
 
-	int lenStat[][] = new int[8][4];
+	private int lenStat[][] = new int[8][4];
 
-	int OutputNormal(IntContainer esc, byte[] data, int dataPos, int newesc) {
+	private int OutputNormal(IntContainer esc, byte[] data, int dataPos,
+			int newesc) {
 		timesNormal++;
 		if ((data[dataPos + 0] & escMask) == esc.intVal) {
 			PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
@@ -629,7 +631,7 @@ public class PUCrunch implements IHeader {
 		return 0;
 	}
 
-	void OutputEof(IntContainer esc) {
+	private void OutputEof(IntContainer esc) {
 		/* EOF marker */
 		PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
 		PutValue(3 - 1); /* >1 */
@@ -639,11 +641,11 @@ public class PUCrunch implements IHeader {
 		FlushBits();
 	}
 
-	byte rleValues[] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	int rleHist[] = new int[256];
+	private byte rleValues[] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private int rleHist[] = new int[256];
 
-	void PutRleByte(int data) {
+	private void PutRleByte(int data) {
 		int index;
 
 		for (index = 1; index < 16/* 32 */; index++) {
@@ -677,9 +679,9 @@ public class PUCrunch implements IHeader {
 		/* Note: values 64..127 are not used if maxGamma>5 */
 	}
 
-	int rleLen[] = new int[256];
+	private int rleLen[] = new int[256];
 
-	void InitRleLen() {
+	private void InitRleLen() {
 		int i;
 
 		for (i = 0; i < 256; i++)
@@ -688,7 +690,7 @@ public class PUCrunch implements IHeader {
 			rleLen[rleValues[i] & 0xff] = lenValue[i];
 	}
 
-	int LenRle(int len, int data) {
+	private int LenRle(int len, int data) {
 		int out = 0;
 
 		do {
@@ -709,7 +711,7 @@ public class PUCrunch implements IHeader {
 		return out;
 	}
 
-	int OutputRle(IntContainer esc, byte[] data, int dataPos, int rlelen) {
+	private int OutputRle(IntContainer esc, byte[] data, int dataPos, int rlelen) {
 		int len = rlelen, tmp;
 
 		while (len != 0) {
@@ -808,11 +810,11 @@ public class PUCrunch implements IHeader {
 	}
 
 	/* e..e 101 (4..) 111111 111111 8b(add) 8b(POSLO) DLZ */
-	int LenDLz(int lzlen, int lzpos) {
+	private int LenDLz(int lzlen, int lzpos) {
 		return escBits + 2 * maxGamma + 8 + 8 + lenValue[lzlen - 1];
 	}
 
-	int OutputDLz(IntContainer esc, int lzlen, int lzpos, int add) {
+	private int OutputDLz(IntContainer esc, int lzlen, int lzpos, int add) {
 		PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
 
 		PutValue(lzlen - 1);
@@ -826,7 +828,7 @@ public class PUCrunch implements IHeader {
 		return 4;
 	}
 
-	int LenLz(int lzlen, int lzpos) {
+	private int LenLz(int lzlen, int lzpos) {
 		if (lzlen == 2) {
 			if (lzpos <= 256)
 				return escBits + 2 + 8;
@@ -838,7 +840,7 @@ public class PUCrunch implements IHeader {
 		// Bug in the C-Version! lzlen==257
 	}
 
-	int OutputLz(IntContainer esc, int lzlen, int lzpos, byte[] data,
+	private int OutputLz(IntContainer esc, int lzlen, int lzpos, byte[] data,
 			int dataPos, int curpos) {
 		if (lzlen == 2)
 			lenStat[0][1]++;
@@ -903,12 +905,12 @@ public class PUCrunch implements IHeader {
 		return lzlen;
 	}
 
-	int[] rle, elr, lzlen, lzpos, lzmlen, lzmpos;
-	int[] lzlen2, lzpos2;
-	int length[], inlen;
-	byte[] indata, newesc;
-	int[] mode;
-	int[] backSkip;
+	private int[] rle, elr, lzlen, lzpos, lzmlen, lzmpos;
+	private int[] lzlen2, lzpos2;
+	private int length[], inlen;
+	private byte[] indata, newesc;
+	private int[] mode;
+	private int[] backSkip;
 
 	private static final int LITERAL = 0;
 	private static final int LZ77 = 1;
@@ -916,12 +918,12 @@ public class PUCrunch implements IHeader {
 	private static final int DLZ = 3;
 	private static final int MMARK = 4;
 
-	int lzopt = 0;
+	private int lzopt = 0;
 
 	/* Non-recursive version */
 	/* NOTE! IMPORTANT! the "length" array length must be inlen+1 */
 
-	int OptimizeLength(int optimize) {
+	private int OptimizeLength(int optimize) {
 		int i;
 
 		length[inlen] = 0; /* one off the end, our 'target' */
@@ -1135,7 +1137,7 @@ public class PUCrunch implements IHeader {
 	 * </PRE>
 	 */
 
-	int OptimizeEscape(IntContainer startEscape, IntContainer nonNormal) {
+	private int OptimizeEscape(IntContainer startEscape, IntContainer nonNormal) {
 		int i, j, states = (1 << escBits);
 		int minp = 0, minv = 0, other = 0;
 		int a[] = new int[256]; /* needs int/long */
@@ -1231,7 +1233,7 @@ public class PUCrunch implements IHeader {
 
 	/* Initialize the RLE byte code table according to all RLE's found so far */
 	/* O(n) */
-	void InitRle(int flags) {
+	private void InitRle(int flags) {
 		int p, mr, mv, i;
 
 		for (i = 1; i < 16/* 32 */; i++) {
@@ -1255,7 +1257,7 @@ public class PUCrunch implements IHeader {
 
 	/* Initialize the RLE byte code table according to RLE's actually used */
 	/* O(n) */
-	void OptimizeRle(int flags) {
+	private void OptimizeRle(int flags) {
 		int p, mr, mv, i;
 
 		if ((flags & F_NORLE) != 0) {
@@ -1321,18 +1323,18 @@ public class PUCrunch implements IHeader {
 		InitRleLen();
 	}
 
-	byte[] up_Data;
-	int up_DataPos;
-	int up_Mask, up_Byte;
+	private byte[] up_Data;
+	private int up_DataPos;
+	private int up_Mask, up_Byte;
 
-	void up_SetInput(final byte[] data, final int dataPos) {
+	private void up_SetInput(final byte[] data, final int dataPos) {
 		up_Data = data;
 		up_DataPos = dataPos;
 		up_Mask = 0x80;
 		up_Byte = 0;
 	}
 
-	int up_GetBits(int bits) {
+	private int up_GetBits(int bits) {
 		int val = 0;
 
 		while (bits-- != 0) {
@@ -1349,7 +1351,7 @@ public class PUCrunch implements IHeader {
 		return val;
 	}
 
-	int up_GetValue() {
+	private int up_GetValue() {
 		int i = 0;
 
 		while (i < maxGamma) {
@@ -1362,7 +1364,8 @@ public class PUCrunch implements IHeader {
 
 	private static final int MAXCODES = 20;
 
-	int UnPack(int loadAddr, final byte[] data, final String file, int flags) {
+	private int UnPack(int loadAddr, final byte[] data, final String file,
+			int flags) {
 		int size, startEsc, endAddr, execAddr, headerSize;
 		int startAddr, error = 0;
 		PrintStream fp;
@@ -1728,8 +1731,8 @@ public class PUCrunch implements IHeader {
 		}
 	}
 
-	int PackLz77(int lzsz, int flags, IntContainer startEscape, int endAddr,
-			int memEnd, int type) {
+	private int PackLz77(int lzsz, int flags, IntContainer startEscape,
+			int endAddr, int memEnd, int type) {
 		int i, j, outlen, p, headerSize;
 		int escape = 0;
 		// #ifdef HASH_COMPARE
