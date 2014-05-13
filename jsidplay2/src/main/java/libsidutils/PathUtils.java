@@ -21,14 +21,14 @@ public class PathUtils {
 	/**
 	 * ZIP entries uses slash, Windows uses backslash.
 	 */
-	private static Pattern separator = Pattern.compile("[/\\\\]");
+	private static final Pattern separator = Pattern.compile("[/\\\\]");
 
-	public static String getCollectionName(final File collectionRoot,
+	public static final String getCollectionName(final File collectionRoot,
 			final File file) {
 		return toPath(getFiles(file.getPath(), collectionRoot, null));
 	}
 
-	private static String toPath(List<File> files) {
+	private static final String toPath(List<File> files) {
 		StringBuilder result = new StringBuilder();
 		for (File pathSeg : files) {
 			Scanner scanner = new Scanner(pathSeg.getName()).useDelimiter("/");
@@ -37,7 +37,7 @@ public class PathUtils {
 		return result.toString();
 	}
 
-	public static File getFile(String path, File hvscRoot, File cgscRoot) {
+	public static final File getFile(String path, File hvscRoot, File cgscRoot) {
 		List<File> files;
 		files = PathUtils.getFiles(path, hvscRoot, null);
 		if (files.size() > 0) {
@@ -52,7 +52,7 @@ public class PathUtils {
 		return new File(path);
 	}
 
-	public static List<File> getFiles(String filePath, File rootFile,
+	public static final List<File> getFiles(String filePath, File rootFile,
 			FileFilter fileFilter) {
 		if (rootFile == null) {
 			return Collections.emptyList();
@@ -87,7 +87,7 @@ public class PathUtils {
 		return pathSegs;
 	}
 
-	public static String getBaseNameNoExt(final File file) {
+	public static final String getBaseNameNoExt(final File file) {
 		String filename = file.getName();
 		int lastIndexOf = filename.lastIndexOf('.');
 		final String basename;
@@ -99,7 +99,7 @@ public class PathUtils {
 		return basename;
 	}
 
-	public static String getExtension(final String filename) {
+	public static final String getExtension(final String filename) {
 		int lastIndexOf = filename.lastIndexOf('.');
 		final String ext;
 		if (lastIndexOf != -1) {

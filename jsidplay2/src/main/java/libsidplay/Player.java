@@ -67,6 +67,8 @@ import libsidplay.player.Track;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PRG2TAP;
+import libsidutils.PRG2TAPProgram;
+import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
 import libsidutils.SidDatabase;
@@ -1183,9 +1185,20 @@ public class Player {
 			final File convertedTape = new File(config.getSidplay2()
 					.getTmpDir(), selectedTape.getName() + ".tap");
 			convertedTape.deleteOnExit();
-			String[] args = new String[] { selectedTape.getAbsolutePath(),
-					convertedTape.getAbsolutePath() };
-			PRG2TAP.main(args);
+			SidTune prog = SidTune.load(selectedTape);
+			if (prog == null) {
+				throw new RuntimeException(
+						"Cannot convert tune, unsupported Format!");
+			}
+			String name = PathUtils.getBaseNameNoExt(selectedTape);
+			PRG2TAPProgram program = new PRG2TAPProgram(prog, name);
+
+			PRG2TAP prg2tap = new PRG2TAP();
+			prg2tap.setTurboTape(true);
+			prg2tap.open(convertedTape);
+			prg2tap.add(program);
+			prg2tap.close(convertedTape);
+
 			datasette.insertTape(convertedTape);
 		} else {
 			datasette.insertTape(selectedTape);
