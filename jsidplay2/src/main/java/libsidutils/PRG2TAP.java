@@ -160,6 +160,7 @@ public class PRG2TAP {
 			slowConvert(data, 0, data.length, 5000);
 
 			addSilence(1000000);
+
 			turbotapeConvert(program);
 		} else {
 			byte[] header = new byte[C64_SLOW_HEADER.length];
@@ -200,15 +201,27 @@ public class PRG2TAP {
 	}
 
 	/**
+	 * Open TAP file
+	 */
+	public void open(final File outputFile) throws IOException {
+		out = new BufferedOutputStream(new FileOutputStream(outputFile));
+		
+		byte[] header = "C64-TAPE-RAW".getBytes("ISO-8859-1");
+		out.write(header);
+		out.write((byte) tapVersion);
+		for (int i = 0; i < HEADER_SIZE - header.length; i++) {
+			out.write((byte) 0);
+		}
+		
+	}
+	
+	/**
 	 * Close TAP file
 	 */
 	public void close(File outputFile) throws IOException {
 		assert (out != null);
 		out.close();
 		long size = outputFile.length() - HEADER_SIZE;
-		if (size < 0) {
-			throw new RuntimeException("Invalid file size");
-		}
 		try (RandomAccessFile rnd = new RandomAccessFile(outputFile, "rw")) {
 			rnd.seek(HEADER_SIZE - 4);
 			rnd.write((byte) (size & 0xFF));
@@ -216,21 +229,6 @@ public class PRG2TAP {
 			rnd.write((byte) ((size >> 16) & 0xFF));
 			rnd.write((byte) ((size >> 24) & 0xFF));
 		}
-	}
-
-	/**
-	 * Open TAP file
-	 */
-	public void open(final File outputFile) throws IOException {
-		out = new BufferedOutputStream(new FileOutputStream(outputFile));
-
-		byte[] header = "C64-TAPE-RAW".getBytes("ISO-8859-1");
-		out.write(header);
-		out.write((byte) tapVersion);
-		for (int i = 0; i < HEADER_SIZE - header.length; i++) {
-			out.write((byte) 0);
-		}
-
 	}
 
 	private void slowConvert(final byte[] data, int startAddr, int length,
@@ -315,7 +313,7 @@ public class PRG2TAP {
 				+ program.getLength() >> 8) & 0xFF));
 		turbotapeWriteByte((byte) 0);
 		for (int i = 0; i < MAX_NAME_LENGTH; i++) {
-			turbotapeWriteByte(program.getMem()[i]);
+			turbotapeWriteByte(program.getName()[i]);
 		}
 		for (int i = 0; i < 171; i++) {
 			turbotapeWriteByte((byte) 0x20);
