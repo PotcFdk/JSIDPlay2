@@ -1225,8 +1225,9 @@ public class Player {
 	 * @throws IOException
 	 *             never thrown here
 	 */
-	public void insertRAMExpansion(final RAMExpansion type, final int sizeKB,
-			final File autostartFile) throws IOException, SidTuneError {
+	public final void insertRAMExpansion(final RAMExpansion type,
+			final int sizeKB, final File autostartFile) throws IOException,
+			SidTuneError {
 		c64.getPla().setCartridge(null);
 		switch (type) {
 		case GEORAM:
@@ -1252,8 +1253,9 @@ public class Player {
 	 * @throws IOException
 	 *             image read error
 	 */
-	public void insertRAMExpansion(final RAMExpansion type, final File file,
-			final File autostartFile) throws IOException, SidTuneError {
+	public final void insertRAMExpansion(final RAMExpansion type,
+			final File file, final File autostartFile) throws IOException,
+			SidTuneError {
 		c64.getPla().setCartridge(null);
 		int sizeKB = (int) (file.length() >> 10);
 		try (DataInputStream dis = new DataInputStream(
@@ -1278,19 +1280,4 @@ public class Player {
 		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
-	/**
-	 * Eject multi purpose cartridge from the expansion port of the C64.
-	 */
-	public void ejectCartridge() {
-		c64.getPla().setCartridge(null);
-	}
-
-	/**
-	 * Get current multi purpose cartridge.
-	 * 
-	 * @return multi purpose cartridge
-	 */
-	public Cartridge getCartridge() {
-		return c64.getPla().getCartridge();
-	}
 }

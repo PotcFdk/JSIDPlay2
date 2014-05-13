@@ -784,13 +784,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void ejectCartridge() {
-		util.getPlayer().ejectCartridge();
+		util.getPlayer().getC64().ejectCartridge();
 		reset();
 	}
 
 	@FXML
 	private void freezeCartridge() {
-		util.getPlayer().getCartridge().freeze();
+		util.getPlayer().getC64().getCartridge().freeze();
 	}
 
 	@FXML

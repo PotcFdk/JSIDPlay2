@@ -60,13 +60,13 @@ public class GameListener extends ProgressListener {
 				.setLastDirectory(file.getParentFile().getAbsolutePath());
 		try {
 			if (isTapeFile(file)) {
-				player.ejectCartridge();
+				player.getC64().ejectCartridge();
 				player.insertTape(file, null);
 				command = "LOAD\rRUN\r";
 				player.setCommand(command);
 				player.playTune(null);
 			} else if (isDiskFile(file)) {
-				player.ejectCartridge();
+				player.getC64().ejectCartridge();
 				player.insertDisk(file, null);
 				command = "LOAD\"*\",8,1\rRUN\r";
 				player.setCommand(command);

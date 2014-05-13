@@ -11,6 +11,7 @@ import libsidplay.common.SIDEmu;
 import libsidplay.components.c1530.DatasetteEnvironment;
 import libsidplay.components.c1541.C1541Environment;
 import libsidplay.components.c1541.IParallelCable;
+import libsidplay.components.cart.Cartridge;
 import libsidplay.components.joystick.IJoystick;
 import libsidplay.components.keyboard.Keyboard;
 import libsidplay.components.mos6510.IMOS6510Extension;
@@ -609,11 +610,11 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	public final VIC getPalVIC() {
 		return palVic;
 	}
-	
+
 	public final VIC getNtscVIC() {
 		return ntscVic;
 	}
-	
+
 	/**
 	 * Set system clock (PAL/NTSC).
 	 * 
@@ -708,5 +709,21 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 
 	public PLA getPla() {
 		return pla;
+	}
+
+	/**
+	 * Eject multi purpose cartridge from the expansion port of the C64.
+	 */
+	public final void ejectCartridge() {
+		pla.setCartridge(null);
+	}
+
+	/**
+	 * Get current multi purpose cartridge.
+	 * 
+	 * @return multi purpose cartridge
+	 */
+	public final Cartridge getCartridge() {
+		return pla.getCartridge();
 	}
 }
