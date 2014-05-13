@@ -46,6 +46,7 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
+import libsidplay.mem.RAMExpansion;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -307,7 +308,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 						os.write(b, 0, len);
 					}
 				}
-				util.getPlayer().insertCartridge(file, tmpFile);
+				util.getPlayer().insertRAMExpansion(RAMExpansion.REU, file,
+						tmpFile);
 			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();
 			}
@@ -386,20 +388,17 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void soundSettings() {
-		C64Window window = new SoundSettings(util.getPlayer());
-		window.open();
+		new SoundSettings(util.getPlayer()).open();
 	}
 
 	@FXML
 	private void emulationSettings() {
-		C64Window window = new EmulationSettings(util.getPlayer());
-		window.open();
+		new EmulationSettings(util.getPlayer()).open();
 	}
 
 	@FXML
 	private void joystickSettings() {
-		C64Window window = new JoystickSettings(util.getPlayer());
-		window.open();
+		new JoystickSettings(util.getPlayer()).open();
 	}
 
 	@FXML
@@ -600,7 +599,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertCartridge(new TFile(file), null);
+				util.getPlayer().insertRAMExpansion(RAMExpansion.AUTODETECT,
+						new TFile(file), null);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
@@ -622,10 +622,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().getC64()
-						.insertRAMExpansion(C64.RAMExpansion.GEORAM, file);
-				reset();
-			} catch (IOException ex) {
+				util.getPlayer().insertRAMExpansion(RAMExpansion.GEORAM, file,
+						null);
+			} catch (IOException | SidTuneError ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -634,10 +633,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM64() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 64);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer().insertRAMExpansion(RAMExpansion.GEORAM, 64, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -645,10 +642,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM128() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 128);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer().insertRAMExpansion(RAMExpansion.GEORAM, 128, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -656,10 +651,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM256() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 256);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer().insertRAMExpansion(RAMExpansion.GEORAM, 256, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -667,10 +660,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM512() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 512);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer().insertRAMExpansion(RAMExpansion.GEORAM, 512, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -678,10 +669,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM1024() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 1024);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer()
+					.insertRAMExpansion(RAMExpansion.GEORAM, 1024, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -689,10 +679,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertGeoRAM2048() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.GEORAM, 2048);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer()
+					.insertRAMExpansion(RAMExpansion.GEORAM, 2048, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -700,10 +689,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertREU128() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.REU, 128);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer().insertRAMExpansion(RAMExpansion.REU, 128, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -711,10 +698,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertREU256() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.REU, 256);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer().insertRAMExpansion(RAMExpansion.REU, 256, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -722,10 +707,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertREU512() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.REU, 512);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer().insertRAMExpansion(RAMExpansion.REU, 512, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -733,10 +716,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertREU2048() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.REU, 2048);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer().insertRAMExpansion(RAMExpansion.REU, 2048, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -744,10 +725,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	@FXML
 	private void insertREU16384() {
 		try {
-			util.getPlayer().getC64()
-					.insertRAMExpansion(C64.RAMExpansion.REU, 16384);
-			reset();
-		} catch (IOException ex) {
+			util.getPlayer().insertRAMExpansion(RAMExpansion.REU, 16384, null);
+		} catch (IOException | SidTuneError ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -789,9 +768,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 						FileInputStream c1541KernalStream = new FileInputStream(
 								c1541kernalFile)) {
 					util.getPlayer().installJiffyDOS(c64KernalStream,
-							c1541KernalStream);
-					reset();
-				} catch (IOException ex) {
+							c1541KernalStream, null);
+				} catch (IOException | SidTuneError ex) {
 					ex.printStackTrace();
 				}
 			}
@@ -800,41 +778,34 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void uninstallJiffyDos() {
-		try {
-			util.getPlayer().uninstallJiffyDOS();
-			reset();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+		util.getPlayer().uninstallJiffyDOS();
+		reset();
 	}
 
 	@FXML
 	private void ejectCartridge() {
-		util.getPlayer().getC64().ejectCartridge();
+		util.getPlayer().ejectCartridge();
 		reset();
 	}
 
 	@FXML
 	private void freezeCartridge() {
-		util.getPlayer().getC64().getCartridge().freeze();
+		util.getPlayer().getCartridge().freeze();
 	}
 
 	@FXML
 	private void memory() {
-		C64Window window = new Disassembler(util.getPlayer());
-		window.open();
+		new Disassembler(util.getPlayer()).open();
 	}
 
 	@FXML
 	private void sidDump() {
-		C64Window window = new SidDump(util.getPlayer());
-		window.open();
+		new SidDump(util.getPlayer()).open();
 	}
 
 	@FXML
 	private void sidRegisters() {
-		C64Window window = new SidReg(util.getPlayer());
-		window.open();
+		new SidReg(util.getPlayer()).open();
 	}
 
 	@FXML
@@ -882,8 +853,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void about() {
-		C64Window window = new About(util.getPlayer());
-		window.open();
+		new About(util.getPlayer()).open();
 
 	}
 

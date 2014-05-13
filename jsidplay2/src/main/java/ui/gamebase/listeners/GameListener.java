@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import javafx.scene.Node;
 import libsidplay.Player;
+import libsidplay.mem.RAMExpansion;
 import libsidplay.sidtune.SidTuneError;
 import ui.common.UIUtil;
 import ui.download.ProgressListener;
@@ -59,19 +60,19 @@ public class GameListener extends ProgressListener {
 				.setLastDirectory(file.getParentFile().getAbsolutePath());
 		try {
 			if (isTapeFile(file)) {
-				player.getC64().ejectCartridge();
+				player.ejectCartridge();
 				player.insertTape(file, null);
 				command = "LOAD\rRUN\r";
 				player.setCommand(command);
 				player.playTune(null);
 			} else if (isDiskFile(file)) {
-				player.getC64().ejectCartridge();
+				player.ejectCartridge();
 				player.insertDisk(file, null);
 				command = "LOAD\"*\",8,1\rRUN\r";
 				player.setCommand(command);
 				player.playTune(null);
 			} else {
-				player.insertCartridge(file, null);
+				player.insertRAMExpansion(RAMExpansion.AUTODETECT, file, null);
 			}
 		} catch (IOException | SidTuneError e) {
 			System.err.println(String.format("Cannot insert media file '%s'.",

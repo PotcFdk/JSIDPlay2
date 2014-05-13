@@ -24,6 +24,7 @@ import hardsid_builder.HardSIDBuilder;
 
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -52,12 +53,16 @@ import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.components.c1541.IParallelCable;
 import libsidplay.components.c1541.SameThreadC1541Runner;
 import libsidplay.components.c1541.VIACore;
+import libsidplay.components.cart.Cartridge;
+import libsidplay.components.cart.supported.GeoRAM;
+import libsidplay.components.cart.supported.REU;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.components.printer.mps803.MPS803;
+import libsidplay.mem.RAMExpansion;
 import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
 import libsidplay.player.FakeStereo;
@@ -77,9 +82,9 @@ import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ChipModel;
 import resid_builder.resid.SamplingMethod;
+import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.NaturalFinishedException;
-import sidplay.audio.Audio;
 import sidplay.ini.intf.IConfig;
 
 /**
@@ -526,7 +531,8 @@ public class Player {
 	 *             error reading the ROMs
 	 */
 	public final void installJiffyDOS(final InputStream c64KernalStream,
-			final InputStream c1541KernalStream) throws IOException {
+			final InputStream c1541KernalStream, final File autostartFile)
+			throws IOException, SidTuneError {
 		try (DataInputStream dis = new DataInputStream(c64KernalStream)) {
 			byte[] c64Kernal = new byte[0x2000];
 			dis.readFully(c64Kernal);
@@ -539,12 +545,13 @@ public class Player {
 				floppy.setCustomKernalRom(c1541Kernal);
 			}
 		}
+		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
 	/**
 	 * Uninstall Jiffy DOS floppy speeder.
 	 */
-	public final void uninstallJiffyDOS() throws IOException {
+	public final void uninstallJiffyDOS() {
 		c64.setCustomKernal(null);
 		for (final C1541 floppy : floppies) {
 			floppy.setCustomKernalRom(null);
@@ -1208,10 +1215,82 @@ public class Player {
 		}
 	}
 
-	public final void insertCartridge(final File selectedFile,
+	/**
+	 * Insert a RAM expansion of a given size with empty contents.
+	 * 
+	 * @param type
+	 *            RAM expansion type
+	 * @param sizeKB
+	 *            size in KB
+	 * @throws IOException
+	 *             never thrown here
+	 */
+	public void insertRAMExpansion(final RAMExpansion type, final int sizeKB,
 			final File autostartFile) throws IOException, SidTuneError {
-		c64.insertCartridge(selectedFile);
+		c64.getPla().setCartridge(null);
+		switch (type) {
+		case GEORAM:
+			c64.getPla().setCartridge(new GeoRAM(c64.getPla(), null, sizeKB));
+			break;
+		case REU:
+			c64.getPla()
+					.setCartridge(REU.readImage(c64.getPla(), null, sizeKB));
+			break;
+		default:
+			throw new RuntimeException("RAM expansion is not supported.");
+		}
 		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
+	/**
+	 * Insert a RAM expansion loading an image file.
+	 * 
+	 * @param type
+	 *            RAM expansion type
+	 * @param file
+	 *            filename to load the RAM contents
+	 * @throws IOException
+	 *             image read error
+	 */
+	public void insertRAMExpansion(final RAMExpansion type, final File file,
+			final File autostartFile) throws IOException, SidTuneError {
+		c64.getPla().setCartridge(null);
+		int sizeKB = (int) (file.length() >> 10);
+		try (DataInputStream dis = new DataInputStream(
+				new FileInputStream(file))) {
+			switch (type) {
+			case GEORAM:
+				c64.getPla()
+						.setCartridge(new GeoRAM(c64.getPla(), dis, sizeKB));
+				break;
+			case REU:
+				c64.getPla().setCartridge(
+						REU.readImage(c64.getPla(), dis, sizeKB));
+				break;
+			case AUTODETECT:
+				c64.getPla().setCartridge(
+						Cartridge.readImage(c64.getPla(), dis));
+				break;
+			default:
+				throw new RuntimeException("RAM expansion is not supported.");
+			}
+		}
+		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
+	}
+
+	/**
+	 * Eject multi purpose cartridge from the expansion port of the C64.
+	 */
+	public void ejectCartridge() {
+		c64.getPla().setCartridge(null);
+	}
+
+	/**
+	 * Get current multi purpose cartridge.
+	 * 
+	 * @return multi purpose cartridge
+	 */
+	public Cartridge getCartridge() {
+		return c64.getPla().getCartridge();
+	}
 }

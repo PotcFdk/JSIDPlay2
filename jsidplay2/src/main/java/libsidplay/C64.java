@@ -1,11 +1,6 @@
 package libsidplay;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Locale;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
@@ -16,9 +11,6 @@ import libsidplay.common.SIDEmu;
 import libsidplay.components.c1530.DatasetteEnvironment;
 import libsidplay.components.c1541.C1541Environment;
 import libsidplay.components.c1541.IParallelCable;
-import libsidplay.components.cart.Cartridge;
-import libsidplay.components.cart.supported.GeoRAM;
-import libsidplay.components.cart.supported.REU;
 import libsidplay.components.joystick.IJoystick;
 import libsidplay.components.keyboard.Keyboard;
 import libsidplay.components.mos6510.IMOS6510Extension;
@@ -678,108 +670,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 				}
 			});
 		}
-	}
-
-	/**
-	 * Well-known RAM expansions, that can be installed.
-	 * 
-	 * @author Ken
-	 * 
-	 */
-	public enum RAMExpansion {
-		GEORAM, REU
-	}
-
-	/**
-	 * Insert a RAM expansion of a given size with empty contents.
-	 * 
-	 * @param type
-	 *            RAM expansion type
-	 * @param sizeKB
-	 *            size in KB
-	 * @throws IOException
-	 *             never thrown here
-	 */
-	public void insertRAMExpansion(final RAMExpansion type, final int sizeKB)
-			throws IOException {
-		pla.setCartridge(null);
-		switch (type) {
-		case GEORAM:
-			pla.setCartridge(new GeoRAM(pla, null, sizeKB));
-			break;
-		case REU:
-			pla.setCartridge(REU.readImage(pla, null, sizeKB));
-			break;
-		default:
-			throw new RuntimeException("RAM expansion is not supported.");
-		}
-	}
-
-	/**
-	 * Insert a RAM expansion loading an image file.
-	 * 
-	 * @param type
-	 *            RAM expansion type
-	 * @param file
-	 *            filename to load the RAM contents
-	 * @throws IOException
-	 *             image read error
-	 */
-	public void insertRAMExpansion(final RAMExpansion type, final File file)
-			throws IOException {
-		pla.setCartridge(null);
-		try (DataInputStream dis = new DataInputStream(
-				new FileInputStream(file))) {
-			final Cartridge cart;
-			switch (type) {
-			case GEORAM:
-				long length = file.length();
-				cart = new GeoRAM(pla, dis, (int) (length >> 10));
-				break;
-			default:
-				throw new RuntimeException("RAM expansion is not supported.");
-			}
-			pla.setCartridge(cart);
-		}
-	}
-
-	/**
-	 * Insert a multi purpose cartridge into the expansion port of the C64.
-	 * 
-	 * @param cartFile
-	 *            cartridge file
-	 * @throws IOException
-	 *             cartridge file read-error
-	 */
-	void insertCartridge(final File cartFile) throws IOException {
-		pla.setCartridge(null);
-		try (DataInputStream is = new DataInputStream(new FileInputStream(
-				cartFile))) {
-			final Cartridge cart;
-			if (cartFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".reu")) {
-				long length = cartFile.length();
-				cart = REU.readImage(pla, is, (int) (length >> 10));
-			} else {
-				cart = Cartridge.readImage(pla, is);
-			}
-			pla.setCartridge(cart);
-		}
-	}
-
-	/**
-	 * Eject multi purpose cartridge from the expansion port of the C64.
-	 */
-	public void ejectCartridge() {
-		pla.setCartridge(null);
-	}
-
-	/**
-	 * Get current multi purpose cartridge.
-	 * 
-	 * @return multi purpose cartridge
-	 */
-	public Cartridge getCartridge() {
-		return pla.getCartridge();
 	}
 
 	/**
