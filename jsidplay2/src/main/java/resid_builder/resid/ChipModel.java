@@ -49,7 +49,7 @@ public enum ChipModel {
 	 * 
 	 * @return chip model to be used for Stereo SID
 	 */
-	public static ChipModel getStereoSIDModel(IConfig config, SidTune tune) {
+	public static ChipModel getStereoModel(IConfig config, SidTune tune) {
 		IEmulationSection emulation = config.getEmulation();
 		ChipModel chipModel = emulation.getStereoSidModel();
 		if (chipModel == null) {

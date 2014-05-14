@@ -164,15 +164,13 @@ public class SoundSettings extends C64Window {
 
 	@FXML
 	private void setSamplingMethod() {
-		util.getConfig()
-				.getAudio()
-				.setSampling(
-						samplingMethod.getSelectionModel().getSelectedItem());
 		IAudioSection audio = util.getConfig().getAudio();
+		audio.setSampling(samplingMethod.getSelectionModel().getSelectedItem());
 		CPUClock systemFrequency = CPUClock.getCPUClock(util.getConfig(), util
 				.getPlayer().getTune());
-		util.getPlayer().setSampling(systemFrequency, audio.getFrequency(),
-				samplingMethod.getSelectionModel().getSelectedItem());
+		util.getPlayer().configureSIDs(
+				sid -> sid.setSampling(systemFrequency.getCpuFrequency(),
+						audio.getFrequency(), audio.getSampling()));
 	}
 
 	@FXML

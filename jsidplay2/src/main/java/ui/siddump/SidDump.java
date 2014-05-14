@@ -413,18 +413,18 @@ public class SidDump extends C64Window {
 		sidDumpExtension.setCurrentSong(subTune);
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
-			int songLength = util.getPlayer().getSongLength(tune);
-			if (songLength == 0) {
-				songLength = util.getConfig().getSidplay2()
-						.getDefaultPlayLength();
-				if (songLength == 0) {
+			int length = util.getPlayer()
+					.getDatabaseInfo(db -> db.length(tune));
+			if (length == 0) {
+				length = util.getConfig().getSidplay2().getDefaultPlayLength();
+				if (length == 0) {
 					// default
-					songLength = 60;
+					length = 60;
 				}
 			}
 			maxRecordLength.setText(String.format("%02d:%02d",
-					(songLength / 60 % 100), (songLength % 60)));
-			sidDumpExtension.setRecordLength(songLength);
+					(length / 60 % 100), (length % 60)));
+			sidDumpExtension.setRecordLength(length);
 		} else {
 			sidDumpExtension.setRecordLength(seconds);
 		}

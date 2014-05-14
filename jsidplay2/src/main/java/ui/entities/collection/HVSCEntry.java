@@ -378,8 +378,7 @@ public class HVSCEntry {
 			hvscEntry.setSidModel1(info.sid1Model);
 			hvscEntry.setSidModel2(info.sid2Model);
 			hvscEntry.setCompatibility(info.compatibility);
-			hvscEntry
-					.setTuneLength(Long.valueOf(player.getFullSongLength(tune)));
+			hvscEntry.setTuneLength(Long.valueOf(getTuneLength(player, tune)));
 			hvscEntry.setAudio(getAudio(info.sidChipBase2));
 			hvscEntry.setSidChipBase1(info.sidChipBase1);
 			hvscEntry.setSidChipBase2(info.sidChipBase2);
@@ -395,6 +394,10 @@ public class HVSCEntry {
 			hvscEntry.setRelocNoPages(info.relocPages);
 		}
 		return hvscEntry;
+	}
+
+	private static int getTuneLength(final Player player, SidTune tune) {
+		return player.getDatabaseInfo(db -> db.getFullSongLength(tune));
 	}
 
 	private static String getPlayer(SidTune tune) {

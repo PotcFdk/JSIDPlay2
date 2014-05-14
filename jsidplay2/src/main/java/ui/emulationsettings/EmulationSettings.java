@@ -16,6 +16,7 @@ import libsidplay.Player;
 import libsidplay.player.State;
 import resid_builder.resid.ChipModel;
 import resid_builder.resid.FilterModelConfig;
+import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
 import ui.common.C64Window;
 
@@ -164,9 +165,11 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setUserSidModel(userSidModel);
 			addFilters(userSidModel);
 		}
-		util.getPlayer().updateChipModel();
-		util.getPlayer().setFilter();
-		util.getPlayer().setFilterEnable(util.getConfig().getEmulation().isFilter());
+		util.getPlayer().changeSIDs();
+		util.getPlayer().configureSIDs(sid -> sid.setFilter(util.getConfig()));
+		util.getPlayer().configureSIDs(
+				sid -> sid.setFilterEnable(util.getConfig().getEmulation()
+						.isFilter()));
 	}
 
 	@FXML
@@ -179,9 +182,11 @@ public class EmulationSettings extends C64Window {
 					.getSelectionModel().getSelectedItem();
 			util.getConfig().getEmulation().setStereoSidModel(stereoSidModel);
 		}
-		util.getPlayer().updateChipModel();
-		util.getPlayer().setFilter();
-		util.getPlayer().setFilterEnable(util.getConfig().getEmulation().isFilter());
+		util.getPlayer().changeSIDs();
+		util.getPlayer().configureSIDs(sid -> sid.setFilter(util.getConfig()));
+		util.getPlayer().configureSIDs(
+				sid -> sid.setFilterEnable(util.getConfig().getEmulation()
+						.isFilter()));
 	}
 
 	@FXML
@@ -202,7 +207,7 @@ public class EmulationSettings extends C64Window {
 	private void setDigiBoost() {
 		boolean selected = boosted8580.isSelected();
 		util.getConfig().getEmulation().setDigiBoosted8580(selected);
-		util.getPlayer().setDigiBoost(selected);
+		util.getPlayer().configureSIDs(sid -> sid.input(selected ? 0x7FF : 0));
 	}
 
 	@FXML
@@ -210,7 +215,8 @@ public class EmulationSettings extends C64Window {
 		final String filterName = filter.getSelectionModel().getSelectedItem();
 		final boolean filterDisabled = "".equals(filterName);
 
-		util.getConfig().getEmulation().setFilter(!filterDisabled);
+		IEmulationSection emulation = util.getConfig().getEmulation();
+		emulation.setFilter(!filterDisabled);
 
 		ChipModel model;
 		if (sid1Model.getSelectionModel().getSelectedItem()
@@ -221,14 +227,15 @@ public class EmulationSettings extends C64Window {
 			model = (ChipModel) sid1Model.getSelectionModel().getSelectedItem();
 		}
 		if (model == ChipModel.MOS6581) {
-			util.getConfig().getEmulation().setFilter6581(filterName);
+			emulation.setFilter6581(filterName);
 		} else {
-			util.getConfig().getEmulation().setFilter8580(filterName);
+			emulation.setFilter8580(filterName);
 		}
 
-		util.getPlayer().updateChipModel();
-		util.getPlayer().setFilter();
-		util.getPlayer().setFilterEnable(util.getConfig().getEmulation().isFilter());
+		util.getPlayer().changeSIDs();
+		util.getPlayer().configureSIDs(sid -> sid.setFilter(util.getConfig()));
+		util.getPlayer().configureSIDs(
+				sid -> sid.setFilterEnable(!filterDisabled));
 		if (!duringInitialization) {
 			calculateFilterCurve(filterName);
 		}

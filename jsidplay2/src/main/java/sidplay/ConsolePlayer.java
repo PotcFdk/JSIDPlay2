@@ -147,40 +147,41 @@ public class ConsolePlayer {
 
 		final Player player = new Player(config);
 		try {
-			player.setTune(SidTune.load(new File(filenames.get(0))));
-			player.getTune().setOutputFilename(outputFile);
+			final SidTune tune = SidTune.load(new File(filenames.get(0)));
+			player.setTune(tune);
+			tune.setOutputFilename(outputFile);
+			player.setDebug(cpuDebug);
+			player.setDriverSettings(new DriverSettings(audio, emulation));
+			// Select the desired track and also mark the play-list start
+			player.getTrack().setSelected(tune.selectSong(song));
+			player.getTrack().setFirst(0);
+			player.getTrack().setSongs(
+					config.getSidplay2().isSingle() ? 1 : tune.getInfo().songs);
+			player.getTimer().setStart(startTime);
+
+			// check song length
+			if (config.getSidplay2().getUserPlayLength() == 0) {
+				setSIDDatabase(player);
+				int length = tune != null ? player.getDatabaseInfo(db -> db
+						.length(tune)) : 0;
+				if (isRecording()
+						&& (!config.getSidplay2().isEnableDatabase() || length == 0)) {
+					System.err
+							.println("ERROR: unknown song length in record mode"
+									+ " (please use option -t or configure song length database)");
+					exit(1);
+				}
+			}
+			ConsoleIO consoleIO = new ConsoleIO(config, filenames.get(0));
+			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet,
+					System.out));
+			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
+
+			player.startC64();
 		} catch (IOException | SidTuneError e) {
 			e.getMessage();
 			exit(1);
 		}
-		player.setDebug(cpuDebug);
-		player.setDriverSettings(new DriverSettings(audio, emulation));
-		// Select the desired track and also mark the play-list start
-		player.getTrack().setSelected(player.getTune().selectSong(song));
-		player.getTrack().setFirst(0);
-		player.getTrack().setSongs(
-				config.getSidplay2().isSingle() ? 1 : player.getTune()
-						.getInfo().songs);
-		player.getTimer().setStart(startTime);
-
-		// check song length
-		if (config.getSidplay2().getUserPlayLength() == 0) {
-			setSIDDatabase(player);
-			if (isRecording()
-					&& (!config.getSidplay2().isEnableDatabase() || player
-							.getSongLength(player.getTune()) == 0)) {
-				System.err
-						.println("ERROR: unknown song length in record mode"
-								+ " (please use option -t or configure song length database)");
-				exit(1);
-			}
-		}
-		ConsoleIO consoleIO = new ConsoleIO(config, filenames.get(0));
-		player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet,
-				System.out));
-		player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
-
-		player.startC64();
 	}
 
 	private void setSIDDatabase(final Player player) {

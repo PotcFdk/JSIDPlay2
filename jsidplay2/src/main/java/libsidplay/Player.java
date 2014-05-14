@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.function.Consumer;
+import java.util.function.ToIntFunction;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -78,7 +79,6 @@ import libsidutils.cpuparser.CPUParser;
 import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ChipModel;
-import resid_builder.resid.SamplingMethod;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.NaturalFinishedException;
@@ -361,7 +361,7 @@ public class Player {
 					final int address = tune.placeProgramInMemory(c64.getRAM());
 					if (address != -1) {
 						// Ideally the driver would set the volume, but whatever
-						setSIDVolume(0xf);
+						configureSIDs(sid -> sid.write(0x18, (byte) 0xf));
 						c64.getCPU().forcedJump(address);
 					} else {
 						typeInCommand("RUN:\r");
@@ -697,62 +697,22 @@ public class Player {
 		return credits.toString();
 	}
 
-	public final void setSampling(CPUClock cpuClock, float frequency,
-			SamplingMethod method) {
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			final SIDEmu s = c64.getSID(i);
-			if (s != null) {
-				s.setSampling(cpuClock.getCpuFrequency(), frequency, method);
-			}
+	public final void configureSIDs(Consumer<SIDEmu> action) {
+		for (int chipNum = 0; chipNum < C64.MAX_SIDS; chipNum++) {
+			configureSID(chipNum, action);
 		}
 	}
 
-	public final void setDigiBoost(boolean selected) {
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			final SIDEmu s = c64.getSID(i);
-			if (s != null) {
-				s.input(selected ? 0x7FF : 0);
-			}
-		}
-	}
-
-	public final void setFilterEnable(boolean filterEnable) {
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			final SIDEmu s = c64.getSID(i);
-			if (s != null) {
-				s.setFilterEnable(filterEnable);
-			}
-		}
-	}
-
-	public final void setFilter() {
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			final SIDEmu s = c64.getSID(i);
-			if (s != null) {
-				s.setFilter(config);
-			}
-		}
-	}
-
-	private void setSIDVolume(int volume) {
-		for (int i = 0; i < C64.MAX_SIDS; i++) {
-			final SIDEmu s = c64.getSID(i);
-			if (s != null) {
-				s.write(0x18, (byte) volume);
-			}
+	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
+		final SIDEmu s = c64.getSID(chipNum);
+		if (s != null) {
+			action.accept(s);
 		}
 	}
 
 	public final void setMixerVolume(int i, float volumeInDb) {
 		if (sidBuilder != null) {
 			sidBuilder.setMixerVolume(i, volumeInDb);
-		}
-	}
-
-	public final void setMute(int chipNum, int voiceNum, boolean mute) {
-		final SIDEmu s = c64.getSID(chipNum);
-		if (s != null) {
-			s.setVoiceMute(voiceNum, mute);
 		}
 	}
 
@@ -882,11 +842,12 @@ public class Player {
 		}
 
 		// According to the configuration, the SIDs must be updated.
-		updateChipModel();
+		changeSIDs();
 
 		// apply filter settings and stereo SID chip address
-		setFilter();
-		setFilterEnable(config.getEmulation().isFilter());
+		configureSIDs(sid -> sid.setFilter(config));
+		configureSIDs(sid -> sid.setFilterEnable(config.getEmulation()
+				.isFilter()));
 		setStereoSIDAddress();
 
 		updateStopTime();
@@ -930,33 +891,25 @@ public class Player {
 	}
 
 	/**
-	 * Set/Update chip model according to the configuration
+	 * Change SIDs according to the configured chip models. Note: Depending on
+	 * the SIDBuilder implementation the SID chip could be reused or created
+	 * from scratch.
 	 */
-	public final void updateChipModel() {
+	public final void changeSIDs() {
 		if (sidBuilder != null) {
+			EventScheduler eventScheduler = c64.getEventScheduler();
+
 			ChipModel chipModel = ChipModel.getChipModel(config, tune);
-			updateChipModel(0, chipModel);
+			SIDEmu sid = c64.getSID(0);
+			c64.setSID(0, sidBuilder.lock(eventScheduler, sid, chipModel));
 
 			if (AudioConfig.isStereo(config, tune)) {
-				ChipModel stereoChipModel = ChipModel.getStereoSIDModel(config,
-						tune);
-				updateChipModel(1, stereoChipModel);
+				ChipModel stereoModel = ChipModel.getStereoModel(config, tune);
+				SIDEmu sid2 = c64.getSID(1);
+				c64.setSID(1,
+						sidBuilder.lock(eventScheduler, sid2, stereoModel));
 			}
 		}
-	}
-
-	/**
-	 * Update SID model according to the settings.
-	 * 
-	 * @param chipNum
-	 *            chip number (0 - mono, 1 - stereo)
-	 * @param model
-	 *            chip model to use
-	 */
-	private void updateChipModel(final int chipNum, final ChipModel model) {
-		SIDEmu s = c64.getSID(chipNum);
-		s = sidBuilder.lock(c64.getEventScheduler(), s, model);
-		c64.setSID(chipNum, s);
 	}
 
 	/**
@@ -972,7 +925,8 @@ public class Player {
 			// default play default length or forever (0) ...
 			timer.setStop(config.getSidplay2().getDefaultPlayLength());
 			if (config.getSidplay2().isEnableDatabase()) {
-				final int length = getSongLength(tune);
+				int length = tune != null ? getDatabaseInfo(db -> db
+						.length(tune)) : 0;
 				if (length > 0) {
 					// ... or use song length of song length database
 					timer.setStop(length);
@@ -1139,18 +1093,8 @@ public class Player {
 		this.sidDatabase = sidDatabase;
 	}
 
-	public final int getSongLength(SidTune t) {
-		if (t != null && sidDatabase != null) {
-			return sidDatabase.length(t);
-		}
-		return 0;
-	}
-
-	public final int getFullSongLength(SidTune t) {
-		if (t != null && sidDatabase != null) {
-			return sidDatabase.getFullSongLength(t);
-		}
-		return 0;
+	public final int getDatabaseInfo(ToIntFunction<SidDatabase> toIntFunction) {
+		return sidDatabase != null ? toIntFunction.applyAsInt(sidDatabase) : 0;
 	}
 
 	public final void setSTIL(STIL stil) {

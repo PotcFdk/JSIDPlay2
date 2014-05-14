@@ -23,7 +23,7 @@ public class ConsoleIO {
 
 	private String filename;
 
-	private boolean v1mute, v2mute, v3mute;
+	private boolean v1mute, v2mute, v3mute, v4mute, v5mute, v6mute;
 
 	public ConsoleIO(IConfig config, String filename) {
 		this.config = config;
@@ -283,38 +283,38 @@ public class ConsoleIO {
 
 			case '1':
 				v1mute = !v1mute;
-				player.setMute(0, 0, v1mute);
+				player.configureSID(0, sid -> sid.setVoiceMute(0, v1mute));
 				break;
 
 			case '2':
 				v2mute = !v2mute;
-				player.setMute(0, 1, v2mute);
+				player.configureSID(0, sid -> sid.setVoiceMute(1, v2mute));
 				break;
 
 			case '3':
 				v3mute = !v3mute;
-				player.setMute(0, 2, v3mute);
+				player.configureSID(0, sid -> sid.setVoiceMute(2, v3mute));
 				break;
 
 			case '4':
-				v1mute = !v1mute;
-				player.setMute(1, 0, v1mute);
+				v4mute = !v4mute;
+				player.configureSID(1, sid -> sid.setVoiceMute(0, v4mute));
 				break;
 
 			case '5':
-				v2mute = !v2mute;
-				player.setMute(1, 1, v2mute);
+				v5mute = !v5mute;
+				player.configureSID(1, sid -> sid.setVoiceMute(1, v5mute));
 				break;
 
 			case '6':
-				v3mute = !v3mute;
-				player.setMute(1, 2, v3mute);
+				v6mute = !v6mute;
+				player.configureSID(1, sid -> sid.setVoiceMute(2, v6mute));
 				break;
 
 			case 'f': {
 				boolean filterEnable = config.getEmulation().isFilter();
 				config.getEmulation().setFilter(filterEnable ^ true);
-				player.setFilterEnable(filterEnable);
+				player.configureSIDs(sid -> sid.setFilterEnable(filterEnable));
 				break;
 			}
 
