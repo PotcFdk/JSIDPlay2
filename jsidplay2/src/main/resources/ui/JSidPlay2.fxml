@@ -217,6 +217,7 @@
 									<MenuItem text="%INSERT_GEORAM_(2048KB)" onAction="#insertGeoRAM2048" />
 								</Menu>
 								<Menu text="%REU">
+									<MenuItem text="%INSERT_REU" onAction="#insertREU" />
 									<MenuItem text="%INSERT_REU_(128KB)" onAction="#insertREU128" />
 									<MenuItem text="%INSERT_REU_(256KB)" onAction="#insertREU256" />
 									<MenuItem text="%INSERT_REU_(512KB)" onAction="#insertREU512" />

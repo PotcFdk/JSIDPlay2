@@ -34,7 +34,10 @@
 package libsidplay.components.cart.supported;
 
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 
 import libsidplay.components.cart.Cartridge;
 import libsidplay.components.pla.Bank;
@@ -75,22 +78,34 @@ public class GeoRAM extends Cartridge {
 	 * GEORAM memory.
 	 */
 	protected byte[] ram;
-	/**
-	 * Size of the GEORAM in KB.
-	 */
-	protected int sizeKB;
 
-	public GeoRAM(PLA pla, final DataInputStream dis, int size)
-			throws IOException {
+	public GeoRAM(PLA pla) {
 		super(pla);
-		sizeKB = size;
+	}
+
+	public static final GeoRAM readImage(PLA pla, InputStream is, int sizeKB)
+			throws IOException {
 		assert sizeKB == 64 || sizeKB == 128 || sizeKB == 256 || sizeKB == 512
-				|| sizeKB == 1024 || sizeKB == 2048;
-		ram = new byte[sizeKB << 10];
-		if (dis != null) {
-			dis.readFully(ram);
+				|| sizeKB == 1 << 10 || sizeKB == 2 << 10;
+
+		GeoRAM geoRAM = new GeoRAM(pla);
+
+		if (sizeKB == 0) {
+			// empty file means maximum size!
+			sizeKB = 2 << 10;
 		}
-		reset();
+		geoRAM.ram = new byte[sizeKB << 10];
+		Arrays.fill(geoRAM.ram, (byte) 0);
+		if (is != null) {
+			DataInputStream dis = new DataInputStream(is);
+			try {
+				dis.readFully(geoRAM.ram);
+			} catch (EOFException e) {
+				/* no problem, we'll just keep the rest uninitialized... */
+			}
+		}
+		geoRAM.reset();
+		return geoRAM;
 	}
 
 	@Override
@@ -123,7 +138,7 @@ public class GeoRAM extends Cartridge {
 			switch (address & 0xff) {
 			case 0xff:
 				// 16 KB bank selector
-				dfff = (byte) (value & (sizeKB >> 4) - 1);
+				dfff = (byte) (value & (ram.length >> 14) - 1);
 				break;
 			case 0xfe:
 				// page selector within a bank (6 bits are used)
@@ -148,7 +163,7 @@ public class GeoRAM extends Cartridge {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " (" + sizeKB + " KB)";
+		return getClass().getSimpleName() + " (" + (ram.length >> 10) + " KB)";
 	}
 
 }

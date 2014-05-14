@@ -46,7 +46,7 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
-import libsidplay.mem.RAMExpansion;
+import libsidplay.components.cart.CartridgeType;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -308,7 +308,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 						os.write(b, 0, len);
 					}
 				}
-				util.getPlayer().insertRAMExpansion(RAMExpansion.REU, file,
+				util.getPlayer().insertCartridge(CartridgeType.REU, file,
 						tmpFile);
 			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();
@@ -587,148 +587,72 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	private void insertCartridge() {
-		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
-		fileDialog.getExtensionFilters().add(
-				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
-						CartFileExtensions.EXTENSIONS));
-		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));
-		final File file = fileDialog.showOpenDialog(scene.getWindow());
-		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			try {
-				util.getPlayer().insertRAMExpansion(RAMExpansion.AUTODETECT,
-						new TFile(file), null);
-			} catch (IOException | SidTuneError e) {
-				System.err.println(String.format(
-						"Cannot insert media file '%s'.",
-						file.getAbsolutePath()));
-			}
-		}
+		chooseCartridge(CartridgeType.CRT);
 	}
 
 	@FXML
 	private void insertGeoRAM() {
-		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
-		fileDialog.getExtensionFilters().add(
-				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
-						CartFileExtensions.EXTENSIONS));
-		final File file = fileDialog.showOpenDialog(scene.getWindow());
-		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
-			try {
-				util.getPlayer().insertRAMExpansion(RAMExpansion.GEORAM, file,
-						null);
-			} catch (IOException | SidTuneError ex) {
-				ex.printStackTrace();
-			}
-		}
+		chooseCartridge(CartridgeType.GEORAM);
 	}
 
 	@FXML
 	private void insertGeoRAM64() {
-		try {
-			util.getPlayer().insertRAMExpansion(RAMExpansion.GEORAM, 64, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.GEORAM, 64);
 	}
 
 	@FXML
 	private void insertGeoRAM128() {
-		try {
-			util.getPlayer().insertRAMExpansion(RAMExpansion.GEORAM, 128, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.GEORAM, 128);
 	}
 
 	@FXML
 	private void insertGeoRAM256() {
-		try {
-			util.getPlayer().insertRAMExpansion(RAMExpansion.GEORAM, 256, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.GEORAM, 256);
 	}
 
 	@FXML
 	private void insertGeoRAM512() {
-		try {
-			util.getPlayer().insertRAMExpansion(RAMExpansion.GEORAM, 512, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.GEORAM, 512);
 	}
 
 	@FXML
 	private void insertGeoRAM1024() {
-		try {
-			util.getPlayer()
-					.insertRAMExpansion(RAMExpansion.GEORAM, 1024, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.GEORAM, 1024);
 	}
 
 	@FXML
 	private void insertGeoRAM2048() {
-		try {
-			util.getPlayer()
-					.insertRAMExpansion(RAMExpansion.GEORAM, 2048, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.GEORAM, 2048);
+	}
+
+	@FXML
+	private void insertREU() {
+		chooseCartridge(CartridgeType.REU);
 	}
 
 	@FXML
 	private void insertREU128() {
-		try {
-			util.getPlayer().insertRAMExpansion(RAMExpansion.REU, 128, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.REU, 128);
 	}
 
 	@FXML
 	private void insertREU256() {
-		try {
-			util.getPlayer().insertRAMExpansion(RAMExpansion.REU, 256, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.REU, 256);
 	}
 
 	@FXML
 	private void insertREU512() {
-		try {
-			util.getPlayer().insertRAMExpansion(RAMExpansion.REU, 512, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.REU, 512);
 	}
 
 	@FXML
 	private void insertREU2048() {
-		try {
-			util.getPlayer().insertRAMExpansion(RAMExpansion.REU, 2048, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.REU, 2048);
 	}
 
 	@FXML
 	private void insertREU16384() {
-		try {
-			util.getPlayer().insertRAMExpansion(RAMExpansion.REU, 16384, null);
-		} catch (IOException | SidTuneError ex) {
-			ex.printStackTrace();
-		}
+		insertCartridge(CartridgeType.REU, 16384);
 	}
 
 	@FXML
@@ -855,6 +779,38 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	private void about() {
 		new About(util.getPlayer()).open();
 
+	}
+
+	private void chooseCartridge(final CartridgeType type) {
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
+				.getSidplay2())).getLastDirectoryFolder());
+		fileDialog.getExtensionFilters().add(
+				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
+						CartFileExtensions.EXTENSIONS));
+		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));
+		final File file = fileDialog.showOpenDialog(scene.getWindow());
+		if (file != null) {
+			util.getConfig().getSidplay2()
+					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			try {
+				util.getPlayer().insertCartridge(type, file, null);
+			} catch (IOException | SidTuneError e) {
+				System.err.println(String.format(
+						"Cannot insert file '%s' as cartridge of type '%s'.",
+						file.getAbsolutePath(), type.name()));
+			}
+		}
+	}
+
+	private void insertCartridge(CartridgeType type, int sizeKB) {
+		try {
+			util.getPlayer().insertCartridge(type, sizeKB, null);
+		} catch (IOException | SidTuneError ex) {
+			System.err.println(String.format(
+					"Cannot insert cartridge of type '%s' and size '%d'KB.",
+					type.name(), sizeKB));
+		}
 	}
 
 	private void playTune(final SidTune tune) {

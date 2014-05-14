@@ -712,18 +712,28 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	}
 
 	/**
-	 * Eject multi purpose cartridge from the expansion port of the C64.
+	 * Set current multi purpose cartridge into the expansion port of the C64.
+	 *
+	 * @param cartridge
+	 *            multi purpose cartridge
 	 */
-	public final void ejectCartridge() {
-		pla.setCartridge(null);
+	public final void setCartridge(Cartridge cartridge) {
+		pla.setCartridge(cartridge);
 	}
 
 	/**
-	 * Get current multi purpose cartridge.
+	 * Get current multi purpose cartridge of the expansion port of the C64.
 	 * 
 	 * @return multi purpose cartridge
 	 */
 	public final Cartridge getCartridge() {
 		return pla.getCartridge();
+	}
+
+	/**
+	 * Eject multi purpose cartridge from the expansion port of the C64.
+	 */
+	public final void ejectCartridge() {
+		pla.setCartridge(null);
 	}
 }

@@ -30,8 +30,8 @@ import libsidplay.components.c1530.Datasette.DatasetteStatus;
 import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyStatus;
 import libsidplay.components.c1541.C1541.FloppyType;
+import libsidplay.components.cart.CartridgeType;
 import libsidplay.components.keyboard.KeyTableEntry;
-import libsidplay.mem.RAMExpansion;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -274,7 +274,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertRAMExpansion(RAMExpansion.AUTODETECT,
+				util.getPlayer().insertCartridge(CartridgeType.CRT,
 						new TFile(file), null);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(

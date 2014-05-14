@@ -24,7 +24,6 @@ import hardsid_builder.HardSIDBuilder;
 
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -54,15 +53,13 @@ import libsidplay.components.c1541.IParallelCable;
 import libsidplay.components.c1541.SameThreadC1541Runner;
 import libsidplay.components.c1541.VIACore;
 import libsidplay.components.cart.Cartridge;
-import libsidplay.components.cart.supported.GeoRAM;
-import libsidplay.components.cart.supported.REU;
+import libsidplay.components.cart.CartridgeType;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.components.printer.mps803.MPS803;
-import libsidplay.mem.RAMExpansion;
 import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
 import libsidplay.player.FakeStereo;
@@ -1179,9 +1176,7 @@ public class Player {
 		if (policy != null) {
 			disk.setExtendImagePolicy(policy);
 		}
-		if (autostartFile != null) {
-			playTune(SidTune.load(autostartFile));
-		}
+		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
 	public final void insertTape(final File selectedTape,
@@ -1210,73 +1205,48 @@ public class Player {
 		} else {
 			datasette.insertTape(selectedTape);
 		}
-		if (autostartFile != null) {
-			playTune(SidTune.load(autostartFile));
-		}
-	}
-
-	/**
-	 * Insert a RAM expansion of a given size with empty contents.
-	 * 
-	 * @param type
-	 *            RAM expansion type
-	 * @param sizeKB
-	 *            size in KB
-	 * @throws IOException
-	 *             never thrown here
-	 */
-	public final void insertRAMExpansion(final RAMExpansion type,
-			final int sizeKB, final File autostartFile) throws IOException,
-			SidTuneError {
-		c64.getPla().setCartridge(null);
-		switch (type) {
-		case GEORAM:
-			c64.getPla().setCartridge(new GeoRAM(c64.getPla(), null, sizeKB));
-			break;
-		case REU:
-			c64.getPla()
-					.setCartridge(REU.readImage(c64.getPla(), null, sizeKB));
-			break;
-		default:
-			throw new RuntimeException("RAM expansion is not supported.");
-		}
 		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
 	/**
-	 * Insert a RAM expansion loading an image file.
+	 * Insert a cartridge of a given size with empty contents.
 	 * 
 	 * @param type
-	 *            RAM expansion type
+	 *            cartridge type
+	 * @param sizeKB
+	 *            size in KB
+	 * @param autostartFile
+	 *            auto-start tune after insertion (null means just reset)
+	 * @throws IOException
+	 *             never thrown here
+	 */
+	public final void insertCartridge(final CartridgeType type,
+			final int sizeKB, final File autostartFile) throws IOException,
+			SidTuneError {
+		c64.ejectCartridge();
+		Cartridge cartridge = Cartridge.create(c64.getPla(), type, sizeKB);
+		c64.setCartridge(cartridge);
+		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
+	}
+
+	/**
+	 * Insert a cartridge loading an image file.
+	 * 
+	 * @param type
+	 *            cartridge type
 	 * @param file
 	 *            filename to load the RAM contents
+	 * @param autostartFile
+	 *            auto-start tune after insertion (null means just reset)
 	 * @throws IOException
 	 *             image read error
 	 */
-	public final void insertRAMExpansion(final RAMExpansion type,
+	public final void insertCartridge(final CartridgeType type,
 			final File file, final File autostartFile) throws IOException,
 			SidTuneError {
-		c64.getPla().setCartridge(null);
-		int sizeKB = (int) (file.length() >> 10);
-		try (DataInputStream dis = new DataInputStream(
-				new FileInputStream(file))) {
-			switch (type) {
-			case GEORAM:
-				c64.getPla()
-						.setCartridge(new GeoRAM(c64.getPla(), dis, sizeKB));
-				break;
-			case REU:
-				c64.getPla().setCartridge(
-						REU.readImage(c64.getPla(), dis, sizeKB));
-				break;
-			case AUTODETECT:
-				c64.getPla().setCartridge(
-						Cartridge.readImage(c64.getPla(), dis));
-				break;
-			default:
-				throw new RuntimeException("RAM expansion is not supported.");
-			}
-		}
+		c64.ejectCartridge();
+		Cartridge cartridge = Cartridge.read(c64.getPla(), type, file);
+		c64.setCartridge(cartridge);
 		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
