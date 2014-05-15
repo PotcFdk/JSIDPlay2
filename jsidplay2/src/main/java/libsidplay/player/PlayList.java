@@ -91,24 +91,17 @@ public class PlayList {
 	}
 
 	/**
-	 * Wrap around (end of the play list is reached)?
-	 */
-	public boolean isEnd() {
-		return current == first;
-	}
-
-	/**
 	 * Choose next play list entry.
 	 */
 	public void next() {
-		current = getNext();
+		current = getNext(true);
 	}
 
 	/**
 	 * Choose previous play list entry.
 	 */
 	public void previous() {
-		current = getPrevious();
+		current = getPrevious(true);
 	}
 
 	/**
@@ -126,29 +119,36 @@ public class PlayList {
 	}
 
 	/**
+	 * Wrap around (end of the play list is reached)?
+	 */
+	public boolean isEnd() {
+		return current == first;
+	}
+	
+	/**
 	 * Is a previous play list entry available?
 	 */
 	public boolean hasPrevious() {
-		return current != null && !isLast(getPrevious());
+		return current != null && current != getPrevious(false);
 	}
 
 	/**
 	 * Is a next play list entry available?
 	 */
 	public boolean hasNext() {
-		return current != null && !isLast(getNext());
+		return current != null && current != getNext(false);
 	}
 
 	/**
 	 * Get previous play list entry (0 means there is none)?
 	 */
-	public Integer getPrevious() {
+	public Integer getPrevious(boolean wrapAround) {
 		if (current == null) {
 			return null;
 		}
 		int previous = config.getSidplay2().isSingle() ? current : current - 1;
 		if (previous < 1) {
-			previous = length;
+			previous = wrapAround ? length : 1;
 		}
 		return previous;
 	}
@@ -156,19 +156,15 @@ public class PlayList {
 	/**
 	 * Get next play list entry (0 means there is none)?
 	 */
-	public Integer getNext() {
+	public Integer getNext(boolean wrapAround) {
 		if (current == null) {
 			return null;
 		}
 		int next = config.getSidplay2().isSingle() ? current : current + 1;
 		if (next > length) {
-			next = length;
+			next = wrapAround ? 1 : length;
 		}
 		return next;
-	}
-
-	private boolean isLast(int songNum) {
-		return songNum == first;
 	}
 
 }

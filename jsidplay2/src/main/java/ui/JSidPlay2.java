@@ -225,10 +225,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		next2.setDisable(next.isDisable());
 
 		previous.setText(String.format(util.getBundle().getString("PREVIOUS2")
-				+ " (%d/%d)", playList.getPrevious(), playList.getLength()));
+				+ " (%d/%d)", playList.getPrevious(true), playList.getLength()));
 		previous2ToolTip.setText(previous.getText());
 		next.setText(String.format(util.getBundle().getString("NEXT2")
-				+ " (%d/%d)", playList.getNext(), playList.getLength()));
+				+ " (%d/%d)", playList.getNext(true), playList.getLength()));
 		next2ToolTip.setText(next.getText());
 	}
 
