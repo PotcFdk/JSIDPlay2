@@ -8,7 +8,7 @@ import java.util.ResourceBundle;
 
 import libsidplay.Player;
 import libsidplay.player.Timer;
-import libsidplay.player.Track;
+import libsidplay.player.PlayList;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Model;
 import sidplay.ini.intf.IConfig;
@@ -38,7 +38,7 @@ public class ConsoleIO {
 		final IConsoleSection console = config.getConsole();
 
 		final SidTune tune = player.getTune();
-		final Track track = player.getTrack();
+		final PlayList playList = player.getPlayList();
 		final Timer timer = player.getTimer();
 
 		printTopLine(out, console);
@@ -55,11 +55,11 @@ public class ConsoleIO {
 		if (verboseLevel != 0) {
 			printFileDetails(out, console, tune);
 		}
-		printPlaylist(out, console, tune, track);
+		printPlaylist(out, console, tune, playList);
 
 		if (verboseLevel > 0) {
 			printHorizontalBottomLine(out, console);
-			printSongSpeedCIAorVBI(out, console, tune, track);
+			printSongSpeedCIAorVBI(out, console, tune, playList);
 		}
 		printSongLength(out, console, timer);
 		if (verboseLevel > 0) {
@@ -122,19 +122,12 @@ public class ConsoleIO {
 	}
 
 	private void printPlaylist(PrintStream out, final IConsoleSection console,
-			final SidTune tune, final Track track) {
-		int i = 1;
-		if (!config.getSidplay2().isSingle()) {
-			i = track.getSelected();
-			i -= track.getFirst() - 1;
-			if (i < 1) {
-				i += track.getSongs();
-			}
-		}
+			final SidTune tune, final PlayList playList) {
+		int i = playList.getCurrentRelative();
 		out.printf("%c %-12s : ", console.getVertical(),
 				BUNDLE.getString("PLAYLIST"));
 		StringBuffer trackList = new StringBuffer();
-		trackList.append(i).append("/").append(track.getSongs());
+		trackList.append(i).append("/").append(playList.getLength());
 		trackList.append(" (tune ").append(tune.getInfo().currentSong)
 				.append("/").append(tune.getInfo().songs);
 		trackList.append("[").append(tune.getInfo().startSong).append("])");
@@ -145,10 +138,12 @@ public class ConsoleIO {
 	}
 
 	private void printSongSpeedCIAorVBI(PrintStream out,
-			final IConsoleSection console, final SidTune tune, final Track track) {
+			final IConsoleSection console, final SidTune tune,
+			final PlayList playList) {
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("SONG_SPEED"),
-				tune.getSongSpeed(track.getSelected()), console.getVertical());
+				tune.getSongSpeed(playList.getCurrent()),
+				console.getVertical());
 	}
 
 	private void printSongLength(PrintStream out,

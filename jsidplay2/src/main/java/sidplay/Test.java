@@ -20,7 +20,7 @@ public class Test {
 	 * @param filename
 	 *            the filename of the tune
 	 */
-	public void playTune(final String filename) throws Exception {
+	public Test(final String filename) throws Exception {
 		// Load tune
 		final SidTune tune = SidTune.load(new File(filename));
 
@@ -36,6 +36,6 @@ public class Test {
 			System.err.println("Missing argument: <filename>");
 			System.exit(-1);
 		}
-		new Test().playTune(args[0]);
+		new Test(args[0]);
 	}
 }

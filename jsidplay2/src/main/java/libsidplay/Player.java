@@ -24,8 +24,8 @@ import hardsid_builder.HardSIDBuilder;
 
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
@@ -66,7 +66,7 @@ import libsidplay.player.Emulation;
 import libsidplay.player.FakeStereo;
 import libsidplay.player.State;
 import libsidplay.player.Timer;
-import libsidplay.player.Track;
+import libsidplay.player.PlayList;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PRG2TAP;
@@ -144,7 +144,7 @@ public class Player {
 	/**
 	 * Play list.
 	 */
-	protected final Track track = new Track();
+	protected PlayList playList;
 	/**
 	 * Currently played tune.
 	 */
@@ -199,6 +199,7 @@ public class Player {
 	public Player(IConfig config) {
 		this.config = config;
 		initializeTmpDir();
+		this.playList = new PlayList(config, null);
 		this.iecBus = new IECBus();
 
 		this.printer = new MPS803(this.iecBus, (byte) 4, (byte) 7) {
@@ -520,22 +521,24 @@ public class Player {
 	 * Replace the Kernal ROM and replace the floppy ROM additionally. Note:
 	 * Floppy kernal is replaced in all drives!
 	 * 
-	 * @param c64KernalStream
+	 * @param c64kernalFile
 	 *            C64 Kernal replacement
-	 * @param c1541KernalStream
+	 * @param c1541kernalFile
 	 *            C1541 Kernal replacement
 	 * @throws IOException
 	 *             error reading the ROMs
 	 */
-	public final void installJiffyDOS(final InputStream c64KernalStream,
-			final InputStream c1541KernalStream, final File autostartFile)
+	public final void installJiffyDOS(final File c64kernalFile,
+			final File c1541kernalFile, final File autostartFile)
 			throws IOException, SidTuneError {
-		try (DataInputStream dis = new DataInputStream(c64KernalStream)) {
+		try (DataInputStream dis = new DataInputStream(new FileInputStream(
+				c64kernalFile))) {
 			byte[] c64Kernal = new byte[0x2000];
 			dis.readFully(c64Kernal);
 			c64.setCustomKernal(c64Kernal);
 		}
-		try (DataInputStream dis = new DataInputStream(c1541KernalStream)) {
+		try (DataInputStream dis = new DataInputStream(new FileInputStream(
+				c1541kernalFile))) {
 			byte[] c1541Kernal = new byte[0x4000];
 			dis.readFully(c1541Kernal);
 			for (final C1541 floppy : floppies) {
@@ -616,17 +619,19 @@ public class Player {
 	}
 
 	/**
-	 * Load a program to play.
+	 * Load a program to play.<BR>
+	 * Note: A new play list is being created.
 	 * 
 	 * @param tune
 	 *            program to play
 	 */
 	public final void setTune(final SidTune tune) {
 		this.tune = tune;
+		this.playList = new PlayList(config, tune);
 	}
 
-	public final Track getTrack() {
-		return track;
+	public final PlayList getPlayList() {
+		return playList;
 	}
 
 	public final Timer getTimer() {
@@ -807,15 +812,8 @@ public class Player {
 		if (stateProperty.get() == State.RESTART) {
 			stateProperty.set(State.STOPPED);
 		}
-		// Select song
-		if (tune != null) {
-			track.setSelected(tune.selectSong(track.getSelected()));
-			if (track.getFirst() == 0) {
-				// A different tune is opened?
-				// We mark a new play-list start
-				track.setFirst(track.getSelected());
-			}
-		}
+		playList.selectCurrentSong();
+
 		CPUClock cpuClock = CPUClock.getCPUClock(config, tune);
 		setClock(cpuClock);
 
@@ -961,7 +959,7 @@ public class Player {
 					nextSong();
 
 					// Check play-list end
-					if (track.getSelected() == track.getFirst()) {
+					if (playList.isEnd()) {
 						stateProperty.set(getEndState());
 					}
 				}
@@ -1016,17 +1014,8 @@ public class Player {
 	public final void playTune(final SidTune sidTune) {
 		// Stop previous run
 		stopC64();
-		tune = sidTune;
-		// 0 means use start song next time open() is called
-		track.setSelected(0);
-		if (tune != null) {
-			// we mark a new play-list start
-			track.setFirst(0);
-			track.setSongs(tune.getInfo().songs);
-		} else {
-			track.setFirst(1);
-			track.setSongs(0);
-		}
+		// set tune and play-list
+		setTune(sidTune);
 		// Start emulation
 		startC64();
 	}
@@ -1042,19 +1031,13 @@ public class Player {
 
 	public final void nextSong() {
 		stateProperty.set(State.RESTART);
-		track.setSelected(track.getSelected() + 1);
-		if (track.getSelected() > track.getSongs()) {
-			track.setSelected(1);
-		}
+		playList.next();
 	}
 
 	public final void previousSong() {
 		stateProperty.set(State.RESTART);
 		if (time() < SID2_PREV_SONG_TIMEOUT) {
-			track.setSelected(track.getSelected() - 1);
-			if (track.getSelected() < 1) {
-				track.setSelected(track.getSongs());
-			}
+			playList.previous();
 		}
 	}
 
@@ -1073,12 +1056,12 @@ public class Player {
 
 	public final void selectFirstTrack() {
 		stateProperty.set(State.RESTART);
-		track.setSelected(1);
+		playList.first();
 	}
 
 	public final void selectLastTrack() {
 		stateProperty.set(State.RESTART);
-		track.setSelected(track.getSongs());
+		playList.last();
 	}
 
 	public final int getNumDevices() {

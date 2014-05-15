@@ -39,7 +39,9 @@ public class SIDPlay extends Applet {
 	public void start() {
 		// autostart if playsid parameter is set initially
 		if (getAppletContext() != null) {
-			playSID(getParameter("playsid"), 0);
+			String startSong = getParameter("startSong");
+			playSID(getParameter("playsid"),
+					startSong != null ? Integer.valueOf(startSong) : null);
 		}
 		callJavaScript("javascript:start()");
 	}
@@ -77,7 +79,7 @@ public class SIDPlay extends Applet {
 	 * @param songNum
 	 *            song number to start with
 	 */
-	public void playSID(final String urlName, final int songNum) {
+	public void playSID(final String urlName, final Integer songNum) {
 		if (urlName == null) {
 			return;
 		}
@@ -85,12 +87,7 @@ public class SIDPlay extends Applet {
 		player.stopC64();
 		player.setTune(getTune(urlName));
 		player.setDriverSettings(new DriverSettings(audio, emulation));
-		// Select the desired track
-		// and also mark the play-list start
-		player.getTrack().setSelected(player.getTune().selectSong(songNum));
-		player.getTrack().setFirst(0);
-
-		player.getTrack().setSongs(1);
+		player.getPlayList().setCurrent(songNum);
 
 		player.startC64();
 	}
@@ -191,7 +188,7 @@ public class SIDPlay extends Applet {
 	 * @return current song number
 	 */
 	public int getCurrentSong() {
-		return player.getTrack().getSelected();
+		return player.getPlayList().getCurrent();
 	}
 
 	/**

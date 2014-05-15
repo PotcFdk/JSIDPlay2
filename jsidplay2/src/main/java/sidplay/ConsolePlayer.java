@@ -71,7 +71,7 @@ public class ConsolePlayer {
 	private String outputFile = "outfile.wav";
 
 	@Parameter(names = "-startSong", descriptionKey = "START_SONG")
-	private Integer song = 0;
+	private Integer song = null;
 
 	@Parameter(names = "-loop", descriptionKey = "LOOP")
 	private Boolean loop = Boolean.FALSE;
@@ -152,11 +152,7 @@ public class ConsolePlayer {
 			tune.setOutputFilename(outputFile);
 			player.setDebug(cpuDebug);
 			player.setDriverSettings(new DriverSettings(audio, emulation));
-			// Select the desired track and also mark the play-list start
-			player.getTrack().setSelected(tune.selectSong(song));
-			player.getTrack().setFirst(0);
-			player.getTrack().setSongs(
-					config.getSidplay2().isSingle() ? 1 : tune.getInfo().songs);
+			player.getPlayList().setCurrent(song);
 			player.getTimer().setStart(startTime);
 
 			// check song length
@@ -179,7 +175,7 @@ public class ConsolePlayer {
 
 			player.startC64();
 		} catch (IOException | SidTuneError e) {
-			e.getMessage();
+			System.err.println(e.getMessage());
 			exit(1);
 		}
 	}

@@ -173,10 +173,12 @@ public abstract class SidTune {
 	 * 
 	 * @return The active song number.
 	 */
-	public final int selectSong(final int selectedSong) {
-		int song = selectedSong;
-		if (selectedSong == 0 || selectedSong > info.songs) {
+	public final int selectSong(final Integer selectedSong) {
+		int song;
+		if (selectedSong == null || selectedSong > info.songs) {
 			song = info.startSong;
+		} else {
+			song = selectedSong;
 		}
 		info.currentSong = song;
 		return song;

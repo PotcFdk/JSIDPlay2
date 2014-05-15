@@ -38,13 +38,9 @@ public class EmulationSettings extends C64Window {
 					sid2Model.getSelectionModel().select(
 							stereoSidModel != null ? stereoSidModel : util
 									.getBundle().getString("LIKE_1ST_SID"));
-					if (userSidModel != null) {
-						addFilters(userSidModel);
-					} else {
-						ChipModel model = ChipModel.getChipModel(
-								util.getConfig(), util.getPlayer().getTune());
-						addFilters(model);
-					}
+					ChipModel model = ChipModel.getChipModel(util.getConfig(),
+							util.getPlayer().getTune());
+					addFilters(model);
 				});
 			}
 		}
@@ -166,10 +162,10 @@ public class EmulationSettings extends C64Window {
 			addFilters(userSidModel);
 		}
 		util.getPlayer().changeSIDs();
-		util.getPlayer().configureSIDs(sid -> sid.setFilter(util.getConfig()));
-		util.getPlayer().configureSIDs(
-				sid -> sid.setFilterEnable(util.getConfig().getEmulation()
-						.isFilter()));
+		util.getPlayer().configureSIDs(sid -> {
+			sid.setFilter(util.getConfig());
+			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
+		});
 	}
 
 	@FXML
@@ -183,10 +179,10 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setStereoSidModel(stereoSidModel);
 		}
 		util.getPlayer().changeSIDs();
-		util.getPlayer().configureSIDs(sid -> sid.setFilter(util.getConfig()));
-		util.getPlayer().configureSIDs(
-				sid -> sid.setFilterEnable(util.getConfig().getEmulation()
-						.isFilter()));
+		util.getPlayer().configureSIDs(sid -> {
+			sid.setFilter(util.getConfig());
+			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
+		});
 	}
 
 	@FXML
@@ -233,9 +229,10 @@ public class EmulationSettings extends C64Window {
 		}
 
 		util.getPlayer().changeSIDs();
-		util.getPlayer().configureSIDs(sid -> sid.setFilter(util.getConfig()));
-		util.getPlayer().configureSIDs(
-				sid -> sid.setFilterEnable(!filterDisabled));
+		util.getPlayer().configureSIDs(sid -> {
+			sid.setFilter(util.getConfig());
+			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
+		});
 		if (!duringInitialization) {
 			calculateFilterCurve(filterName);
 		}

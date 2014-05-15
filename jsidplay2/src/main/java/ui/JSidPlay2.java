@@ -1,7 +1,6 @@
 package ui;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +46,7 @@ import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.components.cart.CartridgeType;
+import libsidplay.player.PlayList;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -71,7 +71,6 @@ import ui.siddump.SidDump;
 import ui.sidreg.SidReg;
 import ui.soundsettings.SoundSettings;
 import ui.videoscreen.Video;
-import de.schlichtherle.truezip.file.TFile;
 
 public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
@@ -219,41 +218,18 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		pauseContinue.setSelected(false);
 		normalSpeed.setSelected(true);
 
-		SidTune tune = util.getPlayer().getTune();
-		final int startSong, maxSong;
-		final int currentSong;
-		if (tune != null) {
-			startSong = tune.getInfo().startSong;
-			maxSong = tune.getInfo().songs;
-			currentSong = tune.getInfo().currentSong;
-		} else {
-			maxSong = 0;
-			currentSong = 0;
-			startSong = 0;
-		}
+		PlayList playList = util.getPlayer().getPlayList();
 
-		int prevSong = currentSong - 1;
-		if (prevSong < 1) {
-			prevSong = maxSong;
-		}
-		int nextSong = currentSong + 1;
-		if (nextSong > maxSong) {
-			nextSong = 1;
-		}
-
-		previous.setDisable(state == State.EXIT || maxSong == 0
-				|| currentSong == startSong);
+		previous.setDisable(state == State.EXIT || !playList.hasPrevious());
 		previous2.setDisable(previous.isDisable());
-		next.setDisable(state == State.EXIT || maxSong == 0
-				|| nextSong == startSong);
-		next2.setDisable(next.isDisable());
+		next.setDisable(state == State.EXIT || !playList.hasNext());
+		next2.setDisable(previous.isDisable());
 
 		previous.setText(String.format(util.getBundle().getString("PREVIOUS2")
-				+ " (%d/%d)", prevSong, maxSong));
+				+ " (%d/%d)", playList.getPrevious(), playList.getLength()));
 		previous2ToolTip.setText(previous.getText());
-
 		next.setText(String.format(util.getBundle().getString("NEXT2")
-				+ " (%d/%d)", nextSong, maxSong));
+				+ " (%d/%d)", playList.getNext(), playList.getLength()));
 		next2ToolTip.setText(next.getText());
 	}
 
@@ -446,7 +422,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertTape(new TFile(file), null);
+				util.getPlayer().insertTape(file, null);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
@@ -556,7 +532,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertDisk(new TFile(file), null);
+				util.getPlayer().insertDisk(file, null);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
@@ -687,12 +663,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 						.setLastDirectory(
 								c1541kernalFile.getParentFile()
 										.getAbsolutePath());
-				try (FileInputStream c64KernalStream = new FileInputStream(
-						c64kernalFile);
-						FileInputStream c1541KernalStream = new FileInputStream(
-								c1541kernalFile)) {
-					util.getPlayer().installJiffyDOS(c64KernalStream,
-							c1541KernalStream, null);
+				try {
+					util.getPlayer().installJiffyDOS(c64kernalFile,
+							c1541kernalFile, null);
 				} catch (IOException | SidTuneError ex) {
 					ex.printStackTrace();
 				}
