@@ -109,14 +109,15 @@ public class PlayList {
 	 * Choose first play list entry.
 	 */
 	public void first() {
-		current = 1;
+		current = first;
 	}
 
 	/**
 	 * Choose last play list entry.
 	 */
 	public void last() {
-		current = length;
+		int last = config.getSidplay2().isSingle() ? first : first - 1;
+		current = last > length ? 1 : last;
 	}
 
 	/**
@@ -141,10 +142,7 @@ public class PlayList {
 			return null;
 		}
 		int previous = config.getSidplay2().isSingle() ? current : current - 1;
-		if (previous < 1) {
-			previous = length;
-		}
-		return previous;
+		return previous < 1 ? length : previous;
 	}
 
 	/**
@@ -155,10 +153,7 @@ public class PlayList {
 			return null;
 		}
 		int next = config.getSidplay2().isSingle() ? current : current + 1;
-		if (next > length) {
-			next = 1;
-		}
-		return next;
+		return next > length ? 1 : next;
 	}
 
 }

@@ -964,8 +964,7 @@ public class Player {
 				throw e;
 			}
 		}
-		return stateProperty.get() == State.RUNNING
-				|| stateProperty.get() == State.PAUSED;
+		return isInPlayingState();
 	}
 
 	private State getEndState() {
@@ -1004,11 +1003,22 @@ public class Player {
 	 */
 	public final void playTune(final SidTune sidTune) {
 		// Stop previous run
-		stopC64();
+		if (isInPlayingState()) {
+			stateProperty.set(State.PAUSED);
+		}
 		// set tune and play-list
 		setTune(sidTune);
 		// Start emulation
-		startC64();
+		if (isInPlayingState()) {
+			stateProperty.set(State.RESTART);
+		} else {
+			startC64();
+		}
+	}
+
+	private boolean isInPlayingState() {
+		return stateProperty.get() == State.RUNNING
+				|| stateProperty.get() == State.PAUSED;
 	}
 
 	public final void pause() {

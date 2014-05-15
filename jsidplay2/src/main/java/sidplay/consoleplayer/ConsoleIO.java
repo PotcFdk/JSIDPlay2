@@ -257,11 +257,15 @@ public class ConsoleIO {
 				break;
 
 			case '>':
-				player.nextSong();
+				if (player.getPlayList().hasNext()) {
+					player.nextSong();
+				}
 				break;
 
 			case '<':
-				player.previousSong();
+				if (player.getPlayList().hasPrevious()) {
+					player.previousSong();
+				}
 				break;
 
 			case '.':
@@ -307,8 +311,8 @@ public class ConsoleIO {
 				break;
 
 			case 'f': {
-				boolean filterEnable = config.getEmulation().isFilter();
-				config.getEmulation().setFilter(filterEnable ^ true);
+				boolean filterEnable = config.getEmulation().isFilter() ^ true;
+				config.getEmulation().setFilter(filterEnable);
 				player.configureSIDs(sid -> sid.setFilterEnable(filterEnable));
 				break;
 			}
