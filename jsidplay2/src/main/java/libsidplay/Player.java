@@ -947,10 +947,10 @@ public class Player {
 				if (config.getSidplay2().isSingle()) {
 					stateProperty.set(getEndState());
 				} else {
-					nextSong();
-
 					// Check play-list end
-					if (playList.isEnd()) {
+					if (playList.hasNext()) {
+						nextSong();
+					} else {
 						stateProperty.set(getEndState());
 					}
 				}

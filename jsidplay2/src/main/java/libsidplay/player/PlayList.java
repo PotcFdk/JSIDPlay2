@@ -7,7 +7,8 @@ import sidplay.ini.intf.IConfig;
  * PlayList is a track list of songs to play. It starts with the first entry,
  * which is the marker to detect a wrap-around. The current entry is the
  * currently selected song.<BR>
- * e.g.: 1,2,[3],4,5 -> first = 3, length=5, current = 1..5 (current song)
+ * e.g. 5 songs in a tune using start song number 3 will result in<BR>
+ * [3],4,5,1,2 -> first = 3, length=5, current song is within range 1..5
  * 
  * @author Ken
  *
@@ -94,14 +95,14 @@ public class PlayList {
 	 * Choose next play list entry.
 	 */
 	public void next() {
-		current = getNext(true);
+		current = getNext();
 	}
 
 	/**
 	 * Choose previous play list entry.
 	 */
 	public void previous() {
-		current = getPrevious(true);
+		current = getPrevious();
 	}
 
 	/**
@@ -119,50 +120,43 @@ public class PlayList {
 	}
 
 	/**
-	 * Wrap around (end of the play list is reached)?
-	 */
-	public boolean isEnd() {
-		return current == first;
-	}
-	
-	/**
 	 * Is a previous play list entry available?
 	 */
 	public boolean hasPrevious() {
-		return current != null && current != getPrevious(false);
+		return current != null && current != first;
 	}
 
 	/**
 	 * Is a next play list entry available?
 	 */
 	public boolean hasNext() {
-		return current != null && current != getNext(false);
+		return current != null && getNext() != first;
 	}
 
 	/**
-	 * Get previous play list entry (0 means there is none)?
+	 * Get previous play list entry (null means there is none).
 	 */
-	public Integer getPrevious(boolean wrapAround) {
+	public Integer getPrevious() {
 		if (current == null) {
 			return null;
 		}
 		int previous = config.getSidplay2().isSingle() ? current : current - 1;
 		if (previous < 1) {
-			previous = wrapAround ? length : 1;
+			previous = length;
 		}
 		return previous;
 	}
 
 	/**
-	 * Get next play list entry (0 means there is none)?
+	 * Get next play list entry (null means there is none).
 	 */
-	public Integer getNext(boolean wrapAround) {
+	public Integer getNext() {
 		if (current == null) {
 			return null;
 		}
 		int next = config.getSidplay2().isSingle() ? current : current + 1;
 		if (next > length) {
-			next = wrapAround ? 1 : length;
+			next = 1;
 		}
 		return next;
 	}
