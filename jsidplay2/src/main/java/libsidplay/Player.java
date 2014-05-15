@@ -1103,7 +1103,9 @@ public class Player {
 		if (policy != null) {
 			disk.setExtendImagePolicy(policy);
 		}
-		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
+		if (autostartFile != null) {
+			playTune(SidTune.load(autostartFile));
+		}
 	}
 
 	public final void insertTape(final File selectedTape,
@@ -1132,7 +1134,9 @@ public class Player {
 		} else {
 			datasette.insertTape(selectedTape);
 		}
-		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
+		if (autostartFile != null) {
+			playTune(SidTune.load(autostartFile));
+		}
 	}
 
 	/**
