@@ -833,9 +833,10 @@ public class Player {
 		changeSIDs();
 
 		// apply filter settings and stereo SID chip address
-		configureSIDs(sid -> sid.setFilter(config));
-		configureSIDs(sid -> sid.setFilterEnable(config.getEmulation()
-				.isFilter()));
+		configureSIDs(sid -> {
+			sid.setFilter(config);
+			sid.setFilterEnable(config.getEmulation().isFilter());
+		});
 		setStereoSIDAddress();
 
 		updateStopTime();
@@ -884,18 +885,18 @@ public class Player {
 	 * from scratch.
 	 */
 	public final void changeSIDs() {
+		EventScheduler eventScheduler = c64.getEventScheduler();
 		if (sidBuilder != null) {
-			EventScheduler eventScheduler = c64.getEventScheduler();
-
 			ChipModel chipModel = ChipModel.getChipModel(config, tune);
 			SIDEmu sid = c64.getSID(0);
-			c64.setSID(0, sidBuilder.lock(eventScheduler, sid, chipModel));
+			sid = sidBuilder.lock(eventScheduler, sid, chipModel);
+			c64.setSID(0, sid);
 
 			if (AudioConfig.isStereo(config, tune)) {
 				ChipModel stereoModel = ChipModel.getStereoModel(config, tune);
 				SIDEmu sid2 = c64.getSID(1);
-				c64.setSID(1,
-						sidBuilder.lock(eventScheduler, sid2, stereoModel));
+				sid2 = sidBuilder.lock(eventScheduler, sid2, stereoModel);
+				c64.setSID(1, sid2);
 			}
 		}
 	}
@@ -936,6 +937,7 @@ public class Player {
 
 			if (seconds == timer.getStart()) {
 				if (sidBuilder != null) {
+					// Switch from the NIL audio driver to the real audio driver
 					sidBuilder.open();
 				}
 			}
