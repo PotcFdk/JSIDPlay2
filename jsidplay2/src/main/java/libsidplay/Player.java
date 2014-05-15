@@ -1092,14 +1092,23 @@ public class Player {
 		this.policy = policy;
 	}
 
-	public final void insertDisk(final File selectedDisk,
-			final File autostartFile) throws IOException, SidTuneError {
+	/**
+	 * Insert a disk into the first floppy disk drive.
+	 * 
+	 * @param file
+	 *            disk file to insert
+	 * @param autostartFile
+	 *            auto-start tune after insertion (null means just do nothing)
+	 * @throws IOException
+	 *             image read error
+	 */
+	public final void insertDisk(final File file, final File autostartFile)
+			throws IOException, SidTuneError {
 		// automatically turn drive on
 		config.getC1541().setDriveOn(true);
 		enableFloppyDiskDrives(true);
 		// attach selected disk into the first disk drive
-		DiskImage disk = floppies[0].getDiskController().insertDisk(
-				selectedDisk);
+		DiskImage disk = floppies[0].getDiskController().insertDisk(file);
 		if (policy != null) {
 			disk.setExtendImagePolicy(policy);
 		}
@@ -1108,20 +1117,30 @@ public class Player {
 		}
 	}
 
-	public final void insertTape(final File selectedTape,
-			final File autostartFile) throws IOException, SidTuneError {
-		if (!selectedTape.getName().toLowerCase(Locale.ENGLISH)
-				.endsWith(".tap")) {
+	/**
+	 * Insert a tape into the datasette.<BR>
+	 * Note: If the file is different to the TAP format, it will be converted.
+	 * 
+	 * @param file
+	 *            tape file to insert
+	 * @param autostartFile
+	 *            auto-start tune after insertion (null means just do nothing)
+	 * @throws IOException
+	 *             image read error
+	 */
+	public final void insertTape(final File file, final File autostartFile)
+			throws IOException, SidTuneError {
+		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".tap")) {
 			// Everything, which is not a tape convert to tape first
 			final File convertedTape = new File(config.getSidplay2()
-					.getTmpDir(), selectedTape.getName() + ".tap");
+					.getTmpDir(), file.getName() + ".tap");
 			convertedTape.deleteOnExit();
-			SidTune prog = SidTune.load(selectedTape);
+			SidTune prog = SidTune.load(file);
 			if (prog == null) {
 				throw new RuntimeException(
 						"Cannot convert tune, unsupported Format!");
 			}
-			String name = PathUtils.getBaseNameNoExt(selectedTape);
+			String name = PathUtils.getBaseNameNoExt(file);
 			PRG2TAPProgram program = new PRG2TAPProgram(prog, name);
 
 			PRG2TAP prg2tap = new PRG2TAP();
@@ -1132,7 +1151,7 @@ public class Player {
 
 			datasette.insertTape(convertedTape);
 		} else {
-			datasette.insertTape(selectedTape);
+			datasette.insertTape(file);
 		}
 		if (autostartFile != null) {
 			playTune(SidTune.load(autostartFile));
@@ -1166,7 +1185,7 @@ public class Player {
 	 * @param type
 	 *            cartridge type
 	 * @param file
-	 *            filename to load the RAM contents
+	 *            file to load the RAM contents
 	 * @param autostartFile
 	 *            auto-start tune after insertion (null means just reset)
 	 * @throws IOException
