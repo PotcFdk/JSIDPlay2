@@ -143,8 +143,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 				.stateProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
-							if (newValue == State.EXIT
-									|| newValue == State.RUNNING) {
+							if (newValue == State.RUNNING) {
 								Platform.runLater(() -> {
 									getPlayerId();
 									lastUpdate = util.getPlayer().getC64()
@@ -220,10 +219,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 		PlayList playList = util.getPlayer().getPlayList();
 
-		previous.setDisable(state == State.EXIT || !playList.hasPrevious());
+		previous.setDisable(!playList.hasPrevious());
 		previous2.setDisable(previous.isDisable());
-		next.setDisable(state == State.EXIT || !playList.hasNext());
-		next2.setDisable(previous.isDisable());
+		next.setDisable(!playList.hasNext());
+		next2.setDisable(next.isDisable());
 
 		previous.setText(String.format(util.getBundle().getString("PREVIOUS2")
 				+ " (%d/%d)", playList.getPrevious(), playList.getLength()));
