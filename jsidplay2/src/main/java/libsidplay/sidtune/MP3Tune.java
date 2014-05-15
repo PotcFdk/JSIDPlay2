@@ -90,12 +90,6 @@ public class MP3Tune extends SidTune {
 				sidTune.info.infoString.add(album
 						+ (genre != null ? " / " + genre : ""));
 			}
-			try {
-				sidTune.info.startSong = Integer.valueOf(sidTune.decoder
-						.getTrack());
-			} catch (NumberFormatException e) {
-				// ignore
-			}
 			if (sidTune.decoder.getImageBytes() != null
 					&& Platform.isFxApplicationThread()) {
 				sidTune.image = new Image(new ByteArrayInputStream(

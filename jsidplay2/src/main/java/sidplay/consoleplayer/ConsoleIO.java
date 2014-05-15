@@ -123,11 +123,11 @@ public class ConsoleIO {
 
 	private void printPlaylist(PrintStream out, final IConsoleSection console,
 			final SidTune tune, final PlayList playList) {
-		int i = playList.getCurrentRelative();
+		int trackNum = playList.getTrackNum();
 		out.printf("%c %-12s : ", console.getVertical(),
 				BUNDLE.getString("PLAYLIST"));
 		StringBuffer trackList = new StringBuffer();
-		trackList.append(i).append("/").append(playList.getLength());
+		trackList.append(trackNum).append("/").append(playList.getLength());
 		trackList.append(" (tune ").append(tune.getInfo().currentSong)
 				.append("/").append(tune.getInfo().songs);
 		trackList.append("[").append(tune.getInfo().startSong).append("])");

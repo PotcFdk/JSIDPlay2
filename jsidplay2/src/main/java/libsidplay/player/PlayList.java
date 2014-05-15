@@ -26,7 +26,7 @@ public class PlayList {
 	/**
 	 * First entry of the play-list.
 	 */
-	private Integer first;
+	private int first;
 	/**
 	 * Number of entries in the play-list.
 	 */
@@ -34,7 +34,7 @@ public class PlayList {
 	/**
 	 * Current entry of the play-list. It wraps around the number of entries.
 	 */
-	private Integer current;
+	private int current;
 
 	/**
 	 * Create a new play list.
@@ -42,6 +42,7 @@ public class PlayList {
 	public PlayList(IConfig config, SidTune tune) {
 		this.config = config;
 		this.tune = tune;
+		setCurrent(null);
 	}
 
 	/**
@@ -52,18 +53,20 @@ public class PlayList {
 	}
 
 	/**
-	 * Get current play list entry relative to the first.
+	 * Get current track (play list entry relative to the first).
 	 */
-	public int getCurrentRelative() {
+	public int getTrackNum() {
 		int start = current - first + 1;
 		return start < 1 ? start + length : start;
 	}
 
 	/**
-	 * Choose a play list entry to play (null means start tune).
+	 * Choose a play list entry to play (null means use start tune).
 	 */
 	public void setCurrent(Integer songNum) {
-		this.current = tune.selectSong(songNum);
+		if (tune != null) {
+			current = tune.selectSong(songNum);
+		}
 	}
 
 	/**
@@ -80,12 +83,12 @@ public class PlayList {
 		if (tune != null) {
 			setCurrent(current);
 			// New play-list?
-			if (first == null) {
+			if (length == 0) {
 				first = current;
-				length = config.getSidplay2().isSingle() ? 1
-						: tune.getInfo().songs;
+				length = tune.getInfo().songs;
 			}
 		} else {
+			current = 1;
 			first = 1;
 			length = 1;
 		}
@@ -117,30 +120,27 @@ public class PlayList {
 	 */
 	public void last() {
 		int last = config.getSidplay2().isSingle() ? first : first - 1;
-		current = last > length ? 1 : last;
+		current = last < 1 ? length : last;
 	}
 
 	/**
 	 * Is a previous play list entry available?
 	 */
 	public boolean hasPrevious() {
-		return current != null && current != first;
+		return current != first;
 	}
 
 	/**
 	 * Is a next play list entry available?
 	 */
 	public boolean hasNext() {
-		return current != null && getNext() != first;
+		return getNext() != first;
 	}
 
 	/**
 	 * Get previous play list entry (null means there is none).
 	 */
-	public Integer getPrevious() {
-		if (current == null) {
-			return null;
-		}
+	public int getPrevious() {
 		int previous = config.getSidplay2().isSingle() ? current : current - 1;
 		return previous < 1 ? length : previous;
 	}
@@ -148,10 +148,7 @@ public class PlayList {
 	/**
 	 * Get next play list entry (null means there is none).
 	 */
-	public Integer getNext() {
-		if (current == null) {
-			return null;
-		}
+	public int getNext() {
 		int next = config.getSidplay2().isSingle() ? current : current + 1;
 		return next > length ? 1 : next;
 	}
