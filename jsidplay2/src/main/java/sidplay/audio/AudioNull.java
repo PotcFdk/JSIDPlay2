@@ -1,9 +1,40 @@
 package sidplay.audio;
 
-public class AudioNull extends JavaSound {
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+public class AudioNull extends AudioDriver {
+
+	protected ByteBuffer sampleBuffer;
 
 	@Override
-	public void write() {
+	public void open(AudioConfig cfg, String outDir)
+			throws LineUnavailableException, UnsupportedAudioFileException,
+			IOException {
+		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * 2
+				* cfg.channels);
+		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
+	}
+
+	@Override
+	public void write() throws InterruptedException {
+	}
+
+	@Override
+	public void pause() {
+	}
+
+	@Override
+	public void close() {
+	}
+
+	@Override
+	public ByteBuffer buffer() {
+		return sampleBuffer;
 	}
 
 }

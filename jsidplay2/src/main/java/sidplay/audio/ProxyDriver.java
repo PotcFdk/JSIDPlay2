@@ -64,9 +64,15 @@ public class ProxyDriver extends AudioDriver {
 	}
 
 	@Override
-	public void setFastForward(int factor) {
-		driverOne.setFastForward(factor);
-		driverTwo.setFastForward(factor);
+	public synchronized void fastForward() {
+		driverOne.fastForward();
+		driverTwo.fastForward();
+	}
+
+	@Override
+	public synchronized void normalSpeed() {
+		driverOne.normalSpeed();
+		driverTwo.normalSpeed();
 	}
 
 }

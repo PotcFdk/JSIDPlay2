@@ -97,7 +97,6 @@ public class Player {
 	private static final int NUM_EVENTS_TO_PLAY = 10000;
 	/** Previous song select timeout (< 4 secs) **/
 	private static final int SID2_PREV_SONG_TIMEOUT = 4;
-	private static final int MAX_SPEED = 32;
 
 	/**
 	 * Configuration.
@@ -167,10 +166,6 @@ public class Player {
 	 */
 	protected Consumer<Player> interactivityHook = (player) -> {
 	};
-	/**
-	 * Fast forward factor.
-	 */
-	protected int currentSpeed = 1;
 	/**
 	 * Audio driver and emulation setting.
 	 */
@@ -825,11 +820,6 @@ public class Player {
 		// 2. Create SIDbuilder (may change audio driver to NIL audio driver)
 		sidBuilder = createSIDBuilder(cpuClock, audioConfig);
 
-		// 3. Fast forwarding the eventually modified NIL audio driver to the
-		// timer start
-		currentSpeed = MAX_SPEED;
-		driverSettings.getAudio().getAudioDriver().setFastForward(currentSpeed);
-
 		// 3. open audio driver (eventually NIL audio driver)
 		try {
 			driverSettings.getAudio().getAudioDriver()
@@ -923,7 +913,7 @@ public class Player {
 			// default play default length or forever (0) ...
 			timer.setStop(config.getSidplay2().getDefaultPlayLength());
 			if (config.getSidplay2().isEnableDatabase()) {
-				int length = tune != null ? getDatabaseInfo(db -> db
+				int length = tune != null ? getSidDatabaseInfo(db -> db
 						.length(tune)) : 0;
 				if (length > 0) {
 					// ... or use song length of song length database
@@ -945,7 +935,6 @@ public class Player {
 			timer.setCurrent(seconds);
 
 			if (seconds == timer.getStart()) {
-				normalSpeed();
 				if (sidBuilder != null) {
 					sidBuilder.open();
 				}
@@ -1042,16 +1031,11 @@ public class Player {
 	}
 
 	public final void fastForward() {
-		currentSpeed = currentSpeed * 2;
-		if (currentSpeed > MAX_SPEED) {
-			currentSpeed = MAX_SPEED;
-		}
-		driverSettings.getAudio().getAudioDriver().setFastForward(currentSpeed);
+		driverSettings.getAudio().getAudioDriver().fastForward();
 	}
 
 	public final void normalSpeed() {
-		currentSpeed = 1;
-		driverSettings.getAudio().getAudioDriver().setFastForward(currentSpeed);
+		driverSettings.getAudio().getAudioDriver().normalSpeed();
 	}
 
 	public final void selectFirstTrack() {
@@ -1076,7 +1060,7 @@ public class Player {
 		this.sidDatabase = sidDatabase;
 	}
 
-	public final int getDatabaseInfo(ToIntFunction<SidDatabase> toIntFunction) {
+	public final int getSidDatabaseInfo(ToIntFunction<SidDatabase> toIntFunction) {
 		return sidDatabase != null ? toIntFunction.applyAsInt(sidDatabase) : 0;
 	}
 

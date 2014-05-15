@@ -850,7 +850,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	private String determineSongLength() {
 		SidTune tune = util.getPlayer().getTune();
-		int songLength = tune != null ? util.getPlayer().getDatabaseInfo(
+		int songLength = tune != null ? util.getPlayer().getSidDatabaseInfo(
 				db -> db.length(tune)) : 0;
 		if (songLength > 0) {
 			// song length well-known?

@@ -414,7 +414,7 @@ public class SidDump extends C64Window {
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
 			int length = util.getPlayer()
-					.getDatabaseInfo(db -> db.length(tune));
+					.getSidDatabaseInfo(db -> db.length(tune));
 			if (length == 0) {
 				length = util.getConfig().getSidplay2().getDefaultPlayLength();
 				if (length == 0) {

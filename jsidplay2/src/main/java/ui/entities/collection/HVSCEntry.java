@@ -397,7 +397,7 @@ public class HVSCEntry {
 	}
 
 	private static int getTuneLength(final Player player, SidTune tune) {
-		return player.getDatabaseInfo(db -> db.getFullSongLength(tune));
+		return player.getSidDatabaseInfo(db -> db.getFullSongLength(tune));
 	}
 
 	private static String getPlayer(SidTune tune) {
