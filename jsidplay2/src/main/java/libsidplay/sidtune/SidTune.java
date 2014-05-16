@@ -165,23 +165,21 @@ public abstract class SidTune {
 	}
 
 	/**
-	 * Select sub-song (0 = default starting song) and return active song number
-	 * out of [1,2,..,SIDTUNE_MAX_SONGS].
+	 * Select sub-song number (null = default starting song).
 	 * 
-	 * @param selectedSong
+	 * @param song
 	 *            The chosen song.
-	 * 
-	 * @return The active song number.
 	 */
-	public final int selectSong(final Integer selectedSong) {
-		int song;
-		if (selectedSong == null || selectedSong > info.songs) {
-			song = info.startSong;
-		} else {
-			song = selectedSong;
-		}
-		info.currentSong = song;
-		return song;
+	public final void setSelectedSong(final Integer song) {
+		assert (song > 0 || song <= info.songs);
+		info.currentSong = song == null ? info.startSong : song;
+	}
+
+	/**
+	 * @return The active sub-song number
+	 */
+	public int getSelectedSong() {
+		return info.currentSong == 0 ? info.startSong : info.currentSong;
 	}
 
 	/**
@@ -205,7 +203,8 @@ public abstract class SidTune {
 	 * @throws IOException
 	 *             if the file could not be found.
 	 */
-	protected static final byte[] getFileContents(final File file) throws IOException {
+	protected static final byte[] getFileContents(final File file)
+			throws IOException {
 		try {
 			Class.forName("de.schlichtherle.truezip.file.TFileInputStream");
 			try (InputStream is = new TFileInputStream(file)) {

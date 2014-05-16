@@ -353,7 +353,7 @@ public class HVSCEntry {
 		hvscEntry.setPath(path);
 		hvscEntry.setName(tuneFile.getName());
 		if (tune != null) {
-			tune.selectSong(1);
+			tune.setSelectedSong(1);
 			SidTuneInfo info = tune.getInfo();
 
 			Iterator<String> descriptionIt = info.infoString.iterator();

@@ -86,7 +86,7 @@ public class SIDPlay extends Applet {
 		// eventually stop last run
 		player.stopC64();
 		player.setTune(getTune(urlName));
-		player.getTune().selectSong(songNum);
+		player.getTune().setSelectedSong(songNum);
 		player.setDriverSettings(new DriverSettings(audio, emulation));
 
 		player.startC64();

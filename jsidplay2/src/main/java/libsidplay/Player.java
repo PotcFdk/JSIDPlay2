@@ -1004,7 +1004,7 @@ public class Player {
 		if (isInPlayingState()) {
 			stateProperty.set(State.PAUSED);
 		}
-		// set tune and play-list
+		// set tune
 		setTune(sidTune);
 		// Start emulation
 		if (isInPlayingState()) {

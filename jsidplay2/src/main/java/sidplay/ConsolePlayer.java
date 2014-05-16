@@ -149,7 +149,7 @@ public class ConsolePlayer {
 		try {
 			final SidTune tune = SidTune.load(new File(filenames.get(0)));
 			player.setTune(tune);
-			tune.selectSong(song);
+			tune.setSelectedSong(song);
 			tune.setOutputFilename(outputFile);
 			player.setDebug(cpuDebug);
 			player.setDriverSettings(new DriverSettings(audio, emulation));

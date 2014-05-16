@@ -42,23 +42,23 @@ public class PlayList {
 	private PlayList(final IConfig config, final SidTune tune) {
 		this.config = config;
 		this.tune = tune;
-		this.current = tune.getInfo().currentSong != 0 ? tune.getInfo().currentSong
-				: tune.getInfo().startSong;
-		this.first = current;
+		this.current = tune.getSelectedSong();
 		this.length = tune.getInfo().songs;
+		this.first = current;
 	}
 
 	/**
 	 * Get instance results in a new play-list each time the tune changes.
 	 */
-	public static final PlayList getInstance(final IConfig config, final SidTune tune) {
+	public static final PlayList getInstance(final IConfig config,
+			final SidTune tune) {
 		if (tune == null) {
 			return NONE;
 		}
 		if (singleton.tune != tune) {
 			singleton = new PlayList(config, tune);
 		}
-		singleton.current = tune.selectSong(singleton.current);
+		singleton.tune.getInfo().currentSong = singleton.current;
 		return singleton;
 	}
 
