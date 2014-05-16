@@ -136,7 +136,7 @@ public class ConsolePlayer {
 		final IniConfig config = new IniConfig(true);
 		config.getSidplay2().setLoop(loop);
 		config.getSidplay2().setSingle(single);
-		config.getSidplay2().setUserPlayLength(startTime + fixedLength);
+		config.getSidplay2().setUserPlayLength(fixedLength);
 		config.getAudio().setFrequency(frequency);
 		config.getEmulation().setForceStereoTune(dualSID);
 		config.getEmulation().setUserClockSpeed(forceClock);
@@ -158,8 +158,7 @@ public class ConsolePlayer {
 			// check song length
 			if (fixedLength == 0) {
 				setSIDDatabase(player);
-				int length = tune != null ? player.getSidDatabaseInfo(db -> db
-						.length(tune)) : 0;
+				int length = player.getSidDatabaseInfo(db -> db.length(tune));
 				if (isRecording()
 						&& (!config.getSidplay2().isEnableDatabase() || length == 0)) {
 					System.err

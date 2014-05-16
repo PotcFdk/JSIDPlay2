@@ -937,7 +937,7 @@ public class Player {
 			}
 			// Only for tunes: if play time is over loop or exit
 			if (tune != null && timer.getStop() != 0
-					&& seconds >= timer.getStop()) {
+					&& seconds >= timer.getStart() + timer.getStop()) {
 				if (config.getSidplay2().isSingle()) {
 					stateProperty.set(getEndState());
 				} else {
