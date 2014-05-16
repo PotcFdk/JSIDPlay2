@@ -741,7 +741,7 @@ public class Psid64 {
 	private void convertToPSID64(Player player, File file, File target)
 			throws NotEnoughC64MemException, IOException, SidTuneError {
 		tune = SidTune.load(file);
-		tune.selectSong(tune.getInfo().startSong);
+		tune.selectSong(null);
 		stilEntry = player.getStilEntry(file);
 
 		File tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file)

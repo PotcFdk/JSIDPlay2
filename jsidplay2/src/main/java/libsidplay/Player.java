@@ -143,7 +143,7 @@ public class Player {
 	/**
 	 * Play list.
 	 */
-	protected PlayList playList;
+	protected PlayList playList = PlayList.NONE;
 	/**
 	 * Currently played tune.
 	 */
@@ -194,7 +194,6 @@ public class Player {
 	public Player(IConfig config) {
 		this.config = config;
 		initializeTmpDir();
-		this.playList = new PlayList(config, null);
 		this.iecBus = new IECBus();
 
 		this.printer = new MPS803(this.iecBus, (byte) 4, (byte) 7) {
@@ -622,7 +621,6 @@ public class Player {
 	 */
 	public final void setTune(final SidTune tune) {
 		this.tune = tune;
-		this.playList = new PlayList(config, tune);
 	}
 
 	public final PlayList getPlayList() {
@@ -807,7 +805,7 @@ public class Player {
 		if (stateProperty.get() == State.RESTART) {
 			stateProperty.set(State.STOPPED);
 		}
-		playList.selectCurrentSong();
+		playList = PlayList.getInstance(config, tune);
 
 		CPUClock cpuClock = CPUClock.getCPUClock(config, tune);
 		setClock(cpuClock);

@@ -36,19 +36,36 @@ public class PlayList {
 	 */
 	private int current;
 
-	/**
-	 * Create a new play list.
-	 */
-	public PlayList(IConfig config, SidTune tune) {
+	private PlayList() {
+	}
+
+	private PlayList(final IConfig config, final SidTune tune) {
 		this.config = config;
 		this.tune = tune;
-		setCurrent(null);
+		this.current = tune.getInfo().currentSong != 0 ? tune.getInfo().currentSong
+				: tune.getInfo().startSong;
+		this.first = current;
+		this.length = tune.getInfo().songs;
+	}
+
+	/**
+	 * Get instance results in a new play-list each time the tune changes.
+	 */
+	public static final PlayList getInstance(final IConfig config, final SidTune tune) {
+		if (tune == null) {
+			return NONE;
+		}
+		if (singleton.tune != tune) {
+			singleton = new PlayList(config, tune);
+		}
+		singleton.current = tune.selectSong(singleton.current);
+		return singleton;
 	}
 
 	/**
 	 * Get currently selected play list entry
 	 */
-	public Integer getCurrent() {
+	public int getCurrent() {
 		return current;
 	}
 
@@ -61,37 +78,10 @@ public class PlayList {
 	}
 
 	/**
-	 * Choose a play list entry to play (null means use start tune).
-	 */
-	public void setCurrent(Integer songNum) {
-		if (tune != null) {
-			current = tune.selectSong(songNum);
-		}
-	}
-
-	/**
 	 * Get number of entries
 	 */
 	public int getLength() {
 		return length;
-	}
-
-	/**
-	 * Use the current play list entry (select song of the tune).
-	 */
-	public void selectCurrentSong() {
-		if (tune != null) {
-			setCurrent(current);
-			// New play-list?
-			if (length == 0) {
-				first = current;
-				length = tune.getInfo().songs;
-			}
-		} else {
-			current = 1;
-			first = 1;
-			length = 1;
-		}
 	}
 
 	/**
@@ -153,4 +143,58 @@ public class PlayList {
 		return next > length ? 1 : next;
 	}
 
+	public static final PlayList NONE = new PlayList() {
+		@Override
+		public int getCurrent() {
+			return 1;
+		}
+
+		@Override
+		public int getTrackNum() {
+			return 1;
+		}
+
+		@Override
+		public int getNext() {
+			return 1;
+		}
+
+		@Override
+		public int getPrevious() {
+			return 1;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return false;
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return false;
+		}
+
+		@Override
+		public int getLength() {
+			return 1;
+		}
+
+		@Override
+		public void first() {
+		}
+
+		@Override
+		public void last() {
+		}
+
+		@Override
+		public void next() {
+		}
+
+		@Override
+		public void previous() {
+		};
+
+	};
+	private static PlayList singleton = NONE;
 }
