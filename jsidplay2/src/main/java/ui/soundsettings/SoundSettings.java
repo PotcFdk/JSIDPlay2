@@ -233,7 +233,7 @@ public class SoundSettings extends C64Window {
 	protected void restart() {
 		// replay last tune
 		if (!duringInitialization) {
-			util.getPlayer().playTune(util.getPlayer().getTune());
+			util.getPlayer().play(util.getPlayer().getTune());
 		}
 	}
 

@@ -101,92 +101,92 @@ public class Player {
 	/**
 	 * Configuration.
 	 */
-	protected final IConfig config;
+	private final IConfig config;
 
 	/**
 	 * C64 computer.
 	 */
-	protected final C64 c64;
+	private final C64 c64;
 	/**
 	 * C1530 datasette.
 	 */
-	protected final Datasette datasette;
+	private final Datasette datasette;
 	/**
 	 * IEC bus.
 	 */
-	protected final IECBus iecBus;
+	private final IECBus iecBus;
 	/**
 	 * Additional serial devices like a printer (except of the floppies).
 	 */
-	protected final SerialIECDevice[] serialDevices;
+	private final SerialIECDevice[] serialDevices;
 	/**
 	 * C1541 floppy disk drives.
 	 */
-	protected final C1541[] floppies;
+	private final C1541[] floppies;
 	/**
 	 * Responsible to keep C64 and C1541 in sync.
 	 */
-	protected final C1541Runner c1541Runner;
+	private final C1541Runner c1541Runner;
 	/**
 	 * MPS803 printer.
 	 */
-	protected final MPS803 printer;
+	private final MPS803 printer;
 	/**
 	 * Music player state.
 	 */
-	protected final ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
+	private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
 			State.STOPPED);
 	/**
 	 * Play timer.
 	 */
-	protected final Timer timer = new Timer();
+	private final Timer timer = new Timer();
 	/**
 	 * Play list.
 	 */
-	protected PlayList playList = PlayList.NONE;
+	private PlayList playList = PlayList.NONE;
 	/**
 	 * Currently played tune.
 	 */
-	protected SidTune tune;
+	private SidTune tune;
 	/**
 	 * Autostart command to be typed-in after reset.
 	 */
-	protected String command;
+	private String command;
 	/**
 	 * Music player thread.
 	 */
-	protected Thread fPlayerThread;
+	private Thread fPlayerThread;
 	/**
 	 * Called each time a tune starts to play.
 	 */
-	protected Consumer<Player> menuHook = (player) -> {
+	private Consumer<Player> menuHook = (player) -> {
 	};
 	/**
 	 * Called each time a chunk of music data has been played.
 	 */
-	protected Consumer<Player> interactivityHook = (player) -> {
+	private Consumer<Player> interactivityHook = (player) -> {
 	};
 	/**
 	 * Audio driver and emulation setting.
 	 */
-	protected DriverSettings driverSettings = new DriverSettings(
-			Audio.SOUNDCARD, Emulation.RESID);
+	private DriverSettings driverSettings = new DriverSettings(Audio.SOUNDCARD,
+			Emulation.RESID);
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
-	protected SIDBuilder sidBuilder;
+	private SIDBuilder sidBuilder;
 	/**
 	 * SID tune information list.
 	 */
-	protected STIL stil;
+	private STIL stil;
 	/**
 	 * Song length database.
 	 */
-	protected SidDatabase sidDatabase;
+	private SidDatabase sidDatabase;
 	/**
 	 * Disk image extension policy (track count greater than 35).
 	 */
-	protected IExtendImageListener policy;
+	private IExtendImageListener policy;
 
 	/**
 	 * Create a complete setup (C64, tape/disk drive, carts and more).
@@ -539,7 +539,7 @@ public class Player {
 				floppy.setCustomKernalRom(c1541Kernal);
 			}
 		}
-		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
+		play(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
 	/**
@@ -612,17 +612,6 @@ public class Player {
 		this.command = command;
 	}
 
-	/**
-	 * Load a program to play.<BR>
-	 * Note: A new play list is being created.
-	 * 
-	 * @param tune
-	 *            program to play
-	 */
-	public final void setTune(final SidTune tune) {
-		this.tune = tune;
-	}
-
 	public final PlayList getPlayList() {
 		return playList;
 	}
@@ -632,12 +621,33 @@ public class Player {
 	}
 
 	/**
-	 * Get the currently played program.
+	 * Get the currently played tune.
 	 * 
-	 * @return the currently played program
+	 * @return the currently played tune
 	 */
 	public final SidTune getTune() {
 		return tune;
+	}
+
+	/**
+	 * Load a tune to play.
+	 * 
+	 * @param tune
+	 *            tune to play
+	 */
+	public final void setTune(final SidTune tune) {
+		this.tune = tune;
+	}
+
+	public final DriverSettings getDriverSettings() {
+		return driverSettings;
+	}
+
+	/**
+	 * Note: Before calling, you must safely call stopC64()!
+	 */
+	public final void setDriverSettings(DriverSettings driverSettings) {
+		this.driverSettings = driverSettings;
 	}
 
 	/**
@@ -746,17 +756,6 @@ public class Player {
 		this.interactivityHook = interactivityHook;
 	}
 
-	/**
-	 * Note: Before calling, you must safely call stopC64()!
-	 */
-	public final void setDriverSettings(DriverSettings driverSettings) {
-		this.driverSettings = driverSettings;
-	}
-
-	public final DriverSettings getDriverSettings() {
-		return driverSettings;
-	}
-
 	public final ObjectProperty<State> stateProperty() {
 		return stateProperty;
 	}
@@ -828,7 +827,7 @@ public class Player {
 		}
 
 		// According to the configuration, the SIDs must be updated.
-		changeSIDs();
+		updateSIDs();
 
 		// apply filter settings and stereo SID chip address
 		configureSIDs(sid -> {
@@ -879,7 +878,7 @@ public class Player {
 	 * the SIDBuilder implementation the SID chip could be reused or created
 	 * from scratch.
 	 */
-	public final void changeSIDs() {
+	public final void updateSIDs() {
 		EventScheduler eventScheduler = c64.getEventScheduler();
 		if (sidBuilder != null) {
 			ChipModel chipModel = ChipModel.getChipModel(config, tune);
@@ -983,22 +982,13 @@ public class Player {
 	/**
 	 * Play tune.
 	 * 
-	 * @param sidTune
+	 * @param tune
 	 *            file to play the tune (null means just reset C64)
 	 */
-	public final void playTune(final SidTune sidTune) {
-		// Stop previous run
-		if (isInPlayingState()) {
-			stateProperty.set(State.PAUSED);
-		}
-		// set tune
-		setTune(sidTune);
-		// Start emulation
-		if (isInPlayingState()) {
-			stateProperty.set(State.RESTART);
-		} else {
-			startC64();
-		}
+	public final void play(final SidTune tune) {
+		stopC64();
+		setTune(tune);
+		startC64();
 	}
 
 	private boolean isInPlayingState() {
@@ -1016,15 +1006,15 @@ public class Player {
 	}
 
 	public final void nextSong() {
-		stateProperty.set(State.RESTART);
 		playList.next();
+		stateProperty.set(State.RESTART);
 	}
 
 	public final void previousSong() {
-		stateProperty.set(State.RESTART);
 		if (time() < SID2_PREV_SONG_TIMEOUT) {
 			playList.previous();
 		}
+		stateProperty.set(State.RESTART);
 	}
 
 	public final void fastForward() {
@@ -1036,13 +1026,13 @@ public class Player {
 	}
 
 	public final void selectFirstTrack() {
-		stateProperty.set(State.RESTART);
 		playList.first();
+		stateProperty.set(State.RESTART);
 	}
 
 	public final void selectLastTrack() {
-		stateProperty.set(State.RESTART);
 		playList.last();
+		stateProperty.set(State.RESTART);
 	}
 
 	public final int getNumDevices() {
@@ -1094,7 +1084,7 @@ public class Player {
 			disk.setExtendImagePolicy(policy);
 		}
 		if (autostartFile != null) {
-			playTune(SidTune.load(autostartFile));
+			play(SidTune.load(autostartFile));
 		}
 	}
 
@@ -1135,7 +1125,7 @@ public class Player {
 			datasette.insertTape(file);
 		}
 		if (autostartFile != null) {
-			playTune(SidTune.load(autostartFile));
+			play(SidTune.load(autostartFile));
 		}
 	}
 
@@ -1156,7 +1146,7 @@ public class Player {
 			SidTuneError {
 		c64.ejectCartridge();
 		c64.setCartridge(Cartridge.create(c64.getPla(), type, sizeKB));
-		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
+		play(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
 	/**
@@ -1176,7 +1166,7 @@ public class Player {
 			SidTuneError {
 		c64.ejectCartridge();
 		c64.setCartridge(Cartridge.read(c64.getPla(), type, file));
-		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
+		play(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
 }

@@ -1006,7 +1006,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void playTune(final File file) {
 		util.setPlayingTab(this);
 		try {
-			util.getPlayer().playTune(SidTune.load(file));
+			util.getPlayer().play(SidTune.load(file));
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
 		}

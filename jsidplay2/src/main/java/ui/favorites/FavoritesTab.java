@@ -647,7 +647,7 @@ public class FavoritesTab extends Tab implements UIPart {
 		if (currentlyPlayedFileProperty.get() != null) {
 			util.setPlayingTab(this);
 			try {
-				util.getPlayer().playTune(
+				util.getPlayer().play(
 						SidTune.load(currentlyPlayedFileProperty.get()));
 			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();

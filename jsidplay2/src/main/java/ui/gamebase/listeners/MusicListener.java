@@ -27,7 +27,7 @@ public class MusicListener extends ProgressListener {
 		downloadedFile.deleteOnExit();
 		// play tune
 		try {
-			player.playTune(SidTune.load(downloadedFile));
+			player.play(SidTune.load(downloadedFile));
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
 		}

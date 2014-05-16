@@ -435,8 +435,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 						throw new RuntimeException("Unexpected floppy status: "
 								+ floppyStatus);
 					}
-					cartridgeName.setText(getC64().getPla().getCartridge()
-							.toString());
+					cartridgeName.setText(getC64().getCartridge().toString());
 				});
 		timer = new Timeline(oneFrame);
 		timer.setCycleCount(Animation.INDEFINITE);

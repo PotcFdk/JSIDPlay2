@@ -787,7 +787,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	private void playTune(final SidTune tune) {
 		util.setPlayingTab(videoScreen);
-		util.getPlayer().playTune(tune);
+		util.getPlayer().play(tune);
 	}
 
 	/**

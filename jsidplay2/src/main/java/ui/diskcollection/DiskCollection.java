@@ -319,7 +319,7 @@ public class DiskCollection extends Tab implements UIPart {
 		}
 		util.setPlayingTab(this);
 		util.getPlayer().setCommand(command);
-		util.getPlayer().playTune(null);
+		util.getPlayer().play(null);
 	}
 
 	protected void showScreenshot(final File file) {

@@ -161,7 +161,7 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setUserSidModel(userSidModel);
 			addFilters(userSidModel);
 		}
-		util.getPlayer().changeSIDs();
+		util.getPlayer().updateSIDs();
 		util.getPlayer().configureSIDs(sid -> {
 			sid.setFilter(util.getConfig());
 			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
@@ -178,7 +178,7 @@ public class EmulationSettings extends C64Window {
 					.getSelectionModel().getSelectedItem();
 			util.getConfig().getEmulation().setStereoSidModel(stereoSidModel);
 		}
-		util.getPlayer().changeSIDs();
+		util.getPlayer().updateSIDs();
 		util.getPlayer().configureSIDs(sid -> {
 			sid.setFilter(util.getConfig());
 			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
@@ -228,7 +228,7 @@ public class EmulationSettings extends C64Window {
 			emulation.setFilter8580(filterName);
 		}
 
-		util.getPlayer().changeSIDs();
+		util.getPlayer().updateSIDs();
 		util.getPlayer().configureSIDs(sid -> {
 			sid.setFilter(util.getConfig());
 			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
@@ -241,7 +241,7 @@ public class EmulationSettings extends C64Window {
 	private void restart() {
 		// replay last tune
 		if (!duringInitialization) {
-			util.getPlayer().playTune(util.getPlayer().getTune());
+			util.getPlayer().play(util.getPlayer().getTune());
 		}
 	}
 

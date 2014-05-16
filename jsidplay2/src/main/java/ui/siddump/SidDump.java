@@ -189,7 +189,7 @@ public class SidDump extends C64Window {
 	private void doStartStopRecording() {
 		if (startStopRecording.isSelected()) {
 			// restart tune, before recording starts
-			util.getPlayer().playTune(util.getPlayer().getTune());
+			util.getPlayer().play(util.getPlayer().getTune());
 			setTune(util.getPlayer().getTune());
 			util.getPlayer().getC64().setPlayRoutineObserver(sidDumpExtension);
 		} else {
