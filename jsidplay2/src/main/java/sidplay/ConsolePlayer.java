@@ -136,7 +136,7 @@ public class ConsolePlayer {
 		final IniConfig config = new IniConfig(true);
 		config.getSidplay2().setLoop(loop);
 		config.getSidplay2().setSingle(single);
-		config.getSidplay2().setUserPlayLength(fixedLength);
+		config.getSidplay2().setUserPlayLength(startTime + fixedLength);
 		config.getAudio().setFrequency(frequency);
 		config.getEmulation().setForceStereoTune(dualSID);
 		config.getEmulation().setUserClockSpeed(forceClock);

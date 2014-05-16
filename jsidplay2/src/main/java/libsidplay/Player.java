@@ -605,11 +605,11 @@ public class Player {
 	/**
 	 * Enter basic command after reset.
 	 * 
-	 * @param cmd
+	 * @param command
 	 *            basic command after reset
 	 */
-	public final void setCommand(final String cmd) {
-		this.command = cmd;
+	public final void setCommand(final String command) {
+		this.command = command;
 	}
 
 	/**
@@ -865,12 +865,9 @@ public class Player {
 		if (secondAddress != null) {
 			if (Integer.valueOf(0xd400).equals(secondAddress)) {
 				/** Stereo SID at 0xd400 hack */
-				if (Integer.valueOf(0xd400).equals(secondAddress)) {
-					final SIDEmu s1 = c64.getSID(0);
-					final SIDEmu s2 = c64.getSID(1);
-					c64.setSID(0, new FakeStereo(c64.getEventScheduler(), s1,
-							s2));
-				}
+				final SIDEmu s1 = c64.getSID(0);
+				final SIDEmu s2 = c64.getSID(1);
+				c64.setSID(0, new FakeStereo(c64.getEventScheduler(), s1, s2));
 			} else {
 				c64.setSecondSIDAddress(secondAddress);
 			}
@@ -901,13 +898,12 @@ public class Player {
 
 	/**
 	 * Set stop time according to the song length database (or use default
-	 * length). User play length means use always a fixed play length
+	 * length). If the user play length has been set, it overrides everything!
 	 */
 	public final void updateStopTime() {
 		if (config.getSidplay2().getUserPlayLength() != 0) {
 			// Use user defined fixed song length
-			timer.setStop(config.getSidplay2().getUserPlayLength()
-					+ timer.getStart());
+			timer.setStop(config.getSidplay2().getUserPlayLength());
 		} else {
 			// default play default length or forever (0) ...
 			timer.setStop(config.getSidplay2().getDefaultPlayLength());
@@ -956,7 +952,9 @@ public class Player {
 		}
 		if (stateProperty.get() == State.RUNNING) {
 			try {
-				play(NUM_EVENTS_TO_PLAY);
+				for (int i = 0; i < NUM_EVENTS_TO_PLAY; i++) {
+					c64.getEventScheduler().clock();
+				}
 			} catch (NaturalFinishedException e) {
 				stateProperty.set(getEndState());
 				throw e;
@@ -967,17 +965,6 @@ public class Player {
 
 	private State getEndState() {
 		return config.getSidplay2().isLoop() ? State.RESTART : State.EXIT;
-	}
-
-	/**
-	 * Run C64 emulation for a specific amount of events.
-	 * 
-	 * @throws InterruptedException
-	 */
-	private final void play(final int numOfEvents) throws InterruptedException {
-		for (int i = 0; i < numOfEvents; i++) {
-			c64.getEventScheduler().clock();
-		}
 	}
 
 	private void close() {
@@ -1168,8 +1155,7 @@ public class Player {
 			final int sizeKB, final File autostartFile) throws IOException,
 			SidTuneError {
 		c64.ejectCartridge();
-		Cartridge cartridge = Cartridge.create(c64.getPla(), type, sizeKB);
-		c64.setCartridge(cartridge);
+		c64.setCartridge(Cartridge.create(c64.getPla(), type, sizeKB));
 		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
@@ -1189,8 +1175,7 @@ public class Player {
 			final File file, final File autostartFile) throws IOException,
 			SidTuneError {
 		c64.ejectCartridge();
-		Cartridge cartridge = Cartridge.read(c64.getPla(), type, file);
-		c64.setCartridge(cartridge);
+		c64.setCartridge(Cartridge.read(c64.getPla(), type, file));
 		playTune(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
