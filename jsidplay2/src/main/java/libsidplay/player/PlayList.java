@@ -58,7 +58,7 @@ public class PlayList {
 		if (singleton.tune != tune) {
 			singleton = new PlayList(config, tune);
 		}
-		singleton.tune.getInfo().currentSong = singleton.current;
+		singleton.tune.setSelectedSong(singleton.current);
 		return singleton;
 	}
 

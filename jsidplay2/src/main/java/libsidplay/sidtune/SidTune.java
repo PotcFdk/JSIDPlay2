@@ -171,7 +171,7 @@ public abstract class SidTune {
 	 *            The chosen song.
 	 */
 	public final void setSelectedSong(final Integer song) {
-		assert (song > 0 || song <= info.songs);
+		assert song == null || (song > 0 && song <= info.songs);
 		info.currentSong = song == null ? info.startSong : song;
 	}
 
