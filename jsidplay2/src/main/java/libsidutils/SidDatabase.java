@@ -36,14 +36,14 @@ public class SidDatabase {
 	public int getFullSongLength(final SidTune tune) {
 		int length = 0;
 		final String md5 = tune.getMD5Digest();
-		for (int i = 1; i <= tune.getInfo().songs; i++) {
+		for (int i = 1; i <= tune.getInfo().getSongs(); i++) {
 			length += length(md5, i);
 		}
 		return length;
 	}
 
 	public int length(final SidTune tune) {
-		final int song = tune.getInfo().currentSong;
+		final int song = tune.getInfo().getCurrentSong();
 		if (song == 0) {
 			return -1;
 		}

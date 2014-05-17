@@ -29,8 +29,7 @@ import libsidutils.SidIdV2;
 
 class Prg extends SidTune {
 
-	private static final MessageDigest MD5_DIGEST;
-
+	protected static final MessageDigest MD5_DIGEST;
 	static {
 		try {
 			MD5_DIGEST = MessageDigest.getInstance("MD5");
@@ -40,63 +39,63 @@ class Prg extends SidTune {
 	}
 
 	private static final SidIdV2 SID_ID = new SidIdV2();
-
 	static {
 		SID_ID.readconfig();
 		SID_ID.setMultiScan(true);
 	}
 
 	private static final String SIDTUNE_TRUNCATED = "ERROR: File is most likely truncated";
-	
-	protected int fileOffset;
+
+	protected int programOffset;
 
 	protected byte[] program;
 
-	protected static SidTune load(final String path, final byte[] dataBuf) throws SidTuneError {
+	protected static SidTune load(final String path, final byte[] dataBuf)
+			throws SidTuneError {
 		if (!PathUtils.getExtension(path).equalsIgnoreCase(".prg")) {
 			return null;
 		}
-		final Prg sidtune = new Prg();
+		final Prg prg = new Prg();
 		if (dataBuf.length < 2) {
 			throw new SidTuneError(SIDTUNE_TRUNCATED);
 		}
-
 		// Automatic settings
-		sidtune.fileOffset = 2;
-		sidtune.info.loadAddr = (dataBuf[0] & 0xff) + ((dataBuf[1] & 0xff) << 8);
-		sidtune.info.c64dataLen = dataBuf.length - 2;
-		sidtune.program = dataBuf;
+		prg.programOffset = 2;
+		prg.info.loadAddr = (dataBuf[0] & 0xff) + ((dataBuf[1] & 0xff) << 8);
+		prg.info.c64dataLen = dataBuf.length - 2;
+		prg.program = dataBuf;
 
 		// Create the speed/clock setting table.
-		sidtune.convertOldStyleSpeedToTables(~0);
-		return sidtune;
+		prg.convertOldStyleSpeedToTables(~0);
+		return prg;
 	}
 
 	@Override
-	public void save(final String destFileName, final boolean overWriteFlag) throws IOException {
-		try (FileOutputStream fMyOut = new FileOutputStream(destFileName,
-				!overWriteFlag)) {
-			fMyOut.write(program);
+	public void save(final String filename, final boolean overwrite)
+			throws IOException {
+		try (FileOutputStream out = new FileOutputStream(filename, !overwrite)) {
+			out.write(program);
 		}
 	}
 
 	@Override
-	public int placeProgramInMemory(final byte[] c64buf) {
+	public int placeProgramInMemory(final byte[] mem) {
 		final int start = info.loadAddr;
 		final int end = start + info.c64dataLen;
-		c64buf[0x2d] = (byte) (end & 0xff);
-		c64buf[0x2e] = (byte) (end >> 8); // Variables start
-		c64buf[0x2f] = (byte) (end & 0xff);
-		c64buf[0x30] = (byte) (end >> 8); // Arrays start
-		c64buf[0x31] = (byte) (end & 0xff);
-		c64buf[0x32] = (byte) (end >> 8); // Strings start
-		c64buf[0xac] = (byte) (start & 0xff);
-		c64buf[0xad] = (byte) (start >> 8);
-		c64buf[0xae] = (byte) (end & 0xff);
-		c64buf[0xaf] = (byte) (end >> 8);
+		mem[0x2d] = (byte) (end & 0xff);
+		mem[0x2e] = (byte) (end >> 8); // Variables start
+		mem[0x2f] = (byte) (end & 0xff);
+		mem[0x30] = (byte) (end >> 8); // Arrays start
+		mem[0x31] = (byte) (end & 0xff);
+		mem[0x32] = (byte) (end >> 8); // Strings start
+		mem[0xac] = (byte) (start & 0xff);
+		mem[0xad] = (byte) (start >> 8);
+		mem[0xae] = (byte) (end & 0xff);
+		mem[0xaf] = (byte) (end >> 8);
 
 		// Copy data from cache to the correct destination.
-		System.arraycopy(program, fileOffset, c64buf, info.loadAddr, info.c64dataLen);
+		System.arraycopy(program, programOffset, mem, info.loadAddr,
+				info.c64dataLen);
 		return -1;
 	}
 
@@ -113,15 +112,14 @@ class Prg extends SidTune {
 	@Override
 	public String getMD5Digest() {
 		byte[] myMD5 = new byte[info.c64dataLen];
-		System.arraycopy(program, fileOffset, myMD5, 0, info.c64dataLen);
+		System.arraycopy(program, programOffset, myMD5, 0, info.c64dataLen);
 		StringBuilder md5 = new StringBuilder();
-		final byte[] encryptMsg = MD5_DIGEST.digest(myMD5);
-		for (final byte anEncryptMsg : encryptMsg) {
-			md5.append(String.format("%02x", anEncryptMsg & 0xff));
+		for (final byte encryptMsg : MD5_DIGEST.digest(myMD5)) {
+			md5.append(String.format("%02x", encryptMsg & 0xff));
 		}
 		return md5.toString();
 	}
-	
+
 	@Override
 	public long getInitDelay() {
 		/* Wait 2.5 seconds before initializing PRG/P00. */

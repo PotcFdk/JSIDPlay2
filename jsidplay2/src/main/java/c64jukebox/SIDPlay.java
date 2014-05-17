@@ -166,8 +166,7 @@ public class SIDPlay extends Applet {
 	 * @return the song count
 	 */
 	public int getSongCount(final String path) {
-		final SidTune tune = getTune(path);
-		return tune.getInfo().songs;
+		return getTune(path).getInfo().getSongs();
 	}
 
 	/**
@@ -178,8 +177,7 @@ public class SIDPlay extends Applet {
 	 * @return the default song number
 	 */
 	public int getDefaultSong(final String path) {
-		final SidTune tune = getTune(path);
-		return tune.getInfo().startSong;
+		return getTune(path).getInfo().getStartSong();
 	}
 
 	/**

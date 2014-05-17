@@ -43,7 +43,7 @@ public class PlayList {
 		this.config = config;
 		this.tune = tune;
 		this.current = tune.getSelectedSong();
-		this.length = tune.getInfo().songs;
+		this.length = tune.getInfo().getSongs();
 		this.first = current;
 	}
 

@@ -126,7 +126,7 @@ class Mus extends PSid {
 	protected void loadWithProvidedMetadata(final byte[] musBuf,
 			final File musFile) throws SidTuneError {
 		final int[] voice3Index = new int[1];
-		if (!detect(musBuf, fileOffset, voice3Index)) {
+		if (!detect(musBuf, programOffset, voice3Index)) {
 			throw new SidTuneError(ERR_SIDTUNE_INVALID);
 		}
 
@@ -211,7 +211,7 @@ class Mus extends PSid {
 		info.infoString.add("<?>");
 
 		program = new byte[musBuf.length + (strBuf != null ? strBuf.length : 0)];
-		info.c64dataLen = program.length - fileOffset;
+		info.c64dataLen = program.length - programOffset;
 		System.arraycopy(musBuf, 0, program, 0, musBuf.length);
 		if (strBuf != null) {
 			System.arraycopy(strBuf, 0, program, musBuf.length, strBuf.length);

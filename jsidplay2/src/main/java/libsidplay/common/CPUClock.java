@@ -35,14 +35,15 @@ public enum CPUClock {
 		if (cpuFreq == null) {
 			cpuFreq = emulation.getDefaultClockSpeed();
 			if (tuneInfo != null) {
-				switch (tuneInfo.clockSpeed) {
+				switch (tuneInfo.getClockSpeed()) {
 				case UNKNOWN:
 				case ANY:
 					cpuFreq = emulation.getDefaultClockSpeed();
 					break;
 				case PAL:
 				case NTSC:
-					cpuFreq = CPUClock.valueOf(tuneInfo.clockSpeed.toString());
+					cpuFreq = CPUClock.valueOf(tuneInfo.getClockSpeed()
+							.toString());
 					break;
 				}
 			}

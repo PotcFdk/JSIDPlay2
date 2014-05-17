@@ -66,9 +66,9 @@ public class AudioConfig {
 	public static AudioConfig create(IConfig config, SidTune tune) {
 		AudioConfig audioConfig = getInstance(config.getAudio(),
 				isStereo(config, tune) ? 2 : 1);
-		audioConfig.tuneFile = tune != null ? tune.getInfo().file : null;
-		audioConfig.songCount = tune != null ? tune.getInfo().songs : 1;
-		audioConfig.currentSong = tune != null ? tune.getInfo().currentSong : 1;
+		audioConfig.tuneFile = tune != null ? tune.getInfo().getFile() : null;
+		audioConfig.songCount = tune != null ? tune.getInfo().getSongs() : 1;
+		audioConfig.currentSong = tune != null ? tune.getInfo().getCurrentSong() : 1;
 		audioConfig.outputFilename = tune != null ? tune.getOutputFilename()
 				: null;
 		return audioConfig;
@@ -76,14 +76,14 @@ public class AudioConfig {
 
 	public static boolean isStereo(IConfig config, SidTune tune) {
 		return config.getEmulation().isForceStereoTune() || tune != null
-				&& tune.getInfo().sidChipBase2 != 0;
+				&& tune.getInfo().getSidChipBase2() != 0;
 	}
 
 	public static Integer getStereoAddress(IConfig config, SidTune tune) {
 		if (config.getEmulation().isForceStereoTune()) {
 			return config.getEmulation().getDualSidBase();
-		} else if (tune != null && tune.getInfo().sidChipBase2 != 0) {
-			return tune.getInfo().sidChipBase2;
+		} else if (tune != null && tune.getInfo().getSidChipBase2() != 0) {
+			return tune.getInfo().getSidChipBase2();
 		} else {
 			return null;
 		}

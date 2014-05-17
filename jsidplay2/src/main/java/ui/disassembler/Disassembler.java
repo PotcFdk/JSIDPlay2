@@ -84,30 +84,30 @@ public class Disassembler extends C64Window {
 	}
 
 	private String getPlayerAddress(final SidTuneInfo tuneInfo) {
-		if (tuneInfo.playAddr == 0xffff) {
+		if (tuneInfo.getPlayAddr() == 0xffff) {
 			return "N/A";
 		} else {
-			return String.format("0x%04x", tuneInfo.playAddr);
+			return String.format("0x%04x", tuneInfo.getPlayAddr());
 		}
 	}
 
 	private String getInitAddress(final SidTuneInfo tuneInfo) {
-		return String.format("0x%04x", tuneInfo.initAddr);
+		return String.format("0x%04x", tuneInfo.getInitAddr());
 	}
 
 	private String getLoadAddress(final SidTuneInfo tuneInfo) {
-		return String.format("0x%04x - 0x%04x", tuneInfo.loadAddr,
-				tuneInfo.loadAddr + tuneInfo.c64dataLen - 1);
+		return String.format("0x%04x - 0x%04x", tuneInfo.getLoadAddr(),
+				tuneInfo.getLoadAddr() + tuneInfo.getC64dataLen() - 1);
 	}
 
 	private String getDriverAddress(final SidTuneInfo tuneInfo) {
-		if (tuneInfo.determinedDriverAddr == 0) {
+		if (tuneInfo.getDeterminedDriverAddr() == 0) {
 			return "N/A";
 		} else {
 			return String.format("0x%04x - 0x%04x",
-					tuneInfo.determinedDriverAddr,
-					tuneInfo.determinedDriverAddr
-							+ tuneInfo.determinedDriverLength - 1);
+					tuneInfo.getDeterminedDriverAddr(),
+					tuneInfo.getDeterminedDriverAddr()
+							+ tuneInfo.getDeterminedDriverLength() - 1);
 		}
 	}
 

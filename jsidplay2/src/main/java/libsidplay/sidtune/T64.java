@@ -88,9 +88,9 @@ public class T64 extends Prg {
 		pos += 2;
 
 		// determine offset of program data
-		fileOffset = 0;
+		programOffset = 0;
 		for (int power = 0; power <= 3; power++) {
-			fileOffset += (dataBuf[pos++] & 0xff) << 8 * power;
+			programOffset += (dataBuf[pos++] & 0xff) << 8 * power;
 		}
 
 		// skip unused
@@ -129,7 +129,7 @@ public class T64 extends Prg {
 				}
 				final int loadAddr = t64.info.loadAddr;
 				final int c64dataLen = t64.info.c64dataLen;
-				final int fileOffset = t64.fileOffset;
+				final int fileOffset = t64.programOffset;
 				
 				dirEntries.add(new DirEntry(t64.info.c64dataLen, t64
 						.getLastEntryName(), (byte) 0x82) {

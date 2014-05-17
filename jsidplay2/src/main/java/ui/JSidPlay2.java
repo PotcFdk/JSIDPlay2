@@ -154,7 +154,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 									SidTune sidTune = util.getPlayer()
 											.getTune();
 									if (sidTune == null
-											|| (sidTune.getInfo().playAddr == 0
+											|| (sidTune.getInfo().getPlayAddr() == 0
 													&& !favorites.isSelected() && !musicCollections
 														.isSelected())) {
 										tabbedPane.getSelectionModel().select(

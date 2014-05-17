@@ -356,7 +356,7 @@ public class HVSCEntry {
 			tune.setSelectedSong(1);
 			SidTuneInfo info = tune.getInfo();
 
-			Iterator<String> descriptionIt = info.infoString.iterator();
+			Iterator<String> descriptionIt = info.getInfoString().iterator();
 			if (descriptionIt.hasNext()) {
 				String title = descriptionIt.next();
 				hvscEntry.setTitle(title);
@@ -371,27 +371,27 @@ public class HVSCEntry {
 			}
 			hvscEntry.setFormat(tune.getClass().getSimpleName());
 			hvscEntry.setPlayerId(getPlayer(tune));
-			hvscEntry.setNoOfSongs(info.songs);
-			hvscEntry.setStartSong(info.startSong);
-			hvscEntry.setClockFreq(info.clockSpeed);
+			hvscEntry.setNoOfSongs(info.getSongs());
+			hvscEntry.setStartSong(info.getStartSong());
+			hvscEntry.setClockFreq(info.getClockSpeed());
 			hvscEntry.setSpeed(tune.getSongSpeed(1));
-			hvscEntry.setSidModel1(info.sid1Model);
-			hvscEntry.setSidModel2(info.sid2Model);
-			hvscEntry.setCompatibility(info.compatibility);
+			hvscEntry.setSidModel1(info.getSid1Model());
+			hvscEntry.setSidModel2(info.getSid2Model());
+			hvscEntry.setCompatibility(info.getCompatibility());
 			hvscEntry.setTuneLength(Long.valueOf(getTuneLength(player, tune)));
-			hvscEntry.setAudio(getAudio(info.sidChipBase2));
-			hvscEntry.setSidChipBase1(info.sidChipBase1);
-			hvscEntry.setSidChipBase2(info.sidChipBase2);
-			hvscEntry.setDriverAddress(info.determinedDriverAddr);
-			hvscEntry.setLoadAddress(info.loadAddr);
-			hvscEntry.setLoadLength(info.c64dataLen);
-			hvscEntry.setInitAddress(info.initAddr);
-			hvscEntry.setPlayerAddress(info.playAddr);
+			hvscEntry.setAudio(getAudio(info.getSidChipBase2()));
+			hvscEntry.setSidChipBase1(info.getSidChipBase1());
+			hvscEntry.setSidChipBase2(info.getSidChipBase2());
+			hvscEntry.setDriverAddress(info.getDeterminedDriverAddr());
+			hvscEntry.setLoadAddress(info.getLoadAddr());
+			hvscEntry.setLoadLength(info.getC64dataLen());
+			hvscEntry.setInitAddress(info.getInitAddr());
+			hvscEntry.setPlayerAddress(info.getPlayAddr());
 			hvscEntry.setFileDate(new Date(tuneFile.lastModified()));
 			hvscEntry.setFileSizeKb(tuneFile.length() >> 10);
 			hvscEntry.setTuneSizeB(tuneFile.length());
-			hvscEntry.setRelocStartPage(info.relocStartPage);
-			hvscEntry.setRelocNoPages(info.relocPages);
+			hvscEntry.setRelocStartPage(info.getRelocStartPage());
+			hvscEntry.setRelocNoPages(info.getRelocPages());
 		}
 		return hvscEntry;
 	}

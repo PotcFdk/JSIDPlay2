@@ -446,7 +446,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	 * Make C64 image visible, if the internal util.getPlayer() is used.
 	 */
 	protected void setVisibilityBasedOnChipType(final SidTune sidTune) {
-		if (sidTune != null && sidTune.getInfo().playAddr != 0) {
+		if (sidTune != null && sidTune.getInfo().getPlayAddr() != 0) {
 			if (getChipModel(sidTune) == ChipModel.MOS6581) {
 				// Old SID chip model? Show breadbox
 				breadbox.setVisible(true);
@@ -478,7 +478,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 			return userSidModel;
 		} else {
 			if (sidTune != null) {
-				switch (sidTune.getInfo().sid1Model) {
+				switch (sidTune.getInfo().getSid1Model()) {
 				case MOS6581:
 					return ChipModel.MOS6581;
 				case MOS8580:

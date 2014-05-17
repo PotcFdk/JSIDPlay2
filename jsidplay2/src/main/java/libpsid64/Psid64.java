@@ -77,7 +77,7 @@ public class Psid64 {
 	private byte[] convert() throws NotEnoughC64MemException {
 		// handle special treatment of tunes programmed in BASIC
 		final SidTuneInfo tuneInfo = tune.getInfo();
-		if (tuneInfo.compatibility == SidTune.Compatibility.RSID_BASIC) {
+		if (tuneInfo.getCompatibility() == SidTune.Compatibility.RSID_BASIC) {
 			return convertBASIC();
 		}
 
@@ -108,10 +108,10 @@ public class Psid64 {
 		memBlocks.add(memoryBlock);
 
 		memoryBlock = new MemoryBlock();
-		memoryBlock.setStartAddress(tuneInfo.loadAddr);
-		memoryBlock.setSize(tuneInfo.c64dataLen);
+		memoryBlock.setStartAddress(tuneInfo.getLoadAddr());
+		memoryBlock.setSize(tuneInfo.getC64dataLen());
 		memoryBlock.setData(new byte[65536]);
-		memoryBlock.setDataOff(tuneInfo.loadAddr);
+		memoryBlock.setDataOff(tuneInfo.getLoadAddr());
 		memoryBlock.setDescription("Music data");
 		memBlocks.add(memoryBlock);
 		tune.placeProgramInMemory(memoryBlock.getData());
@@ -184,7 +184,7 @@ public class Psid64 {
 		int song = programData[addr] & 0xff;
 		song += (programData[addr + 1] & 0xff) << 8;
 		song -= 0x0801 - 2;
-		programData[song] = (byte) (tuneInfo.currentSong - 1 & 0xff);
+		programData[song] = (byte) (tuneInfo.getCurrentSong() - 1 & 0xff);
 
 		final int eof = 0x0801 + psid_boot.length - 2 + size;
 		// end of C64 file
@@ -237,24 +237,26 @@ public class Psid64 {
 	private byte[] convertBASIC() {
 		final SidTuneInfo tuneInfo = tune.getInfo();
 		// allocate space for BASIC program and boot code (optional)
-		byte[] programData = new byte[2 + tuneInfo.c64dataLen + 0];
+		byte[] programData = new byte[2 + tuneInfo.getC64dataLen() + 0];
 
 		// first the load address
-		programData[0] = (byte) (tuneInfo.loadAddr & 0xff);
-		programData[1] = (byte) (tuneInfo.loadAddr >> 8);
+		programData[0] = (byte) (tuneInfo.getLoadAddr() & 0xff);
+		programData[1] = (byte) (tuneInfo.getLoadAddr() >> 8);
 
 		// then copy the BASIC program
 		final byte c64buf[] = new byte[65536];
 		tune.placeProgramInMemory(c64buf);
-		System.arraycopy(c64buf, tuneInfo.loadAddr, programData, 2,
-				tuneInfo.c64dataLen);
+		System.arraycopy(c64buf, tuneInfo.getLoadAddr(), programData, 2,
+				tuneInfo.getC64dataLen());
 
 		// print memory map
 		if (verbose) {
 			System.out.println("C64 memory map:");
-			System.out.println("  $" + toHexWord(tuneInfo.loadAddr) + "-$"
-					+ toHexWord(tuneInfo.loadAddr + tuneInfo.c64dataLen)
-					+ "  BASIC program");
+			System.out.println("  $"
+					+ toHexWord(tuneInfo.getLoadAddr())
+					+ "-$"
+					+ toHexWord(tuneInfo.getLoadAddr()
+							+ tuneInfo.getC64dataLen()) + "  BASIC program");
 		}
 		return programData;
 	}
@@ -273,12 +275,12 @@ public class Psid64 {
 		globals.put("screen", screen);
 		int screen_songnum = 0;
 		SidTuneInfo tuneInfo = tune.getInfo();
-		if (tuneInfo.songs > 1) {
+		if (tuneInfo.getSongs() > 1) {
 			screen_songnum = screen + 10 * 40 + 24;
-			if (tuneInfo.songs >= 100) {
+			if (tuneInfo.getSongs() >= 100) {
 				++screen_songnum;
 			}
-			if (tuneInfo.songs >= 10) {
+			if (tuneInfo.getSongs() >= 10) {
 				++screen_songnum;
 			}
 		}
@@ -325,13 +327,13 @@ public class Psid64 {
 		offset += 6;
 
 		// Store parameters for PSID player.
-		ram[offset++] = (byte) (tuneInfo.initAddr != 0 ? 0x4c : 0x60);
-		ram[offset++] = (byte) (tuneInfo.initAddr & 0xff);
-		ram[offset++] = (byte) (tuneInfo.initAddr >> 8);
-		ram[offset++] = (byte) (tuneInfo.playAddr != 0 ? 0x4c : 0x60);
-		ram[offset++] = (byte) (tuneInfo.playAddr & 0xff);
-		ram[offset++] = (byte) (tuneInfo.playAddr >> 8);
-		ram[offset++] = (byte) tuneInfo.songs;
+		ram[offset++] = (byte) (tuneInfo.getInitAddr() != 0 ? 0x4c : 0x60);
+		ram[offset++] = (byte) (tuneInfo.getInitAddr() & 0xff);
+		ram[offset++] = (byte) (tuneInfo.getInitAddr() >> 8);
+		ram[offset++] = (byte) (tuneInfo.getPlayAddr() != 0 ? 0x4c : 0x60);
+		ram[offset++] = (byte) (tuneInfo.getPlayAddr() & 0xff);
+		ram[offset++] = (byte) (tuneInfo.getPlayAddr() >> 8);
+		ram[offset++] = (byte) tuneInfo.getSongs();
 
 		// get the speed bits (the driver only has space for the first 32 songs)
 		int speed = tune.getSongSpeedArray();
@@ -340,9 +342,9 @@ public class Psid64 {
 		ram[offset++] = (byte) (speed >> 16 & 0xff);
 		ram[offset++] = (byte) (speed >> 24);
 
-		ram[offset++] = (byte) (tuneInfo.loadAddr < 0x31a ? 0xff : 0x05);
-		ram[offset++] = iomap(tuneInfo.initAddr);
-		ram[offset++] = iomap(tuneInfo.playAddr);
+		ram[offset++] = (byte) (tuneInfo.getLoadAddr() < 0x31a ? 0xff : 0x05);
+		ram[offset++] = iomap(tuneInfo.getInitAddr());
+		ram[offset++] = iomap(tuneInfo.getPlayAddr());
 
 		if (freePages.getScreenPage() != null) {
 			ram[offset++] = freePages.getStilPage() != null ? freePages
@@ -358,7 +360,8 @@ public class Psid64 {
 	private byte iomap(int addr) {
 		// Force Real C64 Compatibility
 		SidTuneInfo tuneInfo = tune.getInfo();
-		if (tuneInfo.compatibility == SidTune.Compatibility.RSID || addr == 0) {
+		if (tuneInfo.getCompatibility() == SidTune.Compatibility.RSID
+				|| addr == 0) {
 			return 0; // Special case, converted to 0x37 later
 		}
 		if (addr < 0xa000) {
@@ -395,7 +398,7 @@ public class Psid64 {
 		screen.move(0, 4);
 		screen.write("Name   : ");
 		SidTuneInfo tuneInfo = tune.getInfo();
-		Iterator<String> descriptionIt = tuneInfo.infoString.iterator();
+		Iterator<String> descriptionIt = tuneInfo.getInfoString().iterator();
 		if (descriptionIt.hasNext()) {
 			String title = descriptionIt.next();
 			screen.write(title.substring(0, Math.min(title.length(), 31)));
@@ -413,39 +416,42 @@ public class Psid64 {
 			screen.write(released.substring(0, Math.min(released.length(), 31)));
 		}
 		screen.write("\nLoad   : $");
-		screen.write(toHexWord(tuneInfo.loadAddr));
+		screen.write(toHexWord(tuneInfo.getLoadAddr()));
 		screen.write("-$");
-		screen.write(toHexWord(tuneInfo.loadAddr + tuneInfo.c64dataLen));
+		screen.write(toHexWord(tuneInfo.getLoadAddr()
+				+ tuneInfo.getC64dataLen()));
 
 		screen.write("\nInit   : $");
-		screen.write(toHexWord(tuneInfo.initAddr));
+		screen.write(toHexWord(tuneInfo.getInitAddr()));
 
 		screen.write("\nPlay   : ");
-		if (tuneInfo.playAddr != 0) {
+		if (tuneInfo.getPlayAddr() != 0) {
 			screen.write("$");
-			screen.write(toHexWord(tuneInfo.playAddr));
+			screen.write(toHexWord(tuneInfo.getPlayAddr()));
 		} else {
 			screen.write("N/A");
 		}
 
 		screen.write("\nSongs  : ");
-		screen.write(String.format("%d", tuneInfo.songs));
-		if (tuneInfo.songs > 1) {
+		screen.write(String.format("%d", tuneInfo.getSongs()));
+		if (tuneInfo.getSongs() > 1) {
 			screen.write(" (now playing");
 		}
 
 		boolean hasFlags = false;
 		screen.write("\nFlags  : ");
-		if (tuneInfo.compatibility == SidTune.Compatibility.PSIDv1) {
+		if (tuneInfo.getCompatibility() == SidTune.Compatibility.PSIDv1) {
 			hasFlags = addFlag(screen, hasFlags, "PlaySID");
 		}
-		hasFlags = addFlag(screen, hasFlags, tuneInfo.clockSpeed.toString());
-		hasFlags = addFlag(screen, hasFlags, tuneInfo.sid1Model.toString());
-		int sid2midNibbles = (tuneInfo.sidChipBase2 >> 4) & 0xff;
+		hasFlags = addFlag(screen, hasFlags, tuneInfo.getClockSpeed()
+				.toString());
+		hasFlags = addFlag(screen, hasFlags, tuneInfo.getSid1Model().toString());
+		int sid2midNibbles = (tuneInfo.getSidChipBase2() >> 4) & 0xff;
 		if (((sid2midNibbles & 1) == 0)
 				&& (((0x42 <= sid2midNibbles) && (sid2midNibbles <= 0x7e)) || ((0xe0 <= sid2midNibbles) && (sid2midNibbles <= 0xfe)))) {
-			hasFlags = addFlag(screen, hasFlags, tuneInfo.sid2Model.toString()
-					+ " at $" + toHexWord(tuneInfo.sidChipBase2));
+			hasFlags = addFlag(screen, hasFlags,
+					tuneInfo.getSid2Model().toString() + " at $"
+							+ toHexWord(tuneInfo.getSidChipBase2()));
 		}
 		if (!hasFlags) {
 			screen.write("-");
@@ -454,21 +460,21 @@ public class Psid64 {
 
 		// some additional text
 		screen.write("\n\n  ");
-		if (tuneInfo.songs <= 1) {
+		if (tuneInfo.getSongs() <= 1) {
 			screen.write("   [1");
-		} else if (tuneInfo.songs <= 10) {
+		} else if (tuneInfo.getSongs() <= 10) {
 			screen.write("  [1-");
-			screen.putchar(tuneInfo.songs % 10 + '0');
-		} else if (tuneInfo.songs <= 11) {
+			screen.putchar(tuneInfo.getSongs() % 10 + '0');
+		} else if (tuneInfo.getSongs() <= 11) {
 			screen.write(" [1-0, A");
 		} else {
 			screen.write("[1-0, A-");
-			screen.putchar(tuneInfo.songs <= 36 ? tuneInfo.songs - 11 + 'A'
+			screen.putchar(tuneInfo.getSongs() <= 36 ? tuneInfo.getSongs() - 11 + 'A'
 					: 'Z');
 		}
 		screen.write("] Select song [+] Next song\n");
 		screen.write("  [-] Previous song [DEL] Blank screen\n");
-		if (tuneInfo.playAddr != 0) {
+		if (tuneInfo.getPlayAddr() != 0) {
 			screen.write("[~] Fast forward [LOCK] Show raster time\n");
 		}
 		screen.write("  [RUN/STOP] Stop [CTRL+CBM+DEL] Reset\n");
@@ -578,11 +584,11 @@ public class Psid64 {
 
 		boolean pages[] = new boolean[MAX_PAGES];
 		SidTuneInfo tuneInfo = tune.getInfo();
-		if (tuneInfo.relocStartPage == 0x00) {
+		if (tuneInfo.getRelocStartPage() == 0x00) {
 			// Used memory ranges. calculated below
 			int used[] = { 0x00, 0x03, 0xa0, 0xbf, 0xd0, 0xff,
-					tuneInfo.loadAddr >> 8,
-					tuneInfo.loadAddr + tuneInfo.c64dataLen - 1 >> 8 };
+					tuneInfo.getLoadAddr() >> 8,
+					tuneInfo.getLoadAddr() + tuneInfo.getC64dataLen() - 1 >> 8 };
 
 			// Mark used pages in table.
 			for (int i = 0; i < MAX_PAGES; ++i) {
@@ -593,23 +599,25 @@ public class Psid64 {
 					pages[j] = true;
 				}
 			}
-		} else if (tuneInfo.relocStartPage != 0xff && tuneInfo.relocPages != 0) {
+		} else if (tuneInfo.getRelocStartPage() != 0xff
+				&& tuneInfo.getRelocPages() != 0) {
 			// the available pages have been specified in the PSID file
 			int endp = Math.min(
-					(tuneInfo.relocStartPage + tuneInfo.relocPages), MAX_PAGES);
+					(tuneInfo.getRelocStartPage() + tuneInfo.getRelocPages()),
+					MAX_PAGES);
 
 			// check that the relocation information does not use the following
 			// memory areas: 0x0000-0x03FF, 0xA000-0xBFFF and 0xD000-0xFFFF
-			if (tuneInfo.relocStartPage < 0x04
-					|| 0xa0 <= tuneInfo.relocStartPage
-					&& tuneInfo.relocStartPage <= 0xbf
-					|| tuneInfo.relocStartPage >= 0xd0 || endp - 1 < 0x04
+			if (tuneInfo.getRelocStartPage() < 0x04
+					|| 0xa0 <= tuneInfo.getRelocStartPage()
+					&& tuneInfo.getRelocStartPage() <= 0xbf
+					|| tuneInfo.getRelocStartPage() >= 0xd0 || endp - 1 < 0x04
 					|| 0xa0 <= endp - 1 && endp - 1 <= 0xbf || endp - 1 >= 0xd0) {
 				throw new NotEnoughC64MemException();
 			}
 
 			for (int i = 0; i < MAX_PAGES; ++i) {
-				pages[i] = tuneInfo.relocStartPage <= i && i < endp ? false
+				pages[i] = tuneInfo.getRelocStartPage() <= i && i < endp ? false
 						: true;
 			}
 		} else {

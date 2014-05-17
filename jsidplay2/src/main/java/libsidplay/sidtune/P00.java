@@ -131,7 +131,7 @@ class P00 extends Prg {
 		sidtune.info.infoString.add(convertPetsciiToAscii(pHeader.name, 0));
 
 		// Automatic settings
-		sidtune.fileOffset = X00Header.SIZE + 2;
+		sidtune.programOffset = X00Header.SIZE + 2;
 		sidtune.info.loadAddr = (dataBuf[X00Header.SIZE] & 0xff)
 				| ((dataBuf[X00Header.SIZE + 1] & 0xff) << 8);
 		sidtune.info.c64dataLen = dataBuf.length - 2 - X00Header.SIZE;

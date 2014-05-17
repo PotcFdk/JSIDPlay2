@@ -230,7 +230,7 @@ public class MusicCollection extends Tab implements UIPart {
 								Platform.runLater(() ->
 								// auto-expand current selected tune
 								showNextHit(util.getPlayer().getTune()
-										.getInfo().file));
+										.getInfo().getFile()));
 							}
 						});
 		tuneInfos = FXCollections.<TuneInfo> observableArrayList();
@@ -419,7 +419,7 @@ public class MusicCollection extends Tab implements UIPart {
 					tuneFile);
 			if (name != null && getType() == MusicCollectionType.HVSC) {
 				hvscName = name.replace(".sid", "");
-				currentSong = tuneInfo.currentSong;
+				currentSong = tuneInfo.getCurrentSong();
 				for (MenuItem item : Arrays.asList(soasc6581R2, soasc6581R4,
 						soasc8580R5)) {
 					item.setDisable(false);

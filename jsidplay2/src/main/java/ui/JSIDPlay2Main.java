@@ -39,9 +39,9 @@ public class JSIDPlay2Main extends Application {
 	private Player player;
 
 	private Consumer<Player> menuHook = (player) -> {
-		if (player.getTune() != null && player.getTune().getInfo().file != null) {
+		if (player.getTune() != null && player.getTune().getInfo().getFile() != null) {
 			System.out.println("Play File: <"
-					+ player.getTune().getInfo().file.getAbsolutePath() + ">");
+					+ player.getTune().getInfo().getFile().getAbsolutePath() + ">");
 		}
 	};
 

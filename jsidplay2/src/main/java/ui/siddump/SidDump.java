@@ -401,15 +401,15 @@ public class SidDump extends C64Window {
 			startStopRecording.setDisable(true);
 			return;
 		}
-		startStopRecording.setDisable(tune.getInfo().playAddr == 0);
+		startStopRecording.setDisable(tune.getInfo().getPlayAddr() == 0);
 
-		loadAddress = tune.getInfo().loadAddr;
+		loadAddress = tune.getInfo().getLoadAddr();
 		sidDumpExtension.setLoadAddress(loadAddress);
-		initAddress = tune.getInfo().initAddr;
+		initAddress = tune.getInfo().getInitAddr();
 		sidDumpExtension.setInitAddress(initAddress);
-		playerAddress = tune.getInfo().playAddr;
+		playerAddress = tune.getInfo().getPlayAddr();
 		sidDumpExtension.setPayerAddress(playerAddress);
-		subTune = tune.getInfo().currentSong;
+		subTune = tune.getInfo().getCurrentSong();
 		sidDumpExtension.setCurrentSong(subTune);
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
@@ -439,7 +439,7 @@ public class SidDump extends C64Window {
 				.setNoteSpacing(Integer.parseInt(noteSpacing.getText()));
 		sidDumpExtension.setLowRes(lowResolutionMode.isSelected());
 
-		if (tune.getInfo().playAddr == 0) {
+		if (tune.getInfo().getPlayAddr() == 0) {
 			startStopRecording.setSelected(false);
 			startStopRecording.setTooltip(new Tooltip(util.getBundle()
 					.getString("NOT_AVAILABLE")));

@@ -25,11 +25,11 @@ public enum ChipModel {
 			chipModel = emulation.getDefaultSidModel();
 			SidTuneInfo tuneInfo = tune != null ? tune.getInfo() : null;
 			if (tuneInfo != null) {
-				switch (tuneInfo.sid1Model) {
+				switch (tuneInfo.getSid1Model()) {
 				case MOS6581:
 				case MOS8580:
 					chipModel = ChipModel
-							.valueOf(tuneInfo.sid1Model.toString());
+							.valueOf(tuneInfo.getSid1Model().toString());
 					break;
 				default:
 					break;
@@ -56,11 +56,11 @@ public enum ChipModel {
 			chipModel = getChipModel(config, tune);
 			SidTuneInfo tuneInfo = tune != null ? tune.getInfo() : null;
 			if (tuneInfo != null) {
-				switch (tuneInfo.sid2Model) {
+				switch (tuneInfo.getSid2Model()) {
 				case MOS6581:
 				case MOS8580:
 					chipModel = ChipModel
-							.valueOf(tuneInfo.sid2Model.toString());
+							.valueOf(tuneInfo.getSid2Model().toString());
 					break;
 				default:
 					break;

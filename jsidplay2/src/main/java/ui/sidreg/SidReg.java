@@ -205,7 +205,7 @@ public class SidReg extends C64Window {
 		}
 		util.getPlayer().getC64().setSidWriteListener(0, sidRegExtension);
 		if (util.getPlayer().getTune() != null
-				&& util.getPlayer().getTune().getInfo().sidChipBase2 != 0) {
+				&& util.getPlayer().getTune().getInfo().getSidChipBase2() != 0) {
 			util.getPlayer().getC64().setSidWriteListener(1, sidRegExtension);
 		}
 	}

@@ -48,27 +48,27 @@ import libsidplay.sidtune.SidTune.Model;
  * 
  */
 public class SidTuneInfo {
-	public int loadAddr;
+	protected int loadAddr;
 
-	public int initAddr;
+	protected int initAddr;
 
-	public int playAddr;
+	protected int playAddr;
 
-	public int songs;
+	protected int songs;
 
-	public int startSong = 1;
+	protected int startSong = 1;
 
 	/**
 	 * The SID chip base address used by the sidtune.
 	 */
-	public int sidChipBase1 = 0xd400;
+	protected int sidChipBase1 = 0xd400;
 
 	/**
 	 * The SID chip base address used by the sidtune.
 	 * 
 	 * 0xD??0 (2nd SID) or 0 (no 2nd SID)
 	 */
-	public int sidChipBase2;
+	protected int sidChipBase2;
 
 	//
 	// Available after song initialization.
@@ -77,71 +77,156 @@ public class SidTuneInfo {
 	/**
 	 * the one that has been initialized
 	 */
-	public int currentSong;
+	protected int currentSong;
 
 	/**
 	 * intended speed, see top
 	 */
-	public Clock clockSpeed = Clock.UNKNOWN;
+	protected Clock clockSpeed = Clock.UNKNOWN;
 
 	/**
 	 * First available page for relocation
 	 */
-	public short relocStartPage;
+	protected short relocStartPage;
 
 	/**
 	 * Number of pages available for relocation
 	 */
-	public short relocPages;
+	protected short relocPages;
 
 	/**
 	 * Sid Model required for this sid
 	 */
-	public Model sid1Model = Model.UNKNOWN;
+	protected Model sid1Model = Model.UNKNOWN;
 
 	/**
 	 * Sid Model required for this sid
 	 */
-	public Model sid2Model = Model.UNKNOWN;
+	protected Model sid2Model = Model.UNKNOWN;
 
 	/**
 	 * compatibility requirements
 	 */
-	public Compatibility compatibility = Compatibility.RSID_BASIC;
+	protected Compatibility compatibility = Compatibility.RSID_BASIC;
 
 	/**
 	 * Holds text info from the format headers etc.
 	 * Song title, credits, ... 0 = Title, 1 = Author, 2 = Copyright/Publisher
 	 */
-	public Collection<String> infoString = new ArrayList<>();
+	protected Collection<String> infoString = new ArrayList<>();
 
 	/**
 	 * Number of MUS comments (2 when STR also has comment)
 	 */
-	public int numberOfCommentStrings;
+	protected int numberOfCommentStrings;
 
 	/**
 	 * Used to stash the MUS comment somewhere. Ignored by everything.
 	 */
-	public String[] commentString = new String[2];
+	protected String[] commentString = new String[2];
 
 	/**
 	 * length of raw C64 data without load address
 	 */
-	public int c64dataLen;
+	protected int c64dataLen;
 
 	/**
 	 * path to sidtune files
 	 */
-	public File file;
+	protected File file;
 
 	/**
 	 * Calculated driver address for PSID driver (0 if none).
 	 */
-	public int determinedDriverAddr;
+	protected int determinedDriverAddr;
 
 	/**
 	 * Length of driver.
 	 */
-	public int determinedDriverLength;
+	protected int determinedDriverLength;
+
+	public final int getLoadAddr() {
+		return loadAddr;
+	}
+
+	public final int getInitAddr() {
+		return initAddr;
+	}
+
+	public final int getPlayAddr() {
+		return playAddr;
+	}
+
+	public final int getSongs() {
+		return songs;
+	}
+
+	public final int getStartSong() {
+		return startSong;
+	}
+
+	public final int getSidChipBase1() {
+		return sidChipBase1;
+	}
+
+	public final int getSidChipBase2() {
+		return sidChipBase2;
+	}
+
+	public final int getCurrentSong() {
+		return currentSong;
+	}
+
+	public final Clock getClockSpeed() {
+		return clockSpeed;
+	}
+
+	public final short getRelocStartPage() {
+		return relocStartPage;
+	}
+
+	public final short getRelocPages() {
+		return relocPages;
+	}
+
+	public final Model getSid1Model() {
+		return sid1Model;
+	}
+
+	public final Model getSid2Model() {
+		return sid2Model;
+	}
+
+	public final Compatibility getCompatibility() {
+		return compatibility;
+	}
+
+	public final Collection<String> getInfoString() {
+		return infoString;
+	}
+
+	public final int getNumberOfCommentStrings() {
+		return numberOfCommentStrings;
+	}
+
+	public final String[] getCommentString() {
+		return commentString;
+	}
+
+	public final int getC64dataLen() {
+		return c64dataLen;
+	}
+
+	public final File getFile() {
+		return file;
+	}
+
+	public final int getDeterminedDriverAddr() {
+		return determinedDriverAddr;
+	}
+
+	public final int getDeterminedDriverLength() {
+		return determinedDriverLength;
+	}
+
 }

@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,22 +38,11 @@ class PSid extends Prg {
 	 * Contains a mapping: Author to picture resource path.
 	 */
 	private static final Properties SID_AUTHORS = new Properties();
-
 	static {
 		try (InputStream is = SidTune.class
 				.getResourceAsStream("pictures.properties")) {
 			SID_AUTHORS.load(is);
 		} catch (IOException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
-
-	private static final MessageDigest MD5_DIGEST;
-
-	static {
-		try {
-			MD5_DIGEST = MessageDigest.getInstance("MD5");
-		} catch (final NoSuchAlgorithmException e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
@@ -78,85 +65,109 @@ class PSid extends Prg {
 	 * 
 	 */
 	private static class PHeader {
-		public static final int SIZE = 124;
+		private static final int SIZE = 124;
 
-		public PHeader(final byte[] s) {
-			final ByteBuffer b = ByteBuffer.wrap(s);
+		private PHeader(final byte[] header) {
+			final ByteBuffer buffer = ByteBuffer.wrap(header);
 
-			b.get(id);
-			version = b.getShort();
-			data = b.getShort();
-			load = b.getShort();
-			init = b.getShort();
-			play = b.getShort();
-			songs = b.getShort();
-			start = b.getShort();
-			speed = b.getInt();
+			buffer.get(id);
+			version = buffer.getShort();
+			data = buffer.getShort();
+			load = buffer.getShort();
+			init = buffer.getShort();
+			play = buffer.getShort();
+			songs = buffer.getShort();
+			start = buffer.getShort();
+			speed = buffer.getInt();
 
-			b.get(name);
-			b.get(author);
-			b.get(released);
+			buffer.get(name);
+			buffer.get(author);
+			buffer.get(released);
 
 			if (version >= 2) {
-				flags = b.getShort();
+				flags = buffer.getShort();
 				/* 2B */
-				relocStartPage = b.get();
-				relocPages = b.get();
+				relocStartPage = buffer.get();
+				relocPages = buffer.get();
 				/* 2SID */
-				sidChip2MiddleNybbles = b.get();
-				reserved = b.get();
+				sidChip2MiddleNybbles = buffer.get();
+				reserved = buffer.get();
 			}
 		}
 
-		public PHeader() {
+		private PHeader() {
+		}
+
+		private byte[] getArray() {
+			final ByteBuffer buffer = ByteBuffer.allocate(SIZE);
+			buffer.put(id);
+			buffer.putShort(version);
+			buffer.putShort(data);
+			buffer.putShort(load);
+			buffer.putShort(init);
+			buffer.putShort(play);
+			buffer.putShort(songs);
+			buffer.putShort(start);
+			buffer.putInt(speed);
+			buffer.put(name);
+			buffer.put(author);
+			buffer.put(released);
+			if (version >= 2) {
+				buffer.putShort(flags);
+				buffer.put(relocStartPage);
+				buffer.put(relocPages);
+				buffer.put(sidChip2MiddleNybbles);
+				buffer.put(reserved);
+			}
+			return buffer.array();
 		}
 
 		/**
 		 * Magic (PSID or RSID)
 		 */
-		public byte[] id = new byte[4];
+		private byte[] id = new byte[4];
 
 		/**
 		 * 0x0001, 0x0002 or 0x0003
 		 */
-		public short version;
+		private short version;
 
 		/**
 		 * 16-bit offset to binary data in file
 		 */
-		public short data;
+		private short data;
 
 		/**
 		 * 16-bit C64 address to load file to
 		 */
-		public short load;
+		private short load;
 
 		/**
 		 * 16-bit C64 address of init subroutine
 		 */
-		public short init;
+		private short init;
 
 		/**
 		 * 16-bit C64 address of play subroutine
 		 */
-		public short play;
+		private short play;
 
 		/**
 		 * number of songs
 		 */
-		public short songs;
+		private short songs;
 
 		/**
 		 * start song out of [1..256]
 		 */
-		public short start;
+		private short start;
 
 		/**
 		 * 32-bit speed info:<BR>
 		 * 
 		 * bit: 0=50 Hz, 1=CIA 1 Timer A (default: 60 Hz)
 		 */
-		public int speed;
+		private int speed;
 
 		/**
 		 * ASCII strings, 31 characters long and terminated by a trailing zero
@@ -164,7 +175,7 @@ class PSid extends Prg {
 		 * termination. if less than 32 chars are used then it should be
 		 * terminated with a trailing zero
 		 */
-		public byte name[] = new byte[32];
+		private byte name[] = new byte[32];
 
 		/**
 		 * ASCII strings, 31 characters long and terminated by a trailing zero
@@ -172,7 +183,7 @@ class PSid extends Prg {
 		 * termination. if less than 32 chars are used then it should be
 		 * terminated with a trailing zero
 		 */
-		public byte author[] = new byte[32];
+		private byte author[] = new byte[32];
 
 		/**
 		 * ASCII strings, 31 characters long and terminated by a trailing zero
@@ -180,57 +191,33 @@ class PSid extends Prg {
 		 * termination. if less than 32 chars are used then it should be
 		 * terminated with a trailing zero
 		 */
-		public byte released[] = new byte[32];
+		private byte released[] = new byte[32];
 
 		/**
 		 * only version 0x0002+
 		 */
-		public short flags;
+		private short flags;
 
 		/**
 		 * only version 0x0002+
 		 */
-		public byte relocStartPage;
+		private byte relocStartPage;
 
 		/**
 		 * only version 0x0002+
 		 */
-		public byte relocPages;
+		private byte relocPages;
 
 		/**
 		 * only version 0x0002+ reserved for version 0x0002 used in version
 		 * 0x0003 to indicate second SID chip address
 		 */
-		public byte sidChip2MiddleNybbles;
+		private byte sidChip2MiddleNybbles;
 
 		/**
 		 * only version 0x0002+
 		 */
-		public byte reserved;
-
-		public byte[] getArray() {
-			final ByteBuffer b = ByteBuffer.allocate(SIZE);
-			b.put(id);
-			b.putShort(version);
-			b.putShort(data);
-			b.putShort(load);
-			b.putShort(init);
-			b.putShort(play);
-			b.putShort(songs);
-			b.putShort(start);
-			b.putInt(speed);
-			b.put(name);
-			b.put(author);
-			b.put(released);
-			if (version >= 2) {
-				b.putShort(flags);
-				b.put(relocStartPage);
-				b.put(relocPages);
-				b.put(sidChip2MiddleNybbles);
-				b.put(reserved);
-			}
-			return b.array();
-		}
+		private byte reserved;
 
 	}
 
@@ -238,11 +225,11 @@ class PSid extends Prg {
 	// PSID_SPECIFIC and PSID_BASIC are mutually exclusive
 	//
 
-	public static final int PSID_MUS = 1 << 0;
+	private static final int PSID_MUS = 1 << 0;
 
-	public static final int PSID_SPECIFIC = 1 << 1;
+	private static final int PSID_SPECIFIC = 1 << 1;
 
-	public static final int PSID_BASIC = 1 << 1;
+	private static final int PSID_BASIC = 1 << 1;
 
 	private final Reloc65 relocator = new Reloc65();
 
@@ -253,11 +240,7 @@ class PSid extends Prg {
 	private Image image;
 
 	protected PSid() {
-		// Reloc65 modifies the driver code, for that reason a copy of
-		// IPSIDDrv.PSIDDRV should used instead
-		// Otherwise A parallel searchIndexerThread can happen to fail!
-		System.arraycopy(IPSIDDrv.PSIDDRV, 0, driver, 0,
-				IPSIDDrv.PSIDDRV.length);
+		System.arraycopy(IPSIDDrv.PSIDDRV, 0, driver, 0, driver.length);
 	}
 
 	/**
@@ -290,70 +273,70 @@ class PSid extends Prg {
 	}
 
 	@Override
-	public int placeProgramInMemory(final byte[] c64buf) {
-		super.placeProgramInMemory(c64buf);
+	public int placeProgramInMemory(final byte[] mem) {
+		super.placeProgramInMemory(mem);
 		if (info.compatibility != Compatibility.RSID_BASIC) {
-			return psidDrvReloc(c64buf);
+			return psidDrvReloc(mem);
 		} else {
-			c64buf[0x30c] = (byte) (info.currentSong - 1);
+			mem[0x30c] = (byte) (info.currentSong - 1);
 			return -1;
 		}
 	}
 
-	private int psidDrvReloc(final byte[] m_ram) {
-		final byte[] reloc_driver = relocatedBuffer.array();
-		final int reloc_driverPos = relocatedBuffer.position();
+	private int psidDrvReloc(final byte[] mem) {
+		final byte[] relocDriver = relocatedBuffer.array();
+		final int relocDriverPos = relocatedBuffer.position();
 
 		if (!(info.playAddr == 0 && info.loadAddr == 0x200)) {
 			/*
 			 * XXX: setting these vectors seems a bit dangerous because we will
 			 * still run for some time
 			 */
-			m_ram[0x0314] = reloc_driver[reloc_driverPos + 2]; /* IRQ */
-			m_ram[0x0315] = reloc_driver[reloc_driverPos + 2 + 1];
+			mem[0x0314] = relocDriver[relocDriverPos + 2]; /* IRQ */
+			mem[0x0315] = relocDriver[relocDriverPos + 2 + 1];
 			if (info.compatibility != SidTune.Compatibility.RSID) {
-				m_ram[0x0316] = reloc_driver[reloc_driverPos + 2 + 2]; /* Break */
-				m_ram[0x0317] = reloc_driver[reloc_driverPos + 2 + 3];
-				m_ram[0x0318] = reloc_driver[reloc_driverPos + 2 + 4]; /* NMI */
-				m_ram[0x0319] = reloc_driver[reloc_driverPos + 2 + 5];
+				mem[0x0316] = relocDriver[relocDriverPos + 2 + 2]; /* Break */
+				mem[0x0317] = relocDriver[relocDriverPos + 2 + 3];
+				mem[0x0318] = relocDriver[relocDriverPos + 2 + 4]; /* NMI */
+				mem[0x0319] = relocDriver[relocDriverPos + 2 + 5];
 			}
 		}
 		int pos = info.determinedDriverAddr;
 
 		/* Place driver into RAM */
-		System.arraycopy(reloc_driver, reloc_driverPos + 10, m_ram, pos,
+		System.arraycopy(relocDriver, relocDriverPos + 10, mem, pos,
 				info.determinedDriverLength);
 
 		// Tell C64 about song
-		m_ram[pos++] = (byte) (info.currentSong - 1);
+		mem[pos++] = (byte) (info.currentSong - 1);
 		if (songSpeed[info.currentSong - 1] == Speed.VBI) {
-			m_ram[pos] = 0;
+			mem[pos] = 0;
 		} else {
 			// SIDTUNE_SPEED_CIA_1A
-			m_ram[pos] = 1;
+			mem[pos] = 1;
 		}
 
 		pos++;
-		m_ram[pos++] = (byte) (info.initAddr & 0xff);
-		m_ram[pos++] = (byte) (info.initAddr >> 8);
-		m_ram[pos++] = (byte) (info.playAddr & 0xff);
-		m_ram[pos++] = (byte) (info.playAddr >> 8);
+		mem[pos++] = (byte) (info.initAddr & 0xff);
+		mem[pos++] = (byte) (info.initAddr >> 8);
+		mem[pos++] = (byte) (info.playAddr & 0xff);
+		mem[pos++] = (byte) (info.playAddr >> 8);
 
 		final int powerOnDelay = (int) (0x100 + (System.currentTimeMillis() & 0x1ff));
-		m_ram[pos++] = (byte) (powerOnDelay & 0xff);
-		m_ram[pos++] = (byte) (powerOnDelay >> 8);
-		m_ram[pos++] = iomap(info.initAddr);
-		m_ram[pos++] = iomap(info.playAddr);
-		m_ram[pos + 1] = m_ram[pos + 0] = m_ram[0x02a6]; // PAL/NTSC flag
+		mem[pos++] = (byte) (powerOnDelay & 0xff);
+		mem[pos++] = (byte) (powerOnDelay >> 8);
+		mem[pos++] = iomap(info.initAddr);
+		mem[pos++] = iomap(info.playAddr);
+		mem[pos + 1] = mem[pos + 0] = mem[0x02a6]; // PAL/NTSC flag
 		pos++;
 
 		// Add the required tune speed
 		switch (info.clockSpeed) {
 		case PAL:
-			m_ram[pos++] = 1;
+			mem[pos++] = 1;
 			break;
 		case NTSC:
-			m_ram[pos++] = 0;
+			mem[pos++] = 0;
 			break;
 		default: // UNKNOWN or ANY
 			pos++;
@@ -362,13 +345,13 @@ class PSid extends Prg {
 
 		// Default processor register flags on calling init
 		if (info.compatibility == Compatibility.RSID) {
-			m_ram[pos++] = 0;
+			mem[pos++] = 0;
 		} else {
-			m_ram[pos++] = 1 << MOS6510.SR_INTERRUPT;
+			mem[pos++] = 1 << MOS6510.SR_INTERRUPT;
 		}
 
-		return reloc_driver[reloc_driverPos + 0] & 0xff
-				| (reloc_driver[reloc_driverPos + 1] & 0xff) << 8;
+		return relocDriver[relocDriverPos + 0] & 0xff
+				| (relocDriver[relocDriverPos + 1] & 0xff) << 8;
 	}
 
 	/**
@@ -389,9 +372,9 @@ class PSid extends Prg {
 			if (info.c64dataLen < 2) {
 				throw new SidTuneError("Song is truncated");
 			}
-			info.loadAddr = (program[fileOffset] & 0xff)
-					+ ((program[fileOffset + 1] & 0xff) << 8);
-			fileOffset += 2;
+			info.loadAddr = (program[programOffset] & 0xff)
+					+ ((program[programOffset + 1] & 0xff) << 8);
+			programOffset += 2;
 			info.c64dataLen -= 2;
 		}
 
@@ -483,15 +466,16 @@ class PSid extends Prg {
 		info.determinedDriverLength = relocatedBuffer.limit() - 10;
 	}
 
-	protected static SidTune load(final String path, final byte[] dataBuf) throws SidTuneError {
+	protected static SidTune load(final String path, final byte[] dataBuf)
+			throws SidTuneError {
 		if (dataBuf.length < PHeader.SIZE) {
 			return null;
 		}
 		final PHeader pHeader = new PHeader(dataBuf);
 
 		final PSid sidtune = new PSid();
-		sidtune.fileOffset = pHeader.data;
-		sidtune.info.c64dataLen = dataBuf.length - sidtune.fileOffset;
+		sidtune.programOffset = pHeader.data;
+		sidtune.info.c64dataLen = dataBuf.length - sidtune.programOffset;
 		sidtune.info.loadAddr = pHeader.load & 0xffff;
 		sidtune.info.initAddr = pHeader.init & 0xffff;
 		sidtune.info.playAddr = pHeader.play & 0xffff;
@@ -617,7 +601,7 @@ class PSid extends Prg {
 		if ((pHeader.flags & PSID_MUS) != 0) {
 			final Mus mus = new Mus();
 			mus.info = sidtune.info;
-			mus.fileOffset = sidtune.fileOffset;
+			mus.programOffset = sidtune.programOffset;
 			mus.loadWithProvidedMetadata(dataBuf, null);
 			return mus;
 		}
@@ -716,7 +700,7 @@ class PSid extends Prg {
 
 			// Data starts at: bufferaddr + fileoffset
 			// Data length: datafilelen - fileoffset
-			fos.write(program, fileOffset, info.c64dataLen);
+			fos.write(program, programOffset, info.c64dataLen);
 		}
 
 	}
@@ -731,7 +715,7 @@ class PSid extends Prg {
 		// Include C64 data.
 		final byte[] myMD5 = new byte[info.c64dataLen + 6 + info.songs
 				+ (info.clockSpeed == SidTune.Clock.NTSC ? 1 : 0)];
-		System.arraycopy(program, fileOffset, myMD5, 0, info.c64dataLen);
+		System.arraycopy(program, programOffset, myMD5, 0, info.c64dataLen);
 		int i = info.c64dataLen;
 		myMD5[i++] = (byte) (info.initAddr & 0xff);
 		myMD5[i++] = (byte) (info.initAddr >> 8);

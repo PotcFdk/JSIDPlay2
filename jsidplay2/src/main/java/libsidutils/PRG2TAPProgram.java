@@ -14,8 +14,8 @@ public class PRG2TAPProgram {
 
 	public PRG2TAPProgram(SidTune sidTune, String name) {
 		sidTune.placeProgramInMemory(mem);
-		startAddr = sidTune.getInfo().loadAddr;
-		length = sidTune.getInfo().c64dataLen;
+		startAddr = sidTune.getInfo().getLoadAddr();
+		length = sidTune.getInfo().getC64dataLen();
 		final byte[] petscii;
 		if (sidTune instanceof T64) {
 			petscii = ((T64) sidTune).getLastEntryName();

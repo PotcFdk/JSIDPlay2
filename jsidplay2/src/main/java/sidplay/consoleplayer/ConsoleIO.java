@@ -44,12 +44,12 @@ public class ConsoleIO {
 		printTopLine(out, console);
 		printHeading(out, console);
 		printSeparatorLine(out, console);
-		if (tune.getInfo().infoString.size() == 3) {
+		if (tune.getInfo().getInfoString().size() == 3) {
 			printTitleAutorReleased(out, console, tune);
 		} else {
 			printDecription(out, console, tune);
 		}
-		if (tune.getInfo().infoString.size() > 0) {
+		if (tune.getInfo().getInfoString().size() > 0) {
 			printSeparatorLine(out, console);
 		}
 		if (verboseLevel != 0) {
@@ -90,7 +90,7 @@ public class ConsoleIO {
 
 	private void printTitleAutorReleased(PrintStream out,
 			final IConsoleSection console, final SidTune tune) {
-		Iterator<String> description = tune.getInfo().infoString.iterator();
+		Iterator<String> description = tune.getInfo().getInfoString().iterator();
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("TITLE"), description.next(),
 				console.getVertical());
@@ -104,7 +104,7 @@ public class ConsoleIO {
 
 	private void printDecription(PrintStream out,
 			final IConsoleSection console, final SidTune tune) {
-		for (String description : tune.getInfo().infoString) {
+		for (String description : tune.getInfo().getInfoString()) {
 			out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 					BUNDLE.getString("DESCRIPTION"), description,
 					console.getVertical());
@@ -128,9 +128,9 @@ public class ConsoleIO {
 				BUNDLE.getString("PLAYLIST"));
 		StringBuffer trackList = new StringBuffer();
 		trackList.append(trackNum).append("/").append(playList.getLength());
-		trackList.append(" (tune ").append(tune.getInfo().currentSong)
-				.append("/").append(tune.getInfo().songs);
-		trackList.append("[").append(tune.getInfo().startSong).append("])");
+		trackList.append(" (tune ").append(tune.getInfo().getCurrentSong())
+				.append("/").append(tune.getInfo().getSongs());
+		trackList.append("[").append(tune.getInfo().getStartSong()).append("])");
 		if (config.getSidplay2().isLoop()) {
 			trackList.append(" [" + BUNDLE.getString("LOOPING") + "]");
 		}
@@ -171,21 +171,21 @@ public class ConsoleIO {
 		StringBuffer line = new StringBuffer();
 		// Display PSID Driver location
 		line.append(BUNDLE.getString("DRIVER_ADDR") + " = ");
-		if (tune.getInfo().determinedDriverAddr == 0) {
+		if (tune.getInfo().getDeterminedDriverAddr() == 0) {
 			line.append(BUNDLE.getString("NOT_PRESENT"));
 		} else {
 			line.append(String.format("$%04x",
-					tune.getInfo().determinedDriverAddr));
+					tune.getInfo().getDeterminedDriverAddr()));
 			line.append(String.format("-$%04x",
-					tune.getInfo().determinedDriverAddr
-							+ tune.getInfo().determinedDriverLength - 1));
+					tune.getInfo().getDeterminedDriverAddr()
+							+ tune.getInfo().getDeterminedDriverLength() - 1));
 		}
-		if (tune.getInfo().playAddr == 0xffff) {
+		if (tune.getInfo().getPlayAddr() == 0xffff) {
 			line.append(String.format(", " + BUNDLE.getString("SYS")
-					+ " = $%04x", tune.getInfo().initAddr));
+					+ " = $%04x", tune.getInfo().getInitAddr()));
 		} else {
 			line.append(String.format(", " + BUNDLE.getString("INIT")
-					+ " = $%04x", tune.getInfo().initAddr));
+					+ " = $%04x", tune.getInfo().getInitAddr()));
 		}
 
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
@@ -193,12 +193,12 @@ public class ConsoleIO {
 				console.getVertical());
 		line = new StringBuffer();
 		line.append(String.format(BUNDLE.getString("LOAD") + " = $%04x",
-				tune.getInfo().loadAddr));
+				tune.getInfo().getLoadAddr()));
 		line.append(String.format("-$%04x",
-				tune.getInfo().loadAddr + tune.getInfo().c64dataLen - 1));
-		if (tune.getInfo().playAddr != 0xffff) {
+				tune.getInfo().getLoadAddr() + tune.getInfo().getC64dataLen() - 1));
+		if (tune.getInfo().getPlayAddr() != 0xffff) {
 			line.append(String.format(", %s = $%04x", BUNDLE.getString("PLAY"),
-					tune.getInfo().playAddr));
+					tune.getInfo().getPlayAddr()));
 		}
 		out.printf("%c              : %37s %c\n", console.getVertical(),
 				line.toString(), console.getVertical());
@@ -211,7 +211,7 @@ public class ConsoleIO {
 				Boolean.valueOf(config.getEmulation().isFilter())));
 		/* XXX ignores 2nd SID */
 		line.append(String.format(", " + BUNDLE.getString("MODEL") + " = %s",
-				(tune.getInfo().sid1Model == Model.MOS8580 ? "8580" : "6581")));
+				(tune.getInfo().getSid1Model() == Model.MOS8580 ? "8580" : "6581")));
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("SID_DETAILS"), line.toString(),
 				console.getVertical());

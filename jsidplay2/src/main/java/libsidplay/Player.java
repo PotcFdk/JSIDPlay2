@@ -345,7 +345,7 @@ public class Player {
 		// Autostart program, if we have one.
 		if (tune != null) {
 			// Set playback addr to feedback call frames counter.
-			c64.setPlayAddr(tune.getInfo().playAddr);
+			c64.setPlayAddr(tune.getInfo().getPlayAddr());
 			/*
 			 * This is a bit ugly: starting PRG must be done after C64 system
 			 * reset, while starting SID is done by CBM80 hook.
