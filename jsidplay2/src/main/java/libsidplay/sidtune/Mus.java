@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Locale;
 
 import libsidutils.PathUtils;
 
@@ -85,29 +86,11 @@ class Mus extends PSid {
 				&& ((buffer[voice3Index[0] - 1] & 0xff) + ((buffer[voice3Index[0] - 2] & 0xff) << 8)) == MUS_HLT_CMD;
 	}
 
-	/**
-	 * Get stereo music file by naming convention. Couples are *.mus/*.str or
-	 * *_a.mus/*_b.mus .
-	 * 
-	 * @param file
-	 *            file to get the stereo tune for.
-	 * @return stereo file
-	 */
-	private static File getStereoTune(final File file) {
-		final String fileName = file.getName();
-		final File[] siblings = file.getParentFile().listFiles();
-		for (String extension : DEFAULT_MUS_NAMES) {
-			String test = fileName.replaceFirst("(_[aA]|_[bB])?\\.\\w+$",
-					extension);
-			if (!fileName.equalsIgnoreCase(test)) {
-				for (File sibling : siblings) {
-					if (sibling.getName().equalsIgnoreCase(test)) {
-						return sibling;
-					}
-				}
-			}
-		}
-		return null;
+	protected Mus(SidTuneInfo info, int programOffset, byte[] dataBuf)
+			throws SidTuneError {
+		this.info = info;
+		this.programOffset = programOffset;
+		loadWithProvidedMetadata(null, dataBuf);
 	}
 
 	protected static SidTune load(final File musFile, final byte[] dataBuf)
@@ -115,16 +98,19 @@ class Mus extends PSid {
 		String extension = PathUtils.getExtension(musFile.getName());
 		if (!extension.equalsIgnoreCase(".mus")
 				&& !extension.equalsIgnoreCase(".str")) {
-			return null;
+			throw new SidTuneError("Bad file extension expected: .mus or .str");
 		}
-		final Mus sidTune = new Mus();
-		sidTune.info.compatibility = Compatibility.PSIDv2;
-		sidTune.loadWithProvidedMetadata(dataBuf, musFile);
-		return sidTune;
+		final Mus mus = new Mus();
+		mus.info.compatibility = Compatibility.PSIDv2;
+		mus.loadWithProvidedMetadata(musFile, dataBuf);
+		return mus;
 	}
 
-	protected void loadWithProvidedMetadata(final byte[] musBuf,
-			final File musFile) throws SidTuneError {
+	private Mus() {
+	}
+
+	private void loadWithProvidedMetadata(final File musFile,
+			final byte[] musBuf) throws SidTuneError {
 		final int[] voice3Index = new int[1];
 		if (!detect(musBuf, programOffset, voice3Index)) {
 			throw new SidTuneError(ERR_SIDTUNE_INVALID);
@@ -218,6 +204,38 @@ class Mus extends PSid {
 		}
 
 		findPlaceForDriver();
+	}
+
+	/**
+	 * Get stereo music file by naming convention. Couples are *.mus/*.str or
+	 * *_a.mus/*_b.mus .
+	 * 
+	 * @param file
+	 *            file to get the stereo tune for.
+	 * @return stereo file
+	 */
+	private static File getStereoTune(final File file) {
+		final String fileName = file.getName();
+		final File[] siblings = file.getParentFile().listFiles((dir, name) -> {
+			for (String ext : DEFAULT_MUS_NAMES) {
+				if (name.toLowerCase(Locale.ENGLISH).endsWith(ext)) {
+					return true;
+				}
+			}
+			return false;
+		});
+		for (String extension : DEFAULT_MUS_NAMES) {
+			String test = fileName.replaceFirst("(_[aA]|_[bB])?\\.\\w+$",
+					extension);
+			if (!fileName.equalsIgnoreCase(test)) {
+				for (File sibling : siblings) {
+					if (sibling.getName().equalsIgnoreCase(test)) {
+						return sibling;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	private static final byte SIDTUNE_SIDPLAYER1[] = {

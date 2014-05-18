@@ -1,51 +1,41 @@
 package libsidplay.sidtune;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.charset.Charset;
 import java.util.List;
-
-
 
 import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
 import libsidutils.PathUtils;
 
 public class T64 extends Prg {
-	/**
-	 * Char-set for string to byte conversions.
-	 */
-	private static final Charset ISO88591 = Charset.forName("ISO-8859-1");
-	
-	/**
-	 * T64 program data.
-	 */
-	private byte[] data;
-	private byte[] lastEntryName;
-	
+
+	private static final class T64Entry {
+		private int programOffset;
+		private int loadAddr;
+		private int c64dataLen;
+		private byte[] name;
+	}
+
 	protected static SidTune load(final String path, final byte[] dataBuf)
 			throws SidTuneError {
 		if (!PathUtils.getExtension(path).equalsIgnoreCase(".t64")) {
-			return null;
+			throw new SidTuneError("Bad file extension expected: .t64");
 		}
-		final T64 sidtune = new T64();
-		
-		// always load first entry:
-		if (!sidtune.getEntry(dataBuf, 1)) {
-			return null;
-		}
+		final T64 t64 = new T64();
+		final T64Entry entry = t64.getEntry(dataBuf, 1);
 
-		// Automatic settings
-		sidtune.info.songs = 1;
-		sidtune.info.startSong = 1;
-		sidtune.program = dataBuf;
+		t64.program = dataBuf;
+		t64.programOffset = entry.programOffset;
+		t64.info.loadAddr = entry.loadAddr;
+		t64.info.c64dataLen = entry.c64dataLen;
 
-		// Create the speed/clock setting table.
-		sidtune.convertOldStyleSpeedToTables(~0);
-		return sidtune;
+		t64.convertOldStyleSpeedToTables(~0);
+		return t64;
 	}
 
 	/**
@@ -55,110 +45,92 @@ public class T64 extends Prg {
 	 *            buffer with file data
 	 * @param entryNum
 	 *            entry number to load
-	 * @return true - success
 	 */
-	private boolean getEntry(final byte[] dataBuf, final int entryNum) {
+	private T64Entry getEntry(final byte[] dataBuf, final int entryNum)
+			throws SidTuneError {
 		int totalEntries = ((dataBuf[35] & 0xff) << 8) | (dataBuf[34] & 0xff);
-		if ((entryNum < 1) || (entryNum > totalEntries)) {
-			// entry not available
-			return false;
+		if (entryNum < 1 || entryNum > totalEntries) {
+			throw new SidTuneError("Illegal T64 entry number: " + entryNum
+					+ ", must be 1.." + totalEntries);
 		}
-
-		// determine T64 entry offset
-		int pos = 32 /* header */ + 32 * entryNum;
-
-		// expect 1 (Normal tape file)
-		if (dataBuf[pos++] != 1)
-			return false;
-		// expect PRG
-		if ((dataBuf[pos++] & DirEntry.BITMASK_FILETYPE) != DirEntry.FILETYPE_PRG) {
-			return false;
+		int pos = 32 /* header */+ 32 * entryNum;
+		// expect 1 (Normal tape file) and PRG
+		if (pos + 32 > dataBuf.length
+				|| dataBuf[pos++] != 1
+				|| (dataBuf[pos++] & DirEntry.BITMASK_FILETYPE) != DirEntry.FILETYPE_PRG) {
+			throw new SidTuneError(
+					"Illegal T64 entry type, must be PRG normal tape file");
 		}
+		final T64Entry entry = new T64Entry();
 		// Get start address (or Load address)
-		info.loadAddr = (dataBuf[pos++] & 0xff)
+		entry.loadAddr = (dataBuf[pos++] & 0xff)
 				+ ((dataBuf[pos++] & 0xff) << 8);
-		
+
 		// Get end address (actual end address in memory, if the file was loaded
 		// into a C64).
-		info.c64dataLen = (dataBuf[pos++] & 0xff)
+		entry.c64dataLen = (dataBuf[pos++] & 0xff)
 				+ ((dataBuf[pos++] & 0xff) << 8);
-		info.c64dataLen -= info.loadAddr;
-		
+		entry.c64dataLen -= info.loadAddr;
+
 		// skip unused
 		pos += 2;
 
 		// determine offset of program data
-		programOffset = 0;
-		for (int power = 0; power <= 3; power++) {
-			programOffset += (dataBuf[pos++] & 0xff) << 8 * power;
+		entry.programOffset = 0;
+		for (int i = 0; i <= 3; i++) {
+			entry.programOffset += (dataBuf[pos++] & 0xff) << 8 * i;
 		}
 
 		// skip unused
 		pos += 4;
-		
+
 		// Get program name
-		lastEntryName = new byte[16];
-		System.arraycopy(dataBuf, pos, lastEntryName, 0, 16);
-		return true;
+		entry.name = new byte[16];
+		System.arraycopy(dataBuf, pos, entry.name, 0, entry.name.length);
+		return entry;
 	}
 
-	public byte[] getLastEntryName() {
-		return lastEntryName;
-	}
-	
 	public static Directory getDirectory(File file) throws IOException {
 		Directory dir = new Directory();
 		final T64 t64 = new T64();
 
 		// Load T64
-		final int length = (int) file.length();
-		t64.data = new byte[length];
-		try (RandomAccessFile fd = new RandomAccessFile(file, "r")) {
-			fd.readFully(t64.data, 0, t64.data.length);
+		byte[] data = new byte[(int) file.length()];
+		try (DataInputStream fd = new DataInputStream(new FileInputStream(file))) {
+			fd.readFully(data);
 			// Get title
 			byte[] diskName = new byte[32];
-			System.arraycopy(t64.data, 0, diskName, 0, diskName.length);
-			dir.setTitle(new String(diskName, ISO88591).toUpperCase().getBytes(
-					ISO88591));
-			
-			int totalEntries = ((t64.data[35] & 0xff) << 8) | (t64.data[34] & 0xff);
+			System.arraycopy(data, 0, diskName, 0, diskName.length);
+			dir.setTitle(diskName);
+
+			int totalEntries = ((data[35] & 0xff) << 8) | (data[34] & 0xff);
 			final List<DirEntry> dirEntries = dir.getDirEntries();
-			for (int i = 1; i <= totalEntries; i++) {
-				if (!t64.getEntry(t64.data, i)) {
-					continue;
+			for (int entryNum = 1; entryNum <= totalEntries; entryNum++) {
+				try {
+					final T64Entry entry = t64.getEntry(data, entryNum);
+					dirEntries.add(new DirEntry(entry.c64dataLen, entry.name,
+							(byte) 0x82) {
+						@Override
+						public void save(final File autostartFile)
+								throws IOException {
+							t64.save(autostartFile, data, entry.programOffset,
+									entry.c64dataLen, entry.loadAddr);
+						}
+					});
+				} catch (SidTuneError e) {
 				}
-				final int loadAddr = t64.info.loadAddr;
-				final int c64dataLen = t64.info.c64dataLen;
-				final int fileOffset = t64.programOffset;
-				
-				dirEntries.add(new DirEntry(t64.info.c64dataLen, t64
-						.getLastEntryName(), (byte) 0x82) {
-					/**
-					 * Save the program of this directory entry to the specified
-					 * file.
-					 * 
-					 * @param autostartFile
-					 *            file to save
-					 * @throws IOException
-					 *             File write error
-					 */
-					@Override
-					public void save(final File autostartFile) throws IOException {
-						t64.save(autostartFile, loadAddr, c64dataLen, fileOffset);
-					}
-				});
 			}
 			return dir;
 		}
 	}
 
-	public void save(File file, final int loadAddr, final int c64dataLen,
-			final int fileOffset) throws IOException {
-		try (DataOutputStream dout = new DataOutputStream(new FileOutputStream(file))) {
+	public void save(File file, byte[] program, final int programOffset,
+			final int c64dataLen, final int loadAddr) throws IOException {
+		try (DataOutputStream dout = new DataOutputStream(new FileOutputStream(
+				file))) {
 			dout.writeByte(loadAddr & 0xff);
-			int hiBytePart = loadAddr & 0xff00;
-			dout.writeByte((hiBytePart) >> 8);
-			dout.write(data, fileOffset, c64dataLen);
+			dout.writeByte((loadAddr >> 8) & 0xff);
+			dout.write(program, programOffset, c64dataLen);
 		}
 	}
 }

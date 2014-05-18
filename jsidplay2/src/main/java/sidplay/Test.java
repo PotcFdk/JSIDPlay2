@@ -1,9 +1,11 @@
 package sidplay;
 
 import java.io.File;
+import java.io.IOException;
 
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import sidplay.ini.IniConfig;
 
 /**
@@ -19,8 +21,10 @@ public class Test {
 	 * 
 	 * @param filename
 	 *            the filename of the tune
+	 * @throws SidTuneError
+	 * @throws IOException
 	 */
-	public Test(final String filename) throws Exception {
+	public Test(final String filename) throws IOException, SidTuneError {
 		// Load tune
 		final SidTune tune = SidTune.load(new File(filename));
 
@@ -31,7 +35,8 @@ public class Test {
 		player.play(tune);
 	}
 
-	public static void main(final String[] args) throws Exception {
+	public static void main(final String[] args) throws IOException,
+			SidTuneError {
 		if (args.length < 1) {
 			System.err.println("Missing argument: <filename>");
 			System.exit(-1);

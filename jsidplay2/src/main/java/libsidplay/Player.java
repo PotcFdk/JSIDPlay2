@@ -1107,10 +1107,6 @@ public class Player {
 					.getTmpDir(), file.getName() + ".tap");
 			convertedTape.deleteOnExit();
 			SidTune prog = SidTune.load(file);
-			if (prog == null) {
-				throw new RuntimeException(
-						"Cannot convert tune, unsupported Format!");
-			}
 			String name = PathUtils.getBaseNameNoExt(file);
 			PRG2TAPProgram program = new PRG2TAPProgram(prog, name);
 

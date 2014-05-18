@@ -60,9 +60,6 @@ public class PseudoDirectory {
 		SidTune tune;
 		try {
 			tune = SidTune.load(file);
-			if (tune == null) {
-				throw new IOException();
-			}
 		} catch (SidTuneError e) {
 			throw new IOException();
 		}

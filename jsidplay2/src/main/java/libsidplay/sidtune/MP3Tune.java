@@ -1,7 +1,6 @@
 package libsidplay.sidtune;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -60,43 +59,43 @@ public class MP3Tune extends SidTune {
 		return 0;
 	}
 
-	public static final SidTune load(final File file) throws IOException,
+	public static final SidTune load(final String filename) throws IOException,
 			SidTuneError {
-		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
-			return null;
+		if (!filename.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
+			throw new SidTuneError("Bad file extension expected: .mp3");
 		}
-		final MP3Tune sidTune = new MP3Tune();
-		// fill out some minimal information of an MP3 tune
-		sidTune.mp3Filename = file.getAbsolutePath();
-		sidTune.info.startSong = 1;
-		sidTune.info.songs = 1;
-		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
-			sidTune.decoder.read(randomAccessFile);
-			sidTune.info.infoString.add(sidTune.decoder.getTitle());
-			String interpret = sidTune.decoder.getInterpret();
-			String albumInterpret = sidTune.decoder.getAlbumInterpret();
-			String genre = sidTune.decoder.getGenre();
+		final MP3Tune mp3 = new MP3Tune();
+
+		mp3.mp3Filename = filename;
+		mp3.info.startSong = 1;
+		mp3.info.songs = 1;
+		try (RandomAccessFile file = new RandomAccessFile(filename, "r")) {
+			mp3.decoder.read(file);
+			mp3.info.infoString.add(mp3.decoder.getTitle());
+			String interpret = mp3.decoder.getInterpret();
+			String albumInterpret = mp3.decoder.getAlbumInterpret();
+			String genre = mp3.decoder.getGenre();
 			if (interpret != null) {
-				sidTune.info.infoString.add(interpret);
+				mp3.info.infoString.add(interpret);
 			} else {
-				sidTune.info.infoString.add(albumInterpret);
+				mp3.info.infoString.add(albumInterpret);
 			}
-			String album = sidTune.decoder.getAlbum();
-			String year = sidTune.decoder.getYear();
+			String album = mp3.decoder.getAlbum();
+			String year = mp3.decoder.getYear();
 			if (album != null && year != null) {
-				sidTune.info.infoString.add(album + " (" + year + ")"
+				mp3.info.infoString.add(album + " (" + year + ")"
 						+ (genre != null ? " / " + genre : ""));
 			} else {
-				sidTune.info.infoString.add(album
+				mp3.info.infoString.add(album
 						+ (genre != null ? " / " + genre : ""));
 			}
-			if (sidTune.decoder.getImageBytes() != null
+			if (mp3.decoder.getImageBytes() != null
 					&& Platform.isFxApplicationThread()) {
-				sidTune.image = new Image(new ByteArrayInputStream(
-						sidTune.decoder.getImageBytes()));
+				mp3.image = new Image(new ByteArrayInputStream(
+						mp3.decoder.getImageBytes()));
 			}
 		}
-		return sidTune;
+		return mp3;
 	}
 
 	@Override

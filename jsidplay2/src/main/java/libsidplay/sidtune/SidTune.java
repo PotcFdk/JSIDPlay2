@@ -102,22 +102,20 @@ public abstract class SidTune {
 	 */
 	public static SidTune load(final File file) throws IOException,
 			SidTuneError {
-		SidTune tune = null;
 		try {
-			tune = MP3Tune.load(file);
-			if (tune != null) {
-				return tune;
-			}
-			byte[] fileBuffer = getFileContents(file);
-			tune = loadCommon(file.getName(), fileBuffer);
-			if (tune != null) {
-				return tune;
-			}
-			tune = Mus.load(file, fileBuffer);
+			SidTune tune = MP3Tune.load(file.getAbsolutePath());
+			tune.info.file = file;
 			return tune;
-		} finally {
-			if (tune != null) {
+		} catch (SidTuneError e1) {
+			byte[] fileBuffer = getFileContents(file);
+			try {
+				SidTune tune = loadCommon(file.getName(), fileBuffer);
 				tune.info.file = file;
+				return tune;
+			} catch (SidTuneError e2) {
+				SidTune tune = Mus.load(file, fileBuffer);
+				tune.info.file = file;
+				return tune;
 			}
 		}
 	}
@@ -144,24 +142,19 @@ public abstract class SidTune {
 
 	private static SidTune loadCommon(String name, byte[] fileBuffer)
 			throws SidTuneError {
-		SidTune tune;
-		tune = PSid.load(name, fileBuffer);
-		if (tune != null) {
-			return tune;
+		try {
+			return PSid.load(name, fileBuffer);
+		} catch (SidTuneError e1) {
+			try {
+				return Prg.load(name, fileBuffer);
+			} catch (SidTuneError e2) {
+				try {
+					return P00.load(name, fileBuffer);
+				} catch (SidTuneError e3) {
+					return T64.load(name, fileBuffer);
+				}
+			}
 		}
-		tune = Prg.load(name, fileBuffer);
-		if (tune != null) {
-			return tune;
-		}
-		tune = P00.load(name, fileBuffer);
-		if (tune != null) {
-			return tune;
-		}
-		tune = T64.load(name, fileBuffer);
-		if (tune != null) {
-			return tune;
-		}
-		return null;
 	}
 
 	/**

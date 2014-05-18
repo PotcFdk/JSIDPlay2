@@ -25,7 +25,9 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -218,6 +220,16 @@ class PSid extends Prg {
 		 * only version 0x0002+
 		 */
 		private byte reserved;
+
+		private String getString(byte[] info) {
+			try (Scanner sc = new Scanner(new String(info, "ISO-8859-1"))) {
+				if (sc.useDelimiter("\0").hasNext()) {
+					return sc.next();
+				}
+			} catch (NoSuchElementException | UnsupportedEncodingException e) {
+			}
+			return "<?>";
+		}
 
 	}
 
@@ -469,198 +481,160 @@ class PSid extends Prg {
 	protected static SidTune load(final String path, final byte[] dataBuf)
 			throws SidTuneError {
 		if (dataBuf.length < PHeader.SIZE) {
-			return null;
+			throw new SidTuneError(String.format(
+					"Header too short: %d, expected (%d)", dataBuf.length,
+					PHeader.SIZE));
 		}
-		final PHeader pHeader = new PHeader(dataBuf);
+		final PHeader header = new PHeader(dataBuf);
 
-		final PSid sidtune = new PSid();
-		sidtune.programOffset = pHeader.data;
-		sidtune.info.c64dataLen = dataBuf.length - sidtune.programOffset;
-		sidtune.info.loadAddr = pHeader.load & 0xffff;
-		sidtune.info.initAddr = pHeader.init & 0xffff;
-		sidtune.info.playAddr = pHeader.play & 0xffff;
+		final PSid psid = new PSid();
+		psid.program = dataBuf;
+		psid.programOffset = header.data;
 
-		sidtune.info.songs = pHeader.songs & 0xffff;
-		if (sidtune.info.songs == 0) {
-			sidtune.info.songs++;
+		psid.info.c64dataLen = dataBuf.length - psid.programOffset;
+		psid.info.loadAddr = header.load & 0xffff;
+		psid.info.initAddr = header.init & 0xffff;
+		psid.info.playAddr = header.play & 0xffff;
+
+		psid.info.songs = header.songs & 0xffff;
+		if (psid.info.songs == 0) {
+			psid.info.songs++;
 		}
-		if (sidtune.info.songs > SIDTUNE_MAX_SONGS) {
-			sidtune.info.songs = SIDTUNE_MAX_SONGS;
+		if (psid.info.songs > SIDTUNE_MAX_SONGS) {
+			psid.info.songs = SIDTUNE_MAX_SONGS;
 		}
-		sidtune.info.startSong = pHeader.start & 0xffff;
-		if (sidtune.info.startSong > sidtune.info.songs) {
-			sidtune.info.startSong = 1;
-		} else if (sidtune.info.startSong == 0) {
-			sidtune.info.startSong++;
+		psid.info.startSong = header.start & 0xffff;
+		if (psid.info.startSong > psid.info.songs) {
+			psid.info.startSong = 1;
+		} else if (psid.info.startSong == 0) {
+			psid.info.startSong++;
 		}
 
-		int speed = pHeader.speed;
+		int speed = header.speed;
 
-		if (Arrays.equals(pHeader.id, new byte[] { 'P', 'S', 'I', 'D' })) {
-			switch (pHeader.version) {
+		if (Arrays.equals(header.id, new byte[] { 'P', 'S', 'I', 'D' })) {
+			switch (header.version) {
 			case 1:
-				sidtune.info.compatibility = Compatibility.PSIDv1;
+				psid.info.compatibility = Compatibility.PSIDv1;
 				break;
 			case 2:
-				sidtune.info.compatibility = Compatibility.PSIDv2;
-				if ((pHeader.flags & PSID_SPECIFIC) != 0) {
+				psid.info.compatibility = Compatibility.PSIDv2;
+				if ((header.flags & PSID_SPECIFIC) != 0) {
 					throw new SidTuneError(
 							"PSID-specific files are not supported by this player");
 				}
 				break;
 			case 3:
-				sidtune.info.compatibility = Compatibility.PSIDv3;
+				psid.info.compatibility = Compatibility.PSIDv3;
 				break;
 			default:
 				throw new SidTuneError("PSID version must be 1, 2 or 3, now: "
-						+ pHeader.version);
+						+ header.version);
 			}
-		} else if (Arrays.equals(pHeader.id, new byte[] { 'R', 'S', 'I', 'D' })) {
-			if ((pHeader.version < 2) || (pHeader.version > 3)) {
+		} else if (Arrays.equals(header.id, new byte[] { 'R', 'S', 'I', 'D' })) {
+			if ((header.version < 2) || (header.version > 3)) {
 				throw new SidTuneError("RSID version must be 2 or 3, now: "
-						+ pHeader.version);
+						+ header.version);
 			}
-			sidtune.info.compatibility = (pHeader.flags & PSID_BASIC) != 0 ? Compatibility.RSID_BASIC
+			psid.info.compatibility = (header.flags & PSID_BASIC) != 0 ? Compatibility.RSID_BASIC
 					: Compatibility.RSID;
 
-			if (sidtune.info.loadAddr != 0 || sidtune.info.playAddr != 0
+			if (psid.info.loadAddr != 0 || psid.info.playAddr != 0
 					|| speed != 0) {
 				throw new SidTuneError(
 						"RSID tune specified load, play or speed information.");
 			}
 			speed = ~0; /* CIA */
 		} else {
-			return null;
+			throw new SidTuneError("Bad PSID header, expected (PSID or RSID)");
 		}
 
 		int clock = 0;
 		int model1 = 0;
 		int model2 = 0;
-		if (pHeader.version >= 2) {
-			clock = (pHeader.flags >> 2) & 3;
-			model1 = (pHeader.flags >> 4) & 3;
+		if (header.version >= 2) {
+			clock = (header.flags >> 2) & 3;
+			model1 = (header.flags >> 4) & 3;
 
-			sidtune.info.relocStartPage = (short) (pHeader.relocStartPage & 0xff);
-			sidtune.info.relocPages = (short) (pHeader.relocPages & 0xff);
+			psid.info.relocStartPage = (short) (header.relocStartPage & 0xff);
+			psid.info.relocPages = (short) (header.relocPages & 0xff);
 
-			if (pHeader.version >= 3) {
-				model2 = (pHeader.flags >> 6) & 3;
+			if (header.version >= 3) {
+				model2 = (header.flags >> 6) & 3;
 
 				/* Handle 2nd SID chip location */
-				int sid2loc = 0xd000 | (pHeader.sidChip2MiddleNybbles & 0xff) << 4;
+				int sid2loc = 0xd000 | (header.sidChip2MiddleNybbles & 0xff) << 4;
 				if (((sid2loc >= 0xd420 && sid2loc < 0xd800) || sid2loc >= 0xde00)
 						&& (sid2loc & 0x10) == 0) {
-					sidtune.info.sidChipBase2 = sid2loc;
+					psid.info.sidChipBase2 = sid2loc;
 				}
 			}
 		}
-		sidtune.info.clockSpeed = SidTune.Clock.values()[clock];
-		sidtune.info.sid1Model = SidTune.Model.values()[model1];
-		sidtune.info.sid2Model = SidTune.Model.values()[model2];
+		psid.info.clockSpeed = SidTune.Clock.values()[clock];
+		psid.info.sid1Model = SidTune.Model.values()[model1];
+		psid.info.sid2Model = SidTune.Model.values()[model2];
 
 		// Create the speed/clock setting table.
-		sidtune.convertOldStyleSpeedToTables(speed);
+		psid.convertOldStyleSpeedToTables(speed);
 
 		// Name
-		int i;
-		for (i = 0; i < pHeader.name.length; i++) {
-			if (pHeader.name[i] == 0) {
-				break;
-			}
-		}
-		sidtune.info.infoString.add(makeString(pHeader.name, 0,
-				Math.min(i, pHeader.name.length)));
+		psid.info.infoString.add(header.getString(header.name));
+		psid.info.infoString.add(header.getString(header.author));
+		psid.info.infoString.add(header.getString(header.released));
 
-		// Author
-		for (i = 0; i < pHeader.author.length; i++) {
-			if (pHeader.author[i] == 0) {
-				break;
-			}
-		}
-		String author = makeString(pHeader.author, 0,
-				Math.min(i, pHeader.author.length));
-		sidtune.info.infoString.add(author);
-
-		// Released
-		for (i = 0; i < pHeader.released.length; i++) {
-			if (pHeader.released[i] == 0) {
-				break;
-			}
-		}
-		sidtune.info.infoString.add(makeString(pHeader.released, 0,
-				Math.min(i, pHeader.released.length)));
-
-		String photoRes = SID_AUTHORS.getProperty(author);
-
-		if (photoRes != null && Platform.isFxApplicationThread()) {
-			photoRes = "Photos/" + photoRes;
-			sidtune.image = new Image(SidTune.class.getResource(photoRes)
-					.toString());
+		String photo = SID_AUTHORS.getProperty(header.getString(header.author));
+		if (photo != null && Platform.isFxApplicationThread()) {
+			photo = "Photos/" + photo;
+			psid.image = new Image(SidTune.class.getResource(photo).toString());
 		}
 
-		if ((pHeader.flags & PSID_MUS) != 0) {
-			final Mus mus = new Mus();
-			mus.info = sidtune.info;
-			mus.programOffset = sidtune.programOffset;
-			mus.loadWithProvidedMetadata(dataBuf, null);
-			return mus;
+		if ((header.flags & PSID_MUS) != 0) {
+			return new Mus(psid.info, psid.programOffset, dataBuf);
 		}
 
-		sidtune.program = dataBuf;
-		sidtune.resolveAddrs();
-		sidtune.findPlaceForDriver();
+		psid.resolveAddrs();
+		psid.findPlaceForDriver();
 
-		return sidtune;
-	}
-
-	private static String makeString(byte[] bytes, int start, int len) {
-		if (len == 0) {
-			return "<?>";
-		}
-		try {
-			return new String(bytes, start, len, "ISO-8859-1");
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
+		return psid;
 	}
 
 	@Override
 	public void save(final String name, final boolean overWrite)
 			throws IOException {
 		try (FileOutputStream fos = new FileOutputStream(name, overWrite)) {
-			final PHeader myHeader = new PHeader();
-			myHeader.id = "PSID".getBytes();
+			final PHeader header = new PHeader();
+			header.id = "PSID".getBytes();
 			if (info.sidChipBase2 != 0) {
-				myHeader.version = 3;
+				header.version = 3;
 			} else {
-				myHeader.version = 2;
+				header.version = 2;
 			}
-			myHeader.data = PHeader.SIZE;
-			myHeader.songs = (short) info.songs;
-			myHeader.start = (short) info.startSong;
-			myHeader.speed = getSongSpeedArray();
+			header.data = PHeader.SIZE;
+			header.songs = (short) info.songs;
+			header.start = (short) info.startSong;
+			header.speed = getSongSpeedArray();
+
+			header.init = (short) info.initAddr;
+			header.relocStartPage = (byte) info.relocStartPage;
+			header.relocPages = (byte) info.relocPages;
 
 			short tmpFlags = 0;
-			myHeader.init = (short) info.initAddr;
-			myHeader.relocStartPage = (byte) info.relocStartPage;
-			myHeader.relocPages = (byte) info.relocPages;
-
 			switch (info.compatibility) {
 			case RSID_BASIC:
 				tmpFlags |= PSID_BASIC;
 				//$FALL-THROUGH$
 
 			case RSID:
-				myHeader.id = "RSID".getBytes();
-				myHeader.speed = 0;
+				header.id = "RSID".getBytes();
+				header.speed = 0;
 				break;
 
 			case PSIDv1:
-				tmpFlags |= PSID_SPECIFIC;
-				//$FALL-THROUGH$
+				throw new IOException(
+						"PSID-specific files are not supported by this player");
 
 			default:
-				myHeader.play = (short) info.playAddr;
+				header.play = (short) info.playAddr;
 				break;
 			}
 
@@ -673,25 +647,25 @@ class PSid extends Prg {
 				String released = descriptionIt.next();
 				if (title.length() == 32 || author.length() == 32
 						|| released.length() == 32) {
-					myHeader.version = 3;
+					header.version = 3;
 				}
 				for (int i = 0; i < title.length(); i++) {
-					myHeader.name[i] = (byte) title.charAt(i); // ISO-8859-1
+					header.name[i] = (byte) title.charAt(i); // ISO-8859-1
 				}
 				for (int i = 0; i < author.length(); i++) {
-					myHeader.author[i] = (byte) author.charAt(i); // ISO-8859-1
+					header.author[i] = (byte) author.charAt(i); // ISO-8859-1
 				}
 				for (int i = 0; i < released.length(); i++) {
-					myHeader.released[i] = (byte) released.charAt(i); // ISO-8859-1
+					header.released[i] = (byte) released.charAt(i); // ISO-8859-1
 				}
 			}
 
 			tmpFlags |= info.clockSpeed.ordinal() << 2;
 			tmpFlags |= info.sid1Model.ordinal() << 4;
 			tmpFlags |= info.sid2Model.ordinal() << 6;
-			myHeader.flags = tmpFlags;
+			header.flags = tmpFlags;
 
-			fos.write(myHeader.getArray());
+			fos.write(header.getArray());
 
 			final byte saveAddr[] = new byte[2];
 			saveAddr[0] = (byte) (info.loadAddr & 255);

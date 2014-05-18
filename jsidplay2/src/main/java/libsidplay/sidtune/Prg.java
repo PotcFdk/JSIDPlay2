@@ -44,28 +44,22 @@ class Prg extends SidTune {
 		SID_ID.setMultiScan(true);
 	}
 
-	private static final String SIDTUNE_TRUNCATED = "ERROR: File is most likely truncated";
-
 	protected int programOffset;
 
 	protected byte[] program;
 
 	protected static SidTune load(final String path, final byte[] dataBuf)
 			throws SidTuneError {
-		if (!PathUtils.getExtension(path).equalsIgnoreCase(".prg")) {
-			return null;
+		if (!PathUtils.getExtension(path).equalsIgnoreCase(".prg")
+				|| dataBuf.length < 2) {
+			throw new SidTuneError("Bad file extension expected: .prg and length > 2");
 		}
 		final Prg prg = new Prg();
-		if (dataBuf.length < 2) {
-			throw new SidTuneError(SIDTUNE_TRUNCATED);
-		}
-		// Automatic settings
-		prg.programOffset = 2;
-		prg.info.loadAddr = (dataBuf[0] & 0xff) + ((dataBuf[1] & 0xff) << 8);
-		prg.info.c64dataLen = dataBuf.length - 2;
 		prg.program = dataBuf;
+		prg.programOffset = 2;
+		prg.info.c64dataLen = dataBuf.length - prg.programOffset;
+		prg.info.loadAddr = (dataBuf[0] & 0xff) + ((dataBuf[1] & 0xff) << 8);
 
-		// Create the speed/clock setting table.
 		prg.convertOldStyleSpeedToTables(~0);
 		return prg;
 	}

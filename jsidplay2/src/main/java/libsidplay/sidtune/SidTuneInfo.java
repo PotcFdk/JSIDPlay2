@@ -54,7 +54,7 @@ public class SidTuneInfo {
 
 	protected int playAddr;
 
-	protected int songs;
+	protected int songs = 1;
 
 	protected int startSong = 1;
 
