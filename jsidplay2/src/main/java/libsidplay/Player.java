@@ -959,7 +959,8 @@ public class Player {
 				throw e;
 			}
 		}
-		return isInPlayingState();
+		return stateProperty.get() == State.RUNNING
+		|| stateProperty.get() == State.PAUSED;
 	}
 
 	private State getEndState() {
@@ -989,11 +990,6 @@ public class Player {
 		stopC64();
 		setTune(tune);
 		startC64();
-	}
-
-	private boolean isInPlayingState() {
-		return stateProperty.get() == State.RUNNING
-				|| stateProperty.get() == State.PAUSED;
 	}
 
 	public final void pause() {
