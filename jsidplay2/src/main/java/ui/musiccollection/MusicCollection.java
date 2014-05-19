@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -31,6 +30,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -415,10 +415,10 @@ public class MusicCollection extends Tab implements UIPart {
 		if (sidTune != null) {
 			final SidTuneInfo tuneInfo = sidTune.getInfo();
 			File rootFile = new File(util.getConfig().getSidplay2().getHvsc());
-			String name = PathUtils.getCollectionName(new TFile(rootFile),
-					tuneFile);
-			if (name != null && getType() == MusicCollectionType.HVSC) {
-				hvscName = name.replace(".sid", "");
+			String collectionName = PathUtils.getCollectionName(new TFile(
+					rootFile), tuneFile.getPath());
+			if (collectionName != null && getType() == MusicCollectionType.HVSC) {
+				hvscName = collectionName.replace(".sid", "");
 				currentSong = tuneInfo.getCurrentSong();
 				for (MenuItem item : Arrays.asList(soasc6581R2, soasc6581R4,
 						soasc8580R5)) {
@@ -748,7 +748,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void setSTIL(File hvscRoot) {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
 				STIL.STIL_FILE))) {
-			util.getPlayer().setSTIL(new STIL(hvscRoot, input));
+			util.getPlayer().setSTIL(new STIL(input));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -771,8 +771,12 @@ public class MusicCollection extends Tab implements UIPart {
 
 	private void showTuneInfos(File tuneFile, SidTune sidTune) {
 		tuneInfos.clear();
-		HVSCEntry entry = HVSCEntry.create(util.getPlayer(),
-				tuneFile.getAbsolutePath(), tuneFile, sidTune);
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getPlayer()
+				.getConfig().getSidplay2();
+		String collectionName = PathUtils.getCollectionName(
+				sidPlay2Section.getHvscFile(), tuneFile.getPath());
+		HVSCEntry entry = HVSCEntry.create(util.getPlayer(), collectionName,
+				tuneFile, sidTune);
 
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
 			if (field.getName().equals(HVSCEntry_.id.getName())) {
@@ -824,20 +828,19 @@ public class MusicCollection extends Tab implements UIPart {
 				@Override
 				public void searchStart() {
 					disableSearch();
+					Platform.runLater(() -> util.progressProperty(fileBrowser)
+							.set(ProgressBar.INDETERMINATE_PROGRESS));
 				}
 
 				@Override
 				public void searchHit(File match) {
-					Platform.runLater(() -> {
-						DoubleProperty progressProperty = util
-								.progressProperty(fileBrowser);
-						progressProperty.set((progressProperty.get() + 1) % 100);
-					});
 				}
 
 				@Override
 				public void searchStop(boolean canceled) {
 					enableSearch();
+					Platform.runLater(() -> util.progressProperty(fileBrowser)
+							.set(0));
 				}
 
 			});
@@ -973,8 +976,12 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 		try {
 			SidTune sidTune = SidTune.load(file);
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
+					.getPlayer().getConfig().getSidplay2();
+			String collectionName = PathUtils.getCollectionName(
+					sidPlay2Section.getHvscFile(), file.getPath());
 			HVSCEntry entry = HVSCEntry.create(util.getPlayer(),
-					file.getAbsolutePath(), file, sidTune);
+					collectionName, file, sidTune);
 			section.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();

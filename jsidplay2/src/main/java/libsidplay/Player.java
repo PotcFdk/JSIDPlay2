@@ -1058,8 +1058,9 @@ public class Player {
 		this.stil = stil;
 	}
 
-	public final STILEntry getStilEntry(File file) {
-		return stil != null && file != null ? stil.getSTILEntry(file) : null;
+	public final STILEntry getStilEntry(String collectionName) {
+		return stil != null && collectionName != null ? stil
+				.getSTILEntry(collectionName) : null;
 	}
 
 	public void setRecordingFilenameProvider(

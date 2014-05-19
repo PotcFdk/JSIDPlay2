@@ -350,8 +350,9 @@ public class HVSCEntry {
 	public static HVSCEntry create(final Player player, final String path,
 			final File tuneFile, SidTune tune) {
 		HVSCEntry hvscEntry = new HVSCEntry();
-		hvscEntry.setPath(path);
+
 		hvscEntry.setName(tuneFile.getName());
+		hvscEntry.setPath(path.length() > 0 ? path : tuneFile.getPath());
 		if (tune != null) {
 			tune.setSelectedSong(1);
 			SidTuneInfo info = tune.getInfo();

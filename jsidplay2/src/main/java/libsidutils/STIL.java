@@ -1,7 +1,6 @@
 package libsidutils;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -56,10 +55,8 @@ public class STIL {
 	}
 
 	private final HashMap<String, STILEntry> fastMap = new HashMap<String, STILEntry>();
-	private File hvscRoot;
 
-	public STIL(File hvscRoot, InputStream input) throws Exception {
-		this.hvscRoot = hvscRoot;
+	public STIL(InputStream input) throws Exception {
 		fastMap.clear();
 
 		Pattern p = Pattern
@@ -160,8 +157,8 @@ public class STIL {
 		}
 	}
 
-	public STILEntry getSTILEntry(File file) {
-		return fastMap.get(PathUtils.getCollectionName(hvscRoot, file));
+	public STILEntry getSTILEntry(String collectionName) {
+		return fastMap.get(collectionName);
 	}
 
 }

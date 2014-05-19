@@ -1,6 +1,5 @@
 package ui.entities.collection.service;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
@@ -19,22 +18,21 @@ public class STILService {
 		this.em = em;
 	};
 
-	public void add(Player player, final File tuneFile, HVSCEntry hvscEntry) {
-		STILEntry stilEntry = player.getStilEntry(tuneFile);
+	public void add(Player player, final HVSCEntry hvscEntry) {
+		STILEntry stilEntry = player.getStilEntry(hvscEntry.getPath());
 		if (stilEntry != null) {
 			// get STIL Global Comment
 			hvscEntry.setStilGlbComment(stilEntry.globalComment);
 			// add tune infos
-			addSTILInfo(hvscEntry, stilEntry.infos, tuneFile);
+			addSTILInfo(hvscEntry, stilEntry.infos);
 			// go through subsongs & add them as well
 			for (final TuneEntry entry : stilEntry.subtunes) {
-				addSTILInfo(hvscEntry, entry.infos, tuneFile);
+				addSTILInfo(hvscEntry, entry.infos);
 			}
 		}
 	}
 
-	private void addSTILInfo(HVSCEntry hvscEntry, ArrayList<Info> infos,
-			File tuneFile) {
+	private void addSTILInfo(HVSCEntry hvscEntry, ArrayList<Info> infos) {
 		for (Info info : infos) {
 			ui.entities.collection.StilEntry stil = new ui.entities.collection.StilEntry();
 			stil.setStilName(info.name);
@@ -46,7 +44,7 @@ public class STILService {
 			try {
 				em.persist(stil);
 			} catch (Throwable e) {
-				System.err.println("Tune: " + tuneFile.getAbsolutePath());
+				System.err.println("Tune: " + hvscEntry.getPath());
 				System.err.println(e.getMessage());
 			}
 			hvscEntry.getStil().add(stil);

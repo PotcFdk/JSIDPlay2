@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import ui.entities.config.SidPlay2Section;
 import libsidplay.Player;
 import libsidplay.Reloc65;
 import libsidplay.sidtune.SidTune;
@@ -750,7 +751,11 @@ public class Psid64 {
 			throws NotEnoughC64MemException, IOException, SidTuneError {
 		tune = SidTune.load(file);
 		tune.setSelectedSong(null);
-		stilEntry = player.getStilEntry(file);
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) player
+				.getConfig().getSidplay2();
+		String collectionName = PathUtils.getCollectionName(
+				sidPlay2Section.getHvscFile(), file.getPath());
+		stilEntry = player.getStilEntry(collectionName);
 
 		File tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file)
 				+ ".prg.tmp");

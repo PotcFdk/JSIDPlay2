@@ -181,44 +181,44 @@ public class FavoritesTab extends Tab implements UIPart {
 						tableColumn) == 0);
 			});
 
-		contextMenu.setOnShown((event) -> {
-			HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
-					.getSelectedItem();
-
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2();
-			showStil.setDisable(hvscEntry == null
-					|| util.getPlayer().getStilEntry(
-							PathUtils.getFile(hvscEntry.getPath(),
-									sidPlay2Section.getHvscFile(),
-									sidPlay2Section.getCgscFile())) == null);
-			List<Tab> tabs = favorites.getFavoriteTabs();
-			moveToTab.getItems().clear();
-			copyToTab.getItems().clear();
-			for (final Tab tab : tabs) {
-				if (tab.equals(FavoritesTab.this)) {
-					continue;
-				}
-				final String name = tab.getText();
-				MenuItem moveToTabItem = new MenuItem(name);
-				moveToTabItem.setOnAction((event2) -> {
-					ObservableList<HVSCEntry> selectedItems = favoritesTable
-							.getSelectionModel().getSelectedItems();
-					copyToTab(selectedItems, (FavoritesTab) tab);
-					removeFavorites(selectedItems);
+		contextMenu
+				.setOnShown((event) -> {
+					HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
+							.getSelectedItem();
+					showStil.setDisable(hvscEntry == null
+							|| util.getPlayer().getStilEntry(
+									hvscEntry.getPath()) == null);
+					List<Tab> tabs = favorites.getFavoriteTabs();
+					moveToTab.getItems().clear();
+					copyToTab.getItems().clear();
+					for (final Tab tab : tabs) {
+						if (tab.equals(FavoritesTab.this)) {
+							continue;
+						}
+						final String name = tab.getText();
+						MenuItem moveToTabItem = new MenuItem(name);
+						moveToTabItem
+								.setOnAction((event2) -> {
+									ObservableList<HVSCEntry> selectedItems = favoritesTable
+											.getSelectionModel()
+											.getSelectedItems();
+									copyToTab(selectedItems, (FavoritesTab) tab);
+									removeFavorites(selectedItems);
+								});
+						moveToTab.getItems().add(moveToTabItem);
+						MenuItem copyToTabItem = new MenuItem(name);
+						copyToTabItem
+								.setOnAction((event2) -> {
+									ObservableList<HVSCEntry> selectedItems = favoritesTable
+											.getSelectionModel()
+											.getSelectedItems();
+									copyToTab(selectedItems, (FavoritesTab) tab);
+								});
+						copyToTab.getItems().add(copyToTabItem);
+					}
+					moveToTab.setDisable(moveToTab.getItems().size() == 0);
+					copyToTab.setDisable(copyToTab.getItems().size() == 0);
 				});
-				moveToTab.getItems().add(moveToTabItem);
-				MenuItem copyToTabItem = new MenuItem(name);
-				copyToTabItem.setOnAction((event2) -> {
-					ObservableList<HVSCEntry> selectedItems = favoritesTable
-							.getSelectionModel().getSelectedItems();
-					copyToTab(selectedItems, (FavoritesTab) tab);
-				});
-				copyToTab.getItems().add(copyToTabItem);
-			}
-			moveToTab.setDisable(moveToTab.getItems().size() == 0);
-			copyToTab.setDisable(copyToTab.getItems().size() == 0);
-		});
 
 		currentlyPlayedHVSCEntryProperty = new SimpleObjectProperty<HVSCEntry>();
 		for (TableColumn column : favoritesTable.getColumns()) {
@@ -307,14 +307,8 @@ public class FavoritesTab extends Tab implements UIPart {
 		if (hvscEntry == null) {
 			return;
 		}
-
 		STILView stilInfo = new STILView(util.getPlayer());
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig()
-				.getSidplay2();
-		stilInfo.setEntry(util.getPlayer().getStilEntry(
-				PathUtils.getFile(hvscEntry.getPath(),
-						sidPlay2Section.getHvscFile(),
-						sidPlay2Section.getCgscFile())));
+		stilInfo.setEntry(util.getPlayer().getStilEntry(hvscEntry.getPath()));
 		stilInfo.open();
 	}
 
@@ -540,8 +534,12 @@ public class FavoritesTab extends Tab implements UIPart {
 		SidTune sidTune;
 		try {
 			sidTune = SidTune.load(file);
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
+					.getPlayer().getConfig().getSidplay2();
+			String collectionName = PathUtils.getCollectionName(
+					sidPlay2Section.getHvscFile(), file.getPath());
 			HVSCEntry entry = HVSCEntry.create(util.getPlayer(),
-					file.getAbsolutePath(), file, sidTune);
+					collectionName, file, sidTune);
 			favoritesSection.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();

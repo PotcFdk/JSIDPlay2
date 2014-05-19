@@ -14,8 +14,10 @@ import libsidplay.components.cart.Cartridge;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.T64;
+import libsidutils.PathUtils;
 import sidplay.ini.intf.IConfig;
 import ui.entities.collection.HVSCEntry;
+import ui.entities.config.SidPlay2Section;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.TuneFileFilter;
 
@@ -40,8 +42,8 @@ public class PseudoDirectory {
 	 * @throws IOException
 	 *             can not open file
 	 */
-	public static final Directory getDirectory(Player player,
-			final File file, final IConfig cfg) throws IOException {
+	public static final Directory getDirectory(Player player, final File file,
+			final IConfig cfg) throws IOException {
 		if (diskFilter.accept(file)) {
 			return DiskImage.getDirectory(file);
 		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".t64")) {
@@ -63,8 +65,11 @@ public class PseudoDirectory {
 		} catch (SidTuneError e) {
 			throw new IOException();
 		}
-		HVSCEntry entry = HVSCEntry.create(player, file.getAbsolutePath(), file,
-				tune);
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) player.getConfig()
+				.getSidplay2();
+		String collectionName = PathUtils.getCollectionName(
+				sidPlay2Section.getHvscFile(), file.getPath());
+		HVSCEntry entry = HVSCEntry.create(player, collectionName, file, tune);
 		final String title = entry.getTitle() != null ? entry.getTitle()
 				: entry.getName();
 

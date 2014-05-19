@@ -1,7 +1,5 @@
 package ui.favorites;
 
-import java.io.File;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TableCell;
@@ -10,10 +8,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 import libsidplay.Player;
-import libsidutils.PathUtils;
 import ui.JSIDPlay2Main;
 import ui.entities.collection.HVSCEntry;
-import ui.entities.config.SidPlay2Section;
 
 public class FavoritesCellFactory implements
 		Callback<TableColumn<HVSCEntry, ?>, TableCell<HVSCEntry, ?>> {
@@ -53,7 +49,7 @@ public class FavoritesCellFactory implements
 			if (!empty && value != null) {
 				setText(value.toString());
 				if (getTableView().getColumns().indexOf(getTableColumn()) == 0) {
-					if (player.getStilEntry(getFile()) != null) {
+					if (player.getStilEntry(getPath()) != null) {
 						setGraphic(new ImageView(STIL_ICON));
 					} else {
 						setGraphic(new ImageView(NO_STIL_ICON));
@@ -66,16 +62,9 @@ public class FavoritesCellFactory implements
 			setCellStyle();
 		}
 
-		private File getFile() {
+		private String getPath() {
 			HVSCEntry hvscEntry = getHVSCEntry();
-			if (hvscEntry != null) {
-				SidPlay2Section sidPlay2Section = (SidPlay2Section) player
-						.getConfig().getSidplay2();
-				return PathUtils.getFile(hvscEntry.getPath(),
-						sidPlay2Section.getHvscFile(),
-						sidPlay2Section.getCgscFile());
-			}
-			return null;
+			return hvscEntry != null ? hvscEntry.getPath() : null;
 		}
 
 		private HVSCEntry getHVSCEntry() {

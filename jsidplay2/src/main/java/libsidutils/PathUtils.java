@@ -21,8 +21,8 @@ public class PathUtils {
 	private static final Pattern separator = Pattern.compile("[/\\\\]");
 
 	public static final String getCollectionName(final File collectionRoot,
-			final File file) {
-		return toPath(getFiles(file.getPath(), collectionRoot, null));
+			final String path) {
+		return toPath(getFiles(path, collectionRoot, null));
 	}
 
 	private static final String toPath(List<File> files) {

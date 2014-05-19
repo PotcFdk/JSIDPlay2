@@ -47,7 +47,7 @@ public final class SearchIndexCreator implements ISearchListener {
 		}
 		try {
 			String collectionRelName = PathUtils.getCollectionName(root,
-					matchFile);
+					matchFile.getPath());
 			if (collectionRelName != null) {
 				hvscEntryService.add(player, collectionRelName, matchFile);
 			}
