@@ -645,6 +645,7 @@ public class FavoritesTab extends Tab implements UIPart {
 					sidPlay2Section.getCgscFile());
 			util.getPlayer().play(SidTune.load(file));
 			currentlyPlayedHVSCEntryProperty.set(hvscEntry);
+			favoritesTable.scrollTo(hvscEntry);
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
 		}
