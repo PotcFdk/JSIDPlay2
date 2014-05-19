@@ -956,7 +956,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 					"jsidplay2").getAbsolutePath();
 		}
 		File file = tune.getInfo().getFile();
-		String filename = new File(file.getParentFile(),
+		String filename = new File(util.getConfig().getSidplay2().getTmpDir(),
 				PathUtils.getBaseNameNoExt(file)).getAbsolutePath();
 		if (tune.getInfo().getSongs() > 1) {
 			filename += String.format("-%02d", tune.getInfo().getCurrentSong());
