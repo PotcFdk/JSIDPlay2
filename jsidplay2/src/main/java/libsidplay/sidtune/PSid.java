@@ -223,12 +223,10 @@ class PSid extends Prg {
 
 		private String getString(byte[] info) {
 			try (Scanner sc = new Scanner(new String(info, "ISO-8859-1"))) {
-				if (sc.useDelimiter("\0").hasNext()) {
-					return sc.next();
-				}
+				return sc.useDelimiter("\0").next();
 			} catch (NoSuchElementException | UnsupportedEncodingException e) {
+				return "<?>";
 			}
-			return "<?>";
 		}
 
 	}
@@ -478,7 +476,7 @@ class PSid extends Prg {
 		info.determinedDriverLength = relocatedBuffer.limit() - 10;
 	}
 
-	protected static SidTune load(final String path, final byte[] dataBuf)
+	protected static SidTune load(final String name, final byte[] dataBuf)
 			throws SidTuneError {
 		if (dataBuf.length < PHeader.SIZE) {
 			throw new SidTuneError(String.format(

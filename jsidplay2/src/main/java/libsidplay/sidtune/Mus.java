@@ -192,7 +192,7 @@ class Mus extends PSid {
 			info.playAddr = 0xec80;
 		}
 
-		info.infoString.add("<?>");
+		info.infoString.add(musFile.getName());
 		info.infoString.add("<?>");
 		info.infoString.add("<?>");
 

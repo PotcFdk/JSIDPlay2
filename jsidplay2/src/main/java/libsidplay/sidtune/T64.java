@@ -21,9 +21,9 @@ public class T64 extends Prg {
 		private byte[] name;
 	}
 
-	protected static SidTune load(final String path, final byte[] dataBuf)
+	protected static SidTune load(final String name, final byte[] dataBuf)
 			throws SidTuneError {
-		if (!PathUtils.getExtension(path).equalsIgnoreCase(".t64")) {
+		if (!PathUtils.getExtension(name).equalsIgnoreCase(".t64")) {
 			throw new SidTuneError("Bad file extension expected: .t64");
 		}
 		final T64 t64 = new T64();
@@ -34,6 +34,8 @@ public class T64 extends Prg {
 		t64.info.loadAddr = entry.loadAddr;
 		t64.info.c64dataLen = entry.c64dataLen;
 
+		t64.info.infoString.add(name);
+		
 		t64.convertOldStyleSpeedToTables(~0);
 		return t64;
 	}

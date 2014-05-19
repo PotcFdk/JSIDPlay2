@@ -41,17 +41,13 @@ public class JSIDPlay2Main extends Application {
 
 	private Consumer<Player> menuHook = (player) -> {
 		if (player.getTune() != null) {
-			System.out.print("Playing: ");
 			Iterator<String> info = player.getTune().getInfo().getInfoString()
 					.iterator();
-			for (int i = 0; i < 3; i++) {
+			System.out.print("Playing: ");
+			while (info.hasNext()) {
+				System.out.print(info.next());
 				if (info.hasNext()) {
-					System.out.print("<" + info.next() + ">");
-				} else {
-					System.out.print("<?>");
-				}
-				if (info.hasNext()) {
-					System.out.print(" ");
+					System.out.print(", ");
 				}
 			}
 			System.out.println();

@@ -74,9 +74,9 @@ class P00 extends Prg {
 		}
 	}
 
-	protected static SidTune load(final String path, final byte[] dataBuf)
+	protected static SidTune load(final String name, final byte[] dataBuf)
 			throws SidTuneError {
-		String ext = PathUtils.getExtension(path).toUpperCase(Locale.ENGLISH);
+		String ext = PathUtils.getExtension(name).toUpperCase(Locale.ENGLISH);
 		if (dataBuf.length < X00Header.SIZE + 2 || ext.length() != 4
 				|| '0' != ext.charAt(2) || '0' != ext.charAt(3)) {
 			throw new SidTuneError("Bad file extension expected: .p00");
