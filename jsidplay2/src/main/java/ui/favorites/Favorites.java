@@ -390,8 +390,7 @@ public class Favorites extends Tab implements UIPart {
 					&& util.getPlayer().getTune() != null
 					&& pt != PlaybackType.PLAYBACK_OFF) {
 				// normal playback
-				currentlyPlayedFavorites.playNext(util.getPlayer().getTune()
-						.getInfo().getFile());
+				currentlyPlayedFavorites.playNext();
 			}
 		}
 	}

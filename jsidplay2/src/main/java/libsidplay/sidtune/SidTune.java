@@ -79,8 +79,6 @@ public abstract class SidTune {
 
 	protected final Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
 
-	private String outputFilename;
-
 	/**
 	 * Constructor
 	 */
@@ -311,20 +309,6 @@ public abstract class SidTune {
 	 */
 	public final Speed getSongSpeed(int selected) {
 		return songSpeed[selected - 1];
-	}
-
-	/**
-	 * Set Recording filename.
-	 */
-	public final void setOutputFilename(String outputFilename) {
-		this.outputFilename = outputFilename;
-	}
-
-	/**
-	 * Get Recording filename.
-	 */
-	public final String getOutputFilename() {
-		return outputFilename;
 	}
 
 	/**

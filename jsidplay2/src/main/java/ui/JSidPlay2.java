@@ -51,6 +51,7 @@ import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import sidplay.audio.RecordingFilenameProvider;
 import ui.about.About;
 import ui.common.C64Window;
 import ui.common.dialog.YesNoDialog;
@@ -72,7 +73,8 @@ import ui.sidreg.SidReg;
 import ui.soundsettings.SoundSettings;
 import ui.videoscreen.Video;
 
-public class JSidPlay2 extends C64Window implements IExtendImageListener {
+public class JSidPlay2 extends C64Window implements IExtendImageListener,
+		RecordingFilenameProvider {
 
 	/** Build date calculated from our own modify time */
 	private static String DATE = "unknown";
@@ -138,6 +140,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		this.playerId = new StringBuilder();
 		this.scene = tabbedPane.getScene();
 
+		util.getPlayer().setRecordingFilenameProvider(this);
 		util.getPlayer().setExtendImagePolicy(this);
 		util.getPlayer()
 				.stateProperty()
@@ -943,6 +946,22 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	public void setConfigService(ConfigService configService) {
 		this.configService = configService;
+	}
+
+	@Override
+	public String getFilename() {
+		SidTune tune = util.getPlayer().getTune();
+		if (tune == null) {
+			return new File(util.getConfig().getSidplay2().getTmpDir(),
+					"jsidplay2").getAbsolutePath();
+		}
+		File file = tune.getInfo().getFile();
+		String filename = new File(file.getParentFile(),
+				PathUtils.getBaseNameNoExt(file)).getAbsolutePath();
+		if (tune.getInfo().getSongs() > 1) {
+			filename += String.format("-%02d", tune.getInfo().getCurrentSong());
+		}
+		return filename;
 	}
 
 }

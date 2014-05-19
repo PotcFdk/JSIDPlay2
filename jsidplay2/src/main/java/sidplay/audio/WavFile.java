@@ -1,6 +1,5 @@
 package sidplay.audio;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -21,6 +20,8 @@ import java.nio.charset.Charset;
  */
 public class WavFile extends AudioDriver {
 	protected static final Charset US_ASCII = Charset.forName("US-ASCII");
+
+	private static final String EXTENSION = ".wav";
 
 	private ByteBuffer sampleBuffer;
 
@@ -67,7 +68,7 @@ public class WavFile extends AudioDriver {
 	private RandomAccessFile file;
 
 	@Override
-	public void open(final AudioConfig cfg, String outDir) throws IOException {
+	public void open(final AudioConfig cfg) throws IOException {
 		final int channels = cfg.channels;
 		final int freq = cfg.frameRate;
 		final int blockAlign = 2 * channels;
@@ -86,7 +87,8 @@ public class WavFile extends AudioDriver {
 		wavHdr.blockAlign = (short) blockAlign;
 		wavHdr.bitsPerSample = 16;
 
-		file = new RandomAccessFile(new File(outDir, getFilename(cfg)), "rw");
+		file = new RandomAccessFile(recordingFilenameProvider.getFilename()
+				+ EXTENSION, "rw");
 		file.setLength(0);
 		file.write(wavHdr.getBytes());
 	}
@@ -127,20 +129,4 @@ public class WavFile extends AudioDriver {
 		return sampleBuffer;
 	}
 
-	public String getFilename(final AudioConfig cfg) {
-		if (cfg.getOutputFilename() != null) {
-			// Use requested outputfile name
-			return cfg.getOutputFilename();
-		}
-		if (cfg.getTuneFile() == null) {
-			// Use default name, if no tune is loaded
-			return "jsidplay2.wav";
-		}
-		// Use SID name change the extension and add song number
-		String subTune = "";
-		if (cfg.getSongCount() > 1) {
-			subTune = String.format("-%02d", cfg.getCurrentSong());
-		}
-		return cfg.getTuneFile().getName().replace(".sid", subTune + ".wav");
-	}
 }

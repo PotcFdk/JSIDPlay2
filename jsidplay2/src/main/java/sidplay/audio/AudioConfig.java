@@ -15,8 +15,6 @@
  */
 package sidplay.audio;
 
-import java.io.File;
-
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.SamplingMethod;
 import sidplay.ini.intf.IAudioSection;
@@ -27,13 +25,6 @@ public class AudioConfig {
 	protected int channels = 1;
 	protected int bufferFrames = 4096;
 	private SamplingMethod samplingMethod;
-	private File tuneFile;
-	private int songCount;
-	private int currentSong;
-	private String outputFilename;
-
-	protected AudioConfig() {
-	}
 
 	/**
 	 * This instance represents the requested audio configuration
@@ -43,7 +34,7 @@ public class AudioConfig {
 	 * @param channels
 	 *            The number of audio channels to use.
 	 */
-	public AudioConfig(int frameRate, int channels,
+	protected AudioConfig(int frameRate, int channels,
 			SamplingMethod samplingMethod) {
 		this.frameRate = frameRate;
 		this.channels = channels;
@@ -63,15 +54,9 @@ public class AudioConfig {
 				audio.getSampling());
 	}
 
-	public static AudioConfig create(IConfig config, SidTune tune) {
-		AudioConfig audioConfig = getInstance(config.getAudio(),
-				isStereo(config, tune) ? 2 : 1);
-		audioConfig.tuneFile = tune != null ? tune.getInfo().getFile() : null;
-		audioConfig.songCount = tune != null ? tune.getInfo().getSongs() : 1;
-		audioConfig.currentSong = tune != null ? tune.getInfo().getCurrentSong() : 1;
-		audioConfig.outputFilename = tune != null ? tune.getOutputFilename()
-				: null;
-		return audioConfig;
+	public static AudioConfig getInstance(IConfig config, SidTune tune) {
+		return new AudioConfig(config.getAudio().getFrequency(), isStereo(
+				config, tune) ? 2 : 1, config.getAudio().getSampling());
 	}
 
 	public static boolean isStereo(IConfig config, SidTune tune) {
@@ -125,42 +110,6 @@ public class AudioConfig {
 	 */
 	public SamplingMethod getSamplingMethod() {
 		return samplingMethod;
-	}
-
-	/**
-	 * Get filename of the tune.
-	 * 
-	 * @return filename of the tune
-	 */
-	public final File getTuneFile() {
-		return tuneFile;
-	}
-
-	/**
-	 * Get song count of the tune.
-	 * 
-	 * @return song count
-	 */
-	public final int getSongCount() {
-		return songCount;
-	}
-
-	/**
-	 * Get the current song number.
-	 * 
-	 * @return current song
-	 */
-	public final int getCurrentSong() {
-		return currentSong;
-	}
-
-	/**
-	 * Get an output filename proposal.
-	 * 
-	 * @return output filename
-	 */
-	public final String getOutputFilename() {
-		return outputFilename;
 	}
 
 }

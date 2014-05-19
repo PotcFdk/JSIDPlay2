@@ -32,6 +32,8 @@ public abstract class AudioDriver {
 	 */
 	protected int fastForward = 1;
 
+	protected RecordingFilenameProvider recordingFilenameProvider;
+
 	/**
 	 * Open audio interface.
 	 * 
@@ -43,9 +45,8 @@ public abstract class AudioDriver {
 	 * @throws UnsupportedAudioFileException
 	 * @throws IOException
 	 */
-	public abstract void open(AudioConfig cfg, String outDir)
-			throws LineUnavailableException, UnsupportedAudioFileException,
-			IOException;
+	public abstract void open(AudioConfig cfg) throws LineUnavailableException,
+			UnsupportedAudioFileException, IOException;
 
 	/**
 	 * Write the complete contents of ByteBuffer to audio device.
@@ -98,4 +99,8 @@ public abstract class AudioDriver {
 		fastForward = 1;
 	}
 
+	public void setRecordingFilenameProvider(
+			RecordingFilenameProvider recordingFilenameProvider) {
+		this.recordingFilenameProvider = recordingFilenameProvider;
+	}
 }

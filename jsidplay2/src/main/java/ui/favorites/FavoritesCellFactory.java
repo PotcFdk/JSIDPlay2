@@ -24,46 +24,42 @@ public class FavoritesCellFactory implements
 	private static final Image NO_STIL_ICON = new Image(JSIDPlay2Main.class
 			.getResource("icons/stil_no.png").toString());
 
-	private static final String FILE_NOT_FOUND_ROW = "fileNotFoundRow";
-
 	private static final String CURRENTLY_PLAYED_FILE_ROW = "currentlyPlayedRow";
 
 	private Player player;
-	private ObjectProperty<File> currentlyPlayedFileProperty;
+	private ObjectProperty<HVSCEntry> currentlyPlayedHVSCEntryProperty;
 
 	public void setPlayer(Player player) {
 		this.player = player;
 	}
 
-	public void setCurrentlyPlayedFileProperty(
-			ObjectProperty<File> currentlyPlayedFileProperty) {
-		this.currentlyPlayedFileProperty = currentlyPlayedFileProperty;
+	public void setCurrentlyPlayedHVSCEntryProperty(
+			ObjectProperty<HVSCEntry> currentlyPlayedHVSCEntryProperty) {
+		this.currentlyPlayedHVSCEntryProperty = currentlyPlayedHVSCEntryProperty;
 	}
 
 	protected final class TableCellImpl extends TableCell<HVSCEntry, Object> {
 
-		private File file;
-		private ChangeListener<File> listener = (observable, oldValue, newValue) -> setCellStyle();
+		private ChangeListener<HVSCEntry> listener = (observable, oldValue,
+				newValue) -> setCellStyle();
 
 		public TableCellImpl() {
-			currentlyPlayedFileProperty.addListener(listener);
+			currentlyPlayedHVSCEntryProperty.addListener(listener);
 		}
 
 		@Override
 		protected void updateItem(Object value, boolean empty) {
 			super.updateItem(value, empty);
 			if (!empty && value != null) {
-				file = getFile();
 				setText(value.toString());
 				if (getTableView().getColumns().indexOf(getTableColumn()) == 0) {
-					if (player.getStilEntry(file) != null) {
+					if (player.getStilEntry(getFile()) != null) {
 						setGraphic(new ImageView(STIL_ICON));
 					} else {
 						setGraphic(new ImageView(NO_STIL_ICON));
 					}
 				}
 			} else {
-				file = null;
 				setText(null);
 				setGraphic(null);
 			}
@@ -71,8 +67,8 @@ public class FavoritesCellFactory implements
 		}
 
 		private File getFile() {
-			if (getTableRow() != null) {
-				HVSCEntry hvscEntry = (HVSCEntry) getTableRow().getItem();
+			HVSCEntry hvscEntry = getHVSCEntry();
+			if (hvscEntry != null) {
 				SidPlay2Section sidPlay2Section = (SidPlay2Section) player
 						.getConfig().getSidplay2();
 				return PathUtils.getFile(hvscEntry.getPath(),
@@ -82,15 +78,18 @@ public class FavoritesCellFactory implements
 			return null;
 		}
 
+		private HVSCEntry getHVSCEntry() {
+			if (getTableRow() != null) {
+				return (HVSCEntry) getTableRow().getItem();
+			}
+			return null;
+		}
+
 		private void setCellStyle() {
-			getStyleClass().removeAll(FILE_NOT_FOUND_ROW,
-					CURRENTLY_PLAYED_FILE_ROW);
-			if (!isEmpty() && file != null) {
-				if (!file.exists()) {
-					getStyleClass().add(FILE_NOT_FOUND_ROW);
-				} else if (file.equals(currentlyPlayedFileProperty.get())) {
-					getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
-				}
+			getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
+			if (!isEmpty()
+					&& getHVSCEntry() == currentlyPlayedHVSCEntryProperty.get()) {
+				getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
 			}
 		}
 

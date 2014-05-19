@@ -45,10 +45,6 @@
 	-fx-font-size:12.0px;
 }
 
-.fileNotFoundRow
-{
-	-fx-background-color:red;
-}
 .currentlyPlayedRow
 {
 	-fx-background-color: lightgreen;

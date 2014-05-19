@@ -64,9 +64,9 @@ import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
 import libsidplay.player.FakeStereo;
+import libsidplay.player.PlayList;
 import libsidplay.player.State;
 import libsidplay.player.Timer;
-import libsidplay.player.PlayList;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PRG2TAP;
@@ -82,6 +82,7 @@ import resid_builder.resid.ChipModel;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.NaturalFinishedException;
+import sidplay.audio.RecordingFilenameProvider;
 import sidplay.ini.intf.IConfig;
 
 /**
@@ -187,6 +188,10 @@ public class Player {
 	 * Disk image extension policy (track count greater than 35).
 	 */
 	private IExtendImageListener policy;
+	/**
+	 * Create a filename to be used for recording.
+	 */
+	private RecordingFilenameProvider recordingFilenameProvider = () -> "jsidplay3";
 
 	/**
 	 * Create a complete setup (C64, tape/disk drive, carts and more).
@@ -809,7 +814,10 @@ public class Player {
 		CPUClock cpuClock = CPUClock.getCPUClock(config, tune);
 		setClock(cpuClock);
 
-		AudioConfig audioConfig = AudioConfig.create(config, tune);
+		AudioConfig audioConfig = AudioConfig.getInstance(config, tune);
+
+		driverSettings.getAudio().getAudioDriver()
+				.setRecordingFilenameProvider(recordingFilenameProvider);
 
 		// 1. handle MP3 play-back (replaces audio driver and emulation)
 		driverSettings.handleMP3(config, tune);
@@ -819,8 +827,7 @@ public class Player {
 
 		// 3. open audio driver (eventually NIL audio driver)
 		try {
-			driverSettings.getAudio().getAudioDriver()
-					.open(audioConfig, config.getSidplay2().getTmpDir());
+			driverSettings.getAudio().getAudioDriver().open(audioConfig);
 		} catch (LineUnavailableException | UnsupportedAudioFileException
 				| IOException e) {
 			throw new RuntimeException(e);
@@ -960,7 +967,7 @@ public class Player {
 			}
 		}
 		return stateProperty.get() == State.RUNNING
-		|| stateProperty.get() == State.PAUSED;
+				|| stateProperty.get() == State.PAUSED;
 	}
 
 	private State getEndState() {
@@ -1053,6 +1060,11 @@ public class Player {
 
 	public final STILEntry getStilEntry(File file) {
 		return stil != null && file != null ? stil.getSTILEntry(file) : null;
+	}
+
+	public void setRecordingFilenameProvider(
+			RecordingFilenameProvider recordingFilenameProvider) {
+		this.recordingFilenameProvider = recordingFilenameProvider;
 	}
 
 	public final void setExtendImagePolicy(IExtendImageListener policy) {

@@ -18,13 +18,13 @@ public class JavaSound extends AudioDriver {
 	private AudioConfig cfg;
 
 	@Override
-	public synchronized void open(final AudioConfig cfg, String outDir)
+	public synchronized void open(final AudioConfig cfg)
 			throws LineUnavailableException {
-		open(cfg, outDir, null);
+		open(cfg, null);
 	}
 
-	public synchronized void open(final AudioConfig cfg, String outDir,
-			final Mixer.Info info) throws LineUnavailableException {
+	public synchronized void open(final AudioConfig cfg, final Mixer.Info info)
+			throws LineUnavailableException {
 		this.cfg = cfg;
 		audioFormat = new AudioFormat(cfg.frameRate, 16, cfg.channels, true,
 				false);

@@ -31,14 +31,13 @@ import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.player.DriverSettings;
 import resid_builder.resid.ChipModel;
-import sidplay.audio.AudioConfig;
 import sidplay.audio.Audio;
+import sidplay.audio.AudioConfig;
 import sidplay.ini.intf.IConfig;
 
 public class ReSIDBuilder extends SIDBuilder {
 	/** Current audio configuration */
 	private final AudioConfig audioConfig;
-	private final IConfig config;
 	private final DriverSettings driverSettings;
 
 	/** output driver (for temporary storage while fast forwarding tune) */
@@ -55,7 +54,6 @@ public class ReSIDBuilder extends SIDBuilder {
 
 	public ReSIDBuilder(IConfig config, DriverSettings driverSettings,
 			AudioConfig audioConfig, CPUClock cpuClock) {
-		this.config = config;
 		this.driverSettings = driverSettings;
 		this.audioConfig = audioConfig;
 		this.systemFrequency = cpuClock.getCpuFrequency();
@@ -165,8 +163,7 @@ public class ReSIDBuilder extends SIDBuilder {
 	}
 
 	@Override
-	public SIDEmu lock(final EventScheduler evt, SIDEmu device,
-			ChipModel model) {
+	public SIDEmu lock(final EventScheduler evt, SIDEmu device, ChipModel model) {
 		if (device == null) {
 			device = lock(evt, model);
 		} else {
@@ -212,8 +209,7 @@ public class ReSIDBuilder extends SIDBuilder {
 		// restore original driver and open
 		this.driverSettings.setAudio(audio);
 		try {
-			this.driverSettings.getAudio().getAudioDriver()
-					.open(audioConfig, config.getSidplay2().getTmpDir());
+			this.driverSettings.getAudio().getAudioDriver().open(audioConfig);
 		} catch (LineUnavailableException | UnsupportedAudioFileException
 				| IOException e) {
 			throw new RuntimeException(e);

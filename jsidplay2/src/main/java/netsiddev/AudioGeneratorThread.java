@@ -102,7 +102,7 @@ public class AudioGeneratorThread extends Thread {
 		try {
 			if (deviceIndex >= 0 && deviceIndex < aInfos.length) {
 				mixerInfo = aInfos[deviceIndex];
-				driver.open(audioConfig, null, mixerInfo);
+				driver.open(audioConfig, mixerInfo);
 			} else {
 				driver.open(audioConfig, null);
 			}

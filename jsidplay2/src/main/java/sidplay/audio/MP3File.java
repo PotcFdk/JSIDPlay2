@@ -1,6 +1,5 @@
 package sidplay.audio;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,6 +20,7 @@ import lowlevel.LameEncoder;
  */
 public class MP3File extends AudioDriver {
 
+	private static final String EXTENSION = ".mp3";
 	/**
 	 * Sample buffer to be encoded as MP3.
 	 */
@@ -35,7 +35,7 @@ public class MP3File extends AudioDriver {
 	private LameEncoder jump3r;
 
 	@Override
-	public void open(final AudioConfig cfg, String outDir)
+	public void open(final AudioConfig cfg)
 			throws LineUnavailableException, UnsupportedAudioFileException,
 			IOException {
 		final int channels = cfg.channels;
@@ -47,7 +47,8 @@ public class MP3File extends AudioDriver {
 		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, 16,
 				cfg.channels, true, false);
 		jump3r = new LameEncoder(audioFormat);
-		out = new FileOutputStream(new File(outDir, getFilename(cfg)));
+		out = new FileOutputStream(recordingFilenameProvider.getFilename()
+				+ EXTENSION);
 	}
 
 	@Override
@@ -89,20 +90,4 @@ public class MP3File extends AudioDriver {
 		return sampleBuffer;
 	}
 
-	public String getFilename(final AudioConfig cfg) {
-		if (cfg.getOutputFilename() != null) {
-			// Use requested outputfile name
-			return cfg.getOutputFilename();
-		}
-		if (cfg.getTuneFile() == null) {
-			// Use default name, if no tune is loaded
-			return "jsidplay2.mp3";
-		}
-		// Use SID name change the extension and add song number
-		String subTune = "";
-		if (cfg.getSongCount() > 1) {
-			subTune = String.format("-%02d", cfg.getCurrentSong());
-		}
-		return cfg.getTuneFile().getName().replace(".sid", subTune + ".mp3");
-	}
 }

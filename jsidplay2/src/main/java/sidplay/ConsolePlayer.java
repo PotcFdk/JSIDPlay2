@@ -12,6 +12,7 @@ import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.PathUtils;
 import libsidutils.SidDatabase;
 import resid_builder.resid.ChipModel;
 import sidplay.audio.Audio;
@@ -67,8 +68,8 @@ public class ConsolePlayer {
 	@Parameter(names = "-emulation", descriptionKey = "EMULATION")
 	private Emulation emulation = Emulation.RESID;
 
-	@Parameter(names = "-outputfile", descriptionKey = "OUTPUTFILE")
-	private String outputFile = "outfile.wav";
+	@Parameter(names = "-recordingFilename", descriptionKey = "RECORDING_FILENAME")
+	private String recordingFilename = "jsidplay2";
 
 	@Parameter(names = "-startSong", descriptionKey = "START_SONG")
 	private Integer song = null;
@@ -128,10 +129,9 @@ public class ConsolePlayer {
 			System.err.println(e.getMessage());
 			exit(1);
 		}
-		// Can only loop if not creating audio files
+		// Cannot loop while recording audio files
 		if (isRecording()) {
 			loop = false;
-			single = true;
 		}
 		final IniConfig config = new IniConfig(true);
 		config.getSidplay2().setLoop(loop);
@@ -150,7 +150,16 @@ public class ConsolePlayer {
 			final SidTune tune = SidTune.load(new File(filenames.get(0)));
 			player.setTune(tune);
 			tune.setSelectedSong(song);
-			tune.setOutputFilename(outputFile);
+			player.setRecordingFilenameProvider(() -> {
+				File file = new File(recordingFilename);
+				String filename = new File(file.getParentFile(), PathUtils
+						.getBaseNameNoExt(file)).getAbsolutePath();
+				if (tune.getInfo().getSongs() > 1) {
+					filename += String.format("-%02d", tune.getInfo()
+							.getCurrentSong());
+				}
+				return filename;
+			});
 			player.setDebug(cpuDebug);
 			player.setDriverSettings(new DriverSettings(audio, emulation));
 			player.getTimer().setStart(startTime);
