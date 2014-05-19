@@ -2,6 +2,7 @@ package ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
 import javafx.application.Application;
@@ -39,9 +40,21 @@ public class JSIDPlay2Main extends Application {
 	private Player player;
 
 	private Consumer<Player> menuHook = (player) -> {
-		if (player.getTune() != null && player.getTune().getInfo().getFile() != null) {
-			System.out.println("Play File: <"
-					+ player.getTune().getInfo().getFile().getAbsolutePath() + ">");
+		if (player.getTune() != null) {
+			System.out.print("Playing: ");
+			Iterator<String> info = player.getTune().getInfo().getInfoString()
+					.iterator();
+			for (int i = 0; i < 3; i++) {
+				if (info.hasNext()) {
+					System.out.print("<" + info.next() + ">");
+				} else {
+					System.out.print("<?>");
+				}
+				if (info.hasNext()) {
+					System.out.print(" ");
+				}
+			}
+			System.out.println();
 		}
 	};
 
