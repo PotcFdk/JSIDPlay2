@@ -904,22 +904,17 @@ public class Player {
 
 	/**
 	 * Set stop time according to the song length database (or use default
-	 * length). If the user play length has been set, it overrides everything!
+	 * length).
 	 */
 	public final void updateStopTime() {
-		if (config.getSidplay2().getUserPlayLength() != 0) {
-			// Use user defined fixed song length
-			timer.setStop(config.getSidplay2().getUserPlayLength());
-		} else {
-			// default play default length or forever (0) ...
-			timer.setStop(config.getSidplay2().getDefaultPlayLength());
-			if (config.getSidplay2().isEnableDatabase()) {
-				int length = tune != null ? getSidDatabaseInfo(db -> db
-						.length(tune)) : 0;
-				if (length > 0) {
-					// ... or use song length of song length database
-					timer.setStop(length);
-				}
+		// default play default length or forever (0) ...
+		timer.setStop(config.getSidplay2().getDefaultPlayLength());
+		if (config.getSidplay2().isEnableDatabase()) {
+			int length = tune != null ? getSidDatabaseInfo(db -> db
+					.length(tune)) : 0;
+			if (length > 0) {
+				// ... or use song length of song length database
+				timer.setStop(length);
 			}
 		}
 	}

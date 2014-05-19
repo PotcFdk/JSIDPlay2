@@ -34,21 +34,6 @@ public interface ISidPlay2Section {
 	public void setEnableDatabase(boolean enable);
 
 	/**
-	 * Getter of the user defined fixed play length.
-	 * 
-	 * @return default play length
-	 */
-	public int getUserPlayLength();
-
-	/**
-	 * Setter of the user defined fixed play length.
-	 * 
-	 * @param playLength
-	 *            default play length
-	 */
-	public void setUserPlayLength(int playLength);
-
-	/**
 	 * Getter of the default play length (if the song length is unknown).
 	 * 
 	 * @return default play length

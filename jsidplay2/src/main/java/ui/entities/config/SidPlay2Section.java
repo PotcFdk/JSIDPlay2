@@ -86,33 +86,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return defaultPlayLengthProperty;
 	}
 	
-	@Transient
-	@XmlTransient
-	private IntegerProperty userPlayLengthProperty;
-	
-	private int userPlayLength;
-
-	@Override
-	public int getUserPlayLength() {
-		if (userPlayLengthProperty == null) {
-			userPlayLengthProperty = new SimpleIntegerProperty();
-			userPlayLengthProperty.set(userPlayLength);
-		}
-		return userPlayLengthProperty.get();
-	}
-
-	@Override
-	public void setUserPlayLength(int userPlayLength) {
-		getUserPlayLength();
-		userPlayLengthProperty.set(userPlayLength);
-		this.userPlayLength = userPlayLength;
-	}
-
-	public IntegerProperty userPlayLengthProperty() {
-		getUserPlayLength();
-		return userPlayLengthProperty;
-	}
-	
 	@Enumerated(EnumType.STRING)
 	private PlaybackType playbackType = PlaybackType.NORMAL;
 

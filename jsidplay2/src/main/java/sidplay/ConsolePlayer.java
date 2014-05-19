@@ -104,8 +104,11 @@ public class ConsolePlayer {
 	@Parameter(names = "-startTime", descriptionKey = "START_TIME", converter = TimeConverter.class)
 	private Integer startTime = 0;
 
-	@Parameter(names = "-fixedLength", descriptionKey = "FIXED_LENGTH", converter = TimeConverter.class)
-	private Integer fixedLength = 0;
+	@Parameter(names = "-defaultLength", descriptionKey = "DEFAULT_LENGTH", converter = TimeConverter.class)
+	private Integer defaultLength = 0;
+
+	@Parameter(names = "-enableSidDatabase", descriptionKey = "ENABLE_SID_DATABASE")
+	private Boolean enableSidDatabase = Boolean.TRUE;
 
 	@Parameter(names = "-verbose", descriptionKey = "VERBOSE", validateWith = VerboseValidator.class)
 	private Integer verbose = 0;
@@ -136,7 +139,8 @@ public class ConsolePlayer {
 		final IniConfig config = new IniConfig(true);
 		config.getSidplay2().setLoop(loop);
 		config.getSidplay2().setSingle(single);
-		config.getSidplay2().setUserPlayLength(fixedLength);
+		config.getSidplay2().setDefaultPlayLength(defaultLength);
+		config.getSidplay2().setEnableDatabase(enableSidDatabase);
 		config.getAudio().setFrequency(frequency);
 		config.getEmulation().setForceStereoTune(dualSID);
 		config.getEmulation().setUserClockSpeed(forceClock);
@@ -165,14 +169,14 @@ public class ConsolePlayer {
 			player.getTimer().setStart(startTime);
 
 			// check song length
-			if (fixedLength == 0) {
+			if (defaultLength == 0) {
 				setSIDDatabase(player);
 				int length = player.getSidDatabaseInfo(db -> db.length(tune));
 				if (isRecording()
 						&& (!config.getSidplay2().isEnableDatabase() || length == 0)) {
 					System.err
 							.println("ERROR: unknown song length in record mode"
-									+ " (please use option -t or configure song length database)");
+									+ " (please use option -defaultLength or configure song length database)");
 					exit(1);
 				}
 			}

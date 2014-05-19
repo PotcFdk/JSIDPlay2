@@ -170,7 +170,8 @@ public abstract class SidTune {
 	 * @return The active sub-song number
 	 */
 	public int getSelectedSong() {
-		return info.currentSong == 0 ? info.startSong : info.currentSong;
+		return info.currentSong == 0 || info.currentSong > info.songs ? info.startSong
+				: info.currentSong;
 	}
 
 	/**
