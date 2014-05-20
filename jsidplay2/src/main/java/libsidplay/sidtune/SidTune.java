@@ -30,6 +30,14 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  * 
  */
 public abstract class SidTune {
+	private static boolean ZIP_SUPPORTED;
+	static {
+		try {
+			Class.forName("de.schlichtherle.truezip.file.TFileInputStream");
+			ZIP_SUPPORTED = true;
+		} catch (ClassNotFoundException e) {
+		}
+	}
 	/**
 	 * Maximum possible file size of C64 programs to load.
 	 */
@@ -87,8 +95,7 @@ public abstract class SidTune {
 	}
 
 	/**
-	 * Loads a file into a SidTune. Support of a lot of tunes here.<BR>
-	 * Note: Formats MP3 and MUS (STR) require files!
+	 * Loads a file into a SidTune. Support of a lot of tunes here.
 	 * 
 	 * @param file
 	 *            The file to load.
@@ -205,16 +212,9 @@ public abstract class SidTune {
 	 */
 	protected static final byte[] getFileContents(final File file)
 			throws IOException {
-		try {
-			Class.forName("de.schlichtherle.truezip.file.TFileInputStream");
-			try (InputStream is = new TFileInputStream(file)) {
-				return getFileContents(is);
-			}
-		} catch (ClassNotFoundException e) {
-			// skip ZIP support, if not available!
-			try (InputStream is = new FileInputStream(file)) {
-				return getFileContents(is);
-			}
+		try (InputStream is = ZIP_SUPPORTED ? new TFileInputStream(file)
+				: new FileInputStream(file)) {
+			return getFileContents(is);
 		}
 	}
 

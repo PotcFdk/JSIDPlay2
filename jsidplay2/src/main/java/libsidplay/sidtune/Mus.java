@@ -156,8 +156,7 @@ class Mus extends PSid {
 			final String credit = convertPetsciiToAscii(musBuf,
 					infoStringLocation);
 			infoStringLocation += credit.length() + 1;
-			info.commentString[0] = credit;
-			info.numberOfCommentStrings = 1;
+			info.commentString.add(credit);
 		}
 
 		byte[] strBuf = null;
@@ -182,7 +181,7 @@ class Mus extends PSid {
 
 		if (strBuf != null) {
 			if (!detect(stereoFile, strBuf, 0, voice3Index)) {
-				throw new RuntimeException(SIDTUNE_2ND_INVALID);
+				throw new SidTuneError(SIDTUNE_2ND_INVALID);
 			}
 
 			infoStringLocation = voice3Index[0];
@@ -191,8 +190,7 @@ class Mus extends PSid {
 				final String credit = SidTune.convertPetsciiToAscii(strBuf,
 						infoStringLocation);
 				infoStringLocation += credit.length() + 1;
-				info.commentString[1] = credit;
-				info.numberOfCommentStrings = 2;
+				info.commentString.add(credit);
 			}
 
 			info.sidChipBase2 = STR_SID2_ADDR;

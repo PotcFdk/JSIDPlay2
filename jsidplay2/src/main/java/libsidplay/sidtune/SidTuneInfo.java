@@ -24,24 +24,7 @@ import libsidplay.sidtune.SidTune.Model;
 
 /**
  * An instance of this structure is used to transport values to and from SidTune
- * objects.<BR>
- * You must read (i.e. activate) sub-song specific information via:
- * 
- * <pre>
- * final SidTuneInfo tuneInfo = SidTune[songNumber];
- * final SidTuneInfo tuneInfo = SidTune.getInfo();
- * void SidTune.getInfo(tuneInfo);
- * </pre>
- * 
- * Consider the following fields as read-only, because the SidTune class does
- * not provide an implementation of:
- * 
- * <pre>
- *  boolean setInfo(final SidTuneInfo)
- * </pre>
- * 
- * Currently, the only way to get the class to accept values which are written
- * to these fields is by creating a derived class.
+ * objects.
  * 
  * @author Ken Händel
  * 
@@ -109,20 +92,16 @@ public class SidTuneInfo {
 	protected Compatibility compatibility = Compatibility.RSID_BASIC;
 
 	/**
-	 * Holds text info from the format headers etc.
-	 * Song title, credits, ... 0 = Title, 1 = Author, 2 = Copyright/Publisher
+	 * Holds text info from the format headers etc. Song title, credits, ... 0 =
+	 * Title, 1 = Author, 2 = Copyright/Publisher
 	 */
 	protected Collection<String> infoString = new ArrayList<>();
 
 	/**
-	 * Number of MUS comments (2 when STR also has comment)
+	 * Used to stash the MUS comment somewhere. MUS comments (2 entries when STR
+	 * also has comment)
 	 */
-	protected int numberOfCommentStrings;
-
-	/**
-	 * Used to stash the MUS comment somewhere. Ignored by everything.
-	 */
-	protected String[] commentString = new String[2];
+	protected Collection<String> commentString = new ArrayList<>();
 
 	/**
 	 * length of raw C64 data without load address
@@ -199,11 +178,7 @@ public class SidTuneInfo {
 		return infoString;
 	}
 
-	public final int getNumberOfCommentStrings() {
-		return numberOfCommentStrings;
-	}
-
-	public final String[] getCommentString() {
+	public final Collection<String> getCommentString() {
 		return commentString;
 	}
 
