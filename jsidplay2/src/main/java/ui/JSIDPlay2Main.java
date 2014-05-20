@@ -151,14 +151,6 @@ public class JSIDPlay2Main extends Application {
 				System.out.println("Import Configuration!");
 				config = configService.importCfg(config);
 			}
-			// Configuration version check
-			if (config.getSidplay2().getVersion() != Configuration.REQUIRED_CONFIG_VERSION) {
-				System.err.println("Configuration version "
-						+ config.getSidplay2().getVersion()
-						+ " is wrong, expected version is "
-						+ Configuration.REQUIRED_CONFIG_VERSION);
-				return configService.create(config);
-			}
 			return config;
 		} catch (Throwable e) {
 			e.printStackTrace();

@@ -15,7 +15,6 @@
  */
 package resid_builder;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -116,8 +115,7 @@ public class ReSID extends SIDEmu {
 	public void setFilter(IConfig config) {
 		String filterName6581 = config.getEmulation().getFilter6581();
 		String filterName8580 = config.getEmulation().getFilter8580();
-		List<? extends IFilterSection> filters = config.getFilter();
-		for (IFilterSection filter : filters) {
+		for (IFilterSection filter : config.getFilter()) {
 			if (filter.getName().equals(filterName6581)
 					&& filter.getFilter8580CurvePosition() == 0) {
 				sid.getFilter6581().setFilterCurve(

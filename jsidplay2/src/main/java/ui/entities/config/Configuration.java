@@ -39,9 +39,6 @@ import sidplay.ini.intf.ISidPlay2Section;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Configuration implements IConfig {
 
-	/** Bump this each time you want to invalidate the configuration */
-	public static final int REQUIRED_CONFIG_VERSION = 19;
-
 	@Transient
 	@XmlTransient
 	private final List<FilterSection> INITIAL_FILTERS;
