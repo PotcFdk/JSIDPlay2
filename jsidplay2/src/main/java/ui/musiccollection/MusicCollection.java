@@ -782,10 +782,8 @@ public class MusicCollection extends Tab implements UIPart {
 
 	private void showTuneInfos(File tuneFile, SidTune sidTune) {
 		tuneInfos.clear();
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getPlayer()
-				.getConfig().getSidplay2();
-		String collectionName = PathUtils.getCollectionName(
-				sidPlay2Section.getHvscFile(), tuneFile.getPath());
+		String collectionName = PathUtils.getCollectionName(fileBrowser
+				.getRoot().getValue(), tuneFile.getPath());
 		HVSCEntry entry = HVSCEntry.create(util.getPlayer(), collectionName,
 				tuneFile, sidTune);
 
