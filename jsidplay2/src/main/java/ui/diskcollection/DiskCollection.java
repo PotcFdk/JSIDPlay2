@@ -160,31 +160,35 @@ public class DiskCollection extends Tab implements UIPart {
 		});
 		type = new SimpleObjectProperty<>();
 		type.addListener((observable, oldValue, newValue) -> {
-			String initialRoot;
-			switch (type.get()) {
-			case HVMEC:
-				this.downloadUrl = util.getConfig().getOnline().getHvmecUrl();
-				initialRoot = util.getConfig().getSidplay2().getHVMEC();
-				break;
+			Platform.runLater(() -> {
+				String initialRoot;
+				switch (type.get()) {
+				case HVMEC:
+					this.downloadUrl = util.getConfig().getOnline()
+							.getHvmecUrl();
+					initialRoot = util.getConfig().getSidplay2().getHVMEC();
+					break;
 
-			case DEMOS:
-				this.downloadUrl = util.getConfig().getOnline().getDemosUrl();
-				initialRoot = util.getConfig().getSidplay2().getDemos();
-				break;
+				case DEMOS:
+					this.downloadUrl = util.getConfig().getOnline()
+							.getDemosUrl();
+					initialRoot = util.getConfig().getSidplay2().getDemos();
+					break;
 
-			case MAGS:
-				this.downloadUrl = util.getConfig().getOnline()
-						.getMagazinesUrl();
-				initialRoot = util.getConfig().getSidplay2().getMags();
-				break;
+				case MAGS:
+					this.downloadUrl = util.getConfig().getOnline()
+							.getMagazinesUrl();
+					initialRoot = util.getConfig().getSidplay2().getMags();
+					break;
 
-			default:
-				throw new RuntimeException("Illegal disk collection type : "
-						+ type);
-			}
-			if (initialRoot != null) {
-				setRootFile(new File(initialRoot));
-			}
+				default:
+					throw new RuntimeException(
+							"Illegal disk collection type : " + type);
+				}
+				if (initialRoot != null) {
+					setRootFile(new File(initialRoot));
+				}
+			});
 		});
 	}
 

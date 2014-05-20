@@ -333,7 +333,7 @@
 		<bottom>
 			<AnchorPane>
 				<Label fx:id="status" AnchorPane.leftAnchor="10" />
-				<ProgressBar fx:id="progress" AnchorPane.rightAnchor="10" />
+				<ProgressBar fx:id="progress" progress="0" AnchorPane.rightAnchor="10" />
 			</AnchorPane>
 		</bottom>
 	</BorderPane>

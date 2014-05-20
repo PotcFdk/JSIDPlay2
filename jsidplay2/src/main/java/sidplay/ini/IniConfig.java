@@ -97,6 +97,7 @@ public class IniConfig implements IConfig {
 				clear();
 				/* validate loaded configuration */
 				if (sidplay2Section.getVersion() == REQUIRED_CONFIG_VERSION) {
+					System.out.println("Use INI file: " + iniPath);
 					return;
 				}
 			} catch (final Exception e) {
@@ -155,8 +156,7 @@ public class IniConfig implements IConfig {
 	private void readInternal() {
 		final InputStream is = getClass().getClassLoader().getResourceAsStream(
 				"sidplay/ini/" + FILE_NAME);
-		System.out.println("Use internal INI file: " + "sidplay/ini/"
-				+ FILE_NAME);
+		System.out.println("Use internal INI file: " + FILE_NAME);
 
 		try {
 			iniReader = new IniReader(is);
@@ -174,6 +174,7 @@ public class IniConfig implements IConfig {
 			return;
 		}
 
+		System.out.println("Save INI file: " + iniPath);
 		try {
 			iniReader.save(iniPath.getAbsolutePath());
 		} catch (final IOException e) {

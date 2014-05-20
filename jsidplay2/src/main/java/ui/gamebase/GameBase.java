@@ -196,13 +196,15 @@ public class GameBase extends Tab implements UIPart {
 				.addListener((observable, oldValue, newValue) -> {
 					selectTab((GameBasePage) newValue);
 				});
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig()
-				.getSidplay2();
-		String initialRoot = sidPlay2Section.getGameBase64();
-		if (initialRoot != null && new File(initialRoot).exists()) {
-			gameBaseFile.setText(initialRoot);
-			setRoot(new File(initialRoot));
-		}
+		Platform.runLater(() -> {
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
+					.getConfig().getSidplay2();
+			String initialRoot = sidPlay2Section.getGameBase64();
+			if (initialRoot != null && new File(initialRoot).exists()) {
+				gameBaseFile.setText(initialRoot);
+				setRoot(new File(initialRoot));
+			}
+		});
 	}
 
 	@FXML

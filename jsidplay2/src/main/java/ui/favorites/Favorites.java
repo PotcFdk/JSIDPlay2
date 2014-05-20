@@ -117,9 +117,6 @@ public class Favorites extends Tab implements UIPart {
 				});
 		List<? extends FavoritesSection> favorites = util.getConfig()
 				.getFavorites();
-		for (FavoritesSection favorite : favorites) {
-			addTab(favorite);
-		}
 		util.getConfig()
 				.getObservableFavorites()
 				.addListener(
@@ -148,16 +145,21 @@ public class Favorites extends Tab implements UIPart {
 									.setCurrentFavorite(newValue.getText());
 						}
 					});
-		// Initially select last selected tab
-		String currentFavorite = ((Configuration) util.getConfig())
-				.getCurrentFavorite();
-		if (currentFavorite != null) {
-			for (Tab tab : favoritesList.getTabs()) {
-				if (tab.getText().equals(currentFavorite)) {
-					favoritesList.getSelectionModel().select(tab);
+		Platform.runLater(() -> {
+			for (FavoritesSection favorite : favorites) {
+				addTab(favorite);
+			}
+			// Initially select last selected tab
+			String currentFavorite = ((Configuration) util.getConfig())
+					.getCurrentFavorite();
+			if (currentFavorite != null) {
+				for (Tab tab : favoritesList.getTabs()) {
+					if (tab.getText().equals(currentFavorite)) {
+						favoritesList.getSelectionModel().select(tab);
+					}
 				}
 			}
-		}
+		});
 		Platform.runLater(() -> {
 			favoritesList.getScene().setOnDragOver((event) -> {
 				Dragboard db = event.getDragboard();
