@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 import javafx.beans.property.ObjectProperty;
@@ -94,6 +95,7 @@ import sidplay.ini.intf.IConfig;
  * 
  */
 public class Player {
+
 	private static final int PAUSE_SLEEP_TIME = 250;
 	private static final int NUM_EVENTS_TO_PLAY = 10000;
 	/** Previous song select timeout (< 4 secs) **/
@@ -1047,6 +1049,11 @@ public class Player {
 
 	public final int getSidDatabaseInfo(ToIntFunction<SidDatabase> toIntFunction) {
 		return sidDatabase != null ? toIntFunction.applyAsInt(sidDatabase) : 0;
+	}
+
+	public final String getSidDatabaseStringInfo(
+			Function<SidDatabase, String> toStringFunction) {
+		return sidDatabase != null ? toStringFunction.apply(sidDatabase) : "";
 	}
 
 	public final void setSTIL(STIL stil) {

@@ -227,10 +227,21 @@ public class MusicCollection extends Tab implements UIPart {
 						(observable, oldValue, newValue) -> {
 							if (newValue == State.RUNNING
 									&& util.getPlayer().getTune() != null) {
-								Platform.runLater(() ->
-								// auto-expand current selected tune
-								showNextHit(util.getPlayer().getTune()
-										.getInfo().getFile()));
+								Platform.runLater(() -> {
+									if (fileBrowser.getRoot() != null) {
+										// auto-expand current selected tune
+										SidTune tune = util.getPlayer()
+												.getTune();
+										String collectionName = util
+												.getPlayer()
+												.getSidDatabaseStringInfo(
+														(db) -> db
+																.getPath(tune));
+										showNextHit(new TFile(fileBrowser
+												.getRoot().getValue(),
+												collectionName));
+									}
+								});
 							}
 						});
 		tuneInfos = FXCollections.<TuneInfo> observableArrayList();

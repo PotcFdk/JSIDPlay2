@@ -15,12 +15,8 @@ public class SidDatabase {
 
 	private final IniReader database;
 
-	public SidDatabase(final InputStream input) {
-		try {
-			database = new IniReader(input);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	public SidDatabase(final InputStream input) throws IOException {
+		database = new IniReader(input);
 	}
 
 	private int parseTimeStamp(final String arg) {
@@ -56,12 +52,17 @@ public class SidDatabase {
 
 	private int length(final String md5, final int song) {
 		final String value = database.getPropertyString("Database", md5, null);
-		if (value == null) {
-			return 0;
-		}
-
-		String[] times = value.split(" ");
-		return parseTimeStamp(times[song - 1]);
+		return value != null ? parseTimeStamp(value.split(" ")[song - 1]) : 0;
 	}
 
+	public String getPath(final SidTune tune) {
+		final String md5 = tune.getMD5Digest();
+		return md5 != null ? getPath(md5) : "";
+	}
+
+	private String getPath(final String md5) {
+		final String value = database.getPropertyString("Database", "_" + md5,
+				null);
+		return value != null ? value.substring(1).trim() : "";
+	}
 }
