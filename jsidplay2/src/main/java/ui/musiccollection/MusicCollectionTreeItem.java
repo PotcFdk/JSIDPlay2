@@ -74,8 +74,8 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		Collection<MusicCollectionTreeItem> children = new ArrayList<MusicCollectionTreeItem>();
 		File[] listFiles = getValue().listFiles(fFileFilter);
 		if (listFiles != null) {
-			Arrays.stream(listFiles).sorted(
-					(a, b) -> {
+			Arrays.stream(listFiles)
+					.sorted((a, b) -> {
 						Integer aw = a.isFile() ? 1 : 0;
 						Integer bw = b.isFile() ? 1 : 0;
 						if (aw.equals(bw)) {
@@ -86,17 +86,20 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 													Locale.ENGLISH));
 						}
 						return aw.compareTo(bw);
-					});
-			for (File file : listFiles) {
-				MusicCollectionTreeItem childItem = new MusicCollectionTreeItem(
-						player, file);
-				children.add(childItem);
-				if (childItem.hasSTIL()) {
-					childItem.setGraphic(new ImageView(stilIcon));
-				} else {
-					childItem.setGraphic(new ImageView(noStilIcon));
-				}
-			}
+					})
+					.forEach(
+							file -> {
+								MusicCollectionTreeItem childItem = new MusicCollectionTreeItem(
+										player, file);
+								children.add(childItem);
+								if (childItem.hasSTIL()) {
+									childItem
+											.setGraphic(new ImageView(stilIcon));
+								} else {
+									childItem.setGraphic(new ImageView(
+											noStilIcon));
+								}
+							});
 		}
 		super.getChildren().setAll(children);
 	}
