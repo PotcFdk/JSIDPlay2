@@ -51,6 +51,7 @@ import libsidplay.player.PlayList;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import sidplay.audio.RecordingFilenameProvider;
 import ui.about.About;
@@ -957,12 +958,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			return new File(util.getConfig().getSidplay2().getTmpDir(),
 					defaultName).getAbsolutePath();
 		}
-		Iterator<String> infos = tune.getInfo().getInfoString().iterator();
-		String title = infos.hasNext() ? infos.next() : defaultName;
+		SidTuneInfo info = tune.getInfo();
+		Iterator<String> infos = info.getInfoString().iterator();
+		String name = infos.hasNext() ? infos.next().replaceAll(
+				"[:\\\\/*?|<>]", "_") : defaultName;
 		String filename = new File(util.getConfig().getSidplay2().getTmpDir(),
-				PathUtils.getBaseNameNoExt(title)).getAbsolutePath();
-		if (tune.getInfo().getSongs() > 1) {
-			filename += String.format("-%02d", tune.getInfo().getCurrentSong());
+				PathUtils.getBaseNameNoExt(name)).getAbsolutePath();
+		if (info.getSongs() > 1) {
+			filename += String.format("-%02d", info.getCurrentSong());
 		}
 		return filename;
 	}
