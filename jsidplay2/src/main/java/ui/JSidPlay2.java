@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -718,7 +719,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		final File file = fileDialog.showSaveDialog(scene.getWindow());
 		if (file != null) {
 			File target = new File(file.getParentFile(),
-					PathUtils.getBaseNameNoExt(file) + ".xml");
+					PathUtils.getBaseNameNoExt(file.getName()) + ".xml");
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			configService.exportCfg(util.getConfig(), target);
@@ -951,13 +952,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@Override
 	public String getFilename() {
 		SidTune tune = util.getPlayer().getTune();
+		String defaultName = "jsidplay2";
 		if (tune == null) {
 			return new File(util.getConfig().getSidplay2().getTmpDir(),
-					"jsidplay2").getAbsolutePath();
+					defaultName).getAbsolutePath();
 		}
-		File file = tune.getInfo().getFile();
+		Iterator<String> infos = tune.getInfo().getInfoString().iterator();
+		String title = infos.hasNext() ? infos.next() : defaultName;
 		String filename = new File(util.getConfig().getSidplay2().getTmpDir(),
-				PathUtils.getBaseNameNoExt(file)).getAbsolutePath();
+				PathUtils.getBaseNameNoExt(title)).getAbsolutePath();
 		if (tune.getInfo().getSongs() > 1) {
 			filename += String.format("-%02d", tune.getInfo().getCurrentSong());
 		}

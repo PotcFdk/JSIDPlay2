@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
-import libsidutils.PathUtils;
-
 class Mus extends PSid {
 
 	/** Known SID names. MUS loader scans for these. */
@@ -61,8 +59,19 @@ class Mus extends PSid {
 		}
 	}
 
-	private static boolean detect(final byte[] buffer, final int startIndex,
-			final int[] voice3Index) {
+	private static boolean detect(File musFile, final byte[] buffer,
+			final int startIndex, final int[] voice3Index) {
+		if (musFile != null) {
+			boolean correctExtension = false;
+			for (String ext : DEFAULT_MUS_NAMES) {
+				if (musFile.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)) {
+					correctExtension = true;
+				}
+			}
+			if (!correctExtension) {
+				return false;
+			}
+		}
 		if (buffer == null || buffer.length < startIndex + 8) {
 			return false;
 		}
@@ -86,33 +95,34 @@ class Mus extends PSid {
 				&& ((buffer[voice3Index[0] - 1] & 0xff) + ((buffer[voice3Index[0] - 2] & 0xff) << 8)) == MUS_HLT_CMD;
 	}
 
-	protected Mus(SidTuneInfo info, int programOffset, byte[] dataBuf)
-			throws SidTuneError {
-		this.info = info;
-		this.programOffset = programOffset;
-		loadWithProvidedMetadata(null, dataBuf);
+	/**
+	 * Load MUS mono tune with provided meta-data contained in a PSID.
+	 */
+	protected static SidTune load(SidTuneInfo info, int programOffset,
+			byte[] dataBuf) throws SidTuneError {
+		Mus mus = new Mus();
+		mus.info = info;
+		mus.programOffset = programOffset;
+		mus.loadWithProvidedMetadata(null, dataBuf);
+		return mus;
 	}
 
+	/**
+	 * Load MUS mono or stereo tune (find paired stereo files: MUS/STR or
+	 * _A.MUS/_B.MUS)
+	 */
 	protected static SidTune load(final File musFile, final byte[] dataBuf)
 			throws SidTuneError {
-		String extension = PathUtils.getExtension(musFile.getName());
-		if (!extension.equalsIgnoreCase(".mus")
-				&& !extension.equalsIgnoreCase(".str")) {
-			throw new SidTuneError("Bad file extension expected: .mus or .str");
-		}
 		final Mus mus = new Mus();
 		mus.info.compatibility = Compatibility.PSIDv2;
 		mus.loadWithProvidedMetadata(musFile, dataBuf);
 		return mus;
 	}
 
-	private Mus() {
-	}
-
 	private void loadWithProvidedMetadata(final File musFile,
 			final byte[] musBuf) throws SidTuneError {
 		final int[] voice3Index = new int[1];
-		if (!detect(musBuf, programOffset, voice3Index)) {
+		if (!detect(musFile, musBuf, programOffset, voice3Index)) {
 			throw new SidTuneError(ERR_SIDTUNE_INVALID);
 		}
 
@@ -151,8 +161,9 @@ class Mus extends PSid {
 		}
 
 		byte[] strBuf = null;
+		File stereoFile = null;
 		if (musFile != null) {
-			File stereoFile = getStereoTune(musFile);
+			stereoFile = getStereoTune(musFile);
 			if (stereoFile != null) {
 				try {
 					strBuf = getFileContents(stereoFile);
@@ -170,7 +181,7 @@ class Mus extends PSid {
 		}
 
 		if (strBuf != null) {
-			if (!detect(strBuf, 0, voice3Index)) {
+			if (!detect(stereoFile, strBuf, 0, voice3Index)) {
 				throw new RuntimeException(SIDTUNE_2ND_INVALID);
 			}
 

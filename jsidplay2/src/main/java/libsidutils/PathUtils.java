@@ -84,14 +84,13 @@ public class PathUtils {
 		return pathSegs;
 	}
 
-	public static final String getBaseNameNoExt(final File file) {
-		String filename = file.getName();
-		int lastIndexOf = filename.lastIndexOf('.');
+	public static final String getBaseNameNoExt(final String name) {
+		int lastIndexOf = name.lastIndexOf('.');
 		final String basename;
 		if (lastIndexOf != -1) {
-			basename = filename.substring(0, lastIndexOf);
+			basename = name.substring(0, lastIndexOf);
 		} else {
-			basename = filename;
+			basename = name;
 		}
 		return basename;
 	}

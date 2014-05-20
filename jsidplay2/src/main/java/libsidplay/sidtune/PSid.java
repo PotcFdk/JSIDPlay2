@@ -587,7 +587,7 @@ class PSid extends Prg {
 		}
 
 		if ((header.flags & PSID_MUS) != 0) {
-			return new Mus(psid.info, psid.programOffset, dataBuf);
+			return Mus.load(psid.info, psid.programOffset, dataBuf);
 		}
 
 		psid.resolveAddrs();

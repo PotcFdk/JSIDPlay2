@@ -1,6 +1,7 @@
 package libsidplay.sidtune;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -59,18 +60,18 @@ public class MP3Tune extends SidTune {
 		return 0;
 	}
 
-	public static final SidTune load(final String filename) throws IOException,
+	public static final SidTune load(final File file) throws IOException,
 			SidTuneError {
-		if (!filename.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
+		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			throw new SidTuneError("Bad file extension expected: .mp3");
 		}
 		final MP3Tune mp3 = new MP3Tune();
 
-		mp3.mp3Filename = filename;
+		mp3.mp3Filename = file.getAbsolutePath();
 		mp3.info.startSong = 1;
 		mp3.info.songs = 1;
-		try (RandomAccessFile file = new RandomAccessFile(filename, "r")) {
-			mp3.decoder.read(file);
+		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
+			mp3.decoder.read(randomAccessFile);
 			mp3.info.infoString.add(mp3.decoder.getTitle());
 			String interpret = mp3.decoder.getInterpret();
 			String albumInterpret = mp3.decoder.getAlbumInterpret();

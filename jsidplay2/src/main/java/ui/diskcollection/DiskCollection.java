@@ -368,7 +368,7 @@ public class DiskCollection extends Tab implements UIPart {
 	protected File extract(File file) throws IOException {
 		if (file.getName().endsWith(".gz")) {
 			File dst = new File(util.getConfig().getSidplay2().getTmpDir(),
-					PathUtils.getBaseNameNoExt(file));
+					PathUtils.getBaseNameNoExt(file.getName()));
 			dst.deleteOnExit();
 			try (InputStream is = new GZIPInputStream(
 					new TFileInputStream(file))) {

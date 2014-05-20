@@ -1118,7 +1118,7 @@ public class Player {
 					.getTmpDir(), file.getName() + ".tap");
 			convertedTape.deleteOnExit();
 			SidTune prog = SidTune.load(file);
-			String name = PathUtils.getBaseNameNoExt(file);
+			String name = PathUtils.getBaseNameNoExt(file.getName());
 			PRG2TAPProgram program = new PRG2TAPProgram(prog, name);
 
 			PRG2TAP prg2tap = new PRG2TAP();

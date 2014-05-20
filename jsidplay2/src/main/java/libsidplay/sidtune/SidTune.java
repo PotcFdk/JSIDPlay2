@@ -87,8 +87,8 @@ public abstract class SidTune {
 	}
 
 	/**
-	 * Loads a file into a SidTune. Support of a lot of tunes here. Note:
-	 * Formats MP3 and MUS (STR) require files!
+	 * Loads a file into a SidTune. Support of a lot of tunes here.<BR>
+	 * Note: Formats MP3 and MUS (STR) require files!
 	 * 
 	 * @param file
 	 *            The file to load.
@@ -101,26 +101,20 @@ public abstract class SidTune {
 	public static SidTune load(final File file) throws IOException,
 			SidTuneError {
 		try {
-			SidTune tune = MP3Tune.load(file.getAbsolutePath());
-			tune.info.file = file;
-			return tune;
+			return MP3Tune.load(file);
 		} catch (SidTuneError e1) {
 			byte[] fileBuffer = getFileContents(file);
 			try {
-				SidTune tune = loadCommon(file.getName(), fileBuffer);
-				tune.info.file = file;
-				return tune;
+				return loadCommon(file.getName(), fileBuffer);
 			} catch (SidTuneError e2) {
-				SidTune tune = Mus.load(file, fileBuffer);
-				tune.info.file = file;
-				return tune;
+				return Mus.load(file, fileBuffer);
 			}
 		}
 	}
 
 	/**
-	 * Loads an InputStream into a SidTune. Note: MUS/STR files are not
-	 * supported (they require a stereo file)
+	 * Loads an InputStream into a SidTune. Note: file based tunes are not
+	 * supported (MUS/STR files, MP3)
 	 * 
 	 * @param url
 	 *            URL of the given stream
@@ -138,6 +132,20 @@ public abstract class SidTune {
 		return loadCommon(url, getFileContents(stream));
 	}
 
+	/**
+	 * Load tune. Try several common SID tune formats to load.
+	 * 
+	 * @param name
+	 *            name of the file (e.g. to check extension)
+	 * @param fileBuffer
+	 *            The tune data to load.
+	 * 
+	 * @return A SidTune of the specified contents.
+	 * 
+	 * @throws IOException
+	 *             If the stream cannot be read.
+	 * @throws SidTuneError
+	 */
 	private static SidTune loadCommon(String name, byte[] fileBuffer)
 			throws SidTuneError {
 		try {
@@ -162,8 +170,8 @@ public abstract class SidTune {
 	 *            The chosen song.
 	 */
 	public final void setSelectedSong(final Integer song) {
-		assert song == null || (song > 0 && song <= info.songs);
-		info.currentSong = song == null ? info.startSong : song;
+		info.currentSong = song == null || song > info.songs ? info.startSong
+				: song;
 	}
 
 	/**

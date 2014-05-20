@@ -285,8 +285,8 @@ public class FavoritesTab extends Tab implements UIPart {
 			int number) {
 		String newName = name;
 		if (number > 1) {
-			newName = PathUtils.getBaseNameNoExt(new File(directory, name))
-					+ "_" + number + PathUtils.getExtension(name);
+			newName = PathUtils.getBaseNameNoExt(name) + "_" + number
+					+ PathUtils.getExtension(name);
 		}
 		File newFile = new File(directory, newName);
 		if (newFile.exists()) {

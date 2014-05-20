@@ -69,7 +69,8 @@ public class GameBase extends Tab implements UIPart {
 				});
 
 				File dbFile = new File(downloadedFile.getParent(),
-						PathUtils.getBaseNameNoExt(downloadedFile) + ".mdb");
+						PathUtils.getBaseNameNoExt(downloadedFile.getName())
+								+ ".mdb");
 				SidPlay2Section sidPlay2Section = (SidPlay2Section) util
 						.getConfig().getSidplay2();
 				sidPlay2Section.setGameBase64(dbFile.getAbsolutePath());

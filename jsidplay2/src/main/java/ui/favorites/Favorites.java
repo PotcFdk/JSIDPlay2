@@ -199,7 +199,7 @@ public class Favorites extends Tab implements UIPart {
 			FavoritesTab selectedTab = getSelectedTab();
 			selectedTab.addFavorites(files);
 			renameTab(selectedTab,
-					PathUtils.getBaseNameNoExt(file.getParentFile()));
+					PathUtils.getBaseNameNoExt(file.getParentFile().getName()));
 		}
 	}
 
@@ -253,7 +253,7 @@ public class Favorites extends Tab implements UIPart {
 			util.getConfig().getSidplay2()
 					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			File target = new File(file.getParentFile(),
-					PathUtils.getBaseNameNoExt(file) + ".js2");
+					PathUtils.getBaseNameNoExt(file.getName()) + ".js2");
 			try {
 				getSelectedTab().saveFavorites(target);
 			} catch (IOException e1) {

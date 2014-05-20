@@ -15,7 +15,6 @@
  */
 package libsidplay.sidtune;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -131,11 +130,6 @@ public class SidTuneInfo {
 	protected int c64dataLen;
 
 	/**
-	 * path to sidtune files
-	 */
-	protected File file;
-
-	/**
 	 * Calculated driver address for PSID driver (0 if none).
 	 */
 	protected int determinedDriverAddr;
@@ -215,10 +209,6 @@ public class SidTuneInfo {
 
 	public final int getC64dataLen() {
 		return c64dataLen;
-	}
-
-	public final File getFile() {
-		return file;
 	}
 
 	public final int getDeterminedDriverAddr() {

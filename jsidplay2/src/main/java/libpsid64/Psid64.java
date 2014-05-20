@@ -751,14 +751,14 @@ public class Psid64 {
 			throws NotEnoughC64MemException, IOException, SidTuneError {
 		tune = SidTune.load(file);
 		tune.setSelectedSong(null);
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) player
-				.getConfig().getSidplay2();
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) player.getConfig()
+				.getSidplay2();
 		String collectionName = PathUtils.getCollectionName(
 				sidPlay2Section.getHvscFile(), file.getPath());
 		stilEntry = player.getStilEntry(collectionName);
 
-		File tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file)
-				+ ".prg.tmp");
+		File tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file
+				.getName()) + ".prg.tmp");
 		tmpFile.deleteOnExit();
 		try (OutputStream outfile = new FileOutputStream(tmpFile)) {
 			// convert to PSID64
@@ -767,8 +767,8 @@ public class Psid64 {
 		// crunch result
 		new PUCrunch().run(new String[] {
 				tmpFile.getAbsolutePath(),
-				new File(target, PathUtils.getBaseNameNoExt(file) + ".prg")
-						.getAbsolutePath() });
+				new File(target, PathUtils.getBaseNameNoExt(file.getName())
+						+ ".prg").getAbsolutePath() });
 	}
 
 }
