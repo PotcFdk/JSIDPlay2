@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -662,11 +663,12 @@ public class Player {
 	 * 
 	 * @return the credits
 	 */
-	public final String getCredits() {
+	public final String getCredits(Properties properties) {
 		final StringBuffer credits = new StringBuffer();
-		credits.append("Java Version and User Interface v3.0:\n"
-				+ "\tCopyright (©) 2007-2014 Ken Händel\n"
-				+ "\thttp://sourceforge.net/projects/jsidplay2/\n");
+		credits.append("Java Version and User Interface v")
+				.append(properties.getProperty("version"))
+				.append(":\n\tCopyright (©) 2007-2014 Ken Händel\n"
+						+ "\thttp://sourceforge.net/projects/jsidplay2/\n");
 		credits.append("Distortion Simulation and development: Antti S. Lankila\n"
 				+ "\thttp://bel.fi/~alankila/c64-sw/\n");
 		credits.append("Network SID Device:\n"
