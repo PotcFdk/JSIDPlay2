@@ -107,7 +107,7 @@ public class ConsolePlayer {
 	@Parameter(names = "-defaultLength", descriptionKey = "DEFAULT_LENGTH", converter = TimeConverter.class)
 	private Integer defaultLength = 0;
 
-	@Parameter(names = "-enableSidDatabase", descriptionKey = "ENABLE_SID_DATABASE")
+	@Parameter(names = "-enableSidDatabase", descriptionKey = "ENABLE_SID_DATABASE", arity = 1)
 	private Boolean enableSidDatabase = Boolean.TRUE;
 
 	@Parameter(names = "-verbose", descriptionKey = "VERBOSE", validateWith = VerboseValidator.class)
