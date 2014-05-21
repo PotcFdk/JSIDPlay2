@@ -197,7 +197,7 @@ public class Player {
 	/**
 	 * Create a filename to be used for recording.
 	 */
-	private RecordingFilenameProvider recordingFilenameProvider = () -> "jsidplay3";
+	private RecordingFilenameProvider recordingFilenameProvider = () -> "jsidplay2";
 
 	/**
 	 * Create a complete setup (C64, tape/disk drive, carts and more).
