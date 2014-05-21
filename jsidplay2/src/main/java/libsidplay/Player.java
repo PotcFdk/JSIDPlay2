@@ -162,7 +162,7 @@ public class Player {
 	/**
 	 * Music player thread.
 	 */
-	private Thread fPlayerThread;
+	private Thread playerThread;
 	/**
 	 * Called each time a tune starts to play.
 	 */
@@ -658,6 +658,7 @@ public class Player {
 	 * Note: Before calling, you must safely call stopC64()!
 	 */
 	public final void setDriverSettings(DriverSettings driverSettings) {
+		assert (playerThread == null || !playerThread.isAlive());
 		this.driverSettings = driverSettings;
 	}
 
@@ -743,9 +744,9 @@ public class Player {
 	 * Start emulation (start player thread).
 	 */
 	public final void startC64() {
-		fPlayerThread = new Thread(playerRunnable);
-		fPlayerThread.setPriority(Thread.MAX_PRIORITY);
-		fPlayerThread.start();
+		playerThread = new Thread(playerRunnable);
+		playerThread.setPriority(Thread.MAX_PRIORITY);
+		playerThread.start();
 	}
 
 	/**
@@ -753,11 +754,11 @@ public class Player {
 	 */
 	public final void stopC64() {
 		try {
-			while (fPlayerThread != null && fPlayerThread.isAlive()) {
+			while (playerThread != null && playerThread.isAlive()) {
 				quit();
-				fPlayerThread.join(3000);
+				playerThread.join(3000);
 				// If the player can not be stopped clean:
-				fPlayerThread.interrupt();
+				playerThread.interrupt();
 			}
 		} catch (InterruptedException e) {
 		}
