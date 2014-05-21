@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -364,7 +365,7 @@ public class Player {
 					final int address = tune.placeProgramInMemory(c64.getRAM());
 					if (address != -1) {
 						// Ideally the driver would set the volume, but whatever
-						configureSIDs(sid -> sid.write(0x18, (byte) 0xf));
+						configureSIDs((num, sid) -> sid.write(0x18, (byte) 0xf));
 						c64.getCPU().forcedJump(address);
 					} else {
 						typeInCommand("RUN:\r");
@@ -714,16 +715,19 @@ public class Player {
 		return credits.toString();
 	}
 
-	public final void configureSIDs(Consumer<SIDEmu> action) {
+	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
 		for (int chipNum = 0; chipNum < C64.MAX_SIDS; chipNum++) {
-			configureSID(chipNum, action);
+			final SIDEmu sid = c64.getSID(chipNum);
+			if (sid != null) {
+				action.accept(chipNum, sid);
+			}
 		}
 	}
 
 	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
-		final SIDEmu s = c64.getSID(chipNum);
-		if (s != null) {
-			action.accept(s);
+		final SIDEmu sid = c64.getSID(chipNum);
+		if (sid != null) {
+			action.accept(sid);
 		}
 	}
 
@@ -841,7 +845,7 @@ public class Player {
 		updateSIDs();
 
 		// apply filter settings and stereo SID chip address
-		configureSIDs(sid -> {
+		configureSIDs((num, sid) -> {
 			sid.setFilter(config);
 			sid.setFilterEnable(config.getEmulation().isFilter());
 		});
@@ -975,13 +979,10 @@ public class Player {
 
 	private void close() {
 		if (sidBuilder != null) {
-			for (int i = 0; i < C64.MAX_SIDS; i++) {
-				SIDEmu s = c64.getSID(i);
-				if (s != null) {
-					sidBuilder.unlock(s);
-					c64.setSID(i, null);
-				}
-			}
+			configureSIDs((num, sid) -> {
+				sidBuilder.unlock(sid);
+				c64.setSID(num, null);
+			});
 		}
 		driverSettings.getAudio().getAudioDriver().close();
 	}

@@ -169,7 +169,8 @@ public class SoundSettings extends C64Window {
 		CPUClock systemFrequency = CPUClock.getCPUClock(util.getConfig(), util
 				.getPlayer().getTune());
 		util.getPlayer().configureSIDs(
-				sid -> sid.setSampling(systemFrequency.getCpuFrequency(),
+				(num, sid) -> sid.setSampling(
+						systemFrequency.getCpuFrequency(),
 						audio.getFrequency(), audio.getSampling()));
 	}
 

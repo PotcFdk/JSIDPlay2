@@ -162,7 +162,7 @@ public class EmulationSettings extends C64Window {
 			addFilters(userSidModel);
 		}
 		util.getPlayer().updateSIDs();
-		util.getPlayer().configureSIDs(sid -> {
+		util.getPlayer().configureSIDs((num, sid) -> {
 			sid.setFilter(util.getConfig());
 			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
 		});
@@ -179,7 +179,7 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setStereoSidModel(stereoSidModel);
 		}
 		util.getPlayer().updateSIDs();
-		util.getPlayer().configureSIDs(sid -> {
+		util.getPlayer().configureSIDs((num, sid) -> {
 			sid.setFilter(util.getConfig());
 			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
 		});
@@ -203,7 +203,8 @@ public class EmulationSettings extends C64Window {
 	private void setDigiBoost() {
 		boolean selected = boosted8580.isSelected();
 		util.getConfig().getEmulation().setDigiBoosted8580(selected);
-		util.getPlayer().configureSIDs(sid -> sid.input(selected ? 0x7FF : 0));
+		util.getPlayer().configureSIDs(
+				(num, sid) -> sid.input(selected ? 0x7FF : 0));
 	}
 
 	@FXML
@@ -229,7 +230,7 @@ public class EmulationSettings extends C64Window {
 		}
 
 		util.getPlayer().updateSIDs();
-		util.getPlayer().configureSIDs(sid -> {
+		util.getPlayer().configureSIDs((num, sid) -> {
 			sid.setFilter(util.getConfig());
 			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
 		});
