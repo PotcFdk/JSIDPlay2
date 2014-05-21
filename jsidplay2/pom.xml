@@ -329,6 +329,7 @@
 									<directory>src/main/deploy/jsidplay2</directory>
 									<excludes>
 										<exclude>**/*.htm</exclude>
+										<exclude>**/*.txt</exclude>
 									</excludes>
 								</resource>
 								<resource>
@@ -336,6 +337,7 @@
 									<filtering>true</filtering>
 									<includes>
 										<include>**/*.htm</include>
+										<include>**/*.txt</include>
 									</includes>
 								</resource>
 							</resources>

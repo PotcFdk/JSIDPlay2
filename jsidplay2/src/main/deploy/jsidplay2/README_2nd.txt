@@ -59,7 +59,7 @@ JSIDDevice can be used for playback with ACID64 (http://www.acid64.com/).
 Install and launch ACID64 using the latest version.
 Now you are able to switch between the emulation and the real SID chip (HardSID4U sound-card) in ACID64 on the fly.
 Instead of launching the whole player JSIDPlay2 you must use the slim JSIDDevice
-"jsiddevice-3.0.jar",
+"jsiddevice-${project.version}.jar",
 which shows up as a little icon in the system tray.
 Now you can use ACID64 with it.
 In the system tray JSIDDevice has a context menu to read the credits or to exit the Network SID Device.
@@ -71,4 +71,4 @@ You can call "java -jar jump3r-1.0.jar" to make use of it. It is fully compatibl
 An "Auto Online Configuration" in the HVSC, CGSC, HVMEC, Demos, Magazines and Games makes it possible
 to use prepared contents from our projects web-site without the need of a manual download.
 However you can modify the contents by yourself. It is stored in the default temp directory:
-<user_home>/.jsidplay2 (e.g. C:/users/Ken/.jsidplay2)
+<user_home>/.${project.name} (e.g. C:/users/Ken/.${project.name})

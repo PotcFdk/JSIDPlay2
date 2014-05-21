@@ -72,11 +72,11 @@ Since configured contents (HVSC, CGSC, etc.) must be stored on the same drive.
 
 How to start JSIDPlay2? That depends on what you want to start.
 - For the UI version:
-Type "jsidplay2.exe" (Windows)
-or Type "java -jar jsidlay2-3.0.jar" (Linux, Mac OS X)
+Type "${project.name}-${project.version}.exe" (Windows)
+or Type "java -jar ${project.name}-${project.version}.jar" (Linux, Mac OS X)
 - For the console player:
-Type "jsidplay2_console.exe" (Windows)
-or Type "java -jar jsidlay2_console-3.0.jar" (Linux, Mac OS X)
+Type "${project.name}_console-${project.version}.exe" (Windows)
+or Type "java -jar ${project.name}_console-${project.version}.jar" (Linux, Mac OS X)
 
 10. How compatible is JSIDPlay2?
 JSIDPlay2 is known to be a very accurate C64 emulator.
