@@ -68,7 +68,7 @@ public class SoundSettings extends C64Window {
 			soundDevice.getSelectionModel().select(2);
 		} else if (audio == Audio.LIVE_MP3 && sid == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(3);
-		} else if (audio == Audio.COMPARE && sid == Emulation.RESID) {
+		} else if (audio == Audio.COMPARE_MP3 && sid == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(4);
 		} else {
 			soundDevice.getSelectionModel().select(0);
@@ -128,7 +128,7 @@ public class SoundSettings extends C64Window {
 			break;
 		case 4:
 			util.getPlayer().setDriverSettings(
-					new DriverSettings(Audio.COMPARE, Emulation.RESID));
+					new DriverSettings(Audio.COMPARE_MP3, Emulation.RESID));
 			break;
 
 		}

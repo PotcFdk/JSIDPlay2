@@ -70,6 +70,7 @@ import libsidplay.player.FakeStereo;
 import libsidplay.player.PlayList;
 import libsidplay.player.State;
 import libsidplay.player.Timer;
+import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PRG2TAP;
@@ -84,6 +85,7 @@ import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ChipModel;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
+import sidplay.audio.CmpMP3File;
 import sidplay.audio.NaturalFinishedException;
 import sidplay.audio.RecordingFilenameProvider;
 import sidplay.ini.intf.IConfig;
@@ -175,7 +177,7 @@ public class Player {
 	 * Audio driver and emulation setting.
 	 */
 	private DriverSettings driverSettings = new DriverSettings(Audio.SOUNDCARD,
-			Emulation.RESID);
+			Emulation.RESID), oldDriverSettings;
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -827,13 +829,15 @@ public class Player {
 		driverSettings.getAudio().getAudioDriver()
 				.setRecordingFilenameProvider(recordingFilenameProvider);
 
-		// 1. handle MP3 play-back (replaces audio driver and emulation)
-		driverSettings.handleMP3(config, tune);
-
-		// 2. Create SIDbuilder (may change audio driver to NIL audio driver)
+		// replace driver settings formp3
+		driverSettings = handleMP3(config, tune, driverSettings);
+		// create SID builder for hardware or emulation
 		sidBuilder = createSIDBuilder(cpuClock, audioConfig);
-
-		// 3. open audio driver (eventually NIL audio driver)
+		// may change audio driver to NIL audio driver
+		if (sidBuilder != null) {
+			driverSettings = sidBuilder.init(driverSettings);
+		}
+		// open audio driver (eventually NIL audio driver)
 		try {
 			driverSettings.getAudio().getAudioDriver().open(audioConfig);
 		} catch (LineUnavailableException | UnsupportedAudioFileException
@@ -859,12 +863,15 @@ public class Player {
 		stateProperty.set(State.RUNNING);
 	}
 
+	/**
+	 * Configure SID chip implementation to be used.
+	 */
 	private SIDBuilder createSIDBuilder(CPUClock cpuClock,
 			AudioConfig audioConfig) {
 		switch (driverSettings.getEmulation()) {
 		case RESID:
-			return new ReSIDBuilder(config, driverSettings, audioConfig,
-					cpuClock);
+			return new ReSIDBuilder(config, driverSettings.getAudio()
+					.getAudioDriver(), audioConfig, cpuClock);
 
 		case HARDSID:
 			return new HardSIDBuilder(config);
@@ -872,6 +879,36 @@ public class Player {
 		default:
 			return null;
 		}
+	}
+
+	public DriverSettings handleMP3(final IConfig config, final SidTune tune,
+			DriverSettings driverSettings) {
+		DriverSettings newDriverSettings = driverSettings;
+		if (oldDriverSettings != null && !(tune instanceof MP3Tune)) {
+			// restore settings after MP3 has been played last time
+			newDriverSettings = oldDriverSettings;
+			oldDriverSettings = null;
+		} else if (oldDriverSettings == null && tune instanceof MP3Tune) {
+			// save settings
+			oldDriverSettings = driverSettings;
+		}
+		if (tune instanceof MP3Tune) {
+			// MP3 play-back? Change to MP3 compare driver
+			final MP3Tune mp3 = (MP3Tune) tune;
+			final CmpMP3File driver = (CmpMP3File) Audio.COMPARE_MP3
+					.getAudioDriver();
+			driver.setPlayOriginal(true);
+			driver.setMp3File(new File(mp3.getMP3Filename()));
+			newDriverSettings = new DriverSettings(Audio.COMPARE_MP3,
+					Emulation.RESID);
+		} else if (newDriverSettings.getAudio() == Audio.COMPARE_MP3) {
+			// Set audio compare settings
+			final CmpMP3File cmpMp3Driver = (CmpMP3File) Audio.COMPARE_MP3
+					.getAudioDriver();
+			cmpMp3Driver.setPlayOriginal(config.getAudio().isPlayOriginal());
+			cmpMp3Driver.setMp3File(new File(config.getAudio().getMp3File()));
+		}
+		return newDriverSettings;
 	}
 
 	private void setStereoSIDAddress() {
@@ -940,8 +977,7 @@ public class Player {
 
 			if (seconds == timer.getStart()) {
 				if (sidBuilder != null) {
-					// Switch from the NIL audio driver to the real audio driver
-					sidBuilder.open();
+					driverSettings = sidBuilder.open(driverSettings);
 				}
 			}
 			// Only for tunes: if play time is over loop or exit

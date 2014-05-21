@@ -14,7 +14,7 @@ public enum Audio {
 	/** Java Sound API and MP3 file write. */
 	LIVE_MP3(new ProxyDriver(new JavaSound(), new MP3File())),
 	/** Java Sound API plus recording playback. */
-	COMPARE(new CmpMP3File());
+	COMPARE_MP3(new CmpMP3File());
 
 	private final AudioDriver audioDriver;
 
