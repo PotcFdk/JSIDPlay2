@@ -859,7 +859,7 @@ public class Player {
 		driverSettings.getAudio().getAudioDriver()
 				.setRecordingFilenameProvider(recordingFilenameProvider);
 
-		// replace driver settings formp3
+		// replace driver settings for mp3
 		driverSettings = handleMP3(config, tune, driverSettings);
 		// create SID builder for hardware or emulation
 		sidBuilder = createSIDBuilder(cpuClock, audioConfig);
