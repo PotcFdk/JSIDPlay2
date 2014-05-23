@@ -33,13 +33,11 @@ import libsidplay.player.DriverSettings;
 import resid_builder.resid.ChipModel;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
-import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IConfig;
 
 public class ReSIDBuilder extends SIDBuilder {
 	/** Current audio configuration */
 	private final AudioConfig audioConfig;
-	private final AudioDriver audioDriver;
 
 	/** List of SID instances */
 	protected List<ReSID> sids = new ArrayList<ReSID>();
@@ -51,11 +49,10 @@ public class ReSIDBuilder extends SIDBuilder {
 	private final double systemFrequency;
 
 	/** output driver (for temporary storage while fast forwarding tune) */
-	protected Audio realAudio;
+	protected Audio audio, realAudio;
 
-	public ReSIDBuilder(IConfig config, AudioDriver audioDriver,
-			AudioConfig audioConfig, CPUClock cpuClock) {
-		this.audioDriver = audioDriver;
+	public ReSIDBuilder(IConfig config, AudioConfig audioConfig,
+			CPUClock cpuClock) {
 		this.audioConfig = audioConfig;
 		this.systemFrequency = cpuClock.getCpuFrequency();
 		setMixerVolume(0, config.getAudio().getLeftVolume());
@@ -115,7 +112,7 @@ public class ReSIDBuilder extends SIDBuilder {
 			 * chip1's.
 			 */
 
-			final ByteBuffer soundBuffer = audioDriver.buffer();
+			final ByteBuffer soundBuffer = audio.getAudioDriver().buffer();
 			for (int i = 0; i < samples; i++) {
 				int dither = triangularDithering();
 				int value = (buf1[i] * volume[0] + dither) >> 10;
@@ -140,7 +137,7 @@ public class ReSIDBuilder extends SIDBuilder {
 				}
 
 				if (soundBuffer.remaining() == 0) {
-					audioDriver.write();
+					audio.getAudioDriver().write();
 					soundBuffer.clear();
 				}
 			}
@@ -200,23 +197,29 @@ public class ReSIDBuilder extends SIDBuilder {
 
 	@Override
 	public DriverSettings init(DriverSettings driverSettings) {
-		// save original driver
-		realAudio = driverSettings.getAudio();
-		// switch to NIL driver for fast forward
+		// save original driver, switch to NIL driver
+		this.realAudio = driverSettings.getAudio();
+		this.audio = Audio.NONE;
 		return new DriverSettings(Audio.NONE, driverSettings.getEmulation());
 	}
 
 	@Override
 	public DriverSettings open(DriverSettings driverSettings) {
-		// close NIL driver
-		Audio.NONE.getAudioDriver().close();
 		// restore original driver and open
+		DriverSettings newDriverSettings = close(driverSettings);
 		try {
 			realAudio.getAudioDriver().open(audioConfig);
 		} catch (LineUnavailableException | UnsupportedAudioFileException
 				| IOException e) {
 			throw new RuntimeException(e);
 		}
+		return newDriverSettings;
+	}
+
+	@Override
+	public DriverSettings close(DriverSettings driverSettings) {
+		audio = realAudio;
 		return new DriverSettings(realAudio, driverSettings.getEmulation());
 	}
+
 }

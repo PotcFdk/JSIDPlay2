@@ -146,11 +146,11 @@ public class Player {
 	/**
 	 * Play timer.
 	 */
-	private final Timer timer = new Timer();
+	private final Timer timer;
 	/**
 	 * Play list.
 	 */
-	private PlayList playList = PlayList.NONE;
+	private PlayList playList;
 	/**
 	 * Currently played tune.
 	 */
@@ -288,6 +288,34 @@ public class Player {
 		this.iecBus.setSerialDevices(serialDevices);
 		this.c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(),
 				c1541.getEventScheduler());
+
+		this.playList = PlayList.NONE;
+		this.timer = new Timer(this) {
+			@Override
+			public void start() {
+				if (sidBuilder != null) {
+					driverSettings = sidBuilder.open(driverSettings);
+				}
+			}
+
+			@Override
+			public void end() {
+				// Only for tunes: if play time is over loop or exit
+				if (tune != null) {
+					if (config.getSidplay2().isSingle()) {
+						stateProperty.set(getEndState());
+					} else {
+						// Check play-list end
+						if (playList.hasNext()) {
+							nextSong();
+						} else {
+							stateProperty.set(getEndState());
+						}
+					}
+				}
+
+			}
+		};
 	}
 
 	/**
@@ -327,6 +355,7 @@ public class Player {
 		c64.reset();
 		iecBus.reset();
 		datasette.reset();
+		timer.reset();
 
 		// Reset Floppies
 		for (final C1541 floppy : floppies) {
@@ -856,9 +885,6 @@ public class Player {
 		});
 		setStereoSIDAddress();
 
-		updateStopTime();
-		timer.setCurrent(-1);
-
 		reset();
 
 		stateProperty.set(State.RUNNING);
@@ -871,8 +897,7 @@ public class Player {
 			AudioConfig audioConfig) {
 		switch (driverSettings.getEmulation()) {
 		case RESID:
-			return new ReSIDBuilder(config, driverSettings.getAudio()
-					.getAudioDriver(), audioConfig, cpuClock);
+			return new ReSIDBuilder(config, audioConfig, cpuClock);
 
 		case HARDSID:
 			return new HardSIDBuilder(config);
@@ -949,53 +974,12 @@ public class Player {
 	}
 
 	/**
-	 * Set stop time according to the song length database (or use default
-	 * length).
-	 */
-	public final void updateStopTime() {
-		// default play default length or forever (0) ...
-		timer.setStop(config.getSidplay2().getDefaultPlayLength());
-		if (config.getSidplay2().isEnableDatabase()) {
-			int length = tune != null ? getSidDatabaseInfo(db -> db
-					.length(tune)) : 0;
-			if (length > 0) {
-				// ... or use song length of song length database
-				timer.setStop(length);
-			}
-		}
-	}
-
-	/**
 	 * Play routine emulating a number of events (handle switches to next song
 	 * etc.)
 	 * 
 	 * @throws InterruptedException
 	 */
 	private boolean play() throws InterruptedException {
-		final int seconds = time();
-		if (seconds != timer.getCurrent()) {
-			timer.setCurrent(seconds);
-
-			if (seconds == timer.getStart()) {
-				if (sidBuilder != null) {
-					driverSettings = sidBuilder.open(driverSettings);
-				}
-			}
-			// Only for tunes: if play time is over loop or exit
-			if (tune != null && timer.getStop() != 0
-					&& seconds >= timer.getStart() + timer.getStop()) {
-				if (config.getSidplay2().isSingle()) {
-					stateProperty.set(getEndState());
-				} else {
-					// Check play-list end
-					if (playList.hasNext()) {
-						nextSong();
-					} else {
-						stateProperty.set(getEndState());
-					}
-				}
-			}
-		}
 		if (stateProperty.get() == State.RUNNING) {
 			try {
 				for (int i = 0; i < NUM_EVENTS_TO_PLAY; i++) {
@@ -1016,6 +1000,7 @@ public class Player {
 
 	private void close() {
 		if (sidBuilder != null) {
+			driverSettings = sidBuilder.close(driverSettings);
 			configureSIDs((num, sid) -> {
 				sidBuilder.unlock(sid);
 				c64.setSID(num, null);

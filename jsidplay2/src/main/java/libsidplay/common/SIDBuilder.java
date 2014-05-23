@@ -30,4 +30,5 @@ public abstract class SIDBuilder {
 	public abstract int getNumDevices();
 	public DriverSettings init(DriverSettings driverSettings) {return driverSettings;};
 	public DriverSettings open(DriverSettings driverSettings) {return driverSettings;};
+	public DriverSettings close(DriverSettings driverSettings) {return driverSettings;};
 }

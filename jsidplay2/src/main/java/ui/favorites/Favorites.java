@@ -268,7 +268,7 @@ public class Favorites extends Tab implements UIPart {
 	private void doEnableSldb() {
 		util.getConfig().getSidplay2()
 				.setEnableDatabase(enableSldb.isSelected());
-		util.getPlayer().updateStopTime();
+		util.getPlayer().getTimer().updateLength();
 	}
 
 	@FXML
@@ -283,7 +283,7 @@ public class Favorites extends Tab implements UIPart {
 		final int secs = IniReader.parseTime(defaultTime.getText());
 		if (secs != -1) {
 			util.getConfig().getSidplay2().setDefaultPlayLength(secs);
-			util.getPlayer().updateStopTime();
+			util.getPlayer().getTimer().updateLength();
 			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
 			defaultTime.setTooltip(tooltip);
 			defaultTime.getStyleClass().add(CELL_VALUE_OK);
