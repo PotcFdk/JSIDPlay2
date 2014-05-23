@@ -29,36 +29,12 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
-import libsidplay.player.DriverSettings;
 import resid_builder.resid.ChipModel;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.ini.intf.IConfig;
 
 public class ReSIDBuilder extends SIDBuilder {
-	/** Current audio configuration */
-	private final AudioConfig audioConfig;
-
-	/** List of SID instances */
-	protected List<ReSID> sids = new ArrayList<ReSID>();
-
-	/** Mixing algorithm */
-	private final MixerEvent mixerEvent = new MixerEvent();
-
-	/** C64 system frequency */
-	private final double systemFrequency;
-
-	/** output driver (for temporary storage while fast forwarding tune) */
-	protected Audio audio, realAudio;
-
-	public ReSIDBuilder(IConfig config, AudioConfig audioConfig,
-			CPUClock cpuClock) {
-		this.audioConfig = audioConfig;
-		this.systemFrequency = cpuClock.getCpuFrequency();
-		setMixerVolume(0, config.getAudio().getLeftVolume());
-		setMixerVolume(1, config.getAudio().getRightVolume());
-	}
-
 	protected class MixerEvent extends Event {
 		/** Random source for triangular dithering */
 		private final Random RANDOM = new Random();
@@ -155,6 +131,36 @@ public class ReSIDBuilder extends SIDBuilder {
 		}
 	}
 
+	/** Current audio configuration */
+	private final AudioConfig audioConfig;
+
+	/** C64 system frequency */
+	private final CPUClock cpuClock;
+
+	/** output driver */
+	protected Audio audio, realAudio;
+
+	/** List of SID instances */
+	protected List<ReSID> sids = new ArrayList<ReSID>();
+
+	/** Mixing algorithm */
+	private final MixerEvent mixerEvent = new MixerEvent();
+
+	public ReSIDBuilder(IConfig config, AudioConfig audioConfig,
+			CPUClock cpuClock, Audio audio) {
+		this.audioConfig = audioConfig;
+		this.cpuClock = cpuClock;
+		this.audio = audio;
+		setMixerVolume(0, config.getAudio().getLeftVolume());
+		setMixerVolume(1, config.getAudio().getRightVolume());
+		switchToNullDriver();
+	}
+
+	@Override
+	public void start() {
+		switchToAudioDriver();
+	}
+
 	@Override
 	public SIDEmu lock(final EventScheduler evt, SIDEmu device, ChipModel model) {
 		if (device == null) {
@@ -163,18 +169,6 @@ public class ReSIDBuilder extends SIDBuilder {
 			device.setChipModel(model);
 		}
 		return device;
-	}
-
-	/**
-	 * Make a new SID of right type
-	 */
-	private SIDEmu lock(final EventScheduler env, final ChipModel model) {
-		final ReSID sid = new ReSID(env, mixerEvent);
-		sid.setChipModel(model);
-		sid.setSampling(systemFrequency, audioConfig.getFrameRate(),
-				audioConfig.getSamplingMethod());
-		sids.add(sid);
-		return sid;
 	}
 
 	/**
@@ -195,31 +189,37 @@ public class ReSIDBuilder extends SIDBuilder {
 		return sids.size();
 	}
 
-	@Override
-	public DriverSettings init(DriverSettings driverSettings) {
-		// save original driver, switch to NIL driver
-		this.realAudio = driverSettings.getAudio();
-		this.audio = Audio.NONE;
-		return new DriverSettings(Audio.NONE, driverSettings.getEmulation());
+	/**
+	 * Make a new SID of right type
+	 */
+	private SIDEmu lock(final EventScheduler env, final ChipModel model) {
+		final ReSID sid = new ReSID(env, mixerEvent);
+		sid.setChipModel(model);
+		sid.setSampling(cpuClock.getCpuFrequency(), audioConfig.getFrameRate(),
+				audioConfig.getSamplingMethod());
+		sids.add(sid);
+		return sid;
 	}
 
-	@Override
-	public DriverSettings open(DriverSettings driverSettings) {
-		// restore original driver and open
-		DriverSettings newDriverSettings = close(driverSettings);
+	/**
+	 * Before the timer start time is being reached, use NULL driver to shorten
+	 * the duration to wait for the user.
+	 */
+	private void switchToNullDriver() {
+		this.realAudio = audio;
+		this.audio = Audio.NONE;
 		try {
-			realAudio.getAudioDriver().open(audioConfig);
+			Audio.NONE.getAudioDriver().open(audioConfig);
 		} catch (LineUnavailableException | UnsupportedAudioFileException
 				| IOException e) {
-			throw new RuntimeException(e);
 		}
-		return newDriverSettings;
 	}
 
-	@Override
-	public DriverSettings close(DriverSettings driverSettings) {
+	/**
+	 * When the start time is being reached, switch to the real audio output.
+	 */
+	private void switchToAudioDriver() {
 		audio = realAudio;
-		return new DriverSettings(realAudio, driverSettings.getEmulation());
 	}
 
 }

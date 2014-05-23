@@ -204,7 +204,6 @@ public class Player {
 	 */
 	public Player(IConfig config) {
 		this.config = config;
-		initializeTmpDir();
 		this.iecBus = new IECBus();
 
 		this.printer = new MPS803(this.iecBus, (byte) 4, (byte) 7) {
@@ -294,7 +293,7 @@ public class Player {
 			@Override
 			public void start() {
 				if (sidBuilder != null) {
-					driverSettings = sidBuilder.open(driverSettings);
+					sidBuilder.start();
 				}
 			}
 
@@ -316,10 +315,12 @@ public class Player {
 
 			}
 		};
+		initializeTmpDir();
 	}
 
 	/**
-	 * Create temp directory, if it does not exist.
+	 * Create temporary directory, if it does not exist.<BR>
+	 * Note: Converted tapes and HardSID libraries will be saved here!
 	 */
 	private void initializeTmpDir() {
 		File tmpDir = new File(config.getSidplay2().getTmpDir());
@@ -422,7 +423,7 @@ public class Player {
 		}
 	}
 
-	public final void typeInCommand(String runCommand) {
+	private void typeInCommand(final String runCommand) {
 		byte[] ram = c64.getRAM();
 		for (int i = 0; i < Math.min(runCommand.length(), 16); i++) {
 			ram[0x277 + i] = (byte) runCommand.charAt(i);
@@ -652,10 +653,16 @@ public class Player {
 		this.command = command;
 	}
 
+	/**
+	 * Get current play-list.
+	 */
 	public final PlayList getPlayList() {
 		return playList;
 	}
 
+	/**
+	 * Get current timer.
+	 */
 	public final Timer getTimer() {
 		return timer;
 	}
@@ -863,11 +870,7 @@ public class Player {
 		driverSettings = handleMP3(config, tune, driverSettings);
 		// create SID builder for hardware or emulation
 		sidBuilder = createSIDBuilder(cpuClock, audioConfig);
-		// may change audio driver to NIL audio driver
-		if (sidBuilder != null) {
-			driverSettings = sidBuilder.init(driverSettings);
-		}
-		// open audio driver (eventually NIL audio driver)
+		// open audio driver
 		try {
 			driverSettings.getAudio().getAudioDriver().open(audioConfig);
 		} catch (LineUnavailableException | UnsupportedAudioFileException
@@ -897,7 +900,8 @@ public class Player {
 			AudioConfig audioConfig) {
 		switch (driverSettings.getEmulation()) {
 		case RESID:
-			return new ReSIDBuilder(config, audioConfig, cpuClock);
+			return new ReSIDBuilder(config, audioConfig, cpuClock,
+					driverSettings.getAudio());
 
 		case HARDSID:
 			return new HardSIDBuilder(config);
@@ -907,6 +911,10 @@ public class Player {
 		}
 	}
 
+	/**
+	 * MP3 play-back is using the COMPARE audio driver. Old settings are saved
+	 * and restored choosing mp3 or normal tune files to play.
+	 */
 	public DriverSettings handleMP3(final IConfig config, final SidTune tune,
 			DriverSettings driverSettings) {
 		DriverSettings newDriverSettings = driverSettings;
@@ -919,20 +927,16 @@ public class Player {
 			oldDriverSettings = driverSettings;
 		}
 		if (tune instanceof MP3Tune) {
-			// MP3 play-back? Change to MP3 compare driver
-			final MP3Tune mp3 = (MP3Tune) tune;
-			final CmpMP3File driver = (CmpMP3File) Audio.COMPARE_MP3
-					.getAudioDriver();
+			CmpMP3File driver = (CmpMP3File) Audio.COMPARE_MP3.getAudioDriver();
 			driver.setPlayOriginal(true);
-			driver.setMp3File(new File(mp3.getMP3Filename()));
+			driver.setMp3File(new File(((MP3Tune) tune).getMP3Filename()));
 			newDriverSettings = new DriverSettings(Audio.COMPARE_MP3,
 					Emulation.RESID);
 		} else if (newDriverSettings.getAudio() == Audio.COMPARE_MP3) {
-			// Set audio compare settings
-			final CmpMP3File cmpMp3Driver = (CmpMP3File) Audio.COMPARE_MP3
-					.getAudioDriver();
-			cmpMp3Driver.setPlayOriginal(config.getAudio().isPlayOriginal());
-			cmpMp3Driver.setMp3File(new File(config.getAudio().getMp3File()));
+			// Set audio compare settings, to judge emulation quality
+			CmpMP3File driver = (CmpMP3File) Audio.COMPARE_MP3.getAudioDriver();
+			driver.setPlayOriginal(config.getAudio().isPlayOriginal());
+			driver.setMp3File(new File(config.getAudio().getMp3File()));
 		}
 		return newDriverSettings;
 	}
@@ -952,9 +956,9 @@ public class Player {
 	}
 
 	/**
-	 * Change SIDs according to the configured chip models. Note: Depending on
-	 * the SIDBuilder implementation the SID chip could be reused or created
-	 * from scratch.
+	 * Change SIDs according to the configured chip models.<BR>
+	 * Note: Depending on the SIDBuilder implementation the SID chip could be
+	 * reused or re-created from scratch.
 	 */
 	public final void updateSIDs() {
 		EventScheduler eventScheduler = c64.getEventScheduler();
@@ -974,8 +978,7 @@ public class Player {
 	}
 
 	/**
-	 * Play routine emulating a number of events (handle switches to next song
-	 * etc.)
+	 * Play routine emulating a number of events.
 	 * 
 	 * @throws InterruptedException
 	 */
@@ -987,7 +990,6 @@ public class Player {
 				}
 			} catch (NaturalFinishedException e) {
 				stateProperty.set(getEndState());
-				throw e;
 			}
 		}
 		return stateProperty.get() == State.RUNNING
@@ -1000,7 +1002,6 @@ public class Player {
 
 	private void close() {
 		if (sidBuilder != null) {
-			driverSettings = sidBuilder.close(driverSettings);
 			configureSIDs((num, sid) -> {
 				sidBuilder.unlock(sid);
 				c64.setSID(num, null);

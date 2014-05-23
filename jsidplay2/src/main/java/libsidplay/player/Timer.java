@@ -8,10 +8,23 @@ import libsidplay.sidtune.SidTune;
 import sidplay.ini.intf.IConfig;
 
 /**
- * The timer contains the start and length of a currently played song. It
- * notifies about reaching the start and end of a song.
+ * The timer contains the start and end time of a currently played song. It
+ * notifies about reaching the start and end time by calling start/stop methods.
  */
 public abstract class Timer {
+	final Event startTimeEvent = new Event("Timer Start") {
+		@Override
+		public void event() throws InterruptedException {
+			start();
+		}
+	};
+
+	final Event endTimeEvent = new Event("Timer End") {
+		@Override
+		public void event() throws InterruptedException {
+			end();
+		}
+	};
 
 	/**
 	 * Timer start time in seconds.
@@ -19,9 +32,9 @@ public abstract class Timer {
 	private long start;
 
 	/**
-	 * Timer length in seconds
+	 * Timer end in seconds
 	 */
-	private long length;
+	private long end;
 
 	/**
 	 * The player.
@@ -38,31 +51,31 @@ public abstract class Timer {
 
 	public final void reset() {
 		schedule(start, startTimeEvent);
-		updateLength();
+		updateEnd();
 	}
 
 	/**
-	 * Update timer length.
+	 * Update timer end.
 	 * <UL>
-	 * <LI>SLDB enabled and song length well known -> use song length
-	 * <LI>default length -> use default length relative to start
-	 * <LI>default length == 0 -> play forever
+	 * <LI>SLDB enabled and song length well known? Use song length
+	 * <LI>default length? Use default length relative to start
+	 * <LI>default length == 0? Play forever
 	 * </UL>
 	 */
-	public final void updateLength() {
+	public final void updateEnd() {
 		final IConfig config = player.getConfig();
 		final SidTune tune = player.getTune();
 		// default play default length or forever (0) ...
-		length = config.getSidplay2().getDefaultPlayLength();
-		if (length != 0) {
-			// default length is relative to start
-			length = schedule(start + length, endTimeEvent);
+		end = config.getSidplay2().getDefaultPlayLength();
+		if (end != 0) {
+			// use default length (is meant to be relative to start)
+			end = schedule(start + end, endTimeEvent);
 		}
 		if (tune != null && config.getSidplay2().isEnableDatabase()) {
-			int tuneLength = player.getSidDatabaseInfo(db -> db.length(tune));
-			if (tuneLength > 0) {
+			int songLength = player.getSidDatabaseInfo(db -> db.length(tune));
+			if (songLength > 0) {
 				// ... or use song length of song length database
-				length = schedule(tuneLength, endTimeEvent);
+				end = schedule(songLength, endTimeEvent);
 			}
 		}
 	}
@@ -85,23 +98,9 @@ public abstract class Timer {
 		return seconds;
 	}
 
-	public long getLength() {
-		return length;
+	public long getEnd() {
+		return end;
 	}
-
-	final Event startTimeEvent = new Event("Timer Start") {
-		@Override
-		public void event() throws InterruptedException {
-			start();
-		}
-	};
-
-	final Event endTimeEvent = new Event("Timer End") {
-		@Override
-		public void event() throws InterruptedException {
-			end();
-		}
-	};
 
 	public abstract void start();
 

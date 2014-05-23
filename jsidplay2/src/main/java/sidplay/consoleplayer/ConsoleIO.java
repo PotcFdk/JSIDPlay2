@@ -151,9 +151,9 @@ public class ConsoleIO {
 			final IConsoleSection console, final Timer timer) {
 		out.printf("%c %-12s : ", console.getVertical(),
 				BUNDLE.getString("SONG_LENGTH"));
-		if (timer.getLength() != 0) {
+		if (timer.getEnd() != 0) {
 			String time = String.format("%02d:%02d",
-					(timer.getLength() / 60 % 100), (timer.getLength() % 60));
+					(timer.getEnd() / 60 % 100), (timer.getEnd() % 60));
 			out.printf("%37s %c\n", time, console.getVertical());
 		} else {
 			out.printf("%37s %c\n", BUNDLE.getString("UNLIMITED"),
