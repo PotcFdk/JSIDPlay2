@@ -65,6 +65,8 @@ public abstract class Timer {
 	public final void updateEnd() {
 		final IConfig config = player.getConfig();
 		final SidTune tune = player.getTune();
+		// cancel last stop time event
+		cancel(endTimeEvent);
 		// default play default length or forever (0) ...
 		end = config.getSidplay2().getDefaultPlayLength();
 		if (end != 0) {
@@ -90,7 +92,7 @@ public abstract class Timer {
 		long absoluteCycles = (long) (seconds * cyclesPerSecond);
 		eventScheduler.cancel(event);
 		if (absoluteCycles < eventScheduler.getTime(Phase.PHI1)) {
-			// event is in the past
+			// event is in the past? Trigger immediately!
 			eventScheduler.scheduleAbsolute(event, 0, Phase.PHI1);
 		} else {
 			eventScheduler.scheduleAbsolute(event, absoluteCycles, Phase.PHI1);
@@ -98,6 +100,14 @@ public abstract class Timer {
 		return seconds;
 	}
 
+	/**
+	 * Cancel event.
+	 */
+	private void cancel(Event event) {
+		EventScheduler eventScheduler = player.getC64().getEventScheduler();
+		eventScheduler.cancel(event);
+	}
+	
 	public long getEnd() {
 		return end;
 	}
