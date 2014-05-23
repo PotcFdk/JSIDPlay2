@@ -1,43 +1,45 @@
 package libsidutils.cpuparser;
 
 public class CPUCommand {
-	private int fOpCode;
-	private String fCmd;
-	private String fAddressing;
-	private String fFormat;
-	private int fByteCount;
-	private String fCycles;
-	
-	public CPUCommand(int opCode, String cmd, String addressing, String format, int byteCount, String cycles) {
-		fOpCode = opCode;
-		fCmd = cmd;
-		fAddressing = addressing;
-		fFormat = format;
-		fByteCount = byteCount;
-		fCycles = cycles;
+	private final int opCode;
+	private final String cmd;
+	private final String addressing;
+	private final String format;
+	private final int byteCount;
+	private final String cycles;
+
+	public CPUCommand(final int opCode, final String cmd,
+			final String addressing, final String format, final int byteCount,
+			final String cycles) {
+		this.opCode = opCode;
+		this.cmd = cmd;
+		this.addressing = addressing;
+		this.format = format;
+		this.byteCount = byteCount;
+		this.cycles = cycles;
 	}
-	
+
 	public int getOpCode() {
-		return fOpCode;
+		return opCode;
 	}
-	
+
 	public String getCmd() {
-		return fCmd;
+		return cmd;
 	}
-	
+
 	public String getAddressing() {
-		return fAddressing;
+		return addressing;
 	}
-	
+
 	public String getFormat() {
-		return fFormat;
+		return format;
 	}
-	
+
 	public int getByteCount() {
-		return fByteCount;
+		return byteCount;
 	}
 
 	public String getCycles() {
-		return fCycles;
+		return cycles;
 	}
 }

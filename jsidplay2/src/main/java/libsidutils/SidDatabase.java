@@ -33,24 +33,21 @@ public class SidDatabase {
 		int length = 0;
 		final String md5 = tune.getMD5Digest();
 		for (int i = 1; i <= tune.getInfo().getSongs(); i++) {
-			length += length(md5, i);
+			length += getLength(md5, i);
 		}
 		return length;
 	}
 
-	public int length(final SidTune tune) {
+	public int getSongLength(final SidTune tune) {
 		final int song = tune.getInfo().getCurrentSong();
-		if (song == 0) {
-			return -1;
-		}
 		final String md5 = tune.getMD5Digest();
-		if (md5 == null) {
+		if (song == 0 || md5 == null) {
 			return 0;
 		}
-		return length(md5, song);
+		return getLength(md5, song);
 	}
 
-	private int length(final String md5, final int song) {
+	private int getLength(final String md5, final int song) {
 		final String value = database.getPropertyString("Database", md5, null);
 		return value != null ? parseTimeStamp(value.split(" ")[song - 1]) : 0;
 	}

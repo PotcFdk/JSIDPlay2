@@ -74,7 +74,7 @@ public abstract class Timer {
 			end = schedule(start + end, endTimeEvent);
 		}
 		if (tune != null && config.getSidplay2().isEnableDatabase()) {
-			int songLength = player.getSidDatabaseInfo(db -> db.length(tune));
+			int songLength = player.getSidDatabaseInfo(db -> db.getSongLength(tune));
 			if (songLength > 0) {
 				// ... or use song length of song length database
 				end = schedule(songLength, endTimeEvent);

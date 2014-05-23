@@ -171,7 +171,7 @@ public class ConsolePlayer {
 			// check song length
 			if (defaultLength == 0) {
 				setSIDDatabase(player);
-				int length = player.getSidDatabaseInfo(db -> db.length(tune));
+				int length = player.getSidDatabaseInfo(db -> db.getSongLength(tune));
 				if (isRecording()
 						&& (!config.getSidplay2().isEnableDatabase() || length == 0)) {
 					System.err
