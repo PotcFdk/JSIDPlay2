@@ -1,14 +1,7 @@
 package libsidplay;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
-
-import libpsid64.NotEnoughC64MemException;
-import libpsid64.Psid64;
-import libsidplay.sidtune.SidTuneError;
-import sidplay.ini.IniConfig;
 
 public class Reloc65 {
 
@@ -209,14 +202,4 @@ public class Reloc65 {
 		return s == 2 ? tdiff : 0;
 	}
 
-	public static void main(String[] args) throws NotEnoughC64MemException,
-			IOException, SidTuneError {
-		Psid64 p = new Psid64();
-		p.setTmpDir("D:/");
-		p.convertFiles(
-				new Player(new IniConfig()),
-				new File[] { new File(
-						"d:/workspace/jsidplay2/src/test/resources/pucrunch/Turrican_2-The_Final_Fight.sid") },
-				new File("d:/"));
-	}
 }
