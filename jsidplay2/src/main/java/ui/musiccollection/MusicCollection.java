@@ -455,8 +455,10 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private void convertToPSID64() {
 		DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+		final SidPlay2Section sidPlay2Section = (SidPlay2Section) (util
+				.getConfig().getSidplay2());
+		fileDialog
+				.setInitialDirectory(sidPlay2Section.getLastDirectoryFolder());
 		final File directory = fileDialog.showDialog(fileBrowser.getScene()
 				.getWindow());
 		if (directory != null) {
@@ -469,7 +471,8 @@ public class MusicCollection extends Tab implements UIPart {
 			c.setVerbose(true);
 			try {
 				c.convertFiles(util.getPlayer(),
-						new File[] { selectedItem.getValue() }, directory);
+						new File[] { selectedItem.getValue() }, directory,
+						sidPlay2Section.getHvscFile());
 			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
 				e.printStackTrace();
 			}

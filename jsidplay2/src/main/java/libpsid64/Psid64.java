@@ -23,7 +23,6 @@ import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
 import libsidutils.pucrunch.PUCrunch;
-import ui.entities.config.SidPlay2Section;
 
 public class Psid64 {
 	private static final String PACKAGE = "PSID64";
@@ -733,25 +732,23 @@ public class Psid64 {
 		return null;
 	}
 
-	public void convertFiles(Player player, File[] files, File target)
+	public void convertFiles(Player player, File[] files, File target, File hvscRoot)
 			throws NotEnoughC64MemException, IOException, SidTuneError {
 		for (File file : files) {
 			if (file.isDirectory()) {
-				convertFiles(player, file.listFiles(), target);
+				convertFiles(player, file.listFiles(), target, hvscRoot);
 			} else {
-				convertToPSID64(player, file, target);
+				convertToPSID64(player, file, target, hvscRoot);
 			}
 		}
 	}
 
-	private void convertToPSID64(Player player, File file, File target)
+	private void convertToPSID64(Player player, File file, File target, File hvscRoot)
 			throws NotEnoughC64MemException, IOException, SidTuneError {
 		tune = SidTune.load(file);
 		tune.setSelectedSong(null);
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) player.getConfig()
-				.getSidplay2();
-		String collectionName = PathUtils.getCollectionName(
-				sidPlay2Section.getHvscFile(), file.getPath());
+		String collectionName = PathUtils.getCollectionName(hvscRoot,
+				file.getPath());
 		stilEntry = player.getStilEntry(collectionName);
 
 		File tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file

@@ -337,7 +337,7 @@ public class FavoritesTab extends Tab implements UIPart {
 			c.setVerbose(true);
 			try {
 				c.convertFiles(util.getPlayer(), files.toArray(new File[0]),
-						directory);
+						directory,sidPlay2Section.getHvscFile());
 			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
 				e.printStackTrace();
 			}
