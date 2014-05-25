@@ -467,12 +467,8 @@ class PSid extends Prg {
 					"Can't relocate tune: no pages left to store driver.");
 		}
 
-		relocatedBuffer = relocator.reloc65(driver, driver.length,
+		relocatedBuffer = relocator.reloc65(driver,
 				info.determinedDriverAddr - 10, new HashMap<String, Integer>());
-
-		if (relocatedBuffer == null) {
-			throw new SidTuneError("Failed to relocate driver.");
-		}
 		info.determinedDriverLength = relocatedBuffer.limit() - 10;
 	}
 

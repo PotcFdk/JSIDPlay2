@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import ui.entities.config.SidPlay2Section;
 import libsidplay.Player;
 import libsidplay.Reloc65;
 import libsidplay.sidtune.SidTune;
@@ -24,6 +23,7 @@ import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
 import libsidutils.pucrunch.PUCrunch;
+import ui.entities.config.SidPlay2Section;
 
 public class Psid64 {
 	private static final String PACKAGE = "PSID64";
@@ -309,11 +309,8 @@ public class Psid64 {
 		}
 		// Relocation of C64 PSID driver code.
 		Reloc65 relocator = new Reloc65();
-		ByteBuffer relocated = relocator.reloc65(psidMem, psidMem.length,
+		ByteBuffer relocated = relocator.reloc65(psidMem,
 				freePages.getDriverPage() << 8, globals);
-		if (relocated == null) {
-			throw new RuntimeException(PACKAGE + ": Relocation error.");
-		}
 		storeDriverParameters(relocated.array(), relocated.position(),
 				freePages, tuneInfo);
 		result.setMemory(relocated.array());
