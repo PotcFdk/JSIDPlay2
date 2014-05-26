@@ -5,25 +5,11 @@ import java.util.Map;
 
 public class Reloc65 {
 
-	private byte[] buf;
+	private int tbase, tdiff, tlen, dlen;
 
-	private int tbase, tlen, dlen;
+	private String[] globalStrings;
 
-	private int tdiff;
-
-	private String[] ud;
-
-	private byte[] segt;
-
-	private byte[] segd;
-
-	private byte[] utab;
-
-	private byte[] rttab;
-
-	private byte[] rdtab;
-
-	private byte[] extab;
+	private byte[] buf, segt, segd, utab, rttab, rdtab, extab;
 
 	private Map<String, Integer> globals;
 
@@ -43,16 +29,15 @@ public class Reloc65 {
 		}
 		int mode = readWord(buf, 6);
 		if ((mode & 0x2000) != 0 || (mode & 0x4000) != 0) {
-			throw new RuntimeException(
-					"Reloc65: Invalid mode in header, expected 0!");
+			throw new RuntimeException("Reloc65: Invalid mode in header!");
 		}
 
 		tbase = readWord(buf, 8);
-		tlen = readWord(buf, 10);
 		tdiff = addr - tbase;
+		tlen = readWord(buf, 10);
 		dlen = readWord(buf, 14);
 
-		int headerLength = HEADER_LEN + readOptions(buf, HEADER_LEN);
+		int headerLength = HEADER_LEN + readOptions(buf);
 
 		segt = buf;
 		int segtPos = headerLength;
@@ -84,32 +69,32 @@ public class Reloc65 {
 		return ((buf[pos + 1] & 0xff) << 8) + (buf[pos] & 0xff);
 	}
 
-	private int readOptions(byte[] buf, int pos) {
+	private int readOptions(byte[] buf) {
 		int l = 0;
-		int c = buf[pos + 0] & 0xff;
+		int c = buf[HEADER_LEN] & 0xff;
 		while ((c != 0)) {
 			l += c;
-			c = buf[pos + l] & 0xff;
+			c = buf[HEADER_LEN + l] & 0xff;
 		}
 		return ++l;
 	}
 
 	private int readUndef(byte[] buf, int pos) {
-		int n = readWord(buf, pos);
-		ud = new String[n];
+		globalStrings = new String[readWord(buf, pos)];
 		int endPos = 2;
-		int i = 0;
-		while (i < n) {
+		int currentString = 0;
+		while (currentString < globalStrings.length) {
 			StringBuffer str = new StringBuffer();
-			for (int j = 0; j < buf.length; j++) {
-				if (buf[pos + endPos + j] == 0) {
-					ud[i] = str.toString();
+			for (int i = 0; i < buf.length; i++) {
+				final byte ch = buf[pos + endPos + i];
+				if (ch == 0) {
+					globalStrings[currentString] = str.toString();
 					break;
 				}
-				str.append((char) buf[pos + endPos + j]);
+				str.append((char) ch);
 			}
 			endPos += str.length() + 1;
-			i++;
+			currentString++;
 		}
 		return endPos;
 	}
@@ -117,50 +102,50 @@ public class Reloc65 {
 	private int relocSegment(byte[] buf, int bufPos, int len, byte[] rtab,
 			int rtabPos) {
 		int adr = -1;
-		int type, seg, old, newv;
+		int seg, old;
 		while (rtab[rtabPos] != 0) {
-			if ((rtab[rtabPos] & 255) == 255) {
+			if (rtab[rtabPos] == -1) {
 				adr += 254;
 				rtabPos++;
 			} else {
-				adr += rtab[rtabPos] & 255;
-				rtabPos++;
-				type = rtab[rtabPos] & 0xe0;
-				seg = rtab[rtabPos] & 0x07;
-				rtabPos++;
+				adr += rtab[rtabPos++] & 255;
+				int type = rtab[rtabPos] & 0xe0;
+				seg = rtab[rtabPos++] & 0x07;
 				switch (type) {
 				case 0x80:
-					old = (buf[bufPos + adr] & 0xff) + 256
-							* (buf[bufPos + adr + 1] & 0xff);
-					if (seg != 0)
-						newv = old + reldiff(seg);
-					else
-						newv = old + findGlobal(rtab, rtabPos);
-					buf[bufPos + adr] = (byte) (newv & 255);
-					buf[bufPos + adr + 1] = (byte) ((newv >> 8) & 255);
+					old = readWord(buf, bufPos + adr);
+					if (seg != 0) {
+						writeWord(buf, bufPos + adr, old + reldiff(seg));
+					} else {
+						writeWord(buf, bufPos + adr,
+								old + findGlobal(rtab, rtabPos));
+					}
 					break;
 				case 0x40:
-					old = (buf[bufPos + adr] & 0xff) * 256
-							+ (rtab[rtabPos] & 0xff);
-					if (seg != 0)
-						newv = old + reldiff(seg);
-					else
-						newv = old + findGlobal(rtab, rtabPos);
-					buf[bufPos + adr] = (byte) ((newv >> 8) & 255);
-					rtab[rtabPos] = (byte) (newv & 255);
-					rtabPos++;
+					old = (buf[bufPos + adr] & 0xff) << 8 + (rtab[rtabPos] & 0xff);
+					if (seg != 0) {
+						int newValue = old + reldiff(seg);
+						buf[bufPos + adr] = (byte) (newValue >> 8);
+						rtab[rtabPos++] = (byte) (newValue & 255);
+					} else {
+						int newValue = old + findGlobal(rtab, rtabPos);
+						buf[bufPos + adr] = (byte) (newValue >> 8);
+						rtab[rtabPos++] = (byte) (newValue & 255);
+					}
 					break;
 				case 0x20:
 					old = buf[bufPos + adr] & 0xff;
-					if (seg != 0)
-						newv = old + reldiff(seg);
-					else
-						newv = old + findGlobal(rtab, rtabPos);
-					buf[bufPos + adr] = (byte) (newv & 255);
+					if (seg != 0) {
+						buf[bufPos + adr] = (byte) ((old + reldiff(seg)) & 255);
+					} else {
+						buf[bufPos + adr] = (byte) ((old + findGlobal(rtab,
+								rtabPos)) & 255);
+					}
 					break;
 				}
-				if (seg == 0)
+				if (seg == 0) {
 					rtabPos += 2;
+				}
 			}
 		}
 		if (adr > len) {
@@ -171,8 +156,7 @@ public class Reloc65 {
 	}
 
 	private int findGlobal(byte[] bp, int bpPos) {
-		int nl = (bp[bpPos + 0] & 0xff) + 256 * (bp[bpPos + 1] & 0xff);
-		String name = ud[nl];
+		final String name = globalStrings[readWord(bp, bpPos)];
 		return globals.get(name);
 	}
 
@@ -181,17 +165,15 @@ public class Reloc65 {
 		bufPos += 2;
 
 		while (n != 0) {
-			while ((buf[bufPos++]) != 0) {
+			while (buf[bufPos++] != 0) {
 			}
 			int seg = buf[bufPos] & 0xff;
 			int old = readWord(buf, bufPos + 1);
-			int newValue;
 			if (seg != 0) {
-				newValue = old + reldiff(seg);
+				writeWord(buf, bufPos + 1, old + reldiff(seg));
 			} else {
-				newValue = old + findGlobal(buf, bufPos + 1);
+				writeWord(buf, bufPos + 1, old + findGlobal(buf, bufPos + 1));
 			}
-			writeWord(buf, bufPos + 1, newValue);
 			bufPos += 3;
 			n--;
 		}
