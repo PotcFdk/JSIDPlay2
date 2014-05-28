@@ -104,8 +104,12 @@ public class HardSIDBuilder extends SIDBuilder {
 
 	@Override
 	public SIDEmu lock(EventScheduler evt, SIDEmu device, ChipModel model) {
-		unlock(device);
-		return lock(evt, model);
+		if (device == null) {
+			device = lock(evt, model);
+		} else {
+			device.setChipModel(model);
+		}
+		return device;
 	}
 
 	private SIDEmu lock(final EventScheduler context, ChipModel model) {

@@ -199,6 +199,7 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void setChipModel(final ChipModel model) {
+		System.err.println("HardSID WARNING: SID model cannot be changed on the fly!");
 	}
 
 	@Override
