@@ -27,6 +27,8 @@ import cml.kickass.values.HashtableValue;
 
 public class Assembler {
 
+	private static final String INCLUDE_AUTOINCLUDE_ASM = "/include/autoinclude.asm";
+
 	private static class Assembly {
 
 		private byte data[];
@@ -117,10 +119,10 @@ public class Assembler {
 			evaluationstate.addLibrary(library);
 		}
 		AsmNodeList asmNodeList = new AsmNodeList();
-		InputStream inputstream = (new cml.kickass.KickAssembler()).getClass()
-				.getResourceAsStream("/include/autoinclude.asm");
+		InputStream inputstream = cml.kickass.KickAssembler.class
+				.getResourceAsStream(INCLUDE_AUTOINCLUDE_ASM);
 		asmNodeList.add(AssemblerToolbox.loadAndLex(inputstream,
-				"/include/autoinclude.asm", evaluationstate, null));
+				INCLUDE_AUTOINCLUDE_ASM, evaluationstate, null));
 		asmNodeList.add(AssemblerToolbox.loadAndLex(asm, resource,
 				evaluationstate, null));
 		AsmNode asmNode = asmNodeList;
