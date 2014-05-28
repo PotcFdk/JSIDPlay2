@@ -1,5 +1,3 @@
-.var r1_org = $00f7
-
 .var MAX_BLOCKS = 4
 
 	.pc=$0801
@@ -11,22 +9,21 @@
 	.byte 0
 basic:	.word 0
 
-.var song	= *+1
-	lda #0
+	lda #cmdLineVars.get("songNum").asNumber()
 	jmp start
 
 .var r1_src	= *
 
 // Parameters
-src:	.word song			// $00f7
-dest:	.word 0				// $00f9
-counter:.byte 0				// $00fb
-zp:		.word 0				// $00fc
-numblk:	.byte 0				// $00fe
-chars:	.byte 0				// $00ff
-player:	.word 0				// $0100
-stopvec:.word 0
-blocks:	.fill 4*MAX_BLOCKS, 0
+src:	.word end+cmdLineVars.get("size").asNumber()		// $00f7
+dest:	.word cmdLineVars.get("dst").asNumber()				// $00f9
+counter:.byte cmdLineVars.get("numPages").asNumber()		// $00fb
+zp:		.word cmdLineVars.get("startAfterMoving").asNumber()// $00fc
+numblk:	.byte cmdLineVars.get("numBlocks").asNumber()		// $00fe
+chars:	.byte cmdLineVars.get("charPage").asNumber()		// $00ff
+player:	.word cmdLineVars.get("driverPage").asNumber()		// $0100
+stopvec:.word cmdLineVars.get("stopVec").asNumber()			// $0102
+blocks:	.fill 4*MAX_BLOCKS, 0								// $0104
 
 memmove:	{
 	lda $102
@@ -175,7 +172,7 @@ stilcol:	sta $d800+520,y
 	sta 1
 	ldy #0
 copyr1:	lda r1_src,y
-	sta r1_org,y
+	sta $f7,y
 	iny
 	cpy #r1_len
 	bne copyr1
@@ -192,3 +189,4 @@ vicdata:.byte $00,$00,$00,$00,$00,$00,$00,$00
 linecol:	.byte 9,11,8,12,10,15,7,1,13,7,3,12,14,4,6
 
 	}
+end:

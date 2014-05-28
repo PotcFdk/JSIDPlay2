@@ -49,6 +49,9 @@ import libsidutils.pucrunch.PUCrunch;
 //   it contains some strange branches to gain a few bytes. Look out for side
 //   effects when updating this code!
 public class Psid64 {
+	private static final String PSID64_BOOT_ASM = "/libpsid64/psid64_boot.asm";
+	private static final String PSID64_ASM = "/libpsid64/psid64.asm";
+	private static final String PSID64_NOSCREEN_ASM = "/libpsid64/psid64_noscreen.asm";
 	private static final String PACKAGE = "PSID64";
 	private static final String VERSION = "0.9";
 
@@ -199,61 +202,34 @@ public class Psid64 {
 		for (MemoryBlock memBlock : memBlocks) {
 			size += memBlock.getSize();
 		}
+		final int jmpAddr = freePages.getDriverPage() != null ? freePages
+				.getDriverPage() << 8 : 0;
 
-		String resource = "/libpsid64/psid64_boot.asm";
-		InputStream asm = Psid64.class.getResourceAsStream(resource);
-		byte[] psid_boot = assembler.assemble(resource, asm,
-				new HashMap<String, Integer>());
+		InputStream asm = Psid64.class.getResourceAsStream(PSID64_BOOT_ASM);
+		HashMap<String, Integer> globals = new HashMap<String, Integer>();
+		globals.put("songNum", tuneInfo.getCurrentSong() - 1);
+		globals.put("size", size);
+		globals.put("dst", 0x10000);
+		globals.put("numPages", size + 0xff >> 8);
+		globals.put("startAfterMoving", 0x10000 - size);
+		globals.put("numBlocks", memBlocks.size() - 1);
+		globals.put("charPage",
+				freePages.getCharPage() != null ? freePages.getCharPage() : 0);
+		globals.put("driverPage", jmpAddr);
+		globals.put("stopVec", jmpAddr + 3);
+		byte[] psid_boot = assembler.assemble(PSID64_BOOT_ASM, asm, globals);
 		byte[] programData = new byte[psid_boot.length + size];
 		System.arraycopy(psid_boot, 0, programData, 0, psid_boot.length);
 
-		// the value 0x0801 is related to start of the code in psidboot.a65
-		int addr = 19;
-
-		// fill in the initial song number (passed in at boot time)
-		int song = programData[addr] & 0xff;
-		song += (programData[addr + 1] & 0xff) << 8;
-		song -= 0x0801 - 2;
-		programData[song] = (byte) (tuneInfo.getCurrentSong() - 1 & 0xff);
-
-		final int eof = 0x0801 + psid_boot.length - 2 + size;
-		// end of C64 file
-		programData[addr++] = (byte) (eof & 0xff);
-		programData[addr++] = (byte) (eof >> 8);
-		// end of high memory
-		programData[addr++] = (byte) (0x10000 & 0xff);
-		programData[addr++] = (byte) (0x10000 >> 8);
-		// number of pages to copy
-		programData[addr++] = (byte) (size + 0xff >> 8);
-		// start of blocks after moving
-		programData[addr++] = (byte) (0x10000 - size & 0xff);
-		programData[addr++] = (byte) (0x10000 - size >> 8);
-		// number of blocks - 1
-		programData[addr++] = (byte) (memBlocks.size() - 1);
-		// page for character set, or 0
-		programData[addr++] = freePages.getCharPage() != null ? freePages
-				.getCharPage().byteValue() : 0;
-		final int jmpAddr = freePages.getDriverPage() != null ? freePages
-				.getDriverPage() << 8 : 0;
-		// start address of driver
-		programData[addr++] = (byte) (jmpAddr & 0xff);
-		programData[addr++] = (byte) (jmpAddr >> 8);
-		// address of new stop vector
-		programData[addr++] = (byte) (jmpAddr + 3 & 0xff);
-		// for tunes that call $a7ae during init
-		programData[addr++] = (byte) (jmpAddr + 3 >> 8);
-
-		// copy block data to psidboot.a65 parameters
+		// copy block data to psid64_boot.asm parameters
 		int i = 0;
 		for (MemoryBlock memBlock : memBlocks) {
-			final int offs = addr + memBlocks.size() - 1 - (i++);
+			final int offs = 32 + memBlocks.size() - 1 - (i++);
 			programData[offs] = (byte) (memBlock.getStartAddress() & 0xff);
 			programData[offs + MAX_BLOCKS] = (byte) (memBlock.getStartAddress() >> 8);
 			programData[offs + 2 * MAX_BLOCKS] = (byte) (memBlock.getSize() & 0xff);
 			programData[offs + 3 * MAX_BLOCKS] = (byte) (memBlock.getSize() >> 8);
 		}
-		addr = addr + 4 * MAX_BLOCKS;
-
 		// copy blocks to c64 program file
 		int destPos = psid_boot.length;
 		for (MemoryBlock memBlock : memBlocks) {
@@ -298,80 +274,60 @@ public class Psid64 {
 	private DriverInfo initDriver(FreeMemPages freePages) {
 		DriverInfo result = new DriverInfo();
 
+		SidTuneInfo tuneInfo = tune.getInfo();
+
 		// undefined references in the drive code need to be added to globals
 		HashMap<String, Integer> globals = new HashMap<String, Integer>();
-		int screen = freePages.getScreenPage() != null ? freePages
-				.getScreenPage() << 8 : 0;
-		globals.put("screen", screen);
-		int screen_songnum = 0;
-		SidTuneInfo tuneInfo = tune.getInfo();
-		if (tuneInfo.getSongs() > 1) {
-			screen_songnum = screen + 10 * 40 + 24;
-			if (tuneInfo.getSongs() >= 100) {
-				++screen_songnum;
-			}
-			if (tuneInfo.getSongs() >= 10) {
-				++screen_songnum;
-			}
-		}
-		globals.put("screen_songnum", screen_songnum);
 		int screenPage = freePages.getScreenPage() != null ? freePages
 				.getScreenPage() : 0;
-		globals.put("dd00", ((screenPage & 0xc0) >> 6 ^ 3 | 0x04));
+		int screen = screenPage << 8;
+		int screenSongNum = 0;
+		if (tuneInfo.getSongs() > 1) {
+			screenSongNum = screen + 10 * 40 + 24;
+			if (tuneInfo.getSongs() >= 100) {
+				++screenSongNum;
+			}
+			if (tuneInfo.getSongs() >= 10) {
+				++screenSongNum;
+			}
+		}
 		// video screen address
 		int vsa = (screenPage & 0x3c) << 2;
 		// character memory base address
 		int cba = freePages.getCharPage() != null ? freePages.getCharPage() >> 2 & 0x0e
 				: 0x06;
-		globals.put("d018", vsa | cba);
 
 		// select driver
 		String resource;
 		if (freePages.getScreenPage() == null) {
-			resource = "/libpsid64/psid64_noscreen.asm";
+			resource = PSID64_NOSCREEN_ASM;
 		} else {
-			resource = "/libpsid64/psid64.asm";
+			resource = PSID64_ASM;
 		}
 		// Relocation of C64 PSID driver code.
 		InputStream asm = Psid64.class.getResourceAsStream(resource);
 		globals.put("pc", freePages.getDriverPage() << 8);
-		byte[] relocated = assembler.assemble(resource, asm, globals);
-		storeDriverParameters(relocated, 2, freePages, tuneInfo);
-		result.setMemory(relocated);
+		globals.put("screen", screen);
+		globals.put("screen_songnum", screenSongNum);
+		globals.put("dd00", (screenPage & 0xc0) >> 6 ^ 3 | 0x04);
+		globals.put("d018", vsa | cba);
+		globals.put("initCmd", tuneInfo.getInitAddr() != 0 ? 0x4c : 0x60);
+		globals.put("initAddr", tuneInfo.getInitAddr());
+		globals.put("playCmd", tuneInfo.getPlayAddr() != 0 ? 0x4c : 0x60);
+		globals.put("playAddr", tuneInfo.getPlayAddr());
+		globals.put("songs", tuneInfo.getSongs());
+		globals.put("speed0", tune.getSongSpeedArray() & 0xffff);
+		globals.put("speed1", tune.getSongSpeedArray() >> 16 & 0xffff);
+		globals.put("irqVec", tuneInfo.getLoadAddr() < 0x31a ? 0xff : 0x05);
+		globals.put("initIOMap", iomap(tuneInfo.getInitAddr()));
+		globals.put("playIOMap", iomap(tuneInfo.getPlayAddr()));
+		globals.put("stilPage",
+				freePages.getStilPage() != null ? freePages.getStilPage() : 0);
+		byte[] programData = assembler.assemble(resource, asm, globals);
+		result.setMemory(programData);
 		result.setRelocatedDriverPos(2);
-		result.setSize(relocated.length - 2);
+		result.setSize(programData.length - 2);
 		return result;
-	}
-
-	private void storeDriverParameters(byte[] ram, int offset,
-			FreeMemPages freePages, SidTuneInfo tuneInfo) {
-		// Skip JMP table
-		offset += 6;
-
-		// Store parameters for PSID player.
-		ram[offset++] = (byte) (tuneInfo.getInitAddr() != 0 ? 0x4c : 0x60);
-		ram[offset++] = (byte) (tuneInfo.getInitAddr() & 0xff);
-		ram[offset++] = (byte) (tuneInfo.getInitAddr() >> 8);
-		ram[offset++] = (byte) (tuneInfo.getPlayAddr() != 0 ? 0x4c : 0x60);
-		ram[offset++] = (byte) (tuneInfo.getPlayAddr() & 0xff);
-		ram[offset++] = (byte) (tuneInfo.getPlayAddr() >> 8);
-		ram[offset++] = (byte) tuneInfo.getSongs();
-
-		// get the speed bits (the driver only has space for the first 32 songs)
-		int speed = tune.getSongSpeedArray();
-		ram[offset++] = (byte) (speed & 0xff);
-		ram[offset++] = (byte) (speed >> 8 & 0xff);
-		ram[offset++] = (byte) (speed >> 16 & 0xff);
-		ram[offset++] = (byte) (speed >> 24);
-
-		ram[offset++] = (byte) (tuneInfo.getLoadAddr() < 0x31a ? 0xff : 0x05);
-		ram[offset++] = iomap(tuneInfo.getInitAddr());
-		ram[offset++] = iomap(tuneInfo.getPlayAddr());
-
-		if (freePages.getScreenPage() != null) {
-			ram[offset++] = freePages.getStilPage() != null ? freePages
-					.getStilPage().byteValue() : 0;
-		}
 	}
 
 	/**
@@ -379,7 +335,7 @@ public class Psid64 {
 	 *            A 16-bit effective address
 	 * @return A default bank-select value for $01
 	 */
-	private byte iomap(int addr) {
+	private int iomap(int addr) {
 		// Force Real C64 Compatibility
 		SidTuneInfo tuneInfo = tune.getInfo();
 		if (tuneInfo.getCompatibility() == SidTune.Compatibility.RSID

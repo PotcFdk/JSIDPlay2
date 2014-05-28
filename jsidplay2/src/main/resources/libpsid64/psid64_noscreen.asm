@@ -6,15 +6,15 @@
 	jmp setiomap
 
 	// Parameters
-init:	rts
-	.word 0
-play:	rts
-	.word 0
-playmax:	.byte 0
-speed:	.word 0, 0
-irqvec:	.byte 0
-initiomap: .byte 0
-playiomap: .byte 0
+init:		.byte cmdLineVars.get("initCmd").asNumber()
+			.word cmdLineVars.get("initAddr").asNumber()
+play:		.byte cmdLineVars.get("playCmd").asNumber()
+			.word cmdLineVars.get("playAddr").asNumber()
+playmax:	.byte cmdLineVars.get("songs").asNumber()
+speed:		.word cmdLineVars.get("speed0").asNumber(), cmdLineVars.get("speed1").asNumber()
+irqvec:		.byte cmdLineVars.get("irqVec").asNumber()
+initiomap:	.byte cmdLineVars.get("initIOMap").asNumber()
+playiomap:	.byte cmdLineVars.get("playIOMap").asNumber()
 
 	// Variables
 playnum:	.byte 0
