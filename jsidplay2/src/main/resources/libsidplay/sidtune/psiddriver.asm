@@ -14,16 +14,16 @@
 // (hooks in via stop function)
  	stopusr:     .word setiomap
  
- 	playnum:     .byte 0
- 	speed:       .byte 0
- 	initvec:     .word 0
- 	playvec:     .word 0
- 	rndwait:     .word 0
- 	initiomap:   .byte 0
- 	playiomap:   .byte 0
- 	video:       .byte 0
- 	clock:       .byte 0
- 	flags:       .byte 0
+ 	playnum:     .byte cmdLineVars.get("songNum").asNumber()
+ 	speed:       .byte cmdLineVars.get("songSpeed").asNumber()
+ 	initvec:     .word cmdLineVars.get("initAddr").asNumber()
+ 	playvec:     .word cmdLineVars.get("playAddr").asNumber()
+ 	rndwait:     .word cmdLineVars.get("powerOnDelay").asNumber()
+ 	initiomap:   .byte cmdLineVars.get("initIOMap").asNumber()
+ 	playiomap:   .byte cmdLineVars.get("playIOMap").asNumber()
+ 	video:       .byte cmdLineVars.get("palNtsc").asNumber()
+ 	clock:       .byte cmdLineVars.get("videoMode").asNumber()
+ 	flags:       .byte cmdLineVars.get("flags").asNumber()
  
 // init/play PSID
  	play:        jmp (playvec)

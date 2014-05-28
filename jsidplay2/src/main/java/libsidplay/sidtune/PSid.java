@@ -35,6 +35,8 @@ import libsidplay.components.mos6510.MOS6510;
 import libsidutils.kickassembler.Assembler;
 
 class PSid extends Prg {
+	private static final String PSIDDRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
+
 	/**
 	 * Contains a mapping: Author to picture resource path.
 	 */
@@ -253,7 +255,7 @@ class PSid extends Prg {
 	 *            A 16-bit effective address
 	 * @return A default bank-select value for $01.
 	 */
-	private byte iomap(final int addr) {
+	private int iomap(final int addr) {
 		switch (info.compatibility) {
 		case RSID:
 		case RSID_BASIC:
@@ -278,83 +280,52 @@ class PSid extends Prg {
 	@Override
 	public int placeProgramInMemory(final byte[] mem) {
 		super.placeProgramInMemory(mem);
-		if (info.compatibility != Compatibility.RSID_BASIC) {
-			return psidDrvReloc(mem);
-		} else {
+		if (info.compatibility == Compatibility.RSID_BASIC) {
 			mem[0x30c] = (byte) (info.currentSong - 1);
 			return -1;
+		} else {
+			return psidDrvReloc(mem);
 		}
 	}
 
 	private int psidDrvReloc(final byte[] mem) {
-		final byte[] relocDriver = relocatedBuffer;
-		final int relocDriverPos = 2;
+		InputStream asm = PSid.class.getResourceAsStream(PSIDDRIVER_ASM);
+		HashMap<String, Integer> globals = new HashMap<String, Integer>();
+		globals.put("pc", info.determinedDriverAddr - 10);
+		globals.put("songNum", info.currentSong - 1);
+		globals.put("songSpeed",
+				songSpeed[info.currentSong - 1] == Speed.CIA_1A ? 1 : 0);
+		globals.put("initAddr", info.initAddr);
+		globals.put("playAddr", info.playAddr);
+		globals.put("powerOnDelay",
+				(int) (0x100 + (System.currentTimeMillis() & 0x1ff)));
+		globals.put("initIOMap", iomap(info.initAddr));
+		globals.put("playIOMap", iomap(info.playAddr));
+		globals.put("palNtsc", mem[0x02a6] & 0xff);
+		globals.put("videoMode", info.clockSpeed == Clock.PAL ? 1 : 0);
+		globals.put("flags", info.compatibility == Compatibility.RSID ? 1
+				: 1 << MOS6510.SR_INTERRUPT);
+		relocatedBuffer = assembler.assemble(PSIDDRIVER_ASM, asm, globals);
+		info.determinedDriverLength = relocatedBuffer.length - 12;
 
 		if (!(info.playAddr == 0 && info.loadAddr == 0x200)) {
 			/*
 			 * XXX: setting these vectors seems a bit dangerous because we will
 			 * still run for some time
 			 */
-			mem[0x0314] = relocDriver[relocDriverPos + 2]; /* IRQ */
-			mem[0x0315] = relocDriver[relocDriverPos + 2 + 1];
+			mem[0x0314] = relocatedBuffer[4]; /* IRQ */
+			mem[0x0315] = relocatedBuffer[5];
 			if (info.compatibility != SidTune.Compatibility.RSID) {
-				mem[0x0316] = relocDriver[relocDriverPos + 2 + 2]; /* Break */
-				mem[0x0317] = relocDriver[relocDriverPos + 2 + 3];
-				mem[0x0318] = relocDriver[relocDriverPos + 2 + 4]; /* NMI */
-				mem[0x0319] = relocDriver[relocDriverPos + 2 + 5];
+				mem[0x0316] = relocatedBuffer[6]; /* Break */
+				mem[0x0317] = relocatedBuffer[7];
+				mem[0x0318] = relocatedBuffer[8]; /* NMI */
+				mem[0x0319] = relocatedBuffer[9];
 			}
 		}
-		int pos = info.determinedDriverAddr;
-
 		/* Place driver into RAM */
-		System.arraycopy(relocDriver, relocDriverPos + 10, mem, pos,
+		System.arraycopy(relocatedBuffer, 12, mem, info.determinedDriverAddr,
 				info.determinedDriverLength);
-
-		// Tell C64 about song
-		mem[pos++] = (byte) (info.currentSong - 1);
-		if (songSpeed[info.currentSong - 1] == Speed.VBI) {
-			mem[pos] = 0;
-		} else {
-			// SIDTUNE_SPEED_CIA_1A
-			mem[pos] = 1;
-		}
-
-		pos++;
-		mem[pos++] = (byte) (info.initAddr & 0xff);
-		mem[pos++] = (byte) (info.initAddr >> 8);
-		mem[pos++] = (byte) (info.playAddr & 0xff);
-		mem[pos++] = (byte) (info.playAddr >> 8);
-
-		final int powerOnDelay = (int) (0x100 + (System.currentTimeMillis() & 0x1ff));
-		mem[pos++] = (byte) (powerOnDelay & 0xff);
-		mem[pos++] = (byte) (powerOnDelay >> 8);
-		mem[pos++] = iomap(info.initAddr);
-		mem[pos++] = iomap(info.playAddr);
-		mem[pos + 1] = mem[pos + 0] = mem[0x02a6]; // PAL/NTSC flag
-		pos++;
-
-		// Add the required tune speed
-		switch (info.clockSpeed) {
-		case PAL:
-			mem[pos++] = 1;
-			break;
-		case NTSC:
-			mem[pos++] = 0;
-			break;
-		default: // UNKNOWN or ANY
-			pos++;
-			break;
-		}
-
-		// Default processor register flags on calling init
-		if (info.compatibility == Compatibility.RSID) {
-			mem[pos++] = 0;
-		} else {
-			mem[pos++] = 1 << MOS6510.SR_INTERRUPT;
-		}
-
-		return relocDriver[relocDriverPos + 0] & 0xff
-				| (relocDriver[relocDriverPos + 1] & 0xff) << 8;
+		return relocatedBuffer[2] & 0xff | (relocatedBuffer[3] & 0xff) << 8;
 	}
 
 	/**
@@ -460,12 +431,6 @@ class PSid extends Prg {
 					"Can't relocate tune: no pages left to store driver.");
 		}
 
-		String resource = "/libsidplay/sidtune/psiddriver.asm";
-		InputStream asm = PSid.class.getResourceAsStream(resource);
-		HashMap<String, Integer> globals = new HashMap<String, Integer>();
-		globals.put("pc", info.determinedDriverAddr - 10);
-		relocatedBuffer = assembler.assemble(resource, asm, globals);
-		info.determinedDriverLength = relocatedBuffer.length - 2 - 10;
 	}
 
 	protected static SidTune load(final String name, final byte[] dataBuf)
