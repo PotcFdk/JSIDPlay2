@@ -31,9 +31,8 @@ import java.util.Scanner;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
-import libsidplay.Reloc65;
 import libsidplay.components.mos6510.MOS6510;
-import libsidplay.mem.IPSIDDrv;
+import libsidutils.kickassembler.Assembler;
 
 class PSid extends Prg {
 	/**
@@ -241,17 +240,11 @@ class PSid extends Prg {
 
 	private static final int PSID_BASIC = 1 << 1;
 
-	private final Reloc65 relocator = new Reloc65();
+	private final Assembler assembler = new Assembler();
 
-	private ByteBuffer relocatedBuffer;
-
-	private final byte[] driver = new byte[IPSIDDrv.PSIDDRV.length];
+	private byte[] relocatedBuffer;
 
 	private Image image;
-
-	protected PSid() {
-		System.arraycopy(IPSIDDrv.PSIDDRV, 0, driver, 0, driver.length);
-	}
 
 	/**
 	 * Temporary hack till real bank switching code added
@@ -294,8 +287,8 @@ class PSid extends Prg {
 	}
 
 	private int psidDrvReloc(final byte[] mem) {
-		final byte[] relocDriver = relocatedBuffer.array();
-		final int relocDriverPos = relocatedBuffer.position();
+		final byte[] relocDriver = relocatedBuffer;
+		final int relocDriverPos = 2;
 
 		if (!(info.playAddr == 0 && info.loadAddr == 0x200)) {
 			/*
@@ -467,9 +460,12 @@ class PSid extends Prg {
 					"Can't relocate tune: no pages left to store driver.");
 		}
 
-		relocatedBuffer = relocator.reloc65(driver,
-				info.determinedDriverAddr - 10, new HashMap<String, Integer>());
-		info.determinedDriverLength = relocatedBuffer.limit() - 10;
+		String resource = "/libsidplay/sidtune/psiddriver.asm";
+		InputStream asm = PSid.class.getResourceAsStream(resource);
+		HashMap<String, Integer> globals = new HashMap<String, Integer>();
+		globals.put("pc", info.determinedDriverAddr - 10);
+		relocatedBuffer = assembler.assemble(resource, asm, globals);
+		info.determinedDriverLength = relocatedBuffer.length - 2 - 10;
 	}
 
 	protected static SidTune load(final String name, final byte[] dataBuf)

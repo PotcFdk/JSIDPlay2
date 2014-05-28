@@ -1,12 +1,10 @@
 package libpsid64;
 
-import static libpsid64.IPsidBoot.psid_boot;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import libsidplay.Player;
-import libsidplay.Reloc65;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
@@ -22,8 +19,35 @@ import libsidutils.PathUtils;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
+import libsidutils.kickassembler.Assembler;
 import libsidutils.pucrunch.PUCrunch;
 
+//   psid64 - create a C64 executable from a PSID file
+//   Copyright (C) 2001-2003  Roland Hermans <rolandh@users.sourceforge.net>
+//
+//   This program is free software// you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation// either version 2 of the License, or
+//   (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY// without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with this program// if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//
+//   The relocating PSID driver is based on a reference implementation written
+//   by Dag Lem, using Andre Fachat's relocating cross assembler, xa. The
+//   original driver code was introduced in VICE 1.7.
+//
+//   Please note that this driver code is optimized to squeeze the minimal
+//   driver (without screen support) in just two memory pages. For this reason
+//   it contains some strange branches to gain a few bytes. Look out for side
+//   effects when updating this code!
 public class Psid64 {
 	private static final String PACKAGE = "PSID64";
 	private static final String VERSION = "0.9";
@@ -57,6 +81,7 @@ public class Psid64 {
 	 */
 	private static final int STIL_EOT_SPACES = 10;
 
+	private Assembler assembler = new Assembler();
 	private SidTune tune;
 	private STILEntry stilEntry;
 	private String tmpDir;
@@ -174,6 +199,11 @@ public class Psid64 {
 		for (MemoryBlock memBlock : memBlocks) {
 			size += memBlock.getSize();
 		}
+
+		String resource = "/libpsid64/psid64_boot.asm";
+		InputStream asm = Psid64.class.getResourceAsStream(resource);
+		byte[] psid_boot = assembler.assemble(resource, asm,
+				new HashMap<String, Integer>());
 		byte[] programData = new byte[psid_boot.length + size];
 		System.arraycopy(psid_boot, 0, programData, 0, psid_boot.length);
 
@@ -296,25 +326,20 @@ public class Psid64 {
 		globals.put("d018", vsa | cba);
 
 		// select driver
-		byte[] psidMem;
+		String resource;
 		if (freePages.getScreenPage() == null) {
-			psidMem = new byte[IPsidDrv.psid_driver.length];
-			System.arraycopy(IPsidDrv.psid_driver, 0, psidMem, 0,
-					psidMem.length);
+			resource = "/libpsid64/psid64_noscreen.asm";
 		} else {
-			psidMem = new byte[IPsidExtDriver.psid_extdriver.length];
-			System.arraycopy(IPsidExtDriver.psid_extdriver, 0, psidMem, 0,
-					psidMem.length);
+			resource = "/libpsid64/psid64.asm";
 		}
 		// Relocation of C64 PSID driver code.
-		Reloc65 relocator = new Reloc65();
-		ByteBuffer relocated = relocator.reloc65(psidMem,
-				freePages.getDriverPage() << 8, globals);
-		storeDriverParameters(relocated.array(), relocated.position(),
-				freePages, tuneInfo);
-		result.setMemory(relocated.array());
-		result.setRelocatedDriverPos(relocated.position());
-		result.setSize(relocated.limit());
+		InputStream asm = Psid64.class.getResourceAsStream(resource);
+		globals.put("pc", freePages.getDriverPage() << 8);
+		byte[] relocated = assembler.assemble(resource, asm, globals);
+		storeDriverParameters(relocated, 2, freePages, tuneInfo);
+		result.setMemory(relocated);
+		result.setRelocatedDriverPos(2);
+		result.setSize(relocated.length - 2);
 		return result;
 	}
 
@@ -732,8 +757,9 @@ public class Psid64 {
 		return null;
 	}
 
-	public void convertFiles(Player player, File[] files, File target, File hvscRoot)
-			throws NotEnoughC64MemException, IOException, SidTuneError {
+	public void convertFiles(Player player, File[] files, File target,
+			File hvscRoot) throws NotEnoughC64MemException, IOException,
+			SidTuneError {
 		for (File file : files) {
 			if (file.isDirectory()) {
 				convertFiles(player, file.listFiles(), target, hvscRoot);
@@ -743,8 +769,9 @@ public class Psid64 {
 		}
 	}
 
-	private void convertToPSID64(Player player, File file, File target, File hvscRoot)
-			throws NotEnoughC64MemException, IOException, SidTuneError {
+	private void convertToPSID64(Player player, File file, File target,
+			File hvscRoot) throws NotEnoughC64MemException, IOException,
+			SidTuneError {
 		tune = SidTune.load(file);
 		tune.setSelectedSong(null);
 		String collectionName = PathUtils.getCollectionName(hvscRoot,
