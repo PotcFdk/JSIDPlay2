@@ -15,6 +15,7 @@ import javax.persistence.Persistence;
 
 import libsidplay.Player;
 import libsidplay.components.c1541.C1541;
+import libsidplay.sidtune.SidTuneInfo;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
@@ -41,14 +42,18 @@ public class JSIDPlay2Main extends Application {
 
 	private Consumer<Player> menuHook = (player) -> {
 		if (player.getTune() != null) {
-			Iterator<String> info = player.getTune().getInfo().getInfoString()
-					.iterator();
+			SidTuneInfo info = player.getTune().getInfo();
+			Iterator<String> detail = info.getInfoString().iterator();
 			System.out.print("Playing: ");
-			while (info.hasNext()) {
-				System.out.print(info.next());
-				if (info.hasNext()) {
+			while (detail.hasNext()) {
+				System.out.print(detail.next());
+				if (detail.hasNext()) {
 					System.out.print(", ");
 				}
+			}
+			if (info.getSongs() > 1) {
+				System.out.print(", sub-song: ");
+				System.out.print(info.getCurrentSong());
 			}
 			System.out.println();
 		}
