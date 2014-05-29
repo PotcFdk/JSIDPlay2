@@ -171,18 +171,22 @@ public class Psid64 {
 		}
 		Collections.sort(memBlocks, new MemoryBlockComparator());
 
+		final int driver = freePages.getDriverPage() != null ? freePages
+				.getDriverPage() << 8 : 0;
+		final int charset = freePages.getCharPage() != null ? freePages
+				.getCharPage() << 8 : 0;
+
 		// print memory map
 		if (verbose) {
 			System.out.println("C64 memory map:");
 
-			int charset = freePages.getCharPage() != null ? freePages
-					.getCharPage() << 8 : 0;
+			boolean charsetPrinted = false;
 			for (MemoryBlock memBlock : memBlocks) {
-				if (charset != 0 && memBlock.getStartAddress() > charset) {
+				if (!charsetPrinted && memBlock.getStartAddress() > charset) {
 					System.out.println("  $" + toHexWord(charset) + "-$"
 							+ toHexWord(charset + 256 * NUM_CHAR_PAGES)
 							+ "  Character set");
-					charset = 0;
+					charsetPrinted = true;
 				}
 				System.out.println("  $"
 						+ toHexWord(memBlock.getStartAddress())
@@ -191,7 +195,7 @@ public class Psid64 {
 								+ memBlock.getSize()) + "  "
 						+ memBlock.getDescription());
 			}
-			if (charset != 0) {
+			if (!charsetPrinted) {
 				System.out.println("  $" + toHexWord(charset) + "-$"
 						+ toHexWord(charset + 256 * NUM_CHAR_PAGES)
 						+ "  Character set");
@@ -202,34 +206,28 @@ public class Psid64 {
 		for (MemoryBlock memBlock : memBlocks) {
 			size += memBlock.getSize();
 		}
-		final int jmpAddr = freePages.getDriverPage() != null ? freePages
-				.getDriverPage() << 8 : 0;
 
 		InputStream asm = Psid64.class.getResourceAsStream(PSID64_BOOT_ASM);
 		HashMap<String, Integer> globals = new HashMap<String, Integer>();
 		globals.put("songNum", tuneInfo.getCurrentSong() - 1);
 		globals.put("size", size);
-		globals.put("dst", 0x10000);
 		globals.put("numPages", size + 0xff >> 8);
-		globals.put("startAfterMoving", 0x10000 - size);
 		globals.put("numBlocks", memBlocks.size() - 1);
-		globals.put("charPage",
-				freePages.getCharPage() != null ? freePages.getCharPage() : 0);
-		globals.put("driverPage", jmpAddr);
-		globals.put("stopVec", jmpAddr + 3);
+		globals.put("charPage", charset);
+		globals.put("driverPage", driver);
+		globals.put("stopVec", driver + 3);
+		for (int i = 0; i < MAX_BLOCKS; i++) {
+			final boolean used = i < memBlocks.size();
+			int blockNum = memBlocks.size() - i - 1 + (used ? 0 : MAX_BLOCKS);
+			int blockStart = used ? memBlocks.get(i).getStartAddress() : 0;
+			int blockSize = used ? memBlocks.get(i).getSize() : 0;
+			globals.put("block" + blockNum + "Start", blockStart);
+			globals.put("block" + blockNum + "Size", blockSize);
+		}
 		byte[] psid_boot = assembler.assemble(PSID64_BOOT_ASM, asm, globals);
 		byte[] programData = new byte[psid_boot.length + size];
 		System.arraycopy(psid_boot, 0, programData, 0, psid_boot.length);
 
-		// copy block data to psid64_boot.asm parameters
-		int i = 0;
-		for (MemoryBlock memBlock : memBlocks) {
-			final int offs = 32 + memBlocks.size() - 1 - (i++);
-			programData[offs] = (byte) (memBlock.getStartAddress() & 0xff);
-			programData[offs + MAX_BLOCKS] = (byte) (memBlock.getStartAddress() >> 8);
-			programData[offs + 2 * MAX_BLOCKS] = (byte) (memBlock.getSize() & 0xff);
-			programData[offs + 3 * MAX_BLOCKS] = (byte) (memBlock.getSize() >> 8);
-		}
 		// copy blocks to c64 program file
 		int destPos = psid_boot.length;
 		for (MemoryBlock memBlock : memBlocks) {

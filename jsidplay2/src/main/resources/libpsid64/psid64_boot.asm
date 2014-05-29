@@ -16,14 +16,33 @@ basic:	.word 0
 
 // Parameters
 src:	.word end+cmdLineVars.get("size").asNumber()		// $00f7
-dest:	.word cmdLineVars.get("dst").asNumber()				// $00f9
+dest:	.word $10000										// $00f9
 counter:.byte cmdLineVars.get("numPages").asNumber()		// $00fb
-zp:		.word cmdLineVars.get("startAfterMoving").asNumber()// $00fc
+zp:		.word $10000 - cmdLineVars.get("size").asNumber()	// $00fc
 numblk:	.byte cmdLineVars.get("numBlocks").asNumber()		// $00fe
 chars:	.byte cmdLineVars.get("charPage").asNumber()		// $00ff
 player:	.word cmdLineVars.get("driverPage").asNumber()		// $0100
 stopvec:.word cmdLineVars.get("stopVec").asNumber()			// $0102
-blocks:	.fill 4*MAX_BLOCKS, 0								// $0104
+blocks:														// $0104
+.byte <cmdLineVars.get("block0Start").asNumber()
+.byte <cmdLineVars.get("block1Start").asNumber()
+.byte <cmdLineVars.get("block2Start").asNumber()
+.byte <cmdLineVars.get("block3Start").asNumber()
+
+.byte >cmdLineVars.get("block0Start").asNumber()
+.byte >cmdLineVars.get("block1Start").asNumber()
+.byte >cmdLineVars.get("block2Start").asNumber()
+.byte >cmdLineVars.get("block3Start").asNumber()
+
+.byte <cmdLineVars.get("block0Size").asNumber()
+.byte <cmdLineVars.get("block1Size").asNumber()
+.byte <cmdLineVars.get("block2Size").asNumber()
+.byte <cmdLineVars.get("block3Size").asNumber()
+
+.byte >cmdLineVars.get("block0Size").asNumber()
+.byte >cmdLineVars.get("block1Size").asNumber()
+.byte >cmdLineVars.get("block2Size").asNumber()
+.byte >cmdLineVars.get("block3Size").asNumber()
 
 memmove:	{
 	lda $102
