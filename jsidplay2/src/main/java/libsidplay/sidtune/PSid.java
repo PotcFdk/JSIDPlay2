@@ -291,7 +291,7 @@ class PSid extends Prg {
 	private int psidDrvReloc(final byte[] mem) {
 		InputStream asm = PSid.class.getResourceAsStream(PSIDDRIVER_ASM);
 		HashMap<String, Integer> globals = new HashMap<String, Integer>();
-		globals.put("pc", info.determinedDriverAddr - 10);
+		globals.put("pc", info.determinedDriverAddr);
 		globals.put("songNum", info.currentSong - 1);
 		globals.put("songSpeed",
 				songSpeed[info.currentSong - 1] == Speed.CIA_1A ? 1 : 0);
@@ -301,31 +301,43 @@ class PSid extends Prg {
 				(int) (0x100 + (System.currentTimeMillis() & 0x1ff)));
 		globals.put("initIOMap", iomap(info.initAddr));
 		globals.put("playIOMap", iomap(info.playAddr));
-		globals.put("palNtsc", mem[0x02a6] & 0xff);
 		globals.put("videoMode", info.clockSpeed == Clock.PAL ? 1 : 0);
 		globals.put("flags", info.compatibility == Compatibility.RSID ? 1
 				: 1 << MOS6510.SR_INTERRUPT);
 		relocatedBuffer = assembler.assemble(PSIDDRIVER_ASM, asm, globals);
-		info.determinedDriverLength = relocatedBuffer.length - 12;
+		info.determinedDriverLength = relocatedBuffer.length - 2;
+		System.arraycopy(relocatedBuffer, 2, mem, info.determinedDriverAddr,
+				info.determinedDriverLength);
 
+		// XXX: Seems to be dangerous: we will still run for some time
 		if (!(info.playAddr == 0 && info.loadAddr == 0x200)) {
-			/*
-			 * XXX: setting these vectors seems a bit dangerous because we will
-			 * still run for some time
-			 */
-			mem[0x0314] = relocatedBuffer[4]; /* IRQ */
-			mem[0x0315] = relocatedBuffer[5];
+			// IRQ
+			Integer irq = assembler.getLabels().get("irqAddr");
+			if (irq != null) {
+				mem[0x0314] = (byte) (irq & 0xff);
+				mem[0x0315] = (byte) ((irq >> 8) & 0xff);
+			}
 			if (info.compatibility != SidTune.Compatibility.RSID) {
-				mem[0x0316] = relocatedBuffer[6]; /* Break */
-				mem[0x0317] = relocatedBuffer[7];
-				mem[0x0318] = relocatedBuffer[8]; /* NMI */
-				mem[0x0319] = relocatedBuffer[9];
+				// BRK
+				Integer brk = assembler.getLabels().get("brkAddr");
+				if (brk != null) {
+					mem[0x0316] = (byte) (brk & 0xff);
+					mem[0x0317] = (byte) ((irq >> 8) & 0xff);
+				}
+				// NMI
+				Integer nmi = assembler.getLabels().get("nmiAddr");
+				if (nmi != null) {
+					mem[0x0318] = (byte) (nmi & 0xff);
+					mem[0x0319] = (byte) ((nmi >> 8) & 0xff);
+				}
 			}
 		}
-		/* Place driver into RAM */
-		System.arraycopy(relocatedBuffer, 12, mem, info.determinedDriverAddr,
-				info.determinedDriverLength);
-		return relocatedBuffer[2] & 0xff | (relocatedBuffer[3] & 0xff) << 8;
+		Integer cold = assembler.getLabels().get("coldAddr");
+		if (cold == null) {
+			throw new RuntimeException("Label playAddr not found in "
+					+ PSIDDRIVER_ASM);
+		}
+		return cold;
 	}
 
 	/**

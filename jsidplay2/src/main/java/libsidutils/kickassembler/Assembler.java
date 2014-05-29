@@ -5,8 +5,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import cml.kickass.AssemblerToolbox;
 import cml.kickass.asmnode.AsmNode;
@@ -24,6 +26,8 @@ import cml.kickass.misc.MemoryBlock;
 import cml.kickass.state.EvaluationState;
 import cml.kickass.values.ConstantReferenceValue;
 import cml.kickass.values.HashtableValue;
+import cml.kickass.values.LabelReferenceValue;
+import cml.kickass.values.SymbolScopeValue;
 
 public class Assembler {
 
@@ -89,7 +93,11 @@ public class Assembler {
 
 	private ArrayList<File> sourceLibraryPath = new ArrayList<File>();
 	private ArrayList<Library> libraries = new ArrayList<>();
+	private EvaluationState evaluationstate;
 
+	/**
+	 * Create an assembler.
+	 */
 	public Assembler() {
 		sourceLibraryPath.add(new File("."));
 		libraries.add(new MathLibrary());
@@ -100,13 +108,16 @@ public class Assembler {
 		libraries.add(new MnemonicsLibrary());
 	}
 
+	/**
+	 * @return assembly bytes of the ASM resource
+	 */
 	public byte[] assemble(String resource, InputStream asm,
 			final Map<String, Integer> globals) {
 		final HashMap<String, String> hashmap = new HashMap<String, String>();
 		for (String key : globals.keySet()) {
 			hashmap.put(key, String.valueOf(globals.get(key)));
 		}
-		EvaluationState evaluationstate = new EvaluationState();
+		evaluationstate = new EvaluationState();
 		evaluationstate.setSourceLibraryPath(sourceLibraryPath);
 		evaluationstate.setDtvMode(false);
 		evaluationstate.setMaxMemoryAddress(65535);
@@ -142,5 +153,23 @@ public class Assembler {
 		asmNode.deliverOutput(mainOutputReceiver);
 		mainOutputReceiver.finish();
 		return new Assembly(mainOutputReceiver.getMemoryBlocks()).getData();
+	}
+
+	/**
+	 * @return label values of the assembly
+	 */
+	public Map<String, Integer> getLabels() {
+		Map<String, Integer> result = new HashMap<>();
+		Iterator<Entry<String, SymbolScopeValue>> it = evaluationstate
+				.getCurrentScope().getSymbols().getLocalDefinedEntities()
+				.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<String, SymbolScopeValue> entry = it.next();
+			SymbolScopeValue value = entry.getValue();
+			if (value.getClass().equals(LabelReferenceValue.class)) {
+				result.put(entry.getKey(), value.getInt(null));
+			}
+		}
+		return result;
 	}
 }
