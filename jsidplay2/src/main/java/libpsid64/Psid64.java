@@ -294,6 +294,8 @@ public class Psid64 {
 		// character memory base address
 		int cba = freePages.getCharPage() != null ? freePages.getCharPage() >> 2 & 0x0e
 				: 0x06;
+		int stil = freePages.getStilPage() != null ? freePages.getStilPage()
+				: 0;
 
 		// select driver
 		String resource;
@@ -314,17 +316,15 @@ public class Psid64 {
 		globals.put("playCmd", tuneInfo.getPlayAddr() != 0 ? 0x4c : 0x60);
 		globals.put("playAddr", tuneInfo.getPlayAddr());
 		globals.put("songs", tuneInfo.getSongs());
-		globals.put("speed0", tune.getSongSpeedArray() & 0xffff);
-		globals.put("speed1", tune.getSongSpeedArray() >> 16 & 0xffff);
+		globals.put("speed", tune.getSongSpeedArray());
 		globals.put("irqVec", tuneInfo.getLoadAddr() < 0x31a ? 0xff : 0x05);
 		globals.put("initIOMap", iomap(tuneInfo.getInitAddr()));
 		globals.put("playIOMap", iomap(tuneInfo.getPlayAddr()));
-		globals.put("stilPage",
-				freePages.getStilPage() != null ? freePages.getStilPage() : 0);
-		byte[] programData = assembler.assemble(resource, asm, globals);
-		result.setMemory(programData);
+		globals.put("stilPage", stil);
+		result.setMemory(assembler.assemble(resource, asm, globals));
 		result.setRelocatedDriverPos(2);
-		result.setSize(programData.length - 2);
+		result.setSize(result.getMemory().length
+				- result.getRelocatedDriverPos());
 		return result;
 	}
 

@@ -11,7 +11,8 @@ init:		.byte cmdLineVars.get("initCmd").asNumber()
 play:		.byte cmdLineVars.get("playCmd").asNumber()
 			.word cmdLineVars.get("playAddr").asNumber()
 playmax:	.byte cmdLineVars.get("songs").asNumber()
-speed:		.word cmdLineVars.get("speed0").asNumber(), cmdLineVars.get("speed1").asNumber()
+speed:		.word cmdLineVars.get("speed").asNumber() & $ffff
+			.word [cmdLineVars.get("speed").asNumber() >> 16] & $ffff
 irqvec:		.byte cmdLineVars.get("irqVec").asNumber()
 initiomap:	.byte cmdLineVars.get("initIOMap").asNumber()
 playiomap:	.byte cmdLineVars.get("playIOMap").asNumber()
