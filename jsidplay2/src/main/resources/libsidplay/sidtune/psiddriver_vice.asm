@@ -11,6 +11,8 @@ speed:	.word cmdLineVars.get("speed").asNumber() & $ffff
 iomap:	.byte cmdLineVars.get("playIOMap").asNumber()
 
 irqusr:	.word irqjob 
+brkusr:	.word irqexit
+nmiusr:	.word nmijob
 
 // Cold start
 // Turn interrupts off
@@ -154,12 +156,12 @@ irqjob:	lda #>cmdLineVars.get("playAddr").asNumber()
 noplay:	lda $d019
 	sta $d019
 	lda $dc0d
-brkAddr:	pla
+irqexit:	pla
 	tay
 	pla
 	tax
 	pla
 	rti
 
-nmiAddr:  bit $dd0d
+nmijob:  bit $dd0d
 	rti 
