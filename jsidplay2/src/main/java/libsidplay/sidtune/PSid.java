@@ -293,8 +293,11 @@ class PSid extends Prg {
 		HashMap<String, Integer> globals = new HashMap<String, Integer>();
 		globals.put("pc", info.determinedDriverAddr);
 		globals.put("songNum", info.currentSong - 1);
+		globals.put("songs", info.songs);
 		globals.put("songSpeed",
 				songSpeed[info.currentSong - 1] == Speed.CIA_1A ? 1 : 0);
+		globals.put("speed", getSongSpeedArray());
+		globals.put("loadAddr", info.loadAddr);
 		globals.put("initAddr", info.initAddr);
 		globals.put("playAddr", info.playAddr);
 		globals.put("powerOnDelay",
@@ -322,7 +325,7 @@ class PSid extends Prg {
 				Integer brk = assembler.getLabels().get("brkAddr");
 				if (brk != null) {
 					mem[0x0316] = (byte) (brk & 0xff);
-					mem[0x0317] = (byte) ((irq >> 8) & 0xff);
+					mem[0x0317] = (byte) ((brk >> 8) & 0xff);
 				}
 				// NMI
 				Integer nmi = assembler.getLabels().get("nmiAddr");
