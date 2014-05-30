@@ -244,8 +244,6 @@ class PSid extends Prg {
 
 	private final Assembler assembler = new Assembler();
 
-	private byte[] relocatedBuffer;
-
 	private Image image;
 
 	/**
@@ -284,12 +282,11 @@ class PSid extends Prg {
 			mem[0x30c] = (byte) (info.currentSong - 1);
 			return -1;
 		} else {
-			return psidDrvReloc(mem);
+			return psidInstallDriver(mem);
 		}
 	}
 
-	private int psidDrvReloc(final byte[] mem) {
-		InputStream asm = PSid.class.getResourceAsStream(PSIDDRIVER_ASM);
+	private int psidInstallDriver(final byte[] mem) {
 		HashMap<String, Integer> globals = new HashMap<String, Integer>();
 		globals.put("pc", info.determinedDriverAddr);
 		globals.put("songNum", info.currentSong - 1);
@@ -307,9 +304,10 @@ class PSid extends Prg {
 		globals.put("videoMode", info.clockSpeed == Clock.PAL ? 1 : 0);
 		globals.put("flags", info.compatibility == Compatibility.RSID ? 1
 				: 1 << MOS6510.SR_INTERRUPT);
-		relocatedBuffer = assembler.assemble(PSIDDRIVER_ASM, asm, globals);
-		info.determinedDriverLength = relocatedBuffer.length - 2;
-		System.arraycopy(relocatedBuffer, 2, mem, info.determinedDriverAddr,
+		InputStream asm = PSid.class.getResourceAsStream(PSIDDRIVER_ASM);
+		byte[] driver = assembler.assemble(PSIDDRIVER_ASM, asm, globals);
+		info.determinedDriverLength = driver.length - 2;
+		System.arraycopy(driver, 2, mem, info.determinedDriverAddr,
 				info.determinedDriverLength);
 		Integer start = assembler.getLabels().get("start");
 		if (start == null) {

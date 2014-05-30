@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -102,7 +103,7 @@ public class Psid64 {
 		this.blankScreen = blankScreen;
 	}
 
-	private byte[] convert() throws NotEnoughC64MemException {
+	private byte[] convert() {
 		// handle special treatment of tunes programmed in BASIC
 		final SidTuneInfo tuneInfo = tune.getInfo();
 		if (tuneInfo.getCompatibility() == SidTune.Compatibility.RSID_BASIC) {
@@ -176,38 +177,14 @@ public class Psid64 {
 		final int charset = freePages.getCharPage() != null ? freePages
 				.getCharPage() << 8 : 0;
 
-		// print memory map
-		if (verbose) {
-			System.out.println("C64 memory map:");
+		printMemoryMap(memBlocks, charset);
 
-			boolean charsetPrinted = false;
-			for (MemoryBlock memBlock : memBlocks) {
-				if (!charsetPrinted && memBlock.getStartAddress() > charset) {
-					System.out.println("  $" + toHexWord(charset) + "-$"
-							+ toHexWord(charset + 256 * NUM_CHAR_PAGES)
-							+ "  Character set");
-					charsetPrinted = true;
-				}
-				System.out.println("  $"
-						+ toHexWord(memBlock.getStartAddress())
-						+ "-$"
-						+ toHexWord(memBlock.getStartAddress()
-								+ memBlock.getSize()) + "  "
-						+ memBlock.getDescription());
-			}
-			if (!charsetPrinted) {
-				System.out.println("  $" + toHexWord(charset) + "-$"
-						+ toHexWord(charset + 256 * NUM_CHAR_PAGES)
-						+ "  Character set");
-			}
-		}
 		// calculate total size of the blocks
 		int size = 0;
 		for (MemoryBlock memBlock : memBlocks) {
 			size += memBlock.getSize();
 		}
 
-		InputStream asm = Psid64.class.getResourceAsStream(PSID64_BOOT_ASM);
 		HashMap<String, Integer> globals = new HashMap<String, Integer>();
 		globals.put("songNum", tuneInfo.getCurrentSong() - 1);
 		globals.put("size", size);
@@ -224,12 +201,13 @@ public class Psid64 {
 			globals.put("block" + blockNum + "Start", blockStart);
 			globals.put("block" + blockNum + "Size", blockSize);
 		}
-		byte[] psid_boot = assembler.assemble(PSID64_BOOT_ASM, asm, globals);
-		byte[] programData = new byte[psid_boot.length + size];
-		System.arraycopy(psid_boot, 0, programData, 0, psid_boot.length);
+		InputStream asm = Psid64.class.getResourceAsStream(PSID64_BOOT_ASM);
+		byte[] psidBoot = assembler.assemble(PSID64_BOOT_ASM, asm, globals);
+		byte[] programData = new byte[psidBoot.length + size];
+		System.arraycopy(psidBoot, 0, programData, 0, psidBoot.length);
 
-		// copy blocks to c64 program file
-		int destPos = psid_boot.length;
+		// append memory blocks to PSID64 boot code
+		int destPos = psidBoot.length;
 		for (MemoryBlock memBlock : memBlocks) {
 			System.arraycopy(memBlock.getData(), memBlock.getDataOff(),
 					programData, destPos, memBlock.getSize());
@@ -241,7 +219,7 @@ public class Psid64 {
 	private byte[] convertBASIC() {
 		final SidTuneInfo tuneInfo = tune.getInfo();
 		// allocate space for BASIC program and boot code (optional)
-		byte[] programData = new byte[2 + tuneInfo.getC64dataLen() + 0];
+		byte[] programData = new byte[2 + tuneInfo.getC64dataLen()];
 
 		// first the load address
 		programData[0] = (byte) (tuneInfo.getLoadAddr() & 0xff);
@@ -253,20 +231,46 @@ public class Psid64 {
 		System.arraycopy(c64buf, tuneInfo.getLoadAddr(), programData, 2,
 				tuneInfo.getC64dataLen());
 
-		// print memory map
-		if (verbose) {
-			System.out.println("C64 memory map:");
-			System.out.println("  $"
-					+ toHexWord(tuneInfo.getLoadAddr())
-					+ "-$"
-					+ toHexWord(tuneInfo.getLoadAddr()
-							+ tuneInfo.getC64dataLen()) + "  BASIC program");
-		}
+		printBasicMemoryMap(tuneInfo);
+
 		return programData;
 	}
 
-	private String toHexWord(final int i) {
-		return String.format("%04x", i);
+	private void printBasicMemoryMap(final SidTuneInfo tuneInfo) {
+		if (verbose) {
+			final PrintStream out = System.out;
+			out.println("C64 memory map:");
+			out.printf("  $%04x-$%04x  BASIC program", tuneInfo.getLoadAddr(),
+					tuneInfo.getLoadAddr() + tuneInfo.getC64dataLen());
+			out.println();
+		}
+	}
+
+	private void printMemoryMap(final List<MemoryBlock> memBlocks,
+			final int charset) {
+		if (verbose) {
+			final PrintStream out = System.out;
+
+			out.println("C64 memory map:");
+			boolean charsetPrinted = false;
+			for (MemoryBlock memBlock : memBlocks) {
+				if (!charsetPrinted && memBlock.getStartAddress() > charset) {
+					out.printf("  $%04x-$%04x  Character set", charset, charset
+							+ 256 * NUM_CHAR_PAGES);
+					out.println();
+					charsetPrinted = true;
+				}
+				out.printf("  $%04x-$%04x  ", memBlock.getStartAddress(),
+						memBlock.getStartAddress() + memBlock.getSize(),
+						memBlock.getDescription());
+				out.println();
+			}
+			if (!charsetPrinted) {
+				out.printf("  $%04x-$%04x  Character set", charset, charset
+						+ 256 * NUM_CHAR_PAGES);
+				out.println();
+			}
+		}
 	}
 
 	private DriverInfo initDriver(FreeMemPages freePages) {
@@ -274,8 +278,6 @@ public class Psid64 {
 
 		SidTuneInfo tuneInfo = tune.getInfo();
 
-		// undefined references in the drive code need to be added to globals
-		HashMap<String, Integer> globals = new HashMap<String, Integer>();
 		int screenPage = freePages.getScreenPage() != null ? freePages
 				.getScreenPage() : 0;
 		int screen = screenPage << 8;
@@ -292,35 +294,32 @@ public class Psid64 {
 		// video screen address
 		int vsa = (screenPage & 0x3c) << 2;
 		// character memory base address
-		int cba = freePages.getCharPage() != null ? freePages.getCharPage() >> 2 & 0x0e
+		int charset = freePages.getCharPage() != null ? freePages.getCharPage() >> 2 & 0x0e
 				: 0x06;
 		int stil = freePages.getStilPage() != null ? freePages.getStilPage()
 				: 0;
 
-		// select driver
+		HashMap<String, Integer> globals = new HashMap<String, Integer>();
+		globals.put("pc", freePages.getDriverPage() << 8);
+		globals.put("screen", screen);
+		globals.put("screen_songnum", screenSongNum);
+		globals.put("dd00", (screenPage & 0xc0) >> 6 ^ 3 | 0x04);
+		globals.put("d018", vsa | charset);
+		globals.put("loadAddr", tuneInfo.getLoadAddr());
+		globals.put("initAddr", tuneInfo.getInitAddr());
+		globals.put("playAddr", tuneInfo.getPlayAddr());
+		globals.put("songs", tuneInfo.getSongs());
+		globals.put("speed", tune.getSongSpeedArray());
+		globals.put("initIOMap", iomap(tuneInfo.getInitAddr()));
+		globals.put("playIOMap", iomap(tuneInfo.getPlayAddr()));
+		globals.put("stilPage", stil);
 		String resource;
 		if (freePages.getScreenPage() == null) {
 			resource = PSID64_NOSCREEN_ASM;
 		} else {
 			resource = PSID64_ASM;
 		}
-		// Relocation of C64 PSID driver code.
 		InputStream asm = Psid64.class.getResourceAsStream(resource);
-		globals.put("pc", freePages.getDriverPage() << 8);
-		globals.put("screen", screen);
-		globals.put("screen_songnum", screenSongNum);
-		globals.put("dd00", (screenPage & 0xc0) >> 6 ^ 3 | 0x04);
-		globals.put("d018", vsa | cba);
-		globals.put("initCmd", tuneInfo.getInitAddr() != 0 ? 0x4c : 0x60);
-		globals.put("initAddr", tuneInfo.getInitAddr());
-		globals.put("playCmd", tuneInfo.getPlayAddr() != 0 ? 0x4c : 0x60);
-		globals.put("playAddr", tuneInfo.getPlayAddr());
-		globals.put("songs", tuneInfo.getSongs());
-		globals.put("speed", tune.getSongSpeedArray());
-		globals.put("irqVec", tuneInfo.getLoadAddr() < 0x31a ? 0xff : 0x05);
-		globals.put("initIOMap", iomap(tuneInfo.getInitAddr()));
-		globals.put("playIOMap", iomap(tuneInfo.getPlayAddr()));
-		globals.put("stilPage", stil);
 		result.setMemory(assembler.assemble(resource, asm, globals));
 		result.setRelocatedDriverPos(2);
 		result.setSize(result.getMemory().length
@@ -391,19 +390,15 @@ public class Psid64 {
 			String released = descriptionIt.next();
 			screen.write(released.substring(0, Math.min(released.length(), 31)));
 		}
-		screen.write("\nLoad   : $");
-		screen.write(toHexWord(tuneInfo.getLoadAddr()));
-		screen.write("-$");
-		screen.write(toHexWord(tuneInfo.getLoadAddr()
-				+ tuneInfo.getC64dataLen()));
+		screen.write(String.format("\nLoad   : $%04x-$%04x",
+				tuneInfo.getLoadAddr(),
+				tuneInfo.getLoadAddr() + tuneInfo.getC64dataLen()));
 
-		screen.write("\nInit   : $");
-		screen.write(toHexWord(tuneInfo.getInitAddr()));
+		screen.write(String.format("\nInit   : $%04x", tuneInfo.getInitAddr()));
 
 		screen.write("\nPlay   : ");
 		if (tuneInfo.getPlayAddr() != 0) {
-			screen.write("$");
-			screen.write(toHexWord(tuneInfo.getPlayAddr()));
+			screen.write(String.format("$%04x", tuneInfo.getPlayAddr()));
 		} else {
 			screen.write("N/A");
 		}
@@ -425,9 +420,12 @@ public class Psid64 {
 		int sid2midNibbles = (tuneInfo.getSidChipBase2() >> 4) & 0xff;
 		if (((sid2midNibbles & 1) == 0)
 				&& (((0x42 <= sid2midNibbles) && (sid2midNibbles <= 0x7e)) || ((0xe0 <= sid2midNibbles) && (sid2midNibbles <= 0xfe)))) {
-			hasFlags = addFlag(screen, hasFlags,
-					tuneInfo.getSid2Model().toString() + " at $"
-							+ toHexWord(tuneInfo.getSidChipBase2()));
+			hasFlags = addFlag(
+					screen,
+					hasFlags,
+					tuneInfo.getSid2Model().toString()
+							+ String.format(" at $%04x",
+									tuneInfo.getSidChipBase2()));
 		}
 		if (!hasFlags) {
 			screen.write("-");
@@ -550,11 +548,8 @@ public class Psid64 {
 	 * Of course the driver code takes priority over the screen.
 	 * 
 	 * @return free mem pages for driver/screen/char/stil
-	 * @throws NotEnoughC64MemException
-	 *             no free memory for driver
 	 */
-	private FreeMemPages findFreeSpace(int stilTextLength)
-			throws NotEnoughC64MemException {
+	private FreeMemPages findFreeSpace(int stilTextLength) {
 		// calculate size of the STIL text in pages
 		int stilSize = stilTextLength + 255 >> 8;
 
@@ -589,7 +584,8 @@ public class Psid64 {
 					&& tuneInfo.getRelocStartPage() <= 0xbf
 					|| tuneInfo.getRelocStartPage() >= 0xd0 || endp - 1 < 0x04
 					|| 0xa0 <= endp - 1 && endp - 1 <= 0xbf || endp - 1 >= 0xd0) {
-				throw new NotEnoughC64MemException();
+				throw new RuntimeException(
+						"PSID64: Not enough memory for driver and screen!");
 			}
 
 			for (int i = 0; i < MAX_PAGES; ++i) {
@@ -598,7 +594,8 @@ public class Psid64 {
 			}
 		} else {
 			// not a single page is available
-			throw new NotEnoughC64MemException();
+			throw new RuntimeException(
+					"PSID64: Not enough memory for driver and screen!");
 		}
 
 		for (int i = 0; i < 4; ++i) {
@@ -673,7 +670,8 @@ public class Psid64 {
 			freePrages.setDriverPage(driver);
 			return freePrages;
 		}
-		throw new NotEnoughC64MemException();
+		throw new RuntimeException(
+				"PSID64: Not enough memory for driver and screen!");
 	}
 
 	/**
@@ -712,8 +710,7 @@ public class Psid64 {
 	}
 
 	public void convertFiles(Player player, File[] files, File target,
-			File hvscRoot) throws NotEnoughC64MemException, IOException,
-			SidTuneError {
+			File hvscRoot) throws IOException, SidTuneError {
 		for (File file : files) {
 			if (file.isDirectory()) {
 				convertFiles(player, file.listFiles(), target, hvscRoot);
@@ -724,8 +721,7 @@ public class Psid64 {
 	}
 
 	private void convertToPSID64(Player player, File file, File target,
-			File hvscRoot) throws NotEnoughC64MemException, IOException,
-			SidTuneError {
+			File hvscRoot) throws IOException, SidTuneError {
 		tune = SidTune.load(file);
 		tune.setSelectedSong(null);
 		String collectionName = PathUtils.getCollectionName(hvscRoot,

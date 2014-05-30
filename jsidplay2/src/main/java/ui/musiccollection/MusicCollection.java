@@ -46,7 +46,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.metamodel.SingularAttribute;
 
-import libpsid64.NotEnoughC64MemException;
 import libpsid64.Psid64;
 import libsidplay.Player;
 import libsidplay.player.State;
@@ -473,7 +472,7 @@ public class MusicCollection extends Tab implements UIPart {
 				c.convertFiles(util.getPlayer(),
 						new File[] { selectedItem.getValue() }, directory,
 						sidPlay2Section.getHvscFile());
-			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
+			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();
 			}
 		}

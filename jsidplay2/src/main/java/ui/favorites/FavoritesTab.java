@@ -40,7 +40,6 @@ import javafx.stage.DirectoryChooser;
 
 import javax.persistence.metamodel.SingularAttribute;
 
-import libpsid64.NotEnoughC64MemException;
 import libpsid64.Psid64;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
@@ -337,8 +336,8 @@ public class FavoritesTab extends Tab implements UIPart {
 			c.setVerbose(true);
 			try {
 				c.convertFiles(util.getPlayer(), files.toArray(new File[0]),
-						directory,sidPlay2Section.getHvscFile());
-			} catch (NotEnoughC64MemException | IOException | SidTuneError e) {
+						directory, sidPlay2Section.getHvscFile());
+			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();
 			}
 		}

@@ -8,14 +8,19 @@
 	jmp setiomap
 
 	// Parameters
-init:		.byte cmdLineVars.get("initCmd").asNumber()
-			.word cmdLineVars.get("initAddr").asNumber()
-play:		.byte cmdLineVars.get("playCmd").asNumber()
-			.word cmdLineVars.get("playAddr").asNumber()
+init:	.if (cmdLineVars.get("initAddr").asNumber() != 0) {
+			jmp cmdLineVars.get("initAddr").asNumber()
+		} else {
+			rts
+		}
+play:	.if (cmdLineVars.get("playAddr").asNumber() != 0) {
+			jmp cmdLineVars.get("playAddr").asNumber()
+		} else {
+			rts
+		}
 playmax:	.byte cmdLineVars.get("songs").asNumber()
 speed:		.word cmdLineVars.get("speed").asNumber() & $ffff
 			.word [cmdLineVars.get("speed").asNumber() >> 16] & $ffff
-irqvec:		.byte cmdLineVars.get("irqVec").asNumber()
 initiomap:	.byte cmdLineVars.get("initIOMap").asNumber()
 playiomap:	.byte cmdLineVars.get("playIOMap").asNumber()
 stil:		.byte cmdLineVars.get("stilPage").asNumber()
@@ -165,12 +170,13 @@ rstclk:	ldy clkoffs,x
 	sta clkcounter
 
 	// Set interrupt vectors
-	ldx irqvec
-	bmi vicras
-store03:	lda irqusr,x
-	sta $0314,x
-	dex
-	bpl store03
+	.if (cmdLineVars.get("loadAddr").asNumber() >= $31a) {
+		ldx #5
+store03:lda irqusr,x
+		sta $0314,x
+		dex
+		bpl store03
+	}
 
 	// Set VICII raster to line 0
 vicras:
