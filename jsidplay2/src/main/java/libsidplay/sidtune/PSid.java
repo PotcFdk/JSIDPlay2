@@ -311,36 +311,12 @@ class PSid extends Prg {
 		info.determinedDriverLength = relocatedBuffer.length - 2;
 		System.arraycopy(relocatedBuffer, 2, mem, info.determinedDriverAddr,
 				info.determinedDriverLength);
-
-		// XXX: Seems to be dangerous: we will still run for some time
-		if (!(info.playAddr == 0 && info.loadAddr == 0x200)) {
-			// IRQ
-			Integer irq = assembler.getLabels().get("irqAddr");
-			if (irq != null) {
-				mem[0x0314] = (byte) (irq & 0xff);
-				mem[0x0315] = (byte) ((irq >> 8) & 0xff);
-			}
-			if (info.compatibility != SidTune.Compatibility.RSID) {
-				// BRK
-				Integer brk = assembler.getLabels().get("brkAddr");
-				if (brk != null) {
-					mem[0x0316] = (byte) (brk & 0xff);
-					mem[0x0317] = (byte) ((brk >> 8) & 0xff);
-				}
-				// NMI
-				Integer nmi = assembler.getLabels().get("nmiAddr");
-				if (nmi != null) {
-					mem[0x0318] = (byte) (nmi & 0xff);
-					mem[0x0319] = (byte) ((nmi >> 8) & 0xff);
-				}
-			}
-		}
-		Integer cold = assembler.getLabels().get("coldAddr");
-		if (cold == null) {
-			throw new RuntimeException("Label playAddr not found in "
+		Integer start = assembler.getLabels().get("start");
+		if (start == null) {
+			throw new RuntimeException("Label start not found in "
 					+ PSIDDRIVER_ASM);
 		}
-		return cold;
+		return start;
 	}
 
 	/**

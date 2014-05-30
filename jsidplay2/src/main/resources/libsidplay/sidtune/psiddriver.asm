@@ -4,8 +4,12 @@
  play:		jmp cmdLineVars.get("playAddr").asNumber()
  init:		jmp cmdLineVars.get("initAddr").asNumber()
  
+irqusr:	.word irqjob 
+brkusr:	.word irqexit
+nmiusr:	.word nmijob
+
 // cold start
- coldAddr:	sei
+ start:	sei
  
 // set VICII raster to line 311 for RSIDs
 	        ldx #$9b
@@ -35,9 +39,13 @@ vicinit:	stx $d011
 // we reach are routine to handle play routine
  	        lda #cmdLineVars.get("playIOMap").asNumber()
  	        beq random
- 	        ldx #<irqjob
- 	        stx $0314
- 
+.if (cmdLineVars.get("playAddr").asNumber()!=0 && cmdLineVars.get("loadAddr").asNumber()!=$200) {
+initirq:	ldx #$05
+store:		lda irqusr,x
+			sta $0314,x
+			dex
+			bpl store
+}
 // simulate time before user loads tune
 random:		ldx #<cmdLineVars.get("powerOnDelay").asNumber()
  	        ldy #>cmdLineVars.get("powerOnDelay").asNumber()
@@ -117,6 +125,6 @@ irqjob:		lda $01
 irqAddr:	jmp $ea31
  
 // HLT
-brkAddr:
-nmiAddr:
+irqexit:
+nmijob:
 			.byte $02

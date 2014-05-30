@@ -1,6 +1,6 @@
 .pc = cmdLineVars.get("pc").asNumber()
 
-coldAddr:	jmp cold
+start:	jmp cold
 
 // CBM80 backup
 cbm80:	.byte 0, 0, 0, 0, 0, 0, 0, 0, 0
