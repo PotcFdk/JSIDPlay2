@@ -2,19 +2,19 @@ package libpsid64;
 
 class FreeMemPages {
 	/**
-	 * Start page of driver, 0 means no driver.
+	 * Start page of driver, null means no driver.
 	 */
 	private Integer driverPage;
 	/**
-	 * Start page of screen, 0 means no screen.
+	 * Start page of screen, null means no screen.
 	 */
 	private Integer screenPage;
 	/**
-	 * Start page of chars, 0 means no chars.
+	 * Start page of chars, null means no chars.
 	 */
 	private Integer charPage;
 	/**
-	 * Start page of STIL, 0 means no STIL.
+	 * Start page of STIL, null means no STIL.
 	 */
 	private Integer stilPage;
 	

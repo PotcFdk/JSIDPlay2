@@ -20,8 +20,8 @@ import libsidutils.PathUtils;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
-import libsidutils.kickassembler.Assembler;
-import libsidutils.pucrunch.PUCrunch;
+import libsidutils.assembler.KickAssembler;
+import libsidutils.cruncher.PUCrunch;
 
 //   psid64 - create a C64 executable from a PSID file
 //   Copyright (C) 2001-2003  Roland Hermans <rolandh@users.sourceforge.net>
@@ -85,7 +85,7 @@ public class Psid64 {
 	 */
 	private static final int STIL_EOT_SPACES = 10;
 
-	private Assembler assembler = new Assembler();
+	private KickAssembler assembler = new KickAssembler();
 	private SidTune tune;
 	private STILEntry stilEntry;
 	private String tmpDir;
@@ -170,8 +170,8 @@ public class Psid64 {
 			memoryBlock.setDescription("STIL text");
 			memBlocks.add(memoryBlock);
 		}
-		Collections.sort(memBlocks, new MemoryBlockComparator());
-
+		Collections.sort(memBlocks,
+				(a, b) -> a.getStartAddress() - b.getStartAddress());
 		final int driver = freePages.getDriverPage() != null ? freePages
 				.getDriverPage() << 8 : 0;
 		final int charset = freePages.getCharPage() != null ? freePages
