@@ -61,6 +61,8 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	protected ComboBox<Object> sid1Model, sid2Model;
 	@FXML
+	protected ComboBox<ChipModel> defaultModel;
+	@FXML
 	private ComboBox<String> filter;
 	@FXML
 	private TextField baseAddress;
@@ -73,6 +75,7 @@ public class EmulationSettings extends C64Window {
 
 	private ObservableList<Object> sid1Models;
 	private ObservableList<Object> sid2Models;
+	private ObservableList<ChipModel> defaultModels;
 	private ObservableList<String> filters;
 
 	private ChangeListener<State> emulationChange;
@@ -115,6 +118,9 @@ public class EmulationSettings extends C64Window {
 		sid2Models.addAll(util.getBundle().getString("LIKE_1ST_SID"),
 				ChipModel.MOS6581, ChipModel.MOS8580);
 		sid2Model.setItems(sid2Models);
+		defaultModels = FXCollections.<ChipModel> observableArrayList();
+		defaultModels.addAll(ChipModel.MOS6581, ChipModel.MOS8580);
+		defaultModel.setItems(defaultModels);
 
 		ChipModel userSidModel = util.getConfig().getEmulation()
 				.getUserSidModel();
@@ -126,6 +132,9 @@ public class EmulationSettings extends C64Window {
 		sid2Model.getSelectionModel().select(
 				stereoSidModel != null ? stereoSidModel : util.getBundle()
 						.getString("LIKE_1ST_SID"));
+		ChipModel defautSidModel = util.getConfig().getEmulation()
+				.getDefaultSidModel();
+		defaultModel.getSelectionModel().select(defautSidModel);
 
 		baseAddress.setText(String.format("0x%4x", util.getConfig()
 				.getEmulation().getDualSidBase()));
@@ -161,11 +170,7 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setUserSidModel(userSidModel);
 			addFilters(userSidModel);
 		}
-		util.getPlayer().updateSIDs();
-		util.getPlayer().configureSIDs((num, sid) -> {
-			sid.setFilter(util.getConfig());
-			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
-		});
+		updateChipModels();
 	}
 
 	@FXML
@@ -178,11 +183,18 @@ public class EmulationSettings extends C64Window {
 					.getSelectionModel().getSelectedItem();
 			util.getConfig().getEmulation().setStereoSidModel(stereoSidModel);
 		}
-		util.getPlayer().updateSIDs();
-		util.getPlayer().configureSIDs((num, sid) -> {
-			sid.setFilter(util.getConfig());
-			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
-		});
+		updateChipModels();
+	}
+
+	@FXML
+	private void setDefaultModel() {
+		ChipModel defaultSidModel = (ChipModel) defaultModel
+				.getSelectionModel().getSelectedItem();
+		util.getConfig().getEmulation().setDefaultSidModel(defaultSidModel);
+		ChipModel model = ChipModel.getChipModel(util.getConfig(), util
+				.getPlayer().getTune());
+		addFilters(model);
+		updateChipModels();
 	}
 
 	@FXML
@@ -229,14 +241,18 @@ public class EmulationSettings extends C64Window {
 			emulation.setFilter8580(filterName);
 		}
 
+		updateChipModels();
+		if (!duringInitialization) {
+			calculateFilterCurve(filterName);
+		}
+	}
+
+	private void updateChipModels() {
 		util.getPlayer().updateSIDs();
 		util.getPlayer().configureSIDs((num, sid) -> {
 			sid.setFilter(util.getConfig());
 			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
 		});
-		if (!duringInitialization) {
-			calculateFilterCurve(filterName);
-		}
 	}
 
 	private void restart() {

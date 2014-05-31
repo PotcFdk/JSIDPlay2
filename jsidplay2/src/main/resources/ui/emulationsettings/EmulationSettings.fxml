@@ -48,6 +48,8 @@
 					<ComboBox fx:id="sid1Model" onAction="#setSid1Model" />
 					<Label text="%2ND_SID" />
 					<ComboBox fx:id="sid2Model" onAction="#setSid2Model" />
+					<Label text="%DEFAULT_SID" />
+					<ComboBox fx:id="defaultModel" onAction="#setDefaultModel" />
 				</HBox>
 				<HBox>
 					<Label text="%2ND_ADDRESS" />
