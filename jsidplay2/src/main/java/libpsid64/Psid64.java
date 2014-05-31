@@ -9,7 +9,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import libsidplay.Player;
@@ -53,8 +52,6 @@ public class Psid64 {
 	private static final String PSID64_BOOT_ASM = "/libpsid64/psid64_boot.asm";
 	private static final String PSID64_ASM = "/libpsid64/psid64.asm";
 	private static final String PSID64_NOSCREEN_ASM = "/libpsid64/psid64_noscreen.asm";
-	private static final String PACKAGE = "PSID64";
-	private static final String VERSION = "0.9";
 
 	/**
 	 * Maximum memory block count required for tune driver
@@ -146,7 +143,7 @@ public class Psid64 {
 		tune.placeProgramInMemory(memoryBlock.getData());
 
 		if (freePages.getScreenPage() != null) {
-			Screen screen = drawScreen();
+			Screen screen = new Screen(tune.getInfo());
 			memoryBlock = new MemoryBlock();
 			memoryBlock.setStartAddress(freePages.getScreenPage() << 8);
 			memoryBlock.setSize(screen.getDataSize());
@@ -349,124 +346,6 @@ public class Psid64 {
 			return 0x35; // I/O only
 		}
 		return 0x34; // RAM only
-	}
-
-	private Screen drawScreen() {
-		Screen screen = new Screen();
-		// set title
-		screen.move(5, 1);
-		screen.write(PACKAGE + " v" + VERSION + " by Roland Hermans!");
-
-		// characters for color line effect
-		screen.poke(4, 0, 0x70);
-		screen.poke(35, 0, 0x6e);
-		screen.poke(4, 1, 0x5d);
-		screen.poke(35, 1, 0x5d);
-		screen.poke(4, 2, 0x6d);
-		screen.poke(35, 2, 0x7d);
-		for (int i = 0; i < 30; ++i) {
-			screen.poke(5 + i, 0, 0x40);
-			screen.poke(5 + i, 2, 0x40);
-		}
-
-		// information lines
-		screen.move(0, 4);
-		screen.write("Name   : ");
-		SidTuneInfo tuneInfo = tune.getInfo();
-		Iterator<String> descriptionIt = tuneInfo.getInfoString().iterator();
-		if (descriptionIt.hasNext()) {
-			String title = descriptionIt.next();
-			screen.write(title.substring(0, Math.min(title.length(), 31)));
-		}
-
-		screen.write("\nAuthor : ");
-		if (descriptionIt.hasNext()) {
-			String author = descriptionIt.next();
-			screen.write(author.substring(0, Math.min(author.length(), 31)));
-		}
-
-		screen.write("\nRelease: ");
-		if (descriptionIt.hasNext()) {
-			String released = descriptionIt.next();
-			screen.write(released.substring(0, Math.min(released.length(), 31)));
-		}
-		screen.write(String.format("\nLoad   : $%04x-$%04x",
-				tuneInfo.getLoadAddr(),
-				tuneInfo.getLoadAddr() + tuneInfo.getC64dataLen()));
-
-		screen.write(String.format("\nInit   : $%04x", tuneInfo.getInitAddr()));
-
-		screen.write("\nPlay   : ");
-		if (tuneInfo.getPlayAddr() != 0) {
-			screen.write(String.format("$%04x", tuneInfo.getPlayAddr()));
-		} else {
-			screen.write("N/A");
-		}
-
-		screen.write("\nSongs  : ");
-		screen.write(String.format("%d", tuneInfo.getSongs()));
-		if (tuneInfo.getSongs() > 1) {
-			screen.write(" (now playing");
-		}
-
-		boolean hasFlags = false;
-		screen.write("\nFlags  : ");
-		if (tuneInfo.getCompatibility() == SidTune.Compatibility.PSIDv1) {
-			hasFlags = addFlag(screen, hasFlags, "PlaySID");
-		}
-		hasFlags = addFlag(screen, hasFlags, tuneInfo.getClockSpeed()
-				.toString());
-		hasFlags = addFlag(screen, hasFlags, tuneInfo.getSid1Model().toString());
-		int sid2midNibbles = (tuneInfo.getSidChipBase2() >> 4) & 0xff;
-		if (((sid2midNibbles & 1) == 0)
-				&& (((0x42 <= sid2midNibbles) && (sid2midNibbles <= 0x7e)) || ((0xe0 <= sid2midNibbles) && (sid2midNibbles <= 0xfe)))) {
-			hasFlags = addFlag(
-					screen,
-					hasFlags,
-					tuneInfo.getSid2Model().toString()
-							+ String.format(" at $%04x",
-									tuneInfo.getSidChipBase2()));
-		}
-		if (!hasFlags) {
-			screen.write("-");
-		}
-		screen.write("\nClock  :   :  :");
-
-		// some additional text
-		screen.write("\n\n  ");
-		if (tuneInfo.getSongs() <= 1) {
-			screen.write("   [1");
-		} else if (tuneInfo.getSongs() <= 10) {
-			screen.write("  [1-");
-			screen.putchar(tuneInfo.getSongs() % 10 + '0');
-		} else if (tuneInfo.getSongs() <= 11) {
-			screen.write(" [1-0, A");
-		} else {
-			screen.write("[1-0, A-");
-			screen.putchar(tuneInfo.getSongs() <= 36 ? tuneInfo.getSongs() - 11 + 'A'
-					: 'Z');
-		}
-		screen.write("] Select song [+] Next song\n");
-		screen.write("  [-] Previous song [DEL] Blank screen\n");
-		if (tuneInfo.getPlayAddr() != 0) {
-			screen.write("[~] Fast forward [LOCK] Show raster time\n");
-		}
-		screen.write("  [RUN/STOP] Stop [CTRL+CBM+DEL] Reset\n");
-
-		// flashing bottom line (should be exactly 38 characters)
-		screen.move(1, 24);
-		screen.write("Website: http://psid64.sourceforge.net");
-		return screen;
-	}
-
-	private boolean addFlag(Screen screen, boolean hasFlags, String flagName) {
-		if (hasFlags) {
-			screen.write(", ");
-		} else {
-			hasFlags = true;
-		}
-		screen.write(flagName);
-		return hasFlags;
 	}
 
 	private StringBuffer formatStilText() {
