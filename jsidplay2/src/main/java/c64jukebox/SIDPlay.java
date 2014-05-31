@@ -83,12 +83,10 @@ public class SIDPlay extends Applet {
 		if (urlName == null) {
 			return;
 		}
-		// eventually stop last run
 		player.stopC64();
 		player.setTune(getTune(urlName));
 		player.getTune().setSelectedSong(songNum);
 		player.setDriverSettings(new DriverSettings(audio, emulation));
-
 		player.startC64();
 	}
 
@@ -206,18 +204,17 @@ public class SIDPlay extends Applet {
 	// Helpers
 	//
 	private SidTune getTune(final String url) {
-		SidTune sidTuneMod = map.get(url);
-		if (sidTuneMod != null) {
-			return sidTuneMod;
+		SidTune tune = map.get(url);
+		if (tune != null) {
+			return tune;
 		}
 		try (InputStream stream = new URL(url).openConnection()
 				.getInputStream()) {
-			// load from URL (ui version)
-			sidTuneMod = SidTune.load(url, stream);
-			map.put(url, sidTuneMod);
-			return sidTuneMod;
+			tune = SidTune.load(url, stream);
+			map.put(url, tune);
+			return tune;
 		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
+			showStatus(e.getMessage());
 			return null;
 		}
 	}
