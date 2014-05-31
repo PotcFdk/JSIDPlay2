@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
+import libsidutils.PathUtils;
+
 class Mus extends PSid {
 
 	/** Known SID names. MUS loader scans for these. */
@@ -201,7 +203,7 @@ class Mus extends PSid {
 			info.playAddr = 0xec80;
 		}
 
-		info.infoString.add(musFile.getName());
+		info.infoString.add(PathUtils.getBaseNameNoExt(musFile.getName()));
 		info.infoString.add("<?>");
 		info.infoString.add("<?>");
 

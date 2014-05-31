@@ -34,7 +34,7 @@ public class T64 extends Prg {
 		t64.info.loadAddr = entry.loadAddr;
 		t64.info.c64dataLen = entry.c64dataLen;
 
-		t64.info.infoString.add(name);
+		t64.info.infoString.add(PathUtils.getBaseNameNoExt(name));
 		
 		t64.convertOldStyleSpeedToTables(~0);
 		return t64;

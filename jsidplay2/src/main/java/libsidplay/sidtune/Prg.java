@@ -61,7 +61,7 @@ class Prg extends SidTune {
 		prg.info.c64dataLen = dataBuf.length - prg.programOffset;
 		prg.info.loadAddr = (dataBuf[0] & 0xff) + ((dataBuf[1] & 0xff) << 8);
 
-		prg.info.infoString.add(name);
+		prg.info.infoString.add(PathUtils.getBaseNameNoExt(name));
 		
 		prg.convertOldStyleSpeedToTables(~0);
 		return prg;
