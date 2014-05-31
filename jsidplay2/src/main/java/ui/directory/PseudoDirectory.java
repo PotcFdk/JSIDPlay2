@@ -3,7 +3,7 @@ package ui.directory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
+import java.util.Collection;
 import java.util.Locale;
 
 import libsidplay.Player;
@@ -78,7 +78,7 @@ public class PseudoDirectory {
 		// Directory id: start song '/' song count
 		dir.setId((String.valueOf(entry.getStartSong()) + "/" + String
 				.valueOf(Math.max(1, entry.getNoOfSongs()))).getBytes(ISO88591));
-		List<DirEntry> entries = dir.getDirEntries();
+		Collection<DirEntry> entries = dir.getDirEntries();
 
 		addProperty(entries, "TITLE", entry.getTitle());
 		addProperty(entries, "AUTHOR", entry.getAuthor());
@@ -118,7 +118,7 @@ public class PseudoDirectory {
 		return dir;
 	}
 
-	private static void addProperty(List<DirEntry> entries, String property,
+	private static void addProperty(Collection<DirEntry> entries, String property,
 			String value) {
 		byte[] filename = DirEntry.asciiTopetscii(property + "=" + value, 20);
 		// Pseudo directory entry: tune property '=' value

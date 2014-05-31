@@ -2,7 +2,7 @@ package ui.directory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -123,7 +123,7 @@ public class Directory extends AnchorPane implements UIPart {
 				DirectoryItem headerItem = new DirectoryItem();
 				headerItem.setText(print(dir.toString(), fontSetHeader));
 				directoryEntries.add(headerItem);
-				List<DirEntry> dirEntries = dir.getDirEntries();
+				Collection<DirEntry> dirEntries = dir.getDirEntries();
 				// Print directory entries
 				for (DirEntry dirEntry : dirEntries) {
 					DirectoryItem dirItem = new DirectoryItem();

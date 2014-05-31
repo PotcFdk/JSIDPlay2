@@ -1,6 +1,6 @@
 package libsidplay.components.printer.mps803;
 
-import static libsidplay.mem.IMPS803.MPS803_CHARSET;
+import static libsidplay.mem.IMPS803Char.MPS803_CHARSET;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
 import libsidplay.components.printer.IPaper;

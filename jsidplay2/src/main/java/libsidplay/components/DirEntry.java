@@ -42,13 +42,8 @@ public abstract class DirEntry {
 	/**
 	 * All file extensions.
 	 */
-	private static final byte[][] FILETYPES = new byte[][] {
-			{ 0x44, 0x45, 0x4c }, /* .DEL */
-			{ 0x53, 0x45, 0x51 }, /* .SEQ */
-			{ 0x50, 0x52, 0x47 }, /* .PRG */
-			{ 0x55, 0x53, 0x52 }, /* .USR */
-			{ 0x52, 0x45, 0x4c }, /* .REL */
-	};
+	private static final String[] FILETYPES = new String[] { "DEL", "SEQ",
+			"PRG", "USR", "REL" };
 
 	/**
 	 * Used disk blocks (disk) or number of bytes (tape).
@@ -92,31 +87,25 @@ public abstract class DirEntry {
 			final int fileType) {
 		StringBuffer fn = new StringBuffer();
 		// BEGIN include filename in quotes
-		fn.append((char) (0x22));
-		for (int i = 0; i < fileName.length; i++) {
-			if (fileName[i] == '\r' || fileName[i] == 0x00) {
-				// newline or zero bytes are included
-				// in tape descriptions and delimits the filename for us
+		fn.append("\"");
+		for (byte c : fileName) {
+			if (c == '\r' || c == 0x00) {
+				// newline or zero bytes delimits the filename (e.g. tape)
 				break;
 			}
 			// Beware the PETSCII bytes here!
-			fn.append((char) ((fileName[i] & 0xff)));
+			fn.append((char) ((c & 0xff)));
 		}
+		fn.append("\"");
 		// END include filename in quotes
-		fn.append((char) (0x22));
 		if (fileType != -1) {
 			// append extension if applicable
 			int ft = fileType & BITMASK_FILETYPE;
 			if (ft >= FILETYPE_DEL && ft <= FILETYPE_REL) {
 				// " DEL" | "PRG" ...
-				fn.append((char) (0x20));
-				for (int i = 0; i < FILETYPES[ft - FILETYPE_DEL].length; i++) {
-					fn.append((char) (FILETYPES[ft - FILETYPE_DEL][i] & 0xff));
-				}
+				fn.append(" ").append(FILETYPES[ft - FILETYPE_DEL]);
 			} else {
-				// " ?"
-				fn.append((char) (0x20));
-				fn.append((char) (0x3f));
+				fn.append(" ?");
 			}
 		}
 		return fn.toString();
@@ -154,7 +143,7 @@ public abstract class DirEntry {
 		return convertFilename.substring(1, convertFilename.length() - 1)
 				.replace('/', '_');
 	}
-	
+
 	/**
 	 * Save the program of this directory entry to the specified file.
 	 * 

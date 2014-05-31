@@ -1,6 +1,6 @@
 package libsidplay.mem;
 
-public interface IMPS803 {
+public interface IMPS803Char {
 	public static final byte MPS803_CHARSET[] = {
 		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, 
 		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, 

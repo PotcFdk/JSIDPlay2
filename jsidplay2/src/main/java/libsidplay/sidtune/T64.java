@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
@@ -106,7 +106,7 @@ public class T64 extends Prg {
 			dir.setTitle(diskName);
 
 			int totalEntries = ((data[35] & 0xff) << 8) | (data[34] & 0xff);
-			final List<DirEntry> dirEntries = dir.getDirEntries();
+			final Collection<DirEntry> dirEntries = dir.getDirEntries();
 			for (int entryNum = 1; entryNum <= totalEntries; entryNum++) {
 				try {
 					final T64Entry entry = t64.getEntry(data, entryNum);

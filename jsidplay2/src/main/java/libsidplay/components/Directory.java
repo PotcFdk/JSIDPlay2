@@ -1,8 +1,16 @@
 package libsidplay.components;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
+/**
+ * 
+ * This class represents a disk directory. However it is used to show tape file
+ * entries or other formats as a pseudo directory as well.
+ * 
+ * @author Ken
+ *
+ */
 public class Directory {
 
 	/**
@@ -20,11 +28,7 @@ public class Directory {
 	/**
 	 * Directory entries.
 	 */
-	private List<DirEntry> dirEntries;
-	/**
-	 * Free disk blocks or -1 (tape).
-	 */
-	private int freeBlocks;
+	private Collection<DirEntry> dirEntries;
 
 	/**
 	 * Status line to be displayed as an alternative to the freeBlocks.
@@ -34,7 +38,6 @@ public class Directory {
 	public Directory() {
 		dirEntries = new ArrayList<DirEntry>();
 		singleSided = true;
-		freeBlocks = -1;
 	}
 
 	public void setTitle(byte[] diskName) {
@@ -49,28 +52,20 @@ public class Directory {
 		singleSided = single;
 	}
 
-	public void setFreeBlocks(int blocks) {
-		freeBlocks = blocks;
-	}
-
-	public List<DirEntry> getDirEntries() {
+	public Collection<DirEntry> getDirEntries() {
 		return dirEntries;
 	}
 
 	public String getStatusLine() {
-		if (statusLine == null) {
-			if (freeBlocks != -1) {
-				return String.format("%-3d BLOCKS FREE.", freeBlocks);
-			} else {
-				return null;
-			}
-		} else {
-			return statusLine;
-		}
+		return statusLine;
+	}
+
+	public void setFreeBlocks(int blocks) {
+		statusLine = String.format("%-3d BLOCKS FREE.", blocks);
 	}
 
 	public void setStatusLine(final String line) {
-		this.statusLine = line;
+		statusLine = line;
 	}
 
 	@Override
