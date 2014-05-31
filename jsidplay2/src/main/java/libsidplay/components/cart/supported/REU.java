@@ -3,7 +3,6 @@ package libsidplay.components.cart.supported;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 
 import libsidplay.common.Event;
@@ -89,10 +88,6 @@ public class REU extends Cartridge {
 	/** Currently active command */
 	protected Command reuOperation;
 
-	protected REU(PLA pla) {
-		super(pla);
-	}
-
 	/**
 	 * REU interrupt enable/disable
 	 */
@@ -104,29 +99,26 @@ public class REU extends Cartridge {
 		setIRQ((status & 0x80) != 0);
 	}
 
-	public static final Cartridge readImage(PLA pla, InputStream is, int sizeKB)
-			throws IOException {
+	public REU(DataInputStream dis, PLA pla, int sizeKB) throws IOException {
+		super(pla);
 		assert sizeKB == 128 || sizeKB == 512 || sizeKB == 256
 				|| sizeKB == 2 << 10 || sizeKB == 16 << 10;
-
-		REU reu = new REU(pla);
 
 		if (sizeKB == 0) {
 			// empty file means maximum size!
 			sizeKB = 16 << 10;
 		}
 		wrapAround = (sizeKB << 10) - 1;
-		reu.ram = new byte[sizeKB << 10];
-		Arrays.fill(reu.ram, (byte) 0);
-		if (is != null) {
-			DataInputStream dis = new DataInputStream(is);
+		ram = new byte[sizeKB << 10];
+		Arrays.fill(ram, (byte) 0);
+		if (dis != null) {
 			try {
-				dis.readFully(reu.ram);
+				dis.readFully(ram);
 			} catch (EOFException e) {
 				/* no problem, we'll just keep the rest uninitialized... */
 			}
 		}
-		return reu;
+		reset();
 	}
 
 	private final Bank io2Bank = new Bank() {

@@ -36,7 +36,6 @@ package libsidplay.components.cart.supported;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 
 import libsidplay.components.cart.Cartridge;
@@ -79,33 +78,25 @@ public class GeoRAM extends Cartridge {
 	 */
 	protected byte[] ram;
 
-	public GeoRAM(PLA pla) {
+	public GeoRAM(DataInputStream dis, PLA pla, int sizeKB) throws IOException {
 		super(pla);
-	}
-
-	public static final GeoRAM readImage(PLA pla, InputStream is, int sizeKB)
-			throws IOException {
 		assert sizeKB == 64 || sizeKB == 128 || sizeKB == 256 || sizeKB == 512
 				|| sizeKB == 1 << 10 || sizeKB == 2 << 10;
-
-		GeoRAM geoRAM = new GeoRAM(pla);
 
 		if (sizeKB == 0) {
 			// empty file means maximum size!
 			sizeKB = 2 << 10;
 		}
-		geoRAM.ram = new byte[sizeKB << 10];
-		Arrays.fill(geoRAM.ram, (byte) 0);
-		if (is != null) {
-			DataInputStream dis = new DataInputStream(is);
+		ram = new byte[sizeKB << 10];
+		Arrays.fill(ram, (byte) 0);
+		if (dis != null) {
 			try {
-				dis.readFully(geoRAM.ram);
+				dis.readFully(ram);
 			} catch (EOFException e) {
 				/* no problem, we'll just keep the rest uninitialized... */
 			}
 		}
-		geoRAM.reset();
-		return geoRAM;
+		reset();
 	}
 
 	@Override

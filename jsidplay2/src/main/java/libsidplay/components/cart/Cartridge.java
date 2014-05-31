@@ -43,7 +43,16 @@ public class Cartridge {
 
 		DELA_EP64, DELA_EP7X8, DELA_EP256, REX_EP256, MIKRO_ASSEMBLER, RESERVED, ACTION_REPLAY_4, STARDOS,
 
-		EASYFLASH,
+		EASYFLASH;
+
+		private static CRTType getType(byte[] header) {
+			if (!new String(header, 0, 0x10, ISO88591)
+					.equals("C64 CARTRIDGE   ")) {
+				throw new RuntimeException("File is not a .CRT file");
+			}
+			return values()[(header[0x16] & 0xff) << 8 | (header[0x17] & 0xff)];
+
+		}
 	}
 
 	protected Cartridge(final PLA pla) {
@@ -123,9 +132,9 @@ public class Cartridge {
 			final CartridgeType cartType, final int sizeKB) throws IOException {
 		switch (cartType) {
 		case GEORAM:
-			return GeoRAM.readImage(pla, null, sizeKB);
+			return new GeoRAM(null, pla, sizeKB);
 		case REU:
-			return REU.readImage(pla, null, sizeKB);
+			return new REU(null, pla, sizeKB);
 		default:
 			throw new RuntimeException("Cartridge is unsupported");
 		}
@@ -149,21 +158,14 @@ public class Cartridge {
 				new FileInputStream(file))) {
 			switch (cartType) {
 			case GEORAM:
-				return GeoRAM.readImage(pla, dis, (int) (file.length() >> 10));
+				return new GeoRAM(dis, pla, (int) (file.length() >> 10));
 			case REU:
-				return REU.readImage(pla, dis, (int) (file.length() >> 10));
+				return new REU(dis, pla, (int) (file.length() >> 10));
 			case CRT:
 				final byte[] header = new byte[0x40];
 				dis.readFully(header);
 
-				if (!new String(header, 0, 0x10, ISO88591)
-						.equals("C64 CARTRIDGE   ")) {
-					throw new RuntimeException("File is not a .CRT file");
-				}
-
-				CRTType type = CRTType.values()[(header[0x16] & 0xff) << 8
-						| (header[0x17] & 0xff)];
-
+				final CRTType type = CRTType.getType(header);
 				switch (type) {
 				case ACTION_REPLAY:
 					return new ActionReplay(dis, pla);
@@ -321,12 +323,7 @@ public class Cartridge {
 				new FileInputStream(file))) {
 			final byte[] header = new byte[0x40];
 			dis.readFully(header);
-			if (!new String(header, 0, 0x10, ISO88591)
-					.equals("C64 CARTRIDGE   ")) {
-				return dir;
-			}
-			CRTType type = CRTType.values()[(header[0x16] & 0xff) << 8
-					| (header[0x17] & 0xff)];
+			CRTType type = CRTType.getType(header);
 			// directory title: cartridge type
 			dir.setTitle(type.toString().replace('_', '-').getBytes(ISO88591));
 			// directory id: size in KB
