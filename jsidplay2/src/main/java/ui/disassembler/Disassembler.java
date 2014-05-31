@@ -17,8 +17,8 @@ import javafx.stage.FileChooser;
 import libsidplay.Player;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.cpuparser.CPUCommand;
-import libsidutils.cpuparser.CPUParser;
+import libsidutils.disassembler.CPUCommand;
+import libsidutils.disassembler.SimpleDisassembler;
 import ui.common.C64Window;
 import ui.entities.config.SidPlay2Section;
 
@@ -46,7 +46,7 @@ public class Disassembler extends C64Window {
 
 	private DisassemblerRefresh disassemblerRefresh;
 
-	private static final Map<Integer, CPUCommand> fCommands = CPUParser
+	private static final Map<Integer, CPUCommand> fCommands = SimpleDisassembler
 			.getCpuCommands();
 
 	public Disassembler(Player player) {
@@ -135,7 +135,7 @@ public class Disassembler extends C64Window {
 			hexBytes.append(String.format("%02X ", ram[startAddr + i & 0xffff]));
 		}
 		assemblyLine.setBytes(hexBytes.toString());
-		String[] parts = CPUParser.getInstance().getDisassembly(ram, startAddr)
+		String[] parts = SimpleDisassembler.getInstance().getDisassembly(ram, startAddr)
 				.split(":", 2);
 		assemblyLine.setMnemonic(parts[0]);
 		if (parts.length == 2) {

@@ -1,4 +1,4 @@
-package libsidutils.pucrunch;
+package libsidutils.cruncher;
 
 public class FixEntry {
 	public FixEntry(FixType t, int off) {

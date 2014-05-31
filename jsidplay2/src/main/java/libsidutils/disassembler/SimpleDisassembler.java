@@ -1,4 +1,4 @@
-package libsidutils.cpuparser;
+package libsidutils.disassembler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,9 +9,9 @@ import java.util.Map;
 
 import libsidplay.components.mos6510.IMOS6510Disassembler;
 
-public class CPUParser implements IMOS6510Disassembler {
+public class SimpleDisassembler implements IMOS6510Disassembler {
 	private static HashMap<Integer, CPUCommand> cpuCommands = new HashMap<Integer, CPUCommand>();
-	private static CPUParser theInstance;
+	private static SimpleDisassembler theInstance;
 
 	static {
 		try {
@@ -28,9 +28,9 @@ public class CPUParser implements IMOS6510Disassembler {
 		return Collections.unmodifiableMap(cpuCommands);
 	}
 
-	public static final CPUParser getInstance() {
+	public static final SimpleDisassembler getInstance() {
 		if (theInstance == null) {
-			theInstance = new CPUParser();
+			theInstance = new SimpleDisassembler();
 		}
 		return theInstance;
 	}
@@ -85,7 +85,7 @@ public class CPUParser implements IMOS6510Disassembler {
 
 	static private void parse() throws IOException {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				CPUParser.class.getResourceAsStream("cpu.properties")))) {
+				SimpleDisassembler.class.getResourceAsStream("cpu.properties")))) {
 			String line;
 			while (null != (line = reader.readLine())) {
 				final String[] args = line.split(":");

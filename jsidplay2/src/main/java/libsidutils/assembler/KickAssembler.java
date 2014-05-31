@@ -1,4 +1,4 @@
-package libsidutils.kickassembler;
+package libsidutils.assembler;
 
 import java.io.File;
 import java.io.InputStream;
@@ -29,7 +29,7 @@ import cml.kickass.values.HashtableValue;
 import cml.kickass.values.LabelReferenceValue;
 import cml.kickass.values.SymbolScopeValue;
 
-public class Assembler {
+public class KickAssembler {
 
 	private static final String INCLUDE_AUTOINCLUDE_ASM = "/include/autoinclude.asm";
 
@@ -98,7 +98,7 @@ public class Assembler {
 	/**
 	 * Create an assembler.
 	 */
-	public Assembler() {
+	public KickAssembler() {
 		sourceLibraryPath.add(new File("."));
 		libraries.add(new MathLibrary());
 		libraries.add(new PrintLibrary());

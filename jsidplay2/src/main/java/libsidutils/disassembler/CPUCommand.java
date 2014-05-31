@@ -1,4 +1,4 @@
-package libsidutils.cpuparser;
+package libsidutils.disassembler;
 
 public class CPUCommand {
 	private final int opCode;

@@ -1,4 +1,4 @@
-package libsidutils.pucrunch;
+package libsidutils.cruncher;
 
 public interface IHeader {
 	static byte headerC64SW[] = {

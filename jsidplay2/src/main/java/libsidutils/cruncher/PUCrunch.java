@@ -1,6 +1,6 @@
 /* Pucrunch ©1997-2008 by Pasi 'Albert' Ojala, a1bert@iki.fi */
 /* Pucrunch is now under LGPL: see the doc for details. */
-package libsidutils.pucrunch;
+package libsidutils.cruncher;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -79,7 +79,7 @@ import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
 import libsidutils.SidDatabase;
-import libsidutils.cpuparser.CPUParser;
+import libsidutils.disassembler.SimpleDisassembler;
 import resid_builder.ReSID;
 import resid_builder.ReSIDBuilder;
 import resid_builder.resid.ChipModel;
@@ -604,7 +604,7 @@ public class Player {
 	 *            opcode stringifier to produce CPU debug output.
 	 */
 	public final void setDebug(final boolean cpuDebug) {
-		c64.getCPU().setDebug(cpuDebug ? CPUParser.getInstance() : null);
+		c64.getCPU().setDebug(cpuDebug ? SimpleDisassembler.getInstance() : null);
 	}
 
 	/**

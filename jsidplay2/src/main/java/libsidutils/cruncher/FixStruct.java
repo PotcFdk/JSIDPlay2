@@ -1,4 +1,4 @@
-package libsidutils.pucrunch;
+package libsidutils.cruncher;
 
 public class FixStruct {
 	public FixStruct(byte[] headerc64, int length, FixEntry[] fixtablec64,

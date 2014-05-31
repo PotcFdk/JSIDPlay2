@@ -32,7 +32,7 @@ import java.util.Scanner;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import libsidplay.components.mos6510.MOS6510;
-import libsidutils.kickassembler.Assembler;
+import libsidutils.assembler.KickAssembler;
 
 class PSid extends Prg {
 	private static final String PSIDDRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
@@ -242,7 +242,7 @@ class PSid extends Prg {
 
 	private static final int PSID_BASIC = 1 << 1;
 
-	private final Assembler assembler = new Assembler();
+	private final KickAssembler assembler = new KickAssembler();
 
 	private Image image;
 
