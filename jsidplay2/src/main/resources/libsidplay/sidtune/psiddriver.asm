@@ -39,13 +39,22 @@ vicinit:	stx $d011
 // we reach are routine to handle play routine
  	        lda #cmdLineVars.get("playIOMap").asNumber()
  	        beq random
-.if (cmdLineVars.get("playAddr").asNumber()!=0 && cmdLineVars.get("loadAddr").asNumber()!=$200) {
+
+// Set interrupt vectors
+// Don't step on the vectors if they're part of the PSID image
+			lda #>cmdLineVars.get("loadAddr").asNumber()
+			cmp #$03
+			bcc random
+			bne initirq
+			lda #<cmdLineVars.get("loadAddr").asNumber()
+			cmp #$1a
+			bcc random
 initirq:	ldx #$05
-store:		lda irqusr,x
+store03:	lda irqusr,x
 			sta $0314,x
 			dex
-			bpl store
-}
+			bpl store03
+
 // simulate time before user loads tune
 random:		ldx #<cmdLineVars.get("powerOnDelay").asNumber()
  	        ldy #>cmdLineVars.get("powerOnDelay").asNumber()
