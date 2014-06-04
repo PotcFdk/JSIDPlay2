@@ -257,7 +257,7 @@ public class Psid64 {
 					out.println();
 					charsetPrinted = true;
 				}
-				out.printf("  $%04x-$%04x  ", memBlock.getStartAddress(),
+				out.printf("  $%04x-$%04x  %s", memBlock.getStartAddress(),
 						memBlock.getStartAddress() + memBlock.getSize(),
 						memBlock.getDescription());
 				out.println();
