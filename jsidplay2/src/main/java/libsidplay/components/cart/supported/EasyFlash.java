@@ -275,9 +275,9 @@ public class EasyFlash extends Cartridge {
 				break;
 			}
 
-			int bank = ((chipheader[0xa] & 0xff) << 8) | chipheader[0xb];
-			int offset = ((chipheader[0xc] & 0xff) << 8) | chipheader[0xd];
-			int length = ((chipheader[0xe] & 0xff) << 8) | chipheader[0xf];
+			int bank = ((chipheader[0xa] & 0xff) << 8) | (chipheader[0xb] & 0xff);
+			int offset = ((chipheader[0xc] & 0xff) << 8) | (chipheader[0xd] & 0xff);
+			int length = ((chipheader[0xe] & 0xff) << 8) | (chipheader[0xf] & 0xff);
 
 			if (length == 0x2000) {
 				if (bank >= EASYFLASH_N_BANKS
