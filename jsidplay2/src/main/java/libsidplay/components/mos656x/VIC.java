@@ -495,7 +495,7 @@ public abstract class VIC extends Bank {
 				mcFlip ^= (bits & 4) != 0;
 
 				int videoModeColorsSIMD = videoModeColors[videoModeColorDecoder[videoModeColorDecoderOffset]] << 16
-						| videoModeColors[videoModeColorDecoder[videoModeColorDecoderOffset | 3]];
+						| (videoModeColors[videoModeColorDecoder[videoModeColorDecoderOffset | 3]] & 0xff);
 				videoModeColorsSIMD |= videoModeColorsSIMD << 4;
 				videoModeColorsSIMD |= videoModeColorsSIMD << 8;
 
