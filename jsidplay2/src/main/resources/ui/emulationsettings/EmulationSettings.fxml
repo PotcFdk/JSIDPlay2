@@ -15,11 +15,15 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import java.net.URL?>
 <?import ui.common.KnobSkin?>
 <?import ui.emulationsettings.LogarithmicAxis?>
 <?scenebuilder-preview-i18n-resource EmulationSettings.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
+	<stylesheets>
+		<URL value="@EmulationSettings.css" />
+	</stylesheets>
 	<VBox>
 		<TitledPane text="%VOLUME_CONTROL" collapsible="false">
 			<BorderPane>

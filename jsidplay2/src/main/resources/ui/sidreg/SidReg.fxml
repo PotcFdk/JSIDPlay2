@@ -14,10 +14,14 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.collections.FXCollections?> 
 <?import javafx.scene.control.ToggleButton?>
+<?import java.net.URL?>
 <?import ui.sidreg.SidRegWrite?>
 <?scenebuilder-preview-i18n-resource SidReg.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
+	<stylesheets>
+		<URL value="@SidReg.css" />
+	</stylesheets>
 	<VBox fx:id="vbox">
 		<ToggleButton text="%START_STOP_RECORDING" fx:id="startStop"
 			onAction="#doStartStop">

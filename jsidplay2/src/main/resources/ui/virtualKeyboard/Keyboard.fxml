@@ -8,9 +8,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.paint.*?>
+<?import java.net.URL?>
 <?scenebuilder-preview-i18n-resource VirtualKeyboard.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
+	<stylesheets>
+		<URL value="@Keyboard.css" />
+	</stylesheets>
 	<BorderPane>
 		<center>
 			<StackPane>

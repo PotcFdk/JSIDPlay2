@@ -23,16 +23,22 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import java.net.URL?>
 <?import ui.musiccollection.MusicCollection?>
 <?import ui.diskcollection.DiskCollection?>
 <?import ui.oscilloscope.Oscilloscope?>
 <?import ui.videoscreen.Video?>
 <?import ui.gamebase.GameBase?>
 <?import ui.favorites.Favorites?>
+<?import ui.asm.Asm?>
 <?import ui.printer.Printer?>
 <?import ui.console.Console?>
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
+<?scenebuilder-classpath-element ../../../../target/classes?>
 <Scene>
+	<stylesheets>
+		<URL value="@JSidPlay2.css" />
+	</stylesheets>
 	<BorderPane xmlns:fx="http://javafx.com/fxml">
 		<top>
 			<AnchorPane>
@@ -325,6 +331,7 @@
 						</TabPane>
 					</Tab>
 					<GameBase text="%GAMEBASE" />
+					<Asm text="%ASM" />
 					<Printer text="%PRINTER" />
 					<Console text="%CONSOLE" />
 				</tabs>

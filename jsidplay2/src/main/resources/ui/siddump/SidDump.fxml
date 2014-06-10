@@ -19,10 +19,14 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.cell.MapValueFactory?>
+<?import java.net.URL?>
 <?import ui.siddump.SidDumpCellFactory?>
 <?scenebuilder-preview-i18n-resource SidDump.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
+	<stylesheets>
+		<URL value="@SidDump.css" />
+	</stylesheets>
 	<VBox fx:id="root">
 		<HBox>
 			<ToggleButton text="%START_STOP_RECORDING" fx:id="startStopRecording"

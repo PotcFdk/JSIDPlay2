@@ -35,7 +35,6 @@ public abstract class C64Window implements UIPart {
 		this.stage = stage;
 		util = new UIUtil(this, player, this);
 		scene = (Scene) util.parse();
-		scene.getStylesheets().add(getStyleSheetName());
 		scene.setOnKeyPressed((ke) -> {
 			if (ke.getCode() == KeyCode.ESCAPE) {
 				close();
@@ -74,10 +73,6 @@ public abstract class C64Window implements UIPart {
 
 	public void setWait(boolean wait) {
 		this.wait = wait;
-	}
-
-	private String getStyleSheetName() {
-		return "/" + getClass().getName().replace('.', '/') + ".css";
 	}
 
 	Collection<UIPart> getUiParts() {
