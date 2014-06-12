@@ -231,7 +231,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				.isRamExpansionEnabled3());
 		expandA000.setSelected(util.getConfig().getC1541()
 				.isRamExpansionEnabled4());
-
+		
+		for (ToolEntity tool : util.getConfig().getTools()) {
+			addTool(tool.getFxId());
+		}
 		this.duringInitialization = false;
 
 		final Duration oneFrameAmt = Duration.millis(1000);
@@ -240,10 +243,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		timer = new Timeline(oneFrame);
 		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
-
-		for (ToolEntity tool : util.getConfig().getTools()) {
-			addTool(tool.getFxId());
-		}
 	}
 
 	private void addTool(String id) {
