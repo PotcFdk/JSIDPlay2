@@ -931,16 +931,16 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			tools.add(new ToolEntity(tab.getId()));
 		}
 		tab.setOnClosed((evt) -> {
-			JSidPlay2.this.close((UIPart) tab);
+			close((UIPart) tab);
 			tools.removeIf((tool) -> tool.getFxId().equals(tab.getId()));
 		});
 		tabbedPane.getTabs().add(tab);
 		tabbedPane.getSelectionModel().select(tab);
 	}
 
-	private boolean tabAlreadyExists(String id) {
+	private boolean tabAlreadyExists(String fxId) {
 		return tabbedPane.getTabs().stream()
-				.anyMatch((tab) -> tab.getId().equals(id));
+				.anyMatch((tab) -> tab.getId().equals(fxId));
 	}
 
 	private void chooseCartridge(final CartridgeType type) {
