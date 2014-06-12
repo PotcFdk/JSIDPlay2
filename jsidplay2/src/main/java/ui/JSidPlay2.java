@@ -130,8 +130,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	protected ProgressBar progress;
 
-	protected Video videoScreen;
-
 	private ConfigService configService;
 
 	private Scene scene;
@@ -181,8 +179,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 									if (sidTune == null
 											|| (sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
 										video();
-										tabbedPane.getSelectionModel().select(
-												videoScreen);
+										tabbedPane
+												.getSelectionModel()
+												.select(tabbedPane
+														.getTabs()
+														.stream()
+														.filter((tab) -> tab
+																.getId()
+																.equals(Video.ID))
+														.findFirst().get());
 									}
 								}
 
@@ -766,7 +771,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (!tabAlreadyExists(Video.ID)) {
 			Video tab = new Video(this, util.getPlayer());
 			addTab(tab);
-			videoScreen = tab;
 		}
 	}
 
@@ -974,7 +978,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	private void playTune(final SidTune tune) {
 		video();
-		util.setPlayingTab(videoScreen);
+		util.setPlayingTab(tabbedPane.getTabs().stream()
+				.filter((tab) -> tab.getId().equals(Video.ID)).findFirst()
+				.get());
 		util.getPlayer().play(tune);
 	}
 
@@ -1095,15 +1101,17 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private void createHardCopy(String format) {
-		if (tabAlreadyExists(Video.ID)) {
-			try {
-				ImageIO.write(SwingFXUtils.fromFXImage(
-						videoScreen.getVicImage(), null), format, new File(util
-						.getConfig().getSidplay2().getTmpDir(), "screenshot"
-						+ (++hardcopyCounter) + "." + format));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		video();
+		try {
+			Video videoScreen = (Video) tabbedPane.getTabs().stream()
+					.filter((tab) -> tab.getId().equals(Video.ID)).findFirst()
+					.get();
+			ImageIO.write(SwingFXUtils.fromFXImage(videoScreen.getVicImage(),
+					null), format, new File(util.getConfig().getSidplay2()
+					.getTmpDir(), "screenshot" + (++hardcopyCounter) + "."
+					+ format));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
