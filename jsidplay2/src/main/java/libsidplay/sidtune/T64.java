@@ -35,7 +35,7 @@ public class T64 extends Prg {
 		t64.info.c64dataLen = entry.c64dataLen;
 
 		t64.info.infoString.add(PathUtils.getBaseNameNoExt(name));
-		
+
 		t64.convertOldStyleSpeedToTables(~0);
 		return t64;
 	}
@@ -57,9 +57,11 @@ public class T64 extends Prg {
 		}
 		int pos = 32 /* header */+ 32 * entryNum;
 		// expect 1 (Normal tape file) and PRG
+		final byte type = dataBuf[pos++];
+		final byte fileType = dataBuf[pos++];
 		if (pos + 32 > dataBuf.length
-				|| dataBuf[pos++] != 1
-				|| (dataBuf[pos++] & DirEntry.BITMASK_FILETYPE) != DirEntry.FILETYPE_PRG) {
+				|| type != 1
+				|| (fileType & DirEntry.BITMASK_FILETYPE) != DirEntry.FILETYPE_PRG) {
 			throw new SidTuneError(
 					"Illegal T64 entry type, must be PRG normal tape file");
 		}
@@ -72,7 +74,7 @@ public class T64 extends Prg {
 		// into a C64).
 		entry.c64dataLen = (dataBuf[pos++] & 0xff)
 				+ ((dataBuf[pos++] & 0xff) << 8);
-		entry.c64dataLen -= info.loadAddr;
+		entry.c64dataLen -= entry.loadAddr;
 
 		// skip unused
 		pos += 2;
@@ -80,7 +82,7 @@ public class T64 extends Prg {
 		// determine offset of program data
 		entry.programOffset = 0;
 		for (int i = 0; i <= 3; i++) {
-			entry.programOffset += (dataBuf[pos++] & 0xff) << 8 * i;
+			entry.programOffset += (dataBuf[pos++] & 0xff) << (8 * i);
 		}
 
 		// skip unused
