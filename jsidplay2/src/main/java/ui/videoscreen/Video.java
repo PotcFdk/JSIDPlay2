@@ -47,6 +47,7 @@ import ui.virtualKeyboard.Keyboard;
 import de.schlichtherle.truezip.file.TFile;
 
 public class Video extends Tab implements UIPart, InvalidationListener {
+	public static final String ID = "VIDEO";
 	private static final double MONITOR_MARGIN_LEFT = 35;
 	private static final double MONITOR_MARGIN_RIGHT = 35;
 	private static final double MONITOR_MARGIN_TOP = 28;
@@ -80,6 +81,8 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	public Video(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
+		setId(ID);
+		setText(util.getBundle().getString("VIDEO"));
 	}
 
 	@FXML
@@ -193,6 +196,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		bleed.setValue(getC64().getPalVIC().getPalette().getDotCreep() * 10);
 
 		setupVideoScreen();
+		setVisibilityBasedOnChipType(util.getPlayer().getTune());
 
 		setupKeyboard();
 

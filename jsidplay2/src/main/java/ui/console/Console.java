@@ -9,6 +9,7 @@ import ui.common.UIPart;
 import ui.common.UIUtil;
 
 public class Console extends Tab implements UIPart {
+	public static final String ID = "CONSOLE";
 	private static final String STYLE_ERROR_CONSOLE = "errorConsole";
 	private static final String STYLE_OUTPUT_CONSOLE = "outputConsole";
 
@@ -20,6 +21,8 @@ public class Console extends Tab implements UIPart {
 	public Console(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
+		setId(ID);
+		setText(util.getBundle().getString("CONSOLE"));
 	}
 
 	@FXML

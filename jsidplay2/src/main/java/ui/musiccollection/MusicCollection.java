@@ -103,6 +103,8 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  */
 public class MusicCollection extends Tab implements UIPart {
 
+	public static final String CGSC_ID = "CGSC";
+	public static final String HVSC_ID = "HVSC";
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
 
@@ -171,6 +173,22 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	public void setType(MusicCollectionType type) {
+		switch (type) {
+		case HVSC:
+			setId(HVSC_ID);
+			setText(util.getBundle().getString("HVSC"));
+			setCollectionURL("http://www.hvsc.de/");
+			break;
+
+		case CGSC:
+			setId(CGSC_ID);
+			setText(util.getBundle().getString("CGSC"));
+			setCollectionURL("http://www.c64music.co.uk/");
+			break;
+
+		default:
+			break;
+		}
 		this.type.set(type);
 	}
 
@@ -733,8 +751,8 @@ public class MusicCollection extends Tab implements UIPart {
 					util.getConfig().getSidplay2()
 							.setHvsc(rootFile.getAbsolutePath());
 					File theRootFile = sidPlay2Section.getHvscFile();
-					setSongLengthDatabase(theRootFile);
-					setSTIL(theRootFile);
+					setSongLengthDatabase(sidPlay2Section.getHvsc());
+					setSTIL(sidPlay2Section.getHvsc());
 					fileBrowser.setRoot(new MusicCollectionTreeItem(util
 							.getPlayer(), theRootFile));
 				} else if (getType() == MusicCollectionType.CGSC) {
@@ -760,7 +778,7 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 	}
 
-	private void setSTIL(File hvscRoot) {
+	private void setSTIL(String hvscRoot) {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
 				STIL.STIL_FILE))) {
 			util.getPlayer().setSTIL(new STIL(input));
@@ -769,7 +787,7 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 	}
 
-	private void setSongLengthDatabase(File hvscRoot) {
+	private void setSongLengthDatabase(String hvscRoot) {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
 				SidDatabase.SONGLENGTHS_FILE))) {
 			util.getPlayer().setSidDatabase(new SidDatabase(input));

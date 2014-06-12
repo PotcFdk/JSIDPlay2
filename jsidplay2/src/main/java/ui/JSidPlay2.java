@@ -9,6 +9,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -55,21 +56,33 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import sidplay.audio.RecordingFilenameProvider;
 import ui.about.About;
+import ui.asm.Asm;
 import ui.common.C64Window;
+import ui.common.UIPart;
 import ui.common.dialog.YesNoDialog;
+import ui.console.Console;
 import ui.disassembler.Disassembler;
+import ui.diskcollection.DiskCollection;
+import ui.diskcollection.DiskCollectionType;
 import ui.emulationsettings.EmulationSettings;
 import ui.entities.config.C1541Section;
 import ui.entities.config.PrinterSection;
 import ui.entities.config.SidPlay2Section;
+import ui.entities.config.ToolEntity;
 import ui.entities.config.service.ConfigService;
+import ui.favorites.Favorites;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.ConfigFileExtension;
 import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.RomFileExtensions;
 import ui.filefilter.TapeFileExtensions;
 import ui.filefilter.TuneFileExtensions;
+import ui.gamebase.GameBase;
 import ui.joysticksettings.JoystickSettings;
+import ui.musiccollection.MusicCollection;
+import ui.musiccollection.MusicCollectionType;
+import ui.oscilloscope.Oscilloscope;
+import ui.printer.Printer;
 import ui.siddump.SidDump;
 import ui.sidreg.SidReg;
 import ui.soundsettings.SoundSettings;
@@ -113,13 +126,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	protected TabPane tabbedPane;
 	@FXML
-	protected Tab musicCollections, favorites;
-	@FXML
-	protected Video videoScreen;
-	@FXML
 	private Label status;
 	@FXML
 	protected ProgressBar progress;
+
+	protected Video videoScreen;
 
 	private ConfigService configService;
 
@@ -158,10 +169,18 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 									SidTune sidTune = util.getPlayer()
 											.getTune();
+									final Tab selectedItem = tabbedPane
+											.getSelectionModel()
+											.getSelectedItem();
+									boolean doNotSwitch = selectedItem != null
+											&& (MusicCollection.class
+													.isAssignableFrom(selectedItem
+															.getClass()) || Favorites.class
+													.isAssignableFrom(selectedItem
+															.getClass()));
 									if (sidTune == null
-											|| (sidTune.getInfo().getPlayAddr() == 0
-													&& !favorites.isSelected() && !musicCollections
-														.isSelected())) {
+											|| (sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
+										video();
 										tabbedPane.getSelectionModel().select(
 												videoScreen);
 									}
@@ -216,6 +235,54 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		timer = new Timeline(oneFrame);
 		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
+
+		for (ToolEntity tool : util.getConfig().getTools()) {
+			addTool(tool.getFxId());
+		}
+	}
+
+	private void addTool(String id) {
+		switch (id) {
+		case Video.ID:
+			video();
+			break;
+		case Asm.ID:
+			asm();
+			break;
+		case Oscilloscope.ID:
+			oscilloscope();
+			break;
+		case MusicCollection.HVSC_ID:
+			hvsc();
+			break;
+		case MusicCollection.CGSC_ID:
+			cgsc();
+			break;
+		case DiskCollection.HVMEC_ID:
+			hvmec();
+			break;
+		case DiskCollection.DEMOS_ID:
+			demos();
+			break;
+		case DiskCollection.MAGS_ID:
+			mags();
+			break;
+		case GameBase.ID:
+			gamebase();
+			break;
+		case Favorites.ID:
+			favorites();
+			break;
+		case Printer.ID:
+			printer();
+			break;
+		case Console.ID:
+			console();
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	private void updatePlayerButtons(State state) {
@@ -263,7 +330,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	@FXML
-	private void video() {
+	private void playVideo() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
 				.getSidplay2())).getLastDirectoryFolder());
@@ -560,7 +627,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	@FXML
-	private void printer() {
+	private void printerOn() {
 		util.getConfig().getPrinter().setPrinterOn(turnPrinterOn.isSelected());
 		util.getPlayer().enablePrinter(turnPrinterOn.isSelected());
 	}
@@ -695,6 +762,102 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	@FXML
+	private void video() {
+		if (!tabAlreadyExists(Video.ID)) {
+			Video tab = new Video(this, util.getPlayer());
+			addTab(tab);
+			videoScreen = tab;
+		}
+	}
+
+	@FXML
+	private void oscilloscope() {
+		if (!tabAlreadyExists(Oscilloscope.ID)) {
+			addTab(new Oscilloscope(this, util.getPlayer()));
+		}
+	}
+
+	@FXML
+	private void hvsc() {
+		if (!tabAlreadyExists(MusicCollection.HVSC_ID)) {
+			MusicCollection tab = new MusicCollection(this, util.getPlayer());
+			tab.setType(MusicCollectionType.HVSC);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void cgsc() {
+		if (!tabAlreadyExists(MusicCollection.CGSC_ID)) {
+			MusicCollection tab = new MusicCollection(this, util.getPlayer());
+			tab.setType(MusicCollectionType.CGSC);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void hvmec() {
+		if (!tabAlreadyExists(DiskCollection.HVMEC_ID)) {
+			DiskCollection tab = new DiskCollection(this, util.getPlayer());
+			tab.setType(DiskCollectionType.HVMEC);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void demos() {
+		if (!tabAlreadyExists(DiskCollection.DEMOS_ID)) {
+			DiskCollection tab = new DiskCollection(this, util.getPlayer());
+			tab.setType(DiskCollectionType.DEMOS);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void mags() {
+		if (!tabAlreadyExists(DiskCollection.MAGS_ID)) {
+			DiskCollection tab = new DiskCollection(this, util.getPlayer());
+			tab.setType(DiskCollectionType.MAGS);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void favorites() {
+		if (!tabAlreadyExists(Favorites.ID)) {
+			addTab(new Favorites(this, util.getPlayer()));
+		}
+	}
+
+	@FXML
+	private void gamebase() {
+		if (!tabAlreadyExists(GameBase.ID)) {
+			addTab(new GameBase(this, util.getPlayer()));
+		}
+	}
+
+	@FXML
+	private void asm() {
+		if (!tabAlreadyExists(Asm.ID)) {
+			addTab(new Asm(this, util.getPlayer()));
+		}
+	}
+
+	@FXML
+	private void printer() {
+		if (!tabAlreadyExists(Printer.ID)) {
+			addTab(new Printer(this, util.getPlayer()));
+		}
+	}
+
+	@FXML
+	private void console() {
+		if (!tabAlreadyExists(Console.ID)) {
+			addTab(new Console(this, util.getPlayer()));
+		}
+	}
+
+	@FXML
 	private void memory() {
 		new Disassembler(util.getPlayer()).open();
 	}
@@ -758,6 +921,25 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	}
 
+	private void addTab(Tab tab) {
+		final List<ToolEntity> tools = util.getConfig().getTools();
+		if (!tools.stream().anyMatch(
+				(tool) -> tool.getFxId().equals(tab.getId()))) {
+			tools.add(new ToolEntity(tab.getId()));
+		}
+		tab.setOnClosed((evt) -> {
+			JSidPlay2.this.close((UIPart) tab);
+			tools.removeIf((tool) -> tool.getFxId().equals(tab.getId()));
+		});
+		tabbedPane.getTabs().add(tab);
+		tabbedPane.getSelectionModel().select(tab);
+	}
+
+	private boolean tabAlreadyExists(String id) {
+		return tabbedPane.getTabs().stream()
+				.anyMatch((tab) -> tab.getId().equals(id));
+	}
+
 	private void chooseCartridge(final CartridgeType type) {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
@@ -791,6 +973,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private void playTune(final SidTune tune) {
+		video();
 		util.setPlayingTab(videoScreen);
 		util.getPlayer().play(tune);
 	}
@@ -912,13 +1095,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private void createHardCopy(String format) {
-		try {
-			ImageIO.write(SwingFXUtils.fromFXImage(videoScreen.getVicImage(),
-					null), format, new File(util.getConfig().getSidplay2()
-					.getTmpDir(), "screenshot" + (++hardcopyCounter) + "."
-					+ format));
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (tabAlreadyExists(Video.ID)) {
+			try {
+				ImageIO.write(SwingFXUtils.fromFXImage(
+						videoScreen.getVicImage(), null), format, new File(util
+						.getConfig().getSidplay2().getTmpDir(), "screenshot"
+						+ (++hardcopyCounter) + "." + format));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

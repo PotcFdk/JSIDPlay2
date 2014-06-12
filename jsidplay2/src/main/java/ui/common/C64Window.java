@@ -63,6 +63,11 @@ public abstract class C64Window implements UIPart {
 		}
 	}
 
+	public void close(UIPart part) {
+		part.doClose();
+		uiParts.remove(part);
+	}
+	
 	public Stage getStage() {
 		return stage;
 	}

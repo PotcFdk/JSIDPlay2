@@ -20,6 +20,7 @@ import ui.common.UIUtil;
 
 public class Asm extends Tab implements UIPart {
 
+	public static final String ID = "ASM";
 	private static final String ASM_RESOURCE = "jsidplay2";
 	private static final String ASM_EXAMPLE = "/ui/asm/Asm.asm";
 
@@ -34,6 +35,8 @@ public class Asm extends Tab implements UIPart {
 	public Asm(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
+		setId(ID);
+		setText(util.getBundle().getString("ASM"));
 	}
 
 	@FXML

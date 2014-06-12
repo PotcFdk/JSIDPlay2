@@ -45,6 +45,8 @@ import de.schlichtherle.truezip.file.TFile;
 
 public class GameBase extends Tab implements UIPart {
 
+	public static final String ID = "GAMEBASE";
+
 	protected final class GameBaseListener extends ProgressListener {
 		protected GameBaseListener(UIUtil util, Node node) {
 			super(util, node);
@@ -118,6 +120,8 @@ public class GameBase extends Tab implements UIPart {
 	public GameBase(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
+		setId(ID);
+		setText(util.getBundle().getString("GAMEBASE"));
 	}
 
 	@FXML

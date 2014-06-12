@@ -21,6 +21,8 @@ import ui.common.UIUtil;
  */
 public class Oscilloscope extends Tab implements UIPart {
 
+	public static final String ID = "OSCILLOSCOPE";
+
 	protected class HighResolutionEvent extends Event {
 		private EventScheduler ctx;
 
@@ -89,6 +91,8 @@ public class Oscilloscope extends Tab implements UIPart {
 	public Oscilloscope(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
+		setId(ID);
+		setText(util.getBundle().getString("OSCILLOSCOPE"));
 	}
 
 	@FXML
@@ -98,52 +102,7 @@ public class Oscilloscope extends Tab implements UIPart {
 				.addListener(
 						(observable, oldValue, newValue) -> {
 							if (newValue == State.RUNNING) {
-								final EventScheduler ctx = util.getPlayer()
-										.getC64().getEventScheduler();
-								/* sample oscillator buffer */
-								highResolutionEvent.beginScheduling(ctx);
-
-								for (int i = 0; i < gauges.length; i++) {
-									for (int j = 0; j < gauges[i].length; j++) {
-										for (int k = 0; k < gauges[i][j].length; k++) {
-											gauges[i][j][k].reset();
-										}
-									}
-								}
-								Platform.runLater(() -> {
-									for (int i = 0; i < gauges.length; i++) {
-										for (int j = 0; j < gauges[i].length; j++) {
-											for (int k = 0; k < gauges[i][j].length; k++) {
-												gauges[i][j][k].updateGauge();
-											}
-										}
-									}
-								});
-
-								util.getPlayer().configureSID(
-										0,
-										sid -> sid.setVoiceMute(0,
-												muteVoice1.isSelected()));
-								util.getPlayer().configureSID(
-										0,
-										sid -> sid.setVoiceMute(1,
-												muteVoice2.isSelected()));
-								util.getPlayer().configureSID(
-										0,
-										sid -> sid.setVoiceMute(2,
-												muteVoice3.isSelected()));
-								util.getPlayer().configureSID(
-										1,
-										sid -> sid.setVoiceMute(0,
-												muteVoice4.isSelected()));
-								util.getPlayer().configureSID(
-										1,
-										sid -> sid.setVoiceMute(1,
-												muteVoice5.isSelected()));
-								util.getPlayer().configureSID(
-										1,
-										sid -> sid.setVoiceMute(2,
-												muteVoice6.isSelected()));
+								startOscilloscope();
 							}
 						});
 		waveMono_0.setLocalizer(util.getBundle());
@@ -200,6 +159,56 @@ public class Oscilloscope extends Tab implements UIPart {
 			pt.play();
 		});
 		pt.play();
+		startOscilloscope();
+	}
+
+	private void startOscilloscope() {
+		final EventScheduler ctx = util.getPlayer()
+				.getC64().getEventScheduler();
+		/* sample oscillator buffer */
+		highResolutionEvent.beginScheduling(ctx);
+
+		for (int i = 0; i < gauges.length; i++) {
+			for (int j = 0; j < gauges[i].length; j++) {
+				for (int k = 0; k < gauges[i][j].length; k++) {
+					gauges[i][j][k].reset();
+				}
+			}
+		}
+		Platform.runLater(() -> {
+			for (int i = 0; i < gauges.length; i++) {
+				for (int j = 0; j < gauges[i].length; j++) {
+					for (int k = 0; k < gauges[i][j].length; k++) {
+						gauges[i][j][k].updateGauge();
+					}
+				}
+			}
+		});
+
+		util.getPlayer().configureSID(
+				0,
+				sid -> sid.setVoiceMute(0,
+						muteVoice1.isSelected()));
+		util.getPlayer().configureSID(
+				0,
+				sid -> sid.setVoiceMute(1,
+						muteVoice2.isSelected()));
+		util.getPlayer().configureSID(
+				0,
+				sid -> sid.setVoiceMute(2,
+						muteVoice3.isSelected()));
+		util.getPlayer().configureSID(
+				1,
+				sid -> sid.setVoiceMute(0,
+						muteVoice4.isSelected()));
+		util.getPlayer().configureSID(
+				1,
+				sid -> sid.setVoiceMute(1,
+						muteVoice5.isSelected()));
+		util.getPlayer().configureSID(
+				1,
+				sid -> sid.setVoiceMute(2,
+						muteVoice6.isSelected()));
 	}
 
 	@FXML

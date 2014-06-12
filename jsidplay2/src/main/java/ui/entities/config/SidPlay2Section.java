@@ -37,7 +37,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Transient
 	@XmlTransient
 	private BooleanProperty enableDatabaseProperty;
-	
+
 	@Override
 	public boolean isEnableDatabase() {
 		if (enableDatabaseProperty == null) {
@@ -58,11 +58,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 		isEnableDatabase();
 		return enableDatabaseProperty;
 	}
-	
+
 	@Transient
 	@XmlTransient
 	private IntegerProperty defaultPlayLengthProperty;
-	
+
 	private int defaultPlayLength = 3 * 60;
 
 	@Override
@@ -85,7 +85,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		getDefaultPlayLength();
 		return defaultPlayLengthProperty;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	private PlaybackType playbackType = PlaybackType.NORMAL;
 
@@ -160,6 +160,9 @@ public class SidPlay2Section implements ISidPlay2Section {
 	private volatile File cgscFile;
 
 	public File getCgscFile() {
+		if (cgscFile == null && cgsc != null) {
+			cgscFile = new TFile(cgsc);
+		}
 		return cgscFile;
 	}
 
@@ -173,13 +176,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	public void setHvsc(String hvsc) {
 		this.hvsc = hvsc;
-		this.hvscFile= new TFile(hvsc);
+		this.hvscFile = new TFile(hvsc);
 	}
 
 	@Transient
 	private volatile File hvscFile;
 
 	public File getHvscFile() {
+		if (hvscFile == null && hvsc != null) {
+			hvscFile = new TFile(hvsc);
+		}
 		return hvscFile;
 	}
 
@@ -191,13 +197,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public void setGameBase64(String gameBase64) {
 		this.gameBase64 = gameBase64;
-		this.gameBase64File= new TFile(gameBase64);
+		this.gameBase64File = new TFile(gameBase64);
 	}
 
 	@Transient
 	private volatile File gameBase64File;
 
 	public File getGameBase64File() {
+		if (gameBase64File == null && gameBase64 != null) {
+			gameBase64File = new TFile(gameBase64);
+		}
 		return gameBase64File;
 	}
 
@@ -227,7 +236,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		isSingle();
 		return singleProperty;
 	}
-	
+
 	private boolean enableProxy;
 
 	@Override
@@ -265,7 +274,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	private String lastDirectory;
-	
+
 	@Transient
 	private volatile File lastDirectoryFile;
 
@@ -286,7 +295,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		}
 		return lastDirectoryFile;
 	}
-	
+
 	private String tmpDir = System.getProperty("user.home")
 			+ System.getProperty("file.separator") + ".jsidplay2";
 
@@ -349,7 +358,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	private Boolean fullScreen;
-	
+
 	public Boolean getFullScreen() {
 		return fullScreen;
 	}

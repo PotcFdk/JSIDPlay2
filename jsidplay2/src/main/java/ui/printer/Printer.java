@@ -18,6 +18,8 @@ import ui.common.UIUtil;
 
 public class Printer extends Tab implements UIPart, IPaper {
 
+	public static final String ID = "PRINTER";
+
 	@FXML
 	protected Canvas paper;
 
@@ -29,6 +31,8 @@ public class Printer extends Tab implements UIPart, IPaper {
 	public Printer(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
+		setId(ID);
+		setText(util.getBundle().getString("PRINTER"));
 	}
 
 	@FXML

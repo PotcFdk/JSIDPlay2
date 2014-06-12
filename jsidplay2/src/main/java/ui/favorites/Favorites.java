@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -26,6 +28,8 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.Player;
 import libsidplay.player.State;
 import libsidutils.PathUtils;
+import libsidutils.STIL;
+import libsidutils.SidDatabase;
 import sidplay.ini.IniReader;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -38,6 +42,7 @@ import ui.filefilter.TuneFileExtensions;
 
 public class Favorites extends Tab implements UIPart {
 
+	public static final String ID = "FAVORITES";
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
 
@@ -63,12 +68,18 @@ public class Favorites extends Tab implements UIPart {
 		this.window = window;
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
+		setId(ID);
+		setText(util.getBundle().getString("FAVORITES"));
 	}
 
 	@FXML
 	private void initialize() {
 		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig()
 				.getSidplay2();
+
+		// Not already configured, yet?
+		setSongLengthDatabase(sidPlay2Section.getHvsc());
+		setSTIL(sidPlay2Section.getHvsc());
 
 		final int seconds = sidPlay2Section.getDefaultPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
@@ -340,6 +351,24 @@ public class Favorites extends Tab implements UIPart {
 	@FXML
 	private void repeatOne() {
 		util.getConfig().getSidplay2().setLoop(true);
+	}
+
+	private void setSongLengthDatabase(String hvscRoot) {
+		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
+				SidDatabase.SONGLENGTHS_FILE))) {
+			util.getPlayer().setSidDatabase(new SidDatabase(input));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setSTIL(String hvscRoot) {
+		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
+				STIL.STIL_FILE))) {
+			util.getPlayer().setSTIL(new STIL(input));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private FavoritesTab getSelectedTab() {

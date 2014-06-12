@@ -1,5 +1,5 @@
 package ui.diskcollection;
 
-public enum DiscCollectionType {
+public enum DiskCollectionType {
 	DEMOS, HVMEC, MAGS
 }

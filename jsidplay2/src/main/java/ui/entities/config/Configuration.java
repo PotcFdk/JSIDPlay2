@@ -33,6 +33,8 @@ import sidplay.ini.intf.IFilterSection;
 import sidplay.ini.intf.IJoystickSection;
 import sidplay.ini.intf.IPrinterSection;
 import sidplay.ini.intf.ISidPlay2Section;
+import ui.console.Console;
+import ui.videoscreen.Video;
 
 @Entity
 @XmlRootElement(name = "configuration")
@@ -86,6 +88,15 @@ public class Configuration implements IConfig {
 		dbFilterSection.setName("FilterDarkest6581");
 		dbFilterSection.setFilter6581CurvePosition(0.9f);
 		INITIAL_FILTERS.add(dbFilterSection);
+	}
+
+	@Transient
+	@XmlTransient
+	private final List<ToolEntity> INITIAL_TOOLS;
+	{
+		INITIAL_TOOLS = new ArrayList<ToolEntity>();
+		INITIAL_TOOLS.add(new ToolEntity(Video.ID));
+		INITIAL_TOOLS.add(new ToolEntity(Console.ID));
 	}
 
 	@Id
@@ -261,6 +272,27 @@ public class Configuration implements IConfig {
 		return observableFavorites;
 	}
 
+	@OneToMany(cascade = CascadeType.ALL)
+	@XmlElement(name = "tools")
+	protected List<ToolEntity> tools = INITIAL_TOOLS;
+
+	@Transient
+	@XmlTransient
+	private ObservableList<ToolEntity> observableTools;
+
+	public List<ToolEntity> getTools() {
+		if (observableTools == null) {
+			observableTools = FXCollections
+					.<ToolEntity> observableArrayList(tools);
+			Bindings.bindContent(tools, observableTools);
+		}
+		return observableTools;
+	}
+
+	public void setTools(List<ToolEntity> tools) {
+		this.tools = tools;
+	}
+	
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "filter")
 	private List<FilterSection> filter = INITIAL_FILTERS;

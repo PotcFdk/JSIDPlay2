@@ -247,8 +247,6 @@ public class Player {
 			@Override
 			public void writeToIECBus(final byte data) {
 				if (config.getC1541().isDriveOn()) {
-					// more elegant solution to
-					// assure a one cycle write delay
 					c1541Runner.synchronize(1);
 					iecBus.writeToIECBus(data);
 				}

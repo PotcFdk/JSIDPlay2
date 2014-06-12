@@ -59,7 +59,7 @@
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
 									</accelerator>
 								</MenuItem>
-								<MenuItem text="%LOAD_REU_VIDEO" onAction="#video">
+								<MenuItem text="%LOAD_REU_VIDEO" onAction="#playVideo">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="V"
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
@@ -79,6 +79,20 @@
 									</accelerator>
 								</MenuItem>
 							</items>
+						</Menu>
+						<Menu text="%VIEW">
+							<MenuItem text="%VIDEO" onAction="#video" />
+							<MenuItem text="%OSCILLOSCOPE" onAction="#oscilloscope" />
+							<MenuItem text="%HVSC" onAction="#hvsc" />
+							<MenuItem text="%CGSC" onAction="#cgsc" />
+							<MenuItem text="%HVMEC" onAction="#hvmec" />
+							<MenuItem text="%DEMOS" onAction="#demos" />
+							<MenuItem text="%MAGS" onAction="#mags" />
+							<MenuItem text="%FAVORITES" onAction="#favorites" />
+							<MenuItem text="%GAMEBASE" onAction="#gamebase" />
+							<MenuItem text="%ASM" onAction="#asm" />
+							<MenuItem text="%PRINTER" onAction="#printer" />
+							<MenuItem text="%CONSOLE" onAction="#console" />
 						</Menu>
 						<Menu text="%PLAYER">
 							<items>
@@ -203,7 +217,7 @@
 								<MenuItem text="%RESET_DRIVE" onAction="#resetDrive" />
 							</Menu>
 							<Menu text="%PRINTER">
-								<CheckMenuItem text="%TURN_PRINTER_ON" onAction="#printer"
+								<CheckMenuItem text="%TURN_PRINTER_ON" onAction="#printerOn"
 									fx:id="turnPrinterOn" />
 							</Menu>
 							<Menu text="%CARTRIDGE">
@@ -306,41 +320,13 @@
 		</top>
 		<center>
 			<TabPane focusTraversable="false" fx:id="tabbedPane"
-				tabClosingPolicy="UNAVAILABLE">
-				<tabs>
-					<Video text="%VIDEO" fx:id="videoScreen" />
-					<Oscilloscope text="%OSCILLOSCOPE" />
-					<Tab text="%MUSIC_COLLECTIONS" fx:id="musicCollections">
-						<TabPane tabClosingPolicy="UNAVAILABLE">
-							<tabs>
-								<MusicCollection type="HVSC" text="%HVSC"
-									collectionURL="http://www.hvsc.de/" />
-								<MusicCollection type="CGSC" text="%CGSC"
-									collectionURL="http://www.c64music.co.uk/" />
-							</tabs>
-						</TabPane>
-					</Tab>
-					<Favorites text="%FAVORITES" fx:id="favorites" />
-					<Tab text="%DISC_COLLECTIONS" fx:id="diskCollections">
-						<TabPane tabClosingPolicy="UNAVAILABLE">
-							<tabs>
-								<DiskCollection type="HVMEC" text="%HVMEC" />
-								<DiskCollection type="DEMOS" text="%DEMOS" />
-								<DiskCollection type="MAGS" text="%MAGS" />
-							</tabs>
-						</TabPane>
-					</Tab>
-					<GameBase text="%GAMEBASE" />
-					<Asm text="%ASM" />
-					<Printer text="%PRINTER" />
-					<Console text="%CONSOLE" />
-				</tabs>
-			</TabPane>
+				tabClosingPolicy="ALL_TABS" />
 		</center>
 		<bottom>
 			<AnchorPane>
 				<Label fx:id="status" AnchorPane.leftAnchor="10" />
-				<ProgressBar fx:id="progress" progress="0" AnchorPane.rightAnchor="10" />
+				<ProgressBar fx:id="progress" progress="0"
+					AnchorPane.rightAnchor="10" />
 			</AnchorPane>
 		</bottom>
 	</BorderPane>

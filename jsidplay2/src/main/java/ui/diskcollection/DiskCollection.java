@@ -46,6 +46,9 @@ import de.schlichtherle.truezip.file.TFileInputStream;
 
 public class DiskCollection extends Tab implements UIPart {
 
+	public static final String MAGS_ID = "MAGS";
+	public static final String DEMOS_ID = "DEMOS";
+	public static final String HVMEC_ID = "HVMEC";
 	private static final String HVMEC_DATA = "DATA";
 	private static final String HVMEC_CONTROL = "CONTROL";
 
@@ -66,13 +69,30 @@ public class DiskCollection extends Tab implements UIPart {
 
 	private UIUtil util;
 
-	private ObjectProperty<DiscCollectionType> type;
+	private ObjectProperty<DiskCollectionType> type;
 
-	public DiscCollectionType getType() {
+	public DiskCollectionType getType() {
 		return type.get();
 	}
 
-	public void setType(DiscCollectionType type) {
+	public void setType(DiskCollectionType type) {
+		switch (type) {
+		case HVMEC:
+			setId(HVMEC_ID);
+			setText(util.getBundle().getString("HVMEC"));
+			break;
+		case DEMOS:
+			setId(DEMOS_ID);
+			setText(util.getBundle().getString("DEMOS"));
+			break;
+		case MAGS:
+			setId(MAGS_ID);
+			setText(util.getBundle().getString("MAGS"));
+			break;
+
+		default:
+			break;
+		}
 		this.type.set(type);
 	}
 
@@ -87,7 +107,7 @@ public class DiskCollection extends Tab implements UIPart {
 
 		@Override
 		public boolean accept(File file) {
-			if (type.get() == DiscCollectionType.HVMEC && file.isDirectory()
+			if (type.get() == DiskCollectionType.HVMEC && file.isDirectory()
 					&& file.getName().equals(HVMEC_CONTROL)) {
 				return false;
 			}
@@ -264,13 +284,13 @@ public class DiskCollection extends Tab implements UIPart {
 			fileBrowser.setRoot(new DiskCollectionTreeItem(theRootFile,
 					theRootFile, fileBrowserFileFilter));
 
-			if (type.get() == DiscCollectionType.HVMEC) {
+			if (type.get() == DiskCollectionType.HVMEC) {
 				util.getConfig().getSidplay2()
 						.setHVMEC(rootFile.getAbsolutePath());
-			} else if (type.get() == DiscCollectionType.DEMOS) {
+			} else if (type.get() == DiskCollectionType.DEMOS) {
 				util.getConfig().getSidplay2()
 						.setDemos(rootFile.getAbsolutePath());
-			} else if (type.get() == DiscCollectionType.MAGS) {
+			} else if (type.get() == DiskCollectionType.MAGS) {
 				util.getConfig().getSidplay2()
 						.setMags(rootFile.getAbsolutePath());
 			}
@@ -352,7 +372,7 @@ public class DiskCollection extends Tab implements UIPart {
 		if (rootItem == null) {
 			return null;
 		}
-		String parentPath = type.get() == DiscCollectionType.HVMEC ? file
+		String parentPath = type.get() == DiskCollectionType.HVMEC ? file
 				.getParentFile().getPath().replace(HVMEC_DATA, HVMEC_CONTROL)
 				: file.getParentFile().getPath();
 		List<File> parentFiles = PathUtils.getFiles(parentPath,
