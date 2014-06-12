@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
+import libsidutils.PathUtils;
 import lowlevel.ID3V2Decoder;
 
 /**
@@ -72,23 +73,29 @@ public class MP3Tune extends SidTune {
 		mp3.info.songs = 1;
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
 			mp3.decoder.read(randomAccessFile);
-			mp3.info.infoString.add(mp3.decoder.getTitle());
+			final String title = mp3.decoder.getTitle();
+			mp3.info.infoString.add(title != null ? title : PathUtils
+					.getBaseNameNoExt(file.getName()));
 			String interpret = mp3.decoder.getInterpret();
 			String albumInterpret = mp3.decoder.getAlbumInterpret();
 			String genre = mp3.decoder.getGenre();
 			if (interpret != null) {
 				mp3.info.infoString.add(interpret);
-			} else {
+			} else if (albumInterpret != null) {
 				mp3.info.infoString.add(albumInterpret);
+			} else {
+				mp3.info.infoString.add("<?>");
 			}
 			String album = mp3.decoder.getAlbum();
 			String year = mp3.decoder.getYear();
 			if (album != null && year != null) {
 				mp3.info.infoString.add(album + " (" + year + ")"
 						+ (genre != null ? " / " + genre : ""));
-			} else {
+			} else if (album != null) {
 				mp3.info.infoString.add(album
 						+ (genre != null ? " / " + genre : ""));
+			} else {
+				mp3.info.infoString.add("<?>");
 			}
 			if (mp3.decoder.getImageBytes() != null
 					&& Platform.isFxApplicationThread()) {
