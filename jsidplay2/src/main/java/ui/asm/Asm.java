@@ -1,12 +1,11 @@
 package ui.asm;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -43,14 +42,9 @@ public class Asm extends Tab implements UIPart {
 	private void initialize() {
 		globals = new HashMap<String, Integer>();
 		assembler = new KickAssembler();
-		try {
-			java.net.URL url = Asm.class.getResource(ASM_EXAMPLE);
-			java.nio.file.Path resPath = java.nio.file.Paths.get(url.toURI());
-			String asm = new String(java.nio.file.Files.readAllBytes(resPath),
-					"UTF-8");
-			contents.setText(asm);
-		} catch (IOException | URISyntaxException e) {
-			e.printStackTrace();
+		InputStream is = Asm.class.getResourceAsStream(ASM_EXAMPLE);
+		try (Scanner s = new Scanner(is, "ISO-8859-1")) {
+			contents.setText(s.useDelimiter("\\A").next());
 		}
 	}
 
