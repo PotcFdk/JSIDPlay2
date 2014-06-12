@@ -768,8 +768,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void video() {
 		if (!tabAlreadyExists(Video.ID)) {
-			Video tab = new Video(this, util.getPlayer());
-			addTab(tab);
+			addTab(new Video(this, util.getPlayer()));
 		}
 	}
 
