@@ -182,21 +182,22 @@ public class Psid64 {
 			size += memBlock.getSize();
 		}
 
-		HashMap<String, Integer> globals = new HashMap<String, Integer>();
-		globals.put("songNum", tuneInfo.getCurrentSong() - 1);
-		globals.put("size", size);
-		globals.put("numPages", size + 0xff >> 8);
-		globals.put("numBlocks", memBlocks.size() - 1);
-		globals.put("charPage", charset);
-		globals.put("driverPage", driver);
-		globals.put("stopVec", driver + 3);
+		HashMap<String, String> globals = new HashMap<String, String>();
+		globals.put("songNum", String.valueOf(tuneInfo.getCurrentSong() - 1));
+		globals.put("size", String.valueOf(size));
+		globals.put("numPages", String.valueOf(size + 0xff >> 8));
+		globals.put("numBlocks", String.valueOf(memBlocks.size() - 1));
+		globals.put("charPage", String.valueOf(charset));
+		globals.put("driverPage", String.valueOf(driver));
+		globals.put("stopVec", String.valueOf(driver + 3));
 		for (int i = 0; i < MAX_BLOCKS; i++) {
 			final boolean used = i < memBlocks.size();
 			int blockNum = memBlocks.size() - i - 1 + (used ? 0 : MAX_BLOCKS);
 			int blockStart = used ? memBlocks.get(i).getStartAddress() : 0;
 			int blockSize = used ? memBlocks.get(i).getSize() : 0;
-			globals.put("block" + blockNum + "Start", blockStart);
-			globals.put("block" + blockNum + "Size", blockSize);
+			globals.put("block" + blockNum + "Start",
+					String.valueOf(blockStart));
+			globals.put("block" + blockNum + "Size", String.valueOf(blockSize));
 		}
 		InputStream asm = Psid64.class.getResourceAsStream(PSID64_BOOT_ASM);
 		byte[] psidBoot = assembler.assemble(PSID64_BOOT_ASM, asm, globals);
@@ -296,20 +297,20 @@ public class Psid64 {
 		int stil = freePages.getStilPage() != null ? freePages.getStilPage()
 				: 0;
 
-		HashMap<String, Integer> globals = new HashMap<String, Integer>();
-		globals.put("pc", freePages.getDriverPage() << 8);
-		globals.put("screen", screen);
-		globals.put("screen_songnum", screenSongNum);
-		globals.put("dd00", (screenPage & 0xc0) >> 6 ^ 3 | 0x04);
-		globals.put("d018", vsa | charset);
-		globals.put("loadAddr", tuneInfo.getLoadAddr());
-		globals.put("initAddr", tuneInfo.getInitAddr());
-		globals.put("playAddr", tuneInfo.getPlayAddr());
-		globals.put("songs", tuneInfo.getSongs());
-		globals.put("speed", tune.getSongSpeedArray());
-		globals.put("initIOMap", iomap(tuneInfo.getInitAddr()));
-		globals.put("playIOMap", iomap(tuneInfo.getPlayAddr()));
-		globals.put("stilPage", stil);
+		HashMap<String, String> globals = new HashMap<String, String>();
+		globals.put("pc", String.valueOf(freePages.getDriverPage() << 8));
+		globals.put("screen", String.valueOf(screen));
+		globals.put("screen_songnum", String.valueOf(screenSongNum));
+		globals.put("dd00", String.valueOf((screenPage & 0xc0) >> 6 ^ 3 | 0x04));
+		globals.put("d018", String.valueOf(vsa | charset));
+		globals.put("loadAddr", String.valueOf(tuneInfo.getLoadAddr()));
+		globals.put("initAddr", String.valueOf(tuneInfo.getInitAddr()));
+		globals.put("playAddr", String.valueOf(tuneInfo.getPlayAddr()));
+		globals.put("songs", String.valueOf(tuneInfo.getSongs()));
+		globals.put("speed", String.valueOf(tune.getSongSpeedArray()));
+		globals.put("initIOMap", String.valueOf(iomap(tuneInfo.getInitAddr())));
+		globals.put("playIOMap", String.valueOf(iomap(tuneInfo.getPlayAddr())));
+		globals.put("stilPage", String.valueOf(stil));
 		String resource;
 		if (freePages.getScreenPage() == null) {
 			resource = PSID64_NOSCREEN_ASM;

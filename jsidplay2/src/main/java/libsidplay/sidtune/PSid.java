@@ -287,23 +287,26 @@ class PSid extends Prg {
 	}
 
 	private int psidInstallDriver(final byte[] mem) {
-		HashMap<String, Integer> globals = new HashMap<String, Integer>();
-		globals.put("pc", info.determinedDriverAddr);
-		globals.put("songNum", info.currentSong - 1);
-		globals.put("songs", info.songs);
-		globals.put("songSpeed",
-				songSpeed[info.currentSong - 1] == Speed.CIA_1A ? 1 : 0);
-		globals.put("speed", getSongSpeedArray());
-		globals.put("loadAddr", info.loadAddr);
-		globals.put("initAddr", info.initAddr);
-		globals.put("playAddr", info.playAddr);
-		globals.put("powerOnDelay",
-				(int) (0x100 + (System.currentTimeMillis() & 0x1ff)));
-		globals.put("initIOMap", iomap(info.initAddr));
-		globals.put("playIOMap", iomap(info.playAddr));
-		globals.put("videoMode", info.clockSpeed == Clock.PAL ? 1 : 0);
-		globals.put("flags", info.compatibility == Compatibility.RSID ? 1
-				: 1 << MOS6510.SR_INTERRUPT);
+		HashMap<String, String> globals = new HashMap<String, String>();
+		globals.put("pc", String.valueOf(info.determinedDriverAddr));
+		globals.put("songNum", String.valueOf(info.currentSong - 1));
+		globals.put("songs", String.valueOf(info.songs));
+		globals.put("songSpeed", String
+				.valueOf(songSpeed[info.currentSong - 1] == Speed.CIA_1A ? 1
+						: 0));
+		globals.put("speed", String.valueOf(getSongSpeedArray()));
+		globals.put("loadAddr", String.valueOf(info.loadAddr));
+		globals.put("initAddr", String.valueOf(info.initAddr));
+		globals.put("playAddr", String.valueOf(info.playAddr));
+		globals.put("powerOnDelay", String.valueOf((int) (0x100 + (System
+				.currentTimeMillis() & 0x1ff))));
+		globals.put("initIOMap", String.valueOf(iomap(info.initAddr)));
+		globals.put("playIOMap", String.valueOf(iomap(info.playAddr)));
+		globals.put("videoMode",
+				String.valueOf(info.clockSpeed == Clock.PAL ? 1 : 0));
+		globals.put("flags", String
+				.valueOf(info.compatibility == Compatibility.RSID ? 1
+						: 1 << MOS6510.SR_INTERRUPT));
 		InputStream asm = PSid.class.getResourceAsStream(PSIDDRIVER_ASM);
 		byte[] driver = assembler.assemble(PSIDDRIVER_ASM, asm, globals);
 		info.determinedDriverLength = driver.length - 2;

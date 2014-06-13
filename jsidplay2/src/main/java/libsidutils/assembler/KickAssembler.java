@@ -112,17 +112,13 @@ public class KickAssembler {
 	 * @return assembly bytes of the ASM resource
 	 */
 	public byte[] assemble(String resource, InputStream asm,
-			final Map<String, Integer> globals) {
-		final HashMap<String, String> hashmap = new HashMap<String, String>();
-		for (String key : globals.keySet()) {
-			hashmap.put(key, String.valueOf(globals.get(key)));
-		}
+			final Map<String, String> globals) {
 		evaluationstate = new EvaluationState();
 		evaluationstate.setSourceLibraryPath(sourceLibraryPath);
 		evaluationstate.setDtvMode(false);
 		evaluationstate.setMaxMemoryAddress(65535);
 		HashtableValue hashtablevalue = new HashtableValue()
-				.addStringValues(hashmap);
+				.addStringValues(globals);
 		hashtablevalue.lock(null);
 		evaluationstate.getSystemScope().getSymbols()
 				.put("cmdLineVars", new ConstantReferenceValue(hashtablevalue));
