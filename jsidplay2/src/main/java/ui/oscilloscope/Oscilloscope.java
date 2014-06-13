@@ -1,6 +1,8 @@
 package ui.oscilloscope;
 
 import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -10,7 +12,6 @@ import javafx.util.Duration;
 import libsidplay.Player;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SIDEmu;
 import libsidplay.player.State;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -38,26 +39,20 @@ public class Oscilloscope extends Tab implements UIPart {
 
 		@Override
 		public void event() {
-			for (int i = 0; i < 2; i++) {
-				final SIDEmu sidemu = util.getPlayer().getC64().getSID(i);
-				if (sidemu == null) {
-					continue;
-				}
+			util.getPlayer().configureSIDs((chipNum, sid) -> {
+				sid.clock();
+				for (int row = 0; row < 4; row++) {
+					gauges[chipNum][row][0].sample(sid);
+					gauges[chipNum][row][1].sample(sid);
+					gauges[chipNum][row][2].sample(sid);
 
-				sidemu.clock();
-				for (int j = 0; j < 4; j++) {
-					gauges[i][j][0].sample(sidemu);
-					gauges[i][j][1].sample(sidemu);
-					gauges[i][j][2].sample(sidemu);
-
-					gauges[i][j][0].advance();
+					gauges[chipNum][row][0].advance();
 					if ((repaint & 127) == 0) {
-						gauges[i][j][1].advance();
-						gauges[i][j][2].advance();
+						gauges[chipNum][row][1].advance();
+						gauges[chipNum][row][2].advance();
 					}
 				}
-			}
-
+			});
 			++repaint;
 			ctx.schedule(this, 128);
 		}
@@ -97,14 +92,12 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	@FXML
 	private void initialize() {
-		util.getPlayer()
-				.stateProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							if (newValue == State.RUNNING) {
-								startOscilloscope();
-							}
-						});
+		util.getPlayer().stateProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (newValue == State.RUNNING) {
+						startOscilloscope();
+					}
+				});
 		waveMono_0.setLocalizer(util.getBundle());
 		waveMono_1.setLocalizer(util.getBundle());
 		waveMono_2.setLocalizer(util.getBundle());
@@ -142,73 +135,50 @@ public class Oscilloscope extends Tab implements UIPart {
 		gauges[1][3][2] = filterStereo;
 
 		final PauseTransition pt = new PauseTransition(Duration.millis(50));
-		pt.setCycleCount(1);
-		pt.setOnFinished((ae) -> {
-
-			for (int i = 0; i < 2; i++) {
-				final SIDEmu sidemu = util.getPlayer().getC64().getSID(i);
-				if (sidemu == null) {
-					continue;
+		pt.setOnFinished((evt) -> {
+			util.getPlayer().configureSIDs((chipNum, sid) -> {
+				for (int row = 0; row < 4; row++) {
+					gauges[chipNum][row][0].updateGauge(sid);
+					gauges[chipNum][row][1].updateGauge(sid);
+					gauges[chipNum][row][2].updateGauge(sid);
 				}
-				for (int j = 0; j < 4; j++) {
-					gauges[i][j][0].updateGauge(sidemu);
-					gauges[i][j][1].updateGauge(sidemu);
-					gauges[i][j][2].updateGauge(sidemu);
-				}
-			}
-			pt.play();
+			});
 		});
-		pt.play();
+		final SequentialTransition st = new SequentialTransition(pt);
+		st.setCycleCount(Timeline.INDEFINITE);
+		st.playFromStart();
 		startOscilloscope();
 	}
 
 	private void startOscilloscope() {
-		final EventScheduler ctx = util.getPlayer()
-				.getC64().getEventScheduler();
+		final EventScheduler ctx = util.getPlayer().getC64()
+				.getEventScheduler();
 		/* sample oscillator buffer */
 		highResolutionEvent.beginScheduling(ctx);
 
-		for (int i = 0; i < gauges.length; i++) {
-			for (int j = 0; j < gauges[i].length; j++) {
-				for (int k = 0; k < gauges[i][j].length; k++) {
-					gauges[i][j][k].reset();
-				}
-			}
-		}
 		Platform.runLater(() -> {
-			for (int i = 0; i < gauges.length; i++) {
-				for (int j = 0; j < gauges[i].length; j++) {
-					for (int k = 0; k < gauges[i][j].length; k++) {
-						gauges[i][j][k].updateGauge();
+			for (int chipNum = 0; chipNum < gauges.length; chipNum++) {
+				for (int row = 0; row < gauges[chipNum].length; row++) {
+					for (int col = 0; col < gauges[chipNum][row].length; col++) {
+						gauges[chipNum][row][col].reset();
+						gauges[chipNum][row][col].updateGauge();
 					}
 				}
 			}
 		});
 
-		util.getPlayer().configureSID(
-				0,
-				sid -> sid.setVoiceMute(0,
-						muteVoice1.isSelected()));
-		util.getPlayer().configureSID(
-				0,
-				sid -> sid.setVoiceMute(1,
-						muteVoice2.isSelected()));
-		util.getPlayer().configureSID(
-				0,
-				sid -> sid.setVoiceMute(2,
-						muteVoice3.isSelected()));
-		util.getPlayer().configureSID(
-				1,
-				sid -> sid.setVoiceMute(0,
-						muteVoice4.isSelected()));
-		util.getPlayer().configureSID(
-				1,
-				sid -> sid.setVoiceMute(1,
-						muteVoice5.isSelected()));
-		util.getPlayer().configureSID(
-				1,
-				sid -> sid.setVoiceMute(2,
-						muteVoice6.isSelected()));
+		util.getPlayer().configureSID(0,
+				sid -> sid.setVoiceMute(0, muteVoice1.isSelected()));
+		util.getPlayer().configureSID(0,
+				sid -> sid.setVoiceMute(1, muteVoice2.isSelected()));
+		util.getPlayer().configureSID(0,
+				sid -> sid.setVoiceMute(2, muteVoice3.isSelected()));
+		util.getPlayer().configureSID(1,
+				sid -> sid.setVoiceMute(0, muteVoice4.isSelected()));
+		util.getPlayer().configureSID(1,
+				sid -> sid.setVoiceMute(1, muteVoice5.isSelected()));
+		util.getPlayer().configureSID(1,
+				sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
 	}
 
 	@FXML

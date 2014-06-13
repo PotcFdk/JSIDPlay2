@@ -231,16 +231,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				.isRamExpansionEnabled3());
 		expandA000.setSelected(util.getConfig().getC1541()
 				.isRamExpansionEnabled4());
-		
+
 		for (ToolEntity tool : util.getConfig().getTools()) {
 			addTool(tool.getFxId());
 		}
 		this.duringInitialization = false;
 
-		final Duration oneFrameAmt = Duration.millis(1000);
-		final KeyFrame oneFrame = new KeyFrame(oneFrameAmt,
-				(evt) -> setStatusLine());
-		timer = new Timeline(oneFrame);
+		final Duration duration = Duration.millis(1000);
+		final KeyFrame frame = new KeyFrame(duration, evt -> setStatusLine());
+		timer = new Timeline(frame);
 		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
 	}
@@ -767,21 +766,21 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void video() {
-		if (!tabAlreadyExists(Video.ID)) {
+		if (!tabAlreadyOpen(Video.ID)) {
 			addTab(new Video(this, util.getPlayer()));
 		}
 	}
 
 	@FXML
 	private void oscilloscope() {
-		if (!tabAlreadyExists(Oscilloscope.ID)) {
+		if (!tabAlreadyOpen(Oscilloscope.ID)) {
 			addTab(new Oscilloscope(this, util.getPlayer()));
 		}
 	}
 
 	@FXML
 	private void hvsc() {
-		if (!tabAlreadyExists(MusicCollection.HVSC_ID)) {
+		if (!tabAlreadyOpen(MusicCollection.HVSC_ID)) {
 			MusicCollection tab = new MusicCollection(this, util.getPlayer());
 			tab.setType(MusicCollectionType.HVSC);
 			addTab(tab);
@@ -790,7 +789,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void cgsc() {
-		if (!tabAlreadyExists(MusicCollection.CGSC_ID)) {
+		if (!tabAlreadyOpen(MusicCollection.CGSC_ID)) {
 			MusicCollection tab = new MusicCollection(this, util.getPlayer());
 			tab.setType(MusicCollectionType.CGSC);
 			addTab(tab);
@@ -799,7 +798,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void hvmec() {
-		if (!tabAlreadyExists(DiskCollection.HVMEC_ID)) {
+		if (!tabAlreadyOpen(DiskCollection.HVMEC_ID)) {
 			DiskCollection tab = new DiskCollection(this, util.getPlayer());
 			tab.setType(DiskCollectionType.HVMEC);
 			addTab(tab);
@@ -808,7 +807,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void demos() {
-		if (!tabAlreadyExists(DiskCollection.DEMOS_ID)) {
+		if (!tabAlreadyOpen(DiskCollection.DEMOS_ID)) {
 			DiskCollection tab = new DiskCollection(this, util.getPlayer());
 			tab.setType(DiskCollectionType.DEMOS);
 			addTab(tab);
@@ -817,7 +816,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void mags() {
-		if (!tabAlreadyExists(DiskCollection.MAGS_ID)) {
+		if (!tabAlreadyOpen(DiskCollection.MAGS_ID)) {
 			DiskCollection tab = new DiskCollection(this, util.getPlayer());
 			tab.setType(DiskCollectionType.MAGS);
 			addTab(tab);
@@ -826,35 +825,35 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void favorites() {
-		if (!tabAlreadyExists(Favorites.ID)) {
+		if (!tabAlreadyOpen(Favorites.ID)) {
 			addTab(new Favorites(this, util.getPlayer()));
 		}
 	}
 
 	@FXML
 	private void gamebase() {
-		if (!tabAlreadyExists(GameBase.ID)) {
+		if (!tabAlreadyOpen(GameBase.ID)) {
 			addTab(new GameBase(this, util.getPlayer()));
 		}
 	}
 
 	@FXML
 	private void asm() {
-		if (!tabAlreadyExists(Asm.ID)) {
+		if (!tabAlreadyOpen(Asm.ID)) {
 			addTab(new Asm(this, util.getPlayer()));
 		}
 	}
 
 	@FXML
 	private void printer() {
-		if (!tabAlreadyExists(Printer.ID)) {
+		if (!tabAlreadyOpen(Printer.ID)) {
 			addTab(new Printer(this, util.getPlayer()));
 		}
 	}
 
 	@FXML
 	private void console() {
-		if (!tabAlreadyExists(Console.ID)) {
+		if (!tabAlreadyOpen(Console.ID)) {
 			addTab(new Console(this, util.getPlayer()));
 		}
 	}
@@ -925,8 +924,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	private void addTab(Tab tab) {
 		final List<ToolEntity> tools = util.getConfig().getTools();
-		if (!tools.stream().anyMatch(
-				(tool) -> tool.getFxId().equals(tab.getId()))) {
+		if (!tools.stream()
+				.anyMatch(tool -> tool.getFxId().equals(tab.getId()))) {
 			tools.add(new ToolEntity(tab.getId()));
 		}
 		tab.setOnClosed((evt) -> {
@@ -937,9 +936,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		tabbedPane.getSelectionModel().select(tab);
 	}
 
-	private boolean tabAlreadyExists(String fxId) {
+	private boolean tabAlreadyOpen(String fxId) {
 		return tabbedPane.getTabs().stream()
-				.anyMatch((tab) -> tab.getId().equals(fxId));
+				.anyMatch(tab -> tab.getId().equals(fxId));
 	}
 
 	private void chooseCartridge(final CartridgeType type) {
