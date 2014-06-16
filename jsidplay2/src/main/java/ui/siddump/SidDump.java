@@ -74,8 +74,9 @@ public class SidDump extends Tab implements UIPart {
 		if (newValue == State.RUNNING) {
 			Platform.runLater(() -> setTune(util.getPlayer().getTune()));
 		}
-		if (newValue == State.EXIT) {
+		if (newValue == State.EXIT || newValue == State.QUIT) {
 			Platform.runLater(() -> {
+				startStopRecording.setSelected(false);
 				replayAll.setDisable(false);
 				sidDumpExtension.stopRecording();
 			});

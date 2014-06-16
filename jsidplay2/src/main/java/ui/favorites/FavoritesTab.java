@@ -115,6 +115,10 @@ public class FavoritesTab extends Tab implements UIPart {
 						// Save last selected row
 						favoritesSection.setSelectedRowFrom(newValue.intValue());
 						favoritesSection.setSelectedRowTo(newValue.intValue());
+						HVSCEntry hvscEntry = favoritesSection.getFavorites()
+								.get(newValue.intValue());
+						favoritesTable.scrollTo(hvscEntry);
+
 					}
 					moveUp.setDisable(newValue == null
 							|| newValue.intValue() == 0
