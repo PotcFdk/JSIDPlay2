@@ -181,7 +181,7 @@ public class ReSIDBuilder extends SIDBuilder {
 
 	@Override
 	public void setMixerVolume(int i, float volumeInDB) {
-		mixerEvent.setVolume(i, (float) Math.pow(10, volumeInDB / 20));
+		mixerEvent.setVolume(i, (float) Math.pow(10, volumeInDB / 10));
 	}
 
 	@Override

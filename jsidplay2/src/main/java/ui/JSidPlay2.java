@@ -282,6 +282,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		case Console.ID:
 			console();
 			break;
+		case SidDump.ID:
+			sidDump();
+			break;
 
 		default:
 			break;
@@ -859,13 +862,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	@FXML
+	private void sidDump() {
+		if (!tabAlreadyOpen(SidDump.ID)) {
+			addTab(new SidDump(this, util.getPlayer()));
+		}
+	}
+	
+	@FXML
 	private void memory() {
 		new Disassembler(util.getPlayer()).open();
-	}
-
-	@FXML
-	private void sidDump() {
-		new SidDump(util.getPlayer()).open();
 	}
 
 	@FXML

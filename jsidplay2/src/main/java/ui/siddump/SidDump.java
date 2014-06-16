@@ -4,13 +4,15 @@ import java.io.File;
 import java.io.IOException;
 
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -31,10 +33,13 @@ import org.xml.sax.SAXException;
 
 import sidplay.ini.IniReader;
 import ui.common.C64Window;
+import ui.common.UIPart;
+import ui.common.UIUtil;
 import ui.entities.config.SidPlay2Section;
 
-public class SidDump extends C64Window {
+public class SidDump extends Tab implements UIPart {
 
+	public static final String ID = "SIDDUMP";
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
 
@@ -62,17 +67,30 @@ public class SidDump extends C64Window {
 
 	private Thread fPlayerThread;
 
-	public SidDump(Player player) {
-		super(player);
+	private UIUtil util;
+
+	private ChangeListener<State> changeListener = (observable, oldValue,
+			newValue) -> {
+		if (newValue == State.RUNNING) {
+			Platform.runLater(() -> setTune(util.getPlayer().getTune()));
+		}
+		if (newValue == State.EXIT) {
+			Platform.runLater(() -> {
+				replayAll.setDisable(false);
+				sidDumpExtension.stopRecording();
+			});
+		}
+	};
+
+	public SidDump(final C64Window window, final Player player) {
+		util = new UIUtil(window, player, this);
+		setContent((Node) util.parse());
+		setId(ID);
+		setText(util.getBundle().getString("SIDDUMP"));
 	}
 
 	@FXML
 	private void initialize() {
-		util.getPlayer()
-				.stateProperty()
-				.addListener(
-						(ObservableValue<? extends State> observable,
-								State oldValue, State newValue) -> doStop(newValue));
 		sidDumpExtension = new SidDumpExtension(util.getPlayer(),
 				util.getConfig()) {
 
@@ -86,6 +104,7 @@ public class SidDump extends C64Window {
 				Platform.runLater(() -> sidDumpOutputs.clear());
 			}
 		};
+		util.getPlayer().stateProperty().addListener(changeListener);
 
 		sidDumpOutputs = FXCollections.<SidDumpOutput> observableArrayList();
 		dumpTable.setItems(sidDumpOutputs);
@@ -105,20 +124,7 @@ public class SidDump extends C64Window {
 
 	@Override
 	public void doClose() {
-		util.getPlayer()
-				.stateProperty()
-				.removeListener(
-						(ObservableValue<? extends State> observable,
-								State oldValue, State newValue) -> doStop(newValue));
-	}
-
-	private void doStop(State state) {
-		if (state == State.EXIT) {
-			Platform.runLater(() -> {
-				replayAll.setDisable(false);
-				sidDumpExtension.stopRecording();
-			});
-		}
+		util.getPlayer().stateProperty().removeListener(changeListener);
 	}
 
 	@FXML
@@ -193,6 +199,7 @@ public class SidDump extends C64Window {
 			setTune(util.getPlayer().getTune());
 			util.getPlayer().getC64().setPlayRoutineObserver(sidDumpExtension);
 		} else {
+			util.getPlayer().pause();
 			util.getPlayer().getC64().setPlayRoutineObserver(null);
 			sidDumpExtension.stopRecording();
 		}
@@ -413,8 +420,8 @@ public class SidDump extends C64Window {
 		sidDumpExtension.setCurrentSong(subTune);
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
-			int length = util.getPlayer()
-					.getSidDatabaseInfo(db -> db.getSongLength(tune));
+			int length = util.getPlayer().getSidDatabaseInfo(
+					db -> db.getSongLength(tune));
 			if (length == 0) {
 				length = util.getConfig().getSidplay2().getDefaultPlayLength();
 				if (length == 0) {
@@ -446,6 +453,8 @@ public class SidDump extends C64Window {
 		} else {
 			startStopRecording.setTooltip(new Tooltip(null));
 		}
+		sidDumpExtension.setLeftVolume(util.getConfig().getAudio()
+				.getLeftVolume());
 		sidDumpExtension.init();
 	}
 

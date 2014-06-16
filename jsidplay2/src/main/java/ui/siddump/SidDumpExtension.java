@@ -194,6 +194,8 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	 */
 	private int fNoteNum;
 
+	private float leftVolume;
+
 	public SidDumpExtension(Player pl, Configuration cfg) {
 		this.player = pl;
 		this.audioConfig = AudioConfig.getInstance(cfg.getAudio(), 2);
@@ -295,6 +297,14 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		fReplayFreq = freq;
 	}
 
+	public float getLeftVolume() {
+		return leftVolume;
+	}
+	
+	public void setLeftVolume(float f) {
+		this.leftVolume = f;
+	}
+	
 	/**
 	 * Initialization routine to prepare recording SID write sequence.
 	 */
@@ -1006,6 +1016,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		 */
 		agt = new AudioGeneratorThread(audioConfig);
 		agt.setSidArray(new SID[] { sid });
+		agt.setLevelAdjustment(0, decibelsToCentibels());
 		BlockingQueue<SIDWrite> queue = agt.getSidCommandQueue();
 		agt.start();
 
@@ -1231,6 +1242,10 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 			agt.interrupt();
 			fAborted = false;
 		}
+	}
+
+	private int decibelsToCentibels() {
+		return (int) leftVolume*10;
 	}
 
 	public void stopReplay() {

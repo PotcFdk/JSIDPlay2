@@ -93,6 +93,7 @@
 							<MenuItem text="%ASM" onAction="#asm" />
 							<MenuItem text="%PRINTER" onAction="#printer" />
 							<MenuItem text="%CONSOLE" onAction="#console" />
+							<MenuItem text="%SIDDUMP" onAction="#sidDump" />
 						</Menu>
 						<Menu text="%PLAYER">
 							<items>
@@ -252,7 +253,6 @@
 						</Menu>
 						<Menu text="%TOOLS">
 							<MenuItem text="%MEMORY" onAction="#memory" />
-							<MenuItem text="%SID_DUMP" onAction="#sidDump" />
 							<MenuItem text="%SID_REGISTERS" onAction="#sidRegisters" />
 						</Menu>
 						<Menu text="%SETTINGS">
