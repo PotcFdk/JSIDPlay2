@@ -83,20 +83,28 @@
 						<Menu text="%VIEW">
 							<MenuItem text="%VIDEO" onAction="#video" />
 							<MenuItem text="%OSCILLOSCOPE" onAction="#oscilloscope" />
-							<MenuItem text="%HVSC" onAction="#hvsc" />
-							<MenuItem text="%CGSC" onAction="#cgsc" />
-							<MenuItem text="%HVMEC" onAction="#hvmec" />
-							<MenuItem text="%DEMOS" onAction="#demos" />
-							<MenuItem text="%MAGS" onAction="#mags" />
 							<MenuItem text="%FAVORITES" onAction="#favorites" />
-							<MenuItem text="%GAMEBASE" onAction="#gamebase" />
-							<MenuItem text="%ASM" onAction="#asm" />
 							<MenuItem text="%PRINTER" onAction="#printer" />
 							<MenuItem text="%CONSOLE" onAction="#console" />
-							<MenuItem text="%SIDDUMP" onAction="#sidDump" />
-							<MenuItem text="%SIDREGISTERS" onAction="#sidRegisters" />
-							<MenuItem text="%DISASSEMBLER" onAction="#disassembler" />
-							<MenuItem text="%CSDB" onAction="#csdb" />
+							<Menu text="%MUSICCOLLECTIONS">
+								<MenuItem text="%HVSC" onAction="#hvsc" />
+								<MenuItem text="%CGSC" onAction="#cgsc" />
+							</Menu>
+							<Menu text="%DISKCOLLECTIONS">
+								<MenuItem text="%HVMEC" onAction="#hvmec" />
+								<MenuItem text="%DEMOS" onAction="#demos" />
+								<MenuItem text="%MAGS" onAction="#mags" />
+							</Menu>
+							<Menu text="%TOOLS">
+								<MenuItem text="%SIDDUMP" onAction="#sidDump" />
+								<MenuItem text="%SIDREGISTERS" onAction="#sidRegisters" />
+								<MenuItem text="%ASM" onAction="#asm" />
+								<MenuItem text="%DISASSEMBLER" onAction="#disassembler" />
+							</Menu>
+							<Menu text="%ONLINE">
+								<MenuItem text="%GAMEBASE" onAction="#gamebase" />
+								<MenuItem text="%CSDB" onAction="#csdb" />
+							</Menu>
 						</Menu>
 						<Menu text="%PLAYER">
 							<items>
