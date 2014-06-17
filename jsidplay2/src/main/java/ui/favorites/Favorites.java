@@ -78,8 +78,10 @@ public class Favorites extends Tab implements UIPart {
 				.getSidplay2();
 
 		// Not already configured, yet?
-		setSongLengthDatabase(sidPlay2Section.getHvsc());
-		setSTIL(sidPlay2Section.getHvsc());
+		if (sidPlay2Section.getHvsc()!=null) {
+			setSongLengthDatabase(sidPlay2Section.getHvsc());
+			setSTIL(sidPlay2Section.getHvsc());
+		}
 
 		final int seconds = sidPlay2Section.getDefaultPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
@@ -379,6 +381,9 @@ public class Favorites extends Tab implements UIPart {
 	protected void addTab(final FavoritesSection favoritesSection) {
 		final FavoritesTab newTab = new FavoritesTab(this.window,
 				util.getPlayer());
+		if (favoritesSection.getName() == null) {
+			favoritesSection.setName(util.getBundle().getString("NEW_TAB"));
+		}
 		newTab.setText(favoritesSection.getName());
 		newTab.restoreColumns(favoritesSection);
 		newTab.setClosable(favoritesList.getTabs().size() != 0);

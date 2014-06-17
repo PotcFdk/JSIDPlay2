@@ -9,12 +9,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 @Entity
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ToolEntity {
+public class ViewEntity {
 	
-	public ToolEntity() {
+	public ViewEntity() {
 	}
 	
-	public ToolEntity(String fxId) {
+	public ViewEntity(String fxId) {
 		this.fxId = fxId;
 	}
 	

@@ -19,7 +19,7 @@
 		<class>ui.entities.config.SidPlay2Section</class>
 		<class>ui.entities.config.OnlineSection</class>
 		<class>ui.entities.config.KeyTableEntity</class>
-		<class>ui.entities.config.ToolEntity</class>
+		<class>ui.entities.config.ViewEntity</class>
 		<class>ui.entities.collection.HVSCEntry</class>
 		<class>ui.entities.collection.StilEntry</class>
 

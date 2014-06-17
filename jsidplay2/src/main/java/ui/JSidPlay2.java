@@ -68,7 +68,7 @@ import ui.emulationsettings.EmulationSettings;
 import ui.entities.config.C1541Section;
 import ui.entities.config.PrinterSection;
 import ui.entities.config.SidPlay2Section;
-import ui.entities.config.ToolEntity;
+import ui.entities.config.ViewEntity;
 import ui.entities.config.service.ConfigService;
 import ui.favorites.Favorites;
 import ui.filefilter.CartFileExtensions;
@@ -232,8 +232,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		expandA000.setSelected(util.getConfig().getC1541()
 				.isRamExpansionEnabled4());
 
-		for (ToolEntity tool : util.getConfig().getTools()) {
-			addTool(tool.getFxId());
+		for (ViewEntity view : util.getConfig().getViews()) {
+			addView(view.getFxId());
 		}
 		this.duringInitialization = false;
 
@@ -244,7 +244,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		timer.playFromStart();
 	}
 
-	private void addTool(String id) {
+	private void addView(String id) {
 		switch (id) {
 		case Video.ID:
 			video();
@@ -933,14 +933,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private void addTab(Tab tab) {
-		final List<ToolEntity> tools = util.getConfig().getTools();
-		if (!tools.stream()
+		final List<ViewEntity> views = util.getConfig().getViews();
+		if (!views.stream()
 				.anyMatch(tool -> tool.getFxId().equals(tab.getId()))) {
-			tools.add(new ToolEntity(tab.getId()));
+			views.add(new ViewEntity(tab.getId()));
 		}
 		tab.setOnClosed((evt) -> {
 			close((UIPart) tab);
-			tools.removeIf((tool) -> tool.getFxId().equals(tab.getId()));
+			views.removeIf((view) -> view.getFxId().equals(tab.getId()));
 		});
 		tabbedPane.getTabs().add(tab);
 		tabbedPane.getSelectionModel().select(tab);

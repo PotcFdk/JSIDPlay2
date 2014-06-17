@@ -92,11 +92,11 @@ public class Configuration implements IConfig {
 
 	@Transient
 	@XmlTransient
-	private final List<ToolEntity> INITIAL_TOOLS;
+	private final List<ViewEntity> INITIAL_VIEWS;
 	{
-		INITIAL_TOOLS = new ArrayList<ToolEntity>();
-		INITIAL_TOOLS.add(new ToolEntity(Video.ID));
-		INITIAL_TOOLS.add(new ToolEntity(Console.ID));
+		INITIAL_VIEWS = new ArrayList<ViewEntity>();
+		INITIAL_VIEWS.add(new ViewEntity(Video.ID));
+		INITIAL_VIEWS.add(new ViewEntity(Console.ID));
 	}
 
 	@Id
@@ -273,26 +273,26 @@ public class Configuration implements IConfig {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
-	@XmlElement(name = "tools")
-	protected List<ToolEntity> tools = INITIAL_TOOLS;
+	@XmlElement(name = "views")
+	protected List<ViewEntity> views = INITIAL_VIEWS;
 
 	@Transient
 	@XmlTransient
-	private ObservableList<ToolEntity> observableTools;
+	private ObservableList<ViewEntity> observableViews;
 
-	public List<ToolEntity> getTools() {
-		if (observableTools == null) {
-			observableTools = FXCollections
-					.<ToolEntity> observableArrayList(tools);
-			Bindings.bindContent(tools, observableTools);
+	public List<ViewEntity> getViews() {
+		if (observableViews == null) {
+			observableViews = FXCollections
+					.<ViewEntity> observableArrayList(views);
+			Bindings.bindContent(views, observableViews);
 		}
-		return observableTools;
+		return observableViews;
 	}
 
-	public void setTools(List<ToolEntity> tools) {
-		this.tools = tools;
+	public void setViews(List<ViewEntity> views) {
+		this.views = views;
 	}
-	
+
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "filter")
 	private List<FilterSection> filter = INITIAL_FILTERS;
