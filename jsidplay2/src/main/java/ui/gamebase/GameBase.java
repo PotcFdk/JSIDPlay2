@@ -121,7 +121,7 @@ public class GameBase extends Tab implements UIPart {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 		setId(ID);
-		setText(util.getBundle().getString("GAMEBASE"));
+		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

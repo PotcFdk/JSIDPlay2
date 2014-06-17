@@ -94,6 +94,8 @@
 							<MenuItem text="%PRINTER" onAction="#printer" />
 							<MenuItem text="%CONSOLE" onAction="#console" />
 							<MenuItem text="%SIDDUMP" onAction="#sidDump" />
+							<MenuItem text="%SIDREGISTERS" onAction="#sidRegisters" />
+							<MenuItem text="%DISASSEMBLER" onAction="#disassembler" />
 						</Menu>
 						<Menu text="%PLAYER">
 							<items>
@@ -250,10 +252,6 @@
 							</Menu>
 							<MenuItem text="%INSTALL_JIFFYDOS" onAction="#installJiffyDos" />
 							<MenuItem text="%UNINSTALL_JIFFYDOS" onAction="#uninstallJiffyDos" />
-						</Menu>
-						<Menu text="%TOOLS">
-							<MenuItem text="%MEMORY" onAction="#memory" />
-							<MenuItem text="%SID_REGISTERS" onAction="#sidRegisters" />
 						</Menu>
 						<Menu text="%SETTINGS">
 							<MenuItem text="%IMPORT" onAction="#importConfiguration" />

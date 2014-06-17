@@ -10,7 +10,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
@@ -20,9 +22,11 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.disassembler.CPUCommand;
 import libsidutils.disassembler.SimpleDisassembler;
 import ui.common.C64Window;
+import ui.common.UIPart;
+import ui.common.UIUtil;
 import ui.entities.config.SidPlay2Section;
 
-public class Disassembler extends C64Window {
+public class Disassembler extends Tab implements UIPart {
 
 	private final class DisassemblerRefresh implements ChangeListener<State> {
 		@Override
@@ -33,6 +37,8 @@ public class Disassembler extends C64Window {
 			}
 		}
 	}
+
+	public static final String ID = "DISASSEMBLER";
 
 	@FXML
 	private TextField address, startAddress, endAddress;
@@ -49,8 +55,13 @@ public class Disassembler extends C64Window {
 	private static final Map<Integer, CPUCommand> fCommands = SimpleDisassembler
 			.getCpuCommands();
 
-	public Disassembler(Player player) {
-		super(player);
+	private UIUtil util;
+
+	public Disassembler(final C64Window window, final Player player) {
+		util = new UIUtil(window, player, this);
+		setContent((Node) util.parse());
+		setId(ID);
+		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

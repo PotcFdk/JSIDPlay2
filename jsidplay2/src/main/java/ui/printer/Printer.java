@@ -32,7 +32,7 @@ public class Printer extends Tab implements UIPart, IPaper {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 		setId(ID);
-		setText(util.getBundle().getString("PRINTER"));
+		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

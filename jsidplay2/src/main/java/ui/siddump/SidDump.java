@@ -87,7 +87,7 @@ public class SidDump extends Tab implements UIPart {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 		setId(ID);
-		setText(util.getBundle().getString("SIDDUMP"));
+		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

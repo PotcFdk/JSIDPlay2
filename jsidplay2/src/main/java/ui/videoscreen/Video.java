@@ -82,7 +82,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 		setId(ID);
-		setText(util.getBundle().getString("VIDEO"));
+		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

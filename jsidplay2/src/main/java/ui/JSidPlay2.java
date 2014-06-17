@@ -285,7 +285,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		case SidDump.ID:
 			sidDump();
 			break;
-
+		case SidReg.ID:
+			sidRegisters();
 		default:
 			break;
 		}
@@ -869,13 +870,17 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 	
 	@FXML
-	private void memory() {
-		new Disassembler(util.getPlayer()).open();
-	}
-
-	@FXML
 	private void sidRegisters() {
-		new SidReg(util.getPlayer()).open();
+		if (!tabAlreadyOpen(SidReg.ID)) {
+			addTab(new SidReg(this, util.getPlayer()));
+		}
+	}
+	
+	@FXML
+	private void disassembler() {
+		if (!tabAlreadyOpen(Disassembler.ID)) {
+			addTab(new Disassembler(this, util.getPlayer()));
+		}
 	}
 
 	@FXML

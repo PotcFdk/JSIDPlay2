@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Scene?>
+<?import java.net.URL?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
@@ -11,10 +13,9 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.GridPane?>
 <?scenebuilder-preview-i18n-resource Disassembler.properties?>
 
-<Scene xmlns:fx="http://javafx.com/fxml">
+<AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<HBox>
 		<TableView fx:id="memoryTable">
 			<columns>
@@ -92,5 +93,4 @@
 			</TitledPane>
 		</VBox>
 	</HBox>
-</Scene>
-
+</AnchorPane>

@@ -79,20 +79,18 @@ public class DiskCollection extends Tab implements UIPart {
 		switch (type) {
 		case HVMEC:
 			setId(HVMEC_ID);
-			setText(util.getBundle().getString("HVMEC"));
 			break;
 		case DEMOS:
 			setId(DEMOS_ID);
-			setText(util.getBundle().getString("DEMOS"));
 			break;
 		case MAGS:
 			setId(MAGS_ID);
-			setText(util.getBundle().getString("MAGS"));
 			break;
 
 		default:
 			break;
 		}
+		setText(util.getBundle().getString(getId()));
 		this.type.set(type);
 	}
 

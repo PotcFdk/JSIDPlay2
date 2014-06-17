@@ -6,30 +6,23 @@ import java.util.Set;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import libsidplay.Player;
 import libsidplay.player.State;
 import ui.common.C64Window;
+import ui.common.UIPart;
+import ui.common.UIUtil;
 
-public class SidReg extends C64Window {
-
-	protected final class SidRegStop implements ChangeListener<State> {
-		@Override
-		public void changed(ObservableValue<? extends State> arg0, State arg1,
-				State arg2) {
-			if (arg2 == State.EXIT) {
-				Platform.runLater(() -> recordSidWrites(false));
-			}
-		}
-	}
-
+public class SidReg extends Tab implements UIPart {
+	public static final String ID = "SIDREGISTERS";
 	private static final int REFRESH_RATE = 1000;
 
 	@FXML
@@ -50,15 +43,24 @@ public class SidReg extends C64Window {
 	private ObservableList<SidRegWrite> allSidRegWrites;
 	private Set<String> filters;
 
-	private SidRegStop sidRegStop;
+	private ChangeListener<State> sidRegStop = (observable, oldValue,
+			newValue) -> {
+		if (newValue == State.EXIT) {
+			Platform.runLater(() -> recordSidWrites(false));
+		}
+	};
 
-	public SidReg(Player player) {
-		super(player);
+	private UIUtil util;
+
+	public SidReg(final C64Window window, final Player player) {
+		util = new UIUtil(window, player, this);
+		setContent((Node) util.parse());
+		setId(ID);
+		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML
 	private void initialize() {
-		sidRegStop = new SidRegStop();
 		util.getPlayer().stateProperty().addListener(sidRegStop);
 		filteredSidRegWrites = FXCollections
 				.<SidRegWrite> observableArrayList();

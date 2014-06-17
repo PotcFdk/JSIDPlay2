@@ -48,7 +48,7 @@ public class Asm extends Tab implements UIPart {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 		setId(ID);
-		setText(util.getBundle().getString("ASM"));
+		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

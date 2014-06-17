@@ -69,7 +69,7 @@ public class Favorites extends Tab implements UIPart {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 		setId(ID);
-		setText(util.getBundle().getString("FAVORITES"));
+		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML
@@ -157,12 +157,12 @@ public class Favorites extends Tab implements UIPart {
 						}
 					});
 		Platform.runLater(() -> {
-			for (FavoritesSection favorite : favorites) {
-				addTab(favorite);
-			}
 			// Initially select last selected tab
 			String currentFavorite = ((Configuration) util.getConfig())
 					.getCurrentFavorite();
+			for (FavoritesSection favorite : favorites) {
+				addTab(favorite);
+			}
 			if (currentFavorite != null) {
 				for (Tab tab : favoritesList.getTabs()) {
 					if (tab.getText().equals(currentFavorite)) {

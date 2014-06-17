@@ -103,8 +103,12 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  */
 public class MusicCollection extends Tab implements UIPart {
 
-	public static final String CGSC_ID = "CGSC";
 	public static final String HVSC_ID = "HVSC";
+	public static final String CGSC_ID = "CGSC";
+
+	private static final String HVSC_URL = "http://www.hvsc.de/";
+	private static final String CGSC_URL = "http://www.c64music.co.uk/";
+
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
 
@@ -176,19 +180,18 @@ public class MusicCollection extends Tab implements UIPart {
 		switch (type) {
 		case HVSC:
 			setId(HVSC_ID);
-			setText(util.getBundle().getString("HVSC"));
-			setCollectionURL("http://www.hvsc.de/");
+			setCollectionURL(HVSC_URL);
 			break;
 
 		case CGSC:
 			setId(CGSC_ID);
-			setText(util.getBundle().getString("CGSC"));
-			setCollectionURL("http://www.c64music.co.uk/");
+			setCollectionURL(CGSC_URL);
 			break;
 
 		default:
 			break;
 		}
+		setText(util.getBundle().getString(getId()));
 		this.type.set(type);
 	}
 

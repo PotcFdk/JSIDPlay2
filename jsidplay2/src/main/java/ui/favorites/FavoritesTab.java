@@ -115,9 +115,6 @@ public class FavoritesTab extends Tab implements UIPart {
 						// Save last selected row
 						favoritesSection.setSelectedRowFrom(newValue.intValue());
 						favoritesSection.setSelectedRowTo(newValue.intValue());
-						HVSCEntry hvscEntry = favoritesSection.getFavorites()
-								.get(newValue.intValue());
-						favoritesTable.scrollTo(hvscEntry);
 
 					}
 					moveUp.setDisable(newValue == null
@@ -141,6 +138,7 @@ public class FavoritesTab extends Tab implements UIPart {
 							&& event.isPrimaryButtonDown()
 							&& event.getClickCount() > 1) {
 						playTune(hvscEntry);
+						favoritesTable.scrollTo(hvscEntry);
 					}
 				});
 		favoritesTable.setOnKeyPressed((event) -> {
@@ -416,6 +414,8 @@ public class FavoritesTab extends Tab implements UIPart {
 		Integer from = favoritesSection.getSelectedRowFrom();
 		if (from != null && from != -1) {
 			favoritesTable.getSelectionModel().select(from);
+			HVSCEntry hvscEntry = favoritesSection.getFavorites().get(from);
+			favoritesTable.scrollTo(hvscEntry);
 		}
 	}
 
