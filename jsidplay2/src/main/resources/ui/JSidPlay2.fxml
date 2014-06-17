@@ -96,6 +96,7 @@
 							<MenuItem text="%SIDDUMP" onAction="#sidDump" />
 							<MenuItem text="%SIDREGISTERS" onAction="#sidRegisters" />
 							<MenuItem text="%DISASSEMBLER" onAction="#disassembler" />
+							<MenuItem text="%CSDB" onAction="#csdb" />
 						</Menu>
 						<Menu text="%PLAYER">
 							<items>

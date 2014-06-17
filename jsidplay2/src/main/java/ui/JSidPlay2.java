@@ -87,6 +87,8 @@ import ui.siddump.SidDump;
 import ui.sidreg.SidReg;
 import ui.soundsettings.SoundSettings;
 import ui.videoscreen.Video;
+import ui.webview.WebView;
+import ui.webview.WebViewType;
 
 public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		RecordingFilenameProvider {
@@ -287,6 +289,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			break;
 		case SidReg.ID:
 			sidRegisters();
+		case Disassembler.ID:
+			disassembler();
+		case WebView.CSDB_ID:
+			csdb();
 		default:
 			break;
 		}
@@ -868,18 +874,27 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			addTab(new SidDump(this, util.getPlayer()));
 		}
 	}
-	
+
 	@FXML
 	private void sidRegisters() {
 		if (!tabAlreadyOpen(SidReg.ID)) {
 			addTab(new SidReg(this, util.getPlayer()));
 		}
 	}
-	
+
 	@FXML
 	private void disassembler() {
 		if (!tabAlreadyOpen(Disassembler.ID)) {
 			addTab(new Disassembler(this, util.getPlayer()));
+		}
+	}
+
+	@FXML
+	private void csdb() {
+		if (!tabAlreadyOpen(WebView.CSDB_ID)) {
+			WebView tab = new WebView(this, util.getPlayer());
+			tab.setType(WebViewType.CSDB);
+			addTab(tab);
 		}
 	}
 
