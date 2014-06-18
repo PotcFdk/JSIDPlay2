@@ -86,13 +86,12 @@ public class UIUtil {
 	}
 
 	public final DoubleProperty progressProperty(Node node) {
-		if (progressProperty == null) {
+		if (progressProperty == null && node.getScene() != null) {
 			ProgressBar progressBar = (ProgressBar) node.getScene().lookup(
 					"#progress");
-			if (progressBar == null) {
-				throw new RuntimeException("Progress Bar does not exist!");
+			if (progressBar != null) {
+				progressProperty = progressBar.progressProperty();
 			}
-			progressProperty = progressBar.progressProperty();
 		}
 		return progressProperty;
 	}

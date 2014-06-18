@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Locale;
 
-import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -30,8 +30,10 @@ import de.schlichtherle.truezip.file.TFile;
 
 public class WebView extends Tab implements UIPart {
 	public static final String CSDB_ID = "CSDB";
+	public static final String CODEBASE64_ID = "CODEBASE64";
 
 	private static final String CSDB_URL = "http://csdb.dk/";
+	private static final String CODEBASE64_URL = "http://codebase64.org/";
 
 	private static final String ZIP_EXT = ".zip";
 	private static final String CRT_EXT = ".crt";
@@ -49,8 +51,12 @@ public class WebView extends Tab implements UIPart {
 	private UIUtil util;
 
 	private ChangeListener<? super Number> changeListener = (observable,
-			oldValue, newValue) -> util.progressProperty(webView).setValue(
-			newValue);
+			oldValue, newValue) -> {
+		DoubleProperty progressProperty = util.progressProperty(webView);
+		if (progressProperty != null) {
+			progressProperty.setValue(newValue);
+		}
+	};
 
 	public WebView(final C64Window window, final Player player) {
 		util = new UIUtil(window, player, this);
@@ -63,7 +69,10 @@ public class WebView extends Tab implements UIPart {
 			setId(CSDB_ID);
 			setURL(CSDB_URL);
 			break;
-
+		case CODEBASE64:
+			setId(CODEBASE64_ID);
+			setURL(CODEBASE64_URL);
+			break;
 		default:
 			break;
 		}
@@ -78,8 +87,7 @@ public class WebView extends Tab implements UIPart {
 		engine = webView.getEngine();
 		engine.locationProperty().addListener(
 				(observable, oldValue, newValue) -> handleDownload(newValue));
-		Platform.runLater(() -> engine.getLoadWorker().progressProperty()
-				.addListener(changeListener));
+		engine.getLoadWorker().progressProperty().addListener(changeListener);
 	}
 
 	@Override

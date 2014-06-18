@@ -102,6 +102,7 @@
 							<Menu text="%ONLINE">
 								<MenuItem text="%GAMEBASE" onAction="#gamebase" />
 								<MenuItem text="%CSDB" onAction="#csdb" />
+								<MenuItem text="%CODEBASE64" onAction="#codebase64" />
 							</Menu>
 							<MenuItem text="%PRINTER" onAction="#printer" />
 							<MenuItem text="%CONSOLE" onAction="#console" />

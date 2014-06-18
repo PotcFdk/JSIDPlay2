@@ -1,5 +1,5 @@
 package ui.webview;
 
 public enum WebViewType {
-	CSDB
+	CSDB, CODEBASE64
 }

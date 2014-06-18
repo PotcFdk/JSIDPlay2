@@ -289,10 +289,16 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			break;
 		case SidReg.ID:
 			sidRegisters();
+			break;
 		case Disassembler.ID:
 			disassembler();
+			break;
 		case WebView.CSDB_ID:
 			csdb();
+			break;
+		case WebView.CODEBASE64_ID:
+			codebase64();
+			break;
 		default:
 			break;
 		}
@@ -894,6 +900,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (!tabAlreadyOpen(WebView.CSDB_ID)) {
 			WebView tab = new WebView(this, util.getPlayer());
 			tab.setType(WebViewType.CSDB);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void codebase64() {
+		if (!tabAlreadyOpen(WebView.CODEBASE64_ID)) {
+			WebView tab = new WebView(this, util.getPlayer());
+			tab.setType(WebViewType.CODEBASE64);
 			addTab(tab);
 		}
 	}
