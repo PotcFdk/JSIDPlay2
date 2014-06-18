@@ -1,8 +1,12 @@
 package ui.asm;
 
+import java.awt.Desktop;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -26,6 +30,8 @@ import cml.kickass.exceptions.AsmError;
 public class Asm extends Tab implements UIPart {
 
 	public static final String ID = "ASM";
+	
+	private static final String HOMEPAGE_URL = "http://www.theweb.dk/KickAssembler/";
 	private static final String ASM_RESOURCE = "asm";
 	private static final String ASM_EXAMPLE = "/ui/asm/Asm.asm";
 
@@ -70,6 +76,27 @@ public class Asm extends Tab implements UIPart {
 		variablesTable.setItems(variables);
 	}
 
+	@FXML
+	private void gotoHomepage() {
+		// Open a browser URL
+
+		// As an application we open the default browser
+		if (Desktop.isDesktopSupported()) {
+			Desktop desktop = Desktop.getDesktop();
+			if (desktop.isSupported(Desktop.Action.BROWSE)) {
+				try {
+					desktop.browse(new URL(HOMEPAGE_URL).toURI());
+				} catch (final IOException ioe) {
+					ioe.printStackTrace();
+				} catch (final URISyntaxException urie) {
+					urie.printStackTrace();
+				}
+			}
+		} else {
+			System.err.println("Awt Desktop is not supported!");
+		}
+	}
+	
 	@FXML
 	private void addVariable() {
 		final Variable variable = new Variable();

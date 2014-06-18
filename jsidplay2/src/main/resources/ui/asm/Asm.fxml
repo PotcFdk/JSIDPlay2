@@ -9,20 +9,24 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
-<?import javafx.scene.text.TextFlow?>
-<?import javafx.scene.text.Text?>
-<?import ui.asm.VariablesRowFactory?>
-<?scenebuilder-preview-i18n-resource Asm.properties?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import ui.asm.VariablesRowFactory?>
+<?scenebuilder-preview-i18n-resource Asm.properties?>
+
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<stylesheets>
 		<URL value="@Asm.css" />
 	</stylesheets>
 	<VBox>
+		<Hyperlink text="%HOMEPAGE"
+			textFill="BLUE" underline="true" onAction="#gotoHomepage" />
 		<HBox AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
 			AnchorPane.topAnchor="10" prefHeight="600">
 			<TextArea editable="true" fx:id="contents" />
