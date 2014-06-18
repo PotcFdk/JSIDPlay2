@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>kickassembler</groupId>
 			<artifactId>kickassembler</artifactId>
-			<version>1.0</version>
+			<version>3.35</version>
 		</dependency>
 
 		<dependency>
