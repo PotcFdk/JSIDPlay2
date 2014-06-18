@@ -5,20 +5,25 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Locale;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
-import javafx.scene.web.WebHistory;
+import javafx.scene.web.WebEngine;
 import libsidplay.Player;
+import libsidplay.components.cart.CartridgeType;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.filefilter.DiskFileFilter;
+import ui.filefilter.TapeFileFilter;
 import ui.filefilter.TuneFileFilter;
 import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TFile;
@@ -28,17 +33,26 @@ public class WebView extends Tab implements UIPart {
 
 	private static final String CSDB_URL = "http://csdb.dk/";
 
+	private static final String ZIP_EXT = ".zip";
+	private static final String CRT_EXT = ".crt";
+
 	@FXML
 	private javafx.scene.web.WebView webView;
 
 	private ObjectProperty<WebViewType> type;
 	private String url;
+	private WebEngine engine;
 	private final TuneFileFilter tuneFilter = new TuneFileFilter();
 	private final FileFilter diskFileFilter = new DiskFileFilter();
+	private final FileFilter tapeFileFilter = new TapeFileFilter();
 
 	private UIUtil util;
 
-	public WebView(C64Window window, Player player) {
+	private ChangeListener<? super Number> changeListener = (observable,
+			oldValue, newValue) -> util.progressProperty(webView).setValue(
+			newValue);
+
+	public WebView(final C64Window window, final Player player) {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
@@ -60,30 +74,38 @@ public class WebView extends Tab implements UIPart {
 	@FXML
 	private void initialize() {
 		type = new SimpleObjectProperty<>();
-		type.addListener((observable, oldValue, newValue) -> webView
-				.getEngine().load(url));
-		webView.getEngine().locationProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					System.out.println("location=" + newValue);
-					handleDownload(newValue);
-				});
+		type.addListener((observable, oldValue, newValue) -> engine.load(url));
+		engine = webView.getEngine();
+		engine.locationProperty().addListener(
+				(observable, oldValue, newValue) -> handleDownload(newValue));
+		Platform.runLater(() -> engine.getLoadWorker().progressProperty()
+				.addListener(changeListener));
+	}
+
+	@Override
+	public void doClose() {
+		engine.getLoadWorker().progressProperty()
+				.removeListener(changeListener);
 	}
 
 	@FXML
 	private void backward() {
-		WebHistory history = webView.getEngine().getHistory();
-		history.go(-1);
+		if (engine.getHistory().getCurrentIndex() > 0) {
+			engine.getHistory().go(-1);
+		}
 	}
 
 	@FXML
 	private void reload() {
-		webView.getEngine().reload();
+		engine.reload();
 	}
 
 	@FXML
 	private void forward() {
-		WebHistory history = webView.getEngine().getHistory();
-		history.go(1);
+		if (engine.getHistory().getCurrentIndex() < engine.getHistory()
+				.getMaxSize()) {
+			engine.getHistory().go(1);
+		}
 	}
 
 	public final String getCollectionURL() {
@@ -94,40 +116,92 @@ public class WebView extends Tab implements UIPart {
 		this.url = url;
 	}
 
+	/**
+	 * Analyze URL to download and run SidTune, Programs, Disks,Tapes and
+	 * cartridges.
+	 * 
+	 * @param url
+	 *            download URL
+	 */
 	private void handleDownload(String url) {
 		File file = new File(url);
-		try (InputStream in = new URL(url).openConnection()
-				.getInputStream()) {
-			if (file.getName().endsWith(".zip")) {
-				TFile dst = new TFile(util.getPlayer().getConfig()
-						.getSidplay2().getTmpDir(), file.getName());
-				TFile.cp(in, dst);
-				TFile.cp_rp(dst, new File(util.getPlayer().getConfig()
+		try (InputStream in = new URL(url).openConnection().getInputStream()) {
+			if (file.getName().toLowerCase(Locale.US).endsWith(ZIP_EXT)) {
+				TFile zip = copyZipToTmp(in, file.getName());
+				TFile.cp_rp(zip, new File(util.getPlayer().getConfig()
 						.getSidplay2().getTmpDir()), TArchiveDetector.ALL);
-				File toAttach = null;
-				for (TFile member : dst.listFiles()) {
-					File memberFile = new File(util.getPlayer().getConfig()
-							.getSidplay2().getTmpDir(), member.getName());
-					memberFile.deleteOnExit();
-					if (toAttach == null
-							|| member.getName().compareTo(toAttach.getName()) < 0) {
-						toAttach = memberFile;
-					}
+				File first = getFirstMedia(util.getPlayer().getConfig()
+						.getSidplay2().getTmpDir(), zip, null);
+				TFile.rm_r(zip);
+				if (first.getName().toLowerCase(Locale.US).endsWith(CRT_EXT)) {
+					attachAndRunCartridge(first);
+				} else if (diskFileFilter.accept(first)) {
+					attachAndRunDisk(first);
+				} else if (tapeFileFilter.accept(first)) {
+					attachAndRunTape(first);
 				}
-				TFile.rm_r(dst);
-				attachAndRunDisk(toAttach);
+			} else if (file.getName().toLowerCase(Locale.US).endsWith(CRT_EXT)) {
+				attachAndRunCartridge(copyToTmp(in, file.getName()));
 			} else if (tuneFilter.accept(file)) {
-				util.getPlayer().play(SidTune.load(url, in));
+				playTune(url, in);
 			} else if (diskFileFilter.accept(file)) {
-				File dst = new File(util.getPlayer().getConfig().getSidplay2()
-						.getTmpDir(), file.getName());
-				dst.deleteOnExit();
-				TFile.cp(in, dst);
-				attachAndRunDisk(dst);
+				attachAndRunDisk(copyToTmp(in, file.getName()));
+			} else if (tapeFileFilter.accept(file)) {
+				attachAndRunTape(copyToTmp(in, file.getName()));
 			}
 		} catch (IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
 		}
+	}
+
+	/**
+	 * Get first media file to attach (lexically first one), search recursively.
+	 */
+	private File getFirstMedia(String dir, TFile file, File toAttach) {
+		for (TFile member : file.listFiles()) {
+			File memberFile = new File(dir, member.getName());
+			memberFile.deleteOnExit();
+			if (memberFile.isFile()) {
+				if (toAttach == null
+						|| member.getName().compareTo(toAttach.getName()) < 0) {
+					toAttach = memberFile;
+				}
+			} else if (memberFile.isDirectory()) {
+				return getFirstMedia(memberFile.getPath(),
+						new TFile(memberFile), toAttach);
+			}
+		}
+		return toAttach;
+	}
+
+	/**
+	 * Copy archive to temporary directory.
+	 */
+	private TFile copyZipToTmp(InputStream in, String out) throws IOException {
+		TFile dst = new TFile(util.getPlayer().getConfig().getSidplay2()
+				.getTmpDir(), out);
+		if (!dst.exists()) {
+			TFile.cp(in, dst);
+		}
+		return dst;
+	}
+
+	/**
+	 * Copy file to temporary directory
+	 */
+	private File copyToTmp(InputStream in, String out) throws IOException {
+		File dst = new File(util.getPlayer().getConfig().getSidplay2()
+				.getTmpDir(), out);
+		dst.deleteOnExit();
+		if (!dst.exists()) {
+			TFile.cp(in, dst);
+		}
+		return dst;
+	}
+
+	private void playTune(String url, InputStream in) throws IOException,
+			SidTuneError {
+		util.getPlayer().play(SidTune.load(url, in));
 	}
 
 	private void attachAndRunDisk(File dst) throws IOException, SidTuneError {
@@ -137,5 +211,19 @@ public class WebView extends Tab implements UIPart {
 		util.getPlayer().play(null);
 		util.getPlayer().getConfig().getSidplay2()
 				.setLastDirectory(dst.getParent());
+	}
+
+	private void attachAndRunTape(File dst) throws IOException, SidTuneError {
+		util.getPlayer().getC64().ejectCartridge();
+		util.getPlayer().insertTape(dst, null);
+		util.getPlayer().setCommand("LOAD\rRUN\r");
+		util.getPlayer().play(null);
+		util.getPlayer().getConfig().getSidplay2()
+				.setLastDirectory(dst.getParent());
+	}
+
+	private void attachAndRunCartridge(File dst) throws IOException,
+			SidTuneError {
+		util.getPlayer().insertCartridge(CartridgeType.CRT, dst, null);
 	}
 }

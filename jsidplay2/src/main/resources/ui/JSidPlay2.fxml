@@ -84,8 +84,6 @@
 							<MenuItem text="%VIDEO" onAction="#video" />
 							<MenuItem text="%OSCILLOSCOPE" onAction="#oscilloscope" />
 							<MenuItem text="%FAVORITES" onAction="#favorites" />
-							<MenuItem text="%PRINTER" onAction="#printer" />
-							<MenuItem text="%CONSOLE" onAction="#console" />
 							<Menu text="%MUSICCOLLECTIONS">
 								<MenuItem text="%HVSC" onAction="#hvsc" />
 								<MenuItem text="%CGSC" onAction="#cgsc" />
@@ -105,6 +103,8 @@
 								<MenuItem text="%GAMEBASE" onAction="#gamebase" />
 								<MenuItem text="%CSDB" onAction="#csdb" />
 							</Menu>
+							<MenuItem text="%PRINTER" onAction="#printer" />
+							<MenuItem text="%CONSOLE" onAction="#console" />
 						</Menu>
 						<Menu text="%PLAYER">
 							<items>
