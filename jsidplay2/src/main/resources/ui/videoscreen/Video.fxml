@@ -46,7 +46,7 @@
 			</TitledPane>
 		</left>
 		<right>
-			<VBox alignment="CENTER_RIGHT">
+			<VBox alignment="CENTER_LEFT">
 				<Button fx:id="keyboard" onAction="#showVirtualKeyboard">
 					<graphic>
 						<ImageView preserveRatio="true">
