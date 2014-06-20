@@ -26,9 +26,13 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -89,6 +93,12 @@ import sidplay.audio.CmpMP3File;
 import sidplay.audio.NaturalFinishedException;
 import sidplay.audio.RecordingFilenameProvider;
 import sidplay.ini.intf.IConfig;
+import ui.filefilter.CartFileFilter;
+import ui.filefilter.DiskFileFilter;
+import ui.filefilter.TapeFileFilter;
+import ui.filefilter.TuneFileFilter;
+import de.schlichtherle.truezip.file.TArchiveDetector;
+import de.schlichtherle.truezip.file.TFile;
 
 /**
  * The player contains a C64 computer and additional peripherals.<BR>
@@ -104,6 +114,12 @@ public class Player {
 	private static final int NUM_EVENTS_TO_PLAY = 10000;
 	/** Previous song select timeout (< 4 secs) **/
 	private static final int SID2_PREV_SONG_TIMEOUT = 4;
+
+	private static final String ZIP_EXT = ".zip";
+	private final TuneFileFilter tuneFileFilter = new TuneFileFilter();
+	private final DiskFileFilter diskFileFilter = new DiskFileFilter();
+	private final TapeFileFilter tapeFileFilter = new TapeFileFilter();
+	private final CartFileFilter cartFileFilter = new CartFileFilter();
 
 	/**
 	 * Configuration.
@@ -562,8 +578,7 @@ public class Player {
 	 *             error reading the ROMs
 	 */
 	public final void installJiffyDOS(final File c64kernalFile,
-			final File c1541kernalFile, final File autostartFile)
-			throws IOException, SidTuneError {
+			final File c1541kernalFile) throws IOException, SidTuneError {
 		try (DataInputStream dis = new DataInputStream(new FileInputStream(
 				c64kernalFile))) {
 			byte[] c64Kernal = new byte[0x2000];
@@ -578,7 +593,6 @@ public class Player {
 				floppy.setCustomKernalRom(c1541Kernal);
 			}
 		}
-		play(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
 	/**
@@ -602,7 +616,8 @@ public class Player {
 	 *            opcode stringifier to produce CPU debug output.
 	 */
 	public final void setDebug(final boolean cpuDebug) {
-		c64.getCPU().setDebug(cpuDebug ? SimpleDisassembler.getInstance() : null);
+		final MOS6510 cpu = c64.getCPU();
+		cpu.setDebug(cpuDebug ? SimpleDisassembler.getInstance() : null);
 	}
 
 	/**
@@ -1106,23 +1121,19 @@ public class Player {
 	 * 
 	 * @param file
 	 *            disk file to insert
-	 * @param autostartFile
-	 *            auto-start tune after insertion (null means just do nothing)
 	 * @throws IOException
 	 *             image read error
 	 */
-	public final void insertDisk(final File file, final File autostartFile)
-			throws IOException, SidTuneError {
+	public final void insertDisk(final File file) throws IOException,
+			SidTuneError {
 		// automatically turn drive on
+		config.getSidplay2().setLastDirectory(file.getParent());
 		config.getC1541().setDriveOn(true);
 		enableFloppyDiskDrives(true);
 		// attach selected disk into the first disk drive
 		DiskImage disk = floppies[0].getDiskController().insertDisk(file);
 		if (policy != null) {
 			disk.setExtendImagePolicy(policy);
-		}
-		if (autostartFile != null) {
-			play(SidTune.load(autostartFile));
 		}
 	}
 
@@ -1132,17 +1143,16 @@ public class Player {
 	 * 
 	 * @param file
 	 *            tape file to insert
-	 * @param autostartFile
-	 *            auto-start tune after insertion (null means just do nothing)
 	 * @throws IOException
 	 *             image read error
 	 */
-	public final void insertTape(final File file, final File autostartFile)
-			throws IOException, SidTuneError {
+	public final void insertTape(final File file) throws IOException,
+			SidTuneError {
+		config.getSidplay2().setLastDirectory(file.getParent());
 		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".tap")) {
 			// Everything, which is not a tape convert to tape first
-			final File convertedTape = new File(config.getSidplay2()
-					.getTmpDir(), file.getName() + ".tap");
+			final String tmpDir = config.getSidplay2().getTmpDir();
+			final File convertedTape = new File(tmpDir, file.getName() + ".tap");
 			convertedTape.deleteOnExit();
 			SidTune prog = SidTune.load(file);
 			String name = PathUtils.getBaseNameNoExt(file.getName());
@@ -1158,9 +1168,6 @@ public class Player {
 		} else {
 			datasette.insertTape(file);
 		}
-		if (autostartFile != null) {
-			play(SidTune.load(autostartFile));
-		}
 	}
 
 	/**
@@ -1170,17 +1177,13 @@ public class Player {
 	 *            cartridge type
 	 * @param sizeKB
 	 *            size in KB
-	 * @param autostartFile
-	 *            auto-start tune after insertion (null means just reset)
 	 * @throws IOException
 	 *             never thrown here
 	 */
-	public final void insertCartridge(final CartridgeType type,
-			final int sizeKB, final File autostartFile) throws IOException,
-			SidTuneError {
+	public final void insertCartridge(final CartridgeType type, final int sizeKB)
+			throws IOException, SidTuneError {
 		c64.ejectCartridge();
 		c64.setCartridge(Cartridge.create(c64.getPla(), type, sizeKB));
-		play(autostartFile != null ? SidTune.load(autostartFile) : null);
 	}
 
 	/**
@@ -1190,17 +1193,128 @@ public class Player {
 	 *            cartridge type
 	 * @param file
 	 *            file to load the RAM contents
-	 * @param autostartFile
-	 *            auto-start tune after insertion (null means just reset)
 	 * @throws IOException
 	 *             image read error
 	 */
-	public final void insertCartridge(final CartridgeType type,
-			final File file, final File autostartFile) throws IOException,
-			SidTuneError {
+	public final void insertCartridge(final CartridgeType type, final File file)
+			throws IOException, SidTuneError {
+		config.getSidplay2().setLastDirectory(file.getParent());
 		c64.ejectCartridge();
 		c64.setCartridge(Cartridge.read(c64.getPla(), type, file));
-		play(autostartFile != null ? SidTune.load(autostartFile) : null);
+	}
+
+	/**
+	 * Convenience method. Download C64 bundle (ZIP containing well-known
+	 * formats or unzipped entry). Attach specific disk/tape/cartridge and
+	 * autostart entry.<BR>
+	 * 
+	 * Note: temporary files are removed or marked to be removed on exit.
+	 * 
+	 * @param url
+	 *            URL to open
+	 * @param isMediaToAttach
+	 *            tester for media to attach
+	 * @throws IOException
+	 *             image read error
+	 * @throws SidTuneError
+	 *             invalid tune
+	 */
+	public void autostartURL(URL url, BiPredicate<File, File> isMediaToAttach)
+			throws IOException, SidTuneError, URISyntaxException {
+		final String name = new File(url.toURI().getSchemeSpecificPart())
+				.getName();
+		final String tmpDir = config.getSidplay2().getTmpDir();
+		try (InputStream in = url.openConnection().getInputStream()) {
+			if (name.toLowerCase(Locale.US).endsWith(ZIP_EXT)) {
+				// compressed contents
+				final TFile zip = new TFile(tmpDir, name);
+				if (!zip.exists()) {
+					TFile.cp(in, zip);
+				}
+				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
+				File toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
+				try {
+					TFile.rm(zip);
+				} catch (IOException e) {
+					// ignore, if URL is a local zip-file
+				}
+				if (toAttach != null) {
+					if (cartFileFilter.accept(toAttach)) {
+						insertCartridge(CartridgeType.CRT, toAttach);
+						play(SidTune.RESET);
+					} else if (tuneFileFilter.accept(toAttach)) {
+						play(SidTune.load(toAttach));
+					} else if (diskFileFilter.accept(toAttach)) {
+						c64.ejectCartridge();
+						insertDisk(toAttach);
+						command = "LOAD\"*\",8,1\rRUN\r";
+						play(SidTune.RESET);
+					} else if (tapeFileFilter.accept(toAttach)) {
+						c64.ejectCartridge();
+						insertTape(toAttach);
+						command = "LOAD\rRUN\r";
+						play(SidTune.RESET);
+					}
+				}
+			} else {
+				// uncompressed contents
+				final File dst = new File(tmpDir, name);
+				if (cartFileFilter.accept(null, name)) {
+					insertCartridge(CartridgeType.CRT, copyToTmp(in, dst));
+					play(SidTune.RESET);
+				} else if (tuneFileFilter.accept(null, name)) {
+					play(SidTune.load(name, in));
+				} else if (diskFileFilter.accept(null, name)) {
+					c64.ejectCartridge();
+					insertDisk(copyToTmp(in, dst));
+					command = "LOAD\"*\",8,1\rRUN\r";
+					play(SidTune.RESET);
+				} else if (tapeFileFilter.accept(null, name)) {
+					c64.ejectCartridge();
+					insertTape(copyToTmp(in, dst));
+					command = "LOAD\rRUN\r";
+					play(SidTune.RESET);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get media file to attach, search recursively.<BR>
+	 * 
+	 * Note: all files and folders are marked to be deleted.
+	 */
+	private File getToAttach(String dir, File file,
+			BiPredicate<File, File> isMediaToAttach, File toAttach) {
+		for (File member : file.listFiles()) {
+			File memberFile = new File(dir, member.getName());
+			memberFile.deleteOnExit();
+			if (memberFile.isFile()
+					&& (cartFileFilter.accept(memberFile)
+							|| tuneFileFilter.accept(memberFile)
+							|| diskFileFilter.accept(memberFile) || tapeFileFilter
+								.accept(memberFile))
+					&& isMediaToAttach.test(memberFile, toAttach)) {
+				toAttach = memberFile;
+			} else if (memberFile.isDirectory()) {
+				return getToAttach(memberFile.getPath(), new TFile(memberFile),
+						isMediaToAttach, toAttach);
+			}
+		}
+		return toAttach;
+	}
+
+	/**
+	 * Copy file to temporary directory.<BR>
+	 * 
+	 * Note: file is marked to be deleted on system exit
+	 */
+	private File copyToTmp(InputStream in, File out) throws IOException {
+		out.deleteOnExit();
+		if (!out.exists()) {
+			TFile.cp(in, out);
+		}
+		return out;
 	}
 
 }

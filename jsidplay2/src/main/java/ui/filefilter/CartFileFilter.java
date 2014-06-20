@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ui.filefilter;
 
 import java.io.File;
@@ -8,10 +5,9 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.Locale;
 
-public final class TuneFileFilter implements FileFilter, FilenameFilter {
+public class CartFileFilter implements FileFilter, FilenameFilter {
 
-	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".sid",
-			".dat", ".c64", ".prg", ".p00", ".mus", ".str", ".mp3", ".zip" };
+	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".crt" };
 
 	@Override
 	public boolean accept(File file) {
@@ -31,4 +27,5 @@ public final class TuneFileFilter implements FileFilter, FilenameFilter {
 		}
 		return false;
 	}
+
 }

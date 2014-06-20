@@ -28,6 +28,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import libsidplay.Player;
+import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import ui.common.C64Window;
@@ -242,12 +243,7 @@ public class DiskCollection extends Tab implements UIPart {
 				.getValue();
 		try {
 			File extractedFile = extract(file);
-			util.getPlayer()
-					.getConfig()
-					.getSidplay2()
-					.setLastDirectory(
-							extractedFile.getParentFile().getAbsolutePath());
-			util.getPlayer().insertDisk(extractedFile, null);
+			util.getPlayer().insertDisk(extractedFile);
 		} catch (IOException | SidTuneError e) {
 			System.err.println(String.format("Cannot insert media file '%s'.",
 					file.getAbsolutePath()));
@@ -309,15 +305,16 @@ public class DiskCollection extends Tab implements UIPart {
 		} else {
 			try {
 				File extractedFile = extract(file);
-				util.getPlayer()
-						.getConfig()
-						.getSidplay2()
-						.setLastDirectory(
-								extractedFile.getParentFile().getAbsolutePath());
 				if (diskFileFilter.accept(file)) {
-					util.getPlayer().insertDisk(extractedFile, autoStartFile);
+					util.getPlayer().insertDisk(extractedFile);
+					if (autoStartFile != null) {
+						util.getPlayer().play(SidTune.load(autoStartFile));
+					}
 				} else {
-					util.getPlayer().insertTape(extractedFile, autoStartFile);
+					util.getPlayer().insertTape(extractedFile);
+					if (autoStartFile != null) {
+						util.getPlayer().play(SidTune.load(autoStartFile));
+					}
 				}
 				if (autoStartFile == null) {
 					resetAndLoadDemo(extractedFile);
@@ -341,7 +338,7 @@ public class DiskCollection extends Tab implements UIPart {
 		}
 		util.setPlayingTab(this);
 		util.getPlayer().setCommand(command);
-		util.getPlayer().play(null);
+		util.getPlayer().play(SidTune.RESET);
 	}
 
 	protected void showScreenshot(final File file) {

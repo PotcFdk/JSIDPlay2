@@ -30,6 +30,8 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  * 
  */
 public abstract class SidTune {
+	public static final SidTune RESET = null;
+	
 	private static boolean ZIP_SUPPORTED;
 	static {
 		try {

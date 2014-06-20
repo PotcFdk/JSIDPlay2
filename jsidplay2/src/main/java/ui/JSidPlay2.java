@@ -338,8 +338,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 						TuneFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
 			try {
 				playTune(SidTune.load(file));
 			} catch (IOException | SidTuneError e) {
@@ -358,8 +357,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 						CartFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			final File tmpFile = new File(util.getConfig().getSidplay2()
 					.getTmpDir(), "nuvieplayer-v1.0.prg");
 			tmpFile.deleteOnExit();
@@ -374,8 +371,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 						os.write(b, 0, len);
 					}
 				}
-				util.getPlayer().insertCartridge(CartridgeType.REU, file,
-						tmpFile);
+				util.getPlayer().insertCartridge(CartridgeType.REU, file);
+				util.getPlayer().play(SidTune.load(tmpFile));
 			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();
 			}
@@ -385,7 +382,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void reset() {
 		if (!duringInitialization) {
-			playTune(null);
+			playTune(SidTune.RESET);
 		}
 	}
 
@@ -509,10 +506,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		fileDialog.setTitle(util.getBundle().getString("INSERT_TAPE"));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertTape(file, null);
+				util.getPlayer().insertTape(file);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
@@ -619,10 +614,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		fileDialog.setTitle(util.getBundle().getString("INSERT_DISK"));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertDisk(file, null);
+				util.getPlayer().insertDisk(file);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
@@ -733,29 +726,25 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				.getSidplay2())).getLastDirectoryFolder());
 		final File c64kernalFile = fileDialog.showOpenDialog(scene.getWindow());
 		if (c64kernalFile != null) {
-			util.getConfig()
-					.getSidplay2()
-					.setLastDirectory(
-							c64kernalFile.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2()
+					.setLastDirectory(c64kernalFile.getParent());
 			final FileChooser c1541FileDialog = new FileChooser();
 			c1541FileDialog.setTitle(util.getBundle().getString(
 					"CHOOSE_C1541_KERNAL_ROM"));
-			fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-					.getSidplay2())).getLastDirectoryFolder());
-			fileDialog.getExtensionFilters().add(
+			c1541FileDialog.setInitialDirectory(((SidPlay2Section) (util
+					.getConfig().getSidplay2())).getLastDirectoryFolder());
+			c1541FileDialog.getExtensionFilters().add(
 					new ExtensionFilter(RomFileExtensions.DESCRIPTION,
 							RomFileExtensions.EXTENSIONS));
 			final File c1541kernalFile = c1541FileDialog.showOpenDialog(scene
 					.getWindow());
 			if (c1541kernalFile != null) {
-				util.getConfig()
-						.getSidplay2()
-						.setLastDirectory(
-								c1541kernalFile.getParentFile()
-										.getAbsolutePath());
+				util.getConfig().getSidplay2()
+						.setLastDirectory(c1541kernalFile.getParent());
 				try {
 					util.getPlayer().installJiffyDOS(c64kernalFile,
-							c1541kernalFile, null);
+							c1541kernalFile);
+					util.getPlayer().play(SidTune.RESET);
 				} catch (IOException | SidTuneError ex) {
 					ex.printStackTrace();
 				}
@@ -925,8 +914,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (file != null) {
 			File target = new File(file.getParentFile(),
 					PathUtils.getBaseNameNoExt(file.getName()) + ".xml");
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
 			configService.exportCfg(util.getConfig(), target);
 		}
 	}
@@ -947,10 +935,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 							ConfigFileExtension.EXTENSIONS));
 			final File file = fileDialog.showOpenDialog(scene.getWindow());
 			if (file != null) {
-				util.getConfig()
-						.getSidplay2()
-						.setLastDirectory(
-								file.getParentFile().getAbsolutePath());
+				util.getConfig().getSidplay2()
+						.setLastDirectory(file.getParent());
 				util.getConfig().setReconfigFilename(file.getAbsolutePath());
 			}
 		}
@@ -991,10 +977,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertCartridge(type, file, null);
+				util.getPlayer().insertCartridge(type, file);
+				util.getPlayer().play(SidTune.RESET);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert file '%s' as cartridge of type '%s'.",
@@ -1005,7 +990,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	private void insertCartridge(CartridgeType type, int sizeKB) {
 		try {
-			util.getPlayer().insertCartridge(type, sizeKB, null);
+			util.getPlayer().insertCartridge(type, sizeKB);
+			util.getPlayer().play(SidTune.RESET);
 		} catch (IOException | SidTuneError ex) {
 			System.err.println(String.format(
 					"Cannot insert cartridge of type '%s' and size '%d'KB.",
@@ -1014,7 +1000,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private void playTune(final SidTune tune) {
-		video();
 		util.setPlayingTab(tabbedPane.getTabs().stream()
 				.filter((tab) -> tab.getId().equals(Video.ID)).findFirst()
 				.get());

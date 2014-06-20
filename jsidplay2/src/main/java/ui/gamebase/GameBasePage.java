@@ -18,7 +18,6 @@ import ui.common.UIUtil;
 import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
 import ui.entities.gamebase.Games;
-import ui.gamebase.listeners.GameListener;
 
 public class GameBasePage extends Tab implements UIPart {
 

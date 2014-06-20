@@ -7,7 +7,7 @@ import javafx.scene.Node;
 import ui.common.UIUtil;
 
 public abstract class ProgressListener implements IDownloadListener {
-	private UIUtil util;
+	protected UIUtil util;
 	private Node node;
 
 	public ProgressListener(UIUtil util, Node node) {

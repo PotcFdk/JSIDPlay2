@@ -39,8 +39,6 @@ import ui.entities.PersistenceProperties;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.gamebase.service.GamesService;
 import ui.filefilter.MDBFileExtensions;
-import ui.gamebase.listeners.GameListener;
-import ui.gamebase.listeners.MusicListener;
 import de.schlichtherle.truezip.file.TFile;
 
 public class GameBase extends Tab implements UIPart {

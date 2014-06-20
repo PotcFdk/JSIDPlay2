@@ -78,7 +78,7 @@ public class Favorites extends Tab implements UIPart {
 				.getSidplay2();
 
 		// Not already configured, yet?
-		if (sidPlay2Section.getHvsc()!=null) {
+		if (sidPlay2Section.getHvsc() != null) {
 			setSongLengthDatabase(sidPlay2Section.getHvsc());
 			setSTIL(sidPlay2Section.getHvsc());
 		}
@@ -209,8 +209,7 @@ public class Favorites extends Tab implements UIPart {
 				.showOpenMultipleDialog(favoritesList.getScene().getWindow());
 		if (files != null && files.size() > 0) {
 			File file = files.get(0);
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
 			FavoritesTab selectedTab = getSelectedTab();
 			selectedTab.addFavorites(files);
 			renameTab(selectedTab,
@@ -244,8 +243,7 @@ public class Favorites extends Tab implements UIPart {
 		final File file = fileDialog.showOpenDialog(favoritesList.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
 			try {
 				getSelectedTab().loadFavorites(file);
 			} catch (IOException e1) {
@@ -265,8 +263,7 @@ public class Favorites extends Tab implements UIPart {
 		final File file = fileDialog.showSaveDialog(favoritesList.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
 			File target = new File(file.getParentFile(),
 					PathUtils.getBaseNameNoExt(file.getName()) + ".js2");
 			try {

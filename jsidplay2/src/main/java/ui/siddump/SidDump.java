@@ -136,8 +136,7 @@ public class SidDump extends Tab implements UIPart {
 		final File file = fileDialog.showOpenDialog(loadDump.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
 			sidDumpExtension.load(file.getAbsolutePath());
 			noteSpacing.setText(String.valueOf(sidDumpExtension
 					.getNoteSpacing()));
@@ -162,8 +161,7 @@ public class SidDump extends Tab implements UIPart {
 		final File file = fileDialog.showSaveDialog(saveDump.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
+			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
 			sidDumpExtension.save(file.getAbsolutePath(), sidDumpOutputs);
 		}
 	}

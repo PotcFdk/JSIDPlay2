@@ -115,7 +115,8 @@ public class Disassembler extends Tab implements UIPart {
 		if (tuneInfo.getDeterminedDriverAddr() == 0) {
 			return "N/A";
 		} else {
-			return String.format("0x%04x - 0x%04x",
+			return String.format(
+					"0x%04x - 0x%04x",
 					tuneInfo.getDeterminedDriverAddr(),
 					tuneInfo.getDeterminedDriverAddr()
 							+ tuneInfo.getDeterminedDriverLength() - 1);
@@ -146,8 +147,8 @@ public class Disassembler extends Tab implements UIPart {
 			hexBytes.append(String.format("%02X ", ram[startAddr + i & 0xffff]));
 		}
 		assemblyLine.setBytes(hexBytes.toString());
-		String[] parts = SimpleDisassembler.getInstance().getDisassembly(ram, startAddr)
-				.split(":", 2);
+		String[] parts = SimpleDisassembler.getInstance()
+				.getDisassembly(ram, startAddr).split(":", 2);
 		assemblyLine.setMnemonic(parts[0]);
 		if (parts.length == 2) {
 			assemblyLine.setOperands(parts[1]);
@@ -201,7 +202,7 @@ public class Disassembler extends Tab implements UIPart {
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File file = fileDialog.showSaveDialog(save.getScene().getWindow());
 		if (file != null) {
-			sidplay2.setLastDirectory(file.getParentFile().getAbsolutePath());
+			sidplay2.setLastDirectory(file.getParent());
 			try (FileOutputStream fos = new FileOutputStream(file)) {
 				int start = Integer.decode(startAddress.getText());
 				int end = Integer.decode(endAddress.getText()) + 1;

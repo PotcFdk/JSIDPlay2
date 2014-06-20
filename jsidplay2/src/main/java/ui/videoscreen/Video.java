@@ -227,10 +227,8 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		final File file = fileDialog.showOpenDialog(screen.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertTape(new TFile(file), null);
+				util.getPlayer().insertTape(new TFile(file));
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
@@ -251,10 +249,8 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		final File file = fileDialog.showOpenDialog(screen.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
-				util.getPlayer().insertDisk(new TFile(file), null);
+				util.getPlayer().insertDisk(new TFile(file));
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
@@ -275,11 +271,11 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		final File file = fileDialog.showOpenDialog(screen.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2()
-					.setLastDirectory(file.getParentFile().getAbsolutePath());
 			try {
 				util.getPlayer().insertCartridge(CartridgeType.CRT,
-						new TFile(file), null);
+						new TFile(file));
+				util.getPlayer().play(SidTune.RESET);
+
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
