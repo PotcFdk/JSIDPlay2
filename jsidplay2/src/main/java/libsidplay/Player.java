@@ -1224,20 +1224,16 @@ public class Player {
 		final String name = new File(url.toURI().getSchemeSpecificPart())
 				.getName();
 		final String tmpDir = config.getSidplay2().getTmpDir();
+		TFile zip = null;
 		try (InputStream in = url.openConnection().getInputStream()) {
 			if (name.toLowerCase(Locale.US).endsWith(ZIP_EXT)) {
 				// compressed contents
-				final TFile zip = new TFile(tmpDir, name);
+				zip = new TFile(tmpDir, name);
 				if (!zip.exists()) {
 					TFile.cp(in, zip);
 				}
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
 				File toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
-				try {
-					TFile.rm(zip);
-				} catch (IOException e) {
-					// ignore, if URL is a local zip-file
-				}
 				if (toAttach != null) {
 					if (cartFileFilter.accept(toAttach)) {
 						insertCartridge(CartridgeType.CRT, toAttach);
@@ -1276,6 +1272,9 @@ public class Player {
 					play(SidTune.RESET);
 				}
 			}
+		}
+		if (zip != null) {
+			TFile.rm_r(zip);
 		}
 	}
 
