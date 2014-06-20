@@ -2,10 +2,9 @@ package ui.filefilter;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.util.Locale;
 
-public class CartFileFilter implements FileFilter, FilenameFilter {
+public class CartFileFilter implements FileFilter {
 
 	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".crt" };
 
@@ -17,7 +16,6 @@ public class CartFileFilter implements FileFilter, FilenameFilter {
 		return accept(null, file.getName().toLowerCase(Locale.ENGLISH));
 	}
 
-	@Override
 	public boolean accept(File dir, String name) {
 		String[] exts = DEFAULT_FILE_NAME_EXT;
 		for (String ext : exts) {

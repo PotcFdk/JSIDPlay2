@@ -6,9 +6,11 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.BiPredicate;
 import java.util.zip.GZIPInputStream;
 
 import javafx.application.Platform;
@@ -28,7 +30,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import libsidplay.Player;
-import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import ui.common.C64Window;
@@ -52,6 +53,10 @@ public class DiskCollection extends Tab implements UIPart {
 	public static final String HVMEC_ID = "HVMEC";
 	private static final String HVMEC_DATA = "DATA";
 	private static final String HVMEC_CONTROL = "CONTROL";
+
+	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file,
+			toAttach) -> toAttach == null
+			|| file.getName().compareTo(toAttach.getName()) < 0;
 
 	@FXML
 	private CheckBox autoConfiguration;
@@ -123,10 +128,9 @@ public class DiskCollection extends Tab implements UIPart {
 	@FXML
 	private void initialize() {
 		directory.getAutoStartFileProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					attachAndRunDemo(fileBrowser.getSelectionModel()
-							.getSelectedItem().getValue(), newValue);
-				});
+				(observable) -> attachAndRunDemo(fileBrowser
+						.getSelectionModel().getSelectedItem().getValue(),
+						directory.getAutoStartFileProperty().get()));
 		fileBrowser
 				.getSelectionModel()
 				.selectedItemProperty()
@@ -305,40 +309,14 @@ public class DiskCollection extends Tab implements UIPart {
 		} else {
 			try {
 				File extractedFile = extract(file);
-				if (diskFileFilter.accept(file)) {
-					util.getPlayer().insertDisk(extractedFile);
-					if (autoStartFile != null) {
-						util.getPlayer().play(SidTune.load(autoStartFile));
-					}
-				} else {
-					util.getPlayer().insertTape(extractedFile);
-					if (autoStartFile != null) {
-						util.getPlayer().play(SidTune.load(autoStartFile));
-					}
-				}
-				if (autoStartFile == null) {
-					resetAndLoadDemo(extractedFile);
-				}
-			} catch (IOException | SidTuneError e) {
+				util.getPlayer().autostartURL(extractedFile.toURI().toURL(),
+						LEXICALLY_FIRST_MEDIA, autoStartFile);
+			} catch (IOException | SidTuneError | URISyntaxException e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
 						file.getAbsolutePath()));
 			}
 		}
-	}
-
-	private void resetAndLoadDemo(final File file) {
-		final String command;
-		if (diskFileFilter.accept(file)) {
-			// load from disk
-			command = "LOAD\"*\",8,1\rRUN\r";
-		} else {
-			// load from tape
-			command = "LOAD\rRUN\r";
-		}
-		util.setPlayingTab(this);
-		util.getPlayer().setCommand(command);
-		util.getPlayer().play(SidTune.RESET);
 	}
 
 	protected void showScreenshot(final File file) {
@@ -384,23 +362,21 @@ public class DiskCollection extends Tab implements UIPart {
 		return null;
 	}
 
-	protected File extract(File file) throws IOException {
+	private File extract(File file) throws IOException {
+		String tmpDir = util.getConfig().getSidplay2().getTmpDir();
+		File dst;
 		if (file.getName().endsWith(".gz")) {
-			File dst = new File(util.getConfig().getSidplay2().getTmpDir(),
-					PathUtils.getBaseNameNoExt(file.getName()));
-			dst.deleteOnExit();
+			dst = new File(tmpDir, PathUtils.getBaseNameNoExt(file.getName()));
 			try (InputStream is = new GZIPInputStream(
 					new TFileInputStream(file))) {
 				TFile.cp(is, dst);
 			}
-			return dst;
 		} else {
-			File dst = new File(util.getConfig().getSidplay2().getTmpDir(),
-					file.getName());
-			dst.deleteOnExit();
-			new TFile(file).cp(dst);
-			return dst;
+			dst = new File(tmpDir, file.getName());
+			TFile.cp(file, dst);
 		}
+		dst.deleteOnExit();
+		return dst;
 	}
 
 }

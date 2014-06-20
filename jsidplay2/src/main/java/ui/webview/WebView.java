@@ -81,7 +81,7 @@ public class WebView extends Tab implements UIPart {
 							try {
 								util.getPlayer().autostartURL(
 										new URL(newValue),
-										LEXICALLY_FIRST_MEDIA);
+										LEXICALLY_FIRST_MEDIA, null);
 							} catch (IOException | SidTuneError
 									| URISyntaxException e) {
 								System.err.println(e.getMessage());

@@ -114,6 +114,8 @@ public class Player {
 	private static final int NUM_EVENTS_TO_PLAY = 10000;
 	/** Previous song select timeout (< 4 secs) **/
 	private static final int SID2_PREV_SONG_TIMEOUT = 4;
+	private static final String LOAD_8_1_RUN = "LOAD\"*\",8,1\rRUN\r";
+	private static final String LOAD_RUN = "LOAD\rRUN\r";
 
 	private static final String ZIP_EXT = ".zip";
 	private final TuneFileFilter tuneFileFilter = new TuneFileFilter();
@@ -1214,67 +1216,86 @@ public class Player {
 	 *            URL to open
 	 * @param isMediaToAttach
 	 *            tester for media to attach
+	 * @param autoStartFile
+	 *            if media to attach is a disk/tape/cartridge this tune is
+	 *            loaded after attaching the media (null means just reset C64,
+	 *            instead).
 	 * @throws IOException
 	 *             image read error
 	 * @throws SidTuneError
 	 *             invalid tune
 	 */
-	public void autostartURL(URL url, BiPredicate<File, File> isMediaToAttach)
-			throws IOException, SidTuneError, URISyntaxException {
-		final String name = new File(url.toURI().getSchemeSpecificPart())
-				.getName();
-		final String tmpDir = config.getSidplay2().getTmpDir();
+	public void autostartURL(URL url, BiPredicate<File, File> isMediaToAttach,
+			File autoStartFile) throws IOException, SidTuneError,
+			URISyntaxException {
+		String tmpDir = config.getSidplay2().getTmpDir();
+		String name = new File(url.toURI().getSchemeSpecificPart()).getName();
 		TFile zip = null;
 		try (InputStream in = url.openConnection().getInputStream()) {
 			if (name.toLowerCase(Locale.US).endsWith(ZIP_EXT)) {
 				// compressed contents
-				zip = new TFile(tmpDir, name);
-				if (!zip.exists()) {
-					TFile.cp(in, zip);
-				}
+				zip = copyToTmp(in, tmpDir, name);
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
 				File toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
 				if (toAttach != null) {
 					if (cartFileFilter.accept(toAttach)) {
 						insertCartridge(CartridgeType.CRT, toAttach);
-						play(SidTune.RESET);
+						autoStart(autoStartFile, null);
 					} else if (tuneFileFilter.accept(toAttach)) {
 						play(SidTune.load(toAttach));
 					} else if (diskFileFilter.accept(toAttach)) {
 						c64.ejectCartridge();
 						insertDisk(toAttach);
-						command = "LOAD\"*\",8,1\rRUN\r";
-						play(SidTune.RESET);
+						autoStart(autoStartFile, LOAD_8_1_RUN);
 					} else if (tapeFileFilter.accept(toAttach)) {
 						c64.ejectCartridge();
 						insertTape(toAttach);
-						command = "LOAD\rRUN\r";
-						play(SidTune.RESET);
+						autoStart(autoStartFile, LOAD_RUN);
 					}
 				}
 			} else {
 				// uncompressed contents
-				final File dst = new File(tmpDir, name);
-				if (cartFileFilter.accept(null, name)) {
+				File dst = new File(tmpDir, name);
+				if (cartFileFilter.accept(dst)) {
 					insertCartridge(CartridgeType.CRT, copyToTmp(in, dst));
-					play(SidTune.RESET);
-				} else if (tuneFileFilter.accept(null, name)) {
+					autoStart(autoStartFile, null);
+				} else if (tuneFileFilter.accept(dst)) {
 					play(SidTune.load(name, in));
-				} else if (diskFileFilter.accept(null, name)) {
+				} else if (diskFileFilter.accept(dst)) {
 					c64.ejectCartridge();
 					insertDisk(copyToTmp(in, dst));
-					command = "LOAD\"*\",8,1\rRUN\r";
-					play(SidTune.RESET);
-				} else if (tapeFileFilter.accept(null, name)) {
+					autoStart(autoStartFile, LOAD_8_1_RUN);
+				} else if (tapeFileFilter.accept(dst)) {
 					c64.ejectCartridge();
 					insertTape(copyToTmp(in, dst));
-					command = "LOAD\rRUN\r";
-					play(SidTune.RESET);
+					autoStart(autoStartFile, LOAD_RUN);
 				}
 			}
 		}
 		if (zip != null) {
 			TFile.rm_r(zip);
+		}
+	}
+
+	/**
+	 * Load tune or reset C64 and type-in command automatically
+	 * 
+	 * @param file
+	 *            tune file to load and play
+	 * @param command
+	 *            command to type-in after reset (if no file is specified)
+	 * @throws IOException
+	 *             image read error
+	 * @throws SidTuneError
+	 *             invalid tune
+	 */
+	private void autoStart(File file, String command) throws IOException,
+			SidTuneError {
+		if (file != null) {
+			play(SidTune.load(file));
+		} else {
+			this.command = command;
+			play(SidTune.RESET);
 		}
 	}
 
@@ -1301,6 +1322,18 @@ public class Player {
 			}
 		}
 		return toAttach;
+	}
+
+	/**
+	 * Copy input stream to a file in the temporary directory.
+	 */
+	private TFile copyToTmp(InputStream in, String tmpDir, String name)
+			throws IOException {
+		TFile zip = new TFile(tmpDir, name);
+		if (!zip.exists()) {
+			TFile.cp(in, zip);
+		}
+		return zip;
 	}
 
 	/**
