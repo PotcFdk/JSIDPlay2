@@ -1314,8 +1314,11 @@ public class Player {
 					&& isMediaToAttach.test(memberFile, toAttach)) {
 				toAttach = memberFile;
 			} else if (memberFile.isDirectory()) {
-				return getToAttach(memberFile.getPath(), new TFile(memberFile),
-						isMediaToAttach, toAttach);
+				File toAttachChild = getToAttach(memberFile.getPath(),
+						new TFile(memberFile), isMediaToAttach, toAttach);
+				if (toAttachChild != null) {
+					toAttach = toAttachChild;
+				}
 			}
 		}
 		return toAttach;

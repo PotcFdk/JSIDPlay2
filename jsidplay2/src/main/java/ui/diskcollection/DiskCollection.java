@@ -115,6 +115,7 @@ public class DiskCollection extends Tab implements UIPart {
 					&& file.getName().equals(HVMEC_CONTROL)) {
 				return false;
 			}
+			file = extractGZip(file);
 			return diskFileFilter.accept(file) || tapeFileFilter.accept(file)
 					|| docsFileFilter.accept(file);
 		}
@@ -363,20 +364,35 @@ public class DiskCollection extends Tab implements UIPart {
 	}
 
 	private File extract(File file) throws IOException {
-		String tmpDir = util.getConfig().getSidplay2().getTmpDir();
-		File dst;
-		if (file.getName().endsWith(".gz")) {
-			dst = new File(tmpDir, PathUtils.getBaseNameNoExt(file.getName()));
-			try (InputStream is = new GZIPInputStream(
-					new TFileInputStream(file))) {
-				TFile.cp(is, dst);
-			}
+		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
+			return extractGZip(file);
 		} else {
-			dst = new File(tmpDir, file.getName());
-			TFile.cp(file, dst);
+			String tmpDir = util.getConfig().getSidplay2().getTmpDir();
+			File dst = new File(tmpDir, file.getName());
+			if (!dst.exists()) {
+				TFile.cp(file, dst);
+			}
+			dst.deleteOnExit();
+			return dst;
 		}
-		dst.deleteOnExit();
-		return dst;
 	}
 
+	private File extractGZip(File file) {
+		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
+			String tmpDir = util.getConfig().getSidplay2().getTmpDir();
+			File dst = new File(tmpDir, PathUtils.getBaseNameNoExt(file
+					.getName()));
+			try (InputStream is = new GZIPInputStream(
+					new TFileInputStream(file))) {
+				if (!dst.exists()) {
+					TFile.cp(is, dst);
+				}
+			} catch (IOException e) {
+				return file;
+			}
+			dst.deleteOnExit();
+			return dst;
+		}
+		return file;
+	}
 }
