@@ -117,7 +117,6 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		} catch (IOException ioE) {
 			// ignore missing CRC file
 		} finally {
-			downloadedFile.deleteOnExit();
 			listener.downloadStop(downloadedFile);
 		}
 	}

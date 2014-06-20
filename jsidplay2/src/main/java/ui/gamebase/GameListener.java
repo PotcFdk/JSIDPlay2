@@ -31,6 +31,7 @@ public class GameListener extends ProgressListener {
 			// download failed!
 			return;
 		}
+		downloadedFile.deleteOnExit();
 		try {
 			util.getPlayer().autostartURL(downloadedFile.toURI().toURL(),
 					FILE_TO_RUN_DETECTOR);
