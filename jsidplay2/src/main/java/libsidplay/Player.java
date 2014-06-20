@@ -1231,49 +1231,40 @@ public class Player {
 		String tmpDir = config.getSidplay2().getTmpDir();
 		String name = new File(url.toURI().getSchemeSpecificPart()).getName();
 		TFile zip = null;
+		File toAttach = null;
 		try (InputStream in = url.openConnection().getInputStream()) {
 			if (name.toLowerCase(Locale.US).endsWith(ZIP_EXT)) {
-				// compressed contents
+				// uncompress zip and search media fileto attach
 				zip = copyToTmp(in, tmpDir, name);
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
-				File toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
-				if (toAttach != null) {
-					if (cartFileFilter.accept(toAttach)) {
-						insertCartridge(CartridgeType.CRT, toAttach);
-						autoStart(autoStartFile, null);
-					} else if (tuneFileFilter.accept(toAttach)) {
-						play(SidTune.load(toAttach));
-					} else if (diskFileFilter.accept(toAttach)) {
-						c64.ejectCartridge();
-						insertDisk(toAttach);
-						autoStart(autoStartFile, LOAD_8_1_RUN);
-					} else if (tapeFileFilter.accept(toAttach)) {
-						c64.ejectCartridge();
-						insertTape(toAttach);
-						autoStart(autoStartFile, LOAD_RUN);
-					}
-				}
+				toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
 			} else {
-				// uncompressed contents
 				File dst = new File(tmpDir, name);
-				if (cartFileFilter.accept(dst)) {
-					insertCartridge(CartridgeType.CRT, copyToTmp(in, dst));
-					autoStart(autoStartFile, null);
-				} else if (tuneFileFilter.accept(dst)) {
-					play(SidTune.load(name, in));
-				} else if (diskFileFilter.accept(dst)) {
-					c64.ejectCartridge();
-					insertDisk(copyToTmp(in, dst));
-					autoStart(autoStartFile, LOAD_8_1_RUN);
-				} else if (tapeFileFilter.accept(dst)) {
-					c64.ejectCartridge();
-					insertTape(copyToTmp(in, dst));
-					autoStart(autoStartFile, LOAD_RUN);
-				}
+				if (cartFileFilter.accept(dst) || tuneFileFilter.accept(dst)
+						|| diskFileFilter.accept(dst)
+						|| tapeFileFilter.accept(dst))
+				toAttach = copyToTmp(in, dst);
+			}
+		} finally {
+			if (zip != null) {
+				TFile.rm_r(zip);
 			}
 		}
-		if (zip != null) {
-			TFile.rm_r(zip);
+		if (toAttach != null) {
+			if (cartFileFilter.accept(toAttach)) {
+				insertCartridge(CartridgeType.CRT, toAttach);
+				autoStart(autoStartFile, null);
+			} else if (tuneFileFilter.accept(toAttach)) {
+				play(SidTune.load(toAttach));
+			} else if (diskFileFilter.accept(toAttach)) {
+				c64.ejectCartridge();
+				insertDisk(toAttach);
+				autoStart(autoStartFile, LOAD_8_1_RUN);
+			} else if (tapeFileFilter.accept(toAttach)) {
+				c64.ejectCartridge();
+				insertTape(toAttach);
+				autoStart(autoStartFile, LOAD_RUN);
+			}
 		}
 	}
 
