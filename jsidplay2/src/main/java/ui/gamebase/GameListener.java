@@ -33,7 +33,7 @@ public class GameListener extends ProgressListener {
 		}
 		downloadedFile.deleteOnExit();
 		try {
-			util.getPlayer().autostartURL(downloadedFile.toURI().toURL(),
+			util.getPlayer().autostart(downloadedFile.toURI().toURL(),
 					FILE_TO_RUN_DETECTOR, null);
 		} catch (IOException | SidTuneError | URISyntaxException e) {
 			System.err.println(e.getMessage());

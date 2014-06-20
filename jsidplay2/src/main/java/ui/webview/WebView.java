@@ -79,7 +79,7 @@ public class WebView extends Tab implements UIPart {
 				.addListener(
 						(observable, oldValue, newValue) -> {
 							try {
-								util.getPlayer().autostartURL(
+								util.getPlayer().autostart(
 										new URL(newValue),
 										LEXICALLY_FIRST_MEDIA, null);
 							} catch (IOException | SidTuneError

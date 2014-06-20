@@ -309,7 +309,7 @@ public class DiskCollection extends Tab implements UIPart {
 		} else {
 			try {
 				File extractedFile = extract(file);
-				util.getPlayer().autostartURL(extractedFile.toURI().toURL(),
+				util.getPlayer().autostart(extractedFile.toURI().toURL(),
 						LEXICALLY_FIRST_MEDIA, autoStartFile);
 			} catch (IOException | SidTuneError | URISyntaxException e) {
 				System.err.println(String.format(

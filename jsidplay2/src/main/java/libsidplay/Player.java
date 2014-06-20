@@ -1208,7 +1208,7 @@ public class Player {
 	/**
 	 * Convenience method. Download C64 bundle (ZIP containing well-known
 	 * formats or unzipped entry). Attach specific disk/tape/cartridge and
-	 * autostart entry.<BR>
+	 * automatically start entry.<BR>
 	 * 
 	 * Note: temporary files are removed or marked to be removed on exit.
 	 * 
@@ -1225,7 +1225,7 @@ public class Player {
 	 * @throws SidTuneError
 	 *             invalid tune
 	 */
-	public void autostartURL(URL url, BiPredicate<File, File> isMediaToAttach,
+	public void autostart(URL url, BiPredicate<File, File> isMediaToAttach,
 			File autoStartFile) throws IOException, SidTuneError,
 			URISyntaxException {
 		String tmpDir = config.getSidplay2().getTmpDir();
@@ -1234,16 +1234,16 @@ public class Player {
 		File toAttach = null;
 		try (InputStream in = url.openConnection().getInputStream()) {
 			if (name.toLowerCase(Locale.US).endsWith(ZIP_EXT)) {
-				// uncompress zip and search media fileto attach
+				// uncompress zip
 				zip = copyToTmp(in, tmpDir, name);
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
+				// search media file to attach
 				toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
 			} else {
-				File dst = new File(tmpDir, name);
-				if (cartFileFilter.accept(dst) || tuneFileFilter.accept(dst)
-						|| diskFileFilter.accept(dst)
-						|| tapeFileFilter.accept(dst))
-				toAttach = copyToTmp(in, dst);
+				File attachFile = new File(tmpDir, name);
+				if (isMediaToAttach(attachFile)) {
+					toAttach = copyToTmp(in, attachFile);
+				}
 			}
 		} finally {
 			if (zip != null) {
@@ -1294,17 +1294,23 @@ public class Player {
 	 * Get media file to attach, search recursively.<BR>
 	 * 
 	 * Note: all files and folders are marked to be deleted.
+	 * 
+	 * @param dir
+	 *            directory where the files are located
+	 * @param file
+	 *            file to get traversed and searched for media
+	 * @param isMediaToAttach
+	 *            predicate to check desired media
+	 * @param toAttach
+	 *            current media to attach
+	 * @return media to attach
 	 */
 	private File getToAttach(String dir, File file,
 			BiPredicate<File, File> isMediaToAttach, File toAttach) {
 		for (File member : file.listFiles()) {
 			File memberFile = new File(dir, member.getName());
 			memberFile.deleteOnExit();
-			if (memberFile.isFile()
-					&& (cartFileFilter.accept(memberFile)
-							|| tuneFileFilter.accept(memberFile)
-							|| diskFileFilter.accept(memberFile) || tapeFileFilter
-								.accept(memberFile))
+			if (memberFile.isFile() && isMediaToAttach(memberFile)
 					&& isMediaToAttach.test(memberFile, toAttach)) {
 				toAttach = memberFile;
 			} else if (memberFile.isDirectory()) {
@@ -1313,6 +1319,18 @@ public class Player {
 			}
 		}
 		return toAttach;
+	}
+
+	/**
+	 * Check well-known disk/tape/cartridge file extension
+	 * 
+	 * @param file
+	 *            file to check
+	 * @return is it a well-known format
+	 */
+	private boolean isMediaToAttach(File file) {
+		return cartFileFilter.accept(file) || tuneFileFilter.accept(file)
+				|| diskFileFilter.accept(file) || tapeFileFilter.accept(file);
 	}
 
 	/**
