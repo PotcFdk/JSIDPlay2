@@ -14,9 +14,12 @@ import ui.download.ProgressListener;
 public class GameListener extends ProgressListener {
 
 	private String fileToRun;
+	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file,
+			toAttach) -> toAttach == null
+			|| file.getName().compareTo(toAttach.getName()) < 0;
 	private final BiPredicate<File, File> FILE_TO_RUN_DETECTOR = (file,
-			toAttach) -> fileToRun.length() == 0
-			|| fileToRun.equals(file.getName());
+			toAttach) -> (fileToRun.length() == 0 && LEXICALLY_FIRST_MEDIA
+			.test(file, toAttach)) || fileToRun.equals(file.getName());
 
 	public GameListener(UIUtil util, Node node, Player player) {
 		super(util, node);
