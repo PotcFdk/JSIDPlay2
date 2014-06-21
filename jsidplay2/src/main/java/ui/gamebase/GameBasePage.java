@@ -85,7 +85,6 @@ public class GameBasePage extends Tab implements UIPart {
 											.println("Screenshot is not available on GameBase64: "
 													+ newValue.getName());
 								} else {
-
 									try {
 										URL url = new URL(
 												GB64_SCREENSHOT_DOWNLOAD_URL

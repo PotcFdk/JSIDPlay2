@@ -207,7 +207,6 @@ public class MusicCollection extends Tab implements UIPart {
 	private boolean searchOptionsChanged;
 	private String hvscName;
 	private int currentSong;
-	private DownloadThread downloadThread;
 
 	private FavoritesSection favoritesToAddSearchResult;
 
@@ -502,19 +501,19 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private void startDownload6581R2() {
 		final String url = util.getConfig().getOnline().getSoasc6581R2();
-		downloadStart(MessageFormat.format(url, hvscName, currentSong));
+		downloadStart(MessageFormat.format(url, hvscName, currentSong).trim());
 	}
 
 	@FXML
 	private void startDownload6581R4() {
 		final String url = util.getConfig().getOnline().getSoasc6581R4();
-		downloadStart(MessageFormat.format(url, hvscName, currentSong));
+		downloadStart(MessageFormat.format(url, hvscName, currentSong).trim());
 	}
 
 	@FXML
 	private void startDownload8580R5() {
 		final String url = util.getConfig().getOnline().getSoasc8580R5();
-		downloadStart(MessageFormat.format(url, hvscName, currentSong));
+		downloadStart(MessageFormat.format(url, hvscName, currentSong).trim());
 	}
 
 	@FXML
@@ -1025,20 +1024,17 @@ public class MusicCollection extends Tab implements UIPart {
 	private void downloadStart(String url) {
 		System.out.println("Download URL: <" + url + ">");
 		try {
-			downloadThread = new DownloadThread(util.getConfig(),
-					new ProgressListener(util, fileBrowser) {
+			new DownloadThread(util.getConfig(), new ProgressListener(util,
+					fileBrowser) {
 
-						@Override
-						public void downloaded(final File downloadedFile) {
-							downloadThread = null;
-
-							if (downloadedFile != null) {
-								downloadedFile.deleteOnExit();
-								Platform.runLater(() -> playTune(downloadedFile));
-							}
-						}
-					}, new URL(url.trim()));
-			downloadThread.start();
+				@Override
+				public void downloaded(final File downloadedFile) {
+					if (downloadedFile != null) {
+						downloadedFile.deleteOnExit();
+						Platform.runLater(() -> playTune(downloadedFile));
+					}
+				}
+			}, new URL(url)).start();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
