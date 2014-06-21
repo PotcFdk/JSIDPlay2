@@ -3,6 +3,7 @@ package ui.gamebase;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -17,8 +18,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -27,12 +26,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
 import libsidplay.Player;
+import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.download.DownloadThread;
-import ui.download.IDownloadListener;
 import ui.download.ProgressListener;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
@@ -100,8 +100,6 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	protected TabPane letter;
 	@FXML
-	private ImageView screenshot;
-	@FXML
 	protected TextField infos, programmer, category, musician;
 	@FXML
 	protected TextArea comment;
@@ -110,10 +108,10 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	protected TextField gameBaseFile;
 
-	private UIUtil util;
-
 	private EntityManager em;
 	private GamesService gamesService;
+
+	private UIUtil util;
 
 	public GameBase(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
@@ -140,24 +138,6 @@ public class GameBase extends Tab implements UIPart {
 
 		for (Tab tab : letter.getTabs()) {
 			GameBasePage page = (GameBasePage) tab;
-			page.setScreenShotListener(new ProgressListener(util, letter) {
-
-				@Override
-				public void downloaded(File downloadedFile) {
-					if (downloadedFile == null) {
-						return;
-					}
-					downloadedFile.deleteOnExit();
-					try {
-						final URL resource = downloadedFile.toURI().toURL();
-						Platform.runLater(() -> showScreenshot(resource));
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-			page.setGameListener(new GameListener(util, letter, util
-					.getPlayer()));
 			page.getGamebaseTable()
 					.getSelectionModel()
 					.selectedItemProperty()
@@ -225,18 +205,31 @@ public class GameBase extends Tab implements UIPart {
 				setRoot(dbFile);
 			} else {
 				enableGameBase.setDisable(true);
-				downloadStart(util.getConfig().getOnline().getGamebaseUrl(),
-						new GameBaseListener(util, letter));
+				try {
+					final URL url = new URL(util.getConfig().getOnline()
+							.getGamebaseUrl());
+					DownloadThread downloadThread = new DownloadThread(
+							util.getConfig(),
+							new GameBaseListener(util, letter), url);
+					downloadThread.start();
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	@FXML
 	private void downloadMusic() {
-		downloadStart(
-				GB64_MUSIC_DOWNLOAD_URL
-						+ linkMusic.getText().replace('\\', '/'),
-				new MusicListener(util, letter, util.getPlayer()));
+		try {
+			URL url = new URL(GB64_MUSIC_DOWNLOAD_URL
+					+ linkMusic.getText().replace('\\', '/'));
+			try (InputStream is = url.openStream()) {
+				util.getPlayer().play(SidTune.load(linkMusic.getText(), is));
+			}
+		} catch (IOException | SidTuneError e) {
+			System.err.println(e.getMessage());
+		}
 	}
 
 	@FXML
@@ -290,16 +283,6 @@ public class GameBase extends Tab implements UIPart {
 		selectTab((GameBasePage) letter.getSelectionModel().getSelectedItem());
 	}
 
-	private void downloadStart(String url, IDownloadListener listener) {
-		try {
-			DownloadThread downloadThread = new DownloadThread(
-					util.getConfig(), listener, new URL(url));
-			downloadThread.start();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-	}
-
 	protected void setLettersDisable(boolean b) {
 		for (Tab tab : letter.getTabs()) {
 			tab.setDisable(b);
@@ -320,13 +303,6 @@ public class GameBase extends Tab implements UIPart {
 	public void doClose() {
 		if (em != null) {
 			em.getEntityManagerFactory().close();
-		}
-	}
-
-	protected void showScreenshot(final URL resource) {
-		Image image = new Image(resource.toString());
-		if (image != null) {
-			screenshot.setImage(image);
 		}
 	}
 
