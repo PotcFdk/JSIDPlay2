@@ -16,8 +16,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTuneError;
-import ui.Convenience;
 import ui.common.C64Window;
+import ui.common.Convenience;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 

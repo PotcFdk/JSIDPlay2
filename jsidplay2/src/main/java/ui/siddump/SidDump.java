@@ -194,6 +194,7 @@ public class SidDump extends Tab implements UIPart {
 	private void doStartStopRecording() {
 		if (startStopRecording.isSelected()) {
 			// restart tune, before recording starts
+			util.setPlayingTab(this);
 			util.getPlayer().play(util.getPlayer().getTune());
 			setTune(util.getPlayer().getTune());
 			util.getPlayer().getC64().setPlayRoutineObserver(sidDumpExtension);

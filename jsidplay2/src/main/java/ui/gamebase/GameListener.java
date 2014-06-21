@@ -8,7 +8,7 @@ import java.util.function.BiPredicate;
 import javafx.scene.Node;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTuneError;
-import ui.Convenience;
+import ui.common.Convenience;
 import ui.common.UIUtil;
 import ui.download.ProgressListener;
 
