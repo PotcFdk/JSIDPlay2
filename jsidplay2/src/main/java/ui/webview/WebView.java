@@ -16,6 +16,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTuneError;
+import ui.Convenience;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -34,6 +35,7 @@ public class WebView extends Tab implements UIPart {
 	@FXML
 	private javafx.scene.web.WebView webView;
 
+	private Convenience convenience;
 	private ObjectProperty<WebViewType> type;
 	private String url;
 	private WebEngine engine;
@@ -72,6 +74,7 @@ public class WebView extends Tab implements UIPart {
 
 	@FXML
 	private void initialize() {
+		convenience = new Convenience(util.getPlayer());
 		type = new SimpleObjectProperty<>();
 		type.addListener((observable, oldValue, newValue) -> engine.load(url));
 		engine = webView.getEngine();
@@ -79,8 +82,7 @@ public class WebView extends Tab implements UIPart {
 				.addListener(
 						(observable, oldValue, newValue) -> {
 							try {
-								util.getPlayer().autostart(
-										new URL(newValue),
+								convenience.autostart(new URL(newValue),
 										LEXICALLY_FIRST_MEDIA, null);
 							} catch (IOException | SidTuneError
 									| URISyntaxException e) {

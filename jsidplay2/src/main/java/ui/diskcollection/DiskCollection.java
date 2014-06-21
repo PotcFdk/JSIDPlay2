@@ -32,6 +32,7 @@ import javafx.stage.DirectoryChooser;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import ui.Convenience;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -75,6 +76,7 @@ public class DiskCollection extends Tab implements UIPart {
 
 	private UIUtil util;
 
+	private Convenience convenience;
 	private ObjectProperty<DiskCollectionType> type;
 
 	public DiskCollectionType getType() {
@@ -128,6 +130,7 @@ public class DiskCollection extends Tab implements UIPart {
 
 	@FXML
 	private void initialize() {
+		convenience = new Convenience(util.getPlayer());
 		directory.getAutoStartFileProperty().addListener(
 				(observable) -> attachAndRunDemo(fileBrowser
 						.getSelectionModel().getSelectedItem().getValue(),
@@ -310,7 +313,7 @@ public class DiskCollection extends Tab implements UIPart {
 		} else {
 			try {
 				File extractedFile = extract(file);
-				util.getPlayer().autostart(extractedFile.toURI().toURL(),
+				convenience.autostart(extractedFile.toURI().toURL(),
 						LEXICALLY_FIRST_MEDIA, autoStartFile);
 			} catch (IOException | SidTuneError | URISyntaxException e) {
 				System.err.println(String.format(

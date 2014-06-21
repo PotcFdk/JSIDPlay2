@@ -8,12 +8,15 @@ import java.util.function.BiPredicate;
 import javafx.scene.Node;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTuneError;
+import ui.Convenience;
 import ui.common.UIUtil;
 import ui.download.ProgressListener;
 
 public class GameListener extends ProgressListener {
 
 	private String fileToRun;
+	private Convenience convenience;
+
 	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file,
 			toAttach) -> toAttach == null
 			|| file.getName().compareTo(toAttach.getName()) < 0;
@@ -23,6 +26,7 @@ public class GameListener extends ProgressListener {
 
 	public GameListener(UIUtil util, Node node, Player player) {
 		super(util, node);
+		convenience = new Convenience(util.getPlayer());
 	}
 
 	@Override
@@ -33,7 +37,7 @@ public class GameListener extends ProgressListener {
 		}
 		downloadedFile.deleteOnExit();
 		try {
-			util.getPlayer().autostart(downloadedFile.toURI().toURL(),
+			convenience.autostart(downloadedFile.toURI().toURL(),
 					FILE_TO_RUN_DETECTOR, null);
 		} catch (IOException | SidTuneError | URISyntaxException e) {
 			System.err.println(e.getMessage());
