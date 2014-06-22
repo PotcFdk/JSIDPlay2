@@ -28,7 +28,6 @@ import javax.persistence.Persistence;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.PathUtils;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -39,11 +38,14 @@ import ui.entities.PersistenceProperties;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.gamebase.service.GamesService;
 import ui.filefilter.MDBFileExtensions;
+import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TFile;
 
 public class GameBase extends Tab implements UIPart {
 
 	public static final String ID = "GAMEBASE";
+
+	private static final String EXT_MDB = ".mdb";
 
 	protected final class GameBaseListener extends ProgressListener {
 		protected GameBaseListener(UIUtil util, Node node) {
@@ -56,24 +58,19 @@ public class GameBase extends Tab implements UIPart {
 				if (downloadedFile == null) {
 					return;
 				}
+				final SidPlay2Section sidplay2 = (SidPlay2Section) util
+						.getConfig().getSidplay2();
+				final String tmpDir = sidplay2.getTmpDir();
 				TFile zip = new TFile(downloadedFile);
-				for (File zipEntry : zip.listFiles()) {
-					if (zipEntry.isFile()) {
-						TFile.cp(zipEntry, new File(util.getConfig()
-								.getSidplay2().getTmpDir(), zipEntry.getName()));
-					}
-				}
+				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
 				Platform.runLater(() -> {
 					enableGameBase.setDisable(true);
 					setLettersDisable(true);
 				});
-
-				File dbFile = new File(downloadedFile.getParent(),
-						PathUtils.getBaseNameNoExt(downloadedFile.getName())
-								+ ".mdb");
-				SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-						.getConfig().getSidplay2();
-				sidPlay2Section.setGameBase64(dbFile.getAbsolutePath());
+				File dbFile = new File(tmpDir,
+						zip.listFiles((dir, name) -> name.endsWith(EXT_MDB))[0]
+								.getName());
+				sidplay2.setGameBase64(dbFile.getAbsolutePath());
 				connect(dbFile);
 				Platform.runLater(() -> {
 					gameBaseFile.setText(dbFile.getAbsolutePath());
