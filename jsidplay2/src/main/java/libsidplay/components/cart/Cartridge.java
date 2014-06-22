@@ -17,6 +17,7 @@ import libsidplay.components.cart.supported.Expert;
 import libsidplay.components.cart.supported.FinalV1;
 import libsidplay.components.cart.supported.FinalV3;
 import libsidplay.components.cart.supported.GeoRAM;
+import libsidplay.components.cart.supported.MagicDesk;
 import libsidplay.components.cart.supported.MikroAss;
 import libsidplay.components.cart.supported.Normal;
 import libsidplay.components.cart.supported.REU;
@@ -191,6 +192,8 @@ public class Cartridge {
 					return new MikroAss(dis, pla);
 				case EASYFLASH:
 					return new EasyFlash(dis, pla);
+				case MAGIC_DESK__DOMARK__HES_AUSTRALIA:
+					return new MagicDesk(dis, pla);
 				default:
 					throw new RuntimeException("Cartridges of format: " + type
 							+ " unsupported");
