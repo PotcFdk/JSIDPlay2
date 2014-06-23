@@ -674,7 +674,8 @@ class PSid extends Prg {
 	@Override
 	public long getInitDelay() {
 		// Zero does not always work well (Synth_sample)!
-		return 2500;
+		return info.compatibility == Compatibility.RSID_BASIC ? super
+				.getInitDelay() : 2500;
 	}
 
 	@Override

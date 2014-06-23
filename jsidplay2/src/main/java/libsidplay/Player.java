@@ -104,6 +104,9 @@ public class Player {
 	private static final int NUM_EVENTS_TO_PLAY = 10000;
 	/** Previous song select timeout (< 4 secs) **/
 	private static final int SID2_PREV_SONG_TIMEOUT = 4;
+	private static final String RUN = "RUN:\r";
+	private static final String SYS = "SYS%d\r";
+	private static final String LOAD = "LOAD\r";
 
 	/**
 	 * Configuration.
@@ -156,7 +159,7 @@ public class Player {
 	 */
 	private SidTune tune;
 	/**
-	 * Autostart command to be typed-in after reset.
+	 * Auto-start command to be typed-in after reset.
 	 */
 	private String command;
 	/**
@@ -381,52 +384,51 @@ public class Player {
 
 		enablePrinter(config.getPrinter().isPrinterOn());
 
-		// Autostart program, if we have one.
+		// Auto-start program, if we have one.
 		if (tune != null) {
-			// Set playback addr to feedback call frames counter.
+			// Set play-back address to feedback call frames counter.
 			c64.setPlayAddr(tune.getInfo().getPlayAddr());
-			/*
-			 * This is a bit ugly: starting PRG must be done after C64 system
-			 * reset, while starting SID is done by CBM80 hook.
-			 */
 			c64.getEventScheduler().schedule(new Event("Tune init event") {
 				@Override
 				public void event() throws InterruptedException {
-					final int address = tune.placeProgramInMemory(c64.getRAM());
-					if (address != -1) {
-						// Ideally the driver would set the volume, but whatever
-						configureSIDs((num, sid) -> sid.write(0x18, (byte) 0xf));
-						c64.getCPU().forcedJump(address);
+					final int driverAddress = tune.placeProgramInMemory(c64
+							.getRAM());
+					if (driverAddress != -1) {
+						// Start playSID driver
+						c64.getCPU().forcedJump(driverAddress);
 					} else {
-						typeInCommand("RUN:\r");
+						// Start basic program or machine code
+						final int loadAddr = tune.getInfo().getLoadAddr();
+						command = loadAddr == 0x0801 ? RUN : String.format(SYS,
+								loadAddr);
+						typeInCommand();
 					}
 				}
 			}, tune.getInitDelay());
 		} else {
 			// Normal reset code path using auto-start
-			c64.getEventScheduler().schedule(new Event("Autostart event") {
+			c64.getEventScheduler().schedule(new Event("Auto-start event") {
 				@Override
 				public void event() throws InterruptedException {
 					if (command != null) {
-						typeInCommand(command);
-						if (command.startsWith("LOAD\r")) {
-							// Autostart tape needs someone to press play
+						if (command.startsWith(LOAD)) {
+							// Auto-start tape needs someone to press play
 							datasette.control(Control.START);
 						}
-						// command has been processed, forget it!
-						command = null;
+						typeInCommand();
 					}
 				}
 			}, 2500000);
 		}
 	}
 
-	private void typeInCommand(final String runCommand) {
+	private void typeInCommand() {
 		byte[] ram = c64.getRAM();
-		for (int i = 0; i < Math.min(runCommand.length(), 16); i++) {
-			ram[0x277 + i] = (byte) runCommand.charAt(i);
+		for (int i = 0; i < Math.min(command.length(), 16); i++) {
+			ram[0x277 + i] = (byte) command.charAt(i);
 		}
-		ram[0xc6] = (byte) Math.min(runCommand.length(), 16);
+		ram[0xc6] = (byte) Math.min(command.length(), 16);
+		command = null;
 	}
 
 	/**
