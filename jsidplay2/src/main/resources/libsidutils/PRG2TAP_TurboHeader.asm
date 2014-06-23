@@ -1,12 +1,13 @@
-header:
-	.pc=$0801-26
+.pc=$0801-26
 
-.byte $03
+.byte $03	// non-relocatable program
+
 .word $0801
 .word end+1
 .text cmdLineVars.get("name")
+
 .byte $D7, $05, $90, $F0, $04
-prg:
+
 	lda #$FF
 	sta $90
 	jmp $F5A9

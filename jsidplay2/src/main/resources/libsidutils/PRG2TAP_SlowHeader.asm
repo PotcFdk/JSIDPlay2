@@ -1,28 +1,15 @@
-header:
-	.pc=cmdLineVars.get("start").asNumber()-26
+.pc=cmdLineVars.get("start").asNumber()-26
 
-.byte $01
+.byte $01	// relocatable program
+
 .word cmdLineVars.get("start").asNumber()
 .word cmdLineVars.get("end").asNumber()
 .text cmdLineVars.get("name")
 
-.byte $AB, $AB, $AB, $AB, $AB
-
-prg:
-.byte $AB, $AB
-.byte $AB, $AB
-.byte $AB, $AB,$AB
-loop:
-.byte $AB, $AB,$AB
-.byte $AB, $AB
-.byte $AB, $AB
-.byte $AB, $AB
-.byte $AB, $AB,$AB
-.byte $AB, $AB
-.byte $AB, $AB,$AB
-.byte $AB, $AB
-.byte $AB
-
+.byte $AB, $AB, $AB, $AB, $AB, $AB, $AB, $AB
+.byte $AB, $AB, $AB, $AB, $AB, $AB, $AB, $AB
+.byte $AB, $AB, $AB, $AB, $AB, $AB, $AB, $AB
+.byte $AB, $AB, $AB, $AB, $AB, $AB, $AB, $AB
 .byte $ED, $03
 	sta $AE
 	jsr $03ED
@@ -85,7 +72,6 @@ loop6:
 loop7:
 	cpy $BD
 	bne loop5
-end:
 	jsr $03ED
 	dey
 	bne loop7
