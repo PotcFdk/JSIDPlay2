@@ -1542,11 +1542,11 @@ public class PUCrunch implements IHeader {
 
 		if ((flags & F_STATS) != 0) {
 			System.out
-					.printf("Load 0x%04x, Start 0x%04lx, exec 0x%04lx, %s%s$01=$%02x\n",
+					.printf("Load 0x%04x, Start 0x%04x, exec 0x%04x, %s%s$01=$%02x\n",
 							loadAddr, startAddr, execAddr,
 							(intConfig == 0x58) ? "cli, " : "",
 							(intConfig == 0x78) ? "sei, " : "", memConfig);
-			System.out.printf("Escape bits %d, starting escape 0x%02lx\n",
+			System.out.printf("Escape bits %d, starting escape 0x%02x\n",
 					escBits, (startEsc << (8 - escBits)));
 			System.out.printf(
 					"Decompressor size %d, max length %d, LZPOS LO bits %d\n",
@@ -1569,7 +1569,7 @@ public class PUCrunch implements IHeader {
 				if (startAddr + outPointer >= up_Byte + endAddr - size) {
 					if (0 == error)
 						System.err.printf(
-								"Error: Target %5ld exceeds source %5ld..\n",
+								"Error: Target %5d exceeds source %5d..\n",
 								startAddr + outPointer, up_Byte + endAddr
 										- size);
 					error++;
@@ -1697,7 +1697,7 @@ public class PUCrunch implements IHeader {
 			}
 		}
 		if (error != 0)
-			System.err.printf("Error: Target exceeded source %5ld times.\n",
+			System.err.printf("Error: Target exceeded source %5d times.\n",
 					error);
 
 		try {
