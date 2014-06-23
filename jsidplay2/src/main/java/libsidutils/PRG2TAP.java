@@ -17,103 +17,20 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.HashMap;
+
+import libsidutils.assembler.KickAssembler;
 
 public class PRG2TAP {
 
+	private static final String TURBO_HEADER_ASM = "/libsidutils/PRG2TAP_TurboHeader.asm";
+	private static final String TURBO_DATA_ASM = "/libsidutils/PRG2TAP_TurboData.asm";
+	private static final String SLOW_HEADER_ASM = "/libsidutils/PRG2TAP_SlowHeader.asm";
+
 	static final int MAX_NAME_LENGTH = 16;
-	private static final int HEADER_SIZE = 20;
-
-	private static final byte[] C64_TURBO_HEADER = { 0x03, 0x01, 0x08,
-			(byte) 0x92, 0x08, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-			0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, (byte) 0xd7, 0x05,
-			(byte) 0x90, (byte) 0xf0, 0x04, (byte) 0xa9, (byte) 0xff,
-			(byte) 0x85, (byte) 0x90, 0x4c, (byte) 0xa9, (byte) 0xf5, 0x20,
-			(byte) 0xbf, 0x03, (byte) 0xc9, 0x00, (byte) 0xf0, (byte) 0xf9,
-			(byte) 0x85, (byte) 0xab, 0x20, (byte) 0xed, 0x03, (byte) 0x85,
-			(byte) 0xc3, 0x20, (byte) 0xed, 0x03, (byte) 0x85, (byte) 0xc4,
-			0x20, (byte) 0xed, 0x03, (byte) 0x85, (byte) 0xae, 0x20,
-			(byte) 0xed, 0x03, (byte) 0x85, (byte) 0xaf, (byte) 0xa0,
-			(byte) 0xbc, 0x20, (byte) 0xed, 0x03, (byte) 0x88, (byte) 0xd0,
-			(byte) 0xfa, (byte) 0xf0, 0x2f, 0x20, (byte) 0xbf, 0x03, 0x20,
-			(byte) 0xed, (byte) 0x03, (byte) 0x84, (byte) 0x93, 0x48,
-			(byte) 0xa9, 0x04, (byte) 0x85, 0x01, 0x68, (byte) 0x91,
-			(byte) 0xc3, 0x45, (byte) 0xd7, (byte) 0x85, (byte) 0xd7,
-			(byte) 0xa9, 0x07, (byte) 0x85, 0x01, (byte) 0xe6, (byte) 0xc3,
-			(byte) 0xd0, 0x02, (byte) 0xe6, (byte) 0xc4, (byte) 0xa5,
-			(byte) 0xc3, (byte) 0xc5, (byte) 0xae, (byte) 0xa5, (byte) 0xc4,
-			(byte) 0xe5, (byte) 0xaf, (byte) 0x90, (byte) 0xdb, 0x20,
-			(byte) 0xed, 0x03, 0x20, 0x02, 0x01, (byte) 0xc8, (byte) 0x84,
-			(byte) 0xc0, 0x58, 0x18, (byte) 0xa9, 0x00, (byte) 0x8d,
-			(byte) 0xa0, 0x02, 0x4c, (byte) 0x93, (byte) 0xfc, 0x20, 0x17,
-			(byte) 0xf8, 0x20, 0x02, 0x01, (byte) 0x84, (byte) 0xd7,
-			(byte) 0xa9, 0x07, (byte) 0x8d, 0x06, (byte) 0xdd, (byte) 0xa2,
-			0x01, 0x20, 0x16, 0x01, 0x26, (byte) 0xbd, (byte) 0xa5,
-			(byte) 0xbd, (byte) 0xc9, 0x02, (byte) 0xd0, (byte) 0xf5,
-			(byte) 0xa0, 0x09, 0x20, (byte) 0xed, 0x03, (byte) 0xc9, 0x02,
-			(byte) 0xf0, (byte) 0xf9, (byte) 0xc4, (byte) 0xbd, (byte) 0xd0,
-			(byte) 0xe8, 0x20, (byte) 0xed, 0x03, (byte) 0x88, (byte) 0xd0,
-			(byte) 0xf6, 0x60, (byte) 0xa9, 0x08, (byte) 0x85, (byte) 0xa3,
-			0x20, 0x16, 0x01, 0x26, (byte) 0xbd, (byte) 0xee, 0x20,
-			(byte) 0xd0, (byte) 0xc6, (byte) 0xa3, (byte) 0xd0 };
-
-	private static final byte[] C64_SLOW_HEADER = { 0x01, 0x01, 0x08,
-			(byte) 0x92, 0x08, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-			0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, (byte) 0xab,
-			(byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab,
-			(byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab,
-			(byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab,
-			(byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab,
-			(byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab,
-			(byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab, (byte) 0xab,
-			(byte) 0xab, (byte) 0xed, 0x03, (byte) 0x85, (byte) 0xae, 0x20,
-			(byte) 0xed, 0x03, (byte) 0x85, (byte) 0xaf, (byte) 0xa0,
-			(byte) 0xbc, 0x20, (byte) 0xed, 0x03, (byte) 0x88, (byte) 0xd0,
-			(byte) 0xfa, (byte) 0xf0, 0x2f, 0x20, (byte) 0xbf, 0x03, 0x20,
-			(byte) 0xed, (byte) 0x03, (byte) 0x84, (byte) 0x93, 0x48,
-			(byte) 0xa9, 0x04, (byte) 0x85, 0x01, 0x68, (byte) 0x91,
-			(byte) 0xc3, 0x45, (byte) 0xd7, (byte) 0x85, (byte) 0xd7,
-			(byte) 0xa9, 0x07, (byte) 0x85, 0x01, (byte) 0xe6, (byte) 0xc3,
-			(byte) 0xd0, 0x02, (byte) 0xe6, (byte) 0xc4, (byte) 0xa5,
-			(byte) 0xc3, (byte) 0xc5, (byte) 0xae, (byte) 0xa5, (byte) 0xc4,
-			(byte) 0xe5, (byte) 0xaf, (byte) 0x90, (byte) 0xdb, 0x20,
-			(byte) 0xed, 0x03, 0x20, 0x02, 0x01, (byte) 0xc8, (byte) 0x84,
-			(byte) 0xc0, 0x58, 0x18, (byte) 0xa9, 0x00, (byte) 0x8d,
-			(byte) 0xa0, 0x02, 0x4c, (byte) 0x93, (byte) 0xfc, 0x20, 0x17,
-			(byte) 0xf8, 0x20, 0x02, 0x01, (byte) 0x84, (byte) 0xd7,
-			(byte) 0xa9, 0x07, (byte) 0x8d, 0x06, (byte) 0xdd, (byte) 0xa2,
-			0x01, 0x20, 0x16, 0x01, 0x26, (byte) 0xbd, (byte) 0xa5,
-			(byte) 0xbd, (byte) 0xc9, 0x02, (byte) 0xd0, (byte) 0xf5,
-			(byte) 0xa0, 0x09, 0x20, (byte) 0xed, 0x03, (byte) 0xc9, 0x02,
-			(byte) 0xf0, (byte) 0xf9, (byte) 0xc4, (byte) 0xbd, (byte) 0xd0,
-			(byte) 0xe8, 0x20, (byte) 0xed, 0x03, (byte) 0x88, (byte) 0xd0,
-			(byte) 0xf6, 0x60, (byte) 0xa9, 0x08, (byte) 0x85, (byte) 0xa3,
-			0x20, 0x16, 0x01, 0x26, (byte) 0xbd, (byte) 0xee, 0x20,
-			(byte) 0xd0, (byte) 0xc6, (byte) 0xa3, (byte) 0xd0 };
-
-	private static final byte[] C64_TURBO_DATA = { 0x0b, 0x08, 0x00, 0x00,
-			(byte) 0x9e, 0x32, 0x30, 0x36, 0x31, 0x00, 0x00, 0x00, (byte) 0xa2,
-			0x05, (byte) 0xbd, (byte) 0x8c, 0x08, (byte) 0x9d, 0x77, 0x02,
-			(byte) 0xca, 0x10, (byte) 0xf7, (byte) 0xa9, 0x06, (byte) 0x85,
-			(byte) 0xc6, (byte) 0xa9, 0x03, (byte) 0x8d, 0x31, 0x03,
-			(byte) 0xa9, 0x3c, (byte) 0x8d, 0x30, 0x03, (byte) 0xa2, 0x2a,
-			(byte) 0xbd, 0x48, 0x08, (byte) 0x9d, 0x02, 0x01, (byte) 0xca,
-			0x10, (byte) 0xf7, (byte) 0xa2, 0x15, (byte) 0xbd, 0x72, 0x08,
-			(byte) 0x9d, 0x3b, 0x03, (byte) 0xca, (byte) 0xd0, (byte) 0xf7,
-			(byte) 0xa2, 0x04, (byte) 0xbd, (byte) 0x87, 0x08, (byte) 0x9d,
-			(byte) 0xfb, 0x03, (byte) 0xca, (byte) 0xd0, (byte) 0xf7, 0x60,
-			(byte) 0xa0, 0x00, (byte) 0x84, (byte) 0xc0, (byte) 0xad, 0x11,
-			(byte) 0xd0, 0x29, (byte) 0xef, (byte) 0x8d, 0x11, (byte) 0xd0,
-			(byte) 0xca, (byte) 0xd0, (byte) 0xfd, (byte) 0x88, (byte) 0xd0,
-			(byte) 0xfa, 0x78, 0x60, (byte) 0xa9, 0x10, 0x2c, 0x0d,
-			(byte) 0xdc, (byte) 0xf0, (byte) 0xfb, (byte) 0xad, 0x0d,
-			(byte) 0xdd, (byte) 0x8e, 0x07, (byte) 0xdd, 0x48, (byte) 0xa9,
-			0x19, (byte) 0x8d, 0x0f, (byte) 0xdd, 0x68, 0x4a, 0x4a, 0x60,
-			(byte) 0x85, (byte) 0x90, 0x20, 0x5d, 0x03, (byte) 0xa5,
-			(byte) 0xab, (byte) 0xc9, 0x02, (byte) 0xf0, 0x04, (byte) 0xc9,
-			0x01, (byte) 0xd0, (byte) 0xf3, 0x20, (byte) 0x84, 0x03,
-			(byte) 0xa5, (byte) 0xbd, 0x45, (byte) 0xf4, (byte) 0xa5,
-			(byte) 0xbd, 0x60, 0x4c, (byte) 0xcf, 0x0d, 0x52, (byte) 0xd5, 0x0d };
+	private static final int TAP_HEADER_SIZE = 20;
 
 	private static final int[] PULSE_LENGTH = { 384, 536, 680 };
 
@@ -121,6 +38,7 @@ public class PRG2TAP {
 	private int threshold = 263;
 	private boolean turboTape = true;
 
+	private final KickAssembler assembler = new KickAssembler();
 	private BufferedOutputStream out;
 
 	public final void setTapVersion(byte tapVersion) {
@@ -141,50 +59,55 @@ public class PRG2TAP {
 	 */
 	public void add(final PRG2TAPProgram program) throws IOException {
 		assert (out != null);
+		HashMap<String, String> globals;
+		InputStream asm;
 		if (turboTape) {
-			byte[] header = new byte[C64_TURBO_HEADER.length];
-			System.arraycopy(C64_TURBO_HEADER, 0, header, 0,
-					C64_TURBO_HEADER.length);
-			byte[] data = new byte[C64_TURBO_DATA.length];
-			System.arraycopy(C64_TURBO_DATA, 0, data, 0, C64_TURBO_DATA.length);
-			for (int i = 0; i < MAX_NAME_LENGTH; i++) {
-				header[5 + i] = program.getName()[i];
-			}
-			header[140] = (byte) (threshold & 255);
-			header[145] = (byte) (threshold >> 8);
+			globals = new HashMap<String, String>();
+			globals.put("name", getName(program));
+			globals.put("threshold", String.valueOf(threshold));
+			asm = PRG2TAP.class.getResourceAsStream(TURBO_HEADER_ASM);
+			byte[] header = assembler.assemble(TURBO_HEADER_ASM, asm, globals);
 
-			slowConvert(header, 0, header.length, 20000);
+			globals = new HashMap<String, String>();
+			asm = PRG2TAP.class.getResourceAsStream(TURBO_DATA_ASM);
+			byte[] data = assembler.assemble(TURBO_DATA_ASM, asm, globals);
 
+			slowConvert(header, 2, header.length - 2, 20000);
 			addSilence(200000);
-
-			slowConvert(data, 0, data.length, 5000);
-
+			slowConvert(data, 2, data.length - 2, 5000);
 			addSilence(1000000);
-
 			turbotapeConvert(program);
 		} else {
-			byte[] header = new byte[C64_SLOW_HEADER.length];
-			System.arraycopy(C64_SLOW_HEADER, 0, header, 0,
-					C64_SLOW_HEADER.length);
-			header[1] = (byte) (program.getStartAddr() & 0xFF);
-			header[2] = (byte) ((program.getStartAddr() >> 8) & 0xFF);
-			header[3] = (byte) ((program.getStartAddr() + program.getLength()) & 0xFF);
-			header[4] = (byte) (((program.getStartAddr() + program.getLength()) >> 8) & 0xFF);
-			for (int i = 0; i < MAX_NAME_LENGTH; i++) {
-				header[5 + i] = program.getName()[i];
-			}
-			slowConvert(header, 0, header.length, 20000);
+			final byte[] data = program.getMem();
+			final int start = program.getStartAddr();
+			final int end = start + program.getLength();
 
+			globals = new HashMap<String, String>();
+			globals.put("name", getName(program));
+			globals.put("start", String.valueOf(start));
+			globals.put("end", String.valueOf(end));
+			asm = PRG2TAP.class.getResourceAsStream(SLOW_HEADER_ASM);
+			byte[] header = assembler.assemble(SLOW_HEADER_ASM, asm, globals);
+
+			slowConvert(header, 2, header.length - 2, 20000);
 			addSilence(200000);
-
-			slowConvert(program.getMem(), program.getStartAddr(),
-					program.getLength(), 5000);
+			slowConvert(data, start, end - start, 5000);
 		}
+	}
+
+	private String getName(final PRG2TAPProgram program) {
+		String name = "";
+		for (int i = 0; i < MAX_NAME_LENGTH; i++) {
+			name += (char) program.getName()[i];
+		}
+		return name;
 	}
 
 	/**
 	 * Add silence for n cycles
-	 * @param ncycles cycles of silence to add (1000000 ~ 1 sec)
+	 * 
+	 * @param ncycles
+	 *            cycles of silence to add (1000000 ~ 1 sec)
 	 */
 	public void addSilence(final int ncycles) throws IOException {
 		if (ncycles < 256 * 8) {
@@ -205,25 +128,25 @@ public class PRG2TAP {
 	 */
 	public void open(final File outputFile) throws IOException {
 		out = new BufferedOutputStream(new FileOutputStream(outputFile));
-		
+
 		byte[] header = "C64-TAPE-RAW".getBytes("ISO-8859-1");
 		out.write(header);
 		out.write((byte) tapVersion);
-		for (int i = 0; i < HEADER_SIZE - header.length; i++) {
+		for (int i = 0; i < TAP_HEADER_SIZE - header.length; i++) {
 			out.write((byte) 0);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Close TAP file
 	 */
 	public void close(File outputFile) throws IOException {
 		assert (out != null);
 		out.close();
-		long size = outputFile.length() - HEADER_SIZE;
+		long size = outputFile.length() - TAP_HEADER_SIZE;
 		try (RandomAccessFile rnd = new RandomAccessFile(outputFile, "rw")) {
-			rnd.seek(HEADER_SIZE - 4);
+			rnd.seek(TAP_HEADER_SIZE - 4);
 			rnd.write((byte) (size & 0xFF));
 			rnd.write((byte) ((size >> 8) & 0xFF));
 			rnd.write((byte) ((size >> 16) & 0xFF));
@@ -349,5 +272,4 @@ public class PRG2TAP {
 			}
 		} while ((count = count >> 1) != 0);
 	}
-
 }
