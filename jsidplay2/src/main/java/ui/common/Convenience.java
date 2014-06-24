@@ -26,11 +26,15 @@ import de.schlichtherle.truezip.file.TFile;
  *
  */
 public class Convenience {
+
 	/**
 	 * Auto-start commands.
 	 */
 	private static final String LOAD_8_1_RUN = "LOAD\"*\",8,1\rRUN\r",
 			LOAD_RUN = "LOAD\rRUN\r";
+
+	private static final String ILLEGAL_FILENAME_CHARS = "[?:]";
+	private static final String FILE_SEPARATOR = "/";
 
 	private static final String ZIP_EXT = ".zip";
 	private final TuneFileFilter tuneFileFilter = new TuneFileFilter();
@@ -68,7 +72,8 @@ public class Convenience {
 			File autoStartFile) throws IOException, SidTuneError,
 			URISyntaxException {
 		String tmpDir = player.getConfig().getSidplay2().getTmpDir();
-		String name = new File(url.toURI().getSchemeSpecificPart()).getName();
+		String name = new File(url.toURI().getSchemeSpecificPart()
+				.replaceAll(ILLEGAL_FILENAME_CHARS, FILE_SEPARATOR)).getName();
 		TFile zip = null;
 		File toAttach = null;
 		try (InputStream in = url.openConnection().getInputStream()) {
