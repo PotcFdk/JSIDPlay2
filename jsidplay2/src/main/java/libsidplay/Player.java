@@ -88,6 +88,7 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.NaturalFinishedException;
 import sidplay.audio.RecordingFilenameProvider;
+import sidplay.ini.intf.IC1541Section;
 import sidplay.ini.intf.IConfig;
 
 /**
@@ -100,13 +101,23 @@ import sidplay.ini.intf.IConfig;
  */
 public class Player {
 
+	/**
+	 * Timeout for sleeping if player is paused.
+	 */
 	private static final int PAUSE_SLEEP_TIME = 250;
+	/**
+	 * Number of events to play.
+	 */
 	private static final int NUM_EVENTS_TO_PLAY = 10000;
-	/** Previous song select timeout (< 4 secs) **/
+	/**
+	 * Previous song select timeout (< 4 secs).
+	 */
 	private static final int SID2_PREV_SONG_TIMEOUT = 4;
-	private static final String RUN = "RUN:\r";
-	private static final String SYS = "SYS%d\r";
-	private static final String LOAD = "LOAD\r";
+	/**
+	 * Auto-start commands.
+	 */
+	private static final String RUN = "RUN:\r", SYS = "SYS%d\r",
+			LOAD = "LOAD\r";
 
 	/**
 	 * Configuration.
@@ -194,7 +205,7 @@ public class Player {
 	 */
 	private SidDatabase sidDatabase;
 	/**
-	 * Disk image extension policy (track count greater than 35).
+	 * Disk image extension policy (handle track number greater than 35).
 	 */
 	private IExtendImageListener policy;
 	/**
@@ -219,11 +230,9 @@ public class Player {
 			public long clk() {
 				return c64.context.getTime(Phase.PHI2);
 			}
-
 		};
 
 		this.c64 = new C64() {
-
 			@Override
 			public void printerUserportWriteData(final byte data) {
 				if (config.getPrinter().isPrinterOn()) {
@@ -269,7 +278,6 @@ public class Player {
 			public void toggleWriteBit(final boolean state) {
 				datasette.toggleWriteBit(state);
 			}
-
 		};
 
 		this.datasette = new Datasette(c64.getEventScheduler()) {
@@ -360,22 +368,18 @@ public class Player {
 		timer.reset();
 
 		// Reset Floppies
+		final IC1541Section c1541 = config.getC1541();
 		for (final C1541 floppy : floppies) {
 			floppy.reset();
-			floppy.setFloppyType(config.getC1541().getFloppyType());
-			floppy.setRamExpansion(0, config.getC1541()
-					.isRamExpansionEnabled0());
-			floppy.setRamExpansion(1, config.getC1541()
-					.isRamExpansionEnabled1());
-			floppy.setRamExpansion(2, config.getC1541()
-					.isRamExpansionEnabled2());
-			floppy.setRamExpansion(3, config.getC1541()
-					.isRamExpansionEnabled3());
-			floppy.setRamExpansion(4, config.getC1541()
-					.isRamExpansionEnabled4());
+			floppy.setFloppyType(c1541.getFloppyType());
+			floppy.setRamExpansion(0, c1541.isRamExpansionEnabled0());
+			floppy.setRamExpansion(1, c1541.isRamExpansionEnabled1());
+			floppy.setRamExpansion(2, c1541.isRamExpansionEnabled2());
+			floppy.setRamExpansion(3, c1541.isRamExpansionEnabled3());
+			floppy.setRamExpansion(4, c1541.isRamExpansionEnabled4());
 		}
-		enableFloppyDiskDrives(config.getC1541().isDriveOn());
-		connectC64AndC1541WithParallelCable(config.getC1541().isParallelCable());
+		enableFloppyDiskDrives(c1541.isDriveOn());
+		connectC64AndC1541WithParallelCable(c1541.isParallelCable());
 
 		// Reset IEC devices
 		for (final SerialIECDevice serialDevice : serialDevices) {
@@ -391,8 +395,7 @@ public class Player {
 			c64.getEventScheduler().schedule(new Event("Tune init event") {
 				@Override
 				public void event() throws InterruptedException {
-					final int driverAddress = tune.placeProgramInMemory(c64
-							.getRAM());
+					int driverAddress = tune.placeProgramInMemory(c64.getRAM());
 					if (driverAddress != -1) {
 						// Start playSID driver
 						c64.getCPU().forcedJump(driverAddress);
@@ -424,10 +427,11 @@ public class Player {
 
 	private void typeInCommand() {
 		byte[] ram = c64.getRAM();
-		for (int i = 0; i < Math.min(command.length(), 16); i++) {
+		final int length = Math.min(command.length(), 16);
+		for (int i = 0; i < length; i++) {
 			ram[0x277 + i] = (byte) command.charAt(i);
 		}
-		ram[0xc6] = (byte) Math.min(command.length(), 16);
+		ram[0xc6] = (byte) length;
 		command = null;
 	}
 
@@ -448,26 +452,19 @@ public class Player {
 	 *            floppy disk drives enable
 	 */
 	public final void enableFloppyDiskDrives(final boolean on) {
-		for (final C1541 floppy : floppies) {
-			floppy.setPowerOn(on);
-		}
-		if (on) {
-			c64.getEventScheduler().scheduleThreadSafe(
-					new Event("Begin C64-C1541 sync") {
-						@Override
-						public void event() {
-							c1541Runner.reset();
-						}
-					});
-		} else {
-			c64.getEventScheduler().scheduleThreadSafe(
-					new Event("End C64-C1541 sync") {
-						@Override
-						public void event() {
-							c1541Runner.cancel();
-						}
-					});
-		}
+		c64.getEventScheduler().scheduleThreadSafe(new Event("C64-C1541 sync") {
+			@Override
+			public void event() {
+				if (on) {
+					c1541Runner.reset();
+				} else {
+					c1541Runner.cancel();
+				}
+				for (C1541 floppy : floppies) {
+					floppy.setPowerOn(on);
+				}
+			}
+		});
 	}
 
 	/**
@@ -697,65 +694,6 @@ public class Player {
 		this.driverSettings = driverSettings;
 	}
 
-	/**
-	 * The credits for the authors of many parts of this emulator.
-	 * 
-	 * @return the credits
-	 */
-	public final String getCredits(Properties properties) {
-		final StringBuffer credits = new StringBuffer();
-		credits.append("Java Version and User Interface v")
-				.append(properties.getProperty("version"))
-				.append(":\n\tCopyright (©) 2007-2014 Ken Händel\n"
-						+ "\thttp://sourceforge.net/projects/jsidplay2/\n");
-		credits.append("Distortion Simulation and development: Antti S. Lankila\n"
-				+ "\thttp://bel.fi/~alankila/c64-sw/\n");
-		credits.append("Network SID Device:\n"
-				+ "\tSupported by Wilfred Bos, The Netherlands\n"
-				+ "\thttp://www.acid64.com\n");
-		credits.append("Testing and Feedback: Nata, founder of proNoise\n"
-				+ "\thttp://www.nata.netau.net/\n");
-		credits.append("graphical output:\n" + "\t(©) 2007 Joakim Eriksson\n"
-				+ "\t(©) 2009, 2010 Antti S. Lankila\n");
-		credits.append("MP3 encoder/decoder (jump3r), based on Lame\n"
-				+ "\tCopyright (©) 2010-2011  Ken Händel\n"
-				+ "\thttp://sourceforge.net/projects/jsidplay2/\n");
-		credits.append("This product uses the database of Game Base 64 (GB64)\n"
-				+ "\thttp://www.gb64.com/\n");
-		credits.append("Command Line Parser (JCommander):\n"
-				+ "\tCopyright (©) 2010-2014 Cédric Beust\n"
-				+ "\thttp://jcommander.org/\n");
-		credits.append("MP3 downloads from Stone Oakvalley's Authentic SID MusicCollection (SOASC=):\n"
-				+ "\thttp://www.6581-8580.com/\n");
-		credits.append("6510 cross assembler (Kickassembler V3.34):\n"
-				+ "\tCopyright (©) 2006-2014 Mads Nielsen\n"
-				+ "\thttp://www.theweb.dk/KickAssembler/\n");
-		credits.append("PSID to PRG converter (PSID64 v0.9):\n"
-				+ "\tCopyright (©) 2001-2007 Roland Hermans\n"
-				+ "\thttp://sourceforge.net/projects/psid64/\n");
-		credits.append("An Optimizing Hybrid LZ77 RLE Data Compression Program (Pucrunch 22.11.2008):\n"
-				+ "\tCopyright (©) 1997-2008 Pasi 'Albert' Ojala\n"
-				+ "\thttp://www.cs.tut.fi/~albert/Dev/pucrunch/\n");
-		credits.append("SID dump file (SIDDump V1.04):\n"
-				+ "\tCopyright (©) 2007 Lasse Öörni\n");
-		credits.append("HVSC playroutine identity scanner (SIDId V1.07):\n"
-				+ "\tCopyright (©) 2007 Lasse Öörni\n");
-		credits.append("High Voltage Music Engine MusicCollection (HVMEC V1.0):\n"
-				+ "\tCopyright (©) 2011 by Stefano Tognon and Stephan Parth\n");
-		credits.append("C1541 Floppy Disk Drive Emulation:\n"
-				+ "\tCopyright (©) 2010 VICE (the Versatile Commodore Emulator)\n"
-				+ "\thttp://www.viceteam.org/\n");
-		credits.append("Based on libsidplay v2.1.1 engine:\n"
-				+ "\tCopyright (©) 2000 Simon White sidplay2@yahoo.com\n"
-				+ "\thttp://sidplay2.sourceforge.net\n");
-		credits.append(MOS6510.credits());
-		credits.append(MOS6526.credits());
-		credits.append(VIC.credits());
-		credits.append(HardSIDBuilder.credits());
-		credits.append(ReSID.credits());
-		return credits.toString();
-	}
-
 	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
 		for (int chipNum = 0; chipNum < C64.MAX_SIDS; chipNum++) {
 			final SIDEmu sid = c64.getSID(chipNum);
@@ -896,7 +834,7 @@ public class Player {
 	}
 
 	/**
-	 * Configure SID chip implementation to be used.
+	 * Create configured SID chip implementation (emulation/hardware/none).
 	 */
 	private SIDBuilder createSIDBuilder(CPUClock cpuClock,
 			AudioConfig audioConfig) {
@@ -904,41 +842,43 @@ public class Player {
 		case RESID:
 			return new ReSIDBuilder(config, audioConfig, cpuClock,
 					driverSettings.getAudio());
-
 		case HARDSID:
 			return new HardSIDBuilder(config);
-
-		default:
+		case NONE:
 			return null;
+		default:
+			throw new RuntimeException("Unknown emulation type: "
+					+ driverSettings.getEmulation());
 		}
 	}
 
 	/**
 	 * MP3 play-back is using the COMPARE audio driver. Old settings are saved
-	 * and restored choosing mp3 or normal tune files to play.
+	 * (playing mp3) and restored (next time normal tune is played).
 	 */
-	public DriverSettings handleMP3(final IConfig config, final SidTune tune,
+	private DriverSettings handleMP3(final IConfig config, final SidTune tune,
 			DriverSettings driverSettings) {
 		DriverSettings newDriverSettings = driverSettings;
-		if (oldDriverSettings != null && !(tune instanceof MP3Tune)) {
+		if (oldDriverSettings == null && tune instanceof MP3Tune) {
+			// save settings
+			oldDriverSettings = driverSettings;
+		} else if (oldDriverSettings != null && !(tune instanceof MP3Tune)) {
 			// restore settings after MP3 has been played last time
 			newDriverSettings = oldDriverSettings;
 			oldDriverSettings = null;
-		} else if (oldDriverSettings == null && tune instanceof MP3Tune) {
-			// save settings
-			oldDriverSettings = driverSettings;
 		}
 		if (tune instanceof MP3Tune) {
-			CmpMP3File driver = (CmpMP3File) Audio.COMPARE_MP3.getAudioDriver();
-			driver.setPlayOriginal(true);
-			driver.setMp3File(new File(((MP3Tune) tune).getMP3Filename()));
+			// Change MP3 settings for MP3 play-back
 			newDriverSettings = new DriverSettings(Audio.COMPARE_MP3,
 					Emulation.RESID);
-		} else if (newDriverSettings.getAudio() == Audio.COMPARE_MP3) {
-			// Set audio compare settings, to judge emulation quality
-			CmpMP3File driver = (CmpMP3File) Audio.COMPARE_MP3.getAudioDriver();
-			driver.setPlayOriginal(config.getAudio().isPlayOriginal());
-			driver.setMp3File(new File(config.getAudio().getMp3File()));
+			config.getAudio().setPlayOriginal(true);
+			config.getAudio().setMp3File(((MP3Tune) tune).getMP3Filename());
+		}
+		if (newDriverSettings.getAudio() == Audio.COMPARE_MP3) {
+			// Configure compare driver settings
+			CmpMP3File cmp = (CmpMP3File) Audio.COMPARE_MP3.getAudioDriver();
+			cmp.setPlayOriginal(config.getAudio().isPlayOriginal());
+			cmp.setMp3File(new File(config.getAudio().getMp3File()));
 		}
 		return newDriverSettings;
 	}
@@ -985,14 +925,13 @@ public class Player {
 	 * @throws InterruptedException
 	 */
 	private boolean play() throws InterruptedException {
-		if (stateProperty.get() == State.RUNNING) {
-			try {
-				for (int i = 0; i < NUM_EVENTS_TO_PLAY; i++) {
-					c64.getEventScheduler().clock();
-				}
-			} catch (NaturalFinishedException e) {
-				stateProperty.set(getEndState());
+		try {
+			for (int i = 0; stateProperty.get() == State.RUNNING
+					&& i < NUM_EVENTS_TO_PLAY; i++) {
+				c64.getEventScheduler().clock();
 			}
+		} catch (NaturalFinishedException e) {
+			stateProperty.set(getEndState());
 		}
 		return stateProperty.get() == State.RUNNING
 				|| stateProperty.get() == State.PAUSED;
@@ -1145,7 +1084,7 @@ public class Player {
 			PRG2TAPProgram program = new PRG2TAPProgram(prog, name);
 
 			PRG2TAP prg2tap = new PRG2TAP();
-			prg2tap.setTurboTape(true);
+			prg2tap.setTurboTape(true); // XXX add configuration
 			prg2tap.open(convertedTape);
 			prg2tap.add(program);
 			prg2tap.close(convertedTape);
@@ -1187,6 +1126,65 @@ public class Player {
 		config.getSidplay2().setLastDirectory(file.getParent());
 		c64.ejectCartridge();
 		c64.setCartridge(Cartridge.read(c64.getPla(), type, file));
+	}
+
+	/**
+	 * The credits for the authors of many parts of this emulator.
+	 * 
+	 * @return the credits
+	 */
+	public final String getCredits(Properties properties) {
+		final StringBuffer credits = new StringBuffer();
+		credits.append("Java Version and User Interface v")
+				.append(properties.getProperty("version"))
+				.append(":\n\tCopyright (©) 2007-2014 Ken Händel\n"
+						+ "\thttp://sourceforge.net/projects/jsidplay2/\n");
+		credits.append("Distortion Simulation and development: Antti S. Lankila\n"
+				+ "\thttp://bel.fi/~alankila/c64-sw/\n");
+		credits.append("Network SID Device:\n"
+				+ "\tSupported by Wilfred Bos, The Netherlands\n"
+				+ "\thttp://www.acid64.com\n");
+		credits.append("Testing and Feedback: Nata, founder of proNoise\n"
+				+ "\thttp://www.nata.netau.net/\n");
+		credits.append("graphical output:\n" + "\t(©) 2007 Joakim Eriksson\n"
+				+ "\t(©) 2009, 2010 Antti S. Lankila\n");
+		credits.append("MP3 encoder/decoder (jump3r), based on Lame\n"
+				+ "\tCopyright (©) 2010-2011  Ken Händel\n"
+				+ "\thttp://sourceforge.net/projects/jsidplay2/\n");
+		credits.append("This product uses the database of Game Base 64 (GB64)\n"
+				+ "\thttp://www.gb64.com/\n");
+		credits.append("Command Line Parser (JCommander):\n"
+				+ "\tCopyright (©) 2010-2014 Cédric Beust\n"
+				+ "\thttp://jcommander.org/\n");
+		credits.append("MP3 downloads from Stone Oakvalley's Authentic SID MusicCollection (SOASC=):\n"
+				+ "\thttp://www.6581-8580.com/\n");
+		credits.append("6510 cross assembler (Kickassembler V3.34):\n"
+				+ "\tCopyright (©) 2006-2014 Mads Nielsen\n"
+				+ "\thttp://www.theweb.dk/KickAssembler/\n");
+		credits.append("PSID to PRG converter (PSID64 v0.9):\n"
+				+ "\tCopyright (©) 2001-2007 Roland Hermans\n"
+				+ "\thttp://sourceforge.net/projects/psid64/\n");
+		credits.append("An Optimizing Hybrid LZ77 RLE Data Compression Program (Pucrunch 22.11.2008):\n"
+				+ "\tCopyright (©) 1997-2008 Pasi 'Albert' Ojala\n"
+				+ "\thttp://www.cs.tut.fi/~albert/Dev/pucrunch/\n");
+		credits.append("SID dump file (SIDDump V1.04):\n"
+				+ "\tCopyright (©) 2007 Lasse Öörni\n");
+		credits.append("HVSC playroutine identity scanner (SIDId V1.07):\n"
+				+ "\tCopyright (©) 2007 Lasse Öörni\n");
+		credits.append("High Voltage Music Engine MusicCollection (HVMEC V1.0):\n"
+				+ "\tCopyright (©) 2011 by Stefano Tognon and Stephan Parth\n");
+		credits.append("C1541 Floppy Disk Drive Emulation:\n"
+				+ "\tCopyright (©) 2010 VICE (the Versatile Commodore Emulator)\n"
+				+ "\thttp://www.viceteam.org/\n");
+		credits.append("Based on libsidplay v2.1.1 engine:\n"
+				+ "\tCopyright (©) 2000 Simon White sidplay2@yahoo.com\n"
+				+ "\thttp://sidplay2.sourceforge.net\n");
+		credits.append(MOS6510.credits());
+		credits.append(MOS6526.credits());
+		credits.append(VIC.credits());
+		credits.append(HardSIDBuilder.credits());
+		credits.append(ReSID.credits());
+		return credits.toString();
 	}
 
 }

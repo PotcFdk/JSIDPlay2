@@ -19,9 +19,18 @@ import ui.filefilter.TuneFileFilter;
 import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TFile;
 
+/**
+ * Automation for the Player.
+ * 
+ * @author Ken
+ *
+ */
 public class Convenience {
-	private static final String LOAD_8_1_RUN = "LOAD\"*\",8,1\rRUN\r";
-	private static final String LOAD_RUN = "LOAD\rRUN\r";
+	/**
+	 * Auto-start commands.
+	 */
+	private static final String LOAD_8_1_RUN = "LOAD\"*\",8,1\rRUN\r",
+			LOAD_RUN = "LOAD\rRUN\r";
 
 	private static final String ZIP_EXT = ".zip";
 	private final TuneFileFilter tuneFileFilter = new TuneFileFilter();
@@ -36,9 +45,9 @@ public class Convenience {
 	}
 
 	/**
-	 * Convenience method. Download C64 bundle (ZIP containing well-known
-	 * formats or unzipped entry). Attach specific disk/tape/cartridge and
-	 * automatically start entry.<BR>
+	 * Download C64 bundle (ZIP containing well-known formats or un-zipped
+	 * entry). Attach specific disk/tape/cartridge and automatically start
+	 * entry.<BR>
 	 * 
 	 * Note: temporary files are removed or marked to be removed on exit.
 	 * 
@@ -65,13 +74,13 @@ public class Convenience {
 		try (InputStream in = url.openConnection().getInputStream()) {
 			if (name.toLowerCase(Locale.US).endsWith(ZIP_EXT)) {
 				// uncompress zip
-				zip = copyToTmp(in, tmpDir, name);
+				zip = copyToTmp(in, new TFile(tmpDir, name));
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
 				// search media file to attach
 				toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
 			} else {
 				File attachFile = new File(tmpDir, name);
-				if (isMediaToAttach(attachFile)) {
+				if (isSupportedMedia(attachFile)) {
 					toAttach = copyToTmp(in, attachFile);
 				}
 			}
@@ -81,10 +90,7 @@ public class Convenience {
 			}
 		}
 		if (toAttach != null) {
-			if (cartFileFilter.accept(toAttach)) {
-				player.insertCartridge(CartridgeType.CRT, toAttach);
-				autoStart(autoStartFile, null);
-			} else if (tuneFileFilter.accept(toAttach)) {
+			if (tuneFileFilter.accept(toAttach)) {
 				player.play(SidTune.load(toAttach));
 			} else if (diskFileFilter.accept(toAttach)) {
 				player.getC64().ejectCartridge();
@@ -94,6 +100,9 @@ public class Convenience {
 				player.getC64().ejectCartridge();
 				player.insertTape(toAttach);
 				autoStart(autoStartFile, LOAD_RUN);
+			} else if (cartFileFilter.accept(toAttach)) {
+				player.insertCartridge(CartridgeType.CRT, toAttach);
+				autoStart(autoStartFile, null);
 			}
 		}
 	}
@@ -129,23 +138,23 @@ public class Convenience {
 	 *            directory where the files are located
 	 * @param file
 	 *            file to get traversed and searched for media
-	 * @param isMediaToAttach
+	 * @param mediaTester
 	 *            predicate to check desired media
 	 * @param toAttach
 	 *            current media to attach
 	 * @return media to attach
 	 */
 	private File getToAttach(String dir, File file,
-			BiPredicate<File, File> isMediaToAttach, File toAttach) {
+			BiPredicate<File, File> mediaTester, File toAttach) {
 		for (File member : file.listFiles()) {
 			File memberFile = new File(dir, member.getName());
 			memberFile.deleteOnExit();
-			if (memberFile.isFile() && isMediaToAttach(memberFile)
-					&& isMediaToAttach.test(memberFile, toAttach)) {
+			if (memberFile.isFile() && isSupportedMedia(memberFile)
+					&& mediaTester.test(memberFile, toAttach)) {
 				toAttach = memberFile;
 			} else if (memberFile.isDirectory()) {
 				File toAttachChild = getToAttach(memberFile.getPath(),
-						new TFile(memberFile), isMediaToAttach, toAttach);
+						new TFile(memberFile), mediaTester, toAttach);
 				if (toAttachChild != null) {
 					toAttach = toAttachChild;
 				}
@@ -161,7 +170,7 @@ public class Convenience {
 	 *            file to check
 	 * @return is it a well-known format
 	 */
-	private boolean isMediaToAttach(File file) {
+	private boolean isSupportedMedia(File file) {
 		return cartFileFilter.accept(file) || tuneFileFilter.accept(file)
 				|| diskFileFilter.accept(file) || tapeFileFilter.accept(file);
 	}
@@ -169,9 +178,7 @@ public class Convenience {
 	/**
 	 * Copy input stream to a file in the temporary directory.
 	 */
-	private TFile copyToTmp(InputStream in, String tmpDir, String name)
-			throws IOException {
-		TFile zip = new TFile(tmpDir, name);
+	private TFile copyToTmp(InputStream in, TFile zip) throws IOException {
 		if (!zip.exists()) {
 			TFile.cp(in, zip);
 		}
