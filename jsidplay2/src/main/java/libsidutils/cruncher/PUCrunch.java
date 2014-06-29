@@ -342,12 +342,12 @@ public class PUCrunch implements IHeader {
 		InputStream asm = PUCrunch.class.getResourceAsStream(dc.resourceName);
 		byte[] header = assembler.assemble(dc.resourceName, asm, globals);
 		labels = assembler.getLabels();
-		try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(
-				new File("d:/out.bin")))) {
-			dos.write(header, 2, header.length - 2);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+//		try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(
+//				new File("d:/out.bin")))) {
+//			dos.write(header, 2, header.length - 2);
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//		}
 		if (0 == memStart)
 			memStart = 0x801;
 		if (BIG) {
