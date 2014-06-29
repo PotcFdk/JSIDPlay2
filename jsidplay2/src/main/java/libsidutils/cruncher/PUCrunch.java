@@ -2,10 +2,8 @@
 /* Pucrunch is now under LGPL: see the doc for details. */
 package libsidutils.cruncher;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -54,10 +52,6 @@ public class PUCrunch implements IHeader {
 	 * -v outputs the lz77/rle data to stdout
 	 */
 	private static final boolean ENABLE_VERBOSE = true;
-	/**
-	 * gives statistics about the hash compares
-	 */
-	private static final boolean HASH_STAT = true;
 	/**
 	 * full backSkip table - enables RESCAN. If not defined, backSkip only uses
 	 * max 128kB
@@ -200,20 +194,6 @@ public class PUCrunch implements IHeader {
 		int intVal;
 	}
 
-	private int GetHeaderSize(int type, IntContainer deCall) {
-		FixStruct best;
-		if (deCall != null)
-			deCall.intVal = 0;
-		if ((type & FIXF_MACHMASK) == 0) {
-			return 47; /* standalone */
-		}
-		best = BestMatch(type);
-		if (best != null && labels != null) {
-			deCall.intVal = labels.get("ftDeCall") - 0x7ff;
-		}
-		return best != null ? 1 : 0;
-	}
-
 	private int SavePack(int type, byte[] data, int size, String target,
 			int start, int exec, int escape, byte[] rleValues, int endAddr,
 			int progEnd, int extraLZPosBits, int enable2MHz, int memStart,
@@ -342,12 +322,6 @@ public class PUCrunch implements IHeader {
 		InputStream asm = PUCrunch.class.getResourceAsStream(dc.resourceName);
 		byte[] header = assembler.assemble(dc.resourceName, asm, globals);
 		labels = assembler.getLabels();
-//		try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(
-//				new File("d:/out.bin")))) {
-//			dos.write(header, 2, header.length - 2);
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//		}
 		if (0 == memStart)
 			memStart = 0x801;
 		if (BIG) {
@@ -364,16 +338,6 @@ public class PUCrunch implements IHeader {
 
 		for (i = 1; i <= 15; i++)
 			header[header.length - 15 + i - 1] = rleValues[i];
-
-		if ((header[1] & 0xff) != (memStart >> 8)) {
-			header[1] = (byte) (memStart >> 8); /* Load address */
-			header[3] = (byte) (memStart >> 8); /* Line link */
-
-			header[7] = (byte) (0x30 + (memStart + 12) / 1000);
-			header[8] = (byte) (0x30 + ((memStart + 12) / 100 % 10));
-			header[9] = (byte) (0x30 + ((memStart + 12) / 10 % 10));
-			header[10] = (byte) (0x30 + ((memStart + 12) % 10));
-		}
 
 		System.out.printf("Saving %s\n", dc.name);
 		try {
@@ -510,21 +474,12 @@ public class PUCrunch implements IHeader {
 			PutBit((b & (1 << bits)));
 	}
 
-	private int gainedEscaped = 0;
-	private int gainedRle = 0, gainedSRle = 0, gainedLRle = 0;
-	private int gainedLz = 0, gainedRlecode = 0;
-
-	private int gainedDLz = 0, timesDLz = 0;
-
-	private int timesEscaped = 0, timesNormal = 0;
-	private int timesRle = 0, timesSRle = 0, timesLRle = 0;
-	private int timesLz = 0;
+	private int timesDLz = 0;
 
 	private int lenStat[][] = new int[8][4];
 
 	private int OutputNormal(IntContainer esc, byte[] data, int dataPos,
 			int newesc) {
-		timesNormal++;
 		if ((data[dataPos + 0] & escMask) == esc.intVal) {
 			PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
 			PutValue(2 - 1);
@@ -535,8 +490,6 @@ public class PUCrunch implements IHeader {
 			PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
 			PutNBits((data[dataPos + 0] & 0xff), 8 - escBits);
 
-			gainedEscaped += escBits + 3;
-			timesEscaped++;
 			return 1;
 		}
 		PutNBits((data[dataPos + 0] & 0xff), 8);
@@ -574,16 +527,12 @@ public class PUCrunch implements IHeader {
 				 * else if (index<=31) lenStat[4][3]++;
 				 */
 
-				gainedRlecode += 8 - lenValue[index];
-
 				PutValue(index);
 				return;
 			}
 		}
 		/* System.out.printf("RLECode n: 0x%02x\n", data); */
 		PutValue(16/* 32 */+ (data >> 4/* 3 */));
-
-		gainedRlecode -= lenValue[16/* 32 */+ (data >> 4/* 3 */)] + 4/* 3 */;
 
 		PutNBits(data, 4/* 3 */);
 
@@ -624,7 +573,7 @@ public class PUCrunch implements IHeader {
 	}
 
 	private int OutputRle(IntContainer esc, byte[] data, int dataPos, int rlelen) {
-		int len = rlelen, tmp;
+		int len = rlelen;
 
 		while (len != 0) {
 			if (len >= 2 && len <= (1 << maxGamma)) {
@@ -653,13 +602,6 @@ public class PUCrunch implements IHeader {
 				PutValue(len - 1);
 				PutRleByte(data[dataPos] & 0xff);
 
-				tmp = 8 * len - escBits - 3 - lenValue[len - 1]
-						- rleLen[data[dataPos] & 0xff];
-				gainedRle += tmp;
-				gainedSRle += tmp;
-
-				timesRle++;
-				timesSRle++;
 				return 0;
 			}
 			if (len < 3) {
@@ -683,14 +625,6 @@ public class PUCrunch implements IHeader {
 				PutValue(((len - 1) >> 8) + 1);
 				PutRleByte(data[dataPos] & 0xff);
 
-				tmp = 8 * len - escBits - 3 - maxGamma - 8
-						- lenValue[((len - 1) >> 8) + 1]
-						- rleLen[data[dataPos] & 0xff];
-				gainedRle += tmp;
-				gainedLRle += tmp;
-
-				timesRle++;
-				timesLRle++;
 				return 0;
 			}
 
@@ -708,13 +642,6 @@ public class PUCrunch implements IHeader {
 			PutValue(((maxrlelen - 1) >> 8) + 1);
 			PutRleByte(data[dataPos]);
 
-			tmp = 8 * maxrlelen - escBits - 3 - maxGamma - 8
-					- lenValue[((maxrlelen - 1) >> 8) + 1]
-					- rleLen[data[dataPos]];
-			gainedRle += tmp;
-			gainedLRle += tmp;
-			timesRle++;
-			timesLRle++;
 			len -= maxrlelen;
 			dataPos += maxrlelen;
 		}
@@ -734,8 +661,6 @@ public class PUCrunch implements IHeader {
 		PutNBits(add, 8);
 		PutNBits(((lzpos - 1) & 0xff) ^ 0xff, 8);
 
-		gainedDLz += 8 * lzlen
-				- (escBits + lenValue[lzlen - 1] + 2 * maxGamma + 16);
 		timesDLz++;
 		return 4;
 	}
@@ -809,8 +734,6 @@ public class PUCrunch implements IHeader {
 				PutNBits(((lzpos - 1) & 0xff) ^ 0xff, 8);
 			}
 
-			gainedLz += 8 * lzlen - LenLz(lzlen, lzpos);
-			timesLz++;
 			return 3;
 		}
 		System.err.printf("Error: lzlen too short/long (%d)\n", lzlen);
@@ -1237,7 +1160,7 @@ public class PUCrunch implements IHeader {
 
 	private int PackLz77(int lzsz, int flags, IntContainer startEscape,
 			int endAddr, int memEnd, int type) {
-		int i, j, outlen, p, headerSize;
+		int i, j, p;
 		int escape = 0;
 		// #ifdef HASH_COMPARE
 		int[] hashValue;
@@ -1252,14 +1175,7 @@ public class PUCrunch implements IHeader {
 		// #endif /* BIG */
 
 		// #ifdef BACKSKIP_FULL
-		// #ifdef RESCAN
-		int rescan = 0;
-		// #endif /* RESCAN */
 		// #endif /* BACKSKIP_FULL */
-
-		// #ifdef HASH_STAT
-		int compares = 0, hashChecks = 0, hashEqual = 0;
-		// #endif /* HASH_STAT */
 
 		if (lzsz < 0 || lzsz > lrange) {
 			System.err.printf(
@@ -1354,9 +1270,6 @@ public class PUCrunch implements IHeader {
 						&& (!BIG || rlelen < 65535)) {
 					rlelen++;
 				}
-				if (HASH_STAT) {
-					compares += rlelen;
-				} /* HASH_STAT */
 
 				if (rlelen >= 2) {
 					rleHist[indata[p] & 0xff]++;
@@ -1439,9 +1352,6 @@ public class PUCrunch implements IHeader {
 							 * don't match, don't bother to check the data
 							 * itself.
 							 */
-							if (HASH_STAT) {
-								hashChecks++;
-							} /* HASH_STAT */
 							if ((HASH_COMPARE && hashValue[i + maxval - rlep
 									- 1] == hashCompare)
 									|| ((indata[i + maxval - rlep + 1] & 0xff) == valueCompare) /* HASH_COMPARE */
@@ -1456,10 +1366,6 @@ public class PUCrunch implements IHeader {
 										&& indata[a++] == indata[b++])
 									j++;
 
-								if (HASH_STAT) {
-									hashEqual++;
-									compares += j - 1;
-								} /* HASH_STAT */
 								if (j + rlep - 1 > maxval) {
 									int tmplen = j + rlep - 1, tmppos = p - i
 											+ rlep - 1;
@@ -1640,9 +1546,6 @@ public class PUCrunch implements IHeader {
 									 * don't match, don't bother to check the
 									 * data itself.
 									 */
-									if (HASH_STAT) {
-										hashChecks++;
-									} /* HASH_STAT */
 									if ((indata[i + maxval - rlep + 1] & 0xff) == valueCompare) {
 										a = i + 2; /* match */
 										int b = p + rlep - 1 + 2;/* curpos */
@@ -1654,10 +1557,6 @@ public class PUCrunch implements IHeader {
 												&& (indata[a++] & 0xff) == (((indata[b++] & 0xff) + rot) & 0xff))
 											j++;
 
-										if (HASH_STAT) {
-											hashEqual++;
-											compares += j - 1;
-										} /* HASH_STAT */
 										if (j + rlep - 1 > maxval) {
 											int tmplen = j + rlep - 1, tmppos = p
 													- i + rlep - 1;
@@ -2159,8 +2058,6 @@ public class PUCrunch implements IHeader {
 										if (j + rlep - 1 >= lzlen[p]) {
 											int tmppos = p - i + rlep - 1;
 
-											rescan += LenLz(lzlen[p], lzpos[p])
-													- LenLz(lzlen[p], tmppos);
 											lzpos[p] = tmppos;
 											break;
 										}
@@ -2262,95 +2159,6 @@ public class PUCrunch implements IHeader {
 		else
 			reservedBytes = 0;
 
-		// if (BIG && type == 0) {
-		// headerSize = 16 + rleUsed;
-		// } else {
-		// if (endAddr + reservedBytes + 3 > memEnd) {
-		// type |= FIXF_WRAP;
-		// } else {
-		// type &= ~FIXF_WRAP;
-		// }
-		// headerSize = GetHeaderSize(type, null) + rleUsed - 15;
-		// }
-		// outlen = outPointer + headerSize; /* unpack code */
-		// System.out.printf("In: %d, out: %d, ratio: %5.2f%% (%4.2f[%4.2f] b/B)"
-		// + ", gained: %5.2f%%\n", inlen, outlen, outlen * 100.0 / inlen
-		// + 0.005, 8.0 * outlen / inlen + 0.005, 8.0
-		// * (outlen - headerSize + rleUsed + 4) / inlen + 0.005, 100.0
-		// - outlen * 100.0 / inlen + 0.005);
-		//
-		// if (DELTA && (type & FIXF_DLZ) != 0) {
-		// System.out.printf(
-		// "Gained RLE: %d (S+L:%d+%d), DLZ: %d, LZ: %d, Esc: %d"
-		// + ", Decompressor: %d\n", gainedRle / 8,
-		// gainedSRle / 8, gainedLRle / 8, gainedDLz / 8,
-		// gainedLz / 8, -gainedEscaped / 8, -headerSize);
-		//
-		// System.out.printf(
-		// "Times  RLE: %d (%d+%d), DLZ: %d, LZ: %d, Esc: %d (normal: %d)"
-		// + ", %d escape bit%s\n", timesRle, timesSRle,
-		// timesLRle, timesDLz, timesLz, timesEscaped, timesNormal,
-		// escBits, (escBits == 1) ? "" : "s");
-		// } else {
-		// System.out.printf("Gained RLE: %d (S+L:%d+%d), LZ: %d, Esc: %d"
-		// + ", Decompressor: %d\n", gainedRle / 8, gainedSRle / 8,
-		// gainedLRle / 8, gainedLz / 8, -gainedEscaped / 8,
-		// -headerSize);
-		//
-		// System.out.printf(
-		// "Times  RLE: %d (%d+%d), LZ: %d, Esc: %d (normal: %d)"
-		// + ", %d escape bit%s\n", timesRle, timesSRle,
-		// timesLRle, timesLz, timesEscaped, timesNormal, escBits,
-		// (escBits == 1) ? "" : "s");
-		// }
-		// if ((flags & F_STATS) != 0) {
-		// final String ll[] = { "2", "3-4", "5-8", "9-16", "17-32", "33-64",
-		// "65-128", "129-256" };
-		// System.out.printf("(Gained by RLE Code: %d, LZPOS LO Bits %d"
-		// + ", maxLen: %d, tag bit/prim. %4.2f)\n", gainedRlecode / 8
-		// - rleUsed, extraLZPosBits + 8, (2 << maxGamma),
-		// (double) ((timesRle + timesLz) * escBits + timesEscaped
-		// * (escBits + 3))
-		// / (double) (timesRle + timesLz + timesNormal)
-		// + 0.0049);
-		//
-		// System.out.printf("   LZPOS HI+2 LZLEN S-RLE RLEcode\n");
-		// System.out.printf("   ------------------------------\n");
-		// for (i = 0; i <= maxGamma; i++) {
-		// System.out.printf("%-7s %5d %5d", ll[i], lenStat[i][0],
-		// lenStat[i][1]);
-		// if (i < maxGamma)
-		// System.out.printf(" %5d", lenStat[i][2]);
-		// else
-		// System.out.printf("     -");
-		//
-		// if (i < 5)
-		// System.out.printf("   %5d%s\n", lenStat[i][3],
-		// (i == 4) ? "*" : "");
-		// else
-		// System.out.printf("       -\n");
-		// }
-		// if (BACKSKIP_FULL) {
-		// if (RESCAN) {
-		// System.out.printf("LZ77 rescan gained %d bytes\n",
-		// rescan / 8);
-		// } /* RESCAN */
-		// } /* BACKSKIP_FULL */
-		//
-		// if (HASH_STAT) {
-		// if (HASH_COMPARE) {
-		// System.out
-		// .printf("Hash Checks %d (%d, %4.2f%% equal), RLE/LZ compares %d\n",
-		// hashChecks, hashEqual, 100.0 * hashEqual
-		// / hashChecks, compares);
-		// } else {
-		// System.out
-		// .printf("Value Checks %d (%d, %4.2f%% equal), RLE/LZ compares %d\n",
-		// hashChecks, hashEqual, 100.0 * hashEqual
-		// / hashChecks, compares);
-		// } /* HASH_COMPARE */
-		// } /* HASH_STAT */
-		// }
 		return 0;
 	}
 
@@ -2795,12 +2603,7 @@ public class PUCrunch implements IHeader {
 		startEscape = startEscapeCont.intVal;
 		if (0 == n) {
 			int endAddr = startAddr + inlen; /* end for uncompressed data */
-			int hDeCall, progEnd = endAddr;
-			IntContainer hDeCallCont = new IntContainer();
-			if (GetHeaderSize(type, hDeCallCont) == 0) {
-				GetHeaderSize(type & ~FIXF_WRAP, hDeCallCont);
-			}
-			hDeCall = hDeCallCont.intVal;
+			int hDeCall = 0, progEnd = endAddr;
 			if (machineType != 0
 					&& endAddr - ((outPointer + 255) & ~255) < memStart
 							+ hDeCall + 3) {
@@ -2840,13 +2643,4 @@ public class PUCrunch implements IHeader {
 		return n;
 	}
 
-	public static void main(String[] args) {
-		PUCrunch puCrunch = new PUCrunch();
-		try {
-			System.exit(puCrunch.run(args));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
-	}
 }
