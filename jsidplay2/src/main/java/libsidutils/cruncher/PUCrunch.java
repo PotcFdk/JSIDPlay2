@@ -2,11 +2,17 @@
 /* Pucrunch is now under LGPL: see the doc for details. */
 package libsidutils.cruncher;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import libsidutils.assembler.KickAssembler;
 
 public class PUCrunch implements IHeader {
 	private static final boolean DELTA = true;
@@ -74,6 +80,10 @@ public class PUCrunch implements IHeader {
 	private int extraLZPosBits = 0, rleUsed = 15;
 
 	private int memConfig = 0x37, intConfig = 0x58; /* cli */
+
+	private Map<String, Integer> labels;
+
+	private final KickAssembler assembler = new KickAssembler();
 
 	/**
 	 * <PRE>
@@ -198,16 +208,10 @@ public class PUCrunch implements IHeader {
 			return 47; /* standalone */
 		}
 		best = BestMatch(type);
-		if (best != null && deCall != null) {
-			int i;
-			for (i = 0; best.fixes[i].type != FixType.ftEnd; i++) {
-				if (best.fixes[i].type == FixType.ftDeCall) {
-					deCall.intVal = best.fixes[i].offset;
-					break;
-				}
-			}
+		if (best != null && labels != null) {
+			deCall.intVal = labels.get("ftDeCall") - 0x7ff;
 		}
-		return best != null ? best.codeSize : 0;
+		return best != null ? 1 : 0;
 	}
 
 	private int SavePack(int type, byte[] data, int size, String target,
@@ -216,7 +220,6 @@ public class PUCrunch implements IHeader {
 			int memEnd) {
 		PrintStream fp = null;
 		FixStruct dc;
-		byte[] header;
 		int i, overlap = 0, stackUsed = 0, ibufferUsed = 0;
 
 		if (null == data)
@@ -311,146 +314,56 @@ public class PUCrunch implements IHeader {
 			System.err.printf("No matching decompressor found\n");
 			return 10;
 		}
-		header = dc.code;
-
+		HashMap<String, String> globals = new HashMap<String, String>();
+		globals.put("ftFastDisable", String.valueOf(enable2MHz));
+		globals.put("ftOverlap",
+				String.valueOf(overlap != 0 ? (overlap - 1) : 0));
+		globals.put("ftOverlapAddr",
+				String.valueOf(rleUsed - 15 + size - overlap));
+		globals.put("ftSizePages", String.valueOf((size >> 8) + 1));
+		globals.put("ftSizeAddr",
+				String.valueOf(rleUsed - 15 + size - 0x100 - overlap));
+		globals.put("ftEndAddr", String.valueOf(endAddr - 0x100));
+		globals.put("ftEscValue", String.valueOf(escape >> (8 - escBits)));
+		globals.put("ftOutposAddr", String.valueOf(start));
+		globals.put("ftEscBits", String.valueOf(escBits));
+		globals.put("ftEsc8Bits", String.valueOf(8 - escBits));
+		globals.put("ft1MaxGamma", String.valueOf(1 << maxGamma));
+		globals.put("ft8MaxGamma", String.valueOf(8 - maxGamma));
+		globals.put("ft2MaxGamma", String.valueOf((2 << maxGamma) - 1));
+		globals.put("ftExtraBits", String.valueOf(extraLZPosBits));
+		globals.put("ftMemConfig", String.valueOf(memConfig));
+		globals.put("ftCli", String.valueOf(intConfig));
+		globals.put("ftExec", String.valueOf(exec));
+		globals.put("ftInpos", String.valueOf(endAddr + overlap - size));
+		globals.put("ftMaxGamma", String.valueOf(maxGamma + 1));
+		globals.put("ftReloc", String.valueOf(memStart >> 8));
+		globals.put("ftBEndAddr", String.valueOf(progEnd));
+		InputStream asm = PUCrunch.class.getResourceAsStream(dc.resourceName);
+		byte[] header = assembler.assemble(dc.resourceName, asm, globals);
+		labels = assembler.getLabels();
+		try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(
+				new File("d:/out.bin")))) {
+			dos.write(header, 2, header.length - 2);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		if (0 == memStart)
 			memStart = 0x801;
 		if (BIG) {
-			if (memStart + dc.codeSize - 2 + size > 0xfe00) {
+			if (memStart + header.length - 2 + size > 0xfe00) {
 				System.out.printf(
 						"Packed file's max size is 0x%04x (0x%04x)!\n", 0xfe00
-								- memStart - (dc.codeSize - 2), size);
+								- memStart - (header.length - 2), size);
 				return 10;
 			}
 		} /* BIG */
 
-		for (i = 0; dc.fixes[i].type != FixType.ftEnd; i++) {
-			switch (dc.fixes[i].type) {
-			case ftFastDisable:
-				if (0 == enable2MHz) {
-					header[dc.fixes[i].offset] = 0x2c;
-				}
-				break;
-			case ftOverlap:
-				header[dc.fixes[i].offset] = (byte) (overlap != 0 ? (overlap - 1)
-						: 0);
-				break;
-			case ftOverlapLo:
-				header[dc.fixes[i].offset] = (byte) ((memStart + dc.codeSize
-						- 2 + rleUsed - 15 + size - overlap) & 0xff);
-				break;
-			case ftOverlapHi:
-				header[dc.fixes[i].offset] = (byte) ((memStart + dc.codeSize
-						- 2 + rleUsed - 15 + size - overlap) >> 8);
-				break;
-			case ftWrapCount:
-				header[dc.fixes[i].offset] = (byte) ((memEnd >> 8) - ((endAddr
-						+ overlap - size) >> 8)); /* wrap point.. */
-				break;
-
-			case ftSizePages:
-				header[dc.fixes[i].offset] = (byte) ((size >> 8) + 1);
-				break;
-			case ftSizeLo:
-				header[dc.fixes[i].offset] = (byte) ((memStart + dc.codeSize
-						- 2 + rleUsed - 15 + size - 0x100 - overlap) & 0xff);
-				break;
-			case ftSizeHi:
-				header[dc.fixes[i].offset] = (byte) ((memStart + dc.codeSize
-						- 2 + rleUsed - 15 + size - 0x100 - overlap) >> 8);
-				break;
-			case ftEndLo:
-				header[dc.fixes[i].offset] = (byte) ((endAddr - 0x100) & 0xff);
-				break;
-			case ftEndHi:
-				header[dc.fixes[i].offset] = (byte) ((endAddr - 0x100) >> 8);
-				break;
-			case ftEscValue:
-				header[dc.fixes[i].offset] = (byte) (escape >> (8 - escBits));
-				break;
-			case ftOutposLo:
-				header[dc.fixes[i].offset] = (byte) (start & 0xff); /* OUTPOS */
-				break;
-			case ftOutposHi:
-				header[dc.fixes[i].offset] = (byte) (start >> 8);
-				break;
-			case ftEscBits:
-				header[dc.fixes[i].offset] = (byte) escBits;
-				break;
-			case ftEsc8Bits:
-				header[dc.fixes[i].offset] = (byte) (8 - escBits);
-				break;
-			case ft1MaxGamma:
-				header[dc.fixes[i].offset] = (byte) (1 << maxGamma); /*
-																	 * Short/Long
-																	 * RLE
-																	 */
-				break;
-			case ft8MaxGamma:
-				header[dc.fixes[i].offset] = (byte) (8 - maxGamma); /* Long RLE */
-				break;
-			case ft2MaxGamma:
-				header[dc.fixes[i].offset] = (byte) ((2 << maxGamma) - 1); /*
-																			 * EOF
-																			 * (
-																			 * maxGammaValue
-																			 * )
-																			 */
-				break;
-			case ftExtraBits:
-				header[dc.fixes[i].offset] = (byte) extraLZPosBits;
-				break;
-			case ftMemConfig:
-				header[dc.fixes[i].offset] = (byte) memConfig;
-				break;
-			case ftCli:
-				header[dc.fixes[i].offset] = (byte) intConfig; /*
-																 * $58/$78
-																 * cli/sei;
-																 */
-				break;
-			case ftExecLo:
-				header[dc.fixes[i].offset] = (byte) (exec & 0xff);
-				break;
-			case ftExecHi:
-				header[dc.fixes[i].offset] = (byte) (exec >> 8);
-				break;
-			case ftInposLo:
-				header[dc.fixes[i].offset] = (byte) ((endAddr + overlap - size) & 0xff); /* INPOS */
-				break;
-			case ftInposHi:
-				header[dc.fixes[i].offset] = (byte) ((endAddr + overlap - size) >> 8);
-				break;
-			case ftMaxGamma:
-				header[dc.fixes[i].offset] = (byte) (maxGamma + 1);
-				break;
-			case ftReloc:
-				if (header[1] != (memStart >> 8)) {
-					header[dc.fixes[i].offset] -= ((header[1] & 0xff) - (memStart >> 8));
-				}
-				break;
-
-			case ftBEndLo:
-				header[dc.fixes[i].offset] = (byte) (progEnd & 0xff);
-				break;
-			case ftBEndHi:
-				header[dc.fixes[i].offset] = (byte) (progEnd >> 8);
-				break;
-
-			case ftStackSize:
-				stackUsed = header[dc.fixes[i].offset] & 0xff;
-				break;
-			case ftIBufferSize:
-				ibufferUsed = header[dc.fixes[i].offset] & 0xff;
-				break;
-
-			default:
-				break;
-			}
-		}
+		stackUsed = labels.get("ftStackSize");
+		ibufferUsed = labels.get("ftIBufferSize");
 
 		for (i = 1; i <= 15; i++)
-			header[dc.codeSize - 15 + i - 1] = rleValues[i];
+			header[header.length - 15 + i - 1] = rleValues[i];
 
 		if ((header[1] & 0xff) != (memStart >> 8)) {
 			header[1] = (byte) (memStart >> 8); /* Load address */
@@ -466,7 +379,7 @@ public class PUCrunch implements IHeader {
 		try {
 			if (null == fp) {
 				fp = new PrintStream(target);
-				fp.write(header, 0, dc.codeSize + rleUsed - 15);
+				fp.write(header, 0, header.length + rleUsed - 15);
 				fp.write(data, 0, size);
 				if (fp != System.out)
 					fp.close();
@@ -507,7 +420,6 @@ public class PUCrunch implements IHeader {
 
 	private static final int F_NORLE = (1 << 9);
 
-	private static final int F_UNPACK = (1 << 14);
 	private static final int F_ERROR = (1 << 15);
 
 	/**
@@ -1321,414 +1233,6 @@ public class PUCrunch implements IHeader {
 			if (((i - 1) % 6) != 1)
 				System.out.printf("\n");
 		InitRleLen();
-	}
-
-	private byte[] up_Data;
-	private int up_DataPos;
-	private int up_Mask, up_Byte;
-
-	private void up_SetInput(final byte[] data, final int dataPos) {
-		up_Data = data;
-		up_DataPos = dataPos;
-		up_Mask = 0x80;
-		up_Byte = 0;
-	}
-
-	private int up_GetBits(int bits) {
-		int val = 0;
-
-		while (bits-- != 0) {
-			val <<= 1;
-			if ((up_Data[up_DataPos] & up_Mask) != 0)
-				val |= 1;
-			up_Mask >>= 1;
-			if (0 == up_Mask) {
-				up_Mask = 0x80;
-				up_DataPos++;
-				up_Byte++;
-			}
-		}
-		return val;
-	}
-
-	private int up_GetValue() {
-		int i = 0;
-
-		while (i < maxGamma) {
-			if (0 == up_GetBits(1))
-				break;
-			i++;
-		}
-		return (1 << i) | up_GetBits(i);
-	}
-
-	private static final int MAXCODES = 20;
-
-	private int UnPack(int loadAddr, final byte[] data, final String file,
-			int flags) {
-		int size, startEsc, endAddr, execAddr, headerSize;
-		int startAddr, error = 0;
-		PrintStream fp;
-		int i, overlap;
-		long timeused = System.currentTimeMillis();
-		final byte[] byteCodeVec;
-		int byteCodeVecPos = 0;
-		int mismatch[] = new int[MAXCODES], collect[] = new int[FixType.ftEnd
-				.ordinal()];
-		int dc;
-
-		/* Search for the right code */
-		if (data[0] == (byte) 'p' && data[1] == (byte) 'u') {
-			/* was saved without decompressor */
-			int cnt = 2;
-
-			endAddr = ((data[cnt] & 0xff) | ((data[cnt + 1] & 0xff) << 8)) + 0x100;
-			cnt += 2;
-
-			startEsc = data[cnt++] & 0xff;
-			startAddr = (data[cnt] & 0xff) | ((data[cnt + 1] & 0xff) << 8);
-			cnt += 2;
-
-			escBits = data[cnt++] & 0xff;
-			if (escBits < 0 || escBits > 8) {
-				System.err.printf("Error: Broken archive, escBits %d.\n",
-						escBits);
-				return 20;
-			}
-			maxGamma = (data[cnt++] & 0xff) - 1;
-			if ((data[cnt++] & 0xff) != (1 << maxGamma) || maxGamma < 5
-					|| maxGamma > 7) {
-				System.err.printf("Error: Broken archive, maxGamma %d.\n",
-						maxGamma);
-				return 20;
-			}
-			lrange = LRANGE;
-			maxlzlen = MAXLZLEN;
-			maxrlelen = MAXRLELEN;
-
-			extraLZPosBits = data[cnt++] & 0xff;
-			if (extraLZPosBits < 0 || extraLZPosBits > 4) {
-				System.err.printf(
-						"Error: Broken archive, extraLZPosBits %d.\n",
-						extraLZPosBits);
-				return 20;
-			}
-
-			execAddr = (data[cnt] & 0xff) | ((data[cnt + 1] & 0xff) << 8);
-			cnt += 2;
-
-			rleUsed = data[cnt++] & 0xff;
-			byteCodeVec = data;
-			byteCodeVecPos = cnt - 1;
-			overlap = 0;
-			// memConfig = memConfig;
-			// intConfig = intConfig;
-
-			size = endAddr - startAddr;
-			headerSize = cnt + rleUsed;
-
-			endAddr = loadAddr + size;
-
-		} else {
-
-			for (i = 0; i < fixStruct.length && i < MAXCODES; i++) {
-				int j, maxDiff = 0;
-
-				if (fixStruct[i].code[1] != (loadAddr >> 8))
-					maxDiff = 5;
-				for (j = 0; fixStruct[i].fixes[j].type != FixType.ftEnd; j++) {
-					maxDiff++;
-				}
-				mismatch[i] = 0;
-				for (j = 2; j < fixStruct[i].codeSize - 15; j++) {
-					if (fixStruct[i].code[j] != data[j - 2])
-						mismatch[i]++;
-				}
-				if (mismatch[i] <= maxDiff) {
-					System.out.printf("Detected %s (%d <= %d)\n",
-							fixStruct[i].name, mismatch[i], maxDiff);
-					break;
-				}
-				System.out.printf("Not %s (%d > %d)\n", fixStruct[i].name,
-						mismatch[i], maxDiff);
-			}
-			dc = i;
-			if (dc == fixStruct.length) {
-				System.err
-						.printf("Error: The file is not compressed with this program.\n");
-				return 20;
-			}
-
-			if ((loadAddr & 0xff) != 1) {
-				System.err.printf(
-						"Error: Misaligned basic start address 0x%04x\n",
-						loadAddr);
-				return 20;
-			}
-			/* TODO: check that the decrunch code and load address match. */
-
-			error = 0;
-
-			for (i = 0; i < fixStruct.length; i++) {
-				collect[i] = 0;
-			}
-			collect[FixType.ftMemConfig.ordinal()] = memConfig;
-			collect[FixType.ftCli.ordinal()] = intConfig;
-			for (i = 0; fixStruct[dc].fixes[i].type != FixType.ftEnd; i++) {
-				collect[fixStruct[dc].fixes[i].type.ordinal()] = data[fixStruct[dc].fixes[i].offset - 2] & 0xff;
-			}
-
-			overlap = collect[FixType.ftOverlap.ordinal()];
-			/* TODO: check overlap LO/HI and WrapCount */
-			maxGamma = collect[FixType.ftMaxGamma.ordinal()] - 1;
-			if (maxGamma < 5 || maxGamma > 7) {
-				System.err.printf("Error: Broken archive, maxGamma %d.\n",
-						maxGamma);
-				return 20;
-			}
-			lrange = LRANGE;
-			maxlzlen = MAXLZLEN;
-			maxrlelen = MAXRLELEN;
-
-			if (collect[FixType.ft1MaxGamma.ordinal()] != (1 << maxGamma)
-					|| collect[FixType.ft8MaxGamma.ordinal()] != (8 - maxGamma)
-					|| collect[FixType.ft2MaxGamma.ordinal()] != (2 << maxGamma) - 1) {
-				System.err.printf(
-						"Error: Broken archive, maxGamma (%d) mismatch.\n",
-						maxGamma);
-				return 20;
-			}
-
-			startEsc = collect[FixType.ftEscValue.ordinal()];
-			startAddr = collect[FixType.ftOutposLo.ordinal()]
-					| (collect[FixType.ftOutposHi.ordinal()] << 8);
-			escBits = collect[FixType.ftEscBits.ordinal()];
-			if (escBits < 0 || escBits > 8) {
-				System.err.printf("Error: Broken archive, escBits %d.\n",
-						escBits);
-				return 20;
-			}
-
-			if (collect[FixType.ftEsc8Bits.ordinal()] != 8 - escBits) {
-				System.err.printf(
-						"Error: Broken archive, escBits (%d) mismatch.\n",
-						escBits);
-				return 20;
-			}
-
-			extraLZPosBits = collect[FixType.ftExtraBits.ordinal()];
-			if (extraLZPosBits < 0 || extraLZPosBits > 4) {
-				System.err.printf(
-						"Error: Broken archive, extraLZPosBits %d.\n",
-						extraLZPosBits);
-				return 20;
-			}
-			endAddr = 0x100 + (collect[FixType.ftEndLo.ordinal()] | (collect[FixType.ftEndHi
-					.ordinal()] << 8));
-			size = endAddr
-					- (collect[FixType.ftInposLo.ordinal()] | (collect[FixType.ftInposHi
-							.ordinal()] << 8));
-			headerSize = ((collect[FixType.ftSizeLo.ordinal()] | (collect[FixType.ftSizeHi
-					.ordinal()] << 8)) + 0x100 - size - loadAddr) & 0xffff;
-			execAddr = collect[FixType.ftExecLo.ordinal()]
-					| (collect[FixType.ftExecHi.ordinal()] << 8);
-
-			memConfig = collect[FixType.ftMemConfig.ordinal()];
-			intConfig = collect[FixType.ftCli.ordinal()];
-			byteCodeVec = data;
-			byteCodeVecPos = fixStruct[dc].codeSize - 32 - 2;
-			rleUsed = 15 - fixStruct[dc].codeSize + 2 + headerSize;
-		}
-
-		if ((flags & F_STATS) != 0) {
-			System.out
-					.printf("Load 0x%04x, Start 0x%04x, exec 0x%04x, %s%s$01=$%02x\n",
-							loadAddr, startAddr, execAddr,
-							(intConfig == 0x58) ? "cli, " : "",
-							(intConfig == 0x78) ? "sei, " : "", memConfig);
-			System.out.printf("Escape bits %d, starting escape 0x%02x\n",
-					escBits, (startEsc << (8 - escBits)));
-			System.out.printf(
-					"Decompressor size %d, max length %d, LZPOS LO bits %d\n",
-					headerSize + 2, (2 << maxGamma), extraLZPosBits + 8);
-			System.out.printf("rleUsed: %d\n", rleUsed);
-		}
-
-		if (rleUsed > 15) {
-			System.err
-					.printf("Error: Old archive, rleUsed %d > 15.\n", rleUsed);
-			return 20;
-		}
-
-		outPointer = 0;
-		up_SetInput(data, headerSize);
-		while (0 == error) {
-			int sel = startEsc;
-
-			if (!BIG) {
-				if (startAddr + outPointer >= up_Byte + endAddr - size) {
-					if (0 == error)
-						System.err.printf(
-								"Error: Target %5d exceeds source %5d..\n",
-								startAddr + outPointer, up_Byte + endAddr
-										- size);
-					error++;
-				}
-				if (up_Byte > size + overlap) {
-					System.err.printf(
-							"Error: No EOF symbol found (%d > %d).\n", up_Byte,
-							size + overlap);
-					error++;
-				}
-			} /* BIG */
-
-			if (escBits != 0)
-				sel = up_GetBits(escBits);
-			if (sel == startEsc) {
-				int lzPos, lzLen = up_GetValue();
-				int add = 0;
-
-				if (lzLen != 1) {
-					int lzPosHi = up_GetValue() - 1, lzPosLo;
-
-					if (lzPosHi == (2 << maxGamma) - 2) {
-						// if (DELTA) {
-						/* asm: 25 bytes longer */
-						if (lzLen > 2) {
-							add = up_GetBits(8);
-							lzPos = up_GetBits(8) ^ 0xff;
-						} else
-							// }
-							break; /* EOF */
-					} else {
-						if (extraLZPosBits != 0) {
-							lzPosHi = (lzPosHi << extraLZPosBits)
-									| up_GetBits(extraLZPosBits);
-						}
-						lzPosLo = up_GetBits(8) ^ 0xff;
-						lzPos = (lzPosHi << 8) | lzPosLo;
-					}
-				} else {
-					if (up_GetBits(1) != 0) {
-						int rleLen, byteCode;
-						byte b;
-
-						if (0 == up_GetBits(1)) {
-							int newEsc = up_GetBits(escBits);
-
-							outBuffer[outPointer++] = (byte) ((startEsc << (8 - escBits)) | up_GetBits(8 - escBits));
-							/*
-							 * System.out.printf("%5ld %5ld  *%02x\n",
-							 * outPointer-1, up_Byte, outBuffer[outPointer-1]);
-							 */
-							startEsc = newEsc;
-							if (outPointer >= OUT_SIZE) {
-								System.err.printf("Error: Broken archive, "
-										+ "output buffer overrun at %d.\n",
-										outPointer);
-								return 20;
-							}
-							continue;
-						}
-						rleLen = up_GetValue();
-						if (rleLen >= (1 << maxGamma)) {
-							rleLen = ((rleLen - (1 << maxGamma)) << (8 - maxGamma))
-									| up_GetBits(8 - maxGamma);
-							rleLen |= ((up_GetValue() - 1) << 8);
-						}
-						byteCode = up_GetValue();
-						if (byteCode < 16/* 32 */) {
-							b = byteCodeVec[byteCodeVecPos + byteCode];
-						} else {
-							b = (byte) (((byteCode - 16/* 32 */) << 4/* 3 */) | up_GetBits(4/* 3 */));
-						}
-
-						/*
-						 * System.out.printf("%5ld %5ld RLE %5d 0x%02x\n",
-						 * outPointer, up_Byte, rleLen+1, byte);
-						 */
-						if (outPointer + rleLen + 1 >= OUT_SIZE) {
-							System.err.printf("Error: Broken archive, "
-									+ "output buffer overrun at %d.\n",
-									OUT_SIZE);
-							return 20;
-						}
-						for (i = 0; i <= rleLen; i++) {
-							outBuffer[outPointer++] = b;
-						}
-						continue;
-					}
-					lzPos = up_GetBits(8) ^ 0xff;
-				}
-				/*
-				 * System.out.printf("%5ld %5ld LZ %3d 0x%04x\n", outPointer,
-				 * up_Byte, lzLen+1, lzPos+1);
-				 */
-
-				/* outPointer increases in the loop, thus its minimum is here */
-				if (outPointer - lzPos - 1 < 0) {
-					System.err.printf("Error: Broken archive, "
-							+ "LZ copy position underrun at %d (%d). "
-							+ "lzLen %d.\n", outPointer, lzPos + 1, lzLen + 1);
-					return 20;
-				}
-				if (outPointer + lzLen + 1 >= OUT_SIZE) {
-					System.err.printf("Error: Broken archive, "
-							+ "output buffer overrun at %d.\n", OUT_SIZE);
-					return 20;
-				}
-				for (i = 0; i <= lzLen; i++) {
-					outBuffer[outPointer] = (byte) (outBuffer[outPointer
-							- lzPos - 1] + (DELTA ? add : 0));
-					outPointer++;
-				}
-			} else {
-				byte b = (byte) ((sel << (8 - escBits)) | up_GetBits(8 - escBits));
-				/*
-				 * System.out.printf("%5ld %5ld  %02x\n", outPointer, up_Byte,
-				 * byte);
-				 */
-				outBuffer[outPointer++] = b;
-				if (outPointer >= OUT_SIZE) {
-					System.err.printf("Error: Broken archive, "
-							+ "output buffer overrun at %d.\n", outPointer);
-					return 20;
-				}
-			}
-		}
-		if (error != 0)
-			System.err.printf("Error: Target exceeded source %5d times.\n",
-					error);
-
-		try {
-			if (file != null) {
-				fp = new PrintStream(file);
-			} else {
-				fp = System.out;
-			}
-			byte tmp[] = new byte[2];
-			tmp[0] = (byte) (startAddr & 0xff);
-			tmp[1] = (byte) (startAddr >> 8);
-
-			fp.write(tmp, 0, 2);
-			fp.write(outBuffer, 0, outPointer);
-			if (fp != System.out)
-				fp.close();
-
-			timeused = System.currentTimeMillis() - timeused;
-			if (0 == timeused)
-				timeused++; /* round upwards */
-			System.out.printf(
-					"Decompressed %d bytes in %4.2f seconds (%4.2f kB/s)\n",
-					outPointer, (double) timeused / 1000, (double) 1000
-							* outPointer / timeused / 1024.0);
-
-			return error;
-		} catch (IOException ioE) {
-			System.err
-					.printf("Could not open file \"%s\" for writing.\n", file);
-			return 20;
-		}
 	}
 
 	private int PackLz77(int lzsz, int flags, IntContainer startEscape,
@@ -2758,95 +2262,95 @@ public class PUCrunch implements IHeader {
 		else
 			reservedBytes = 0;
 
-		if (BIG && type == 0) {
-			headerSize = 16 + rleUsed;
-		} else {
-			if (endAddr + reservedBytes + 3 > memEnd) {
-				type |= FIXF_WRAP;
-			} else {
-				type &= ~FIXF_WRAP;
-			}
-			headerSize = GetHeaderSize(type, null) + rleUsed - 15;
-		}
-		outlen = outPointer + headerSize; /* unpack code */
-		System.out.printf("In: %d, out: %d, ratio: %5.2f%% (%4.2f[%4.2f] b/B)"
-				+ ", gained: %5.2f%%\n", inlen, outlen, outlen * 100.0 / inlen
-				+ 0.005, 8.0 * outlen / inlen + 0.005, 8.0
-				* (outlen - headerSize + rleUsed + 4) / inlen + 0.005, 100.0
-				- outlen * 100.0 / inlen + 0.005);
-
-		if (DELTA && (type & FIXF_DLZ) != 0) {
-			System.out.printf(
-					"Gained RLE: %d (S+L:%d+%d), DLZ: %d, LZ: %d, Esc: %d"
-							+ ", Decompressor: %d\n", gainedRle / 8,
-					gainedSRle / 8, gainedLRle / 8, gainedDLz / 8,
-					gainedLz / 8, -gainedEscaped / 8, -headerSize);
-
-			System.out.printf(
-					"Times  RLE: %d (%d+%d), DLZ: %d, LZ: %d, Esc: %d (normal: %d)"
-							+ ", %d escape bit%s\n", timesRle, timesSRle,
-					timesLRle, timesDLz, timesLz, timesEscaped, timesNormal,
-					escBits, (escBits == 1) ? "" : "s");
-		} else {
-			System.out.printf("Gained RLE: %d (S+L:%d+%d), LZ: %d, Esc: %d"
-					+ ", Decompressor: %d\n", gainedRle / 8, gainedSRle / 8,
-					gainedLRle / 8, gainedLz / 8, -gainedEscaped / 8,
-					-headerSize);
-
-			System.out.printf(
-					"Times  RLE: %d (%d+%d), LZ: %d, Esc: %d (normal: %d)"
-							+ ", %d escape bit%s\n", timesRle, timesSRle,
-					timesLRle, timesLz, timesEscaped, timesNormal, escBits,
-					(escBits == 1) ? "" : "s");
-		}
-		if ((flags & F_STATS) != 0) {
-			final String ll[] = { "2", "3-4", "5-8", "9-16", "17-32", "33-64",
-					"65-128", "129-256" };
-			System.out.printf("(Gained by RLE Code: %d, LZPOS LO Bits %d"
-					+ ", maxLen: %d, tag bit/prim. %4.2f)\n", gainedRlecode / 8
-					- rleUsed, extraLZPosBits + 8, (2 << maxGamma),
-					(double) ((timesRle + timesLz) * escBits + timesEscaped
-							* (escBits + 3))
-							/ (double) (timesRle + timesLz + timesNormal)
-							+ 0.0049);
-
-			System.out.printf("   LZPOS HI+2 LZLEN S-RLE RLEcode\n");
-			System.out.printf("   ------------------------------\n");
-			for (i = 0; i <= maxGamma; i++) {
-				System.out.printf("%-7s %5d %5d", ll[i], lenStat[i][0],
-						lenStat[i][1]);
-				if (i < maxGamma)
-					System.out.printf(" %5d", lenStat[i][2]);
-				else
-					System.out.printf("     -");
-
-				if (i < 5)
-					System.out.printf("   %5d%s\n", lenStat[i][3],
-							(i == 4) ? "*" : "");
-				else
-					System.out.printf("       -\n");
-			}
-			if (BACKSKIP_FULL) {
-				if (RESCAN) {
-					System.out.printf("LZ77 rescan gained %d bytes\n",
-							rescan / 8);
-				} /* RESCAN */
-			} /* BACKSKIP_FULL */
-
-			if (HASH_STAT) {
-				if (HASH_COMPARE) {
-					System.out
-							.printf("Hash Checks %d (%d, %4.2f%% equal), RLE/LZ compares %d\n",
-									hashChecks, hashEqual, 100.0 * hashEqual
-											/ hashChecks, compares);
-				} else {
-					System.out
-							.printf("Value Checks %d (%d, %4.2f%% equal), RLE/LZ compares %d\n",
-									hashChecks, hashEqual, 100.0 * hashEqual
-											/ hashChecks, compares);
-				} /* HASH_COMPARE */
-			} /* HASH_STAT */
-		}
+		// if (BIG && type == 0) {
+		// headerSize = 16 + rleUsed;
+		// } else {
+		// if (endAddr + reservedBytes + 3 > memEnd) {
+		// type |= FIXF_WRAP;
+		// } else {
+		// type &= ~FIXF_WRAP;
+		// }
+		// headerSize = GetHeaderSize(type, null) + rleUsed - 15;
+		// }
+		// outlen = outPointer + headerSize; /* unpack code */
+		// System.out.printf("In: %d, out: %d, ratio: %5.2f%% (%4.2f[%4.2f] b/B)"
+		// + ", gained: %5.2f%%\n", inlen, outlen, outlen * 100.0 / inlen
+		// + 0.005, 8.0 * outlen / inlen + 0.005, 8.0
+		// * (outlen - headerSize + rleUsed + 4) / inlen + 0.005, 100.0
+		// - outlen * 100.0 / inlen + 0.005);
+		//
+		// if (DELTA && (type & FIXF_DLZ) != 0) {
+		// System.out.printf(
+		// "Gained RLE: %d (S+L:%d+%d), DLZ: %d, LZ: %d, Esc: %d"
+		// + ", Decompressor: %d\n", gainedRle / 8,
+		// gainedSRle / 8, gainedLRle / 8, gainedDLz / 8,
+		// gainedLz / 8, -gainedEscaped / 8, -headerSize);
+		//
+		// System.out.printf(
+		// "Times  RLE: %d (%d+%d), DLZ: %d, LZ: %d, Esc: %d (normal: %d)"
+		// + ", %d escape bit%s\n", timesRle, timesSRle,
+		// timesLRle, timesDLz, timesLz, timesEscaped, timesNormal,
+		// escBits, (escBits == 1) ? "" : "s");
+		// } else {
+		// System.out.printf("Gained RLE: %d (S+L:%d+%d), LZ: %d, Esc: %d"
+		// + ", Decompressor: %d\n", gainedRle / 8, gainedSRle / 8,
+		// gainedLRle / 8, gainedLz / 8, -gainedEscaped / 8,
+		// -headerSize);
+		//
+		// System.out.printf(
+		// "Times  RLE: %d (%d+%d), LZ: %d, Esc: %d (normal: %d)"
+		// + ", %d escape bit%s\n", timesRle, timesSRle,
+		// timesLRle, timesLz, timesEscaped, timesNormal, escBits,
+		// (escBits == 1) ? "" : "s");
+		// }
+		// if ((flags & F_STATS) != 0) {
+		// final String ll[] = { "2", "3-4", "5-8", "9-16", "17-32", "33-64",
+		// "65-128", "129-256" };
+		// System.out.printf("(Gained by RLE Code: %d, LZPOS LO Bits %d"
+		// + ", maxLen: %d, tag bit/prim. %4.2f)\n", gainedRlecode / 8
+		// - rleUsed, extraLZPosBits + 8, (2 << maxGamma),
+		// (double) ((timesRle + timesLz) * escBits + timesEscaped
+		// * (escBits + 3))
+		// / (double) (timesRle + timesLz + timesNormal)
+		// + 0.0049);
+		//
+		// System.out.printf("   LZPOS HI+2 LZLEN S-RLE RLEcode\n");
+		// System.out.printf("   ------------------------------\n");
+		// for (i = 0; i <= maxGamma; i++) {
+		// System.out.printf("%-7s %5d %5d", ll[i], lenStat[i][0],
+		// lenStat[i][1]);
+		// if (i < maxGamma)
+		// System.out.printf(" %5d", lenStat[i][2]);
+		// else
+		// System.out.printf("     -");
+		//
+		// if (i < 5)
+		// System.out.printf("   %5d%s\n", lenStat[i][3],
+		// (i == 4) ? "*" : "");
+		// else
+		// System.out.printf("       -\n");
+		// }
+		// if (BACKSKIP_FULL) {
+		// if (RESCAN) {
+		// System.out.printf("LZ77 rescan gained %d bytes\n",
+		// rescan / 8);
+		// } /* RESCAN */
+		// } /* BACKSKIP_FULL */
+		//
+		// if (HASH_STAT) {
+		// if (HASH_COMPARE) {
+		// System.out
+		// .printf("Hash Checks %d (%d, %4.2f%% equal), RLE/LZ compares %d\n",
+		// hashChecks, hashEqual, 100.0 * hashEqual
+		// / hashChecks, compares);
+		// } else {
+		// System.out
+		// .printf("Value Checks %d (%d, %4.2f%% equal), RLE/LZ compares %d\n",
+		// hashChecks, hashEqual, 100.0 * hashEqual
+		// / hashChecks, compares);
+		// } /* HASH_COMPARE */
+		// } /* HASH_STAT */
+		// }
 		return 0;
 	}
 
@@ -2895,9 +2399,6 @@ public class PUCrunch implements IHeader {
 
 				while (i < argv[n].length()) {
 					switch (argv[n].charAt(i)) {
-					case 'u':
-						flags |= F_UNPACK;
-						break;
 
 					case 'd': /* Raw - no loading address */
 						flags |= F_SKIP;
@@ -3079,8 +2580,7 @@ public class PUCrunch implements IHeader {
 							+ "\t p<val>    force extralzposbits\n"
 							+ "\t m<val>    max len 5..7 (2*2^5..2*2^7)\n"
 							+ "\t i<val>    interrupt enable after decompress (0=disable)\n"
-							+ "\t g<val>    memory configuration after decompress\n"
-							+ "\t u         unpack\n");
+							+ "\t g<val>    memory configuration after decompress\n");
 			return -1;
 		}
 
@@ -3128,11 +2628,6 @@ public class PUCrunch implements IHeader {
 		}
 		if (infp != System.in)
 			infp.close();
-
-		if ((flags & F_UNPACK) != 0) {
-			n = UnPack(startAddr, indata, fileOut, flags);
-			return n;
-		}
 
 		if (startAddr < 0x258 && (BIG || startAddr + inlen - 1 > 0xffff)) {
 			System.err

@@ -1,18 +1,14 @@
 package libsidutils.cruncher;
 
 public class FixStruct {
-	public FixStruct(byte[] headerc64, int length, FixEntry[] fixtablec64,
+	public FixStruct(String resourceName,
 			String string, int fixfC64) {
-		code = headerc64;
-		codeSize = length;
-		fixes = fixtablec64;
+		this.resourceName=resourceName;
 		name = string;
 		flags = fixfC64;
 	}
 
-	byte[] code;
-	int codeSize;
-	FixEntry[] fixes;
+	String resourceName;
 	String name;
 	int flags;
 
