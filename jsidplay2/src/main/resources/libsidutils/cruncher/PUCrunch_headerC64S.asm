@@ -1,7 +1,4 @@
-/*
-java -jar "d:\Downloads\C64\C64 Kickassembler\KickAss.jar" -binfile d:\workspace\jsidplay2\src\main\resources\libsidutils\cruncher\PUCrunch_headerC64S.asm :ftBEndHi=170 :ftOverlap=0 :ftOverlapAddr=43690 :ftStackSize=224 :ftReloc=8 :ftSizePages=170 :ftSizeAddr= :ftSizeAddr=43690 :ftEndAddr=65280 :ftEscValue=0 :ftOutposAddr=43690 :ftEscBits=02 :ftEsc8Bits=06 :ftEscBits2=02 :ft1MaxGamma=64 :ft8MaxGamma=02 :ft2MaxGamma=127 :ftExtraBits=0 :ftMemConfig=55 :ftCli=88 :ftExec=43690 :ftInpos=43690 :ftMaxGamma=7
-*/
-	.pc=$0801
+	.pc=cmdLineVars.get("pc").asNumber()
 
 	.word basic
 	.word 239
@@ -19,7 +16,7 @@ basic:	.word 0
 .label ftStackSize=*+1
 	ldx #$E0
 !:
-	lda.absx [<data-1] | [cmdLineVars.get("ftReloc").asNumber() << 8]
+	lda data-1,x
 	sta mem3-1,x
 	dex
 	bne !-
@@ -32,8 +29,8 @@ tgt:
 	sta.absx cmdLineVars.get("ftEndAddr").asNumber()
 	txa
 	bne !-
-	dec.abs [<tgt+2] | [cmdLineVars.get("ftReloc").asNumber() << 8]
-	dec.abs [<src+2] | [cmdLineVars.get("ftReloc").asNumber() << 8]
+	dec tgt+2
+	dec src+2
 	dey
 	bne !-
 ftDeCall:
@@ -60,7 +57,7 @@ loop4:
 	sta mem
 	tya
 !:
-	ldx #cmdLineVars.get("ftEsc8Bits").asNumber()
+	ldx #8-cmdLineVars.get("ftEscBits").asNumber()
 	jsr t1
 	jsr target2
 start:
@@ -81,9 +78,9 @@ start:
 	iny
 	jsr t2
 	sta $2f
-	cmp #cmdLineVars.get("ft1MaxGamma").asNumber()
+	cmp #1 << cmdLineVars.get("ftMaxGamma").asNumber()
 	bcc !+
-	ldx #cmdLineVars.get("ft8MaxGamma").asNumber()
+	ldx #8-cmdLineVars.get("ftMaxGamma").asNumber()
 	jsr loop5
 	sta $2f
 	jsr t2
@@ -109,7 +106,7 @@ loop7:
 	beq start
 loop:
 	jsr t2
-	cmp #cmdLineVars.get("ft2MaxGamma").asNumber()
+	cmp #[2 << cmdLineVars.get("ftMaxGamma").asNumber()]-1
 	beq loop9
 	sbc #$00
 	ldx #cmdLineVars.get("ftExtraBits").asNumber()
@@ -158,7 +155,7 @@ t2:
 	jsr loop2
 	bcc !+
 	inx
-	cpx #cmdLineVars.get("ftMaxGamma").asNumber()
+	cpx #cmdLineVars.get("ftMaxGamma").asNumber()+1
 	bne !-
 	beq !+
 loop5:

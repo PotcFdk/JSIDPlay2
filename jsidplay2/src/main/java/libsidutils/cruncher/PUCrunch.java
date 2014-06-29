@@ -295,6 +295,7 @@ public class PUCrunch implements IHeader {
 			return 10;
 		}
 		HashMap<String, String> globals = new HashMap<String, String>();
+		globals.put("pc", String.valueOf(memStart));
 		globals.put("ftFastDisable", String.valueOf(enable2MHz));
 		globals.put("ftOverlap",
 				String.valueOf(overlap != 0 ? (overlap - 1) : 0));
@@ -307,17 +308,12 @@ public class PUCrunch implements IHeader {
 		globals.put("ftEscValue", String.valueOf(escape >> (8 - escBits)));
 		globals.put("ftOutposAddr", String.valueOf(start));
 		globals.put("ftEscBits", String.valueOf(escBits));
-		globals.put("ftEsc8Bits", String.valueOf(8 - escBits));
-		globals.put("ft1MaxGamma", String.valueOf(1 << maxGamma));
-		globals.put("ft8MaxGamma", String.valueOf(8 - maxGamma));
-		globals.put("ft2MaxGamma", String.valueOf((2 << maxGamma) - 1));
+		globals.put("ftMaxGamma", String.valueOf(maxGamma));
 		globals.put("ftExtraBits", String.valueOf(extraLZPosBits));
 		globals.put("ftMemConfig", String.valueOf(memConfig));
 		globals.put("ftCli", String.valueOf(intConfig));
 		globals.put("ftExec", String.valueOf(exec));
 		globals.put("ftInpos", String.valueOf(endAddr + overlap - size));
-		globals.put("ftMaxGamma", String.valueOf(maxGamma + 1));
-		globals.put("ftReloc", String.valueOf(memStart >> 8));
 		globals.put("ftBEndAddr", String.valueOf(progEnd));
 		InputStream asm = PUCrunch.class.getResourceAsStream(dc.resourceName);
 		byte[] header = assembler.assemble(dc.resourceName, asm, globals);
