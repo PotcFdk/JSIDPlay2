@@ -3,9 +3,6 @@ package libsidutils.cruncher;
 public interface IHeader {
 
 	final static int FIXF_C64 = 1;
-	final static int FIXF_VIC20 = 2;
-	final static int FIXF_C16 = 4;
-	final static int FIXF_C128 = 8;
 	final static int FIXF_MACHMASK = 0xff; /* Must be exactly correct */
 
 	final static int FIXF_WRAP = 256; /* If requested, must be present */
