@@ -13,71 +13,12 @@ import java.util.Map;
 import libsidutils.assembler.KickAssembler;
 
 public class PUCrunch implements IHeader {
-	private static final boolean DELTA = true;
 
-	/**
-	 * <PRE>
-	 * 	 Define BIG for >64k files.
-	 * 	 It will use even more *huge* amounts of memory.
-	 * 
-	 * 	 Note:
-	 * 	 Although this version uses memory proportionally to the file length,
-	 * 	 it is possible to use fixed-size buffers. The LZ77 history buffer
-	 * 	 (and backSkip) needs to be as long as is needed, the other buffers
-	 * 	 minimally need to be about three times the length of the maximum
-	 * 	 LZ77 match. Writing the compressor this way would probably make it a
-	 * 	 little slower, and automatic selection of e.g. escape bits might not be
-	 * 	 practical.
-	 * 
-	 * 	 Adjusting the number of escape bits to adapt to local
-	 * 	 changes in the data would be worth investigating.
-	 * 
-	 * 	 Also, the memory needed for rle/elr tables could probably be reduced
-	 * 	 by using a sparse table implementation. Because of the RLE property
-	 * 	 only the starting and ending points (or lengths) need be saved. The
-	 * 	 speed should not decrease too much, because the tables are used in
-	 * 	 LZ77 string match also.... Wait! Actually no, because the RLE/LZ77
-	 * 	 optimize needs to change the RLE lengths inside RLE's...
-	 * 
-	 * 	 The elr array can be reduced to half by storing only the byte that
-	 * 	 is before a run of bytes if we have the full backSkip table..
-	 * 
-	 * 	 Because the lzlen maximum value is 256, we could reduce the table
-	 * 	 from unsigned short to unsigned char by encoding 0->0, 2->1, .. 256->255.
-	 * 	 lzlen of the value 1 is never used anyway..
-	 * </PRE>
-	 */
-	private boolean BIG = false;
-	/**
-	 * -v outputs the lz77/rle data to stdout
-	 */
-	private static final boolean ENABLE_VERBOSE = true;
-	/**
-	 * full backSkip table - enables RESCAN. If not defined, backSkip only uses
-	 * max 128kB
-	 */
-	private static final boolean BACKSKIP_FULL = true;
-	/**
-	 * rescans LZ77 matches for a closer match.
-	 */
-	private static final boolean RESCAN = true;
-	/**
-	 * Use a 3-to-1 hash to skip impossible matches takes "inbytes" bytes,
-	 * reduces string compares from 16% to 8%
-	 */
-	private static final boolean HASH_COMPARE = true;
-
-	public final static String version = "\0$VER: pucrunch 1.14 22-Nov-2008\n";
-
-	private int maxGamma = 7, reservedBytes = 2;
-	private int escBits = 2, escMask = 0xc0;
-	private int extraLZPosBits = 0, rleUsed = 15;
-
-	private int memConfig = 0x37, intConfig = 0x58; /* cli */
-
-	private Map<String, Integer> labels;
+	private int maxGamma = 7, reservedBytes = 2, escBits = 2, escMask = 0xc0,
+			extraLZPosBits = 0, rleUsed = 15, memConfig = 0x37, cliConfig = 0x58;
 
 	private final KickAssembler assembler = new KickAssembler();
+	private Map<String, Integer> labels;
 
 	/**
 	 * <PRE>
@@ -145,15 +86,6 @@ public class PUCrunch implements IHeader {
 	 * 	; 1xxxxxx	111111	xxxxxx	64-127			+5 bits
 	 * </PRE>
 	 */
-
-	private void ListDecompressors(PrintStream fp) {
-		int dc = 0;
-
-		while (dc < fixStruct.length) {
-			fp.printf("%s\n", fixStruct[dc].name);
-			dc++;
-		}
-	}
 
 	private FixStruct BestMatch(int type) {
 		int dc = 0;
@@ -311,7 +243,7 @@ public class PUCrunch implements IHeader {
 		globals.put("ftMaxGamma", String.valueOf(maxGamma));
 		globals.put("ftExtraBits", String.valueOf(extraLZPosBits));
 		globals.put("ftMemConfig", String.valueOf(memConfig));
-		globals.put("ftCli", String.valueOf(intConfig));
+		globals.put("ftCli", String.valueOf(cliConfig));
 		globals.put("ftExec", String.valueOf(exec));
 		globals.put("ftInpos", String.valueOf(endAddr + overlap - size));
 		globals.put("ftBEndAddr", String.valueOf(progEnd));
@@ -320,14 +252,6 @@ public class PUCrunch implements IHeader {
 		labels = assembler.getLabels();
 		if (0 == memStart)
 			memStart = 0x801;
-		if (BIG) {
-			if (memStart + header.length - 2 + size > 0xfe00) {
-				System.out.printf(
-						"Packed file's max size is 0x%04x (0x%04x)!\n", 0xfe00
-								- memStart - (header.length - 2), size);
-				return 10;
-			}
-		} /* BIG */
 
 		stackUsed = labels.get("ftStackSize");
 		ibufferUsed = labels.get("ftIBufferSize");
@@ -368,14 +292,12 @@ public class PUCrunch implements IHeader {
 		return 0;
 	}
 
-	private static final int F_VERBOSE = (1 << 0);
 	private static final int F_STATS = (1 << 1);
 	private static final int F_AUTO = (1 << 2);
 	private static final int F_NOOPT = (1 << 3);
 	private static final int F_AUTOEX = (1 << 4);
 	private static final int F_SKIP = (1 << 5);
 	private static final int F_2MHZ = (1 << 6);
-	private static final int F_AVOID = (1 << 7);
 	// private static final int F_DELTA = (1 << 8);
 
 	private static final int F_NORLE = (1 << 9);
@@ -761,7 +683,7 @@ public class PUCrunch implements IHeader {
 		for (i = inlen - 1; i >= 0; i--) {
 			int r1 = 8 + length[i + 1], r2, r3;
 
-			if (0 == lzlen[i] && 0 == rle[i] && DELTA
+			if (0 == lzlen[i] && 0 == rle[i]
 					&& (null == lzlen2 || 0 == lzlen2[i])
 
 			) {
@@ -884,26 +806,24 @@ public class PUCrunch implements IHeader {
 						}
 						ii++;
 					}
-					if (BACKSKIP_FULL) {
-						/*
-						 * Note: 2-byte optimization checks are no longer done
-						 * with the rest, because the equation gives too long
-						 * code lengths for 2-byte matches if extraLzPosBits>0.
-						 */
-						/* Two-byte rescan/check */
-						if (backSkip[i] != 0 && backSkip[i] <= 256) {
-							/* There are previous occurrances (near enough) */
-							int v = LenLz(2, backSkip[i]) + length[i + 2];
+					/*
+					 * Note: 2-byte optimization checks are no longer done with
+					 * the rest, because the equation gives too long code
+					 * lengths for 2-byte matches if extraLzPosBits>0.
+					 */
+					/* Two-byte rescan/check */
+					if (backSkip[i] != 0 && backSkip[i] <= 256) {
+						/* There are previous occurrances (near enough) */
+						int v = LenLz(2, backSkip[i]) + length[i + 2];
 
-							if (v < minv) {
-								minv = v;
-								mini = 2;
-								lzlen[i] = mini;
-								r3 = minv;
-								lzpos[i] = backSkip[i];
-							}
+						if (v < minv) {
+							minv = v;
+							mini = 2;
+							lzlen[i] = mini;
+							r3 = minv;
+							lzpos[i] = backSkip[i];
 						}
-					} /* BACKSKIP_FULL */
+					}
 					if (minv != r3 && minv < r2) {
 						/*
 						 * printf("@%05d LZ %d %4x -> %d %4x\n", i, lzlen[i],
@@ -934,13 +854,11 @@ public class PUCrunch implements IHeader {
 					mode[i] = LITERAL;
 				}
 			}
-			if (DELTA) {
-				if (lzlen2 != null && lzlen2[i] > 3) {
-					r3 = LenDLz(lzlen2[i], lzpos2[i]) + length[i + lzlen2[i]];
-					if (r3 < length[i]) {
-						length[i] = r3;
-						mode[i] = DLZ;
-					}
+			if (lzlen2 != null && lzlen2[i] > 3) {
+				r3 = LenDLz(lzlen2[i], lzpos2[i]) + length[i + lzlen2[i]];
+				if (r3 < length[i]) {
+					length[i] = r3;
+					mode[i] = DLZ;
 				}
 			}
 		}
@@ -1198,55 +1116,36 @@ public class PUCrunch implements IHeader {
 		lzpos = new int[inlen];
 		lzmlen = new int[inlen];
 		lzmpos = new int[inlen];
-		if (DELTA) {
-			if ((type & FIXF_DLZ) != 0) {
-				lzlen2 = new int[inlen];
-				lzpos2 = new int[inlen];
-			} else {
-				lzlen2 = lzpos2 = null;
-			}
+		if ((type & FIXF_DLZ) != 0) {
+			lzlen2 = new int[inlen];
+			lzpos2 = new int[inlen];
+		} else {
+			lzlen2 = lzpos2 = null;
 		}
 		newesc = new byte[inlen];
-		if (BACKSKIP_FULL) {
-			backSkip = new int[inlen];
-		} else {
-			backSkip = new int[65536];
-		} /* BACKSKIP_FULL */
-		if (HASH_COMPARE) {
-			hashValue = new int[inlen];
-		} /* HASH_COMPARE */
-		if (BIG) {
-			lastPair = new int[256 * 256];
-		} else {
-			lastPair = new int[256 * 256];
-		} /* BIG */
+		backSkip = new int[inlen];
+		hashValue = new int[inlen];
+		lastPair = new int[256 * 256];
 
-		if (HASH_COMPARE) {
-			i = 0;
-			j = 0;
-			a = inlen;
-			for (p = inlen - 1; p >= 0; p--) {
-				k = j;
-				j = i;
-				i = indata[--a] & 0xff; /* Only one read per position */
+		i = 0;
+		j = 0;
+		a = inlen;
+		for (p = inlen - 1; p >= 0; p--) {
+			k = j;
+			j = i;
+			i = indata[--a] & 0xff; /* Only one read per position */
 
-				/* Without hash: 18.56%, end+middle: 12.68% */
-				/* hashValue[p] = i*2 ^ j*3 ^ k*5; *//* 8.56% */
-				/* hashValue[p] = i ^ j*2 ^ k*3; *//* 8.85% */
-				/* hashValue[p] = i + j + k; *//* 9.33% */
-				/* hashValue[p] = i + j*2 + k*3; *//* 8.25% */
-				/* hashValue[p] = i*2 + j*3 + k*5; *//* 8.29% */
-				/* hashValue[p] = i*3 + j*5 + k*7; *//* 7.95% */
-				hashValue[p] = i * 3 + j * 5 + k * 7; /* 7.95 % */
-			}
-		} /* HASH_COMPARE */
+			/* Without hash: 18.56%, end+middle: 12.68% */
+			/* hashValue[p] = i*2 ^ j*3 ^ k*5; *//* 8.56% */
+			/* hashValue[p] = i ^ j*2 ^ k*3; *//* 8.85% */
+			/* hashValue[p] = i + j + k; *//* 9.33% */
+			/* hashValue[p] = i + j*2 + k*3; *//* 8.25% */
+			/* hashValue[p] = i*2 + j*3 + k*5; *//* 8.29% */
+			/* hashValue[p] = i*3 + j*5 + k*7; *//* 7.95% */
+			hashValue[p] = i * 3 + j * 5 + k * 7; /* 7.95 % */
+		}
 		/* Detect all RLE and LZ77 jump possibilities */
 		for (p = 0; p < inlen; p++) {
-			if (BIG) {
-				if (0 == (p & 2047)) {
-					System.err.printf("\r%d ", p);
-				}
-			} /* BIG */
 			/* check run-length code - must be done, LZ77 search needs it! */
 			if (rle[p] <= 0) {
 				/*
@@ -1262,8 +1161,7 @@ public class PUCrunch implements IHeader {
 				int rlelen = 1;
 
 				/* Loop for the whole RLE */
-				while (rlelen < top && (indata[a++] & 0xff) == val
-						&& (!BIG || rlelen < 65535)) {
+				while (rlelen < top && (indata[a++] & 0xff) == val) {
 					rlelen++;
 				}
 
@@ -1281,11 +1179,7 @@ public class PUCrunch implements IHeader {
 			if (p + rle[p] + 1 < inlen) {
 				int bot = p - lzsz, maxval, maxpos, rlep = rle[p];
 				int hashCompare, valueCompare = 0;
-				if (HASH_COMPARE) {
-					hashCompare = hashValue[p];
-				} else {
-					valueCompare = indata[p + 2] & 0xff;
-				} /* HASH_COMPARE */
+				hashCompare = hashValue[p];
 
 				/*
 				 * There's always 1 equal byte, although it may not be marked as
@@ -1348,8 +1242,7 @@ public class PUCrunch implements IHeader {
 							 * don't match, don't bother to check the data
 							 * itself.
 							 */
-							if ((HASH_COMPARE && hashValue[i + maxval - rlep
-									- 1] == hashCompare)
+							if ((hashValue[i + maxval - rlep - 1] == hashCompare)
 									|| ((indata[i + maxval - rlep + 1] & 0xff) == valueCompare) /* HASH_COMPARE */
 							) {
 								a = i + 2; /* match */
@@ -1381,27 +1274,16 @@ public class PUCrunch implements IHeader {
 											* 8 - LenLz(maxval, maxpos)) {
 										maxval = tmplen;
 										maxpos = tmppos;
-										if (HASH_COMPARE) {
-											hashCompare = hashValue[p + maxval
-													- 2];
-										} else {
-											valueCompare = indata[p + maxval] & 0xff;
-										} /* HASH_COMPARE */
+										hashCompare = hashValue[p + maxval - 2];
 									}
 									if (maxval == maxlzlen)
 										break;
 								}
 							}
 						}
-						if (BACKSKIP_FULL) {
-							if (0 == backSkip[i])
-								break; /* No previous occurrances (near enough) */
-							i -= backSkip[i];
-						} else {
-							if (0 == backSkip[i & 0xffff])
-								break; /* No previous occurrances (near enough) */
-							i -= backSkip[i & 0xffff];
-						} /* BACKSKIP_FULL */
+						if (0 == backSkip[i])
+							break; /* No previous occurrances (near enough) */
+						i -= backSkip[i];
 					}
 
 					/*
@@ -1431,21 +1313,11 @@ public class PUCrunch implements IHeader {
 									break; /* Got enough */
 							}
 							i -= elr[i];
-							if (BACKSKIP_FULL) {
-								if (0 == backSkip[i])
-									break; /*
-											 * No previous occurrances (near
-											 * enough)
-											 */
-								i -= backSkip[i];
-							} else {
-								if (0 == backSkip[i & 0xffff])
-									break; /*
-											 * No previous occurrances (near
-											 * enough)
-											 */
-								i -= backSkip[i & 0xffff];
-							} /* BACKSKIP_FULL */
+							if (0 == backSkip[i])
+								break; /*
+										 * No previous occurrances (near enough)
+										 */
+							i -= backSkip[i];
 						}
 					}
 					if (p + maxval > inlen) {
@@ -1467,156 +1339,139 @@ public class PUCrunch implements IHeader {
 					}
 				}
 			}
-			if (DELTA) {
-				/* check LZ77 code again, ROT1..255 */
-				if ((type & FIXF_DLZ) != 0
-						&& /* rle[p]<maxlzlen && */p + rle[p] + 1 < inlen) {
-					int rot;
+			/* check LZ77 code again, ROT1..255 */
+			if ((type & FIXF_DLZ) != 0
+					&& /* rle[p]<maxlzlen && */p + rle[p] + 1 < inlen) {
+				int rot;
 
-					for (rot = 1; rot < 255/* BUG:?should be 256? */; rot++) {
-						int bot = p - /* lzsz */256, maxval, maxpos, rlep = rle[p];
-						int valueCompare = ((indata[p + 2] & 0xff) + rot) & 0xff;
+				for (rot = 1; rot < 255/* BUG:?should be 256? */; rot++) {
+					int bot = p - /* lzsz */256, maxval, maxpos, rlep = rle[p];
+					int valueCompare = ((indata[p + 2] & 0xff) + rot) & 0xff;
+
+					/*
+					 * There's always 1 equal byte, although it may not be
+					 * marked as RLE.
+					 */
+					if (rlep <= 0)
+						rlep = 1;
+					if (bot < 0)
+						bot = 0;
+					bot += (rlep - 1);
+
+					/*
+					 * First get the shortest possible match (if any). If there
+					 * is no 2-byte match, don't look further, because there
+					 * can't be a longer match.
+					 */
+					i = lastPair[((((indata[p] & 0xff) + rot) & 0xff) << 8)
+							| (((indata[p + 1] & 0xff) + rot) & 0xff)] - 1;
+					if (i >= 0 && i >= bot) {
+						/* Got a 2-byte match at least */
+						maxval = 2;
+						maxpos = p - i;
 
 						/*
-						 * There's always 1 equal byte, although it may not be
-						 * marked as RLE.
+						 * A..AB rlep # of A's, B is something else..
+						 * 
+						 * Search for bytes that are in p + (rlep-1), i.e. the
+						 * last rle byte ('A') and the non-matching one ('B').
+						 * When found, check if the rle in the compare position
+						 * (i) is long enough (i.e. the same number of A's at p
+						 * and i-rlep+1).
+						 * 
+						 * There are dramatically less matches for AB than for
+						 * AA, so we get a huge speedup with this approach. We
+						 * are still guaranteed to find the most recent longest
+						 * match there is.
 						 */
-						if (rlep <= 0)
-							rlep = 1;
-						if (bot < 0)
-							bot = 0;
-						bot += (rlep - 1);
 
-						/*
-						 * First get the shortest possible match (if any). If
-						 * there is no 2-byte match, don't look further, because
-						 * there can't be a longer match.
-						 */
-						i = lastPair[((((indata[p] & 0xff) + rot) & 0xff) << 8)
-								| (((indata[p + 1] & 0xff) + rot) & 0xff)] - 1;
-						if (i >= 0 && i >= bot) {
-							/* Got a 2-byte match at least */
-							maxval = 2;
-							maxpos = p - i;
+						i = lastPair[((((indata[p + (rlep - 1)] & 0xff) + rot) & 0xff) << 8)
+								| (((indata[p + rlep] & 0xff) + rot) & 0xff)] - 1;
+						while (i >= bot /* && i>=rlep-1 */) { /*
+															 * bot>=rlep-1,
+															 * i>=bot ==>
+															 * i>=rlep-1
+															 */
 
-							/*
-							 * A..AB rlep # of A's, B is something else..
-							 * 
-							 * Search for bytes that are in p + (rlep-1), i.e.
-							 * the last rle byte ('A') and the non-matching one
-							 * ('B'). When found, check if the rle in the
-							 * compare position (i) is long enough (i.e. the
-							 * same number of A's at p and i-rlep+1).
-							 * 
-							 * There are dramatically less matches for AB than
-							 * for AA, so we get a huge speedup with this
-							 * approach. We are still guaranteed to find the
-							 * most recent longest match there is.
-							 */
+							/* Equal number of A's ? */
+							if (0 == (rlep - 1) || rle[i - (rlep - 1)] == rlep) { /*
+																				 * 'head'
+																				 * matches
+																				 */
+								/* rlep==1 ==> (rlep-1)==0 */
+								/*
+								 * ivanova.run: 443517 rlep==1, 709846
+								 * rle[i+1-rlep]==rlep
+								 */
 
-							i = lastPair[((((indata[p + (rlep - 1)] & 0xff) + rot) & 0xff) << 8)
-									| (((indata[p + rlep] & 0xff) + rot) & 0xff)] - 1;
-							while (i >= bot /* && i>=rlep-1 */) { /*
-																 * bot>=rlep-1,
-																 * i>=bot ==>
-																 * i>=rlep-1
-																 */
+								/*
+								 * Check the hash values corresponding to the
+								 * last two bytes of the currently longest match
+								 * and the first new matching(?) byte. If the
+								 * hash values don't match, don't bother to
+								 * check the data itself.
+								 */
+								if ((indata[i + maxval - rlep + 1] & 0xff) == valueCompare) {
+									a = i + 2; /* match */
+									int b = p + rlep - 1 + 2;/* curpos */
+									int topindex = inlen - (p + rlep - 1);
 
-								/* Equal number of A's ? */
-								if (0 == (rlep - 1)
-										|| rle[i - (rlep - 1)] == rlep) { /*
-																		 * 'head'
-																		 * matches
-																		 */
-									/* rlep==1 ==> (rlep-1)==0 */
-									/*
-									 * ivanova.run: 443517 rlep==1, 709846
-									 * rle[i+1-rlep]==rlep
-									 */
+									/* the 2 first bytes ARE the same.. */
+									j = 2;
+									while (j < topindex
+											&& (indata[a++] & 0xff) == (((indata[b++] & 0xff) + rot) & 0xff))
+										j++;
 
-									/*
-									 * Check the hash values corresponding to
-									 * the last two bytes of the currently
-									 * longest match and the first new
-									 * matching(?) byte. If the hash values
-									 * don't match, don't bother to check the
-									 * data itself.
-									 */
-									if ((indata[i + maxval - rlep + 1] & 0xff) == valueCompare) {
-										a = i + 2; /* match */
-										int b = p + rlep - 1 + 2;/* curpos */
-										int topindex = inlen - (p + rlep - 1);
+									if (j + rlep - 1 > maxval) {
+										int tmplen = j + rlep - 1, tmppos = p
+												- i + rlep - 1;
 
-										/* the 2 first bytes ARE the same.. */
-										j = 2;
-										while (j < topindex
-												&& (indata[a++] & 0xff) == (((indata[b++] & 0xff) + rot) & 0xff))
-											j++;
+										if (tmplen > maxlzlen)
+											tmplen = maxlzlen;
 
-										if (j + rlep - 1 > maxval) {
-											int tmplen = j + rlep - 1, tmppos = p
-													- i + rlep - 1;
+										/*
+										 * Accept only versions that really are
+										 * shorter
+										 */
+										if (tmplen * 8 - LenLz(tmplen, tmppos) > maxval
+												* 8 - LenLz(maxval, maxpos)) {
+											maxval = tmplen;
+											maxpos = tmppos;
 
-											if (tmplen > maxlzlen)
-												tmplen = maxlzlen;
-
-											/*
-											 * Accept only versions that really
-											 * are shorter
-											 */
-											if (tmplen * 8
-													- LenLz(tmplen, tmppos) > maxval
-													* 8 - LenLz(maxval, maxpos)) {
-												maxval = tmplen;
-												maxpos = tmppos;
-
-												valueCompare = ((indata[p
-														+ maxval] & 0xff) + rot) & 0xff;
-											}
-											if (maxval == maxlzlen)
-												break;
+											valueCompare = ((indata[p + maxval] & 0xff) + rot) & 0xff;
 										}
+										if (maxval == maxlzlen)
+											break;
 									}
 								}
-								if (BACKSKIP_FULL) {
-									if (0 == backSkip[i])
-										break; /*
-												 * No previous occurrances (near
-												 * enough)
-												 */
-									i -= backSkip[i];
-								} else {
-									if (0 == backSkip[i & 0xffff])
-										break; /*
-												 * No previous occurrances (near
-												 * enough)
-												 */
-									i -= backSkip[i & 0xffff];
-								} /* BACKSKIP_FULL */
 							}
+							if (0 == backSkip[i])
+								break; /*
+										 * No previous occurrances (near enough)
+										 */
+							i -= backSkip[i];
+						}
 
-							if (p + maxval > inlen) {
-								System.err
-										.printf("Error @ %d, lzlen %d, pos %d - exceeds inlen\n",
-												p, maxval, maxpos);
-								maxval = inlen - p;
-							}
-							if (maxval > 3
-									&& maxpos <= 256
-									&& (maxval > lzlen2[p] || (maxval == lzlen2[p] && maxpos < lzpos2[p]))) {
-								if (maxpos < 0)
-									System.err.printf(
-											"Error @ %d, lzlen %d, pos %d\n",
+						if (p + maxval > inlen) {
+							System.err
+									.printf("Error @ %d, lzlen %d, pos %d - exceeds inlen\n",
 											p, maxval, maxpos);
-								lzlen2[p] = (maxval < maxlzlen) ? maxval
-										: maxlzlen;
-								lzpos2[p] = maxpos;
-							}
+							maxval = inlen - p;
+						}
+						if (maxval > 3
+								&& maxpos <= 256
+								&& (maxval > lzlen2[p] || (maxval == lzlen2[p] && maxpos < lzpos2[p]))) {
+							if (maxpos < 0)
+								System.err.printf(
+										"Error @ %d, lzlen %d, pos %d\n", p,
+										maxval, maxpos);
+							lzlen2[p] = (maxval < maxlzlen) ? maxval : maxlzlen;
+							lzpos2[p] = maxpos;
 						}
 					}
-					if (lzlen2[p] <= lzlen[p] || lzlen2[p] <= rle[p]) {
-						lzlen2[p] = lzpos2[p] = 0;
-					}
+				}
+				if (lzlen2[p] <= lzlen[p] || lzlen2[p] <= rle[p]) {
+					lzlen2[p] = lzpos2[p] = 0;
 				}
 			}
 
@@ -1631,11 +1486,7 @@ public class PUCrunch implements IHeader {
 				if (ptr > p || ptr > 0xffff)
 					ptr = 0;
 
-				if (BACKSKIP_FULL) {
-					backSkip[p] = ptr;
-				} else {
-					backSkip[p & 0xffff] = ptr;
-				} /* BACKSKIP_FULL */
+				backSkip[p] = ptr;
 				lastPair[index] = p + 1;
 			}
 		}
@@ -1851,151 +1702,6 @@ public class PUCrunch implements IHeader {
 			startEscape.intVal = escape;
 		OptimizeRle(flags); /* Retune the RLE selections */
 
-		if (ENABLE_VERBOSE) {
-			if ((flags & F_VERBOSE) != 0) {
-				int oldEscape = escape;
-				System.out.printf("normal RLE  LZLEN LZPOS(absolute)\n\n");
-
-				for (p = 0; p < inlen;) {
-					switch (mode[p]) {
-					case LZ77:
-						mode[p - lzpos[p]] |= MMARK; /* Was referred to by lz77 */
-						p += lzlen[p];
-						break;
-					case RLE:
-						p += rle[p];
-						break;
-					// #ifdef DELTA
-					case DLZ:
-						mode[p - lzpos2[p]] |= MMARK; /* Was referred to by lz77 */
-						p += lzlen2[p];
-						break;
-					// #endif
-					/*
-					 * case LITERAL: case MMARK:
-					 */
-					default:
-						p++;
-						break;
-					}
-				}
-
-				j = 0;
-				for (p = 0; p < inlen; p++) {
-					switch (mode[p]) {
-					// #ifdef DELTA
-					case MMARK | DLZ:
-					case DLZ:
-						if (j == p) {
-							System.out.printf(">");
-							j += lzlen2[p];
-						} else
-							System.out.printf(" ");
-						if (lzpos2 != null) {
-							System.out.printf(" %04x*%03d*+%02x", lzpos2[p],
-									lzlen2[p], ((indata[p] & 0xff) - (indata[p
-											- lzpos2[p]] & 0xff)) & 0xff);
-						}
-						System.out.printf(
-								" 001   %03d   %03d  %04x(%04x)  %02x %s\n",
-								rle[p], lzlen[p], lzpos[p], p - lzpos[p],
-								(indata[p] & 0xff),
-								(mode[p] & MMARK) != 0 ? "#" : " ");
-						break;
-					// #endif
-					case MMARK | LITERAL:
-					case LITERAL:
-						if (j == p) {
-							System.out.printf(">");
-						} else
-							System.out.printf(" ");
-						if (DELTA) {
-							if (lzpos2 != null) {
-								System.out.printf(" %04x %03d +%02x",
-										lzpos2[p], lzlen2[p],
-										((indata[p] & 0xff) - (indata[p
-												- lzpos2[p]] & 0xff)) & 0xff);
-							}
-						}
-						if (j == p) {
-							System.out
-									.printf("*001*  %03d   %03d  %04x(%04x)  %02x %s %02x",
-											rle[p], lzlen[p], lzpos[p], p
-													- lzpos[p],
-											(indata[p] & 0xff),
-											(mode[p] & MMARK) != 0 ? "#" : " ",
-											newesc[p] & 0xff);
-							if ((indata[p] & escMask) == escape) {
-								escape = newesc[p] & 0xff;
-								System.out.printf("«");
-							}
-							System.out.printf("\n");
-							j += 1;
-						} else {
-							System.out
-									.printf("*001*  %03d   %03d  %04x(%04x)  %02x %s %02x\n",
-											rle[p], lzlen[p], lzpos[p], p
-													- lzpos[p],
-											(indata[p] & 0xff),
-											(mode[p] & MMARK) != 0 ? "#" : " ",
-											newesc[p] & 0xff);
-						}
-						break;
-					case MMARK | LZ77:
-					case LZ77:
-						if (j == p) {
-							System.out.printf(">");
-							j += lzlen[p];
-						} else
-							System.out.printf(" ");
-						if (DELTA) {
-							if (lzpos2 != null) {
-								System.out.printf(" %04x %03d +%02x",
-										lzpos2[p], lzlen2[p],
-										((indata[p] & 0xff) - (indata[p
-												- lzpos2[p]] & 0xff)) & 0xff);
-							}
-						}
-						System.out.printf(
-								" 001   %03d  *%03d* %04x(%04x)  %02x %s",
-								rle[p], lzlen[p], lzpos[p], p - lzpos[p],
-								(indata[p] & 0xff),
-								(mode[p] & MMARK) != 0 ? "#" : " ");
-
-						System.out.printf("\n");
-
-						break;
-					case MMARK | RLE:
-					case RLE:
-						if (j == p) {
-							System.out.printf(">");
-							j += rle[p];
-						} else
-							System.out.printf(" ");
-						if (DELTA) {
-							if (lzpos2 != null) {
-								System.out.printf(" %04x %03d +%02x",
-										lzpos2[p], lzlen2[p],
-										((indata[p] & 0xff) - (indata[p
-												- lzpos2[p]] & 0xff)) & 0xff);
-							}
-						}
-						System.out.printf(
-								" 001  *%03d*  %03d  %04x(%04x)  %02x %s\n",
-								rle[p], lzlen[p], lzpos[p], p - lzpos[p],
-								(indata[p] & 0xff),
-								(mode[p] & MMARK) != 0 ? "#" : " ");
-						break;
-					default:
-						j++;
-						break;
-					}
-					mode[p] &= ~MMARK;
-				}
-				escape = oldEscape;
-			}
-		} /* ENABLE_VERBOSE */
-
 		/* Perform rescan */
 		{
 			int esc = escape;
@@ -2017,57 +1723,48 @@ public class PUCrunch implements IHeader {
 
 				case LZ77: /* lz77 */
 
-					if (BACKSKIP_FULL) {
-						/*
-						 * Not possible for smaller backSkip table (the table is
-						 * overwritten during previous use)
-						 */
-						if (RESCAN) {
-							/* Re-search matches to get the closest one */
-							if (lzopt != 0 && /* If any changes to lengths.. */
-							lzlen[p] > 2 /* && lzlen[p] > rle[p] */) {
-								int bot = p - lzpos[p] + 1;
-								int rlep = rle[p];
+					/* Re-search matches to get the closest one */
+					if (lzopt != 0 && /* If any changes to lengths.. */
+					lzlen[p] > 2 /* && lzlen[p] > rle[p] */) {
+						int bot = p - lzpos[p] + 1;
+						int rlep = rle[p];
 
-								if (0 == rlep)
-									rlep = 1;
-								if (bot < 0)
-									bot = 0;
-								bot += (rlep - 1);
+						if (0 == rlep)
+							rlep = 1;
+						if (bot < 0)
+							bot = 0;
+						bot += (rlep - 1);
 
-								i = p - backSkip[p];
-								while (i >= bot /* && i>=rlep-1 */) {
-									/* Equal number of A's ? */
-									if (rlep == 1 || rle[i - rlep + 1] == rlep) { /*
-																				 * 'head'
-																				 * matches
-																				 */
-										a = i + 1; /* match */
-										int b = p + rlep - 1 + 1; /* curpos */
-										int topindex = inlen - (p + rlep - 1);
+						i = p - backSkip[p];
+						while (i >= bot /* && i>=rlep-1 */) {
+							/* Equal number of A's ? */
+							if (rlep == 1 || rle[i - rlep + 1] == rlep) { /*
+																		 * 'head'
+																		 * matches
+																		 */
+								a = i + 1; /* match */
+								int b = p + rlep - 1 + 1; /* curpos */
+								int topindex = inlen - (p + rlep - 1);
 
-										j = 1;
-										while (j < topindex
-												&& indata[a++] == indata[b++])
-											j++;
+								j = 1;
+								while (j < topindex
+										&& indata[a++] == indata[b++])
+									j++;
 
-										if (j + rlep - 1 >= lzlen[p]) {
-											int tmppos = p - i + rlep - 1;
+								if (j + rlep - 1 >= lzlen[p]) {
+									int tmppos = p - i + rlep - 1;
 
-											lzpos[p] = tmppos;
-											break;
-										}
-									}
-									if (0 == backSkip[i])
-										break; /*
-												 * No previous occurrances (near
-												 * enough)
-												 */
-									i -= backSkip[i];
+									lzpos[p] = tmppos;
+									break;
 								}
 							}
-						} /* RESCAN */
-					} /* BACKSKIP_FULL */
+							if (0 == backSkip[i])
+								break; /*
+										 * No previous occurrances (near enough)
+										 */
+							i -= backSkip[i];
+						}
+					}
 
 					p += lzlen[p];
 					break;
@@ -2159,12 +1856,9 @@ public class PUCrunch implements IHeader {
 	}
 
 	public int run(String[] argv) throws IOException {
-		int n, execAddr = -1, ea = -1, newlen, startAddr = -1, startEscape;
-		int flags = F_2MHZ, lzlen = -1, buflen;
+		int ea = -1, startAddr = -1;
+		int flags = F_2MHZ, lzlen = -1;
 		String fileIn = null, fileOut = null;
-		InputStream infp;
-		byte tmp[] = new byte[2];
-		long timeused = System.currentTimeMillis();
 
 		int machineType = 64;
 		String machineTypeTxt;
@@ -2177,220 +1871,26 @@ public class PUCrunch implements IHeader {
 		InitValueLen();
 
 		flags |= (F_AUTO | F_AUTOEX);
-		for (n = 0; n < argv.length; n++) {
-			if (argv[n].equals("-flist")) {
-				System.out.printf("List of Decompressors:\n");
-				System.out.printf("----------------------\n");
-				ListDecompressors(System.out);
-				return -1;
-			} else if (argv[n].equals("-ffast")) {
-				type |= FIXF_FAST;
-			} else if (argv[n].equals("-fnorle")) {
-				flags |= F_NORLE;
-			} else if (argv[n].equals("-fshort")) {
-				type |= FIXF_SHORT;
-			} else if (argv[n].equals("-fbasic")) {
-				type |= FIXF_BASIC;
-			} else if (DELTA && argv[n].equals("-fdelta")) {
-				type |= FIXF_DLZ;
-			} else if (argv[n].equals("+f")) {
-				flags &= ~F_2MHZ;
-			} else if (argv[n].startsWith("-")) {
-				int i = 1;
-				char c;
-				String val;
-				int tmpval;
-
-				while (i < argv[n].length()) {
-					switch (argv[n].charAt(i)) {
-
-					case 'd': /* Raw - no loading address */
-						flags |= F_SKIP;
-						break;
-
-					case 'n': /* noopt, no rle/lzlen optimization */
-						flags |= F_NOOPT;
-						break;
-
-					case 's':
-						flags |= F_STATS;
-						break;
-
-					// #ifdef ENABLE_VERBOSE
-					case 'v':
-						flags |= F_VERBOSE;
-						break;
-					// #endif /* ENABLE_VERBOSE */
-
-					case 'f':
-						flags |= F_2MHZ;
-						break;
-
-					case 'a':
-						flags |= F_AVOID;
-						break;
-
-					case 'h':
-					case '?':
-						flags |= F_ERROR;
-						break;
-
-					case 'g':
-					case 'i':
-					case 'r':
-					case 'x':
-					case 'm':
-					case 'e':
-					case 'p':
-					case 'l':
-					case 'c': /* 64 (C64), 20 (VIC20), 16/4 (C16/Plus4) */
-						c = argv[n].charAt(i); /* Remember the option */
-						if (i + 1 < argv[n].length()) {
-							val = argv[n].substring(i + 1);
-						} else if (n + 1 < argv.length) {
-							val = argv[n + 1];
-							n++;
-						} else {
-							flags |= F_ERROR;
-							break;
-						}
-
-						i = argv[n].length() - 1;
-						try {
-							if (val.startsWith("$"))
-								tmpval = Integer.parseInt(val.substring(1), 16);
-							else
-								tmpval = Integer.parseInt(val.substring(1));
-						} catch (NumberFormatException e) {
-							System.err.printf(
-									"Error: invalid number: \"%s\"\n", val);
-							flags |= F_ERROR;
-							break;
-						}
-						switch (c) {
-						case 'r':
-							lzlen = tmpval;
-							break;
-						case 'x':
-							ea = tmpval;
-							break;
-						case 'm':
-							maxGamma = tmpval;
-							if (maxGamma < 5 || maxGamma > 7) {
-								System.err.printf("Max length must be 5..7!\n");
-								flags |= F_ERROR;
-								maxGamma = 7;
-							}
-							lrange = LRANGE;
-							maxlzlen = MAXLZLEN;
-							maxrlelen = MAXRLELEN;
-
-							InitValueLen();
-							break;
-						case 'e':
-							escBits = tmpval;
-							if (escBits < 0 || escBits > 8) {
-								System.err
-										.printf("Escape bits must be 0..8!\n");
-								flags |= F_ERROR;
-							} else
-								flags &= ~F_AUTO;
-							escMask = (0xff00 >> escBits) & 0xff;
-							break;
-						case 'p':
-							extraLZPosBits = tmpval;
-							if (extraLZPosBits < 0 || extraLZPosBits > 4) {
-								System.err
-										.printf("Extra LZ-pos bits must be 0..4!\n");
-								flags |= F_ERROR;
-							} else
-								flags &= ~F_AUTOEX;
-							break;
-						case 'l':
-							startAddr = tmpval;
-							if (startAddr < 0 || startAddr > 0xffff) {
-								System.err
-										.printf("Load address must be 0..0xffff!\n");
-								flags |= F_ERROR;
-							}
-							break;
-						case 'c': /* 64 (C64), 20 (VIC20), 16/4 (C16/Plus4) */
-							machineType = tmpval;
-							if (machineType != 64 && machineType != 20
-									&& machineType != 16 && machineType != 4
-									&& machineType != 128 && machineType != 0) {
-								System.err
-										.printf("Machine must be 64, 20, 16/4, 128!\n");
-								flags |= F_ERROR;
-							}
-							break;
-						case 'i': /* Interrupt config */
-							if (tmpval == 0) {
-								intConfig = 0x78; /* sei */
-							} else {
-								intConfig = 0x58; /* cli */
-							}
-							break;
-						case 'g': /* Memory configuration */
-							memConfig = (tmpval & 0xff);
-							break;
-						}
-						break;
-
-					default:
-						System.err.printf("Error: Unknown option \"%c\"\n",
-								argv[n].charAt(i));
-						flags |= F_ERROR;
-					}
-					i++;
-				}
+		for (int n = 0; n < argv.length; n++) {
+			if (null == fileIn) {
+				fileIn = argv[n];
+			} else if (null == fileOut) {
+				fileOut = argv[n];
 			} else {
-				if (null == fileIn) {
-					fileIn = argv[n];
-				} else if (null == fileOut) {
-					fileOut = argv[n];
-				} else {
-					System.err.printf("Only two filenames wanted!\n");
-					flags |= F_ERROR;
-				}
+				System.err.printf("Only two filenames wanted!\n");
+				flags |= F_ERROR;
 			}
 		}
 
 		if ((flags & F_ERROR) != 0) {
-			System.err.printf("Usage: %s [-<flags>] [<infile> [<outfile>]]\n",
-					argv[0]);
-			System.err
-					.printf("\t -flist    list all decompressors\n"
-							+ "\t -ffast    select faster version, if available (longer)\n"
-							+ "\t -fshort   select shorter version, if available (slower)\n"
-							+ "\t -fbasic   select version for BASIC programs (for VIC20 and C64)\n"
-							// #ifdef DELTA
-							+ "\t -fdelta   use delta-lz77 -- shortens some files\n"
-							// #endif
-							+ "\t -f        enable fast mode for C128 (C64 mode) and C16/+4 (default)\n"
-							+ "\t +f        disable fast mode for C128 (C64 mode) and C16/+4\n"
-							+ "\t c<val>    machine: 64 (C64), 20 (VIC20), 16 (C16/+4)\n"
-							+ "\t a         avoid video matrix (for VIC20)\n"
-							+ "\t d         data (no loading address)\n"
-							+ "\t l<val>    set/override load address\n"
-							+ "\t x<val>    set execution address\n"
-							+ "\t e<val>    force escape bits\n"
-							+ "\t r<val>    restrict lz search range\n"
-							+ "\t n         no RLE/LZ length optimization\n"
-							+ "\t s         full statistics\n"
-							// #ifdef ENABLE_VERBOSE
-							+ "\t v         verbose\n"
-							// #endif /* ENABLE_VERBOSE */
-							+ "\t p<val>    force extralzposbits\n"
-							+ "\t m<val>    max len 5..7 (2*2^5..2*2^7)\n"
-							+ "\t i<val>    interrupt enable after decompress (0=disable)\n"
-							+ "\t g<val>    memory configuration after decompress\n");
+			System.err.printf("Usage: %s [<infile> [<outfile>]]\n", argv[0]);
 			return -1;
 		}
 
 		if (lzlen == -1)
 			lzlen = DEFAULT_LZLEN;
 
+		InputStream infp;
 		if (fileIn != null) {
 			try {
 				infp = new FileInputStream(new File(fileIn));
@@ -2404,6 +1904,7 @@ public class PUCrunch implements IHeader {
 		}
 
 		if (0 == (flags & F_SKIP)) {
+			byte tmp[] = new byte[2];
 			infp.read(tmp, 0, 2);
 			/* Use it only if not overriden by the user */
 			if (startAddr == -1)
@@ -2414,18 +1915,18 @@ public class PUCrunch implements IHeader {
 
 		/* Read in the data */
 		inlen = 0;
-		buflen = 0;
+		int buflen = 0;
 		indata = null;
 		while (true) {
 			if (buflen < inlen + lrange) {
-				tmp = new byte[buflen + lrange];
+				byte[] tmp = new byte[buflen + lrange];
 				if (indata != null) {
 					System.arraycopy(indata, 0, tmp, 0, buflen);
 				}
 				indata = tmp;
 				buflen += lrange;
 			}
-			newlen = infp.read(indata, inlen, lrange);
+			int newlen = infp.read(indata, inlen, lrange);
 			if (newlen <= 0)
 				break;
 			inlen += newlen;
@@ -2433,7 +1934,7 @@ public class PUCrunch implements IHeader {
 		if (infp != System.in)
 			infp.close();
 
-		if (startAddr < 0x258 && (BIG || startAddr + inlen - 1 > 0xffff)) {
+		if (startAddr < 0x258 && (startAddr + inlen - 1 > 0xffff)) {
 			System.err
 					.printf("Only programs from 0x0258 to 0xffff can be compressed\n");
 			System.err.printf("(the input file is from 0x%04x to 0x%04x)\n",
@@ -2441,110 +1942,14 @@ public class PUCrunch implements IHeader {
 			return -1;
 		}
 
-		switch (machineType) {
-		case 20:
-			machineTypeTxt = "VIC20 with 8k or 16k (or 24k) expansion memory";
-			memStart = 0x1201;
-			memEnd = 0x4000;
-			type |= FIXF_VIC20 | FIXF_WRAP;
+		type |= FIXF_C64 | FIXF_WRAP; /* C64, wrap active */
+		machineTypeTxt = "Commodore 64";
+		memStart = 0x801; /* Loading address */
+		memEnd = 0x10000;
 
-			if (startAddr + inlen > 0x8000) {
-				System.err.printf("Original file exceeds 0x8000 (0x%04x), "
-						+ "not a valid VIC20 file!\n", startAddr + inlen - 1);
-				n = -1;
-				return n;
-			} else if (startAddr + inlen > 0x6000) {
-				if (startAddr < 0x1000) {
-					System.err.printf("Original file exceeds 0x6000 (0x%04x), "
-							+ "3kB+24kB memory expansions assumed\n", startAddr
-							+ inlen - 1);
-					machineTypeTxt = "VIC20 with 3k+24k expansion memory";
-				} else {
-					System.err.printf("Original file exceeds 0x6000 (0x%04x), "
-							+ "24kB memory expansion assumed\n", startAddr
-							+ inlen - 1);
-					machineTypeTxt = "VIC20 with 24k expansion memory";
-				}
-				memEnd = 0x8000;
-			} else if (startAddr + inlen > 0x4000) {
-				if (startAddr < 0x1000) {
-					System.err.printf("Original file exceeds 0x4000 (0x%04x), "
-							+ "3kB+16kB memory expansion assumed\n", startAddr
-							+ inlen - 1);
-					machineTypeTxt = "VIC20 with 3k+16k (or 3k+24k) expansion memory";
-				} else {
-					System.err.printf("Original file exceeds 0x4000 (0x%04x), "
-							+ "16kB memory expansion assumed\n", startAddr
-							+ inlen - 1);
-					machineTypeTxt = "VIC20 with 16k (or 24k) expansion memory";
-				}
-				memEnd = 0x6000;
-			} else if (startAddr + inlen > 0x2000) {
-				if (startAddr < 0x1000) {
-					System.err.printf("Original file exceeds 0x2000 (0x%04x), "
-							+ "3kB+8kB memory expansion assumed\n", startAddr
-							+ inlen - 1);
-					machineTypeTxt = "VIC20 with 3k+8k (or 3k+16k, or 3k+24k) expansion memory";
-				} else {
-					System.err.printf("Original file exceeds 0x2000 (0x%04x), "
-							+ "8kB memory expansion assumed\n", startAddr
-							+ inlen - 1);
-				}
-				/* memEnd = 0x4000; */
-			} else {
-				if (startAddr >= 0x1000 && startAddr < 0x1200) {
-					System.err.printf("Program for unexpanded VIC detected.\n");
-					memStart = 0x1001;
-					memEnd = (flags & F_AVOID) != 0 ? 0x1e00 : 0x2000;
-					machineTypeTxt = "VIC20 without expansion memory";
-				}
-				if (startAddr >= 0x400 && startAddr < 0x1000) {
-					System.out
-							.printf("Program for 3k-expanded VIC detected.\n");
-					memStart = 0x0401;
-					memEnd = (flags & F_AVOID) != 0 ? 0x1e00 : 0x2000;
-					machineTypeTxt = "VIC20 with 3k expansion memory";
-				}
-			}
-			break;
-		case 16:
-		case 4:
-			type |= FIXF_C16 | FIXF_WRAP;
-			if (startAddr + inlen > 0x4000) {
-				System.out
-						.printf("Original file exceeds 0x4000, 61k RAM assumed\n");
-				memStart = 0x1001;
-				memEnd = 0xfd00;
-				machineTypeTxt = "Plus/4";
-			} else {
-				System.out.printf("Program for unexpanded C16 detected.\n");
-				memStart = 0x1001;
-				memEnd = 0x4000;
-				machineTypeTxt = "Commodore 16";
-			}
-			break;
-		case 128:
-			type |= FIXF_C128 | FIXF_WRAP;
-			memStart = 0x1c01;
-			memEnd = 0x10000;
-			machineTypeTxt = "Commodore 128";
-			break;
-		case 0:
-			type |= 0;
-			machineTypeTxt = "Without decompressor";
-			memStart = 0x801;
-			memEnd = 0x10000;
-			break;
-		default: /* C64 */
-			type |= FIXF_C64 | FIXF_WRAP; /* C64, wrap active */
-			machineTypeTxt = "Commodore 64";
-			memStart = 0x801; /* Loading address */
-			memEnd = 0x10000;
-			break;
-		}
-
+		int execAddr = -1;
 		if (startAddr <= memStart) {
-			for (n = memStart - startAddr; n < memStart - startAddr + 60; n++) {
+			for (int n = memStart - startAddr; n < memStart - startAddr + 60; n++) {
 				if (indata[n] == (byte) 0x9e) { /* SYS token */
 					execAddr = 0;
 					n++;
@@ -2583,20 +1988,20 @@ public class PUCrunch implements IHeader {
 		System.out.printf("New load address 0x%04x=%d\n", memStart, memStart);
 		if (machineType == 64) {
 			System.out.printf("Interrupts %s and memory config set to $%02x "
-					+ "after decompression\n", (intConfig == 0x58) ? "enabled"
+					+ "after decompression\n", (cliConfig == 0x58) ? "enabled"
 					: "disabled", memConfig);
 			System.out.printf("Runnable on %s\n", machineTypeTxt);
 		} else if (machineType != 0) {
 			System.out.printf("Interrupts %s after decompression\n",
-					(intConfig == 0x58) ? "enabled" : "disabled");
+					(cliConfig == 0x58) ? "enabled" : "disabled");
 			System.out.printf("Runnable on %s\n", machineTypeTxt);
 		} else {
 			System.out.printf("Standalone decompressor required\n");
 		}
 		IntContainer startEscapeCont = new IntContainer();
-		n = PackLz77(lzlen, flags, startEscapeCont, startAddr + inlen, memEnd,
-				type);
-		startEscape = startEscapeCont.intVal;
+		int n = PackLz77(lzlen, flags, startEscapeCont, startAddr + inlen,
+				memEnd, type);
+		int startEscape = startEscapeCont.intVal;
 		if (0 == n) {
 			int endAddr = startAddr + inlen; /* end for uncompressed data */
 			int hDeCall = 0, progEnd = endAddr;
@@ -2616,25 +2021,14 @@ public class PUCrunch implements IHeader {
 			/* bytes reserved for temporary data expansion (escaped chars) */
 			endAddr += 3 + reservedBytes;
 
-			if (BIG) {
-				endAddr = 0x10000;
-			} /* BIG */
-			if (DELTA) {
-				if (0 == timesDLz) {
-					type &= ~FIXF_DLZ;
-				}
+			if (0 == timesDLz) {
+				type &= ~FIXF_DLZ;
 			}
 			SavePack(type, outBuffer, outPointer, fileOut, startAddr, execAddr,
 					startEscape, rleValues, endAddr, progEnd, extraLZPosBits,
 					(flags & F_2MHZ) != 0 ? 1 : 0, memStart, memEnd);
 
-			timeused = System.currentTimeMillis() - timeused;
-			if (0 == timeused)
-				timeused++;
-			System.out.printf(
-					"Compressed %d bytes in %4.2f seconds (%4.2f kB/sec)\n",
-					inlen, (double) timeused / 1000, (double) 1000 * inlen
-							/ timeused / 1024.0);
+			System.out.printf("Compressed %d bytes\n", inlen);
 		}
 		return n;
 	}
