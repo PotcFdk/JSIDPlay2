@@ -79,19 +79,19 @@ import libsidutils.assembler.KickAssembler;
  */
 public class PUCrunch {
 
-	final static int FIXF_C64 = 1;
-	final static int FIXF_MACHMASK = 0xff; /* Must be exactly correct */
+	private static final int FIXF_C64 = 1;
+	private static final int FIXF_MACHMASK = 0xff; /* Must be exactly correct */
 
-	final static int FIXF_WRAP = 256; /* If requested, must be present */
-	final static int FIXF_DLZ = 512; /* If requested, must be present */
-	final static int FIXF_BASIC = 1024; /* If requested, must be present */
+	private static final int FIXF_WRAP = 256; /* If requested, must be present */
+	private static final int FIXF_DLZ = 512; /* If requested, must be present */
+	private static final int FIXF_BASIC = 1024; /* If requested, must be present */
 
-	final static int FIXF_FAST = 2048;
-	final static int FIXF_SHORT = 4096;
+	private static final int FIXF_FAST = 2048;
+	private static final int FIXF_SHORT = 4096;
 
-	final static int FIXF_MUSTMASK = (FIXF_WRAP | FIXF_DLZ | FIXF_BASIC);
+	private static final int FIXF_MUSTMASK = (FIXF_WRAP | FIXF_DLZ | FIXF_BASIC);
 
-	final static Decruncher DECRUNCHERS[] = {
+	private static final Decruncher DECRUNCHERS[] = {
 			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64.asm",
 					"C64", FIXF_C64),
 			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64S.asm",
@@ -127,29 +127,19 @@ public class PUCrunch {
 
 	private int maxGamma = 7, reservedBytes = 2, escBits = 2, escMask = 0xc0,
 			extraLZPosBits = 0, rleUsed = 15, memConfig = 0x37,
-			cliConfig = 0x58, lrange, maxlzlen, maxrlelen, size = 0,
+			cliConfig = 0x58, lrange = (((2 << maxGamma) - 3) * 256),
+			maxlzlen = (2 << maxGamma),
+			maxrlelen = (((2 << maxGamma) - 2) * 256), size = 0,
 			bitMask = 0x80, timesDLz = 0, inlen, lzopt = 0;
 
-	/**
-	 * 0..125, 126 -> 1..127
-	 */
-	private int LRANGE = (((2 << maxGamma) - 3) * 256);
-	private int MAXLZLEN = (2 << maxGamma);
-	/**
-	 * 0..126 -> 1..127
-	 */
-	private int MAXRLELEN = (((2 << maxGamma) - 2) * 256);
-	private int DEFAULT_LZLEN = LRANGE;
-
-	private byte[] outBuffer = new byte[OUT_SIZE], indata, newesc;
+	private byte[] outBuffer = new byte[OUT_SIZE], indata, newesc,
+			rleValues = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 	private int lenValue[] = new int[256], rleHist[] = new int[256],
 			rleLen[] = new int[256];
 
 	private int lenStat[][] = new int[8][4];
-
-	private byte rleValues[] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 	private int[] rle, elr, lzlen, lzpos, lzmlen, lzmpos, lzlen2, lzpos2, mode,
 			backSkip, length;
@@ -159,44 +149,32 @@ public class PUCrunch {
 	private final KickAssembler assembler = new KickAssembler();
 
 	private Decruncher BestMatch(int type) {
-		int dc = 0;
 		Decruncher best = null;
 
-		while (dc < DECRUNCHERS.length) {
-			if ((DECRUNCHERS[dc].getFlags() & FIXF_MACHMASK) == (type & FIXF_MACHMASK)) {
+		for (Decruncher dc : DECRUNCHERS) {
+			if ((dc.getFlags() & FIXF_MACHMASK) == (type & FIXF_MACHMASK)) {
 				/* machine is correct */
 				/* Require wrap if necessary, allow wrap if not */
 				/* Require delta matches */
-				if (((DECRUNCHERS[dc].getFlags() & type) & FIXF_MUSTMASK) == (type & FIXF_MUSTMASK)) {
+				if (((dc.getFlags() & type) & FIXF_MUSTMASK) == (type & FIXF_MUSTMASK)) {
 
 					/* Haven't found any match or this is better */
 					if (null == best
-							|| ((type & FIXF_WRAP) == (DECRUNCHERS[dc]
-									.getFlags() & FIXF_WRAP) && (0 == (type & (FIXF_FAST | FIXF_SHORT)) || (DECRUNCHERS[dc]
+							|| ((type & FIXF_WRAP) == (dc.getFlags() & FIXF_WRAP) && (0 == (type & (FIXF_FAST | FIXF_SHORT)) || (dc
 									.getFlags() & type & (FIXF_FAST | FIXF_SHORT)) != 0)))
-						best = DECRUNCHERS[dc];
+						best = dc;
 					/* If requirements match exactly, can return */
 					/* Assumes that non-wraps are located before wrap versions */
-					if ((type & (FIXF_FAST | FIXF_SHORT)) == (DECRUNCHERS[dc]
-							.getFlags() & (FIXF_FAST | FIXF_SHORT))) {
-						return DECRUNCHERS[dc];
+					if ((type & (FIXF_FAST | FIXF_SHORT)) == (dc.getFlags() & (FIXF_FAST | FIXF_SHORT))) {
+						return dc;
 					}
 				}
 			}
-			dc++;
 		}
 		if (null == best) {
 			throw new RuntimeException("No matching decompressor found\n");
 		}
 		return best;
-	}
-
-	private static class IntContainer {
-		public IntContainer(int v) {
-			intVal = v;
-		}
-
-		int intVal;
 	}
 
 	private void SavePack(int type, PrintStream fp, int start, int exec,
@@ -352,10 +330,10 @@ public class PUCrunch {
 		return 2 * count;
 	}
 
-	private void InitValueLen() {
-		int i;
-		for (i = 1; i < 256; i++)
+	private void initValueLen() {
+		for (int i = 1; i < 256; i++) {
 			lenValue[i] = RealLenValue(i);
+		}
 	}
 
 	private void PutNBits(int b, int bits) {
@@ -363,26 +341,26 @@ public class PUCrunch {
 			PutBit((b & (1 << bits)));
 	}
 
-	private void OutputNormal(IntContainer esc, byte[] data, int dataPos,
-			int newesc) {
-		if ((data[dataPos + 0] & escMask) == esc.intVal) {
-			PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
+	private int OutputNormal(int esc, byte[] data, int dataPos, int newesc) {
+		if ((data[dataPos + 0] & escMask) == esc) {
+			PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
 			PutValue(2 - 1);
 			PutBit(1);
 			PutBit(0);
 
-			esc.intVal = newesc;
-			PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
+			esc = newesc;
+			PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
 			PutNBits((data[dataPos + 0] & 0xff), 8 - escBits);
 
-			return;
+			return newesc;
 		}
 		PutNBits((data[dataPos + 0] & 0xff), 8);
+		return esc;
 	}
 
-	private void OutputEof(IntContainer esc) {
+	private void OutputEof(int esc) {
 		/* EOF marker */
-		PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
+		PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
 		PutValue(3 - 1); /* >1 */
 		PutValue((2 << maxGamma) - 1); /* Maximum value */
 
@@ -447,8 +425,7 @@ public class PUCrunch {
 		return out;
 	}
 
-	private void OutputRle(IntContainer esc, byte[] data, int dataPos,
-			int rlelen) {
+	private int OutputRle(int esc, byte[] data, int dataPos, int rlelen) {
 		int len = rlelen;
 
 		while (len != 0) {
@@ -471,23 +448,23 @@ public class PUCrunch {
 				else if (len <= 256)
 					lenStat[6][2]++;
 
-				PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
+				PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
 				PutValue(2 - 1);
 				PutBit(1);
 				PutBit(1);
 				PutValue(len - 1);
 				PutRleByte(data[dataPos] & 0xff);
-				return;
+				return esc;
 			}
 			if (len < 3) {
 				while (len-- != 0)
-					OutputNormal(esc, data, dataPos, esc.intVal);
-				return;
+					esc = OutputNormal(esc, data, dataPos, esc);
+				return esc;
 			}
 
 			if (len <= maxrlelen) {
 				/* Run-length encoding */
-				PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
+				PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
 
 				PutValue(2 - 1);
 				PutBit(1);
@@ -500,11 +477,11 @@ public class PUCrunch {
 				PutValue(((len - 1) >> 8) + 1);
 				PutRleByte(data[dataPos] & 0xff);
 
-				return;
+				return esc;
 			}
 
 			/* Run-length encoding */
-			PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
+			PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
 
 			PutValue(2 - 1);
 			PutBit(1);
@@ -520,7 +497,7 @@ public class PUCrunch {
 			len -= maxrlelen;
 			dataPos += maxrlelen;
 		}
-		return;
+		return esc;
 	}
 
 	/* e..e 101 (4..) 111111 111111 8b(add) 8b(POSLO) DLZ */
@@ -528,8 +505,8 @@ public class PUCrunch {
 		return escBits + 2 * maxGamma + 8 + 8 + lenValue[lzlen - 1];
 	}
 
-	private void OutputDLz(IntContainer esc, int lzlen, int lzpos, int add) {
-		PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
+	private void OutputDLz(int esc, int lzlen, int lzpos, int add) {
+		PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
 
 		PutValue(lzlen - 1);
 		PutValue((2 << maxGamma) - 1); /* Maximum value */
@@ -551,7 +528,7 @@ public class PUCrunch {
 		// Bug in the C-Version! lzlen==257
 	}
 
-	private void OutputLz(IntContainer esc, int lzlen, int lzpos, byte[] data,
+	private void OutputLz(int esc, int lzlen, int lzpos, byte[] data,
 			int dataPos, int curpos) {
 		if (lzlen == 2)
 			lenStat[0][1]++;
@@ -573,7 +550,7 @@ public class PUCrunch {
 		if (lzlen >= 2 && lzlen <= maxlzlen) {
 			int tmp;
 
-			PutNBits((esc.intVal >> (8 - escBits)), escBits); /* escBits>=0 */
+			PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
 
 			tmp = ((lzpos - 1) >> (8 + extraLZPosBits)) + 2;
 			if (tmp == 2)
@@ -821,6 +798,14 @@ public class PUCrunch {
 	 * 
 	 * </PRE>
 	 */
+
+	private static class IntContainer {
+		public IntContainer(int v) {
+			intVal = v;
+		}
+
+		private int intVal;
+	}
 
 	private int OptimizeEscape(IntContainer startEscape, IntContainer nonNormal) {
 		int i, j, states = (1 << escBits);
@@ -1542,8 +1527,7 @@ public class PUCrunch {
 		IntContainer escapeCont = new IntContainer(escape);
 		OptimizeEscape(escapeCont, null);
 		escape = escapeCont.intVal;
-		IntContainer startEscape = new IntContainer(escape);
-		startEscape.intVal = escape;
+		int startEscape = escape;
 		OptimizeRle(flags); /* Retune the RLE selections */
 
 		/* Perform rescan */
@@ -1630,41 +1614,32 @@ public class PUCrunch {
 			case LITERAL: /* normal */
 				length[p] = size;
 
-				escapeCont = new IntContainer(escape);
-				OutputNormal(escapeCont, indata, p, newesc[p] & 0xff);
-				escape = escapeCont.intVal;
+				escape = OutputNormal(escape, indata, p, newesc[p] & 0xff);
 				p++;
 				break;
 
 			case DLZ:
 				for (i = 0; i < lzlen2[p]; i++)
 					length[p + i] = size;
-				escapeCont = new IntContainer(escape);
 				OutputDLz(
-						escapeCont,
+						escape,
 						lzlen2[p],
 						lzpos2[p],
 						((indata[p] & 0xff) - (indata[p - lzpos2[p]] & 0xff)) & 0xff);
-				escape = escapeCont.intVal;
 				p += lzlen2[p];
 				break;
 
 			case LZ77: /* lz77 */
 				for (i = 0; i < lzlen[p]; i++)
 					length[p + i] = size;
-				escapeCont = new IntContainer(escape);
-				OutputLz(escapeCont, lzlen[p], lzpos[p], indata, p - lzpos[p],
-						p);
-				escape = escapeCont.intVal;
+				OutputLz(escape, lzlen[p], lzpos[p], indata, p - lzpos[p], p);
 				p += lzlen[p];
 				break;
 
 			case RLE: /* rle */
 				for (i = 0; i < rle[p]; i++)
 					length[p + i] = size;
-				escapeCont = new IntContainer(escape);
-				OutputRle(escapeCont, indata, p, rle[p]);
-				escape = escapeCont.intVal;
+				escape = OutputRle(escape, indata, p, rle[p]);
 				p += rle[p];
 				break;
 
@@ -1674,9 +1649,7 @@ public class PUCrunch {
 				break;
 			}
 		}
-		escapeCont = new IntContainer(escape);
-		OutputEof(escapeCont);
-		escape = escapeCont.intVal;
+		OutputEof(escape);
 
 		/* xxxxxxxxxxxxxxxxxxx uncompressed */
 		/* yyyyyyyyyyyyyyyyy compressed */
@@ -1692,8 +1665,7 @@ public class PUCrunch {
 		else
 			reservedBytes = 0;
 
-		return startEscape.intVal;
-
+		return startEscape;
 	}
 
 	private int getSYSAddr(int offset) {
@@ -1725,10 +1697,7 @@ public class PUCrunch {
 		try (DataInputStream infp = new DataInputStream(new FileInputStream(
 				input)); PrintStream outfp = new PrintStream(output)) {
 
-			lrange = LRANGE;
-			maxlzlen = MAXLZLEN;
-			maxrlelen = MAXRLELEN;
-			InitValueLen();
+			initValueLen();
 
 			int startAddr = (infp.read() & 0xff) + 256 * (infp.read() & 0xff);
 
@@ -1776,7 +1745,7 @@ public class PUCrunch {
 
 			int flags = F_2MHZ | F_AUTO | F_AUTOEX;
 
-			int startEscape = PackLz77(DEFAULT_LZLEN, flags, startAddr + inlen,
+			int startEscape = PackLz77(lrange, flags, startAddr + inlen,
 					memEnd, type);
 			int endAddr = startAddr + inlen; /* end for uncompressed data */
 			int progEnd = endAddr;
