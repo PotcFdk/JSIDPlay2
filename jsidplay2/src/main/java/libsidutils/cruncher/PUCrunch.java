@@ -14,6 +14,8 @@ import libsidutils.assembler.KickAssembler;
 
 public class PUCrunch implements IHeader {
 
+	private static final boolean VERBOSE = false;
+
 	private int maxGamma = 7, reservedBytes = 2, escBits = 2, escMask = 0xc0,
 			extraLZPosBits = 0, rleUsed = 15, memConfig = 0x37,
 			cliConfig = 0x58;
@@ -124,63 +126,20 @@ public class PUCrunch implements IHeader {
 		int intVal;
 	}
 
-	private int SavePack(int type, byte[] data, int size, PrintStream fp,
+	private void SavePack(int type, byte[] data, int size, PrintStream fp,
 			int start, int exec, int escape, byte[] rleValues, int endAddr,
-			int progEnd, int extraLZPosBits, int enable2MHz, int memStart,
+			int progEnd, int extraLZPosBits, boolean enable2MHz, int memStart,
 			int memEnd) {
 		FixStruct dc;
 		int i, overlap = 0, stackUsed = 0, ibufferUsed = 0;
 
-		if (null == data)
-			return 10;
-
-		if ((type & FIXF_MACHMASK) == 0) {
-			/* Save without decompressor */
-
-			byte head[] = new byte[64];
-			int cnt = 0;
-
-			head[cnt++] = (byte) ((endAddr + overlap - size) & 0xff); /* INPOS */
-			head[cnt++] = (byte) ((endAddr + overlap - size) >> 8);
-
-			head[cnt++] = 'p';
-			head[cnt++] = 'u';
-
-			head[cnt++] = (byte) ((endAddr - 0x100) & 0xff);
-			head[cnt++] = (byte) ((endAddr - 0x100) >> 8);
-
-			head[cnt++] = (byte) (escape >> (8 - escBits));
-			head[cnt++] = (byte) (start & 0xff); /* OUTPOS */
-			head[cnt++] = (byte) (start >> 8);
-			head[cnt++] = (byte) escBits;
-			/* head[cnt++] = 8-escBits; */
-
-			head[cnt++] = (byte) (maxGamma + 1);
-			/* head[cnt++] = (8-maxGamma); *//* Long RLE */
-			head[cnt++] = (byte) (1 << maxGamma); /* Short/Long RLE */
-			/* head[cnt++] = (2<<maxGamma)-1; *//* EOF (maxGammaValue) */
-
-			head[cnt++] = (byte) extraLZPosBits;
-
-			head[cnt++] = (byte) (exec & 0xff);
-			head[cnt++] = (byte) (exec >> 8);
-
-			head[cnt++] = (byte) rleUsed;
-			for (i = 1; i <= rleUsed; i++) {
-				head[cnt++] = rleValues[i];
-			}
-
-			fp.write(head, 0, cnt);
-			fp.write(data, 0, cnt);
-			return 0;
-		}
 		if ((memStart & 0xff) != 1) {
-			System.err.printf("Misaligned basic start 0x%04x\n", memStart);
-			return 10;
+			throw new RuntimeException(String.format(
+					"Misaligned basic start 0x%04x\n", memStart));
 		} else if (memStart > 9999) {
 			/* The basic line only holds 4 digits.. */
-			System.err.printf("Too high basic start 0x%04x\n", memStart);
-			return 10;
+			throw new RuntimeException(String.format(
+					"Too high basic start 0x%04x\n", memStart));
 		}
 
 		if (endAddr > memEnd) {
@@ -208,12 +167,11 @@ public class PUCrunch implements IHeader {
 		}
 		dc = BestMatch(type);
 		if (null == dc) {
-			System.err.printf("No matching decompressor found\n");
-			return 10;
+			throw new RuntimeException("No matching decompressor found\n");
 		}
 		HashMap<String, String> globals = new HashMap<String, String>();
 		globals.put("pc", String.valueOf(memStart));
-		globals.put("ftFastDisable", String.valueOf(enable2MHz));
+		globals.put("ftFastDisable", String.valueOf(enable2MHz ? 1 : 0));
 		globals.put("ftOverlap",
 				String.valueOf(overlap != 0 ? (overlap - 1) : 0));
 		globals.put("ftOverlapAddr",
@@ -239,7 +197,8 @@ public class PUCrunch implements IHeader {
 			memStart = 0x801;
 
 		stackUsed = labels.get("ftStackSize");
-		ibufferUsed = labels.get("ftIBufferSize");
+		ibufferUsed = labels.get("ftIBufferSize") != null ? labels
+				.get("ftIBufferSize") : 0;
 
 		for (i = 1; i <= 15; i++)
 			header[header.length - 15 + i - 1] = rleValues[i];
@@ -262,7 +221,6 @@ public class PUCrunch implements IHeader {
 			System.out.printf("$200-$%x, ", 0x200 + ibufferUsed);
 		System.out.printf("and $%04x-$%04x.\n", (start < memStart + 1) ? start
 				: memStart + 1, endAddr - 1);
-		return 0;
 	}
 
 	private static final int F_STATS = (1 << 1);
@@ -1825,12 +1783,9 @@ public class PUCrunch implements IHeader {
 
 	}
 
-	public void crunch(String[] args) throws IOException {
-		if (args.length != 2) {
-			throw new RuntimeException("Usage: <infile> <outfile>");
-		}
+	public void crunch(String input, String output) throws IOException {
 		try (DataInputStream infp = new DataInputStream(new FileInputStream(
-				args[0])); PrintStream outfp = new PrintStream(args[1])) {
+				input)); PrintStream outfp = new PrintStream(output)) {
 
 			lrange = LRANGE;
 			maxlzlen = MAXLZLEN;
@@ -1852,28 +1807,14 @@ public class PUCrunch implements IHeader {
 						"Only programs from 0x0258 to 0xffff can be compressed");
 			}
 
-			int type = FIXF_C64 | FIXF_WRAP; /* C64, wrap active */
+			int type = FIXF_C64 | FIXF_WRAP | FIXF_BASIC; /*
+														 * C64, wrap active,
+														 * basic
+														 */
 			int memStart = 0x801; /* Loading address */
 			int memEnd = 0x10000;
 
-			int execAddr = -1;
-			if (startAddr <= memStart) {
-				for (int n = memStart - startAddr; n < memStart - startAddr
-						+ 60; n++) {
-					if (indata[n] == (byte) 0x9e) { /* SYS token */
-						execAddr = 0;
-						n++;
-						/* Skip spaces and parens */
-						while (indata[n] == '(' || indata[n] == ' ')
-							n++;
-
-						while (indata[n] >= '0' && indata[n] <= '9') {
-							execAddr = execAddr * 10 + indata[n++] - '0';
-						}
-						break;
-					}
-				}
-			}
+			int execAddr = getSYSAddr(memStart - startAddr);
 			if (execAddr < startAddr || execAddr >= startAddr + inlen) {
 				if ((type & FIXF_BASIC) != 0) {
 					execAddr = 0xa7ae;
@@ -1882,21 +1823,26 @@ public class PUCrunch implements IHeader {
 							"Note: The execution address was not detected correctly!");
 				}
 			}
-			System.out.printf("Crunching " + args[0]);
-			System.out.printf("Load address 0x%04x, End address 0x%04x\n",
-					startAddr, startAddr + inlen - 1);
-			System.out.printf("Exec address 0x%04x\n", execAddr);
-			System.out.printf("New load address 0x%04x\n", memStart);
-			System.out.printf("Interrupts %s and memory config set to $%02x "
-					+ "after decompression\n", (cliConfig == 0x58) ? "enabled"
-					: "disabled", memConfig);
+			if (VERBOSE) {
+				System.out.printf("Crunching " + input);
+				System.out.printf("Load address 0x%04x, End address 0x%04x\n",
+						startAddr, startAddr + inlen - 1);
+				System.out.printf("Exec address 0x%04x\n", execAddr);
+				System.out.printf("New load address 0x%04x\n", memStart);
+				System.out
+						.printf("Interrupts %s and memory config set to $%02x "
+								+ "after decompression\n",
+								(cliConfig == 0x58) ? "enabled" : "disabled",
+								memConfig);
+			}
 
 			int flags = F_2MHZ | F_AUTO | F_AUTOEX;
 
 			int startEscape = PackLz77(DEFAULT_LZLEN, flags, startAddr + inlen,
 					memEnd, type);
 			int endAddr = startAddr + inlen; /* end for uncompressed data */
-			int hDeCall = 0, progEnd = endAddr;
+			int progEnd = endAddr;
+			int hDeCall = 512/* estimated maximum decruncher size */;
 			if (endAddr - ((outPointer + 255) & ~255) < memStart + hDeCall + 3) {
 				/* would overwrite the decompressor, move a bit upwards */
 				System.out.printf(
@@ -1906,9 +1852,6 @@ public class PUCrunch implements IHeader {
 								+ hDeCall + 3);
 				endAddr = memStart + hDeCall + 3 + ((outPointer + 255) & ~255);
 			}
-			/*
-			 * Should check that endAddr really is larger than original endaddr!
-			 */
 			/* 3 bytes reserved for EOF */
 			/* bytes reserved for temporary data expansion (escaped chars) */
 			endAddr += 3 + reservedBytes;
@@ -1918,10 +1861,31 @@ public class PUCrunch implements IHeader {
 			}
 			SavePack(type, outBuffer, outPointer, outfp, startAddr, execAddr,
 					startEscape, rleValues, endAddr, progEnd, extraLZPosBits,
-					(flags & F_2MHZ) != 0 ? 1 : 0, memStart, memEnd);
+					(flags & F_2MHZ) != 0, memStart, memEnd);
 
 			System.out.printf("Compressed %d bytes\n", inlen);
 		}
+	}
+
+	private int getSYSAddr(int offset) {
+		int execAddr = -1;
+		if (0 <= offset) {
+			for (int i = offset; i < offset + 60; i++) {
+				if (indata[i] == (byte) 0x9e) { /* SYS token */
+					execAddr = 0;
+					i++;
+					/* Skip spaces and parens */
+					while (indata[i] == '(' || indata[i] == ' ')
+						i++;
+
+					while (indata[i] >= '0' && indata[i] <= '9') {
+						execAddr = execAddr * 10 + indata[i++] - '0';
+					}
+					break;
+				}
+			}
+		}
+		return execAddr;
 	}
 
 }

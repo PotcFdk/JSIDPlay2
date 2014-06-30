@@ -11,7 +11,7 @@ basic:	.word 0
 	sta $01
 	lda #$aa
 	sta $2d
-	lda #cmdLineVars.get("ftBEndHi").asNumber()
+	lda #>cmdLineVars.get("ftBEndAddr").asNumber()
 	sta $2e
 .label ftStackSize=*+1
 	ldx #$E5
@@ -173,4 +173,4 @@ t1:
 data2:
 .byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 }
-end
+end:
