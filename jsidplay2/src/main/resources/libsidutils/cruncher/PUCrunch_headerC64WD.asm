@@ -211,6 +211,20 @@ loop9:
 	.byte cmdLineVars.get("ftCli").asNumber()
 	jmp.abs cmdLineVars.get("ftExec").asNumber()
 data2:
-.byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+.byte cmdLineVars.get("rleValue1").asNumber()
+.byte cmdLineVars.get("rleValue2").asNumber()
+.byte cmdLineVars.get("rleValue3").asNumber()
+.byte cmdLineVars.get("rleValue4").asNumber()
+.byte cmdLineVars.get("rleValue5").asNumber()
+.byte cmdLineVars.get("rleValue6").asNumber()
+.byte cmdLineVars.get("rleValue7").asNumber()
+.byte cmdLineVars.get("rleValue8").asNumber()
+.byte cmdLineVars.get("rleValue9").asNumber()
+.byte cmdLineVars.get("rleValue10").asNumber()
+.byte cmdLineVars.get("rleValue11").asNumber()
+.byte cmdLineVars.get("rleValue12").asNumber()
+.byte cmdLineVars.get("rleValue13").asNumber()
+.byte cmdLineVars.get("rleValue14").asNumber()
+.byte cmdLineVars.get("rleValue15").asNumber()
 }
 end:
