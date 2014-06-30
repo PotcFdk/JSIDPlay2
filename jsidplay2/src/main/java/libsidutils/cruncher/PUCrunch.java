@@ -2,6 +2,7 @@
 /* Pucrunch is now under LGPL: see the doc for details. */
 package libsidutils.cruncher;
 
+import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1824,45 +1825,29 @@ public class PUCrunch implements IHeader {
 
 	}
 
-	public int run(String[] args) throws IOException {
+	public void crunch(String[] args) throws IOException {
 		if (args.length != 2) {
-			System.err.println("Usage: %s <infile> <outfile>");
-			return -1;
+			throw new RuntimeException("Usage: <infile> <outfile>");
 		}
-		try (InputStream infp = new FileInputStream(args[0]);
-				PrintStream outfp = new PrintStream(args[1])) {
+		try (DataInputStream infp = new DataInputStream(new FileInputStream(
+				args[0])); PrintStream outfp = new PrintStream(args[1])) {
 
 			lrange = LRANGE;
 			maxlzlen = MAXLZLEN;
 			maxrlelen = MAXRLELEN;
 			InitValueLen();
 
-			int flags = F_2MHZ | F_AUTO | F_AUTOEX;
-
-			byte tmp[] = new byte[2];
-			infp.read(tmp, 0, 2);
-			int startAddr = (tmp[0] & 0xff) + 256 * (tmp[1] & 0xff);
+			int startAddr = (infp.read() & 0xff) + 256 * (infp.read() & 0xff);
 
 			/* Read in the data */
-			inlen = 0;
-			indata = null;
-			int buflen = 0;
-			while (true) {
-				if (buflen < inlen + lrange) {
-					tmp = new byte[buflen + lrange];
-					if (indata != null) {
-						System.arraycopy(indata, 0, tmp, 0, buflen);
-					}
-					indata = tmp;
-					buflen += lrange;
-				}
-				int newlen = infp.read(indata, inlen, lrange);
-				if (newlen <= 0)
-					break;
-				inlen += newlen;
+			indata = new byte[lrange];
+			int count = 0;
+			while (inlen < lrange
+					&& (count = infp.read(indata, inlen, lrange - inlen)) >= 0) {
+				inlen += count;
 			}
 
-			if (startAddr < 0x258 && (startAddr + inlen - 1 > 0xffff)) {
+			if (startAddr < 0x258 || startAddr + inlen - 1 > 0xffff) {
 				throw new RuntimeException(
 						"Only programs from 0x0258 to 0xffff can be compressed");
 			}
@@ -1898,15 +1883,16 @@ public class PUCrunch implements IHeader {
 				}
 			}
 			System.out.printf("Crunching " + args[0]);
-			System.out.printf("Load address 0x%04x=%d, Last byte 0x%04x=%d\n",
-					startAddr, startAddr, startAddr + inlen - 1, startAddr
-							+ inlen - 1);
-			System.out.printf("Exec address 0x%04x=%d\n", execAddr, execAddr);
-			System.out.printf("New load address 0x%04x=%d\n", memStart,
-					memStart);
+			System.out.printf("Load address 0x%04x, End address 0x%04x\n",
+					startAddr, startAddr + inlen - 1);
+			System.out.printf("Exec address 0x%04x\n", execAddr);
+			System.out.printf("New load address 0x%04x\n", memStart);
 			System.out.printf("Interrupts %s and memory config set to $%02x "
 					+ "after decompression\n", (cliConfig == 0x58) ? "enabled"
 					: "disabled", memConfig);
+
+			int flags = F_2MHZ | F_AUTO | F_AUTOEX;
+
 			int startEscape = PackLz77(DEFAULT_LZLEN, flags, startAddr + inlen,
 					memEnd, type);
 			int endAddr = startAddr + inlen; /* end for uncompressed data */
@@ -1935,7 +1921,6 @@ public class PUCrunch implements IHeader {
 					(flags & F_2MHZ) != 0 ? 1 : 0, memStart, memEnd);
 
 			System.out.printf("Compressed %d bytes\n", inlen);
-			return 0;
 		}
 	}
 

@@ -616,7 +616,7 @@ public class Psid64 {
 			outfile.write(convert());
 		}
 		// crunch result
-		new PUCrunch().run(new String[] {
+		new PUCrunch().crunch(new String[] {
 				tmpFile.getAbsolutePath(),
 				new File(target, PathUtils.getBaseNameNoExt(file.getName())
 						+ ".prg").getAbsolutePath() });
