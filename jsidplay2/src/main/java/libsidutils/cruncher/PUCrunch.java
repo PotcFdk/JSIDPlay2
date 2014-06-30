@@ -2,7 +2,6 @@
 /* Pucrunch is now under LGPL: see the doc for details. */
 package libsidutils.cruncher;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +14,8 @@ import libsidutils.assembler.KickAssembler;
 public class PUCrunch implements IHeader {
 
 	private int maxGamma = 7, reservedBytes = 2, escBits = 2, escMask = 0xc0,
-			extraLZPosBits = 0, rleUsed = 15, memConfig = 0x37, cliConfig = 0x58;
+			extraLZPosBits = 0, rleUsed = 15, memConfig = 0x37,
+			cliConfig = 0x58;
 
 	private final KickAssembler assembler = new KickAssembler();
 	private Map<String, Integer> labels;
@@ -120,74 +120,58 @@ public class PUCrunch implements IHeader {
 			intVal = v;
 		}
 
-		public IntContainer() {
-		}
-
 		int intVal;
 	}
 
-	private int SavePack(int type, byte[] data, int size, String target,
+	private int SavePack(int type, byte[] data, int size, PrintStream fp,
 			int start, int exec, int escape, byte[] rleValues, int endAddr,
 			int progEnd, int extraLZPosBits, int enable2MHz, int memStart,
 			int memEnd) {
-		PrintStream fp = null;
 		FixStruct dc;
 		int i, overlap = 0, stackUsed = 0, ibufferUsed = 0;
 
 		if (null == data)
 			return 10;
-		if (null == target)
-			fp = System.out;
 
 		if ((type & FIXF_MACHMASK) == 0) {
 			/* Save without decompressor */
 
-			try {
-				if (null == fp) {
-					fp = new PrintStream(target);
-					byte head[] = new byte[64];
-					int cnt = 0;
+			byte head[] = new byte[64];
+			int cnt = 0;
 
-					head[cnt++] = (byte) ((endAddr + overlap - size) & 0xff); /* INPOS */
-					head[cnt++] = (byte) ((endAddr + overlap - size) >> 8);
+			head[cnt++] = (byte) ((endAddr + overlap - size) & 0xff); /* INPOS */
+			head[cnt++] = (byte) ((endAddr + overlap - size) >> 8);
 
-					head[cnt++] = 'p';
-					head[cnt++] = 'u';
+			head[cnt++] = 'p';
+			head[cnt++] = 'u';
 
-					head[cnt++] = (byte) ((endAddr - 0x100) & 0xff);
-					head[cnt++] = (byte) ((endAddr - 0x100) >> 8);
+			head[cnt++] = (byte) ((endAddr - 0x100) & 0xff);
+			head[cnt++] = (byte) ((endAddr - 0x100) >> 8);
 
-					head[cnt++] = (byte) (escape >> (8 - escBits));
-					head[cnt++] = (byte) (start & 0xff); /* OUTPOS */
-					head[cnt++] = (byte) (start >> 8);
-					head[cnt++] = (byte) escBits;
-					/* head[cnt++] = 8-escBits; */
+			head[cnt++] = (byte) (escape >> (8 - escBits));
+			head[cnt++] = (byte) (start & 0xff); /* OUTPOS */
+			head[cnt++] = (byte) (start >> 8);
+			head[cnt++] = (byte) escBits;
+			/* head[cnt++] = 8-escBits; */
 
-					head[cnt++] = (byte) (maxGamma + 1);
-					/* head[cnt++] = (8-maxGamma); *//* Long RLE */
-					head[cnt++] = (byte) (1 << maxGamma); /* Short/Long RLE */
-					/* head[cnt++] = (2<<maxGamma)-1; *//* EOF (maxGammaValue) */
+			head[cnt++] = (byte) (maxGamma + 1);
+			/* head[cnt++] = (8-maxGamma); *//* Long RLE */
+			head[cnt++] = (byte) (1 << maxGamma); /* Short/Long RLE */
+			/* head[cnt++] = (2<<maxGamma)-1; *//* EOF (maxGammaValue) */
 
-					head[cnt++] = (byte) extraLZPosBits;
+			head[cnt++] = (byte) extraLZPosBits;
 
-					head[cnt++] = (byte) (exec & 0xff);
-					head[cnt++] = (byte) (exec >> 8);
+			head[cnt++] = (byte) (exec & 0xff);
+			head[cnt++] = (byte) (exec >> 8);
 
-					head[cnt++] = (byte) rleUsed;
-					for (i = 1; i <= rleUsed; i++) {
-						head[cnt++] = rleValues[i];
-					}
-
-					fp.write(head, 0, cnt);
-					fp.write(data, 0, cnt);
-					if (fp != System.out)
-						fp.close();
-					return 0;
-				}
-			} catch (IOException e) {
-				System.err.printf("Could not open %s for writing\n", target);
-				return 10;
+			head[cnt++] = (byte) rleUsed;
+			for (i = 1; i <= rleUsed; i++) {
+				head[cnt++] = rleValues[i];
 			}
+
+			fp.write(head, 0, cnt);
+			fp.write(data, 0, cnt);
+			return 0;
 		}
 		if ((memStart & 0xff) != 1) {
 			System.err.printf("Misaligned basic start 0x%04x\n", memStart);
@@ -260,24 +244,12 @@ public class PUCrunch implements IHeader {
 			header[header.length - 15 + i - 1] = rleValues[i];
 
 		System.out.printf("Saving %s\n", dc.name);
-		try {
-			if (null == fp) {
-				fp = new PrintStream(target);
-				fp.write(header, 0, header.length + rleUsed - 15);
-				fp.write(data, 0, size);
-				if (fp != System.out)
-					fp.close();
-			}
-		} catch (IOException e) {
-			System.err.printf("Could not open %s for writing\n", target);
-			return 10;
-		}
+		fp.write(header, 0, header.length + rleUsed - 15);
+		fp.write(data, 0, size);
 		if ((dc.flags & FIXF_SHORT) != 0) {
-			System.out.printf("%s uses the memory $2d-$30, ",
-					target != null ? target : "");
+			System.out.printf("Uses the memory $2d-$30, ");
 		} else {
-			System.out.printf("%s uses the memory $2d/$2e, ",
-					target != null ? target : "");
+			System.out.printf("Uses the memory $2d/$2e, ");
 		}
 		if (overlap != 0)
 			System.out.printf("$4b-$%02x, ", 0x4b + overlap);
@@ -296,13 +268,10 @@ public class PUCrunch implements IHeader {
 	private static final int F_AUTO = (1 << 2);
 	private static final int F_NOOPT = (1 << 3);
 	private static final int F_AUTOEX = (1 << 4);
-	private static final int F_SKIP = (1 << 5);
 	private static final int F_2MHZ = (1 << 6);
 	// private static final int F_DELTA = (1 << 8);
 
 	private static final int F_NORLE = (1 << 9);
-
-	private static final int F_ERROR = (1 << 15);
 
 	/**
 	 * 0..125, 126 -> 1..127
@@ -1072,8 +1041,7 @@ public class PUCrunch implements IHeader {
 		InitRleLen();
 	}
 
-	private int PackLz77(int lzsz, int flags, IntContainer startEscape,
-			int endAddr, int memEnd, int type) {
+	private int PackLz77(int lzsz, int flags, int endAddr, int memEnd, int type) {
 		int i, j, p;
 		int escape = 0;
 		// #ifdef HASH_COMPARE
@@ -1698,8 +1666,8 @@ public class PUCrunch implements IHeader {
 		IntContainer escapeCont = new IntContainer(escape);
 		OptimizeEscape(escapeCont, null);
 		escape = escapeCont.intVal;
-		if (startEscape != null)
-			startEscape.intVal = escape;
+		IntContainer startEscape = new IntContainer(escape);
+		startEscape.intVal = escape;
 		OptimizeRle(flags); /* Retune the RLE selections */
 
 		/* Perform rescan */
@@ -1852,162 +1820,98 @@ public class PUCrunch implements IHeader {
 		else
 			reservedBytes = 0;
 
-		return 0;
+		return startEscape.intVal;
+
 	}
 
-	public int run(String[] argv) throws IOException {
-		int ea = -1, startAddr = -1;
-		int flags = F_2MHZ, lzlen = -1;
-		String fileIn = null, fileOut = null;
-
-		int machineType = 64;
-		String machineTypeTxt;
-		int memStart, memEnd;
-		int type = 0;
-
-		lrange = LRANGE;
-		maxlzlen = MAXLZLEN;
-		maxrlelen = MAXRLELEN;
-		InitValueLen();
-
-		flags |= (F_AUTO | F_AUTOEX);
-		for (int n = 0; n < argv.length; n++) {
-			if (null == fileIn) {
-				fileIn = argv[n];
-			} else if (null == fileOut) {
-				fileOut = argv[n];
-			} else {
-				System.err.printf("Only two filenames wanted!\n");
-				flags |= F_ERROR;
-			}
-		}
-
-		if ((flags & F_ERROR) != 0) {
-			System.err.printf("Usage: %s [<infile> [<outfile>]]\n", argv[0]);
+	public int run(String[] args) throws IOException {
+		if (args.length != 2) {
+			System.err.println("Usage: %s <infile> <outfile>");
 			return -1;
 		}
+		try (InputStream infp = new FileInputStream(args[0]);
+				PrintStream outfp = new PrintStream(args[1])) {
 
-		if (lzlen == -1)
-			lzlen = DEFAULT_LZLEN;
+			lrange = LRANGE;
+			maxlzlen = MAXLZLEN;
+			maxrlelen = MAXRLELEN;
+			InitValueLen();
 
-		InputStream infp;
-		if (fileIn != null) {
-			try {
-				infp = new FileInputStream(new File(fileIn));
-			} catch (IOException e) {
-				System.err.printf("Could not open %s for reading!\n", fileIn);
-				return -1;
-			}
-		} else {
-			System.out.printf("Reading from stdin\n");
-			infp = System.in;
-		}
+			int flags = F_2MHZ | F_AUTO | F_AUTOEX;
 
-		if (0 == (flags & F_SKIP)) {
 			byte tmp[] = new byte[2];
 			infp.read(tmp, 0, 2);
-			/* Use it only if not overriden by the user */
-			if (startAddr == -1)
-				startAddr = (tmp[0] & 0xff) + 256 * (tmp[1] & 0xff);
-		}
-		if (startAddr == -1)
-			startAddr = 0x258;
+			int startAddr = (tmp[0] & 0xff) + 256 * (tmp[1] & 0xff);
 
-		/* Read in the data */
-		inlen = 0;
-		int buflen = 0;
-		indata = null;
-		while (true) {
-			if (buflen < inlen + lrange) {
-				byte[] tmp = new byte[buflen + lrange];
-				if (indata != null) {
-					System.arraycopy(indata, 0, tmp, 0, buflen);
-				}
-				indata = tmp;
-				buflen += lrange;
-			}
-			int newlen = infp.read(indata, inlen, lrange);
-			if (newlen <= 0)
-				break;
-			inlen += newlen;
-		}
-		if (infp != System.in)
-			infp.close();
-
-		if (startAddr < 0x258 && (startAddr + inlen - 1 > 0xffff)) {
-			System.err
-					.printf("Only programs from 0x0258 to 0xffff can be compressed\n");
-			System.err.printf("(the input file is from 0x%04x to 0x%04x)\n",
-					startAddr, startAddr + inlen - 1);
-			return -1;
-		}
-
-		type |= FIXF_C64 | FIXF_WRAP; /* C64, wrap active */
-		machineTypeTxt = "Commodore 64";
-		memStart = 0x801; /* Loading address */
-		memEnd = 0x10000;
-
-		int execAddr = -1;
-		if (startAddr <= memStart) {
-			for (int n = memStart - startAddr; n < memStart - startAddr + 60; n++) {
-				if (indata[n] == (byte) 0x9e) { /* SYS token */
-					execAddr = 0;
-					n++;
-					/* Skip spaces and parens */
-					while (indata[n] == '(' || indata[n] == ' ')
-						n++;
-
-					while (indata[n] >= '0' && indata[n] <= '9') {
-						execAddr = execAddr * 10 + indata[n++] - '0';
+			/* Read in the data */
+			inlen = 0;
+			indata = null;
+			int buflen = 0;
+			while (true) {
+				if (buflen < inlen + lrange) {
+					tmp = new byte[buflen + lrange];
+					if (indata != null) {
+						System.arraycopy(indata, 0, tmp, 0, buflen);
 					}
+					indata = tmp;
+					buflen += lrange;
+				}
+				int newlen = infp.read(indata, inlen, lrange);
+				if (newlen <= 0)
 					break;
+				inlen += newlen;
+			}
+
+			if (startAddr < 0x258 && (startAddr + inlen - 1 > 0xffff)) {
+				throw new RuntimeException(
+						"Only programs from 0x0258 to 0xffff can be compressed");
+			}
+
+			int type = FIXF_C64 | FIXF_WRAP; /* C64, wrap active */
+			int memStart = 0x801; /* Loading address */
+			int memEnd = 0x10000;
+
+			int execAddr = -1;
+			if (startAddr <= memStart) {
+				for (int n = memStart - startAddr; n < memStart - startAddr
+						+ 60; n++) {
+					if (indata[n] == (byte) 0x9e) { /* SYS token */
+						execAddr = 0;
+						n++;
+						/* Skip spaces and parens */
+						while (indata[n] == '(' || indata[n] == ' ')
+							n++;
+
+						while (indata[n] >= '0' && indata[n] <= '9') {
+							execAddr = execAddr * 10 + indata[n++] - '0';
+						}
+						break;
+					}
 				}
 			}
-		}
-		if (ea != -1) {
-			if (execAddr != -1 && ea != execAddr)
-				System.out.printf("Discarding execution address 0x%04x=%d\n",
-						execAddr, execAddr);
-			execAddr = ea;
-		} else if (execAddr < startAddr || execAddr >= startAddr + inlen) {
-			if ((type & FIXF_BASIC) != 0) {
-				execAddr = 0xa7ae;
-			} else {
-				System.err
-						.printf("Note: The execution address was not detected "
-								+ "correctly!\n");
-				System.err
-						.printf("      Use the -x option to set the execution "
-								+ "address.\n");
+			if (execAddr < startAddr || execAddr >= startAddr + inlen) {
+				if ((type & FIXF_BASIC) != 0) {
+					execAddr = 0xa7ae;
+				} else {
+					throw new RuntimeException(
+							"Note: The execution address was not detected correctly!");
+				}
 			}
-		}
-		System.out.printf("Load address 0x%04x=%d, Last byte 0x%04x=%d\n",
-				startAddr, startAddr, startAddr + inlen - 1, startAddr + inlen
-						- 1);
-		System.out.printf("Exec address 0x%04x=%d\n", execAddr, execAddr);
-		System.out.printf("New load address 0x%04x=%d\n", memStart, memStart);
-		if (machineType == 64) {
+			System.out.printf("Crunching " + args[0]);
+			System.out.printf("Load address 0x%04x=%d, Last byte 0x%04x=%d\n",
+					startAddr, startAddr, startAddr + inlen - 1, startAddr
+							+ inlen - 1);
+			System.out.printf("Exec address 0x%04x=%d\n", execAddr, execAddr);
+			System.out.printf("New load address 0x%04x=%d\n", memStart,
+					memStart);
 			System.out.printf("Interrupts %s and memory config set to $%02x "
 					+ "after decompression\n", (cliConfig == 0x58) ? "enabled"
 					: "disabled", memConfig);
-			System.out.printf("Runnable on %s\n", machineTypeTxt);
-		} else if (machineType != 0) {
-			System.out.printf("Interrupts %s after decompression\n",
-					(cliConfig == 0x58) ? "enabled" : "disabled");
-			System.out.printf("Runnable on %s\n", machineTypeTxt);
-		} else {
-			System.out.printf("Standalone decompressor required\n");
-		}
-		IntContainer startEscapeCont = new IntContainer();
-		int n = PackLz77(lzlen, flags, startEscapeCont, startAddr + inlen,
-				memEnd, type);
-		int startEscape = startEscapeCont.intVal;
-		if (0 == n) {
+			int startEscape = PackLz77(DEFAULT_LZLEN, flags, startAddr + inlen,
+					memEnd, type);
 			int endAddr = startAddr + inlen; /* end for uncompressed data */
 			int hDeCall = 0, progEnd = endAddr;
-			if (machineType != 0
-					&& endAddr - ((outPointer + 255) & ~255) < memStart
-							+ hDeCall + 3) {
+			if (endAddr - ((outPointer + 255) & ~255) < memStart + hDeCall + 3) {
 				/* would overwrite the decompressor, move a bit upwards */
 				System.out.printf(
 						"$%x < $%x, decompressor overwrite possible, "
@@ -2016,7 +1920,9 @@ public class PUCrunch implements IHeader {
 								+ hDeCall + 3);
 				endAddr = memStart + hDeCall + 3 + ((outPointer + 255) & ~255);
 			}
-			/* Should check that endAddr really is larger than original endaddr! */
+			/*
+			 * Should check that endAddr really is larger than original endaddr!
+			 */
 			/* 3 bytes reserved for EOF */
 			/* bytes reserved for temporary data expansion (escaped chars) */
 			endAddr += 3 + reservedBytes;
@@ -2024,13 +1930,13 @@ public class PUCrunch implements IHeader {
 			if (0 == timesDLz) {
 				type &= ~FIXF_DLZ;
 			}
-			SavePack(type, outBuffer, outPointer, fileOut, startAddr, execAddr,
+			SavePack(type, outBuffer, outPointer, outfp, startAddr, execAddr,
 					startEscape, rleValues, endAddr, progEnd, extraLZPosBits,
 					(flags & F_2MHZ) != 0 ? 1 : 0, memStart, memEnd);
 
 			System.out.printf("Compressed %d bytes\n", inlen);
+			return 0;
 		}
-		return n;
 	}
 
 }
