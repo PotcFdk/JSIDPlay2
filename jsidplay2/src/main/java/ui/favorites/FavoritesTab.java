@@ -335,7 +335,7 @@ public class FavoritesTab extends Tab implements UIPart {
 			}
 			Psid64 c = new Psid64();
 			c.setTmpDir(util.getConfig().getSidplay2().getTmpDir());
-			c.setVerbose(true);
+			c.setVerbose(false);
 			try {
 				c.convertFiles(util.getPlayer(), files.toArray(new File[0]),
 						directory, sidPlay2Section.getHvscFile());
