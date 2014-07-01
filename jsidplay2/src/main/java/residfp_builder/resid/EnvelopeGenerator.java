@@ -367,7 +367,7 @@ public final class EnvelopeGenerator {
 	 *
 	 * @return envelope counter
 	 */
-	protected byte readENV() {
+	public byte readENV() {
 		return envelopeValue;
 	}
 

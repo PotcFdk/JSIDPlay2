@@ -161,6 +161,15 @@ public class ReSID extends SIDEmu {
 	}
 
 	/**
+	 * Gets the {@link SID} instance being used.
+	 *
+	 * @return The {@link SID} instance being used.
+	 */
+	public SID sid() {
+		return sid;
+	}
+
+	/**
 	 * Set the emulated SID model
 	 * 
 	 * @param model

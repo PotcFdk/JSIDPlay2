@@ -21,6 +21,8 @@
  */
 package residfp_builder.resid;
 
+import resid_builder.resid.ChipModel;
+
 /**
  * A 24 bit accumulator is the basis for waveform generation. FREQ is added to the lower 16 bits of the accumulator each cycle. The accumulator is set to zero when TEST is set, and starts counting
  * when TEST is cleared. The noise waveform is taken from intermediate bits of a 23 bit shift register. This register is clocked by bit 19 of the accumulator.
@@ -248,6 +250,14 @@ public final class WaveformGenerator {
 		return readOSC(ring_modulator.accumulator_prev, accumulator_prev);
 	}
 	
+	public byte readOSC(ChipModel model) {
+		if (model == ChipModel.MOS6581) {
+			return readOSC6581(this);
+		} else {
+			return readOSC8580(this);
+		}
+	}
+
 	/**
 	 * Calculate OSC3 bitstate from the analog values.
 	 * 

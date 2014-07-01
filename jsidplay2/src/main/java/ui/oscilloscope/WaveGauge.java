@@ -33,15 +33,20 @@ public final class WaveGauge extends SIDGauge {
 
 	@Override
 	public void sample(SIDEmu sidemu) {
-		if (!(sidemu instanceof ReSID)) {
+		if (sidemu instanceof ReSID) {
+			SID sid = ((ReSID) sidemu).sid();
+			final WaveformGenerator wave = sid.voice[getVoice()].wave;
+			int sampleValue = wave.readOSC() & 0xff;
+			accumulate(sampleValue / 255f);
+		} else if (sidemu instanceof residfp_builder.ReSID) {
+			residfp_builder.resid.SID sid = ((residfp_builder.ReSID) sidemu)
+					.sid();
+			final residfp_builder.resid.WaveformGenerator wave = sid.voice[getVoice()].wave;
+			int sampleValue = wave.readOSC(sid.getChipModel()) & 0xff;
+			accumulate(sampleValue / 255f);
+		} else {
 			accumulate((byte) 0);
-			return;
 		}
-
-		SID sid = ((ReSID) sidemu).sid();
-		final WaveformGenerator wave = sid.voice[getVoice()].wave;
-		int sampleValue = wave.readOSC() & 0xff;
-		accumulate(sampleValue / 255f);
 	}
 
 	@Override
