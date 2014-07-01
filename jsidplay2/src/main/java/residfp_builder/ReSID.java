@@ -64,12 +64,22 @@ public class ReSID extends SIDEmu {
 	public void setFilter(IConfig config) {
 		try (InputStream is = getClass().getResourceAsStream(
 				"/residfp_builder/" + FILE_NAME)) {
-			System.out.println("ReSIDfp: Use internal INI file: " + FILE_NAME);
+			System.out.println("ReSID-fp: Use internal INI file: " + FILE_NAME);
 			IniReader iniReader = new IniReader(is);
+			String filterName6581 = iniReader.getPropertyString(
+					FilterConfig.class.getSimpleName(),
+					FilterConfig.FILTER_6581, null);
+			String filterName8580 = iniReader.getPropertyString(
+					FilterConfig.class.getSimpleName(),
+					FilterConfig.FILTER_8580, null);
+			System.out.println("  " + FilterConfig.FILTER_6581 + "="
+					+ filterName6581);
+			System.out.println("  " + FilterConfig.FILTER_8580 + "="
+					+ filterName8580);
 			FilterConfig filter6581 = FilterConfig.read(iniReader,
-					"FilterAlankila6581R4AR_3789");
+					filterName6581 != null ? filterName6581 : null);
 			FilterConfig filter8580 = FilterConfig.read(iniReader,
-					"FilterTrurl8580R5_3691");
+					filterName8580 != null ? filterName8580 : null);
 			filter(filter6581, filter8580);
 		} catch (final IOException e) {
 			e.printStackTrace();

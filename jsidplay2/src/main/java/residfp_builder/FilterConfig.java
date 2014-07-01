@@ -3,6 +3,9 @@ package residfp_builder;
 import sidplay.ini.IniReader;
 
 public class FilterConfig {
+	static final String FILTER_8580 = "Filter8580";
+	static final String FILTER_6581 = "Filter6581";
+
 	private final IniReader ini;
 	private final String heading;
 	
