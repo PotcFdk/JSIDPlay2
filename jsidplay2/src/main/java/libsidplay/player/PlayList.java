@@ -128,7 +128,7 @@ public class PlayList {
 	}
 
 	/**
-	 * Get previous play list entry (null means there is none).
+	 * Get previous play list entry.
 	 */
 	public int getPrevious() {
 		int previous = config.getSidplay2().isSingle() ? current : current - 1;
@@ -136,7 +136,7 @@ public class PlayList {
 	}
 
 	/**
-	 * Get next play list entry (null means there is none).
+	 * Get next play list entry.
 	 */
 	public int getNext() {
 		int next = config.getSidplay2().isSingle() ? current : current + 1;

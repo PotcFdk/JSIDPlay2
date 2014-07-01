@@ -840,7 +840,12 @@ public class Player {
 			AudioConfig audioConfig) {
 		switch (driverSettings.getEmulation()) {
 		case RESID:
+			// Dag Lem's ReSID 1.0 beta
 			return new ReSIDBuilder(config, audioConfig, cpuClock,
+					driverSettings.getAudio());
+		case RESIDFP:
+			// Antti Lankila's ReSID-fp (distortion simulation)
+			return new residfp_builder.ReSIDBuilder(config, audioConfig, cpuClock,
 					driverSettings.getAudio());
 		case HARDSID:
 			return new HardSIDBuilder(config);

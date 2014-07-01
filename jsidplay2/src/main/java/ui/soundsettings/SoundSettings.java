@@ -57,7 +57,8 @@ public class SoundSettings extends C64Window {
 				.getBundle().getString("HARDSID4U"), util.getBundle()
 				.getString("WAV_RECORDER"),
 				util.getBundle().getString("MP3_RECORDER"), util.getBundle()
-						.getString("COMPARE_TO_MP3"));
+						.getString("COMPARE_TO_MP3"), util.getBundle()
+						.getString("SOUNDCARD_RESIDFP"));
 		Audio audio = util.getPlayer().getDriverSettings().getAudio();
 		Emulation sid = util.getPlayer().getDriverSettings().getEmulation();
 		if (audio == Audio.SOUNDCARD && sid == Emulation.RESID) {
@@ -70,6 +71,8 @@ public class SoundSettings extends C64Window {
 			soundDevice.getSelectionModel().select(3);
 		} else if (audio == Audio.COMPARE_MP3 && sid == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(4);
+		} else if (audio == Audio.SOUNDCARD && sid == Emulation.RESIDFP) {
+			soundDevice.getSelectionModel().select(5);
 		} else {
 			soundDevice.getSelectionModel().select(0);
 		}
@@ -129,6 +132,11 @@ public class SoundSettings extends C64Window {
 		case 4:
 			util.getPlayer().setDriverSettings(
 					new DriverSettings(Audio.COMPARE_MP3, Emulation.RESID));
+			break;
+
+		case 5:
+			util.getPlayer().setDriverSettings(
+					new DriverSettings(Audio.SOUNDCARD, Emulation.RESIDFP));
 			break;
 
 		}

@@ -5,6 +5,8 @@ public enum Emulation {
 	NONE,
 	/** The following require a soundcard */
 	RESID,
+	/** The following require a soundcard */
+	RESIDFP,
 	/** The following should disable the soundcard */
 	HARDSID
 }
