@@ -180,26 +180,15 @@ public class PUCrunch {
 	private void SavePack(int type, PrintStream fp, int start, int exec,
 			int escape, int endAddr, int progEnd, boolean enable2MHz,
 			int memStart, int memEnd) {
-		if ((memStart & 0xff) != 1) {
-			throw new RuntimeException(String.format(
-					"Misaligned basic start 0x%04x\n", memStart));
-		} else if (memStart > 9999) {
-			/* The basic line only holds 4 digits.. */
-			throw new RuntimeException(String.format(
-					"Too high basic start 0x%04x\n", memStart));
-		}
-
 		int overlap = 0;
 		if (endAddr > memEnd) {
 			overlap = endAddr - memEnd;
 			endAddr = memEnd;
-
 			/*
 			 * Make the decrunch code wrap from $ffff to $004b. The decrunch
 			 * code first copies the data that would exceed $ffff to $004b and
 			 * then copy the rest of it to end at $ffff.
 			 */
-
 			if (overlap > 22) {
 				System.err.printf("Warning: data overlap is %d, but only 22 "
 						+ "is totally safe!\n", overlap);
@@ -245,32 +234,7 @@ public class PUCrunch {
 		fp.write(header, 0, header.length + rleUsed - 15);
 		fp.write(outBuffer, 0, size);
 
-		if (verbose) {
-			Map<String, Integer> labels = assembler.getLabels();
-			int stackUsed = labels.get("ftStackSize");
-			int ibufferUsed = labels.get("ftIBufferSize") != null ? labels
-					.get("ftIBufferSize") : 0;
-
-			System.out.printf("Saving %s\n", dc.getName());
-
-			if ((dc.getFlags() & FIXF_SHORT) != 0) {
-				System.out.printf("Uses the memory $2d-$30, ");
-			} else {
-				System.out.printf("Uses the memory $2d/$2e, ");
-			}
-			if (overlap != 0)
-				System.out.printf("$4b-$%02x, ", 0x4b + overlap);
-			else if ((dc.getFlags() & FIXF_WRAP) != 0)
-				System.out.printf("$4b, ");
-			if (stackUsed != 0)
-				System.out.printf("$f7-$%x, ", 0xf7 + stackUsed);
-			if (ibufferUsed != 0)
-				System.out.printf("$200-$%x, ", 0x200 + ibufferUsed);
-			System.out.printf("and $%04x-$%04x.\n",
-					(start < memStart + 1) ? start : memStart + 1, endAddr - 1);
-			System.out.printf("Uncompressed %d bytes, Compressed %d bytes\n",
-					inlen, header.length + rleUsed - 15 + size);
-		}
+		printCrunchingResult(start, endAddr, memStart, overlap, dc, header);
 	}
 
 	private void FlushBits() {
@@ -369,9 +333,7 @@ public class PUCrunch {
 	}
 
 	private void PutRleByte(int data) {
-		int index;
-
-		for (index = 1; index < 16/* 32 */; index++) {
+		for (int index = 1; index < 16/* 32 */; index++) {
 			if (data == (rleValues[index] & 0xff)) {
 				if (index == 1)
 					lenStat[0][3]++;
@@ -406,7 +368,6 @@ public class PUCrunch {
 
 	private int LenRle(int len, int data) {
 		int out = 0;
-
 		do {
 			if (len == 1) {
 				out += escBits + 3 + 8;
@@ -525,7 +486,6 @@ public class PUCrunch {
 		return escBits + 8 + extraLZPosBits
 				+ lenValue[((lzpos - 1) >> (8 + extraLZPosBits)) + 1] + lzlen < 257 ? lenValue[lzlen - 1]
 				: 50;
-		// Bug in the C-Version! lzlen==257
 	}
 
 	private void OutputLz(int esc, int lzlen, int lzpos, byte[] data,
@@ -590,10 +550,8 @@ public class PUCrunch {
 	}
 
 	private int OptimizeLength(int optimize) {
-		int i;
-
 		length[inlen] = 0; /* one off the end, our 'target' */
-		for (i = inlen - 1; i >= 0; i--) {
+		for (int i = inlen - 1; i >= 0; i--) {
 			int r1 = 8 + length[i + 1], r2, r3;
 
 			if (0 == lzlen[i] && 0 == rle[i]
@@ -778,6 +736,14 @@ public class PUCrunch {
 		return length[0];
 	}
 
+	private static class IntContainer {
+		public IntContainer(int v) {
+			intVal = v;
+		}
+
+		private int intVal;
+	}
+
 	/**
 	 * <PRE>
 	 *     The algorithm in the OptimizeEscape() works as follows:
@@ -798,15 +764,6 @@ public class PUCrunch {
 	 * 
 	 * </PRE>
 	 */
-
-	private static class IntContainer {
-		public IntContainer(int v) {
-			intVal = v;
-		}
-
-		private int intVal;
-	}
-
 	private int OptimizeEscape(IntContainer startEscape, IntContainer nonNormal) {
 		int i, j, states = (1 << escBits);
 		int minp = 0, minv = 0, other = 0;
@@ -902,16 +859,13 @@ public class PUCrunch {
 	/* Initialize the RLE byte code table according to all RLE's found so far */
 	/* O(n) */
 	private void InitRle(int flags) {
-		int p, mr, mv, i;
-
-		for (i = 1; i < 16/* 32 */; i++) {
-			mr = -1;
-			mv = 0;
-
-			for (p = 0; p < 256; p++) {
-				if (rleHist[p] > mv) {
-					mv = rleHist[p];
-					mr = p;
+		for (int i = 1; i < 16/* 32 */; i++) {
+			int mr = -1;
+			int mv = 0;
+			for (int j = 0; j < 256; j++) {
+				if (rleHist[j] > mv) {
+					mv = rleHist[j];
+					mr = j;
 				}
 			}
 			if (mv > 0) {
@@ -926,16 +880,14 @@ public class PUCrunch {
 	/* Initialize the RLE byte code table according to RLE's actually used */
 	/* O(n) */
 	private void OptimizeRle(int flags) {
-		int p, mr, mv, i;
-
 		if ((flags & F_NORLE) != 0) {
 			rleUsed = 0;
 			return;
 		}
-		for (p = 0; p < 256; p++)
+		for (int p = 0; p < 256; p++)
 			rleHist[p] = 0;
 
-		for (p = 0; p < inlen;) {
+		for (int p = 0; p < inlen;) {
 			switch (mode[p]) {
 			case DLZ: /* lz */
 				p += lzlen2[p];
@@ -958,11 +910,12 @@ public class PUCrunch {
 			}
 		}
 
+		int i;
 		for (i = 1; i < 16 /* 32 */; i++) {
-			mr = -1;
-			mv = 0;
+			int mr = -1;
+			int mv = 0;
 
-			for (p = 0; p < 256; p++) {
+			for (int p = 0; p < 256; p++) {
 				if (rleHist[p] > mv) {
 					mv = rleHist[p];
 					mr = p;
@@ -980,13 +933,8 @@ public class PUCrunch {
 	}
 
 	private int PackLz77(int lzsz, int flags, int endAddr, int memEnd, int type) {
-		int i, j, p;
 		int escape = 0;
-		int[] hashValue;
-		int a;
-		int k;
 
-		int[] lastPair;
 		if (lzsz < 0 || lzsz > lrange) {
 			System.err.printf(
 					"LZ range must be from 0 to %d (was %d). Set to %d.\n",
@@ -1020,14 +968,15 @@ public class PUCrunch {
 		}
 		newesc = new byte[inlen];
 		backSkip = new int[inlen];
-		hashValue = new int[inlen];
-		lastPair = new int[256 * 256];
+		int[] hashValue = new int[inlen];
+		int[] lastPair = new int[256 * 256];
 
-		i = 0;
-		j = 0;
-		a = inlen;
+		int i = 0;
+		int j = 0;
+		int a = inlen;
+		int p;
 		for (p = inlen - 1; p >= 0; p--) {
-			k = j;
+			int k = j;
 			j = i;
 			i = indata[--a] & 0xff; /* Only one read per position */
 
@@ -1668,6 +1617,10 @@ public class PUCrunch {
 		return startEscape;
 	}
 
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
+
 	private int getSYSAddr(int offset) {
 		int execAddr = -1;
 		if (0 <= offset) {
@@ -1689,8 +1642,51 @@ public class PUCrunch {
 		return execAddr;
 	}
 
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
+	private void printCrunchInput(String input, int startAddr, int memStart,
+			int execAddr) {
+		if (verbose) {
+			System.out.println("Crunching " + input);
+			System.out.printf("Load address 0x%04x, End address 0x%04x\n",
+					startAddr, startAddr + inlen - 1);
+			System.out.printf("Exec address 0x%04x\n", execAddr);
+			System.out.printf("New load address 0x%04x\n", memStart);
+			System.out.printf("Interrupts %s and memory config set to $%02x "
+					+ "after decompression\n", (cliConfig == 0x58) ? "enabled"
+					: "disabled", memConfig);
+		}
+	}
+
+	private void printCrunchingResult(int start, int endAddr, int memStart,
+			int overlap, Decruncher dc, byte[] header) {
+		if (verbose) {
+			Map<String, Integer> labels = assembler.getLabels();
+			int stackUsed = labels.get("ftStackSize");
+			int ibufferUsed = labels.get("ftIBufferSize") != null ? labels
+					.get("ftIBufferSize") : 0;
+
+			System.out.printf("Saving %s\n", dc.getName());
+
+			if ((dc.getFlags() & FIXF_SHORT) != 0) {
+				System.out.printf("Uses the memory $2d-$30, ");
+			} else {
+				System.out.printf("Uses the memory $2d/$2e, ");
+			}
+			if (overlap != 0) {
+				System.out.printf("$4b-$%02x, ", 0x4b + overlap);
+			} else if ((dc.getFlags() & FIXF_WRAP) != 0) {
+				System.out.printf("$4b, ");
+			}
+			if (stackUsed != 0) {
+				System.out.printf("$f7-$%x, ", 0xf7 + stackUsed);
+			}
+			if (ibufferUsed != 0) {
+				System.out.printf("$200-$%x, ", 0x200 + ibufferUsed);
+			}
+			System.out.printf("and $%04x-$%04x.\n",
+					(start < memStart + 1) ? start : memStart + 1, endAddr - 1);
+			System.out.printf("Uncompressed %d bytes, Compressed %d bytes\n",
+					inlen, header.length + rleUsed - 15 + size);
+		}
 	}
 
 	public void crunch(String input, String output) throws IOException {
@@ -1714,11 +1710,10 @@ public class PUCrunch {
 						"Only programs from 0x0258 to 0xffff can be compressed");
 			}
 
-			int type = FIXF_C64 | FIXF_WRAP | FIXF_BASIC; /*
-														 * C64, wrap active,
-														 * basic
-														 */
-			int memStart = 0x801; /* Loading address */
+			// C64, wrap active, basic
+			int type = FIXF_C64 | FIXF_WRAP | FIXF_BASIC;
+			// Loading address
+			int memStart = 0x801;
 			int memEnd = 0x10000;
 
 			int execAddr = getSYSAddr(memStart - startAddr);
@@ -1730,29 +1725,22 @@ public class PUCrunch {
 							"Note: The execution address was not detected correctly!");
 				}
 			}
-			if (verbose) {
-				System.out.println("Crunching " + input);
-				System.out.printf("Load address 0x%04x, End address 0x%04x\n",
-						startAddr, startAddr + inlen - 1);
-				System.out.printf("Exec address 0x%04x\n", execAddr);
-				System.out.printf("New load address 0x%04x\n", memStart);
-				System.out
-						.printf("Interrupts %s and memory config set to $%02x "
-								+ "after decompression\n",
-								(cliConfig == 0x58) ? "enabled" : "disabled",
-								memConfig);
-			}
+			printCrunchInput(input, startAddr, memStart, execAddr);
 
 			int flags = F_2MHZ | F_AUTO | F_AUTOEX;
 
 			int startEscape = PackLz77(lrange, flags, startAddr + inlen,
 					memEnd, type);
-			int endAddr = startAddr + inlen; /* end for uncompressed data */
+			// end for uncompressed data
+			int endAddr = startAddr + inlen;
 			int progEnd = endAddr;
-			int hDeCall = 512/* estimated maximum decruncher size */;
-			if (endAddr - ((size + 255) & ~255) < memStart + hDeCall + 3) {
+			// estimated maximum decruncher size
+			int maxDecruncherLen = 512;
+			if (endAddr - ((size + 0xff) & ~0xff) < memStart + maxDecruncherLen
+					+ 3) {
 				/* would overwrite the decompressor, move a bit upwards */
-				endAddr = memStart + hDeCall + 3 + ((size + 255) & ~255);
+				endAddr = memStart + maxDecruncherLen + 3
+						+ ((size + 0xff) & ~0xff);
 			}
 			/* 3 bytes reserved for EOF */
 			/* bytes reserved for temporary data expansion (escaped chars) */
@@ -1760,6 +1748,14 @@ public class PUCrunch {
 
 			if (0 == timesDLz) {
 				type &= ~FIXF_DLZ;
+			}
+			if ((memStart & 0xff) != 1) {
+				throw new RuntimeException(String.format(
+						"Misaligned basic start 0x%04x\n", memStart));
+			} else if (memStart > 9999) {
+				/* The basic line only holds 4 digits.. */
+				throw new RuntimeException(String.format(
+						"Too high basic start 0x%04x\n", memStart));
 			}
 			SavePack(type, outfp, startAddr, execAddr, startEscape, endAddr,
 					progEnd, (flags & F_2MHZ) != 0, memStart, memEnd);
