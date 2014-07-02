@@ -5,11 +5,13 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
 import libsidplay.common.CPUClock;
+import libsidplay.player.Emulation;
 import resid_builder.resid.ChipModel;
 
 @Generated(value="Dali", date="2012-11-09T20:55:57.992+0100")
 @StaticMetamodel(EmulationSection.class)
 public class EmulationSection_ {
+	public static volatile SingularAttribute<EmulationSection, Emulation> emulation;
 	public static volatile SingularAttribute<EmulationSection, CPUClock> defaultClockSpeed;
 	public static volatile SingularAttribute<EmulationSection, CPUClock> userClockSpeed;
 	public static volatile SingularAttribute<EmulationSection, ChipModel> defaultSidModel;

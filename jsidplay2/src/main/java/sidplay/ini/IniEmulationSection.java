@@ -1,6 +1,7 @@
 package sidplay.ini;
 
 import libsidplay.common.CPUClock;
+import libsidplay.player.Emulation;
 import resid_builder.resid.ChipModel;
 import sidplay.ini.intf.IEmulationSection;
 
@@ -10,11 +11,23 @@ import sidplay.ini.intf.IEmulationSection;
  * @author Ken Händel
  * 
  */
-public class IniEmulationSection extends IniSection implements IEmulationSection {
+public class IniEmulationSection extends IniSection implements
+		IEmulationSection {
 	protected IniEmulationSection(IniReader iniReader) {
 		super(iniReader);
 	}
-		
+
+	@Override
+	public Emulation getEmulation() {
+		return iniReader.getPropertyEnum("Emulation", "Emulation",
+				Emulation.RESID);
+	}
+
+	@Override
+	public void setEmulation(Emulation emulation) {
+		iniReader.setProperty("Emulation", "Emulation", emulation);
+	}
+
 	/**
 	 * Getter of the default clock speed.
 	 * 
@@ -22,7 +35,8 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 */
 	@Override
 	public final CPUClock getDefaultClockSpeed() {
-		return iniReader.getPropertyEnum("Emulation", "DefaultClockSpeed", CPUClock.PAL);
+		return iniReader.getPropertyEnum("Emulation", "DefaultClockSpeed",
+				CPUClock.PAL);
 	}
 
 	/**
@@ -43,7 +57,8 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 */
 	@Override
 	public final CPUClock getUserClockSpeed() {
-		return iniReader.getPropertyEnum("Emulation", "UserClockSpeed", null, CPUClock.class);
+		return iniReader.getPropertyEnum("Emulation", "UserClockSpeed", null,
+				CPUClock.class);
 	}
 
 	/**
@@ -64,13 +79,15 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 */
 	@Override
 	public final ChipModel getDefaultSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "DefaultSidModel", ChipModel.MOS6581);
+		return iniReader.getPropertyEnum("Emulation", "DefaultSidModel",
+				ChipModel.MOS6581);
 	}
 
 	/**
 	 * Setter of the default SID model.
 	 * 
-	 * @param model the default SID model
+	 * @param model
+	 *            the default SID model
 	 */
 	@Override
 	public final void setDefaultSidModel(ChipModel model) {
@@ -84,7 +101,8 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 */
 	@Override
 	public final ChipModel getUserSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "UserSidModel", null, ChipModel.class);
+		return iniReader.getPropertyEnum("Emulation", "UserSidModel", null,
+				ChipModel.class);
 	}
 
 	/**
@@ -210,7 +228,8 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 */
 	@Override
 	public final String getReSIDfpFilter6581() {
-		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter6581", null);
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter6581",
+				null);
 	}
 
 	/**
@@ -231,7 +250,8 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 */
 	@Override
 	public final String getReSIDfpFilter8580() {
-		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter8580", null);
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter8580",
+				null);
 	}
 
 	/**
@@ -284,7 +304,8 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	 */
 	@Override
 	public final void setDualSidBase(final int base) {
-		iniReader.setProperty("Emulation", "dualSidBase", String.format("0x%04x", base));
+		iniReader.setProperty("Emulation", "dualSidBase",
+				String.format("0x%04x", base));
 	}
 
 	/**
@@ -319,7 +340,8 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 			// Special case: property not set? return null
 			return null;
 		}
-		return iniReader.getPropertyEnum("Emulation", "StereoSidModel", ChipModel.MOS6581);
+		return iniReader.getPropertyEnum("Emulation", "StereoSidModel",
+				ChipModel.MOS6581);
 	}
 
 	/**

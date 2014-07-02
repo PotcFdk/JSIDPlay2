@@ -236,7 +236,7 @@ public class EmulationSettings extends C64Window {
 		} else {
 			model = (ChipModel) sid1Model.getSelectionModel().getSelectedItem();
 		}
-		if (util.getPlayer().getDriverSettings().getEmulation()
+		if (util.getConfig().getEmulation()
 				.equals(Emulation.RESIDFP)) {
 			if (model == ChipModel.MOS6581) {
 				emulation.setReSIDfpFilter6581(filterName);
@@ -321,8 +321,7 @@ public class EmulationSettings extends C64Window {
 		final boolean enable = util.getConfig().getEmulation().isFilter();
 		String item = null;
 		if (enable) {
-			if (util.getPlayer().getDriverSettings().getEmulation()
-					.equals(Emulation.RESIDFP)) {
+			if (util.getConfig().getEmulation().equals(Emulation.RESIDFP)) {
 				if (model == ChipModel.MOS6581) {
 					item = util.getConfig().getEmulation()
 							.getReSIDfpFilter6581();
@@ -342,8 +341,7 @@ public class EmulationSettings extends C64Window {
 		filters.clear();
 		filters.add("");
 		for (IFilterSection filter : util.getConfig().getFilter()) {
-			if (util.getPlayer().getDriverSettings().getEmulation()
-					.equals(Emulation.RESIDFP)) {
+			if (util.getConfig().getEmulation().equals(Emulation.RESIDFP)) {
 				if (filter.isReSIDfpFilter6581() && model == ChipModel.MOS6581) {
 					filters.add(filter.getName());
 				} else if (filter.isReSIDfpFilter8580()

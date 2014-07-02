@@ -5,11 +5,25 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import libsidplay.common.CPUClock;
+import libsidplay.player.Emulation;
 import resid_builder.resid.ChipModel;
 import sidplay.ini.intf.IEmulationSection;
 
 @Embeddable
 public class EmulationSection implements IEmulationSection {
+
+	@Enumerated(EnumType.STRING)
+	private Emulation emulation = Emulation.RESID;
+
+	@Override
+	public Emulation getEmulation() {
+		return this.emulation;
+	}
+
+	@Override
+	public void setEmulation(Emulation emulation) {
+		this.emulation = emulation;
+	}
 
 	@Enumerated(EnumType.STRING)
 	private CPUClock defaultClockSpeed = CPUClock.PAL;

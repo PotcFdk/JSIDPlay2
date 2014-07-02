@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.HashMap;
 
 import libsidplay.Player;
-import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -19,8 +18,6 @@ import sidplay.ini.IniConfig;
 public class SIDPlay extends Applet {
 	private IniConfig config;
 	private Player player;
-	private Audio audio = Audio.SOUNDCARD;
-	private Emulation emulation = Emulation.RESID;
 
 	private final HashMap<String, SidTune> map = new HashMap<String, SidTune>();
 
@@ -86,7 +83,6 @@ public class SIDPlay extends Applet {
 		player.stopC64();
 		player.setTune(getTune(urlName));
 		player.getTune().setSelectedSong(songNum);
-		player.setDriverSettings(new DriverSettings(audio, emulation));
 		player.startC64();
 	}
 
@@ -115,16 +111,16 @@ public class SIDPlay extends Applet {
 	 * Use JSIDPlay2 emulation for the next song.
 	 */
 	public void useEmulation() {
-		audio = Audio.NONE;
-		emulation = Emulation.HARDSID;
+		config.getEmulation().setEmulation(Emulation.HARDSID);
+		config.getAudio().setAudio(Audio.NONE);
 	}
 
 	/**
 	 * Use HardSID4U for the next song.
 	 */
 	public void useHardSID() {
-		audio = Audio.SOUNDCARD;
-		emulation = Emulation.RESID;
+		config.getEmulation().setEmulation(Emulation.RESID);
+		config.getAudio().setAudio(Audio.SOUNDCARD);
 	}
 
 	/**

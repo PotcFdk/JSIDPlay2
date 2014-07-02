@@ -1,9 +1,25 @@
 package sidplay.ini.intf;
 
 import libsidplay.common.CPUClock;
+import libsidplay.player.Emulation;
 import resid_builder.resid.ChipModel;
 
 public interface IEmulationSection {
+
+	/**
+	 * Getter of the emulation to be used.
+	 * 
+	 * @return the emulation to be used
+	 */
+	public Emulation getEmulation();
+
+	/**
+	 * Setter of the emulation to be used.
+	 * 
+	 * @param emulation
+	 *            emulation to be used
+	 */
+	public void setEmulation(Emulation emulation);
 
 	/**
 	 * Getter of the default clock speed.
@@ -45,7 +61,8 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the default SID model.
 	 * 
-	 * @param model the default SID model
+	 * @param model
+	 *            the default SID model
 	 */
 	public void setDefaultSidModel(ChipModel model);
 

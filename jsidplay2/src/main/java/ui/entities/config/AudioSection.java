@@ -5,10 +5,24 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import resid_builder.resid.SamplingMethod;
+import sidplay.audio.Audio;
 import sidplay.ini.intf.IAudioSection;
 
 @Embeddable
 public class AudioSection implements IAudioSection {
+
+	@Enumerated(EnumType.STRING)
+	private Audio audio = Audio.SOUNDCARD;
+
+	@Override
+	public Audio getAudio() {
+		return audio;
+	}
+
+	@Override
+	public void setAudio(Audio audio) {
+		this.audio = audio;
+	}
 
 	private int frequency = 48000;
 

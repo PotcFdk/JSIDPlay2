@@ -1,6 +1,7 @@
 package sidplay.ini;
 
 import resid_builder.resid.SamplingMethod;
+import sidplay.audio.Audio;
 import sidplay.ini.intf.IAudioSection;
 
 /**
@@ -12,6 +13,16 @@ import sidplay.ini.intf.IAudioSection;
 public class IniAudioSection extends IniSection implements IAudioSection {
 	public IniAudioSection(IniReader iniReader) {
 		super(iniReader);
+	}
+
+	@Override
+	public Audio getAudio() {
+		return iniReader.getPropertyEnum("Audio", "Audio", Audio.SOUNDCARD);
+	}
+
+	@Override
+	public void setAudio(Audio audio) {
+		iniReader.setProperty("Audio", "Audio", audio);
 	}
 
 	/**

@@ -1,8 +1,24 @@
 package sidplay.ini.intf;
 
 import resid_builder.resid.SamplingMethod;
+import sidplay.audio.Audio;
 
 public interface IAudioSection {
+
+	/**
+	 * Getter of the audio to be used.
+	 * 
+	 * @return the audio to be used
+	 */
+	public Audio getAudio();
+
+	/**
+	 * Setter of the audio to be used.
+	 * 
+	 * @param emulation
+	 *            audio to be used
+	 */
+	public void setAudio(Audio audio);
 
 	/**
 	 * Getter of the Playback/Recording frequency.

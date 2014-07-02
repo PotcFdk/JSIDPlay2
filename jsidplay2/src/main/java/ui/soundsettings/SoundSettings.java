@@ -13,11 +13,10 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
-import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
 import resid_builder.resid.SamplingMethod;
-import sidplay.audio.CmpMP3File;
 import sidplay.audio.Audio;
+import sidplay.audio.CmpMP3File;
 import sidplay.ini.intf.IAudioSection;
 import ui.common.C64Window;
 
@@ -59,19 +58,19 @@ public class SoundSettings extends C64Window {
 				util.getBundle().getString("WAV_RECORDER"), util.getBundle()
 						.getString("MP3_RECORDER"),
 				util.getBundle().getString("COMPARE_TO_MP3"));
-		Audio audio = util.getPlayer().getDriverSettings().getAudio();
-		Emulation sid = util.getPlayer().getDriverSettings().getEmulation();
-		if (audio == Audio.SOUNDCARD && sid == Emulation.RESID) {
+		Audio audio = util.getConfig().getAudio().getAudio();
+		Emulation emu = util.getConfig().getEmulation().getEmulation();
+		if (audio == Audio.SOUNDCARD && emu == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(0);
-		} else if (audio == Audio.SOUNDCARD && sid == Emulation.RESIDFP) {
+		} else if (audio == Audio.SOUNDCARD && emu == Emulation.RESIDFP) {
 			soundDevice.getSelectionModel().select(1);
-		} else if (audio == Audio.NONE && sid == Emulation.HARDSID) {
+		} else if (audio == Audio.NONE && emu == Emulation.HARDSID) {
 			soundDevice.getSelectionModel().select(2);
-		} else if (audio == Audio.LIVE_WAV && sid == Emulation.RESID) {
+		} else if (audio == Audio.LIVE_WAV && emu == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(3);
-		} else if (audio == Audio.LIVE_MP3 && sid == Emulation.RESID) {
+		} else if (audio == Audio.LIVE_MP3 && emu == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(4);
-		} else if (audio == Audio.COMPARE_MP3 && sid == Emulation.RESID) {
+		} else if (audio == Audio.COMPARE_MP3 && emu == Emulation.RESID) {
 			soundDevice.getSelectionModel().select(5);
 		} else {
 			soundDevice.getSelectionModel().select(0);
@@ -111,32 +110,32 @@ public class SoundSettings extends C64Window {
 		stop();
 		switch (soundDevice.getSelectionModel().getSelectedIndex()) {
 		case 0:
-			util.getPlayer().setDriverSettings(
-					new DriverSettings(Audio.SOUNDCARD, Emulation.RESID));
+			util.getConfig().getEmulation().setEmulation(Emulation.RESID);
+			util.getConfig().getAudio().setAudio(Audio.SOUNDCARD);
 			break;
 
 		case 1:
-			util.getPlayer().setDriverSettings(
-					new DriverSettings(Audio.SOUNDCARD, Emulation.RESIDFP));
+			util.getConfig().getEmulation().setEmulation(Emulation.RESIDFP);
+			util.getConfig().getAudio().setAudio(Audio.SOUNDCARD);
 			break;
 
 		case 2:
-			util.getPlayer().setDriverSettings(
-					new DriverSettings(Audio.NONE, Emulation.HARDSID));
+			util.getConfig().getEmulation().setEmulation(Emulation.HARDSID);
+			util.getConfig().getAudio().setAudio(Audio.NONE);
 			break;
 
 		case 3:
-			util.getPlayer().setDriverSettings(
-					new DriverSettings(Audio.LIVE_WAV, Emulation.RESID));
+			util.getConfig().getEmulation().setEmulation(Emulation.RESID);
+			util.getConfig().getAudio().setAudio(Audio.LIVE_WAV);
 			break;
 
 		case 4:
-			util.getPlayer().setDriverSettings(
-					new DriverSettings(Audio.LIVE_MP3, Emulation.RESID));
+			util.getConfig().getEmulation().setEmulation(Emulation.RESID);
+			util.getConfig().getAudio().setAudio(Audio.LIVE_MP3);
 			break;
 		case 5:
-			util.getPlayer().setDriverSettings(
-					new DriverSettings(Audio.COMPARE_MP3, Emulation.RESID));
+			util.getConfig().getEmulation().setEmulation(Emulation.RESID);
+			util.getConfig().getAudio().setAudio(Audio.COMPARE_MP3);
 			break;
 
 		}
@@ -248,8 +247,8 @@ public class SoundSettings extends C64Window {
 
 	protected void setPlayOriginal(final boolean playOriginal) {
 		util.getConfig().getAudio().setPlayOriginal(playOriginal);
-		if (util.getPlayer().getDriverSettings().getAudio().getAudioDriver() instanceof CmpMP3File) {
-			((CmpMP3File) util.getPlayer().getDriverSettings().getAudio()
+		if (util.getConfig().getAudio().getAudio().getAudioDriver() instanceof CmpMP3File) {
+			((CmpMP3File) util.getConfig().getAudio().getAudio()
 					.getAudioDriver()).setPlayOriginal(playOriginal);
 		}
 	}

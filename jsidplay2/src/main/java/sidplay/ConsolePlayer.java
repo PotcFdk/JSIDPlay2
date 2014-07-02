@@ -8,7 +8,6 @@ import java.util.List;
 
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
-import libsidplay.player.DriverSettings;
 import libsidplay.player.Emulation;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -141,7 +140,9 @@ public class ConsolePlayer {
 		config.getSidplay2().setSingle(single);
 		config.getSidplay2().setDefaultPlayLength(defaultLength);
 		config.getSidplay2().setEnableDatabase(enableSidDatabase);
+		config.getAudio().setAudio(audio);
 		config.getAudio().setFrequency(frequency);
+		config.getEmulation().setEmulation(emulation);
 		config.getEmulation().setForceStereoTune(dualSID);
 		config.getEmulation().setUserClockSpeed(forceClock);
 		config.getEmulation().setDefaultClockSpeed(defaultClock);
@@ -165,7 +166,6 @@ public class ConsolePlayer {
 				return filename;
 			});
 			player.setDebug(cpuDebug);
-			player.setDriverSettings(new DriverSettings(audio, emulation));
 			player.getTimer().setStart(startTime);
 
 			// check song length

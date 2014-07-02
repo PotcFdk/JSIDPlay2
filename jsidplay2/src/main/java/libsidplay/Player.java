@@ -190,8 +190,7 @@ public class Player {
 	/**
 	 * Audio driver and emulation setting.
 	 */
-	private DriverSettings driverSettings = new DriverSettings(Audio.SOUNDCARD,
-			Emulation.RESID), oldDriverSettings;
+	private DriverSettings driverSettings, oldDriverSettings;
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -682,18 +681,6 @@ public class Player {
 		this.tune = tune;
 	}
 
-	public final DriverSettings getDriverSettings() {
-		return driverSettings;
-	}
-
-	/**
-	 * Note: Before calling, you must safely call stopC64()!
-	 */
-	public final void setDriverSettings(DriverSettings driverSettings) {
-		assert (playerThread == null || !playerThread.isAlive());
-		this.driverSettings = driverSettings;
-	}
-
 	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
 		for (int chipNum = 0; chipNum < C64.MAX_SIDS; chipNum++) {
 			final SIDEmu sid = c64.getSID(chipNum);
@@ -803,6 +790,9 @@ public class Player {
 
 		AudioConfig audioConfig = AudioConfig.getInstance(config, tune);
 
+		driverSettings = new DriverSettings(config.getAudio().getAudio(),
+				config.getEmulation().getEmulation());
+
 		driverSettings.getAudio().getAudioDriver()
 				.setRecordingFilenameProvider(recordingFilenameProvider);
 
@@ -845,8 +835,8 @@ public class Player {
 					driverSettings.getAudio());
 		case RESIDFP:
 			// Antti Lankila's ReSID-fp (distortion simulation)
-			return new residfp_builder.ReSIDBuilder(config, audioConfig, cpuClock,
-					driverSettings.getAudio());
+			return new residfp_builder.ReSIDBuilder(config, audioConfig,
+					cpuClock, driverSettings.getAudio());
 		case HARDSID:
 			return new HardSIDBuilder(config);
 		case NONE:
