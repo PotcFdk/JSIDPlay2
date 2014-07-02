@@ -13,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import libsidplay.Player;
+import libsidplay.player.Emulation;
 import libsidplay.player.State;
 import resid_builder.resid.ChipModel;
 import resid_builder.resid.FilterModelConfig;
@@ -235,10 +236,19 @@ public class EmulationSettings extends C64Window {
 		} else {
 			model = (ChipModel) sid1Model.getSelectionModel().getSelectedItem();
 		}
-		if (model == ChipModel.MOS6581) {
-			emulation.setFilter6581(filterName);
+		if (util.getPlayer().getDriverSettings().getEmulation()
+				.equals(Emulation.RESIDFP)) {
+			if (model == ChipModel.MOS6581) {
+				emulation.setReSIDfpFilter6581(filterName);
+			} else {
+				emulation.setReSIDfpFilter8580(filterName);
+			}
 		} else {
-			emulation.setFilter8580(filterName);
+			if (model == ChipModel.MOS6581) {
+				emulation.setFilter6581(filterName);
+			} else {
+				emulation.setFilter8580(filterName);
+			}
 		}
 
 		updateChipModels();
@@ -271,10 +281,11 @@ public class EmulationSettings extends C64Window {
 			}
 		}
 
+		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+		series.setName(util.getBundle().getString("FILTERCURVE_TITLE"));
+		filterCurve.getData().clear();
 		if (filterSid1 != null) {
-			XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-			series.setName(util.getBundle().getString("FILTERCURVE_TITLE"));
-			if (filterSid1.getFilter6581CurvePosition() != 0) {
+			if (filterSid1.isReSIDFilter6581()) {
 				double dacZero = FilterModelConfig.getDacZero(filterSid1
 						.getFilter6581CurvePosition());
 				for (int i = 0; i < FC_MAX; i += STEP) {
@@ -283,7 +294,7 @@ public class EmulationSettings extends C64Window {
 									(int) FilterModelConfig.estimateFrequency(
 											dacZero, i)));
 				}
-			} else {
+			} else if (filterSid1.isReSIDFilter8580()) {
 				for (int i = 0; i < FC_MAX; i += STEP) {
 					series.getData()
 							.add(new XYChart.Data<Number, Number>(
@@ -292,8 +303,16 @@ public class EmulationSettings extends C64Window {
 											* filterSid1
 													.getFilter8580CurvePosition() / (FC_MAX - 1))));
 				}
+			} else if (filterSid1.isReSIDfpFilter6581()
+					|| filterSid1.isReSIDfpFilter8580()) {
+				for (int i = 0; i < FC_MAX; i += STEP) {
+					series.getData()
+							.add(new XYChart.Data<Number, Number>(
+									i,
+									(int) residfp_builder.resid.FilterModelConfig
+											.estimateFrequency(filterSid1, i)));
+				}
 			}
-			filterCurve.getData().clear();
 			filterCurve.getData().add(series);
 		}
 	}
@@ -302,19 +321,42 @@ public class EmulationSettings extends C64Window {
 		final boolean enable = util.getConfig().getEmulation().isFilter();
 		String item = null;
 		if (enable) {
-			if (model == ChipModel.MOS6581) {
-				item = util.getConfig().getEmulation().getFilter6581();
-			} else if (model == ChipModel.MOS8580) {
-				item = util.getConfig().getEmulation().getFilter8580();
+			if (util.getPlayer().getDriverSettings().getEmulation()
+					.equals(Emulation.RESIDFP)) {
+				if (model == ChipModel.MOS6581) {
+					item = util.getConfig().getEmulation()
+							.getReSIDfpFilter6581();
+				} else if (model == ChipModel.MOS8580) {
+					item = util.getConfig().getEmulation()
+							.getReSIDfpFilter8580();
+				}
+			} else {
+				if (model == ChipModel.MOS6581) {
+					item = util.getConfig().getEmulation().getFilter6581();
+				} else if (model == ChipModel.MOS8580) {
+					item = util.getConfig().getEmulation().getFilter8580();
+				}
 			}
 		}
 
 		filters.clear();
 		filters.add("");
 		for (IFilterSection filter : util.getConfig().getFilter()) {
-			if (filter.getFilter8580CurvePosition() != 0
-					^ model == ChipModel.MOS6581) {
-				filters.add(filter.getName());
+			if (util.getPlayer().getDriverSettings().getEmulation()
+					.equals(Emulation.RESIDFP)) {
+				if (filter.isReSIDfpFilter6581() && model == ChipModel.MOS6581) {
+					filters.add(filter.getName());
+				} else if (filter.isReSIDfpFilter8580()
+						&& model == ChipModel.MOS8580) {
+					filters.add(filter.getName());
+				}
+			} else {
+				if (filter.isReSIDFilter6581() && model == ChipModel.MOS6581) {
+					filters.add(filter.getName());
+				} else if (filter.isReSIDFilter8580()
+						&& model == ChipModel.MOS8580) {
+					filters.add(filter.getName());
+				}
 			}
 		}
 

@@ -140,6 +140,36 @@ public interface IEmulationSection {
 	public void setFilter8580(String filterName);
 
 	/**
+	 * Getter of the filter setting of MOS6581 for ReSIDfp.
+	 * 
+	 * @return the filter setting of MOS6581 for ReSIDfp
+	 */
+	public String getReSIDfpFilter6581();
+
+	/**
+	 * Setter of the filter setting of MOS6581 for ReSIDfp.
+	 * 
+	 * @param filterName
+	 *            filter setting of MOS6581 for ReSIDfp
+	 */
+	public void setReSIDfpFilter6581(String filterName);
+
+	/**
+	 * Getter of the filter setting of CSG8580.
+	 * 
+	 * @return the filter setting of CSG8580
+	 */
+	public String getReSIDfpFilter8580();
+
+	/**
+	 * Setter of the filter setting of CSG8680.
+	 * 
+	 * @param filterName
+	 *            filter setting of CSG8680
+	 */
+	public void setReSIDfpFilter8580(String filterName);
+
+	/**
 	 * Getter of the enable SID digi-boost.
 	 * 
 	 * @return the enable SID digi-boost

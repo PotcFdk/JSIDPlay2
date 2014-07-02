@@ -204,6 +204,48 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	/**
+	 * Getter of the filter setting of MOS6581.
+	 * 
+	 * @return the filter setting of MOS6581
+	 */
+	@Override
+	public final String getReSIDfpFilter6581() {
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter6581", null);
+	}
+
+	/**
+	 * Setter of the filter setting of MOS6581.
+	 * 
+	 * @param filterName
+	 *            filter setting of MOS6581
+	 */
+	@Override
+	public final void setReSIDfpFilter6581(final String filterName) {
+		iniReader.setProperty("Emulation", "ReSIDfp_Filter6581", filterName);
+	}
+
+	/**
+	 * Getter of the filter setting of CSG8580.
+	 * 
+	 * @return the filter setting of CSG8580
+	 */
+	@Override
+	public final String getReSIDfpFilter8580() {
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter8580", null);
+	}
+
+	/**
+	 * Setter of the filter setting of CSG8680.
+	 * 
+	 * @param filterName
+	 *            filter setting of CSG8680
+	 */
+	@Override
+	public final void setReSIDfpFilter8580(final String filterName) {
+		iniReader.setProperty("Emulation", "ReSIDfp_Filter8580", filterName);
+	}
+
+	/**
 	 * Getter of the enable SID digi-boost.
 	 * 
 	 * @return the enable SID digi-boost
@@ -290,4 +332,5 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setStereoSidModel(final ChipModel model) {
 		iniReader.setProperty("Emulation", "StereoSidModel", model);
 	}
+
 }

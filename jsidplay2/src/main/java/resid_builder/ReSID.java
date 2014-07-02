@@ -117,11 +117,11 @@ public class ReSID extends SIDEmu {
 		String filterName8580 = config.getEmulation().getFilter8580();
 		for (IFilterSection filter : config.getFilter()) {
 			if (filter.getName().equals(filterName6581)
-					&& filter.getFilter8580CurvePosition() == 0) {
+					&& filter.isReSIDFilter6581()) {
 				sid.getFilter6581().setFilterCurve(
 						filter.getFilter6581CurvePosition());
 			} else if (filter.getName().equals(filterName8580)
-					&& filter.getFilter8580CurvePosition() != 0) {
+					&& filter.isReSIDFilter8580()) {
 				sid.getFilter8580().setFilterCurve(
 						filter.getFilter8580CurvePosition());
 			}

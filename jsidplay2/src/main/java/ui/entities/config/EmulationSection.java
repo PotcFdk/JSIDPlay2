@@ -123,6 +123,30 @@ public class EmulationSection implements IEmulationSection {
 		this.filter8580 = filter8580;
 	}
 
+	private String reSIDfpFilter6581 = "FilterAlankila6581R4AR_3789";
+
+	@Override
+	public String getReSIDfpFilter6581() {
+		return reSIDfpFilter6581;
+	}
+
+	@Override
+	public void setReSIDfpFilter6581(String reSIDfpFilter6581) {
+		this.reSIDfpFilter6581 = reSIDfpFilter6581;
+	}
+
+	private String reSIDfpFilter8580 = "FilterTrurl8580R5_3691";
+
+	@Override
+	public String getReSIDfpFilter8580() {
+		return reSIDfpFilter8580;
+	}
+
+	@Override
+	public void setReSIDfpFilter8580(String reSIDfpFilter8580) {
+		this.reSIDfpFilter8580 = reSIDfpFilter8580;
+	}
+
 	private boolean digiBoosted8580;
 
 	@Override

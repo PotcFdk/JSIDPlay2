@@ -15,8 +15,6 @@
  */
 package residfp_builder;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,9 +24,11 @@ import libsidplay.common.SIDEmu;
 import resid_builder.resid.ChipModel;
 import resid_builder.resid.SamplingMethod;
 import residfp_builder.ReSIDBuilder.MixerEvent;
+import residfp_builder.resid.Filter6581;
+import residfp_builder.resid.Filter8580;
 import residfp_builder.resid.SID;
-import sidplay.ini.IniReader;
 import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IFilterSection;
 
 public class ReSID extends SIDEmu {
 	private static final Logger RESID = Logger.getLogger(ReSID.class.getName());
@@ -57,59 +57,36 @@ public class ReSID extends SIDEmu {
 		reset((byte) 0);
 	}
 
-	/** Name of our config file. */
-	private static final String FILE_NAME = "residfp.ini";
-
 	@Override
 	public void setFilter(IConfig config) {
-		try (InputStream is = getClass().getResourceAsStream(
-				"/residfp_builder/" + FILE_NAME)) {
-			System.out.println("ReSID-fp: Use internal INI file: " + FILE_NAME);
-			IniReader iniReader = new IniReader(is);
-			String filterName6581 = iniReader.getPropertyString(
-					FilterConfig.class.getSimpleName(),
-					FilterConfig.FILTER_6581, null);
-			String filterName8580 = iniReader.getPropertyString(
-					FilterConfig.class.getSimpleName(),
-					FilterConfig.FILTER_8580, null);
-			System.out.println("  " + FilterConfig.FILTER_6581 + "="
-					+ filterName6581);
-			System.out.println("  " + FilterConfig.FILTER_8580 + "="
-					+ filterName8580);
-			FilterConfig filter6581 = FilterConfig.read(iniReader,
-					filterName6581 != null ? filterName6581 : null);
-			FilterConfig filter8580 = FilterConfig.read(iniReader,
-					filterName8580 != null ? filterName8580 : null);
-			filter(filter6581, filter8580);
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-	}
+		final Filter6581 filter6581 = sid.getFilter6581();
+		final Filter8580 filter8580 = sid.getFilter8580();
 
-	private void filter(final FilterConfig filter6581,
-			final FilterConfig filter8580) {
-		if (filter6581 != null) {
-			sid.getFilter6581().setCurveProperties(
-					filter6581.getBaseresistance(), filter6581.getOffset(),
-					filter6581.getSteepness(),
-					filter6581.getMinimumfetresistance());
-			sid.getFilter6581().setDistortionProperties(
-					filter6581.getAttenuation(), filter6581.getNonlinearity(),
-					filter6581.getResonanceFactor());
-			sid.set6581VoiceNonlinearity(filter6581.getVoiceNonlinearity());
-			sid.getFilter6581().setNonLinearity(
-					filter6581.getVoiceNonlinearity());
-		} else {
-			sid.getFilter6581().setCurveAndDistortionDefaults();
+		String filterName6581 = config.getEmulation().getReSIDfpFilter6581();
+		if (filterName6581 == null) {
+			filter6581.setCurveAndDistortionDefaults();
 		}
-
-		if (filter8580 != null) {
-			sid.getFilter8580().setCurveProperties(filter8580.getK(),
-					filter8580.getB(), 0, 0);
-			sid.getFilter8580().setDistortionProperties(0, 0,
-					filter8580.getResonanceFactor());
-		} else {
-			sid.getFilter8580().setCurveAndDistortionDefaults();
+		String filterName8580 = config.getEmulation().getReSIDfpFilter8580();
+		if (filterName8580 == null) {
+			filter8580.setCurveAndDistortionDefaults();
+		}
+		for (IFilterSection filter : config.getFilter()) {
+			if (filter.getName().equals(filterName6581)
+					&& filter.isReSIDfpFilter6581()) {
+				filter6581.setCurveProperties(filter.getBaseresistance(),
+						filter.getOffset(), filter.getSteepness(),
+						filter.getMinimumfetresistance());
+				filter6581.setDistortionProperties(filter.getAttenuation(),
+						filter.getNonlinearity(), filter.getResonanceFactor());
+				sid.set6581VoiceNonlinearity(filter.getVoiceNonlinearity());
+				filter6581.setNonLinearity(filter.getVoiceNonlinearity());
+			} else if (filter.getName().equals(filterName8580)
+					&& filter.isReSIDfpFilter8580()) {
+				filter8580.setCurveProperties(filter.getK(), filter.getB(), 0,
+						0);
+				filter8580.setDistortionProperties(0, 0,
+						filter.getResonanceFactor());
+			}
 		}
 	}
 

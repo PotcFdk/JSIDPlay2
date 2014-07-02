@@ -48,4 +48,111 @@ public class FilterSection implements IFilterSection {
 		this.filter6581CurvePosition = filter6581CurvePosition;
 	}
 
+	private float attenuation;
+
+	@Override
+	public float getAttenuation() {
+		return attenuation;
+	}
+
+	@Override
+	public void setAttenuation(float attenuation) {
+		this.attenuation = attenuation;
+	}
+
+	private float nonlinearity;
+
+	@Override
+	public float getNonlinearity() {
+		return nonlinearity;
+	}
+
+	@Override
+	public void setNonlinearity(float nonlinearity) {
+		this.nonlinearity = nonlinearity;
+	}
+
+	private float voiceNonlinearity;
+
+	@Override
+	public float getVoiceNonlinearity() {
+		return voiceNonlinearity;
+	}
+
+	@Override
+	public void setVoiceNonlinearity(float voiceNonlinearity) {
+		this.voiceNonlinearity = voiceNonlinearity;
+	}
+
+	private float baseresistance;
+
+	@Override
+	public float getBaseresistance() {
+		return baseresistance;
+	}
+
+	@Override
+	public void setBaseresistance(float baseresistance) {
+		this.baseresistance = baseresistance;
+	}
+
+	private float offset;
+
+	public float getOffset() {
+		return offset;
+	}
+
+	public void setOffset(float offset) {
+		this.offset = offset;
+	}
+
+	private float steepness;
+
+	public float getSteepness() {
+		return steepness;
+	}
+
+	public void setSteepness(float steepness) {
+		this.steepness = steepness;
+	}
+
+	private float minimumfetresistance;
+
+	public float getMinimumfetresistance() {
+		return minimumfetresistance;
+	}
+
+	public void setMinimumfetresistance(float minimumfetresistance) {
+		this.minimumfetresistance = minimumfetresistance;
+	}
+
+	private float k;
+
+	public float getK() {
+		return k;
+	}
+
+	public void setK(float k) {
+		this.k = k;
+	}
+
+	private float b;
+
+	public float getB() {
+		return b;
+	}
+
+	public void setB(float b) {
+		this.b = b;
+	}
+
+	private float resonanceFactor;
+
+	public float getResonanceFactor() {
+		return resonanceFactor;
+	}
+
+	public void setResonanceFactor(float resonanceFactor) {
+		this.resonanceFactor = resonanceFactor;
+	}
 }
