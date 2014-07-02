@@ -242,7 +242,8 @@
 							<includes>
 								<include>netsiddev/*</include>
 								<include>netsiddev/ini/*</include>
-								<include>resid_builder/**/*.class</include>
+								<include>resid_builder/resid/**/*.class</include>
+								<include>residfp_builder/resid/**/*.class</include>
 								<include>libsidplay/common/*.class</include>
 								<include>sidplay/audio/Audio*.class</include>
 								<include>sidplay/audio/JavaSound*.class</include>

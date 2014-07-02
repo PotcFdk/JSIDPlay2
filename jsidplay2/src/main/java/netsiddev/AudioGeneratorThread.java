@@ -14,8 +14,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.SIDChip;
 import resid_builder.resid.ChipModel;
-import resid_builder.resid.SID;
 import resid_builder.resid.SamplingMethod;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
@@ -39,7 +39,7 @@ public class AudioGeneratorThread extends Thread {
 	private boolean digiBoostEnabled = false;
 	
 	/** SIDs that generate output */
-	private SID[] sid;
+	private SIDChip[] sid;
 
 	/** Currently active clocking value */
 	private CPUClock[] sidClocking;
@@ -377,7 +377,7 @@ public class AudioGeneratorThread extends Thread {
 		return isQueueReady;
 	}
 
-	public void setSidArray(SID[] sid) {
+	public void setSidArray(SIDChip[] sid) {
 		this.sid = sid;
 
 		sidClocking = new CPUClock[sid.length];
@@ -400,7 +400,7 @@ public class AudioGeneratorThread extends Thread {
 		}
 	}
 
-	public void setSID(int sidNumber, SID sidConfig) {
+	public void setSID(int sidNumber, SIDChip sidConfig) {
 		sid[sidNumber] = sidConfig;
 		setDigiBoost(digiBoostEnabled);
 	}
@@ -415,7 +415,7 @@ public class AudioGeneratorThread extends Thread {
 
 		final int input = selected ? 0x7FF : 0;
 
-		for (SID sidChip : sid) {
+		for (SIDChip sidChip : sid) {
 			if (sidChip != null && sidChip.getChipModel().equals(ChipModel.MOS8580)) {
 				sidChip.input(input);
 			}

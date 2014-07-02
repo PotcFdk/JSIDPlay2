@@ -16,12 +16,14 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javafx.application.Platform;
+
 import javax.sound.sampled.Mixer;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.SIDChip;
 import netsiddev.ini.JSIDDeviceConfig;
 import resid_builder.resid.ChipModel;
-import resid_builder.resid.SID;
 import resid_builder.resid.SamplingMethod;
 import sidplay.audio.AudioConfig;
 
@@ -91,7 +93,7 @@ class ClientContext {
 	private final AudioGeneratorThread eventConsumerThread;
 
 	/** Shadow SID clocked with client to read from */
-	private SID[] sidRead;
+	private SIDChip[] sidRead;
 	
 	/** Allocate read buffer. Maximum command + maximum socket buffer size (assumed to be per request 16K) */
 	private final ByteBuffer dataRead = ByteBuffer.allocateDirect(65536 + 4 + 16384);
@@ -180,8 +182,8 @@ class ClientContext {
 				break;
 			}
 			
-			SID[] sid = new SID[sidNumber];
-			sidRead = new SID[sidNumber];
+			SIDChip[] sid = new SIDChip[sidNumber];
+			sidRead = new SIDChip[sidNumber];
 			eventConsumerThread.setSidArray(sid);
 			
 			dataWrite.put((byte) Response.OK.ordinal());
@@ -517,15 +519,16 @@ class ClientContext {
 							if (! (e instanceof IOException)) {
 								StringWriter sw = new StringWriter();
 								e.printStackTrace(new PrintWriter(sw));
-								
-								Alert alert = new Alert();
-								alert.setMessage(sw.toString());
-								alert.setWait(true);
-								try {
-									alert.open();
-								} catch (Exception e1) {
-								}
-								System.exit(0);
+								Platform.runLater(()->{
+									Alert alert = new Alert();
+									alert.setMessage(sw.toString());
+									alert.setWait(true);
+									try {
+										alert.open();
+									} catch (Exception e1) {
+									}
+									System.exit(0);
+								});
 							}
 							continue;
 						}

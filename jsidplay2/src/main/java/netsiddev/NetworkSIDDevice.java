@@ -14,9 +14,11 @@ import java.io.StringWriter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import libsidplay.common.SIDChip;
 import netsiddev.ini.JSIDDeviceConfig;
 import resid_builder.resid.ChipModel;
-import resid_builder.resid.SID;
+import residfp_builder.resid.Filter6581;
+import residfp_builder.resid.Filter8580;
 import sidplay.ini.intf.IFilterSection;
 
 /**
@@ -297,21 +299,46 @@ public class NetworkSIDDevice extends Application {
 	 * 
 	 * @param sidNumber
 	 */
-	protected static SID getSidConfig(int sidNumber) {
-		SID sid = new SID();
+	protected static SIDChip getSidConfig(int sidNumber) {
 		IFilterSection iniFilter = config
 				.getFilter(config.getFilterList()[sidNumber]);
 
+		SIDChip sid = null;
 		if (iniFilter.isReSIDFilter6581()) {
-			sid.setChipModel(ChipModel.MOS6581);
-			sid.getFilter6581().setFilterCurve(
+			sid = new resid_builder.resid.SID();
+			((resid_builder.resid.SID) sid).setChipModel(ChipModel.MOS6581);
+			((resid_builder.resid.SID) sid).getFilter6581().setFilterCurve(
 					iniFilter.getFilter6581CurvePosition());
 		} else if (iniFilter.isReSIDFilter8580()) {
-			sid.setChipModel(ChipModel.MOS8580);
-			sid.getFilter8580().setFilterCurve(
+			sid = new resid_builder.resid.SID();
+			((resid_builder.resid.SID) sid).setChipModel(ChipModel.MOS8580);
+			((resid_builder.resid.SID) sid).getFilter8580().setFilterCurve(
 					iniFilter.getFilter8580CurvePosition());
+		} else if (iniFilter.isReSIDfpFilter6581()) {
+			sid = new residfp_builder.resid.SID();
+			((residfp_builder.resid.SID) sid).setChipModel(ChipModel.MOS6581);
+			Filter6581 filter6581 = ((residfp_builder.resid.SID) sid)
+					.getFilter6581();
+			filter6581.setCurveProperties(iniFilter.getBaseresistance(),
+					iniFilter.getOffset(), iniFilter.getSteepness(),
+					iniFilter.getMinimumfetresistance());
+			filter6581
+					.setDistortionProperties(iniFilter.getAttenuation(),
+							iniFilter.getNonlinearity(),
+							iniFilter.getResonanceFactor());
+			((residfp_builder.resid.SID) sid)
+					.set6581VoiceNonlinearity(iniFilter.getVoiceNonlinearity());
+			filter6581.setNonLinearity(iniFilter.getVoiceNonlinearity());
+		} else if (iniFilter.isReSIDfpFilter8580()) {
+			sid = new residfp_builder.resid.SID();
+			((residfp_builder.resid.SID) sid).setChipModel(ChipModel.MOS8580);
+			Filter8580 filter8580 = ((residfp_builder.resid.SID) sid)
+					.getFilter8580();
+			filter8580.setCurveProperties(iniFilter.getK(), iniFilter.getB(),
+					0, 0);
+			filter8580.setDistortionProperties(0, 0,
+					iniFilter.getResonanceFactor());
 		}
-
 		return sid;
 	}
 

@@ -24,10 +24,11 @@ package residfp_builder.resid;
 import java.util.HashMap;
 import java.util.Map;
 
+import libsidplay.common.SIDChip;
 import resid_builder.resid.ChipModel;
 import resid_builder.resid.SamplingMethod;
 
-public class SID {
+public class SID implements SIDChip {
 	/**
 	 * Cache for caching the expensive FIR table computation results in the Java
 	 * process.
@@ -40,7 +41,8 @@ public class SID {
 	private static final float OUTPUT_LEVEL = 1 / (2047.f * 255.f * 3.0f * 3.0f);
 
 	/** SID voices */
-	public final Voice[] voice = new Voice[] { new Voice(), new Voice(), new Voice() };
+	public final Voice[] voice = new Voice[] { new Voice(), new Voice(),
+			new Voice() };
 
 	/** Currently active filter */
 	private Filter filter;
@@ -53,7 +55,7 @@ public class SID {
 	public final Filter getFilter() {
 		return filter;
 	}
-	
+
 	/** Filter used, if model is set to 6581 */
 	private final Filter6581 filter6581 = new Filter6581();
 
@@ -61,8 +63,8 @@ public class SID {
 	private final Filter8580 filter8580 = new Filter8580();
 
 	/**
-	 * External filter that provides high-pass and low-pass filtering
-	 * to adjust sound tone slightly.
+	 * External filter that provides high-pass and low-pass filtering to adjust
+	 * sound tone slightly.
 	 */
 	private final ExternalFilter externalFilter = new ExternalFilter();
 
@@ -85,9 +87,9 @@ public class SID {
 	private static final int RINGSIZE = 2048;
 
 	/**
-	 * Aliasing parameter: we don't care about accurate sound reproduction
-	 * above this frequency. The lower this is, the faster resampling will be,
-	 * but the worse it will sound.
+	 * Aliasing parameter: we don't care about accurate sound reproduction above
+	 * this frequency. The lower this is, the faster resampling will be, but the
+	 * worse it will sound.
 	 */
 	private static final float MAXIMUM_AUDIBLE_FREQUENCY = 20000;
 
@@ -136,19 +138,24 @@ public class SID {
 	}
 
 	/**
-	 * Estimate DAC nonlinearity. The SID contains R-2R ladder, but the second resistor
-	 * is not exactly double the first. The parameter nonLinearity models the deviation
-	 * from the resistor lengths. There appears to be about 4 % error on the 6581,
-	 * resulting in major kinks on the DAC. The value that the DAC yields tends to be
-	 * larger than expected. The output of this method is normalized such that DAC
-	 * errors occur both above and below the ideal value equally.
+	 * Estimate DAC nonlinearity. The SID contains R-2R ladder, but the second
+	 * resistor is not exactly double the first. The parameter nonLinearity
+	 * models the deviation from the resistor lengths. There appears to be about
+	 * 4 % error on the 6581, resulting in major kinks on the DAC. The value
+	 * that the DAC yields tends to be larger than expected. The output of this
+	 * method is normalized such that DAC errors occur both above and below the
+	 * ideal value equally.
 	 * 
-	 * @param input digital value to convert to analog
-	 * @param nonLinearity nonlinearity parameter, 1.0 for perfect linearity.
-	 * @param maxBit highest bit that may be set in input.
+	 * @param input
+	 *            digital value to convert to analog
+	 * @param nonLinearity
+	 *            nonlinearity parameter, 1.0 for perfect linearity.
+	 * @param maxBit
+	 *            highest bit that may be set in input.
 	 * @return the analog value as modeled from the R-2R network.
 	 */
-	public static float kinkedDac(final int input, final float nonLinearity, final int maxBit) {
+	public static float kinkedDac(final int input, final float nonLinearity,
+			final int maxBit) {
 		float value = 0f;
 		int currentBit = 1;
 		float weight = 1f;
@@ -167,7 +174,8 @@ public class SID {
 	/**
 	 * Constructor.
 	 *
-	 * @param count chip number
+	 * @param count
+	 *            chip number
 	 */
 	public SID() {
 		set6581VoiceNonlinearity(0.96f);
@@ -183,7 +191,8 @@ public class SID {
 	/**
 	 * Set chip model.
 	 * 
-	 * @param model chip model to use
+	 * @param model
+	 *            chip model to use
 	 */
 	public void setChipModel(final ChipModel model) {
 		this.model = model;
@@ -197,17 +206,20 @@ public class SID {
 			filter = filter8580;
 			nonLinearity = 1f;
 		} else {
-			throw new RuntimeException("Don't know how to handle chip type " + model);
+			throw new RuntimeException("Don't know how to handle chip type "
+					+ model);
 		}
 
 		/* calculate waveform-related tables, feed them to the generator */
-		final Object[] tables = WaveformCalculator.rebuildWftable(model, nonLinearity);
+		final Object[] tables = WaveformCalculator.rebuildWftable(model,
+				nonLinearity);
 
 		/* update voice offsets */
 		for (int i = 0; i < 3; i++) {
 			voice[i].setChipModel(model);
 			voice[i].envelope.setNonLinearity(nonLinearity);
-			voice[i].wave.setWftable((float[][]) tables[0], (float[]) tables[1], (byte[][]) tables[2]);
+			voice[i].wave.setWftable((float[][]) tables[0],
+					(float[]) tables[1], (byte[][]) tables[2]);
 		}
 	}
 
@@ -236,7 +248,8 @@ public class SID {
 	 * an external audio signal, the signal should be resampled to 1MHz first to
 	 * avoid sampling noise.
 	 * 
-	 * @param value input level to set
+	 * @param value
+	 *            input level to set
 	 */
 	public void input(final int value) {
 		// Voice outputs are 20 bits. Scale up to match three voices in order
@@ -247,13 +260,21 @@ public class SID {
 	/**
 	 * Read registers.
 	 * <P>
-	 * Reading a write only register returns the last byte written to any SID register. The individual bits in this value start to fade down towards zero after a few cycles. All bits reach zero within
-	 * approximately $2000 - $4000 cycles. It has been claimed that this fading happens in an orderly fashion, however sampling of write only registers reveals that this is not the case. NB! This is
-	 * not correctly modeled. The actual use of write only registers has largely been made in the belief that all SID registers are readable. To support this belief the read would have to be done
-	 * immediately after a write to the same register (remember that an intermediate write to another register would yield that value instead). With this in mind we return the last value written to
-	 * any SID register for $2000 cycles without modeling the bit fading.
+	 * Reading a write only register returns the last byte written to any SID
+	 * register. The individual bits in this value start to fade down towards
+	 * zero after a few cycles. All bits reach zero within approximately $2000 -
+	 * $4000 cycles. It has been claimed that this fading happens in an orderly
+	 * fashion, however sampling of write only registers reveals that this is
+	 * not the case. NB! This is not correctly modeled. The actual use of write
+	 * only registers has largely been made in the belief that all SID registers
+	 * are readable. To support this belief the read would have to be done
+	 * immediately after a write to the same register (remember that an
+	 * intermediate write to another register would yield that value instead).
+	 * With this in mind we return the last value written to any SID register
+	 * for $2000 cycles without modeling the bit fading.
 	 * 
-	 * @param offset SID register to read
+	 * @param offset
+	 *            SID register to read
 	 * @return value read from chip
 	 */
 	public byte read(final int offset) {
@@ -263,9 +284,9 @@ public class SID {
 		case 0x1a:
 			return potY.readPOT();
 		case 0x1b:
-			return model == ChipModel.MOS6581 ?
-					voice[2].wave.readOSC6581(voice[0].wave) :
-						voice[2].wave.readOSC8580(voice[0].wave);
+			return model == ChipModel.MOS6581 ? voice[2].wave
+					.readOSC6581(voice[0].wave) : voice[2].wave
+					.readOSC8580(voice[0].wave);
 		case 0x1c:
 			return voice[2].envelope.readENV();
 		default:
@@ -276,8 +297,10 @@ public class SID {
 	/**
 	 * Write registers.
 	 * 
-	 * @param offset chip register to write
-	 * @param value value to write
+	 * @param offset
+	 *            chip register to write
+	 * @param value
+	 *            value to write
 	 */
 	public void write(final int offset, final byte value) {
 		busValue = value;
@@ -371,8 +394,10 @@ public class SID {
 	/**
 	 * SID voice muting.
 	 * 
-	 * @param channel channe to modify
-	 * @param enable is muted?
+	 * @param channel
+	 *            channe to modify
+	 * @param enable
+	 *            is muted?
 	 */
 	public void mute(final int channel, final boolean enable) {
 		voice[channel].mute(enable);
@@ -386,7 +411,8 @@ public class SID {
 	 * This function is originally from resample-1.5/filterkit.c by J. O. Smith.
 	 * It is used to build the Kaiser window for resampling.
 	 * 
-	 * @param x evaluate I0 at x
+	 * @param x
+	 *            evaluate I0 at x
 	 * @return value of I0 at x.
 	 */
 	private static double I0(final double x) {
@@ -403,27 +429,38 @@ public class SID {
 		return sum;
 	}
 
-
-
 	/**
 	 * Setting of SID sampling parameters.
 	 * <P>
-	 * Use a clock freqency of 985248Hz for PAL C64, 1022730Hz for NTSC C64. The default end of passband frequency is pass_freq = 0.9*sample_freq/2 for sample frequencies up to ~ 44.1kHz, and 20kHz
-	 * for higher sample frequencies.
+	 * Use a clock freqency of 985248Hz for PAL C64, 1022730Hz for NTSC C64. The
+	 * default end of passband frequency is pass_freq = 0.9*sample_freq/2 for
+	 * sample frequencies up to ~ 44.1kHz, and 20kHz for higher sample
+	 * frequencies.
 	 * <P>
-	 * For resampling, the ratio between the clock frequency and the sample frequency is limited as follows: 125*clock_freq/sample_freq < 16384 E.g. provided a clock frequency of ~ 1MHz, the sample
-	 * frequency can not be set lower than ~ 8kHz. A lower sample frequency would make the resampling code overfill its 16k sample ring buffer.
+	 * For resampling, the ratio between the clock frequency and the sample
+	 * frequency is limited as follows: 125*clock_freq/sample_freq < 16384 E.g.
+	 * provided a clock frequency of ~ 1MHz, the sample frequency can not be set
+	 * lower than ~ 8kHz. A lower sample frequency would make the resampling
+	 * code overfill its 16k sample ring buffer.
 	 * <P>
-	 * The end of passband frequency is also limited: pass_freq <= 0.9*sample_freq/2
+	 * The end of passband frequency is also limited: pass_freq <=
+	 * 0.9*sample_freq/2
 	 * <P>
-	 * E.g. for a 44.1kHz sampling rate the end of passband frequency is limited to slightly below 20kHz. This constraint ensures that the FIR table is not overfilled.
+	 * E.g. for a 44.1kHz sampling rate the end of passband frequency is limited
+	 * to slightly below 20kHz. This constraint ensures that the FIR table is
+	 * not overfilled.
 	 * 
-	 * @param clockFrequency System clock frequency at Hz
-	 * @param method sampling method to use
-	 * @param samplingFrequency Desired output sampling rate
+	 * @param clockFrequency
+	 *            System clock frequency at Hz
+	 * @param method
+	 *            sampling method to use
+	 * @param samplingFrequency
+	 *            Desired output sampling rate
 	 * @return success
 	 */
-	synchronized public void setSamplingParameters(final double clockFrequency, final SamplingMethod method, final double samplingFrequency, final double highestAccurateFrequency) {
+	synchronized public void setSamplingParameters(final double clockFrequency,
+			final SamplingMethod method, final double samplingFrequency,
+			final double highestAccurateFrequency) {
 		filter6581.setClockFrequency(clockFrequency);
 		filter8580.setClockFrequency(clockFrequency);
 		externalFilter.setClockFrequency(clockFrequency);
@@ -445,9 +482,13 @@ public class SID {
 		/* rest of the code initializes the FIR. */
 		sampleIndex = 0;
 
-		/* Allow specifying at most 90 % of passband to limit the CPU time spent on resampling. */
+		/*
+		 * Allow specifying at most 90 % of passband to limit the CPU time spent
+		 * on resampling.
+		 */
 		if (2 * highestAccurateFrequency / samplingFrequency > 0.95f) {
-			throw new RuntimeException("Requested passband is too narrow. Try raising sampling frequency or lowering highest accurate frequency.");
+			throw new RuntimeException(
+					"Requested passband is too narrow. Try raising sampling frequency or lowering highest accurate frequency.");
 		}
 
 		// 16 bits -> -96dB stopband attenuation.
@@ -458,27 +499,37 @@ public class SID {
 		// http://www.mathworks.com/access/helpdesk/help/toolbox/signal/kaiserord.html
 		final double beta = 0.1102 * (A - 8.7);
 		final double I0beta = I0(beta);
-		final double halfCyclesPerSample = clockFrequency / samplingFrequency / 2;
+		final double halfCyclesPerSample = clockFrequency / samplingFrequency
+				/ 2;
 
-		/* Widen the transition band to allow aliasing down to the specified highest
-		 * correctly reproduced frequency. I sincerely hope that highestAccurateFrequency
-		 * is above 20 kHz, or this will sound like shit. */
-		double aliasingAllowance = samplingFrequency / 2 - MAXIMUM_AUDIBLE_FREQUENCY;
+		/*
+		 * Widen the transition band to allow aliasing down to the specified
+		 * highest correctly reproduced frequency. I sincerely hope that
+		 * highestAccurateFrequency is above 20 kHz, or this will sound like
+		 * shit.
+		 */
+		double aliasingAllowance = samplingFrequency / 2
+				- MAXIMUM_AUDIBLE_FREQUENCY;
 		if (aliasingAllowance < 0) {
 			aliasingAllowance = 0;
 		}
 
-		final double transitionBandwidth = samplingFrequency / 2 - highestAccurateFrequency + aliasingAllowance;
+		final double transitionBandwidth = samplingFrequency / 2
+				- highestAccurateFrequency + aliasingAllowance;
 		{
-			// The filter order will maximally be 124 with the current constraints.
-			// N >= (96.33 - 7.95)/(2 * pi * 2.285 * (maxfreq - passbandfreq) >= 123
+			// The filter order will maximally be 124 with the current
+			// constraints.
+			// N >= (96.33 - 7.95)/(2 * pi * 2.285 * (maxfreq - passbandfreq) >=
+			// 123
 			// The filter order is equal to the number of zero crossings, i.e.
 			// it should be an even number (sinc is symmetric about x = 0).
 			//
-			// XXX: analysis indicates that the filter is slighly overspecified by
+			// XXX: analysis indicates that the filter is slighly overspecified
+			// by
 			// there constraints. Need to check why. One possibility is the
 			// level of audio being in truth closer to 15-bit than 16-bit.
-			int N = (int) ((A - 7.95) / (2 * Math.PI * 2.285 * transitionBandwidth / samplingFrequency) + 0.5);
+			int N = (int) ((A - 7.95)
+					/ (2 * Math.PI * 2.285 * transitionBandwidth / samplingFrequency) + 0.5);
 			N += N & 1;
 
 			// The filter length is equal to the filter order + 1.
@@ -493,20 +544,24 @@ public class SID {
 			}
 
 			/*
-			 * Error is bound by 1.234 / L^2, so for 16-bit:
-			 * sqrt(1.234 * (1 << 16))
+			 * Error is bound by 1.234 / L^2, so for 16-bit: sqrt(1.234 * (1 <<
+			 * 16))
 			 */
 			firRES = (int) (Math.sqrt(1.234 * (1 << 16)) / halfCyclesPerSample + 0.5);
 		}
 
 		// The cutoff frequency is midway through the transition band
-		final double wc = (highestAccurateFrequency + transitionBandwidth / 2) / samplingFrequency * Math.PI * 2;
+		final double wc = (highestAccurateFrequency + transitionBandwidth / 2)
+				/ samplingFrequency * Math.PI * 2;
 
-		final String firKey = firN + "," + firRES + "," + wc + "," + halfCyclesPerSample;
+		final String firKey = firN + "," + firRES + "," + wc + ","
+				+ halfCyclesPerSample;
 		fir = FIR_CACHE.get(firKey);
 
-		/* The FIR computation is expensive and we set sampling parameters often, but
-		 * from a very small set of choices. Thus, caching this seems appropriate.
+		/*
+		 * The FIR computation is expensive and we set sampling parameters
+		 * often, but from a very small set of choices. Thus, caching this seems
+		 * appropriate.
 		 */
 		if (fir == null) {
 			// Allocate memory for FIR tables.
@@ -515,16 +570,19 @@ public class SID {
 
 			/* Calculate the sinc tables. */
 			final double scale = wc / halfCyclesPerSample / Math.PI;
-			for (int i = 0; i < firRES; i ++) {
-				final double jPhase = (double) i / firRES + firN/2;
-				for (int j = 0; j < firN; j ++) {
+			for (int i = 0; i < firRES; i++) {
+				final double jPhase = (double) i / firRES + firN / 2;
+				for (int j = 0; j < firN; j++) {
 					final double x = j - jPhase;
 
-					final double xt = x / (firN/2);
-					final double kaiserXt = Math.abs(xt) < 1 ? I0(beta * Math.sqrt(1 - xt * xt)) / I0beta : 0;
+					final double xt = x / (firN / 2);
+					final double kaiserXt = Math.abs(xt) < 1 ? I0(beta
+							* Math.sqrt(1 - xt * xt))
+							/ I0beta : 0;
 
 					final double wt = wc * x / halfCyclesPerSample;
-					final double sincWt = Math.abs(wt) >= 1e-8 ? Math.sin(wt) / wt : 1;
+					final double sincWt = Math.abs(wt) >= 1e-8 ? Math.sin(wt)
+							/ wt : 1;
 
 					fir[i][j] = (float) (scale * sincWt * kaiserXt);
 				}
@@ -565,18 +623,25 @@ public class SID {
 		voice[1].envelope.clock();
 		voice[2].envelope.clock();
 
-		return externalFilter.clock(filter.clock(voice[0].output(voice[2].wave), voice[1].output(voice[0].wave), voice[2].output(voice[1].wave), ext_in)) * OUTPUT_LEVEL;
+		return externalFilter.clock(filter.clock(
+				voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),
+				voice[2].output(voice[1].wave), ext_in))
+				* OUTPUT_LEVEL;
 	}
 
 	/**
 	 * Clock SID forward using chosen output sampling algorithm.
 	 * 
-	 * @param delta_t c64 clocks to clock
-	 * @param buf audio output buffer
-	 * @param pos where to begin audio writing
+	 * @param delta_t
+	 *            c64 clocks to clock
+	 * @param buf
+	 *            audio output buffer
+	 * @param pos
+	 *            where to begin audio writing
 	 * @return
 	 */
-	public final int clock(final int /* cycle_count */delta_t, final float buf[], final int pos) {
+	public final int clock(final int /* cycle_count */delta_t,
+			final float buf[], final int pos) {
 		ageBusValue(delta_t);
 
 		int res;
@@ -596,15 +661,17 @@ public class SID {
 
 	/**
 	 * Clock SID forward with no audio production. This trashes the SID state,
-	 * and this method can't be used together with audio-producing clock_xxx methods.
+	 * and this method can't be used together with audio-producing clock_xxx
+	 * methods.
 	 * 
-	 * @param delta_t c64 clocks to clock.
+	 * @param delta_t
+	 *            c64 clocks to clock.
 	 * @return
 	 */
 	public void clockSilent(final int delta_t) {
 		ageBusValue(delta_t);
 
-		for (int i = 0; i < delta_t; i ++) {
+		for (int i = 0; i < delta_t; i++) {
 			/* clock waveform generators */
 			voice[0].wave.clock();
 			voice[1].wave.clock();
@@ -616,8 +683,8 @@ public class SID {
 			voice[2].wave.synchronize(voice[0].wave, voice[1].wave);
 
 			/* clock ENV3 only */
-			//voice[0].envelope.clock();
-			//voice[1].envelope.clock();
+			// voice[0].envelope.clock();
+			// voice[1].envelope.clock();
 			voice[2].envelope.clock();
 		}
 	}
@@ -626,8 +693,9 @@ public class SID {
 	 * SID clocking with audio sampling - cycle based with linear sample
 	 * interpolation.
 	 * <P>
-	 * Here the chip is clocked every cycle. This yields higher quality sound since the samples are linearly interpolated, and since the external filter attenuates frequencies above 16kHz, thus
-	 * reducing sampling noise.
+	 * Here the chip is clocked every cycle. This yields higher quality sound
+	 * since the samples are linearly interpolated, and since the external
+	 * filter attenuates frequencies above 16kHz, thus reducing sampling noise.
 	 * 
 	 * @return number of samples constructed
 	 */
@@ -641,7 +709,7 @@ public class SID {
 			if (cyclesToNextSample > cycles) {
 				break;
 			}
-			for (i = 0; i < cyclesToNextSample-1; i++) {
+			for (i = 0; i < cyclesToNextSample - 1; i++) {
 				clock();
 			}
 
@@ -668,29 +736,42 @@ public class SID {
 	/**
 	 * SID clocking with audio sampling - cycle based with audio resampling.
 	 * <P>
-	 * This is the theoretically correct (and computationally intensive) audio sample generation. The samples are generated by resampling to the specified sampling frequency. The work rate is
-	 * inversely proportional to the percentage of the bandwidth allocated to the filter transition band.
+	 * This is the theoretically correct (and computationally intensive) audio
+	 * sample generation. The samples are generated by resampling to the
+	 * specified sampling frequency. The work rate is inversely proportional to
+	 * the percentage of the bandwidth allocated to the filter transition band.
 	 * <P>
-	 * This implementation is based on the paper "A Flexible Sampling-Rate Conversion Method", by J. O. Smith and P. Gosset, or rather on the expanded tutorial on the
-	 * "Digital Audio Resampling Home Page": http:*www-ccrma.stanford.edu/~jos/resample/
+	 * This implementation is based on the paper
+	 * "A Flexible Sampling-Rate Conversion Method", by J. O. Smith and P.
+	 * Gosset, or rather on the expanded tutorial on the
+	 * "Digital Audio Resampling Home Page":
+	 * http:*www-ccrma.stanford.edu/~jos/resample/
 	 * <P>
-	 * By building shifted FIR tables with samples according to the sampling frequency, this implementation dramatically reduces the computational effort in the filter convolutions, without any loss
-	 * of accuracy. The filter convolutions are also vectorizable on current hardware.
+	 * By building shifted FIR tables with samples according to the sampling
+	 * frequency, this implementation dramatically reduces the computational
+	 * effort in the filter convolutions, without any loss of accuracy. The
+	 * filter convolutions are also vectorizable on current hardware.
 	 * <P>
 	 * Further possible optimizations are:
 	 * <OL>
-	 * <LI>An equiripple filter design could yield a lower filter order, see http://www.mwrf.com/Articles/ArticleID/7229/7229.html
-	 * <LI>The Convolution Theorem could be used to bring the complexity of convolution down from O(n*n) to O(n*log(n)) using the Fast Fourier Transform, see
-	 * http://en.wikipedia.org/wiki/Convolution_theorem
-	 * <LI>Simply resampling in two steps can also yield computational savings, since the transition band will be wider in the first step and the required filter order is thus lower in this step.
-	 * Laurent Ganier has found the optimal intermediate sampling frequency to be (via derivation of sum of two steps):<BR>
+	 * <LI>An equiripple filter design could yield a lower filter order, see
+	 * http://www.mwrf.com/Articles/ArticleID/7229/7229.html
+	 * <LI>The Convolution Theorem could be used to bring the complexity of
+	 * convolution down from O(n*n) to O(n*log(n)) using the Fast Fourier
+	 * Transform, see http://en.wikipedia.org/wiki/Convolution_theorem
+	 * <LI>Simply resampling in two steps can also yield computational savings,
+	 * since the transition band will be wider in the first step and the
+	 * required filter order is thus lower in this step. Laurent Ganier has
+	 * found the optimal intermediate sampling frequency to be (via derivation
+	 * of sum of two steps):<BR>
 	 * <CODE>2 * pass_freq + sqrt [ 2 * pass_freq * orig_sample_freq
 	 *       * (dest_sample_freq - 2 * pass_freq) / dest_sample_freq ]</CODE>
 	 * </OL>
 	 * 
 	 * @return number of samples constructed
 	 */
-	private int clockResampleInterpolate(int cycles, final float buf[], final int pos) {
+	private int clockResampleInterpolate(int cycles, final float buf[],
+			final int pos) {
 		int s = 0;
 
 		for (;;) {
@@ -718,7 +799,8 @@ public class SID {
 			firTableOffset -= firTableFirst;
 
 			/*
-			 * find firN most recent samples, plus one extra in case the FIR wraps.
+			 * find firN most recent samples, plus one extra in case the FIR
+			 * wraps.
 			 */
 			int sampleStart = sampleIndex - firN + RINGSIZE - 1;
 
@@ -752,5 +834,15 @@ public class SID {
 
 	public Filter8580 getFilter8580() {
 		return filter8580;
+	}
+
+	@Override
+	public int clock(int piece, int[] audioBuffer, int offset) {
+		float[] buffer = new float[audioBuffer.length];
+		final int clock = clock(piece, buffer, offset);
+		for (int i = offset; i < buffer.length; i++) {
+			audioBuffer[i] = Math.round(buffer[i] * 32768f);
+		}
+		return clock;
 	}
 }

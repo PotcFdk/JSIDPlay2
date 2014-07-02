@@ -21,6 +21,7 @@
  */
 package resid_builder.resid;
 
+import libsidplay.common.SIDChip;
 import resid_builder.resid.resample.Resampler;
 import resid_builder.resid.resample.TwoPassSincResampler;
 import resid_builder.resid.resample.ZeroOrderResampler;
@@ -35,7 +36,7 @@ import resid_builder.resid.resample.ZeroOrderResampler;
  * @author Dag Lem
  * @author Antti Lankila
  */
-public final class SID {
+public final class SID implements SIDChip {
 	/**
 	 * Bus value stays alive for some time after each operation.
 	 */
