@@ -37,7 +37,7 @@ public class SID {
 	/**
 	 * Output scaler.
 	 */
-	private static final float OUTPUT_LEVEL = 1 / (2047.f * 255.f * 3.0f * 2.0f);
+	private static final float OUTPUT_LEVEL = 1 / (2047.f * 255.f * 3.0f * 3.0f);
 
 	/** SID voices */
 	public final Voice[] voice = new Voice[] { new Voice(), new Voice(), new Voice() };
