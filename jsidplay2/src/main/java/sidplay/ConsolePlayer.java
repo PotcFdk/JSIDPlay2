@@ -8,7 +8,7 @@ import java.util.List;
 
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
-import libsidplay.player.Emulation;
+import libsidplay.common.Emulation;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;

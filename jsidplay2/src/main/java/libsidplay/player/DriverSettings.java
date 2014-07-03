@@ -1,5 +1,6 @@
 package libsidplay.player;
 
+import libsidplay.common.Emulation;
 import sidplay.audio.Audio;
 
 public class DriverSettings {

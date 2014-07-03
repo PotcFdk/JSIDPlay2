@@ -5,7 +5,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
 import libsidplay.common.CPUClock;
-import libsidplay.player.Emulation;
+import libsidplay.common.Emulation;
 import resid_builder.resid.ChipModel;
 
 @Generated(value="Dali", date="2012-11-09T20:55:57.992+0100")

@@ -13,7 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
-import libsidplay.player.Emulation;
+import libsidplay.common.Emulation;
 import resid_builder.resid.SamplingMethod;
 import sidplay.audio.Audio;
 import sidplay.audio.CmpMP3File;

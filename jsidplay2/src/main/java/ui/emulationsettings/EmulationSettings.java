@@ -13,7 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import libsidplay.Player;
-import libsidplay.player.Emulation;
+import libsidplay.common.Emulation;
 import libsidplay.player.State;
 import resid_builder.resid.ChipModel;
 import resid_builder.resid.FilterModelConfig;
