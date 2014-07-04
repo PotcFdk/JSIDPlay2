@@ -280,7 +280,7 @@ public class Screen {
 		}
 	}
 
-	protected static byte iso2scr(char c) {
+	public static byte iso2scr(char c) {
 		return (byte) scrtab[c & 0xff];
 	}
 

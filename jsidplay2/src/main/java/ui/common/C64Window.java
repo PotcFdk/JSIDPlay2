@@ -84,4 +84,7 @@ public abstract class C64Window implements UIPart {
 		return uiParts;
 	}
 
+	public UIUtil getUtil() {
+		return util;
+	}
 }

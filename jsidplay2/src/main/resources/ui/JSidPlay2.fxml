@@ -51,9 +51,9 @@
 				</fx:define>
 				<MenuBar fx:id="menuBar" AnchorPane.leftAnchor="10">
 					<menus>
-						<Menu text="%FILE">
+						<Menu text="%FILE" fx:id="file">
 							<items>
-								<MenuItem text="%LOAD" onAction="#load">
+								<MenuItem text="%LOAD" onAction="#load" fx:id="load">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="L"
 											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />

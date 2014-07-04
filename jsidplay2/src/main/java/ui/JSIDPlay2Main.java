@@ -69,6 +69,8 @@ public class JSIDPlay2Main extends Application {
 	 */
 	private ConfigService configService;
 
+	private static JSidPlay2 testInstance;
+
 	@Override
 	public void start(Stage primaryStage) {
 		player = new Player(getConfiguration());
@@ -107,6 +109,7 @@ public class JSIDPlay2Main extends Application {
 							.setFrameY(newValue.intValue()));
 		}
 		player.startC64();
+		testInstance = jSidplay2;
 	}
 
 	@Override
@@ -193,4 +196,7 @@ public class JSIDPlay2Main extends Application {
 		launch(args);
 	}
 
+	public static JSidPlay2 getInstance() {
+		return testInstance;
+	}
 }

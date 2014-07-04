@@ -415,7 +415,7 @@ public final class SidIdV2 {
 	private void andBytesMaxPtnLength(final ArrayList<Pattern> ptnList,
 			final ArrayList<Byte> byteList, final int byteListOffset,
 			final int byteCount, final boolean isSubPattern) {
-		assert byteCount < MAX_KEY_LENGTH;
+		assert byteCount <= MAX_KEY_LENGTH;
 		final byte[] and = new byte[byteCount];
 		for (int i = 0; i < and.length; i++) {
 			and[i] = byteList.get(i + byteListOffset);
