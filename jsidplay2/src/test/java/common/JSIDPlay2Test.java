@@ -1,42 +1,28 @@
 package common;
 
 import javafx.scene.Parent;
+import javafx.stage.Stage;
 import libpsid64.Screen;
 import libsidplay.Player;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.loadui.testfx.GuiTest;
+import org.junit.Before;
 import org.loadui.testfx.utils.FXTestUtils;
 
 import ui.JSIDPlay2Main;
 import ui.entities.config.Configuration;
 
-public class JSIDPlay2Test {
+public class JSIDPlay2Test extends GuiTest {
 	protected static final int FILE_BROWSER_OPENED_TIMEOUT = 1000;
 	protected static final int SID_TUNE_LOADED_TIMEOUT = 5000;
 
-	protected static GuiTest ctrl;
+	protected Configuration config;
+	protected Player player;
 
-	protected static Configuration config;
-	protected static Player player;
-
-	@BeforeClass
-	public static void setUpClass() {
-		FXTestUtils.launchApp(JSIDPlay2Main.class);
-		ctrl = new GuiTest() {
-			@Override
-			protected Parent getRootNode() {
-				return JSIDPlay2Main.getInstance().getStage().getScene()
-						.getRoot();
-			}
-		};
-		while (JSIDPlay2Main.getInstance() == null)
-			ctrl.sleep(500);
+	@Before
+	public void setup() {
 		config = JSIDPlay2Main.getInstance().getUtil().getConfig();
 		player = JSIDPlay2Main.getInstance().getUtil().getPlayer();
-		player.setMenuHook((player) -> {
-		});
 	}
 
 	protected void assertRam(int address, byte[] expected) {
@@ -57,5 +43,19 @@ public class JSIDPlay2Test {
 					+ offset + i], offset + i, screenCode, i);
 			Assert.assertTrue(message, ram[0x0400 + offset + i] == screenCode);
 		}
+	}
+
+	@Override
+	protected Stage launchApp() {
+		FXTestUtils.launchApp(JSIDPlay2Main.class);
+		while (JSIDPlay2Main.getInstance() == null) {
+			sleep(1000);
+		}
+		return JSIDPlay2Main.getInstance().getStage();
+	}
+
+	@Override
+	protected Parent getRootNode() {
+		return stage.getScene().getRoot();
 	}
 }

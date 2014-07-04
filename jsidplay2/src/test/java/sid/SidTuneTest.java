@@ -4,29 +4,23 @@ import static javafx.scene.input.KeyCode.ENTER;
 import javafx.scene.control.Label;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 
 import common.JSIDPlay2Test;
 
 public class SidTuneTest extends JSIDPlay2Test {
-	@Before
-	public void setUp() {
-		config.getSidplay2().setLastDirectory(
-				"target/test-classes/sid/examples");
-	}
 
 	@Test
 	public void loadPSidStereoTest() {
 		config.getSidplay2().setLastDirectory(
 				"target/test-classes/sid/examples/stereo/2sids/Nata");
-		ctrl.click("#file");
-		ctrl.click("#load");
-		ctrl.sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		ctrl.type("test.sid");
-		ctrl.press(ENTER).release(ENTER);
-		ctrl.sleep(SID_TUNE_LOADED_TIMEOUT);
+		click("#file");
+		click("#load");
+		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		type("test.sid");
+		press(ENTER).release(ENTER);
+		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		Assert.assertTrue(player.getC64().getSID(0) != null);
 		Assert.assertTrue(player.getC64().getSID(1) != null);
@@ -40,12 +34,14 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadPSidTest() {
-		ctrl.click("#file");
-		ctrl.click("#load");
-		ctrl.sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		ctrl.type("test.sid");
-		ctrl.press(ENTER).release(ENTER);
-		ctrl.sleep(SID_TUNE_LOADED_TIMEOUT);
+		config.getSidplay2().setLastDirectory(
+				"target/test-classes/sid/examples");
+		click("#file");
+		click("#load");
+		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		type("test.sid");
+		press(ENTER).release(ENTER);
+		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		// Driver
 		assertRam(0xc000, new byte[] { 0x4c, 0x00, 0x08 });
@@ -57,24 +53,28 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadP00Test() {
-		ctrl.click("#file");
-		ctrl.click("#load");
-		ctrl.sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		ctrl.type("test.p00");
-		ctrl.press(ENTER).release(ENTER);
-		ctrl.sleep(SID_TUNE_LOADED_TIMEOUT);
+		config.getSidplay2().setLastDirectory(
+				"target/test-classes/sid/examples");
+		click("#file");
+		click("#load");
+		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		type("test.p00");
+		press(ENTER).release(ENTER);
+		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		assertRam(0x0801, new byte[] { (byte) 0xde, 0x38, (byte) 0xa9 });
 	}
 
 	@Test
 	public void loadMusTest() {
-		ctrl.click("#file");
-		ctrl.click("#load");
-		ctrl.sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		ctrl.type("test.mus");
-		ctrl.press(ENTER).release(ENTER);
-		ctrl.sleep(SID_TUNE_LOADED_TIMEOUT);
+		config.getSidplay2().setLastDirectory(
+				"target/test-classes/sid/examples");
+		click("#file");
+		click("#load");
+		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		type("test.mus");
+		press(ENTER).release(ENTER);
+		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		// Driver
 		assertRam(0x0400, new byte[] { 0x4c, (byte) 0x80, (byte) 0xec });
@@ -90,12 +90,12 @@ public class SidTuneTest extends JSIDPlay2Test {
 	public void loadMusStereoTest() {
 		config.getSidplay2().setLastDirectory(
 				"target/test-classes/sid/examples/stereo");
-		ctrl.click("#file");
-		ctrl.click("#load");
-		ctrl.sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		ctrl.type("test.mus");
-		ctrl.press(ENTER).release(ENTER);
-		ctrl.sleep(SID_TUNE_LOADED_TIMEOUT);
+		click("#file");
+		click("#load");
+		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		type("test.mus");
+		press(ENTER).release(ENTER);
+		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		Assert.assertTrue(player.getC64().getSID(0) != null);
 		Assert.assertTrue(player.getC64().getSID(1) != null);
@@ -111,12 +111,14 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadPrgTest() {
-		ctrl.click("#file");
-		ctrl.click("#load");
-		ctrl.sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		ctrl.type("test.prg");
-		ctrl.press(ENTER).release(ENTER);
-		ctrl.sleep(SID_TUNE_LOADED_TIMEOUT);
+		config.getSidplay2().setLastDirectory(
+				"target/test-classes/sid/examples");
+		click("#file");
+		click("#load");
+		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		type("test.prg");
+		press(ENTER).release(ENTER);
+		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		assertScreenMessage("Spiral Silicon Towers", 2, 1);
 	}
