@@ -137,7 +137,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		type("test.prg");
+		type("radiantx_spiral_silicon_towers.prg");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
