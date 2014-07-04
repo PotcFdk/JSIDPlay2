@@ -7,9 +7,30 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 
+import resid_builder.resid.ChipModel;
 import common.JSIDPlay2Test;
 
 public class SidTuneTest extends JSIDPlay2Test {
+
+	@Test
+	public void detectSidModelTest() {
+		config.getSidplay2().setLastDirectory("target/test-classes/sid");
+
+		config.getEmulation().setUserSidModel(null);
+		config.getEmulation().setDefaultSidModel(ChipModel.MOS8580);
+		click("#file");
+		click("#load");
+		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		type("sid_detection.prg");
+		push(ENTER);
+		sleep(SID_TUNE_LOADED_TIMEOUT);
+		assertScreenMessage("b", 1, 1);
+
+		config.getEmulation().setDefaultSidModel(ChipModel.MOS6581);
+		player.play(player.getTune());
+		sleep(SID_TUNE_LOADED_TIMEOUT);
+		assertScreenMessage("a", 1, 1);
+	}
 
 	@Test
 	public void loadPSidStereoTest() {
@@ -18,8 +39,8 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		type("test.sid");
-		press(ENTER).release(ENTER);
+		type("Anthrox_2SID.sid");
+		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		Assert.assertTrue(player.getC64().getSID(0) != null);
@@ -39,8 +60,8 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		type("test.sid");
-		press(ENTER).release(ENTER);
+		type("Turrican_2-The_Final_Fight.sid");
+		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		// Driver
@@ -58,8 +79,8 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		type("test.p00");
-		press(ENTER).release(ENTER);
+		type("PUZZLEND.P00");
+		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		assertRam(0x0801, new byte[] { (byte) 0xde, 0x38, (byte) 0xa9 });
@@ -72,8 +93,8 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		type("test.mus");
-		press(ENTER).release(ENTER);
+		type("Angie_A.mus");
+		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		// Driver
@@ -93,8 +114,8 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		type("test.mus");
-		press(ENTER).release(ENTER);
+		type("Safety_Dance.mus");
+		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		Assert.assertTrue(player.getC64().getSID(0) != null);
@@ -117,7 +138,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
 		type("test.prg");
-		press(ENTER).release(ENTER);
+		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		assertScreenMessage("Spiral Silicon Towers", 2, 1);

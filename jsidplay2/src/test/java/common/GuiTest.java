@@ -840,12 +840,12 @@ public abstract class GuiTest {
 	public GuiTest type(char character) {
 		KeyCode keyCode = KeyCodeUtils.findKeyCode(character);
 
-		if (!Character.isUpperCase(character)) {
+		if (!Character.isUpperCase(character) && character!='_') {
 			return type(keyCode);
 		} else {
 			KeyCode[] modifiers = new KeyCode[] { KeyCode.SHIFT };
 			press(modifiers);
-			type(keyCode);
+			type(keyCode!=KeyCode.UNDERSCORE?keyCode:KeyCode.MINUS);
 			return release(modifiers);
 		}
 	}
