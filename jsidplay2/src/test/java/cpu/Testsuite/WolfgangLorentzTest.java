@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import common.JSIDPlay2Test;
 
-public class WolfgangLorentz extends JSIDPlay2Test {
+public class WolfgangLorentzTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDisk1() {
