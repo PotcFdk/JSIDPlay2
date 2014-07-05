@@ -5,7 +5,6 @@ import javafx.stage.Stage;
 import libpsid64.Screen;
 import libsidplay.Player;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.loadui.testfx.utils.FXTestUtils;
 
@@ -25,24 +24,26 @@ public class JSIDPlay2Test extends GuiTest {
 		player = JSIDPlay2Main.getInstance().getUtil().getPlayer();
 	}
 
-	protected void assertRam(int address, byte[] expected) {
+	protected boolean checkRam(int address, byte[] expected) {
 		final byte[] ram = player.getC64().getRAM();
 		for (int i = 0; i < expected.length; i++) {
-			final String message = String.format("%d(%d)!=%d(%d)", ram[address
-					+ i], address + i, expected[i], i);
-			Assert.assertTrue(message, ram[address + i] == expected[i]);
+			if (ram[address + i] != expected[i]) {
+				return false;
+			}
 		}
+		return true;
 	}
 
-	protected void assertScreenMessage(String expected, int row, int column) {
+	protected boolean checkScreenMessage(String expected, int row, int column) {
 		final byte[] ram = player.getC64().getRAM();
 		final int offset = ((row - 1) * 40) + (column - 1);
 		for (int i = 0; i < expected.length(); i++) {
 			final byte screenCode = Screen.iso2scr(expected.charAt(i));
-			final String message = String.format("%d(%d)!=%d(%d)", ram[0x0400
-					+ offset + i], offset + i, screenCode, i);
-			Assert.assertTrue(message, ram[0x0400 + offset + i] == screenCode);
+			if (ram[0x0400 + offset + i] != screenCode) {
+				return false;
+			}
 		}
+		return true;
 	}
 
 	@Override
