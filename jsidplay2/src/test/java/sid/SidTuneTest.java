@@ -1,11 +1,9 @@
 package sid;
 
 import static javafx.scene.input.KeyCode.ENTER;
-import javafx.scene.control.Label;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.loadui.testfx.GuiTest;
 
 import resid_builder.resid.ChipModel;
 
@@ -149,13 +147,6 @@ public class SidTuneTest extends JSIDPlay2Test {
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		Assert.assertTrue(checkScreenMessage("Spiral Silicon Towers", 2, 1));
-	}
-
-	@Test
-	public void statusTest() {
-		Label status = ((Label) GuiTest.find("#status"));
-
-		Assert.assertNotNull(status);
 	}
 
 }

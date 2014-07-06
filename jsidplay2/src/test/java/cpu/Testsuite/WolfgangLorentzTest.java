@@ -72,7 +72,8 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 	private boolean checkTestFailed() {
 		for (int i = 1; i < 40; i++) {
 			if (checkScreenMessage("before", i, 1)
-					|| checkScreenMessage("init", i, 1)) {
+					|| checkScreenMessage("init", i, 1)
+					|| checkScreenMessage("right", i, 1)) {
 				return true;
 			}
 		}
@@ -97,4 +98,3 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 		return false;
 	}
 }
-

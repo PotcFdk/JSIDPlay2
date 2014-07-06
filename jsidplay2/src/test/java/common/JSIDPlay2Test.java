@@ -3,7 +3,9 @@ package common;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import libpsid64.Screen;
+import libsidplay.C64;
 import libsidplay.Player;
+import libsidplay.common.Event;
 
 import org.junit.Before;
 import org.loadui.testfx.utils.FXTestUtils;
@@ -14,6 +16,7 @@ import ui.entities.config.Configuration;
 public class JSIDPlay2Test extends GuiTest {
 	protected static final int FILE_BROWSER_OPENED_TIMEOUT = 1000;
 	protected static final int SID_TUNE_LOADED_TIMEOUT = 5000;
+	protected static final int SCHEDULE_THREADSAFE_TIMEOUT = 2000;
 
 	protected Configuration config;
 	protected Player player;
@@ -44,6 +47,16 @@ public class JSIDPlay2Test extends GuiTest {
 			}
 		}
 		return true;
+	}
+
+	protected void schedule(java.util.function.Consumer<C64> c) {
+		player.getC64().getEventScheduler()
+				.scheduleThreadSafe(new Event("Test Event") {
+					@Override
+					public void event() throws InterruptedException {
+						c.accept(player.getC64());
+					}
+				});
 	}
 
 	@Override

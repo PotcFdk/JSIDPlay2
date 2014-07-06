@@ -1,9 +1,7 @@
 package cpu.Frodo4;
 
 import static javafx.scene.input.KeyCode.ENTER;
-import libsidplay.C64;
-import libsidplay.common.Event;
-import libsidplay.components.keyboard.KeyTableEntry;
+import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,13 +28,12 @@ public class FrodoTest extends JSIDPlay2Test {
 
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 1);
 		click("#screen");
-		schedule((c64) -> c64.getKeyboard().keyPressed(KeyTableEntry.SPACE));
-		sleep(2000);
+		schedule(c64 -> c64.getKeyboard().keyPressed(SPACE));
+		sleep(SCHEDULE_THREADSAFE_TIMEOUT);
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 0);
-		schedule((c64) -> c64.getKeyboard().keyReleased(KeyTableEntry.SPACE));
-		sleep(2000);
+		schedule(c64 -> c64.getKeyboard().keyReleased(SPACE));
+		sleep(SCHEDULE_THREADSAFE_TIMEOUT);
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 1);
-
 	}
 
 	@Test
@@ -50,23 +47,12 @@ public class FrodoTest extends JSIDPlay2Test {
 
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 0);
 		click("#screen");
-		schedule((c64) -> c64.getKeyboard().keyPressed(KeyTableEntry.SPACE));
-		sleep(2000);
+		schedule(c64 -> c64.getKeyboard().keyPressed(SPACE));
+		sleep(SCHEDULE_THREADSAFE_TIMEOUT);
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 1);
-		schedule((c64) -> c64.getKeyboard().keyReleased(KeyTableEntry.SPACE));
-		sleep(2000);
+		schedule(c64 -> c64.getKeyboard().keyReleased(SPACE));
+		sleep(SCHEDULE_THREADSAFE_TIMEOUT);
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 0);
-
-	}
-
-	private void schedule(java.util.function.Consumer<C64> c) {
-		player.getC64().getEventScheduler()
-				.scheduleThreadSafe(new Event("Test Event") {
-					@Override
-					public void event() throws InterruptedException {
-						c.accept(player.getC64());
-					}
-				});
 	}
 
 }
