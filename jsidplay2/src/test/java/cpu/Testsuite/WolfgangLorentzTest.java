@@ -4,16 +4,22 @@ import static javafx.scene.input.KeyCode.ENTER;
 import static libsidplay.sidtune.SidTune.RESET;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import common.JSIDPlay2Test;
 
 public class WolfgangLorentzTest extends JSIDPlay2Test {
 
-	@Test
-	public void testDisk1() {
+	@Before
+	public void setup() {
+		super.setup();
 		config.getSidplay2().setLastDirectory(
 				"target/test-classes/cpu/Testsuite/d64");
+	};
+
+	@Test
+	public void testDisk1() {
 		click("#floppy");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
 		type("Disk1.d64");
@@ -27,30 +33,35 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 				Assert.fail();
 			}
 		}
+	}
+
+	@Test
+	public void testDisk2() {
 		click("#floppy");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
 		type("Disk2.d64");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
-		click("#screen");
-		press(ENTER);
-		player.setCommand("LOAD\"*\",8,1\rRUN\r");
+		player.setCommand("LOAD\"*\",8\rRUN\r");
+		player.play(RESET);
 		while (!checkDiskChange(3)) {
 			sleep(10000);
 			if (checkTestFailed()) {
 				Assert.fail();
 			}
 		}
+	}
 
+	@Test
+	public void testDisk3() {
 		click("#floppy");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
 		type("Disk3.d64");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
-		click("#screen");
-		press(ENTER);
-		player.setCommand("LOAD\"*\",8,1\rRUN\r");
-		while (!checkScreenMessage("ready.", 39, 1)) {
+		player.setCommand("LOAD\"*\",8\rRUN\r");
+		player.play(RESET);
+		while (!checkReady()) {
 			sleep(10000);
 			if (checkTestFailed()) {
 				Assert.fail();
@@ -76,4 +87,14 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 		}
 		return false;
 	}
+
+	private boolean checkReady() {
+		for (int i = 1; i < 40; i++) {
+			if (checkScreenMessage("ready.", i, 1)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
+
