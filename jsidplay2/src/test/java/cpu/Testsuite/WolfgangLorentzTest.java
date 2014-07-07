@@ -2,6 +2,7 @@ package cpu.Testsuite;
 
 import static javafx.scene.input.KeyCode.ENTER;
 import static libsidplay.sidtune.SidTune.RESET;
+import libsidplay.player.State;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -70,6 +71,9 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 	}
 
 	private boolean checkTestFailed() {
+		if (player.stateProperty().get().equals(State.QUIT)) {
+			return true;
+		}
 		for (int i = 1; i < 40; i++) {
 			if (checkScreenMessage("before", i, 1)
 					|| checkScreenMessage("init", i, 1)

@@ -5,7 +5,6 @@ import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.getFirst;
 import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Sets.filter;
-import static org.junit.Assume.assumeTrue;
 import static org.loadui.testfx.controls.Commons.hasText;
 import static org.loadui.testfx.utils.FXTestUtils.flattenSets;
 import static org.loadui.testfx.utils.FXTestUtils.intersection;
@@ -45,14 +44,12 @@ import javax.imageio.ImageIO;
 
 import org.hamcrest.Matcher;
 import org.junit.Before;
-import org.loadui.testfx.FXScreenController;
 import org.loadui.testfx.ScreenController;
 import org.loadui.testfx.exceptions.NoNodesFoundException;
 import org.loadui.testfx.exceptions.NoNodesVisibleException;
 import org.loadui.testfx.utils.FXTestUtils;
 import org.loadui.testfx.utils.KeyCodeUtils;
 import org.loadui.testfx.utils.TestUtils;
-import org.loadui.testfx.utils.UserInputDetector;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -72,11 +69,11 @@ public abstract class GuiTest {
 
 	@Before
 	public void setupStage() throws Throwable {
-		assumeTrue(!UserInputDetector.instance.hasDetectedUserInput());
 		showNodeInStage();
 	}
 
 	protected abstract Stage launchApp();
+
 	protected abstract Parent getRootNode();
 
 	/**
@@ -463,7 +460,6 @@ public abstract class GuiTest {
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 
 	public GuiTest() {
-		UserInputDetector.instance.setTestThread(Thread.currentThread());
 		this.controller = new FXScreenController();
 	}
 
@@ -688,13 +684,6 @@ public abstract class GuiTest {
 		return this;
 	}
 
-	public MouseMotion drag(Object source, MouseButton... buttons) {
-		move(source);
-		press(buttons);
-
-		return new MouseMotion(this, buttons);
-	}
-
 	/**
 	 * Moves the mouse cursor to the given coordinates.
 	 *
@@ -702,10 +691,7 @@ public abstract class GuiTest {
 	 * @param y
 	 */
 	public GuiTest move(double x, double y) {
-		synchronized (UserInputDetector.instance) {
-			controller.move(x, y);
-			UserInputDetector.instance.reset();
-		}
+		controller.move(x, y);
 		return this;
 	}
 
@@ -840,12 +826,12 @@ public abstract class GuiTest {
 	public GuiTest type(char character) {
 		KeyCode keyCode = KeyCodeUtils.findKeyCode(character);
 
-		if (!Character.isUpperCase(character) && character!='_') {
+		if (!Character.isUpperCase(character) && character != '_') {
 			return type(keyCode);
 		} else {
 			KeyCode[] modifiers = new KeyCode[] { KeyCode.SHIFT };
 			press(modifiers);
-			type(keyCode!=KeyCode.UNDERSCORE?keyCode:KeyCode.MINUS);
+			type(keyCode != KeyCode.UNDERSCORE ? keyCode : KeyCode.MINUS);
 			return release(modifiers);
 		}
 	}

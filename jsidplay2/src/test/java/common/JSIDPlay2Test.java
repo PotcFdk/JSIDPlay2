@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.loadui.testfx.utils.FXTestUtils;
 
 import ui.JSIDPlay2Main;
+import ui.JSidPlay2;
 import ui.entities.config.Configuration;
 
 public class JSIDPlay2Test extends GuiTest {
@@ -25,6 +26,9 @@ public class JSIDPlay2Test extends GuiTest {
 	public void setup() {
 		config = JSIDPlay2Main.getInstance().getUtil().getConfig();
 		player = JSIDPlay2Main.getInstance().getUtil().getPlayer();
+		player.setMenuHook((player) -> {
+		});
+
 	}
 
 	protected boolean checkRam(int address, byte[] expected) {
@@ -65,7 +69,9 @@ public class JSIDPlay2Test extends GuiTest {
 		while (JSIDPlay2Main.getInstance() == null) {
 			sleep(1000);
 		}
-		return JSIDPlay2Main.getInstance().getStage();
+		final JSidPlay2 instance = JSIDPlay2Main.getInstance();
+		instance.getStage().setOnCloseRequest((evt) -> evt.consume());
+		return instance.getStage();
 	}
 
 	@Override
