@@ -61,7 +61,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 		player.setCommand("LOAD\"*\",8\rRUN\r");
 		player.play(RESET);
-		while (!checkReady()) {
+		while (!checkFinish()) {
 			sleep(10000);
 			if (checkTestFailed()) {
 				Assert.fail();
@@ -89,9 +89,9 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 		return false;
 	}
 
-	private boolean checkReady() {
+	private boolean checkFinish() {
 		for (int i = 1; i < 40; i++) {
-			if (checkScreenMessage("ready.", i, 1)) {
+			if (checkScreenMessage("finish", i, 1)) {
 				return true;
 			}
 		}
