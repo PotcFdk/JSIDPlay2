@@ -10,10 +10,13 @@ import static org.loadui.testfx.utils.FXTestUtils.flattenSets;
 import static org.loadui.testfx.utils.FXTestUtils.intersection;
 import static org.loadui.testfx.utils.FXTestUtils.isVisible;
 
+import java.awt.AWTException;
 import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Collection;
@@ -22,6 +25,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +60,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -66,6 +71,13 @@ public abstract class GuiTest {
 	private static final SettableFuture<Stage> stageFuture = SettableFuture
 			.create();
 	protected static Stage stage;
+
+    private static final Map<MouseButton, Integer> BUTTONS = ImmutableMap.of( MouseButton.PRIMARY,
+            InputEvent.BUTTON1_MASK, MouseButton.MIDDLE, InputEvent.BUTTON2_MASK, MouseButton.SECONDARY,
+            InputEvent.BUTTON3_MASK );
+
+    private final Robot robot;
+    private long moveTime = 175;
 
 	@Before
 	public void setupStage() throws Throwable {
@@ -85,7 +97,6 @@ public abstract class GuiTest {
 	}
 
 	private void showNodeInStage(final String stylesheet) {
-		// TODO: Do something with the stylesheet?
 		if (stage == null) {
 			stageFuture.set(launchApp());
 			try {
@@ -460,7 +471,128 @@ public abstract class GuiTest {
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 
 	public GuiTest() {
-		this.controller = new FXScreenController();
+        try
+        {
+            robot = new Robot();
+        }
+        catch( AWTException e )
+        {
+            throw new IllegalArgumentException( e );
+        }
+		this.controller = new ScreenController() {
+		    @Override
+		    public Point2D getMouse()
+		    {
+		        Point awtPoint = MouseInfo.getPointerInfo().getLocation();
+		        return new Point2D( awtPoint.getX(), awtPoint.getY() );
+		    }
+
+		    @Override
+		    public void position( double x, double y )
+		    {
+		        robot.mouseMove((int) x, (int) y);
+		    }
+
+		    @Override
+		    public void move( double x, double y )
+		    {
+		        // Calculate how far we need to go
+		        Point position = MouseInfo.getPointerInfo().getLocation();
+		        double distanceX = x - position.getX();
+		        double distanceY = y - position.getY();
+		        double distance = Math.sqrt( Math.pow(distanceX, 2) + Math.pow(distanceY, 2) );
+		        
+		        // The maximum time for the movement is "moveTime". Far movements will make the cursor go faster.
+		        // In order to be not too slow on small distances, the minimum speed is 1 pixel per millisecond.
+		        double totalTime = moveTime;
+		        if (distance < totalTime) {
+		            totalTime = Math.max(1, distance);
+		        }
+
+		        double speedX = distanceX / totalTime;
+		        double speedY = distanceY / totalTime;
+		        for (int time = 0; time < totalTime; time++) {
+
+		            int newX = position.x + (int) (speedX * time);
+		            int newY = position.y + (int) (speedY * time);
+		            robot.mouseMove(newX, newY);
+
+		            try
+		            {
+		                Thread.sleep( 1 );
+		            }
+		            catch( InterruptedException e )
+		            {
+		                return;
+		            }
+
+		        }
+
+		        // We should be less than one step away from the target
+		        // => Make one last step to hit it.
+		        robot.mouseMove((int) x, (int) y);
+		        FXTestUtils.awaitEvents();
+		    }
+
+		    @Override
+		    public void press( MouseButton button )
+		    {
+		        if( button == null )
+		        {
+		            return;
+		        }
+		        robot.mousePress( BUTTONS.get( button ) );
+		        FXTestUtils.awaitEvents();
+		    }
+
+		    @Override
+		    public void release( MouseButton button )
+		    {
+		        if( button == null )
+		        {
+		            return;
+		        }
+		        robot.mouseRelease( BUTTONS.get( button ) );
+		        FXTestUtils.awaitEvents();
+		    }
+
+		    @SuppressWarnings("deprecation")
+		    @Override
+		    public void press( KeyCode key )
+		    {
+		        robot.keyPress( key.impl_getCode() );
+		        FXTestUtils.awaitEvents();
+		    }
+
+		    @SuppressWarnings("deprecation")
+		    @Override
+		    public void release( KeyCode key )
+		    {
+		        robot.keyRelease( key.impl_getCode() );
+		        FXTestUtils.awaitEvents();
+		    }
+		    
+		    @SuppressWarnings("deprecation")
+		    @Override
+		    public void pressNoWait( KeyCode key )
+		    {
+		        robot.keyPress( key.impl_getCode() );
+		    }
+
+		    @SuppressWarnings("deprecation")
+		    @Override
+		    public void releaseNoWait( KeyCode key )
+		    {
+		        robot.keyRelease( key.impl_getCode() );
+		    }
+		    
+		    @Override
+		    public void scroll( int amount )
+		    {
+		        robot.mouseWheel( amount );
+		        FXTestUtils.awaitEvents();
+		    }
+		};
 	}
 
 	/**
