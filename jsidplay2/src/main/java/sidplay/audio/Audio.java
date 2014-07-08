@@ -2,28 +2,34 @@ package sidplay.audio;
 
 public enum Audio {
 	/** No audio. */
-	NONE(new AudioNull()),
+	NONE(new AudioNull(), ""),
 	/** Java Sound API. */
-	SOUNDCARD(new JavaSound()),
+	SOUNDCARD(new JavaSound(), "Soundcard"),
 	/** WAV file write. */
-	WAV(new WavFile()),
+	WAV(new WavFile(), "WAV"),
 	/** MP3 file write. */
-	MP3(new MP3File()),
+	MP3(new MP3File(), "MP3"),
 	/** Java Sound API plus WAV file write. */
-	LIVE_WAV(new ProxyDriver(new JavaSound(), new WavFile())),
+	LIVE_WAV(new ProxyDriver(new JavaSound(), new WavFile()), "Record(WAV)"),
 	/** Java Sound API and MP3 file write. */
-	LIVE_MP3(new ProxyDriver(new JavaSound(), new MP3File())),
+	LIVE_MP3(new ProxyDriver(new JavaSound(), new MP3File()), "Record(MP3)"),
 	/** Java Sound API plus recording playback. */
-	COMPARE_MP3(new CmpMP3File());
+	COMPARE_MP3(new CmpMP3File(), "Comparison");
 
 	private final AudioDriver audioDriver;
+	private final String description;
 
-	private Audio(AudioDriver audioDriver) {
+	private Audio(AudioDriver audioDriver, String description) {
 		this.audioDriver = audioDriver;
+		this.description = description;
 	}
 
 	public final AudioDriver getAudioDriver() {
 		return audioDriver;
 	}
 
+	@Override
+	public String toString() {
+		return description;
+	}
 }

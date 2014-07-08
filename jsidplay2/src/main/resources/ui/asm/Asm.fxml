@@ -25,12 +25,12 @@
 		<URL value="@Asm.css" />
 	</stylesheets>
 	<VBox>
-		<Hyperlink text="%HOMEPAGE"
-			textFill="BLUE" underline="true" onAction="#gotoHomepage" />
+		<Hyperlink text="%HOMEPAGE" textFill="BLUE" underline="true"
+			onAction="#gotoHomepage" />
 		<HBox AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
 			AnchorPane.topAnchor="10" prefHeight="600">
 			<TextArea editable="true" fx:id="contents" />
-			<VBox alignment="TOP_LEFT">
+			<VBox alignment="TOP_CENTER" >
 				<TableView editable="true" minWidth="320" minHeight="200"
 					fx:id="variablesTable">
 					<rowFactory>
@@ -74,12 +74,12 @@
 						</graphic>
 					</Button>
 				</HBox>
+				<Button text="%COMPILE" onAction="#compile"
+					AnchorPane.bottomAnchor="10" />
 			</VBox>
 		</HBox>
 		<TitledPane text="%ERRORS">
 			<Label fx:id="status" />
 		</TitledPane>
 	</VBox>
-	<Button text="%COMPILE" onAction="#compile"
-		AnchorPane.bottomAnchor="10" />
 </AnchorPane>

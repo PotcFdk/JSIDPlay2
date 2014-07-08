@@ -85,7 +85,7 @@
 			<ImageView fx:id="photograph" fitWidth="320" fitHeight="200"
 				preserveRatio="true" />
 		</TitledPane>
-		<TitledPane text="%SEARCH" collapsible="false"
+		<TitledPane text="%SEARCH" collapsible="true" expanded="false"
 			GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="3">
 			<VBox>
 				<HBox>
@@ -175,26 +175,6 @@
 				<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
 					onAction="#gotoURL" />
 			</HBox>
-		</TitledPane>
-		<TitledPane text="%PLAYBACK_OPTIONS" collapsible="false"
-			GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="3">
-			<GridPane>
-				<CheckBox text="%RESPECT_SONG_LENGTH" GridPane.columnIndex="0"
-					GridPane.rowIndex="0" fx:id="enableSldb" onAction="#doEnableSldb">
-				</CheckBox>
-				<CheckBox text="%SINGLE_SONG" GridPane.columnIndex="1"
-					GridPane.rowIndex="0" fx:id="singleSong" onAction="#playSingleSong">
-				</CheckBox>
-				<Label text="%DEFAULT_LENGTH" GridPane.columnIndex="2"
-					GridPane.rowIndex="0" GridPane.halignment="RIGHT">
-				</Label>
-				<TextField GridPane.columnIndex="3" GridPane.rowIndex="0"
-					fx:id="defaultTime" onAction="#setDefaultTime">
-					<tooltip>
-						<Tooltip text="%DEFAULT_LENGTH_TIP"></Tooltip>
-					</tooltip>
-				</TextField>
-			</GridPane>
 		</TitledPane>
 	</GridPane>
 </AnchorPane>

@@ -34,7 +34,6 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -55,7 +54,6 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
-import sidplay.ini.IniReader;
 import ui.common.C64Window;
 import ui.common.TypeTextField;
 import ui.common.UIPart;
@@ -109,9 +107,6 @@ public class MusicCollection extends Tab implements UIPart {
 	private static final String HVSC_URL = "http://www.hvsc.de/";
 	private static final String CGSC_URL = "http://www.c64music.co.uk/";
 
-	private static final String CELL_VALUE_OK = "cellValueOk";
-	private static final String CELL_VALUE_ERROR = "cellValueError";
-
 	private class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
 		public SearchCriteria(SingularAttribute<DECLARING_CLASS, JAVA_TYPE> att) {
 			this.attribute = att;
@@ -132,7 +127,7 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	@FXML
-	private CheckBox autoConfiguration, enableSldb, singleSong;
+	private CheckBox autoConfiguration;
 	@FXML
 	private TableView<TuneInfo> tuneInfoTable;
 	@FXML
@@ -148,7 +143,7 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private Button startSearch, stopSearch, resetSearch, createSearchIndex;
 	@FXML
-	private TextField collectionDir, defaultTime;
+	private TextField collectionDir;
 	@FXML
 	private TypeTextField stringTextField, integerTextField, longTextField,
 			shortTextField;
@@ -220,26 +215,6 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void initialize() {
-		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
-				.getSidplay2();
-
-		int seconds = sidplay2.getDefaultPlayLength();
-		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
-				seconds % 60));
-		sidplay2.defaultPlayLengthProperty().addListener(
-				(observable, oldValue, newValue) -> defaultTime.setText(String
-						.format("%02d:%02d", newValue.intValue() / 60,
-								newValue.intValue() % 60)));
-
-		enableSldb.setSelected(sidplay2.isEnableDatabase());
-		sidplay2.enableDatabaseProperty().addListener(
-				(observable, oldValue, newValue) -> enableSldb
-						.setSelected(newValue));
-
-		singleSong.setSelected(sidplay2.isSingle());
-		sidplay2.singleProperty().addListener(
-				(observable, oldValue, newValue) -> singleSong
-						.setSelected(newValue));
 		util.getPlayer()
 				.stateProperty()
 				.addListener(
@@ -642,36 +617,6 @@ public class MusicCollection extends Tab implements UIPart {
 			recentlySearchedForValue = searchForValue;
 		}
 		startSearch(false);
-	}
-
-	@FXML
-	private void doEnableSldb() {
-		util.getConfig().getSidplay2()
-				.setEnableDatabase(enableSldb.isSelected());
-		util.getPlayer().getTimer().updateEnd();
-	}
-
-	@FXML
-	private void playSingleSong() {
-		util.getConfig().getSidplay2().setSingle(singleSong.isSelected());
-	}
-
-	@FXML
-	private void setDefaultTime() {
-		final Tooltip tooltip = new Tooltip();
-		defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-		final int secs = IniReader.parseTime(defaultTime.getText());
-		if (secs != -1) {
-			util.getConfig().getSidplay2().setDefaultPlayLength(secs);
-			util.getPlayer().getTimer().updateEnd();
-			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
-			defaultTime.setTooltip(tooltip);
-			defaultTime.getStyleClass().add(CELL_VALUE_OK);
-		} else {
-			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_FORMAT"));
-			defaultTime.setTooltip(tooltip);
-			defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
-		}
 	}
 
 	public String getCollectionURL() {

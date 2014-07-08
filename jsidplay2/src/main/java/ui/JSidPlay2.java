@@ -19,13 +19,16 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.media.AudioClip;
@@ -39,6 +42,7 @@ import javax.imageio.ImageIO;
 import libsidplay.C64;
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
+import libsidplay.common.Emulation;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -54,7 +58,10 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
+import resid_builder.resid.SamplingMethod;
+import sidplay.audio.Audio;
 import sidplay.audio.RecordingFilenameProvider;
+import sidplay.ini.IniReader;
 import ui.about.About;
 import ui.asm.Asm;
 import ui.common.C64Window;
@@ -110,6 +117,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private static final AudioClip TRACKSOUND_AUDIOCLIP = new AudioClip(
 			JSidPlay2.class.getResource("/ui/sounds/track.wav").toString());
 
+	private static final String CELL_VALUE_OK = "cellValueOk";
+	private static final String CELL_VALUE_ERROR = "cellValueError";
+
 	@FXML
 	protected CheckMenuItem pauseContinue, driveOn, driveSoundOn, parCable,
 			expand2000, expand4000, expand6000, expand8000, expandA000,
@@ -119,6 +129,18 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			c1541_II, neverExtend, askExtend, accessExtend;
 	@FXML
 	protected MenuItem previous, next;
+	@FXML
+	private ComboBox<SamplingMethod> samplingBox;
+	@FXML
+	private ComboBox<Integer> samplingRateBox, hardsid6581Box, hardsid8580Box;
+	@FXML
+	private ComboBox<Audio> audioBox;
+	@FXML
+	private ComboBox<Emulation> emulationBox;
+	@FXML
+	private CheckBox enableSldb, singleSong;
+	@FXML
+	private TextField defaultTime;
 	@FXML
 	private ToggleButton pauseContinue2;
 	@FXML
@@ -200,6 +222,47 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				);
 		pauseContinue.selectedProperty().bindBidirectional(
 				pauseContinue2.selectedProperty());
+
+		Audio audio = util.getConfig().getAudio().getAudio();
+		audioBox.getSelectionModel().select(audio);
+
+		SamplingMethod sampling = util.getConfig().getAudio().getSampling();
+		samplingBox.getSelectionModel().select(sampling);
+
+		Integer samplingRate = Integer.valueOf(util.getConfig().getAudio()
+				.getFrequency());
+		samplingRateBox.getSelectionModel().select(samplingRate);
+
+		hardsid6581Box.getSelectionModel().select(
+				Integer.valueOf(util.getConfig().getEmulation()
+						.getHardsid6581()));
+		hardsid8580Box.getSelectionModel().select(
+				Integer.valueOf(util.getConfig().getEmulation()
+						.getHardsid8580()));
+
+		Emulation emulation = util.getConfig().getEmulation().getEmulation();
+		emulationBox.getSelectionModel().select(emulation);
+
+		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
+				.getSidplay2();
+
+		int seconds = sidplay2.getDefaultPlayLength();
+		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
+				seconds % 60));
+		sidplay2.defaultPlayLengthProperty().addListener(
+				(observable, oldValue, newValue) -> defaultTime.setText(String
+						.format("%02d:%02d", newValue.intValue() / 60,
+								newValue.intValue() % 60)));
+
+		enableSldb.setSelected(sidplay2.isEnableDatabase());
+		sidplay2.enableDatabaseProperty().addListener(
+				(observable, oldValue, newValue) -> enableSldb
+						.setSelected(newValue));
+
+		singleSong.setSelected(sidplay2.isSingle());
+		sidplay2.singleProperty().addListener(
+				(observable, oldValue, newValue) -> singleSong
+						.setSelected(newValue));
 
 		C1541Section c1541Section = (C1541Section) util.getConfig().getC1541();
 		driveOn.selectedProperty().bindBidirectional(
@@ -770,6 +833,88 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	@FXML
+	private void setAudio() {
+		Audio audio = audioBox.getSelectionModel().getSelectedItem();
+		util.getConfig().getAudio().setAudio(audio);
+		restart();
+	}
+	
+	@FXML
+	private void setSampling() {
+		SamplingMethod sampling = samplingBox.getSelectionModel()
+				.getSelectedItem();
+		util.getConfig().getAudio().setSampling(sampling);
+	}
+
+	@FXML
+	private void setSamplingRate() {
+		Integer samplingRate = samplingRateBox.getSelectionModel()
+				.getSelectedItem();
+		util.getConfig().getAudio().setFrequency(samplingRate);
+		restart();
+	}
+
+	@FXML
+	private void setEmulation() {
+		Emulation emulation = emulationBox.getSelectionModel()
+				.getSelectedItem();
+		util.getConfig().getEmulation().setEmulation(emulation);
+		if (Emulation.HARDSID.equals(emulation)) {
+			audioBox.getSelectionModel().select(Audio.NONE);
+		} else if (Audio.NONE.equals(audioBox.getSelectionModel()
+				.getSelectedItem())) {
+			audioBox.getSelectionModel().select(Audio.SOUNDCARD);
+		}
+		hardsid6581Box.setDisable(!Emulation.HARDSID.equals(emulation));
+		hardsid8580Box.setDisable(!Emulation.HARDSID.equals(emulation));
+		restart();
+	}
+	
+	@FXML
+	private void setSid6581() {
+		int hardsid6581 = hardsid6581Box.getSelectionModel().getSelectedItem();
+		util.getConfig().getEmulation().setHardsid6581(hardsid6581);
+		restart();
+	}
+
+	@FXML
+	private void setSid8580() {
+		int hardsid8580 = hardsid8580Box.getSelectionModel().getSelectedItem();
+		util.getConfig().getEmulation().setHardsid8580(hardsid8580);
+		restart();
+	}
+
+	@FXML
+	private void doEnableSldb() {
+		util.getConfig().getSidplay2()
+				.setEnableDatabase(enableSldb.isSelected());
+		util.getPlayer().getTimer().updateEnd();
+	}
+
+	@FXML
+	private void playSingleSong() {
+		util.getConfig().getSidplay2().setSingle(singleSong.isSelected());
+	}
+
+	@FXML
+	private void setDefaultTime() {
+		final Tooltip tooltip = new Tooltip();
+		defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		final int secs = IniReader.parseTime(defaultTime.getText());
+		if (secs != -1) {
+			util.getConfig().getSidplay2().setDefaultPlayLength(secs);
+			util.getPlayer().getTimer().updateEnd();
+			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
+			defaultTime.setTooltip(tooltip);
+			defaultTime.getStyleClass().add(CELL_VALUE_OK);
+		} else {
+			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_FORMAT"));
+			defaultTime.setTooltip(tooltip);
+			defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
+		}
+	}
+
+	@FXML
 	private void video() {
 		if (!tabAlreadyOpen(Video.ID)) {
 			addTab(new Video(this, util.getPlayer()));
@@ -1139,6 +1284,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	private C1541 getFirstFloppy() {
 		return util.getPlayer().getFloppies()[0];
+	}
+
+	private void restart() {
+		if (!duringInitialization) {
+			util.getPlayer().play(util.getPlayer().getTune());
+		}
 	}
 
 	@Override

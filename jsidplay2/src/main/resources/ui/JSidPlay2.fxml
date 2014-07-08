@@ -12,6 +12,8 @@
 <?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.Tooltip?>
@@ -23,7 +25,12 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.collections.FXCollections?> 
+<?import java.lang.Integer?>
 <?import java.net.URL?>
+<?import libsidplay.common.Emulation?>
+<?import resid_builder.resid.SamplingMethod?>
+<?import sidplay.audio.Audio?>
 <?import ui.musiccollection.MusicCollection?>
 <?import ui.diskcollection.DiskCollection?>
 <?import ui.oscilloscope.Oscilloscope?>
@@ -35,296 +42,408 @@
 <?import ui.console.Console?>
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
 <?scenebuilder-classpath-element ../../../../target/classes?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
 <Scene>
 	<stylesheets>
 		<URL value="@JSidPlay2.css" />
 	</stylesheets>
 	<BorderPane xmlns:fx="http://javafx.com/fxml">
 		<top>
-			<AnchorPane>
-				<fx:define>
-					<ToggleGroup fx:id="playSpeedGroup" />
-					<ToggleGroup fx:id="videoCaptureGroup" />
-					<ToggleGroup fx:id="videoStandardGroup" />
-					<ToggleGroup fx:id="floppyGroup" />
-					<ToggleGroup fx:id="extensionGroup" />
-				</fx:define>
-				<MenuBar fx:id="menuBar" AnchorPane.leftAnchor="10">
-					<menus>
-						<Menu text="%FILE" fx:id="file">
+			<VBox>
+				<AnchorPane>
+					<fx:define>
+						<ToggleGroup fx:id="playSpeedGroup" />
+						<ToggleGroup fx:id="videoCaptureGroup" />
+						<ToggleGroup fx:id="videoStandardGroup" />
+						<ToggleGroup fx:id="floppyGroup" />
+						<ToggleGroup fx:id="extensionGroup" />
+					</fx:define>
+					<MenuBar fx:id="menuBar" AnchorPane.leftAnchor="10">
+						<menus>
+							<Menu text="%FILE" fx:id="file">
+								<items>
+									<MenuItem text="%LOAD" onAction="#load" fx:id="load">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="L"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</MenuItem>
+									<MenuItem text="%LOAD_REU_VIDEO" onAction="#playVideo">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="V"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</MenuItem>
+									<MenuItem text="%RESET" onAction="#reset">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="R"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</MenuItem>
+									<SeparatorMenuItem />
+									<MenuItem text="%QUIT" onAction="#quit">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="Q"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</MenuItem>
+								</items>
+							</Menu>
+							<Menu text="%VIEW">
+								<MenuItem text="%VIDEO" onAction="#video" />
+								<MenuItem text="%OSCILLOSCOPE" onAction="#oscilloscope" />
+								<MenuItem text="%FAVORITES" onAction="#favorites" />
+								<Menu text="%MUSICCOLLECTIONS">
+									<MenuItem text="%HVSC" onAction="#hvsc" />
+									<MenuItem text="%CGSC" onAction="#cgsc" />
+								</Menu>
+								<Menu text="%DISKCOLLECTIONS">
+									<MenuItem text="%HVMEC" onAction="#hvmec" />
+									<MenuItem text="%DEMOS" onAction="#demos" />
+									<MenuItem text="%MAGS" onAction="#mags" />
+								</Menu>
+								<Menu text="%TOOLS">
+									<MenuItem text="%SIDDUMP" onAction="#sidDump" />
+									<MenuItem text="%SIDREGISTERS" onAction="#sidRegisters" />
+									<MenuItem text="%ASM" onAction="#asm" />
+									<MenuItem text="%DISASSEMBLER" onAction="#disassembler" />
+								</Menu>
+								<Menu text="%ONLINE">
+									<MenuItem text="%GAMEBASE" onAction="#gamebase" />
+									<MenuItem text="%CSDB" onAction="#csdb" />
+									<MenuItem text="%CODEBASE64" onAction="#codebase64" />
+								</Menu>
+								<MenuItem text="%PRINTER" onAction="#printer" />
+								<MenuItem text="%CONSOLE" onAction="#console" />
+							</Menu>
+							<Menu text="%PLAYER">
+								<items>
+									<CheckMenuItem text="%PAUSE" onAction="#pause"
+										fx:id="pauseContinue">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="P"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</CheckMenuItem>
+									<MenuItem text="%PREVIOUS" onAction="#previousSong"
+										fx:id="previous">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="MINUS"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</MenuItem>
+									<MenuItem text="%NEXT" onAction="#nextSong" fx:id="next">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="PLUS"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</MenuItem>
+									<RadioMenuItem text="%NORMAL_SPEED" selected="true"
+										toggleGroup="$playSpeedGroup" onAction="#playNormalSpeed"
+										fx:id="normalSpeed">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="COMMA"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</RadioMenuItem>
+									<RadioMenuItem text="%FAST_FORWARD" toggleGroup="$playSpeedGroup"
+										onAction="#playFastForward" fx:id="fastForward">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="DECIMAL"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</RadioMenuItem>
+									<MenuItem text="%STOP" onAction="#stopSong">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="T"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</MenuItem>
+								</items>
+							</Menu>
+							<Menu text="%HARDCOPY">
+								<MenuItem text="%HARDCOPY_GIF" onAction="#doHardcopyGif" />
+								<MenuItem text="%HARDCOPY_JPG" onAction="#doHardcopyJpg" />
+								<MenuItem text="%HARDCOPY_PNG" onAction="#doHardcopyPng">
+									<accelerator>
+										<KeyCodeCombination alt="UP" code="N"
+											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+									</accelerator>
+								</MenuItem>
+							</Menu>
+							<Menu text="%OPTIONS">
+								<Menu text="%VIDEO_STANDARD">
+									<RadioMenuItem text="%PAL" toggleGroup="$videoStandardGroup"
+										onAction="#videoStandardPal" fx:id="pal" />
+									<RadioMenuItem text="%NTSC" toggleGroup="$videoStandardGroup"
+										onAction="#videoStandardNtsc" fx:id="ntsc" />
+								</Menu>
+								<MenuItem text="%SOUND_SETTINGS" onAction="#soundSettings" />
+								<MenuItem text="%EMULATION_SETTINGS" onAction="#emulationSettings" />
+								<MenuItem text="%JOYSTICK_SETTINGS" onAction="#joystickSettings" />
+							</Menu>
+							<Menu text="%DEVICES">
+								<Menu text="%DATASETTE">
+									<MenuItem text="%RECORD" onAction="#record" />
+									<MenuItem text="%PLAY" onAction="#play" />
+									<MenuItem text="%REWIND" onAction="#rewind" />
+									<MenuItem text="%FORWARD" onAction="#forward" />
+									<MenuItem text="%STOP" onAction="#stop" />
+									<MenuItem text="%RESET_COUNTER" onAction="#resetCounter" />
+									<MenuItem text="%INSERT_TAPE" onAction="#insertTape">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="DIGIT1"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</MenuItem>
+									<MenuItem text="%EJECT_TAPE" onAction="#ejectTape" />
+								</Menu>
+								<Menu text="%FLOPPY">
+									<CheckMenuItem text="%TURN_DRIVE_ON" onAction="#turnDriveOn"
+										fx:id="driveOn" />
+									<CheckMenuItem text="%DRIVE_SOUND" onAction="#driveSound"
+										fx:id="driveSoundOn" />
+									<CheckMenuItem text="%PARALLEL_CABLE" onAction="#parallelCable"
+										fx:id="parCable" />
+									<Menu text="%FLOPPY_TYPE">
+										<RadioMenuItem text="%C1541" toggleGroup="$floppyGroup"
+											onAction="#floppyTypeC1541" fx:id="c1541" />
+										<RadioMenuItem text="%C1541-II" toggleGroup="$floppyGroup"
+											onAction="#floppyTypeC1541_II" fx:id="c1541_II" />
+									</Menu>
+									<Menu text="%40_TRACK_HANDLING">
+										<RadioMenuItem text="%NEVER_EXTEND" toggleGroup="$extensionGroup"
+											onAction="#extendNever" fx:id="neverExtend" />
+										<RadioMenuItem text="%ASK_ON_EXTEND"
+											toggleGroup="$extensionGroup" onAction="#extendAsk" fx:id="askExtend" />
+										<RadioMenuItem text="%EXTEND_ON_ACCESS"
+											toggleGroup="$extensionGroup" onAction="#extendAccess" fx:id="accessExtend" />
+									</Menu>
+									<CheckMenuItem text="%8K_RAM_EXPANSION_0X2000"
+										onAction="#expansion0x2000" fx:id="expand2000" />
+									<CheckMenuItem text="%8K_RAM_EXPANSION_0X4000"
+										onAction="#expansion0x4000" fx:id="expand4000" />
+									<CheckMenuItem text="%8K_RAM_EXPANSION_0X6000"
+										onAction="#expansion0x6000" fx:id="expand6000" />
+									<CheckMenuItem text="%8K_RAM_EXPANSION_0X8000"
+										onAction="#expansion0x8000" fx:id="expand8000" />
+									<CheckMenuItem text="%8K_RAM_EXPANSION_0XA000"
+										onAction="#expansion0xA000" fx:id="expandA000" />
+									<MenuItem text="%INSERT_DISK" onAction="#insertDisk">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="DIGIT8"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</MenuItem>
+									<MenuItem text="%EJECT_DISK" onAction="#ejectDisk" />
+									<MenuItem text="%RESET_DRIVE" onAction="#resetDrive" />
+								</Menu>
+								<Menu text="%PRINTER">
+									<CheckMenuItem text="%TURN_PRINTER_ON" onAction="#printerOn"
+										fx:id="turnPrinterOn" />
+								</Menu>
+								<Menu text="%CARTRIDGE">
+									<MenuItem text="%INSERT_CARTRIDGE" onAction="#insertCartridge">
+										<accelerator>
+											<KeyCodeCombination alt="UP" code="C"
+												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+										</accelerator>
+									</MenuItem>
+									<Menu text="%GEORAM">
+										<MenuItem text="%INSERT_GEORAM" onAction="#insertGeoRAM" />
+										<MenuItem text="%INSERT_GEORAM_(64KB)" onAction="#insertGeoRAM64" />
+										<MenuItem text="%INSERT_GEORAM_(128KB)" onAction="#insertGeoRAM128" />
+										<MenuItem text="%INSERT_GEORAM_(256KB)" onAction="#insertGeoRAM256" />
+										<MenuItem text="%INSERT_GEORAM_(512KB)" onAction="#insertGeoRAM512" />
+										<MenuItem text="%INSERT_GEORAM_(1024KB)" onAction="#insertGeoRAM1024" />
+										<MenuItem text="%INSERT_GEORAM_(2048KB)" onAction="#insertGeoRAM2048" />
+									</Menu>
+									<Menu text="%REU">
+										<MenuItem text="%INSERT_REU" onAction="#insertREU" />
+										<MenuItem text="%INSERT_REU_(128KB)" onAction="#insertREU128" />
+										<MenuItem text="%INSERT_REU_(256KB)" onAction="#insertREU256" />
+										<MenuItem text="%INSERT_REU_(512KB)" onAction="#insertREU512" />
+										<MenuItem text="%INSERT_REU_(2MB)" onAction="#insertREU2048" />
+										<MenuItem text="%INSERT_REU_(16MB)" onAction="#insertREU16384" />
+									</Menu>
+									<MenuItem text="%EJECT_CARTRIDGE" onAction="#ejectCartridge" />
+									<MenuItem text="%FREEZE" onAction="#freezeCartridge" />
+								</Menu>
+								<MenuItem text="%INSTALL_JIFFYDOS" onAction="#installJiffyDos" />
+								<MenuItem text="%UNINSTALL_JIFFYDOS" onAction="#uninstallJiffyDos" />
+							</Menu>
+							<Menu text="%SETTINGS">
+								<MenuItem text="%IMPORT" onAction="#importConfiguration" />
+								<MenuItem text="%EXPORT" onAction="#exportConfiguration" />
+							</Menu>
+							<Menu text="%HELP">
+								<MenuItem text="%ABOUT" onAction="#about" />
+							</Menu>
+						</menus>
+					</MenuBar>
+					<HBox AnchorPane.rightAnchor="10">
+						<Button focusTraversable="false" onAction="#previousSong"
+							fx:id="previous2">
+							<tooltip>
+								<Tooltip text="%PREVIOUS2" fx:id="previous2ToolTip" />
+							</tooltip>
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/playback_prev.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+						<ToggleButton focusTraversable="false" onAction="#pause"
+							fx:id="pauseContinue2">
+							<tooltip>
+								<Tooltip text="%PAUSE2" />
+							</tooltip>
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/playback_pause.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</ToggleButton>
+						<Button focusTraversable="false" onAction="#nextSong"
+							fx:id="next2">
+							<tooltip>
+								<Tooltip text="%NEXT2" fx:id="next2ToolTip" />
+							</tooltip>
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/playback_next.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Button focusTraversable="false" onAction="#stopSong">
+							<tooltip>
+								<Tooltip text="%STOP2" />
+							</tooltip>
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/playback_stop.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+					</HBox>
+				</AnchorPane>
+				<AnchorPane>
+					<HBox AnchorPane.leftAnchor="10" alignment="CENTER">
+						<ComboBox onAction="#setAudio" fx:id="audioBox">
 							<items>
-								<MenuItem text="%LOAD" onAction="#load" fx:id="load">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="L"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
-								<MenuItem text="%LOAD_REU_VIDEO" onAction="#playVideo">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="V"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
-								<MenuItem text="%RESET" onAction="#reset">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="R"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
-								<SeparatorMenuItem />
-								<MenuItem text="%QUIT" onAction="#quit">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="Q"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
+								<FXCollections fx:factory="observableArrayList">
+									<Audio fx:value="SOUNDCARD" />
+									<Audio fx:value="LIVE_WAV" />
+									<Audio fx:value="LIVE_MP3" />
+									<Audio fx:value="NONE" />
+								</FXCollections>
 							</items>
-						</Menu>
-						<Menu text="%VIEW">
-							<MenuItem text="%VIDEO" onAction="#video" />
-							<MenuItem text="%OSCILLOSCOPE" onAction="#oscilloscope" />
-							<MenuItem text="%FAVORITES" onAction="#favorites" />
-							<Menu text="%MUSICCOLLECTIONS">
-								<MenuItem text="%HVSC" onAction="#hvsc" />
-								<MenuItem text="%CGSC" onAction="#cgsc" />
-							</Menu>
-							<Menu text="%DISKCOLLECTIONS">
-								<MenuItem text="%HVMEC" onAction="#hvmec" />
-								<MenuItem text="%DEMOS" onAction="#demos" />
-								<MenuItem text="%MAGS" onAction="#mags" />
-							</Menu>
-							<Menu text="%TOOLS">
-								<MenuItem text="%SIDDUMP" onAction="#sidDump" />
-								<MenuItem text="%SIDREGISTERS" onAction="#sidRegisters" />
-								<MenuItem text="%ASM" onAction="#asm" />
-								<MenuItem text="%DISASSEMBLER" onAction="#disassembler" />
-							</Menu>
-							<Menu text="%ONLINE">
-								<MenuItem text="%GAMEBASE" onAction="#gamebase" />
-								<MenuItem text="%CSDB" onAction="#csdb" />
-								<MenuItem text="%CODEBASE64" onAction="#codebase64" />
-							</Menu>
-							<MenuItem text="%PRINTER" onAction="#printer" />
-							<MenuItem text="%CONSOLE" onAction="#console" />
-						</Menu>
-						<Menu text="%PLAYER">
+						</ComboBox>
+						<ComboBox onAction="#setSampling" fx:id="samplingBox">
 							<items>
-								<CheckMenuItem text="%PAUSE" onAction="#pause"
-									fx:id="pauseContinue">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="P"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</CheckMenuItem>
-								<MenuItem text="%PREVIOUS" onAction="#previousSong"
-									fx:id="previous">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="MINUS"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
-								<MenuItem text="%NEXT" onAction="#nextSong" fx:id="next">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="PLUS"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
-								<RadioMenuItem text="%NORMAL_SPEED" selected="true"
-									toggleGroup="$playSpeedGroup" onAction="#playNormalSpeed"
-									fx:id="normalSpeed">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="COMMA"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</RadioMenuItem>
-								<RadioMenuItem text="%FAST_FORWARD" toggleGroup="$playSpeedGroup"
-									onAction="#playFastForward" fx:id="fastForward">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="DECIMAL"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</RadioMenuItem>
-								<MenuItem text="%STOP" onAction="#stopSong">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="T"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
+								<FXCollections fx:factory="observableArrayList">
+									<SamplingMethod fx:value="DECIMATE" />
+									<SamplingMethod fx:value="RESAMPLE" />
+								</FXCollections>
 							</items>
-						</Menu>
-						<Menu text="%HARDCOPY">
-							<MenuItem text="%HARDCOPY_GIF" onAction="#doHardcopyGif" />
-							<MenuItem text="%HARDCOPY_JPG" onAction="#doHardcopyJpg" />
-							<MenuItem text="%HARDCOPY_PNG" onAction="#doHardcopyPng">
-								<accelerator>
-									<KeyCodeCombination alt="UP" code="N"
-										control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-								</accelerator>
-							</MenuItem>
-						</Menu>
-						<Menu text="%OPTIONS">
-							<Menu text="%VIDEO_STANDARD">
-								<RadioMenuItem text="%PAL" toggleGroup="$videoStandardGroup"
-									onAction="#videoStandardPal" fx:id="pal" />
-								<RadioMenuItem text="%NTSC" toggleGroup="$videoStandardGroup"
-									onAction="#videoStandardNtsc" fx:id="ntsc" />
-							</Menu>
-							<MenuItem text="%SOUND_SETTINGS" onAction="#soundSettings" />
-							<MenuItem text="%EMULATION_SETTINGS" onAction="#emulationSettings" />
-							<MenuItem text="%JOYSTICK_SETTINGS" onAction="#joystickSettings" />
-						</Menu>
-						<Menu text="%DEVICES">
-							<Menu text="%DATASETTE">
-								<MenuItem text="%RECORD" onAction="#record" />
-								<MenuItem text="%PLAY" onAction="#play" />
-								<MenuItem text="%REWIND" onAction="#rewind" />
-								<MenuItem text="%FORWARD" onAction="#forward" />
-								<MenuItem text="%STOP" onAction="#stop" />
-								<MenuItem text="%RESET_COUNTER" onAction="#resetCounter" />
-								<MenuItem text="%INSERT_TAPE" onAction="#insertTape">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="DIGIT1"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
-								<MenuItem text="%EJECT_TAPE" onAction="#ejectTape" />
-							</Menu>
-							<Menu text="%FLOPPY">
-								<CheckMenuItem text="%TURN_DRIVE_ON" onAction="#turnDriveOn"
-									fx:id="driveOn" />
-								<CheckMenuItem text="%DRIVE_SOUND" onAction="#driveSound"
-									fx:id="driveSoundOn" />
-								<CheckMenuItem text="%PARALLEL_CABLE" onAction="#parallelCable"
-									fx:id="parCable" />
-								<Menu text="%FLOPPY_TYPE">
-									<RadioMenuItem text="%C1541" toggleGroup="$floppyGroup"
-										onAction="#floppyTypeC1541" fx:id="c1541" />
-									<RadioMenuItem text="%C1541-II" toggleGroup="$floppyGroup"
-										onAction="#floppyTypeC1541_II" fx:id="c1541_II" />
-								</Menu>
-								<Menu text="%40_TRACK_HANDLING">
-									<RadioMenuItem text="%NEVER_EXTEND" toggleGroup="$extensionGroup"
-										onAction="#extendNever" fx:id="neverExtend" />
-									<RadioMenuItem text="%ASK_ON_EXTEND" toggleGroup="$extensionGroup"
-										onAction="#extendAsk" fx:id="askExtend" />
-									<RadioMenuItem text="%EXTEND_ON_ACCESS"
-										toggleGroup="$extensionGroup" onAction="#extendAccess" fx:id="accessExtend" />
-								</Menu>
-								<CheckMenuItem text="%8K_RAM_EXPANSION_0X2000"
-									onAction="#expansion0x2000" fx:id="expand2000" />
-								<CheckMenuItem text="%8K_RAM_EXPANSION_0X4000"
-									onAction="#expansion0x4000" fx:id="expand4000" />
-								<CheckMenuItem text="%8K_RAM_EXPANSION_0X6000"
-									onAction="#expansion0x6000" fx:id="expand6000" />
-								<CheckMenuItem text="%8K_RAM_EXPANSION_0X8000"
-									onAction="#expansion0x8000" fx:id="expand8000" />
-								<CheckMenuItem text="%8K_RAM_EXPANSION_0XA000"
-									onAction="#expansion0xA000" fx:id="expandA000" />
-								<MenuItem text="%INSERT_DISK" onAction="#insertDisk">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="DIGIT8"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
-								<MenuItem text="%EJECT_DISK" onAction="#ejectDisk" />
-								<MenuItem text="%RESET_DRIVE" onAction="#resetDrive" />
-							</Menu>
-							<Menu text="%PRINTER">
-								<CheckMenuItem text="%TURN_PRINTER_ON" onAction="#printerOn"
-									fx:id="turnPrinterOn" />
-							</Menu>
-							<Menu text="%CARTRIDGE">
-								<MenuItem text="%INSERT_CARTRIDGE" onAction="#insertCartridge">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="C"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
-								<Menu text="%GEORAM">
-									<MenuItem text="%INSERT_GEORAM" onAction="#insertGeoRAM" />
-									<MenuItem text="%INSERT_GEORAM_(64KB)" onAction="#insertGeoRAM64" />
-									<MenuItem text="%INSERT_GEORAM_(128KB)" onAction="#insertGeoRAM128" />
-									<MenuItem text="%INSERT_GEORAM_(256KB)" onAction="#insertGeoRAM256" />
-									<MenuItem text="%INSERT_GEORAM_(512KB)" onAction="#insertGeoRAM512" />
-									<MenuItem text="%INSERT_GEORAM_(1024KB)" onAction="#insertGeoRAM1024" />
-									<MenuItem text="%INSERT_GEORAM_(2048KB)" onAction="#insertGeoRAM2048" />
-								</Menu>
-								<Menu text="%REU">
-									<MenuItem text="%INSERT_REU" onAction="#insertREU" />
-									<MenuItem text="%INSERT_REU_(128KB)" onAction="#insertREU128" />
-									<MenuItem text="%INSERT_REU_(256KB)" onAction="#insertREU256" />
-									<MenuItem text="%INSERT_REU_(512KB)" onAction="#insertREU512" />
-									<MenuItem text="%INSERT_REU_(2MB)" onAction="#insertREU2048" />
-									<MenuItem text="%INSERT_REU_(16MB)" onAction="#insertREU16384" />
-								</Menu>
-								<MenuItem text="%EJECT_CARTRIDGE" onAction="#ejectCartridge" />
-								<MenuItem text="%FREEZE" onAction="#freezeCartridge" />
-							</Menu>
-							<MenuItem text="%INSTALL_JIFFYDOS" onAction="#installJiffyDos" />
-							<MenuItem text="%UNINSTALL_JIFFYDOS" onAction="#uninstallJiffyDos" />
-						</Menu>
-						<Menu text="%SETTINGS">
-							<MenuItem text="%IMPORT" onAction="#importConfiguration" />
-							<MenuItem text="%EXPORT" onAction="#exportConfiguration" />
-						</Menu>
-						<Menu text="%HELP">
-							<MenuItem text="%ABOUT" onAction="#about" />
-						</Menu>
-					</menus>
-				</MenuBar>
-				<HBox AnchorPane.rightAnchor="10">
-					<Button focusTraversable="false" onAction="#previousSong"
-						fx:id="previous2">
-						<tooltip>
-							<Tooltip text="%PREVIOUS2" fx:id="previous2ToolTip" />
-						</tooltip>
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/playback_prev.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-					<ToggleButton focusTraversable="false" onAction="#pause"
-						fx:id="pauseContinue2">
-						<tooltip>
-							<Tooltip text="%PAUSE2" />
-						</tooltip>
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/playback_pause.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</ToggleButton>
-					<Button focusTraversable="false" onAction="#nextSong" fx:id="next2">
-						<tooltip>
-							<Tooltip text="%NEXT2" fx:id="next2ToolTip" />
-						</tooltip>
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/playback_next.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-					<Button focusTraversable="false" onAction="#stopSong">
-						<tooltip>
-							<Tooltip text="%STOP2" />
-						</tooltip>
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/playback_stop.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-				</HBox>
-			</AnchorPane>
+						</ComboBox>
+						<ComboBox onAction="#setSamplingRate" fx:id="samplingRateBox">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<Integer fx:value="44100" />
+									<Integer fx:value="48000" />
+									<Integer fx:value="96000" />
+								</FXCollections>
+							</items>
+						</ComboBox>
+						<ComboBox onAction="#setEmulation" fx:id="emulationBox">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<Emulation fx:value="RESID" />
+									<Emulation fx:value="RESIDFP" />
+									<Emulation fx:value="HARDSID" />
+									<Emulation fx:value="NONE" />
+								</FXCollections>
+							</items>
+						</ComboBox>
+						<Label text="%6581" />
+						<ComboBox fx:id="hardsid6581Box" onAction="#setSid6581">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<!-- Put in enough devices for: 4 HardSID PCI cards + 4 HardSID 
+										USB chips + 8 Network SID Devices -->
+									<Integer fx:value="1" />
+									<Integer fx:value="2" />
+									<Integer fx:value="3" />
+									<Integer fx:value="4" />
+									<Integer fx:value="5" />
+									<Integer fx:value="6" />
+									<Integer fx:value="7" />
+									<Integer fx:value="8" />
+									<Integer fx:value="9" />
+									<Integer fx:value="10" />
+									<Integer fx:value="11" />
+									<Integer fx:value="12" />
+									<Integer fx:value="13" />
+									<Integer fx:value="14" />
+									<Integer fx:value="15" />
+									<Integer fx:value="16" />
+								</FXCollections>
+							</items>
+						</ComboBox>
+						<Label text="%8580" />
+						<ComboBox fx:id="hardsid8580Box" onAction="#setSid8580">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<!-- Put in enough devices for: 4 HardSID PCI cards + 4 HardSID 
+										USB chips + 8 Network SID Devices -->
+									<Integer fx:value="1" />
+									<Integer fx:value="2" />
+									<Integer fx:value="3" />
+									<Integer fx:value="4" />
+									<Integer fx:value="5" />
+									<Integer fx:value="6" />
+									<Integer fx:value="7" />
+									<Integer fx:value="8" />
+									<Integer fx:value="9" />
+									<Integer fx:value="10" />
+									<Integer fx:value="11" />
+									<Integer fx:value="12" />
+									<Integer fx:value="13" />
+									<Integer fx:value="14" />
+									<Integer fx:value="15" />
+									<Integer fx:value="16" />
+								</FXCollections>
+							</items>
+						</ComboBox>
+					</HBox>
+				</AnchorPane>
+				<AnchorPane>
+					<HBox alignment="CENTER" AnchorPane.leftAnchor="10">
+						<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
+						<TextField fx:id="defaultTime" onAction="#setDefaultTime" prefWidth="60">
+							<tooltip>
+								<Tooltip text="%DEFAULT_LENGTH_TIP"></Tooltip>
+							</tooltip>
+						</TextField>
+						<CheckBox text="%RESPECT_SONG_LENGTH" fx:id="enableSldb"
+							onAction="#doEnableSldb">
+						</CheckBox>
+						<CheckBox text="%SINGLE_SONG" fx:id="singleSong"
+							onAction="#playSingleSong">
+						</CheckBox>
+					</HBox>
+				</AnchorPane>
+			</VBox>
 		</top>
 		<center>
 			<TabPane focusTraversable="false" fx:id="tabbedPane"

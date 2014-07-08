@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -15,12 +13,10 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
@@ -30,7 +26,6 @@ import libsidplay.player.State;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
-import sidplay.ini.IniReader;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -39,21 +34,19 @@ import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileExtensions;
+import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 
 public class Favorites extends Tab implements UIPart {
 
 	public static final String ID = "FAVORITES";
-	private static final String CELL_VALUE_OK = "cellValueOk";
-	private static final String CELL_VALUE_ERROR = "cellValueError";
 
 	@FXML
 	private Button add, remove, selectAll, deselectAll, load, save, saveAs;
 	@FXML
 	private TabPane favoritesList;
 	@FXML
-	protected TextField defaultTime, renameTab;
-	@FXML
-	protected CheckBox enableSldb, singleSong;
+	protected TextField renameTab;
 	@FXML
 	private RadioButton off, normal, randomOne, randomAll, repeatOff,
 			repeatOne;
@@ -83,22 +76,6 @@ public class Favorites extends Tab implements UIPart {
 			setSTIL(sidPlay2Section.getHvsc());
 		}
 
-		final int seconds = sidPlay2Section.getDefaultPlayLength();
-		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
-				seconds % 60));
-		sidPlay2Section.defaultPlayLengthProperty().addListener(
-				(observable, oldValue, newValue) -> defaultTime.setText(String
-						.format("%02d:%02d", newValue.intValue() / 60,
-								newValue.intValue() % 60)));
-
-		enableSldb.setSelected(sidPlay2Section.isEnableDatabase());
-		sidPlay2Section.enableDatabaseProperty().addListener(
-				(observable, oldValue, newValue) -> enableSldb
-						.setSelected(newValue));
-		singleSong.setSelected(sidPlay2Section.isSingle());
-		sidPlay2Section.singleProperty().addListener(
-				(observable, oldValue, newValue) -> singleSong
-						.setSelected(newValue));
 		PlaybackType pt = sidPlay2Section.getPlaybackType();
 		switch (pt) {
 		case PLAYBACK_OFF:
@@ -271,36 +248,6 @@ public class Favorites extends Tab implements UIPart {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-		}
-	}
-
-	@FXML
-	private void doEnableSldb() {
-		util.getConfig().getSidplay2()
-				.setEnableDatabase(enableSldb.isSelected());
-		util.getPlayer().getTimer().updateEnd();
-	}
-
-	@FXML
-	private void playSingleSong() {
-		util.getConfig().getSidplay2().setSingle(singleSong.isSelected());
-	}
-
-	@FXML
-	private void setDefaultTime() {
-		final Tooltip tooltip = new Tooltip();
-		defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-		final int secs = IniReader.parseTime(defaultTime.getText());
-		if (secs != -1) {
-			util.getConfig().getSidplay2().setDefaultPlayLength(secs);
-			util.getPlayer().getTimer().updateEnd();
-			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
-			defaultTime.setTooltip(tooltip);
-			defaultTime.getStyleClass().add(CELL_VALUE_OK);
-		} else {
-			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_FORMAT"));
-			defaultTime.setTooltip(tooltip);
-			defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
 		}
 	}
 
