@@ -25,6 +25,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -60,6 +61,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import resid_builder.resid.SamplingMethod;
 import sidplay.audio.Audio;
+import sidplay.audio.CmpMP3File;
 import sidplay.audio.RecordingFilenameProvider;
 import sidplay.ini.IniReader;
 import ui.about.About;
@@ -90,9 +92,9 @@ import ui.musiccollection.MusicCollection;
 import ui.musiccollection.MusicCollectionType;
 import ui.oscilloscope.Oscilloscope;
 import ui.printer.Printer;
+import ui.proxysettings.ProxySettings;
 import ui.siddump.SidDump;
 import ui.sidreg.SidReg;
-import ui.soundsettings.SoundSettings;
 import ui.videoscreen.Video;
 import ui.webview.WebView;
 import ui.webview.WebViewType;
@@ -144,13 +146,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private ToggleButton pauseContinue2;
 	@FXML
-	protected Button previous2, next2;
+	protected RadioButton playMP3, playEmulation;
+	@FXML
+	protected Button previous2, next2, mp3Browse;
 	@FXML
 	protected Tooltip previous2ToolTip, next2ToolTip;
 	@FXML
 	protected TabPane tabbedPane;
 	@FXML
-	private Label status;
+	private Label status, hardsid6581Label, hardsid8580Label;
 	@FXML
 	protected ProgressBar progress;
 
@@ -225,6 +229,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		Audio audio = util.getConfig().getAudio().getAudio();
 		audioBox.getSelectionModel().select(audio);
+		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
+		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
+		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
 
 		SamplingMethod sampling = util.getConfig().getAudio().getSampling();
 		samplingBox.getSelectionModel().select(sampling);
@@ -243,6 +250,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		Emulation emulation = util.getConfig().getEmulation().getEmulation();
 		emulationBox.getSelectionModel().select(emulation);
 
+		hardsid6581Box.setDisable(!Emulation.HARDSID.equals(emulation));
+		hardsid8580Box.setDisable(!Emulation.HARDSID.equals(emulation));
+		hardsid6581Label.setDisable(!Emulation.HARDSID.equals(emulation));
+		hardsid8580Label.setDisable(!Emulation.HARDSID.equals(emulation));
+		
 		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
 				.getSidplay2();
 
@@ -263,6 +275,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		sidplay2.singleProperty().addListener(
 				(observable, oldValue, newValue) -> singleSong
 						.setSelected(newValue));
+
+		playMP3.setSelected(util.getConfig().getAudio().isPlayOriginal());
+		playEmulation
+				.setSelected(!util.getConfig().getAudio().isPlayOriginal());
 
 		C1541Section c1541Section = (C1541Section) util.getConfig().getC1541();
 		driveOn.selectedProperty().bindBidirectional(
@@ -513,8 +529,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	@FXML
-	private void soundSettings() {
-		new SoundSettings(util.getPlayer()).open();
+	private void proxySettings() {
+		new ProxySettings(util.getPlayer()).open();
 	}
 
 	@FXML
@@ -835,10 +851,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void setAudio() {
 		Audio audio = audioBox.getSelectionModel().getSelectedItem();
+		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
+		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
+		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		util.getConfig().getAudio().setAudio(audio);
 		restart();
 	}
-	
+
 	@FXML
 	private void setSampling() {
 		SamplingMethod sampling = samplingBox.getSelectionModel()
@@ -867,9 +886,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		}
 		hardsid6581Box.setDisable(!Emulation.HARDSID.equals(emulation));
 		hardsid8580Box.setDisable(!Emulation.HARDSID.equals(emulation));
+		hardsid6581Label.setDisable(!Emulation.HARDSID.equals(emulation));
+		hardsid8580Label.setDisable(!Emulation.HARDSID.equals(emulation));
 		restart();
 	}
-	
+
 	@FXML
 	private void setSid6581() {
 		int hardsid6581 = hardsid6581Box.getSelectionModel().getSelectedItem();
@@ -911,6 +932,29 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_FORMAT"));
 			defaultTime.setTooltip(tooltip);
 			defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
+		}
+	}
+
+	@FXML
+	private void playEmulatedSound() {
+		setPlayOriginal(false);
+	}
+
+	@FXML
+	private void playRecordedSound() {
+		setPlayOriginal(true);
+	}
+
+	@FXML
+	private void doBrowse() {
+		final FileChooser fileDialog = new FileChooser();
+		final FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+				"MP3 file (*.mp3)", "*.mp3");
+		fileDialog.getExtensionFilters().add(extFilter);
+		final File file = fileDialog.showOpenDialog(scene.getWindow());
+		if (file != null) {
+			util.getConfig().getAudio().setMp3File(file.getAbsolutePath());
+			restart();
 		}
 	}
 
@@ -1289,6 +1333,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void restart() {
 		if (!duringInitialization) {
 			util.getPlayer().play(util.getPlayer().getTune());
+		}
+	}
+
+	private void setPlayOriginal(final boolean playOriginal) {
+		util.getConfig().getAudio().setPlayOriginal(playOriginal);
+		if (util.getConfig().getAudio().getAudio().getAudioDriver() instanceof CmpMP3File) {
+			((CmpMP3File) util.getConfig().getAudio().getAudio()
+					.getAudioDriver()).setPlayOriginal(playOriginal);
 		}
 	}
 

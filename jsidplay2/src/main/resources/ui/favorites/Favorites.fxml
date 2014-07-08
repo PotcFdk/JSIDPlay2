@@ -31,6 +31,18 @@
 				collapsible="false">
 				<VBox>
 					<HBox alignment="CENTER">
+						<Button onAction="#addTab" prefWidth="20" prefHeight="20">
+							<tooltip>
+								<Tooltip text="%ADD_A_NEW_TAB" />
+							</tooltip>
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/addtab.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
 						<Button text="%ADD" fx:id="add" onAction="#addFavorites">
 							<graphic>
 								<ImageView>
@@ -88,20 +100,6 @@
 						</Button>
 						<Label text="%RENAME_TAB" />
 						<TextField fx:id="renameTab" onAction="#renameTab"  prefWidth="100"/>
-					</HBox>
-					<HBox spacing="5">
-						<Button onAction="#addTab" prefWidth="20" prefHeight="20">
-							<tooltip>
-								<Tooltip text="%ADD_A_NEW_TAB" />
-							</tooltip>
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/addtab.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
 					</HBox>
 					<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS" />
 				</VBox>
