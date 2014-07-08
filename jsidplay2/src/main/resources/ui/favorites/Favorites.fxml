@@ -27,83 +27,81 @@
 	<BorderPane AnchorPane.bottomAnchor="10"
 		AnchorPane.leftAnchor="10" AnchorPane.topAnchor="10">
 		<center>
-			<TitledPane text="%PLAYLISTS" BorderPane.alignment="TOP_LEFT"
-				collapsible="false">
-				<VBox>
-					<HBox alignment="CENTER">
-						<Button onAction="#addTab" prefWidth="20" prefHeight="20">
-							<tooltip>
-								<Tooltip text="%ADD_A_NEW_TAB" />
-							</tooltip>
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/addtab.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button text="%ADD" fx:id="add" onAction="#addFavorites">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/add.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button text="%REMOVE" fx:id="remove" onAction="#removeFavorites">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/remove.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button text="%SELECT_ALL" fx:id="selectAll" onAction="#selectAllFavorites">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/selectall.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button text="%DESELECT_ALL" fx:id="deselectAll" onAction="#clearSelection">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/deselectall.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button text="%LOAD" fx:id="load" onAction="#loadFavorites">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/load.png" />
-									</image>
-								</ImageView>
-							</graphic>
+			<VBox>
+				<HBox alignment="CENTER">
+					<Button onAction="#addTab" prefWidth="20" prefHeight="20">
+						<tooltip>
+							<Tooltip text="%ADD_A_NEW_TAB" />
+						</tooltip>
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/addtab.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Button text="%ADD" fx:id="add" onAction="#addFavorites">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/add.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Button text="%REMOVE" fx:id="remove" onAction="#removeFavorites">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/remove.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Button text="%SELECT_ALL" fx:id="selectAll" onAction="#selectAllFavorites">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/selectall.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Button text="%DESELECT_ALL" fx:id="deselectAll" onAction="#clearSelection">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/deselectall.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Button text="%LOAD" fx:id="load" onAction="#loadFavorites">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/load.png" />
+								</image>
+							</ImageView>
+						</graphic>
 
-						</Button>
-						<Button text="%SAVEAS" fx:id="saveAs" onAction="#saveFavoritesAs">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/save.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Label text="%RENAME_TAB" />
-						<TextField fx:id="renameTab" onAction="#renameTab"  prefWidth="100"/>
-					</HBox>
-					<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS" />
-				</VBox>
-			</TitledPane>
+					</Button>
+					<Button text="%SAVEAS" fx:id="saveAs" onAction="#saveFavoritesAs">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/save.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Label text="%RENAME_TAB" />
+					<TextField fx:id="renameTab" onAction="#renameTab"
+						prefWidth="100" />
+				</HBox>
+				<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS" />
+			</VBox>
 		</center>
 		<bottom>
 			<TitledPane text="%PLAYBACK_OPTIONS" collapsible="true"

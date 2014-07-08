@@ -56,25 +56,24 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	@FXML
 	private TitledPane monitor;
 	@FXML
-	protected Canvas screen;
+	private Canvas screen;
 	@FXML
-	protected ImageView monitorBorder, breadbox, pc64;
+	private ImageView monitorBorder, breadbox, pc64;
 	@FXML
 	private Slider brightness, contrast, gamma, saturation, phaseShift, offset,
 			tint, blur, bleed;
 	@FXML
-	protected Label brightnessValue, contrastValue, gammaValue,
-			saturationValue, phaseShiftValue, offsetValue, tintValue,
-			blurValue, bleedValue;
+	private Label brightnessValue, contrastValue, gammaValue, saturationValue,
+			phaseShiftValue, offsetValue, tintValue, blurValue, bleedValue;
 	@FXML
-	protected ImageView datasetteOff, datasetteLoad, datasetteSave, c1541Off,
+	private ImageView datasetteOff, datasetteLoad, datasetteSave, c1541Off,
 			c1541On, c1541Load, c1541IIOff, c1541IIOn, c1541IILoad;
 	@FXML
-	protected Label tapeName, diskName, cartridgeName;
+	private Label tapeName, diskName, cartridgeName;
 
 	private UIUtil util;
 
-	protected WritableImage vicImage;
+	private WritableImage vicImage;
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
@@ -361,7 +360,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 				});
 	}
 
-	protected float round(float f) {
+	private float round(float f) {
 		return (int) (f * 100) / 100f;
 	}
 
@@ -445,7 +444,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	/**
 	 * Make C64 image visible, if the internal util.getPlayer() is used.
 	 */
-	protected void setVisibilityBasedOnChipType(final SidTune sidTune) {
+	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
 		if (sidTune != null && sidTune.getInfo().getPlayAddr() != 0) {
 			if (getChipModel(sidTune) == ChipModel.MOS6581) {
 				// Old SID chip model? Show breadbox
@@ -527,7 +526,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		return vicImage;
 	}
 
-	protected C64 getC64() {
+	private C64 getC64() {
 		return util.getPlayer().getC64();
 	}
 

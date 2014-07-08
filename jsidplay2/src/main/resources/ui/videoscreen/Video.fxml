@@ -24,7 +24,7 @@
 		AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
 		AnchorPane.topAnchor="0">
 		<left>
-			<TitledPane fx:id="monitor" text="%MONITOR" collapsible="false">
+			<TitledPane fx:id="monitor" collapsible="false">
 				<StackPane>
 					<Canvas fx:id="screen" />
 					<ImageView fx:id="monitorBorder">
