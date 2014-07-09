@@ -29,7 +29,7 @@
 <?import java.lang.Integer?>
 <?import java.net.URL?>
 <?import libsidplay.common.Emulation?>
-<?import resid_builder.resid.SamplingMethod?>
+<?import libsidplay.common.SamplingMethod?>
 <?import sidplay.audio.Audio?>
 <?import ui.musiccollection.MusicCollection?>
 <?import ui.diskcollection.DiskCollection?>
