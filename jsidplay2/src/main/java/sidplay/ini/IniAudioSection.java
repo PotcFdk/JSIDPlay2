@@ -1,6 +1,6 @@
 package sidplay.ini;
 
-import resid_builder.resid.SamplingMethod;
+import libsidplay.common.SamplingMethod;
 import sidplay.audio.Audio;
 import sidplay.ini.intf.IAudioSection;
 

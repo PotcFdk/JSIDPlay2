@@ -15,7 +15,6 @@
  */
 package libsidplay.common;
 
-import resid_builder.resid.ChipModel;
 
 /**
  * @author Ken Händel

@@ -1,4 +1,4 @@
-package resid_builder.resid;
+package libsidplay.common;
 
 public enum SamplingMethod {
 	DECIMATE("Decimate"), RESAMPLE("Resample");

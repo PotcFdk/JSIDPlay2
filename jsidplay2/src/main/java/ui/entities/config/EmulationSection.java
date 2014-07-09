@@ -5,8 +5,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
-import resid_builder.resid.ChipModel;
 import sidplay.ini.intf.IEmulationSection;
 
 @Embeddable

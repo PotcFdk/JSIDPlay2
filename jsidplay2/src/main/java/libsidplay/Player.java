@@ -38,6 +38,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -78,7 +79,6 @@ import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
 import libsidutils.SidDatabase;
 import libsidutils.disassembler.SimpleDisassembler;
-import resid_builder.resid.ChipModel;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.CmpMP3File;

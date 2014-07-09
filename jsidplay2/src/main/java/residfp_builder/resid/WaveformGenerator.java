@@ -21,7 +21,7 @@
  */
 package residfp_builder.resid;
 
-import resid_builder.resid.ChipModel;
+import libsidplay.common.ChipModel;
 
 /**
  * A 24 bit accumulator is the basis for waveform generation. FREQ is added to the lower 16 bits of the accumulator each cycle. The accumulator is set to zero when TEST is set, and starts counting

@@ -8,12 +8,12 @@ import java.util.List;
 
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.SidDatabase;
-import resid_builder.resid.ChipModel;
 import sidplay.audio.Audio;
 import sidplay.consoleplayer.ConsoleIO;
 import sidplay.ini.IniConfig;

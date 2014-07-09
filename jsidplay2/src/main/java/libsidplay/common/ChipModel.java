@@ -1,4 +1,4 @@
-package resid_builder.resid;
+package libsidplay.common;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;

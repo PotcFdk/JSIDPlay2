@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
-import resid_builder.resid.ChipModel;
 import sidplay.ini.intf.IConfig;
 
 /**

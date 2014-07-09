@@ -1,11 +1,10 @@
 package sid;
 
 import static javafx.scene.input.KeyCode.ENTER;
+import libsidplay.common.ChipModel;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import resid_builder.resid.ChipModel;
 
 import common.JSIDPlay2Test;
 

@@ -15,8 +15,6 @@
  */
 package libsidplay.common;
 
-import resid_builder.resid.ChipModel;
-import resid_builder.resid.SamplingMethod;
 import sidplay.ini.intf.IConfig;
 
 public abstract class SIDEmu {

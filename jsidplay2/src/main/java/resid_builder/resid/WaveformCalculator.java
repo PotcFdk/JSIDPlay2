@@ -24,6 +24,8 @@ package resid_builder.resid;
 import java.util.HashMap;
 import java.util.Map;
 
+import libsidplay.common.ChipModel;
+
 /**
  * Combined waveform calculator for WaveformGenerator.
  * 

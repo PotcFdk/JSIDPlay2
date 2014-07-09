@@ -24,9 +24,9 @@ package residfp_builder.resid;
 import java.util.HashMap;
 import java.util.Map;
 
+import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
-import resid_builder.resid.ChipModel;
-import resid_builder.resid.SamplingMethod;
+import libsidplay.common.SamplingMethod;
 
 public class SID implements SIDChip {
 	/**

@@ -21,10 +21,10 @@ import javafx.application.Platform;
 import javax.sound.sampled.Mixer;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
+import libsidplay.common.SamplingMethod;
 import netsiddev.ini.JSIDDeviceConfig;
-import resid_builder.resid.ChipModel;
-import resid_builder.resid.SamplingMethod;
 import sidplay.audio.AudioConfig;
 
 /**

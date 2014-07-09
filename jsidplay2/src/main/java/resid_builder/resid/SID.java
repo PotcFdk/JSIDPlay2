@@ -21,7 +21,9 @@
  */
 package resid_builder.resid;
 
+import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
+import libsidplay.common.SamplingMethod;
 import resid_builder.resid.resample.Resampler;
 import resid_builder.resid.resample.TwoPassSincResampler;
 import resid_builder.resid.resample.ZeroOrderResampler;

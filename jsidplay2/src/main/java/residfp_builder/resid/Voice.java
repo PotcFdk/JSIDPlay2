@@ -21,7 +21,7 @@
  */
 package residfp_builder.resid;
 
-import resid_builder.resid.ChipModel;
+import libsidplay.common.ChipModel;
 
 public final class Voice {
 	public final WaveformGenerator wave = new WaveformGenerator();

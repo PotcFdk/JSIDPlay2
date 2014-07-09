@@ -26,7 +26,7 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import resid_builder.resid.ChipModel;
+import libsidplay.common.ChipModel;
 
 /**
  * Combined waveform calculator for WaveformGenerator.

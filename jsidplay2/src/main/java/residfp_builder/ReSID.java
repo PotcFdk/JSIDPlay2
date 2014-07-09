@@ -18,11 +18,11 @@ package residfp_builder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import resid_builder.resid.ChipModel;
-import resid_builder.resid.SamplingMethod;
+import libsidplay.common.SamplingMethod;
 import residfp_builder.ReSIDBuilder.MixerEvent;
 import residfp_builder.resid.Filter6581;
 import residfp_builder.resid.Filter8580;

@@ -1,7 +1,5 @@
 package libsidplay.common;
 
-import resid_builder.resid.ChipModel;
-import resid_builder.resid.SamplingMethod;
 
 public interface SIDChip {
 

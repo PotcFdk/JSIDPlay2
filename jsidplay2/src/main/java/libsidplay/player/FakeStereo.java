@@ -1,9 +1,9 @@
 package libsidplay.player;
 
+import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import resid_builder.resid.ChipModel;
-import resid_builder.resid.SamplingMethod;
+import libsidplay.common.SamplingMethod;
 import sidplay.ini.intf.IConfig;
 
 public final class FakeStereo extends SIDEmu {

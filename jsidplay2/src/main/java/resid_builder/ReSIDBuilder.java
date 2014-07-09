@@ -25,11 +25,11 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
-import resid_builder.resid.ChipModel;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.ini.intf.IConfig;

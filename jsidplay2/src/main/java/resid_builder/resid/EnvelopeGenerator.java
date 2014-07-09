@@ -21,6 +21,8 @@
  */
 package resid_builder.resid;
 
+import libsidplay.common.ChipModel;
+
 
 /**
  * A 15 bit counter is used to implement the envelope rates, in effect dividing
