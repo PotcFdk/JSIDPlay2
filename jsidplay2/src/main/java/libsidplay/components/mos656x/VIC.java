@@ -138,8 +138,8 @@ public abstract class VIC extends Bank {
 
 	/** Credits */
 	private static final String credit = "MOS656X (cycle-exact VICII) Emulation:\n"
-			+ "\tCopyright (C) 2009 Joerg Jahnke <joergjahnke@users.sourceforge.net>\n"
-			+ "\tCopyright (C) 2010 Antti S. Lankila <alankila@bel.fi>\n";
+			+ "\tCopyright (©) 2009 Joerg Jahnke <joergjahnke@users.sourceforge.net>\n"
+			+ "\tCopyright (©) 2010 Antti S. Lankila <alankila@bel.fi>\n";
 
 	// graphic modes
 	/**

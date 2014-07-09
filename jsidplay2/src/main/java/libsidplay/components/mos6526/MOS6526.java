@@ -37,9 +37,9 @@ public abstract class MOS6526 extends Bank {
 	 * These are the credits.
 	 */
 	private static final String CREDITS = "MOS6526 (CIA) Emulation:\n"
-		+ "\tCopyright (C) 2001-2004 Simon White <sidplay2@yahoo.com>\n"
-		+ "\tCopyright (C) 2009 VICE Project\n"
-		+ "\tCopyright (C) 2009-2010 Antti S. Lankila\n";
+		+ "\tCopyright (©) 2001-2004 Simon White <sidplay2@yahoo.com>\n"
+		+ "\tCopyright (©) 2009 VICE Project\n"
+		+ "\tCopyright (©) 2009-2010 Antti S. Lankila\n";
 
 	/**
 	 * Interrupt flag: no interrupt.

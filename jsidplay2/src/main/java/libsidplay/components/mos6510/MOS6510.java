@@ -2070,8 +2070,8 @@ public abstract class MOS6510 {
 	 * @return credit string
 	 */
 	public static String credits() {
-		return "MOS6510 CPU\n" + "\t(C) 2000 Simon A. White\n"
-				+ "\t(C) 2008-2010 Antti S. Lankila\n";
+		return "MOS6510 (CPU)\n" + "\t(©) 2000 Simon A. White\n"
+				+ "\t(©) 2008-2010 Antti S. Lankila\n";
 	}
 
 	/**

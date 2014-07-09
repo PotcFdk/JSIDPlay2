@@ -33,12 +33,10 @@ import sidplay.ini.intf.IFilterSection;
 public class ReSID extends SIDEmu {
 	private static final Logger RESID = Logger.getLogger(ReSID.class.getName());
 
-	private static final String VERSION = "0.0.2";
-
-	private static final int OUTPUTBUFFERSIZE = 5000; /*
-													 * supports 5 ms chunk at 96
-													 * kHz
-													 */
+	/**
+	 * Supports 5 ms chunk at 96 kHz
+	 */
+	private static final int OUTPUTBUFFERSIZE = 5000;
 
 	private final SID sid;
 
@@ -177,11 +175,9 @@ public class ReSID extends SIDEmu {
 
 	// Standard component functions
 	public static final String credits() {
-		String m_credit = "ReSID V" + VERSION + " Engine:\n";
-		m_credit += "\tCopyright (C) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
-		m_credit += "MOS6581/8580 (SID) Emulation:\n";
-		m_credit += "\tCopyright (C) 1999-2004 Dag Lem <resid@nimrod.no>\n";
-		m_credit += "\tCopyright (C) 2005-2010 Antti S. Lankila <alankila@bel.fi>\n";
+		String m_credit = "MOS6581/8580 (SID) - Antti S. Lankila's resid-fp (distortion simulation):\n";
+		m_credit += "\tCopyright (©) 1999-2004 Dag Lem <resid@nimrod.no>\n";
+		m_credit += "\tCopyright (©) 2005-2011 Antti S. Lankila <alankila@bel.fi>\n";
 		return m_credit;
 	}
 
