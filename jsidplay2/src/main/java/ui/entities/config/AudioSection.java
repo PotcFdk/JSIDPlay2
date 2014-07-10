@@ -24,6 +24,18 @@ public class AudioSection implements IAudioSection {
 		this.audio = audio;
 	}
 
+	private int device = 0;
+
+	@Override
+	public int getDevice() {
+		return device;
+	}
+
+	@Override
+	public void setDevice(int device) {
+		this.device = device;
+	}
+
 	private int frequency = 48000;
 
 	@Override

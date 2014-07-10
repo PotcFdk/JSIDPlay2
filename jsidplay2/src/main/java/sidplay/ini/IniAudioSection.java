@@ -25,6 +25,16 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 		iniReader.setProperty("Audio", "Audio", audio);
 	}
 
+	@Override
+	public int getDevice() {
+		return iniReader.getPropertyInt("Audio", "Device", 0);
+	}
+
+	@Override
+	public void setDevice(int device) {
+		iniReader.setProperty("Audio", "Device", device);
+	}
+
 	/**
 	 * Getter of the Playback/Recording frequency.
 	 * 

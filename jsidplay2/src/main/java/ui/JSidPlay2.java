@@ -15,6 +15,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -39,15 +40,16 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.C64;
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Emulation;
 import libsidplay.common.Event;
-import libsidplay.common.SamplingMethod;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SamplingMethod;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
@@ -62,6 +64,8 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import sidplay.audio.Audio;
 import sidplay.audio.CmpMP3File;
+import sidplay.audio.JavaSound;
+import sidplay.audio.JavaSound.Device;
 import sidplay.audio.RecordingFilenameProvider;
 import sidplay.ini.IniReader;
 import ui.about.About;
@@ -138,6 +142,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private ComboBox<Audio> audioBox;
 	@FXML
+	private ComboBox<Device> devicesBox;
+	@FXML
 	private ComboBox<Emulation> emulationBox;
 	@FXML
 	private CheckBox enableSldb, singleSong;
@@ -157,6 +163,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private Label status, hardsid6581Label, hardsid8580Label;
 	@FXML
 	protected ProgressBar progress;
+
+	private ObservableList<Device> devices;
 
 	private ConfigService configService;
 
@@ -229,9 +237,19 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		Audio audio = util.getConfig().getAudio().getAudio();
 		audioBox.getSelectionModel().select(audio);
+
+		devicesBox.setDisable(Audio.NONE.equals(audio));
+		samplingBox.setDisable(Audio.NONE.equals(audio));
+		samplingRateBox.setDisable(Audio.NONE.equals(audio));
+
 		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
+
+		devices = JavaSound.getDevices();
+		devicesBox.setItems(devices);
+		devicesBox.getSelectionModel().select(
+				util.getConfig().getAudio().getDevice());
 
 		SamplingMethod sampling = util.getConfig().getAudio().getSampling();
 		samplingBox.getSelectionModel().select(sampling);
@@ -254,7 +272,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		hardsid8580Box.setDisable(!Emulation.HARDSID.equals(emulation));
 		hardsid6581Label.setDisable(!Emulation.HARDSID.equals(emulation));
 		hardsid8580Label.setDisable(!Emulation.HARDSID.equals(emulation));
-		
+
 		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
 				.getSidplay2();
 
@@ -851,11 +869,32 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void setAudio() {
 		Audio audio = audioBox.getSelectionModel().getSelectedItem();
+		util.getConfig().getAudio().setAudio(audio);
+
+		devicesBox.setDisable(Audio.NONE.equals(audio));
+		samplingBox.setDisable(Audio.NONE.equals(audio));
+		samplingRateBox.setDisable(Audio.NONE.equals(audio));
+
 		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
-		util.getConfig().getAudio().setAudio(audio);
+
 		restart();
+	}
+
+	@FXML
+	public void setDevice() {
+		Device device = devicesBox.getSelectionModel().getSelectedItem();
+		int deviceIndex = devicesBox.getItems().indexOf(device);
+		util.getConfig().getAudio().setDevice(deviceIndex);
+		if (!this.duringInitialization) {
+			JavaSound js = (JavaSound) Audio.SOUNDCARD.getAudioDriver();
+			try {
+				js.setAudioDevice(device.getInfo());
+			} catch (LineUnavailableException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	@FXML

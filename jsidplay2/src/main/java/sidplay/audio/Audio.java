@@ -10,9 +10,9 @@ public enum Audio {
 	/** MP3 file write. */
 	MP3(new MP3File(), "MP3"),
 	/** Java Sound API plus WAV file write. */
-	LIVE_WAV(new ProxyDriver(new JavaSound(), new WavFile()), "Record(WAV)"),
+	LIVE_WAV(new ProxyDriver(new JavaSound(), new WavFile()), "Record WAV"),
 	/** Java Sound API and MP3 file write. */
-	LIVE_MP3(new ProxyDriver(new JavaSound(), new MP3File()), "Record(MP3)"),
+	LIVE_MP3(new ProxyDriver(new JavaSound(), new MP3File()), "Record MP3"),
 	/** Java Sound API plus recording playback. */
 	COMPARE_MP3(new CmpMP3File(), "Comparison");
 

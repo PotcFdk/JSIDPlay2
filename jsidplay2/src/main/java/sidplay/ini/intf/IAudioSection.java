@@ -20,6 +20,10 @@ public interface IAudioSection {
 	 */
 	public void setAudio(Audio audio);
 
+	public int getDevice();
+
+	void setDevice(int device);
+
 	/**
 	 * Getter of the Playback/Recording frequency.
 	 * 

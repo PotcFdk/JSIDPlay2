@@ -342,6 +342,16 @@
 				</AnchorPane>
 				<AnchorPane>
 					<HBox AnchorPane.leftAnchor="10" alignment="CENTER">
+						<ComboBox onAction="#setEmulation" fx:id="emulationBox">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<Emulation fx:value="RESID" />
+									<Emulation fx:value="RESIDFP" />
+									<Emulation fx:value="HARDSID" />
+									<Emulation fx:value="NONE" />
+								</FXCollections>
+							</items>
+						</ComboBox>
 						<ComboBox onAction="#setAudio" fx:id="audioBox">
 							<items>
 								<FXCollections fx:factory="observableArrayList">
@@ -353,6 +363,7 @@
 								</FXCollections>
 							</items>
 						</ComboBox>
+						<ComboBox onAction="#setDevice" fx:id="devicesBox" maxWidth="150"/>
 						<ComboBox onAction="#setSampling" fx:id="samplingBox">
 							<items>
 								<FXCollections fx:factory="observableArrayList">
@@ -367,16 +378,6 @@
 									<Integer fx:value="44100" />
 									<Integer fx:value="48000" />
 									<Integer fx:value="96000" />
-								</FXCollections>
-							</items>
-						</ComboBox>
-						<ComboBox onAction="#setEmulation" fx:id="emulationBox">
-							<items>
-								<FXCollections fx:factory="observableArrayList">
-									<Emulation fx:value="RESID" />
-									<Emulation fx:value="RESIDFP" />
-									<Emulation fx:value="HARDSID" />
-									<Emulation fx:value="NONE" />
 								</FXCollections>
 							</items>
 						</ComboBox>
@@ -430,19 +431,23 @@
 								</FXCollections>
 							</items>
 						</ComboBox>
-						<RadioButton text="%EMU" fx:id="playEmulation"
-							onAction="#playEmulatedSound" toggleGroup="$playSourceGroup" />
-						<RadioButton text="%RECORDING" fx:id="playMP3"
-							onAction="#playRecordedSound" toggleGroup="$playSourceGroup" />
-						<Button fx:id="mp3Browse" onAction="#doBrowse">
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/browse.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
+						<HBox>
+							<VBox>
+								<RadioButton text="%EMU" fx:id="playEmulation"
+									onAction="#playEmulatedSound" toggleGroup="$playSourceGroup" />
+								<RadioButton text="%RECORDING" fx:id="playMP3"
+									onAction="#playRecordedSound" toggleGroup="$playSourceGroup" />
+							</VBox>
+							<Button fx:id="mp3Browse" onAction="#doBrowse">
+								<graphic>
+									<ImageView>
+										<image>
+											<Image url="@/ui/icons/browse.png" />
+										</image>
+									</ImageView>
+								</graphic>
+							</Button>
+						</HBox>
 					</HBox>
 				</AnchorPane>
 				<AnchorPane>

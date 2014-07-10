@@ -25,6 +25,7 @@ public class AudioConfig {
 	protected int channels = 1;
 	protected int bufferFrames = 4096;
 	private SamplingMethod samplingMethod;
+	private int deviceIdx;
 
 	/**
 	 * This instance represents the requested audio configuration
@@ -35,10 +36,11 @@ public class AudioConfig {
 	 *            The number of audio channels to use.
 	 */
 	protected AudioConfig(int frameRate, int channels,
-			SamplingMethod samplingMethod) {
+			SamplingMethod samplingMethod, int deviceIdx) {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.samplingMethod = samplingMethod;
+		this.deviceIdx = deviceIdx;
 	}
 
 	/**
@@ -51,12 +53,12 @@ public class AudioConfig {
 	 */
 	public static AudioConfig getInstance(IAudioSection audio, int channels) {
 		return new AudioConfig(audio.getFrequency(), channels,
-				audio.getSampling());
+				audio.getSampling(), audio.getDevice());
 	}
 
 	public static AudioConfig getInstance(IConfig config, SidTune tune) {
 		return new AudioConfig(config.getAudio().getFrequency(), isStereo(
-				config, tune) ? 2 : 1, config.getAudio().getSampling());
+				config, tune) ? 2 : 1, config.getAudio().getSampling(), config.getAudio().getDevice());
 	}
 
 	public static boolean isStereo(IConfig config, SidTune tune) {
@@ -110,6 +112,10 @@ public class AudioConfig {
 	 */
 	public SamplingMethod getSamplingMethod() {
 		return samplingMethod;
+	}
+
+	public int getDevice() {
+		return deviceIdx;
 	}
 
 }

@@ -4,13 +4,35 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
+import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
 
 public class JavaSound extends AudioDriver {
+	public static final class Device {
+		private final Info info;
+
+		public Device(Info info) {
+			this.info = info;
+		}
+
+		public Info getInfo() {
+			return info;
+		}
+
+		@Override
+		public String toString() {
+			return info.getName();
+		}
+	}
+
 	private AudioFormat audioFormat;
 	private SourceDataLine dataLine;
 
@@ -20,7 +42,19 @@ public class JavaSound extends AudioDriver {
 	@Override
 	public synchronized void open(final AudioConfig cfg)
 			throws LineUnavailableException {
-		open(cfg, null);
+		open(cfg, getDevices().get(cfg.getDevice()).getInfo());
+	}
+
+	public static final ObservableList<Device> getDevices() {
+		ObservableList<Device> devices = FXCollections.<Device> observableArrayList();
+		for (Info info : AudioSystem.getMixerInfo()) {
+			Mixer mixer = AudioSystem.getMixer(info);
+			Line.Info lineInfo = new Line.Info(SourceDataLine.class);
+			if (mixer.isLineSupported(lineInfo)) {
+				devices.add(new Device(info));
+			}
+		}
+		return devices;
 	}
 
 	public synchronized void open(final AudioConfig cfg, final Mixer.Info info)
