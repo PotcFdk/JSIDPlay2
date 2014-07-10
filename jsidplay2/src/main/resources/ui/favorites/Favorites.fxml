@@ -100,7 +100,7 @@
 					<TextField fx:id="renameTab" onAction="#renameTab"
 						prefWidth="100" />
 				</HBox>
-				<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS" />
+				<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS" VBox.vgrow="ALWAYS"/>
 			</VBox>
 		</center>
 		<bottom>

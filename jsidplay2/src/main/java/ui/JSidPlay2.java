@@ -68,6 +68,7 @@ import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
 import sidplay.audio.RecordingFilenameProvider;
 import sidplay.ini.IniReader;
+import sidplay.ini.intf.ISidPlay2Section;
 import ui.about.About;
 import ui.asm.Asm;
 import ui.common.C64Window;
@@ -154,7 +155,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	protected RadioButton playMP3, playEmulation;
 	@FXML
-	protected Button previous2, next2, mp3Browse;
+	protected Button previous2, next2, volumeButton, mp3Browse;
 	@FXML
 	protected Tooltip previous2ToolTip, next2ToolTip;
 	@FXML
@@ -297,6 +298,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		playMP3.setSelected(util.getConfig().getAudio().isPlayOriginal());
 		playEmulation
 				.setSelected(!util.getConfig().getAudio().isPlayOriginal());
+
+		String os = System.getProperty("os.name");
+		volumeButton.setDisable(!os.startsWith("Windows"));
+		if (volumeButton.isDisable()) {
+			volumeButton.setTooltip(new Tooltip("Windows only!"));
+		}
 
 		C1541Section c1541Section = (C1541Section) util.getConfig().getC1541();
 		driveOn.selectedProperty().bindBidirectional(
@@ -994,6 +1001,21 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (file != null) {
 			util.getConfig().getAudio().setMp3File(file.getAbsolutePath());
 			restart();
+		}
+	}
+
+	@FXML
+	private void showVolume() {
+		ISidPlay2Section section = util.getConfig().getSidplay2();
+		int x = section.getFrameX() + section.getFrameWidth() / 2;
+		try {
+			Runtime.getRuntime().exec("sndvol -f " + x);
+		} catch (IOException e) {
+			try {
+				Runtime.getRuntime().exec("sndvol32");
+			} catch (IOException e1) {
+				System.err.println("sndvol or sndvol32 not found!");
+			}
 		}
 	}
 

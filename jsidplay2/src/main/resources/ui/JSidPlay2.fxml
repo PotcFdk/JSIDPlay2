@@ -363,7 +363,8 @@
 								</FXCollections>
 							</items>
 						</ComboBox>
-						<ComboBox onAction="#setDevice" fx:id="devicesBox" maxWidth="150"/>
+						<ComboBox onAction="#setDevice" fx:id="devicesBox"
+							maxWidth="150" />
 						<ComboBox onAction="#setSampling" fx:id="samplingBox">
 							<items>
 								<FXCollections fx:factory="observableArrayList">
@@ -381,6 +382,34 @@
 								</FXCollections>
 							</items>
 						</ComboBox>
+						<Button onAction="#showVolume" fx:id="volumeButton">
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/show_volume.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+					</HBox>
+				</AnchorPane>
+				<HBox>
+					<HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+						<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
+						<TextField fx:id="defaultTime" onAction="#setDefaultTime"
+							prefWidth="60">
+							<tooltip>
+								<Tooltip text="%DEFAULT_LENGTH_TIP"></Tooltip>
+							</tooltip>
+						</TextField>
+						<CheckBox text="%RESPECT_SONG_LENGTH" fx:id="enableSldb"
+							onAction="#doEnableSldb">
+						</CheckBox>
+						<CheckBox text="%SINGLE_SONG" fx:id="singleSong"
+							onAction="#playSingleSong">
+						</CheckBox>
+					</HBox>
+					<HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
 						<Label text="%6581" fx:id="hardsid6581Label" />
 						<ComboBox fx:id="hardsid6581Box" onAction="#setSid6581">
 							<items>
@@ -438,35 +467,18 @@
 								<RadioButton text="%RECORDING" fx:id="playMP3"
 									onAction="#playRecordedSound" toggleGroup="$playSourceGroup" />
 							</VBox>
-							<Button fx:id="mp3Browse" onAction="#doBrowse">
-								<graphic>
-									<ImageView>
-										<image>
-											<Image url="@/ui/icons/browse.png" />
-										</image>
-									</ImageView>
-								</graphic>
-							</Button>
 						</HBox>
+						<Button fx:id="mp3Browse" onAction="#doBrowse">
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/browse.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
 					</HBox>
-				</AnchorPane>
-				<AnchorPane>
-					<HBox alignment="CENTER" AnchorPane.leftAnchor="10">
-						<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
-						<TextField fx:id="defaultTime" onAction="#setDefaultTime"
-							prefWidth="60">
-							<tooltip>
-								<Tooltip text="%DEFAULT_LENGTH_TIP"></Tooltip>
-							</tooltip>
-						</TextField>
-						<CheckBox text="%RESPECT_SONG_LENGTH" fx:id="enableSldb"
-							onAction="#doEnableSldb">
-						</CheckBox>
-						<CheckBox text="%SINGLE_SONG" fx:id="singleSong"
-							onAction="#playSingleSong">
-						</CheckBox>
-					</HBox>
-				</AnchorPane>
+				</HBox>
 			</VBox>
 		</top>
 		<center>
