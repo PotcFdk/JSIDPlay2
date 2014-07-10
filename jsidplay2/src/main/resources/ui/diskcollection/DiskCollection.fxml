@@ -37,20 +37,18 @@
 			<contextMenu>
 				<ContextMenu fx:id="contextMenu">
 					<items>
-						<MenuItem  fx:id="start" text="%START" onAction="#start" />
-						<MenuItem  fx:id="attachDisk" text="%ATTACH_DISK" onAction="#attachDisk" />
+						<MenuItem fx:id="start" text="%START" onAction="#start" />
+						<MenuItem fx:id="attachDisk" text="%ATTACH_DISK"
+							onAction="#attachDisk" />
 					</items>
 				</ContextMenu>
 			</contextMenu>
 		</TreeView>
-		<TitledPane text="%SCREENSHOT" collapsible="false"
-			GridPane.rowIndex="1" GridPane.columnIndex="2" minWidth="320"
-			maxHeight="550">
-			<ImageView fx:id="screenshot" fitWidth="320" fitHeight="200"
-				preserveRatio="true" />
-		</TitledPane>
-		<TitledPane text="%CONFIGURATION" collapsible="false"
-			GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="3">
+		<ImageView fx:id="screenshot" fitWidth="320" fitHeight="200"
+			preserveRatio="true" GridPane.rowIndex="1" GridPane.columnIndex="2" />
+		<TitledPane text="%CONFIGURATION" collapsible="true"
+			expanded="false" GridPane.rowIndex="2" GridPane.columnIndex="0"
+			GridPane.columnSpan="3">
 			<HBox>
 				<Label text="%BASE_DIR" />
 				<TextField fx:id="collectionDir" disable="true" />

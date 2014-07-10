@@ -61,11 +61,8 @@
 				<GameBasePage text="Z" disable="true" />
 			</TabPane>
 		</TitledPane>
-		<TitledPane text="%SCREENSHOT" collapsible="false"
-			GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="320">
-			<ImageView fx:id="screenshot" fitWidth="320" fitHeight="200"
-				preserveRatio="true" />
-		</TitledPane>
+		<ImageView fx:id="screenshot" fitWidth="320" fitHeight="200"
+			preserveRatio="true" GridPane.rowIndex="2" GridPane.columnIndex="1" />
 		<TitledPane text="%INFOS" collapsible="false"
 			GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="320">
 			<TextField fx:id="infos" />
@@ -88,8 +85,9 @@
 		</TitledPane>
 		<Button text="%MUSIC_GET" fx:id="linkMusic" onAction="#downloadMusic"
 			GridPane.rowIndex="8" GridPane.columnIndex="1" minWidth="320" />
-		<TitledPane text="%CONFIGURATION" collapsible="false"
-			GridPane.rowIndex="9" GridPane.columnIndex="0" GridPane.columnSpan="3">
+		<TitledPane text="%CONFIGURATION" collapsible="true"
+			expanded="false" GridPane.rowIndex="9" GridPane.columnIndex="0"
+			GridPane.columnSpan="3">
 			<HBox>
 				<Label text="%BASE_DIR" />
 				<TextField fx:id="gameBaseFile" disable="true" />

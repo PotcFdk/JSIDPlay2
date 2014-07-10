@@ -158,8 +158,9 @@
 				</HBox>
 			</VBox>
 		</TitledPane>
-		<TitledPane text="%CONFIGURATION" collapsible="false"
-			GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="3">
+		<TitledPane text="%CONFIGURATION" collapsible="true"
+			expanded="false" GridPane.rowIndex="3" GridPane.columnIndex="0"
+			GridPane.columnSpan="3">
 			<HBox>
 				<Label text="%BASE_DIR" />
 				<TextField fx:id="collectionDir" disable="true" />
