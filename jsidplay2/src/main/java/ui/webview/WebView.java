@@ -12,7 +12,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
 import javafx.scene.web.WebEngine;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTuneError;
@@ -33,7 +35,11 @@ public class WebView extends Tab implements UIPart {
 			|| file.getName().compareTo(toAttach.getName()) < 0;
 
 	@FXML
+	private Button backward, forward;
+	@FXML
 	private javafx.scene.web.WebView webView;
+	@FXML
+	private TextField urlField;
 
 	private Convenience convenience;
 	private ObjectProperty<WebViewType> type;
@@ -78,9 +84,19 @@ public class WebView extends Tab implements UIPart {
 		type = new SimpleObjectProperty<>();
 		type.addListener((observable, oldValue, newValue) -> engine.load(url));
 		engine = webView.getEngine();
+		engine.getHistory()
+				.currentIndexProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							backward.setDisable(newValue.intValue() <= 0);
+							forward.setDisable(newValue.intValue() + 1 >= engine
+									.getHistory().getEntries().size());
+
+						});
 		engine.locationProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
+							urlField.setText(newValue);
 							try {
 								convenience.autostart(new URL(newValue),
 										LEXICALLY_FIRST_MEDIA, null);
@@ -100,9 +116,7 @@ public class WebView extends Tab implements UIPart {
 
 	@FXML
 	private void backward() {
-		if (engine.getHistory().getCurrentIndex() > 0) {
-			engine.getHistory().go(-1);
-		}
+		engine.getHistory().go(-1);
 	}
 
 	@FXML
@@ -111,11 +125,18 @@ public class WebView extends Tab implements UIPart {
 	}
 
 	@FXML
+	private void home() {
+		engine.load(url);
+	}
+
+	@FXML
 	private void forward() {
-		if (engine.getHistory().getCurrentIndex() < engine.getHistory()
-				.getMaxSize()) {
-			engine.getHistory().go(1);
-		}
+		engine.getHistory().go(1);
+	}
+
+	@FXML
+	private void setUrl() {
+		engine.load(urlField.getText());
 	}
 
 	public final String getCollectionURL() {

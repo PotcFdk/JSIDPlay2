@@ -7,14 +7,52 @@
 <?import javafx.scene.web.WebView?>
 <?import javafx.scene.control.Button?>
 <?scenebuilder-preview-i18n-resource WebView.properties?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.TextField?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<VBox AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
 		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 		<HBox alignment="CENTER_LEFT">
-			<Button text="%BACKWARD" onAction="#backward" />
-			<Button text="%RELOAD" onAction="#reload" />
-			<Button text="%FORWARD" onAction="#forward" />
+			<Button onAction="#backward" disable="true" fx:id="backward">
+				<graphic>
+					<ImageView>
+						<image>
+							<Image url="@/ui/icons/backward.png" />
+						</image>
+					</ImageView>
+				</graphic>
+			</Button>
+			<Button onAction="#reload">
+				<graphic>
+					<ImageView>
+						<image>
+							<Image url="@/ui/icons/reload.png" />
+						</image>
+					</ImageView>
+				</graphic>
+			</Button>
+			<Button onAction="#home">
+				<graphic>
+					<ImageView>
+						<image>
+							<Image url="@/ui/icons/home.png" />
+						</image>
+					</ImageView>
+				</graphic>
+			</Button>
+			<Button onAction="#forward" disable="true" fx:id="forward">
+				<graphic>
+					<ImageView>
+						<image>
+							<Image url="@/ui/icons/forward.png" />
+						</image>
+					</ImageView>
+				</graphic>
+			</Button>
+			<TextField HBox.hgrow="ALWAYS" fx:id="urlField" onAction="#setUrl" />
 		</HBox>
 		<WebView fx:id="webView" />
 	</VBox>
