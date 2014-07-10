@@ -1125,13 +1125,14 @@ public class Parse {
 									"shortthreshold")) {
 						{
 							float x, y;
-							Scanner sc = new Scanner(nextArg);
-							x = sc.nextFloat();
-							if (!sc.hasNext()) {
-								y = x;
-							} else {
-								sc.nextByte();
-								y = sc.nextFloat();
+							try (Scanner sc = new Scanner(nextArg)) {
+								x = sc.nextFloat();
+								if (!sc.hasNext()) {
+									y = x;
+								} else {
+									sc.nextByte();
+									y = sc.nextFloat();
+								}
 							}
 							argUsed = 1;
 							gfp.internal_flags.nsPsy.attackthre = x;
@@ -1378,13 +1379,14 @@ public class Parse {
 							 */
 						{
 							int x, y;
-							Scanner sc = new Scanner(arg);
-							x = sc.nextInt();
-							if (!sc.hasNext()) {
-								y = x;
-							} else {
-								sc.nextByte();
-								y = sc.nextInt();
+							try (Scanner sc = new Scanner(arg)) {
+								x = sc.nextInt();
+								if (!sc.hasNext()) {
+									y = x;
+								} else {
+									sc.nextByte();
+									y = sc.nextInt();
+								}
 							}
 							argUsed = 1;
 							if (INTERNAL_OPTS) {
@@ -1402,8 +1404,9 @@ public class Parse {
 							 */
 						{
 							int n = 1;
-							Scanner sc = new Scanner(arg);
-							n = sc.nextInt();
+							try (Scanner sc = new Scanner(arg)) {
+								n = sc.nextInt();
+							}
 							if (INTERNAL_OPTS) {
 								gfp.experimentalZ = n;
 							}

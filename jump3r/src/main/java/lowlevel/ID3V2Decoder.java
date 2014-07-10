@@ -232,51 +232,51 @@ public class ID3V2Decoder {
 		return "";
 	}
 
-	private void readComment(final RandomAccessFile is, int len, int enc)
-			throws IOException {
-		byte[] lang = new byte[3];
-		is.readFully(lang);
-		String language = new String(lang);
-		setCommentLanguage(language);
-		String fieldValue;
-		is.read();
-		fieldValue = readString(is, len, enc);
-		// System.out.println(fieldValue);
-		fieldValue = readString(is, len, enc);
-		setComment(fieldValue);
-	}
+//	private void readComment(final RandomAccessFile is, int len, int enc)
+//			throws IOException {
+//		byte[] lang = new byte[3];
+//		is.readFully(lang);
+//		String language = new String(lang);
+//		setCommentLanguage(language);
+//		String fieldValue;
+//		is.read();
+//		fieldValue = readString(is, len, enc);
+//		// System.out.println(fieldValue);
+//		fieldValue = readString(is, len, enc);
+//		setComment(fieldValue);
+//	}
 
-	private String readString(final RandomAccessFile is, int len, int enc)
-			throws IOException {
-		if (enc == 0 || enc == 3) {
-			byte[] bytes = new byte[len];
-			int pos = 0;
-			int ch;
-			do {
-				ch = is.read();
-				bytes[pos++] = (byte) ch;
-			} while (pos < len && bytes[pos - 1] != 0);
-			if (enc == 0) {
-				return new String(bytes, 0, pos, "ISO-8859-1");
-			} else {
-				return new String(bytes, 0, pos, "UTF-8");
-			}
-		} else {
-			len -= 8;
-			byte[] bytes = new byte[len];
-			int pos = 0;
-			int ch;
-			do {
-				ch = is.read();
-				bytes[pos++] = (byte) ch;
-			} while (pos < len && (bytes[pos - 1] != 0 || bytes[pos - 2] != 0));
-			return new String(bytes, 0, pos, "UTF-16");
-		}
-	}
+//	private String readString(final RandomAccessFile is, int len, int enc)
+//			throws IOException {
+//		if (enc == 0 || enc == 3) {
+//			byte[] bytes = new byte[len];
+//			int pos = 0;
+//			int ch;
+//			do {
+//				ch = is.read();
+//				bytes[pos++] = (byte) ch;
+//			} while (pos < len && bytes[pos - 1] != 0);
+//			if (enc == 0) {
+//				return new String(bytes, 0, pos, "ISO-8859-1");
+//			} else {
+//				return new String(bytes, 0, pos, "UTF-8");
+//			}
+//		} else {
+//			len -= 8;
+//			byte[] bytes = new byte[len];
+//			int pos = 0;
+//			int ch;
+//			do {
+//				ch = is.read();
+//				bytes[pos++] = (byte) ch;
+//			} while (pos < len && (bytes[pos - 1] != 0 || bytes[pos - 2] != 0));
+//			return new String(bytes, 0, pos, "UTF-16");
+//		}
+//	}
 
 	private void readImage(final RandomAccessFile is, long len)
 			throws IOException, FileNotFoundException {
-		int c = is.read();
+		is.read();
 		int ch;
 		StringBuilder mime = new StringBuilder();
 		do {

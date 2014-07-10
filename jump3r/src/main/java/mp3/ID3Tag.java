@@ -999,6 +999,7 @@ public class ID3Tag {
 					case MIMETYPE_GIF:
 						albumart_mime = mime_gif;
 						break;
+					default:
 					}
 					if (albumart_mime != null) {
 						tag_size += 10 + 4 + albumart_mime.length()
