@@ -98,8 +98,10 @@ public class WebView extends Tab implements UIPart {
 						(observable, oldValue, newValue) -> {
 							urlField.setText(newValue);
 							try {
-								convenience.autostart(new URL(newValue),
-										LEXICALLY_FIRST_MEDIA, null);
+								if (convenience.autostart(new URL(newValue),
+										LEXICALLY_FIRST_MEDIA, null)) {
+									util.setPlayingTab(this);
+								}
 							} catch (IOException | SidTuneError
 									| URISyntaxException e) {
 								System.err.println(e.getMessage());

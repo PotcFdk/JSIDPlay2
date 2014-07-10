@@ -223,6 +223,7 @@ public class GameBase extends Tab implements UIPart {
 					+ linkMusic.getText().replace('\\', '/'));
 			try (InputStream is = url.openStream()) {
 				util.getPlayer().play(SidTune.load(linkMusic.getText(), is));
+				util.setPlayingTab(this);
 			}
 		} catch (IOException | SidTuneError e) {
 			System.err.println(e.getMessage());

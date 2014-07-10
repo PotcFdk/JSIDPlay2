@@ -68,7 +68,7 @@ public class Convenience {
 	 * @throws SidTuneError
 	 *             invalid tune
 	 */
-	public void autostart(URL url, BiPredicate<File, File> isMediaToAttach,
+	public boolean autostart(URL url, BiPredicate<File, File> isMediaToAttach,
 			File autoStartFile) throws IOException, SidTuneError,
 			URISyntaxException {
 		String tmpDir = player.getConfig().getSidplay2().getTmpDir();
@@ -97,19 +97,24 @@ public class Convenience {
 		if (toAttach != null) {
 			if (tuneFileFilter.accept(toAttach)) {
 				player.play(SidTune.load(toAttach));
+				return true;
 			} else if (diskFileFilter.accept(toAttach)) {
 				player.getC64().ejectCartridge();
 				player.insertDisk(toAttach);
 				autoStart(autoStartFile, LOAD_8_1_RUN);
+				return true;
 			} else if (tapeFileFilter.accept(toAttach)) {
 				player.getC64().ejectCartridge();
 				player.insertTape(toAttach);
 				autoStart(autoStartFile, LOAD_RUN);
+				return true;
 			} else if (cartFileFilter.accept(toAttach)) {
 				player.insertCartridge(CartridgeType.CRT, toAttach);
 				autoStart(autoStartFile, null);
+				return true;
 			}
 		}
+		return false;
 	}
 
 	/**

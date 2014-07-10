@@ -118,13 +118,14 @@ public class GameBasePage extends Tab implements UIPart {
 		}
 		try {
 			fileToRun = game.getFileToRun();
-			convenience.autostart(new URL(GB64_GAMES_DOWNLOAD_URL
+			if (convenience.autostart(new URL(GB64_GAMES_DOWNLOAD_URL
 					+ game.getFilename().replace('\\', '/')).toURI().toURL(),
-					FILE_TO_RUN_DETECTOR, null);
+					FILE_TO_RUN_DETECTOR, null)) {
+				util.setPlayingTab(this);
+			}
 		} catch (IOException | SidTuneError | URISyntaxException e) {
 			System.err.println(e.getMessage());
 		}
-		util.setPlayingTab(this);
 	}
 
 	void setGames(List<Games> games) {

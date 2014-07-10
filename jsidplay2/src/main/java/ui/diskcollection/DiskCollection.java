@@ -313,8 +313,10 @@ public class DiskCollection extends Tab implements UIPart {
 		} else {
 			try {
 				File extractedFile = extract(file);
-				convenience.autostart(extractedFile.toURI().toURL(),
-						LEXICALLY_FIRST_MEDIA, autoStartFile);
+				if (convenience.autostart(extractedFile.toURI().toURL(),
+						LEXICALLY_FIRST_MEDIA, autoStartFile)) {
+					util.setPlayingTab(this);
+				}
 			} catch (IOException | SidTuneError | URISyntaxException e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
