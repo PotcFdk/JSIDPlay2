@@ -75,6 +75,7 @@ public class JSIDPlay2Main extends Application {
 	public void start(Stage primaryStage) {
 		player = new Player(getConfiguration());
 		player.setMenuHook(menuHook);
+		player.startC64();
 
 		final JSidPlay2 jSidplay2 = new JSidPlay2(primaryStage, player);
 		jSidplay2.setConfigService(configService);
@@ -108,7 +109,6 @@ public class JSIDPlay2Main extends Application {
 					(observable, oldValue, newValue) -> section
 							.setFrameY(newValue.intValue()));
 		}
-		player.startC64();
 		testInstance = jSidplay2;
 	}
 
