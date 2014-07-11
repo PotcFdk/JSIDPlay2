@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 
 import libsidplay.Player;
 import libsidplay.components.cart.CartridgeType;
@@ -43,9 +44,14 @@ public class Convenience {
 	private final CartFileFilter cartFileFilter = new CartFileFilter();
 
 	private Player player;
+	private Consumer<File> autoStartedFile;
 
 	public Convenience(Player player) {
 		this.player = player;
+	}
+
+	public void setAutoStartedFile(Consumer<File> autoStartedFile) {
+		this.autoStartedFile = autoStartedFile;
 	}
 
 	/**
@@ -97,6 +103,7 @@ public class Convenience {
 		if (toAttach != null) {
 			if (tuneFileFilter.accept(toAttach)) {
 				player.play(SidTune.load(toAttach));
+				autoStartedFile.accept(toAttach);
 				return true;
 			} else if (diskFileFilter.accept(toAttach)) {
 				player.getC64().ejectCartridge();
@@ -133,6 +140,7 @@ public class Convenience {
 			SidTuneError {
 		if (file != null) {
 			player.play(SidTune.load(file));
+			autoStartedFile.accept(file);
 		} else {
 			player.setCommand(command);
 			player.play(SidTune.RESET);

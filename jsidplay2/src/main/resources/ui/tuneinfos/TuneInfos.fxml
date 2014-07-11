@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import ui.musiccollection.TuneInfoRowFactory?>
+<?scenebuilder-preview-i18n-resource TuneInfos.properties?>
+
+<Scene xmlns:fx="http://javafx.com/fxml">
+	<AnchorPane xmlns:fx="http://javafx.com/fxml">
+		<TableView focusTraversable="false" fx:id="tuneInfoTable"
+			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+			AnchorPane.topAnchor="10" AnchorPane.bottomAnchor="10">
+			<rowFactory>
+				<TuneInfoRowFactory />
+			</rowFactory>
+			<columns>
+				<TableColumn text="%TUNEINFO_NAME" prefWidth="120">
+					<cellValueFactory>
+						<PropertyValueFactory property="name" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="%TUNEINFO_VALUE" prefWidth="180">
+					<cellValueFactory>
+						<PropertyValueFactory property="value" />
+					</cellValueFactory>
+				</TableColumn>
+			</columns>
+		</TableView>
+	</AnchorPane>
+</Scene>

@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.web.WebEngine?>
 <?import javafx.scene.web.WebView?>
 <?import javafx.scene.control.Button?>
-<?scenebuilder-preview-i18n-resource WebView.properties?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.Tooltip?>
+<?scenebuilder-preview-i18n-resource WebView.properties?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
+	<stylesheets>
+		<URL value="@WebView.css" />
+	</stylesheets>
 	<VBox AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
 		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 		<HBox alignment="CENTER_LEFT">
@@ -24,6 +30,9 @@
 						</image>
 					</ImageView>
 				</graphic>
+				<tooltip>
+					<Tooltip text="%TIP_BACKWARD" />
+				</tooltip>
 			</Button>
 			<Button onAction="#reload">
 				<graphic>
@@ -33,6 +42,9 @@
 						</image>
 					</ImageView>
 				</graphic>
+				<tooltip>
+					<Tooltip text="%TIP_RELOAD" />
+				</tooltip>
 			</Button>
 			<Button onAction="#home">
 				<graphic>
@@ -42,6 +54,9 @@
 						</image>
 					</ImageView>
 				</graphic>
+				<tooltip>
+					<Tooltip text="%TIP_HOME" />
+				</tooltip>
 			</Button>
 			<Button onAction="#forward" disable="true" fx:id="forward">
 				<graphic>
@@ -51,7 +66,15 @@
 						</image>
 					</ImageView>
 				</graphic>
+				<tooltip>
+					<Tooltip text="%TIP_FORWARD" />
+				</tooltip>
 			</Button>
+			<ToggleButton onAction="#setShowTuneInfos" fx:id="showTuneInfoButton">
+				<tooltip>
+					<Tooltip text="%TIP_SHOW_TUNE_INFOS" />
+				</tooltip>
+			</ToggleButton>
 			<TextField HBox.hgrow="ALWAYS" fx:id="urlField" onAction="#setUrl" />
 		</HBox>
 		<WebView fx:id="webView" />

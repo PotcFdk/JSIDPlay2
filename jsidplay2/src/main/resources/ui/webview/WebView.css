@@ -1,0 +1,8 @@
+#showTuneInfoButton:selected {
+	-fx-graphic: url("../icons/show_info.png");
+}
+
+#showTuneInfoButton {
+	-fx-graphic: url("../icons/hide_info.png");
+}
+

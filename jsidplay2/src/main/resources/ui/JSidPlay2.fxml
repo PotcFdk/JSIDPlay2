@@ -115,6 +115,8 @@
 									<MenuItem text="%GAMEBASE" onAction="#gamebase" />
 									<MenuItem text="%CSDB" onAction="#csdb" />
 									<MenuItem text="%CODEBASE64" onAction="#codebase64" />
+									<MenuItem text="%REMIX_KWED_ORG" onAction="#remixKweqOrg" />
+									<MenuItem text="%SID_OTH4_COM" onAction="#sidOth4Com" />
 								</Menu>
 								<MenuItem text="%PRINTER" onAction="#printer" />
 								<MenuItem text="%CONSOLE" onAction="#console" />

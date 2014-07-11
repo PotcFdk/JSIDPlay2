@@ -15,21 +15,20 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.web.WebEngine;
+import javafx.stage.Modality;
 import libsidplay.Player;
+import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.PathUtils;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.UIPart;
 import ui.common.UIUtil;
+import ui.tuneinfos.TuneInfos;
 
 public class WebView extends Tab implements UIPart {
-	public static final String CSDB_ID = "CSDB";
-	public static final String CODEBASE64_ID = "CODEBASE64";
-
-	private static final String CSDB_URL = "http://csdb.dk/";
-	private static final String CODEBASE64_URL = "http://codebase64.org/";
-
 	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file,
 			toAttach) -> toAttach == null
 			|| file.getName().compareTo(toAttach.getName()) < 0;
@@ -40,7 +39,9 @@ public class WebView extends Tab implements UIPart {
 	private javafx.scene.web.WebView webView;
 	@FXML
 	private TextField urlField;
-
+	@FXML
+	private ToggleButton showTuneInfoButton;
+	
 	private Convenience convenience;
 	private ObjectProperty<WebViewType> type;
 	private String url;
@@ -56,24 +57,16 @@ public class WebView extends Tab implements UIPart {
 		}
 	};
 
+	private boolean showTuneInfos;
+
 	public WebView(final C64Window window, final Player player) {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 
 	public void setType(WebViewType type) {
-		switch (type) {
-		case CSDB:
-			setId(CSDB_ID);
-			setURL(CSDB_URL);
-			break;
-		case CODEBASE64:
-			setId(CODEBASE64_ID);
-			setURL(CODEBASE64_URL);
-			break;
-		default:
-			break;
-		}
+		setId(type.name());
+		setURL(type.getUrl());
 		setText(util.getBundle().getString(getId()));
 		this.type.set(type);
 	}
@@ -81,6 +74,13 @@ public class WebView extends Tab implements UIPart {
 	@FXML
 	private void initialize() {
 		convenience = new Convenience(util.getPlayer());
+		convenience.setAutoStartedFile((file) -> {
+			if (showTuneInfos
+					&& PathUtils.getExtension(file.getName()).equalsIgnoreCase(
+							".sid")) {
+				showTuneInfos(util.getPlayer().getTune(), file);
+			}
+		});
 		type = new SimpleObjectProperty<>();
 		type.addListener((observable, oldValue, newValue) -> engine.load(url));
 		engine = webView.getEngine();
@@ -104,7 +104,7 @@ public class WebView extends Tab implements UIPart {
 								}
 							} catch (IOException | SidTuneError
 									| URISyntaxException e) {
-								System.err.println(e.getMessage());
+								// ignore
 							}
 						});
 		engine.getLoadWorker().progressProperty().addListener(changeListener);
@@ -139,6 +139,21 @@ public class WebView extends Tab implements UIPart {
 	@FXML
 	private void setUrl() {
 		engine.load(urlField.getText());
+	}
+
+	@FXML
+	private void setShowTuneInfos() {
+		showTuneInfos = showTuneInfoButton.isSelected();
+	}
+
+	private void showTuneInfos(SidTune sidTune, File tuneFile) {
+		TuneInfos tuneInfos = new TuneInfos(util.getPlayer());
+
+		tuneInfos.getStage().initModality(Modality.WINDOW_MODAL);
+		tuneInfos.getStage().initOwner(urlField.getScene().getWindow());
+
+		tuneInfos.open();
+		tuneInfos.showTuneInfos(tuneFile, sidTune);
 	}
 
 	public final String getCollectionURL() {

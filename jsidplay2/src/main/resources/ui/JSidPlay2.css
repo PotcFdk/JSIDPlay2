@@ -1,11 +1,11 @@
 .button {
 	-fx-effect: null;
 }
-.toggle-button:selected {
+#pauseContinue2:selected {
 	-fx-graphic: url("icons/playback_start.png");
 }
 
-.toggle-button {
+#pauseContinue2 {
 	-fx-graphic: url("icons/playback_pause.png");
 }
 

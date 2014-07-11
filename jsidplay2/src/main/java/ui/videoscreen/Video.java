@@ -21,6 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
 import libsidplay.C64;
@@ -211,6 +212,8 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	@FXML
 	private void showVirtualKeyboard() {
 		virtualKeyboard = new Keyboard(util.getPlayer());
+		virtualKeyboard.getStage().initModality(Modality.WINDOW_MODAL);
+		virtualKeyboard.getStage().initOwner(screen.getScene().getWindow());
 		virtualKeyboard.open();
 	}
 

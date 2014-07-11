@@ -351,60 +351,44 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private void addView(String id) {
-		switch (id) {
-		case Video.ID:
+		if (Video.ID.equals(id)) {
 			video();
-			break;
-		case Asm.ID:
+		} else if (Asm.ID.equals(id)) {
 			asm();
-			break;
-		case Oscilloscope.ID:
+		} else if (Oscilloscope.ID.equals(id)) {
 			oscilloscope();
-			break;
-		case MusicCollection.HVSC_ID:
+		} else if (MusicCollection.HVSC_ID.equals(id)) {
 			hvsc();
-			break;
-		case MusicCollection.CGSC_ID:
+		} else if (MusicCollection.CGSC_ID.equals(id)) {
 			cgsc();
-			break;
-		case DiskCollection.HVMEC_ID:
+		} else if (DiskCollection.HVMEC_ID.equals(id)) {
 			hvmec();
-			break;
-		case DiskCollection.DEMOS_ID:
+		} else if (DiskCollection.DEMOS_ID.equals(id)) {
 			demos();
-			break;
-		case DiskCollection.MAGS_ID:
+		} else if (DiskCollection.MAGS_ID.equals(id)) {
 			mags();
-			break;
-		case GameBase.ID:
+		} else if (GameBase.ID.equals(id)) {
 			gamebase();
-			break;
-		case Favorites.ID:
+		} else if (Favorites.ID.equals(id)) {
 			favorites();
-			break;
-		case Printer.ID:
+		} else if (Printer.ID.equals(id)) {
 			printer();
-			break;
-		case Console.ID:
+		} else if (Console.ID.equals(id)) {
 			console();
-			break;
-		case SidDump.ID:
+		} else if (SidDump.ID.equals(id)) {
 			sidDump();
-			break;
-		case SidReg.ID:
+		} else if (SidReg.ID.equals(id)) {
 			sidRegisters();
-			break;
-		case Disassembler.ID:
+		} else if (Disassembler.ID.equals(id)) {
 			disassembler();
-			break;
-		case WebView.CSDB_ID:
+		} else if (WebViewType.CSDB.name().equals(id)) {
 			csdb();
-			break;
-		case WebView.CODEBASE64_ID:
+		} else if (WebViewType.CODEBASE64.name().equals(id)) {
 			codebase64();
-			break;
-		default:
-			break;
+		} else if (WebViewType.REMIX_KWED_ORG.name().equals(id)) {
+			remixKweqOrg();
+		} else if (WebViewType.SID_OTH4_COM.name().equals(id)) {
+			sidOth4Com();
 		}
 	}
 
@@ -1136,7 +1120,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void csdb() {
-		if (!tabAlreadyOpen(WebView.CSDB_ID)) {
+		if (!tabAlreadyOpen(WebViewType.CSDB.name())) {
 			WebView tab = new WebView(this, util.getPlayer());
 			tab.setType(WebViewType.CSDB);
 			addTab(tab);
@@ -1145,13 +1129,31 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void codebase64() {
-		if (!tabAlreadyOpen(WebView.CODEBASE64_ID)) {
+		if (!tabAlreadyOpen(WebViewType.CODEBASE64.name())) {
 			WebView tab = new WebView(this, util.getPlayer());
 			tab.setType(WebViewType.CODEBASE64);
 			addTab(tab);
 		}
 	}
 
+	@FXML
+	private void remixKweqOrg() {
+		if (!tabAlreadyOpen(WebViewType.REMIX_KWED_ORG.name())) {
+			WebView tab = new WebView(this, util.getPlayer());
+			tab.setType(WebViewType.REMIX_KWED_ORG);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void sidOth4Com() {
+		if (!tabAlreadyOpen(WebViewType.SID_OTH4_COM.name())) {
+			WebView tab = new WebView(this, util.getPlayer());
+			tab.setType(WebViewType.SID_OTH4_COM);
+			addTab(tab);
+		}
+	}
+	
 	@FXML
 	private void exportConfiguration() {
 		final FileChooser fileDialog = new FileChooser();
