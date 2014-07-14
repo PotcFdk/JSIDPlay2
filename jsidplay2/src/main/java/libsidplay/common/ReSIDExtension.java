@@ -1,6 +1,6 @@
 package libsidplay.common;
 
-public interface IReSIDExtension {
+public interface ReSIDExtension {
 
 	void write(long time, int chipNum, int addr, byte data);
 

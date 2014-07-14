@@ -2,9 +2,9 @@ package ui.sidreg;
 
 import java.util.ResourceBundle;
 
-import libsidplay.common.IReSIDExtension;
+import libsidplay.common.ReSIDExtension;
 
-public abstract class SidRegExtension implements IReSIDExtension {
+public abstract class SidRegExtension implements ReSIDExtension {
 
 	private ResourceBundle bundle;
 

@@ -6,7 +6,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.IReSIDExtension;
+import libsidplay.common.ReSIDExtension;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.c1530.DatasetteEnvironment;
 import libsidplay.components.c1541.C1541Environment;
@@ -130,7 +130,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		private final SIDEmu[] sidemu = new SIDEmu[MAX_SIDS];
 
 		/** SID listener for detecting SID writes */
-		private final IReSIDExtension[] sidWriteListener = new IReSIDExtension[MAX_SIDS];
+		private final ReSIDExtension[] sidWriteListener = new ReSIDExtension[MAX_SIDS];
 
 		/** Reset SID chips using highest volume setting. */
 		public void reset() {
@@ -151,7 +151,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		 * Install a SID register write listener for a specific SID chip number.
 		 */
 		public void setSidWriteListener(final int chipNum,
-				final IReSIDExtension listener) {
+				final ReSIDExtension listener) {
 			sidWriteListener[chipNum] = listener;
 		}
 
@@ -565,7 +565,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 *            listener to debug SID register writes
 	 */
 	public void setSidWriteListener(final int chipNo,
-			final IReSIDExtension listener) {
+			final ReSIDExtension listener) {
 		sidBank.setSidWriteListener(chipNo, listener);
 	}
 
