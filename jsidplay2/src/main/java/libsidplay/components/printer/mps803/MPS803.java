@@ -1,6 +1,8 @@
 package libsidplay.components.printer.mps803;
 
-import static libsidplay.mem.IMPS803Char.MPS803_CHARSET;
+import java.io.DataInputStream;
+import java.io.IOException;
+
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
 import libsidplay.components.printer.IPaper;
@@ -98,6 +100,17 @@ import libsidplay.components.printer.paper.ConsolePaper;
  */
 public abstract class MPS803 extends SerialIECDevice implements
 		UserportPrinterEnvironment {
+
+	private static final byte[] MPS803_CHARSET_BIN = new byte[3584];
+	static {
+		try (DataInputStream is = new DataInputStream(
+				MPS803.class
+						.getResourceAsStream("/libsidplay/roms/mps803char.bin"))) {
+			is.readFully(MPS803_CHARSET_BIN);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	/**
 	 * Maximum column with.
@@ -296,7 +309,8 @@ public abstract class MPS803 extends SerialIECDevice implements
 	/**
 	 * Turn on/off printer. The paper is opened or closed.
 	 * 
-	 * @param on true (on), false (off)
+	 * @param on
+	 *            true (on), false (off)
 	 */
 	public void turnPrinterOnOff(final boolean on) {
 		if (on) {
@@ -308,7 +322,7 @@ public abstract class MPS803 extends SerialIECDevice implements
 		}
 		setDeviceEnable(on);
 	}
-	
+
 	/**
 	 * Set printer paper output.
 	 * 
@@ -521,7 +535,8 @@ public abstract class MPS803 extends SerialIECDevice implements
 				 * double-width using dot matrix that is 7 dots high and 12 dots
 				 * wide.
 				 */
-				for (int x = 0; lineBufferPos + x * 2 + 1 < 480 && x < CHAR_WIDTH; x++) {
+				for (int x = 0; lineBufferPos + x * 2 + 1 < 480
+						&& x < CHAR_WIDTH; x++) {
 					lineBuffer[lineBufferPos + x * 2][y] = getCharsetBit(c, x,
 							y);
 					lineBuffer[lineBufferPos + x * 2 + 1][y] = getCharsetBit(c,
@@ -558,7 +573,7 @@ public abstract class MPS803 extends SerialIECDevice implements
 		 * background.
 		 */
 		boolean reverse = isState(STATE_REVERSE);
-		return (MPS803_CHARSET[chr * CHAR_HEIGHT + row] & (1 << (CHAR_HEIGHT - bit))) != 0 ? !reverse
+		return (MPS803_CHARSET_BIN[chr * CHAR_HEIGHT + row] & (1 << (CHAR_HEIGHT - bit))) != 0 ? !reverse
 				: reverse;
 	}
 
@@ -596,7 +611,8 @@ public abstract class MPS803 extends SerialIECDevice implements
 	/**
 	 * Bit image printing.
 	 * 
-	 * @param c The bitmask to print.
+	 * @param c
+	 *            The bitmask to print.
 	 */
 	private void printBitmask(final byte c) {
 		for (int y = 0; y < CHAR_HEIGHT; y++) {
@@ -658,12 +674,12 @@ public abstract class MPS803 extends SerialIECDevice implements
 	 * Signal busy printer.
 	 * 
 	 * @param flag
-	 *             busy flag
+	 *            busy flag
 	 */
 	public abstract void setBusy(final boolean flag);
 
 	private byte status;
-	
+
 	@Override
 	public void open(int device, byte secondary) {
 		/*
@@ -676,33 +692,33 @@ public abstract class MPS803 extends SerialIECDevice implements
 		}
 		status = 0;
 	}
-	
+
 	@Override
 	public void close(int device, byte secondary) {
 		status = 0;
 	}
-	
+
 	@Override
 	public void listenTalk(int device, byte secondary) {
 		status = 0;
 	}
-	
+
 	@Override
 	public void unlisten(int device, byte secondary) {
 		status = 0;
 	}
-	
+
 	@Override
 	public void untalk(int device, byte secondary) {
 		status = 0;
 	}
-	
+
 	@Override
 	public byte read(int device, byte secondary) {
 		status = 0;
 		return 0;
 	}
-	
+
 	@Override
 	public void write(int device, byte secondary, byte data) {
 		/*
@@ -716,11 +732,10 @@ public abstract class MPS803 extends SerialIECDevice implements
 		putc(data);
 		status = 0;
 	}
-	
+
 	@Override
 	public byte getStatus() {
 		return status;
 	}
-	
-	
+
 }

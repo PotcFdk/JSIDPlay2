@@ -1,10 +1,10 @@
 package ui;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
@@ -116,6 +116,16 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			Date date = new Date(us.openConnection().getLastModified());
 			DATE = DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
 		} catch (IOException e) {
+		}
+	}
+	private static final byte[] NUVIE_PLAYER_PRG = new byte[2884];
+	static {
+		try (DataInputStream is = new DataInputStream(
+				JSidPlay2.class
+						.getResourceAsStream("/libsidplay/roms/nuvieplayer-v1.0.prg"))) {
+			is.readFully(NUVIE_PLAYER_PRG);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -448,17 +458,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			final File tmpFile = new File(util.getConfig().getSidplay2()
 					.getTmpDir(), "nuvieplayer-v1.0.prg");
 			tmpFile.deleteOnExit();
-			try (OutputStream os = new FileOutputStream(tmpFile);
-					InputStream is = JSIDPlay2Main.class.getClassLoader()
-							.getResourceAsStream(
-									"libsidplay/mem/nuvieplayer-v1.0.prg")) {
-				byte[] b = new byte[1024];
-				while (is.available() > 0) {
-					int len = is.read(b);
-					if (len > 0) {
-						os.write(b, 0, len);
-					}
-				}
+			try (DataOutputStream os = new DataOutputStream(
+					new FileOutputStream(tmpFile))) {
+				os.write(NUVIE_PLAYER_PRG);
 				util.getPlayer().insertCartridge(CartridgeType.REU, file);
 				util.getPlayer().play(SidTune.load(tmpFile));
 			} catch (IOException | SidTuneError e) {
@@ -1153,7 +1155,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			addTab(tab);
 		}
 	}
-	
+
 	@FXML
 	private void exportConfiguration() {
 		final FileChooser fileDialog = new FileChooser();

@@ -1,5 +1,7 @@
 package libsidplay.components.pla;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 import libsidplay.common.Event;
@@ -8,9 +10,6 @@ import libsidplay.components.cart.Cartridge;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.components.ram.ColorRAMBank;
-import libsidplay.mem.IBasic;
-import libsidplay.mem.IChar;
-import libsidplay.mem.IKernal;
 
 /**
  * The C64 MMU chip. This handles the coordination between the various chips in
@@ -24,10 +23,37 @@ import libsidplay.mem.IKernal;
  * @author Antti Lankila
  */
 public final class PLA {
+	private static final byte[] CHAR = new byte[4096];
+	static {
+		try (DataInputStream is = new DataInputStream(
+				PLA.class.getResourceAsStream("/libsidplay/roms/char.bin"))) {
+			is.readFully(CHAR);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	private static final byte[] BASIC = new byte[8192];
+	static {
+		try (DataInputStream is = new DataInputStream(
+				PLA.class.getResourceAsStream("/libsidplay/roms/basic.bin"))) {
+			is.readFully(BASIC);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	private static final byte[] KERNAL = new byte[8192];
+	static {
+		try (DataInputStream is = new DataInputStream(
+				PLA.class.getResourceAsStream("/libsidplay/roms/kernal.bin"))) {
+			is.readFully(KERNAL);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 	private static final Bank characterRomBank = new Bank() {
 		@Override
 		public byte read(final int address) {
-			return IChar.CHAR[address & 0xfff];
+			return CHAR[address & 0xfff];
 		}
 
 		@Override
@@ -40,7 +66,7 @@ public final class PLA {
 	private static final Bank basicRomBank = new Bank() {
 		@Override
 		public byte read(final int address) {
-			return IBasic.BASIC[address & 0x1fff];
+			return BASIC[address & 0x1fff];
 		}
 
 		@Override
@@ -53,7 +79,7 @@ public final class PLA {
 	private static final Bank kernalRomBank = new Bank() {
 		@Override
 		public byte read(final int address) {
-			return IKernal.KERNAL[address & 0x1fff];
+			return KERNAL[address & 0x1fff];
 		}
 
 		@Override
@@ -241,7 +267,8 @@ public final class PLA {
 	 * 
 	 * Calls permitted during PHI1.
 	 * 
-	 * @param state BA state.
+	 * @param state
+	 *            BA state.
 	 */
 	public void setBA(final boolean state) {
 		/* only react to changes in state */
@@ -269,7 +296,8 @@ public final class PLA {
 	 * 
 	 * Calls permitted during PHI1.
 	 * 
-	 * @param state DMA state.
+	 * @param state
+	 *            DMA state.
 	 */
 	public void setDMA(final boolean state) {
 		cartridgeDma = state;
@@ -291,7 +319,8 @@ public final class PLA {
 	 * 
 	 * Calls permitted any time, but normally originated by chips at PHI1.
 	 * 
-	 * @param state NMI state.
+	 * @param state
+	 *            NMI state.
 	 */
 	public void setNMI(final boolean state) {
 		if (state) {
@@ -313,7 +342,8 @@ public final class PLA {
 	 * 
 	 * Calls permitted any time, but normally originated by chips at PHI1.
 	 * 
-	 * @param state IRQ state.
+	 * @param state
+	 *            IRQ state.
 	 */
 	public void setIRQ(final boolean state) {
 		if (state) {

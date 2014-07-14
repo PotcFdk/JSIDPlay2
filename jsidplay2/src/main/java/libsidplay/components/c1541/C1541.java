@@ -6,11 +6,8 @@
  */
 package libsidplay.components.c1541;
 
-import static libsidplay.mem.IC1541_1.C1541_C000;
-import static libsidplay.mem.IC1541_2.C1541_E000;
-import static libsidplay.mem.IC1541_II_1.C1541_II_C000;
-import static libsidplay.mem.IC1541_II_2.C1541_II_E000;
-
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 import libsidplay.common.Event;
@@ -37,14 +34,24 @@ import libsidplay.components.mos6510.MOS6510;
  * @author Ken Händel
  */
 public final class C1541 {
-	public enum FloppyStatus {
-		OFF, ON, LOAD,
-	}
-
 	/**
 	 * Size of the floppy ROM.
 	 */
 	private static final int ROM_SIZE = 0x4000;
+	private static final byte[] C1541_ROM =  new byte[ROM_SIZE];
+	private static final byte[] C1541_II_ROM = new byte[ROM_SIZE];
+	static {
+		try (DataInputStream is = new DataInputStream(
+				C1541.class.getResourceAsStream("/libsidplay/roms/c1541.bin"));
+				DataInputStream is2 = new DataInputStream(
+						C1541.class
+								.getResourceAsStream("/libsidplay/roms/c1541-2.bin"))) {
+			is.readFully(C1541_ROM);
+			is2.readFully(C1541_II_ROM);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 	/**
 	 * Size of the floppy RAM.
 	 */
@@ -53,6 +60,14 @@ public final class C1541 {
 	 * Size of the floppy RAM expansion.
 	 */
 	private static final int RAM_EXP_SIZE = 0x2000;
+	/**
+	 * Maximum number of activated 8KB Ram expansions.
+	 */
+	private static final int EXP_RAM_BANKS = 5;
+
+	public enum FloppyStatus {
+		OFF, ON, LOAD,
+	}
 
 	/**
 	 * Specific floppy type.
@@ -70,11 +85,6 @@ public final class C1541 {
 		 */
 		C1541_II
 	}
-
-	/**
-	 * Maximum number of activated 8KB Ram expansions.
-	 */
-	protected static final int EXP_RAM_BANKS = 5;
 
 	/**
 	 * The disk drive is turned on?
@@ -453,16 +463,20 @@ public final class C1541 {
 	 */
 	private void setRom() {
 		if (customC1541Rom != null) {
-			System.arraycopy(customC1541Rom, 0, rom, 0, ROM_SIZE);
+			System.arraycopy(customC1541Rom, 0, rom, 0, customC1541Rom.length);
 		} else {
-			if (floppyType == FloppyType.C1541) {
-				System.arraycopy(C1541_C000, 0, rom, 0, ROM_SIZE >> 1);
-				System.arraycopy(C1541_E000, 0, rom, ROM_SIZE >> 1,
-						ROM_SIZE >> 1);
-			} else {
-				System.arraycopy(C1541_II_C000, 0, rom, 0, ROM_SIZE >> 1);
-				System.arraycopy(C1541_II_E000, 0, rom, ROM_SIZE >> 1,
-						ROM_SIZE >> 1);
+			switch (floppyType) {
+			case C1541:
+				System.arraycopy(C1541_ROM, 0, rom, 0, C1541_ROM.length);
+				break;
+
+			case C1541_II:
+				System.arraycopy(C1541_II_ROM, 0, rom, 0, C1541_II_ROM.length);
+				break;
+
+			default:
+				throw new RuntimeException("Unsupported floppy type: "
+						+ floppyType);
 			}
 		}
 	}
@@ -501,7 +515,7 @@ public final class C1541 {
 	public String getDiskName() {
 		return diskName;
 	}
-	
+
 	public void setDiskName(String diskName) {
 		this.diskName = diskName;
 	}
