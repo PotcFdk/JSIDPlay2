@@ -28,6 +28,9 @@ Optional:
 Tips:
 =====
 
+Shrink jsiddevice:
+upx --best --ultra-brute jsiddevice.exe
+
 find out available JavaFX style classes of a node in the scene graph:
 	private void dump(Node n, int depth) {
 		for (int i = 0; i < depth; i++)

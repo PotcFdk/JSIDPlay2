@@ -125,9 +125,9 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>org.loadui</groupId>
-		    <artifactId>testFx</artifactId>
-		    <version>3.1.2 </version>
+			<groupId>org.loadui</groupId>
+			<artifactId>testFx</artifactId>
+			<version>3.1.2 </version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -258,6 +258,7 @@
 							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
 							<finalName>jsiddevice-${project.version}</finalName>
 							<archive>
+								<addMavenDescriptor>false</addMavenDescriptor>
 								<manifest>
 									<addClasspath>false</addClasspath>
 									<mainClass>netsiddev.NetworkSIDDevice</mainClass>
@@ -425,6 +426,31 @@
 								<mainClass>sidplay.ConsolePlayer</mainClass>
 								<jarLocation>.</jarLocation>
 								<addDependencies>true</addDependencies>
+							</classPath>
+							<jre>
+								<minVersion>1.8.0</minVersion>
+							</jre>
+						</configuration>
+					</execution>
+					<execution>
+						<id>netsiddev</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<headerType>gui</headerType>
+							<jar>${project.build.directory}/deploy/jsiddevice-${project.version}.jar</jar>
+							<outfile>${project.build.directory}/deploy/jsiddevice-${project.version}.exe</outfile>
+							<errTitle>NetworkSIDDevice</errTitle>
+							<chdir>.</chdir>
+							<downloadUrl>http://java.com/download</downloadUrl>
+							<supportUrl>http://sourceforge.net/projects/jsidplay2/</supportUrl>
+							<customProcName>false</customProcName>
+							<stayAlive>false</stayAlive>
+							<icon>src/main/launch4j/jsidplay2.ico</icon>
+							<classPath>
+								<mainClass>netsiddev.NetworkSIDDevice</mainClass>
 							</classPath>
 							<jre>
 								<minVersion>1.8.0</minVersion>
