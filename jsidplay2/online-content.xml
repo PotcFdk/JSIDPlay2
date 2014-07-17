@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="build online content" default="all">
+<project name="build online content" default="all" xmlns:fx="javafx:com.sun.javafx.tools.ant">
 	<description>
 		Create online content of JSIDPlay2
     </description>
@@ -30,8 +30,10 @@
 	<property name="gamebase_name" value="GameBase64" />
 	<!-- jsiddevice -->
 	<property name="jsiddevice_jar" value="jsiddevice.jar" />
+	<!-- webstart -->
+	<property name="webstart_dir" location="${result_dir}/webstart" />
 
-	<target name="all" depends="jsiddevice,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import"/>
+	<target name="all" depends="jsiddevice,webstart,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import" />
 
 	<!-- ================================= 
           target: jsiddevice
@@ -50,7 +52,60 @@
 		</exec>
 		<delete file="${jsiddevice_jar}.pack.gz" />
 	</target>
-	
+
+	<!-- ================================= 
+          target: webstart
+          Description:
+          Create Java WebStart Application.
+         ================================= -->
+	<target name="webstart">
+		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath="${java.home}/../lib/ant-javafx.jar" />
+		<!-- Unsign already signed jar -->
+		<jar destfile="${webstart_dir}/bcprov-jdk16-stripped-1.46.jar">
+			<zipfileset src="${webstart_dir}/bcprov-jdk16-1.46.jar" excludes="META-INF/**/*" />
+		</jar>
+		<move file="${webstart_dir}/bcprov-jdk16-stripped-1.46.jar" tofile="${webstart_dir}/bcprov-jdk16-1.46.jar" />
+		<!-- Add required manifest attributes to ALL jars-->
+		<apply executable="${java.home}/../bin/jar" failonerror="true">
+			<arg value="ufm" />
+			<srcfile />
+			<arg value="${result_dir}/webstart/addToManifest.txt" />
+			<fileset dir="${webstart_dir}" includes="*.jar" />
+		</apply>
+		<delete file="${result_dir}/webstart/addToManifest.txt" />
+		<!-- sign all jars using the SAME certificate -->
+		<exec executable="${java.home}/../bin/keytool" dir="${webstart_dir}" failonerror="true">
+			<arg value="-selfcert" />
+			<arg value="-genkey" />
+			<arg value="-alias" />
+			<arg value="jsidplay2" />
+			<arg value="-storepass" />
+			<arg value="jsidplay2" />
+			<arg value="-keypass" />
+			<arg value="jsidplay2" />
+			<arg value="-dname" />
+			<arg value="cn=Ken Händel, ou=JSIDPlay2, o=Open Source, l=Berlin, st=Berlin, c=DE" />
+			<arg value="-keystore" />
+			<arg value="jsidplay2.jks" />
+		</exec>
+		<signjar destdir="${webstart_dir}" keyStore="${webstart_dir}/jsidplay2.jks" storePass="jsidplay2" alias="jsidplay2" keyPass="jsidplay2">
+			<fileset dir="${webstart_dir}" includes="*.jar" />
+		</signjar>
+		<delete file="${webstart_dir}/jsidplay2.jks" />
+		<!-- create all sort of deployment types (webstart, native bundle, etc.) -->
+		<fx:deploy width="${javafx.run.width}" height="${javafx.run.height}" nativeBundles="all" outdir="${webstart_dir}" outfile="${application.title}">
+			<fx:application name="${application.title}" mainClass="${javafx.main.class}" />
+			<fx:resources>
+				<fx:fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar" />
+				<fx:fileset dir="${webstart_dir}" type="native" os="Windows" arch="x86_64 x86" includes="*-natives-windows.jar" />
+				<fx:fileset dir="${webstart_dir}" type="native" os="Linux" arch="i386 ia64 x84_64" includes="*-natives-linux.jar" />
+				<fx:fileset dir="${webstart_dir}" type="native" os="Mac OS" includes="*-natives-osx.jar" />
+			</fx:resources>
+			<fx:info title="${application.title}" vendor="${application.vendor}" />
+			<fx:permissions elevated="true" cachecertificates="true" />
+		</fx:deploy>
+	</target>
+
 	<!-- ================================= 
           target: gb64_import
           Description:
@@ -60,7 +115,7 @@
 	<target name="check.gb64.mdbfile">
 		<condition property="gb64.mdbfile.isset" value="true">
 			<and>
-				<isset property="gb64.mdbfile"/>
+				<isset property="gb64.mdbfile" />
 				<not>
 					<equals arg1="${gb64.mdbfile}" arg2="" />
 				</not>
@@ -105,7 +160,7 @@
 	<target name="check.hvsc.zip">
 		<condition property="hvsc.zip.isset" value="true">
 			<and>
-				<isset property="hvsc.zip"/>
+				<isset property="hvsc.zip" />
 				<not>
 					<equals arg1="${hvsc.zip}" arg2="" />
 				</not>
@@ -162,11 +217,11 @@
 	<target name="check.cgsc.7z">
 		<condition property="cgsc.7z.isset" value="true">
 			<and>
-				<isset property="zip7.home"/>
+				<isset property="zip7.home" />
 				<not>
 					<equals arg1="${zip7.home}" arg2="" />
 				</not>
-				<isset property="cgsc.7z"/>
+				<isset property="cgsc.7z" />
 				<not>
 					<equals arg1="${cgsc.7z}" arg2="" />
 				</not>
@@ -212,7 +267,7 @@
 	<target name="check.test_src">
 		<condition property="test_src.isset" value="true">
 			<and>
-				<isset property="test_src"/>
+				<isset property="test_src" />
 				<not>
 					<equals arg1="${test_src}" arg2="" />
 				</not>
@@ -245,7 +300,7 @@
 	<target name="check.hvmec.bz2">
 		<condition property="hvmec.bz2.isset" value="true">
 			<and>
-				<isset property="hvmec.bz2"/>
+				<isset property="hvmec.bz2" />
 				<not>
 					<equals arg1="${hvmec.bz2}" arg2="" />
 				</not>

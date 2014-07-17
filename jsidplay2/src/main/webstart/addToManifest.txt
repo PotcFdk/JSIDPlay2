@@ -1,0 +1,4 @@
+Permissions: all-permissions
+Codebase: ${codebase}
+Implementation-Vendor: ${application.vendor}
+Implementation-Title: ${application.title}
