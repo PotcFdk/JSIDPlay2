@@ -17,8 +17,8 @@
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 		<debug>false</debug>
 		<!-- WebStart -->
-		<!-- file:///d:/workspace/jsidplay2/target/webstart -->
-		<codebase>http://kenchis.t15.org/jsidplay2/javafx</codebase>
+		<!-- for development: --><!-- codebase>file:///d:/workspace/jsidplay2/target/deploy/online/webstart</codebase-->
+		<!-- for release: --> <codebase>http://kenchis.t15.org/jsidplay2/javafx</codebase>
 		<javafx.main.class>ui.JSIDPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
@@ -228,25 +228,6 @@
 								</manifestEntries>
 							</archive>
 							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
-						</configuration>
-					</execution>
-					<execution>
-						<id>webstart-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifest>
-									<addClasspath>true</addClasspath>
-									<mainClass>ui.JSIDPlay2Main</mainClass>
-								</manifest>
-								<manifestEntries>
-									<url>${project.url}</url>
-								</manifestEntries>
-							</archive>
-							<outputDirectory>${project.build.directory}/deploy/online/webstart</outputDirectory>
 						</configuration>
 					</execution>
 					<execution>
@@ -586,7 +567,9 @@
 									<property name="hvmec.bz2" value="${hvmec.bz2}" />
 									<property name="result_dir"
 										location="${project.build.directory}/deploy/online" />
-									<property name="webstart_dir" location="${project.build.directory}/deploy/online/webstart" />
+									<property name="project.url" value="${project.url}" />
+									<property name="project.artifactId" value="${project.artifactId}" />
+									<property name="project.version" value="${project.version}" />
 									<property name="javafx.main.class" value="${javafx.main.class}" />
 									<property name="javafx.run.width" value="${javafx.run.width}" />
 									<property name="javafx.run.height" value="${javafx.run.height}" />

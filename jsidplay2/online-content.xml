@@ -32,6 +32,8 @@
 	<property name="jsiddevice_jar" value="jsiddevice.jar" />
 	<!-- webstart -->
 	<property name="webstart_dir" location="${result_dir}/webstart" />
+	<property name="javafx.run.width" value="${javafx.run.width}" />
+	<property name="javafx.run.height" value="${javafx.run.height}" />
 
 	<target name="all" depends="jsiddevice,webstart,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import" />
 
@@ -60,13 +62,27 @@
          ================================= -->
 	<target name="webstart">
 		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath="${java.home}/../lib/ant-javafx.jar" />
+		<!-- Create main jar -->
+		<fx:jar destfile="${webstart_dir}/${project.artifactId}-${project.version}.jar">
+			<fx:application name="${application.title}" mainClass="${javafx.main.class}" />
+			<fx:resources>
+				<fx:fileset dir="${webstart_dir}" includes="*.jar" />
+			</fx:resources>
+			<fileset dir="target/classes" />
+			<fx:platform javafx="2.2+" j2se="1.8+" />
+			<manifest>
+				<attribute name="Implementation-Vendor" value="${application.vendor}" />
+				<attribute name="Implementation-Version" value="${project.version}" />
+				<attribute name="url" value="${project.url}" />
+			</manifest>
+		</fx:jar>
 		<!-- Unsign already signed jar -->
 		<jar destfile="${webstart_dir}/bcprov-jdk16-stripped-1.46.jar">
 			<zipfileset src="${webstart_dir}/bcprov-jdk16-1.46.jar" excludes="META-INF/**/*" />
 		</jar>
 		<move file="${webstart_dir}/bcprov-jdk16-stripped-1.46.jar" tofile="${webstart_dir}/bcprov-jdk16-1.46.jar" />
 		<!-- Add required manifest attributes to ALL jars-->
-		<apply executable="${java.home}/../bin/jar" failonerror="true">
+		<apply executable="${java.home}/../bin/jar" failonerror="true" >
 			<arg value="ufm" />
 			<srcfile />
 			<arg value="${result_dir}/webstart/addToManifest.txt" />
@@ -75,25 +91,16 @@
 		<delete file="${result_dir}/webstart/addToManifest.txt" />
 		<!-- sign all jars using the SAME certificate -->
 		<exec executable="${java.home}/../bin/keytool" dir="${webstart_dir}" failonerror="true">
-			<arg value="-selfcert" />
-			<arg value="-genkey" />
-			<arg value="-alias" />
-			<arg value="jsidplay2" />
-			<arg value="-storepass" />
-			<arg value="jsidplay2" />
-			<arg value="-keypass" />
-			<arg value="jsidplay2" />
+			<arg line="-selfcert -genkey -alias jsidplay2 -storepass jsidplay2 -keypass jsidplay2 -keystore jsidplay2.jks" />
 			<arg value="-dname" />
-			<arg value="cn=Ken Händel, ou=JSIDPlay2, o=Open Source, l=Berlin, st=Berlin, c=DE" />
-			<arg value="-keystore" />
-			<arg value="jsidplay2.jks" />
+			<arg value="cn=${application.vendor}, ou=${application.title}, o=Open Source, l=Berlin, st=Berlin, c=DE" />
 		</exec>
 		<signjar destdir="${webstart_dir}" keyStore="${webstart_dir}/jsidplay2.jks" storePass="jsidplay2" alias="jsidplay2" keyPass="jsidplay2">
 			<fileset dir="${webstart_dir}" includes="*.jar" />
 		</signjar>
 		<delete file="${webstart_dir}/jsidplay2.jks" />
-		<!-- create all sort of deployment types (webstart, native bundle, etc.) -->
-		<fx:deploy width="${javafx.run.width}" height="${javafx.run.height}" nativeBundles="all" outdir="${webstart_dir}" outfile="${application.title}">
+		<!-- create deployment types (webstart, native bundle, etc.) -->
+		<fx:deploy embeddedWidth="100%" embeddedHeight="100%" width="${javafx.run.width}" height="${javafx.run.height}" nativeBundles="none" outdir="${webstart_dir}" outfile="${application.title}" embedjnlp="true" updatemode="background">
 			<fx:application name="${application.title}" mainClass="${javafx.main.class}" />
 			<fx:resources>
 				<fx:fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar" />
@@ -103,14 +110,14 @@
 			</fx:resources>
 			<fx:info title="${application.title}" vendor="${application.vendor}" />
 			<fx:permissions elevated="true" cachecertificates="true" />
+			<fx:platform javafx="2.2+" j2se="1.8+" />
 		</fx:deploy>
 	</target>
 
 	<!-- ================================= 
           target: gb64_import
           Description:
-          Import GameBase 64 database file (.mdb) via ODBC-JDBC bridge
-          into a java-based HSQLDB database as a JAR.
+          Import GameBase 64 database file (.mdb)
          ================================= -->
 	<target name="check.gb64.mdbfile">
 		<condition property="gb64.mdbfile.isset" value="true">
