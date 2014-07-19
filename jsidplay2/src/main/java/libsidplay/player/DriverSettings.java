@@ -5,9 +5,9 @@ import sidplay.audio.Audio;
 
 public class DriverSettings {
 	/** SID emulation */
-	protected final Emulation emulation;
+	private final Emulation emulation;
 	/** output */
-	protected final Audio audio;
+	private final Audio audio;
 
 	public DriverSettings(final Audio audio, final Emulation emulation) {
 		this.audio = audio;

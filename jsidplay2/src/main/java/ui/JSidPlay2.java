@@ -118,14 +118,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		} catch (IOException e) {
 		}
 	}
-	private static final byte[] NUVIE_PLAYER_PRG = new byte[2884];
+
+	private static final String NUVIE_PLAYER_PRG = "/libsidplay/roms/nuvieplayer-v1.0.prg";
+	private static final byte[] NUVIE_PLAYER = new byte[2884];
 	static {
 		try (DataInputStream is = new DataInputStream(
-				JSidPlay2.class
-						.getResourceAsStream("/libsidplay/roms/nuvieplayer-v1.0.prg"))) {
-			is.readFully(NUVIE_PLAYER_PRG);
+				JSidPlay2.class.getResourceAsStream(NUVIE_PLAYER_PRG))) {
+			is.readFully(NUVIE_PLAYER);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ExceptionInInitializerError(e);
 		}
 	}
 
@@ -460,7 +461,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			tmpFile.deleteOnExit();
 			try (DataOutputStream os = new DataOutputStream(
 					new FileOutputStream(tmpFile))) {
-				os.write(NUVIE_PLAYER_PRG);
+				os.write(NUVIE_PLAYER);
 				util.getPlayer().insertCartridge(CartridgeType.REU, file);
 				util.getPlayer().play(SidTune.load(tmpFile));
 			} catch (IOException | SidTuneError e) {

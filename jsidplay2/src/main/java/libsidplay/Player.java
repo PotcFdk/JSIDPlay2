@@ -292,7 +292,7 @@ public class Player {
 		this.c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(),
 				c1541.getEventScheduler());
 
-		this.playList = PlayList.NONE;
+		this.playList = PlayList.getInstance(config, null);
 		this.timer = new Timer(this) {
 			@Override
 			public void start() {
@@ -303,7 +303,7 @@ public class Player {
 
 			@Override
 			public void end() {
-				// Only for tunes: if play time is over loop or exit
+				// Only if tune is playing: if play time is over loop or exit
 				if (tune != null) {
 					if (config.getSidplay2().isSingle()) {
 						stateProperty.set(getEndState());

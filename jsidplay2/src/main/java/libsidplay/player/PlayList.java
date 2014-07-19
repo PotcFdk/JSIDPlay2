@@ -143,7 +143,7 @@ public class PlayList {
 		return next > length ? 1 : next;
 	}
 
-	public static final PlayList NONE = new PlayList() {
+	private static final PlayList NONE = new PlayList() {
 		@Override
 		public int getCurrent() {
 			return 1;

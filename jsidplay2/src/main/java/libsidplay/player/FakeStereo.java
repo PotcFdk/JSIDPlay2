@@ -7,8 +7,8 @@ import libsidplay.common.SamplingMethod;
 import sidplay.ini.intf.IConfig;
 
 public final class FakeStereo extends SIDEmu {
-	private final SIDEmu s2;
 	private final SIDEmu s1;
+	private final SIDEmu s2;
 
 	public FakeStereo(EventScheduler context, SIDEmu s1, SIDEmu s2) {
 		super(context);

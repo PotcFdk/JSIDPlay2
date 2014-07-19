@@ -23,31 +23,25 @@ import libsidplay.components.ram.ColorRAMBank;
  * @author Antti Lankila
  */
 public final class PLA {
-	private static final byte[] CHAR = new byte[4096];
+	private static final String CHAR_ROM = "/libsidplay/roms/char.bin";
+	private static final String BASIC_ROM = "/libsidplay/roms/basic.bin";
+	private static final String KERNAL_ROM = "/libsidplay/roms/kernal.bin";
+
+	private static final byte[] CHAR = new byte[0x1000];
+	private static final byte[] BASIC = new byte[0x2000];
+	private static final byte[] KERNAL = new byte[0x2000];
 	static {
-		try (DataInputStream is = new DataInputStream(
-				PLA.class.getResourceAsStream("/libsidplay/roms/char.bin"))) {
-			is.readFully(CHAR);
+		try (DataInputStream isChar = new DataInputStream(
+				PLA.class.getResourceAsStream(CHAR_ROM));
+				DataInputStream isBasic = new DataInputStream(
+						PLA.class.getResourceAsStream(BASIC_ROM));
+				DataInputStream isKernal = new DataInputStream(
+						PLA.class.getResourceAsStream(KERNAL_ROM))) {
+			isChar.readFully(CHAR);
+			isBasic.readFully(BASIC);
+			isKernal.readFully(KERNAL);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	private static final byte[] BASIC = new byte[8192];
-	static {
-		try (DataInputStream is = new DataInputStream(
-				PLA.class.getResourceAsStream("/libsidplay/roms/basic.bin"))) {
-			is.readFully(BASIC);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	private static final byte[] KERNAL = new byte[8192];
-	static {
-		try (DataInputStream is = new DataInputStream(
-				PLA.class.getResourceAsStream("/libsidplay/roms/kernal.bin"))) {
-			is.readFully(KERNAL);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ExceptionInInitializerError(e);
 		}
 	}
 	private static final Bank characterRomBank = new Bank() {

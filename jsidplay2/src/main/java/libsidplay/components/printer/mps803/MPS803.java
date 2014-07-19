@@ -101,14 +101,15 @@ import libsidplay.components.printer.paper.ConsolePaper;
 public abstract class MPS803 extends SerialIECDevice implements
 		UserportPrinterEnvironment {
 
+	private static final String CHAR_ROM = "/libsidplay/roms/mps803char.bin";
+
 	private static final byte[] MPS803_CHARSET_BIN = new byte[3584];
 	static {
 		try (DataInputStream is = new DataInputStream(
-				MPS803.class
-						.getResourceAsStream("/libsidplay/roms/mps803char.bin"))) {
+				MPS803.class.getResourceAsStream(CHAR_ROM))) {
 			is.readFully(MPS803_CHARSET_BIN);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ExceptionInInitializerError(e);
 		}
 	}
 

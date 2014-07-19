@@ -69,12 +69,14 @@ public abstract class Timer {
 		cancel(endTimeEvent);
 		// default play default length or forever (0) ...
 		end = config.getSidplay2().getDefaultPlayLength();
+		// Only for tunes: if play time is over loop or exit
 		if (end != 0) {
 			// use default length (is meant to be relative to start)
 			end = schedule(start + end, endTimeEvent);
 		}
-		if (tune != null && config.getSidplay2().isEnableDatabase()) {
-			int songLength = player.getSidDatabaseInfo(db -> db.getSongLength(tune));
+		if (config.getSidplay2().isEnableDatabase()) {
+			int songLength = player.getSidDatabaseInfo(db -> db
+					.getSongLength(tune));
 			if (songLength > 0) {
 				// ... or use song length of song length database
 				end = schedule(songLength, endTimeEvent);
@@ -107,7 +109,7 @@ public abstract class Timer {
 		EventScheduler eventScheduler = player.getC64().getEventScheduler();
 		eventScheduler.cancel(event);
 	}
-	
+
 	public long getEnd() {
 		return end;
 	}

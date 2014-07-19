@@ -34,22 +34,23 @@ import libsidplay.components.mos6510.MOS6510;
  * @author Ken Händel
  */
 public final class C1541 {
+	private static final String C1541_ROM = "/libsidplay/roms/c1541.bin";
+	private static final String C1541_II_ROM = "/libsidplay/roms/c1541-2.bin";
 	/**
 	 * Size of the floppy ROM.
 	 */
 	private static final int ROM_SIZE = 0x4000;
-	private static final byte[] C1541_ROM =  new byte[ROM_SIZE];
-	private static final byte[] C1541_II_ROM = new byte[ROM_SIZE];
+	private static final byte[] C1541 = new byte[ROM_SIZE];
+	private static final byte[] C1541_II = new byte[ROM_SIZE];
 	static {
-		try (DataInputStream is = new DataInputStream(
-				C1541.class.getResourceAsStream("/libsidplay/roms/c1541.bin"));
-				DataInputStream is2 = new DataInputStream(
-						C1541.class
-								.getResourceAsStream("/libsidplay/roms/c1541-2.bin"))) {
-			is.readFully(C1541_ROM);
-			is2.readFully(C1541_II_ROM);
+		try (DataInputStream isC1541 = new DataInputStream(
+				C1541.class.getResourceAsStream(C1541_ROM));
+				DataInputStream isC1541_II = new DataInputStream(
+						C1541.class.getResourceAsStream(C1541_II_ROM))) {
+			isC1541.readFully(C1541);
+			isC1541_II.readFully(C1541_II);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ExceptionInInitializerError(e);
 		}
 	}
 	/**
@@ -467,11 +468,11 @@ public final class C1541 {
 		} else {
 			switch (floppyType) {
 			case C1541:
-				System.arraycopy(C1541_ROM, 0, rom, 0, C1541_ROM.length);
+				System.arraycopy(C1541, 0, rom, 0, C1541.length);
 				break;
 
 			case C1541_II:
-				System.arraycopy(C1541_II_ROM, 0, rom, 0, C1541_II_ROM.length);
+				System.arraycopy(C1541_II, 0, rom, 0, C1541_II.length);
 				break;
 
 			default:
