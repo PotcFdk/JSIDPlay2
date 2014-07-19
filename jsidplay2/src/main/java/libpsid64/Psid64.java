@@ -121,15 +121,15 @@ public class Psid64 {
 		}
 
 		// relocate and initialize the driver
-		final DriverInfo driverInfo = initDriver(freePages);
+		final byte[] driverInfo = initDriver(freePages);
 
 		// fill the blocks structure
 		final List<MemoryBlock> memBlocks = new ArrayList<>();
 		MemoryBlock memoryBlock = new MemoryBlock();
 		memoryBlock.setStartAddress(freePages.getDriverPage() << 8);
-		memoryBlock.setSize(driverInfo.getSize());
-		memoryBlock.setData(driverInfo.getMemory());
-		memoryBlock.setDataOff(driverInfo.getRelocatedDriverPos());
+		memoryBlock.setSize(driverInfo.length-2);
+		memoryBlock.setData(driverInfo);
+		memoryBlock.setDataOff(2);
 		memoryBlock.setDescription("Driver code");
 		memBlocks.add(memoryBlock);
 
@@ -271,9 +271,7 @@ public class Psid64 {
 		}
 	}
 
-	private DriverInfo initDriver(FreeMemPages freePages) {
-		DriverInfo result = new DriverInfo();
-
+	private byte[] initDriver(FreeMemPages freePages) {
 		SidTuneInfo tuneInfo = tune.getInfo();
 
 		int screenPage = freePages.getScreenPage() != null ? freePages
@@ -318,11 +316,7 @@ public class Psid64 {
 			resource = PSID64_ASM;
 		}
 		InputStream asm = Psid64.class.getResourceAsStream(resource);
-		result.setMemory(assembler.assemble(resource, asm, globals));
-		result.setRelocatedDriverPos(2);
-		result.setSize(result.getMemory().length
-				- result.getRelocatedDriverPos());
-		return result;
+		return assembler.assemble(resource, asm, globals);
 	}
 
 	/**
