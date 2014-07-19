@@ -23,7 +23,6 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 
 	public void open(Stage stage) throws IOException {
 		Scene scene = (Scene) util.parse(this);
-		scene.getStylesheets().add(getStyleSheetName());
 		scene.setOnKeyPressed((ke) -> {
 			if (ke.getCode() == KeyCode.ESCAPE) {
 				stage.close();
@@ -45,10 +44,6 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 
 	public void setWait(boolean wait) {
 		this.wait = wait;
-	}
-
-	protected String getStyleSheetName() {
-		return "/" + getClass().getName().replace('.', '/') + ".css";
 	}
 
 }

@@ -17,8 +17,8 @@
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 		<debug>false</debug>
 		<!-- WebStart -->
-		<!-- for development: --><!-- codebase>file:///d:/workspace/jsidplay2/target/deploy/online/webstart</codebase-->
-		<!-- for release: --> <codebase>http://kenchis.t15.org/jsidplay2/javafx</codebase>
+		<!--  development: --><!-- codebase>file:///d:/workspace/jsidplay2/target/deploy/online/webstart</codebase-->
+		<!--  release: --> <codebase>${url}</codebase>
 		<javafx.main.class>ui.JSIDPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
@@ -434,6 +434,8 @@
 							</classPath>
 							<jre>
 								<minVersion>1.8.0</minVersion>
+								<initialHeapSize>256</initialHeapSize>
+								<maxHeapSize>768</maxHeapSize>
 							</jre>
 							<splash>
 								<file>src/main/launch4j/jsidplay2.bmp</file>

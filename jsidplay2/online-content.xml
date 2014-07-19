@@ -62,6 +62,15 @@
          ================================= -->
 	<target name="webstart">
 		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath="${java.home}/../lib/ant-javafx.jar" />
+		<!-- Compile stylesheets -->
+		<fx:csstobin outdir="target/classes">
+			<fileset dir="target/classes" includes="**/*.css" />
+		</fx:csstobin>
+		<delete>
+			<fileset dir="target/classes">
+				<include name="*.css"/>
+			</fileset>
+		</delete>
 		<!-- Create main jar -->
 		<fx:jar destfile="${webstart_dir}/${project.artifactId}-${project.version}.jar">
 			<fx:application name="${application.title}" mainClass="${javafx.main.class}" />
@@ -69,7 +78,10 @@
 				<fx:fileset dir="${webstart_dir}" includes="*.jar" />
 			</fx:resources>
 			<fileset dir="target/classes" />
-			<fx:platform javafx="2.2+" j2se="1.8+" />
+			<fx:platform javafx="2.2+" j2se="1.8+">
+				<fx:jvmarg value="-Xms256m" />
+				<fx:jvmarg value="-Xmx768m" />
+			</fx:platform>
 			<manifest>
 				<attribute name="Implementation-Vendor" value="${application.vendor}" />
 				<attribute name="Implementation-Version" value="${project.version}" />
@@ -82,7 +94,7 @@
 		</jar>
 		<move file="${webstart_dir}/bcprov-jdk16-stripped-1.46.jar" tofile="${webstart_dir}/bcprov-jdk16-1.46.jar" />
 		<!-- Add required manifest attributes to ALL jars-->
-		<apply executable="${java.home}/../bin/jar" failonerror="true" >
+		<apply executable="${java.home}/../bin/jar" failonerror="true">
 			<arg value="ufm" />
 			<srcfile />
 			<arg value="${result_dir}/webstart/addToManifest.txt" />
@@ -108,9 +120,16 @@
 				<fx:fileset dir="${webstart_dir}" type="native" os="Linux" arch="i386 ia64 x84_64" includes="*-natives-linux.jar" />
 				<fx:fileset dir="${webstart_dir}" type="native" os="Mac OS" includes="*-natives-osx.jar" />
 			</fx:resources>
-			<fx:info title="${application.title}" vendor="${application.vendor}" />
+			<fx:info title="${application.title}" vendor="${application.vendor}">
+				<fx:splash href="jsidplay2.jpg" />
+				<fx:icon href="jsidplay2.ico" kind="shortcut" width="32" height="32" depth="8" />
+			</fx:info>
 			<fx:permissions elevated="true" cachecertificates="true" />
-			<fx:platform javafx="2.2+" j2se="1.8+" />
+			<fx:platform javafx="2.2+" j2se="1.8+">
+				<fx:jvmarg value="-Xms256m" />
+				<fx:jvmarg value="-Xmx768m" />
+			</fx:platform>
+			<fx:preferences shortcut="true" install="true" menu="true" />
 		</fx:deploy>
 	</target>
 
