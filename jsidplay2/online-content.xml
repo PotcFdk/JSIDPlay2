@@ -32,8 +32,6 @@
 	<property name="jsiddevice_jar" value="jsiddevice.jar" />
 	<!-- webstart -->
 	<property name="webstart_dir" location="${result_dir}/webstart" />
-	<property name="javafx.run.width" value="${javafx.run.width}" />
-	<property name="javafx.run.height" value="${javafx.run.height}" />
 
 	<target name="all" depends="jsiddevice,webstart,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import" />
 
