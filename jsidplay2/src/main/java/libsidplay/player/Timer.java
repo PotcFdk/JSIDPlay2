@@ -74,7 +74,7 @@ public abstract class Timer {
 			// use default length (is meant to be relative to start)
 			end = schedule(start + end, endTimeEvent);
 		}
-		if (config.getSidplay2().isEnableDatabase()) {
+		if (tune != null && config.getSidplay2().isEnableDatabase()) {
 			int songLength = player.getSidDatabaseInfo(db -> db
 					.getSongLength(tune));
 			if (songLength > 0) {

@@ -400,6 +400,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			remixKweqOrg();
 		} else if (WebViewType.SID_OTH4_COM.name().equals(id)) {
 			sidOth4Com();
+		} else if (WebViewType.C64_SK.name().equals(id)) {
+			c64();
+		} else if (WebViewType.FORUM64_DE.name().equals(id)) {
+			forum64();
+		} else if (WebViewType.LEMON64_COM.name().equals(id)) {
+			lemon64();
+		} else if (WebViewType.JSIDPLAY2.name().equals(id)) {
+			jsidplay2();
 		}
 	}
 
@@ -1153,6 +1161,42 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (!tabAlreadyOpen(WebViewType.SID_OTH4_COM.name())) {
 			WebView tab = new WebView(this, util.getPlayer());
 			tab.setType(WebViewType.SID_OTH4_COM);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void c64() {
+		if (!tabAlreadyOpen(WebViewType.C64_SK.name())) {
+			WebView tab = new WebView(this, util.getPlayer());
+			tab.setType(WebViewType.C64_SK);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void forum64() {
+		if (!tabAlreadyOpen(WebViewType.FORUM64_DE.name())) {
+			WebView tab = new WebView(this, util.getPlayer());
+			tab.setType(WebViewType.FORUM64_DE);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void lemon64() {
+		if (!tabAlreadyOpen(WebViewType.LEMON64_COM.name())) {
+			WebView tab = new WebView(this, util.getPlayer());
+			tab.setType(WebViewType.LEMON64_COM);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void jsidplay2() {
+		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2.name())) {
+			WebView tab = new WebView(this, util.getPlayer());
+			tab.setType(WebViewType.JSIDPLAY2);
 			addTab(tab);
 		}
 	}

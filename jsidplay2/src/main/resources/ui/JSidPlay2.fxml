@@ -117,6 +117,10 @@
 									<MenuItem text="%CODEBASE64" onAction="#codebase64" />
 									<MenuItem text="%REMIX_KWED_ORG" onAction="#remixKweqOrg" />
 									<MenuItem text="%SID_OTH4_COM" onAction="#sidOth4Com" />
+									<MenuItem text="%C64_SK" onAction="#c64" />
+									<MenuItem text="%FORUM64_DE" onAction="#forum64" />
+									<MenuItem text="%LEMON64_COM" onAction="#lemon64" />
+									<MenuItem text="%JSIDPLAY2" onAction="#jsidplay2" />
 								</Menu>
 								<MenuItem text="%PRINTER" onAction="#printer" />
 								<MenuItem text="%CONSOLE" onAction="#console" />
