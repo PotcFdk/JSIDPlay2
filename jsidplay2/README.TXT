@@ -28,7 +28,7 @@ Java WebStart pitfalls:
 =======================
 Common:
 Java Control Panel:
-1. The server URL (starting with http:// or file://) must be configured in the Java Control Panel's security panel: exception list
+1. The server URL (starting with file://) must be configured in the Java Control Panel's security panel: exception list for local testing of the WebStart application
 2. Also the security settings must be lowered to medium. 
 see src/main/webstart/Java Control Panel.jpg
 3. In pom.xml change codebase to webservers URL, where the app is uploaded to. For local tests it must be the local file URL e.g. "file:///d:/workspace/jsidplay2/target/deploy/online/webstart"
