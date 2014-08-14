@@ -32,53 +32,35 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.version = version;
 	}
 
-	private boolean enableDatabase = true;
-
-	private BooleanProperty enableDatabaseProperty;
+	private BooleanProperty enableDatabaseProperty = new SimpleBooleanProperty(true);
 
 	@Override
 	public boolean isEnableDatabase() {
-		if (enableDatabaseProperty == null) {
-			enableDatabaseProperty = new SimpleBooleanProperty();
-			enableDatabaseProperty.set(enableDatabase);
-		}
 		return enableDatabaseProperty.get();
 	}
 
 	@Override
 	public void setEnableDatabase(boolean isEnableDatabase) {
-		isEnableDatabase();
 		enableDatabaseProperty.set(isEnableDatabase);
-		this.enableDatabase = isEnableDatabase;
 	}
 
 	public BooleanProperty enableDatabaseProperty() {
-		isEnableDatabase();
 		return enableDatabaseProperty;
 	}
 
-	private IntegerProperty defaultPlayLengthProperty;
-
-	private int defaultPlayLength = 3 * 60;
+	private IntegerProperty defaultPlayLengthProperty = new SimpleIntegerProperty(3 * 60);
 
 	@Override
 	public int getDefaultPlayLength() {
-		if (defaultPlayLengthProperty == null) {
-			defaultPlayLengthProperty = new SimpleIntegerProperty();
-			defaultPlayLengthProperty.set(defaultPlayLength);
-		}
 		return defaultPlayLengthProperty.get();
 	}
 
 	@Override
 	public void setDefaultPlayLength(int defaultPlayLength) {
-		getDefaultPlayLength();
 		defaultPlayLengthProperty.set(defaultPlayLength);
-		this.defaultPlayLength = defaultPlayLength;
 	}
 
 	public IntegerProperty defaultPlayLengthProperty() {
-		getDefaultPlayLength();
 		return defaultPlayLengthProperty;
 	}
 
@@ -209,28 +191,19 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return gameBase64File;
 	}
 
-	private BooleanProperty singleProperty;
-
-	private boolean single;
+	private BooleanProperty singleProperty = new SimpleBooleanProperty();
 
 	@Override
 	public boolean isSingle() {
-		if (singleProperty == null) {
-			singleProperty = new SimpleBooleanProperty();
-			singleProperty.set(single);
-		}
-		return single;
+		return singleProperty.get();
 	}
 
 	@Override
 	public void setSingle(boolean isSingle) {
-		isSingle();
 		singleProperty.set(isSingle);
-		this.single = isSingle;
 	}
 
 	public BooleanProperty singleProperty() {
-		isSingle();
 		return singleProperty;
 	}
 

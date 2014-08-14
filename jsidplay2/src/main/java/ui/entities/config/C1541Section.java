@@ -14,78 +14,51 @@ import sidplay.ini.intf.IC1541Section;
 @Embeddable
 public class C1541Section implements IC1541Section {
 
-	private boolean driveOn;
-	
-	private BooleanProperty driveOnProperty;
+	private BooleanProperty driveOnProperty = new SimpleBooleanProperty();
 	
 	@Override
 	public boolean isDriveOn() {
-		if (driveOnProperty == null) {
-			driveOnProperty = new SimpleBooleanProperty();
-			driveOnProperty.set(driveOn);
-		}
 		return driveOnProperty.get();
 	}
 
 	@Override
 	public void setDriveOn(boolean driveOn) {
-		isDriveOn();
 		driveOnProperty.set(driveOn);
-		this.driveOn = driveOn;
 	}
 
 	public BooleanProperty driveOnProperty() {
-		isDriveOn();
 		return driveOnProperty;
 	}
 	
-	private boolean driveSoundOn;
-	
-	private BooleanProperty driveSoundOnProperty;
+	private BooleanProperty driveSoundOnProperty = new SimpleBooleanProperty();
 	
 	@Override
 	public boolean isDriveSoundOn() {
-		if (driveSoundOnProperty == null) {
-			driveSoundOnProperty = new SimpleBooleanProperty();
-			driveSoundOnProperty.set(driveSoundOn);
-		}
 		return driveSoundOnProperty.get();
 	}
 
 	@Override
 	public void setDriveSoundOn(boolean driveSoundOn) {
-		isDriveSoundOn();
 		driveSoundOnProperty.set(driveSoundOn);
-		this.driveSoundOn = driveSoundOn;
 	}
 
 	public BooleanProperty driveSoundOnProperty() {
-		isDriveSoundOn();
 		return driveSoundOnProperty;
 	}
 	
-	private boolean parallelCable;
-	
-	private BooleanProperty parallelCableProperty;
+	private BooleanProperty parallelCableProperty = new SimpleBooleanProperty();
 	
 	@Override
 	public boolean isParallelCable() {
-		if (parallelCableProperty == null) {
-			parallelCableProperty = new SimpleBooleanProperty();
-			parallelCableProperty.set(parallelCable);
-		}
 		return parallelCableProperty.get();
 	}
 
 	@Override
 	public void setParallelCable(boolean parallelCable) {
-		isParallelCable();
 		parallelCableProperty.set(parallelCable);
-		this.parallelCable = parallelCable;
 	}
 
 	public BooleanProperty parallelCableProperty() {
-		isParallelCable();
 		return parallelCableProperty;
 	}
 	
