@@ -12,9 +12,9 @@ import sidplay.ini.intf.IEmulationSection;
 @Embeddable
 public class EmulationSection implements IEmulationSection {
 
-	@Enumerated(EnumType.STRING)
 	private Emulation emulation = Emulation.RESID;
 
+	@Enumerated(EnumType.STRING)
 	@Override
 	public Emulation getEmulation() {
 		return this.emulation;
@@ -25,9 +25,9 @@ public class EmulationSection implements IEmulationSection {
 		this.emulation = emulation;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private CPUClock defaultClockSpeed = CPUClock.PAL;
 
+	@Enumerated(EnumType.STRING)
 	@Override
 	public CPUClock getDefaultClockSpeed() {
 		return this.defaultClockSpeed;
@@ -38,9 +38,9 @@ public class EmulationSection implements IEmulationSection {
 		this.defaultClockSpeed = speed;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private CPUClock userClockSpeed;
 
+	@Enumerated(EnumType.STRING)
 	@Override
 	public CPUClock getUserClockSpeed() {
 		return userClockSpeed;
@@ -51,9 +51,9 @@ public class EmulationSection implements IEmulationSection {
 		this.userClockSpeed = userClockSpeed;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private ChipModel defaultSidModel = ChipModel.MOS6581;
 
+	@Enumerated(EnumType.STRING)
 	@Override
 	public ChipModel getDefaultSidModel() {
 		return defaultSidModel;
@@ -64,9 +64,9 @@ public class EmulationSection implements IEmulationSection {
 		this.defaultSidModel = defaultSidModel;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private ChipModel userSidModel;
 
+	@Enumerated(EnumType.STRING)
 	@Override
 	public ChipModel getUserSidModel() {
 		return userSidModel;

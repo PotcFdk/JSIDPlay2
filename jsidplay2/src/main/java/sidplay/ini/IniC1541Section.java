@@ -113,23 +113,23 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	 *            enable 8K Ram expansion
 	 */
 	@Override
-	public final void setRamExpansion0(final boolean on) {
+	public final void setRamExpansionEnabled0(final boolean on) {
 		iniReader.setProperty("C1541", "RamExpand0x2000", on);
 	}
 	@Override
-	public final void setRamExpansion1(final boolean on) {
+	public final void setRamExpansionEnabled1(final boolean on) {
 		iniReader.setProperty("C1541", "RamExpand0x4000", on);
 	}
 	@Override
-	public final void setRamExpansion2(final boolean on) {
+	public final void setRamExpansionEnabled2(final boolean on) {
 		iniReader.setProperty("C1541", "RamExpand0x6000", on);
 	}
 	@Override
-	public final void setRamExpansion3(final boolean on) {
+	public final void setRamExpansionEnabled3(final boolean on) {
 		iniReader.setProperty("C1541", "RamExpand0x8000", on);
 	}
 	@Override
-	public final void setRamExpansion4(final boolean on) {
+	public final void setRamExpansionEnabled4(final boolean on) {
 		iniReader.setProperty("C1541", "RamExpand0xA000", on);
 	}
 

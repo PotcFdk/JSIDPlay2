@@ -8,10 +8,10 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 public class FavoriteColumn {
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Integer id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@XmlTransient
 	public Integer getId() {
 		return id;

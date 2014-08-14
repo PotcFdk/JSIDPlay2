@@ -9,6 +9,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -28,11 +30,11 @@ import ui.console.Console;
 import ui.videoscreen.Video;
 
 @Entity
+@Access(AccessType.PROPERTY)
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class Configuration implements IConfig {
 
-	@Transient
 	private final List<FilterSection> INITIAL_FILTERS;
 	{
 		//
@@ -377,7 +379,6 @@ public class Configuration implements IConfig {
 		INITIAL_FILTERS.add(dbFilterSection);
 	}
 
-	@Transient
 	private final List<ViewEntity> INITIAL_VIEWS;
 	{
 		INITIAL_VIEWS = new ArrayList<ViewEntity>();
@@ -385,10 +386,10 @@ public class Configuration implements IConfig {
 		INITIAL_VIEWS.add(new ViewEntity(Console.ID));
 	}
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	public Integer getId() {
 		return id;
@@ -408,21 +409,21 @@ public class Configuration implements IConfig {
 		this.reconfigFilename = reconfigFilename;
 	}
 
-	@Embedded
 	private SidPlay2Section sidplay2 = new SidPlay2Section();
 
 	public void setSidplay2(SidPlay2Section sidplay2) {
 		this.sidplay2 = sidplay2;
 	}
 
+	@Embedded
 	@Override
 	public SidPlay2Section getSidplay2() {
 		return sidplay2;
 	}
 
-	@Embedded
 	private OnlineSection online = new OnlineSection();
 
+	@Embedded
 	public OnlineSection getOnline() {
 		return online;
 	}
@@ -431,7 +432,6 @@ public class Configuration implements IConfig {
 		this.online = online;
 	}
 
-	@Embedded
 	private C1541Section c1541 = new C1541Section();
 
 	public void setC1541(C1541Section c1541) {
@@ -439,65 +439,66 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
+	@Embedded
 	public C1541Section getC1541() {
 		return c1541;
 	}
 
-	@Embedded
 	private PrinterSection printer = new PrinterSection();
 
 	public void setPrinter(PrinterSection printer) {
 		this.printer = printer;
 	}
 
+	@Embedded
 	@Override
 	public PrinterSection getPrinter() {
 		return printer;
 	}
 
-	@Embedded
 	private JoystickSection joystick = new JoystickSection();
 
 	public void setJoystick(JoystickSection joystick) {
 		this.joystick = joystick;
 	}
 
+	@Embedded
 	@Override
 	public JoystickSection getJoystick() {
 		return joystick;
 	}
 
-	@Embedded
 	private ConsoleSection console = new ConsoleSection();
 
 	public void setConsole(ConsoleSection console) {
 		this.console = console;
 	}
 
+	@Embedded
 	@Override
 	public ConsoleSection getConsole() {
 		return console;
 	}
 
-	@Embedded
 	private AudioSection audio = new AudioSection();
 
 	public void setAudio(AudioSection audio) {
 		this.audio = audio;
 	}
 
+	@Embedded
 	@Override
 	public AudioSection getAudio() {
 		return audio;
 	}
 
-	@Embedded
 	private EmulationSection emulation = new EmulationSection();
 
 	public void setEmulation(EmulationSection emulation) {
 		this.emulation = emulation;
 	}
 
+	@Embedded
 	@Override
 	public EmulationSection getEmulation() {
 		return emulation;
@@ -513,7 +514,6 @@ public class Configuration implements IConfig {
 		this.currentFavorite = currentFavorite;
 	}
 
-	@Transient
 	private final List<FavoritesSection> INITIAL_FAVORITES;
 	{
 		INITIAL_FAVORITES = new ArrayList<FavoritesSection>();
@@ -522,16 +522,15 @@ public class Configuration implements IConfig {
 		INITIAL_FAVORITES.add(dbFavoritesSection);
 	}
 
-	@OneToMany(cascade = CascadeType.ALL)
 	protected List<FavoritesSection> favorites = INITIAL_FAVORITES;
 
-	@Transient
 	protected ObservableList<FavoritesSection> observableFavorites;
 
 	public void setFavorites(List<FavoritesSection> favorites) {
 		this.favorites = favorites;
 	}
 
+	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoritesSection> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<FavoritesSection>();
@@ -539,6 +538,7 @@ public class Configuration implements IConfig {
 		return getObservableFavorites();
 	}
 
+	@Transient
 	public ObservableList<FavoritesSection> getObservableFavorites() {
 		if (observableFavorites == null) {
 			observableFavorites = FXCollections
@@ -548,12 +548,11 @@ public class Configuration implements IConfig {
 		return observableFavorites;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL)
 	protected List<ViewEntity> views = INITIAL_VIEWS;
 
-	@Transient
 	private ObservableList<ViewEntity> observableViews;
 
+	@OneToMany(cascade = CascadeType.ALL)
 	public List<ViewEntity> getViews() {
 		if (observableViews == null) {
 			observableViews = FXCollections
@@ -567,13 +566,13 @@ public class Configuration implements IConfig {
 		this.views = views;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL)
 	private List<FilterSection> filter = INITIAL_FILTERS;
 
 	public void setFilter(List<FilterSection> filter) {
 		this.filter = filter;
 	}
 
+	@OneToMany(cascade = CascadeType.ALL)
 	@Override
 	public List<FilterSection> getFilter() {
 		if (filter == null) {
@@ -582,7 +581,6 @@ public class Configuration implements IConfig {
 		return filter;
 	}
 
-	@Transient
 	private final List<KeyTableEntity> INITIAL_KEYCODES;
 	{
 		INITIAL_KEYCODES = new ArrayList<KeyTableEntity>();
@@ -691,9 +689,9 @@ public class Configuration implements IConfig {
 		INITIAL_KEYCODES.addAll(keyCodes);
 	}
 
-	@OneToMany(cascade = CascadeType.ALL)
 	private List<KeyTableEntity> keyCodeMap = INITIAL_KEYCODES;
 
+	@OneToMany(cascade = CascadeType.ALL)
 	public List<KeyTableEntity> getKeyCodeMap() {
 		return keyCodeMap;
 	}

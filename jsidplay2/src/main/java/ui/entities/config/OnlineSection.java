@@ -30,7 +30,7 @@ public class OnlineSection implements IOnlineSection {
 		return cgscUrl;
 	}
 
-	public void setCgscurl(String cgscUrl) {
+	public void setCgscUrl(String cgscUrl) {
 		this.cgscUrl = cgscUrl;
 	}
 

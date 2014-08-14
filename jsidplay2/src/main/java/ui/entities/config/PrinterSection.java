@@ -4,7 +4,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import javax.persistence.Embeddable;
-import javax.persistence.Transient;
 
 import sidplay.ini.intf.IPrinterSection;
 
@@ -13,7 +12,6 @@ public class PrinterSection implements IPrinterSection {
 
 	private boolean printerOn;
 	
-	@Transient
 	private BooleanProperty printerOnProperty;
 	
 	@Override

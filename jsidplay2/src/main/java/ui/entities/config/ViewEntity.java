@@ -16,10 +16,10 @@ public class ViewEntity {
 		this.fxId = fxId;
 	}
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	public Integer getId() {
 		return id;

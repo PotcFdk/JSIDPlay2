@@ -68,11 +68,11 @@ public interface IC1541Section {
 	 * @param on
 	 *            enable 8K Ram expansion
 	 */
-	public void setRamExpansion0(boolean on);
-	public void setRamExpansion1(boolean on);
-	public void setRamExpansion2(boolean on);
-	public void setRamExpansion3(boolean on);
-	public void setRamExpansion4(boolean on);
+	public void setRamExpansionEnabled0(boolean on);
+	public void setRamExpansionEnabled1(boolean on);
+	public void setRamExpansionEnabled2(boolean on);
+	public void setRamExpansionEnabled3(boolean on);
+	public void setRamExpansionEnabled4(boolean on);
 
 	/**
 	 * Set 40 tracks disk image extension policy.

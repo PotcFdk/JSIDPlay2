@@ -11,9 +11,9 @@ import sidplay.ini.intf.IAudioSection;
 @Embeddable
 public class AudioSection implements IAudioSection {
 
-	@Enumerated(EnumType.STRING)
 	private Audio audio = Audio.SOUNDCARD;
 
+	@Enumerated(EnumType.STRING)
 	@Override
 	public Audio getAudio() {
 		return audio;
@@ -48,9 +48,9 @@ public class AudioSection implements IAudioSection {
 		this.frequency = freq;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private SamplingMethod sampling = SamplingMethod.DECIMATE;
 
+	@Enumerated(EnumType.STRING)
 	@Override
 	public SamplingMethod getSampling() {
 		return this.sampling;

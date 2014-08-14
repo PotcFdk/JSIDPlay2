@@ -11,6 +11,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.ISidPlay2Section;
 import ui.favorites.PlaybackType;
@@ -33,7 +34,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private boolean enableDatabase = true;
 
-	@Transient
 	private BooleanProperty enableDatabaseProperty;
 
 	@Override
@@ -57,7 +57,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return enableDatabaseProperty;
 	}
 
-	@Transient
 	private IntegerProperty defaultPlayLengthProperty;
 
 	private int defaultPlayLength = 3 * 60;
@@ -83,9 +82,9 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return defaultPlayLengthProperty;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private PlaybackType playbackType = PlaybackType.NORMAL;
 
+	@Enumerated(EnumType.STRING)
 	public PlaybackType getPlaybackType() {
 		return playbackType;
 	}
@@ -153,9 +152,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.cgscFile = new TFile(cgsc);
 	}
 
-	@Transient
 	private volatile File cgscFile;
 
+	@Transient
+	@XmlTransient
 	public File getCgscFile() {
 		if (cgscFile == null && cgsc != null) {
 			cgscFile = new TFile(cgsc);
@@ -176,9 +176,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.hvscFile = new TFile(hvsc);
 	}
 
-	@Transient
 	private volatile File hvscFile;
 
+	@Transient
+	@XmlTransient
 	public File getHvscFile() {
 		if (hvscFile == null && hvsc != null) {
 			hvscFile = new TFile(hvsc);
@@ -197,9 +198,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.gameBase64File = new TFile(gameBase64);
 	}
 
-	@Transient
 	private volatile File gameBase64File;
 
+	@Transient
+	@XmlTransient
 	public File getGameBase64File() {
 		if (gameBase64File == null && gameBase64 != null) {
 			gameBase64File = new TFile(gameBase64);
@@ -207,7 +209,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return gameBase64File;
 	}
 
-	@Transient
 	private BooleanProperty singleProperty;
 
 	private boolean single;
@@ -281,6 +282,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.lastDirectory = lastDirectory;
 	}
 
+	@Transient
+	@XmlTransient
 	public File getLastDirectoryFolder() {
 		if (lastDirectory != null && new TFile(lastDirectory).isDirectory()) {
 			return new TFile(lastDirectory);

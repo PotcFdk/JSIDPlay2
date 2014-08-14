@@ -25,10 +25,10 @@ public class KeyTableEntity {
 		this.entry = entry;
 	}
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	public Integer getId() {
 		return id;
@@ -40,9 +40,9 @@ public class KeyTableEntity {
 
 	private String keyCodeName;
 
-	@Enumerated(EnumType.STRING)
 	private KeyTableEntry entry;
 
+	@Enumerated(EnumType.STRING)
 	public KeyTableEntry getEntry() {
 		return entry;
 	}

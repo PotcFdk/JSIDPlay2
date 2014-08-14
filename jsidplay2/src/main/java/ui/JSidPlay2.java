@@ -675,31 +675,31 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void expansion0x2000() {
 		getFirstFloppy().setRamExpansion(0, expand2000.isSelected());
-		util.getConfig().getC1541().setRamExpansion0(expand2000.isSelected());
+		util.getConfig().getC1541().setRamExpansionEnabled0(expand2000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x4000() {
 		getFirstFloppy().setRamExpansion(1, expand4000.isSelected());
-		util.getConfig().getC1541().setRamExpansion1(expand4000.isSelected());
+		util.getConfig().getC1541().setRamExpansionEnabled1(expand4000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x6000() {
 		getFirstFloppy().setRamExpansion(2, expand6000.isSelected());
-		util.getConfig().getC1541().setRamExpansion2(expand6000.isSelected());
+		util.getConfig().getC1541().setRamExpansionEnabled2(expand6000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x8000() {
 		getFirstFloppy().setRamExpansion(3, expand8000.isSelected());
-		util.getConfig().getC1541().setRamExpansion3(expand8000.isSelected());
+		util.getConfig().getC1541().setRamExpansionEnabled3(expand8000.isSelected());
 	}
 
 	@FXML
 	private void expansion0xA000() {
 		getFirstFloppy().setRamExpansion(4, expandA000.isSelected());
-		util.getConfig().getC1541().setRamExpansion4(expandA000.isSelected());
+		util.getConfig().getC1541().setRamExpansionEnabled4(expandA000.isSelected());
 	}
 
 	@FXML

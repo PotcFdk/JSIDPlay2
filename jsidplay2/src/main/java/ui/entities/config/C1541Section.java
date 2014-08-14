@@ -6,7 +6,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Transient;
 
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
@@ -17,7 +16,6 @@ public class C1541Section implements IC1541Section {
 
 	private boolean driveOn;
 	
-	@Transient
 	private BooleanProperty driveOnProperty;
 	
 	@Override
@@ -43,7 +41,6 @@ public class C1541Section implements IC1541Section {
 	
 	private boolean driveSoundOn;
 	
-	@Transient
 	private BooleanProperty driveSoundOnProperty;
 	
 	@Override
@@ -69,7 +66,6 @@ public class C1541Section implements IC1541Section {
 	
 	private boolean parallelCable;
 	
-	@Transient
 	private BooleanProperty parallelCableProperty;
 	
 	@Override
@@ -101,7 +97,7 @@ public class C1541Section implements IC1541Section {
 	}
 
 	@Override
-	public void setRamExpansion0(boolean on) {
+	public void setRamExpansionEnabled0(boolean on) {
 		this.ramExpansionEnabled0 = on;
 	}
 
@@ -113,7 +109,7 @@ public class C1541Section implements IC1541Section {
 	}
 
 	@Override
-	public void setRamExpansion1(boolean on) {
+	public void setRamExpansionEnabled1(boolean on) {
 		this.ramExpansionEnabled1 = on;
 	}
 
@@ -125,7 +121,7 @@ public class C1541Section implements IC1541Section {
 	}
 
 	@Override
-	public void setRamExpansion2(boolean on) {
+	public void setRamExpansionEnabled2(boolean on) {
 		this.ramExpansionEnabled2 = on;
 	}
 
@@ -137,7 +133,7 @@ public class C1541Section implements IC1541Section {
 	}
 
 	@Override
-	public void setRamExpansion3(boolean on) {
+	public void setRamExpansionEnabled3(boolean on) {
 		this.ramExpansionEnabled3 = on;
 	}
 
@@ -149,11 +145,10 @@ public class C1541Section implements IC1541Section {
 	}
 
 	@Override
-	public void setRamExpansion4(boolean on) {
+	public void setRamExpansionEnabled4(boolean on) {
 		this.ramExpansionEnabled4 = on;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private ExtendImagePolicy extendImagePolicy = ExtendImagePolicy.EXTEND_ACCESS;
 
 	@Override
@@ -162,11 +157,11 @@ public class C1541Section implements IC1541Section {
 	}
 
 	@Override
+	@Enumerated(EnumType.STRING)
 	public ExtendImagePolicy getExtendImagePolicy() {
 		return this.extendImagePolicy;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private FloppyType floppyType = FloppyType.C1541;
 
 	@Override
@@ -174,6 +169,7 @@ public class C1541Section implements IC1541Section {
 		this.floppyType = floppyType;
 	}
 
+	@Enumerated(EnumType.STRING)
 	@Override
 	public FloppyType getFloppyType() {
 		return floppyType;

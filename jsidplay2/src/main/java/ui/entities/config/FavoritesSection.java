@@ -25,10 +25,10 @@ import ui.entities.collection.HVSCEntry_;
 @Entity
 public class FavoritesSection {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	public Integer getId() {
 		return id;
@@ -78,9 +78,9 @@ public class FavoritesSection {
 		this.selectedRowTo = selectedRowTo;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL)
 	private List<FavoriteColumn> columns;
 
+	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoriteColumn> getColumns() {
 		if (columns == null) {
 			columns = new ArrayList<FavoriteColumn>();
@@ -109,16 +109,15 @@ public class FavoritesSection {
 		this.columns = columns;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL)
 	protected List<HVSCEntry> favorites;
 
-	@Transient
 	protected ObservableList<HVSCEntry> observableFavorites;
 
 	public void setFavorites(List<HVSCEntry> favorites) {
 		this.favorites = favorites;
 	}
 
+	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "favorite")
 	public List<HVSCEntry> getFavorites() {
 		if (favorites == null) {
@@ -127,6 +126,7 @@ public class FavoritesSection {
 		return getObservableFavorites();
 	}
 
+	@Transient
 	public ObservableList<HVSCEntry> getObservableFavorites() {
 		if (observableFavorites == null) {
 			observableFavorites = FXCollections
