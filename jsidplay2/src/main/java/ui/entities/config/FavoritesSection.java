@@ -16,8 +16,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -25,13 +23,13 @@ import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 
 @Entity
-@XmlAccessorType(XmlAccessType.FIELD)
 public class FavoritesSection {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
+	@XmlTransient
 	public Integer getId() {
 		return id;
 	}
@@ -111,18 +109,17 @@ public class FavoritesSection {
 		this.columns = columns;
 	}
 
-	@XmlElement(name = "favorite")
 	@OneToMany(cascade = CascadeType.ALL)
 	protected List<HVSCEntry> favorites;
 
 	@Transient
-	@XmlTransient
 	protected ObservableList<HVSCEntry> observableFavorites;
 
 	public void setFavorites(List<HVSCEntry> favorites) {
 		this.favorites = favorites;
 	}
 
+	@XmlElement(name = "favorite")
 	public List<HVSCEntry> getFavorites() {
 		if (favorites == null) {
 			favorites = new ArrayList<HVSCEntry>();

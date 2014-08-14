@@ -7,7 +7,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlTransient;
 
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
@@ -19,7 +18,6 @@ public class C1541Section implements IC1541Section {
 	private boolean driveOn;
 	
 	@Transient
-	@XmlTransient
 	private BooleanProperty driveOnProperty;
 	
 	@Override
@@ -46,7 +44,6 @@ public class C1541Section implements IC1541Section {
 	private boolean driveSoundOn;
 	
 	@Transient
-	@XmlTransient
 	private BooleanProperty driveSoundOnProperty;
 	
 	@Override
@@ -73,7 +70,6 @@ public class C1541Section implements IC1541Section {
 	private boolean parallelCable;
 	
 	@Transient
-	@XmlTransient
 	private BooleanProperty parallelCableProperty;
 	
 	@Override

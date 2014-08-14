@@ -11,7 +11,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.ISidPlay2Section;
 import ui.favorites.PlaybackType;
@@ -35,7 +34,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	private boolean enableDatabase = true;
 
 	@Transient
-	@XmlTransient
 	private BooleanProperty enableDatabaseProperty;
 
 	@Override
@@ -60,7 +58,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	@Transient
-	@XmlTransient
 	private IntegerProperty defaultPlayLengthProperty;
 
 	private int defaultPlayLength = 3 * 60;
@@ -211,7 +208,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	@Transient
-	@XmlTransient
 	private BooleanProperty singleProperty;
 
 	private boolean single;

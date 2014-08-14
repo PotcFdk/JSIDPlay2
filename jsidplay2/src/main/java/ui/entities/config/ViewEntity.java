@@ -4,11 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
-@XmlAccessorType(XmlAccessType.FIELD)
 public class ViewEntity {
 	
 	public ViewEntity() {
@@ -22,6 +20,7 @@ public class ViewEntity {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
+	@XmlTransient
 	public Integer getId() {
 		return id;
 	}

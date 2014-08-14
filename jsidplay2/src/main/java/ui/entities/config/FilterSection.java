@@ -2,13 +2,10 @@ package ui.entities.config;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 
 import sidplay.ini.intf.IFilterSection;
 
 @Entity
-@XmlAccessorType(XmlAccessType.FIELD)
 public class FilterSection implements IFilterSection {
 
 	@Id

@@ -19,30 +19,20 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import libsidplay.components.keyboard.KeyTableEntry;
-import sidplay.ini.intf.IAudioSection;
-import sidplay.ini.intf.IC1541Section;
 import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IConsoleSection;
-import sidplay.ini.intf.IEmulationSection;
-import sidplay.ini.intf.IFilterSection;
-import sidplay.ini.intf.IJoystickSection;
-import sidplay.ini.intf.IPrinterSection;
-import sidplay.ini.intf.ISidPlay2Section;
 import ui.console.Console;
 import ui.videoscreen.Video;
 
 @Entity
-@XmlRootElement(name = "configuration")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Configuration implements IConfig {
 
 	@Transient
-	@XmlTransient
 	private final List<FilterSection> INITIAL_FILTERS;
 	{
 		//
@@ -388,7 +378,6 @@ public class Configuration implements IConfig {
 	}
 
 	@Transient
-	@XmlTransient
 	private final List<ViewEntity> INITIAL_VIEWS;
 	{
 		INITIAL_VIEWS = new ArrayList<ViewEntity>();
@@ -400,6 +389,7 @@ public class Configuration implements IConfig {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
+	@XmlTransient
 	public Integer getId() {
 		return id;
 	}
@@ -419,7 +409,6 @@ public class Configuration implements IConfig {
 	}
 
 	@Embedded
-	@XmlElement(name = "sidplay2")
 	private SidPlay2Section sidplay2 = new SidPlay2Section();
 
 	public void setSidplay2(SidPlay2Section sidplay2) {
@@ -427,12 +416,11 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	public ISidPlay2Section getSidplay2() {
+	public SidPlay2Section getSidplay2() {
 		return sidplay2;
 	}
 
 	@Embedded
-	@XmlElement(name = "online")
 	private OnlineSection online = new OnlineSection();
 
 	public OnlineSection getOnline() {
@@ -444,7 +432,6 @@ public class Configuration implements IConfig {
 	}
 
 	@Embedded
-	@XmlElement(name = "c1541")
 	private C1541Section c1541 = new C1541Section();
 
 	public void setC1541(C1541Section c1541) {
@@ -452,12 +439,11 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	public IC1541Section getC1541() {
+	public C1541Section getC1541() {
 		return c1541;
 	}
 
 	@Embedded
-	@XmlElement(name = "printer")
 	private PrinterSection printer = new PrinterSection();
 
 	public void setPrinter(PrinterSection printer) {
@@ -465,12 +451,11 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	public IPrinterSection getPrinter() {
+	public PrinterSection getPrinter() {
 		return printer;
 	}
 
 	@Embedded
-	@XmlElement(name = "joystick")
 	private JoystickSection joystick = new JoystickSection();
 
 	public void setJoystick(JoystickSection joystick) {
@@ -478,12 +463,11 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	public IJoystickSection getJoystick() {
+	public JoystickSection getJoystick() {
 		return joystick;
 	}
 
 	@Embedded
-	@XmlElement(name = "console")
 	private ConsoleSection console = new ConsoleSection();
 
 	public void setConsole(ConsoleSection console) {
@@ -491,12 +475,11 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	public IConsoleSection getConsole() {
+	public ConsoleSection getConsole() {
 		return console;
 	}
 
 	@Embedded
-	@XmlElement(name = "audio")
 	private AudioSection audio = new AudioSection();
 
 	public void setAudio(AudioSection audio) {
@@ -504,12 +487,11 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	public IAudioSection getAudio() {
+	public AudioSection getAudio() {
 		return audio;
 	}
 
 	@Embedded
-	@XmlElement(name = "emulation")
 	private EmulationSection emulation = new EmulationSection();
 
 	public void setEmulation(EmulationSection emulation) {
@@ -517,7 +499,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	public IEmulationSection getEmulation() {
+	public EmulationSection getEmulation() {
 		return emulation;
 	}
 
@@ -532,7 +514,6 @@ public class Configuration implements IConfig {
 	}
 
 	@Transient
-	@XmlTransient
 	private final List<FavoritesSection> INITIAL_FAVORITES;
 	{
 		INITIAL_FAVORITES = new ArrayList<FavoritesSection>();
@@ -542,11 +523,9 @@ public class Configuration implements IConfig {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
-	@XmlElement(name = "favorites")
 	protected List<FavoritesSection> favorites = INITIAL_FAVORITES;
 
 	@Transient
-	@XmlTransient
 	protected ObservableList<FavoritesSection> observableFavorites;
 
 	public void setFavorites(List<FavoritesSection> favorites) {
@@ -570,11 +549,9 @@ public class Configuration implements IConfig {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
-	@XmlElement(name = "views")
 	protected List<ViewEntity> views = INITIAL_VIEWS;
 
 	@Transient
-	@XmlTransient
 	private ObservableList<ViewEntity> observableViews;
 
 	public List<ViewEntity> getViews() {
@@ -591,7 +568,6 @@ public class Configuration implements IConfig {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
-	@XmlElement(name = "filter")
 	private List<FilterSection> filter = INITIAL_FILTERS;
 
 	public void setFilter(List<FilterSection> filter) {
@@ -599,7 +575,7 @@ public class Configuration implements IConfig {
 	}
 
 	@Override
-	public List<? extends IFilterSection> getFilter() {
+	public List<FilterSection> getFilter() {
 		if (filter == null) {
 			filter = new ArrayList<FilterSection>();
 		}
@@ -607,7 +583,6 @@ public class Configuration implements IConfig {
 	}
 
 	@Transient
-	@XmlTransient
 	private final List<KeyTableEntity> INITIAL_KEYCODES;
 	{
 		INITIAL_KEYCODES = new ArrayList<KeyTableEntity>();
@@ -717,7 +692,6 @@ public class Configuration implements IConfig {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
-	@XmlElement(name = "keyCodeMap")
 	private List<KeyTableEntity> keyCodeMap = INITIAL_KEYCODES;
 
 	public List<KeyTableEntity> getKeyCodeMap() {
