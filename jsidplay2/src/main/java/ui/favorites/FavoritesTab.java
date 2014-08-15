@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -371,10 +373,10 @@ public class FavoritesTab extends Tab implements UIPart {
 		// Restore persisted columns
 		for (FavoriteColumn favoriteColumn : favoritesSection.getColumns()) {
 			try {
-				String columnProperty = favoriteColumn.getColumnProperty();
-				SingularAttribute<?, ?> attribute = getAttribute(columnProperty);
-				addColumn(attribute, columnProperty, favoriteColumn);
-			} catch (NoSuchFieldException | IllegalArgumentException
+				SingularAttribute<?, ?> attribute = getAttribute(favoriteColumn
+						.getColumnProperty());
+				addColumn(attribute, favoriteColumn);
+			} catch (IllegalArgumentException | NoSuchFieldException
 					| IllegalAccessException e) {
 				e.printStackTrace();
 			}
@@ -439,18 +441,18 @@ public class FavoritesTab extends Tab implements UIPart {
 						.getColumns()) {
 					FavoriteColumn favoriteColumn = (FavoriteColumn) tableColumn
 							.getUserData();
-					String columnProperty = favoriteColumn != null ? favoriteColumn
+					String name = favoriteColumn != null ? favoriteColumn
 							.getColumnProperty() : HVSCEntry_.path.getName();
 					try {
-						SingularAttribute<?, ?> singleAttribute = getAttribute(columnProperty);
-						Object value = ((Field) singleAttribute.getJavaMember())
-								.get(hvscEntry);
+						Object value = ((Method) getAttribute(name)
+								.getJavaMember()).invoke(hvscEntry);
 						String text = value != null ? value.toString() : "";
 						if (text.contains(filterText)) {
 							filteredFavorites.add(hvscEntry);
 							continue outer;
 						}
-					} catch (IllegalAccessException | NoSuchFieldException e) {
+					} catch (IllegalAccessException | IllegalArgumentException
+							| InvocationTargetException | NoSuchFieldException e) {
 						e.printStackTrace();
 					}
 				}
@@ -556,10 +558,18 @@ public class FavoritesTab extends Tab implements UIPart {
 
 	private SingularAttribute<?, ?> getAttribute(String columnProperty)
 			throws NoSuchFieldException, IllegalAccessException {
-		Field field = HVSCEntry_.class.getDeclaredField(columnProperty);
-		SingularAttribute<?, ?> singleAttribute = (SingularAttribute<?, ?>) field
-				.get(null);
-		return singleAttribute;
+		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
+			if (field.getName().equals(HVSCEntry_.id.getName())) {
+				continue;
+			}
+			if (!(SingularAttribute.class.isAssignableFrom(field.getType()))) {
+				continue;
+			}
+			if (columnProperty.equals(field.getName())) {
+				return (SingularAttribute<?, ?>) field.get(null);
+			}
+		}
+		return null;
 	}
 
 	TableColumnBase getContextMenuColumn() {
@@ -576,22 +586,22 @@ public class FavoritesTab extends Tab implements UIPart {
 			FavoriteColumn favoriteColumn = new FavoriteColumn();
 			favoriteColumn.setColumnProperty(attribute.getName());
 			favoritesSection.getColumns().add(favoriteColumn);
-			addColumn(attribute, attribute.getName(), favoriteColumn);
+			addColumn(attribute, favoriteColumn);
 		});
 		addColumnMenu.getItems().add(menuItem);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void addColumn(SingularAttribute<?, ?> attribute, String columnProperty,
+	void addColumn(SingularAttribute<?, ?> attribute,
 			final FavoriteColumn favoriteColumn) {
 		String text = util.getBundle().getString(
 				attribute.getDeclaringType().getJavaType().getSimpleName()
-						+ "." + columnProperty);
+						+ "." + attribute.getName());
 		TableColumn tableColumn = new TableColumn();
 		tableColumn.setUserData(favoriteColumn);
 		tableColumn.setText(text);
-		tableColumn
-				.setCellValueFactory(new PropertyValueFactory(columnProperty));
+		tableColumn.setCellValueFactory(new PropertyValueFactory(attribute
+				.getName()));
 		FavoritesCellFactory cellFactory = new FavoritesCellFactory();
 		cellFactory.setPlayer(util.getPlayer());
 		cellFactory

@@ -1,14 +1,17 @@
 package ui.entities.gamebase;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
+@Access(AccessType.PROPERTY)
 public class Config {
-	@Column(name="MAJORVERSION")
 	private int majorVersion;
 
+	@Column(name="MAJORVERSION")
 	public int getMajorVersion() {
 		return majorVersion;
 	}
@@ -17,9 +20,9 @@ public class Config {
 		this.majorVersion = majorVersion;
 	}
 
-	@Column(name="MINORVERSION")
 	private int minorVersion;
 
+	@Column(name="MINORVERSION")
 	public int getMinorVersion() {
 		return minorVersion;
 	}
@@ -28,10 +31,10 @@ public class Config {
 		this.minorVersion = minorVersion;
 	}
 
-	@Id
-	@Column(name="OFFICIALUPDATE")
 	private int officialUpdate;
 
+	@Id
+	@Column(name="OFFICIALUPDATE")
 	public int getOfficialUpdate() {
 		return officialUpdate;
 	}

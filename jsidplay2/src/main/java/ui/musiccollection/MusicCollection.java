@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -770,10 +772,11 @@ public class MusicCollection extends Tab implements UIPart {
 			try {
 				SingularAttribute<?, ?> singleAttribute = (SingularAttribute<?, ?>) field
 						.get(entry);
-				Object value = ((Field) singleAttribute.getJavaMember())
-						.get(entry);
+				Object value = ((Method) singleAttribute.getJavaMember())
+						.invoke(entry);
 				tuneInfo.setValue(String.valueOf(value != null ? value : ""));
-			} catch (IllegalArgumentException | IllegalAccessException e) {
+			} catch (IllegalArgumentException | IllegalAccessException
+					| InvocationTargetException e) {
 			}
 			tuneInfos.add(tuneInfo);
 		}

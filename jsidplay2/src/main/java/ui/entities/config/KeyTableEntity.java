@@ -1,5 +1,7 @@
 package ui.entities.config;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,6 +13,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import libsidplay.components.keyboard.KeyTableEntry;
 
 @Entity
+@Access(AccessType.PROPERTY)
 public class KeyTableEntity {
 
 	public KeyTableEntity() {

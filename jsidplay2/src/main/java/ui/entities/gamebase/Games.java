@@ -1,5 +1,7 @@
 package ui.entities.gamebase;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,12 +11,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
+@Access(AccessType.PROPERTY)
 @Table(name = "GAMES")
 public class Games {
-	@Id
-	@Column(name = "GA_ID")
 	private int id;
 
+	@Id
+	@Column(name = "GA_ID")
 	public int getId() {
 		return id;
 	}
@@ -23,9 +26,9 @@ public class Games {
 		this.id = id;
 	}
 
-	@Column(name = "NAME")
 	private String name;
 
+	@Column(name = "NAME")
 	public String getName() {
 		return name;
 	}
@@ -34,10 +37,10 @@ public class Games {
 		this.name = name;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "YE_ID")
 	private Years years;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "YE_ID")
 	public Years getYears() {
 		return years;
 	}
@@ -46,9 +49,9 @@ public class Games {
 		this.years = years;
 	}
 
-	@Column(name = "FILENAME")
 	private String filename;
 
+	@Column(name = "FILENAME")
 	public String getFilename() {
 		return filename;
 	}
@@ -57,9 +60,9 @@ public class Games {
 		this.filename = filename;
 	}
 
-	@Column(name = "FILETORUN")
 	private String fileToRun;
 
+	@Column(name = "FILETORUN")
 	public String getFileToRun() {
 		return fileToRun;
 	}
@@ -68,9 +71,9 @@ public class Games {
 		this.fileToRun = fileToRun;
 	}
 
-	@Column(name = "FILENAMEINDEX")
 	private int filenameIdx;
 
+	@Column(name = "FILENAMEINDEX")
 	public int getFilenameIdx() {
 		return filenameIdx;
 	}
@@ -79,9 +82,9 @@ public class Games {
 		this.filenameIdx = filenameIdx;
 	}
 
-	@Column(name = "SCRNSHOTFILENAME")
 	private String screenshotFilename;
 
+	@Column(name = "SCRNSHOTFILENAME")
 	public String getScreenshotFilename() {
 		return screenshotFilename;
 	}
@@ -90,22 +93,22 @@ public class Games {
 		this.screenshotFilename = screenshotFilename;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "MU_ID")
 	private Musicians musicians;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "MU_ID")
 	public Musicians getMusicians() {
 		return musicians;
 	}
 
-	public void setMusician(Musicians musicians) {
+	public void setMusicians(Musicians musicians) {
 		this.musicians = musicians;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "GE_ID")
 	private Genres genres;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "GE_ID")
 	public Genres getGenres() {
 		return genres;
 	}
@@ -114,10 +117,10 @@ public class Games {
 		this.genres = genres;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PU_ID")
 	private Publishers publishers;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "PU_ID")
 	public Publishers getPublishers() {
 		return publishers;
 	}
@@ -126,9 +129,9 @@ public class Games {
 		this.publishers = publishers;
 	}
 
-	@Column(name = "SIDFILENAME")
 	private String sidFilename;
 
+	@Column(name = "SIDFILENAME")
 	public String getSidFilename() {
 		return sidFilename;
 	}
@@ -137,10 +140,10 @@ public class Games {
 		this.sidFilename = sidFilename;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PR_ID")
 	private Programmers programmers;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "PR_ID")
 	public Programmers getProgrammers() {
 		return programmers;
 	}
@@ -149,9 +152,9 @@ public class Games {
 		this.programmers = programmers;
 	}
 
-	@Column(name = "COMMENT")
 	private String comment;
 
+	@Column(name = "COMMENT")
 	public String getComment() {
 		return comment;
 	}

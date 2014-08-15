@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -26,11 +28,12 @@ import libsidplay.sidtune.SidTune.Speed;
 import libsidplay.sidtune.SidTuneInfo;
 
 @Entity
+@Access(AccessType.PROPERTY)
 public class HVSCEntry {
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Integer id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@XmlTransient
 	public Integer getId() {
 		return id;
@@ -100,9 +103,9 @@ public class HVSCEntry {
 		this.format = format;
 	}
 
-	@Column(length = 2048)
 	private String playerId;
 
+	@Column(length = 2048)
 	public String getPlayerId() {
 		return playerId;
 	}
@@ -131,9 +134,9 @@ public class HVSCEntry {
 		this.startSong = startSong;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private Clock clockFreq;
 
+	@Enumerated(EnumType.STRING)
 	public Clock getClockFreq() {
 		return clockFreq;
 	}
@@ -142,9 +145,9 @@ public class HVSCEntry {
 		this.clockFreq = clockFreq;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private Speed speed;
 
+	@Enumerated(EnumType.STRING)
 	public Speed getSpeed() {
 		return speed;
 	}
@@ -153,9 +156,9 @@ public class HVSCEntry {
 		this.speed = speed;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private Model sidModel1;
 
+	@Enumerated(EnumType.STRING)
 	public Model getSidModel1() {
 		return sidModel1;
 	}
@@ -164,9 +167,9 @@ public class HVSCEntry {
 		this.sidModel1 = sidModel1;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private Model sidModel2;
 
+	@Enumerated(EnumType.STRING)
 	public Model getSidModel2() {
 		return sidModel2;
 	}
@@ -175,9 +178,9 @@ public class HVSCEntry {
 		this.sidModel2 = sidModel2;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private Compatibility compatibility;
 
+	@Enumerated(EnumType.STRING)
 	public Compatibility getCompatibility() {
 		return compatibility;
 	}
@@ -326,9 +329,9 @@ public class HVSCEntry {
 		this.relocNoPages = relocNoPages;
 	}
 
-	@Column(length = 4096)
 	private String stilGlbComment;
 
+	@Column(length = 4096)
 	public String getStilGlbComment() {
 		return stilGlbComment;
 	}
@@ -337,9 +340,9 @@ public class HVSCEntry {
 		this.stilGlbComment = stilComment;
 	}
 
-	@OneToMany(mappedBy = "hvscEntry", fetch = FetchType.LAZY)
 	private List<StilEntry> stil;
 
+	@OneToMany(mappedBy = "hvscEntry", fetch = FetchType.LAZY)
 	public List<StilEntry> getStil() {
 		if (stil == null) {
 			stil = new ArrayList<StilEntry>();
@@ -347,6 +350,10 @@ public class HVSCEntry {
 		return stil;
 	}
 
+	public void setStil(List<StilEntry> stil) {
+		this.stil = stil;
+	}
+	
 	public static HVSCEntry create(final Player player, final String path,
 			final File tuneFile, SidTune tune) {
 		HVSCEntry hvscEntry = new HVSCEntry();

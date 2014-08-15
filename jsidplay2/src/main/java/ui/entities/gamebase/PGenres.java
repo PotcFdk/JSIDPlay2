@@ -1,5 +1,7 @@
 package ui.entities.gamebase;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,11 +12,12 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="PGENRES")
+@Access(AccessType.PROPERTY)
 public class PGenres {
-	@Id
-	@Column(name="PG_ID")
 	private int id;
 	
+	@Id
+	@Column(name="PG_ID")
 	public int getId() {
 		return id;
 	}
@@ -23,10 +26,10 @@ public class PGenres {
 		this.id = id;
 	}
 
-	@OneToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="PG_ID")
 	private Games games;
 	
+	@OneToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="PG_ID")
 	public Games getGames() {
 		return games;
 	}
@@ -35,9 +38,9 @@ public class PGenres {
 		this.games = games;
 	}
 
-	@Column(name="PARENTGENRE")
 	private String parentGenre;
 
+	@Column(name="PARENTGENRE")
 	public String getParentGenre() {
 		return parentGenre;
 	}

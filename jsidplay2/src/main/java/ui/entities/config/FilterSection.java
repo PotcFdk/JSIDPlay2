@@ -1,16 +1,19 @@
 package ui.entities.config;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import sidplay.ini.intf.IFilterSection;
 
 @Entity
+@Access(AccessType.PROPERTY)
 public class FilterSection implements IFilterSection {
 
-	@Id
 	private String name;
 
+	@Id
 	@Override
 	public String getName() {
 		return name;

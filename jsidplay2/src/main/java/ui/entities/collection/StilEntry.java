@@ -1,5 +1,7 @@
 package ui.entities.collection;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,11 +10,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
+@Access(AccessType.PROPERTY)
 public class StilEntry {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	public int getId() {
 		return id;
 	}
@@ -21,9 +24,9 @@ public class StilEntry {
 		this.id = id;
 	}
 
-	@ManyToOne
 	private HVSCEntry hvscEntry;
 
+	@ManyToOne
 	public HVSCEntry getHvscEntry() {
 		return hvscEntry;
 	}
@@ -72,9 +75,9 @@ public class StilEntry {
 		this.stilArtist = artist;
 	}
 
-	@Column(length = 4096)
 	private String stilComment;
 
+	@Column(length = 4096)
 	public String getStilComment() {
 		return stilComment;
 	}

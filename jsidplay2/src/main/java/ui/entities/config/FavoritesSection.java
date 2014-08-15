@@ -1,6 +1,5 @@
 package ui.entities.config;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,8 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,6 +24,7 @@ import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 
 @Entity
+@Access(AccessType.PROPERTY)
 public class FavoritesSection {
 
 	private Integer id;
@@ -49,11 +51,11 @@ public class FavoritesSection {
 	}
 
 	private Double width;
-	
+
 	public Double getWidth() {
 		return width;
 	}
-	
+
 	public void setWidth(Double width) {
 		this.width = width;
 	}
@@ -85,21 +87,18 @@ public class FavoritesSection {
 		if (columns == null) {
 			columns = new ArrayList<FavoriteColumn>();
 			FavoriteColumn dbFavoriteColumn;
-			SingularAttribute<?, ?> field;
+			SingularAttribute<?, ?> attribute;
 			dbFavoriteColumn = new FavoriteColumn();
-			field = (SingularAttribute<?, ?>) HVSCEntry_.title;
-			dbFavoriteColumn.setColumnProperty(((Field) field.getJavaMember())
-					.getName());
+			attribute = (SingularAttribute<?, ?>) HVSCEntry_.title;
+			dbFavoriteColumn.setColumnProperty(attribute.getName());
 			columns.add(dbFavoriteColumn);
 			dbFavoriteColumn = new FavoriteColumn();
-			field = (SingularAttribute<?, ?>) HVSCEntry_.author;
-			dbFavoriteColumn.setColumnProperty(((Field) field.getJavaMember())
-					.getName());
+			attribute = (SingularAttribute<?, ?>) HVSCEntry_.author;
+			dbFavoriteColumn.setColumnProperty(attribute.getName());
 			columns.add(dbFavoriteColumn);
 			dbFavoriteColumn = new FavoriteColumn();
-			field = (SingularAttribute<?, ?>) HVSCEntry_.released;
-			dbFavoriteColumn.setColumnProperty(((Field) field.getJavaMember())
-					.getName());
+			attribute = (SingularAttribute<?, ?>) HVSCEntry_.released;
+			dbFavoriteColumn.setColumnProperty(attribute.getName());
 			columns.add(dbFavoriteColumn);
 		}
 		return columns;

@@ -1,5 +1,7 @@
 package ui.entities.gamebase;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,11 +12,12 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="YEARS")
+@Access(AccessType.PROPERTY)
 public class Years {
-	@Id
-	@Column(name="YE_ID")
 	private int id;
 	
+	@Id
+	@Column(name="YE_ID")
 	public int getId() {
 		return id;
 	}
@@ -23,10 +26,10 @@ public class Years {
 		this.id = id;
 	}
 
-	@OneToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="YE_ID")
 	private Games games;
 	
+	@OneToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="YE_ID")
 	public Games getGames() {
 		return games;
 	}
@@ -35,9 +38,9 @@ public class Years {
 		this.games = games;
 	}
 
-	@Column(name="YEAR")
 	private int year;
 
+	@Column(name="YEAR")
 	public int getYear() {
 		return year;
 	}

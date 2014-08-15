@@ -1,5 +1,7 @@
 package ui.entities.gamebase;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,11 +12,12 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="MUSICIANS")
+@Access(AccessType.PROPERTY)
 public class Musicians {
-	@Id
-	@Column(name="MU_ID")
 	private int id;
 	
+	@Id
+	@Column(name="MU_ID")
 	public int getId() {
 		return id;
 	}
@@ -23,10 +26,10 @@ public class Musicians {
 		this.id = id;
 	}
 
-	@OneToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="MU_ID")
 	private Games games;
 	
+	@OneToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="MU_ID")
 	public Games getGames() {
 		return games;
 	}
@@ -37,9 +40,9 @@ public class Musicians {
 
 	// private Blob? photo;
 	
-	@Column(name="MUSICIAN")
 	private String musician;
 
+	@Column(name="MUSICIAN")
 	public String getMusician() {
 		return musician;
 	}
@@ -48,9 +51,9 @@ public class Musicians {
 		this.musician = musician;
 	}
 
-	@Column(name="GRP")
 	private String group;
 
+	@Column(name="GRP")
 	public String getGroup() {
 		return group;
 	}
@@ -59,9 +62,9 @@ public class Musicians {
 		this.group = group;
 	}
 
-	@Column(name="NICK")
 	private String nickname;
 
+	@Column(name="NICK")
 	public String getNickname() {
 		return nickname;
 	}
