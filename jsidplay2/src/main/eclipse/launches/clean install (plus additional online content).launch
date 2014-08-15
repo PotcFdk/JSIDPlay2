@@ -13,9 +13,11 @@
 <listEntry value="hvmec.bz2=${hvmec.bz2}"/>
 </listAttribute>
 <stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>
-<booleanAttribute key="M2_SKIP_TESTS" value="false"/>
+<booleanAttribute key="M2_SKIP_TESTS" value="true"/>
 <intAttribute key="M2_THREADS" value="1"/>
 <booleanAttribute key="M2_UPDATE_SNAPSHOTS" value="false"/>
+<stringAttribute key="M2_USER_SETTINGS" value=""/>
 <booleanAttribute key="M2_WORKSPACE_RESOLUTION" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dgb64.mdbfile=d:\Downloads\gb64\GBC_v12\GBC_v12.mdb"/>
 <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:/jsidplay2}"/>
 </launchConfiguration>
