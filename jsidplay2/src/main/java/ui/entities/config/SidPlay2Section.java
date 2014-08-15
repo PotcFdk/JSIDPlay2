@@ -131,7 +131,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	public void setCgsc(String cgsc) {
 		this.cgsc = cgsc;
-		this.cgscFile = new TFile(cgsc);
+		getCgscFile();
 	}
 
 	private volatile File cgscFile;
@@ -155,7 +155,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	public void setHvsc(String hvsc) {
 		this.hvsc = hvsc;
-		this.hvscFile = new TFile(hvsc);
+		getHvscFile();
 	}
 
 	private volatile File hvscFile;
@@ -177,7 +177,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public void setGameBase64(String gameBase64) {
 		this.gameBase64 = gameBase64;
-		this.gameBase64File = new TFile(gameBase64);
+		getGameBase64File();
 	}
 
 	private volatile File gameBase64File;
