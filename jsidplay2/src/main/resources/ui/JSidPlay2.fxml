@@ -170,27 +170,6 @@
 									</MenuItem>
 								</items>
 							</Menu>
-							<Menu text="%HARDCOPY">
-								<MenuItem text="%HARDCOPY_GIF" onAction="#doHardcopyGif" />
-								<MenuItem text="%HARDCOPY_JPG" onAction="#doHardcopyJpg" />
-								<MenuItem text="%HARDCOPY_PNG" onAction="#doHardcopyPng">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="N"
-											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
-									</accelerator>
-								</MenuItem>
-							</Menu>
-							<Menu text="%SETTINGS">
-								<Menu text="%VIDEO_STANDARD">
-									<RadioMenuItem text="%PAL" toggleGroup="$videoStandardGroup"
-										onAction="#videoStandardPal" fx:id="pal" />
-									<RadioMenuItem text="%NTSC" toggleGroup="$videoStandardGroup"
-										onAction="#videoStandardNtsc" fx:id="ntsc" />
-								</Menu>
-								<MenuItem text="%EMULATION_SETTINGS" onAction="#emulationSettings" />
-								<MenuItem text="%JOYSTICK_SETTINGS" onAction="#joystickSettings" />
-								<MenuItem text="%PROXY_SETTINGS" onAction="#proxySettings" />
-							</Menu>
 							<Menu text="%DEVICES">
 								<Menu text="%DATASETTE">
 									<MenuItem text="%RECORD" onAction="#record" />
@@ -283,7 +262,27 @@
 								<MenuItem text="%INSTALL_JIFFYDOS" onAction="#installJiffyDos" />
 								<MenuItem text="%UNINSTALL_JIFFYDOS" onAction="#uninstallJiffyDos" />
 							</Menu>
-							<Menu text="%CONFIGURATION">
+							<Menu text="%HARDCOPY">
+								<MenuItem text="%HARDCOPY_GIF" onAction="#doHardcopyGif" />
+								<MenuItem text="%HARDCOPY_JPG" onAction="#doHardcopyJpg" />
+								<MenuItem text="%HARDCOPY_PNG" onAction="#doHardcopyPng">
+									<accelerator>
+										<KeyCodeCombination alt="UP" code="N"
+											control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+									</accelerator>
+								</MenuItem>
+							</Menu>
+							<Menu text="%SETTINGS">
+								<Menu text="%VIDEO_STANDARD">
+									<RadioMenuItem text="%PAL" toggleGroup="$videoStandardGroup"
+										onAction="#videoStandardPal" fx:id="pal" />
+									<RadioMenuItem text="%NTSC" toggleGroup="$videoStandardGroup"
+										onAction="#videoStandardNtsc" fx:id="ntsc" />
+								</Menu>
+								<MenuItem text="%EMULATION_SETTINGS" onAction="#emulationSettings" />
+								<MenuItem text="%JOYSTICK_SETTINGS" onAction="#joystickSettings" />
+								<MenuItem text="%PROXY_SETTINGS" onAction="#proxySettings" />
+								<SeparatorMenuItem />
 								<MenuItem text="%IMPORT" onAction="#importConfiguration" />
 								<MenuItem text="%EXPORT" onAction="#exportConfiguration" />
 							</Menu>
