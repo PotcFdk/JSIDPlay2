@@ -3,11 +3,10 @@ package netsiddev;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Properties;
 
 public class SIDDeviceSettings {
-	private Properties props;
-
 	private final static String FILE_NAME_PROPERTIES = "jsiddevice.properties";
 	private final static String PROPERTY_DEVICE_INDEX = "deviceIndex";
 	private final static String PROPERTY_DIGI_BOOST = "digiBoost";
@@ -15,12 +14,10 @@ public class SIDDeviceSettings {
 
 	private static final SIDDeviceSettings instance = new SIDDeviceSettings();
 
+	private Properties props = new java.util.Properties();
+	
 	private SIDDeviceSettings() {
-		props = new java.util.Properties();
-		try (FileInputStream fis = new FileInputStream(FILE_NAME_PROPERTIES)) {
-			props.load(fis);
-		} catch (IOException ioe) {
-		}
+		load();
 	}
 
 	/**
@@ -47,8 +44,8 @@ public class SIDDeviceSettings {
 	 * @return digi boost value from the settings.
 	 */
 	public synchronized boolean getDigiBoostEnabled() {
-		return Boolean.TRUE.equals(Boolean.valueOf(
-				props.getProperty(PROPERTY_DIGI_BOOST)).booleanValue());
+		return Boolean.TRUE.equals(Boolean.valueOf(props
+				.getProperty(PROPERTY_DIGI_BOOST)));
 	}
 
 	/**
@@ -57,11 +54,7 @@ public class SIDDeviceSettings {
 	 */
 	public synchronized void saveDeviceIndex(final Integer deviceIndex) {
 		props.setProperty(PROPERTY_DEVICE_INDEX, String.valueOf(deviceIndex));
-		try {
-			props.store(new FileOutputStream(FILE_NAME_PROPERTIES),
-					PROPERTY_DEVICE_INDEX_COMMENT);
-		} catch (IOException e1) {
-		}
+		save();
 	}
 
 	/**
@@ -70,9 +63,19 @@ public class SIDDeviceSettings {
 	 */
 	public synchronized void saveDigiBoost(boolean digiBoost) {
 		props.setProperty(PROPERTY_DIGI_BOOST, String.valueOf(digiBoost));
-		try {
-			props.store(new FileOutputStream(FILE_NAME_PROPERTIES),
-					PROPERTY_DEVICE_INDEX_COMMENT);
+		save();
+	}
+
+	public void load() {
+		try (FileInputStream fis = new FileInputStream(FILE_NAME_PROPERTIES)) {
+			props.load(fis);
+		} catch (IOException ioe) {
+		}
+	}
+
+	public void save() {
+		try (OutputStream os = new FileOutputStream(FILE_NAME_PROPERTIES)) {
+			props.store(os, PROPERTY_DEVICE_INDEX_COMMENT);
 		} catch (IOException e1) {
 		}
 	}

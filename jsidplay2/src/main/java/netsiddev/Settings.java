@@ -4,7 +4,6 @@ import java.util.Collections;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -60,20 +59,20 @@ public class Settings extends SIDDeviceStage {
 
 	@FXML
 	private void setAudioDevice() {
-		ClientContext.changeDevice(audioDevice.getSelectionModel()
-				.getSelectedItem().getInfo());
-		settings.saveDeviceIndex(audioDevice.getSelectionModel()
-				.getSelectedItem().getIndex());
+		AudioDevice device = audioDevice.getSelectionModel().getSelectedItem();
+		ClientContext.changeDevice(device.getInfo());
+		settings.saveDeviceIndex(device.getIndex());
 	}
 
 	@FXML
 	private void setDigiBoost() {
-		ClientContext.setDigiBoost(digiBoost.isSelected());
-		settings.saveDigiBoost(digiBoost.isSelected());
+		boolean isDigiBoost = digiBoost.isSelected();
+		ClientContext.setDigiBoost(isDigiBoost);
+		settings.saveDigiBoost(isDigiBoost);
 	}
 
 	@FXML
-	private void okPressed(ActionEvent event) {
+	private void okPressed() {
 		settings.saveDeviceIndex(settings.getDeviceIndex());
 		((Stage) audioDevice.getScene().getWindow()).close();
 	}
