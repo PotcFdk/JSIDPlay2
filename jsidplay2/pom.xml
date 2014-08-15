@@ -18,7 +18,7 @@
 		<debug>false</debug>
 		<!-- WebStart -->
 		<!--  development: --><!-- codebase>file:///d:/workspace/jsidplay2/target/deploy/online/webstart</codebase-->
-		<!--  release: --> <codebase>${url}</codebase>
+		<!--  release: --> <codebase>${project.url}</codebase>
 		<javafx.main.class>ui.JSIDPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
