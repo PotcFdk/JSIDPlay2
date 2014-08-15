@@ -69,7 +69,7 @@ public class PseudoDirectory {
 				.getSidplay2();
 		String collectionName = PathUtils.getCollectionName(
 				sidPlay2Section.getHvscFile(), file.getPath());
-		HVSCEntry entry = HVSCEntry.create(player, collectionName, file, tune);
+		HVSCEntry entry = new HVSCEntry(player, collectionName, file, tune);
 		final String title = entry.getTitle() != null ? entry.getTitle()
 				: entry.getName();
 
@@ -118,8 +118,8 @@ public class PseudoDirectory {
 		return dir;
 	}
 
-	private static void addProperty(Collection<DirEntry> entries, String property,
-			String value) {
+	private static void addProperty(Collection<DirEntry> entries,
+			String property, String value) {
 		byte[] filename = DirEntry.asciiTopetscii(property + "=" + value, 20);
 		// Pseudo directory entry: tune property '=' value
 		entries.add(new DirEntry(0, filename, (byte) -1) {

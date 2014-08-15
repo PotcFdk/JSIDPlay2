@@ -755,7 +755,7 @@ public class MusicCollection extends Tab implements UIPart {
 		tuneInfos.clear();
 		String collectionName = PathUtils.getCollectionName(fileBrowser
 				.getRoot().getValue(), tuneFile.getPath());
-		HVSCEntry entry = HVSCEntry.create(util.getPlayer(), collectionName,
+		HVSCEntry entry = new HVSCEntry(util.getPlayer(), collectionName,
 				tuneFile, sidTune);
 
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
@@ -961,8 +961,8 @@ public class MusicCollection extends Tab implements UIPart {
 					.getPlayer().getConfig().getSidplay2();
 			String collectionName = PathUtils.getCollectionName(
 					sidPlay2Section.getHvscFile(), file.getPath());
-			HVSCEntry entry = HVSCEntry.create(util.getPlayer(),
-					collectionName, file, sidTune);
+			HVSCEntry entry = new HVSCEntry(util.getPlayer(), collectionName,
+					file, sidTune);
 			section.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();

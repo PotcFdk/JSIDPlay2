@@ -67,10 +67,10 @@ public class HVSCEntryService {
 		this.stilService = new STILService(em);
 	};
 
-	public HVSCEntry add(Player player, final String path,
-			final File tuneFile) throws IOException, SidTuneError {
+	public HVSCEntry add(Player player, final String path, final File tuneFile)
+			throws IOException, SidTuneError {
 		final SidTune tune = tuneFile.isFile() ? SidTune.load(tuneFile) : null;
-		HVSCEntry hvscEntry = HVSCEntry.create(player, path, tuneFile, tune);
+		HVSCEntry hvscEntry = new HVSCEntry(player, path, tuneFile, tune);
 
 		stilService.add(player, hvscEntry);
 

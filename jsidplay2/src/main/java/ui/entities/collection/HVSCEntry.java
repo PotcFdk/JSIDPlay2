@@ -30,6 +30,56 @@ import libsidplay.sidtune.SidTuneInfo;
 @Entity
 @Access(AccessType.PROPERTY)
 public class HVSCEntry {
+	public HVSCEntry() {
+	}
+
+	public HVSCEntry(final Player player, final String path,
+			final File tuneFile, SidTune tune) {
+		this.name = tuneFile.getName();
+		this.path = path.length() > 0 ? path : tuneFile.getPath();
+		if (tune != null) {
+			tune.setSelectedSong(1);
+			SidTuneInfo info = tune.getInfo();
+			Iterator<String> descriptionIt = info.getInfoString().iterator();
+			if (descriptionIt.hasNext()) {
+				this.title = descriptionIt.next();
+			}
+			if (descriptionIt.hasNext()) {
+				this.author = descriptionIt.next();
+			}
+			if (descriptionIt.hasNext()) {
+				this.released = descriptionIt.next();
+			}
+			this.format = tune.getClass().getSimpleName();
+			StringBuilder ids = new StringBuilder();
+			tune.identify().stream().forEach(id -> ids.append(',').append(id));
+			this.playerId = ids.length() > 0 ? ids.substring(1) : ids
+					.toString();
+			this.noOfSongs = info.getSongs();
+			this.startSong = info.getStartSong();
+			this.clockFreq = info.getClockSpeed();
+			this.speed = tune.getSongSpeed(1);
+			this.sidModel1 = info.getSid1Model();
+			this.sidModel2 = info.getSid2Model();
+			this.compatibility = info.getCompatibility();
+			this.tuneLength = Long.valueOf(player.getSidDatabaseInfo(db -> db
+					.getFullSongLength(tune)));
+			this.audio = info.getSidChipBase2() != 0 ? "Stereo" : "Mono";
+			this.sidChipBase1 = info.getSidChipBase1();
+			this.sidChipBase2 = info.getSidChipBase2();
+			this.driverAddress = info.getDeterminedDriverAddr();
+			this.loadAddress = info.getLoadAddr();
+			this.loadLength = info.getC64dataLen();
+			this.initAddress = info.getInitAddr();
+			this.playerAddress = info.getPlayAddr();
+			this.fileDate = new Date(tuneFile.lastModified());
+			this.fileSizeKb = tuneFile.length() >> 10;
+			this.tuneSizeB = tuneFile.length();
+			this.relocStartPage = info.getRelocStartPage();
+			this.relocNoPages = info.getRelocPages();
+		}
+	}
+
 	private Integer id;
 
 	@Id
@@ -352,75 +402,6 @@ public class HVSCEntry {
 
 	public void setStil(List<StilEntry> stil) {
 		this.stil = stil;
-	}
-	
-	public static HVSCEntry create(final Player player, final String path,
-			final File tuneFile, SidTune tune) {
-		HVSCEntry hvscEntry = new HVSCEntry();
-
-		hvscEntry.setName(tuneFile.getName());
-		hvscEntry.setPath(path.length() > 0 ? path : tuneFile.getPath());
-		if (tune != null) {
-			tune.setSelectedSong(1);
-			SidTuneInfo info = tune.getInfo();
-
-			Iterator<String> descriptionIt = info.getInfoString().iterator();
-			if (descriptionIt.hasNext()) {
-				String title = descriptionIt.next();
-				hvscEntry.setTitle(title);
-			}
-			if (descriptionIt.hasNext()) {
-				String author = descriptionIt.next();
-				hvscEntry.setAuthor(author);
-			}
-			if (descriptionIt.hasNext()) {
-				String released = descriptionIt.next();
-				hvscEntry.setReleased(released);
-			}
-			hvscEntry.setFormat(tune.getClass().getSimpleName());
-			hvscEntry.setPlayerId(getPlayer(tune));
-			hvscEntry.setNoOfSongs(info.getSongs());
-			hvscEntry.setStartSong(info.getStartSong());
-			hvscEntry.setClockFreq(info.getClockSpeed());
-			hvscEntry.setSpeed(tune.getSongSpeed(1));
-			hvscEntry.setSidModel1(info.getSid1Model());
-			hvscEntry.setSidModel2(info.getSid2Model());
-			hvscEntry.setCompatibility(info.getCompatibility());
-			hvscEntry.setTuneLength(Long.valueOf(getTuneLength(player, tune)));
-			hvscEntry.setAudio(getAudio(info.getSidChipBase2()));
-			hvscEntry.setSidChipBase1(info.getSidChipBase1());
-			hvscEntry.setSidChipBase2(info.getSidChipBase2());
-			hvscEntry.setDriverAddress(info.getDeterminedDriverAddr());
-			hvscEntry.setLoadAddress(info.getLoadAddr());
-			hvscEntry.setLoadLength(info.getC64dataLen());
-			hvscEntry.setInitAddress(info.getInitAddr());
-			hvscEntry.setPlayerAddress(info.getPlayAddr());
-			hvscEntry.setFileDate(new Date(tuneFile.lastModified()));
-			hvscEntry.setFileSizeKb(tuneFile.length() >> 10);
-			hvscEntry.setTuneSizeB(tuneFile.length());
-			hvscEntry.setRelocStartPage(info.getRelocStartPage());
-			hvscEntry.setRelocNoPages(info.getRelocPages());
-		}
-		return hvscEntry;
-	}
-
-	private static int getTuneLength(final Player player, SidTune tune) {
-		return player.getSidDatabaseInfo(db -> db.getFullSongLength(tune));
-	}
-
-	private static String getPlayer(SidTune tune) {
-		StringBuilder ids = new StringBuilder();
-		for (String s : tune.identify()) {
-			if (ids.length() > 0) {
-				ids.append(", ");
-			}
-			ids.append(s);
-		}
-		return ids.toString();
-	}
-
-	private static String getAudio(int sidChipBase2) {
-		return sidChipBase2 != 0 ? "Stereo" : "Mono";
 	}
 
 }
