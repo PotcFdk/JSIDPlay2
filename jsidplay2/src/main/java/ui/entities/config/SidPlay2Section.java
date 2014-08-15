@@ -11,7 +11,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlTransient;
 
 import sidplay.ini.intf.ISidPlay2Section;
 import ui.favorites.PlaybackType;
@@ -137,7 +136,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	private volatile File cgscFile;
 
 	@Transient
-	@XmlTransient
 	public File getCgscFile() {
 		if (cgscFile == null && cgsc != null) {
 			cgscFile = new TFile(cgsc);
@@ -161,7 +159,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	private volatile File hvscFile;
 
 	@Transient
-	@XmlTransient
 	public File getHvscFile() {
 		if (hvscFile == null && hvsc != null) {
 			hvscFile = new TFile(hvsc);
@@ -183,7 +180,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	private volatile File gameBase64File;
 
 	@Transient
-	@XmlTransient
 	public File getGameBase64File() {
 		if (gameBase64File == null && gameBase64 != null) {
 			gameBase64File = new TFile(gameBase64);
@@ -256,7 +252,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	@Transient
-	@XmlTransient
 	public File getLastDirectoryFolder() {
 		if (lastDirectory != null && new TFile(lastDirectory).isDirectory()) {
 			return new TFile(lastDirectory);

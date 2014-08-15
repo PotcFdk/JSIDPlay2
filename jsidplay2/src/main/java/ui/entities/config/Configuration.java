@@ -382,8 +382,8 @@ public class Configuration implements IConfig {
 	private final List<ViewEntity> INITIAL_VIEWS;
 	{
 		INITIAL_VIEWS = new ArrayList<ViewEntity>();
-		INITIAL_VIEWS.add(new ViewEntity(Video.ID));
 		INITIAL_VIEWS.add(new ViewEntity(Console.ID));
+		INITIAL_VIEWS.add(new ViewEntity(Video.ID));
 	}
 
 	private Integer id;

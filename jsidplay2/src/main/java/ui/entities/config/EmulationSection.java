@@ -197,9 +197,9 @@ public class EmulationSection implements IEmulationSection {
 		this.forceStereoTune = isForceStereoTune;
 	}
 
-	@Enumerated(EnumType.STRING)
 	private ChipModel stereoSidModel;
 
+	@Enumerated(EnumType.STRING)
 	@Override
 	public ChipModel getStereoSidModel() {
 		return stereoSidModel;
