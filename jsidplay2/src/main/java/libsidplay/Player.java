@@ -738,40 +738,37 @@ public class Player {
 	/**
 	 * Player runnable to play music in the background.
 	 */
-	private transient final Runnable playerRunnable = new Runnable() {
-		@Override
-		public void run() {
-			// Run until the player gets stopped
-			while (true) {
-				try {
-					// Open tune
-					open();
-					menuHook.accept(Player.this);
-					// Play next chunk of sound data, until it gets stopped
-					while (true) {
-						// Pause? sleep for awhile
-						if (stateProperty.get() == State.PAUSED) {
-							Thread.sleep(PAUSE_SLEEP_TIME);
-						}
-						// Play a chunk
-						if (!play()) {
-							break;
-						}
-						interactivityHook.accept(Player.this);
+	private transient final Runnable playerRunnable = () -> {
+		// Run until the player gets stopped
+		while (true) {
+			try {
+				// Open tune
+				open();
+				menuHook.accept(Player.this);
+				// Play next chunk of sound data, until it gets stopped
+				while (true) {
+					// Pause? sleep for awhile
+					if (stateProperty.get() == State.PAUSED) {
+						Thread.sleep(PAUSE_SLEEP_TIME);
 					}
-				} catch (InterruptedException e) {
-				} finally {
-					// Don't forget to close
-					close();
+					// Play a chunk
+					if (!play()) {
+						break;
+					}
+					interactivityHook.accept(Player.this);
 				}
-
-				// "Play it once, Sam. For old times' sake."
-				if (stateProperty.get() == State.RESTART) {
-					continue;
-				}
-				// Stop it
-				break;
+			} catch (InterruptedException e) {
+			} finally {
+				// Don't forget to close
+				close();
 			}
+
+			// "Play it once, Sam. For old times' sake."
+			if (stateProperty.get() == State.RESTART) {
+				continue;
+			}
+			// Stop it
+			break;
 		}
 	};
 
