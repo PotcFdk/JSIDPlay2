@@ -97,7 +97,7 @@ setbank:	sta $01
  
 setregs:	lda #cmdLineVars.get("flags").asNumber()
  	        pha
- 	        lda #cmdLineVars.get("songNum").asNumber()
+ 	        lda #cmdLineVars.get("songNum").asNumber()-1
  	        plp
  	        jsr init
 setiomap:	lda #cmdLineVars.get("initIOMap").asNumber()

@@ -288,7 +288,7 @@ class PSid extends Prg {
 	private int psidInstallDriver(final byte[] mem) {
 		HashMap<String, String> globals = new HashMap<String, String>();
 		globals.put("pc", String.valueOf(info.determinedDriverAddr));
-		globals.put("songNum", String.valueOf(info.currentSong - 1));
+		globals.put("songNum", String.valueOf(info.currentSong));
 		globals.put("songs", String.valueOf(info.songs));
 		globals.put("songSpeed", String
 				.valueOf(songSpeed[info.currentSong - 1] == Speed.CIA_1A ? 1
