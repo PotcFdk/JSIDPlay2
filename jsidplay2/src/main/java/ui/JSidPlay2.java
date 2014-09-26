@@ -101,6 +101,7 @@ import ui.printer.Printer;
 import ui.proxysettings.ProxySettings;
 import ui.siddump.SidDump;
 import ui.sidreg.SidReg;
+import ui.update.Update;
 import ui.videoscreen.Video;
 import ui.webview.WebView;
 import ui.webview.WebViewType;
@@ -1261,9 +1262,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	@FXML
+	private void updateCheck() {
+		new Update(util.getPlayer()).open();
+	}
+
+	@FXML
 	private void about() {
 		new About(util.getPlayer()).open();
-
 	}
 
 	private void addTab(Tab tab) {

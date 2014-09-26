@@ -288,6 +288,8 @@
 								<MenuItem text="%EXPORT" onAction="#exportConfiguration" />
 							</Menu>
 							<Menu text="%HELP">
+								<MenuItem text="%CHECK_FOR_UPDATES" onAction="#updateCheck" />
+								<SeparatorMenuItem />
 								<MenuItem text="%ABOUT" onAction="#about" />
 							</Menu>
 						</menus>
