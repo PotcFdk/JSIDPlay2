@@ -45,6 +45,7 @@ import javax.sound.sampled.LineUnavailableException;
 import libsidplay.C64;
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -254,7 +255,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		String sidDriver = util.getConfig().getAudio().getSidDriver();
 		sidDriverBox.getSelectionModel().select(sidDriver);
-		
+
 		devicesBox.setDisable(Audio.NONE.equals(audio));
 		samplingBox.setDisable(Audio.NONE.equals(audio));
 		samplingRateBox.setDisable(Audio.NONE.equals(audio));
@@ -680,31 +681,36 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void expansion0x2000() {
 		getFirstFloppy().setRamExpansion(0, expand2000.isSelected());
-		util.getConfig().getC1541().setRamExpansionEnabled0(expand2000.isSelected());
+		util.getConfig().getC1541()
+				.setRamExpansionEnabled0(expand2000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x4000() {
 		getFirstFloppy().setRamExpansion(1, expand4000.isSelected());
-		util.getConfig().getC1541().setRamExpansionEnabled1(expand4000.isSelected());
+		util.getConfig().getC1541()
+				.setRamExpansionEnabled1(expand4000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x6000() {
 		getFirstFloppy().setRamExpansion(2, expand6000.isSelected());
-		util.getConfig().getC1541().setRamExpansionEnabled2(expand6000.isSelected());
+		util.getConfig().getC1541()
+				.setRamExpansionEnabled2(expand6000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x8000() {
 		getFirstFloppy().setRamExpansion(3, expand8000.isSelected());
-		util.getConfig().getC1541().setRamExpansionEnabled3(expand8000.isSelected());
+		util.getConfig().getC1541()
+				.setRamExpansionEnabled3(expand8000.isSelected());
 	}
 
 	@FXML
 	private void expansion0xA000() {
 		getFirstFloppy().setRamExpansion(4, expandA000.isSelected());
-		util.getConfig().getC1541().setRamExpansionEnabled4(expandA000.isSelected());
+		util.getConfig().getC1541()
+				.setRamExpansionEnabled4(expandA000.isSelected());
 	}
 
 	@FXML
@@ -896,6 +902,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		SidTune.useDriver(sidDriver);
 		restart();
 	}
+
 	@FXML
 	public void setDevice() {
 		Device device = devicesBox.getSelectionModel().getSelectedItem();
@@ -1346,12 +1353,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (datasette.getMotor()) {
 			progress.setProgress(datasette.getProgress() / 100f);
 		}
+		// SID chip being used and current song number
+		String sid = determineSid();
+		String song = determineSong();
 		// Current play time / well-known song length
 		String statusTime = determinePlayTime();
 		String statusSongLength = determineSongLength();
-		// Memory usage
-		int totalMemory = determineMemusage(Runtime.getRuntime().totalMemory());
-		int freeMemory = determineMemusage(Runtime.getRuntime().freeMemory());
 		// tune speed
 		determineTuneSpeed();
 		// final status bar text
@@ -1360,13 +1367,29 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				.append(util.getBundle().getString("DATASETTE_COUNTER"))
 				.append(" %03d, ")
 				.append(util.getBundle().getString("FLOPPY_TRACK"))
-				.append(" %02d, ").append("%s%s")
-				.append(util.getBundle().getString("TIME")).append(" %s%s, ")
-				.append(util.getBundle().getString("MEM")).append(" %d/%d MB");
+				.append(" %02d, ").append("%s%s").append("%s").append("%s")
+				.append(util.getBundle().getString("TIME")).append(" %s%s");
 		status.setText(String.format(format.toString(), DATE,
 				datasette.getCounter(), halfTrack >> 1, playerId, tuneSpeed,
-				statusTime, statusSongLength, (totalMemory - freeMemory),
-				totalMemory));
+				sid, song, statusTime, statusSongLength));
+	}
+
+	private String determineSid() {
+		return String.format("%s, ", ChipModel.getChipModel(util.getConfig(),
+				util.getPlayer().getTune()));
+	}
+
+	private String determineSong() {
+		SidTune tune = util.getPlayer().getTune();
+		if (tune != null) {
+			SidTuneInfo info = tune.getInfo();
+			if (info.getSongs() > 1) {
+				return String.format("%s %d/%d, ",
+						util.getBundle().getString("SONG"),
+						info.getCurrentSong(), info.getSongs());
+			}
+		}
+		return "";
 	}
 
 	private String determinePlayTime() {
@@ -1384,10 +1407,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 					(songLength % 60));
 		}
 		return "";
-	}
-
-	private int determineMemusage(long mem) {
-		return (int) (mem / (1 << 20));
 	}
 
 	private void getPlayerId() {
