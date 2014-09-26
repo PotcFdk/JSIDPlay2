@@ -25,6 +25,19 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 		iniReader.setProperty("Audio", "Audio", audio);
 	}
 
+	protected String sidDriver;
+
+	@Override
+	public String getSidDriver() {
+		return iniReader.getPropertyString("Audio", "SIDDriver",
+				"/libsidplay/sidtune/psiddriver.asm");
+	}
+
+	@Override
+	public void setSidDriver(String sidDriver) {
+		iniReader.setProperty("Audio", "SIDDriver", sidDriver);
+	}
+
 	@Override
 	public int getDevice() {
 		return iniReader.getPropertyInt("Audio", "Device", 0);
@@ -63,7 +76,8 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final SamplingMethod getSampling() {
-		return iniReader.getPropertyEnum("Audio", "Sampling", SamplingMethod.DECIMATE);
+		return iniReader.getPropertyEnum("Audio", "Sampling",
+				SamplingMethod.DECIMATE);
 	}
 
 	/**

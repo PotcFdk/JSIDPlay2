@@ -27,6 +27,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.collections.FXCollections?> 
 <?import java.lang.Integer?>
+<?import java.lang.String?>
 <?import java.net.URL?>
 <?import libsidplay.common.Emulation?>
 <?import libsidplay.common.SamplingMethod?>
@@ -354,6 +355,15 @@
 									<Emulation fx:value="RESIDFP" />
 									<Emulation fx:value="HARDSID" />
 									<Emulation fx:value="NONE" />
+								</FXCollections>
+							</items>
+						</ComboBox>
+						<ComboBox onAction="#setSIDDriver" fx:id="sidDriverBox"
+							maxWidth="150">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<String fx:value="/libsidplay/sidtune/psiddriver.asm" />
+									<String fx:value="/libsidplay/sidtune/psiddriver_vice.asm" />
 								</FXCollections>
 							</items>
 						</ComboBox>

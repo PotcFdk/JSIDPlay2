@@ -35,7 +35,6 @@ import libsidplay.components.mos6510.MOS6510;
 import libsidutils.assembler.KickAssembler;
 
 class PSid extends Prg {
-	private static final String PSIDDRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
 
 	/**
 	 * Contains a mapping: Author to picture resource path.

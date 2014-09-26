@@ -154,6 +154,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private ComboBox<Audio> audioBox;
 	@FXML
+	private ComboBox<String> sidDriverBox;
+	@FXML
 	private ComboBox<Device> devicesBox;
 	@FXML
 	private ComboBox<Emulation> emulationBox;
@@ -250,6 +252,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		Audio audio = util.getConfig().getAudio().getAudio();
 		audioBox.getSelectionModel().select(audio);
 
+		String sidDriver = util.getConfig().getAudio().getSidDriver();
+		sidDriverBox.getSelectionModel().select(sidDriver);
+		
 		devicesBox.setDisable(Audio.NONE.equals(audio));
 		samplingBox.setDisable(Audio.NONE.equals(audio));
 		samplingRateBox.setDisable(Audio.NONE.equals(audio));
@@ -884,6 +889,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		restart();
 	}
 
+	@FXML
+	private void setSIDDriver() {
+		String sidDriver = sidDriverBox.getSelectionModel().getSelectedItem();
+		util.getConfig().getAudio().setSidDriver(sidDriver);
+		SidTune.useDriver(sidDriver);
+		restart();
+	}
 	@FXML
 	public void setDevice() {
 		Device device = devicesBox.getSelectionModel().getSelectedItem();

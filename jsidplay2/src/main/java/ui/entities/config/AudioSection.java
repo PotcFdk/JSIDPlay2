@@ -24,6 +24,18 @@ public class AudioSection implements IAudioSection {
 		this.audio = audio;
 	}
 
+	private String sidDriver = "/libsidplay/sidtune/psiddriver.asm";
+	
+	@Override
+	public String getSidDriver() {
+		return sidDriver;
+	}
+	
+	@Override
+	public void setSidDriver(final String sidDriver) {
+		this.sidDriver = sidDriver;
+	}
+
 	private int device = 0;
 
 	@Override

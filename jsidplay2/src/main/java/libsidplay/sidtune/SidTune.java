@@ -31,7 +31,7 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  */
 public abstract class SidTune {
 	public static final SidTune RESET = null;
-	
+
 	private static boolean ZIP_SUPPORTED;
 	static {
 		try {
@@ -89,11 +89,19 @@ public abstract class SidTune {
 
 	protected final Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
 
+	protected static String PSIDDRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
+
 	/**
 	 * Constructor
 	 */
 	protected SidTune() {
 		Arrays.fill(songSpeed, Speed.VBI);
+	}
+
+	public static void useDriver(String sidDriver) {
+		if (sidDriver != null) {
+			PSIDDRIVER_ASM = sidDriver;
+		}
 	}
 
 	/**

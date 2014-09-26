@@ -10,7 +10,7 @@ public interface IAudioSection {
 	 * 
 	 * @return the audio to be used
 	 */
-	public Audio getAudio();
+	Audio getAudio();
 
 	/**
 	 * Setter of the audio to be used.
@@ -18,9 +18,23 @@ public interface IAudioSection {
 	 * @param emulation
 	 *            audio to be used
 	 */
-	public void setAudio(Audio audio);
+	void setAudio(Audio audio);
 
-	public int getDevice();
+	/**
+	 * Getter of the SID driver to play SIDs.
+	 * 
+	 * @return SID driver to play SIDs
+	 */
+	String getSidDriver();
+	
+	/**
+	 * Setter of the SID driver to play SIDs.
+	 * 
+	 * @param sidDriver SID driver to play SIDs
+	 */
+	void setSidDriver(final String sidDriver);
+
+	int getDevice();
 
 	void setDevice(int device);
 
@@ -29,7 +43,7 @@ public interface IAudioSection {
 	 * 
 	 * @return Playback/Recording frequency
 	 */
-	public int getFrequency();
+	int getFrequency();
 
 	/**
 	 * Setter of the Playback/Recording frequency.
@@ -37,14 +51,14 @@ public interface IAudioSection {
 	 * @param freq
 	 *            Playback/Recording frequency
 	 */
-	public void setFrequency(int freq);
+	void setFrequency(int freq);
 
 	/**
 	 * Getter of the sampling method.
 	 * 
 	 * @return the sampling method
 	 */
-	public SamplingMethod getSampling();
+	SamplingMethod getSampling();
 
 	/**
 	 * Setter of the sampling method.
@@ -52,14 +66,14 @@ public interface IAudioSection {
 	 * @param method
 	 *            the sampling method
 	 */
-	public void setSampling(SamplingMethod method);
+	void setSampling(SamplingMethod method);
 
 	/**
 	 * Do we play the recording?
 	 * 
 	 * @return play the recording
 	 */
-	public boolean isPlayOriginal();
+	boolean isPlayOriginal();
 
 	/**
 	 * Setter to play the recorded tune.
@@ -67,14 +81,14 @@ public interface IAudioSection {
 	 * @param original
 	 *            Play recorded (original) or emulated tune
 	 */
-	public void setPlayOriginal(boolean original);
+	void setPlayOriginal(boolean original);
 
 	/**
 	 * Getter of the recorded tune filename.
 	 * 
 	 * @return the recorded tune filename
 	 */
-	public String getMp3File();
+	String getMp3File();
 
 	/**
 	 * Setter of the recorded tune filename.
@@ -82,14 +96,14 @@ public interface IAudioSection {
 	 * @param recording
 	 *            the recorded tune filename
 	 */
-	public void setMp3File(String recording);
+	void setMp3File(String recording);
 
 	/**
 	 * Getter of the left volume setting.
 	 * 
 	 * @return the left volume setting
 	 */
-	public float getLeftVolume();
+	float getLeftVolume();
 
 	/**
 	 * Setter of the left volume setting.
@@ -97,14 +111,14 @@ public interface IAudioSection {
 	 * @param volume
 	 *            the left volume setting
 	 */
-	public void setLeftVolume(float volume);
+	void setLeftVolume(float volume);
 
 	/**
 	 * Getter of the right volume setting.
 	 * 
 	 * @return the right volume setting
 	 */
-	public float getRightVolume();
+	float getRightVolume();
 
 	/**
 	 * Setter of the right volume setting.
@@ -112,6 +126,6 @@ public interface IAudioSection {
 	 * @param volume
 	 *            the right volume setting
 	 */
-	public void setRightVolume(float volume);
+	void setRightVolume(float volume);
 
 }
