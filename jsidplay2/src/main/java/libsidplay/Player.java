@@ -974,22 +974,22 @@ public class Player {
 		stateProperty.set(State.RESTART);
 	}
 
+	public final void firstSong() {
+		playList.first();
+		stateProperty.set(State.RESTART);
+	}
+
+	public final void lastSong() {
+		playList.last();
+		stateProperty.set(State.RESTART);
+	}
+
 	public final void fastForward() {
 		driverSettings.getAudio().getAudioDriver().fastForward();
 	}
 
 	public final void normalSpeed() {
 		driverSettings.getAudio().getAudioDriver().normalSpeed();
-	}
-
-	public final void selectFirstTrack() {
-		playList.first();
-		stateProperty.set(State.RESTART);
-	}
-
-	public final void selectLastTrack() {
-		playList.last();
-		stateProperty.set(State.RESTART);
 	}
 
 	public final int getNumDevices() {

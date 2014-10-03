@@ -251,11 +251,11 @@ public class ConsoleIO {
 			final int key = System.in.read();
 			switch (key) {
 			case 'h':
-				player.selectFirstTrack();
+				player.firstSong();
 				break;
 
 			case 'e':
-				player.selectLastTrack();
+				player.lastSong();
 				break;
 
 			case '>':
