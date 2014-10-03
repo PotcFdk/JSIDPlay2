@@ -936,7 +936,9 @@ public class Player {
 				c64.setSID(num, null);
 			});
 		}
-		driverSettings.getAudio().getAudioDriver().close();
+		if (driverSettings != null) {
+			driverSettings.getAudio().getAudioDriver().close();
+		}
 	}
 
 	/**

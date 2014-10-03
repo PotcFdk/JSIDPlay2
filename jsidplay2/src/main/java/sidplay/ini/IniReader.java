@@ -232,7 +232,8 @@ public class IniReader {
 		if (settings == null) {
 			sections.put(section, settings = new HashMap<String, String>());
 		}
-		String newValue = String.valueOf(value);
+		String newValue = value instanceof Enum ? ((Enum<?>) value).name()
+				: String.valueOf(value);
 
 		String oldValue = null;
 		if (settings.containsKey(key)) {
