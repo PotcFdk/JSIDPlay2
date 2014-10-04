@@ -125,7 +125,7 @@ public class ConsolePlayer {
 			commander.setCaseSensitiveOptions(true);
 			if (help || filenames.size() != 1) {
 				commander.usage();
-				exit(help ? 0 : 1);
+				exit(1);
 			}
 		} catch (ParameterException e) {
 			System.err.println(e.getMessage());
@@ -171,7 +171,8 @@ public class ConsolePlayer {
 			// check song length
 			if (defaultLength == 0) {
 				setSIDDatabase(player);
-				int length = player.getSidDatabaseInfo(db -> db.getSongLength(tune));
+				int length = player.getSidDatabaseInfo(db -> db
+						.getSongLength(tune));
 				if (isRecording()
 						&& (!config.getSidplay2().isEnableDatabase() || length == 0)) {
 					System.err
@@ -211,10 +212,8 @@ public class ConsolePlayer {
 
 	private void exit(int rc) {
 		try {
-			if (rc == 0) {
-				System.out.println("Press <enter> to exit the player!");
-				System.in.read();
-			}
+			System.out.println("Press <enter> to exit the player!");
+			System.in.read();
 			System.exit(rc);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
