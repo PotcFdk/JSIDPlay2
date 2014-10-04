@@ -32,6 +32,7 @@ import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -731,7 +732,7 @@ public class Player {
 		this.interactivityHook = interactivityHook;
 	}
 
-	public final ObjectProperty<State> stateProperty() {
+	public final ReadOnlyObjectProperty<State> stateProperty() {
 		return stateProperty;
 	}
 
