@@ -7,10 +7,11 @@ import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import libsidplay.Player;
-import libsidplay.player.Timer;
+import libsidplay.common.ChipModel;
 import libsidplay.player.PlayList;
+import libsidplay.player.Timer;
 import libsidplay.sidtune.SidTune;
-import libsidplay.sidtune.SidTune.Model;
+import sidplay.audio.AudioConfig;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IConsoleSection;
 
@@ -207,13 +208,16 @@ public class ConsoleIO {
 
 	private void printSIDDetails(PrintStream out,
 			final IConsoleSection console, final SidTune tune) {
-		StringBuffer line = new StringBuffer(String.format(
-				BUNDLE.getString("FILTER") + " = %s",
-				Boolean.valueOf(config.getEmulation().isFilter())));
-		/* XXX ignores 2nd SID */
-		line.append(String.format(", " + BUNDLE.getString("MODEL") + " = %s",
-				(tune.getInfo().getSid1Model() == Model.MOS8580 ? "8580"
-						: "6581")));
+		StringBuffer line = new StringBuffer();
+		line.append(BUNDLE.getString("FILTER")
+				+ (config.getEmulation().isFilter() ? " = on, " : " = off, "));
+		ChipModel chipModel = ChipModel.getChipModel(config, tune);
+		line.append(String.format(BUNDLE.getString("MODEL") + " = %s",
+				chipModel));
+		if (AudioConfig.isStereo(config, tune)) {
+			ChipModel stereoModel = ChipModel.getStereoModel(config, tune);
+			line.append(String.format("(%s)", stereoModel));
+		}
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("SID_DETAILS"), line.toString(),
 				console.getVertical());
@@ -222,9 +226,9 @@ public class ConsoleIO {
 	private void printKeyboardControls(PrintStream out) {
 		out.println(BUNDLE.getString("KEYBOARD_CONTROLS"));
 		out.println(BUNDLE.getString("FORWARD_REWIND"));
+		out.println(BUNDLE.getString("FIRST_LAST"));
 		out.println(BUNDLE.getString("NORMAL_FAST"));
 		out.println(BUNDLE.getString("PAUSE_CONTINUE"));
-		out.println(BUNDLE.getString("FIRST_LAST"));
 		out.println(BUNDLE.getString("MUTE_1"));
 		out.println(BUNDLE.getString("MUTE_2"));
 		out.println(BUNDLE.getString("MUTE_3"));
