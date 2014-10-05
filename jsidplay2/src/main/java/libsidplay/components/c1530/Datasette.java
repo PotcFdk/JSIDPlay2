@@ -803,6 +803,7 @@ public abstract class Datasette {
 	 * Reset datasette.
 	 */
 	public final void reset() {
+		motor = false;
 		if (resetDatasetteWithMainCPU) {
 			try {
 				internalReset();

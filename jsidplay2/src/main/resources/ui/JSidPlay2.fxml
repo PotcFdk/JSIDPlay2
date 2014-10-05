@@ -31,6 +31,7 @@
 <?import java.net.URL?>
 <?import libsidplay.common.Emulation?>
 <?import libsidplay.common.SamplingMethod?>
+<?import libsidplay.common.CPUClock?>
 <?import sidplay.audio.Audio?>
 <?import ui.musiccollection.MusicCollection?>
 <?import ui.diskcollection.DiskCollection?>
@@ -57,7 +58,6 @@
 					<fx:define>
 						<ToggleGroup fx:id="playSpeedGroup" />
 						<ToggleGroup fx:id="videoCaptureGroup" />
-						<ToggleGroup fx:id="videoStandardGroup" />
 						<ToggleGroup fx:id="floppyGroup" />
 						<ToggleGroup fx:id="extensionGroup" />
 						<ToggleGroup fx:id="playSourceGroup" />
@@ -274,12 +274,6 @@
 								</MenuItem>
 							</Menu>
 							<Menu text="%SETTINGS">
-								<Menu text="%VIDEO_STANDARD">
-									<RadioMenuItem text="%PAL" toggleGroup="$videoStandardGroup"
-										onAction="#videoStandardPal" fx:id="pal" />
-									<RadioMenuItem text="%NTSC" toggleGroup="$videoStandardGroup"
-										onAction="#videoStandardNtsc" fx:id="ntsc" />
-								</Menu>
 								<MenuItem text="%EMULATION_SETTINGS" onAction="#emulationSettings" />
 								<MenuItem text="%JOYSTICK_SETTINGS" onAction="#joystickSettings" />
 								<MenuItem text="%PROXY_SETTINGS" onAction="#proxySettings" />
@@ -350,6 +344,14 @@
 				</AnchorPane>
 				<AnchorPane>
 					<HBox AnchorPane.leftAnchor="10" alignment="CENTER">
+						<ComboBox onAction="#setVideoStandard" fx:id="videoStandardBox">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<CPUClock fx:value="PAL" />
+									<CPUClock fx:value="NTSC" />
+								</FXCollections>
+							</items>
+						</ComboBox>
 						<ComboBox onAction="#setEmulation" fx:id="emulationBox">
 							<items>
 								<FXCollections fx:factory="observableArrayList">

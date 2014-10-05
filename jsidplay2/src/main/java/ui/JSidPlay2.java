@@ -64,6 +64,7 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import sidplay.audio.Audio;
+import sidplay.audio.AudioConfig;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
@@ -145,12 +146,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			expand2000, expand4000, expand6000, expand8000, expandA000,
 			turnPrinterOn;
 	@FXML
-	protected RadioMenuItem normalSpeed, fastForward, ntsc, pal, c1541,
+	protected RadioMenuItem normalSpeed, fastForward, c1541,
 			c1541_II, neverExtend, askExtend, accessExtend;
 	@FXML
 	protected MenuItem previous, next;
 	@FXML
 	private ComboBox<SamplingMethod> samplingBox;
+	@FXML
+	private ComboBox<CPUClock> videoStandardBox;
 	@FXML
 	private ComboBox<Integer> samplingRateBox, hardsid6581Box, hardsid8580Box;
 	@FXML
@@ -277,6 +280,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				.getFrequency());
 		samplingRateBox.getSelectionModel().select(samplingRate);
 
+		CPUClock videoStandard = CPUClock.getCPUClock(util.getConfig(), util
+				.getPlayer().getTune());
+		videoStandardBox.getSelectionModel().select(videoStandard);
+
 		hardsid6581Box.getSelectionModel().select(
 				Integer.valueOf(util.getConfig().getEmulation()
 						.getHardsid6581()));
@@ -334,10 +341,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		turnPrinterOn.selectedProperty().bindBidirectional(
 				printer.printerOnProperty());
 
-		CPUClock defClk = util.getConfig().getEmulation()
-				.getDefaultClockSpeed();
-		(defClk != null ? defClk == CPUClock.NTSC ? ntsc : pal : pal)
-				.setSelected(true);
 		FloppyType floppyType = util.getConfig().getC1541().getFloppyType();
 		(floppyType == FloppyType.C1541 ? c1541 : c1541_II).setSelected(true);
 		ExtendImagePolicy extendImagePolicy = util.getConfig().getC1541()
@@ -544,15 +547,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	@FXML
-	private void videoStandardPal() {
-		util.getConfig().getEmulation().setDefaultClockSpeed(CPUClock.PAL);
-		reset();
-	}
-
-	@FXML
-	private void videoStandardNtsc() {
-		util.getConfig().getEmulation().setDefaultClockSpeed(CPUClock.NTSC);
-		reset();
+	private void setVideoStandard() {
+		CPUClock videoStandard = videoStandardBox.getSelectionModel()
+				.getSelectedItem();
+		util.getConfig().getEmulation().setDefaultClockSpeed(videoStandard);
+		restart();
 	}
 
 	@FXML
@@ -1358,30 +1357,49 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (datasette.getMotor()) {
 			progress.setProgress(datasette.getProgress() / 100f);
 		}
-		// SID chip being used and current song number
-		String sid = determineSid();
-		String song = determineSong();
-		// Current play time / well-known song length
-		String statusTime = determinePlayTime();
-		String statusSongLength = determineSongLength();
-		// tune speed
 		determineTuneSpeed();
 		// final status bar text
-		StringBuilder format = new StringBuilder();
-		format.append(util.getBundle().getString("RELEASE")).append(" %s, ")
-				.append(util.getBundle().getString("DATASETTE_COUNTER"))
-				.append(" %03d, ")
-				.append(util.getBundle().getString("FLOPPY_TRACK"))
-				.append(" %02d, ").append("%s%s").append("%s").append("%s")
-				.append(util.getBundle().getString("TIME")).append(" %s%s");
-		status.setText(String.format(format.toString(), DATE,
-				datasette.getCounter(), halfTrack >> 1, playerId, tuneSpeed,
-				sid, song, statusTime, statusSongLength));
+		StringBuilder line = new StringBuilder();
+		line.append(String.format("%s: %s, ",
+				util.getBundle().getString("RELEASE"), DATE));
+		line.append(determineChipModel());
+		line.append(determineVideoNorm());
+		line.append(playerId);
+		line.append(tuneSpeed);
+		line.append(determineSong());
+		if (datasette.getMotor()) {
+			line.append(String.format("%s: %03d, ",
+					util.getBundle().getString("DATASETTE_COUNTER"),
+					datasette.getCounter()));
+		}
+		if (c1541.getDiskController().isMotorOn()) {
+			line.append(String.format("%s: %02d, ",
+					util.getBundle().getString("FLOPPY_TRACK"), halfTrack >> 1));
+		}
+		line.append(String.format("%s: %s%s", util.getBundle()
+				.getString("TIME"), determinePlayTime(), determineSongLength()));
+		status.setText(line.toString());
 	}
 
-	private String determineSid() {
-		return String.format("%s, ", ChipModel.getChipModel(util.getConfig(),
-				util.getPlayer().getTune()));
+	private String determineChipModel() {
+		StringBuilder line = new StringBuilder();
+		ChipModel chipModel = ChipModel.getChipModel(util.getConfig(), util
+				.getPlayer().getTune());
+		line.append(String.format("%s", chipModel));
+		if (AudioConfig.isStereo(util.getConfig(), util.getPlayer().getTune())) {
+			ChipModel stereoModel = ChipModel.getStereoModel(util.getConfig(),
+					util.getPlayer().getTune());
+			line.append(String.format("+%s", stereoModel));
+		}
+		line.append(", ");
+		return line.toString();
+	}
+
+	private String determineVideoNorm() {
+		return String.format(
+				"%s, ",
+				CPUClock.getCPUClock(util.getConfig(),
+						util.getPlayer().getTune()).name());
 	}
 
 	private String determineSong() {
@@ -1389,7 +1407,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (tune != null) {
 			SidTuneInfo info = tune.getInfo();
 			if (info.getSongs() > 1) {
-				return String.format("%s %d/%d, ",
+				return String.format("%s: %d/%d, ",
 						util.getBundle().getString("SONG"),
 						info.getCurrentSong(), info.getSongs());
 			}
@@ -1419,7 +1437,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (util.getPlayer().getTune() != null) {
 			for (final String id : util.getPlayer().getTune().identify()) {
 				playerId.append(util.getBundle().getString("PLAYER_ID"))
-						.append(" ").append(id);
+						.append(": ").append(id);
 				int length = id.length();
 				playerId.setLength(playerId.length()
 						- (length - Math.min(length, 14)));
@@ -1449,7 +1467,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				/* convert to number of calls per frame */
 				tuneSpeed.setLength(0);
 				tuneSpeed.append(util.getBundle().getString("SPEED")).append(
-						String.format(" %.1fx, ", callsSinceLastRead
+						String.format(": %.1fx, ", callsSinceLastRead
 								/ systemClock.getRefresh()));
 			}
 		} else {

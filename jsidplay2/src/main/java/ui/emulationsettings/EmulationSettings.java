@@ -38,7 +38,7 @@ public class EmulationSettings extends C64Window {
 							.getStereoSidModel();
 					sid2Model.getSelectionModel().select(
 							stereoSidModel != null ? stereoSidModel : util
-									.getBundle().getString("LIKE_1ST_SID"));
+									.getBundle().getString("AUTO"));
 					ChipModel model = ChipModel.getChipModel(util.getConfig(),
 							util.getPlayer().getTune());
 					addFilters(model);
@@ -116,7 +116,7 @@ public class EmulationSettings extends C64Window {
 				ChipModel.MOS6581, ChipModel.MOS8580);
 		sid1Model.setItems(sid1Models);
 		sid2Models = FXCollections.<Object> observableArrayList();
-		sid2Models.addAll(util.getBundle().getString("LIKE_1ST_SID"),
+		sid2Models.addAll(util.getBundle().getString("AUTO"),
 				ChipModel.MOS6581, ChipModel.MOS8580);
 		sid2Model.setItems(sid2Models);
 		defaultModels = FXCollections.<ChipModel> observableArrayList();
@@ -132,7 +132,7 @@ public class EmulationSettings extends C64Window {
 				.getStereoSidModel();
 		sid2Model.getSelectionModel().select(
 				stereoSidModel != null ? stereoSidModel : util.getBundle()
-						.getString("LIKE_1ST_SID"));
+						.getString("AUTO"));
 		ChipModel defautSidModel = util.getConfig().getEmulation()
 				.getDefaultSidModel();
 		defaultModel.getSelectionModel().select(defautSidModel);
@@ -177,7 +177,7 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private void setSid2Model() {
 		if (sid2Model.getSelectionModel().getSelectedItem()
-				.equals(util.getBundle().getString("LIKE_1ST_SID"))) {
+				.equals(util.getBundle().getString("AUTO"))) {
 			util.getConfig().getEmulation().setStereoSidModel(null);
 		} else {
 			ChipModel stereoSidModel = (ChipModel) sid2Model
