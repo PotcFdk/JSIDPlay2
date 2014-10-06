@@ -560,8 +560,8 @@
 								<ant antfile="${basedir}/online-content.xml">
 									<property name="compile_classpath" refid="maven.compile.classpath" />
 									<property name="test_src" location="${basedir}/src/test/resources" />
-									<property name="jsiddevice_jar"
-										value="${project.build.directory}/deploy/jsiddevice-${project.version}.jar" />
+									<property name="deploy_dir" value="${project.build.directory}/deploy" />
+									<property name="jsiddevice" value="jsiddevice-${project.version}" />
 									<property name="gb64.mdbfile" value="${gb64.mdbfile}" />
 									<property name="hvsc.zip" value="${hvsc.zip}" />
 									<property name="zip7.home" value="${zip7.home}" />
