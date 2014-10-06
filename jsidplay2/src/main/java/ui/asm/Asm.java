@@ -21,6 +21,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.TextFieldTableCell;
 import libsidplay.Player;
+import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import libsidutils.assembler.KickAssembler;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -125,16 +127,19 @@ public class Asm extends Tab implements UIPart {
 			byte[] assembly = assembler.assemble(ASM_RESOURCE, asm, globals);
 			int startAddress = (assembly[0] & 0xff)
 					+ ((assembly[1] & 0xff) << 8);
-			byte[] ram = util.getPlayer().getC64().getRAM();
-			System.arraycopy(assembly, 2, ram, startAddress,
-					assembly.length - 2);
+			InputStream is = new ByteArrayInputStream(assembly);
+			SidTune tune = SidTune.load("assembly.prg", is);
 			status.setText("");
+			util.getPlayer().setCommand(String.format("SYS %d\r", startAddress));
+			util.getPlayer().play(tune);
 		} catch (AsmError e) {
 			if (e.getDebugInfo() != null) {
 				highlightError(e);
 			}
 			status.setText(e.getMessage());
 		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();
 		}
 	}

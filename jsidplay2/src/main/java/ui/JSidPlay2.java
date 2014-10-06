@@ -1362,8 +1362,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		StringBuilder line = new StringBuilder();
 		line.append(String.format("%s: %s, ",
 				util.getBundle().getString("RELEASE"), DATE));
-		line.append(determineChipModel());
 		line.append(determineVideoNorm());
+		line.append(determineChipModel());
 		line.append(playerId);
 		line.append(tuneSpeed);
 		line.append(determineSong());
