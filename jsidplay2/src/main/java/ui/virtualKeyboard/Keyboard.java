@@ -469,6 +469,50 @@ public class Keyboard extends C64Window {
 				});
 	}
 
+	@FXML
+	private void list() {
+		typeInCommand("LIST\r");
+	}
+	
+	@FXML
+	private void run() {
+		typeInCommand("RUN\r");
+	}
+	
+	@FXML
+	private void sys() {
+		typeInCommand("SYS 49152");
+	}
+	
+	@FXML
+	private void reset() {
+		typeInCommand("SYS 64738\r");
+	}
+	
+	@FXML
+	private void directory() {
+		typeInCommand("LOAD\"$\",8\r");
+	}
+	
+	@FXML
+	private void diskLoad() {
+		typeInCommand("LOAD\"*\",8,1\r");
+	}
+	
+	@FXML
+	private void tapeLoad() {
+		typeInCommand("LOAD\r");
+	}
+	
+	private void typeInCommand(String command) {
+		byte[] ram = getC64().getRAM();
+		final int length = Math.min(command.length(), 16);
+		for (int i = 0; i < length; i++) {
+			ram[0x277 + i] = (byte) command.charAt(i);
+		}
+		ram[0xc6] = (byte) length;
+	}
+
 	protected C64 getC64() {
 		return util.getPlayer().getC64();
 	}
