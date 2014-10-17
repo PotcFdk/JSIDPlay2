@@ -493,11 +493,10 @@ public class FavoritesTab extends Tab implements UIPart {
 	void saveFavorites(File favoritesFile) throws IOException {
 		favoritesFile = addFileExtension(favoritesFile);
 		try (PrintStream p = new PrintStream(favoritesFile)) {
-			for (HVSCEntry hvscEntry : favoritesSection.getFavorites()) {
+			for (HVSCEntry hvscEntry : favoritesTable.getItems()) {
 				p.println(new TFile(hvscEntry.getPath()).getPath());
 			}
 		}
-
 	}
 
 	void playNext() {
