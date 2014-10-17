@@ -31,7 +31,18 @@
 	<!-- webstart -->
 	<property name="webstart_dir" location="${result_dir}/webstart" />
 
-	<target name="all" depends="jsiddevice,webstart,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import" />
+	<target name="all" depends="jsiddevice,webstart,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import,updateVersion" />
+
+	<!-- ================================= 
+          target: updateVersion
+          Description:
+          Update latest version.
+         ================================= -->
+	<target name="updateVersion">
+   		<propertyfile file="latest.properties">
+			<entry operation="=" type="string" key="version" value="${project.version}" />
+		</propertyfile>
+	</target>
 
 	<!-- ================================= 
           target: jsiddevice
