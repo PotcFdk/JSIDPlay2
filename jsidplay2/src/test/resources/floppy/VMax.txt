@@ -1,0 +1,63 @@
+LordCrass@CSDB wrote:
+Revolution-V is a native-C64 copy program for copying disks that were written in the V-Max 2 or newer format. 
+
+ Copiers that do this already exist, but the difference is that this one does it using standard hardware. No parallel cables, extra drive RAM, or slowed down motors needed. Just a C64 and a 1541/1541-II/1571 (or 100% compatible) drive is required. 1 or 2 drives are supported. 256kB or larger REU is also supported, but not required. 
+
+ I have no web hosting, so I've just thrown it up on Arnold for now: 
+
+ftp://arnold.c64.org/pub/incoming/Revolution-V.d64
+
+I don't have a CSDB account, so I can't modify anything on there. 
+
+ As to how it can copy the disks without extra hardware, it helps to know how the disk is laid out and what the loader is looking for. Long post coming up, for the tldr version, skip to the end. 
+
+ There are actually 3 different copy routines within the program. One for CBM DOS, one for the track 20 loader, and one for the V-Max formatted tracks. 
+
+ There are 2 main versions of V-Max that the copier deals with. Version 2 (this is found on Rocket Ranger, Three Stooges, and a handful of other titles), and Version 3/4 (found on Arkanoid 2, Contra, Times of Lore, and many others). 
+
+ Version 2 has 22 sectors per track on tracks 1-17, and 20 sectors per track for tracks 18-38. Each sector consists of: 
+
+ header marker byte 1 
+ a series of repeating byte pairs 
+ header marker byte 2 
+ $140 bytes of sector data 
+ end-of-sector marker byte 
+
+ The marker bytes are either $64,$46, or $4E, depending on the title. Marker byte 2 will always be different from marker byte 1. The $46 byte is problematic on certain drives due to having three "0" bits in a row. The copier has the option to change this for you (it forces $64/$4e). These bytes are hard-coded into the loader on track 20. 
+
+ The repeating byte pairs are eor'd together to get the sector number. Only one pair is required for the loader to function, but there is typically between 9 and 11 pairs written to disk. The copier writes 8 pairs, which shortens the track, but also keeps the disk from having an unusually large track gap area which would occur if only 1 pair was written. Version 2 doesn't use denser-than-normal tracks from what I've seen, so reducing track length was more of a matter of convenience than requirement. 
+
+ The data block is always $140 bytes long and the encoding is rigged so that all bytes always have the high bit set, so they are differentiated from the marker bytes and end-of-sector byte. There are at 2 different GCR encoding tables that were used (maybe more, I have not seen every game out there), but they only differed by 2 bytes. The copier detects which is in use when it decodes the track 20 loader and adjusts the routines accordingly. The GCR is a 3:4 ratio (3 regular bytes encode to 4 GCR bytes) and is decoded/checksummed in real-time. The loader can read every 3rd sector, but uses an interleave of 4 so that it will not overshoot the next sector if interrupt processing on the C64 causes a delay. 
+
+ The end-of-sector byte is a byte with the high-bit stripped. This is usually $7F, but can sometimes simply be header marker byte 1 of the next sector. 
+
+ Once the data block is decoded in drive memory, it is executed as code. There is a small routine at the beginning of the sector that calls the transfer routine and sets the next track and sector number. This code is followed by one byte for parity information and then the data payload. The payload is pre-scrambled so that the transfer routine does not have to rearrange the bit order on the host side. 
+
+ V-Max doesn't care if there's anything between the sectors. It doesn't look for a sync mark, nor care if any are present on the disk. There is sometimes just a single one at the start of the track, and sometimes there is a short 10-bit sync between sectors. This version of the loader always starts each track at sector 0, so technically only the sync mark preceding sector 0 matters. The copier writes 2 sectors at a time, sequentially, with a small gap of about 3 bytes after each pair. Each sector is written prefixed with a 10-bit sync mark ($5B $FF) to ensure framing after the write splice. The copier then waits for the end of the previously written sector (1 revolution) to appear under the head, and repeats until all sectors on the track have been written. This makes writing somewhat slow, about 3 seconds per track. It also writes a CBM DOS header to the start of every odd numbered track so that the drive can find where the head is if you try to load one of these games after drive power-on and the head isn't on one of the DOS tracks. The DOS header is something the 8k copiers will not include, which reduces the user-friendliness of the copy. 
+
+ The loader track is encoded in a 2:3 GCR ratio and contains a special sequence of bytes that mark the start of 7 blocks that are stored sequentially which decode to one page of drive memory each, followed by a parity byte that is encoded in a 1:2 ratio. The sectors are read into drive RAM from $100-$7ff, with the booter routine in $700 being overwritten at the end as it's loading. As a result, it does not check the parity byte for the final sector, nor does the parity information exist for this block on the track. The booter routine is located in a standard DOS sector on track 18. The copier writes a shortened form of the header followed by the first sector, then 2 gap bytes. It waits one revolution, counts its way through the first sector, then writes a sync mark, a $55 byte, and the following sector, then repeat. The booter is modified to wait for the sync mark after each block and to throw away the $55 byte, which there to prevent misframing in the event the next GCR byte has the high bit set. 
+
+ Originally I had an idea of a way to write all of track 20 without turning off the write head, which would mean no modification to the booter would be necessary, but it didn't pan out. The idea was to load $200 bytes of the track into drive memory, and in the buffer between $100-$200 bytes look for a special pair of GCR bytes. This pair would have at least the lower 2 bits set of the first byte, and the following byte with the high bit not set. During the write routine, when this pair is reached, write the first byte, then put an $FF byte into $1C01 and jump into the transfer routine, receiving the next $200 bytes or so from the C64, then jumping back to the write routine and continuing where it left off. This would leave a large sync mark between the byte pair, but would not affect data coming into the standard BVC *, CLV, LDX $1C01, etc loop when the loader reads it. It turned out I couldn't find a transfer routine faster than about 50-something cycles per byte, which would result in the loader taking up 3x the space and not fitting on the track. This could be done with a 1571 and C128 (1571 at 2MHz and C64 mode running the xfer routine at 2MHz), but the goal was to get this running on a standard C64/1541 combo, so I had to settle for the small modification to the booter. At the same time, I made another small patch to the booter that fixes the JiffyDOS incompatibility. 
+
+ V-Max 3 uses the same GCR encoding as V2 for both the V-Max formatted tracks and the track 20 loader, but the sector layout is different: 
+
+ 4 (v4) or 7 (v3) GCR $49 bytes marking beginning of sector. 
+ $EE byte marking end of header. 
+ Up to $118 GCR bytes of sector data 
+ end-of-sector byte ($7F or the $49 byte from next header) 
+
+ The sectors are no longer a fixed size, but can be almost any length up to $118 bytes. The sector number is now encoded as part of the sector data, along with 5 other bytes of sector information: 
+
+ File number 
+ $60 byte (RTS) 
+ Next track in file chain (high bit set if it is the last sector for the file, and will point to track 19) 
+ Sector parity byte 
+ Size of payload to send to host (bytes/3) 
+
+ With this information, along with the load address in the payload of each sector for the host-side, sectors can be loaded out-of-order and interleave doesn't matter, although it winds up being 3. The data payload is pre-scrambled, as in V2. Track 19 contains the recovery sector, which contains clean-up code for the drive and host, as well as instruction on what to do with the loaded code. 
+
+ The copier reduces the $49 marker bytes to 3, although 2 is possible for all titles except those using version 3b, which requires 3 bytes to be reliable. It also removes 3 bytes of padding at the end of sectors that have it (3 zero bytes, which encodes as 4 $F7 bytes), which is almost all of them and saves approximately 100 bytes per track. They are never transferred to the C64 during load, and the only reason I can see for those existing is to increase the track length to the point where it requires a slower motor to duplicate. 
+
+ Track 20 loader is now 8 blocks instead of 7, and covers the zero-page of drive memory. The booter is stored on track 18 again (and in part of the BAM sector), but in a different sector, and is eor'd with byte $A7 for simple encryption. The booter also contains the track table which tells the loader how many V-Max sectors occupy each track. The remaining file information is stored in the relative file side-sector bytes for each file in the directory track. 
+
+ TLDR version: Shortened the headers, trimmed the excess padding off the data blocks, added sync marks to the loader track's blocks and modded the booter to look for them.
