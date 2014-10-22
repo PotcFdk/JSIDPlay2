@@ -328,6 +328,19 @@
 								</ImageView>
 							</graphic>
 						</Button>
+						<Button focusTraversable="false" onAction="#nextFavorite"
+							fx:id="nextFavorite">
+							<tooltip>
+								<Tooltip text="%NEXT_FAVORITE" />
+							</tooltip>
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/favorite_next.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
 						<Button focusTraversable="false" onAction="#stopSong">
 							<tooltip>
 								<Tooltip text="%STOP2" />

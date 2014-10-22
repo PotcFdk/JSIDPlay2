@@ -15,6 +15,8 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
@@ -146,8 +148,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			expand2000, expand4000, expand6000, expand8000, expandA000,
 			turnPrinterOn;
 	@FXML
-	protected RadioMenuItem normalSpeed, fastForward, c1541,
-			c1541_II, neverExtend, askExtend, accessExtend;
+	protected RadioMenuItem normalSpeed, fastForward, c1541, c1541_II,
+			neverExtend, askExtend, accessExtend;
 	@FXML
 	protected MenuItem previous, next;
 	@FXML
@@ -173,7 +175,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	protected RadioButton playMP3, playEmulation;
 	@FXML
-	protected Button previous2, next2, volumeButton, mp3Browse;
+	protected Button previous2, next2, nextFavorite, volumeButton, mp3Browse;
 	@FXML
 	protected Tooltip previous2ToolTip, next2ToolTip;
 	@FXML
@@ -193,6 +195,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private int oldHalfTrack, hardcopyCounter;
 	private boolean duringInitialization, oldMotorOn;
 	private StringBuilder tuneSpeed, playerId;
+	private BooleanProperty nextFavoriteState;
 
 	public JSidPlay2(Stage primaryStage, Player player) {
 		super(primaryStage, player);
@@ -212,6 +215,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				.stateProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
+							SidTune sidTune = util.getPlayer().getTune();
+							Platform.runLater(() -> nextFavoriteState
+									.set(sidTune == SidTune.RESET
+											|| !(newValue == State.RUNNING || newValue == State.PAUSED)));
 							if (newValue == State.RUNNING) {
 								Platform.runLater(() -> {
 									getPlayerId();
@@ -220,8 +227,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 											.getTime(Phase.PHI1);
 									updatePlayerButtons(newValue);
 
-									SidTune sidTune = util.getPlayer()
-											.getTune();
 									final Tab selectedItem = tabbedPane
 											.getSelectionModel()
 											.getSelectedItem();
@@ -253,6 +258,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				);
 		pauseContinue.selectedProperty().bindBidirectional(
 				pauseContinue2.selectedProperty());
+		nextFavoriteState = new SimpleBooleanProperty(true);
+		nextFavorite.disableProperty().bind(nextFavoriteState);
 
 		Audio audio = util.getConfig().getAudio().getAudio();
 		audioBox.getSelectionModel().select(audio);
@@ -524,6 +531,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void playFastForward() {
 		util.getPlayer().fastForward();
+	}
+
+	@FXML
+	private void nextFavorite() {
+		util.getPlayer().getTimer().end();
 	}
 
 	@FXML
