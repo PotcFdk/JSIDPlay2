@@ -3,6 +3,7 @@ package ui;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import javafx.application.Application;
@@ -29,6 +30,19 @@ import ui.entities.config.service.ConfigService;
  *         SID Player main class
  */
 public class JSIDPlay2Main extends Application {
+
+	/**
+	 * Language dependent messages resource.
+	 */
+	private static final String JSIDPLAY2_MAIN_PROPERTIES = "ui.JSidPlay2Main";
+	/**
+	 * Language dependent message.
+	 */
+	private static final String IMPORT_CONFIGURATION = "IMPORT_CONFIGURATION";
+	/**
+	 * Language dependent message.
+	 */
+	private static final String CONFIGURATION_ERROR = "CONFIGURATION_ERROR";
 
 	/**
 	 * Filename of the jsidplay2 configuration database.
@@ -147,6 +161,8 @@ public class JSIDPlay2Main extends Application {
 	 * @return the players configuration to be used
 	 */
 	private Configuration getConfiguration() {
+		ResourceBundle bundle = ResourceBundle
+				.getBundle(JSIDPLAY2_MAIN_PROPERTIES);
 		try {
 			em = Persistence.createEntityManagerFactory(
 					PersistenceProperties.CONFIG_DS,
@@ -156,13 +172,16 @@ public class JSIDPlay2Main extends Application {
 			Configuration config = configService.getOrCreate();
 			// Import configuration (if flagged)
 			if (configService.shouldBeRestored(config)) {
-				System.out.println("Import Configuration!");
+				System.out.printf(bundle.getString(IMPORT_CONFIGURATION),
+						config.getReconfigFilename());
 				config = configService.importCfg(config);
 			}
 			return config;
 		} catch (Throwable e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			// fatal database error?
+			System.out.printf(bundle.getString(CONFIGURATION_ERROR),
+					getConfigDatabasePath().getAbsolutePath());
 			System.exit(0);
 			return null;
 		}
