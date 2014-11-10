@@ -30,6 +30,7 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
+import libsidplay.sidtune.SidTune;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.ini.intf.IConfig;
@@ -149,13 +150,13 @@ public class ReSIDBuilder extends SIDBuilder {
 	private final MixerEvent mixerEvent = new MixerEvent();
 
 	public ReSIDBuilder(IConfig config, AudioConfig audioConfig,
-			CPUClock cpuClock, Audio audio) {
+			CPUClock cpuClock, Audio audio, SidTune tune) {
 		this.audioConfig = audioConfig;
 		this.cpuClock = cpuClock;
 		this.audio = audio;
 		setMixerVolume(0, config.getAudio().getLeftVolume());
 		setMixerVolume(1, config.getAudio().getRightVolume());
-		switchToNullDriver();
+		switchToNullDriver(tune);
 	}
 
 	@Override
@@ -206,12 +207,13 @@ public class ReSIDBuilder extends SIDBuilder {
 	/**
 	 * Before the timer start time is being reached, use NULL driver to shorten
 	 * the duration to wait for the user.
+	 * @param tune 
 	 */
-	private void switchToNullDriver() {
+	private void switchToNullDriver(SidTune tune) {
 		this.realAudio = audio;
 		this.audio = Audio.NONE;
 		try {
-			Audio.NONE.getAudioDriver().open(audioConfig);
+			Audio.NONE.getAudioDriver().open(audioConfig, tune);
 		} catch (LineUnavailableException | UnsupportedAudioFileException
 				| IOException e) {
 		}

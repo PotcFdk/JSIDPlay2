@@ -155,12 +155,12 @@ public class ConsolePlayer {
 			final SidTune tune = SidTune.load(new File(filenames.get(0)));
 			player.setTune(tune);
 			tune.setSelectedSong(song);
-			player.setRecordingFilenameProvider(() -> {
+			player.setRecordingFilenameProvider((theTune) -> {
 				File file = new File(recordingFilename);
 				String filename = new File(file.getParentFile(), PathUtils
 						.getBaseNameNoExt(file.getName())).getAbsolutePath();
-				if (tune.getInfo().getSongs() > 1) {
-					filename += String.format("-%02d", tune.getInfo()
+				if (theTune.getInfo().getSongs() > 1) {
+					filename += String.format("-%02d", theTune.getInfo()
 							.getCurrentSong());
 				}
 				return filename;

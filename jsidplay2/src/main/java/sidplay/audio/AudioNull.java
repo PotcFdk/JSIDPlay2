@@ -7,13 +7,16 @@ import java.nio.ByteOrder;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import libsidplay.sidtune.SidTune;
+
 public class AudioNull extends AudioDriver {
 
 	protected ByteBuffer sampleBuffer;
 
 	@Override
-	public void open(AudioConfig cfg) throws LineUnavailableException,
-			UnsupportedAudioFileException, IOException {
+	public void open(AudioConfig cfg, SidTune tune)
+			throws LineUnavailableException, UnsupportedAudioFileException,
+			IOException {
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * 2
 				* cfg.channels);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);

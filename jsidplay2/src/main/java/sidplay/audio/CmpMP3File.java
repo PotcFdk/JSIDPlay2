@@ -5,6 +5,7 @@ import java.io.File;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.SamplingMethod;
+import libsidplay.sidtune.SidTune;
 import lowlevel.LameDecoder;
 
 /**
@@ -34,13 +35,16 @@ public class CmpMP3File extends JavaSound {
 	protected JavaSound mp3Driver = new JavaSound();
 
 	@Override
-	public void open(final AudioConfig cfg) throws LineUnavailableException {
-		super.open(cfg);
+	public void open(final AudioConfig cfg, SidTune tune)
+			throws LineUnavailableException {
+		super.open(cfg, tune);
 
 		jump3r = new LameDecoder(mp3File.getAbsolutePath());
 
-		mp3Driver.open(new AudioConfig(jump3r.getSampleRate(), jump3r
-				.getChannels(), SamplingMethod.RESAMPLE, cfg.getDevice()) {
+		mp3Driver
+				.open(new AudioConfig(jump3r.getSampleRate(), jump3r
+						.getChannels(), SamplingMethod.RESAMPLE, cfg
+						.getDevice()) {
 			@Override
 			public int getChunkFrames() {
 				return jump3r.getFrameSize();
@@ -50,7 +54,7 @@ public class CmpMP3File extends JavaSound {
 			public int getFrameRate() {
 				return jump3r.getSampleRate();
 			}
-		});
+		}, tune);
 	}
 
 	@Override

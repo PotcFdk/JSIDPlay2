@@ -1,5 +1,7 @@
 package sidplay.audio;
 
+import libsidplay.sidtune.SidTune;
+
 public interface RecordingFilenameProvider {
-	String getFilename();
+	String getFilename(SidTune tune);
 }

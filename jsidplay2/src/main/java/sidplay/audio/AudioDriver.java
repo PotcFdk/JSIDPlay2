@@ -21,6 +21,8 @@ import java.nio.ByteBuffer;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import libsidplay.sidtune.SidTune;
+
 public abstract class AudioDriver {
 	/**
 	 * Maximum fast forward factor of the current audio driver.
@@ -41,11 +43,12 @@ public abstract class AudioDriver {
 	 * 
 	 * @param cfg
 	 *            Configuration requested.
+	 * @param tune 
 	 * @throws LineUnavailableException
 	 * @throws UnsupportedAudioFileException
 	 * @throws IOException
 	 */
-	public abstract void open(AudioConfig cfg) throws LineUnavailableException,
+	public abstract void open(AudioConfig cfg, SidTune tune) throws LineUnavailableException,
 			UnsupportedAudioFileException, IOException;
 
 	/**

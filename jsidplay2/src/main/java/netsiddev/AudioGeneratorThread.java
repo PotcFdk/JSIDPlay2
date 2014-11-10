@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
+import javax.sound.sampled.Mixer.Info;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
@@ -104,7 +105,7 @@ public class AudioGeneratorThread extends Thread {
 				mixerInfo = aInfos[deviceIndex];
 				driver.open(audioConfig, mixerInfo);
 			} else {
-				driver.open(audioConfig, null);
+				driver.open(audioConfig, (Info) null);
 			}
 
 			/* Do sound 10 ms at a time. */

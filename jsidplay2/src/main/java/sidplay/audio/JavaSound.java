@@ -15,6 +15,8 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
 
+import libsidplay.sidtune.SidTune;
+
 public class JavaSound extends AudioDriver {
 	public static final class Device {
 		private final Info info;
@@ -40,7 +42,7 @@ public class JavaSound extends AudioDriver {
 	private AudioConfig cfg;
 
 	@Override
-	public synchronized void open(final AudioConfig cfg)
+	public synchronized void open(final AudioConfig cfg, SidTune tune)
 			throws LineUnavailableException {
 		open(cfg, getDevices().get(cfg.getDevice()).getInfo());
 	}

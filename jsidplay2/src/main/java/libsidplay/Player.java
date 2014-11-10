@@ -207,7 +207,7 @@ public class Player {
 	/**
 	 * Create a filename to be used for recording.
 	 */
-	private RecordingFilenameProvider recordingFilenameProvider = () -> "jsidplay2";
+	private RecordingFilenameProvider recordingFilenameProvider = tune -> "jsidplay2";
 
 	/**
 	 * Create a complete setup (C64, tape/disk drive, carts and more).
@@ -796,7 +796,7 @@ public class Player {
 		sidBuilder = createSIDBuilder(cpuClock, audioConfig);
 		// open audio driver
 		try {
-			driverSettings.getAudio().getAudioDriver().open(audioConfig);
+			driverSettings.getAudio().getAudioDriver().open(audioConfig, tune);
 		} catch (LineUnavailableException | UnsupportedAudioFileException
 				| IOException e) {
 			throw new RuntimeException(e);
@@ -826,11 +826,11 @@ public class Player {
 		case RESID:
 			// Dag Lem's ReSID 1.0 beta
 			return new resid_builder.ReSIDBuilder(config, audioConfig,
-					cpuClock, driverSettings.getAudio());
+					cpuClock, driverSettings.getAudio(), tune);
 		case RESIDFP:
 			// Antti Lankila's ReSID-fp (distortion simulation)
 			return new residfp_builder.ReSIDBuilder(config, audioConfig,
-					cpuClock, driverSettings.getAudio());
+					cpuClock, driverSettings.getAudio(), tune);
 		case HARDSID:
 			return new hardsid_builder.HardSIDBuilder(config);
 		case NONE:

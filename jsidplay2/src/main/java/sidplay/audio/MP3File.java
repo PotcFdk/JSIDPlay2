@@ -10,6 +10,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import libsidplay.sidtune.SidTune;
 import lowlevel.LameEncoder;
 
 /**
@@ -35,7 +36,7 @@ public class MP3File extends AudioDriver {
 	private LameEncoder jump3r;
 
 	@Override
-	public void open(final AudioConfig cfg)
+	public void open(final AudioConfig cfg, SidTune tune)
 			throws LineUnavailableException, UnsupportedAudioFileException,
 			IOException {
 		final int channels = cfg.channels;
@@ -47,7 +48,7 @@ public class MP3File extends AudioDriver {
 		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, 16,
 				cfg.channels, true, false);
 		jump3r = new LameEncoder(audioFormat);
-		out = new FileOutputStream(recordingFilenameProvider.getFilename()
+		out = new FileOutputStream(recordingFilenameProvider.getFilename(tune)
 				+ EXTENSION);
 	}
 
