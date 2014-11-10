@@ -571,7 +571,7 @@ public class FavoritesTab extends Tab implements UIPart {
 		return null;
 	}
 
-	TableColumnBase getContextMenuColumn() {
+	TableColumnBase<?, ?> getContextMenuColumn() {
 		TableColumnHeader columnHeader = (TableColumnHeader) contextMenuHeader
 				.getOwnerNode();
 		return columnHeader.getTableColumn();
