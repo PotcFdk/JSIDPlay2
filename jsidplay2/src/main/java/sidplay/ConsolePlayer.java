@@ -61,58 +61,58 @@ public class ConsolePlayer {
 	@Parameter(names = "--cpuDebug", hidden = true, descriptionKey = "DEBUG")
 	private Boolean cpuDebug = Boolean.FALSE;
 
-	@Parameter(names = "-audio", descriptionKey = "DRIVER")
+	@Parameter(names = { "--audio", "-a" }, descriptionKey = "DRIVER")
 	private Audio audio = Audio.SOUNDCARD;
 
-	@Parameter(names = "-emulation", descriptionKey = "EMULATION")
+	@Parameter(names = { "--emulation", "-e" }, descriptionKey = "EMULATION")
 	private Emulation emulation = Emulation.RESID;
 
-	@Parameter(names = "-recordingFilename", descriptionKey = "RECORDING_FILENAME")
+	@Parameter(names = { "--recordingFilename", "-r" }, descriptionKey = "RECORDING_FILENAME")
 	private String recordingFilename = "jsidplay2";
 
-	@Parameter(names = "-startSong", descriptionKey = "START_SONG")
+	@Parameter(names = { "--startSong", "-o" }, descriptionKey = "START_SONG")
 	private Integer song = null;
 
-	@Parameter(names = "-loop", descriptionKey = "LOOP")
+	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP")
 	private Boolean loop = Boolean.FALSE;
 
-	@Parameter(names = "-single", descriptionKey = "SINGLE")
+	@Parameter(names = { "--single", "-s" }, descriptionKey = "SINGLE")
 	private Boolean single = Boolean.FALSE;
 
-	@Parameter(names = "-frequency", descriptionKey = "FREQUENCY")
+	@Parameter(names = { "--frequency", "-f" }, descriptionKey = "FREQUENCY")
 	private Integer frequency = 48000;
 
-	@Parameter(names = "-dualSID", descriptionKey = "DUAL_SID")
+	@Parameter(names = { "--dualSID", "-d" }, descriptionKey = "DUAL_SID")
 	private Boolean dualSID = Boolean.FALSE;
 
-	@Parameter(names = "-forceClock", descriptionKey = "FORCE_CLOCK")
+	@Parameter(names = { "--forceClock", "-c" }, descriptionKey = "FORCE_CLOCK")
 	private CPUClock forceClock = null;
 
-	@Parameter(names = "-defaultClock", descriptionKey = "DEFAULT_CLOCK")
+	@Parameter(names = { "--defaultClock", "-k" }, descriptionKey = "DEFAULT_CLOCK")
 	private CPUClock defaultClock = CPUClock.PAL;
 
-	@Parameter(names = "-disableFilter", descriptionKey = "DISABLE_FILTER")
+	@Parameter(names = { "--disableFilter", "-i" }, descriptionKey = "DISABLE_FILTER")
 	private Boolean disableFilter = Boolean.FALSE;
 
-	@Parameter(names = "-forceModel", descriptionKey = "FORCE_MODEL")
+	@Parameter(names = { "--forceModel", "-m" }, descriptionKey = "FORCE_MODEL")
 	private ChipModel forceModel = null;
 
-	@Parameter(names = "-defaultModel", descriptionKey = "DEFAULT_MODEL")
+	@Parameter(names = { "--defaultModel", "-u" }, descriptionKey = "DEFAULT_MODEL")
 	private ChipModel defaultModel = ChipModel.MOS6581;
 
-	@Parameter(names = "-startTime", descriptionKey = "START_TIME", converter = TimeConverter.class)
+	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = TimeConverter.class)
 	private Integer startTime = 0;
 
-	@Parameter(names = "-defaultLength", descriptionKey = "DEFAULT_LENGTH", converter = TimeConverter.class)
+	@Parameter(names = { "--defaultLength", "-g" }, descriptionKey = "DEFAULT_LENGTH", converter = TimeConverter.class)
 	private Integer defaultLength = 0;
 
-	@Parameter(names = "-enableSidDatabase", descriptionKey = "ENABLE_SID_DATABASE", arity = 1)
+	@Parameter(names = { "--enableSidDatabase", "-n" }, descriptionKey = "ENABLE_SID_DATABASE", arity = 1)
 	private Boolean enableSidDatabase = Boolean.TRUE;
 
-	@Parameter(names = "-verbose", descriptionKey = "VERBOSE", validateWith = VerboseValidator.class)
+	@Parameter(names = { "--verbose", "-v" }, descriptionKey = "VERBOSE", validateWith = VerboseValidator.class)
 	private Integer verbose = 0;
 
-	@Parameter(names = "-quiet", descriptionKey = "QUIET")
+	@Parameter(names = { "--quiet", "-q" }, descriptionKey = "QUIET")
 	private Boolean quiet = Boolean.FALSE;
 
 	@Parameter(description = "filename")
