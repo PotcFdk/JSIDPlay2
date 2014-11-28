@@ -276,7 +276,7 @@ public class EmulationSettings extends C64Window {
 		final boolean filterDisabled = "".equals(filterName);
 
 		IEmulationSection emulation = util.getConfig().getEmulation();
-		emulation.setFilter(!filterDisabled);
+		emulation.setStereoFilter(!filterDisabled);
 
 		ChipModel model;
 		if (sid2Model.getSelectionModel().getSelectedItem()
@@ -311,7 +311,9 @@ public class EmulationSettings extends C64Window {
 		util.getPlayer().updateSIDs();
 		util.getPlayer().configureSIDs((num, sid) -> {
 			sid.setFilter(util.getConfig(), num != 0);
-			sid.setFilterEnable(util.getConfig().getEmulation().isFilter());
+					sid.setFilterEnable(num != 0 ? util.getConfig()
+							.getEmulation().isStereoFilter() : util.getConfig()
+							.getEmulation().isFilter());
 		});
 	}
 
@@ -368,7 +370,7 @@ public class EmulationSettings extends C64Window {
 	}
 
 	private void addFilters(final ChipModel model, boolean isStereo) {
-		final boolean enable = util.getConfig().getEmulation().isFilter();
+		final boolean enable = isStereo?util.getConfig().getEmulation().isStereoFilter():util.getConfig().getEmulation().isFilter();
 		String item = null;
 		if (enable) {
 			if (util.getConfig().getEmulation().getEmulation()

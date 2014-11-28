@@ -94,6 +94,9 @@ public class ConsolePlayer {
 	@Parameter(names = { "--disableFilter", "-i" }, descriptionKey = "DISABLE_FILTER")
 	private Boolean disableFilter = Boolean.FALSE;
 
+	@Parameter(names = { "--disableStereoFilter", "-j" }, descriptionKey = "DISABLE_STEREO_FILTER")
+	private Boolean disableStereoFilter = Boolean.FALSE;
+
 	@Parameter(names = { "--forceModel", "-m" }, descriptionKey = "FORCE_MODEL")
 	private ChipModel forceModel = null;
 
@@ -149,6 +152,7 @@ public class ConsolePlayer {
 		config.getEmulation().setUserSidModel(forceModel);
 		config.getEmulation().setDefaultSidModel(defaultModel);
 		config.getEmulation().setFilter(!disableFilter);
+		config.getEmulation().setStereoFilter(!disableStereoFilter);
 
 		final Player player = new Player(config);
 		try {

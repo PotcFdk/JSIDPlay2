@@ -117,6 +117,7 @@ public interface IEmulationSection {
 	 * @return filter enabled
 	 */
 	public boolean isFilter();
+	public boolean isStereoFilter();
 
 	/**
 	 * Setter of the filter enable.
@@ -125,6 +126,7 @@ public interface IEmulationSection {
 	 *            the filter enable
 	 */
 	public void setFilter(boolean enable);
+	public void setStereoFilter(boolean enable);
 
 	/**
 	 * Getter of the filter setting of MOS6581.

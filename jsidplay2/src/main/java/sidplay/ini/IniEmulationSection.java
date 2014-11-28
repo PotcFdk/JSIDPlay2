@@ -167,6 +167,10 @@ public class IniEmulationSection extends IniSection implements
 	public final boolean isFilter() {
 		return iniReader.getPropertyBool("Emulation", "UseFilter", true);
 	}
+	@Override
+	public final boolean isStereoFilter() {
+		return iniReader.getPropertyBool("Emulation", "UseStereoFilter", true);
+	}
 
 	/**
 	 * Setter of the filter enable.
@@ -177,6 +181,10 @@ public class IniEmulationSection extends IniSection implements
 	@Override
 	public final void setFilter(final boolean enable) {
 		iniReader.setProperty("Emulation", "UseFilter", enable);
+	}
+	@Override
+	public final void setStereoFilter(final boolean enable) {
+		iniReader.setProperty("Emulation", "UseStereoFilter", enable);
 	}
 
 	/**

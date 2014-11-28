@@ -113,6 +113,18 @@ public class EmulationSection implements IEmulationSection {
 		this.filter = isFilter;
 	}
 
+	private boolean stereoFilter = true;
+
+	@Override
+	public boolean isStereoFilter() {
+		return stereoFilter;
+	}
+
+	@Override
+	public void setStereoFilter(boolean isFilter) {
+		this.stereoFilter = isFilter;
+	}
+
 	private String filter6581 = "FilterAverage6581";
 
 	@Override

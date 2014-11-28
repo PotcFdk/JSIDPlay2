@@ -236,6 +236,7 @@ public class ConsoleIO {
 		out.println(BUNDLE.getString("MUTE_5"));
 		out.println(BUNDLE.getString("MUTE_6"));
 		out.println(BUNDLE.getString("FILTER_ENABLE"));
+		out.println(BUNDLE.getString("STEREO_FILTER_ENABLE"));
 		out.println(BUNDLE.getString("QUIT"));
 	}
 
@@ -319,8 +320,14 @@ public class ConsoleIO {
 			case 'f': {
 				boolean filterEnable = config.getEmulation().isFilter() ^ true;
 				config.getEmulation().setFilter(filterEnable);
-				player.configureSIDs((num, sid) -> sid
-						.setFilterEnable(filterEnable));
+				player.configureSID(0, sid -> sid.setFilterEnable(filterEnable));
+				break;
+			}
+
+			case 'g': {
+				boolean filterEnable = config.getEmulation().isStereoFilter() ^ true;
+				config.getEmulation().setStereoFilter(filterEnable);
+				player.configureSID(1, sid -> sid.setFilterEnable(filterEnable));
 				break;
 			}
 
