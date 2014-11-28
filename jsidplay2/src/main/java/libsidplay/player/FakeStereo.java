@@ -48,8 +48,8 @@ public final class FakeStereo extends SIDEmu {
 	}
 
 	@Override
-	public void setFilter(IConfig config) {
-		s1.setFilter(config);
+	public void setFilter(IConfig config, boolean isStereo) {
+		s1.setFilter(config, isStereo);
 	}
 
 	@Override

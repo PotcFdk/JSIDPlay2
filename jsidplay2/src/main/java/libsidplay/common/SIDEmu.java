@@ -54,7 +54,7 @@ public abstract class SIDEmu {
 
 	public abstract void setVoiceMute(int num, boolean mute);
 
-	public abstract void setFilter(IConfig config);
+	public abstract void setFilter(IConfig config, boolean isStereo);
 
 	public abstract void setFilterEnable(boolean enable);
 

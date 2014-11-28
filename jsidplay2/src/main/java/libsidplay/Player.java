@@ -807,7 +807,7 @@ public class Player {
 
 		// apply filter settings and stereo SID chip address
 		configureSIDs((num, sid) -> {
-			sid.setFilter(config);
+			sid.setFilter(config, num != 0);
 			sid.setFilterEnable(config.getEmulation().isFilter());
 		});
 		setStereoSIDAddress();

@@ -56,15 +56,19 @@ public class ReSID extends SIDEmu {
 	}
 
 	@Override
-	public void setFilter(IConfig config) {
+	public void setFilter(IConfig config, boolean isStereo) {
 		final Filter6581 filter6581 = sid.getFilter6581();
 		final Filter8580 filter8580 = sid.getFilter8580();
 
-		String filterName6581 = config.getEmulation().getReSIDfpFilter6581();
+		String filterName6581 = isStereo ? config.getEmulation()
+				.getReSIDfpStereoFilter6581() : config.getEmulation()
+				.getReSIDfpFilter6581();
 		if (filterName6581 == null) {
 			filter6581.setCurveAndDistortionDefaults();
 		}
-		String filterName8580 = config.getEmulation().getReSIDfpFilter8580();
+		String filterName8580 = isStereo ? config.getEmulation()
+				.getReSIDfpStereoFilter8580() : config.getEmulation()
+				.getReSIDfpFilter8580();
 		if (filterName8580 == null) {
 			filter8580.setCurveAndDistortionDefaults();
 		}

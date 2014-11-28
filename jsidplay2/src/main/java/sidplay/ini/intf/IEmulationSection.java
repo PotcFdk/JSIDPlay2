@@ -132,6 +132,7 @@ public interface IEmulationSection {
 	 * @return the filter setting of MOS6581
 	 */
 	public String getFilter6581();
+	public String getStereoFilter6581();
 
 	/**
 	 * Setter of the filter setting of MOS6581.
@@ -140,6 +141,7 @@ public interface IEmulationSection {
 	 *            filter setting of MOS6581
 	 */
 	public void setFilter6581(String filterName);
+	public void setStereoFilter6581(String filterName);
 
 	/**
 	 * Getter of the filter setting of CSG8580.
@@ -147,6 +149,7 @@ public interface IEmulationSection {
 	 * @return the filter setting of CSG8580
 	 */
 	public String getFilter8580();
+	public String getStereoFilter8580();
 
 	/**
 	 * Setter of the filter setting of CSG8680.
@@ -155,6 +158,7 @@ public interface IEmulationSection {
 	 *            filter setting of CSG8680
 	 */
 	public void setFilter8580(String filterName);
+	public void setStereoFilter8580(String filterName);
 
 	/**
 	 * Getter of the filter setting of MOS6581 for ReSIDfp.
@@ -162,6 +166,7 @@ public interface IEmulationSection {
 	 * @return the filter setting of MOS6581 for ReSIDfp
 	 */
 	public String getReSIDfpFilter6581();
+	public String getReSIDfpStereoFilter6581();
 
 	/**
 	 * Setter of the filter setting of MOS6581 for ReSIDfp.
@@ -170,6 +175,7 @@ public interface IEmulationSection {
 	 *            filter setting of MOS6581 for ReSIDfp
 	 */
 	public void setReSIDfpFilter6581(String filterName);
+	public void setReSIDfpStereoFilter6581(String filterName);
 
 	/**
 	 * Getter of the filter setting of CSG8580.
@@ -177,6 +183,7 @@ public interface IEmulationSection {
 	 * @return the filter setting of CSG8580
 	 */
 	public String getReSIDfpFilter8580();
+	public String getReSIDfpStereoFilter8580();
 
 	/**
 	 * Setter of the filter setting of CSG8680.
@@ -185,6 +192,7 @@ public interface IEmulationSection {
 	 *            filter setting of CSG8680
 	 */
 	public void setReSIDfpFilter8580(String filterName);
+	public void setReSIDfpStereoFilter8580(String filterName);
 
 	/**
 	 * Getter of the enable SID digi-boost.

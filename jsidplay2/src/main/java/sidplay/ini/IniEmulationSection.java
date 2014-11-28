@@ -188,6 +188,10 @@ public class IniEmulationSection extends IniSection implements
 	public final String getFilter6581() {
 		return iniReader.getPropertyString("Emulation", "Filter6581", null);
 	}
+	@Override
+	public final String getStereoFilter6581() {
+		return iniReader.getPropertyString("Emulation", "Stereo_Filter6581", null);
+	}
 
 	/**
 	 * Setter of the filter setting of MOS6581.
@@ -199,6 +203,10 @@ public class IniEmulationSection extends IniSection implements
 	public final void setFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "Filter6581", filterName);
 	}
+	@Override
+	public final void setStereoFilter6581(final String filterName) {
+		iniReader.setProperty("Emulation", "Stereo_Filter6581", filterName);
+	}
 
 	/**
 	 * Getter of the filter setting of CSG8580.
@@ -208,6 +216,10 @@ public class IniEmulationSection extends IniSection implements
 	@Override
 	public final String getFilter8580() {
 		return iniReader.getPropertyString("Emulation", "Filter8580", null);
+	}
+	@Override
+	public final String getStereoFilter8580() {
+		return iniReader.getPropertyString("Emulation", "Stereo_Filter8580", null);
 	}
 
 	/**
@@ -220,6 +232,10 @@ public class IniEmulationSection extends IniSection implements
 	public final void setFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "Filter8580", filterName);
 	}
+	@Override
+	public final void setStereoFilter8580(final String filterName) {
+		iniReader.setProperty("Emulation", "Stereo_Filter8580", filterName);
+	}
 
 	/**
 	 * Getter of the filter setting of MOS6581.
@@ -229,6 +245,11 @@ public class IniEmulationSection extends IniSection implements
 	@Override
 	public final String getReSIDfpFilter6581() {
 		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter6581",
+				null);
+	}
+	@Override
+	public final String getReSIDfpStereoFilter6581() {
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_Stereo_Filter6581",
 				null);
 	}
 
@@ -242,6 +263,10 @@ public class IniEmulationSection extends IniSection implements
 	public final void setReSIDfpFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Filter6581", filterName);
 	}
+	@Override
+	public final void setReSIDfpStereoFilter6581(final String filterName) {
+		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter6581", filterName);
+	}
 
 	/**
 	 * Getter of the filter setting of CSG8580.
@@ -251,6 +276,11 @@ public class IniEmulationSection extends IniSection implements
 	@Override
 	public final String getReSIDfpFilter8580() {
 		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter8580",
+				null);
+	}
+	@Override
+	public final String getReSIDfpStereoFilter8580() {
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_Stereo_Filter8580",
 				null);
 	}
 
@@ -263,6 +293,10 @@ public class IniEmulationSection extends IniSection implements
 	@Override
 	public final void setReSIDfpFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Filter8580", filterName);
+	}
+	@Override
+	public final void setReSIDfpStereoFilter8580(final String filterName) {
+		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter8580", filterName);
 	}
 
 	/**

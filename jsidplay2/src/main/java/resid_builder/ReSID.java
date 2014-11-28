@@ -110,9 +110,11 @@ public class ReSID extends SIDEmu {
 		sid.getFilter8580().enable(enable);
 	}
 
-	public void setFilter(IConfig config) {
-		String filterName6581 = config.getEmulation().getFilter6581();
-		String filterName8580 = config.getEmulation().getFilter8580();
+	public void setFilter(IConfig config, boolean isStereo) {
+		String filterName6581 = isStereo ? config.getEmulation()
+				.getStereoFilter6581() : config.getEmulation().getFilter6581();
+		String filterName8580 = isStereo ? config.getEmulation()
+				.getStereoFilter8580() : config.getEmulation().getFilter8580();
 		for (IFilterSection filter : config.getFilter()) {
 			if (filter.getName().equals(filterName6581)
 					&& filter.isReSIDFilter6581()) {

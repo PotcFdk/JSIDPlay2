@@ -125,6 +125,18 @@ public class EmulationSection implements IEmulationSection {
 		this.filter6581 = filter6581;
 	}
 
+	private String stereoFilter6581 = "FilterAverage6581";
+
+	@Override
+	public String getStereoFilter6581() {
+		return stereoFilter6581;
+	}
+
+	@Override
+	public void setStereoFilter6581(String filter6581) {
+		this.stereoFilter6581 = filter6581;
+	}
+
 	private String filter8580 = "FilterAverage8580";
 
 	@Override
@@ -135,6 +147,18 @@ public class EmulationSection implements IEmulationSection {
 	@Override
 	public void setFilter8580(String filter8580) {
 		this.filter8580 = filter8580;
+	}
+
+	private String stereoFilter8580 = "FilterAverage8580";
+
+	@Override
+	public String getStereoFilter8580() {
+		return stereoFilter8580;
+	}
+
+	@Override
+	public void setStereoFilter8580(String filter8580) {
+		this.stereoFilter8580 = filter8580;
 	}
 
 	private String reSIDfpFilter6581 = "FilterAlankila6581R4AR_3789";
@@ -149,6 +173,18 @@ public class EmulationSection implements IEmulationSection {
 		this.reSIDfpFilter6581 = reSIDfpFilter6581;
 	}
 
+	private String reSIDfpStereoFilter6581 = "FilterAlankila6581R4AR_3789";
+
+	@Override
+	public String getReSIDfpStereoFilter6581() {
+		return reSIDfpStereoFilter6581;
+	}
+
+	@Override
+	public void setReSIDfpStereoFilter6581(String reSIDfpFilter6581) {
+		this.reSIDfpStereoFilter6581 = reSIDfpFilter6581;
+	}
+
 	private String reSIDfpFilter8580 = "FilterTrurl8580R5_3691";
 
 	@Override
@@ -159,6 +195,18 @@ public class EmulationSection implements IEmulationSection {
 	@Override
 	public void setReSIDfpFilter8580(String reSIDfpFilter8580) {
 		this.reSIDfpFilter8580 = reSIDfpFilter8580;
+	}
+
+	private String reSIDfpStereoFilter8580 = "FilterTrurl8580R5_3691";
+
+	@Override
+	public String getReSIDfpStereoFilter8580() {
+		return reSIDfpStereoFilter8580;
+	}
+
+	@Override
+	public void setReSIDfpStereoFilter8580(String reSIDfpFilter8580) {
+		this.reSIDfpStereoFilter8580 = reSIDfpFilter8580;
 	}
 
 	private boolean digiBoosted8580;

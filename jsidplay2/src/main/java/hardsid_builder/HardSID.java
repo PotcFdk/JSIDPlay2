@@ -129,7 +129,7 @@ public class HardSID extends SIDEmu {
 	}
 
 	@Override
-	public void setFilter(IConfig config) {
+	public void setFilter(IConfig config, boolean isStereo) {
 	}
 
 	@Override
