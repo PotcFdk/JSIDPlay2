@@ -87,7 +87,7 @@
 			<BorderPane>
 				<top>
 					<FlowPane BorderPane.alignment="CENTER">
-						<Label text="%MODEL" />
+						<Label text="%STEREO_MODEL" />
 						<ComboBox fx:id="sid2Model" onAction="#setSid2Model" />
 						<Label text="%FILTER_DEFINITION" />
 						<ComboBox fx:id="stereoFilter" onAction="#setStereoFilter" />
