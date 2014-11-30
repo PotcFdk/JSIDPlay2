@@ -1,5 +1,11 @@
 package ui.entities.config;
 
+import java.net.URI;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
+
 import javax.persistence.Embeddable;
 
 import sidplay.ini.intf.IOnlineSection;
@@ -10,7 +16,23 @@ public class OnlineSection implements IOnlineSection {
 	/**
 	 * URL where the JSIDPlay2 is deployed to.
 	 */
-	private static final String DEPLOYMENT_URL = "http://kenchis.t15.org/jsidplay2/javafx/";
+	private static String DEPLOYMENT_URL;
+	static {
+		try {
+			// Determine download URL from project URL
+			URI uri = OnlineSection.class.getResource("/META-INF/MANIFEST.MF")
+					.toURI();
+			FileSystems.newFileSystem(uri,
+					Collections.singletonMap("create", "true"));
+			Files.lines(Paths.get(uri))
+					.filter(s -> s.startsWith("url: "))
+					.forEach(
+							s -> DEPLOYMENT_URL = s.substring("url: ".length()));
+		} catch (Exception e) {
+			// MANIFEST.MF is only available in a release version!
+			DEPLOYMENT_URL = "http://kenchis.t15.org/jsidplay2/javafx/";
+		}
+	}
 
 	private String hvscUrl = DEPLOYMENT_URL + "C64Music.zip";
 
