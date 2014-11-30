@@ -331,12 +331,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		playEmulation
 				.setSelected(!util.getConfig().getAudio().isPlayOriginal());
 
-		String os = System.getProperty("os.name");
-		volumeButton.setDisable(!os.startsWith("Windows"));
-		if (volumeButton.isDisable()) {
-			volumeButton.setTooltip(new Tooltip("Windows only!"));
-		}
-
 		C1541Section c1541Section = (C1541Section) util.getConfig().getC1541();
 		driveOn.selectedProperty().bindBidirectional(
 				c1541Section.driveOnProperty());
@@ -1040,7 +1034,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			try {
 				Runtime.getRuntime().exec("sndvol32");
 			} catch (IOException e1) {
-				System.err.println("sndvol or sndvol32 not found!");
+				try {
+					Runtime.getRuntime().exec("kmix");
+				} catch (IOException e2) {
+					volumeButton.setDisable(true);
+					volumeButton.setTooltip(new Tooltip("Windows or Linux (KDE) only!"));
+					System.err.println("sndvol or sndvol32 or kmix not found!");
+				}
 			}
 		}
 	}

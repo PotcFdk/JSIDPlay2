@@ -3,6 +3,7 @@ package ui;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -16,6 +17,8 @@ import javax.persistence.Persistence;
 
 import libsidplay.Player;
 import libsidplay.components.c1541.C1541;
+import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
@@ -24,7 +27,7 @@ import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 
 /**
- * @author Ken Händel
+ * @author Ken Hï¿½ndel
  * @author Joakim Eriksson
  * 
  *         SID Player main class
@@ -122,8 +125,23 @@ public class JSIDPlay2Main extends Application {
 			window.yProperty().addListener(
 					(observable, oldValue, newValue) -> section
 							.setFrameY(newValue.intValue()));
+			processCommandLineArgs();
 		}
 		testInstance = jSidplay2;
+	}
+
+	/**
+	 * Play tune, if command line argument provided.
+	 */
+	private void processCommandLineArgs() {
+		List<String> raw = getParameters().getRaw();
+		if (raw.size() != 0) {
+			try {
+				player.play(SidTune.load(new File(raw.get(0))));
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
