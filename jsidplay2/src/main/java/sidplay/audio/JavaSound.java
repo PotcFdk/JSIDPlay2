@@ -44,11 +44,17 @@ public class JavaSound extends AudioDriver {
 	@Override
 	public synchronized void open(final AudioConfig cfg, SidTune tune)
 			throws LineUnavailableException {
-		open(cfg, getDevices().get(cfg.getDevice()).getInfo());
+		int device = cfg.getDevice();
+		if (device < getDevices().size()) {
+			open(cfg, getDevices().get(device).getInfo());
+		} else {
+			open(cfg, (Info) null);
+		}
 	}
 
 	public static final ObservableList<Device> getDevices() {
-		ObservableList<Device> devices = FXCollections.<Device> observableArrayList();
+		ObservableList<Device> devices = FXCollections
+				.<Device> observableArrayList();
 		for (Info info : AudioSystem.getMixerInfo()) {
 			Mixer mixer = AudioSystem.getMixer(info);
 			Line.Info lineInfo = new Line.Info(SourceDataLine.class);

@@ -277,8 +277,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		devices = JavaSound.getDevices();
 		devicesBox.setItems(devices);
-		devicesBox.getSelectionModel().select(
-				util.getConfig().getAudio().getDevice());
+		int device = util.getConfig().getAudio().getDevice();
+		if (device < devices.size()) {
+			devicesBox.getSelectionModel().select(device);
+		} else {
+			devicesBox.getSelectionModel().select(0);
+		}
 
 		SamplingMethod sampling = util.getConfig().getAudio().getSampling();
 		samplingBox.getSelectionModel().select(sampling);
@@ -1038,7 +1042,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 					Runtime.getRuntime().exec("kmix");
 				} catch (IOException e2) {
 					volumeButton.setDisable(true);
-					volumeButton.setTooltip(new Tooltip("Windows or Linux (KDE) only!"));
+					volumeButton.setTooltip(new Tooltip(
+							"Windows or Linux (KDE) only!"));
 					System.err.println("sndvol or sndvol32 or kmix not found!");
 				}
 			}
