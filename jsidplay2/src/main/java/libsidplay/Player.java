@@ -798,8 +798,8 @@ public class Player {
 		try {
 			driverSettings.getAudio().getAudioDriver().open(audioConfig, tune);
 		} catch (LineUnavailableException e) {
-			// Linux fix: end song to make next play possible
-			stateProperty.set(getEndState());
+			// Linux fix: restart, if currently unavailable
+			stateProperty.set(State.RESTART);
 			throw new InterruptedException(e.getMessage());
 		} catch (UnsupportedAudioFileException | IOException e) {
 			throw new RuntimeException(e);
