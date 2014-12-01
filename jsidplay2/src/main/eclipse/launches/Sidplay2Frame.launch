@@ -18,6 +18,6 @@
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jsidplay2"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${workspace_loc:jsidplay2}/target/standalone"/>
-<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="C:\Temp"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="/tmp"/>
 <stringAttribute key="org.eclipse.tptp.platform.instrumentation.ui.SELECTED_INSTRUMENT_COLLECTOR" value="org.eclipse.tptp.platform.instrumentation.ui.instrumentCollector.jvmti"/>
 </launchConfiguration>
