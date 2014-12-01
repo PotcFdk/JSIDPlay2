@@ -5,15 +5,18 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import libsidplay.common.SamplingMethod;
 import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IEmulationSection;
 
 public final class FakeStereo extends SIDEmu {
 	private final SIDEmu s1;
 	private final SIDEmu s2;
+	private IEmulationSection emulation;
 
-	public FakeStereo(EventScheduler context, SIDEmu s1, SIDEmu s2) {
+	public FakeStereo(EventScheduler context, SIDEmu s1, SIDEmu s2, IEmulationSection emulation) {
 		super(context);
 		this.s1 = s1;
 		this.s2 = s2;
+		this.emulation = emulation;
 	}
 
 	@Override
@@ -23,7 +26,7 @@ public final class FakeStereo extends SIDEmu {
 
 	@Override
 	public byte read(int addr) {
-		return s1.read(addr);
+		return (emulation.getSidNumToRead() > 0 ? s2 : s1).read(addr);
 	}
 
 	@Override
@@ -34,7 +37,8 @@ public final class FakeStereo extends SIDEmu {
 
 	@Override
 	public byte readInternalRegister(int addr) {
-		return s1.readInternalRegister(addr);
+		return (emulation.getSidNumToRead() > 0 ? s2 : s1)
+				.readInternalRegister(addr);
 	}
 
 	@Override
@@ -77,4 +81,5 @@ public final class FakeStereo extends SIDEmu {
 	public void input(int input) {
 		s1.input(input);
 	}
+
 }

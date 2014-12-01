@@ -8,7 +8,7 @@ import sidplay.ini.intf.IEmulationSection;
 /**
  * Emulation section of the INI file.
  * 
- * @author Ken Händel
+ * @author Ken Hï¿½ndel
  * 
  */
 public class IniEmulationSection extends IniSection implements
@@ -306,6 +306,17 @@ public class IniEmulationSection extends IniSection implements
 	public final void setReSIDfpStereoFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter8580", filterName);
 	}
+
+	@Override
+	public int getSidNumToRead() {
+		return iniReader.getPropertyInt("Emulation", "SidNumToRead", 0);
+	}
+	
+	@Override
+	public void setSidNumToRead(int sidNumToRead) {
+		iniReader.setProperty("Emulation", "SidNumToRead", sidNumToRead);
+	}
+	
 
 	/**
 	 * Getter of the enable SID digi-boost.

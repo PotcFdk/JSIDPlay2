@@ -883,7 +883,8 @@ public class Player {
 				/** Stereo SID at 0xd400 hack */
 				final SIDEmu s1 = c64.getSID(0);
 				final SIDEmu s2 = c64.getSID(1);
-				c64.setSID(0, new FakeStereo(c64.getEventScheduler(), s1, s2));
+				c64.setSID(0, new FakeStereo(c64.getEventScheduler(), s1, s2,
+						config.getEmulation()));
 			} else {
 				c64.setSecondSIDAddress(secondAddress);
 			}

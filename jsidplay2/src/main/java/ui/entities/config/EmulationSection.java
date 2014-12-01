@@ -221,6 +221,18 @@ public class EmulationSection implements IEmulationSection {
 		this.reSIDfpStereoFilter8580 = reSIDfpFilter8580;
 	}
 
+	private int sidNumToRead;
+
+	@Override
+	public int getSidNumToRead() {
+		return sidNumToRead;
+	}
+	
+	@Override
+	public void setSidNumToRead(int sidNumToRead) {
+		this.sidNumToRead = sidNumToRead;
+	}
+	
 	private boolean digiBoosted8580;
 
 	@Override

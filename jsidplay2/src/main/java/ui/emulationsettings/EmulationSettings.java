@@ -67,7 +67,7 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	protected ComboBox<ChipModel> defaultModel;
 	@FXML
-	private ComboBox<String> filter, stereoFilter;
+	private ComboBox<String> filter, stereoFilter, sidToRead;
 	@FXML
 	private TextField baseAddress;
 	@FXML
@@ -80,7 +80,7 @@ public class EmulationSettings extends C64Window {
 	private ObservableList<Object> sid1Models;
 	private ObservableList<Object> sid2Models;
 	private ObservableList<ChipModel> defaultModels;
-	private ObservableList<String> filters, stereoFilters;
+	private ObservableList<String> filters, stereoFilters, sidReads;
 
 	private ChangeListener<State> emulationChange;
 
@@ -115,6 +115,13 @@ public class EmulationSettings extends C64Window {
 					util.getConfig().getAudio().setRightVolume(volumeDb);
 					util.getPlayer().setMixerVolume(1, volumeDb);
 				});
+
+		sidReads = FXCollections.<String> observableArrayList();
+		sidReads.addAll(util.getBundle().getString("FIRST_SID"), util
+				.getBundle().getString("SECOND_SID"));
+		sidToRead.setItems(sidReads);
+		sidToRead.getSelectionModel().select(
+				util.getConfig().getEmulation().getSidNumToRead());
 
 		sid1Models = FXCollections.<Object> observableArrayList();
 		sid1Models.addAll(util.getBundle().getString("AUTO"),
@@ -225,6 +232,12 @@ public class EmulationSettings extends C64Window {
 		restart();
 	}
 
+	@FXML
+	private void setSidToRead() {
+		int sidNumToRead = sidToRead.getSelectionModel().getSelectedIndex();
+		util.getConfig().getEmulation().setSidNumToRead(sidNumToRead);
+	}
+	
 	@FXML
 	private void setDigiBoost() {
 		boolean selected = boosted8580.isSelected();

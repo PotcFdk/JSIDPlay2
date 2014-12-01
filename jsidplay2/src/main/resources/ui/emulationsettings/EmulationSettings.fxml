@@ -15,10 +15,13 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.collections.FXCollections?>
 <?import java.net.URL?>
+<?import java.lang.String?>
 <?import ui.common.KnobSkin?>
 <?import ui.emulationsettings.LogarithmicAxis?>
 <?scenebuilder-preview-i18n-resource EmulationSettings.properties?>
+<?import javafx.scene.control.Tooltip?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<stylesheets>
@@ -53,63 +56,69 @@
 					<CheckBox text="%FORCE_STEREO" fx:id="forceStereo"
 						onAction="#doForceStereo" />
 					<TextField fx:id="baseAddress" onAction="#setBaseAddress" />
+					<Label text="%SID_READ" />
+					<ComboBox fx:id="sidToRead" onAction="#setSidToRead">
+						<tooltip>
+							<Tooltip text="%SID_READ_TIP"/>
+						</tooltip>
+					</ComboBox>
 					<CheckBox text="%DIGI_BOOST" fx:id="boosted8580" onAction="#setDigiBoost" />
 				</HBox>
 			</VBox>
 		</TitledPane>
 		<TitledPane text="%FILTER" collapsible="false">
-				<HBox>
-			<BorderPane>
-				<top>
-					<FlowPane BorderPane.alignment="CENTER">
-						<Label text="%MODEL" />
-						<ComboBox fx:id="sid1Model" onAction="#setSid1Model" />
-						<Label text="%FILTER_DEFINITION" />
-						<ComboBox fx:id="filter" onAction="#setFilter" />
-					</FlowPane>
-				</top>
-				<center>
-					<LineChart legendVisible="true"
-						horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
-						fx:id="filterCurve" BorderPane.alignment="BOTTOM_CENTER">
-						<xAxis>
-							<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
-								upperBound="2048" side="BOTTOM" />
-						</xAxis>
-						<yAxis>
-							<LogarithmicAxis label="%FILTERCURVE_YAXIS"
-								minorTickVisible="false" lowerBound="200" upperBound="20000"
-								side="LEFT" />
-						</yAxis>
-					</LineChart>
-				</center>
-			</BorderPane>
-			<BorderPane>
-				<top>
-					<FlowPane BorderPane.alignment="CENTER">
-						<Label text="%STEREO_MODEL" />
-						<ComboBox fx:id="sid2Model" onAction="#setSid2Model" />
-						<Label text="%FILTER_DEFINITION" />
-						<ComboBox fx:id="stereoFilter" onAction="#setStereoFilter" />
-					</FlowPane>
-				</top>
-				<center>
-					<LineChart legendVisible="true"
-						horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
-						fx:id="stereoFilterCurve" BorderPane.alignment="BOTTOM_CENTER">
-						<xAxis>
-							<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
-								upperBound="2048" side="BOTTOM" />
-						</xAxis>
-						<yAxis>
-							<LogarithmicAxis label="%FILTERCURVE_YAXIS"
-								minorTickVisible="false" lowerBound="200" upperBound="20000"
-								side="LEFT" />
-						</yAxis>
-					</LineChart>
-				</center>
-			</BorderPane>
-				</HBox>
+			<HBox>
+				<BorderPane>
+					<top>
+						<FlowPane BorderPane.alignment="CENTER">
+							<Label text="%MODEL" />
+							<ComboBox fx:id="sid1Model" onAction="#setSid1Model" />
+							<Label text="%FILTER_DEFINITION" />
+							<ComboBox fx:id="filter" onAction="#setFilter" />
+						</FlowPane>
+					</top>
+					<center>
+						<LineChart legendVisible="true"
+							horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
+							fx:id="filterCurve" BorderPane.alignment="BOTTOM_CENTER">
+							<xAxis>
+								<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
+									upperBound="2048" side="BOTTOM" />
+							</xAxis>
+							<yAxis>
+								<LogarithmicAxis label="%FILTERCURVE_YAXIS"
+									minorTickVisible="false" lowerBound="200" upperBound="20000"
+									side="LEFT" />
+							</yAxis>
+						</LineChart>
+					</center>
+				</BorderPane>
+				<BorderPane>
+					<top>
+						<FlowPane BorderPane.alignment="CENTER">
+							<Label text="%STEREO_MODEL" />
+							<ComboBox fx:id="sid2Model" onAction="#setSid2Model" />
+							<Label text="%FILTER_DEFINITION" />
+							<ComboBox fx:id="stereoFilter" onAction="#setStereoFilter" />
+						</FlowPane>
+					</top>
+					<center>
+						<LineChart legendVisible="true"
+							horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
+							fx:id="stereoFilterCurve" BorderPane.alignment="BOTTOM_CENTER">
+							<xAxis>
+								<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
+									upperBound="2048" side="BOTTOM" />
+							</xAxis>
+							<yAxis>
+								<LogarithmicAxis label="%FILTERCURVE_YAXIS"
+									minorTickVisible="false" lowerBound="200" upperBound="20000"
+									side="LEFT" />
+							</yAxis>
+						</LineChart>
+					</center>
+				</BorderPane>
+			</HBox>
 		</TitledPane>
 	</VBox>
 </Scene>

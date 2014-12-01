@@ -227,6 +227,16 @@ public interface IEmulationSection {
 	public void setDualSidBase(int base);
 
 	/**
+	 * @return SID chip to read from (FakeStereo)
+	 */
+	public int getSidNumToRead();
+	/**
+	 * Setter of the SID chip to read from (FakeStereo).
+	 * @param sidNumToRead SID chip to read from (FakeStereo)
+	 */
+	public void setSidNumToRead(int sidNumToRead);
+
+	/**
 	 * Getter of the forced playback stereo mode.
 	 * 
 	 * @return the forced playback stereo mode
