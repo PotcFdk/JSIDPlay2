@@ -55,7 +55,11 @@
 					<ComboBox fx:id="defaultModel" onAction="#setDefaultModel" />
 					<CheckBox text="%FORCE_STEREO" fx:id="forceStereo"
 						onAction="#doForceStereo" />
-					<TextField fx:id="baseAddress" onAction="#setBaseAddress" />
+					<TextField fx:id="baseAddress" onAction="#setBaseAddress" >
+						<tooltip>
+							<Tooltip text="%BASE_ADDRESS_TIP"/>
+						</tooltip>
+					</TextField>
 					<Label text="%SID_READ" />
 					<ComboBox fx:id="sidToRead" onAction="#setSidToRead">
 						<tooltip>
