@@ -46,14 +46,8 @@ public class EmulationSettings extends C64Window {
 					ChipModel stereoModel = ChipModel.getStereoModel(
 							util.getConfig(), util.getPlayer().getTune());
 					addFilters(stereoModel, true);
-					boolean stereo = AudioConfig.isStereo(util.getConfig(),
-							util.getPlayer().getTune());
-					rightVolume.setDisable(!stereo);
-					leftBalance.setDisable(!stereo);
-					rightBalance.setDisable(!stereo);
-					sid2Model.setDisable(!stereo);
-					stereoFilter.setDisable(!stereo);
-					stereoFilterCurve.setDisable(!stereo);
+
+					enableStereoSettings();
 				});
 			}
 		}
@@ -186,16 +180,21 @@ public class EmulationSettings extends C64Window {
 		emulationChange = new EmulationChange();
 		util.getPlayer().stateProperty().addListener(emulationChange);
 
-		boolean stereo = AudioConfig.isStereo(util.getConfig(),
-				util.getPlayer().getTune());
+		enableStereoSettings();
+
+		duringInitialization = false;
+	}
+
+	private void enableStereoSettings() {
+		boolean stereo = AudioConfig.isStereo(util.getConfig(), util
+				.getPlayer().getTune());
 		rightVolume.setDisable(!stereo);
 		leftBalance.setDisable(!stereo);
 		rightBalance.setDisable(!stereo);
 		sid2Model.setDisable(!stereo);
 		stereoFilter.setDisable(!stereo);
 		stereoFilterCurve.setDisable(!stereo);
-
-		duringInitialization = false;
+		sidToRead.setDisable(!stereo);
 	}
 
 	@Override
