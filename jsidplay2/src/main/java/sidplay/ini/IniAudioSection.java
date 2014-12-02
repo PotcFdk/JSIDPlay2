@@ -7,7 +7,7 @@ import sidplay.ini.intf.IAudioSection;
 /**
  * Audio section of the INI file.
  * 
- * @author Ken Händel
+ * @author Ken Hï¿½ndel
  * 
  */
 public class IniAudioSection extends IniSection implements IAudioSection {
@@ -185,4 +185,23 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 		iniReader.setProperty("Audio", "RightVolume", volume);
 	}
 
+	@Override
+	public float getLeftBalance() {
+		return iniReader.getPropertyFloat("Audio", "LeftBalance", 0f);
+	}
+
+	@Override
+	public void setLeftBalance(float balance) {
+		iniReader.setProperty("Audio", "LeftBalance", balance);
+	}
+
+	@Override
+	public float getRightBalance() {
+		return iniReader.getPropertyFloat("Audio", "RightBalance", 1f);
+	}
+
+	@Override
+	public void setRightBalance(float balance) {
+		iniReader.setProperty("Audio", "RightBalance", balance);
+	}
 }

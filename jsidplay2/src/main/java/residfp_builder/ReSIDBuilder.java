@@ -10,7 +10,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken Händel
+ * @author Ken Hï¿½ndel
  *
  */
 package residfp_builder;
@@ -43,10 +43,15 @@ public class ReSIDBuilder extends SIDBuilder {
 		private int oldRandomValue;
 
 		private final int[] volume = new int[] { 1024, 1024 };
+		private final float[] balance = new float[] { 0, 1 };
 		private EventScheduler context;
 
 		protected void setVolume(int i, float v) {
-			volume[i] = (int) (v * 1024f);
+			this.volume[i] = (int) (v * 1024f);
+		}
+
+		public void setBalance(int i, float balance) {
+			this.balance[i] = balance;
 		}
 
 		/**
@@ -92,8 +97,11 @@ public class ReSIDBuilder extends SIDBuilder {
 			final ByteBuffer soundBuffer = audio.getAudioDriver().buffer();
 			for (int i = 0; i < samples; i++) {
 				int dither = triangularDithering();
-				int value = (Math
-						.round((buf1[i] * 32768f) * volume[0] + dither)) >> 10;
+				int value = (Math.round((buf1[i] * 32768f)
+						* volume[0]
+						* (1 - this.balance[0])
+						+ (buf2 != null ? (buf2[i] * 32768f) * volume[1]
+								* (1 - this.balance[1]) : 0) + dither)) >> 10;
 				if (value > 32767) {
 					value = 32767;
 				}
@@ -103,8 +111,9 @@ public class ReSIDBuilder extends SIDBuilder {
 				soundBuffer.putShort((short) value);
 
 				if (buf2 != null) {
-					value = (Math
-							.round((buf2[i] * 32768f) * volume[1] + dither)) >> 10;
+					value = (Math.round((buf2[i] * 32768f) * volume[1]
+							* this.balance[1] + (buf1[i] * 32768f) * volume[0]
+							* this.balance[0] + dither)) >> 10;
 					if (value > 32767) {
 						value = 32767;
 					}
@@ -156,6 +165,8 @@ public class ReSIDBuilder extends SIDBuilder {
 		this.audio = audio;
 		setMixerVolume(0, config.getAudio().getLeftVolume());
 		setMixerVolume(1, config.getAudio().getRightVolume());
+		setBalance(0, config.getAudio().getLeftBalance());
+		setBalance(1, config.getAudio().getRightBalance());
 		switchToNullDriver(tune);
 	}
 
@@ -185,6 +196,11 @@ public class ReSIDBuilder extends SIDBuilder {
 	@Override
 	public void setMixerVolume(int i, float volumeInDB) {
 		mixerEvent.setVolume(i, (float) Math.pow(10, volumeInDB / 10));
+	}
+
+	@Override
+	public void setBalance(int i, float balance) {
+		mixerEvent.setBalance(i, balance);
 	}
 
 	@Override

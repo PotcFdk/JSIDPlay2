@@ -700,6 +700,12 @@ public class Player {
 		}
 	}
 
+	public void setBalance(int i, float balance) {
+		if (sidBuilder != null) {
+			sidBuilder.setBalance(i, balance);
+		}
+	}
+
 	/**
 	 * Start emulation (start player thread).
 	 */

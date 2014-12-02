@@ -31,7 +31,7 @@ import sidplay.ini.intf.IConfig;
  * **************************************************************************
  * </pre>
  * 
- * @author Ken Händel
+ * @author Ken Hï¿½ndel
  * 
  */
 public class HardSIDBuilder extends SIDBuilder {
@@ -151,13 +151,17 @@ public class HardSIDBuilder extends SIDBuilder {
 	}
 
 	@Override
+	public void setBalance(int i, float balance) {
+	}
+	
+	@Override
 	public int getNumDevices() {
 		return hsid2.GetHardSIDCount();
 	}
 
 	public static final String credits() {
 		return String.format("HardSID V%s Engine:\n", VERSION)
-				+ "\tCopyright (©) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
+				+ "\tCopyright (ï¿½) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
 	}
 
 }

@@ -128,4 +128,10 @@ public interface IAudioSection {
 	 */
 	void setRightVolume(float volume);
 
+	public float getLeftBalance();
+	public void setLeftBalance(float balance);
+
+	public float getRightBalance();
+	public void setRightBalance(float balance);
+
 }

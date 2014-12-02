@@ -10,14 +10,14 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken Händel
+ * @author Ken Hï¿½ndel
  *
  */
 package libsidplay.common;
 
 
 /**
- * @author Ken Händel
+ * @author Ken Hï¿½ndel
  * 
  *         Inherit this class to create a new SID emulations for libsidplay2.
  */
@@ -25,6 +25,7 @@ public abstract class SIDBuilder {
 	public void start() {};
 	public abstract SIDEmu lock(EventScheduler context, SIDEmu device, ChipModel model);
 	public abstract void unlock(SIDEmu device);
+	public abstract void setBalance(int i, float balance);
 	public abstract void setMixerVolume(int sidNum, float volumnInDb);
 	public abstract int getNumDevices();
 }

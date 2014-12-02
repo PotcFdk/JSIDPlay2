@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
+<?import java.lang.String?>
 <?import javafx.scene.Scene?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
@@ -11,17 +13,15 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.collections.FXCollections?>
-<?import java.net.URL?>
-<?import java.lang.String?>
 <?import ui.common.KnobSkin?>
 <?import ui.emulationsettings.LogarithmicAxis?>
 <?scenebuilder-preview-i18n-resource EmulationSettings.properties?>
-<?import javafx.scene.control.Tooltip?>
 
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<stylesheets>
@@ -32,18 +32,22 @@
 			<BorderPane>
 				<left>
 					<VBox>
-						<Label text="%MAIN_SID_LEVEL" GridPane.columnIndex="0"
-							GridPane.rowIndex="0" />
+						<Label text="%LEFT_BALANCE" />
+						<Slider fx:id="leftBalance" min="0" max="1" value="0"
+							blockIncrement="0.1" />
 						<Slider fx:id="leftVolume" min="0" max="12" value="12"
-							blockIncrement="1" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+							blockIncrement="1" majorTickUnit="0.1" />
+						<Label text="%MAIN_SID_LEVEL" />
 					</VBox>
 				</left>
 				<right>
 					<VBox>
-						<Label text="%SECOND_SID_LEVEL" GridPane.columnIndex="2"
-							GridPane.rowIndex="0" />
+						<Label text="%RIGHT_BALANCE" />
+						<Slider fx:id="rightBalance" min="0" max="1" value="1"
+							blockIncrement="0.1" />
 						<Slider fx:id="rightVolume" min="0" max="12" value="12"
-							blockIncrement="1" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+							blockIncrement="1" />
+						<Label text="%SECOND_SID_LEVEL" />
 					</VBox>
 				</right>
 			</BorderPane>
@@ -55,15 +59,15 @@
 					<ComboBox fx:id="defaultModel" onAction="#setDefaultModel" />
 					<CheckBox text="%FORCE_STEREO" fx:id="forceStereo"
 						onAction="#doForceStereo" />
-					<TextField fx:id="baseAddress" onAction="#setBaseAddress" >
+					<TextField fx:id="baseAddress" onAction="#setBaseAddress">
 						<tooltip>
-							<Tooltip text="%BASE_ADDRESS_TIP"/>
+							<Tooltip text="%BASE_ADDRESS_TIP" />
 						</tooltip>
 					</TextField>
 					<Label text="%SID_READ" />
 					<ComboBox fx:id="sidToRead" onAction="#setSidToRead">
 						<tooltip>
-							<Tooltip text="%SID_READ_TIP"/>
+							<Tooltip text="%SID_READ_TIP" />
 						</tooltip>
 					</ComboBox>
 					<CheckBox text="%DIGI_BOOST" fx:id="boosted8580" onAction="#setDigiBoost" />

@@ -17,6 +17,7 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.player.State;
 import resid_builder.resid.FilterModelConfig;
+import sidplay.audio.AudioConfig;
 import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
 import ui.common.C64Window;
@@ -45,6 +46,14 @@ public class EmulationSettings extends C64Window {
 					ChipModel stereoModel = ChipModel.getStereoModel(
 							util.getConfig(), util.getPlayer().getTune());
 					addFilters(stereoModel, true);
+					boolean stereo = AudioConfig.isStereo(util.getConfig(),
+							util.getPlayer().getTune());
+					rightVolume.setDisable(!stereo);
+					leftBalance.setDisable(!stereo);
+					rightBalance.setDisable(!stereo);
+					sid2Model.setDisable(!stereo);
+					stereoFilter.setDisable(!stereo);
+					stereoFilterCurve.setDisable(!stereo);
 				});
 			}
 		}
@@ -73,7 +82,7 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private CheckBox forceStereo, boosted8580;
 	@FXML
-	private Slider leftVolume, rightVolume;
+	private Slider leftVolume, rightVolume, leftBalance, rightBalance;
 	@FXML
 	private LineChart<Number, Number> filterCurve, stereoFilterCurve;
 
@@ -98,6 +107,21 @@ public class EmulationSettings extends C64Window {
 		filter.setItems(filters);
 		stereoFilters = FXCollections.<String> observableArrayList();
 		stereoFilter.setItems(stereoFilters);
+
+		leftBalance.setValue(util.getConfig().getAudio().getLeftBalance());
+		leftBalance.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					float balance = newValue.floatValue();
+					util.getConfig().getAudio().setLeftBalance(balance);
+					util.getPlayer().setBalance(0, balance);
+				});
+		rightBalance.setValue(util.getConfig().getAudio().getRightBalance());
+		rightBalance.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					float balance = newValue.floatValue();
+					util.getConfig().getAudio().setRightBalance(balance);
+					util.getPlayer().setBalance(1, balance);
+				});
 
 		leftVolume.setValue(util.getConfig().getAudio().getLeftVolume()
 				+ MAX_VOLUME_DB);
@@ -161,6 +185,15 @@ public class EmulationSettings extends C64Window {
 
 		emulationChange = new EmulationChange();
 		util.getPlayer().stateProperty().addListener(emulationChange);
+
+		boolean stereo = AudioConfig.isStereo(util.getConfig(),
+				util.getPlayer().getTune());
+		rightVolume.setDisable(!stereo);
+		leftBalance.setDisable(!stereo);
+		rightBalance.setDisable(!stereo);
+		sid2Model.setDisable(!stereo);
+		stereoFilter.setDisable(!stereo);
+		stereoFilterCurve.setDisable(!stereo);
 
 		duringInitialization = false;
 	}

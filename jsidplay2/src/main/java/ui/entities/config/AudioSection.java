@@ -121,4 +121,28 @@ public class AudioSection implements IAudioSection {
 		this.rightVolume = volume;
 	}
 
+	private float leftBalance = 0f;
+
+	@Override
+	public float getLeftBalance() {
+		return this.leftBalance;
+	}
+
+	@Override
+	public void setLeftBalance(float balance) {
+		this.leftBalance = balance;
+	}
+
+	private float rightBalance = 1f;
+
+	@Override
+	public float getRightBalance() {
+		return this.rightBalance;
+	}
+
+	@Override
+	public void setRightBalance(float right) {
+		this.rightBalance = right;
+	}
+
 }

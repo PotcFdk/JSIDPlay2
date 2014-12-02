@@ -1,4 +1,7 @@
-.slider {
+#leftVolume {
+    -fx-skin: "ui.common.KnobSkin";
+}
+#rightVolume {
     -fx-skin: "ui.common.KnobSkin";
 }
 .slider:focused .knob {
