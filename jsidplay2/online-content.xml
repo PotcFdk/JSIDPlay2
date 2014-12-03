@@ -135,7 +135,7 @@
 			<fx:resources>
 				<fx:fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar" />
 				<fx:fileset dir="${webstart_dir}" type="native" os="Windows" arch="x86_64 x86" includes="*-natives-windows.jar" />
-				<fx:fileset dir="${webstart_dir}" type="native" os="Linux" arch="i386 ia64 x84_64" includes="*-natives-linux.jar" />
+				<fx:fileset dir="${webstart_dir}" type="native" os="Linux" arch="i386 ia64 x84_64 amd64" includes="*-natives-linux.jar" />
 				<fx:fileset dir="${webstart_dir}" type="native" os="Mac OS" includes="*-natives-osx.jar" />
 			</fx:resources>
 			<fx:info title="${application.title}" vendor="${application.vendor}">
