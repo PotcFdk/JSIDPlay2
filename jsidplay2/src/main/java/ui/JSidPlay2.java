@@ -1406,7 +1406,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (AudioConfig.isStereo(util.getConfig(), util.getPlayer().getTune())) {
 			ChipModel stereoModel = ChipModel.getStereoModel(util.getConfig(),
 					util.getPlayer().getTune());
-			line.append(String.format("+%s", stereoModel));
+			int dualSidBase = AudioConfig.getStereoAddress(util.getConfig(),
+					util.getPlayer().getTune());
+			line.append(String
+					.format("+%s(at 0x%4x)", stereoModel, dualSidBase));
 		}
 		line.append(", ");
 		return line.toString();

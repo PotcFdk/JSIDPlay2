@@ -70,11 +70,11 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	protected ComboBox<ChipModel> defaultModel;
 	@FXML
-	private ComboBox<String> filter, stereoFilter, sidToRead;
+	private ComboBox<String> stereoMode, filter, stereoFilter, sidToRead;
 	@FXML
 	private TextField baseAddress;
 	@FXML
-	private CheckBox forceStereo, boosted8580;
+	private CheckBox boosted8580;
 	@FXML
 	private Slider leftVolume, rightVolume, leftBalance, rightBalance;
 	@FXML
@@ -83,7 +83,8 @@ public class EmulationSettings extends C64Window {
 	private ObservableList<Object> sid1Models;
 	private ObservableList<Object> sid2Models;
 	private ObservableList<ChipModel> defaultModels;
-	private ObservableList<String> filters, stereoFilters, sidReads;
+	private ObservableList<String> stereoModes, sidReads, filters,
+			stereoFilters;
 
 	private ChangeListener<State> emulationChange;
 
@@ -134,6 +135,29 @@ public class EmulationSettings extends C64Window {
 					util.getPlayer().setMixerVolume(1, volumeDb);
 				});
 
+		stereoModes = FXCollections.<String> observableArrayList();
+		stereoModes
+				.addAll(util.getBundle().getString("AUTO"), util.getBundle()
+						.getString("FAKE_STEREO"),
+						util.getBundle().getString("STEREO"));
+		stereoMode.setItems(stereoModes);
+
+		int dualSidBase = util.getConfig().getEmulation().getDualSidBase();
+		if (util.getConfig().getEmulation().isForceStereoTune()) {
+			if (dualSidBase == 0xd400) {
+				stereoMode.getSelectionModel().select(
+						util.getBundle().getString("FAKE_STEREO"));
+			} else {
+				stereoMode.getSelectionModel().select(
+						util.getBundle().getString("STEREO"));
+			}
+		} else {
+			stereoMode.getSelectionModel().select(
+					util.getBundle().getString("AUTO"));
+		}
+
+		baseAddress.setText(String.format("0x%4x", dualSidBase));
+
 		sidReads = FXCollections.<String> observableArrayList();
 		sidReads.addAll(util.getBundle().getString("FIRST_SID"), util
 				.getBundle().getString("SECOND_SID"));
@@ -167,15 +191,13 @@ public class EmulationSettings extends C64Window {
 				.getDefaultSidModel();
 		defaultModel.getSelectionModel().select(defautSidModel);
 
-		baseAddress.setText(String.format("0x%4x", util.getConfig()
-				.getEmulation().getDualSidBase()));
-		forceStereo.setSelected(util.getConfig().getEmulation()
-				.isForceStereoTune());
 		boosted8580.setSelected(util.getConfig().getEmulation()
 				.isDigiBoosted8580());
 
-		calculateFilterCurve(filter.getSelectionModel().getSelectedItem(), false);
-		calculateFilterCurve(stereoFilter.getSelectionModel().getSelectedItem(), true);
+		calculateFilterCurve(filter.getSelectionModel().getSelectedItem(),
+				false);
+		calculateFilterCurve(
+				stereoFilter.getSelectionModel().getSelectedItem(), true);
 
 		emulationChange = new EmulationChange();
 		util.getPlayer().stateProperty().addListener(emulationChange);
@@ -188,13 +210,18 @@ public class EmulationSettings extends C64Window {
 	private void enableStereoSettings() {
 		boolean stereo = AudioConfig.isStereo(util.getConfig(), util
 				.getPlayer().getTune());
+		// stereo, only:
 		rightVolume.setDisable(!stereo);
 		leftBalance.setDisable(!stereo);
 		rightBalance.setDisable(!stereo);
 		sid2Model.setDisable(!stereo);
 		stereoFilter.setDisable(!stereo);
 		stereoFilterCurve.setDisable(!stereo);
-		sidToRead.setDisable(!stereo);
+		// forced stereo, only:
+		sidToRead.setDisable(!(stereo && util.getConfig().getEmulation()
+				.isForceStereoTune()));
+		baseAddress.setDisable(!(stereo && util.getConfig().getEmulation()
+				.isForceStereoTune()));
 	}
 
 	@Override
@@ -224,8 +251,8 @@ public class EmulationSettings extends C64Window {
 		if (sid2Model.getSelectionModel().getSelectedItem()
 				.equals(util.getBundle().getString("AUTO"))) {
 			util.getConfig().getEmulation().setStereoSidModel(null);
-			ChipModel stereoModel = ChipModel.getStereoModel(util.getConfig(), util
-					.getPlayer().getTune());
+			ChipModel stereoModel = ChipModel.getStereoModel(util.getConfig(),
+					util.getPlayer().getTune());
 			addFilters(stereoModel, true);
 		} else {
 			ChipModel stereoSidModel = (ChipModel) sid2Model
@@ -252,15 +279,44 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setBaseAddress() {
-		util.getConfig().getEmulation()
-				.setDualSidBase(Integer.decode(baseAddress.getText()));
+		Integer decode = Integer.decode(baseAddress.getText());
+		util.getConfig().getEmulation().setDualSidBase(decode);
+
+		String stereo = util.getBundle().getString("STEREO");
+		String fakeStereo = util.getBundle().getString("FAKE_STEREO");
+
+		if (decode == 0xd400) {
+			if (!stereoMode.getSelectionModel().getSelectedItem()
+					.equals(fakeStereo)) {
+				stereoMode.getSelectionModel().select(fakeStereo);
+				return;
+			}
+		} else if (!stereoMode.getSelectionModel().getSelectedItem()
+				.equals(stereo)) {
+			stereoMode.getSelectionModel().select(stereo);
+			baseAddress.setText(String.format("0x%4x",decode));
+			return;
+		}
 		restart();
 	}
 
 	@FXML
-	private void doForceStereo() {
-		util.getConfig().getEmulation()
-				.setForceStereoTune(forceStereo.isSelected());
+	private void setStereoMode() {
+		String stereo = util.getBundle().getString("STEREO");
+		String fakeStereo = util.getBundle().getString("FAKE_STEREO");
+
+		if (stereoMode.getSelectionModel().getSelectedItem().equals(fakeStereo)) {
+			util.getConfig().getEmulation().setForceStereoTune(true);
+			util.getConfig().getEmulation().setDualSidBase(0xd400);
+			baseAddress.setText("0xd400");
+		} else if (stereoMode.getSelectionModel().getSelectedItem()
+				.equals(stereo)) {
+			util.getConfig().getEmulation().setForceStereoTune(true);
+			util.getConfig().getEmulation().setDualSidBase(0xd420);
+			baseAddress.setText("0xd420");
+		} else {
+			util.getConfig().getEmulation().setForceStereoTune(false);
+		}
 		restart();
 	}
 
@@ -269,7 +325,7 @@ public class EmulationSettings extends C64Window {
 		int sidNumToRead = sidToRead.getSelectionModel().getSelectedIndex();
 		util.getConfig().getEmulation().setSidNumToRead(sidNumToRead);
 	}
-	
+
 	@FXML
 	private void setDigiBoost() {
 		boolean selected = boosted8580.isSelected();
@@ -317,7 +373,8 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setStereoFilter() {
-		final String filterName = stereoFilter.getSelectionModel().getSelectedItem();
+		final String filterName = stereoFilter.getSelectionModel()
+				.getSelectedItem();
 		final boolean filterDisabled = "".equals(filterName);
 
 		IEmulationSection emulation = util.getConfig().getEmulation();
@@ -354,12 +411,13 @@ public class EmulationSettings extends C64Window {
 
 	private void updateChipModels() {
 		util.getPlayer().updateSIDs();
-		util.getPlayer().configureSIDs((num, sid) -> {
-			sid.setFilter(util.getConfig(), num != 0);
+		util.getPlayer().configureSIDs(
+				(num, sid) -> {
+					sid.setFilter(util.getConfig(), num != 0);
 					sid.setFilterEnable(num != 0 ? util.getConfig()
 							.getEmulation().isStereoFilter() : util.getConfig()
 							.getEmulation().isFilter());
-		});
+				});
 	}
 
 	private void restart() {
@@ -369,21 +427,24 @@ public class EmulationSettings extends C64Window {
 		}
 	}
 
-	private void calculateFilterCurve(final String filterName, boolean isStereo) {
-		IFilterSection filterSid1 = null;
-		for (final IFilterSection filter : util.getConfig().getFilter()) {
-			if (filter.getName().equals(filterName)) {
-				filterSid1 = filter;
+	private void calculateFilterCurve(final String filterName, boolean secondSID) {
+		IFilterSection filter = null;
+		for (final IFilterSection filterSection : util.getConfig().getFilter()) {
+			if (filterSection.getName().equals(filterName)) {
+				filter = filterSection;
 				break;
 			}
 		}
 
+		boolean stereo = AudioConfig.isStereo(util.getConfig(), util
+				.getPlayer().getTune());
+
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		series.setName(util.getBundle().getString("FILTERCURVE_TITLE"));
-		(isStereo?stereoFilterCurve:filterCurve).getData().clear();
-		if (filterSid1 != null) {
-			if (filterSid1.isReSIDFilter6581()) {
-				double dacZero = FilterModelConfig.getDacZero(filterSid1
+		(secondSID ? stereoFilterCurve : filterCurve).getData().clear();
+		if (filter != null && !(secondSID && !stereo)) {
+			if (filter.isReSIDFilter6581()) {
+				double dacZero = FilterModelConfig.getDacZero(filter
 						.getFilter6581CurvePosition());
 				for (int i = 0; i < FC_MAX; i += STEP) {
 					series.getData().add(
@@ -391,31 +452,32 @@ public class EmulationSettings extends C64Window {
 									(int) FilterModelConfig.estimateFrequency(
 											dacZero, i)));
 				}
-			} else if (filterSid1.isReSIDFilter8580()) {
+			} else if (filter.isReSIDFilter8580()) {
 				for (int i = 0; i < FC_MAX; i += STEP) {
 					series.getData()
 							.add(new XYChart.Data<Number, Number>(
 									i,
 									(int) (i
-											* filterSid1
+											* filter
 													.getFilter8580CurvePosition() / (FC_MAX - 1))));
 				}
-			} else if (filterSid1.isReSIDfpFilter6581()
-					|| filterSid1.isReSIDfpFilter8580()) {
+			} else if (filter.isReSIDfpFilter6581()
+					|| filter.isReSIDfpFilter8580()) {
 				for (int i = 0; i < FC_MAX; i += STEP) {
 					series.getData()
 							.add(new XYChart.Data<Number, Number>(
 									i,
 									(int) residfp_builder.resid.FilterModelConfig
-											.estimateFrequency(filterSid1, i)));
+											.estimateFrequency(filter, i)));
 				}
 			}
-			(isStereo?stereoFilterCurve:filterCurve).getData().add(series);
+			(secondSID ? stereoFilterCurve : filterCurve).getData().add(series);
 		}
 	}
 
 	private void addFilters(final ChipModel model, boolean isStereo) {
-		final boolean enable = isStereo?util.getConfig().getEmulation().isStereoFilter():util.getConfig().getEmulation().isFilter();
+		final boolean enable = isStereo ? util.getConfig().getEmulation()
+				.isStereoFilter() : util.getConfig().getEmulation().isFilter();
 		String item = null;
 		if (enable) {
 			if (util.getConfig().getEmulation().getEmulation()
@@ -438,31 +500,31 @@ public class EmulationSettings extends C64Window {
 			}
 		}
 
-		(isStereo?stereoFilters:filters).clear();
-		(isStereo?stereoFilters:filters).add("");
+		(isStereo ? stereoFilters : filters).clear();
+		(isStereo ? stereoFilters : filters).add("");
 		for (IFilterSection filter : util.getConfig().getFilter()) {
 			if (util.getConfig().getEmulation().getEmulation()
 					.equals(Emulation.RESIDFP)) {
 				if (filter.isReSIDfpFilter6581() && model == ChipModel.MOS6581) {
-					(isStereo?stereoFilters:filters).add(filter.getName());
+					(isStereo ? stereoFilters : filters).add(filter.getName());
 				} else if (filter.isReSIDfpFilter8580()
 						&& model == ChipModel.MOS8580) {
-					(isStereo?stereoFilters:filters).add(filter.getName());
+					(isStereo ? stereoFilters : filters).add(filter.getName());
 				}
 			} else {
 				if (filter.isReSIDFilter6581() && model == ChipModel.MOS6581) {
-					(isStereo?stereoFilters:filters).add(filter.getName());
+					(isStereo ? stereoFilters : filters).add(filter.getName());
 				} else if (filter.isReSIDFilter8580()
 						&& model == ChipModel.MOS8580) {
-					(isStereo?stereoFilters:filters).add(filter.getName());
+					(isStereo ? stereoFilters : filters).add(filter.getName());
 				}
 			}
 		}
 
 		if (enable) {
-			(isStereo?stereoFilter:filter).getSelectionModel().select(item);
+			(isStereo ? stereoFilter : filter).getSelectionModel().select(item);
 		} else {
-			(isStereo?stereoFilter:filter).getSelectionModel().select(0);
+			(isStereo ? stereoFilter : filter).getSelectionModel().select(0);
 		}
 	}
 

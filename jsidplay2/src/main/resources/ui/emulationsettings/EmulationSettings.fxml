@@ -55,10 +55,9 @@
 		<TitledPane text="%SID_CONTROL" collapsible="false">
 			<VBox>
 				<HBox>
-					<Label text="%DEFAULT_SID" />
-					<ComboBox fx:id="defaultModel" onAction="#setDefaultModel" />
-					<CheckBox text="%FORCE_STEREO" fx:id="forceStereo"
-						onAction="#doForceStereo" />
+					<Label text="%STEREO_MODE" />
+					<ComboBox fx:id="stereoMode" onAction="#setStereoMode"
+						maxWidth="200" />
 					<TextField fx:id="baseAddress" onAction="#setBaseAddress">
 						<tooltip>
 							<Tooltip text="%BASE_ADDRESS_TIP" />
@@ -70,6 +69,8 @@
 							<Tooltip text="%SID_READ_TIP" />
 						</tooltip>
 					</ComboBox>
+					<Label text="%DEFAULT_SID" />
+					<ComboBox fx:id="defaultModel" onAction="#setDefaultModel" />
 					<CheckBox text="%DIGI_BOOST" fx:id="boosted8580" onAction="#setDigiBoost" />
 				</HBox>
 			</VBox>
