@@ -27,7 +27,7 @@ import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 
 /**
- * @author Ken H�ndel
+ * @author Ken Händel
  * @author Joakim Eriksson
  * 
  *         SID Player main class

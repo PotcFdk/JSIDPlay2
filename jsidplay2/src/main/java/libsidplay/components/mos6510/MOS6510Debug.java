@@ -10,7 +10,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package libsidplay.components.mos6510;
@@ -21,10 +21,10 @@ import static libsidplay.components.mos6510.IOpCode.*;
  * Cycle-exact 6502/6510 emulation core.
  * 
  * Code is based on work by Simon A. White <sidplay2@yahoo.com>.
- * Original Java port by Ken Händel. Later on, it has been hacked to
+ * Original Java port by Ken HÃ¤ndel. Later on, it has been hacked to
  * improve compatibility with Lorenz suite on VICE's test suite.
  * 
- * @author alankila
+ * @author Antti Lankila
  */
 public class MOS6510Debug {
 	protected static void dumpState(long time, MOS6510 cpu) {

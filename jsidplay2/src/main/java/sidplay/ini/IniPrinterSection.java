@@ -5,7 +5,7 @@ import sidplay.ini.intf.IPrinterSection;
 /**
  * C1541 section of the INI file.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class IniPrinterSection extends IniSection implements IPrinterSection {

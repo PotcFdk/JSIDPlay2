@@ -10,7 +10,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package libsidplay.components.mos6510;
@@ -28,10 +28,10 @@ import libsidplay.common.EventScheduler;
  * Cycle-exact 6502/6510 emulation core.
  * 
  * Code is based on work by Simon A. White <sidplay2@yahoo.com>. Original Java
- * port by Ken Händel. Later on, it has been hacked to improve compatibility
+ * port by Ken HÃ¤ndel. Later on, it has been hacked to improve compatibility
  * with Lorenz suite on VICE's test suite.
  * 
- * @author alankila
+ * @author Antti Lankila
  */
 public abstract class MOS6510 {
 	/** Status register interrupt bit. */
@@ -2070,8 +2070,8 @@ public abstract class MOS6510 {
 	 * @return credit string
 	 */
 	public static String credits() {
-		return "MOS6510 (CPU)\n" + "\t(©) 2000 Simon A. White\n"
-				+ "\t(©) 2008-2010 Antti S. Lankila\n";
+		return "MOS6510 (CPU)\n" + "\t(Â©) 2000 Simon A. White\n"
+				+ "\t(Â©) 2008-2010 Antti S. Lankila\n";
 	}
 
 	/**

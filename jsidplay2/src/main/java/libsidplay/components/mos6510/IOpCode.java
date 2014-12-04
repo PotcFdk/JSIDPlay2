@@ -10,7 +10,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package libsidplay.components.mos6510;

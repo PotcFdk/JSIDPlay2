@@ -1,4 +1,4 @@
-/* Pucrunch �1997-2008 by Pasi 'Albert' Ojala, a1bert@iki.fi */
+/* Pucrunch ©1997-2008 by Pasi 'Albert' Ojala, a1bert@iki.fi */
 /* Pucrunch is now under LGPL: see the doc for details. */
 package libsidutils.cruncher;
 
@@ -74,7 +74,7 @@ import libsidutils.assembler.KickAssembler;
  * 	; 1xxxxxx	111111	xxxxxx	64-127			+5 bits
  * </PRE>
  * 
- * @author Ken
+ * @author Ken Händel
  *
  */
 public class PUCrunch {

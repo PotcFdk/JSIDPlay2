@@ -6,7 +6,7 @@ package resid_builder.resid;
  * 
  * Java port by Antti S. Lankila
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * @author Dag Lem
  * @author Antti Lankila
  */

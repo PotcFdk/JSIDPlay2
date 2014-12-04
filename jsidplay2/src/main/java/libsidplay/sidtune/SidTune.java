@@ -26,7 +26,7 @@ import javafx.scene.image.Image;
 import de.schlichtherle.truezip.file.TFileInputStream;
 
 /**
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public abstract class SidTune {

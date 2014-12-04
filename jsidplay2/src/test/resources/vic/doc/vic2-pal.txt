@@ -2,7 +2,7 @@
                       Video Interface Controller
 
 
-                             Marko Mäkelä
+                             Marko MÃ¤kelÃ¤
                             3rd June, 1994
 
   This document is based on my screen size measurements in Sweden at
@@ -623,21 +623,21 @@ not use it, at least not after August 1994.
 
   Snail mail (Germany, valid until July 30th, 1994):
 
-        Marko Mäkelä
-        Anschützstraße 15, Zimmer I/209
-        D-23562 Lübeck
+        Marko MÃ¤kelÃ¤
+        Anschï¿½tzstraï¿½e 15, Zimmer I/209
+        D-23562 Lï¿½beck
 
   Snail mail (Finland, valid all the time, but not read until 2st of August):
 
-        Marko Mäkelä
+        Marko MÃ¤kelÃ¤
         Sillitie 10 A
         FIN-01480 Vantaa
 
   In case you are not using the ISO 8859-1 character set, you may want to
-know that the letter ä represents an adiaeresis, an a with two little points
-on top of it.  Similarly, ü is an udiaeresis, an u with two points on it.
+know that the letter ï¿½ represents an adiaeresis, an a with two little points
+on top of it.  Similarly, ï¿½ is an udiaeresis, an u with two points on it.
 The points are just like the point over the lower case i and j letters, but
-there are two of them, and they are placed horizontally.  The ß character is
+there are two of them, and they are placed horizontally.  The ï¿½ character is
 the German sharp s and looks like the lower case Greek beta character.  If
 you don't know how to write it, write two s characters on its place.
 

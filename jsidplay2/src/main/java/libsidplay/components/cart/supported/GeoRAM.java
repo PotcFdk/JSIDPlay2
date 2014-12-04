@@ -29,7 +29,7 @@
  * XXX The BBG (Battery Backed GeoRAM) is a version that retains the
  * RAM contents after power-off. This is not emulated, yet.
  *
- *@author Ken
+ *@author Ken Händel
  */
 package libsidplay.components.cart.supported;
 

@@ -58,7 +58,7 @@ import de.schlichtherle.truezip.file.TFile;
  * crc32=&lt;8DigitsHexCRC32&gt;
  * </PRE>
  * 
- * @author Ken
+ * @author Ken Händel
  * 
  */
 public class DownloadThread extends Thread implements RBCWrapperDelegate {

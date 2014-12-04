@@ -1,7 +1,7 @@
 /**
  * G64 disk image.
  * 
- * @author Ken
+ * @author Ken Händel
  */
 package libsidplay.components.c1541;
 
@@ -10,7 +10,7 @@ import java.io.RandomAccessFile;
 import java.util.Arrays;
 
 /**
- * @author Ken H�ndel
+ * @author Ken Händel
  * 
  */
 public class G64 extends DiskImage {

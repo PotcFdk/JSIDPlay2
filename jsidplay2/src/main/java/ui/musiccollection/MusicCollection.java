@@ -98,7 +98,7 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  * artist. - currently playing symbol - artist name - song name - total song
  * length (?)
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * @author Antti Lankila
  */
 public class MusicCollection extends Tab implements UIPart {

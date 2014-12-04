@@ -3,7 +3,7 @@
 
 /* Lacking an official SDK, the secrets of HardSID API
  * are collected here as my feeble attempt to figure it out.
- * -alankila */
+ * -Antti Lankila */
 
 /* This header describes methods available as of version 3.01 */
 #define HARDSID_VERSION 0x301

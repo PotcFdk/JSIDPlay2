@@ -34,7 +34,7 @@ import libsidutils.PathUtils;
  * vowels and finally numerics. If the filename is still greater than 8 it is
  * truncated. struct X00Header
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 class P00 extends Prg {

@@ -33,7 +33,7 @@ import libsidplay.components.c1541.VIACore;
 /**
  * IEC Bus Implementation.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class IECBus {

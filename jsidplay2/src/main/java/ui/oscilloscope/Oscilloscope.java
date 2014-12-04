@@ -18,7 +18,7 @@ import ui.common.UIPart;
 import ui.common.UIUtil;
 
 /**
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  */
 public class Oscilloscope extends Tab implements UIPart {
 

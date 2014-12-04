@@ -78,7 +78,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		type("PUZZLEND.P00");
+		type("PUZZLEND.p00");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 

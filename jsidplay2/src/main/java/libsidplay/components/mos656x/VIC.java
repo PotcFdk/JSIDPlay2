@@ -51,7 +51,7 @@ import libsidplay.components.pla.PLA;
  * </pre>
  * 
  * 
- * @author Joerg Jahnke (joergjahnke@users.sourceforge.net)
+ * @author Jörg Jahnke (joergjahnke@users.sourceforge.net)
  * @author Antti S. Lankila (alankila@bel.fi)
  */
 public abstract class VIC extends Bank {
@@ -138,8 +138,8 @@ public abstract class VIC extends Bank {
 
 	/** Credits */
 	private static final String credit = "MOS656X (cycle-exact VICII) Emulation:\n"
-			+ "\tCopyright (�) 2009 Joerg Jahnke <joergjahnke@users.sourceforge.net>\n"
-			+ "\tCopyright (�) 2010 Antti S. Lankila <alankila@bel.fi>\n";
+			+ "\tCopyright (©) 2009 Jörg Jahnke <joergjahnke@users.sourceforge.net>\n"
+			+ "\tCopyright (©) 2010 Antti S. Lankila <alankila@bel.fi>\n";
 
 	// graphic modes
 	/**

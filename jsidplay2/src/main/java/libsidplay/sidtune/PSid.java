@@ -63,7 +63,7 @@ class PSid extends Prg {
 	 * </UL>
 	 * all values big-endian
 	 * 
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 */
 	private static class PHeader {

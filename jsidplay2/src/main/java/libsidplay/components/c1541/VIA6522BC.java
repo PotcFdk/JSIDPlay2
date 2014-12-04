@@ -3,7 +3,7 @@
  *
  * Written by
  *  Andreas Boose <viceteam@t-online.de>
- *  Andre' Fachat <fachat@physik.tu-chemnitz.de>
+ *  André Fachat <fachat@physik.tu-chemnitz.de>
  *  Daniel Sladic <sladic@eecg.toronto.edu>
  *  Ettore Perazzoli <ettore@comm2000.it>
  *
@@ -33,7 +33,7 @@ import libsidplay.components.iec.IECBus;
 /**
  * Handling of the Bus Controller.
  * 
- * @author Ken H�ndel
+ * @author Ken Händel
  * 
  */
 public abstract class VIA6522BC extends VIACore {

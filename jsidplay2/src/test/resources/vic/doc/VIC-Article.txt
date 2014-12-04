@@ -81,7 +81,7 @@ memory map) already known to experienced C64 programmers has been included
 as well.
 
 The description of the unspecified properties is based on tests done by
-Marko Mäkelä, Andreas Boose, Pasi Ojala, Wolfgang Lorenz and myself (not to
+Marko MÃ¤kelÃ¤, Andreas Boose, Pasi Ojala, Wolfgang Lorenz and myself (not to
 mention numerous others) during the last years. It also covers internal
 registers and workings of the VIC. As no schematics of the VIC are
 available it can of course only be speculative, but in all cases a model
@@ -107,14 +107,14 @@ C64 and the integration of the VIC into the system.
 
 The C64 basically consists of the following units:
 
- · 6510 8 bit microprocessor
- · 6567/6569 VIC-II graphics chip
- · 6581 SID sound chip
- · Two 6526 CIA I/O chips
- · 64KB DRAM (64K*8 bit) main memory
- · 0.5KB SRAM (1K*4 bit) Color RAM
- · 16KB ROM (16K*8 bit) for operating system and BASIC interpreter
- · 4KB ROM (4K*8 bit) character generator
+ ï¿½ 6510 8 bit microprocessor
+ ï¿½ 6567/6569 VIC-II graphics chip
+ ï¿½ 6581 SID sound chip
+ ï¿½ Two 6526 CIA I/O chips
+ ï¿½ 64KB DRAM (64K*8 bit) main memory
+ ï¿½ 0.5KB SRAM (1K*4 bit) Color RAM
+ ï¿½ 16KB ROM (16K*8 bit) for operating system and BASIC interpreter
+ ï¿½ 4KB ROM (4K*8 bit) character generator
 
 Most chips are manufactured in NMOS technology.
 
@@ -129,12 +129,12 @@ in the C64.
 
 Important signals:
 
-ø2     Processor clock output
+ï¿½2     Processor clock output
        This clock signal is the reference for the complete bus timing. Its
        frequency is 1022.7 kHz (NTSC models) or 985.248 kHz (PAL models).
        One period of this signal corresponds to one clock cycle consisting
-       of two phases: ø2 is low in the first phase and high in the second
-       phase (hence the name 'ø2' for "phase 2"). The 6510 only accesses
+       of two phases: ï¿½2 is low in the first phase and high in the second
+       phase (hence the name 'ï¿½2' for "phase 2"). The 6510 only accesses
        the bus in the second clock phase, the VIC normally only in the
        first phase.
 
@@ -209,7 +209,7 @@ IRQ     This output is wired to the IRQ input on the processor and makes it
         the light pen input.
 
 BA      With this signal, the VIC indicated that the bus is available to
-        the processor during the second clock phase (ø2 high). BA is
+        the processor during the second clock phase (ï¿½2 high). BA is
         normally high as the VIC accesses the bus mostly during the first
         phase. But for the character pointer and sprite data accesses, the
         VIC also needs the bus sometimes during the second phase. In this
@@ -223,7 +223,7 @@ BA      With this signal, the VIC indicated that the bus is available to
 AEC     This pin is wired to the processor signal with the same name (see
         there). It reflects the state of the data and address line drivers
         of the VIC. If AEC is high, they are in tri-state. AEC is normally
-        low during the first clock phase (ø2 low) and high during the
+        low during the first clock phase (ï¿½2 low) and high during the
         second phase so that the VIC can access the bus during the first
         phase and the 6510 during the second phase. If the VIC also needs
         the bus in the second phase, AEC remains low.
@@ -233,23 +233,23 @@ LP      This input is intended for connecting a light pen. On a negative
         registers LPX and LPY. As this pin shares a line with the keyboard
         matrix, it can also be accessed by software.
 
-øIN     This is the feed for the pixel clock of 8.18 MHz (NTSC) or 7.88 MHz
+ï¿½IN     This is the feed for the pixel clock of 8.18 MHz (NTSC) or 7.88 MHz
         (PAL) that is generated from the crystal frequency. Eight pixels
-        are displayed per bus clock cycle (ø2).
+        are displayed per bus clock cycle (ï¿½2).
 
-ø0      From the pixel clock on øIN, the VIC generates the system clock of
-        1.023 MHz (NTSC) or 0.985 MHz (PAL) by dividing øIN by eight. It is
+ï¿½0      From the pixel clock on ï¿½IN, the VIC generates the system clock of
+        1.023 MHz (NTSC) or 0.985 MHz (PAL) by dividing ï¿½IN by eight. It is
         available on this pin and fed into the processor which in turn
-        generated the signal ø2 from it.
+        generated the signal ï¿½2 from it.
 
 2.4. Memory
 -----------
 
 Three memory areas in the C64 are involved with the graphics:
 
- · The 64KB main memory
- · The 1K*4 bit Color RAM
- · The 4KB character generator ROM (Char ROM)
+ ï¿½ The 64KB main memory
+ ï¿½ The 1K*4 bit Color RAM
+ ï¿½ The 4KB character generator ROM (Char ROM)
 
 In the following two sections it is explained how these memory areas share
 the address space as seen by the CPU and the VIC. After that, the basics of
@@ -394,9 +394,9 @@ Besides this, the VIC takes care of the DRAM refresh by reading from 5
 refresh addresses in each raster line.
 
 The division of accesses between 6510 and VIC is basically static: Each
-clock cycle (one period of the ø2 signal) consists of two phases. The VIC
-accesses in the first phase (ø2 low), the processor in the second phase (ø2
-high). The AEC signal closely follows ø2. That way the 6510 and VIC can
+clock cycle (one period of the ï¿½2 signal) consists of two phases. The VIC
+accesses in the first phase (ï¿½2 low), the processor in the second phase (ï¿½2
+high). The AEC signal closely follows ï¿½2. That way the 6510 and VIC can
 both use the memory alternatively without disturbing each other.
 
 However, the VIC sometimes needs more cycles than made available to it by
@@ -410,7 +410,7 @@ low during the second clock phase so that the VIC can output its addresses.
 The following diagram illustrates the process of the take-over:
 
        _ _ _ _ _ _ _ _ _ _ _ _ _    _ _ _ _ _ _ _ _ _ _ _ _ _
- ø2   _ _ _ _ _ _ _ _ _ _ _ _ _ ..._ _ _ _ _ _ _ _ _ _ _ _ _
+ ï¿½2   _ _ _ _ _ _ _ _ _ _ _ _ _ ..._ _ _ _ _ _ _ _ _ _ _ _ _
       ______________                       __________________
  BA                 ____________...________
        _ _ _ _ _ _ _ _ _ _                  _ _ _ _ _ _ _ _ _
@@ -464,12 +464,12 @@ of the VIC and the independently working function units:
   . <==>|r|   |d| |  +--------------+      |                            |
   +     |y|   |r| |     | | |              |                            |
   d     | |   |.|<--------+----------------+ +------------------------+ |
-  a     |i|   |g|===========================>|40×12 bit video matrix-/| |
+  a     |i|   |g|===========================>|40ï¿½12 bit video matrix-/| |
   t     |n|<=>|e| |     |   |                |       color line       | |
   a     |t|   |n| |     |   |                +------------------------+ |
         |e|   |e| |     |   |                            ||             |
         |r|   |r| |     |   | +----------------+         ||             |
- BA  <--|f|   |a|============>|8×24 bit sprite |         ||             |
+ BA  <--|f|   |a|============>|8ï¿½24 bit sprite |         ||             |
         |a|   |t|<----+ |   | |  data buffers  |         ||             |
  AEC <--|c|   |o| |   | v   | +----------------+         ||             |
         |e|   |r| | +-----+ |         ||                 ||             |
@@ -479,11 +479,11 @@ of the VIC and the independently working function units:
         +---------------+   |  |  sequencer   |   |  sequencer   |      |
  RAS <--|               |   |  +--------------+   +--------------+      |
  CAS <--|Clock generator|   |              |         |                  |
- ø0  <--|               |   |              v         v                  |
+ ï¿½0  <--|               |   |              v         v                  |
         +---------------+   |       +-----------------------+           |
                 ^           |       |          MUX          |           |
                 |           |       | Sprite priorities and |-----------+
- øIN -----------+           |       |  collision detection  |
+ ï¿½IN -----------+           |       |  collision detection  |
                             |       +-----------------------+
    VC: Video Matrix Counter |                   |
                             |                   v
@@ -493,7 +493,7 @@ of the VIC and the independently working function units:
                             |                   |
                             v                   v
                     +----------------+  +----------------+
-                    |Sync generation |  |Color generation|<-------- øCOLOR
+                    |Sync generation |  |Color generation|<-------- ï¿½COLOR
                     +----------------+  +----------------+
                                    |      |
                                    v      v
@@ -622,17 +622,17 @@ functions:
 
 Notes:
 
- · The bits marked with '-' are not connected and give "1" on reading
- · The VIC registers are repeated each 64 bytes in the area $d000-$d3ff,
+ ï¿½ The bits marked with '-' are not connected and give "1" on reading
+ ï¿½ The VIC registers are repeated each 64 bytes in the area $d000-$d3ff,
    i.e. register 0 appears on addresses $d000, $d040, $d080 etc.
- · The unused addresses $d02f-$d03f give $ff on reading, a write access is
+ ï¿½ The unused addresses $d02f-$d03f give $ff on reading, a write access is
    ignored
- · The registers $d01e and $d01f cannot be written and are automatically
+ ï¿½ The registers $d01e and $d01f cannot be written and are automatically
    cleared on reading
- · The RES bit (bit 5) of register $d016 has no function on the VIC
+ ï¿½ The RES bit (bit 5) of register $d016 has no function on the VIC
    6567/6569 examined as yet. On the 6566, this bit is used to stop the
    VIC.
- · Bit 7 in register $d011 (RST8) is bit 8 of register $d012. Together they
+ ï¿½ Bit 7 in register $d011 (RST8) is bit 8 of register $d012. Together they
    are called "RASTER" in the following. A write access to these bits sets
    the comparison line for the raster interrupt (see section 3.12.).
 
@@ -664,8 +664,8 @@ The VIC has a hard-wired palette of 16 colors that are encoded with 4 bits:
 As usual for controlling CRTs, the VIC builds the video frame line by line.
 The line number and the number of clock cycles per line are constant for
 every VIC type. The VIC works character-based, every character consists of
-a matrix of 8×8 pixels, so a text line is made up of 8 pixel lines. 40×25
-text characters are displayed in the text based modes, 320×200 or 160×200
+a matrix of 8ï¿½8 pixels, so a text line is made up of 8 pixel lines. 40ï¿½25
+text characters are displayed in the text based modes, 320ï¿½200 or 160ï¿½200
 pixels in the bitmap modes.
 
 In this article, the specification of a position on the screen is done with
@@ -762,7 +762,7 @@ display window, if CSEL=0 the left border is extended by 7 pixels and the
 right one by 9 pixels. The position of the display window and its
 resolution do not change, RSEL/CSEL only switch the starting and ending
 position of the border display. The size of the video matrix also stays
-constantly at 40×25 characters.
+constantly at 40ï¿½25 characters.
 
 With XSCROLL/YSCROLL (bits 0-2 of registers $d011 (XSCROLL) and $d016
 (YSCROLL)), the position of the graphics inside the display window can be
@@ -830,7 +830,7 @@ It is therefore necessary to introduce a more general definition, namely
 that of a "Bad Line Condition":
 
  A Bad Line Condition is given at any arbitrary clock cycle, if at the
- negative edge of ø0 at the beginning of the cycle RASTER >= $30 and RASTER
+ negative edge of ï¿½0 at the beginning of the cycle RASTER >= $30 and RASTER
  <= $f7 and the lower three bits of RASTER are equal to YSCROLL and if the
  DEN bit was set during an arbitrary cycle of raster line $30.
 
@@ -903,16 +903,16 @@ memory areas:
 
 For the text/bitmap graphics:
 
- · The video matrix; an area of 1000 video addresses (40×25, 12 bits each)
+ ï¿½ The video matrix; an area of 1000 video addresses (40ï¿½25, 12 bits each)
    that can be moved in 1KB steps within the 16KB address space of the VIC
    with the bits VM10-VM13 of register $d018. It stores the character codes
    and their color for the text modes and some of the color information of
-   8×8 pixel blocks for the bitmap modes. The Color RAM is part of the
+   8ï¿½8 pixel blocks for the bitmap modes. The Color RAM is part of the
    video matrix, it delivers the upper 4 bits of the 12 bit matrix. The
    data read from the video matrix is stored in an internal buffer in the
-   VIC, the 40×12 bit video matrix/color line.
+   VIC, the 40ï¿½12 bit video matrix/color line.
 
- · The character generator resp. the bitmap; an area of 2048 bytes (bitmap:
+ ï¿½ The character generator resp. the bitmap; an area of 2048 bytes (bitmap:
    8192 bytes) that can be moved in 2KB steps (bitmap: 8KB steps) within
    the VIC address space with the bits CB11-CB13 (bitmap: only CB13) of
    register $d018. It stores the pixel data of the characters for the text
@@ -924,11 +924,11 @@ For the text/bitmap graphics:
 
 For the sprites:
 
- · The sprite data pointers; 8 bytes after the end of the video matrix,
+ ï¿½ The sprite data pointers; 8 bytes after the end of the video matrix,
    that select one out of 256 blocks of 64 bytes within the VIC address
    space for each sprite.
 
- · The sprite data; an area of 63 bytes containing the pixel data of the
+ ï¿½ The sprite data; an area of 63 bytes containing the pixel data of the
    sprites which can be moved in steps of 64 bytes with the sprite data
    pointers independently for each sprite.
 
@@ -972,7 +972,7 @@ First the timing diagrams, the explanation follows:
 Cycl-# 6                   1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5 5 6 6 6 6
        3 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 1
         _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    ø0 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+    ï¿½0 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
        __
    IRQ   ________________________________________________________________________________________________________________________________
        ________________________                                                                                      ____________________
@@ -996,7 +996,7 @@ X coo. \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 Cycl-# 6                   1 1 1 1 1 1 1 1 1 1 |5 5 5 5 5 5 5 6 6 6 6
        3 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 |3 4 5 6 7 8 9 0 1 2 3 1
         _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _| _ _ _ _ _ _ _ _ _ _ _ _
-    ø0 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ |_ _ _ _ _ _ _ _ _ _ _ _
+    ï¿½0 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ |_ _ _ _ _ _ _ _ _ _ _ _
        __                                      |
    IRQ   ______________________________________|________________________
        ________________________________________|________________________
@@ -1021,7 +1021,7 @@ line (abbreviated):
 Cycl-# 6                   1 1 1 1 1 1 1 1 1 1 |5 5 5 5 5 5 5 6 6 6 6 6
        4 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 |3 4 5 6 7 8 9 0 1 2 3 4 1
         _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _| _ _ _ _ _ _ _ _ _ _ _ _ _
-    ø0 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ |_ _ _ _ _ _ _ _ _ _ _ _ _ 
+    ï¿½0 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ |_ _ _ _ _ _ _ _ _ _ _ _ _ 
        __                                      |
    IRQ   ______________________________________|__________________________
        ____                  __                |    __          __________
@@ -1046,7 +1046,7 @@ next line (abbreviated):
 Cycl-# 6                   1 1 1 1 1 1 1 1 1 1 |5 5 5 5 5 5 5 6 6 6 6 6 6
        5 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 |3 4 5 6 7 8 9 0 1 2 3 4 5 1
         _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _| _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    ø0 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ |_ _ _ _ _ _ _ _ _ _ _ _ _ _
+    ï¿½0 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ |_ _ _ _ _ _ _ _ _ _ _ _ _ _
        __                                      |
    IRQ   ______________________________________|____________________________
                              __________________|________
@@ -1071,8 +1071,8 @@ of 64 cycles on the 6567R56A and of 65 cycles on the 6567R8. The last cycle
 of the previous line and the first cycle of the next line have also been
 included in the diagrams to make things clearer.
 
-The lines "ø0", "IRQ", "BA" and "AEC" reflect the state of the bus signals
-with the same names. ø0 is low in the first phase and high in the second
+The lines "ï¿½0", "IRQ", "BA" and "AEC" reflect the state of the bus signals
+with the same names. ï¿½0 is low in the first phase and high in the second
 phase.
 
 The symbols in the lines "VIC" and "6510" show what kind of access VIC and
@@ -1151,14 +1151,14 @@ character generator/bitmap.
 
 Strictly speaking there are three registers:
 
- · "VC" (video counter) is a 10 bit counter that can be loaded with the
+ ï¿½ "VC" (video counter) is a 10 bit counter that can be loaded with the
    value from VCBASE.
- · "VCBASE" (video counter base) is a 10 bit data register with reset input
+ ï¿½ "VCBASE" (video counter base) is a 10 bit data register with reset input
    that can be loaded with the value from VC.
- · "RC" (row counter) is a 3 bit counter with reset input.
+ ï¿½ "RC" (row counter) is a 3 bit counter with reset input.
 
 Besides this, there is a 6 bit counter with reset input that keeps track of
-the position within the internal 40×12 bit video matrix/color line where
+the position within the internal 40ï¿½12 bit video matrix/color line where
 read character pointers are stored resp. read again. I will call this
 "VMLI" (video matrix line index) here.
 
@@ -1234,7 +1234,7 @@ mode although e.g. the c-accesses are always the same.
 In this mode (as in all text modes), the VIC reads 8 bit character pointers
 from the video matrix that specify the address of the dot matrix of the
 character in the character generator. A character set of 256 characters is
-available, each consisting of 8×8 pixels which are stored in 8 successive
+available, each consisting of 8ï¿½8 pixels which are stored in 8 successive
 bytes in the character generator. Video matrix and character generator can
 be moved in memory with the bits VM10-VM13 and CB11-CB13 of register $d018.
 
@@ -1291,7 +1291,7 @@ horizontal resolution. If bit 11 of the c-data is zero, the character is
 displayed as in standard text mode with only the colors 0-7 available for
 the foreground. If bit 11 is set, each two adjacent bits of the dot matrix
 form one pixel. By this means, the resolution of a character of reduced to
-4×8 (the pixels are twice as wide, so the total width of the characters
+4ï¿½8 (the pixels are twice as wide, so the total width of the characters
 doesn't change).
 
 It is interesting that not only the bit combination "00" but also "01" is
@@ -1348,21 +1348,21 @@ g-access
 -------------------------------------------------
 
 In this mode (as in all bitmap modes), the VIC reads the graphics data from
-a 320×200 bitmap in which every bit corresponds to one pixel on the screen.
+a 320ï¿½200 bitmap in which every bit corresponds to one pixel on the screen.
 The data from the video matrix is used for color information. As the video
-matrix is still only a 40×25 matrix, you can only specify the colors for
-blocks of 8×8 pixels individually (sort of a YC 8:1 format). As the
+matrix is still only a 40ï¿½25 matrix, you can only specify the colors for
+blocks of 8ï¿½8 pixels individually (sort of a YC 8:1 format). As the
 designers of the VIC wanted to realize the bitmap mode with as little
 additional circuitry as possible (the VIC-I didn't have a bitmap mode), the
 arrangement of the bitmap in memory is somewhat weird: In contrast to
 modern video chips that read the bitmap in a linear fashion from memory,
-the VIC forms an 8×8 pixel block on the screen from 8 successive bytes of
+the VIC forms an 8ï¿½8 pixel block on the screen from 8 successive bytes of
 the bitmap. The video matrix and the bitmap can be moved in memory with the
 bits VM10-VM13 and CB13 of register $d018.
 
 In standard bitmap mode, every bit in the bitmap directly corresponds to
 one pixel on the screen. Foreground and background color can be arbitrarily
-set for every 8×8 block.
+set for every 8ï¿½8 block.
 
 c-access
 
@@ -1409,7 +1409,7 @@ g-access
 
 Similar to the multicolor text mode, this mode also forms (twice as wide)
 pixels by combining two adjacent bits. So the resolution is reduced to
-160×200 pixels.
+160ï¿½200 pixels.
 
 The bit combination "01" is also treated as "background" for the sprite
 priority and collision detection, as in multicolor text mode.
@@ -1744,13 +1744,13 @@ g-access
 ------------
 
 Apart from the text/bitmap graphics, the VIC can display eight independent
-24×21 pixels large, freely movable objects, the "sprites" (called "MOBs"
+24ï¿½21 pixels large, freely movable objects, the "sprites" (called "MOBs"
 (Movable Object Blocks) in [2]).
 
 The sprites can have an arbitrary position on the screen, you can switch
 them on and off one at a time with the bits of register $d015 (MxE), expand
 them by the factor 2 in X and/or Y direction with registers $d017/$d01d
-(with the resolution still being 24×21 pixels), choose between standard and
+(with the resolution still being 24ï¿½21 pixels), choose between standard and
 multicolor mode with register $d01c (MxMC), set the display priority with
 respect to the text/bitmap graphics with register $d01b (MxDP) and assign a
 different color to each sprite (registers $d027-$d02e). Besides, the VIC
@@ -1766,7 +1766,7 @@ all sprites are collected in register $d010).
 3.8.1. Memory access and display
 --------------------------------
 
-The 63 bytes of sprite data necessary for displaying 24×21 pixels are
+The 63 bytes of sprite data necessary for displaying 24ï¿½21 pixels are
 stored in memory in a linear fashion: 3 adjacent bytes form one line of the
 sprite.
 
@@ -1796,7 +1796,7 @@ one pixel on the screen. A "0" pixel is transparent and the underlying
 graphics are visible below it, a "1" pixel is displayed in the sprite color
 from registers $d027-$d02e belonging to the sprite in question. In
 multicolor mode, two adjacent bits form one pixel, thus reducing the
-resolution of the sprite to 12×21 (the pixels are twice as wide).
+resolution of the sprite to 12ï¿½21 (the pixels are twice as wide).
 
 Moreover, the sprites can be doubled in their size on the screen in X
 and/or Y direction (X/Y expansion). For that, every sprite pixel simply
@@ -1813,9 +1813,9 @@ Every sprite has its own sprite data sequencer whose core is a 24 bit shift
 register. Apart from that, there are two internal registers for every
 sprite:
 
- · "MC" (MOB Data Counter) is a 6 bit counter that can be loaded from
+ ï¿½ "MC" (MOB Data Counter) is a 6 bit counter that can be loaded from
    MCBASE.
- · "MCBASE" (MOB Data Counter Base) is a 6 bit counter with reset input.
+ ï¿½ "MCBASE" (MOB Data Counter Base) is a 6 bit counter with reset input.
 
 Besides, there is one expansion flip flop per sprite that controls the
 Y expansion.
@@ -2050,7 +2050,7 @@ data sequencer. The sequencer only outputs data if the flip flop is
 not set, otherwise it displays the background color. This was probably done
 to prevent sprite-graphics collisions in the border area.
 
-There are 2×2 comparators belonging to each of the two flip flops. There
+There are 2ï¿½2 comparators belonging to each of the two flip flops. There
 comparators compare the X/Y position of the raster beam with one of two
 hardwired values (depending on the state of the CSEL/RSEL bits) to control
 the flip flops. The comparisons only match if the values are reached
@@ -2298,13 +2298,13 @@ Instead of delaying the occurrence of Bad Lines as for the FLD effect, you
 may also artificially create additional Bad Lines before the VIC has
 completed the current text line. This is especially interesting for the
 bitmap modes, as these use the data from the video matrix (which is read in
-the Bad Lines) for color information, so normally only single 8×8 pixel
+the Bad Lines) for color information, so normally only single 8ï¿½8 pixel
 blocks can be colored individually in bitmap modes. But if you make every
 raster line a Bad Line by appropriately modifying YSCROLL, the VIC will
 read from the video matrix in every line and so it will also read new color
 information for every line.
 
-This way, each of the 4×8 pixels of a block in multicolor mode can have a
+This way, each of the 4ï¿½8 pixels of a block in multicolor mode can have a
 different color. This software-generated new graphics mode is called
 "Flexible Line Interpretation" (FLI) and is probably the most outstanding
 example of "unconventional" VIC programming.
@@ -2404,7 +2404,7 @@ register $d011 so that YSCROLL is equal to the lower three bits of RASTER.
 The VIC will then set BA to low immediately in the next cycle, switch to
 display state and start reading from the video matrix (the processor is now
 stopped because BA is low and it wants to read the next opcode). However,
-AEC still follows ø2 for three cycles before also staying at low state.
+AEC still follows ï¿½2 for three cycles before also staying at low state.
 This behavior (AEC not until three cycles after BA) is hardwired in the VIC
 and cannot be avoided.
 
@@ -2556,10 +2556,10 @@ Appendix A: Bibliography
 
 [3] dto., Chapter 5, Section "Memory management on the Commodore 64"
 
-[4] Marko Mäkelä, "The memory accesses of the MOS 6569 VIC-II and MOS 8566
+[4] Marko MÃ¤kelÃ¤, "The memory accesses of the MOS 6569 VIC-II and MOS 8566
     VIC-IIe Video Interface Controller" (AKA: Pal timing), 15.07.1994
 
-[5] John West, Marko Mäkelä, "Documentation for the NMOS 65xx/85xx
+[5] John West, Marko MÃ¤kelÃ¤, "Documentation for the NMOS 65xx/85xx
     Instruction Set" (AKA: 64doc), 03.06.1994
 
 
@@ -2568,7 +2568,7 @@ Appendix B: Acknowledgments
 
 I want to thank
 
- - Marko Mäkelä, Andreas Boose, Pasi Ojala and Wolfgang Lorenz for the
+ - Marko MÃ¤kelÃ¤, Andreas Boose, Pasi Ojala and Wolfgang Lorenz for the
    amount of work they put into the examination of the VIC
  - Kaspar Jensen for proof-reading the English version of this document and
    for his suggestions

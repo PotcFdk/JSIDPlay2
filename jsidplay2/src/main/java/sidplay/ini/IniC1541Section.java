@@ -7,7 +7,7 @@ import libsidplay.components.c1541.ExtendImagePolicy;
 /**
  * C1541 section of the INI file.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class IniC1541Section extends IniSection implements IC1541Section {

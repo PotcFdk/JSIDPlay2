@@ -10,7 +10,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package resid_builder;
@@ -170,8 +170,8 @@ public class ReSID extends SIDEmu {
 	 */
 	public static final String credits() {
 		String m_credit = "MOS6581/8580 (SID) - Dag Lem's resid 1.0 beta:\n";
-		m_credit += "\tCopyright (©) 1999-2012 Dag Lem <resid@nimrod.no>\n";
-		m_credit += "\tCopyright (©) 2012 Java version by Antti S. Lankila <alankila@bel.fi>\n";
+		m_credit += "\tCopyright (Â©) 1999-2012 Dag Lem <resid@nimrod.no>\n";
+		m_credit += "\tCopyright (Â©) 2012 Java version by Antti S. Lankila <alankila@bel.fi>\n";
 		return m_credit;
 	}
 

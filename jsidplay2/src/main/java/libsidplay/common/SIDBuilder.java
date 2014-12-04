@@ -10,14 +10,14 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken H�ndel
+ * @author Ken Händel
  *
  */
 package libsidplay.common;
 
 
 /**
- * @author Ken H�ndel
+ * @author Ken Händel
  * 
  *         Inherit this class to create a new SID emulations for libsidplay2.
  */

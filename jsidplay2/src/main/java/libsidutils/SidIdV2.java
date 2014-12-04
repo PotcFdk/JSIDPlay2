@@ -19,7 +19,7 @@ import libsidutils.stringsearch.BNDMWildcards;
  * Scan tune files to find out the player ID. A configuration file is used with
  * patterns of well-known players.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public final class SidIdV2 {
@@ -27,7 +27,7 @@ public final class SidIdV2 {
 	/**
 	 * This is a single pattern to match a player.
 	 * 
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 */
 	private static class Pattern {
@@ -92,7 +92,7 @@ public final class SidIdV2 {
 	/**
 	 * Player section of the SID-ID configuration file.
 	 * 
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 */
 	private static class PlayerSection {

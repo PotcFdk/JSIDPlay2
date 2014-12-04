@@ -21,6 +21,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDisk1() {
+		click("#VIDEO");
 		click("#floppy");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
 		type("Disk1.d64");
@@ -38,6 +39,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDisk2() {
+		click("#VIDEO");
 		click("#floppy");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
 		type("Disk2.d64");
@@ -55,6 +57,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDisk3() {
+		click("#VIDEO");
 		click("#floppy");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
 		type("Disk3.d64");

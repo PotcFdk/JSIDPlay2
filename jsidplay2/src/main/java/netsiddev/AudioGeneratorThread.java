@@ -24,7 +24,7 @@ import sidplay.audio.JavaSound;
 /**
  * Audio generating thread which communicates with SIDWrite source over a BlockingQueue.
  * 
- * @author alankila
+ * @author Antti Lankila
  */
 public class AudioGeneratorThread extends Thread {
 	/** Random source for triangular dithering */	

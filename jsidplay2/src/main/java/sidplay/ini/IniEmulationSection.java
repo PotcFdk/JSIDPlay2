@@ -8,7 +8,7 @@ import sidplay.ini.intf.IEmulationSection;
 /**
  * Emulation section of the INI file.
  * 
- * @author Ken H�ndel
+ * @author Ken Händel
  * 
  */
 public class IniEmulationSection extends IniSection implements

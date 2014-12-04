@@ -833,6 +833,7 @@ public abstract class GuiTest {
 		// Since moving takes time, only do it if we're not already at the
 		// desired point.
 		if (!MouseInfo.getPointerInfo().getLocation().equals(point)) {
+			move(MouseInfo.getPointerInfo().getLocation().getX(), point.getY());
 			move(point.getX(), point.getY());
 		}
 		// If the target has moved while we were moving the mouse, update to the

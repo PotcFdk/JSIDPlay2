@@ -16,7 +16,7 @@ import lowlevel.LameEncoder;
 /**
  * File based driver to create a MP3 file.
  * 
- * @author Ken
+ * @author Ken Händel
  * 
  */
 public class MP3File extends AudioDriver {

@@ -23,7 +23,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  *
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  **/
 package libsidplay.components.c1541;
@@ -36,7 +36,7 @@ import java.util.Arrays;
  * 
  * Group Coded Recording.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public final class GCR {

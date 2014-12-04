@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package residfp_builder.resid;
@@ -27,7 +27,7 @@ import libsidplay.common.ChipModel;
  * A 24 bit accumulator is the basis for waveform generation. FREQ is added to the lower 16 bits of the accumulator each cycle. The accumulator is set to zero when TEST is set, and starts counting
  * when TEST is cleared. The noise waveform is taken from intermediate bits of a 23 bit shift register. This register is clocked by bit 19 of the accumulator.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public final class WaveformGenerator {

@@ -12,7 +12,7 @@ import javafx.util.Callback;
 /**
  * Classify SidDump table cells for CSS styling.
  * 
- * @author Ken
+ * @author Ken Händel
  * 
  */
 public class DirectoryCellFactory

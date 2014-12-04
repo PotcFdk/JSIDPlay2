@@ -3,7 +3,7 @@ package libsidplay.components.c1541;
 /**
  * Call-back how to deal with 40 tracks images.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public interface IExtendImageListener {

@@ -30,8 +30,8 @@ import libsidplay.components.mos6510.MOS6510;
  * TODO Half-tracks are not supported, yet maybe the code looks like it does,
  * but this is not the case.
  * 
- * @author Jörg Jahnke (joergjahnke@users.sourceforge.net)
- * @author Ken Händel
+ * @author JÃ¶rg Jahnke (joergjahnke@users.sourceforge.net)
+ * @author Ken HÃ¤ndel
  */
 public final class C1541 {
 	private static final String C1541_ROM = "/libsidplay/roms/c1541.bin";
@@ -73,7 +73,7 @@ public final class C1541 {
 	/**
 	 * Specific floppy type.
 	 * 
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 */
 	public enum FloppyType {

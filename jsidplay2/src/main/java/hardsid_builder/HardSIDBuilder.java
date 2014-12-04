@@ -31,7 +31,7 @@ import sidplay.ini.intf.IConfig;
  * **************************************************************************
  * </pre>
  * 
- * @author Ken H�ndel
+ * @author Ken Händel
  * 
  */
 public class HardSIDBuilder extends SIDBuilder {
@@ -161,7 +161,7 @@ public class HardSIDBuilder extends SIDBuilder {
 
 	public static final String credits() {
 		return String.format("HardSID V%s Engine:\n", VERSION)
-				+ "\tCopyright (�) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
+				+ "\tCopyright (©) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
 	}
 
 }

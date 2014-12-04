@@ -85,7 +85,7 @@
 										</accelerator>
 									</MenuItem>
 									<SeparatorMenuItem />
-									<MenuItem text="%QUIT" onAction="#quit">
+									<MenuItem text="%QUIT" onAction="#quit" fx:id="quit">
 										<accelerator>
 											<KeyCodeCombination alt="UP" code="Q"
 												control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
@@ -311,6 +311,18 @@
 								<ImageView>
 									<image>
 										<Image url="@/ui/icons/playback_pause.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</ToggleButton>
+						<ToggleButton focusTraversable="false" onAction="#fastForward" fx:id="fastForward2">
+							<tooltip>
+								<Tooltip text="%FAST_FORWARD2" />
+							</tooltip>
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/playback_fast.png" />
 									</image>
 								</ImageView>
 							</graphic>

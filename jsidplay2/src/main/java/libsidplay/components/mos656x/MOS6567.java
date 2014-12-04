@@ -14,7 +14,7 @@ import libsidplay.components.pla.PLA;
 /**
  * NTSC specialization of the VIC
  * 
- * @author alankila
+ * @author Antti Lankila
  */
 public class MOS6567 extends VIC {
 	private final Palette palette = new Palette();

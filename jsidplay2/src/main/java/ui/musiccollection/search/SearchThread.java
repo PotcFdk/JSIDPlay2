@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Common Search thread
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public abstract class SearchThread extends Thread {

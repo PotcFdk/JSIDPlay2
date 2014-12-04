@@ -20,7 +20,7 @@ import sidplay.ini.intf.IConfig;
  * *************************************************************************
  * </pre>
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class HardSID extends SIDEmu {

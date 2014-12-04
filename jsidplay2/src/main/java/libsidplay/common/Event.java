@@ -16,7 +16,7 @@ public abstract class Event {
 	 * and PHI2 to CPU activity. For any clock, PHI1s are before
 	 * PHI2s.
 	 * 
-	 * @author alankila
+	 * @author Antti Lankila
 	 */
 	public enum Phase {
 		PHI1, PHI2

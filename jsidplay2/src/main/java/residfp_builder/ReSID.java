@@ -10,7 +10,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package residfp_builder;
@@ -180,8 +180,8 @@ public class ReSID extends SIDEmu {
 	// Standard component functions
 	public static final String credits() {
 		String m_credit = "MOS6581/8580 (SID) - Antti S. Lankila's resid-fp (distortion simulation):\n";
-		m_credit += "\tCopyright (©) 1999-2004 Dag Lem <resid@nimrod.no>\n";
-		m_credit += "\tCopyright (©) 2005-2011 Antti S. Lankila <alankila@bel.fi>\n";
+		m_credit += "\tCopyright (Â©) 1999-2004 Dag Lem <resid@nimrod.no>\n";
+		m_credit += "\tCopyright (Â©) 2005-2011 Antti S. Lankila <alankila@bel.fi>\n";
 		return m_credit;
 	}
 

@@ -18,7 +18,7 @@ import lowlevel.ID3V2Decoder;
  * memory, it is just a file played back by the jump3r library. However this C64
  * emulator requires tunes so this is a dummy to meet that requirement.
  * 
- * @author Ken
+ * @author Ken Händel
  * 
  */
 public class MP3Tune extends SidTune {

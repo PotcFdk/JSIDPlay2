@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package residfp_builder.resid;
@@ -32,7 +32,7 @@ package residfp_builder.resid;
  * yields BJT base-emitter and emitter-base impedances sufficiently low to produce additional low-pass and high-pass 3dB-frequencies in the order of hundreds of kHz. This calls for a sampling
  * frequency of several MHz, which is far too high for practical use.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 final class ExternalFilter {

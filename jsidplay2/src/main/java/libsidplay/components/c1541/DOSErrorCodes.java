@@ -4,7 +4,7 @@ package libsidplay.components.c1541;
  * 
  * CBM DOS 2.6 Input Processor Error Codes.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public enum DOSErrorCodes {

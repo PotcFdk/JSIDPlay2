@@ -12,7 +12,7 @@ package libsidplay.components.c1541;
  * The other direction is handled via the handshake parameter on the
  * driveWrite().
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  */
 public interface IParallelCable {
 	/**

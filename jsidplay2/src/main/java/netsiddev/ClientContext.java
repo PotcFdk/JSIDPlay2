@@ -30,7 +30,7 @@ import sidplay.audio.AudioConfig;
 /**
  * Container for client-specific data.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * @author Antti Lankila
  * @author Wilfred Bos
 

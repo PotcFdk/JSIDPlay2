@@ -18,7 +18,7 @@
  * ---------------------------------------------------------------------------
  * Filter distortion code written by Antti S. Lankila 2007 - 2008.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package resid_builder.resid;
@@ -26,7 +26,7 @@ package resid_builder.resid;
 /** 
  * SID filter base class
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * @author Dag Lem
  * @author Antti Lankila
  */

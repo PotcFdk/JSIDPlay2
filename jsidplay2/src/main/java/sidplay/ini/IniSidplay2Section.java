@@ -6,7 +6,7 @@ import sidplay.ini.intf.ISidPlay2Section;
 /**
  * SIDPlay2 section of the INI file.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class IniSidplay2Section extends IniSection implements ISidPlay2Section {

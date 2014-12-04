@@ -34,7 +34,7 @@ import libsidplay.components.ram.SystemRAMBank;
  * and some memory expansions and other cartridges can be plugged in.
  * 
  * @author Antti Lankila
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public abstract class C64 implements DatasetteEnvironment, C1541Environment,
@@ -97,7 +97,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	/**
 	 * This class implements a disconnected joystick.
 	 * 
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 */
 	protected static final class DisconnectedJoystick implements IJoystick {

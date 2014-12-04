@@ -18,7 +18,7 @@ import java.util.Set;
  * <a href='http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg'>http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg</a>.
  * </pre>
  * 
- * @author Joerg Jahnke (joergjahnke@users.sourceforge.net)
+ * @author Jörg Jahnke (joergjahnke@users.sourceforge.net)
  */
 public abstract class Keyboard {
 	private final Set<KeyTableEntry> keysDown = new HashSet<KeyTableEntry>();

@@ -10,7 +10,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package libsidplay.components.mos6526;
@@ -26,7 +26,7 @@ import libsidplay.components.pla.Bank;
  * This class is heavily based on the ciacore/ciatimer source code from VICE.
  * The CIA state machine is lifted as-is. Big thanks to VICE project!
  * 
- * @author alankila
+ * @author Antti Lankila
  */
 public abstract class MOS6526 extends Bank {
 	public enum Model {
@@ -37,9 +37,9 @@ public abstract class MOS6526 extends Bank {
 	 * These are the credits.
 	 */
 	private static final String CREDITS = "MOS6526 (CIA) Emulation:\n"
-		+ "\tCopyright (©) 2001-2004 Simon White <sidplay2@yahoo.com>\n"
-		+ "\tCopyright (©) 2009 VICE Project\n"
-		+ "\tCopyright (©) 2009-2010 Antti S. Lankila\n";
+		+ "\tCopyright (Â©) 2001-2004 Simon White <sidplay2@yahoo.com>\n"
+		+ "\tCopyright (Â©) 2009 VICE Project\n"
+		+ "\tCopyright (Â©) 2009-2010 Antti S. Lankila\n";
 
 	/**
 	 * Interrupt flag: no interrupt.
@@ -172,7 +172,7 @@ public abstract class MOS6526 extends Bank {
 	/**
 	 * InterruptSource that acts like new CIA
 	 * 
-	 * @author alankila
+	 * @author Antti Lankila
 	 */
 	protected final class InterruptSource6526A extends InterruptSource {
 		@Override
@@ -201,7 +201,7 @@ public abstract class MOS6526 extends Bank {
 	/**
 	 * InterruptSource that acts like old CIA
 	 * 
-	 * @author alankila
+	 * @author Antti Lankila
 	 */
 	protected final class InterruptSource6526 extends InterruptSource {
 		/** Have we already scheduled CIA->CPU interrupt transition? */
@@ -276,7 +276,7 @@ public abstract class MOS6526 extends Bank {
 	/**
 	 * This class implements a Timer A or B of a MOS6526 chip.
 	 * 
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 */
 	protected abstract class Timer extends Event {
@@ -597,7 +597,7 @@ public abstract class MOS6526 extends Bank {
 	/**
 	 * This is the timer A of this CIA.
 	 * 
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 */
 	private final class TimerA extends Timer {
@@ -666,7 +666,7 @@ public abstract class MOS6526 extends Bank {
 	/**
 	 * This is the timer B of this CIA.
 	 * 
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 */
 	private final class TimerB extends Timer {

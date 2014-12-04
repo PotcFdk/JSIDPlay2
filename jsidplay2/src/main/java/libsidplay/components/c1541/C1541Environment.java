@@ -3,7 +3,7 @@ package libsidplay.components.c1541;
 /**
  * Connection between the C64 and the floppy disk drive.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public interface C1541Environment {

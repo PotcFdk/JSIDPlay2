@@ -31,7 +31,7 @@ import java.io.IOException;
 /**
  * Tape image implementation.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class TapeImage {

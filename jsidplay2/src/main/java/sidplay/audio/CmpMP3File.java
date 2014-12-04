@@ -11,7 +11,7 @@ import lowlevel.LameDecoder;
 /**
  * Sound driver to listen to emulation and MP3 recording in parallel.
  * 
- * @author Ken
+ * @author Ken Händel
  * 
  */
 public class CmpMP3File extends JavaSound {

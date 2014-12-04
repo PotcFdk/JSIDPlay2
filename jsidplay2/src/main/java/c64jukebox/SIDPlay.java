@@ -65,7 +65,7 @@ public class SIDPlay extends Applet {
 	}
 
 	//
-	// Methods wanted by Téli Sándor
+	// Methods wanted by TÃ©li SÃ¡ndor
 	//
 
 	/**

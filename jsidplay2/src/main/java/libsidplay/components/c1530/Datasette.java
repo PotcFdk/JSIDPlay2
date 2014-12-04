@@ -36,7 +36,7 @@ import libsidplay.common.EventScheduler;
 /**
  * Implementation of a C1530 Datasette.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public abstract class Datasette {
@@ -121,7 +121,7 @@ public abstract class Datasette {
 	/**
 	 * Return value of method fetchGap.
 	 * 
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 */
 	protected static final class GapDir {
@@ -165,7 +165,7 @@ public abstract class Datasette {
 	/**
 	 * Controls of the datasette.
 	 * 
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 */
 	public enum Control {

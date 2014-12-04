@@ -7,7 +7,7 @@ import sidplay.ini.intf.IAudioSection;
 /**
  * Audio section of the INI file.
  * 
- * @author Ken H�ndel
+ * @author Ken Händel
  * 
  */
 public class IniAudioSection extends IniSection implements IAudioSection {

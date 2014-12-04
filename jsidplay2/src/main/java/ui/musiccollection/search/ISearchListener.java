@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * Interface to get noticed about the search state.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public interface ISearchListener {

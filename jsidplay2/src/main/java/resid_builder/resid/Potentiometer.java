@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package resid_builder.resid;
@@ -26,7 +26,7 @@ package resid_builder.resid;
  * 
  * This class will probably never be implemented in any real way.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * @author Dag Lem
  */
 final class Potentiometer {

@@ -18,7 +18,7 @@
  * ---------------------------------------------------------------------------
  * Filter distortion code written by Antti S. Lankila 2007 - 2008.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package residfp_builder.resid;
@@ -106,7 +106,7 @@ package residfp_builder.resid;
  * ----------------------------------------------------------------------------
  * </pre>
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  */
 public abstract class Filter {
 

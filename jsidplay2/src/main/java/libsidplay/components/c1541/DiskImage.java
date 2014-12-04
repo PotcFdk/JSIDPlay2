@@ -37,7 +37,7 @@ import libsidplay.components.Directory;
 /**
  * Support of disk images.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public abstract class DiskImage {

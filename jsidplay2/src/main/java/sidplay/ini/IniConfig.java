@@ -10,7 +10,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package sidplay.ini;
@@ -37,7 +37,7 @@ import sidplay.ini.intf.ISidPlay2Section;
  * INI configuration file support responsible to load and save all emulator
  * settings.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class IniConfig implements IConfig {

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package residfp_builder.resid;
@@ -100,11 +100,11 @@ public final class WaveformCalculator {
 
 	/**
 	 * Build waveform tables for use by WaveformGenerator. The method returns 3
-	 * tables in an Object[] wrapper:
+	 * tables in an Object[] wrapper:
 	 * 
 	 * 1. float[11][4096] wftable: the analog values in the waveform table
 	 * 2. float[12] dac table for values of the nonlinear bits used in waveforms.
-	 * 3. byte[11][4096] wfdigital: the digital values in the waveform table.
+	 * 3. byte[11][4096] wfdigital: the digital values in the waveform table.
 	 * 
 	 * The wf* tables are structured as follows: indices 0 .. 6 correspond
 	 * to SID waveforms of 1 to 7 with pulse width value set to 0x1000 (never

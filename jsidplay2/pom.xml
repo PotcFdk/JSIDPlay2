@@ -15,7 +15,7 @@
  It is a full C64 emulator and can play games of the GameBase64 project as well.</description>
 
 	<properties>
-		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<debug>false</debug>
 		<!-- WebStart -->
 		<!--  development: --><!-- codebase>file:///d:/workspace/jsidplay2/target/deploy/online/webstart</codebase-->
@@ -151,7 +151,7 @@
 				<version>2.3.1</version>
 				<configuration>
 					<debug>${debug}</debug>
-					<encoding>ISO-8859-1</encoding>
+					<encoding>UTF-8</encoding>
 					<debuglevel>lines,vars,source</debuglevel>
 					<source>1.8</source>
 					<target>1.8</target>

@@ -3,7 +3,7 @@ package libsidplay.components.c1541;
 /**
  * Strategies to extend disk image to 40 tracks.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public enum ExtendImagePolicy {

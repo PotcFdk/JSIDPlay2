@@ -27,7 +27,7 @@ public class FrodoTest extends JSIDPlay2Test {
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 1);
-		click("#screen");
+		click("#VIDEO");
 		schedule(c64 -> c64.getKeyboard().keyPressed(SPACE));
 		sleep(SCHEDULE_THREADSAFE_TIMEOUT);
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 0);
@@ -46,7 +46,7 @@ public class FrodoTest extends JSIDPlay2Test {
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 0);
-		click("#screen");
+		click("#VIDEO");
 		schedule(c64 -> c64.getKeyboard().keyPressed(SPACE));
 		sleep(SCHEDULE_THREADSAFE_TIMEOUT);
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 1);

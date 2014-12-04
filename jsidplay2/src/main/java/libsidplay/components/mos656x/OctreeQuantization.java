@@ -18,7 +18,7 @@ import java.util.TreeSet;
  * that compensates for eye's different sensitivity for errors in each component,
  * as the color distance calculation and quantization assumes so.
  * 
- * @author alankila
+ * @author Antti Lankila
  */
 class OctreeQuantization {
 	/** Bits per component */

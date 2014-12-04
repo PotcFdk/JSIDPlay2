@@ -148,7 +148,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			expand2000, expand4000, expand6000, expand8000, expandA000,
 			turnPrinterOn;
 	@FXML
-	protected RadioMenuItem normalSpeed, fastForward, c1541, c1541_II,
+	protected RadioMenuItem fastForward, normalSpeed, c1541, c1541_II,
 			neverExtend, askExtend, accessExtend;
 	@FXML
 	protected MenuItem previous, next;
@@ -171,7 +171,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private TextField defaultTime;
 	@FXML
-	private ToggleButton pauseContinue2;
+	private ToggleButton pauseContinue2, fastForward2;
 	@FXML
 	protected RadioButton playMP3, playEmulation;
 	@FXML
@@ -195,7 +195,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private int oldHalfTrack, hardcopyCounter;
 	private boolean duringInitialization, oldMotorOn;
 	private StringBuilder tuneSpeed, playerId;
-	private BooleanProperty nextFavoriteState;
+	private BooleanProperty nextFavoriteDisabledState;
 
 	public JSidPlay2(Stage primaryStage, Player player) {
 		super(primaryStage, player);
@@ -216,9 +216,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				.addListener(
 						(observable, oldValue, newValue) -> {
 							SidTune sidTune = util.getPlayer().getTune();
-							Platform.runLater(() -> nextFavoriteState
-									.set(sidTune == SidTune.RESET
-											|| !(newValue == State.RUNNING || newValue == State.PAUSED)));
+							Platform.runLater(() -> nextFavoriteDisabledState
+									.set(sidTune == SidTune.RESET));
 							if (newValue == State.RUNNING) {
 								Platform.runLater(() -> {
 									getPlayerId();
@@ -258,9 +257,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				);
 		pauseContinue.selectedProperty().bindBidirectional(
 				pauseContinue2.selectedProperty());
-		nextFavoriteState = new SimpleBooleanProperty(true);
-		nextFavorite.disableProperty().bind(nextFavoriteState);
+		
+		fastForward2.selectedProperty().bindBidirectional(
+				fastForward.selectedProperty());
+		
+		nextFavoriteDisabledState = new SimpleBooleanProperty(true);
+		nextFavorite.disableProperty().bind(nextFavoriteDisabledState);
 
+		updatePlayerButtons(util.getPlayer().stateProperty().get());
+		
 		Audio audio = util.getConfig().getAudio().getAudio();
 		audioBox.getSelectionModel().select(audio);
 
@@ -531,6 +536,17 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		util.getPlayer().fastForward();
 	}
 
+	@FXML
+	private void fastForward() {
+		if (util.getPlayer().isFastForward()) {
+			util.getPlayer().normalSpeed();
+			normalSpeed.setSelected(true);
+		} else {
+			util.getPlayer().fastForward();
+			fastForward.setSelected(true);
+		}
+	}
+	
 	@FXML
 	private void nextFavorite() {
 		util.getPlayer().getTimer().end();

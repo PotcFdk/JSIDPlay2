@@ -6,7 +6,7 @@ package resid_builder.resid;
  * This class is a rewrite without use of fixed point integer mathematics, and
  * uses the actual voltages instead of the normalized values.
  * 
- * @author alankila
+ * @author Antti Lankila
  */
 final class OpAmp {
 	private final double EPSILON = 1e-8;

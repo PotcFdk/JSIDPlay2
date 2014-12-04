@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package resid_builder.resid;
@@ -32,9 +32,9 @@ import resid_builder.resid.resample.ZeroOrderResampler;
  * MOS6581/MOS8580 emulation.
  * Based on reSID 0.16 by Dag Lem,
  * and then hacked on by Antti S. Lankila.
- * Ported to Java by Ken Händel.
+ * Ported to Java by Ken HÃ¤ndel.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * @author Dag Lem
  * @author Antti Lankila
  */

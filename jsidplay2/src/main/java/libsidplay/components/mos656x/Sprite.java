@@ -11,7 +11,7 @@ import libsidplay.common.Event;
 /**
  * Sprite class to handle all data for sprites.
  * 
- * @author Joerg Jahnke (joergjahnke@users.sourceforge.net)
+ * @author Jörg Jahnke (joergjahnke@users.sourceforge.net)
  * @author Antti S. Lankila (alankila@bel.fi)
  */
 public final class Sprite extends Event {

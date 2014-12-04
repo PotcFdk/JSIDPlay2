@@ -95,7 +95,7 @@ import libsidplay.components.printer.paper.ConsolePaper;
  * </TR>
  * </TABLE>
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public abstract class MPS803 extends SerialIECDevice implements

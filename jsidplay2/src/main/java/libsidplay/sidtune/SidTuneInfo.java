@@ -26,7 +26,7 @@ import libsidplay.sidtune.SidTune.Model;
  * An instance of this structure is used to transport values to and from SidTune
  * objects.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class SidTuneInfo {

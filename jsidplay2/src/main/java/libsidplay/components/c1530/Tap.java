@@ -39,7 +39,7 @@ import java.nio.charset.Charset;
 /**
  * TAP filetype implementation.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class Tap {

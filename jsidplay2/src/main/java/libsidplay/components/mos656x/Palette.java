@@ -60,7 +60,7 @@ import java.util.Map;
  * highest bit of the current row's generated color is used to identify
  * odd/even rows.
  * 
- * @author alankila
+ * @author Antti Lankila
  */
 public class Palette {
 	/* YUV generation defaults */
@@ -110,7 +110,7 @@ public class Palette {
 	/**
 	 * Simulate VIC chip colors and some common distortions to the colors.
 	 * 
-	 * @author alankila
+	 * @author Antti Lankila
 	 */
 	protected static class PaletteEntry {
 		private final float luminance;

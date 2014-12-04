@@ -257,7 +257,7 @@ import sidplay.ini.intf.IFilterSection;
  * <li>combine read and write in one data packet
  * </ul>
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * @author Antti S. Lankila
  * @author Wilfred Bos
  */

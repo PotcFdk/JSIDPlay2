@@ -3,7 +3,7 @@
  *
  * Written by
  *  Andreas Boose <viceteam@t-online.de>
- *  Andre' Fachat <fachat@physik.tu-chemnitz.de>
+ *  Andr√© Fachat <fachat@physik.tu-chemnitz.de>
  *  Daniel Sladic <sladic@eecg.toronto.edu>
  *  Ettore Perazzoli <ettore@comm2000.it>
  *
@@ -37,7 +37,7 @@ import libsidplay.components.mos6510.MOS6510;
 /**
  * Handling of the Disk Controller.
  * 
- * @author Ken H‰ndel
+ * @author Ken H√§ndel
  * 
  */
 public abstract class VIA6522DC extends VIACore {
@@ -60,7 +60,7 @@ public abstract class VIA6522DC extends VIACore {
 	/**
 	 * Current mode read or write.
 	 * 
-	 * @author Ken H‰ndel
+	 * @author Ken H√§ndel
 	 * 
 	 */
 	enum Mode {

@@ -11,7 +11,7 @@ import libsidplay.sidtune.SidTune;
 /**
  * Proxy driver to use two different sound drivers.
  * 
- * @author Ken
+ * @author Ken Händel
  * 
  */
 public class ProxyDriver extends AudioDriver {

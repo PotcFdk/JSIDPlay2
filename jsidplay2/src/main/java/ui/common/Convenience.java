@@ -23,7 +23,7 @@ import de.schlichtherle.truezip.file.TFile;
 /**
  * Automation for the Player.
  * 
- * @author Ken
+ * @author Ken Händel
  *
  */
 public class Convenience {

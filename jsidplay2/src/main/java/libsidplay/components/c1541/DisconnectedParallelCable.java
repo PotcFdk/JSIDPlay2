@@ -3,7 +3,7 @@ package libsidplay.components.c1541;
 /**
  * This class represents a disconnected parallel port.
  * 
- * @author alankila
+ * @author Antti Lankila
  */
 public class DisconnectedParallelCable implements IParallelCable {
 	/**

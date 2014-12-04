@@ -4,7 +4,7 @@
  *                             Library Configuration Code
  *                    xa65 - 6502 cross assembler and utility suite
  *                          reloc65 - relocates 'o65' files
- *        Copyright (C) 1997 Andr� Fachat (a.fachat@physik.tu-chemnitz.de)
+ *        Copyright (C) 1997 André Fachat (a.fachat@physik.tu-chemnitz.de)
  *        ----------------------------------------------------------------
  *  begin                : Fri Jun 9 2000
  *  copyright            : (C) 2000 by Simon White
@@ -15,7 +15,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken H�ndel
+ * @author Ken Händel
  *
  */
 package libsidplay;
@@ -93,7 +93,7 @@ import sidplay.ini.intf.IConfig;
  * It is meant as a complete setup (C64, tape/disk drive, carts and more).<BR>
  * It also has some music player capabilities.
  * 
- * @author Ken H�ndel
+ * @author Ken Händel
  * 
  */
 public class Player {
@@ -165,7 +165,7 @@ public class Player {
 	/**
 	 * Currently played tune.
 	 */
-	private SidTune tune;
+	private SidTune tune = SidTune.RESET;
 	/**
 	 * Auto-start command to be typed-in after reset.
 	 */
@@ -1004,6 +1004,10 @@ public class Player {
 		driverSettings.getAudio().getAudioDriver().normalSpeed();
 	}
 
+	public final boolean isFastForward() {
+		return driverSettings.getAudio().getAudioDriver().isFastForward();
+	}
+
 	public final int getNumDevices() {
 		return sidBuilder != null ? sidBuilder.getNumDevices() : 0;
 	}
@@ -1140,7 +1144,7 @@ public class Player {
 		credits.append("Java Version and User Interface v");
 		credits.append(properties.getProperty("version"));
 		credits.append(":\n");
-		credits.append("\tCopyright (�) 2007-2014 Ken H�ndel\n");
+		credits.append("\tCopyright (©) 2007-2014 Ken Händel\n");
 		credits.append("\thttp://sourceforge.net/projects/jsidplay2/\n");
 		credits.append("Distortion Simulation and development: Antti S. Lankila\n");
 		credits.append("\thttp://bel.fi/~alankila/c64-sw/\n");
@@ -1149,38 +1153,38 @@ public class Player {
 		credits.append("\thttp://www.acid64.com\n");
 		credits.append("Testing and Feedback: Nata, founder of proNoise\n");
 		credits.append("\thttp://www.nata.netau.net/\n");
-		credits.append("graphical output:\n" + "\t(�) 2007 Joakim Eriksson\n");
-		credits.append("\t(�) 2009, 2010 Antti S. Lankila\n");
+		credits.append("graphical output:\n" + "\t(©) 2007 Joakim Eriksson\n");
+		credits.append("\t(©) 2009, 2010 Antti S. Lankila\n");
 		credits.append("MP3 encoder/decoder (jump3r), based on Lame\n");
-		credits.append("\tCopyright (�) 2010-2011  Ken H�ndel\n");
+		credits.append("\tCopyright (©) 2010-2011  Ken Händel\n");
 		credits.append("\thttp://sourceforge.net/projects/jsidplay2/\n");
 		credits.append("This product uses the database of Game Base 64 (GB64)\n");
 		credits.append("\thttp://www.gb64.com/\n");
 		credits.append("Command Line Parser (JCommander):\n");
-		credits.append("\tCopyright (�) 2010-2014 C�dric Beust\n");
+		credits.append("\tCopyright (©) 2010-2014 Cédric Beust\n");
 		credits.append("\thttp://jcommander.org/\n");
 		credits.append("MP3 downloads from Stone Oakvalley's Authentic SID MusicCollection (SOASC=):\n");
 		credits.append("\thttp://www.6581-8580.com/\n");
 		credits.append("6510 cross assembler (Kickassembler V3.34):\n");
-		credits.append("\tCopyright (�) 2006-2014 Mads Nielsen\n");
+		credits.append("\tCopyright (©) 2006-2014 Mads Nielsen\n");
 		credits.append("\thttp://www.theweb.dk/KickAssembler/\n");
 		credits.append("PSID to PRG converter (PSID64 v0.9):\n");
-		credits.append("\tCopyright (�) 2001-2007 Roland Hermans\n");
+		credits.append("\tCopyright (©) 2001-2007 Roland Hermans\n");
 		credits.append("\thttp://sourceforge.net/projects/psid64/\n");
 		credits.append("An Optimizing Hybrid LZ77 RLE Data Compression Program (Pucrunch 22.11.2008):\n");
-		credits.append("\tCopyright (�) 1997-2008 Pasi 'Albert' Ojala\n");
+		credits.append("\tCopyright (©) 1997-2008 Pasi 'Albert' Ojala\n");
 		credits.append("\thttp://www.cs.tut.fi/~albert/Dev/pucrunch/\n");
 		credits.append("SID dump file (SIDDump V1.04):\n");
-		credits.append("\tCopyright (�) 2007 Lasse ��rni\n");
+		credits.append("\tCopyright (©) 2007 Lasse Öörni\n");
 		credits.append("HVSC playroutine identity scanner (SIDId V1.07):\n");
-		credits.append("\tCopyright (�) 2007 Lasse ��rni\n");
+		credits.append("\tCopyright (©) 2007 Lasse Öörni\n");
 		credits.append("High Voltage Music Engine MusicCollection (HVMEC V1.0):\n");
-		credits.append("\tCopyright (�) 2011 by Stefano Tognon and Stephan Parth\n");
+		credits.append("\tCopyright (©) 2011 by Stefano Tognon and Stephan Parth\n");
 		credits.append("C1541 Floppy Disk Drive Emulation:\n");
-		credits.append("\tCopyright (�) 2010 VICE (the Versatile Commodore Emulator)\n");
+		credits.append("\tCopyright (©) 2010 VICE (the Versatile Commodore Emulator)\n");
 		credits.append("\thttp://www.viceteam.org/\n");
 		credits.append("Based on libsidplay v2.1.1 and ReSID v0.0.2 engine:\n");
-		credits.append("\tCopyright (�) 1999-2002 Simon White <sidplay2@yahoo.com>\n");
+		credits.append("\tCopyright (©) 1999-2002 Simon White <sidplay2@yahoo.com>\n");
 		credits.append("\thttp://sidplay2.sourceforge.net\n");
 		credits.append(MOS6510.credits());
 		credits.append(MOS6526.credits());

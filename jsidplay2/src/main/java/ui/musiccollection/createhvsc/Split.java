@@ -12,7 +12,7 @@ import java.io.IOException;
  * This class is used by Ant to split the HVSC in several parts to avoid the
  * maximum file size limit of the web-site provider.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  */
 public class Split {
 

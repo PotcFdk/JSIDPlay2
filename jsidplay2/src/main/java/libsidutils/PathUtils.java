@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 /**
  * This class provides a general filename utility functions.
  * 
- * @author Ken Haendel
+ * @author Ken Händel
  */
 @SuppressWarnings("resource")
 public class PathUtils {

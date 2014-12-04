@@ -8,7 +8,7 @@ import java.util.Collection;
  * This class represents a disk directory. However it is used to show tape file
  * entries or other formats as a pseudo directory as well.
  * 
- * @author Ken
+ * @author Ken Händel
  *
  */
 public class Directory {

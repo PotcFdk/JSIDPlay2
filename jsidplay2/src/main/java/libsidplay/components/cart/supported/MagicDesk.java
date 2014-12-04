@@ -20,7 +20,7 @@ import libsidplay.components.pla.PLA;
  *     bit 7     exrom (1 = cart disabled)
  * </PRE>
  * 
- * @author Ken
+ * @author Ken Händel
  *
  */
 public class MagicDesk extends Cartridge {

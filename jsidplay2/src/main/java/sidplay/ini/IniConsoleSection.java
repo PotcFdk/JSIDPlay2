@@ -5,7 +5,7 @@ import sidplay.ini.intf.IConsoleSection;
 /**
  * Console section of the INI file.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class IniConsoleSection extends IniSection implements IConsoleSection {

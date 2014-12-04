@@ -10,7 +10,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  *
  */
 package sidplay.audio;
@@ -102,6 +102,10 @@ public abstract class AudioDriver {
 		fastForward = 1;
 	}
 
+	public synchronized boolean isFastForward() {
+		return fastForward != 1;
+	}
+	
 	public void setRecordingFilenameProvider(
 			RecordingFilenameProvider recordingFilenameProvider) {
 		this.recordingFilenameProvider = recordingFilenameProvider;

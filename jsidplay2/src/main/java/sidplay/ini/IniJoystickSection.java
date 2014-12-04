@@ -5,7 +5,7 @@ import sidplay.ini.intf.IJoystickSection;
 /**
  * Joystick section of the INI file.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public class IniJoystickSection extends IniSection implements IJoystickSection {

@@ -1,7 +1,7 @@
 /**
  * D64 disk images.
  * 
- * @author Ken
+ * @author Ken Händel
  */
 package libsidplay.components.c1541;
 
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
- * @author Ken H�ndel
+ * @author Ken Händel
  * 
  */
 public final class D64 extends DiskImage {

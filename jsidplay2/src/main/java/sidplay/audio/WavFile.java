@@ -11,7 +11,7 @@ import libsidplay.sidtune.SidTune;
 /**
  * File based driver to create a WAV file.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  *         Only unsigned 8-bit, and signed 16-bit, samples are supported.
  *         Endian-ess is adjusted if necessary.
@@ -28,7 +28,7 @@ public class WavFile extends AudioDriver {
 	private ByteBuffer sampleBuffer;
 
 	/**
-	 * @author Ken Händel
+	 * @author Ken HÃ¤ndel
 	 * 
 	 *         little endian format
 	 */

@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  *
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  **/
 package libsidplay.components.c1541;
@@ -35,7 +35,7 @@ import libsidplay.components.c1541.VIA6522DC.Mode;
  * 
  * Disk rotation.
  * 
- * @author Ken Händel
+ * @author Ken HÃ¤ndel
  * 
  */
 public abstract class Rotation {
