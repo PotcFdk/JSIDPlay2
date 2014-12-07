@@ -142,7 +142,14 @@
 		</dependency>
 	</dependencies>
 
-	<build>
+    <build>
+		<extensions>
+	      <extension>
+	        <groupId>org.apache.maven.wagon</groupId>
+	        <artifactId>wagon-ftp</artifactId>
+	        <version>1.0</version>
+	      </extension>
+	    </extensions>
 		<plugins>
 
 			<plugin>
@@ -585,27 +592,25 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>com.github.goldin</groupId>
-				<artifactId>copy-maven-plugin</artifactId>
-				<version>0.2.5</version>
-				<executions>
-					<execution>
-						<id>copy</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<resources>
-								<resource>
-									<targetPath>ftp://${ftp.username}:${ftp.password}@${ftp.server}:${ftp.remotedir}</targetPath>
-									<directory>${project.build.directory}/deploy</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+		      <groupId>org.codehaus.mojo</groupId>
+		      <artifactId>wagon-maven-plugin</artifactId>
+		      <version>1.0-beta-5</version>
+		      <executions>
+		        <execution>
+		          <id>copy</id>
+		          <phase>deploy</phase>
+		          <goals>
+		            <goal>upload</goal>
+		          </goals>
+		          <configuration>
+		            <fromDir>${project.build.directory}/deploy</fromDir>
+		            <includes>*</includes>
+		            <url>ftp://${ftp.username}:${ftp.password}@${ftp.server}/</url>
+		            <toDir>${ftp.remotedir}</toDir>
+		          </configuration>
+		          </execution>
+		        </executions>
+	        </plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
