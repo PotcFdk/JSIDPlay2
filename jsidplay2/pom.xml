@@ -17,19 +17,16 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<debug>false</debug>
-		<!-- WebStart -->
-		<!--  development: --><!-- codebase>file:///d:/workspace/jsidplay2/target/deploy/online/webstart</codebase-->
-		<!--  release: --> <codebase>${project.url}</codebase>
+		<codebase>${project.url}</codebase>
 		<javafx.main.class>ui.JSIDPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
 		<application.title>JSIDPlay2</application.title>
 		<application.vendor>Ken Händel</application.vendor>
 		<!-- Optional: FTP upload coordinates -->
-		<ftp.username>JohnDoe</ftp.username>
-		<ftp.password>secret</ftp.password>
-		<ftp.server>rainbow.org</ftp.server>
-		<ftp.remotedir>foobar</ftp.remotedir>
+		<serverId></serverId>
+		<serverUrl>ftp://JohnDoe:secret@rainbow.org</serverUrl>
+		<remoteDir></remoteDir>
 		<!-- Optional: extra online content -->
 		<gb64.mdbfile />
 		<hvsc.zip />
@@ -605,8 +602,9 @@
 		          <configuration>
 		            <fromDir>${project.build.directory}/deploy</fromDir>
 		            <includes>*</includes>
-		            <url>ftp://${ftp.username}:${ftp.password}@${ftp.server}/</url>
-		            <toDir>${ftp.remotedir}</toDir>
+		          	<serverId>${serverId}</serverId>
+		            <url>${serverUrl}</url>
+		            <toDir>${remoteDir}</toDir>
 		          </configuration>
 		          </execution>
 		        </executions>

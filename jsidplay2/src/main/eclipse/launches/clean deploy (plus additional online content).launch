@@ -6,10 +6,9 @@
 <booleanAttribute key="M2_OFFLINE" value="false"/>
 <stringAttribute key="M2_PROFILES" value=""/>
 <listAttribute key="M2_PROPERTIES">
-<listEntry value="ftp.password=${ftp.password}"/>
-<listEntry value="ftp.username=${ftp.username}"/>
-<listEntry value="ftp.server=${ftp.server}"/>
-<listEntry value="ftp.remotedir=${ftp.remotedir}"/>
+<listEntry value="serverId=${serverId}"/>
+<listEntry value="serverUrl=${serverUrl}"/>
+<listEntry value="remoteDir=${remoteDir}"/>
 <listEntry value="gb64.mdbfile=${gb64.mdbfile}"/>
 <listEntry value="hvsc.zip=${hvsc.zip}"/>
 <listEntry value="zip7.home=${zip7.home}"/>
@@ -17,7 +16,7 @@
 <listEntry value="hvmec.bz2=${hvmec.bz2}"/>
 </listAttribute>
 <stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>
-<booleanAttribute key="M2_SKIP_TESTS" value="false"/>
+<booleanAttribute key="M2_SKIP_TESTS" value="true"/>
 <intAttribute key="M2_THREADS" value="1"/>
 <booleanAttribute key="M2_UPDATE_SNAPSHOTS" value="false"/>
 <stringAttribute key="M2_USER_SETTINGS" value=""/>

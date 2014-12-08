@@ -12,10 +12,9 @@ Set the following properties in Eclipse: Preferences/Run/Debug StringSubstitutio
 or at command line: using -D
 
 e.g.
--Dftp.username=XXX
--Dftp.password=XXX
--Dftp.server=ftp.kenchis.t15.org
--Dftp.remotedir=/jsidplay2/javafx
+-DserverId=
+-DserverUrl=ftp://<user>:<password>@kenchis.t15.org
+-DremoteDir=/jsidplay2/javafx
 
 Optional:
 -Dgb64.mdbfile=<pathToGameBase64.mdb>
