@@ -108,14 +108,16 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					float balance = newValue.floatValue();
 					util.getConfig().getAudio().setLeftBalance(balance);
-					util.getPlayer().setBalance(0, balance);
+					util.getPlayer().configureSIDBuilder(
+							(b) -> b.setBalance(0, balance));
 				});
 		rightBalance.setValue(util.getConfig().getAudio().getRightBalance());
 		rightBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					float balance = newValue.floatValue();
 					util.getConfig().getAudio().setRightBalance(balance);
-					util.getPlayer().setBalance(1, balance);
+					util.getPlayer().configureSIDBuilder(
+							(b) -> b.setBalance(1, balance));
 				});
 
 		leftVolume.setValue(util.getConfig().getAudio().getLeftVolume()
@@ -124,7 +126,8 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
 					util.getConfig().getAudio().setLeftVolume(volumeDb);
-					util.getPlayer().setMixerVolume(0, volumeDb);
+					util.getPlayer().configureSIDBuilder(
+							(b) -> b.setMixerVolume(0, volumeDb));
 				});
 		rightVolume.setValue(util.getConfig().getAudio().getRightVolume()
 				+ MAX_VOLUME_DB);
@@ -132,7 +135,8 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
 					util.getConfig().getAudio().setRightVolume(volumeDb);
-					util.getPlayer().setMixerVolume(1, volumeDb);
+					util.getPlayer().configureSIDBuilder(
+							(b) -> b.setMixerVolume(1, volumeDb));
 				});
 
 		stereoModes = FXCollections.<String> observableArrayList();

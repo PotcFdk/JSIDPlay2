@@ -694,15 +694,9 @@ public class Player {
 		}
 	}
 
-	public final void setMixerVolume(int i, float volumeInDb) {
+	public final void configureSIDBuilder(Consumer<SIDBuilder> action) {
 		if (sidBuilder != null) {
-			sidBuilder.setMixerVolume(i, volumeInDb);
-		}
-	}
-
-	public void setBalance(int i, float balance) {
-		if (sidBuilder != null) {
-			sidBuilder.setBalance(i, balance);
+			action.accept(sidBuilder);
 		}
 	}
 

@@ -24,6 +24,8 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import libsidplay.common.SamplingMethod;
 import resid_builder.ReSIDBuilder.MixerEvent;
+import resid_builder.resid.Filter6581;
+import resid_builder.resid.Filter8580;
 import resid_builder.resid.SID;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IFilterSection;
@@ -111,6 +113,9 @@ public class ReSID extends SIDEmu {
 	}
 
 	public void setFilter(IConfig config, boolean isStereo) {
+		final Filter6581 filter6581 = sid.getFilter6581();
+		final Filter8580 filter8580 = sid.getFilter8580();
+
 		String filterName6581 = isStereo ? config.getEmulation()
 				.getStereoFilter6581() : config.getEmulation().getFilter6581();
 		String filterName8580 = isStereo ? config.getEmulation()
@@ -118,12 +123,10 @@ public class ReSID extends SIDEmu {
 		for (IFilterSection filter : config.getFilter()) {
 			if (filter.getName().equals(filterName6581)
 					&& filter.isReSIDFilter6581()) {
-				sid.getFilter6581().setFilterCurve(
-						filter.getFilter6581CurvePosition());
+				filter6581.setFilterCurve(filter.getFilter6581CurvePosition());
 			} else if (filter.getName().equals(filterName8580)
 					&& filter.isReSIDFilter8580()) {
-				sid.getFilter8580().setFilterCurve(
-						filter.getFilter8580CurvePosition());
+				filter8580.setFilterCurve(filter.getFilter8580CurvePosition());
 			}
 		}
 	}
