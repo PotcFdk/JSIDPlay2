@@ -181,7 +181,7 @@ public class ConsolePlayer {
 						&& (!config.getSidplay2().isEnableDatabase() || length == 0)) {
 					System.err
 							.println("ERROR: unknown song length in record mode"
-									+ " (please use option -defaultLength or configure song length database)");
+									+ " (please use option --defaultLength or configure song length database)");
 					exit(1);
 				}
 			}

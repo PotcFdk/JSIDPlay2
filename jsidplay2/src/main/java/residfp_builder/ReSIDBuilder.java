@@ -33,6 +33,7 @@ import libsidplay.common.SIDEmu;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
+import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IConfig;
 
 public class ReSIDBuilder extends SIDBuilder {
@@ -94,7 +95,7 @@ public class ReSIDBuilder extends SIDBuilder {
 			 * chip1's.
 			 */
 
-			final ByteBuffer soundBuffer = audio.getAudioDriver().buffer();
+			final ByteBuffer soundBuffer = driver.buffer();
 			for (int i = 0; i < samples; i++) {
 				int dither = triangularDithering();
 				int value = (Math.round((buf1[i] * 32768f)
@@ -125,7 +126,7 @@ public class ReSIDBuilder extends SIDBuilder {
 				}
 
 				if (soundBuffer.remaining() == 0) {
-					audio.getAudioDriver().write();
+					driver.write();
 					soundBuffer.clear();
 				}
 			}
@@ -150,7 +151,7 @@ public class ReSIDBuilder extends SIDBuilder {
 	private final CPUClock cpuClock;
 
 	/** output driver */
-	protected Audio audio, realAudio;
+	protected AudioDriver driver, realDriver;
 
 	/** List of SID instances */
 	protected List<ReSID> sids = new ArrayList<ReSID>();
@@ -159,10 +160,10 @@ public class ReSIDBuilder extends SIDBuilder {
 	private final MixerEvent mixerEvent = new MixerEvent();
 
 	public ReSIDBuilder(IConfig config, AudioConfig audioConfig,
-			CPUClock cpuClock, Audio audio, SidTune tune) {
+			CPUClock cpuClock, AudioDriver audio, SidTune tune) {
 		this.audioConfig = audioConfig;
 		this.cpuClock = cpuClock;
-		this.audio = audio;
+		this.driver = audio;
 		setMixerVolume(0, config.getAudio().getLeftVolume());
 		setMixerVolume(1, config.getAudio().getRightVolume());
 		setBalance(0, config.getAudio().getLeftBalance());
@@ -226,8 +227,8 @@ public class ReSIDBuilder extends SIDBuilder {
 	 * @param tune 
 	 */
 	private void switchToNullDriver(SidTune tune) {
-		this.realAudio = audio;
-		this.audio = Audio.NONE;
+		this.realDriver = driver;
+		this.driver = Audio.NONE.getAudioDriver();
 		try {
 			Audio.NONE.getAudioDriver().open(audioConfig, tune);
 		} catch (LineUnavailableException | UnsupportedAudioFileException
@@ -239,7 +240,7 @@ public class ReSIDBuilder extends SIDBuilder {
 	 * When the start time is being reached, switch to the real audio output.
 	 */
 	private void switchToAudioDriver() {
-		audio = realAudio;
+		driver = realDriver;
 	}
 
 }

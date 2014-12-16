@@ -1,16 +1,16 @@
 package libsidplay.player;
 
 import libsidplay.common.Emulation;
-import sidplay.audio.Audio;
+import sidplay.audio.AudioDriver;
 
 public class DriverSettings {
 	/** SID emulation */
 	private final Emulation emulation;
 	/** output */
-	private final Audio audio;
+	private final AudioDriver driver;
 
-	public DriverSettings(final Audio audio, final Emulation emulation) {
-		this.audio = audio;
+	public DriverSettings(final AudioDriver driver, final Emulation emulation) {
+		this.driver = driver;
 		this.emulation = emulation;
 	}
 
@@ -18,8 +18,8 @@ public class DriverSettings {
 		return emulation;
 	}
 
-	public final Audio getAudio() {
-		return audio;
+	public final AudioDriver getAudioDriver() {
+		return driver;
 	}
 
 }

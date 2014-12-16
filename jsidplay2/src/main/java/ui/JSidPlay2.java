@@ -918,6 +918,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
 
+		util.getPlayer().updateDriverSettings();
 		restart();
 	}
 
@@ -974,6 +975,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		hardsid8580Box.setDisable(!Emulation.HARDSID.equals(emulation));
 		hardsid6581Label.setDisable(!Emulation.HARDSID.equals(emulation));
 		hardsid8580Label.setDisable(!Emulation.HARDSID.equals(emulation));
+		util.getPlayer().updateDriverSettings();
 		restart();
 	}
 
