@@ -918,6 +918,8 @@ public class Lame {
 		gfc.channels_in = gfp.getInNumChannels();
 		if (gfc.channels_in == 1)
 			gfp.setMode(MPEGMode.MONO);
+		else
+			gfp.setMode(MPEGMode.STEREO);
 		gfc.channels_out = (gfp.getMode() == MPEGMode.MONO) ? 1 : 2;
 		gfc.mode_ext = Encoder.MPG_MD_MS_LR;
 		if (gfp.getMode() == MPEGMode.MONO)
