@@ -21,10 +21,14 @@
         <servlet-name>JSIDPlay2</servlet-name>
         <servlet-class>de.haendel.service.JSIDPlay2ServiceWS</servlet-class>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>JSIDPlay2</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>JSIDPlay2</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+        <servlet-name>javax.ws.rs.core.Application</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
 	<session-config>
 		<session-timeout>2</session-timeout>
 	</session-config>

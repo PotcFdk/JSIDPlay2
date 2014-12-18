@@ -82,6 +82,12 @@
 			<artifactId>jboss-annotations-api_1.1_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxrs</artifactId>
+			<version>3.0.10.Final</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<!-- the context root -->
