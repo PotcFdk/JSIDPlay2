@@ -24,7 +24,7 @@ import libsidutils.PathUtils;
 import ui.entities.config.Configuration;
 import de.haendel.impl.IJSIDPlay2;
 
-@WebServlet("/JSIDPlay2")
+@WebServlet("/JSIDPlay2SRV")
 public class JSIDPlay2ServiceServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -2861221133139848654L;
@@ -36,7 +36,7 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 	@Inject
 	private IJSIDPlay2 jsidplay2Service;
 
-	// http://localhost:8080/jsidplay2service/JSIDPlay2
+	// http://localhost:8080/jsidplay2service/JSIDPlay2SRV
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -50,9 +50,9 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 			PrintWriter writer = response.getWriter();
 			writer.println("<html><head><title>JSIDPlay2</title></head><body>");
 			writer.println("<h1>Musik:</h1>");
-			getDirectory(ROOT, jsidplay2Service.getDirectory(ROOT), writer);
+			getDirectory(ROOT, jsidplay2Service.getDirectory(ROOT, null), writer);
 			writer.println("<h1>SIDs:</h1>");
-			getDirectory(ROOTSID, jsidplay2Service.getDirectory(ROOTSID),
+			getDirectory(ROOTSID, jsidplay2Service.getDirectory(ROOTSID, null),
 					writer);
 			writer.println("</body></html>");
 			writer.close();
@@ -66,7 +66,7 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 			writer.println("<html><head><title>JSIDPlay2</title></head><body>");
 			writer.println("<h1>Directory: " + dir + "</h1>");
 
-			getDirectory(dir, jsidplay2Service.getDirectory(dir), writer);
+			getDirectory(dir, jsidplay2Service.getDirectory(dir, null), writer);
 			writer.println("</body></html>");
 			writer.close();
 		} else if (convertBE != null) {
@@ -76,7 +76,7 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 			try (OutputStream stream = response.getOutputStream()) {
 				Configuration cfg = new Configuration();
 				cfg.getEmulation().setEmulation(Emulation.RESIDFP);
-				byte[] contents = jsidplay2Service.convert(cfg, convert);
+				byte[] contents = jsidplay2Service.convert(cfg, convert, ROOTSID);
 				response.setContentType("audio/mpeg");
 				
 				response.addHeader(
@@ -119,21 +119,21 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 
 	private void getDirectory(String root, List<File> directory,
 			PrintWriter writer) throws IOException {
-		writer.println("<A href='JSIDPlay2?dir="
+		writer.println("<A href='JSIDPlay2SRV?dir="
 				+ new File(root, "/.").getCanonicalPath() + "'>.</A><BR>");
-		writer.println("<A href='JSIDPlay2?dir="
+		writer.println("<A href='JSIDPlay2SRV?dir="
 				+ new File(root, "/..").getCanonicalPath() + "'>..</A><BR>");
 		for (Iterator<File> iterator = directory.iterator(); iterator.hasNext();) {
 			File file = (File) iterator.next();
 			String encode = URLEncoder.encode(file.getPath(), "UTF-8");
 			if (file.isDirectory()) {
-				writer.println("<A href='JSIDPlay2?dir=" + encode + "'>"
+				writer.println("<A href='JSIDPlay2SRV?dir=" + encode + "'>"
 						+ file.getName() + "</A><BR>");
 			} else {
-				writer.println("<A href='JSIDPlay2?download=" + encode + "'>"
+				writer.println("<A href='JSIDPlay2SRV?download=" + encode + "'>"
 						+ file.getName() + "</A>");
 				if (file.getName().endsWith(".sid")) {
-					writer.println("<A href='JSIDPlay2?convert=" + encode
+					writer.println("<A href='JSIDPlay2SRV?convert=" + encode
 							+ "'> Convert to MP3!</A>");
 				}
 				writer.println("<BR>");

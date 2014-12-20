@@ -1,6 +1,7 @@
 package de.haendel.impl;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,7 +26,8 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 
 	private static final String TMP_PREFIX = "jsidplay2";
 	private static final String TMP_SUFFIX = ".jboss.mp3";
-	private static final String HVSC = "/home/ken/Downloads/C64Music";
+
+	private static final int DEFALT_LENGTH = 300;
 
 	private class FileTypeComparator implements Comparator<File> {
 
@@ -47,27 +49,37 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	private Comparator<File> cmp = new FileTypeComparator();
 
 	@Override
-	public List<File> getDirectory(String root) {
+	public List<File> getDirectory(String root, String filter) {
 		File rootFile = new File(root);
-		List<File> asList = Arrays.asList(rootFile.listFiles());
+		List<File> asList = Arrays.asList(rootFile.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.isDirectory() || filter == null
+						|| pathname.getName().matches(filter);
+			}
+		}));
 		Collections.sort(asList, cmp);
 		return asList;
 	}
 
 	@Override
-	public byte[] convert(Configuration config, String resource)
+	public byte[] convert(Configuration config, String resource, String hvsc)
 			throws InterruptedException, IOException, SidTuneError {
 		File file = null;
 		try {
 			file = File.createTempFile(TMP_PREFIX, TMP_SUFFIX);
 			file.deleteOnExit();
 
+			config.getAudio().setAudio(Audio.NONE);
 			config.getSidplay2().setLoop(false);
 			config.getSidplay2().setSingle(true);
-			config.getSidplay2().setDefaultPlayLength(300);
-			config.getSidplay2().setEnableDatabase(true);
-			config.getSidplay2().setHvsc(HVSC);
-			config.getAudio().setAudio(Audio.NONE);
+			if (config.getSidplay2().getDefaultPlayLength() == 0) {
+				config.getSidplay2().setDefaultPlayLength(DEFALT_LENGTH);
+			}
+			config.getSidplay2().setEnableDatabase(hvsc != null);
+			if (hvsc != null) {
+				config.getSidplay2().setHvsc(hvsc);
+			}
 			Player player = new Player(config);
 			setSIDDatabase(player);
 			setRecordingFilenameProvider(player, file);

@@ -9,8 +9,8 @@ import ui.entities.config.Configuration;
 
 public interface IJSIDPlay2 {
 
-	List<File> getDirectory(String root);
+	List<File> getDirectory(String root, String filter);
 
-	byte[] convert(Configuration cfg, String filename)
+	byte[] convert(Configuration cfg, String filename, String hvsc)
 			throws InterruptedException, IOException, SidTuneError;
 }

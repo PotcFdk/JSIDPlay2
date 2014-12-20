@@ -23,7 +23,7 @@
     </servlet>
 	<servlet-mapping>
 		<servlet-name>JSIDPlay2</servlet-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>/JSIDPlay2WS/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
         <servlet-name>javax.ws.rs.core.Application</servlet-name>

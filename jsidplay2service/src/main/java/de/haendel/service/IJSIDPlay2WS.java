@@ -10,7 +10,7 @@ import ui.entities.config.Configuration;
 @WebService
 public interface IJSIDPlay2WS {
 
-	byte[] convert(Configuration cfg, String filename)
+	byte[] convert(Configuration cfg, String filename, String hvsc)
 			throws InterruptedException, IOException, SidTuneError;
 
 }
