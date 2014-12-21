@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
@@ -24,16 +25,19 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
+
+	private static final int[] UI_ELEMS = new int[] { R.id.button1,
+			R.id.button2, R.id.listView1 };
 
 	private static final String CONTEXT_ROOT = "/jsidplay2service";
 	private static final String ROOT_PATH = "/JSIDPlay2REST";
@@ -55,7 +59,7 @@ public class MainActivity extends Activity {
 
 	private String hostname, port;
 
-	protected static String filter;
+	private static String filter;
 	static {
 		try {
 			filter = URLEncoder.encode(".*\\.(mp3|sid)$", "UTF-8");
@@ -76,26 +80,36 @@ public class MainActivity extends Activity {
 		public LongRunningRequest(String url, String name) {
 			this.url = url;
 			this.name = name;
-			disableUI();
+			enableDisableUI(false);
 		}
 
 		@Override
 		protected Object doInBackground(Void... params) {
 			HttpClient httpClient = new DefaultHttpClient();
 			HttpContext localContext = new BasicHttpContext();
-			HttpGet httpGet = new HttpGet("http://" + hostname + ":" + port
-					+ url);
+			String theURL = "http://" + hostname + ":" + port + url;
+			HttpGet httpGet = new HttpGet(theURL);
 			try {
 				HttpResponse response = httpClient.execute(httpGet,
 						localContext);
-				HttpEntity entity = response.getEntity();
-				if (url.startsWith(DIRECTORY_URL)) {
-					return getDirectoryFromEntity(entity);
+				int statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode == HttpURLConnection.HTTP_OK) {
+					HttpEntity entity = response.getEntity();
+					if (url.startsWith(DIRECTORY_URL)) {
+						return getDirectoryFromEntity(entity);
+					} else {
+						return getDownloadFromEntity(entity);
+					}
 				} else {
-					return getDownloadFromEntity(entity);
+					Log.e(getApplication().getString(R.string.app_name), String
+							.format("URL: '%s', HTTP status: '%d':", theURL,
+									statusCode));
+					return null;
 				}
-			} catch (Exception e) {
-				return e.getLocalizedMessage();
+			} catch (IOException e) {
+				Log.e(getApplication().getString(R.string.app_name),
+						e.getMessage(), e);
+				return null;
 			}
 		}
 
@@ -138,12 +152,13 @@ public class MainActivity extends Activity {
 			InputStream in = entity.getContent();
 			long length = entity.getContentLength();
 
-			File root = Environment.getExternalStorageDirectory();
-			File music = new File(root, MP3SAVE_DIR + "/"
-					+ getBaseNameNoExt(name) + ".mp3");
+			File sdRootDir = Environment.getExternalStorageDirectory();
+			File music = new File(new File(sdRootDir, MP3SAVE_DIR),
+					getBaseNameNoExt(name) + ".mp3");
+
 			OutputStream out;
 			byte[] b = new byte[4096];
-			if (root.canWrite()) {
+			if (sdRootDir.canWrite()) {
 				out = new BufferedOutputStream(new FileOutputStream(music));
 				while (length > 0) {
 					int n = in.read(b);
@@ -187,8 +202,8 @@ public class MainActivity extends Activity {
 							final View view, int position, long id) {
 						final String item = (String) parent
 								.getItemAtPosition(position);
+						File file = new File(item);
 						try {
-							File file = new File(item);
 							String encode = URLEncoder.encode(
 									file.getCanonicalPath(), "UTF-8");
 							if (item.endsWith(".mp3")) {
@@ -207,13 +222,14 @@ public class MainActivity extends Activity {
 										.execute();
 							}
 						} catch (IOException e) {
-							e.printStackTrace();
+							Log.e(getApplication().getString(R.string.app_name),
+									e.getMessage(), e);
 						}
 					}
 
 				});
 			}
-			enableUI();
+			enableDisableUI(true);
 		}
 
 	}
@@ -243,68 +259,51 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void music(View view) {
+	private void requestDirectory(File dir) {
+		try {
+			String encode = URLEncoder.encode(dir.getCanonicalPath(), "UTF-8");
+			new LongRunningRequest(DIRECTORY_URL + "?" + DIR_PARAM + encode
+					+ "&&" + FILTER_PARAM + filter, dir.getName()).execute();
+		} catch (UnsupportedEncodingException e) {
+			Log.e(getApplication().getString(R.string.app_name),
+					e.getMessage(), e);
+		} catch (IOException e) {
+			Log.e(getApplication().getString(R.string.app_name),
+					e.getMessage(), e);
+		}
+	}
+
+	private void setHostnamePort() {
 		hostname = ((EditText) findViewById(R.id.hostname)).getText()
 				.toString();
 		port = ((EditText) findViewById(R.id.port)).getText().toString();
-		try {
-			File file = new File(MUSIK_DIR);
-			String encode = URLEncoder.encode(file.getCanonicalPath(), "UTF-8");
-			new LongRunningRequest(DIRECTORY_URL + "?" + DIR_PARAM + encode
-					+ "&&" + FILTER_PARAM + filter, file.getName()).execute();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+	}
+
+	private void enableDisableUI(boolean enable) {
+		for (int i = 0; i < UI_ELEMS.length; i++) {
+			View view = (View) findViewById(UI_ELEMS[i]);
+			view.setClickable(enable);
+			view.setEnabled(enable);
 		}
-	}
-
-	public void c64music(View view) {
-		try {
-			File file = new File(C64MUSIC_DIR);
-			String encode = URLEncoder.encode(file.getCanonicalPath(), "UTF-8");
-			new LongRunningRequest(DIRECTORY_URL + "?" + DIR_PARAM + encode
-					+ "&&" + FILTER_PARAM + filter, file.getName()).execute();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void disableUI() {
-		Button b = (Button) findViewById(R.id.button1);
-		b.setClickable(false);
-		b.setEnabled(false);
-		b = (Button) findViewById(R.id.button2);
-		b.setClickable(false);
-		b.setEnabled(false);
-		ListView listview = (ListView) findViewById(R.id.listView1);
-		listview.setClickable(false);
-		listview.setEnabled(false);
-	}
-
-	private void enableUI() {
-		Button b = (Button) findViewById(R.id.button1);
-		b.setClickable(true);
-		b.setEnabled(true);
-		b = (Button) findViewById(R.id.button2);
-		b.setClickable(true);
-		b.setEnabled(true);
-		ListView listview = (ListView) findViewById(R.id.listView1);
-		listview.setClickable(true);
-		listview.setEnabled(true);
 	}
 
 	private static final String getBaseNameNoExt(final String name) {
 		int lastIndexOf = name.lastIndexOf('.');
-		final String basename;
 		if (lastIndexOf != -1) {
-			basename = name.substring(0, lastIndexOf);
+			return name.substring(0, lastIndexOf);
 		} else {
-			basename = name;
+			return name;
 		}
-		return basename;
+	}
+
+	public void music(View view) {
+		setHostnamePort();
+		requestDirectory(new File(MUSIK_DIR));
+	}
+
+	public void c64music(View view) {
+		setHostnamePort();
+		requestDirectory(new File(C64MUSIC_DIR));
 	}
 
 }
