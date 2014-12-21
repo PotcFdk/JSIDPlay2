@@ -7,7 +7,7 @@ REFERENCE: http://csdb.dk/release/?id=10741
 
 8bitDigi/THCM
    AUTHOR: Uwe Anfang (The Human Code Machine)
-  COMMENT: The technique used in this player was discovered by Otto Järvinen
+  COMMENT: The technique used in this player was discovered by Otto JÃ¤rvinen
            (SounDemoN) in 2006. It makes use of the noise waveform and the
            test bit and uses the frequency register to write the 8-bit sample
            data to the SID chip.
@@ -51,7 +51,7 @@ Arne/AFL
    AUTHOR: Arne Puszelski (Arne)
 
 Artlace
-   AUTHOR: Artúr Bujdosó (Artlace)
+   AUTHOR: ArtÃºr BujdosÃ³ (Artlace)
 
 Artline_Designs
    AUTHOR: Antti Kangas (AK)
@@ -71,21 +71,21 @@ REFERENCE: http://csdb.dk/release/?id=11576
 
 ATMDS_1.x
      NAME: Acid Track Music Development System (ATMDS)
-   AUTHOR: Stefan Hübner (St0ff)
+   AUTHOR: Stefan HÃ¼bner (St0ff)
  RELEASED: 1997 Neoplasia
   COMMENT: Also known as Acid Track Creator
 REFERENCE: http://csdb.dk/release/?id=129844
 
 ATMDS_3.x
      NAME: Acid Track Music Development System (ATMDS)
-   AUTHOR: Stefan Hübner (St0ff)
+   AUTHOR: Stefan HÃ¼bner (St0ff)
  RELEASED: 2001 Neoplasia
   COMMENT: Also known as Acid Track Creator
 REFERENCE: http://csdb.dk/release/?id=7159
 
 Audial_Arts
      NAME: Zong Player
-   AUTHOR: François Prijt
+   AUTHOR: FranÃ§ois Prijt
  RELEASED: Audial Arts
   COMMENT: Player used by the group Audial Arts
 
@@ -102,7 +102,7 @@ REFERENCE: http://csdb.dk/release/?id=97497
 
 C64_Speech_System
      NAME: C64 Speech System
-   AUTHOR: Kristian Köhntopp
+   AUTHOR: Kristian KÃ¶hntopp
   COMMENT: Also known as "Speech Basic"
  RELEASED: 1986 64'er/Markt & Technik
 REFERENCE: http://csdb.dk/release/?id=129965
@@ -131,7 +131,7 @@ Chris_Murray
            music editors that are based on this player.
 
 Chubrocker_V3.x
-   AUTHOR: László Benke (Dec)
+   AUTHOR: LÃ¡szlÃ³ Benke (Dec)
  RELEASED: 1995 Cadgers
 REFERENCE: http://csdb.dk/release/?id=114185
 
@@ -160,7 +160,7 @@ CRL/Jay_Derrett
   COMMENT: Player is used in CRL (Computer Rentals Limited) releases
 
 Cyberbrain_Digi
-   AUTHOR: Bjarke Nørgaard Laustsen (CyberBrain)
+   AUTHOR: Bjarke NÃ¸rgaard Laustsen (CyberBrain)
 
 Cyberlogic_SoundStudio
      NAME: Cyberlogic Sound Studio
@@ -169,7 +169,7 @@ Cyberlogic_SoundStudio
 REFERENCE: http://csdb.dk/release/?id=97286
 
 CyberTracker
-   AUTHOR: Bjarke Nørgaard Laustsen (CyberBrain)
+   AUTHOR: Bjarke NÃ¸rgaard Laustsen (CyberBrain)
  RELEASED: 2001
 REFERENCE: http://csdb.dk/release/?id=2601
 
@@ -203,12 +203,12 @@ REFERENCE: http://csdb.dk/release/?id=120965
   COMMENT: Made in 2008, released in 2013
 
 Digitalizer_V3.0
-   AUTHOR: Olav Mørkrid
+   AUTHOR: Olav MÃ¸rkrid
  RELEASED: 1992
 REFERENCE: http://csdb.dk/release/?id=33649
 
 Digitalizer_V2.x
-   AUTHOR: Olav Mørkrid
+   AUTHOR: Olav MÃ¸rkrid
  RELEASED: 1989
 REFERENCE: http://csdb.dk/release/?id=33646
 
@@ -252,10 +252,10 @@ Dutch-USA_Team/ProDrum
 REFERENCE: http://csdb.dk/release/?id=20672
 
 Ed/Wrath
-   AUTHOR: Eddie Svärd (Ed)
+   AUTHOR: Eddie SvÃ¤rd (Ed)
 
 Ed/Wrath_Digi
-   AUTHOR: Eddie Svärd (Ed)
+   AUTHOR: Eddie SvÃ¤rd (Ed)
 
 Ed_Bogas_V1
    AUTHOR: Ed Bogas
@@ -327,7 +327,7 @@ GKGM
 
 GalBard/ATOO
      NAME: GalBard
-   AUTHOR: Anders Andréen (ATOO)
+   AUTHOR: Anders AndrÃ©en (ATOO)
   COMMENT: GalBard is a script-based music editor. It is called GalBard
            because Anders' goal was to be able to create tunes in the style of
            Martin Galway and Rob Hubbard.
@@ -421,12 +421,12 @@ GMC_V2.0/Superiors
    AUTHOR: Balazs Farkas (Brian)
 
 GoatTracker_V1.x
-   AUTHOR: Lasse Öörni (Cadaver)
+   AUTHOR: Lasse Ã–Ã¶rni (Cadaver)
  RELEASED: 2002 Covert Bitops
 REFERENCE: http://csdb.dk/release/?id=6072
 
 GoatTracker_V2.x
-   AUTHOR: Lasse Öörni (Cadaver)
+   AUTHOR: Lasse Ã–Ã¶rni (Cadaver)
  RELEASED: 2005 Covert Bitops
 REFERENCE: http://csdb.dk/release/?id=18308
 
@@ -440,10 +440,10 @@ GRG_tiny2
    AUTHOR: Glenn Rune Gallefoss (GRG)
 
 Griff/Chromance
-   AUTHOR: Péter Varga (Griff)
+   AUTHOR: PÃ©ter Varga (Griff)
 
 (LightVoices)
-   AUTHOR: Péter Varga (Griff)
+   AUTHOR: PÃ©ter Varga (Griff)
  RELEASED: 1990 FBI Crew
 REFERENCE: http://csdb.dk/release/?id=72915
 
@@ -451,7 +451,7 @@ Groo/Psygon
    AUTHOR: Claus Leth Gregersen (Groo)
 
 Groovy_Bits
-   AUTHOR: Lars Patrik Wallström (Karl XII)
+   AUTHOR: Lars Patrik WallstrÃ¶m (Karl XII)
  RELEASED: 1989 Groovy Bits
 REFERENCE: http://csdb.dk/release/?id=121370
 
@@ -469,20 +469,20 @@ Heathcliff/DigitalArts
 REFERENCE: http://csdb.dk/release/?id=112794
 
 Hermit
-   AUTHOR: Mihály Horváth (Hermit)
+   AUTHOR: MihÃ¡ly HorvÃ¡th (Hermit)
 
 (Hermit/3SID)
-   AUTHOR: Mihály Horváth (Hermit)
+   AUTHOR: MihÃ¡ly HorvÃ¡th (Hermit)
  RELEASED: 2008
 REFERENCE: http://csdb.dk/release/?id=66065
 
 Hermit/SidWizard_V1
-   AUTHOR: Mihály Horváth (Hermit)
+   AUTHOR: MihÃ¡ly HorvÃ¡th (Hermit)
  RELEASED: 2012
 REFERENCE: http://csdb.dk/release/?id=110942
 
 Hermit/1RasterTracker
-   AUTHOR: Mihály Horváth (Hermit)
+   AUTHOR: MihÃ¡ly HorvÃ¡th (Hermit)
  RELEASED: 2013
 REFERENCE: http://csdb.dk/release/?id=117935
 
@@ -541,27 +541,27 @@ REFERENCE: http://csdb.dk/release/?id=43956
 
 Jeff
      NAME: Music Editor
-   AUTHOR: Søren Lund (Jeff)
+   AUTHOR: SÃ¸ren Lund (Jeff)
  RELEASED: 1996 Cyberzound Productions
 REFERENCE: http://csdb.dk/release/?id=122334
 
 (X-SID)
-   AUTHOR: Søren Lund (Jeff)
+   AUTHOR: SÃ¸ren Lund (Jeff)
  RELEASED: 2007 Viruz
 REFERENCE: http://csdb.dk/release/?id=47985
 
 Jeff/BullSID
-   AUTHOR: Søren Lund (Jeff)
+   AUTHOR: SÃ¸ren Lund (Jeff)
 
 Jeff/XLarge
-   AUTHOR: Søren Lund (Jeff)
+   AUTHOR: SÃ¸ren Lund (Jeff)
 
 JITT_1.x
    AUTHOR: Stefano Tognon (Ice00)
 REFERENCE: http://csdb.dk/release/?id=74136
 
 Johannes_Goettker
-   AUTHOR: Johannes Göttker
+   AUTHOR: Johannes GÃ¶ttker
 
 John_Player
    AUTHOR: Aleksi Eeben
@@ -597,7 +597,7 @@ Laxity_NewPlayer_V21
 REFERENCE: http://csdb.dk/release/?id=26563
 
 LFT
-   AUTHOR: Linus Åkesson (LFT)
+   AUTHOR: Linus Ã…kesson (LFT)
 
 Loadstar_SongSmith
      NAME: Songsmith
@@ -742,7 +742,7 @@ Mjoosic_Mejker
 REFERENCE: http://csdb.dk/release/?id=43954
 
 Modulator
-   AUTHOR: Thomas Krätzig
+   AUTHOR: Thomas KrÃ¤tzig
  RELEASED: 1985
 REFERENCE: http://csdb.dk/release/?id=129802
 
@@ -797,13 +797,13 @@ REFERENCE: http://csdb.dk/release/?id=82618
 
 MusicComposer/Flash_Inc
      NAME: Music-Composer
-   AUTHOR: Fredrik Karlsson (Zodiac) & Anders Elmén (Moon)
+   AUTHOR: Fredrik Karlsson (Zodiac) & Anders ElmÃ©n (Moon)
  RELEASED: 1991 Flash Inc.
   COMMENT: All programming by Zodiac with assistance by Moon
 
 (MusicComposer_V3.0)
      NAME: Music-Composer V3.0
-   AUTHOR: Fredrik Karlsson (Zodiac) & Anders Elmén (Moon)
+   AUTHOR: Fredrik Karlsson (Zodiac) & Anders ElmÃ©n (Moon)
  RELEASED: 1992 Flash Inc.
   COMMENT: All programming by Zodiac with assistance by Moon
 REFERENCE: http://csdb.dk/release/?id=10755
@@ -832,16 +832,16 @@ Music_Works
 REFERENCE: http://csdb.dk/release/?id=92082
 
 MusicShop
- RELEASED: 1984 Brøderbund Software
+ RELEASED: 1984 BrÃ¸derbund Software
 REFERENCE: http://csdb.dk/release/?id=82453
 
 NinjaTracker_V1.x
-   AUTHOR: Lasse Öörni (Cadaver)
+   AUTHOR: Lasse Ã–Ã¶rni (Cadaver)
  RELEASED: 2002 Covert Bitops
 REFERENCE: http://csdb.dk/release/?id=7206
 
 NinjaTracker_V2.x
-   AUTHOR: Lasse Öörni (Cadaver)
+   AUTHOR: Lasse Ã–Ã¶rni (Cadaver)
  RELEASED: 2006 Covert Bitops
 REFERENCE: http://csdb.dk/release/?id=39374
 
@@ -860,18 +860,18 @@ Odie_Tiny
    AUTHOR: Sean Connolly (Odie)
 
 OdinTracker
-   AUTHOR: Zoltán Konyha (Zed)
+   AUTHOR: ZoltÃ¡n Konyha (Zed)
  RELEASED: 2001
 REFERENCE: http://csdb.dk/release/?id=2628
 
 Oeyvind_Jergan
-   AUTHOR: Øyvind Jergan
+   AUTHOR: Ã˜yvind Jergan
 
 Oeyvind_Jergan_2
-   AUTHOR: Øyvind Jergan
+   AUTHOR: Ã˜yvind Jergan
 
 OmegaSupreme_digi
-   AUTHOR: Olav Mørkrid (Omega Supreme)
+   AUTHOR: Olav MÃ¸rkrid (Omega Supreme)
 
 Ozzy_Oldschool_V1
    AUTHOR: Ossi Aarnio (Ozzy Oldskool)
@@ -996,7 +996,7 @@ Ryo_Kawasaki
            More info: http://www.ryokawasaki.com/c64/
 
 SadoTracker
-   AUTHOR: Lasse Öörni (Cadaver)
+   AUTHOR: Lasse Ã–Ã¶rni (Cadaver)
  RELEASED: 1999 Covert Bitops
 REFERENCE: http://csdb.dk/release/?id=72773
 
@@ -1026,7 +1026,7 @@ SidSynth64
    AUTHOR: Dave Davies
 
 SidWinder
-   AUTHOR: Balázs Takács (Taki)
+   AUTHOR: BalÃ¡zs TakÃ¡cs (Taki)
  RELEASED: 1999 Natural Beat
 REFERENCE: http://csdb.dk/release/?id=66494
 
@@ -1093,7 +1093,7 @@ SoftwareAutomaticMouth
 REFERENCE: http://csdb.dk/release/?id=42843
 
 Soft_Tune_Composer
-   AUTHOR: Melih Küçükçalik
+   AUTHOR: Melih KÃ¼Ã§Ã¼kÃ§alik
  RELEASED: 1989
 REFERENCE: http://csdb.dk/release/?id=101769
 
@@ -1120,17 +1120,17 @@ Soundbooster
 REFERENCE: http://csdb.dk/release/?id=7536
 
 SounDemon
-   AUTHOR: Otto Järvinen (SounDemoN)
+   AUTHOR: Otto JÃ¤rvinen (SounDemoN)
 
 SoundMonitor
-   AUTHOR: Chris Hülsbeck
+   AUTHOR: Chris HÃ¼lsbeck
  RELEASED: 1986 Markt & Technik
   COMMENT: Released as a type-in listing in the October 1986 issue of the
            German C-64 magazine 64'er.
 REFERENCE: http://csdb.dk/release/?id=59929
 
 (BeatBox/KarlXII)
-   AUTHOR: Lars Patrik Wallström (Karl XII)
+   AUTHOR: Lars Patrik WallstrÃ¶m (Karl XII)
  RELEASED: 1987 Science 451
   COMMENT: This editor was also released by The Sharks under the name
            Noisemaster 1 and Noisemaster 2
@@ -1186,13 +1186,13 @@ REFERENCE: http://csdb.dk/release/?id=17476
 REFERENCE: http://csdb.dk/release/?id=21823
 
 (Huelsbeck_Digi_V1)
-   AUTHOR: Chris Hülsbeck
+   AUTHOR: Chris HÃ¼lsbeck
 
 (Huelsbeck_Digi_V2)
-   AUTHOR: Chris Hülsbeck
+   AUTHOR: Chris HÃ¼lsbeck
 
 (JamMasterV1)
-   AUTHOR: Christof Mühlan (Banana) & TAM
+   AUTHOR: Christof MÃ¼hlan (Banana) & TAM
  RELEASED: 1987
   COMMENT: also known as Soundking v1 by DSA and JamMonitor by TDT
 REFERENCE: http://csdb.dk/release/?id=106085
@@ -1250,12 +1250,12 @@ TBB/SideB
    AUTHOR: Tero Hilpinen (TBB)
 
 TGS_Digi
-   AUTHOR: Gábor Gáspár (The Galactic Stranger)
+   AUTHOR: GÃ¡bor GÃ¡spÃ¡r (The Galactic Stranger)
   COMMENT: Probably derived from C64_Speech_System
 
 TFMX
      NAME: The Final Musicsystem eXtended (TFMX)
-   AUTHOR: Chris Hülsbeck
+   AUTHOR: Chris HÃ¼lsbeck
  RELEASED: 1988
 
 TFMX/MasterComposer
