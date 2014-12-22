@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.BorderPane?>
 <?scenebuilder-preview-i18n-resource About.properties?>
-<Scene xmlns:fx="http://javafx.com/fxml" width="360" height="360">
+<Scene xmlns:fx="http://javafx.com/fxml" width="278" height="300">
 	<BorderPane>
 		<center>
 			<TextArea

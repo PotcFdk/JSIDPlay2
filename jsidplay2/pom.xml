@@ -495,7 +495,7 @@
 							<supportUrl>http://sourceforge.net/projects/jsidplay2/</supportUrl>
 							<customProcName>false</customProcName>
 							<stayAlive>false</stayAlive>
-							<icon>src/main/launch4j/jsidplay2.ico</icon>
+							<icon>src/main/launch4j/jsiddevice.ico</icon>
 							<classPath>
 								<mainClass>netsiddev.NetworkSIDDevice</mainClass>
 							</classPath>
