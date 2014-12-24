@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>jsidplay2</name>
-	<!--url>http://haendel.ddns.net/~ken/</url-->
+	<!--url>http://haendel.ddns.net/~ken/</url -->
 	<url>http://kenchis.t15.org/jsidplay2/javafx/</url>
 	<description>This is a Commodore 64 emulator specialized for sound reproduction. It is also a SID player for music collections like HVSC and CGSC.
  It is a full C64 emulator and can play games of the GameBase64 project as well.</description>
@@ -139,14 +139,30 @@
 		</dependency>
 	</dependencies>
 
-    <build>
+	<build>
 		<extensions>
-	      <extension>
-	        <groupId>org.apache.maven.wagon</groupId>
-	        <artifactId>wagon-ftp</artifactId>
-	        <version>1.0</version>
-	      </extension>
-	    </extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0</version>
+			</extension>
+		</extensions>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+			</resource>
+		</resources>
 		<plugins>
 
 			<plugin>
@@ -589,26 +605,26 @@
 				</executions>
 			</plugin>
 			<plugin>
-		      <groupId>org.codehaus.mojo</groupId>
-		      <artifactId>wagon-maven-plugin</artifactId>
-		      <version>1.0-beta-5</version>
-		      <executions>
-		        <execution>
-		          <id>copy</id>
-		          <phase>deploy</phase>
-		          <goals>
-		            <goal>upload</goal>
-		          </goals>
-		          <configuration>
-		            <fromDir>${project.build.directory}/deploy</fromDir>
-		            <includes>*</includes>
-		          	<serverId>${serverId}</serverId>
-		            <url>${serverUrl}</url>
-		            <toDir>${remoteDir}</toDir>
-		          </configuration>
-		          </execution>
-		        </executions>
-	        </plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>wagon-maven-plugin</artifactId>
+				<version>1.0-beta-5</version>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+						<configuration>
+							<fromDir>${project.build.directory}/deploy</fromDir>
+							<includes>*</includes>
+							<serverId>${serverId}</serverId>
+							<url>${serverUrl}</url>
+							<toDir>${remoteDir}</toDir>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
