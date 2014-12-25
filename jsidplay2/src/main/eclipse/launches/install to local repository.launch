@@ -6,12 +6,11 @@
 <booleanAttribute key="M2_OFFLINE" value="false"/>
 <stringAttribute key="M2_PROFILES" value=""/>
 <listAttribute key="M2_PROPERTIES">
-<listEntry value="file=d:\ucanaccess-2.0.6.3.jar"/>
-<listEntry value="groupId=ucanaccess"/>
-<listEntry value="artifactId=ucanaccess"/>
-<listEntry value="version=2.0.6_3"/>
+<listEntry value="file=/home/ken/workspace/jsidplay2/target/standalone/jsidplay2-3.4.jar"/>
+<listEntry value="groupId=jsidplay2"/>
+<listEntry value="artifactId=jsidplay2"/>
+<listEntry value="version=3.4"/>
 <listEntry value="packaging=jar"/>
-<listEntry value="localRepositoryPath=${workspace_loc:/jsidplay2}/lib"/>
 </listAttribute>
 <stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>
 <booleanAttribute key="M2_SKIP_TESTS" value="false"/>
