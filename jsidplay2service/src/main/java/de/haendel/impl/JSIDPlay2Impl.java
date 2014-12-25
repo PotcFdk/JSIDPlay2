@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import libsidutils.PathUtils;
 import libsidutils.SidDatabase;
 import sidplay.audio.Audio;
 import sidplay.audio.MP3File;
+import sidplay.audio.MP3Stream;
 import sidplay.audio.RecordingFilenameProvider;
 import ui.entities.config.Configuration;
 
@@ -94,6 +96,29 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 				file.delete();
 			}
 		}
+	}
+
+	@Override
+	public void convert2(Configuration config, String resource, String hvsc,
+			OutputStream out) throws InterruptedException, IOException,
+			SidTuneError {
+		config.getAudio().setAudio(Audio.NONE);
+		config.getSidplay2().setLoop(false);
+		config.getSidplay2().setSingle(true);
+		if (config.getSidplay2().getDefaultPlayLength() == 0) {
+			config.getSidplay2().setDefaultPlayLength(DEFALT_LENGTH);
+		}
+		config.getSidplay2().setEnableDatabase(hvsc != null);
+		if (hvsc != null) {
+			config.getSidplay2().setHvsc(hvsc);
+		}
+		Player player = new Player(config);
+		setSIDDatabase(player);
+
+		player.setDriverSettings(new DriverSettings(new MP3Stream(out), config
+				.getEmulation().getEmulation()));
+		player.play(SidTune.load(new File(resource)));
+		player.waitForC64();
 	}
 
 	private void setRecordingFilenameProvider(Player player, File file) {

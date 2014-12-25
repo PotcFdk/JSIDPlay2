@@ -2,6 +2,7 @@ package de.haendel.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import libsidplay.sidtune.SidTuneError;
@@ -11,6 +12,9 @@ public interface IJSIDPlay2 {
 
 	List<File> getDirectory(String root, String filter);
 
-	byte[] convert(Configuration cfg, String filename, String hvsc)
-			throws InterruptedException, IOException, SidTuneError;
+	public byte[] convert(Configuration config, String resource, String hvsc) throws InterruptedException, IOException,
+			SidTuneError;
+	public void convert2(Configuration config, String resource, String hvsc,
+			OutputStream out) throws InterruptedException, IOException,
+			SidTuneError;
 }
