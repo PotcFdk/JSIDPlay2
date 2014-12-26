@@ -50,7 +50,8 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 			PrintWriter writer = response.getWriter();
 			writer.println("<html><head><title>JSIDPlay2</title></head><body>");
 			writer.println("<h1>Musik:</h1>");
-			getDirectory(ROOT, jsidplay2Service.getDirectory(ROOT, null), writer);
+			getDirectory(ROOT, jsidplay2Service.getDirectory(ROOT, null),
+					writer);
 			writer.println("<h1>SIDs:</h1>");
 			getDirectory(ROOTSID, jsidplay2Service.getDirectory(ROOTSID, null),
 					writer);
@@ -72,20 +73,18 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 		} else if (convertBE != null) {
 			String convert = new String(convertBE.getBytes("iso-8859-1"),
 					"UTF-8");
-			
+
 			try (OutputStream stream = response.getOutputStream()) {
 				Configuration cfg = new Configuration();
 				cfg.getEmulation().setEmulation(Emulation.RESIDFP);
-				byte[] contents = jsidplay2Service.convert(cfg, convert, ROOTSID);
 				response.setContentType("audio/mpeg");
-				
+
 				response.addHeader(
 						"Content-Disposition",
-						"attachment; filename="
+						"filename="
 								+ PathUtils.getBaseNameNoExt(new File(convert)
-								.getName()) + ".mp3");
-				response.setContentLength(contents.length);
-				stream.write(contents, 0, contents.length);
+										.getName()) + ".mp3");
+				jsidplay2Service.convert2(cfg, convert, ROOTSID, stream);
 			} catch (SidTuneError | InterruptedException e) {
 				log(e.getMessage(), e);
 			}
@@ -130,8 +129,8 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 				writer.println("<A href='JSIDPlay2SRV?dir=" + encode + "'>"
 						+ file.getName() + "</A><BR>");
 			} else {
-				writer.println("<A href='JSIDPlay2SRV?download=" + encode + "'>"
-						+ file.getName() + "</A>");
+				writer.println("<A href='JSIDPlay2SRV?download=" + encode
+						+ "'>" + file.getName() + "</A>");
 				if (file.getName().endsWith(".sid")) {
 					writer.println("<A href='JSIDPlay2SRV?convert=" + encode
 							+ "'> Convert to MP3!</A>");
