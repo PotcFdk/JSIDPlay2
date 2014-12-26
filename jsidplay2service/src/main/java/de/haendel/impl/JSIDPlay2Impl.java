@@ -103,17 +103,8 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			OutputStream out) throws InterruptedException, IOException,
 			SidTuneError {
 		config.getAudio().setAudio(Audio.NONE);
-		config.getSidplay2().setLoop(false);
-		config.getSidplay2().setSingle(true);
-		if (config.getSidplay2().getDefaultPlayLength() == 0) {
-			config.getSidplay2().setDefaultPlayLength(DEFALT_LENGTH);
-		}
-		config.getSidplay2().setEnableDatabase(hvsc != null);
-		if (hvsc != null) {
-			config.getSidplay2().setHvsc(hvsc);
-		}
+		config.getSidplay2().setDefaultPlayLength(0);
 		Player player = new Player(config);
-		setSIDDatabase(player);
 
 		player.setDriverSettings(new DriverSettings(new MP3Stream(out), config
 				.getEmulation().getEmulation()));
