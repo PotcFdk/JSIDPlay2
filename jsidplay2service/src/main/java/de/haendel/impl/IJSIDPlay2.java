@@ -12,9 +12,6 @@ public interface IJSIDPlay2 {
 
 	List<File> getDirectory(String root, String filter);
 
-	public byte[] convert(Configuration config, String resource, String hvsc) throws InterruptedException, IOException,
-			SidTuneError;
-	public void convert2(Configuration config, String resource, String hvsc,
-			OutputStream out) throws InterruptedException, IOException,
-			SidTuneError;
+	public void convert(Configuration config, String resource, OutputStream out)
+			throws InterruptedException, IOException, SidTuneError;
 }

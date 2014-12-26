@@ -20,8 +20,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import libsidplay.common.Emulation;
-import libsidplay.sidtune.SidTuneError;
-import libsidutils.PathUtils;
 import ui.entities.config.Configuration;
 import de.haendel.impl.IJSIDPlay2;
 
@@ -46,7 +44,6 @@ public class JSIDPlay2ServiceREST {
 	}
 
 	@GET
-	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@Path("/download")
 	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/download?file=/home/ken/Downloads/C64Music/DEMOS/0-9/1_45_Tune.sid
 	public Response getDownload(@QueryParam("file") String file) {
@@ -74,56 +71,18 @@ public class JSIDPlay2ServiceREST {
 	}
 
 	@GET
-	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@Produces("audio/mpeg")
 	@Path("/convert")
 	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/convert?file=/home/ken/Downloads/C64Music/DEMOS/0-9/1_45_Tune.sid
-	public Response getConvert(@QueryParam("file") String file,
-			@QueryParam("hvsc") String hvsc) {
-		try {
-			Configuration cfg = new Configuration();
-			cfg.getEmulation().setEmulation(Emulation.RESIDFP);
-			byte[] convert = jsidplay2Service.convert(cfg, file, hvsc);
-			StreamingOutput stream = new StreamingOutput() {
-				public void write(OutputStream output) throws IOException,
-						WebApplicationException {
-					try {
-						output.write(convert);
-					} catch (Exception e) {
-						throw new WebApplicationException(e);
-					}
-				}
-			};
-			return Response
-					.ok(stream, MediaType.APPLICATION_OCTET_STREAM)
-					.header("content-type", "audio/mpeg")
-					.header("content-length", convert.length)
-					.header("content-disposition",
-							"attachment; filename=\""
-									+ PathUtils.getBaseNameNoExt(new File(file)
-											.getName()) + ".mp3" + "\"")
-					.build();
-		} catch (InterruptedException e1) {
-			return Response.serverError().build();
-		} catch (IOException e1) {
-			return Response.serverError().build();
-		} catch (SidTuneError e1) {
-			return Response.serverError().build();
-		}
-	}
-
-	@GET
-	@Produces("audio/mpeg")
-	@Path("/convert2")
-	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/convert?file=/home/ken/Downloads/C64Music/DEMOS/0-9/1_45_Tune.sid
-	public StreamingOutput getConvert2(@QueryParam("file") String file,
-			@QueryParam("hvsc") String hvsc) {
+	public StreamingOutput getConvert(@QueryParam("file") String file) {
 		Configuration cfg = new Configuration();
+		cfg.getSidplay2().setDefaultPlayLength(0);
 		cfg.getEmulation().setEmulation(Emulation.RESIDFP);
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
 				try {
-					jsidplay2Service.convert2(cfg, file, hvsc, output);
+					jsidplay2Service.convert(cfg, file, output);
 				} catch (Exception e) {
 					throw new WebApplicationException(e);
 				}

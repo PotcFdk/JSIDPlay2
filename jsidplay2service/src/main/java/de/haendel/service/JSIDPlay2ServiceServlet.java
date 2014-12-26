@@ -76,15 +76,15 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 
 			try (OutputStream stream = response.getOutputStream()) {
 				Configuration cfg = new Configuration();
+				cfg.getSidplay2().setDefaultPlayLength(0);
 				cfg.getEmulation().setEmulation(Emulation.RESIDFP);
 				response.setContentType("audio/mpeg");
-
 				response.addHeader(
 						"Content-Disposition",
 						"filename="
 								+ PathUtils.getBaseNameNoExt(new File(convert)
 										.getName()) + ".mp3");
-				jsidplay2Service.convert2(cfg, convert, ROOTSID, stream);
+				jsidplay2Service.convert(cfg, convert, stream);
 			} catch (SidTuneError | InterruptedException e) {
 				log(e.getMessage(), e);
 			}

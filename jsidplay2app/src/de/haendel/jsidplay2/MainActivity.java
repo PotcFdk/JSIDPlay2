@@ -46,10 +46,9 @@ public class MainActivity extends Activity {
 	private static final String DIR_PARAM = "dir=";
 	private static final String FILE_PARAM = "file=";
 	private static final String FILTER_PARAM = "filter=";
-	private static final String HVSC_PARAM = "hvsc=";
 
 	private static final String DOWNLOAD_URL = ROOT_URL + "/download";
-	private static final String CONVERT_URL = ROOT_URL + "/convert2";
+	private static final String CONVERT_URL = ROOT_URL + "/convert";
 	private static final String DIRECTORY_URL = ROOT_URL + "/directory";
 
 	private static final String MUSIK_DIR = "/media/readyshare/Musik";
@@ -163,7 +162,7 @@ public class MainActivity extends Activity {
 				while (length > 0) {
 					int n = in.read(b);
 					if (n > 0) {
-					out.write(b, 0, n);
+						out.write(b, 0, n);
 						length -= n;
 					}
 				}
@@ -213,8 +212,7 @@ public class MainActivity extends Activity {
 							} else if (item.endsWith(".sid")) {
 								Uri myUri = Uri.parse("http://" + hostname
 										+ ":" + port + CONVERT_URL + "?"
-										+ FILE_PARAM + encode + "&&"
-										+ HVSC_PARAM + C64MUSIC_DIR);
+										+ FILE_PARAM + encode);
 								Intent intent = new Intent(
 										android.content.Intent.ACTION_VIEW);
 								intent.setDataAndType(myUri, "audio/*");
