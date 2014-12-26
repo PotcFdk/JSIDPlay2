@@ -36,8 +36,8 @@ import android.widget.ListView;
 
 public class MainActivity extends Activity {
 
-	private static final int[] UI_ELEMS = new int[] { R.id.button1,
-			R.id.button2, R.id.listView1 };
+	private static final int[] UI_ELEMS = new int[] { R.id.button2,
+			R.id.listView1 };
 
 	private static final String CONTEXT_ROOT = "/jsidplay2service";
 	private static final String ROOT_PATH = "/JSIDPlay2REST";
@@ -50,9 +50,6 @@ public class MainActivity extends Activity {
 	private static final String DOWNLOAD_URL = ROOT_URL + "/download";
 	private static final String CONVERT_URL = ROOT_URL + "/convert";
 	private static final String DIRECTORY_URL = ROOT_URL + "/directory";
-
-	private static final String MUSIK_DIR = "/media/readyshare/Musik";
-	private static final String C64MUSIC_DIR = "/home/ken/Downloads/C64Music";
 
 	private static final String MP3SAVE_DIR = "Download";
 
@@ -298,14 +295,9 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	public void music(View view) {
-		setHostnamePort();
-		requestDirectory(new File(MUSIK_DIR));
-	}
-
 	public void c64music(View view) {
 		setHostnamePort();
-		requestDirectory(new File(C64MUSIC_DIR));
+		requestDirectory(new File("/"));
 	}
 
 }

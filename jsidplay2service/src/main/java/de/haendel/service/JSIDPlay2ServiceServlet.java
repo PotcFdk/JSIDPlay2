@@ -29,10 +29,6 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -2861221133139848654L;
 
-	private static final String ROOT = "/media/readyshare/Musik";
-
-	private static final String ROOTSID = "/home/ken/Downloads/C64Music";
-
 	@Inject
 	private IJSIDPlay2 jsidplay2Service;
 
@@ -49,12 +45,8 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 
 			PrintWriter writer = response.getWriter();
 			writer.println("<html><head><title>JSIDPlay2</title></head><body>");
-			writer.println("<h1>Musik:</h1>");
-			getDirectory(ROOT, jsidplay2Service.getDirectory(ROOT, null),
-					writer);
-			writer.println("<h1>SIDs:</h1>");
-			getDirectory(ROOTSID, jsidplay2Service.getDirectory(ROOTSID, null),
-					writer);
+			writer.println("<h1>ROOT folder:</h1>");
+			getDirectory(jsidplay2Service.getDirectory("", null), writer);
 			writer.println("</body></html>");
 			writer.close();
 		} else if (dirBE != null) {
@@ -67,7 +59,7 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 			writer.println("<html><head><title>JSIDPlay2</title></head><body>");
 			writer.println("<h1>Directory: " + dir + "</h1>");
 
-			getDirectory(dir, jsidplay2Service.getDirectory(dir, null), writer);
+			getDirectory(jsidplay2Service.getDirectory(dir, null), writer);
 			writer.println("</body></html>");
 			writer.close();
 		} else if (convertBE != null) {
@@ -93,22 +85,24 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 			String download = new String(downloadBE.getBytes("iso-8859-1"),
 					"UTF-8");
 
-			getDownload(response, new File(download));
+			getDownload(response, download);
 		}
 	}
 
-	private void getDownload(HttpServletResponse response, File mp3)
+	private void getDownload(HttpServletResponse response, String mp3)
 			throws IOException {
-		if (mp3.getName().endsWith(".mp3") || mp3.getName().endsWith(".sid")) {
-			response.setContentType(mp3.getName().endsWith(".mp3") ? "audio/mpeg"
+		File file = jsidplay2Service.getFile(mp3);
+		String name = file.getName();
+		if (name.endsWith(".mp3") || name.endsWith(".sid")) {
+			response.setContentType(name.endsWith(".mp3") ? "audio/mpeg"
 					: "audio/prs.sid");
 		}
 		response.addHeader("Content-Disposition",
-				"attachment; filename=" + mp3.getName());
+				"attachment; filename=" + name);
 		try (ServletOutputStream stream = response.getOutputStream();
 				BufferedInputStream buf = new BufferedInputStream(
-						new FileInputStream(mp3))) {
-			response.setContentLength((int) mp3.length());
+						new FileInputStream(file))) {
+			response.setContentLength((int) file.length());
 			int readBytes = 0;
 			while ((readBytes = buf.read()) != -1) {
 				stream.write(readBytes);
@@ -116,26 +110,27 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 		}
 	}
 
-	private void getDirectory(String root, List<File> directory,
-			PrintWriter writer) throws IOException {
-		writer.println("<A href='JSIDPlay2SRV?dir="
-				+ new File(root, "/.").getCanonicalPath() + "'>.</A><BR>");
-		writer.println("<A href='JSIDPlay2SRV?dir="
-				+ new File(root, "/..").getCanonicalPath() + "'>..</A><BR>");
-		for (Iterator<File> iterator = directory.iterator(); iterator.hasNext();) {
-			File file = (File) iterator.next();
-			String encode = URLEncoder.encode(file.getPath(), "UTF-8");
-			if (file.isDirectory()) {
-				writer.println("<A href='JSIDPlay2SRV?dir=" + encode + "'>"
-						+ file.getName() + "</A><BR>");
-			} else {
+	private void getDirectory(List<String> directory, PrintWriter writer)
+			throws IOException {
+		for (Iterator<String> iterator = directory.iterator(); iterator
+				.hasNext();) {
+			String file = (String) iterator.next();
+			String encode = URLEncoder.encode(file, "UTF-8");
+			if (file.endsWith(".sid")) {
 				writer.println("<A href='JSIDPlay2SRV?download=" + encode
-						+ "'>" + file.getName() + "</A>");
-				if (file.getName().endsWith(".sid")) {
+						+ "'>" + file + "</A>");
+				if (file.endsWith(".sid")) {
 					writer.println("<A href='JSIDPlay2SRV?convert=" + encode
-							+ "'> Convert to MP3!</A>");
+							+ "'>***as MP3***</A>");
 				}
 				writer.println("<BR>");
+			} else if (file.endsWith(".mp3")) {
+				writer.println("<A href='JSIDPlay2SRV?download=" + encode
+						+ "'>" + file + "</A>");
+				writer.println("<BR>");
+			} else {
+				writer.println("<A href='JSIDPlay2SRV?dir=" + encode + "'>"
+						+ file + "</A><BR>");
 			}
 		}
 	}

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -34,13 +33,9 @@ public class JSIDPlay2ServiceREST {
 	@GET
 	@Path("/directory")
 	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/directory?dir=/media
-	public List<File> getDir(@QueryParam("dir") String dir,
+	public List<String> getDir(@QueryParam("dir") String dir,
 			@QueryParam("filter") String filter) {
-		List<File> result = new ArrayList<File>();
-		result.add(new File(dir, "."));
-		result.add(new File(dir, ".."));
-		result.addAll(jsidplay2Service.getDirectory(dir, filter));
-		return result;
+		return jsidplay2Service.getDirectory(dir, filter);
 	}
 
 	@GET
@@ -52,8 +47,8 @@ public class JSIDPlay2ServiceREST {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
 				try {
-					output.write(Files.readAllBytes(Paths.get(new File(file)
-							.getPath())));
+					output.write(Files.readAllBytes(Paths.get(jsidplay2Service
+							.getFile(file).getPath())));
 				} catch (Exception e) {
 					throw new WebApplicationException(e);
 				}

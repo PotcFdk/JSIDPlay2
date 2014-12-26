@@ -10,8 +10,10 @@ import ui.entities.config.Configuration;
 
 public interface IJSIDPlay2 {
 
-	List<File> getDirectory(String root, String filter);
+	List<String> getDirectory(String dir, String filter);
 
-	public void convert(Configuration config, String resource, OutputStream out)
+	File getFile(String path);
+
+	void convert(Configuration config, String resource, OutputStream out)
 			throws InterruptedException, IOException, SidTuneError;
 }

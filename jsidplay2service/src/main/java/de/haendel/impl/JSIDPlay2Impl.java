@@ -5,6 +5,7 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +21,8 @@ import sidplay.audio.MP3Stream;
 import ui.entities.config.Configuration;
 
 public class JSIDPlay2Impl implements IJSIDPlay2 {
+
+	private static final String ROOT_DIR = "/home/ken/Downloads/C64Music";
 
 	private class FileTypeComparator implements Comparator<File> {
 
@@ -41,8 +44,8 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	private Comparator<File> cmp = new FileTypeComparator();
 
 	@Override
-	public List<File> getDirectory(String root, String filter) {
-		File rootFile = new File(root);
+	public List<String> getDirectory(String dir, String filter) {
+		File rootFile = new File(ROOT_DIR, dir);
 		List<File> asList = Arrays.asList(rootFile.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
@@ -51,7 +54,34 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			}
 		}));
 		Collections.sort(asList, cmp);
-		return asList;
+		ArrayList<String> result = new ArrayList<String>();
+		if (!asList.isEmpty()) {
+			addPath(result, new File(rootFile, "."));
+			addPath(result, new File(rootFile, ".."));
+		}
+		for (File f : asList) {
+			addPath(result, f);
+		}
+		return result;
+	}
+
+	private void addPath(ArrayList<String> result, File f) {
+		try {
+			String canonicalPath = f.getCanonicalPath();
+			if (canonicalPath.startsWith(ROOT_DIR)) {
+				String path = canonicalPath.substring(ROOT_DIR.length());
+				if (!path.isEmpty()) {
+					result.add(path);
+				}
+			}
+		} catch (IOException e) {
+			// ignore invalid path
+		}
+	}
+
+	@Override
+	public File getFile(String path) {
+		return new File(ROOT_DIR, path);
 	}
 
 	@Override
@@ -63,7 +93,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 
 		player.setDriverSettings(new DriverSettings(new MP3Stream(out), config
 				.getEmulation().getEmulation()));
-		player.play(SidTune.load(new File(resource)));
+		player.play(SidTune.load(getFile(resource)));
 		player.waitForC64();
 	}
 
