@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,6 +16,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import libsidplay.common.Emulation;
 import libsidplay.sidtune.SidTuneError;
@@ -24,7 +24,7 @@ import libsidutils.PathUtils;
 import ui.entities.config.Configuration;
 import de.haendel.impl.IJSIDPlay2;
 
-@WebServlet("/JSIDPlay2SRV")
+@WebServlet("/JSIDPlay2SRV/*")
 public class JSIDPlay2ServiceServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -2861221133139848654L;
@@ -38,46 +38,48 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse response)
 			throws ServletException, IOException {
-		String dirBE = req.getParameter("dir");
-		String downloadBE = req.getParameter("download");
-		String convertBE = req.getParameter("convert");
-		if (req.getParameterMap().isEmpty() || dirBE != null) {
-			String dir = dirBE != null ? new String(
-					dirBE.getBytes("iso-8859-1"), "UTF-8") : "/";
+		HttpSession session = req.getSession(true);
+		Configuration config = getConfiguration(session);
 
+		String pathInfo = req.getRequestURI();
+		String[] pathParts = pathInfo.split("/");
+		String mode = null;
+		StringBuilder path= new StringBuilder();
+		if (pathParts.length>3) {
+			mode = pathParts[3];
+			if (pathParts.length>4) {
+				for (int i = 4; i < pathParts.length; i++) {
+					path.append(pathParts[i]).append("/");
+				}
+			}
+		}
+		
+		if (mode == null || "dir".equals(mode)) {
 			response.setContentType("text/html");
 			response.setCharacterEncoding("UTF-8");
 
 			PrintWriter writer = response.getWriter();
 			writer.println("<html><head><title>JSIDPlay2</title></head><body>");
-			writer.println("<h1>Directory: " + dir + "</h1>");
+			writer.println("<h1>Directory: " + path + "</h1>");
 
-			getDirectory(jsidplay2Service.getDirectory(dir, MUSIC_FILTER),
+			getDirectory(jsidplay2Service.getDirectory(path.toString(), MUSIC_FILTER),
 					writer);
 			writer.println("</body></html>");
 			writer.close();
-		} else if (convertBE != null) {
-			String convert = new String(convertBE.getBytes("iso-8859-1"),
-					"UTF-8");
-
+		} else if ("convert".equals(mode)) {
 			response.setContentType("audio/mpeg");
 			response.addHeader("Content-Disposition", "inline; filename="
-					+ PathUtils.getBaseNameNoExt(new File(convert).getName())
+					+ PathUtils.getBaseNameNoExt(new File(path.toString()).getName())
 					+ ".mp3");
 			try (OutputStream stream = response.getOutputStream()) {
-				Configuration cfg = new Configuration();
-				cfg.getSidplay2().setDefaultPlayLength(0);
-				cfg.getEmulation().setEmulation(Emulation.RESIDFP);
-				jsidplay2Service.convert(cfg, convert, stream);
+				config.getSidplay2().setDefaultPlayLength(0);
+				config.getEmulation().setEmulation(Emulation.RESIDFP);
+				jsidplay2Service.convert(config, path.toString(), stream);
 			} catch (SidTuneError | InterruptedException e) {
 				log(e.getMessage(), e);
 			}
 		} else {
-			// downloadBE != null
-			String download = new String(downloadBE.getBytes("iso-8859-1"),
-					"UTF-8");
-
-			File file = jsidplay2Service.getFile(download);
+			File file = jsidplay2Service.getFile(path.toString());
 			response.setContentLength((int) file.length());
 			String name = file.getName();
 			if (name.endsWith(".mp3") || name.endsWith(".sid")) {
@@ -88,6 +90,13 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 					+ name);
 			getDownload(response.getOutputStream(), file);
 		}
+	}
+
+	private Configuration getConfiguration(HttpSession session) {
+		if (session.isNew()) {
+			session.setAttribute("Configuration", new Configuration());
+		}
+		return (Configuration) session.getAttribute("Configuration");
 	}
 
 	private void getDownload(ServletOutputStream out, File file)
@@ -107,21 +116,20 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 		for (Iterator<String> iterator = directory.iterator(); iterator
 				.hasNext();) {
 			String file = (String) iterator.next();
-			String encode = URLEncoder.encode(file, "UTF-8");
 			if (file.endsWith(".sid")) {
-				writer.println("<A href='JSIDPlay2SRV?download=" + encode
+				writer.println("<A href='/jsidplay2service/JSIDPlay2SRV/download" + file
 						+ "'>" + file + "</A>");
 				if (file.endsWith(".sid")) {
-					writer.println("<A href='JSIDPlay2SRV?convert=" + encode
+					writer.println("<A href='/jsidplay2service/JSIDPlay2SRV/convert" + file
 							+ "'>***as MP3***</A>");
 				}
 				writer.println("<BR>");
 			} else if (file.endsWith(".mp3")) {
-				writer.println("<A href='JSIDPlay2SRV?download=" + encode
+				writer.println("<A href='/jsidplay2service/JSIDPlay2SRV/download" + file
 						+ "'>" + file + "</A>");
 				writer.println("<BR>");
 			} else {
-				writer.println("<A href='JSIDPlay2SRV?dir=" + encode + "'>"
+				writer.println("<A href='/jsidplay2service/JSIDPlay2SRV/dir" + file + "'>"
 						+ file + "</A><BR>");
 			}
 		}
