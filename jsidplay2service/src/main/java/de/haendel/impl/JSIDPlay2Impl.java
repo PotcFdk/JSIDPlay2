@@ -16,7 +16,6 @@ import libsidplay.player.DriverSettings;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.SidDatabase;
-import sidplay.audio.Audio;
 import sidplay.audio.MP3Stream;
 import ui.entities.config.Configuration;
 
@@ -24,7 +23,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 
 	private static final String ROOT_DIR = "/home/ken/Downloads/C64Music";
 
-	private class FileTypeComparator implements Comparator<File> {
+	private static class FileTypeComparator implements Comparator<File> {
 
 		@Override
 		public int compare(File file1, File file2) {
@@ -41,26 +40,26 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 		}
 	}
 
-	private Comparator<File> cmp = new FileTypeComparator();
+	private static final Comparator<File> DIRECTORY_COMPARATOR = new FileTypeComparator();
 
 	@Override
-	public List<String> getDirectory(String dir, String filter) {
-		File rootFile = new File(ROOT_DIR, dir);
-		List<File> asList = Arrays.asList(rootFile.listFiles(new FileFilter() {
+	public List<String> getDirectory(String path, String filter) {
+		File file = getFile(path);
+		File[] listFiles = file.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
 				return pathname.isDirectory() || filter == null
 						|| pathname.getName().matches(filter);
 			}
-		}));
-		Collections.sort(asList, cmp);
+		});
 		ArrayList<String> result = new ArrayList<String>();
-		if (!asList.isEmpty()) {
-			addPath(result, new File(rootFile, "."));
-			addPath(result, new File(rootFile, ".."));
-		}
-		for (File f : asList) {
-			addPath(result, f);
+		if (listFiles != null) {
+			List<File> asList = Arrays.asList(listFiles);
+			Collections.sort(asList, DIRECTORY_COMPARATOR);
+			addPath(result, new File(file, ".."));
+			for (File f : asList) {
+				addPath(result, f);
+			}
 		}
 		return result;
 	}
@@ -72,6 +71,8 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 				String path = canonicalPath.substring(ROOT_DIR.length());
 				if (!path.isEmpty()) {
 					result.add(path);
+				} else {
+					result.add("/");
 				}
 			}
 		} catch (IOException e) {
@@ -87,10 +88,8 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	@Override
 	public void convert(Configuration config, String resource, OutputStream out)
 			throws InterruptedException, IOException, SidTuneError {
-		config.getAudio().setAudio(Audio.NONE);
 		Player player = new Player(config);
 		setSIDDatabase(player);
-
 		player.setDriverSettings(new DriverSettings(new MP3Stream(out), config
 				.getEmulation().getEmulation()));
 		player.play(SidTune.load(getFile(resource)));

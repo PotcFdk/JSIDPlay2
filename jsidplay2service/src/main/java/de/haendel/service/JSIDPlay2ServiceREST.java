@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -32,23 +33,29 @@ public class JSIDPlay2ServiceREST {
 
 	@GET
 	@Path("/directory")
-	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/directory?dir=/media
-	public List<String> getDir(@QueryParam("dir") String dir,
-			@QueryParam("filter") String filter) {
-		return jsidplay2Service.getDirectory(dir, filter);
+	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/directory
+	public List<String> getRootDir(@QueryParam("filter") String filter) {
+		return jsidplay2Service.getDirectory("/", filter);
 	}
 
 	@GET
-	@Path("/download")
-	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/download?file=/home/ken/Downloads/C64Music/DEMOS/0-9/1_45_Tune.sid
-	public Response getDownload(@QueryParam("file") String file) {
-		StreamingOutput stream = new StreamingOutput() {
+	@Path("/directory/{filePath : .*}")
+	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/directory/MUSICIANS
+	public List<String> getDir(@PathParam("filePath") String filePath,
+			@QueryParam("filter") String filter) {
+		return jsidplay2Service.getDirectory(filePath, filter);
+	}
 
+	@GET
+	@Path("/download/{filePath : .*}")
+	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/download/DEMOS/0-9/1_45_Tune.sid
+	public Response getDownload(@PathParam("filePath") String filePath) {
+		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
 				try {
 					output.write(Files.readAllBytes(Paths.get(jsidplay2Service
-							.getFile(file).getPath())));
+							.getFile(filePath).getPath())));
 				} catch (Exception e) {
 					throw new WebApplicationException(e);
 				}
@@ -57,19 +64,19 @@ public class JSIDPlay2ServiceREST {
 		return Response
 				.ok(stream, MediaType.APPLICATION_OCTET_STREAM)
 				.header("content-type",
-						file.endsWith(".mp3") ? "audio/mpeg" : file
+						filePath.endsWith(".mp3") ? "audio/mpeg" : filePath
 								.endsWith(".sid") ? "audio/prs.sid" : "bin")
-				.header("content-length", new File(file).length())
+				.header("content-length", new File(filePath).length())
 				.header("content-disposition",
-						"attachment; filename=\"" + new File(file).getName()
-								+ "\"").build();
+						"attachment; filename=\""
+								+ new File(filePath).getName() + "\"").build();
 	}
 
-	@GET
 	@Produces("audio/mpeg")
-	@Path("/convert")
-	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/convert?file=/home/ken/Downloads/C64Music/DEMOS/0-9/1_45_Tune.sid
-	public StreamingOutput getConvert(@QueryParam("file") String file) {
+	@GET
+	@Path("/convert/{filePath : .*}")
+	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/convert/DEMOS/0-9/1_45_Tune.sid
+	public StreamingOutput convert(@PathParam("filePath") String filePath) {
 		Configuration cfg = new Configuration();
 		cfg.getSidplay2().setDefaultPlayLength(0);
 		cfg.getEmulation().setEmulation(Emulation.RESIDFP);
@@ -77,7 +84,7 @@ public class JSIDPlay2ServiceREST {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
 				try {
-					jsidplay2Service.convert(cfg, file, output);
+					jsidplay2Service.convert(cfg, filePath, output);
 				} catch (Exception e) {
 					throw new WebApplicationException(e);
 				}

@@ -36,6 +36,8 @@ import android.widget.ListView;
 
 public class MainActivity extends Activity {
 
+	private static final String MUSIC_FILTER = ".*\\.(mp3|sid)$";
+
 	private static final int[] UI_ELEMS = new int[] { R.id.button2,
 			R.id.listView1 };
 
@@ -43,8 +45,6 @@ public class MainActivity extends Activity {
 	private static final String ROOT_PATH = "/JSIDPlay2REST";
 	private static final String ROOT_URL = CONTEXT_ROOT + ROOT_PATH;
 
-	private static final String DIR_PARAM = "dir=";
-	private static final String FILE_PARAM = "file=";
 	private static final String FILTER_PARAM = "filter=";
 
 	private static final String DOWNLOAD_URL = ROOT_URL + "/download";
@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
 	private static String filter;
 	static {
 		try {
-			filter = URLEncoder.encode(".*\\.(mp3|sid)$", "UTF-8");
+			filter = URLEncoder.encode(MUSIC_FILTER, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new ExceptionInInitializerError(e);
 		}
@@ -200,23 +200,21 @@ public class MainActivity extends Activity {
 								.getItemAtPosition(position);
 						File file = new File(item);
 						try {
-							String encode = URLEncoder.encode(
-									file.getCanonicalPath(), "UTF-8");
 							if (item.endsWith(".mp3")) {
-								new LongRunningRequest(DOWNLOAD_URL + "?"
-										+ FILE_PARAM + encode, file.getName())
-										.execute();
+								new LongRunningRequest(DOWNLOAD_URL
+										+ file.getCanonicalPath(), file
+										.getName()).execute();
 							} else if (item.endsWith(".sid")) {
 								Uri myUri = Uri.parse("http://" + hostname
-										+ ":" + port + CONVERT_URL + "?"
-										+ FILE_PARAM + encode);
+										+ ":" + port + CONVERT_URL
+										+ file.getCanonicalPath());
 								Intent intent = new Intent(
 										android.content.Intent.ACTION_VIEW);
-								intent.setDataAndType(myUri, "audio/*");
+								intent.setDataAndType(myUri, "audio/mpeg");
 								startActivity(intent);
 							} else {
-								new LongRunningRequest(DIRECTORY_URL + "?"
-										+ DIR_PARAM + encode + "&&"
+								new LongRunningRequest(DIRECTORY_URL
+										+ file.getCanonicalPath() + "?"
 										+ FILTER_PARAM + filter, file.getName())
 										.execute();
 							}
@@ -260,9 +258,8 @@ public class MainActivity extends Activity {
 
 	private void requestDirectory(File dir) {
 		try {
-			String encode = URLEncoder.encode(dir.getCanonicalPath(), "UTF-8");
-			new LongRunningRequest(DIRECTORY_URL + "?" + DIR_PARAM + encode
-					+ "&&" + FILTER_PARAM + filter, dir.getName()).execute();
+			new LongRunningRequest(DIRECTORY_URL + dir.getCanonicalPath() + "?"
+					+ FILTER_PARAM + filter, dir.getName()).execute();
 		} catch (UnsupportedEncodingException e) {
 			Log.e(getApplication().getString(R.string.app_name),
 					e.getMessage(), e);
