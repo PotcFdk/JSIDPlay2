@@ -9,23 +9,34 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.geometry.Insets?>
 <?scenebuilder-preview-i18n-resource Settings.properties?>
 <Scene xmlns:fx="http://javafx.com/fxml">
-	<VBox spacing="10">
-		<TitledPane text="%AUDIO_SETTINGS" collapsible="false">
-			<HBox spacing="10">
+	<VBox>
+		<padding>
+			<Insets top="10" right="10" left="10" bottom="0"/>                 
+        </padding>
+
+		<TitledPane text="%AUDIO_SETTINGS" collapsible="false" focusTraversable="false">
+			<padding>
+				<Insets top="0" right="0" left="0" bottom="10"/>                 
+            </padding>
+			<HBox spacing="10" alignment="CENTER_LEFT">
 				<Label text="%DEVICE" />
 				<ComboBox fx:id="audioDevice" onAction="#setAudioDevice" />
 			</HBox>
 		</TitledPane>
-		<TitledPane text="%EMULATION_SETTINGS" collapsible="false">
-			<HBox spacing="10">
+		
+		<TitledPane text="%EMULATION_SETTINGS" collapsible="false" focusTraversable="false">
+			<HBox spacing="10" alignment="CENTER_LEFT">
 				<Label text="%DIGI_BOOST" />
 				<CheckBox fx:id="digiBoost" onAction="#setDigiBoost" />
 			</HBox>
 		</TitledPane>
-		<HBox alignment="BASELINE_CENTER" spacing="10">
-			<Button text="%OK" onAction="#okPressed"></Button>
-		</HBox>
+		<VBox prefHeight="44" alignment="CENTER">
+			<HBox alignment="BASELINE_CENTER">
+				<Button text="%OK" onAction="#okPressed"></Button>
+			</HBox>
+		</VBox>
 	</VBox>
 </Scene>

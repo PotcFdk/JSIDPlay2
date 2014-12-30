@@ -15,4 +15,8 @@ public class About extends SIDDeviceStage {
 		((Stage) credits.getScene().getWindow()).close();
 	}
 	
+	@FXML
+	private void initialize() {
+		setWait(true);
+	}
 }

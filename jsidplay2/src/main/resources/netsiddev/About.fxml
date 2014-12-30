@@ -3,18 +3,22 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.BorderPane?>
 <?scenebuilder-preview-i18n-resource About.properties?>
-<Scene xmlns:fx="http://javafx.com/fxml" width="278" height="300">
+<Scene xmlns:fx="http://javafx.com/fxml" width="278" height="308">
 	<BorderPane>
 		<center>
 			<TextArea
-				editable="false" wrapText="false" text="%CREDITS" fx:id="credits"></TextArea>
+				editable="false" wrapText="false" text="%CREDITS" fx:id="credits" focusTraversable="false">
+			</TextArea>
 		</center>
 		<bottom>
-			<HBox alignment="BASELINE_CENTER">
-				<Button text="%OK" onAction="#okPressed"></Button>
-			</HBox>
+			<VBox prefHeight="44" alignment="CENTER">
+				<HBox alignment="BASELINE_CENTER">
+					<Button text="%OK" onAction="#okPressed"></Button>
+				</HBox>
+			</VBox>
 		</bottom>
 	</BorderPane>
 </Scene>

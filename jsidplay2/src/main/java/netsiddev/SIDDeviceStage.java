@@ -24,7 +24,7 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 	public void open(Stage stage) throws IOException {
 		Scene scene = (Scene) util.parse(this);
 		scene.setOnKeyPressed((ke) -> {
-			if (ke.getCode() == KeyCode.ESCAPE) {
+			if ((ke.getCode() == KeyCode.ESCAPE) || (ke.getCode() == KeyCode.ENTER)) {
 				stage.close();
 			}
 		});
