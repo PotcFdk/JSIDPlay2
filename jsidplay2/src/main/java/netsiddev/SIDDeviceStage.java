@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 
@@ -14,28 +15,34 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 
 	public SIDDeviceStage() {
 		util = new SIDDeviceUIUtil();
-	}
-
-	public void open() throws IOException {
-		open(this);
-		centerOnScreen();
-	}
-
-	public void open(Stage stage) throws IOException {
+		
 		Scene scene = (Scene) util.parse(this);
 		scene.setOnKeyPressed((ke) -> {
 			if ((ke.getCode() == KeyCode.ESCAPE) || (ke.getCode() == KeyCode.ENTER)) {
-				stage.close();
+				close();
 			}
 		});
-		stage.setScene(scene);
-		stage.getIcons().add(new Image(util.getBundle().getString("ICON")));
-		stage.setTitle(util.getBundle().getString("TITLE"));
+		
+		setScene(scene);
+		sizeToScene();
+
+		initStyle(StageStyle.UTILITY);
+		setAlwaysOnTop(true);
+		
+		getIcons().add(new Image(util.getBundle().getString("ICON")));
+		setTitle(util.getBundle().getString("TITLE"));
+
+		centerOnScreen();
+	}
+
+	public void open() throws IOException {
+		sizeToScene();
+		
 		if (wait) {
-			stage.showAndWait();
+			showAndWait();
 		} else {
-			stage.show();
-		}
+			show();
+		}		
 	}
 
 	public boolean isWait() {

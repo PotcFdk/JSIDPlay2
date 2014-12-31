@@ -269,6 +269,9 @@ public class NetworkSIDDevice extends Application {
 	private static final String MENU_EXIT = "Exit";
 
 	private static JSIDDeviceConfig config;
+	
+	private About aboutDialog = null;
+	private Settings settingsDialog = null;
 
 	/**
 	 * Gets the number of known configurations.
@@ -386,7 +389,13 @@ public class NetworkSIDDevice extends Application {
 		MenuItem aboutItem = new MenuItem(MENU_ABOUT);
 		aboutItem.addActionListener((e) -> Platform.runLater(() -> {
 			try {
-				new About().open();
+				if (aboutDialog == null) {
+					aboutDialog = new About();
+				}
+				aboutDialog.requestFocus();
+				if (!aboutDialog.isShowing()) {
+					aboutDialog.open();
+				}
 			} catch (IOException e1) {
 				printErrorAndExit(exceptionToString(e1));
 			}
@@ -396,7 +405,13 @@ public class NetworkSIDDevice extends Application {
 		MenuItem settingsItem = new MenuItem(MENU_SETTINGS);
 		settingsItem.addActionListener((e) -> Platform.runLater(() -> {
 			try {
-				new Settings().open();
+				if (settingsDialog == null) {
+					settingsDialog = new Settings();
+				}
+				settingsDialog.requestFocus();
+				if (!settingsDialog.isShowing()) {
+					settingsDialog.open();
+				}
 			} catch (IOException e1) {
 				printErrorAndExit(exceptionToString(e1));
 			}
