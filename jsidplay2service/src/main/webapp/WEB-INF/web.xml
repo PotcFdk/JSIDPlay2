@@ -1,35 +1,69 @@
-<!--
-    JBoss, Home of Professional Open Source
-    Copyright 2014, Red Hat, Inc. and/or its affiliates, and individual
-    contributors by the @authors tag. See the copyright.txt in the
-    distribution for a full listing of individual contributors.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
--->
+<!-- JBoss, Home of Professional Open Source Copyright 2014, Red Hat, Inc. 
+	and/or its affiliates, and individual contributors by the @authors tag. See 
+	the copyright.txt in the distribution for a full listing of individual contributors. 
+	Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+	use this file except in compliance with the License. You may obtain a copy 
+	of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <servlet>
-        <servlet-name>JSIDPlay2</servlet-name>
-        <servlet-class>de.haendel.service.JSIDPlay2ServiceWS</servlet-class>
-    </servlet>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	<!-- WSDL based WebService Servlet -->
+	<servlet>
+		<servlet-name>JSIDPlay2</servlet-name>
+		<servlet-class>de.haendel.service.JSIDPlay2ServiceWS</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>JSIDPlay2</servlet-name>
 		<url-pattern>/JSIDPlay2WS/*</url-pattern>
 	</servlet-mapping>
+	<!-- RESTful WebService -->
 	<servlet-mapping>
-        <servlet-name>javax.ws.rs.core.Application</servlet-name>
+		<servlet-name>javax.ws.rs.core.Application</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 	<session-config>
 		<session-timeout>2</session-timeout>
 	</session-config>
+
+	<!-- Configuration for servlet URL: -->
+	<!-- Authentification required by user assigned to role JSIDPlay2User (call 
+		bin/add-user.sh) -->
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>HtmlAuth</web-resource-name>
+			<description>application security constraints</description>
+			<url-pattern>/JSIDPlay2SRV/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>JSIDPlay2User</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>ApplicationRealm</realm-name>
+	</login-config>
+	<security-role>
+		<role-name>JSIDPlay2User</role-name>
+	</security-role>
+
+	<!-- Configuration for WebService URL: -->
+	<!-- Authentification required by user assigned to role JSIDPlay2User (call 
+		bin/add-user.sh) -->
+		<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>All resources</web-resource-name>
+			<description>application security constraints</description>
+			<url-pattern>/JSIDPlay2WS/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>JSIDPlay2User</role-name>
+		</auth-constraint>
+	</security-constraint>
 </web-app>
