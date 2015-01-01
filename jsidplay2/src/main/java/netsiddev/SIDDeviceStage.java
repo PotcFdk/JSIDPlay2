@@ -25,13 +25,12 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 		
 		setScene(scene);
 		sizeToScene();
+		resizableProperty().set(false);
 
 		initStyle(StageStyle.UTILITY);
 		setAlwaysOnTop(true);
 		
-		getIcons().add(new Image(util.getBundle().getString("ICON")));
 		setTitle(util.getBundle().getString("TITLE"));
-
 		centerOnScreen();
 	}
 
