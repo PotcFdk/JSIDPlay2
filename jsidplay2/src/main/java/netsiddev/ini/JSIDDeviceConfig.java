@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import sidplay.ini.IniAudioSection;
@@ -55,6 +56,20 @@ public class JSIDDeviceConfig {
 
 	private String[] filterList;
 	
+	public class compareFilterNames implements Comparator<String> {
+		private static final String JSIDDEVICE_NAME = "JSidDevice";
+
+		public int compare(String o1, String o2) {
+			// make sure that devices that starts with JSidDevice will be on top of the list
+			if (o1.startsWith(JSIDDEVICE_NAME) && !o2.startsWith(JSIDDEVICE_NAME)) {
+				return -1;
+			} else if (o2.startsWith(JSIDDEVICE_NAME) && !o1.startsWith(JSIDDEVICE_NAME)) {
+				return 1;
+			}
+			return o1.compareTo(o2);
+		}
+	}
+	
 	private void clear() {
 		jsiddeviceSection = new IniJSIDDeviceSection(iniReader);
 		audioSection = new IniAudioSection(iniReader);
@@ -66,7 +81,7 @@ public class JSIDDeviceConfig {
 			}
 			filters.add(heading.substring(6));
 		}
-		Collections.sort(filters);
+		Collections.sort(filters, new compareFilterNames());
 
 		filterList = filters.toArray(new String[] {});
 	}
