@@ -13,7 +13,8 @@ import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
@@ -81,10 +82,13 @@ public class MainActivity extends Activity {
 
 		@Override
 		protected Object doInBackground(Void... params) {
-			HttpClient httpClient = new DefaultHttpClient();
+			DefaultHttpClient httpClient = new DefaultHttpClient();
 			HttpContext localContext = new BasicHttpContext();
 			String theURL = "http://" + hostname + ":" + port + url;
 			HttpGet httpGet = new HttpGet(theURL);
+			httpClient.getCredentialsProvider().setCredentials(
+					new AuthScope(hostname, AuthScope.ANY_PORT),
+					new UsernamePasswordCredentials("jsidplay2", "jsidplay2!"));
 			try {
 				HttpResponse response = httpClient.execute(httpGet,
 						localContext);
@@ -205,7 +209,7 @@ public class MainActivity extends Activity {
 										+ file.getCanonicalPath(), file
 										.getName()).execute();
 							} else if (item.endsWith(".sid")) {
-								Uri myUri = Uri.parse("http://" + hostname
+								Uri myUri = Uri.parse("http://jsidplay2:jsidplay2!@" + hostname
 										+ ":" + port + CONVERT_URL
 										+ file.getCanonicalPath());
 								Intent intent = new Intent(

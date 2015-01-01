@@ -56,7 +56,7 @@
 	<!-- Configuration for WebService URL: -->
 	<!-- Authentification required by user assigned to role JSIDPlay2User (call 
 		bin/add-user.sh) -->
-		<security-constraint>
+	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>All resources</web-resource-name>
 			<description>application security constraints</description>
@@ -66,4 +66,19 @@
 			<role-name>JSIDPlay2User</role-name>
 		</auth-constraint>
 	</security-constraint>
+
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Resteasy</web-resource-name>
+			<url-pattern>/JSIDPlay2REST/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>JSIDPlay2User</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<context-param>
+		<param-name>resteasy.role.based.security</param-name>
+		<param-value>true</param-value>
+	</context-param>
 </web-app>
