@@ -35,7 +35,7 @@
 		</TitledPane>
 		<VBox prefHeight="44" alignment="CENTER">
 			<HBox alignment="BASELINE_CENTER">
-				<Button text="%OK" onAction="#okPressed"></Button>
+				<Button fx:id="okButton" text="%OK" onAction="#okPressed"></Button>
 			</HBox>
 		</VBox>
 	</VBox>

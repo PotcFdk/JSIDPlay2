@@ -1,5 +1,6 @@
 package netsiddev;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import javafx.collections.FXCollections;
@@ -7,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import javax.sound.sampled.AudioSystem;
@@ -21,6 +23,8 @@ public class Settings extends SIDDeviceStage {
 	private ComboBox<AudioDevice> audioDevice;
 	@FXML
 	private CheckBox digiBoost;
+	@FXML
+	private Button okButton;
 
 	private ObservableList<AudioDevice> audioDevices;
 
@@ -55,6 +59,11 @@ public class Settings extends SIDDeviceStage {
 		Collections.sort(audioDevices, cmp);
 		audioDevice.getSelectionModel().select(selectedAudioDeviceItem);
 		digiBoost.setSelected(settings.getDigiBoostEnabled());
+	}
+	
+	public void open() throws IOException {
+		okButton.requestFocus();
+		super.open();
 	}
 
 	@FXML
