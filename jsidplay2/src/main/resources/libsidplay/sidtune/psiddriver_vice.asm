@@ -133,16 +133,29 @@ idle:	jmp idle
 init:	jmp cmdLineVars.get("initAddr").asNumber()
 play:	jmp cmdLineVars.get("playAddr").asNumber()
 
+// alternative rule(s) according to wilfried bos
+// $34 for init/play in $d000 - $dfff
+// $35 for init/play in $e000 - $ffff
+// $36 for load end/play in $a000 - $ffff
+// $37 for the rest
 // Get required I/O map to reach address
-getmap:	cmp #$e0
+getmap:
+	cmp #$e0
 	bcc kern_on
 	lda #$35
 	rts
-kern_on:	cmp #$d0
+kern_on:
+	cmp #$d0
 	bcc io_on
 	lda #$34
 	rts
-io_on:	lda #$36
+io_on:
+	cpx #$a0
+	bcc bas_on
+	lda #$36
+	rts
+bas_on:
+	lda #$37
 	rts
 
 // IRQ handler
