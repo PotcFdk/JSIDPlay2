@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import sidplay.ini.IniAudioSection;
@@ -48,6 +47,9 @@ public class JSIDDeviceConfig {
 	/** INI configuration filename or null (use internal configuration) */
 	private final File iniPath;
 
+	/** Device name prefix of JSIDDEVICE 1.0 */
+	private static final String JSIDDEVICE1_NAME_PREFIX = "JSidDevice";
+	
 	private IniJSIDDeviceSection jsiddeviceSection;
 
 	private IAudioSection audioSection;
@@ -56,33 +58,40 @@ public class JSIDDeviceConfig {
 
 	private String[] filterList;
 	
-	public class compareFilterNames implements Comparator<String> {
-		private static final String JSIDDEVICE_NAME = "JSidDevice";
-
-		public int compare(String o1, String o2) {
-			// make sure that devices that starts with JSidDevice will be on top of the list
-			if (o1.startsWith(JSIDDEVICE_NAME) && !o2.startsWith(JSIDDEVICE_NAME)) {
-				return -1;
-			} else if (o2.startsWith(JSIDDEVICE_NAME) && !o1.startsWith(JSIDDEVICE_NAME)) {
-				return 1;
-			}
-			return o1.compareTo(o2);
-		}
-	}
-	
 	private void clear() {
 		jsiddeviceSection = new IniJSIDDeviceSection(iniReader);
 		audioSection = new IniAudioSection(iniReader);
 		
 		final List<String> filters = new ArrayList<String>();
+		final List<String> filtersResidfp = new ArrayList<String>();
+		final List<String> filtersResid = new ArrayList<String>();
+		
 		for (final String heading : iniReader.listSections()) {
 			if (!heading.matches("Filter.*")) {
 				continue;
 			}
-			filters.add(heading.substring(6));
+			
+			String filterName = heading.substring(6);
+			
+			if (filterName.startsWith(JSIDDEVICE1_NAME_PREFIX)) {
+				filters.add(filterName);
+			} else {
+				IFilterSection iniFilter =  getFilter(filterName);
+				if (iniFilter.isReSIDfpFilter6581() || iniFilter.isReSIDfpFilter8580()) {
+					filtersResidfp.add(filterName);
+				} else {
+					filtersResid.add(filterName);
+				}
+			}
 		}
-		Collections.sort(filters, new compareFilterNames());
 
+		Collections.sort(filters);
+		Collections.sort(filtersResidfp);
+		Collections.sort(filtersResid);
+
+		filters.addAll(filtersResid);
+		filters.addAll(filtersResidfp);
+		
 		filterList = filters.toArray(new String[] {});
 	}
 
