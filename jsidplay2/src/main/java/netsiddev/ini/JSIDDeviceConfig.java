@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import sidplay.ini.IniAudioSection;
@@ -58,6 +59,35 @@ public class JSIDDeviceConfig {
 
 	private String[] filterList;
 	
+	/** ReSid device names are sorted by filter strength and SID model */
+	public class compareReSidFilterNames implements Comparator<String> {
+		private static final String LIGHT8580 = "Light8580";
+		private static final String LIGHT = "Light";
+		private static final String DARK = "Dark";
+		
+		public int compare(String o1, String o2) {
+			if (o1.startsWith(LIGHT) && !o2.startsWith(LIGHT)) {
+				return -1;
+			} else if (o2.startsWith(LIGHT) && !o1.startsWith(LIGHT)) {
+				return 1;
+			} else if (o2.startsWith(LIGHT) && o1.startsWith(LIGHT)) {
+				if (o1.startsWith(LIGHT8580) && !o2.startsWith(LIGHT8580)) {
+					return 1;
+				} else if (o2.startsWith(LIGHT8580) && !o1.startsWith(LIGHT8580)) {
+					return -1;
+				}
+				return -o1.compareTo(o2);
+			}
+			
+			if (o1.startsWith(DARK) && !o2.startsWith(DARK)) {
+				return 1;
+			} else if (o2.startsWith(DARK) && !o1.startsWith(DARK)) {
+				return -1;
+			} 
+			return o1.compareTo(o2);
+		}
+	}
+	
 	private void clear() {
 		jsiddeviceSection = new IniJSIDDeviceSection(iniReader);
 		audioSection = new IniAudioSection(iniReader);
@@ -87,7 +117,7 @@ public class JSIDDeviceConfig {
 
 		Collections.sort(filters);
 		Collections.sort(filtersResidfp);
-		Collections.sort(filtersResid);
+		Collections.sort(filtersResid, new compareReSidFilterNames());
 
 		filters.addAll(filtersResid);
 		filters.addAll(filtersResidfp);
