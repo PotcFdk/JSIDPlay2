@@ -39,10 +39,16 @@ import resid_builder.resid.resample.ZeroOrderResampler;
  * @author Antti Lankila
  */
 public final class SID implements SIDChip {
+
 	/**
 	 * Bus value stays alive for some time after each operation.
 	 */
 	private static final int BUS_TTL = 0x9000;
+
+	/**
+	 * Output scaler.
+	 */
+	private static final int OUTPUT_LEVEL = 2;
 
 	/** SID voices */
 	public final Voice[] voice = new Voice[] { new Voice(), new Voice(), new Voice() };
@@ -448,7 +454,7 @@ public final class SID implements SIDChip {
 	 * @return the output sample
 	 */
 	private int output() {
-		return externalFilter.clock(filter.clock(voice[0].output(voice[2].wave), voice[1].output(voice[0].wave), voice[2].output(voice[1].wave)));
+		return externalFilter.clock(filter.clock(voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),voice[2].output(voice[1].wave))) * OUTPUT_LEVEL;
 	}
 
 	/**
