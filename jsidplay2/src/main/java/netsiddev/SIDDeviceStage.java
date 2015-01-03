@@ -23,7 +23,6 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 		});
 		
 		setScene(scene);
-		sizeToScene();
 		resizableProperty().set(false);
 
 		initStyle(StageStyle.UTILITY);
@@ -34,8 +33,6 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 	}
 
 	public void open() throws IOException {
-		sizeToScene();
-		
 		if (wait) {
 			showAndWait();
 		} else {
