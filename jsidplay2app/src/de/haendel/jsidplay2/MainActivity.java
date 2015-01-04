@@ -20,12 +20,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
-import android.app.Activity;
+import android.app.TabActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,13 +36,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
 
-public class MainActivity extends Activity {
+public class MainActivity extends TabActivity {
 
 	private static final String MUSIC_FILTER = ".*\\.(mp3|sid)$";
 
-	private static final int[] UI_ELEMS = new int[] { R.id.button2,
-			R.id.listView1 };
+	private static final int[] UI_ELEMS = new int[] { R.id.listView1 };
 
 	private static final String CONTEXT_ROOT = "/jsidplay2service";
 	private static final String ROOT_PATH = "/JSIDPlay2REST";
@@ -54,7 +57,9 @@ public class MainActivity extends Activity {
 
 	private static final String MP3SAVE_DIR = "Download";
 
-	private String hostname, port;
+	private String hostname, port, username, password;
+
+	private TabHost mTabHost;
 
 	private static String filter;
 	static {
@@ -88,7 +93,7 @@ public class MainActivity extends Activity {
 			HttpGet httpGet = new HttpGet(theURL);
 			httpClient.getCredentialsProvider().setCredentials(
 					new AuthScope(hostname, AuthScope.ANY_PORT),
-					new UsernamePasswordCredentials("jsidplay2", "jsidplay2!"));
+					new UsernamePasswordCredentials(username, password));
 			try {
 				HttpResponse response = httpClient.execute(httpGet,
 						localContext);
@@ -209,8 +214,9 @@ public class MainActivity extends Activity {
 										+ file.getCanonicalPath(), file
 										.getName()).execute();
 							} else if (item.endsWith(".sid")) {
-								Uri myUri = Uri.parse("http://jsidplay2:jsidplay2!@" + hostname
-										+ ":" + port + CONVERT_URL
+								Uri myUri = Uri.parse("http://" + username
+										+ ":" + password + "@" + hostname + ":"
+										+ port + CONVERT_URL
 										+ file.getCanonicalPath());
 								Intent intent = new Intent(
 										android.content.Intent.ACTION_VIEW);
@@ -236,9 +242,60 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
+
+		mTabHost.addTab(mTabHost.newTabSpec("tab_test1")
+				.setIndicator("General").setContent(R.id.connections));
+		mTabHost.addTab(mTabHost.newTabSpec("tab_test2").setIndicator("HVSC")
+				.setContent(R.id.hvsc));
+		mTabHost.addTab(mTabHost.newTabSpec("tab_test3").setIndicator("XXX")
+				.setContent(R.id.textview3));
+
+		mTabHost.setCurrentTab(0);
+
+		mTabHost.setOnTabChangedListener(new OnTabChangeListener() {
+
+			public void onTabChanged(String tabId) {
+				Log.d(getApplication().getString(R.string.app_name),
+						"onTabChanged: tab number=" + mTabHost.getCurrentTab());
+
+				switch (mTabHost.getCurrentTab()) {
+				case 0:
+					// do what you want when tab 0 is selected
+					break;
+				case 1:
+					// do what you want when tab 1 is selected
+					setHostnamePort();
+					if (!"".equals(hostname)) {
+						requestDirectory(new File("/"));
+					}
+					break;
+				case 2:
+					// do what you want when tab 2 is selected
+					break;
+
+				default:
+
+					break;
+				}
+			}
+		});
+
+		// For retrieving string value from sharedPreference
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		String hostname = preferences.getString("hostname", "haendel.ddns.net");
+		String port = preferences.getString("port", "8080");
+		String username = preferences.getString("username", "jsidplay2");
+		String password = preferences.getString("password", "jsidplay2!");
+		((EditText) findViewById(R.id.hostname)).setText(hostname);
+		((EditText) findViewById(R.id.port)).setText(port);
+		((EditText) findViewById(R.id.username)).setText(username);
+		((EditText) findViewById(R.id.password)).setText(password);
 	}
 
 	@Override
@@ -277,6 +334,19 @@ public class MainActivity extends Activity {
 		hostname = ((EditText) findViewById(R.id.hostname)).getText()
 				.toString();
 		port = ((EditText) findViewById(R.id.port)).getText().toString();
+		username = ((EditText) findViewById(R.id.username)).getText()
+				.toString();
+		password = ((EditText) findViewById(R.id.password)).getText()
+				.toString();
+		// For storing string value in sharedPreference
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putString("hostname", hostname);
+		editor.putString("port", port);
+		editor.putString("username", username);
+		editor.putString("password", password);
+		editor.commit();
 	}
 
 	private void enableDisableUI(boolean enable) {
@@ -294,11 +364,6 @@ public class MainActivity extends Activity {
 		} else {
 			return name;
 		}
-	}
-
-	public void c64music(View view) {
-		setHostnamePort();
-		requestDirectory(new File("/"));
 	}
 
 }

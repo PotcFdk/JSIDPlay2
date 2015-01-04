@@ -5,8 +5,11 @@
     <string name="title_activity_main">JSIDPlay2</string>
     <string name="hello_world">Directory:</string>
     <string name="action_settings">Settings</string>
-    <string name="button2">Home</string>
-    <string name="hostname">Hostname:</string>
-    <string name="port">Port:</string>
+    <string name="button2">Browse&#8230;</string>
+    <string name="hostname">Hostname</string>
+    <string name="port">Port</string>
+    <string name="username">username</string>
+    <string name="user_jsidplay2">jsidplay2</string>
+    <string name="password">password</string>
 
 </resources>
