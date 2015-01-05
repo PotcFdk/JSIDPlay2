@@ -41,9 +41,8 @@ import android.widget.TabHost.OnTabChangeListener;
 
 public class MainActivity extends TabActivity {
 
-	private static final String MUSIC_FILTER = ".*\\.(mp3|sid)$";
-
-	private static final int[] UI_ELEMS = new int[] { R.id.listView1 };
+	private static final String HVSC_FILTER = ".*\\.(sid)$";
+	private static final String CGSC_FILTER = ".*\\.(dat|mus|str)$";
 
 	private static final String CONTEXT_ROOT = "/jsidplay2service";
 	private static final String ROOT_PATH = "/JSIDPlay2REST";
@@ -61,10 +60,19 @@ public class MainActivity extends TabActivity {
 
 	private TabHost mTabHost;
 
-	private static String filter;
+	private static String hvscFilter;
 	static {
 		try {
-			filter = URLEncoder.encode(MUSIC_FILTER, "UTF-8");
+			hvscFilter = URLEncoder.encode(HVSC_FILTER, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
+
+	private static String cgscFilter;
+	static {
+		try {
+			cgscFilter = URLEncoder.encode(CGSC_FILTER, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new ExceptionInInitializerError(e);
 		}
@@ -78,11 +86,16 @@ public class MainActivity extends TabActivity {
 	private class LongRunningRequest extends AsyncTask<Void, Void, Object> {
 		private String url;
 		private String name;
+		private int listViewId;
+		private String filter;
 
-		public LongRunningRequest(String url, String name) {
-			this.url = url;
+		public LongRunningRequest(String url, String name, int listViewId,
+				String filter) {
+			this.url = url + "?" + FILTER_PARAM + filter;
 			this.name = name;
-			enableDisableUI(false);
+			this.listViewId = listViewId;
+			this.filter = filter;
+			enableDisableUI(false, listViewId);
 		}
 
 		@Override
@@ -195,9 +208,11 @@ public class MainActivity extends TabActivity {
 
 				ArrayList<String> list = new ArrayList<String>();
 				for (String child : childs) {
-					list.add(child.substring(1, child.length() - 1));
+					if (child.length() > 2) {
+						list.add(child.substring(1, child.length() - 1));
+					}
 				}
-				ListView listview = (ListView) findViewById(R.id.listView1);
+				ListView listview = (ListView) findViewById(listViewId);
 				listview.setAdapter(new ArrayAdapter<String>(MainActivity.this,
 						android.R.layout.simple_list_item_1, list));
 				listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -212,8 +227,9 @@ public class MainActivity extends TabActivity {
 							if (item.endsWith(".mp3")) {
 								new LongRunningRequest(DOWNLOAD_URL
 										+ file.getCanonicalPath(), file
-										.getName()).execute();
-							} else if (item.endsWith(".sid")) {
+										.getName(), listViewId, filter)
+										.execute();
+							} else if (item.indexOf(".") != -1) {
 								Uri myUri = Uri.parse("http://" + username
 										+ ":" + password + "@" + hostname + ":"
 										+ port + CONVERT_URL
@@ -224,8 +240,8 @@ public class MainActivity extends TabActivity {
 								startActivity(intent);
 							} else {
 								new LongRunningRequest(DIRECTORY_URL
-										+ file.getCanonicalPath() + "?"
-										+ FILTER_PARAM + filter, file.getName())
+										+ file.getCanonicalPath(), file
+										.getName(), listViewId, filter)
 										.execute();
 							}
 						} catch (IOException e) {
@@ -236,7 +252,7 @@ public class MainActivity extends TabActivity {
 
 				});
 			}
-			enableDisableUI(true);
+			enableDisableUI(true, listViewId);
 		}
 
 	}
@@ -252,14 +268,15 @@ public class MainActivity extends TabActivity {
 				.setIndicator("General").setContent(R.id.connections));
 		mTabHost.addTab(mTabHost.newTabSpec("tab_test2").setIndicator("HVSC")
 				.setContent(R.id.hvsc));
-		mTabHost.addTab(mTabHost.newTabSpec("tab_test3").setIndicator("XXX")
-				.setContent(R.id.textview3));
+		mTabHost.addTab(mTabHost.newTabSpec("tab_test3").setIndicator("CGSC")
+				.setContent(R.id.cgsc));
 
 		mTabHost.setCurrentTab(0);
 
 		mTabHost.setOnTabChangedListener(new OnTabChangeListener() {
 
 			public void onTabChanged(String tabId) {
+				ListView view;
 				Log.d(getApplication().getString(R.string.app_name),
 						"onTabChanged: tab number=" + mTabHost.getCurrentTab());
 
@@ -270,12 +287,20 @@ public class MainActivity extends TabActivity {
 				case 1:
 					// do what you want when tab 1 is selected
 					setHostnamePort();
-					if (!"".equals(hostname)) {
-						requestDirectory(new File("/"));
+					view = (ListView) findViewById(R.id.listView1);
+					if (!"".equals(hostname) && view.getCount() == 0) {
+						requestDirectory(new File("/C64Music"), view.getId(),
+								hvscFilter);
 					}
 					break;
 				case 2:
 					// do what you want when tab 2 is selected
+					setHostnamePort();
+					view = (ListView) findViewById(R.id.listView2);
+					if (!"".equals(hostname) && view.getCount() == 0) {
+						requestDirectory(new File("/CGSC"), view.getId(),
+								cgscFilter);
+					}
 					break;
 
 				default:
@@ -317,10 +342,10 @@ public class MainActivity extends TabActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void requestDirectory(File dir) {
+	private void requestDirectory(File dir, int listViewId, String filter) {
 		try {
-			new LongRunningRequest(DIRECTORY_URL + dir.getCanonicalPath() + "?"
-					+ FILTER_PARAM + filter, dir.getName()).execute();
+			new LongRunningRequest(DIRECTORY_URL + dir.getCanonicalPath(),
+					dir.getName(), listViewId, filter).execute();
 		} catch (UnsupportedEncodingException e) {
 			Log.e(getApplication().getString(R.string.app_name),
 					e.getMessage(), e);
@@ -349,12 +374,10 @@ public class MainActivity extends TabActivity {
 		editor.commit();
 	}
 
-	private void enableDisableUI(boolean enable) {
-		for (int i = 0; i < UI_ELEMS.length; i++) {
-			View view = (View) findViewById(UI_ELEMS[i]);
-			view.setClickable(enable);
-			view.setEnabled(enable);
-		}
+	private void enableDisableUI(boolean enable, int listViewId) {
+		View view = (View) findViewById(listViewId);
+		view.setClickable(enable);
+		view.setEnabled(enable);
 	}
 
 	private static final String getBaseNameNoExt(final String name) {

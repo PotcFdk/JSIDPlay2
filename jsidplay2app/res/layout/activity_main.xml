@@ -82,7 +82,6 @@
                 android:id="@+id/hvsc"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:onClick="hvsc"
                 android:orientation="vertical" >
 
                 <ListView
@@ -94,11 +93,21 @@
                 </ListView>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textview3"
+            <LinearLayout
+                android:id="@+id/cgsc"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="this is a third tab" />
+                android:orientation="vertical" >
+
+                <ListView
+                    android:id="@+id/listView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/linearLayout1"
+                    android:layout_below="@+id/linearLayout1" >
+                </ListView>
+            </LinearLayout>
+
         </FrameLayout>
     </LinearLayout>
 
