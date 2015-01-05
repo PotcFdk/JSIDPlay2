@@ -133,7 +133,6 @@ idle:	jmp idle
 init:	jmp cmdLineVars.get("initAddr").asNumber()
 play:	jmp cmdLineVars.get("playAddr").asNumber()
 
-// alternative rule(s) according to wilfried bos
 // $34 for init/play in $d000 - $dfff
 // $35 for init/play in $e000 - $ffff
 // $36 for load end/play in $a000 - $ffff
