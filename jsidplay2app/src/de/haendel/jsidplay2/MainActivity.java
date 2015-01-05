@@ -8,7 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.URLEncoder;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
@@ -17,6 +18,8 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -48,8 +51,6 @@ public class MainActivity extends TabActivity {
 	private static final String ROOT_PATH = "/JSIDPlay2REST";
 	private static final String ROOT_URL = CONTEXT_ROOT + ROOT_PATH;
 
-	private static final String FILTER_PARAM = "filter=";
-
 	private static final String DOWNLOAD_URL = ROOT_URL + "/download";
 	private static final String CONVERT_URL = ROOT_URL + "/convert";
 	private static final String DIRECTORY_URL = ROOT_URL + "/directory";
@@ -59,24 +60,6 @@ public class MainActivity extends TabActivity {
 	private String hostname, port, username, password;
 
 	private TabHost mTabHost;
-
-	private static String hvscFilter;
-	static {
-		try {
-			hvscFilter = URLEncoder.encode(HVSC_FILTER, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
-
-	private static String cgscFilter;
-	static {
-		try {
-			cgscFilter = URLEncoder.encode(CGSC_FILTER, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
 
 	private class DataAndType {
 		private Uri uri;
@@ -91,7 +74,7 @@ public class MainActivity extends TabActivity {
 
 		public LongRunningRequest(String url, String name, int listViewId,
 				String filter) {
-			this.url = url + "?" + FILTER_PARAM + filter;
+			this.url = url;
 			this.name = name;
 			this.listViewId = listViewId;
 			this.filter = filter;
@@ -100,14 +83,22 @@ public class MainActivity extends TabActivity {
 
 		@Override
 		protected Object doInBackground(Void... params) {
-			DefaultHttpClient httpClient = new DefaultHttpClient();
-			HttpContext localContext = new BasicHttpContext();
-			String theURL = "http://" + hostname + ":" + port + url;
-			HttpGet httpGet = new HttpGet(theURL);
-			httpClient.getCredentialsProvider().setCredentials(
-					new AuthScope(hostname, AuthScope.ANY_PORT),
-					new UsernamePasswordCredentials(username, password));
 			try {
+				DefaultHttpClient httpClient = new DefaultHttpClient();
+
+				HttpParams httpParams = httpClient.getParams();
+				HttpConnectionParams.setConnectionTimeout(httpParams, 2000);
+				HttpConnectionParams.setSoTimeout(httpParams, 2000);
+
+				httpClient.getCredentialsProvider().setCredentials(
+						new AuthScope(hostname, AuthScope.ANY_PORT),
+						new UsernamePasswordCredentials(username, password));
+
+				URI myUri = new URI("http", "", hostname,
+						Integer.valueOf(port), url, "filter=" + filter, null);
+
+				HttpGet httpGet = new HttpGet(myUri);
+				HttpContext localContext = new BasicHttpContext();
 				HttpResponse response = httpClient.execute(httpGet,
 						localContext);
 				int statusCode = response.getStatusLine().getStatusCode();
@@ -120,11 +111,15 @@ public class MainActivity extends TabActivity {
 					}
 				} else {
 					Log.e(getApplication().getString(R.string.app_name), String
-							.format("URL: '%s', HTTP status: '%d':", theURL,
-									statusCode));
+							.format("URL: '%s', HTTP status: '%d':",
+									myUri.toString(), statusCode));
 					return null;
 				}
 			} catch (IOException e) {
+				Log.e(getApplication().getString(R.string.app_name),
+						e.getMessage(), e);
+				return null;
+			} catch (URISyntaxException e) {
 				Log.e(getApplication().getString(R.string.app_name),
 						e.getMessage(), e);
 				return null;
@@ -230,14 +225,24 @@ public class MainActivity extends TabActivity {
 										.getName(), listViewId, filter)
 										.execute();
 							} else if (item.indexOf(".") != -1) {
-								Uri myUri = Uri.parse("http://" + username
-										+ ":" + password + "@" + hostname + ":"
-										+ port + CONVERT_URL
-										+ file.getCanonicalPath());
-								Intent intent = new Intent(
-										android.content.Intent.ACTION_VIEW);
-								intent.setDataAndType(myUri, "audio/mpeg");
-								startActivity(intent);
+								try {
+									URI uri = new URI("http", username + ":"
+											+ password, hostname, Integer
+											.valueOf(port), CONVERT_URL
+											+ file.getCanonicalPath(), "", null);
+									Uri myUri = Uri.parse(uri.toString());
+
+									Intent intent = new Intent(
+											android.content.Intent.ACTION_VIEW);
+									intent.setDataAndType(myUri, "audio/mpeg");
+									startActivity(intent);
+								} catch (NumberFormatException e) {
+									Log.e(getApplication().getString(R.string.app_name),
+											e.getMessage(), e);
+								} catch (URISyntaxException e) {
+									Log.e(getApplication().getString(R.string.app_name),
+											e.getMessage(), e);
+								}
 							} else {
 								new LongRunningRequest(DIRECTORY_URL
 										+ file.getCanonicalPath(), file
@@ -290,7 +295,7 @@ public class MainActivity extends TabActivity {
 					view = (ListView) findViewById(R.id.listView1);
 					if (!"".equals(hostname) && view.getCount() == 0) {
 						requestDirectory(new File("/C64Music"), view.getId(),
-								hvscFilter);
+								HVSC_FILTER);
 					}
 					break;
 				case 2:
@@ -299,7 +304,7 @@ public class MainActivity extends TabActivity {
 					view = (ListView) findViewById(R.id.listView2);
 					if (!"".equals(hostname) && view.getCount() == 0) {
 						requestDirectory(new File("/CGSC"), view.getId(),
-								cgscFilter);
+								CGSC_FILTER);
 					}
 					break;
 
