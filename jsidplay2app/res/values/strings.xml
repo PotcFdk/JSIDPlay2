@@ -11,5 +11,8 @@
     <string name="username">username</string>
     <string name="user_jsidplay2">jsidplay2</string>
     <string name="password">password</string>
+    <string name="btn_download">Download</string>
+    <string name="btn_mp3">as MP3</string>
+    <string name="tune_hint">SID Tune</string>
 
 </resources>

@@ -45,6 +45,11 @@
 			<version>3.4</version>
 		</dependency>
 		<dependency>
+			<groupId>jsidplay2</groupId>
+			<artifactId>photos</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-file</artifactId>
 			<version>7.7.6</version>

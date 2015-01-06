@@ -29,7 +29,7 @@ public class JSIDPlay2ServiceServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -2861221133139848654L;
 
-	private static final String MUSIC_FILTER = ".*\\.(mp3|sid)$";
+	private static final String MUSIC_FILTER = ".*\\.(mp3|sid|dat|mus|str)$";
 
 	@Inject
 	private IJSIDPlay2 jsidplay2Service;

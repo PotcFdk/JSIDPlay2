@@ -1,15 +1,20 @@
 package de.haendel.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import libsidplay.Player;
 import libsidplay.player.DriverSettings;
@@ -21,6 +26,18 @@ import ui.entities.config.Configuration;
 
 public class JSIDPlay2Impl implements IJSIDPlay2 {
 
+	/**
+	 * Contains a mapping: Author to picture resource path.
+	 */
+	private static final Properties SID_AUTHORS = new Properties();
+	static {
+		try (InputStream is = SidTune.class
+				.getResourceAsStream("pictures.properties")) {
+			SID_AUTHORS.load(is);
+		} catch (IOException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 	private static final String ROOT_DIR = "/home/ken/Downloads/C64Music";
 
 	private static class FileTypeComparator implements Comparator<File> {
@@ -104,5 +121,34 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 				player.setSidDatabase(new SidDatabase(input));
 			}
 		}
+	}
+
+	@Override
+	public byte[] loadPhoto(String resource) throws IOException, SidTuneError {
+		SidTune tune = SidTune.load(getFile(resource));
+		if (tune != null) {
+			Collection<String> photos = tune.getInfo().getInfoString();
+			if (photos.size() > 1) {
+				Iterator<String> iterator = photos.iterator();
+				iterator.next();
+				String author = iterator.next();
+				String photo = SID_AUTHORS.getProperty(author);
+				if (photo != null) {
+					photo = "Photos/" + photo;
+					ByteArrayOutputStream s = new ByteArrayOutputStream();
+					try (InputStream is = SidTune.class.getResourceAsStream(photo)) {
+						int n = 1;
+						while (n > 0) {
+							byte[] b = new byte[4096];
+							n = is.read(b);
+							if (n > 0)
+								s.write(b, 0, n);
+						}
+					}
+					return s.toByteArray();
+				}
+			}
+		}
+		return new byte[0];
 	}
 }

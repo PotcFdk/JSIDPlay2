@@ -16,4 +16,6 @@ public interface IJSIDPlay2 {
 
 	void convert(Configuration config, String resource, OutputStream out)
 			throws InterruptedException, IOException, SidTuneError;
+
+	byte[] loadPhoto(String resource) throws IOException, SidTuneError;
 }

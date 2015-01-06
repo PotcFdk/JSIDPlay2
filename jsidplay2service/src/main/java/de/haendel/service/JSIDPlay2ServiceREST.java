@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import libsidplay.common.Emulation;
+import libsidplay.sidtune.SidTuneError;
 import ui.entities.config.Configuration;
 import de.haendel.impl.IJSIDPlay2;
 
@@ -50,12 +51,12 @@ public class JSIDPlay2ServiceREST {
 	@Path("/download/{filePath : .*}")
 	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/download/DEMOS/0-9/1_45_Tune.sid
 	public Response getDownload(@PathParam("filePath") String filePath) {
+		File file = jsidplay2Service.getFile(filePath);
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
 				try {
-					output.write(Files.readAllBytes(Paths.get(jsidplay2Service
-							.getFile(filePath).getPath())));
+					output.write(Files.readAllBytes(Paths.get(file.getPath())));
 				} catch (Exception e) {
 					throw new WebApplicationException(e);
 				}
@@ -66,10 +67,10 @@ public class JSIDPlay2ServiceREST {
 				.header("content-type",
 						filePath.endsWith(".mp3") ? "audio/mpeg" : filePath
 								.endsWith(".sid") ? "audio/prs.sid" : "bin")
-				.header("content-length", new File(filePath).length())
+				.header("content-length", file.length())
 				.header("content-disposition",
-						"attachment; filename=\""
-								+ new File(filePath).getName() + "\"").build();
+						"attachment; filename=\"" + file.getName() + "\"")
+				.build();
 	}
 
 	@Produces("audio/mpeg")
@@ -91,6 +92,19 @@ public class JSIDPlay2ServiceREST {
 			}
 		};
 		return stream;
+	}
+
+	@GET
+	@Path("/photo/{filePath : .*}")
+	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/photo/DEMOS/0-9/1_45_Tune.sid
+	public byte[] photo(@PathParam("filePath") String filePath) {
+		try {
+			return jsidplay2Service.loadPhoto(filePath);
+		} catch (IOException e) {
+			throw new WebApplicationException(e);
+		} catch (SidTuneError e) {
+			throw new WebApplicationException(e);
+		}
 	}
 
 }

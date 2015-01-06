@@ -1,6 +1,7 @@
 package de.haendel.jsidplay2;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,6 +27,8 @@ import org.apache.http.protocol.HttpContext;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,9 +41,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TabHost.TabSpec;
+import android.widget.TextView;
 
 public class MainActivity extends TabActivity {
 
@@ -54,8 +60,9 @@ public class MainActivity extends TabActivity {
 	private static final String DOWNLOAD_URL = ROOT_URL + "/download";
 	private static final String CONVERT_URL = ROOT_URL + "/convert";
 	private static final String DIRECTORY_URL = ROOT_URL + "/directory";
+	private static final String LOAD_PHOTO_URL = ROOT_URL + "/photo";
 
-	private static final String MP3SAVE_DIR = "Download";
+	private static final String DOWNLOAD_DIR = "Download";
 
 	private String hostname, port, username, password;
 
@@ -68,14 +75,11 @@ public class MainActivity extends TabActivity {
 
 	private class LongRunningRequest extends AsyncTask<Void, Void, Object> {
 		private String url;
-		private String name;
 		private int listViewId;
 		private String filter;
 
-		public LongRunningRequest(String url, String name, int listViewId,
-				String filter) {
+		public LongRunningRequest(String url, int listViewId, String filter) {
 			this.url = url;
-			this.name = name;
 			this.listViewId = listViewId;
 			this.filter = filter;
 			enableDisableUI(false, listViewId);
@@ -87,15 +91,19 @@ public class MainActivity extends TabActivity {
 				DefaultHttpClient httpClient = new DefaultHttpClient();
 
 				HttpParams httpParams = httpClient.getParams();
-				HttpConnectionParams.setConnectionTimeout(httpParams, 2000);
-				HttpConnectionParams.setSoTimeout(httpParams, 2000);
+				HttpConnectionParams.setConnectionTimeout(httpParams, 4000);
+				HttpConnectionParams.setSoTimeout(httpParams, 4000);
 
 				httpClient.getCredentialsProvider().setCredentials(
 						new AuthScope(hostname, AuthScope.ANY_PORT),
 						new UsernamePasswordCredentials(username, password));
 
-				URI myUri = new URI("http", "", hostname,
-						Integer.valueOf(port), url, "filter=" + filter, null);
+				URI myUri = new URI("http", null, hostname,
+						Integer.valueOf(port), url, filter != null ? "filter="
+								+ filter : null, null);
+
+				Log.d(getApplication().getString(R.string.app_name),
+						"HTTP-GET: " + myUri);
 
 				HttpGet httpGet = new HttpGet(myUri);
 				HttpContext localContext = new BasicHttpContext();
@@ -106,6 +114,8 @@ public class MainActivity extends TabActivity {
 					HttpEntity entity = response.getEntity();
 					if (url.startsWith(DIRECTORY_URL)) {
 						return getDirectoryFromEntity(entity);
+					} else if (url.startsWith(LOAD_PHOTO_URL)) {
+						return getPhotoFromEntity(entity);
 					} else {
 						return getDownloadFromEntity(entity);
 					}
@@ -124,6 +134,20 @@ public class MainActivity extends TabActivity {
 						e.getMessage(), e);
 				return null;
 			}
+		}
+
+		protected byte[] getPhotoFromEntity(HttpEntity entity)
+				throws IllegalStateException, IOException {
+			InputStream in = entity.getContent();
+			ByteArrayOutputStream s = new ByteArrayOutputStream();
+			int n = 1;
+			while (n > 0) {
+				byte[] b = new byte[4096];
+				n = in.read(b);
+				if (n > 0)
+					s.write(b, 0, n);
+			}
+			return s.toByteArray();
 		}
 
 		protected String[] getDirectoryFromEntity(HttpEntity entity)
@@ -166,8 +190,8 @@ public class MainActivity extends TabActivity {
 			long length = entity.getContentLength();
 
 			File sdRootDir = Environment.getExternalStorageDirectory();
-			File music = new File(new File(sdRootDir, MP3SAVE_DIR),
-					getBaseNameNoExt(name) + ".mp3");
+			File music = new File(new File(sdRootDir, DOWNLOAD_DIR), new File(
+					url).getName());
 
 			OutputStream out;
 			byte[] b = new byte[4096];
@@ -189,7 +213,13 @@ public class MainActivity extends TabActivity {
 		}
 
 		protected void onPostExecute(Object result) {
-			if (result instanceof DataAndType) {
+			if (result instanceof byte[]) {
+				byte[] photo = (byte[]) result;
+				ImageView image = (ImageView) findViewById(R.id.imageView1);
+				Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0,
+						photo.length);
+				image.setImageBitmap(bitmap);
+			} else if (result instanceof DataAndType) {
 				// Open Download
 				DataAndType music = (DataAndType) result;
 
@@ -221,33 +251,23 @@ public class MainActivity extends TabActivity {
 						try {
 							if (item.endsWith(".mp3")) {
 								new LongRunningRequest(DOWNLOAD_URL
-										+ file.getCanonicalPath(), file
-										.getName(), listViewId, filter)
-										.execute();
+										+ file.getCanonicalPath(), listViewId,
+										filter).execute();
 							} else if (item.indexOf(".") != -1) {
-								try {
-									URI uri = new URI("http", username + ":"
-											+ password, hostname, Integer
-											.valueOf(port), CONVERT_URL
-											+ file.getCanonicalPath(), "", null);
-									Uri myUri = Uri.parse(uri.toString());
 
-									Intent intent = new Intent(
-											android.content.Intent.ACTION_VIEW);
-									intent.setDataAndType(myUri, "audio/mpeg");
-									startActivity(intent);
-								} catch (NumberFormatException e) {
-									Log.e(getApplication().getString(R.string.app_name),
-											e.getMessage(), e);
-								} catch (URISyntaxException e) {
-									Log.e(getApplication().getString(R.string.app_name),
-											e.getMessage(), e);
-								}
+								TextView resource = (TextView) findViewById(R.id.resource);
+								resource.setText(file.getCanonicalPath());
+								mTabHost.getTabWidget().getChildTabViewAt(3)
+										.setEnabled(true);
+
+								mTabHost.setCurrentTab(3);
+								new LongRunningRequest(LOAD_PHOTO_URL
+										+ file.getCanonicalPath(), listViewId,
+										null).execute();
 							} else {
 								new LongRunningRequest(DIRECTORY_URL
-										+ file.getCanonicalPath(), file
-										.getName(), listViewId, filter)
-										.execute();
+										+ file.getCanonicalPath(), listViewId,
+										filter).execute();
 							}
 						} catch (IOException e) {
 							Log.e(getApplication().getString(R.string.app_name),
@@ -269,15 +289,18 @@ public class MainActivity extends TabActivity {
 
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 
-		mTabHost.addTab(mTabHost.newTabSpec("tab_test1")
-				.setIndicator("General").setContent(R.id.connections));
+		mTabHost.addTab(mTabHost.newTabSpec("tab_test1").setIndicator("Conn")
+				.setContent(R.id.general));
 		mTabHost.addTab(mTabHost.newTabSpec("tab_test2").setIndicator("HVSC")
 				.setContent(R.id.hvsc));
 		mTabHost.addTab(mTabHost.newTabSpec("tab_test3").setIndicator("CGSC")
 				.setContent(R.id.cgsc));
+		TabSpec setContent = mTabHost.newTabSpec("tab_test4")
+				.setIndicator("Tune").setContent(R.id.tune);
+		mTabHost.addTab(setContent);
 
 		mTabHost.setCurrentTab(0);
-
+		mTabHost.getTabWidget().getChildTabViewAt(3).setEnabled(false);
 		mTabHost.setOnTabChangedListener(new OnTabChangeListener() {
 
 			public void onTabChanged(String tabId) {
@@ -350,7 +373,7 @@ public class MainActivity extends TabActivity {
 	private void requestDirectory(File dir, int listViewId, String filter) {
 		try {
 			new LongRunningRequest(DIRECTORY_URL + dir.getCanonicalPath(),
-					dir.getName(), listViewId, filter).execute();
+					listViewId, filter).execute();
 		} catch (UnsupportedEncodingException e) {
 			Log.e(getApplication().getString(R.string.app_name),
 					e.getMessage(), e);
@@ -380,18 +403,36 @@ public class MainActivity extends TabActivity {
 	}
 
 	private void enableDisableUI(boolean enable, int listViewId) {
-		View view = (View) findViewById(listViewId);
-		view.setClickable(enable);
-		view.setEnabled(enable);
-	}
-
-	private static final String getBaseNameNoExt(final String name) {
-		int lastIndexOf = name.lastIndexOf('.');
-		if (lastIndexOf != -1) {
-			return name.substring(0, lastIndexOf);
-		} else {
-			return name;
+		if (listViewId != -1) {
+			View view = (View) findViewById(listViewId);
+			view.setClickable(enable);
+			view.setEnabled(enable);
 		}
 	}
 
+	public void download(View view) {
+		TextView resource = (TextView) findViewById(R.id.resource);
+		String tune = String.valueOf(resource.getText());
+		new LongRunningRequest(DOWNLOAD_URL + tune, -1, null).execute();
+	}
+
+	public void mp3(View view) {
+		TextView resource = (TextView) findViewById(R.id.resource);
+		CharSequence tune = resource.getText();
+		try {
+			URI uri = new URI("http", username + ":" + password, hostname,
+					Integer.valueOf(port), CONVERT_URL + tune, "", null);
+			Uri myUri = Uri.parse(uri.toString());
+
+			Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
+			intent.setDataAndType(myUri, "audio/mpeg");
+			startActivity(intent);
+		} catch (NumberFormatException e) {
+			Log.e(getApplication().getString(R.string.app_name),
+					e.getMessage(), e);
+		} catch (URISyntaxException e) {
+			Log.e(getApplication().getString(R.string.app_name),
+					e.getMessage(), e);
+		}
+	}
 }

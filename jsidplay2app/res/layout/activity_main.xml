@@ -20,7 +20,7 @@
             android:layout_height="fill_parent" >
 
             <LinearLayout
-                android:id="@+id/connections"
+                android:id="@+id/general"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:orientation="vertical" >
@@ -74,7 +74,6 @@
                         android:ems="10"
                         android:hint="@string/password"
                         android:inputType="textPassword" />
-                    
                 </LinearLayout>
             </LinearLayout>
 
@@ -107,7 +106,53 @@
                     android:layout_below="@+id/linearLayout1" >
                 </ListView>
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/tune"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
 
+                <TextView
+                    android:id="@+id/resource"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/tune_hint" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <ImageView
+                        android:id="@+id/imageView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxHeight="5dp"
+                        android:maxWidth="5dp"
+                        android:minHeight="5dp"
+                        android:minWidth="5dp"
+                        android:src="@drawable/ic_launcher" />
+
+                    <Button
+                        android:id="@+id/button1"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="download"
+                        android:text="@string/btn_download" />
+
+                    <Button
+                        android:id="@+id/button2"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="mp3"
+                        android:text="@string/btn_mp3" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            
         </FrameLayout>
     </LinearLayout>
 
