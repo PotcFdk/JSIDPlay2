@@ -194,7 +194,7 @@ public final class EnvelopeGenerator {
 	 */
 	protected void setChipModel(final ChipModel chipModel) {
 		final double dacBits[] = new double[8];
-		SID.kinkedDac(dacBits, (chipModel == ChipModel.MOS6581) ? 2.30 : 2.00, chipModel == ChipModel.MOS8580);
+		SID.kinkedDac(dacBits, (chipModel == ChipModel.MOS6581) ? 2.20 : 2.00, chipModel == ChipModel.MOS8580);
 		for (int i = 0; i < 256; i++) {
 			double dacValue = 0;
 			for (int j = 0; j < 8; j ++) {
