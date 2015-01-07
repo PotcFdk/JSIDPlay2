@@ -110,7 +110,7 @@ public class JSIDPlay2ServiceREST {
 
 	@GET
 	@Path("/info/{filePath : .*}")
-	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/photo/DEMOS/0-9/1_45_Tune.sid
+	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/info/DEMOS/0-9/1_45_Tune.sid
 	public Map<String,String> info(@PathParam("filePath") String filePath) {
 		try {
 			return jsidplay2Service.getTuneInfos(filePath);

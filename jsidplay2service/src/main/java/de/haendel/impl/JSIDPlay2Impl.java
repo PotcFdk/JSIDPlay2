@@ -37,7 +37,6 @@ import sidplay.audio.MP3Stream;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry;
-import ui.entities.collection.StilEntry_;
 import ui.entities.config.Configuration;
 
 public class JSIDPlay2Impl implements IJSIDPlay2 {
@@ -145,17 +144,16 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	public byte[] loadPhoto(String resource) throws IOException, SidTuneError {
 		SidTune tune = SidTune.load(getFile(resource));
 		if (tune != null) {
-			Collection<String> photos = tune.getInfo().getInfoString();
-			if (photos.size() > 1) {
-				Iterator<String> iterator = photos.iterator();
-				iterator.next();
+			Collection<String> infos = tune.getInfo().getInfoString();
+			if (infos.size() > 1) {
+				Iterator<String> iterator = infos.iterator();
+				/* title = */iterator.next();
 				String author = iterator.next();
 				String photo = SID_AUTHORS.getProperty(author);
 				if (photo != null) {
-					photo = "Photos/" + photo;
 					ByteArrayOutputStream s = new ByteArrayOutputStream();
 					try (InputStream is = SidTune.class
-							.getResourceAsStream(photo)) {
+							.getResourceAsStream("Photos/" + photo)) {
 						int n = 1;
 						while (n > 0) {
 							byte[] b = new byte[4096];
@@ -191,14 +189,10 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			STILEntry stilEntry = db.getPath(tune) != null ? stil
 					.getSTILEntry(db.getPath(tune)) : null;
 			if (stilEntry != null) {
-				// get STIL Global Comment
 				hvscEntry.setStilGlbComment(stilEntry.globalComment);
-				// add tune infos
-				addSTILInfo(stilEntry.infos, tuneInfos);
-				// go through subsongs & add them as well
-				for (final TuneEntry entry : stilEntry.subtunes) {
-					addSTILInfo(entry.infos, tuneInfos);
-				}
+				StringBuffer stilText = formatStilText(stilEntry);
+				tuneInfos.put(StilEntry.class.getSimpleName() + ".text",
+						stilText.toString());
 			}
 			for (Field field : HVSCEntry_.class.getDeclaredFields()) {
 				if (field.getName().equals(HVSCEntry_.id.getName())) {
@@ -229,37 +223,71 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 				STIL.STIL_FILE))) {
 			return new STIL(input);
 		} catch (Exception e) {
-			e.printStackTrace();
+			// ignore
 		}
 		return null;
 	}
 
-	private void addSTILInfo(ArrayList<Info> infos,
-			Map<String, String> tuneInfos) {
-		for (Info info : infos) {
-			ui.entities.collection.StilEntry stil = new ui.entities.collection.StilEntry();
-			stil.setStilName(info.name);
-			stil.setStilAuthor(info.author);
-			stil.setStilTitle(info.title);
-			stil.setStilArtist(info.artist);
-			stil.setStilComment(info.comment);
-			String value;
-			value = info.name;
-			String prefix = StilEntry.class.getSimpleName() + ".";
-			tuneInfos.put(prefix+StilEntry_.stilName.getName(),
-					String.valueOf(value != null ? value : ""));
-			value = info.author;
-			tuneInfos.put(prefix+StilEntry_.stilAuthor.getName(),
-					String.valueOf(value != null ? value : ""));
-			value = info.title;
-			tuneInfos.put(prefix+StilEntry_.stilTitle.getName(),
-					String.valueOf(value != null ? value : ""));
-			value = info.artist;
-			tuneInfos.put(prefix+StilEntry_.stilArtist.getName(),
-					String.valueOf(value != null ? value : ""));
-			value = info.comment;
-			tuneInfos.put(prefix+StilEntry_.stilComment.getName(),
-					String.valueOf(value != null ? value : ""));
+	private StringBuffer formatStilText(STILEntry stilEntry) {
+		StringBuffer result = new StringBuffer();
+		if (stilEntry != null) {
+			// append STIL infos,replace multiple whitespaces
+			String writeSTILEntry = writeSTILEntry(stilEntry);
+			String replaceAll = writeSTILEntry.replaceAll("([ \t\r])+", " ");
+			result.append(replaceAll);
+		}
+		return result;
+	}
+
+	private String writeSTILEntry(STILEntry stilEntry) {
+		StringBuffer result = new StringBuffer();
+		if (stilEntry.filename != null) {
+			result.append("Filename: ");
+			result.append(stilEntry.filename);
+			result.append(" - ");
+		}
+		if (stilEntry.globalComment != null) {
+			result.append("\n"+stilEntry.globalComment);
+		}
+		for (Info info : stilEntry.infos) {
+			writeSTILEntry(result, info);
+		}
+		int subTuneNo = 1;
+		for (TuneEntry entry : stilEntry.subtunes) {
+			if (entry.globalComment != null) {
+				result.append("\n"+entry.globalComment);
+			}
+			for (Info info : entry.infos) {
+				result.append("\nSubTune #" + subTuneNo + ": ");
+				writeSTILEntry(result, info);
+			}
+			subTuneNo++;
+		}
+		return result.append("                                        ")
+				.toString();
+	}
+
+	private void writeSTILEntry(StringBuffer buffer, Info info) {
+		if (info.name != null) {
+			buffer.append("\nName: ");
+			buffer.append(info.name);
+		}
+		if (info.author != null) {
+			buffer.append("\nAuthor: ");
+			buffer.append(info.author);
+		}
+		if (info.title != null) {
+			buffer.append("\nTitle: ");
+			buffer.append(info.title);
+		}
+		if (info.artist != null) {
+			buffer.append("\nArtist: ");
+			buffer.append(info.artist);
+		}
+		if (info.comment != null) {
+			buffer.append("\nComment: ");
+			buffer.append(info.comment.replaceAll("\"", "'"));
 		}
 	}
+
 }

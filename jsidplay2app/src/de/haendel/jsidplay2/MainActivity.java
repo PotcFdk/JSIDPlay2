@@ -278,7 +278,7 @@ public class MainActivity extends TabActivity {
 									name = getString(key);
 									key = name;
 								} else {
-									value = key;
+									value = key.replaceAll("\\\\n", "\n");
 								}
 								System.out.println(s2);
 							}
@@ -316,6 +316,7 @@ public class MainActivity extends TabActivity {
 							/* Create a Button to be the row-content. */
 							b = new TextView(MainActivity.this);
 							b.setText(r.second);
+							b.setSingleLine(false);
 							b.setLayoutParams(new TableRow.LayoutParams(
 									TableRow.LayoutParams.MATCH_PARENT,
 									TableRow.LayoutParams.WRAP_CONTENT));

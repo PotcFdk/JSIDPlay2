@@ -43,9 +43,5 @@
     <string name="HVSCEntry.relocStartPage">Reloc. start page</string>
     <string name="HVSCEntry.relocNoPages">Reloc. no. pages</string>
     <string name="HVSCEntry.stilGlbComment">STIL glb. Comment</string>
-    <string name="StilEntry.stilName">STIL Name</string>
-    <string name="StilEntry.stilAuthor">STIL Author</string>
-    <string name="StilEntry.stilTitle">STIL Title</string>
-    <string name="StilEntry.stilArtist">STIL Artist</string>
-    <string name="StilEntry.stilComment">STIL Comment</string>
+    <string name="StilEntry.text">STIL</string>
 </resources>
