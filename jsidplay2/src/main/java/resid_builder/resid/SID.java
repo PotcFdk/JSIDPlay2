@@ -48,7 +48,7 @@ public final class SID implements SIDChip {
 	/**
 	 * Output scaler.
 	 */
-	private static final int OUTPUT_LEVEL = 2;
+	private static final int OUTPUT_LEVEL = 359;
 
 	/** SID voices */
 	public final Voice[] voice = new Voice[] { new Voice(), new Voice(), new Voice() };
@@ -454,7 +454,7 @@ public final class SID implements SIDChip {
 	 * @return the output sample
 	 */
 	private int output() {
-		return externalFilter.clock(filter.clock(voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),voice[2].output(voice[1].wave))) * OUTPUT_LEVEL;
+		return externalFilter.clock(filter.clock(voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),voice[2].output(voice[1].wave))) * OUTPUT_LEVEL >> 8;
 	}
 
 	/**
