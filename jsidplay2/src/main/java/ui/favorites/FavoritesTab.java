@@ -542,8 +542,10 @@ public class FavoritesTab extends Tab implements UIPart {
 					.getPlayer().getConfig().getSidplay2();
 			String collectionName = PathUtils.getCollectionName(
 					sidPlay2Section.getHvscFile(), file.getPath());
-			HVSCEntry entry = new HVSCEntry(util.getPlayer(), collectionName,
-					file, sidTune);
+			HVSCEntry entry = new HVSCEntry(tn -> util.getPlayer()
+					.getSidDatabase() != null ? util.getPlayer()
+					.getSidDatabase().getFullSongLength(tn) : 0,
+					collectionName, file, sidTune);
 			favoritesSection.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
 			e.printStackTrace();

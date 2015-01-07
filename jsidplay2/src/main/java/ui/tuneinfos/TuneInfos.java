@@ -38,7 +38,10 @@ public class TuneInfos extends C64Window {
 
 	public void showTuneInfos(File tuneFile, SidTune sidTune) {
 		tuneInfos.clear();
-		HVSCEntry entry = new HVSCEntry(util.getPlayer(), "", tuneFile, sidTune);
+		HVSCEntry entry = new HVSCEntry(
+				tn -> util.getPlayer().getSidDatabase() != null ? util
+						.getPlayer().getSidDatabase().getFullSongLength(tn) : 0,
+				"", tuneFile, sidTune);
 
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
 			if (field.getName().equals(HVSCEntry_.id.getName())) {

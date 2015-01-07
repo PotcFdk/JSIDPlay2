@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -100,6 +101,19 @@ public class JSIDPlay2ServiceREST {
 	public byte[] photo(@PathParam("filePath") String filePath) {
 		try {
 			return jsidplay2Service.loadPhoto(filePath);
+		} catch (IOException e) {
+			throw new WebApplicationException(e);
+		} catch (SidTuneError e) {
+			throw new WebApplicationException(e);
+		}
+	}
+
+	@GET
+	@Path("/info/{filePath : .*}")
+	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/photo/DEMOS/0-9/1_45_Tune.sid
+	public Map<String,String> info(@PathParam("filePath") String filePath) {
+		try {
+			return jsidplay2Service.getTuneInfos(filePath);
 		} catch (IOException e) {
 			throw new WebApplicationException(e);
 		} catch (SidTuneError e) {

@@ -8,10 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -35,6 +39,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +51,8 @@ import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 public class MainActivity extends TabActivity {
@@ -61,6 +68,7 @@ public class MainActivity extends TabActivity {
 	private static final String CONVERT_URL = ROOT_URL + "/convert";
 	private static final String DIRECTORY_URL = ROOT_URL + "/directory";
 	private static final String LOAD_PHOTO_URL = ROOT_URL + "/photo";
+	private static final String GET_TUNE_INFOS = ROOT_URL + "/info";
 
 	private static final String DOWNLOAD_DIR = "Download";
 
@@ -91,8 +99,8 @@ public class MainActivity extends TabActivity {
 				DefaultHttpClient httpClient = new DefaultHttpClient();
 
 				HttpParams httpParams = httpClient.getParams();
-				HttpConnectionParams.setConnectionTimeout(httpParams, 4000);
-				HttpConnectionParams.setSoTimeout(httpParams, 4000);
+				HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
+				HttpConnectionParams.setSoTimeout(httpParams, 5000);
 
 				httpClient.getCredentialsProvider().setCredentials(
 						new AuthScope(hostname, AuthScope.ANY_PORT),
@@ -116,6 +124,8 @@ public class MainActivity extends TabActivity {
 						return getDirectoryFromEntity(entity);
 					} else if (url.startsWith(LOAD_PHOTO_URL)) {
 						return getPhotoFromEntity(entity);
+					} else if (url.startsWith(GET_TUNE_INFOS)) {
+						return getTuneInfos(entity);
 					} else {
 						return getDownloadFromEntity(entity);
 					}
@@ -134,6 +144,36 @@ public class MainActivity extends TabActivity {
 						e.getMessage(), e);
 				return null;
 			}
+		}
+
+		private Object getTuneInfos(HttpEntity entity) throws IOException {
+			InputStream in = entity.getContent();
+			final StringBuffer out = new StringBuffer();
+			int n = 1;
+			while (n > 0) {
+				byte[] b = new byte[4096];
+				n = in.read(b);
+				if (n > 0)
+					out.append(new String(b, 0, n));
+			}
+			System.out.println(out);
+			return out;
+		}
+
+		private String getString(String s2) {
+			s2 = s2.replaceAll("[.]", "_");
+			for (Field field : R.string.class.getDeclaredFields()) {
+				if (field.getName().equals(s2)) {
+					try {
+						return MainActivity.this.getString(field.getInt(null));
+					} catch (IllegalArgumentException e) {
+						return "???";
+					} catch (IllegalAccessException e) {
+						return "???";
+					}
+				}
+			}
+			return "???";
 		}
 
 		protected byte[] getPhotoFromEntity(HttpEntity entity)
@@ -162,11 +202,16 @@ public class MainActivity extends TabActivity {
 					out.append(new String(b, 0, n));
 			}
 			String line = out.substring(1, out.length() - 1);
+			String[] split = splitJSONToken(line, ",");
+			return split;
+		}
+
+		private String[] splitJSONToken(String line, String sep) {
 			String otherThanQuote = " [^\"] ";
 			String quotedString = String.format(" \" %s* \" ", otherThanQuote);
 			String regex = String.format("(?x) " + // enable comments,
 													// ignore white spaces
-					",                         " + // match a comma
+					sep + "                         " + // match a comma
 					"(?=                       " + // start positive look
 													// ahead
 					"  (                       " + // start group 1
@@ -181,7 +226,8 @@ public class MainActivity extends TabActivity {
 					")                         ", // stop positive look
 													// ahead
 					otherThanQuote, quotedString, otherThanQuote);
-			return line.split(regex, -1);
+			String[] split = line.split(regex, -1);
+			return split;
 		}
 
 		protected DataAndType getDownloadFromEntity(HttpEntity entity)
@@ -213,7 +259,77 @@ public class MainActivity extends TabActivity {
 		}
 
 		protected void onPostExecute(Object result) {
-			if (result instanceof byte[]) {
+			if (result instanceof StringBuffer) {
+				final StringBuffer out = (StringBuffer) result;
+				runOnUiThread(new Runnable() {
+					public void run() {
+						List<Pair<String, String>> rows = new ArrayList<Pair<String, String>>();
+
+						String line = out.substring(1, out.length() - 1);
+						String[] split = splitJSONToken(line, ",");
+						for (String s : split) {
+							System.out.println(s);
+							String[] split2 = splitJSONToken(s, ":");
+							String name = null;
+							String value = "";
+							for (String s2 : split2) {
+								String key = s2.substring(1, s2.length() - 1);
+								if (name == null) {
+									name = getString(key);
+									key = name;
+								} else {
+									value = key;
+								}
+								System.out.println(s2);
+							}
+							if (!value.equals("")) {
+								Pair<String, String> p = new Pair<String, String>(
+										name, value);
+								rows.add(p);
+							}
+						}
+						Comparator<? super Pair<String, String>> rowC = new Comparator<Pair<String, String>>() {
+							@Override
+							public int compare(Pair<String, String> lhs,
+									Pair<String, String> rhs) {
+								return lhs.first.compareTo(rhs.first);
+							}
+						};
+						Collections.sort(rows, rowC);
+						TableLayout table = (TableLayout) findViewById(R.id.table);
+						table.removeAllViews();
+						for (Pair<String, String> r : rows) {
+							TableRow tr = new TableRow(MainActivity.this);
+							tr.setLayoutParams(new TableRow.LayoutParams(
+									TableRow.LayoutParams.MATCH_PARENT,
+									TableRow.LayoutParams.MATCH_PARENT));
+
+							/* Create a Button to be the row-content. */
+							TextView b = new TextView(MainActivity.this);
+							b.setText(r.first);
+							b.setLayoutParams(new TableRow.LayoutParams(
+									TableRow.LayoutParams.MATCH_PARENT,
+									TableRow.LayoutParams.WRAP_CONTENT));
+							/* Add Button to row. */
+							tr.addView(b);
+
+							/* Create a Button to be the row-content. */
+							b = new TextView(MainActivity.this);
+							b.setText(r.second);
+							b.setLayoutParams(new TableRow.LayoutParams(
+									TableRow.LayoutParams.MATCH_PARENT,
+									TableRow.LayoutParams.WRAP_CONTENT));
+							/* Add Button to row. */
+							tr.addView(b);
+							/* Add row to TableLayout. */
+							// tr.setBackgroundResource(R.drawable.sf_gradient_03);
+							table.addView(tr, new TableLayout.LayoutParams(
+									TableLayout.LayoutParams.MATCH_PARENT,
+									TableLayout.LayoutParams.WRAP_CONTENT));
+						}
+					}
+				});
+			} else if (result instanceof byte[]) {
 				byte[] photo = (byte[]) result;
 				ImageView image = (ImageView) findViewById(R.id.imageView1);
 				Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0,
@@ -259,11 +375,13 @@ public class MainActivity extends TabActivity {
 								resource.setText(file.getCanonicalPath());
 								mTabHost.getTabWidget().getChildTabViewAt(3)
 										.setEnabled(true);
-
-								mTabHost.setCurrentTab(3);
 								new LongRunningRequest(LOAD_PHOTO_URL
 										+ file.getCanonicalPath(), listViewId,
 										null).execute();
+								new LongRunningRequest(GET_TUNE_INFOS
+										+ file.getCanonicalPath(), listViewId,
+										null).execute();
+								mTabHost.setCurrentTab(3);
 							} else {
 								new LongRunningRequest(DIRECTORY_URL
 										+ file.getCanonicalPath(), listViewId,

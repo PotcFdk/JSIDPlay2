@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.ToIntFunction;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -19,7 +20,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlTransient;
 
-import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
@@ -33,8 +33,8 @@ public class HVSCEntry {
 	public HVSCEntry() {
 	}
 
-	public HVSCEntry(final Player player, final String path,
-			final File tuneFile, SidTune tune) {
+	public HVSCEntry(final ToIntFunction<SidTune> lengthFnct,
+			final String path, final File tuneFile, SidTune tune) {
 		this.name = tuneFile.getName();
 		this.path = path.length() > 0 ? path : tuneFile.getPath();
 		if (tune != null) {
@@ -62,8 +62,8 @@ public class HVSCEntry {
 			this.sidModel1 = info.getSid1Model();
 			this.sidModel2 = info.getSid2Model();
 			this.compatibility = info.getCompatibility();
-			this.tuneLength = Long.valueOf(player.getSidDatabaseInfo(db -> db
-					.getFullSongLength(tune)));
+			this.tuneLength = Long.valueOf(lengthFnct != null ? lengthFnct
+					.applyAsInt(tune) : 0);
 			this.audio = info.getSidChipBase2() != 0 ? "Stereo" : "Mono";
 			this.sidChipBase1 = info.getSidChipBase1();
 			this.sidChipBase2 = info.getSidChipBase2();

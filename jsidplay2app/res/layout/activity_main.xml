@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TabHost xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/tabhost"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -18,6 +18,82 @@
             android:id="@android:id/tabcontent"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" >
+
+            <LinearLayout
+                android:id="@+id/tune"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/resource"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/tune_hint" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <ImageView
+                        android:id="@+id/imageView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxHeight="5dp"
+                        android:maxWidth="5dp"
+                        android:minHeight="5dp"
+                        android:minWidth="5dp"
+                        android:src="@drawable/ic_launcher" />
+
+                    <Button
+                        android:id="@+id/button1"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="download"
+                        android:text="@string/btn_download" />
+
+                    <Button
+                        android:id="@+id/button2"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="mp3"
+                        android:text="@string/btn_mp3" />
+                </LinearLayout>
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:fadeScrollbars="false"
+                    android:fillViewport="true"
+                    android:scrollbarAlwaysDrawHorizontalTrack="true"
+                    android:scrollbarAlwaysDrawVerticalTrack="true"
+                    android:scrollbarFadeDuration="0"
+                    android:scrollbarStyle="outsideInset"
+                    android:scrollbars="horizontal|vertical" >
+
+                    <HorizontalScrollView
+                        android:id="@+id/horizontalView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="horizontal|vertical" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="vertical" >
+
+                            <TableLayout
+                                android:id="@+id/table"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" >
+                            </TableLayout>
+                        </LinearLayout>
+                    </HorizontalScrollView>
+                </ScrollView>
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/general"
@@ -106,53 +182,6 @@
                     android:layout_below="@+id/linearLayout1" >
                 </ListView>
             </LinearLayout>
-            <LinearLayout
-                android:id="@+id/tune"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical" >
-
-                <TextView
-                    android:id="@+id/resource"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/tune_hint" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:maxHeight="5dp"
-                        android:maxWidth="5dp"
-                        android:minHeight="5dp"
-                        android:minWidth="5dp"
-                        android:src="@drawable/ic_launcher" />
-
-                    <Button
-                        android:id="@+id/button1"
-                        style="?android:attr/buttonStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:onClick="download"
-                        android:text="@string/btn_download" />
-
-                    <Button
-                        android:id="@+id/button2"
-                        style="?android:attr/buttonStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:onClick="mp3"
-                        android:text="@string/btn_mp3" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            
         </FrameLayout>
     </LinearLayout>
 

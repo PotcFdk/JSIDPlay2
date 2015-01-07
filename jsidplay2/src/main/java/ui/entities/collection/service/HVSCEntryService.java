@@ -21,6 +21,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.STIL;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry;
@@ -70,9 +71,12 @@ public class HVSCEntryService {
 	public HVSCEntry add(Player player, final String path, final File tuneFile)
 			throws IOException, SidTuneError {
 		final SidTune tune = tuneFile.isFile() ? SidTune.load(tuneFile) : null;
-		HVSCEntry hvscEntry = new HVSCEntry(player, path, tuneFile, tune);
-
-		stilService.add(player, hvscEntry);
+		HVSCEntry hvscEntry = new HVSCEntry(
+				tn -> player.getSidDatabase() != null ? player.getSidDatabase()
+						.getFullSongLength(tn) : 0, path, tuneFile, tune);
+		STIL stil = player.getStil();
+		stilService.add(p -> stil != null && p != null ? stil.getSTILEntry(p)
+				: null, hvscEntry);
 
 		try {
 			em.persist(hvscEntry);

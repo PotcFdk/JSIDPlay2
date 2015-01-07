@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import libsidplay.sidtune.SidTuneError;
 import ui.entities.config.Configuration;
@@ -18,4 +19,7 @@ public interface IJSIDPlay2 {
 			throws InterruptedException, IOException, SidTuneError;
 
 	byte[] loadPhoto(String resource) throws IOException, SidTuneError;
+
+	Map<String, String> getTuneInfos(String resource) throws IOException,
+			SidTuneError;
 }

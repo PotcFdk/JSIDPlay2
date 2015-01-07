@@ -1,10 +1,10 @@
 package ui.entities.collection.service;
 
 import java.util.ArrayList;
+import java.util.function.Function;
 
 import javax.persistence.EntityManager;
 
-import libsidplay.Player;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
@@ -18,8 +18,8 @@ public class STILService {
 		this.em = em;
 	};
 
-	public void add(Player player, final HVSCEntry hvscEntry) {
-		STILEntry stilEntry = player.getStilEntry(hvscEntry.getPath());
+	public void add(Function<String, STILEntry> stilFnct, final HVSCEntry hvscEntry) {
+		STILEntry stilEntry = stilFnct.apply(hvscEntry.getPath());
 		if (stilEntry != null) {
 			// get STIL Global Comment
 			hvscEntry.setStilGlbComment(stilEntry.globalComment);
