@@ -1,6 +1,5 @@
 package de.haendel.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -11,15 +10,71 @@ import ui.entities.config.Configuration;
 
 public interface IJSIDPlay2 {
 
+	/**
+	 * Get directory contents
+	 * 
+	 * @param dir
+	 *            directory relative to ROOT directory
+	 * @param filter
+	 *            regexp filter for relevant directory entries
+	 * @return directory list (directories ends with a slash)
+	 */
 	List<String> getDirectory(String dir, String filter);
 
-	File getFile(String path);
+	/**
+	 * get file contents
+	 * 
+	 * @param path
+	 *            path relative to ROOT directory
+	 * @return file contents
+	 * @throws IOException
+	 *             file read error
+	 */
+	byte[] getFile(String path) throws IOException;
 
+	/**
+	 * Convert SID to MP3
+	 * 
+	 * @param config
+	 *            configuration with quality settings
+	 * @param resource
+	 *            SID resource relative to ROOT_DIR
+	 * @param out
+	 *            output stream to stream the resulton-the-fly
+	 * @throws InterruptedException
+	 *             player aborted
+	 * @throws IOException
+	 *             file read error
+	 * @throws SidTuneError
+	 *             invalid tune
+	 */
 	void convert(Configuration config, String resource, OutputStream out)
 			throws InterruptedException, IOException, SidTuneError;
 
-	byte[] loadPhoto(String resource) throws IOException, SidTuneError;
+	/**
+	 * Get composer photo
+	 * 
+	 * @param resource
+	 *            SID resource relative to ROOT_DIR
+	 * @return composer photo contents
+	 * @throws IOException
+	 *             file read error
+	 * @throws SidTuneError
+	 *             invalid tune
+	 */
+	byte[] getPhoto(String resource) throws IOException, SidTuneError;
 
+	/**
+	 * Get SID tune infos
+	 * 
+	 * @param resource
+	 *            SID resource relative to ROOT_DIR
+	 * @return map containing various SID tune infos
+	 * @throws IOException
+	 *             file read error
+	 * @throws SidTuneError
+	 *             invalid tune
+	 */
 	Map<String, String> getTuneInfos(String resource) throws IOException,
 			SidTuneError;
 }

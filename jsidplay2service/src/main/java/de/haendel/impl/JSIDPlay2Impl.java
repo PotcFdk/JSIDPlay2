@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +43,8 @@ import ui.entities.config.Configuration;
 
 public class JSIDPlay2Impl implements IJSIDPlay2 {
 
+	private static final String ROOT_DIR = "/home/ken/Downloads/C64Music";
+	private static final String HVSC_ROOT = ROOT_DIR + "/C64Music";
 	/**
 	 * Contains a mapping: Author to picture resource path.
 	 */
@@ -53,8 +57,6 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
-	private static final String ROOT_DIR = "/home/ken/Downloads/C64Music";
-	private static final String HVSC_ROOT = ROOT_DIR + "/C64Music";
 
 	private static class FileTypeComparator implements Comparator<File> {
 
@@ -77,7 +79,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 
 	@Override
 	public List<String> getDirectory(String path, String filter) {
-		File file = getFile(path);
+		File file = getAbsoluteFile(path);
 		File[] listFiles = file.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
@@ -89,7 +91,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 		if (listFiles != null) {
 			List<File> asList = Arrays.asList(listFiles);
 			Collections.sort(asList, DIRECTORY_COMPARATOR);
-			addPath(result, new File(file, ".."));
+			addPath(result, new File(file, "../"));
 			for (File f : asList) {
 				addPath(result, f);
 			}
@@ -103,7 +105,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			if (canonicalPath.startsWith(ROOT_DIR)) {
 				String path = canonicalPath.substring(ROOT_DIR.length());
 				if (!path.isEmpty()) {
-					result.add(path);
+					result.add(path + (f.isDirectory() ? "/" : ""));
 				} else {
 					result.add("/");
 				}
@@ -113,9 +115,13 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 		}
 	}
 
-	@Override
-	public File getFile(String path) {
+	private File getAbsoluteFile(String path) {
 		return new File(ROOT_DIR, path);
+	}
+
+	@Override
+	public byte[] getFile(String path) throws IOException {
+		return Files.readAllBytes(Paths.get(getAbsoluteFile(path).getPath()));
 	}
 
 	@Override
@@ -126,7 +132,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 				.getHvsc()));
 		player.setDriverSettings(new DriverSettings(new MP3Stream(out), config
 				.getEmulation().getEmulation()));
-		player.play(SidTune.load(getFile(resource)));
+		player.play(SidTune.load(getAbsoluteFile(resource)));
 		player.waitForC64();
 	}
 
@@ -141,8 +147,8 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	}
 
 	@Override
-	public byte[] loadPhoto(String resource) throws IOException, SidTuneError {
-		SidTune tune = SidTune.load(getFile(resource));
+	public byte[] getPhoto(String resource) throws IOException, SidTuneError {
+		SidTune tune = SidTune.load(getAbsoluteFile(resource));
 		if (tune != null) {
 			Collection<String> infos = tune.getInfo().getInfoString();
 			if (infos.size() > 1) {
@@ -173,7 +179,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	public Map<String, String> getTuneInfos(String resource)
 			throws IOException, SidTuneError {
 		Map<String, String> tuneInfos = new HashMap<String, String>();
-		File tuneFile = getFile(resource);
+		File tuneFile = getAbsoluteFile(resource);
 		SidTune tune = SidTune.load(tuneFile);
 		SidDatabase db = getSidDatabase(HVSC_ROOT);
 		STIL stil = getSTIL(HVSC_ROOT);
@@ -247,7 +253,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			result.append(" - ");
 		}
 		if (stilEntry.globalComment != null) {
-			result.append("\n"+stilEntry.globalComment);
+			result.append("\n" + stilEntry.globalComment);
 		}
 		for (Info info : stilEntry.infos) {
 			writeSTILEntry(result, info);
@@ -255,7 +261,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 		int subTuneNo = 1;
 		for (TuneEntry entry : stilEntry.subtunes) {
 			if (entry.globalComment != null) {
-				result.append("\n"+entry.globalComment);
+				result.append("\n" + entry.globalComment);
 			}
 			for (Info info : entry.infos) {
 				result.append("\nSubTune #" + subTuneNo + ": ");
