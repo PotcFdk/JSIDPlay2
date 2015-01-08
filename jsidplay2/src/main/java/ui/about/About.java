@@ -28,6 +28,7 @@ public class About extends C64Window {
 
 	public About(Player player) {
 		super(player);
+		getStage().resizableProperty().set(false);
 	}
 
 	@FXML

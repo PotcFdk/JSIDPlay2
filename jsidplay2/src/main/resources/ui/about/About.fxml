@@ -21,7 +21,7 @@
 			<content> 
 				<HBox styleClass="creditsBox">
 					<padding>
-						<Insets top="5" right="15" left="5" bottom="5"/>                 
+						<Insets top="5" right="5" left="5" bottom="5"/>                 
 			        </padding>
 					<TextFlow>
 						<Text fx:id="credits" />
