@@ -6,7 +6,7 @@ import java.util.Properties;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
+import javafx.scene.text.Text;
 import libsidplay.Player;
 import ui.JSIDPlay2Main;
 import ui.common.C64Window;
@@ -24,7 +24,7 @@ public class About extends C64Window {
 	}
 
 	@FXML
-	private TextArea credits;
+	private Text credits;
 
 	public About(Player player) {
 		super(player);
