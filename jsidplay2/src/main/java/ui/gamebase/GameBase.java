@@ -305,7 +305,9 @@ public class GameBase extends Tab implements UIPart {
 	}
 
 	protected void selectTab(GameBasePage page) {
-		page.setGames(gamesService.select(page.getText().charAt(0)));
+		if (gamesService != null) {
+			page.setGames(gamesService.select(page.getText().charAt(0)));
+		}
 		filterField.setText("");
 	}
 
