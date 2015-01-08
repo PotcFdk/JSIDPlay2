@@ -70,7 +70,7 @@ public class STIL {
 
 		try (@SuppressWarnings("resource")
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(
-				input))) {
+				input, "ISO-8859-1"))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				if (line.startsWith("#")) {
