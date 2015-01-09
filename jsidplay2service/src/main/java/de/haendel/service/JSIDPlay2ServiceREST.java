@@ -75,14 +75,18 @@ public class JSIDPlay2ServiceREST {
 	@GET
 	@Path("/convert/{filePath : .*}")
 	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/convert/C64Music/DEMOS/0-9/1_45_Tune.sid
-	public Response convert(@PathParam("filePath") String filePath) {
+	public Response convert(@PathParam("filePath") String filePath,
+			@QueryParam("defaultPlayLength") int defaultPlayLength,
+			@QueryParam("enableDatabase") boolean enableDatabase,
+			@QueryParam("emulation") Emulation emulation) {
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
 				try {
 					Configuration cfg = new Configuration();
-					cfg.getSidplay2().setDefaultPlayLength(0);
-					cfg.getEmulation().setEmulation(Emulation.RESIDFP);
+					cfg.getSidplay2().setDefaultPlayLength(defaultPlayLength);
+					cfg.getSidplay2().setEnableDatabase(enableDatabase);
+					cfg.getEmulation().setEmulation(emulation);
 					jsidplay2Service.convert(cfg, filePath, output);
 				} catch (InterruptedException e) {
 					throw new WebApplicationException(e);
@@ -112,7 +116,8 @@ public class JSIDPlay2ServiceREST {
 	@Path("/info/{filePath : .*}")
 	@Produces({ "application/json" })
 	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/info/C64Music/DEMOS/0-9/1_45_Tune.sid
-	public Map<String, String> getTuneInfos(@PathParam("filePath") String filePath) {
+	public Map<String, String> getTuneInfos(
+			@PathParam("filePath") String filePath) {
 		try {
 			return jsidplay2Service.getTuneInfos(filePath);
 		} catch (IOException e) {

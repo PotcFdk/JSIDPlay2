@@ -46,6 +46,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 
 	private static final String ROOT_DIR = "/home/ken/Downloads/C64Music";
 	private static final String HVSC_ROOT = ROOT_DIR + "/C64Music";
+
 	/**
 	 * Contains a mapping: Author to picture resource path.
 	 */
@@ -129,8 +130,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	public void convert(Configuration config, String resource, OutputStream out)
 			throws InterruptedException, IOException, SidTuneError {
 		Player player = new Player(config);
-		player.setSidDatabase(getSidDatabase(player.getConfig().getSidplay2()
-				.getHvsc()));
+		player.setSidDatabase(getSidDatabase(HVSC_ROOT));
 		player.setDriverSettings(new DriverSettings(new MP3Stream(
 				new BufferedOutputStream(out, 16 << 10)), config.getEmulation()
 				.getEmulation()));

@@ -20,6 +20,113 @@
             android:layout_height="fill_parent" >
 
             <LinearLayout
+                android:id="@+id/settings"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <Spinner
+                    android:id="@+id/emulation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <CheckBox
+                        android:id="@+id/songlength"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/detect_song_length" />
+
+                    <EditText
+                        android:id="@+id/defaultLength"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="@string/default_length"
+                        android:inputType="number" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/general"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/hostname"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2.41"
+                        android:ems="10"
+                        android:hint="@string/hostname"
+                        android:singleLine="true" >
+                    </EditText>
+
+                    <EditText
+                        android:id="@+id/port"
+                        android:layout_width="76dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.23"
+                        android:ems="10"
+                        android:hint="@string/port"
+                        android:text="8080" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <EditText
+                        android:id="@+id/username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="@string/username"
+                        android:text="@string/user_jsidplay2" >
+
+                        <requestFocus />
+                    </EditText>
+
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="@string/password"
+                        android:inputType="textPassword" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sids"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+
+                <ListView
+                    android:id="@+id/listView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/linearLayout1"
+                    android:layout_below="@+id/linearLayout1" >
+                </ListView>
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/tune"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -93,94 +200,6 @@
                         </LinearLayout>
                     </HorizontalScrollView>
                 </ScrollView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/general"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical" >
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
-
-                    <EditText
-                        android:id="@+id/hostname"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2.41"
-                        android:ems="10"
-                        android:hint="@string/hostname"
-                        android:singleLine="true" >
-                    </EditText>
-
-                    <EditText
-                        android:id="@+id/port"
-                        android:layout_width="76dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.23"
-                        android:ems="10"
-                        android:hint="@string/port"
-                        android:text="8080" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <EditText
-                        android:id="@+id/username"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:hint="@string/username"
-                        android:text="@string/user_jsidplay2" >
-
-                        <requestFocus />
-                    </EditText>
-
-                    <EditText
-                        android:id="@+id/password"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:hint="@string/password"
-                        android:inputType="textPassword" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/hvsc"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical" >
-
-                <ListView
-                    android:id="@+id/listView1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/linearLayout1"
-                    android:layout_below="@+id/linearLayout1" >
-                </ListView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/cgsc"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical" >
-
-                <ListView
-                    android:id="@+id/listView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/linearLayout1"
-                    android:layout_below="@+id/linearLayout1" >
-                </ListView>
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>

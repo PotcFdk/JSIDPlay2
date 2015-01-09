@@ -44,4 +44,6 @@
     <string name="HVSCEntry.relocNoPages">Reloc. no. pages</string>
     <string name="HVSCEntry.stilGlbComment">STIL glb. Comment</string>
     <string name="StilEntry.text">STIL</string>
+    <string name="detect_song_length">Detect Song Length</string>
+    <string name="default_length">Default in sec.</string>
 </resources>

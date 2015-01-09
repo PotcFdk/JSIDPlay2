@@ -23,9 +23,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TableLayout;
@@ -34,8 +36,7 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
-	private static final String HVSC_FILTER = ".*\\.(sid)$";
-	private static final String CGSC_FILTER = ".*\\.(dat|mus|str)$";
+	private static final String SIDS_FILTER = ".*\\.(sid|dat|mus|str)$";
 
 	private static final String CONTEXT_ROOT = "/jsidplay2service";
 	private static final String ROOT_PATH = "/JSIDPlay2REST";
@@ -51,6 +52,12 @@ public class MainActivity extends Activity {
 	private static final String PAR_PORT = "port";
 	private static final String PAR_USERNAME = "username";
 	private static final String PAR_PASSWORD = "password";
+	private static final String PAR_EMULATION = "emulation";
+	private static final String PAR_ENABLE_DATABASE = "enableDatabase";
+	private static final String PAR_DEFAULT_PLAY_LENGTH = "defaultPlayLength";
+
+	private static final String RESID = "RESID";
+	private static final String RESIDFP = "RESIDFP";
 
 	private static final String DEFAULT_HOSTNAME = "haendel.ddns.net";
 	private static final String DEFAULT_PORT = "8080";
@@ -66,21 +73,25 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		// For retrieving string value from sharedPreference
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+
 		appName = getApplication().getString(R.string.app_name);
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
 		mTabHost.addTab(mTabHost.newTabSpec("tab_test1").setIndicator("Conn")
 				.setContent(R.id.general));
-		mTabHost.addTab(mTabHost.newTabSpec("tab_test2").setIndicator("HVSC")
-				.setContent(R.id.hvsc));
-		mTabHost.addTab(mTabHost.newTabSpec("tab_test3").setIndicator("CGSC")
-				.setContent(R.id.cgsc));
+		mTabHost.addTab(mTabHost.newTabSpec("tab_test2").setIndicator("Music")
+				.setContent(R.id.sids));
 		mTabHost.addTab(mTabHost.newTabSpec("tab_test4").setIndicator("Tune")
 				.setContent(R.id.tune));
+		mTabHost.addTab(mTabHost.newTabSpec("tab_test5").setIndicator("Cfg")
+				.setContent(R.id.settings));
 
 		mTabHost.setCurrentTab(0);
-		mTabHost.getTabWidget().getChildTabViewAt(3).setEnabled(false);
+		mTabHost.getTabWidget().getChildTabViewAt(2).setEnabled(false);
 		mTabHost.setOnTabChangedListener(new OnTabChangeListener() {
 
 			public void onTabChanged(String tabId) {
@@ -89,14 +100,9 @@ public class MainActivity extends Activity {
 					// connection tab shown initially
 					break;
 				case 1:
-					requestDirectory(new File("/C64Music"),
+					requestDirectory(new File("/"),
 							(ListView) findViewById(R.id.listView1),
-							HVSC_FILTER);
-					break;
-				case 2:
-					requestDirectory(new File("/CGSC"),
-							(ListView) findViewById(R.id.listView2),
-							CGSC_FILTER);
+							SIDS_FILTER);
 					break;
 
 				default:
@@ -108,9 +114,21 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		// For retrieving string value from sharedPreference
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
+		String[] array_spinner = new String[2];
+		array_spinner[0] = RESID;
+		array_spinner[1] = RESIDFP;
+		Spinner s = (Spinner) findViewById(R.id.emulation);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, array_spinner);
+		s.setAdapter(adapter);
+		s.setSelection(preferences.getString(PAR_EMULATION, RESIDFP).equals(
+				RESID) ? 0 : 1);
+
+		((CheckBox) findViewById(R.id.songlength)).setChecked(Boolean
+				.valueOf(preferences.getString(PAR_ENABLE_DATABASE, "false")));
+		((EditText) findViewById(R.id.defaultLength)).setText(preferences
+				.getString(PAR_DEFAULT_PLAY_LENGTH, "0"));
+
 		((EditText) findViewById(R.id.hostname)).setText(preferences.getString(
 				PAR_HOSTNAME, DEFAULT_HOSTNAME));
 		((EditText) findViewById(R.id.port)).setText(preferences.getString(
@@ -119,6 +137,7 @@ public class MainActivity extends Activity {
 				PAR_USERNAME, DEFAULT_USERNAME));
 		((EditText) findViewById(R.id.password)).setText(preferences.getString(
 				PAR_PASSWORD, DEFAULT_PASSWORD));
+
 	}
 
 	@Override
@@ -151,6 +170,9 @@ public class MainActivity extends Activity {
 
 					@Override
 					protected void onPostExecute(List<String> childs) {
+						if (childs == null) {
+							return;
+						}
 						// View Directory
 						viewDirectory(childs, view.getId(), filter);
 					}
@@ -174,6 +196,7 @@ public class MainActivity extends Activity {
 				.getText().toString());
 		connection.setPassword(((EditText) findViewById(R.id.password))
 				.getText().toString());
+
 		// For storing string value in sharedPreference
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
@@ -182,7 +205,17 @@ public class MainActivity extends Activity {
 		editor.putString(PAR_PORT, connection.getPort());
 		editor.putString(PAR_USERNAME, connection.getUsername());
 		editor.putString(PAR_PASSWORD, connection.getPassword());
+		editor.putString(PAR_EMULATION,
+				((Spinner) findViewById(R.id.emulation)).getSelectedItem()
+						.toString());
+		editor.putString(PAR_ENABLE_DATABASE, Boolean
+				.toString(((CheckBox) findViewById(R.id.songlength))
+						.isChecked()));
+		editor.putString(PAR_DEFAULT_PLAY_LENGTH,
+				((EditText) findViewById(R.id.defaultLength)).getText()
+						.toString());
 		editor.commit();
+
 	}
 
 	void enableDisableUI(boolean enable, int listViewId) {
@@ -199,6 +232,9 @@ public class MainActivity extends Activity {
 		enableDisableUI(false, -1);
 		new DownloadRequest(appName, connection, REST_DOWNLOAD_URL + tune) {
 			protected void onPostExecute(DataAndType music) {
+				if (music == null) {
+					return;
+				}
 				saveDownload(music, -1);
 			}
 		}.execute();
@@ -208,10 +244,18 @@ public class MainActivity extends Activity {
 		TextView resource = (TextView) findViewById(R.id.resource);
 		CharSequence tune = resource.getText();
 		try {
+			Spinner s = (Spinner) findViewById(R.id.emulation);
+			CheckBox box = (CheckBox) findViewById(R.id.songlength);
+			EditText txt = (EditText) findViewById(R.id.defaultLength);
+
+			String query = "";
+			query += PAR_EMULATION + "=" + s.getSelectedItem().toString() + "&";
+			query += PAR_ENABLE_DATABASE + "" + box.isChecked() + "&";
+			query += PAR_DEFAULT_PLAY_LENGTH + "" + getNumber(txt);
 			URI uri = new URI("http", connection.getUsername() + ":"
 					+ connection.getPassword(), connection.getHostname(),
 					Integer.valueOf(connection.getPort()), REST_CONVERT_URL
-							+ tune, "", null);
+							+ tune, query, null);
 			Uri myUri = Uri.parse(uri.toString());
 
 			Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
@@ -223,6 +267,14 @@ public class MainActivity extends Activity {
 		} catch (URISyntaxException e) {
 			Log.e(getApplication().getString(R.string.app_name),
 					e.getMessage(), e);
+		}
+	}
+
+	private int getNumber(EditText txt) {
+		try {
+			return Integer.parseInt(txt.getText().toString());
+		} catch (NumberFormatException e) {
+			return 0;
 		}
 	}
 
@@ -245,6 +297,9 @@ public class MainActivity extends Activity {
 
 							@Override
 							protected void onPostExecute(List<String> childs) {
+								if (childs == null) {
+									return;
+								}
 								viewDirectory(childs, listViewId, filter);
 							}
 						}.execute(filter);
@@ -255,6 +310,9 @@ public class MainActivity extends Activity {
 								REST_LOAD_PHOTO_URL + file.getCanonicalPath()) {
 							@Override
 							protected void onPostExecute(byte[] photo) {
+								if (photo == null) {
+									return;
+								}
 								viewPhoto(photo, listViewId);
 							}
 						}.execute();
@@ -280,12 +338,15 @@ public class MainActivity extends Activity {
 							@Override
 							protected void onPostExecute(
 									List<Pair<String, String>> out) {
+								if (out == null) {
+									return;
+								}
 								viewTuneInfos(out, listViewId);
 							}
 						}.execute();
-						mTabHost.getTabWidget().getChildTabViewAt(3)
+						mTabHost.getTabWidget().getChildTabViewAt(2)
 								.setEnabled(true);
-						mTabHost.setCurrentTab(3);
+						mTabHost.setCurrentTab(2);
 					}
 				} catch (IOException e) {
 					Log.e(getApplication().getString(R.string.app_name),
