@@ -250,8 +250,8 @@ public class MainActivity extends Activity {
 
 			String query = "";
 			query += PAR_EMULATION + "=" + s.getSelectedItem().toString() + "&";
-			query += PAR_ENABLE_DATABASE + "" + box.isChecked() + "&";
-			query += PAR_DEFAULT_PLAY_LENGTH + "" + getNumber(txt);
+			query += PAR_ENABLE_DATABASE + "=" + box.isChecked() + "&";
+			query += PAR_DEFAULT_PLAY_LENGTH + "=" + getNumber(txt);
 			URI uri = new URI("http", connection.getUsername() + ":"
 					+ connection.getPassword(), connection.getHostname(),
 					Integer.valueOf(connection.getPort()), REST_CONVERT_URL

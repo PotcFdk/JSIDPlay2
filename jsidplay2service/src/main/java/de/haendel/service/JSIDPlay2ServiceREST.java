@@ -79,14 +79,14 @@ public class JSIDPlay2ServiceREST {
 			@QueryParam("defaultPlayLength") int defaultPlayLength,
 			@QueryParam("enableDatabase") boolean enableDatabase,
 			@QueryParam("emulation") Emulation emulation) {
+		Configuration cfg = new Configuration();
+		cfg.getSidplay2().setDefaultPlayLength(defaultPlayLength);
+		cfg.getSidplay2().setEnableDatabase(enableDatabase);
+		cfg.getEmulation().setEmulation(emulation);
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
 				try {
-					Configuration cfg = new Configuration();
-					cfg.getSidplay2().setDefaultPlayLength(defaultPlayLength);
-					cfg.getSidplay2().setEnableDatabase(enableDatabase);
-					cfg.getEmulation().setEmulation(emulation);
 					jsidplay2Service.convert(cfg, filePath, output);
 				} catch (InterruptedException e) {
 					throw new WebApplicationException(e);
