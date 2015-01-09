@@ -270,9 +270,7 @@ public class MainActivity extends Activity {
 													.getString(field
 															.getInt(null));
 										} catch (IllegalArgumentException e) {
-											return "???";
 										} catch (IllegalAccessException e) {
-											return "???";
 										}
 									}
 								}

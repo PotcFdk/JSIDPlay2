@@ -23,17 +23,21 @@ public class DownloadRequest extends LongRunningRequest<DataAndType> {
 	protected DataAndType getResult(HttpEntity httpEntity)
 			throws IllegalStateException, IOException {
 		InputStream content = httpEntity.getContent();
+		long length = httpEntity.getContentLength();
 		File sdRootDir = Environment.getExternalStorageDirectory();
 		File music = new File(new File(sdRootDir, DOWNLOAD_DIR),
 				new File(url).getName());
-
 		OutputStream out;
 		byte[] b = new byte[4096];
 		if (sdRootDir.canWrite()) {
 			out = new BufferedOutputStream(new FileOutputStream(music));
-			while (content.available() > 0) {
+			int count = 0;
+			while (count < length) {
 				int n = content.read(b);
-				out.write(b, 0, n);
+				if (n > 0) {
+					out.write(b, 0, n);
+					count += n;
+				}
 			}
 			out.close();
 		}
