@@ -53,4 +53,13 @@
     <string name="resid8580">Filter 8580:</string>
     <string name="residfp6581">Filter 6581:</string>
     <string name="residfp8580">Filter 8580:</string>
+    <string name="about">Android App of JSIDPlay2 - Music Player &amp; C64 SID Chip Emulator\n
+JSIDPlay2app uses JSidplay2 which are copyrighted to:\n
+2007-2015 Ken H&#228;ndel,\n
+&#x20;&#x20;Antti S. Lankila and Wilfred Bos\n\
+Distortion Simulation and 6581/8580 emulation:\n  Copyright &#169; 2005-2011 Antti S. Lankila\n
+ReSID engine and 6581/8580 emulation:\n  Copyright &#169; 1999-2011 Dag Lem\n
+Source code can be found at:\n
+&#x20;&#x20;http://sourceforge.net/projects/jsidplay2/</string>
+
 </resources>

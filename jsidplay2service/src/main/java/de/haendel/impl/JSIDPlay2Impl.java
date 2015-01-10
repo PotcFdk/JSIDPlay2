@@ -134,7 +134,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 		Player player = new Player(config);
 		player.setSidDatabase(getSidDatabase(HVSC_ROOT));
 		player.setDriverSettings(new DriverSettings(new MP3Stream(
-				new BufferedOutputStream(out, 16 << 10)), config.getEmulation()
+				new BufferedOutputStream(out, 64 << 10)), config.getEmulation()
 				.getEmulation()));
 		player.play(SidTune.load(getAbsoluteFile(resource)));
 		player.waitForC64();
