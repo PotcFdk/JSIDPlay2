@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.http.HttpEntity;
 
-public abstract class DirectoryRequest extends LongRunningRequest<List<String>> {
+public class FiltersRequest extends LongRunningRequest<List<String>> {
 
-	public DirectoryRequest(String appName, Connection conn, String url) {
+	public FiltersRequest(String appName, Connection conn, String url) {
 		super(appName, conn, url);
 	}
 
@@ -16,7 +16,4 @@ public abstract class DirectoryRequest extends LongRunningRequest<List<String>> 
 			throws IllegalStateException, IOException {
 		return receiveList(httpEntity);
 	}
-
-	@Override
-	protected abstract void onPostExecute(List<String> result);
 }

@@ -37,6 +37,8 @@ import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
 import libsidutils.SidDatabase;
 import sidplay.audio.MP3Stream;
+import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IFilterSection;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry;
@@ -296,6 +298,28 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			buffer.append("\nComment: ");
 			buffer.append(info.comment.replaceAll("\"", "'"));
 		}
+	}
+
+	@Override
+	public List<String> getFilters() {
+		List<String> result = new ArrayList<String>();
+		IniConfig cfg = new IniConfig();
+		List<? extends IFilterSection> filterSection = cfg.getFilter();
+		for (Iterator<? extends IFilterSection> iterator = filterSection
+				.iterator(); iterator.hasNext();) {
+			final IFilterSection iFilterSection = (IFilterSection) iterator
+					.next();
+			if (iFilterSection.isReSIDFilter6581()) {
+				result.add("RESID_MOS6581_" + iFilterSection.getName());
+			} else if (iFilterSection.isReSIDFilter8580()) {
+				result.add("RESID_MOS8580_" + iFilterSection.getName());
+			} else if (iFilterSection.isReSIDfpFilter6581()) {
+				result.add("RESIDFP_MOS6581_" + iFilterSection.getName());
+			} else if (iFilterSection.isReSIDfpFilter8580()) {
+				result.add("RESIDFP_MOS8580_" + iFilterSection.getName());
+			}
+		}
+		return result;
 	}
 
 }

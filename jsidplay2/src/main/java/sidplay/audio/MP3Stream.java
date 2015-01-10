@@ -77,13 +77,6 @@ public class MP3Stream extends AudioDriver {
 		if (jump3r != null) {
 			jump3r.close();
 		}
-		if (out != null) {
-			try {
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	@Override

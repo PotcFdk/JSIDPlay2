@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.sidtune.SidTuneError;
 import ui.entities.config.Configuration;
@@ -78,11 +79,25 @@ public class JSIDPlay2ServiceREST {
 	public Response convert(@PathParam("filePath") String filePath,
 			@QueryParam("defaultPlayLength") int defaultPlayLength,
 			@QueryParam("enableDatabase") boolean enableDatabase,
-			@QueryParam("emulation") Emulation emulation) {
+			@QueryParam("single") boolean single,
+			@QueryParam("loop") boolean loop,
+			@QueryParam("emulation") Emulation emulation,
+			@QueryParam("defaultSidModel") ChipModel defaultSidModel,
+			@QueryParam("filter6581") String filter6581,
+			@QueryParam("filter8580") String filter8580,
+			@QueryParam("reSIDfpFilter6581") String reSIDfpFilter6581,
+			@QueryParam("reSIDfpFilter8580") String reSIDfpFilter8580) {
 		Configuration cfg = new Configuration();
 		cfg.getSidplay2().setDefaultPlayLength(defaultPlayLength);
 		cfg.getSidplay2().setEnableDatabase(enableDatabase);
+		cfg.getSidplay2().setSingle(single);
+		cfg.getSidplay2().setLoop(loop);
 		cfg.getEmulation().setEmulation(emulation);
+		cfg.getEmulation().setDefaultSidModel(defaultSidModel);
+		cfg.getEmulation().setFilter6581(filter6581);
+		cfg.getEmulation().setFilter8580(filter8580);
+		cfg.getEmulation().setReSIDfpFilter6581(reSIDfpFilter6581);
+		cfg.getEmulation().setReSIDfpFilter8580(reSIDfpFilter8580);
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
@@ -127,4 +142,10 @@ public class JSIDPlay2ServiceREST {
 		}
 	}
 
+	@GET
+	@Path("/filters")
+	@Produces({ "application/json" })
+	public List<String> getFilters() {
+		return jsidplay2Service.getFilters();
+	}
 }

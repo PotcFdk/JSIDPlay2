@@ -46,4 +46,11 @@
     <string name="StilEntry.text">STIL</string>
     <string name="detect_song_length">Detect Song Length</string>
     <string name="default_length">Default in sec.</string>
+    <string name="single">Single Song</string>
+    <string name="loop">Loop Song</string>
+    <string name="default_model">Default Model</string>
+    <string name="resid6581">Filter 6581:</string>
+    <string name="resid8580">Filter 8580:</string>
+    <string name="residfp6581">Filter 6581:</string>
+    <string name="residfp8580">Filter 8580:</string>
 </resources>

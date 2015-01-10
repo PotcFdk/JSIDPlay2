@@ -77,4 +77,11 @@ public interface IJSIDPlay2 {
 	 */
 	Map<String, String> getTuneInfos(String resource) throws IOException,
 			SidTuneError;
+
+	/**
+	 * Get all filter names.
+	 * 
+	 * @return list of filter names
+	 */
+	List<String> getFilters();
 }
