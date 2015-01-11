@@ -79,7 +79,7 @@ public class AudioGeneratorThread extends Thread {
 	 */
 	protected int triangularDithering() {
 		int prevValue = oldRandomValue;
-		oldRandomValue = RANDOM.nextInt() & 0x3ff;
+		oldRandomValue = RANDOM.nextInt() & 0x01;
 		return oldRandomValue - prevValue;
 	}
 
@@ -158,7 +158,6 @@ public class AudioGeneratorThread extends Thread {
 					/* First SID initializes the buffer. */
 					final int audioBufferPos = sid[0].clock(piece, audioBuffer, 0);
 					for (int i = 0; i < audioBufferPos; i ++) {
-						/* FIXME: dithering */
 						int sample = audioBuffer[i] * sidLevel[0] >> 10;
 						outAudioBuffer[i << 1 | 0] = sample * sidPositionL[0] >> 10;
 						outAudioBuffer[i << 1 | 1] = sample * sidPositionR[0] >> 10;
@@ -168,7 +167,6 @@ public class AudioGeneratorThread extends Thread {
 					for (int sidNum = 1; sidNum < sid.length; sidNum ++) {
 						sid[sidNum].clock(piece, audioBuffer, 0);
 						for (int i = 0; i < audioBufferPos; i ++) {
-							/* FIXME: dithering */
 							int sample = audioBuffer[i] * sidLevel[sidNum] >> 10;
 							outAudioBuffer[i << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
 							outAudioBuffer[i << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
@@ -185,9 +183,10 @@ public class AudioGeneratorThread extends Thread {
 					/* Generate triangularly dithered stereo audio output. */
 					final ByteBuffer output = driver.buffer();
 					for (int i = 0; i < audioBufferPos; i ++) {
+						int dithering = triangularDithering();
 						int value;
 
-						value = outAudioBuffer[i << 1 | 0];
+						value = outAudioBuffer[i << 1 | 0] + dithering;
 						if (value > 32767) {
 							value = 32767;
 						}
@@ -196,7 +195,7 @@ public class AudioGeneratorThread extends Thread {
 						}
 						output.putShort((short) value);
 
-						value = outAudioBuffer[i << 1 | 1];
+						value = outAudioBuffer[i << 1 | 1] + dithering;
 						if (value > 32767) {
 							value = 32767;
 						}
