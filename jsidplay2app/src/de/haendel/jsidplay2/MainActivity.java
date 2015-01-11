@@ -74,6 +74,7 @@ public class MainActivity extends Activity {
 	private static final String PAR_STEREO_FILTERRESIDfp6581 = "reSIDfpStereoFilter6581";
 	private static final String PAR_FILTERRESIDfp8580 = "reSIDfpFilter8580";
 	private static final String PAR_STEREO_FILTERRESIDfp8580 = "reSIDfpStereoFilter8580";
+	private static final String PAR_DIGI_BOOSTED8580 = "digiBoosted8580";
 
 	private static final String RESID = "RESID";
 	private static final String RESIDFP = "RESIDFP";
@@ -341,6 +342,22 @@ public class MainActivity extends Activity {
 				editor.commit();
 			}
 		});
+
+		CheckBox digiBoosted8580 = (CheckBox) findViewById(R.id.digiBoosted8580);
+		loop.setChecked(Boolean.valueOf(preferences
+				.getString(PAR_DIGI_BOOSTED8580, "false")));
+		loop.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString(PAR_DIGI_BOOSTED8580, Boolean
+						.toString(((CheckBox) findViewById(R.id.digiBoosted8580))
+								.isChecked()));
+				editor.commit();
+			}
+		});
 	}
 
 	private void setFiltersVisibility(Spinner emulation) {
@@ -587,6 +604,7 @@ public class MainActivity extends Activity {
 			Spinner stereoFilters8580 = (Spinner) findViewById(R.id.stereoFiltersRESID8580);
 			Spinner stereoFiltersRESIDfp6581 = (Spinner) findViewById(R.id.stereoFiltersRESIDfp6581);
 			Spinner stereoFiltersRESIDfp8580 = (Spinner) findViewById(R.id.stereoFiltersRESIDfp8580);
+			CheckBox digiBoosted8580 = (CheckBox) findViewById(R.id.digiBoosted8580);
 
 			String query = "";
 			query += PAR_EMULATION + "=" + emulation.getSelectedItem() + "&";
@@ -614,7 +632,8 @@ public class MainActivity extends Activity {
 			query += PAR_STEREO_FILTERRESIDfp6581 + "="
 					+ stereoFiltersRESIDfp6581.getSelectedItem() + "&";
 			query += PAR_STEREO_FILTERRESIDfp8580 + "="
-					+ stereoFiltersRESIDfp8580.getSelectedItem();
+					+ stereoFiltersRESIDfp8580.getSelectedItem() + "&";
+			query += PAR_DIGI_BOOSTED8580 + "=" + digiBoosted8580.isChecked();
 			
 			URI uri = new URI("http", connection.getUsername() + ":"
 					+ connection.getPassword(), connection.getHostname(),

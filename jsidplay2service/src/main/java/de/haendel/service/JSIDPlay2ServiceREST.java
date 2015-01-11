@@ -91,7 +91,8 @@ public class JSIDPlay2ServiceREST {
 			@QueryParam("reSIDfpFilter6581") String reSIDfpFilter6581,
 			@QueryParam("reSIDfpStereoFilter6581") String reSIDfpStereoFilter6581,
 			@QueryParam("reSIDfpFilter8580") String reSIDfpFilter8580,
-			@QueryParam("reSIDfpStereoFilter8580") String reSIDfpStereoFilter8580) {
+			@QueryParam("reSIDfpStereoFilter8580") String reSIDfpStereoFilter8580,
+			@QueryParam("digiBoosted8580") boolean digiBoosted8580) {
 		Configuration cfg = new Configuration();
 		cfg.getSidplay2().setDefaultPlayLength(defaultPlayLength);
 		cfg.getSidplay2().setEnableDatabase(enableDatabase);
@@ -107,6 +108,7 @@ public class JSIDPlay2ServiceREST {
 		cfg.getEmulation().setReSIDfpStereoFilter6581(reSIDfpStereoFilter6581);
 		cfg.getEmulation().setReSIDfpFilter8580(reSIDfpFilter8580);
 		cfg.getEmulation().setReSIDfpStereoFilter8580(reSIDfpStereoFilter8580);
+		cfg.getEmulation().setDigiBoosted8580(digiBoosted8580);
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {

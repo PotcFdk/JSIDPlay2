@@ -62,10 +62,35 @@
                         android:text="@string/loop" />
                 </LinearLayout>
 
-                <Spinner
-                    android:id="@+id/emulation"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content" >
+
+                    <CheckBox
+                        android:id="@+id/digiBoosted8580"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/digiBoosted8580" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/editText2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/resid_engine" />
+
+                    <Spinner
+                        android:id="@+id/emulation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                        android:layout_weight="1" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

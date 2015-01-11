@@ -48,7 +48,7 @@
     <string name="default_length">Default in sec.</string>
     <string name="single">Single Song</string>
     <string name="loop">Loop Song</string>
-    <string name="default_model">Default Model</string>
+    <string name="default_model">Default Model:</string>
     <string name="resid6581">Filter 6581:</string>
     <string name="resid8580">Filter 8580:</string>
     <string name="residfp6581">Filter 6581:</string>
@@ -67,5 +67,9 @@ Distortion Simulation and 6581/8580 emulation:\n  Copyright &#169; 2005-2011 Ant
 ReSID engine and 6581/8580 emulation:\n  Copyright &#169; 1999-2011 Dag Lem\n
 Source code can be found at:\n
 &#x20;&#x20;http://sourceforge.net/projects/jsidplay2/</string>
+    
+    <string name="digiBoosted8580">Digi Boost 8580</string>
+    
+    <string name="resid_engine">ReSID Engine:</string>
 
 </resources>
