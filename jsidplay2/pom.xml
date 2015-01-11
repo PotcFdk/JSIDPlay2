@@ -287,9 +287,12 @@
 								<include>netsiddev/ini/*</include>
 								<include>resid_builder/resid/**/*.class</include>
 								<include>residfp_builder/resid/**/*.class</include>
-								<include>libsidplay/common/*.class</include>
+								<include>libsidplay/common/ChipModel.class</include>
+								<include>libsidplay/common/CPUClock.class</include>
+								<include>libsidplay/common/SamplingMethod.class</include>
+								<include>libsidplay/common/SIDChip.class</include>
 								<include>sidplay/audio/Audio*.class</include>
-								<include>sidplay/audio/JavaSound*.class</include>
+								<include>sidplay/audio/JavaSound.class</include>
 								<include>sidplay/ini/intf/IAudioSection.class</include>
 								<include>sidplay/ini/intf/IFilterSection.class</include>
 								<include>sidplay/ini/IniSection.class</include>
@@ -420,10 +423,64 @@
 					</execution>
 				</executions>
 			</plugin>
+ 			<plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.0.8</version>
+                <executions>
+                   <execution>
+                       <phase>package</phase>
+                       <goals><goal>proguard</goal></goals>
+                   </execution>
+                </executions>
+                <configuration>
+                    <proguardVersion>5.1</proguardVersion>
+                    <obfuscate>true</obfuscate>
+                    <injar>deploy/jsiddevice-${project.version}.jar</injar>
+                    <outjar>deploy/jsiddevice-${project.version}-proguard.jar</outjar>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <proguardInclude>${basedir}/proguard.conf</proguardInclude>
+                    <includeDependency>false</includeDependency> 
+                    <libs>
+                        <lib>${java.home}/lib/rt.jar</lib>
+                        <lib>${java.home}/lib/ext/jfxrt.jar</lib>
+                    </libs>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sf.proguard</groupId>
+                        <artifactId>proguard-base</artifactId>
+                        <version>5.1</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>pack-jsiddevice-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<ant antfile="${basedir}/packjar.xml">
+									<property name="deploy_dir" value="${project.build.directory}/deploy" />
+									<property name="jsiddevice" value="jsiddevice-${project.version}" />
+								</ant>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>            
 			<plugin>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
-				<version>1.5.2</version>
+				<version>1.7.3</version>
 				<executions>
 					<execution>
 						<id>launch4j</id>
