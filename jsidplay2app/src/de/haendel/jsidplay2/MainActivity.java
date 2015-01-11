@@ -67,9 +67,13 @@ public class MainActivity extends Activity {
 	private static final String PAR_SINGLE_SONG = "single";
 	private static final String PAR_LOOP = "loop";
 	private static final String PAR_FILTERRESID6581 = "filter6581";
+	private static final String PAR_STEREO_FILTERRESID6581 = "stereoFilter6581";
 	private static final String PAR_FILTERRESID8580 = "filter8580";
+	private static final String PAR_STEREO_FILTERRESID8580 = "stereoFilter8580";
 	private static final String PAR_FILTERRESIDfp6581 = "reSIDfpFilter6581";
+	private static final String PAR_STEREO_FILTERRESIDfp6581 = "reSIDfpStereoFilter6581";
 	private static final String PAR_FILTERRESIDfp8580 = "reSIDfpFilter8580";
+	private static final String PAR_STEREO_FILTERRESIDfp8580 = "reSIDfpStereoFilter8580";
 
 	private static final String RESID = "RESID";
 	private static final String RESIDFP = "RESIDFP";
@@ -98,8 +102,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		// For retrieving string value from sharedPreference
-		preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		appName = getApplication().getString(R.string.app_name);
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
@@ -140,8 +143,7 @@ public class MainActivity extends Activity {
 		});
 
 		EditText hostname = (EditText) findViewById(R.id.hostname);
-		hostname.setText(preferences.getString(
-				PAR_HOSTNAME, DEFAULT_HOSTNAME));
+		hostname.setText(preferences.getString(PAR_HOSTNAME, DEFAULT_HOSTNAME));
 		hostname.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable s) {
@@ -149,6 +151,7 @@ public class MainActivity extends Activity {
 				editor.putString(PAR_HOSTNAME, connection.getHostname());
 				editor.commit();
 			}
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
@@ -160,8 +163,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		EditText port = (EditText) findViewById(R.id.port);
-		port.setText(preferences.getString(
-				PAR_PORT, DEFAULT_PORT));
+		port.setText(preferences.getString(PAR_PORT, DEFAULT_PORT));
 		port.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable s) {
@@ -169,6 +171,7 @@ public class MainActivity extends Activity {
 				editor.putString(PAR_PORT, connection.getPort());
 				editor.commit();
 			}
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
@@ -181,8 +184,7 @@ public class MainActivity extends Activity {
 		});
 
 		EditText username = (EditText) findViewById(R.id.username);
-		username.setText(preferences.getString(
-				PAR_USERNAME, DEFAULT_USERNAME));
+		username.setText(preferences.getString(PAR_USERNAME, DEFAULT_USERNAME));
 		username.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable s) {
@@ -190,6 +192,7 @@ public class MainActivity extends Activity {
 				editor.putString(PAR_USERNAME, connection.getUsername());
 				editor.commit();
 			}
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
@@ -202,8 +205,7 @@ public class MainActivity extends Activity {
 		});
 
 		EditText password = (EditText) findViewById(R.id.password);
-		password.setText(preferences.getString(
-				PAR_PASSWORD, DEFAULT_PASSWORD));
+		password.setText(preferences.getString(PAR_PASSWORD, DEFAULT_PASSWORD));
 		password.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable s) {
@@ -211,6 +213,7 @@ public class MainActivity extends Activity {
 				editor.putString(PAR_PASSWORD, connection.getPassword());
 				editor.commit();
 			}
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
@@ -239,11 +242,13 @@ public class MainActivity extends Activity {
 				editor.commit();
 				setFiltersVisibility(emulation);
 			}
-			public void onNothingSelected(android.widget.AdapterView<?> parent) {};
+
+			public void onNothingSelected(android.widget.AdapterView<?> parent) {
+			};
 		});
 
 		setFiltersVisibility(emulation);
-		
+
 		Spinner defaultModel = (Spinner) findViewById(R.id.defaultModel);
 		defaultModel.setAdapter(new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, new String[] { MOS6581,
@@ -260,76 +265,78 @@ public class MainActivity extends Activity {
 								.getSelectedItem().toString());
 				editor.commit();
 			}
-			public void onNothingSelected(android.widget.AdapterView<?> parent) {};
+
+			public void onNothingSelected(android.widget.AdapterView<?> parent) {
+			};
 		});
 
-
 		CheckBox songLength = (CheckBox) findViewById(R.id.songlength);
-		songLength.setChecked(Boolean
-				.valueOf(preferences.getString(PAR_ENABLE_DATABASE, "false")));
+		songLength.setChecked(Boolean.valueOf(preferences.getString(
+				PAR_ENABLE_DATABASE, "false")));
 		songLength.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
+
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
 				SharedPreferences.Editor editor = preferences.edit();
-				editor.putString(
-						PAR_ENABLE_DATABASE,
-						Boolean.toString(((CheckBox) findViewById(R.id.songlength))
+				editor.putString(PAR_ENABLE_DATABASE, Boolean
+						.toString(((CheckBox) findViewById(R.id.songlength))
 								.isChecked()));
 				editor.commit();
 			}
 		});
 		EditText defaultLength = (EditText) findViewById(R.id.defaultLength);
-		defaultLength.setText(preferences
-				.getString(PAR_DEFAULT_PLAY_LENGTH, "0"));
+		defaultLength.setText(preferences.getString(PAR_DEFAULT_PLAY_LENGTH,
+				"0"));
 		defaultLength.addTextChangedListener(new TextWatcher() {
-			
+
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
 				SharedPreferences.Editor editor = preferences.edit();
 				editor.putString(PAR_DEFAULT_PLAY_LENGTH,
-						((EditText) findViewById(R.id.defaultLength))
-								.getText().toString());
+						((EditText) findViewById(R.id.defaultLength)).getText()
+								.toString());
 				editor.commit();
 			}
-			
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable s) {
 			}
 		});
-		
+
 		CheckBox singleSong = (CheckBox) findViewById(R.id.singleSong);
-		singleSong.setChecked(Boolean
-				.valueOf(preferences.getString(PAR_SINGLE_SONG, "false")));
+		singleSong.setChecked(Boolean.valueOf(preferences.getString(
+				PAR_SINGLE_SONG, "false")));
 		singleSong.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
+
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
 				SharedPreferences.Editor editor = preferences.edit();
-				editor.putString(
-						PAR_SINGLE_SONG,
-						Boolean.toString(((CheckBox) findViewById(R.id.singleSong))
+				editor.putString(PAR_SINGLE_SONG, Boolean
+						.toString(((CheckBox) findViewById(R.id.singleSong))
 								.isChecked()));
 				editor.commit();
 			}
 		});
 
 		CheckBox loop = (CheckBox) findViewById(R.id.loop);
-		loop.setChecked(Boolean
-				.valueOf(preferences.getString(PAR_LOOP, "false")));
+		loop.setChecked(Boolean.valueOf(preferences
+				.getString(PAR_LOOP, "false")));
 		loop.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
+
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
 				SharedPreferences.Editor editor = preferences.edit();
-				editor.putString(
-						PAR_LOOP,
-						Boolean.toString(((CheckBox) findViewById(R.id.loop))
+				editor.putString(PAR_LOOP, Boolean
+						.toString(((CheckBox) findViewById(R.id.loop))
 								.isChecked()));
 				editor.commit();
 			}
@@ -341,18 +348,51 @@ public class MainActivity extends Activity {
 		Spinner filtersRESID6581 = (Spinner) findViewById(R.id.filtersRESID6581);
 		TextView filtersRESID8580txt = (TextView) findViewById(R.id.filtersRESID8580txt);
 		Spinner filtersRESID8580 = (Spinner) findViewById(R.id.filtersRESID8580);
-		filtersRESID6581txt.setVisibility(emulation.getSelectedItem().equals("RESID")?View.VISIBLE:View.GONE);
-		filtersRESID6581.setVisibility(emulation.getSelectedItem().equals("RESID")?View.VISIBLE:View.GONE);
-		filtersRESID8580txt.setVisibility(emulation.getSelectedItem().equals("RESID")?View.VISIBLE:View.GONE);
-		filtersRESID8580.setVisibility(emulation.getSelectedItem().equals("RESID")?View.VISIBLE:View.GONE);
+		filtersRESID6581txt.setVisibility(emulation.getSelectedItem().equals(
+				"RESID") ? View.VISIBLE : View.GONE);
+		filtersRESID6581.setVisibility(emulation.getSelectedItem().equals(
+				"RESID") ? View.VISIBLE : View.GONE);
+		filtersRESID8580txt.setVisibility(emulation.getSelectedItem().equals(
+				"RESID") ? View.VISIBLE : View.GONE);
+		filtersRESID8580.setVisibility(emulation.getSelectedItem().equals(
+				"RESID") ? View.VISIBLE : View.GONE);
 		TextView filtersRESIDfp6581txt = (TextView) findViewById(R.id.filtersRESIDfp6581txt);
 		Spinner filtersRESIDfp6581 = (Spinner) findViewById(R.id.filtersRESIDfp6581);
 		TextView filtersRESIDfp8580txt = (TextView) findViewById(R.id.filtersRESIDfp8580txt);
 		Spinner filtersRESIDfp8580 = (Spinner) findViewById(R.id.filtersRESIDfp8580);
-		filtersRESIDfp6581txt.setVisibility(emulation.getSelectedItem().equals("RESIDFP")?View.VISIBLE:View.GONE);
-		filtersRESIDfp6581.setVisibility(emulation.getSelectedItem().equals("RESIDFP")?View.VISIBLE:View.GONE);
-		filtersRESIDfp8580txt.setVisibility(emulation.getSelectedItem().equals("RESIDFP")?View.VISIBLE:View.GONE);
-		filtersRESIDfp8580.setVisibility(emulation.getSelectedItem().equals("RESIDFP")?View.VISIBLE:View.GONE);
+		filtersRESIDfp6581txt.setVisibility(emulation.getSelectedItem().equals(
+				"RESIDFP") ? View.VISIBLE : View.GONE);
+		filtersRESIDfp6581.setVisibility(emulation.getSelectedItem().equals(
+				"RESIDFP") ? View.VISIBLE : View.GONE);
+		filtersRESIDfp8580txt.setVisibility(emulation.getSelectedItem().equals(
+				"RESIDFP") ? View.VISIBLE : View.GONE);
+		filtersRESIDfp8580.setVisibility(emulation.getSelectedItem().equals(
+				"RESIDFP") ? View.VISIBLE : View.GONE);
+
+		TextView stereoFiltersRESID6581txt = (TextView) findViewById(R.id.stereoFiltersRESID6581txt);
+		Spinner stereoFiltersRESID6581 = (Spinner) findViewById(R.id.stereoFiltersRESID6581);
+		TextView stereoFiltersRESID8580txt = (TextView) findViewById(R.id.stereoFiltersRESID8580txt);
+		Spinner stereoFiltersRESID8580 = (Spinner) findViewById(R.id.stereoFiltersRESID8580);
+		stereoFiltersRESID6581txt.setVisibility(emulation.getSelectedItem()
+				.equals("RESID") ? View.VISIBLE : View.GONE);
+		stereoFiltersRESID6581.setVisibility(emulation.getSelectedItem()
+				.equals("RESID") ? View.VISIBLE : View.GONE);
+		stereoFiltersRESID8580txt.setVisibility(emulation.getSelectedItem()
+				.equals("RESID") ? View.VISIBLE : View.GONE);
+		stereoFiltersRESID8580.setVisibility(emulation.getSelectedItem()
+				.equals("RESID") ? View.VISIBLE : View.GONE);
+		TextView stereoFiltersRESIDfp6581txt = (TextView) findViewById(R.id.stereoFiltersRESIDfp6581txt);
+		Spinner stereoFiltersRESIDfp6581 = (Spinner) findViewById(R.id.stereoFiltersRESIDfp6581);
+		TextView stereoFiltersRESIDfp8580txt = (TextView) findViewById(R.id.stereoFiltersRESIDfp8580txt);
+		Spinner stereoFiltersRESIDfp8580 = (Spinner) findViewById(R.id.stereoFiltersRESIDfp8580);
+		stereoFiltersRESIDfp6581txt.setVisibility(emulation.getSelectedItem()
+				.equals("RESIDFP") ? View.VISIBLE : View.GONE);
+		stereoFiltersRESIDfp6581.setVisibility(emulation.getSelectedItem()
+				.equals("RESIDFP") ? View.VISIBLE : View.GONE);
+		stereoFiltersRESIDfp8580txt.setVisibility(emulation.getSelectedItem()
+				.equals("RESIDFP") ? View.VISIBLE : View.GONE);
+		stereoFiltersRESIDfp8580.setVisibility(emulation.getSelectedItem()
+				.equals("RESIDFP") ? View.VISIBLE : View.GONE);
 	}
 
 	@Override
@@ -391,6 +431,7 @@ public class MainActivity extends Activity {
 						ArrayList<String> filtersRESIDfp6581 = new ArrayList<String>();
 						ArrayList<String> filtersRESIDfp8580 = new ArrayList<String>();
 						int idxFILTERRESID6581 = 0, idxFILTERRESID8580 = 0, idxFILTERRESIDfp6581 = 0, idxFILTERRESIDfp8580 = 0;
+						int idxSTEREOFILTERRESID6581 = 0, idxSTEREOFILTERRESID8580 = 0, idxSTEREOFILTERRESIDfp6581 = 0, idxSTEREOFILTERRESIDfp8580 = 0;
 						for (Iterator<String> iterator = filters.iterator(); iterator
 								.hasNext();) {
 							String filter = (String) iterator.next();
@@ -403,6 +444,12 @@ public class MainActivity extends Activity {
 									idxFILTERRESID6581 = filtersRESID6581
 											.size();
 								}
+								if (substring.equals(preferences.getString(
+										PAR_STEREO_FILTERRESID6581,
+										DEFAULT_FILTERRESID6581))) {
+									idxSTEREOFILTERRESID6581 = filtersRESID6581
+											.size();
+								}
 								filtersRESID6581.add(substring);
 							} else if (filter.startsWith("RESID_MOS8580_")) {
 								String substring = filter
@@ -411,6 +458,12 @@ public class MainActivity extends Activity {
 										PAR_FILTERRESID8580,
 										DEFAULT_FILTERRESID8580))) {
 									idxFILTERRESID8580 = filtersRESID8580
+											.size();
+								}
+								if (substring.equals(preferences.getString(
+										PAR_STEREO_FILTERRESID8580,
+										DEFAULT_FILTERRESID8580))) {
+									idxSTEREOFILTERRESID8580 = filtersRESID8580
 											.size();
 								}
 								filtersRESID8580.add(substring);
@@ -423,6 +476,12 @@ public class MainActivity extends Activity {
 									idxFILTERRESIDfp6581 = filtersRESIDfp6581
 											.size();
 								}
+								if (substring.equals(preferences.getString(
+										PAR_STEREO_FILTERRESIDfp6581,
+										DEFAULT_FILTERRESIDFP6581))) {
+									idxSTEREOFILTERRESIDfp6581 = filtersRESIDfp6581
+											.size();
+								}
 								filtersRESIDfp6581.add(substring);
 							} else if (filter.startsWith("RESIDFP_MOS8580_")) {
 								String substring = filter
@@ -433,89 +492,23 @@ public class MainActivity extends Activity {
 									idxFILTERRESIDfp8580 = filtersRESIDfp8580
 											.size();
 								}
+								if (substring.equals(preferences.getString(
+										PAR_STEREO_FILTERRESIDfp8580,
+										DEFAULT_FILTERRESIDFP8580))) {
+									idxSTEREOFILTERRESIDfp8580 = filtersRESIDfp8580
+											.size();
+								}
 								filtersRESIDfp8580.add(substring);
 							}
 						}
-						Spinner filters6581 = (Spinner) findViewById(R.id.filtersRESID6581);
-						filters6581.setAdapter(new ArrayAdapter<String>(
-								MainActivity.this,
-								android.R.layout.simple_spinner_item,
-								filtersRESID6581));
-						filters6581.setSelection(idxFILTERRESID6581);
-						filters6581.setOnItemSelectedListener(new OnItemSelectedListener() {
-							@Override
-							public void onItemSelected(AdapterView<?> parent,
-									View view, int position, long id) {
-								SharedPreferences.Editor editor = preferences.edit();
-								editor.putString(PAR_FILTERRESID6581,
-										((Spinner) findViewById(R.id.filtersRESID6581))
-												.getSelectedItem().toString());
-								editor.commit();
-							}
-							@Override
-							public void onNothingSelected(AdapterView<?> parent) {
-							}
-						});
-						Spinner filters8580 = (Spinner) findViewById(R.id.filtersRESID8580);
-						filters8580.setAdapter(new ArrayAdapter<String>(
-								MainActivity.this,
-								android.R.layout.simple_spinner_item,
-								filtersRESID8580));
-						filters8580.setSelection(idxFILTERRESID8580);
-						filters8580.setOnItemSelectedListener(new OnItemSelectedListener() {
-							@Override
-							public void onItemSelected(AdapterView<?> parent,
-									View view, int position, long id) {
-								SharedPreferences.Editor editor = preferences.edit();
-								editor.putString(PAR_FILTERRESID8580,
-										((Spinner) findViewById(R.id.filtersRESID8580))
-												.getSelectedItem().toString());
-								editor.commit();
-							}
-							@Override
-							public void onNothingSelected(AdapterView<?> parent) {
-							}
-						});
-						Spinner filtersfp6581 = (Spinner) findViewById(R.id.filtersRESIDfp6581);
-						filtersfp6581.setAdapter(new ArrayAdapter<String>(
-								MainActivity.this,
-								android.R.layout.simple_spinner_item,
-								filtersRESIDfp6581));
-						filtersfp6581.setSelection(idxFILTERRESIDfp6581);
-						filtersfp6581.setOnItemSelectedListener(new OnItemSelectedListener() {
-							@Override
-							public void onItemSelected(AdapterView<?> parent,
-									View view, int position, long id) {
-								SharedPreferences.Editor editor = preferences.edit();
-								editor.putString(PAR_FILTERRESIDfp6581,
-										((Spinner) findViewById(R.id.filtersRESIDfp6581))
-												.getSelectedItem().toString());
-								editor.commit();
-							}
-							@Override
-							public void onNothingSelected(AdapterView<?> parent) {
-							}
-						});
-						Spinner filtersfp8580 = (Spinner) findViewById(R.id.filtersRESIDfp8580);
-						filtersfp8580.setAdapter(new ArrayAdapter<String>(
-								MainActivity.this,
-								android.R.layout.simple_spinner_item,
-								filtersRESIDfp8580));
-						filtersfp8580.setSelection(idxFILTERRESIDfp8580);
-						filtersfp8580.setOnItemSelectedListener(new OnItemSelectedListener() {
-							@Override
-							public void onItemSelected(AdapterView<?> parent,
-									View view, int position, long id) {
-								SharedPreferences.Editor editor = preferences.edit();
-								editor.putString(PAR_FILTERRESIDfp8580,
-										((Spinner) findViewById(R.id.filtersRESIDfp8580))
-												.getSelectedItem().toString());
-								editor.commit();
-							}
-							@Override
-							public void onNothingSelected(AdapterView<?> parent) {
-							}
-						});
+						setupFilterSpinners(
+								filtersRESID6581, filtersRESID8580,
+								filtersRESIDfp6581, filtersRESIDfp8580,
+								idxFILTERRESID6581, idxFILTERRESID8580,
+								idxFILTERRESIDfp6581, idxFILTERRESIDfp8580,
+								idxSTEREOFILTERRESID6581, idxSTEREOFILTERRESID8580,
+								idxSTEREOFILTERRESIDfp6581, idxSTEREOFILTERRESIDfp8580
+								);
 					}
 				}.execute();
 
@@ -590,14 +583,21 @@ public class MainActivity extends Activity {
 			Spinner filtersRESIDfp6581 = (Spinner) findViewById(R.id.filtersRESIDfp6581);
 			Spinner filtersRESIDfp8580 = (Spinner) findViewById(R.id.filtersRESIDfp8580);
 
+			Spinner stereoFilters6581 = (Spinner) findViewById(R.id.stereoFiltersRESID6581);
+			Spinner stereoFilters8580 = (Spinner) findViewById(R.id.stereoFiltersRESID8580);
+			Spinner stereoFiltersRESIDfp6581 = (Spinner) findViewById(R.id.stereoFiltersRESIDfp6581);
+			Spinner stereoFiltersRESIDfp8580 = (Spinner) findViewById(R.id.stereoFiltersRESIDfp8580);
+
 			String query = "";
 			query += PAR_EMULATION + "=" + emulation.getSelectedItem() + "&";
 			query += PAR_ENABLE_DATABASE + "=" + songLength.isChecked() + "&";
-			query += PAR_DEFAULT_PLAY_LENGTH + "=" + getNumber(defaultLength) + "&";
+			query += PAR_DEFAULT_PLAY_LENGTH + "=" + getNumber(defaultLength)
+					+ "&";
 			query += PAR_DEFAULT_MODEL + "=" + defaultModel.getSelectedItem()
 					+ "&";
 			query += PAR_SINGLE_SONG + "=" + single.isChecked() + "&";
 			query += PAR_LOOP + "=" + loop.isChecked() + "&";
+
 			query += PAR_FILTERRESID6581 + "=" + filters6581.getSelectedItem()
 					+ "&";
 			query += PAR_FILTERRESID8580 + "=" + filters8580.getSelectedItem()
@@ -605,7 +605,17 @@ public class MainActivity extends Activity {
 			query += PAR_FILTERRESIDfp6581 + "="
 					+ filtersRESIDfp6581.getSelectedItem() + "&";
 			query += PAR_FILTERRESIDfp8580 + "="
-					+ filtersRESIDfp8580.getSelectedItem();
+					+ filtersRESIDfp8580.getSelectedItem() + "&";
+
+			query += PAR_STEREO_FILTERRESID6581 + "=" + stereoFilters6581.getSelectedItem()
+					+ "&";
+			query += PAR_STEREO_FILTERRESID8580 + "=" + stereoFilters8580.getSelectedItem()
+					+ "&";
+			query += PAR_STEREO_FILTERRESIDfp6581 + "="
+					+ stereoFiltersRESIDfp6581.getSelectedItem() + "&";
+			query += PAR_STEREO_FILTERRESIDfp8580 + "="
+					+ stereoFiltersRESIDfp8580.getSelectedItem();
+			
 			URI uri = new URI("http", connection.getUsername() + ":"
 					+ connection.getPassword(), connection.getHostname(),
 					Integer.valueOf(connection.getPort()), REST_CONVERT_URL
@@ -762,6 +772,175 @@ public class MainActivity extends Activity {
 		intent.setDataAndType(music.uri, music.type);
 		startActivity(intent);
 		enableDisableUI(true, listViewId);
+	}
+
+	private void setupFilterSpinners(ArrayList<String> filtersRESID6581,
+			ArrayList<String> filtersRESID8580,
+			ArrayList<String> filtersRESIDfp6581,
+			ArrayList<String> filtersRESIDfp8580,
+			int idxFILTERRESID6581,
+			int idxFILTERRESID8580,
+			int idxFILTERRESIDfp6581,
+			int idxFILTERRESIDfp8580,
+			int idxSTEREOFILTERRESID6581,
+			int idxSTEREOFILTERRESID8580,
+			int idxSTEREOFILTERRESIDfp6581,
+			int idxSTEREOFILTERRESIDfp8580
+			) {
+		Spinner filters6581 = (Spinner) findViewById(R.id.filtersRESID6581);
+		filters6581.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+				android.R.layout.simple_spinner_item, filtersRESID6581));
+		filters6581.setSelection(idxFILTERRESID6581);
+		filters6581.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString(PAR_FILTERRESID6581,
+						((Spinner) findViewById(R.id.filtersRESID6581))
+								.getSelectedItem().toString());
+				editor.commit();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
+		Spinner filters8580 = (Spinner) findViewById(R.id.filtersRESID8580);
+		filters8580.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+				android.R.layout.simple_spinner_item, filtersRESID8580));
+		filters8580.setSelection(idxFILTERRESID8580);
+		filters8580.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString(PAR_FILTERRESID8580,
+						((Spinner) findViewById(R.id.filtersRESID8580))
+								.getSelectedItem().toString());
+				editor.commit();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
+		Spinner filtersfp6581 = (Spinner) findViewById(R.id.filtersRESIDfp6581);
+		filtersfp6581.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+				android.R.layout.simple_spinner_item, filtersRESIDfp6581));
+		filtersfp6581.setSelection(idxFILTERRESIDfp6581);
+		filtersfp6581.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString(PAR_FILTERRESIDfp6581,
+						((Spinner) findViewById(R.id.filtersRESIDfp6581))
+								.getSelectedItem().toString());
+				editor.commit();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
+		Spinner filtersfp8580 = (Spinner) findViewById(R.id.filtersRESIDfp8580);
+		filtersfp8580.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+				android.R.layout.simple_spinner_item, filtersRESIDfp8580));
+		filtersfp8580.setSelection(idxFILTERRESIDfp8580);
+		filtersfp8580.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString(PAR_FILTERRESIDfp8580,
+						((Spinner) findViewById(R.id.filtersRESIDfp8580))
+								.getSelectedItem().toString());
+				editor.commit();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
+
+	
+		Spinner stereoFilters6581 = (Spinner) findViewById(R.id.stereoFiltersRESID6581);
+		stereoFilters6581.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+				android.R.layout.simple_spinner_item, filtersRESID6581));
+		stereoFilters6581.setSelection(idxSTEREOFILTERRESID6581);
+		stereoFilters6581.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString(PAR_STEREO_FILTERRESID6581,
+						((Spinner) findViewById(R.id.stereoFiltersRESID6581))
+								.getSelectedItem().toString());
+				editor.commit();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
+		Spinner stereoFilters8580 = (Spinner) findViewById(R.id.stereoFiltersRESID8580);
+		stereoFilters8580.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+				android.R.layout.simple_spinner_item, filtersRESID8580));
+		stereoFilters8580.setSelection(idxSTEREOFILTERRESID8580);
+		stereoFilters8580.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString(PAR_STEREO_FILTERRESID8580,
+						((Spinner) findViewById(R.id.stereoFiltersRESID8580))
+								.getSelectedItem().toString());
+				editor.commit();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
+		Spinner stereoFiltersfp6581 = (Spinner) findViewById(R.id.stereoFiltersRESIDfp6581);
+		stereoFiltersfp6581.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+				android.R.layout.simple_spinner_item, filtersRESIDfp6581));
+		stereoFiltersfp6581.setSelection(idxSTEREOFILTERRESIDfp6581);
+		stereoFiltersfp6581.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString(PAR_STEREO_FILTERRESIDfp6581,
+						((Spinner) findViewById(R.id.stereoFiltersRESIDfp6581))
+								.getSelectedItem().toString());
+				editor.commit();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
+		Spinner stereoFiltersfp8580 = (Spinner) findViewById(R.id.stereoFiltersRESIDfp8580);
+		stereoFiltersfp8580.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+				android.R.layout.simple_spinner_item, filtersRESIDfp8580));
+		stereoFiltersfp8580.setSelection(idxSTEREOFILTERRESIDfp8580);
+		stereoFiltersfp8580.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString(PAR_STEREO_FILTERRESIDfp8580,
+						((Spinner) findViewById(R.id.stereoFiltersRESIDfp8580))
+								.getSelectedItem().toString());
+				editor.commit();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
 	}
 
 }

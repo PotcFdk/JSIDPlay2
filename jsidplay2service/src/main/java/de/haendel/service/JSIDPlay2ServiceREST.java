@@ -76,7 +76,8 @@ public class JSIDPlay2ServiceREST {
 	@GET
 	@Path("/convert/{filePath : .*}")
 	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/convert/C64Music/DEMOS/0-9/1_45_Tune.sid
-	public Response convert(@PathParam("filePath") String filePath,
+	public Response convert(
+			@PathParam("filePath") String filePath,
 			@QueryParam("defaultPlayLength") int defaultPlayLength,
 			@QueryParam("enableDatabase") boolean enableDatabase,
 			@QueryParam("single") boolean single,
@@ -84,9 +85,13 @@ public class JSIDPlay2ServiceREST {
 			@QueryParam("emulation") Emulation emulation,
 			@QueryParam("defaultSidModel") ChipModel defaultSidModel,
 			@QueryParam("filter6581") String filter6581,
+			@QueryParam("stereoFilter6581") String stereoFilter6581,
 			@QueryParam("filter8580") String filter8580,
+			@QueryParam("stereoFilter8580") String stereoFilter8580,
 			@QueryParam("reSIDfpFilter6581") String reSIDfpFilter6581,
-			@QueryParam("reSIDfpFilter8580") String reSIDfpFilter8580) {
+			@QueryParam("reSIDfpStereoFilter6581") String reSIDfpStereoFilter6581,
+			@QueryParam("reSIDfpFilter8580") String reSIDfpFilter8580,
+			@QueryParam("reSIDfpStereoFilter8580") String reSIDfpStereoFilter8580) {
 		Configuration cfg = new Configuration();
 		cfg.getSidplay2().setDefaultPlayLength(defaultPlayLength);
 		cfg.getSidplay2().setEnableDatabase(enableDatabase);
@@ -95,9 +100,13 @@ public class JSIDPlay2ServiceREST {
 		cfg.getEmulation().setEmulation(emulation);
 		cfg.getEmulation().setDefaultSidModel(defaultSidModel);
 		cfg.getEmulation().setFilter6581(filter6581);
+		cfg.getEmulation().setStereoFilter6581(stereoFilter6581);
 		cfg.getEmulation().setFilter8580(filter8580);
+		cfg.getEmulation().setStereoFilter8580(stereoFilter8580);
 		cfg.getEmulation().setReSIDfpFilter6581(reSIDfpFilter6581);
+		cfg.getEmulation().setReSIDfpStereoFilter6581(reSIDfpStereoFilter6581);
 		cfg.getEmulation().setReSIDfpFilter8580(reSIDfpFilter8580);
+		cfg.getEmulation().setReSIDfpStereoFilter8580(reSIDfpStereoFilter8580);
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
