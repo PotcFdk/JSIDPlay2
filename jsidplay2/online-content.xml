@@ -51,17 +51,11 @@
          ================================= -->
 	<target name="shrink_jsiddevice">
 		<exec executable="${java.home}/bin/pack200" failonerror="true">
-			<arg value="--no-gzip" />
+			<arg value="--repack" />
 			<arg value="--strip-debug" />
-			<arg value="${deploy_dir}/${jsiddevice}.pack" />
 			<arg value="${deploy_dir}/${jsiddevice}-proguard.jar" />
 		</exec>
-		<exec executable="${java.home}/bin/unpack200" failonerror="true">
-			<arg value="${deploy_dir}/${jsiddevice}.pack" />
-			<arg value="${deploy_dir}/${jsiddevice}.jar" />
-		</exec>
-		<delete file="${deploy_dir}/${jsiddevice}-proguard.jar" />
-		<delete file="${deploy_dir}/${jsiddevice}.pack" />
+		<move file="${deploy_dir}/${jsiddevice}-proguard.jar" tofile="${deploy_dir}/${jsiddevice}.jar" />
 	</target>
 	
 	<!-- ================================= 
