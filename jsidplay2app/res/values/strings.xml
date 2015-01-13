@@ -72,4 +72,9 @@ Source code can be found at:\n
     
     <string name="resid_engine">ReSID Engine:</string>
 
+    <string name="tab_connection">Conn</string>
+    <string name="tab_sids">Music</string>
+    <string name="tab_tune">Tune</string>
+    <string name="tab_cfg">Cfg</string>
+    
 </resources>
