@@ -19,6 +19,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.SamplingMethod;
 import libsidplay.sidtune.SidTuneError;
 import ui.entities.config.Configuration;
 import de.haendel.impl.IJSIDPlay2;
@@ -82,6 +83,8 @@ public class JSIDPlay2ServiceREST {
 			@QueryParam("enableDatabase") boolean enableDatabase,
 			@QueryParam("single") boolean single,
 			@QueryParam("loop") boolean loop,
+			@QueryParam("samplingMethod") SamplingMethod samplingMethod,
+			@QueryParam("frequency") int frequency,
 			@QueryParam("emulation") Emulation emulation,
 			@QueryParam("defaultSidModel") ChipModel defaultSidModel,
 			@QueryParam("filter6581") String filter6581,
@@ -98,6 +101,8 @@ public class JSIDPlay2ServiceREST {
 		cfg.getSidplay2().setEnableDatabase(enableDatabase);
 		cfg.getSidplay2().setSingle(single);
 		cfg.getSidplay2().setLoop(loop);
+		cfg.getAudio().setSampling(samplingMethod);
+		cfg.getAudio().setFrequency(frequency);
 		cfg.getEmulation().setEmulation(emulation);
 		cfg.getEmulation().setDefaultSidModel(defaultSidModel);
 		cfg.getEmulation().setFilter6581(filter6581);

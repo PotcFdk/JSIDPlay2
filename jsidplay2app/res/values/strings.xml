@@ -12,7 +12,7 @@
     <string name="user_jsidplay2">jsidplay2</string>
     <string name="password">password</string>
     <string name="btn_download">as SID</string>
-    <string name="btn_mp3">as MP3 Stream</string>
+    <string name="btn_mp3">add MP3 Stream to PlayList</string>
     <string name="tune_hint">SID Tune</string>
     <string name="HVSCEntry.path">Full Path</string>
     <string name="HVSCEntry.name">File Name</string>
@@ -76,5 +76,8 @@ Source code can be found at:\n
     <string name="tab_sids">Music</string>
     <string name="tab_tune">Tune</string>
     <string name="tab_cfg">Cfg</string>
+    <string name="samplingMethod">Sampling Method:</string>
+    <string name="frequency">Frequency:</string>
+    <string name="stop">Stop</string>
     
 </resources>

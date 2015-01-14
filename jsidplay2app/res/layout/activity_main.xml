@@ -20,6 +20,91 @@
             android:layout_height="fill_parent" >
 
             <LinearLayout
+                android:id="@+id/tune"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/resource"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/tune_hint" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <ImageView
+                        android:id="@+id/image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxHeight="5dp"
+                        android:maxWidth="5dp"
+                        android:minHeight="5dp"
+                        android:minWidth="5dp"
+                        android:src="@drawable/ic_launcher" />
+
+                    <Button
+                        android:id="@+id/asSid"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="asSid"
+                        android:text="@string/btn_download"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/asMp3"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="addToPlaylist"
+                        android:text="@string/btn_mp3" />
+
+                    <Button
+                        android:id="@+id/stop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="stop"
+                        android:text="@string/stop" />
+
+                </LinearLayout>
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:fadeScrollbars="false"
+                    android:fillViewport="true"
+                    android:scrollbarAlwaysDrawHorizontalTrack="true"
+                    android:scrollbarAlwaysDrawVerticalTrack="true"
+                    android:scrollbarFadeDuration="0"
+                    android:scrollbarStyle="outsideInset"
+                    android:scrollbars="horizontal|vertical" >
+
+                    <HorizontalScrollView
+                        android:id="@+id/horizontalView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="horizontal|vertical" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="vertical" >
+
+                            <TableLayout
+                                android:id="@+id/table"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" >
+                            </TableLayout>
+                        </LinearLayout>
+                    </HorizontalScrollView>
+                </ScrollView>
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/general"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -111,82 +196,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/tune"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical" >
-
-                <TextView
-                    android:id="@+id/resource"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/tune_hint" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <ImageView
-                        android:id="@+id/image"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:maxHeight="5dp"
-                        android:maxWidth="5dp"
-                        android:minHeight="5dp"
-                        android:minWidth="5dp"
-                        android:src="@drawable/ic_launcher" />
-
-                    <Button
-                        android:id="@+id/asSid"
-                        style="?android:attr/buttonStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:onClick="asSid"
-                        android:text="@string/btn_download" />
-
-                    <Button
-                        android:id="@+id/asMp3"
-                        style="?android:attr/buttonStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:onClick="asMp3"
-                        android:text="@string/btn_mp3" />
-                </LinearLayout>
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:fadeScrollbars="false"
-                    android:fillViewport="true"
-                    android:scrollbarAlwaysDrawHorizontalTrack="true"
-                    android:scrollbarAlwaysDrawVerticalTrack="true"
-                    android:scrollbarFadeDuration="0"
-                    android:scrollbarStyle="outsideInset"
-                    android:scrollbars="horizontal|vertical" >
-
-                    <HorizontalScrollView
-                        android:id="@+id/horizontalView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:scrollbars="horizontal|vertical" >
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="fill_parent"
-                            android:orientation="vertical" >
-
-                            <TableLayout
-                                android:id="@+id/table"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" >
-                            </TableLayout>
-                        </LinearLayout>
-                    </HorizontalScrollView>
-                </ScrollView>
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/settings"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -254,6 +263,40 @@
                         android:id="@+id/emulation"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/samplingMethodtxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/samplingMethod" />
+
+                    <Spinner
+                        android:id="@+id/samplingMethod"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/frequencytxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/frequency" />
+
+                    <Spinner
+                        android:id="@+id/frequency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
                 </LinearLayout>
 
                 <LinearLayout

@@ -13,7 +13,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -39,7 +42,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnCompletionListener {
 
 	private static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str)$";
 
@@ -64,6 +67,8 @@ public class MainActivity extends Activity {
 	private static final String PAR_DEFAULT_MODEL = "defaultSidModel";
 	private static final String PAR_SINGLE_SONG = "single";
 	private static final String PAR_LOOP = "loop";
+	private static final String PAR_SAMPLING_METHOD = "samplingMethod";
+	private static final String PAR_FREQUENCY = "frequency";
 	private static final String PAR_FILTER_6581 = "filter6581";
 	private static final String PAR_STEREO_FILTER_6581 = "stereoFilter6581";
 	private static final String PAR_FILTER_8580 = "filter8580";
@@ -79,6 +84,13 @@ public class MainActivity extends Activity {
 
 	private static final String MOS6581 = "MOS6581";
 	private static final String MOS8580 = "MOS8580";
+
+	private static final String DECIMATE = "DECIMATE";
+	private static final String RESAMPLE = "RESAMPLE";
+
+	private static final String _44100 = "44100";
+	private static final String _48000 = "48000";
+	private static final String _96000 = "96000";
 
 	private static final String DEFAULT_HOSTNAME = "haendel.ddns.net";
 	private static final String DEFAULT_PORT = "8080";
@@ -109,6 +121,7 @@ public class MainActivity extends Activity {
 	private String appName;
 	private Connection connection = new Connection();
 	private SharedPreferences preferences;
+	private List<String> playList = new ArrayList<String>();
 
 	private TabHost tabHost;
 	private EditText hostname, port, username, password, defaultLength;
@@ -124,10 +137,12 @@ public class MainActivity extends Activity {
 	private TextView filter6581txt, filter8580txt, reSIDfpFilter6581txt,
 			reSIDfpFilter8580txt;
 
-	private Spinner stereoFilter6581, stereoFilter8580,
-			reSIDfpStereoFilter6581, reSIDfpStereoFilter8580;
+	private Spinner samplingMethod, frequency, stereoFilter6581,
+			stereoFilter8580, reSIDfpStereoFilter6581, reSIDfpStereoFilter8580;
 	private TextView stereoFilter6581txt, stereoFilter8580txt,
 			reSIDfpStereoFilter6581txt, reSIDfpStereoFilter8580txt;
+
+	private MediaPlayer mediaPlayer;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -153,7 +168,8 @@ public class MainActivity extends Activity {
 		digiBoosted8580 = (CheckBox) findViewById(R.id.digiBoosted8580);
 		emulation = (Spinner) findViewById(R.id.emulation);
 		defaultModel = (Spinner) findViewById(R.id.defaultModel);
-
+		samplingMethod = (Spinner) findViewById(R.id.samplingMethod);
+		frequency = (Spinner) findViewById(R.id.frequency);
 		filter6581 = (Spinner) findViewById(R.id.filter6581);
 		filter6581txt = (TextView) findViewById(R.id.filter6581txt);
 		filter8580 = (Spinner) findViewById(R.id.filter8580);
@@ -190,6 +206,10 @@ public class MainActivity extends Activity {
 				RESIDFP);
 		setupSpinner(defaultModel, new String[] { MOS6581, MOS8580 },
 				PAR_DEFAULT_MODEL, MOS6581);
+		setupSpinner(samplingMethod, new String[] { DECIMATE, RESAMPLE },
+				PAR_SAMPLING_METHOD, DECIMATE);
+		setupSpinner(frequency, new String[] { _44100, _48000, _96000 },
+				PAR_FREQUENCY, _48000);
 
 		tabHost.setup();
 		tabHost.addTab(tabHost.newTabSpec("tab_1")
@@ -453,50 +473,103 @@ public class MainActivity extends Activity {
 		}.execute();
 	}
 
-	public void asMp3(View view) {
+	public void addToPlaylist(View view) {
+		StringBuilder query = new StringBuilder();
+		query.append(PAR_EMULATION + "=" + emulation.getSelectedItem() + "&");
+		query.append(PAR_ENABLE_DATABASE + "=" + enableDatabase.isChecked()
+				+ "&");
+		query.append(PAR_DEFAULT_PLAY_LENGTH + "="
+				+ getNumber(defaultLength.getText().toString()) + "&");
+		query.append(PAR_DEFAULT_MODEL + "=" + defaultModel.getSelectedItem()
+				+ "&");
+		query.append(PAR_SINGLE_SONG + "=" + singleSong.isChecked() + "&");
+		query.append(PAR_LOOP + "=" + loop.isChecked() + "&");
+
+		query.append(PAR_FILTER_6581 + "=" + filter6581.getSelectedItem() + "&");
+		query.append(PAR_FILTER_8580 + "=" + filter8580.getSelectedItem() + "&");
+		query.append(PAR_RESIDFP_FILTER_6581 + "="
+				+ reSIDfpFilter6581.getSelectedItem() + "&");
+		query.append(PAR_RESIDFP_FILTER_8580 + "="
+				+ reSIDfpFilter8580.getSelectedItem() + "&");
+
+		query.append(PAR_STEREO_FILTER_6581 + "="
+				+ stereoFilter6581.getSelectedItem() + "&");
+		query.append(PAR_STEREO_FILTER_8580 + "="
+				+ stereoFilter8580.getSelectedItem() + "&");
+		query.append(PAR_RESIDFP_STEREO_FILTER_6581 + "="
+				+ reSIDfpStereoFilter6581.getSelectedItem() + "&");
+		query.append(PAR_RESIDFP_STEREO_FILTER_8580 + "="
+				+ reSIDfpStereoFilter8580.getSelectedItem() + "&");
+		query.append(PAR_DIGI_BOOSTED_8580 + "=" + digiBoosted8580.isChecked()
+				+ "&");
+		query.append(PAR_SAMPLING_METHOD + "="
+				+ samplingMethod.getSelectedItem() + "&");
+		query.append(PAR_FREQUENCY + "=" + frequency.getSelectedItem());
+
+		synchronized (playList) {
+			if (playList.isEmpty()) {
+				stopMediaPlayer();
+				startMediaPlayer(query.toString());
+			}
+			playList.add(query.toString());
+		}
+	}
+
+	public void stop(View view) {
+		synchronized (playList) {
+			stopMediaPlayer();
+			playList.clear();
+		}
+	}
+	
+	private void stopMediaPlayer() {
+		if (mediaPlayer != null) {
+			mediaPlayer.release();
+		}
+	}
+
+	private void startMediaPlayer(String query) {
 		try {
-			StringBuilder query = new StringBuilder();
-			query.append(PAR_EMULATION + "=" + emulation.getSelectedItem()
-					+ "&");
-			query.append(PAR_ENABLE_DATABASE + "=" + enableDatabase.isChecked()
-					+ "&");
-			query.append(PAR_DEFAULT_PLAY_LENGTH + "="
-					+ getNumber(defaultLength.getText().toString()) + "&");
-			query.append(PAR_DEFAULT_MODEL + "="
-					+ defaultModel.getSelectedItem() + "&");
-			query.append(PAR_SINGLE_SONG + "=" + singleSong.isChecked() + "&");
-			query.append(PAR_LOOP + "=" + loop.isChecked() + "&");
-
-			query.append(PAR_FILTER_6581 + "=" + filter6581.getSelectedItem()
-					+ "&");
-			query.append(PAR_FILTER_8580 + "=" + filter8580.getSelectedItem()
-					+ "&");
-			query.append(PAR_RESIDFP_FILTER_6581 + "="
-					+ reSIDfpFilter6581.getSelectedItem() + "&");
-			query.append(PAR_RESIDFP_FILTER_8580 + "="
-					+ reSIDfpFilter8580.getSelectedItem() + "&");
-
-			query.append(PAR_STEREO_FILTER_6581 + "="
-					+ stereoFilter6581.getSelectedItem() + "&");
-			query.append(PAR_STEREO_FILTER_8580 + "="
-					+ stereoFilter8580.getSelectedItem() + "&");
-			query.append(PAR_RESIDFP_STEREO_FILTER_6581 + "="
-					+ reSIDfpStereoFilter6581.getSelectedItem() + "&");
-			query.append(PAR_RESIDFP_STEREO_FILTER_8580 + "="
-					+ reSIDfpStereoFilter8580.getSelectedItem() + "&");
-			query.append(PAR_DIGI_BOOSTED_8580 + "="
-					+ digiBoosted8580.isChecked());
-
 			URI uri = new URI("http", connection.getUsername() + ":"
 					+ connection.getPassword(), connection.getHostname(),
 					getNumber(connection.getPort()), REST_CONVERT_URL
-							+ resource.getText(), query.toString(), null);
+							+ resource.getText(), query, null);
+			mediaPlayer = new MediaPlayer();
+			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+			try {
+				mediaPlayer.setDataSource(uri.toString());
+			} catch (IllegalArgumentException e) {
+				Log.e(appName, e.getMessage(), e);
+			} catch (SecurityException e) {
+				Log.e(appName, e.getMessage(), e);
+			} catch (IllegalStateException e) {
+				Log.e(appName, e.getMessage(), e);
+			} catch (IOException e) {
+				Log.e(appName, e.getMessage(), e);
+			}
+			mediaPlayer.setOnPreparedListener(new OnPreparedListener() {
 
-			Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
-			intent.setDataAndType(Uri.parse(uri.toString()), "audio/mpeg");
-			startActivity(intent);
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					mediaPlayer.setOnCompletionListener(MainActivity.this);
+					mediaPlayer.start();
+				}
+			});
+			mediaPlayer.prepareAsync();
 		} catch (URISyntaxException e) {
 			Log.e(appName, e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public void onCompletion(MediaPlayer mp) {
+		synchronized (playList) {
+			stopMediaPlayer();
+			playList.remove(0);
+			if (!playList.isEmpty()) {
+				String query = playList.get(0);
+				startMediaPlayer(query);
+			}
 		}
 	}
 
