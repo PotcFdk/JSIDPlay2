@@ -641,6 +641,22 @@
 						<id>default-install</id>
 						<phase>none</phase>
 					</execution>
+					<execution>
+						<id>jsidplay2-install</id>
+						<phase>install</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<packaging>jar</packaging>
+							<artifactId>${project.artifactId}</artifactId>
+							<groupId>${project.groupId}</groupId>
+							<version>${project.version}</version>
+							<file>
+								${project.build.directory}/standalone/${project.artifactId}-${project.version}.jar
+							</file>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
