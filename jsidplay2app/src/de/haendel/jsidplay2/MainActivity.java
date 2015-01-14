@@ -112,7 +112,7 @@ public class MainActivity extends Activity {
 
 	private TabHost tabHost;
 	private EditText hostname, port, username, password, defaultLength;
-	private ListView listView;
+	private ListView directory;
 	private TextView resource;
 	private ImageView image;
 	private TableLayout table;
@@ -142,35 +142,35 @@ public class MainActivity extends Activity {
 		port = (EditText) findViewById(R.id.port);
 		username = (EditText) findViewById(R.id.username);
 		password = (EditText) findViewById(R.id.password);
-		listView = (ListView) findViewById(R.id.listView1);
+		directory = (ListView) findViewById(R.id.directory);
 		resource = (TextView) findViewById(R.id.resource);
-		image = (ImageView) findViewById(R.id.imageView1);
+		image = (ImageView) findViewById(R.id.image);
 		table = (TableLayout) findViewById(R.id.table);
 		defaultLength = (EditText) findViewById(R.id.defaultLength);
-		enableDatabase = (CheckBox) findViewById(R.id.songlength);
+		enableDatabase = (CheckBox) findViewById(R.id.enableDatabase);
 		singleSong = (CheckBox) findViewById(R.id.singleSong);
 		loop = (CheckBox) findViewById(R.id.loop);
 		digiBoosted8580 = (CheckBox) findViewById(R.id.digiBoosted8580);
 		emulation = (Spinner) findViewById(R.id.emulation);
 		defaultModel = (Spinner) findViewById(R.id.defaultModel);
 
-		filter6581 = (Spinner) findViewById(R.id.filtersRESID6581);
-		filter6581txt = (TextView) findViewById(R.id.filtersRESID6581txt);
-		filter8580 = (Spinner) findViewById(R.id.filtersRESID8580);
-		filter8580txt = (TextView) findViewById(R.id.filtersRESID8580txt);
-		reSIDfpFilter6581 = (Spinner) findViewById(R.id.filtersRESIDfp6581);
-		reSIDfpFilter6581txt = (TextView) findViewById(R.id.filtersRESIDfp6581txt);
-		reSIDfpFilter8580 = (Spinner) findViewById(R.id.filtersRESIDfp8580);
-		reSIDfpFilter8580txt = (TextView) findViewById(R.id.filtersRESIDfp8580txt);
+		filter6581 = (Spinner) findViewById(R.id.filter6581);
+		filter6581txt = (TextView) findViewById(R.id.filter6581txt);
+		filter8580 = (Spinner) findViewById(R.id.filter8580);
+		filter8580txt = (TextView) findViewById(R.id.filter8580txt);
+		reSIDfpFilter6581 = (Spinner) findViewById(R.id.reSIDfpFilter6581);
+		reSIDfpFilter6581txt = (TextView) findViewById(R.id.reSIDfpFilter6581txt);
+		reSIDfpFilter8580 = (Spinner) findViewById(R.id.reSIDfpFilter8580);
+		reSIDfpFilter8580txt = (TextView) findViewById(R.id.reSIDfpFilter8580txt);
 
-		stereoFilter6581 = (Spinner) findViewById(R.id.stereoFiltersRESID6581);
-		stereoFilter6581txt = (TextView) findViewById(R.id.stereoFiltersRESID6581txt);
-		stereoFilter8580 = (Spinner) findViewById(R.id.stereoFiltersRESID8580);
-		stereoFilter8580txt = (TextView) findViewById(R.id.stereoFiltersRESID8580txt);
-		reSIDfpStereoFilter6581 = (Spinner) findViewById(R.id.stereoFiltersRESIDfp6581);
-		reSIDfpStereoFilter6581txt = (TextView) findViewById(R.id.stereoFiltersRESIDfp6581txt);
-		reSIDfpStereoFilter8580 = (Spinner) findViewById(R.id.stereoFiltersRESIDfp8580);
-		reSIDfpStereoFilter8580txt = (TextView) findViewById(R.id.stereoFiltersRESIDfp8580txt);
+		stereoFilter6581 = (Spinner) findViewById(R.id.stereoFilter6581);
+		stereoFilter6581txt = (TextView) findViewById(R.id.stereoFilter6581txt);
+		stereoFilter8580 = (Spinner) findViewById(R.id.stereoFilter8580);
+		stereoFilter8580txt = (TextView) findViewById(R.id.stereoFilter8580txt);
+		reSIDfpStereoFilter6581 = (Spinner) findViewById(R.id.reSIDfpStereoFilter6581);
+		reSIDfpStereoFilter6581txt = (TextView) findViewById(R.id.reSIDfpStereoFilter6581txt);
+		reSIDfpStereoFilter8580 = (Spinner) findViewById(R.id.reSIDfpStereoFilter8580);
+		reSIDfpStereoFilter8580txt = (TextView) findViewById(R.id.reSIDfpStereoFilter8580txt);
 
 		setupEditText(hostname, PAR_HOSTNAME, DEFAULT_HOSTNAME);
 		setupEditText(port, PAR_PORT, DEFAULT_PORT);
@@ -213,7 +213,7 @@ public class MainActivity extends Activity {
 				switch (tabHost.getCurrentTab()) {
 				case SIDS_TAB_IDX:
 				case SETTINGS_TAB_IDX:
-					if (listView.getCount() == 0) {
+					if (directory.getCount() == 0) {
 						requestFilters();
 						requestDirectory(new File("/"), TUNE_FILTER);
 					}
@@ -496,8 +496,7 @@ public class MainActivity extends Activity {
 			intent.setDataAndType(Uri.parse(uri.toString()), "audio/mpeg");
 			startActivity(intent);
 		} catch (URISyntaxException e) {
-			Log.e(getApplication().getString(R.string.app_name),
-					e.getMessage(), e);
+			Log.e(appName, e.getMessage(), e);
 		}
 	}
 
@@ -510,9 +509,9 @@ public class MainActivity extends Activity {
 	}
 
 	private void viewDirectory(List<String> childs, final String filter) {
-		listView.setAdapter(new ArrayAdapter<String>(this,
+		directory.setAdapter(new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, childs));
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		directory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, final View view,

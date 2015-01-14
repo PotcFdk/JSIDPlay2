@@ -44,9 +44,9 @@
     <string name="HVSCEntry.relocNoPages">Reloc. no. pages</string>
     <string name="HVSCEntry.stilGlbComment">STIL glb. Comment</string>
     <string name="StilEntry.text">STIL</string>
-    <string name="detect_song_length">Detect Song Length</string>
-    <string name="default_length">Default in sec.</string>
-    <string name="single">Single Song</string>
+    <string name="enableDatabase">Detect Song Length</string>
+    <string name="defaultLength">Default in sec.</string>
+    <string name="singleSong">Single Song</string>
     <string name="loop">Loop Song</string>
     <string name="default_model">Default Model:</string>
     <string name="resid6581">Filter 6581:</string>
@@ -70,7 +70,7 @@ Source code can be found at:\n
     
     <string name="digiBoosted8580">Digi Boost 8580</string>
     
-    <string name="resid_engine">ReSID Engine:</string>
+    <string name="residEngine">ReSID Engine:</string>
 
     <string name="tab_connection">Conn</string>
     <string name="tab_sids">Music</string>
