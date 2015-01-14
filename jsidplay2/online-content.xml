@@ -31,7 +31,7 @@
 	<!-- webstart -->
 	<property name="webstart_dir" location="${result_dir}/webstart" />
 
-	<target name="all" depends="zip_jsiddevice,webstart,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import,updateVersion" />
+	<target name="all" depends="compress_jsiddevice_exe,zip_jsiddevice,webstart,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import,updateVersion" />
 
 	<!-- ================================= 
           target: updateVersion
@@ -57,6 +57,22 @@
 		</exec>
 		<move file="${deploy_dir}/${jsiddevice}-proguard.jar" tofile="${deploy_dir}/${jsiddevice}.jar" />
 	</target>
+	
+	<!-- ================================= 
+          target: compress_jsiddevice_exe
+          Description:
+          Compress executable of JSIDDevice with UPX.
+         ================================= -->	
+	<target name="check_upx">
+	    <available file="${upx.home}/upx.exe" property="upx.present"/>
+	</target>
+	<target name="compress_jsiddevice_exe" depends="check_upx" if="upx.present">
+		<exec executable="${upx.home}/upx.exe" failonerror="true">
+			<arg value="--lzma" />
+			<arg value="--best" />
+			<arg value="${deploy_dir}/${jsiddevice}.exe" />
+		</exec>
+	</target>	
 	
 	<!-- ================================= 
           target: zip_jsiddevice

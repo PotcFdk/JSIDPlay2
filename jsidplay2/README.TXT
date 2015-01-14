@@ -22,6 +22,7 @@ Optional:
 -Dzip7.home=<pathToPacker7zip>
 -Dcgsc.7z=<pathToCGSZ.7z>
 -Dhvmec.bz2=<pathToHVMEC.tar.bz2>
+-Dupx.home=<pathToUPX>
 
 Java WebStart pitfalls:
 =======================
