@@ -235,7 +235,7 @@ public class MainActivity extends Activity {
 				SharedPreferences.Editor editor = preferences.edit();
 				editor.putString(parName, newValue);
 				editor.commit();
-				setConnetionParameter(parName, newValue);
+				editTextUpdated(parName, newValue);
 			}
 
 			@Override
@@ -249,6 +249,18 @@ public class MainActivity extends Activity {
 			}
 		});
 		editText.setText(preferences.getString(parName, defaultValue));
+	}
+
+	private void editTextUpdated(String parName, String newValue) {
+		if (PAR_HOSTNAME.equals(parName)) {
+			connection.setHostname(newValue);
+		} else if (PAR_PORT.equals(parName)) {
+			connection.setPort(newValue);
+		} else if (PAR_USERNAME.equals(parName)) {
+			connection.setUsername(newValue);
+		} else if (PAR_PASSWORD.equals(parName)) {
+			connection.setPassword(newValue);
+		}
 	}
 
 	private void setupCheckBox(final CheckBox checkBox, final String parName,
@@ -297,18 +309,6 @@ public class MainActivity extends Activity {
 	private void spinnerUpdated(final Spinner spinner, final String parName) {
 		if (PAR_EMULATION.equals(parName)) {
 			updateFiltersVisibility(spinner);
-		}
-	}
-
-	private void setConnetionParameter(String parName, String newValue) {
-		if (PAR_HOSTNAME.equals(parName)) {
-			connection.setHostname(newValue);
-		} else if (PAR_PORT.equals(parName)) {
-			connection.setPort(newValue);
-		} else if (PAR_USERNAME.equals(parName)) {
-			connection.setUsername(newValue);
-		} else if (PAR_PASSWORD.equals(parName)) {
-			connection.setPassword(newValue);
 		}
 	}
 
@@ -441,7 +441,7 @@ public class MainActivity extends Activity {
 		return result;
 	}
 
-	public void download(View view) {
+	public void asSid(View view) {
 		new DownloadRequest(appName, connection, REST_DOWNLOAD_URL
 				+ resource.getText()) {
 			protected void onPostExecute(DataAndType music) {
@@ -453,7 +453,7 @@ public class MainActivity extends Activity {
 		}.execute();
 	}
 
-	public void mp3(View view) {
+	public void asMp3(View view) {
 		try {
 			StringBuilder query = new StringBuilder();
 			query.append(PAR_EMULATION + "=" + emulation.getSelectedItem()
