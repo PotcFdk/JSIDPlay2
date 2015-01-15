@@ -433,8 +433,7 @@ public class NetworkSIDDevice extends Application {
 
 	private void printErrorAndExit(String msg) {
 		Alert alert = new Alert();
-		alert.setMessage(msg);
-		alert.setWait(true);
+		alert.setText(msg);
 		try {
 			alert.open();
 		} catch (IOException e1) {

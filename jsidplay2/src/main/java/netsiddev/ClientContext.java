@@ -521,8 +521,7 @@ class ClientContext {
 								e.printStackTrace(new PrintWriter(sw));
 								Platform.runLater(()->{
 									Alert alert = new Alert();
-									alert.setMessage(sw.toString());
-									alert.setWait(true);
+									alert.setText(sw.toString());
 									try {
 										alert.open();
 									} catch (Exception e1) {
