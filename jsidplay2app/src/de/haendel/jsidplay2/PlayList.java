@@ -215,7 +215,7 @@ public class PlayList implements OnCompletionListener {
 
 	public synchronized PlayListEntry next() {
 		int next;
-		if (mainActivity.random.isSelected()) {
+		if (mainActivity.random.isChecked()) {
 			next = random.nextInt(list.size());
 		} else {
 			next = ++idx;;
