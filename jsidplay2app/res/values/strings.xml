@@ -77,5 +77,6 @@ Source code can be found at:\n
     <string name="stop">Stop</string>
     <string name="next">Next</string>
     <string name="removeFavorite">Remove</string>
-
+    <string name="random">Random</string>
+    
 </resources>

@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -29,6 +30,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 public class PlayList implements OnCompletionListener {
+
+	private Random random = new Random(System.currentTimeMillis());
 
 	private static final String JSIDPLAY2_JS2 = "jsidplay2.js2";
 	private static final String DOWNLOAD = "Download";
@@ -80,17 +83,16 @@ public class PlayList implements OnCompletionListener {
 				} catch (URISyntaxException e) {
 					Log.e(mainActivity.appName, e.getMessage(), e);
 				}
-				new TuneInfoRequest(mainActivity.appName, mainActivity.connection, MainActivity.REST_INFO
-						+ entry.getResource()) {
+				new TuneInfoRequest(mainActivity.appName,
+						mainActivity.connection, MainActivity.REST_INFO
+								+ entry.getResource()) {
 					public String getString(String key) {
 						key = key.replaceAll("[.]", "_");
-						for (Field field : R.string.class
-								.getDeclaredFields()) {
+						for (Field field : R.string.class.getDeclaredFields()) {
 							if (field.getName().equals(key)) {
 								try {
-									return mainActivity
-											.getString(field
-													.getInt(null));
+									return mainActivity.getString(field
+											.getInt(null));
 								} catch (IllegalArgumentException e) {
 								} catch (IllegalAccessException e) {
 								}
@@ -100,8 +102,7 @@ public class PlayList implements OnCompletionListener {
 					}
 
 					@Override
-					protected void onPostExecute(
-							List<Pair<String, String>> out) {
+					protected void onPostExecute(List<Pair<String, String>> out) {
 						if (out == null) {
 							return;
 						}
@@ -143,7 +144,7 @@ public class PlayList implements OnCompletionListener {
 			String line;
 			while ((line = r.readLine()) != null) {
 				// assuming JSIDPlay2 style - most often relative to HVSC
-				add((!line.startsWith("/C64Music")?"/C64Music":"") + line);
+				add((!line.startsWith("/C64Music") ? "/C64Music" : "") + line);
 			}
 		} finally {
 			r.close();
@@ -213,7 +214,12 @@ public class PlayList implements OnCompletionListener {
 	}
 
 	public synchronized PlayListEntry next() {
-		int next = ++idx;
+		int next;
+		if (mainActivity.random.isSelected()) {
+			next = random.nextInt(list.size());
+		} else {
+			next = ++idx;;
+		}
 		return next < list.size() ? list.get(next) : null;
 	}
 
@@ -286,7 +292,14 @@ public class PlayList implements OnCompletionListener {
 
 	private void stopMediaPlayer() {
 		if (mediaPlayer != null) {
-			mediaPlayer.release();
+			try {
+				if (mediaPlayer.isPlaying()) {
+					mediaPlayer.stop();
+				}
+				mediaPlayer.release();
+			} catch (Exception ex) {
+				Log.e(mainActivity.appName, "Cannot stop media player!");
+			}
 		}
 	}
 

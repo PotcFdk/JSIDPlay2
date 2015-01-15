@@ -128,7 +128,7 @@ public class MainActivity extends Activity {
 	private TableLayout table;
 
 	TableLayout favorites;
-	CheckBox enableDatabase, singleSong, loop, digiBoosted8580;
+	CheckBox enableDatabase, singleSong, loop, digiBoosted8580, random;
 	Spinner emulation, defaultModel;
 
 	Spinner filter6581, filter8580, reSIDfpFilter6581, reSIDfpFilter8580;
@@ -185,6 +185,7 @@ public class MainActivity extends Activity {
 		reSIDfpStereoFilter8580txt = (TextView) findViewById(R.id.reSIDfpStereoFilter8580txt);
 
 		favorites = (TableLayout) findViewById(R.id.favorites);
+		random = (CheckBox) findViewById(R.id.random);
 
 		setupEditText(hostname, PAR_HOSTNAME, DEFAULT_HOSTNAME);
 		setupEditText(port, PAR_PORT, DEFAULT_PORT);
@@ -246,6 +247,11 @@ public class MainActivity extends Activity {
 			}
 		});
 		loadFavorites(null);
+	}
+
+	public void onStop() {
+		super.onStop();;
+		playList.stop();
 	}
 
 	private final void setupEditText(final EditText editText,
@@ -649,8 +655,7 @@ public class MainActivity extends Activity {
 					TableLayout.LayoutParams.MATCH_PARENT,
 					TableLayout.LayoutParams.WRAP_CONTENT));
 		}
-		tabHost.getTabWidget().getChildTabViewAt(TUNE_TAB_IDX)
-		.setEnabled(true);
+		tabHost.getTabWidget().getChildTabViewAt(TUNE_TAB_IDX).setEnabled(true);
 
 	}
 
