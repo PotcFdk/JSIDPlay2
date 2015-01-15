@@ -20,4 +20,6 @@ public interface SIDChip {
 			double samplingFrequency, double highestAccurateFrequency);
 
 	ChipModel getChipModel();
+	
+	int getInputDigiBoost();
 }

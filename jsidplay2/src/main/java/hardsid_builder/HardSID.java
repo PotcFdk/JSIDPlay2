@@ -214,4 +214,9 @@ public class HardSID extends SIDEmu {
 	void setChipsUsed(int size) {
 		chipsUsed = size;
 	}
+
+	@Override
+	public int getInputDigiBoost() {
+		return 0;
+	}
 }

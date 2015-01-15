@@ -39,7 +39,7 @@ import resid_builder.resid.resample.ZeroOrderResampler;
  * @author Antti Lankila
  */
 public final class SID implements SIDChip {
-	public static final int INPUTDIGIBOOST = 0x2FF;
+	private static final int INPUTDIGIBOOST = 0x2FF;
 	
 	/**
 	 * Bus value stays alive for some time after each operation.
@@ -601,5 +601,10 @@ public final class SID implements SIDChip {
 	 */
 	public Filter8580 getFilter8580() {
 		return filter8580;
+	}
+
+	@Override
+	public int getInputDigiBoost() {
+		return model.equals(ChipModel.MOS8580) ? INPUTDIGIBOOST : 0;
 	}
 }

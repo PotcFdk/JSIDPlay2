@@ -82,4 +82,9 @@ public final class FakeStereo extends SIDEmu {
 		s1.input(input);
 	}
 
+	@Override
+	public int getInputDigiBoost() {
+		return s1.getInputDigiBoost();
+	}
+
 }

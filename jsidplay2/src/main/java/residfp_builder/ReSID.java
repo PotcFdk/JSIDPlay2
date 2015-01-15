@@ -185,4 +185,7 @@ public class ReSID extends SIDEmu {
 		return m_credit;
 	}
 
+	public int getInputDigiBoost() {
+		return sid.getInputDigiBoost();
+	}
 }

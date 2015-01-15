@@ -15,30 +15,33 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 
 import libsidplay.common.CPUClock;
-import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 
 /**
- * Audio generating thread which communicates with SIDWrite source over a BlockingQueue.
+ * Audio generating thread which communicates with SIDWrite source over a
+ * BlockingQueue.
  * 
  * @author Antti Lankila
  */
 public class AudioGeneratorThread extends Thread {
-	/** Random source for triangular dithering */	
+	/** Random source for triangular dithering */
 	private static final Random RANDOM = new Random();
-	
+
 	/** Current clock in the SID stream. */
 	private final AtomicLong playbackClock = new AtomicLong(0);
 
-	/** Queue with SID writes from client. We reserve a space assuming writes come at most one every 10 cpu clocks. */
+	/**
+	 * Queue with SID writes from client. We reserve a space assuming writes
+	 * come at most one every 10 cpu clocks.
+	 */
 	private final BlockingQueue<SIDWrite> sidCommandQueue;
 
 	/** global setting for each 8580 if digiboost should be enabled */
 	private boolean digiBoostEnabled = false;
-	
+
 	/** SIDs that generate output */
 	private SIDChip[] sid;
 
@@ -57,7 +60,7 @@ public class AudioGeneratorThread extends Thread {
 	private int[] sidLevel;
 
 	private int deviceIndex;
-	
+
 	private int[] sidPositionL;
 
 	private int[] sidPositionR;
@@ -72,8 +75,8 @@ public class AudioGeneratorThread extends Thread {
 	private final AtomicBoolean quicklyDiscardAudio = new AtomicBoolean(false);
 
 	/**
-	 * Triangularly shaped noise source for audio applications.
-	 * Output of this PRNG is between ]-1, 1[.
+	 * Triangularly shaped noise source for audio applications. Output of this
+	 * PRNG is between ]-1, 1[.
 	 * 
 	 * @return triangular noise sample
 	 */
@@ -93,7 +96,7 @@ public class AudioGeneratorThread extends Thread {
 		deviceIndex = settings.getDeviceIndex();
 		digiBoostEnabled = settings.getDigiBoostEnabled();
 	}
-	
+
 	@Override
 	public void run() {
 		/** Audio output driver. */
@@ -111,7 +114,8 @@ public class AudioGeneratorThread extends Thread {
 			/* Do sound 10 ms at a time. */
 			final int audioLength = 10000;
 			/* Allocate audio buffer about 2x needed. */
-			int[] audioBuffer = new int[2 * audioLength / (1000000 / audioConfig.getFrameRate())];
+			int[] audioBuffer = new int[2 * audioLength
+					/ (1000000 / audioConfig.getFrameRate())];
 			int[] outAudioBuffer = new int[audioBuffer.length];
 
 			/* Wait for configuration/commands initially. */
@@ -126,9 +130,14 @@ public class AudioGeneratorThread extends Thread {
 
 				/* Ran out of writes? */
 				if (write == null) {
-					long predictedExhaustionTime = System.currentTimeMillis() + driver.getRemainingPlayTime();
-					while (! quicklyDiscardAudio.get() && System.currentTimeMillis() < predictedExhaustionTime) {
-						/* Sleep for 1 ms, then re-check quicklyDiscardAudio flag. */
+					long predictedExhaustionTime = System.currentTimeMillis()
+							+ driver.getRemainingPlayTime();
+					while (!quicklyDiscardAudio.get()
+							&& System.currentTimeMillis() < predictedExhaustionTime) {
+						/*
+						 * Sleep for 1 ms, then re-check quicklyDiscardAudio
+						 * flag.
+						 */
 						write = sidCommandQueue.poll(1, TimeUnit.MILLISECONDS);
 						if (write != null) {
 							break;
@@ -138,7 +147,7 @@ public class AudioGeneratorThread extends Thread {
 
 					/* Okay, no dice; we must stop. */
 					if (write == null) {
-						synchronized(audioWait) {
+						synchronized (audioWait) {
 							audioWait.set(true);
 							audioWait.notify();
 						}
@@ -156,33 +165,38 @@ public class AudioGeneratorThread extends Thread {
 					int piece = Math.min(cycles, audioLength);
 
 					/* First SID initializes the buffer. */
-					final int audioBufferPos = sid[0].clock(piece, audioBuffer, 0);
-					for (int i = 0; i < audioBufferPos; i ++) {
+					final int audioBufferPos = sid[0].clock(piece, audioBuffer,
+							0);
+					for (int i = 0; i < audioBufferPos; i++) {
 						int sample = audioBuffer[i] * sidLevel[0] >> 10;
 						outAudioBuffer[i << 1 | 0] = sample * sidPositionL[0] >> 10;
 						outAudioBuffer[i << 1 | 1] = sample * sidPositionR[0] >> 10;
 					}
 
 					/* Other SIDs are added to mix. */
-					for (int sidNum = 1; sidNum < sid.length; sidNum ++) {
+					for (int sidNum = 1; sidNum < sid.length; sidNum++) {
 						sid[sidNum].clock(piece, audioBuffer, 0);
-						for (int i = 0; i < audioBufferPos; i ++) {
+						for (int i = 0; i < audioBufferPos; i++) {
 							int sample = audioBuffer[i] * sidLevel[sidNum] >> 10;
-							outAudioBuffer[i << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
-							outAudioBuffer[i << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
+							outAudioBuffer[i << 1 | 0] += sample
+									* sidPositionL[sidNum] >> 10;
+							outAudioBuffer[i << 1 | 1] += sample
+									* sidPositionR[sidNum] >> 10;
 						}
 					}
 
-					/* Note: if we need > 2 SIDs, we could consider mixing them together
-					 * before resampling, which would allow us to run the sinc code only
-					 * twice. Additionally, we might define stereo sinc resampler to do
-					 * both passes at once. This should be a win because the FIR table
-					 * would only have to be fetched once.
+					/*
+					 * Note: if we need > 2 SIDs, we could consider mixing them
+					 * together before resampling, which would allow us to run
+					 * the sinc code only twice. Additionally, we might define
+					 * stereo sinc resampler to do both passes at once. This
+					 * should be a win because the FIR table would only have to
+					 * be fetched once.
 					 */
 
 					/* Generate triangularly dithered stereo audio output. */
 					final ByteBuffer output = driver.buffer();
-					for (int i = 0; i < audioBufferPos; i ++) {
+					for (int i = 0; i < audioBufferPos; i++) {
 						int dithering = triangularDithering();
 						int value;
 
@@ -203,8 +217,8 @@ public class AudioGeneratorThread extends Thread {
 							value = -32768;
 						}
 						output.putShort((short) value);
-							
-						if (! output.hasRemaining()) {
+
+						if (!output.hasRemaining()) {
 							driver.write();
 							output.clear();
 						}
@@ -228,8 +242,9 @@ public class AudioGeneratorThread extends Thread {
 					break;
 				}
 
-				if (! write.isPureDelay()) {
-					sid[write.getChip()].write(write.getRegister(), write.getValue());
+				if (!write.isPureDelay()) {
+					sid[write.getChip()].write(write.getRegister(),
+							write.getValue());
 				}
 
 				if (deviceChanged) {
@@ -248,8 +263,10 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Reset the specified SID and sets the volume afterwards.
 	 * 
-	 * @param sidNumber The specified SID to reset.
-	 * @param volume    The volume of the specified SID after resetting it.
+	 * @param sidNumber
+	 *            The specified SID to reset.
+	 * @param volume
+	 *            The volume of the specified SID after resetting it.
 	 */
 	public void reset(final int sidNumber, final byte volume) {
 		sid[sidNumber].reset();
@@ -259,9 +276,12 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Mute a SID's voice.
 	 * 
-	 * @param sidNumber The specified SID to mute the voice of.
-	 * @param voiceNo   The specific voice of the SID to mute.
-	 * @param mute      Mute/Unmute the SID voice.
+	 * @param sidNumber
+	 *            The specified SID to mute the voice of.
+	 * @param voiceNo
+	 *            The specific voice of the SID to mute.
+	 * @param mute
+	 *            Mute/Unmute the SID voice.
 	 */
 	public void mute(final int sidNumber, final int voiceNo, final boolean mute) {
 		sid[sidNumber].mute(voiceNo, mute);
@@ -280,7 +300,8 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Set NTSC/PAL time source.
 	 * 
-	 * @param clock The specified clock value to set.
+	 * @param clock
+	 *            The specified clock value to set.
 	 */
 	public void setClocking(CPUClock clock) {
 		Arrays.fill(sidClocking, clock);
@@ -290,7 +311,8 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Set quality of audio output.
 	 * 
-	 * @param samplingMethod The desired sampling method to use.
+	 * @param samplingMethod
+	 *            The desired sampling method to use.
 	 */
 	public void setSampling(SamplingMethod samplingMethod) {
 		Arrays.fill(sidSampling, samplingMethod);
@@ -298,12 +320,13 @@ public class AudioGeneratorThread extends Thread {
 	}
 
 	/**
-	 * Update SID parameters to new settings based on
-	 * given clocking, sampling and output frequency.
+	 * Update SID parameters to new settings based on given clocking, sampling
+	 * and output frequency.
 	 */
 	private void refreshParams() {
-		for (int i = 0; i < sid.length; i ++) {
-			sid[i].setSamplingParameters(sidClocking[i].getCpuFrequency(), sidSampling[i], audioConfig.getFrameRate(), 20000);
+		for (int i = 0; i < sid.length; i++) {
+			sid[i].setSamplingParameters(sidClocking[i].getCpuFrequency(),
+					sidSampling[i], audioConfig.getFrameRate(), 20000);
 		}
 	}
 
@@ -311,14 +334,15 @@ public class AudioGeneratorThread extends Thread {
 		if (sid.length > 1) {
 			float rightFraction = (position + 100) / 200f;
 			float leftFraction = 1f - rightFraction;
-			float power = (float) Math.sqrt(leftFraction * leftFraction + rightFraction * rightFraction);
+			float power = (float) Math.sqrt(leftFraction * leftFraction
+					+ rightFraction * rightFraction);
 			sidPositionL[sidNumber] = (int) (1024 * leftFraction / power);
 			sidPositionR[sidNumber] = (int) (1024 * rightFraction / power);
 		} else {
 			sidPositionL[sidNumber] = 1024;
 			sidPositionR[sidNumber] = 1024;
 		}
-	}	
+	}
 
 	public void setLevelAdjustment(int sid, int level) {
 		sidLevel[sid] = (int) (1024 * Math.pow(10.0, level / 100.0));
@@ -364,7 +388,7 @@ public class AudioGeneratorThread extends Thread {
 
 	public boolean waitUntilQueueReady(long timeout) {
 		boolean isQueueReady = audioWait.get();
-		if (! isQueueReady) {
+		if (!isQueueReady) {
 			ensureQuickDraining();
 			try {
 				synchronized (audioWait) {
@@ -390,7 +414,7 @@ public class AudioGeneratorThread extends Thread {
 		sidPositionL = new int[sid.length];
 		sidPositionR = new int[sid.length];
 
-		for (int i = 0; i < sid.length; i ++) {
+		for (int i = 0; i < sid.length; i++) {
 			setLevelAdjustment(i, 0);
 			if (sid.length > 1) {
 				setPosition(i, -100 + 200 * i / (sid.length - 1));
@@ -408,21 +432,15 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Whether or not to enable Digiboost for all SID chips of model 8580.
 	 *
-	 * @param selected Whether or not to enable Digiboost.
+	 * @param selected
+	 *            Whether or not to enable Digiboost.
 	 */
 	public void setDigiBoost(final boolean selected) {
 		digiBoostEnabled = selected;
 
-		final int inputReSid = selected ? resid_builder.resid.SID.INPUTDIGIBOOST : 0;
-		final int inputResidFP = selected ? residfp_builder.resid.SID.INPUTDIGIBOOST : 0;
-
 		for (SIDChip sidChip : sid) {
-			if (sidChip != null && sidChip.getChipModel().equals(ChipModel.MOS8580)) {
-				if (sidChip instanceof residfp_builder.resid.SID) { 
-					sidChip.input(inputResidFP);
-				} else {
-					sidChip.input(inputReSid);
-				}
+			if (digiBoostEnabled && sidChip != null) {
+				sidChip.input(sidChip.getInputDigiBoost());
 			}
 		}
 	}

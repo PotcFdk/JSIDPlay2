@@ -221,4 +221,8 @@ public class ReSID extends SIDEmu {
 	public int[] getBuffer() {
 		return buffer;
 	}
+	
+	public int getInputDigiBoost() {
+		return sid.getInputDigiBoost();
+	}
 }

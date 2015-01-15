@@ -82,7 +82,7 @@ public class EmulationSettings extends C64Window {
 	private LineChart<Number, Number> filterCurve, stereoFilterCurve;
 
 	private boolean boost8580Enabled;
-	
+
 	private ObservableList<Object> sid1Models;
 	private ObservableList<Object> sid2Models;
 	private ObservableList<ChipModel> defaultModels;
@@ -100,7 +100,7 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private void initialize() {
 		duringInitialization = true;
-		
+
 		boost8580Enabled = util.getConfig().getEmulation().isDigiBoosted8580();
 
 		filters = FXCollections.<String> observableArrayList();
@@ -302,7 +302,7 @@ public class EmulationSettings extends C64Window {
 		} else if (!stereoMode.getSelectionModel().getSelectedItem()
 				.equals(stereo)) {
 			stereoMode.getSelectionModel().select(stereo);
-			baseAddress.setText(String.format("0x%4x",decode));
+			baseAddress.setText(String.format("0x%4x", decode));
 			return;
 		}
 		restart();
@@ -339,18 +339,8 @@ public class EmulationSettings extends C64Window {
 		boost8580Enabled = boosted8580.isSelected();
 		util.getConfig().getEmulation().setDigiBoosted8580(boost8580Enabled);
 		util.getPlayer().configureSIDs(
-				(num, sid) -> sid.input(getDigiBoostInputValue(sid)));	
-	}
-
-	private int getDigiBoostInputValue(final SIDEmu sid) {
-		if (boost8580Enabled == true && sid.getChipModel().equals(ChipModel.MOS8580)) {
-			if (sid instanceof residfp_builder.ReSID) {
-				return residfp_builder.resid.SID.INPUTDIGIBOOST;
-			} else {
-				return resid_builder.resid.SID.INPUTDIGIBOOST;
-			}
-		}
-		return 0;
+				(num, sid) -> sid.input(boost8580Enabled ? sid
+						.getInputDigiBoost() : 0));
 	}
 
 	@FXML
@@ -436,7 +426,8 @@ public class EmulationSettings extends C64Window {
 					sid.setFilterEnable(num != 0 ? util.getConfig()
 							.getEmulation().isStereoFilter() : util.getConfig()
 							.getEmulation().isFilter());
-					sid.input(getDigiBoostInputValue(sid));
+					final SIDEmu sid1 = sid;
+					sid.input(boost8580Enabled ? sid1.getInputDigiBoost() : 0);
 				});
 	}
 
@@ -478,8 +469,7 @@ public class EmulationSettings extends C64Window {
 							.add(new XYChart.Data<Number, Number>(
 									i,
 									(int) (i
-											* filter
-													.getFilter8580CurvePosition() / (FC_MAX - 1))));
+											* filter.getFilter8580CurvePosition() / (FC_MAX - 1))));
 				}
 			} else if (filter.isReSIDfpFilter6581()
 					|| filter.isReSIDfpFilter8580()) {

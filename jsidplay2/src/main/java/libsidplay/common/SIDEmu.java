@@ -66,4 +66,6 @@ public abstract class SIDEmu {
 			SamplingMethod sampling);
 
 	public abstract void input(int input);
+
+	public abstract int getInputDigiBoost();
 }
