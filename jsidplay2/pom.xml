@@ -603,7 +603,7 @@
 							<icon>src/main/launch4j/jsiddevice.ico</icon>
 							<singleInstance>
 								<mutexName>JSidDevice</mutexName>
-							</singleInstance>								
+							</singleInstance>
 							<classPath>
 								<mainClass>netsiddev.NetworkSIDDevice</mainClass>
 							</classPath>
