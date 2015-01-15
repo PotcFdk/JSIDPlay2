@@ -81,6 +81,8 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private LineChart<Number, Number> filterCurve, stereoFilterCurve;
 
+	private boolean boost8580Enabled;
+	
 	private ObservableList<Object> sid1Models;
 	private ObservableList<Object> sid2Models;
 	private ObservableList<ChipModel> defaultModels;
@@ -98,6 +100,8 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private void initialize() {
 		duringInitialization = true;
+		
+		boost8580Enabled = util.getConfig().getEmulation().isDigiBoosted8580();
 
 		filters = FXCollections.<String> observableArrayList();
 		filter.setItems(filters);
@@ -196,8 +200,7 @@ public class EmulationSettings extends C64Window {
 				.getDefaultSidModel();
 		defaultModel.getSelectionModel().select(defautSidModel);
 
-		boosted8580.setSelected(util.getConfig().getEmulation()
-				.isDigiBoosted8580());
+		boosted8580.setSelected(boost8580Enabled);
 
 		calculateFilterCurve(filter.getSelectionModel().getSelectedItem(),
 				false);
@@ -333,13 +336,14 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setDigiBoost() {
-		util.getConfig().getEmulation().setDigiBoosted8580(boosted8580.isSelected());
+		boost8580Enabled = boosted8580.isSelected();
+		util.getConfig().getEmulation().setDigiBoosted8580(boost8580Enabled);
 		util.getPlayer().configureSIDs(
 				(num, sid) -> sid.input(getDigiBoostInputValue(sid)));	
 	}
 
 	private int getDigiBoostInputValue(final SIDEmu sid) {
-		if (boosted8580.isSelected() == true &&	sid.getChipModel().equals(ChipModel.MOS8580)) {
+		if (boost8580Enabled == true && sid.getChipModel().equals(ChipModel.MOS8580)) {
 			if (sid instanceof residfp_builder.ReSID) {
 				return residfp_builder.resid.SID.INPUTDIGIBOOST;
 			} else {

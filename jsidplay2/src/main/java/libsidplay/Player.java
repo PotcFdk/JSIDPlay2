@@ -828,12 +828,25 @@ public class Player {
 			sid.setFilter(config, num != 0);
 			sid.setFilterEnable(num != 0 ? config.getEmulation()
 					.isStereoFilter() : config.getEmulation().isFilter());
+			sid.input(getDigiBoostInputValue(sid));
 		});
 		setStereoSIDAddress();
 
 		reset();
 
 		stateProperty.set(State.RUNNING);
+	}
+	
+	private int getDigiBoostInputValue(final SIDEmu sid) {
+		final boolean boosted8580 = getConfig().getEmulation().isDigiBoosted8580();
+		if (boosted8580 && sid.getChipModel().equals(ChipModel.MOS8580)) {
+			if (sid instanceof residfp_builder.ReSID) {
+				return residfp_builder.resid.SID.INPUTDIGIBOOST;
+			} else {
+				return resid_builder.resid.SID.INPUTDIGIBOOST;
+			}
+		}
+		return 0;
 	}
 
 	/**
