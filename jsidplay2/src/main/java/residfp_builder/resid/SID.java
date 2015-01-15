@@ -29,6 +29,8 @@ import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
 
 public class SID implements SIDChip {
+	public static final int INPUTDIGIBOOST = -0x9500;
+	
 	/**
 	 * Cache for caching the expensive FIR table computation results in the Java
 	 * process.

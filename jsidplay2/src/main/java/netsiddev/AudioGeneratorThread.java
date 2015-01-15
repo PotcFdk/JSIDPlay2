@@ -413,8 +413,8 @@ public class AudioGeneratorThread extends Thread {
 	public void setDigiBoost(final boolean selected) {
 		digiBoostEnabled = selected;
 
-		final int inputReSid = selected ? 0x2FF : 0;
-		final int inputResidFP = selected ? -0x9500 : 0;
+		final int inputReSid = selected ? resid_builder.resid.SID.INPUTDIGIBOOST : 0;
+		final int inputResidFP = selected ? residfp_builder.resid.SID.INPUTDIGIBOOST : 0;
 
 		for (SIDChip sidChip : sid) {
 			if (sidChip != null && sidChip.getChipModel().equals(ChipModel.MOS8580)) {

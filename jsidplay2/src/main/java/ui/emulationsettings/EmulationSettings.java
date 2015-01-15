@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 import libsidplay.Player;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.SIDEmu;
 import libsidplay.player.State;
 import resid_builder.resid.FilterModelConfig;
 import sidplay.audio.AudioConfig;
@@ -332,10 +333,20 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setDigiBoost() {
-		boolean selected = boosted8580.isSelected();
-		util.getConfig().getEmulation().setDigiBoosted8580(selected);
+		util.getConfig().getEmulation().setDigiBoosted8580(boosted8580.isSelected());
 		util.getPlayer().configureSIDs(
-				(num, sid) -> sid.input(selected ? 0x7FF : 0));
+				(num, sid) -> sid.input(getDigiBoostInputValue(sid)));	
+	}
+
+	private int getDigiBoostInputValue(final SIDEmu sid) {
+		if (boosted8580.isSelected() == true &&	sid.getChipModel().equals(ChipModel.MOS8580)) {
+			if (sid instanceof residfp_builder.ReSID) {
+				return residfp_builder.resid.SID.INPUTDIGIBOOST;
+			} else {
+				return resid_builder.resid.SID.INPUTDIGIBOOST;
+			}
+		}
+		return 0;
 	}
 
 	@FXML
@@ -421,6 +432,7 @@ public class EmulationSettings extends C64Window {
 					sid.setFilterEnable(num != 0 ? util.getConfig()
 							.getEmulation().isStereoFilter() : util.getConfig()
 							.getEmulation().isFilter());
+					sid.input(getDigiBoostInputValue(sid));
 				});
 	}
 
