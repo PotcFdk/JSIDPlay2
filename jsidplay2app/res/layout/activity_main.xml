@@ -20,6 +20,72 @@
             android:layout_height="fill_parent" >
 
             <LinearLayout
+                android:id="@+id/playlist"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <Button
+                        android:id="@+id/remove"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="removeFavorite"
+                        android:text="@string/removeFavorite" />
+
+                    <Button
+                        android:id="@+id/next"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="next"
+                        android:text="@string/next" />
+
+                    <Button
+                        android:id="@+id/stop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="stop"
+                        android:text="@string/stop" />
+
+                    </LinearLayout>
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:fadeScrollbars="false"
+                    android:fillViewport="true"
+                    android:scrollbarAlwaysDrawHorizontalTrack="true"
+                    android:scrollbarAlwaysDrawVerticalTrack="true"
+                    android:scrollbarFadeDuration="0"
+                    android:scrollbarStyle="outsideInset"
+                    android:scrollbars="horizontal|vertical" >
+
+                    <HorizontalScrollView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="horizontal|vertical" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="vertical" >
+
+                            <TableLayout
+                                android:id="@+id/favorites"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" >
+                            </TableLayout>
+                        </LinearLayout>
+                    </HorizontalScrollView>
+                </ScrollView>
+                
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/tune"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -61,14 +127,6 @@
                         android:layout_height="wrap_content"
                         android:onClick="addToPlaylist"
                         android:text="@string/btn_mp3" />
-
-                    <Button
-                        android:id="@+id/stop"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:onClick="stop"
-                        android:text="@string/stop" />
-
                 </LinearLayout>
 
                 <ScrollView
@@ -84,7 +142,6 @@
                     android:scrollbars="horizontal|vertical" >
 
                     <HorizontalScrollView
-                        android:id="@+id/horizontalView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:scrollbars="horizontal|vertical" >
@@ -177,7 +234,6 @@
                     android:inputType="textMultiLine|none"
                     android:text="@string/about"
                     android:textStyle="italic" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -443,7 +499,6 @@
                         android:layout_height="wrap_content" />
                 </LinearLayout>
             </LinearLayout>
-
         </FrameLayout>
     </LinearLayout>
 

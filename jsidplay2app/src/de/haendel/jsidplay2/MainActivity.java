@@ -2,8 +2,8 @@ package de.haendel.jsidplay2;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +13,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -42,7 +38,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements OnCompletionListener {
+public class MainActivity extends Activity {
 
 	private static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str)$";
 
@@ -51,7 +47,7 @@ public class MainActivity extends Activity implements OnCompletionListener {
 	private static final String ROOT_URL = CONTEXT_ROOT + ROOT_PATH;
 
 	static final String REST_DOWNLOAD_URL = ROOT_URL + "/download";
-	private static final String REST_CONVERT_URL = ROOT_URL + "/convert";
+	static final String REST_CONVERT_URL = ROOT_URL + "/convert";
 	static final String REST_DIRECTORY_URL = ROOT_URL + "/directory";
 	static final String REST_PHOTO_URL = ROOT_URL + "/photo";
 	static final String REST_INFO = ROOT_URL + "/info";
@@ -61,23 +57,23 @@ public class MainActivity extends Activity implements OnCompletionListener {
 	private static final String PAR_PORT = "port";
 	private static final String PAR_USERNAME = "username";
 	private static final String PAR_PASSWORD = "password";
-	private static final String PAR_EMULATION = "emulation";
-	private static final String PAR_ENABLE_DATABASE = "enableDatabase";
-	private static final String PAR_DEFAULT_PLAY_LENGTH = "defaultPlayLength";
-	private static final String PAR_DEFAULT_MODEL = "defaultSidModel";
-	private static final String PAR_SINGLE_SONG = "single";
-	private static final String PAR_LOOP = "loop";
-	private static final String PAR_SAMPLING_METHOD = "samplingMethod";
-	private static final String PAR_FREQUENCY = "frequency";
-	private static final String PAR_FILTER_6581 = "filter6581";
-	private static final String PAR_STEREO_FILTER_6581 = "stereoFilter6581";
-	private static final String PAR_FILTER_8580 = "filter8580";
-	private static final String PAR_STEREO_FILTER_8580 = "stereoFilter8580";
-	private static final String PAR_RESIDFP_FILTER_6581 = "reSIDfpFilter6581";
-	private static final String PAR_RESIDFP_STEREO_FILTER_6581 = "reSIDfpStereoFilter6581";
-	private static final String PAR_RESIDFP_FILTER_8580 = "reSIDfpFilter8580";
-	private static final String PAR_RESIDFP_STEREO_FILTER_8580 = "reSIDfpStereoFilter8580";
-	private static final String PAR_DIGI_BOOSTED_8580 = "digiBoosted8580";
+	static final String PAR_EMULATION = "emulation";
+	static final String PAR_ENABLE_DATABASE = "enableDatabase";
+	static final String PAR_DEFAULT_PLAY_LENGTH = "defaultPlayLength";
+	static final String PAR_DEFAULT_MODEL = "defaultSidModel";
+	static final String PAR_SINGLE_SONG = "single";
+	static final String PAR_LOOP = "loop";
+	static final String PAR_SAMPLING_METHOD = "samplingMethod";
+	static final String PAR_FREQUENCY = "frequency";
+	static final String PAR_FILTER_6581 = "filter6581";
+	static final String PAR_STEREO_FILTER_6581 = "stereoFilter6581";
+	static final String PAR_FILTER_8580 = "filter8580";
+	static final String PAR_STEREO_FILTER_8580 = "stereoFilter8580";
+	static final String PAR_RESIDFP_FILTER_6581 = "reSIDfpFilter6581";
+	static final String PAR_RESIDFP_STEREO_FILTER_6581 = "reSIDfpStereoFilter6581";
+	static final String PAR_RESIDFP_FILTER_8580 = "reSIDfpFilter8580";
+	static final String PAR_RESIDFP_STEREO_FILTER_8580 = "reSIDfpStereoFilter8580";
+	static final String PAR_DIGI_BOOSTED_8580 = "digiBoosted8580";
 
 	private static final String RESID = "RESID";
 	private static final String RESIDFP = "RESIDFP";
@@ -96,8 +92,8 @@ public class MainActivity extends Activity implements OnCompletionListener {
 	private static final String DEFAULT_PORT = "8080";
 	private static final String DEFAULT_USERNAME = "jsidplay2";
 	private static final String DEFAULT_PASSWORD = "jsidplay2!";
-	private static final String DEFAULT_DEFAULT_PLAY_LENGTH = "0";
-	private static final String DEFAULT_ENABLE_DATABASE = Boolean.FALSE
+	private static final String DEFAULT_DEFAULT_PLAY_LENGTH = "300";
+	private static final String DEFAULT_ENABLE_DATABASE = Boolean.TRUE
 			.toString();
 	private static final String DEFAULT_SINGLE_SONG = Boolean.FALSE.toString();
 	private static final String DEFAULT_LOOP = Boolean.FALSE.toString();
@@ -116,33 +112,33 @@ public class MainActivity extends Activity implements OnCompletionListener {
 	// private static final int CONNECTION_TAB_IDX = 0;
 	private static final int SIDS_TAB_IDX = 1;
 	private static final int TUNE_TAB_IDX = 2;
-	private static final int SETTINGS_TAB_IDX = 3;
+	private static final int PLAYLIST_TAB_IDX = 3;
+	private static final int SETTINGS_TAB_IDX = 4;
 
-	private String appName;
-	private Connection connection = new Connection();
+	String appName;
+	Connection connection = new Connection();
 	private SharedPreferences preferences;
-	private List<String> playList = new ArrayList<String>();
+	private PlayList playList = new PlayList(this);
 
 	private TabHost tabHost;
-	private EditText hostname, port, username, password, defaultLength;
+	EditText hostname, port, username, password, defaultLength;
 	private ListView directory;
 	private TextView resource;
 	private ImageView image;
 	private TableLayout table;
-	private CheckBox enableDatabase, singleSong, loop, digiBoosted8580;
-	private Spinner emulation, defaultModel;
 
-	private Spinner filter6581, filter8580, reSIDfpFilter6581,
-			reSIDfpFilter8580;
+	TableLayout favorites;
+	CheckBox enableDatabase, singleSong, loop, digiBoosted8580;
+	Spinner emulation, defaultModel;
+
+	Spinner filter6581, filter8580, reSIDfpFilter6581, reSIDfpFilter8580;
 	private TextView filter6581txt, filter8580txt, reSIDfpFilter6581txt,
 			reSIDfpFilter8580txt;
 
-	private Spinner samplingMethod, frequency, stereoFilter6581,
-			stereoFilter8580, reSIDfpStereoFilter6581, reSIDfpStereoFilter8580;
+	Spinner samplingMethod, frequency, stereoFilter6581, stereoFilter8580,
+			reSIDfpStereoFilter6581, reSIDfpStereoFilter8580;
 	private TextView stereoFilter6581txt, stereoFilter8580txt,
 			reSIDfpStereoFilter6581txt, reSIDfpStereoFilter8580txt;
-
-	private MediaPlayer mediaPlayer;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -188,6 +184,8 @@ public class MainActivity extends Activity implements OnCompletionListener {
 		reSIDfpStereoFilter8580 = (Spinner) findViewById(R.id.reSIDfpStereoFilter8580);
 		reSIDfpStereoFilter8580txt = (TextView) findViewById(R.id.reSIDfpStereoFilter8580txt);
 
+		favorites = (TableLayout) findViewById(R.id.favorites);
+
 		setupEditText(hostname, PAR_HOSTNAME, DEFAULT_HOSTNAME);
 		setupEditText(port, PAR_PORT, DEFAULT_PORT);
 		setupEditText(username, PAR_USERNAME, DEFAULT_USERNAME);
@@ -222,6 +220,9 @@ public class MainActivity extends Activity implements OnCompletionListener {
 				.setIndicator(getString(R.string.tab_tune))
 				.setContent(R.id.tune));
 		tabHost.addTab(tabHost.newTabSpec("tab_5")
+				.setIndicator(getString(R.string.tab_playlist))
+				.setContent(R.id.playlist));
+		tabHost.addTab(tabHost.newTabSpec("tab_6")
 				.setIndicator(getString(R.string.tab_cfg))
 				.setContent(R.id.settings));
 
@@ -244,6 +245,7 @@ public class MainActivity extends Activity implements OnCompletionListener {
 				}
 			}
 		});
+		loadFavorites(null);
 	}
 
 	private final void setupEditText(final EditText editText,
@@ -473,112 +475,73 @@ public class MainActivity extends Activity implements OnCompletionListener {
 		}.execute();
 	}
 
-	public void addToPlaylist(View view) {
-		StringBuilder query = new StringBuilder();
-		query.append(PAR_EMULATION + "=" + emulation.getSelectedItem() + "&");
-		query.append(PAR_ENABLE_DATABASE + "=" + enableDatabase.isChecked()
-				+ "&");
-		query.append(PAR_DEFAULT_PLAY_LENGTH + "="
-				+ getNumber(defaultLength.getText().toString()) + "&");
-		query.append(PAR_DEFAULT_MODEL + "=" + defaultModel.getSelectedItem()
-				+ "&");
-		query.append(PAR_SINGLE_SONG + "=" + singleSong.isChecked() + "&");
-		query.append(PAR_LOOP + "=" + loop.isChecked() + "&");
-
-		query.append(PAR_FILTER_6581 + "=" + filter6581.getSelectedItem() + "&");
-		query.append(PAR_FILTER_8580 + "=" + filter8580.getSelectedItem() + "&");
-		query.append(PAR_RESIDFP_FILTER_6581 + "="
-				+ reSIDfpFilter6581.getSelectedItem() + "&");
-		query.append(PAR_RESIDFP_FILTER_8580 + "="
-				+ reSIDfpFilter8580.getSelectedItem() + "&");
-
-		query.append(PAR_STEREO_FILTER_6581 + "="
-				+ stereoFilter6581.getSelectedItem() + "&");
-		query.append(PAR_STEREO_FILTER_8580 + "="
-				+ stereoFilter8580.getSelectedItem() + "&");
-		query.append(PAR_RESIDFP_STEREO_FILTER_6581 + "="
-				+ reSIDfpStereoFilter6581.getSelectedItem() + "&");
-		query.append(PAR_RESIDFP_STEREO_FILTER_8580 + "="
-				+ reSIDfpStereoFilter8580.getSelectedItem() + "&");
-		query.append(PAR_DIGI_BOOSTED_8580 + "=" + digiBoosted8580.isChecked()
-				+ "&");
-		query.append(PAR_SAMPLING_METHOD + "="
-				+ samplingMethod.getSelectedItem() + "&");
-		query.append(PAR_FREQUENCY + "=" + frequency.getSelectedItem());
-
-		synchronized (playList) {
-			if (playList.isEmpty()) {
-				stopMediaPlayer();
-				startMediaPlayer(query.toString());
-			}
-			playList.add(query.toString());
-		}
-	}
-
-	public void stop(View view) {
-		synchronized (playList) {
-			stopMediaPlayer();
-			playList.clear();
-		}
-	}
-	
-	private void stopMediaPlayer() {
-		if (mediaPlayer != null) {
-			mediaPlayer.release();
-		}
-	}
-
-	private void startMediaPlayer(String query) {
+	public void loadFavorites(View view) {
 		try {
-			URI uri = new URI("http", connection.getUsername() + ":"
-					+ connection.getPassword(), connection.getHostname(),
-					getNumber(connection.getPort()), REST_CONVERT_URL
-							+ resource.getText(), query, null);
-			mediaPlayer = new MediaPlayer();
-			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			try {
-				mediaPlayer.setDataSource(uri.toString());
-			} catch (IllegalArgumentException e) {
-				Log.e(appName, e.getMessage(), e);
-			} catch (SecurityException e) {
-				Log.e(appName, e.getMessage(), e);
-			} catch (IllegalStateException e) {
-				Log.e(appName, e.getMessage(), e);
-			} catch (IOException e) {
-				Log.e(appName, e.getMessage(), e);
-			}
-			mediaPlayer.setOnPreparedListener(new OnPreparedListener() {
-
-				@Override
-				public void onPrepared(MediaPlayer mp) {
-					mediaPlayer.setOnCompletionListener(MainActivity.this);
-					mediaPlayer.start();
-				}
-			});
-			mediaPlayer.prepareAsync();
+			playList.load();
+		} catch (UnsupportedEncodingException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (IllegalArgumentException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (SecurityException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (IllegalStateException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (IOException e) {
+			Log.e(appName, e.getMessage(), e);
 		} catch (URISyntaxException e) {
 			Log.e(appName, e.getMessage(), e);
 		}
 	}
 
-	@Override
-	public void onCompletion(MediaPlayer mp) {
-		synchronized (playList) {
-			stopMediaPlayer();
-			playList.remove(0);
-			if (!playList.isEmpty()) {
-				String query = playList.get(0);
-				startMediaPlayer(query);
-			}
+	public void removeFavorite(View view) {
+		try {
+			playList.remove();
+			playList.save();
+		} catch (UnsupportedEncodingException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (IOException e) {
+			Log.e(appName, e.getMessage(), e);
 		}
 	}
 
-	private int getNumber(String txt) {
+	public void next(View view) {
 		try {
-			return Integer.parseInt(txt);
-		} catch (NumberFormatException e) {
-			return 0;
+			playList.play(playList.next());
+		} catch (UnsupportedEncodingException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (IllegalArgumentException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (SecurityException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (IllegalStateException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (IOException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (URISyntaxException e) {
+			Log.e(appName, e.getMessage(), e);
 		}
+	}
+
+	public void addToPlaylist(View view) {
+		try {
+			playList.add(resource.getText().toString());
+			playList.save();
+		} catch (IllegalArgumentException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (SecurityException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (IllegalStateException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (URISyntaxException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (IOException e) {
+			Log.e(appName, e.getMessage(), e);
+		}
+		tabHost.setCurrentTab(PLAYLIST_TAB_IDX);
+	}
+
+	public void stop(View view) {
+		playList.stop();
 	}
 
 	private void viewDirectory(List<String> childs, final String filter) {
@@ -645,8 +608,6 @@ public class MainActivity extends Activity implements OnCompletionListener {
 								viewTuneInfos(out);
 							}
 						}.execute();
-						tabHost.getTabWidget().getChildTabViewAt(TUNE_TAB_IDX)
-								.setEnabled(true);
 						tabHost.setCurrentTab(TUNE_TAB_IDX);
 					}
 				} catch (IOException e) {
@@ -662,7 +623,7 @@ public class MainActivity extends Activity implements OnCompletionListener {
 		image.setImageBitmap(bitmap);
 	}
 
-	private void viewTuneInfos(List<Pair<String, String>> rows) {
+	void viewTuneInfos(List<Pair<String, String>> rows) {
 		table.removeAllViews();
 		for (Pair<String, String> r : rows) {
 			TableRow tr = new TableRow(this);
@@ -688,6 +649,9 @@ public class MainActivity extends Activity implements OnCompletionListener {
 					TableLayout.LayoutParams.MATCH_PARENT,
 					TableLayout.LayoutParams.WRAP_CONTENT));
 		}
+		tabHost.getTabWidget().getChildTabViewAt(TUNE_TAB_IDX)
+		.setEnabled(true);
+
 	}
 
 	private void saveDownload(DataAndType music) {

@@ -27,7 +27,7 @@ public abstract class LongRunningRequest<ResultType> extends
 		AsyncTask<String, Void, ResultType> {
 
 	private static final int CONNECTION_TIMEOUT = 5000;
-	private static final int SOCKET_TIMEOUT = 5000;
+	private static final int SOCKET_TIMEOUT = 10000;
 
 	protected final String appName;
 	protected Connection conn;
