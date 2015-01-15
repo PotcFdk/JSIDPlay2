@@ -512,7 +512,7 @@
 			<plugin>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
-				<version>1.7.3</version>
+				<version>1.7.4</version>
 				<executions>
 					<execution>
 						<id>launch4j</id>
@@ -601,6 +601,9 @@
 							<customProcName>false</customProcName>
 							<stayAlive>false</stayAlive>
 							<icon>src/main/launch4j/jsiddevice.ico</icon>
+							<singleInstance>
+								<mutexName>JSidDevice</mutexName>
+							</singleInstance>								
 							<classPath>
 								<mainClass>netsiddev.NetworkSIDDevice</mainClass>
 							</classPath>
