@@ -74,6 +74,7 @@ public class MainActivity extends Activity {
 	static final String PAR_RESIDFP_FILTER_8580 = "reSIDfpFilter8580";
 	static final String PAR_RESIDFP_STEREO_FILTER_8580 = "reSIDfpStereoFilter8580";
 	static final String PAR_DIGI_BOOSTED_8580 = "digiBoosted8580";
+	static final String PAR_RANDOM = "random";
 
 	private static final String RESID = "RESID";
 	private static final String RESIDFP = "RESIDFP";
@@ -103,6 +104,8 @@ public class MainActivity extends Activity {
 	private static final String DEFAULT_FILTER_8580 = "FilterAverage8580";
 	private static final String DEFAULT_RESIDFP_FILTER_6581 = "FilterAlankila6581R4AR_3789";
 	private static final String DEFAULT_RESIDFP_FILTER_8580 = "FilterTrurl8580R5_3691";
+
+	private static final String DEFAULT_RANDOM = Boolean.FALSE.toString();
 
 	private static final String PREFIX_FILTER_6581 = "RESID_MOS6581_";
 	private static final String PREFIX_FILTER_8580 = "RESID_MOS8580_";
@@ -210,6 +213,8 @@ public class MainActivity extends Activity {
 		setupSpinner(frequency, new String[] { _44100, _48000, _96000 },
 				PAR_FREQUENCY, _48000);
 
+		setupCheckBox(random, PAR_RANDOM, DEFAULT_RANDOM);
+
 		tabHost.setup();
 		tabHost.addTab(tabHost.newTabSpec("tab_1")
 				.setIndicator(getString(R.string.tab_connection))
@@ -250,7 +255,7 @@ public class MainActivity extends Activity {
 	}
 
 	public void onStop() {
-		super.onStop();;
+		super.onStop();
 		playList.stop();
 	}
 
