@@ -123,6 +123,8 @@ public class JSIDPlay2ServiceREST {
 					throw new WebApplicationException(e);
 				} catch (SidTuneError e) {
 					throw new WebApplicationException(e);
+				} finally {
+					output.flush();
 				}
 			}
 		};
