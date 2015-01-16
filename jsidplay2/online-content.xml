@@ -39,9 +39,7 @@
           Update latest version.
          ================================= -->
 	<target name="updateVersion">
-   		<propertyfile file="latest.properties">
-			<entry operation="=" type="string" key="version" value="${project.version}" />
-		</propertyfile>
+	    <echo output="latest.properties">version=${project.version}</echo>
 	</target>
 
 	<!-- ================================= 
