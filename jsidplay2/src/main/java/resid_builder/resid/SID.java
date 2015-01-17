@@ -557,7 +557,7 @@ public final class SID implements SIDChip {
 	}
 
 	/**
-	 * Return the numebr of cycles according to current parameters
+	 * Return the number of cycles according to current parameters
 	 * that it takes to reach sync.
 	 */
 	private void voiceSync(boolean sync) {
