@@ -39,7 +39,7 @@ import resid_builder.resid.resample.ZeroOrderResampler;
  * @author Antti Lankila
  */
 public final class SID implements SIDChip {
-	private static final int INPUTDIGIBOOST = 0x2FF;
+	private static final int INPUTDIGIBOOST = 0x1FF;
 	
 	/**
 	 * Bus value stays alive for some time after each operation.
