@@ -1,4 +1,4 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.tab;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
-import de.haendel.jsidplay2.JSIDPlay2RESTRequest.RequestType;
+import de.haendel.jsidplay2.R;
+import de.haendel.jsidplay2.common.UIHelper;
+import de.haendel.jsidplay2.config.IConfiguration;
+import de.haendel.jsidplay2.request.DirectoryRequest;
+import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
+import de.haendel.jsidplay2.request.PhotoRequest;
+import de.haendel.jsidplay2.request.TuneInfoRequest;
 
 public abstract class SidsTab {
 	static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str)$";

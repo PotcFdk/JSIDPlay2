@@ -1,4 +1,4 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;

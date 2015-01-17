@@ -1,9 +1,11 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.request;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
+
+import de.haendel.jsidplay2.config.IConfiguration;
 
 public abstract class DirectoryRequest extends JSIDPlay2RESTRequest<List<String>> {
 

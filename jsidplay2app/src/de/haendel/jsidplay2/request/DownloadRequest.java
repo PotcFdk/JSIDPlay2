@@ -1,4 +1,4 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.request;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -9,6 +9,7 @@ import java.io.OutputStream;
 
 import org.apache.http.HttpEntity;
 
+import de.haendel.jsidplay2.config.IConfiguration;
 import android.net.Uri;
 import android.os.Environment;
 
@@ -42,8 +43,8 @@ public class DownloadRequest extends JSIDPlay2RESTRequest<DataAndType> {
 			out.close();
 		}
 		DataAndType dt = new DataAndType();
-		dt.uri = Uri.fromFile(music);
-		dt.type = url.endsWith(".mp3") ? "audio/mpeg" : "audio/prs.sid";
+		dt.setUri(Uri.fromFile(music));
+		dt.setType(url.endsWith(".mp3") ? "audio/mpeg" : "audio/prs.sid");
 		return dt;
 	}
 }

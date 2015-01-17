@@ -1,10 +1,12 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.request;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.http.HttpEntity;
+
+import de.haendel.jsidplay2.config.IConfiguration;
 
 public class PhotoRequest extends JSIDPlay2RESTRequest<byte[]> {
 	public PhotoRequest(String appName, IConfiguration configuration, RequestType type, String url) {

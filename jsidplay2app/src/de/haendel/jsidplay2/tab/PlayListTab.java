@@ -1,22 +1,22 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.tab;
 
-import static de.haendel.jsidplay2.IConfiguration.PAR_DEFAULT_MODEL;
-import static de.haendel.jsidplay2.IConfiguration.PAR_DEFAULT_PLAY_LENGTH;
-import static de.haendel.jsidplay2.IConfiguration.PAR_DIGI_BOOSTED_8580;
-import static de.haendel.jsidplay2.IConfiguration.PAR_EMULATION;
-import static de.haendel.jsidplay2.IConfiguration.PAR_ENABLE_DATABASE;
-import static de.haendel.jsidplay2.IConfiguration.PAR_FILTER_6581;
-import static de.haendel.jsidplay2.IConfiguration.PAR_FILTER_8580;
-import static de.haendel.jsidplay2.IConfiguration.PAR_FREQUENCY;
-import static de.haendel.jsidplay2.IConfiguration.PAR_LOOP;
-import static de.haendel.jsidplay2.IConfiguration.PAR_RESIDFP_FILTER_6581;
-import static de.haendel.jsidplay2.IConfiguration.PAR_RESIDFP_FILTER_8580;
-import static de.haendel.jsidplay2.IConfiguration.PAR_RESIDFP_STEREO_FILTER_6581;
-import static de.haendel.jsidplay2.IConfiguration.PAR_RESIDFP_STEREO_FILTER_8580;
-import static de.haendel.jsidplay2.IConfiguration.PAR_SAMPLING_METHOD;
-import static de.haendel.jsidplay2.IConfiguration.PAR_SINGLE_SONG;
-import static de.haendel.jsidplay2.IConfiguration.PAR_STEREO_FILTER_6581;
-import static de.haendel.jsidplay2.IConfiguration.PAR_STEREO_FILTER_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_MODEL;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_PLAY_LENGTH;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_DIGI_BOOSTED_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_EMULATION;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_ENABLE_DATABASE;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_FILTER_6581;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_FILTER_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_FREQUENCY;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_LOOP;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_6581;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_STEREO_FILTER_6581;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_STEREO_FILTER_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_SAMPLING_METHOD;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_SINGLE_SONG;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_6581;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_8580;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -52,9 +52,13 @@ import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import de.haendel.jsidplay2.JSIDPlay2RESTRequest.RequestType;
+import de.haendel.jsidplay2.R;
+import de.haendel.jsidplay2.common.UIHelper;
+import de.haendel.jsidplay2.config.IConfiguration;
+import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
+import de.haendel.jsidplay2.request.TuneInfoRequest;
 
-public abstract class PlayList implements OnCompletionListener {
+public abstract class PlayListTab implements OnCompletionListener {
 
 	private static final String JSIDPLAY2_JS2 = "jsidplay2.js2";
 	private static final String DOWNLOAD = "Download";
@@ -90,7 +94,7 @@ public abstract class PlayList implements OnCompletionListener {
 	private CheckBox random;
 	private MediaPlayer mediaPlayer;
 
-	public PlayList(final Activity activity, final String appName,
+	public PlayListTab(final Activity activity, final String appName,
 			final IConfiguration configuration, TabHost tabHost) {
 		this.context = activity;
 		this.appName = appName;
@@ -98,7 +102,7 @@ public abstract class PlayList implements OnCompletionListener {
 		this.tabHost = tabHost;
 		preferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		ui = new UIHelper(preferences);
-		tabHost.addTab(tabHost.newTabSpec(PlayList.class.getSimpleName())
+		tabHost.addTab(tabHost.newTabSpec(PlayListTab.class.getSimpleName())
 				.setIndicator(activity.getString(R.string.tab_playlist))
 				.setContent(R.id.playlist));
 
@@ -174,7 +178,7 @@ public abstract class PlayList implements OnCompletionListener {
 		favorites.addView(row, new TableLayout.LayoutParams(
 				TableLayout.LayoutParams.MATCH_PARENT,
 				TableLayout.LayoutParams.WRAP_CONTENT));
-		tabHost.setCurrentTabByTag(PlayList.class.getSimpleName());
+		tabHost.setCurrentTabByTag(PlayListTab.class.getSimpleName());
 		return entry;
 	}
 
@@ -326,7 +330,7 @@ public abstract class PlayList implements OnCompletionListener {
 
 			@Override
 			public void onPrepared(MediaPlayer mp) {
-				mediaPlayer.setOnCompletionListener(PlayList.this);
+				mediaPlayer.setOnCompletionListener(PlayListTab.this);
 				mediaPlayer.start();
 			}
 		});

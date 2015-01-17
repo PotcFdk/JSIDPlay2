@@ -1,10 +1,13 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.tab;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.widget.EditText;
 import android.widget.TabHost;
+import de.haendel.jsidplay2.R;
+import de.haendel.jsidplay2.common.UIHelper;
+import de.haendel.jsidplay2.config.IConfiguration;
 
 public class GeneralTab {
 

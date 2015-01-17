@@ -12,13 +12,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TabHost;
-import de.haendel.jsidplay2.JSIDPlay2RESTRequest.RequestType;
+import de.haendel.jsidplay2.config.Configuration;
+import de.haendel.jsidplay2.request.DataAndType;
+import de.haendel.jsidplay2.request.DownloadRequest;
+import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
+import de.haendel.jsidplay2.tab.ConfigurationTab;
+import de.haendel.jsidplay2.tab.GeneralTab;
+import de.haendel.jsidplay2.tab.PlayListTab;
+import de.haendel.jsidplay2.tab.SidTab;
+import de.haendel.jsidplay2.tab.SidsTab;
 
 public class MainActivity extends Activity {
 
 	private String appName;
 	private SidTab sidTab;
-	private PlayList playList;
+	private PlayListTab playList;
 	private Configuration configuration;
 
 	private TabHost tabHost;
@@ -42,7 +50,7 @@ public class MainActivity extends Activity {
 			}
 		};
 		sidTab = new SidTab(this, appName, configuration, tabHost);
-		playList = new PlayList(this, appName, configuration, tabHost) {
+		playList = new PlayListTab(this, appName, configuration, tabHost) {
 			@Override
 			protected SidTab getSidTab() {
 				return sidTab;
@@ -160,7 +168,7 @@ public class MainActivity extends Activity {
 	private void saveDownload(DataAndType music) {
 		Intent intent = new Intent();
 		intent.setAction(android.content.Intent.ACTION_VIEW);
-		intent.setDataAndType(music.uri, music.type);
+		intent.setDataAndType(music.getUri(), music.getType());
 		startActivity(intent);
 	}
 

@@ -1,4 +1,4 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.config;
 
 public class Configuration implements IConfiguration {
 

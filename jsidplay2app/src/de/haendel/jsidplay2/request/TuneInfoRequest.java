@@ -1,4 +1,4 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.request;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.http.HttpEntity;
 
+import de.haendel.jsidplay2.config.IConfiguration;
 import android.util.Pair;
 
 public abstract class TuneInfoRequest extends

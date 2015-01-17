@@ -1,4 +1,4 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.request;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +19,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import de.haendel.jsidplay2.config.IConfiguration;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;

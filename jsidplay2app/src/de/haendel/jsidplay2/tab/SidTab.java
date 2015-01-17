@@ -1,4 +1,4 @@
-package de.haendel.jsidplay2;
+package de.haendel.jsidplay2.tab;
 
 import java.util.List;
 
@@ -15,6 +15,9 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import de.haendel.jsidplay2.R;
+import de.haendel.jsidplay2.common.UIHelper;
+import de.haendel.jsidplay2.config.IConfiguration;
 
 public class SidTab {
 
