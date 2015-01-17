@@ -165,8 +165,8 @@ public class AudioGeneratorThread extends Thread {
 					int piece = Math.min(cycles, audioLength);
 
 					/* First SID initializes the buffer. */
-					final int audioBufferPos = sid[0].clock(piece, audioBuffer,
-							0);
+					final int audioBufferPos = sid[0].clock(piece, audioBuffer, 0);
+					
 					for (int i = 0; i < audioBufferPos; i++) {
 						int sample = audioBuffer[i] * sidLevel[0] >> 10;
 						outAudioBuffer[i << 1 | 0] = sample * sidPositionL[0] >> 10;
@@ -178,10 +178,8 @@ public class AudioGeneratorThread extends Thread {
 						sid[sidNum].clock(piece, audioBuffer, 0);
 						for (int i = 0; i < audioBufferPos; i++) {
 							int sample = audioBuffer[i] * sidLevel[sidNum] >> 10;
-							outAudioBuffer[i << 1 | 0] += sample
-									* sidPositionL[sidNum] >> 10;
-							outAudioBuffer[i << 1 | 1] += sample
-									* sidPositionR[sidNum] >> 10;
+							outAudioBuffer[i << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
+							outAudioBuffer[i << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
 						}
 					}
 
@@ -439,8 +437,8 @@ public class AudioGeneratorThread extends Thread {
 		digiBoostEnabled = selected;
 
 		for (SIDChip sidChip : sid) {
-			if (digiBoostEnabled && sidChip != null) {
-				sidChip.input(sidChip.getInputDigiBoost());
+			if (sidChip != null) {
+				sidChip.input(digiBoostEnabled ? sidChip.getInputDigiBoost() : 0);
 			}
 		}
 	}
