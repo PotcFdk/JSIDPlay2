@@ -823,13 +823,14 @@ public class Player {
 		// According to the configuration, the SIDs must be updated.
 		updateSIDs();
 
+		final boolean digiBoostEnabled = config.getEmulation().isDigiBoosted8580();
+		
 		// apply filter settings and stereo SID chip address
 		configureSIDs((num, sid) -> {
 			sid.setFilter(config, num != 0);
 			sid.setFilterEnable(num != 0 ? config.getEmulation()
 					.isStereoFilter() : config.getEmulation().isFilter());
-			sid.input(getConfig().getEmulation().isDigiBoosted8580() ? sid
-					.getInputDigiBoost() : 0);
+			sid.input(digiBoostEnabled ? sid.getInputDigiBoost() : 0);
 		});
 		setStereoSIDAddress();
 
