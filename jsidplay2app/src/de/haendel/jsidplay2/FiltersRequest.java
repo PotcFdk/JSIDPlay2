@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.apache.http.HttpEntity;
 
-public class FiltersRequest extends LongRunningRequest<List<String>> {
+public class FiltersRequest extends JSIDPlay2RESTRequest<List<String>> {
 
-	public FiltersRequest(String appName, Connection conn, String url) {
-		super(appName, conn, url);
+	public FiltersRequest(String appName, IConfiguration configuration, RequestType type, String url) {
+		super(appName, configuration, type, url);
 	}
 
 	@Override

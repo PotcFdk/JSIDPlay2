@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.apache.http.HttpEntity;
 
-public abstract class DirectoryRequest extends LongRunningRequest<List<String>> {
+public abstract class DirectoryRequest extends JSIDPlay2RESTRequest<List<String>> {
 
-	public DirectoryRequest(String appName, Connection conn, String url) {
-		super(appName, conn, url);
+	public DirectoryRequest(String appName, IConfiguration configuration, RequestType type, String url) {
+		super(appName, configuration, type, url);
 	}
 
 	@Override

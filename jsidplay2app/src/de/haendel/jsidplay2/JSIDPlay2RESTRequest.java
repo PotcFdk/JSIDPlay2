@@ -23,20 +23,48 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
 
-public abstract class LongRunningRequest<ResultType> extends
+public abstract class JSIDPlay2RESTRequest<ResultType> extends
 		AsyncTask<String, Void, ResultType> {
 
-	private static final int CONNECTION_TIMEOUT = 5000;
+	public enum RequestType {
+		DOWNLOAD(REST_DOWNLOAD_URL), CONVERT(REST_CONVERT_URL), DIRECTORY(
+				REST_DIRECTORY_URL), PHOTO(REST_PHOTO_URL), INFO(REST_INFO), FILTERS(
+				REST_FILTERS_URL);
+
+		private String url;
+
+		private RequestType(String url) {
+			this.url = url;
+		}
+
+		public String getUrl() {
+			return url;
+		}
+	}
+
+	private static final String CONTEXT_ROOT = "/jsidplay2service";
+	private static final String ROOT_PATH = "/JSIDPlay2REST";
+	private static final String ROOT_URL = CONTEXT_ROOT + ROOT_PATH;
+
+	private static final String REST_DOWNLOAD_URL = ROOT_URL + "/download";
+	private static final String REST_CONVERT_URL = ROOT_URL + "/convert";
+	private static final String REST_DIRECTORY_URL = ROOT_URL + "/directory";
+	private static final String REST_PHOTO_URL = ROOT_URL + "/photo";
+	private static final String REST_INFO = ROOT_URL + "/info";
+	private static final String REST_FILTERS_URL = ROOT_URL + "/filters";
+
+	private static final int CONNECTION_TIMEOUT = 10000;
 	private static final int SOCKET_TIMEOUT = 10000;
 
 	protected final String appName;
-	protected Connection conn;
+	protected IConfiguration configuration;
 	protected String url;
 
-	public LongRunningRequest(String appName, Connection conn, String url) {
+	public JSIDPlay2RESTRequest(String appName, IConfiguration configuration,
+			RequestType type, String url) {
 		this.appName = appName;
-		this.conn = conn;
-		this.url = url;
+		this.configuration = configuration;
+		this.url = type.getUrl() + url;
 	}
 
 	@Override
@@ -50,12 +78,12 @@ public abstract class LongRunningRequest<ResultType> extends
 			HttpConnectionParams.setSoTimeout(httpParams, SOCKET_TIMEOUT);
 
 			httpClient.getCredentialsProvider().setCredentials(
-					new AuthScope(conn.getHostname(), AuthScope.ANY_PORT),
-					new UsernamePasswordCredentials(conn.getUsername(), conn
+					new AuthScope(configuration.getHostname(), AuthScope.ANY_PORT),
+					new UsernamePasswordCredentials(configuration.getUsername(), configuration
 							.getPassword()));
 
-			URI myUri = new URI("http", null, conn.getHostname(),
-					Integer.valueOf(conn.getPort()), url,
+			URI myUri = new URI("http", null, configuration.getHostname(),
+					Integer.valueOf(configuration.getPort()), url,
 					params.length != 0 ? "filter=" + params[0] : null, null);
 
 			Log.d(appName, "HTTP-GET: " + myUri);
@@ -156,9 +184,10 @@ public abstract class LongRunningRequest<ResultType> extends
 		List<Pair<String, String>> rows = new ArrayList<Pair<String, String>>();
 
 		String mapToken = out.substring(1, out.length() - 1);
-		String[] splittedMap = LongRunningRequest.splitJSONToken(mapToken, ",");
+		String[] splittedMap = JSIDPlay2RESTRequest.splitJSONToken(mapToken,
+				",");
 		for (String mapEntryToken : splittedMap) {
-			String[] splittedMapEntry = LongRunningRequest.splitJSONToken(
+			String[] splittedMapEntry = JSIDPlay2RESTRequest.splitJSONToken(
 					mapEntryToken, ":");
 			String tuneInfoName = null;
 			String tuneInfoValue = "";

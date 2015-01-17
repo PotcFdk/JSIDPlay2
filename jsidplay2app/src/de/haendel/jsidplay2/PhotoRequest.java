@@ -6,11 +6,11 @@ import java.io.InputStream;
 
 import org.apache.http.HttpEntity;
 
-public class PhotoRequest extends LongRunningRequest<byte[]> {
-	public PhotoRequest(String appName, Connection conn, String url) {
-		super(appName, conn, url);
+public class PhotoRequest extends JSIDPlay2RESTRequest<byte[]> {
+	public PhotoRequest(String appName, IConfiguration configuration, RequestType type, String url) {
+		super(appName, configuration, type, url);
 	}
-	
+
 	@Override
 	protected byte[] getResult(HttpEntity httpEntity)
 			throws IllegalStateException, IOException {

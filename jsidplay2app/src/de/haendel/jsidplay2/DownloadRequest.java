@@ -12,11 +12,11 @@ import org.apache.http.HttpEntity;
 import android.net.Uri;
 import android.os.Environment;
 
-public class DownloadRequest extends LongRunningRequest<DataAndType> {
+public class DownloadRequest extends JSIDPlay2RESTRequest<DataAndType> {
 	private static final String DOWNLOAD_DIR = "Download";
 
-	public DownloadRequest(String appName, Connection conn, String url) {
-		super(appName, conn, url);
+	public DownloadRequest(String appName, IConfiguration configuration, RequestType type, String url) {
+		super(appName, configuration, type, url);
 	}
 
 	@Override

@@ -10,15 +10,18 @@ import org.apache.http.HttpEntity;
 import android.util.Pair;
 
 public abstract class TuneInfoRequest extends
-		LongRunningRequest<List<Pair<String, String>>> implements LongRunningRequest.IKeyLocalizer {
-	public TuneInfoRequest(String appName, Connection conn, String url) {
-		super(appName, conn, url);
+		JSIDPlay2RESTRequest<List<Pair<String, String>>> implements
+		JSIDPlay2RESTRequest.IKeyLocalizer {
+	public TuneInfoRequest(String appName, IConfiguration configuration, RequestType type,
+			String url) {
+		super(appName, configuration, type, url);
 	}
 
 	@Override
 	protected List<Pair<String, String>> getResult(HttpEntity httpEntity)
 			throws IllegalStateException, IOException {
-		List<Pair<String, String>> rows = receiveListOfKeyValues(httpEntity, this);
+		List<Pair<String, String>> rows = receiveListOfKeyValues(httpEntity,
+				this);
 
 		Comparator<? super Pair<String, String>> rowC = new Comparator<Pair<String, String>>() {
 			@Override
