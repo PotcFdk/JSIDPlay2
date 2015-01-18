@@ -141,7 +141,6 @@ public abstract class PlayListTab implements OnCompletionListener {
 				} catch (URISyntaxException e) {
 					Log.e(appName, e.getMessage(), e);
 				}
-				getSidTab().requestSidDetails(entry.getResource());
 			}
 		});
 		row.setLayoutParams(new TableRow.LayoutParams(
@@ -201,10 +200,10 @@ public abstract class PlayListTab implements OnCompletionListener {
 		return list.size() > 0 ? list.get(list.size() - 1) : null;
 	}
 
-	public synchronized void play(PlayListEntry next)
+	public synchronized void play(PlayListEntry entry)
 			throws IllegalArgumentException, SecurityException,
 			IllegalStateException, IOException, URISyntaxException {
-		startMediaPlayer(next);
+		startMediaPlayer(entry);
 	}
 
 	public synchronized void stop() {
@@ -257,7 +256,7 @@ public abstract class PlayListTab implements OnCompletionListener {
 		return next < list.size() ? list.get(next) : null;
 	}
 
-	private void startMediaPlayer(PlayListEntry entry)
+	private void startMediaPlayer(final PlayListEntry entry)
 			throws IllegalArgumentException, SecurityException,
 			IllegalStateException, IOException, URISyntaxException {
 		stopMediaPlayer();
@@ -313,6 +312,7 @@ public abstract class PlayListTab implements OnCompletionListener {
 			public void onPrepared(MediaPlayer mp) {
 				mediaPlayer.setOnCompletionListener(PlayListTab.this);
 				mediaPlayer.start();
+				getSidTab().requestSidDetails(entry.getResource());
 			}
 		});
 		mediaPlayer.prepare();
