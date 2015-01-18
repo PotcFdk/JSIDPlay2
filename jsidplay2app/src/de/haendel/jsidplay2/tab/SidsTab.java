@@ -2,7 +2,6 @@ package de.haendel.jsidplay2.tab;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.List;
 
 import android.app.Activity;
@@ -10,7 +9,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,8 +19,6 @@ import de.haendel.jsidplay2.common.UIHelper;
 import de.haendel.jsidplay2.config.IConfiguration;
 import de.haendel.jsidplay2.request.DirectoryRequest;
 import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
-import de.haendel.jsidplay2.request.PhotoRequest;
-import de.haendel.jsidplay2.request.TuneInfoRequest;
 
 public abstract class SidsTab {
 	static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str)$";
@@ -61,7 +57,7 @@ public abstract class SidsTab {
 	public void requestDirectory(final File dir, final String filter)
 			throws IOException {
 		new DirectoryRequest(appName, configuration, RequestType.DIRECTORY,
-				dir.getCanonicalPath()) {
+				dir.getCanonicalPath(), filter) {
 
 			@Override
 			protected void onPostExecute(List<String> childs) {
@@ -70,7 +66,7 @@ public abstract class SidsTab {
 				}
 				viewDirectory(childs, filter);
 			}
-		}.execute(filter);
+		}.execute();
 	}
 
 	private void viewDirectory(List<String> childs, final String filter) {
@@ -85,9 +81,10 @@ public abstract class SidsTab {
 						.getItemAtPosition(position);
 				File file = new File(dirEntry);
 				try {
+					String canonicalPath = file.getCanonicalPath();
 					if (dirEntry.endsWith("/")) {
 						new DirectoryRequest(appName, configuration,
-								RequestType.DIRECTORY, file.getCanonicalPath()) {
+								RequestType.DIRECTORY, canonicalPath, filter) {
 
 							@Override
 							protected void onPostExecute(List<String> childs) {
@@ -96,46 +93,9 @@ public abstract class SidsTab {
 								}
 								viewDirectory(childs, filter);
 							}
-						}.execute(filter);
+						}.execute();
 					} else {
-						getSidTab().setCurrentTune(file.getCanonicalPath());
-						new PhotoRequest(appName, configuration,
-								RequestType.PHOTO, file.getCanonicalPath()) {
-							@Override
-							protected void onPostExecute(byte[] photo) {
-								if (photo == null) {
-									return;
-								}
-								getSidTab().viewPhoto(photo);
-							}
-						}.execute();
-						new TuneInfoRequest(appName, configuration,
-								RequestType.INFO, file.getCanonicalPath()) {
-							public String getString(String key) {
-								key = key.replaceAll("[.]", "_");
-								for (Field field : R.string.class
-										.getDeclaredFields()) {
-									if (field.getName().equals(key)) {
-										try {
-											return context.getString(field
-													.getInt(null));
-										} catch (IllegalArgumentException e) {
-										} catch (IllegalAccessException e) {
-										}
-									}
-								}
-								return "???";
-							}
-
-							@Override
-							protected void onPostExecute(
-									List<Pair<String, String>> out) {
-								if (out == null) {
-									return;
-								}
-								getSidTab().viewTuneInfos(out);
-							}
-						}.execute();
+						getSidTab().requestSidDetails(canonicalPath);
 						tabHost.setCurrentTabByTag(SidTab.class.getSimpleName());
 					}
 				} catch (IOException e) {
@@ -155,4 +115,5 @@ public abstract class SidsTab {
 	}
 
 	protected abstract SidTab getSidTab();
+
 }

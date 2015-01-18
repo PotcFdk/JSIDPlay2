@@ -59,13 +59,14 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 
 	protected final String appName;
 	protected IConfiguration configuration;
-	protected String url;
+	protected String url, query;
 
 	public JSIDPlay2RESTRequest(String appName, IConfiguration configuration,
-			RequestType type, String url) {
+			RequestType type, String url, String query) {
 		this.appName = appName;
 		this.configuration = configuration;
 		this.url = type.getUrl() + url;
+		this.query = query;
 	}
 
 	@Override
@@ -84,8 +85,7 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 							.getPassword()));
 
 			URI myUri = new URI("http", null, configuration.getHostname(),
-					Integer.valueOf(configuration.getPort()), url,
-					params.length != 0 ? "filter=" + params[0] : null, null);
+					Integer.valueOf(configuration.getPort()), url, query, null);
 
 			Log.d(appName, "HTTP-GET: " + myUri);
 

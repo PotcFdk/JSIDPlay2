@@ -61,9 +61,9 @@ public class ConfigurationTab {
 	private static final String PREFIX_RESIDFP_FILTER_6581 = "RESIDFP_MOS6581_";
 	private static final String PREFIX_RESIDFP_FILTER_8580 = "RESIDFP_MOS8580_";
 
-	public class ConfigurationÛIHelper extends UIHelper {
+	public class ConfigurationUIHelper extends UIHelper {
 
-		public ConfigurationÛIHelper(SharedPreferences preferences) {
+		public ConfigurationUIHelper(SharedPreferences preferences) {
 			super(preferences);
 		}
 
@@ -72,21 +72,18 @@ public class ConfigurationTab {
 				final String newValue) {
 			if (PAR_EMULATION.equals(parName)) {
 				boolean isReSid = newValue.equals("RESID");
-				updateFiltersVisibility(new View[] { filter6581txt, filter6581,
-						filter8580txt, filter8580 }, isReSid);
 				updateFiltersVisibility(
-						new View[] { stereoFilter6581txt, stereoFilter6581,
-								stereoFilter8580txt, stereoFilter8580 },
-						isReSid);
+						new View[] { filter6581txt, filter6581, filter8580txt,
+								filter8580, stereoFilter6581txt,
+								stereoFilter6581, stereoFilter8580txt,
+								stereoFilter8580 }, isReSid);
 
 				boolean isReSidFp = newValue.equals("RESIDFP");
 				updateFiltersVisibility(new View[] { reSIDfpFilter6581txt,
 						reSIDfpFilter6581, reSIDfpFilter8580txt,
-						reSIDfpFilter8580 }, isReSidFp);
-				updateFiltersVisibility(new View[] {
-						reSIDfpStereoFilter6581txt, reSIDfpStereoFilter6581,
-						reSIDfpStereoFilter8580txt, reSIDfpStereoFilter8580 },
-						isReSidFp);
+						reSIDfpFilter8580, reSIDfpStereoFilter6581txt,
+						reSIDfpStereoFilter6581, reSIDfpStereoFilter8580txt,
+						reSIDfpStereoFilter8580 }, isReSidFp);
 				configuration.setEmulation(newValue);
 			} else if (PAR_DEFAULT_MODEL.equals(parName)) {
 				configuration.setDefaultModel(newValue);
@@ -169,7 +166,7 @@ public class ConfigurationTab {
 		this.appName = appName;
 		this.configuration = configuration;
 		preferences = PreferenceManager.getDefaultSharedPreferences(activity);
-		ui = new ConfigurationÛIHelper(preferences);
+		ui = new ConfigurationUIHelper(preferences);
 		tabHost.addTab(tabHost
 				.newTabSpec(ConfigurationTab.class.getSimpleName())
 				.setIndicator(activity.getString(R.string.tab_cfg))
@@ -185,6 +182,7 @@ public class ConfigurationTab {
 		defaultModel = (Spinner) activity.findViewById(R.id.defaultModel);
 		samplingMethod = (Spinner) activity.findViewById(R.id.samplingMethod);
 		frequency = (Spinner) activity.findViewById(R.id.frequency);
+
 		filter6581 = (Spinner) activity.findViewById(R.id.filter6581);
 		filter6581txt = (TextView) activity.findViewById(R.id.filter6581txt);
 		filter8580 = (Spinner) activity.findViewById(R.id.filter8580);

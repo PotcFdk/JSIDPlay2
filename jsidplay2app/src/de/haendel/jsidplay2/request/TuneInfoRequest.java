@@ -15,7 +15,7 @@ public abstract class TuneInfoRequest extends
 		JSIDPlay2RESTRequest.IKeyLocalizer {
 	public TuneInfoRequest(String appName, IConfiguration configuration, RequestType type,
 			String url) {
-		super(appName, configuration, type, url);
+		super(appName, configuration, type, url, null);
 	}
 
 	@Override

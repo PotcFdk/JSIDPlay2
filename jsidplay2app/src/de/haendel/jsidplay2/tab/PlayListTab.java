@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
@@ -56,12 +54,18 @@ import de.haendel.jsidplay2.R;
 import de.haendel.jsidplay2.common.UIHelper;
 import de.haendel.jsidplay2.config.IConfiguration;
 import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
-import de.haendel.jsidplay2.request.TuneInfoRequest;
 
 public abstract class PlayListTab implements OnCompletionListener {
 
+	/**
+	 * Playlist filename.
+	 */
 	private static final String JSIDPLAY2_JS2 = "jsidplay2.js2";
+	/**
+	 * Folder of the playlist.
+	 */
 	private static final String DOWNLOAD = "Download";
+
 	private static final String PAR_RANDOM = "random";
 	private static final String DEFAULT_RANDOM = Boolean.FALSE.toString();
 
@@ -137,30 +141,7 @@ public abstract class PlayListTab implements OnCompletionListener {
 				} catch (URISyntaxException e) {
 					Log.e(appName, e.getMessage(), e);
 				}
-				new TuneInfoRequest(appName, configuration, RequestType.INFO,
-						entry.getResource()) {
-					public String getString(String key) {
-						key = key.replaceAll("[.]", "_");
-						for (Field field : R.string.class.getDeclaredFields()) {
-							if (field.getName().equals(key)) {
-								try {
-									return context.getString(field.getInt(null));
-								} catch (IllegalArgumentException e) {
-								} catch (IllegalAccessException e) {
-								}
-							}
-						}
-						return "???";
-					}
-
-					@Override
-					protected void onPostExecute(List<Pair<String, String>> out) {
-						if (out == null) {
-							return;
-						}
-						getSidTab().viewTuneInfos(out);
-					}
-				}.execute();
+				getSidTab().requestSidDetails(entry.getResource());
 			}
 		});
 		row.setLayoutParams(new TableRow.LayoutParams(

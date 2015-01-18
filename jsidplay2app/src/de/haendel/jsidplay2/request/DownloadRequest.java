@@ -17,7 +17,7 @@ public class DownloadRequest extends JSIDPlay2RESTRequest<DataAndType> {
 	private static final String DOWNLOAD_DIR = "Download";
 
 	public DownloadRequest(String appName, IConfiguration configuration, RequestType type, String url) {
-		super(appName, configuration, type, url);
+		super(appName, configuration, type, url, null);
 	}
 
 	@Override

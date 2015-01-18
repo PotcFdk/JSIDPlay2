@@ -1,5 +1,6 @@
 package de.haendel.jsidplay2.tab;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import android.app.Activity;
@@ -18,6 +19,9 @@ import android.widget.TextView;
 import de.haendel.jsidplay2.R;
 import de.haendel.jsidplay2.common.UIHelper;
 import de.haendel.jsidplay2.config.IConfiguration;
+import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
+import de.haendel.jsidplay2.request.PhotoRequest;
+import de.haendel.jsidplay2.request.TuneInfoRequest;
 
 public class SidTab {
 
@@ -89,5 +93,43 @@ public class SidTab {
 
 	public void setCurrentTune(String canonicalPath) {
 		resource.setText(canonicalPath);
+	}
+
+	public void requestSidDetails(String canonicalPath) {
+		setCurrentTune(canonicalPath);
+		new PhotoRequest(appName, configuration, RequestType.PHOTO,
+				canonicalPath) {
+			@Override
+			protected void onPostExecute(byte[] photo) {
+				if (photo == null) {
+					return;
+				}
+				viewPhoto(photo);
+			}
+		}.execute();
+		new TuneInfoRequest(appName, configuration, RequestType.INFO,
+				canonicalPath) {
+			public String getString(String key) {
+				key = key.replaceAll("[.]", "_");
+				for (Field field : R.string.class.getDeclaredFields()) {
+					if (field.getName().equals(key)) {
+						try {
+							return context.getString(field.getInt(null));
+						} catch (IllegalArgumentException e) {
+						} catch (IllegalAccessException e) {
+						}
+					}
+				}
+				return "???";
+			}
+
+			@Override
+			protected void onPostExecute(List<Pair<String, String>> out) {
+				if (out == null) {
+					return;
+				}
+				viewTuneInfos(out);
+			}
+		}.execute();
 	}
 }
