@@ -235,7 +235,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 															.getClass()) || Favorites.class
 													.isAssignableFrom(selectedItem
 															.getClass()));
-									if (sidTune == null
+									if (sidTune == SidTune.RESET
 											|| (sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
 										video();
 										tabbedPane
@@ -248,24 +248,20 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 																.equals(Video.ID))
 														.findFirst().get());
 									}
-								}
-
-								);
+								});
 							}
-						}
-
-				);
+						});
 		pauseContinue.selectedProperty().bindBidirectional(
 				pauseContinue2.selectedProperty());
-		
+
 		fastForward2.selectedProperty().bindBidirectional(
 				fastForward.selectedProperty());
-		
+
 		nextFavoriteDisabledState = new SimpleBooleanProperty(true);
 		nextFavorite.disableProperty().bind(nextFavoriteDisabledState);
 
 		updatePlayerButtons(util.getPlayer().stateProperty().get());
-		
+
 		Audio audio = util.getConfig().getAudio().getAudio();
 		audioBox.getSelectionModel().select(audio);
 
@@ -283,11 +279,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		devices = JavaSound.getDevices();
 		devicesBox.setItems(devices);
 		int device = util.getConfig().getAudio().getDevice();
-		if (device < devices.size()) {
-			devicesBox.getSelectionModel().select(device);
-		} else {
-			devicesBox.getSelectionModel().select(0);
-		}
+		devicesBox.getSelectionModel().select(
+				device < devices.size() ? device : 0);
 
 		SamplingMethod sampling = util.getConfig().getAudio().getSampling();
 		samplingBox.getSelectionModel().select(sampling);
@@ -546,7 +539,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			fastForward.setSelected(true);
 		}
 	}
-	
+
 	@FXML
 	private void nextFavorite() {
 		util.getPlayer().getTimer().end();
