@@ -20,6 +20,78 @@
             android:layout_height="fill_parent" >
 
             <LinearLayout
+                android:id="@+id/general"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/hostname"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2.41"
+                        android:ems="10"
+                        android:hint="@string/hostname"
+                        android:singleLine="true" />
+
+                    <EditText
+                        android:id="@+id/port"
+                        android:layout_width="76dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.23"
+                        android:ems="10"
+                        android:hint="@string/port"
+                        android:text="8080" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <EditText
+                        android:id="@+id/username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="@string/username"
+                        android:text="@string/user_jsidplay2" />
+
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="@string/password"
+                        android:inputType="textPassword" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/splash"
+                    android:layout_width="218dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/jsidplay2" />
+
+                <TextView
+                    android:id="@+id/about"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:text="@string/about"
+                    android:textStyle="italic" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/playlist"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
@@ -165,80 +237,6 @@
                         </LinearLayout>
                     </HorizontalScrollView>
                 </ScrollView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/general"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical" >
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
-
-                    <EditText
-                        android:id="@+id/hostname"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2.41"
-                        android:ems="10"
-                        android:hint="@string/hostname"
-                        android:singleLine="true" >
-                    </EditText>
-
-                    <EditText
-                        android:id="@+id/port"
-                        android:layout_width="76dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.23"
-                        android:ems="10"
-                        android:hint="@string/port"
-                        android:text="8080" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <EditText
-                        android:id="@+id/username"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:hint="@string/username"
-                        android:text="@string/user_jsidplay2" >
-
-                        <requestFocus />
-                    </EditText>
-
-                    <EditText
-                        android:id="@+id/password"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:hint="@string/password"
-                        android:inputType="textPassword" />
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/splash"
-                    android:layout_width="218dp"
-                    android:layout_height="96dp"
-                    android:layout_gravity="center_horizontal"
-                    android:src="@drawable/jsidplay2" />
-
-                <TextView
-                    android:id="@+id/about"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:ems="10"
-                    android:text="@string/about"
-                    android:textStyle="italic" />
             </LinearLayout>
 
             <LinearLayout
@@ -505,6 +503,7 @@
                 </LinearLayout>
             </LinearLayout>
         </FrameLayout>
+
     </LinearLayout>
 
 </TabHost>
