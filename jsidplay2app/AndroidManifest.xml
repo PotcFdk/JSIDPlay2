@@ -6,7 +6,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="21" />
@@ -25,6 +26,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".JSIDPlay2Service"
+            android:description="@string/desc_service_jsidplay2"
+            android:exported="false"
+            android:icon="@drawable/jsidplay2icon"
+            android:label="@string/label_service_jsidplay2" />
     </application>
 
 </manifest>

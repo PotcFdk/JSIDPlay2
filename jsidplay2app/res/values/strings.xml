@@ -4,7 +4,7 @@
     <string name="app_name">JSIDPlay2</string>
     <string name="title_activity_main">JSIDPlay2</string>
     <string name="hello_world">Directory:</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Quit</string>
     <string name="button2">Browse&#8230;</string>
     <string name="hostname">Hostname</string>
     <string name="port">Port</string>
@@ -58,7 +58,7 @@
     <string name="stereoResidfp6581">Stereo Filter 6581:</string>
     <string name="stereoResidfp8580">Stereo Filter 8580:</string>
     <string name="about">Android App of JSIDPlay2 - Music Player &amp; C64 SID Chip Emulator\n
-JSIDPlay2app uses JSidplay2 which are copyrighted to:\n
+JSIDPlay2 is copyrighted to:\n
 2007-2015 Ken H&#228;ndel,\n
 &#x20;&#x20;Antti S. Lankila and Wilfred Bos\n\
 Distortion Simulation and 6581/8580 emulation:\n  Copyright &#169; 2005-2011 Antti S. Lankila\n
@@ -78,5 +78,6 @@ Source code can be found at:\n
     <string name="next">Next</string>
     <string name="removeFavorite">Remove</string>
     <string name="random">Random</string>
-    
+    <string name="label_service_jsidplay2">JSIDPlay2</string>
+    <string name="desc_service_jsidplay2">MediaPlayer of JSIDPlay2</string>
 </resources>

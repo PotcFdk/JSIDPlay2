@@ -95,7 +95,7 @@ public abstract class SidsTab {
 							}
 						}.execute();
 					} else {
-						getSidTab().requestSidDetails(canonicalPath);
+						showSid(canonicalPath);
 						tabHost.setCurrentTabByTag(SidTab.class.getSimpleName());
 					}
 				} catch (IOException e) {
@@ -114,6 +114,7 @@ public abstract class SidsTab {
 		}
 	}
 
-	protected abstract SidTab getSidTab();
+	protected abstract void showSid(String canonicalPath);
 
 }
+
