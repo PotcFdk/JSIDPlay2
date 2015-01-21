@@ -53,7 +53,6 @@ public class MainActivity extends Activity {
 			jsidplay2service.setConfiguration(configuration);
 			jsidplay2service.setRandomized(randomized);
 
-			playListTab.setPlayList(jsidplay2service.getPlayList());
 			for (PlayListEntry entry : jsidplay2service.getPlayList()) {
 				playListTab.addRow(entry);
 			}
@@ -192,6 +191,7 @@ public class MainActivity extends Activity {
 			String resource = sidTab.getCurrentTune();
 			PlayListEntry entry = jsidplay2service.add(resource);
 			playListTab.addRow(entry);
+			tabHost.setCurrentTabByTag(PlayListTab.class.getSimpleName());
 		} catch (IOException e) {
 			Log.e(appName, e.getMessage(), e);
 		}

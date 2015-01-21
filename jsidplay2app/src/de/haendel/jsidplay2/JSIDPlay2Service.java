@@ -107,9 +107,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		currentSong = -1;
 		rnd = new Random(System.currentTimeMillis());
 
-		// create player
-		player = new MediaPlayer();
-		initMusicPlayer();
+		player = createMediaPlayer();
 	}
 
 	@Override
@@ -134,8 +132,8 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 
 	@Override
 	public boolean onUnbind(Intent intent) {
-		stop();
-		player.release();
+		stopMediaPlayer(player);
+		destroyMediaPlayer(player);
 		return false;
 	}
 
@@ -154,22 +152,17 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		default:
 			break;
 		}
+		stopMediaPlayer(mp);
+		destroyMediaPlayer(mp);
+
+		player = createMediaPlayer();
 		playNextSong();
-		return true;
+		return false;
 	}
 
 	@Override
 	public void onCompletion(MediaPlayer mp) {
 		playNextSong();
-	}
-
-	public void initMusicPlayer() {
-		player.setWakeMode(getApplicationContext(),
-				PowerManager.PARTIAL_WAKE_LOCK);
-		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		player.setOnPreparedListener(this);
-		player.setOnCompletionListener(this);
-		player.setOnErrorListener(this);
 	}
 
 	@Override
@@ -216,9 +209,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 
 	public void stop() {
 		Toast.makeText(this, "JSIDPlay2 Stopped...", Toast.LENGTH_SHORT).show();
-		if (player.isPlaying()) {
-			player.stop();
-		}
+		stopMediaPlayer(player);
 	}
 
 	public PlayListEntry add(String resource)
@@ -236,6 +227,27 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 			playList.remove(entry);
 			save();
 		}
+	}
+
+	private MediaPlayer createMediaPlayer() {
+		MediaPlayer mp = new MediaPlayer();
+		mp.setWakeMode(getApplicationContext(),
+				PowerManager.PARTIAL_WAKE_LOCK);
+		mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		mp.setOnPreparedListener(this);
+		mp.setOnCompletionListener(this);
+		mp.setOnErrorListener(this);
+		return mp;
+	}
+
+	private void stopMediaPlayer(MediaPlayer mp) {
+		if (mp.isPlaying()) {
+			mp.stop();
+		}
+	}
+
+	private void destroyMediaPlayer(MediaPlayer mp) {
+		mp.release();
 	}
 
 	private URI getURI(IConfiguration configuration, String resource)

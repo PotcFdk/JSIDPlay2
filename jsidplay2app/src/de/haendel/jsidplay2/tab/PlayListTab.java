@@ -1,12 +1,11 @@
 package de.haendel.jsidplay2.tab;
 
-import java.util.List;
-
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
+import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -44,9 +43,9 @@ public abstract class PlayListTab {
 
 	private UIHelper ui;
 
+	private ScrollView favoritesScroll;
 	private TableLayout favorites;
 	private CheckBox random;
-	private List<PlayListEntry> playList;
 
 	public PlayListTab(final MainActivity activity, final String appName,
 			final IConfiguration configuration, TabHost tabHost) {
@@ -60,6 +59,8 @@ public abstract class PlayListTab {
 				.setIndicator(activity.getString(R.string.tab_playlist))
 				.setContent(R.id.playlist));
 
+		favoritesScroll = (ScrollView) activity
+				.findViewById(R.id.favoritesScroll);
 		favorites = (TableLayout) activity.findViewById(R.id.favorites);
 		random = (CheckBox) activity.findViewById(R.id.random);
 
@@ -68,7 +69,7 @@ public abstract class PlayListTab {
 	}
 
 	public PlayListEntry addRow(final PlayListEntry entry) {
-		TableRow row = new TableRow(context);
+		final TableRow row = new TableRow(context);
 		row.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -91,16 +92,18 @@ public abstract class PlayListTab {
 		favorites.addView(row, new TableLayout.LayoutParams(
 				TableLayout.LayoutParams.MATCH_PARENT,
 				TableLayout.LayoutParams.WRAP_CONTENT));
-		tabHost.setCurrentTabByTag(PlayListTab.class.getSimpleName());
+
+		favoritesScroll.post(new Runnable() {
+			@Override
+			public void run() {
+				favoritesScroll.scrollTo(0, row.getTop());
+			}
+		});
 		return entry;
 	}
 
 	public void removeLast() {
 		favorites.removeViewAt(favorites.getChildCount() - 1);
-	}
-
-	public void setPlayList(List<PlayListEntry> list) {
-		this.playList = list;
 	}
 
 	protected abstract void play(PlayListEntry entry);
