@@ -2,7 +2,6 @@ package de.haendel.jsidplay2;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -31,15 +30,16 @@ import de.haendel.jsidplay2.tab.SidsTab;
 public class MainActivity extends Activity {
 
 	private String appName;
-	private SidTab sidTab;
-	private PlayListTab playList;
+
 	private Configuration configuration;
+	private boolean randomized;
 
 	private TabHost tabHost;
+	private SidTab sidTab;
+	private PlayListTab playListTab;
 
 	private JSIDPlay2Service jsidplay2service;
 	private Intent playIntent;
-	private boolean musicBound = false;
 
 	// connect to the service
 	final ServiceConnection jsidplay2Connection = new ServiceConnection() {
@@ -49,19 +49,20 @@ public class MainActivity extends Activity {
 			JSIDPlay2Binder binder = (JSIDPlay2Binder) service;
 			// get service
 			jsidplay2service = binder.getService();
-			// pass list
+			// pass configuration
 			jsidplay2service.setConfiguration(configuration);
-			jsidplay2service.setList(playList.getList());
 			jsidplay2service.setRandomized(randomized);
-			musicBound = true;
+
+			playListTab.setPlayList(jsidplay2service.getPlayList());
+			for (PlayListEntry entry : jsidplay2service.getPlayList()) {
+				playListTab.addRow(entry);
+			}
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-			musicBound = false;
 		}
 	};
-	private boolean randomized;
 
 	@Override
 	protected void onStart() {
@@ -121,7 +122,7 @@ public class MainActivity extends Activity {
 			}
 		};
 		sidTab = new SidTab(this, appName, configuration, tabHost);
-		playList = new PlayListTab(this, appName, configuration, tabHost) {
+		playListTab = new PlayListTab(this, appName, configuration, tabHost) {
 			@Override
 			protected void play(PlayListEntry entry) {
 				if (entry == null) {
@@ -134,8 +135,6 @@ public class MainActivity extends Activity {
 		};
 		new ConfigurationTab(this, appName, configuration, tabHost);
 
-		loadFavorites(null);
-		
 		tabHost.setCurrentTabByTag(GeneralTab.class.getSimpleName());
 	}
 
@@ -169,25 +168,18 @@ public class MainActivity extends Activity {
 				if (music == null) {
 					return;
 				}
-				saveDownload(music);
+				Intent intent = new Intent();
+				intent.setAction(android.content.Intent.ACTION_VIEW);
+				intent.setDataAndType(music.getUri(), music.getType());
+				startActivity(intent);
 			}
 		}.execute();
 	}
 
-	public void loadFavorites(View view) {
-		try {
-			playList.load();
-		} catch (IOException e) {
-			Log.e(appName, e.getMessage(), e);
-		} catch (URISyntaxException e) {
-			Log.e(appName, e.getMessage(), e);
-		}
-	}
-
 	public void removeFavorite(View view) {
 		try {
-			playList.remove();
-			playList.save();
+			jsidplay2service.removeLast();
+			playListTab.removeLast();
 		} catch (UnsupportedEncodingException e) {
 			Log.e(appName, e.getMessage(), e);
 		} catch (IOException e) {
@@ -197,18 +189,12 @@ public class MainActivity extends Activity {
 
 	public void addToPlaylist(View view) {
 		try {
-			playList.add(sidTab.getCurrentTune());
-			playList.save();
+			String resource = sidTab.getCurrentTune();
+			PlayListEntry entry = jsidplay2service.add(resource);
+			playListTab.addRow(entry);
 		} catch (IOException e) {
 			Log.e(appName, e.getMessage(), e);
 		}
-	}
-
-	private void saveDownload(DataAndType music) {
-		Intent intent = new Intent();
-		intent.setAction(android.content.Intent.ACTION_VIEW);
-		intent.setDataAndType(music.getUri(), music.getType());
-		startActivity(intent);
 	}
 
 }

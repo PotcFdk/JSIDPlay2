@@ -1,5 +1,7 @@
 package de.haendel.jsidplay2;
 
+import static android.media.MediaPlayer.MEDIA_ERROR_SERVER_DIED;
+import static android.media.MediaPlayer.MEDIA_ERROR_UNKNOWN;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_MODEL;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_PLAY_LENGTH;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DIGI_BOOSTED_8580;
@@ -18,9 +20,18 @@ import static de.haendel.jsidplay2.config.IConfiguration.PAR_SINGLE_SONG;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_8580;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -33,6 +44,7 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
@@ -43,11 +55,14 @@ import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		OnErrorListener, OnCompletionListener {
 
+	private static final String JSIDPLAY2_FOLDER = "Download";
+	private static final String JSIDPLAY2_JS2 = "jsidplay2.js2";
+
 	public static class PlayListEntry {
 
 		private String resource;
 
-		public PlayListEntry(String resource) {
+		private PlayListEntry(String resource) {
 			this.resource = resource;
 		}
 
@@ -62,20 +77,15 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		}
 	}
 
-	private Random rnd = new Random(System.currentTimeMillis());
+	private IConfiguration configuration;
+	private boolean randomized;
 
-	// media player
-	private MediaPlayer player;
-	// song list
 	private List<PlayListEntry> playList;
-	// current position
 	private int currentSong;
+	private Random rnd;
 
 	private final IBinder jsidplay2Binder = new JSIDPlay2Binder();
-
-	private IConfiguration configuration;
-
-	private boolean randomized;
+	private MediaPlayer player;
 
 	public void setConfiguration(IConfiguration configuration) {
 		this.configuration = configuration;
@@ -85,16 +95,18 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		this.randomized = randomized;
 	}
 
-	public void setList(List<PlayListEntry> list) {
-		this.playList = list;
+	public List<PlayListEntry> getPlayList() {
+		return this.playList;
 	}
 
 	public void onCreate() {
-		// create the service
 		super.onCreate();
 
-		// initialize position
+		// initialize playlist
+		playList = new ArrayList<PlayListEntry>();
 		currentSong = -1;
+		rnd = new Random(System.currentTimeMillis());
+
 		// create player
 		player = new MediaPlayer();
 		initMusicPlayer();
@@ -102,6 +114,21 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 
 	@Override
 	public IBinder onBind(Intent intent) {
+		try {
+			load();
+		} catch (UnsupportedEncodingException e) {
+			Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+		} catch (IllegalArgumentException e) {
+			Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+		} catch (SecurityException e) {
+			Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+		} catch (IllegalStateException e) {
+			Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+		} catch (IOException e) {
+			Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+		} catch (URISyntaxException e) {
+			Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+		}
 		return jsidplay2Binder;
 	}
 
@@ -114,18 +141,29 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 
 	@Override
 	public boolean onError(MediaPlayer mp, int what, int extra) {
-		return false;
+		Log.e(getPackageName(), String.format("Error(%s%s)", what, extra));
+		switch (what) {
+		case MEDIA_ERROR_SERVER_DIED:
+			Toast.makeText(this, "MEDIA_ERROR_SERVER_DIED", Toast.LENGTH_SHORT)
+					.show();
+			break;
+		case MEDIA_ERROR_UNKNOWN:
+			Toast.makeText(this, "MEDIA_ERROR_UNKNOWN", Toast.LENGTH_SHORT)
+					.show();
+			break;
+		default:
+			break;
+		}
+		playNextSong();
+		return true;
 	}
 
 	@Override
 	public void onCompletion(MediaPlayer mp) {
-		Toast.makeText(this, "JSIDPlay2 Completed...", Toast.LENGTH_SHORT)
-				.show();
 		playNextSong();
 	}
 
 	public void initMusicPlayer() {
-		// set player properties
 		player.setWakeMode(getApplicationContext(),
 				PowerManager.PARTIAL_WAKE_LOCK);
 		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -135,28 +173,18 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 	}
 
 	@Override
-	public void onPrepared(MediaPlayer mp) {
-		// start playback
-		mp.start();
-	}
-
-	public void stop() {
-		Toast.makeText(this, "JSIDPlay2 Stopped...", Toast.LENGTH_SHORT).show();
-		if (player.isPlaying()) {
-			player.stop();
-		}
+	public void onPrepared(MediaPlayer mediaPlayer) {
+		mediaPlayer.start();
 	}
 
 	public void playSong(PlayListEntry entry) {
 		File file = new File(entry.getResource());
 		Toast.makeText(this, file.getName(), Toast.LENGTH_SHORT).show();
 
-		// play a song
 		player.reset();
 
 		// get song
 		currentSong = playList.indexOf(entry);
-
 		if (currentSong == -1) {
 			return;
 		}
@@ -167,7 +195,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 					Uri.parse(uri.toString()));
 		} catch (Exception e) {
 			Log.e(JSIDPlay2Service.class.getSimpleName(),
-					"Error setting data source", e);
+					"Error setting data source!", e);
 		}
 		player.prepareAsync();
 	}
@@ -184,6 +212,30 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		}
 
 		playSong(playList.get(currentSong));
+	}
+
+	public void stop() {
+		Toast.makeText(this, "JSIDPlay2 Stopped...", Toast.LENGTH_SHORT).show();
+		if (player.isPlaying()) {
+			player.stop();
+		}
+	}
+
+	public PlayListEntry add(String resource)
+			throws UnsupportedEncodingException, IOException {
+		PlayListEntry entry = new PlayListEntry(resource);
+		playList.add(entry);
+
+		save();
+		return entry;
+	}
+
+	public void removeLast() throws UnsupportedEncodingException, IOException {
+		PlayListEntry entry = getLast();
+		if (entry != null) {
+			playList.remove(entry);
+			save();
+		}
 	}
 
 	private URI getURI(IConfiguration configuration, String resource)
@@ -233,6 +285,50 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 			return Integer.parseInt(txt);
 		} catch (NumberFormatException e) {
 			return 0;
+		}
+	}
+
+	private PlayListEntry getLast() {
+		return playList.size() > 0 ? playList.get(playList.size() - 1) : null;
+	}
+
+	private void load() throws UnsupportedEncodingException, IOException,
+			IllegalArgumentException, SecurityException, IllegalStateException,
+			URISyntaxException {
+		File sdRootDir = Environment.getExternalStorageDirectory();
+		File playlistFile = new File(new File(sdRootDir, JSIDPLAY2_FOLDER),
+				JSIDPLAY2_JS2);
+		if (!playlistFile.exists()) {
+			playlistFile.createNewFile();
+		}
+		BufferedReader r = new BufferedReader(new InputStreamReader(
+				new FileInputStream(playlistFile), "ISO-8859-1"));
+		try {
+			String line;
+			while ((line = r.readLine()) != null) {
+				// assuming JSIDPlay2 style - most often relative to HVSC
+				String resource = (!line.startsWith("/C64Music") ? "/C64Music"
+						: "") + line;
+				playList.add(new PlayListEntry(resource));
+			}
+		} finally {
+			r.close();
+		}
+	}
+
+	private void save() throws UnsupportedEncodingException, IOException {
+		File sdRootDir = Environment.getExternalStorageDirectory();
+		File playlistFile = new File(new File(sdRootDir, JSIDPLAY2_FOLDER),
+				JSIDPLAY2_JS2);
+		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(
+				new FileOutputStream(playlistFile), "ISO-8859-1"));
+		try {
+			for (PlayListEntry playListEntry : playList) {
+				w.write(playListEntry.getResource());
+				w.write('\n');
+			}
+		} finally {
+			w.close();
 		}
 	}
 
