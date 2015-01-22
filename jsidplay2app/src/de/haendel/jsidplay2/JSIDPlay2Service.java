@@ -152,12 +152,8 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		default:
 			break;
 		}
-		stopMediaPlayer(mp);
-		destroyMediaPlayer(mp);
-
-		player = createMediaPlayer();
-		playNextSong();
-		return false;
+		player.reset();
+		return true;
 	}
 
 	@Override
