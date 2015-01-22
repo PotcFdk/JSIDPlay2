@@ -108,4 +108,14 @@ public abstract class PlayListTab {
 
 	protected abstract void play(PlayListEntry entry);
 
+	public void gotoRow(final int currentSong) {
+		favoritesScroll.post(new Runnable() {
+			@Override
+			public void run() {
+				favoritesScroll.scrollTo(0, favorites.getChildAt(currentSong)
+						.getTop());
+			}
+		});
+	}
+
 }

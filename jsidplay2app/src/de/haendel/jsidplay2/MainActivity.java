@@ -8,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.widget.TabHost;
 import de.haendel.jsidplay2.JSIDPlay2Service.JSIDPlay2Binder;
 import de.haendel.jsidplay2.JSIDPlay2Service.PlayListEntry;
+import de.haendel.jsidplay2.JSIDPlay2Service.PlayListener;
 import de.haendel.jsidplay2.config.Configuration;
 import de.haendel.jsidplay2.request.DataAndType;
 import de.haendel.jsidplay2.request.DownloadRequest;
@@ -27,7 +30,7 @@ import de.haendel.jsidplay2.tab.PlayListTab;
 import de.haendel.jsidplay2.tab.SidTab;
 import de.haendel.jsidplay2.tab.SidsTab;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements PlayListener {
 
 	private String appName;
 
@@ -49,6 +52,7 @@ public class MainActivity extends Activity {
 			JSIDPlay2Binder binder = (JSIDPlay2Binder) service;
 			// get service
 			jsidplay2service = binder.getService();
+			binder.addPlayListener(MainActivity.this);
 			// pass configuration
 			jsidplay2service.setConfiguration(configuration);
 			jsidplay2service.setRandomized(randomized);
@@ -195,6 +199,11 @@ public class MainActivity extends Activity {
 		} catch (IOException e) {
 			Log.e(appName, e.getMessage(), e);
 		}
+	}
+
+	@Override
+	public void play(int currentSong) {
+		playListTab.gotoRow(currentSong);
 	}
 
 }

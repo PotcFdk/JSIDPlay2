@@ -55,6 +55,10 @@ import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		OnErrorListener, OnCompletionListener {
 
+	public interface PlayListener {
+		void play(int currentSong);
+	}
+
 	private static final String JSIDPLAY2_FOLDER = "Download";
 	private static final String JSIDPLAY2_JS2 = "jsidplay2.js2";
 
@@ -75,6 +79,9 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		public JSIDPlay2Service getService() {
 			return JSIDPlay2Service.this;
 		}
+		public void addPlayListener(PlayListener listener) {
+			JSIDPlay2Service.this.listener = listener;
+		}
 	}
 
 	private IConfiguration configuration;
@@ -86,6 +93,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 
 	private final IBinder jsidplay2Binder = new JSIDPlay2Binder();
 	private MediaPlayer player;
+	private PlayListener listener;
 
 	public void setConfiguration(IConfiguration configuration) {
 		this.configuration = configuration;
@@ -134,6 +142,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 	public boolean onUnbind(Intent intent) {
 		stopMediaPlayer(player);
 		destroyMediaPlayer(player);
+		listener = null;
 		return false;
 	}
 
@@ -187,9 +196,10 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 					"Error setting data source!", e);
 		}
 		player.prepareAsync();
+		listener.play(currentSong);
 	}
 
-	public void playNextSong() {
+	public int playNextSong() {
 		if (randomized) {
 			currentSong = rnd.nextInt(playList.size());
 		} else {
@@ -197,10 +207,11 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 					: -1;
 		}
 		if (currentSong == -1) {
-			return;
+			return -1;
 		}
 
 		playSong(playList.get(currentSong));
+		return currentSong;
 	}
 
 	public void stop() {
