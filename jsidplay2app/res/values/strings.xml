@@ -4,7 +4,7 @@
     <string name="app_name">JSIDPlay2</string>
     <string name="title_activity_main">JSIDPlay2</string>
     <string name="hello_world">Directory:</string>
-    <string name="action_settings">Quit</string>
+    <string name="action_quit">Quit</string>
     <string name="button2">Browse&#8230;</string>
     <string name="hostname">Hostname</string>
     <string name="port">Port</string>

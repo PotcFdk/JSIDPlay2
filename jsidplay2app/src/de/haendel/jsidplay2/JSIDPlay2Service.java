@@ -56,7 +56,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		OnErrorListener, OnCompletionListener {
 
 	public interface PlayListener {
-		void play(int currentSong);
+		void play(int currentSong, PlayListEntry entry);
 	}
 
 	private static final String JSIDPLAY2_FOLDER = "Download";
@@ -196,7 +196,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 					"Error setting data source!", e);
 		}
 		player.prepareAsync();
-		listener.play(currentSong);
+		listener.play(currentSong, entry);
 	}
 
 	public int playNextSong() {
