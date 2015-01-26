@@ -977,7 +977,7 @@ public class Player {
 	 * Play tune.
 	 * 
 	 * @param tune
-	 *            file to play the tune (null means just reset C64)
+	 *            file to play the tune (SidTune.RESET means just reset C64)
 	 */
 	public final void play(final SidTune tune) {
 		stopC64();
