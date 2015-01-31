@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,32 +12,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
 import de.haendel.jsidplay2.R;
-import de.haendel.jsidplay2.common.UIHelper;
+import de.haendel.jsidplay2.common.TabBase;
 import de.haendel.jsidplay2.config.IConfiguration;
 import de.haendel.jsidplay2.request.DirectoryRequest;
 import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 
-public abstract class SidsTab {
-	static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str)$";
+public abstract class SidsTab extends TabBase {
+	private static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str)$";
 
-	ListView directory;
-
-	private Context context;
-	private String appName;
-	private IConfiguration configuration;
-	private TabHost tabHost;
-	private SharedPreferences preferences;
-
-	private UIHelper ui;
+	private ListView directory;
 
 	public SidsTab(final Activity activity, final String appName,
 			final IConfiguration configuration, TabHost tabHost) {
-		this.context = activity;
-		this.appName = appName;
-		this.configuration = configuration;
-		this.tabHost = tabHost;
-		preferences = PreferenceManager.getDefaultSharedPreferences(activity);
-		ui = new UIHelper(preferences);
+		super(activity, appName, configuration, tabHost);
 		tabHost.addTab(tabHost.newTabSpec(SidsTab.class.getSimpleName())
 				.setIndicator(activity.getString(R.string.tab_sids))
 				.setContent(R.id.sids));
@@ -70,7 +54,7 @@ public abstract class SidsTab {
 	}
 
 	private void viewDirectory(List<String> childs, final String filter) {
-		directory.setAdapter(new ArrayAdapter<String>(context,
+		directory.setAdapter(new ArrayAdapter<String>(activity,
 				android.R.layout.simple_list_item_1, childs));
 		directory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -117,4 +101,3 @@ public abstract class SidsTab {
 	protected abstract void showSid(String canonicalPath);
 
 }
-

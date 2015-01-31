@@ -26,7 +26,7 @@
                 android:orientation="vertical" >
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
@@ -55,7 +55,7 @@
 
                     <EditText
                         android:id="@+id/username"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ems="10"
@@ -81,7 +81,7 @@
 
                 <TextView
                     android:id="@+id/about"
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
                     android:ems="10"
@@ -94,11 +94,11 @@
             <LinearLayout
                 android:id="@+id/playlist"
                 android:layout_width="fill_parent"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:orientation="vertical" >
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content" >
 
                     <Button
@@ -132,7 +132,7 @@
 
                 <ScrollView
                     android:id="@+id/favoritesScroll"
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:fadeScrollbars="false"
@@ -166,8 +166,8 @@
 
             <LinearLayout
                 android:id="@+id/tune"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
                 android:orientation="vertical">
 
                 <TextView
@@ -250,15 +250,14 @@
                     android:id="@+id/directory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/linearLayout1"
-                    android:layout_below="@+id/linearLayout1" >
+                     >
                 </ListView>
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/settings"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
                 android:orientation="vertical" >
 
                 <LinearLayout

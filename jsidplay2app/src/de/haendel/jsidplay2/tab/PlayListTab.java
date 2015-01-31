@@ -13,11 +13,15 @@ import android.widget.TextView;
 import de.haendel.jsidplay2.JSIDPlay2Service.PlayListEntry;
 import de.haendel.jsidplay2.MainActivity;
 import de.haendel.jsidplay2.R;
+import de.haendel.jsidplay2.common.TabBase;
 import de.haendel.jsidplay2.common.UIHelper;
 import de.haendel.jsidplay2.config.IConfiguration;
 
-public abstract class PlayListTab {
+public abstract class PlayListTab extends TabBase {
 
+	private static final String PAR_RANDOM = "random";
+	private static final String DEFAULT_RANDOM = Boolean.FALSE.toString();
+	
 	public class PlayListUIHelper extends UIHelper {
 
 		public PlayListUIHelper(SharedPreferences preferences) {
@@ -27,34 +31,24 @@ public abstract class PlayListTab {
 		@Override
 		protected void checkBoxUpdated(String parName, boolean newValue) {
 			if (parName.equals(PAR_RANDOM)) {
-				context.setRandomized(newValue);
+				PlayListTab.this.setRandomized(newValue);
 			}
 		}
 	}
 
-	private static final String PAR_RANDOM = "random";
-	private static final String DEFAULT_RANDOM = Boolean.FALSE.toString();
-
-	private MainActivity context;
-	private String appName;
-	private IConfiguration configuration;
-	private TabHost tabHost;
-	private SharedPreferences preferences;
-
-	private UIHelper ui;
-
 	private ScrollView favoritesScroll;
 	private TableLayout favorites;
 	private CheckBox random;
+	
+	private SharedPreferences preferences;
+	private UIHelper ui;
 
 	public PlayListTab(final MainActivity activity, final String appName,
 			final IConfiguration configuration, TabHost tabHost) {
-		this.context = activity;
-		this.appName = appName;
-		this.configuration = configuration;
-		this.tabHost = tabHost;
+		super(activity, appName, configuration, tabHost);
 		preferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		ui = new PlayListUIHelper(preferences);
+
 		tabHost.addTab(tabHost.newTabSpec(PlayListTab.class.getSimpleName())
 				.setIndicator(activity.getString(R.string.tab_playlist))
 				.setContent(R.id.playlist));
@@ -69,7 +63,7 @@ public abstract class PlayListTab {
 	}
 
 	public PlayListEntry addRow(final PlayListEntry entry) {
-		final TableRow row = new TableRow(context);
+		final TableRow row = new TableRow(activity);
 		row.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -81,7 +75,7 @@ public abstract class PlayListTab {
 				TableRow.LayoutParams.WRAP_CONTENT,
 				TableRow.LayoutParams.MATCH_PARENT));
 
-		TextView col = new TextView(context);
+		TextView col = new TextView(activity);
 		col.setText(entry.getResource());
 		col.setLayoutParams(new TableRow.LayoutParams(
 				TableRow.LayoutParams.MATCH_PARENT,
@@ -117,5 +111,7 @@ public abstract class PlayListTab {
 			}
 		});
 	}
+
+	protected abstract void setRandomized(boolean newValue);
 
 }

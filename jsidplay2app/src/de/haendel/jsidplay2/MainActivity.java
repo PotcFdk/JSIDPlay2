@@ -67,6 +67,11 @@ public class MainActivity extends Activity implements PlayListener {
 				jsidplay2service.playSong(entry);
 				sidTab.requestSidDetails(entry.getResource());
 			}
+
+			@Override
+			protected void setRandomized(boolean newValue) {
+				MainActivity.this.setRandomized(newValue);
+			}
 		};
 		new ConfigurationTab(this, appName, configuration, tabHost);
 

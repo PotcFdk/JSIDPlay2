@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -50,12 +49,13 @@ import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
 import de.haendel.jsidplay2.R;
+import de.haendel.jsidplay2.common.TabBase;
 import de.haendel.jsidplay2.common.UIHelper;
 import de.haendel.jsidplay2.config.IConfiguration;
 import de.haendel.jsidplay2.request.FiltersRequest;
 import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 
-public class ConfigurationTab {
+public class ConfigurationTab extends TabBase {
 	private static final String PREFIX_FILTER_6581 = "RESID_MOS6581_";
 	private static final String PREFIX_FILTER_8580 = "RESID_MOS8580_";
 	private static final String PREFIX_RESIDFP_FILTER_6581 = "RESIDFP_MOS6581_";
@@ -139,13 +139,6 @@ public class ConfigurationTab {
 
 	}
 
-	private Context context;
-	private String appName;
-	private IConfiguration configuration;
-	private TabHost tabHost;
-	private SharedPreferences preferences;
-
-	private UIHelper ui;
 	private EditText defaultLength;
 	private CheckBox enableDatabase, singleSong, loop, digiBoosted8580;
 	private Spinner emulation, defaultModel;
@@ -160,13 +153,15 @@ public class ConfigurationTab {
 	private TextView stereoFilter6581txt, stereoFilter8580txt,
 			reSIDfpStereoFilter6581txt, reSIDfpStereoFilter8580txt;
 
+	private SharedPreferences preferences;
+	private UIHelper ui;
+
 	public ConfigurationTab(final Activity activity, final String appName,
 			final IConfiguration configuration, TabHost tabHost) {
-		this.context = activity;
-		this.appName = appName;
-		this.configuration = configuration;
+		super(activity, appName, configuration, tabHost);
 		preferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		ui = new ConfigurationUIHelper(preferences);
+
 		tabHost.addTab(tabHost
 				.newTabSpec(ConfigurationTab.class.getSimpleName())
 				.setIndicator(activity.getString(R.string.tab_cfg))
@@ -251,37 +246,37 @@ public class ConfigurationTab {
 				List<String> reSidFpFilter8580List = determineFilterList(
 						filters, PREFIX_RESIDFP_FILTER_8580);
 
-				ui.setupSpinner(context, filter6581, filter6581List
+				ui.setupSpinner(activity, filter6581, filter6581List
 						.toArray(new String[0]), PAR_FILTER_6581, preferences
 						.getString(PAR_FILTER_6581, DEFAULT_FILTER_6581));
-				ui.setupSpinner(context, filter8580, filter8580List
+				ui.setupSpinner(activity, filter8580, filter8580List
 						.toArray(new String[0]), PAR_FILTER_8580, preferences
 						.getString(PAR_FILTER_8580, DEFAULT_FILTER_8580));
-				ui.setupSpinner(context, reSIDfpFilter6581,
+				ui.setupSpinner(activity, reSIDfpFilter6581,
 						reSidFpFilter6581List.toArray(new String[0]),
 						PAR_RESIDFP_FILTER_6581, preferences.getString(
 								PAR_RESIDFP_FILTER_6581,
 								DEFAULT_RESIDFP_FILTER_6581));
-				ui.setupSpinner(context, reSIDfpFilter8580,
+				ui.setupSpinner(activity, reSIDfpFilter8580,
 						reSidFpFilter8580List.toArray(new String[0]),
 						PAR_RESIDFP_FILTER_8580, preferences.getString(
 								PAR_RESIDFP_FILTER_8580,
 								DEFAULT_RESIDFP_FILTER_8580));
 
-				ui.setupSpinner(context, stereoFilter6581, filter6581List
+				ui.setupSpinner(activity, stereoFilter6581, filter6581List
 						.toArray(new String[0]), PAR_STEREO_FILTER_6581,
 						preferences.getString(PAR_STEREO_FILTER_6581,
 								DEFAULT_FILTER_6581));
-				ui.setupSpinner(context, stereoFilter8580, filter8580List
+				ui.setupSpinner(activity, stereoFilter8580, filter8580List
 						.toArray(new String[0]), PAR_STEREO_FILTER_8580,
 						preferences.getString(PAR_STEREO_FILTER_8580,
 								DEFAULT_FILTER_8580));
-				ui.setupSpinner(context, reSIDfpStereoFilter6581,
+				ui.setupSpinner(activity, reSIDfpStereoFilter6581,
 						reSidFpFilter6581List.toArray(new String[0]),
 						PAR_RESIDFP_STEREO_FILTER_6581, preferences.getString(
 								PAR_RESIDFP_STEREO_FILTER_6581,
 								DEFAULT_RESIDFP_FILTER_6581));
-				ui.setupSpinner(context, reSIDfpStereoFilter8580,
+				ui.setupSpinner(activity, reSIDfpStereoFilter8580,
 						reSidFpFilter8580List.toArray(new String[0]),
 						PAR_RESIDFP_STEREO_FILTER_8580, preferences.getString(
 								PAR_RESIDFP_STEREO_FILTER_8580,

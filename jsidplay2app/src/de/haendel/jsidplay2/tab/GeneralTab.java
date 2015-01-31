@@ -6,10 +6,11 @@ import android.preference.PreferenceManager;
 import android.widget.EditText;
 import android.widget.TabHost;
 import de.haendel.jsidplay2.R;
+import de.haendel.jsidplay2.common.TabBase;
 import de.haendel.jsidplay2.common.UIHelper;
 import de.haendel.jsidplay2.config.IConfiguration;
 
-public class GeneralTab {
+public class GeneralTab extends TabBase {
 
 	private static final String PAR_HOSTNAME = "hostname";
 	private static final String PAR_PORT = "port";
@@ -41,18 +42,14 @@ public class GeneralTab {
 		}
 	}
 
-	private String appName;
-	private IConfiguration configuration;
-	private TabHost tabHost;
 	private SharedPreferences preferences;
-
 	private UIHelper ui;
+
 	private EditText hostname, port, username, password;
 
 	public GeneralTab(final Activity activity, final String appName,
 			final IConfiguration configuration, TabHost tabHost) {
-		this.appName = appName;
-		this.configuration = configuration;
+		super(activity, appName, configuration, tabHost);
 		preferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		ui = new GeneralUIHelper(preferences);
 		tabHost.addTab(tabHost.newTabSpec(GeneralTab.class.getSimpleName())
