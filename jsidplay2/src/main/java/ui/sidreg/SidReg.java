@@ -205,10 +205,6 @@ public class SidReg extends Tab implements UIPart {
 			sidRegExtension.setbundle(util.getBundle());
 			sidRegExtension.init();
 		}
-		util.getPlayer().getC64().setSidWriteListener(0, sidRegExtension);
-		if (util.getPlayer().getTune() != null
-				&& util.getPlayer().getTune().getInfo().getSidChipBase2() != 0) {
-			util.getPlayer().getC64().setSidWriteListener(1, sidRegExtension);
-		}
+		util.getPlayer().setSidWriteListener(sidRegExtension);
 	}
 }

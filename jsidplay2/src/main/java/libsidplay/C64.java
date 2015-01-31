@@ -40,7 +40,7 @@ import libsidplay.components.ram.SystemRAMBank;
 public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		UserportPrinterEnvironment {
 	/** Maximum number of supported SIDs (mono and stereo) */
-	final static int MAX_SIDS = 2;
+	final static int MAX_SIDS = 3;
 
 	/** Currently active CIA model. */
 	private static final MOS6526.Model CIAMODEL = MOS6526.Model.MOS6526;
@@ -551,9 +551,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 * @param secondSidChipBase
 	 *            base address (e.g. 0xd420)
 	 */
-	public void setSecondSIDAddress(final int secondSidChipBase) {
-		sidBank.setSIDMapping(0xd400, 0);
-		sidBank.setSIDMapping(secondSidChipBase, 1);
+	public void setSIDAddress(final int base, int sidNum) {
+		sidBank.setSIDMapping(base, sidNum);
 	}
 
 	/**
@@ -564,8 +563,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 * @param listener
 	 *            listener to debug SID register writes
 	 */
-	public void setSidWriteListener(final int chipNo,
-			final ReSIDExtension listener) {
+	void setSidWriteListener(final int chipNo, final ReSIDExtension listener) {
 		sidBank.setSidWriteListener(chipNo, listener);
 	}
 

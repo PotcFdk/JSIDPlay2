@@ -86,6 +86,8 @@ import sidplay.audio.NaturalFinishedException;
 import sidplay.audio.RecordingFilenameProvider;
 import sidplay.ini.intf.IC1541Section;
 import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IEmulationSection;
+import ui.sidreg.SidRegExtension;
 
 /**
  * The player contains a C64 computer and additional peripherals.<BR>
@@ -213,9 +215,8 @@ public class Player {
 	 */
 	public Player(IConfig config) {
 		this.config = config;
-		this.driverSettings = new DriverSettings(config.getAudio()
-				.getAudio().getAudioDriver(), config.getEmulation()
-				.getEmulation());
+		this.driverSettings = new DriverSettings(config.getAudio().getAudio()
+				.getAudioDriver(), config.getEmulation().getEmulation());
 
 		this.iecBus = new IECBus();
 
@@ -732,7 +733,7 @@ public class Player {
 			Thread.sleep(1000);
 		}
 	}
-	
+
 	public final void setMenuHook(Consumer<Player> menuHook) {
 		this.menuHook = menuHook;
 	}
@@ -823,22 +824,22 @@ public class Player {
 		// According to the configuration, the SIDs must be updated.
 		updateSIDs();
 
-		final boolean digiBoostEnabled = config.getEmulation().isDigiBoosted8580();
-		
+		final boolean digiBoostEnabled = config.getEmulation()
+				.isDigiBoosted8580();
+
 		// apply filter settings and stereo SID chip address
 		configureSIDs((num, sid) -> {
-			sid.setFilter(config, num != 0);
-			sid.setFilterEnable(num != 0 ? config.getEmulation()
-					.isStereoFilter() : config.getEmulation().isFilter());
+			sid.setFilter(config, num);
+			sid.setFilterEnable(config.getEmulation(), num);
 			sid.input(digiBoostEnabled ? sid.getInputDigiBoost() : 0);
 		});
-		setStereoSIDAddress();
+		setSIDAddresses();
 
 		reset();
 
 		stateProperty.set(State.RUNNING);
 	}
-	
+
 	/**
 	 * Create configured SID chip implementation (emulation/hardware/none).
 	 */
@@ -902,17 +903,20 @@ public class Player {
 		return newDriverSettings;
 	}
 
-	private void setStereoSIDAddress() {
-		Integer secondAddress = AudioConfig.getStereoAddress(config, tune);
-		if (secondAddress != null) {
-			if (Integer.valueOf(0xd400).equals(secondAddress)) {
+	private void setSIDAddresses() {
+		IEmulationSection emulation = config.getEmulation();
+		for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
+			if (AudioConfig.isSIDUsed(emulation, tune, sidNum)) {
+				int address = AudioConfig
+						.getSIDAddress(emulation, tune, sidNum);
+				c64.setSIDAddress(address, sidNum);
 				/** Stereo SID at 0xd400 hack */
-				final SIDEmu s1 = c64.getSID(0);
-				final SIDEmu s2 = c64.getSID(1);
-				c64.setSID(0, new FakeStereo(c64.getEventScheduler(), s1, s2,
-						config.getEmulation()));
-			} else {
-				c64.setSecondSIDAddress(secondAddress);
+				if (sidNum == 1 && Integer.valueOf(0xd400).equals(address)) {
+					final SIDEmu s1 = c64.getSID(0);
+					final SIDEmu s2 = c64.getSID(1);
+					c64.setSID(0, new FakeStereo(c64.getEventScheduler(), s1,
+							s2, emulation));
+				}
 			}
 		}
 	}
@@ -925,16 +929,24 @@ public class Player {
 	public final void updateSIDs() {
 		EventScheduler eventScheduler = c64.getEventScheduler();
 		if (sidBuilder != null) {
-			ChipModel chipModel = ChipModel.getChipModel(config, tune);
-			SIDEmu sid = c64.getSID(0);
-			sid = sidBuilder.lock(eventScheduler, sid, chipModel);
-			c64.setSID(0, sid);
+			IEmulationSection emulation = config.getEmulation();
+			for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
+				if (AudioConfig.isSIDUsed(emulation, tune, sidNum)) {
+					ChipModel chipModel = ChipModel.getChipModel(emulation,
+							tune, sidNum);
+					SIDEmu sid = c64.getSID(sidNum);
+					sid = sidBuilder.lock(eventScheduler, sid, chipModel);
+					c64.setSID(sidNum, sid);
+				}
+			}
+		}
+	}
 
-			if (AudioConfig.isStereo(config, tune)) {
-				ChipModel stereoModel = ChipModel.getStereoModel(config, tune);
-				SIDEmu sid2 = c64.getSID(1);
-				sid2 = sidBuilder.lock(eventScheduler, sid2, stereoModel);
-				c64.setSID(1, sid2);
+	public void setSidWriteListener(SidRegExtension sidRegExtension) {
+		IEmulationSection emulation = config.getEmulation();
+		for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
+			if (AudioConfig.isSIDUsed(emulation, tune, sidNum)) {
+				c64.setSidWriteListener(sidNum, sidRegExtension);
 			}
 		}
 	}
@@ -1043,7 +1055,7 @@ public class Player {
 	public SidDatabase getSidDatabase() {
 		return sidDatabase;
 	}
-	
+
 	public final int getSidDatabaseInfo(ToIntFunction<SidDatabase> toIntFunction) {
 		return sidDatabase != null ? toIntFunction.applyAsInt(sidDatabase) : 0;
 	}
@@ -1056,7 +1068,7 @@ public class Player {
 	public final void setSTIL(STIL stil) {
 		this.stil = stil;
 	}
-	
+
 	public STIL getStil() {
 		return stil;
 	}

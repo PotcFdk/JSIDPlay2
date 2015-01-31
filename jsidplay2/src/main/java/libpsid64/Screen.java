@@ -114,11 +114,11 @@ public class Screen {
 		}
 		hasFlags = addFlag(hasFlags, tuneInfo.getClockSpeed().toString());
 		hasFlags = addFlag(hasFlags, tuneInfo.getSid1Model().toString());
-		int sid2midNibbles = (tuneInfo.getSidChipBase2() >> 4) & 0xff;
+		int sid2midNibbles = (tuneInfo.getSidChipBase(1) >> 4) & 0xff;
 		if (((sid2midNibbles & 1) == 0)
 				&& (((0x42 <= sid2midNibbles) && (sid2midNibbles <= 0x7e)) || ((0xe0 <= sid2midNibbles) && (sid2midNibbles <= 0xfe)))) {
 			hasFlags = addFlag(hasFlags, tuneInfo.getSid2Model().toString()
-					+ String.format(" at $%04x", tuneInfo.getSidChipBase2()));
+					+ String.format(" at $%04x", tuneInfo.getSidChipBase(1)));
 		}
 		if (!hasFlags) {
 			write("-");

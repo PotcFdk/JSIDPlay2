@@ -6,6 +6,7 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import libsidplay.common.SamplingMethod;
 import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IEmulationSection;
 
 /**
  * <pre>
@@ -129,11 +130,25 @@ public class HardSID extends SIDEmu {
 	}
 
 	@Override
-	public void setFilter(IConfig config, boolean isStereo) {
+	public void setFilter(IConfig config, int sidNum) {
 	}
 
 	@Override
-	public void setFilterEnable(final boolean enable) {
+	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
+		boolean enable;
+		switch (sidNum) {
+			case 0 :
+				enable = emulation.isFilter();
+				break;
+			case 1 :
+				enable = emulation.isStereoFilter();
+				break;
+			case 2 :
+				enable = emulation.isThirdSIDFilter();
+				break;
+			default :
+				throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
 		hsid2.HardSID_Filter(chipNum, enable);
 	}
 
@@ -199,7 +214,8 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void setChipModel(final ChipModel model) {
-		System.err.println("HardSID WARNING: SID model cannot be changed on the fly!");
+		System.err
+				.println("HardSID WARNING: SID model cannot be changed on the fly!");
 	}
 
 	@Override

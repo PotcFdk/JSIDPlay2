@@ -16,6 +16,7 @@
 package libsidplay.common;
 
 import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IEmulationSection;
 
 public abstract class SIDEmu {
 	/** Event context */
@@ -54,9 +55,9 @@ public abstract class SIDEmu {
 
 	public abstract void setVoiceMute(int num, boolean mute);
 
-	public abstract void setFilter(IConfig config, boolean isStereo);
+	public abstract void setFilter(IConfig config, int sidNum);
 
-	public abstract void setFilterEnable(boolean enable);
+	public abstract void setFilterEnable(IEmulationSection emulation, int sidNum);
 
 	public abstract ChipModel getChipModel();
 
@@ -68,4 +69,5 @@ public abstract class SIDEmu {
 	public abstract void input(int input);
 
 	public abstract int getInputDigiBoost();
+
 }

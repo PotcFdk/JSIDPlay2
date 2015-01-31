@@ -84,6 +84,7 @@ import ui.diskcollection.DiskCollection;
 import ui.diskcollection.DiskCollectionType;
 import ui.emulationsettings.EmulationSettings;
 import ui.entities.config.C1541Section;
+import ui.entities.config.EmulationSection;
 import ui.entities.config.PrinterSection;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.ViewEntity;
@@ -1410,15 +1411,16 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private String determineChipModel() {
+		EmulationSection emulation = util.getConfig().getEmulation();
 		StringBuilder line = new StringBuilder();
-		ChipModel chipModel = ChipModel.getChipModel(util.getConfig(), util
-				.getPlayer().getTune());
+		ChipModel chipModel = ChipModel.getChipModel(emulation, util
+				.getPlayer().getTune(), 0);
 		line.append(String.format("%s", chipModel));
-		if (AudioConfig.isStereo(util.getConfig(), util.getPlayer().getTune())) {
-			ChipModel stereoModel = ChipModel.getStereoModel(util.getConfig(),
-					util.getPlayer().getTune());
-			int dualSidBase = AudioConfig.getStereoAddress(util.getConfig(),
-					util.getPlayer().getTune());
+		if (AudioConfig.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
+			ChipModel stereoModel = ChipModel.getChipModel(emulation, util
+					.getPlayer().getTune(), 1);
+			int dualSidBase = AudioConfig.getSIDAddress(emulation, util
+					.getPlayer().getTune(), 1);
 			line.append(String
 					.format("+%s(at 0x%4x)", stereoModel, dualSidBase));
 		}

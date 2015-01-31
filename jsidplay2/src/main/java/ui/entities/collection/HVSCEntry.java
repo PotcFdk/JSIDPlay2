@@ -64,9 +64,11 @@ public class HVSCEntry {
 			this.compatibility = info.getCompatibility();
 			this.tuneLength = Long.valueOf(lengthFnct != null ? lengthFnct
 					.applyAsInt(tune) : 0);
-			this.audio = info.getSidChipBase2() != 0 ? "Stereo" : "Mono";
-			this.sidChipBase1 = info.getSidChipBase1();
-			this.sidChipBase2 = info.getSidChipBase2();
+			this.audio = info.getSidChipBase(1) != 0
+					? info.getSidChipBase(2) != 0 ? "3-SID" : "Stereo"
+					: "Mono";
+			this.sidChipBase1 = info.getSidChipBase(0);
+			this.sidChipBase2 = info.getSidChipBase(1);
 			this.driverAddress = info.getDeterminedDriverAddr();
 			this.loadAddress = info.getLoadAddr();
 			this.loadLength = info.getC64dataLen();

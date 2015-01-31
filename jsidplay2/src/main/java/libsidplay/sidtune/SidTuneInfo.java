@@ -51,6 +51,7 @@ public class SidTuneInfo {
 	 * 0xD??0 (2nd SID) or 0 (no 2nd SID)
 	 */
 	protected int sidChipBase2;
+	protected int sidChipBase3;
 
 	//
 	// Available after song initialization.
@@ -85,6 +86,7 @@ public class SidTuneInfo {
 	 * Sid Model required for this sid
 	 */
 	protected Model sid2Model = Model.UNKNOWN;
+	protected Model sid3Model = Model.UNKNOWN;
 
 	/**
 	 * compatibility requirements
@@ -138,12 +140,17 @@ public class SidTuneInfo {
 		return startSong;
 	}
 
-	public final int getSidChipBase1() {
-		return sidChipBase1;
-	}
-
-	public final int getSidChipBase2() {
-		return sidChipBase2;
+	public final int getSidChipBase(int sidNum) {
+		switch (sidNum) {
+			case 0 :
+				return sidChipBase1;
+			case 1 :
+				return sidChipBase2;
+			case 2 :
+				return sidChipBase3;
+			default :
+				throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
 	}
 
 	public final int getCurrentSong() {
@@ -168,6 +175,9 @@ public class SidTuneInfo {
 
 	public final Model getSid2Model() {
 		return sid2Model;
+	}
+	public final Model getSid3Model() {
+		return sid3Model;
 	}
 
 	public final Compatibility getCompatibility() {

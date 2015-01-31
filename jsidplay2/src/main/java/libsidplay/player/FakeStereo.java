@@ -12,7 +12,8 @@ public final class FakeStereo extends SIDEmu {
 	private final SIDEmu s2;
 	private IEmulationSection emulation;
 
-	public FakeStereo(EventScheduler context, SIDEmu s1, SIDEmu s2, IEmulationSection emulation) {
+	public FakeStereo(EventScheduler context, SIDEmu s1, SIDEmu s2,
+			IEmulationSection emulation) {
 		super(context);
 		this.s1 = s1;
 		this.s2 = s2;
@@ -52,13 +53,13 @@ public final class FakeStereo extends SIDEmu {
 	}
 
 	@Override
-	public void setFilter(IConfig config, boolean isStereo) {
-		s1.setFilter(config, isStereo);
+	public void setFilter(IConfig config, int sidNum) {
+		s1.setFilter(config, sidNum);
 	}
 
 	@Override
-	public void setFilterEnable(boolean enable) {
-		s1.setFilterEnable(enable);
+	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
+		s1.setFilterEnable(emulation, sidNum);
 	}
 
 	@Override

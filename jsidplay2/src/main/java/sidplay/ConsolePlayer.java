@@ -85,6 +85,9 @@ public class ConsolePlayer {
 	@Parameter(names = { "--dualSID", "-d" }, descriptionKey = "DUAL_SID")
 	private Boolean dualSID = Boolean.FALSE;
 
+	@Parameter(names = { "--thirdSID", "-D" }, descriptionKey = "THIRD_SID")
+	private Boolean thirdSID = Boolean.FALSE;
+
 	@Parameter(names = { "--forceClock", "-c" }, descriptionKey = "FORCE_CLOCK")
 	private CPUClock forceClock = null;
 
@@ -96,6 +99,9 @@ public class ConsolePlayer {
 
 	@Parameter(names = { "--disableStereoFilter", "-j" }, descriptionKey = "DISABLE_STEREO_FILTER")
 	private Boolean disableStereoFilter = Boolean.FALSE;
+
+	@Parameter(names = { "--disable3rdSidFilter", "-J" }, descriptionKey = "DISABLE_3RD_SID_FILTER")
+	private Boolean disable3rdSIDFilter = Boolean.FALSE;
 
 	@Parameter(names = { "--forceModel", "-m" }, descriptionKey = "FORCE_MODEL")
 	private ChipModel forceModel = null;
@@ -147,12 +153,14 @@ public class ConsolePlayer {
 		config.getAudio().setFrequency(frequency);
 		config.getEmulation().setEmulation(emulation);
 		config.getEmulation().setForceStereoTune(dualSID);
+		config.getEmulation().setForce3SIDTune(thirdSID);
 		config.getEmulation().setUserClockSpeed(forceClock);
 		config.getEmulation().setDefaultClockSpeed(defaultClock);
 		config.getEmulation().setUserSidModel(forceModel);
 		config.getEmulation().setDefaultSidModel(defaultModel);
 		config.getEmulation().setFilter(!disableFilter);
 		config.getEmulation().setStereoFilter(!disableStereoFilter);
+		config.getEmulation().setThirdSIDFilter(!disable3rdSIDFilter);
 
 		final Player player = new Player(config);
 		try {

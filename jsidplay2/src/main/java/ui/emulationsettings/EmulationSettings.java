@@ -15,13 +15,13 @@ import javafx.scene.control.TextField;
 import libsidplay.Player;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
-import libsidplay.common.SIDEmu;
 import libsidplay.player.State;
 import resid_builder.resid.FilterModelConfig;
 import sidplay.audio.AudioConfig;
 import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
 import ui.common.C64Window;
+import ui.entities.config.EmulationSection;
 
 public class EmulationSettings extends C64Window {
 
@@ -31,21 +31,21 @@ public class EmulationSettings extends C64Window {
 				State oldValue, State newValue) {
 			if (newValue == State.RUNNING) {
 				Platform.runLater(() -> {
-					ChipModel userSidModel = util.getConfig().getEmulation()
-							.getUserSidModel();
+					EmulationSection emulation = util.getConfig()
+							.getEmulation();
+					ChipModel userSidModel = emulation.getUserSidModel();
 					sid1Model.getSelectionModel().select(
 							userSidModel != null ? userSidModel : util
 									.getBundle().getString("AUTO"));
-					ChipModel stereoSidModel = util.getConfig().getEmulation()
-							.getStereoSidModel();
+					ChipModel stereoSidModel = emulation.getStereoSidModel();
 					sid2Model.getSelectionModel().select(
 							stereoSidModel != null ? stereoSidModel : util
 									.getBundle().getString("AUTO"));
-					ChipModel model = ChipModel.getChipModel(util.getConfig(),
-							util.getPlayer().getTune());
+					ChipModel model = ChipModel.getChipModel(emulation, util
+							.getPlayer().getTune(), 0);
 					addFilters(model, false);
-					ChipModel stereoModel = ChipModel.getStereoModel(
-							util.getConfig(), util.getPlayer().getTune());
+					ChipModel stereoModel = ChipModel.getChipModel(emulation,
+							util.getPlayer().getTune(), 1);
 					addFilters(stereoModel, true);
 
 					enableStereoSettings();
@@ -216,8 +216,9 @@ public class EmulationSettings extends C64Window {
 	}
 
 	private void enableStereoSettings() {
-		boolean stereo = AudioConfig.isStereo(util.getConfig(), util
-				.getPlayer().getTune());
+		EmulationSection emulation = util.getConfig().getEmulation();
+		boolean stereo = AudioConfig.isSIDUsed(emulation, util.getPlayer()
+				.getTune(), 1);
 		// stereo, only:
 		rightVolume.setDisable(!stereo);
 		leftBalance.setDisable(!stereo);
@@ -226,10 +227,8 @@ public class EmulationSettings extends C64Window {
 		stereoFilter.setDisable(!stereo);
 		stereoFilterCurve.setDisable(!stereo);
 		// forced stereo, only:
-		sidToRead.setDisable(!(stereo && util.getConfig().getEmulation()
-				.isForceStereoTune()));
-		baseAddress.setDisable(!(stereo && util.getConfig().getEmulation()
-				.isForceStereoTune()));
+		sidToRead.setDisable(!(stereo && emulation.isForceStereoTune()));
+		baseAddress.setDisable(!(stereo && emulation.isForceStereoTune()));
 	}
 
 	@Override
@@ -239,16 +238,17 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setSid1Model() {
+		EmulationSection emulation = util.getConfig().getEmulation();
 		if (sid1Model.getSelectionModel().getSelectedItem()
 				.equals(util.getBundle().getString("AUTO"))) {
-			util.getConfig().getEmulation().setUserSidModel(null);
-			ChipModel model = ChipModel.getChipModel(util.getConfig(), util
-					.getPlayer().getTune());
+			emulation.setUserSidModel(null);
+			ChipModel model = ChipModel.getChipModel(emulation, util
+					.getPlayer().getTune(), 0);
 			addFilters(model, false);
 		} else {
 			ChipModel userSidModel = (ChipModel) sid1Model.getSelectionModel()
 					.getSelectedItem();
-			util.getConfig().getEmulation().setUserSidModel(userSidModel);
+			emulation.setUserSidModel(userSidModel);
 			addFilters(userSidModel, false);
 		}
 		updateChipModels();
@@ -256,16 +256,17 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setSid2Model() {
+		EmulationSection emulation = util.getConfig().getEmulation();
 		if (sid2Model.getSelectionModel().getSelectedItem()
 				.equals(util.getBundle().getString("AUTO"))) {
-			util.getConfig().getEmulation().setStereoSidModel(null);
-			ChipModel stereoModel = ChipModel.getStereoModel(util.getConfig(),
-					util.getPlayer().getTune());
+			emulation.setStereoSidModel(null);
+			ChipModel stereoModel = ChipModel.getChipModel(emulation, util
+					.getPlayer().getTune(), 1);
 			addFilters(stereoModel, true);
 		} else {
 			ChipModel stereoSidModel = (ChipModel) sid2Model
 					.getSelectionModel().getSelectedItem();
-			util.getConfig().getEmulation().setStereoSidModel(stereoSidModel);
+			emulation.setStereoSidModel(stereoSidModel);
 			addFilters(stereoSidModel, true);
 		}
 		updateChipModels();
@@ -273,14 +274,15 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setDefaultModel() {
+		EmulationSection emulation = util.getConfig().getEmulation();
 		ChipModel defaultSidModel = (ChipModel) defaultModel
 				.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulation().setDefaultSidModel(defaultSidModel);
-		ChipModel model = ChipModel.getChipModel(util.getConfig(), util
-				.getPlayer().getTune());
+		emulation.setDefaultSidModel(defaultSidModel);
+		ChipModel model = ChipModel.getChipModel(emulation, util.getPlayer()
+				.getTune(), 0);
 		addFilters(model, false);
-		ChipModel stereoModel = ChipModel.getStereoModel(util.getConfig(), util
-				.getPlayer().getTune());
+		ChipModel stereoModel = ChipModel.getChipModel(emulation, util
+				.getPlayer().getTune(), 1);
 		addFilters(stereoModel, true);
 		updateChipModels();
 	}
@@ -354,8 +356,8 @@ public class EmulationSettings extends C64Window {
 		ChipModel model;
 		if (sid1Model.getSelectionModel().getSelectedItem()
 				.equals(util.getBundle().getString("AUTO"))) {
-			model = ChipModel.getChipModel(util.getConfig(), util.getPlayer()
-					.getTune());
+			model = ChipModel.getChipModel(emulation, util.getPlayer()
+					.getTune(), 0);
 		} else {
 			model = (ChipModel) sid1Model.getSelectionModel().getSelectedItem();
 		}
@@ -392,8 +394,8 @@ public class EmulationSettings extends C64Window {
 		ChipModel model;
 		if (sid2Model.getSelectionModel().getSelectedItem()
 				.equals(util.getBundle().getString("AUTO"))) {
-			model = ChipModel.getStereoModel(util.getConfig(), util.getPlayer()
-					.getTune());
+			model = ChipModel.getChipModel(emulation, util.getPlayer()
+					.getTune(), 1);
 		} else {
 			model = (ChipModel) sid2Model.getSelectionModel().getSelectedItem();
 		}
@@ -420,15 +422,11 @@ public class EmulationSettings extends C64Window {
 
 	private void updateChipModels() {
 		util.getPlayer().updateSIDs();
-		util.getPlayer().configureSIDs(
-				(num, sid) -> {
-					sid.setFilter(util.getConfig(), num != 0);
-					sid.setFilterEnable(num != 0 ? util.getConfig()
-							.getEmulation().isStereoFilter() : util.getConfig()
-							.getEmulation().isFilter());
-					final SIDEmu sid1 = sid;
-					sid.input(boost8580Enabled ? sid1.getInputDigiBoost() : 0);
-				});
+		util.getPlayer().configureSIDs((num, sid) -> {
+			sid.setFilter(util.getConfig(), num);
+			sid.setFilterEnable(util.getConfig().getEmulation(), num);
+			sid.input(boost8580Enabled ? sid.getInputDigiBoost() : 0);
+		});
 	}
 
 	private void restart() {
@@ -447,8 +445,8 @@ public class EmulationSettings extends C64Window {
 			}
 		}
 
-		boolean stereo = AudioConfig.isStereo(util.getConfig(), util
-				.getPlayer().getTune());
+		boolean stereo = AudioConfig.isSIDUsed(util.getConfig().getEmulation(),
+				util.getPlayer().getTune(), 1);
 
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		series.setName(util.getBundle().getString("FILTERCURVE_TITLE"));

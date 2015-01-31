@@ -14,6 +14,7 @@ import libsidplay.sidtune.SidTune;
 import sidplay.audio.AudioConfig;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IConsoleSection;
+import sidplay.ini.intf.IEmulationSection;
 
 public class ConsoleIO {
 
@@ -24,7 +25,8 @@ public class ConsoleIO {
 
 	private String filename;
 
-	private boolean v1mute, v2mute, v3mute, v4mute, v5mute, v6mute;
+	private boolean v1mute, v2mute, v3mute, v4mute, v5mute, v6mute, v7mute,
+			v8mute, v9mute;
 
 	public ConsoleIO(IConfig config, String filename) {
 		this.config = config;
@@ -209,13 +211,14 @@ public class ConsoleIO {
 	private void printSIDDetails(PrintStream out,
 			final IConsoleSection console, final SidTune tune) {
 		StringBuffer line = new StringBuffer();
+		IEmulationSection emulation = config.getEmulation();
 		line.append(BUNDLE.getString("FILTER")
-				+ (config.getEmulation().isFilter() ? " = on, " : " = off, "));
-		ChipModel chipModel = ChipModel.getChipModel(config, tune);
+				+ (emulation.isFilter() ? " = on, " : " = off, "));
+		ChipModel chipModel = ChipModel.getChipModel(emulation, tune, 0);
 		line.append(String.format(BUNDLE.getString("MODEL") + " = %s",
 				chipModel));
-		if (AudioConfig.isStereo(config, tune)) {
-			ChipModel stereoModel = ChipModel.getStereoModel(config, tune);
+		if (AudioConfig.isSIDUsed(emulation, tune, 1)) {
+			ChipModel stereoModel = ChipModel.getChipModel(emulation, tune, 1);
 			line.append(String.format("(%s)", stereoModel));
 		}
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
@@ -235,8 +238,12 @@ public class ConsoleIO {
 		out.println(BUNDLE.getString("MUTE_4"));
 		out.println(BUNDLE.getString("MUTE_5"));
 		out.println(BUNDLE.getString("MUTE_6"));
+		out.println(BUNDLE.getString("MUTE_7"));
+		out.println(BUNDLE.getString("MUTE_8"));
+		out.println(BUNDLE.getString("MUTE_9"));
 		out.println(BUNDLE.getString("FILTER_ENABLE"));
 		out.println(BUNDLE.getString("STEREO_FILTER_ENABLE"));
+		out.println(BUNDLE.getString("3RD_SID_FILTER_ENABLE"));
 		out.println(BUNDLE.getString("QUIT"));
 	}
 
@@ -254,6 +261,7 @@ public class ConsoleIO {
 				return;
 			}
 			final int key = System.in.read();
+			IEmulationSection emulation = config.getEmulation();
 			switch (key) {
 			case 'h':
 				player.firstSong();
@@ -317,17 +325,39 @@ public class ConsoleIO {
 				player.configureSID(1, sid -> sid.setVoiceMute(2, v6mute));
 				break;
 
+			case '7':
+				v7mute = !v7mute;
+				player.configureSID(2, sid -> sid.setVoiceMute(0, v7mute));
+				break;
+
+			case '8':
+				v8mute = !v8mute;
+				player.configureSID(2, sid -> sid.setVoiceMute(1, v8mute));
+				break;
+
+			case '9':
+				v9mute = !v9mute;
+				player.configureSID(2, sid -> sid.setVoiceMute(2, v9mute));
+				break;
+
 			case 'f': {
-				boolean filterEnable = config.getEmulation().isFilter() ^ true;
-				config.getEmulation().setFilter(filterEnable);
-				player.configureSID(0, sid -> sid.setFilterEnable(filterEnable));
+				boolean filterEnable = emulation.isFilter() ^ true;
+				emulation.setFilter(filterEnable);
+				player.configureSID(0, sid -> sid.setFilterEnable(emulation, 0));
 				break;
 			}
 
 			case 'g': {
-				boolean filterEnable = config.getEmulation().isStereoFilter() ^ true;
-				config.getEmulation().setStereoFilter(filterEnable);
-				player.configureSID(1, sid -> sid.setFilterEnable(filterEnable));
+				boolean filterEnable = emulation.isStereoFilter() ^ true;
+				emulation.setStereoFilter(filterEnable);
+				player.configureSID(1, sid -> sid.setFilterEnable(emulation, 1));
+				break;
+			}
+
+			case 'G': {
+				boolean filterEnable = emulation.isThirdSIDFilter() ^ true;
+				emulation.setThirdSIDFilter(filterEnable);
+				player.configureSID(2, sid -> sid.setFilterEnable(emulation, 2));
 				break;
 			}
 

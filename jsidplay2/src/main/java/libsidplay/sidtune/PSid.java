@@ -519,6 +519,9 @@ class PSid extends Prg {
 		psid.info.clockSpeed = SidTune.Clock.values()[clock];
 		psid.info.sid1Model = SidTune.Model.values()[model1];
 		psid.info.sid2Model = SidTune.Model.values()[model2];
+		// XXX hard-wired for now
+		psid.info.sid3Model = SidTune.Model.MOS8580;
+		psid.info.sidChipBase3 = 0x00;
 
 		// Create the speed/clock setting table.
 		psid.convertOldStyleSpeedToTables(speed);
@@ -555,6 +558,10 @@ class PSid extends Prg {
 			} else {
 				header.version = 2;
 			}
+			if (info.sidChipBase3 != 0) {
+				// XXX new PSID header version required?
+			}
+
 			header.data = PHeader.SIZE;
 			header.songs = (short) info.songs;
 			header.start = (short) info.startSong;
@@ -609,6 +616,7 @@ class PSid extends Prg {
 			tmpFlags |= info.clockSpeed.ordinal() << 2;
 			tmpFlags |= info.sid1Model.ordinal() << 4;
 			tmpFlags |= info.sid2Model.ordinal() << 6;
+			// XXX save 3rdSID model flag: tmpFlags |= info.sid3Model.ordinal() << 8;
 			header.flags = tmpFlags;
 
 			fos.write(header.getArray());

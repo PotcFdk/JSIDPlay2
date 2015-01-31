@@ -43,8 +43,8 @@ public class ReSIDBuilder extends SIDBuilder {
 		/** State of HP-TPDF. */
 		private int oldRandomValue;
 
-		private final int[] volume = new int[] { 1024, 1024 };
-		private final float[] balance = new float[] { 0, 1 };
+		private final int[] volume = new int[] { 1024, 1024, 1024 };
+		private final float[] balance = new float[] { 0, 1, 1 };
 		private EventScheduler context;
 
 		protected void setVolume(int i, float v) {
@@ -75,6 +75,7 @@ public class ReSIDBuilder extends SIDBuilder {
 		public void event() throws InterruptedException {
 			final ReSID chip1 = sids.get(0);
 			final ReSID chip2 = sids.size() >= 2 ? sids.get(1) : null;
+			final ReSID chip3 = sids.size() >= 3 ? sids.get(2) : null;
 
 			/* this clocks the SID to the present moment, if it isn't already. */
 			chip1.clock();
@@ -83,6 +84,11 @@ public class ReSIDBuilder extends SIDBuilder {
 			if (chip2 != null) {
 				chip2.clock();
 				buf2 = chip2.buffer;
+			}
+			float[] buf3 = null;
+			if (chip3 != null) {
+				chip3.clock();
+				buf3 = chip3.buffer;
 			}
 
 			/*
@@ -112,9 +118,15 @@ public class ReSIDBuilder extends SIDBuilder {
 				soundBuffer.putShort((short) value);
 
 				if (buf2 != null) {
-					value = (Math.round((buf2[i] * 32768f) * volume[1]
-							* this.balance[1] + (buf1[i] * 32768f) * volume[0]
-							* this.balance[0] + dither)) >> 10;
+					value = (Math.round((buf2[i] * 32768f)
+							* volume[1]
+							* this.balance[1]
+							+ (buf1[i] * 32768f)
+							* volume[0]
+							* this.balance[0]
+							// XXX mix 3rd SID to right channel
+							+ (buf3 != null ? (buf3[i] * 32768f) * volume[2]
+									* (1 - this.balance[2]) : 0) + dither)) >> 10;
 					if (value > 32767) {
 						value = 32767;
 					}
@@ -134,6 +146,9 @@ public class ReSIDBuilder extends SIDBuilder {
 			chip1.bufferpos = 0;
 			if (chip2 != null) {
 				chip2.bufferpos = 0;
+			}
+			if (chip3 != null) {
+				chip3.bufferpos = 0;
 			}
 
 			context.schedule(this, 10000);

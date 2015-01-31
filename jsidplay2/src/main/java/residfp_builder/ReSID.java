@@ -28,6 +28,7 @@ import residfp_builder.resid.Filter6581;
 import residfp_builder.resid.Filter8580;
 import residfp_builder.resid.SID;
 import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
 
 public class ReSID extends SIDEmu {
@@ -56,19 +57,31 @@ public class ReSID extends SIDEmu {
 	}
 
 	@Override
-	public void setFilter(IConfig config, boolean isStereo) {
+	public void setFilter(IConfig config, int sidNum) {
 		final Filter6581 filter6581 = sid.getFilter6581();
 		final Filter8580 filter8580 = sid.getFilter8580();
 
-		String filterName6581 = isStereo ? config.getEmulation()
-				.getReSIDfpStereoFilter6581() : config.getEmulation()
-				.getReSIDfpFilter6581();
+		String filterName6581 = null;
+		String filterName8580 = null;
+		switch (sidNum) {
+		case 0:
+			filterName6581 = config.getEmulation().getReSIDfpFilter6581();
+			filterName8580 = config.getEmulation().getReSIDfpFilter8580();
+			break;
+		case 1:
+			filterName6581 = config.getEmulation().getReSIDfpStereoFilter6581();
+			filterName8580 = config.getEmulation().getReSIDfpStereoFilter8580();
+			break;
+		case 2:
+			filterName6581 = config.getEmulation().getReSIDfp3rdSIDFilter6581();
+			filterName8580 = config.getEmulation().getReSIDfp3rdSIDFilter8580();
+			break;
+		default:
+			break;
+		}
 		if (filterName6581 == null) {
 			filter6581.setCurveAndDistortionDefaults();
 		}
-		String filterName8580 = isStereo ? config.getEmulation()
-				.getReSIDfpStereoFilter8580() : config.getEmulation()
-				.getReSIDfpFilter8580();
 		if (filterName8580 == null) {
 			filter8580.setCurveAndDistortionDefaults();
 		}
@@ -133,7 +146,21 @@ public class ReSID extends SIDEmu {
 	}
 
 	@Override
-	public void setFilterEnable(final boolean enable) {
+	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
+		boolean enable;
+		switch (sidNum) {
+		case 0:
+			enable = emulation.isFilter();
+			break;
+		case 1:
+			enable = emulation.isStereoFilter();
+			break;
+		case 2:
+			enable = emulation.isThirdSIDFilter();
+			break;
+		default:
+			throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
 		sid.getFilter6581().enable(enable);
 		sid.getFilter8580().enable(enable);
 	}
