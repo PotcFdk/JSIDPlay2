@@ -55,12 +55,12 @@ import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		OnErrorListener, OnCompletionListener {
 
+	private static final String JSIDPLAY2_FOLDER = "Download";
+	private static final String JSIDPLAY2_JS2 = "jsidplay2.js2";
+
 	public interface PlayListener {
 		void play(int currentSong, PlayListEntry entry);
 	}
-
-	private static final String JSIDPLAY2_FOLDER = "Download";
-	private static final String JSIDPLAY2_JS2 = "jsidplay2.js2";
 
 	public static class PlayListEntry {
 
@@ -79,21 +79,17 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		public JSIDPlay2Service getService() {
 			return JSIDPlay2Service.this;
 		}
-		public void addPlayListener(PlayListener listener) {
-			JSIDPlay2Service.this.listener = listener;
-		}
 	}
 
+	private final IBinder jsidplay2Binder = new JSIDPlay2Binder();
 	private IConfiguration configuration;
 	private boolean randomized;
-
-	private List<PlayListEntry> playList;
-	private int currentSong;
-	private Random rnd;
-
-	private final IBinder jsidplay2Binder = new JSIDPlay2Binder();
-	private MediaPlayer player;
 	private PlayListener listener;
+
+	private Random rnd;
+	private PlayListEntry currentEntry;
+	private List<PlayListEntry> playList;
+	private MediaPlayer player;
 
 	public void setConfiguration(IConfiguration configuration) {
 		this.configuration = configuration;
@@ -103,6 +99,10 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		this.randomized = randomized;
 	}
 
+	public void addPlayListener(PlayListener listener) {
+		this.listener = listener;
+	}
+
 	public List<PlayListEntry> getPlayList() {
 		return this.playList;
 	}
@@ -110,11 +110,9 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 	public void onCreate() {
 		super.onCreate();
 
-		// initialize playlist
-		playList = new ArrayList<PlayListEntry>();
-		currentSong = -1;
 		rnd = new Random(System.currentTimeMillis());
-
+		playList = new ArrayList<PlayListEntry>();
+		currentEntry = null;
 		player = createMediaPlayer();
 	}
 
@@ -173,22 +171,19 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 	@Override
 	public void onPrepared(MediaPlayer mediaPlayer) {
 		mediaPlayer.start();
+		listener.play(playList.indexOf(currentEntry), currentEntry);
 	}
 
 	public void playSong(PlayListEntry entry) {
-		File file = new File(entry.getResource());
+		this.currentEntry = entry;
+
+		File file = new File(currentEntry.getResource());
 		Toast.makeText(this, file.getName(), Toast.LENGTH_SHORT).show();
 
 		player.reset();
 
-		// get song
-		currentSong = playList.indexOf(entry);
-		if (currentSong == -1) {
-			return;
-		}
-
 		try {
-			URI uri = getURI(configuration, entry.getResource());
+			URI uri = getURI(configuration, currentEntry.getResource());
 			player.setDataSource(getApplicationContext(),
 					Uri.parse(uri.toString()));
 		} catch (Exception e) {
@@ -196,10 +191,11 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 					"Error setting data source!", e);
 		}
 		player.prepareAsync();
-		listener.play(currentSong, entry);
 	}
 
-	public int playNextSong() {
+	public void playNextSong() {
+		int currentSong = currentEntry == null ? -1 : playList
+				.indexOf(currentEntry);
 		if (randomized) {
 			currentSong = rnd.nextInt(playList.size());
 		} else {
@@ -207,11 +203,9 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 					: -1;
 		}
 		if (currentSong == -1) {
-			return -1;
+			return;
 		}
-
 		playSong(playList.get(currentSong));
-		return currentSong;
 	}
 
 	public void stop() {
@@ -238,8 +232,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 
 	private MediaPlayer createMediaPlayer() {
 		MediaPlayer mp = new MediaPlayer();
-		mp.setWakeMode(getApplicationContext(),
-				PowerManager.PARTIAL_WAKE_LOCK);
+		mp.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
 		mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		mp.setOnPreparedListener(this);
 		mp.setOnCompletionListener(this);

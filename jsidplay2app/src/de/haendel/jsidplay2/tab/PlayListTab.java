@@ -100,8 +100,6 @@ public abstract class PlayListTab extends TabBase {
 		favorites.removeViewAt(favorites.getChildCount() - 1);
 	}
 
-	protected abstract void play(PlayListEntry entry);
-
 	public void gotoRow(final int currentSong) {
 		favoritesScroll.post(new Runnable() {
 			@Override
@@ -112,6 +110,8 @@ public abstract class PlayListTab extends TabBase {
 		});
 	}
 
+	protected abstract void play(PlayListEntry entry);
+	
 	protected abstract void setRandomized(boolean newValue);
 
 }

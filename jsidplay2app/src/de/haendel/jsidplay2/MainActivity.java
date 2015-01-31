@@ -31,14 +31,13 @@ import de.haendel.jsidplay2.tab.SidsTab;
 public class MainActivity extends Activity implements PlayListener {
 
 	private String appName;
-
 	private Configuration configuration;
-	private boolean randomized;
 
 	private TabHost tabHost;
 	private SidTab sidTab;
 	private PlayListTab playListTab;
 
+	private boolean randomized;
 	private JSIDPlay2Service jsidplay2service;
 	private Intent playIntent;
 
@@ -181,10 +180,10 @@ public class MainActivity extends Activity implements PlayListener {
 			JSIDPlay2Binder binder = (JSIDPlay2Binder) service;
 			// get service
 			jsidplay2service = binder.getService();
-			binder.addPlayListener(MainActivity.this);
 			// pass configuration
 			jsidplay2service.setConfiguration(configuration);
 			jsidplay2service.setRandomized(randomized);
+			jsidplay2service.addPlayListener(MainActivity.this);
 
 			for (PlayListEntry entry : jsidplay2service.getPlayList()) {
 				playListTab.addRow(entry);
