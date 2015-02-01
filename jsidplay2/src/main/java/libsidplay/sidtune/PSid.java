@@ -93,7 +93,8 @@ class PSid extends Prg {
 				relocPages = buffer.get();
 				/* 2SID */
 				sidChip2MiddleNybbles = buffer.get();
-				reserved = buffer.get();
+				/* 3SID */
+				sidChip3MiddleNybbles = buffer.get();
 			}
 		}
 
@@ -119,7 +120,7 @@ class PSid extends Prg {
 				buffer.put(relocStartPage);
 				buffer.put(relocPages);
 				buffer.put(sidChip2MiddleNybbles);
-				buffer.put(reserved);
+				buffer.put(sidChip3MiddleNybbles);
 			}
 			return buffer.array();
 		}
@@ -217,9 +218,9 @@ class PSid extends Prg {
 		private byte sidChip2MiddleNybbles;
 
 		/**
-		 * only version 0x0002+
+		 * only version 0x0004 to indicate third SID chip address
 		 */
-		private byte reserved;
+		private byte sidChip3MiddleNybbles;
 
 		private String getString(byte[] info) {
 			try (Scanner sc = new Scanner(new String(info, "ISO-8859-1"))) {
@@ -473,8 +474,11 @@ class PSid extends Prg {
 			case 3:
 				psid.info.compatibility = Compatibility.PSIDv3;
 				break;
+			case 4:
+				psid.info.compatibility = Compatibility.PSIDv4;
+				break;
 			default:
-				throw new SidTuneError("PSID version must be 1, 2 or 3, now: "
+				throw new SidTuneError("PSID version must be 1, 2, 3 or 4, now: "
 						+ header.version);
 			}
 		} else if (Arrays.equals(header.id, new byte[] { 'R', 'S', 'I', 'D' })) {
@@ -498,6 +502,7 @@ class PSid extends Prg {
 		int clock = 0;
 		int model1 = 0;
 		int model2 = 0;
+		int model3 = 0;
 		if (header.version >= 2) {
 			clock = (header.flags >> 2) & 3;
 			model1 = (header.flags >> 4) & 3;
@@ -514,14 +519,27 @@ class PSid extends Prg {
 						&& (sid2loc & 0x10) == 0) {
 					psid.info.sidChipBase2 = sid2loc;
 				}
+
+				model3 = (header.flags >> 8) & 3;
+
+				/* Handle 2nd SID chip location */
+				int sid3loc = 0xd000 | (header.sidChip3MiddleNybbles & 0xff) << 4;
+				if (((sid3loc >= 0xd420 && sid3loc < 0xd800) || sid3loc >= 0xde00)
+						&& (sid3loc & 0x10) == 0) {
+					psid.info.sidChipBase3 = sid3loc;
+				}
 			}
 		}
 		psid.info.clockSpeed = SidTune.Clock.values()[clock];
 		psid.info.sid1Model = SidTune.Model.values()[model1];
-		psid.info.sid2Model = SidTune.Model.values()[model2];
-		// XXX hard-wired for now
-		psid.info.sid3Model = SidTune.Model.MOS8580;
-		psid.info.sidChipBase3 = 0x00;
+		// If bits 6-7 are set to Unknown then the second SID will be set to the
+		// same SID model as the first SID.
+		psid.info.sid2Model = model2 == 0 ? psid.info.sid1Model : SidTune.Model
+				.values()[model2];
+		// If bits 8-9 are set to Unknown then the third SID will be set to the
+		// same SID model as the first SID.
+		psid.info.sid3Model = model3 == 0 ? psid.info.sid1Model : SidTune.Model
+				.values()[model3];
 
 		// Create the speed/clock setting table.
 		psid.convertOldStyleSpeedToTables(speed);
@@ -553,13 +571,12 @@ class PSid extends Prg {
 		try (FileOutputStream fos = new FileOutputStream(name, overWrite)) {
 			final PHeader header = new PHeader();
 			header.id = "PSID".getBytes();
-			if (info.sidChipBase2 != 0) {
+			if (info.sidChipBase3 != 0) {
+				header.version = 4;
+			} else if (info.sidChipBase2 != 0) {
 				header.version = 3;
 			} else {
 				header.version = 2;
-			}
-			if (info.sidChipBase3 != 0) {
-				// XXX new PSID header version required?
 			}
 
 			header.data = PHeader.SIZE;
@@ -616,7 +633,7 @@ class PSid extends Prg {
 			tmpFlags |= info.clockSpeed.ordinal() << 2;
 			tmpFlags |= info.sid1Model.ordinal() << 4;
 			tmpFlags |= info.sid2Model.ordinal() << 6;
-			// XXX save 3rdSID model flag: tmpFlags |= info.sid3Model.ordinal() << 8;
+			tmpFlags |= info.sid3Model.ordinal() << 8;
 			header.flags = tmpFlags;
 
 			fos.write(header.getArray());

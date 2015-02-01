@@ -82,7 +82,7 @@ public abstract class SidTune {
 	 * SID types the SidTune may be compatible with.
 	 */
 	public enum Compatibility {
-		PSIDv3, PSIDv2, PSIDv1, RSID, RSID_BASIC
+		PSIDv4, PSIDv3, PSIDv2, PSIDv1, RSID, RSID_BASIC
 	}
 
 	protected SidTuneInfo info = new SidTuneInfo();
