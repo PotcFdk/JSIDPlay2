@@ -518,6 +518,10 @@ class PSid extends Prg {
 				if (((sid2loc >= 0xd420 && sid2loc < 0xd800) || sid2loc >= 0xde00)
 						&& (sid2loc & 0x10) == 0) {
 					psid.info.sidChipBase2 = sid2loc;
+					if (model2 == 0) {
+						// If Unknown then SID will be same SID as the first SID
+						model2 = model1;
+					}
 				}
 
 				model3 = (header.flags >> 8) & 3;
@@ -527,19 +531,17 @@ class PSid extends Prg {
 				if (((sid3loc >= 0xd420 && sid3loc < 0xd800) || sid3loc >= 0xde00)
 						&& (sid3loc & 0x10) == 0) {
 					psid.info.sidChipBase3 = sid3loc;
+					if (model3 == 0) {
+						// If Unknown then SID will be same SID as the first SID
+						model3 = model1;
+					}
 				}
 			}
 		}
 		psid.info.clockSpeed = SidTune.Clock.values()[clock];
 		psid.info.sid1Model = SidTune.Model.values()[model1];
-		// If bits 6-7 are set to Unknown then the second SID will be set to the
-		// same SID model as the first SID.
-		psid.info.sid2Model = model2 == 0 ? psid.info.sid1Model : SidTune.Model
-				.values()[model2];
-		// If bits 8-9 are set to Unknown then the third SID will be set to the
-		// same SID model as the first SID.
-		psid.info.sid3Model = model3 == 0 ? psid.info.sid1Model : SidTune.Model
-				.values()[model3];
+		psid.info.sid2Model = SidTune.Model.values()[model2];
+		psid.info.sid3Model = SidTune.Model.values()[model3];
 
 		// Create the speed/clock setting table.
 		psid.convertOldStyleSpeedToTables(speed);
