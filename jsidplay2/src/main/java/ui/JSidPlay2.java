@@ -1423,6 +1423,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 					.getPlayer().getTune(), 1);
 			line.append(String
 					.format("+%s(at 0x%4x)", stereoModel, dualSidBase));
+			if (AudioConfig.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
+				ChipModel thirdModel = ChipModel.getChipModel(emulation, util
+						.getPlayer().getTune(), 2);
+				int thirdSidBase = AudioConfig.getSIDAddress(emulation, util
+						.getPlayer().getTune(), 2);
+				line.append(String
+						.format("+%s(at 0x%4x)", thirdModel, thirdSidBase));
+			}
 		}
 		line.append(", ");
 		return line.toString();

@@ -224,6 +224,15 @@ public class ConsoleIO {
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("SID_DETAILS"), line.toString(),
 				console.getVertical());
+
+		if (AudioConfig.isSIDUsed(emulation, tune, 2)) {
+			ChipModel thirdModel = ChipModel.getChipModel(emulation, tune, 2);
+			line.setLength(0);
+			line.append(String.format("(%s)", thirdModel));
+			out.printf("%c %-12s : %37s %c\n", console.getVertical(),
+					BUNDLE.getString("SID_DETAILS"), line.toString(),
+					console.getVertical());
+		}
 	}
 
 	private void printKeyboardControls(PrintStream out) {
