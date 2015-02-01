@@ -105,13 +105,12 @@ public class ReSIDBuilder extends SIDBuilder {
 			for (int i = 0; i < samples; i++) {
 				int dither = triangularDithering();
 
-				value = (buf1[i]) * volume[0] * (1 - this.balance[0]);
+				value = buf1[i] * volume[0] * (1 - this.balance[0]);
 				if (buf2 != null) {
 					value += buf2[i] * volume[1] * (1 - this.balance[1]);
 				}
 				if (buf3 != null) {
-					value += buf3[i]
-							* (int) (volume[2] * (1 - this.balance[2]));
+					value += buf3[i] * volume[2] * (1 - this.balance[2]);
 				}
 				value *= 32768f;
 				value += dither;
