@@ -12,7 +12,7 @@ public enum ChipModel {
 	 * <OL>
 	 * <LI>forced chip model
 	 * <LI>chip model provided by tune information
-	 * <LI>default chip model
+	 * <LI>default chip model or use 1st chip model (for 2nd or 3rd chip)
 	 * </OL>
 	 * 
 	 * @return chip model to be used for Mono SID
