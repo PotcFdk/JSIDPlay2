@@ -100,15 +100,23 @@ public class ReSIDBuilder extends SIDBuilder {
 			 * If chip2 exists, its bufferpos is expected to be identical to
 			 * chip1's.
 			 */
-
+			float value;
 			final ByteBuffer soundBuffer = driver.buffer();
 			for (int i = 0; i < samples; i++) {
 				int dither = triangularDithering();
-				int value = (Math.round((buf1[i] * 32768f)
-						* volume[0]
-						* (1 - this.balance[0])
-						+ (buf2 != null ? (buf2[i] * 32768f) * volume[1]
-								* (1 - this.balance[1]) : 0) + dither)) >> 10;
+
+				value = (buf1[i]) * volume[0] * (1 - this.balance[0]);
+				if (buf2 != null) {
+					value += buf2[i] * volume[1] * (1 - this.balance[1]);
+				}
+				if (buf3 != null) {
+					value += buf3[i]
+							* (int) (volume[2] * (1 - this.balance[2]));
+				}
+				value *= 32768f;
+				value += dither;
+				value = Math.round(value) >> 10;
+
 				if (value > 32767) {
 					value = 32767;
 				}
@@ -118,15 +126,15 @@ public class ReSIDBuilder extends SIDBuilder {
 				soundBuffer.putShort((short) value);
 
 				if (buf2 != null) {
-					value = (Math.round((buf2[i] * 32768f)
-							* volume[1]
-							* this.balance[1]
-							+ (buf1[i] * 32768f)
-							* volume[0]
-							* this.balance[0]
-							// XXX mix 3rd SID to right channel
-							+ (buf3 != null ? (buf3[i] * 32768f) * volume[2]
-									* (1 - this.balance[2]) : 0) + dither)) >> 10;
+					value = buf1[i] * volume[0] * this.balance[0];
+					value += buf2[i] * volume[1] * this.balance[1];
+					if (buf3 != null) {
+						value += buf3[i] * volume[2] * this.balance[2];
+					}
+					value *= 32768f;
+					value += dither;
+					value = Math.round(value) >> 10;
+
 					if (value > 32767) {
 						value = 32767;
 					}
@@ -239,7 +247,8 @@ public class ReSIDBuilder extends SIDBuilder {
 	/**
 	 * Before the timer start time is being reached, use NULL driver to shorten
 	 * the duration to wait for the user.
-	 * @param tune 
+	 * 
+	 * @param tune
 	 */
 	private void switchToNullDriver(SidTune tune) {
 		this.realDriver = driver;
