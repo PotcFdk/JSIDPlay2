@@ -34,6 +34,7 @@ import libsidplay.sidtune.SidTune;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
+import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
 
 public class ReSIDBuilder extends SIDBuilder {
@@ -186,10 +187,6 @@ public class ReSIDBuilder extends SIDBuilder {
 		this.audioConfig = audioConfig;
 		this.cpuClock = cpuClock;
 		this.driver = audio;
-		setMixerVolume(0, config.getAudio().getLeftVolume());
-		setMixerVolume(1, config.getAudio().getRightVolume());
-		setBalance(0, config.getAudio().getLeftBalance());
-		setBalance(1, config.getAudio().getRightBalance());
 		switchToNullDriver(tune);
 	}
 
@@ -217,13 +214,41 @@ public class ReSIDBuilder extends SIDBuilder {
 	}
 
 	@Override
-	public void setMixerVolume(int i, float volumeInDB) {
-		mixerEvent.setVolume(i, (float) Math.pow(10, volumeInDB / 10));
+	public void setMixerVolume(int num, IAudioSection audio) {
+		float volumeInDB;
+		switch (num) {
+		case 0:
+			volumeInDB = audio.getMainVolume();
+			break;
+		case 1:
+			volumeInDB = audio.getSecondVolume();
+			break;
+		case 2:
+			volumeInDB = audio.getThirdVolume();
+			break;
+		default:
+			throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
+		mixerEvent.setVolume(num, (float) Math.pow(10, volumeInDB / 10));
 	}
 
 	@Override
-	public void setBalance(int i, float balance) {
-		mixerEvent.setBalance(i, balance);
+	public void setBalance(int num, IAudioSection audio) {
+		float balance;
+		switch (num) {
+		case 0:
+			balance = audio.getMainBalance();
+			break;
+		case 1:
+			balance = audio.getSecondBalance();
+			break;
+		case 2:
+			balance = audio.getThirdBalance();
+			break;
+		default:
+			throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
+		mixerEvent.setBalance(num, balance);
 	}
 
 	@Override

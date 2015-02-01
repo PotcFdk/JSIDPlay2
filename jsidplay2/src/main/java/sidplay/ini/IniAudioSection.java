@@ -144,64 +144,95 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	/**
-	 * Getter of the left volume setting.
+	 * Getter of the main SID volume setting.
 	 * 
-	 * @return the left volume setting
+	 * @return the main SID volume setting
 	 */
 	@Override
-	public final float getLeftVolume() {
-		return iniReader.getPropertyFloat("Audio", "LeftVolume", 0f);
+	public final float getMainVolume() {
+		return iniReader.getPropertyFloat("Audio", "MainVolume", 6.0f);
 	}
 
 	/**
-	 * Setter of the left volume setting.
+	 * Setter of the main SID volume setting.
 	 * 
 	 * @param volume
-	 *            the left volume setting
+	 *            the main SID volume setting
 	 */
 	@Override
-	public final void setLeftVolume(final float volume) {
-		iniReader.setProperty("Audio", "LeftVolume", volume);
+	public final void setMainVolume(final float volume) {
+		iniReader.setProperty("Audio", "MainVolume", volume);
 	}
 
 	/**
-	 * Getter of the right volume setting.
+	 * Getter of the second SID volume setting.
 	 * 
-	 * @return the right volume setting
+	 * @return the second SID volume setting
 	 */
 	@Override
-	public float getRightVolume() {
-		return iniReader.getPropertyFloat("Audio", "RightVolume", 0f);
+	public float getSecondVolume() {
+		return iniReader.getPropertyFloat("Audio", "SecondVolume", 6.0f);
 	}
 
 	/**
-	 * Setter of the right volume setting.
+	 * Setter of the second SID volume setting.
 	 * 
 	 * @param volume
-	 *            the right volume setting
+	 *            the second SID volume setting
 	 */
 	@Override
-	public void setRightVolume(final float volume) {
-		iniReader.setProperty("Audio", "RightVolume", volume);
+	public void setSecondVolume(final float volume) {
+		iniReader.setProperty("Audio", "SecondVolume", volume);
+	}
+
+	/**
+	 * Getter of the third SID volume setting.
+	 * 
+	 * @return the third SID volume setting
+	 */
+	@Override
+	public float getThirdVolume() {
+		return iniReader.getPropertyFloat("Audio", "ThirdVolume", 6.0f);
+	}
+
+	/**
+	 * Setter of the third SID volume setting.
+	 * 
+	 * @param volume
+	 *            the third SID volume setting
+	 */
+	@Override
+	public void setThirdVolume(final float volume) {
+		iniReader.setProperty("Audio", "ThirdVolume", volume);
 	}
 
 	@Override
-	public float getLeftBalance() {
-		return iniReader.getPropertyFloat("Audio", "LeftBalance", 0f);
+	public float getMainBalance() {
+		return iniReader.getPropertyFloat("Audio", "MainBalance", 0f);
 	}
 
 	@Override
-	public void setLeftBalance(float balance) {
-		iniReader.setProperty("Audio", "LeftBalance", balance);
+	public void setMainBalance(float balance) {
+		iniReader.setProperty("Audio", "MainBalance", balance);
 	}
 
 	@Override
-	public float getRightBalance() {
-		return iniReader.getPropertyFloat("Audio", "RightBalance", 1f);
+	public float getSecondBalance() {
+		return iniReader.getPropertyFloat("Audio", "SecondBalance", 1f);
 	}
 
 	@Override
-	public void setRightBalance(float balance) {
-		iniReader.setProperty("Audio", "RightBalance", balance);
+	public void setSecondBalance(float balance) {
+		iniReader.setProperty("Audio", "SecondBalance", balance);
+	}
+
+	@Override
+	public float getThirdBalance() {
+		return iniReader.getPropertyFloat("Audio", "ThirdBalance", 1f);
+	}
+
+	@Override
+	public void setThirdBalance(float balance) {
+		iniReader.setProperty("Audio", "ThirdBalance", balance);
 	}
 }

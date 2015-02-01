@@ -20,6 +20,7 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
+import ui.common.dialog.AlertDialog;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
@@ -196,8 +197,15 @@ public class JSIDPlay2Main extends Application {
 			}
 			return config;
 		} catch (Throwable e) {
-			System.out.println(e.getMessage());
 			// fatal database error?
+			AlertDialog dialog = new AlertDialog(player);
+			dialog.getStage().setTitle(bundle.getString("IMPORT_CONFIGURATION_FAILURE"));
+			dialog.setText(e.getMessage()
+					+ "\n"
+					+ String.format(bundle.getString(CONFIGURATION_ERROR),
+							getConfigDatabasePath().getAbsolutePath()));
+			dialog.open();
+			System.out.println(e.getMessage());
 			System.out.printf(bundle.getString(CONFIGURATION_ERROR),
 					getConfigDatabasePath().getAbsolutePath());
 			System.exit(0);

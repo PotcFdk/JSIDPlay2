@@ -97,52 +97,76 @@ public class AudioSection implements IAudioSection {
 		this.mp3File = recording;
 	}
 
-	private float leftVolume = 6.0f;
+	private float mainVolume = 6.0f;
 
 	@Override
-	public float getLeftVolume() {
-		return this.leftVolume;
+	public float getMainVolume() {
+		return this.mainVolume;
 	}
 
 	@Override
-	public void setLeftVolume(float volume) {
-		this.leftVolume = volume;
+	public void setMainVolume(float volume) {
+		this.mainVolume = volume;
 	}
 
-	private float rightVolume = 6.0f;
+	private float secondVolume = 6.0f;
 
 	@Override
-	public float getRightVolume() {
-		return this.rightVolume;
-	}
-
-	@Override
-	public void setRightVolume(float volume) {
-		this.rightVolume = volume;
-	}
-
-	private float leftBalance = 0f;
-
-	@Override
-	public float getLeftBalance() {
-		return this.leftBalance;
+	public float getSecondVolume() {
+		return this.secondVolume;
 	}
 
 	@Override
-	public void setLeftBalance(float balance) {
-		this.leftBalance = balance;
+	public void setSecondVolume(float volume) {
+		this.secondVolume = volume;
 	}
 
-	private float rightBalance = 1f;
+	private float thirdVolume = 6.0f;
 
 	@Override
-	public float getRightBalance() {
-		return this.rightBalance;
+	public float getThirdVolume() {
+		return this.thirdVolume;
 	}
 
 	@Override
-	public void setRightBalance(float right) {
-		this.rightBalance = right;
+	public void setThirdVolume(float volume) {
+		this.thirdVolume = volume;
+	}
+
+	private float mainBalance = 0f;
+
+	@Override
+	public float getMainBalance() {
+		return this.mainBalance;
+	}
+
+	@Override
+	public void setMainBalance(float balance) {
+		this.mainBalance = balance;
+	}
+
+	private float secondBalance = 1f;
+
+	@Override
+	public float getSecondBalance() {
+		return this.secondBalance;
+	}
+
+	@Override
+	public void setSecondBalance(float right) {
+		this.secondBalance = right;
+	}
+
+	private float thirdBalance = 1f;
+
+	@Override
+	public float getThirdBalance() {
+		return this.thirdBalance;
+	}
+
+	@Override
+	public void setThirdBalance(float third) {
+		this.thirdBalance = third;
 	}
 
 }

@@ -26,11 +26,12 @@ public interface IAudioSection {
 	 * @return SID driver to play SIDs
 	 */
 	String getSidDriver();
-	
+
 	/**
 	 * Setter of the SID driver to play SIDs.
 	 * 
-	 * @param sidDriver SID driver to play SIDs
+	 * @param sidDriver
+	 *            SID driver to play SIDs
 	 */
 	void setSidDriver(final String sidDriver);
 
@@ -99,39 +100,93 @@ public interface IAudioSection {
 	void setMp3File(String recording);
 
 	/**
-	 * Getter of the left volume setting.
+	 * Getter of the main SID volume setting.
 	 * 
-	 * @return the left volume setting
+	 * @return the main SID volume setting
 	 */
-	float getLeftVolume();
+	float getMainVolume();
 
 	/**
-	 * Setter of the left volume setting.
+	 * Setter of the main SID volume setting.
 	 * 
 	 * @param volume
-	 *            the left volume setting
+	 *            the main SID volume setting
 	 */
-	void setLeftVolume(float volume);
+	void setMainVolume(float volume);
 
 	/**
-	 * Getter of the right volume setting.
+	 * Getter of the second SID volume setting.
 	 * 
-	 * @return the right volume setting
+	 * @return the second SID volume setting
 	 */
-	float getRightVolume();
+	float getSecondVolume();
 
 	/**
-	 * Setter of the right volume setting.
+	 * Setter of the second SID volume setting.
 	 * 
 	 * @param volume
-	 *            the right volume setting
+	 *            the second SID volume setting
 	 */
-	void setRightVolume(float volume);
+	void setSecondVolume(float volume);
 
-	public float getLeftBalance();
-	public void setLeftBalance(float balance);
+	/**
+	 * Getter of the third SID volume setting.
+	 * 
+	 * @return the third SID volume setting
+	 */
+	float getThirdVolume();
 
-	public float getRightBalance();
-	public void setRightBalance(float balance);
+	/**
+	 * Setter of the third SID setting.
+	 * 
+	 * @param volume
+	 *            the third SID volume setting
+	 */
+	void setThirdVolume(float volume);
+
+	/**
+	 * Getter of the main SID balance setting (0 - left, 1 - right speaker).
+	 * 
+	 * @return the main SID balance setting
+	 */
+	float getMainBalance();
+
+	/**
+	 * Setter of the main SID balance setting (0 - left, 1 - right speaker).
+	 * 
+	 * @param volume
+	 *            the main SID balance setting
+	 */
+	void setMainBalance(float balance);
+
+	/**
+	 * Getter of the second SID balance setting (0 - left, 1 - right speaker).
+	 * 
+	 * @return the second SID balance setting
+	 */
+	float getSecondBalance();
+
+	/**
+	 * Setter of the second SID balance setting (0 - left, 1 - right speaker).
+	 * 
+	 * @param volume
+	 *            the second SID balance setting
+	 */
+	void setSecondBalance(float balance);
+
+	/**
+	 * Getter of the third SID balance setting (0 - left, 1 - right speaker).
+	 * 
+	 * @return the third SID balance setting
+	 */
+	float getThirdBalance();
+
+	/**
+	 * Setter of the third SID balance setting (0 - left, 1 - right speaker).
+	 * 
+	 * @param volume
+	 *            the third SID balance setting
+	 */
+	void setThirdBalance(float balance);
 
 }

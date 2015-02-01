@@ -32,22 +32,32 @@
 			<BorderPane>
 				<left>
 					<VBox>
-						<Label text="%LEFT_BALANCE" />
-						<Slider fx:id="leftBalance" min="0" max="1" value="0"
+						<Label text="%MAIN_BALANCE" />
+						<Slider fx:id="mainBalance" min="0" max="1" value="0"
 							blockIncrement="0.1" />
-						<Slider fx:id="leftVolume" min="0" max="12" value="12"
+						<Slider fx:id="mainVolume" min="0" max="12" value="12"
 							blockIncrement="1" majorTickUnit="0.1" />
 						<Label text="%MAIN_SID_LEVEL" />
 					</VBox>
 				</left>
-				<right>
+				<center>
 					<VBox>
-						<Label text="%RIGHT_BALANCE" />
-						<Slider fx:id="rightBalance" min="0" max="1" value="1"
+						<Label text="%SECOND_BALANCE" />
+						<Slider fx:id="secondBalance" min="0" max="1" value="1"
 							blockIncrement="0.1" />
-						<Slider fx:id="rightVolume" min="0" max="12" value="12"
+						<Slider fx:id="secondVolume" min="0" max="12" value="12"
 							blockIncrement="1" />
 						<Label text="%SECOND_SID_LEVEL" />
+					</VBox>
+				</center>
+				<right>
+					<VBox>
+						<Label text="%THIRD_BALANCE" />
+						<Slider fx:id="thirdBalance" min="0" max="1" value="1"
+							blockIncrement="0.1" />
+						<Slider fx:id="thirdVolume" min="0" max="12" value="12"
+							blockIncrement="1" />
+						<Label text="%THIRD_SID_LEVEL" />
 					</VBox>
 				</right>
 			</BorderPane>
@@ -58,11 +68,12 @@
 					<Label text="%STEREO_MODE" />
 					<ComboBox fx:id="stereoMode" onAction="#setStereoMode"
 						maxWidth="200" />
-					<TextField fx:id="baseAddress" onAction="#setBaseAddress">
+					<TextField fx:id="baseAddress" onAction="#setBaseAddress" >
 						<tooltip>
 							<Tooltip text="%BASE_ADDRESS_TIP" />
 						</tooltip>
 					</TextField>
+					<TextField fx:id="thirdAddress" onAction="#setThirdAddress" />
 					<Label text="%SID_READ" />
 					<ComboBox fx:id="sidToRead" onAction="#setSidToRead">
 						<tooltip>
@@ -80,16 +91,16 @@
 				<BorderPane>
 					<top>
 						<FlowPane BorderPane.alignment="CENTER">
-							<Label text="%MODEL" />
+							<Label text="%MAIN_MODEL" />
 							<ComboBox fx:id="sid1Model" onAction="#setSid1Model" />
 							<Label text="%FILTER_DEFINITION" />
-							<ComboBox fx:id="filter" onAction="#setFilter" />
+							<ComboBox fx:id="mainFilter" onAction="#setMainFilter" />
 						</FlowPane>
 					</top>
 					<center>
 						<LineChart legendVisible="true"
 							horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
-							fx:id="filterCurve" BorderPane.alignment="BOTTOM_CENTER">
+							fx:id="mainFilterCurve" BorderPane.alignment="BOTTOM_CENTER">
 							<xAxis>
 								<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
 									upperBound="2048" side="BOTTOM" />
@@ -105,16 +116,41 @@
 				<BorderPane>
 					<top>
 						<FlowPane BorderPane.alignment="CENTER">
-							<Label text="%STEREO_MODEL" />
+							<Label text="%SECOND_MODEL" />
 							<ComboBox fx:id="sid2Model" onAction="#setSid2Model" />
 							<Label text="%FILTER_DEFINITION" />
-							<ComboBox fx:id="stereoFilter" onAction="#setStereoFilter" />
+							<ComboBox fx:id="secondFilter" onAction="#setSecondFilter" />
 						</FlowPane>
 					</top>
 					<center>
 						<LineChart legendVisible="true"
 							horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
-							fx:id="stereoFilterCurve" BorderPane.alignment="BOTTOM_CENTER">
+							fx:id="secondFilterCurve" BorderPane.alignment="BOTTOM_CENTER">
+							<xAxis>
+								<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
+									upperBound="2048" side="BOTTOM" />
+							</xAxis>
+							<yAxis>
+								<LogarithmicAxis label="%FILTERCURVE_YAXIS"
+									minorTickVisible="false" lowerBound="200" upperBound="20000"
+									side="LEFT" />
+							</yAxis>
+						</LineChart>
+					</center>
+				</BorderPane>
+				<BorderPane>
+					<top>
+						<FlowPane BorderPane.alignment="CENTER">
+							<Label text="%THIRD_MODEL" />
+							<ComboBox fx:id="sid3Model" onAction="#setSid3Model" />
+							<Label text="%FILTER_DEFINITION" />
+							<ComboBox fx:id="thirdFilter" onAction="#setThirdFilter" />
+						</FlowPane>
+					</top>
+					<center>
+						<LineChart legendVisible="true"
+							horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
+							fx:id="thirdFilterCurve" BorderPane.alignment="BOTTOM_CENTER">
 							<xAxis>
 								<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
 									upperBound="2048" side="BOTTOM" />

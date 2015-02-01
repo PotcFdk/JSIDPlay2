@@ -454,7 +454,7 @@ public class SidDump extends Tab implements UIPart {
 			startStopRecording.setTooltip(new Tooltip(null));
 		}
 		sidDumpExtension.setLeftVolume(util.getConfig().getAudio()
-				.getLeftVolume());
+				.getMainVolume());
 		sidDumpExtension.init();
 	}
 

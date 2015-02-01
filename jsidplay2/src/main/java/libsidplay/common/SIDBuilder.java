@@ -15,6 +15,8 @@
  */
 package libsidplay.common;
 
+import sidplay.ini.intf.IAudioSection;
+
 
 /**
  * @author Ken Händel
@@ -25,7 +27,7 @@ public abstract class SIDBuilder {
 	public void start() {};
 	public abstract SIDEmu lock(EventScheduler context, SIDEmu device, ChipModel model);
 	public abstract void unlock(SIDEmu device);
-	public abstract void setBalance(int i, float balance);
-	public abstract void setMixerVolume(int sidNum, float volumnInDb);
+	public abstract void setBalance(int i, IAudioSection audio);
+	public abstract void setMixerVolume(int sidNum, IAudioSection audio);
 	public abstract int getNumDevices();
 }

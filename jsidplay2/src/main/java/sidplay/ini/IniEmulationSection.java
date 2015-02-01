@@ -420,7 +420,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final int getThirdSIDBase() {
-		return iniReader.getPropertyInt("Emulation", "3rdSIDBase", 0xd420);
+		return iniReader.getPropertyInt("Emulation", "thirdSIDBase", 0xd440);
 	}
 
 	/**
@@ -437,7 +437,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final void setThirdSIDBase(final int base) {
-		iniReader.setProperty("Emulation", "3rdSIDBase",
+		iniReader.setProperty("Emulation", "thirdSIDBase",
 				String.format("0x%04x", base));
 	}
 

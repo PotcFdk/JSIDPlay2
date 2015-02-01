@@ -317,7 +317,7 @@ public class EmulationSection implements IEmulationSection {
 		this.dualSidBase = dualSidBase;
 	}
 
-	private int thirdSIDBase = 0xdf00;
+	private int thirdSIDBase = 0xd440;
 
 	@Override
 	public int getThirdSIDBase() {

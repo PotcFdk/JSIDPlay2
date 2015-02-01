@@ -829,6 +829,10 @@ public class Player {
 
 		// apply filter settings and stereo SID chip address
 		configureSIDs((num, sid) -> {
+			if (sidBuilder != null) {
+				sidBuilder.setMixerVolume(num, config.getAudio());
+				sidBuilder.setBalance(num, config.getAudio());
+			}
 			sid.setFilter(config, num);
 			sid.setFilterEnable(config.getEmulation(), num);
 			sid.input(digiBoostEnabled ? sid.getInputDigiBoost() : 0);

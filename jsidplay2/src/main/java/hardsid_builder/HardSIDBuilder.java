@@ -11,6 +11,7 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
+import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
 
 /**
@@ -147,11 +148,11 @@ public class HardSIDBuilder extends SIDBuilder {
 	}
 
 	@Override
-	public void setMixerVolume(int sidNum, float volumnInDb) {
+	public void setMixerVolume(int num, IAudioSection audio) {
 	}
 
 	@Override
-	public void setBalance(int i, float balance) {
+	public void setBalance(int num, IAudioSection audio) {
 	}
 	
 	@Override

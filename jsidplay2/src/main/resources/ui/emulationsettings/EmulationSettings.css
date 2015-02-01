@@ -1,7 +1,10 @@
-#leftVolume {
+#mainVolume {
     -fx-skin: "ui.common.KnobSkin";
 }
-#rightVolume {
+#secondVolume {
+    -fx-skin: "ui.common.KnobSkin";
+}
+#thirdVolume {
     -fx-skin: "ui.common.KnobSkin";
 }
 .slider:focused .knob {
