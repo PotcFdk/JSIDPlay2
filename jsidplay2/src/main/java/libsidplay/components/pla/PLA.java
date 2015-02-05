@@ -230,6 +230,7 @@ public final class PLA {
 		oldBAState = true;
 		nmiCount = 0;
 		irqCount = 0;
+		sidBanks.clear();
 
 		colorRamBank.reset();
 		/* Cartridge-related banks are not reset() */
