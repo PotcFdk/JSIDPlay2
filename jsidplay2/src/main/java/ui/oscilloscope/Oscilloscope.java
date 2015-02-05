@@ -60,22 +60,22 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	@FXML
 	protected CheckBox muteVoice1, muteVoice2, muteVoice3, muteVoice4,
-			muteVoice5, muteVoice6;
+			muteVoice5, muteVoice6, muteVoice7, muteVoice8, muteVoice9;
 	@FXML
 	private WaveGauge waveMono_0, waveMono_1, waveMono_2, waveStereo_0,
-			waveStereo_1, waveStereo_2;
+			waveStereo_1, waveStereo_2, wave3Sid_0, wave3Sid_1, wave3Sid_2;
 	@FXML
 	private EnvelopeGauge envMono_0, envMono_1, envMono_2, envStereo_0,
-			envStereo_1, envStereo_2;
+			envStereo_1, envStereo_2, env3Sid_0, env3Sid_1, env3Sid_2;
 	@FXML
 	private FrequencyGauge freqMono_0, freqMono_1, freqMono_2, freqStereo_0,
-			freqStereo_1, freqStereo_2;
+			freqStereo_1, freqStereo_2, freq3Sid_0, freq3Sid_1, freq3Sid_2;
 	@FXML
-	private VolumeGauge volumeMono, volumeStereo;
+	private VolumeGauge volumeMono, volumeStereo, volume3Sid;
 	@FXML
-	private ResonanceGauge resonanceMono, resonanceStereo;
+	private ResonanceGauge resonanceMono, resonanceStereo, resonance3Sid;
 	@FXML
-	private FilterGauge filterMono, filterStereo;
+	private FilterGauge filterMono, filterStereo, filter3Sid;
 
 	private UIUtil util;
 
@@ -104,9 +104,12 @@ public class Oscilloscope extends Tab implements UIPart {
 		waveStereo_0.setLocalizer(util.getBundle());
 		waveStereo_1.setLocalizer(util.getBundle());
 		waveStereo_2.setLocalizer(util.getBundle());
+		wave3Sid_0.setLocalizer(util.getBundle());
+		wave3Sid_1.setLocalizer(util.getBundle());
+		wave3Sid_2.setLocalizer(util.getBundle());
 
 		// Mono SID gauges
-		gauges = new SIDGauge[2][4][3];
+		gauges = new SIDGauge[3][4][3];
 		gauges[0][0][0] = waveMono_0;
 		gauges[0][1][0] = waveMono_1;
 		gauges[0][2][0] = waveMono_2;
@@ -133,6 +136,20 @@ public class Oscilloscope extends Tab implements UIPart {
 		gauges[1][3][0] = volumeStereo;
 		gauges[1][3][1] = resonanceStereo;
 		gauges[1][3][2] = filterStereo;
+
+		// 3SID gauges
+		gauges[2][0][0] = wave3Sid_0;
+		gauges[2][1][0] = wave3Sid_1;
+		gauges[2][2][0] = wave3Sid_2;
+		gauges[2][0][1] = env3Sid_0;
+		gauges[2][1][1] = env3Sid_1;
+		gauges[2][2][1] = env3Sid_2;
+		gauges[2][0][2] = freq3Sid_0;
+		gauges[2][1][2] = freq3Sid_1;
+		gauges[2][2][2] = freq3Sid_2;
+		gauges[2][3][0] = volume3Sid;
+		gauges[2][3][1] = resonance3Sid;
+		gauges[2][3][2] = filter3Sid;
 
 		final PauseTransition pt = new PauseTransition(Duration.millis(50));
 		pt.setOnFinished((evt) -> {
@@ -179,6 +196,12 @@ public class Oscilloscope extends Tab implements UIPart {
 				sid -> sid.setVoiceMute(1, muteVoice5.isSelected()));
 		util.getPlayer().configureSID(1,
 				sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
+		util.getPlayer().configureSID(2,
+				sid -> sid.setVoiceMute(0, muteVoice7.isSelected()));
+		util.getPlayer().configureSID(2,
+				sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
+		util.getPlayer().configureSID(2,
+				sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
 	}
 
 	@FXML
@@ -215,6 +238,24 @@ public class Oscilloscope extends Tab implements UIPart {
 	private void doMuteVoice6() {
 		util.getPlayer().configureSID(1,
 				sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
+	}
+
+	@FXML
+	private void doMuteVoice7() {
+		util.getPlayer().configureSID(2,
+				sid -> sid.setVoiceMute(0, muteVoice7.isSelected()));
+	}
+
+	@FXML
+	private void doMuteVoice8() {
+		util.getPlayer().configureSID(2,
+				sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
+	}
+
+	@FXML
+	private void doMuteVoice9() {
+		util.getPlayer().configureSID(2,
+				sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
 	}
 
 }

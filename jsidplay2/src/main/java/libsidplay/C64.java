@@ -145,6 +145,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		/** Assign SID chip base address to a SID chip number */
 		public void setSIDMapping(final int address, final int chipNum) {
 			sidmapper[address >> 5 & MAPPER_SIZE - 1] = chipNum;
+			pla.setSid(address, sidBank);
 		}
 
 		/**

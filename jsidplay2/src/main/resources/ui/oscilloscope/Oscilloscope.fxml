@@ -37,6 +37,14 @@
 				GridPane.columnIndex="2" GridPane.rowIndex="1" />
 			<CheckBox fx:id="muteVoice6" onAction="#doMuteVoice6" text="%MUTE_VOICE_3"
 				GridPane.columnIndex="3" GridPane.rowIndex="1" />
+			<Label text="%3SID_" GridPane.columnIndex="0"
+				GridPane.rowIndex="2" />
+			<CheckBox fx:id="muteVoice7" onAction="#doMuteVoice7" text="%MUTE_VOICE_1"
+				GridPane.columnIndex="1" GridPane.rowIndex="2" />
+			<CheckBox fx:id="muteVoice8" onAction="#doMuteVoice8" text="%MUTE_VOICE_2"
+				GridPane.columnIndex="2" GridPane.rowIndex="2" />
+			<CheckBox fx:id="muteVoice9" onAction="#doMuteVoice9" text="%MUTE_VOICE_3"
+				GridPane.columnIndex="3" GridPane.rowIndex="2" />
 		</GridPane>
 		<Separator orientation="HORIZONTAL" />
 		<HBox>
@@ -94,6 +102,35 @@
 					<ResonanceGauge fx:id="resonanceStereo" text="%RESONANCE"
 						GridPane.columnIndex="1" GridPane.rowIndex="3" />
 					<FilterGauge fx:id="filterStereo" text="%FILTER"
+						GridPane.columnIndex="2" GridPane.rowIndex="3" />
+				</GridPane>
+			</TitledPane>
+			<HBox HBox.hgrow="ALWAYS" />
+			<TitledPane text="%3SID" collapsible="false">
+				<GridPane>
+					<WaveGauge fx:id="wave3Sid_0" text="%WAVE"
+						GridPane.columnIndex="0" GridPane.rowIndex="0" />
+					<EnvelopeGauge fx:id="env3Sid_0" text="%ENVELOPE"
+						GridPane.columnIndex="1" GridPane.rowIndex="0" />
+					<FrequencyGauge fx:id="freq3Sid_0" text="%FREQUENCY"
+						GridPane.columnIndex="2" GridPane.rowIndex="0" />
+					<WaveGauge fx:id="wave3Sid_1" text="%WAVE" voice="1"
+						GridPane.columnIndex="0" GridPane.rowIndex="1" />
+					<EnvelopeGauge fx:id="env3Sid_1" text="%ENVELOPE"
+						voice="1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+					<FrequencyGauge fx:id="freq3Sid_1" text="%FREQUENCY"
+						voice="1" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+					<WaveGauge fx:id="wave3Sid_2" text="%WAVE" voice="2"
+						GridPane.columnIndex="0" GridPane.rowIndex="2" />
+					<EnvelopeGauge fx:id="env3Sid_2" text="%ENVELOPE"
+						voice="2" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+					<FrequencyGauge fx:id="freq3Sid_2" text="%FREQUENCY"
+						voice="2" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+					<VolumeGauge fx:id="volume3Sid" text="%MASTER_VOLUME"
+						GridPane.columnIndex="0" GridPane.rowIndex="3" />
+					<ResonanceGauge fx:id="resonance3Sid" text="%RESONANCE"
+						GridPane.columnIndex="1" GridPane.rowIndex="3" />
+					<FilterGauge fx:id="filter3Sid" text="%FILTER"
 						GridPane.columnIndex="2" GridPane.rowIndex="3" />
 				</GridPane>
 			</TitledPane>

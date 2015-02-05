@@ -3,6 +3,8 @@ package libsidplay.components.pla;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -193,6 +195,9 @@ public final class PLA {
 
 	/** Cartridge DMA */
 	private boolean cartridgeDma;
+
+	/** SIDs assigned to bank numbers */
+	private Map<Integer,Bank> sidBanks = new HashMap<Integer,Bank>();
 
 	public PLA(final EventScheduler context, final Bank sid,
 			final Bank zeroRAMBank, final Bank ramBank) {
@@ -449,11 +454,15 @@ public final class PLA {
 			}
 		}
 
-		Bank io1 = cartridge.getIO1();
-		ioBank.setBank(14, io1);
+		if (sidBanks.get(14) == null) {
+			Bank io1 = cartridge.getIO1();
+			ioBank.setBank(14, io1);
+		}
 
-		Bank io2 = cartridge.getIO2();
-		ioBank.setBank(15, io2);
+		if (sidBanks.get(15) == null) {
+			Bank io2 = cartridge.getIO2();
+			ioBank.setBank(15, io2);
+		}
 
 		cartridge.installBankHooks(cpuReadMap, cpuWriteMap);
 	}
@@ -578,6 +587,11 @@ public final class PLA {
 		ioBank.setBank(3, vic);
 
 		disconnectedBusBank = new DisconnectedBusBank(vic);
+	}
+
+	public void setSid(final int address, final Bank sid) {
+		int num = (address & 0x0f00) >> 8;
+		sidBanks.put(num,sid);
 	}
 
 	public Bank getDisconnectedBusBank() {
