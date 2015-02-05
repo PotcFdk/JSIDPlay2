@@ -454,15 +454,13 @@ public final class PLA {
 			}
 		}
 
-		if (sidBanks.get(14) == null) {
-			Bank io1 = cartridge.getIO1();
-			ioBank.setBank(14, io1);
-		}
+		Bank io1 = cartridge.getIO1();
+		Bank sidBank14 = sidBanks.get(14);
+		ioBank.setBank(14, sidBank14 == null ? io1 : sidBank14);
 
-		if (sidBanks.get(15) == null) {
-			Bank io2 = cartridge.getIO2();
-			ioBank.setBank(15, io2);
-		}
+		Bank io2 = cartridge.getIO2();
+		Bank sidBank15 = sidBanks.get(15);
+		ioBank.setBank(15, sidBank15 == null ? io2 : sidBank15);
 
 		cartridge.installBankHooks(cpuReadMap, cpuWriteMap);
 	}

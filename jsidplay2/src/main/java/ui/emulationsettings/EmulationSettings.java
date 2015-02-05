@@ -166,6 +166,8 @@ public class EmulationSettings extends C64Window {
 							(b) -> b.setMixerVolume(1, util.getConfig()
 									.getAudio()));
 				});
+		thirdVolume.setValue(util.getConfig().getAudio().getThirdVolume()
+				+ MAX_VOLUME_DB);
 		thirdVolume.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
@@ -282,7 +284,7 @@ public class EmulationSettings extends C64Window {
 		thirdFilter.setDisable(!third);
 		thirdFilterCurve.setDisable(!third);
 		// forced stereo, only:
-		sidToRead.setDisable(!(second && emulation.isForceStereoTune()));
+		sidToRead.setDisable(!(second || third));
 		baseAddress
 				.setDisable(!(second && (emulation.isForceStereoTune() || (third && emulation
 						.isForce3SIDTune()))));
