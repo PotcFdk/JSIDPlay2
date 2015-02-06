@@ -4,6 +4,7 @@ import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
@@ -35,6 +36,11 @@ public class Oscilloscope extends Tab implements UIPart {
 			ctx = _ctx;
 			ctx.cancel(this);
 			ctx.schedule(this, 0, Event.Phase.PHI2);
+		}
+
+		public void stopScheduling(final EventScheduler _ctx) {
+			ctx = _ctx;
+			ctx.cancel(this);
 		}
 
 		@Override
@@ -77,6 +83,16 @@ public class Oscilloscope extends Tab implements UIPart {
 	@FXML
 	private FilterGauge filterMono, filterStereo, filter3Sid;
 
+	private PauseTransition pt = new PauseTransition(Duration.millis(50));
+	private SequentialTransition st = new SequentialTransition(pt);
+
+	private ChangeListener<? super State> listener = (observable, oldValue,
+			newValue) -> {
+		if (newValue == State.RUNNING) {
+			startOscilloscope();
+		}
+	};
+
 	private UIUtil util;
 
 	protected SIDGauge[][][] gauges;
@@ -92,12 +108,7 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	@FXML
 	private void initialize() {
-		util.getPlayer().stateProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					if (newValue == State.RUNNING) {
-						startOscilloscope();
-					}
-				});
+		util.getPlayer().stateProperty().addListener(listener);
 		waveMono_0.setLocalizer(util.getBundle());
 		waveMono_1.setLocalizer(util.getBundle());
 		waveMono_2.setLocalizer(util.getBundle());
@@ -151,7 +162,6 @@ public class Oscilloscope extends Tab implements UIPart {
 		gauges[2][3][1] = resonance3Sid;
 		gauges[2][3][2] = filter3Sid;
 
-		final PauseTransition pt = new PauseTransition(Duration.millis(50));
 		pt.setOnFinished((evt) -> {
 			util.getPlayer().configureSIDs((chipNum, sid) -> {
 				for (int row = 0; row < 4; row++) {
@@ -161,7 +171,6 @@ public class Oscilloscope extends Tab implements UIPart {
 				}
 			});
 		});
-		final SequentialTransition st = new SequentialTransition(pt);
 		st.setCycleCount(Timeline.INDEFINITE);
 		st.playFromStart();
 		startOscilloscope();
@@ -202,6 +211,16 @@ public class Oscilloscope extends Tab implements UIPart {
 				sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
 		util.getPlayer().configureSID(2,
 				sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
+	}
+
+	@Override
+	public void doClose() {
+		final EventScheduler ctx = util.getPlayer().getC64()
+				.getEventScheduler();
+		highResolutionEvent.stopScheduling(ctx);
+		st.stop();
+		util.getPlayer().stateProperty().removeListener(listener);
+		UIPart.super.doClose();
 	}
 
 	@FXML
