@@ -837,9 +837,9 @@ public class Player {
 			sid.setFilterEnable(config.getEmulation(), num);
 			sid.input(digiBoostEnabled ? sid.getInputDigiBoost() : 0);
 		});
-		setSIDAddresses();
 
 		reset();
+		setSIDAddresses();
 
 		stateProperty.set(State.RUNNING);
 	}
