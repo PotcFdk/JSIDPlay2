@@ -94,8 +94,9 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 				for (int channel = 0; channel < channels; channel++) {
 					int value = 0;
 					for (int bufferIdx = 0; bufferIdx < numBuffers; bufferIdx++) {
-						value += buffers[bufferIdx][sampleIdx]
-								* balancedVolumeL[bufferIdx];
+						float balance = (channel == 0 ? balancedVolumeL[bufferIdx]
+								: balancedVolumeR[bufferIdx]);
+						value += buffers[bufferIdx][sampleIdx] * balance;
 					}
 					value = value + dither >> 10;
 
