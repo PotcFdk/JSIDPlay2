@@ -843,7 +843,7 @@ public class SID implements SIDChip {
 		float[] buffer = new float[audioBuffer.length];
 		final int clock = clock(piece, buffer, offset);
 		for (int i = offset; i < buffer.length; i++) {
-			audioBuffer[i] = Math.round(buffer[i] * 32768f);
+			audioBuffer[i] = (int)(buffer[i] * 32768f);
 		}
 		return clock;
 	}

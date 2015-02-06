@@ -25,6 +25,7 @@ import sidplay.ini.intf.IAudioSection;
  */
 public abstract class SIDBuilder {
 	public void start() {};
+	public void reset(EventScheduler context) {}
 	public abstract SIDEmu lock(EventScheduler context, SIDEmu device, ChipModel model);
 	public abstract void unlock(SIDEmu device);
 	public abstract void setBalance(int i, IAudioSection audio);

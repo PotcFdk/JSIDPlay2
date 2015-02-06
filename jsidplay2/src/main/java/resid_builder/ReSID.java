@@ -19,11 +19,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import libsidplay.common.ChipModel;
-import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SIDBuilder;
+import libsidplay.common.ReSIDBuilderBase.MixerEvent;
 import libsidplay.common.SIDEmu;
 import libsidplay.common.SamplingMethod;
-import resid_builder.ReSIDBuilder.MixerEvent;
 import resid_builder.resid.Filter6581;
 import resid_builder.resid.Filter8580;
 import resid_builder.resid.SID;
@@ -37,17 +37,9 @@ import sidplay.ini.intf.IFilterSection;
 public class ReSID extends SIDEmu {
 	private static final Logger RESID = Logger.getLogger(ReSID.class.getName());
 
-	/*
-	 * supports 5 ms chunk at 96 kHz
-	 */
-	private static final int OUTPUTBUFFERSIZE = 5000;
 	private final SID sid = new SID();
 
-	protected int position;
-
-	protected int[] buffer;
-
-	private final ReSIDBuilder.MixerEvent mixerEvent;
+	private SIDBuilder builder;
 
 	/**
 	 * Constructor
@@ -57,11 +49,9 @@ public class ReSID extends SIDEmu {
 	 * @param mixerEvent
 	 *            {@link MixerEvent} to use.
 	 */
-	public ReSID(EventScheduler context, MixerEvent mixerEvent) {
+	public ReSID(EventScheduler context, SIDBuilder builder) {
 		super(context);
-		this.mixerEvent = mixerEvent;
-		buffer = new int[OUTPUTBUFFERSIZE];
-		position = 0;
+		this.builder = builder;
 		reset((byte) 0);
 	}
 
@@ -70,14 +60,7 @@ public class ReSID extends SIDEmu {
 		clocksSinceLastAccess();
 		sid.reset();
 		sid.write(0x18, volume);
-		/*
-		 * No matter how many chips are in use, mixerEvent is singleton with
-		 * respect to them. Only one will be scheduled. This is a bit dirty,
-		 * though.
-		 */
-		context.cancel(mixerEvent);
-		mixerEvent.setContext(context);
-		context.schedule(mixerEvent, 0, Event.Phase.PHI2);
+		builder.reset(context);
 	}
 
 	@Override
@@ -104,7 +87,7 @@ public class ReSID extends SIDEmu {
 	@Override
 	public void clock() {
 		int cycles = clocksSinceLastAccess();
-		position += sid.clock(cycles, buffer, position);
+		bufferpos += sid.clock(cycles, buffer, bufferpos);
 	}
 
 	@Override
@@ -225,34 +208,6 @@ public class ReSID extends SIDEmu {
 	@Override
 	public ChipModel getChipModel() {
 		return sid.getChipModel();
-	}
-
-	/**
-	 * Gets the current position that audio is being written to.
-	 *
-	 * @return The current position that audio is being written to.
-	 */
-	public int getPosition() {
-		return position;
-	}
-
-	/**
-	 * Sets the position to write audio to the buffer.
-	 *
-	 * @param position
-	 *            The new position to start at.
-	 */
-	public void setPosition(final int position) {
-		this.position = position;
-	}
-
-	/**
-	 * Gets the audio output sample buffer.
-	 *
-	 * @return The audio output sample buffer.
-	 */
-	public int[] getBuffer() {
-		return buffer;
 	}
 
 	public int getInputDigiBoost() {

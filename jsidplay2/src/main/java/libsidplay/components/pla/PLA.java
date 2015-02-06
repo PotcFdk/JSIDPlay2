@@ -3,8 +3,6 @@ package libsidplay.components.pla;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -197,7 +195,7 @@ public final class PLA {
 	private boolean cartridgeDma;
 
 	/** SIDs assigned to bank numbers */
-	private Map<Integer,Bank> sidBanks = new HashMap<Integer,Bank>();
+	private Bank[] sidBanks = new Bank[16];
 
 	public PLA(final EventScheduler context, final Bank sid,
 			final Bank zeroRAMBank, final Bank ramBank) {
@@ -230,7 +228,7 @@ public final class PLA {
 		oldBAState = true;
 		nmiCount = 0;
 		irqCount = 0;
-		sidBanks.clear();
+		Arrays.fill(sidBanks, null);
 
 		colorRamBank.reset();
 		/* Cartridge-related banks are not reset() */
@@ -456,11 +454,11 @@ public final class PLA {
 		}
 
 		Bank io1 = cartridge.getIO1();
-		Bank sidBank14 = sidBanks.get(14);
+		Bank sidBank14 = sidBanks[14];
 		ioBank.setBank(14, sidBank14 == null ? io1 : sidBank14);
 
 		Bank io2 = cartridge.getIO2();
-		Bank sidBank15 = sidBanks.get(15);
+		Bank sidBank15 = sidBanks[15];
 		ioBank.setBank(15, sidBank15 == null ? io2 : sidBank15);
 
 		cartridge.installBankHooks(cpuReadMap, cpuWriteMap);
@@ -590,7 +588,7 @@ public final class PLA {
 
 	public void setSid(final int address, final Bank sid) {
 		int num = (address & 0x0f00) >> 8;
-		sidBanks.put(num,sid);
+		sidBanks[num] = sid;
 	}
 
 	public Bank getDisconnectedBusBank() {

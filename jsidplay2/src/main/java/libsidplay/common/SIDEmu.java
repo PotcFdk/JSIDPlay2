@@ -19,6 +19,11 @@ import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IEmulationSection;
 
 public abstract class SIDEmu {
+	/*
+	 * supports 5 ms chunk at 96 kHz
+	 */
+	private static final int OUTPUTBUFFERSIZE = 5000;
+
 	/** Event context */
 	protected final EventScheduler context;
 
@@ -28,8 +33,20 @@ public abstract class SIDEmu {
 	/** Internal cache of SID register state, used for GUI feedback. */
 	private final byte[] registers = new byte[32];
 
+	/**
+	 * Current position that audio is being written to.
+	 */
+	protected int bufferpos;
+
+	/**
+	 * Audio output sample buffer.
+	 */
+	protected int[] buffer;
+
 	public SIDEmu(EventScheduler context) {
 		this.context = context;
+		buffer = new int[OUTPUTBUFFERSIZE];
+		bufferpos = 0;
 	}
 
 	public byte readInternalRegister(final int addr) {

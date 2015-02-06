@@ -19,11 +19,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import libsidplay.common.ChipModel;
-import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.common.SamplingMethod;
-import residfp_builder.ReSIDBuilder.MixerEvent;
 import residfp_builder.resid.Filter6581;
 import residfp_builder.resid.Filter8580;
 import residfp_builder.resid.SID;
@@ -34,25 +33,13 @@ import sidplay.ini.intf.IFilterSection;
 public class ReSID extends SIDEmu {
 	private static final Logger RESID = Logger.getLogger(ReSID.class.getName());
 
-	/**
-	 * Supports 5 ms chunk at 96 kHz
-	 */
-	private static final int OUTPUTBUFFERSIZE = 5000;
+	private final SID sid = new SID();
 
-	private final SID sid;
+	private SIDBuilder builder;
 
-	protected int bufferpos;
-
-	protected float[] buffer;
-
-	private final ReSIDBuilder.MixerEvent mixerEvent;
-
-	public ReSID(EventScheduler context, MixerEvent mixerEvent) {
+	public ReSID(EventScheduler context, SIDBuilder builder) {
 		super(context);
-		this.mixerEvent = mixerEvent;
-		sid = new SID();
-		buffer = new float[OUTPUTBUFFERSIZE];
-		bufferpos = 0;
+		this.builder = builder;
 		reset((byte) 0);
 	}
 
@@ -110,14 +97,7 @@ public class ReSID extends SIDEmu {
 		clocksSinceLastAccess();
 		sid.reset();
 		sid.write(0x18, volume);
-		/*
-		 * No matter how many chips are in use, mixerEvent is singleton with
-		 * respect to them. Only one will be scheduled. This is a bit dirty,
-		 * though.
-		 */
-		context.cancel(mixerEvent);
-		mixerEvent.setContext(context);
-		context.schedule(mixerEvent, 0, Event.Phase.PHI2);
+		builder.reset(context);
 	}
 
 	@Override
