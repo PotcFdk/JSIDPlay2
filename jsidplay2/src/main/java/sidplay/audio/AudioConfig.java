@@ -152,6 +152,10 @@ public class AudioConfig {
 		return samplingMethod;
 	}
 
+	public int getChannels() {
+		return channels;
+	}
+	
 	public int getDevice() {
 		return deviceIdx;
 	}

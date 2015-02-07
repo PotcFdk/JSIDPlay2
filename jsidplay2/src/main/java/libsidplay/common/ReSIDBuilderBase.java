@@ -86,7 +86,7 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 				samples = samples == 0 ? sid.bufferpos : samples;
 				sid.bufferpos = 0;
 			}
-			int channels = Math.min(sids.size(), 2);
+			int channels = audioConfig.getChannels();
 			final ByteBuffer soundBuffer = driver.buffer();
 			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
 				int dither = triangularDithering();
@@ -94,9 +94,9 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 				for (int channel = 0; channel < channels; channel++) {
 					int value = 0;
 					for (int bufferIdx = 0; bufferIdx < numBuffers; bufferIdx++) {
-						float balance = (channel == 0 ? balancedVolumeL[bufferIdx]
+						float volume = (channel == 0 ? balancedVolumeL[bufferIdx]
 								: balancedVolumeR[bufferIdx]);
-						value += buffers[bufferIdx][sampleIdx] * balance;
+						value += buffers[bufferIdx][sampleIdx] * volume;
 					}
 					value = value + dither >> 10;
 
