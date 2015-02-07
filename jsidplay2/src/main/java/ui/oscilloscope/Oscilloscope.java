@@ -179,9 +179,6 @@ public class Oscilloscope extends Tab implements UIPart {
 	private void startOscilloscope() {
 		final EventScheduler ctx = util.getPlayer().getC64()
 				.getEventScheduler();
-		/* sample oscillator buffer */
-		highResolutionEvent.beginScheduling(ctx);
-
 		Platform.runLater(() -> {
 			for (int chipNum = 0; chipNum < gauges.length; chipNum++) {
 				for (int row = 0; row < gauges[chipNum].length; row++) {
@@ -191,6 +188,8 @@ public class Oscilloscope extends Tab implements UIPart {
 					}
 				}
 			}
+			/* sample oscillator buffer */
+			highResolutionEvent.beginScheduling(ctx);
 		});
 
 		util.getPlayer().configureSID(0,

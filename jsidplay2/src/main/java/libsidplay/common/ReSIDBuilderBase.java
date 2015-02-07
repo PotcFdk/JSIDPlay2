@@ -72,7 +72,6 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 		public void event() throws InterruptedException {
 			int samples = 0;
 			int numBuffers = 0;
-			int[][] buffers = new int[sids.size()][];
 			for (SIDEmu sid : sids) {
 				/*
 				 * Clocks the SID to the present moment, if it isn't already.
@@ -86,8 +85,6 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 				samples = samples == 0 ? sid.bufferpos : samples;
 				sid.bufferpos = 0;
 			}
-			int channels = audioConfig.getChannels();
-			final ByteBuffer soundBuffer = driver.buffer();
 			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
 				int dither = triangularDithering();
 
@@ -127,6 +124,10 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 	/** C64 system frequency */
 	private final CPUClock cpuClock;
 
+	private int[][] buffers;
+	private int channels;
+	private ByteBuffer soundBuffer;
+	
 	/** output driver */
 	protected AudioDriver driver, realDriver;
 
@@ -160,6 +161,9 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 		 */
 		context.cancel(mixerEvent);
 		mixerEvent.setContext(context);
+		buffers = new int[sids.size()][];
+		channels = audioConfig.getChannels();
+		soundBuffer = realDriver.buffer();
 		context.schedule(mixerEvent, 0, Event.Phase.PHI2);
 	}
 
