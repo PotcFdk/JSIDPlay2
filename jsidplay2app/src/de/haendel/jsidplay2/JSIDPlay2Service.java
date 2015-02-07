@@ -318,10 +318,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		try {
 			String line;
 			while ((line = r.readLine()) != null) {
-				// assuming JSIDPlay2 style - most often relative to HVSC
-				String resource = (!line.startsWith("/C64Music") ? "/C64Music"
-						: "") + line;
-				playList.add(new PlayListEntry(resource));
+				playList.add(new PlayListEntry(line));
 			}
 		} finally {
 			r.close();
