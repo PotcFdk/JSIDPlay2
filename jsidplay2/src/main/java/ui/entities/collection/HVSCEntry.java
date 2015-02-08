@@ -70,6 +70,7 @@ public class HVSCEntry {
 					: "Mono";
 			this.sidChipBase1 = info.getSidChipBase(0);
 			this.sidChipBase2 = info.getSidChipBase(1);
+			this.sidChipBase3 = info.getSidChipBase(2);
 			this.driverAddress = info.getDeterminedDriverAddr();
 			this.loadAddress = info.getLoadAddr();
 			this.loadLength = info.getC64dataLen();
