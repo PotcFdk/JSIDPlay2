@@ -148,4 +148,26 @@ public class SidTuneTest extends JSIDPlay2Test {
 		Assert.assertTrue(checkScreenMessage("Spiral Silicon Towers", 2, 1));
 	}
 
+	@Test
+	public void loadPSid3SidTest() {
+		config.getSidplay2().setLastDirectory(
+				"target/test-classes/sid/examples/stereo/3sids");
+		click("#file");
+		click("#load");
+		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		type("Arcade_Memories_3SID.sid");
+		push(ENTER);
+		sleep(SID_TUNE_LOADED_TIMEOUT);
+
+		Assert.assertTrue(player.getC64().getSID(0) != null);
+		Assert.assertTrue(player.getC64().getSID(1) != null);
+		Assert.assertTrue(player.getC64().getSID(2) != null);
+		// Driver
+		Assert.assertTrue(checkRam(0x0400, new byte[] { 0x4c, (byte) 0x93, 0x28 }));
+		// Load/Init
+		Assert.assertTrue(checkRam(0x1000, new byte[] { 0x4c, (byte) 0xF1, 0x10 }));
+		// Play
+		Assert.assertTrue(checkRam(0x2890, new byte[] { 0x4c, (byte) 0x9C, 0x28 }));
+	}
+
 }
