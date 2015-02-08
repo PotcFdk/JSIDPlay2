@@ -61,6 +61,7 @@ public class HVSCEntry {
 			this.speed = tune.getSongSpeed(1);
 			this.sidModel1 = info.getSid1Model();
 			this.sidModel2 = info.getSid2Model();
+			this.sidModel3 = info.getSid3Model();
 			this.compatibility = info.getCompatibility();
 			this.tuneLength = Long.valueOf(lengthFnct != null ? lengthFnct
 					.applyAsInt(tune) : 0);
@@ -230,6 +231,17 @@ public class HVSCEntry {
 		this.sidModel2 = sidModel2;
 	}
 
+	private Model sidModel3;
+
+	@Enumerated(EnumType.STRING)
+	public Model getSidModel3() {
+		return sidModel3;
+	}
+
+	public void setSidModel3(Model sidModel3) {
+		this.sidModel3 = sidModel3;
+	}
+
 	private Compatibility compatibility;
 
 	@Enumerated(EnumType.STRING)
@@ -279,6 +291,16 @@ public class HVSCEntry {
 
 	public void setSidChipBase2(Integer sidChipBase2) {
 		this.sidChipBase2 = sidChipBase2;
+	}
+
+	private Integer sidChipBase3;
+
+	public Integer getSidChipBase3() {
+		return sidChipBase3;
+	}
+
+	public void setSidChipBase3(Integer sidChipBase3) {
+		this.sidChipBase3 = sidChipBase3;
 	}
 
 	private Integer driverAddress;

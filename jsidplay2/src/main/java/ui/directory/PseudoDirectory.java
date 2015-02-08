@@ -93,6 +93,7 @@ public class PseudoDirectory {
 		addProperty(entries, "SPEED", String.valueOf(entry.getSpeed()));
 		addProperty(entries, "SIDMODEL1", String.valueOf(entry.getSidModel1()));
 		addProperty(entries, "SIDMODEL2", String.valueOf(entry.getSidModel2()));
+		addProperty(entries, "SIDMODEL3", String.valueOf(entry.getSidModel3()));
 		addProperty(entries, "COMPAT", String.valueOf(entry.getCompatibility()));
 		addProperty(entries, "TUNE_LGTH", String.valueOf(entry.getTuneLength()));
 		addProperty(entries, "AUDIO", entry.getAudio());
@@ -100,6 +101,8 @@ public class PseudoDirectory {
 				String.valueOf(entry.getSidChipBase1()));
 		addProperty(entries, "CHIP_BASE2",
 				String.valueOf(entry.getSidChipBase2()));
+		addProperty(entries, "CHIP_BASE3",
+				String.valueOf(entry.getSidChipBase3()));
 		addProperty(entries, "DRV_ADDR",
 				String.valueOf(entry.getDriverAddress()));
 		addProperty(entries, "LOAD_ADDR",

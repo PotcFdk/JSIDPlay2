@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.collections.ObservableList;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer.Info;
+
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
@@ -15,6 +20,8 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.SidDatabase;
 import sidplay.audio.Audio;
+import sidplay.audio.JavaSound;
+import sidplay.audio.JavaSound.Device;
 import sidplay.consoleplayer.ConsoleIO;
 import sidplay.ini.IniConfig;
 
@@ -63,6 +70,9 @@ public class ConsolePlayer {
 
 	@Parameter(names = { "--audio", "-a" }, descriptionKey = "DRIVER")
 	private Audio audio = Audio.SOUNDCARD;
+
+	@Parameter(names = { "--deviceIndex", "-A" }, descriptionKey = "DEVICEINDEX")
+	private Integer deviceIdx;
 
 	@Parameter(names = { "--emulation", "-e" }, descriptionKey = "EMULATION")
 	private Emulation emulation = Emulation.RESID;
@@ -143,6 +153,25 @@ public class ConsolePlayer {
 		// Cannot loop while recording audio files
 		if (isRecording()) {
 			loop = false;
+		}
+		// Set SOUNDCARD audio device
+		if (deviceIdx != null) {
+			JavaSound js = (JavaSound) Audio.SOUNDCARD.getAudioDriver();
+			ObservableList<Device> devices = JavaSound.getDevices();
+			try {
+				Info info = devices.get(deviceIdx).getInfo();
+				js.setAudioDevice(info);
+			} catch (IndexOutOfBoundsException
+					| LineUnavailableException e) {
+				int deviceIdx = 0;
+				for (Device device : JavaSound.getDevices()) {
+					System.err.printf("device %d = %s (%s)\n",
+							(deviceIdx++), device.getInfo().getName(),
+							device.getInfo().getDescription());
+				}
+				System.err.println(e.getMessage());
+				exit(1);
+			}
 		}
 		final IniConfig config = new IniConfig(true);
 		config.getSidplay2().setLoop(loop);

@@ -27,11 +27,13 @@ public class HVSCEntry_ {
 	public static volatile SingularAttribute<HVSCEntry, Speed> speed;
 	public static volatile SingularAttribute<HVSCEntry, Model> sidModel1;
 	public static volatile SingularAttribute<HVSCEntry, Model> sidModel2;
+	public static volatile SingularAttribute<HVSCEntry, Model> sidModel3;
 	public static volatile SingularAttribute<HVSCEntry, Compatibility> compatibility;
 	public static volatile SingularAttribute<HVSCEntry, Long> tuneLength;
 	public static volatile SingularAttribute<HVSCEntry, String> audio;
 	public static volatile SingularAttribute<HVSCEntry, Integer> sidChipBase1;
 	public static volatile SingularAttribute<HVSCEntry, Integer> sidChipBase2;
+	public static volatile SingularAttribute<HVSCEntry, Integer> sidChipBase3;
 	public static volatile SingularAttribute<HVSCEntry, Integer> driverAddress;
 	public static volatile SingularAttribute<HVSCEntry, Integer> loadAddress;
 	public static volatile SingularAttribute<HVSCEntry, Integer> loadLength;
