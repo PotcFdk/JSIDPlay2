@@ -88,22 +88,9 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
 				int dither = triangularDithering();
 
-				for (int channel = 0; channel < channels; channel++) {
-					int value = 0;
-					for (int bufferIdx = 0; bufferIdx < numBuffers; bufferIdx++) {
-						float volume = (channel == 0 ? balancedVolumeL[bufferIdx]
-								: balancedVolumeR[bufferIdx]);
-						value += buffers[bufferIdx][sampleIdx] * volume;
-					}
-					value = value + dither >> 10;
-
-					if (value > 32767) {
-						value = 32767;
-					}
-					if (value < -32768) {
-						value = -32768;
-					}
-					soundBuffer.putShort((short) value);
+				putSample(numBuffers, sampleIdx, balancedVolumeL, dither);
+				if (channels > 1) {
+					putSample(numBuffers, sampleIdx, balancedVolumeR, dither);
 				}
 				if (soundBuffer.remaining() == 0) {
 					driver.write();
@@ -111,6 +98,24 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 				}
 			}
 			context.schedule(this, 10000);
+		}
+
+		private final void putSample(int numBuffers, int sampleIdx,
+				float[] balancedVolume, int dither) {
+			int value = 0;
+			for (int bufferIdx = 0; bufferIdx < numBuffers; bufferIdx++) {
+				value += buffers[bufferIdx][sampleIdx]
+						* balancedVolume[bufferIdx];
+			}
+			value = value + dither >> 10;
+
+			if (value > 32767) {
+				value = 32767;
+			}
+			if (value < -32768) {
+				value = -32768;
+			}
+			soundBuffer.putShort((short) value);
 		}
 
 		public void setContext(EventScheduler env) {
@@ -127,7 +132,7 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 	private int[][] buffers;
 	private int channels;
 	private ByteBuffer soundBuffer;
-	
+
 	/** output driver */
 	protected AudioDriver driver, realDriver;
 
