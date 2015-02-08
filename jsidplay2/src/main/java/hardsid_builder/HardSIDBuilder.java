@@ -35,7 +35,7 @@ import sidplay.ini.intf.IConfig;
  * @author Ken Händel
  * 
  */
-public class HardSIDBuilder extends SIDBuilder {
+public class HardSIDBuilder implements SIDBuilder {
 	private static final String VERSION = "1.0.1";
 
 	private final ArrayList<HardSID> sidobjs = new ArrayList<HardSID>(4);
@@ -79,6 +79,45 @@ public class HardSIDBuilder extends SIDBuilder {
 		hsid2.InitHardSID_Mapper();
 	}
 
+	@Override
+	public SIDEmu lock(EventScheduler evt, SIDEmu device, ChipModel model) {
+		if (device == null) {
+			device = lock(evt, model);
+		} else {
+			device.setChipModel(model);
+		}
+		return device;
+	}
+
+	@Override
+	public void unlock(final SIDEmu device) {
+		for (HardSID hardSid : sidobjs) {
+			hardSid.setChipsUsed(sidobjs.size() - 1);
+			hardSid.flush();
+			hardSid.reset((byte) 0);
+		}
+		if (sidobjs.remove(device)) {
+			((HardSID) device).lock(false);
+		}
+	}
+
+	@Override
+	public int getNumDevices() {
+		return hsid2.GetHardSIDCount();
+	}
+
+	@Override
+	public void start(EventScheduler context) {
+	}
+
+	@Override
+	public void setVolume(int num, IAudioSection audio) {
+	}
+
+	@Override
+	public void setBalance(int num, IAudioSection audio) {
+	}
+	
 	private String extract(IConfig config, final String path,
 			final String libName) throws IOException {
 		File f = new File(new File(config.getSidplay2().getTmpDir()), libName);
@@ -103,16 +142,6 @@ public class HardSIDBuilder extends SIDBuilder {
 		inputStream.close();
 	}
 
-	@Override
-	public SIDEmu lock(EventScheduler evt, SIDEmu device, ChipModel model) {
-		if (device == null) {
-			device = lock(evt, model);
-		} else {
-			device.setChipModel(model);
-		}
-		return device;
-	}
-
 	private SIDEmu lock(final EventScheduler context, ChipModel model) {
 		ChipModel alreadyUsedModel = null;
 		if (sidobjs.size() > 0) {
@@ -133,31 +162,6 @@ public class HardSIDBuilder extends SIDBuilder {
 			return hsid;
 		}
 		throw new RuntimeException("HardSID ERROR: No available SIDs to lock");
-	}
-
-	@Override
-	public void unlock(final SIDEmu device) {
-		for (HardSID hardSid : sidobjs) {
-			hardSid.setChipsUsed(sidobjs.size() - 1);
-			hardSid.flush();
-			hardSid.reset((byte) 0);
-		}
-		if (sidobjs.remove(device)) {
-			((HardSID) device).lock(false);
-		}
-	}
-
-	@Override
-	public void setMixerVolume(int num, IAudioSection audio) {
-	}
-
-	@Override
-	public void setBalance(int num, IAudioSection audio) {
-	}
-	
-	@Override
-	public int getNumDevices() {
-		return hsid2.GetHardSIDCount();
 	}
 
 	public static final String credits() {

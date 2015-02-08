@@ -32,7 +32,7 @@ public class ReSIDBuilder extends ReSIDBuilderBase {
 
 	@Override
 	protected SIDEmu createSIDEmu(EventScheduler context) {
-		return new ReSID(context, this);
+		return new ReSID(context);
 	}
 
 }

@@ -302,7 +302,7 @@ public class Player {
 			@Override
 			public void start() {
 				if (sidBuilder != null) {
-					sidBuilder.start();
+					sidBuilder.start(c64.getEventScheduler());
 				}
 			}
 
@@ -830,7 +830,7 @@ public class Player {
 		// apply filter settings and stereo SID chip address
 		configureSIDs((num, sid) -> {
 			if (sidBuilder != null) {
-				sidBuilder.setMixerVolume(num, config.getAudio());
+				sidBuilder.setVolume(num, config.getAudio());
 				sidBuilder.setBalance(num, config.getAudio());
 			}
 			sid.setFilter(config, num);

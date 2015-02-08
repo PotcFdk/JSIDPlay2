@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.common.SamplingMethod;
 import residfp_builder.resid.Filter6581;
@@ -35,11 +34,8 @@ public class ReSID extends SIDEmu {
 
 	private final SID sid = new SID();
 
-	private SIDBuilder builder;
-
-	public ReSID(EventScheduler context, SIDBuilder builder) {
+	public ReSID(EventScheduler context) {
 		super(context);
-		this.builder = builder;
 		reset((byte) 0);
 	}
 
@@ -97,7 +93,6 @@ public class ReSID extends SIDEmu {
 		clocksSinceLastAccess();
 		sid.reset();
 		sid.write(0x18, volume);
-		builder.reset(context);
 	}
 
 	@Override

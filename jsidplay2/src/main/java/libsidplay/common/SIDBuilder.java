@@ -17,18 +17,52 @@ package libsidplay.common;
 
 import sidplay.ini.intf.IAudioSection;
 
-
 /**
  * @author Ken Händel
  * 
- *         Inherit this class to create a new SID emulations for libsidplay2.
+ *         Implement this class to create a new SID emulations for libsidplay2.
  */
-public abstract class SIDBuilder {
-	public void start() {};
-	public void reset(EventScheduler context) {}
-	public abstract SIDEmu lock(EventScheduler context, SIDEmu device, ChipModel model);
-	public abstract void unlock(SIDEmu device);
-	public abstract void setBalance(int i, IAudioSection audio);
-	public abstract void setMixerVolume(int sidNum, IAudioSection audio);
-	public abstract int getNumDevices();
+public interface SIDBuilder {
+	/**
+	 * Create a new SID chip emulation.
+	 * 
+	 * @return emulated SID chip
+	 */
+	SIDEmu lock(EventScheduler context, SIDEmu device, ChipModel model);
+
+	/**
+	 * Destroy SID chip emulation.
+	 */
+	void unlock(SIDEmu device);
+
+	/**
+	 * @return current number of devices.
+	 */
+	int getNumDevices();
+
+	/**
+	 * Timer start reached, audio output should be processed.
+	 */
+	void start(EventScheduler context);
+
+	/**
+	 * Volume of the SID chip
+	 * 
+	 * @param sidNum
+	 *            SID chip number
+	 * @param audio
+	 *            0(-6db)..12(+6db)
+	 */
+	void setVolume(int sidNum, IAudioSection audio);
+
+	/**
+	 * Panning feature: spreading of the SID chip sound signal to the two stereo
+	 * channels
+	 * 
+	 * @param sidNum
+	 *            SID chip number
+	 * @param audio
+	 *            0(left speaker)..0.5(centered)..1(right speaker)
+	 */
+	void setBalance(int sidNum, IAudioSection audio);
 }

@@ -16,7 +16,7 @@ import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
 
-public abstract class ReSIDBuilderBase extends SIDBuilder {
+public abstract class ReSIDBuilderBase implements SIDBuilder {
 	public class MixerEvent extends Event {
 		/** Random source for triangular dithering */
 		private final Random RANDOM = new Random();
@@ -24,18 +24,16 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 		private int oldRandomValue;
 
 		private final int[] volume = new int[] { 1024, 1024, 1024 };
-		private final float[] positionL = new float[] { 1, 0, 0 };
-		private final float[] positionR = new float[] { 0, 1, 1 };
+		private final float[] positionL = new float[] { 1, 0, .5f };
+		private final float[] positionR = new float[] { 0, 1, .5f };
 
 		private transient final float[] balancedVolumeL = new float[] { 1024,
-				0, 0 };
+				0, 512 };
 		private transient final float[] balancedVolumeR = new float[] { 0,
-				1024, 1024 };
-
-		private EventScheduler context;
+				1024, 512 };
 
 		private void setVolume(int i, float v) {
-			this.volume[i] = (int) (v * 1024f);
+			this.volume[i] = (int) (v * 1024);
 			updateFactor();
 		}
 
@@ -118,9 +116,6 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 			soundBuffer.putShort((short) value);
 		}
 
-		public void setContext(EventScheduler env) {
-			this.context = env;
-		}
 	}
 
 	/** Current audio configuration */
@@ -142,8 +137,7 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 	/** Mixing algorithm */
 	protected final MixerEvent mixerEvent = new MixerEvent();
 
-	protected final int[] volume = new int[] { 1024, 1024, 1024 };
-	protected final float[] balance = new float[] { 0, 1, 1 };
+	private EventScheduler context;
 
 	public ReSIDBuilderBase(IConfig config, AudioConfig audioConfig,
 			CPUClock cpuClock, AudioDriver audio, SidTune tune) {
@@ -153,23 +147,19 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 		switchToNullDriver(tune);
 	}
 
-	public void start() {
-		switchToAudioDriver();
-	}
-
-	@Override
-	public void reset(final EventScheduler context) {
+	public void start(final EventScheduler context) {
+		this.context = context;
 		/*
 		 * No matter how many chips are in use, mixerEvent is singleton with
 		 * respect to them. Only one will be scheduled. This is a bit dirty,
 		 * though.
 		 */
 		context.cancel(mixerEvent);
-		mixerEvent.setContext(context);
 		buffers = new int[sids.size()][];
 		channels = audioConfig.getChannels();
 		soundBuffer = realDriver.buffer();
 		context.schedule(mixerEvent, 0, Event.Phase.PHI2);
+		switchToAudioDriver();
 	}
 
 	public int getNumDevices() {
@@ -204,7 +194,7 @@ public abstract class ReSIDBuilderBase extends SIDBuilder {
 		sids.remove(sid);
 	}
 
-	public void setMixerVolume(int num, IAudioSection audio) {
+	public void setVolume(int num, IAudioSection audio) {
 		float volumeInDB;
 		switch (num) {
 		case 0:

@@ -153,7 +153,7 @@ public class EmulationSettings extends C64Window {
 					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
 					util.getConfig().getAudio().setMainVolume(volumeDb);
 					util.getPlayer().configureSIDBuilder(
-							(b) -> b.setMixerVolume(0, util.getConfig()
+							(b) -> b.setVolume(0, util.getConfig()
 									.getAudio()));
 				});
 		secondVolume.setValue(util.getConfig().getAudio().getSecondVolume()
@@ -163,7 +163,7 @@ public class EmulationSettings extends C64Window {
 					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
 					util.getConfig().getAudio().setSecondVolume(volumeDb);
 					util.getPlayer().configureSIDBuilder(
-							(b) -> b.setMixerVolume(1, util.getConfig()
+							(b) -> b.setVolume(1, util.getConfig()
 									.getAudio()));
 				});
 		thirdVolume.setValue(util.getConfig().getAudio().getThirdVolume()
@@ -173,7 +173,7 @@ public class EmulationSettings extends C64Window {
 					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
 					util.getConfig().getAudio().setThirdVolume(volumeDb);
 					util.getPlayer().configureSIDBuilder(
-							(b) -> b.setMixerVolume(2, util.getConfig()
+							(b) -> b.setVolume(2, util.getConfig()
 									.getAudio()));
 				});
 
