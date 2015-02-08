@@ -27,11 +27,13 @@
     <string name="HVSCEntry.speed">Speed</string>
     <string name="HVSCEntry.sidModel1">SID model 1</string>
     <string name="HVSCEntry.sidModel2">SID model 2</string>
+    <string name="HVSCEntry.sidModel3">SID model 3</string>
     <string name="HVSCEntry.compatibility">Compatibility</string>
     <string name="HVSCEntry.tuneLength">Tune length (s)</string>
     <string name="HVSCEntry.audio">Audio</string>
     <string name="HVSCEntry.sidChipBase1">SID chip base 1</string>
     <string name="HVSCEntry.sidChipBase2">SID chip base 2</string>
+    <string name="HVSCEntry.sidChipBase3">SID chip base 3</string>
     <string name="HVSCEntry.driverAddress">Driver Address</string>
     <string name="HVSCEntry.loadAddress">Load Address</string>
     <string name="HVSCEntry.loadLength">Load Length</string>
