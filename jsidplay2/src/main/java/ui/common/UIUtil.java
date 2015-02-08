@@ -15,12 +15,12 @@ import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import libsidplay.Player;
-import ui.JSIDPlay2Main;
+import ui.JSidPlay2Main;
 import ui.entities.config.Configuration;
 
 public class UIUtil {
 
-	private static final Image PLAYED_ICON = new Image(JSIDPlay2Main.class
+	private static final Image PLAYED_ICON = new Image(JSidPlay2Main.class
 			.getResource("icons/play.png").toString());
 
 	private C64Window window;

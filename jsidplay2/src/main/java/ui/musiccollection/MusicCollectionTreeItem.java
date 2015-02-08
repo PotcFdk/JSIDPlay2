@@ -14,16 +14,16 @@ import javafx.scene.image.ImageView;
 import libsidplay.Player;
 import libsidutils.PathUtils;
 import libsidutils.STIL.STILEntry;
-import ui.JSIDPlay2Main;
+import ui.JSidPlay2Main;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.TuneFileFilter;
 
 public class MusicCollectionTreeItem extends TreeItem<File> {
 
-	private static final Image stilIcon = new Image(JSIDPlay2Main.class
+	private static final Image stilIcon = new Image(JSidPlay2Main.class
 			.getResource("icons/stil.png").toString());
 
-	private static final Image noStilIcon = new Image(JSIDPlay2Main.class
+	private static final Image noStilIcon = new Image(JSidPlay2Main.class
 			.getResource("icons/stil_no.png").toString());
 
 	private final FileFilter fFileFilter = new TuneFileFilter();

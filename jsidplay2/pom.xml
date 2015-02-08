@@ -18,7 +18,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<debug>false</debug>
 		<codebase>${project.url}</codebase>
-		<javafx.main.class>ui.JSIDPlay2Main</javafx.main.class>
+		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
 		<application.title>JSIDPlay2</application.title>
@@ -242,7 +242,7 @@
 							<archive>
 								<manifest>
 									<addClasspath>true</addClasspath>
-									<mainClass>ui.JSIDPlay2Main</mainClass>
+									<mainClass>ui.JSidPlay2Main</mainClass>
 								</manifest>
 								<manifestEntries>
 									<url>${project.url}</url>
@@ -538,7 +538,7 @@
 								<windowTitle>Error</windowTitle>
 							</singleInstance>
 							<classPath>
-								<mainClass>ui.JSIDPlay2Main</mainClass>
+								<mainClass>ui.JSidPlay2Main</mainClass>
 								<jarLocation>.</jarLocation>
 								<addDependencies>true</addDependencies>
 							</classPath>

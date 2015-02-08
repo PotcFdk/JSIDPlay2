@@ -10,7 +10,7 @@ import libsidplay.common.Event;
 import org.junit.Before;
 import org.loadui.testfx.utils.FXTestUtils;
 
-import ui.JSIDPlay2Main;
+import ui.JSidPlay2Main;
 import ui.JSidPlay2;
 import ui.entities.config.Configuration;
 
@@ -24,8 +24,8 @@ public class JSIDPlay2Test extends GuiTest {
 
 	@Before
 	public void setup() {
-		config = JSIDPlay2Main.getInstance().getUtil().getConfig();
-		player = JSIDPlay2Main.getInstance().getUtil().getPlayer();
+		config = JSidPlay2Main.getInstance().getUtil().getConfig();
+		player = JSidPlay2Main.getInstance().getUtil().getPlayer();
 		player.setMenuHook((player) -> {
 		});
 
@@ -65,11 +65,11 @@ public class JSIDPlay2Test extends GuiTest {
 
 	@Override
 	protected Stage launchApp() {
-		FXTestUtils.launchApp(JSIDPlay2Main.class);
-		while (JSIDPlay2Main.getInstance() == null) {
+		FXTestUtils.launchApp(JSidPlay2Main.class);
+		while (JSidPlay2Main.getInstance() == null) {
 			sleep(1000);
 		}
-		final JSidPlay2 instance = JSIDPlay2Main.getInstance();
+		final JSidPlay2 instance = JSidPlay2Main.getInstance();
 		instance.getStage().setOnCloseRequest((evt) -> evt.consume());
 		return instance.getStage();
 	}

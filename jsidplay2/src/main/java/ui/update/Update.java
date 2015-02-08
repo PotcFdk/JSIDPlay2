@@ -11,7 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import libsidplay.Player;
-import ui.JSIDPlay2Main;
+import ui.JSidPlay2Main;
 import ui.common.C64Window;
 
 public class Update extends C64Window {
@@ -31,7 +31,7 @@ public class Update extends C64Window {
 		float currentVersion = Integer.MAX_VALUE;
 		try {
 			Properties currentProperties = new Properties();
-			URL resource = JSIDPlay2Main.class
+			URL resource = JSidPlay2Main.class
 					.getResource("/META-INF/maven/jsidplay2/jsidplay2/pom.properties");
 			currentProperties.load(resource.openConnection().getInputStream());
 			currentVersion = Float.parseFloat(currentProperties

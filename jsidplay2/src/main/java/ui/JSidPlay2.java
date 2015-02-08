@@ -117,7 +117,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private static String DATE = "unknown";
 	static {
 		try {
-			URL us = JSIDPlay2Main.class.getResource("/"
+			URL us = JSidPlay2Main.class.getResource("/"
 					+ JSidPlay2.class.getName().replace('.', '/') + ".class");
 			Date date = new Date(us.openConnection().getLastModified());
 			DATE = DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);

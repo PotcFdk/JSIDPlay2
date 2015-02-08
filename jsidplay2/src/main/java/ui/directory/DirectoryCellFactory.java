@@ -2,7 +2,7 @@ package ui.directory;
 
 import java.io.InputStream;
 
-import ui.JSIDPlay2Main;
+import ui.JSidPlay2Main;
 
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -21,7 +21,7 @@ public class DirectoryCellFactory
 
 	protected Font c64Font;
 	{
-		InputStream fontStream = JSIDPlay2Main.class
+		InputStream fontStream = JSidPlay2Main.class
 				.getResourceAsStream("fonts/C64_Elite_Mono_v1.0-STYLE.ttf");
 		c64Font = Font.loadFont(fontStream, 10);
 	}

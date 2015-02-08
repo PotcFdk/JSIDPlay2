@@ -8,7 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 import libsidplay.Player;
-import ui.JSIDPlay2Main;
+import ui.JSidPlay2Main;
 import ui.common.C64Window;
 
 public class About extends C64Window {
@@ -16,7 +16,7 @@ public class About extends C64Window {
 	static {
 		properties.setProperty("version", "(beta)");
 		try {
-			URL resource = JSIDPlay2Main.class
+			URL resource = JSidPlay2Main.class
 					.getResource("/META-INF/maven/jsidplay2/jsidplay2/pom.properties");
 			properties.load(resource.openConnection().getInputStream());
 		} catch (NullPointerException | IOException e) {

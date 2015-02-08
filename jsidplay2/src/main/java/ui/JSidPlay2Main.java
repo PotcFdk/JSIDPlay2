@@ -33,12 +33,8 @@ import ui.entities.config.service.ConfigService;
  * 
  *         SID Player main class
  */
-public class JSIDPlay2Main extends Application {
+public class JSidPlay2Main extends Application {
 
-	/**
-	 * Language dependent messages resource.
-	 */
-	private static final String JSIDPLAY2_MAIN_PROPERTIES = "ui.JSidPlay2Main";
 	/**
 	 * Language dependent message.
 	 */
@@ -180,8 +176,8 @@ public class JSIDPlay2Main extends Application {
 	 * @return the players configuration to be used
 	 */
 	private Configuration getConfiguration() {
-		ResourceBundle bundle = ResourceBundle
-				.getBundle(JSIDPLAY2_MAIN_PROPERTIES);
+		ResourceBundle bundle = ResourceBundle.getBundle(JSidPlay2Main.class
+				.getName());
 		try {
 			em = Persistence.createEntityManagerFactory(
 					PersistenceProperties.CONFIG_DS,
@@ -199,7 +195,8 @@ public class JSIDPlay2Main extends Application {
 		} catch (Throwable e) {
 			// fatal database error?
 			AlertDialog dialog = new AlertDialog(player);
-			dialog.getStage().setTitle(bundle.getString("IMPORT_CONFIGURATION_FAILURE"));
+			dialog.getStage().setTitle(
+					bundle.getString("IMPORT_CONFIGURATION_FAILURE"));
 			dialog.setText(e.getMessage()
 					+ "\n"
 					+ String.format(bundle.getString(CONFIGURATION_ERROR),

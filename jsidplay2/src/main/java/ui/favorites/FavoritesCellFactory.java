@@ -8,16 +8,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 import libsidplay.Player;
-import ui.JSIDPlay2Main;
+import ui.JSidPlay2Main;
 import ui.entities.collection.HVSCEntry;
 
 public class FavoritesCellFactory implements
 		Callback<TableColumn<HVSCEntry, ?>, TableCell<HVSCEntry, ?>> {
 
-	private static final Image STIL_ICON = new Image(JSIDPlay2Main.class
+	private static final Image STIL_ICON = new Image(JSidPlay2Main.class
 			.getResource("icons/stil.png").toString());
 
-	private static final Image NO_STIL_ICON = new Image(JSIDPlay2Main.class
+	private static final Image NO_STIL_ICON = new Image(JSidPlay2Main.class
 			.getResource("icons/stil_no.png").toString());
 
 	private static final String CURRENTLY_PLAYED_FILE_ROW = "currentlyPlayedRow";
