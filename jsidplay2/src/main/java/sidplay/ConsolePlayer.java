@@ -83,7 +83,7 @@ public class ConsolePlayer {
 	@Parameter(names = { "--startSong", "-o" }, descriptionKey = "START_SONG")
 	private Integer song = null;
 
-	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP")
+	@Parameter(names = { "--loop", "-l" }, descriptionKey = "DEFAULT_LOOP")
 	private Boolean loop = Boolean.FALSE;
 
 	@Parameter(names = { "--single", "-s" }, descriptionKey = "SINGLE")

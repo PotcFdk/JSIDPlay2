@@ -72,7 +72,6 @@ import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
 import sidplay.audio.RecordingFilenameProvider;
 import sidplay.ini.IniReader;
-import sidplay.ini.intf.ISidPlay2Section;
 import ui.about.About;
 import ui.asm.Asm;
 import ui.common.C64Window;
@@ -1042,7 +1041,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void showVolume() {
-		ISidPlay2Section section = util.getConfig().getSidplay2();
+		SidPlay2Section section = util.getConfig().getSidplay2();
 		int x = section.getFrameX() + section.getFrameWidth() / 2;
 		try {
 			Runtime.getRuntime().exec("sndvol -f " + x);

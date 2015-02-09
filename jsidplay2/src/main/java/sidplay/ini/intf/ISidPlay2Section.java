@@ -1,7 +1,12 @@
 package sidplay.ini.intf;
 
-
 public interface ISidPlay2Section {
+
+	public static final boolean DEFAULT_ENABLE_DATABASE = true;
+	public static final int DEFAULT_PLAY_LENGTH = 3 * 60;
+	public static final boolean DEFAULT_LOOP = false;
+	public static final boolean DEFAULT_SINGLE_TRACK = false;
+	public static final boolean DEFAULT_ENABLE_PROXY = false;
 
 	/**
 	 * Get INI file version.
@@ -53,66 +58,6 @@ public interface ISidPlay2Section {
 	public void setLoop(boolean loop);
 
 	/**
-	 * Getter of the HVMEC collection directory.
-	 * 
-	 * @return the HVMEC collection directory
-	 */
-	public String getHVMEC();
-
-	/**
-	 * Setter of the HVMEC directory.
-	 * 
-	 * @param hvmec
-	 *            the HVMEC directory
-	 */
-	public void setHVMEC(String hvmec);
-
-	/**
-	 * Getter of the CGSC collection directory.
-	 * 
-	 * @return the CGSC collection directory
-	 */
-	public String getDemos();
-
-	/**
-	 * Setter of the Demos directory.
-	 * 
-	 * @param demos
-	 *            the Demos directory
-	 */
-	public void setDemos(String demos);
-
-	/**
-	 * Getter of the Mags directory.
-	 * 
-	 * @return the Mags directory
-	 */
-	public String getMags();
-
-	/**
-	 * Setter of the Mags directory.
-	 * 
-	 * @param mags
-	 *            the Mags directory
-	 */
-	public void setMags(String mags);
-
-	/**
-	 * Getter of the CGSC collection directory.
-	 * 
-	 * @return the CGSC collection directory
-	 */
-	public String getCgsc();
-
-	/**
-	 * Setter of the CGSC collection directory.
-	 * 
-	 * @param cgsc
-	 *            the CGSC collection directory
-	 */
-	public void setCgsc(String cgsc);
-
-	/**
 	 * Getter of the HVSC collection directory.
 	 * 
 	 * @return the HVSC collection directory
@@ -141,51 +86,6 @@ public interface ISidPlay2Section {
 	 *            play a single song per tune
 	 */
 	public void setSingle(boolean singleSong);
-
-	/**
-	 * Do we enable proxy for SOASC downloads?
-	 * 
-	 * @return enable proxy for SOASC downloads
-	 */
-	public boolean isEnableProxy();
-
-	/**
-	 * Setter to enable proxy for SOASC downloads.
-	 * 
-	 * @param enable
-	 *            enable proxy for SOASC downloads
-	 */
-	public void setEnableProxy(boolean enable);
-
-	/**
-	 * Getter of the proxy hostname for SOASC downloads.
-	 * 
-	 * @return the proxy hostname for SOASC downloads
-	 */
-	public String getProxyHostname();
-
-	/**
-	 * Setter of the proxy hostname for SOASC downloads.
-	 * 
-	 * @param hostname
-	 *            the proxy hostname for SOASC downloads
-	 */
-	public void setProxyHostname(String hostname);
-
-	/**
-	 * Getter of the proxy port for SOASC downloads.
-	 * 
-	 * @return the proxy port for SOASC downloads
-	 */
-	public int getProxyPort();
-
-	/**
-	 * Setter of the proxy port for SOASC downloads.
-	 * 
-	 * @param port
-	 *            the proxy port for SOASC downloads
-	 */
-	public void setProxyPort(int port);
 
 	/**
 	 * Getter of the last accessed directory in the file browser.
@@ -218,65 +118,5 @@ public interface ISidPlay2Section {
 	 *            the temporary directory for JSIDPlay2
 	 */
 	public void setTmpDir(String path);
-
-	/**
-	 * Getter of the application window X position.
-	 * 
-	 * @return the application window X position
-	 */
-	public int getFrameX();
-
-	/**
-	 * Setter of the application window X position.
-	 * 
-	 * @param x
-	 *            application window X position
-	 */
-	public void setFrameX(int x);
-
-	/**
-	 * Getter of the application window Y position.
-	 * 
-	 * @return the application window Y position
-	 */
-	public int getFrameY();
-
-	/**
-	 * Setter of the application window Y position.
-	 * 
-	 * @param y
-	 *            application window Y position
-	 */
-	public void setFrameY(int y);
-
-	/**
-	 * Getter of the application window width.
-	 * 
-	 * @return the application window width
-	 */
-	public int getFrameWidth();
-
-	/**
-	 * Setter of the application window width.
-	 * 
-	 * @param width
-	 *            application window width
-	 */
-	public void setFrameWidth(int width);
-
-	/**
-	 * Getter of the application window height.
-	 * 
-	 * @return the application window height
-	 */
-	public int getFrameHeight();
-
-	/**
-	 * Setter of the application window height.
-	 * 
-	 * @param height
-	 *            application window height
-	 */
-	public void setFrameHeight(int height);
 
 }

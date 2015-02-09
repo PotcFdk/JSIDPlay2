@@ -19,6 +19,13 @@ import de.schlichtherle.truezip.file.TFile;
 @Embeddable
 public class SidPlay2Section implements ISidPlay2Section {
 
+	public static final int DEFAULT_PROXY_PORT = 80;
+	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
+	public static final int DEFAULT_FRAME_WIDTH = 1024;
+	public static final int DEFAULT_FRAME_HEIGHT = 830;
+	public static final boolean DEFAULT_FULL_SCREEN = false;
+	public static final float DEFAULT_VIDEO_SCALING = 2.f;
+	
 	private int version;
 
 	@Override
@@ -31,7 +38,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.version = version;
 	}
 
-	private BooleanProperty enableDatabaseProperty = new SimpleBooleanProperty(true);
+	private BooleanProperty enableDatabaseProperty = new SimpleBooleanProperty(
+			DEFAULT_ENABLE_DATABASE);
 
 	@Override
 	public boolean isEnableDatabase() {
@@ -47,7 +55,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return enableDatabaseProperty;
 	}
 
-	private IntegerProperty defaultPlayLengthProperty = new SimpleIntegerProperty(3 * 60);
+	private IntegerProperty defaultPlayLengthProperty = new SimpleIntegerProperty(
+			DEFAULT_PLAY_LENGTH);
 
 	@Override
 	public int getDefaultPlayLength() {
@@ -63,7 +72,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return defaultPlayLengthProperty;
 	}
 
-	private PlaybackType playbackType = PlaybackType.NORMAL;
+	private PlaybackType playbackType = DEFAULT_PLAYBACK_TYPE;
 
 	@Enumerated(EnumType.STRING)
 	public PlaybackType getPlaybackType() {
@@ -74,7 +83,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.playbackType = playbackType;
 	}
 
-	private boolean loop;
+	private boolean loop = DEFAULT_LOOP;
 
 	public boolean isLoop() {
 		return loop;
@@ -84,50 +93,59 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.loop = loop;
 	}
 
-	private String HVMEC;
+	private BooleanProperty singleProperty = new SimpleBooleanProperty(
+			DEFAULT_SINGLE_TRACK);
 
 	@Override
+	public boolean isSingle() {
+		return singleProperty.get();
+	}
+
+	@Override
+	public void setSingle(boolean isSingle) {
+		singleProperty.set(isSingle);
+	}
+
+	public BooleanProperty singleProperty() {
+		return singleProperty;
+	}
+
+	private String HVMEC;
+
 	public String getHVMEC() {
 		return HVMEC;
 	}
 
-	@Override
 	public void setHVMEC(String hVMEC) {
 		HVMEC = hVMEC;
 	}
 
 	private String demos;
 
-	@Override
 	public String getDemos() {
 		return demos;
 	}
 
-	@Override
 	public void setDemos(String demos) {
 		this.demos = demos;
 	}
 
 	private String mags;
 
-	@Override
 	public String getMags() {
 		return mags;
 	}
 
-	@Override
 	public void setMags(String mags) {
 		this.mags = mags;
 	}
 
 	private String cgsc;
 
-	@Override
 	public String getCgsc() {
 		return cgsc;
 	}
 
-	@Override
 	public void setCgsc(String cgsc) {
 		this.cgsc = cgsc;
 		getCgscFile();
@@ -187,54 +205,32 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return gameBase64File;
 	}
 
-	private BooleanProperty singleProperty = new SimpleBooleanProperty();
+	private boolean enableProxy = DEFAULT_ENABLE_PROXY;
 
-	@Override
-	public boolean isSingle() {
-		return singleProperty.get();
-	}
-
-	@Override
-	public void setSingle(boolean isSingle) {
-		singleProperty.set(isSingle);
-	}
-
-	public BooleanProperty singleProperty() {
-		return singleProperty;
-	}
-
-	private boolean enableProxy;
-
-	@Override
 	public boolean isEnableProxy() {
 		return enableProxy;
 	}
 
-	@Override
 	public void setEnableProxy(boolean isEnableProxy) {
 		this.enableProxy = isEnableProxy;
 	}
 
 	private String proxyHostname;
 
-	@Override
 	public String getProxyHostname() {
 		return proxyHostname;
 	}
 
-	@Override
 	public void setProxyHostname(String proxyHostname) {
 		this.proxyHostname = proxyHostname;
 	}
 
-	private int proxyPort = 80;
+	private int proxyPort = DEFAULT_PROXY_PORT;
 
-	@Override
 	public int getProxyPort() {
 		return proxyPort;
 	}
 
-	@Override
 	public void setProxyPort(int proxyPort) {
 		this.proxyPort = proxyPort;
 	}
@@ -274,53 +270,45 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private int frameX;
 
-	@Override
 	public int getFrameX() {
 		return frameX;
 	}
 
-	@Override
 	public void setFrameX(int frameX) {
 		this.frameX = frameX;
 	}
 
 	private int frameY;
 
-	@Override
 	public int getFrameY() {
 		return frameY;
 	}
 
-	@Override
 	public void setFrameY(int frameY) {
 		this.frameY = frameY;
 	}
 
-	private int frameWidth = 1024;
+	private int frameWidth = DEFAULT_FRAME_WIDTH;
 
-	@Override
 	public int getFrameWidth() {
 		return frameWidth;
 	}
 
-	@Override
 	public void setFrameWidth(int frameWidth) {
 		this.frameWidth = frameWidth;
 	}
 
-	private int frameHeight = 830;
+	private int frameHeight = DEFAULT_FRAME_HEIGHT;
 
-	@Override
 	public int getFrameHeight() {
 		return frameHeight;
 	}
 
-	@Override
 	public void setFrameHeight(int frameHeight) {
 		this.frameHeight = frameHeight;
 	}
 
-	private Boolean fullScreen;
+	private Boolean fullScreen = DEFAULT_FULL_SCREEN;
 
 	public Boolean getFullScreen() {
 		return fullScreen;
@@ -330,7 +318,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.fullScreen = fullScreen;
 	}
 
-	private double videoScaling = 2.0;
+	private double videoScaling = DEFAULT_VIDEO_SCALING;
 
 	public double getVideoScaling() {
 		return videoScaling;
