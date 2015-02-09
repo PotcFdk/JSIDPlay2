@@ -10,8 +10,9 @@ import sidplay.ini.intf.IPrinterSection;
 @Embeddable
 public class PrinterSection implements IPrinterSection {
 
-	private BooleanProperty printerOnProperty = new SimpleBooleanProperty();
-	
+	private BooleanProperty printerOnProperty = new SimpleBooleanProperty(
+			DEFAULT_PRINTER_ON);
+
 	@Override
 	public boolean isPrinterOn() {
 		return printerOnProperty.get();
@@ -25,5 +26,5 @@ public class PrinterSection implements IPrinterSection {
 	public BooleanProperty printerOnProperty() {
 		return printerOnProperty;
 	}
-	
+
 }

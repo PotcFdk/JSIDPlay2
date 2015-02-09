@@ -1,6 +1,7 @@
 package sidplay.ini.intf;
 
 public interface IPrinterSection {
+	public static final boolean DEFAULT_PRINTER_ON=false;
 
 	/**
 	 * Printer turned on?
