@@ -150,7 +150,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final float getMainVolume() {
-		return iniReader.getPropertyFloat("Audio", "MainVolume", 6.0f);
+		return iniReader.getPropertyFloat("Audio", "MainVolume", 0f);
 	}
 
 	/**
@@ -171,7 +171,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public float getSecondVolume() {
-		return iniReader.getPropertyFloat("Audio", "SecondVolume", 6.0f);
+		return iniReader.getPropertyFloat("Audio", "SecondVolume", 0f);
 	}
 
 	/**
@@ -192,7 +192,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public float getThirdVolume() {
-		return iniReader.getPropertyFloat("Audio", "ThirdVolume", 6.0f);
+		return iniReader.getPropertyFloat("Audio", "ThirdVolume", 0f);
 	}
 
 	/**
@@ -228,11 +228,26 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public float getThirdBalance() {
-		return iniReader.getPropertyFloat("Audio", "ThirdBalance", 1f);
+		return iniReader.getPropertyFloat("Audio", "ThirdBalance", .5f);
 	}
 
 	@Override
 	public void setThirdBalance(float balance) {
 		iniReader.setProperty("Audio", "ThirdBalance", balance);
+	}
+
+	/*
+	 * supports 5 ms chunk at 96 kHz
+	 */
+	private int bufferSize = 5000;
+
+	@Override
+	public int getBufferSize() {
+		return bufferSize;
+	}
+
+	@Override
+	public void setBufferSize(int bufferSize) {
+		this.bufferSize = bufferSize;
 	}
 }

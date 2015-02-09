@@ -97,7 +97,7 @@ public class AudioSection implements IAudioSection {
 		this.mp3File = recording;
 	}
 
-	private float mainVolume = 6.0f;
+	private float mainVolume = 0f;
 
 	@Override
 	public float getMainVolume() {
@@ -109,7 +109,7 @@ public class AudioSection implements IAudioSection {
 		this.mainVolume = volume;
 	}
 
-	private float secondVolume = 6.0f;
+	private float secondVolume = 0f;
 
 	@Override
 	public float getSecondVolume() {
@@ -121,7 +121,7 @@ public class AudioSection implements IAudioSection {
 		this.secondVolume = volume;
 	}
 
-	private float thirdVolume = 6.0f;
+	private float thirdVolume = 0f;
 
 	@Override
 	public float getThirdVolume() {
@@ -157,7 +157,7 @@ public class AudioSection implements IAudioSection {
 		this.secondBalance = right;
 	}
 
-	private float thirdBalance = 1f;
+	private float thirdBalance = .5f;
 
 	@Override
 	public float getThirdBalance() {
@@ -169,4 +169,18 @@ public class AudioSection implements IAudioSection {
 		this.thirdBalance = third;
 	}
 
+	/*
+	 * supports 5 ms chunk at 96 kHz
+	 */
+	private int bufferSize = 5000;
+
+	@Override
+	public int getBufferSize() {
+		return bufferSize;
+	}
+
+	@Override
+	public void setBufferSize(int bufferSize) {
+		this.bufferSize = bufferSize;
+	}
 }

@@ -17,8 +17,8 @@ package residfp_builder;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.ReSIDBase;
 import libsidplay.common.ReSIDBuilderBase;
-import libsidplay.common.SIDEmu;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
@@ -26,14 +26,17 @@ import sidplay.ini.intf.IConfig;
 
 public class ReSIDBuilder extends ReSIDBuilderBase {
 
+	private IConfig config;
+
 	public ReSIDBuilder(IConfig config, AudioConfig audioConfig,
 			CPUClock cpuClock, AudioDriver audio, SidTune tune) {
 		super(config, audioConfig, cpuClock, audio, tune);
+		this.config = config;
 	}
 
 	@Override
-	protected SIDEmu createSIDEmu(EventScheduler env) {
-		return new ReSID(env);
+	protected ReSIDBase createSIDEmu(EventScheduler env) {
+		return new ReSID(env, config.getAudio().getBufferSize());
 	}
 
 }

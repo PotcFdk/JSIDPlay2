@@ -70,7 +70,7 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 		public void event() throws InterruptedException {
 			int samples = 0;
 			int numBuffers = 0;
-			for (SIDEmu sid : sids) {
+			for (ReSIDBase sid : sids) {
 				/*
 				 * Clocks the SID to the present moment, if it isn't already.
 				 */
@@ -132,7 +132,7 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 	protected AudioDriver driver, realDriver;
 
 	/** List of SID instances */
-	protected List<SIDEmu> sids = new ArrayList<SIDEmu>();
+	protected List<ReSIDBase> sids = new ArrayList<ReSIDBase>();
 
 	/** Mixing algorithm */
 	protected final MixerEvent mixerEvent = new MixerEvent();
@@ -178,8 +178,8 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 	/**
 	 * Make a new SID of right type
 	 */
-	private SIDEmu lock(final EventScheduler env, final ChipModel model) {
-		final SIDEmu sid = createSIDEmu(env);
+	private ReSIDBase lock(final EventScheduler env, final ChipModel model) {
+		final ReSIDBase sid = createSIDEmu(env);
 		sid.setChipModel(model);
 		sid.setSampling(cpuClock.getCpuFrequency(), audioConfig.getFrameRate(),
 				audioConfig.getSamplingMethod());
@@ -253,6 +253,6 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 		driver = realDriver;
 	}
 
-	protected abstract SIDEmu createSIDEmu(EventScheduler env);
+	protected abstract ReSIDBase createSIDEmu(EventScheduler env);
 
 }

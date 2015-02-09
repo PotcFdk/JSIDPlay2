@@ -20,8 +20,8 @@ import java.util.logging.Logger;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.ReSIDBase;
 import libsidplay.common.ReSIDBuilderBase.MixerEvent;
-import libsidplay.common.SIDEmu;
 import libsidplay.common.SamplingMethod;
 import resid_builder.resid.Filter6581;
 import resid_builder.resid.Filter8580;
@@ -33,7 +33,7 @@ import sidplay.ini.intf.IFilterSection;
 /**
  * ReSID emulation.
  */
-public class ReSID extends SIDEmu {
+public class ReSID extends ReSIDBase {
 	private static final Logger RESID = Logger.getLogger(ReSID.class.getName());
 
 	private final SID sid = new SID();
@@ -46,8 +46,8 @@ public class ReSID extends SIDEmu {
 	 * @param mixerEvent
 	 *            {@link MixerEvent} to use.
 	 */
-	public ReSID(EventScheduler context) {
-		super(context);
+	public ReSID(EventScheduler context, final int bufferSize) {
+		super(context, bufferSize);
 		reset((byte) 0);
 	}
 

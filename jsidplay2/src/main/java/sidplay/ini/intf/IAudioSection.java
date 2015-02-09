@@ -189,4 +189,18 @@ public interface IAudioSection {
 	 */
 	void setThirdBalance(float balance);
 
+	/**
+	 * Getter of the output buffer size.
+	 * 
+	 * @return size of the output buffer
+	 */
+	int getBufferSize();
+
+	/**
+	 * Setter of the output buffer size.
+	 * 
+	 * @param bufferSize
+	 *            output buffer size
+	 */
+	void setBufferSize(int bufferSize);
 }
