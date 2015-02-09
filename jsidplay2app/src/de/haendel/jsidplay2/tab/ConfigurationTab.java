@@ -1,17 +1,19 @@
 package de.haendel.jsidplay2.tab;
 
 import static de.haendel.jsidplay2.config.IConfiguration.DECIMATE;
-import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_DEFAULT_PLAY_LENGTH;
+import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_BUFFER_SIZE;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_DIGI_BOOSTED_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_ENABLE_DATABASE;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_LOOP;
+import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_PLAY_LENGTH;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_RESIDFP_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_RESIDFP_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_SINGLE_SONG;
 import static de.haendel.jsidplay2.config.IConfiguration.MOS6581;
 import static de.haendel.jsidplay2.config.IConfiguration.MOS8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_BUFFER_SIZE;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_MODEL;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_PLAY_LENGTH;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DIGI_BOOSTED_8580;
@@ -112,7 +114,9 @@ public class ConfigurationTab extends TabBase {
 
 		@Override
 		protected void editTextUpdated(String parName, String newValue) {
-			if (PAR_DEFAULT_PLAY_LENGTH.equals(parName)) {
+			if (PAR_BUFFER_SIZE.equals(parName)) {
+				configuration.setBufferSize(newValue);
+			} else if (PAR_DEFAULT_PLAY_LENGTH.equals(parName)) {
 				configuration.setDefaultLength(newValue);
 			}
 		}
@@ -139,7 +143,7 @@ public class ConfigurationTab extends TabBase {
 
 	}
 
-	private EditText defaultLength;
+	private EditText bufferSize, defaultLength;
 	private CheckBox enableDatabase, singleSong, loop, digiBoosted8580;
 	private Spinner emulation, defaultModel;
 
@@ -167,6 +171,7 @@ public class ConfigurationTab extends TabBase {
 				.setIndicator(activity.getString(R.string.tab_cfg))
 				.setContent(R.id.settings));
 
+		bufferSize = (EditText) activity.findViewById(R.id.bufferSize);
 		defaultLength = (EditText) activity.findViewById(R.id.defaultLength);
 		enableDatabase = (CheckBox) activity.findViewById(R.id.enableDatabase);
 		singleSong = (CheckBox) activity.findViewById(R.id.singleSong);
@@ -208,8 +213,10 @@ public class ConfigurationTab extends TabBase {
 		reSIDfpStereoFilter8580txt = (TextView) activity
 				.findViewById(R.id.reSIDfpStereoFilter8580txt);
 
+		ui.setupEditText(bufferSize, PAR_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
+
 		ui.setupEditText(defaultLength, PAR_DEFAULT_PLAY_LENGTH,
-				DEFAULT_DEFAULT_PLAY_LENGTH);
+				DEFAULT_PLAY_LENGTH);
 
 		ui.setupCheckBox(enableDatabase, PAR_ENABLE_DATABASE,
 				DEFAULT_ENABLE_DATABASE);

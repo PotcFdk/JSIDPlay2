@@ -68,6 +68,7 @@ ReSID engine and 6581/8580 emulation:\n  Copyright &#169; 1999-2011 Dag Lem\n
 Source code can be found at:\n
 &#x20;&#x20;http://sourceforge.net/projects/jsidplay2/</string>
     <string name="digiBoosted8580">Digi Boost 8580</string>
+    <string name="bufferSize">Output Buffer Size</string>
     <string name="residEngine">ReSID Engine:</string>
     <string name="tab_connection">Con</string>
     <string name="tab_sids">Sids</string>

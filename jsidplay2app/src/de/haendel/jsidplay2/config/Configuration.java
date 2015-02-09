@@ -249,4 +249,16 @@ public class Configuration implements IConfiguration {
 		this.frequency = frequency;
 	}
 
+	private String bufferSize;
+
+	@Override
+	public String getBufferSize() {
+		return bufferSize;
+	}
+
+	@Override
+	public void setBufferSize(String bufferSize) {
+		this.bufferSize = bufferSize;
+	}
+
 }

@@ -1,6 +1,5 @@
 package de.haendel.impl;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -133,13 +132,10 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			throws InterruptedException, IOException, SidTuneError {
 		Player player = new Player(config);
 		player.setSidDatabase(getSidDatabase(HVSC_ROOT));
-		BufferedOutputStream bufferedStream = new BufferedOutputStream(out,
-				128 << 10);
-		player.setDriverSettings(new DriverSettings(new MP3Stream(
-				bufferedStream), config.getEmulation().getEmulation()));
+		player.setDriverSettings(new DriverSettings(new MP3Stream(out), config
+				.getEmulation().getEmulation()));
 		player.play(SidTune.load(getAbsoluteFile(resource)));
 		player.waitForC64();
-		bufferedStream.flush();
 	}
 
 	private SidDatabase getSidDatabase(String hvscRoot) throws IOException {

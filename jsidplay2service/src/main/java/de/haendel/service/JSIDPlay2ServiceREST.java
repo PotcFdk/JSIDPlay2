@@ -79,6 +79,7 @@ public class JSIDPlay2ServiceREST {
 	// http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/convert/C64Music/DEMOS/0-9/1_45_Tune.sid
 	public Response convert(
 			@PathParam("filePath") String filePath,
+			@QueryParam("bufferSize") int bufferSize,
 			@QueryParam("defaultPlayLength") int defaultPlayLength,
 			@QueryParam("enableDatabase") boolean enableDatabase,
 			@QueryParam("single") boolean single,
@@ -101,6 +102,7 @@ public class JSIDPlay2ServiceREST {
 		cfg.getSidplay2().setEnableDatabase(enableDatabase);
 		cfg.getSidplay2().setSingle(single);
 		cfg.getSidplay2().setLoop(loop);
+		cfg.getAudio().setBufferSize(bufferSize);
 		cfg.getAudio().setSampling(samplingMethod);
 		cfg.getAudio().setFrequency(frequency);
 		cfg.getEmulation().setEmulation(emulation);

@@ -2,6 +2,7 @@ package de.haendel.jsidplay2;
 
 import static android.media.MediaPlayer.MEDIA_ERROR_SERVER_DIED;
 import static android.media.MediaPlayer.MEDIA_ERROR_UNKNOWN;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_BUFFER_SIZE;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_MODEL;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_PLAY_LENGTH;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DIGI_BOOSTED_8580;
@@ -253,6 +254,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 	private URI getURI(IConfiguration configuration, String resource)
 			throws URISyntaxException {
 		StringBuilder query = new StringBuilder();
+		query.append(PAR_BUFFER_SIZE+ "=" + configuration.getBufferSize() + "&");
 		query.append(PAR_EMULATION + "=" + configuration.getEmulation() + "&");
 		query.append(PAR_ENABLE_DATABASE + "="
 				+ configuration.isEnableDatabase() + "&");
