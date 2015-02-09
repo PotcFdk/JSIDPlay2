@@ -29,7 +29,6 @@ import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IConsoleSection;
 import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
-import sidplay.ini.intf.IJoystickSection;
 import sidplay.ini.intf.IPrinterSection;
 import sidplay.ini.intf.ISidPlay2Section;
 
@@ -50,7 +49,6 @@ public class IniConfig implements IConfig {
 	private ISidPlay2Section sidplay2Section;
 	private IC1541Section c1541Section;
 	private IPrinterSection printerSection;
-	private IJoystickSection joystickSection;
 	private IConsoleSection consoleSection;
 	private IAudioSection audioSection;
 	private IEmulationSection emulationSection;
@@ -61,7 +59,6 @@ public class IniConfig implements IConfig {
 		sidplay2Section = new IniSidplay2Section(iniReader);
 		c1541Section = new IniC1541Section(iniReader);
 		printerSection = new IniPrinterSection(iniReader);
-		joystickSection = new IniJoystickSection(iniReader);
 		consoleSection = new IniConsoleSection(iniReader);
 		audioSection = new IniAudioSection(iniReader);
 		emulationSection = new IniEmulationSection(iniReader);
@@ -197,12 +194,6 @@ public class IniConfig implements IConfig {
 		return printerSection;
 	}
 
-	@Override
-	public final IJoystickSection getJoystick() {
-		return joystickSection;
-	}
-
-	@Override
 	public final IConsoleSection getConsole() {
 		return consoleSection;
 	}

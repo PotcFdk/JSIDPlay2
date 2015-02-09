@@ -13,8 +13,6 @@ public interface IConfig {
 
 	IPrinterSection getPrinter();
 
-	IJoystickSection getJoystick();
-
 	IConsoleSection getConsole();
 
 	IAudioSection getAudio();

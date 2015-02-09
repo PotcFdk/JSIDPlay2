@@ -463,7 +463,6 @@ public class Configuration implements IConfig {
 	}
 
 	@Embedded
-	@Override
 	public JoystickSection getJoystick() {
 		return joystick;
 	}

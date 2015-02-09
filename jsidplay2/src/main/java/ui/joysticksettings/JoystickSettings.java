@@ -14,9 +14,9 @@ import libsidplay.Player;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
-import sidplay.ini.intf.IJoystickSection;
 import ui.common.C64Window;
 import ui.common.TypeTextField;
+import ui.entities.config.JoystickSection;
 
 public class JoystickSettings extends C64Window {
 
@@ -76,7 +76,7 @@ public class JoystickSettings extends C64Window {
 
 		devices.addAll(controllers);
 
-		IJoystickSection joystickSettings = util.getConfig().getJoystick();
+		JoystickSection joystickSettings = util.getConfig().getJoystick();
 
 		activateJoy1.setSelected(util.getPlayer().getC64()
 				.isJoystickConnected(0));
