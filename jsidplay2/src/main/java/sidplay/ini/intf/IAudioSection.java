@@ -5,6 +5,18 @@ import sidplay.audio.Audio;
 
 public interface IAudioSection {
 
+	public static final Audio DEFAULT_AUDIO = Audio.SOUNDCARD;
+	public static final int DEFAULT_DEVICE = 0;
+	public static final int DEFAULT_FREQUENCY = 48000;
+	public static final SamplingMethod DEFAULT_SAMPLING = SamplingMethod.DECIMATE;
+	public static final boolean DEFAULT_PLAY_ORIGINAL = false;
+	public static final float DEFAULT_MAIN_VOLUME = 0.f;
+	public static final float DEFAULT_SECOND_VOLUME = 0.f;
+	public static final float DEFAULT_THIRD_VOLUME = 0.f;
+	public static final float DEFAULT_MAIN_BALANCE = 0.f;
+	public static final float DEFAULT_SECOND_BALANCE = 1.f;
+	public static final float DEFAULT_THIRD_BALANCE = .5f;
+
 	/**
 	 * Getter of the audio to be used.
 	 * 
@@ -19,21 +31,6 @@ public interface IAudioSection {
 	 *            audio to be used
 	 */
 	void setAudio(Audio audio);
-
-	/**
-	 * Getter of the SID driver to play SIDs.
-	 * 
-	 * @return SID driver to play SIDs
-	 */
-	String getSidDriver();
-
-	/**
-	 * Setter of the SID driver to play SIDs.
-	 * 
-	 * @param sidDriver
-	 *            SID driver to play SIDs
-	 */
-	void setSidDriver(final String sidDriver);
 
 	int getDevice();
 

@@ -11,7 +11,9 @@ import sidplay.ini.intf.IAudioSection;
 @Embeddable
 public class AudioSection implements IAudioSection {
 
-	private Audio audio = Audio.SOUNDCARD;
+	public static final String DEFAULT_SID_DRIVER = "/libsidplay/sidtune/psiddriver.asm";
+
+	private Audio audio = DEFAULT_AUDIO;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -24,19 +26,17 @@ public class AudioSection implements IAudioSection {
 		this.audio = audio;
 	}
 
-	private String sidDriver = "/libsidplay/sidtune/psiddriver.asm";
-	
-	@Override
+	private String sidDriver = DEFAULT_SID_DRIVER;
+
 	public String getSidDriver() {
 		return sidDriver;
 	}
-	
-	@Override
+
 	public void setSidDriver(final String sidDriver) {
 		this.sidDriver = sidDriver;
 	}
 
-	private int device = 0;
+	private int device = DEFAULT_DEVICE;
 
 	@Override
 	public int getDevice() {
@@ -48,7 +48,7 @@ public class AudioSection implements IAudioSection {
 		this.device = device;
 	}
 
-	private int frequency = 48000;
+	private int frequency = DEFAULT_FREQUENCY;
 
 	@Override
 	public int getFrequency() {
@@ -60,7 +60,7 @@ public class AudioSection implements IAudioSection {
 		this.frequency = freq;
 	}
 
-	private SamplingMethod sampling = SamplingMethod.DECIMATE;
+	private SamplingMethod sampling = DEFAULT_SAMPLING;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -73,7 +73,7 @@ public class AudioSection implements IAudioSection {
 		this.sampling = method;
 	}
 
-	private boolean playOriginal;
+	private boolean playOriginal = DEFAULT_PLAY_ORIGINAL;
 
 	@Override
 	public boolean isPlayOriginal() {
@@ -97,7 +97,7 @@ public class AudioSection implements IAudioSection {
 		this.mp3File = recording;
 	}
 
-	private float mainVolume = 0f;
+	private float mainVolume = DEFAULT_MAIN_VOLUME;
 
 	@Override
 	public float getMainVolume() {
@@ -109,7 +109,7 @@ public class AudioSection implements IAudioSection {
 		this.mainVolume = volume;
 	}
 
-	private float secondVolume = 0f;
+	private float secondVolume = DEFAULT_SECOND_VOLUME;
 
 	@Override
 	public float getSecondVolume() {
@@ -121,7 +121,7 @@ public class AudioSection implements IAudioSection {
 		this.secondVolume = volume;
 	}
 
-	private float thirdVolume = 0f;
+	private float thirdVolume = DEFAULT_THIRD_VOLUME;
 
 	@Override
 	public float getThirdVolume() {
@@ -145,7 +145,7 @@ public class AudioSection implements IAudioSection {
 		this.mainBalance = balance;
 	}
 
-	private float secondBalance = 1f;
+	private float secondBalance = DEFAULT_SECOND_BALANCE;
 
 	@Override
 	public float getSecondBalance() {
@@ -157,7 +157,7 @@ public class AudioSection implements IAudioSection {
 		this.secondBalance = right;
 	}
 
-	private float thirdBalance = .5f;
+	private float thirdBalance = DEFAULT_THIRD_BALANCE;
 
 	@Override
 	public float getThirdBalance() {

@@ -17,7 +17,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public Audio getAudio() {
-		return iniReader.getPropertyEnum("Audio", "Audio", Audio.SOUNDCARD);
+		return iniReader.getPropertyEnum("Audio", "Audio", DEFAULT_AUDIO);
 	}
 
 	@Override
@@ -25,22 +25,9 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 		iniReader.setProperty("Audio", "Audio", audio);
 	}
 
-	protected String sidDriver;
-
-	@Override
-	public String getSidDriver() {
-		return iniReader.getPropertyString("Audio", "SIDDriver",
-				"/libsidplay/sidtune/psiddriver.asm");
-	}
-
-	@Override
-	public void setSidDriver(String sidDriver) {
-		iniReader.setProperty("Audio", "SIDDriver", sidDriver);
-	}
-
 	@Override
 	public int getDevice() {
-		return iniReader.getPropertyInt("Audio", "Device", 0);
+		return iniReader.getPropertyInt("Audio", "Device", DEFAULT_DEVICE);
 	}
 
 	@Override
@@ -55,7 +42,8 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final int getFrequency() {
-		return iniReader.getPropertyInt("Audio", "Frequency", 48000);
+		return iniReader
+				.getPropertyInt("Audio", "Frequency", DEFAULT_FREQUENCY);
 	}
 
 	/**
@@ -76,8 +64,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final SamplingMethod getSampling() {
-		return iniReader.getPropertyEnum("Audio", "Sampling",
-				SamplingMethod.DECIMATE);
+		return iniReader.getPropertyEnum("Audio", "Sampling", DEFAULT_SAMPLING);
 	}
 
 	/**
@@ -94,7 +81,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	/**
 	 * Play recorded (original) or emulated tune.
 	 */
-	protected boolean playOriginal;
+	protected boolean playOriginal = DEFAULT_PLAY_ORIGINAL;
 
 	/**
 	 * Do we play the recording?
@@ -150,7 +137,8 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final float getMainVolume() {
-		return iniReader.getPropertyFloat("Audio", "MainVolume", 0f);
+		return iniReader.getPropertyFloat("Audio", "MainVolume",
+				DEFAULT_MAIN_VOLUME);
 	}
 
 	/**
@@ -171,7 +159,8 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public float getSecondVolume() {
-		return iniReader.getPropertyFloat("Audio", "SecondVolume", 0f);
+		return iniReader.getPropertyFloat("Audio", "SecondVolume",
+				DEFAULT_SECOND_VOLUME);
 	}
 
 	/**
@@ -192,7 +181,8 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public float getThirdVolume() {
-		return iniReader.getPropertyFloat("Audio", "ThirdVolume", 0f);
+		return iniReader.getPropertyFloat("Audio", "ThirdVolume",
+				DEFAULT_THIRD_VOLUME);
 	}
 
 	/**
@@ -208,7 +198,8 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public float getMainBalance() {
-		return iniReader.getPropertyFloat("Audio", "MainBalance", 0f);
+		return iniReader.getPropertyFloat("Audio", "MainBalance",
+				DEFAULT_MAIN_BALANCE);
 	}
 
 	@Override
@@ -218,7 +209,8 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public float getSecondBalance() {
-		return iniReader.getPropertyFloat("Audio", "SecondBalance", 1f);
+		return iniReader.getPropertyFloat("Audio", "SecondBalance",
+				DEFAULT_SECOND_BALANCE);
 	}
 
 	@Override
@@ -228,7 +220,8 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public float getThirdBalance() {
-		return iniReader.getPropertyFloat("Audio", "ThirdBalance", .5f);
+		return iniReader.getPropertyFloat("Audio", "ThirdBalance",
+				DEFAULT_THIRD_BALANCE);
 	}
 
 	@Override
