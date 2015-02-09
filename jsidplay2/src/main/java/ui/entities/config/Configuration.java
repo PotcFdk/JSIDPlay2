@@ -467,18 +467,6 @@ public class Configuration implements IConfig {
 		return joystick;
 	}
 
-	private ConsoleSection console = new ConsoleSection();
-
-	public void setConsole(ConsoleSection console) {
-		this.console = console;
-	}
-
-	@Embedded
-	@Override
-	public ConsoleSection getConsole() {
-		return console;
-	}
-
 	private AudioSection audio = new AudioSection();
 
 	public void setAudio(AudioSection audio) {

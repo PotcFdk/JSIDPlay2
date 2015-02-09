@@ -12,8 +12,8 @@ import libsidplay.player.PlayList;
 import libsidplay.player.Timer;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.AudioConfig;
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IConsoleSection;
+import sidplay.ini.IniConfig;
+import sidplay.ini.IniConsoleSection;
 import sidplay.ini.intf.IEmulationSection;
 
 public class ConsoleIO {
@@ -21,14 +21,14 @@ public class ConsoleIO {
 	private static final ResourceBundle BUNDLE = ResourceBundle
 			.getBundle("sidplay.consoleplayer.ConsolePlayer");
 
-	private IConfig config;
+	private IniConfig config;
 
 	private String filename;
 
 	private boolean v1mute, v2mute, v3mute, v4mute, v5mute, v6mute, v7mute,
 			v8mute, v9mute;
 
-	public ConsoleIO(IConfig config, String filename) {
+	public ConsoleIO(IniConfig config, String filename) {
 		this.config = config;
 		this.filename = filename;
 	}
@@ -38,7 +38,7 @@ public class ConsoleIO {
 		if (quiet) {
 			return;
 		}
-		final IConsoleSection console = config.getConsole();
+		final IniConsoleSection console = config.getConsole();
 
 		final SidTune tune = player.getTune();
 		final PlayList playList = player.getPlayList();
@@ -74,25 +74,25 @@ public class ConsoleIO {
 		printKeyboardControls(out);
 	}
 
-	private void printTopLine(PrintStream out, final IConsoleSection console) {
+	private void printTopLine(PrintStream out, final IniConsoleSection console) {
 		out.printf("%c%s%c\n", console.getTopLeft(),
 				setFill(console.getHorizontal(), 54), console.getTopRight());
 	}
 
-	private void printHeading(PrintStream out, final IConsoleSection console) {
+	private void printHeading(PrintStream out, final IniConsoleSection console) {
 		out.printf("%c%52s  %c\n", console.getVertical(),
 				BUNDLE.getString("HEADING"), console.getVertical());
 	}
 
 	private void printSeparatorLine(PrintStream out,
-			final IConsoleSection console) {
+			final IniConsoleSection console) {
 		out.printf("%c%s%c\n", console.getJunctionLeft(),
 				setFill(console.getHorizontal(), 54),
 				console.getJunctionRight());
 	}
 
 	private void printTitleAutorReleased(PrintStream out,
-			final IConsoleSection console, final SidTune tune) {
+			final IniConsoleSection console, final SidTune tune) {
 		Iterator<String> description = tune.getInfo().getInfoString()
 				.iterator();
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
@@ -107,7 +107,7 @@ public class ConsoleIO {
 	}
 
 	private void printDecription(PrintStream out,
-			final IConsoleSection console, final SidTune tune) {
+			final IniConsoleSection console, final SidTune tune) {
 		for (String description : tune.getInfo().getInfoString()) {
 			out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 					BUNDLE.getString("DESCRIPTION"), description,
@@ -116,7 +116,7 @@ public class ConsoleIO {
 	}
 
 	private void printFileDetails(PrintStream out,
-			final IConsoleSection console, final SidTune tune) {
+			final IniConsoleSection console, final SidTune tune) {
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("FILE_FORMAT"), tune.getInfo().getClass()
 						.getSimpleName(), console.getVertical());
@@ -125,8 +125,9 @@ public class ConsoleIO {
 				console.getVertical());
 	}
 
-	private void printPlaylist(PrintStream out, final IConsoleSection console,
-			final SidTune tune, final PlayList playList) {
+	private void printPlaylist(PrintStream out,
+			final IniConsoleSection console, final SidTune tune,
+			final PlayList playList) {
 		int trackNum = playList.getTrackNum();
 		out.printf("%c %-12s : ", console.getVertical(),
 				BUNDLE.getString("PLAYLIST"));
@@ -143,7 +144,7 @@ public class ConsoleIO {
 	}
 
 	private void printSongSpeedCIAorVBI(PrintStream out,
-			final IConsoleSection console, final SidTune tune,
+			final IniConsoleSection console, final SidTune tune,
 			final PlayList playList) {
 		out.printf("%c %-12s : %37s %c\n", console.getVertical(),
 				BUNDLE.getString("SONG_SPEED"),
@@ -151,7 +152,7 @@ public class ConsoleIO {
 	}
 
 	private void printSongLength(PrintStream out,
-			final IConsoleSection console, final Timer timer) {
+			final IniConsoleSection console, final Timer timer) {
 		out.printf("%c %-12s : ", console.getVertical(),
 				BUNDLE.getString("SONG_LENGTH"));
 		if (timer.getEnd() != 0) {
@@ -165,13 +166,13 @@ public class ConsoleIO {
 	}
 
 	private void printHorizontalBottomLine(PrintStream out,
-			final IConsoleSection console) {
+			final IniConsoleSection console) {
 		out.printf("%c%s%c\n", console.getBottomLeft(),
 				setFill(console.getHorizontal(), 54), console.getBottomRight());
 	}
 
-	private void printAddresses(PrintStream out, final IConsoleSection console,
-			final SidTune tune) {
+	private void printAddresses(PrintStream out,
+			final IniConsoleSection console, final SidTune tune) {
 		StringBuffer line = new StringBuffer();
 		// Display PSID Driver location
 		line.append(BUNDLE.getString("DRIVER_ADDR") + " = ");
@@ -209,7 +210,7 @@ public class ConsoleIO {
 	}
 
 	private void printSIDDetails(PrintStream out,
-			final IConsoleSection console, final SidTune tune) {
+			final IniConsoleSection console, final SidTune tune) {
 		StringBuffer line = new StringBuffer();
 		IEmulationSection emulation = config.getEmulation();
 		line.append(BUNDLE.getString("FILTER")

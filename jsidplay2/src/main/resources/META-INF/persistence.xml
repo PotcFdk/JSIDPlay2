@@ -9,7 +9,6 @@
 		<class>ui.entities.config.AudioSection</class>
 		<class>ui.entities.config.C1541Section</class>
 		<class>ui.entities.config.Configuration</class>
-		<class>ui.entities.config.ConsoleSection</class>
 		<class>ui.entities.config.EmulationSection</class>
 		<class>ui.entities.config.FavoritesSection</class>
 		<class>ui.entities.config.FavoriteColumn</class>

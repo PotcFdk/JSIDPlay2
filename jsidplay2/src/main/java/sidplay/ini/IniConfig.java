@@ -26,7 +26,6 @@ import java.util.List;
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IC1541Section;
 import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IConsoleSection;
 import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
 import sidplay.ini.intf.IPrinterSection;
@@ -49,7 +48,7 @@ public class IniConfig implements IConfig {
 	private ISidPlay2Section sidplay2Section;
 	private IC1541Section c1541Section;
 	private IPrinterSection printerSection;
-	private IConsoleSection consoleSection;
+	private IniConsoleSection consoleSection;
 	private IAudioSection audioSection;
 	private IEmulationSection emulationSection;
 
@@ -194,7 +193,7 @@ public class IniConfig implements IConfig {
 		return printerSection;
 	}
 
-	public final IConsoleSection getConsole() {
+	public final IniConsoleSection getConsole() {
 		return consoleSection;
 	}
 
