@@ -5,6 +5,39 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 
 public interface IEmulationSection {
+	public static final Emulation DEFAULT_EMULATION = Emulation.RESID;
+	public static final CPUClock DEFAULT_CLOCK_SPEED = CPUClock.PAL;
+	public static final ChipModel DEFAULT_SID_MODEL = ChipModel.MOS6581;
+	public static final int DEFAULT_HARD_SID_6581 = 1;
+	public static final int DEFAULT_HARD_SID_8580 = 2;
+	public static final boolean DEFAULT_USE_FILTER = true;
+	public static final boolean DEFAULT_USE_STEREO_FILTER = true;
+	public static final boolean DEFAULT_USE_3SID_FILTER = true;
+	public static final int DEFAULT_SID_NUM_TO_READ = 0;
+	public static final boolean DEFAULT_DIGI_BOOSTED_8580 = false;
+	public static final int DEFAULT_DUAL_SID_BASE = 0xd420;
+	public static final int DEFAULT_THIRD_SID_BASE = 0xd440;
+	public static final boolean DEFAULT_FORCE_STEREO_TUNE = false;
+	public static final boolean DEFAULT_FORCE_3SID_TUNE = false;
+	public static final ChipModel DEFAULT_STEREO_SID_MODEL = ChipModel.MOS6581;
+	public static final ChipModel DEFAULT_3RD_SID_MODEL = ChipModel.MOS6581;
+
+
+	public static final String DEFAULT_FILTER_6581 = "FilterAverage6581";
+	public static final String DEFAULT_STEREO_FILTER_6581 = "FilterAverage6581";
+	public static final String DEFAULT_3SID_FILTER_6581 = "FilterAverage6581";
+
+	public static final String DEFAULT_FILTER_8580 = "FilterAverage8580";
+	public static final String DEFAULT_STEREO_FILTER_8580 = "FilterAverage8580";
+	public static final String DEFAULT_3SID_FILTER_8580 = "FilterAverage8580";
+
+	public static final String DEFAULT_ReSIDfp_FILTER_6581 = "FilterAlankila6581R4AR_3789";
+	public static final String DEFAULT_ReSIDfp_STEREO_FILTER_6581 = "FilterAlankila6581R4AR_3789";
+	public static final String DEFAULT_ReSIDfp_3SID_FILTER_6581 = "FilterAlankila6581R4AR_3789";
+
+	public static final String DEFAULT_ReSIDfp_FILTER_8580 = "FilterTrurl8580R5_3691";
+	public static final String DEFAULT_ReSIDfp_STEREO_FILTER_8580 = "FilterTrurl8580R5_3691";
+	public static final String DEFAULT_ReSIDfp_3SID_FILTER_8580 = "FilterTrurl8580R5_3691";
 
 	/**
 	 * Getter of the emulation to be used.
@@ -117,7 +150,9 @@ public interface IEmulationSection {
 	 * @return filter enabled
 	 */
 	public boolean isFilter();
+
 	public boolean isStereoFilter();
+
 	public boolean isThirdSIDFilter();
 
 	/**
@@ -127,7 +162,9 @@ public interface IEmulationSection {
 	 *            the filter enable
 	 */
 	public void setFilter(boolean enable);
+
 	public void setStereoFilter(boolean enable);
+
 	public void setThirdSIDFilter(boolean enable);
 
 	/**
@@ -136,7 +173,9 @@ public interface IEmulationSection {
 	 * @return the filter setting of MOS6581
 	 */
 	public String getFilter6581();
+
 	public String getStereoFilter6581();
+
 	public String getThirdSIDFilter6581();
 
 	/**
@@ -146,7 +185,9 @@ public interface IEmulationSection {
 	 *            filter setting of MOS6581
 	 */
 	public void setFilter6581(String filterName);
+
 	public void setStereoFilter6581(String filterName);
+
 	public void setThirdSIDFilter6581(String filterName);
 
 	/**
@@ -155,7 +196,9 @@ public interface IEmulationSection {
 	 * @return the filter setting of CSG8580
 	 */
 	public String getFilter8580();
+
 	public String getStereoFilter8580();
+
 	public String getThirdSIDFilter8580();
 
 	/**
@@ -165,7 +208,9 @@ public interface IEmulationSection {
 	 *            filter setting of CSG8680
 	 */
 	public void setFilter8580(String filterName);
+
 	public void setStereoFilter8580(String filterName);
+
 	public void setThirdSIDFilter8580(String filterName);
 
 	/**
@@ -174,7 +219,9 @@ public interface IEmulationSection {
 	 * @return the filter setting of MOS6581 for ReSIDfp
 	 */
 	public String getReSIDfpFilter6581();
+
 	public String getReSIDfpStereoFilter6581();
+
 	public String getReSIDfp3rdSIDFilter6581();
 
 	/**
@@ -184,7 +231,9 @@ public interface IEmulationSection {
 	 *            filter setting of MOS6581 for ReSIDfp
 	 */
 	public void setReSIDfpFilter6581(String filterName);
+
 	public void setReSIDfpStereoFilter6581(String filterName);
+
 	public void setReSIDfp3rdSIDFilter6581(String filterName);
 
 	/**
@@ -193,7 +242,9 @@ public interface IEmulationSection {
 	 * @return the filter setting of CSG8580
 	 */
 	public String getReSIDfpFilter8580();
+
 	public String getReSIDfpStereoFilter8580();
+
 	public String getReSIDfp3rdSIDFilter8580();
 
 	/**
@@ -203,7 +254,9 @@ public interface IEmulationSection {
 	 *            filter setting of CSG8680
 	 */
 	public void setReSIDfpFilter8580(String filterName);
+
 	public void setReSIDfpStereoFilter8580(String filterName);
+
 	public void setReSIDfp3rdSIDFilter8580(String filterName);
 
 	/**
@@ -227,6 +280,7 @@ public interface IEmulationSection {
 	 * @return the stereo SID base address
 	 */
 	public int getDualSidBase();
+
 	public int getThirdSIDBase();
 
 	/**
@@ -236,15 +290,19 @@ public interface IEmulationSection {
 	 *            stereo SID base address
 	 */
 	public void setDualSidBase(int base);
+
 	public void setThirdSIDBase(int base);
 
 	/**
 	 * @return SID chip to read from (FakeStereo)
 	 */
 	public int getSidNumToRead();
+
 	/**
 	 * Setter of the SID chip to read from (FakeStereo).
-	 * @param sidNumToRead SID chip to read from (FakeStereo)
+	 * 
+	 * @param sidNumToRead
+	 *            SID chip to read from (FakeStereo)
 	 */
 	public void setSidNumToRead(int sidNumToRead);
 
@@ -254,6 +312,7 @@ public interface IEmulationSection {
 	 * @return the forced playback stereo mode
 	 */
 	public boolean isForceStereoTune();
+
 	public boolean isForce3SIDTune();
 
 	/**
@@ -263,6 +322,7 @@ public interface IEmulationSection {
 	 *            forced playback stereo mode
 	 */
 	public void setForceStereoTune(boolean force);
+
 	public void setForce3SIDTune(boolean force);
 
 	/**

@@ -12,7 +12,7 @@ import sidplay.ini.intf.IEmulationSection;
 @Embeddable
 public class EmulationSection implements IEmulationSection {
 
-	private Emulation emulation = Emulation.RESID;
+	private Emulation emulation = DEFAULT_EMULATION;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -25,7 +25,7 @@ public class EmulationSection implements IEmulationSection {
 		this.emulation = emulation;
 	}
 
-	private CPUClock defaultClockSpeed = CPUClock.PAL;
+	private CPUClock defaultClockSpeed = DEFAULT_CLOCK_SPEED;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -51,7 +51,7 @@ public class EmulationSection implements IEmulationSection {
 		this.userClockSpeed = userClockSpeed;
 	}
 
-	private ChipModel defaultSidModel = ChipModel.MOS6581;
+	private ChipModel defaultSidModel = DEFAULT_SID_MODEL;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -77,7 +77,7 @@ public class EmulationSection implements IEmulationSection {
 		this.userSidModel = userSidModel;
 	}
 
-	private int hardsid6581 = 1;
+	private int hardsid6581 = DEFAULT_HARD_SID_6581;
 
 	@Override
 	public int getHardsid6581() {
@@ -89,7 +89,7 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid6581 = hardsid6581;
 	}
 
-	private int hardsid8580 = 2;
+	private int hardsid8580 = DEFAULT_HARD_SID_8580;
 
 	@Override
 	public int getHardsid8580() {
@@ -101,7 +101,7 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid8580 = hardsid8580;
 	}
 
-	private boolean filter = true;
+	private boolean filter = DEFAULT_USE_FILTER;
 
 	@Override
 	public boolean isFilter() {
@@ -113,7 +113,7 @@ public class EmulationSection implements IEmulationSection {
 		this.filter = isFilter;
 	}
 
-	private boolean stereoFilter = true;
+	private boolean stereoFilter = DEFAULT_USE_STEREO_FILTER;
 
 	@Override
 	public boolean isStereoFilter() {
@@ -125,7 +125,7 @@ public class EmulationSection implements IEmulationSection {
 		this.stereoFilter = isFilter;
 	}
 
-	private boolean thirdSIDFilter = true;
+	private boolean thirdSIDFilter = DEFAULT_USE_3SID_FILTER;
 
 	@Override
 	public boolean isThirdSIDFilter() {
@@ -137,163 +137,19 @@ public class EmulationSection implements IEmulationSection {
 		this.thirdSIDFilter = isFilter;
 	}
 
-	private String filter6581 = "FilterAverage6581";
-
-	@Override
-	public String getFilter6581() {
-		return filter6581;
-	}
-
-	@Override
-	public void setFilter6581(String filter6581) {
-		this.filter6581 = filter6581;
-	}
-
-	private String stereoFilter6581 = "FilterAverage6581";
-
-	@Override
-	public String getStereoFilter6581() {
-		return stereoFilter6581;
-	}
-
-	@Override
-	public void setStereoFilter6581(String filter6581) {
-		this.stereoFilter6581 = filter6581;
-	}
-
-	private String thirdSIDFilter6581 = "FilterAverage6581";
-
-	@Override
-	public String getThirdSIDFilter6581() {
-		return thirdSIDFilter6581;
-	}
-
-	@Override
-	public void setThirdSIDFilter6581(String filter6581) {
-		this.thirdSIDFilter6581 = filter6581;
-	}
-
-	private String filter8580 = "FilterAverage8580";
-
-	@Override
-	public String getFilter8580() {
-		return filter8580;
-	}
-
-	@Override
-	public void setFilter8580(String filter8580) {
-		this.filter8580 = filter8580;
-	}
-
-	private String stereoFilter8580 = "FilterAverage8580";
-
-	@Override
-	public String getStereoFilter8580() {
-		return stereoFilter8580;
-	}
-
-	@Override
-	public void setStereoFilter8580(String filter8580) {
-		this.stereoFilter8580 = filter8580;
-	}
-
-	private String thirdSIDFilter8580 = "FilterAverage8580";
-
-	@Override
-	public String getThirdSIDFilter8580() {
-		return thirdSIDFilter8580;
-	}
-
-	@Override
-	public void setThirdSIDFilter8580(String filter8580) {
-		this.thirdSIDFilter8580 = filter8580;
-	}
-
-	private String reSIDfpFilter6581 = "FilterAlankila6581R4AR_3789";
-
-	@Override
-	public String getReSIDfpFilter6581() {
-		return reSIDfpFilter6581;
-	}
-
-	@Override
-	public void setReSIDfpFilter6581(String reSIDfpFilter6581) {
-		this.reSIDfpFilter6581 = reSIDfpFilter6581;
-	}
-
-	private String reSIDfpStereoFilter6581 = "FilterAlankila6581R4AR_3789";
-
-	@Override
-	public String getReSIDfpStereoFilter6581() {
-		return reSIDfpStereoFilter6581;
-	}
-
-	@Override
-	public void setReSIDfpStereoFilter6581(String reSIDfpFilter6581) {
-		this.reSIDfpStereoFilter6581 = reSIDfpFilter6581;
-	}
-
-	private String reSIDfp3rdSIDFilter6581 = "FilterAlankila6581R4AR_3789";
-
-	@Override
-	public String getReSIDfp3rdSIDFilter6581() {
-		return reSIDfp3rdSIDFilter6581;
-	}
-
-	@Override
-	public void setReSIDfp3rdSIDFilter6581(String reSIDfpFilter6581) {
-		this.reSIDfp3rdSIDFilter6581 = reSIDfpFilter6581;
-	}
-
-	private String reSIDfpFilter8580 = "FilterTrurl8580R5_3691";
-
-	@Override
-	public String getReSIDfpFilter8580() {
-		return reSIDfpFilter8580;
-	}
-
-	@Override
-	public void setReSIDfpFilter8580(String reSIDfpFilter8580) {
-		this.reSIDfpFilter8580 = reSIDfpFilter8580;
-	}
-
-	private String reSIDfpStereoFilter8580 = "FilterTrurl8580R5_3691";
-
-	@Override
-	public String getReSIDfpStereoFilter8580() {
-		return reSIDfpStereoFilter8580;
-	}
-
-	@Override
-	public void setReSIDfpStereoFilter8580(String reSIDfpFilter8580) {
-		this.reSIDfpStereoFilter8580 = reSIDfpFilter8580;
-	}
-
-	private String reSIDfp3rdSIDFilter8580 = "FilterTrurl8580R5_3691";
-
-	@Override
-	public String getReSIDfp3rdSIDFilter8580() {
-		return reSIDfp3rdSIDFilter8580;
-	}
-
-	@Override
-	public void setReSIDfp3rdSIDFilter8580(String reSIDfpFilter8580) {
-		this.reSIDfp3rdSIDFilter8580 = reSIDfpFilter8580;
-	}
-
-	private int sidNumToRead;
+	private int sidNumToRead = DEFAULT_SID_NUM_TO_READ;
 
 	@Override
 	public int getSidNumToRead() {
 		return sidNumToRead;
 	}
-	
+
 	@Override
 	public void setSidNumToRead(int sidNumToRead) {
 		this.sidNumToRead = sidNumToRead;
 	}
-	
-	private boolean digiBoosted8580;
+
+	private boolean digiBoosted8580 = DEFAULT_DIGI_BOOSTED_8580;
 
 	@Override
 	public boolean isDigiBoosted8580() {
@@ -305,7 +161,7 @@ public class EmulationSection implements IEmulationSection {
 		this.digiBoosted8580 = isDigiBoosted8580;
 	}
 
-	private int dualSidBase = 0xd420;
+	private int dualSidBase = DEFAULT_DUAL_SID_BASE;
 
 	@Override
 	public int getDualSidBase() {
@@ -317,7 +173,7 @@ public class EmulationSection implements IEmulationSection {
 		this.dualSidBase = dualSidBase;
 	}
 
-	private int thirdSIDBase = 0xd440;
+	private int thirdSIDBase = DEFAULT_THIRD_SID_BASE;
 
 	@Override
 	public int getThirdSIDBase() {
@@ -329,7 +185,7 @@ public class EmulationSection implements IEmulationSection {
 		this.thirdSIDBase = dualSidBase;
 	}
 
-	private boolean forceStereoTune;
+	private boolean forceStereoTune = DEFAULT_FORCE_STEREO_TUNE;
 
 	@Override
 	public boolean isForceStereoTune() {
@@ -341,7 +197,7 @@ public class EmulationSection implements IEmulationSection {
 		this.forceStereoTune = isForceStereoTune;
 	}
 
-	private boolean force3SIDTune;
+	private boolean force3SIDTune = DEFAULT_FORCE_3SID_TUNE;
 
 	@Override
 	public boolean isForce3SIDTune() {
@@ -353,7 +209,7 @@ public class EmulationSection implements IEmulationSection {
 		this.force3SIDTune = isForceStereoTune;
 	}
 
-	private ChipModel stereoSidModel;
+	private ChipModel stereoSidModel = DEFAULT_STEREO_SID_MODEL;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -366,7 +222,7 @@ public class EmulationSection implements IEmulationSection {
 		this.stereoSidModel = stereoSidModel;
 	}
 
-	private ChipModel thirdSIDModel;
+	private ChipModel thirdSIDModel = DEFAULT_3RD_SID_MODEL;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -378,4 +234,149 @@ public class EmulationSection implements IEmulationSection {
 	public void setThirdSIDModel(ChipModel stereoSidModel) {
 		this.thirdSIDModel = stereoSidModel;
 	}
+
+	private String filter6581 = DEFAULT_FILTER_6581;
+
+	@Override
+	public String getFilter6581() {
+		return filter6581;
+	}
+
+	@Override
+	public void setFilter6581(String filter6581) {
+		this.filter6581 = filter6581;
+	}
+
+	private String stereoFilter6581 = DEFAULT_STEREO_FILTER_6581;
+
+	@Override
+	public String getStereoFilter6581() {
+		return stereoFilter6581;
+	}
+
+	@Override
+	public void setStereoFilter6581(String filter6581) {
+		this.stereoFilter6581 = filter6581;
+	}
+
+	private String thirdSIDFilter6581 = DEFAULT_3SID_FILTER_6581;
+
+	@Override
+	public String getThirdSIDFilter6581() {
+		return thirdSIDFilter6581;
+	}
+
+	@Override
+	public void setThirdSIDFilter6581(String filter6581) {
+		this.thirdSIDFilter6581 = filter6581;
+	}
+
+	private String filter8580 = DEFAULT_FILTER_8580;
+
+	@Override
+	public String getFilter8580() {
+		return filter8580;
+	}
+
+	@Override
+	public void setFilter8580(String filter8580) {
+		this.filter8580 = filter8580;
+	}
+
+	private String stereoFilter8580 = DEFAULT_STEREO_FILTER_8580;
+
+	@Override
+	public String getStereoFilter8580() {
+		return stereoFilter8580;
+	}
+
+	@Override
+	public void setStereoFilter8580(String filter8580) {
+		this.stereoFilter8580 = filter8580;
+	}
+
+	private String thirdSIDFilter8580 = DEFAULT_3SID_FILTER_8580;
+
+	@Override
+	public String getThirdSIDFilter8580() {
+		return thirdSIDFilter8580;
+	}
+
+	@Override
+	public void setThirdSIDFilter8580(String filter8580) {
+		this.thirdSIDFilter8580 = filter8580;
+	}
+
+	private String reSIDfpFilter6581 = DEFAULT_ReSIDfp_FILTER_6581;
+
+	@Override
+	public String getReSIDfpFilter6581() {
+		return reSIDfpFilter6581;
+	}
+
+	@Override
+	public void setReSIDfpFilter6581(String reSIDfpFilter6581) {
+		this.reSIDfpFilter6581 = reSIDfpFilter6581;
+	}
+
+	private String reSIDfpStereoFilter6581 = DEFAULT_ReSIDfp_STEREO_FILTER_6581;
+
+	@Override
+	public String getReSIDfpStereoFilter6581() {
+		return reSIDfpStereoFilter6581;
+	}
+
+	@Override
+	public void setReSIDfpStereoFilter6581(String reSIDfpFilter6581) {
+		this.reSIDfpStereoFilter6581 = reSIDfpFilter6581;
+	}
+
+	private String reSIDfp3rdSIDFilter6581 = DEFAULT_ReSIDfp_3SID_FILTER_6581;
+
+	@Override
+	public String getReSIDfp3rdSIDFilter6581() {
+		return reSIDfp3rdSIDFilter6581;
+	}
+
+	@Override
+	public void setReSIDfp3rdSIDFilter6581(String reSIDfpFilter6581) {
+		this.reSIDfp3rdSIDFilter6581 = reSIDfpFilter6581;
+	}
+
+	private String reSIDfpFilter8580 = DEFAULT_ReSIDfp_FILTER_8580;
+
+	@Override
+	public String getReSIDfpFilter8580() {
+		return reSIDfpFilter8580;
+	}
+
+	@Override
+	public void setReSIDfpFilter8580(String reSIDfpFilter8580) {
+		this.reSIDfpFilter8580 = reSIDfpFilter8580;
+	}
+
+	private String reSIDfpStereoFilter8580 = DEFAULT_ReSIDfp_STEREO_FILTER_8580;
+
+	@Override
+	public String getReSIDfpStereoFilter8580() {
+		return reSIDfpStereoFilter8580;
+	}
+
+	@Override
+	public void setReSIDfpStereoFilter8580(String reSIDfpFilter8580) {
+		this.reSIDfpStereoFilter8580 = reSIDfpFilter8580;
+	}
+
+	private String reSIDfp3rdSIDFilter8580 = DEFAULT_ReSIDfp_3SID_FILTER_8580;
+
+	@Override
+	public String getReSIDfp3rdSIDFilter8580() {
+		return reSIDfp3rdSIDFilter8580;
+	}
+
+	@Override
+	public void setReSIDfp3rdSIDFilter8580(String reSIDfpFilter8580) {
+		this.reSIDfp3rdSIDFilter8580 = reSIDfpFilter8580;
+	}
+
 }
