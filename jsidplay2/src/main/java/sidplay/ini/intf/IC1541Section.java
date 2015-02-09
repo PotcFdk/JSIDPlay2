@@ -1,9 +1,17 @@
 package sidplay.ini.intf;
 
-import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.C1541.FloppyType;
 
 public interface IC1541Section {
+
+	public static final boolean DEFAULT_DRIVE_ON = false;
+	public static final boolean DEFAULT_PARALLEL_CABLE = false;
+	public static final boolean DEFAULT_RAM_EXPAND_0X2000 = false;
+	public static final boolean DEFAULT_RAM_EXPAND_0X4000 = false;
+	public static final boolean DEFAULT_RAM_EXPAND_0X6000 = false;
+	public static final boolean DEFAULT_RAM_EXPAND_0X8000 = false;
+	public static final boolean DEFAULT_RAM_EXPAND_0XA000 = false;
+	public static final FloppyType DEFAULT_FLOPPY_TYPE = FloppyType.C1541;
 
 	/**
 	 * Drive turned on?
@@ -19,21 +27,6 @@ public interface IC1541Section {
 	 *            drive turned on?
 	 */
 	public void setDriveOn(boolean on);
-
-	/**
-	 * Drive sound turned on?
-	 * 
-	 * @return drive sound turned on?
-	 */
-	public boolean isDriveSoundOn();
-
-	/**
-	 * Turn drive sound on.
-	 * 
-	 * @param on
-	 *            drive sound turned on?
-	 */
-	public void setDriveSoundOn(boolean on);
 
 	/**
 	 * Is the parallel cable plugged in?
@@ -53,13 +46,16 @@ public interface IC1541Section {
 	/**
 	 * Is RAM expansion at some particular slot enabled
 	 *
-	 * @return state
-	 * 			  enabled?
+	 * @return state enabled?
 	 */
 	public boolean isRamExpansionEnabled0();
+
 	public boolean isRamExpansionEnabled1();
+
 	public boolean isRamExpansionEnabled2();
+
 	public boolean isRamExpansionEnabled3();
+
 	public boolean isRamExpansionEnabled4();
 
 	/**
@@ -69,25 +65,14 @@ public interface IC1541Section {
 	 *            enable 8K Ram expansion
 	 */
 	public void setRamExpansionEnabled0(boolean on);
+
 	public void setRamExpansionEnabled1(boolean on);
+
 	public void setRamExpansionEnabled2(boolean on);
+
 	public void setRamExpansionEnabled3(boolean on);
+
 	public void setRamExpansionEnabled4(boolean on);
-
-	/**
-	 * Set 40 tracks disk image extension policy.
-	 * 
-	 * @param policy
-	 *            policy to extend disk image
-	 */
-	public void setExtendImagePolicy(ExtendImagePolicy policy);
-
-	/**
-	 * Get 40 tracks disk image extension policy.
-	 * 
-	 * @return disk image extension policy
-	 */
-	public ExtendImagePolicy getExtendImagePolicy();
 
 	/**
 	 * Set type of floppy.

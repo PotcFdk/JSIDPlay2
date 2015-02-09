@@ -349,7 +349,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		ExtendImagePolicy extendImagePolicy = util.getConfig().getC1541()
 				.getExtendImagePolicy();
 		(extendImagePolicy == ExtendImagePolicy.EXTEND_NEVER ? neverExtend
-				: extendImagePolicy == ExtendImagePolicy.EXTEND_ACCESS ? askExtend
+				: extendImagePolicy == ExtendImagePolicy.EXTEND_ASK ? askExtend
 						: accessExtend).setSelected(true);
 		expand2000.setSelected(util.getConfig().getC1541()
 				.isRamExpansionEnabled0());
@@ -1427,8 +1427,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 						.getPlayer().getTune(), 2);
 				int thirdSidBase = AudioConfig.getSIDAddress(emulation, util
 						.getPlayer().getTune(), 2);
-				line.append(String
-						.format("+%s(at 0x%4x)", thirdModel, thirdSidBase));
+				line.append(String.format("+%s(at 0x%4x)", thirdModel,
+						thirdSidBase));
 			}
 		}
 		line.append(", ");

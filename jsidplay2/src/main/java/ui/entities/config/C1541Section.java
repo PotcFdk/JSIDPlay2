@@ -14,8 +14,12 @@ import sidplay.ini.intf.IC1541Section;
 @Embeddable
 public class C1541Section implements IC1541Section {
 
-	private BooleanProperty driveOnProperty = new SimpleBooleanProperty();
-	
+	public static final boolean DEFAULT_DRIVE_SOUND = false;
+	public static final ExtendImagePolicy DEFAULT_EXTEND_IMAGE_POLICY = ExtendImagePolicy.EXTEND_ACCESS;
+
+	private BooleanProperty driveOnProperty = new SimpleBooleanProperty(
+			DEFAULT_DRIVE_ON);
+
 	@Override
 	public boolean isDriveOn() {
 		return driveOnProperty.get();
@@ -29,15 +33,14 @@ public class C1541Section implements IC1541Section {
 	public BooleanProperty driveOnProperty() {
 		return driveOnProperty;
 	}
-	
-	private BooleanProperty driveSoundOnProperty = new SimpleBooleanProperty();
-	
-	@Override
+
+	private BooleanProperty driveSoundOnProperty = new SimpleBooleanProperty(
+			DEFAULT_DRIVE_SOUND);
+
 	public boolean isDriveSoundOn() {
 		return driveSoundOnProperty.get();
 	}
 
-	@Override
 	public void setDriveSoundOn(boolean driveSoundOn) {
 		driveSoundOnProperty.set(driveSoundOn);
 	}
@@ -45,9 +48,10 @@ public class C1541Section implements IC1541Section {
 	public BooleanProperty driveSoundOnProperty() {
 		return driveSoundOnProperty;
 	}
-	
-	private BooleanProperty parallelCableProperty = new SimpleBooleanProperty();
-	
+
+	private BooleanProperty parallelCableProperty = new SimpleBooleanProperty(
+			DEFAULT_PARALLEL_CABLE);
+
 	@Override
 	public boolean isParallelCable() {
 		return parallelCableProperty.get();
@@ -61,8 +65,8 @@ public class C1541Section implements IC1541Section {
 	public BooleanProperty parallelCableProperty() {
 		return parallelCableProperty;
 	}
-	
-	private boolean ramExpansionEnabled0;
+
+	private boolean ramExpansionEnabled0 = DEFAULT_RAM_EXPAND_0X2000;
 
 	@Override
 	public boolean isRamExpansionEnabled0() {
@@ -74,7 +78,7 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled0 = on;
 	}
 
-	private boolean ramExpansionEnabled1;
+	private boolean ramExpansionEnabled1 = DEFAULT_RAM_EXPAND_0X4000;
 
 	@Override
 	public boolean isRamExpansionEnabled1() {
@@ -86,7 +90,7 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled1 = on;
 	}
 
-	private boolean ramExpansionEnabled2;
+	private boolean ramExpansionEnabled2 = DEFAULT_RAM_EXPAND_0X6000;
 
 	@Override
 	public boolean isRamExpansionEnabled2() {
@@ -98,7 +102,7 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled2 = on;
 	}
 
-	private boolean ramExpansionEnabled3;
+	private boolean ramExpansionEnabled3 = DEFAULT_RAM_EXPAND_0X8000;
 
 	@Override
 	public boolean isRamExpansionEnabled3() {
@@ -110,7 +114,7 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled3 = on;
 	}
 
-	private boolean ramExpansionEnabled4;
+	private boolean ramExpansionEnabled4 = DEFAULT_RAM_EXPAND_0XA000;
 
 	@Override
 	public boolean isRamExpansionEnabled4() {
@@ -122,20 +126,18 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled4 = on;
 	}
 
-	private ExtendImagePolicy extendImagePolicy = ExtendImagePolicy.EXTEND_ACCESS;
+	private ExtendImagePolicy extendImagePolicy = DEFAULT_EXTEND_IMAGE_POLICY;
 
-	@Override
 	public void setExtendImagePolicy(ExtendImagePolicy policy) {
 		this.extendImagePolicy = policy;
 	}
 
-	@Override
 	@Enumerated(EnumType.STRING)
 	public ExtendImagePolicy getExtendImagePolicy() {
 		return this.extendImagePolicy;
 	}
 
-	private FloppyType floppyType = FloppyType.C1541;
+	private FloppyType floppyType = DEFAULT_FLOPPY_TYPE;
 
 	@Override
 	public void setFloppyType(FloppyType floppyType) {
