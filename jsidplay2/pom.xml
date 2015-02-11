@@ -291,8 +291,7 @@
 								<include>libsidplay/common/CPUClock.class</include>
 								<include>libsidplay/common/SamplingMethod.class</include>
 								<include>libsidplay/common/SIDChip.class</include>
-								<include>sidplay/audio/Audio*.class</include>
-								<include>sidplay/audio/JavaSound.class</include>
+								<include>sidplay/audio/*.class</include>
 								<include>sidplay/ini/intf/IAudioSection.class</include>
 								<include>sidplay/ini/intf/IFilterSection.class</include>
 								<include>sidplay/ini/IniSection.class</include>
