@@ -65,6 +65,10 @@ public class AudioGeneratorThread extends Thread {
 
 	private int[] sidPositionR;
 
+	private int[] audioBufferOverflow;
+	private boolean[] audioBufferOverflowState;
+	private int[] audioBufferPos;
+
 	private Mixer.Info mixerInfo;
 	private boolean deviceChanged = false;
 
@@ -165,22 +169,60 @@ public class AudioGeneratorThread extends Thread {
 					int piece = Math.min(cycles, audioLength);
 
 					/* First SID initializes the buffer. */
-					final int audioBufferPos = sid[0].clock(piece, audioBuffer, 0);
-					
-					for (int i = 0; i < audioBufferPos; i++) {
+					audioBufferPos[0] = sid[0].clock(piece, audioBuffer, 0);
+
+					int overflow = 0;
+					if (audioBufferOverflowState[0] == true) {
+						int sample = audioBufferOverflow[0];
+						outAudioBuffer[0 << 1 | 0] = sample * sidPositionL[0] >> 10;
+						outAudioBuffer[0 << 1 | 1] = sample * sidPositionR[0] >> 10;
+						overflow = 1;
+					}
+
+					for (int i = 0; i < audioBufferPos[0]; i++) {
 						int sample = audioBuffer[i] * sidLevel[0] >> 10;
-						outAudioBuffer[i << 1 | 0] = sample * sidPositionL[0] >> 10;
-						outAudioBuffer[i << 1 | 1] = sample * sidPositionR[0] >> 10;
+						outAudioBuffer[(i + overflow) << 1 | 0] = sample * sidPositionL[0] >> 10;
+						outAudioBuffer[(i + overflow) << 1 | 1] = sample * sidPositionR[0] >> 10;
+						audioBufferOverflow[0] = sample;
+					}
+
+					if (overflow == 1) {
+						audioBufferPos[0]++;
 					}
 
 					/* Other SIDs are added to mix. */
 					for (int sidNum = 1; sidNum < sid.length; sidNum++) {
-						sid[sidNum].clock(piece, audioBuffer, 0);
-						for (int i = 0; i < audioBufferPos; i++) {
-							int sample = audioBuffer[i] * sidLevel[sidNum] >> 10;
-							outAudioBuffer[i << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
-							outAudioBuffer[i << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
+						audioBufferPos[sidNum] = sid[sidNum].clock(piece, audioBuffer, 0);
+
+						overflow = 0;
+						if (audioBufferOverflowState[sidNum] == true) {
+							int sample = audioBufferOverflow[sidNum];
+							outAudioBuffer[0 << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
+							outAudioBuffer[0 << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
+							overflow = 1;
 						}
+
+						for (int i = 0; i < audioBufferPos[sidNum]; i++) {
+							int sample = audioBuffer[i] * sidLevel[sidNum] >> 10;
+							outAudioBuffer[(i + overflow) << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
+							outAudioBuffer[(i + overflow) << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
+							audioBufferOverflow[sidNum] = sample;
+						}
+
+						if (overflow == 1) {
+							audioBufferPos[sidNum]++;
+						}
+					}
+
+					int shortestAudioBufferPos = audioBufferPos[0];
+					for (int i = 1; i < sid.length; i++) {
+						if (audioBufferPos[i] < shortestAudioBufferPos) {
+							shortestAudioBufferPos = audioBufferPos[i];
+						}
+					}
+
+					for (int i = 0; i < sid.length; i++) {
+						audioBufferOverflowState[i] = audioBufferPos[i] > shortestAudioBufferPos;
 					}
 
 					/*
@@ -194,7 +236,7 @@ public class AudioGeneratorThread extends Thread {
 
 					/* Generate triangularly dithered stereo audio output. */
 					final ByteBuffer output = driver.buffer();
-					for (int i = 0; i < audioBufferPos; i++) {
+					for (int i = 0; i < shortestAudioBufferPos; i++) {
 						int dithering = triangularDithering();
 						int value;
 
@@ -412,6 +454,10 @@ public class AudioGeneratorThread extends Thread {
 		sidPositionL = new int[sid.length];
 		sidPositionR = new int[sid.length];
 
+		audioBufferOverflow = new int[sid.length];
+		audioBufferOverflowState = new boolean[sid.length];
+		audioBufferPos = new int[sid.length];
+
 		for (int i = 0; i < sid.length; i++) {
 			setLevelAdjustment(i, 0);
 			if (sid.length > 1) {
@@ -419,6 +465,8 @@ public class AudioGeneratorThread extends Thread {
 			} else {
 				setPosition(i, 0);
 			}
+
+			audioBufferOverflowState[i] = false;
 		}
 	}
 
