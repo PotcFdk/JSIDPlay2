@@ -379,4 +379,42 @@ public class EmulationSection implements IEmulationSection {
 		this.reSIDfp3rdSIDFilter8580 = reSIDfpFilter8580;
 	}
 
+	private Emulation userEmulation;
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public Emulation getUserEmulation() {
+		return this.userEmulation;
+	}
+
+	@Override
+	public void setUserEmulation(Emulation userEmulation) {
+		this.userEmulation = userEmulation;
+	}
+
+	private Emulation stereoEmulation;
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public Emulation getStereoEmulation() {
+		return this.stereoEmulation;
+	}
+
+	@Override
+	public void setStereoEmulation(Emulation stereoEmulation) {
+		this.stereoEmulation = stereoEmulation;
+	}
+
+	private Emulation thirdEmulation;
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public Emulation getThirdEmulation() {
+		return this.thirdEmulation;
+	}
+
+	@Override
+	public void setThirdEmulation(Emulation thirdEmulation) {
+		this.thirdEmulation = thirdEmulation;
+	}
 }

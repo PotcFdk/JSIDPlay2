@@ -39,7 +39,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import libsidplay.common.CPUClock;
-import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -80,6 +79,7 @@ import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
 import libsidutils.SidDatabase;
 import libsidutils.disassembler.SimpleDisassembler;
+import resid_builder.ReSIDBuilder;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.NaturalFinishedException;
@@ -851,13 +851,9 @@ public class Player {
 			AudioConfig audioConfig) {
 		switch (driverSettings.getEmulation()) {
 		case RESID:
-			// Dag Lem's ReSID 1.0 beta
-			return new resid_builder.ReSIDBuilder(config, audioConfig,
-					cpuClock, driverSettings.getAudioDriver(), tune);
 		case RESIDFP:
-			// Antti Lankila's ReSID-fp (distortion simulation)
-			return new residfp_builder.ReSIDBuilder(config, audioConfig,
-					cpuClock, driverSettings.getAudioDriver(), tune);
+			return new ReSIDBuilder(config, audioConfig, cpuClock,
+					driverSettings.getAudioDriver(), tune);
 		case HARDSID:
 			return new hardsid_builder.HardSIDBuilder(config);
 		case NONE:
@@ -926,20 +922,17 @@ public class Player {
 	}
 
 	/**
-	 * Change SIDs according to the configured chip models.<BR>
-	 * Note: Depending on the SIDBuilder implementation the SID chip could be
-	 * reused or re-created from scratch.
+	 * Change SIDs according to the configured emulation, chip models.
 	 */
 	public final void updateSIDs() {
 		EventScheduler eventScheduler = c64.getEventScheduler();
 		if (sidBuilder != null) {
-			IEmulationSection emulation = config.getEmulation();
+			IEmulationSection emulationSection = config.getEmulation();
 			for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
-				if (AudioConfig.isSIDUsed(emulation, tune, sidNum)) {
-					ChipModel chipModel = ChipModel.getChipModel(emulation,
-							tune, sidNum);
+				if (AudioConfig.isSIDUsed(emulationSection, tune, sidNum)) {
 					SIDEmu sid = c64.getSID(sidNum);
-					sid = sidBuilder.lock(eventScheduler, sid, chipModel);
+					sid = sidBuilder.lock(eventScheduler, emulationSection,
+							sid, sidNum, tune);
 					c64.setSID(sidNum, sid);
 				}
 			}

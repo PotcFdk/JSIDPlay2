@@ -117,6 +117,39 @@ public class IniEmulationSection extends IniSection implements
 	}
 
 	/**
+	 * Getter of the the stereo SID model.
+	 * 
+	 * @return the stereo SID model
+	 */
+	@Override
+	public final ChipModel getStereoSidModel() {
+		return iniReader.getPropertyEnum("Emulation", "StereoSidModel",
+				DEFAULT_STEREO_SID_MODEL);
+	}
+
+	@Override
+	public final ChipModel getThirdSIDModel() {
+		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel",
+				DEFAULT_3RD_SID_MODEL);
+	}
+
+	/**
+	 * Setter of the the stereo SID model.
+	 * 
+	 * @param model
+	 *            the the stereo SID model
+	 */
+	@Override
+	public final void setStereoSidModel(final ChipModel model) {
+		iniReader.setProperty("Emulation", "StereoSidModel", model);
+	}
+
+	@Override
+	public final void setThirdSIDModel(final ChipModel model) {
+		iniReader.setProperty("Emulation", "3rdSIDModel", model);
+	}
+
+	/**
 	 * Getter of the chip to be used for MOS6581.
 	 * 
 	 * @return the chip to be used for MOS6581
@@ -306,44 +339,6 @@ public class IniEmulationSection extends IniSection implements
 	}
 
 	/**
-	 * Getter of the the stereo SID model.
-	 * 
-	 * @return the stereo SID model
-	 */
-	@Override
-	public final ChipModel getStereoSidModel() {
-		if (iniReader.getPropertyString("Emulation", "StereoSidModel", null) == null) {
-			// Special case: property not set? return null
-			return null;
-		}
-		return iniReader.getPropertyEnum("Emulation", "StereoSidModel",
-				DEFAULT_STEREO_SID_MODEL);
-	}
-
-	@Override
-	public final ChipModel getThirdSIDModel() {
-		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel",
-				DEFAULT_3RD_SID_MODEL);
-	}
-
-	/**
-	 * Setter of the the stereo SID model.
-	 * 
-	 * @param model
-	 *            the the stereo SID model
-	 */
-	@Override
-	public final void setStereoSidModel(final ChipModel model) {
-		iniReader.setProperty("Emulation", "StereoSidModel", model);
-	}
-
-	@Override
-	public final void setThirdSIDModel(final ChipModel model) {
-		iniReader.setProperty("Emulation", "3rdSIDModel", model);
-	}
-
-
-	/**
 	 * Getter of the filter setting of MOS6581.
 	 * 
 	 * @return the filter setting of MOS6581
@@ -523,6 +518,37 @@ public class IniEmulationSection extends IniSection implements
 	public final void setReSIDfp3rdSIDFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_3rdSID_Filter8580",
 				filterName);
+	}
+
+	@Override
+	public final Emulation getUserEmulation() {
+		return iniReader.getPropertyEnum("Emulation", "UserEmulation", null,
+				Emulation.class);
+	}
+
+	@Override
+	public final void setUserEmulation(final Emulation emulation) {
+		iniReader.setProperty("Emulation", "UserEmulation", emulation);
+	}
+
+	@Override
+	public final Emulation getStereoEmulation() {
+		return iniReader.getPropertyEnum("Emulation", "StereoEmulation", null);
+	}
+
+	@Override
+	public final void setStereoEmulation(final Emulation model) {
+		iniReader.setProperty("Emulation", "StereoEmulation", model);
+	}
+	
+	@Override
+	public final Emulation getThirdEmulation() {
+		return iniReader.getPropertyEnum("Emulation", "3rdEmulation", null);
+	}
+
+	@Override
+	public final void setThirdEmulation(final Emulation emulation) {
+		iniReader.setProperty("Emulation", "3rdEmulation", emulation);
 	}
 
 }

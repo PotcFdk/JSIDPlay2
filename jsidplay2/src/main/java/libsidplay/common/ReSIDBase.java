@@ -1,6 +1,5 @@
 package libsidplay.common;
 
-import libsidplay.common.ReSIDBuilderBase.MixerEvent;
 
 public abstract class ReSIDBase extends SIDEmu {
 

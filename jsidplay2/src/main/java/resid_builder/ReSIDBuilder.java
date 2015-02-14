@@ -16,6 +16,7 @@
 package resid_builder;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.Emulation;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.ReSIDBase;
 import libsidplay.common.ReSIDBuilderBase;
@@ -34,8 +35,16 @@ public class ReSIDBuilder extends ReSIDBuilderBase {
 	}
 
 	@Override
-	protected ReSIDBase createSIDEmu(EventScheduler context) {
-		return new ReSID(context, config.getAudio().getBufferSize());
+	protected ReSIDBase createSIDEmu(EventScheduler context, Emulation emulation) {
+		if (emulation.equals(Emulation.RESID)) {
+			return new ReSID(context, config.getAudio().getBufferSize());
+		} else if (emulation.equals(Emulation.RESIDFP)) {
+			return new residfp_builder.ReSID(context, config.getAudio()
+					.getBufferSize());
+		} else {
+			throw new RuntimeException("Cannot create SID emulation engine: "
+					+ emulation);
+		}
 	}
 
 }

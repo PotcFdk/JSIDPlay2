@@ -91,6 +91,7 @@
 				<BorderPane>
 					<top>
 						<FlowPane BorderPane.alignment="CENTER">
+							<ComboBox fx:id="sid1Emulation" onAction="#setSid1Emulation" />
 							<Label text="%MAIN_MODEL" />
 							<ComboBox fx:id="sid1Model" onAction="#setSid1Model" />
 							<Label text="%FILTER_DEFINITION" />
@@ -116,6 +117,7 @@
 				<BorderPane>
 					<top>
 						<FlowPane BorderPane.alignment="CENTER">
+							<ComboBox fx:id="sid2Emulation" onAction="#setSid2Emulation" />
 							<Label text="%SECOND_MODEL" />
 							<ComboBox fx:id="sid2Model" onAction="#setSid2Model" />
 							<Label text="%FILTER_DEFINITION" />
@@ -141,6 +143,7 @@
 				<BorderPane>
 					<top>
 						<FlowPane BorderPane.alignment="CENTER">
+							<ComboBox fx:id="sid3Emulation" onAction="#setSid3Emulation" />
 							<Label text="%THIRD_MODEL" />
 							<ComboBox fx:id="sid3Model" onAction="#setSid3Model" />
 							<Label text="%FILTER_DEFINITION" />

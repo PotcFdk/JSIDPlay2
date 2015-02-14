@@ -1,5 +1,8 @@
 package libsidplay.common;
 
+import libsidplay.sidtune.SidTune;
+import sidplay.ini.intf.IEmulationSection;
+
 public enum Emulation {
 	/** No emulation. */
 	NONE(""),
@@ -9,7 +12,7 @@ public enum Emulation {
 	RESIDFP("Antti S. Lankila's resid-fp"),
 	/** Hardware */
 	HARDSID("HardSID Hardware");
-	
+
 	private final String description;
 
 	Emulation(String description) {
@@ -19,5 +22,28 @@ public enum Emulation {
 	@Override
 	public String toString() {
 		return description;
+	}
+
+	public static Emulation getEmulation(IEmulationSection emulationSection,
+			SidTune tune, int sidNum) {
+		Emulation forcedEmulation;
+		Emulation defaultEmulation;
+		switch (sidNum) {
+		case 0:
+			forcedEmulation = emulationSection.getUserEmulation();
+			defaultEmulation = emulationSection.getEmulation();
+			break;
+		case 1:
+			forcedEmulation = emulationSection.getStereoEmulation();
+			defaultEmulation = getEmulation(emulationSection, tune, 0);
+			break;
+		case 2:
+			forcedEmulation = emulationSection.getThirdEmulation();
+			defaultEmulation = getEmulation(emulationSection, tune, 0);
+			break;
+		default:
+			throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
+		return forcedEmulation != null ? forcedEmulation : defaultEmulation;
 	}
 }

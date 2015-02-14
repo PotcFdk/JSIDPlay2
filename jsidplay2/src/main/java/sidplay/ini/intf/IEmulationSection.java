@@ -355,4 +355,16 @@ public interface IEmulationSection {
 	 */
 	public void setThirdSIDModel(ChipModel model);
 
+	public Emulation getUserEmulation();
+	
+	public void setUserEmulation(Emulation emulation);
+	
+	public Emulation getStereoEmulation();
+	
+	public void setStereoEmulation(Emulation emulation);
+	
+	public Emulation getThirdEmulation();
+	
+	public void setThirdEmulation(Emulation emulation);
+	
 }

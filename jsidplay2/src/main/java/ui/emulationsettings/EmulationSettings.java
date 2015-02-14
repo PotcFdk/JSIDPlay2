@@ -76,6 +76,8 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	protected ComboBox<Object> sid1Model, sid2Model, sid3Model;
 	@FXML
+	protected ComboBox<Object> sid1Emulation, sid2Emulation, sid3Emulation;
+	@FXML
 	protected ComboBox<ChipModel> defaultModel;
 	@FXML
 	private ComboBox<String> stereoMode, mainFilter, secondFilter, thirdFilter,
@@ -93,9 +95,9 @@ public class EmulationSettings extends C64Window {
 
 	private boolean boost8580Enabled;
 
-	private ObservableList<Object> sid1Models;
-	private ObservableList<Object> sid2Models;
-	private ObservableList<Object> sid3Models;
+	private ObservableList<Object> sid1Models, sid2Models, sid3Models;
+	private ObservableList<Object> sid1Emulations, sid2Emulations,
+			sid3Emulations;
 	private ObservableList<ChipModel> defaultModels;
 	private ObservableList<String> stereoModes, sidReads, mainFilters,
 			secondFilters, thirdFilters;
@@ -148,34 +150,43 @@ public class EmulationSettings extends C64Window {
 
 		mainVolume.setValue(util.getConfig().getAudio().getMainVolume()
 				+ MAX_VOLUME_DB);
-		mainVolume.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
-					util.getConfig().getAudio().setMainVolume(volumeDb);
-					util.getPlayer().configureSIDBuilder(
-							(b) -> b.setVolume(0, util.getConfig()
-									.getAudio()));
-				});
+		mainVolume
+				.valueProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							float volumeDb = newValue.floatValue()
+									- MAX_VOLUME_DB;
+							util.getConfig().getAudio().setMainVolume(volumeDb);
+							util.getPlayer().configureSIDBuilder(
+									(b) -> b.setVolume(0, util.getConfig()
+											.getAudio()));
+						});
 		secondVolume.setValue(util.getConfig().getAudio().getSecondVolume()
 				+ MAX_VOLUME_DB);
-		secondVolume.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
-					util.getConfig().getAudio().setSecondVolume(volumeDb);
-					util.getPlayer().configureSIDBuilder(
-							(b) -> b.setVolume(1, util.getConfig()
-									.getAudio()));
-				});
+		secondVolume.valueProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							float volumeDb = newValue.floatValue()
+									- MAX_VOLUME_DB;
+							util.getConfig().getAudio()
+									.setSecondVolume(volumeDb);
+							util.getPlayer().configureSIDBuilder(
+									(b) -> b.setVolume(1, util.getConfig()
+											.getAudio()));
+						});
 		thirdVolume.setValue(util.getConfig().getAudio().getThirdVolume()
 				+ MAX_VOLUME_DB);
-		thirdVolume.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					float volumeDb = newValue.floatValue() - MAX_VOLUME_DB;
-					util.getConfig().getAudio().setThirdVolume(volumeDb);
-					util.getPlayer().configureSIDBuilder(
-							(b) -> b.setVolume(2, util.getConfig()
-									.getAudio()));
-				});
+		thirdVolume.valueProperty()
+				.addListener(
+						(observable, oldValue, newValue) -> {
+							float volumeDb = newValue.floatValue()
+									- MAX_VOLUME_DB;
+							util.getConfig().getAudio()
+									.setThirdVolume(volumeDb);
+							util.getPlayer().configureSIDBuilder(
+									(b) -> b.setVolume(2, util.getConfig()
+											.getAudio()));
+						});
 
 		stereoModes = FXCollections.<String> observableArrayList();
 		stereoModes.addAll(util.getBundle().getString("AUTO"), util.getBundle()
@@ -213,6 +224,19 @@ public class EmulationSettings extends C64Window {
 		sidToRead.getSelectionModel().select(
 				util.getConfig().getEmulation().getSidNumToRead());
 
+		sid1Emulations = FXCollections.<Object> observableArrayList();
+		sid1Emulations.addAll(util.getBundle().getString("AUTO"),
+				Emulation.RESID, Emulation.RESIDFP);
+		sid1Emulation.setItems(sid1Emulations);
+		sid2Emulations = FXCollections.<Object> observableArrayList();
+		sid2Emulations.addAll(util.getBundle().getString("AUTO"),
+				Emulation.RESID, Emulation.RESIDFP);
+		sid2Emulation.setItems(sid2Emulations);
+		sid3Emulations = FXCollections.<Object> observableArrayList();
+		sid3Emulations.addAll(util.getBundle().getString("AUTO"),
+				Emulation.RESID, Emulation.RESIDFP);
+		sid3Emulation.setItems(sid3Emulations);
+
 		sid1Models = FXCollections.<Object> observableArrayList();
 		sid1Models.addAll(util.getBundle().getString("AUTO"),
 				ChipModel.MOS6581, ChipModel.MOS8580);
@@ -234,15 +258,30 @@ public class EmulationSettings extends C64Window {
 		sid1Model.getSelectionModel().select(
 				userSidModel != null ? userSidModel : util.getBundle()
 						.getString("AUTO"));
+		Emulation userEmulation = util.getConfig().getEmulation()
+				.getUserEmulation();
+		sid1Emulation.getSelectionModel().select(
+				userEmulation != null ? userEmulation : util.getBundle()
+						.getString("AUTO"));
 		ChipModel stereoSidModel = util.getConfig().getEmulation()
 				.getStereoSidModel();
 		sid2Model.getSelectionModel().select(
 				stereoSidModel != null ? stereoSidModel : util.getBundle()
 						.getString("AUTO"));
+		Emulation stereoEmulation = util.getConfig().getEmulation()
+				.getStereoEmulation();
+		sid2Emulation.getSelectionModel().select(
+				stereoEmulation != null ? stereoEmulation : util.getBundle()
+						.getString("AUTO"));
 		ChipModel thirdSidModel = util.getConfig().getEmulation()
 				.getThirdSIDModel();
 		sid3Model.getSelectionModel().select(
 				thirdSidModel != null ? thirdSidModel : util.getBundle()
+						.getString("AUTO"));
+		Emulation thirdEmulation = util.getConfig().getEmulation()
+				.getThirdEmulation();
+		sid3Emulation.getSelectionModel().select(
+				thirdEmulation != null ? thirdEmulation : util.getBundle()
 						.getString("AUTO"));
 		ChipModel defautSidModel = util.getConfig().getEmulation()
 				.getDefaultSidModel();
@@ -275,11 +314,13 @@ public class EmulationSettings extends C64Window {
 		mainBalance.setDisable(!second);
 		secondVolume.setDisable(!second);
 		secondBalance.setDisable(!second);
+		sid2Emulation.setDisable(!second);
 		sid2Model.setDisable(!second);
 		secondFilter.setDisable(!second);
 		secondFilterCurve.setDisable(!second);
 		thirdVolume.setDisable(!third);
 		thirdBalance.setDisable(!third);
+		sid3Emulation.setDisable(!third);
 		sid3Model.setDisable(!third);
 		thirdFilter.setDisable(!third);
 		thirdFilterCurve.setDisable(!third);
@@ -294,6 +335,48 @@ public class EmulationSettings extends C64Window {
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(emulationChange);
+	}
+
+	@FXML
+	private void setSid1Emulation() {
+		EmulationSection emulationSection = util.getConfig().getEmulation();
+		if (sid1Emulation.getSelectionModel().getSelectedItem()
+				.equals(util.getBundle().getString("AUTO"))) {
+			emulationSection.setUserEmulation(null);
+		} else {
+			Emulation userEmulation = (Emulation) sid1Emulation
+					.getSelectionModel().getSelectedItem();
+			emulationSection.setUserEmulation(userEmulation);
+		}
+		setSid1Model();
+	}
+
+	@FXML
+	private void setSid2Emulation() {
+		EmulationSection emulationSection = util.getConfig().getEmulation();
+		if (sid2Emulation.getSelectionModel().getSelectedItem()
+				.equals(util.getBundle().getString("AUTO"))) {
+			emulationSection.setStereoEmulation(null);
+		} else {
+			Emulation userEmulation = (Emulation) sid2Emulation
+					.getSelectionModel().getSelectedItem();
+			emulationSection.setStereoEmulation(userEmulation);
+		}
+		setSid2Model();
+	}
+
+	@FXML
+	private void setSid3Emulation() {
+		EmulationSection emulationSection = util.getConfig().getEmulation();
+		if (sid3Emulation.getSelectionModel().getSelectedItem()
+				.equals(util.getBundle().getString("AUTO"))) {
+			emulationSection.setThirdEmulation(null);
+		} else {
+			Emulation userEmulation = (Emulation) sid3Emulation
+					.getSelectionModel().getSelectedItem();
+			emulationSection.setThirdEmulation(userEmulation);
+		}
+		setSid3Model();
 	}
 
 	@FXML
@@ -461,29 +544,30 @@ public class EmulationSettings extends C64Window {
 				.getSelectedItem();
 		final boolean filterDisabled = "".equals(filterName);
 
-		IEmulationSection emulation = util.getConfig().getEmulation();
-		emulation.setFilter(!filterDisabled);
+		IEmulationSection emulationSection = util.getConfig().getEmulation();
+		emulationSection.setFilter(!filterDisabled);
 
 		ChipModel model;
 		if (sid1Model.getSelectionModel().getSelectedItem()
 				.equals(util.getBundle().getString("AUTO"))) {
-			model = ChipModel.getChipModel(emulation, util.getPlayer()
+			model = ChipModel.getChipModel(emulationSection, util.getPlayer()
 					.getTune(), 0);
 		} else {
 			model = (ChipModel) sid1Model.getSelectionModel().getSelectedItem();
 		}
-		if (util.getConfig().getEmulation().getEmulation()
-				.equals(Emulation.RESIDFP)) {
+		Emulation emulation = Emulation.getEmulation(emulationSection, util
+				.getPlayer().getTune(), 0);
+		if (emulation.equals(Emulation.RESIDFP)) {
 			if (model == ChipModel.MOS6581) {
-				emulation.setReSIDfpFilter6581(filterName);
+				emulationSection.setReSIDfpFilter6581(filterName);
 			} else {
-				emulation.setReSIDfpFilter8580(filterName);
+				emulationSection.setReSIDfpFilter8580(filterName);
 			}
 		} else {
 			if (model == ChipModel.MOS6581) {
-				emulation.setFilter6581(filterName);
+				emulationSection.setFilter6581(filterName);
 			} else {
-				emulation.setFilter8580(filterName);
+				emulationSection.setFilter8580(filterName);
 			}
 		}
 
@@ -499,29 +583,30 @@ public class EmulationSettings extends C64Window {
 				.getSelectedItem();
 		final boolean filterDisabled = "".equals(filterName);
 
-		IEmulationSection emulation = util.getConfig().getEmulation();
-		emulation.setStereoFilter(!filterDisabled);
+		IEmulationSection emulationSection = util.getConfig().getEmulation();
+		emulationSection.setStereoFilter(!filterDisabled);
 
 		ChipModel model;
 		if (sid2Model.getSelectionModel().getSelectedItem()
 				.equals(util.getBundle().getString("AUTO"))) {
-			model = ChipModel.getChipModel(emulation, util.getPlayer()
+			model = ChipModel.getChipModel(emulationSection, util.getPlayer()
 					.getTune(), 1);
 		} else {
 			model = (ChipModel) sid2Model.getSelectionModel().getSelectedItem();
 		}
-		if (util.getConfig().getEmulation().getEmulation()
-				.equals(Emulation.RESIDFP)) {
+		Emulation emulation = Emulation.getEmulation(emulationSection, util
+				.getPlayer().getTune(), 1);
+		if (emulation.equals(Emulation.RESIDFP)) {
 			if (model == ChipModel.MOS6581) {
-				emulation.setReSIDfpStereoFilter6581(filterName);
+				emulationSection.setReSIDfpStereoFilter6581(filterName);
 			} else {
-				emulation.setReSIDfpStereoFilter8580(filterName);
+				emulationSection.setReSIDfpStereoFilter8580(filterName);
 			}
 		} else {
 			if (model == ChipModel.MOS6581) {
-				emulation.setStereoFilter6581(filterName);
+				emulationSection.setStereoFilter6581(filterName);
 			} else {
-				emulation.setStereoFilter8580(filterName);
+				emulationSection.setStereoFilter8580(filterName);
 			}
 		}
 
@@ -537,29 +622,30 @@ public class EmulationSettings extends C64Window {
 				.getSelectedItem();
 		final boolean filterDisabled = "".equals(filterName);
 
-		IEmulationSection emulation = util.getConfig().getEmulation();
-		emulation.setThirdSIDFilter(!filterDisabled);
+		IEmulationSection emulationSection = util.getConfig().getEmulation();
+		emulationSection.setThirdSIDFilter(!filterDisabled);
 
 		ChipModel model;
 		if (sid3Model.getSelectionModel().getSelectedItem()
 				.equals(util.getBundle().getString("AUTO"))) {
-			model = ChipModel.getChipModel(emulation, util.getPlayer()
+			model = ChipModel.getChipModel(emulationSection, util.getPlayer()
 					.getTune(), 2);
 		} else {
 			model = (ChipModel) sid3Model.getSelectionModel().getSelectedItem();
 		}
-		if (util.getConfig().getEmulation().getEmulation()
-				.equals(Emulation.RESIDFP)) {
+		Emulation emulation = Emulation.getEmulation(emulationSection, util
+				.getPlayer().getTune(), 2);
+		if (emulation.equals(Emulation.RESIDFP)) {
 			if (model == ChipModel.MOS6581) {
-				emulation.setReSIDfp3rdSIDFilter6581(filterName);
+				emulationSection.setReSIDfp3rdSIDFilter6581(filterName);
 			} else {
-				emulation.setReSIDfp3rdSIDFilter8580(filterName);
+				emulationSection.setReSIDfp3rdSIDFilter8580(filterName);
 			}
 		} else {
 			if (model == ChipModel.MOS6581) {
-				emulation.setThirdSIDFilter6581(filterName);
+				emulationSection.setThirdSIDFilter6581(filterName);
 			} else {
-				emulation.setThirdSIDFilter8580(filterName);
+				emulationSection.setThirdSIDFilter8580(filterName);
 			}
 		}
 
@@ -674,8 +760,9 @@ public class EmulationSettings extends C64Window {
 		}
 		String item = null;
 		if (filterEnable) {
-			if (util.getConfig().getEmulation().getEmulation()
-					.equals(Emulation.RESIDFP)) {
+			Emulation emulation = Emulation.getEmulation(util.getConfig()
+					.getEmulation(), util.getPlayer().getTune(), num);
+			if (emulation.equals(Emulation.RESIDFP)) {
 				switch (num) {
 				case 0:
 					if (model == ChipModel.MOS6581) {
@@ -694,6 +781,7 @@ public class EmulationSettings extends C64Window {
 						item = util.getConfig().getEmulation()
 								.getReSIDfpStereoFilter8580();
 					}
+					break;
 				case 2:
 					if (model == ChipModel.MOS6581) {
 						item = util.getConfig().getEmulation()
@@ -708,10 +796,35 @@ public class EmulationSettings extends C64Window {
 							"Maximum supported SIDS exceeded!");
 				}
 			} else {
-				if (model == ChipModel.MOS6581) {
-					item = util.getConfig().getEmulation().getFilter6581();
-				} else if (model == ChipModel.MOS8580) {
-					item = util.getConfig().getEmulation().getFilter8580();
+				switch (num) {
+				case 0:
+					if (model == ChipModel.MOS6581) {
+						item = util.getConfig().getEmulation().getFilter6581();
+					} else if (model == ChipModel.MOS8580) {
+						item = util.getConfig().getEmulation().getFilter8580();
+					}
+					break;
+				case 1:
+					if (model == ChipModel.MOS6581) {
+						item = util.getConfig().getEmulation()
+								.getStereoFilter6581();
+					} else if (model == ChipModel.MOS8580) {
+						item = util.getConfig().getEmulation()
+								.getStereoFilter8580();
+					}
+					break;
+				case 2:
+					if (model == ChipModel.MOS6581) {
+						item = util.getConfig().getEmulation()
+								.getThirdSIDFilter6581();
+					} else if (model == ChipModel.MOS8580) {
+						item = util.getConfig().getEmulation()
+								.getThirdSIDFilter8580();
+					}
+					break;
+				default:
+					throw new RuntimeException(
+							"Maximum supported SIDS exceeded!");
 				}
 			}
 		}
@@ -719,8 +832,9 @@ public class EmulationSettings extends C64Window {
 		filters.clear();
 		filters.add("");
 		for (IFilterSection filterSection : util.getConfig().getFilter()) {
-			if (util.getConfig().getEmulation().getEmulation()
-					.equals(Emulation.RESIDFP)) {
+			Emulation emulation = Emulation.getEmulation(util.getConfig()
+					.getEmulation(), util.getPlayer().getTune(), num);
+			if (emulation.equals(Emulation.RESIDFP)) {
 				if (filterSection.isReSIDfpFilter6581()
 						&& model == ChipModel.MOS6581) {
 					filters.add(filterSection.getName());

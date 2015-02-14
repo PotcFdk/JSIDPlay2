@@ -11,8 +11,10 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
+import libsidplay.sidtune.SidTune;
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IEmulationSection;
 
 /**
  * <pre>
@@ -80,11 +82,14 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	@Override
-	public SIDEmu lock(EventScheduler evt, SIDEmu device, ChipModel model) {
+	public SIDEmu lock(EventScheduler evt, IEmulationSection emulationSection,
+			SIDEmu device, int sidNum, SidTune tune) {
+		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune,
+				sidNum);
 		if (device == null) {
-			device = lock(evt, model);
+			device = lock(evt, chipModel);
 		} else {
-			device.setChipModel(model);
+			device.setChipModel(chipModel);
 		}
 		return device;
 	}
@@ -117,7 +122,7 @@ public class HardSIDBuilder implements SIDBuilder {
 	@Override
 	public void setBalance(int num, IAudioSection audio) {
 	}
-	
+
 	private String extract(IConfig config, final String path,
 			final String libName) throws IOException {
 		File f = new File(new File(config.getSidplay2().getTmpDir()), libName);

@@ -15,6 +15,7 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
+import sidplay.ini.intf.IEmulationSection;
 
 public abstract class ReSIDBuilderBase implements SIDBuilder {
 	public class MixerEvent extends Event {
@@ -66,29 +67,50 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 			super("Mixer");
 		}
 
+		/**
+		 * Note: The assumption, that after clocking two chips their buffer
+		 * positions are equal is false! Under some circumstance one chip can be
+		 * one sample further than the other. Therefore we have to handle
+		 * overflowing sample data to prevent crackling noises. This
+		 * implementation can handle a maximum difference of one sample!
+		 */
 		@Override
 		public void event() throws InterruptedException {
-			int samples = 0;
-			int numBuffers = 0;
+			int i = 0;
 			for (ReSIDBase sid : sids) {
-				/*
-				 * Clocks the SID to the present moment, if it isn't already.
-				 */
+				// clock SID to the present moment
 				sid.clock();
-				buffers[numBuffers++] = sid.buffer;
-				/*
-				 * extract buffer info now that the SID is updated. If chip2
-				 * exists, its bufferpos is expected to be identical to chip1's.
-				 */
-				samples = samples == 0 ? sid.bufferpos : samples;
+				buffers[i] = sid.buffer;
+				// keep SIDs in sync: last time there was one sample too much?
+				if (bufferOverflowState[i]) {
+					bufferOverflowState[i] = false;
+					// shift produced samples to the right
+					System.arraycopy(sid.buffer, 0, sid.buffer, 1,
+							sid.bufferpos++);
+					// insert last overflowing sample
+					sid.buffer[0] = bufferOverflow[i];
+				}
+				// remember last overflowing sample
+				bufferOverflow[i++] = sid.bufferpos > 0 ? sid.buffer[sid.bufferpos - 1]
+						: 0;
+			}
+			int numSids = 0;
+			int samples = 0;
+			for (ReSIDBase sid : sids) {
+				// determine amount of samples produced
+				samples = samples > 0 ? Math.min(samples, sid.bufferpos)
+						: sid.bufferpos;
+				// detect overflows of a certain chip
+				bufferOverflowState[numSids++] = sid.bufferpos > samples;
 				sid.bufferpos = 0;
 			}
+			// output sample data
 			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
 				int dither = triangularDithering();
 
-				putSample(numBuffers, sampleIdx, balancedVolumeL, dither);
+				putSample(sampleIdx, balancedVolumeL, dither);
 				if (channels > 1) {
-					putSample(numBuffers, sampleIdx, balancedVolumeR, dither);
+					putSample(sampleIdx, balancedVolumeR, dither);
 				}
 				if (soundBuffer.remaining() == 0) {
 					driver.write();
@@ -98,12 +120,11 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 			context.schedule(this, 10000);
 		}
 
-		private final void putSample(int numBuffers, int sampleIdx,
-				float[] balancedVolume, int dither) {
+		private final void putSample(int sampleIdx, float[] balancedVolume,
+				int dither) {
 			int value = 0;
-			for (int bufferIdx = 0; bufferIdx < numBuffers; bufferIdx++) {
-				value += buffers[bufferIdx][sampleIdx]
-						* balancedVolume[bufferIdx];
+			for (int i = 0; i < sids.size(); i++) {
+				value += buffers[i][sampleIdx] * balancedVolume[i];
 			}
 			value = value + dither >> 10;
 
@@ -125,6 +146,8 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 	private final CPUClock cpuClock;
 
 	private int[][] buffers;
+	private int[] bufferOverflow;
+	private boolean[] bufferOverflowState;
 	private int channels;
 	private ByteBuffer soundBuffer;
 
@@ -156,6 +179,8 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 		 */
 		context.cancel(mixerEvent);
 		buffers = new int[sids.size()][];
+		bufferOverflow = new int[sids.size()];
+		bufferOverflowState = new boolean[sids.size()];
 		channels = audioConfig.getChannels();
 		soundBuffer = realDriver.buffer();
 		context.schedule(mixerEvent, 0, Event.Phase.PHI2);
@@ -166,24 +191,19 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 		return sids.size();
 	}
 
-	public SIDEmu lock(final EventScheduler evt, SIDEmu device, ChipModel model) {
-		if (device == null) {
-			device = lock(evt, model);
-		} else {
-			device.setChipModel(model);
-		}
-		return device;
-	}
-
-	/**
-	 * Make a new SID of right type
-	 */
-	private ReSIDBase lock(final EventScheduler env, final ChipModel model) {
-		final ReSIDBase sid = createSIDEmu(env);
-		sid.setChipModel(model);
+	public SIDEmu lock(EventScheduler context,
+			IEmulationSection emulationSection, SIDEmu device, int sidNum,
+			SidTune tune) {
+		final ReSIDBase sid = createSIDEmu(context,
+				Emulation.getEmulation(emulationSection, tune, sidNum));
+		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
 		sid.setSampling(cpuClock.getCpuFrequency(), audioConfig.getFrameRate(),
 				audioConfig.getSamplingMethod());
-		sids.add(sid);
+		if (sidNum < sids.size()) {
+			sids.set(sidNum, sid);
+		} else {
+			sids.add(sid);
+		}
 		return sid;
 	}
 
@@ -253,6 +273,7 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 		driver = realDriver;
 	}
 
-	protected abstract ReSIDBase createSIDEmu(EventScheduler env);
+	protected abstract ReSIDBase createSIDEmu(EventScheduler env,
+			Emulation emulation);
 
 }
