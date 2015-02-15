@@ -66,7 +66,7 @@ public class AudioGeneratorThread extends Thread {
 	private int[] sidPositionR;
 
 	private int[] audioBufferOverflow;
-	private boolean[] audioBufferOverflowState;
+	private int[] audioBufferOverflowCount;
 	private int[] audioBufferPos;
 
 	private Mixer.Info mixerInfo;
@@ -173,8 +173,8 @@ public class AudioGeneratorThread extends Thread {
 						audioBufferPos[sidNum] = sid[sidNum].clock(piece, audioBuffer, 0);
 
 						int overflowCount = 0;
-						if (audioBufferOverflowState[sidNum] == true) {
-							int sample = audioBufferOverflow[sidNum];
+						if (audioBufferOverflowCount[sidNum] > 0) {
+							int sample = audioBufferOverflow[sidNum] * sidLevel[sidNum] >> 10;
 							
 							if (sidNum == 0) {
 								outAudioBuffer[0 << 1 | 0] = sample * sidPositionL[sidNum] >> 10;
@@ -183,8 +183,9 @@ public class AudioGeneratorThread extends Thread {
 								outAudioBuffer[0 << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
 								outAudioBuffer[0 << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
 							}
-							overflowCount = 1;
-							audioBufferPos[sidNum]++;
+							
+							/* Only one byte is processed as overflow since more bytes are negligible */
+							audioBufferPos[sidNum] += ++overflowCount;
 						}
 
 						if (sidNum == 0) {
@@ -192,15 +193,18 @@ public class AudioGeneratorThread extends Thread {
 								int sample = audioBuffer[i - overflowCount] * sidLevel[sidNum] >> 10;
 								outAudioBuffer[i << 1 | 0] = sample * sidPositionL[sidNum] >> 10;
 								outAudioBuffer[i << 1 | 1] = sample * sidPositionR[sidNum] >> 10;
-								audioBufferOverflow[sidNum] = sample;
 							}
 						} else {
 							for (int i = overflowCount; i < audioBufferPos[sidNum]; i++) {
 								int sample = audioBuffer[i - overflowCount] * sidLevel[sidNum] >> 10;
 								outAudioBuffer[i << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
 								outAudioBuffer[i << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
-								audioBufferOverflow[sidNum] = sample;
 							}
+						}
+						
+						/* Store only last byte of buffer as possible overflow */
+						if (audioBufferPos[sidNum] - overflowCount > 0) {
+							audioBufferOverflow[sidNum] = audioBuffer[audioBufferPos[sidNum] - overflowCount - 1];
 						}
 					}
 
@@ -212,7 +216,7 @@ public class AudioGeneratorThread extends Thread {
 					}
 
 					for (int i = 0; i < sid.length; i++) {
-						audioBufferOverflowState[i] = audioBufferPos[i] > shortestAudioBufferPos;
+						audioBufferOverflowCount[i] = audioBufferPos[i] - shortestAudioBufferPos;
 					}
 
 					/*
@@ -445,7 +449,7 @@ public class AudioGeneratorThread extends Thread {
 		sidPositionR = new int[sid.length];
 
 		audioBufferOverflow = new int[sid.length];
-		audioBufferOverflowState = new boolean[sid.length];
+		audioBufferOverflowCount = new int[sid.length];
 		audioBufferPos = new int[sid.length];
 
 		for (int i = 0; i < sid.length; i++) {
@@ -456,7 +460,7 @@ public class AudioGeneratorThread extends Thread {
 				setPosition(i, 0);
 			}
 
-			audioBufferOverflowState[i] = false;
+			audioBufferOverflowCount[i] = 0;
 		}
 	}
 
