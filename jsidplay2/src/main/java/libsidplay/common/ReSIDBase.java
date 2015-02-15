@@ -27,8 +27,4 @@ public abstract class ReSIDBase extends SIDEmu {
 		bufferpos = 0;
 	}
 
-	public void resetBufferPos() {
-		bufferpos = 0;
-	}
-	
 }

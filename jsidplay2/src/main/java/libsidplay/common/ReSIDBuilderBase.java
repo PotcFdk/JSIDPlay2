@@ -101,7 +101,7 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 						: sid.bufferpos;
 				// detect overflows of a certain chip
 				bufferOverflowState[numSids++] = sid.bufferpos > samples;
-				sid.resetBufferPos();
+				sid.bufferpos = 0;
 			}
 			// output sample data
 			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
@@ -162,8 +162,8 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 
 	private EventScheduler context;
 
-	public ReSIDBuilderBase(AudioConfig audioConfig,
-			CPUClock cpuClock, AudioDriver audio, SidTune tune) {
+	public ReSIDBuilderBase(AudioConfig audioConfig, CPUClock cpuClock,
+			AudioDriver audio, SidTune tune) {
 		this.audioConfig = audioConfig;
 		this.cpuClock = cpuClock;
 		this.driver = audio;
