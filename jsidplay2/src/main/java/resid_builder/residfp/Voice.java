@@ -19,7 +19,7 @@
  * @author Ken Händel
  *
  */
-package residfp_builder.resid;
+package resid_builder.residfp;
 
 import libsidplay.common.ChipModel;
 

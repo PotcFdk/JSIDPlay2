@@ -21,7 +21,7 @@
  * @author Ken Händel
  *
  */
-package residfp_builder.resid;
+package resid_builder.residfp;
 
 /**
  * The SID filter is modeled with a two-integrator-loop biquadratic filter, which has been confirmed by Bob Yannes to be the actual circuit used in the SID chip.

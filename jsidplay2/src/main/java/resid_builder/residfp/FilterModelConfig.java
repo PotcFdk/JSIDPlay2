@@ -1,4 +1,4 @@
-package residfp_builder.resid;
+package resid_builder.residfp;
 
 import sidplay.ini.intf.IFilterSection;
 

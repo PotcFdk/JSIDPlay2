@@ -1,4 +1,4 @@
-package residfp_builder.resid;
+package resid_builder.residfp;
 
 public final class Filter6581 extends Filter {
 

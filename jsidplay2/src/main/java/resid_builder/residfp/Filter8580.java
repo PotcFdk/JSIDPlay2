@@ -1,4 +1,4 @@
-package residfp_builder.resid;
+package resid_builder.residfp;
 
 public class Filter8580 extends Filter {
 	protected Filter8580() {

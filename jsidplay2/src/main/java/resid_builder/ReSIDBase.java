@@ -1,4 +1,7 @@
-package libsidplay.common;
+package resid_builder;
+
+import libsidplay.common.EventScheduler;
+import libsidplay.common.SIDEmu;
 
 
 public abstract class ReSIDBase extends SIDEmu {
@@ -6,12 +9,12 @@ public abstract class ReSIDBase extends SIDEmu {
 	/**
 	 * Current position that audio is being written to.
 	 */
-	public int bufferpos;
+	protected int bufferpos;
 
 	/**
 	 * Audio output sample buffer.
 	 */
-	public final int[] buffer;
+	protected final int[] buffer;
 
 	/**
 	 * Constructor

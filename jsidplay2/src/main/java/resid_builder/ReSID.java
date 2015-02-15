@@ -20,9 +20,8 @@ import java.util.logging.Logger;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.ReSIDBase;
-import libsidplay.common.ReSIDBuilderBase.MixerEvent;
 import libsidplay.common.SamplingMethod;
+import resid_builder.ReSIDBuilder.MixerEvent;
 import resid_builder.resid.Filter6581;
 import resid_builder.resid.Filter8580;
 import resid_builder.resid.SID;

@@ -1218,7 +1218,7 @@ public class Player {
 		credits.append(MOS6526.credits());
 		credits.append(VIC.credits());
 		credits.append(resid_builder.ReSID.credits());
-		credits.append(residfp_builder.ReSID.credits());
+		credits.append(resid_builder.ReSIDfp.credits());
 		credits.append(hardsid_builder.HardSIDBuilder.credits());
 		return credits.toString();
 	}

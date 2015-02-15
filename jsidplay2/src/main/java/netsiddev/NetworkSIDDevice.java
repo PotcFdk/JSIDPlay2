@@ -17,8 +17,8 @@ import javafx.stage.Stage;
 import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
 import netsiddev.ini.JSIDDeviceConfig;
-import residfp_builder.resid.Filter6581;
-import residfp_builder.resid.Filter8580;
+import resid_builder.residfp.Filter6581;
+import resid_builder.residfp.Filter8580;
 import sidplay.ini.intf.IFilterSection;
 
 /**
@@ -318,9 +318,9 @@ public class NetworkSIDDevice extends Application {
 			((resid_builder.resid.SID) sid).getFilter8580().setFilterCurve(
 					iniFilter.getFilter8580CurvePosition());
 		} else if (iniFilter.isReSIDfpFilter6581()) {
-			sid = new residfp_builder.resid.SID();
-			((residfp_builder.resid.SID) sid).setChipModel(ChipModel.MOS6581);
-			Filter6581 filter6581 = ((residfp_builder.resid.SID) sid)
+			sid = new resid_builder.residfp.SID();
+			((resid_builder.residfp.SID) sid).setChipModel(ChipModel.MOS6581);
+			Filter6581 filter6581 = ((resid_builder.residfp.SID) sid)
 					.getFilter6581();
 			filter6581.setCurveProperties(iniFilter.getBaseresistance(),
 					iniFilter.getOffset(), iniFilter.getSteepness(),
@@ -329,13 +329,13 @@ public class NetworkSIDDevice extends Application {
 					.setDistortionProperties(iniFilter.getAttenuation(),
 							iniFilter.getNonlinearity(),
 							iniFilter.getResonanceFactor());
-			((residfp_builder.resid.SID) sid)
+			((resid_builder.residfp.SID) sid)
 					.set6581VoiceNonlinearity(iniFilter.getVoiceNonlinearity());
 			filter6581.setNonLinearity(iniFilter.getVoiceNonlinearity());
 		} else if (iniFilter.isReSIDfpFilter8580()) {
-			sid = new residfp_builder.resid.SID();
-			((residfp_builder.resid.SID) sid).setChipModel(ChipModel.MOS8580);
-			Filter8580 filter8580 = ((residfp_builder.resid.SID) sid)
+			sid = new resid_builder.residfp.SID();
+			((resid_builder.residfp.SID) sid).setChipModel(ChipModel.MOS8580);
+			Filter8580 filter8580 = ((resid_builder.residfp.SID) sid)
 					.getFilter8580();
 			filter8580.setCurveProperties(iniFilter.getK(), iniFilter.getB(),
 					0, 0);

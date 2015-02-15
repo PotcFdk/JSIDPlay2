@@ -727,7 +727,7 @@ public class EmulationSettings extends C64Window {
 					series.getData()
 							.add(new XYChart.Data<Number, Number>(
 									i,
-									(int) residfp_builder.resid.FilterModelConfig
+									(int) resid_builder.residfp.FilterModelConfig
 											.estimateFrequency(filter, i)));
 				}
 			}

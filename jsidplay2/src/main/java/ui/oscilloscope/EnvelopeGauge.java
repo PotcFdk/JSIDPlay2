@@ -36,8 +36,8 @@ public final class EnvelopeGauge extends SIDGauge {
 			SID sid = ((ReSID) sidemu).sid();
 			final byte envOutput = sid.voice[getVoice()].envelope.readENV();
 			accumulate(getValue(envOutput));
-		} else if (sidemu instanceof residfp_builder.ReSID) {
-			residfp_builder.resid.SID sid = ((residfp_builder.ReSID) sidemu)
+		} else if (sidemu instanceof resid_builder.ReSIDfp) {
+			resid_builder.residfp.SID sid = ((resid_builder.ReSIDfp) sidemu)
 					.sid();
 			final byte envOutput = sid.voice[getVoice()].envelope.readENV();
 			accumulate(getValue(envOutput));

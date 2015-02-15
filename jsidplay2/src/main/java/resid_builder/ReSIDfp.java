@@ -13,28 +13,27 @@
  * @author Ken Händel
  *
  */
-package residfp_builder;
+package resid_builder;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.ReSIDBase;
 import libsidplay.common.SamplingMethod;
-import residfp_builder.resid.Filter6581;
-import residfp_builder.resid.Filter8580;
-import residfp_builder.resid.SID;
+import resid_builder.residfp.Filter6581;
+import resid_builder.residfp.Filter8580;
+import resid_builder.residfp.SID;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
 
-public class ReSID extends ReSIDBase {
-	private static final Logger RESID = Logger.getLogger(ReSID.class.getName());
+public class ReSIDfp extends ReSIDBase {
+	private static final Logger RESID = Logger.getLogger(ReSIDfp.class.getName());
 
 	private final SID sid = new SID();
 
-	public ReSID(EventScheduler context, final int bufferSize) {
+	public ReSIDfp(EventScheduler context, final int bufferSize) {
 		super(context, bufferSize);
 		reset((byte) 0);
 	}
