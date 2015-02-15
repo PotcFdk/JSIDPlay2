@@ -168,49 +168,39 @@ public class AudioGeneratorThread extends Thread {
 				while (cycles != 0) {
 					int piece = Math.min(cycles, audioLength);
 
-					/* First SID initializes the buffer. */
-					audioBufferPos[0] = sid[0].clock(piece, audioBuffer, 0);
-
-					int overflow = 0;
-					if (audioBufferOverflowState[0] == true) {
-						int sample = audioBufferOverflow[0];
-						outAudioBuffer[0 << 1 | 0] = sample * sidPositionL[0] >> 10;
-						outAudioBuffer[0 << 1 | 1] = sample * sidPositionR[0] >> 10;
-						overflow = 1;
-					}
-
-					for (int i = 0; i < audioBufferPos[0]; i++) {
-						int sample = audioBuffer[i] * sidLevel[0] >> 10;
-						outAudioBuffer[(i + overflow) << 1 | 0] = sample * sidPositionL[0] >> 10;
-						outAudioBuffer[(i + overflow) << 1 | 1] = sample * sidPositionR[0] >> 10;
-						audioBufferOverflow[0] = sample;
-					}
-
-					if (overflow == 1) {
-						audioBufferPos[0]++;
-					}
-
-					/* Other SIDs are added to mix. */
-					for (int sidNum = 1; sidNum < sid.length; sidNum++) {
+					/* Mix SID buffers. */
+					for (int sidNum = 0; sidNum < sid.length; sidNum++) {
 						audioBufferPos[sidNum] = sid[sidNum].clock(piece, audioBuffer, 0);
 
-						overflow = 0;
+						int overflowCount = 0;
 						if (audioBufferOverflowState[sidNum] == true) {
 							int sample = audioBufferOverflow[sidNum];
-							outAudioBuffer[0 << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
-							outAudioBuffer[0 << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
-							overflow = 1;
-						}
-
-						for (int i = 0; i < audioBufferPos[sidNum]; i++) {
-							int sample = audioBuffer[i] * sidLevel[sidNum] >> 10;
-							outAudioBuffer[(i + overflow) << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
-							outAudioBuffer[(i + overflow) << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
-							audioBufferOverflow[sidNum] = sample;
-						}
-
-						if (overflow == 1) {
+							
+							if (sidNum == 0) {
+								outAudioBuffer[0 << 1 | 0] = sample * sidPositionL[sidNum] >> 10;
+								outAudioBuffer[0 << 1 | 1] = sample * sidPositionR[sidNum] >> 10;
+							} else {
+								outAudioBuffer[0 << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
+								outAudioBuffer[0 << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
+							}
+							overflowCount = 1;
 							audioBufferPos[sidNum]++;
+						}
+
+						if (sidNum == 0) {
+							for (int i = overflowCount; i < audioBufferPos[sidNum]; i++) {
+								int sample = audioBuffer[i - overflowCount] * sidLevel[sidNum] >> 10;
+								outAudioBuffer[i << 1 | 0] = sample * sidPositionL[sidNum] >> 10;
+								outAudioBuffer[i << 1 | 1] = sample * sidPositionR[sidNum] >> 10;
+								audioBufferOverflow[sidNum] = sample;
+							}
+						} else {
+							for (int i = overflowCount; i < audioBufferPos[sidNum]; i++) {
+								int sample = audioBuffer[i - overflowCount] * sidLevel[sidNum] >> 10;
+								outAudioBuffer[i << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
+								outAudioBuffer[i << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
+								audioBufferOverflow[sidNum] = sample;
+							}
 						}
 					}
 
