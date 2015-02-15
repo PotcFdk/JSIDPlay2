@@ -76,6 +76,7 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 		@Override
 		public void event() throws InterruptedException {
 			int i = 0;
+			int samples = 0;
 			for (ReSIDBase sid : sids) {
 				// clock SID to the present moment
 				sid.clock();
@@ -89,16 +90,15 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 					// insert last overflowing sample
 					sid.buffer[0] = bufferOverflow[i];
 				}
+				// determine amount of samples produced
+				samples = samples > 0 ? Math.min(samples, sid.bufferpos)
+						: sid.bufferpos;
 				// remember last overflowing sample
 				bufferOverflow[i++] = sid.bufferpos > 0 ? sid.buffer[sid.bufferpos - 1]
 						: 0;
 			}
 			int numSids = 0;
-			int samples = 0;
 			for (ReSIDBase sid : sids) {
-				// determine amount of samples produced
-				samples = samples > 0 ? Math.min(samples, sid.bufferpos)
-						: sid.bufferpos;
 				// detect overflows of a certain chip
 				bufferOverflowState[numSids++] = sid.bufferpos > samples;
 				sid.bufferpos = 0;
