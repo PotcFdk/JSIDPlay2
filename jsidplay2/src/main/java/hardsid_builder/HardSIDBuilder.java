@@ -14,7 +14,6 @@ import libsidplay.common.SIDEmu;
 import libsidplay.sidtune.SidTune;
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
 
 /**
  * <pre>
@@ -82,10 +81,10 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	@Override
-	public SIDEmu lock(EventScheduler evt, IEmulationSection emulationSection,
-			SIDEmu device, int sidNum, SidTune tune) {
-		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune,
-				sidNum);
+	public SIDEmu lock(EventScheduler evt, IConfig config, SIDEmu device,
+			int sidNum, SidTune tune) {
+		ChipModel chipModel = ChipModel.getChipModel(config.getEmulation(),
+				tune, sidNum);
 		if (device == null) {
 			device = lock(evt, chipModel);
 		} else {

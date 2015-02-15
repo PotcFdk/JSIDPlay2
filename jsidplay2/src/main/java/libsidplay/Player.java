@@ -65,7 +65,6 @@ import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.player.DriverSettings;
-import libsidplay.player.FakeStereo;
 import libsidplay.player.PlayList;
 import libsidplay.player.State;
 import libsidplay.player.Timer;
@@ -910,13 +909,6 @@ public class Player {
 				int address = AudioConfig
 						.getSIDAddress(emulation, tune, sidNum);
 				c64.setSIDAddress(address, sidNum);
-				/** Stereo SID at 0xd400 hack */
-				if (sidNum == 1 && Integer.valueOf(0xd400).equals(address)) {
-					final SIDEmu s1 = c64.getSID(0);
-					final SIDEmu s2 = c64.getSID(1);
-					c64.setSID(0, new FakeStereo(c64.getEventScheduler(), s1,
-							s2, emulation));
-				}
 			}
 		}
 	}
@@ -927,12 +919,11 @@ public class Player {
 	public final void updateSIDs() {
 		EventScheduler eventScheduler = c64.getEventScheduler();
 		if (sidBuilder != null) {
-			IEmulationSection emulationSection = config.getEmulation();
 			for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
-				if (AudioConfig.isSIDUsed(emulationSection, tune, sidNum)) {
+				if (AudioConfig.isSIDUsed(config.getEmulation(), tune, sidNum)) {
 					SIDEmu sid = c64.getSID(sidNum);
-					sid = sidBuilder.lock(eventScheduler, emulationSection,
-							sid, sidNum, tune);
+					sid = sidBuilder.lock(eventScheduler, config, sid, sidNum,
+							tune);
 					c64.setSID(sidNum, sid);
 				}
 			}

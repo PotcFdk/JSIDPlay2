@@ -2,19 +2,19 @@ package libsidplay.player;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SIDEmu;
+import libsidplay.common.ReSIDBase;
 import libsidplay.common.SamplingMethod;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IEmulationSection;
 
-public final class FakeStereo extends SIDEmu {
-	private final SIDEmu s1;
-	private final SIDEmu s2;
+public final class FakeStereo extends ReSIDBase {
+	private final ReSIDBase s1;
+	private final ReSIDBase s2;
 	private IEmulationSection emulation;
 
-	public FakeStereo(EventScheduler context, SIDEmu s1, SIDEmu s2,
-			IEmulationSection emulation) {
-		super(context);
+	public FakeStereo(EventScheduler context, ReSIDBase s1, ReSIDBase s2,
+			IEmulationSection emulation, int bufferSize) {
+		super(context, bufferSize);
 		this.s1 = s1;
 		this.s2 = s2;
 		this.emulation = emulation;
@@ -45,6 +45,14 @@ public final class FakeStereo extends SIDEmu {
 	@Override
 	public void clock() {
 		s1.clock();
+		bufferpos = s1.bufferpos;
+		System.arraycopy(s1.buffer, 0, buffer, 0, s1.buffer.length);
+	}
+
+	@Override
+	public void resetBufferPos() {
+		bufferpos = 0;
+		s1.bufferpos = 0;
 	}
 
 	@Override

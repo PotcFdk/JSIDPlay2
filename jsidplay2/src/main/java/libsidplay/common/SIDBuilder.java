@@ -17,7 +17,7 @@ package libsidplay.common;
 
 import libsidplay.sidtune.SidTune;
 import sidplay.ini.intf.IAudioSection;
-import sidplay.ini.intf.IEmulationSection;
+import sidplay.ini.intf.IConfig;
 
 /**
  * @author Ken Händel
@@ -31,7 +31,7 @@ public interface SIDBuilder {
 	 * 
 	 * @return emulated SID chip
 	 */
-	SIDEmu lock(EventScheduler context, IEmulationSection emulationSection,
+	SIDEmu lock(EventScheduler context, IConfig config,
 			SIDEmu device, int sidNum, SidTune tune);
 
 	/**

@@ -9,6 +9,7 @@ import java.util.Random;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import libsidplay.player.FakeStereo;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
@@ -24,7 +25,7 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 		/** State of HP-TPDF. */
 		private int oldRandomValue;
 
-		private final int[] volume = new int[] { 1024, 1024, 1024 };
+		private final float[] volume = new float[] { 1024f, 1024f, 1024f };
 		private final float[] positionL = new float[] { 1, 0, .5f };
 		private final float[] positionR = new float[] { 0, 1, .5f };
 
@@ -34,7 +35,7 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 				1024, 512 };
 
 		private void setVolume(int i, float v) {
-			this.volume[i] = (int) (v * 1024);
+			this.volume[i] = v * 1024;
 			updateFactor();
 		}
 
@@ -102,13 +103,14 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 						: sid.bufferpos;
 				// detect overflows of a certain chip
 				bufferOverflowState[numSids++] = sid.bufferpos > samples;
-				sid.bufferpos = 0;
+				sid.resetBufferPos();
 			}
 			// output sample data
 			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
 				int dither = triangularDithering();
 
-				putSample(sampleIdx, balancedVolumeL, dither);
+				putSample(sampleIdx, channels > 1 ? balancedVolumeL : volume,
+						dither);
 				if (channels > 1) {
 					putSample(sampleIdx, balancedVolumeR, dither);
 				}
@@ -170,6 +172,7 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 		switchToNullDriver(tune);
 	}
 
+	@Override
 	public void start(final EventScheduler context) {
 		this.context = context;
 		/*
@@ -187,15 +190,33 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 		switchToAudioDriver();
 	}
 
+	@Override
 	public int getNumDevices() {
 		return sids.size();
 	}
 
-	public SIDEmu lock(EventScheduler context,
-			IEmulationSection emulationSection, SIDEmu device, int sidNum,
-			SidTune tune) {
-		final ReSIDBase sid = createSIDEmu(context,
-				Emulation.getEmulation(emulationSection, tune, sidNum));
+	@Override
+	public SIDEmu lock(EventScheduler context, IConfig config, SIDEmu device,
+			int sidNum, SidTune tune) {
+		IEmulationSection emulationSection = config.getEmulation();
+		boolean stereo = AudioConfig.isSIDUsed(emulationSection, tune, 1);
+		int stereoAddress = AudioConfig
+				.getSIDAddress(emulationSection, tune, 1);
+
+		ReSIDBase sid;
+		if (stereo && sidNum == 1
+				&& Integer.valueOf(0xd400).equals(stereoAddress)) {
+			/** Stereo SID at 0xd400 hack */
+			final ReSIDBase s1 = createSIDEmu(context,
+					Emulation.getEmulation(emulationSection, tune, sidNum));
+			final ReSIDBase s2 = sids.get(0);
+			sid = new FakeStereo(context, s1, s2, emulationSection, config
+					.getAudio().getBufferSize());
+		} else {
+			/** normal case */
+			sid = createSIDEmu(context,
+					Emulation.getEmulation(emulationSection, tune, sidNum));
+		}
 		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
 		sid.setSampling(cpuClock.getCpuFrequency(), audioConfig.getFrameRate(),
 				audioConfig.getSamplingMethod());
@@ -210,10 +231,12 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 	/**
 	 * No implementation, just builder API compat.
 	 */
+	@Override
 	public void unlock(final SIDEmu sid) {
 		sids.remove(sid);
 	}
 
+	@Override
 	public void setVolume(int num, IAudioSection audio) {
 		float volumeInDB;
 		switch (num) {
@@ -232,6 +255,7 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 		mixerEvent.setVolume(num, (float) Math.pow(10, volumeInDB / 10));
 	}
 
+	@Override
 	public void setBalance(int num, IAudioSection audio) {
 		float balance;
 		switch (num) {

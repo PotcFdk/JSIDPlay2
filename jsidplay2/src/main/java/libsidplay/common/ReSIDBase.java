@@ -6,12 +6,12 @@ public abstract class ReSIDBase extends SIDEmu {
 	/**
 	 * Current position that audio is being written to.
 	 */
-	protected int bufferpos;
+	public int bufferpos;
 
 	/**
 	 * Audio output sample buffer.
 	 */
-	protected int[] buffer;
+	public final int[] buffer;
 
 	/**
 	 * Constructor
@@ -27,4 +27,8 @@ public abstract class ReSIDBase extends SIDEmu {
 		bufferpos = 0;
 	}
 
+	public void resetBufferPos() {
+		bufferpos = 0;
+	}
+	
 }
