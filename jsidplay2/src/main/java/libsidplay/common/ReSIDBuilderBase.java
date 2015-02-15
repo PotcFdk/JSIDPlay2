@@ -9,14 +9,12 @@ import java.util.Random;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import libsidplay.player.FakeStereo;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
 
 public abstract class ReSIDBuilderBase implements SIDBuilder {
 	public class MixerEvent extends Event {
@@ -164,7 +162,7 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 
 	private EventScheduler context;
 
-	public ReSIDBuilderBase(IConfig config, AudioConfig audioConfig,
+	public ReSIDBuilderBase(AudioConfig audioConfig,
 			CPUClock cpuClock, AudioDriver audio, SidTune tune) {
 		this.audioConfig = audioConfig;
 		this.cpuClock = cpuClock;
@@ -198,26 +196,9 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 	@Override
 	public SIDEmu lock(EventScheduler context, IConfig config, SIDEmu device,
 			int sidNum, SidTune tune) {
-		IEmulationSection emulationSection = config.getEmulation();
-		boolean stereo = AudioConfig.isSIDUsed(emulationSection, tune, 1);
-		int stereoAddress = AudioConfig
-				.getSIDAddress(emulationSection, tune, 1);
-
-		ReSIDBase sid;
-		if (stereo && sidNum == 1
-				&& Integer.valueOf(0xd400).equals(stereoAddress)) {
-			/** Stereo SID at 0xd400 hack */
-			final ReSIDBase s1 = createSIDEmu(context,
-					Emulation.getEmulation(emulationSection, tune, sidNum));
-			final ReSIDBase s2 = sids.get(0);
-			sid = new FakeStereo(context, s1, s2, emulationSection, config
-					.getAudio().getBufferSize());
-		} else {
-			/** normal case */
-			sid = createSIDEmu(context,
-					Emulation.getEmulation(emulationSection, tune, sidNum));
-		}
-		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
+		final ReSIDBase sid = createSIDEmu(context, config, tune, sidNum);
+		sid.setChipModel(ChipModel.getChipModel(config.getEmulation(), tune,
+				sidNum));
 		sid.setSampling(cpuClock.getCpuFrequency(), audioConfig.getFrameRate(),
 				audioConfig.getSamplingMethod());
 		if (sidNum < sids.size()) {
@@ -298,6 +279,6 @@ public abstract class ReSIDBuilderBase implements SIDBuilder {
 	}
 
 	protected abstract ReSIDBase createSIDEmu(EventScheduler env,
-			Emulation emulation);
+			IConfig config, SidTune tune, int sidNum);
 
 }

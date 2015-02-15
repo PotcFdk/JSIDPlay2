@@ -851,7 +851,7 @@ public class Player {
 		switch (driverSettings.getEmulation()) {
 		case RESID:
 		case RESIDFP:
-			return new ReSIDBuilder(config, audioConfig, cpuClock,
+			return new ReSIDBuilder(audioConfig, cpuClock,
 					driverSettings.getAudioDriver(), tune);
 		case HARDSID:
 			return new hardsid_builder.HardSIDBuilder(config);
