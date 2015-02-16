@@ -86,7 +86,7 @@ public class ConfigurationTab extends TabBase {
 						reSIDfpFilter8580, reSIDfpStereoFilter6581txt,
 						reSIDfpStereoFilter6581, reSIDfpStereoFilter8580txt,
 						reSIDfpStereoFilter8580 }, isReSidFp);
-				configuration.setEmulation(newValue);
+				configuration.setDefaultEmulation(newValue);
 			} else if (PAR_DEFAULT_MODEL.equals(parName)) {
 				configuration.setDefaultModel(newValue);
 			} else if (PAR_FREQUENCY.equals(parName)) {

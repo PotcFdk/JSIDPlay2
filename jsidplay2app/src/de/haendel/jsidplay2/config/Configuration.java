@@ -45,12 +45,12 @@ public class Configuration implements IConfiguration {
 	private String emulation;
 
 	@Override
-	public String getEmulation() {
+	public String getDefaultEmulation() {
 		return emulation;
 	}
 
 	@Override
-	public void setEmulation(String emulation) {
+	public void setDefaultEmulation(String emulation) {
 		this.emulation = emulation;
 	}
 

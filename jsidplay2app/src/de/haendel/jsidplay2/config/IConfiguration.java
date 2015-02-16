@@ -64,9 +64,9 @@ public interface IConfiguration {
 
 	void setBufferSize(String bufferSize);
 
-	String getEmulation();
+	String getDefaultEmulation();
 
-	void setEmulation(String emulation);
+	void setDefaultEmulation(String emulation);
 
 	boolean isEnableDatabase();
 

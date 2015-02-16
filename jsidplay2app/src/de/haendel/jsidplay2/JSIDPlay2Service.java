@@ -255,7 +255,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 			throws URISyntaxException {
 		StringBuilder query = new StringBuilder();
 		query.append(PAR_BUFFER_SIZE+ "=" + configuration.getBufferSize() + "&");
-		query.append(PAR_EMULATION + "=" + configuration.getEmulation() + "&");
+		query.append(PAR_EMULATION + "=" + configuration.getDefaultEmulation() + "&");
 		query.append(PAR_ENABLE_DATABASE + "="
 				+ configuration.isEnableDatabase() + "&");
 		query.append(PAR_DEFAULT_PLAY_LENGTH + "="

@@ -132,8 +132,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			throws InterruptedException, IOException, SidTuneError {
 		Player player = new Player(config);
 		player.setSidDatabase(getSidDatabase(HVSC_ROOT));
-		player.setDriverSettings(new DriverSettings(new MP3Stream(out), config
-				.getEmulation().getEmulation()));
+		player.setDriverSettings(new DriverSettings(new MP3Stream(out)));
 		player.play(SidTune.load(getAbsoluteFile(resource)));
 		player.waitForC64();
 	}
