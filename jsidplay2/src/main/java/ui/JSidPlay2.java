@@ -963,7 +963,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		hardsid8580Box.setDisable(!Engine.HARDSID.equals(engine));
 		hardsid6581Label.setDisable(!Engine.HARDSID.equals(engine));
 		hardsid8580Label.setDisable(!Engine.HARDSID.equals(engine));
-		util.getPlayer().updateDriverSettings();
 		restart();
 	}
 

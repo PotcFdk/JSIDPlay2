@@ -25,7 +25,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final int DEFAULT_FRAME_HEIGHT = 830;
 	public static final boolean DEFAULT_FULL_SCREEN = false;
 	public static final float DEFAULT_VIDEO_SCALING = 2.f;
-	
+
 	private int version;
 
 	@Override
@@ -327,4 +327,18 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public void setVideoScaling(double videoScaling) {
 		this.videoScaling = videoScaling;
 	}
+
+	private BooleanProperty turboTapeProperty = new SimpleBooleanProperty(
+			DEFAULT_TURBO_TAPE);
+
+	@Override
+	public boolean isTurboTape() {
+		return turboTapeProperty.get();
+	}
+
+	@Override
+	public void setTurboTape(boolean turboTape) {
+		turboTapeProperty.set(turboTape);
+	}
+
 }

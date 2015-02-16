@@ -277,6 +277,12 @@ public class EmulationSettings extends C64Window {
 
 		boosted8580.setSelected(boost8580Enabled);
 
+		emulationChange = new EmulationChange();
+		util.getPlayer().stateProperty().addListener(emulationChange);
+
+		enableStereoSettings();
+
+		duringInitialization = false;
 		calculateFilterCurve(mainFilter.getSelectionModel().getSelectedItem(),
 				0);
 		calculateFilterCurve(
@@ -284,12 +290,6 @@ public class EmulationSettings extends C64Window {
 		calculateFilterCurve(thirdFilter.getSelectionModel().getSelectedItem(),
 				2);
 
-		emulationChange = new EmulationChange();
-		util.getPlayer().stateProperty().addListener(emulationChange);
-
-		enableStereoSettings();
-
-		duringInitialization = false;
 	}
 
 	private void initSidModel(int sidNum) {
@@ -608,7 +608,7 @@ public class EmulationSettings extends C64Window {
 
 	private void updateChipModels() {
 		if (!duringInitialization) {
-			util.getPlayer().updateSIDs();
+			util.getPlayer().createOrUpdateSIDs();
 		}
 	}
 

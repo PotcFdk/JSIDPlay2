@@ -148,6 +148,9 @@ public class ReSIDBuilder implements SIDBuilder {
 
 	}
 
+	/** Configuration **/
+	private IConfig config;
+
 	/** Current audio configuration */
 	private final AudioConfig audioConfig;
 
@@ -170,8 +173,9 @@ public class ReSIDBuilder implements SIDBuilder {
 
 	private EventScheduler context;
 
-	public ReSIDBuilder(AudioConfig audioConfig, CPUClock cpuClock,
-			AudioDriver audio, SidTune tune) {
+	public ReSIDBuilder(IConfig config, AudioConfig audioConfig,
+			CPUClock cpuClock, AudioDriver audio, SidTune tune) {
+		this.config = config;
 		this.audioConfig = audioConfig;
 		this.cpuClock = cpuClock;
 		this.driver = audio;
@@ -191,6 +195,10 @@ public class ReSIDBuilder implements SIDBuilder {
 			buffers = new int[sids.size()][];
 			channels = audioConfig.getChannels();
 			soundBuffer = realDriver.buffer();
+			for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
+				setVolume(sidNum, config.getAudio());
+				setBalance(sidNum, config.getAudio());
+			}
 		}
 		context.schedule(mixerEvent, 0, Event.Phase.PHI2);
 		switchToAudioDriver();
@@ -205,7 +213,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	public SIDEmu lock(EventScheduler context, IConfig config, SIDEmu device,
 			int sidNum, SidTune tune) {
 		synchronized (sids) {
-			final ReSIDBase sid = createSIDEmu(context, config, tune, sidNum);
+			final ReSIDBase sid = createSIDEmu(context, tune, sidNum);
 			sid.setChipModel(ChipModel.getChipModel(config.getEmulation(),
 					tune, sidNum));
 			sid.setSampling(cpuClock.getCpuFrequency(),
@@ -299,8 +307,8 @@ public class ReSIDBuilder implements SIDBuilder {
 	 * 
 	 * @return SID emulation of a specific emulation engine
 	 */
-	protected ReSIDBase createSIDEmu(EventScheduler context, IConfig config,
-			SidTune tune, int sidNum) {
+	protected ReSIDBase createSIDEmu(EventScheduler context, SidTune tune,
+			int sidNum) {
 		final IEmulationSection emulationSection = config.getEmulation();
 		final Emulation emulation = Emulation.getEmulation(emulationSection,
 				tune, sidNum);

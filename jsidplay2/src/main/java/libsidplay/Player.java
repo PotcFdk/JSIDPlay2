@@ -368,6 +368,9 @@ public class Player {
 		datasette.reset();
 		timer.reset();
 
+		// assign SID chip addresses
+		setSIDAddresses();
+
 		// Reset Floppies
 		final IC1541Section c1541 = config.getC1541();
 		for (final C1541 floppy : floppies) {
@@ -434,6 +437,17 @@ public class Player {
 		}
 		ram[0xc6] = (byte) length;
 		command = null;
+	}
+
+	private void setSIDAddresses() {
+		IEmulationSection emulation = config.getEmulation();
+		for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
+			if (AudioConfig.isSIDUsed(emulation, tune, sidNum)) {
+				int address = AudioConfig
+						.getSIDAddress(emulation, tune, sidNum);
+				c64.setSIDAddress(address, sidNum);
+			}
+		}
 	}
 
 	/**
@@ -798,8 +812,8 @@ public class Player {
 
 		if (updateDriverSetting) {
 			updateDriverSetting = false;
-			this.driverSettings = new DriverSettings(config.getAudio()
-					.getAudio().getAudioDriver());
+			driverSettings = new DriverSettings(config.getAudio().getAudio()
+					.getAudioDriver());
 		}
 		driverSettings.getAudioDriver().setRecordingFilenameProvider(
 				recordingFilenameProvider);
@@ -822,19 +836,9 @@ public class Player {
 		}
 
 		// According to the configuration, the SIDs must be updated.
-		updateSIDs();
-
-		// apply filter settings and stereo SID chip address
-		configureSIDs((num, sid) -> {
-			if (sidBuilder != null) {
-				sidBuilder.setVolume(num, config.getAudio());
-				sidBuilder.setBalance(num, config.getAudio());
-			}
-		});
+		createOrUpdateSIDs();
 
 		reset();
-		// must be done after PLA.reset()!
-		setSIDAddresses();
 
 		stateProperty.set(State.RUNNING);
 	}
@@ -847,7 +851,7 @@ public class Player {
 		Engine engine = config.getEmulation().getEngine();
 		switch (engine) {
 		case EMULATION:
-			return new ReSIDBuilder(audioConfig, cpuClock,
+			return new ReSIDBuilder(config, audioConfig, cpuClock,
 					driverSettings.getAudioDriver(), tune);
 		case HARDSID:
 			return new HardSIDBuilder(config);
@@ -896,21 +900,10 @@ public class Player {
 		return newDriverSettings;
 	}
 
-	private void setSIDAddresses() {
-		IEmulationSection emulation = config.getEmulation();
-		for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
-			if (AudioConfig.isSIDUsed(emulation, tune, sidNum)) {
-				int address = AudioConfig
-						.getSIDAddress(emulation, tune, sidNum);
-				c64.setSIDAddress(address, sidNum);
-			}
-		}
-	}
-
 	/**
 	 * Change SIDs according to the configured emulation, chip models.
 	 */
-	public final void updateSIDs() {
+	public final void createOrUpdateSIDs() {
 		EventScheduler eventScheduler = c64.getEventScheduler();
 		if (sidBuilder != null) {
 			for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
@@ -1112,7 +1105,7 @@ public class Player {
 			PRG2TAPProgram program = new PRG2TAPProgram(prog, name);
 
 			PRG2TAP prg2tap = new PRG2TAP();
-			prg2tap.setTurboTape(true); // XXX add configuration
+			prg2tap.setTurboTape(config.getSidplay2().isTurboTape());
 			prg2tap.open(convertedTape);
 			prg2tap.add(program);
 			prg2tap.close(convertedTape);

@@ -2,18 +2,19 @@ package sidplay.ini.intf;
 
 public interface ISidPlay2Section {
 
-	public static final boolean DEFAULT_ENABLE_DATABASE = true;
-	public static final int DEFAULT_PLAY_LENGTH = 3 * 60;
-	public static final boolean DEFAULT_LOOP = false;
-	public static final boolean DEFAULT_SINGLE_TRACK = false;
-	public static final boolean DEFAULT_ENABLE_PROXY = false;
-
+	static final boolean DEFAULT_ENABLE_DATABASE = true;
+	static final int DEFAULT_PLAY_LENGTH = 3 * 60;
+	static final boolean DEFAULT_LOOP = false;
+	static final boolean DEFAULT_SINGLE_TRACK = false;
+	static final boolean DEFAULT_ENABLE_PROXY = false;
+	static final boolean DEFAULT_TURBO_TAPE = true;
+	
 	/**
 	 * Get INI file version.
 	 * 
 	 * @return INI file version
 	 */
-	public int getVersion();
+	int getVersion();
 
 	/**
 	 * Set configuration version
@@ -21,14 +22,14 @@ public interface ISidPlay2Section {
 	 * @param version
 	 *            configuration version
 	 */
-	public void setVersion(int version);
+	void setVersion(int version);
 
 	/**
 	 * Getter of the enable of the Songlengths database.
 	 * 
 	 * @return Is the Songlengths database enabled?
 	 */
-	public boolean isEnableDatabase();
+	boolean isEnableDatabase();
 
 	/**
 	 * Setter of the enable of the Songlengths database.
@@ -36,14 +37,14 @@ public interface ISidPlay2Section {
 	 * @param enable
 	 *            the enable of the Songlengths database
 	 */
-	public void setEnableDatabase(boolean enable);
+	void setEnableDatabase(boolean enable);
 
 	/**
 	 * Getter of the default play length (if the song length is unknown).
 	 * 
 	 * @return default play length
 	 */
-	public int getDefaultPlayLength();
+	int getDefaultPlayLength();
 
 	/**
 	 * Setter of the default play length (if the song length is unknown).
@@ -51,18 +52,18 @@ public interface ISidPlay2Section {
 	 * @param playLength
 	 *            default play length
 	 */
-	public void setDefaultPlayLength(int playLength);
+	void setDefaultPlayLength(int playLength);
 
-	public boolean isLoop();
+	boolean isLoop();
 
-	public void setLoop(boolean loop);
+	void setLoop(boolean loop);
 
 	/**
 	 * Getter of the HVSC collection directory.
 	 * 
 	 * @return the HVSC collection directory
 	 */
-	public String getHvsc();
+	String getHvsc();
 
 	/**
 	 * Setter of the HVSC collection directory.
@@ -70,14 +71,14 @@ public interface ISidPlay2Section {
 	 * @param hvsc
 	 *            the HVSC collection directory
 	 */
-	public void setHvsc(String hvsc);
+	void setHvsc(String hvsc);
 
 	/**
 	 * Do we play a single song per tune?
 	 * 
 	 * @return play a single song per tune
 	 */
-	public boolean isSingle();
+	boolean isSingle();
 
 	/**
 	 * setter to play a single song per tune.
@@ -85,14 +86,14 @@ public interface ISidPlay2Section {
 	 * @param singleSong
 	 *            play a single song per tune
 	 */
-	public void setSingle(boolean singleSong);
+	void setSingle(boolean singleSong);
 
 	/**
 	 * Getter of the last accessed directory in the file browser.
 	 * 
 	 * @return the last accessed directory in the file browser
 	 */
-	public String getLastDirectory();
+	String getLastDirectory();
 
 	/**
 	 * Setter of the last accessed directory in the file browser.
@@ -100,7 +101,7 @@ public interface ISidPlay2Section {
 	 * @param lastDir
 	 *            the last accessed directory in the file browser
 	 */
-	public void setLastDirectory(String lastDir);
+	void setLastDirectory(String lastDir);
 
 	/**
 	 * Getter of the temporary directory for JSIDPlay2.
@@ -109,7 +110,7 @@ public interface ISidPlay2Section {
 	 * 
 	 * @return the temporary directory for JSIDPlay2
 	 */
-	public String getTmpDir();
+	String getTmpDir();
 
 	/**
 	 * Setter of the temporary directory for JSIDPlay2.
@@ -117,6 +118,17 @@ public interface ISidPlay2Section {
 	 * @param path
 	 *            the temporary directory for JSIDPlay2
 	 */
-	public void setTmpDir(String path);
+	void setTmpDir(String path);
 
+	/**
+	 * Getter of convert other programs to turbo-tape or normal tape format
+	 * 
+	 * @return should be converted to turbo tape
+	 */
+	boolean isTurboTape();
+
+	/**
+	 * Setter of convert other programs to turbo-tape or normal tape format
+	 */
+	void setTurboTape(boolean turboTape);
 }
