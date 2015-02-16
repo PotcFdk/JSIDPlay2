@@ -135,20 +135,7 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
-		boolean enable;
-		switch (sidNum) {
-			case 0 :
-				enable = emulation.isFilter();
-				break;
-			case 1 :
-				enable = emulation.isStereoFilter();
-				break;
-			case 2 :
-				enable = emulation.isThirdSIDFilter();
-				break;
-			default :
-				throw new RuntimeException("Maximum supported SIDS exceeded!");
-		}
+		boolean enable = emulation.isFilterEnable(sidNum);
 		hsid2.HardSID_Filter(chipNum, enable);
 	}
 

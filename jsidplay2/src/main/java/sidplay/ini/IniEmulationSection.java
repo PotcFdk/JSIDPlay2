@@ -341,7 +341,7 @@ public class IniEmulationSection extends IniSection implements
 	}
 
 	@Override
-	public final String getReSIDfp3rdSIDFilter6581() {
+	public final String getReSIDfpThirdSIDFilter6581() {
 		return iniReader.getPropertyString("Emulation",
 				"ReSIDfp_3rdSID_Filter6581", DEFAULT_ReSIDfp_3SID_FILTER_6581);
 	}
@@ -358,7 +358,7 @@ public class IniEmulationSection extends IniSection implements
 	}
 
 	@Override
-	public final void setReSIDfp3rdSIDFilter6581(final String filterName) {
+	public final void setReSIDfpThirdSIDFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_3rdSID_Filter6581",
 				filterName);
 	}
@@ -377,7 +377,7 @@ public class IniEmulationSection extends IniSection implements
 	}
 
 	@Override
-	public final String getReSIDfp3rdSIDFilter8580() {
+	public final String getReSIDfpThirdSIDFilter8580() {
 		return iniReader.getPropertyString("Emulation",
 				"ReSIDfp_3rdSID_Filter8580", DEFAULT_ReSIDfp_3SID_FILTER_8580);
 	}
@@ -393,7 +393,7 @@ public class IniEmulationSection extends IniSection implements
 	}
 
 	@Override
-	public final void setReSIDfp3rdSIDFilter8580(final String filterName) {
+	public final void setReSIDfpThirdSIDFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_3rdSID_Filter8580",
 				filterName);
 	}

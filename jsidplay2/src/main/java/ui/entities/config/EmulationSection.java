@@ -386,12 +386,12 @@ public class EmulationSection implements IEmulationSection {
 	private String reSIDfp3rdSIDFilter6581 = DEFAULT_ReSIDfp_3SID_FILTER_6581;
 
 	@Override
-	public String getReSIDfp3rdSIDFilter6581() {
+	public String getReSIDfpThirdSIDFilter6581() {
 		return reSIDfp3rdSIDFilter6581;
 	}
 
 	@Override
-	public void setReSIDfp3rdSIDFilter6581(String reSIDfpFilter6581) {
+	public void setReSIDfpThirdSIDFilter6581(String reSIDfpFilter6581) {
 		this.reSIDfp3rdSIDFilter6581 = reSIDfpFilter6581;
 	}
 
@@ -422,12 +422,12 @@ public class EmulationSection implements IEmulationSection {
 	private String reSIDfp3rdSIDFilter8580 = DEFAULT_ReSIDfp_3SID_FILTER_8580;
 
 	@Override
-	public String getReSIDfp3rdSIDFilter8580() {
+	public String getReSIDfpThirdSIDFilter8580() {
 		return reSIDfp3rdSIDFilter8580;
 	}
 
 	@Override
-	public void setReSIDfp3rdSIDFilter8580(String reSIDfpFilter8580) {
+	public void setReSIDfpThirdSIDFilter8580(String reSIDfpFilter8580) {
 		this.reSIDfp3rdSIDFilter8580 = reSIDfpFilter8580;
 	}
 

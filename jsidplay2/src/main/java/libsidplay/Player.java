@@ -20,6 +20,8 @@
  */
 package libsidplay;
 
+import hardsid_builder.HardSIDBuilder;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -822,21 +824,16 @@ public class Player {
 		// According to the configuration, the SIDs must be updated.
 		updateSIDs();
 
-		final boolean digiBoostEnabled = config.getEmulation()
-				.isDigiBoosted8580();
-
 		// apply filter settings and stereo SID chip address
 		configureSIDs((num, sid) -> {
 			if (sidBuilder != null) {
 				sidBuilder.setVolume(num, config.getAudio());
 				sidBuilder.setBalance(num, config.getAudio());
 			}
-			sid.setFilter(config, num);
-			sid.setFilterEnable(config.getEmulation(), num);
-			sid.input(digiBoostEnabled ? sid.getInputDigiBoost() : 0);
 		});
 
 		reset();
+		// must be done after PLA.reset()!
 		setSIDAddresses();
 
 		stateProperty.set(State.RUNNING);
@@ -853,7 +850,7 @@ public class Player {
 			return new ReSIDBuilder(audioConfig, cpuClock,
 					driverSettings.getAudioDriver(), tune);
 		case HARDSID:
-			return new hardsid_builder.HardSIDBuilder(config);
+			return new HardSIDBuilder(config);
 		case NONE:
 			return null;
 		default:

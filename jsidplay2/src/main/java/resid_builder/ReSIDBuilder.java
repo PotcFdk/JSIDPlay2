@@ -18,6 +18,7 @@ package resid_builder;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -98,29 +99,31 @@ public class ReSIDBuilder implements SIDBuilder {
 		 */
 		@Override
 		public void event() throws InterruptedException {
-			int numSids = 0;
-			int samples = 0;
-			for (ReSIDBase sid : sids) {
-				// clock SID to the present moment
-				sid.clock();
-				buffers[numSids++] = sid.buffer;
-				// determine amount of samples produced (cut-off overflows)
-				samples = samples > 0 ? Math.min(samples, sid.bufferpos)
-						: sid.bufferpos;
-				sid.bufferpos = 0;
-			}
-			// output sample data
-			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
-				int dither = triangularDithering();
-
-				putSample(sampleIdx, channels > 1 ? balancedVolumeL : volume,
-						dither);
-				if (channels > 1) {
-					putSample(sampleIdx, balancedVolumeR, dither);
+			synchronized (sids) {
+				int numSids = 0;
+				int samples = 0;
+				for (ReSIDBase sid : sids) {
+					// clock SID to the present moment
+					sid.clock();
+					buffers[numSids++] = sid.buffer;
+					// determine amount of samples produced (cut-off overflows)
+					samples = samples > 0 ? Math.min(samples, sid.bufferpos)
+							: sid.bufferpos;
+					sid.bufferpos = 0;
 				}
-				if (soundBuffer.remaining() == 0) {
-					driver.write();
-					soundBuffer.clear();
+				// output sample data
+				for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
+					int dither = triangularDithering();
+
+					putSample(sampleIdx, channels > 1 ? balancedVolumeL
+							: volume, dither);
+					if (channels > 1) {
+						putSample(sampleIdx, balancedVolumeR, dither);
+					}
+					if (soundBuffer.remaining() == 0) {
+						driver.write();
+						soundBuffer.clear();
+					}
 				}
 			}
 			context.schedule(this, 10000);
@@ -159,7 +162,8 @@ public class ReSIDBuilder implements SIDBuilder {
 	protected AudioDriver driver, realDriver;
 
 	/** List of SID instances */
-	protected List<ReSIDBase> sids = new ArrayList<ReSIDBase>();
+	protected List<ReSIDBase> sids = Collections
+			.synchronizedList(new ArrayList<ReSIDBase>());
 
 	/** Mixing algorithm */
 	protected final MixerEvent mixerEvent = new MixerEvent();
@@ -183,9 +187,11 @@ public class ReSIDBuilder implements SIDBuilder {
 		 * though.
 		 */
 		context.cancel(mixerEvent);
-		buffers = new int[sids.size()][];
-		channels = audioConfig.getChannels();
-		soundBuffer = realDriver.buffer();
+		synchronized (sids) {
+			buffers = new int[sids.size()][];
+			channels = audioConfig.getChannels();
+			soundBuffer = realDriver.buffer();
+		}
 		context.schedule(mixerEvent, 0, Event.Phase.PHI2);
 		switchToAudioDriver();
 	}
@@ -198,17 +204,23 @@ public class ReSIDBuilder implements SIDBuilder {
 	@Override
 	public SIDEmu lock(EventScheduler context, IConfig config, SIDEmu device,
 			int sidNum, SidTune tune) {
-		final ReSIDBase sid = createSIDEmu(context, config, tune, sidNum);
-		sid.setChipModel(ChipModel.getChipModel(config.getEmulation(), tune,
-				sidNum));
-		sid.setSampling(cpuClock.getCpuFrequency(), audioConfig.getFrameRate(),
-				audioConfig.getSamplingMethod());
-		if (sidNum < sids.size()) {
-			sids.set(sidNum, sid);
-		} else {
-			sids.add(sid);
+		synchronized (sids) {
+			final ReSIDBase sid = createSIDEmu(context, config, tune, sidNum);
+			sid.setChipModel(ChipModel.getChipModel(config.getEmulation(),
+					tune, sidNum));
+			sid.setSampling(cpuClock.getCpuFrequency(),
+					audioConfig.getFrameRate(), audioConfig.getSamplingMethod());
+			sid.setFilter(config, sidNum);
+			sid.setFilterEnable(config.getEmulation(), sidNum);
+			sid.input(config.getEmulation().isDigiBoosted8580() ? sid
+					.getInputDigiBoost() : 0);
+			if (sidNum < sids.size()) {
+				sids.set(sidNum, sid);
+			} else {
+				sids.add(sid);
+			}
+			return sid;
 		}
-		return sid;
 	}
 
 	/**
@@ -299,56 +311,58 @@ public class ReSIDBuilder implements SIDBuilder {
 				.getSIDAddress(emulationSection, tune, 1);
 		if (isStereo && sidNum == 1 && address == stereoAddress) {
 			/** Stereo SID at 0xd400 hack */
-			final ReSIDBase firstSid = sids.get(0);
-			if (emulation.equals(Emulation.RESID)) {
-				return new ReSID(context, config.getAudio().getBufferSize()) {
-					@Override
-					public byte read(int addr) {
-						if (emulationSection.getSidNumToRead() > 0) {
-							return firstSid.read(addr);
+			synchronized (sids) {
+				final ReSIDBase firstSid = sids.get(0);
+				if (emulation.equals(Emulation.RESID)) {
+					return new ReSID(context, config.getAudio().getBufferSize()) {
+						@Override
+						public byte read(int addr) {
+							if (emulationSection.getSidNumToRead() > 0) {
+								return firstSid.read(addr);
+							}
+							return super.read(addr);
 						}
-						return super.read(addr);
-					}
 
-					@Override
-					public byte readInternalRegister(int addr) {
-						if (emulationSection.getSidNumToRead() > 0) {
-							return firstSid.readInternalRegister(addr);
+						@Override
+						public byte readInternalRegister(int addr) {
+							if (emulationSection.getSidNumToRead() > 0) {
+								return firstSid.readInternalRegister(addr);
+							}
+							return super.readInternalRegister(addr);
 						}
-						return super.readInternalRegister(addr);
-					}
 
-					@Override
-					public void write(int addr, byte data) {
-						super.write(addr, data);
-						firstSid.write(addr, data);
-					}
-				};
-			} else if (emulation.equals(Emulation.RESIDFP)) {
-				return new resid_builder.ReSIDfp(context, config.getAudio()
-						.getBufferSize()) {
-					@Override
-					public byte read(int addr) {
-						if (emulationSection.getSidNumToRead() > 0) {
-							return firstSid.read(addr);
+						@Override
+						public void write(int addr, byte data) {
+							super.write(addr, data);
+							firstSid.write(addr, data);
 						}
-						return super.read(addr);
-					}
-
-					@Override
-					public byte readInternalRegister(int addr) {
-						if (emulationSection.getSidNumToRead() > 0) {
-							return firstSid.readInternalRegister(addr);
+					};
+				} else if (emulation.equals(Emulation.RESIDFP)) {
+					return new resid_builder.ReSIDfp(context, config.getAudio()
+							.getBufferSize()) {
+						@Override
+						public byte read(int addr) {
+							if (emulationSection.getSidNumToRead() > 0) {
+								return firstSid.read(addr);
+							}
+							return super.read(addr);
 						}
-						return super.readInternalRegister(addr);
-					}
 
-					@Override
-					public void write(int addr, byte data) {
-						super.write(addr, data);
-						firstSid.write(addr, data);
-					}
-				};
+						@Override
+						public byte readInternalRegister(int addr) {
+							if (emulationSection.getSidNumToRead() > 0) {
+								return firstSid.readInternalRegister(addr);
+							}
+							return super.readInternalRegister(addr);
+						}
+
+						@Override
+						public void write(int addr, byte data) {
+							super.write(addr, data);
+							firstSid.write(addr, data);
+						}
+					};
+				}
 			}
 		}
 		/** normal case **/

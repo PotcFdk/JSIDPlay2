@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import libsidplay.common.ChipModel;
+import libsidplay.common.Emulation;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SamplingMethod;
 import resid_builder.ReSIDBuilder.MixerEvent;
@@ -86,20 +87,7 @@ public class ReSID extends ReSIDBase {
 
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
-		boolean enable;
-		switch (sidNum) {
-		case 0:
-			enable = emulation.isFilter();
-			break;
-		case 1:
-			enable = emulation.isStereoFilter();
-			break;
-		case 2:
-			enable = emulation.isThirdSIDFilter();
-			break;
-		default:
-			throw new RuntimeException("Maximum supported SIDS exceeded!");
-		}
+		boolean enable = emulation.isFilterEnable(sidNum);
 		sid.getFilter6581().enable(enable);
 		sid.getFilter8580().enable(enable);
 	}
@@ -109,27 +97,10 @@ public class ReSID extends ReSIDBase {
 		final Filter6581 filter6581 = sid.getFilter6581();
 		final Filter8580 filter8580 = sid.getFilter8580();
 
-		String filterName6581 = null;
-		String filterName8580 = null;
-		switch (sidNum) {
-		case 0:
-			filterName6581 = config.getEmulation().getFilter6581();
-			filterName8580 = config.getEmulation().getFilter8580();
-			break;
-
-		case 1:
-			filterName6581 = config.getEmulation().getStereoFilter6581();
-			filterName8580 = config.getEmulation().getStereoFilter8580();
-			break;
-
-		case 2:
-			filterName6581 = config.getEmulation().getThirdSIDFilter6581();
-			filterName8580 = config.getEmulation().getThirdSIDFilter8580();
-			break;
-
-		default:
-			break;
-		}
+		String filterName6581 = config.getEmulation().getFilterName(sidNum,
+				Emulation.RESID, ChipModel.MOS6581);
+		String filterName8580 = config.getEmulation().getFilterName(sidNum,
+				Emulation.RESID, ChipModel.MOS8580);
 		for (IFilterSection filter : config.getFilter()) {
 			if (filter.getName().equals(filterName6581)
 					&& filter.isReSIDFilter6581()) {
