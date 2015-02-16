@@ -105,7 +105,7 @@ public class JSIDPlay2ServiceREST {
 		cfg.getAudio().setBufferSize(bufferSize);
 		cfg.getAudio().setSampling(samplingMethod);
 		cfg.getAudio().setFrequency(frequency);
-		cfg.getEmulation().setEmulation(emulation);
+		cfg.getEmulation().setDefaultEmulation(emulation);
 		cfg.getEmulation().setDefaultSidModel(defaultSidModel);
 		cfg.getEmulation().setFilter6581(filter6581);
 		cfg.getEmulation().setStereoFilter6581(stereoFilter6581);
