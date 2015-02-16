@@ -24,12 +24,15 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.collections.FXCollections?> 
 <?import java.lang.Integer?>
 <?import java.lang.String?>
 <?import java.net.URL?>
-<?import libsidplay.common.Emulation?>
+<?import libsidplay.common.Engine?>
 <?import libsidplay.common.SamplingMethod?>
 <?import libsidplay.common.CPUClock?>
 <?import sidplay.audio.Audio?>
@@ -44,9 +47,6 @@
 <?import ui.console.Console?>
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
 <?scenebuilder-classpath-element ../../../../target/classes?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.RadioButton?>
 <Scene>
 	<stylesheets>
 		<URL value="@JSidPlay2.css" />
@@ -377,13 +377,12 @@
 								</FXCollections>
 							</items>
 						</ComboBox>
-						<ComboBox onAction="#setEmulation" fx:id="emulationBox">
+						<ComboBox onAction="#setEngine" fx:id="engineBox">
 							<items>
 								<FXCollections fx:factory="observableArrayList">
-									<Emulation fx:value="RESID" />
-									<Emulation fx:value="RESIDFP" />
-									<Emulation fx:value="HARDSID" />
-									<Emulation fx:value="NONE" />
+									<Engine fx:value="EMULATION" />
+									<Engine fx:value="HARDSID" />
+									<Engine fx:value="NONE" />
 								</FXCollections>
 							</items>
 						</ComboBox>
