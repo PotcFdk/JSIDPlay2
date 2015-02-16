@@ -7,24 +7,76 @@ import javax.persistence.Enumerated;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.Engine;
 import sidplay.ini.intf.IEmulationSection;
 
 @Embeddable
 public class EmulationSection implements IEmulationSection {
 
-	private Emulation emulation = DEFAULT_EMULATION;
+	private Engine engine = DEFAULT_ENGINE;
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public Emulation getEmulation() {
-		return this.emulation;
+	public Engine getEngine() {
+		return this.engine;
 	}
 
 	@Override
-	public void setEmulation(Emulation emulation) {
-		this.emulation = emulation;
+	public void setEngine(Engine engine) {
+		this.engine = engine;
 	}
 
+	private Emulation defaultEmulation = DEFAULT_EMULATION;
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public Emulation getDefaultEmulation() {
+		return this.defaultEmulation;
+	}
+
+	@Override
+	public void setDefaultEmulation(Emulation emulation) {
+		this.defaultEmulation = emulation;
+	}
+
+	private Emulation userEmulation;
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public Emulation getUserEmulation() {
+		return this.userEmulation;
+	}
+
+	@Override
+	public void setUserEmulation(Emulation userEmulation) {
+		this.userEmulation = userEmulation;
+	}
+
+	private Emulation stereoEmulation;
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public Emulation getStereoEmulation() {
+		return this.stereoEmulation;
+	}
+
+	@Override
+	public void setStereoEmulation(Emulation stereoEmulation) {
+		this.stereoEmulation = stereoEmulation;
+	}
+
+	private Emulation thirdEmulation;
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public Emulation getThirdEmulation() {
+		return this.thirdEmulation;
+	}
+
+	@Override
+	public void setThirdEmulation(Emulation thirdEmulation) {
+		this.thirdEmulation = thirdEmulation;
+	}
 	private CPUClock defaultClockSpeed = DEFAULT_CLOCK_SPEED;
 
 	@Enumerated(EnumType.STRING)
@@ -379,42 +431,4 @@ public class EmulationSection implements IEmulationSection {
 		this.reSIDfp3rdSIDFilter8580 = reSIDfpFilter8580;
 	}
 
-	private Emulation userEmulation;
-
-	@Enumerated(EnumType.STRING)
-	@Override
-	public Emulation getUserEmulation() {
-		return this.userEmulation;
-	}
-
-	@Override
-	public void setUserEmulation(Emulation userEmulation) {
-		this.userEmulation = userEmulation;
-	}
-
-	private Emulation stereoEmulation;
-
-	@Enumerated(EnumType.STRING)
-	@Override
-	public Emulation getStereoEmulation() {
-		return this.stereoEmulation;
-	}
-
-	@Override
-	public void setStereoEmulation(Emulation stereoEmulation) {
-		this.stereoEmulation = stereoEmulation;
-	}
-
-	private Emulation thirdEmulation;
-
-	@Enumerated(EnumType.STRING)
-	@Override
-	public Emulation getThirdEmulation() {
-		return this.thirdEmulation;
-	}
-
-	@Override
-	public void setThirdEmulation(Emulation thirdEmulation) {
-		this.thirdEmulation = thirdEmulation;
-	}
 }

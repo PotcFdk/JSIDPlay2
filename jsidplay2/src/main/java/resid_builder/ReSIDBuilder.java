@@ -294,10 +294,10 @@ public class ReSIDBuilder implements SIDBuilder {
 				tune, sidNum);
 
 		boolean isStereo = AudioConfig.isSIDUsed(emulationSection, tune, 1);
+		int address = AudioConfig.getSIDAddress(emulationSection, tune, 0);
 		int stereoAddress = AudioConfig
 				.getSIDAddress(emulationSection, tune, 1);
-		if (isStereo && sidNum == 1
-				&& Integer.valueOf(0xd400).equals(stereoAddress)) {
+		if (isStereo && sidNum == 1 && address == stereoAddress) {
 			/** Stereo SID at 0xd400 hack */
 			final ReSIDBase firstSid = sids.get(0);
 			if (emulation.equals(Emulation.RESID)) {

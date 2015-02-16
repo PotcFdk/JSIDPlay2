@@ -3,8 +3,10 @@ package sidplay.ini.intf;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.Engine;
 
 public interface IEmulationSection {
+	public static final Engine DEFAULT_ENGINE = Engine.EMULATION;
 	public static final Emulation DEFAULT_EMULATION = Emulation.RESID;
 	public static final CPUClock DEFAULT_CLOCK_SPEED = CPUClock.PAL;
 	public static final ChipModel DEFAULT_SID_MODEL = ChipModel.MOS6581;
@@ -21,7 +23,6 @@ public interface IEmulationSection {
 	public static final boolean DEFAULT_FORCE_3SID_TUNE = false;
 	public static final ChipModel DEFAULT_STEREO_SID_MODEL = ChipModel.MOS6581;
 	public static final ChipModel DEFAULT_3RD_SID_MODEL = ChipModel.MOS6581;
-
 
 	public static final String DEFAULT_FILTER_6581 = "FilterAverage6581";
 	public static final String DEFAULT_STEREO_FILTER_6581 = "FilterAverage6581";
@@ -40,19 +41,79 @@ public interface IEmulationSection {
 	public static final String DEFAULT_ReSIDfp_3SID_FILTER_8580 = "FilterTrurl8580R5_3691";
 
 	/**
-	 * Getter of the emulation to be used.
+	 * Getter of the SID engine to be used.
 	 * 
 	 * @return the emulation to be used
 	 */
-	public Emulation getEmulation();
+	public Engine getEngine();
 
 	/**
-	 * Setter of the emulation to be used.
+	 * Setter of the SID engine to be used.
 	 * 
 	 * @param emulation
 	 *            emulation to be used
 	 */
-	public void setEmulation(Emulation emulation);
+	public void setEngine(Engine engine);
+
+	/**
+	 * Getter of the default emulation to be used.
+	 * 
+	 * @return the default emulation to be used
+	 */
+	public Emulation getDefaultEmulation();
+
+	/**
+	 * Setter of the first SIDs user emulation to be used.
+	 * 
+	 * @param emulation
+	 *            first SIDs user emulation to be used
+	 */
+	public void setUserEmulation(Emulation emulation);
+
+	/**
+	 * Getter of the first SIDs user emulation to be used.
+	 * 
+	 * @return the first SIDs user emulation to be used
+	 */
+	public Emulation getUserEmulation();
+
+	/**
+	 * Setter of the second SIDs user emulation to be used.
+	 * 
+	 * @param emulation
+	 *            second SIDs user emulation to be used
+	 */
+	public void setStereoEmulation(Emulation emulation);
+
+	/**
+	 * Getter of the second SIDs user emulation to be used.
+	 * 
+	 * @return the second SIDs user emulation to be used
+	 */
+	public Emulation getStereoEmulation();
+
+	/**
+	 * Setter of the third SIDs user emulation to be used.
+	 * 
+	 * @param emulation
+	 *            third SIDs user emulation to be used
+	 */
+	public void setThirdEmulation(Emulation emulation);
+
+	/**
+	 * Getter of the third SIDs user emulation to be used.
+	 * 
+	 * @return the third SIDs user emulation to be used
+	 */
+	public Emulation getThirdEmulation();
+
+	/**
+	 * Setter of the default emulation to be used.
+	 * 
+	 * @param emulation
+	 *            default emulation to be used
+	 */
+	public void setDefaultEmulation(Emulation emulation);
 
 	/**
 	 * Getter of the default clock speed.
@@ -355,16 +416,4 @@ public interface IEmulationSection {
 	 */
 	public void setThirdSIDModel(ChipModel model);
 
-	public Emulation getUserEmulation();
-	
-	public void setUserEmulation(Emulation emulation);
-	
-	public Emulation getStereoEmulation();
-	
-	public void setStereoEmulation(Emulation emulation);
-	
-	public Emulation getThirdEmulation();
-	
-	public void setThirdEmulation(Emulation emulation);
-	
 }

@@ -15,6 +15,7 @@ import libsidplay.Player;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.Engine;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
@@ -74,8 +75,11 @@ public class ConsolePlayer {
 	@Parameter(names = { "--deviceIndex", "-A" }, descriptionKey = "DEVICEINDEX")
 	private Integer deviceIdx;
 
-	@Parameter(names = { "--emulation", "-e" }, descriptionKey = "EMULATION")
-	private Emulation emulation = Emulation.RESID;
+	@Parameter(names = { "--engine", "-E" }, descriptionKey = "ENGINE")
+	private Engine engine = Engine.EMULATION;
+
+	@Parameter(names = { "--defaultEmulation", "-e" }, descriptionKey = "DEFAULT_EMULATION")
+	private Emulation defaultEmulation = Emulation.RESID;
 
 	@Parameter(names = { "--recordingFilename", "-r" }, descriptionKey = "RECORDING_FILENAME")
 	private String recordingFilename = "jsidplay2";
@@ -161,13 +165,12 @@ public class ConsolePlayer {
 			try {
 				Info info = devices.get(deviceIdx).getInfo();
 				js.setAudioDevice(info);
-			} catch (IndexOutOfBoundsException
-					| LineUnavailableException e) {
+			} catch (IndexOutOfBoundsException | LineUnavailableException e) {
 				int deviceIdx = 0;
 				for (Device device : JavaSound.getDevices()) {
-					System.err.printf("device %d = %s (%s)\n",
-							(deviceIdx++), device.getInfo().getName(),
-							device.getInfo().getDescription());
+					System.err.printf("device %d = %s (%s)\n", (deviceIdx++),
+							device.getInfo().getName(), device.getInfo()
+									.getDescription());
 				}
 				System.err.println(e.getMessage());
 				exit(1);
@@ -180,7 +183,8 @@ public class ConsolePlayer {
 		config.getSidplay2().setEnableDatabase(enableSidDatabase);
 		config.getAudio().setAudio(audio);
 		config.getAudio().setFrequency(frequency);
-		config.getEmulation().setEmulation(emulation);
+		config.getEmulation().setEngine(engine);
+		config.getEmulation().setDefaultEmulation(defaultEmulation);
 		config.getEmulation().setForceStereoTune(dualSID);
 		config.getEmulation().setForce3SIDTune(thirdSID);
 		config.getEmulation().setUserClockSpeed(forceClock);

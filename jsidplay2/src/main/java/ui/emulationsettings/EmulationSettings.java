@@ -80,6 +80,8 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	protected ComboBox<ChipModel> defaultModel;
 	@FXML
+	protected ComboBox<Emulation> defaultEmulation;
+	@FXML
 	private ComboBox<String> stereoMode, mainFilter, secondFilter, thirdFilter,
 			sidToRead;
 	@FXML
@@ -99,6 +101,7 @@ public class EmulationSettings extends C64Window {
 	private ObservableList<Object> sid1Emulations, sid2Emulations,
 			sid3Emulations;
 	private ObservableList<ChipModel> defaultModels;
+	private ObservableList<Emulation> defaultEmulations;
 	private ObservableList<String> stereoModes, sidReads, mainFilters,
 			secondFilters, thirdFilters;
 
@@ -253,6 +256,10 @@ public class EmulationSettings extends C64Window {
 		defaultModels.addAll(ChipModel.MOS6581, ChipModel.MOS8580);
 		defaultModel.setItems(defaultModels);
 
+		defaultEmulations = FXCollections.<Emulation> observableArrayList();
+		defaultEmulations.addAll(Emulation.RESID, Emulation.RESIDFP);
+		defaultEmulation.setItems(defaultEmulations);
+
 		ChipModel userSidModel = util.getConfig().getEmulation()
 				.getUserSidModel();
 		sid1Model.getSelectionModel().select(
@@ -286,6 +293,9 @@ public class EmulationSettings extends C64Window {
 		ChipModel defautSidModel = util.getConfig().getEmulation()
 				.getDefaultSidModel();
 		defaultModel.getSelectionModel().select(defautSidModel);
+		Emulation defaultSidEmulation = util.getConfig().getEmulation()
+				.getDefaultEmulation();
+		defaultEmulation.getSelectionModel().select(defaultSidEmulation);
 
 		boosted8580.setSelected(boost8580Enabled);
 
@@ -449,6 +459,17 @@ public class EmulationSettings extends C64Window {
 				.getPlayer().getTune(), 2);
 		addFilters(thirdModel, 2);
 		updateChipModels();
+	}
+
+	@FXML
+	private void setDefaultEmulation() {
+		EmulationSection emulationSection = util.getConfig().getEmulation();
+		Emulation defaultSidEmulation = (Emulation) defaultEmulation
+				.getSelectionModel().getSelectedItem();
+		emulationSection.setDefaultEmulation(defaultSidEmulation);
+		setSid1Model();
+		setSid2Model();
+		setSid3Model();
 	}
 
 	@FXML

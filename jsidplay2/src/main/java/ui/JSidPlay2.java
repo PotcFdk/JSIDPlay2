@@ -48,7 +48,7 @@ import libsidplay.C64;
 import libsidplay.Player;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
-import libsidplay.common.Emulation;
+import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -165,7 +165,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private ComboBox<Device> devicesBox;
 	@FXML
-	private ComboBox<Emulation> emulationBox;
+	private ComboBox<Engine> engineBox;
 	@FXML
 	private CheckBox enableSldb, singleSong;
 	@FXML
@@ -300,13 +300,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				Integer.valueOf(util.getConfig().getEmulation()
 						.getHardsid8580()));
 
-		Emulation emulation = util.getConfig().getEmulation().getEmulation();
-		emulationBox.getSelectionModel().select(emulation);
-
-		hardsid6581Box.setDisable(!Emulation.HARDSID.equals(emulation));
-		hardsid8580Box.setDisable(!Emulation.HARDSID.equals(emulation));
-		hardsid6581Label.setDisable(!Emulation.HARDSID.equals(emulation));
-		hardsid8580Label.setDisable(!Emulation.HARDSID.equals(emulation));
+		Engine engine = util.getConfig().getEmulation().getEngine();
+		engineBox.getSelectionModel().select(engine);
 
 		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
 				.getSidplay2();
@@ -954,20 +949,20 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	@FXML
-	private void setEmulation() {
-		Emulation emulation = emulationBox.getSelectionModel()
+	private void setEngine() {
+		Engine engine = engineBox.getSelectionModel()
 				.getSelectedItem();
-		util.getConfig().getEmulation().setEmulation(emulation);
-		if (Emulation.HARDSID.equals(emulation)) {
+		util.getConfig().getEmulation().setEngine(engine);
+		if (Engine.HARDSID.equals(engine)) {
 			audioBox.getSelectionModel().select(Audio.NONE);
 		} else if (Audio.NONE.equals(audioBox.getSelectionModel()
 				.getSelectedItem())) {
 			audioBox.getSelectionModel().select(Audio.SOUNDCARD);
 		}
-		hardsid6581Box.setDisable(!Emulation.HARDSID.equals(emulation));
-		hardsid8580Box.setDisable(!Emulation.HARDSID.equals(emulation));
-		hardsid6581Label.setDisable(!Emulation.HARDSID.equals(emulation));
-		hardsid8580Label.setDisable(!Emulation.HARDSID.equals(emulation));
+		hardsid6581Box.setDisable(!Engine.HARDSID.equals(engine));
+		hardsid8580Box.setDisable(!Engine.HARDSID.equals(engine));
+		hardsid6581Label.setDisable(!Engine.HARDSID.equals(engine));
+		hardsid8580Label.setDisable(!Engine.HARDSID.equals(engine));
 		util.getPlayer().updateDriverSettings();
 		restart();
 	}

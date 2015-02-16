@@ -8,7 +8,7 @@ import java.net.URL;
 import java.util.HashMap;
 
 import libsidplay.Player;
-import libsidplay.common.Emulation;
+import libsidplay.common.Engine;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.audio.Audio;
@@ -111,7 +111,7 @@ public class SIDPlay extends Applet {
 	 * Use JSIDPlay2 emulation for the next song.
 	 */
 	public void useEmulation() {
-		config.getEmulation().setEmulation(Emulation.HARDSID);
+		config.getEmulation().setEngine(Engine.EMULATION);
 		config.getAudio().setAudio(Audio.NONE);
 	}
 
@@ -119,7 +119,7 @@ public class SIDPlay extends Applet {
 	 * Use HardSID4U for the next song.
 	 */
 	public void useHardSID() {
-		config.getEmulation().setEmulation(Emulation.RESID);
+		config.getEmulation().setEngine(Engine.HARDSID);
 		config.getAudio().setAudio(Audio.SOUNDCARD);
 	}
 

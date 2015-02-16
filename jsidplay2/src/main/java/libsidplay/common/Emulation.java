@@ -4,14 +4,10 @@ import libsidplay.sidtune.SidTune;
 import sidplay.ini.intf.IEmulationSection;
 
 public enum Emulation {
-	/** No emulation. */
-	NONE(""),
 	/** Dag Lem's resid 1.0 beta */
 	RESID("Dag Lem's resid 1.0 beta"),
 	/** Antti S. Lankila's resid-fp */
-	RESIDFP("Antti S. Lankila's resid-fp"),
-	/** Hardware */
-	HARDSID("HardSID Hardware");
+	RESIDFP("Antti S. Lankila's resid-fp");
 
 	private final String description;
 
@@ -31,7 +27,7 @@ public enum Emulation {
 		switch (sidNum) {
 		case 0:
 			forcedEmulation = emulationSection.getUserEmulation();
-			defaultEmulation = emulationSection.getEmulation();
+			defaultEmulation = emulationSection.getDefaultEmulation();
 			break;
 		case 1:
 			forcedEmulation = emulationSection.getStereoEmulation();

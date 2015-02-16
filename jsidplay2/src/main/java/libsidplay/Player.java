@@ -39,7 +39,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import libsidplay.common.CPUClock;
-import libsidplay.common.Emulation;
+import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -215,7 +215,7 @@ public class Player {
 	public Player(IConfig config) {
 		this.config = config;
 		this.driverSettings = new DriverSettings(config.getAudio().getAudio()
-				.getAudioDriver(), config.getEmulation().getEmulation());
+				.getAudioDriver());
 
 		this.iecBus = new IECBus();
 
@@ -797,8 +797,7 @@ public class Player {
 		if (updateDriverSetting) {
 			updateDriverSetting = false;
 			this.driverSettings = new DriverSettings(config.getAudio()
-					.getAudio().getAudioDriver(), config.getEmulation()
-					.getEmulation());
+					.getAudio().getAudioDriver());
 		}
 		driverSettings.getAudioDriver().setRecordingFilenameProvider(
 				recordingFilenameProvider);
@@ -848,9 +847,9 @@ public class Player {
 	 */
 	private SIDBuilder createSIDBuilder(CPUClock cpuClock,
 			AudioConfig audioConfig) {
-		switch (driverSettings.getEmulation()) {
-		case RESID:
-		case RESIDFP:
+		Engine engine = config.getEmulation().getEngine();
+		switch (engine) {
+		case EMULATION:
 			return new ReSIDBuilder(audioConfig, cpuClock,
 					driverSettings.getAudioDriver(), tune);
 		case HARDSID:
@@ -858,8 +857,7 @@ public class Player {
 		case NONE:
 			return null;
 		default:
-			throw new RuntimeException("Unknown emulation type: "
-					+ driverSettings.getEmulation());
+			throw new RuntimeException("Unknown engine type: " + engine);
 		}
 	}
 
@@ -888,8 +886,7 @@ public class Player {
 		}
 		if (tune instanceof MP3Tune) {
 			// Change MP3 settings for MP3 play-back
-			newDriverSettings = new DriverSettings(new CmpMP3File(),
-					Emulation.RESID);
+			newDriverSettings = new DriverSettings(new CmpMP3File());
 			config.getAudio().setPlayOriginal(true);
 			config.getAudio().setMp3File(((MP3Tune) tune).getMP3Filename());
 		}
