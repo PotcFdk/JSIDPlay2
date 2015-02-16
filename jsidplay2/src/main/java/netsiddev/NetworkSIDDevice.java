@@ -298,8 +298,6 @@ public class NetworkSIDDevice extends Application {
 	/**
 	 * Construct the SID object suite.
 	 * 
-	 * TODO: we should read these things off configuration file.
-	 * 
 	 * @param sidNumber
 	 */
 	protected static SIDChip getSidConfig(int sidNumber) {
