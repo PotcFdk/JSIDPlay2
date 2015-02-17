@@ -31,32 +31,35 @@
 	<ScrollPane>
 		<VBox>
 			<TitledPane text="%VOLUME_CONTROL">
-				<HBox>
-					<VBox>
+				<GridPane>
+					<VBox GridPane.columnIndex="0" GridPane.rowIndex="0"
+						GridPane.hgrow="ALWAYS">
+						<Label text="%MAIN_SID_LEVEL" />
+						<Slider fx:id="mainVolume" min="0" max="12" value="12"
+							blockIncrement="1" majorTickUnit="0.1" />
 						<Label text="%MAIN_BALANCE" />
 						<Slider fx:id="mainBalance" min="0" max="1" value="0"
 							blockIncrement="0.1" />
-						<Slider fx:id="mainVolume" min="0" max="12" value="12"
-							blockIncrement="1" majorTickUnit="0.1" />
-						<Label text="%MAIN_SID_LEVEL" />
 					</VBox>
-					<VBox>
+					<VBox GridPane.columnIndex="1" GridPane.rowIndex="0"
+						GridPane.hgrow="ALWAYS">
+						<Label text="%SECOND_SID_LEVEL" />
+						<Slider fx:id="secondVolume" min="0" max="12" value="12"
+							blockIncrement="1" />
 						<Label text="%SECOND_BALANCE" />
 						<Slider fx:id="secondBalance" min="0" max="1" value="1"
 							blockIncrement="0.1" />
-						<Slider fx:id="secondVolume" min="0" max="12" value="12"
-							blockIncrement="1" />
-						<Label text="%SECOND_SID_LEVEL" />
 					</VBox>
-					<VBox>
+					<VBox GridPane.columnIndex="2" GridPane.rowIndex="0"
+						GridPane.hgrow="ALWAYS">
 						<Label text="%THIRD_BALANCE" />
-						<Slider fx:id="thirdBalance" min="0" max="1" value="1"
-							blockIncrement="0.1" />
 						<Slider fx:id="thirdVolume" min="0" max="12" value="12"
 							blockIncrement="1" />
 						<Label text="%THIRD_SID_LEVEL" />
+						<Slider fx:id="thirdBalance" min="0" max="1" value="1"
+							blockIncrement="0.1" />
 					</VBox>
-				</HBox>
+				</GridPane>
 			</TitledPane>
 			<TitledPane text="%SID_CONTROL">
 				<VBox>
@@ -88,8 +91,8 @@
 				</VBox>
 			</TitledPane>
 			<TitledPane text="%FILTER">
-				<HBox>
-					<BorderPane>
+				<GridPane>
+					<BorderPane GridPane.columnIndex="0">
 						<top>
 							<VBox>
 								<HBox>
@@ -123,7 +126,7 @@
 							</VBox>
 						</center>
 					</BorderPane>
-					<BorderPane>
+					<BorderPane GridPane.columnIndex="1">
 						<top>
 							<VBox>
 								<HBox>
@@ -159,7 +162,7 @@
 							</FlowPane>
 						</center>
 					</BorderPane>
-					<BorderPane>
+					<BorderPane GridPane.columnIndex="2">
 						<top>
 							<VBox>
 								<HBox>
@@ -195,7 +198,7 @@
 							</FlowPane>
 						</center>
 					</BorderPane>
-				</HBox>
+				</GridPane>
 			</TitledPane>
 		</VBox>
 	</ScrollPane>
