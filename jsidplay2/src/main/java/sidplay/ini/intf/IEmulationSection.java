@@ -21,8 +21,6 @@ public interface IEmulationSection {
 	static final int DEFAULT_THIRD_SID_BASE = 0xd440;
 	static final boolean DEFAULT_FORCE_STEREO_TUNE = false;
 	static final boolean DEFAULT_FORCE_3SID_TUNE = false;
-	static final ChipModel DEFAULT_STEREO_SID_MODEL = ChipModel.MOS6581;
-	static final ChipModel DEFAULT_3RD_SID_MODEL = ChipModel.MOS6581;
 
 	static final String DEFAULT_FILTER_6581 = "FilterAverage6581";
 	static final String DEFAULT_STEREO_FILTER_6581 = "FilterAverage6581";

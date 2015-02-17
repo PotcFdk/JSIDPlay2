@@ -22,15 +22,16 @@
 <?import ui.common.KnobSkin?>
 <?import ui.emulationsettings.LogarithmicAxis?>
 <?scenebuilder-preview-i18n-resource EmulationSettings.properties?>
+<?import javafx.scene.control.ScrollPane?>
 
-<Scene xmlns:fx="http://javafx.com/fxml">
+<Scene xmlns:fx="http://javafx.com/fxml" width="1024" height="768">
 	<stylesheets>
 		<URL value="@EmulationSettings.css" />
 	</stylesheets>
-	<VBox>
-		<TitledPane text="%VOLUME_CONTROL" collapsible="false">
-			<BorderPane>
-				<left>
+	<ScrollPane>
+		<VBox>
+			<TitledPane text="%VOLUME_CONTROL">
+				<HBox>
 					<VBox>
 						<Label text="%MAIN_BALANCE" />
 						<Slider fx:id="mainBalance" min="0" max="1" value="0"
@@ -39,8 +40,6 @@
 							blockIncrement="1" majorTickUnit="0.1" />
 						<Label text="%MAIN_SID_LEVEL" />
 					</VBox>
-				</left>
-				<center>
 					<VBox>
 						<Label text="%SECOND_BALANCE" />
 						<Slider fx:id="secondBalance" min="0" max="1" value="1"
@@ -49,8 +48,6 @@
 							blockIncrement="1" />
 						<Label text="%SECOND_SID_LEVEL" />
 					</VBox>
-				</center>
-				<right>
 					<VBox>
 						<Label text="%THIRD_BALANCE" />
 						<Slider fx:id="thirdBalance" min="0" max="1" value="1"
@@ -59,140 +56,147 @@
 							blockIncrement="1" />
 						<Label text="%THIRD_SID_LEVEL" />
 					</VBox>
-				</right>
-			</BorderPane>
-		</TitledPane>
-		<TitledPane text="%SID_CONTROL" collapsible="false">
-			<VBox>
-				<HBox>
-					<Label text="%STEREO_MODE" />
-					<ComboBox fx:id="stereoMode" onAction="#setStereoMode"
-						maxWidth="200" />
-					<TextField fx:id="baseAddress" onAction="#setBaseAddress">
-						<tooltip>
-							<Tooltip text="%BASE_ADDRESS_TIP" />
-						</tooltip>
-					</TextField>
-					<TextField fx:id="thirdAddress" onAction="#setThirdAddress" />
-					<Label text="%SID_READ" />
-					<ComboBox fx:id="sidToRead" onAction="#setSidToRead">
-						<tooltip>
-							<Tooltip text="%SID_READ_TIP" />
-						</tooltip>
-					</ComboBox>
-					<Label text="%DEFAULT_EMULATION" />
-					<ComboBox fx:id="defaultEmulation" onAction="#setDefaultEmulation" />
-					<Label text="%DEFAULT_SID" />
-					<ComboBox fx:id="defaultModel" onAction="#setDefaultModel" />
-					<CheckBox text="%DIGI_BOOST" fx:id="boosted8580" onAction="#setDigiBoost" />
 				</HBox>
-			</VBox>
-		</TitledPane>
-		<TitledPane text="%FILTER" collapsible="false">
-			<HBox>
-				<BorderPane>
-					<bottom>
-						<FlowPane orientation="VERTICAL" BorderPane.alignment="CENTER">
-							<FlowPane>
-								<Label text="%MAIN_EMULATION" />
-								<ComboBox fx:id="sid1Emulation" onAction="#setSid1Emulation"
-									maxWidth="150" />
-								<Label text="%MAIN_MODEL" />
-								<ComboBox fx:id="sid1Model" onAction="#setSid1Model" />
+			</TitledPane>
+			<TitledPane text="%SID_CONTROL">
+				<VBox>
+					<HBox>
+						<Label text="%STEREO_MODE" />
+						<ComboBox fx:id="stereoMode" onAction="#setStereoMode"
+							maxWidth="200" />
+						<TextField fx:id="baseAddress" onAction="#setBaseAddress">
+							<tooltip>
+								<Tooltip text="%BASE_ADDRESS_TIP" />
+							</tooltip>
+						</TextField>
+						<TextField fx:id="thirdAddress" onAction="#setThirdAddress" />
+						<Label text="%SID_READ" />
+						<ComboBox fx:id="sidToRead" onAction="#setSidToRead">
+							<tooltip>
+								<Tooltip text="%SID_READ_TIP" />
+							</tooltip>
+						</ComboBox>
+					</HBox>
+					<HBox>
+						<Label text="%DEFAULT_EMULATION" />
+						<ComboBox fx:id="defaultEmulation" onAction="#setDefaultEmulation" />
+						<Label text="%DEFAULT_SID" />
+						<ComboBox fx:id="defaultModel" onAction="#setDefaultModel" />
+						<CheckBox text="%DIGI_BOOST" fx:id="boosted8580"
+							onAction="#setDigiBoost" />
+					</HBox>
+				</VBox>
+			</TitledPane>
+			<TitledPane text="%FILTER">
+				<HBox>
+					<BorderPane>
+						<top>
+							<VBox>
+								<HBox>
+									<Label text="%MAIN_EMULATION" />
+									<ComboBox fx:id="sid1Emulation" onAction="#setSid1Emulation"
+										maxWidth="150" />
+									<Label text="%MAIN_MODEL" />
+									<ComboBox fx:id="sid1Model" onAction="#setSid1Model" />
+								</HBox>
+								<HBox>
+									<Label text="%FILTER_DEFINITION" />
+									<ComboBox fx:id="mainFilter" onAction="#setMainFilter" />
+								</HBox>
+							</VBox>
+						</top>
+						<center>
+							<VBox minWidth="400">
+								<LineChart legendVisible="true"
+									horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
+									fx:id="mainFilterCurve">
+									<xAxis>
+										<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
+											upperBound="2048" side="BOTTOM" />
+									</xAxis>
+									<yAxis>
+										<LogarithmicAxis label="%FILTERCURVE_YAXIS"
+											minorTickVisible="false" lowerBound="200" upperBound="20000"
+											side="LEFT" />
+									</yAxis>
+								</LineChart>
+							</VBox>
+						</center>
+					</BorderPane>
+					<BorderPane>
+						<top>
+							<VBox>
+								<HBox>
+									<Label text="%SECOND_EMULATION" />
+									<ComboBox fx:id="sid2Emulation" onAction="#setSid2Emulation"
+										maxWidth="150" />
+									<Label text="%SECOND_MODEL" />
+									<ComboBox fx:id="sid2Model" onAction="#setSid2Model" />
+								</HBox>
+								<FlowPane>
+									<Label text="%FILTER_DEFINITION" />
+									<ComboBox fx:id="secondFilter" onAction="#setSecondFilter" />
+								</FlowPane>
+							</VBox>
+						</top>
+						<center>
+							<FlowPane orientation="VERTICAL" BorderPane.alignment="CENTER">
+								<VBox minWidth="400">
+									<LineChart legendVisible="true"
+										horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
+										fx:id="secondFilterCurve">
+										<xAxis>
+											<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
+												upperBound="2048" side="BOTTOM" />
+										</xAxis>
+										<yAxis>
+											<LogarithmicAxis label="%FILTERCURVE_YAXIS"
+												minorTickVisible="false" lowerBound="200" upperBound="20000"
+												side="LEFT" />
+										</yAxis>
+									</LineChart>
+								</VBox>
 							</FlowPane>
-							<FlowPane>
-								<Label text="%FILTER_DEFINITION" />
-								<ComboBox fx:id="mainFilter" onAction="#setMainFilter" />
+						</center>
+					</BorderPane>
+					<BorderPane>
+						<top>
+							<VBox>
+								<HBox>
+									<Label text="%THIRD_EMULATION" />
+									<ComboBox fx:id="sid3Emulation" onAction="#setSid3Emulation"
+										maxWidth="150" />
+									<Label text="%THIRD_MODEL" />
+									<ComboBox fx:id="sid3Model" onAction="#setSid3Model" />
+								</HBox>
+								<HBox>
+									<Label text="%FILTER_DEFINITION" />
+									<ComboBox fx:id="thirdFilter" onAction="#setThirdFilter" />
+								</HBox>
+							</VBox>
+						</top>
+						<center>
+							<FlowPane orientation="VERTICAL" BorderPane.alignment="CENTER">
+								<VBox minWidth="400">
+									<LineChart legendVisible="true"
+										horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
+										fx:id="thirdFilterCurve">
+										<xAxis>
+											<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
+												upperBound="2048" side="BOTTOM" />
+										</xAxis>
+										<yAxis>
+											<LogarithmicAxis label="%FILTERCURVE_YAXIS"
+												minorTickVisible="false" lowerBound="200" upperBound="20000"
+												side="LEFT" />
+										</yAxis>
+									</LineChart>
+								</VBox>
 							</FlowPane>
-						</FlowPane>
-					</bottom>
-					<center>
-						<FlowPane orientation="VERTICAL" BorderPane.alignment="CENTER">
-							<LineChart legendVisible="true"
-								horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
-								fx:id="mainFilterCurve">
-								<xAxis>
-									<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
-										upperBound="2048" side="BOTTOM" />
-								</xAxis>
-								<yAxis>
-									<LogarithmicAxis label="%FILTERCURVE_YAXIS"
-										minorTickVisible="false" lowerBound="200" upperBound="20000"
-										side="LEFT" />
-								</yAxis>
-							</LineChart>
-						</FlowPane>
-					</center>
-				</BorderPane>
-				<BorderPane>
-					<center>
-						<FlowPane orientation="VERTICAL" BorderPane.alignment="CENTER">
-							<LineChart legendVisible="true"
-								horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
-								fx:id="secondFilterCurve">
-								<xAxis>
-									<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
-										upperBound="2048" side="BOTTOM" />
-								</xAxis>
-								<yAxis>
-									<LogarithmicAxis label="%FILTERCURVE_YAXIS"
-										minorTickVisible="false" lowerBound="200" upperBound="20000"
-										side="LEFT" />
-								</yAxis>
-							</LineChart>
-						</FlowPane>
-					</center>
-					<bottom>
-						<FlowPane orientation="VERTICAL" BorderPane.alignment="CENTER">
-							<FlowPane>
-								<Label text="%SECOND_EMULATION" />
-								<ComboBox fx:id="sid2Emulation" onAction="#setSid2Emulation"
-									maxWidth="150" />
-								<Label text="%SECOND_MODEL" />
-								<ComboBox fx:id="sid2Model" onAction="#setSid2Model" />
-							</FlowPane>
-							<FlowPane>
-								<Label text="%FILTER_DEFINITION" />
-								<ComboBox fx:id="secondFilter" onAction="#setSecondFilter" />
-							</FlowPane>
-						</FlowPane>
-					</bottom>
-				</BorderPane>
-				<BorderPane>
-					<center>
-						<FlowPane orientation="VERTICAL" BorderPane.alignment="CENTER">
-							<LineChart legendVisible="true"
-								horizontalGridLinesVisible="true" verticalGridLinesVisible="true"
-								fx:id="thirdFilterCurve">
-								<xAxis>
-									<NumberAxis label="%FILTERCURVE_XAXIS" lowerBound="0"
-										upperBound="2048" side="BOTTOM" />
-								</xAxis>
-								<yAxis>
-									<LogarithmicAxis label="%FILTERCURVE_YAXIS"
-										minorTickVisible="false" lowerBound="200" upperBound="20000"
-										side="LEFT" />
-								</yAxis>
-							</LineChart>
-						</FlowPane>
-					</center>
-					<bottom>
-						<FlowPane orientation="VERTICAL" BorderPane.alignment="CENTER">
-							<FlowPane>
-								<Label text="%THIRD_EMULATION" />
-								<ComboBox fx:id="sid3Emulation" onAction="#setSid3Emulation"
-									maxWidth="150" />
-								<Label text="%THIRD_MODEL" />
-								<ComboBox fx:id="sid3Model" onAction="#setSid3Model" />
-							</FlowPane>
-							<FlowPane>
-								<Label text="%FILTER_DEFINITION" />
-								<ComboBox fx:id="thirdFilter" onAction="#setThirdFilter" />
-							</FlowPane>
-						</FlowPane>
-					</bottom>
-				</BorderPane>
-			</HBox>
-		</TitledPane>
-	</VBox>
+						</center>
+					</BorderPane>
+				</HBox>
+			</TitledPane>
+		</VBox>
+	</ScrollPane>
 </Scene>

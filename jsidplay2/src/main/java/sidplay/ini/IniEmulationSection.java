@@ -118,14 +118,14 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final ChipModel getStereoSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "StereoSidModel",
-				DEFAULT_STEREO_SID_MODEL);
+		return iniReader.getPropertyEnum("Emulation", "StereoSidModel", null,
+				ChipModel.class);
 	}
 
 	@Override
 	public final ChipModel getThirdSIDModel() {
-		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel",
-				DEFAULT_3RD_SID_MODEL);
+		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel", null,
+				ChipModel.class);
 	}
 
 	@Override

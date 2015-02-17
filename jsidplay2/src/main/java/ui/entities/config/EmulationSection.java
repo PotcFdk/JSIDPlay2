@@ -261,7 +261,7 @@ public class EmulationSection implements IEmulationSection {
 		this.force3SIDTune = isForceStereoTune;
 	}
 
-	private ChipModel stereoSidModel = DEFAULT_STEREO_SID_MODEL;
+	private ChipModel stereoSidModel;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -274,7 +274,7 @@ public class EmulationSection implements IEmulationSection {
 		this.stereoSidModel = stereoSidModel;
 	}
 
-	private ChipModel thirdSIDModel = DEFAULT_3RD_SID_MODEL;
+	private ChipModel thirdSIDModel;
 
 	@Enumerated(EnumType.STRING)
 	@Override
