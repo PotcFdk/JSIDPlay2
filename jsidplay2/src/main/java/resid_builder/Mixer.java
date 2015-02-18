@@ -7,12 +7,13 @@ import java.util.Random;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
+import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IAudioSection;
 
 public class Mixer {
-	private final class NullEvent extends Event {
-		private NullEvent(String name) {
+	private final class NullAudioEvent extends Event {
+		private NullAudioEvent(String name) {
 			super(name);
 		}
 
@@ -75,7 +76,7 @@ public class Mixer {
 	 */
 	private EventScheduler context;
 
-	private Event nullAudio = new NullEvent("NullAudio");
+	private Event nullAudio = new NullAudioEvent("NullAudio");
 	private Event mixerAudio = new MixerEvent("MixerAudio");
 
 	/**
@@ -140,10 +141,10 @@ public class Mixer {
 	 * Starts mixing the outputs of several SIDs. Write samples to the sound
 	 * buffer.
 	 */
-	public synchronized void start(int channels, IAudioSection audioSection) {
+	public synchronized void start(AudioConfig audioConfig, IAudioSection audioSection) {
 		context.cancel(mixerAudio);
 		this.buffers = new int[sids.size()][];
-		this.channels = channels;
+		this.channels = audioConfig.getChannels();
 		for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
 			setVolume(sidNum, audioSection);
 			setBalance(sidNum, audioSection);

@@ -86,7 +86,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	public void reset() {
 		mixer.reset();
 	}
-	
+
 	/**
 	 * Timer start time has been reached, start mixing.
 	 */
@@ -97,7 +97,7 @@ public class ReSIDBuilder implements SIDBuilder {
 		 * respect to them. Only one will be scheduled. This is a bit dirty,
 		 * though.
 		 */
-		mixer.start(audioConfig.getChannels(), config.getAudio());
+		mixer.start(audioConfig, config.getAudio());
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class ReSIDBuilder implements SIDBuilder {
 		int stereoAddress = AudioConfig
 				.getSIDAddress(emulationSection, tune, 1);
 		if (isStereo && sidNum == 1 && address == stereoAddress) {
-			/** Stereo SID at 0xd400 hack */
+			// Stereo SID at 0xd400 hack
 			final ReSIDBase firstSid = mixer.get(0);
 			if (emulation.equals(Emulation.RESID)) {
 				return new ReSID(context, config.getAudio().getBufferSize()) {
@@ -186,7 +186,7 @@ public class ReSIDBuilder implements SIDBuilder {
 				};
 			}
 		}
-		/** normal case **/
+		// normal case
 		if (emulation.equals(Emulation.RESID)) {
 			return new ReSID(context, config.getAudio().getBufferSize());
 		} else if (emulation.equals(Emulation.RESIDFP)) {
