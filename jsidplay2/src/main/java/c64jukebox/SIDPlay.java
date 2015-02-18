@@ -112,7 +112,7 @@ public class SIDPlay extends Applet {
 	 */
 	public void useEmulation() {
 		config.getEmulation().setEngine(Engine.EMULATION);
-		config.getAudio().setAudio(Audio.NONE);
+		config.getAudio().setAudio(Audio.SOUNDCARD);
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class SIDPlay extends Applet {
 	 */
 	public void useHardSID() {
 		config.getEmulation().setEngine(Engine.HARDSID);
-		config.getAudio().setAudio(Audio.SOUNDCARD);
+		config.getAudio().setAudio(Audio.NONE);
 	}
 
 	/**

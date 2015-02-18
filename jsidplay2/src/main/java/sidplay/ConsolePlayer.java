@@ -158,24 +158,6 @@ public class ConsolePlayer {
 		if (isRecording()) {
 			loop = false;
 		}
-		// Set SOUNDCARD audio device
-		if (deviceIdx != null) {
-			JavaSound js = (JavaSound) Audio.SOUNDCARD.getAudioDriver();
-			ObservableList<Device> devices = JavaSound.getDevices();
-			try {
-				Info info = devices.get(deviceIdx).getInfo();
-				js.setAudioDevice(info);
-			} catch (IndexOutOfBoundsException | LineUnavailableException e) {
-				int deviceIdx = 0;
-				for (Device device : JavaSound.getDevices()) {
-					System.err.printf("device %d = %s (%s)\n", (deviceIdx++),
-							device.getInfo().getName(), device.getInfo()
-									.getDescription());
-				}
-				System.err.println(e.getMessage());
-				exit(1);
-			}
-		}
 		final IniConfig config = new IniConfig(true);
 		config.getSidplay2().setLoop(loop);
 		config.getSidplay2().setSingle(single);
@@ -235,6 +217,25 @@ public class ConsolePlayer {
 		} catch (IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
 			exit(1);
+		}
+
+		// Set SOUNDCARD audio device
+		if (deviceIdx != null) {
+			JavaSound js = (JavaSound) Audio.SOUNDCARD.getAudioDriver();
+			ObservableList<Device> devices = JavaSound.getDevices();
+			try {
+				Info info = devices.get(deviceIdx).getInfo();
+				js.setAudioDevice(info);
+			} catch (IndexOutOfBoundsException | LineUnavailableException e) {
+				int deviceIdx = 0;
+				for (Device device : JavaSound.getDevices()) {
+					System.err.printf("device %d = %s (%s)\n", (deviceIdx++),
+							device.getInfo().getName(), device.getInfo()
+									.getDescription());
+				}
+				System.err.println(e.getMessage());
+				exit(1);
+			}
 		}
 	}
 

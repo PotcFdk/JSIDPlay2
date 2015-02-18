@@ -22,7 +22,6 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SamplingMethod;
-import resid_builder.ReSIDBuilder.MixerEvent;
 import resid_builder.resid.Filter6581;
 import resid_builder.resid.Filter8580;
 import resid_builder.resid.SID;
@@ -44,7 +43,7 @@ public class ReSID extends ReSIDBase {
 	 * @param context
 	 *            {@link EventScheduler} context to use.
 	 * @param mixerEvent
-	 *            {@link MixerEvent} to use.
+	 *            {@link Mixer} to use.
 	 */
 	public ReSID(EventScheduler context, final int bufferSize) {
 		super(context, bufferSize);

@@ -45,9 +45,14 @@ public interface SIDBuilder {
 	int getNumDevices();
 
 	/**
-	 * Timer start reached, audio output should be processed.
+	 * Reset.
 	 */
-	void start(EventScheduler context);
+	void reset();
+	
+	/**
+	 * Timer start reached, audio output should be produced.
+	 */
+	void start();
 
 	/**
 	 * Volume of the SID chip

@@ -920,15 +920,17 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	public void setDevice() {
-		Device device = devicesBox.getSelectionModel().getSelectedItem();
-		int deviceIndex = devicesBox.getItems().indexOf(device);
-		util.getConfig().getAudio().setDevice(deviceIndex);
-		if (!this.duringInitialization) {
-			JavaSound js = (JavaSound) Audio.SOUNDCARD.getAudioDriver();
-			try {
-				js.setAudioDevice(device.getInfo());
-			} catch (LineUnavailableException e) {
-				throw new RuntimeException(e);
+		if (!duringInitialization) {
+			Device device = devicesBox.getSelectionModel().getSelectedItem();
+			int deviceIndex = devicesBox.getItems().indexOf(device);
+			util.getConfig().getAudio().setDevice(deviceIndex);
+			if (!this.duringInitialization) {
+				JavaSound js = (JavaSound) Audio.SOUNDCARD.getAudioDriver();
+				try {
+					js.setAudioDevice(device.getInfo());
+				} catch (LineUnavailableException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 	}

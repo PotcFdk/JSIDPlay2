@@ -111,7 +111,11 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	@Override
-	public void start(EventScheduler context) {
+	public void reset() {
+	}
+	
+	@Override
+	public void start() {
 	}
 
 	@Override

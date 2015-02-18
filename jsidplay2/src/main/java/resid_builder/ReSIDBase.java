@@ -22,7 +22,7 @@ public abstract class ReSIDBase extends SIDEmu {
 	 * @param context
 	 *            {@link EventScheduler} context to use.
 	 * @param mixerEvent
-	 *            {@link MixerEvent} to use.
+	 *            {@link Mixer} to use.
 	 */
 	public ReSIDBase(EventScheduler context, final int bufferSize) {
 		super(context);

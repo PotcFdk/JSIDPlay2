@@ -303,7 +303,7 @@ public class Player {
 			@Override
 			public void start() {
 				if (sidBuilder != null) {
-					sidBuilder.start(c64.getEventScheduler());
+					sidBuilder.start();
 				}
 			}
 
@@ -367,6 +367,9 @@ public class Player {
 		iecBus.reset();
 		datasette.reset();
 		timer.reset();
+		if (sidBuilder != null) {
+			sidBuilder.reset();
+		}
 
 		// assign SID chip addresses
 		setSIDAddresses();
@@ -851,8 +854,8 @@ public class Player {
 		Engine engine = config.getEmulation().getEngine();
 		switch (engine) {
 		case EMULATION:
-			return new ReSIDBuilder(config, audioConfig, cpuClock,
-					driverSettings.getAudioDriver(), tune);
+			return new ReSIDBuilder(c64.getEventScheduler(), config,
+					audioConfig, cpuClock, driverSettings.getAudioDriver());
 		case HARDSID:
 			return new HardSIDBuilder(config);
 		case NONE:
