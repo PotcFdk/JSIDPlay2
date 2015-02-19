@@ -16,8 +16,8 @@ import libsidplay.Player;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.player.State;
+import libsidplay.sidtune.SidTune;
 import resid_builder.resid.FilterModelConfig;
-import sidplay.audio.AudioConfig;
 import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
 import ui.common.C64Window;
@@ -321,10 +321,10 @@ public class EmulationSettings extends C64Window {
 
 	private void enableStereoSettings() {
 		EmulationSection emulation = util.getConfig().getEmulation();
-		boolean second = AudioConfig.isSIDUsed(emulation, util.getPlayer()
+		boolean second = SidTune.isSIDUsed(emulation, util.getPlayer()
 				.getTune(), 1);
-		boolean third = AudioConfig.isSIDUsed(emulation, util.getPlayer()
-				.getTune(), 2);
+		boolean third = SidTune.isSIDUsed(emulation,
+				util.getPlayer().getTune(), 2);
 		// stereo, only:
 		mainBalance.setDisable(!second);
 		secondVolume.setDisable(!second);
@@ -630,9 +630,9 @@ public class EmulationSettings extends C64Window {
 				}
 			}
 
-			boolean secondSidUsed = AudioConfig.isSIDUsed(util.getConfig()
+			boolean secondSidUsed = SidTune.isSIDUsed(util.getConfig()
 					.getEmulation(), util.getPlayer().getTune(), 1);
-			boolean thirdSidUsed = AudioConfig.isSIDUsed(util.getConfig()
+			boolean thirdSidUsed = SidTune.isSIDUsed(util.getConfig()
 					.getEmulation(), util.getPlayer().getTune(), 2);
 
 			LineChart<Number, Number> filterCurve;

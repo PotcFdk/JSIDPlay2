@@ -371,8 +371,14 @@ public class Player {
 			sidBuilder.reset();
 		}
 
-		// assign SID chip addresses
-		setSIDAddresses();
+		// Assign SID chip addresses
+		IEmulationSection emulation = config.getEmulation();
+		for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
+			if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
+				int address = SidTune.getSIDAddress(emulation, tune, sidNum);
+				c64.setSIDAddress(address, sidNum);
+			}
+		}
 
 		// Reset Floppies
 		final IC1541Section c1541 = config.getC1541();
@@ -440,17 +446,6 @@ public class Player {
 		}
 		ram[0xc6] = (byte) length;
 		command = null;
-	}
-
-	private void setSIDAddresses() {
-		IEmulationSection emulation = config.getEmulation();
-		for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
-			if (AudioConfig.isSIDUsed(emulation, tune, sidNum)) {
-				int address = AudioConfig
-						.getSIDAddress(emulation, tune, sidNum);
-				c64.setSIDAddress(address, sidNum);
-			}
-		}
 	}
 
 	/**
@@ -910,7 +905,7 @@ public class Player {
 		EventScheduler eventScheduler = c64.getEventScheduler();
 		if (sidBuilder != null) {
 			for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
-				if (AudioConfig.isSIDUsed(config.getEmulation(), tune, sidNum)) {
+				if (SidTune.isSIDUsed(config.getEmulation(), tune, sidNum)) {
 					SIDEmu sid = c64.getSID(sidNum);
 					sid = sidBuilder.lock(eventScheduler, config, sid, sidNum,
 							tune);
@@ -923,7 +918,7 @@ public class Player {
 	public void setSidWriteListener(SidRegExtension sidRegExtension) {
 		IEmulationSection emulation = config.getEmulation();
 		for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
-			if (AudioConfig.isSIDUsed(emulation, tune, sidNum)) {
+			if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
 				c64.setSidWriteListener(sidNum, sidRegExtension);
 			}
 		}

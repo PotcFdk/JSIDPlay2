@@ -42,12 +42,10 @@ public class Mixer {
 		 */
 		@Override
 		public synchronized void event() throws InterruptedException {
-			int numSids = 0;
 			int samples = 0;
 			for (ReSIDBase sid : sids) {
 				// clock SID to the present moment
 				sid.clock();
-				buffers[numSids++] = sid.buffer;
 				// determine amount of samples produced (cut-off overflows)
 				samples = samples > 0 ? Math.min(samples, sid.bufferpos)
 						: sid.bufferpos;
@@ -84,10 +82,6 @@ public class Mixer {
 	 */
 	private List<ReSIDBase> sids = new ArrayList<ReSIDBase>();
 	/**
-	 * Buffers containing samples of all SIDs.
-	 */
-	private int[][] buffers;
-	/**
 	 * Channels used (1=Mono, 2=Stereo).
 	 */
 	private int channels;
@@ -106,24 +100,24 @@ public class Mixer {
 	private int oldRandomValue;
 
 	/**
-	 * Volume control of all SIDs.
+	 * Volume of all SIDs.
 	 */
 	private final float[] volume = new float[] { 1024f, 1024f, 1024f };
 	/**
-	 * Left channel balancing of all SIDs 0(silent)..1(loud).
+	 * SID audibility on the left speaker of all SIDs 0(silent)..1(loud).
 	 */
 	private final float[] positionL = new float[] { 1, 0, .5f };
 	/**
-	 * Right channel balancing of all SIDs 0(silent)..1(loud).
+	 * SID audibility on the right speaker of all SIDs 0(silent)..1(loud).
 	 */
 	private final float[] positionR = new float[] { 0, 1, .5f };
 
 	/**
-	 * Balanced left channel volume = volumeL * positionL.
+	 * Balanced left speaker volume = volumeL * positionL.
 	 */
 	private final float[] balancedVolumeL = new float[] { 1024, 0, 512 };
 	/**
-	 * Balanced right channel volume = volumeR * positionR.
+	 * Balanced right speaker volume = volumeR * positionR.
 	 */
 	private final float[] balancedVolumeR = new float[] { 0, 1024, 512 };
 
@@ -141,15 +135,15 @@ public class Mixer {
 	 * Starts mixing the outputs of several SIDs. Write samples to the sound
 	 * buffer.
 	 */
-	public synchronized void start(AudioConfig audioConfig, IAudioSection audioSection) {
+	public synchronized void start(AudioConfig audioConfig,
+			IAudioSection audioSection) {
+		context.cancel(nullAudio);
 		context.cancel(mixerAudio);
-		this.buffers = new int[sids.size()][];
 		this.channels = audioConfig.getChannels();
 		for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
 			setVolume(sidNum, audioSection);
 			setBalance(sidNum, audioSection);
 		}
-		context.cancel(nullAudio);
 		context.schedule(mixerAudio, 0, Event.Phase.PHI2);
 	}
 
@@ -191,8 +185,9 @@ public class Mixer {
 	private final void putSample(int sampleIdx, float[] balancedVolume,
 			int dither) {
 		int value = 0;
-		for (int i = 0; i < sids.size(); i++) {
-			value += buffers[i][sampleIdx] * balancedVolume[i];
+		int sidNum = 0;
+		for (ReSIDBase sid : sids) {
+			value += sid.buffer[sampleIdx] * balancedVolume[sidNum++];
 		}
 		value = value + dither >> 10;
 
@@ -206,16 +201,17 @@ public class Mixer {
 	}
 
 	/**
-	 * Volume of the SID chip
+	 * Volume of the SID chip.<BR>
+	 * 0(-6db)..12(+6db)
 	 * 
 	 * @param sidNum
 	 *            SID chip number
 	 * @param audio
-	 *            0(-6db)..12(+6db)
+	 *            audio configuration
 	 */
-	public void setVolume(int num, IAudioSection audio) {
+	public void setVolume(int sidNum, IAudioSection audio) {
 		float volumeInDB;
-		switch (num) {
+		switch (sidNum) {
 		case 0:
 			volumeInDB = audio.getMainVolume();
 			break;
@@ -228,22 +224,22 @@ public class Mixer {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
-		volume[num] = (float) Math.pow(10, volumeInDB / 10) * 1024;
+		volume[sidNum] = (float) Math.pow(10, volumeInDB / 10) * 1024;
 		updateFactor();
 	}
 
 	/**
-	 * Panning feature: spreading of the SID chip sound signal to the two stereo
-	 * channels
+	 * Set left/right speaker balance for each SID.<BR>
+	 * 0(left speaker)..0.5(centered)..1(right speaker)
 	 * 
 	 * @param sidNum
 	 *            SID chip number
 	 * @param audio
-	 *            0(left speaker)..0.5(centered)..1(right speaker)
+	 *            audio configuration
 	 */
-	public void setBalance(int num, IAudioSection audio) {
+	public void setBalance(int sidNum, IAudioSection audio) {
 		float balance;
-		switch (num) {
+		switch (sidNum) {
 		case 0:
 			balance = audio.getMainBalance();
 			break;
@@ -256,8 +252,8 @@ public class Mixer {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
-		positionL[num] = 1 - balance;
-		positionR[num] = balance;
+		positionL[sidNum] = 1 - balance;
+		positionR[sidNum] = balance;
 		updateFactor();
 	}
 

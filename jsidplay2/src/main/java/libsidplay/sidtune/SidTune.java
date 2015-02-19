@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
+import sidplay.ini.intf.IEmulationSection;
 import javafx.scene.image.Image;
 import de.schlichtherle.truezip.file.TFileInputStream;
 
@@ -372,5 +373,59 @@ public abstract class SidTune {
 	 * MD5 for song length detection.
 	 */
 	public abstract String getMD5Digest();
+
+	/**
+	 * Is specified SID number in use?
+	 * <OL>
+	 * <LI>0 - first SID is always used
+	 * <LI>1 - second SID is only used for stereo tunes
+	 * <LI>2 - third SID is used for 3-SID tunes
+	 * </OL>
+	 */
+	public static boolean isSIDUsed(IEmulationSection emulation, SidTune tune,
+			int sidNum) {
+		return getSIDAddress(emulation, tune, sidNum) != 0;
+	}
+
+	/**
+	 * Get SID address of specified SID number
+	 * <OL>
+	 * <LI>0xd400 - always used for first SID
+	 * <LI>forced SID base - configured value for forced stereo output
+	 * <LI>tune SID base - SID base detected by tune information
+	 * <LI>0 - SID is not used
+	 * </OL>
+	 * Note: this function is static, even if no tune is loaded stereo mode can
+	 * be configured!
+	 */
+	public static int getSIDAddress(IEmulationSection emulation, SidTune tune,
+			int sidNum) {
+		boolean forcedStereoTune;
+		int forcedSidBase;
+		int tuneChipBase;
+		switch (sidNum) {
+		case 0:
+			return 0xd400;
+		case 1:
+			forcedStereoTune = emulation.isForceStereoTune();
+			forcedSidBase = emulation.getDualSidBase();
+			tuneChipBase = tune != null ? tune.getInfo().getSidChipBase(sidNum)
+					: 0;
+			break;
+		case 2:
+			forcedStereoTune = emulation.isForce3SIDTune();
+			forcedSidBase = emulation.getThirdSIDBase();
+			tuneChipBase = tune != null ? tune.getInfo().getSidChipBase(sidNum)
+					: 0;
+			break;
+		default:
+			throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
+		if (forcedStereoTune) {
+			return forcedSidBase;
+		} else {
+			return tuneChipBase;
+		}
+	}
 
 }

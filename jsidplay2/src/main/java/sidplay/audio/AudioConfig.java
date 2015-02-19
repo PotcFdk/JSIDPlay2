@@ -59,59 +59,10 @@ public class AudioConfig {
 
 	public static AudioConfig getInstance(IConfig config, SidTune tune) {
 		IEmulationSection emulation = config.getEmulation();
-		return new AudioConfig(config.getAudio().getFrequency(), isSIDUsed(
-				emulation, tune, 1) ? 2 : 1, config.getAudio().getSampling(),
-				config.getAudio().getDevice());
-	}
-
-	/**
-	 * Is SID used of specified SID number?
-	 * <OL>
-	 * <LI>0 - first SID is always used
-	 * <LI>1 - second SID is only used for stereo tunes
-	 * <LI>2 - third SID is used for triple SID tunes
-	 * </OL>
-	 */
-	public static boolean isSIDUsed(IEmulationSection emulation, SidTune tune,
-			int sidNum) {
-		return getSIDAddress(emulation, tune, sidNum) != 0;
-	}
-
-	/**
-	 * Get SID address of specified SID number
-	 * <OL>
-	 * <LI>0xd400 - always used for first SID
-	 * <LI>forced SID base - configured value for forced stereo output
-	 * <LI>tune SID base - SID base detected by tune information
-	 * <LI>0 - SID is not used
-	 * </OL>
-	 */
-	public static int getSIDAddress(IEmulationSection emulation, SidTune tune,
-			int sidNum) {
-		boolean forcedStereoTune;
-		int forcedSidBase;
-		int tuneChipBase;
-		switch (sidNum) {
-		case 0:
-			return 0xd400;
-		case 1:
-			forcedStereoTune = emulation.isForceStereoTune();
-			forcedSidBase = emulation.getDualSidBase();
-			tuneChipBase = tune != null ? tune.getInfo().getSidChipBase(sidNum) : 0;
-			break;
-		case 2:
-			forcedStereoTune = emulation.isForce3SIDTune();
-			forcedSidBase = emulation.getThirdSIDBase();
-			tuneChipBase = tune != null ? tune.getInfo().getSidChipBase(sidNum) : 0;
-			break;
-		default:
-			throw new RuntimeException("Maximum supported SIDS exceeded!");
-		}
-		if (forcedStereoTune) {
-			return forcedSidBase;
-		} else {
-			return tuneChipBase;
-		}
+		return new AudioConfig(config.getAudio().getFrequency(),
+				SidTune.isSIDUsed(emulation, tune, 1) ? 2 : 1, config
+						.getAudio().getSampling(), config.getAudio()
+						.getDevice());
 	}
 
 	/**
@@ -155,7 +106,7 @@ public class AudioConfig {
 	public int getChannels() {
 		return channels;
 	}
-	
+
 	public int getDevice() {
 		return deviceIdx;
 	}

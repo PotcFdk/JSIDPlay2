@@ -11,7 +11,6 @@ import libsidplay.common.ChipModel;
 import libsidplay.player.PlayList;
 import libsidplay.player.Timer;
 import libsidplay.sidtune.SidTune;
-import sidplay.audio.AudioConfig;
 import sidplay.ini.IniConfig;
 import sidplay.ini.IniConsoleSection;
 import sidplay.ini.intf.IEmulationSection;
@@ -218,7 +217,7 @@ public class ConsoleIO {
 		ChipModel chipModel = ChipModel.getChipModel(emulation, tune, 0);
 		line.append(String.format(BUNDLE.getString("MODEL") + " = %s",
 				chipModel));
-		if (AudioConfig.isSIDUsed(emulation, tune, 1)) {
+		if (SidTune.isSIDUsed(emulation, tune, 1)) {
 			ChipModel stereoModel = ChipModel.getChipModel(emulation, tune, 1);
 			line.append(String.format("(%s)", stereoModel));
 		}
@@ -226,7 +225,7 @@ public class ConsoleIO {
 				BUNDLE.getString("SID_DETAILS"), line.toString(),
 				console.getVertical());
 
-		if (AudioConfig.isSIDUsed(emulation, tune, 2)) {
+		if (SidTune.isSIDUsed(emulation, tune, 2)) {
 			ChipModel thirdModel = ChipModel.getChipModel(emulation, tune, 2);
 			line.setLength(0);
 			line.append(String.format("(%s)", thirdModel));

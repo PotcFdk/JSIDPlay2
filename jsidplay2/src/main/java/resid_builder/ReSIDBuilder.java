@@ -82,6 +82,9 @@ public class ReSIDBuilder implements SIDBuilder {
 		mixer.remove(sid);
 	}
 
+	/**
+	 * Reset.
+	 */
 	@Override
 	public void reset() {
 		mixer.reset();
@@ -92,33 +95,50 @@ public class ReSIDBuilder implements SIDBuilder {
 	 */
 	@Override
 	public void start() {
-		/*
-		 * No matter how many chips are in use, mixerEvent is singleton with
-		 * respect to them. Only one will be scheduled. This is a bit dirty,
-		 * though.
-		 */
 		mixer.start(audioConfig, config.getAudio());
 	}
 
+	/**
+	 * How many SID chips are in the mix?
+	 */
 	@Override
 	public int getNumDevices() {
 		return mixer.getNumDevices();
 	}
 
+	/**
+	 * Volume of the SID chip.<BR>
+	 * 0(-6db)..12(+6db)
+	 * 
+	 * @param sidNum
+	 *            SID chip number
+	 * @param audio
+	 *            audio configuration
+	 */
 	@Override
 	public void setVolume(int num, IAudioSection audio) {
 		mixer.setVolume(num, audio);
 	}
 
+	/**
+	 * Set left/right speaker balance for each SID.<BR>
+	 * 0(left speaker)..0.5(centered)..1(right speaker)
+	 * 
+	 * @param sidNum
+	 *            SID chip number
+	 * @param audio
+	 *            audio configuration
+	 */
 	@Override
-	public void setBalance(int num, IAudioSection audio) {
-		mixer.setBalance(num, audio);
+	public void setBalance(int sidNum, IAudioSection audio) {
+		mixer.setBalance(sidNum, audio);
 	}
 
 	/**
 	 * Create SID emulation of a specific emulation engine type.<BR>
 	 * Note: FakeStereo mode uses two chips using the same base address. Write
-	 * commands are routed two both SIDs.
+	 * commands are routed two both SIDs, while read command can be configured
+	 * to be processed by a specific SID chip.
 	 * 
 	 * @return SID emulation of a specific emulation engine
 	 */
@@ -128,10 +148,9 @@ public class ReSIDBuilder implements SIDBuilder {
 		final Emulation emulation = Emulation.getEmulation(emulationSection,
 				tune, sidNum);
 
-		boolean isStereo = AudioConfig.isSIDUsed(emulationSection, tune, 1);
-		int address = AudioConfig.getSIDAddress(emulationSection, tune, 0);
-		int stereoAddress = AudioConfig
-				.getSIDAddress(emulationSection, tune, 1);
+		boolean isStereo = SidTune.isSIDUsed(emulationSection, tune, 1);
+		int address = SidTune.getSIDAddress(emulationSection, tune, 0);
+		int stereoAddress = SidTune.getSIDAddress(emulationSection, tune, 1);
 		if (isStereo && sidNum == 1 && address == stereoAddress) {
 			// Stereo SID at 0xd400 hack
 			final ReSIDBase firstSid = mixer.get(0);

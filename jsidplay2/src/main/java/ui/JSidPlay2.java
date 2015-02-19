@@ -66,7 +66,6 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import sidplay.audio.Audio;
-import sidplay.audio.AudioConfig;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
@@ -952,8 +951,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void setEngine() {
-		Engine engine = engineBox.getSelectionModel()
-				.getSelectedItem();
+		Engine engine = engineBox.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulation().setEngine(engine);
 		if (Engine.HARDSID.equals(engine)) {
 			audioBox.getSelectionModel().select(Audio.NONE);
@@ -1411,17 +1409,17 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		ChipModel chipModel = ChipModel.getChipModel(emulation, util
 				.getPlayer().getTune(), 0);
 		line.append(String.format("%s", chipModel));
-		if (AudioConfig.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
+		if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
 			ChipModel stereoModel = ChipModel.getChipModel(emulation, util
 					.getPlayer().getTune(), 1);
-			int dualSidBase = AudioConfig.getSIDAddress(emulation, util
-					.getPlayer().getTune(), 1);
+			int dualSidBase = SidTune.getSIDAddress(emulation, util.getPlayer()
+					.getTune(), 1);
 			line.append(String
 					.format("+%s(at 0x%4x)", stereoModel, dualSidBase));
-			if (AudioConfig.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
+			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
 				ChipModel thirdModel = ChipModel.getChipModel(emulation, util
 						.getPlayer().getTune(), 2);
-				int thirdSidBase = AudioConfig.getSIDAddress(emulation, util
+				int thirdSidBase = SidTune.getSIDAddress(emulation, util
 						.getPlayer().getTune(), 2);
 				line.append(String.format("+%s(at 0x%4x)", thirdModel,
 						thirdSidBase));
