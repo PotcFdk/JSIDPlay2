@@ -61,7 +61,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	@Override
 	public SIDEmu lock(EventScheduler context, IConfig config, SIDEmu device,
 			int sidNum, SidTune tune) {
-		final ReSIDBase sid = createSIDEmu(context, device, tune, sidNum);
+		final ReSIDBase sid = getOrCreateSID(context, device, tune, sidNum);
 		sid.setChipModel(ChipModel.getChipModel(config.getEmulation(), tune,
 				sidNum));
 		sid.setSampling(cpuClock.getCpuFrequency(), audioConfig.getFrameRate(),
@@ -140,11 +140,12 @@ public class ReSIDBuilder implements SIDBuilder {
 	 * commands are routed two both SIDs, while read command can be configured
 	 * to be processed by a specific SID chip.
 	 * 
-	 * @param device currently used SID chip
+	 * @param device
+	 *            currently used SID chip
 	 * 
 	 * @return SID emulation of a specific emulation engine
 	 */
-	protected ReSIDBase createSIDEmu(EventScheduler context, SIDEmu device,
+	protected ReSIDBase getOrCreateSID(EventScheduler context, SIDEmu device,
 			SidTune tune, int sidNum) {
 		final IEmulationSection emulationSection = config.getEmulation();
 		final Emulation emulation = Emulation.getEmulation(emulationSection,
@@ -208,18 +209,36 @@ public class ReSIDBuilder implements SIDBuilder {
 			}
 		}
 		// normal case
+		return getOrCreateSID(context, device, emulation);
+	}
+
+	/**
+	 * Create SID chip or reuse already used SID chip, if possile (emulation did
+	 * not change)
+	 * 
+	 * @param context
+	 *            System event context.
+	 * @param device
+	 *            currently used SID chip
+	 * @param emulation
+	 *            wanted emulation type
+	 * @returnnew SID chip or recycled old one
+	 */
+	private ReSIDBase getOrCreateSID(EventScheduler context, SIDEmu device,
+			final Emulation emulation) {
 		if (emulation.equals(Emulation.RESID)) {
 			if (device != null && device.getClass().equals(ReSID.class)) {
+				// reuse already used chip emulation, if possible
 				return (ReSIDBase) device;
 			} else {
 				return new ReSID(context, config.getAudio().getBufferSize());
 			}
 		} else if (emulation.equals(Emulation.RESIDFP)) {
 			if (device != null && device.getClass().equals(ReSIDfp.class)) {
+				// reuse already used chip emulation, if possible
 				return (ReSIDBase) device;
 			} else {
-				return new resid_builder.ReSIDfp(context, config.getAudio()
-						.getBufferSize());
+				return new ReSIDfp(context, config.getAudio().getBufferSize());
 			}
 		}
 		throw new RuntimeException("Cannot create SID emulation engine: "
