@@ -1,7 +1,9 @@
 package resid_builder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import libsidplay.common.Event;
@@ -69,6 +71,57 @@ public class Mixer {
 		}
 	}
 
+	private final class OverflowMixerEvent extends Event {
+		private OverflowMixerEvent(String name) {
+			super(name);
+		}
+
+		/**
+		 * Note: The assumption, that after clocking two chips their buffer
+		 * positions are equal is false! Under some circumstance one chip can be
+		 * one sample further than the other. Therefore we have to handle
+		 * overflowing sample data to prevent crackling noises. This
+		 * implementation just shifts the overflowing sample to the next chunk
+		 * of sampled data.
+		 */
+		@Override
+		public synchronized void event() throws InterruptedException {
+			int samples = 0;
+			for (ReSIDBase sid : sids) {
+				// clock SID to the present moment
+				sid.clock();
+				Integer overflow = overflowSample.get(sid);
+				if (overflow != null) {
+					sid.buffer[0] = overflow;
+				}
+				// determine amount of samples produced (cut-off overflows)
+				samples = samples > 0 ? Math.min(samples, sid.bufferpos)
+						: sid.bufferpos;
+			}
+			for (ReSIDBase sid : sids) {
+				boolean hasOverflow = sid.bufferpos > samples;
+				overflowSample.put(sid,
+						hasOverflow ? sid.buffer[sid.bufferpos - 1] : null);
+				sid.bufferpos = hasOverflow ? 1 : 0;
+			}
+			// output sample data
+			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
+				int dither = triangularDithering();
+
+				putSample(sampleIdx, channels > 1 ? balancedVolumeL : volume,
+						dither);
+				if (channels > 1) {
+					putSample(sampleIdx, balancedVolumeR, dither);
+				}
+				if (driver.buffer().remaining() == 0) {
+					driver.write();
+					driver.buffer().clear();
+				}
+			}
+			context.schedule(this, 10000);
+		}
+	}
+
 	/**
 	 * System event context.
 	 */
@@ -81,6 +134,7 @@ public class Mixer {
 	 * SIDs to mix their sound output.
 	 */
 	private List<ReSIDBase> sids = new ArrayList<ReSIDBase>();
+	private Map<ReSIDBase, Integer> overflowSample;
 	/**
 	 * Channels used (1=Mono, 2=Stereo).
 	 */
@@ -140,6 +194,7 @@ public class Mixer {
 		context.cancel(nullAudio);
 		context.cancel(mixerAudio);
 		this.channels = audioConfig.getChannels();
+		this.overflowSample = new HashMap<ReSIDBase, Integer>();
 		for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
 			setVolume(sidNum, audioSection);
 			setBalance(sidNum, audioSection);
