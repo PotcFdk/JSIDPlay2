@@ -61,7 +61,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	@Override
 	public SIDEmu lock(EventScheduler context, IConfig config, SIDEmu device,
 			int sidNum, SidTune tune) {
-		final ReSIDBase sid = createSIDEmu(context, tune, sidNum);
+		final ReSIDBase sid = createSIDEmu(context, device, tune, sidNum);
 		sid.setChipModel(ChipModel.getChipModel(config.getEmulation(), tune,
 				sidNum));
 		sid.setSampling(cpuClock.getCpuFrequency(), audioConfig.getFrameRate(),
@@ -140,10 +140,12 @@ public class ReSIDBuilder implements SIDBuilder {
 	 * commands are routed two both SIDs, while read command can be configured
 	 * to be processed by a specific SID chip.
 	 * 
+	 * @param device currently used SID chip
+	 * 
 	 * @return SID emulation of a specific emulation engine
 	 */
-	protected ReSIDBase createSIDEmu(EventScheduler context, SidTune tune,
-			int sidNum) {
+	protected ReSIDBase createSIDEmu(EventScheduler context, SIDEmu device,
+			SidTune tune, int sidNum) {
 		final IEmulationSection emulationSection = config.getEmulation();
 		final Emulation emulation = Emulation.getEmulation(emulationSection,
 				tune, sidNum);
@@ -207,10 +209,18 @@ public class ReSIDBuilder implements SIDBuilder {
 		}
 		// normal case
 		if (emulation.equals(Emulation.RESID)) {
-			return new ReSID(context, config.getAudio().getBufferSize());
+			if (device != null && device.getClass().equals(ReSID.class)) {
+				return (ReSIDBase) device;
+			} else {
+				return new ReSID(context, config.getAudio().getBufferSize());
+			}
 		} else if (emulation.equals(Emulation.RESIDFP)) {
-			return new resid_builder.ReSIDfp(context, config.getAudio()
-					.getBufferSize());
+			if (device != null && device.getClass().equals(ReSIDfp.class)) {
+				return (ReSIDBase) device;
+			} else {
+				return new resid_builder.ReSIDfp(context, config.getAudio()
+						.getBufferSize());
+			}
 		}
 		throw new RuntimeException("Cannot create SID emulation engine: "
 				+ emulation);
