@@ -1,12 +1,11 @@
 package libsidplay.common;
 
 public enum Engine {
-	/** No emulation. */
-	NONE(""),
 
 	/** Hardware */
 	HARDSID("HardSID4U"),
 
+	/** Software */
 	EMULATION("Emulation");
 
 	private final String description;

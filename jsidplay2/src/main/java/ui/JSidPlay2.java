@@ -953,12 +953,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void setEngine() {
 		Engine engine = engineBox.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulation().setEngine(engine);
-		if (Engine.HARDSID.equals(engine)) {
-			audioBox.getSelectionModel().select(Audio.NONE);
-		} else if (Audio.NONE.equals(audioBox.getSelectionModel()
-				.getSelectedItem())) {
-			audioBox.getSelectionModel().select(Audio.SOUNDCARD);
-		}
 		hardsid6581Box.setDisable(!Engine.HARDSID.equals(engine));
 		hardsid8580Box.setDisable(!Engine.HARDSID.equals(engine));
 		hardsid6581Label.setDisable(!Engine.HARDSID.equals(engine));

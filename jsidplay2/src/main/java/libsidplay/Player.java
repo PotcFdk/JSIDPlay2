@@ -115,7 +115,7 @@ public class Player {
 	/**
 	 * Auto-start commands.
 	 */
-	private static final String RUN = "RUN:\r", SYS = "SYS%d\r",
+	private static final String RUN = "RUN\r", SYS = "SYS%d\r",
 			LOAD = "LOAD\r";
 
 	/**
@@ -298,7 +298,7 @@ public class Player {
 		this.c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(),
 				c1541.getEventScheduler());
 
-		this.playList = PlayList.getInstance(config, null);
+		this.playList = PlayList.getInstance(config, SidTune.RESET);
 		this.timer = new Timer(this) {
 			@Override
 			public void start() {
@@ -402,7 +402,21 @@ public class Player {
 		enablePrinter(config.getPrinter().isPrinterOn());
 
 		// Auto-start program, if we have one.
-		if (tune != null) {
+		if (tune == SidTune.RESET) {
+			// Normal reset code path using auto-start
+			c64.getEventScheduler().schedule(new Event("Auto-start event") {
+				@Override
+				public void event() throws InterruptedException {
+					if (command != null) {
+						if (command.startsWith(LOAD)) {
+							// Auto-start tape needs someone to press play
+							datasette.control(Control.START);
+						}
+						typeInCommand();
+					}
+				}
+			}, 2500000);
+		} else {
 			// Set play-back address to feedback call frames counter.
 			c64.setPlayAddr(tune.getInfo().getPlayAddr());
 			c64.getEventScheduler().schedule(new Event("Tune init event") {
@@ -421,20 +435,6 @@ public class Player {
 					}
 				}
 			}, tune.getInitDelay());
-		} else {
-			// Normal reset code path using auto-start
-			c64.getEventScheduler().schedule(new Event("Auto-start event") {
-				@Override
-				public void event() throws InterruptedException {
-					if (command != null) {
-						if (command.startsWith(LOAD)) {
-							// Auto-start tape needs someone to press play
-							datasette.control(Control.START);
-						}
-						typeInCommand();
-					}
-				}
-			}, 2500000);
 		}
 	}
 
@@ -686,7 +686,7 @@ public class Player {
 	}
 
 	/**
-	 * Load a tune to play.
+	 * Set a tune to play.
 	 * 
 	 * @param tune
 	 *            tune to play
@@ -853,8 +853,6 @@ public class Player {
 					audioConfig, cpuClock, driverSettings.getAudioDriver());
 		case HARDSID:
 			return new HardSIDBuilder(config);
-		case NONE:
-			return null;
 		default:
 			throw new RuntimeException("Unknown engine type: " + engine);
 		}

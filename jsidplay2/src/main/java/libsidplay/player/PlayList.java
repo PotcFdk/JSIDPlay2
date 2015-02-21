@@ -52,7 +52,7 @@ public class PlayList {
 	 */
 	public static final PlayList getInstance(final IConfig config,
 			final SidTune tune) {
-		if (tune == null) {
+		if (tune == SidTune.RESET) {
 			return NONE;
 		}
 		if (singleton.tune != tune) {

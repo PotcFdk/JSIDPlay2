@@ -11,7 +11,6 @@ import libsidplay.Player;
 import libsidplay.common.Engine;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import sidplay.audio.Audio;
 import sidplay.ini.IniConfig;
 
 @SuppressWarnings("serial")
@@ -112,7 +111,6 @@ public class SIDPlay extends Applet {
 	 */
 	public void useEmulation() {
 		config.getEmulation().setEngine(Engine.EMULATION);
-		config.getAudio().setAudio(Audio.SOUNDCARD);
 	}
 
 	/**
@@ -120,7 +118,6 @@ public class SIDPlay extends Applet {
 	 */
 	public void useHardSID() {
 		config.getEmulation().setEngine(Engine.HARDSID);
-		config.getAudio().setAudio(Audio.NONE);
 	}
 
 	/**

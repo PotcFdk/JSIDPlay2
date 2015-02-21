@@ -382,7 +382,6 @@
 								<FXCollections fx:factory="observableArrayList">
 									<Engine fx:value="EMULATION" />
 									<Engine fx:value="HARDSID" />
-									<Engine fx:value="NONE" />
 								</FXCollections>
 							</items>
 						</ComboBox>
