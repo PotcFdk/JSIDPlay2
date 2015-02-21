@@ -52,10 +52,10 @@
 					</VBox>
 					<VBox GridPane.columnIndex="2" GridPane.rowIndex="0"
 						GridPane.hgrow="ALWAYS">
-						<Label text="%THIRD_BALANCE" />
+						<Label text="%THIRD_SID_LEVEL" />
 						<Slider fx:id="thirdVolume" min="0" max="12" value="12"
 							blockIncrement="1" />
-						<Label text="%THIRD_SID_LEVEL" />
+						<Label text="%THIRD_BALANCE" />
 						<Slider fx:id="thirdBalance" min="0" max="1" value="1"
 							blockIncrement="0.1" />
 					</VBox>

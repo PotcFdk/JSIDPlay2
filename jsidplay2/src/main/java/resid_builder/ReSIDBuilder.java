@@ -32,7 +32,7 @@ public class ReSIDBuilder implements SIDBuilder {
 
 	/**
 	 * Configuration
-	 **/
+	 */
 	private IConfig config;
 
 	/**

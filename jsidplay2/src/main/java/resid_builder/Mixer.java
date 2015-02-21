@@ -12,6 +12,13 @@ import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IAudioSection;
 
 public class Mixer {
+	/**
+	 * NullAudio ignores generated sound samples. This is used, before timer
+	 * start has been reached.
+	 * 
+	 * @author ken
+	 *
+	 */
 	private final class NullAudioEvent extends Event {
 		private NullAudioEvent(String name) {
 			super(name);
@@ -28,6 +35,13 @@ public class Mixer {
 		}
 	}
 
+	/**
+	 * The mixer mixes the generated sound samples into the drivers audio
+	 * buffer. This is used, after timer start has been reached.
+	 * 
+	 * @author ken
+	 *
+	 */
 	private final class MixerEvent extends Event {
 		private MixerEvent(String name) {
 			super(name);
@@ -42,12 +56,12 @@ public class Mixer {
 		 */
 		@Override
 		public synchronized void event() throws InterruptedException {
-			int samples = 0;
+			int samples = -1;
 			for (ReSIDBase sid : sids) {
 				// clock SID to the present moment
 				sid.clock();
 				// determine amount of samples produced (cut-off overflows)
-				samples = samples > 0 ? Math.min(samples, sid.bufferpos)
+				samples = samples != -1 ? Math.min(samples, sid.bufferpos)
 						: sid.bufferpos;
 				sid.bufferpos = 0;
 			}

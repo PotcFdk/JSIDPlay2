@@ -267,10 +267,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		String sidDriver = util.getConfig().getAudio().getSidDriver();
 		sidDriverBox.getSelectionModel().select(sidDriver);
 
-		devicesBox.setDisable(Audio.NONE.equals(audio));
-		samplingBox.setDisable(Audio.NONE.equals(audio));
-		samplingRateBox.setDisable(Audio.NONE.equals(audio));
-
 		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
@@ -896,10 +892,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void setAudio() {
 		Audio audio = audioBox.getSelectionModel().getSelectedItem();
 		util.getConfig().getAudio().setAudio(audio);
-
-		devicesBox.setDisable(Audio.NONE.equals(audio));
-		samplingBox.setDisable(Audio.NONE.equals(audio));
-		samplingRateBox.setDisable(Audio.NONE.equals(audio));
 
 		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));

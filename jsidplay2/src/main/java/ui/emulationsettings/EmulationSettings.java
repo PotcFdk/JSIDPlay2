@@ -65,9 +65,8 @@ public class EmulationSettings extends C64Window {
 	private static final int STEP = 3;
 
 	@FXML
-	protected ComboBox<Object> sid1Model, sid2Model, sid3Model;
-	@FXML
-	protected ComboBox<Object> sid1Emulation, sid2Emulation, sid3Emulation;
+	protected ComboBox<Object> sid1Model, sid2Model, sid3Model, sid1Emulation,
+			sid2Emulation, sid3Emulation;
 	@FXML
 	protected ComboBox<ChipModel> defaultModel;
 	@FXML
@@ -107,7 +106,9 @@ public class EmulationSettings extends C64Window {
 	private void initialize() {
 		duringInitialization = true;
 
-		boost8580Enabled = util.getConfig().getEmulation().isDigiBoosted8580();
+		EmulationSection emulationSection = util.getConfig().getEmulation();
+
+		boost8580Enabled = emulationSection.isDigiBoosted8580();
 
 		mainFilters = FXCollections.<String> observableArrayList();
 		mainFilter.setItems(mainFilters);
@@ -188,10 +189,12 @@ public class EmulationSettings extends C64Window {
 						.getString("3SID"));
 		stereoMode.setItems(stereoModes);
 
-		int dualSidBase = util.getConfig().getEmulation().getDualSidBase();
-		int thirdSidBase = util.getConfig().getEmulation().getThirdSIDBase();
-		if (util.getConfig().getEmulation().isForceStereoTune()) {
-			if (dualSidBase == 0xd400) {
+		int sidBase = SidTune.getSIDAddress(emulationSection, util.getPlayer()
+				.getTune(), 0);
+		int dualSidBase = emulationSection.getDualSidBase();
+		int thirdSidBase = emulationSection.getThirdSIDBase();
+		if (emulationSection.isForceStereoTune()) {
+			if (dualSidBase == sidBase) {
 				stereoMode.getSelectionModel().select(
 						util.getBundle().getString("FAKE_STEREO"));
 			} else if (thirdSidBase != 0) {
@@ -214,8 +217,8 @@ public class EmulationSettings extends C64Window {
 				.getBundle().getString("SECOND_SID"), util.getBundle()
 				.getString("THIRD_SID"));
 		sidToRead.setItems(sidReads);
-		sidToRead.getSelectionModel().select(
-				util.getConfig().getEmulation().getSidNumToRead());
+		sidToRead.getSelectionModel()
+				.select(emulationSection.getSidNumToRead());
 
 		sid1Emulations = FXCollections.<Object> observableArrayList();
 		sid1Emulations.addAll(util.getBundle().getString("AUTO"),
@@ -251,28 +254,23 @@ public class EmulationSettings extends C64Window {
 		defaultEmulation.setItems(defaultEmulations);
 
 		initSidModel(0);
-		Emulation userEmulation = util.getConfig().getEmulation()
-				.getUserEmulation();
+		Emulation userEmulation = emulationSection.getUserEmulation();
 		sid1Emulation.getSelectionModel().select(
 				userEmulation != null ? userEmulation : util.getBundle()
 						.getString("AUTO"));
 		initSidModel(1);
-		Emulation stereoEmulation = util.getConfig().getEmulation()
-				.getStereoEmulation();
+		Emulation stereoEmulation = emulationSection.getStereoEmulation();
 		sid2Emulation.getSelectionModel().select(
 				stereoEmulation != null ? stereoEmulation : util.getBundle()
 						.getString("AUTO"));
 		initSidModel(2);
-		Emulation thirdEmulation = util.getConfig().getEmulation()
-				.getThirdEmulation();
+		Emulation thirdEmulation = emulationSection.getThirdEmulation();
 		sid3Emulation.getSelectionModel().select(
 				thirdEmulation != null ? thirdEmulation : util.getBundle()
 						.getString("AUTO"));
-		ChipModel defautSidModel = util.getConfig().getEmulation()
-				.getDefaultSidModel();
+		ChipModel defautSidModel = emulationSection.getDefaultSidModel();
 		defaultModel.getSelectionModel().select(defautSidModel);
-		Emulation defaultSidEmulation = util.getConfig().getEmulation()
-				.getDefaultEmulation();
+		Emulation defaultSidEmulation = emulationSection.getDefaultEmulation();
 		defaultEmulation.getSelectionModel().select(defaultSidEmulation);
 
 		boosted8580.setSelected(boost8580Enabled);
@@ -320,11 +318,15 @@ public class EmulationSettings extends C64Window {
 	}
 
 	private void enableStereoSettings() {
-		EmulationSection emulation = util.getConfig().getEmulation();
-		boolean second = SidTune.isSIDUsed(emulation, util.getPlayer()
+		EmulationSection emulationSection = util.getConfig().getEmulation();
+		int sidBase = SidTune.getSIDAddress(emulationSection, util.getPlayer()
+				.getTune(), 0);
+		int dualSidBase = SidTune.getSIDAddress(emulationSection, util
+				.getPlayer().getTune(), 1);
+		boolean second = SidTune.isSIDUsed(emulationSection, util.getPlayer()
 				.getTune(), 1);
-		boolean third = SidTune.isSIDUsed(emulation,
-				util.getPlayer().getTune(), 2);
+		boolean third = SidTune.isSIDUsed(emulationSection, util.getPlayer()
+				.getTune(), 2);
 		// stereo, only:
 		mainBalance.setDisable(!second);
 		secondVolume.setDisable(!second);
@@ -339,12 +341,14 @@ public class EmulationSettings extends C64Window {
 		sid3Model.setDisable(!third);
 		thirdFilter.setDisable(!third);
 		thirdFilterCurve.setDisable(!third);
-		// forced stereo, only:
-		sidToRead.setDisable(!(second || third));
+		// fake stereo, only:
+		sidToRead.setDisable(!(second && sidBase == dualSidBase));
+		// forced stereo or forced 3-SID, only:
 		baseAddress
-				.setDisable(!(second && (emulation.isForceStereoTune() || (third && emulation
-						.isForce3SIDTune()))));
-		thirdAddress.setDisable(!(third && emulation.isForce3SIDTune()));
+				.setDisable(!(second && emulationSection.isForceStereoTune() || (third && emulationSection
+						.isForce3SIDTune())));
+		// forced 3-SID, only:
+		thirdAddress.setDisable(!(third && emulationSection.isForce3SIDTune()));
 	}
 
 	@Override
@@ -472,6 +476,7 @@ public class EmulationSettings extends C64Window {
 		Emulation defaultSidEmulation = (Emulation) defaultEmulation
 				.getSelectionModel().getSelectedItem();
 		emulationSection.setDefaultEmulation(defaultSidEmulation);
+		// default SID model has an impact on all chip model settings
 		setSid1Model();
 		setSid2Model();
 		setSid3Model();
@@ -479,14 +484,17 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setBaseAddress() {
+		EmulationSection emulationSection = util.getConfig().getEmulation();
 		Integer decode = Integer.decode(baseAddress.getText());
-		util.getConfig().getEmulation().setDualSidBase(decode);
+		emulationSection.setDualSidBase(decode);
 
 		String thirdSid = util.getBundle().getString("3SID");
 		String stereo = util.getBundle().getString("STEREO");
 		String fakeStereo = util.getBundle().getString("FAKE_STEREO");
 
-		if (decode == 0xd400) {
+		int sidBase = SidTune.getSIDAddress(emulationSection, util.getPlayer()
+				.getTune(), 0);
+		if (decode == sidBase) {
 			if (!stereoMode.getSelectionModel().getSelectedItem()
 					.equals(fakeStereo)) {
 				stereoMode.getSelectionModel().select(fakeStereo);

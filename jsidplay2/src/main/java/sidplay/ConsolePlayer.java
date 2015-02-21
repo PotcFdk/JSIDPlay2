@@ -24,10 +24,10 @@ import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
 import sidplay.consoleplayer.ConsoleIO;
+import sidplay.consoleplayer.TimeConverter;
+import sidplay.consoleplayer.VerboseValidator;
 import sidplay.ini.IniConfig;
 
-import com.beust.jcommander.IParameterValidator;
-import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -35,34 +35,6 @@ import com.beust.jcommander.Parameters;
 
 @Parameters(resourceBundle = "sidplay.consoleplayer.ConsolePlayer")
 public class ConsolePlayer {
-	/**
-	 * Parse [mm:]ss (parse time in minutes and seconds and store as seconds)
-	 */
-	public static class TimeConverter implements IStringConverter<Integer> {
-		@Override
-		public Integer convert(String value) {
-			String[] s = value.split(":");
-			if (s.length == 1) {
-				return Integer.parseInt(s[0]);
-			} else if (s.length == 2) {
-				return Integer.parseInt(s[0]) * 60 + Integer.parseInt(s[1]);
-			}
-			throw new ParameterException(
-					"Invalid time, expected [mm:]ss (found " + value + ")");
-		}
-	}
-
-	public static class VerboseValidator implements IParameterValidator {
-		public void validate(String name, String value)
-				throws ParameterException {
-			int n = Integer.parseInt(value);
-			if (n < 0 || n > 2) {
-				throw new ParameterException("Invalid " + name
-						+ " value, expected 0, 1 or 2 (found " + value + ")");
-			}
-		}
-	}
-
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 

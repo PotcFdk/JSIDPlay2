@@ -1,8 +1,6 @@
 package sidplay.audio;
 
 public enum Audio {
-	/** No audio. */
-	NONE(new AudioNull(), ""),
 	/** Java Sound API. */
 	SOUNDCARD(new JavaSound(), "Soundcard"),
 	/** WAV file write. */

@@ -401,7 +401,6 @@
 									<Audio fx:value="LIVE_WAV" />
 									<Audio fx:value="LIVE_MP3" />
 									<Audio fx:value="COMPARE_MP3" />
-									<Audio fx:value="NONE" />
 								</FXCollections>
 							</items>
 						</ComboBox>
