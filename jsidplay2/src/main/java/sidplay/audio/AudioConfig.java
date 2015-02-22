@@ -16,10 +16,7 @@
 package sidplay.audio;
 
 import libsidplay.common.SamplingMethod;
-import libsidplay.sidtune.SidTune;
 import sidplay.ini.intf.IAudioSection;
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
 
 public class AudioConfig {
 	protected int frameRate = 48000;
@@ -55,14 +52,6 @@ public class AudioConfig {
 	public static AudioConfig getInstance(IAudioSection audio, int channels) {
 		return new AudioConfig(audio.getFrequency(), channels,
 				audio.getSampling(), audio.getDevice());
-	}
-
-	public static AudioConfig getInstance(IConfig config, SidTune tune) {
-		IEmulationSection emulation = config.getEmulation();
-		return new AudioConfig(config.getAudio().getFrequency(),
-				SidTune.isSIDUsed(emulation, tune, 1) ? 2 : 1, config
-						.getAudio().getSampling(), config.getAudio()
-						.getDevice());
 	}
 
 	/**

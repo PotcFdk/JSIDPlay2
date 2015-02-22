@@ -13,7 +13,7 @@ import libsidplay.sidtune.SidTune;
 import lowlevel.LameEncoder;
 
 /**
- * File based driver to create a MP3 file.
+ * Driver to write into an MP3 encoded output stream.
  * 
  * @author Ken Händel
  * 
@@ -36,7 +36,7 @@ public class MP3Stream extends AudioDriver {
 	public MP3Stream(OutputStream out) {
 		this.out = out;
 	}
-	
+
 	@Override
 	public void open(final AudioConfig cfg, SidTune tune)
 			throws LineUnavailableException, UnsupportedAudioFileException,

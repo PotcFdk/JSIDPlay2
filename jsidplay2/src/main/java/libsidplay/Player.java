@@ -806,7 +806,9 @@ public class Player {
 		CPUClock cpuClock = CPUClock.getCPUClock(config, tune);
 		setClock(cpuClock);
 
-		AudioConfig audioConfig = AudioConfig.getInstance(config, tune);
+		boolean isStereo = SidTune.isSIDUsed(config.getEmulation(), tune, 1);
+		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudio(),
+				isStereo ? 2 : 1);
 
 		if (updateDriverSetting) {
 			updateDriverSetting = false;
