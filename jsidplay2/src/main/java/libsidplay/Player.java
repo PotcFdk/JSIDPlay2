@@ -415,8 +415,9 @@ public class Player {
 						typeInCommand();
 					}
 				}
-			}, 2500000);
+			}, 2500000/* 2.5 sec */);
 		} else {
+			// Tune code path using auto-start
 			// Set play-back address to feedback call frames counter.
 			c64.setPlayAddr(tune.getInfo().getPlayAddr());
 			c64.getEventScheduler().schedule(new Event("Tune init event") {
@@ -844,11 +845,11 @@ public class Player {
 	}
 
 	/**
-	 * Create configured SID chip implementation (emulation/hardware/none).
+	 * Create configured SID chip implementation (emulation/hardware).
 	 */
 	private SIDBuilder createSIDBuilder(CPUClock cpuClock,
 			AudioConfig audioConfig) {
-		Engine engine = config.getEmulation().getEngine();
+		final Engine engine = config.getEmulation().getEngine();
 		switch (engine) {
 		case EMULATION:
 			return new ReSIDBuilder(c64.getEventScheduler(), config,
