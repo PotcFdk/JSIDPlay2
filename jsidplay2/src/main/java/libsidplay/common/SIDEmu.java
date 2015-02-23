@@ -54,12 +54,6 @@ public abstract class SIDEmu {
 
 	public abstract void clock();
 
-	public abstract void setVoiceMute(int num, boolean mute);
-
-	public abstract void setFilter(IConfig config, int sidNum);
-
-	public abstract void setFilterEnable(IEmulationSection emulation, int sidNum);
-
 	public abstract ChipModel getChipModel();
 
 	public abstract void setChipModel(final ChipModel model);
@@ -70,5 +64,11 @@ public abstract class SIDEmu {
 	public abstract void input(int input);
 
 	public abstract int getInputDigiBoost();
+
+	public abstract void setVoiceMute(int num, boolean mute);
+
+	public abstract void setFilter(IConfig config, int sidNum);
+
+	public abstract void setFilterEnable(IEmulationSection emulation, int sidNum);
 
 }

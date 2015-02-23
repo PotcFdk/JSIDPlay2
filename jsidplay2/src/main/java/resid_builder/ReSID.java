@@ -15,13 +15,10 @@
  */
 package resid_builder;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SamplingMethod;
+import libsidplay.common.SIDChip;
 import resid_builder.resid.Filter6581;
 import resid_builder.resid.Filter8580;
 import resid_builder.resid.SID;
@@ -30,12 +27,9 @@ import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
 
 /**
- * ReSID emulation.
+ * Dag Lem's resid 1.0 beta
  */
 public class ReSID extends ReSIDBase {
-	private static final Logger RESID = Logger.getLogger(ReSID.class.getName());
-
-	private final SID sid = new SID();
 
 	/**
 	 * Constructor
@@ -47,54 +41,21 @@ public class ReSID extends ReSIDBase {
 	 */
 	public ReSID(EventScheduler context, final int bufferSize) {
 		super(context, bufferSize);
-		reset((byte) 0);
-	}
-
-	@Override
-	public void reset(final byte volume) {
-		clocksSinceLastAccess();
-		sid.reset();
-		sid.write(0x18, volume);
-	}
-
-	@Override
-	public byte read(int addr) {
-		addr &= 0x1f;
-		// correction for sid_detection.prg
-		lastTime--;
-		clock();
-		return sid.read(addr);
-	}
-
-	@Override
-	public void write(int addr, final byte data) {
-		addr &= 0x1f;
-		super.write(addr, data);
-		if (RESID.isLoggable(Level.FINE)) {
-			RESID.fine(String.format("write 0x%02x=0x%02x", addr, data));
-		}
-
-		clock();
-		sid.write(addr, data);
-	}
-
-	@Override
-	public void clock() {
-		int cycles = clocksSinceLastAccess();
-		bufferpos += sid.clock(cycles, buffer, bufferpos);
 	}
 
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
 		boolean enable = emulation.isFilterEnable(sidNum);
-		sid.getFilter6581().enable(enable);
-		sid.getFilter8580().enable(enable);
+		SID sidImpl = (SID) sid;
+		sidImpl.getFilter6581().enable(enable);
+		sidImpl.getFilter8580().enable(enable);
 	}
 
 	@Override
 	public void setFilter(IConfig config, int sidNum) {
-		final Filter6581 filter6581 = sid.getFilter6581();
-		final Filter8580 filter8580 = sid.getFilter8580();
+		SID sidImpl = (SID) sid;
+		final Filter6581 filter6581 = sidImpl.getFilter6581();
+		final Filter8580 filter8580 = sidImpl.getFilter8580();
 
 		String filterName6581 = config.getEmulation().getFilterName(sidNum,
 				Emulation.RESID, ChipModel.MOS6581);
@@ -112,38 +73,10 @@ public class ReSID extends ReSIDBase {
 	}
 
 	@Override
-	public void setVoiceMute(final int num, final boolean mute) {
-		sid.mute(num, mute);
-	}
-
-	/**
-	 * Sets the SID sampling parameters.
-	 *
-	 * @param systemClock
-	 *            System clock to use for the SID.
-	 * @param freq
-	 *            Frequency to use for the SID.
-	 * @param method
-	 *            {@link SamplingMethod} to use for the SID.
-	 */
-	public void setSampling(final double systemClock, final float freq,
-			final SamplingMethod method) {
-		sid.setSamplingParameters(systemClock, method, freq, 20000);
-	}
-
-	/**
-	 * Set the emulated SID model
-	 * 
-	 * @param model
-	 *            The emulated SID chip model to use.
-	 */
-	public void setChipModel(final ChipModel model) {
-		sid.setChipModel(model);
-	}
-
-	@Override
-	public void input(int input) {
-		sid.input(input);
+	public byte read(int addr) {
+		// correction for sid_detection.prg
+		lastTime--;
+		return super.read(addr);
 	}
 
 	/**
@@ -158,23 +91,9 @@ public class ReSID extends ReSIDBase {
 		return m_credit;
 	}
 
-	// Getters and setters.
-
-	/**
-	 * Gets the {@link SID} instance being used.
-	 *
-	 * @return The {@link SID} instance being used.
-	 */
-	public SID sid() {
-		return sid;
-	}
-
 	@Override
-	public ChipModel getChipModel() {
-		return sid.getChipModel();
+	protected SIDChip createSID() {
+		return new SID();
 	}
 
-	public int getInputDigiBoost() {
-		return sid.getInputDigiBoost();
-	}
 }

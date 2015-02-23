@@ -6,7 +6,6 @@ import javafx.scene.control.TitledPane;
 import libsidplay.Player;
 import libsidplay.common.SIDEmu;
 import resid_builder.ReSID;
-import resid_builder.resid.SID;
 import ui.common.C64Window;
 
 public final class EnvelopeGauge extends SIDGauge {
@@ -33,11 +32,12 @@ public final class EnvelopeGauge extends SIDGauge {
 	@Override
 	public void sample(SIDEmu sidemu) {
 		if (sidemu instanceof ReSID) {
-			SID sid = ((ReSID) sidemu).sid();
+			final resid_builder.resid.SID sid = (resid_builder.resid.SID) ((resid_builder.ReSID) sidemu)
+					.sid();
 			final byte envOutput = sid.voice[getVoice()].envelope.readENV();
 			accumulate(getValue(envOutput));
 		} else if (sidemu instanceof resid_builder.ReSIDfp) {
-			resid_builder.residfp.SID sid = ((resid_builder.ReSIDfp) sidemu)
+			final resid_builder.residfp.SID sid = (resid_builder.residfp.SID) ((resid_builder.ReSIDfp) sidemu)
 					.sid();
 			final byte envOutput = sid.voice[getVoice()].envelope.readENV();
 			accumulate(getValue(envOutput));
@@ -49,8 +49,7 @@ public final class EnvelopeGauge extends SIDGauge {
 	private float getValue(final byte envOutput) {
 		float value = -48;
 		if (envOutput != 0) {
-			value = (float) (Math.log((envOutput & 0xff) / 255f)
-					/ Math.log(10) * 20);
+			value = (float) (Math.log((envOutput & 0xff) / 255f) / Math.log(10) * 20);
 		}
 		return 1f + value / 48.0f;
 	}

@@ -1,6 +1,5 @@
 package libsidplay.common;
 
-
 public interface SIDChip {
 
 	int clock(int piece, int[] audioBuffer, int offset);
@@ -20,6 +19,8 @@ public interface SIDChip {
 			double samplingFrequency, double highestAccurateFrequency);
 
 	ChipModel getChipModel();
+	void setChipModel(ChipModel model);
 	
 	int getInputDigiBoost();
+
 }

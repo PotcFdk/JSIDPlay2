@@ -6,7 +6,6 @@ import javafx.scene.control.TitledPane;
 import libsidplay.Player;
 import libsidplay.common.SIDEmu;
 import resid_builder.ReSID;
-import resid_builder.resid.SID;
 import resid_builder.resid.WaveformGenerator;
 import ui.common.C64Window;
 
@@ -34,12 +33,13 @@ public final class WaveGauge extends SIDGauge {
 	@Override
 	public void sample(SIDEmu sidemu) {
 		if (sidemu instanceof ReSID) {
-			SID sid = ((ReSID) sidemu).sid();
+			final resid_builder.resid.SID sid = (resid_builder.resid.SID) ((resid_builder.ReSID) sidemu)
+					.sid();
 			final WaveformGenerator wave = sid.voice[getVoice()].wave;
 			int sampleValue = wave.readOSC() & 0xff;
 			accumulate(sampleValue / 255f);
 		} else if (sidemu instanceof resid_builder.ReSIDfp) {
-			resid_builder.residfp.SID sid = ((resid_builder.ReSIDfp) sidemu)
+			final resid_builder.residfp.SID sid = (resid_builder.residfp.SID) ((resid_builder.ReSIDfp) sidemu)
 					.sid();
 			final resid_builder.residfp.WaveformGenerator wave = sid.voice[getVoice()].wave;
 			int sampleValue = wave.readOSC(sid.getChipModel()) & 0xff;
