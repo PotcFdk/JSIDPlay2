@@ -13,7 +13,7 @@ import libsidplay.common.SamplingMethod;
 
 public abstract class ReSIDBase extends SIDEmu {
 
-	private static final Logger RESID = Logger.getLogger(ReSID.class.getName());
+	private static final Logger RESID = Logger.getLogger(ReSIDBase.class.getName());
 
 	protected final SIDChip sid;
 
