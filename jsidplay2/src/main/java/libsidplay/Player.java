@@ -308,7 +308,7 @@ public class Player {
 			@Override
 			public void end() {
 				// Only if tune is playing: if play time is over loop or exit
-				if (tune != null) {
+				if (tune != SidTune.RESET) {
 					if (config.getSidplay2().isSingle()) {
 						stateProperty.set(getEndState());
 					} else {
@@ -361,6 +361,9 @@ public class Player {
 	 * @throws InterruptedException
 	 */
 	private final void reset() throws InterruptedException {
+		// According to the configuration, the SIDs must be updated.
+		createOrUpdateSIDs();
+		
 		c64.reset();
 		iecBus.reset();
 		datasette.reset();
@@ -375,7 +378,6 @@ public class Player {
 				c64.setSIDAddress(address, sidNum);
 			}
 		}
-
 		// Reset Floppies
 		final IC1541Section c1541 = config.getC1541();
 		for (final C1541 floppy : floppies) {
@@ -829,12 +831,7 @@ public class Player {
 		} catch (UnsupportedAudioFileException | IOException e) {
 			throw new RuntimeException(e);
 		}
-
-		// According to the configuration, the SIDs must be updated.
-		createOrUpdateSIDs();
-
 		reset();
-
 		stateProperty.set(State.RUNNING);
 	}
 
