@@ -302,9 +302,7 @@ public class Player {
 		this.timer = new Timer(this) {
 			@Override
 			public void start() {
-				if (sidBuilder != null) {
-					sidBuilder.start();
-				}
+				sidBuilder.start();
 			}
 
 			@Override
@@ -367,9 +365,7 @@ public class Player {
 		iecBus.reset();
 		datasette.reset();
 		timer.reset();
-		if (sidBuilder != null) {
-			sidBuilder.reset();
-		}
+		sidBuilder.reset();
 
 		// Assign SID chip addresses
 		IEmulationSection emulation = config.getEmulation();
@@ -713,9 +709,7 @@ public class Player {
 	}
 
 	public final void configureSIDBuilder(Consumer<SIDBuilder> action) {
-		if (sidBuilder != null) {
-			action.accept(sidBuilder);
-		}
+		action.accept(sidBuilder);
 	}
 
 	/**
@@ -904,14 +898,12 @@ public class Player {
 	 */
 	public final void createOrUpdateSIDs() {
 		EventScheduler eventScheduler = c64.getEventScheduler();
-		if (sidBuilder != null) {
-			for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
-				if (SidTune.isSIDUsed(config.getEmulation(), tune, sidNum)) {
-					SIDEmu sid = c64.getSID(sidNum);
-					sid = sidBuilder.lock(eventScheduler, config, sid, sidNum,
-							tune);
-					c64.setSID(sidNum, sid);
-				}
+		for (int sidNum = 0; sidNum < C64.MAX_SIDS; sidNum++) {
+			if (SidTune.isSIDUsed(config.getEmulation(), tune, sidNum)) {
+				SIDEmu sid = c64.getSID(sidNum);
+				sid = sidBuilder
+						.lock(eventScheduler, config, sid, sidNum, tune);
+				c64.setSID(sidNum, sid);
 			}
 		}
 	}
@@ -948,12 +940,10 @@ public class Player {
 	}
 
 	private void close() {
-		if (sidBuilder != null) {
-			configureSIDs((num, sid) -> {
-				sidBuilder.unlock(sid);
-				c64.setSID(num, null);
-			});
-		}
+		configureSIDs((num, sid) -> {
+			sidBuilder.unlock(sid);
+			c64.setSID(num, null);
+		});
 		if (driverSettings != null) {
 			driverSettings.getAudioDriver().close();
 		}
@@ -1015,7 +1005,7 @@ public class Player {
 	}
 
 	public final int getNumDevices() {
-		return sidBuilder != null ? sidBuilder.getNumDevices() : 0;
+		return sidBuilder.getNumDevices();
 	}
 
 	public final void quit() {
