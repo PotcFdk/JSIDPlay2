@@ -3,7 +3,6 @@ package resid_builder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import resid_builder.resid.SID;
 import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDChip;
@@ -121,12 +120,7 @@ public abstract class ReSIDBase extends SIDEmu {
 		return sid.getInputDigiBoost();
 	}
 
-	/**
-	 * Gets the {@link SID} instance being used.
-	 *
-	 * @return The {@link SID} instance being used.
-	 */
-	public SIDChip sid() {
+	public SIDChip getSID() {
 		return sid;
 	}
 

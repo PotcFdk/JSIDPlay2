@@ -23,4 +23,7 @@ public interface SIDChip {
 	
 	int getInputDigiBoost();
 
+	byte readENV(int voiceNum);
+
+	byte readOSC(int voiceNum);
 }

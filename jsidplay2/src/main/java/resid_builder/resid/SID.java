@@ -29,10 +29,8 @@ import resid_builder.resid.resample.TwoPassSincResampler;
 import resid_builder.resid.resample.ZeroOrderResampler;
 
 /**
- * MOS6581/MOS8580 emulation.
- * Based on reSID 0.16 by Dag Lem,
- * and then hacked on by Antti S. Lankila.
- * Ported to Java by Ken Händel.
+ * MOS6581/MOS8580 emulation. Based on reSID 0.16 by Dag Lem, and then hacked on
+ * by Antti S. Lankila. Ported to Java by Ken Händel.
  * 
  * @author Ken Händel
  * @author Dag Lem
@@ -40,7 +38,7 @@ import resid_builder.resid.resample.ZeroOrderResampler;
  */
 public final class SID implements SIDChip {
 	private static final int INPUTDIGIBOOST = 0x3FF;
-	
+
 	/**
 	 * Bus value stays alive for some time after each operation.
 	 */
@@ -52,7 +50,8 @@ public final class SID implements SIDChip {
 	private static final int OUTPUT_LEVEL = 359;
 
 	/** SID voices */
-	public final Voice[] voice = new Voice[] { new Voice(), new Voice(), new Voice() };
+	public final Voice[] voice = new Voice[] { new Voice(), new Voice(),
+			new Voice() };
 
 	/** Currently active filter */
 	private Filter filter;
@@ -64,8 +63,8 @@ public final class SID implements SIDChip {
 	private final Filter8580 filter8580 = new Filter8580();
 
 	/**
-	 * External filter that provides high-pass and low-pass filtering
-	 * to adjust sound tone slightly.
+	 * External filter that provides high-pass and low-pass filtering to adjust
+	 * sound tone slightly.
 	 */
 	private final ExternalFilter externalFilter = new ExternalFilter();
 
@@ -105,72 +104,81 @@ public final class SID implements SIDChip {
 	private final boolean[] muted = new boolean[3];
 
 	/**
-	 * Estimate DAC nonlinearity. The SID contains R-2R ladder, and some likely errors
-	 * in the resistor lengths which result in errors depending on the bits chosen.
+	 * Estimate DAC nonlinearity. The SID contains R-2R ladder, and some likely
+	 * errors in the resistor lengths which result in errors depending on the
+	 * bits chosen.
 	 * <P>
-	 * This model was derived by Dag Lem, and is port of the upcoming reSID version.
-	 * In average, it shows a value higher than the target by a value that depends
-	 * on the _2R_div_R parameter. It differs from the version written by Antti Lankila
-	 * chiefly in the emulation of the lacking termination of the 2R ladder, which
-	 * destroys the output with respect to the low bits of the DAC.
+	 * This model was derived by Dag Lem, and is port of the upcoming reSID
+	 * version. In average, it shows a value higher than the target by a value
+	 * that depends on the _2R_div_R parameter. It differs from the version
+	 * written by Antti Lankila chiefly in the emulation of the lacking
+	 * termination of the 2R ladder, which destroys the output with respect to
+	 * the low bits of the DAC.
 	 * <P>
 	 * Returns the analog value as modeled from the R-2R network.
 	 *
-	 * @param dac digital value to convert to analog
-	 * @param _2R_div_R nonlinearity parameter, 1.0 for perfect linearity.
-	 * @param term is the dac terminated by a 2R resistor? (6581 DACs are not)
+	 * @param dac
+	 *            digital value to convert to analog
+	 * @param _2R_div_R
+	 *            nonlinearity parameter, 1.0 for perfect linearity.
+	 * @param term
+	 *            is the dac terminated by a 2R resistor? (6581 DACs are not)
 	 */
-	public static void kinkedDac(final double[] dac, final double _2R_div_R, final boolean term) {
+	public static void kinkedDac(final double[] dac, final double _2R_div_R,
+			final boolean term) {
 		final double INFINITY = 1e6;
 
-		// Calculate voltage contribution by each individual bit in the R-2R ladder.
+		// Calculate voltage contribution by each individual bit in the R-2R
+		// ladder.
 		for (int set_bit = 0; set_bit < dac.length; set_bit++) {
 			int bit;
 
-		    double Vn = 1;          // Normalized bit voltage.
-		    double R = 1;           // Normalized R
-		    double _2R = _2R_div_R*R;  // 2R
-		    double Rn = term ?         // Rn = 2R for correct termination,
-		      _2R : INFINITY;         // INFINITY for missing termination.
+			double Vn = 1; // Normalized bit voltage.
+			double R = 1; // Normalized R
+			double _2R = _2R_div_R * R; // 2R
+			double Rn = term ? // Rn = 2R for correct termination,
+			_2R
+					: INFINITY; // INFINITY for missing termination.
 
-		    // Calculate DAC "tail" resistance by repeated parallel substitution.
-		    for (bit = 0; bit < set_bit; bit++) {
-		    	if (Rn == INFINITY) {
-		    		Rn = R + _2R;
-		    	} else {
-		    		Rn = R + _2R*Rn/(_2R + Rn); // R + 2R || Rn
-		    	}
-		    }
-		    
-		    // Source transformation for bit voltage.
-		    if (Rn == INFINITY) {
-		      Rn = _2R;
-		    }
-		    else {
-		      Rn = _2R*Rn/(_2R + Rn);  // 2R || Rn
-		      Vn = Vn*Rn/_2R;
-		    }
-		    
-		    // Calculate DAC output voltage by repeated source transformation from
-		    // the "tail".
-		    
-		    for (++bit; bit < dac.length; bit++) {
-		        Rn += R;
-		        double I = Vn/Rn;
-		        Rn = _2R*Rn/(_2R + Rn);  // 2R || Rn
-		        Vn = Rn*I;
-		    }
-		    
-		    dac[set_bit] = Vn;
+			// Calculate DAC "tail" resistance by repeated parallel
+			// substitution.
+			for (bit = 0; bit < set_bit; bit++) {
+				if (Rn == INFINITY) {
+					Rn = R + _2R;
+				} else {
+					Rn = R + _2R * Rn / (_2R + Rn); // R + 2R || Rn
+				}
+			}
+
+			// Source transformation for bit voltage.
+			if (Rn == INFINITY) {
+				Rn = _2R;
+			} else {
+				Rn = _2R * Rn / (_2R + Rn); // 2R || Rn
+				Vn = Vn * Rn / _2R;
+			}
+
+			// Calculate DAC output voltage by repeated source transformation
+			// from
+			// the "tail".
+
+			for (++bit; bit < dac.length; bit++) {
+				Rn += R;
+				double I = Vn / Rn;
+				Rn = _2R * Rn / (_2R + Rn); // 2R || Rn
+				Vn = Rn * I;
+			}
+
+			dac[set_bit] = Vn;
 		}
 
 		/* Normalize to integerish behavior */
 		double Vsum = 0;
-		for (int i = 0; i < dac.length; i ++) {
+		for (int i = 0; i < dac.length; i++) {
 			Vsum += dac[i];
 		}
 		Vsum /= 1 << dac.length;
-		for (int i = 0; i < dac.length; i ++) {
+		for (int i = 0; i < dac.length; i++) {
 			dac[i] /= Vsum;
 		}
 	}
@@ -186,7 +194,8 @@ public final class SID implements SIDChip {
 	/**
 	 * Set chip model.
 	 * 
-	 * @param model chip model to use
+	 * @param model
+	 *            chip model to use
 	 */
 	public void setChipModel(final ChipModel model) {
 		this.model = model;
@@ -196,7 +205,8 @@ public final class SID implements SIDChip {
 		} else if (model == ChipModel.MOS8580) {
 			filter = filter8580;
 		} else {
-			throw new RuntimeException("Don't know how to handle chip type " + model);
+			throw new RuntimeException("Don't know how to handle chip type "
+					+ model);
 		}
 
 		/* calculate waveform-related tables, feed them to the generator */
@@ -240,7 +250,8 @@ public final class SID implements SIDChip {
 	 * an external audio signal, the signal should be resampled to 1MHz first to
 	 * avoid sampling noise.
 	 * 
-	 * @param value input level to set
+	 * @param value
+	 *            input level to set
 	 */
 	public void input(final int value) {
 		filter6581.input(value);
@@ -250,18 +261,26 @@ public final class SID implements SIDChip {
 	/**
 	 * Read registers.
 	 * <P>
-	 * Reading a write only register returns the last byte written to any SID register. The individual bits in this value start to fade down towards zero after a few cycles. All bits reach zero within
-	 * approximately $2000 - $4000 cycles. It has been claimed that this fading happens in an orderly fashion, however sampling of write only registers reveals that this is not the case. NB! This is
-	 * not correctly modeled. The actual use of write only registers has largely been made in the belief that all SID registers are readable. To support this belief the read would have to be done
-	 * immediately after a write to the same register (remember that an intermediate write to another register would yield that value instead). With this in mind we return the last value written to
-	 * any SID register for $2000 cycles without modeling the bit fading.
+	 * Reading a write only register returns the last byte written to any SID
+	 * register. The individual bits in this value start to fade down towards
+	 * zero after a few cycles. All bits reach zero within approximately $2000 -
+	 * $4000 cycles. It has been claimed that this fading happens in an orderly
+	 * fashion, however sampling of write only registers reveals that this is
+	 * not the case. NB! This is not correctly modeled. The actual use of write
+	 * only registers has largely been made in the belief that all SID registers
+	 * are readable. To support this belief the read would have to be done
+	 * immediately after a write to the same register (remember that an
+	 * intermediate write to another register would yield that value instead).
+	 * With this in mind we return the last value written to any SID register
+	 * for $2000 cycles without modeling the bit fading.
 	 * 
-	 * @param offset SID register to read
+	 * @param offset
+	 *            SID register to read
 	 * @return value read from chip
 	 */
 	public byte read(final int offset) {
 		final byte value;
-		
+
 		switch (offset) {
 		case 0x19:
 			value = potX.readPOT();
@@ -284,15 +303,17 @@ public final class SID implements SIDChip {
 			break;
 		}
 
-		busValue = value;		
+		busValue = value;
 		return value;
 	}
 
 	/**
 	 * Write registers.
 	 * 
-	 * @param offset chip register to write
-	 * @param value value to write
+	 * @param offset
+	 *            chip register to write
+	 * @param value
+	 *            value to write
 	 */
 	public void write(final int offset, final byte value) {
 		busValue = value;
@@ -305,7 +326,7 @@ public final class SID implements SIDChip {
 			writeImmediate(offset, value);
 		}
 	}
-	
+
 	private void writeImmediate(final int offset, final byte value) {
 		switch (offset) {
 		case 0x00:
@@ -390,7 +411,7 @@ public final class SID implements SIDChip {
 		default:
 			break;
 		}
-		
+
 		/* Update voicesync just in case. */
 		voiceSync(false);
 	}
@@ -398,8 +419,10 @@ public final class SID implements SIDChip {
 	/**
 	 * SID voice muting.
 	 * 
-	 * @param channel channe to modify
-	 * @param enable is muted?
+	 * @param channel
+	 *            channe to modify
+	 * @param enable
+	 *            is muted?
 	 */
 	public void mute(final int channel, final boolean enable) {
 		muted[channel] = enable;
@@ -408,31 +431,46 @@ public final class SID implements SIDChip {
 	/**
 	 * Setting of SID sampling parameters.
 	 * <P>
-	 * Use a clock freqency of 985248Hz for PAL C64, 1022730Hz for NTSC C64. The default end of passband frequency is pass_freq = 0.9*sample_freq/2 for sample frequencies up to ~ 44.1kHz, and 20kHz
-	 * for higher sample frequencies.
+	 * Use a clock freqency of 985248Hz for PAL C64, 1022730Hz for NTSC C64. The
+	 * default end of passband frequency is pass_freq = 0.9*sample_freq/2 for
+	 * sample frequencies up to ~ 44.1kHz, and 20kHz for higher sample
+	 * frequencies.
 	 * <P>
-	 * For resampling, the ratio between the clock frequency and the sample frequency is limited as follows: 125*clock_freq/sample_freq < 16384 E.g. provided a clock frequency of ~ 1MHz, the sample
-	 * frequency can not be set lower than ~ 8kHz. A lower sample frequency would make the resampling code overfill its 16k sample ring buffer.
+	 * For resampling, the ratio between the clock frequency and the sample
+	 * frequency is limited as follows: 125*clock_freq/sample_freq < 16384 E.g.
+	 * provided a clock frequency of ~ 1MHz, the sample frequency can not be set
+	 * lower than ~ 8kHz. A lower sample frequency would make the resampling
+	 * code overfill its 16k sample ring buffer.
 	 * <P>
-	 * The end of passband frequency is also limited: pass_freq <= 0.9*sample_freq/2
+	 * The end of passband frequency is also limited: pass_freq <=
+	 * 0.9*sample_freq/2
 	 * <P>
-	 * E.g. for a 44.1kHz sampling rate the end of passband frequency is limited to slightly below 20kHz. This constraint ensures that the FIR table is not overfilled.
+	 * E.g. for a 44.1kHz sampling rate the end of passband frequency is limited
+	 * to slightly below 20kHz. This constraint ensures that the FIR table is
+	 * not overfilled.
 	 * 
-	 * @param clockFrequency System clock frequency at Hz
-	 * @param method sampling method to use
-	 * @param samplingFrequency Desired output sampling rate
+	 * @param clockFrequency
+	 *            System clock frequency at Hz
+	 * @param method
+	 *            sampling method to use
+	 * @param samplingFrequency
+	 *            Desired output sampling rate
 	 */
-	public void setSamplingParameters(final double clockFrequency, final SamplingMethod method, final double samplingFrequency, final double highestAccurateFrequency) {
+	public void setSamplingParameters(final double clockFrequency,
+			final SamplingMethod method, final double samplingFrequency,
+			final double highestAccurateFrequency) {
 		filter6581.setClockFrequency(clockFrequency);
 		filter8580.setClockFrequency(clockFrequency);
 		externalFilter.setClockFrequency(clockFrequency);
 
 		switch (method) {
 		case DECIMATE:
-			resampler = new ZeroOrderResampler(clockFrequency, samplingFrequency);
+			resampler = new ZeroOrderResampler(clockFrequency,
+					samplingFrequency);
 			break;
 		case RESAMPLE:
-			resampler = new TwoPassSincResampler(clockFrequency, samplingFrequency, highestAccurateFrequency);
+			resampler = new TwoPassSincResampler(clockFrequency,
+					samplingFrequency, highestAccurateFrequency);
 			break;
 		default:
 			throw new RuntimeException("Unknown samplingmethod: " + method);
@@ -455,54 +493,60 @@ public final class SID implements SIDChip {
 	 * @return the output sample
 	 */
 	private int output() {
-		return externalFilter.clock(filter.clock(voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),voice[2].output(voice[1].wave))) * OUTPUT_LEVEL >> 8;
+		return externalFilter.clock(filter.clock(
+				voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),
+				voice[2].output(voice[1].wave)))
+				* OUTPUT_LEVEL >> 8;
 	}
 
 	/**
 	 * Clock SID forward using chosen output sampling algorithm.
 	 * 
-	 * @param cycles c64 clocks to clock
-	 * @param buf audio output buffer
-	 * @param pos where to begin audio writing
+	 * @param cycles
+	 *            c64 clocks to clock
+	 * @param buf
+	 *            audio output buffer
+	 * @param pos
+	 *            where to begin audio writing
 	 * @return
 	 */
 	public final int clock(int cycles, final int buf[], final int pos) {
 		ageBusValue(cycles);
 		int s = 0;
-		
+
 		while (cycles != 0) {
 			int delta_t = Math.min(nextVoiceSync, cycles);
 			if (delta_t > 0) {
 				if (delayedOffset != -1) {
 					delta_t = 1;
 				}
-				
-				for (int i = 0; i < delta_t; i ++) {
+
+				for (int i = 0; i < delta_t; i++) {
 					if (resampler.input(output())) {
 						buf[pos + s] = resampler.output();
-						s ++;
+						s++;
 					}
 
 					/* clock waveform generators */
 					voice[0].wave.clock();
 					voice[1].wave.clock();
 					voice[2].wave.clock();
-				
+
 					/* clock envelope generators */
 					voice[0].envelope.clock();
 					voice[1].envelope.clock();
 					voice[2].envelope.clock();
 				}
-				
+
 				if (delayedOffset != -1) {
 					writeImmediate(delayedOffset, delayedValue);
 					delayedOffset = -1;
 				}
-		
+
 				cycles -= delta_t;
 				nextVoiceSync -= delta_t;
 			}
-			
+
 			if (nextVoiceSync == 0) {
 				voiceSync(true);
 			}
@@ -514,12 +558,12 @@ public final class SID implements SIDChip {
 	/**
 	 * Clock SID forward with no audio production.
 	 * <p>
-	 * <b>Warning:</b>
-	 * You can't mix this method of clocking with the audio-producing
-	 * clock() because components that don't affect OSC3/ENV3 are not
-	 * emulated.
+	 * <b>Warning:</b> You can't mix this method of clocking with the
+	 * audio-producing clock() because components that don't affect OSC3/ENV3
+	 * are not emulated.
 	 * 
-	 * @param cycles c64 clocks to clock.
+	 * @param cycles
+	 *            c64 clocks to clock.
 	 */
 	public void clockSilent(int cycles) {
 		ageBusValue(cycles);
@@ -530,8 +574,8 @@ public final class SID implements SIDChip {
 				if (delayedOffset != -1) {
 					delta_t = 1;
 				}
-				
-				for (int i = 0; i < delta_t; i ++) {
+
+				for (int i = 0; i < delta_t; i++) {
 					/* clock waveform generators (can affect OSC3) */
 					voice[0].wave.clock();
 					voice[1].wave.clock();
@@ -549,7 +593,7 @@ public final class SID implements SIDChip {
 				cycles -= delta_t;
 				nextVoiceSync -= delta_t;
 			}
-			
+
 			if (nextVoiceSync == 0) {
 				voiceSync(true);
 			}
@@ -557,28 +601,31 @@ public final class SID implements SIDChip {
 	}
 
 	/**
-	 * Return the number of cycles according to current parameters
-	 * that it takes to reach sync.
+	 * Return the number of cycles according to current parameters that it takes
+	 * to reach sync.
 	 */
 	private void voiceSync(boolean sync) {
 		if (sync) {
 			/* Synchronize the 3 waveform generators. */
-			for (int i = 0; i < 3 ; i ++) {
-				voice[i].wave.synchronize(voice[(i+1) % 3].wave, voice[(i+2) % 3].wave);
+			for (int i = 0; i < 3; i++) {
+				voice[i].wave.synchronize(voice[(i + 1) % 3].wave,
+						voice[(i + 2) % 3].wave);
 			}
 		}
-		
+
 		/* Calculate the time to next voice sync */
 		nextVoiceSync = Integer.MAX_VALUE;
-		for (int i = 0; i < 3 ; i ++) {
+		for (int i = 0; i < 3; i++) {
 			int accumulator = voice[i].wave.accumulator;
 			int freq = voice[i].wave.freq;
 
-			if (voice[i].wave.test || freq == 0 || !voice[(i+1) % 3].wave.sync) {
+			if (voice[i].wave.test || freq == 0
+					|| !voice[(i + 1) % 3].wave.sync) {
 				continue;
 			}
-			
-			int thisVoiceSync = ((0x7fffff - accumulator) & 0xffffff) / freq + 1;
+
+			int thisVoiceSync = ((0x7fffff - accumulator) & 0xffffff) / freq
+					+ 1;
 			if (thisVoiceSync < nextVoiceSync) {
 				nextVoiceSync = thisVoiceSync;
 			}
@@ -606,5 +653,15 @@ public final class SID implements SIDChip {
 	@Override
 	public int getInputDigiBoost() {
 		return model.equals(ChipModel.MOS8580) ? INPUTDIGIBOOST : 0;
+	}
+
+	@Override
+	public byte readENV(int voiceNum) {
+		return voice[voiceNum].envelope.readENV();
+	}
+
+	@Override
+	public byte readOSC(int voiceNum) {
+		return voice[voiceNum].wave.readOSC();
 	}
 }

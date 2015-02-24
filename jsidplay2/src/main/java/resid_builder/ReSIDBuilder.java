@@ -135,7 +135,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	}
 
 	/**
-	 * Create SID emulation of a specific emulation engine type.<BR>
+	 * Create SID emulation of a specific emulation type.<BR>
 	 * Note: FakeStereo mode uses two chips using the same base address. Write
 	 * commands are routed two both SIDs, while read command can be configured
 	 * to be processed by a specific SID chip.
@@ -182,8 +182,7 @@ public class ReSIDBuilder implements SIDBuilder {
 					}
 				};
 			} else if (emulation.equals(Emulation.RESIDFP)) {
-				return new resid_builder.ReSIDfp(context, config.getAudio()
-						.getBufferSize()) {
+				return new ReSIDfp(context, config.getAudio().getBufferSize()) {
 					@Override
 					public byte read(int addr) {
 						if (emulationSection.getSidNumToRead() > 0) {

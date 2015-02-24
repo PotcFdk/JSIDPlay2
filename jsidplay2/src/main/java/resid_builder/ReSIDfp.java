@@ -44,6 +44,14 @@ public class ReSIDfp extends ReSIDBase {
 	}
 
 	@Override
+	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
+		boolean enable = emulation.isFilterEnable(sidNum);
+		SID sidImpl = (SID) sid;
+		sidImpl.getFilter6581().enable(enable);
+		sidImpl.getFilter8580().enable(enable);
+	}
+	
+	@Override
 	public void setFilter(IConfig config, int sidNum) {
 		SID sidImpl = (SID) sid;
 		final Filter6581 filter6581 = sidImpl.getFilter6581();
@@ -77,14 +85,6 @@ public class ReSIDfp extends ReSIDBase {
 						filter.getResonanceFactor());
 			}
 		}
-	}
-
-	@Override
-	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
-		boolean enable = emulation.isFilterEnable(sidNum);
-		SID sidImpl = (SID) sid;
-		sidImpl.getFilter6581().enable(enable);
-		sidImpl.getFilter8580().enable(enable);
 	}
 
 	/**

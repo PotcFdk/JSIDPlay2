@@ -30,7 +30,7 @@ import libsidplay.common.SamplingMethod;
 
 public class SID implements SIDChip {
 	private static final int INPUTDIGIBOOST = -0x9500;
-	
+
 	/**
 	 * Cache for caching the expensive FIR table computation results in the Java
 	 * process.
@@ -843,7 +843,7 @@ public class SID implements SIDChip {
 		float[] buffer = new float[audioBuffer.length];
 		final int clock = clock(piece, buffer, offset);
 		for (int i = offset; i < buffer.length; i++) {
-			audioBuffer[i] = (int)(buffer[i] * 32768f);
+			audioBuffer[i] = (int) (buffer[i] * 32768f);
 		}
 		return clock;
 	}
@@ -851,5 +851,15 @@ public class SID implements SIDChip {
 	@Override
 	public int getInputDigiBoost() {
 		return model.equals(ChipModel.MOS8580) ? INPUTDIGIBOOST : 0;
+	}
+
+	@Override
+	public byte readENV(int voiceNum) {
+		return voice[voiceNum].envelope.readENV();
+	}
+
+	@Override
+	public byte readOSC(int voiceNum) {
+		return voice[voiceNum].wave.readOSC(model);
 	}
 }

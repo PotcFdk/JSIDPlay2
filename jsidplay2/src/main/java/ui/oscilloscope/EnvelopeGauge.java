@@ -5,7 +5,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
 import libsidplay.Player;
 import libsidplay.common.SIDEmu;
-import resid_builder.ReSID;
+import resid_builder.ReSIDBase;
 import ui.common.C64Window;
 
 public final class EnvelopeGauge extends SIDGauge {
@@ -31,18 +31,10 @@ public final class EnvelopeGauge extends SIDGauge {
 
 	@Override
 	public void sample(SIDEmu sidemu) {
-		if (sidemu instanceof ReSID) {
-			final resid_builder.resid.SID sid = (resid_builder.resid.SID) ((resid_builder.ReSID) sidemu)
-					.sid();
-			final byte envOutput = sid.voice[getVoice()].envelope.readENV();
-			accumulate(getValue(envOutput));
-		} else if (sidemu instanceof resid_builder.ReSIDfp) {
-			final resid_builder.residfp.SID sid = (resid_builder.residfp.SID) ((resid_builder.ReSIDfp) sidemu)
-					.sid();
-			final byte envOutput = sid.voice[getVoice()].envelope.readENV();
-			accumulate(getValue(envOutput));
+		if (sidemu instanceof ReSIDBase) {
+			accumulate(getValue(((ReSIDBase)sidemu).getSID().readENV(getVoice())));
 		} else {
-			accumulate((byte) 0);
+			accumulate(0f);
 		}
 	}
 
