@@ -588,7 +588,7 @@ public final class PLA {
 		disconnectedBusBank = new DisconnectedBusBank(vic);
 	}
 
-	public void setSid(final int address, final Bank sid) {
+	public void setSid(final int address) {
 		sidBankUsed[(address & 0x0f00) >> 8] = true;
 	}
 
