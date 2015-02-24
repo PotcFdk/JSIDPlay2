@@ -173,6 +173,9 @@ public final class PLA {
 
 	/** RAM */
 	private final Bank ramBank;
+	
+	/** SID */
+	private Bank sid;
 
 	/** Connected cartridge */
 	private Cartridge cartridge;
@@ -195,12 +198,13 @@ public final class PLA {
 	private boolean cartridgeDma;
 
 	/** SIDs assigned to bank numbers */
-	private Bank[] sidBanks = new Bank[16];
+	private boolean[] sidBankUsed = new boolean[16];
 
 	public PLA(final EventScheduler context, final Bank sid,
 			final Bank zeroRAMBank, final Bank ramBank) {
 		this.context = context;
 		this.ramBank = ramBank;
+		this.sid = sid;
 		nullCartridge = Cartridge.nullCartridge(this);
 
 		ioBank.setBank(4, sid);
@@ -228,7 +232,7 @@ public final class PLA {
 		oldBAState = true;
 		nmiCount = 0;
 		irqCount = 0;
-		Arrays.fill(sidBanks, null);
+		Arrays.fill(sidBankUsed, false);
 
 		colorRamBank.reset();
 		/* Cartridge-related banks are not reset() */
@@ -454,12 +458,10 @@ public final class PLA {
 		}
 
 		Bank io1 = cartridge.getIO1();
-		Bank sidBank14 = sidBanks[14];
-		ioBank.setBank(14, sidBank14 == null ? io1 : sidBank14);
+		ioBank.setBank(14, sidBankUsed[14] ? sid : io1);
 
 		Bank io2 = cartridge.getIO2();
-		Bank sidBank15 = sidBanks[15];
-		ioBank.setBank(15, sidBank15 == null ? io2 : sidBank15);
+		ioBank.setBank(15, sidBankUsed[15] ? sid : io2);
 
 		cartridge.installBankHooks(cpuReadMap, cpuWriteMap);
 	}
@@ -587,8 +589,7 @@ public final class PLA {
 	}
 
 	public void setSid(final int address, final Bank sid) {
-		int num = (address & 0x0f00) >> 8;
-		sidBanks[num] = sid;
+		sidBankUsed[(address & 0x0f00) >> 8] = true;
 	}
 
 	public Bank getDisconnectedBusBank() {
