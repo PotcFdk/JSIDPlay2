@@ -32,7 +32,7 @@ public final class WaveGauge extends SIDGauge {
 	@Override
 	public void sample(SIDEmu sidemu) {
 		if (sidemu instanceof ReSIDBase) {
-			accumulate((((ReSIDBase) sidemu).getSID().readENV(getVoice()) & 0xff) / 255f);
+			accumulate((((ReSIDBase) sidemu).getSID().readOSC(getVoice()) & 0xff) / 255f);
 		} else {
 			accumulate(0f);
 		}
