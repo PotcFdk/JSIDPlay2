@@ -37,7 +37,7 @@ public class SIDPlay extends Applet {
 		if (getAppletContext() != null) {
 			String startSong = getParameter("startSong");
 			playSID(getParameter("playsid"),
-					startSong != null ? Integer.valueOf(startSong) : null);
+					startSong != null ? Integer.valueOf(startSong) : -1);
 		}
 		callJavaScript("javascript:start()");
 	}
