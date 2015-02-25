@@ -334,7 +334,7 @@
 								<exclude>hardsid_builder/lib/**</exclude>
 								<exclude>libpsid64/**</exclude>
 							</excludes>
-							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
+							<outputDirectory>${project.build.directory}/deploy/online/webstart</outputDirectory>
 							<finalName>c64jukebox-${project.version}</finalName>
 							<archive>
 								<manifest>
