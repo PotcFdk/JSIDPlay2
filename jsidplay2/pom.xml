@@ -7,22 +7,23 @@
 	<artifactId>jsidplay2</artifactId>
 	<version>3.4</version>
 	<packaging>jar</packaging>
-
-	<name>jsidplay2</name>
-	<!--url>http://haendel.ddns.net/~ken/</url -->
-	<url>http://kenchis.t15.org/jsidplay2/javafx/</url>
+	<organization>
+		<url>https://sourceforge.net/projects/jsidplay2/</url>
+		<name>Ken Händel</name>
+	</organization>
+	<name>JSIDPlay2</name>
+	<url>https://sourceforge.net/projects/jsidplay2/</url>
 	<description>This is a Commodore 64 emulator specialized for sound reproduction. It is also a SID player for music collections like HVSC and CGSC.
  It is a full C64 emulator and can play games of the GameBase64 project as well.</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<debug>false</debug>
-		<codebase>${project.url}</codebase>
+		<!--codebase>http://haendel.ddns.net/~ken/</codebase-->
+		<codebase>http://kenchis.t15.org/jsidplay2/javafx/</codebase>
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
-		<application.title>JSIDPlay2</application.title>
-		<application.vendor>Ken Händel</application.vendor>
 		<!-- Optional: FTP upload coordinates -->
 		<serverId></serverId>
 		<serverUrl>ftp://JohnDoe:secret@rainbow.org</serverUrl>
@@ -241,12 +242,11 @@
 						<configuration>
 							<archive>
 								<manifest>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 									<addClasspath>true</addClasspath>
 									<mainClass>ui.JSidPlay2Main</mainClass>
 								</manifest>
-								<manifestEntries>
-									<url>${project.url}</url>
-								</manifestEntries>
 							</archive>
 							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
 						</configuration>
@@ -260,16 +260,17 @@
 						<configuration>
 							<archive>
 								<manifest>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 									<addClasspath>false</addClasspath>
 									<mainClass>sidplay.ConsolePlayer</mainClass>
 								</manifest>
 								<manifestEntries>
 									<Class-Path>${project.artifactId}-${project.version}.jar</Class-Path>
-									<url>${project.url}</url>
 								</manifestEntries>
 							</archive>
 							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
-							<finalName>${project.name}_console-${project.version}</finalName>
+							<finalName>${project.artifactId}_console-${project.version}</finalName>
 							<excludes>
 								<exclude>**/*</exclude>
 							</excludes>
@@ -307,12 +308,11 @@
 							<archive>
 								<addMavenDescriptor>false</addMavenDescriptor>
 								<manifest>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 									<addClasspath>false</addClasspath>
 									<mainClass>netsiddev.NetworkSIDDevice</mainClass>
 								</manifest>
-								<manifestEntries>
-									<url>${project.url}</url>
-								</manifestEntries>
 							</archive>
 						</configuration>
 					</execution>
@@ -338,10 +338,15 @@
 							<finalName>c64jukebox-${project.version}</finalName>
 							<archive>
 								<manifest>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 									<addClasspath>false</addClasspath>
 								</manifest>
 								<manifestEntries>
-									<url>${project.url}</url>
+									<Entry-Point>c64jukebox.SIDPlay</Entry-Point>
+									<Application-Name>${project.name}</Application-Name>
+									<permissions>all-permissions</permissions>
+									<codebase>${codebase}</codebase>
 								</manifestEntries>
 							</archive>
 						</configuration>
@@ -425,38 +430,40 @@
 					</execution>
 				</executions>
 			</plugin>
- 			<plugin>
-                <groupId>com.github.wvengen</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <version>2.0.8</version>
-                <executions>
-                   <execution>
-                       <phase>package</phase>
-                       <goals><goal>proguard</goal></goals>
-                   </execution>
-                </executions>
-                <configuration>
-                    <proguardVersion>5.1</proguardVersion>
-                    <obfuscate>true</obfuscate>
-                    <injar>deploy/jsiddevice-${project.version}.jar</injar>
-                    <outjar>deploy/jsiddevice-${project.version}-proguard.jar</outjar>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
-                    <proguardInclude>${basedir}/src/main/proguard/proguard.conf</proguardInclude>
-                    <includeDependency>false</includeDependency> 
-                    <libs>
-                        <lib>${java.home}/lib/rt.jar</lib>
-                        <lib>${java.home}/lib/ext/jfxrt.jar</lib>
-                    </libs>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>net.sf.proguard</groupId>
-                        <artifactId>proguard-base</artifactId>
-                        <version>5.1</version>
-                        <scope>runtime</scope>
-                    </dependency>
-                </dependencies>
-            </plugin>
+			<plugin>
+				<groupId>com.github.wvengen</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<version>2.0.8</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<proguardVersion>5.1</proguardVersion>
+					<obfuscate>true</obfuscate>
+					<injar>deploy/jsiddevice-${project.version}.jar</injar>
+					<outjar>deploy/jsiddevice-${project.version}-proguard.jar</outjar>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+					<proguardInclude>${basedir}/src/main/proguard/proguard.conf</proguardInclude>
+					<includeDependency>false</includeDependency>
+					<libs>
+						<lib>${java.home}/lib/rt.jar</lib>
+						<lib>${java.home}/lib/ext/jfxrt.jar</lib>
+					</libs>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>net.sf.proguard</groupId>
+						<artifactId>proguard-base</artifactId>
+						<version>5.1</version>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -470,7 +477,7 @@
 						</goals>
 						<configuration>
 							<target>
-								<ant antfile="${basedir}/online-content.xml"  target="shrink_jsiddevice" >
+								<ant antfile="${basedir}/online-content.xml" target="shrink_jsiddevice">
 									<property name="deploy_dir" value="${project.build.directory}/deploy" />
 									<property name="jsiddevice" value="jsiddevice-${project.version}" />
 								</ant>
@@ -497,20 +504,21 @@
 									<property name="hvmec.bz2" value="${hvmec.bz2}" />
 									<property name="result_dir"
 										location="${project.build.directory}/deploy/online" />
-									<property name="project.url" value="${project.url}" />
-									<property name="project.artifactId" value="${project.artifactId}" />
+									<property name="project.name" value="${project.name}" />
+									<property name="project.organization.name" value="${project.organization.name}" />
 									<property name="project.version" value="${project.version}" />
+									<property name="project.artifactId" value="${project.artifactId}" />
+									<property name="project.url" value="${project.url}" />
+									<property name="codebase" value="${codebase}" />
 									<property name="javafx.main.class" value="${javafx.main.class}" />
 									<property name="javafx.run.width" value="${javafx.run.width}" />
 									<property name="javafx.run.height" value="${javafx.run.height}" />
-									<property name="application.title" value="${application.title}" />
-									<property name="application.vendor" value="${application.vendor}" />
 								</ant>
 							</target>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>            
+			</plugin>
 			<plugin>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
@@ -526,7 +534,7 @@
 							<dontWrapJar>true</dontWrapJar>
 							<headerType>gui</headerType>
 							<jar>${project.artifactId}-${project.version}.jar</jar>
-							<outfile>${project.build.directory}/standalone/${project.name}-${project.version}.exe</outfile>
+							<outfile>${project.build.directory}/standalone/${project.artifactId}-${project.version}.exe</outfile>
 							<errTitle>${project.name}</errTitle>
 							<chdir>.</chdir>
 							<priority>high</priority>
@@ -536,7 +544,7 @@
 							<stayAlive>false</stayAlive>
 							<icon>src/main/launch4j/jsidplay2.ico</icon>
 							<singleInstance>
-								<mutexName>${project.name}</mutexName>
+								<mutexName>${project.artifactId}</mutexName>
 								<windowTitle>Error</windowTitle>
 							</singleInstance>
 							<classPath>
@@ -567,7 +575,7 @@
 							<dontWrapJar>true</dontWrapJar>
 							<headerType>console</headerType>
 							<jar>${project.artifactId}-${project.version}.jar</jar>
-							<outfile>${project.build.directory}/standalone/${project.name}_console-${project.version}.exe</outfile>
+							<outfile>${project.build.directory}/standalone/${project.artifactId}_console-${project.version}.exe</outfile>
 							<errTitle>${project.name}</errTitle>
 							<chdir>.</chdir>
 							<priority>high</priority>
@@ -624,7 +632,7 @@
 						<descriptor>src/main/assembly/zip.xml</descriptor>
 					</descriptors>
 					<outputDirectory>${project.build.directory}/deploy</outputDirectory>
-					<finalName>${project.name}-${project.version}</finalName>
+					<finalName>${project.artifactId}-${project.version}</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
