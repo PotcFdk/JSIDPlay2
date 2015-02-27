@@ -19,12 +19,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import sidplay.ini.intf.IEmulationSection;
 import javafx.scene.image.Image;
-import de.schlichtherle.truezip.file.TFileInputStream;
+import sidplay.ini.intf.IEmulationSection;
 
 /**
  * @author Ken Händel
@@ -33,12 +34,15 @@ import de.schlichtherle.truezip.file.TFileInputStream;
 public abstract class SidTune {
 	public static final SidTune RESET = null;
 
-	private static boolean ZIP_SUPPORTED;
+	private static Constructor<?> TFILE_IS = null;
 	static {
+		// support for files contained in a ZIP (optionally in the classpath)
 		try {
-			Class.forName("de.schlichtherle.truezip.file.TFileInputStream");
-			ZIP_SUPPORTED = true;
-		} catch (ClassNotFoundException e) {
+			TFILE_IS = (Constructor<?>) Class.forName(
+					"de.schlichtherle.truezip.file.TFileInputStream")
+					.getConstructor(File.class);
+		} catch (ClassNotFoundException | NoSuchMethodException
+				| SecurityException e) {
 		}
 	}
 	/**
@@ -223,9 +227,12 @@ public abstract class SidTune {
 	 */
 	protected static final byte[] getFileContents(final File file)
 			throws IOException {
-		try (InputStream is = ZIP_SUPPORTED ? new TFileInputStream(file)
-				: new FileInputStream(file)) {
+		try (InputStream is = TFILE_IS != null ? (InputStream) TFILE_IS
+				.newInstance(file) : new FileInputStream(file)) {
 			return getFileContents(is);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException e) {
+			throw new IOException(file.getAbsolutePath());
 		}
 	}
 
