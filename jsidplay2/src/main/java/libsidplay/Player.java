@@ -179,12 +179,12 @@ public class Player {
 	/**
 	 * Called each time a tune starts to play.
 	 */
-	private Consumer<Player> menuHook = (player) -> {
+	private Consumer<Player> menuHook = player -> {
 	};
 	/**
 	 * Called each time a chunk of music data has been played.
 	 */
-	private Consumer<Player> interactivityHook = (player) -> {
+	private Consumer<Player> interactivityHook = player -> {
 	};
 	/**
 	 * Audio driver and emulation setting.
@@ -363,7 +363,7 @@ public class Player {
 	private final void reset() throws InterruptedException {
 		// According to the configuration, the SIDs must be updated.
 		createOrUpdateSIDs();
-		
+
 		c64.reset();
 		iecBus.reset();
 		datasette.reset();
@@ -423,7 +423,7 @@ public class Player {
 				public void event() throws InterruptedException {
 					int driverAddress = tune.placeProgramInMemory(c64.getRAM());
 					if (driverAddress != -1) {
-						// Start playSID driver
+						// Start SID player driver, if required
 						c64.getCPU().forcedJump(driverAddress);
 					} else {
 						// Start basic program or machine code
@@ -941,9 +941,7 @@ public class Player {
 			sidBuilder.unlock(sid);
 			c64.setSID(num, null);
 		});
-		if (driverSettings != null) {
-			driverSettings.getAudioDriver().close();
-		}
+		driverSettings.getAudioDriver().close();
 	}
 
 	/**
