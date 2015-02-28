@@ -174,7 +174,7 @@ public class Mixer {
 	}
 
 	public synchronized ReSIDBase get(int sidNum) {
-		return sids.get(0);
+		return sids.get(sidNum);
 	}
 
 	/**
