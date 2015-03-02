@@ -116,8 +116,8 @@ public class ReSIDBuilder implements SIDBuilder {
 	 *            audio configuration
 	 */
 	@Override
-	public void setVolume(int num, IAudioSection audio) {
-		mixer.setVolume(num, audio);
+	public void setVolume(int sidNum, IAudioSection audio) {
+		mixer.setVolume(sidNum, audio);
 	}
 
 	/**
@@ -151,26 +151,27 @@ public class ReSIDBuilder implements SIDBuilder {
 		final Emulation emulation = Emulation.getEmulation(emulationSection,
 				tune, sidNum);
 
-		boolean isStereo = SidTune.isSIDUsed(emulationSection, tune, 1);
-		int address = SidTune.getSIDAddress(emulationSection, tune, 0);
-		int stereoAddress = SidTune.getSIDAddress(emulationSection, tune, 1);
-		if (isStereo && sidNum == 1 && address == stereoAddress) {
-			// Stereo SID at 0xd400 hack
-			final ReSIDBase firstSid = mixer.get(0);
+		int prevNum = sidNum > 0 ? sidNum - 1 : sidNum;
+		boolean isSidUsed = SidTune.isSIDUsed(emulationSection, tune, sidNum);
+		int prevAddres = SidTune.getSIDAddress(emulationSection, tune, prevNum);
+		int baseAddress = SidTune.getSIDAddress(emulationSection, tune, sidNum);
+		if (sidNum > 0 && isSidUsed && prevAddres == baseAddress) {
+			// Fake-stereo (two SIDs at the same address) hack
+			final ReSIDBase prevSid = mixer.get(prevNum);
 			if (emulation.equals(Emulation.RESID)) {
 				return new ReSID(context, config.getAudio().getBufferSize()) {
 					@Override
 					public byte read(int addr) {
-						if (emulationSection.getSidNumToRead() > 0) {
-							return firstSid.read(addr);
+						if (emulationSection.getSidNumToRead() == prevNum) {
+							return prevSid.read(addr);
 						}
 						return super.read(addr);
 					}
 
 					@Override
 					public byte readInternalRegister(int addr) {
-						if (emulationSection.getSidNumToRead() > 0) {
-							return firstSid.readInternalRegister(addr);
+						if (emulationSection.getSidNumToRead() == prevNum) {
+							return prevSid.readInternalRegister(addr);
 						}
 						return super.readInternalRegister(addr);
 					}
@@ -178,23 +179,23 @@ public class ReSIDBuilder implements SIDBuilder {
 					@Override
 					public void write(int addr, byte data) {
 						super.write(addr, data);
-						firstSid.write(addr, data);
+						prevSid.write(addr, data);
 					}
 				};
 			} else if (emulation.equals(Emulation.RESIDFP)) {
 				return new ReSIDfp(context, config.getAudio().getBufferSize()) {
 					@Override
 					public byte read(int addr) {
-						if (emulationSection.getSidNumToRead() > 0) {
-							return firstSid.read(addr);
+						if (emulationSection.getSidNumToRead() == prevNum) {
+							return prevSid.read(addr);
 						}
 						return super.read(addr);
 					}
 
 					@Override
 					public byte readInternalRegister(int addr) {
-						if (emulationSection.getSidNumToRead() > 0) {
-							return firstSid.readInternalRegister(addr);
+						if (emulationSection.getSidNumToRead() == prevNum) {
+							return prevSid.readInternalRegister(addr);
 						}
 						return super.readInternalRegister(addr);
 					}
@@ -202,7 +203,7 @@ public class ReSIDBuilder implements SIDBuilder {
 					@Override
 					public void write(int addr, byte data) {
 						super.write(addr, data);
-						firstSid.write(addr, data);
+						prevSid.write(addr, data);
 					}
 				};
 			}
