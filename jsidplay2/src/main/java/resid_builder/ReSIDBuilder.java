@@ -59,9 +59,9 @@ public class ReSIDBuilder implements SIDBuilder {
 	}
 
 	@Override
-	public SIDEmu lock(EventScheduler context, IConfig config, SIDEmu device,
-			int sidNum, SidTune tune) {
-		final ReSIDBase sid = getOrCreateSID(context, device, tune, sidNum);
+	public SIDEmu lock(EventScheduler context, IConfig config,
+			SIDEmu oldSIDEmu, int sidNum, SidTune tune) {
+		final ReSIDBase sid = getOrCreateSID(context, oldSIDEmu, tune, sidNum);
 		sid.setChipModel(ChipModel.getChipModel(config.getEmulation(), tune,
 				sidNum));
 		sid.setSampling(cpuClock.getCpuFrequency(), audioConfig.getFrameRate(),
@@ -135,114 +135,107 @@ public class ReSIDBuilder implements SIDBuilder {
 	}
 
 	/**
-	 * Create SID emulation of a specific emulation type.<BR>
-	 * Note: FakeStereo mode uses two chips using the same base address. Write
-	 * commands are routed two both SIDs, while read command can be configured
-	 * to be processed by a specific SID chip.
+	 * Create SID emulation of a specific emulation type or re-use already used
+	 * SID chip, if implementation does not change.<BR>
+	 * Note: The reason for re-using SID implementation is to preserve the
+	 * current SID's internal state, when changing filters ot chip model type.
 	 * 
-	 * @param device
+	 * @param context
+	 *            System event context
+	 * @param oldSIDEmu
 	 *            currently used SID chip
+	 * @param tune
+	 *            current tune
+	 * @param sidNum
+	 *            current SID number
 	 * 
-	 * @return SID emulation of a specific emulation engine
+	 * @return new or re-used SID emulation of a specific emulation engine
 	 */
-	protected ReSIDBase getOrCreateSID(EventScheduler context, SIDEmu device,
+	private ReSIDBase getOrCreateSID(EventScheduler context, SIDEmu oldSIDEmu,
 			SidTune tune, int sidNum) {
 		final IEmulationSection emulationSection = config.getEmulation();
 		final Emulation emulation = Emulation.getEmulation(emulationSection,
 				tune, sidNum);
-
-		int prevNum = sidNum > 0 ? sidNum - 1 : sidNum;
-		boolean isSidUsed = SidTune.isSIDUsed(emulationSection, tune, sidNum);
-		int prevAddres = SidTune.getSIDAddress(emulationSection, tune, prevNum);
-		int baseAddress = SidTune.getSIDAddress(emulationSection, tune, sidNum);
-		if (sidNum > 0 && isSidUsed && prevAddres == baseAddress) {
-			// Fake-stereo (two SIDs at the same address) hack
-			final ReSIDBase prevSid = mixer.get(prevNum);
-			if (emulation.equals(Emulation.RESID)) {
-				return new ReSID(context, config.getAudio().getBufferSize()) {
-					@Override
-					public byte read(int addr) {
-						if (emulationSection.getSidNumToRead() == prevNum) {
-							return prevSid.read(addr);
-						}
-						return super.read(addr);
-					}
-
-					@Override
-					public byte readInternalRegister(int addr) {
-						if (emulationSection.getSidNumToRead() == prevNum) {
-							return prevSid.readInternalRegister(addr);
-						}
-						return super.readInternalRegister(addr);
-					}
-
-					@Override
-					public void write(int addr, byte data) {
-						super.write(addr, data);
-						prevSid.write(addr, data);
-					}
-				};
-			} else if (emulation.equals(Emulation.RESIDFP)) {
-				return new ReSIDfp(context, config.getAudio().getBufferSize()) {
-					@Override
-					public byte read(int addr) {
-						if (emulationSection.getSidNumToRead() == prevNum) {
-							return prevSid.read(addr);
-						}
-						return super.read(addr);
-					}
-
-					@Override
-					public byte readInternalRegister(int addr) {
-						if (emulationSection.getSidNumToRead() == prevNum) {
-							return prevSid.readInternalRegister(addr);
-						}
-						return super.readInternalRegister(addr);
-					}
-
-					@Override
-					public void write(int addr, byte data) {
-						super.write(addr, data);
-						prevSid.write(addr, data);
-					}
-				};
-			}
+		boolean fakeStereo = isFakeStereo(tune, sidNum, emulationSection);
+		Class<? extends ReSIDBase> sidImlClass = getSIDImplClass(emulation,
+				fakeStereo);
+		if (oldSIDEmu != null && oldSIDEmu.getClass().equals(sidImlClass)) {
+			// the implementing class does not change, re-use!
+			return (ReSIDBase) oldSIDEmu;
 		}
-		// normal case
-		return getOrCreateSID(context, device, emulation);
+		return createSID(context, sidImlClass, sidNum);
 	}
 
 	/**
-	 * Create SID chip or reuse already used SID chip, if possile (emulation did
-	 * not change)
+	 * Detect fake-stereo mode (two SIDs at the same address).
+	 * 
+	 * @param tune
+	 *            current tune
+	 * @param sidNum
+	 *            current SID number
+	 * @param emulationSection
+	 *            configuration
+	 * @return fake-stereo mode has been detected
+	 */
+	private boolean isFakeStereo(SidTune tune, int sidNum,
+			final IEmulationSection emulationSection) {
+		int prevNum = sidNum > 0 ? sidNum - 1 : sidNum;
+		int prevAddres = SidTune.getSIDAddress(emulationSection, tune, prevNum);
+		int baseAddress = SidTune.getSIDAddress(emulationSection, tune, sidNum);
+		return sidNum > 0 && prevAddres == baseAddress;
+	}
+
+	/**
+	 * Get SID chip implementation class.
+	 * 
+	 * @param emulation
+	 *            wanted emulation type
+	 * @param fakeStereo
+	 *            fake-stereo mode (two SIDs at the same address)
+	 * @return SID implementation class
+	 */
+	private Class<? extends ReSIDBase> getSIDImplClass(
+			final Emulation emulation, final boolean fakeStereo) {
+		switch (emulation) {
+		case RESID:
+			return fakeStereo ? ReSID.FakeStereo.class : ReSID.class;
+		case RESIDFP:
+			return fakeStereo ? ReSIDfp.FakeStereo.class : ReSIDfp.class;
+		default:
+			throw new RuntimeException("Unknown SID emulation: " + emulation);
+		}
+	}
+
+	/**
+	 * Create a new SID chip implemention.
 	 * 
 	 * @param context
 	 *            System event context.
-	 * @param device
-	 *            currently used SID chip
-	 * @param emulation
-	 *            wanted emulation type
-	 * @returnnew SID chip or recycled old one
+	 * @param sidImplCls
+	 *            SID implementation class
+	 * @param sidNum
+	 *            current SID number
+	 * @return new SID chip
 	 */
-	private ReSIDBase getOrCreateSID(EventScheduler context, SIDEmu device,
-			final Emulation emulation) {
-		if (emulation.equals(Emulation.RESID)) {
-			if (device != null && device.getClass().equals(ReSID.class)) {
-				// reuse already used chip emulation, if possible
-				return (ReSIDBase) device;
-			} else {
-				return new ReSID(context, config.getAudio().getBufferSize());
-			}
-		} else if (emulation.equals(Emulation.RESIDFP)) {
-			if (device != null && device.getClass().equals(ReSIDfp.class)) {
-				// reuse already used chip emulation, if possible
-				return (ReSIDBase) device;
-			} else {
-				return new ReSIDfp(context, config.getAudio().getBufferSize());
-			}
+	private ReSIDBase createSID(final EventScheduler context,
+			final Class<? extends ReSIDBase> sidImplCls, int sidNum) {
+		if (ReSID.class.equals(sidImplCls)) {
+			return new ReSID(context, config.getAudio().getBufferSize());
+		} else if (ReSIDfp.class.equals(sidImplCls)) {
+			return new ReSIDfp(context, config.getAudio().getBufferSize());
+		} else if (ReSID.FakeStereo.class.equals(sidImplCls)) {
+			// ReSID fake-stereo mode
+			final int prevNum = sidNum - 1;
+			final ReSIDBase prevSID = mixer.get(prevNum);
+			return new ReSID.FakeStereo(context, config, prevNum, prevSID);
+		} else if (ReSIDfp.FakeStereo.class.equals(sidImplCls)) {
+			// ReSIDfp fake-stereo mode
+			final int prevNum = sidNum - 1;
+			final ReSIDBase prevSID = mixer.get(prevNum);
+			return new ReSIDfp.FakeStereo(context, config, prevNum, prevSID);
+		} else {
+			throw new RuntimeException("Unknown SID impl.: " + sidImplCls);
 		}
-		throw new RuntimeException("Cannot create SID emulation engine: "
-				+ emulation);
 	}
 
 }

@@ -32,6 +32,50 @@ import sidplay.ini.intf.IFilterSection;
 public class ReSIDfp extends ReSIDBase {
 
 	/**
+	 * FakeStereo mode uses two chips using the same base address. Write
+	 * commands are routed two both SIDs, while read command can be configured
+	 * to be processed by a specific SID chip.
+	 * 
+	 * @author ken
+	 *
+	 */
+	static class FakeStereo extends ReSIDfp {
+		private IEmulationSection emulationSection;
+		private int prevNum;
+		private ReSIDBase prevSid;
+
+		public FakeStereo(final EventScheduler context,
+				final IConfig config, final int prevNum, final ReSIDBase prevSid) {
+			super(context, config.getAudio().getBufferSize());
+			this.emulationSection = config.getEmulation();
+			this.prevNum = prevNum;
+			this.prevSid = prevSid;
+		}
+
+		@Override
+		public byte read(int addr) {
+			if (emulationSection.getSidNumToRead() <= prevNum) {
+				return prevSid.read(addr);
+			}
+			return super.read(addr);
+		}
+
+		@Override
+		public byte readInternalRegister(int addr) {
+			if (emulationSection.getSidNumToRead() <= prevNum) {
+				return prevSid.readInternalRegister(addr);
+			}
+			return super.readInternalRegister(addr);
+		}
+
+		@Override
+		public void write(int addr, byte data) {
+			super.write(addr, data);
+			prevSid.write(addr, data);
+		}
+	}
+
+	/**
 	 * Constructor
 	 *
 	 * @param context
@@ -50,7 +94,7 @@ public class ReSIDfp extends ReSIDBase {
 		sidImpl.getFilter6581().enable(enable);
 		sidImpl.getFilter8580().enable(enable);
 	}
-	
+
 	@Override
 	public void setFilter(IConfig config, int sidNum) {
 		SID sidImpl = (SID) sid;

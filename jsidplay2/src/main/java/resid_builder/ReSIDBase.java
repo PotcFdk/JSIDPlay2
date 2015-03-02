@@ -39,7 +39,7 @@ public abstract class ReSIDBase extends SIDEmu {
 		this.sid = createSID();
 		this.buffer = new int[bufferSize];
 		this.bufferpos = 0;
-		reset((byte) 0);
+		reset((byte) 0xf);
 	}
 
 	@Override
