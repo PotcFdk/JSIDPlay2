@@ -63,7 +63,7 @@ public class HardSID extends SIDEmu {
 			throw new RuntimeException(
 					"HARDSID ERROR: System doesn't have enough SID chips.");
 		}
-		reset((byte) 0);
+		reset((byte) 0xf);
 	}
 
 	@Override
@@ -158,7 +158,6 @@ public class HardSID extends SIDEmu {
 		if (!lock && !locked || lock && locked) {
 			return false;
 		}
-		reset((byte) 0);
 		if (!lock) {
 			if (hsid2.HardSID_Version() >= HSID_VERSION_204) {
 				hsid2.HardSID_Unlock(chipNum);
