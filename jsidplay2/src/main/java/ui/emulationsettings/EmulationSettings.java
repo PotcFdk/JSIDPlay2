@@ -507,7 +507,7 @@ public class EmulationSettings extends C64Window {
 			baseAddress.setText(String.format("0x%4x", decode));
 			return;
 		}
-		restart();
+		updateChipModels();
 	}
 
 	@FXML
@@ -522,7 +522,7 @@ public class EmulationSettings extends C64Window {
 			thirdAddress.setText(String.format("0x%4x", decode));
 			return;
 		}
-		restart();
+		updateChipModels();
 	}
 
 	@FXML
@@ -554,7 +554,7 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulation().setForceStereoTune(false);
 			util.getConfig().getEmulation().setForce3SIDTune(false);
 		}
-		restart();
+		updateChipModels();
 	}
 
 	@FXML
@@ -617,13 +617,7 @@ public class EmulationSettings extends C64Window {
 	private void updateChipModels() {
 		if (!duringInitialization) {
 			util.getPlayer().createOrUpdateSIDs();
-		}
-	}
-
-	private void restart() {
-		// replay last tune
-		if (!duringInitialization) {
-			util.getPlayer().play(util.getPlayer().getTune());
+			enableStereoSettings();
 		}
 	}
 

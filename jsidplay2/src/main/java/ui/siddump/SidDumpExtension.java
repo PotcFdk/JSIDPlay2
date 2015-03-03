@@ -97,6 +97,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	private final Channel fPrevChannel2[] = new Channel[3];
 
 	private Player player;
+	private SIDEmu fSid;
 	private AudioConfig audioConfig;
 	private AudioGeneratorThread agt;
 
@@ -316,6 +317,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		fFetchedRow = 0;
 		fPatternNum = 1;
 		fNoteNum = 1;
+		player.configureSID(0, sid -> fSid = sid);
 	}
 
 	private void clearChannelStructures() {
@@ -376,7 +378,6 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		}
 
 		// player is called within time window
-		final SIDEmu fSid = player.getC64().getSID(0);
 		if (fSid == null) {
 			return;
 		}

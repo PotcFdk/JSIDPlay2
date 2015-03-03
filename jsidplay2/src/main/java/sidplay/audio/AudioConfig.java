@@ -20,7 +20,7 @@ import sidplay.ini.intf.IAudioSection;
 
 public class AudioConfig {
 	protected int frameRate = 48000;
-	protected int channels = 1;
+	protected int channels = 2;
 	protected int bufferFrames = 4096;
 	private SamplingMethod samplingMethod;
 	private int deviceIdx;

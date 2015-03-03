@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.ReSIDExtension;
+import libsidplay.common.SIDEmu;
 import libsidplay.components.cart.Cartridge;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos656x.VIC;
@@ -23,6 +25,9 @@ import libsidplay.components.ram.ColorRAMBank;
  * @author Antti Lankila
  */
 public final class PLA {
+	/** Maximum number of supported SIDs (mono and stereo) */
+	public final static int MAX_SIDS = 3;
+
 	private static final String CHAR_ROM = "/libsidplay/roms/char.bin";
 	private static final String BASIC_ROM = "/libsidplay/roms/basic.bin";
 	private static final String KERNAL_ROM = "/libsidplay/roms/kernal.bin";
@@ -95,6 +100,106 @@ public final class PLA {
 	public void setCustomKernalRomBank(final Bank kernalRom) {
 		this.customKernalRomBank = kernalRom;
 	}
+
+	/** SID chip memory bank maps reads and writes to the assigned SID chip */
+	private class SIDBank extends Bank {
+		/**
+		 * Size of mapping table. Each 32 bytes another SID chip base address
+		 * can be assigned to.
+		 */
+		private final static int MAPPER_SIZE = 32;
+		/** Number of SID chip registers */
+		private final static int REG_COUNT = 32;
+
+		/**
+		 * Mapping table in d400-d7ff. Maps a SID chip base address to a SID
+		 * chip number.
+		 */
+		private final int sidmapper[] = new int[MAPPER_SIZE];
+
+		/** Contains a SID chip implementation for each SID chip number. */
+		private final SIDEmu[] sidemu = new SIDEmu[MAX_SIDS];
+
+		/** SIDs assigned to bank numbers */
+		private boolean[] sidBankUsed = new boolean[16];
+
+		/** SID listener for detecting SID writes */
+		private final ReSIDExtension[] sidWriteListener = new ReSIDExtension[MAX_SIDS];
+
+		/** Reset SID chips using highest volume setting. */
+		private void reset() {
+			Arrays.fill(sidWriteListener, null);
+		}
+
+		/** Clear SID address mapping */
+		private void clearSIDAddresses() {
+			Arrays.fill(sidmapper, 0);
+			Arrays.fill(sidBankUsed, false);
+		}
+
+		/** Assign SID chip base address to a SID chip number */
+		private void setSIDAddress(final int chipNum, final int address) {
+			sidmapper[address >> 5 & MAPPER_SIZE - 1] = chipNum;
+			sidBankUsed[(address & 0x0f00) >> 8] = true;
+		}
+
+		/** Is a specific memory bank in use by SID? */
+		private boolean isUsed(int bankNum) {
+			return sidBankUsed[bankNum];
+		}
+
+		/**
+		 * Install a SID register write listener for a specific SID chip number.
+		 */
+		public void setSidWriteListener(final int chipNum,
+				final ReSIDExtension listener) {
+			sidWriteListener[chipNum] = listener;
+		}
+
+		/**
+		 * SID register read access redirected to a specific SID chip number
+		 * configured earlier.
+		 */
+		@Override
+		public byte read(final int address) {
+			final int chipNum = sidmapper[address >> 5 & MAPPER_SIZE - 1];
+			if (sidemu[chipNum] != null) {
+				return sidemu[chipNum].read(address & REG_COUNT - 1);
+			} else {
+				return (byte) 0xff;
+			}
+		}
+
+		/**
+		 * SID register write access redirected to a specific SID chip number
+		 * configured earlier.
+		 */
+		@Override
+		public void write(final int address, final byte value) {
+			final int chipNum = sidmapper[address >> 5 & MAPPER_SIZE - 1];
+			if (sidemu[chipNum] != null) {
+				sidemu[chipNum].write(address & REG_COUNT - 1, value);
+			}
+			if (sidWriteListener[chipNum] != null) {
+				final long time = context.getTime(Event.Phase.PHI2);
+				sidWriteListener[chipNum].write(time, chipNum, address
+						& REG_COUNT - 1, value);
+			}
+		}
+
+		/** Get SID chip implementation of a specific SID chip number. */
+		private SIDEmu getSID(final int chipNum) {
+			return sidemu[chipNum];
+		}
+
+		/** Set SID chip implementation of a specific SID chip number. */
+		private void setSID(final int chipNum, final SIDEmu s) {
+			sidemu[chipNum] = s;
+		}
+	}
+
+	/** SID chip memory bank */
+	private final SIDBank sidBank = new SIDBank();
 
 	protected final ColorRAMBank colorRamBank = new ColorRAMBank();
 
@@ -173,9 +278,6 @@ public final class PLA {
 
 	/** RAM */
 	private final Bank ramBank;
-	
-	/** SID */
-	private Bank sid;
 
 	/** Connected cartridge */
 	private Cartridge cartridge;
@@ -197,20 +299,16 @@ public final class PLA {
 	/** Cartridge DMA */
 	private boolean cartridgeDma;
 
-	/** SIDs assigned to bank numbers */
-	private boolean[] sidBankUsed = new boolean[16];
-
-	public PLA(final EventScheduler context, final Bank sid,
-			final Bank zeroRAMBank, final Bank ramBank) {
+	public PLA(final EventScheduler context, final Bank zeroRAMBank,
+			final Bank ramBank) {
 		this.context = context;
 		this.ramBank = ramBank;
-		this.sid = sid;
 		nullCartridge = Cartridge.nullCartridge(this);
 
-		ioBank.setBank(4, sid);
-		ioBank.setBank(5, sid);
-		ioBank.setBank(6, sid);
-		ioBank.setBank(7, sid);
+		ioBank.setBank(4, sidBank);
+		ioBank.setBank(5, sidBank);
+		ioBank.setBank(6, sidBank);
+		ioBank.setBank(7, sidBank);
 		ioBank.setBank(8, colorRamDisconnectedBusBank);
 		ioBank.setBank(9, colorRamDisconnectedBusBank);
 		ioBank.setBank(10, colorRamDisconnectedBusBank);
@@ -232,8 +330,8 @@ public final class PLA {
 		oldBAState = true;
 		nmiCount = 0;
 		irqCount = 0;
-		Arrays.fill(sidBankUsed, false);
 
+		sidBank.reset();
 		colorRamBank.reset();
 		/* Cartridge-related banks are not reset() */
 		cartridge.reset();
@@ -458,10 +556,10 @@ public final class PLA {
 		}
 
 		Bank io1 = cartridge.getIO1();
-		ioBank.setBank(14, sidBankUsed[14] ? sid : io1);
+		ioBank.setBank(14, sidBank.isUsed(14) ? sidBank : io1);
 
 		Bank io2 = cartridge.getIO2();
-		ioBank.setBank(15, sidBankUsed[15] ? sid : io2);
+		ioBank.setBank(15, sidBank.isUsed(15) ? sidBank : io2);
 
 		cartridge.installBankHooks(cpuReadMap, cpuWriteMap);
 	}
@@ -588,8 +686,57 @@ public final class PLA {
 		disconnectedBusBank = new DisconnectedBusBank(vic);
 	}
 
-	public void setSid(final int address) {
-		sidBankUsed[(address & 0x0f00) >> 8] = true;
+	/**
+	 * Return the requested SID
+	 * 
+	 * @param chipNo
+	 *            (0..MAX_SIDS-1)
+	 * @return the SID
+	 */
+	public SIDEmu getSID(final int chipNo) {
+		return sidBank.getSID(chipNo);
+	}
+
+	/**
+	 * Set the requested SID
+	 * 
+	 * @param chipNo
+	 *            (0..MAX_SIDS-1)
+	 * @param sidemu
+	 *            the sid to set
+	 */
+	public void setSID(final int chipNo, final SIDEmu sidemu) {
+		sidBank.setSID(chipNo, sidemu);
+	}
+
+	/**
+	 * Clear SID address mapping.
+	 */
+	public void clearSIDAddresses() {
+		sidBank.clearSIDAddresses();
+	}
+
+	/**
+	 * Set the base address of a stereo SID chip
+	 * 
+	 * @param secondSidChipBase
+	 *            base address (e.g. 0xd420)
+	 */
+	public void setSIDAddress(int sidNum, final int base) {
+		sidBank.setSIDAddress(sidNum, base);
+	}
+
+	/**
+	 * Set a SID write listener to debug SID register writes.
+	 * 
+	 * @param chipNo
+	 *            (0..MAX_SIDS-1)
+	 * @param listener
+	 *            listener to debug SID register writes
+	 */
+	public void setSidWriteListener(final int chipNo,
+			final ReSIDExtension listener) {
+		sidBank.setSidWriteListener(chipNo, listener);
 	}
 
 	public Bank getDisconnectedBusBank() {

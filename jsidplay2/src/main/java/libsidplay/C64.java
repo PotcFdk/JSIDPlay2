@@ -1,13 +1,9 @@
 package libsidplay;
 
-import java.util.Arrays;
-
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.ReSIDExtension;
-import libsidplay.common.SIDEmu;
 import libsidplay.components.c1530.DatasetteEnvironment;
 import libsidplay.components.c1541.C1541Environment;
 import libsidplay.components.c1541.IParallelCable;
@@ -39,9 +35,6 @@ import libsidplay.components.ram.SystemRAMBank;
  */
 public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		UserportPrinterEnvironment {
-	/** Maximum number of supported SIDs (mono and stereo) */
-	final static int MAX_SIDS = 3;
-
 	/** Currently active CIA model. */
 	private static final MOS6526.Model CIAMODEL = MOS6526.Model.MOS6526;
 
@@ -109,91 +102,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 
 	/** Implementation of a disconnected Joystick */
 	private final DisconnectedJoystick disconnectedJoystick = new DisconnectedJoystick();
-
-	/** SID chip memory bank maps reads and writes to the assigned SID chip */
-	protected class SIDBank extends Bank {
-		/**
-		 * Size of mapping table. Each 32 bytes another SID chip base address
-		 * can be assigned to.
-		 */
-		private final static int MAPPER_SIZE = 32;
-		/** Number of SID chip registers */
-		private final static int REG_COUNT = 32;
-
-		/**
-		 * Mapping table in d400-d7ff. Maps a SID chip base address to a SID
-		 * chip number.
-		 */
-		private final int sidmapper[] = new int[MAPPER_SIZE];
-
-		/** Contains a SID chip implementation for each SID chip number. */
-		private final SIDEmu[] sidemu = new SIDEmu[MAX_SIDS];
-
-		/** SID listener for detecting SID writes */
-		private final ReSIDExtension[] sidWriteListener = new ReSIDExtension[MAX_SIDS];
-
-		/** Reset SID chips using highest volume setting. */
-		public void reset() {
-			for (final SIDEmu s : sidemu) {
-				if (s != null) {
-					s.reset((byte) 0xf);
-				}
-			}
-			Arrays.fill(sidWriteListener, null);
-		}
-
-		/** Assign SID chip base address to a SID chip number */
-		public void setSIDMapping(final int address, final int chipNum) {
-			sidmapper[address >> 5 & MAPPER_SIZE - 1] = chipNum;
-			pla.setSid(address);
-		}
-
-		/**
-		 * Install a SID register write listener for a specific SID chip number.
-		 */
-		public void setSidWriteListener(final int chipNum,
-				final ReSIDExtension listener) {
-			sidWriteListener[chipNum] = listener;
-		}
-
-		@Override
-		/** SID register read access redirected to a specific SID chip number configured earlier. */
-		public byte read(final int address) {
-			final int chipNum = sidmapper[address >> 5 & MAPPER_SIZE - 1];
-			if (sidemu[chipNum] != null) {
-				return sidemu[chipNum].read(address & REG_COUNT - 1);
-			} else {
-				return (byte) 0xff;
-			}
-		}
-
-		@Override
-		/** SID register write access redirected to a specific SID chip number configured earlier. */
-		public void write(final int address, final byte value) {
-			final int chipNum = sidmapper[address >> 5 & MAPPER_SIZE - 1];
-			if (sidemu[chipNum] != null) {
-				sidemu[chipNum].write(address & REG_COUNT - 1, value);
-			}
-			if (sidWriteListener[chipNum] != null) {
-				final long time = context.getTime(Event.Phase.PHI2);
-				sidWriteListener[chipNum].write(time, chipNum, address
-						& REG_COUNT - 1, value);
-			}
-		}
-
-		/** Get SID chip implementation of a specific SID chip number. */
-		public SIDEmu getSID(final int chipNum) {
-			return sidemu[chipNum];
-		}
-
-		/** Set SID chip implementation of a specific SID chip number. */
-		public void setSID(final int chipNum, final SIDEmu s) {
-			sidemu[chipNum] = s;
-		}
-	}
-
-	/** SID chip memory bank */
-	private final SIDBank sidBank = new SIDBank();
 
 	/**
 	 * Area backed by RAM, including cpu port addresses 0 and 1.
@@ -366,7 +274,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	public C64() {
 		context = new EventScheduler();
 
-		pla = new PLA(context, sidBank, zeroRAMBank, ramBank);
+		pla = new PLA(context, zeroRAMBank, ramBank);
 
 		cpu = new MOS6510(context) {
 			@Override
@@ -514,58 +422,12 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		cpu.triggerRST();
 		cia1.reset();
 		cia2.reset();
-		sidBank.reset();
 		getVIC().reset();
 		zeroRAMBank.reset();
 		ramBank.reset();
 
 		callsToPlayRoutine = 0;
 		playAddr = -1;
-	}
-
-	/**
-	 * Return the requested SID
-	 * 
-	 * @param chipNo
-	 *            (0..MAX_SIDS-1)
-	 * @return the SID
-	 */
-	public SIDEmu getSID(final int chipNo) {
-		return sidBank.getSID(chipNo);
-	}
-
-	/**
-	 * Set the requested SID
-	 * 
-	 * @param chipNo
-	 *            (0..MAX_SIDS-1)
-	 * @param sidemu
-	 *            the sid to set
-	 */
-	public void setSID(final int chipNo, final SIDEmu sidemu) {
-		sidBank.setSID(chipNo, sidemu);
-	}
-
-	/**
-	 * Set the base address of a stereo SID chip
-	 * 
-	 * @param secondSidChipBase
-	 *            base address (e.g. 0xd420)
-	 */
-	public void setSIDAddress(final int base, int sidNum) {
-		sidBank.setSIDMapping(base, sidNum);
-	}
-
-	/**
-	 * Set a SID write listener to debug SID register writes.
-	 * 
-	 * @param chipNo
-	 *            (0..MAX_SIDS-1)
-	 * @param listener
-	 *            listener to debug SID register writes
-	 */
-	void setSidWriteListener(final int chipNo, final ReSIDExtension listener) {
-		sidBank.setSidWriteListener(chipNo, listener);
 	}
 
 	/**
@@ -614,6 +476,10 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		return ntscVic;
 	}
 
+	public boolean hasSID(int chipNo) {
+		return pla.getSID(chipNo) != null;
+	}
+	
 	/**
 	 * Set system clock (PAL/NTSC).
 	 * 

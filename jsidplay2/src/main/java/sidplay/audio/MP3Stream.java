@@ -47,8 +47,8 @@ public class MP3Stream extends AudioDriver {
 		// We need to make a buffer for the user
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, 16,
-				cfg.channels, true, false);
+		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, 16, channels,
+				true, false);
 		jump3r = new LameEncoder(audioFormat);
 	}
 

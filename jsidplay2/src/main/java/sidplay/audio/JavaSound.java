@@ -85,7 +85,6 @@ public class JavaSound extends AudioDriver {
 			dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
 		}
 		dataLine.open(dataLine.getFormat(), cfg.bufferFrames * 2 * cfg.channels);
-		cfg.bufferFrames = dataLine.getBufferSize() / 2 / cfg.channels;
 
 		/*
 		 * Write to audio device often. We make the sample buffer size divisible

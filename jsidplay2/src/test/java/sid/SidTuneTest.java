@@ -41,8 +41,8 @@ public class SidTuneTest extends JSIDPlay2Test {
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
-		Assert.assertTrue(player.getC64().getSID(0) != null);
-		Assert.assertTrue(player.getC64().getSID(1) != null);
+		Assert.assertTrue(player.getC64().hasSID(0));
+		Assert.assertTrue(player.getC64().hasSID(1));
 		// Driver
 		Assert.assertTrue(checkRam(0x0400, new byte[] { 0x4c, 0x03, 0x10 }));
 		// Load/Init
@@ -119,8 +119,8 @@ public class SidTuneTest extends JSIDPlay2Test {
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
-		Assert.assertTrue(player.getC64().getSID(0) != null);
-		Assert.assertTrue(player.getC64().getSID(1) != null);
+		Assert.assertTrue(player.getC64().hasSID(0));
+		Assert.assertTrue(player.getC64().hasSID(1));
 		// Driver
 		Assert.assertTrue(checkRam(0x0400, new byte[] { 0x4c, (byte) 0x96,
 				(byte) 0xfc }));
@@ -159,9 +159,9 @@ public class SidTuneTest extends JSIDPlay2Test {
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
-		Assert.assertTrue(player.getC64().getSID(0) != null);
-		Assert.assertTrue(player.getC64().getSID(1) != null);
-		Assert.assertTrue(player.getC64().getSID(2) != null);
+		Assert.assertTrue(player.getC64().hasSID(0));
+		Assert.assertTrue(player.getC64().hasSID(1));
+		Assert.assertTrue(player.getC64().hasSID(2));
 		// Driver
 		Assert.assertTrue(checkRam(0x0400, new byte[] { 0x4c, (byte) 0x93, 0x28 }));
 		// Load/Init

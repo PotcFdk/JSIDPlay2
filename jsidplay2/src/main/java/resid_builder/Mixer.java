@@ -72,11 +72,10 @@ public class Mixer {
 				for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
 					int dither = triangularDithering();
 
-					putSample(sampleIdx, channels > 1 ? balancedVolumeL
+					putSample(sampleIdx, sids.size() > 1 ? balancedVolumeL
 							: volume, dither);
-					if (channels > 1) {
-						putSample(sampleIdx, balancedVolumeR, dither);
-					}
+					putSample(sampleIdx, sids.size() > 1 ? balancedVolumeR
+							: volume, dither);
 					if (driver.buffer().remaining() == 0) {
 						driver.write();
 						driver.buffer().clear();
@@ -99,10 +98,6 @@ public class Mixer {
 	 * SIDs to mix their sound output.
 	 */
 	private List<ReSIDBase> sids = new ArrayList<ReSIDBase>();
-	/**
-	 * Channels used (1=Mono, 2=Stereo).
-	 */
-	private int channels;
 	/**
 	 * Audio driver
 	 */
@@ -156,7 +151,6 @@ public class Mixer {
 	public void start(AudioConfig audioConfig, IAudioSection audioSection) {
 		context.cancel(nullAudio);
 		context.cancel(mixerAudio);
-		this.channels = audioConfig.getChannels();
 		synchronized (sids) {
 			for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
 				setVolume(sidNum, audioSection);
