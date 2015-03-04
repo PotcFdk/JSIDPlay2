@@ -16,6 +16,9 @@ import static de.haendel.jsidplay2.config.IConfiguration.MOS8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_BUFFER_SIZE;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_MODEL;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_PLAY_LENGTH;
+import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_IS_VBR;
+import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_CBR;
+import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_VBR;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DIGI_BOOSTED_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_EMULATION;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_ENABLE_DATABASE;
@@ -27,6 +30,9 @@ import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_6581
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_STEREO_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_STEREO_FILTER_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_IS_VBR;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_CBR;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_VBR;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_SAMPLING_METHOD;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_SINGLE_SONG;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_6581;
@@ -109,6 +115,8 @@ public class ConfigurationTab extends TabBase {
 				configuration.setReSIDfpStereoFilter6581(newValue);
 			} else if (PAR_RESIDFP_STEREO_FILTER_8580.equals(parName)) {
 				configuration.setReSIDfpStereoFilter8580(newValue);
+			} else if (PAR_IS_VBR.equals(parName)) {
+				configuration.setIsVbr(Boolean.valueOf(newValue));
 			}
 		}
 
@@ -118,6 +126,10 @@ public class ConfigurationTab extends TabBase {
 				configuration.setBufferSize(newValue);
 			} else if (PAR_DEFAULT_PLAY_LENGTH.equals(parName)) {
 				configuration.setDefaultLength(newValue);
+			} else if (PAR_CBR.equals(parName)) {
+				configuration.setCbr(newValue);
+			} else if (PAR_VBR.equals(parName)) {
+				configuration.setVbr(newValue);
 			}
 		}
 
@@ -156,6 +168,8 @@ public class ConfigurationTab extends TabBase {
 			stereoFilter8580, reSIDfpStereoFilter6581, reSIDfpStereoFilter8580;
 	private TextView stereoFilter6581txt, stereoFilter8580txt,
 			reSIDfpStereoFilter6581txt, reSIDfpStereoFilter8580txt;
+	private Spinner isVbr;
+	private EditText cbr, vbr;
 
 	private SharedPreferences preferences;
 	private UIHelper ui;
@@ -212,6 +226,9 @@ public class ConfigurationTab extends TabBase {
 				.findViewById(R.id.reSIDfpStereoFilter8580);
 		reSIDfpStereoFilter8580txt = (TextView) activity
 				.findViewById(R.id.reSIDfpStereoFilter8580txt);
+		isVbr = (Spinner) activity.findViewById(R.id.isVbr);
+		cbr = (EditText) activity.findViewById(R.id.cbr);
+		vbr = (EditText) activity.findViewById(R.id.vbr);
 
 		ui.setupEditText(bufferSize, PAR_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
 
@@ -234,6 +251,10 @@ public class ConfigurationTab extends TabBase {
 		ui.setupSpinner(activity, frequency, new String[] { _44100, _48000,
 				_96000 }, PAR_FREQUENCY, _48000);
 
+		ui.setupSpinner(activity, isVbr, new String[] { "true", "false"},
+				PAR_IS_VBR, DEFAULT_IS_VBR);
+		ui.setupEditText(cbr, PAR_CBR, DEFAULT_CBR);
+		ui.setupEditText(vbr, PAR_VBR, DEFAULT_VBR);
 		requestFilters();
 	}
 

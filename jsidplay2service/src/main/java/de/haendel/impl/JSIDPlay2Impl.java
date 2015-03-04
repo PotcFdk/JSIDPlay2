@@ -128,11 +128,13 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	}
 
 	@Override
-	public void convert(Configuration config, String resource, OutputStream out)
+	public void convert(Configuration config, String resource,
+			OutputStream out, int cbr, int vbr, boolean isVbr)
 			throws InterruptedException, IOException, SidTuneError {
 		Player player = new Player(config);
 		player.setSidDatabase(getSidDatabase(HVSC_ROOT));
-		player.setDriverSettings(new DriverSettings(new MP3Stream(out)));
+		MP3Stream mp3Stream = new MP3Stream(out, cbr, vbr, isVbr);
+		player.setDriverSettings(new DriverSettings(mp3Stream));
 		player.play(SidTune.load(getAbsoluteFile(resource)));
 		player.waitForC64();
 	}

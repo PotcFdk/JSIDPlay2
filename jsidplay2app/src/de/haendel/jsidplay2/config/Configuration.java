@@ -261,4 +261,40 @@ public class Configuration implements IConfiguration {
 		this.bufferSize = bufferSize;
 	}
 
+	private boolean isVbr;
+
+	@Override
+	public boolean isVbr() {
+		return isVbr;
+	}
+
+	@Override
+	public void setIsVbr(boolean isVbr) {
+		this.isVbr = isVbr;
+	}
+
+	private String cbr;
+
+	@Override
+	public String getCbr() {
+		return cbr;
+	}
+
+	@Override
+	public void setCbr(String cbr) {
+		this.cbr = cbr;
+	}
+
+	private String vbr;
+
+	@Override
+	public String getVbr() {
+		return vbr;
+	}
+
+	@Override
+	public void setVbr(String vbr) {
+		this.vbr = vbr;
+	}
+
 }

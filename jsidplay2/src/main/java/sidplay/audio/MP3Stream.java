@@ -11,6 +11,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import libsidplay.sidtune.SidTune;
 import lowlevel.LameEncoder;
+import mp3.MPEGMode;
 
 /**
  * Driver to write into an MP3 encoded output stream.
@@ -33,8 +34,24 @@ public class MP3Stream extends AudioDriver {
 	 */
 	private LameEncoder jump3r;
 
-	public MP3Stream(OutputStream out) {
+	/**
+	 * MP3: Constant bit rate (-1=auto)
+	 */
+	private int cbr;
+	/**
+	 * MP3: Variable bit rate quality (0=best, 5=medium, 9=worst)
+	 */
+	private int vbr;
+	/**
+	 * Use variable bit rate mode? (or constant bit rate mode)
+	 */
+	private boolean isVbr;
+
+	public MP3Stream(OutputStream out, int cbr, int vbr, boolean isVbr) {
 		this.out = out;
+		this.cbr = cbr;
+		this.vbr = vbr;
+		this.isVbr = isVbr;
 	}
 
 	@Override
@@ -49,7 +66,7 @@ public class MP3Stream extends AudioDriver {
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, 16, channels,
 				true, false);
-		jump3r = new LameEncoder(audioFormat);
+		jump3r = new LameEncoder(audioFormat, cbr, MPEGMode.STEREO, vbr, isVbr);
 	}
 
 	@Override

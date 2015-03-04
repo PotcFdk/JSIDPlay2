@@ -83,4 +83,7 @@ Source code can be found at:\n
     <string name="random">Random</string>
     <string name="label_service_jsidplay2">JSIDPlay2</string>
     <string name="desc_service_jsidplay2">MediaPlayer of JSIDPlay2</string>
+    <string name="isVbr">VBR(/CBR)</string>
+    <string name="cbr">bitrate</string>
+    <string name="vbr">quality</string>
 </resources>

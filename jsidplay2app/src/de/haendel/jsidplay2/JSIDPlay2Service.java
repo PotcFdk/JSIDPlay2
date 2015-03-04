@@ -11,6 +11,9 @@ import static de.haendel.jsidplay2.config.IConfiguration.PAR_ENABLE_DATABASE;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_FREQUENCY;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_IS_VBR;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_CBR;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_VBR;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_LOOP;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_8580;
@@ -286,7 +289,10 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 				+ configuration.isDigiBoosted8580() + "&");
 		query.append(PAR_SAMPLING_METHOD + "="
 				+ configuration.getSamplingMethod() + "&");
-		query.append(PAR_FREQUENCY + "=" + configuration.getFrequency());
+		query.append(PAR_FREQUENCY + "=" + configuration.getFrequency() + "&");
+		query.append(PAR_IS_VBR + "=" + configuration.isVbr() + "&");		
+		query.append(PAR_CBR + "=" + configuration.getCbr() + "&");		
+		query.append(PAR_VBR + "=" + configuration.getVbr());
 
 		return new URI("http", configuration.getUsername() + ":"
 				+ configuration.getPassword(), configuration.getHostname(),
