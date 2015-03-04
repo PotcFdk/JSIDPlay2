@@ -901,7 +901,7 @@ public class Player {
 								sidNum);
 						c64.getPla().setSIDAddress(sidNum, base);
 					} else if (sid != null) {
-						// Free SIDs no more in use
+						// Safely remove SIDs no more in use
 						sidBuilder.unlock(sid);
 						c64.getPla().setSID(sidNum, null);
 					}

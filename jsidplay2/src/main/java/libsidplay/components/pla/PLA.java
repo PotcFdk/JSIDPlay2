@@ -129,6 +129,7 @@ public final class PLA {
 		/** Reset SID chips using highest volume setting. */
 		private void reset() {
 			Arrays.fill(sidWriteListener, null);
+			clearSIDAddresses();
 		}
 
 		/** Clear SID address mapping */
@@ -140,7 +141,7 @@ public final class PLA {
 		/** Assign SID chip base address to a SID chip number */
 		private void setSIDAddress(final int chipNum, final int address) {
 			sidmapper[address >> 5 & MAPPER_SIZE - 1] = chipNum;
-			sidBankUsed[(address & 0x0f00) >> 8] = true;
+			sidBankUsed[address >> 8 & 0xf] = true;
 		}
 
 		/** Is a specific memory bank in use by SID? */
