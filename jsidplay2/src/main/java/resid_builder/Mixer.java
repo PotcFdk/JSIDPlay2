@@ -26,12 +26,10 @@ public class Mixer {
 
 		@Override
 		public void event() throws InterruptedException {
-			synchronized (sids) {
-				for (ReSIDBase sid : sids) {
-					// clock SID to the present moment
-					sid.clock();
-					sid.bufferpos = 0;
-				}
+			for (ReSIDBase sid : sids) {
+				// clock SID to the present moment
+				sid.clock();
+				sid.bufferpos = 0;
 			}
 			context.schedule(nullAudio, 10000);
 		}
@@ -58,28 +56,27 @@ public class Mixer {
 		 */
 		@Override
 		public void event() throws InterruptedException {
-			synchronized (sids) {
-				int samples = -1;
-				for (ReSIDBase sid : sids) {
-					// clock SID to the present moment
-					sid.clock();
-					// determine amount of samples produced (cut-off overflows)
-					samples = samples != -1 ? Math.min(samples, sid.bufferpos)
-							: sid.bufferpos;
-					sid.bufferpos = 0;
-				}
-				// output sample data
-				for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
-					int dither = triangularDithering();
+			int samples = -1;
+			for (ReSIDBase sid : sids) {
+				// clock SID to the present moment
+				sid.clock();
+				// determine amount of samples produced (cut-off overflows)
+				samples = samples != -1 ? Math.min(samples, sid.bufferpos)
+						: sid.bufferpos;
+				sid.bufferpos = 0;
+			}
+			boolean isStereoSid = sids.size() > 1;
+			// output sample data
+			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
+				int dither = triangularDithering();
 
-					putSample(sampleIdx, sids.size() > 1 ? balancedVolumeL
-							: volume, dither);
-					putSample(sampleIdx, sids.size() > 1 ? balancedVolumeR
-							: volume, dither);
-					if (driver.buffer().remaining() == 0) {
-						driver.write();
-						driver.buffer().clear();
-					}
+				putSample(sampleIdx, isStereoSid ? balancedVolumeL : volume,
+						dither);
+				putSample(sampleIdx, isStereoSid ? balancedVolumeR : volume,
+						dither);
+				if (driver.buffer().remaining() == 0) {
+					driver.write();
+					driver.buffer().clear();
 				}
 			}
 			context.schedule(this, 10000);
@@ -115,7 +112,7 @@ public class Mixer {
 	/**
 	 * Volume of all SIDs.
 	 */
-	private final float[] volume = new float[] { 1024f, 1024f, 1024f };
+	private final int[] volume = new int[] { 1024, 1024, 1024 };
 	/**
 	 * SID audibility on the left speaker of all SIDs 0(silent)..1(loud).
 	 */
@@ -128,11 +125,11 @@ public class Mixer {
 	/**
 	 * Balanced left speaker volume = volumeL * positionL.
 	 */
-	private final float[] balancedVolumeL = new float[] { 1024, 0, 512 };
+	private final int[] balancedVolumeL = new int[] { 1024, 0, 512 };
 	/**
 	 * Balanced right speaker volume = volumeR * positionR.
 	 */
-	private final float[] balancedVolumeR = new float[] { 0, 1024, 512 };
+	private final int[] balancedVolumeR = new int[] { 0, 1024, 512 };
 
 	public Mixer(EventScheduler context, AudioDriver audioDriver) {
 		this.context = context;
@@ -140,7 +137,6 @@ public class Mixer {
 	}
 
 	public void reset() {
-		context.cancel(nullAudio);
 		context.schedule(nullAudio, 0, Event.Phase.PHI2);
 	}
 
@@ -149,46 +145,35 @@ public class Mixer {
 	 * buffer.
 	 */
 	public void start(AudioConfig audioConfig, IAudioSection audioSection) {
-		context.cancel(nullAudio);
-		context.cancel(mixerAudio);
-		synchronized (sids) {
-			for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
-				setVolume(sidNum, audioSection);
-				setBalance(sidNum, audioSection);
-			}
+		for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
+			setVolume(sidNum, audioSection);
+			setBalance(sidNum, audioSection);
 		}
+		context.cancel(nullAudio);
 		context.schedule(mixerAudio, 0, Event.Phase.PHI2);
 	}
 
 	public void add(int sidNum, ReSIDBase sid) {
-		synchronized (sids) {
-			if (sidNum < sids.size()) {
-				sids.set(sidNum, sid);
-			} else {
-				sids.add(sid);
-			}
+		if (sidNum < sids.size()) {
+			sids.set(sidNum, sid);
+		} else {
+			sids.add(sid);
 		}
 	}
 
 	public void remove(SIDEmu sid) {
-		synchronized (sids) {
-			sids.remove(sid);
-		}
+		sids.remove(sid);
 	}
 
 	public ReSIDBase get(int sidNum) {
-		synchronized (sids) {
-			return sids.get(sidNum);
-		}
+		return sids.get(sidNum);
 	}
 
 	/**
 	 * @return current number of devices.
 	 */
 	public int getNumDevices() {
-		synchronized (sids) {
-			return sids.size();
-		}
+		return sids.size();
 	}
 
 	/**
@@ -203,8 +188,7 @@ public class Mixer {
 		return oldRandomValue - prevValue;
 	}
 
-	private final void putSample(int sampleIdx, float[] balancedVolume,
-			int dither) {
+	private final void putSample(int sampleIdx, int[] balancedVolume, int dither) {
 		int value = 0;
 		int sidNum = 0;
 		for (ReSIDBase sid : sids) {
@@ -245,7 +229,7 @@ public class Mixer {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
-		volume[sidNum] = (float) Math.pow(10, volumeInDB / 10) * 1024;
+		volume[sidNum] = (int) (Math.pow(10, volumeInDB / 10) * 1024);
 		updateFactor();
 	}
 
@@ -280,8 +264,8 @@ public class Mixer {
 
 	private void updateFactor() {
 		for (int i = 0; i < balancedVolumeL.length; i++) {
-			balancedVolumeL[i] = volume[i] * positionL[i];
-			balancedVolumeR[i] = volume[i] * positionR[i];
+			balancedVolumeL[i] = (int) (volume[i] * positionL[i]);
+			balancedVolumeR[i] = (int) (volume[i] * positionR[i]);
 		}
 	}
 
