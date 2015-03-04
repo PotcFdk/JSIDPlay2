@@ -31,7 +31,7 @@ public class Mixer {
 				sid.clock();
 				sid.bufferpos = 0;
 			}
-			context.schedule(nullAudio, 10000);
+			context.schedule(this, 10000);
 		}
 	}
 
@@ -65,14 +65,14 @@ public class Mixer {
 						: sid.bufferpos;
 				sid.bufferpos = 0;
 			}
-			boolean isStereoSid = sids.size() > 1;
+			boolean hasMoreSids = sids.size() > 1;
 			// output sample data
 			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
 				int dither = triangularDithering();
 
-				putSample(sampleIdx, isStereoSid ? balancedVolumeL : volume,
+				putSample(sampleIdx, hasMoreSids ? balancedVolumeL : volume,
 						dither);
-				putSample(sampleIdx, isStereoSid ? balancedVolumeR : volume,
+				putSample(sampleIdx, hasMoreSids ? balancedVolumeR : volume,
 						dither);
 				if (driver.buffer().remaining() == 0) {
 					driver.write();
