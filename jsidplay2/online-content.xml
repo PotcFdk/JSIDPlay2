@@ -83,12 +83,6 @@
 				<include name="${jsiddevice}.*" />
 			</fileset>
 		</zip>
-		<delete>
-			<fileset dir="${deploy_dir}">
-				<include name="${jsiddevice}.*"/>
-				<exclude name="${jsiddevice}.zip"/>
-			</fileset>
-		</delete>
 	</target>
 
 	<!-- ================================= 
