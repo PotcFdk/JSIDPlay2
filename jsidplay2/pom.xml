@@ -34,6 +34,7 @@
 		<zip7.home />
 		<cgsc.7z />
 		<hvmec.bz2 />
+		<upx.home />
 	</properties>
 
 	<scm>
@@ -502,6 +503,7 @@
 									<property name="zip7.home" value="${zip7.home}" />
 									<property name="cgsc.7z" value="${cgsc.7z}" />
 									<property name="hvmec.bz2" value="${hvmec.bz2}" />
+									<property name="upx.home" value="${upx.home}" />
 									<property name="result_dir"
 										location="${project.build.directory}/deploy/online" />
 									<property name="project.name" value="${project.name}" />

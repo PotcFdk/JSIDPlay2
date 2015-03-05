@@ -62,10 +62,11 @@
           Compress executable of JSIDDevice with UPX.
          ================================= -->	
 	<target name="check_upx">
-	    <available file="${upx.home}/upx.exe" property="upx.present"/>
+		<available file="${upx.home}/upx" property="upx.present"/>
+		<available file="${upx.home}/upx.exe" property="upx.present"/>
 	</target>
 	<target name="compress_jsiddevice_exe" depends="check_upx" if="upx.present">
-		<exec executable="${upx.home}/upx.exe" failonerror="true">
+		<exec executable="${upx.home}/upx" failonerror="true">
 			<arg value="--lzma" />
 			<arg value="--best" />
 			<arg value="${deploy_dir}/${jsiddevice}.exe" />
