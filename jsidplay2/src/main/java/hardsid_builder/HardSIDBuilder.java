@@ -99,12 +99,18 @@ public class HardSIDBuilder implements SIDBuilder {
 		// we cannot reconfigure already existing HardSIDs
 		if (oldHardSID == null) {
 			final ChipModel chipModel = getChipModel(config, tune, sidNum);
-			final int deviceIdx = getModelDependantDevice(config, chipModel);
-			HardSID hsid = new HardSID(this, context, hsidDLL, deviceIdx,
-					chipModel);
-			if (hsid.lock(true)) {
-				sids.add(hsid);
-				return hsid;
+			final int deviceIdx = getModelDependantDevice(config, chipModel,
+					sidNum);
+			if (deviceIdx < hsidDLL.HardSID_Devices()) {
+				HardSID hsid = new HardSID(this, context, hsidDLL, deviceIdx,
+						chipModel);
+				if (hsid.lock(true)) {
+					sids.add(hsid);
+					return hsid;
+				}
+			} else {
+				System.err
+						.println("HARDSID ERROR: System doesn't have enough SID chips.");
 			}
 		}
 		return oldHardSID;
@@ -230,12 +236,22 @@ public class HardSIDBuilder implements SIDBuilder {
 	 *            configuration
 	 * @param chipModel
 	 *            desired chip model
+	 * @param sidNum
+	 *            current SID number
 	 * @return device index of the desired HardSID device
 	 */
 	private int getModelDependantDevice(final IConfig config,
-			final ChipModel chipModel) {
+			final ChipModel chipModel, int sidNum) {
 		int sid6581 = config.getEmulation().getHardsid6581();
 		int sid8580 = config.getEmulation().getHardsid8580();
+		if (sidNum == 2) {
+			// 3-SID: for now choose next available free slot
+			for (int i = 0; i < getNumDevices(); i++) {
+				if (i != sid6581 && i != sid8580) {
+					return i;
+				}
+			}
+		}
 		return chipModel == ChipModel.MOS6581 ? sid6581 : sid8580;
 	}
 

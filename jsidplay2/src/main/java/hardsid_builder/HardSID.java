@@ -38,12 +38,13 @@ public class HardSID extends SIDEmu {
 		@Override
 		public void event() {
 			final int cycles = clocksSinceLastAccess();
-			hsid2.HardSID_Delay(chipNum, cycles / hardSIDBuilder.getDevcesInUse());
+			hsidDll.HardSID_Delay(chipNum,
+					cycles / hardSIDBuilder.getDevcesInUse());
 			context.schedule(event, HARDSID_DELAY_CYCLES, Event.Phase.PHI2);
 		}
 	};
 
-	private final HsidDLL2 hsid2;
+	private final HsidDLL2 hsidDll;
 
 	private final int chipNum;
 
@@ -53,17 +54,13 @@ public class HardSID extends SIDEmu {
 
 	private HardSIDBuilder hardSIDBuilder;
 
-	public HardSID(HardSIDBuilder hardSIDBuilder, EventScheduler context, final HsidDLL2 hsid2, final int sid,
-			final ChipModel model) {
+	public HardSID(HardSIDBuilder hardSIDBuilder, EventScheduler context,
+			final HsidDLL2 hsidDll, final int sid, final ChipModel model) {
 		super(context);
 		this.hardSIDBuilder = hardSIDBuilder;
-		this.hsid2 = hsid2;
+		this.hsidDll = hsidDll;
 		this.chipNum = sid;
 		this.chipModel = model;
-		if (chipNum >= hsid2.HardSID_Devices()) {
-			throw new RuntimeException(
-					"HARDSID ERROR: System doesn't have enough SID chips.");
-		}
 		reset((byte) 0xf);
 	}
 
@@ -71,12 +68,18 @@ public class HardSID extends SIDEmu {
 	@SuppressWarnings("deprecation")
 	public void reset(final byte volume) {
 		clocksSinceLastAccess();
-		if (hsid2.HardSID_Version() >= HSID_VERSION_204) {
-			hsid2.HardSID_Reset2(chipNum, volume);
+		if (hsidDll.HardSID_Version() >= HSID_VERSION_204) {
+			hsidDll.HardSID_Reset2(chipNum, volume);
+			for (int channel = 0; channel < 3; channel++) {
+				hsidDll.HardSID_Mute2(chipNum, channel, volume == 0, true);
+			}
 		} else {
-			hsid2.HardSID_Reset(chipNum);
+			hsidDll.HardSID_Reset(chipNum);
+			for (int channel = 0; channel < 3; channel++) {
+				hsidDll.HardSID_Mute(chipNum, channel, volume == 0);
+			}
 		}
-		hsid2.HardSID_Sync(chipNum);
+		hsidDll.HardSID_Sync(chipNum);
 
 		if (context != null) {
 			context.cancel(event);
@@ -93,7 +96,7 @@ public class HardSID extends SIDEmu {
 		 * fake devices -> drop read support. Otherwise HardSID 4U won't play
 		 * for some unknown reason.
 		 */
-		if (hsid2.HardSID_Devices() > SID_DEVICES) {
+		if (hsidDll.HardSID_Devices() > SID_DEVICES) {
 			return (byte) 0xff;
 		}
 		/*
@@ -105,11 +108,11 @@ public class HardSID extends SIDEmu {
 		 */
 		int cycles = clocksSinceLastAccess();
 		while (cycles > 0xFFFF) {
-			hsid2.HardSID_Delay(chipNum, 0xFFFF);
+			hsidDll.HardSID_Delay(chipNum, 0xFFFF);
 			cycles -= 0xFFFF;
 		}
 
-		return (byte) hsid2.HardSID_Read(chipNum, cycles, addr);
+		return (byte) hsidDll.HardSID_Read(chipNum, cycles, addr);
 	}
 
 	@Override
@@ -120,10 +123,10 @@ public class HardSID extends SIDEmu {
 		int cycles = clocksSinceLastAccess();
 
 		while (cycles > 0xFFFF) {
-			hsid2.HardSID_Delay(chipNum, 0xFFFF);
+			hsidDll.HardSID_Delay(chipNum, 0xFFFF);
 			cycles -= 0xFFFF;
 		}
-		hsid2.HardSID_Write(chipNum, cycles, addr, data);
+		hsidDll.HardSID_Write(chipNum, cycles, addr, data);
 	}
 
 	@Override
@@ -137,21 +140,21 @@ public class HardSID extends SIDEmu {
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
 		boolean enable = emulation.isFilterEnable(sidNum);
-		hsid2.HardSID_Filter(chipNum, enable);
+		hsidDll.HardSID_Filter(chipNum, enable);
 	}
 
 	@Override
 	public void setVoiceMute(final int num, final boolean mute) {
-		if (hsid2.HardSID_Version() >= HSID_VERSION_207) {
-			hsid2.HardSID_Mute2(chipNum, num, mute, false);
+		if (hsidDll.HardSID_Version() >= HSID_VERSION_207) {
+			hsidDll.HardSID_Mute2(chipNum, num, mute, false);
 		} else {
-			hsid2.HardSID_Mute(chipNum, num, mute);
+			hsidDll.HardSID_Mute(chipNum, num, mute);
 		}
 	}
 
 	// HardSID specific
 	void flush() {
-		hsid2.HardSID_Flush(chipNum);
+		hsidDll.HardSID_Flush(chipNum);
 	}
 
 	// Must lock the SID before using the standard functions.
@@ -160,30 +163,30 @@ public class HardSID extends SIDEmu {
 			return false;
 		}
 		if (!lock) {
-			if (hsid2.HardSID_Version() >= HSID_VERSION_204) {
-				hsid2.HardSID_Unlock(chipNum);
+			if (hsidDll.HardSID_Version() >= HSID_VERSION_204) {
+				hsidDll.HardSID_Unlock(chipNum);
 			}
 			context.cancel(event);
 		} else {
 			// Check major version
-			if (hsid2.HardSID_Version() >> 8 < HSID_VERSION_MIN >> 8) {
+			if (hsidDll.HardSID_Version() >> 8 < HSID_VERSION_MIN >> 8) {
 				throw new RuntimeException(String.format(
 						"HARDSID ERROR: HardSID.dll not V%d",
 						HSID_VERSION_MIN >> 8));
 			}
 			// Check minor version
-			if (hsid2.HardSID_Version() < HSID_VERSION_MIN) {
+			if (hsidDll.HardSID_Version() < HSID_VERSION_MIN) {
 				throw new RuntimeException(
 						String.format(
 								"HARDSID ERROR: HardSID.dll must be V%02d.%02d or greater",
 								HSID_VERSION_MIN >> 8, HSID_VERSION_MIN & 0xff));
 			}
-			if (hsid2.HardSID_Version() >= HSID_VERSION_204) {
+			if (hsidDll.HardSID_Version() >= HSID_VERSION_204) {
 				// If the player switches to the next song of a tune
 				// the device will never get unlocked.
 				// Therefore preemptive unlocking here!
-				hsid2.HardSID_Unlock(chipNum);
-				if (hsid2.HardSID_Lock(chipNum) == false) {
+				hsidDll.HardSID_Unlock(chipNum);
+				if (hsidDll.HardSID_Lock(chipNum) == false) {
 					return false;
 				}
 			}
