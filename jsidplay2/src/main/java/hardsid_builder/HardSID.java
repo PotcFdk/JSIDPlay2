@@ -38,7 +38,7 @@ public class HardSID extends SIDEmu {
 		@Override
 		public void event() {
 			final int cycles = clocksSinceLastAccess();
-			hsid2.HardSID_Delay(chipNum, cycles / chipsUsed);
+			hsid2.HardSID_Delay(chipNum, cycles / hardSIDBuilder.getDevcesInUse());
 			context.schedule(event, HARDSID_DELAY_CYCLES, Event.Phase.PHI2);
 		}
 	};
@@ -47,18 +47,19 @@ public class HardSID extends SIDEmu {
 
 	private final int chipNum;
 
-	private ChipModel model;
+	private ChipModel chipModel;
 
 	private boolean locked;
 
-	private int chipsUsed;
+	private HardSIDBuilder hardSIDBuilder;
 
-	public HardSID(EventScheduler context, final HsidDLL2 hsid2, final int sid,
+	public HardSID(HardSIDBuilder hardSIDBuilder, EventScheduler context, final HsidDLL2 hsid2, final int sid,
 			final ChipModel model) {
 		super(context);
+		this.hardSIDBuilder = hardSIDBuilder;
 		this.hsid2 = hsid2;
 		this.chipNum = sid;
-		this.model = model;
+		this.chipModel = model;
 		if (chipNum >= hsid2.HardSID_Devices()) {
 			throw new RuntimeException(
 					"HARDSID ERROR: System doesn't have enough SID chips.");
@@ -195,7 +196,7 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public ChipModel getChipModel() {
-		return model;
+		return chipModel;
 	}
 
 	@Override
@@ -213,12 +214,14 @@ public class HardSID extends SIDEmu {
 	public void input(int input) {
 	}
 
-	void setChipsUsed(int size) {
-		chipsUsed = size;
-	}
-
 	@Override
 	public int getInputDigiBoost() {
 		return 0;
 	}
+
+	public static final String credits() {
+		return "HardSID V1.0.1 Engine:\n"
+				+ "\tCopyright (©) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
+	}
+
 }

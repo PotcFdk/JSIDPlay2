@@ -289,11 +289,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		videoStandardBox.getSelectionModel().select(videoStandard);
 
 		hardsid6581Box.getSelectionModel().select(
-				Integer.valueOf(util.getConfig().getEmulation()
-						.getHardsid6581()));
+				util.getConfig().getEmulation().getHardsid6581());
 		hardsid8580Box.getSelectionModel().select(
-				Integer.valueOf(util.getConfig().getEmulation()
-						.getHardsid8580()));
+				util.getConfig().getEmulation().getHardsid8580());
 
 		Engine engine = util.getConfig().getEmulation().getEngine();
 		engineBox.getSelectionModel().select(engine);

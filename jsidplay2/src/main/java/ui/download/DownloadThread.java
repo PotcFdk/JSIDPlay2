@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -25,7 +27,6 @@ import java.util.zip.CheckedInputStream;
 
 import ui.entities.config.Configuration;
 import de.schlichtherle.truezip.file.TFile;
-
 
 /**
  * DownloadManager downloads a large file from a server. If the file is splitted
@@ -250,38 +251,19 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	@SuppressWarnings("resource")
 	private File merge(File resultFile, File chunk) throws IOException {
-		BufferedInputStream is = null;
-		BufferedOutputStream os = null;
-		File tmp = null;
-		try {
-			tmp = File.createTempFile("jsidplay2", "tmp");
-			tmp.deleteOnExit();
-			is = new BufferedInputStream(
-					new SequenceInputStream(new FileInputStream(resultFile),
-							new FileInputStream(chunk)));
-			os = new BufferedOutputStream(new FileOutputStream(tmp));
+		File tmp = File.createTempFile("jsidplay2", "tmp");
+		tmp.deleteOnExit();
+		try (InputStream is = new BufferedInputStream(new SequenceInputStream(
+				new FileInputStream(resultFile), new FileInputStream(chunk)));
+				OutputStream os = new BufferedOutputStream(
+						new FileOutputStream(tmp))) {
 			int bytesRead;
 			byte[] buffer = new byte[MAX_BUFFER_SIZE];
 			while ((bytesRead = is.read(buffer)) != -1) {
 				os.write(buffer, 0, bytesRead);
 			}
-			return tmp;
-		} finally {
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			if (os != null) {
-				try {
-					os.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
+		return tmp;
 	}
 
 	private URL getCrcUrl() throws MalformedURLException {
@@ -344,7 +326,8 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	public static void main(String[] args) {
 		try {
 			long checksum = calculateCRC32(new File(args[0]));
-			System.out.println(String.format("%8X", checksum).replace(' ', '0'));
+			System.out
+					.println(String.format("%8X", checksum).replace(' ', '0'));
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

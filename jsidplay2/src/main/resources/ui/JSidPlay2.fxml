@@ -457,6 +457,7 @@
 								<FXCollections fx:factory="observableArrayList">
 									<!-- Put in enough devices for: 4 HardSID PCI cards + 4 HardSID 
 										USB chips + 8 Network SID Devices -->
+									<Integer fx:value="0" />
 									<Integer fx:value="1" />
 									<Integer fx:value="2" />
 									<Integer fx:value="3" />
@@ -472,7 +473,6 @@
 									<Integer fx:value="13" />
 									<Integer fx:value="14" />
 									<Integer fx:value="15" />
-									<Integer fx:value="16" />
 								</FXCollections>
 							</items>
 						</ComboBox>
@@ -482,6 +482,7 @@
 								<FXCollections fx:factory="observableArrayList">
 									<!-- Put in enough devices for: 4 HardSID PCI cards + 4 HardSID 
 										USB chips + 8 Network SID Devices -->
+									<Integer fx:value="0" />
 									<Integer fx:value="1" />
 									<Integer fx:value="2" />
 									<Integer fx:value="3" />
@@ -497,7 +498,6 @@
 									<Integer fx:value="13" />
 									<Integer fx:value="14" />
 									<Integer fx:value="15" />
-									<Integer fx:value="16" />
 								</FXCollections>
 							</items>
 						</ComboBox>

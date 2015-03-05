@@ -1195,7 +1195,7 @@ public class Player {
 		credits.append(VIC.credits());
 		credits.append(resid_builder.ReSID.credits());
 		credits.append(resid_builder.ReSIDfp.credits());
-		credits.append(hardsid_builder.HardSIDBuilder.credits());
+		credits.append(hardsid_builder.HardSID.credits());
 		return credits.toString();
 	}
 
