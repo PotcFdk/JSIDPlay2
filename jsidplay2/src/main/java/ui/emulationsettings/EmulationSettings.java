@@ -278,6 +278,17 @@ public class EmulationSettings extends C64Window {
 		emulationChange = new EmulationChange();
 		util.getPlayer().stateProperty().addListener(emulationChange);
 
+		EmulationSection emulation = util.getConfig()
+				.getEmulation();
+		ChipModel model = ChipModel.getChipModel(emulation, util
+				.getPlayer().getTune(), 0);
+		addFilters(model, 0, mainFilters, mainFilter);
+		ChipModel stereoModel = ChipModel.getChipModel(emulation,
+				util.getPlayer().getTune(), 1);
+		addFilters(stereoModel, 1, secondFilters, secondFilter);
+		ChipModel thirdModel = ChipModel.getChipModel(emulation,
+				util.getPlayer().getTune(), 2);
+		addFilters(thirdModel, 2, thirdFilters, thirdFilter);
 		enableStereoSettings();
 
 		duringInitialization = false;
