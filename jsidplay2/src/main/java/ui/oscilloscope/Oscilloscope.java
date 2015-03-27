@@ -26,21 +26,17 @@ public class Oscilloscope extends Tab implements UIPart {
 	public static final String ID = "OSCILLOSCOPE";
 
 	protected class HighResolutionEvent extends Event {
-		private EventScheduler ctx;
 
 		public HighResolutionEvent() {
 			super("High Resolution SID Register Sampler");
 		}
 
-		public void beginScheduling(final EventScheduler _ctx) {
-			ctx = _ctx;
-			ctx.cancel(this);
-			ctx.schedule(this, 0, Event.Phase.PHI2);
+		public void beginScheduling(final EventScheduler ctx) {
+			ctx.scheduleOscilloscopeThreadSafe(this);
 		}
 
-		public void stopScheduling(final EventScheduler _ctx) {
-			ctx = _ctx;
-			ctx.cancel(this);
+		public void stopScheduling(final EventScheduler ctx) {
+			ctx.cancelOscilloscopeThreadSafe();
 		}
 
 		@Override
@@ -60,7 +56,6 @@ public class Oscilloscope extends Tab implements UIPart {
 				}
 			});
 			++repaint;
-			ctx.schedule(this, 128);
 		}
 	}
 
@@ -162,17 +157,6 @@ public class Oscilloscope extends Tab implements UIPart {
 		gauges[2][3][1] = resonance3Sid;
 		gauges[2][3][2] = filter3Sid;
 
-		pt.setOnFinished((evt) -> {
-			util.getPlayer().configureSIDs((chipNum, sid) -> {
-				for (int row = 0; row < 4; row++) {
-					gauges[chipNum][row][0].updateGauge(sid);
-					gauges[chipNum][row][1].updateGauge(sid);
-					gauges[chipNum][row][2].updateGauge(sid);
-				}
-			});
-		});
-		st.setCycleCount(Timeline.INDEFINITE);
-		st.playFromStart();
 		startOscilloscope();
 	}
 
@@ -180,6 +164,7 @@ public class Oscilloscope extends Tab implements UIPart {
 		final EventScheduler ctx = util.getPlayer().getC64()
 				.getEventScheduler();
 		Platform.runLater(() -> {
+			/* Initially clear all gauges */
 			for (int chipNum = 0; chipNum < gauges.length; chipNum++) {
 				for (int row = 0; row < gauges[chipNum].length; row++) {
 					for (int col = 0; col < gauges[chipNum][row].length; col++) {
@@ -190,6 +175,17 @@ public class Oscilloscope extends Tab implements UIPart {
 			}
 			/* sample oscillator buffer */
 			highResolutionEvent.beginScheduling(ctx);
+			pt.setOnFinished((evt) -> {
+				util.getPlayer().configureSIDs((chipNum, sid) -> {
+					for (int row = 0; row < gauges[chipNum].length; row++) {
+						gauges[chipNum][row][0].updateGauge(sid);
+						gauges[chipNum][row][1].updateGauge(sid);
+						gauges[chipNum][row][2].updateGauge(sid);
+					}
+				});
+			});
+			st.setCycleCount(Timeline.INDEFINITE);
+			st.playFromStart();
 		});
 
 		util.getPlayer().configureSID(0,
