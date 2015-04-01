@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 import libsidplay.Player;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.Event;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.FilterModelConfig;
@@ -627,7 +628,13 @@ public class EmulationSettings extends C64Window {
 
 	private void updateChipModels() {
 		if (!duringInitialization) {
-			util.getPlayer().createOrUpdateSIDs();
+			util.getPlayer().getC64().getEventScheduler()
+					.scheduleThreadSafe(new Event("Update SIDs") {
+						@Override
+						public void event() throws InterruptedException {
+							util.getPlayer().createOrUpdateSIDs();
+						}
+					});
 			enableStereoSettings();
 		}
 	}
