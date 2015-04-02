@@ -63,6 +63,11 @@ public class EmulationSettings extends C64Window {
 	 */
 	private static final float MAX_VOLUME_DB = 6.0f;
 
+	/**
+	 * Max balance (10 times).
+	 */
+	private static final float MAX_BALANCE = 5f;
+
 	private static final int STEP = 3;
 
 	@FXML
@@ -118,26 +123,32 @@ public class EmulationSettings extends C64Window {
 		thirdFilters = FXCollections.<String> observableArrayList();
 		thirdFilter.setItems(thirdFilters);
 
-		mainBalance.setValue(util.getConfig().getAudio().getMainBalance());
+		mainBalance
+				.setValue((util.getConfig().getAudio().getMainBalance() * 10)
+						- MAX_BALANCE);
 		mainBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					float balance = newValue.floatValue();
+					float balance = (newValue.floatValue() + MAX_BALANCE) / 10;
 					util.getConfig().getAudio().setMainBalance(balance);
 					util.getPlayer().configureSIDBuilder(
 							b -> b.setBalance(0, util.getConfig().getAudio()));
 				});
-		secondBalance.setValue(util.getConfig().getAudio().getSecondBalance());
+		secondBalance
+				.setValue((util.getConfig().getAudio().getSecondBalance() * 10)
+						- MAX_BALANCE);
 		secondBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					float balance = newValue.floatValue();
+					float balance = (newValue.floatValue() + MAX_BALANCE) / 10;
 					util.getConfig().getAudio().setSecondBalance(balance);
 					util.getPlayer().configureSIDBuilder(
 							b -> b.setBalance(1, util.getConfig().getAudio()));
 				});
-		thirdBalance.setValue(util.getConfig().getAudio().getThirdBalance());
+		thirdBalance
+				.setValue((util.getConfig().getAudio().getThirdBalance() * 10)
+						- MAX_BALANCE);
 		thirdBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					float balance = newValue.floatValue();
+					float balance = (newValue.floatValue() + MAX_BALANCE) / 10;
 					util.getConfig().getAudio().setThirdBalance(balance);
 					util.getPlayer().configureSIDBuilder(
 							b -> b.setBalance(2, util.getConfig().getAudio()));
@@ -279,16 +290,15 @@ public class EmulationSettings extends C64Window {
 		emulationChange = new EmulationChange();
 		util.getPlayer().stateProperty().addListener(emulationChange);
 
-		EmulationSection emulation = util.getConfig()
-				.getEmulation();
-		ChipModel model = ChipModel.getChipModel(emulation, util
-				.getPlayer().getTune(), 0);
+		EmulationSection emulation = util.getConfig().getEmulation();
+		ChipModel model = ChipModel.getChipModel(emulation, util.getPlayer()
+				.getTune(), 0);
 		addFilters(model, 0, mainFilters, mainFilter);
-		ChipModel stereoModel = ChipModel.getChipModel(emulation,
-				util.getPlayer().getTune(), 1);
+		ChipModel stereoModel = ChipModel.getChipModel(emulation, util
+				.getPlayer().getTune(), 1);
 		addFilters(stereoModel, 1, secondFilters, secondFilter);
-		ChipModel thirdModel = ChipModel.getChipModel(emulation,
-				util.getPlayer().getTune(), 2);
+		ChipModel thirdModel = ChipModel.getChipModel(emulation, util
+				.getPlayer().getTune(), 2);
 		addFilters(thirdModel, 2, thirdFilters, thirdFilter);
 		enableStereoSettings();
 
