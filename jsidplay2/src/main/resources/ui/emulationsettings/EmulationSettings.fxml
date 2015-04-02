@@ -94,7 +94,7 @@
 				</VBox>
 			</TitledPane>
 			<TitledPane text="%FILTER">
-				<GridPane>
+				<GridPane gridLinesVisible="true">
 					<BorderPane GridPane.columnIndex="0">
 						<top>
 							<VBox>
