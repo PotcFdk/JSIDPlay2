@@ -56,6 +56,7 @@ public class KnobSkin extends SkinBase<Slider> {
 				dragOffset = zeroOneValue - dragStart;
 				behavior.thumbPressed(me, dragStart);
 				behavior.trackPress(me, dragStart);
+				getSkinnable().requestLayout();
 			}
 		);
 		getSkinnable().setOnMouseReleased(
