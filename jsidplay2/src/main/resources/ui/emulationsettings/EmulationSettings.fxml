@@ -31,8 +31,8 @@
 	<ScrollPane>
 		<VBox>
 			<TitledPane text="%VOLUME_CONTROL">
-				<GridPane>
-					<VBox GridPane.columnIndex="0" GridPane.rowIndex="0"
+				<GridPane gridLinesVisible="true">
+					<VBox GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="TOP_CENTER"
 						GridPane.hgrow="ALWAYS">
 						<Label text="%MAIN_SID_LEVEL" />
 						<Slider fx:id="mainVolume" min="0" max="12" value="12"
@@ -42,7 +42,7 @@
 							blockIncrement="0.1" />
 					</VBox>
 					<VBox GridPane.columnIndex="1" GridPane.rowIndex="0"
-						GridPane.hgrow="ALWAYS">
+						alignment="TOP_CENTER" GridPane.hgrow="ALWAYS">
 						<Label text="%SECOND_SID_LEVEL" />
 						<Slider fx:id="secondVolume" min="0" max="12" value="12"
 							blockIncrement="1" />
@@ -51,7 +51,7 @@
 							blockIncrement="0.1" />
 					</VBox>
 					<VBox GridPane.columnIndex="2" GridPane.rowIndex="0"
-						GridPane.hgrow="ALWAYS">
+						alignment="TOP_CENTER" GridPane.hgrow="ALWAYS">
 						<Label text="%THIRD_SID_LEVEL" />
 						<Slider fx:id="thirdVolume" min="0" max="12" value="12"
 							blockIncrement="1" />

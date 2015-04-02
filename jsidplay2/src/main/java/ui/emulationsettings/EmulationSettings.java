@@ -701,8 +701,8 @@ public class EmulationSettings extends C64Window {
 												.estimateFrequency(filter, i)));
 					}
 				}
-				filterCurve.getData().add(series);
 			}
+			filterCurve.getData().add(series);
 		}
 	}
 
