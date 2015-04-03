@@ -32,22 +32,7 @@ public class EmulationSettings extends C64Window {
 				State oldValue, State newValue) {
 			if (newValue == State.RUNNING) {
 				Platform.runLater(() -> {
-					initSidModel(0);
-					initSidModel(1);
-					initSidModel(2);
-					EmulationSection emulation = util.getConfig()
-							.getEmulation();
-					ChipModel model = ChipModel.getChipModel(emulation, util
-							.getPlayer().getTune(), 0);
-					addFilters(model, 0, mainFilters, mainFilter);
-					ChipModel stereoModel = ChipModel.getChipModel(emulation,
-							util.getPlayer().getTune(), 1);
-					addFilters(stereoModel, 1, secondFilters, secondFilter);
-					ChipModel thirdModel = ChipModel.getChipModel(emulation,
-							util.getPlayer().getTune(), 2);
-					addFilters(thirdModel, 2, thirdFilters, thirdFilter);
-
-					enableStereoSettings();
+					initSettingsForTune();
 				});
 			}
 		}
@@ -265,17 +250,14 @@ public class EmulationSettings extends C64Window {
 		defaultEmulations.addAll(Emulation.RESID, Emulation.RESIDFP);
 		defaultEmulation.setItems(defaultEmulations);
 
-		initSidModel(0);
 		Emulation userEmulation = emulationSection.getUserEmulation();
 		sid1Emulation.getSelectionModel().select(
 				userEmulation != null ? userEmulation : util.getBundle()
 						.getString("AUTO"));
-		initSidModel(1);
 		Emulation stereoEmulation = emulationSection.getStereoEmulation();
 		sid2Emulation.getSelectionModel().select(
 				stereoEmulation != null ? stereoEmulation : util.getBundle()
 						.getString("AUTO"));
-		initSidModel(2);
 		Emulation thirdEmulation = emulationSection.getThirdEmulation();
 		sid3Emulation.getSelectionModel().select(
 				thirdEmulation != null ? thirdEmulation : util.getBundle()
@@ -290,6 +272,21 @@ public class EmulationSettings extends C64Window {
 		emulationChange = new EmulationChange();
 		util.getPlayer().stateProperty().addListener(emulationChange);
 
+		initSettingsForTune();
+
+		duringInitialization = false;
+		calculateFilterCurve(mainFilter.getSelectionModel().getSelectedItem(),
+				0);
+		calculateFilterCurve(
+				secondFilter.getSelectionModel().getSelectedItem(), 1);
+		calculateFilterCurve(thirdFilter.getSelectionModel().getSelectedItem(),
+				2);
+	}
+
+	private void initSettingsForTune() {
+		initSidModel(0);
+		initSidModel(1);
+		initSidModel(2);
 		EmulationSection emulation = util.getConfig().getEmulation();
 		ChipModel model = ChipModel.getChipModel(emulation, util.getPlayer()
 				.getTune(), 0);
@@ -301,15 +298,6 @@ public class EmulationSettings extends C64Window {
 				.getPlayer().getTune(), 2);
 		addFilters(thirdModel, 2, thirdFilters, thirdFilter);
 		enableStereoSettings();
-
-		duringInitialization = false;
-		calculateFilterCurve(mainFilter.getSelectionModel().getSelectedItem(),
-				0);
-		calculateFilterCurve(
-				secondFilter.getSelectionModel().getSelectedItem(), 1);
-		calculateFilterCurve(thirdFilter.getSelectionModel().getSelectedItem(),
-				2);
-
 	}
 
 	private void initSidModel(int sidNum) {
