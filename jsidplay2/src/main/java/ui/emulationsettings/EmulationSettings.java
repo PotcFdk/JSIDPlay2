@@ -473,6 +473,7 @@ public class EmulationSettings extends C64Window {
 		}
 		enableStereoSettings(util.getPlayer().getTune());
 		updateChipModels();
+		// stereo mode changes has an impact on all filter curves
 		drawFilterCurve(mainFilter.getSelectionModel().getSelectedItem(), 0);
 		drawFilterCurve(secondFilter.getSelectionModel().getSelectedItem(), 1);
 		drawFilterCurve(thirdFilter.getSelectionModel().getSelectedItem(), 2);
