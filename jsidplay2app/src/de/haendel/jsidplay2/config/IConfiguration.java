@@ -36,7 +36,7 @@ public interface IConfiguration {
 	String _48000 = "48000";
 	String _96000 = "96000";
 
-	String DEFAULT_BUFFER_SIZE = "64000";
+	String DEFAULT_BUFFER_SIZE = "2500";
 	String DEFAULT_PLAY_LENGTH = "300";
 	String DEFAULT_ENABLE_DATABASE = Boolean.TRUE.toString();
 	String DEFAULT_SINGLE_SONG = Boolean.FALSE.toString();
@@ -47,8 +47,8 @@ public interface IConfiguration {
 	String DEFAULT_RESIDFP_FILTER_6581 = "FilterAlankila6581R4AR_3789";
 	String DEFAULT_RESIDFP_FILTER_8580 = "FilterTrurl8580R5_3691";
 	String DEFAULT_IS_VBR = Boolean.FALSE.toString();
-	String DEFAULT_CBR = "80";
-	String DEFAULT_VBR = "-1";
+	String DEFAULT_CBR = "64";
+	String DEFAULT_VBR = "0";
 
 	String getHostname();
 
