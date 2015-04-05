@@ -20,7 +20,6 @@ import libsidplay.common.Emulation;
 import libsidplay.common.Event;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
-import resid_builder.ReSIDBase;
 import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
 import ui.common.C64Window;
@@ -597,7 +596,7 @@ public class EmulationSettings extends C64Window {
 			FilterSection filter = optFilter.get();
 			// stereo curve or 3-SID curve currently not used?
 			if (!((num == 1 && !second) || (num == 2 && !third))) {
-				for (int i = 0; i < ReSIDBase.FC_MAX; i += STEP) {
+				for (int i = 0; i < resid_builder.resid.FilterModelConfig.FC_MAX; i += STEP) {
 					if (filter.isReSIDFilter6581()
 							|| filter.isReSIDFilter8580()) {
 						double data = resid_builder.resid.FilterModelConfig

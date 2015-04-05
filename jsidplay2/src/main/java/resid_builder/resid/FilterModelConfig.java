@@ -1,9 +1,13 @@
 package resid_builder.resid;
 
-import resid_builder.ReSIDBase;
 import sidplay.ini.intf.IFilterSection;
 
 public final class FilterModelConfig {
+	/**
+	 * Max SID filter FC value.
+	 */
+	public static final int FC_MAX = 2048;
+
 	private static final double[][] opamp_voltage = {
 			{ 0.75, 10.02 }, // Approximate start of actual range
 			{ 2.50, 10.13 }, { 2.75, 10.12 }, { 2.90, 10.04 }, { 3.00, 9.92 },
@@ -306,7 +310,7 @@ public final class FilterModelConfig {
 			 */
 			return n_I / (2 * Math.PI * C * diff);
 		} else {
-			return (fc * filter.getFilter8580CurvePosition() / (ReSIDBase.FC_MAX - 1));
+			return (fc * filter.getFilter8580CurvePosition() / (FC_MAX - 1));
 		}
 	}
 }
