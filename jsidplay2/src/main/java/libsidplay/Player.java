@@ -851,6 +851,10 @@ public class Player {
 		this.driverSettings = driverSettings;
 	}
 
+	public DriverSettings getDriverSettings() {
+		return driverSettings;
+	}
+
 	/**
 	 * MP3 play-back is using the COMPARE audio driver. Old settings are saved
 	 * (playing mp3) and restored (next time normal tune is played).

@@ -104,9 +104,11 @@ public final class EventScheduler {
 			synchronized (threadSafeOscilloscopeQueue) {
 				if (!threadSafeOscilloscopeQueue.isEmpty()) {
 					threadSafeOscilloscopeQueue.get(0).event();
+					schedule(this, 128);
+				} else {
+					cancel(this);
 				}
 			}
-			schedule(this, 128);
 		}
 	};
 
@@ -141,6 +143,7 @@ public final class EventScheduler {
 		synchronized (threadSafeOscilloscopeQueue) {
 			threadSafeOscilloscopeQueue.clear();
 			threadSafeOscilloscopeQueue.add(event);
+			schedule(threadSafeOscilloscopeQueueingEvent, 0, Event.Phase.PHI2);
 		}
 	}
 
@@ -259,7 +262,6 @@ public final class EventScheduler {
 		currentTime = 0;
 		firstEvent.next = lastEvent;
 		schedule(threadSafeQueueingEvent, 0, Event.Phase.PHI1);
-		schedule(threadSafeOscilloscopeQueueingEvent, 0, Event.Phase.PHI2);
 	}
 
 	/**

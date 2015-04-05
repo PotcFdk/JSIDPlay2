@@ -538,7 +538,8 @@ public class EmulationSettings extends C64Window {
 				sidNum);
 		ChipModel model = ChipModel
 				.getChipModel(emulationSection, tune, sidNum);
-		emulationSection.setFilterName(sidNum, emulation, model, filterName);
+		emulationSection.setFilterName(sidNum, emulation, model,
+				!"".equals(filterName) ? filterName : null);
 	}
 
 	/**

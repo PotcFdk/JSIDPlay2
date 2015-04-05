@@ -66,6 +66,7 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import sidplay.audio.Audio;
+import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
@@ -914,11 +915,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			int deviceIndex = devicesBox.getItems().indexOf(device);
 			util.getConfig().getAudio().setDevice(deviceIndex);
 			if (!this.duringInitialization) {
-				JavaSound js = (JavaSound) Audio.SOUNDCARD.getAudioDriver();
-				try {
-					js.setAudioDevice(device.getInfo());
-				} catch (LineUnavailableException e) {
-					throw new RuntimeException(e);
+				AudioDriver driver = util.getPlayer().getDriverSettings().getAudioDriver();
+				if (driver instanceof JavaSound) {
+					JavaSound js = (JavaSound) driver;
+					try {
+						js.setAudioDevice(device.getInfo());
+					} catch (LineUnavailableException e) {
+						throw new RuntimeException(e);
+					}
 				}
 			}
 		}

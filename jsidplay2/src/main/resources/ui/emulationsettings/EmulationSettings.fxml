@@ -46,7 +46,7 @@
 						alignment="TOP_CENTER" GridPane.hgrow="ALWAYS">
 						<Label text="%SECOND_SID_LEVEL" />
 						<Slider fx:id="secondVolume" min="0" max="12" value="6"
-							blockIncrement="1" />
+							blockIncrement="1" majorTickUnit="0.1" />
 						<Label text="%SECOND_BALANCE" />
 						<Slider fx:id="secondBalance" min="-5" max="5" value="5"
 							minorTickCount="0" snapToTicks="true" blockIncrement="1"
@@ -56,7 +56,7 @@
 						alignment="TOP_CENTER" GridPane.hgrow="ALWAYS">
 						<Label text="%THIRD_SID_LEVEL" />
 						<Slider fx:id="thirdVolume" min="0" max="12" value="6"
-							blockIncrement="1" />
+							blockIncrement="1" majorTickUnit="0.1" />
 						<Label text="%THIRD_BALANCE" />
 						<Slider fx:id="thirdBalance" min="-5" max="5" value="0"
 							minorTickCount="0" snapToTicks="true" blockIncrement="1"
