@@ -14,6 +14,11 @@ public abstract class ReSIDBase extends SIDEmu {
 
 	private static final Logger RESID = Logger.getLogger(ReSIDBase.class.getName());
 
+	/**
+	 * Max SID filter FC value.
+	 */
+	public static final int FC_MAX = 2048;
+
 	protected final SIDChip sid;
 
 	/**
