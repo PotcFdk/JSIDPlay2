@@ -44,6 +44,9 @@ public class ConsolePlayer {
 	@Parameter(names = { "--audio", "-a" }, descriptionKey = "DRIVER")
 	private Audio audio = Audio.SOUNDCARD;
 
+	@Parameter(names = { "--bufferSize", "-B" }, descriptionKey = "BUFFER_SIZE")
+	private int bufferSize  = 2500;
+
 	@Parameter(names = { "--deviceIndex", "-A" }, descriptionKey = "DEVICEINDEX")
 	private Integer deviceIdx;
 
@@ -137,6 +140,7 @@ public class ConsolePlayer {
 		config.getSidplay2().setEnableDatabase(enableSidDatabase);
 		config.getAudio().setAudio(audio);
 		config.getAudio().setFrequency(frequency);
+		config.getAudio().setBufferSize(bufferSize);
 		config.getEmulation().setEngine(engine);
 		config.getEmulation().setDefaultEmulation(defaultEmulation);
 		config.getEmulation().setForceStereoTune(dualSID);
