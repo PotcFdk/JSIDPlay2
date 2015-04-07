@@ -1,5 +1,7 @@
 package ui.emulationsettings;
 
+import javafx.util.StringConverter;
+
 import java.util.Optional;
 
 import javafx.application.Platform;
@@ -40,16 +42,6 @@ public class EmulationSettings extends C64Window {
 		}
 	}
 
-	/**
-	 * Max volume in DB.
-	 */
-	private static final float MAX_VOLUME_DB = 6.0f;
-
-	/**
-	 * Max balance (10 times).
-	 */
-	private static final float MAX_BALANCE = 5f;
-
 	private static final int STEP = 3;
 
 	@FXML
@@ -73,6 +65,8 @@ public class EmulationSettings extends C64Window {
 	private LineChart<Number, Number> mainFilterCurve, secondFilterCurve,
 			thirdFilterCurve;
 
+	private StringConverter<Double> tickLabelFormatter;
+	
 	private ObservableList<Object> sid1Emulations, sid2Emulations,
 			sid3Emulations, sid1Models, sid2Models, sid3Models;
 	private ObservableList<ChipModel> defaultModels;
@@ -92,6 +86,20 @@ public class EmulationSettings extends C64Window {
 	private void initialize() {
 		duringInitialization = true;
 
+		tickLabelFormatter = new StringConverter<Double>() {
+			
+			@Override
+			public String toString(Double d) {
+				double rounded = (double)Math.round(d * 10) / 10;
+				return String.format("%.1f", rounded);
+			}
+			
+			@Override
+			public Double fromString(String string) {
+				return Double.parseDouble(string);
+			}
+		};
+		
 		EmulationSection emulationSection = util.getConfig().getEmulation();
 
 		mainFilters = FXCollections.<String> observableArrayList();
@@ -101,70 +109,63 @@ public class EmulationSettings extends C64Window {
 		thirdFilters = FXCollections.<String> observableArrayList();
 		thirdFilter.setItems(thirdFilters);
 
-		mainBalance
-				.setValue((util.getConfig().getAudio().getMainBalance() * 10)
-						- MAX_BALANCE);
+		mainBalance.setValue(util.getConfig().getAudio().getMainBalance());
+		mainBalance.setLabelFormatter(tickLabelFormatter);
 		mainBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					float balance = (newValue.floatValue() + MAX_BALANCE) / 10;
+					float balance = newValue.floatValue();
 					util.getConfig().getAudio().setMainBalance(balance);
 					util.getPlayer().configureSIDBuilder(
 							b -> b.setBalance(0, util.getConfig().getAudio()));
 				});
 		secondBalance
-				.setValue((util.getConfig().getAudio().getSecondBalance() * 10)
-						- MAX_BALANCE);
+				.setValue(util.getConfig().getAudio().getSecondBalance());
+		secondBalance.setLabelFormatter(tickLabelFormatter);
 		secondBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					float balance = (newValue.floatValue() + MAX_BALANCE) / 10;
+					float balance = newValue.floatValue();
 					util.getConfig().getAudio().setSecondBalance(balance);
 					util.getPlayer().configureSIDBuilder(
 							b -> b.setBalance(1, util.getConfig().getAudio()));
 				});
 		thirdBalance
-				.setValue((util.getConfig().getAudio().getThirdBalance() * 10)
-						- MAX_BALANCE);
+				.setValue(util.getConfig().getAudio().getThirdBalance());
+		thirdBalance.setLabelFormatter(tickLabelFormatter);
 		thirdBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					float balance = (newValue.floatValue() + MAX_BALANCE) / 10;
+					float balance = newValue.floatValue();
 					util.getConfig().getAudio().setThirdBalance(balance);
 					util.getPlayer().configureSIDBuilder(
 							b -> b.setBalance(2, util.getConfig().getAudio()));
 				});
 
-		mainVolume.setValue(util.getConfig().getAudio().getMainVolume()
-				+ MAX_VOLUME_DB);
+		mainVolume.setValue(util.getConfig().getAudio().getMainVolume());
 		mainVolume
 				.valueProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
-							float volumeDb = newValue.floatValue()
-									- MAX_VOLUME_DB;
+							float volumeDb = newValue.floatValue();
 							util.getConfig().getAudio().setMainVolume(volumeDb);
 							util.getPlayer().configureSIDBuilder(
 									(b) -> b.setVolume(0, util.getConfig()
 											.getAudio()));
 						});
-		secondVolume.setValue(util.getConfig().getAudio().getSecondVolume()
-				+ MAX_VOLUME_DB);
+		secondVolume.setValue(util.getConfig().getAudio().getSecondVolume());
 		secondVolume.valueProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
-							float volumeDb = newValue.floatValue()
-									- MAX_VOLUME_DB;
+							float volumeDb = newValue.floatValue();
 							util.getConfig().getAudio()
 									.setSecondVolume(volumeDb);
 							util.getPlayer().configureSIDBuilder(
 									(b) -> b.setVolume(1, util.getConfig()
 											.getAudio()));
 						});
-		thirdVolume.setValue(util.getConfig().getAudio().getThirdVolume()
-				+ MAX_VOLUME_DB);
+		thirdVolume.setValue(util.getConfig().getAudio().getThirdVolume());
 		thirdVolume.valueProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
-							float volumeDb = newValue.floatValue()
-									- MAX_VOLUME_DB;
+							float volumeDb = newValue.floatValue();
 							util.getConfig().getAudio()
 									.setThirdVolume(volumeDb);
 							util.getPlayer().configureSIDBuilder(

@@ -112,24 +112,24 @@ public class Mixer {
 	/**
 	 * Volume of all SIDs.
 	 */
-	private final int[] volume = new int[] { 1024, 1024, 1024 };
+	private final int[] volume = new int[3];
 	/**
 	 * SID audibility on the left speaker of all SIDs 0(silent)..1(loud).
 	 */
-	private final float[] positionL = new float[] { 1, 0, .5f };
+	private final float[] positionL = new float[3];
 	/**
 	 * SID audibility on the right speaker of all SIDs 0(silent)..1(loud).
 	 */
-	private final float[] positionR = new float[] { 0, 1, .5f };
+	private final float[] positionR = new float[3];
 
 	/**
 	 * Balanced left speaker volume = volumeL * positionL.
 	 */
-	private final int[] balancedVolumeL = new int[] { 1024, 0, 512 };
+	private final int[] balancedVolumeL = new int[3];
 	/**
 	 * Balanced right speaker volume = volumeR * positionR.
 	 */
-	private final int[] balancedVolumeR = new int[] { 0, 1024, 512 };
+	private final int[] balancedVolumeR = new int[3];
 
 	public Mixer(EventScheduler context, AudioDriver audioDriver) {
 		this.context = context;
@@ -153,10 +153,12 @@ public class Mixer {
 		context.schedule(mixerAudio, 0, Event.Phase.PHI2);
 	}
 
-	public void add(int sidNum, ReSIDBase sid) {
+	public void add(int sidNum, ReSIDBase sid, IAudioSection audio) {
 		if (sidNum < sids.size()) {
 			sids.set(sidNum, sid);
 		} else {
+			setVolume(sidNum, audio);
+			setBalance(sidNum, audio);
 			sids.add(sid);
 		}
 	}
@@ -207,7 +209,7 @@ public class Mixer {
 
 	/**
 	 * Volume of the SID chip.<BR>
-	 * 0(-6db)..12(+6db)
+	 * -6(-6db)..6(+6db)
 	 * 
 	 * @param sidNum
 	 *            SID chip number
@@ -229,6 +231,7 @@ public class Mixer {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
+		assert volumeInDB >= -6 && volumeInDB <= 6;
 		volume[sidNum] = (int) (Math.pow(10, volumeInDB / 10) * 1024);
 		updateFactor();
 	}
@@ -257,6 +260,7 @@ public class Mixer {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
+		assert balance >= 0 && balance <= 1;
 		positionL[sidNum] = 1 - balance;
 		positionR[sidNum] = balance;
 		updateFactor();

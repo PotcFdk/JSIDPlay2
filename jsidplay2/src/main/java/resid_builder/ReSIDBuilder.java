@@ -70,7 +70,7 @@ public class ReSIDBuilder implements SIDBuilder {
 		sid.setFilterEnable(config.getEmulation(), sidNum);
 		sid.input(config.getEmulation().isDigiBoosted8580() ? sid
 				.getInputDigiBoost() : 0);
-		mixer.add(sidNum, sid);
+		mixer.add(sidNum, sid, config.getAudio());
 		return sid;
 	}
 
