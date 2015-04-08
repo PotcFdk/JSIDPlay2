@@ -143,6 +143,7 @@ public final class EventScheduler {
 		synchronized (threadSafeOscilloscopeQueue) {
 			threadSafeOscilloscopeQueue.clear();
 			threadSafeOscilloscopeQueue.add(event);
+			cancel(threadSafeOscilloscopeQueueingEvent);
 			schedule(threadSafeOscilloscopeQueueingEvent, 0, Event.Phase.PHI2);
 		}
 	}

@@ -81,13 +81,6 @@ public class Oscilloscope extends Tab implements UIPart {
 	private PauseTransition pt = new PauseTransition(Duration.millis(50));
 	private SequentialTransition st = new SequentialTransition(pt);
 
-	private ChangeListener<? super State> listener = (observable, oldValue,
-			newValue) -> {
-		if (newValue == State.RUNNING) {
-			startOscilloscope();
-		}
-	};
-
 	private UIUtil util;
 
 	protected SIDGauge[][][] gauges;
@@ -100,6 +93,22 @@ public class Oscilloscope extends Tab implements UIPart {
 		setId(ID);
 		setText(util.getBundle().getString(getId()));
 	}
+
+	private ChangeListener<? super State> listener = (observable, oldValue,
+			newValue) -> {
+		final EventScheduler ctx = util.getPlayer().getC64()
+				.getEventScheduler();
+		if (newValue == State.RUNNING) {
+			Platform.runLater(() -> {
+				startOscilloscope();
+			});
+			highResolutionEvent.beginScheduling(ctx);
+			st.play();
+		} else if (newValue == State.PAUSED) {
+			st.pause();
+			highResolutionEvent.stopScheduling(ctx);
+		}
+	};
 
 	@FXML
 	private void initialize() {
@@ -163,30 +172,27 @@ public class Oscilloscope extends Tab implements UIPart {
 	private void startOscilloscope() {
 		final EventScheduler ctx = util.getPlayer().getC64()
 				.getEventScheduler();
-		Platform.runLater(() -> {
-			/* Initially clear all gauges */
-			for (int chipNum = 0; chipNum < gauges.length; chipNum++) {
-				for (int row = 0; row < gauges[chipNum].length; row++) {
-					for (int col = 0; col < gauges[chipNum][row].length; col++) {
-						gauges[chipNum][row][col].reset();
-						gauges[chipNum][row][col].updateGauge();
-					}
+		/* Initially clear all gauges (unused SIDs inclusive) */
+		for (int chipNum = 0; chipNum < gauges.length; chipNum++) {
+			for (int row = 0; row < gauges[chipNum].length; row++) {
+				for (int col = 0; col < gauges[chipNum][row].length; col++) {
+					gauges[chipNum][row][col].reset();
+					gauges[chipNum][row][col].updateGauge();
 				}
 			}
-			/* sample oscillator buffer */
-			highResolutionEvent.beginScheduling(ctx);
-			pt.setOnFinished((evt) -> {
-				util.getPlayer().configureSIDs((chipNum, sid) -> {
-					for (int row = 0; row < gauges[chipNum].length; row++) {
-						gauges[chipNum][row][0].updateGauge(sid);
-						gauges[chipNum][row][1].updateGauge(sid);
-						gauges[chipNum][row][2].updateGauge(sid);
-					}
-				});
+		}
+		/* sample oscillator buffer */
+		highResolutionEvent.beginScheduling(ctx);
+		pt.setOnFinished(evt -> {
+			util.getPlayer().configureSIDs((chipNum, sid) -> {
+				for (int row = 0; row < gauges[chipNum].length; row++)
+					for (int col = 0; col < gauges[chipNum][row].length; col++)
+						gauges[chipNum][row][col].updateGauge(sid);
+
 			});
-			st.setCycleCount(Timeline.INDEFINITE);
-			st.playFromStart();
 		});
+		st.setCycleCount(Timeline.INDEFINITE);
+		st.playFromStart();
 
 		util.getPlayer().configureSID(0,
 				sid -> sid.setVoiceMute(0, muteVoice1.isSelected()));
@@ -215,7 +221,6 @@ public class Oscilloscope extends Tab implements UIPart {
 		highResolutionEvent.stopScheduling(ctx);
 		st.stop();
 		util.getPlayer().stateProperty().removeListener(listener);
-		UIPart.super.doClose();
 	}
 
 	@FXML

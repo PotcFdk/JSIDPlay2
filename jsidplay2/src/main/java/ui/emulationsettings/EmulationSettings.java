@@ -20,6 +20,7 @@ import libsidplay.Player;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Event;
+import libsidplay.common.SIDChip;
 import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import sidplay.ini.intf.IEmulationSection;
@@ -66,7 +67,7 @@ public class EmulationSettings extends C64Window {
 			thirdFilterCurve;
 
 	private StringConverter<Double> tickLabelFormatter;
-	
+
 	private ObservableList<Object> sid1Emulations, sid2Emulations,
 			sid3Emulations, sid1Models, sid2Models, sid3Models;
 	private ObservableList<ChipModel> defaultModels;
@@ -87,19 +88,19 @@ public class EmulationSettings extends C64Window {
 		duringInitialization = true;
 
 		tickLabelFormatter = new StringConverter<Double>() {
-			
+
 			@Override
 			public String toString(Double d) {
-				double rounded = (double)Math.round(d * 10) / 10;
+				double rounded = (double) Math.round(d * 10) / 10;
 				return String.format("%.1f", rounded);
 			}
-			
+
 			@Override
 			public Double fromString(String string) {
 				return Double.parseDouble(string);
 			}
 		};
-		
+
 		EmulationSection emulationSection = util.getConfig().getEmulation();
 
 		mainFilters = FXCollections.<String> observableArrayList();
@@ -113,39 +114,36 @@ public class EmulationSettings extends C64Window {
 		mainBalance.setLabelFormatter(tickLabelFormatter);
 		mainBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					float balance = newValue.floatValue();
-					util.getConfig().getAudio().setMainBalance(balance);
+					util.getConfig().getAudio()
+							.setMainBalance(newValue.floatValue());
 					util.getPlayer().configureSIDBuilder(
 							b -> b.setBalance(0, util.getConfig().getAudio()));
 				});
-		secondBalance
-				.setValue(util.getConfig().getAudio().getSecondBalance());
+		secondBalance.setValue(util.getConfig().getAudio().getSecondBalance());
 		secondBalance.setLabelFormatter(tickLabelFormatter);
 		secondBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					float balance = newValue.floatValue();
-					util.getConfig().getAudio().setSecondBalance(balance);
+					util.getConfig().getAudio()
+							.setSecondBalance(newValue.floatValue());
 					util.getPlayer().configureSIDBuilder(
 							b -> b.setBalance(1, util.getConfig().getAudio()));
 				});
-		thirdBalance
-				.setValue(util.getConfig().getAudio().getThirdBalance());
+		thirdBalance.setValue(util.getConfig().getAudio().getThirdBalance());
 		thirdBalance.setLabelFormatter(tickLabelFormatter);
 		thirdBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					float balance = newValue.floatValue();
-					util.getConfig().getAudio().setThirdBalance(balance);
+					util.getConfig().getAudio()
+							.setThirdBalance(newValue.floatValue());
 					util.getPlayer().configureSIDBuilder(
 							b -> b.setBalance(2, util.getConfig().getAudio()));
 				});
 
 		mainVolume.setValue(util.getConfig().getAudio().getMainVolume());
-		mainVolume
-				.valueProperty()
+		mainVolume.valueProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
-							float volumeDb = newValue.floatValue();
-							util.getConfig().getAudio().setMainVolume(volumeDb);
+							util.getConfig().getAudio()
+									.setMainVolume(newValue.floatValue());
 							util.getPlayer().configureSIDBuilder(
 									(b) -> b.setVolume(0, util.getConfig()
 											.getAudio()));
@@ -154,9 +152,8 @@ public class EmulationSettings extends C64Window {
 		secondVolume.valueProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
-							float volumeDb = newValue.floatValue();
 							util.getConfig().getAudio()
-									.setSecondVolume(volumeDb);
+									.setSecondVolume(newValue.floatValue());
 							util.getPlayer().configureSIDBuilder(
 									(b) -> b.setVolume(1, util.getConfig()
 											.getAudio()));
@@ -165,9 +162,8 @@ public class EmulationSettings extends C64Window {
 		thirdVolume.valueProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
-							float volumeDb = newValue.floatValue();
 							util.getConfig().getAudio()
-									.setThirdVolume(volumeDb);
+									.setThirdVolume(newValue.floatValue());
 							util.getPlayer().configureSIDBuilder(
 									(b) -> b.setVolume(2, util.getConfig()
 											.getAudio()));
@@ -474,9 +470,9 @@ public class EmulationSettings extends C64Window {
 		enableStereoSettings(util.getPlayer().getTune());
 		updateChipModels();
 		// stereo mode changes has an impact on all filter curves
-		drawFilterCurve(mainFilter.getSelectionModel().getSelectedItem(), 0);
-		drawFilterCurve(secondFilter.getSelectionModel().getSelectedItem(), 1);
-		drawFilterCurve(thirdFilter.getSelectionModel().getSelectedItem(), 2);
+		drawFilterCurve(mainFilter, mainFilterCurve);
+		drawFilterCurve(secondFilter, secondFilterCurve);
+		drawFilterCurve(thirdFilter, thirdFilterCurve);
 	}
 
 	@FXML
@@ -496,27 +492,23 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setMainFilter() {
-		String selectedItem = mainFilter.getSelectionModel().getSelectedItem();
-		setFilter(0, selectedItem);
+		setFilter(0, mainFilter);
 		updateChipModels();
-		drawFilterCurve(selectedItem, 0);
+		drawFilterCurve(mainFilter, mainFilterCurve);
 	}
 
 	@FXML
 	private void setSecondFilter() {
-		String selectedItem = secondFilter.getSelectionModel()
-				.getSelectedItem();
-		setFilter(1, selectedItem);
+		setFilter(1, secondFilter);
 		updateChipModels();
-		drawFilterCurve(selectedItem, 1);
+		drawFilterCurve(secondFilter, secondFilterCurve);
 	}
 
 	@FXML
 	private void setThirdFilter() {
-		String selectedItem = thirdFilter.getSelectionModel().getSelectedItem();
-		setFilter(2, selectedItem);
+		setFilter(2, thirdFilter);
 		updateChipModels();
-		drawFilterCurve(selectedItem, 2);
+		drawFilterCurve(thirdFilter, thirdFilterCurve);
 	}
 
 	/**
@@ -525,12 +517,13 @@ public class EmulationSettings extends C64Window {
 	 * 
 	 * @param sidNum
 	 *            SID chip number
-	 * @param filterName
-	 *            filter name
+	 * @param filterBox
+	 *            filter combo box
 	 */
-	private void setFilter(int sidNum, String filterName) {
+	private void setFilter(int sidNum, ComboBox<String> filterBox) {
 		IEmulationSection emulationSection = util.getConfig().getEmulation();
 
+		String filterName = filterBox.getSelectionModel().getSelectedItem();
 		boolean filterDisabled = "".equals(filterName);
 		emulationSection.setFilterEnable(sidNum, !filterDisabled);
 
@@ -540,7 +533,7 @@ public class EmulationSettings extends C64Window {
 		ChipModel model = ChipModel
 				.getChipModel(emulationSection, tune, sidNum);
 		emulationSection.setFilterName(sidNum, emulation, model,
-				!"".equals(filterName) ? filterName : null);
+				!filterDisabled ? filterName : null);
 	}
 
 	/**
@@ -561,27 +554,14 @@ public class EmulationSettings extends C64Window {
 	/**
 	 * Draw filter curve of the specified SID number and filter name
 	 * 
-	 * @param filterName
-	 *            filter name
+	 * @param filterBox
+	 *            filter combo box
 	 * @param num
 	 *            SID chip number
 	 */
-	private void drawFilterCurve(final String filterName, int num) {
+	private void drawFilterCurve(final ComboBox<String> filterBox,
+			LineChart<Number, Number> filterCurve) {
 		EmulationSection emulationSection = util.getConfig().getEmulation();
-		LineChart<Number, Number> filterCurve;
-		switch (num) {
-		case 0:
-			filterCurve = mainFilterCurve;
-			break;
-		case 1:
-			filterCurve = secondFilterCurve;
-			break;
-		case 2:
-			filterCurve = thirdFilterCurve;
-			break;
-		default:
-			throw new RuntimeException("Maximum supported SIDS exceeded!");
-		}
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		series.setName(util.getBundle().getString("FILTERCURVE_TITLE"));
 		filterCurve.getData().clear();
@@ -591,27 +571,31 @@ public class EmulationSettings extends C64Window {
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
 		boolean third = SidTune.isSIDUsed(emulationSection, tune, 2);
 
-		Optional<FilterSection> optFilter = util.getConfig().getFilter()
-				.stream().filter(f -> f.getName().equals(filterName))
+		Optional<FilterSection> optFilter = util
+				.getConfig()
+				.getFilter()
+				.stream()
+				.filter(f -> f.getName().equals(
+						filterBox.getSelectionModel().getSelectedItem()))
 				.findFirst();
 		if (optFilter.isPresent()) {
 			FilterSection filter = optFilter.get();
 			// stereo curve or 3-SID curve currently not used?
-			if (!((num == 1 && !second) || (num == 2 && !third))) {
-				for (int i = 0; i < resid_builder.resid.FilterModelConfig.FC_MAX; i += STEP) {
+			if (!((filterCurve == secondFilterCurve && !second) || (filterCurve == thirdFilterCurve && !third))) {
+				for (int fc = 0; fc < SIDChip.FC_MAX; fc += STEP) {
 					if (filter.isReSIDFilter6581()
 							|| filter.isReSIDFilter8580()) {
 						double data = resid_builder.resid.FilterModelConfig
-								.estimateFrequency(filter, i);
+								.estimateFrequency(filter, fc);
 						series.getData()
-								.add(new XYChart.Data<Number, Number>(i,
+								.add(new XYChart.Data<Number, Number>(fc,
 										(int) data));
 					} else if (filter.isReSIDfpFilter6581()
 							|| filter.isReSIDfpFilter8580()) {
 						double data = resid_builder.residfp.FilterModelConfig
-								.estimateFrequency(filter, i);
+								.estimateFrequency(filter, fc);
 						series.getData()
-								.add(new XYChart.Data<Number, Number>(i,
+								.add(new XYChart.Data<Number, Number>(fc,
 										(int) data));
 					}
 				}

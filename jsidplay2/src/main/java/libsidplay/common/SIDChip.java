@@ -1,6 +1,10 @@
 package libsidplay.common;
 
 public interface SIDChip {
+	/**
+	 * Max SID filter FC value.
+	 */
+	public static final int FC_MAX = 2048;
 
 	int clock(int piece, int[] audioBuffer, int offset);
 
