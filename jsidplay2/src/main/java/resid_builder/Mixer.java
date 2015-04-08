@@ -49,9 +49,9 @@ public class Mixer {
 
 		/**
 		 * Note: The assumption, that after clocking two chips their buffer
-		 * positions are equal is false! Under some circumstance one chip can be
-		 * one sample further than the other. Therefore we have to handle
-		 * overflowing sample data to prevent crackling noises. This
+		 * positions are equal is false! Using differetn SID reimplementations
+		 * one chip can be one sample further than the other. Therefore we have
+		 * to handle overflowing sample data to prevent crackling noises. This
 		 * implementation just cuts them off.
 		 */
 		@Override
@@ -154,11 +154,11 @@ public class Mixer {
 	}
 
 	public void add(int sidNum, ReSIDBase sid, IAudioSection audio) {
+		setVolume(sidNum, audio);
+		setBalance(sidNum, audio);
 		if (sidNum < sids.size()) {
 			sids.set(sidNum, sid);
 		} else {
-			setVolume(sidNum, audio);
-			setBalance(sidNum, audio);
 			sids.add(sid);
 		}
 	}
