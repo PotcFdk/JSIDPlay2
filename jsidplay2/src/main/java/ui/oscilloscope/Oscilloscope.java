@@ -102,11 +102,11 @@ public class Oscilloscope extends Tab implements UIPart {
 			Platform.runLater(() -> {
 				startOscilloscope();
 			});
-			highResolutionEvent.beginScheduling(ctx);
-			st.play();
 		} else if (newValue == State.PAUSED) {
-			st.pause();
-			highResolutionEvent.stopScheduling(ctx);
+			Platform.runLater(() -> {
+				st.pause();
+				highResolutionEvent.stopScheduling(ctx);
+			});
 		}
 	};
 
