@@ -531,7 +531,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void nextFavorite() {
-		util.getPlayer().getTimer().end();
+		final C64 c64 = util.getPlayer().getC64();
+		final EventScheduler ctx = c64.getEventScheduler();
+		ctx.scheduleThreadSafe(new Event("Timer End To Play Next Favorite!") {
+			@Override
+			public void event() {
+				util.getPlayer().getTimer().end();
+			}
+		});
 	}
 
 	@FXML
@@ -915,7 +922,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			int deviceIndex = devicesBox.getItems().indexOf(device);
 			util.getConfig().getAudio().setDevice(deviceIndex);
 			if (!this.duringInitialization) {
-				AudioDriver driver = util.getPlayer().getDriverSettings().getAudioDriver();
+				AudioDriver driver = util.getPlayer().getDriverSettings()
+						.getAudioDriver();
 				if (driver instanceof JavaSound) {
 					JavaSound js = (JavaSound) driver;
 					try {
@@ -972,7 +980,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void doEnableSldb() {
 		util.getConfig().getSidplay2()
 				.setEnableDatabase(enableSldb.isSelected());
-		util.getPlayer().getTimer().updateEnd();
+		final C64 c64 = util.getPlayer().getC64();
+		final EventScheduler ctx = c64.getEventScheduler();
+		ctx.scheduleThreadSafe(new Event("Update Play Timer!") {
+			@Override
+			public void event() {
+				util.getPlayer().getTimer().updateEnd();
+			}
+		});
 	}
 
 	@FXML
@@ -1023,23 +1038,36 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void showVolume() {
-		SidPlay2Section section = util.getConfig().getSidplay2();
-		int x = section.getFrameX() + section.getFrameWidth() / 2;
-		try {
-			Runtime.getRuntime().exec("sndvol -f " + x);
-		} catch (IOException e) {
+		String OS = System.getProperty("os.name").toLowerCase();
+		if (OS.indexOf("win") >= 0) {
+			SidPlay2Section section = util.getConfig().getSidplay2();
+			int x = section.getFrameX() + section.getFrameWidth() / 2;
 			try {
-				Runtime.getRuntime().exec("sndvol32");
-			} catch (IOException e1) {
+				Runtime.getRuntime().exec("sndvol -f " + x);
+			} catch (IOException e) {
 				try {
-					Runtime.getRuntime().exec("kmix");
-				} catch (IOException e2) {
+					Runtime.getRuntime().exec("sndvol32");
+				} catch (IOException e1) {
+					String toolTip = "For Windows: sndvol or sndvol32 not found!";
 					volumeButton.setDisable(true);
-					volumeButton.setTooltip(new Tooltip(
-							"Windows or Linux (KDE) only!"));
-					System.err.println("sndvol or sndvol32 or kmix not found!");
+					volumeButton.setTooltip(new Tooltip(toolTip));
+					System.err.println(toolTip);
 				}
 			}
+		} else if (OS.indexOf("nux") >= 0) {
+			try {
+				Runtime.getRuntime().exec("pavucontrol");
+			} catch (IOException e2) {
+				String toolTip = "For Linux PulseAudio: pavucontrol not found!";
+				volumeButton.setDisable(true);
+				volumeButton.setTooltip(new Tooltip(toolTip));
+				System.err.println(toolTip);
+			}
+		} else if (OS.indexOf("mac") >= 0) {
+			String toolTip = "For OSX: N.Y.I!";
+			volumeButton.setDisable(true);
+			volumeButton.setTooltip(new Tooltip(toolTip));
+			System.err.println(toolTip);
 		}
 	}
 
