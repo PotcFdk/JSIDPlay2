@@ -67,20 +67,21 @@ public abstract class Timer {
 		final SidTune tune = player.getTune();
 		// cancel last stop time event
 		cancel(endTimeEvent);
-		// default play default length or forever (0) ...
-		end = config.getSidplay2().getDefaultPlayLength();
-		// Only for tunes: if play time is over loop or exit
-		if (end != 0) {
-			// use default length (is meant to be relative to start)
-			end = schedule(start + end, endTimeEvent);
-		}
-		if (tune != null && config.getSidplay2().isEnableDatabase()) {
+		// Only for tunes: check song length
+		if (tune != SidTune.RESET && config.getSidplay2().isEnableDatabase()) {
 			int songLength = player.getSidDatabaseInfo(db -> db
 					.getSongLength(tune));
 			if (songLength > 0) {
 				// ... or use song length of song length database
 				end = schedule(songLength, endTimeEvent);
+				return;
 			}
+		}
+		// default play default length or forever (0) ...
+		end = config.getSidplay2().getDefaultPlayLength();
+		if (end != 0) {
+			// use default length (is meant to be relative to start)
+			end = schedule(start + end, endTimeEvent);
 		}
 	}
 
