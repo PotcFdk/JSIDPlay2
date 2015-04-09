@@ -7,7 +7,6 @@ import java.util.Random;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IAudioSection;
 
@@ -144,21 +143,17 @@ public class Mixer {
 	 * Starts mixing the outputs of several SIDs. Write samples to the sound
 	 * buffer.
 	 */
-	public void start(AudioConfig audioConfig, IAudioSection audioSection) {
-		for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
-			setVolume(sidNum, audioSection);
-			setBalance(sidNum, audioSection);
-		}
+	public void start() {
 		context.cancel(nullAudio);
 		context.schedule(mixerAudio, 0, Event.Phase.PHI2);
 	}
 
 	public void add(int sidNum, ReSIDBase sid, IAudioSection audio) {
-		setVolume(sidNum, audio);
-		setBalance(sidNum, audio);
 		if (sidNum < sids.size()) {
 			sids.set(sidNum, sid);
 		} else {
+			setVolume(sidNum, audio);
+			setBalance(sidNum, audio);
 			sids.add(sid);
 		}
 	}

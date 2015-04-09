@@ -95,7 +95,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	 */
 	@Override
 	public void start() {
-		mixer.start(audioConfig, config.getAudio());
+		mixer.start();
 	}
 
 	/**
