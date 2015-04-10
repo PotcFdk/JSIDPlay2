@@ -71,7 +71,7 @@ public class SidDump extends Tab implements UIPart {
 
 	private ChangeListener<State> changeListener = (observable, oldValue,
 			newValue) -> {
-		if (newValue == State.RUNNING) {
+		if (newValue == State.START) {
 			Platform.runLater(() -> setTune(util.getPlayer().getTune()));
 		}
 		if (newValue == State.EXIT) {

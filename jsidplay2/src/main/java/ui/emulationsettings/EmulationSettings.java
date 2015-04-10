@@ -35,7 +35,7 @@ public class EmulationSettings extends C64Window {
 		@Override
 		public void changed(ObservableValue<? extends State> observable,
 				State oldValue, State newValue) {
-			if (newValue == State.RUNNING) {
+			if (newValue == State.START) {
 				Platform.runLater(() -> {
 					updateSettingsForTune(util.getPlayer().getTune());
 				});

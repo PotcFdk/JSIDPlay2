@@ -221,8 +221,8 @@ public class MusicCollection extends Tab implements UIPart {
 				.stateProperty()
 				.addListener(
 						(observable, oldValue, newValue) -> {
-							if (newValue == State.RUNNING
-									&& util.getPlayer().getTune() != null) {
+							if (newValue == State.START
+									&& util.getPlayer().getTune() != SidTune.RESET) {
 								Platform.runLater(() -> {
 									if (fileBrowser.getRoot() != null) {
 										// auto-expand current selected tune

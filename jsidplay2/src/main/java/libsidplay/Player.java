@@ -759,6 +759,7 @@ public class Player {
 				// Open tune
 				open();
 				menuHook.accept(Player.this);
+				stateProperty.set(State.RUNNING);
 				// Play next chunk of sound data, until it gets stopped
 				while (true) {
 					// Pause? sleep for awhile
@@ -823,7 +824,7 @@ public class Player {
 			throw new RuntimeException(e);
 		}
 		reset();
-		stateProperty.set(State.RUNNING);
+		stateProperty.set(State.START);
 	}
 
 	/**

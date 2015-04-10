@@ -180,6 +180,7 @@ public class Oscilloscope extends Tab implements UIPart {
 		}
 		/* sample oscillator buffer */
 		highResolutionEvent.beginScheduling(ctx);
+		st.stop();
 		pt.setOnFinished(evt -> {
 			util.getPlayer().configureSIDs((chipNum, sid) -> {
 				for (int row = 0; row < gauges[chipNum].length; row++)

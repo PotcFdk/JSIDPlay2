@@ -218,7 +218,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 							SidTune sidTune = util.getPlayer().getTune();
 							Platform.runLater(() -> nextFavoriteDisabledState
 									.set(sidTune == SidTune.RESET));
-							if (newValue == State.RUNNING) {
+							if (newValue == State.START) {
 								Platform.runLater(() -> {
 									getPlayerId();
 									lastUpdate = util.getPlayer().getC64()

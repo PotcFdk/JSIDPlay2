@@ -88,7 +88,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	@FXML
 	private void initialize() {
 		util.getPlayer().stateProperty().addListener((arg0, arg1, arg2) -> {
-			if (arg2 == State.RUNNING) {
+			if (arg2 == State.START) {
 				Platform.runLater(() -> {
 					setupVideoScreen();
 					setVisibilityBasedOnChipType(util.getPlayer().getTune());

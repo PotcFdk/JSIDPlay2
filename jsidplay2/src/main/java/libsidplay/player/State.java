@@ -1,6 +1,8 @@
 package libsidplay.player;
 
 public enum State {
+	/** Player has been started to play a tune */
+	START,
 	/** Player is currently playing a song */
 	RUNNING,
 	/** Player has been paused */

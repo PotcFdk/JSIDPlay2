@@ -32,7 +32,7 @@ public class Disassembler extends Tab implements UIPart {
 		@Override
 		public void changed(ObservableValue<? extends State> observable,
 				State oldValue, State newValue) {
-			if (newValue == State.RUNNING) {
+			if (newValue == State.START) {
 				Platform.runLater(() -> setTune());
 			}
 		}
