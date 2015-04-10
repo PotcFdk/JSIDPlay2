@@ -162,7 +162,7 @@ public class JavaSound extends AudioDriver {
 	@Override
 	public synchronized void pause() {
 		if (dataLine.isActive()) {
-			dataLine.drain();
+			dataLine.flush();
 			dataLine.stop();
 		}
 	}
