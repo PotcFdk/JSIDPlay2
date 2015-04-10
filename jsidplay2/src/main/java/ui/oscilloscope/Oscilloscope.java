@@ -96,16 +96,13 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	private ChangeListener<? super State> listener = (observable, oldValue,
 			newValue) -> {
-		final EventScheduler ctx = util.getPlayer().getC64()
-				.getEventScheduler();
 		if (newValue == State.RUNNING) {
 			Platform.runLater(() -> {
 				startOscilloscope();
 			});
 		} else if (newValue == State.PAUSED) {
 			Platform.runLater(() -> {
-				st.pause();
-				highResolutionEvent.stopScheduling(ctx);
+				stopOscilloscope();
 			});
 		}
 	};
@@ -214,12 +211,16 @@ public class Oscilloscope extends Tab implements UIPart {
 				sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
 	}
 
-	@Override
-	public void doClose() {
+	private void stopOscilloscope() {
 		final EventScheduler ctx = util.getPlayer().getC64()
 				.getEventScheduler();
-		highResolutionEvent.stopScheduling(ctx);
 		st.stop();
+		highResolutionEvent.stopScheduling(ctx);
+	}
+
+	@Override
+	public void doClose() {
+		stopOscilloscope();
 		util.getPlayer().stateProperty().removeListener(listener);
 	}
 
