@@ -174,7 +174,7 @@ public class JavaSound extends AudioDriver {
 		}
 
 		if (dataLine.isActive()) {
-			dataLine.drain();
+			dataLine.flush();
 			dataLine.stop();
 		}
 		if (dataLine.isOpen()) {

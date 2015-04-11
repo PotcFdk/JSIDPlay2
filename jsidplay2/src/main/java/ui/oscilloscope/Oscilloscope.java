@@ -12,6 +12,7 @@ import javafx.scene.control.Tab;
 import javafx.util.Duration;
 import libsidplay.Player;
 import libsidplay.common.Event;
+import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.player.State;
 import ui.common.C64Window;
@@ -25,7 +26,7 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	public static final String ID = "OSCILLOSCOPE";
 
-	protected class HighResolutionEvent extends Event {
+	private class HighResolutionEvent extends Event {
 
 		public HighResolutionEvent() {
 			super("High Resolution SID Register Sampler");
@@ -48,6 +49,8 @@ public class Oscilloscope extends Tab implements UIPart {
 				}
 			});
 			++repaint;
+			util.getPlayer().getC64().getEventScheduler()
+					.schedule(highResolutionEvent, 128);
 		}
 	}
 
@@ -91,13 +94,14 @@ public class Oscilloscope extends Tab implements UIPart {
 		final EventScheduler ctx = util.getPlayer().getC64()
 				.getEventScheduler();
 		if (newValue == State.RUNNING) {
-			/* sample oscillator buffer */
-			ctx.scheduleOscilloscopeThreadSafe(highResolutionEvent);
+			if (!ctx.isPending(highResolutionEvent)) {
+				ctx.schedule(highResolutionEvent, 0, Phase.PHI2);
+			}
 			Platform.runLater(() -> {
 				startOscilloscope();
 			});
 		} else if (newValue == State.PAUSED) {
-			ctx.cancelOscilloscopeThreadSafe();
+			ctx.cancel(highResolutionEvent);
 			Platform.runLater(() -> {
 				stopOscilloscope();
 			});
@@ -160,10 +164,10 @@ public class Oscilloscope extends Tab implements UIPart {
 		gauges[2][3][1] = resonance3Sid;
 		gauges[2][3][2] = filter3Sid;
 
-		/* sample oscillator buffer */
-		final EventScheduler ctx = util.getPlayer().getC64()
-				.getEventScheduler();
-		ctx.scheduleOscilloscopeThreadSafe(highResolutionEvent);
+		EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
+		if (!ctx.isPending(highResolutionEvent)) {
+			ctx.scheduleThreadSafe(highResolutionEvent);
+		}
 		startOscilloscope();
 	}
 
@@ -216,7 +220,7 @@ public class Oscilloscope extends Tab implements UIPart {
 	public void doClose() {
 		final EventScheduler ctx = util.getPlayer().getC64()
 				.getEventScheduler();
-		ctx.cancelOscilloscopeThreadSafe();
+		ctx.cancel(highResolutionEvent);
 		stopOscilloscope();
 		util.getPlayer().stateProperty().removeListener(listener);
 	}

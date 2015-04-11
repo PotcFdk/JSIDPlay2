@@ -43,7 +43,6 @@ public final class EventScheduler {
 	private double cyclesPerSecond;
 
 	private List<Event> threadSafeQueue = new ArrayList<Event>();
-	private List<Event> threadSafeOscilloscopeQueue = new ArrayList<Event>();
 
 	/**
 	 * The tail event, always after every other event.
@@ -92,25 +91,6 @@ public final class EventScheduler {
 	};
 
 	/**
-	 * Periodic thread-safe event scheduling mechanism for Oscilloscope view.
-	 * Needs to be scheduled periodically very often to measure sample audio
-	 * provided by SID. Queue contains always one event, only. if Oscilloscope
-	 * is unused, the queue is emptied and the event is canceled again.
-	 */
-	private final Event threadSafeOscilloscopeQueueingEvent = new Event(
-			"Inject Oscilloscope event in thread-safe manner.") {
-		@Override
-		public void event() throws InterruptedException {
-			synchronized (threadSafeOscilloscopeQueue) {
-				if (!threadSafeOscilloscopeQueue.isEmpty()) {
-					threadSafeOscilloscopeQueue.get(0).event();
-				}
-			}
-			schedule(this, 128);
-		}
-	};
-
-	/**
 	 * Schedule an event in a thread-safe manner.
 	 * 
 	 * The thread-safe queue is moved to the unsafe queue periodically, and
@@ -124,33 +104,6 @@ public final class EventScheduler {
 		synchronized (threadSafeQueue) {
 			threadSafeQueue.add(event);
 		}
-	}
-
-	/**
-	 * Schedule an event in a thread-safe manner for Oscilloscope.
-	 * 
-	 * The thread-safe queue is moved to the unsafe queue periodically, and
-	 * specific execution time is every 128 cycles as specified in the
-	 * threadSafeOscilloscopeQueueingEvent and will always occur during the PHI2
-	 * phase. The queue is always cleared before adding the event.
-	 * 
-	 * @param event
-	 *            The event to schedule.
-	 */
-	public void scheduleOscilloscopeThreadSafe(final Event event) {
-		cancel(threadSafeOscilloscopeQueueingEvent);
-		synchronized (threadSafeOscilloscopeQueue) {
-			threadSafeOscilloscopeQueue.clear();
-			threadSafeOscilloscopeQueue.add(event);
-		}
-		schedule(threadSafeOscilloscopeQueueingEvent, 0, Event.Phase.PHI2);
-	}
-
-	/**
-	 * Clear Oscilloscope event.
-	 */
-	public void cancelOscilloscopeThreadSafe() {
-		cancel(threadSafeOscilloscopeQueueingEvent);
 	}
 
 	public EventScheduler() {
@@ -255,7 +208,6 @@ public final class EventScheduler {
 	/** Cancel all pending events and reset time. */
 	public void reset() {
 		threadSafeQueue.clear();
-		threadSafeOscilloscopeQueue.clear();
 		currentTime = 0;
 		firstEvent.next = lastEvent;
 		schedule(threadSafeQueueingEvent, 0, Event.Phase.PHI1);
