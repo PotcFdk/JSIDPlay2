@@ -48,31 +48,29 @@ public class Mixer {
 
 		/**
 		 * Note: The assumption, that after clocking two chips their buffer
-		 * positions are equal is false! Using differetn SID reimplementations
+		 * positions are equal is false! Using different SID reimplementations
 		 * one chip can be one sample further than the other. Therefore we have
 		 * to handle overflowing sample data to prevent crackling noises. This
 		 * implementation just cuts them off.
 		 */
 		@Override
 		public void event() throws InterruptedException {
-			int samples = -1;
+			int samples = 0;
 			for (ReSIDBase sid : sids) {
 				// clock SID to the present moment
 				sid.clock();
 				// determine amount of samples produced (cut-off overflows)
-				samples = samples != -1 ? Math.min(samples, sid.bufferpos)
+				samples = samples != 0 ? Math.min(samples, sid.bufferpos)
 						: sid.bufferpos;
 				sid.bufferpos = 0;
 			}
-			boolean hasMoreSids = sids.size() > 1;
 			// output sample data
 			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
 				int dither = triangularDithering();
 
-				putSample(sampleIdx, hasMoreSids ? balancedVolumeL : volume,
-						dither);
-				putSample(sampleIdx, hasMoreSids ? balancedVolumeR : volume,
-						dither);
+				putSample(sampleIdx, balancedVolumeL, dither);
+				putSample(sampleIdx, balancedVolumeR, dither);
+
 				if (driver.buffer().remaining() == 0) {
 					driver.write();
 					driver.buffer().clear();
@@ -87,7 +85,13 @@ public class Mixer {
 	 */
 	private EventScheduler context;
 
+	/**
+	 * Mixer WITHOUT audio output, just clocking SID chips.
+	 */
 	private Event nullAudio = new NullAudioEvent("NullAudio");
+	/**
+	 * Mixer clocking SID chips and producing audio output.
+	 */
 	private Event mixerAudio = new MixerEvent("MixerAudio");
 
 	/**
@@ -102,7 +106,7 @@ public class Mixer {
 	/**
 	 * Random source for triangular dithering
 	 */
-	private final Random RANDOM = new Random();
+	private Random RANDOM = new Random();
 	/**
 	 * State of HP-TPDF.
 	 */
@@ -111,24 +115,24 @@ public class Mixer {
 	/**
 	 * Volume of all SIDs.
 	 */
-	private final int[] volume = new int[3];
+	private int[] volume = new int[3];
 	/**
 	 * SID audibility on the left speaker of all SIDs 0(silent)..1(loud).
 	 */
-	private final float[] positionL = new float[3];
+	private float[] positionL = new float[3];
 	/**
 	 * SID audibility on the right speaker of all SIDs 0(silent)..1(loud).
 	 */
-	private final float[] positionR = new float[3];
+	private float[] positionR = new float[3];
 
 	/**
 	 * Balanced left speaker volume = volumeL * positionL.
 	 */
-	private final int[] balancedVolumeL = new int[3];
+	private int[] balancedVolumeL = new int[3];
 	/**
 	 * Balanced right speaker volume = volumeR * positionR.
 	 */
-	private final int[] balancedVolumeR = new int[3];
+	private int[] balancedVolumeR = new int[3];
 
 	public Mixer(EventScheduler context, AudioDriver audioDriver) {
 		this.context = context;
@@ -155,11 +159,13 @@ public class Mixer {
 			setVolume(sidNum, audio);
 			setBalance(sidNum, audio);
 			sids.add(sid);
+			balanceVolume();
 		}
 	}
 
 	public void remove(SIDEmu sid) {
 		sids.remove(sid);
+		balanceVolume();
 	}
 
 	public ReSIDBase get(int sidNum) {
@@ -228,7 +234,7 @@ public class Mixer {
 		}
 		assert volumeInDB >= -6 && volumeInDB <= 6;
 		volume[sidNum] = (int) (Math.pow(10, volumeInDB / 10) * 1024);
-		updateFactor();
+		balanceVolume();
 	}
 
 	/**
@@ -258,14 +264,25 @@ public class Mixer {
 		assert balance >= 0 && balance <= 1;
 		positionL[sidNum] = 1 - balance;
 		positionR[sidNum] = balance;
-		updateFactor();
+		balanceVolume();
 	}
 
-	private void updateFactor() {
-		for (int i = 0; i < balancedVolumeL.length; i++) {
-			balancedVolumeL[i] = (int) (volume[i] * positionL[i]);
-			balancedVolumeR[i] = (int) (volume[i] * positionR[i]);
+	/**
+	 * Calculate balanced speaker volume level.<BR>
+	 * Mono output: Use volume.<BR>
+	 * Stereo or 3-SID output: Use speaker audibility and volume.
+	 */
+	private void balanceVolume() {
+		boolean mono = sids.size() < 2;
+		for (int i = 0; i < volume.length; i++) {
+			if (mono) {
+				balancedVolumeL[i] = volume[i];
+				balancedVolumeR[i] = volume[i];
+			} else {
+				balancedVolumeL[i] = (int) (volume[i] * positionL[i]);
+				balancedVolumeR[i] = (int) (volume[i] * positionR[i]);
+
+			}
 		}
 	}
-
 }

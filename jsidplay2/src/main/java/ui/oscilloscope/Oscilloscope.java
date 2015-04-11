@@ -31,14 +31,6 @@ public class Oscilloscope extends Tab implements UIPart {
 			super("High Resolution SID Register Sampler");
 		}
 
-		public void beginScheduling(final EventScheduler ctx) {
-			ctx.scheduleOscilloscopeThreadSafe(this);
-		}
-
-		public void stopScheduling(final EventScheduler ctx) {
-			ctx.cancelOscilloscopeThreadSafe();
-		}
-
 		@Override
 		public void event() {
 			util.getPlayer().configureSIDs((chipNum, sid) -> {
@@ -96,11 +88,16 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	private ChangeListener<? super State> listener = (observable, oldValue,
 			newValue) -> {
+		final EventScheduler ctx = util.getPlayer().getC64()
+				.getEventScheduler();
 		if (newValue == State.RUNNING) {
+			/* sample oscillator buffer */
+			ctx.scheduleOscilloscopeThreadSafe(highResolutionEvent);
 			Platform.runLater(() -> {
 				startOscilloscope();
 			});
 		} else if (newValue == State.PAUSED) {
+			ctx.cancelOscilloscopeThreadSafe();
 			Platform.runLater(() -> {
 				stopOscilloscope();
 			});
@@ -163,12 +160,14 @@ public class Oscilloscope extends Tab implements UIPart {
 		gauges[2][3][1] = resonance3Sid;
 		gauges[2][3][2] = filter3Sid;
 
+		/* sample oscillator buffer */
+		final EventScheduler ctx = util.getPlayer().getC64()
+				.getEventScheduler();
+		ctx.scheduleOscilloscopeThreadSafe(highResolutionEvent);
 		startOscilloscope();
 	}
 
 	private void startOscilloscope() {
-		final EventScheduler ctx = util.getPlayer().getC64()
-				.getEventScheduler();
 		/* Initially clear all gauges (unused SIDs inclusive) */
 		for (int chipNum = 0; chipNum < gauges.length; chipNum++) {
 			for (int row = 0; row < gauges[chipNum].length; row++) {
@@ -178,9 +177,6 @@ public class Oscilloscope extends Tab implements UIPart {
 				}
 			}
 		}
-		/* sample oscillator buffer */
-		highResolutionEvent.beginScheduling(ctx);
-		st.stop();
 		pt.setOnFinished(evt -> {
 			util.getPlayer().configureSIDs((chipNum, sid) -> {
 				for (int row = 0; row < gauges[chipNum].length; row++)
@@ -213,14 +209,14 @@ public class Oscilloscope extends Tab implements UIPart {
 	}
 
 	private void stopOscilloscope() {
-		final EventScheduler ctx = util.getPlayer().getC64()
-				.getEventScheduler();
 		st.stop();
-		highResolutionEvent.stopScheduling(ctx);
 	}
 
 	@Override
 	public void doClose() {
+		final EventScheduler ctx = util.getPlayer().getC64()
+				.getEventScheduler();
+		ctx.cancelOscilloscopeThreadSafe();
 		stopOscilloscope();
 		util.getPlayer().stateProperty().removeListener(listener);
 	}

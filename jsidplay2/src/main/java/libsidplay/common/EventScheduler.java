@@ -94,8 +94,8 @@ public final class EventScheduler {
 	/**
 	 * Periodic thread-safe event scheduling mechanism for Oscilloscope view.
 	 * Needs to be scheduled periodically very often to measure sample audio
-	 * provided by SID. Queue contains always one event. Only, if oscilloscope
-	 * is unused, the queue is empty.
+	 * provided by SID. Queue contains always one event, only. if Oscilloscope
+	 * is unused, the queue is emptied and the event is canceled again.
 	 */
 	private final Event threadSafeOscilloscopeQueueingEvent = new Event(
 			"Inject Oscilloscope event in thread-safe manner.") {
@@ -104,11 +104,9 @@ public final class EventScheduler {
 			synchronized (threadSafeOscilloscopeQueue) {
 				if (!threadSafeOscilloscopeQueue.isEmpty()) {
 					threadSafeOscilloscopeQueue.get(0).event();
-					schedule(this, 128);
-				} else {
-					cancel(this);
 				}
 			}
+			schedule(this, 128);
 		}
 	};
 
@@ -140,21 +138,19 @@ public final class EventScheduler {
 	 *            The event to schedule.
 	 */
 	public void scheduleOscilloscopeThreadSafe(final Event event) {
+		cancel(threadSafeOscilloscopeQueueingEvent);
 		synchronized (threadSafeOscilloscopeQueue) {
 			threadSafeOscilloscopeQueue.clear();
 			threadSafeOscilloscopeQueue.add(event);
-			cancel(threadSafeOscilloscopeQueueingEvent);
-			schedule(threadSafeOscilloscopeQueueingEvent, 0, Event.Phase.PHI2);
 		}
+		schedule(threadSafeOscilloscopeQueueingEvent, 0, Event.Phase.PHI2);
 	}
 
 	/**
 	 * Clear Oscilloscope event.
 	 */
 	public void cancelOscilloscopeThreadSafe() {
-		synchronized (threadSafeOscilloscopeQueue) {
-			threadSafeOscilloscopeQueue.clear();
-		}
+		cancel(threadSafeOscilloscopeQueueingEvent);
 	}
 
 	public EventScheduler() {
