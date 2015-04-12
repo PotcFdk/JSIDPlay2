@@ -54,8 +54,8 @@ public class JSidPlay2Main extends Application {
 	 */
 	private Player player;
 
-	private Consumer<Player> menuHook = (player) -> {
-		if (player.getTune() != null) {
+	private Consumer<Player> menuHook = player -> {
+		if (player.getTune() != SidTune.RESET) {
 			SidTuneInfo info = player.getTune().getInfo();
 			Iterator<String> detail = info.getInfoString().iterator();
 			System.out.print("Playing: ");
