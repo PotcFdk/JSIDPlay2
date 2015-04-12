@@ -139,35 +139,29 @@ public class EmulationSettings extends C64Window {
 				});
 
 		mainVolume.setValue(util.getConfig().getAudio().getMainVolume());
-		mainVolume.valueProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							util.getConfig().getAudio()
-									.setMainVolume(newValue.floatValue());
-							util.getPlayer().configureSIDBuilder(
-									(b) -> b.setVolume(0, util.getConfig()
-											.getAudio()));
-						});
+		mainVolume.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					util.getConfig().getAudio()
+							.setMainVolume(newValue.floatValue());
+					util.getPlayer().configureSIDBuilder(
+							b -> b.setVolume(0, util.getConfig().getAudio()));
+				});
 		secondVolume.setValue(util.getConfig().getAudio().getSecondVolume());
-		secondVolume.valueProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							util.getConfig().getAudio()
-									.setSecondVolume(newValue.floatValue());
-							util.getPlayer().configureSIDBuilder(
-									(b) -> b.setVolume(1, util.getConfig()
-											.getAudio()));
-						});
+		secondVolume.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					util.getConfig().getAudio()
+							.setSecondVolume(newValue.floatValue());
+					util.getPlayer().configureSIDBuilder(
+							b -> b.setVolume(1, util.getConfig().getAudio()));
+				});
 		thirdVolume.setValue(util.getConfig().getAudio().getThirdVolume());
-		thirdVolume.valueProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							util.getConfig().getAudio()
-									.setThirdVolume(newValue.floatValue());
-							util.getPlayer().configureSIDBuilder(
-									(b) -> b.setVolume(2, util.getConfig()
-											.getAudio()));
-						});
+		thirdVolume.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					util.getConfig().getAudio()
+							.setThirdVolume(newValue.floatValue());
+					util.getPlayer().configureSIDBuilder(
+							b -> b.setVolume(2, util.getConfig().getAudio()));
+				});
 
 		stereoModes = FXCollections.<String> observableArrayList();
 		stereoModes.addAll(util.getBundle().getString("AUTO"), util.getBundle()
