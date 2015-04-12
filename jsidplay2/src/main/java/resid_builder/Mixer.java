@@ -7,6 +7,7 @@ import java.util.Random;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
+import libsidplay.components.pla.PLA;
 import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IAudioSection;
 
@@ -115,24 +116,24 @@ public class Mixer {
 	/**
 	 * Volume of all SIDs.
 	 */
-	private int[] volume = new int[3];
+	private int[] volume = new int[PLA.MAX_SIDS];
 	/**
 	 * SID audibility on the left speaker of all SIDs 0(silent)..1(loud).
 	 */
-	private float[] positionL = new float[3];
+	private float[] positionL = new float[PLA.MAX_SIDS];
 	/**
 	 * SID audibility on the right speaker of all SIDs 0(silent)..1(loud).
 	 */
-	private float[] positionR = new float[3];
+	private float[] positionR = new float[PLA.MAX_SIDS];
 
 	/**
 	 * Balanced left speaker volume = volumeL * positionL.
 	 */
-	private int[] balancedVolumeL = new int[3];
+	private int[] balancedVolumeL = new int[PLA.MAX_SIDS];
 	/**
 	 * Balanced right speaker volume = volumeR * positionR.
 	 */
-	private int[] balancedVolumeR = new int[3];
+	private int[] balancedVolumeR = new int[PLA.MAX_SIDS];
 
 	public Mixer(EventScheduler context, AudioDriver audioDriver) {
 		this.context = context;
@@ -218,6 +219,8 @@ public class Mixer {
 	 *            audio configuration
 	 */
 	public void setVolume(int sidNum, IAudioSection audio) {
+		assert sidNum < sids.size();
+
 		float volumeInDB;
 		switch (sidNum) {
 		case 0:
@@ -247,6 +250,8 @@ public class Mixer {
 	 *            audio configuration
 	 */
 	public void setBalance(int sidNum, IAudioSection audio) {
+		assert sidNum < sids.size();
+
 		float balance;
 		switch (sidNum) {
 		case 0:
@@ -274,14 +279,13 @@ public class Mixer {
 	 */
 	private void balanceVolume() {
 		boolean mono = sids.size() < 2;
-		for (int i = 0; i < volume.length; i++) {
+		for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
 			if (mono) {
-				balancedVolumeL[i] = volume[i];
-				balancedVolumeR[i] = volume[i];
+				balancedVolumeL[sidNum] = volume[sidNum];
+				balancedVolumeR[sidNum] = volume[sidNum];
 			} else {
-				balancedVolumeL[i] = (int) (volume[i] * positionL[i]);
-				balancedVolumeR[i] = (int) (volume[i] * positionR[i]);
-
+				balancedVolumeL[sidNum] = (int) (volume[sidNum] * positionL[sidNum]);
+				balancedVolumeR[sidNum] = (int) (volume[sidNum] * positionR[sidNum]);
 			}
 		}
 	}
