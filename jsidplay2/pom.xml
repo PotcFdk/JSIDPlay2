@@ -287,6 +287,7 @@
 							<includes>
 								<include>netsiddev/*</include>
 								<include>netsiddev/ini/*</include>
+								<include>resid_builder/resample/**/*.class</include>
 								<include>resid_builder/resid/**/*.class</include>
 								<include>resid_builder/residfp/**/*.class</include>
 								<include>libsidplay/common/ChipModel.class</include>

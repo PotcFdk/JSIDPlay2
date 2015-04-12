@@ -402,7 +402,7 @@ public class SID implements SIDChip {
 	 *            Desired output sampling rate
 	 * @return success
 	 */
-	synchronized public void setSamplingParameters(final double clockFrequency,
+	public void setSamplingParameters(final double clockFrequency,
 			final SamplingMethod method, final double samplingFrequency,
 			final double highestAccurateFrequency) {
 		filter6581.setClockFrequency(clockFrequency);
