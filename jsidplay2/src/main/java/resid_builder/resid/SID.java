@@ -24,9 +24,9 @@ package resid_builder.resid;
 import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
-import resid_builder.resid.resample.Resampler;
-import resid_builder.resid.resample.TwoPassSincResampler;
-import resid_builder.resid.resample.ZeroOrderResampler;
+import resid_builder.resample.Resampler;
+import resid_builder.resample.TwoPassSincResampler;
+import resid_builder.resample.ZeroOrderResampler;
 
 /**
  * MOS6581/MOS8580 emulation. Based on reSID 0.16 by Dag Lem, and then hacked on

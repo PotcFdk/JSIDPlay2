@@ -1,4 +1,4 @@
-package resid_builder.resid.resample;
+package resid_builder.resample;
 
 /**
  * Abstraction of a resampling process. Given enough input, produces output.

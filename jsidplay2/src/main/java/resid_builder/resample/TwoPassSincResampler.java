@@ -1,4 +1,4 @@
-package resid_builder.resid.resample;
+package resid_builder.resample;
 
 /**
  * Compose a more efficient SINC from chaining two other SINCs.

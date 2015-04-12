@@ -1,4 +1,4 @@
-package resid_builder.resid.resample;
+package resid_builder.resample;
 
 /**
  * Return sample with linear interpolation.

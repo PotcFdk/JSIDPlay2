@@ -21,21 +21,15 @@
  */
 package resid_builder.residfp;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
+import resid_builder.resample.Resampler;
+import resid_builder.resample.TwoPassSincResampler;
+import resid_builder.resample.ZeroOrderResampler;
 
 public class SID implements SIDChip {
 	private static final int INPUTDIGIBOOST = -0x9500;
-
-	/**
-	 * Cache for caching the expensive FIR table computation results in the Java
-	 * process.
-	 */
-	private static Map<String, float[][]> FIR_CACHE = new HashMap<String, float[][]>();
 
 	/**
 	 * Output scaler.
@@ -85,42 +79,13 @@ public class SID implements SIDChip {
 	/** External audio input. */
 	private float ext_in;
 
-	/** Maximum convolution length */
-	private static final int RINGSIZE = 2048;
-
-	/**
-	 * Aliasing parameter: we don't care about accurate sound reproduction above
-	 * this frequency. The lower this is, the faster resampling will be, but the
-	 * worse it will sound.
-	 */
-	private static final float MAXIMUM_AUDIBLE_FREQUENCY = 20000;
-
-	/** Currently active sampling method. */
-	private SamplingMethod samplingMethod;
-
-	/** Interval between samples. (Not a whole integer.) */
-	private float cyclesPerSample;
-
-	/** Convolution length for SINC resampling. */
-	private int firN;
-
-	/** Number of SINC subphases (for subclock sampling) */
-	private int firRES;
-
-	/** The subclock [0, 1[ for precise subphase sampling. */
-	private float sampleOffset;
-
-	/** Currently active FIR table. */
-	private float fir[][];
-
-	/** Ring buffer with overflow for contiguous storage of RINGSIZE samples. */
-	private final float sample[] = new float[RINGSIZE * 2];
-
-	/** Index of next unused sample in ring buffer. */
-	private int sampleIndex;
-
 	/** 6581 nonlinearity term used for all DACs */
 	private float nonLinearity6581;
+
+	/**
+	 * Resampler used by audio generation code.
+	 */
+	private Resampler resampler;
 
 	/**
 	 * Set DAC nonlinearity for 6581 emulation.
@@ -242,6 +207,9 @@ public class SID implements SIDChip {
 
 		busValue = 0;
 		busValueTtl = 0;
+		if (resampler != null) {
+			resampler.reset();
+		}
 	}
 
 	/**
@@ -405,32 +373,6 @@ public class SID implements SIDChip {
 		voice[channel].mute(enable);
 	}
 
-	/** Maximum error acceptable in I0 is 1e-6, or ~96 dB. */
-	private static final double I0E = 1e-6;
-
-	/**
-	 * I0() computes the 0th order modified Bessel function of the first kind.
-	 * This function is originally from resample-1.5/filterkit.c by J. O. Smith.
-	 * It is used to build the Kaiser window for resampling.
-	 * 
-	 * @param x
-	 *            evaluate I0 at x
-	 * @return value of I0 at x.
-	 */
-	private static double I0(final double x) {
-		double sum = 1, u = 1, n = 1;
-		final double halfx = x / 2;
-
-		do {
-			final double temp = halfx / n;
-			u *= temp * temp;
-			sum += u;
-			n += 1;
-		} while (u >= I0E * sum);
-
-		return sum;
-	}
-
 	/**
 	 * Setting of SID sampling parameters.
 	 * <P>
@@ -467,133 +409,18 @@ public class SID implements SIDChip {
 		filter8580.setClockFrequency(clockFrequency);
 		externalFilter.setClockFrequency(clockFrequency);
 
-		cyclesPerSample = (float) (clockFrequency / samplingFrequency);
-
-		sampleOffset = 0;
-
-		// Clear sample buffer.
-		for (int j = 0; j < RINGSIZE * 2; j++) {
-			sample[j] = 0;
+		switch (method) {
+		case DECIMATE:
+			resampler = new ZeroOrderResampler(clockFrequency,
+					samplingFrequency);
+			break;
+		case RESAMPLE:
+			resampler = new TwoPassSincResampler(clockFrequency,
+					samplingFrequency, highestAccurateFrequency);
+			break;
+		default:
+			throw new RuntimeException("Unknown samplingmethod: " + method);
 		}
-
-		if (method != SamplingMethod.RESAMPLE) {
-			samplingMethod = method;
-			return;
-		}
-
-		/* rest of the code initializes the FIR. */
-		sampleIndex = 0;
-
-		/*
-		 * Allow specifying at most 90 % of passband to limit the CPU time spent
-		 * on resampling.
-		 */
-		if (2 * highestAccurateFrequency / samplingFrequency > 0.95f) {
-			throw new RuntimeException(
-					"Requested passband is too narrow. Try raising sampling frequency or lowering highest accurate frequency.");
-		}
-
-		// 16 bits -> -96dB stopband attenuation.
-		final double A = -20 * Math.log10(1.0 / (1 << 16));
-
-		// For calculation of beta and N see the reference for the kaiserord
-		// function in the MATLAB Signal Processing Toolbox:
-		// http://www.mathworks.com/access/helpdesk/help/toolbox/signal/kaiserord.html
-		final double beta = 0.1102 * (A - 8.7);
-		final double I0beta = I0(beta);
-		final double halfCyclesPerSample = clockFrequency / samplingFrequency
-				/ 2;
-
-		/*
-		 * Widen the transition band to allow aliasing down to the specified
-		 * highest correctly reproduced frequency. I sincerely hope that
-		 * highestAccurateFrequency is above 20 kHz, or this will sound like
-		 * shit.
-		 */
-		double aliasingAllowance = samplingFrequency / 2
-				- MAXIMUM_AUDIBLE_FREQUENCY;
-		if (aliasingAllowance < 0) {
-			aliasingAllowance = 0;
-		}
-
-		final double transitionBandwidth = samplingFrequency / 2
-				- highestAccurateFrequency + aliasingAllowance;
-		{
-			// The filter order will maximally be 124 with the current
-			// constraints.
-			// N >= (96.33 - 7.95)/(2 * pi * 2.285 * (maxfreq - passbandfreq) >=
-			// 123
-			// The filter order is equal to the number of zero crossings, i.e.
-			// it should be an even number (sinc is symmetric about x = 0).
-			//
-			// XXX: analysis indicates that the filter is slighly overspecified
-			// by
-			// there constraints. Need to check why. One possibility is the
-			// level of audio being in truth closer to 15-bit than 16-bit.
-			int N = (int) ((A - 7.95)
-					/ (2 * Math.PI * 2.285 * transitionBandwidth / samplingFrequency) + 0.5);
-			N += N & 1;
-
-			// The filter length is equal to the filter order + 1.
-			// The filter length must be an odd number (sinc is symmetric about
-			// x = 0).
-			firN = (int) (N * halfCyclesPerSample) + 1;
-			firN |= 1;
-
-			// Check whether the sample ring buffer would overflow.
-			if (firN > RINGSIZE - 1) {
-				throw new RuntimeException("FIR ring buffer would overflow");
-			}
-
-			/*
-			 * Error is bound by 1.234 / L^2, so for 16-bit: sqrt(1.234 * (1 <<
-			 * 16))
-			 */
-			firRES = (int) (Math.sqrt(1.234 * (1 << 16)) / halfCyclesPerSample + 0.5);
-		}
-
-		// The cutoff frequency is midway through the transition band
-		final double wc = (highestAccurateFrequency + transitionBandwidth / 2)
-				/ samplingFrequency * Math.PI * 2;
-
-		final String firKey = firN + "," + firRES + "," + wc + ","
-				+ halfCyclesPerSample;
-		fir = FIR_CACHE.get(firKey);
-
-		/*
-		 * The FIR computation is expensive and we set sampling parameters
-		 * often, but from a very small set of choices. Thus, caching this seems
-		 * appropriate.
-		 */
-		if (fir == null) {
-			// Allocate memory for FIR tables.
-			fir = new float[firRES][firN];
-			FIR_CACHE.put(firKey, fir);
-
-			/* Calculate the sinc tables. */
-			final double scale = wc / halfCyclesPerSample / Math.PI;
-			for (int i = 0; i < firRES; i++) {
-				final double jPhase = (double) i / firRES + firN / 2;
-				for (int j = 0; j < firN; j++) {
-					final double x = j - jPhase;
-
-					final double xt = x / (firN / 2);
-					final double kaiserXt = Math.abs(xt) < 1 ? I0(beta
-							* Math.sqrt(1 - xt * xt))
-							/ I0beta : 0;
-
-					final double wt = wc * x / halfCyclesPerSample;
-					final double sincWt = Math.abs(wt) >= 1e-8 ? Math.sin(wt)
-							/ wt : 1;
-
-					fir[i][j] = (float) (scale * sincWt * kaiserXt);
-				}
-			}
-		}
-		// This must be the last statement to ensure,
-		// that the FIR table has been build completely,
-		// because this is called from UI thread as well.
-		samplingMethod = method;
 	}
 
 	private void ageBusValue(final int n) {
@@ -641,19 +468,16 @@ public class SID implements SIDChip {
 	 *            where to begin audio writing
 	 * @return
 	 */
-	public final int clock(final int /* cycle_count */delta_t,
-			final float buf[], final int pos) {
+	@Override
+	public final int clock(final int delta_t, final int buf[], final int pos) {
 		ageBusValue(delta_t);
 
-		int res;
-		switch (samplingMethod) {
-		default:
-		case DECIMATE:
-			res = clockDecimate(delta_t, buf, pos);
-			break;
-		case RESAMPLE:
-			res = clockResampleInterpolate(delta_t, buf, pos);
-			break;
+		int res = 0;
+		for (int i = 0; i < delta_t; i++) {
+			if (resampler.input((int) (clock() * OUTPUT_LEVEL))) {
+				buf[pos + res] = resampler.output();
+				res++;
+			}
 		}
 		filter.zeroDenormals();
 		externalFilter.zeroDenormals();
@@ -690,161 +514,12 @@ public class SID implements SIDChip {
 		}
 	}
 
-	/**
-	 * SID clocking with audio sampling - cycle based with linear sample
-	 * interpolation.
-	 * <P>
-	 * Here the chip is clocked every cycle. This yields higher quality sound
-	 * since the samples are linearly interpolated, and since the external
-	 * filter attenuates frequencies above 16kHz, thus reducing sampling noise.
-	 * 
-	 * @return number of samples constructed
-	 */
-	private int clockDecimate(int cycles, final float buf[], final int pos) {
-		int s = 0;
-		int i;
-
-		for (;;) {
-			final float nextSampleOffset = sampleOffset + cyclesPerSample;
-			final int cyclesToNextSample = (int) nextSampleOffset;
-			if (cyclesToNextSample > cycles) {
-				break;
-			}
-			for (i = 0; i < cyclesToNextSample - 1; i++) {
-				clock();
-			}
-
-			cycles -= cyclesToNextSample;
-			sampleOffset = nextSampleOffset - cyclesToNextSample;
-
-			buf[pos + s++] = clock();
-		}
-		for (i = 0; i < cycles; i++) {
-			clock();
-		}
-		sampleOffset -= cycles;
-		return s;
-	}
-
-	private static float convolve(final float a[], int aPos, final float b[]) {
-		float out = 0.f;
-		for (int i = 0; i < b.length; i++, aPos++) {
-			out += a[aPos] * b[i];
-		}
-		return out;
-	}
-
-	/**
-	 * SID clocking with audio sampling - cycle based with audio resampling.
-	 * <P>
-	 * This is the theoretically correct (and computationally intensive) audio
-	 * sample generation. The samples are generated by resampling to the
-	 * specified sampling frequency. The work rate is inversely proportional to
-	 * the percentage of the bandwidth allocated to the filter transition band.
-	 * <P>
-	 * This implementation is based on the paper
-	 * "A Flexible Sampling-Rate Conversion Method", by J. O. Smith and P.
-	 * Gosset, or rather on the expanded tutorial on the
-	 * "Digital Audio Resampling Home Page":
-	 * http:*www-ccrma.stanford.edu/~jos/resample/
-	 * <P>
-	 * By building shifted FIR tables with samples according to the sampling
-	 * frequency, this implementation dramatically reduces the computational
-	 * effort in the filter convolutions, without any loss of accuracy. The
-	 * filter convolutions are also vectorizable on current hardware.
-	 * <P>
-	 * Further possible optimizations are:
-	 * <OL>
-	 * <LI>An equiripple filter design could yield a lower filter order, see
-	 * http://www.mwrf.com/Articles/ArticleID/7229/7229.html
-	 * <LI>The Convolution Theorem could be used to bring the complexity of
-	 * convolution down from O(n*n) to O(n*log(n)) using the Fast Fourier
-	 * Transform, see http://en.wikipedia.org/wiki/Convolution_theorem
-	 * <LI>Simply resampling in two steps can also yield computational savings,
-	 * since the transition band will be wider in the first step and the
-	 * required filter order is thus lower in this step. Laurent Ganier has
-	 * found the optimal intermediate sampling frequency to be (via derivation
-	 * of sum of two steps):<BR>
-	 * <CODE>2 * pass_freq + sqrt [ 2 * pass_freq * orig_sample_freq
-	 *       * (dest_sample_freq - 2 * pass_freq) / dest_sample_freq ]</CODE>
-	 * </OL>
-	 * 
-	 * @return number of samples constructed
-	 */
-	private int clockResampleInterpolate(int cycles, final float buf[],
-			final int pos) {
-		int s = 0;
-
-		for (;;) {
-			final float nextSampleOffset = sampleOffset + cyclesPerSample;
-			/* full clocks left to next sample */
-			final int cyclesToNextSample = (int) nextSampleOffset;
-			if (cyclesToNextSample > cycles) {
-				break;
-			}
-
-			/* clock forward delta_t_sample samples */
-			for (int i = 0; i < cyclesToNextSample; i++) {
-				sample[sampleIndex] = sample[sampleIndex + RINGSIZE] = clock();
-				sampleIndex = sampleIndex + 1 & RINGSIZE - 1;
-			}
-			cycles -= cyclesToNextSample;
-
-			/* Phase of the sample in terms of clock, [0 .. 1[. */
-			sampleOffset = nextSampleOffset - cyclesToNextSample;
-
-			/* find the first of the nearest fir tables close to the phase */
-			float firTableOffset = sampleOffset * firRES;
-			int firTableFirst = (int) firTableOffset;
-			/* [0 .. 1[ */
-			firTableOffset -= firTableFirst;
-
-			/*
-			 * find firN most recent samples, plus one extra in case the FIR
-			 * wraps.
-			 */
-			int sampleStart = sampleIndex - firN + RINGSIZE - 1;
-
-			final float v1 = convolve(sample, sampleStart, fir[firTableFirst]);
-			// Use next FIR table, wrap around to first FIR table using
-			// previous sample.
-			if (++firTableFirst == firRES) {
-				firTableFirst = 0;
-				++sampleStart;
-			}
-
-			final float v2 = convolve(sample, sampleStart, fir[firTableFirst]);
-
-			// Linear interpolation between the sinc tables yields good
-			// approximation for the exact value.
-			buf[pos + s++] = v1 + firTableOffset * (v2 - v1);
-		}
-
-		/* clock forward delta_t samples */
-		for (int i = 0; i < cycles; i++) {
-			sample[sampleIndex] = sample[sampleIndex + RINGSIZE] = clock();
-			sampleIndex = sampleIndex + 1 & RINGSIZE - 1;
-		}
-		sampleOffset -= cycles;
-		return s;
-	}
-
 	public Filter6581 getFilter6581() {
 		return filter6581;
 	}
 
 	public Filter8580 getFilter8580() {
 		return filter8580;
-	}
-
-	@Override
-	public int clock(int piece, int[] audioBuffer, int offset) {
-		float[] buffer = new float[audioBuffer.length];
-		final int clock = clock(piece, buffer, offset);
-		for (int i = offset; i < buffer.length; i++) {
-			audioBuffer[i] = (int) (buffer[i] * OUTPUT_LEVEL);
-		}
-		return clock;
 	}
 
 	@Override

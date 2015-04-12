@@ -19,7 +19,7 @@
  * @author Ken Händel
  *
  */
-package resid_builder.resid.resample;
+package resid_builder.resample;
 
 import java.util.Arrays;
 import java.util.HashMap;
