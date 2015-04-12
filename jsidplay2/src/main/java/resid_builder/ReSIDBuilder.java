@@ -58,6 +58,9 @@ public class ReSIDBuilder implements SIDBuilder {
 		this.mixer = new Mixer(context, audioDriver);
 	}
 
+	/**
+	 * Create a SID chip implementation and configure it, then start mixing.
+	 */
 	@Override
 	public SIDEmu lock(EventScheduler context, IConfig config,
 			SIDEmu oldSIDEmu, int sidNum, SidTune tune) {
@@ -75,7 +78,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	}
 
 	/**
-	 * No implementation, just builder API compat.
+	 * Stop mixing SID chip.
 	 */
 	@Override
 	public void unlock(final SIDEmu sid) {
@@ -156,7 +159,7 @@ public class ReSIDBuilder implements SIDBuilder {
 		final IEmulationSection emulationSection = config.getEmulation();
 		final Emulation emulation = Emulation.getEmulation(emulationSection,
 				tune, sidNum);
-		boolean fakeStereo = isFakeStereo(tune, sidNum, emulationSection);
+		boolean fakeStereo = isFakeStereoSid(tune, sidNum, emulationSection);
 		Class<? extends ReSIDBase> sidImlClass = getSIDImplClass(emulation,
 				fakeStereo);
 		if (oldSIDEmu != null && oldSIDEmu.getClass().equals(sidImlClass)) {
@@ -167,7 +170,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	}
 
 	/**
-	 * Detect fake-stereo mode (two SIDs at the same address).
+	 * Detect fake-stereo SID (second SID at the same address).
 	 * 
 	 * @param tune
 	 *            current tune
@@ -175,9 +178,9 @@ public class ReSIDBuilder implements SIDBuilder {
 	 *            current SID number
 	 * @param emulationSection
 	 *            configuration
-	 * @return fake-stereo mode has been detected
+	 * @return fake-stereo SID has been detected
 	 */
-	private boolean isFakeStereo(SidTune tune, int sidNum,
+	private boolean isFakeStereoSid(SidTune tune, int sidNum,
 			final IEmulationSection emulationSection) {
 		int prevNum = sidNum > 0 ? sidNum - 1 : sidNum;
 		int prevAddres = SidTune.getSIDAddress(emulationSection, tune, prevNum);
