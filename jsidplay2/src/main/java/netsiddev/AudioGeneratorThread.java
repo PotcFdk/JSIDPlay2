@@ -17,6 +17,7 @@ import javax.sound.sampled.Mixer.Info;
 import libsidplay.common.CPUClock;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
+import resid_builder.resample.Resampler;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 
@@ -45,6 +46,9 @@ public class AudioGeneratorThread extends Thread {
 	/** SIDs that generate output */
 	private SIDChip[] sid;
 
+	/** SID resampler */
+	private Resampler[] resampler;
+
 	/** Currently active clocking value */
 	private CPUClock[] sidClocking;
 
@@ -68,7 +72,7 @@ public class AudioGeneratorThread extends Thread {
 	private int[] audioBufferOverflow;
 	private int[] audioBufferOverflowCount;
 	private int[] audioBufferPos;
-
+	
 	private Mixer.Info mixerInfo;
 	private boolean deviceChanged = false;
 
@@ -170,7 +174,15 @@ public class AudioGeneratorThread extends Thread {
 
 					/* Mix SID buffers. */
 					for (int sidNum = 0; sidNum < sid.length; sidNum++) {
-						audioBufferPos[sidNum] = sid[sidNum].clock(piece, audioBuffer, 0);
+						// XXX Mixing before resampling? Can one resampler be used for all SID combinations?
+						final Resampler _resampler = resampler[sidNum];
+						final int _sidNum = sidNum;
+						audioBufferPos[sidNum] = 0;
+						sid[sidNum].clock(piece, sample -> {
+							if (_resampler.input(sample)) {
+								audioBuffer[audioBufferPos[_sidNum]++] = _resampler.output();
+							}
+						});
 
 						int overflowCount = 0;
 						if (audioBufferOverflowCount[sidNum] > 0) {
@@ -359,8 +371,10 @@ public class AudioGeneratorThread extends Thread {
 	 */
 	private void refreshParams() {
 		for (int i = 0; i < sid.length; i++) {
-			sid[i].setSamplingParameters(sidClocking[i].getCpuFrequency(),
-					sidSampling[i], audioConfig.getFrameRate(), 20000);
+			sid[i].setClockFrequency(sidClocking[i].getCpuFrequency());
+			resampler[i] = Resampler.createResampler(
+					sidClocking[i].getCpuFrequency(), sidSampling[i],
+					audioConfig.getFrameRate(), 20000);
 		}
 	}
 
@@ -437,6 +451,7 @@ public class AudioGeneratorThread extends Thread {
 
 	public void setSidArray(SIDChip[] sid) {
 		this.sid = sid;
+		this.resampler = new Resampler[sid.length];
 
 		sidClocking = new CPUClock[sid.length];
 		Arrays.fill(sidClocking, CPUClock.PAL);

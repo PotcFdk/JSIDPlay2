@@ -170,9 +170,9 @@ public class AudioSection implements IAudioSection {
 	}
 
 	/*
-	 * supports 2.5 ms chunk at 96 kHz
+	 * 2500 bytes is equal to 2.5 ms chunk at 96 kHz
 	 */
-	private int bufferSize = 2500;
+	private int bufferSize = 25000;
 
 	@Override
 	public int getBufferSize() {

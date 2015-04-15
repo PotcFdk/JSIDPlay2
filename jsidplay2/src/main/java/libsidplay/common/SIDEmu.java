@@ -58,8 +58,7 @@ public abstract class SIDEmu {
 
 	public abstract void setChipModel(final ChipModel model);
 
-	public abstract void setSampling(double cpuFrequency, float frequency,
-			SamplingMethod sampling);
+	public abstract void setClockFrequency(double cpuFrequency);
 
 	public abstract void input(int input);
 

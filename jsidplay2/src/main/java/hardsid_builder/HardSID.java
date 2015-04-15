@@ -4,7 +4,6 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import libsidplay.common.SamplingMethod;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IEmulationSection;
 
@@ -209,8 +208,7 @@ public class HardSID extends SIDEmu {
 	}
 
 	@Override
-	public void setSampling(double cpuFrequency, float frequency,
-			SamplingMethod sampling) {
+	public void setClockFrequency(double cpuFrequency) {
 	}
 
 	@Override

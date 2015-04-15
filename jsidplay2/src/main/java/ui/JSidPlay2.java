@@ -941,6 +941,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		SamplingMethod sampling = samplingBox.getSelectionModel()
 				.getSelectedItem();
 		util.getConfig().getAudio().setSampling(sampling);
+		restart();
 	}
 
 	@FXML

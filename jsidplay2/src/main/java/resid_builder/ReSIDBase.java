@@ -1,5 +1,6 @@
 package resid_builder;
 
+import java.util.function.IntConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -7,7 +8,6 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
-import libsidplay.common.SamplingMethod;
 
 
 public abstract class ReSIDBase extends SIDEmu {
@@ -27,6 +27,11 @@ public abstract class ReSIDBase extends SIDEmu {
 	protected final int[] buffer;
 
 	/**
+	 * Consumes samples of the SID while clocking.
+	 */
+	private IntConsumer sampler;
+	
+	/**
 	 * Constructor
 	 *
 	 * @param context
@@ -39,6 +44,9 @@ public abstract class ReSIDBase extends SIDEmu {
 		this.sid = createSID();
 		this.buffer = new int[bufferSize];
 		this.bufferpos = 0;
+		sampler = sample -> {
+			buffer[bufferpos++] = sample;
+		};
 		reset((byte) 0xf);
 	}
 
@@ -71,7 +79,7 @@ public abstract class ReSIDBase extends SIDEmu {
 	@Override
 	public void clock() {
 		int cycles = clocksSinceLastAccess();
-		bufferpos += sid.clock(cycles, buffer, bufferpos);
+		sid.clock(cycles, sampler);
 	}
 
 	@Override
@@ -80,19 +88,14 @@ public abstract class ReSIDBase extends SIDEmu {
 	}
 
 	/**
-	 * Sets the SID sampling parameters.
+	 * Sets the clock frequency.
 	 *
 	 * @param systemClock
 	 *            System clock to use for the SID.
-	 * @param freq
-	 *            Frequency to use for the SID.
-	 * @param method
-	 *            {@link SamplingMethod} to use for the SID.
 	 */
 	@Override
-	public void setSampling(final double systemClock, final float freq,
-			final SamplingMethod method) {
-		sid.setSamplingParameters(systemClock, method, freq, 20000);
+	public void setClockFrequency(final double systemClock) {
+		sid.setClockFrequency(systemClock);
 	}
 
 	/**

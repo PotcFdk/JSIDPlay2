@@ -7,7 +7,9 @@ import java.util.Random;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
+import libsidplay.common.SamplingMethod;
 import libsidplay.components.pla.PLA;
+import resid_builder.resample.Resampler;
 import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IAudioSection;
 
@@ -69,8 +71,8 @@ public class Mixer {
 			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
 				int dither = triangularDithering();
 
-				putSample(sampleIdx, balancedVolumeL, dither);
-				putSample(sampleIdx, balancedVolumeR, dither);
+				putSample(sampleIdx, balancedVolumeL, dither, resamplerL);
+				putSample(sampleIdx, balancedVolumeR, dither, resamplerR);
 
 				if (driver.buffer().remaining() == 0) {
 					driver.write();
@@ -79,6 +81,46 @@ public class Mixer {
 			}
 			context.schedule(this, 10000);
 		}
+
+		/**
+		 * <OL>
+		 * <LI>Mix sample data of all SIDs with respect to the audibility on the
+		 * speaker.
+		 * <LI>Next resample the resulting sample value.
+		 * <LI>Add dithering to reduce quantization noise, when moving to a
+		 * format with less precision.
+		 * <LI>And last cut-off overflow samples.
+		 * </OL>
+		 * 
+		 * @param sampleIdx
+		 *            current sample index
+		 * @param balancedVolume
+		 *            audibility (balanced volume of the speaker)
+		 * @param dither
+		 *            triangularly shaped noise
+		 * @param resampler
+		 *            resampler to be used
+		 */
+		private final void putSample(int sampleIdx, int[] balancedVolume,
+				int dither, Resampler resampler) {
+			int value = 0;
+			int sidNum = 0;
+			for (ReSIDBase sid : sids) {
+				value += sid.buffer[sampleIdx] * balancedVolume[sidNum++];
+			}
+			if (resampler.input(value >> 10)) {
+				value = resampler.output() + dither;
+
+				if (value > 32767) {
+					value = 32767;
+				}
+				if (value < -32768) {
+					value = -32768;
+				}
+				driver.buffer().putShort((short) value);
+			}
+		}
+
 	}
 
 	/**
@@ -135,6 +177,11 @@ public class Mixer {
 	 */
 	private int[] balancedVolumeR = new int[PLA.MAX_SIDS];
 
+	/**
+	 * Resampler of sample output for left and right speaker.
+	 */
+	private Resampler resamplerL, resamplerR;
+
 	public Mixer(EventScheduler context, AudioDriver audioDriver) {
 		this.context = context;
 		this.driver = audioDriver;
@@ -142,6 +189,14 @@ public class Mixer {
 
 	public void reset() {
 		context.schedule(nullAudio, 0, Event.Phase.PHI2);
+	}
+
+	public void setSampling(final double systemClock, final float freq,
+			final SamplingMethod method, double highestAccurateFrequency) {
+		resamplerL = Resampler.createResampler(systemClock, method, freq,
+				highestAccurateFrequency);
+		resamplerR = Resampler.createResampler(systemClock, method, freq,
+				highestAccurateFrequency);
 	}
 
 	/**
@@ -182,31 +237,14 @@ public class Mixer {
 
 	/**
 	 * Triangularly shaped noise source for audio applications. Output of this
-	 * PRNG is between ]-1, 1[ * 1024.
+	 * PRNG is between ]-1, 1[.
 	 * 
 	 * @return triangular noise sample
 	 */
 	private int triangularDithering() {
 		int prevValue = oldRandomValue;
-		oldRandomValue = RANDOM.nextInt() & 0x3ff;
+		oldRandomValue = RANDOM.nextInt() & 0x1;
 		return oldRandomValue - prevValue;
-	}
-
-	private final void putSample(int sampleIdx, int[] balancedVolume, int dither) {
-		int value = 0;
-		int sidNum = 0;
-		for (ReSIDBase sid : sids) {
-			value += sid.buffer[sampleIdx] * balancedVolume[sidNum++];
-		}
-		value = value + dither >> 10;
-
-		if (value > 32767) {
-			value = 32767;
-		}
-		if (value < -32768) {
-			value = -32768;
-		}
-		driver.buffer().putShort((short) value);
 	}
 
 	/**

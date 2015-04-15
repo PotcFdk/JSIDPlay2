@@ -15,6 +15,7 @@ public class TwoPassSincResampler implements Resampler {
 			* (samplingFrequency - 2 * highestAccurateFrequency) / samplingFrequency);	
 		s1 = new SincResampler(clockFrequency, intermediateFrequency, highestAccurateFrequency);
 		s2 = new SincResampler(intermediateFrequency, samplingFrequency, highestAccurateFrequency);
+		reset();
 	}
 	
 	public boolean input(int sample) {

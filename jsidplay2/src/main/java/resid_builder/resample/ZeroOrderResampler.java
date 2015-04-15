@@ -14,6 +14,7 @@ public class ZeroOrderResampler implements Resampler {
 	
 	public ZeroOrderResampler(double clockFrequency, double samplingFrequency) {
 		cyclesPerSample = (int) (clockFrequency / samplingFrequency * 1024f);
+		reset();
 	}
 	
 	public boolean input(int sample) {

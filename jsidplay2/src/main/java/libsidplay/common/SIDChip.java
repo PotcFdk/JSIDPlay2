@@ -1,12 +1,14 @@
 package libsidplay.common;
 
+import java.util.function.IntConsumer;
+
 public interface SIDChip {
 	/**
 	 * Max SID filter FC value.
 	 */
 	public static final int FC_MAX = 2048;
 
-	int clock(int piece, int[] audioBuffer, int offset);
+	void clock(int piece, IntConsumer sample);
 
 	void clockSilent(int cycles);
 
@@ -19,8 +21,7 @@ public interface SIDChip {
 	void mute(int voiceNo, boolean mute);
 	void input(int input);
 
-	void setSamplingParameters(double clockFrequency, SamplingMethod method,
-			double samplingFrequency, double highestAccurateFrequency);
+	void setClockFrequency(double clockFrequency);
 
 	ChipModel getChipModel();
 	void setChipModel(ChipModel model);

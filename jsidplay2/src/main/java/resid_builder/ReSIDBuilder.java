@@ -67,12 +67,14 @@ public class ReSIDBuilder implements SIDBuilder {
 		final ReSIDBase sid = getOrCreateSID(context, oldSIDEmu, tune, sidNum);
 		sid.setChipModel(ChipModel.getChipModel(config.getEmulation(), tune,
 				sidNum));
-		sid.setSampling(cpuClock.getCpuFrequency(), audioConfig.getFrameRate(),
-				audioConfig.getSamplingMethod());
+		sid.setClockFrequency(cpuClock.getCpuFrequency());
 		sid.setFilter(config, sidNum);
 		sid.setFilterEnable(config.getEmulation(), sidNum);
 		sid.input(config.getEmulation().isDigiBoosted8580() ? sid
 				.getInputDigiBoost() : 0);
+		mixer.setSampling(cpuClock.getCpuFrequency(),
+				audioConfig.getFrameRate(), audioConfig.getSamplingMethod(),
+				20000);
 		mixer.add(sidNum, sid, config.getAudio());
 		return sid;
 	}

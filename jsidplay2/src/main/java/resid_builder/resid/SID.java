@@ -21,12 +21,10 @@
  */
 package resid_builder.resid;
 
+import java.util.function.IntConsumer;
+
 import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
-import libsidplay.common.SamplingMethod;
-import resid_builder.resample.Resampler;
-import resid_builder.resample.TwoPassSincResampler;
-import resid_builder.resample.ZeroOrderResampler;
 
 /**
  * MOS6581/MOS8580 emulation. Based on reSID 0.16 by Dag Lem, and then hacked on
@@ -89,11 +87,6 @@ public final class SID implements SIDChip {
 	 * Time until synchronize() must be run.
 	 */
 	private int nextVoiceSync;
-
-	/**
-	 * Resampler used by audio generation code.
-	 */
-	private Resampler resampler;
 
 	/** Delayed MOS8580 write register */
 	private int delayedOffset;
@@ -234,9 +227,6 @@ public final class SID implements SIDChip {
 		filter6581.reset();
 		filter8580.reset();
 		externalFilter.reset();
-		if (resampler != null) {
-			resampler.reset();
-		}
 
 		busValue = 0;
 		busValueTtl = 0;
@@ -429,52 +419,15 @@ public final class SID implements SIDChip {
 	}
 
 	/**
-	 * Setting of SID sampling parameters.
-	 * <P>
-	 * Use a clock freqency of 985248Hz for PAL C64, 1022730Hz for NTSC C64. The
-	 * default end of passband frequency is pass_freq = 0.9*sample_freq/2 for
-	 * sample frequencies up to ~ 44.1kHz, and 20kHz for higher sample
-	 * frequencies.
-	 * <P>
-	 * For resampling, the ratio between the clock frequency and the sample
-	 * frequency is limited as follows: 125*clock_freq/sample_freq < 16384 E.g.
-	 * provided a clock frequency of ~ 1MHz, the sample frequency can not be set
-	 * lower than ~ 8kHz. A lower sample frequency would make the resampling
-	 * code overfill its 16k sample ring buffer.
-	 * <P>
-	 * The end of passband frequency is also limited: pass_freq <=
-	 * 0.9*sample_freq/2
-	 * <P>
-	 * E.g. for a 44.1kHz sampling rate the end of passband frequency is limited
-	 * to slightly below 20kHz. This constraint ensures that the FIR table is
-	 * not overfilled.
+	 * Setting of clock frequency.
 	 * 
 	 * @param clockFrequency
 	 *            System clock frequency at Hz
-	 * @param method
-	 *            sampling method to use
-	 * @param samplingFrequency
-	 *            Desired output sampling rate
 	 */
-	public void setSamplingParameters(final double clockFrequency,
-			final SamplingMethod method, final double samplingFrequency,
-			final double highestAccurateFrequency) {
+	public void setClockFrequency(final double clockFrequency) {
 		filter6581.setClockFrequency(clockFrequency);
 		filter8580.setClockFrequency(clockFrequency);
 		externalFilter.setClockFrequency(clockFrequency);
-
-		switch (method) {
-		case DECIMATE:
-			resampler = new ZeroOrderResampler(clockFrequency,
-					samplingFrequency);
-			break;
-		case RESAMPLE:
-			resampler = new TwoPassSincResampler(clockFrequency,
-					samplingFrequency, highestAccurateFrequency);
-			break;
-		default:
-			throw new RuntimeException("Unknown samplingmethod: " + method);
-		}
 	}
 
 	private void ageBusValue(final int n) {
@@ -510,9 +463,9 @@ public final class SID implements SIDChip {
 	 *            where to begin audio writing
 	 * @return
 	 */
-	public final int clock(int cycles, final int buf[], final int pos) {
+	@Override
+	public final void clock(int cycles, IntConsumer sample) {
 		ageBusValue(cycles);
-		int s = 0;
 
 		while (cycles != 0) {
 			int delta_t = Math.min(nextVoiceSync, cycles);
@@ -522,10 +475,7 @@ public final class SID implements SIDChip {
 				}
 
 				for (int i = 0; i < delta_t; i++) {
-					if (resampler.input(output())) {
-						buf[pos + s] = resampler.output();
-						s++;
-					}
+					sample.accept(output());
 
 					/* clock waveform generators */
 					voice[0].wave.clock();
@@ -551,8 +501,6 @@ public final class SID implements SIDChip {
 				voiceSync(true);
 			}
 		}
-
-		return s;
 	}
 
 	/**
