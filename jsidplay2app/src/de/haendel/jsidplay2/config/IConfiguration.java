@@ -36,7 +36,7 @@ public interface IConfiguration {
 	String _48000 = "48000";
 	String _96000 = "96000";
 
-	String DEFAULT_BUFFER_SIZE = "2500";
+	String DEFAULT_BUFFER_SIZE = "25000";
 	String DEFAULT_PLAY_LENGTH = "300";
 	String DEFAULT_ENABLE_DATABASE = Boolean.TRUE.toString();
 	String DEFAULT_SINGLE_SONG = Boolean.FALSE.toString();
