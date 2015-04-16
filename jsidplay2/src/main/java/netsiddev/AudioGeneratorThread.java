@@ -1,7 +1,6 @@
 package netsiddev;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -47,13 +46,13 @@ public class AudioGeneratorThread extends Thread {
 	private SIDChip[] sid;
 
 	/** SID resampler */
-	private Resampler[] resampler;
+	private Resampler resamplerL, resamplerR;
 
 	/** Currently active clocking value */
-	private CPUClock[] sidClocking;
+	private CPUClock sidClocking;
 
 	/** Currently active sampling method */
-	private SamplingMethod[] sidSampling;
+	private SamplingMethod sidSampling;
 
 	/** Current audio output frequency. */
 	private final AudioConfig audioConfig;
@@ -121,8 +120,8 @@ public class AudioGeneratorThread extends Thread {
 
 			/* Do sound 10 ms at a time. */
 			final int audioLength = 10000;
-			/* Allocate audio buffer about 2x needed. */
-			int[] audioBuffer = new int[2 * audioLength
+			/* Allocate audio buffer about 2x needed. And another 15x for storing unresampled data. */
+			int[] audioBuffer = new int[15 * 2 * audioLength
 					/ (1000000 / audioConfig.getFrameRate())];
 			int[] outAudioBuffer = new int[audioBuffer.length];
 
@@ -174,14 +173,10 @@ public class AudioGeneratorThread extends Thread {
 
 					/* Mix SID buffers. */
 					for (int sidNum = 0; sidNum < sid.length; sidNum++) {
-						// XXX Mixing before resampling? Can one resampler be used for all SID combinations?
-						final Resampler _resampler = resampler[sidNum];
 						final int _sidNum = sidNum;
 						audioBufferPos[sidNum] = 0;
 						sid[sidNum].clock(piece, sample -> {
-							if (_resampler.input(sample)) {
-								audioBuffer[audioBufferPos[_sidNum]++] = _resampler.output();
-							}
+							audioBuffer[audioBufferPos[_sidNum]++] = sample;
 						});
 
 						int overflowCount = 0;
@@ -232,12 +227,9 @@ public class AudioGeneratorThread extends Thread {
 					}
 
 					/*
-					 * Note: if we need > 2 SIDs, we could consider mixing them
-					 * together before resampling, which would allow us to run
-					 * the sinc code only twice. Additionally, we might define
-					 * stereo sinc resampler to do both passes at once. This
-					 * should be a win because the FIR table would only have to
-					 * be fetched once.
+					 * XXX Note: We might define stereo sinc resampler to do both
+					 * passes at once. This should be a win because the FIR
+					 * table would only have to be fetched once.
 					 */
 
 					/* Generate triangularly dithered stereo audio output. */
@@ -246,24 +238,30 @@ public class AudioGeneratorThread extends Thread {
 						int dithering = triangularDithering();
 						int value;
 
-						value = outAudioBuffer[i << 1 | 0] + dithering;
-						if (value > 32767) {
-							value = 32767;
-						}
-						if (value < -32768) {
-							value = -32768;
-						}
-						output.putShort((short) value);
+						value = outAudioBuffer[i << 1 | 0];
+						if (resamplerL.input(value)) {
+							value = resamplerL.output() + dithering;
 
-						value = outAudioBuffer[i << 1 | 1] + dithering;
-						if (value > 32767) {
-							value = 32767;
+							if (value > 32767) {
+								value = 32767;
+							}
+							if (value < -32768) {
+								value = -32768;
+							}
+							output.putShort((short) value);
 						}
-						if (value < -32768) {
-							value = -32768;
-						}
-						output.putShort((short) value);
+						value = outAudioBuffer[i << 1 | 1];
+						if (resamplerR.input(value)) {
+							value = resamplerR.output() + dithering;
 
+							if (value > 32767) {
+								value = 32767;
+							}
+							if (value < -32768) {
+								value = -32768;
+							}
+							output.putShort((short) value);
+						}
 						if (!output.hasRemaining()) {
 							driver.write();
 							output.clear();
@@ -350,7 +348,7 @@ public class AudioGeneratorThread extends Thread {
 	 *            The specified clock value to set.
 	 */
 	public void setClocking(CPUClock clock) {
-		Arrays.fill(sidClocking, clock);
+		sidClocking = clock;
 		refreshParams();
 	}
 
@@ -361,7 +359,7 @@ public class AudioGeneratorThread extends Thread {
 	 *            The desired sampling method to use.
 	 */
 	public void setSampling(SamplingMethod samplingMethod) {
-		Arrays.fill(sidSampling, samplingMethod);
+		sidSampling = samplingMethod;
 		refreshParams();
 	}
 
@@ -371,11 +369,12 @@ public class AudioGeneratorThread extends Thread {
 	 */
 	private void refreshParams() {
 		for (int i = 0; i < sid.length; i++) {
-			sid[i].setClockFrequency(sidClocking[i].getCpuFrequency());
-			resampler[i] = Resampler.createResampler(
-					sidClocking[i].getCpuFrequency(), sidSampling[i],
-					audioConfig.getFrameRate(), 20000);
+			sid[i].setClockFrequency(sidClocking.getCpuFrequency());
 		}
+		resamplerL = Resampler.createResampler(sidClocking.getCpuFrequency(),
+				sidSampling, audioConfig.getFrameRate(), 20000);
+		resamplerR = Resampler.createResampler(sidClocking.getCpuFrequency(),
+				sidSampling, audioConfig.getFrameRate(), 20000);
 	}
 
 	public void setPosition(int sidNumber, int position) {
@@ -451,13 +450,10 @@ public class AudioGeneratorThread extends Thread {
 
 	public void setSidArray(SIDChip[] sid) {
 		this.sid = sid;
-		this.resampler = new Resampler[sid.length];
 
-		sidClocking = new CPUClock[sid.length];
-		Arrays.fill(sidClocking, CPUClock.PAL);
+		sidClocking = CPUClock.PAL;
 
-		sidSampling = new SamplingMethod[sid.length];
-		Arrays.fill(sidSampling, SamplingMethod.DECIMATE);
+		sidSampling = SamplingMethod.DECIMATE;
 
 		sidLevel = new int[sid.length];
 		sidPositionL = new int[sid.length];

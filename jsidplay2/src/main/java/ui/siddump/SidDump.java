@@ -455,6 +455,8 @@ public class SidDump extends Tab implements UIPart {
 		}
 		sidDumpExtension.setLeftVolume(util.getConfig().getAudio()
 				.getMainVolume());
+		sidDumpExtension.setRegOrder(regPlayer.getSelectionModel()
+				.getSelectedItem().getRegs());
 		sidDumpExtension.init();
 	}
 
