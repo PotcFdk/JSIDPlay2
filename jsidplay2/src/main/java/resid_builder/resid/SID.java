@@ -448,8 +448,7 @@ public final class SID implements SIDChip {
 	private int output() {
 		return externalFilter.clock(filter.clock(
 				voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),
-				voice[2].output(voice[1].wave)))
-				* OUTPUT_LEVEL >> 8;
+				voice[2].output(voice[1].wave)));
 	}
 
 	/**
@@ -475,7 +474,7 @@ public final class SID implements SIDChip {
 				}
 
 				for (int i = 0; i < delta_t; i++) {
-					sample.accept(output());
+					sample.accept(output() * OUTPUT_LEVEL >> 8);
 
 					/* clock waveform generators */
 					voice[0].wave.clock();

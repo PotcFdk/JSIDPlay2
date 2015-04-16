@@ -143,7 +143,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	 * Create SID emulation of a specific emulation type or re-use already used
 	 * SID chip, if implementation does not change.<BR>
 	 * Note: The reason for re-using SID implementation is to preserve the
-	 * current SID's internal state, when changing filters ot chip model type.
+	 * current SID's internal state, when changing filters or chip model type.
 	 * 
 	 * @param context
 	 *            System event context

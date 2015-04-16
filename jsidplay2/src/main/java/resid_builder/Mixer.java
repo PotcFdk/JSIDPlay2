@@ -31,6 +31,7 @@ public class Mixer {
 			for (ReSIDBase sid : sids) {
 				// clock SID to the present moment
 				sid.clock();
+				// rewind buffer
 				sid.bufferpos = 0;
 			}
 			context.schedule(this, 10000);
@@ -58,21 +59,31 @@ public class Mixer {
 		 */
 		@Override
 		public void event() throws InterruptedException {
-			int samples = 0;
+			// clock all SIDs and buffer sample data
+			int numSamples = 0;
 			for (ReSIDBase sid : sids) {
 				// clock SID to the present moment
 				sid.clock();
 				// determine amount of samples produced (cut-off overflows)
-				samples = samples != 0 ? Math.min(samples, sid.bufferpos)
-						: sid.bufferpos;
+				numSamples = numSamples != 0 ? Math.min(numSamples,
+						sid.bufferpos) : sid.bufferpos;
+				// rewind buffer
 				sid.bufferpos = 0;
 			}
-			// output sample data
-			for (int sampleIdx = 0; sampleIdx < samples; sampleIdx++) {
+			// For all sample data
+			for (int sampleIdx = 0; sampleIdx < numSamples; sampleIdx++) {
+				// Mix all SIDs sample with respect to the speakers audibility
+				int sidNum = 0;
+				int valueL = 0, valueR = 0;
+				for (ReSIDBase sid : sids) {
+					int sample = sid.buffer[sampleIdx];
+					valueL += sample * balancedVolumeL[sidNum];
+					valueR += sample * balancedVolumeR[sidNum++];
+				}
+				// output sample data
 				int dither = triangularDithering();
-
-				putSample(sampleIdx, balancedVolumeL, dither, resamplerL);
-				putSample(sampleIdx, balancedVolumeR, dither, resamplerR);
+				putSample(resamplerL, valueL >> 10, dither);
+				putSample(resamplerR, valueR >> 10, dither);
 
 				if (driver.buffer().remaining() == 0) {
 					driver.write();
@@ -84,33 +95,23 @@ public class Mixer {
 
 		/**
 		 * <OL>
-		 * <LI>Mix sample data of all SIDs with respect to the audibility on the
-		 * speaker.
-		 * <LI>Next resample the resulting sample value.
+		 * <LI>Resample the SID output, because the sample frequency is
+		 * different to the clock frequency .
 		 * <LI>Add dithering to reduce quantization noise, when moving to a
 		 * format with less precision.
-		 * <LI>And last cut-off overflow samples.
+		 * <LI>Cut-off overflow samples.
 		 * </OL>
 		 * 
-		 * @param sampleIdx
-		 *            current sample index
-		 * @param balancedVolume
-		 *            audibility (balanced volume of the speaker)
+		 * @param resampler
+		 *            resampler
+		 * @param value
+		 *            sample value
 		 * @param dither
 		 *            triangularly shaped noise
-		 * @param resampler
-		 *            resampler to be used
 		 */
-		private final void putSample(int sampleIdx, int[] balancedVolume,
-				int dither, Resampler resampler) {
-			int value = 0;
-			int sidNum = 0;
-			for (ReSIDBase sid : sids) {
-				value += sid.buffer[sampleIdx] * balancedVolume[sidNum++];
-			}
-			if (resampler.input(value >> 10)) {
+		private final void putSample(Resampler resampler, int value, int dither) {
+			if (resampler.input(value)) {
 				value = resampler.output() + dither;
-
 				if (value > 32767) {
 					value = 32767;
 				}
@@ -178,7 +179,7 @@ public class Mixer {
 	private int[] balancedVolumeR = new int[PLA.MAX_SIDS];
 
 	/**
-	 * Resampler of sample output for left and right speaker.
+	 * Resampler of sample output for two channels (stereo).
 	 */
 	private Resampler resamplerL, resamplerR;
 
