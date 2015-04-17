@@ -46,7 +46,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	private final CPUClock cpuClock;
 
 	/**
-	 * Mixing algorithm
+	 * Mixer of sound samples
 	 */
 	protected final Mixer mixer;
 
