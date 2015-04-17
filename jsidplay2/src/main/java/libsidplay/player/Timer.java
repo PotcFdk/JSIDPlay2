@@ -72,12 +72,12 @@ public abstract class Timer {
 			int songLength = player.getSidDatabaseInfo(db -> db
 					.getSongLength(tune));
 			if (songLength > 0) {
-				// ... or use song length of song length database
+				// use song length of song length database ...
 				end = schedule(songLength, endTimeEvent);
 				return;
 			}
 		}
-		// default play default length or forever (0) ...
+		// ... or play default length or (0 means forever)
 		end = config.getSidplay2().getDefaultPlayLength();
 		if (end != 0) {
 			// use default length (is meant to be relative to start)
@@ -98,6 +98,7 @@ public abstract class Timer {
 			// event is in the past? Trigger immediately!
 			eventScheduler.scheduleAbsolute(event, 0, Phase.PHI1);
 		} else {
+			// event is in the future
 			eventScheduler.scheduleAbsolute(event, absoluteCycles, Phase.PHI1);
 		}
 		return seconds;
@@ -107,8 +108,7 @@ public abstract class Timer {
 	 * Cancel event.
 	 */
 	private void cancel(Event event) {
-		EventScheduler eventScheduler = player.getC64().getEventScheduler();
-		eventScheduler.cancel(event);
+		player.getC64().getEventScheduler().cancel(event);
 	}
 
 	public long getEnd() {

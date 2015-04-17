@@ -112,7 +112,7 @@ public class Player {
 	/**
 	 * Previous song select timeout (< 4 secs).
 	 */
-	private static final int SID2_PREV_SONG_TIMEOUT = 4;
+	private static final int PREV_SONG_TIMEOUT = 4;
 	/**
 	 * Auto-start commands.
 	 */
@@ -122,45 +122,45 @@ public class Player {
 	/**
 	 * Configuration.
 	 */
-	private final IConfig config;
+	private IConfig config;
 
 	/**
 	 * C64 computer.
 	 */
-	private final C64 c64;
+	private C64 c64;
 	/**
 	 * C1530 datasette.
 	 */
-	private final Datasette datasette;
+	private Datasette datasette;
 	/**
 	 * IEC bus.
 	 */
-	private final IECBus iecBus;
+	private IECBus iecBus;
 	/**
 	 * Additional serial devices like a printer (except of the floppies).
 	 */
-	private final SerialIECDevice[] serialDevices;
+	private SerialIECDevice[] serialDevices;
 	/**
 	 * C1541 floppy disk drives.
 	 */
-	private final C1541[] floppies;
+	private C1541[] floppies;
 	/**
 	 * Responsible to keep C64 and C1541 in sync.
 	 */
-	private final C1541Runner c1541Runner;
+	private C1541Runner c1541Runner;
 	/**
 	 * MPS803 printer.
 	 */
-	private final MPS803 printer;
+	private MPS803 printer;
 	/**
 	 * Music player state.
 	 */
-	private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
+	private ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
 			State.STOPPED);
 	/**
 	 * Play timer.
 	 */
-	private final Timer timer;
+	private Timer timer;
 	/**
 	 * Play list.
 	 */
@@ -348,7 +348,7 @@ public class Player {
 	 * @param cpuFreq
 	 *            frequency (PAL/NTSC)
 	 */
-	public final void setClock(final CPUClock cpuFreq) {
+	private void setClock(final CPUClock cpuFreq) {
 		c64.setClock(cpuFreq);
 		c1541Runner.setClockDivider(cpuFreq);
 		for (SerialIECDevice device : serialDevices) {
@@ -361,7 +361,7 @@ public class Player {
 	 * 
 	 * @throws InterruptedException
 	 */
-	private final void reset() throws InterruptedException {
+	private void reset() throws InterruptedException {
 		c64.reset();
 		iecBus.reset();
 		datasette.reset();
@@ -441,9 +441,9 @@ public class Player {
 	}
 
 	/**
-	 * What is the current playing time.
+	 * What is the current playing time in sec.
 	 * 
-	 * @return the current playing time
+	 * @return the current playing time in sec
 	 */
 	public final int time() {
 		final EventScheduler c = c64.getEventScheduler();
@@ -555,8 +555,8 @@ public class Player {
 	/**
 	 * Install Jiffy DOS floppy speeder.
 	 * 
-	 * Replace the Kernal ROM and replace the floppy ROM additionally. Note:
-	 * Floppy kernal is replaced in all drives!
+	 * Replace the Kernal ROM and replace the floppy ROM additionally.<BR>
+	 * Note: Floppy kernal is replaced in all drives!
 	 * 
 	 * @param c64kernalFile
 	 *            C64 Kernal replacement
@@ -687,6 +687,12 @@ public class Player {
 		this.tune = tune;
 	}
 
+	/**
+	 * Configure all available SIDs.
+	 * 
+	 * @param action
+	 *            SID chip consumer
+	 */
 	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
 		for (int chipNum = 0; chipNum < PLA.MAX_SIDS; chipNum++) {
 			final SIDEmu sid = c64.getPla().getSID(chipNum);
@@ -696,6 +702,14 @@ public class Player {
 		}
 	}
 
+	/**
+	 * Configure one specific SID.
+	 * 
+	 * @param chipNum
+	 *            SID chip number
+	 * @param action
+	 *            SID chip consumer
+	 */
 	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
 		final SIDEmu sid = c64.getPla().getSID(chipNum);
 		if (sid != null) {
@@ -703,6 +717,12 @@ public class Player {
 		}
 	}
 
+	/**
+	 * Configure a SID builder
+	 * 
+	 * @param action
+	 *            SID builder consumer
+	 */
 	public final void configureSIDBuilder(Consumer<SIDBuilder> action) {
 		action.accept(sidBuilder);
 	}
@@ -752,7 +772,7 @@ public class Player {
 	/**
 	 * Player runnable to play music in the background.
 	 */
-	private transient final Runnable playerRunnable = () -> {
+	private Runnable playerRunnable = () -> {
 		// Run until the player gets stopped
 		while (true) {
 			try {
@@ -872,7 +892,7 @@ public class Player {
 			oldDriverSettings = null;
 		}
 		if (tune instanceof MP3Tune) {
-			// Change MP3 settings for MP3 play-back
+			// Change driver settings to use compare driver for MP3 play-back
 			newDriverSettings = new DriverSettings(new CmpMP3File());
 			config.getAudio().setPlayOriginal(true);
 			config.getAudio().setMp3File(((MP3Tune) tune).getMP3Filename());
@@ -981,7 +1001,7 @@ public class Player {
 	}
 
 	public final void previousSong() {
-		if (time() < SID2_PREV_SONG_TIMEOUT) {
+		if (time() < PREV_SONG_TIMEOUT) {
 			playList.previous();
 		}
 		stateProperty.set(State.RESTART);
