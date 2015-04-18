@@ -121,7 +121,7 @@ public class AudioGeneratorThread extends Thread {
 			/* Do sound 10 ms at a time. */
 			final int audioLength = 10000;
 			/* Allocate audio buffer about 2x needed. And another 15x for storing unresampled data. */
-			int[] audioBuffer = new int[15 * 2 * audioLength
+			int[] audioBuffer = new int[25 * 2 * audioLength
 					/ (1000000 / audioConfig.getFrameRate())];
 			int[] outAudioBuffer = new int[audioBuffer.length];
 
