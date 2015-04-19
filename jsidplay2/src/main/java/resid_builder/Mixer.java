@@ -1,19 +1,69 @@
 package resid_builder;
 
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.IntConsumer;
 
+import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import libsidplay.common.SamplingMethod;
 import libsidplay.components.pla.PLA;
 import resid_builder.resample.Resampler;
+import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IAudioSection;
 
+/**
+ * Mixer to mix SIDs sample data into the audio buffer.<BR>
+ * Note: the speakers audibility on the left/right speaker requires two audio
+ * buffers, one for each channel.
+ * 
+ * @author ken
+ *
+ */
 public class Mixer {
+	/**
+	 * Sound sample consumer consuming sample data while a SID is being
+	 * clock'ed. A sample value is added to the audio buffer to mix the output
+	 * of several SIDs together.
+	 * 
+	 * @author ken
+	 *
+	 */
+	private class SampleAdder implements IntConsumer {
+		private int sidNum;
+		private int pos;
+
+		public SampleAdder(int sidNum) {
+			this.sidNum = sidNum;
+		}
+
+		/**
+		 * Add sample to the mix with respect to the speakers audibility.
+		 */
+		@Override
+		public void accept(int sample) {
+			int valueL = audioBufferL.get(pos);
+			int valueR = audioBufferR.get(pos);
+			valueL += sample * balancedVolumeL[sidNum];
+			valueR += sample * balancedVolumeR[sidNum];
+			audioBufferL.put(pos, valueL);
+			audioBufferR.put(pos++, valueR);
+		}
+
+		public void rewind() {
+			pos = 0;
+		}
+
+		public int getPos() {
+			return pos;
+		}
+
+	}
+
 	/**
 	 * NullAudio ignores generated sound samples. This is used, before timer
 	 * start has been reached.
@@ -29,10 +79,11 @@ public class Mixer {
 		@Override
 		public void event() throws InterruptedException {
 			for (ReSIDBase sid : sids) {
+				SampleAdder sampler = (SampleAdder) sid.getSampler();
 				// clock SID to the present moment
 				sid.clock();
-				// rewind buffer
-				sid.bufferpos = 0;
+				// rewind
+				sampler.rewind();
 			}
 			context.schedule(this, 10000);
 		}
@@ -52,43 +103,38 @@ public class Mixer {
 
 		/**
 		 * Note: The assumption, that after clocking two chips their buffer
-		 * positions are equal is false! Using different SID reimplementations
+		 * positions are equal is wrong! Using different SID reimplementations
 		 * one chip can be one sample further than the other. Therefore we have
 		 * to handle overflowing sample data to prevent crackling noises. This
 		 * implementation just cuts them off.
 		 */
 		@Override
 		public void event() throws InterruptedException {
-			// clock all SIDs and buffer sample data
+			// Clock SIDs to fill audio buffer
 			int numSamples = 0;
 			for (ReSIDBase sid : sids) {
+				SampleAdder sampler = (SampleAdder) sid.getSampler();
 				// clock SID to the present moment
 				sid.clock();
 				// determine amount of samples produced (cut-off overflows)
 				numSamples = numSamples != 0 ? Math.min(numSamples,
-						sid.bufferpos) : sid.bufferpos;
-				// rewind buffer
-				sid.bufferpos = 0;
+						sampler.getPos()) : sampler.getPos();
+				// rewind
+				sampler.rewind();
 			}
-			// For all sample data
-			for (int sampleIdx = 0; sampleIdx < numSamples; sampleIdx++) {
-				// Mix all SIDs sample with respect to the speakers audibility
-				int sidNum = 0;
-				int valueL = 0, valueR = 0;
-				for (ReSIDBase sid : sids) {
-					int sample = sid.buffer[sampleIdx];
-					valueL += sample * balancedVolumeL[sidNum];
-					valueR += sample * balancedVolumeR[sidNum++];
-				}
-				// output sample data
+			// Output sample data
+			for (int pos = 0; pos < numSamples; pos++) {
 				int dither = triangularDithering();
-				putSample(resamplerL, valueL >> 10, dither);
-				putSample(resamplerR, valueR >> 10, dither);
+
+				putSample(resamplerL, audioBufferL.get(pos), dither);
+				putSample(resamplerR, audioBufferR.get(pos), dither);
 
 				if (driver.buffer().remaining() == 0) {
 					driver.write();
 					driver.buffer().clear();
 				}
+				audioBufferL.put(pos, 0);
+				audioBufferR.put(pos, 0);
 			}
 			context.schedule(this, 10000);
 		}
@@ -110,7 +156,7 @@ public class Mixer {
 		 *            triangularly shaped noise
 		 */
 		private final void putSample(Resampler resampler, int value, int dither) {
-			if (resampler.input(value)) {
+			if (resampler.input(value >> 10)) {
 				value = resampler.output() + dither;
 				if (value > 32767) {
 					value = 32767;
@@ -142,6 +188,17 @@ public class Mixer {
 	 * SIDs to mix their sound output.
 	 */
 	private List<ReSIDBase> sids = new ArrayList<ReSIDBase>();
+
+	/**
+	 * Audio buffer for two channels (stereo).
+	 */
+	private IntBuffer audioBufferL, audioBufferR;
+
+	/**
+	 * Resampler of sample output for two channels (stereo).
+	 */
+	private Resampler resamplerL, resamplerR;
+
 	/**
 	 * Audio driver
 	 */
@@ -178,26 +235,23 @@ public class Mixer {
 	 */
 	private int[] balancedVolumeR = new int[PLA.MAX_SIDS];
 
-	/**
-	 * Resampler of sample output for two channels (stereo).
-	 */
-	private Resampler resamplerL, resamplerR;
-
-	public Mixer(EventScheduler context, AudioDriver audioDriver) {
+	public Mixer(EventScheduler context, CPUClock cpuClock,
+			AudioConfig audioConfig, IAudioSection audioSection,
+			AudioDriver audioDriver) {
 		this.context = context;
 		this.driver = audioDriver;
+		this.audioBufferL = IntBuffer.allocate(audioSection.getBufferSize());
+		this.audioBufferR = IntBuffer.allocate(audioSection.getBufferSize());
+		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(),
+				audioConfig.getSamplingMethod(), audioConfig.getFrameRate(),
+				20000);
+		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(),
+				audioConfig.getSamplingMethod(), audioConfig.getFrameRate(),
+				20000);
 	}
 
 	public void reset() {
 		context.schedule(nullAudio, 0, Event.Phase.PHI2);
-	}
-
-	public void setSampling(final double systemClock, final float freq,
-			final SamplingMethod method, double highestAccurateFrequency) {
-		resamplerL = Resampler.createResampler(systemClock, method, freq,
-				highestAccurateFrequency);
-		resamplerR = Resampler.createResampler(systemClock, method, freq,
-				highestAccurateFrequency);
 	}
 
 	/**
@@ -209,30 +263,57 @@ public class Mixer {
 		context.schedule(mixerAudio, 0, Event.Phase.PHI2);
 	}
 
+	/**
+	 * Add a SID to the mix.
+	 * 
+	 * @param sidNum
+	 *            SID chip number
+	 * @param sid
+	 *            SID to add
+	 * @param audio
+	 *            audio configuration
+	 */
 	public void add(int sidNum, ReSIDBase sid, IAudioSection audio) {
+		sid.setSampler(new SampleAdder(sidNum));
 		if (sidNum < sids.size()) {
 			sids.set(sidNum, sid);
 		} else {
+			sids.add(sid);
 			setVolume(sidNum, audio);
 			setBalance(sidNum, audio);
-			sids.add(sid);
-			balanceVolume();
 		}
 	}
 
+	/**
+	 * Remove SID from the mix.
+	 * 
+	 * @param sid
+	 *            SID to remove
+	 */
 	public void remove(SIDEmu sid) {
 		sids.remove(sid);
 		balanceVolume();
 	}
 
+	/**
+	 * Get specified SID.
+	 * 
+	 * @param sidNum
+	 *            requested SID number
+	 * @return the mixers SID
+	 */
 	public ReSIDBase get(int sidNum) {
 		return sids.get(sidNum);
 	}
 
+	List<ReSIDBase> getSids() {
+		return sids;
+	}
+
 	/**
-	 * @return current number of devices.
+	 * @return current number of SIDs.
 	 */
-	public int getNumDevices() {
+	public int getCount() {
 		return sids.size();
 	}
 

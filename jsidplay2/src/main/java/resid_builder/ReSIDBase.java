@@ -9,28 +9,18 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
 
-
 public abstract class ReSIDBase extends SIDEmu {
 
-	private static final Logger RESID = Logger.getLogger(ReSIDBase.class.getName());
+	private static final Logger RESID = Logger.getLogger(ReSIDBase.class
+			.getName());
 
 	protected final SIDChip sid;
-
-	/**
-	 * Current position that audio is being written to.
-	 */
-	protected int bufferpos;
-
-	/**
-	 * Audio output sample buffer.
-	 */
-	protected final int[] buffer;
 
 	/**
 	 * Consumes samples of the SID while clocking.
 	 */
 	private IntConsumer sampler;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -39,15 +29,18 @@ public abstract class ReSIDBase extends SIDEmu {
 	 * @param mixerEvent
 	 *            {@link Mixer} to use.
 	 */
-	public ReSIDBase(EventScheduler context, final int bufferSize) {
+	public ReSIDBase(EventScheduler context) {
 		super(context);
 		this.sid = createSID();
-		this.buffer = new int[bufferSize];
-		this.bufferpos = 0;
-		sampler = sample -> {
-			buffer[bufferpos++] = sample;
-		};
 		reset((byte) 0xf);
+	}
+
+	public void setSampler(IntConsumer sampler) {
+		this.sampler = sampler;
+	}
+
+	public IntConsumer getSampler() {
+		return sampler;
 	}
 
 	@Override
@@ -128,5 +121,5 @@ public abstract class ReSIDBase extends SIDEmu {
 	}
 
 	protected abstract SIDChip createSID();
-	
+
 }

@@ -15,6 +15,8 @@
  */
 package resid_builder;
 
+import java.util.List;
+
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.EventScheduler;
@@ -42,20 +44,20 @@ public class ReSIDfp extends ReSIDBase {
 	static class FakeStereo extends ReSIDfp {
 		private IEmulationSection emulationSection;
 		private int prevNum;
-		private ReSIDBase prevSid;
+		private List<ReSIDBase> sids;
 
-		public FakeStereo(final EventScheduler context,
-				final IConfig config, final int prevNum, final ReSIDBase prevSid) {
-			super(context, config.getAudio().getBufferSize());
+		public FakeStereo(final EventScheduler context, final IConfig config,
+				final int prevNum, final List<ReSIDBase> sids) {
+			super(context);
 			this.emulationSection = config.getEmulation();
 			this.prevNum = prevNum;
-			this.prevSid = prevSid;
+			this.sids = sids;
 		}
 
 		@Override
 		public byte read(int addr) {
 			if (emulationSection.getSidNumToRead() <= prevNum) {
-				return prevSid.read(addr);
+				return sids.get(prevNum).read(addr);
 			}
 			return super.read(addr);
 		}
@@ -63,7 +65,7 @@ public class ReSIDfp extends ReSIDBase {
 		@Override
 		public byte readInternalRegister(int addr) {
 			if (emulationSection.getSidNumToRead() <= prevNum) {
-				return prevSid.readInternalRegister(addr);
+				return sids.get(prevNum).readInternalRegister(addr);
 			}
 			return super.readInternalRegister(addr);
 		}
@@ -71,7 +73,7 @@ public class ReSIDfp extends ReSIDBase {
 		@Override
 		public void write(int addr, byte data) {
 			super.write(addr, data);
-			prevSid.write(addr, data);
+			sids.get(prevNum).write(addr, data);
 		}
 	}
 
@@ -83,8 +85,8 @@ public class ReSIDfp extends ReSIDBase {
 	 * @param mixerEvent
 	 *            {@link Mixer} to use.
 	 */
-	public ReSIDfp(EventScheduler context, final int bufferSize) {
-		super(context, bufferSize);
+	public ReSIDfp(EventScheduler context) {
+		super(context);
 	}
 
 	@Override

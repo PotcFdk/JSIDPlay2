@@ -15,6 +15,8 @@
  */
 package resid_builder;
 
+import java.util.List;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
@@ -36,11 +38,6 @@ public class ReSIDBuilder implements SIDBuilder {
 	private IConfig config;
 
 	/**
-	 * Current audio configuration
-	 */
-	private final AudioConfig audioConfig;
-
-	/**
 	 * C64 system frequency
 	 */
 	private final CPUClock cpuClock;
@@ -53,9 +50,9 @@ public class ReSIDBuilder implements SIDBuilder {
 	public ReSIDBuilder(EventScheduler context, IConfig config,
 			AudioConfig audioConfig, CPUClock cpuClock, AudioDriver audioDriver) {
 		this.config = config;
-		this.audioConfig = audioConfig;
 		this.cpuClock = cpuClock;
-		this.mixer = new Mixer(context, audioDriver);
+		this.mixer = new Mixer(context, cpuClock, audioConfig,
+				config.getAudio(), audioDriver);
 	}
 
 	/**
@@ -72,9 +69,6 @@ public class ReSIDBuilder implements SIDBuilder {
 		sid.setFilterEnable(config.getEmulation(), sidNum);
 		sid.input(config.getEmulation().isDigiBoosted8580() ? sid
 				.getInputDigiBoost() : 0);
-		mixer.setSampling(cpuClock.getCpuFrequency(),
-				audioConfig.getFrameRate(), audioConfig.getSamplingMethod(),
-				20000);
 		mixer.add(sidNum, sid, config.getAudio());
 		return sid;
 	}
@@ -108,7 +102,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	 */
 	@Override
 	public int getNumDevices() {
-		return mixer.getNumDevices();
+		return mixer.getCount();
 	}
 
 	/**
@@ -225,19 +219,19 @@ public class ReSIDBuilder implements SIDBuilder {
 	private ReSIDBase createSID(final EventScheduler context,
 			final Class<? extends ReSIDBase> sidImplCls, int sidNum) {
 		if (ReSID.class.equals(sidImplCls)) {
-			return new ReSID(context, config.getAudio().getBufferSize());
+			return new ReSID(context);
 		} else if (ReSIDfp.class.equals(sidImplCls)) {
-			return new ReSIDfp(context, config.getAudio().getBufferSize());
+			return new ReSIDfp(context);
 		} else if (ReSID.FakeStereo.class.equals(sidImplCls)) {
 			// ReSID fake-stereo mode
 			final int prevNum = sidNum - 1;
-			final ReSIDBase prevSID = mixer.get(prevNum);
-			return new ReSID.FakeStereo(context, config, prevNum, prevSID);
+			List<ReSIDBase> sids = mixer.getSids();
+			return new ReSID.FakeStereo(context, config, prevNum, sids);
 		} else if (ReSIDfp.FakeStereo.class.equals(sidImplCls)) {
 			// ReSIDfp fake-stereo mode
 			final int prevNum = sidNum - 1;
-			final ReSIDBase prevSID = mixer.get(prevNum);
-			return new ReSIDfp.FakeStereo(context, config, prevNum, prevSID);
+			List<ReSIDBase> sids = mixer.getSids();
+			return new ReSIDfp.FakeStereo(context, config, prevNum, sids);
 		} else {
 			throw new RuntimeException("Unknown SID impl.: " + sidImplCls);
 		}
