@@ -18,9 +18,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<debug>false</debug>
-		<!--codebase>http://haendel.ddns.net/~ken/</codebase-->
-		<codebase>http://kenchis.t15.org/jsidplay2/javafx/</codebase>
+		<debug>true</debug>
+		<codebase>http://haendel.ddns.net/~ken/</codebase>
+		<!--codebase>http://kenchis.t15.org/jsidplay2/javafx/</codebase-->
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
