@@ -16,6 +16,7 @@ public interface IAudioSection {
 	public static final float DEFAULT_MAIN_BALANCE = 0.f;
 	public static final float DEFAULT_SECOND_BALANCE = 1.f;
 	public static final float DEFAULT_THIRD_BALANCE = .5f;
+	public static final int DEFAULT_BUFFER_SIZE = 25000;
 
 	/**
 	 * Getter of the audio to be used.

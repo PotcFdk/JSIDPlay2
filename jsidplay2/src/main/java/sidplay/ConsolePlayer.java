@@ -27,6 +27,7 @@ import sidplay.consoleplayer.ConsoleIO;
 import sidplay.consoleplayer.TimeConverter;
 import sidplay.consoleplayer.VerboseValidator;
 import sidplay.ini.IniConfig;
+import sidplay.ini.intf.IAudioSection;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -45,7 +46,7 @@ public class ConsolePlayer {
 	private Audio audio = Audio.SOUNDCARD;
 
 	@Parameter(names = { "--bufferSize", "-B" }, descriptionKey = "BUFFER_SIZE")
-	private int bufferSize  = 2500;
+	private int bufferSize  = IAudioSection.DEFAULT_BUFFER_SIZE;
 
 	@Parameter(names = { "--deviceIndex", "-A" }, descriptionKey = "DEVICEINDEX")
 	private Integer deviceIdx;

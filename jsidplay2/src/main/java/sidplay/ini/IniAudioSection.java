@@ -229,10 +229,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 		iniReader.setProperty("Audio", "ThirdBalance", balance);
 	}
 
-	/*
-	 * supports 5 ms chunk at 96 kHz
-	 */
-	private int bufferSize = 5000;
+	private int bufferSize = DEFAULT_BUFFER_SIZE;
 
 	@Override
 	public int getBufferSize() {

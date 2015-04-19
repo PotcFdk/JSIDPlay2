@@ -169,10 +169,7 @@ public class AudioSection implements IAudioSection {
 		this.thirdBalance = third;
 	}
 
-	/*
-	 * 2500 bytes is equal to 2.5 ms chunk at 96 kHz
-	 */
-	private int bufferSize = 25000;
+	private int bufferSize = DEFAULT_BUFFER_SIZE;
 
 	@Override
 	public int getBufferSize() {
