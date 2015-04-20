@@ -102,7 +102,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	 */
 	@Override
 	public int getNumDevices() {
-		return mixer.getCount();
+		return mixer.getSIDCount();
 	}
 
 	/**
@@ -225,12 +225,12 @@ public class ReSIDBuilder implements SIDBuilder {
 		} else if (ReSID.FakeStereo.class.equals(sidImplCls)) {
 			// ReSID fake-stereo mode
 			final int prevNum = sidNum - 1;
-			List<ReSIDBase> sids = mixer.getSids();
+			List<ReSIDBase> sids = mixer.getSIDs();
 			return new ReSID.FakeStereo(context, config, prevNum, sids);
 		} else if (ReSIDfp.FakeStereo.class.equals(sidImplCls)) {
 			// ReSIDfp fake-stereo mode
 			final int prevNum = sidNum - 1;
-			List<ReSIDBase> sids = mixer.getSids();
+			List<ReSIDBase> sids = mixer.getSIDs();
 			return new ReSIDfp.FakeStereo(context, config, prevNum, sids);
 		} else {
 			throw new RuntimeException("Unknown SID impl.: " + sidImplCls);

@@ -18,8 +18,8 @@ import sidplay.ini.intf.IAudioSection;
 
 /**
  * Mixer to mix SIDs sample data into the audio buffer.<BR>
- * Note: the speakers audibility on the left/right speaker requires two audio
- * buffers, one for each channel.
+ * Note: the audibility on the left/right speaker require two audio buffers, one
+ * for each channel.
  * 
  * @author ken
  *
@@ -34,7 +34,14 @@ public class Mixer {
 	 *
 	 */
 	private class SampleAdder implements IntConsumer {
+		/**
+		 * @param sidNum
+		 *            SID chip number
+		 */
 		private int sidNum;
+		/**
+		 * Current audio buffer position.
+		 */
 		private int pos;
 
 		public SampleAdder(int sidNum) {
@@ -100,6 +107,15 @@ public class Mixer {
 		private MixerEvent(String name) {
 			super(name);
 		}
+
+		/**
+		 * Random source for triangular dithering
+		 */
+		private Random RANDOM = new Random();
+		/**
+		 * State of HP-TPDF.
+		 */
+		private int oldRandomValue;
 
 		/**
 		 * Note: The assumption, that after clocking two chips their buffer
@@ -168,6 +184,18 @@ public class Mixer {
 			}
 		}
 
+		/**
+		 * Triangularly shaped noise source for audio applications. Output of
+		 * this PRNG is between ]-1, 1[.
+		 * 
+		 * @return triangular noise sample
+		 */
+		private int triangularDithering() {
+			int prevValue = oldRandomValue;
+			oldRandomValue = RANDOM.nextInt() & 0x1;
+			return oldRandomValue - prevValue;
+		}
+
 	}
 
 	/**
@@ -203,15 +231,6 @@ public class Mixer {
 	 * Audio driver
 	 */
 	private AudioDriver driver;
-
-	/**
-	 * Random source for triangular dithering
-	 */
-	private Random RANDOM = new Random();
-	/**
-	 * State of HP-TPDF.
-	 */
-	private int oldRandomValue;
 
 	/**
 	 * Volume of all SIDs.
@@ -296,37 +315,19 @@ public class Mixer {
 	}
 
 	/**
-	 * Get specified SID.
+	 * Getter for SIDs in the mix.
 	 * 
-	 * @param sidNum
-	 *            requested SID number
-	 * @return the mixers SID
+	 * @return SIDs in the mix
 	 */
-	public ReSIDBase get(int sidNum) {
-		return sids.get(sidNum);
-	}
-
-	List<ReSIDBase> getSids() {
+	public List<ReSIDBase> getSIDs() {
 		return sids;
 	}
 
 	/**
 	 * @return current number of SIDs.
 	 */
-	public int getCount() {
+	public int getSIDCount() {
 		return sids.size();
-	}
-
-	/**
-	 * Triangularly shaped noise source for audio applications. Output of this
-	 * PRNG is between ]-1, 1[.
-	 * 
-	 * @return triangular noise sample
-	 */
-	private int triangularDithering() {
-		int prevValue = oldRandomValue;
-		oldRandomValue = RANDOM.nextInt() & 0x1;
-		return oldRandomValue - prevValue;
 	}
 
 	/**
