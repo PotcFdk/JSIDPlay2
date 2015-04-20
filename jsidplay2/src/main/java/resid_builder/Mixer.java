@@ -15,6 +15,7 @@ import resid_builder.resample.Resampler;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.ini.intf.IAudioSection;
+import sidplay.ini.intf.IConfig;
 
 /**
  * Mixer to mix SIDs sample data into the audio buffer.<BR>
@@ -204,6 +205,11 @@ public class Mixer {
 	private EventScheduler context;
 
 	/**
+	 * Configuration
+	 */
+	private IConfig config;
+
+	/**
 	 * Mixer WITHOUT audio output, just clocking SID chips.
 	 */
 	private Event nullAudio = new NullAudioEvent("NullAudio");
@@ -254,13 +260,14 @@ public class Mixer {
 	 */
 	private int[] balancedVolumeR = new int[PLA.MAX_SIDS];
 
-	public Mixer(EventScheduler context, CPUClock cpuClock,
-			AudioConfig audioConfig, IAudioSection audioSection,
-			AudioDriver audioDriver) {
+	public Mixer(EventScheduler context, IConfig config, CPUClock cpuClock,
+			AudioConfig audioConfig, AudioDriver audioDriver) {
 		this.context = context;
+		this.config = config;
 		this.driver = audioDriver;
-		this.audioBufferL = IntBuffer.allocate(audioSection.getBufferSize());
-		this.audioBufferR = IntBuffer.allocate(audioSection.getBufferSize());
+		IAudioSection audio = config.getAudio();
+		this.audioBufferL = IntBuffer.allocate(audio.getBufferSize());
+		this.audioBufferR = IntBuffer.allocate(audio.getBufferSize());
 		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(),
 				audioConfig.getSamplingMethod(), audioConfig.getFrameRate(),
 				20000);
@@ -289,17 +296,15 @@ public class Mixer {
 	 *            SID chip number
 	 * @param sid
 	 *            SID to add
-	 * @param audio
-	 *            audio configuration
 	 */
-	public void add(int sidNum, ReSIDBase sid, IAudioSection audio) {
+	public void add(int sidNum, ReSIDBase sid) {
 		sid.setSampler(new SampleAdder(sidNum));
 		if (sidNum < sids.size()) {
 			sids.set(sidNum, sid);
 		} else {
 			sids.add(sid);
-			setVolume(sidNum, audio);
-			setBalance(sidNum, audio);
+			setVolume(sidNum);
+			setBalance(sidNum);
 		}
 	}
 
@@ -336,22 +341,20 @@ public class Mixer {
 	 * 
 	 * @param sidNum
 	 *            SID chip number
-	 * @param audio
-	 *            audio configuration
 	 */
-	public void setVolume(int sidNum, IAudioSection audio) {
+	public void setVolume(int sidNum) {
 		assert sidNum < sids.size();
 
 		float volumeInDB;
 		switch (sidNum) {
 		case 0:
-			volumeInDB = audio.getMainVolume();
+			volumeInDB = config.getAudio().getMainVolume();
 			break;
 		case 1:
-			volumeInDB = audio.getSecondVolume();
+			volumeInDB = config.getAudio().getSecondVolume();
 			break;
 		case 2:
-			volumeInDB = audio.getThirdVolume();
+			volumeInDB = config.getAudio().getThirdVolume();
 			break;
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
@@ -367,22 +370,20 @@ public class Mixer {
 	 * 
 	 * @param sidNum
 	 *            SID chip number
-	 * @param audio
-	 *            audio configuration
 	 */
-	public void setBalance(int sidNum, IAudioSection audio) {
+	public void setBalance(int sidNum) {
 		assert sidNum < sids.size();
 
 		float balance;
 		switch (sidNum) {
 		case 0:
-			balance = audio.getMainBalance();
+			balance = config.getAudio().getMainBalance();
 			break;
 		case 1:
-			balance = audio.getSecondBalance();
+			balance = config.getAudio().getSecondBalance();
 			break;
 		case 2:
-			balance = audio.getThirdBalance();
+			balance = config.getAudio().getThirdBalance();
 			break;
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");

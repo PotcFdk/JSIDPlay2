@@ -26,11 +26,15 @@ import libsidplay.common.SIDEmu;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
-import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IEmulationSection;
 
 public class ReSIDBuilder implements SIDBuilder {
+
+	/**
+	 * System event context.
+	 */
+	private EventScheduler context;
 
 	/**
 	 * Configuration
@@ -49,19 +53,19 @@ public class ReSIDBuilder implements SIDBuilder {
 
 	public ReSIDBuilder(EventScheduler context, IConfig config,
 			AudioConfig audioConfig, CPUClock cpuClock, AudioDriver audioDriver) {
+		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
-		this.mixer = new Mixer(context, cpuClock, audioConfig,
-				config.getAudio(), audioDriver);
+		this.mixer = new Mixer(context, config, cpuClock, audioConfig,
+				audioDriver);
 	}
 
 	/**
 	 * Create a SID chip implementation and configure it, then start mixing.
 	 */
 	@Override
-	public SIDEmu lock(EventScheduler context, IConfig config,
-			SIDEmu oldSIDEmu, int sidNum, SidTune tune) {
-		final ReSIDBase sid = getOrCreateSID(context, oldSIDEmu, tune, sidNum);
+	public SIDEmu lock(SIDEmu oldSIDEmu, int sidNum, SidTune tune) {
+		final ReSIDBase sid = getOrCreateSID(oldSIDEmu, tune, sidNum);
 		sid.setChipModel(ChipModel.getChipModel(config.getEmulation(), tune,
 				sidNum));
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
@@ -69,7 +73,7 @@ public class ReSIDBuilder implements SIDBuilder {
 		sid.setFilterEnable(config.getEmulation(), sidNum);
 		sid.input(config.getEmulation().isDigiBoosted8580() ? sid
 				.getInputDigiBoost() : 0);
-		mixer.add(sidNum, sid, config.getAudio());
+		mixer.add(sidNum, sid);
 		return sid;
 	}
 
@@ -111,12 +115,10 @@ public class ReSIDBuilder implements SIDBuilder {
 	 * 
 	 * @param sidNum
 	 *            SID chip number
-	 * @param audio
-	 *            audio configuration
 	 */
 	@Override
-	public void setVolume(int sidNum, IAudioSection audio) {
-		mixer.setVolume(sidNum, audio);
+	public void setVolume(int sidNum) {
+		mixer.setVolume(sidNum);
 	}
 
 	/**
@@ -125,12 +127,10 @@ public class ReSIDBuilder implements SIDBuilder {
 	 * 
 	 * @param sidNum
 	 *            SID chip number
-	 * @param audio
-	 *            audio configuration
 	 */
 	@Override
-	public void setBalance(int sidNum, IAudioSection audio) {
-		mixer.setBalance(sidNum, audio);
+	public void setBalance(int sidNum) {
+		mixer.setBalance(sidNum);
 	}
 
 	/**
@@ -139,8 +139,6 @@ public class ReSIDBuilder implements SIDBuilder {
 	 * Note: The reason for re-using SID implementation is to preserve the
 	 * current SID's internal state, when changing filters or chip model type.
 	 * 
-	 * @param context
-	 *            System event context
 	 * @param oldSIDEmu
 	 *            currently used SID chip
 	 * @param tune
@@ -150,19 +148,18 @@ public class ReSIDBuilder implements SIDBuilder {
 	 * 
 	 * @return new or re-used SID emulation of a specific emulation engine
 	 */
-	private ReSIDBase getOrCreateSID(EventScheduler context, SIDEmu oldSIDEmu,
-			SidTune tune, int sidNum) {
+	private ReSIDBase getOrCreateSID(SIDEmu oldSIDEmu, SidTune tune, int sidNum) {
 		final IEmulationSection emulationSection = config.getEmulation();
 		final Emulation emulation = Emulation.getEmulation(emulationSection,
 				tune, sidNum);
-		boolean fakeStereo = isFakeStereoSid(tune, sidNum, emulationSection);
+		boolean fakeStereo = isFakeStereoSid(tune, sidNum);
 		Class<? extends ReSIDBase> sidImlClass = getSIDImplClass(emulation,
 				fakeStereo);
 		if (oldSIDEmu != null && oldSIDEmu.getClass().equals(sidImlClass)) {
 			// the implementing class does not change, re-use!
 			return (ReSIDBase) oldSIDEmu;
 		}
-		return createSID(context, sidImlClass, sidNum);
+		return createSID(sidImlClass, sidNum);
 	}
 
 	/**
@@ -172,13 +169,11 @@ public class ReSIDBuilder implements SIDBuilder {
 	 *            current tune
 	 * @param sidNum
 	 *            current SID number
-	 * @param emulationSection
-	 *            configuration
 	 * @return fake-stereo SID has been detected
 	 */
-	private boolean isFakeStereoSid(SidTune tune, int sidNum,
-			final IEmulationSection emulationSection) {
+	private boolean isFakeStereoSid(SidTune tune, int sidNum) {
 		int prevNum = sidNum > 0 ? sidNum - 1 : sidNum;
+		IEmulationSection emulationSection = config.getEmulation();
 		int prevAddres = SidTune.getSIDAddress(emulationSection, tune, prevNum);
 		int baseAddress = SidTune.getSIDAddress(emulationSection, tune, sidNum);
 		return sidNum > 0 && prevAddres == baseAddress;
@@ -208,16 +203,14 @@ public class ReSIDBuilder implements SIDBuilder {
 	/**
 	 * Create a new SID chip implemention.
 	 * 
-	 * @param context
-	 *            System event context.
 	 * @param sidImplCls
 	 *            SID implementation class
 	 * @param sidNum
 	 *            current SID number
 	 * @return new SID chip
 	 */
-	private ReSIDBase createSID(final EventScheduler context,
-			final Class<? extends ReSIDBase> sidImplCls, int sidNum) {
+	private ReSIDBase createSID(final Class<? extends ReSIDBase> sidImplCls,
+			int sidNum) {
 		if (ReSID.class.equals(sidImplCls)) {
 			return new ReSID(context);
 		} else if (ReSIDfp.class.equals(sidImplCls)) {

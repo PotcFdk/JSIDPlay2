@@ -14,7 +14,6 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.sidtune.SidTune;
-import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
 
 /**
@@ -46,6 +45,16 @@ public class HardSIDBuilder implements SIDBuilder {
 	public static final int MAX_BUFFER_SIZE = 1 << 20;
 
 	/**
+	 * System event context.
+	 */
+	private EventScheduler context;
+
+	/**
+	 * Configuration
+	 */
+	private IConfig config;
+
+	/**
 	 * Native library wrapper.
 	 */
 	private static HsidDLL2 hsidDLL;
@@ -59,7 +68,9 @@ public class HardSIDBuilder implements SIDBuilder {
 	 * @param config
 	 *            configuration
 	 */
-	public HardSIDBuilder(final IConfig config) {
+	public HardSIDBuilder(EventScheduler context, IConfig config) {
+		this.context = context;
+		this.config = config;
 		// Extract fake HardSID driver recognizing fake and real devices
 		String driverPath;
 		try {
@@ -94,13 +105,11 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	@Override
-	public SIDEmu lock(EventScheduler context, IConfig config,
-			SIDEmu oldHardSID, int sidNum, SidTune tune) {
+	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
 		// we cannot reconfigure already existing HardSIDs
 		if (oldHardSID == null) {
-			final ChipModel chipModel = getChipModel(config, tune, sidNum);
-			final int deviceIdx = getModelDependantDevice(config, chipModel,
-					sidNum);
+			final ChipModel chipModel = getChipModel(tune, sidNum);
+			final int deviceIdx = getModelDependantDevice(chipModel, sidNum);
 			if (deviceIdx < hsidDLL.HardSID_Devices()) {
 				HardSID hsid = new HardSID(this, context, hsidDLL, deviceIdx,
 						chipModel);
@@ -143,11 +152,11 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	@Override
-	public void setVolume(int num, IAudioSection audio) {
+	public void setVolume(int num) {
 	}
 
 	@Override
-	public void setBalance(int num, IAudioSection audio) {
+	public void setBalance(int num) {
 	}
 
 	/**
@@ -207,15 +216,13 @@ public class HardSIDBuilder implements SIDBuilder {
 	 * correct chip model. But, in stereo mode we need another device. Therefore
 	 * we change the chip model to match the second configured device.
 	 * 
-	 * @param config
-	 *            configuration
 	 * @param tune
 	 *            current tune
 	 * @param sidNum
 	 *            current SID number
 	 * @return desired chip model
 	 */
-	private ChipModel getChipModel(IConfig config, SidTune tune, int sidNum) {
+	private ChipModel getChipModel(SidTune tune, int sidNum) {
 		ChipModel chipModel = ChipModel.getChipModel(config.getEmulation(),
 				tune, sidNum);
 		if (sids.size() > 0) {
@@ -232,16 +239,13 @@ public class HardSIDBuilder implements SIDBuilder {
 	/**
 	 * Get device index based on the desired chip model.
 	 * 
-	 * @param config
-	 *            configuration
 	 * @param chipModel
 	 *            desired chip model
 	 * @param sidNum
 	 *            current SID number
 	 * @return device index of the desired HardSID device
 	 */
-	private int getModelDependantDevice(final IConfig config,
-			final ChipModel chipModel, int sidNum) {
+	private int getModelDependantDevice(final ChipModel chipModel, int sidNum) {
 		int sid6581 = config.getEmulation().getHardsid6581();
 		int sid8580 = config.getEmulation().getHardsid8580();
 		if (sidNum == 2) {

@@ -16,8 +16,6 @@
 package libsidplay.common;
 
 import libsidplay.sidtune.SidTune;
-import sidplay.ini.intf.IAudioSection;
-import sidplay.ini.intf.IConfig;
 
 /**
  * @author Ken Händel
@@ -27,15 +25,23 @@ import sidplay.ini.intf.IConfig;
 public interface SIDBuilder {
 	/**
 	 * Create a new SID chip emulation.
-	 * @param emulationSection 
+	 * 
+	 * @param device
+	 *            old SID chip in use
+	 * @param sidNum
+	 *            SID chip number
+	 * @param tune
+	 *            current tune
 	 * 
 	 * @return emulated SID chip
 	 */
-	SIDEmu lock(EventScheduler context, IConfig config,
-			SIDEmu device, int sidNum, SidTune tune);
+	SIDEmu lock(SIDEmu device, int sidNum, SidTune tune);
 
 	/**
 	 * Destroy SID chip emulation.
+	 * 
+	 * @param device
+	 *            SID chip to destroy
 	 */
 	void unlock(SIDEmu device);
 
@@ -48,7 +54,7 @@ public interface SIDBuilder {
 	 * Reset.
 	 */
 	void reset();
-	
+
 	/**
 	 * Timer start reached, audio output should be produced.
 	 */
@@ -59,10 +65,8 @@ public interface SIDBuilder {
 	 * 
 	 * @param sidNum
 	 *            SID chip number
-	 * @param audio
-	 *            0(-6db)..12(+6db)
 	 */
-	void setVolume(int sidNum, IAudioSection audio);
+	void setVolume(int sidNum);
 
 	/**
 	 * Panning feature: spreading of the SID chip sound signal to the two stereo
@@ -70,9 +74,7 @@ public interface SIDBuilder {
 	 * 
 	 * @param sidNum
 	 *            SID chip number
-	 * @param audio
-	 *            0(left speaker)..0.5(centered)..1(right speaker)
 	 */
-	void setBalance(int sidNum, IAudioSection audio);
+	void setBalance(int sidNum);
 
 }

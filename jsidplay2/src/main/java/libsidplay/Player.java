@@ -858,7 +858,7 @@ public class Player {
 			return new ReSIDBuilder(c64.getEventScheduler(), config,
 					audioConfig, cpuClock, driverSettings.getAudioDriver());
 		case HARDSID:
-			return new HardSIDBuilder(config);
+			return new HardSIDBuilder(c64.getEventScheduler(), config);
 		default:
 			throw new RuntimeException("Unknown engine type: " + engine);
 		}
@@ -919,8 +919,7 @@ public class Player {
 				for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 					SIDEmu sid = c64.getPla().getSID(sidNum);
 					if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
-						sid = sidBuilder.lock(eventScheduler, config, sid,
-								sidNum, tune);
+						sid = sidBuilder.lock(sid, sidNum, tune);
 						c64.getPla().setSID(sidNum, sid);
 						int base = SidTune.getSIDAddress(emulation, tune,
 								sidNum);
