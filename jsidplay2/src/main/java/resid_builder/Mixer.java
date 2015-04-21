@@ -27,6 +27,11 @@ import sidplay.ini.intf.IConfig;
  */
 public class Mixer {
 	/**
+	 * Number of events until the mixer puts the audio buffer into the drivers
+	 * audio buffer.
+	 */
+
+	/**
 	 * Sound sample consumer consuming sample data while a SID is being
 	 * clock'ed. A sample value is added to the audio buffer to mix the output
 	 * of several SIDs together.
@@ -93,7 +98,7 @@ public class Mixer {
 				// rewind
 				sampler.rewind();
 			}
-			context.schedule(this, 10000);
+			context.schedule(this, config.getAudio().getBufferSize());
 		}
 	}
 
@@ -153,7 +158,7 @@ public class Mixer {
 				audioBufferL.put(pos, 0);
 				audioBufferR.put(pos, 0);
 			}
-			context.schedule(this, 10000);
+			context.schedule(this, config.getAudio().getBufferSize());
 		}
 
 		/**

@@ -106,10 +106,6 @@ public class Player {
 	 */
 	private static final int PAUSE_SLEEP_TIME = 250;
 	/**
-	 * Number of events to play.
-	 */
-	private static final int NUM_EVENTS_TO_PLAY = 10000;
-	/**
 	 * Previous song select timeout (< 4 secs).
 	 */
 	private static final int PREV_SONG_TIMEOUT = 4;
@@ -951,7 +947,7 @@ public class Player {
 	private boolean play() throws InterruptedException {
 		try {
 			for (int i = 0; stateProperty.get() == State.RUNNING
-					&& i < NUM_EVENTS_TO_PLAY; i++) {
+					&& i < config.getAudio().getBufferSize(); i++) {
 				c64.getEventScheduler().clock();
 			}
 		} catch (NaturalFinishedException e) {
