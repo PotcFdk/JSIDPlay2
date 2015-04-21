@@ -68,8 +68,6 @@ public class AudioGeneratorThread extends Thread {
 
 	private int[] sidPositionR;
 
-	private int[] audioBufferOverflow;
-	private int[] audioBufferOverflowCount;
 	private int[] audioBufferPos;
 	
 	private Mixer.Info mixerInfo;
@@ -120,10 +118,9 @@ public class AudioGeneratorThread extends Thread {
 
 			/* Do sound 10 ms at a time. */
 			final int audioLength = 10000;
-			/* Allocate audio buffer about 2x needed. And another 25x for storing unresampled data. */
-			int[] audioBuffer = new int[25 * 2 * audioLength
-					/ (1000000 / audioConfig.getFrameRate())];
-			int[] outAudioBuffer = new int[audioBuffer.length];
+			/* Allocate audio buffer for two channels (stereo) */
+			int[] audioBuffer = new int[audioLength*2];
+			int[] outAudioBuffer = new int[audioLength*2];
 
 			/* Wait for configuration/commands initially. */
 			synchronized (sidCommandQueue) {
@@ -179,39 +176,18 @@ public class AudioGeneratorThread extends Thread {
 							audioBuffer[audioBufferPos[_sidNum]++] = sample;
 						});
 
-						int overflowCount = 0;
-						if (audioBufferOverflowCount[sidNum] > 0) {
-							int sample = audioBufferOverflow[sidNum] * sidLevel[sidNum] >> 10;
-							
-							if (sidNum == 0) {
-								outAudioBuffer[0 << 1 | 0] = sample * sidPositionL[sidNum] >> 10;
-								outAudioBuffer[0 << 1 | 1] = sample * sidPositionR[sidNum] >> 10;
-							} else {
-								outAudioBuffer[0 << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
-								outAudioBuffer[0 << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
-							}
-							
-							/* Only one byte is processed as overflow since more bytes are negligible */
-							audioBufferPos[sidNum] += ++overflowCount;
-						}
-
 						if (sidNum == 0) {
-							for (int i = overflowCount; i < audioBufferPos[sidNum]; i++) {
-								int sample = audioBuffer[i - overflowCount] * sidLevel[sidNum] >> 10;
+							for (int i = 0; i < audioBufferPos[sidNum]; i++) {
+								int sample = audioBuffer[i] * sidLevel[sidNum] >> 10;
 								outAudioBuffer[i << 1 | 0] = sample * sidPositionL[sidNum] >> 10;
 								outAudioBuffer[i << 1 | 1] = sample * sidPositionR[sidNum] >> 10;
 							}
 						} else {
-							for (int i = overflowCount; i < audioBufferPos[sidNum]; i++) {
-								int sample = audioBuffer[i - overflowCount] * sidLevel[sidNum] >> 10;
+							for (int i = 0; i < audioBufferPos[sidNum]; i++) {
+								int sample = audioBuffer[i] * sidLevel[sidNum] >> 10;
 								outAudioBuffer[i << 1 | 0] += sample * sidPositionL[sidNum] >> 10;
 								outAudioBuffer[i << 1 | 1] += sample * sidPositionR[sidNum] >> 10;
 							}
-						}
-						
-						/* Store only last byte of buffer as possible overflow */
-						if (audioBufferPos[sidNum] - overflowCount > 0) {
-							audioBufferOverflow[sidNum] = audioBuffer[audioBufferPos[sidNum] - overflowCount - 1];
 						}
 					}
 
@@ -220,10 +196,6 @@ public class AudioGeneratorThread extends Thread {
 						if (audioBufferPos[i] < shortestAudioBufferPos) {
 							shortestAudioBufferPos = audioBufferPos[i];
 						}
-					}
-
-					for (int i = 0; i < sid.length; i++) {
-						audioBufferOverflowCount[i] = audioBufferPos[i] - shortestAudioBufferPos;
 					}
 
 					/*
@@ -459,8 +431,6 @@ public class AudioGeneratorThread extends Thread {
 		sidPositionL = new int[sid.length];
 		sidPositionR = new int[sid.length];
 
-		audioBufferOverflow = new int[sid.length];
-		audioBufferOverflowCount = new int[sid.length];
 		audioBufferPos = new int[sid.length];
 
 		for (int i = 0; i < sid.length; i++) {
@@ -470,8 +440,6 @@ public class AudioGeneratorThread extends Thread {
 			} else {
 				setPosition(i, 0);
 			}
-
-			audioBufferOverflowCount[i] = 0;
 		}
 	}
 
