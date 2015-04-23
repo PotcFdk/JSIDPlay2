@@ -928,6 +928,8 @@ public class Player {
 		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 			if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
 				c64.getPla().setSidWriteListener(sidNum, sidRegExtension);
+			} else {
+				c64.getPla().setSidWriteListener(sidNum, null);
 			}
 		}
 	}
