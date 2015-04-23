@@ -89,7 +89,7 @@ public class Mixer {
 				// rewind
 				sampler.rewind();
 			}
-			context.schedule(this, config.getAudio().getBufferSize());
+			context.schedule(this, audioBufferL.limit());
 		}
 	}
 
@@ -138,7 +138,7 @@ public class Mixer {
 				audioBufferL.put(pos, 0);
 				audioBufferR.put(pos, 0);
 			}
-			context.schedule(this, config.getAudio().getBufferSize());
+			context.schedule(this, audioBufferL.limit());
 		}
 
 		/**
