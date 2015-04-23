@@ -45,7 +45,7 @@ public class Mixer {
 		 */
 		private int pos;
 
-		public SampleAdder(int sidNum) {
+		private SampleAdder(int sidNum) {
 			this.sidNum = sidNum;
 		}
 

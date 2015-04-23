@@ -30,6 +30,8 @@ import libsidplay.common.SIDChip;
  * MOS6581/MOS8580 emulation. Based on reSID 0.16 by Dag Lem, and then hacked on
  * by Antti S. Lankila. Ported to Java by Ken Händel.
  * 
+ * XXX sid_detection.prg chip model test fails for this implementation
+ * 
  * @author Ken Händel
  * @author Dag Lem
  * @author Antti Lankila
