@@ -906,28 +906,21 @@ public class Player {
 	 * Change SIDs according to the configured emulation, chip models.
 	 */
 	public final void createOrUpdateSIDs() {
-		final EventScheduler eventScheduler = c64.getEventScheduler();
-		eventScheduler.scheduleThreadSafe(new Event("Update SIDs") {
-			@Override
-			public void event() {
-				IEmulationSection emulation = config.getEmulation();
-				c64.getPla().clearSIDAddresses();
-				for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-					SIDEmu sid = c64.getPla().getSID(sidNum);
-					if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
-						sid = sidBuilder.lock(sid, sidNum, tune);
-						c64.getPla().setSID(sidNum, sid);
-						int base = SidTune.getSIDAddress(emulation, tune,
-								sidNum);
-						c64.getPla().setSIDAddress(sidNum, base);
-					} else if (sid != null) {
-						// Safely remove SIDs no more in use
-						sidBuilder.unlock(sid);
-						c64.getPla().setSID(sidNum, null);
-					}
-				}
+		IEmulationSection emulation = config.getEmulation();
+		c64.getPla().clearSIDAddresses();
+		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+			SIDEmu sid = c64.getPla().getSID(sidNum);
+			if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
+				sid = sidBuilder.lock(sid, sidNum, tune);
+				c64.getPla().setSID(sidNum, sid);
+				int base = SidTune.getSIDAddress(emulation, tune, sidNum);
+				c64.getPla().setSIDAddress(sidNum, base);
+			} else if (sid != null) {
+				// Safely remove SIDs no more in use
+				sidBuilder.unlock(sid);
+				c64.getPla().setSID(sidNum, null);
 			}
-		});
+		}
 	}
 
 	public void setSidWriteListener(SidRegExtension sidRegExtension) {

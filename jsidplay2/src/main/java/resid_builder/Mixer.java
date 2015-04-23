@@ -27,11 +27,6 @@ import sidplay.ini.intf.IConfig;
  */
 public class Mixer {
 	/**
-	 * Number of events until the mixer puts the audio buffer into the drivers
-	 * audio buffer.
-	 */
-
-	/**
 	 * Sound sample consumer consuming sample data while a SID is being
 	 * clock'ed. A sample value is added to the audio buffer to mix the output
 	 * of several SIDs together.
@@ -69,10 +64,6 @@ public class Mixer {
 
 		public void rewind() {
 			pos = 0;
-		}
-
-		public int getPos() {
-			return pos;
 		}
 
 	}
@@ -123,29 +114,18 @@ public class Mixer {
 		 */
 		private int oldRandomValue;
 
-		/**
-		 * Note: The assumption, that after clocking two chips their buffer
-		 * positions are equal is wrong! Using different SID reimplementations
-		 * one chip can be one sample further than the other. Therefore we have
-		 * to handle overflowing sample data to prevent crackling noises. This
-		 * implementation just cuts them off.
-		 */
 		@Override
 		public void event() throws InterruptedException {
 			// Clock SIDs to fill audio buffer
-			int numSamples = 0;
 			for (ReSIDBase sid : sids) {
 				SampleAdder sampler = (SampleAdder) sid.getSampler();
 				// clock SID to the present moment
 				sid.clock();
-				// determine amount of samples produced (cut-off overflows)
-				numSamples = numSamples != 0 ? Math.min(numSamples,
-						sampler.getPos()) : sampler.getPos();
 				// rewind
 				sampler.rewind();
 			}
 			// Output sample data
-			for (int pos = 0; pos < numSamples; pos++) {
+			for (int pos = 0; pos < audioBufferL.limit(); pos++) {
 				int dither = triangularDithering();
 
 				putSample(resamplerL, audioBufferL.get(pos), dither);

@@ -118,13 +118,6 @@ public class ReSID extends ReSIDBase {
 		}
 	}
 
-	@Override
-	public byte read(int addr) {
-		// correction for sid_detection.prg
-		lastTime--;
-		return super.read(addr);
-	}
-
 	/**
 	 * Credits string.
 	 *
