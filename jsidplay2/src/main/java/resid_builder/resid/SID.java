@@ -30,8 +30,6 @@ import libsidplay.common.SIDChip;
  * MOS6581/MOS8580 emulation. Based on reSID 0.16 by Dag Lem, and then hacked on
  * by Antti S. Lankila. Ported to Java by Ken Händel.
  * 
- * XXX sid_detection.prg chip model test fails for this implementation
- * 
  * @author Ken Händel
  * @author Dag Lem
  * @author Antti Lankila
@@ -443,17 +441,6 @@ public final class SID implements SIDChip {
 	}
 
 	/**
-	 * Get output sample
-	 * 
-	 * @return the output sample
-	 */
-	private int output() {
-		return externalFilter.clock(filter.clock(
-				voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),
-				voice[2].output(voice[1].wave)));
-	}
-
-	/**
 	 * Clock SID forward using chosen output sampling algorithm.
 	 * 
 	 * @param cycles
@@ -476,17 +463,7 @@ public final class SID implements SIDChip {
 				}
 
 				for (int i = 0; i < delta_t; i++) {
-					sample.accept(output() * OUTPUT_LEVEL >> 8);
-
-					/* clock waveform generators */
-					voice[0].wave.clock();
-					voice[1].wave.clock();
-					voice[2].wave.clock();
-
-					/* clock envelope generators */
-					voice[0].envelope.clock();
-					voice[1].envelope.clock();
-					voice[2].envelope.clock();
+					sample.accept(clock() * OUTPUT_LEVEL >> 8);
 				}
 
 				if (delayedOffset != -1) {
@@ -502,6 +479,25 @@ public final class SID implements SIDChip {
 				voiceSync(true);
 			}
 		}
+	}
+
+	/**
+	 * SID clocking - 1 cycle.
+	 */
+	private int clock() {
+		/* clock waveform generators */
+		voice[0].wave.clock();
+		voice[1].wave.clock();
+		voice[2].wave.clock();
+
+		/* clock envelope generators */
+		voice[0].envelope.clock();
+		voice[1].envelope.clock();
+		voice[2].envelope.clock();
+
+		return externalFilter.clock(filter.clock(
+				voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),
+				voice[2].output(voice[1].wave)));
 	}
 
 	/**
