@@ -173,9 +173,8 @@ public class AudioGeneratorThread extends Thread {
 						audioBufferPos[sid] = 0;
 						sids[sidNum].clock(piece, sample -> {
 							sample = sample * sidLevel[sid] >> 10;
-							outAudioBuffer[audioBufferPos[sid] << 1 | 0] += sample * sidPositionL[sid] >> 10;
-							outAudioBuffer[audioBufferPos[sid] << 1 | 1] += sample * sidPositionR[sid] >> 10;
-							audioBufferPos[sid] = audioBufferPos[sid] + 1;
+							outAudioBuffer[audioBufferPos[sid]   << 1 | 0] += sample * sidPositionL[sid] >> 10;
+							outAudioBuffer[audioBufferPos[sid]++ << 1 | 1] += sample * sidPositionR[sid] >> 10;
 						});
 					}
 
