@@ -38,14 +38,14 @@ public final class SID implements SIDChip {
 	private static final int INPUTDIGIBOOST = 0x3FF;
 
 	/**
-	 * Bus value stays alive for some time after each operation.
-	 */
-	private static final int BUS_TTL = 0x9000;
-
-	/**
 	 * Output scaler.
 	 */
 	private static final int OUTPUT_LEVEL = 359;
+	
+	/**
+	 * Bus value stays alive for some time after each operation.
+	 */
+	private static final int BUS_TTL = 0x9000;
 
 	/** SID voices */
 	public final Voice[] voice = new Voice[] { new Voice(), new Voice(),
@@ -117,7 +117,7 @@ public final class SID implements SIDChip {
 	 * @param term
 	 *            is the dac terminated by a 2R resistor? (6581 DACs are not)
 	 */
-	public static void kinkedDac(final double[] dac, final double _2R_div_R,
+	static void kinkedDac(final double[] dac, final double _2R_div_R,
 			final boolean term) {
 		final double INFINITY = 1e6;
 
@@ -190,6 +190,7 @@ public final class SID implements SIDChip {
 	 * @param model
 	 *            chip model to use
 	 */
+	@Override
 	public void setChipModel(final ChipModel model) {
 		this.model = model;
 
@@ -213,6 +214,7 @@ public final class SID implements SIDChip {
 		}
 	}
 
+	@Override
 	public ChipModel getChipModel() {
 		return model;
 	}
@@ -220,6 +222,7 @@ public final class SID implements SIDChip {
 	/**
 	 * SID reset.
 	 */
+	@Override
 	public void reset() {
 		for (int i = 0; i < 3; i++) {
 			voice[i].reset();
@@ -243,6 +246,7 @@ public final class SID implements SIDChip {
 	 * @param value
 	 *            input level to set
 	 */
+	@Override
 	public void input(final int value) {
 		filter6581.input(value);
 		filter8580.input(value);
@@ -268,6 +272,7 @@ public final class SID implements SIDChip {
 	 *            SID register to read
 	 * @return value read from chip
 	 */
+	@Override
 	public byte read(final int offset) {
 		final byte value;
 
@@ -305,6 +310,7 @@ public final class SID implements SIDChip {
 	 * @param value
 	 *            value to write
 	 */
+	@Override
 	public void write(final int offset, final byte value) {
 		busValue = value;
 		busValueTtl = BUS_TTL;
@@ -414,6 +420,7 @@ public final class SID implements SIDChip {
 	 * @param enable
 	 *            is muted?
 	 */
+	@Override
 	public void mute(final int channel, final boolean enable) {
 		muted[channel] = enable;
 	}
@@ -424,6 +431,7 @@ public final class SID implements SIDChip {
 	 * @param clockFrequency
 	 *            System clock frequency at Hz
 	 */
+	@Override
 	public void setClockFrequency(final double clockFrequency) {
 		filter6581.setClockFrequency(clockFrequency);
 		filter8580.setClockFrequency(clockFrequency);
@@ -445,11 +453,8 @@ public final class SID implements SIDChip {
 	 * 
 	 * @param cycles
 	 *            c64 clocks to clock
-	 * @param buf
-	 *            audio output buffer
-	 * @param pos
-	 *            where to begin audio writing
-	 * @return
+	 * @param sample
+	 *            sample consumer
 	 */
 	@Override
 	public final void clock(int cycles, IntConsumer sample) {

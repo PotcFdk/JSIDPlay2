@@ -34,21 +34,17 @@ public class SID implements SIDChip {
 	 */
 	private static final float OUTPUT_LEVEL = 32768f / (2047.f * 255.f * 3.0f * 2.0f);
 
+	/**
+	 * Bus value stays alive for some time after each operation.
+	 */
+	private static final int BUS_TTL = 34000;
+
 	/** SID voices */
 	public final Voice[] voice = new Voice[] { new Voice(), new Voice(),
 			new Voice() };
 
 	/** Currently active filter */
 	private Filter filter;
-
-	/**
-	 * Get currently active filter.
-	 * 
-	 * @return currently active filter
-	 */
-	public final Filter getFilter() {
-		return filter;
-	}
 
 	/** Filter used, if model is set to 6581 */
 	private final Filter6581 filter6581 = new Filter6581();
@@ -73,6 +69,11 @@ public class SID implements SIDChip {
 
 	/** Time to live for the last written value */
 	private int busValueTtl;
+
+	/**
+	 * Currently active chip model.
+	 */
+	private ChipModel model;
 
 	/** External audio input. */
 	private float ext_in;
@@ -114,7 +115,7 @@ public class SID implements SIDChip {
 	 *            highest bit that may be set in input.
 	 * @return the analog value as modeled from the R-2R network.
 	 */
-	public static float kinkedDac(final int input, final float nonLinearity,
+	static float kinkedDac(final int input, final float nonLinearity,
 			final int maxBit) {
 		float value = 0f;
 		int currentBit = 1;
@@ -144,16 +145,12 @@ public class SID implements SIDChip {
 	}
 
 	/**
-	 * Currently active chip model.
-	 */
-	private ChipModel model;
-
-	/**
 	 * Set chip model.
 	 * 
 	 * @param model
 	 *            chip model to use
 	 */
+	@Override
 	public void setChipModel(final ChipModel model) {
 		this.model = model;
 
@@ -183,6 +180,7 @@ public class SID implements SIDChip {
 		}
 	}
 
+	@Override
 	public ChipModel getChipModel() {
 		return model;
 	}
@@ -190,6 +188,7 @@ public class SID implements SIDChip {
 	/**
 	 * SID reset.
 	 */
+	@Override
 	public void reset() {
 		for (int i = 0; i < 3; i++) {
 			voice[i].reset();
@@ -211,6 +210,7 @@ public class SID implements SIDChip {
 	 * @param value
 	 *            input level to set
 	 */
+	@Override
 	public void input(final int value) {
 		// Voice outputs are 20 bits. Scale up to match three voices in order
 		// to facilitate simulation of the MOS8580 "digi boost" hardware hack.
@@ -237,6 +237,7 @@ public class SID implements SIDChip {
 	 *            SID register to read
 	 * @return value read from chip
 	 */
+	@Override
 	public byte read(final int offset) {
 		switch (offset) {
 		case 0x19:
@@ -262,9 +263,10 @@ public class SID implements SIDChip {
 	 * @param value
 	 *            value to write
 	 */
+	@Override
 	public void write(final int offset, final byte value) {
 		busValue = value;
-		busValueTtl = 34000;
+		busValueTtl = BUS_TTL;
 
 		switch (offset) {
 		case 0x00:
@@ -359,6 +361,7 @@ public class SID implements SIDChip {
 	 * @param enable
 	 *            is muted?
 	 */
+	@Override
 	public void mute(final int channel, final boolean enable) {
 		voice[channel].mute(enable);
 	}
@@ -369,6 +372,7 @@ public class SID implements SIDChip {
 	 * @param clockFrequency
 	 *            System clock frequency at Hz
 	 */
+	@Override
 	public void setClockFrequency(final double clockFrequency) {
 		filter6581.setClockFrequency(clockFrequency);
 		filter8580.setClockFrequency(clockFrequency);
@@ -383,6 +387,25 @@ public class SID implements SIDChip {
 				busValueTtl = 0;
 			}
 		}
+	}
+
+	/**
+	 * Clock SID forward using chosen output sampling algorithm.
+	 * 
+	 * @param delta_t
+	 *            c64 clocks to clock
+	 * @param sample
+	 *            sample consumer
+	 */
+	@Override
+	public final void clock(final int delta_t, IntConsumer sample) {
+		ageBusValue(delta_t);
+
+		for (int i = 0; i < delta_t; i++) {
+			sample.accept((int) (clock() * OUTPUT_LEVEL));
+		}
+		filter.zeroDenormals();
+		externalFilter.zeroDenormals();
 	}
 
 	/**
@@ -407,28 +430,6 @@ public class SID implements SIDChip {
 		return externalFilter.clock(filter.clock(
 				voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),
 				voice[2].output(voice[1].wave), ext_in));
-	}
-
-	/**
-	 * Clock SID forward using chosen output sampling algorithm.
-	 * 
-	 * @param delta_t
-	 *            c64 clocks to clock
-	 * @param buf
-	 *            audio output buffer
-	 * @param pos
-	 *            where to begin audio writing
-	 * @return
-	 */
-	@Override
-	public final void clock(final int delta_t, IntConsumer sample) {
-		ageBusValue(delta_t);
-
-		for (int i = 0; i < delta_t; i++) {
-			sample.accept((int) (clock() * OUTPUT_LEVEL));
-		}
-		filter.zeroDenormals();
-		externalFilter.zeroDenormals();
 	}
 
 	/**
