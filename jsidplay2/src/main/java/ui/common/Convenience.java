@@ -29,6 +29,11 @@ import de.schlichtherle.truezip.file.TFile;
 public class Convenience {
 
 	/**
+	 * Useless Apple directory.
+	 */
+	private static final String MACOSX = "__MACOSX";
+
+	/**
 	 * Auto-start commands.
 	 */
 	private static final String LOAD_8_1_RUN = "LOAD\"*\",8,1\rRUN\r",
@@ -170,7 +175,7 @@ public class Convenience {
 			if (memberFile.isFile() && isSupportedMedia(memberFile)
 					&& mediaTester.test(memberFile, toAttach)) {
 				toAttach = memberFile;
-			} else if (memberFile.isDirectory()) {
+			} else if (memberFile.isDirectory() && !memberFile.getName().equals(MACOSX)) {
 				File toAttachChild = getToAttach(memberFile.getPath(),
 						new TFile(memberFile), mediaTester, toAttach);
 				if (toAttachChild != null) {
