@@ -10,8 +10,6 @@ public interface SIDChip {
 
 	void clock(int piece, IntConsumer sample);
 
-	void clockSilent(int cycles);
-
 	byte read(int register);
 
 	void write(int register, byte value);

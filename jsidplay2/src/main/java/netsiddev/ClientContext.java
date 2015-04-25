@@ -407,7 +407,7 @@ class ClientContext {
 		Queue<SIDWrite> q = eventConsumerThread.getSidCommandQueue();
 		inputClock += cycles;
 		q.add(SIDWrite.makePureDelay(sidNumber, cycles));
-		sidRead[sidNumber].clockSilent(cycles);
+		sidRead[sidNumber].clock(cycles, sample -> { });
 	}
 
 	private void handleWritePacket(int dataLength) throws InvalidCommandException {
@@ -420,7 +420,7 @@ class ClientContext {
 			final byte value = dataRead.get(4 + i + 3);
 			inputClock += writeCycles;
 			q.add(new SIDWrite(sid, reg, value, writeCycles));
-			sidRead[sid].clockSilent(writeCycles);
+			sidRead[sid].clock(writeCycles, sample -> { });
 			sidRead[sid].write(reg & 0x1f, value);
 		}
 	}

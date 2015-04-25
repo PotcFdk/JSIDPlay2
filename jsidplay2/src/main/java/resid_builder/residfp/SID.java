@@ -432,36 +432,6 @@ public class SID implements SIDChip {
 				voice[2].output(voice[1].wave), ext_in));
 	}
 
-	/**
-	 * Clock SID forward with no audio production. This trashes the SID state,
-	 * and this method can't be used together with audio-producing clock_xxx
-	 * methods.
-	 * 
-	 * @param delta_t
-	 *            c64 clocks to clock.
-	 * @return
-	 */
-	public void clockSilent(final int delta_t) {
-		ageBusValue(delta_t);
-
-		for (int i = 0; i < delta_t; i++) {
-			/* clock waveform generators */
-			voice[0].wave.clock();
-			voice[1].wave.clock();
-			voice[2].wave.clock();
-
-			/* emulate SYNC bit */
-			voice[0].wave.synchronize(voice[1].wave, voice[2].wave);
-			voice[1].wave.synchronize(voice[2].wave, voice[0].wave);
-			voice[2].wave.synchronize(voice[0].wave, voice[1].wave);
-
-			/* clock ENV3 only */
-			// voice[0].envelope.clock();
-			// voice[1].envelope.clock();
-			voice[2].envelope.clock();
-		}
-	}
-
 	public Filter6581 getFilter6581() {
 		return filter6581;
 	}

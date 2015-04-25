@@ -506,51 +506,6 @@ public final class SID implements SIDChip {
 	}
 
 	/**
-	 * Clock SID forward with no audio production.
-	 * <p>
-	 * <b>Warning:</b> You can't mix this method of clocking with the
-	 * audio-producing clock() because components that don't affect OSC3/ENV3
-	 * are not emulated.
-	 * 
-	 * @param cycles
-	 *            c64 clocks to clock.
-	 */
-	public void clockSilent(int cycles) {
-		ageBusValue(cycles);
-
-		while (cycles != 0) {
-			int delta_t = Math.min(nextVoiceSync, cycles);
-			if (delta_t > 0) {
-				if (delayedOffset != -1) {
-					delta_t = 1;
-				}
-
-				for (int i = 0; i < delta_t; i++) {
-					/* clock waveform generators (can affect OSC3) */
-					voice[0].wave.clock();
-					voice[1].wave.clock();
-					voice[2].wave.clock();
-
-					/* clock ENV3 only */
-					voice[2].envelope.clock();
-				}
-
-				if (delayedOffset != -1) {
-					writeImmediate(delayedOffset, delayedValue);
-					delayedOffset = -1;
-				}
-
-				cycles -= delta_t;
-				nextVoiceSync -= delta_t;
-			}
-
-			if (nextVoiceSync == 0) {
-				voiceSync(true);
-			}
-		}
-	}
-
-	/**
 	 * Return the number of cycles according to current parameters that it takes
 	 * to reach sync.
 	 */
