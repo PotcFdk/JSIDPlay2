@@ -32,7 +32,7 @@ import libsidplay.common.ChipModel;
  * @author Antti Lankila
  */
 public final class WaveformCalculator {
-	private static Map<CombinedWaveformConfig[], short[][]> CACHE = new HashMap<CombinedWaveformConfig[], short[][]>();
+	private static final Map<CombinedWaveformConfig[], short[][]> CACHE = new HashMap<CombinedWaveformConfig[], short[][]>();
 
 	protected static class CombinedWaveformConfig {
 		protected CombinedWaveformConfig(final float f, final float g, final float h, final float i, final float j) {
