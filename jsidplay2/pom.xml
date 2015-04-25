@@ -304,6 +304,7 @@
 								<exclude>sidplay/audio/MP3*.class</exclude>
 								<exclude>sidplay/audio/Cmp*.class</exclude>
 								<exclude>sidplay/audio/Wav*.class</exclude>
+								<exclude>sidplay/audio/Proxy*.class</exclude>
 							</includes>
 							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
 							<finalName>jsiddevice-${project.version}</finalName>
