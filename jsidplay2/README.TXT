@@ -11,10 +11,15 @@ and uploads target/deploy to web-server
 Set the following properties in Eclipse: Preferences/Run/Debug StringSubstitution
 or at command line: using -D
 
-e.g.
+e.g. FTP
 -DserverId=
 -DserverUrl=ftp://<user>:<password>@kenchis.t15.org
 -DremoteDir=/jsidplay2/javafx
+
+e.g. copy
+-DserverId=
+-DserverUrl=file:///home/ken
+-DremoteDir=public_html
 
 Optional:
 -Dgb64.mdbfile=<pathToGameBase64.mdb>

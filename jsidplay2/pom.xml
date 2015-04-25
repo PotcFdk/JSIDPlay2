@@ -513,7 +513,7 @@
 									<property name="project.version" value="${project.version}" />
 									<property name="project.artifactId" value="${project.artifactId}" />
 									<property name="project.url" value="${project.url}" />
-									<property name="codebase" value="${codebase}" />
+									<property name="codebase" value="${codebase}online/webstart" />
 									<property name="javafx.main.class" value="${javafx.main.class}" />
 									<property name="javafx.run.width" value="${javafx.run.width}" />
 									<property name="javafx.run.height" value="${javafx.run.height}" />
@@ -700,7 +700,7 @@
 						</goals>
 						<configuration>
 							<fromDir>${project.build.directory}/deploy</fromDir>
-							<includes>*</includes>
+							<includes>**/*</includes>
 							<serverId>${serverId}</serverId>
 							<url>${serverUrl}</url>
 							<toDir>${remoteDir}</toDir>
