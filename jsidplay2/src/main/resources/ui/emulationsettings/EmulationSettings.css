@@ -37,11 +37,18 @@
     linear-gradient(to bottom right, rgba(255,255,255,0.1), rgba(0,0,0,0.5))
 }
 
-.default-color0.chart-series-line {
-	-fx-stroke: transparent, transparent;
+.chart-vertical-grid-lines {
+    -fx-stroke: #3278fa;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: #3278fa;
 }
  
 .default-color0.chart-line-symbol {
-    -fx-stroke-width:1px;
-    -fx-background-color: rgba(0,0,0,0.5);
+    -fx-background-color: rgba(0,255,0,0);
 }
+
+.chart-plot-background {
+    -fx-background-color: #e2ecfe;
+} 	
