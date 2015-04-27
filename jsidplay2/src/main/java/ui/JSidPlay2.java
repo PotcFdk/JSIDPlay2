@@ -903,7 +903,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
 
-		util.getPlayer().updateDriverSettings();
+		util.getPlayer().updateAudioDriver();
 		restart();
 	}
 
@@ -922,8 +922,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			int deviceIndex = devicesBox.getItems().indexOf(device);
 			util.getConfig().getAudio().setDevice(deviceIndex);
 			if (!this.duringInitialization) {
-				AudioDriver driver = util.getPlayer().getDriverSettings()
-						.getAudioDriver();
+				AudioDriver driver = util.getPlayer().getAudioDriver();
 				if (driver instanceof JavaSound) {
 					JavaSound js = (JavaSound) driver;
 					try {

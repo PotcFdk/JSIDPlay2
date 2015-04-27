@@ -67,7 +67,6 @@ import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.components.pla.PLA;
 import libsidplay.components.printer.mps803.MPS803;
-import libsidplay.player.DriverSettings;
 import libsidplay.player.PlayList;
 import libsidplay.player.State;
 import libsidplay.player.Timer;
@@ -83,6 +82,7 @@ import libsidutils.SidDatabase;
 import libsidutils.disassembler.SimpleDisassembler;
 import resid_builder.ReSIDBuilder;
 import sidplay.audio.AudioConfig;
+import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.NaturalFinishedException;
 import sidplay.audio.RecordingFilenameProvider;
@@ -186,7 +186,13 @@ public class Player {
 	/**
 	 * Audio driver and emulation setting.
 	 */
-	private DriverSettings driverSettings, oldDriverSettings;
+	private AudioDriver audioDriver, oldAudioDriver;
+
+	/**
+	 * Update audio driver next time player opens a tune.
+	 */
+	private boolean updateAudioDriver;
+
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -213,8 +219,7 @@ public class Player {
 	 */
 	public Player(IConfig config) {
 		this.config = config;
-		this.driverSettings = new DriverSettings(config.getAudio().getAudio()
-				.getAudioDriver());
+		this.audioDriver = config.getAudio().getAudio().getAudioDriver();
 
 		this.iecBus = new IECBus();
 
@@ -802,7 +807,6 @@ public class Player {
 			break;
 		}
 	};
-	private boolean updateDriverSetting;
 
 	private void open() throws InterruptedException {
 		if (stateProperty.get() == State.RESTART) {
@@ -815,21 +819,19 @@ public class Player {
 
 		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudio(), 2);
 
-		if (updateDriverSetting) {
-			updateDriverSetting = false;
-			driverSettings = new DriverSettings(config.getAudio().getAudio()
-					.getAudioDriver());
+		if (updateAudioDriver) {
+			updateAudioDriver = false;
+			audioDriver = config.getAudio().getAudio().getAudioDriver();
 		}
-		driverSettings.getAudioDriver().setRecordingFilenameProvider(
-				recordingFilenameProvider);
+		audioDriver.setRecordingFilenameProvider(recordingFilenameProvider);
 
 		// replace driver settings for mp3
-		driverSettings = handleMP3(config, tune, driverSettings);
+		audioDriver = handleMP3(config, tune, audioDriver);
 		// create SID builder for hardware or emulation
 		sidBuilder = createSIDBuilder(cpuClock, audioConfig);
 		// open audio driver
 		try {
-			driverSettings.getAudioDriver().open(audioConfig, tune);
+			audioDriver.open(audioConfig, tune);
 		} catch (LineUnavailableException e) {
 			// Linux fix: restart, if currently unavailable
 			System.err.println(e.getMessage());
@@ -852,7 +854,7 @@ public class Player {
 		switch (engine) {
 		case EMULATION:
 			return new ReSIDBuilder(c64.getEventScheduler(), config,
-					audioConfig, cpuClock, driverSettings.getAudioDriver());
+					audioConfig, cpuClock, audioDriver);
 		case HARDSID:
 			return new HardSIDBuilder(c64.getEventScheduler(), config);
 		default:
@@ -860,46 +862,46 @@ public class Player {
 		}
 	}
 
-	public final void updateDriverSettings() {
-		updateDriverSetting = true;
+	public final void updateAudioDriver() {
+		updateAudioDriver = true;
 	}
 
-	public final void setDriverSettings(DriverSettings driverSettings) {
-		this.driverSettings = driverSettings;
+	public AudioDriver getAudioDriver() {
+		return audioDriver;
 	}
-
-	public DriverSettings getDriverSettings() {
-		return driverSettings;
+	
+	public final void setAudioDriver(final AudioDriver driver) {
+		this.audioDriver = driver;
 	}
 
 	/**
 	 * MP3 play-back is using the COMPARE audio driver. Old settings are saved
 	 * (playing mp3) and restored (next time normal tune is played).
 	 */
-	private DriverSettings handleMP3(final IConfig config, final SidTune tune,
-			DriverSettings driverSettings) {
-		DriverSettings newDriverSettings = driverSettings;
-		if (oldDriverSettings == null && tune instanceof MP3Tune) {
+	private AudioDriver handleMP3(final IConfig config, final SidTune tune,
+			AudioDriver audioDriver) {
+		AudioDriver newAudioDriver = audioDriver;
+		if (oldAudioDriver == null && tune instanceof MP3Tune) {
 			// save settings
-			oldDriverSettings = driverSettings;
-		} else if (oldDriverSettings != null && !(tune instanceof MP3Tune)) {
+			oldAudioDriver = audioDriver;
+		} else if (oldAudioDriver != null && !(tune instanceof MP3Tune)) {
 			// restore settings after MP3 has been played last time
-			newDriverSettings = oldDriverSettings;
-			oldDriverSettings = null;
+			newAudioDriver = oldAudioDriver;
+			oldAudioDriver = null;
 		}
 		if (tune instanceof MP3Tune) {
 			// Change driver settings to use compare driver for MP3 play-back
-			newDriverSettings = new DriverSettings(new CmpMP3File());
+			newAudioDriver = new CmpMP3File();
 			config.getAudio().setPlayOriginal(true);
 			config.getAudio().setMp3File(((MP3Tune) tune).getMP3Filename());
 		}
-		if (newDriverSettings.getAudioDriver() instanceof CmpMP3File) {
+		if (newAudioDriver instanceof CmpMP3File) {
 			// Configure compare driver settings
-			CmpMP3File cmp = (CmpMP3File) newDriverSettings.getAudioDriver();
+			CmpMP3File cmp = (CmpMP3File) newAudioDriver;
 			cmp.setPlayOriginal(config.getAudio().isPlayOriginal());
 			cmp.setMp3File(new File(config.getAudio().getMp3File()));
 		}
-		return newDriverSettings;
+		return newAudioDriver;
 	}
 
 	/**
@@ -961,7 +963,7 @@ public class Player {
 			sidBuilder.unlock(sid);
 			c64.getPla().setSID(num, null);
 		});
-		driverSettings.getAudioDriver().close();
+		audioDriver.close();
 	}
 
 	/**
@@ -981,7 +983,7 @@ public class Player {
 			stateProperty.set(State.RUNNING);
 		} else {
 			stateProperty.set(State.PAUSED);
-			driverSettings.getAudioDriver().pause();
+			audioDriver.pause();
 		}
 	}
 
@@ -1008,15 +1010,15 @@ public class Player {
 	}
 
 	public final void fastForward() {
-		driverSettings.getAudioDriver().fastForward();
+		audioDriver.fastForward();
 	}
 
 	public final void normalSpeed() {
-		driverSettings.getAudioDriver().normalSpeed();
+		audioDriver.normalSpeed();
 	}
 
 	public final boolean isFastForward() {
-		return driverSettings.getAudioDriver().isFastForward();
+		return audioDriver.isFastForward();
 	}
 
 	public final int getNumDevices() {

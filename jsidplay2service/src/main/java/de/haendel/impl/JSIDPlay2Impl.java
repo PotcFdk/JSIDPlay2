@@ -27,7 +27,6 @@ import java.util.function.ToIntFunction;
 import javax.persistence.metamodel.SingularAttribute;
 
 import libsidplay.Player;
-import libsidplay.player.DriverSettings;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.STIL;
@@ -133,8 +132,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			throws InterruptedException, IOException, SidTuneError {
 		Player player = new Player(config);
 		player.setSidDatabase(getSidDatabase(HVSC_ROOT));
-		MP3Stream mp3Stream = new MP3Stream(out, cbr, vbr, isVbr);
-		player.setDriverSettings(new DriverSettings(mp3Stream));
+		player.setAudioDriver(new MP3Stream(out, cbr, vbr, isVbr));
 		player.play(SidTune.load(getAbsoluteFile(resource)));
 		player.waitForC64();
 	}
