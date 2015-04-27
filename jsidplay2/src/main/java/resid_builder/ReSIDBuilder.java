@@ -153,13 +153,13 @@ public class ReSIDBuilder implements SIDBuilder {
 		final Emulation emulation = Emulation.getEmulation(emulationSection,
 				tune, sidNum);
 		boolean fakeStereo = isFakeStereoSid(tune, sidNum);
-		Class<? extends ReSIDBase> sidImlClass = getSIDImplClass(emulation,
+		Class<? extends ReSIDBase> sidImplClass = getSIDImplClass(emulation,
 				fakeStereo);
-		if (oldSIDEmu != null && oldSIDEmu.getClass().equals(sidImlClass)) {
+		if (oldSIDEmu != null && oldSIDEmu.getClass().equals(sidImplClass)) {
 			// the implementing class does not change, re-use!
 			return (ReSIDBase) oldSIDEmu;
 		}
-		return createSID(sidImlClass, sidNum);
+		return createSID(sidImplClass, sidNum);
 	}
 
 	/**
@@ -218,12 +218,12 @@ public class ReSIDBuilder implements SIDBuilder {
 		} else if (ReSID.FakeStereo.class.equals(sidImplCls)) {
 			// ReSID fake-stereo mode
 			final int prevNum = sidNum - 1;
-			List<ReSIDBase> sids = mixer.getSIDs();
+			final List<ReSIDBase> sids = mixer.getSIDs();
 			return new ReSID.FakeStereo(context, config, prevNum, sids);
 		} else if (ReSIDfp.FakeStereo.class.equals(sidImplCls)) {
 			// ReSIDfp fake-stereo mode
 			final int prevNum = sidNum - 1;
-			List<ReSIDBase> sids = mixer.getSIDs();
+			final List<ReSIDBase> sids = mixer.getSIDs();
 			return new ReSIDfp.FakeStereo(context, config, prevNum, sids);
 		} else {
 			throw new RuntimeException("Unknown SID impl.: " + sidImplCls);
