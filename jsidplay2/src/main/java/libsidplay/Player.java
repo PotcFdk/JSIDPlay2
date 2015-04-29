@@ -1210,8 +1210,8 @@ public class Player {
 		credits.append(MOS6510.credits());
 		credits.append(MOS6526.credits());
 		credits.append(VIC.credits());
-		credits.append(resid_builder.ReSID.credits());
-		credits.append(resid_builder.ReSIDfp.credits());
+		credits.append(resid_builder.resid.ReSID.credits());
+		credits.append(resid_builder.residfp.ReSIDfp.credits());
 		credits.append(hardsid_builder.HardSID.credits());
 		return credits.toString();
 	}

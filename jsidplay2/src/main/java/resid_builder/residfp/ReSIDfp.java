@@ -13,7 +13,7 @@
  * @author Ken Händel
  *
  */
-package resid_builder;
+package resid_builder.residfp;
 
 import java.util.List;
 
@@ -21,9 +21,8 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDChip;
-import resid_builder.residfp.Filter6581;
-import resid_builder.residfp.Filter8580;
-import resid_builder.residfp.SID;
+import resid_builder.Mixer;
+import resid_builder.ReSIDBase;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IEmulationSection;
 import sidplay.ini.intf.IFilterSection;
@@ -41,7 +40,7 @@ public class ReSIDfp extends ReSIDBase {
 	 * @author ken
 	 *
 	 */
-	static class FakeStereo extends ReSIDfp {
+	public static class FakeStereo extends ReSIDfp {
 		private IEmulationSection emulationSection;
 		private int prevNum;
 		private List<ReSIDBase> sids;

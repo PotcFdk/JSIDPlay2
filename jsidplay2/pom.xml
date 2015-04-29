@@ -301,11 +301,15 @@
 								<include>sidplay/ini/IniReader.class</include>
 								<include>sidplay/ini/IniAudioSection.class</include>
 								<include>sidplay/ini/IniFilterSection.class</include>
+							</includes>
+							<excludes>
+								<exclude>resid_builder/resid/ReSID*.class</exclude>
+								<exclude>resid_builder/residfp/ReSIDfp*.class</exclude>
 								<exclude>sidplay/audio/MP3*.class</exclude>
 								<exclude>sidplay/audio/Cmp*.class</exclude>
 								<exclude>sidplay/audio/Wav*.class</exclude>
 								<exclude>sidplay/audio/Proxy*.class</exclude>
-							</includes>
+							</excludes>
 							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
 							<finalName>jsiddevice-${project.version}</finalName>
 							<archive>
