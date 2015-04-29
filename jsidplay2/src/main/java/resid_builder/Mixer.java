@@ -4,7 +4,6 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.function.IntConsumer;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
@@ -23,42 +22,6 @@ import sidplay.ini.intf.IConfig;
  *
  */
 public class Mixer {
-	/**
-	 * Sound sample consumer consuming sample data while a SID is being
-	 * clock'ed. A sample value is added to the audio buffer to mix the output
-	 * of several SIDs together.
-	 * 
-	 * @author ken
-	 *
-	 */
-	private static class SampleMixer implements IntConsumer {
-		private IntBuffer bufferL, bufferR;
-
-		private int volumeL, volumeR;
-
-		private SampleMixer(IntBuffer audioBufferL, IntBuffer audioBufferR) {
-			this.bufferL = audioBufferL;
-			this.bufferR = audioBufferR;
-		}
-
-		public void setVolume(int volumeL, int volumeR) {
-			this.volumeL = volumeL;
-			this.volumeR = volumeR;
-		}
-
-		@Override
-		public void accept(int sample) {
-			bufferL.put(bufferL.get(bufferL.position()) + sample * volumeL);
-			bufferR.put(bufferR.get(bufferR.position()) + sample * volumeR);
-		}
-
-		private void rewind() {
-			bufferL.rewind();
-			bufferR.rewind();
-		}
-
-	}
-
 	/**
 	 * NullAudio ignores generated sound samples. This is used, before timer
 	 * start has been reached.
@@ -80,7 +43,7 @@ public class Mixer {
 				// rewind
 				sampler.rewind();
 			}
-			context.schedule(this, audioBufferL.limit());
+			context.schedule(this, audioBufferL.capacity());
 		}
 	}
 
@@ -116,7 +79,7 @@ public class Mixer {
 				sampler.rewind();
 			}
 			// Output sample data
-			for (int pos = 0; pos < audioBufferL.limit(); pos++) {
+			for (int pos = 0; pos < audioBufferL.capacity(); pos++) {
 				int dither = triangularDithering();
 
 				putSample(resamplerL, audioBufferL.get(pos), dither);
@@ -129,7 +92,7 @@ public class Mixer {
 				audioBufferL.put(pos, 0);
 				audioBufferR.put(pos, 0);
 			}
-			context.schedule(this, audioBufferL.limit());
+			context.schedule(this, audioBufferL.capacity());
 		}
 
 		/**
@@ -381,8 +344,9 @@ public class Mixer {
 	 */
 	private void setSampleMixerVolume() {
 		boolean stereo = sids.size() > 1;
-		for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
-			SampleMixer sampler = (SampleMixer) sids.get(sidNum).getSampler();
+		int sidNum = 0;
+		for (ReSIDBase sid : sids) {
+			SampleMixer sampler = (SampleMixer) sid.getSampler();
 			if (stereo) {
 				int volumeL = (int) (volume[sidNum] * positionL[sidNum]);
 				int volumeR = (int) (volume[sidNum] * positionR[sidNum]);
@@ -390,6 +354,7 @@ public class Mixer {
 			} else {
 				sampler.setVolume(volume[sidNum], volume[sidNum]);
 			}
+			sidNum++;
 		}
 	}
 }
