@@ -14,13 +14,10 @@ import libsidplay.components.pla.PLA;
 import resid_builder.resample.Resampler;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
-import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
 
 /**
- * Mixer to mix SIDs sample data into the audio buffer.<BR>
- * Note: the audibility on the left/right speaker require two audio buffers, one
- * for each channel.
+ * Mixer to mix SIDs sample data into the audio buffer.
  * 
  * @author ken
  *
@@ -34,36 +31,30 @@ public class Mixer {
 	 * @author ken
 	 *
 	 */
-	private class SampleAdder implements IntConsumer {
-		/**
-		 * @param sidNum
-		 *            SID chip number
-		 */
-		private int sidNum;
-		/**
-		 * Current audio buffer position.
-		 */
-		private int pos;
+	private static class SampleMixer implements IntConsumer {
+		private IntBuffer bufferL, bufferR;
 
-		private SampleAdder(int sidNum) {
-			this.sidNum = sidNum;
+		private int volumeL, volumeR;
+
+		private SampleMixer(IntBuffer audioBufferL, IntBuffer audioBufferR) {
+			this.bufferL = audioBufferL;
+			this.bufferR = audioBufferR;
 		}
 
-		/**
-		 * Add sample to the mix with respect to the speakers audibility.
-		 */
+		public void setVolume(int volumeL, int volumeR) {
+			this.volumeL = volumeL;
+			this.volumeR = volumeR;
+		}
+
 		@Override
 		public void accept(int sample) {
-			int valueL = audioBufferL.get(pos);
-			int valueR = audioBufferR.get(pos);
-			valueL += sample * balancedVolumeL[sidNum];
-			valueR += sample * balancedVolumeR[sidNum];
-			audioBufferL.put(pos, valueL);
-			audioBufferR.put(pos++, valueR);
+			bufferL.put(bufferL.get(bufferL.position()) + sample * volumeL);
+			bufferR.put(bufferR.get(bufferR.position()) + sample * volumeR);
 		}
 
-		public void rewind() {
-			pos = 0;
+		private void rewind() {
+			bufferL.rewind();
+			bufferR.rewind();
 		}
 
 	}
@@ -83,7 +74,7 @@ public class Mixer {
 		@Override
 		public void event() throws InterruptedException {
 			for (ReSIDBase sid : sids) {
-				SampleAdder sampler = (SampleAdder) sid.getSampler();
+				SampleMixer sampler = (SampleMixer) sid.getSampler();
 				// clock SID to the present moment
 				sid.clock();
 				// rewind
@@ -118,7 +109,7 @@ public class Mixer {
 		public void event() throws InterruptedException {
 			// Clock SIDs to fill audio buffer
 			for (ReSIDBase sid : sids) {
-				SampleAdder sampler = (SampleAdder) sid.getSampler();
+				SampleMixer sampler = (SampleMixer) sid.getSampler();
 				// clock SID to the present moment
 				sid.clock();
 				// rewind
@@ -236,23 +227,15 @@ public class Mixer {
 	 */
 	private float[] positionR = new float[PLA.MAX_SIDS];
 
-	/**
-	 * Balanced left speaker volume = volumeL * positionL.
-	 */
-	private int[] balancedVolumeL = new int[PLA.MAX_SIDS];
-	/**
-	 * Balanced right speaker volume = volumeR * positionR.
-	 */
-	private int[] balancedVolumeR = new int[PLA.MAX_SIDS];
-
 	public Mixer(EventScheduler context, IConfig config, CPUClock cpuClock,
 			AudioConfig audioConfig, AudioDriver audioDriver) {
 		this.context = context;
 		this.config = config;
 		this.driver = audioDriver;
-		IAudioSection audio = config.getAudio();
-		this.audioBufferL = IntBuffer.allocate(audio.getBufferSize());
-		this.audioBufferR = IntBuffer.allocate(audio.getBufferSize());
+		this.audioBufferL = IntBuffer.allocate(config.getAudio()
+				.getBufferSize());
+		this.audioBufferR = IntBuffer.allocate(config.getAudio()
+				.getBufferSize());
 		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(),
 				audioConfig.getSamplingMethod(), audioConfig.getFrameRate(),
 				20000);
@@ -283,14 +266,14 @@ public class Mixer {
 	 *            SID to add
 	 */
 	public void add(int sidNum, ReSIDBase sid) {
-		sid.setSampler(new SampleAdder(sidNum));
 		if (sidNum < sids.size()) {
 			sids.set(sidNum, sid);
 		} else {
 			sids.add(sid);
-			setVolume(sidNum);
-			setBalance(sidNum);
 		}
+		createSampleMixer(sid);
+		setVolume(sidNum);
+		setBalance(sidNum);
 	}
 
 	/**
@@ -301,7 +284,7 @@ public class Mixer {
 	 */
 	public void remove(SIDEmu sid) {
 		sids.remove(sid);
-		balanceVolume();
+		setSampleMixerVolume();
 	}
 
 	/**
@@ -346,7 +329,7 @@ public class Mixer {
 		}
 		assert volumeInDB >= -6 && volumeInDB <= 6;
 		volume[sidNum] = (int) (Math.pow(10, volumeInDB / 10) * 1024);
-		balanceVolume();
+		setSampleMixerVolume();
 	}
 
 	/**
@@ -376,23 +359,36 @@ public class Mixer {
 		assert balance >= 0 && balance <= 1;
 		positionL[sidNum] = 1 - balance;
 		positionR[sidNum] = balance;
-		balanceVolume();
+		setSampleMixerVolume();
 	}
 
 	/**
-	 * Calculate balanced speaker volume level.<BR>
+	 * Create a new sample value mixer and assign to SID chip.
+	 * 
+	 * @param sid
+	 *            SID chip that requires a sample mixer.
+	 */
+	private void createSampleMixer(ReSIDBase sid) {
+		IntBuffer intBufferL = IntBuffer.wrap(audioBufferL.array());
+		IntBuffer intBufferR = IntBuffer.wrap(audioBufferR.array());
+		sid.setSampler(new SampleMixer(intBufferL, intBufferR));
+	}
+
+	/**
+	 * Set the sample mixer volume to the calculated balanced volume level.<BR>
 	 * Mono output: Use volume.<BR>
 	 * Stereo or 3-SID output: Use speaker audibility and volume.
 	 */
-	private void balanceVolume() {
-		boolean mono = sids.size() < 2;
+	private void setSampleMixerVolume() {
+		boolean stereo = sids.size() > 1;
 		for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
-			if (mono) {
-				balancedVolumeL[sidNum] = volume[sidNum];
-				balancedVolumeR[sidNum] = volume[sidNum];
+			SampleMixer sampler = (SampleMixer) sids.get(sidNum).getSampler();
+			if (stereo) {
+				int volumeL = (int) (volume[sidNum] * positionL[sidNum]);
+				int volumeR = (int) (volume[sidNum] * positionR[sidNum]);
+				sampler.setVolume(volumeL, volumeR);
 			} else {
-				balancedVolumeL[sidNum] = (int) (volume[sidNum] * positionL[sidNum]);
-				balancedVolumeR[sidNum] = (int) (volume[sidNum] * positionR[sidNum]);
+				sampler.setVolume(volume[sidNum], volume[sidNum]);
 			}
 		}
 	}
