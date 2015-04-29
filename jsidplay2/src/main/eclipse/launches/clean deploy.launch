@@ -9,6 +9,7 @@
 <listEntry value="serverId=${serverId}"/>
 <listEntry value="serverUrl=${serverUrl}"/>
 <listEntry value="remoteDir=${remoteDir}"/>
+<listEntry value="upx.home=${upx.home}"/>
 </listAttribute>
 <stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>
 <booleanAttribute key="M2_SKIP_TESTS" value="true"/>
