@@ -21,7 +21,6 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDChip;
-import resid_builder.Mixer;
 import resid_builder.ReSIDBase;
 import sidplay.ini.intf.IConfig;
 import sidplay.ini.intf.IEmulationSection;
@@ -81,8 +80,6 @@ public class ReSIDfp extends ReSIDBase {
 	 *
 	 * @param context
 	 *            {@link EventScheduler} context to use.
-	 * @param mixerEvent
-	 *            {@link Mixer} to use.
 	 */
 	public ReSIDfp(EventScheduler context) {
 		super(context);
