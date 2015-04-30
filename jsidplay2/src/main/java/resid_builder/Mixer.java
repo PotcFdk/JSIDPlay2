@@ -276,21 +276,9 @@ public class Mixer {
 	public void setVolume(int sidNum) {
 		assert sidNum < sids.size();
 
-		float volumeInDB;
-		switch (sidNum) {
-		case 0:
-			volumeInDB = config.getAudio().getMainVolume();
-			break;
-		case 1:
-			volumeInDB = config.getAudio().getSecondVolume();
-			break;
-		case 2:
-			volumeInDB = config.getAudio().getThirdVolume();
-			break;
-		default:
-			throw new RuntimeException("Maximum supported SIDS exceeded!");
-		}
+		float volumeInDB = config.getAudio().getVolume(sidNum);
 		assert volumeInDB >= -6 && volumeInDB <= 6;
+
 		volume[sidNum] = (int) (Math.pow(10, volumeInDB / 10) * 1024);
 		setSampleMixerVolume();
 	}
@@ -305,21 +293,9 @@ public class Mixer {
 	public void setBalance(int sidNum) {
 		assert sidNum < sids.size();
 
-		float balance;
-		switch (sidNum) {
-		case 0:
-			balance = config.getAudio().getMainBalance();
-			break;
-		case 1:
-			balance = config.getAudio().getSecondBalance();
-			break;
-		case 2:
-			balance = config.getAudio().getThirdBalance();
-			break;
-		default:
-			throw new RuntimeException("Maximum supported SIDS exceeded!");
-		}
+		float balance = config.getAudio().getBalance(sidNum);
 		assert balance >= 0 && balance <= 1;
+
 		positionL[sidNum] = 1 - balance;
 		positionR[sidNum] = balance;
 		setSampleMixerVolume();

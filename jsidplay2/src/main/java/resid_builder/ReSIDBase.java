@@ -117,7 +117,7 @@ public abstract class ReSIDBase extends SIDEmu {
 	public SIDChip getSID() {
 		return sid;
 	}
-
+	
 	protected abstract SIDChip createSID();
 
 }

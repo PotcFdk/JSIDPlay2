@@ -201,4 +201,30 @@ public interface IAudioSection {
 	 *            output buffer size
 	 */
 	void setBufferSize(int bufferSize);
+
+	default float getVolume(int sidNum) {
+		switch (sidNum) {
+		case 0:
+			return getMainVolume();
+		case 1:
+			return getSecondVolume();
+		case 2:
+			return getThirdVolume();
+		default:
+			throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
+	}
+
+	default float getBalance(int sidNum) {
+		switch (sidNum) {
+		case 0:
+			return getMainBalance();
+		case 1:
+			return getSecondBalance();
+		case 2:
+			return getThirdBalance();
+		default:
+			throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
+	}
 }
