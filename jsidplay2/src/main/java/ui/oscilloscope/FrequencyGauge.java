@@ -29,7 +29,7 @@ public final class FrequencyGauge extends SIDGauge {
 	}
 
 	@Override
-	public void sample(SIDEmu sidemu) {
+	public SIDGauge sample(SIDEmu sidemu) {
 		int frqValue = (sidemu.readInternalRegister(1 + getVoice() * 7) & 0xff) << 8
 				| sidemu.readInternalRegister(0 + getVoice() * 7) & 0xff;
 		float frq = 12 * 7;
@@ -37,5 +37,6 @@ public final class FrequencyGauge extends SIDGauge {
 			frq = (float) (Math.log(frqValue / 65535.0f) / Math.log(2) * 12);
 		}
 		accumulate(1f + frq / (12 * 7));
+		return this;
 	}
 }

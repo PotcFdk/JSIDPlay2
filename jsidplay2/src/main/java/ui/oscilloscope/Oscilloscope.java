@@ -1,5 +1,7 @@
 package ui.oscilloscope;
 
+import java.util.function.Consumer;
+
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
@@ -14,6 +16,8 @@ import libsidplay.Player;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SIDEmu;
+import libsidplay.components.pla.PLA;
 import libsidplay.player.State;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -28,6 +32,8 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	private class HighResolutionEvent extends Event {
 
+		protected int repaint;
+
 		public HighResolutionEvent() {
 			super("High Resolution SID Register Sampler");
 		}
@@ -36,17 +42,7 @@ public class Oscilloscope extends Tab implements UIPart {
 		public void event() {
 			util.getPlayer().configureSIDs((chipNum, sid) -> {
 				sid.clock();
-				for (int row = 0; row < 4; row++) {
-					gauges[chipNum][row][0].sample(sid);
-					gauges[chipNum][row][1].sample(sid);
-					gauges[chipNum][row][2].sample(sid);
-
-					gauges[chipNum][row][0].advance();
-					if ((repaint & 127) == 0) {
-						gauges[chipNum][row][1].advance();
-						gauges[chipNum][row][2].advance();
-					}
-				}
+				sampleGauges(chipNum, sid, (repaint & 127) == 0);
 			});
 			++repaint;
 			util.getPlayer().getC64().getEventScheduler()
@@ -78,8 +74,6 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	private UIUtil util;
 
-	protected SIDGauge[][][] gauges;
-	protected int repaint;
 	protected final HighResolutionEvent highResolutionEvent = new HighResolutionEvent();
 
 	public Oscilloscope(C64Window window, Player player) {
@@ -121,49 +115,6 @@ public class Oscilloscope extends Tab implements UIPart {
 		wave3Sid_1.setLocalizer(util.getBundle());
 		wave3Sid_2.setLocalizer(util.getBundle());
 
-		// Mono SID gauges
-		gauges = new SIDGauge[3][4][3];
-		gauges[0][0][0] = waveMono_0;
-		gauges[0][1][0] = waveMono_1;
-		gauges[0][2][0] = waveMono_2;
-		gauges[0][0][1] = envMono_0;
-		gauges[0][1][1] = envMono_1;
-		gauges[0][2][1] = envMono_2;
-		gauges[0][0][2] = freqMono_0;
-		gauges[0][1][2] = freqMono_1;
-		gauges[0][2][2] = freqMono_2;
-		gauges[0][3][0] = volumeMono;
-		gauges[0][3][1] = resonanceMono;
-		gauges[0][3][2] = filterMono;
-
-		// Stereo SID gauges
-		gauges[1][0][0] = waveStereo_0;
-		gauges[1][1][0] = waveStereo_1;
-		gauges[1][2][0] = waveStereo_2;
-		gauges[1][0][1] = envStereo_0;
-		gauges[1][1][1] = envStereo_1;
-		gauges[1][2][1] = envStereo_2;
-		gauges[1][0][2] = freqStereo_0;
-		gauges[1][1][2] = freqStereo_1;
-		gauges[1][2][2] = freqStereo_2;
-		gauges[1][3][0] = volumeStereo;
-		gauges[1][3][1] = resonanceStereo;
-		gauges[1][3][2] = filterStereo;
-
-		// 3SID gauges
-		gauges[2][0][0] = wave3Sid_0;
-		gauges[2][1][0] = wave3Sid_1;
-		gauges[2][2][0] = wave3Sid_2;
-		gauges[2][0][1] = env3Sid_0;
-		gauges[2][1][1] = env3Sid_1;
-		gauges[2][2][1] = env3Sid_2;
-		gauges[2][0][2] = freq3Sid_0;
-		gauges[2][1][2] = freq3Sid_1;
-		gauges[2][2][2] = freq3Sid_2;
-		gauges[2][3][0] = volume3Sid;
-		gauges[2][3][1] = resonance3Sid;
-		gauges[2][3][2] = filter3Sid;
-
 		EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
 		if (!ctx.isPending(highResolutionEvent)) {
 			ctx.scheduleThreadSafe(highResolutionEvent);
@@ -173,21 +124,13 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	private void startOscilloscope() {
 		/* Initially clear all gauges (unused SIDs inclusive) */
-		for (int chipNum = 0; chipNum < gauges.length; chipNum++) {
-			for (int row = 0; row < gauges[chipNum].length; row++) {
-				for (int col = 0; col < gauges[chipNum][row].length; col++) {
-					gauges[chipNum][row][col].reset();
-					gauges[chipNum][row][col].updateGauge();
-				}
-			}
+		for (int chipNum = 0; chipNum < PLA.MAX_SIDS; chipNum++) {
+			updateGauges(chipNum, Gauge::reset);
 		}
 		pt.setOnFinished(evt -> {
-			util.getPlayer().configureSIDs((chipNum, sid) -> {
-				for (int row = 0; row < gauges[chipNum].length; row++)
-					for (int col = 0; col < gauges[chipNum][row].length; col++)
-						gauges[chipNum][row][col].updateGauge(sid);
-
-			});
+			util.getPlayer().configureSIDs(
+					(chipNum, sid) -> updateGauges(chipNum,
+							gauge -> gauge.updateGauge(sid)));
 		});
 		st.setCycleCount(Timeline.INDEFINITE);
 		st.playFromStart();
@@ -220,7 +163,12 @@ public class Oscilloscope extends Tab implements UIPart {
 	public void doClose() {
 		final EventScheduler ctx = util.getPlayer().getC64()
 				.getEventScheduler();
-		ctx.cancel(highResolutionEvent);
+		ctx.scheduleThreadSafe(new Event("Cancel Oscilloscope") {
+			@Override
+			public void event() throws InterruptedException {
+				ctx.cancel(highResolutionEvent);
+			}
+		});
 		stopOscilloscope();
 		util.getPlayer().stateProperty().removeListener(listener);
 	}
@@ -277,6 +225,158 @@ public class Oscilloscope extends Tab implements UIPart {
 	private void doMuteVoice9() {
 		util.getPlayer().configureSID(2,
 				sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
+	}
+
+	/**
+	 * Sample audio from provided SID.
+	 * 
+	 * @param chipNum
+	 *            SID chip number
+	 * @param sid
+	 *            provided SID
+	 * @param isLowerResolution
+	 *            lower resolution event occured (less precision)
+	 */
+	private void sampleGauges(Integer chipNum, SIDEmu sid,
+			boolean isLowerResolution) {
+		switch (chipNum) {
+		case 0:
+			waveMono_0.sample(sid).advance();
+			waveMono_1.sample(sid).advance();
+			waveMono_2.sample(sid).advance();
+			envMono_0.sample(sid);
+			envMono_1.sample(sid);
+			envMono_2.sample(sid);
+			freqMono_0.sample(sid);
+			freqMono_1.sample(sid);
+			freqMono_2.sample(sid);
+			volumeMono.sample(sid).advance();
+			resonanceMono.sample(sid);
+			filterMono.sample(sid);
+			if (isLowerResolution) {
+				envMono_0.advance();
+				envMono_1.advance();
+				envMono_2.advance();
+				freqMono_0.advance();
+				freqMono_1.advance();
+				freqMono_2.advance();
+				resonanceMono.advance();
+				filterMono.advance();
+			}
+			break;
+
+		case 1:
+			waveStereo_0.sample(sid).advance();
+			waveStereo_1.sample(sid).advance();
+			waveStereo_2.sample(sid).advance();
+			envStereo_0.sample(sid);
+			envStereo_1.sample(sid);
+			envStereo_2.sample(sid);
+			freqStereo_0.sample(sid);
+			freqStereo_1.sample(sid);
+			freqStereo_2.sample(sid);
+			volumeStereo.sample(sid).advance();
+			resonanceStereo.sample(sid);
+			filterStereo.sample(sid);
+			if (isLowerResolution) {
+				envStereo_0.advance();
+				envStereo_1.advance();
+				envStereo_2.advance();
+				freqStereo_0.advance();
+				freqStereo_1.advance();
+				freqStereo_2.advance();
+				resonanceStereo.advance();
+				filterStereo.advance();
+			}
+			break;
+		case 2:
+			wave3Sid_0.sample(sid).advance();
+			wave3Sid_1.sample(sid).advance();
+			wave3Sid_2.sample(sid).advance();
+			env3Sid_0.sample(sid);
+			env3Sid_1.sample(sid);
+			env3Sid_2.sample(sid);
+			freq3Sid_0.sample(sid);
+			freq3Sid_1.sample(sid);
+			freq3Sid_2.sample(sid);
+			volume3Sid.sample(sid).advance();
+			resonance3Sid.sample(sid);
+			filter3Sid.sample(sid);
+			if (isLowerResolution) {
+				env3Sid_0.advance();
+				env3Sid_1.advance();
+				env3Sid_2.advance();
+				freq3Sid_0.advance();
+				freq3Sid_1.advance();
+				freq3Sid_2.advance();
+				resonance3Sid.advance();
+				filter3Sid.advance();
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * Update gauges using provided consumer.
+	 * 
+	 * @param chipNum
+	 *            SID chip number
+	 * @param updater
+	 *            update method
+	 */
+	private void updateGauges(Integer chipNum, Consumer<Gauge> updater) {
+		switch (chipNum) {
+		case 0:
+			updater.accept(waveMono_0);
+			updater.accept(waveMono_0);
+			updater.accept(waveMono_1);
+			updater.accept(waveMono_2);
+			updater.accept(envMono_0);
+			updater.accept(envMono_1);
+			updater.accept(envMono_2);
+			updater.accept(freqMono_0);
+			updater.accept(freqMono_1);
+			updater.accept(freqMono_2);
+			updater.accept(volumeMono);
+			updater.accept(resonanceMono);
+			updater.accept(filterMono);
+			break;
+
+		case 1:
+			updater.accept(waveStereo_0);
+			updater.accept(waveStereo_1);
+			updater.accept(waveStereo_2);
+			updater.accept(envStereo_0);
+			updater.accept(envStereo_1);
+			updater.accept(envStereo_2);
+			updater.accept(freqStereo_0);
+			updater.accept(freqStereo_1);
+			updater.accept(freqStereo_2);
+			updater.accept(volumeStereo);
+			updater.accept(resonanceStereo);
+			updater.accept(filterStereo);
+			break;
+		case 2:
+			updater.accept(wave3Sid_0);
+			updater.accept(wave3Sid_1);
+			updater.accept(wave3Sid_2);
+			updater.accept(env3Sid_0);
+			updater.accept(env3Sid_1);
+			updater.accept(env3Sid_2);
+			updater.accept(freq3Sid_0);
+			updater.accept(freq3Sid_1);
+			updater.accept(freq3Sid_2);
+			updater.accept(volume3Sid);
+			updater.accept(resonance3Sid);
+			updater.accept(filter3Sid);
+			break;
+
+		default:
+			break;
+		}
 	}
 
 }

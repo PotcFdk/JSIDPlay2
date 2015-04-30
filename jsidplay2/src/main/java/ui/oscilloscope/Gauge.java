@@ -10,6 +10,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import libsidplay.Player;
+import libsidplay.common.SIDEmu;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -89,9 +90,10 @@ public class Gauge extends VBox implements UIPart {
 		Arrays.fill(dataMin, (byte) 0);
 		Arrays.fill(dataMax, (byte) 0);
 		dataPos = 0;
+		updateGauge(null);
 	}
 
-	public void updateGauge() {
+	public void updateGauge(SIDEmu sidemu) {
 		getTitledPane().setText(text);
 
 		GraphicsContext g = getArea().getGraphicsContext2D();

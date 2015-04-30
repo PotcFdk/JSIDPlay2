@@ -29,8 +29,9 @@ public final class VolumeGauge extends SIDGauge {
 	}
 
 	@Override
-	public void sample(SIDEmu sidemu) {
+	public SIDGauge sample(SIDEmu sidemu) {
 		int sample = sidemu.readInternalRegister(0x18) & 0xf;
 		accumulate(sample / 15f);
+		return this;
 	}
 }

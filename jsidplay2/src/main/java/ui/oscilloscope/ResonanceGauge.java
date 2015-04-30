@@ -29,8 +29,9 @@ public final class ResonanceGauge extends SIDGauge {
 	}
 
 	@Override
-	public void sample(SIDEmu sidemu) {
+	public SIDGauge sample(SIDEmu sidemu) {
 		int res = (sidemu.readInternalRegister(0x17) >> 4) & 0xf;
 		accumulate(res / 15f);
+		return this;
 	}
 }

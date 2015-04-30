@@ -30,17 +30,18 @@ public final class WaveGauge extends SIDGauge {
 	}
 
 	@Override
-	public void sample(SIDEmu sidemu) {
+	public SIDGauge sample(SIDEmu sidemu) {
 		if (sidemu instanceof ReSIDBase) {
 			accumulate((((ReSIDBase) sidemu).getSID().readOSC(getVoice()) & 0xff) / 255f);
 		} else {
 			accumulate(0f);
 		}
+		return this;
 	}
 
 	@Override
 	public void updateGauge(SIDEmu sidemu) {
-		super.updateGauge();
+		super.updateGauge(sidemu);
 		if (sidemu != null) {
 			final byte wf = sidemu.readInternalRegister(4 + 7 * getVoice());
 			final byte filt = sidemu.readInternalRegister(0x17);

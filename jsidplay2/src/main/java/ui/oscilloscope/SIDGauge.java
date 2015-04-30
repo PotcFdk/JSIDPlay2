@@ -23,7 +23,7 @@ abstract class SIDGauge extends Gauge {
 	 * @param sid
 	 *            The SID to sample audio from.
 	 */
-	public abstract void sample(SIDEmu sid);
+	public abstract SIDGauge sample(SIDEmu sid);
 
 	/**
 	 * Redraw gauge. SID is passed to maybe update label etc.
@@ -32,7 +32,7 @@ abstract class SIDGauge extends Gauge {
 	 *            SID to redraw the gauge for.
 	 */
 	public void updateGauge(SIDEmu sid) {
-		updateGauge();
+		super.updateGauge(sid);
 	}
 
 	public void setLocalizer(ResourceBundle resources) {
