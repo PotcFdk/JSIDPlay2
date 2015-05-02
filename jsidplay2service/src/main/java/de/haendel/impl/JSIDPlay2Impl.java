@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.function.ToIntFunction;
+import java.util.function.IntSupplier;
 
 import javax.persistence.metamodel.SingularAttribute;
 
@@ -185,10 +185,10 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 		SidDatabase db = getSidDatabase(HVSC_ROOT);
 		STIL stil = getSTIL(HVSC_ROOT);
 		if (tune != null) {
-			ToIntFunction<SidTune> lengthFnct = new ToIntFunction<SidTune>() {
+			IntSupplier lengthFnct = new IntSupplier() {
 				@Override
-				public int applyAsInt(SidTune tn) {
-					return db != null ? db.getFullSongLength(tn) : 0;
+				public int getAsInt() {
+					return db != null ? db.getFullSongLength(tune) : 0;
 				}
 			};
 			HVSCEntry hvscEntry = new HVSCEntry(lengthFnct, "", tuneFile, tune);
