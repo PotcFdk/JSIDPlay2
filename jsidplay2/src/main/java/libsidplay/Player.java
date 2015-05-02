@@ -101,6 +101,11 @@ import ui.sidreg.SidRegExtension;
 public class Player {
 
 	/**
+	 * Delay in cycles, for normal RESET code path, before autostart commands
+	 * are executed (~2.5 seconds).
+	 */
+	private static final int RESET_INIT_DELAY = 2500000;
+	/**
 	 * Timeout for sleeping if player is paused.
 	 */
 	private static final int PAUSE_SLEEP_TIME = 250;
@@ -406,7 +411,7 @@ public class Player {
 						typeInCommand();
 					}
 				}
-			}, 2500000/* 2.5 sec */);
+			}, RESET_INIT_DELAY);
 		} else {
 			// Tune code path using auto-start
 			// Set play-back address to feedback call frames counter.
@@ -868,7 +873,7 @@ public class Player {
 	public AudioDriver getAudioDriver() {
 		return audioDriver;
 	}
-	
+
 	public final void setAudioDriver(final AudioDriver driver) {
 		this.audioDriver = driver;
 	}
@@ -958,9 +963,9 @@ public class Player {
 	}
 
 	private void close() {
-		configureSIDs((num, sid) -> {
+		configureSIDs((sidNum, sid) -> {
 			sidBuilder.unlock(sid);
-			c64.getPla().setSID(num, null);
+			c64.getPla().setSID(sidNum, null);
 		});
 		audioDriver.close();
 	}
