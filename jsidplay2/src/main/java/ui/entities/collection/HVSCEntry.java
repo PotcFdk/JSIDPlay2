@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.ToIntFunction;
+import java.util.function.IntSupplier;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -33,8 +33,8 @@ public class HVSCEntry {
 	public HVSCEntry() {
 	}
 
-	public HVSCEntry(final ToIntFunction<SidTune> lengthFnct,
-			final String path, final File tuneFile, SidTune tune) {
+	public HVSCEntry(final IntSupplier lengthFnct, final String path,
+			final File tuneFile, SidTune tune) {
 		this.name = tuneFile.getName();
 		this.path = path.length() > 0 ? path : tuneFile.getPath();
 		if (tune != null) {
@@ -63,10 +63,9 @@ public class HVSCEntry {
 			this.sidModel2 = info.getSid2Model();
 			this.sidModel3 = info.getSid3Model();
 			this.compatibility = info.getCompatibility();
-			this.tuneLength = Long.valueOf(lengthFnct != null ? lengthFnct
-					.applyAsInt(tune) : 0);
-			this.audio = info.getSidChipBase(1) != 0
-					? info.getSidChipBase(2) != 0 ? "3-SID" : "Stereo"
+			this.tuneLength = Long.valueOf(lengthFnct.getAsInt());
+			this.audio = info.getSidChipBase(1) != 0 ? info.getSidChipBase(2) != 0 ? "3-SID"
+					: "Stereo"
 					: "Mono";
 			this.sidChipBase1 = info.getSidChipBase(0);
 			this.sidChipBase2 = info.getSidChipBase(1);

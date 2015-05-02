@@ -31,7 +31,6 @@ import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.ToIntFunction;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -1037,13 +1036,8 @@ public class Player {
 		return sidDatabase;
 	}
 
-	public final int getSidDatabaseInfo(ToIntFunction<SidDatabase> toIntFunction) {
-		return sidDatabase != null ? toIntFunction.applyAsInt(sidDatabase) : 0;
-	}
-
-	public final String getSidDatabaseStringInfo(
-			Function<SidDatabase, String> toStringFunction) {
-		return sidDatabase != null ? toStringFunction.apply(sidDatabase) : "";
+	public final <T> T getSidDatabaseInfo(Function<SidDatabase, T> function) {
+		return sidDatabase != null ? function.apply(sidDatabase) : null;
 	}
 
 	public final void setSTIL(STIL stil) {
