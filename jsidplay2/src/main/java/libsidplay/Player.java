@@ -1032,20 +1032,12 @@ public class Player {
 		this.sidDatabase = sidDatabase;
 	}
 
-	public SidDatabase getSidDatabase() {
-		return sidDatabase;
-	}
-
 	public final <T> T getSidDatabaseInfo(Function<SidDatabase, T> function) {
 		return sidDatabase != null ? function.apply(sidDatabase) : null;
 	}
 
 	public final void setSTIL(STIL stil) {
 		this.stil = stil;
-	}
-
-	public STIL getStil() {
-		return stil;
 	}
 
 	public final STILEntry getStilEntry(String collectionName) {
