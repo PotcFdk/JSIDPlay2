@@ -35,11 +35,10 @@ public class JavaSound extends AudioDriver {
 		}
 	}
 
-	protected ByteBuffer sampleBuffer;
-
 	private AudioConfig cfg;
 	private AudioFormat audioFormat;
 	private SourceDataLine dataLine;
+	private ByteBuffer sampleBuffer;
 
 	@Override
 	public synchronized void open(final AudioConfig cfg, SidTune tune)
