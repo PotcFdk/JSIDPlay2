@@ -35,11 +35,11 @@ public class JavaSound extends AudioDriver {
 		}
 	}
 
+	protected ByteBuffer sampleBuffer;
+
+	private AudioConfig cfg;
 	private AudioFormat audioFormat;
 	private SourceDataLine dataLine;
-
-	protected ByteBuffer sampleBuffer;
-	private AudioConfig cfg;
 
 	@Override
 	public synchronized void open(final AudioConfig cfg, SidTune tune)
@@ -51,6 +51,16 @@ public class JavaSound extends AudioDriver {
 		} else {
 			open(cfg, (Info) null);
 		}
+	}
+
+	public synchronized void open(final AudioConfig cfg, final Mixer.Info info)
+			throws LineUnavailableException {
+		this.cfg = cfg;
+		boolean signed = true;
+		boolean bigEndian = false;
+		this.audioFormat = new AudioFormat(cfg.frameRate, Short.SIZE,
+				cfg.channels, signed, bigEndian);
+		setAudioDevice(info);
 	}
 
 	public static final ObservableList<Device> getDevices() {
@@ -66,15 +76,6 @@ public class JavaSound extends AudioDriver {
 		return devices;
 	}
 
-	public synchronized void open(final AudioConfig cfg, final Mixer.Info info)
-			throws LineUnavailableException {
-		this.cfg = cfg;
-		audioFormat = new AudioFormat(cfg.frameRate, 16, cfg.channels, true,
-				false);
-
-		setAudioDevice(info);
-	}
-
 	public synchronized void setAudioDevice(final Mixer.Info info)
 			throws LineUnavailableException {
 		// first close previous dataLine when it already present
@@ -85,17 +86,19 @@ public class JavaSound extends AudioDriver {
 		} else {
 			dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
 		}
-		dataLine.open(dataLine.getFormat(), cfg.bufferFrames * 2 * cfg.channels);
+		dataLine.open(dataLine.getFormat(), cfg.bufferFrames * Short.BYTES
+				* cfg.channels);
 		// The actual buffer size for the open line may differ from the
 		// requested buffer size, therefore
-		cfg.bufferFrames = dataLine.getBufferSize() / 2 / cfg.channels;
+		cfg.bufferFrames = dataLine.getBufferSize() / Short.BYTES
+				/ cfg.channels;
 
 		/*
 		 * Write to audio device often. We make the sample buffer size divisible
 		 * by 64 to ensure that all fast forward factors can be handled. (32x
 		 * speed, 2 channels)
 		 */
-		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * 2
+		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES
 				* cfg.channels);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
 	}
@@ -154,7 +157,7 @@ public class JavaSound extends AudioDriver {
 	 * @return playback time in ms
 	 */
 	public synchronized int getRemainingPlayTime() {
-		int bytesPerFrame = dataLine.getFormat().getChannels() * 2;
+		int bytesPerFrame = dataLine.getFormat().getChannels() * Short.BYTES;
 		int framesPlayed = dataLine.available() / bytesPerFrame;
 		int framesTotal = dataLine.getBufferSize() / bytesPerFrame;
 		int framesNotYetPlayed = framesTotal - framesPlayed;
@@ -164,7 +167,6 @@ public class JavaSound extends AudioDriver {
 	@Override
 	public synchronized void pause() {
 		if (dataLine.isActive()) {
-			dataLine.flush();
 			dataLine.stop();
 		}
 	}
@@ -176,18 +178,9 @@ public class JavaSound extends AudioDriver {
 		}
 
 		if (dataLine.isActive()) {
-			dataLine.flush();
 			dataLine.stop();
-		}
-		if (dataLine.isOpen()) {
-			/*
-			 * Fails with PulseAudio. Workaround, don't know why, might not
-			 * matter.
-			 */
-			try {
-				dataLine.close();
-			} catch (RuntimeException rte) {
-			}
+			dataLine.flush();
+			dataLine.close();
 		}
 	}
 

@@ -40,12 +40,12 @@ public class MP3File extends AudioDriver {
 			throws LineUnavailableException, UnsupportedAudioFileException,
 			IOException {
 		final int channels = cfg.channels;
-		final int blockAlign = 2 * channels;
+		final int blockAlign = Short.BYTES * channels;
 
 		// We need to make a buffer for the user
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, 16,
+		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, Short.SIZE,
 				cfg.channels, true, false);
 		jump3r = new LameEncoder(audioFormat);
 		out = new FileOutputStream(recordingFilenameProvider.getFilename(tune)

@@ -73,7 +73,7 @@ public class WavFile extends AudioDriver {
 	public void open(final AudioConfig cfg, SidTune tune) throws IOException {
 		final int channels = cfg.channels;
 		final int freq = cfg.frameRate;
-		final int blockAlign = 2 * channels;
+		final int blockAlign = Short.BYTES * channels;
 		byteCount = 0;
 
 		// We need to make a buffer for the user
