@@ -274,8 +274,6 @@ public class Mixer {
 	 *            SID chip number
 	 */
 	public void setVolume(int sidNum) {
-		assert sidNum < sids.size();
-
 		float volumeInDB = config.getAudio().getVolume(sidNum);
 		assert volumeInDB >= -6 && volumeInDB <= 6;
 
@@ -291,8 +289,6 @@ public class Mixer {
 	 *            SID chip number
 	 */
 	public void setBalance(int sidNum) {
-		assert sidNum < sids.size();
-
 		float balance = config.getAudio().getBalance(sidNum);
 		assert balance >= 0 && balance <= 1;
 
