@@ -114,6 +114,18 @@ public class Player {
 	 */
 	private static final int PREV_SONG_TIMEOUT = 4;
 	/**
+	 * RAM location for a user typed-in command.
+	 */
+	private static final int RAM_COMAND = 0x277;
+	/**
+	 * RAM location for a user typed-in command length.
+	 */
+	private static final int RAM_COMMAND_LEN = 0xc6;
+	/**
+	 * Maximum length for a user typed-in command.
+	 */
+	private static final int MAX_COMMAND_LEN = 16;
+	/**
 	 * Auto-start commands.
 	 */
 	private static final String RUN = "RUN\r", SYS = "SYS%d\r",
@@ -363,10 +375,8 @@ public class Player {
 
 	/**
 	 * Power-on C64 system. Only play() calls should be made after this point.
-	 * 
-	 * @throws InterruptedException
 	 */
-	private void reset() throws InterruptedException {
+	private void reset() {
 		c64.reset();
 		iecBus.reset();
 		datasette.reset();
@@ -377,18 +387,17 @@ public class Player {
 		createOrUpdateSIDs();
 
 		// Reset Floppies
-		final IC1541Section c1541 = config.getC1541();
+		final IC1541Section c1541Section = config.getC1541();
 		for (final C1541 floppy : floppies) {
+			floppy.setFloppyType(c1541Section.getFloppyType());
+			for (int selector = 0; selector < IC1541Section.MAX_RAM_EXPANSIONS; selector++) {
+				boolean hasRamExpansion = c1541Section.isRamExpansion(selector);
+				floppy.setRamExpansion(selector, hasRamExpansion);
+			}
 			floppy.reset();
-			floppy.setFloppyType(c1541.getFloppyType());
-			floppy.setRamExpansion(0, c1541.isRamExpansionEnabled0());
-			floppy.setRamExpansion(1, c1541.isRamExpansionEnabled1());
-			floppy.setRamExpansion(2, c1541.isRamExpansionEnabled2());
-			floppy.setRamExpansion(3, c1541.isRamExpansionEnabled3());
-			floppy.setRamExpansion(4, c1541.isRamExpansionEnabled4());
 		}
-		enableFloppyDiskDrives(c1541.isDriveOn());
-		connectC64AndC1541WithParallelCable(c1541.isParallelCable());
+		enableFloppyDiskDrives(c1541Section.isDriveOn());
+		connectC64AndC1541WithParallelCable(c1541Section.isParallelCable());
 
 		// Reset IEC devices
 		for (final SerialIECDevice serialDevice : serialDevices) {
@@ -435,13 +444,16 @@ public class Player {
 		}
 	}
 
+	/**
+	 * Simulate a user typed-in command.
+	 */
 	private void typeInCommand() {
 		byte[] ram = c64.getRAM();
-		final int length = Math.min(command.length(), 16);
-		for (int i = 0; i < length; i++) {
-			ram[0x277 + i] = (byte) command.charAt(i);
+		final int length = Math.min(command.length(), MAX_COMMAND_LEN);
+		for (int charNum = 0; charNum < length; charNum++) {
+			ram[RAM_COMAND + charNum] = (byte) command.charAt(charNum);
 		}
-		ram[0xc6] = (byte) length;
+		ram[RAM_COMMAND_LEN] = (byte) length;
 		command = null;
 	}
 
@@ -812,6 +824,11 @@ public class Player {
 		}
 	};
 
+	/**
+	 * Open player, that means basically: Reset C64 and start playing the tune.
+	 * 
+	 * @throws InterruptedException
+	 */
 	private void open() throws InterruptedException {
 		if (stateProperty.get() == State.RESTART) {
 			stateProperty.set(State.STOPPED);
@@ -821,7 +838,7 @@ public class Player {
 		CPUClock cpuClock = CPUClock.getCPUClock(config, tune);
 		setClock(cpuClock);
 
-		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudio(), 2);
+		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudio());
 
 		if (updateAudioDriver) {
 			updateAudioDriver = false;

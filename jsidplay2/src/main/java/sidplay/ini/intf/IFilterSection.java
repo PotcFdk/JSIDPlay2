@@ -2,57 +2,57 @@ package sidplay.ini.intf;
 
 public interface IFilterSection {
 
-	public String getName();
+	String getName();
 
-	public void setName(String name);
+	void setName(String name);
 
-	public float getFilter8580CurvePosition();
+	float getFilter8580CurvePosition();
 
-	public void setFilter8580CurvePosition(float filter8580CurvePosition);
+	void setFilter8580CurvePosition(float filter8580CurvePosition);
 
-	public float getFilter6581CurvePosition();
+	float getFilter6581CurvePosition();
 
-	public void setFilter6581CurvePosition(float filter6581CurvePosition);
+	void setFilter6581CurvePosition(float filter6581CurvePosition);
 
-	public float getAttenuation();
+	float getAttenuation();
 
-	public void setAttenuation(float attenuation);
+	void setAttenuation(float attenuation);
 
-	public float getNonlinearity();
+	float getNonlinearity();
 
-	public void setNonlinearity(float nonlinearity);
+	void setNonlinearity(float nonlinearity);
 
-	public float getVoiceNonlinearity();
+	float getVoiceNonlinearity();
 
-	public void setVoiceNonlinearity(float voiceNonlinearity);
+	void setVoiceNonlinearity(float voiceNonlinearity);
 
-	public float getBaseresistance();
+	float getBaseresistance();
 
-	public void setBaseresistance(float baseresistance);
+	void setBaseresistance(float baseresistance);
 
-	public float getOffset();
+	float getOffset();
 
-	public void setOffset(float offset);
+	void setOffset(float offset);
 
-	public float getSteepness();
+	float getSteepness();
 
-	public void setSteepness(float steepness);
+	void setSteepness(float steepness);
 
-	public float getMinimumfetresistance();
+	float getMinimumfetresistance();
 
-	public void setMinimumfetresistance(float minimumfetresistance);
+	void setMinimumfetresistance(float minimumfetresistance);
 
-	public float getK();
+	float getK();
 
-	public void setK(float k);
+	void setK(float k);
 
-	public float getB();
+	float getB();
 
-	public void setB(float b);
+	void setB(float b);
 
-	public float getResonanceFactor();
+	float getResonanceFactor();
 
-	public void setResonanceFactor(float resonanceFactor);
+	void setResonanceFactor(float resonanceFactor);
 
 	default boolean isReSIDFilter6581() {
 		return getFilter6581CurvePosition() != 0;

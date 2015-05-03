@@ -15,15 +15,13 @@
  */
 package sidplay.audio;
 
-import libsidplay.common.SamplingMethod;
 import sidplay.ini.intf.IAudioSection;
 
 public class AudioConfig {
-	protected int frameRate = 48000;
-	protected int channels = 2;
-	protected int bufferFrames = 4096;
-	private SamplingMethod samplingMethod;
-	private int deviceIdx;
+	protected final int frameRate;
+	protected final int channels;
+	protected int bufferFrames;
+	protected final int deviceIdx;
 
 	/**
 	 * This instance represents the requested audio configuration
@@ -32,26 +30,29 @@ public class AudioConfig {
 	 *            The desired audio framerate.
 	 * @param channels
 	 *            The number of audio channels to use.
+	 * @param deviceIdx
+	 *            The sound device number.
 	 */
-	protected AudioConfig(int frameRate, int channels,
-			SamplingMethod samplingMethod, int deviceIdx) {
+	protected AudioConfig(int frameRate, int channels, int deviceIdx) {
 		this.frameRate = frameRate;
 		this.channels = channels;
-		this.samplingMethod = samplingMethod;
 		this.deviceIdx = deviceIdx;
+		this.bufferFrames = 4096;
 	}
 
 	/**
 	 * Return a detached AudioConfig instance corresponding to current
-	 * parameters.
+	 * parameters.<BR>
+	 * <B>Note:</B> The number of audio channels is always two to support stereo
+	 * tunes and to play mono tunes as stereo (fake stereo).
 	 * 
-	 * @param channels
-	 *            The number of audio channels to use.
+	 * @param audio
+	 *            audio configuration
+	 * 
 	 * @return AudioConfig for current specification
 	 */
-	public static AudioConfig getInstance(IAudioSection audio, int channels) {
-		return new AudioConfig(audio.getFrequency(), channels,
-				audio.getSampling(), audio.getDevice());
+	public static AudioConfig getInstance(IAudioSection audio) {
+		return new AudioConfig(audio.getFrequency(), 2, audio.getDevice());
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class AudioConfig {
 	 * @return size of one chunk
 	 */
 	public int getChunkFrames() {
-		return 1024 < bufferFrames ? 1024 : bufferFrames;
+		return Math.min(1024, bufferFrames);
 	}
 
 	/**
@@ -81,15 +82,6 @@ public class AudioConfig {
 	 */
 	public int getBufferFrames() {
 		return bufferFrames;
-	}
-
-	/**
-	 * Gets the SID sampling method used by this AudioConfig.
-	 * 
-	 * @return The SID sampling method used by this AudioConfig.
-	 */
-	public SamplingMethod getSamplingMethod() {
-		return samplingMethod;
 	}
 
 	public int getChannels() {

@@ -200,10 +200,10 @@ public class Mixer {
 		this.audioBufferR = IntBuffer.allocate(config.getAudio()
 				.getBufferSize());
 		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(),
-				audioConfig.getSamplingMethod(), audioConfig.getFrameRate(),
+				config.getAudio().getSampling(), audioConfig.getFrameRate(),
 				20000);
 		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(),
-				audioConfig.getSamplingMethod(), audioConfig.getFrameRate(),
+				config.getAudio().getSampling(), audioConfig.getFrameRate(),
 				20000);
 	}
 

@@ -5,18 +5,18 @@ import sidplay.audio.Audio;
 
 public interface IAudioSection {
 
-	public static final Audio DEFAULT_AUDIO = Audio.SOUNDCARD;
-	public static final int DEFAULT_DEVICE = 0;
-	public static final int DEFAULT_FREQUENCY = 48000;
-	public static final SamplingMethod DEFAULT_SAMPLING = SamplingMethod.DECIMATE;
-	public static final boolean DEFAULT_PLAY_ORIGINAL = false;
-	public static final float DEFAULT_MAIN_VOLUME = 0.f;
-	public static final float DEFAULT_SECOND_VOLUME = 0.f;
-	public static final float DEFAULT_THIRD_VOLUME = 0.f;
-	public static final float DEFAULT_MAIN_BALANCE = 0.f;
-	public static final float DEFAULT_SECOND_BALANCE = 1.f;
-	public static final float DEFAULT_THIRD_BALANCE = .5f;
-	public static final int DEFAULT_BUFFER_SIZE = 2500;
+	static final Audio DEFAULT_AUDIO = Audio.SOUNDCARD;
+	static final int DEFAULT_DEVICE = 0;
+	static final int DEFAULT_FREQUENCY = 48000;
+	static final SamplingMethod DEFAULT_SAMPLING = SamplingMethod.DECIMATE;
+	static final boolean DEFAULT_PLAY_ORIGINAL = false;
+	static final float DEFAULT_MAIN_VOLUME = 0.f;
+	static final float DEFAULT_SECOND_VOLUME = 0.f;
+	static final float DEFAULT_THIRD_VOLUME = 0.f;
+	static final float DEFAULT_MAIN_BALANCE = 0.f;
+	static final float DEFAULT_SECOND_BALANCE = 1.f;
+	static final float DEFAULT_THIRD_BALANCE = .5f;
+	static final int DEFAULT_BUFFER_SIZE = 2500;
 
 	/**
 	 * Getter of the audio to be used.

@@ -45,8 +45,9 @@ public class JavaSound extends AudioDriver {
 	public synchronized void open(final AudioConfig cfg, SidTune tune)
 			throws LineUnavailableException {
 		int device = cfg.getDevice();
-		if (device < getDevices().size()) {
-			open(cfg, getDevices().get(device).getInfo());
+		ObservableList<Device> devices = getDevices();
+		if (device < devices.size()) {
+			open(cfg, devices.get(device).getInfo());
 		} else {
 			open(cfg, (Info) null);
 		}

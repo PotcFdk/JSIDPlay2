@@ -1,14 +1,14 @@
 package sidplay.ini.intf;
 
 public interface IPrinterSection {
-	public static final boolean DEFAULT_PRINTER_ON=false;
+	static final boolean DEFAULT_PRINTER_ON = false;
 
 	/**
 	 * Printer turned on?
 	 * 
 	 * @return printer turned on?
 	 */
-	public boolean isPrinterOn();
+	boolean isPrinterOn();
 
 	/**
 	 * Turn printer on.
@@ -16,6 +16,6 @@ public interface IPrinterSection {
 	 * @param on
 	 *            printer turned on?
 	 */
-	public void setPrinterOn(boolean on);
+	void setPrinterOn(boolean on);
 
 }

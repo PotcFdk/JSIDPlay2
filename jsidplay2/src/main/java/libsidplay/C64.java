@@ -412,10 +412,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	/**
 	 * Perform the equivalent of full power-on reset of C64, re-initializing
 	 * everything.
-	 * 
-	 * @throws InterruptedException
 	 */
-	public void reset() throws InterruptedException {
+	public void reset() {
 		context.reset();
 		keyboard.reset();
 		pla.reset();
