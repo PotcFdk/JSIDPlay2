@@ -1054,8 +1054,9 @@ public class Player {
 		this.sidDatabase = sidDatabase;
 	}
 
-	public final <T> T getSidDatabaseInfo(Function<SidDatabase, T> function) {
-		return sidDatabase != null ? function.apply(sidDatabase) : null;
+	public final <T> T getSidDatabaseInfo(Function<SidDatabase, T> function,
+			T defaultValue) {
+		return sidDatabase != null ? function.apply(sidDatabase) : defaultValue;
 	}
 
 	public final void setSTIL(STIL stil) {

@@ -231,7 +231,7 @@ public class MusicCollection extends Tab implements UIPart {
 										String collectionName = util
 												.getPlayer()
 												.getSidDatabaseInfo(
-														db -> db.getPath(tune));
+														db -> db.getPath(tune), "");
 										showNextHit(new TFile(fileBrowser
 												.getRoot().getValue(),
 												collectionName));
@@ -755,7 +755,7 @@ public class MusicCollection extends Tab implements UIPart {
 		String collectionName = PathUtils.getCollectionName(fileBrowser
 				.getRoot().getValue(), tuneFile.getPath());
 		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
-				.getSidDatabaseInfo(db -> db.getFullSongLength(tune)),
+				.getSidDatabaseInfo(db -> db.getFullSongLength(tune), 0),
 				collectionName, tuneFile, tune);
 
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
@@ -962,7 +962,7 @@ public class MusicCollection extends Tab implements UIPart {
 			String collectionName = PathUtils.getCollectionName(
 					sidPlay2Section.getHvscFile(), file.getPath());
 			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
-					.getSidDatabaseInfo(db -> db.getFullSongLength(tune)),
+					.getSidDatabaseInfo(db -> db.getFullSongLength(tune), 0),
 					collectionName, file, tune);
 			section.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {

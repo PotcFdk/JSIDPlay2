@@ -421,7 +421,7 @@ public class SidDump extends Tab implements UIPart {
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
 			int length = util.getPlayer().getSidDatabaseInfo(
-					db -> db.getSongLength(tune));
+					db -> db.getSongLength(tune), 0);
 			if (length == 0) {
 				length = util.getConfig().getSidplay2().getDefaultPlayLength();
 				if (length == 0) {
