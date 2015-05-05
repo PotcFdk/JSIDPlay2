@@ -798,17 +798,16 @@ public class Player {
 				menuHook.accept(Player.this);
 				stateProperty.set(State.RUNNING);
 				// Play next chunk of sound data, until it gets stopped
-				while (true) {
+				while (play()) {
 					// Pause? sleep for awhile
 					if (stateProperty.get() == State.PAUSED) {
 						Thread.sleep(PAUSE_SLEEP_TIME);
 					}
-					// Play a chunk
-					if (!play()) {
-						break;
-					}
 					interactivityHook.accept(Player.this);
 				}
+			} catch (NaturalFinishedException e) {
+				// natural finish
+				stateProperty.set(getEndState());
 			} catch (InterruptedException e) {
 			} finally {
 				// Don't forget to close
@@ -963,13 +962,9 @@ public class Player {
 	 * @throws InterruptedException
 	 */
 	private boolean play() throws InterruptedException {
-		try {
-			for (int i = 0; stateProperty.get() == State.RUNNING
-					&& i < config.getAudio().getBufferSize(); i++) {
-				c64.getEventScheduler().clock();
-			}
-		} catch (NaturalFinishedException e) {
-			stateProperty.set(getEndState());
+		for (int i = 0; stateProperty.get() == State.RUNNING
+				&& i < config.getAudio().getBufferSize(); i++) {
+			c64.getEventScheduler().clock();
 		}
 		return stateProperty.get() == State.RUNNING
 				|| stateProperty.get() == State.PAUSED;
