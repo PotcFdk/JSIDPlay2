@@ -104,6 +104,7 @@ public class JavaSound extends AudioDriver {
 
 	@Override
 	public synchronized void write() throws InterruptedException {
+		// in pause mode next call of write continues
 		if (!dataLine.isActive()) {
 			dataLine.start();
 		}
@@ -132,7 +133,7 @@ public class JavaSound extends AudioDriver {
 					for (int c = 0; c < audioFormat.getChannels(); c++) {
 						sampleBuffer.putShort(newLen,
 								(short) (val[c] / fastForward));
-						newLen += 2;
+						newLen += Short.BYTES;
 					}
 
 					/* zero accumulator */
@@ -172,11 +173,7 @@ public class JavaSound extends AudioDriver {
 
 	@Override
 	public synchronized void close() {
-		if (dataLine == null) {
-			return;
-		}
-
-		if (dataLine.isActive()) {
+		if (dataLine != null && dataLine.isActive()) {
 			dataLine.stop();
 			dataLine.flush();
 			dataLine.close();

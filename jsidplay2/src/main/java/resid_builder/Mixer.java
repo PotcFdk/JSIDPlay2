@@ -85,7 +85,7 @@ public class Mixer {
 				putSample(resamplerL, audioBufferL.get(pos), dither);
 				putSample(resamplerR, audioBufferR.get(pos), dither);
 
-				if (driver.buffer().remaining() == 0) {
+				if (!driver.buffer().hasRemaining()) {
 					driver.write();
 					driver.buffer().clear();
 				}
