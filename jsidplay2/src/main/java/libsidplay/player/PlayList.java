@@ -109,7 +109,7 @@ public class PlayList {
 	 * Choose last play list entry.
 	 */
 	public void last() {
-		int last = config.getSidplay2().isSingle() ? first : first - 1;
+		int last = config.getSidplay2Section().isSingle() ? first : first - 1;
 		current = last < 1 ? length : last;
 	}
 
@@ -131,7 +131,7 @@ public class PlayList {
 	 * Get previous play list entry.
 	 */
 	public int getPrevious() {
-		int previous = config.getSidplay2().isSingle() ? current : current - 1;
+		int previous = config.getSidplay2Section().isSingle() ? current : current - 1;
 		return previous < 1 ? length : previous;
 	}
 
@@ -139,7 +139,7 @@ public class PlayList {
 	 * Get next play list entry.
 	 */
 	public int getNext() {
-		int next = config.getSidplay2().isSingle() ? current : current + 1;
+		int next = config.getSidplay2Section().isSingle() ? current : current + 1;
 		return next > length ? 1 : next;
 	}
 

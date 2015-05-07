@@ -106,7 +106,7 @@ public class Player {
 	 */
 	private static final int RESET_INIT_DELAY = 2500000;
 	/**
-	 * Timeout for sleeping if player is paused.
+	 * Timeout (in ms) for sleeping if player is paused.
 	 */
 	private static final int PAUSE_SLEEP_TIME = 250;
 	/**
@@ -235,7 +235,7 @@ public class Player {
 	 */
 	public Player(IConfig config) {
 		this.config = config;
-		this.audioDriver = config.getAudio().getAudio().getAudioDriver();
+		this.audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 
 		this.iecBus = new IECBus();
 
@@ -254,21 +254,21 @@ public class Player {
 		this.c64 = new C64() {
 			@Override
 			public void printerUserportWriteData(final byte data) {
-				if (config.getPrinter().isPrinterOn()) {
+				if (config.getPrinterSection().isPrinterOn()) {
 					printer.printerUserportWriteData(data);
 				}
 			}
 
 			@Override
 			public void printerUserportWriteStrobe(final boolean strobe) {
-				if (config.getPrinter().isPrinterOn()) {
+				if (config.getPrinterSection().isPrinterOn()) {
 					printer.printerUserportWriteStrobe(strobe);
 				}
 			}
 
 			@Override
 			public byte readFromIECBus() {
-				if (config.getC1541().isDriveOn()) {
+				if (config.getC1541Section().isDriveOn()) {
 					c1541Runner.synchronize(0);
 					return iecBus.readFromIECBus();
 				}
@@ -277,7 +277,7 @@ public class Player {
 
 			@Override
 			public void writeToIECBus(final byte data) {
-				if (config.getC1541().isDriveOn()) {
+				if (config.getC1541Section().isDriveOn()) {
 					c1541Runner.synchronize(1);
 					iecBus.writeToIECBus(data);
 				}
@@ -327,7 +327,7 @@ public class Player {
 			public void end() {
 				// Only if tune is playing: if play time is over loop or exit
 				if (tune != SidTune.RESET) {
-					if (config.getSidplay2().isSingle()) {
+					if (config.getSidplay2Section().isSingle()) {
 						stateProperty.set(getEndState());
 					} else {
 						// Check play-list end
@@ -349,7 +349,7 @@ public class Player {
 	 * Note: Converted tapes and HardSID libraries will be saved here!
 	 */
 	private void initializeTmpDir() {
-		File tmpDir = new File(config.getSidplay2().getTmpDir());
+		File tmpDir = new File(config.getSidplay2Section().getTmpDir());
 		if (!tmpDir.exists()) {
 			tmpDir.mkdirs();
 		}
@@ -387,7 +387,7 @@ public class Player {
 		createOrUpdateSIDs();
 
 		// Reset Floppies
-		final IC1541Section c1541Section = config.getC1541();
+		final IC1541Section c1541Section = config.getC1541Section();
 		for (final C1541 floppy : floppies) {
 			floppy.setFloppyType(c1541Section.getFloppyType());
 			for (int selector = 0; selector < IC1541Section.MAX_RAM_EXPANSIONS; selector++) {
@@ -404,7 +404,7 @@ public class Player {
 			serialDevice.reset();
 		}
 
-		enablePrinter(config.getPrinter().isPrinterOn());
+		enablePrinter(config.getPrinterSection().isPrinterOn());
 
 		// Auto-start program, if we have one.
 		if (tune == SidTune.RESET) {
@@ -837,11 +837,12 @@ public class Player {
 		CPUClock cpuClock = CPUClock.getCPUClock(config, tune);
 		setClock(cpuClock);
 
-		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudio());
+		AudioConfig audioConfig = AudioConfig.getInstance(config
+				.getAudioSection());
 
 		if (updateAudioDriver) {
 			updateAudioDriver = false;
-			audioDriver = config.getAudio().getAudio().getAudioDriver();
+			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 		}
 		audioDriver.setRecordingFilenameProvider(recordingFilenameProvider);
 
@@ -870,7 +871,7 @@ public class Player {
 	 */
 	private SIDBuilder createSIDBuilder(CPUClock cpuClock,
 			AudioConfig audioConfig) {
-		final Engine engine = config.getEmulation().getEngine();
+		final Engine engine = config.getEmulationSection().getEngine();
 		switch (engine) {
 		case EMULATION:
 			return new ReSIDBuilder(c64.getEventScheduler(), config,
@@ -911,15 +912,16 @@ public class Player {
 		}
 		if (tune instanceof MP3Tune) {
 			// Change driver settings to use compare driver for MP3 play-back
+			MP3Tune mp3Tune = (MP3Tune) tune;
 			newAudioDriver = new CmpMP3File();
-			config.getAudio().setPlayOriginal(true);
-			config.getAudio().setMp3File(((MP3Tune) tune).getMP3Filename());
+			config.getAudioSection().setPlayOriginal(true);
+			config.getAudioSection().setMp3File(mp3Tune.getMP3Filename());
 		}
 		if (newAudioDriver instanceof CmpMP3File) {
 			// Configure compare driver settings
 			CmpMP3File cmp = (CmpMP3File) newAudioDriver;
-			cmp.setPlayOriginal(config.getAudio().isPlayOriginal());
-			cmp.setMp3File(new File(config.getAudio().getMp3File()));
+			cmp.setPlayOriginal(config.getAudioSection().isPlayOriginal());
+			cmp.setMp3File(new File(config.getAudioSection().getMp3File()));
 		}
 		return newAudioDriver;
 	}
@@ -928,7 +930,7 @@ public class Player {
 	 * Change SIDs according to the configured emulation, chip models.
 	 */
 	public final void createOrUpdateSIDs() {
-		IEmulationSection emulation = config.getEmulation();
+		IEmulationSection emulation = config.getEmulationSection();
 		c64.getPla().clearSIDAddresses();
 		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 			SIDEmu sid = c64.getPla().getSID(sidNum);
@@ -946,7 +948,7 @@ public class Player {
 	}
 
 	public void setSidWriteListener(SidRegExtension sidRegExtension) {
-		IEmulationSection emulation = config.getEmulation();
+		IEmulationSection emulation = config.getEmulationSection();
 		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 			if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
 				c64.getPla().setSidWriteListener(sidNum, sidRegExtension);
@@ -963,7 +965,7 @@ public class Player {
 	 */
 	private boolean play() throws InterruptedException {
 		for (int i = 0; stateProperty.get() == State.RUNNING
-				&& i < config.getAudio().getBufferSize(); i++) {
+				&& i < config.getAudioSection().getBufferSize(); i++) {
 			c64.getEventScheduler().clock();
 		}
 		return stateProperty.get() == State.RUNNING
@@ -971,7 +973,8 @@ public class Player {
 	}
 
 	private State getEndState() {
-		return config.getSidplay2().isLoop() ? State.RESTART : State.EXIT;
+		return config.getSidplay2Section().isLoop() ? State.RESTART
+				: State.EXIT;
 	}
 
 	private void close() {
@@ -1083,8 +1086,8 @@ public class Player {
 	public final void insertDisk(final File file) throws IOException,
 			SidTuneError {
 		// automatically turn drive on
-		config.getSidplay2().setLastDirectory(file.getParent());
-		config.getC1541().setDriveOn(true);
+		config.getSidplay2Section().setLastDirectory(file.getParent());
+		config.getC1541Section().setDriveOn(true);
 		enableFloppyDiskDrives(true);
 		// attach selected disk into the first disk drive
 		DiskImage disk = floppies[0].getDiskController().insertDisk(file);
@@ -1104,10 +1107,10 @@ public class Player {
 	 */
 	public final void insertTape(final File file) throws IOException,
 			SidTuneError {
-		config.getSidplay2().setLastDirectory(file.getParent());
+		config.getSidplay2Section().setLastDirectory(file.getParent());
 		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".tap")) {
 			// Everything, which is not a tape convert to tape first
-			final String tmpDir = config.getSidplay2().getTmpDir();
+			final String tmpDir = config.getSidplay2Section().getTmpDir();
 			final File convertedTape = new File(tmpDir, file.getName() + ".tap");
 			convertedTape.deleteOnExit();
 			SidTune prog = SidTune.load(file);
@@ -1115,7 +1118,7 @@ public class Player {
 			PRG2TAPProgram program = new PRG2TAPProgram(prog, name);
 
 			PRG2TAP prg2tap = new PRG2TAP();
-			prg2tap.setTurboTape(config.getSidplay2().isTurboTape());
+			prg2tap.setTurboTape(config.getSidplay2Section().isTurboTape());
 			prg2tap.open(convertedTape);
 			prg2tap.add(program);
 			prg2tap.close(convertedTape);
@@ -1154,7 +1157,7 @@ public class Player {
 	 */
 	public final void insertCartridge(final CartridgeType type, final File file)
 			throws IOException, SidTuneError {
-		config.getSidplay2().setLastDirectory(file.getParent());
+		config.getSidplay2Section().setLastDirectory(file.getParent());
 		c64.ejectCartridge();
 		c64.setCartridge(Cartridge.read(c64.getPla(), type, file));
 	}

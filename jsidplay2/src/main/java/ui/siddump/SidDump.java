@@ -132,11 +132,11 @@ public class SidDump extends Tab implements UIPart {
 	private void doLoadDump() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		final File file = fileDialog.showOpenDialog(loadDump.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
 			sidDumpExtension.load(file.getAbsolutePath());
 			noteSpacing.setText(String.valueOf(sidDumpExtension
 					.getNoteSpacing()));
@@ -157,11 +157,11 @@ public class SidDump extends Tab implements UIPart {
 	private void doSaveDump() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		final File file = fileDialog.showSaveDialog(saveDump.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
 			sidDumpExtension.save(file.getAbsolutePath(), sidDumpOutputs);
 		}
 	}
@@ -423,7 +423,7 @@ public class SidDump extends Tab implements UIPart {
 			int length = util.getPlayer().getSidDatabaseInfo(
 					db -> db.getSongLength(tune), 0);
 			if (length == 0) {
-				length = util.getConfig().getSidplay2().getDefaultPlayLength();
+				length = util.getConfig().getSidplay2Section().getDefaultPlayLength();
 				if (length == 0) {
 					// default
 					length = 60;
@@ -453,7 +453,7 @@ public class SidDump extends Tab implements UIPart {
 		} else {
 			startStopRecording.setTooltip(new Tooltip(null));
 		}
-		sidDumpExtension.setLeftVolume(util.getConfig().getAudio()
+		sidDumpExtension.setLeftVolume(util.getConfig().getAudioSection()
 				.getMainVolume());
 		sidDumpExtension.setRegOrder(regPlayer.getSelectionModel()
 				.getSelectedItem().getRegs());

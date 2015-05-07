@@ -199,7 +199,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 	public SidDumpExtension(Player pl, Configuration cfg) {
 		this.player = pl;
-		this.audioConfig = AudioConfig.getInstance(cfg.getAudio());
+		this.audioConfig = AudioConfig.getInstance(cfg.getAudioSection());
 	}
 
 	public int getLoadAddress() {

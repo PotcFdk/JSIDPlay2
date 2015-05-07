@@ -68,12 +68,12 @@ public class ReSIDBuilder implements SIDBuilder {
 	@Override
 	public SIDEmu lock(SIDEmu oldSIDEmu, int sidNum, SidTune tune) {
 		final ReSIDBase sid = getOrCreateSID(oldSIDEmu, tune, sidNum);
-		sid.setChipModel(ChipModel.getChipModel(config.getEmulation(), tune,
-				sidNum));
+		IEmulationSection emulationSection = config.getEmulationSection();
+		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
 		sid.setFilter(config, sidNum);
-		sid.setFilterEnable(config.getEmulation(), sidNum);
-		sid.input(config.getEmulation().isDigiBoosted8580() ? sid
+		sid.setFilterEnable(emulationSection, sidNum);
+		sid.input(emulationSection.isDigiBoosted8580() ? sid
 				.getInputDigiBoost() : 0);
 		mixer.add(sidNum, sid);
 		return sid;
@@ -151,7 +151,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	 * @return new or re-used SID emulation of a specific emulation engine
 	 */
 	private ReSIDBase getOrCreateSID(SIDEmu oldSIDEmu, SidTune tune, int sidNum) {
-		final IEmulationSection emulationSection = config.getEmulation();
+		final IEmulationSection emulationSection = config.getEmulationSection();
 		final Emulation emulation = Emulation.getEmulation(emulationSection,
 				tune, sidNum);
 		boolean fakeStereo = isFakeStereoSid(tune, sidNum);
@@ -175,7 +175,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	 */
 	private boolean isFakeStereoSid(SidTune tune, int sidNum) {
 		int prevNum = sidNum > 0 ? sidNum - 1 : sidNum;
-		IEmulationSection emulationSection = config.getEmulation();
+		IEmulationSection emulationSection = config.getEmulationSection();
 		int prevAddres = SidTune.getSIDAddress(emulationSection, tune, prevNum);
 		int baseAddress = SidTune.getSIDAddress(emulationSection, tune, sidNum);
 		return sidNum > 0 && prevAddres == baseAddress;

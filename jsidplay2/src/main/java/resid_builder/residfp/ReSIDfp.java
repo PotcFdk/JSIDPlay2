@@ -47,7 +47,7 @@ public class ReSIDfp extends ReSIDBase {
 		public FakeStereo(final EventScheduler context, final IConfig config,
 				final int prevNum, final List<ReSIDBase> sids) {
 			super(context);
-			this.emulationSection = config.getEmulation();
+			this.emulationSection = config.getEmulationSection();
 			this.prevNum = prevNum;
 			this.sids = sids;
 		}
@@ -99,17 +99,17 @@ public class ReSIDfp extends ReSIDBase {
 		final Filter6581 filter6581 = sidImpl.getFilter6581();
 		final Filter8580 filter8580 = sidImpl.getFilter8580();
 
-		String filterName6581 = config.getEmulation().getFilterName(sidNum,
-				Emulation.RESIDFP, ChipModel.MOS6581);
-		String filterName8580 = config.getEmulation().getFilterName(sidNum,
-				Emulation.RESIDFP, ChipModel.MOS8580);
+		String filterName6581 = config.getEmulationSection().getFilterName(
+				sidNum, Emulation.RESIDFP, ChipModel.MOS6581);
+		String filterName8580 = config.getEmulationSection().getFilterName(
+				sidNum, Emulation.RESIDFP, ChipModel.MOS8580);
 		if (filterName6581 == null) {
 			filter6581.setCurveAndDistortionDefaults();
 		}
 		if (filterName8580 == null) {
 			filter8580.setCurveAndDistortionDefaults();
 		}
-		for (IFilterSection filter : config.getFilter()) {
+		for (IFilterSection filter : config.getFilterSection()) {
 			if (filter.getName().equals(filterName6581)
 					&& filter.isReSIDfpFilter6581()) {
 				filter6581.setCurveProperties(filter.getBaseresistance(),

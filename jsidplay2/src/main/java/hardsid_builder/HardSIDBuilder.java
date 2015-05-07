@@ -175,7 +175,7 @@ public class HardSIDBuilder implements SIDBuilder {
 	 */
 	private String extract(final IConfig config, final String path,
 			final String libName) throws IOException {
-		File f = new File(new File(config.getSidplay2().getTmpDir()), libName);
+		File f = new File(new File(config.getSidplay2Section().getTmpDir()), libName);
 		if (!f.exists()) {
 			f.deleteOnExit();
 			writeResource(path + libName, f);
@@ -223,7 +223,7 @@ public class HardSIDBuilder implements SIDBuilder {
 	 * @return desired chip model
 	 */
 	private ChipModel getChipModel(SidTune tune, int sidNum) {
-		ChipModel chipModel = ChipModel.getChipModel(config.getEmulation(),
+		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(),
 				tune, sidNum);
 		if (sids.size() > 0) {
 			// Stereo device? Use a HardSID device different to the first SID
@@ -246,8 +246,8 @@ public class HardSIDBuilder implements SIDBuilder {
 	 * @return device index of the desired HardSID device
 	 */
 	private int getModelDependantDevice(final ChipModel chipModel, int sidNum) {
-		int sid6581 = config.getEmulation().getHardsid6581();
-		int sid8580 = config.getEmulation().getHardsid8580();
+		int sid6581 = config.getEmulationSection().getHardsid6581();
+		int sid8580 = config.getEmulationSection().getHardsid8580();
 		if (sidNum == 2) {
 			// 3-SID: for now choose next available free slot
 			for (int i = 0; i < getNumDevices(); i++) {

@@ -110,14 +110,14 @@ public class SIDPlay extends Applet {
 	 * Use JSIDPlay2 emulation for the next song.
 	 */
 	public void useEmulation() {
-		config.getEmulation().setEngine(Engine.EMULATION);
+		config.getEmulationSection().setEngine(Engine.EMULATION);
 	}
 
 	/**
 	 * Use HardSID4U for the next song.
 	 */
 	public void useHardSID() {
-		config.getEmulation().setEngine(Engine.HARDSID);
+		config.getEmulationSection().setEngine(Engine.HARDSID);
 	}
 
 	/**
@@ -145,8 +145,8 @@ public class SIDPlay extends Applet {
 	 *            device number to be used for 8580
 	 */
 	public void setChipDevice(final int hardsid6581, final int hardsid8580) {
-		config.getEmulation().setHardsid6581(hardsid6581);
-		config.getEmulation().setHardsid8580(hardsid8580);
+		config.getEmulationSection().setHardsid6581(hardsid6581);
+		config.getEmulationSection().setHardsid8580(hardsid8580);
 	}
 
 	/**

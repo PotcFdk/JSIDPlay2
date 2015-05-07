@@ -13,6 +13,7 @@ import libsidplay.components.pla.PLA;
 import resid_builder.resample.Resampler;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
+import sidplay.ini.intf.IAudioSection;
 import sidplay.ini.intf.IConfig;
 
 /**
@@ -195,16 +196,13 @@ public class Mixer {
 		this.context = context;
 		this.config = config;
 		this.driver = audioDriver;
-		this.audioBufferL = IntBuffer.allocate(config.getAudio()
-				.getBufferSize());
-		this.audioBufferR = IntBuffer.allocate(config.getAudio()
-				.getBufferSize());
+		IAudioSection audioSection = config.getAudioSection();
+		this.audioBufferL = IntBuffer.allocate(audioSection.getBufferSize());
+		this.audioBufferR = IntBuffer.allocate(audioSection.getBufferSize());
 		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(),
-				config.getAudio().getSampling(), audioConfig.getFrameRate(),
-				20000);
+				audioSection.getSampling(), audioConfig.getFrameRate(), 20000);
 		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(),
-				config.getAudio().getSampling(), audioConfig.getFrameRate(),
-				20000);
+				audioSection.getSampling(), audioConfig.getFrameRate(), 20000);
 	}
 
 	public void reset() {
@@ -274,7 +272,7 @@ public class Mixer {
 	 *            SID chip number
 	 */
 	public void setVolume(int sidNum) {
-		float volumeInDB = config.getAudio().getVolume(sidNum);
+		float volumeInDB = config.getAudioSection().getVolume(sidNum);
 		assert volumeInDB >= -6 && volumeInDB <= 6;
 
 		volume[sidNum] = (int) (Math.pow(10, volumeInDB / 10) * 1024);
@@ -289,7 +287,7 @@ public class Mixer {
 	 *            SID chip number
 	 */
 	public void setBalance(int sidNum) {
-		float balance = config.getAudio().getBalance(sidNum);
+		float balance = config.getAudioSection().getBalance(sidNum);
 		assert balance >= 0 && balance <= 1;
 
 		positionL[sidNum] = 1 - balance;

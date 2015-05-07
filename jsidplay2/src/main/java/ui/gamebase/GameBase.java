@@ -59,7 +59,7 @@ public class GameBase extends Tab implements UIPart {
 					return;
 				}
 				final SidPlay2Section sidplay2 = (SidPlay2Section) util
-						.getConfig().getSidplay2();
+						.getConfig().getSidplay2Section();
 				final String tmpDir = sidplay2.getTmpDir();
 				TFile zip = new TFile(downloadedFile);
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
@@ -177,7 +177,7 @@ public class GameBase extends Tab implements UIPart {
 				});
 		Platform.runLater(() -> {
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2();
+					.getConfig().getSidplay2Section();
 			String initialRoot = sidPlay2Section.getGameBase64();
 			if (initialRoot != null && new File(initialRoot).exists()) {
 				gameBaseFile.setText(initialRoot);
@@ -189,21 +189,21 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	private void doEnableGameBase() {
 		if (enableGameBase.isSelected()) {
-			File dbFile = new File(util.getConfig().getSidplay2().getTmpDir(),
+			File dbFile = new File(util.getConfig().getSidplay2Section().getTmpDir(),
 					"GameBase64.mdb");
 			if (dbFile.exists()) {
 				// There is already a database file downloaded earlier.
 				// Therefore we try to connect
 
 				SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-						.getConfig().getSidplay2();
+						.getConfig().getSidplay2Section();
 				sidPlay2Section.setGameBase64(dbFile.getAbsolutePath());
 				gameBaseFile.setText(dbFile.getAbsolutePath());
 				setRoot(dbFile);
 			} else {
 				enableGameBase.setDisable(true);
 				try {
-					final URL url = new URL(util.getConfig().getOnline()
+					final URL url = new URL(util.getConfig().getOnlineSection()
 							.getGamebaseUrl());
 					DownloadThread downloadThread = new DownloadThread(
 							util.getConfig(),
@@ -240,7 +240,7 @@ public class GameBase extends Tab implements UIPart {
 		if (file != null) {
 			gameBaseFile.setText(file.getAbsolutePath());
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2();
+					.getConfig().getSidplay2Section();
 			sidPlay2Section.setGameBase64(file.getAbsolutePath());
 			File theRootFile = sidPlay2Section.getGameBase64File();
 			gameBaseFile.setText(file.getAbsolutePath());

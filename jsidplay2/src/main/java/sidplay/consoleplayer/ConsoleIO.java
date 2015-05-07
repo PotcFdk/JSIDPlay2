@@ -136,7 +136,7 @@ public class ConsoleIO {
 				.append("/").append(tune.getInfo().getSongs());
 		trackList.append("[").append(tune.getInfo().getStartSong())
 				.append("])");
-		if (config.getSidplay2().isLoop()) {
+		if (config.getSidplay2Section().isLoop()) {
 			trackList.append(" [" + BUNDLE.getString("LOOPING") + "]");
 		}
 		out.printf("%37s %c\n", trackList.toString(), console.getVertical());
@@ -211,7 +211,7 @@ public class ConsoleIO {
 	private void printSIDDetails(PrintStream out,
 			final IniConsoleSection console, final SidTune tune) {
 		StringBuffer line = new StringBuffer();
-		IEmulationSection emulation = config.getEmulation();
+		IEmulationSection emulation = config.getEmulationSection();
 		line.append(BUNDLE.getString("FILTER")
 				+ (emulation.isFilter() ? " = on, " : " = off, "));
 		ChipModel chipModel = ChipModel.getChipModel(emulation, tune, 0);
@@ -270,7 +270,7 @@ public class ConsoleIO {
 				return;
 			}
 			final int key = System.in.read();
-			IEmulationSection emulation = config.getEmulation();
+			IEmulationSection emulation = config.getEmulationSection();
 			switch (key) {
 			case 'h':
 				player.firstSong();

@@ -134,9 +134,9 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private Proxy getProxy() {
-		if (config.getSidplay2().isEnableProxy()) {
+		if (config.getSidplay2Section().isEnableProxy()) {
 			final SocketAddress addr = new InetSocketAddress(config
-					.getSidplay2().getProxyHostname(), config.getSidplay2()
+					.getSidplay2Section().getProxyHostname(), config.getSidplay2Section()
 					.getProxyPort());
 			return new Proxy(Proxy.Type.HTTP, addr);
 		} else {
@@ -231,7 +231,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private File createLocalFile(URL currentURL) {
-		return new File(config.getSidplay2().getTmpDir(), new File(
+		return new File(config.getSidplay2Section().getTmpDir(), new File(
 				currentURL.toString()).getName());
 	}
 

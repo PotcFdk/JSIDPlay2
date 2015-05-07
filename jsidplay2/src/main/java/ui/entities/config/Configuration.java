@@ -411,84 +411,84 @@ public class Configuration implements IConfig {
 
 	private SidPlay2Section sidplay2 = new SidPlay2Section();
 
-	public void setSidplay2(SidPlay2Section sidplay2) {
+	public void setSidplay2Section(SidPlay2Section sidplay2) {
 		this.sidplay2 = sidplay2;
 	}
 
 	@Embedded
 	@Override
-	public SidPlay2Section getSidplay2() {
+	public SidPlay2Section getSidplay2Section() {
 		return sidplay2;
 	}
 
 	private OnlineSection online = new OnlineSection();
 
 	@Embedded
-	public OnlineSection getOnline() {
+	public OnlineSection getOnlineSection() {
 		return online;
 	}
 
-	public void setOnline(OnlineSection online) {
+	public void setOnlineSection(OnlineSection online) {
 		this.online = online;
 	}
 
 	private C1541Section c1541 = new C1541Section();
 
-	public void setC1541(C1541Section c1541) {
+	public void setC1541Section(C1541Section c1541) {
 		this.c1541 = c1541;
 	}
 
 	@Override
 	@Embedded
-	public C1541Section getC1541() {
+	public C1541Section getC1541Section() {
 		return c1541;
 	}
 
 	private PrinterSection printer = new PrinterSection();
 
-	public void setPrinter(PrinterSection printer) {
+	public void setPrinterSection(PrinterSection printer) {
 		this.printer = printer;
 	}
 
 	@Embedded
 	@Override
-	public PrinterSection getPrinter() {
+	public PrinterSection getPrinterSection() {
 		return printer;
 	}
 
-	private JoystickSection joystick = new JoystickSection();
+	private JoystickSection joystickSection = new JoystickSection();
 
-	public void setJoystick(JoystickSection joystick) {
-		this.joystick = joystick;
+	public void setJoystickSection(JoystickSection joystick) {
+		this.joystickSection = joystick;
 	}
 
 	@Embedded
-	public JoystickSection getJoystick() {
-		return joystick;
+	public JoystickSection getJoystickSection() {
+		return joystickSection;
 	}
 
-	private AudioSection audio = new AudioSection();
+	private AudioSection audioSection = new AudioSection();
 
-	public void setAudio(AudioSection audio) {
-		this.audio = audio;
-	}
-
-	@Embedded
-	@Override
-	public AudioSection getAudio() {
-		return audio;
-	}
-
-	private EmulationSection emulation = new EmulationSection();
-
-	public void setEmulation(EmulationSection emulation) {
-		this.emulation = emulation;
+	public void setAudioSection(AudioSection audio) {
+		this.audioSection = audio;
 	}
 
 	@Embedded
 	@Override
-	public EmulationSection getEmulation() {
-		return emulation;
+	public AudioSection getAudioSection() {
+		return audioSection;
+	}
+
+	private EmulationSection emulationSection = new EmulationSection();
+
+	public void setEmulationSection(EmulationSection emulation) {
+		this.emulationSection = emulation;
+	}
+
+	@Embedded
+	@Override
+	public EmulationSection getEmulationSection() {
+		return emulationSection;
 	}
 
 	private String currentFavorite;
@@ -555,13 +555,13 @@ public class Configuration implements IConfig {
 
 	private List<FilterSection> filter = INITIAL_FILTERS;
 
-	public void setFilter(List<FilterSection> filter) {
+	public void setFilterSection(List<FilterSection> filter) {
 		this.filter = filter;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@Override
-	public List<FilterSection> getFilter() {
+	public List<FilterSection> getFilterSection() {
 		if (filter == null) {
 			filter = new ArrayList<FilterSection>();
 		}

@@ -64,7 +64,7 @@ public class IniConfig implements IConfig {
 	}
 
 	@Override
-	public List<? extends IFilterSection> getFilter() {
+	public List<? extends IFilterSection> getFilterSection() {
 		final List<IFilterSection> filters = new ArrayList<IFilterSection>();
 		for (final String heading : iniReader.listSections()) {
 			if (!heading.matches("Filter.*")) {
@@ -179,17 +179,17 @@ public class IniConfig implements IConfig {
 	}
 
 	@Override
-	public final ISidPlay2Section getSidplay2() {
+	public final ISidPlay2Section getSidplay2Section() {
 		return sidplay2Section;
 	}
 
 	@Override
-	public final IC1541Section getC1541() {
+	public final IC1541Section getC1541Section() {
 		return c1541Section;
 	}
 
 	@Override
-	public final IPrinterSection getPrinter() {
+	public final IPrinterSection getPrinterSection() {
 		return printerSection;
 	}
 
@@ -198,12 +198,12 @@ public class IniConfig implements IConfig {
 	}
 
 	@Override
-	public final IAudioSection getAudio() {
+	public final IAudioSection getAudioSection() {
 		return audioSection;
 	}
 
 	@Override
-	public final IEmulationSection getEmulation() {
+	public final IEmulationSection getEmulationSection() {
 		return emulationSection;
 	}
 

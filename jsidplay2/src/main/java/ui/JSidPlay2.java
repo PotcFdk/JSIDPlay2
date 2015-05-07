@@ -262,10 +262,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		updatePlayerButtons(util.getPlayer().stateProperty().get());
 
-		Audio audio = util.getConfig().getAudio().getAudio();
+		Audio audio = util.getConfig().getAudioSection().getAudio();
 		audioBox.getSelectionModel().select(audio);
 
-		String sidDriver = util.getConfig().getAudio().getSidDriver();
+		String sidDriver = util.getConfig().getAudioSection().getSidDriver();
 		sidDriverBox.getSelectionModel().select(sidDriver);
 
 		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
@@ -274,15 +274,16 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		devices = JavaSound.getDevices();
 		devicesBox.setItems(devices);
-		int device = util.getConfig().getAudio().getDevice();
+		int device = util.getConfig().getAudioSection().getDevice();
 		devicesBox.getSelectionModel().select(
 				device < devices.size() ? device : 0);
 
-		SamplingMethod sampling = util.getConfig().getAudio().getSampling();
+		SamplingMethod sampling = util.getConfig().getAudioSection()
+				.getSampling();
 		samplingBox.getSelectionModel().select(sampling);
 
-		Integer samplingRate = Integer.valueOf(util.getConfig().getAudio()
-				.getFrequency());
+		Integer samplingRate = Integer.valueOf(util.getConfig()
+				.getAudioSection().getFrequency());
 		samplingRateBox.getSelectionModel().select(samplingRate);
 
 		CPUClock videoStandard = CPUClock.getCPUClock(util.getConfig(), util
@@ -290,15 +291,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		videoStandardBox.getSelectionModel().select(videoStandard);
 
 		hardsid6581Box.getSelectionModel().select(
-				util.getConfig().getEmulation().getHardsid6581());
+				util.getConfig().getEmulationSection().getHardsid6581());
 		hardsid8580Box.getSelectionModel().select(
-				util.getConfig().getEmulation().getHardsid8580());
+				util.getConfig().getEmulationSection().getHardsid8580());
 
-		Engine engine = util.getConfig().getEmulation().getEngine();
+		Engine engine = util.getConfig().getEmulationSection().getEngine();
 		engineBox.getSelectionModel().select(engine);
 
 		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
-				.getSidplay2();
+				.getSidplay2Section();
 
 		int seconds = sidplay2.getDefaultPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
@@ -318,37 +319,40 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				(observable, oldValue, newValue) -> singleSong
 						.setSelected(newValue));
 
-		playMP3.setSelected(util.getConfig().getAudio().isPlayOriginal());
-		playEmulation
-				.setSelected(!util.getConfig().getAudio().isPlayOriginal());
+		playMP3.setSelected(util.getConfig().getAudioSection().isPlayOriginal());
+		playEmulation.setSelected(!util.getConfig().getAudioSection()
+				.isPlayOriginal());
 
-		C1541Section c1541Section = (C1541Section) util.getConfig().getC1541();
+		C1541Section c1541Section = (C1541Section) util.getConfig()
+				.getC1541Section();
 		driveOn.selectedProperty().bindBidirectional(
 				c1541Section.driveOnProperty());
 		parCable.selectedProperty().bindBidirectional(
 				c1541Section.parallelCableProperty());
 		driveSoundOn.selectedProperty().bindBidirectional(
 				c1541Section.driveSoundOnProperty());
-		PrinterSection printer = (PrinterSection) util.getConfig().getPrinter();
+		PrinterSection printer = (PrinterSection) util.getConfig()
+				.getPrinterSection();
 		turnPrinterOn.selectedProperty().bindBidirectional(
 				printer.printerOnProperty());
 
-		FloppyType floppyType = util.getConfig().getC1541().getFloppyType();
+		FloppyType floppyType = util.getConfig().getC1541Section()
+				.getFloppyType();
 		(floppyType == FloppyType.C1541 ? c1541 : c1541_II).setSelected(true);
-		ExtendImagePolicy extendImagePolicy = util.getConfig().getC1541()
-				.getExtendImagePolicy();
+		ExtendImagePolicy extendImagePolicy = util.getConfig()
+				.getC1541Section().getExtendImagePolicy();
 		(extendImagePolicy == ExtendImagePolicy.EXTEND_NEVER ? neverExtend
 				: extendImagePolicy == ExtendImagePolicy.EXTEND_ASK ? askExtend
 						: accessExtend).setSelected(true);
-		expand2000.setSelected(util.getConfig().getC1541()
+		expand2000.setSelected(util.getConfig().getC1541Section()
 				.isRamExpansionEnabled0());
-		expand4000.setSelected(util.getConfig().getC1541()
+		expand4000.setSelected(util.getConfig().getC1541Section()
 				.isRamExpansionEnabled1());
-		expand6000.setSelected(util.getConfig().getC1541()
+		expand6000.setSelected(util.getConfig().getC1541Section()
 				.isRamExpansionEnabled2());
-		expand8000.setSelected(util.getConfig().getC1541()
+		expand8000.setSelected(util.getConfig().getC1541Section()
 				.isRamExpansionEnabled3());
-		expandA000.setSelected(util.getConfig().getC1541()
+		expandA000.setSelected(util.getConfig().getC1541Section()
 				.isRamExpansionEnabled4());
 
 		for (ViewEntity view : util.getConfig().getViews()) {
@@ -441,13 +445,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void load() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TuneFileExtensions.DESCRIPTION,
 						TuneFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section()
+					.setLastDirectory(file.getParent());
 			try {
 				playTune(SidTune.load(file));
 			} catch (IOException | SidTuneError e) {
@@ -460,13 +465,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void playVideo() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			final File tmpFile = new File(util.getConfig().getSidplay2()
+			final File tmpFile = new File(util.getConfig().getSidplay2Section()
 					.getTmpDir(), "nuvieplayer-v1.0.prg");
 			tmpFile.deleteOnExit();
 			try (DataOutputStream os = new DataOutputStream(
@@ -565,7 +570,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void setVideoStandard() {
 		CPUClock videoStandard = videoStandardBox.getSelectionModel()
 				.getSelectedItem();
-		util.getConfig().getEmulation().setDefaultClockSpeed(videoStandard);
+		util.getConfig().getEmulationSection()
+				.setDefaultClockSpeed(videoStandard);
 		restart();
 	}
 
@@ -619,7 +625,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
 						TapeFileExtensions.EXTENSIONS));
@@ -647,84 +653,86 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void turnDriveOn() {
-		util.getConfig().getC1541().setDriveOn(driveOn.isSelected());
+		util.getConfig().getC1541Section().setDriveOn(driveOn.isSelected());
 		util.getPlayer().enableFloppyDiskDrives(driveOn.isSelected());
 	}
 
 	@FXML
 	private void driveSound() {
-		util.getConfig().getC1541().setDriveSoundOn(driveSoundOn.isSelected());
+		util.getConfig().getC1541Section()
+				.setDriveSoundOn(driveSoundOn.isSelected());
 	}
 
 	@FXML
 	private void parallelCable() {
 		util.getPlayer().connectC64AndC1541WithParallelCable(
 				parCable.isSelected());
-		util.getConfig().getC1541().setParallelCable(parCable.isSelected());
+		util.getConfig().getC1541Section()
+				.setParallelCable(parCable.isSelected());
 	}
 
 	@FXML
 	private void floppyTypeC1541() {
 		getFirstFloppy().setFloppyType(FloppyType.C1541);
-		util.getConfig().getC1541().setFloppyType(FloppyType.C1541);
+		util.getConfig().getC1541Section().setFloppyType(FloppyType.C1541);
 	}
 
 	@FXML
 	private void floppyTypeC1541_II() {
 		getFirstFloppy().setFloppyType(FloppyType.C1541_II);
-		util.getConfig().getC1541().setFloppyType(FloppyType.C1541_II);
+		util.getConfig().getC1541Section().setFloppyType(FloppyType.C1541_II);
 	}
 
 	@FXML
 	private void extendNever() {
-		util.getConfig().getC1541()
+		util.getConfig().getC1541Section()
 				.setExtendImagePolicy(ExtendImagePolicy.EXTEND_NEVER);
 	}
 
 	@FXML
 	private void extendAsk() {
-		util.getConfig().getC1541()
+		util.getConfig().getC1541Section()
 				.setExtendImagePolicy(ExtendImagePolicy.EXTEND_ASK);
 	}
 
 	@FXML
 	private void extendAccess() {
-		util.getConfig().getC1541()
+		util.getConfig().getC1541Section()
 				.setExtendImagePolicy(ExtendImagePolicy.EXTEND_ACCESS);
 	}
 
 	@FXML
 	private void expansion0x2000() {
 		getFirstFloppy().setRamExpansion(0, expand2000.isSelected());
-		util.getConfig().getC1541()
+		util.getConfig().getC1541Section()
 				.setRamExpansionEnabled0(expand2000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x4000() {
 		getFirstFloppy().setRamExpansion(1, expand4000.isSelected());
-		util.getConfig().getC1541()
+		util.getConfig().getC1541Section()
 				.setRamExpansionEnabled1(expand4000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x6000() {
 		getFirstFloppy().setRamExpansion(2, expand6000.isSelected());
-		util.getConfig().getC1541()
+		util.getConfig().getC1541Section()
 				.setRamExpansionEnabled2(expand6000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x8000() {
 		getFirstFloppy().setRamExpansion(3, expand8000.isSelected());
-		util.getConfig().getC1541()
+		util.getConfig().getC1541Section()
 				.setRamExpansionEnabled3(expand8000.isSelected());
 	}
 
 	@FXML
 	private void expansion0xA000() {
 		getFirstFloppy().setRamExpansion(4, expandA000.isSelected());
-		util.getConfig().getC1541()
+		util.getConfig().getC1541Section()
 				.setRamExpansionEnabled4(expandA000.isSelected());
 	}
 
@@ -732,7 +740,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
 						DiskFileExtensions.EXTENSIONS));
@@ -765,7 +773,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void printerOn() {
-		util.getConfig().getPrinter().setPrinterOn(turnPrinterOn.isSelected());
+		util.getConfig().getPrinterSection()
+				.setPrinterOn(turnPrinterOn.isSelected());
 		util.getPlayer().enablePrinter(turnPrinterOn.isSelected());
 	}
 
@@ -848,23 +857,24 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				new ExtensionFilter(RomFileExtensions.DESCRIPTION,
 						RomFileExtensions.EXTENSIONS));
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		final File c64kernalFile = fileDialog.showOpenDialog(scene.getWindow());
 		if (c64kernalFile != null) {
-			util.getConfig().getSidplay2()
+			util.getConfig().getSidplay2Section()
 					.setLastDirectory(c64kernalFile.getParent());
 			final FileChooser c1541FileDialog = new FileChooser();
 			c1541FileDialog.setTitle(util.getBundle().getString(
 					"CHOOSE_C1541_KERNAL_ROM"));
 			c1541FileDialog.setInitialDirectory(((SidPlay2Section) (util
-					.getConfig().getSidplay2())).getLastDirectoryFolder());
+					.getConfig().getSidplay2Section()))
+					.getLastDirectoryFolder());
 			c1541FileDialog.getExtensionFilters().add(
 					new ExtensionFilter(RomFileExtensions.DESCRIPTION,
 							RomFileExtensions.EXTENSIONS));
 			final File c1541kernalFile = c1541FileDialog.showOpenDialog(scene
 					.getWindow());
 			if (c1541kernalFile != null) {
-				util.getConfig().getSidplay2()
+				util.getConfig().getSidplay2Section()
 						.setLastDirectory(c1541kernalFile.getParent());
 				try {
 					util.getPlayer().installJiffyDOS(c64kernalFile,
@@ -897,7 +907,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void setAudio() {
 		Audio audio = audioBox.getSelectionModel().getSelectedItem();
-		util.getConfig().getAudio().setAudio(audio);
+		util.getConfig().getAudioSection().setAudio(audio);
 
 		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
@@ -910,7 +920,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void setSIDDriver() {
 		String sidDriver = sidDriverBox.getSelectionModel().getSelectedItem();
-		util.getConfig().getAudio().setSidDriver(sidDriver);
+		util.getConfig().getAudioSection().setSidDriver(sidDriver);
 		SidTune.useDriver(sidDriver);
 		restart();
 	}
@@ -920,7 +930,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (!duringInitialization) {
 			Device device = devicesBox.getSelectionModel().getSelectedItem();
 			int deviceIndex = devicesBox.getItems().indexOf(device);
-			util.getConfig().getAudio().setDevice(deviceIndex);
+			util.getConfig().getAudioSection().setDevice(deviceIndex);
 			if (!this.duringInitialization) {
 				AudioDriver driver = util.getPlayer().getAudioDriver();
 				if (driver instanceof JavaSound) {
@@ -939,7 +949,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void setSampling() {
 		SamplingMethod sampling = samplingBox.getSelectionModel()
 				.getSelectedItem();
-		util.getConfig().getAudio().setSampling(sampling);
+		util.getConfig().getAudioSection().setSampling(sampling);
 		restart();
 	}
 
@@ -947,14 +957,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void setSamplingRate() {
 		Integer samplingRate = samplingRateBox.getSelectionModel()
 				.getSelectedItem();
-		util.getConfig().getAudio().setFrequency(samplingRate);
+		util.getConfig().getAudioSection().setFrequency(samplingRate);
 		restart();
 	}
 
 	@FXML
 	private void setEngine() {
 		Engine engine = engineBox.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulation().setEngine(engine);
+		util.getConfig().getEmulationSection().setEngine(engine);
 		hardsid6581Box.setDisable(!Engine.HARDSID.equals(engine));
 		hardsid8580Box.setDisable(!Engine.HARDSID.equals(engine));
 		hardsid6581Label.setDisable(!Engine.HARDSID.equals(engine));
@@ -965,20 +975,20 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void setSid6581() {
 		int hardsid6581 = hardsid6581Box.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulation().setHardsid6581(hardsid6581);
+		util.getConfig().getEmulationSection().setHardsid6581(hardsid6581);
 		restart();
 	}
 
 	@FXML
 	private void setSid8580() {
 		int hardsid8580 = hardsid8580Box.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulation().setHardsid8580(hardsid8580);
+		util.getConfig().getEmulationSection().setHardsid8580(hardsid8580);
 		restart();
 	}
 
 	@FXML
 	private void doEnableSldb() {
-		util.getConfig().getSidplay2()
+		util.getConfig().getSidplay2Section()
 				.setEnableDatabase(enableSldb.isSelected());
 		final C64 c64 = util.getPlayer().getC64();
 		final EventScheduler ctx = c64.getEventScheduler();
@@ -992,7 +1002,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void playSingleSong() {
-		util.getConfig().getSidplay2().setSingle(singleSong.isSelected());
+		util.getConfig().getSidplay2Section()
+				.setSingle(singleSong.isSelected());
 	}
 
 	@FXML
@@ -1001,7 +1012,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 		final int secs = IniReader.parseTime(defaultTime.getText());
 		if (secs != -1) {
-			util.getConfig().getSidplay2().setDefaultPlayLength(secs);
+			util.getConfig().getSidplay2Section().setDefaultPlayLength(secs);
 			util.getPlayer().getTimer().updateEnd();
 			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
 			defaultTime.setTooltip(tooltip);
@@ -1031,7 +1042,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		fileDialog.getExtensionFilters().add(extFilter);
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
 		if (file != null) {
-			util.getConfig().getAudio().setMp3File(file.getAbsolutePath());
+			util.getConfig().getAudioSection()
+					.setMp3File(file.getAbsolutePath());
 			restart();
 		}
 	}
@@ -1040,7 +1052,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void showVolume() {
 		String OS = System.getProperty("os.name").toLowerCase();
 		if (OS.indexOf("win") >= 0) {
-			SidPlay2Section section = util.getConfig().getSidplay2();
+			SidPlay2Section section = util.getConfig().getSidplay2Section();
 			int x = section.getFrameX() + section.getFrameWidth() / 2;
 			try {
 				Runtime.getRuntime().exec("sndvol -f " + x);
@@ -1262,7 +1274,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void exportConfiguration() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(ConfigFileExtension.DESCRIPTION,
 						ConfigFileExtension.EXTENSIONS));
@@ -1270,7 +1282,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (file != null) {
 			File target = new File(file.getParentFile(),
 					PathUtils.getBaseNameNoExt(file.getName()) + ".xml");
-			util.getConfig().getSidplay2().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section()
+					.setLastDirectory(file.getParent());
 			configService.exportCfg(util.getConfig(), target);
 		}
 	}
@@ -1285,13 +1298,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (dialog.getConfirmed().get()) {
 			final FileChooser fileDialog = new FileChooser();
 			fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-					.getSidplay2())).getLastDirectoryFolder());
+					.getSidplay2Section())).getLastDirectoryFolder());
 			fileDialog.getExtensionFilters().add(
 					new ExtensionFilter(ConfigFileExtension.DESCRIPTION,
 							ConfigFileExtension.EXTENSIONS));
 			final File file = fileDialog.showOpenDialog(scene.getWindow());
 			if (file != null) {
-				util.getConfig().getSidplay2()
+				util.getConfig().getSidplay2Section()
 						.setLastDirectory(file.getParent());
 				util.getConfig().setReconfigFilename(file.getAbsolutePath());
 			}
@@ -1330,7 +1343,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void chooseCartridge(final CartridgeType type) {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
@@ -1373,7 +1386,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		// Get status information of the first disk drive
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
-		boolean motorOn = util.getConfig().getC1541().isDriveSoundOn()
+		boolean motorOn = util.getConfig().getC1541Section().isDriveSoundOn()
 				&& util.getPlayer().stateProperty().get() == State.RUNNING
 				&& c1541.getDiskController().isMotorOn();
 		if (!oldMotorOn && motorOn) {
@@ -1420,7 +1433,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private String determineChipModel() {
-		EmulationSection emulation = util.getConfig().getEmulation();
+		EmulationSection emulation = util.getConfig().getEmulationSection();
 		StringBuilder line = new StringBuilder();
 		ChipModel chipModel = ChipModel.getChipModel(emulation, util
 				.getPlayer().getTune(), 0);
@@ -1531,10 +1544,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			Video videoScreen = (Video) tabbedPane.getTabs().stream()
 					.filter((tab) -> tab.getId().equals(Video.ID)).findFirst()
 					.get();
-			ImageIO.write(SwingFXUtils.fromFXImage(videoScreen.getVicImage(),
-					null), format, new File(util.getConfig().getSidplay2()
-					.getTmpDir(), "screenshot" + (++hardcopyCounter) + "."
-					+ format));
+			ImageIO.write(
+					SwingFXUtils.fromFXImage(videoScreen.getVicImage(), null),
+					format, new File(util.getConfig().getSidplay2Section()
+							.getTmpDir(), "screenshot" + (++hardcopyCounter)
+							+ "." + format));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1551,16 +1565,16 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private void setPlayOriginal(final boolean playOriginal) {
-		util.getConfig().getAudio().setPlayOriginal(playOriginal);
-		if (util.getConfig().getAudio().getAudio().getAudioDriver() instanceof CmpMP3File) {
-			((CmpMP3File) util.getConfig().getAudio().getAudio()
+		util.getConfig().getAudioSection().setPlayOriginal(playOriginal);
+		if (util.getConfig().getAudioSection().getAudio().getAudioDriver() instanceof CmpMP3File) {
+			((CmpMP3File) util.getConfig().getAudioSection().getAudio()
 					.getAudioDriver()).setPlayOriginal(playOriginal);
 		}
 	}
 
 	@Override
 	public boolean isAllowed() {
-		if (util.getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ASK) {
+		if (util.getConfig().getC1541Section().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ASK) {
 			// EXTEND_ASK
 			YesNoDialog dialog = new YesNoDialog(util.getPlayer());
 			dialog.getStage().setTitle(
@@ -1569,7 +1583,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 					"EXTEND_DISK_IMAGE_TO_40_TRACKS"));
 			dialog.open();
 			return dialog.getConfirmed().get();
-		} else if (util.getConfig().getC1541().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ACCESS) {
+		} else if (util.getConfig().getC1541Section().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ACCESS) {
 			// EXTEND_ACCESS
 			return true;
 		} else {
@@ -1586,15 +1600,16 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	public String getFilename(SidTune tune) {
 		String defaultName = "jsidplay2";
 		if (tune == null) {
-			return new File(util.getConfig().getSidplay2().getTmpDir(),
+			return new File(util.getConfig().getSidplay2Section().getTmpDir(),
 					defaultName).getAbsolutePath();
 		}
 		SidTuneInfo info = tune.getInfo();
 		Iterator<String> infos = info.getInfoString().iterator();
 		String name = infos.hasNext() ? infos.next().replaceAll(
 				"[:\\\\/*?|<>]", "_") : defaultName;
-		String filename = new File(util.getConfig().getSidplay2().getTmpDir(),
-				PathUtils.getBaseNameNoExt(name)).getAbsolutePath();
+		String filename = new File(util.getConfig().getSidplay2Section()
+				.getTmpDir(), PathUtils.getBaseNameNoExt(name))
+				.getAbsolutePath();
 		if (info.getSongs() > 1) {
 			filename += String.format("-%02d", info.getCurrentSong());
 		}

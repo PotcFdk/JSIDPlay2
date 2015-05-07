@@ -66,7 +66,7 @@ public class PseudoDirectory {
 			throw new IOException();
 		}
 		SidPlay2Section sidPlay2Section = (SidPlay2Section) player.getConfig()
-				.getSidplay2();
+				.getSidplay2Section();
 		String collectionName = PathUtils.getCollectionName(
 				sidPlay2Section.getHvscFile(), file.getPath());
 		HVSCEntry entry = new HVSCEntry(

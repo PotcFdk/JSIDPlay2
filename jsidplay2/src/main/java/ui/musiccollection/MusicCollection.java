@@ -386,11 +386,11 @@ public class MusicCollection extends Tab implements UIPart {
 				String initialRoot;
 				switch (getType()) {
 				case HVSC:
-					initialRoot = util.getConfig().getSidplay2().getHvsc();
+					initialRoot = util.getConfig().getSidplay2Section().getHvsc();
 					break;
 
 				case CGSC:
-					initialRoot = util.getConfig().getSidplay2().getCgsc();
+					initialRoot = util.getConfig().getSidplay2Section().getCgsc();
 					break;
 
 				default:
@@ -422,7 +422,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void getSOASCURL(SidTune sidTune, File tuneFile) {
 		if (sidTune != null) {
 			final SidTuneInfo tuneInfo = sidTune.getInfo();
-			File rootFile = new File(util.getConfig().getSidplay2().getHvsc());
+			File rootFile = new File(util.getConfig().getSidplay2Section().getHvsc());
 			String collectionName = PathUtils.getCollectionName(new TFile(
 					rootFile), tuneFile.getPath());
 			if (collectionName != null && getType() == MusicCollectionType.HVSC) {
@@ -451,18 +451,18 @@ public class MusicCollection extends Tab implements UIPart {
 	private void convertToPSID64() {
 		DirectoryChooser fileDialog = new DirectoryChooser();
 		final SidPlay2Section sidPlay2Section = (SidPlay2Section) (util
-				.getConfig().getSidplay2());
+				.getConfig().getSidplay2Section());
 		fileDialog
 				.setInitialDirectory(sidPlay2Section.getLastDirectoryFolder());
 		final File directory = fileDialog.showDialog(fileBrowser.getScene()
 				.getWindow());
 		if (directory != null) {
-			util.getConfig().getSidplay2()
+			util.getConfig().getSidplay2Section()
 					.setLastDirectory(directory.getAbsolutePath());
 			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
 					.getSelectedItem();
 			Psid64 c = new Psid64();
-			c.setTmpDir(util.getConfig().getSidplay2().getTmpDir());
+			c.setTmpDir(util.getConfig().getSidplay2Section().getTmpDir());
 			c.setVerbose(true);
 			try {
 				c.convertFiles(util.getPlayer(),
@@ -476,19 +476,19 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void startDownload6581R2() {
-		final String url = util.getConfig().getOnline().getSoasc6581R2();
+		final String url = util.getConfig().getOnlineSection().getSoasc6581R2();
 		downloadStart(MessageFormat.format(url, hvscName, currentSong).trim());
 	}
 
 	@FXML
 	private void startDownload6581R4() {
-		final String url = util.getConfig().getOnline().getSoasc6581R4();
+		final String url = util.getConfig().getOnlineSection().getSoasc6581R4();
 		downloadStart(MessageFormat.format(url, hvscName, currentSong).trim());
 	}
 
 	@FXML
 	private void startDownload8580R5() {
-		final String url = util.getConfig().getOnline().getSoasc8580R5();
+		final String url = util.getConfig().getOnlineSection().getSoasc8580R5();
 		downloadStart(MessageFormat.format(url, hvscName, currentSong).trim());
 	}
 
@@ -497,11 +497,11 @@ public class MusicCollection extends Tab implements UIPart {
 		String url;
 		switch (getType()) {
 		case HVSC:
-			url = util.getConfig().getOnline().getHvscUrl();
+			url = util.getConfig().getOnlineSection().getHvscUrl();
 			break;
 
 		case CGSC:
-			url = util.getConfig().getOnline().getCgscUrl();
+			url = util.getConfig().getOnlineSection().getCgscUrl();
 			break;
 
 		default:
@@ -578,11 +578,11 @@ public class MusicCollection extends Tab implements UIPart {
 	private void doBrowse() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene()
 				.getWindow());
 		if (directory != null) {
-			util.getConfig().getSidplay2()
+			util.getConfig().getSidplay2Section()
 					.setLastDirectory(directory.getAbsolutePath());
 			setRoot(directory);
 		}
@@ -694,9 +694,9 @@ public class MusicCollection extends Tab implements UIPart {
 
 			if (rootFile.exists()) {
 				SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-						.getConfig().getSidplay2();
+						.getConfig().getSidplay2Section();
 				if (getType() == MusicCollectionType.HVSC) {
-					util.getConfig().getSidplay2()
+					util.getConfig().getSidplay2Section()
 							.setHvsc(rootFile.getAbsolutePath());
 					File theRootFile = sidPlay2Section.getHvscFile();
 					setSongLengthDatabase(sidPlay2Section.getHvsc());
@@ -704,7 +704,7 @@ public class MusicCollection extends Tab implements UIPart {
 					fileBrowser.setRoot(new MusicCollectionTreeItem(util
 							.getPlayer(), theRootFile));
 				} else if (getType() == MusicCollectionType.CGSC) {
-					util.getConfig().getSidplay2()
+					util.getConfig().getSidplay2Section()
 							.setCgsc(rootFile.getAbsolutePath());
 					File theRootFile = sidPlay2Section.getCgscFile();
 					fileBrowser.setRoot(new MusicCollectionTreeItem(util
@@ -958,7 +958,7 @@ public class MusicCollection extends Tab implements UIPart {
 		try {
 			SidTune tune = SidTune.load(file);
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getPlayer().getConfig().getSidplay2();
+					.getPlayer().getConfig().getSidplay2Section();
 			String collectionName = PathUtils.getCollectionName(
 					sidPlay2Section.getHvscFile(), file.getPath());
 			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()

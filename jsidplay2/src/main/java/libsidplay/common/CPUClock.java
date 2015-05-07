@@ -29,7 +29,7 @@ public enum CPUClock {
 	}
 
 	public static CPUClock getCPUClock(IConfig config, SidTune tune) {
-		IEmulationSection emulation = config.getEmulation();
+		IEmulationSection emulation = config.getEmulationSection();
 		SidTuneInfo tuneInfo = tune != null ? tune.getInfo() : null;
 		CPUClock cpuFreq = emulation.getUserClockSpeed();
 		if (cpuFreq == null) {

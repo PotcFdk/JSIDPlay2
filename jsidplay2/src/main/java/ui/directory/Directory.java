@@ -97,7 +97,7 @@ public class Directory extends AnchorPane implements UIPart {
 					.getSelectedItem();
 			DirEntry dirEntry = dirItem.getDirEntry();
 			if (dirEntry != null) {
-				File autoStartFile = new File(util.getConfig().getSidplay2()
+				File autoStartFile = new File(util.getConfig().getSidplay2Section()
 						.getTmpDir(), dirEntry.getValidFilename() + ".prg");
 				autoStartFile.deleteOnExit();
 				dirEntry.save(autoStartFile);

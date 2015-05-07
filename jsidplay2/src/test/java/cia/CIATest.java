@@ -12,7 +12,7 @@ public class CIATest extends JSIDPlay2Test {
 	@Override
 	public void setup() {
 		super.setup();
-		config.getSidplay2().setLastDirectory("target/test-classes/cia");
+		config.getSidplay2Section().setLastDirectory("target/test-classes/cia");
 	}
 
 	@Test

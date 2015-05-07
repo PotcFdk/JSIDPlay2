@@ -82,7 +82,7 @@ public class Convenience {
 	public boolean autostart(URL url, BiPredicate<File, File> isMediaToAttach,
 			File autoStartFile) throws IOException, SidTuneError,
 			URISyntaxException {
-		String tmpDir = player.getConfig().getSidplay2().getTmpDir();
+		String tmpDir = player.getConfig().getSidplay2Section().getTmpDir();
 		String name = new File(url.toURI().getSchemeSpecificPart()
 				.replaceAll(ILLEGAL_FILENAME_CHARS, FILE_SEPARATOR)).getName();
 		TFile zip = null;

@@ -46,7 +46,7 @@ public class ConsolePlayer {
 	private Audio audio = Audio.SOUNDCARD;
 
 	@Parameter(names = { "--bufferSize", "-B" }, descriptionKey = "BUFFER_SIZE")
-	private int bufferSize  = IAudioSection.DEFAULT_BUFFER_SIZE;
+	private int bufferSize = IAudioSection.DEFAULT_BUFFER_SIZE;
 
 	@Parameter(names = { "--deviceIndex", "-A" }, descriptionKey = "DEVICEINDEX")
 	private Integer deviceIdx;
@@ -135,24 +135,24 @@ public class ConsolePlayer {
 			loop = false;
 		}
 		final IniConfig config = new IniConfig(true);
-		config.getSidplay2().setLoop(loop);
-		config.getSidplay2().setSingle(single);
-		config.getSidplay2().setDefaultPlayLength(defaultLength);
-		config.getSidplay2().setEnableDatabase(enableSidDatabase);
-		config.getAudio().setAudio(audio);
-		config.getAudio().setFrequency(frequency);
-		config.getAudio().setBufferSize(bufferSize);
-		config.getEmulation().setEngine(engine);
-		config.getEmulation().setDefaultEmulation(defaultEmulation);
-		config.getEmulation().setForceStereoTune(dualSID);
-		config.getEmulation().setForce3SIDTune(thirdSID);
-		config.getEmulation().setUserClockSpeed(forceClock);
-		config.getEmulation().setDefaultClockSpeed(defaultClock);
-		config.getEmulation().setUserSidModel(forceModel);
-		config.getEmulation().setDefaultSidModel(defaultModel);
-		config.getEmulation().setFilter(!disableFilter);
-		config.getEmulation().setStereoFilter(!disableStereoFilter);
-		config.getEmulation().setThirdSIDFilter(!disable3rdSIDFilter);
+		config.getSidplay2Section().setLoop(loop);
+		config.getSidplay2Section().setSingle(single);
+		config.getSidplay2Section().setDefaultPlayLength(defaultLength);
+		config.getSidplay2Section().setEnableDatabase(enableSidDatabase);
+		config.getAudioSection().setAudio(audio);
+		config.getAudioSection().setFrequency(frequency);
+		config.getAudioSection().setBufferSize(bufferSize);
+		config.getEmulationSection().setEngine(engine);
+		config.getEmulationSection().setDefaultEmulation(defaultEmulation);
+		config.getEmulationSection().setForceStereoTune(dualSID);
+		config.getEmulationSection().setForce3SIDTune(thirdSID);
+		config.getEmulationSection().setUserClockSpeed(forceClock);
+		config.getEmulationSection().setDefaultClockSpeed(defaultClock);
+		config.getEmulationSection().setUserSidModel(forceModel);
+		config.getEmulationSection().setDefaultSidModel(defaultModel);
+		config.getEmulationSection().setFilter(!disableFilter);
+		config.getEmulationSection().setStereoFilter(!disableStereoFilter);
+		config.getEmulationSection().setThirdSIDFilter(!disable3rdSIDFilter);
 
 		final Player player = new Player(config);
 		try {
@@ -175,9 +175,10 @@ public class ConsolePlayer {
 			// check song length
 			if (defaultLength == 0) {
 				setSIDDatabase(player);
-				int length = player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0);
+				int length = player.getSidDatabaseInfo(
+						db -> db.getSongLength(tune), 0);
 				if (isRecording()
-						&& (!config.getSidplay2().isEnableDatabase() || length == 0)) {
+						&& (!config.getSidplay2Section().isEnableDatabase() || length == 0)) {
 					System.err
 							.println("ERROR: unknown song length in record mode"
 									+ " (please use option --defaultLength or configure song length database)");
@@ -216,7 +217,7 @@ public class ConsolePlayer {
 	}
 
 	private void setSIDDatabase(final Player player) {
-		String hvscRoot = player.getConfig().getSidplay2().getHvsc();
+		String hvscRoot = player.getConfig().getSidplay2Section().getHvsc();
 		if (hvscRoot != null) {
 			File file = new File(hvscRoot, SidDatabase.SONGLENGTHS_FILE);
 			try (FileInputStream input = new FileInputStream(file)) {

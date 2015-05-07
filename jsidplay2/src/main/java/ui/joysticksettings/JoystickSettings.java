@@ -76,7 +76,7 @@ public class JoystickSettings extends C64Window {
 
 		devices.addAll(controllers);
 
-		JoystickSection joystickSettings = util.getConfig().getJoystick();
+		JoystickSection joystickSettings = util.getConfig().getJoystickSection();
 
 		activateJoy1.setSelected(util.getPlayer().getC64()
 				.isJoystickConnected(0));
@@ -184,13 +184,13 @@ public class JoystickSettings extends C64Window {
 	private void chooseDevice1() {
 		Controller controller1 = device1.getSelectionModel().getSelectedItem();
 		components1.setAll(controller1.getComponents());
-		util.getConfig().getJoystick().setDeviceName1(controller1.getName());
+		util.getConfig().getJoystickSection().setDeviceName1(controller1.getName());
 	}
 
 	@FXML
 	private void chooseUp1() {
 		util.getConfig()
-				.getJoystick()
+				.getJoystickSection()
 				.setComponentNameUp1(
 						up1.getSelectionModel().getSelectedItem()
 								.getIdentifier().getName());
@@ -198,14 +198,14 @@ public class JoystickSettings extends C64Window {
 
 	@FXML
 	private void chooseUp1Value() {
-		util.getConfig().getJoystick()
+		util.getConfig().getJoystickSection()
 				.setComponentValueUp1((float) up1Value.getValue());
 	}
 
 	@FXML
 	private void chooseDown1() {
 		util.getConfig()
-				.getJoystick()
+				.getJoystickSection()
 				.setComponentNameDown1(
 						down1.getSelectionModel().getSelectedItem()
 								.getIdentifier().getName());
@@ -213,14 +213,14 @@ public class JoystickSettings extends C64Window {
 
 	@FXML
 	private void chooseDown1Value() {
-		util.getConfig().getJoystick()
+		util.getConfig().getJoystickSection()
 				.setComponentValueDown1((float) down1Value.getValue());
 	}
 
 	@FXML
 	private void chooseLeft1() {
 		util.getConfig()
-				.getJoystick()
+				.getJoystickSection()
 				.setComponentNameLeft1(
 						left1.getSelectionModel().getSelectedItem()
 								.getIdentifier().getName());
@@ -228,14 +228,14 @@ public class JoystickSettings extends C64Window {
 
 	@FXML
 	private void chooseLeft1Value() {
-		util.getConfig().getJoystick()
+		util.getConfig().getJoystickSection()
 				.setComponentValueLeft1((float) left1Value.getValue());
 	}
 
 	@FXML
 	private void chooseRight1() {
 		util.getConfig()
-				.getJoystick()
+				.getJoystickSection()
 				.setComponentNameRight1(
 						right1.getSelectionModel().getSelectedItem()
 								.getIdentifier().getName());
@@ -243,14 +243,14 @@ public class JoystickSettings extends C64Window {
 
 	@FXML
 	private void chooseRight1Value() {
-		util.getConfig().getJoystick()
+		util.getConfig().getJoystickSection()
 				.setComponentValueRight1((float) right1Value.getValue());
 	}
 
 	@FXML
 	private void chooseFire1() {
 		util.getConfig()
-				.getJoystick()
+				.getJoystickSection()
 				.setComponentNameBtn1(
 						fire1.getSelectionModel().getSelectedItem()
 								.getIdentifier().getName());
@@ -258,7 +258,7 @@ public class JoystickSettings extends C64Window {
 
 	@FXML
 	private void chooseFire1Value() {
-		util.getConfig().getJoystick()
+		util.getConfig().getJoystickSection()
 				.setComponentValueBtn1((float) fire1Value.getValue());
 	}
 
@@ -286,13 +286,13 @@ public class JoystickSettings extends C64Window {
 	private void chooseDevice2() {
 		Controller controller2 = device2.getSelectionModel().getSelectedItem();
 		components2.setAll(controller2.getComponents());
-		util.getConfig().getJoystick().setDeviceName2(controller2.getName());
+		util.getConfig().getJoystickSection().setDeviceName2(controller2.getName());
 	}
 
 	@FXML
 	private void chooseUp2() {
 		util.getConfig()
-				.getJoystick()
+				.getJoystickSection()
 				.setComponentNameUp2(
 						up2.getSelectionModel().getSelectedItem()
 								.getIdentifier().getName());
@@ -300,14 +300,14 @@ public class JoystickSettings extends C64Window {
 
 	@FXML
 	private void chooseUp2Value() {
-		util.getConfig().getJoystick()
+		util.getConfig().getJoystickSection()
 				.setComponentValueUp2((float) up2Value.getValue());
 	}
 
 	@FXML
 	private void chooseDown2() {
 		util.getConfig()
-				.getJoystick()
+				.getJoystickSection()
 				.setComponentNameDown2(
 						down2.getSelectionModel().getSelectedItem()
 								.getIdentifier().getName());
@@ -315,14 +315,14 @@ public class JoystickSettings extends C64Window {
 
 	@FXML
 	private void chooseDown2Value() {
-		util.getConfig().getJoystick()
+		util.getConfig().getJoystickSection()
 				.setComponentValueDown2((float) down2Value.getValue());
 	}
 
 	@FXML
 	private void chooseLeft2() {
 		util.getConfig()
-				.getJoystick()
+				.getJoystickSection()
 				.setComponentNameLeft2(
 						left2.getSelectionModel().getSelectedItem()
 								.getIdentifier().getName());
@@ -330,14 +330,14 @@ public class JoystickSettings extends C64Window {
 
 	@FXML
 	private void chooseLeft2Value() {
-		util.getConfig().getJoystick()
+		util.getConfig().getJoystickSection()
 				.setComponentValueLeft2((float) left2Value.getValue());
 	}
 
 	@FXML
 	private void chooseRight2() {
 		util.getConfig()
-				.getJoystick()
+				.getJoystickSection()
 				.setComponentNameRight2(
 						right2.getSelectionModel().getSelectedItem()
 								.getIdentifier().getName());
@@ -345,14 +345,14 @@ public class JoystickSettings extends C64Window {
 
 	@FXML
 	private void chooseRight2Value() {
-		util.getConfig().getJoystick()
+		util.getConfig().getJoystickSection()
 				.setComponentValueRight2((float) right2Value.getValue());
 	}
 
 	@FXML
 	private void chooseFire2() {
 		util.getConfig()
-				.getJoystick()
+				.getJoystickSection()
 				.setComponentNameBtn2(
 						fire2.getSelectionModel().getSelectedItem()
 								.getIdentifier().getName());
@@ -360,7 +360,7 @@ public class JoystickSettings extends C64Window {
 
 	@FXML
 	private void chooseFire2Value() {
-		util.getConfig().getJoystick()
+		util.getConfig().getJoystickSection()
 				.setComponentValueBtn2((float) fire2Value.getValue());
 	}
 

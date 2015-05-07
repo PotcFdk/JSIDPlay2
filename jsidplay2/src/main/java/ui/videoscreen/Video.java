@@ -221,7 +221,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
 						TapeFileExtensions.EXTENSIONS));
@@ -243,7 +243,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
 						DiskFileExtensions.EXTENSIONS));
@@ -265,7 +265,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	private void insertCartridge() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(
 				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
 						CartFileExtensions.EXTENSIONS));
@@ -296,7 +296,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	 * Connect VIC output with screen.
 	 */
 	private void setupVideoScreen() {
-		double screenScale = ((SidPlay2Section) util.getConfig().getSidplay2())
+		double screenScale = ((SidPlay2Section) util.getConfig().getSidplay2Section())
 				.getVideoScaling();
 		screen.setWidth(screenScale * getC64().getVIC().getBorderWidth());
 		screen.setHeight(screenScale * getC64().getVIC().getBorderHeight());
@@ -474,7 +474,7 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	}
 
 	private ChipModel getChipModel(SidTune sidTune) {
-		ChipModel userSidModel = util.getConfig().getEmulation()
+		ChipModel userSidModel = util.getConfig().getEmulationSection()
 				.getUserSidModel();
 		if (userSidModel != null) {
 			return userSidModel;
@@ -486,17 +486,17 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 				case MOS8580:
 					return ChipModel.MOS8580;
 				default:
-					return util.getConfig().getEmulation().getDefaultSidModel();
+					return util.getConfig().getEmulationSection().getDefaultSidModel();
 				}
 			} else {
-				return util.getConfig().getEmulation().getDefaultSidModel();
+				return util.getConfig().getEmulationSection().getDefaultSidModel();
 			}
 		}
 	}
 
 	@Override
 	public void invalidated(Observable observable) {
-		double screenScale = ((SidPlay2Section) util.getConfig().getSidplay2())
+		double screenScale = ((SidPlay2Section) util.getConfig().getSidplay2Section())
 				.getVideoScaling();
 		Platform.runLater(() -> {
 			// consistency check required, if video mode changes are made

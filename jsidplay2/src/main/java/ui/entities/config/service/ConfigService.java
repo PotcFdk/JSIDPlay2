@@ -27,7 +27,7 @@ public class ConfigService {
 		}
 
 		Configuration config = new Configuration();
-		config.getSidplay2().setVersion(Configuration.REQUIRED_CONFIG_VERSION);
+		config.getSidplay2Section().setVersion(Configuration.REQUIRED_CONFIG_VERSION);
 		em.persist(config);
 		flush();
 		return config;

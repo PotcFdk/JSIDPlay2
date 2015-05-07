@@ -198,7 +198,7 @@ public class Disassembler extends Tab implements UIPart {
 	private void saveMemory() {
 		FileChooser fileDialog = new FileChooser();
 		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
-				.getSidplay2();
+				.getSidplay2Section();
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File file = fileDialog.showSaveDialog(save.getScene().getWindow());
 		if (file != null) {

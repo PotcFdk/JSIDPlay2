@@ -12,10 +12,10 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void detectSidModelTest() {
-		config.getSidplay2().setLastDirectory("target/test-classes/sid");
+		config.getSidplay2Section().setLastDirectory("target/test-classes/sid");
 
-		config.getEmulation().setUserSidModel(null);
-		config.getEmulation().setDefaultSidModel(ChipModel.MOS8580);
+		config.getEmulationSection().setUserSidModel(null);
+		config.getEmulationSection().setDefaultSidModel(ChipModel.MOS8580);
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
@@ -24,7 +24,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 		Assert.assertTrue(checkScreenMessage("b", 1, 1));
 
-		config.getEmulation().setDefaultSidModel(ChipModel.MOS6581);
+		config.getEmulationSection().setDefaultSidModel(ChipModel.MOS6581);
 		player.play(player.getTune());
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 		Assert.assertTrue(checkScreenMessage("a", 1, 1));
@@ -32,7 +32,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadPSidStereoTest() {
-		config.getSidplay2().setLastDirectory(
+		config.getSidplay2Section().setLastDirectory(
 				"target/test-classes/sid/examples/stereo/2sids/Nata");
 		click("#file");
 		click("#load");
@@ -53,7 +53,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadPSidTest() {
-		config.getSidplay2().setLastDirectory(
+		config.getSidplay2Section().setLastDirectory(
 				"target/test-classes/sid/examples");
 		click("#file");
 		click("#load");
@@ -73,7 +73,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadP00Test() {
-		config.getSidplay2().setLastDirectory(
+		config.getSidplay2Section().setLastDirectory(
 				"target/test-classes/sid/examples");
 		click("#file");
 		click("#load");
@@ -88,7 +88,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadMusTest() {
-		config.getSidplay2().setLastDirectory(
+		config.getSidplay2Section().setLastDirectory(
 				"target/test-classes/sid/examples");
 		click("#file");
 		click("#load");
@@ -110,7 +110,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadMusStereoTest() {
-		config.getSidplay2().setLastDirectory(
+		config.getSidplay2Section().setLastDirectory(
 				"target/test-classes/sid/examples/stereo");
 		click("#file");
 		click("#load");
@@ -136,7 +136,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadPrgTest() {
-		config.getSidplay2().setLastDirectory(
+		config.getSidplay2Section().setLastDirectory(
 				"target/test-classes/sid/examples");
 		click("#file");
 		click("#load");
@@ -150,7 +150,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadPSid3SidTest() {
-		config.getSidplay2().setLastDirectory(
+		config.getSidplay2Section().setLastDirectory(
 				"target/test-classes/sid/examples/stereo/3sids");
 		click("#file");
 		click("#load");

@@ -191,21 +191,21 @@ public class DiskCollection extends Tab implements UIPart {
 				String initialRoot;
 				switch (getType()) {
 				case HVMEC:
-					this.downloadUrl = util.getConfig().getOnline()
+					this.downloadUrl = util.getConfig().getOnlineSection()
 							.getHvmecUrl();
-					initialRoot = util.getConfig().getSidplay2().getHVMEC();
+					initialRoot = util.getConfig().getSidplay2Section().getHVMEC();
 					break;
 
 				case DEMOS:
-					this.downloadUrl = util.getConfig().getOnline()
+					this.downloadUrl = util.getConfig().getOnlineSection()
 							.getDemosUrl();
-					initialRoot = util.getConfig().getSidplay2().getDemos();
+					initialRoot = util.getConfig().getSidplay2Section().getDemos();
 					break;
 
 				case MAGS:
-					this.downloadUrl = util.getConfig().getOnline()
+					this.downloadUrl = util.getConfig().getOnlineSection()
 							.getMagazinesUrl();
-					initialRoot = util.getConfig().getSidplay2().getMags();
+					initialRoot = util.getConfig().getSidplay2Section().getMags();
 					break;
 
 				default:
@@ -268,7 +268,7 @@ public class DiskCollection extends Tab implements UIPart {
 	private void doBrowse() {
 		DirectoryChooser fileDialog = new DirectoryChooser();
 		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
-				.getSidplay2();
+				.getSidplay2Section();
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene()
 				.getWindow());
@@ -287,13 +287,13 @@ public class DiskCollection extends Tab implements UIPart {
 					theRootFile, fileBrowserFileFilter));
 
 			if (getType() == DiskCollectionType.HVMEC) {
-				util.getConfig().getSidplay2()
+				util.getConfig().getSidplay2Section()
 						.setHVMEC(rootFile.getAbsolutePath());
 			} else if (getType() == DiskCollectionType.DEMOS) {
-				util.getConfig().getSidplay2()
+				util.getConfig().getSidplay2Section()
 						.setDemos(rootFile.getAbsolutePath());
 			} else if (getType() == DiskCollectionType.MAGS) {
-				util.getConfig().getSidplay2()
+				util.getConfig().getSidplay2Section()
 						.setMags(rootFile.getAbsolutePath());
 			}
 		}
@@ -372,7 +372,7 @@ public class DiskCollection extends Tab implements UIPart {
 		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
 			return extractGZip(file);
 		} else {
-			String tmpDir = util.getConfig().getSidplay2().getTmpDir();
+			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
 			File dst = new File(tmpDir, file.getName());
 			if (!dst.exists()) {
 				TFile.cp(file, dst);
@@ -384,7 +384,7 @@ public class DiskCollection extends Tab implements UIPart {
 
 	private File extractGZip(File file) {
 		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
-			String tmpDir = util.getConfig().getSidplay2().getTmpDir();
+			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
 			File dst = new File(tmpDir, PathUtils.getBaseNameNoExt(file
 					.getName()));
 			try (InputStream is = new GZIPInputStream(

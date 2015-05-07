@@ -15,7 +15,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 	@Before
 	public void setup() {
 		super.setup();
-		config.getSidplay2().setLastDirectory(
+		config.getSidplay2Section().setLastDirectory(
 				"target/test-classes/cpu/Testsuite/d64");
 	};
 

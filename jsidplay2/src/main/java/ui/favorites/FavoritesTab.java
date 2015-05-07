@@ -132,7 +132,7 @@ public class FavoritesTab extends Tab implements UIPart {
 					final HVSCEntry hvscEntry = favoritesTable
 							.getSelectionModel().getSelectedItem();
 					SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-							.getConfig().getSidplay2();
+							.getConfig().getSidplay2Section();
 					if (hvscEntry != null
 							&& PathUtils.getFile(hvscEntry.getPath(),
 									sidPlay2Section.getHvscFile(),
@@ -147,7 +147,7 @@ public class FavoritesTab extends Tab implements UIPart {
 			final HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
 					.getSelectedItem();
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2();
+					.getConfig().getSidplay2Section();
 			if (event.getCode() == KeyCode.ENTER
 					&& hvscEntry != null
 					&& PathUtils.getFile(hvscEntry.getPath(),
@@ -265,14 +265,14 @@ public class FavoritesTab extends Tab implements UIPart {
 	private void exportToDir() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(favoritesTable.getScene()
 				.getWindow());
 		if (directory != null) {
-			util.getConfig().getSidplay2()
+			util.getConfig().getSidplay2Section()
 					.setLastDirectory(directory.getAbsolutePath());
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2();
+					.getConfig().getSidplay2Section();
 			for (HVSCEntry hvscEntry : favoritesTable.getSelectionModel()
 					.getSelectedItems()) {
 				File file = PathUtils.getFile(hvscEntry.getPath(),
@@ -319,14 +319,14 @@ public class FavoritesTab extends Tab implements UIPart {
 	private void convertToPsid64() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
 		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2())).getLastDirectoryFolder());
+				.getSidplay2Section())).getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(favoritesTable.getScene()
 				.getWindow());
 		if (directory != null) {
-			util.getConfig().getSidplay2()
+			util.getConfig().getSidplay2Section()
 					.setLastDirectory(directory.getAbsolutePath());
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2();
+					.getConfig().getSidplay2Section();
 			final ArrayList<File> files = new ArrayList<File>();
 			for (HVSCEntry hvscEntry : favoritesTable.getSelectionModel()
 					.getSelectedItems()) {
@@ -336,7 +336,7 @@ public class FavoritesTab extends Tab implements UIPart {
 				files.add(file);
 			}
 			Psid64 c = new Psid64();
-			c.setTmpDir(util.getConfig().getSidplay2().getTmpDir());
+			c.setTmpDir(util.getConfig().getSidplay2Section().getTmpDir());
 			c.setVerbose(false);
 			try {
 				c.convertFiles(util.getPlayer(), files.toArray(new File[0]),
@@ -474,7 +474,7 @@ public class FavoritesTab extends Tab implements UIPart {
 				new FileInputStream(favoritesFile), "ISO-8859-1"))) {
 			String line;
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2();
+					.getConfig().getSidplay2Section();
 			while ((line = r.readLine()) != null) {
 				if (line.startsWith("<HVSC>/") || line.startsWith("<CGSC>/")) {
 					// backward compatibility
@@ -539,7 +539,7 @@ public class FavoritesTab extends Tab implements UIPart {
 		try {
 			tune = SidTune.load(file);
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getPlayer().getConfig().getSidplay2();
+					.getPlayer().getConfig().getSidplay2Section();
 			String collectionName = PathUtils.getCollectionName(
 					sidPlay2Section.getHvscFile(), file.getPath());
 			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
@@ -637,7 +637,7 @@ public class FavoritesTab extends Tab implements UIPart {
 
 	void copyToTab(final List<HVSCEntry> toCopy, final FavoritesTab tab) {
 		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig()
-				.getSidplay2();
+				.getSidplay2Section();
 		for (HVSCEntry hvscEntry : toCopy) {
 			tab.addFavorite(PathUtils.getFile(hvscEntry.getPath(),
 					sidPlay2Section.getHvscFile(),
@@ -648,7 +648,7 @@ public class FavoritesTab extends Tab implements UIPart {
 	void playTune(final HVSCEntry hvscEntry) {
 		favorites.setCurrentlyPlayedFavorites(this);
 		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig()
-				.getSidplay2();
+				.getSidplay2Section();
 		util.setPlayingTab(this);
 		try {
 			File file = PathUtils.getFile(hvscEntry.getPath(),
