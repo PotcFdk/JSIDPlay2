@@ -301,7 +301,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	public List<String> getFilters() {
 		List<String> result = new ArrayList<String>();
 		IniConfig cfg = new IniConfig();
-		List<? extends IFilterSection> filterSection = cfg.getFilter();
+		List<? extends IFilterSection> filterSection = cfg.getFilterSection();
 		for (Iterator<? extends IFilterSection> iterator = filterSection
 				.iterator(); iterator.hasNext();) {
 			final IFilterSection iFilterSection = (IFilterSection) iterator
