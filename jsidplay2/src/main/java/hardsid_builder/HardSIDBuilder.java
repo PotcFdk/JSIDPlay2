@@ -259,4 +259,17 @@ public class HardSIDBuilder implements SIDBuilder {
 		return chipModel == ChipModel.MOS6581 ? sid6581 : sid8580;
 	}
 
+	@Override
+	public void fastForward() {
+	}
+
+	@Override
+	public void normalSpeed() {
+	}
+
+	@Override
+	public boolean isFastForward() {
+		return false;
+	}
+
 }

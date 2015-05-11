@@ -1029,15 +1029,15 @@ public class Player {
 	}
 
 	public final void fastForward() {
-		audioDriver.fastForward();
+		sidBuilder.fastForward();
 	}
 
 	public final void normalSpeed() {
-		audioDriver.normalSpeed();
+		sidBuilder.normalSpeed();
 	}
 
 	public final boolean isFastForward() {
-		return audioDriver.isFastForward();
+		return sidBuilder.isFastForward();
 	}
 
 	public final int getNumDevices() {

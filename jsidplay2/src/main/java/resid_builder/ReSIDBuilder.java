@@ -136,6 +136,30 @@ public class ReSIDBuilder implements SIDBuilder {
 	}
 
 	/**
+	 * Doubles speed factor.
+	 */
+	@Override
+	public void fastForward() {
+		mixer.fastForward();
+	}
+
+	/**
+	 * Use normal speed factor.
+	 */
+	@Override
+	public void normalSpeed() {
+		mixer.normalSpeed();
+	}
+
+	/**
+	 * @return speed factor is used?
+	 */
+	@Override
+	public boolean isFastForward() {
+		return mixer.isFastForward();
+	}
+
+	/**
 	 * Create SID emulation of a specific emulation type or re-use already used
 	 * SID chip, if implementation does not change.<BR>
 	 * Note: The reason for re-using SID implementation is to preserve the

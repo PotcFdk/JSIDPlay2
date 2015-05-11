@@ -2,7 +2,6 @@ package sidplay.audio;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -108,43 +107,7 @@ public class JavaSound extends AudioDriver {
 		if (!dataLine.isActive()) {
 			dataLine.start();
 		}
-
-		final int len;
-		if (fastForward > 1) {
-			sampleBuffer.rewind();
-			int newLen = 0;
-			int[] val = new int[audioFormat.getChannels()];
-			int j = 0;
-			/* for each short-formatted sample in the buffer... */
-			while (sampleBuffer.position() < sampleBuffer.capacity()) {
-				/* accumulate each interleaved channel into its own accumulator */
-				for (int c = 0; c < audioFormat.getChannels(); c++) {
-					val[c] += sampleBuffer.getShort();
-				}
-
-				/*
-				 * once enough samples have been accumulated, write one to
-				 * output
-				 */
-				j++;
-				if (j == fastForward) {
-					j = 0;
-
-					for (int c = 0; c < audioFormat.getChannels(); c++) {
-						sampleBuffer.putShort(newLen,
-								(short) (val[c] / fastForward));
-						newLen += Short.BYTES;
-					}
-
-					/* zero accumulator */
-					Arrays.fill(val, 0);
-				}
-			}
-			len = newLen;
-		} else {
-			len = sampleBuffer.capacity();
-		}
-
+		int len = sampleBuffer.capacity();
 		int bytesWritten = dataLine.write(sampleBuffer.array(), 0, len);
 		if (bytesWritten != len) {
 			throw new InterruptedException();

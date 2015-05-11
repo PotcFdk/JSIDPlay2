@@ -68,18 +68,6 @@ public class ProxyDriver extends AudioDriver {
 	}
 
 	@Override
-	public synchronized void fastForward() {
-		driverOne.fastForward();
-		driverTwo.fastForward();
-	}
-
-	@Override
-	public synchronized void normalSpeed() {
-		driverOne.normalSpeed();
-		driverTwo.normalSpeed();
-	}
-
-	@Override
 	public void setRecordingFilenameProvider(
 			RecordingFilenameProvider recordingFilenameProvider) {
 		driverOne.setRecordingFilenameProvider(recordingFilenameProvider);

@@ -77,4 +77,19 @@ public interface SIDBuilder {
 	 */
 	void setBalance(int sidNum);
 
+	/**
+	 * Doubles speed factor.
+	 */
+	void fastForward();
+
+	/**
+	 * Use normal speed factor.
+	 */
+	void normalSpeed();
+
+	/**
+	 * @return speed factor is used?
+	 */
+	boolean isFastForward();
+
 }

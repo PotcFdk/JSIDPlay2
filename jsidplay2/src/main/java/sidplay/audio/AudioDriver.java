@@ -24,16 +24,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import libsidplay.sidtune.SidTune;
 
 public abstract class AudioDriver {
-	/**
-	 * Maximum fast forward factor of the current audio driver.
-	 */
-	private static final int MAX_SPEED = 32;
-
-	/**
-	 * Fast forward factor of the current audio driver.
-	 */
-	protected int fastForward = 1;
-
 	protected RecordingFilenameProvider recordingFilenameProvider;
 
 	/**
@@ -83,29 +73,6 @@ public abstract class AudioDriver {
 	 */
 	public abstract ByteBuffer buffer();
 
-	/**
-	 * Doubles speed factor for drivers that support it. (Only JavaSound to
-	 * fast-forward emulation quickly.)
-	 */
-	public synchronized void fastForward() {
-		fastForward = fastForward << 1;
-		if (fastForward > MAX_SPEED) {
-			fastForward = MAX_SPEED;
-		}
-	}
-
-	/**
-	 * Use normal speed factor for drivers that support it. (Only JavaSound to
-	 * fast-forward emulation quickly.)
-	 */
-	public synchronized void normalSpeed() {
-		fastForward = 1;
-	}
-
-	public synchronized boolean isFastForward() {
-		return fastForward != 1;
-	}
-	
 	public void setRecordingFilenameProvider(
 			RecordingFilenameProvider recordingFilenameProvider) {
 		this.recordingFilenameProvider = recordingFilenameProvider;
