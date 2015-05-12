@@ -91,13 +91,13 @@ public class Mixer {
 
 				putSample(resamplerL, audioBufferL.get(pos), dither);
 				putSample(resamplerR, audioBufferR.get(pos), dither);
+				audioBufferL.put(pos, 0);
+				audioBufferR.put(pos, 0);
 
 				if (!driver.buffer().hasRemaining()) {
 					driver.write();
 					driver.buffer().clear();
 				}
-				audioBufferL.put(pos, 0);
-				audioBufferR.put(pos, 0);
 			}
 			context.schedule(this, audioBufferL.capacity());
 		}

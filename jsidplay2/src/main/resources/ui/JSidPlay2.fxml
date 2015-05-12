@@ -394,7 +394,7 @@
 								</FXCollections>
 							</items>
 						</ComboBox>
-						<ComboBox onAction="#setAudio" fx:id="audioBox">
+						<ComboBox onAction="#setAudio" fx:id="audioBox" maxWidth="200">
 							<items>
 								<FXCollections fx:factory="observableArrayList">
 									<Audio fx:value="SOUNDCARD" />

@@ -143,10 +143,6 @@ public class JavaSound extends AudioDriver {
 		}
 	}
 
-	public AudioFormat getAudioFormat() {
-		return audioFormat;
-	}
-
 	@Override
 	public ByteBuffer buffer() {
 		return sampleBuffer;
