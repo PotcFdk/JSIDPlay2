@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.ReSIDExtension;
+import libsidplay.common.SIDListener;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.cart.Cartridge;
 import libsidplay.components.mos6510.MOS6510;
@@ -124,7 +124,7 @@ public final class PLA {
 		private boolean[] sidBankUsed = new boolean[16];
 
 		/** SID listener for detecting SID writes */
-		private final ReSIDExtension[] sidWriteListener = new ReSIDExtension[MAX_SIDS];
+		private final SIDListener[] sidWriteListener = new SIDListener[MAX_SIDS];
 
 		/** Reset SID chips using highest volume setting. */
 		private void reset() {
@@ -153,7 +153,7 @@ public final class PLA {
 		 * Install a SID register write listener for a specific SID chip number.
 		 */
 		public void setSidWriteListener(final int chipNum,
-				final ReSIDExtension listener) {
+				final SIDListener listener) {
 			sidWriteListener[chipNum] = listener;
 		}
 
@@ -736,7 +736,7 @@ public final class PLA {
 	 *            listener to debug SID register writes
 	 */
 	public void setSidWriteListener(final int chipNo,
-			final ReSIDExtension listener) {
+			final SIDListener listener) {
 		sidBank.setSidWriteListener(chipNo, listener);
 	}
 

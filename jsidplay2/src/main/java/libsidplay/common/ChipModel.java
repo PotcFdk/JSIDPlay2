@@ -15,7 +15,7 @@ public enum ChipModel {
 	 * <LI>default chip model or use 1st chip model (for 2nd or 3rd chip)
 	 * </OL>
 	 * 
-	 * @return chip model to be used for Mono SID
+	 * @return chip model to be used for SID number
 	 */
 	public static ChipModel getChipModel(IEmulationSection emulation,
 			SidTune tune, int sidNum) {

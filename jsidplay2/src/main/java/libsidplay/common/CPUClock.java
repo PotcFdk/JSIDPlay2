@@ -28,6 +28,16 @@ public enum CPUClock {
 		return refresh;
 	}
 
+	/**
+	 * Detect CPU clock of specific tune.
+	 * <OL>
+	 * <LI>forced CPU clock
+	 * <LI>CPU clock provided by tune information
+	 * <LI>default CPU clock
+	 * </OL>
+	 * 
+	 * @return CPU clock to be used for the tune
+	 */
 	public static CPUClock getCPUClock(IConfig config, SidTune tune) {
 		IEmulationSection emulation = config.getEmulationSection();
 		SidTuneInfo tuneInfo = tune != null ? tune.getInfo() : null;

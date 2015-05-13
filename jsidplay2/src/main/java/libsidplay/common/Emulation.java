@@ -20,6 +20,15 @@ public enum Emulation {
 		return description;
 	}
 
+	/**
+	 * Detect SID emulation of specified SID number
+	 * <OL>
+	 * <LI>forced SID emulation
+	 * <LI>default SID emulaton or use 1st SID emulation (for 2nd or 3rd chip)
+	 * </OL>
+	 * 
+	 * @return SID emulation to be used for SID number
+	 */
 	public static Emulation getEmulation(IEmulationSection emulationSection,
 			SidTune tune, int sidNum) {
 		Emulation forcedEmulation;
