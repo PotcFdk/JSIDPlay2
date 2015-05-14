@@ -3,6 +3,7 @@ package de.haendel.jsidplay2;
 import static android.media.MediaPlayer.MEDIA_ERROR_SERVER_DIED;
 import static android.media.MediaPlayer.MEDIA_ERROR_UNKNOWN;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_BUFFER_SIZE;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_CBR;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_MODEL;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_PLAY_LENGTH;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DIGI_BOOSTED_8580;
@@ -12,8 +13,6 @@ import static de.haendel.jsidplay2.config.IConfiguration.PAR_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_FREQUENCY;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_IS_VBR;
-import static de.haendel.jsidplay2.config.IConfiguration.PAR_CBR;
-import static de.haendel.jsidplay2.config.IConfiguration.PAR_VBR;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_LOOP;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_8580;
@@ -23,6 +22,7 @@ import static de.haendel.jsidplay2.config.IConfiguration.PAR_SAMPLING_METHOD;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_SINGLE_SONG;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_VBR;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,6 +36,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -51,6 +52,7 @@ import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 import de.haendel.jsidplay2.config.IConfiguration;
@@ -187,9 +189,14 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		player.reset();
 
 		try {
-			URI uri = getURI(configuration, currentEntry.getResource());
-			player.setDataSource(getApplicationContext(),
-					Uri.parse(uri.toString()));
+			byte[] toEncrypt = (configuration.getUsername() + ":" + configuration
+					.getPassword()).getBytes();
+			String encoded = Base64.encodeToString(toEncrypt, Base64.DEFAULT);
+			HashMap<String, String> headers = new HashMap<String, String>();
+			headers.put("Authorization", "Basic " + encoded);
+
+			Uri uri = getURI(configuration, currentEntry.getResource());
+			player.setDataSource(getApplicationContext(), uri, headers);
 		} catch (Exception e) {
 			Log.e(JSIDPlay2Service.class.getSimpleName(),
 					"Error setting data source!", e);
@@ -254,11 +261,13 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		mp.release();
 	}
 
-	private URI getURI(IConfiguration configuration, String resource)
+	private Uri getURI(IConfiguration configuration, String resource)
 			throws URISyntaxException {
 		StringBuilder query = new StringBuilder();
-		query.append(PAR_BUFFER_SIZE+ "=" + configuration.getBufferSize() + "&");
-		query.append(PAR_EMULATION + "=" + configuration.getDefaultEmulation() + "&");
+		query.append(PAR_BUFFER_SIZE + "=" + configuration.getBufferSize()
+				+ "&");
+		query.append(PAR_EMULATION + "=" + configuration.getDefaultEmulation()
+				+ "&");
 		query.append(PAR_ENABLE_DATABASE + "="
 				+ configuration.isEnableDatabase() + "&");
 		query.append(PAR_DEFAULT_PLAY_LENGTH + "="
@@ -290,14 +299,14 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		query.append(PAR_SAMPLING_METHOD + "="
 				+ configuration.getSamplingMethod() + "&");
 		query.append(PAR_FREQUENCY + "=" + configuration.getFrequency() + "&");
-		query.append(PAR_IS_VBR + "=" + configuration.isVbr() + "&");		
-		query.append(PAR_CBR + "=" + configuration.getCbr() + "&");		
+		query.append(PAR_IS_VBR + "=" + configuration.isVbr() + "&");
+		query.append(PAR_CBR + "=" + configuration.getCbr() + "&");
 		query.append(PAR_VBR + "=" + configuration.getVbr());
 
-		return new URI("http", configuration.getUsername() + ":"
-				+ configuration.getPassword(), configuration.getHostname(),
-				getNumber(configuration.getPort()),
-				RequestType.CONVERT.getUrl() + resource, query.toString(), null);
+		return Uri.parse(new URI("http", null, configuration.getHostname(),
+				getNumber(configuration.getPort()), RequestType.CONVERT
+						.getUrl() + resource, query.toString(), null)
+				.toString());
 	}
 
 	private int getNumber(String txt) {
