@@ -10,6 +10,7 @@ public class SIDDeviceSettings {
 	private final static String FILE_NAME_PROPERTIES = "jsiddevice.properties";
 	private final static String PROPERTY_DEVICE_INDEX = "deviceIndex";
 	private final static String PROPERTY_DIGI_BOOST = "digiBoost";
+	private final static String ALLOW_EXTERNAL_CONNECTIONS = "allowExternalConnections";
 	private final static String PROPERTY_DEVICE_INDEX_COMMENT = "JSIDDevice settings";
 
 	private static final SIDDeviceSettings instance = new SIDDeviceSettings();
@@ -47,7 +48,15 @@ public class SIDDeviceSettings {
 		return Boolean.TRUE.equals(Boolean.valueOf(props
 				.getProperty(PROPERTY_DIGI_BOOST)));
 	}
-
+	
+	/**
+	 * @return if external connections are allowed.
+	 */
+	public synchronized boolean getAllowExternalConnections() {
+		return Boolean.TRUE.equals(Boolean.valueOf(props
+				.getProperty(ALLOW_EXTERNAL_CONNECTIONS)));
+	}	
+	
 	/**
 	 * @param deviceIndex
 	 *            the device index to be saved
@@ -65,6 +74,15 @@ public class SIDDeviceSettings {
 		props.setProperty(PROPERTY_DIGI_BOOST, String.valueOf(digiBoost));
 		save();
 	}
+	
+	/**
+	 * @param allowExternalConnections
+	 *            specifies if external connection are allowed
+	 */
+	public synchronized void saveAllowExternalConnections(boolean allowExternalConnections) {
+		props.setProperty(ALLOW_EXTERNAL_CONNECTIONS, String.valueOf(allowExternalConnections));
+		save();
+	}	
 
 	public void load() {
 		try (FileInputStream fis = new FileInputStream(FILE_NAME_PROPERTIES)) {

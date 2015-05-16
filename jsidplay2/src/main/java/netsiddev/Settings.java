@@ -22,6 +22,8 @@ public class Settings extends SIDDeviceStage {
 	@FXML
 	private ComboBox<AudioDevice> audioDevice;
 	@FXML
+	private CheckBox allowExternalConnections;
+	@FXML
 	private CheckBox digiBoost;
 	@FXML
 	private Button okButton;
@@ -58,6 +60,7 @@ public class Settings extends SIDDeviceStage {
 		}
 		Collections.sort(audioDevices, cmp);
 		audioDevice.getSelectionModel().select(selectedAudioDeviceItem);
+		allowExternalConnections.setSelected(settings.getAllowExternalConnections());
 		digiBoost.setSelected(settings.getDigiBoostEnabled());
 	}
 	
@@ -71,6 +74,13 @@ public class Settings extends SIDDeviceStage {
 		AudioDevice device = audioDevice.getSelectionModel().getSelectedItem();
 		ClientContext.changeDevice(device.getInfo());
 		settings.saveDeviceIndex(device.getIndex());
+	}
+	
+	@FXML
+	private void setAllowExternalConnections() {
+		boolean isAllowExternalConnections = allowExternalConnections.isSelected();
+		settings.saveAllowExternalConnections(isAllowExternalConnections);
+		ClientContext.applyConnectionConfigChanges();
 	}
 
 	@FXML

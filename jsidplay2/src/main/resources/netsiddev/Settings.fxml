@@ -27,6 +27,16 @@
 			</HBox>
 		</TitledPane>
 		
+		<TitledPane text="%CONNECTION_SETTINGS" collapsible="false" focusTraversable="false">
+			<padding>
+				<Insets top="0" right="0" left="0" bottom="10"/>                 
+            </padding>
+			<HBox spacing="10" alignment="CENTER_LEFT">
+				<Label text="%ALLOW_EXTERNAL_CONNECTIONS" />
+				<CheckBox fx:id="allowExternalConnections" onAction="#setAllowExternalConnections" />
+			</HBox>
+		</TitledPane>
+		
 		<TitledPane text="%EMULATION_SETTINGS" collapsible="false" focusTraversable="false">
 			<HBox spacing="10" alignment="CENTER_LEFT">
 				<Label text="%DIGI_BOOST" />

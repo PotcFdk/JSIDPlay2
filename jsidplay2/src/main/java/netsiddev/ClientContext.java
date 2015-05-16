@@ -101,6 +101,12 @@ class ClientContext {
 	/** Allocate write buffer. Maximum supported writes are currently 260 bytes long. */
 	private final ByteBuffer dataWrite = ByteBuffer.allocateDirect(260);
 	
+	/** A selectable channel for stream-oriented listening sockets. */
+	private static ServerSocketChannel ssc = null;
+	
+	/** The selector which is registered to the server socket channel. */
+	private static Selector selector;
+	
 	/** Current command. */
 	private Command command;
 	
@@ -112,6 +118,9 @@ class ClientContext {
 	
 	/** Current clock value in input. */
 	private long inputClock;
+	
+	/** Indicates if a new connection should be opened in case of connection settings changes. */
+	private static boolean openNewConnection = true;
 
 	/** Map which holds all instances of each client connection. */
 	private static Map<SocketChannel, ClientContext> clientContextMap = new ConcurrentHashMap<SocketChannel, ClientContext>();
@@ -463,127 +472,163 @@ class ClientContext {
 		for (ClientContext clientContext : clientContextMap.values()) { 
 			clientContext.eventConsumerThread.setDigiBoost(enabled); 
 		} 
-	}	
+	}
+	
+	/**
+	 * applyConnectionConfigChanges will close all current connections and apply the new configuration which
+	 * is stored in the SIDDeviceSettings.
+	 */
+	public static void applyConnectionConfigChanges() {
+		openNewConnection = true;
+		if (selector != null) {
+			selector.wakeup();
+		}
+	}
 
 	public static void listenForClients(final JSIDDeviceConfig config) {
-		/* check for new connections. */
-		ServerSocketChannel ssc = null;
 		try {
-			ssc = ServerSocketChannel.open();
-			ssc.configureBlocking(false);
-			System.out.println("Opening listening socket.");
-			ssc.socket().bind(new InetSocketAddress(config.jsiddevice().getHostname(), config.jsiddevice().getPort()));
-
-			Selector s = Selector.open();
-			ssc.register(s, SelectionKey.OP_ACCEPT);
-	
-			clientContextMap.clear();
+			/* check for new connections. */
+			openNewConnection = true;
 			
-			while (s.select() > 0) {
-				for (SelectionKey sk : s.selectedKeys()) {
-					if (sk.isAcceptable()) {
-						SocketChannel sc = ((ServerSocketChannel) sk.channel()).accept();
-						sc.socket().setReceiveBufferSize(16384);
-						sc.socket().setSendBufferSize(1024);
-						sc.configureBlocking(false);
-	
-						sc.register(s, SelectionKey.OP_READ);
-						ClientContext cc = new ClientContext(
-								AudioConfig.getInstance(config.audio()), config
-										.jsiddevice().getLatency());
-						clientContextMap.put(sc, cc);
-						System.out.println("New client: " + cc);
+			while (openNewConnection) {
+				ssc = ServerSocketChannel.open();
+				ssc.configureBlocking(false);
+				
+				SIDDeviceSettings settings = SIDDeviceSettings.getInstance();
+				boolean allowExternalIpConnections = settings.getAllowExternalConnections();
+
+				String ipAddress = allowExternalIpConnections ? "0.0.0.0" : config.jsiddevice().getHostname();
+				ssc.socket().bind(new InetSocketAddress(ipAddress, config.jsiddevice().getPort()));
+
+				System.out.println("Opening listening socket on ip address " + ipAddress);				
+				
+				selector = Selector.open();
+				ssc.register(selector, SelectionKey.OP_ACCEPT);
+		
+				clientContextMap.clear();
+				
+				openNewConnection = false;
+				while (selector.select() > 0) {
+					if (openNewConnection) {
+						break;
 					}
 					
-					if (sk.isReadable()) {
-						SocketChannel sc = (SocketChannel) sk.channel();
-						ClientContext cc = clientContextMap.get(sc);
+					for (SelectionKey sk : selector.selectedKeys()) {
+						if (sk.isAcceptable()) {
+							SocketChannel sc = ((ServerSocketChannel) sk.channel()).accept();
+							sc.socket().setReceiveBufferSize(16384);
+							sc.socket().setSendBufferSize(1024);
+							sc.configureBlocking(false);
+		
+							sc.register(selector, SelectionKey.OP_READ);
+							ClientContext cc = new ClientContext(AudioConfig.getInstance(config.audio()), config.jsiddevice().getLatency());
+							clientContextMap.put(sc, cc);
+							System.out.println("New client: " + cc);
+						}
 						
-						try {
-							int length = sc.read(cc.getReadBuffer());
-							if (length == -1) {
-								throw new EOFException();
-							}
-	
-							cc.processReadBuffer();
-						}
-						catch (Exception e) {
-							System.out.println("Read: closing client " + cc + " due to exception: " + e);
-	
-							cc.dispose();
-							clientContextMap.remove(sc);
-							sk.cancel();
-							sc.close();
+						if (sk.isReadable()) {
+							SocketChannel sc = (SocketChannel) sk.channel();
+							ClientContext cc = clientContextMap.get(sc);
 							
-							/* IOExceptions are probably not worth bothering user about, they could be normal
-							 * stuff like apps exiting or closing connection. Other stuff is important, though.
-							 */
-							if (! (e instanceof IOException)) {
-								StringWriter sw = new StringWriter();
-								e.printStackTrace(new PrintWriter(sw));
-								Platform.runLater(()->{
-									Alert alert = new Alert();
-									alert.setText(sw.toString());
-									try {
-										alert.open();
-									} catch (Exception e1) {
-									}
-									System.exit(0);
-								});
+							try {
+								int length = sc.read(cc.getReadBuffer());
+								if (length == -1) {
+									throw new EOFException();
+								}
+		
+								cc.processReadBuffer();
 							}
-							continue;
+							catch (Exception e) {
+								System.out.println("Read: closing client " + cc + " due to exception: " + e);
+		
+								cc.dispose();
+								clientContextMap.remove(sc);
+								sk.cancel();
+								sc.close();
+								
+								/* IOExceptions are probably not worth bothering user about, they could be normal
+								 * stuff like apps exiting or closing connection. Other stuff is important, though.
+								 */
+								if (! (e instanceof IOException)) {
+									StringWriter sw = new StringWriter();
+									e.printStackTrace(new PrintWriter(sw));
+									Platform.runLater(()->{
+										Alert alert = new Alert();
+										alert.setText(sw.toString());
+										try {
+											alert.open();
+										} catch (Exception e1) {
+										}
+										System.exit(0);
+									});
+								}
+								continue;
+							}
+		
+							/* Switch to writing? */
+							ByteBuffer data = cc.getWriteBuffer();
+							if (data.remaining() != 0) {
+								sc.register(selector, SelectionKey.OP_WRITE);
+							}
 						}
-	
-						/* Switch to writing? */
-						ByteBuffer data = cc.getWriteBuffer();
-						if (data.remaining() != 0) {
-							sc.register(s, SelectionKey.OP_WRITE);
+						
+						if (sk.isWritable()) {
+							SocketChannel sc = (SocketChannel) sk.channel();
+							ClientContext cc = clientContextMap.get(sc);
+		
+							try {
+								ByteBuffer data = cc.getWriteBuffer();
+								sc.write(data);
+		
+								/* Switch to reading? */
+								if (data.remaining() == 0) {
+									sc.register(selector, SelectionKey.OP_READ);
+								}
+							}
+							catch (IOException ioe) {
+								System.out.println("Write: closing client " + cc + " due to exception: " + ioe);
+								cc.dispose();
+								clientContextMap.remove(sc);
+								sk.cancel();
+								sc.close();
+								continue;
+							}
 						}
 					}
 					
-					if (sk.isWritable()) {
-						SocketChannel sc = (SocketChannel) sk.channel();
-						ClientContext cc = clientContextMap.get(sc);
-	
-						try {
-							ByteBuffer data = cc.getWriteBuffer();
-							sc.write(data);
-	
-							/* Switch to reading? */
-							if (data.remaining() == 0) {
-								sc.register(s, SelectionKey.OP_READ);
-							}
-						}
-						catch (IOException ioe) {
-							System.out.println("Write: closing client " + cc + " due to exception: " + ioe);
-							cc.dispose();
-							clientContextMap.remove(sc);
-							sk.cancel();
-							sc.close();
-							continue;
-						}
-					}
+					selector.selectedKeys().clear();
 				}
 				
-				s.selectedKeys().clear();
+				closeClientConnections();
 			}
-	
-			for (ClientContext cc : clientContextMap.values()) {
-				System.out.println("Cleaning up client: " + cc);
-				cc.dispose();
-			}
-			for (SocketChannel sc : clientContextMap.keySet()) {
-				sc.close();
-			}
-			for (ClientContext cc : clientContextMap.values()) {
-				cc.disposeWait();
-			}
-			
-			ssc.close();
-			System.out.println("Listening socket closed.");
-			
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static void closeClientConnections() throws IOException {
+		for (ClientContext cc : clientContextMap.values()) {
+			System.out.println("Cleaning up client: " + cc);
+			cc.dispose();
+		}
+		
+		for (SocketChannel sc : clientContextMap.keySet()) {
+			sc.close();
+		}
+		
+		for (ClientContext cc : clientContextMap.values()) {
+			cc.disposeWait();
+		}
+		
+		if (ssc.socket().isBound()) {
+			ssc.socket().close();
+		}
+		
+		if (selector.isOpen()) {
+			selector.close();
+		}
+		
+		ssc.close();
+		System.out.println("Listening socket closed.");
 	}
 }
