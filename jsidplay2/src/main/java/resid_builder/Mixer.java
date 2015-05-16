@@ -1,5 +1,7 @@
 package resid_builder;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -234,8 +236,12 @@ public class Mixer {
 		this.config = config;
 		this.driver = audioDriver;
 		IAudioSection audioSection = config.getAudioSection();
-		this.audioBufferL = IntBuffer.allocate(audioSection.getBufferSize());
-		this.audioBufferR = IntBuffer.allocate(audioSection.getBufferSize());
+		this.audioBufferL = ByteBuffer
+				.allocateDirect(Integer.BYTES * audioSection.getBufferSize())
+				.order(ByteOrder.nativeOrder()).asIntBuffer();
+		this.audioBufferR = ByteBuffer
+				.allocateDirect(Integer.BYTES * audioSection.getBufferSize())
+				.order(ByteOrder.nativeOrder()).asIntBuffer();
 		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(),
 				audioSection.getSampling(), audioConfig.getFrameRate(), 20000);
 		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(),
@@ -340,8 +346,8 @@ public class Mixer {
 	 *            SID chip that requires a sample mixer.
 	 */
 	private void createSampleMixer(ReSIDBase sid) {
-		IntBuffer intBufferL = IntBuffer.wrap(audioBufferL.array());
-		IntBuffer intBufferR = IntBuffer.wrap(audioBufferR.array());
+		IntBuffer intBufferL = audioBufferL.duplicate();
+		IntBuffer intBufferR = audioBufferR.duplicate();
 		sid.setSampler(new SampleMixer(intBufferL, intBufferR));
 	}
 
