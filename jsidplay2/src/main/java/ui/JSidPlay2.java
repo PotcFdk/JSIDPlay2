@@ -1599,7 +1599,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@Override
 	public String getFilename(SidTune tune) {
 		String defaultName = "jsidplay2";
-		if (tune == null) {
+		if (tune == SidTune.RESET) {
 			return new File(util.getConfig().getSidplay2Section().getTmpDir(),
 					defaultName).getAbsolutePath();
 		}
