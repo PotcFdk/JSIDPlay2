@@ -14,6 +14,7 @@
 <listEntry value="zip7.home=${zip7.home}"/>
 <listEntry value="cgsc.7z=${cgsc.7z}"/>
 <listEntry value="hvmec.bz2=${hvmec.bz2}"/>
+<listEntry value="upx.home=${upx.home}"/>
 </listAttribute>
 <stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>
 <booleanAttribute key="M2_SKIP_TESTS" value="true"/>
