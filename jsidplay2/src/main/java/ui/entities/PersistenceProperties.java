@@ -1,6 +1,5 @@
 package ui.entities;
 
-import java.io.File;
 import java.util.HashMap;
 
 public class PersistenceProperties extends HashMap<String, String> {
@@ -10,11 +9,11 @@ public class PersistenceProperties extends HashMap<String, String> {
 	public static final String COLLECTION_DS = "collection-ds";
 	public static final String GAMEBASE_DS = "gamebase-ds";
 
-	public PersistenceProperties(File databaseFile, Database type) {
+	public PersistenceProperties(String name, Database type) {
 		put("hibernate.connection.driver_class", type.getJdbcDriver());
 		put("hibernate.connection.url",
-				type.getJdbcUrl().replace("${file}",
-						databaseFile.getAbsolutePath()));
+				type.getJdbcUrl().replace("${name}",
+						name));
 	}
 
 }

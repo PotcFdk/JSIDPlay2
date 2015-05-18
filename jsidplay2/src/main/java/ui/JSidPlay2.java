@@ -87,10 +87,8 @@ import ui.entities.config.EmulationSection;
 import ui.entities.config.PrinterSection;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.ViewEntity;
-import ui.entities.config.service.ConfigService;
 import ui.favorites.Favorites;
 import ui.filefilter.CartFileExtensions;
-import ui.filefilter.ConfigFileExtension;
 import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.RomFileExtensions;
 import ui.filefilter.TapeFileExtensions;
@@ -186,8 +184,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	protected ProgressBar progress;
 
 	private ObservableList<Device> devices;
-
-	private ConfigService configService;
 
 	private Scene scene;
 	private Timeline timer;
@@ -1271,47 +1267,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	@FXML
-	private void exportConfiguration() {
-		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2Section())).getLastDirectoryFolder());
-		fileDialog.getExtensionFilters().add(
-				new ExtensionFilter(ConfigFileExtension.DESCRIPTION,
-						ConfigFileExtension.EXTENSIONS));
-		final File file = fileDialog.showSaveDialog(scene.getWindow());
-		if (file != null) {
-			File target = new File(file.getParentFile(),
-					PathUtils.getBaseNameNoExt(file.getName()) + ".xml");
-			util.getConfig().getSidplay2Section()
-					.setLastDirectory(file.getParent());
-			configService.exportCfg(util.getConfig(), target);
-		}
-	}
-
-	@FXML
-	private void importConfiguration() {
-		YesNoDialog dialog = new YesNoDialog(util.getPlayer());
-		dialog.getStage().setTitle(
-				util.getBundle().getString("IMPORT_CONFIGURATION"));
-		dialog.setText(util.getBundle().getString("PLEASE_RESTART"));
-		dialog.open();
-		if (dialog.getConfirmed().get()) {
-			final FileChooser fileDialog = new FileChooser();
-			fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-					.getSidplay2Section())).getLastDirectoryFolder());
-			fileDialog.getExtensionFilters().add(
-					new ExtensionFilter(ConfigFileExtension.DESCRIPTION,
-							ConfigFileExtension.EXTENSIONS));
-			final File file = fileDialog.showOpenDialog(scene.getWindow());
-			if (file != null) {
-				util.getConfig().getSidplay2Section()
-						.setLastDirectory(file.getParent());
-				util.getConfig().setReconfigFilename(file.getAbsolutePath());
-			}
-		}
-	}
-
-	@FXML
 	private void updateCheck() {
 		new Update(util.getPlayer()).open();
 	}
@@ -1590,10 +1545,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			// EXTEND_NEVER
 			return false;
 		}
-	}
-
-	public void setConfigService(ConfigService configService) {
-		this.configService = configService;
 	}
 
 	@Override

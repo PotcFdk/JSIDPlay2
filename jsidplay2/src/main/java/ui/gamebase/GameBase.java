@@ -189,8 +189,8 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	private void doEnableGameBase() {
 		if (enableGameBase.isSelected()) {
-			File dbFile = new File(util.getConfig().getSidplay2Section().getTmpDir(),
-					"GameBase64.mdb");
+			File dbFile = new File(util.getConfig().getSidplay2Section()
+					.getTmpDir(), "GameBase64.mdb");
 			if (dbFile.exists()) {
 				// There is already a database file downloaded earlier.
 				// Therefore we try to connect
@@ -293,8 +293,8 @@ public class GameBase extends Tab implements UIPart {
 		}
 		em = Persistence.createEntityManagerFactory(
 				PersistenceProperties.GAMEBASE_DS,
-				new PersistenceProperties(dbFile, Database.MSACCESS))
-				.createEntityManager();
+				new PersistenceProperties(dbFile.getAbsolutePath(),
+						Database.MSACCESS)).createEntityManager();
 		gamesService = new GamesService(em);
 	}
 

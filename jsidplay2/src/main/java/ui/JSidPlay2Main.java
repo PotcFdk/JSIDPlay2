@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import javafx.application.Application;
@@ -20,7 +19,6 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
-import ui.common.dialog.AlertDialog;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
@@ -36,18 +34,9 @@ import ui.entities.config.service.ConfigService;
 public class JSidPlay2Main extends Application {
 
 	/**
-	 * Language dependent message.
+	 * Filename of the jsidplay2 configuration XML file.
 	 */
-	private static final String IMPORT_CONFIGURATION = "IMPORT_CONFIGURATION";
-	/**
-	 * Language dependent message.
-	 */
-	private static final String CONFIGURATION_ERROR = "CONFIGURATION_ERROR";
-
-	/**
-	 * Filename of the jsidplay2 configuration database.
-	 */
-	public static final String CONFIG_DATABASE = "JSIDPLAY2";
+	public static final String CONFIG_FILE = "jsidplay2";
 
 	/**
 	 * Player
@@ -92,7 +81,6 @@ public class JSidPlay2Main extends Application {
 		player.startC64();
 
 		final JSidPlay2 jSidplay2 = new JSidPlay2(primaryStage, player);
-		jSidplay2.setConfigService(configService);
 		jSidplay2.open();
 		// Set default position and size
 		final SidPlay2Section section = (SidPlay2Section) player.getConfig()
@@ -159,6 +147,9 @@ public class JSidPlay2Main extends Application {
 		}
 		configService.commit((Configuration) player.getConfig());
 
+		configService.exportCfg((Configuration) player.getConfig(),
+				getConfigPath());
+
 		em.getEntityManagerFactory().close();
 
 		// Really persist the databases
@@ -176,56 +167,29 @@ public class JSidPlay2Main extends Application {
 	 * @return the players configuration to be used
 	 */
 	private Configuration getConfiguration() {
-		ResourceBundle bundle = ResourceBundle.getBundle(JSidPlay2Main.class
-				.getName());
-		try {
-			em = Persistence.createEntityManagerFactory(
-					PersistenceProperties.CONFIG_DS,
-					new PersistenceProperties(getConfigDatabasePath(),
-							Database.HSQL)).createEntityManager();
-			configService = new ConfigService(em);
-			Configuration config = configService.getOrCreate();
-			// Import configuration (if flagged)
-			if (configService.shouldBeRestored(config)) {
-				System.out.printf(bundle.getString(IMPORT_CONFIGURATION),
-						config.getReconfigFilename());
-				config = configService.importCfg(config);
-			}
-			return config;
-		} catch (Throwable e) {
-			// fatal database error?
-			AlertDialog dialog = new AlertDialog(player);
-			dialog.getStage().setTitle(
-					bundle.getString("IMPORT_CONFIGURATION_FAILURE"));
-			dialog.setText(e.getMessage()
-					+ "\n"
-					+ String.format(bundle.getString(CONFIGURATION_ERROR),
-							getConfigDatabasePath().getAbsolutePath()));
-			dialog.open();
-			System.out.println(e.getMessage());
-			System.out.printf(bundle.getString(CONFIGURATION_ERROR),
-					getConfigDatabasePath().getAbsolutePath());
-			System.exit(0);
-			return null;
-		}
+		em = Persistence.createEntityManagerFactory(
+				PersistenceProperties.CONFIG_DS,
+				new PersistenceProperties(CONFIG_FILE, Database.HSQL_MEM))
+				.createEntityManager();
+		configService = new ConfigService(em);
+		return configService.importCfg(getConfigPath());
 	}
 
 	/**
-	 * Search for the database (the players configuration). Search in CWD and in
-	 * the HOME folder.
+	 * Search for the configuration. Search in CWD and in the HOME folder.
 	 * 
-	 * @return absolute path name of the database
+	 * @return XML configuration file
 	 */
-	private File getConfigDatabasePath() {
+	private File getConfigPath() {
 		for (final String s : new String[] { System.getProperty("user.dir"),
 				System.getProperty("user.home"), }) {
-			File configPlace = new File(s, CONFIG_DATABASE + ".properties");
+			File configPlace = new File(s, CONFIG_FILE + ".xml");
 			if (configPlace.exists()) {
-				return new File(configPlace.getParent(), CONFIG_DATABASE);
+				return configPlace;
 			}
 		}
 		// default directory
-		return new File(System.getProperty("user.home"), CONFIG_DATABASE);
+		return new File(System.getProperty("user.home"), CONFIG_FILE + ".xml");
 	}
 
 	/**

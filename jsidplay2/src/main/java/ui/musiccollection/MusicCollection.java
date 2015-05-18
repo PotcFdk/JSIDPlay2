@@ -231,7 +231,8 @@ public class MusicCollection extends Tab implements UIPart {
 										String collectionName = util
 												.getPlayer()
 												.getSidDatabaseInfo(
-														db -> db.getPath(tune), "");
+														db -> db.getPath(tune),
+														"");
 										showNextHit(new TFile(fileBrowser
 												.getRoot().getValue(),
 												collectionName));
@@ -386,11 +387,13 @@ public class MusicCollection extends Tab implements UIPart {
 				String initialRoot;
 				switch (getType()) {
 				case HVSC:
-					initialRoot = util.getConfig().getSidplay2Section().getHvsc();
+					initialRoot = util.getConfig().getSidplay2Section()
+							.getHvsc();
 					break;
 
 				case CGSC:
-					initialRoot = util.getConfig().getSidplay2Section().getCgsc();
+					initialRoot = util.getConfig().getSidplay2Section()
+							.getCgsc();
 					break;
 
 				default:
@@ -422,7 +425,8 @@ public class MusicCollection extends Tab implements UIPart {
 	private void getSOASCURL(SidTune sidTune, File tuneFile) {
 		if (sidTune != null) {
 			final SidTuneInfo tuneInfo = sidTune.getInfo();
-			File rootFile = new File(util.getConfig().getSidplay2Section().getHvsc());
+			File rootFile = new File(util.getConfig().getSidplay2Section()
+					.getHvsc());
 			String collectionName = PathUtils.getCollectionName(new TFile(
 					rootFile), tuneFile.getPath());
 			if (collectionName != null && getType() == MusicCollectionType.HVSC) {
@@ -686,8 +690,9 @@ public class MusicCollection extends Tab implements UIPart {
 			em = Persistence.createEntityManagerFactory(
 					PersistenceProperties.COLLECTION_DS,
 					new PersistenceProperties(new File(
-							rootFile.getParentFile(), type.get().toString()),
-							Database.HSQL)).createEntityManager();
+							rootFile.getParentFile(), type.get().toString())
+							.getAbsolutePath(), Database.HSQL_FILE))
+					.createEntityManager();
 
 			versionService = new VersionService(em);
 			collectionDir.setText(rootFile.getAbsolutePath());

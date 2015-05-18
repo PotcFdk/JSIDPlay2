@@ -277,9 +277,6 @@
 								<MenuItem text="%EMULATION_SETTINGS" onAction="#emulationSettings" />
 								<MenuItem text="%JOYSTICK_SETTINGS" onAction="#joystickSettings" />
 								<MenuItem text="%PROXY_SETTINGS" onAction="#proxySettings" />
-								<SeparatorMenuItem />
-								<MenuItem text="%IMPORT" onAction="#importConfiguration" />
-								<MenuItem text="%EXPORT" onAction="#exportConfiguration" />
 							</Menu>
 							<Menu text="%HELP">
 								<MenuItem text="%CHECK_FOR_UPDATES" onAction="#updateCheck" />

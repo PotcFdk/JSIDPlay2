@@ -399,16 +399,6 @@ public class Configuration implements IConfig {
 		this.id = id;
 	}
 
-	private String reconfigFilename;
-
-	public String getReconfigFilename() {
-		return reconfigFilename;
-	}
-
-	public void setReconfigFilename(String reconfigFilename) {
-		this.reconfigFilename = reconfigFilename;
-	}
-
 	private SidPlay2Section sidplay2 = new SidPlay2Section();
 
 	public void setSidplay2Section(SidPlay2Section sidplay2) {

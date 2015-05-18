@@ -3,15 +3,20 @@ package ui.entities;
 public enum Database {
 
 	/**
-	 * Java Database
+	 * File-based Java Database
 	 */
-	HSQL("org.hsqldb.jdbcDriver", "jdbc:hsqldb:file:${file};shutdown=true"),
+	HSQL_FILE("org.hsqldb.jdbcDriver", "jdbc:hsqldb:file:${name};shutdown=true"),
+
+	/**
+	 * In-Memory Java Database
+	 */
+	HSQL_MEM("org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:${name};shutdown=true"),
 
 	/**
 	 * MSAccess Database
 	 */
 	MSACCESS("net.ucanaccess.jdbc.UcanaccessDriver",
-			"jdbc:ucanaccess://${file};showschema=true");
+			"jdbc:ucanaccess://${name};showschema=true");
 
 	private String jdbcDriver;
 	private String jdbcUrl;

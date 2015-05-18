@@ -57,21 +57,14 @@ public class ConfigService {
 		}
 	}
 
-	public boolean shouldBeRestored(Configuration config) {
-		return config.getReconfigFilename() != null;
-	}
-
-	public Configuration importCfg(Configuration oldConfiguration) {
+	public Configuration importCfg(File file) {
 		try {
 			JAXBContext jaxbContext = JAXBContext
 					.newInstance(Configuration.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			Object obj = unmarshaller.unmarshal(new File(oldConfiguration
-					.getReconfigFilename()));
+			Object obj = unmarshaller.unmarshal(file);
 			if (obj instanceof Configuration) {
 				Configuration detachedConfig = (Configuration) obj;
-
-				remove(oldConfiguration);
 
 				Configuration mergedConfig = em.merge(detachedConfig);
 				em.persist(mergedConfig);
@@ -80,12 +73,9 @@ public class ConfigService {
 				return mergedConfig;
 			}
 		} catch (JAXBException e) {
-			e.printStackTrace();
-		} finally {
-			// Reset restoration flag
-			oldConfiguration.setReconfigFilename(null);
+			System.err.println(e.getMessage());
 		}
-		return oldConfiguration;
+		return create(null);
 	}
 
 	private void remove(Configuration config) {
