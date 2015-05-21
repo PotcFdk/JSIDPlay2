@@ -127,7 +127,7 @@ public class Psid64 {
 		final List<MemoryBlock> memBlocks = new ArrayList<>();
 		MemoryBlock memoryBlock = new MemoryBlock();
 		memoryBlock.setStartAddress(freePages.getDriverPage() << 8);
-		memoryBlock.setSize(driverInfo.length-2);
+		memoryBlock.setSize(driverInfo.length - 2);
 		memoryBlock.setData(driverInfo);
 		memoryBlock.setDataOff(2);
 		memoryBlock.setDescription("Driver code");
@@ -327,7 +327,8 @@ public class Psid64 {
 	private int iomap(int addr) {
 		// Force Real C64 Compatibility
 		SidTuneInfo tuneInfo = tune.getInfo();
-		if (tuneInfo.getCompatibility() == SidTune.Compatibility.RSID
+		if (tuneInfo.getCompatibility() == SidTune.Compatibility.RSIDv2
+				|| tuneInfo.getCompatibility() == SidTune.Compatibility.RSIDv3
 				|| addr == 0) {
 			return 0; // Special case, converted to 0x37 later
 		}

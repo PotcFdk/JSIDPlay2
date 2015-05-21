@@ -255,7 +255,8 @@ class PSid extends Prg {
 	 */
 	private int iomap(final int addr) {
 		switch (info.compatibility) {
-		case RSID:
+		case RSIDv2:
+		case RSIDv3:
 		case RSID_BASIC:
 			return 0; // Special case, converted to 0x37 later
 		default:
@@ -305,7 +306,8 @@ class PSid extends Prg {
 		globals.put("videoMode",
 				String.valueOf(info.clockSpeed == Clock.PAL ? 1 : 0));
 		globals.put("flags", String
-				.valueOf(info.compatibility == Compatibility.RSID ? 1
+				.valueOf(info.compatibility == Compatibility.RSIDv2
+						|| info.compatibility == Compatibility.RSIDv3 ? 1
 						: 1 << MOS6510.SR_INTERRUPT));
 		InputStream asm = PSid.class.getResourceAsStream(PSIDDRIVER_ASM);
 		byte[] driver = assembler.assemble(PSIDDRIVER_ASM, asm, globals);
@@ -478,17 +480,26 @@ class PSid extends Prg {
 				psid.info.compatibility = Compatibility.PSIDv4;
 				break;
 			default:
-				throw new SidTuneError("PSID version must be 1, 2, 3 or 4, now: "
-						+ header.version);
+				throw new SidTuneError(
+						"PSID version must be 1, 2, 3 or 4, now: "
+								+ header.version);
 			}
 		} else if (Arrays.equals(header.id, new byte[] { 'R', 'S', 'I', 'D' })) {
-			if ((header.version < 2) || (header.version > 3)) {
-				throw new SidTuneError("RSID version must be 2 or 3, now: "
-						+ header.version);
+			if ((header.flags & PSID_BASIC) != 0) {
+				psid.info.compatibility = Compatibility.RSID_BASIC;
+			} else {
+				switch (header.version) {
+				case 2:
+					psid.info.compatibility = Compatibility.RSIDv2;
+					break;
+				case 3:
+					psid.info.compatibility = Compatibility.RSIDv3;
+					break;
+				default:
+					throw new SidTuneError("RSID version must be 2 or 3, now: "
+							+ header.version);
+				}
 			}
-			psid.info.compatibility = (header.flags & PSID_BASIC) != 0 ? Compatibility.RSID_BASIC
-					: Compatibility.RSID;
-
 			if (psid.info.loadAddr != 0 || psid.info.playAddr != 0
 					|| speed != 0) {
 				throw new SidTuneError(
@@ -596,7 +607,8 @@ class PSid extends Prg {
 				tmpFlags |= PSID_BASIC;
 				//$FALL-THROUGH$
 
-			case RSID:
+			case RSIDv2:
+			case RSIDv3:
 				header.id = "RSID".getBytes();
 				header.speed = 0;
 				break;
@@ -701,7 +713,8 @@ class PSid extends Prg {
 	public long getInitDelay() {
 		// 2.5ms does not always work well (Synth_sample)!
 		return info.compatibility == Compatibility.RSID_BASIC
-				|| info.compatibility == Compatibility.RSID ? super
+				|| info.compatibility == Compatibility.RSIDv2
+				|| info.compatibility == Compatibility.RSIDv3 ? super
 				.getInitDelay() : 2500;
 	}
 
