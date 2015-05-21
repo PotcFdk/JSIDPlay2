@@ -146,6 +146,8 @@ public class Favorites extends Tab implements UIPart {
 				for (Tab tab : favoritesList.getTabs()) {
 					if (tab.getText().equals(currentFavorite)) {
 						favoritesList.getSelectionModel().select(tab);
+						currentlyPlayedFavorites = getSelectedTab();
+						break;
 					}
 				}
 			}

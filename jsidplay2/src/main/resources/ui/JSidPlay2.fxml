@@ -307,7 +307,7 @@
 							<graphic>
 								<ImageView>
 									<image>
-										<Image url="@/ui/icons/playback_pause.png" />
+										<Image url="@/ui/icons/playback_start.png" />
 									</image>
 								</ImageView>
 							</graphic>

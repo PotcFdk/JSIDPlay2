@@ -213,7 +213,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 						(observable, oldValue, newValue) -> {
 							SidTune sidTune = util.getPlayer().getTune();
 							Platform.runLater(() -> nextFavoriteDisabledState
-									.set(sidTune == SidTune.RESET));
+									.set(sidTune == SidTune.RESET
+											|| newValue == State.QUIT));
 							if (newValue == State.START) {
 								Platform.runLater(() -> {
 									getPlayerId();
@@ -293,6 +294,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		Engine engine = util.getConfig().getEmulationSection().getEngine();
 		engineBox.getSelectionModel().select(engine);
+
+		hardsid6581Box.setDisable(!Engine.HARDSID.equals(engine));
+		hardsid8580Box.setDisable(!Engine.HARDSID.equals(engine));
+		hardsid6581Label.setDisable(!Engine.HARDSID.equals(engine));
+		hardsid8580Label.setDisable(!Engine.HARDSID.equals(engine));
 
 		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
 				.getSidplay2Section();
@@ -533,6 +539,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void nextFavorite() {
 		final C64 c64 = util.getPlayer().getC64();
+		if (util.getPlayer().stateProperty().get()==State.PAUSED) {
+			util.getPlayer().pause();
+		}
 		final EventScheduler ctx = c64.getEventScheduler();
 		ctx.scheduleThreadSafe(new Event("Timer End To Play Next Favorite!") {
 			@Override

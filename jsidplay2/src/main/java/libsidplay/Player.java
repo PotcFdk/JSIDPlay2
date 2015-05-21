@@ -998,7 +998,9 @@ public class Player {
 	}
 
 	public final void pause() {
-		if (stateProperty.get() == State.PAUSED) {
+		if (stateProperty.get() == State.QUIT) {
+			play(tune);
+		} else if (stateProperty.get() == State.PAUSED) {
 			stateProperty.set(State.RUNNING);
 		} else {
 			stateProperty.set(State.PAUSED);
