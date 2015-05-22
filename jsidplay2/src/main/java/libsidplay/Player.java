@@ -80,9 +80,11 @@ import libsidutils.STIL.STILEntry;
 import libsidutils.SidDatabase;
 import libsidutils.disassembler.SimpleDisassembler;
 import resid_builder.ReSIDBuilder;
+import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
+import sidplay.audio.MP3Stream;
 import sidplay.audio.NaturalFinishedException;
 import sidplay.audio.RecordingFilenameProvider;
 import sidplay.ini.intf.IC1541Section;
@@ -883,14 +885,30 @@ public class Player {
 		}
 	}
 
+	/**
+	 * Re-read audio config to update audio driver.<BR>
+	 * Note: Normally this is done only once, initially.
+	 */
 	public final void updateAudioDriver() {
 		updateAudioDriver = true;
 	}
 
+	/**
+	 * Get the currently used audio driver.
+	 * 
+	 * @return current audio driver
+	 */
 	public AudioDriver getAudioDriver() {
 		return audioDriver;
 	}
 
+	/**
+	 * Set alternative audio driver (not contained in {@link Audio}).<BR>
+	 * If it is required to use a NEW instance each time.
+	 * 
+	 * @param driver
+	 *            for example {@link MP3Stream}
+	 */
 	public final void setAudioDriver(final AudioDriver driver) {
 		this.audioDriver = driver;
 	}
@@ -911,7 +929,7 @@ public class Player {
 			oldAudioDriver = null;
 		}
 		if (tune instanceof MP3Tune) {
-			// Change driver settings to use compare driver for MP3 play-back
+			// Change driver settings to use comparison driver for MP3 play-back
 			MP3Tune mp3Tune = (MP3Tune) tune;
 			newAudioDriver = new CmpMP3File();
 			config.getAudioSection().setPlayOriginal(true);
@@ -947,6 +965,12 @@ public class Player {
 		}
 	}
 
+	/**
+	 * Register a SID write register listener vor all SID chips in use.
+	 * 
+	 * @param sidRegExtension
+	 *            SID write register listener
+	 */
 	public void setSidWriteListener(SidRegExtension sidRegExtension) {
 		IEmulationSection emulation = config.getEmulationSection();
 		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
@@ -972,6 +996,12 @@ public class Player {
 				|| stateProperty.get() == State.PAUSED;
 	}
 
+	/**
+	 * Get end state according to the configuration.<BR>
+	 * Looping tunes restart the player, otherwise it gets stopped.
+	 * 
+	 * @return end state of the player
+	 */
 	private State getEndState() {
 		return config.getSidplay2Section().isLoop() ? State.RESTART
 				: State.EXIT;
