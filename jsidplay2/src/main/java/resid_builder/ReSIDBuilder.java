@@ -51,14 +51,14 @@ public class ReSIDBuilder implements SIDBuilder {
 	/**
 	 * Mixer of sound samples
 	 */
-	protected final Mixer mixer;
+	protected final SIDMixer mixer;
 
 	public ReSIDBuilder(EventScheduler context, IConfig config,
 			AudioConfig audioConfig, CPUClock cpuClock, AudioDriver audioDriver) {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
-		this.mixer = new Mixer(context, config, cpuClock, audioConfig,
+		this.mixer = new SIDMixer(context, config, cpuClock, audioConfig,
 				audioDriver);
 	}
 

@@ -24,7 +24,7 @@ import sidplay.ini.intf.IConfig;
  * @author ken
  *
  */
-public class Mixer {
+public class SIDMixer {
 	/**
 	 * Maximum fast forward factor.
 	 */
@@ -230,7 +230,7 @@ public class Mixer {
 	 */
 	private int fastForward;
 
-	public Mixer(EventScheduler context, IConfig config, CPUClock cpuClock,
+	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock,
 			AudioConfig audioConfig, AudioDriver audioDriver) {
 		this.context = context;
 		this.config = config;
