@@ -2,13 +2,8 @@ package libsidutils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.StringTokenizer;
@@ -22,7 +17,7 @@ import libsidutils.stringsearch.BNDMWildcards;
  * @author Ken Händel
  * 
  */
-public final class SidIdV2 {
+public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * This is a single pattern to match a player.
@@ -284,35 +279,18 @@ public final class SidIdV2 {
 	}
 
 	/**
-	 * Load byte array containing the text to be searched in.
-	 * 
-	 * @param name
-	 *            the filename to load
-	 * @return the byte array with the file contents
-	 * @throws IOException
-	 *             read error
-	 */
-	private byte[] load(final String name) throws IOException {
-		try (final DataInputStream in = new DataInputStream(
-				new FileInputStream(name))) {
-			final int length = (int) new File(name).length();
-			final byte[] buffer = new byte[length];
-			in.readFully(buffer);
-			return buffer;
-		}
-	}
-
-	/**
 	 * Read configuration file and configure the SID-ID class.
+	 * @throws IOException 
+	 * @throws NumberFormatException 
 	 */
-	public void readconfig() {
-		final BufferedReader br = new BufferedReader(new InputStreamReader(
-				new ByteArrayInputStream(readConfiguration())));
+	public void readconfig() throws NumberFormatException, IOException {
 		sections = new ArrayList<PlayerSection>();
 		PlayerSection section = null;
 		final ArrayList<Byte> byteList = new ArrayList<Byte>();
 		String line;
-		try {
+		try (final BufferedReader br = new BufferedReader(
+				new InputStreamReader(new ByteArrayInputStream(
+						readConfiguration(FNAME, SID_ID_PKG))))) {
 			while ((line = br.readLine()) != null) {
 				final StringTokenizer stok = new StringTokenizer(line, " ");
 				while (stok.hasMoreTokens()) {
@@ -353,8 +331,6 @@ public final class SidIdV2 {
 					}
 				}
 			}
-		} catch (final IOException e) {
-			e.printStackTrace();
 		}
 		if (section != null) {
 			// last section is always empty. (refer to
@@ -422,96 +398,6 @@ public final class SidIdV2 {
 		}
 		ptnList.add(new Pattern(and, search.processBytes(and, (byte) '?'),
 				isSubPattern));
-	}
-
-	/**
-	 * Load configuration file.
-	 * 
-	 * @return the configuration file entries
-	 */
-	private byte[] readConfiguration() {
-		final File iniFilename = getLocation();
-		if (iniFilename != null) {
-			try {
-				return load(iniFilename.getAbsolutePath());
-			} catch (final IOException e) {
-				System.err.println("Read error: " + iniFilename);
-				return readInternal();
-			}
-		} else {
-			return readInternal();
-		}
-	}
-
-	/**
-	 * Read from internal SID-ID configuration file.
-	 * 
-	 * @return the contents
-	 */
-	private byte[] readInternal() {
-		try (final InputStream inputStream = getClass().getClassLoader()
-				.getResourceAsStream(SID_ID_PKG + FNAME)) {
-			if (inputStream == null) {
-				throw new RuntimeException("Internal SIDID not found: "
-						+ SID_ID_PKG + FNAME);
-			}
-			final int length = inputStream.available();
-			final byte[] data = new byte[length];
-			int count, pos = 0;
-			while (pos < length
-					&& (count = inputStream.read(data, pos, length - pos)) >= 0) {
-				pos += count;
-			}
-			if (pos != length) {
-				System.err.println("Internal SIDID was not loaded completely!");
-			}
-			return data;
-		} catch (final IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Internal SIDID not found: "
-					+ SID_ID_PKG + FNAME);
-		}
-	}
-
-	/**
-	 * Search for the configuration file at various locations.
-	 * <OL>
-	 * <LI>current working dir
-	 * <LI>user home dir
-	 * </OL>
-	 * 
-	 * @return the configuration file or null (not found)
-	 */
-	private File getLocation() {
-		try {
-			final String[] paths = new String[] { "user.dir", "user.home" };
-			for (final String path : paths) {
-				File sidIdFile;
-				sidIdFile = locate(path);
-				if (sidIdFile.exists()) {
-					return sidIdFile;
-				}
-			}
-		} catch (AccessControlException e) {
-			// access denied in the ui version
-		}
-		return null;
-	}
-
-	/**
-	 * Locate configuration file at the given path.
-	 * 
-	 * @param location
-	 *            the path to search in
-	 * @return the file (caller should check exists)
-	 */
-	private File locate(final String location) {
-		final String path = System.getProperty(location);
-		if (path != null) {
-			return new File(path, FNAME);
-		} else {
-			return new File("", FNAME);
-		}
 	}
 
 }

@@ -25,6 +25,8 @@ import java.util.Collection;
 
 import javafx.scene.image.Image;
 import libsidutils.PathUtils;
+import libsidutils.SidIdInfo;
+import libsidutils.SidIdInfo.PlayerInfoSection;
 import libsidutils.SidIdV2;
 
 class Prg extends SidTune {
@@ -40,8 +42,21 @@ class Prg extends SidTune {
 
 	private static final SidIdV2 SID_ID = new SidIdV2();
 	static {
-		SID_ID.readconfig();
-		SID_ID.setMultiScan(true);
+		try {
+			SID_ID.readconfig();
+			SID_ID.setMultiScan(true);
+		} catch (NumberFormatException | IOException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
+
+	private static final SidIdInfo SID_ID_INFO = new SidIdInfo();
+	static {
+		try {
+			SID_ID_INFO.readconfig();
+		} catch (IOException e) {
+			throw new ExceptionInInitializerError(e);
+		}
 	}
 
 	protected int programOffset;
@@ -104,6 +119,18 @@ class Prg extends SidTune {
 	@Override
 	public Collection<String> identify() {
 		return SID_ID.identify(program);
+	}
+
+	/**
+	 * Search player ID Info.
+	 * 
+	 * @param playerName
+	 *            player to get infos for
+	 * @return player infos (or null, if not found)
+	 */
+	@Override
+	public PlayerInfoSection getPlayerInfo(String playerName) {
+		return SID_ID_INFO.getPlayerInfo(playerName);
 	}
 
 	@Override

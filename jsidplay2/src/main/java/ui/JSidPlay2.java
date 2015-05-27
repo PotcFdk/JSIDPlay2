@@ -65,6 +65,7 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
+import libsidutils.SidIdInfo.PlayerInfoSection;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
@@ -190,8 +191,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private long lastUpdate;
 	private int oldHalfTrack, hardcopyCounter;
 	private boolean duringInitialization, oldMotorOn;
-	private StringBuilder tuneSpeed, playerId;
+	private StringBuilder tuneSpeed, playerId, playerinfos;
 	private BooleanProperty nextFavoriteDisabledState;
+	private Tooltip statusTooltip;
 
 	public JSidPlay2(Stage primaryStage, Player player) {
 		super(primaryStage, player);
@@ -203,7 +205,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		this.tuneSpeed = new StringBuilder();
 		this.playerId = new StringBuilder();
+		this.playerinfos = new StringBuilder();
 		this.scene = tabbedPane.getScene();
+		this.statusTooltip = new Tooltip();
+		this.status.setTooltip(statusTooltip);
 
 		util.getPlayer().setRecordingFilenameProvider(this);
 		util.getPlayer().setExtendImagePolicy(this);
@@ -539,7 +544,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void nextFavorite() {
 		final C64 c64 = util.getPlayer().getC64();
-		if (util.getPlayer().stateProperty().get()==State.PAUSED) {
+		if (util.getPlayer().stateProperty().get() == State.PAUSED) {
 			util.getPlayer().pause();
 		}
 		final EventScheduler ctx = c64.getEventScheduler();
@@ -1394,6 +1399,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		line.append(String.format("%s: %s%s", util.getBundle()
 				.getString("TIME"), determinePlayTime(), determineSongLength()));
 		status.setText(line.toString());
+		statusTooltip.setText(playerinfos.toString());
 	}
 
 	private String determineChipModel() {
@@ -1460,11 +1466,17 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private void getPlayerId() {
+		playerinfos.setLength(0);
 		playerId.setLength(0);
-		if (util.getPlayer().getTune() != null) {
-			for (final String id : util.getPlayer().getTune().identify()) {
+		SidTune tune = util.getPlayer().getTune();
+		if (tune != null) {
+			for (final String id : tune.identify()) {
 				playerId.append(util.getBundle().getString("PLAYER_ID"))
 						.append(": ").append(id);
+				PlayerInfoSection playerInfo = tune.getPlayerInfo(id);
+				if (playerInfo != null) {
+					playerinfos.append(playerInfo.toString()).append("\n");
+				}
 				int length = id.length();
 				playerId.setLength(playerId.length()
 						- (length - Math.min(length, 14)));

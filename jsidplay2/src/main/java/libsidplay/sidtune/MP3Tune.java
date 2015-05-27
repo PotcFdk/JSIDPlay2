@@ -11,6 +11,7 @@ import java.util.Locale;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import libsidutils.PathUtils;
+import libsidutils.SidIdInfo.PlayerInfoSection;
 import lowlevel.ID3V2Decoder;
 
 /**
@@ -53,6 +54,11 @@ public class MP3Tune extends SidTune {
 		// The player is called jump3r ;-)
 		names.add("jump3r");
 		return names;
+	}
+
+	@Override
+	public PlayerInfoSection getPlayerInfo(String playerName) {
+		return null;
 	}
 
 	@Override

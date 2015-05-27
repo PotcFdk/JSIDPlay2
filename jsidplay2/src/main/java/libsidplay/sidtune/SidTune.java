@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import javafx.scene.image.Image;
+import libsidutils.SidIdInfo.PlayerInfoSection;
 import sidplay.ini.intf.IEmulationSection;
 
 /**
@@ -365,6 +366,15 @@ public abstract class SidTune {
 	 * @return the player IDs as a list
 	 */
 	public abstract Collection<String> identify();
+
+	/**
+	 * Search player ID Info.
+	 * 
+	 * @param playerName
+	 *            player to get infos for
+	 * @return player infos (or null, if not found)
+	 */
+	public abstract PlayerInfoSection getPlayerInfo(String playerName);
 
 	/**
 	 * Return delay in C64 clocks before song init is done.
