@@ -1,8 +1,6 @@
 package ui.update;
 
-import java.awt.Desktop;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -11,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import libsidplay.Player;
+import libsidutils.WebUtils;
 import ui.JSidPlay2Main;
 import ui.common.C64Window;
 
@@ -57,23 +56,7 @@ public class Update extends C64Window {
 
 	@FXML
 	private void gotoLatestVersion() {
-		// Open a browser URL
-
-		// As an application we open the default browser
-		if (Desktop.isDesktopSupported()) {
-			Desktop desktop = Desktop.getDesktop();
-			if (desktop.isSupported(Desktop.Action.BROWSE)) {
-				try {
-					desktop.browse(new URL(
-							"http://sourceforge.net/projects/jsidplay2/files/latest/download")
-							.toURI());
-				} catch (final IOException | URISyntaxException e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
-			System.err.println("Awt Desktop is not supported!");
-		}
+		WebUtils.browse("http://sourceforge.net/projects/jsidplay2/files/latest/download");
 	}
 
 	@FXML

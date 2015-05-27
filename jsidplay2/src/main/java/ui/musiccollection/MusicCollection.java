@@ -1,6 +1,5 @@
 package ui.musiccollection;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -8,7 +7,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -56,6 +54,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
+import libsidutils.WebUtils;
 import ui.common.C64Window;
 import ui.common.TypeTextField;
 import ui.common.UIPart;
@@ -594,23 +593,7 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void gotoURL() {
-		// Open a browser URL
-
-		// As an application we open the default browser
-		if (Desktop.isDesktopSupported()) {
-			Desktop desktop = Desktop.getDesktop();
-			if (desktop.isSupported(Desktop.Action.BROWSE)) {
-				try {
-					desktop.browse(new URL(collectionURL).toURI());
-				} catch (final IOException ioe) {
-					ioe.printStackTrace();
-				} catch (final URISyntaxException urie) {
-					urie.printStackTrace();
-				}
-			}
-		} else {
-			System.err.println("Awt Desktop is not supported!");
-		}
+		WebUtils.browse(collectionURL);
 	}
 
 	@FXML

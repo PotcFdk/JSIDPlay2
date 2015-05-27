@@ -1,12 +1,9 @@
 package ui.asm;
 
-import java.awt.Desktop;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -23,6 +20,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.WebUtils;
 import libsidutils.assembler.KickAssembler;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -32,7 +30,7 @@ import cml.kickass.exceptions.AsmError;
 public class Asm extends Tab implements UIPart {
 
 	public static final String ID = "ASM";
-	
+
 	private static final String HOMEPAGE_URL = "http://www.theweb.dk/KickAssembler/";
 	private static final String ASM_RESOURCE = "asm";
 	private static final String ASM_EXAMPLE = "/ui/asm/Asm.asm";
@@ -80,25 +78,9 @@ public class Asm extends Tab implements UIPart {
 
 	@FXML
 	private void gotoHomepage() {
-		// Open a browser URL
-
-		// As an application we open the default browser
-		if (Desktop.isDesktopSupported()) {
-			Desktop desktop = Desktop.getDesktop();
-			if (desktop.isSupported(Desktop.Action.BROWSE)) {
-				try {
-					desktop.browse(new URL(HOMEPAGE_URL).toURI());
-				} catch (final IOException ioe) {
-					ioe.printStackTrace();
-				} catch (final URISyntaxException urie) {
-					urie.printStackTrace();
-				}
-			}
-		} else {
-			System.err.println("Awt Desktop is not supported!");
-		}
+		WebUtils.browse(HOMEPAGE_URL);
 	}
-	
+
 	@FXML
 	private void addVariable() {
 		final Variable variable = new Variable();
@@ -130,7 +112,8 @@ public class Asm extends Tab implements UIPart {
 			InputStream is = new ByteArrayInputStream(assembly);
 			SidTune tune = SidTune.load("assembly.prg", is);
 			status.setText("");
-			util.getPlayer().setCommand(String.format("SYS %d\r", startAddress));
+			util.getPlayer()
+					.setCommand(String.format("SYS %d\r", startAddress));
 			util.getPlayer().play(tune);
 		} catch (AsmError e) {
 			if (e.getDebugInfo() != null) {

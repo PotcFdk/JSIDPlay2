@@ -1,11 +1,9 @@
 package ui.gamebase;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import javafx.application.Platform;
@@ -28,6 +26,7 @@ import javax.persistence.Persistence;
 import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.WebUtils;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -250,23 +249,7 @@ public class GameBase extends Tab implements UIPart {
 
 	@FXML
 	private void gotoURL() {
-		// Open a browser URL
-
-		// As an application we open the default browser
-		if (Desktop.isDesktopSupported()) {
-			Desktop desktop = Desktop.getDesktop();
-			if (desktop.isSupported(Desktop.Action.BROWSE)) {
-				try {
-					desktop.browse(new URL(GB64_URL).toURI());
-				} catch (final IOException ioe) {
-					ioe.printStackTrace();
-				} catch (final URISyntaxException urie) {
-					urie.printStackTrace();
-				}
-			}
-		} else {
-			System.err.println("Awt Desktop is not supported!");
-		}
+		WebUtils.browse(GB64_URL);
 	}
 
 	private void setRoot(File file) {

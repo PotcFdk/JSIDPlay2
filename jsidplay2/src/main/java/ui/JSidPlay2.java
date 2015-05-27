@@ -66,6 +66,7 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import libsidutils.SidIdInfo.PlayerInfoSection;
+import libsidutils.WebUtils;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
@@ -208,7 +209,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		this.playerinfos = new StringBuilder();
 		this.scene = tabbedPane.getScene();
 		this.statusTooltip = new Tooltip();
-		this.status.setTooltip(statusTooltip);
+		this.status.setOnMouseClicked(e -> {
+			if (status.getUserData() != null)
+				WebUtils.browse(status.getUserData().toString());
+		});
 
 		util.getPlayer().setRecordingFilenameProvider(this);
 		util.getPlayer().setExtendImagePolicy(this);
@@ -1399,6 +1403,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		line.append(String.format("%s: %s%s", util.getBundle()
 				.getString("TIME"), determinePlayTime(), determineSongLength()));
 		status.setText(line.toString());
+		status.setTooltip(playerinfos.length() > 0 ? statusTooltip : null);
 		statusTooltip.setText(playerinfos.toString());
 	}
 
@@ -1476,6 +1481,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				PlayerInfoSection playerInfo = tune.getPlayerInfo(id);
 				if (playerInfo != null) {
 					playerinfos.append(playerInfo.toString()).append("\n");
+					status.setUserData(playerInfo.getReference());
 				}
 				int length = id.length();
 				playerId.setLength(playerId.length()
