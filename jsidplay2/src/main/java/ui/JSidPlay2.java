@@ -1482,6 +1482,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				if (playerInfo != null) {
 					playerinfos.append(playerInfo.toString()).append("\n");
 					status.setUserData(playerInfo.getReference());
+				} else {
+					status.setUserData(null);
 				}
 				int length = id.length();
 				playerId.setLength(playerId.length()
