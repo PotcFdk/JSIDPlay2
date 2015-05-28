@@ -17,8 +17,7 @@ REFERENCE: http://csdb.dk/release/?id=10741
 8bitDigi/Mahoney
    AUTHOR: Pex Tufvesson (Mahoney)
   COMMENT: The player uses a technique to play 8-bit samples at 44.1kHz via the
-           volume register of the SID.
-           More info about this technique:
+           volume register of the SID. More info about this technique:
            http://www.livet.se/mahoney/c64-files/Musik_RunStop_Technical_Details_by_Pex_Mahoney_Tufvesson_v2.pdf
 
 5_Dimension
@@ -98,6 +97,12 @@ Audio_Effect_Editor
    AUTHOR: Alexander Kirsch
  RELEASED: 1988
 REFERENCE: http://csdb.dk/release/?id=122169
+
+Background_MusicEditor
+     NAME: Background Music Editor
+   AUTHOR: Gary Davis
+ RELEASED: 1983
+REFERENCE: http://csdb.dk/release/?id=138743
 
 Ben_Daglish
    AUTHOR: Ben Daglish
