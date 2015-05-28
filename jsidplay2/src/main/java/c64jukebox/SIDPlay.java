@@ -79,10 +79,9 @@ public class SIDPlay extends Applet {
 		if (urlName == null) {
 			return;
 		}
-		player.stopC64();
-		player.setTune(getTune(urlName));
-		player.getTune().setSelectedSong(songNum != -1 ? songNum : null);
-		player.startC64();
+		SidTune tune = getTune(urlName);
+		tune.setSelectedSong(songNum != -1 ? songNum : null);
+		player.play(tune);
 	}
 
 	/**
