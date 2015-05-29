@@ -7,7 +7,7 @@ import libsidplay.common.Engine;
 
 public interface IEmulationSection {
 	static final Engine DEFAULT_ENGINE = Engine.EMULATION;
-	static final Emulation DEFAULT_EMULATION = Emulation.RESID;
+	static final Emulation DEFAULT_EMULATION = Emulation.RESIDFP;
 	static final CPUClock DEFAULT_CLOCK_SPEED = CPUClock.PAL;
 	static final ChipModel DEFAULT_SID_MODEL = ChipModel.MOS6581;
 	static final int DEFAULT_HARD_SID_6581 = 1;

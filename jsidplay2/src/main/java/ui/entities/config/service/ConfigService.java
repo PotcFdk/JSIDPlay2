@@ -27,7 +27,8 @@ public class ConfigService {
 		}
 
 		Configuration config = new Configuration();
-		config.getSidplay2Section().setVersion(Configuration.REQUIRED_CONFIG_VERSION);
+		config.getSidplay2Section().setVersion(
+				Configuration.REQUIRED_CONFIG_VERSION);
 		em.persist(config);
 		flush();
 		return config;
@@ -58,22 +59,24 @@ public class ConfigService {
 	}
 
 	public Configuration importCfg(File file) {
-		try {
-			JAXBContext jaxbContext = JAXBContext
-					.newInstance(Configuration.class);
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			Object obj = unmarshaller.unmarshal(file);
-			if (obj instanceof Configuration) {
-				Configuration detachedConfig = (Configuration) obj;
+		if (file.exists()) {
+			try {
+				JAXBContext jaxbContext = JAXBContext
+						.newInstance(Configuration.class);
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+				Object obj = unmarshaller.unmarshal(file);
+				if (obj instanceof Configuration) {
+					Configuration detachedConfig = (Configuration) obj;
 
-				Configuration mergedConfig = em.merge(detachedConfig);
-				em.persist(mergedConfig);
-				flush();
+					Configuration mergedConfig = em.merge(detachedConfig);
+					em.persist(mergedConfig);
+					flush();
 
-				return mergedConfig;
+					return mergedConfig;
+				}
+			} catch (JAXBException e) {
+				System.err.println(e.getMessage());
 			}
-		} catch (JAXBException e) {
-			System.err.println(e.getMessage());
 		}
 		return create(null);
 	}
@@ -83,7 +86,7 @@ public class ConfigService {
 		flush();
 		em.clear();
 	}
-	
+
 	public void commit(Configuration config) {
 		em.getTransaction().begin();
 		try {

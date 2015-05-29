@@ -1,5 +1,22 @@
 package sidplay;
 
+import static sidplay.ini.intf.IAudioSection.DEFAULT_AUDIO;
+import static sidplay.ini.intf.IAudioSection.DEFAULT_BUFFER_SIZE;
+import static sidplay.ini.intf.IAudioSection.DEFAULT_FREQUENCY;
+import static sidplay.ini.intf.IEmulationSection.DEFAULT_CLOCK_SPEED;
+import static sidplay.ini.intf.IEmulationSection.DEFAULT_EMULATION;
+import static sidplay.ini.intf.IEmulationSection.DEFAULT_ENGINE;
+import static sidplay.ini.intf.IEmulationSection.DEFAULT_FORCE_3SID_TUNE;
+import static sidplay.ini.intf.IEmulationSection.DEFAULT_FORCE_STEREO_TUNE;
+import static sidplay.ini.intf.IEmulationSection.DEFAULT_SID_MODEL;
+import static sidplay.ini.intf.IEmulationSection.DEFAULT_USE_3SID_FILTER;
+import static sidplay.ini.intf.IEmulationSection.DEFAULT_USE_FILTER;
+import static sidplay.ini.intf.IEmulationSection.DEFAULT_USE_STEREO_FILTER;
+import static sidplay.ini.intf.ISidPlay2Section.DEFAULT_ENABLE_DATABASE;
+import static sidplay.ini.intf.ISidPlay2Section.DEFAULT_LOOP;
+import static sidplay.ini.intf.ISidPlay2Section.DEFAULT_PLAY_LENGTH;
+import static sidplay.ini.intf.ISidPlay2Section.DEFAULT_SINGLE_TRACK;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,7 +44,6 @@ import sidplay.consoleplayer.ConsoleIO;
 import sidplay.consoleplayer.TimeConverter;
 import sidplay.consoleplayer.VerboseValidator;
 import sidplay.ini.IniConfig;
-import sidplay.ini.intf.IAudioSection;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -43,19 +59,19 @@ public class ConsolePlayer {
 	private Boolean cpuDebug = Boolean.FALSE;
 
 	@Parameter(names = { "--audio", "-a" }, descriptionKey = "DRIVER")
-	private Audio audio = Audio.SOUNDCARD;
+	private Audio audio = DEFAULT_AUDIO;
 
 	@Parameter(names = { "--bufferSize", "-B" }, descriptionKey = "BUFFER_SIZE")
-	private int bufferSize = IAudioSection.DEFAULT_BUFFER_SIZE;
+	private int bufferSize = DEFAULT_BUFFER_SIZE;
 
 	@Parameter(names = { "--deviceIndex", "-A" }, descriptionKey = "DEVICEINDEX")
 	private Integer deviceIdx;
 
 	@Parameter(names = { "--engine", "-E" }, descriptionKey = "ENGINE")
-	private Engine engine = Engine.EMULATION;
+	private Engine engine = DEFAULT_ENGINE;
 
 	@Parameter(names = { "--defaultEmulation", "-e" }, descriptionKey = "DEFAULT_EMULATION")
-	private Emulation defaultEmulation = Emulation.RESID;
+	private Emulation defaultEmulation = DEFAULT_EMULATION;
 
 	@Parameter(names = { "--recordingFilename", "-r" }, descriptionKey = "RECORDING_FILENAME")
 	private String recordingFilename = "jsidplay2";
@@ -64,49 +80,49 @@ public class ConsolePlayer {
 	private Integer song = null;
 
 	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP")
-	private Boolean loop = Boolean.FALSE;
+	private Boolean loop = DEFAULT_LOOP;
 
 	@Parameter(names = { "--single", "-s" }, descriptionKey = "SINGLE")
-	private Boolean single = Boolean.FALSE;
+	private Boolean single = DEFAULT_SINGLE_TRACK;
 
 	@Parameter(names = { "--frequency", "-f" }, descriptionKey = "FREQUENCY")
-	private Integer frequency = 48000;
+	private Integer frequency = DEFAULT_FREQUENCY;
 
 	@Parameter(names = { "--dualSID", "-d" }, descriptionKey = "DUAL_SID")
-	private Boolean dualSID = Boolean.FALSE;
+	private Boolean dualSID = DEFAULT_FORCE_STEREO_TUNE;
 
 	@Parameter(names = { "--thirdSID", "-D" }, descriptionKey = "THIRD_SID")
-	private Boolean thirdSID = Boolean.FALSE;
+	private Boolean thirdSID = DEFAULT_FORCE_3SID_TUNE;
 
 	@Parameter(names = { "--forceClock", "-c" }, descriptionKey = "FORCE_CLOCK")
 	private CPUClock forceClock = null;
 
 	@Parameter(names = { "--defaultClock", "-k" }, descriptionKey = "DEFAULT_CLOCK")
-	private CPUClock defaultClock = CPUClock.PAL;
+	private CPUClock defaultClock = DEFAULT_CLOCK_SPEED;
 
 	@Parameter(names = { "--disableFilter", "-i" }, descriptionKey = "DISABLE_FILTER")
-	private Boolean disableFilter = Boolean.FALSE;
+	private Boolean disableFilter = !DEFAULT_USE_FILTER;
 
 	@Parameter(names = { "--disableStereoFilter", "-j" }, descriptionKey = "DISABLE_STEREO_FILTER")
-	private Boolean disableStereoFilter = Boolean.FALSE;
+	private Boolean disableStereoFilter = !DEFAULT_USE_STEREO_FILTER;
 
 	@Parameter(names = { "--disable3rdSidFilter", "-J" }, descriptionKey = "DISABLE_3RD_SID_FILTER")
-	private Boolean disable3rdSIDFilter = Boolean.FALSE;
+	private Boolean disable3rdSIDFilter = !DEFAULT_USE_3SID_FILTER;
 
 	@Parameter(names = { "--forceModel", "-m" }, descriptionKey = "FORCE_MODEL")
 	private ChipModel forceModel = null;
 
 	@Parameter(names = { "--defaultModel", "-u" }, descriptionKey = "DEFAULT_MODEL")
-	private ChipModel defaultModel = ChipModel.MOS6581;
+	private ChipModel defaultModel = DEFAULT_SID_MODEL;
 
 	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = TimeConverter.class)
 	private Integer startTime = 0;
 
 	@Parameter(names = { "--defaultLength", "-g" }, descriptionKey = "DEFAULT_LENGTH", converter = TimeConverter.class)
-	private Integer defaultLength = 0;
+	private Integer defaultLength = DEFAULT_PLAY_LENGTH;
 
 	@Parameter(names = { "--enableSidDatabase", "-n" }, descriptionKey = "ENABLE_SID_DATABASE", arity = 1)
-	private Boolean enableSidDatabase = Boolean.TRUE;
+	private Boolean enableSidDatabase = DEFAULT_ENABLE_DATABASE;
 
 	@Parameter(names = { "--verbose", "-v" }, descriptionKey = "VERBOSE", validateWith = VerboseValidator.class)
 	private Integer verbose = 0;
