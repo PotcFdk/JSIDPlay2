@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -57,6 +58,12 @@ public class Favorites extends Tab implements UIPart {
 	protected Random random = new Random();
 	private C64Window window;
 
+	private ChangeListener<? super State> nextTuneListener = (observable, oldValue, newValue) -> {
+		if (newValue == State.EXIT) {
+			Platform.runLater(() -> playNextTune());
+		}
+	};
+
 	public Favorites(C64Window window, Player player) {
 		this.window = window;
 		util = new UIUtil(window, player, this);
@@ -100,11 +107,7 @@ public class Favorites extends Tab implements UIPart {
 			repeatOff.setSelected(true);
 		}
 		util.getPlayer().stateProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					if (newValue == State.EXIT) {
-						Platform.runLater(() -> playNextTune());
-					}
-				});
+				.addListener(nextTuneListener);
 		List<? extends FavoritesSection> favorites = util.getConfig()
 				.getFavorites();
 		util.getConfig()
@@ -176,6 +179,11 @@ public class Favorites extends Tab implements UIPart {
 		});
 	}
 
+	@Override
+	public void doClose() {
+		util.getPlayer().stateProperty().removeListener(nextTuneListener);
+	}
+	
 	@FXML
 	private void addFavorites() {
 		final FileChooser fileDialog = new FileChooser();
