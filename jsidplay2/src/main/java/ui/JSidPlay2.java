@@ -1346,6 +1346,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	}
 
 	private void playTune(final SidTune tune) {
+		video();
 		util.setPlayingTab(tabbedPane.getTabs().stream()
 				.filter((tab) -> tab.getId().equals(Video.ID)).findFirst()
 				.get());
