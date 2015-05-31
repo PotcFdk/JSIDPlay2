@@ -2,11 +2,11 @@
 	-fx-effect: null;
 }
 #pauseContinue2:selected {
-	-fx-graphic: url("icons/playback_pause.png");
+	-fx-graphic: url("icons/playback_start.png");
 }
 
 #pauseContinue2 {
-	-fx-graphic: url("icons/playback_start.png");
+	-fx-graphic: url("icons/playback_pause.png");
 }
 
 .slider.knobStyle {
