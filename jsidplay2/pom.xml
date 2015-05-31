@@ -5,7 +5,7 @@
 
 	<groupId>jsidplay2</groupId>
 	<artifactId>jsidplay2</artifactId>
-	<version>3.5</version>
+	<version>3.6</version>
 	<packaging>jar</packaging>
 	<organization>
 		<url>https://sourceforge.net/projects/jsidplay2/</url>
