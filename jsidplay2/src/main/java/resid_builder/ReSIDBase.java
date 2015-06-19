@@ -58,13 +58,12 @@ public abstract class ReSIDBase extends SIDEmu {
 	@Override
 	public void write(int addr, final byte data) {
 		addr &= 0x1f;
+		clock();
 		super.write(addr, data);
+		sid.write(addr, data);
 		if (RESID.isLoggable(Level.FINE)) {
 			RESID.fine(String.format("write 0x%02x=0x%02x", addr, data));
 		}
-
-		clock();
-		sid.write(addr, data);
 	}
 
 	@Override

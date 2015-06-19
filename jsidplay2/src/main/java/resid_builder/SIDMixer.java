@@ -110,8 +110,7 @@ public class SIDMixer {
 		 * @return new audio buffer length (len/fastForward)
 		 */
 		private int fastForward() {
-			int newLen, valL, valR, factor;
-			newLen = valL = valR = factor = 0;
+			int newLen= 0, valL= 0, valR= 0, factor= 0;
 			for (int pos = 0; pos < audioBufferL.capacity(); pos++) {
 				// accumulate each interleaved channel
 				valL += audioBufferL.get(pos);
