@@ -42,7 +42,7 @@ public class AudioConfig {
 		 * We make the sample buffer size divisible by 64 to ensure that all
 		 * fast forward factors can be handled. (32x speed, 2 channels)
 		 */
-		this.bufferFrames = SIDMixer.MAX_FAST_FORWARD * 2 * 64;
+		this.bufferFrames = (1 << SIDMixer.MAX_FAST_FORWARD) * 2 * 64;
 	}
 
 	/**

@@ -26,9 +26,9 @@ import sidplay.ini.intf.IConfig;
  */
 public class SIDMixer {
 	/**
-	 * Maximum fast forward factor.
+	 * Maximum fast forward factor (1 << 5 = 32).
 	 */
-	public static final int MAX_FAST_FORWARD = 32;
+	public static final int MAX_FAST_FORWARD = 5;
 
 	/**
 	 * NullAudio ignores generated sound samples. This is used, before timer
@@ -86,7 +86,7 @@ public class SIDMixer {
 				// rewind
 				sampler.rewind();
 			}
-			int len = fastForward > 1 ? fastForward() : audioBufferL.capacity();
+			int len = isFastForward()? fastForward() : audioBufferL.capacity();
 			// Output sample data
 			for (int pos = 0; pos < len; pos++) {
 				int dither = triangularDithering();
@@ -119,12 +119,11 @@ public class SIDMixer {
 				audioBufferL.put(pos, 0);
 				audioBufferR.put(pos, 0);
 				// once enough samples have been accumulated, write output
-				if (++factor == fastForward) {
-					factor = 0;
-					audioBufferL.put(newLen, valL / fastForward);
-					audioBufferR.put(newLen++, valR / fastForward);
+				if (++factor == (1 << fastForward)) {
+					audioBufferL.put(newLen, valL >> fastForward);
+					audioBufferR.put(newLen++, valR >> fastForward);
 					// zero accumulator
-					valL = valR = 0;
+					valL = valR = factor = 0;
 				}
 			}
 			return newLen;
@@ -226,7 +225,7 @@ public class SIDMixer {
 	private float[] positionR = new float[PLA.MAX_SIDS];
 
 	/**
-	 * Fast forward factor.
+	 * Fast forward factor (1 << fastForward).
 	 */
 	private int fastForward;
 
@@ -246,7 +245,6 @@ public class SIDMixer {
 				audioSection.getSampling(), audioConfig.getFrameRate(), 20000);
 		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(),
 				audioSection.getSampling(), audioConfig.getFrameRate(), 20000);
-		this.fastForward = 1;
 	}
 
 	public void reset() {
@@ -376,7 +374,7 @@ public class SIDMixer {
 	 * Doubles speed factor.
 	 */
 	public void fastForward() {
-		fastForward = fastForward << 1;
+		fastForward++;
 		if (fastForward > MAX_FAST_FORWARD) {
 			fastForward = MAX_FAST_FORWARD;
 		}
@@ -386,11 +384,11 @@ public class SIDMixer {
 	 * Use normal speed factor.
 	 */
 	public void normalSpeed() {
-		fastForward = 1;
+		fastForward = 0;
 	}
 
 	public boolean isFastForward() {
-		return fastForward != 1;
+		return fastForward != 0;
 	}
 
 }
