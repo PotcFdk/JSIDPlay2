@@ -91,11 +91,6 @@ public class JavaSound extends AudioDriver {
 		cfg.bufferFrames = dataLine.getBufferSize() / Short.BYTES
 				/ cfg.channels;
 
-		/*
-		 * Write to audio device often. We make the sample buffer size divisible
-		 * by 64 to ensure that all fast forward factors can be handled. (32x
-		 * speed, 2 channels)
-		 */
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES
 				* cfg.channels);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);

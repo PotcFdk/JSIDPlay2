@@ -15,6 +15,7 @@
  */
 package sidplay.audio;
 
+import resid_builder.SIDMixer;
 import sidplay.ini.intf.IAudioSection;
 
 public class AudioConfig {
@@ -37,7 +38,11 @@ public class AudioConfig {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.deviceIdx = deviceIdx;
-		this.bufferFrames = 4096;
+		/*
+		 * We make the sample buffer size divisible by 64 to ensure that all
+		 * fast forward factors can be handled. (32x speed, 2 channels)
+		 */
+		this.bufferFrames = SIDMixer.MAX_FAST_FORWARD * 2 * 64;
 	}
 
 	/**

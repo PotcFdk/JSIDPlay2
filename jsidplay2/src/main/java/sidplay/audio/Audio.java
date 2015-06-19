@@ -4,7 +4,7 @@ public enum Audio {
 	/** Java Sound API. */
 	SOUNDCARD(new JavaSound(), "Soundcard"),
 	/** WAV file write. */
-	WAV(new WavFile(), "+WAV recording"),
+	WAV(new WavFile(), "WAV recording"),
 	/** MP3 file write. */
 	MP3(new MP3File(), "MP3 recording"),
 	/** Java Sound API plus WAV file write. */

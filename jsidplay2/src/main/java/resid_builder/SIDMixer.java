@@ -28,7 +28,7 @@ public class SIDMixer {
 	/**
 	 * Maximum fast forward factor.
 	 */
-	private static final int MAX_FAST_FORWARD = 32;
+	public static final int MAX_FAST_FORWARD = 32;
 
 	/**
 	 * NullAudio ignores generated sound samples. This is used, before timer
