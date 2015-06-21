@@ -570,7 +570,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		return !joystickPort[portNumber].equals(disconnectedJoystick);
 	}
 
-	protected PLA getPla() {
+	public PLA getPla() {
 		return pla;
 	}
 

@@ -5,8 +5,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import libsidplay.common.SamplingMethod;
+import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
-import sidplay.ini.intf.IAudioSection;
 
 @Embeddable
 public class AudioSection implements IAudioSection {

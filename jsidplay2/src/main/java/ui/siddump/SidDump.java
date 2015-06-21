@@ -22,8 +22,6 @@ import javafx.stage.FileChooser;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import libsidplay.Player;
-import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidutils.SIDDumpConfiguration;
 import libsidutils.SIDDumpConfiguration.SIDDumpPlayer;
@@ -31,7 +29,9 @@ import netsiddev.InvalidCommandException;
 
 import org.xml.sax.SAXException;
 
+import sidplay.Player;
 import sidplay.ini.IniReader;
+import sidplay.player.State;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;

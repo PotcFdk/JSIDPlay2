@@ -4,7 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import libsidplay.Player;
+import sidplay.Player;
 import ui.common.C64Window;
 
 public class AlertDialog extends C64Window {

@@ -1,8 +1,8 @@
 package sidplay.ini;
 
 import libsidplay.common.SamplingMethod;
+import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
-import sidplay.ini.intf.IAudioSection;
 
 /**
  * Audio section of the INI file.

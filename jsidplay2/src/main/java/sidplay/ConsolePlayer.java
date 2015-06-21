@@ -1,21 +1,21 @@
 package sidplay;
 
-import static sidplay.ini.intf.IAudioSection.DEFAULT_AUDIO;
-import static sidplay.ini.intf.IAudioSection.DEFAULT_BUFFER_SIZE;
-import static sidplay.ini.intf.IAudioSection.DEFAULT_FREQUENCY;
-import static sidplay.ini.intf.IEmulationSection.DEFAULT_CLOCK_SPEED;
-import static sidplay.ini.intf.IEmulationSection.DEFAULT_EMULATION;
-import static sidplay.ini.intf.IEmulationSection.DEFAULT_ENGINE;
-import static sidplay.ini.intf.IEmulationSection.DEFAULT_FORCE_3SID_TUNE;
-import static sidplay.ini.intf.IEmulationSection.DEFAULT_FORCE_STEREO_TUNE;
-import static sidplay.ini.intf.IEmulationSection.DEFAULT_SID_MODEL;
-import static sidplay.ini.intf.IEmulationSection.DEFAULT_USE_3SID_FILTER;
-import static sidplay.ini.intf.IEmulationSection.DEFAULT_USE_FILTER;
-import static sidplay.ini.intf.IEmulationSection.DEFAULT_USE_STEREO_FILTER;
-import static sidplay.ini.intf.ISidPlay2Section.DEFAULT_ENABLE_DATABASE;
-import static sidplay.ini.intf.ISidPlay2Section.DEFAULT_LOOP;
-import static sidplay.ini.intf.ISidPlay2Section.DEFAULT_PLAY_LENGTH;
-import static sidplay.ini.intf.ISidPlay2Section.DEFAULT_SINGLE_TRACK;
+import static libsidplay.config.IAudioSection.DEFAULT_AUDIO;
+import static libsidplay.config.IAudioSection.DEFAULT_BUFFER_SIZE;
+import static libsidplay.config.IAudioSection.DEFAULT_FREQUENCY;
+import static libsidplay.config.IEmulationSection.DEFAULT_CLOCK_SPEED;
+import static libsidplay.config.IEmulationSection.DEFAULT_EMULATION;
+import static libsidplay.config.IEmulationSection.DEFAULT_ENGINE;
+import static libsidplay.config.IEmulationSection.DEFAULT_FORCE_3SID_TUNE;
+import static libsidplay.config.IEmulationSection.DEFAULT_FORCE_STEREO_TUNE;
+import static libsidplay.config.IEmulationSection.DEFAULT_SID_MODEL;
+import static libsidplay.config.IEmulationSection.DEFAULT_USE_3SID_FILTER;
+import static libsidplay.config.IEmulationSection.DEFAULT_USE_FILTER;
+import static libsidplay.config.IEmulationSection.DEFAULT_USE_STEREO_FILTER;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_ENABLE_DATABASE;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_LOOP;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_PLAY_LENGTH;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_SINGLE_TRACK;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +28,6 @@ import javafx.collections.ObservableList;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer.Info;
 
-import libsidplay.Player;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;

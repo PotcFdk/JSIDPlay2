@@ -23,10 +23,10 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.WebUtils;
+import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;

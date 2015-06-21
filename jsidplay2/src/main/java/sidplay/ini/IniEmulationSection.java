@@ -4,7 +4,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
-import sidplay.ini.intf.IEmulationSection;
+import libsidplay.config.IEmulationSection;
 
 /**
  * Emulation section of the INI file.

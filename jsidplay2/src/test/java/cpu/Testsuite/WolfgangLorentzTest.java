@@ -2,12 +2,12 @@ package cpu.Testsuite;
 
 import static javafx.scene.input.KeyCode.ENTER;
 import static libsidplay.sidtune.SidTune.RESET;
-import libsidplay.player.State;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import sidplay.player.State;
 import common.JSIDPlay2Test;
 
 public class WolfgangLorentzTest extends JSIDPlay2Test {

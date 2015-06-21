@@ -12,7 +12,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
-import sidplay.ini.intf.ISidPlay2Section;
+import libsidplay.config.ISidPlay2Section;
 import ui.favorites.PlaybackType;
 import de.schlichtherle.truezip.file.TFile;
 

@@ -3,7 +3,7 @@ package ui.console;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
-import libsidplay.Player;
+import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;

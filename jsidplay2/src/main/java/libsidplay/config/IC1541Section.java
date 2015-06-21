@@ -1,4 +1,4 @@
-package sidplay.ini.intf;
+package libsidplay.config;
 
 import libsidplay.components.c1541.C1541.FloppyType;
 

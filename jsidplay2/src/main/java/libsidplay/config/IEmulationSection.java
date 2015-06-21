@@ -1,4 +1,4 @@
-package sidplay.ini.intf;
+package libsidplay.config;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;

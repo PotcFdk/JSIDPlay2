@@ -1,7 +1,7 @@
 package libsidplay.common;
 
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
-import sidplay.ini.intf.IEmulationSection;
 
 public enum Emulation {
 	/** Dag Lem's resid 1.0 beta */

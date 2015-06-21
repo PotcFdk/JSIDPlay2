@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 import javax.persistence.Embeddable;
 
-import sidplay.ini.intf.IPrinterSection;
+import libsidplay.config.IPrinterSection;
 
 @Embeddable
 public class PrinterSection implements IPrinterSection {

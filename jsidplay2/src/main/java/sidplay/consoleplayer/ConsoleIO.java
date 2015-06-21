@@ -6,14 +6,14 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
-import libsidplay.Player;
 import libsidplay.common.ChipModel;
-import libsidplay.player.PlayList;
-import libsidplay.player.Timer;
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
+import sidplay.Player;
 import sidplay.ini.IniConfig;
 import sidplay.ini.IniConsoleSection;
-import sidplay.ini.intf.IEmulationSection;
+import sidplay.player.PlayList;
+import sidplay.player.Timer;
 
 public class ConsoleIO {
 

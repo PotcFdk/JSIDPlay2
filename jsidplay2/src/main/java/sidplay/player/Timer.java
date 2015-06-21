@@ -1,11 +1,11 @@
-package libsidplay.player;
+package sidplay.player;
 
-import libsidplay.Player;
+import sidplay.Player;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
+import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
-import sidplay.ini.intf.IConfig;
 
 /**
  * The timer contains the start and end time of a currently played song. It

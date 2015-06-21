@@ -4,12 +4,12 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 import libpsid64.Screen;
 import libsidplay.C64;
-import libsidplay.Player;
 import libsidplay.common.Event;
 
 import org.junit.Before;
 import org.loadui.testfx.utils.FXTestUtils;
 
+import sidplay.Player;
 import ui.JSidPlay2Main;
 import ui.JSidPlay2;
 import ui.entities.config.Configuration;

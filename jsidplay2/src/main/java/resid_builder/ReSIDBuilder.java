@@ -23,13 +23,13 @@ import libsidplay.common.Emulation;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
+import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.ReSID;
 import resid_builder.residfp.ReSIDfp;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
 
 public class ReSIDBuilder implements SIDBuilder {
 

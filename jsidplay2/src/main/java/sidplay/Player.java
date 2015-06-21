@@ -18,7 +18,7 @@
  * @author Ken Händel
  *
  */
-package libsidplay;
+package sidplay;
 
 import hardsid_builder.HardSIDBuilder;
 
@@ -36,6 +36,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
@@ -48,9 +49,8 @@ import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.components.pla.PLA;
-import libsidplay.player.PlayList;
-import libsidplay.player.State;
-import libsidplay.player.Timer;
+import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import libsidutils.STIL;
@@ -64,8 +64,9 @@ import sidplay.audio.CmpMP3File;
 import sidplay.audio.MP3Stream;
 import sidplay.audio.NaturalFinishedException;
 import sidplay.audio.RecordingFilenameProvider;
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
+import sidplay.player.PlayList;
+import sidplay.player.State;
+import sidplay.player.Timer;
 import ui.sidreg.SidRegExtension;
 
 /**

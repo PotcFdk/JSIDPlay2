@@ -6,16 +6,16 @@ import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Locale;
 
-import libsidplay.Player;
 import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
 import libsidplay.components.c1541.DiskImage;
 import libsidplay.components.cart.Cartridge;
+import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.T64;
 import libsidutils.PathUtils;
-import sidplay.ini.intf.IConfig;
+import sidplay.Player;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.DiskFileFilter;

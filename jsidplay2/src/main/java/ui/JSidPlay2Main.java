@@ -14,11 +14,11 @@ import javafx.stage.Window;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-import libsidplay.Player;
 import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
+import sidplay.Player;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;

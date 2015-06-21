@@ -8,8 +8,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
-import libsidplay.Player;
 import libsidutils.WebUtils;
+import sidplay.Player;
 import ui.JSidPlay2Main;
 import ui.common.C64Window;
 

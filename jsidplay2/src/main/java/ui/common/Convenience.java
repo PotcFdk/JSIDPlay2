@@ -9,10 +9,10 @@ import java.util.Locale;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
-import libsidplay.Player;
 import libsidplay.components.cart.CartridgeType;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import sidplay.Player;
 import ui.filefilter.CartFileFilter;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.TapeFileFilter;

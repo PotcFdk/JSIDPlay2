@@ -1,6 +1,6 @@
 package sidplay.ini;
 
-import sidplay.ini.intf.IPrinterSection;
+import libsidplay.config.IPrinterSection;
 
 /**
  * C1541 section of the INI file.

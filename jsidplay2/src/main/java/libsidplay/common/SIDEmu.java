@@ -15,8 +15,8 @@
  */
 package libsidplay.common;
 
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
+import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
 
 public abstract class SIDEmu {
 

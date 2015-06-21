@@ -1,6 +1,6 @@
 package sidplay.ini;
 
-import sidplay.ini.intf.IFilterSection;
+import libsidplay.config.IFilterSection;
 
 public class IniFilterSection implements IFilterSection {
 	private final IniReader ini;

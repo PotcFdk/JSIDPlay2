@@ -4,9 +4,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import libsidplay.C64;
-import libsidplay.Player;
 import libsidplay.common.Event;
 import libsidplay.components.keyboard.KeyTableEntry;
+import sidplay.Player;
 import ui.common.C64Window;
 
 public class Keyboard extends C64Window {

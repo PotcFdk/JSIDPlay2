@@ -1,9 +1,9 @@
 package libsidplay.common;
 
+import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
 
 public enum CPUClock {
 	PAL(985248.4, 50), NTSC(1022727.14, 60);

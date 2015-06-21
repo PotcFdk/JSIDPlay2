@@ -12,11 +12,11 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.pla.PLA;
+import libsidplay.config.IAudioSection;
+import libsidplay.config.IConfig;
 import resid_builder.resample.Resampler;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
-import sidplay.ini.intf.IAudioSection;
-import sidplay.ini.intf.IConfig;
 
 /**
  * Mixer to mix SIDs sample data into the audio buffer.

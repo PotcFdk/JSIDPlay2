@@ -3,9 +3,9 @@ package ui.oscilloscope;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
-import libsidplay.Player;
 import libsidplay.common.SIDEmu;
 import resid_builder.ReSIDBase;
+import sidplay.Player;
 import ui.common.C64Window;
 
 public final class EnvelopeGauge extends SIDGauge {

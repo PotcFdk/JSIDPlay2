@@ -46,8 +46,6 @@ import javax.persistence.Persistence;
 import javax.persistence.metamodel.SingularAttribute;
 
 import libpsid64.Psid64;
-import libsidplay.Player;
-import libsidplay.player.State;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
@@ -55,6 +53,8 @@ import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
 import libsidutils.WebUtils;
+import sidplay.Player;
+import sidplay.player.State;
 import ui.common.C64Window;
 import ui.common.TypeTextField;
 import ui.common.UIPart;

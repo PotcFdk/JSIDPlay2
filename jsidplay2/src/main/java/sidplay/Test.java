@@ -3,7 +3,6 @@ package sidplay;
 import java.io.File;
 import java.io.IOException;
 
-import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.ini.IniConfig;

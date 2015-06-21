@@ -1,8 +1,8 @@
 package libsidplay.common;
 
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Model;
-import sidplay.ini.intf.IEmulationSection;
 
 public enum ChipModel {
 	MOS6581, MOS8580;

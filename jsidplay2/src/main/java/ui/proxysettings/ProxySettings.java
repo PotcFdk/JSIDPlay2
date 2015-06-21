@@ -3,7 +3,7 @@ package ui.proxysettings;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
-import libsidplay.Player;
+import sidplay.Player;
 import ui.common.C64Window;
 
 public class ProxySettings extends C64Window {

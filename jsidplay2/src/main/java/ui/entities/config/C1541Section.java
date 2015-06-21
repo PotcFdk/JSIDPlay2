@@ -9,7 +9,7 @@ import javax.persistence.Enumerated;
 
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
-import sidplay.ini.intf.IC1541Section;
+import libsidplay.config.IC1541Section;
 
 @Embeddable
 public class C1541Section implements IC1541Section {

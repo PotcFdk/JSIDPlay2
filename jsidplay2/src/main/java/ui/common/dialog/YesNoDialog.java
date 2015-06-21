@@ -4,7 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
-import libsidplay.Player;
+import sidplay.Player;
 import ui.common.C64Window;
 
 public class YesNoDialog extends C64Window {

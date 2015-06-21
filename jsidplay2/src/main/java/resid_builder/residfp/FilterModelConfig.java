@@ -1,6 +1,6 @@
 package resid_builder.residfp;
 
-import sidplay.ini.intf.IFilterSection;
+import libsidplay.config.IFilterSection;
 
 public final class FilterModelConfig {
 	/* these constants seem fixed for all 6581s... */

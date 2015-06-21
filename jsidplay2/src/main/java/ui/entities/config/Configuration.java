@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import libsidplay.components.keyboard.KeyTableEntry;
-import sidplay.ini.intf.IConfig;
+import libsidplay.config.IConfig;
 import ui.console.Console;
 import ui.videoscreen.Video;
 

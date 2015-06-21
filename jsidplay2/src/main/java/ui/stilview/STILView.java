@@ -6,10 +6,10 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import libsidplay.Player;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
+import sidplay.Player;
 import ui.common.C64Window;
 
 public class STILView extends C64Window {

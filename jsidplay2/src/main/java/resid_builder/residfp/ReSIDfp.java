@@ -21,10 +21,10 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDChip;
+import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
+import libsidplay.config.IFilterSection;
 import resid_builder.ReSIDBase;
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
-import sidplay.ini.intf.IFilterSection;
 
 /**
  * Antti S. Lankila's resid-fp (distortion simulation)

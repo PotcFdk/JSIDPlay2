@@ -25,8 +25,8 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import javafx.scene.image.Image;
+import libsidplay.config.IEmulationSection;
 import libsidutils.SidIdInfo.PlayerInfoSection;
-import sidplay.ini.intf.IEmulationSection;
 
 /**
  * @author Ken Händel

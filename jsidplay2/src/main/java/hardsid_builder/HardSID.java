@@ -4,8 +4,8 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
+import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
 
 /**
  * <pre>

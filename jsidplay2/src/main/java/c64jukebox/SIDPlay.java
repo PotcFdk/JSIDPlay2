@@ -7,10 +7,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
-import libsidplay.Player;
 import libsidplay.common.Engine;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import sidplay.Player;
 import sidplay.ini.IniConfig;
 
 @SuppressWarnings("serial")

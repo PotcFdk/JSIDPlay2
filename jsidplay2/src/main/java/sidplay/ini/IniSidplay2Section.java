@@ -1,7 +1,7 @@
 package sidplay.ini;
 
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.ISidPlay2Section;
+import libsidplay.config.IConfig;
+import libsidplay.config.ISidPlay2Section;
 
 /**
  * SIDPlay2 section of the INI file.

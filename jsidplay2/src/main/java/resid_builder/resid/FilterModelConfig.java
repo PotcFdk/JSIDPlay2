@@ -1,7 +1,7 @@
 package resid_builder.resid;
 
 import libsidplay.common.SIDChip;
-import sidplay.ini.intf.IFilterSection;
+import libsidplay.config.IFilterSection;
 
 public final class FilterModelConfig {
 	private static final double[][] opamp_voltage = {

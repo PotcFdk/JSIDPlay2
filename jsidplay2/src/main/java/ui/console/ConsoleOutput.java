@@ -10,7 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
-import libsidplay.Player;
+import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;

@@ -18,9 +18,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
-import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import sidplay.Player;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry;

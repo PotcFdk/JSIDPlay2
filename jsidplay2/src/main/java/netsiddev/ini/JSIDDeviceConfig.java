@@ -25,11 +25,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import libsidplay.config.IAudioSection;
+import libsidplay.config.IFilterSection;
 import sidplay.ini.IniAudioSection;
 import sidplay.ini.IniFilterSection;
 import sidplay.ini.IniReader;
-import sidplay.ini.intf.IAudioSection;
-import sidplay.ini.intf.IFilterSection;
 
 /**
  * INI configuration file support responsible to load and save all emulator

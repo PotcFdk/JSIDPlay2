@@ -1,7 +1,7 @@
-package libsidplay.player;
+package sidplay.player;
 
+import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
-import sidplay.ini.intf.IConfig;
 
 /**
  * PlayList is a track list of songs to play. It starts with the first entry,

@@ -25,14 +25,14 @@ import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.printer.mps803.MPS803;
+import libsidplay.config.IC1541Section;
+import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PRG2TAP;
 import libsidutils.PRG2TAPProgram;
 import libsidutils.PathUtils;
 import libsidutils.disassembler.SimpleDisassembler;
-import sidplay.ini.intf.IC1541Section;
-import sidplay.ini.intf.IConfig;
 
 /**
  * The HardwareEnsemble contains a C64 computer and additional peripherals.<BR>

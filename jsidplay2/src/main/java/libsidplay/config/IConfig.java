@@ -1,4 +1,4 @@
-package sidplay.ini.intf;
+package libsidplay.config;
 
 import java.util.List;
 

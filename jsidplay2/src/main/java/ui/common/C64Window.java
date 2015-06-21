@@ -3,11 +3,11 @@ package ui.common;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import sidplay.Player;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
-import libsidplay.Player;
 
 public abstract class C64Window implements UIPart {
 

@@ -2,8 +2,8 @@ package ui.oscilloscope;
 
 import java.util.ResourceBundle;
 
-import libsidplay.Player;
 import libsidplay.common.SIDEmu;
+import sidplay.Player;
 import ui.common.C64Window;
 
 abstract class SIDGauge extends Gauge {

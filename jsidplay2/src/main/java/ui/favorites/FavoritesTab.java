@@ -43,10 +43,10 @@ import javafx.stage.DirectoryChooser;
 import javax.persistence.metamodel.SingularAttribute;
 
 import libpsid64.Psid64;
-import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;

@@ -15,8 +15,8 @@
  */
 package sidplay.audio;
 
+import libsidplay.config.IAudioSection;
 import resid_builder.SIDMixer;
-import sidplay.ini.intf.IAudioSection;
 
 public class AudioConfig {
 	protected final int frameRate;

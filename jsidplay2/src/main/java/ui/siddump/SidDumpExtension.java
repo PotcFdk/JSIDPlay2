@@ -15,7 +15,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.regex.MatchResult;
 
 import javafx.collections.ObservableList;
-import libsidplay.Player;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.mos6510.IMOS6510Extension;
 import libsidutils.SIDDumpConfiguration.SIDDumpReg;
@@ -23,6 +22,7 @@ import netsiddev.AudioGeneratorThread;
 import netsiddev.InvalidCommandException;
 import netsiddev.SIDWrite;
 import resid_builder.resid.SID;
+import sidplay.Player;
 import sidplay.audio.AudioConfig;
 import ui.entities.config.Configuration;
 

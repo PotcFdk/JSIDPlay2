@@ -7,8 +7,8 @@ import java.io.File;
 
 import javax.persistence.EntityManager;
 
-import libsidplay.Player;
 import libsidutils.PathUtils;
+import sidplay.Player;
 import ui.entities.collection.service.HVSCEntryService;
 import ui.entities.collection.service.STILService;
 import ui.entities.collection.service.VersionService;

@@ -23,13 +23,13 @@ import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.List;
 
-import sidplay.ini.intf.IAudioSection;
-import sidplay.ini.intf.IC1541Section;
-import sidplay.ini.intf.IConfig;
-import sidplay.ini.intf.IEmulationSection;
-import sidplay.ini.intf.IFilterSection;
-import sidplay.ini.intf.IPrinterSection;
-import sidplay.ini.intf.ISidPlay2Section;
+import libsidplay.config.IAudioSection;
+import libsidplay.config.IC1541Section;
+import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
+import libsidplay.config.IFilterSection;
+import libsidplay.config.IPrinterSection;
+import libsidplay.config.ISidPlay2Section;
 
 /**
  * INI configuration file support responsible to load and save all emulator

@@ -5,7 +5,7 @@ import javax.persistence.AccessType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import sidplay.ini.intf.IFilterSection;
+import libsidplay.config.IFilterSection;
 
 @Entity
 @Access(AccessType.PROPERTY)

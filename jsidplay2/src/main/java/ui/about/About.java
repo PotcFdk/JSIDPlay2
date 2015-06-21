@@ -7,7 +7,7 @@ import java.util.Properties;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
-import libsidplay.Player;
+import sidplay.Player;
 import ui.JSidPlay2Main;
 import ui.common.C64Window;
 

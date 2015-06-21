@@ -3,10 +3,10 @@ package ui.common;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import sidplay.Player;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.util.Builder;
 import javafx.util.BuilderFactory;
-import libsidplay.Player;
 
 final class UIBuilder implements BuilderFactory {
 

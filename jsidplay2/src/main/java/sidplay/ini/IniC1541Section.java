@@ -1,7 +1,7 @@
 package sidplay.ini;
 
 import libsidplay.components.c1541.C1541.FloppyType;
-import sidplay.ini.intf.IC1541Section;
+import libsidplay.config.IC1541Section;
 
 /**
  * C1541 section of the INI file.

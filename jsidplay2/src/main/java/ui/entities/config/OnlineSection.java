@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import javax.persistence.Embeddable;
 
-import sidplay.ini.intf.IOnlineSection;
+import libsidplay.config.IOnlineSection;
 
 @Embeddable
 public class OnlineSection implements IOnlineSection {

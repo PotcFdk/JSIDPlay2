@@ -13,8 +13,8 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
+import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
-import sidplay.ini.intf.IConfig;
 
 /**
  * <pre>

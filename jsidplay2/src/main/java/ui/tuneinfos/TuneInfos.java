@@ -12,8 +12,8 @@ import javafx.scene.control.TableView;
 
 import javax.persistence.metamodel.SingularAttribute;
 
-import libsidplay.Player;
 import libsidplay.sidtune.SidTune;
+import sidplay.Player;
 import ui.common.C64Window;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;

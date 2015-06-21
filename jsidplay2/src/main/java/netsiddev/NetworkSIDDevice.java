@@ -16,10 +16,10 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
+import libsidplay.config.IFilterSection;
 import netsiddev.ini.JSIDDeviceConfig;
 import resid_builder.residfp.Filter6581;
 import resid_builder.residfp.Filter8580;
-import sidplay.ini.intf.IFilterSection;
 
 /**
  * JSIDPlay2 SID-emulation integration protocol. It is possible to have
