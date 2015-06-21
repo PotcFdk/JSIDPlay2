@@ -44,6 +44,7 @@ import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
+import libsidplay.common.SIDListener;
 import libsidplay.components.c1530.Datasette.Control;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos6526.MOS6526;
@@ -67,7 +68,6 @@ import sidplay.audio.RecordingFilenameProvider;
 import sidplay.player.PlayList;
 import sidplay.player.State;
 import sidplay.player.Timer;
-import ui.sidreg.SidRegExtension;
 
 /**
  * The player adds some music player capabilities to the HardwareEnsemble.
@@ -171,7 +171,7 @@ public class Player extends HardwareEnsemble {
 	private RecordingFilenameProvider recordingFilenameProvider = tune -> "jsidplay2";
 
 	/**
-	 * Create a complete setup (C64, tape/disk drive, carts and more).
+	 * Create a Music Player.
 	 */
 	public Player(IConfig config) {
 		super(config);
@@ -591,16 +591,16 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Register a SID write register listener vor all SID chips in use.
+	 * Register a SID write register listener for all SID chips in use.
 	 * 
-	 * @param sidRegExtension
+	 * @param sidListener
 	 *            SID write register listener
 	 */
-	public void setSidWriteListener(SidRegExtension sidRegExtension) {
+	public void setSidWriteListener(SIDListener sidListener) {
 		IEmulationSection emulation = config.getEmulationSection();
 		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 			if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
-				c64.getPla().setSidWriteListener(sidNum, sidRegExtension);
+				c64.getPla().setSidWriteListener(sidNum, sidListener);
 			} else {
 				c64.getPla().setSidWriteListener(sidNum, null);
 			}

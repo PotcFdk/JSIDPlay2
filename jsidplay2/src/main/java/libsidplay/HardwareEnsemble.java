@@ -82,6 +82,9 @@ public class HardwareEnsemble {
 	 */
 	private IExtendImageListener policy;
 
+	/**
+	 * Create a complete setup (C64, tape/disk drive, carts and more).
+	 */
 	public HardwareEnsemble(IConfig config) {
 		this.config = config;
 		this.iecBus = new IECBus();
