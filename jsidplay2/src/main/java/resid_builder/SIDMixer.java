@@ -86,46 +86,29 @@ public class SIDMixer {
 				// rewind
 				sampler.rewind();
 			}
-			int len = isFastForward()? fastForward() : audioBufferL.capacity();
-			// Output sample data
-			for (int pos = 0; pos < len; pos++) {
-				int dither = triangularDithering();
-
-				putSample(resamplerL, audioBufferL.get(pos), dither);
-				putSample(resamplerR, audioBufferR.get(pos), dither);
-				audioBufferL.put(pos, 0);
-				audioBufferR.put(pos, 0);
-
-				if (!driver.buffer().hasRemaining()) {
-					driver.write();
-					driver.buffer().clear();
-				}
-			}
-			context.schedule(this, audioBufferL.capacity());
-		}
-
-		/**
-		 * Fast forward tune by accumulation of sample data
-		 * 
-		 * @return new audio buffer length (len/fastForward)
-		 */
-		private int fastForward() {
-			int newLen= 0, valL= 0, valR= 0, factor= 0;
+			// Accumulate sample data respect to fast forward factor
+			int valL= 0, valR= 0, factor= 0;
 			for (int pos = 0; pos < audioBufferL.capacity(); pos++) {
-				// accumulate each interleaved channel
 				valL += audioBufferL.get(pos);
 				valR += audioBufferR.get(pos);
 				audioBufferL.put(pos, 0);
 				audioBufferR.put(pos, 0);
+
 				// once enough samples have been accumulated, write output
 				if (++factor == (1 << fastForward)) {
-					audioBufferL.put(newLen, valL >> fastForward);
-					audioBufferR.put(newLen++, valR >> fastForward);
+					int dither = triangularDithering();
+
+					putSample(resamplerL, valL >> fastForward, dither);
+					putSample(resamplerR, valR >> fastForward, dither);
+					if (!driver.buffer().hasRemaining()) {
+						driver.write();
+						driver.buffer().clear();
+					}
 					// zero accumulator
 					valL = valR = factor = 0;
 				}
 			}
-			return newLen;
+			context.schedule(this, audioBufferL.capacity());
 		}
 
 		/**
