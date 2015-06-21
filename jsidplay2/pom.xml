@@ -295,8 +295,8 @@
 								<include>libsidplay/common/SamplingMethod.class</include>
 								<include>libsidplay/common/SIDChip.class</include>
 								<include>sidplay/audio/*.class</include>
-								<include>sidplay/ini/intf/IAudioSection.class</include>
-								<include>sidplay/ini/intf/IFilterSection.class</include>
+								<include>libsidplay/config/IAudioSection.class</include>
+								<include>libsidplay/config/IFilterSection.class</include>
 								<include>sidplay/ini/IniSection.class</include>
 								<include>sidplay/ini/IniReader.class</include>
 								<include>sidplay/ini/IniAudioSection.class</include>
