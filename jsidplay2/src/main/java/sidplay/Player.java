@@ -139,12 +139,12 @@ public class Player extends HardwareEnsemble {
 	private Consumer<Player> menuHook = player -> {
 	};
 	/**
-	 * Called each time a chunk of music data has been played.
+	 * Called each time a chunk of music has been played.
 	 */
 	private Consumer<Player> interactivityHook = player -> {
 	};
 	/**
-	 * Audio driver and emulation setting.
+	 * Audio driver.
 	 */
 	private AudioDriver audioDriver, oldAudioDriver;
 
@@ -185,7 +185,7 @@ public class Player extends HardwareEnsemble {
 
 			@Override
 			public void end() {
-				// Only if tune is playing: if play time is over loop or exit
+				// Only, if tune is playing: If play time is over loop or exit
 				if (tune != SidTune.RESET) {
 					if (config.getSidplay2Section().isSingle()) {
 						stateProperty.set(getEndState());
@@ -278,9 +278,9 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * What is the current playing time in sec.
+	 * What is the current playing time in secs.
 	 * 
-	 * @return the current playing time in sec
+	 * @return the current playing time in secs
 	 */
 	public final int time() {
 		final EventScheduler c = c64.getEventScheduler();
@@ -371,7 +371,7 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Start emulation (start player thread).
+	 * Start player thread.
 	 */
 	public final void startC64() {
 		playerThread = new Thread(playerRunnable);
@@ -380,7 +380,7 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Stop emulation (stop player thread).
+	 * Stop player thread.
 	 */
 	public final void stopC64() {
 		try {
@@ -394,20 +394,41 @@ public class Player extends HardwareEnsemble {
 		}
 	}
 
+	/**
+	 * Wait for termination of the player thread.
+	 * 
+	 * @throws InterruptedException
+	 */
 	public final void waitForC64() throws InterruptedException {
 		while (playerThread != null && playerThread.isAlive()) {
 			Thread.sleep(1000);
 		}
 	}
 
+	/**
+	 * Set a hook to be called when the player has opened a tune.
+	 * 
+	 * @param menuHook
+	 *            menu hook
+	 */
 	public final void setMenuHook(Consumer<Player> menuHook) {
 		this.menuHook = menuHook;
 	}
 
+	/**
+	 * Set a hook to be called when the player has played a chunk.
+	 * 
+	 * @param interactivityHook
+	 */
 	public final void setInteractivityHook(Consumer<Player> interactivityHook) {
 		this.interactivityHook = interactivityHook;
 	}
 
+	/**
+	 * Get the player's state
+	 * 
+	 * @return the player's state
+	 */
 	public final ReadOnlyObjectProperty<State> stateProperty() {
 		return stateProperty;
 	}
@@ -481,7 +502,6 @@ public class Player extends HardwareEnsemble {
 			audioDriver.open(audioConfig, tune);
 		} catch (LineUnavailableException e) {
 			// Linux fix: restart, if currently unavailable
-			System.err.println(e.getMessage());
 			Thread.sleep(1000);
 			stateProperty.set(State.RESTART);
 			throw new InterruptedException(e.getMessage());
@@ -652,6 +672,9 @@ public class Player extends HardwareEnsemble {
 		startC64();
 	}
 
+	/**
+	 * Pause player.
+	 */
 	public final void pause() {
 		if (stateProperty.get() == State.QUIT) {
 			play(tune);
@@ -663,11 +686,19 @@ public class Player extends HardwareEnsemble {
 		}
 	}
 
+	/**
+	 * Play next song.
+	 */
 	public final void nextSong() {
 		playList.next();
 		stateProperty.set(State.RESTART);
 	}
 
+	/**
+	 * Play previous song.<BR>
+	 * <B>Note:</B> After {@link #PREV_SONG_TIMEOUT} has been reached, the
+	 * current tune is restarted instead.
+	 */
 	public final void previousSong() {
 		if (time() < PREV_SONG_TIMEOUT) {
 			playList.previous();
@@ -675,54 +706,111 @@ public class Player extends HardwareEnsemble {
 		stateProperty.set(State.RESTART);
 	}
 
+	/**
+	 * Play first song.
+	 */
 	public final void firstSong() {
 		playList.first();
 		stateProperty.set(State.RESTART);
 	}
 
+	/**
+	 * Play last song.
+	 */
 	public final void lastSong() {
 		playList.last();
 		stateProperty.set(State.RESTART);
 	}
 
+	/**
+	 * Fast forward song.<BR>
+	 * <B>Note:</B> This method can be called several times up to
+	 * {@link resid_builder.SIDMixer#MAX_FAST_FORWARD} times.
+	 */
 	public final void fastForward() {
 		sidBuilder.fastForward();
 	}
 
+	/**
+	 * Play normal speed (stop fast forward).
+	 */
 	public final void normalSpeed() {
 		sidBuilder.normalSpeed();
 	}
 
+	/**
+	 * Is fast forward playback active?
+	 */
 	public final boolean isFastForward() {
 		return sidBuilder.isFastForward();
 	}
 
+	/**
+	 * Get current SID chip count.
+	 */
 	public final int getNumDevices() {
 		return sidBuilder.getNumDevices();
 	}
 
+	/**
+	 * Quit player.
+	 */
 	public final void quit() {
 		stateProperty.set(State.QUIT);
 	}
 
+	/**
+	 * Set song length database.
+	 * 
+	 * @param sidDatabase
+	 *            song length database
+	 */
 	public final void setSidDatabase(SidDatabase sidDatabase) {
 		this.sidDatabase = sidDatabase;
 	}
 
+	/**
+	 * Get song length database info.
+	 * 
+	 * @param function
+	 *            SidDatabase function to apply
+	 * @param defaultValue
+	 *            default value, if database is not set
+	 * @return song length database info
+	 */
 	public final <T> T getSidDatabaseInfo(Function<SidDatabase, T> function,
 			T defaultValue) {
 		return sidDatabase != null ? function.apply(sidDatabase) : defaultValue;
 	}
 
+	/**
+	 * Set Sid Tune Information List (STIL)
+	 * 
+	 * @param stil
+	 *            Sid Tune Information List
+	 */
 	public final void setSTIL(STIL stil) {
 		this.stil = stil;
 	}
 
+	/**
+	 * Get Sid Tune Information List info.
+	 * 
+	 * @param collectionName
+	 *            entry path to get infos for
+	 * @return Sid Tune Information List info
+	 */
 	public final STILEntry getStilEntry(String collectionName) {
 		return stil != null && collectionName != null ? stil
 				.getSTILEntry(collectionName) : null;
 	}
 
+	/**
+	 * Set provider of recording filenames.
+	 * 
+	 * @param recordingFilenameProvider
+	 *            provider of recording filenames
+	 */
 	public void setRecordingFilenameProvider(
 			RecordingFilenameProvider recordingFilenameProvider) {
 		this.recordingFilenameProvider = recordingFilenameProvider;

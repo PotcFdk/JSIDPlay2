@@ -36,7 +36,8 @@ import libsidutils.disassembler.SimpleDisassembler;
 
 /**
  * The HardwareEnsemble contains a C64 computer and additional peripherals.<BR>
- * It is meant as a complete setup (C64, tape/disk drive, carts and more).
+ * It is meant as a complete hardware setup (C64, tape/disk drive, printer and
+ * more).
  * 
  * @author Ken Händel
  * 
@@ -83,7 +84,8 @@ public class HardwareEnsemble {
 	private IExtendImageListener policy;
 
 	/**
-	 * Create a complete setup (C64, tape/disk drive, carts and more).
+	 * Create a complete hardware setup (C64, tape/disk drive, printer and
+	 * more).
 	 */
 	public HardwareEnsemble(IConfig config) {
 		this.config = config;
@@ -167,6 +169,11 @@ public class HardwareEnsemble {
 				c1541.getEventScheduler());
 	}
 
+	/**
+	 * Get Configuration
+	 * 
+	 * @return configuration
+	 */
 	public final IConfig getConfig() {
 		return config;
 	}
@@ -222,7 +229,7 @@ public class HardwareEnsemble {
 	}
 
 	/**
-	 * Power-on C64 system. Only play() calls should be made after this point.
+	 * Reset hardware.
 	 */
 	protected void reset() {
 		c64.reset();
@@ -248,7 +255,6 @@ public class HardwareEnsemble {
 		}
 
 		enablePrinter(config.getPrinterSection().isPrinterOn());
-
 	}
 
 	/**
@@ -353,6 +359,12 @@ public class HardwareEnsemble {
 		};
 	}
 
+	/**
+	 * Turn-on printer.
+	 * 
+	 * @param printerOn
+	 *            printer on/off
+	 */
 	public final void enablePrinter(boolean printerOn) {
 		printer.turnPrinterOnOff(printerOn);
 	}
@@ -409,6 +421,12 @@ public class HardwareEnsemble {
 		}
 	}
 
+	/**
+	 * Extend floppy disk strategy (> 35 tracks)
+	 * 
+	 * @param policy
+	 *            extension policy
+	 */
 	public final void setExtendImagePolicy(IExtendImageListener policy) {
 		this.policy = policy;
 	}
