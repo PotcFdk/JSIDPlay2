@@ -174,7 +174,7 @@ public class ConsolePlayer {
 			final SidTune tune = SidTune.load(new File(filenames.get(0)));
 			player.setTune(tune);
 			tune.setSelectedSong(song);
-			player.setRecordingFilenameProvider((theTune) -> {
+			player.setRecordingFilenameProvider(theTune -> {
 				File file = new File(recordingFilename);
 				String filename = new File(file.getParentFile(), PathUtils
 						.getBaseNameNoExt(file.getName())).getAbsolutePath();
