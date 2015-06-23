@@ -356,8 +356,7 @@ public class SIDMixer {
 	 * Doubles speed factor.
 	 */
 	public void fastForward() {
-		fastForward++;
-		if (fastForward > MAX_FAST_FORWARD) {
+		if (++fastForward > MAX_FAST_FORWARD) {
 			fastForward = MAX_FAST_FORWARD;
 		}
 	}
