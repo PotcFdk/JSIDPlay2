@@ -86,8 +86,8 @@ public class SIDMixer {
 				// rewind
 				sampler.rewind();
 			}
-			// Accumulate sample data respect to fast forward factor
-			int valL= 0, valR= 0, factor= 0;
+			// Accumulate sample data with respect to fast forward factor
+			int valL = 0, valR = 0, factor = 0;
 			for (int pos = 0; pos < audioBufferL.capacity(); pos++) {
 				valL += audioBufferL.get(pos);
 				valR += audioBufferR.get(pos);

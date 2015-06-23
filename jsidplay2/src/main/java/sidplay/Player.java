@@ -250,7 +250,7 @@ public class Player extends HardwareEnsemble {
 				public void event() throws InterruptedException {
 					int driverAddress = tune.placeProgramInMemory(c64.getRAM());
 					if (driverAddress != -1) {
-						// Start SID player driver, if required
+						// Start SID player driver, if available
 						c64.getCPU().forcedJump(driverAddress);
 					} else {
 						// Start basic program or machine code
@@ -391,6 +391,7 @@ public class Player extends HardwareEnsemble {
 				playerThread.interrupt();
 			}
 		} catch (InterruptedException e) {
+			// unclean player thread halt (interrupted)
 		}
 	}
 
@@ -434,7 +435,7 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Player runnable to play music in the background.
+	 * Player runnable to play music in a background thread.
 	 */
 	private Runnable playerRunnable = () -> {
 		// Run until the player gets stopped
@@ -628,7 +629,8 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Play routine emulating a number of events.
+	 * Play routine (clock chips until audio buffer is filled completely or
+	 * player is paused).
 	 * 
 	 * @throws InterruptedException
 	 */
