@@ -103,6 +103,16 @@ public class ReSIDBuilder implements SIDBuilder {
 		mixer.start();
 	}
 
+	@Override
+	public void fadeIn(int fadeIn) {
+		mixer.fadeIn(fadeIn);
+	}
+
+	@Override
+	public void fadeOut(int fadeOut) {
+		mixer.fadeOut(fadeOut);
+	}
+
 	/**
 	 * How many SID chips are in the mix?
 	 */

@@ -72,6 +72,38 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return defaultPlayLengthProperty;
 	}
 
+	private IntegerProperty fadeInTimeProperty = new SimpleIntegerProperty(
+			DEFAULT_FADE_IN_TIME);
+
+	@Override
+	public int getFadeInTime() {
+		return fadeInTimeProperty.get();
+	}
+
+	public void setFadeInTime(int fadeInTime) {
+		fadeInTimeProperty.set(fadeInTime);
+	}
+	
+	public IntegerProperty fadeInTimeProperty() {
+		return fadeInTimeProperty;
+	}
+	
+	private IntegerProperty fadeOutTimeProperty = new SimpleIntegerProperty(
+			DEFAULT_FADE_OUT_TIME);
+
+	@Override
+	public int getFadeOutTime() {
+		return fadeOutTimeProperty.get();
+	}
+
+	public void setFadeOutTime(int fadeOutTime) {
+		fadeOutTimeProperty.set(fadeOutTime);
+	}
+
+	public IntegerProperty fadeOutTimeProperty() {
+		return fadeOutTimeProperty;
+	}
+	
 	private PlaybackType playbackType = DEFAULT_PLAYBACK_TYPE;
 
 	@Enumerated(EnumType.STRING)

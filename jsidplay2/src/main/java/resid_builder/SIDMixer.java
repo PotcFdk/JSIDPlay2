@@ -242,6 +242,20 @@ public class SIDMixer {
 		context.schedule(mixerAudio, 0, Event.Phase.PHI2);
 	}
 
+	public void fadeIn(int fadeIn) {
+		for (ReSIDBase sid : sids) {
+			SampleMixer sampler = (SampleMixer) sid.getSampler();
+			sampler.setFadeIn(fadeIn * 1000000L);
+		}
+	}
+
+	public void fadeOut(int fadeOut) {
+		for (ReSIDBase sid : sids) {
+			SampleMixer sampler = (SampleMixer) sid.getSampler();
+			sampler.setFadeOut(fadeOut * 1000000L);
+		}
+	}
+
 	/**
 	 * Add a SID to the mix.
 	 * 

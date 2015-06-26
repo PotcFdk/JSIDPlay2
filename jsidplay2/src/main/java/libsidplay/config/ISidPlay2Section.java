@@ -4,11 +4,13 @@ public interface ISidPlay2Section {
 
 	static final boolean DEFAULT_ENABLE_DATABASE = true;
 	static final int DEFAULT_PLAY_LENGTH = 3 * 60;
+	static final int DEFAULT_FADE_IN_TIME = 0;
+	static final int DEFAULT_FADE_OUT_TIME = 0;
 	static final boolean DEFAULT_LOOP = false;
 	static final boolean DEFAULT_SINGLE_TRACK = false;
 	static final boolean DEFAULT_ENABLE_PROXY = false;
 	static final boolean DEFAULT_TURBO_TAPE = true;
-	
+
 	/**
 	 * Get INI file version.
 	 * 
@@ -131,4 +133,15 @@ public interface ISidPlay2Section {
 	 * Setter of convert other programs to turbo-tape or normal tape format
 	 */
 	void setTurboTape(boolean turboTape);
+
+	/**
+	 * Fade-in start time in seconds, audio volume should be increased to the
+	 * max.
+	 */
+	int getFadeInTime();
+
+	/**
+	 * Fade-out start time in seconds, audio volume should be lowered to zero.
+	 */
+	int getFadeOutTime();
 }

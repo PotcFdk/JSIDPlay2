@@ -26,6 +26,20 @@ public abstract class Timer {
 		}
 	};
 
+	final Event fadeInStartTimeEvent = new Event("Fade-in Start") {
+		@Override
+		public void event() throws InterruptedException {
+			fadeInStart(fadeIn);
+		}
+	};
+
+	final Event fadeOutStartTimeEvent = new Event("Fade-out Start") {
+		@Override
+		public void event() throws InterruptedException {
+			fadeOutStart(fadeOut);
+		}
+	};
+
 	/**
 	 * Timer start time in seconds.
 	 */
@@ -35,6 +49,16 @@ public abstract class Timer {
 	 * Timer end in seconds
 	 */
 	private long end;
+
+	/**
+	 * Fade-in time in seconds.
+	 */
+	private int fadeIn;
+
+	/**
+	 * Fade-out time in seconds
+	 */
+	private int fadeOut;
 
 	/**
 	 * The player.
@@ -50,7 +74,11 @@ public abstract class Timer {
 	}
 
 	public final void reset() {
+		final IConfig config = player.getConfig();
+		fadeIn = config.getSidplay2Section().getFadeInTime();
+		fadeOut = config.getSidplay2Section().getFadeOutTime();
 		schedule(start, startTimeEvent);
+		schedule(start, fadeInStartTimeEvent);
 		updateEnd();
 	}
 
@@ -67,12 +95,16 @@ public abstract class Timer {
 		final SidTune tune = player.getTune();
 		// cancel last stop time event
 		cancel(endTimeEvent);
+		cancel(fadeOutStartTimeEvent);
 		// Only for tunes: check song length
-		if (tune != SidTune.RESET && config.getSidplay2Section().isEnableDatabase()) {
-			int songLength = player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0);
+		if (tune != SidTune.RESET
+				&& config.getSidplay2Section().isEnableDatabase()) {
+			int songLength = player.getSidDatabaseInfo(
+					db -> db.getSongLength(tune), 0);
 			if (songLength > 0) {
 				// use song length of song length database ...
 				end = schedule(songLength, endTimeEvent);
+				schedule(end - fadeOut, fadeOutStartTimeEvent);
 				return;
 			}
 		}
@@ -81,6 +113,7 @@ public abstract class Timer {
 		if (end != 0) {
 			// use default length (is meant to be relative to start)
 			end = schedule(start + end, endTimeEvent);
+			schedule(end - fadeOut, fadeOutStartTimeEvent);
 		}
 	}
 
@@ -117,4 +150,8 @@ public abstract class Timer {
 	public abstract void start();
 
 	public abstract void end();
+
+	public abstract void fadeInStart(int fadeIn);
+
+	public abstract void fadeOutStart(int fadeOut);
 }

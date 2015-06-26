@@ -198,8 +198,18 @@ public class Player extends HardwareEnsemble {
 						}
 					}
 				}
-
 			}
+
+			@Override
+			public void fadeInStart(int fadeIn) {
+				sidBuilder.fadeIn(fadeIn);
+			}
+
+			@Override
+			public void fadeOutStart(int fadeOut) {
+				sidBuilder.fadeOut(fadeOut);
+			}
+
 		};
 		initializeTmpDir();
 	}

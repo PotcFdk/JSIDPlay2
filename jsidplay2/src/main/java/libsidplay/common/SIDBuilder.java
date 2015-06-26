@@ -61,6 +61,22 @@ public interface SIDBuilder {
 	void start();
 
 	/**
+	 * Fade-in start time reached, audio volume should be increased to the max.
+	 * 
+	 * @param fadeIn
+	 *            Fade-in time in seconds
+	 */
+	void fadeIn(int fadeIn);
+
+	/**
+	 * Fade-out start time reached, audio volume should be lowered to zero.
+	 * 
+	 * @param fadeOut
+	 *            Fade-out time in seconds
+	 */
+	void fadeOut(int fadeOut);
+
+	/**
 	 * Volume of the SID chip
 	 * 
 	 * @param sidNum

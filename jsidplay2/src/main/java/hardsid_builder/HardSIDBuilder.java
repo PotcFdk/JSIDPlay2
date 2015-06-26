@@ -152,6 +152,14 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	@Override
+	public void fadeIn(int fadeIn) {
+	}
+
+	@Override
+	public void fadeOut(int fadeOut) {
+	}
+
+	@Override
 	public void setVolume(int num) {
 	}
 
