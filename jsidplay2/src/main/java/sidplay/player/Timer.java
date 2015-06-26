@@ -78,7 +78,9 @@ public abstract class Timer {
 		fadeIn = config.getSidplay2Section().getFadeInTime();
 		fadeOut = config.getSidplay2Section().getFadeOutTime();
 		schedule(start, startTimeEvent);
-		schedule(start, fadeInStartTimeEvent);
+		if (fadeIn != 0) {
+			schedule(start, fadeInStartTimeEvent);
+		}
 		updateEnd();
 	}
 
@@ -95,7 +97,9 @@ public abstract class Timer {
 		final SidTune tune = player.getTune();
 		// cancel last stop time event
 		cancel(endTimeEvent);
-		cancel(fadeOutStartTimeEvent);
+		if (fadeOut != 0) {
+			cancel(fadeOutStartTimeEvent);
+		}
 		// Only for tunes: check song length
 		if (tune != SidTune.RESET
 				&& config.getSidplay2Section().isEnableDatabase()) {
@@ -104,7 +108,9 @@ public abstract class Timer {
 			if (songLength > 0) {
 				// use song length of song length database ...
 				end = schedule(songLength, endTimeEvent);
-				schedule(end - fadeOut, fadeOutStartTimeEvent);
+				if (fadeOut != 0) {
+					schedule(end - fadeOut, fadeOutStartTimeEvent);
+				}
 				return;
 			}
 		}
@@ -113,7 +119,9 @@ public abstract class Timer {
 		if (end != 0) {
 			// use default length (is meant to be relative to start)
 			end = schedule(start + end, endTimeEvent);
-			schedule(end - fadeOut, fadeOutStartTimeEvent);
+			if (fadeOut != 0) {
+				schedule(end - fadeOut, fadeOutStartTimeEvent);
+			}
 		}
 	}
 

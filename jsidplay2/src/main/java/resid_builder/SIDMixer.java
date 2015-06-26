@@ -211,6 +211,11 @@ public class SIDMixer {
 	 */
 	private int fastForward;
 
+	/**
+	 * Fade-in/fade-out enabled.
+	 */
+	private boolean fadeInFadeOutEnabled;
+
 	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock,
 			AudioConfig audioConfig, AudioDriver audioDriver) {
 		this.context = context;
@@ -230,6 +235,8 @@ public class SIDMixer {
 	}
 
 	public void reset() {
+		this.fadeInFadeOutEnabled = config.getSidplay2Section().getFadeInTime() != 0
+				|| config.getSidplay2Section().getFadeOutTime() != 0;
 		context.schedule(nullAudio, 0, Event.Phase.PHI2);
 	}
 
@@ -244,15 +251,15 @@ public class SIDMixer {
 
 	public void fadeIn(int fadeIn) {
 		for (ReSIDBase sid : sids) {
-			SampleMixer sampler = (SampleMixer) sid.getSampler();
-			sampler.setFadeIn(fadeIn * 1000000L);
+			FadingSampleMixer sampler = (FadingSampleMixer) sid.getSampler();
+			sampler.setFadeIn(fadeIn);
 		}
 	}
 
 	public void fadeOut(int fadeOut) {
 		for (ReSIDBase sid : sids) {
-			SampleMixer sampler = (SampleMixer) sid.getSampler();
-			sampler.setFadeOut(fadeOut * 1000000L);
+			FadingSampleMixer sampler = (FadingSampleMixer) sid.getSampler();
+			sampler.setFadeOut(fadeOut);
 		}
 	}
 
@@ -342,7 +349,11 @@ public class SIDMixer {
 	private void createSampleMixer(ReSIDBase sid) {
 		IntBuffer intBufferL = audioBufferL.duplicate();
 		IntBuffer intBufferR = audioBufferR.duplicate();
-		sid.setSampler(new SampleMixer(intBufferL, intBufferR));
+		if (fadeInFadeOutEnabled) {
+			sid.setSampler(new FadingSampleMixer(intBufferL, intBufferR));
+		} else {
+			sid.setSampler(new SampleMixer(intBufferL, intBufferR));
+		}
 	}
 
 	/**
