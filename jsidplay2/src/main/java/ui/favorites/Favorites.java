@@ -18,6 +18,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
@@ -26,6 +27,7 @@ import libsidutils.PathUtils;
 import libsidutils.STIL;
 import libsidutils.SidDatabase;
 import sidplay.Player;
+import sidplay.ini.IniReader;
 import sidplay.player.State;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -42,12 +44,15 @@ public class Favorites extends Tab implements UIPart {
 
 	public static final String ID = "FAVORITES";
 
+	private static final String CELL_VALUE_OK = "cellValueOk";
+	private static final String CELL_VALUE_ERROR = "cellValueError";
+
 	@FXML
 	private Button add, remove, selectAll, deselectAll, load, save, saveAs;
 	@FXML
 	private TabPane favoritesList;
 	@FXML
-	protected TextField renameTab;
+	protected TextField renameTab, fadeInTime, fadeOutTime;
 	@FXML
 	private RadioButton off, normal, randomOne, randomAll, repeatOff,
 			repeatOne;
@@ -58,7 +63,8 @@ public class Favorites extends Tab implements UIPart {
 	protected Random random = new Random();
 	private C64Window window;
 
-	private ChangeListener<? super State> nextTuneListener = (observable, oldValue, newValue) -> {
+	private ChangeListener<? super State> nextTuneListener = (observable,
+			oldValue, newValue) -> {
 		if (newValue == State.EXIT) {
 			Platform.runLater(() -> playNextTune());
 		}
@@ -83,6 +89,21 @@ public class Favorites extends Tab implements UIPart {
 			setSTIL(sidPlay2Section.getHvsc());
 		}
 
+		int fadeInSeconds = sidPlay2Section.getFadeInTime();
+		fadeInTime.setText(String.format("%02d:%02d", fadeInSeconds / 60,
+				fadeInSeconds % 60));
+		sidPlay2Section.fadeInTimeProperty().addListener(
+				(observable, oldValue, newValue) -> fadeInTime.setText(String
+						.format("%02d:%02d", newValue.intValue() / 60,
+								newValue.intValue() % 60)));
+		int fadeOutSeconds = sidPlay2Section.getFadeOutTime();
+		fadeOutTime.setText(String.format("%02d:%02d", fadeOutSeconds / 60,
+				fadeOutSeconds % 60));
+		sidPlay2Section.fadeOutTimeProperty().addListener(
+				(observable, oldValue, newValue) -> fadeOutTime.setText(String
+						.format("%02d:%02d", newValue.intValue() / 60,
+								newValue.intValue() % 60)));
+
 		PlaybackType pt = sidPlay2Section.getPlaybackType();
 		switch (pt) {
 		case PLAYBACK_OFF:
@@ -106,8 +127,7 @@ public class Favorites extends Tab implements UIPart {
 		} else {
 			repeatOff.setSelected(true);
 		}
-		util.getPlayer().stateProperty()
-				.addListener(nextTuneListener);
+		util.getPlayer().stateProperty().addListener(nextTuneListener);
 		List<? extends FavoritesSection> favorites = util.getConfig()
 				.getFavorites();
 		util.getConfig()
@@ -183,7 +203,7 @@ public class Favorites extends Tab implements UIPart {
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(nextTuneListener);
 	}
-	
+
 	@FXML
 	private void addFavorites() {
 		final FileChooser fileDialog = new FileChooser();
@@ -196,7 +216,8 @@ public class Favorites extends Tab implements UIPart {
 				.showOpenMultipleDialog(favoritesList.getScene().getWindow());
 		if (files != null && files.size() > 0) {
 			File file = files.get(0);
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section()
+					.setLastDirectory(file.getParent());
 			FavoritesTab selectedTab = getSelectedTab();
 			selectedTab.addFavorites(files);
 			renameTab(selectedTab,
@@ -230,7 +251,8 @@ public class Favorites extends Tab implements UIPart {
 		final File file = fileDialog.showOpenDialog(favoritesList.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section()
+					.setLastDirectory(file.getParent());
 			try {
 				getSelectedTab().loadFavorites(file);
 			} catch (IOException e1) {
@@ -250,7 +272,8 @@ public class Favorites extends Tab implements UIPart {
 		final File file = fileDialog.showSaveDialog(favoritesList.getScene()
 				.getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section()
+					.setLastDirectory(file.getParent());
 			File target = new File(file.getParentFile(),
 					PathUtils.getBaseNameNoExt(file.getName()) + ".js2");
 			try {
@@ -273,6 +296,43 @@ public class Favorites extends Tab implements UIPart {
 	@FXML
 	private void renameTab() {
 		renameTab(getSelectedTab(), renameTab.getText());
+	}
+
+	@FXML
+	private void setFadeInTime() {
+		final Tooltip tooltip = new Tooltip();
+		fadeInTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		final int secs = IniReader.parseTime(fadeInTime.getText());
+		if (secs != -1) {
+			util.getConfig().getSidplay2Section().setFadeInTime(secs);
+			util.getPlayer().getTimer().updateEnd();
+			tooltip.setText(util.getBundle().getString("FADE_IN_LENGTH_TIP"));
+			fadeInTime.setTooltip(tooltip);
+			fadeInTime.getStyleClass().add(CELL_VALUE_OK);
+		} else {
+			tooltip.setText(util.getBundle().getString("FADE_IN_LENGTH_FORMAT"));
+			fadeInTime.setTooltip(tooltip);
+			fadeInTime.getStyleClass().add(CELL_VALUE_ERROR);
+		}
+	}
+
+	@FXML
+	private void setFadeOutTime() {
+		final Tooltip tooltip = new Tooltip();
+		fadeOutTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		final int secs = IniReader.parseTime(fadeOutTime.getText());
+		if (secs != -1) {
+			util.getConfig().getSidplay2Section().setFadeOutTime(secs);
+			util.getPlayer().getTimer().updateEnd();
+			tooltip.setText(util.getBundle().getString("FADE_OUT_LENGTH_TIP"));
+			fadeOutTime.setTooltip(tooltip);
+			fadeOutTime.getStyleClass().add(CELL_VALUE_OK);
+		} else {
+			tooltip.setText(util.getBundle()
+					.getString("FADE_OUT_LENGTH_FORMAT"));
+			fadeOutTime.setTooltip(tooltip);
+			fadeOutTime.getStyleClass().add(CELL_VALUE_ERROR);
+		}
 	}
 
 	@FXML

@@ -19,6 +19,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.CheckBox?>
 <?scenebuilder-preview-i18n-resource Favorites.properties?>
+<?import javafx.geometry.Insets?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<fx:define>
 		<ToggleGroup fx:id="playbackGroup" />
@@ -100,31 +101,48 @@
 					<TextField fx:id="renameTab" onAction="#renameTab"
 						prefWidth="100" />
 				</HBox>
-				<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS" VBox.vgrow="ALWAYS"/>
+				<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS"
+					VBox.vgrow="ALWAYS" />
 			</VBox>
 		</center>
 		<bottom>
 			<TitledPane text="%PLAYBACK_OPTIONS" collapsible="true"
 				expanded="false">
-				<GridPane>
+				<GridPane hgap="10">
+					<Label text="%FADE_IN_LENGTH" alignment="CENTER_RIGHT"
+						GridPane.rowIndex="0" GridPane.columnIndex="0" />
+					<TextField fx:id="fadeInTime" onAction="#setFadeInTime"
+						GridPane.rowIndex="0" GridPane.columnIndex="1">
+						<tooltip>
+							<Tooltip text="%FADE_IN_LENGTH_TIP"></Tooltip>
+						</tooltip>
+					</TextField>
+					<Label text="%FADE_OUT_LENGTH" alignment="CENTER_RIGHT"
+						GridPane.rowIndex="0" GridPane.columnIndex="2" />
+					<TextField fx:id="fadeOutTime" onAction="#setFadeOutTime"
+						GridPane.rowIndex="0" GridPane.columnIndex="3">
+						<tooltip>
+							<Tooltip text="%FADE_OUT_LENGTH_TIP"></Tooltip>
+						</tooltip>
+					</TextField>
 					<RadioButton text="%OFF" selected="true" toggleGroup="$playbackGroup"
-						fx:id="off" GridPane.rowIndex="0" GridPane.columnIndex="0"
+						fx:id="off" GridPane.rowIndex="1" GridPane.columnIndex="0"
 						onAction="#off" />
 					<RadioButton text="%NORMAL" toggleGroup="$playbackGroup"
-						fx:id="normal" GridPane.rowIndex="0" GridPane.columnIndex="1"
+						fx:id="normal" GridPane.rowIndex="1" GridPane.columnIndex="1"
 						onAction="#normal" />
 					<RadioButton text="%RANDOM_ONE_PLAYLIST" toggleGroup="$playbackGroup"
-						fx:id="randomOne" GridPane.rowIndex="0" GridPane.columnIndex="2"
+						fx:id="randomOne" GridPane.rowIndex="1" GridPane.columnIndex="2"
 						onAction="#randomOne" />
 					<RadioButton text="%RANDOM_ALL_PLAYLISTS" toggleGroup="$playbackGroup"
-						fx:id="randomAll" GridPane.rowIndex="0" GridPane.columnIndex="3"
+						fx:id="randomAll" GridPane.rowIndex="1" GridPane.columnIndex="3"
 						onAction="#randomAll" />
 
 					<RadioButton text="%REPEAT_OFF" selected="true"
-						toggleGroup="$repeatGroup" fx:id="repeatOff" GridPane.rowIndex="1"
+						toggleGroup="$repeatGroup" fx:id="repeatOff" GridPane.rowIndex="2"
 						GridPane.columnIndex="0" onAction="#repeatOff" />
 					<RadioButton text="%REPEAT_ONE_TUNE" toggleGroup="$repeatGroup"
-						fx:id="repeatOne" GridPane.rowIndex="1" GridPane.columnIndex="1"
+						fx:id="repeatOne" GridPane.rowIndex="2" GridPane.columnIndex="1"
 						onAction="#repeatOne" />
 				</GridPane>
 			</TitledPane>
