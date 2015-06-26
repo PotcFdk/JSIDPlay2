@@ -82,7 +82,7 @@ class SampleMixer implements IntConsumer {
 	/**
 	 * Volume increment with respect to fade-in/fade-out.
 	 * 
-	 * <B>Note:</B> If fadeIn==0? Increment volume to the max next time.
+	 * <B>Note:</B> If fadeIn==0? Increment volume to the max next event.
 	 */
 	private void updateVolumeIncrement() {
 		volumeIncL = fadeIn != 0 ? (double) volumeL / fadeIn : (double) volumeL;
@@ -95,7 +95,7 @@ class SampleMixer implements IntConsumer {
 	public void accept(int sample) {
 		if (fadeIn >= 0) {
 			fadeIn--;
-			// fade-in (fadeIn==0? set maximum volume)
+			// fade-in (fadeIn==0? increment to maximum volume)
 			currVolumeL = (int) Math.round(fadedVolumeL += volumeIncL);
 			currVolumeR = (int) Math.round(fadedVolumeR += volumeIncR);
 		}
