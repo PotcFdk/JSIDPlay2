@@ -115,7 +115,7 @@ public abstract class Timer {
 				return;
 			}
 		}
-		// ... or play default length or (0 means forever)
+		// ... or play default length (0 means forever)
 		end = config.getSidplay2Section().getDefaultPlayLength();
 		if (end != 0) {
 			// use default length (is meant to be relative to start)

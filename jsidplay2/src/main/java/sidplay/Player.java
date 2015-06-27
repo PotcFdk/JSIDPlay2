@@ -263,7 +263,7 @@ public class Player extends HardwareEnsemble {
 						// Start SID player driver, if available
 						c64.getCPU().forcedJump(driverAddress);
 					} else {
-						// Start basic program or machine code
+						// Start basic program or machine code routine
 						final int loadAddr = tune.getInfo().getLoadAddr();
 						command = loadAddr == 0x0801 ? RUN : String.format(SYS,
 								loadAddr);
@@ -601,7 +601,7 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Change SIDs according to the configured emulation, chip models.
+	 * Change SIDs according to the configured emulation and chip models.
 	 */
 	public final void createOrUpdateSIDs() {
 		IEmulationSection emulation = config.getEmulationSection();
