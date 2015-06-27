@@ -165,6 +165,11 @@ public class SIDMixer {
 	private IConfig config;
 
 	/**
+	 * CPU clock.
+	 */
+	private CPUClock cpuClock;
+
+	/**
 	 * Mixer WITHOUT audio output, just clocking SID chips.
 	 */
 	private Event nullAudio = new NullAudioEvent("NullAudio");
@@ -220,6 +225,7 @@ public class SIDMixer {
 			AudioConfig audioConfig, AudioDriver audioDriver) {
 		this.context = context;
 		this.config = config;
+		this.cpuClock = cpuClock;
 		this.driver = audioDriver;
 		IAudioSection audioSection = config.getAudioSection();
 		this.audioBufferL = ByteBuffer
@@ -249,17 +255,30 @@ public class SIDMixer {
 		context.schedule(mixerAudio, 0, Event.Phase.PHI2);
 	}
 
+	/**
+	 * Fade-in start time reached, audio volume should be increased to the max.
+	 * 
+	 * @param fadeIn
+	 *            Fade-in time in seconds
+	 */
 	public void fadeIn(int fadeIn) {
 		for (ReSIDBase sid : sids) {
 			FadingSampleMixer sampler = (FadingSampleMixer) sid.getSampler();
-			sampler.setFadeIn(fadeIn);
+			sampler.setFadeInClocks((long) (fadeIn * cpuClock.getCpuFrequency()));
 		}
 	}
 
+	/**
+	 * Fade-out start time reached, audio volume should be lowered to zero.
+	 * 
+	 * @param fadeOut
+	 *            Fade-out time in seconds
+	 */
 	public void fadeOut(int fadeOut) {
 		for (ReSIDBase sid : sids) {
 			FadingSampleMixer sampler = (FadingSampleMixer) sid.getSampler();
-			sampler.setFadeOut(fadeOut);
+			sampler.setFadeOutClocks((long) (fadeOut * cpuClock
+					.getCpuFrequency()));
 		}
 	}
 
