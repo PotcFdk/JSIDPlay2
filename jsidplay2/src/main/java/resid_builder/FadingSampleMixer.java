@@ -76,7 +76,7 @@ class FadingSampleMixer extends SampleMixer {
 	public void accept(int sample) {
 		if (fadeInClocks >= 0) {
 			if (fadeInClocks-- == 0) {
-				// no fade-in? Initially set volume
+				// end of fade-in? set maximum volume
 				volumeL = maxVolL;
 				volumeR = maxVolR;
 			} else {
