@@ -264,7 +264,7 @@ public class SIDMixer {
 	public void fadeIn(int fadeIn) {
 		for (ReSIDBase sid : sids) {
 			FadingSampleMixer sampler = (FadingSampleMixer) sid.getSampler();
-			sampler.setFadeInClocks((long) (fadeIn * cpuClock.getCpuFrequency()));
+			sampler.setFadeIn((long) (fadeIn * cpuClock.getCpuFrequency()));
 		}
 	}
 
@@ -277,8 +277,7 @@ public class SIDMixer {
 	public void fadeOut(int fadeOut) {
 		for (ReSIDBase sid : sids) {
 			FadingSampleMixer sampler = (FadingSampleMixer) sid.getSampler();
-			sampler.setFadeOutClocks((long) (fadeOut * cpuClock
-					.getCpuFrequency()));
+			sampler.setFadeOut((long) (fadeOut * cpuClock.getCpuFrequency()));
 		}
 	}
 

@@ -21,7 +21,7 @@ class FadingSampleMixer extends SampleMixer {
 	 * and fade-out counters for left and right speaker.
 	 */
 	private long fadeInStepL, fadeInStepR, fadeOutStepL, fadeOutStepR,
-			curInValL, curInValR, curOutValL, curOutValR;
+			fadeInValL, fadeInValR, fadeOutValL, fadeOutValR;
 
 	/**
 	 * Currently configured volume level.
@@ -32,70 +32,62 @@ class FadingSampleMixer extends SampleMixer {
 		super(audioBufferL, audioBufferR);
 	}
 
-	public void setVolume(int volumeL, int volumeR) {
-		super.setVolume(volumeL, volumeR);
+	/**
+	 * Set fade-in time. Increae volume from zero to the maximum.
+	 * 
+	 * @param fadeIn
+	 *            fade-in time in clock ticks
+	 */
+	public void setFadeIn(long fadeIn) {
+		this.fadeInClocks = fadeIn;
 		this.maxVolL = volumeL;
 		this.maxVolR = volumeR;
-		updateFader();
-	}
-
-	/**
-	 * Set fade-in time.
-	 * 
-	 * @param fadeInClocks
-	 *            fade-in time in clock ticks (0 means disabled)
-	 */
-	public void setFadeInClocks(long fadeInClocks) {
 		super.setVolume(0, 0);
-		this.fadeInClocks = fadeInClocks;
 		updateFader();
 	}
 
 	/**
-	 * Set fade-out time.
+	 * Set fade-out time. Decrease volume from the maximum to zero.
 	 * 
-	 * @param fadeOutClocks
-	 *            fade-out time in clock ticks (0 means disabled)
+	 * @param fadeOut
+	 *            fade-out time in clock ticks
 	 */
-	public void setFadeOutClocks(long fadeOutClocks) {
-		this.fadeOutClocks = fadeOutClocks;
+	public void setFadeOut(long fadeOut) {
+		this.fadeOutClocks = fadeOut;
+		super.setVolume(maxVolL, maxVolR);
 		updateFader();
 	}
 
 	/**
-	 * Volume increment with respect to fade-in/fade-out.
+	 * Calculate after how many clock ticks volume must be increased/decreased.
 	 */
 	private void updateFader() {
-		curInValL = fadeInStepL = maxVolL != 0 ? fadeInClocks / maxVolL : 0;
-		curInValR = fadeInStepR = maxVolR != 0 ? fadeInClocks / maxVolR : 0;
-		curOutValL = fadeOutStepL = maxVolL != 0 ? fadeOutClocks / maxVolL : 0;
-		curOutValR = fadeOutStepR = maxVolR != 0 ? fadeOutClocks / maxVolR : 0;
+		fadeInValL = fadeInStepL = maxVolL != 0 ? fadeInClocks / maxVolL : 0;
+		fadeInValR = fadeInStepR = maxVolR != 0 ? fadeInClocks / maxVolR : 0;
+		fadeOutValL = fadeOutStepL = maxVolL != 0 ? fadeOutClocks / maxVolL : 0;
+		fadeOutValR = fadeOutStepR = maxVolR != 0 ? fadeOutClocks / maxVolR : 0;
 	}
 
 	@Override
 	public void accept(int sample) {
-		if (fadeInClocks >= 0) {
-			if (fadeInClocks-- == 0) {
-				// end of fade-in? set maximum volume
-				volumeL = maxVolL;
-				volumeR = maxVolR;
-			} else {
-				if (--curInValL == 0) {
-					curInValL = fadeInStepL;
-					volumeL++;
-				}
-				if (--curInValR == 0) {
-					curInValR = fadeInStepR;
-					volumeR++;
-				}
+		if (fadeInClocks > 0) {
+			fadeInClocks--;
+			if (--fadeInValL == 0) {
+				fadeInValL = fadeInStepL;
+				volumeL++;
+			}
+			if (--fadeInValR == 0) {
+				fadeInValR = fadeInStepR;
+				volumeR++;
 			}
 		} else if (fadeOutClocks > 0) {
-			if (--curOutValL == 0) {
-				curOutValL = fadeOutStepL;
+			fadeOutClocks--;
+			if (--fadeOutValL == 0) {
+				fadeOutValL = fadeOutStepL;
 				volumeL--;
 			}
-			if (--curOutValR == 0) {
-				curOutValR = fadeOutStepR;
+			if (--fadeOutValR == 0) {
+				fadeOutValR = fadeOutStepR;
 				volumeR--;
 			}
 		}
