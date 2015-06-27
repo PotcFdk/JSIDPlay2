@@ -10,6 +10,7 @@ import libsidplay.sidtune.SidTune;
 /**
  * The timer contains the start and end time of a currently played song. It
  * notifies about reaching the start and end time by calling start/stop methods.
+ * Additionally the fade-in and fade-out start time notification has been added.
  */
 public abstract class Timer {
 	final Event startTimeEvent = new Event("Timer Start") {

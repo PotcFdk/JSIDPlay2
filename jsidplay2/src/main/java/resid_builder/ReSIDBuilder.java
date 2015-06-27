@@ -103,11 +103,23 @@ public class ReSIDBuilder implements SIDBuilder {
 		mixer.start();
 	}
 
+	/**
+	 * Fade-in start time reached, audio volume should be increased to the max.
+	 * 
+	 * @param fadeIn
+	 *            Fade-in time in seconds
+	 */
 	@Override
 	public void fadeIn(int fadeIn) {
 		mixer.fadeIn(fadeIn);
 	}
 
+	/**
+	 * Fade-out start time reached, audio volume should be lowered to zero.
+	 * 
+	 * @param fadeOut
+	 *            Fade-out time in seconds
+	 */
 	@Override
 	public void fadeOut(int fadeOut) {
 		mixer.fadeOut(fadeOut);
