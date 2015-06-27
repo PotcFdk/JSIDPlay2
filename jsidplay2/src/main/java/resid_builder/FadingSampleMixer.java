@@ -33,7 +33,7 @@ class FadingSampleMixer extends SampleMixer {
 	}
 
 	public void setVolume(int volumeL, int volumeR) {
-		super.setVolume(0, 0);
+		super.setVolume(volumeL, volumeR);
 		this.maxVolL = volumeL;
 		this.maxVolR = volumeR;
 		updateFader();
@@ -46,6 +46,7 @@ class FadingSampleMixer extends SampleMixer {
 	 *            fade-in time in clock ticks (0 means disabled)
 	 */
 	public void setFadeInClocks(long fadeInClocks) {
+		super.setVolume(0, 0);
 		this.fadeInClocks = fadeInClocks;
 		updateFader();
 	}
