@@ -449,7 +449,7 @@ public class Player extends HardwareEnsemble {
 	 */
 	private Runnable playerRunnable = () -> {
 		// Run until the player gets stopped
-		while (true) {
+		do {
 			try {
 				// Open tune
 				open();
@@ -471,14 +471,8 @@ public class Player extends HardwareEnsemble {
 				// Don't forget to close
 				close();
 			}
-
 			// "Play it once, Sam. For old times' sake."
-			if (stateProperty.get() == State.RESTART) {
-				continue;
-			}
-			// Stop it
-			break;
-		}
+		} while (stateProperty.get() == State.RESTART);
 	};
 
 	/**
