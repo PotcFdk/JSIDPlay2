@@ -729,33 +729,14 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Fast forward song.<BR>
-	 * <B>Note:</B> This method can be called several times up to
-	 * {@link resid_builder.SIDMixer#MAX_FAST_FORWARD} times.
+	 * Get SID builder info.
+	 * 
+	 * @param function
+	 *            SIDBuilder function to apply
+	 * @return SIDBuilder info
 	 */
-	public final void fastForward() {
-		sidBuilder.fastForward();
-	}
-
-	/**
-	 * Play normal speed (stop fast forward).
-	 */
-	public final void normalSpeed() {
-		sidBuilder.normalSpeed();
-	}
-
-	/**
-	 * Is fast forward playback active?
-	 */
-	public final boolean isFastForward() {
-		return sidBuilder.isFastForward();
-	}
-
-	/**
-	 * Get current SID chip count.
-	 */
-	public final int getNumDevices() {
-		return sidBuilder.getNumDevices();
+	public final <T> T getSidBuilderInfo(Function<SIDBuilder, T> function) {
+		return function.apply(sidBuilder);
 	}
 
 	/**

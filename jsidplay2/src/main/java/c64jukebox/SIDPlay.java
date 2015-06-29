@@ -189,7 +189,7 @@ public class SIDPlay extends Applet {
 	}
 
 	public int getHardSID_SID_Count() {
-		return player.getNumDevices();
+		return player.getSidBuilderInfo(builder -> builder.getNumDevices());
 	}
 
 	//

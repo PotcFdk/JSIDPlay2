@@ -293,11 +293,11 @@ public class ConsoleIO {
 				break;
 
 			case '.':
-				player.fastForward();
+				player.configureSIDBuilder(builder -> builder.fastForward());
 				break;
 
 			case ',':
-				player.normalSpeed();
+				player.configureSIDBuilder(builder -> builder.normalSpeed());
 				break;
 
 			case 'p':
