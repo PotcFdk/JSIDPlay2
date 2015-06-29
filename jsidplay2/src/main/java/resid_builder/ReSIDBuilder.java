@@ -15,8 +15,6 @@
  */
 package resid_builder;
 
-import java.util.List;
-
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
@@ -31,35 +29,11 @@ import resid_builder.residfp.ReSIDfp;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 
-public class ReSIDBuilder implements SIDBuilder {
-
-	/**
-	 * System event context.
-	 */
-	private EventScheduler context;
-
-	/**
-	 * Configuration
-	 */
-	private IConfig config;
-
-	/**
-	 * C64 system frequency
-	 */
-	private final CPUClock cpuClock;
-
-	/**
-	 * Mixer of sound samples
-	 */
-	protected final SIDMixer mixer;
+public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 
 	public ReSIDBuilder(EventScheduler context, IConfig config,
 			AudioConfig audioConfig, CPUClock cpuClock, AudioDriver audioDriver) {
-		this.context = context;
-		this.config = config;
-		this.cpuClock = cpuClock;
-		this.mixer = new SIDMixer(context, config, cpuClock, audioConfig,
-				audioDriver);
+		super(context, config, cpuClock, audioConfig, audioDriver);
 	}
 
 	/**
@@ -75,7 +49,7 @@ public class ReSIDBuilder implements SIDBuilder {
 		sid.setFilterEnable(emulationSection, sidNum);
 		sid.input(emulationSection.isDigiBoosted8580() ? sid
 				.getInputDigiBoost() : 0);
-		mixer.add(sidNum, sid);
+		add(sidNum, sid);
 		return sid;
 	}
 
@@ -84,101 +58,7 @@ public class ReSIDBuilder implements SIDBuilder {
 	 */
 	@Override
 	public void unlock(final SIDEmu sid) {
-		mixer.remove(sid);
-	}
-
-	/**
-	 * Reset.
-	 */
-	@Override
-	public void reset() {
-		mixer.reset();
-	}
-
-	/**
-	 * Timer start time has been reached, start mixing.
-	 */
-	@Override
-	public void start() {
-		mixer.start();
-	}
-
-	/**
-	 * Fade-in start time reached, audio volume should be increased to the max.
-	 * 
-	 * @param fadeIn
-	 *            Fade-in time in seconds
-	 */
-	@Override
-	public void fadeIn(int fadeIn) {
-		mixer.fadeIn(fadeIn);
-	}
-
-	/**
-	 * Fade-out start time reached, audio volume should be lowered to zero.
-	 * 
-	 * @param fadeOut
-	 *            Fade-out time in seconds
-	 */
-	@Override
-	public void fadeOut(int fadeOut) {
-		mixer.fadeOut(fadeOut);
-	}
-
-	/**
-	 * How many SID chips are in the mix?
-	 */
-	@Override
-	public int getNumDevices() {
-		return mixer.getSIDCount();
-	}
-
-	/**
-	 * Volume of the SID chip.<BR>
-	 * 0(-6db)..12(+6db)
-	 * 
-	 * @param sidNum
-	 *            SID chip number
-	 */
-	@Override
-	public void setVolume(int sidNum) {
-		mixer.setVolume(sidNum);
-	}
-
-	/**
-	 * Set left/right speaker balance for each SID.<BR>
-	 * 0(left speaker)..0.5(centered)..1(right speaker)
-	 * 
-	 * @param sidNum
-	 *            SID chip number
-	 */
-	@Override
-	public void setBalance(int sidNum) {
-		mixer.setBalance(sidNum);
-	}
-
-	/**
-	 * Doubles speed factor.
-	 */
-	@Override
-	public void fastForward() {
-		mixer.fastForward();
-	}
-
-	/**
-	 * Use normal speed factor.
-	 */
-	@Override
-	public void normalSpeed() {
-		mixer.normalSpeed();
-	}
-
-	/**
-	 * @return speed factor is used?
-	 */
-	@Override
-	public boolean isFastForward() {
-		return mixer.isFastForward();
+		remove(sid);
 	}
 
 	/**
@@ -266,13 +146,11 @@ public class ReSIDBuilder implements SIDBuilder {
 		} else if (ReSID.FakeStereo.class.equals(sidImplCls)) {
 			// ReSID fake-stereo mode
 			final int prevNum = sidNum - 1;
-			final List<ReSIDBase> sids = mixer.getSIDs();
-			return new ReSID.FakeStereo(context, config, prevNum, sids);
+			return new ReSID.FakeStereo(context, config, prevNum, getSIDs());
 		} else if (ReSIDfp.FakeStereo.class.equals(sidImplCls)) {
 			// ReSIDfp fake-stereo mode
 			final int prevNum = sidNum - 1;
-			final List<ReSIDBase> sids = mixer.getSIDs();
-			return new ReSIDfp.FakeStereo(context, config, prevNum, sids);
+			return new ReSIDfp.FakeStereo(context, config, prevNum, getSIDs());
 		} else {
 			throw new RuntimeException("Unknown SID impl.: " + sidImplCls);
 		}

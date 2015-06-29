@@ -157,17 +157,17 @@ public class SIDMixer {
 	/**
 	 * System event context.
 	 */
-	private EventScheduler context;
+	protected EventScheduler context;
 
 	/**
 	 * Configuration
 	 */
-	private IConfig config;
+	protected IConfig config;
 
 	/**
 	 * CPU clock.
 	 */
-	private CPUClock cpuClock;
+	protected CPUClock cpuClock;
 
 	/**
 	 * Mixer WITHOUT audio output, just clocking SID chips.

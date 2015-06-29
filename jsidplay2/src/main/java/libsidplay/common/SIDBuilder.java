@@ -46,9 +46,9 @@ public interface SIDBuilder {
 	void unlock(SIDEmu device);
 
 	/**
-	 * @return current number of devices.
+	 * @return current number of SID devices.
 	 */
-	int getNumDevices();
+	int getSIDCount();
 
 	/**
 	 * Reset.

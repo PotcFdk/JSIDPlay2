@@ -135,7 +135,7 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	@Override
-	public int getNumDevices() {
+	public int getSIDCount() {
 		return hsidDLL.GetHardSIDCount();
 	}
 
@@ -258,7 +258,7 @@ public class HardSIDBuilder implements SIDBuilder {
 		int sid8580 = config.getEmulationSection().getHardsid8580();
 		if (sidNum == 2) {
 			// 3-SID: for now choose next available free slot
-			for (int i = 0; i < getNumDevices(); i++) {
+			for (int i = 0; i < getSIDCount(); i++) {
 				if (i != sid6581 && i != sid8580) {
 					return i;
 				}
