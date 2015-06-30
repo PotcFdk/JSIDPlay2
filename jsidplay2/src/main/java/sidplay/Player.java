@@ -178,24 +178,31 @@ public class Player extends HardwareEnsemble {
 		this.audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 		this.playList = PlayList.getInstance(config, SidTune.RESET);
 		this.timer = new Timer(this) {
+
 			@Override
 			public void start() {
 				sidBuilder.start();
 			}
 
+			/**
+			 * If a tune ends:
+			 * <UL>
+			 * <LI>Single tune option? Stop player (except for loop option)
+			 * <LI>Play list with next song? Play next song
+			 * <LI>Play list end? Stop player (except for loop option)
+			 * </UL>
+			 * 
+			 * @see sidplay.player.Timer#end()
+			 */
 			@Override
 			public void end() {
-				// Only, if tune is playing: If play time is over loop or exit
 				if (tune != SidTune.RESET) {
 					if (config.getSidplay2Section().isSingle()) {
 						stateProperty.set(getEndState());
+					} else if (playList.hasNext()) {
+						nextSong();
 					} else {
-						// Check play-list end
-						if (playList.hasNext()) {
-							nextSong();
-						} else {
-							stateProperty.set(getEndState());
-						}
+						stateProperty.set(getEndState());
 					}
 				}
 			}
@@ -492,14 +499,14 @@ public class Player extends HardwareEnsemble {
 		AudioConfig audioConfig = AudioConfig.getInstance(config
 				.getAudioSection());
 
-		if (updateAudioDriver) {
-			updateAudioDriver = false;
+		if (updateAudioDriver ^= true) {
 			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 		}
 		audioDriver.setRecordingFilenameProvider(recordingFilenameProvider);
 
 		// replace driver settings for mp3
 		audioDriver = handleMP3(config, tune, audioDriver);
+
 		// create SID builder for hardware or emulation
 		sidBuilder = createSIDBuilder(cpuClock, audioConfig);
 		// open audio driver
