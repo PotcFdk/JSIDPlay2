@@ -186,11 +186,11 @@ public class Player extends HardwareEnsemble {
 
 			/**
 			 * If a tune ends:
-			 * <UL>
+			 * <OL>
 			 * <LI>Single tune option? Stop player (except for loop option)
 			 * <LI>Play list with next song? Play next song
 			 * <LI>Play list end? Stop player (except for loop option)
-			 * </UL>
+			 * </OL>
 			 * 
 			 * @see sidplay.player.Timer#end()
 			 */
