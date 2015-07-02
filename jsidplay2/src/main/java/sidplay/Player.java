@@ -209,12 +209,16 @@ public class Player extends HardwareEnsemble {
 
 			@Override
 			public void fadeInStart(int fadeIn) {
-				sidBuilder.fadeIn(fadeIn);
+				if (tune != SidTune.RESET) {
+					sidBuilder.fadeIn(fadeIn);
+				}
 			}
 
 			@Override
 			public void fadeOutStart(int fadeOut) {
-				sidBuilder.fadeOut(fadeOut);
+				if (tune != SidTune.RESET) {
+					sidBuilder.fadeOut(fadeOut);
+				}
 			}
 
 		};
