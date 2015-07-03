@@ -503,7 +503,8 @@ public class Player extends HardwareEnsemble {
 		AudioConfig audioConfig = AudioConfig.getInstance(config
 				.getAudioSection());
 
-		if (updateAudioDriver ^= true) {
+		if (updateAudioDriver) {
+			updateAudioDriver = false;
 			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 		}
 		audioDriver.setRecordingFilenameProvider(recordingFilenameProvider);
