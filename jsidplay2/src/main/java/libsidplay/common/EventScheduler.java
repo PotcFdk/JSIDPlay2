@@ -174,7 +174,7 @@ public final class EventScheduler {
 			if (next.triggerTime > event.triggerTime) {
 				event.next = next;
 				scan.next = event;
-				break;
+				return;
 			}
 			scan = next;
 		}

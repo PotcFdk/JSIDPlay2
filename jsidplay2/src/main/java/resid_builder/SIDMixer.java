@@ -14,6 +14,7 @@ import libsidplay.common.SIDEmu;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
+import resid_builder.SampleMixer.FadingSampleMixer;
 import resid_builder.resample.Resampler;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;

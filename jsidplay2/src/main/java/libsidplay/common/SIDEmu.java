@@ -20,6 +20,9 @@ import libsidplay.config.IEmulationSection;
 
 public abstract class SIDEmu {
 
+	/** Number of SID chip registers. */
+	public final static int REG_COUNT = 32;
+
 	/** Event context */
 	protected final EventScheduler context;
 
@@ -27,7 +30,7 @@ public abstract class SIDEmu {
 	protected long lastTime;
 
 	/** Internal cache of SID register state, used for GUI feedback. */
-	private final byte[] registers = new byte[32];
+	private final byte[] registers = new byte[REG_COUNT];
 
 	public SIDEmu(EventScheduler context) {
 		this.context = context;

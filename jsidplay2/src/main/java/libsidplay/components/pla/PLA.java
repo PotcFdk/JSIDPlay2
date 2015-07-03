@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SIDListener;
 import libsidplay.common.SIDEmu;
+import libsidplay.common.SIDListener;
 import libsidplay.components.cart.Cartridge;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos656x.VIC;
@@ -25,16 +25,27 @@ import libsidplay.components.ram.ColorRAMBank;
  * @author Antti Lankila
  */
 public final class PLA {
-	/** Maximum number of supported SIDs (mono and stereo) */
+	/**
+	 * Maximum number of supported SIDs (mono, stereo and 3-SID)
+	 */
 	public final static int MAX_SIDS = 3;
+
+	/**
+	 * Maximum bank count (4K regions).
+	 */
+	private static final int MAX_BANKS = 16;
 
 	private static final String CHAR_ROM = "/libsidplay/roms/char.bin";
 	private static final String BASIC_ROM = "/libsidplay/roms/basic.bin";
 	private static final String KERNAL_ROM = "/libsidplay/roms/kernal.bin";
 
-	private static final byte[] CHAR = new byte[0x1000];
-	private static final byte[] BASIC = new byte[0x2000];
-	private static final byte[] KERNAL = new byte[0x2000];
+	private static final int CHAR_LENGTH = 0x1000;
+	private static final int BASIC_LENGTH = 0x2000;
+	private static final int KERNAL_LENGTH = 0x2000;
+
+	private static final byte[] CHAR = new byte[CHAR_LENGTH];
+	private static final byte[] BASIC = new byte[BASIC_LENGTH];
+	private static final byte[] KERNAL = new byte[KERNAL_LENGTH];
 	static {
 		try (DataInputStream isChar = new DataInputStream(
 				PLA.class.getResourceAsStream(CHAR_ROM));
@@ -52,7 +63,7 @@ public final class PLA {
 	private static final Bank characterRomBank = new Bank() {
 		@Override
 		public byte read(final int address) {
-			return CHAR[address & 0xfff];
+			return CHAR[address & CHAR_LENGTH - 1];
 		}
 
 		@Override
@@ -65,7 +76,7 @@ public final class PLA {
 	private static final Bank basicRomBank = new Bank() {
 		@Override
 		public byte read(final int address) {
-			return BASIC[address & 0x1fff];
+			return BASIC[address & BASIC_LENGTH - 1];
 		}
 
 		@Override
@@ -78,7 +89,7 @@ public final class PLA {
 	private static final Bank kernalRomBank = new Bank() {
 		@Override
 		public byte read(final int address) {
-			return KERNAL[address & 0x1fff];
+			return KERNAL[address & KERNAL_LENGTH - 1];
 		}
 
 		@Override
@@ -105,11 +116,9 @@ public final class PLA {
 	private class SIDBank extends Bank {
 		/**
 		 * Size of mapping table. Each 32 bytes another SID chip base address
-		 * can be assigned to.
+		 * can be assigned to (range is d400-d7ff, step size=0x20).
 		 */
 		private final static int MAPPER_SIZE = 32;
-		/** Number of SID chip registers */
-		private final static int REG_COUNT = 32;
 
 		/**
 		 * Mapping table in d400-d7ff. Maps a SID chip base address to a SID
@@ -121,7 +130,7 @@ public final class PLA {
 		private final SIDEmu[] sidemu = new SIDEmu[MAX_SIDS];
 
 		/** SIDs assigned to bank numbers */
-		private boolean[] sidBankUsed = new boolean[16];
+		private boolean[] sidBankUsed = new boolean[MAX_BANKS];
 
 		/** SID listener for detecting SID writes */
 		private final SIDListener[] sidWriteListener = new SIDListener[MAX_SIDS];
@@ -165,7 +174,7 @@ public final class PLA {
 		public byte read(final int address) {
 			final int chipNum = sidmapper[address >> 5 & MAPPER_SIZE - 1];
 			if (sidemu[chipNum] != null) {
-				return sidemu[chipNum].read(address & REG_COUNT - 1);
+				return sidemu[chipNum].read(address & SIDEmu.REG_COUNT - 1);
 			} else {
 				return (byte) 0xff;
 			}
@@ -179,12 +188,12 @@ public final class PLA {
 		public void write(final int address, final byte value) {
 			final int chipNum = sidmapper[address >> 5 & MAPPER_SIZE - 1];
 			if (sidemu[chipNum] != null) {
-				sidemu[chipNum].write(address & REG_COUNT - 1, value);
+				sidemu[chipNum].write(address & SIDEmu.REG_COUNT - 1, value);
 			}
 			if (sidWriteListener[chipNum] != null) {
 				final long time = context.getTime(Event.Phase.PHI2);
 				sidWriteListener[chipNum].write(time, chipNum, address
-						& REG_COUNT - 1, value);
+						& SIDEmu.REG_COUNT - 1, value);
 			}
 		}
 
@@ -223,7 +232,7 @@ public final class PLA {
 	 * @author Antti Lankila
 	 */
 	public static class IOBank extends Bank {
-		private final Bank[] map = new Bank[16];
+		private final Bank[] map = new Bank[MAX_BANKS];
 
 		public void setBank(final int num, final Bank b) {
 			map[num] = b;
@@ -246,13 +255,13 @@ public final class PLA {
 	private boolean basic, kernal, io;
 
 	/** CPU read memory mapping in 4k chunks */
-	private final Bank[] cpuReadMap = new Bank[16];
+	private final Bank[] cpuReadMap = new Bank[MAX_BANKS];
 
 	/** CPU write memory mapping in 4k chunks */
-	private final Bank[] cpuWriteMap = new Bank[16];
+	private final Bank[] cpuWriteMap = new Bank[MAX_BANKS];
 
 	/** VIC memory bank mapping in 4k chunks */
-	private final Bank[] vicMapPHI1 = new Bank[16];
+	private final Bank[] vicMapPHI1 = new Bank[MAX_BANKS];
 
 	/** VIC memory top bits from CIA 2 */
 	private int vicMemBase;
@@ -575,11 +584,11 @@ public final class PLA {
 
 		/* vic bank mapping ROMH */
 		if (exromPHI1 && !gamePHI1) {
-			for (int i = 3; i < 16; i += 4) {
+			for (int i = 3; i < MAX_BANKS; i += 4) {
 				vicMapPHI1[i] = cartridge.getRomh();
 			}
 		} else {
-			for (int i = 3; i < 16; i += 4) {
+			for (int i = 3; i < MAX_BANKS; i += 4) {
 				vicMapPHI1[i] = ramBank;
 			}
 		}
@@ -735,8 +744,7 @@ public final class PLA {
 	 * @param listener
 	 *            listener to debug SID register writes
 	 */
-	public void setSidWriteListener(final int chipNo,
-			final SIDListener listener) {
+	public void setSidWriteListener(final int chipNo, final SIDListener listener) {
 		sidBank.setSidWriteListener(chipNo, listener);
 	}
 
