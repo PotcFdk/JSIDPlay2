@@ -115,14 +115,15 @@ public final class PLA {
 	/** SID chip memory bank maps reads and writes to the assigned SID chip */
 	private class SIDBank extends Bank {
 		/**
-		 * Size of mapping table. Each 32 bytes another SID chip base address
-		 * can be assigned to (range is d400-d7ff, step size=0x20).
+		 * Size of mapping table. Each 32 bytes another SID chip is possible (it
+		 * can be assigned to IO range d000-dfff: 4096b/32b=128 places).<BR>
+		 * <B>Note:</B> First possible and default address of a SID in a C64 is
+		 * 0xd400. Other common places are 0xd400-0xd7ff, 0xde00 and 0xdf00.
 		 */
-		private final static int MAPPER_SIZE = 32;
+		private final static int MAPPER_SIZE = 128;
 
 		/**
-		 * Mapping table in d400-d7ff. Maps a SID chip base address to a SID
-		 * chip number.
+		 * SID Mapping table. Maps a SID chip base address to a SID chip number.
 		 */
 		private final int sidmapper[] = new int[MAPPER_SIZE];
 
