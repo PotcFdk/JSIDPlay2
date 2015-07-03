@@ -190,16 +190,14 @@ public class ConsolePlayer {
 			if (config.getSidplay2Section().isEnableDatabase()) {
 				setSIDDatabase(player);
 			}
-			// check song length
-			if (defaultLength == 0) {
-				int length = player.getSidDatabaseInfo(
-						db -> db.getSongLength(tune), 0);
-				if (isRecording() && length == 0) {
-					System.err
-							.println("ERROR: unknown song length in record mode"
-									+ " (please use option --defaultLength or configure song length database)");
-					exit(1);
-				}
+			if (isRecording()
+					&& defaultLength == 0
+					&& player.getSidDatabaseInfo(db -> db.getSongLength(tune),
+							0) == 0) {
+				System.err
+						.println("ERROR: unknown song length in record mode"
+								+ " (please use option --defaultLength or configure song length database)");
+				exit(1);
 			}
 			ConsoleIO consoleIO = new ConsoleIO(config, filenames.get(0));
 			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet,
