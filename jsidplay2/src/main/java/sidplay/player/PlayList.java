@@ -193,7 +193,7 @@ public class PlayList {
 
 		@Override
 		public void previous() {
-		};
+		}
 
 	};
 	private static PlayList singleton = NONE;

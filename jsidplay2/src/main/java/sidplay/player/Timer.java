@@ -52,12 +52,12 @@ public abstract class Timer {
 	private long end;
 
 	/**
-	 * Fade-in time in seconds.
+	 * Fade-in time in seconds (0 means no fade-in).
 	 */
 	private int fadeIn;
 
 	/**
-	 * Fade-out time in seconds
+	 * Fade-out time in seconds (0 means no fade-out).
 	 */
 	private int fadeOut;
 
@@ -134,7 +134,6 @@ public abstract class Timer {
 		EventScheduler eventScheduler = player.getC64().getEventScheduler();
 		double cyclesPerSecond = eventScheduler.getCyclesPerSecond();
 		long absoluteCycles = (long) (seconds * cyclesPerSecond);
-		eventScheduler.cancel(event);
 		if (absoluteCycles < eventScheduler.getTime(Phase.PHI1)) {
 			// event is in the past? Trigger immediately!
 			eventScheduler.scheduleAbsolute(event, 0, Phase.PHI1);
