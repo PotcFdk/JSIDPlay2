@@ -76,14 +76,10 @@ public class JavaSound extends AudioDriver {
 
 	public synchronized void setAudioDevice(final Mixer.Info info)
 			throws LineUnavailableException {
-		// first close previous dataLine when it already present
+		// first close previous dataLine when it is already present
 		close();
 
-		if (info == null) {
-			dataLine = AudioSystem.getSourceDataLine(audioFormat);
-		} else {
-			dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
-		}
+		dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
 		dataLine.open(dataLine.getFormat(), cfg.bufferFrames * Short.BYTES
 				* cfg.channels);
 		// The actual buffer size for the open line may differ from the

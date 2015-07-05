@@ -130,7 +130,7 @@ public final class PLA {
 		/** Contains a SID chip implementation for each SID chip number. */
 		private final SIDEmu[] sidemu = new SIDEmu[MAX_SIDS];
 
-		/** SIDs assigned to bank numbers */
+		/** Is a SID assigned to a bank number? */
 		private boolean[] sidBankUsed = new boolean[MAX_BANKS];
 
 		/** SID listener for detecting SID writes */
@@ -204,8 +204,8 @@ public final class PLA {
 		}
 
 		/** Set SID chip implementation of a specific SID chip number. */
-		private void setSID(final int chipNum, final SIDEmu s) {
-			sidemu[chipNum] = s;
+		private void setSID(final int chipNum, final SIDEmu sidEmu) {
+			sidemu[chipNum] = sidEmu;
 		}
 	}
 
@@ -721,14 +721,14 @@ public final class PLA {
 	}
 
 	/**
-	 * Clear SID address mapping.
+	 * Clear SID base address mapping.
 	 */
 	public void clearSIDAddresses() {
 		sidBank.clearSIDAddresses();
 	}
 
 	/**
-	 * Set the base address of a stereo SID chip
+	 * Set the base address of a SID chip
 	 * 
 	 * @param secondSidChipBase
 	 *            base address (e.g. 0xd420)
