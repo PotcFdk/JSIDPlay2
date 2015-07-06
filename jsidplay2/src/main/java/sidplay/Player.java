@@ -207,6 +207,11 @@ public class Player extends HardwareEnsemble {
 				}
 			}
 
+			/**
+			 * If a tune starts playing, fade-in volume.
+			 * 
+			 * @see sidplay.player.Timer#fadeInStart(int)
+			 */
 			@Override
 			public void fadeInStart(int fadeIn) {
 				if (tune != SidTune.RESET) {
@@ -214,6 +219,11 @@ public class Player extends HardwareEnsemble {
 				}
 			}
 
+			/**
+			 * If a tune is short before stop time, fade-out volume.
+			 * 
+			 * @see sidplay.player.Timer#fadeOutStart(int)
+			 */
 			@Override
 			public void fadeOutStart(int fadeOut) {
 				if (tune != SidTune.RESET) {
@@ -565,7 +575,7 @@ public class Player extends HardwareEnsemble {
 
 	/**
 	 * Set alternative audio driver (not contained in {@link Audio}).<BR>
-	 * For example, If it is required to use a neW instance of audio driver each
+	 * For example, If it is required to use a new instance of audio driver each
 	 * time the player plays a tune.
 	 * 
 	 * @param driver
@@ -583,7 +593,7 @@ public class Player extends HardwareEnsemble {
 			AudioDriver audioDriver) {
 		AudioDriver newAudioDriver = audioDriver;
 		if (oldAudioDriver == null && tune instanceof MP3Tune) {
-			// save settings
+			// save settings before MP3 gets played
 			oldAudioDriver = audioDriver;
 		} else if (oldAudioDriver != null && !(tune instanceof MP3Tune)) {
 			// restore settings after MP3 has been played last time
