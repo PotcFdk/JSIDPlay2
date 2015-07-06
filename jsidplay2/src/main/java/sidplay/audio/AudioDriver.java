@@ -17,6 +17,7 @@ package sidplay.audio;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.function.Function;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -24,7 +25,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import libsidplay.sidtune.SidTune;
 
 public abstract class AudioDriver {
-	protected RecordingFilenameProvider recordingFilenameProvider;
+	protected Function<SidTune, String> recordingFilenameProvider;
 
 	/**
 	 * Open audio interface.
@@ -74,7 +75,7 @@ public abstract class AudioDriver {
 	public abstract ByteBuffer buffer();
 
 	public void setRecordingFilenameProvider(
-			RecordingFilenameProvider recordingFilenameProvider) {
+			Function<SidTune, String> recordingFilenameProvider) {
 		this.recordingFilenameProvider = recordingFilenameProvider;
 	}
 }

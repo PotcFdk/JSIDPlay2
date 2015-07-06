@@ -63,7 +63,6 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.MP3Stream;
-import sidplay.audio.RecordingFilenameProvider;
 import sidplay.player.PlayList;
 import sidplay.player.State;
 import sidplay.player.Timer;
@@ -167,7 +166,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Create a filename to be used for recording.
 	 */
-	private RecordingFilenameProvider recordingFilenameProvider = tune -> "jsidplay2";
+	private Function<SidTune, String> recordingFilenameProvider = tune -> "jsidplay2";
 
 	/**
 	 * Create a Music Player.
@@ -817,7 +816,7 @@ public class Player extends HardwareEnsemble {
 	 *            provider of recording filenames
 	 */
 	public void setRecordingFilenameProvider(
-			RecordingFilenameProvider recordingFilenameProvider) {
+			Function<SidTune, String> recordingFilenameProvider) {
 		this.recordingFilenameProvider = recordingFilenameProvider;
 	}
 

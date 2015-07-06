@@ -89,7 +89,7 @@ public class WavFile extends AudioDriver {
 		wavHdr.blockAlign = (short) blockAlign;
 		wavHdr.bitsPerSample = 16;
 
-		file = new RandomAccessFile(recordingFilenameProvider.getFilename(tune)
+		file = new RandomAccessFile(recordingFilenameProvider.apply(tune)
 				+ EXTENSION, "rw");
 		file.setLength(0);
 		file.write(wavHdr.getBytes());

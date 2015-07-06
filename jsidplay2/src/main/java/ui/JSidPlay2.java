@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -70,7 +71,6 @@ import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
-import sidplay.audio.RecordingFilenameProvider;
 import sidplay.ini.IniReader;
 import sidplay.player.PlayList;
 import sidplay.player.State;
@@ -110,7 +110,7 @@ import ui.webview.WebView;
 import ui.webview.WebViewType;
 
 public class JSidPlay2 extends C64Window implements IExtendImageListener,
-		RecordingFilenameProvider {
+		Function<SidTune, String> {
 
 	/** Build date calculated from our own modify time */
 	private static String DATE = "unknown";
@@ -1577,8 +1577,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		}
 	}
 
+	/**
+	 * Provide a filename for the tune containing some tune infos.
+	 * 
+	 * @see java.util.function.Function#apply(java.lang.Object)
+	 */
 	@Override
-	public String getFilename(SidTune tune) {
+	public String apply(SidTune tune) {
 		String defaultName = "jsidplay2";
 		if (tune == SidTune.RESET) {
 			return new File(util.getConfig().getSidplay2Section().getTmpDir(),

@@ -48,7 +48,7 @@ public class MP3File extends AudioDriver {
 		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, Short.SIZE,
 				cfg.channels, true, false);
 		jump3r = new LameEncoder(audioFormat);
-		out = new FileOutputStream(recordingFilenameProvider.getFilename(tune)
+		out = new FileOutputStream(recordingFilenameProvider.apply(tune)
 				+ EXTENSION);
 	}
 

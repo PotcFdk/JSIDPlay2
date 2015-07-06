@@ -2,6 +2,7 @@ package sidplay.audio;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.function.Function;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -69,7 +70,7 @@ public class ProxyDriver extends AudioDriver {
 
 	@Override
 	public void setRecordingFilenameProvider(
-			RecordingFilenameProvider recordingFilenameProvider) {
+			Function<SidTune, String> recordingFilenameProvider) {
 		driverOne.setRecordingFilenameProvider(recordingFilenameProvider);
 		driverTwo.setRecordingFilenameProvider(recordingFilenameProvider);
 	}
