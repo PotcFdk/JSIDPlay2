@@ -9,10 +9,8 @@ import java.util.Optional;
 
 import javax.persistence.Embeddable;
 
-import libsidplay.config.IOnlineSection;
-
 @Embeddable
-public class OnlineSection implements IOnlineSection {
+public class OnlineSection {
 
 	private static final String MAFIFEST_URL_KEY = "url:";
 
@@ -43,7 +41,6 @@ public class OnlineSection implements IOnlineSection {
 
 	private String hvscUrl = DEPLOYMENT_URL + "C64Music.zip";
 
-	@Override
 	public String getHvscUrl() {
 		return hvscUrl;
 	}
@@ -54,7 +51,6 @@ public class OnlineSection implements IOnlineSection {
 
 	private String cgscUrl = DEPLOYMENT_URL + "CGSC.zip";
 
-	@Override
 	public String getCgscUrl() {
 		return cgscUrl;
 	}
@@ -65,7 +61,6 @@ public class OnlineSection implements IOnlineSection {
 
 	private String hvmecUrl = DEPLOYMENT_URL + "HVMEC.zip";
 
-	@Override
 	public String getHvmecUrl() {
 		return hvmecUrl;
 	}
@@ -76,7 +71,6 @@ public class OnlineSection implements IOnlineSection {
 
 	private String demosUrl = DEPLOYMENT_URL + "Demos.zip";
 
-	@Override
 	public String getDemosUrl() {
 		return demosUrl;
 	}
@@ -87,7 +81,6 @@ public class OnlineSection implements IOnlineSection {
 
 	private String magazinesUrl = DEPLOYMENT_URL + "C64Magazines.zip";
 
-	@Override
 	public String getMagazinesUrl() {
 		return magazinesUrl;
 	}
@@ -98,7 +91,6 @@ public class OnlineSection implements IOnlineSection {
 
 	private String gamebaseUrl = DEPLOYMENT_URL + "GameBase64.zip";
 
-	@Override
 	public String getGamebaseUrl() {
 		return gamebaseUrl;
 	}
@@ -112,12 +104,10 @@ public class OnlineSection implements IOnlineSection {
 	private String soasc6581R2 = SOASC_BASE
 			+ "soasc/soasc_mp3{0}_T{1,number,00}.sid_MOS6581R2.mp3";
 
-	@Override
 	public String getSoasc6581R2() {
 		return soasc6581R2;
 	}
 
-	@Override
 	public void setSoasc6581R2(String soasc6581r2) {
 		soasc6581R2 = soasc6581r2;
 	}
@@ -125,12 +115,10 @@ public class OnlineSection implements IOnlineSection {
 	private String soasc6581R4 = SOASC_BASE
 			+ "soasc/soasc_mp3{0}_T{1,number,00}.sid_MOS6581R4.mp3";
 
-	@Override
 	public String getSoasc6581R4() {
 		return soasc6581R4;
 	}
 
-	@Override
 	public void setSoasc6581R4(String soasc6581r4) {
 		soasc6581R4 = soasc6581r4;
 	}
@@ -138,12 +126,10 @@ public class OnlineSection implements IOnlineSection {
 	private String soasc8580R5 = SOASC_BASE
 			+ "soasc/soasc_mp3{0}_T{1,number,00}.sid_CSG8580R5.mp3";
 
-	@Override
 	public String getSoasc8580R5() {
 		return soasc8580R5;
 	}
 
-	@Override
 	public void setSoasc8580R5(String soasc8580r5) {
 		soasc8580R5 = soasc8580r5;
 	}
