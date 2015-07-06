@@ -63,7 +63,6 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.MP3Stream;
-import sidplay.audio.NaturalFinishedException;
 import sidplay.audio.RecordingFilenameProvider;
 import sidplay.player.PlayList;
 import sidplay.player.State;
@@ -484,9 +483,6 @@ public class Player extends HardwareEnsemble {
 					}
 					interactivityHook.accept(Player.this);
 				}
-			} catch (NaturalFinishedException e) {
-				// natural finish
-				stateProperty.set(getEndState());
 			} catch (InterruptedException e) {
 			} finally {
 				// Don't forget to close
