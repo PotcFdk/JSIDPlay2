@@ -62,7 +62,7 @@ import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
-import sidplay.audio.MP3Stream;
+import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.player.PlayList;
 import sidplay.player.State;
 import sidplay.player.Timer;

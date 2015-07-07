@@ -1,5 +1,7 @@
 package sidplay.audio;
 
+import sidplay.audio.MP3Driver.MP3File;
+
 public enum Audio {
 	/** Java Sound API. */
 	SOUNDCARD(new JavaSound(), "Soundcard"),
