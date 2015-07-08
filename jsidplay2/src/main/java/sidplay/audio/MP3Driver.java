@@ -108,8 +108,7 @@ public abstract class MP3Driver extends AudioDriver {
 	public void open(final AudioConfig cfg, SidTune tune)
 			throws LineUnavailableException, UnsupportedAudioFileException,
 			IOException {
-		final int channels = cfg.channels;
-		final int blockAlign = Short.BYTES * channels;
+		final int blockAlign = Short.BYTES * cfg.channels;
 
 		// We need to make a buffer for the user
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);

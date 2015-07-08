@@ -98,11 +98,7 @@ public class JavaSound extends AudioDriver {
 		if (!dataLine.isActive()) {
 			dataLine.start();
 		}
-		int len = sampleBuffer.capacity();
-		int bytesWritten = dataLine.write(sampleBuffer.array(), 0, len);
-		if (bytesWritten != len) {
-			throw new InterruptedException();
-		}
+		dataLine.write(sampleBuffer.array(), 0, sampleBuffer.capacity());
 	}
 
 	/**
