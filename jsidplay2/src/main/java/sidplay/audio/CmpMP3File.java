@@ -31,7 +31,7 @@ public class CmpMP3File extends JavaSound {
 	/**
 	 * MP3 sound output.
 	 */
-	protected JavaSound mp3Driver = new JavaSound();
+	protected JavaSound mp3JavaSound = new JavaSound();
 
 	@Override
 	public void open(final AudioConfig cfg, SidTune tune)
@@ -40,7 +40,7 @@ public class CmpMP3File extends JavaSound {
 
 		jump3r = new LameDecoder(mp3File.getAbsolutePath());
 
-		mp3Driver.open(
+		mp3JavaSound.open(
 				new AudioConfig(jump3r.getSampleRate(), jump3r.getChannels(),
 						cfg.getDevice()) {
 					@Override
@@ -57,11 +57,11 @@ public class CmpMP3File extends JavaSound {
 
 	@Override
 	public void write() throws InterruptedException {
-		if (!jump3r.decode(mp3Driver.buffer())) {
+		if (!jump3r.decode(mp3JavaSound.buffer())) {
 			throw new InterruptedException();
 		}
 		if (playOriginal) {
-			mp3Driver.write();
+			mp3JavaSound.write();
 		} else {
 			super.write();
 		}
@@ -70,13 +70,13 @@ public class CmpMP3File extends JavaSound {
 	@Override
 	public synchronized void pause() {
 		super.pause();
-		mp3Driver.pause();
+		mp3JavaSound.pause();
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		mp3Driver.close();
+		mp3JavaSound.close();
 		if (jump3r != null) {
 			jump3r.close();
 		}
