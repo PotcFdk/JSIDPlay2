@@ -520,8 +520,9 @@ public class Player extends HardwareEnsemble {
 			String recordingFilename = recordingFilenameProvider.apply(tune);
 			audioDriver.open(audioConfig, recordingFilename);
 		} catch (LineUnavailableException e) {
-			// Linux fix: restart, if currently unavailable
-			Thread.sleep(1000);
+			// Retry, most commonly when a requested line is already in use by
+			// another application
+			Thread.sleep(5000);
 			stateProperty.set(State.RESTART);
 			throw new InterruptedException(e.getMessage());
 		} catch (IOException e) {
