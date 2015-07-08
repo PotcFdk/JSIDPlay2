@@ -11,7 +11,7 @@ import javax.sound.sampled.LineUnavailableException;
  * @author Ken Händel
  * 
  */
-public class ProxyDriver extends AudioDriver {
+public class ProxyDriver implements AudioDriver {
 	private final AudioDriver driverOne;
 	private final AudioDriver driverTwo;
 

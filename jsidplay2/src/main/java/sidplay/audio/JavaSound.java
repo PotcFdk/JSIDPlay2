@@ -14,7 +14,7 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
 
-public class JavaSound extends AudioDriver {
+public class JavaSound implements AudioDriver {
 	public static final class Device {
 		private final Info info;
 

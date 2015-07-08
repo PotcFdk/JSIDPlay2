@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
 
 import javax.sound.sampled.LineUnavailableException;
 
-public abstract class AudioDriver {
+public interface AudioDriver {
 
 	/**
 	 * Open audio interface.
@@ -34,7 +34,7 @@ public abstract class AudioDriver {
 	 * @throws LineUnavailableException
 	 * @throws IOException
 	 */
-	public abstract void open(AudioConfig cfg, String recordingFilename)
+	void open(AudioConfig cfg, String recordingFilename)
 			throws LineUnavailableException, IOException;
 
 	/**
@@ -42,7 +42,7 @@ public abstract class AudioDriver {
 	 * 
 	 * @throws InterruptedException
 	 */
-	public abstract void write() throws InterruptedException;
+	void write() throws InterruptedException;
 
 	/**
 	 * Temporarily cease audio production, for instance if user paused the
@@ -51,12 +51,12 @@ public abstract class AudioDriver {
 	 * 
 	 * Audio will be resumed automatically on next write().
 	 */
-	public abstract void pause();
+	void pause();
 
 	/**
 	 * Free the audio device. (Counterpart of open().)
 	 */
-	public abstract void close();
+	void close();
 
 	/**
 	 * Return the bytebuffer intended to hold the audio data.
@@ -67,6 +67,6 @@ public abstract class AudioDriver {
 	 * 
 	 * @return The buffer to write audio to.
 	 */
-	public abstract ByteBuffer buffer();
+	ByteBuffer buffer();
 
 }

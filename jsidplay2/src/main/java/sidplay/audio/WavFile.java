@@ -12,7 +12,7 @@ import java.nio.charset.Charset;
  * @author Ken Händel
  * 
  */
-public class WavFile extends AudioDriver {
+public class WavFile implements AudioDriver {
 	private static final int HEADER_LENGTH = 44;
 	private static final int HEADER_OFFSET = 8;
 

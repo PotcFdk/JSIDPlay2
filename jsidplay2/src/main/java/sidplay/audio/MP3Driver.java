@@ -17,7 +17,7 @@ import mp3.MPEGMode;
  * @author Ken Händel
  * 
  */
-public abstract class MP3Driver extends AudioDriver {
+public abstract class MP3Driver implements AudioDriver {
 
 	/**
 	 * File based driver to create a MP3 file.
