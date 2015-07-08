@@ -851,7 +851,7 @@ public class Player extends HardwareEnsemble {
 		credits.append("\thttp://jcommander.org/\n");
 		credits.append("MP3 downloads from Stone Oakvalley's Authentic SID MusicCollection (SOASC=):\n");
 		credits.append("\thttp://www.6581-8580.com/\n");
-		credits.append("6510 cross assembler (Kickassembler V3.34):\n");
+		credits.append("6510 cross assembler (Kickassembler V3.36):\n");
 		credits.append("\tCopyright (©) 2006-2014 Mads Nielsen\n");
 		credits.append("\thttp://www.theweb.dk/KickAssembler/\n");
 		credits.append("PSID to PRG converter (PSID64 v0.9):\n");
