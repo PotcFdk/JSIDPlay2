@@ -185,9 +185,8 @@ public class Player extends HardwareEnsemble {
 			/**
 			 * If a tune ends:
 			 * <OL>
-			 * <LI>Single tune option? Stop player (except for loop option)
-			 * <LI>Play list with next song? Play next song
-			 * <LI>Play list end? Stop player (except for loop option)
+			 * <LI>Single tune or end of play list? Stop player (except loop)
+			 * <LI>Else play next song
 			 * </OL>
 			 * 
 			 * @see sidplay.player.Timer#end()
@@ -195,12 +194,11 @@ public class Player extends HardwareEnsemble {
 			@Override
 			public void end() {
 				if (tune != SidTune.RESET) {
-					if (config.getSidplay2Section().isSingle()) {
+					if (config.getSidplay2Section().isSingle()
+							|| !playList.hasNext()) {
 						stateProperty.set(getEndState());
-					} else if (playList.hasNext()) {
-						nextSong();
 					} else {
-						stateProperty.set(getEndState());
+						nextSong();
 					}
 				}
 			}
@@ -272,8 +270,6 @@ public class Player extends HardwareEnsemble {
 			}, RESET_INIT_DELAY);
 		} else {
 			// Tune code path using auto-start
-			// Set play-back address to feedback call frames counter.
-			c64.setPlayAddr(tune.getInfo().getPlayAddr());
 			c64.getEventScheduler().schedule(new Event("Tune init event") {
 				@Override
 				public void event() throws InterruptedException {
@@ -290,6 +286,8 @@ public class Player extends HardwareEnsemble {
 					}
 				}
 			}, tune.getInitDelay());
+			// Set play-back address to feedback call frames counter.
+			c64.setPlayAddr(tune.getInfo().getPlayAddr());
 		}
 	}
 
@@ -473,8 +471,8 @@ public class Player extends HardwareEnsemble {
 				// Open tune
 				open();
 				menuHook.accept(Player.this);
-				stateProperty.set(State.RUNNING);
 				// Play next chunk of sound data, until it gets stopped
+				stateProperty.set(State.RUNNING);
 				while (play()) {
 					// Pause? sleep for awhile
 					if (stateProperty.get() == State.PAUSED) {
@@ -554,6 +552,8 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Re-read audio config to update audio driver.<BR>
 	 * Note: Normally this is done only once, initially.
+	 * 
+	 * @see Audio
 	 */
 	public final void updateAudioDriver() {
 		updateAudioDriver = true;
