@@ -13,29 +13,31 @@ import libsidplay.sidtune.SidTune;
  * 
  * @author Ken Händel
  * 
- *         Only unsigned 8-bit, and signed 16-bit, samples are supported.
- *         Endian-ess is adjusted if necessary.
- * 
- *         If number of sample bytes is given, this can speed up the process of
- *         closing a huge file on slow storage media.
- * 
  */
 public class WavFile extends AudioDriver {
-	protected static final Charset US_ASCII = Charset.forName("US-ASCII");
-
-	private static final String EXTENSION = ".wav";
+	private static final int HEADER_LENGTH = 44;
+	private static final int HEADER_OFFSET = 8;
 
 	private ByteBuffer sampleBuffer;
 
 	/**
-	 * @author Ken Händel
+	 * WAV header format.
 	 * 
-	 *         little endian format
+	 * @author Ken Händel
 	 */
 	static class WavHeader {
-		public static final int HEADER_LENGTH = 44;
+		private static final Charset US_ASCII = Charset.forName("US-ASCII");
 
-		public byte[] getBytes() {
+		private int length;
+		private short format;
+		private short channels;
+		private int sampleFreq;
+		private int bytesPerSec;
+		private short blockAlign;
+		private short bitsPerSample;
+		private int dataChunkLen;
+
+		private byte[] getBytes() {
 			final ByteBuffer b = ByteBuffer.allocate(HEADER_LENGTH);
 			b.order(ByteOrder.LITTLE_ENDIAN);
 			b.put("RIFF".getBytes(US_ASCII));
@@ -53,59 +55,43 @@ public class WavFile extends AudioDriver {
 			b.putInt(dataChunkLen);
 			return b.array();
 		}
-
-		protected int length;
-		protected short format;
-		protected short channels;
-		protected int sampleFreq;
-		protected int bytesPerSec;
-		protected short blockAlign;
-		protected short bitsPerSample;
-		protected int dataChunkLen;
 	}
 
-	private int byteCount;
-
-	private final WavHeader wavHdr = new WavHeader();
+	private int samplesWritten;
 	private RandomAccessFile file;
+	private final WavHeader wavHdr = new WavHeader();
 
 	@Override
 	public void open(final AudioConfig cfg, SidTune tune) throws IOException {
-		final int channels = cfg.channels;
-		final int freq = cfg.frameRate;
-		final int blockAlign = Short.BYTES * channels;
-		byteCount = 0;
+		final int blockAlign = Short.BYTES * cfg.channels;
 
-		// We need to make a buffer for the user
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-		// Fill in header with parameters and expected file size.
-		wavHdr.length = WavHeader.HEADER_LENGTH - 8;
+		wavHdr.length = HEADER_LENGTH - HEADER_OFFSET;
 		wavHdr.format = 1;
-		wavHdr.channels = (short) channels;
-		wavHdr.sampleFreq = freq;
-		wavHdr.bytesPerSec = freq * blockAlign;
+		wavHdr.channels = (short) cfg.channels;
+		wavHdr.sampleFreq = cfg.frameRate;
+		wavHdr.bytesPerSec = cfg.frameRate * blockAlign;
 		wavHdr.blockAlign = (short) blockAlign;
 		wavHdr.bitsPerSample = 16;
 
 		file = new RandomAccessFile(recordingFilenameProvider.apply(tune)
-				+ EXTENSION, "rw");
+				+ ".wav", "rw");
 		file.setLength(0);
 		file.write(wavHdr.getBytes());
+
+		samplesWritten = 0;
 	}
 
-	/**
-	 * After write call old buffer is invalid and you should use the new buffer
-	 * provided instead.
-	 */
 	@Override
-	public void write() {
-		byteCount += sampleBuffer.capacity();
+	public void write() throws InterruptedException {
 		try {
-			file.write(sampleBuffer.array(), 0, sampleBuffer.capacity());
+			int len = sampleBuffer.capacity();
+			file.write(sampleBuffer.array(), 0, len);
+			samplesWritten += len;
 		} catch (final IOException e) {
-			throw new RuntimeException(e);
+			throw new InterruptedException();
 		}
 	}
 
@@ -116,10 +102,10 @@ public class WavFile extends AudioDriver {
 	@Override
 	public void close() {
 		try {
-			wavHdr.length = byteCount + WavHeader.HEADER_LENGTH - 8;
-			wavHdr.dataChunkLen = byteCount;
+			wavHdr.length = samplesWritten + HEADER_LENGTH - HEADER_OFFSET;
+			wavHdr.dataChunkLen = samplesWritten;
 			file.seek(0);
-			file.write(wavHdr.getBytes(), 0, WavHeader.HEADER_LENGTH);
+			file.write(wavHdr.getBytes(), 0, HEADER_LENGTH);
 			file.close();
 		} catch (final IOException e) {
 			throw new RuntimeException(e);

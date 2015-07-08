@@ -110,7 +110,6 @@ public abstract class MP3Driver extends AudioDriver {
 			IOException {
 		final int blockAlign = Short.BYTES * cfg.channels;
 
-		// We need to make a buffer for the user
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, Short.SIZE,
