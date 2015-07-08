@@ -7,10 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
-import libsidplay.sidtune.SidTune;
 import lowlevel.LameEncoder;
 import mp3.MPEGMode;
 
@@ -30,9 +27,9 @@ public abstract class MP3Driver extends AudioDriver {
 	 */
 	public static class MP3File extends MP3Driver {
 		@Override
-		protected OutputStream getOut(SidTune tune) throws IOException {
-			return new FileOutputStream(recordingFilenameProvider.apply(tune)
-					+ ".mp3");
+		protected OutputStream getOut(String recordingFilename)
+				throws IOException {
+			return new FileOutputStream(recordingFilename + ".mp3");
 		}
 	}
 
@@ -61,7 +58,7 @@ public abstract class MP3Driver extends AudioDriver {
 		}
 
 		@Override
-		protected OutputStream getOut(SidTune tune) {
+		protected OutputStream getOut(String recordingFilename) {
 			return out;
 		}
 	}
@@ -105,9 +102,8 @@ public abstract class MP3Driver extends AudioDriver {
 	}
 
 	@Override
-	public void open(final AudioConfig cfg, SidTune tune)
-			throws LineUnavailableException, UnsupportedAudioFileException,
-			IOException {
+	public void open(final AudioConfig cfg, String recordingFilename)
+			throws IOException {
 		final int blockAlign = Short.BYTES * cfg.channels;
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
@@ -116,7 +112,7 @@ public abstract class MP3Driver extends AudioDriver {
 				cfg.channels, true, false);
 		jump3r = new LameEncoder(audioFormat, cbr, MPEGMode.STEREO, vbrQuality,
 				vbr);
-		out = getOut(tune);
+		out = getOut(recordingFilename);
 	}
 
 	@Override
@@ -155,5 +151,6 @@ public abstract class MP3Driver extends AudioDriver {
 		return sampleBuffer;
 	}
 
-	protected abstract OutputStream getOut(SidTune tune) throws IOException;
+	protected abstract OutputStream getOut(String recordingFilename)
+			throws IOException;
 }

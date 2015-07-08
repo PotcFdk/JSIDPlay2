@@ -2,12 +2,8 @@ package sidplay.audio;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.function.Function;
 
 import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import libsidplay.sidtune.SidTune;
 
 /**
  * Proxy driver to use two different sound drivers.
@@ -33,11 +29,10 @@ public class ProxyDriver extends AudioDriver {
 	}
 
 	@Override
-	public void open(final AudioConfig cfg, SidTune tune)
-			throws LineUnavailableException, IOException,
-			UnsupportedAudioFileException {
-		driverOne.open(cfg, tune);
-		driverTwo.open(cfg, tune);
+	public void open(final AudioConfig cfg, String recordingFilename)
+			throws LineUnavailableException, IOException {
+		driverOne.open(cfg, recordingFilename);
+		driverTwo.open(cfg, recordingFilename);
 	}
 
 	@Override
@@ -68,10 +63,4 @@ public class ProxyDriver extends AudioDriver {
 		return driverOne.buffer();
 	}
 
-	@Override
-	public void setRecordingFilenameProvider(
-			Function<SidTune, String> recordingFilenameProvider) {
-		driverOne.setRecordingFilenameProvider(recordingFilenameProvider);
-		driverTwo.setRecordingFilenameProvider(recordingFilenameProvider);
-	}
 }

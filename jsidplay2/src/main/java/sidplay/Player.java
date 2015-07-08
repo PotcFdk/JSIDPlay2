@@ -34,7 +34,6 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
@@ -510,7 +509,6 @@ public class Player extends HardwareEnsemble {
 			updateAudioDriver = false;
 			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 		}
-		audioDriver.setRecordingFilenameProvider(recordingFilenameProvider);
 
 		// replace driver settings for mp3
 		audioDriver = handleMP3(config, tune, audioDriver);
@@ -519,13 +517,14 @@ public class Player extends HardwareEnsemble {
 		sidBuilder = createSIDBuilder(cpuClock, audioConfig);
 		// open audio driver
 		try {
-			audioDriver.open(audioConfig, tune);
+			String recordingFilename = recordingFilenameProvider.apply(tune);
+			audioDriver.open(audioConfig, recordingFilename);
 		} catch (LineUnavailableException e) {
 			// Linux fix: restart, if currently unavailable
 			Thread.sleep(1000);
 			stateProperty.set(State.RESTART);
 			throw new InterruptedException(e.getMessage());
-		} catch (UnsupportedAudioFileException | IOException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		reset();

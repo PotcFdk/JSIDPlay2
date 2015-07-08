@@ -6,8 +6,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
-import libsidplay.sidtune.SidTune;
-
 /**
  * File based driver to create a WAV file.
  * 
@@ -62,7 +60,8 @@ public class WavFile extends AudioDriver {
 	private final WavHeader wavHdr = new WavHeader();
 
 	@Override
-	public void open(final AudioConfig cfg, SidTune tune) throws IOException {
+	public void open(final AudioConfig cfg, String recordingFilename)
+			throws IOException {
 		final int blockAlign = Short.BYTES * cfg.channels;
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
@@ -76,8 +75,7 @@ public class WavFile extends AudioDriver {
 		wavHdr.blockAlign = (short) blockAlign;
 		wavHdr.bitsPerSample = 16;
 
-		file = new RandomAccessFile(recordingFilenameProvider.apply(tune)
-				+ ".wav", "rw");
+		file = new RandomAccessFile(recordingFilename + ".wav", "rw");
 		file.setLength(0);
 		file.write(wavHdr.getBytes());
 
