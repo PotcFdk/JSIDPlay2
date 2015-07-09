@@ -56,7 +56,10 @@ class SampleMixer implements IntConsumer {
 			this.maxVolL = volumeL;
 			this.maxVolR = volumeR;
 			super.setVolume(0, 0);
-			updateFader();
+			fadeInValL = fadeInStepL = maxVolL != 0 ? fadeInClocks / maxVolL
+					: 0;
+			fadeInValR = fadeInStepR = maxVolR != 0 ? fadeInClocks / maxVolR
+					: 0;
 		}
 
 		/**
@@ -68,18 +71,6 @@ class SampleMixer implements IntConsumer {
 		public void setFadeOut(long fadeOut) {
 			this.fadeOutClocks = fadeOut;
 			super.setVolume(maxVolL, maxVolR);
-			updateFader();
-		}
-
-		/**
-		 * Calculate after how many clock ticks volume must be
-		 * increased/decreased.
-		 */
-		private void updateFader() {
-			fadeInValL = fadeInStepL = maxVolL != 0 ? fadeInClocks / maxVolL
-					: 0;
-			fadeInValR = fadeInStepR = maxVolR != 0 ? fadeInClocks / maxVolR
-					: 0;
 			fadeOutValL = fadeOutStepL = maxVolL != 0 ? fadeOutClocks / maxVolL
 					: 0;
 			fadeOutValR = fadeOutStepR = maxVolR != 0 ? fadeOutClocks / maxVolR
