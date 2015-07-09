@@ -43,7 +43,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
-import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.C64;
 import libsidplay.common.CPUClock;
@@ -951,8 +950,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 					JavaSound js = (JavaSound) driver;
 					try {
 						js.setAudioDevice(device.getInfo());
-					} catch (LineUnavailableException e) {
-						throw new RuntimeException(e);
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 				}
 			}

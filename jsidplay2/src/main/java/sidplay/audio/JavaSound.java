@@ -1,5 +1,6 @@
 package sidplay.audio;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -39,7 +40,7 @@ public class JavaSound implements AudioDriver {
 
 	@Override
 	public synchronized void open(final AudioConfig cfg,
-			String recordingFilename) throws LineUnavailableException {
+			String recordingFilename) throws IOException {
 		int device = cfg.getDevice();
 		ObservableList<Device> devices = getDevices();
 		if (device < devices.size()) {
@@ -50,7 +51,7 @@ public class JavaSound implements AudioDriver {
 	}
 
 	public synchronized void open(final AudioConfig cfg, final Mixer.Info info)
-			throws LineUnavailableException {
+			throws IOException {
 		this.cfg = cfg;
 		boolean signed = true;
 		boolean bigEndian = false;
@@ -73,21 +74,37 @@ public class JavaSound implements AudioDriver {
 	}
 
 	public synchronized void setAudioDevice(final Mixer.Info info)
-			throws LineUnavailableException {
+			throws IOException {
 		// first close previous dataLine when it is already present
 		close();
 
-		dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
-		dataLine.open(dataLine.getFormat(), cfg.bufferFrames * Short.BYTES
-				* cfg.channels);
-		// The actual buffer size for the open line may differ from the
-		// requested buffer size, therefore
-		cfg.bufferFrames = dataLine.getBufferSize() / Short.BYTES
-				/ cfg.channels;
+		int retries = 3;
+		do {
+			try {
+				dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
+				dataLine.open(dataLine.getFormat(), cfg.bufferFrames
+						* Short.BYTES * cfg.channels);
 
-		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES
-				* cfg.channels);
-		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				// The actual buffer size for the open line may differ from the
+				// requested buffer size, therefore
+				cfg.bufferFrames = dataLine.getBufferSize() / Short.BYTES
+						/ cfg.channels;
+
+				sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames()
+						* Short.BYTES * cfg.channels);
+				sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				return;
+			} catch (LineUnavailableException e) {
+				try {
+					// Retry, most commonly when a requested line is already in
+					// use by another applicationm, retry
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					retries = 0;
+				}
+			}
+		} while (retries-- > 0);
+		throw new IOException("JavaSound: source data Line already in use?");
 	}
 
 	@Override

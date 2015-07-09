@@ -25,7 +25,6 @@ import java.util.List;
 
 import javafx.collections.ObservableList;
 
-import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer.Info;
 
 import libsidplay.common.CPUClock;
@@ -217,7 +216,7 @@ public class ConsolePlayer {
 			try {
 				Info info = devices.get(deviceIdx).getInfo();
 				js.setAudioDevice(info);
-			} catch (IndexOutOfBoundsException | LineUnavailableException e) {
+			} catch (IndexOutOfBoundsException | IOException e) {
 				int deviceIdx = 0;
 				for (Device device : JavaSound.getDevices()) {
 					System.err.printf("device %d = %s (%s)\n", (deviceIdx++),

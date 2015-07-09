@@ -32,9 +32,6 @@ import java.util.function.Function;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-
-import javax.sound.sampled.LineUnavailableException;
-
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Engine;
@@ -519,12 +516,6 @@ public class Player extends HardwareEnsemble {
 		try {
 			String recordingFilename = recordingFilenameProvider.apply(tune);
 			audioDriver.open(audioConfig, recordingFilename);
-		} catch (LineUnavailableException e) {
-			// Retry, most commonly when a requested line is already in use by
-			// another application
-			Thread.sleep(5000);
-			stateProperty.set(State.RESTART);
-			throw new InterruptedException(e.getMessage());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

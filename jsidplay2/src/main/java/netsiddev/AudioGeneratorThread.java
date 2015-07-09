@@ -1,5 +1,6 @@
 package netsiddev;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -9,7 +10,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 
@@ -252,7 +252,7 @@ public class AudioGeneratorThread extends Thread {
 				}
 			}
 		} catch (final InterruptedException e) {
-		} catch (final LineUnavailableException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		} finally {
 			driver.close();

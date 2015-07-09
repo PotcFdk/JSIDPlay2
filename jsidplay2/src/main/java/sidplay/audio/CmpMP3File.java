@@ -1,8 +1,7 @@
 package sidplay.audio;
 
 import java.io.File;
-
-import javax.sound.sampled.LineUnavailableException;
+import java.io.IOException;
 
 import lowlevel.LameDecoder;
 
@@ -34,7 +33,7 @@ public class CmpMP3File extends JavaSound {
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename)
-			throws LineUnavailableException {
+			throws IOException {
 		super.open(cfg, recordingFilename);
 
 		jump3r = new LameDecoder(mp3File.getAbsolutePath());
