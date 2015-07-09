@@ -30,16 +30,16 @@ class SampleMixer implements IntConsumer {
 		private long fadeInClocks, fadeOutClocks;
 
 		/**
+		 * Currently configured volume level.
+		 */
+		private int maxVolL, maxVolR;
+		
+		/**
 		 * Fade-in/fade-out clock steps until next volume change and current
 		 * fade-in and fade-out counters for left and right speaker.
 		 */
 		private long fadeInStepL, fadeInStepR, fadeOutStepL, fadeOutStepR,
 				fadeInValL, fadeInValR, fadeOutValL, fadeOutValR;
-
-		/**
-		 * Currently configured volume level.
-		 */
-		private int maxVolL, maxVolR;
 
 		FadingSampleMixer(IntBuffer audioBufferL, IntBuffer audioBufferR) {
 			super(audioBufferL, audioBufferR);
