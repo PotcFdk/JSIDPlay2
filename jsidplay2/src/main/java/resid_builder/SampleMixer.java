@@ -53,8 +53,6 @@ class SampleMixer implements IntConsumer {
 		 */
 		public void setFadeIn(long fadeIn) {
 			this.fadeInClocks = fadeIn;
-			this.maxVolL = volumeL;
-			this.maxVolR = volumeR;
 			super.setVolume(0, 0);
 			fadeInValL = fadeInStepL = maxVolL != 0 ? fadeInClocks / maxVolL
 					: 0;
@@ -77,6 +75,13 @@ class SampleMixer implements IntConsumer {
 					: 0;
 		}
 
+		@Override
+		public void setVolume(int volumeL, int volumeR) {
+			super.setVolume(volumeL, volumeR);
+			this.maxVolL = volumeL;
+			this.maxVolR = volumeR;
+		}
+		
 		@Override
 		public void accept(int sample) {
 			if (fadeInClocks > 0) {
