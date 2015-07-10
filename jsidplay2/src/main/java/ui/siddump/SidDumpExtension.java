@@ -1,5 +1,17 @@
 package ui.siddump;
 
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.ATTACK_DECAY_1;
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FILTERCTRL;
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FILTERFREQ_HI;
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FILTERFREQ_LO;
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FREQ_HI_1;
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FREQ_LO_1;
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.PULSE_HI_1;
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.PULSE_LO_1;
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.SUSTAIN_RELEASE_1;
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.VOL;
+import static libsidutils.SIDDumpConfiguration.SIDDumpReg.WAVEFORM_1;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -10,37 +22,17 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Scanner;
-import java.util.Vector;
-import java.util.concurrent.BlockingQueue;
 import java.util.regex.MatchResult;
 
 import javafx.collections.ObservableList;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.mos6510.IMOS6510Extension;
 import libsidutils.SIDDumpConfiguration.SIDDumpReg;
-import netsiddev.AudioGeneratorThread;
 import netsiddev.InvalidCommandException;
-import netsiddev.SIDWrite;
-import resid_builder.resid.SID;
 import sidplay.Player;
-import sidplay.audio.AudioConfig;
 import ui.entities.config.Configuration;
 
 public abstract class SidDumpExtension implements IMOS6510Extension {
-
-	protected static class Channel {
-		int freq;
-		int pulse;
-		int adsr;
-		int wave;
-		int note;
-	}
-
-	protected static class Filter {
-		int cutoff;
-		int ctrl;
-		int type;
-	}
 
 	private static final String NOTE_NAME[] = { "C-0", "C#0", "D-0", "D#0",
 			"E-0", "F-0", "F#0", "G-0", "G#0", "A-0", "A#0", "B-0", "C-1",
@@ -83,12 +75,108 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	private static final char FREQ_TBL_LO_USE[] = new char[FREQ_TBL_LO.length];
 	private static final char FREQ_TBL_HI_USE[] = new char[FREQ_TBL_HI.length];
 
-	private static final int SID_WRITE_DELAY = 6;
-
 	/**
 	 * Frequency of player address calls in Hz
 	 */
 	private static final int TUNE_SPEED = 50;
+
+	protected static class Channel {
+		private int freq, pulse, adsr, wave, note;
+
+		public void read(SIDEmu sid, int channel) {
+			freq = sid.readInternalRegister(FREQ_LO_1.getRegister() + 7
+					* channel)
+					& 0xff
+					| (sid.readInternalRegister(FREQ_HI_1.getRegister() + 7
+							* channel) & 0xff) << 8;
+			pulse = (sid.readInternalRegister(PULSE_LO_1.getRegister() + 7
+					* channel) & 0xff | (sid.readInternalRegister(PULSE_HI_1
+					.getRegister() + 7 * channel) & 0xff) << 8) & 0xfff;
+			wave = sid.readInternalRegister(WAVEFORM_1.getRegister() + 7
+					* channel) & 0xff;
+			adsr = sid.readInternalRegister(SUSTAIN_RELEASE_1.getRegister() + 7
+					* channel)
+					& 0xff
+					| (sid.readInternalRegister(ATTACK_DECAY_1.getRegister()
+							+ 7 * channel) & 0xff) << 8;
+
+		}
+
+		public void assign(Channel channel) {
+			adsr = channel.adsr;
+			freq = channel.freq;
+			note = channel.note;
+			pulse = channel.pulse;
+			wave = channel.wave;
+
+		}
+
+		public String getFreq() {
+			return String.format("%04X", freq);
+		}
+
+		public String getNote(boolean prevChannelNote) {
+			if (prevChannelNote) {
+				return String.format("(%s %02X)", NOTE_NAME[note], note | 0x80);
+			} else {
+				return String.format(" %s %02X ", NOTE_NAME[note], note | 0x80);
+			}
+		}
+
+		public String getWf() {
+			return String.format("%02X", wave);
+		}
+
+		public String getADSR() {
+			return String.format("%04X", adsr);
+		}
+
+		public String getPul() {
+			return String.format("%03X", pulse);
+		}
+	}
+
+	protected static class Filter {
+		private int cutoff, ctrl, type;
+
+		public void read(SIDEmu fSid) {
+			cutoff = (fSid.readInternalRegister(FILTERFREQ_LO.getRegister()) & 0xff) << 5
+					| (fSid.readInternalRegister(FILTERFREQ_HI.getRegister()) & 0xff) << 8;
+			ctrl = fSid.readInternalRegister(FILTERCTRL.getRegister()) & 0xff;
+			type = fSid.readInternalRegister(VOL.getRegister()) & 0xff;
+		}
+
+		public void assign(Filter filter) {
+			ctrl = filter.ctrl;
+			cutoff = filter.cutoff;
+			type = filter.type;
+		}
+
+		public String getCutoff() {
+			return String.format("%04X", cutoff);
+		}
+
+		public String getCtrl() {
+			return String.format("%02X", ctrl);
+		}
+
+		public String getTyp() {
+			return FILTER_NAME[type >> 4 & 0x7];
+		}
+
+		public String getV() {
+			return String.format("%01X", type & 0xf);
+		}
+	}
+
+	private String getTime(long time, boolean timeInSeconds) {
+		if (!timeInSeconds) {
+			return String.format("%5d", time);
+		} else {
+			return String.format("%01d:%02d.%02d", time / (TUNE_SPEED * 60),
+					time / TUNE_SPEED % 60, time % TUNE_SPEED);
+		}
+	}
 
 	private final Channel fChannel[] = new Channel[3];
 
@@ -98,8 +186,6 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 	private Player player;
 	private SIDEmu fSid;
-	private AudioConfig audioConfig;
-	private AudioGeneratorThread agt;
 
 	private Filter fFilter;
 	private Filter fPrevFilter;
@@ -168,8 +254,6 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	 */
 	private int fRows;
 
-	private boolean fAborted;
-
 	/**
 	 * Replay option: register write order
 	 */
@@ -197,9 +281,10 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 	private float leftVolume;
 
+	private SidDumpReplayer replayer;
+
 	public SidDumpExtension(Player pl, Configuration cfg) {
 		this.player = pl;
-		this.audioConfig = AudioConfig.getInstance(cfg.getAudioSection());
 	}
 
 	public int getLoadAddress() {
@@ -298,14 +383,10 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		fReplayFreq = freq;
 	}
 
-	public float getLeftVolume() {
-		return leftVolume;
-	}
-	
 	public void setLeftVolume(float f) {
 		this.leftVolume = f;
 	}
-	
+
 	/**
 	 * Initialization routine to prepare recording SID write sequence.
 	 */
@@ -383,49 +464,19 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		}
 
 		if (fFrames < fFirstframe + fSeconds * TUNE_SPEED) {
+
 			// Get SID parameters from each channel and the filter
-			for (int c = 0; c < 3; c++) {
-				fChannel[c].freq = fSid
-						.readInternalRegister(SIDDumpReg.FREQ_LO_1.getRegister()
-								+ 7 * c)
-						& 0xff
-						| (fSid.readInternalRegister(SIDDumpReg.FREQ_HI_1
-								.getRegister() + 7 * c) & 0xff) << 8;
-				fChannel[c].pulse = (fSid
-						.readInternalRegister(SIDDumpReg.PULSE_LO_1.getRegister()
-								+ 7 * c) & 0xff | (fSid
-						.readInternalRegister(SIDDumpReg.PULSE_HI_1.getRegister()
-								+ 7 * c) & 0xff) << 8) & 0xfff;
-				fChannel[c].wave = fSid
-						.readInternalRegister(SIDDumpReg.WAVEFORM_1.getRegister()
-								+ 7 * c) & 0xff;
-				fChannel[c].adsr = fSid
-						.readInternalRegister(SIDDumpReg.SUSTAIN_RELEASE_1
-								.getRegister() + 7 * c)
-						& 0xff
-						| (fSid.readInternalRegister(SIDDumpReg.ATTACK_DECAY_1
-								.getRegister() + 7 * c) & 0xff) << 8;
+			for (int channel = 0; channel < 3; channel++) {
+				fChannel[channel].read(fSid, channel);
 			}
-			fFilter.cutoff = (fSid
-					.readInternalRegister(SIDDumpReg.FILTERFREQ_LO.getRegister()) & 0xff) << 5
-					| (fSid.readInternalRegister(SIDDumpReg.FILTERFREQ_HI
-							.getRegister()) & 0xff) << 8;
-			fFilter.ctrl = fSid.readInternalRegister(SIDDumpReg.FILTERCTRL
-					.getRegister()) & 0xff;
-			fFilter.type = fSid.readInternalRegister(SIDDumpReg.VOL.getRegister()) & 0xff;
+			fFilter.read(fSid);
 
 			// Frame display if first frame to be recorded is reached
 			if (fFrames >= fFirstframe) {
 				SidDumpOutput output = new SidDumpOutput();
 				final long time = fFrames - fFirstframe;
 
-				if (!fTimeInSeconds) {
-					output.setTime(String.format("%5d", time));
-				} else {
-					output.setTime(String.format("%01d:%02d.%02d", time
-							/ (TUNE_SPEED * 60), time / TUNE_SPEED % 60, time
-							% TUNE_SPEED));
-				}
+				output.setTime(getTime(time, fTimeInSeconds));
 
 				// Loop for each channel
 				for (int c = 0; c < 3; c++) {
@@ -446,8 +497,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 						int dist = 0x7fffffff;
 						final int delta = fChannel[c].freq
 								- fPrevChannel2[c].freq;
-						output.setFreq(String.format("%04X", fChannel[c].freq),
-								c);
+						output.setFreq(fChannel[c].getFreq(), c);
 
 						if (fChannel[c].wave >= 0x10) {
 							// Get new note number
@@ -483,13 +533,10 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 									if (fLowRes) {
 										newnote = 1;
 									}
-									output.setNote(String.format(" %s %02X ",
-											NOTE_NAME[fChannel[c].note],
-											fChannel[c].note | 0x80), c);
+									output.setNote(fChannel[c].getNote(false),
+											c);
 								} else {
-									output.setNote(String.format("(%s %02X)",
-											NOTE_NAME[fChannel[c].note],
-											fChannel[c].note | 0x80), c);
+									output.setNote(fChannel[c].getNote(true), c);
 								}
 							} else {
 								// If same note, print frequency change
@@ -517,7 +564,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 					// Waveform
 					if (fFrames == fFirstframe || newnote != 0
 							|| fChannel[c].wave != fPrevChannel[c].wave) {
-						output.setWf(String.format("%02X", fChannel[c].wave), c);
+						output.setWf(fChannel[c].getWf(), c);
 					} else {
 						output.setWf("..", c);
 					}
@@ -525,8 +572,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 					// ADSR
 					if (fFrames == fFirstframe || newnote != 0
 							|| fChannel[c].adsr != fPrevChannel[c].adsr) {
-						output.setAdsr(String.format("%04X", fChannel[c].adsr),
-								c);
+						output.setAdsr(fChannel[c].getADSR(), c);
 					} else {
 						output.setAdsr("....", c);
 					}
@@ -534,8 +580,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 					// Pulse
 					if (fFrames == fFirstframe || newnote != 0
 							|| fChannel[c].pulse != fPrevChannel[c].pulse) {
-						output.setPul(String.format("%03X", fChannel[c].pulse),
-								c);
+						output.setPul(fChannel[c].getPul(), c);
 					} else {
 						output.setPul("...", c);
 					}
@@ -543,14 +588,14 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 				// Filter cutoff
 				if (fFrames == fFirstframe
 						|| fFilter.cutoff != fPrevFilter.cutoff) {
-					output.setFcut(String.format("%04X", fFilter.cutoff));
+					output.setFcut(fFilter.getCutoff());
 				} else {
 					output.setFcut("....");
 				}
 
 				// Filter control
 				if (fFrames == fFirstframe || fFilter.ctrl != fPrevFilter.ctrl) {
-					output.setRc(String.format("%02X", fFilter.ctrl));
+					output.setRc(fFilter.getCtrl());
 				} else {
 					output.setRc("..");
 				}
@@ -558,7 +603,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 				// Filter passband
 				if (fFrames == fFirstframe
 						|| (fFilter.type & 0x70) != (fPrevFilter.type & 0x70)) {
-					output.setTyp(FILTER_NAME[fFilter.type >> 4 & 0x7]);
+					output.setTyp(fFilter.getTyp());
 				} else {
 					output.setTyp("...");
 				}
@@ -566,7 +611,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 				// Mastervolume
 				if (fFrames == fFirstframe
 						|| (fFilter.type & 0xf) != (fPrevFilter.type & 0xf)) {
-					output.setV(String.format("%01X", fFilter.type & 0xf));
+					output.setV(fFilter.getV());
 				} else {
 					output.setV(".");
 				}
@@ -577,23 +622,13 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 				if (!fLowRes || 0 == (fFrames - fFirstframe) % fNoteSpacing) {
 					fFetchedRow++;
 					add(output);
-					for (int c = 0; c < 3; c++) {
-						fPrevChannel[c].adsr = fChannel[c].adsr;
-						fPrevChannel[c].freq = fChannel[c].freq;
-						fPrevChannel[c].note = fChannel[c].note;
-						fPrevChannel[c].pulse = fChannel[c].pulse;
-						fPrevChannel[c].wave = fChannel[c].wave;
+					for (int channel = 0; channel < 3; channel++) {
+						fPrevChannel[channel].assign(fChannel[channel]);
 					}
-					fPrevFilter.ctrl = fFilter.ctrl;
-					fPrevFilter.cutoff = fFilter.cutoff;
-					fPrevFilter.type = fFilter.type;
+					fPrevFilter.assign(fFilter);
 				}
-				for (int c = 0; c < 3; c++) {
-					fPrevChannel2[c].adsr = fChannel[c].adsr;
-					fPrevChannel2[c].freq = fChannel[c].freq;
-					fPrevChannel2[c].note = fChannel[c].note;
-					fPrevChannel2[c].pulse = fChannel[c].pulse;
-					fPrevChannel2[c].wave = fChannel[c].wave;
+				for (int channel = 0; channel < 3; channel++) {
+					fPrevChannel2[channel].assign(fChannel[channel]);
 				}
 
 				// Print note/pattern separators
@@ -649,30 +684,15 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 						final String group = result.group(j + 1);
 						switch (j) {
 						case 0:
-							// Load Address
-							try {
-								fLoadAddress = Integer.parseInt(group, 16);
-							} catch (final NumberFormatException e) {
-								e.printStackTrace();
-							}
+							fLoadAddress = readNumber(group, 16);
 							break;
 
 						case 1:
-							// Init Address
-							try {
-								fInitAddress = Integer.parseInt(group, 16);
-							} catch (final NumberFormatException e) {
-								e.printStackTrace();
-							}
+							fInitAddress = readNumber(group, 16);
 							break;
 
 						case 2:
-							// Player Address
-							try {
-								fPlayerAddress = Integer.parseInt(group, 16);
-							} catch (final NumberFormatException e) {
-								e.printStackTrace();
-							}
+							fPlayerAddress = readNumber(group, 16);
 							break;
 
 						default:
@@ -691,11 +711,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 						switch (j) {
 						case 0:
 							// Sub Tune
-							try {
-								fCurrentSong = Integer.parseInt(group) + 1;
-							} catch (final NumberFormatException e) {
-								e.printStackTrace();
-							}
+							fCurrentSong = readNumber(group, 10) + 1;
 							break;
 
 						default:
@@ -718,11 +734,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 						case 1:
 							// first frame
-							try {
-								fFirstframe = Integer.parseInt(group);
-							} catch (final NumberFormatException e) {
-								e.printStackTrace();
-							}
+							fFirstframe = readNumber(group, 10);
 							break;
 
 						default:
@@ -769,7 +781,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 				int lastFrame = 0;
 				loop: do {
-					final SidDumpOutput sidDumpOutput = new SidDumpOutput();
+					final SidDumpOutput output = new SidDumpOutput();
 					int col = 0;
 					while (sc.hasNext()) {
 						final String next = sc.next();
@@ -780,7 +792,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 						switch (col) {
 						case 0:
 							if (next.startsWith("-") || next.startsWith("=")) {
-								sidDumpOutput.setTime(next);
+								output.setTime(next);
 								break;
 							}
 							// get frame of current row
@@ -794,41 +806,29 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 								}
 							}
 							// e.g. Frame=" 0"
-							sidDumpOutput.setTime(next);
+							output.setTime(next);
 							break;
 
 						case 1:
 						case 2:
 						case 3:
-							// e.g. Freq Note/Abs WF ADSR Pul = "0000 ... .. 09
-							// 00FD
-							// 808"
-							final String freq = next.substring(0, 4);
-							sidDumpOutput.setFreq(freq, col - 1);
-							final String note = next.substring(5, 13);
-							sidDumpOutput.setNote(note, col - 1);
-							final String wf = next.substring(14, 16);
-							sidDumpOutput.setWf(wf, col - 1);
-							final String adsr = next.substring(17, 21);
-							sidDumpOutput.setAdsr(adsr, col - 1);
-							final String pul = next.substring(22, 25);
-							sidDumpOutput.setPul(pul, col - 1);
+							output.setFreq(next.substring(0, 4), col - 1);
+							output.setNote(next.substring(5, 13), col - 1);
+							output.setWf(next.substring(14, 16), col - 1);
+							output.setAdsr(next.substring(17, 21), col - 1);
+							output.setPul(next.substring(22, 25), col - 1);
 							break;
 
 						case 4:
 							// e.g. FCut RC Typ V = "3000 F2 Low F"
-							final String fcut = next.substring(0, 4);
-							sidDumpOutput.setFcut(fcut);
-							final String rc = next.substring(5, 7);
-							sidDumpOutput.setRc(rc);
-							final String typ = next.substring(8, 11);
-							sidDumpOutput.setTyp(typ);
-							final String v = next.substring(12, 13);
-							sidDumpOutput.setV(v);
+							output.setFcut(next.substring(0, 4));
+							output.setRc(next.substring(5, 7));
+							output.setTyp(next.substring(8, 11));
+							output.setV(next.substring(12, 13));
 							break;
 
 						case 5:
-							add(sidDumpOutput);
+							add(output);
 							if (next.trim().startsWith("+=")) {
 								if (fPatternSpacing == 0) {
 									final int nextFrame = lastFrame
@@ -853,13 +853,22 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 						}
 						col++;
 					}
-					add(sidDumpOutput);
+					add(output);
 				} while (sc.hasNext());
 			}
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 		stopRecording();
+	}
+
+	private int readNumber(String number, int radix) {
+		try {
+			return Integer.parseInt(number, radix);
+		} catch (final NumberFormatException e) {
+			System.err.println(e.getMessage());
+			return 0;
+		}
 	}
 
 	/**
@@ -926,7 +935,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 			out.println();
 			out.println("| Frame | Freq Note/Abs WF ADSR Pul | Freq Note/Abs WF ADSR Pul | Freq Note/Abs WF ADSR Pul | FCut RC Typ V |");
 			out.println("+-------+---------------------------+---------------------------+---------------------------+---------------+");
-			for (final SidDumpOutput sidDumpOutput : sidDumpOutputs) {
+			for (final SidDumpOutput putput : sidDumpOutputs) {
 				// String firstCol = row.get(0);
 				// if (firstCol.startsWith("=")) {
 				// out
@@ -938,45 +947,45 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 				// continue;
 				// }
 				out.print("| ");
-				out.print(sidDumpOutput.getTime());
+				out.print(putput.getTime());
 				out.print(" | ");
-				out.print(sidDumpOutput.getFreq(0));
+				out.print(putput.getFreq(0));
 				out.print(" ");
-				out.print(sidDumpOutput.getNote(0));
+				out.print(putput.getNote(0));
 				out.print(" ");
-				out.print(sidDumpOutput.getWf(0));
+				out.print(putput.getWf(0));
 				out.print(" ");
-				out.print(sidDumpOutput.getAdsr(0));
+				out.print(putput.getAdsr(0));
 				out.print(" ");
-				out.print(sidDumpOutput.getPul(0));
+				out.print(putput.getPul(0));
 				out.print(" | ");
-				out.print(sidDumpOutput.getFreq(1));
+				out.print(putput.getFreq(1));
 				out.print(" ");
-				out.print(sidDumpOutput.getNote(1));
+				out.print(putput.getNote(1));
 				out.print(" ");
-				out.print(sidDumpOutput.getWf(1));
+				out.print(putput.getWf(1));
 				out.print(" ");
-				out.print(sidDumpOutput.getAdsr(1));
+				out.print(putput.getAdsr(1));
 				out.print(" ");
-				out.print(sidDumpOutput.getPul(1));
+				out.print(putput.getPul(1));
 				out.print(" | ");
-				out.print(sidDumpOutput.getFreq(2));
+				out.print(putput.getFreq(2));
 				out.print(" ");
-				out.print(sidDumpOutput.getNote(2));
+				out.print(putput.getNote(2));
 				out.print(" ");
-				out.print(sidDumpOutput.getWf(2));
+				out.print(putput.getWf(2));
 				out.print(" ");
-				out.print(sidDumpOutput.getAdsr(2));
+				out.print(putput.getAdsr(2));
 				out.print(" ");
-				out.print(sidDumpOutput.getPul(2));
+				out.print(putput.getPul(2));
 				out.print(" | ");
-				out.print(sidDumpOutput.getFcut());
+				out.print(putput.getFcut());
 				out.print(" ");
-				out.print(sidDumpOutput.getRc());
+				out.print(putput.getRc());
 				out.print(" ");
-				out.print(sidDumpOutput.getTyp());
+				out.print(putput.getTyp());
 				out.print(" ");
-				out.print(sidDumpOutput.getV());
+				out.print(putput.getV());
 				out.println(" |");
 			}
 		} catch (final FileNotFoundException e) {
@@ -1002,315 +1011,15 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	 */
 	public void replay(ObservableList<SidDumpOutput> sidDumpOutputs)
 			throws InvalidCommandException {
-
-		if (fRegOrder == null) {
-			// no SID write order, no playback!
-			return;
-		}
-
-		/* FIXME: configure this SID. It is a 8580. */
-		SID sid = new SID();
-
-		/*
-		 * FIXME: support for HardSID playback of recordings is lost. Will fix
-		 * later.
-		 */
-		agt = new AudioGeneratorThread(audioConfig);
-		agt.setSidArray(new SID[] { sid });
-		agt.setLevelAdjustment(0, decibelsToCentibels());
-		BlockingQueue<SIDWrite> queue = agt.getSidCommandQueue();
-		agt.start();
-
-		try {
-			// reset replay queue
-			byte volume = 0xf;
-
-			// for each row do replay
-			for (int rown = 0; rown < sidDumpOutputs.size(); rown++) {
-				final SidDumpOutput row = sidDumpOutputs.get(rown);
-
-				final String firstCol = row.getTime();
-				if (firstCol.startsWith("=")) {
-					// ignore pattern spacing
-					continue;
-				} else if (firstCol.startsWith("-")) {
-					// ignore note spacing
-					continue;
-				}
-
-				final Vector<SidDumpOutput> examineRows = new Vector<SidDumpOutput>();
-				for (int i = 0; i < 20; i++) {
-					examineRows.add(row);
-				}
-
-				int cmd = 0;
-				long time = 0;
-				for (final SIDDumpReg aFRegOrder : fRegOrder) {
-					String col;
-					int coln;
-					byte register = aFRegOrder.getRegister();
-
-					switch (aFRegOrder) {
-					case ATTACK_DECAY_1:
-					case SUSTAIN_RELEASE_1:
-					case ATTACK_DECAY_2:
-					case SUSTAIN_RELEASE_2:
-					case ATTACK_DECAY_3:
-					case SUSTAIN_RELEASE_3:
-						// ADSR
-						coln = register / 7 * 5 + 4;
-						col = getColumnValue(examineRows.get(coln), coln);
-						if (col.startsWith(".")) {
-							// ignore columns without a change
-							break;
-						}
-
-						final int adsr = Integer.valueOf(col, 16);
-						if ((register + 2) % 7 == 0) {
-							// ATTACK/DECAY
-							queue.put(new SIDWrite(0, register,
-									(byte) (adsr >> 8), SID_WRITE_DELAY));
-						} else {
-							// SUSTAIN/RELEASE
-							queue.put(new SIDWrite(0, register,
-									(byte) (adsr & 0xff), SID_WRITE_DELAY));
-						}
-						cmd++;
-						break;
-
-					case FREQ_LO_1:
-					case FREQ_HI_1:
-					case FREQ_LO_2:
-					case FREQ_HI_2:
-					case FREQ_HI_3:
-					case FREQ_LO_3:
-						// FREQ
-						coln = register / 7 * 5 + 1;
-						col = getColumnValue(examineRows.get(coln), coln);
-						if (col.startsWith(".")) {
-							// ignore columns without a change
-							break;
-						}
-						final int freq = Integer.valueOf(col, 16);
-						if (register % 7 == 0) {
-							// FREQ_LO
-							queue.put(new SIDWrite(0, register, (byte) freq,
-									SID_WRITE_DELAY));
-						} else {
-							// FREQ_HI
-							queue.put(new SIDWrite(0, register,
-									(byte) (freq >> 8), SID_WRITE_DELAY));
-						}
-						cmd++;
-						break;
-
-					case PULSE_LO_1:
-					case PULSE_HI_1:
-					case PULSE_LO_2:
-					case PULSE_HI_2:
-					case PULSE_LO_3:
-					case PULSE_HI_3:
-						// PULSE
-						coln = register / 7 * 5 + 5;
-						col = getColumnValue(examineRows.get(coln), coln);
-						if (col.startsWith(".")) {
-							// ignore columns without a change
-							break;
-						}
-
-						final int pulse = Integer.valueOf(col.trim(), 16);
-						if ((register + 5) % 7 == 0) {
-							queue.put(new SIDWrite(0, register, (byte) pulse,
-									SID_WRITE_DELAY));
-						} else {
-							queue.put(new SIDWrite(0, register,
-									(byte) (pulse >> 8), SID_WRITE_DELAY));
-						}
-						cmd++;
-						break;
-
-					case WAVEFORM_1:
-					case WAVEFORM_2:
-					case WAVEFORM_3:
-						// WF
-						coln = register / 7 * 5 + 3;
-						col = getColumnValue(examineRows.get(coln), coln);
-						if (col.startsWith(".")) {
-							// ignore columns without a change
-							break;
-						}
-						final int wf = Integer.valueOf(col.trim(), 16);
-						queue.put(new SIDWrite(0, register, (byte) wf,
-								SID_WRITE_DELAY));
-						cmd++;
-						break;
-
-					case FILTERFREQ_LO:
-					case FILTERFREQ_HI:
-						// FCut
-						coln = 16;
-						col = getColumnValue(examineRows.get(coln), coln);
-						if (col.startsWith(".")) {
-							// ignore columns without a change
-							break;
-						}
-						final int fcut = Integer.valueOf(col.trim(), 16);
-						if (aFRegOrder == SIDDumpReg.FILTERFREQ_LO) {
-							// FILTERFREQ_LO
-							queue.put(new SIDWrite(0, register,
-									(byte) (fcut >> 5 & 0x07), SID_WRITE_DELAY));
-						} else {
-							// FILTERFREQ_HI
-							queue.put(new SIDWrite(0, register,
-									(byte) (fcut >> 8), SID_WRITE_DELAY));
-						}
-						cmd++;
-						break;
-
-					case FILTERCTRL:
-						// Ctrl
-						coln = 17;
-						col = getColumnValue(examineRows.get(coln), coln);
-						if (col.startsWith(".")) {
-							// ignore columns without a change
-							break;
-						}
-						final int typ = Integer.valueOf(col.trim(), 16);
-						queue.put(new SIDWrite(0, register, (byte) typ,
-								SID_WRITE_DELAY));
-						cmd++;
-						break;
-
-					case VOL:
-						// Typ und Mastervolume
-						coln = 18;
-						String colFilt = getColumnValue(examineRows.get(coln),
-								coln);
-						coln = 19;
-						String colMast = getColumnValue(examineRows.get(coln),
-								coln);
-
-						if (colFilt.startsWith(".") && colMast.startsWith(".")) {
-							break;
-						}
-
-						if (!colMast.startsWith(".")) {
-							volume = (byte) (volume & 0xf0 | Integer.parseInt(
-									colMast, 16));
-						}
-						if (!colFilt.startsWith(".")) {
-							String cmp = colFilt.trim();
-							for (int j = 0; j < FILTER_NAME.length; j++) {
-								if (FILTER_NAME[j].equals(cmp)) {
-									volume = (byte) (j << 4 | volume & 0xf);
-									break;
-								}
-							}
-						}
-						queue.put(new SIDWrite(0, register, volume,
-								SID_WRITE_DELAY));
-						cmd++;
-						break;
-
-					default:
-						break;
-					}
-				}
-
-				/* Fill up to 1 frame delay */
-				queue.put(SIDWrite.makePureDelay(0, 1000000 / fReplayFreq - cmd
-						* SID_WRITE_DELAY));
-
-				time += 1000000 / fReplayFreq;
-				while (agt.getPlaybackClock() < time - 100000) {
-					agt.ensureDraining();
-					Thread.sleep(10);
-				}
-
-				if (fAborted) {
-					throw new InterruptedException();
-				}
-			}
-
-			/* Wait until queue drain. */
-			queue.put(SIDWrite.makeEnd());
-			do {
-				agt.ensureDraining();
-				agt.join(1000);
-			} while (agt.isAlive());
-		} catch (InterruptedException e) {
-		} finally {
-			agt.interrupt();
-			fAborted = false;
-		}
-	}
-
-	private int decibelsToCentibels() {
-		return (int) leftVolume*10;
+		replayer = new SidDumpReplayer(player.getConfig());
+		replayer.setLeftVolume(leftVolume);
+		replayer.setRegOrder(fRegOrder);
+		replayer.setReplayFrequency(fReplayFreq);
+		replayer.replay(sidDumpOutputs);
 	}
 
 	public void stopReplay() {
-		try {
-			while (agt != null && agt.isAlive()) {
-				fAborted = true;
-				BlockingQueue<SIDWrite> queue = agt.getSidCommandQueue();
-				queue.clear();
-				/* Wait until queue drain. */
-				queue.put(SIDWrite.makeEnd());
-				do {
-					agt.ensureDraining();
-					agt.join(1000);
-				} while (agt.isAlive());
-			}
-		} catch (InterruptedException e1) {
-		}
-	}
-
-	private String getColumnValue(SidDumpOutput row, int coli) {
-		switch (coli) {
-		case 0:
-			return row.getTime();
-		case 1:
-			return row.getFreq(0);
-		case 2:
-			return row.getNote(0);
-		case 3:
-			return row.getWf(0);
-		case 4:
-			return row.getAdsr(0);
-		case 5:
-			return row.getPul(0);
-		case 6:
-			return row.getFreq(1);
-		case 7:
-			return row.getNote(1);
-		case 8:
-			return row.getWf(1);
-		case 9:
-			return row.getAdsr(1);
-		case 10:
-			return row.getPul(1);
-		case 11:
-			return row.getFreq(2);
-		case 12:
-			return row.getNote(2);
-		case 13:
-			return row.getWf(2);
-		case 14:
-			return row.getAdsr(2);
-		case 15:
-			return row.getPul(2);
-		case 16:
-			return row.getFcut();
-		case 17:
-			return row.getRc();
-		case 18:
-			return row.getTyp();
-		case 19:
-			return row.getV();
-		default:
-			return null;
-		}
+		replayer.stopReplay();
 	}
 
 	public abstract void clear();
