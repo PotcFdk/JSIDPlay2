@@ -515,18 +515,14 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 			return;
 		}
 		Platform.runLater(() -> {
-			// consistency check required, if video mode changes are made
 			VIC vic = getC64().getVIC();
-			if (vicImage.getHeight() == vic.getBorderHeight()) {
-				vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(),
-						vic.getBorderHeight(), pixelFormat,
-						(int[]) property.get(), 0, vic.getBorderWidth());
-				screen.getGraphicsContext2D().drawImage(vicImage, 0, 0,
-						vic.getBorderWidth(), vic.getBorderHeight(),
-						marginLeft, marginTop,
-						screen.getWidth() - (marginLeft + marginRight),
-						screen.getHeight() - (marginTop + marginBottom));
-			}
+			vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(),
+					vic.getBorderHeight(), pixelFormat, (int[]) property.get(),
+					0, vic.getBorderWidth());
+			screen.getGraphicsContext2D().drawImage(vicImage, 0, 0,
+					vic.getBorderWidth(), vic.getBorderHeight(), marginLeft,
+					marginTop, screen.getWidth() - (marginLeft + marginRight),
+					screen.getHeight() - (marginTop + marginBottom));
 		});
 	}
 
