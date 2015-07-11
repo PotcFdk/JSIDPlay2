@@ -7,9 +7,8 @@
 package libsidplay.components.mos656x;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -254,21 +253,22 @@ public abstract class VIC extends Bank {
 		}
 	}
 
-	private final ObjectProperty<int[]> pixelsProperty = new SimpleObjectProperty<>(
-			new int[pixels.length]);
-
 	/**
-	 * Get screen as ARGB data
+	 * Consumer for VIC screen output as ARGB data
 	 * 
 	 * @return C64 screen pixels as ARGB data
 	 */
-	public final ObjectProperty<int[]> pixelsProperty() {
-		return pixelsProperty;
-	}
+	protected Consumer<int[]> pixelConsumer = pixels -> {
+	};
 
-	protected void notifyListeners() {
-		pixelsProperty.set(null);
-		pixelsProperty.set(pixels);
+	/**
+	 * Set consumer of VIC screen output as ARGB data
+	 * 
+	 * @param consumer
+	 *            consumer of C64 screen pixels as ARGB data
+	 */
+	public void setPixelConsumer(Consumer<int[]> consumer) {
+		pixelConsumer = consumer;
 	}
 
 	/**
@@ -1209,4 +1209,5 @@ public abstract class VIC extends Bank {
 	public byte[] getRegisters() {
 		return registers;
 	}
+
 }

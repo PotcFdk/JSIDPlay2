@@ -4,14 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -51,7 +49,7 @@ import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 import de.schlichtherle.truezip.file.TFile;
 
-public class Video extends Tab implements UIPart, InvalidationListener {
+public class Video extends Tab implements UIPart, Consumer<int[]> {
 	public static final String ID = "VIDEO";
 	private static final double MONITOR_MARGIN_LEFT = 35;
 	private static final double MONITOR_MARGIN_RIGHT = 35;
@@ -212,8 +210,8 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 
 	@Override
 	public void doClose() {
-		getC64().getPalVIC().pixelsProperty().removeListener(this);
-		getC64().getNtscVIC().pixelsProperty().removeListener(this);
+		getC64().getPalVIC().setPixelConsumer(pixels->{});
+		getC64().getNtscVIC().setPixelConsumer(pixels->{});
 	}
 
 	@FXML
@@ -320,9 +318,9 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(),
 				getC64().getVIC().getBorderHeight());
 		pixelFormat = PixelFormat.getIntArgbInstance();
-		getC64().getPalVIC().pixelsProperty().removeListener(this);
-		getC64().getNtscVIC().pixelsProperty().removeListener(this);
-		getC64().getVIC().pixelsProperty().addListener(this);
+		getC64().getPalVIC().setPixelConsumer(pixels->{});
+		getC64().getNtscVIC().setPixelConsumer(pixels->{});
+		getC64().getVIC().setPixelConsumer(this);
 	}
 
 	/**
@@ -509,16 +507,12 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 	}
 
 	@Override
-	public void invalidated(Observable observable) {
-		ObjectProperty<?> property = (ObjectProperty<?>) observable;
-		if (property.get() == null) {
-			return;
-		}
+	public void accept(int[] pixels) {
 		Platform.runLater(() -> {
 			VIC vic = getC64().getVIC();
 			vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(),
-					vic.getBorderHeight(), pixelFormat, (int[]) property.get(),
-					0, vic.getBorderWidth());
+					vic.getBorderHeight(), pixelFormat, pixels, 0,
+					vic.getBorderWidth());
 			screen.getGraphicsContext2D().drawImage(vicImage, 0, 0,
 					vic.getBorderWidth(), vic.getBorderHeight(), marginLeft,
 					marginTop, screen.getWidth() - (marginLeft + marginRight),

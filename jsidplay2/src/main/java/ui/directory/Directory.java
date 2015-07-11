@@ -95,10 +95,14 @@ public class Directory extends AnchorPane implements UIPart {
 		try {
 			DirectoryItem dirItem = directory.getSelectionModel()
 					.getSelectedItem();
+			if (dirItem == null) {
+				return;
+			}
 			DirEntry dirEntry = dirItem.getDirEntry();
 			if (dirEntry != null) {
-				File autoStartFile = new File(util.getConfig().getSidplay2Section()
-						.getTmpDir(), dirEntry.getValidFilename() + ".prg");
+				File autoStartFile = new File(util.getConfig()
+						.getSidplay2Section().getTmpDir(),
+						dirEntry.getValidFilename() + ".prg");
 				autoStartFile.deleteOnExit();
 				dirEntry.save(autoStartFile);
 				autoStartFileProperty.set(autoStartFile);
