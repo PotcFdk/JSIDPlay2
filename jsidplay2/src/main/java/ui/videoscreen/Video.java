@@ -11,6 +11,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -509,13 +510,17 @@ public class Video extends Tab implements UIPart, InvalidationListener {
 
 	@Override
 	public void invalidated(Observable observable) {
+		ObjectProperty<?> property = (ObjectProperty<?>) observable;
+		if (property.get() == null) {
+			return;
+		}
 		Platform.runLater(() -> {
 			// consistency check required, if video mode changes are made
 			VIC vic = getC64().getVIC();
 			if (vicImage.getHeight() == vic.getBorderHeight()) {
 				vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(),
 						vic.getBorderHeight(), pixelFormat,
-						vic.pixelsProperty().get(), 0, vic.getBorderWidth());
+						(int[]) property.get(), 0, vic.getBorderWidth());
 				screen.getGraphicsContext2D().drawImage(vicImage, 0, 0,
 						vic.getBorderWidth(), vic.getBorderHeight(),
 						marginLeft, marginTop,

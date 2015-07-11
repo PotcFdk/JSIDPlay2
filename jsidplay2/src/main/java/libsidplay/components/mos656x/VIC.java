@@ -254,7 +254,6 @@ public abstract class VIC extends Bank {
 		}
 	}
 
-	private final int[] pixelsLastScreenRefresh = new int[pixels.length];
 	private final ObjectProperty<int[]> pixelsProperty = new SimpleObjectProperty<>(
 			new int[pixels.length]);
 
@@ -268,11 +267,8 @@ public abstract class VIC extends Bank {
 	}
 
 	protected void notifyListeners() {
-		// force notification using alternate buffers
-		System.arraycopy(pixels, 0, pixelsLastScreenRefresh, 0, pixels.length);
-		pixelsProperty
-				.set(pixelsProperty.get() == pixels ? pixelsLastScreenRefresh
-						: pixels);
+		pixelsProperty.set(null);
+		pixelsProperty.set(pixels);
 	}
 
 	/**
