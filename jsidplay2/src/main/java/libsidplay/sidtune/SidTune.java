@@ -24,7 +24,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import javafx.scene.image.Image;
 import libsidplay.config.IEmulationSection;
 import libsidutils.SidIdInfo.PlayerInfoSection;
 
@@ -380,11 +379,6 @@ public abstract class SidTune {
 	 * Return delay in C64 clocks before song init is done.
 	 */
 	public abstract long getInitDelay();
-
-	/**
-	 * A picture representing the tune (composer photo or cover art).
-	 */
-	public abstract Image getImage();
 
 	/**
 	 * MD5 for song length detection.

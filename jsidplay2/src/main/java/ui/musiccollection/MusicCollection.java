@@ -12,8 +12,10 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -733,9 +735,13 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void showPhoto(SidTune sidTune) {
-		photograph
-				.setImage(sidTune != null && sidTune.getImage() != null ? sidTune
-						.getImage() : null);
+		Collection<String> infoString = sidTune.getInfo().getInfoString();
+		if (infoString.size() > 1) {
+			Iterator<String> it = infoString.iterator();
+			/* String name = */it.next();
+			String author = it.next();
+			photograph.setImage(SidAuthors.getImage(author));
+		}
 	}
 
 	private void showTuneInfos(File tuneFile, SidTune tune) {

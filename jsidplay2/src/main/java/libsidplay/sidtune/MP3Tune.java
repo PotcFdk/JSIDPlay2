@@ -1,6 +1,5 @@
 package libsidplay.sidtune;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -8,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
-import javafx.application.Platform;
-import javafx.scene.image.Image;
 import libsidutils.PathUtils;
 import libsidutils.SidIdInfo.PlayerInfoSection;
 import lowlevel.ID3V2Decoder;
@@ -30,11 +27,6 @@ public class MP3Tune extends SidTune {
 	 * MP3 decoder.
 	 */
 	private ID3V2Decoder decoder = new ID3V2Decoder();
-
-	/**
-	 * Cover art stored inside MP3.
-	 */
-	private Image image;
 
 	@Override
 	public int placeProgramInMemory(byte[] c64buf) {
@@ -103,23 +95,22 @@ public class MP3Tune extends SidTune {
 			} else {
 				mp3.info.infoString.add("<?>");
 			}
-			if (mp3.decoder.getImageBytes() != null
-					&& Platform.isFxApplicationThread()) {
-				mp3.image = new Image(new ByteArrayInputStream(
-						mp3.decoder.getImageBytes()));
-			}
 		}
 		return mp3;
+	}
+
+	/**
+	 * Get cover art bitmap.
+	 * 
+	 * @return cover art bitmap
+	 */
+	public byte[] getCoverArt() {
+		return decoder.getImageBytes();
 	}
 
 	@Override
 	public String getMD5Digest() {
 		return null;
-	}
-
-	@Override
-	public Image getImage() {
-		return image;
 	}
 
 	public String getMP3Filename() {

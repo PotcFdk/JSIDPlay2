@@ -26,28 +26,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.Scanner;
 
-import javafx.application.Platform;
-import javafx.scene.image.Image;
 import libsidplay.components.mos6510.MOS6510;
 import libsidutils.assembler.KickAssembler;
 
 class PSid extends Prg {
-
-	/**
-	 * Contains a mapping: Author to picture resource path.
-	 */
-	private static final Properties SID_AUTHORS = new Properties();
-	static {
-		try (InputStream is = SidTune.class
-				.getResourceAsStream("pictures.properties")) {
-			SID_AUTHORS.load(is);
-		} catch (IOException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
 
 	/**
 	 * Header has been extended for 'RSID' format<BR>
@@ -243,8 +227,6 @@ class PSid extends Prg {
 	private static final int PSID_BASIC = 1 << 1;
 
 	private final KickAssembler assembler = new KickAssembler();
-
-	private Image image;
 
 	/**
 	 * Temporary hack till real bank switching code added
@@ -562,12 +544,6 @@ class PSid extends Prg {
 		psid.info.infoString.add(header.getString(header.author));
 		psid.info.infoString.add(header.getString(header.released));
 
-		String photo = SID_AUTHORS.getProperty(header.getString(header.author));
-		if (photo != null && Platform.isFxApplicationThread()) {
-			photo = "Photos/" + photo;
-			psid.image = new Image(SidTune.class.getResource(photo).toString());
-		}
-
 		if ((header.flags & PSID_MUS) != 0) {
 			return Mus.load(psid.info, psid.programOffset, dataBuf);
 		}
@@ -718,8 +694,4 @@ class PSid extends Prg {
 				.getInitDelay() : 2500;
 	}
 
-	@Override
-	public Image getImage() {
-		return image;
-	}
 }

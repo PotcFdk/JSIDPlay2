@@ -23,7 +23,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
-import javafx.scene.image.Image;
 import libsidutils.PathUtils;
 import libsidutils.SidIdInfo;
 import libsidutils.SidIdInfo.PlayerInfoSection;
@@ -67,17 +66,18 @@ class Prg extends SidTune {
 			throws SidTuneError {
 		if (!PathUtils.getExtension(name).equalsIgnoreCase(".prg")
 				|| dataBuf.length < 2) {
-			throw new SidTuneError("Bad file extension expected: .prg and length > 2");
+			throw new SidTuneError(
+					"Bad file extension expected: .prg and length > 2");
 		}
 		final Prg prg = new Prg();
-		
+
 		prg.program = dataBuf;
 		prg.programOffset = 2;
 		prg.info.c64dataLen = dataBuf.length - prg.programOffset;
 		prg.info.loadAddr = (dataBuf[0] & 0xff) + ((dataBuf[1] & 0xff) << 8);
 
 		prg.info.infoString.add(PathUtils.getBaseNameNoExt(name));
-		
+
 		prg.convertOldStyleSpeedToTables(~0);
 		return prg;
 	}
@@ -150,8 +150,4 @@ class Prg extends SidTune {
 		return 2500000;
 	}
 
-	@Override
-	public Image getImage() {
-		return null;
-	}
 }
