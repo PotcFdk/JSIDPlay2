@@ -525,21 +525,22 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void playNormalSpeed() {
-		util.getPlayer().configureSIDBuilder(builder -> builder.normalSpeed());
+		util.getPlayer().configureMixer(mixer -> mixer.normalSpeed());
 	}
 
 	@FXML
 	private void playFastForward() {
-		util.getPlayer().configureSIDBuilder(builder -> builder.fastForward());
+		util.getPlayer().configureMixer(mixer -> mixer.fastForward());
 	}
 
 	@FXML
 	private void fastForward() {
-		if (util.getPlayer().getSidBuilderInfo(sidBd -> sidBd.isFastForward())) {
-			util.getPlayer().configureSIDBuilder(sidBd -> sidBd.normalSpeed());
+		if (util.getPlayer()
+				.getMixerInfo(mixer -> mixer.isFastForward(), false)) {
+			util.getPlayer().configureMixer(mixer -> mixer.normalSpeed());
 			normalSpeed.setSelected(true);
 		} else {
-			util.getPlayer().configureSIDBuilder(sidBd -> sidBd.fastForward());
+			util.getPlayer().configureMixer(mixer -> mixer.fastForward());
 			fastForward.setSelected(true);
 		}
 	}

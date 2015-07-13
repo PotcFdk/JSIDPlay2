@@ -151,22 +151,6 @@ public class HardSIDBuilder implements SIDBuilder {
 	public void start() {
 	}
 
-	@Override
-	public void fadeIn(int fadeIn) {
-	}
-
-	@Override
-	public void fadeOut(int fadeOut) {
-	}
-
-	@Override
-	public void setVolume(int num) {
-	}
-
-	@Override
-	public void setBalance(int num) {
-	}
-
 	/**
 	 * Extract a classpath resource referencing a file to the temp directory and
 	 * mark to be deleted after exit.
@@ -265,19 +249,6 @@ public class HardSIDBuilder implements SIDBuilder {
 			}
 		}
 		return chipModel == ChipModel.MOS6581 ? sid6581 : sid8580;
-	}
-
-	@Override
-	public void fastForward() {
-	}
-
-	@Override
-	public void normalSpeed() {
-	}
-
-	@Override
-	public boolean isFastForward() {
-		return false;
 	}
 
 }

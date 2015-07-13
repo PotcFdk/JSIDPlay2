@@ -38,6 +38,7 @@ import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.common.SIDListener;
@@ -207,7 +208,7 @@ public class Player extends HardwareEnsemble {
 			@Override
 			public void fadeInStart(int fadeIn) {
 				if (tune != SidTune.RESET) {
-					sidBuilder.fadeIn(fadeIn);
+					configureMixer(mixer -> mixer.fadeIn(fadeIn));
 				}
 			}
 
@@ -219,7 +220,7 @@ public class Player extends HardwareEnsemble {
 			@Override
 			public void fadeOutStart(int fadeOut) {
 				if (tune != SidTune.RESET) {
-					sidBuilder.fadeOut(fadeOut);
+					configureMixer(mixer -> mixer.fadeOut(fadeOut));
 				}
 			}
 
@@ -384,13 +385,15 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Configure a SID builder
+	 * Configure the mixer, optionally implemented by SID builder.
 	 * 
 	 * @param action
-	 *            SID builder consumer
+	 *            mixer consumer
 	 */
-	public final void configureSIDBuilder(Consumer<SIDBuilder> action) {
-		action.accept(sidBuilder);
+	public final void configureMixer(Consumer<Mixer> action) {
+		if (sidBuilder instanceof Mixer) {
+			action.accept((Mixer) sidBuilder);
+		}
 	}
 
 	/**
@@ -737,14 +740,26 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Get SID builder info.
+	 * Get current number of SID devices.
+	 * 
+	 * @return current number of SID devices.
+	 */
+	public int getSIDCount() {
+		return sidBuilder.getSIDCount();
+	}
+
+	/**
+	 * Get mixer info.
 	 * 
 	 * @param function
-	 *            SIDBuilder function to apply
-	 * @return SIDBuilder info
+	 *            mixer function to apply
+	 * @param defaultValue
+	 *            default value, if SIDBuilder does not implement a mixer
+	 * @return mixer info
 	 */
-	public final <T> T getSidBuilderInfo(Function<SIDBuilder, T> function) {
-		return function.apply(sidBuilder);
+	public final <T> T getMixerInfo(Function<Mixer, T> function, T defaultValue) {
+		boolean isMixer = sidBuilder instanceof Mixer;
+		return isMixer ? function.apply((Mixer) sidBuilder) : defaultValue;
 	}
 
 	/**

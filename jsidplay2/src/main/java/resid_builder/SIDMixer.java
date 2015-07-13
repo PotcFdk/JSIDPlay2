@@ -10,6 +10,7 @@ import java.util.Random;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.Mixer;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
@@ -25,7 +26,7 @@ import sidplay.audio.AudioDriver;
  * @author ken
  *
  */
-public class SIDMixer {
+public class SIDMixer implements Mixer {
 	/**
 	 * Maximum fast forward factor (1 << 5 = 32).
 	 */

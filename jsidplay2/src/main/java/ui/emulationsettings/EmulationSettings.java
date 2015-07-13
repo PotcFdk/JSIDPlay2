@@ -116,7 +116,7 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
 							.setMainBalance(newValue.floatValue());
-					util.getPlayer().configureSIDBuilder(b -> b.setBalance(0));
+					util.getPlayer().configureMixer(m -> m.setBalance(0));
 				});
 		secondBalance.setValue(util.getConfig().getAudioSection().getSecondBalance());
 		secondBalance.setLabelFormatter(tickLabelFormatter);
@@ -124,7 +124,7 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
 							.setSecondBalance(newValue.floatValue());
-					util.getPlayer().configureSIDBuilder(b -> b.setBalance(1));
+					util.getPlayer().configureMixer(m -> m.setBalance(1));
 				});
 		thirdBalance.setValue(util.getConfig().getAudioSection().getThirdBalance());
 		thirdBalance.setLabelFormatter(tickLabelFormatter);
@@ -132,7 +132,7 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
 							.setThirdBalance(newValue.floatValue());
-					util.getPlayer().configureSIDBuilder(b -> b.setBalance(2));
+					util.getPlayer().configureMixer(m -> m.setBalance(2));
 				});
 
 		mainVolume.setValue(util.getConfig().getAudioSection().getMainVolume());
@@ -140,21 +140,21 @@ public class EmulationSettings extends C64Window {
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
 							.setMainVolume(newValue.floatValue());
-					util.getPlayer().configureSIDBuilder(b -> b.setVolume(0));
+					util.getPlayer().configureMixer(m -> m.setVolume(0));
 				});
 		secondVolume.setValue(util.getConfig().getAudioSection().getSecondVolume());
 		secondVolume.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
 							.setSecondVolume(newValue.floatValue());
-					util.getPlayer().configureSIDBuilder(b -> b.setVolume(1));
+					util.getPlayer().configureMixer(b -> b.setVolume(1));
 				});
 		thirdVolume.setValue(util.getConfig().getAudioSection().getThirdVolume());
 		thirdVolume.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
 							.setThirdVolume(newValue.floatValue());
-					util.getPlayer().configureSIDBuilder(b -> b.setVolume(2));
+					util.getPlayer().configureMixer(b -> b.setVolume(2));
 				});
 
 		stereoModes = FXCollections.<String> observableArrayList();
