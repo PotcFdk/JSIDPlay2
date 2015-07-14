@@ -136,19 +136,7 @@ public class HardSIDBuilder implements SIDBuilder {
 
 	@Override
 	public int getSIDCount() {
-		return hsidDLL.GetHardSIDCount();
-	}
-
-	public final int getDevcesInUse() {
 		return sids.size();
-	}
-
-	@Override
-	public void reset() {
-	}
-
-	@Override
-	public void start() {
 	}
 
 	/**

@@ -52,14 +52,4 @@ public interface SIDBuilder {
 	 */
 	int getSIDCount();
 
-	/**
-	 * Reset.
-	 */
-	void reset();
-
-	/**
-	 * Timer start reached, audio output should be produced.
-	 */
-	void start();
-
 }

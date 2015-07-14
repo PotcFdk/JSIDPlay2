@@ -38,7 +38,7 @@ public class HardSID extends SIDEmu {
 		public void event() {
 			final int cycles = clocksSinceLastAccess();
 			hsidDll.HardSID_Delay(chipNum,
-					cycles / hardSIDBuilder.getDevcesInUse());
+					cycles / hardSIDBuilder.getSIDCount());
 			context.schedule(event, HARDSID_DELAY_CYCLES, Event.Phase.PHI2);
 		}
 	};

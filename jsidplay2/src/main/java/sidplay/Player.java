@@ -176,7 +176,7 @@ public class Player extends HardwareEnsemble {
 
 			@Override
 			public void start() {
-				sidBuilder.start();
+				configureMixer(mixer -> mixer.start());
 			}
 
 			/**
@@ -245,7 +245,7 @@ public class Player extends HardwareEnsemble {
 	protected void reset() {
 		super.reset();
 		timer.reset();
-		sidBuilder.reset();
+		configureMixer(mixer -> mixer.reset());
 
 		// According to the configuration, the SIDs must be updated.
 		createOrUpdateSIDs();

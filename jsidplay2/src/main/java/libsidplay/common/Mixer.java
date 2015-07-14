@@ -10,12 +10,14 @@ package libsidplay.common;
 public interface Mixer {
 
 	/**
-	 * Volume of the SID chip
-	 * 
-	 * @param sidNum
-	 *            SID chip number
+	 * Reset.
 	 */
-	void setVolume(int sidNum);
+	void reset();
+
+	/**
+	 * Timer start reached, audio output should be produced.
+	 */
+	void start();
 
 	/**
 	 * Fade-in start time reached, audio volume should be increased to the max.
@@ -32,6 +34,14 @@ public interface Mixer {
 	 *            Fade-out time in seconds
 	 */
 	void fadeOut(int fadeOut);
+
+	/**
+	 * Volume of the SID chip
+	 * 
+	 * @param sidNum
+	 *            SID chip number
+	 */
+	void setVolume(int sidNum);
 
 	/**
 	 * Panning feature: spreading of the SID chip sound signal to the two stereo
