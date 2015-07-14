@@ -172,6 +172,11 @@ public class SIDMixer implements Mixer {
 	protected CPUClock cpuClock;
 
 	/**
+	 * SIDs to mix their sound output.
+	 */
+	protected List<ReSIDBase> sids = new ArrayList<ReSIDBase>();
+
+	/**
 	 * Mixer WITHOUT audio output, just clocking SID chips.
 	 */
 	private Event nullAudio = new NullAudioEvent("NullAudio");
@@ -179,11 +184,6 @@ public class SIDMixer implements Mixer {
 	 * Mixer clocking SID chips and producing audio output.
 	 */
 	private Event mixerAudio = new MixerEvent("MixerAudio");
-
-	/**
-	 * SIDs to mix their sound output.
-	 */
-	private List<ReSIDBase> sids = new ArrayList<ReSIDBase>();
 
 	/**
 	 * Audio buffer for two channels (stereo).
@@ -311,15 +311,6 @@ public class SIDMixer implements Mixer {
 	public void remove(SIDEmu sid) {
 		sids.remove(sid);
 		setSampleMixerVolume();
-	}
-
-	/**
-	 * Getter for SIDs in the mix.
-	 * 
-	 * @return SIDs in the mix
-	 */
-	public List<ReSIDBase> getSIDs() {
-		return sids;
 	}
 
 	/**

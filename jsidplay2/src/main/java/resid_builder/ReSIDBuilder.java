@@ -144,13 +144,9 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 		} else if (ReSIDfp.class.equals(sidImplCls)) {
 			return new ReSIDfp(context);
 		} else if (ReSID.FakeStereo.class.equals(sidImplCls)) {
-			// ReSID fake-stereo mode
-			final int prevNum = sidNum - 1;
-			return new ReSID.FakeStereo(context, config, prevNum, getSIDs());
+			return new ReSID.FakeStereo(context, config, sidNum - 1, sids);
 		} else if (ReSIDfp.FakeStereo.class.equals(sidImplCls)) {
-			// ReSIDfp fake-stereo mode
-			final int prevNum = sidNum - 1;
-			return new ReSIDfp.FakeStereo(context, config, prevNum, getSIDs());
+			return new ReSIDfp.FakeStereo(context, config, sidNum - 1, sids);
 		} else {
 			throw new RuntimeException("Unknown SID impl.: " + sidImplCls);
 		}
