@@ -20,6 +20,7 @@ import javax.ws.rs.core.StreamingOutput;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.SamplingMethod;
+import libsidplay.common.SamplingRate;
 import libsidplay.sidtune.SidTuneError;
 import ui.entities.config.Configuration;
 import de.haendel.impl.IJSIDPlay2;
@@ -99,14 +100,21 @@ public class JSIDPlay2ServiceREST {
 			@QueryParam("digiBoosted8580") boolean digiBoosted8580,
 			@QueryParam("cbr") int cbr, @QueryParam("vbr") int vbr,
 			@QueryParam("isVbr") boolean isVbr) {
+		SamplingRate samplingRate = frequency == 44100 ? SamplingRate.LOW
+				: frequency == 48000 ? SamplingRate.MEDIUM : SamplingRate.HIGH;
 		Configuration cfg = new Configuration();
 		cfg.getSidplay2Section().setDefaultPlayLength(defaultPlayLength);
 		cfg.getSidplay2Section().setEnableDatabase(enableDatabase);
 		cfg.getSidplay2Section().setSingle(single);
 		cfg.getSidplay2Section().setLoop(loop);
+		cfg.getSidplay2Section().setFadeInTime(5);
+		cfg.getSidplay2Section().setFadeOutTime(5);
 		cfg.getAudioSection().setBufferSize(bufferSize);
 		cfg.getAudioSection().setSampling(samplingMethod);
-		cfg.getAudioSection().setFrequency(frequency);
+		cfg.getAudioSection().setSamplingRate(samplingRate);
+		cfg.getAudioSection().setMainVolume(4f);
+		cfg.getAudioSection().setSecondVolume(4f);
+		cfg.getAudioSection().setThirdVolume(4f);
 		cfg.getEmulationSection().setDefaultEmulation(emulation);
 		cfg.getEmulationSection().setDefaultSidModel(defaultSidModel);
 		cfg.getEmulationSection().setFilter6581(filter6581);
@@ -114,9 +122,11 @@ public class JSIDPlay2ServiceREST {
 		cfg.getEmulationSection().setFilter8580(filter8580);
 		cfg.getEmulationSection().setStereoFilter8580(stereoFilter8580);
 		cfg.getEmulationSection().setReSIDfpFilter6581(reSIDfpFilter6581);
-		cfg.getEmulationSection().setReSIDfpStereoFilter6581(reSIDfpStereoFilter6581);
+		cfg.getEmulationSection().setReSIDfpStereoFilter6581(
+				reSIDfpStereoFilter6581);
 		cfg.getEmulationSection().setReSIDfpFilter8580(reSIDfpFilter8580);
-		cfg.getEmulationSection().setReSIDfpStereoFilter8580(reSIDfpStereoFilter8580);
+		cfg.getEmulationSection().setReSIDfpStereoFilter8580(
+				reSIDfpStereoFilter8580);
 		cfg.getEmulationSection().setDigiBoosted8580(digiBoosted8580);
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
