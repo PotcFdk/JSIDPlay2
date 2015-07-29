@@ -474,10 +474,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		return ntscVic;
 	}
 
-	public boolean hasSID(int chipNo) {
-		return pla.getSID(chipNo) != null;
-	}
-	
 	/**
 	 * Set system clock (PAL/NTSC).
 	 * 

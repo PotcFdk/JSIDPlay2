@@ -97,7 +97,7 @@ public class SIDMixer implements Mixer {
 				audioBufferR.put(pos, 0);
 
 				// once enough samples have been accumulated, write output
-				if (++factor == (1 << fastForward)) {
+				if (++factor == 1 << fastForward) {
 					int dither = triangularDithering();
 
 					putSample(resamplerL, valL >> fastForward, dither);
@@ -298,8 +298,8 @@ public class SIDMixer implements Mixer {
 			sids.add(sid);
 		}
 		createSampleMixer(sid);
-		setVolume(sidNum);
-		setBalance(sidNum);
+		setVolume(sidNum, config.getAudioSection().getVolume(sidNum));
+		setBalance(sidNum, config.getAudioSection().getBalance(sidNum));
 	}
 
 	/**
@@ -310,45 +310,38 @@ public class SIDMixer implements Mixer {
 	 */
 	public void remove(SIDEmu sid) {
 		sids.remove(sid);
-		setSampleMixerVolume();
+		updateSampleMixerVolume();
 	}
 
 	/**
-	 * @return current number of SIDs.
-	 */
-	public int getSIDCount() {
-		return sids.size();
-	}
-
-	/**
-	 * Volume of the SID chip.<BR>
-	 * -6(-6db)..6(+6db)
+	 * Volume of the SID chip.
 	 * 
 	 * @param sidNum
 	 *            SID chip number
+	 * @param volume
+	 *            volume in DB -6(-6db)..6(+6db)
 	 */
-	public void setVolume(int sidNum) {
-		float volumeInDB = config.getAudioSection().getVolume(sidNum);
+	public void setVolume(int sidNum, float volumeInDB) {
 		assert volumeInDB >= -6 && volumeInDB <= 6;
 
 		volume[sidNum] = (int) (Math.pow(10, volumeInDB / 10) * 1024);
-		setSampleMixerVolume();
+		updateSampleMixerVolume();
 	}
 
 	/**
-	 * Set left/right speaker balance for each SID.<BR>
-	 * 0(left speaker)..0.5(centered)..1(right speaker)
+	 * Set left/right speaker balance for each SID.
 	 * 
 	 * @param sidNum
 	 *            SID chip number
+	 * @param balance
+	 *            balance 0(left speaker)..0.5(centered)..1(right speaker)
 	 */
-	public void setBalance(int sidNum) {
-		float balance = config.getAudioSection().getBalance(sidNum);
+	public void setBalance(int sidNum, float balance) {
 		assert balance >= 0 && balance <= 1;
 
 		positionL[sidNum] = 1 - balance;
 		positionR[sidNum] = balance;
-		setSampleMixerVolume();
+		updateSampleMixerVolume();
 	}
 
 	/**
@@ -372,7 +365,7 @@ public class SIDMixer implements Mixer {
 	 * Mono output: Use volume.<BR>
 	 * Stereo or 3-SID output: Use speaker audibility and volume.
 	 */
-	private void setSampleMixerVolume() {
+	private void updateSampleMixerVolume() {
 		boolean stereo = sids.size() > 1;
 		int sidNum = 0;
 		for (ReSIDBase sid : sids) {

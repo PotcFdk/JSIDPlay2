@@ -39,7 +39,7 @@ public class EmulationSection implements IEmulationSection {
 		this.defaultEmulation = emulation;
 	}
 
-	private Emulation userEmulation;
+	private Emulation userEmulation = DEFAULT_USER_EMULATION;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -52,7 +52,7 @@ public class EmulationSection implements IEmulationSection {
 		this.userEmulation = userEmulation;
 	}
 
-	private Emulation stereoEmulation;
+	private Emulation stereoEmulation = DEFAULT_STEREO_EMULATION;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -65,7 +65,7 @@ public class EmulationSection implements IEmulationSection {
 		this.stereoEmulation = stereoEmulation;
 	}
 
-	private Emulation thirdEmulation;
+	private Emulation thirdEmulation = DEFAULT_3SID_EMULATION;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -116,7 +116,7 @@ public class EmulationSection implements IEmulationSection {
 		this.defaultSidModel = defaultSidModel;
 	}
 
-	private ChipModel userSidModel;
+	private ChipModel userSidModel = DEFAULT_USER_MODEL;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -261,7 +261,7 @@ public class EmulationSection implements IEmulationSection {
 		this.force3SIDTune = isForceStereoTune;
 	}
 
-	private ChipModel stereoSidModel;
+	private ChipModel stereoSidModel = DEFAULT_STEREO_MODEL;
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -274,7 +274,7 @@ public class EmulationSection implements IEmulationSection {
 		this.stereoSidModel = stereoSidModel;
 	}
 
-	private ChipModel thirdSIDModel;
+	private ChipModel thirdSIDModel = DEFAULT_3SID_MODEL;
 
 	@Enumerated(EnumType.STRING)
 	@Override

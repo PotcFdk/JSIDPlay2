@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import javafx.animation.Animation;
@@ -18,6 +19,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
@@ -51,7 +53,9 @@ import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.PSIDDriver;
 import libsidplay.common.SamplingMethod;
+import libsidplay.common.SamplingRate;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
@@ -76,6 +80,7 @@ import sidplay.player.State;
 import ui.about.About;
 import ui.asm.Asm;
 import ui.common.C64Window;
+import ui.common.EnumToString;
 import ui.common.UIPart;
 import ui.common.dialog.YesNoDialog;
 import ui.console.Console;
@@ -83,6 +88,7 @@ import ui.disassembler.Disassembler;
 import ui.diskcollection.DiskCollection;
 import ui.diskcollection.DiskCollectionType;
 import ui.emulationsettings.EmulationSettings;
+import ui.entities.config.AudioSection;
 import ui.entities.config.C1541Section;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.PrinterSection;
@@ -156,11 +162,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private ComboBox<CPUClock> videoStandardBox;
 	@FXML
-	private ComboBox<Integer> samplingRateBox, hardsid6581Box, hardsid8580Box;
+	private ComboBox<Integer> hardsid6581Box, hardsid8580Box;
+	@FXML
+	private ComboBox<SamplingRate> samplingRateBox;
 	@FXML
 	private ComboBox<Audio> audioBox;
 	@FXML
-	private ComboBox<String> sidDriverBox;
+	private ComboBox<PSIDDriver> sidDriverBox;
 	@FXML
 	private ComboBox<Device> devicesBox;
 	@FXML
@@ -184,7 +192,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	protected ProgressBar progress;
 
+	private ObservableList<CPUClock> videoStandards;
+	private ObservableList<PSIDDriver> drivers;
+	private ObservableList<Engine> engines;
+	private ObservableList<Audio> audioDrivers;
 	private ObservableList<Device> devices;
+	private ObservableList<SamplingMethod> samplingMethods;
+	private ObservableList<SamplingRate> samplingRates;
 
 	private Scene scene;
 	private Timeline timer;
@@ -202,6 +216,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void initialize() {
 		this.duringInitialization = true;
+
+		ResourceBundle bundle = util.getBundle();
+		AudioSection audioSection = util.getConfig().getAudioSection();
 
 		this.tuneSpeed = new StringBuilder();
 		this.playerId = new StringBuilder();
@@ -267,11 +284,19 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		updatePlayerButtons(util.getPlayer().stateProperty().get());
 
-		Audio audio = util.getConfig().getAudioSection().getAudio();
+		audioDrivers = FXCollections.<Audio> observableArrayList(
+				Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
+				Audio.COMPARE_MP3);
+		audioBox.setConverter(new EnumToString<Audio>(bundle));
+		audioBox.setItems(audioDrivers);
+		Audio audio = audioSection.getAudio();
 		audioBox.getSelectionModel().select(audio);
 
-		String sidDriver = util.getConfig().getAudioSection().getSidDriver();
-		sidDriverBox.getSelectionModel().select(sidDriver);
+		drivers = FXCollections.<PSIDDriver> observableArrayList(PSIDDriver
+				.values());
+		sidDriverBox.setConverter(new EnumToString<PSIDDriver>(bundle));
+		sidDriverBox.setItems(drivers);
+		sidDriverBox.getSelectionModel().select(audioSection.getSidDriver());
 
 		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
 		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
@@ -279,27 +304,39 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		devices = JavaSound.getDevices();
 		devicesBox.setItems(devices);
-		int device = util.getConfig().getAudioSection().getDevice();
+		int device = audioSection.getDevice();
 		devicesBox.getSelectionModel().select(
 				device < devices.size() ? device : 0);
 
-		SamplingMethod sampling = util.getConfig().getAudioSection()
-				.getSampling();
-		samplingBox.getSelectionModel().select(sampling);
+		samplingMethods = FXCollections
+				.<SamplingMethod> observableArrayList(SamplingMethod.values());
+		samplingBox.setConverter(new EnumToString<SamplingMethod>(bundle));
+		samplingBox.setItems(samplingMethods);
+		samplingBox.getSelectionModel().select(audioSection.getSampling());
 
-		Integer samplingRate = Integer.valueOf(util.getConfig()
-				.getAudioSection().getFrequency());
+		samplingRates = FXCollections
+				.<SamplingRate> observableArrayList(SamplingRate.values());
+		SamplingRate samplingRate = audioSection.getSamplingRate();
+		samplingRateBox.setConverter(new EnumToString<SamplingRate>(bundle));
+		samplingRateBox.setItems(samplingRates);
 		samplingRateBox.getSelectionModel().select(samplingRate);
 
-		CPUClock videoStandard = CPUClock.getCPUClock(util.getConfig(), util
-				.getPlayer().getTune());
-		videoStandardBox.getSelectionModel().select(videoStandard);
+		videoStandards = FXCollections.<CPUClock> observableArrayList(CPUClock
+				.values());
+		videoStandardBox.setConverter(new EnumToString<CPUClock>(bundle));
+		videoStandardBox.setItems(videoStandards);
+		videoStandardBox.getSelectionModel().select(
+				CPUClock.getCPUClock(util.getConfig().getEmulationSection(),
+						util.getPlayer().getTune()));
 
 		hardsid6581Box.getSelectionModel().select(
 				util.getConfig().getEmulationSection().getHardsid6581());
 		hardsid8580Box.getSelectionModel().select(
 				util.getConfig().getEmulationSection().getHardsid8580());
 
+		engines = FXCollections.<Engine> observableArrayList(Engine.values());
+		engineBox.setConverter(new EnumToString<Engine>(bundle));
+		engineBox.setItems(engines);
 		Engine engine = util.getConfig().getEmulationSection().getEngine();
 		engineBox.getSelectionModel().select(engine);
 
@@ -329,9 +366,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				(observable, oldValue, newValue) -> singleSong
 						.setSelected(newValue));
 
-		playMP3.setSelected(util.getConfig().getAudioSection().isPlayOriginal());
-		playEmulation.setSelected(!util.getConfig().getAudioSection()
-				.isPlayOriginal());
+		playMP3.setSelected(audioSection.isPlayOriginal());
+		playEmulation.setSelected(!audioSection.isPlayOriginal());
 
 		C1541Section c1541Section = (C1541Section) util.getConfig()
 				.getC1541Section();
@@ -933,9 +969,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void setSIDDriver() {
-		String sidDriver = sidDriverBox.getSelectionModel().getSelectedItem();
+		PSIDDriver sidDriver = sidDriverBox.getSelectionModel()
+				.getSelectedItem();
 		util.getConfig().getAudioSection().setSidDriver(sidDriver);
-		SidTune.useDriver(sidDriver);
+		SidTune.useDriver(sidDriver.getDriverPath());
 		restart();
 	}
 
@@ -969,9 +1006,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void setSamplingRate() {
-		Integer samplingRate = samplingRateBox.getSelectionModel()
+		SamplingRate samplingRate = samplingRateBox.getSelectionModel()
 				.getSelectedItem();
-		util.getConfig().getAudioSection().setFrequency(samplingRate);
+		util.getConfig().getAudioSection().setSamplingRate(samplingRate);
 		restart();
 	}
 
@@ -1437,7 +1474,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private String determineVideoNorm() {
 		return String.format(
 				"%s, ",
-				CPUClock.getCPUClock(util.getConfig(),
+				CPUClock.getCPUClock(util.getConfig().getEmulationSection(),
 						util.getPlayer().getTune()).name());
 	}
 

@@ -20,7 +20,7 @@ import libsidplay.sidtune.SidTune;
 /**
  * @author Ken Händel
  * 
- *         Implement this class to create a new SID emulations for libsidplay2.
+ *         Implement this class to create a new SID emulation for libsidplay2.
  */
 public interface SIDBuilder {
 	/**
@@ -44,12 +44,5 @@ public interface SIDBuilder {
 	 *            SID chip to destroy
 	 */
 	void unlock(SIDEmu device);
-
-	/**
-	 * Get current number of SID devices.
-	 * 
-	 * @return current number of SID devices.
-	 */
-	int getSIDCount();
 
 }

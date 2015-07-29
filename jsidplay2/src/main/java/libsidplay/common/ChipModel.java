@@ -5,7 +5,12 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Model;
 
 public enum ChipModel {
-	MOS6581, MOS8580;
+	/** Auto-detect SID model */
+	AUTO,
+	/** SID chip of the old C64 */
+	MOS6581,
+	/** SID chip of the new C64 */
+	MOS8580;
 
 	/**
 	 * Detect chip model of specified SID number
@@ -41,7 +46,7 @@ public enum ChipModel {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
-		if (forcedChipModel != null) {
+		if (forcedChipModel != ChipModel.AUTO) {
 			return forcedChipModel;
 		}
 		if (tuneSidModel == null) {

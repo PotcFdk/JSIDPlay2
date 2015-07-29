@@ -40,8 +40,10 @@ public interface Mixer {
 	 * 
 	 * @param sidNum
 	 *            SID chip number
+	 * @param volume
+	 *            volume in DB -6(-6db)..6(+6db)
 	 */
-	void setVolume(int sidNum);
+	void setVolume(int sidNum, float volume);
 
 	/**
 	 * Panning feature: spreading of the SID chip sound signal to the two stereo
@@ -49,8 +51,10 @@ public interface Mixer {
 	 * 
 	 * @param sidNum
 	 *            SID chip number
+	 * @param balance
+	 *            balance 0(left speaker)..0.5(centered)..1(right speaker)
 	 */
-	void setBalance(int sidNum);
+	void setBalance(int sidNum, float balance);
 
 	/**
 	 * Doubles speed factor.

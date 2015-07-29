@@ -134,7 +134,6 @@ public class HardSIDBuilder implements SIDBuilder {
 		}
 	}
 
-	@Override
 	public int getSIDCount() {
 		return sids.size();
 	}

@@ -14,7 +14,7 @@ public abstract class ReSIDBase extends SIDEmu {
 	private static final Logger RESID = Logger.getLogger(ReSIDBase.class
 			.getName());
 
-	protected final SIDChip sid;
+	protected final SIDChip sid = createSID();
 
 	/**
 	 * Consumes samples of the SID while clocking.
@@ -29,7 +29,6 @@ public abstract class ReSIDBase extends SIDEmu {
 	 */
 	public ReSIDBase(EventScheduler context) {
 		super(context);
-		this.sid = createSID();
 		reset((byte) 0xf);
 	}
 

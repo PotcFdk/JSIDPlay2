@@ -181,10 +181,10 @@ public class Player extends HardwareEnsemble {
 
 			/**
 			 * If a tune ends:
-			 * <OL>
+			 * <UL>
 			 * <LI>Single tune or end of play list? Stop player (except loop)
 			 * <LI>Else play next song
-			 * </OL>
+			 * </UL>
 			 * 
 			 * @see sidplay.player.Timer#end()
 			 */
@@ -240,7 +240,7 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Power-on C64 system. Only play() calls should be made after this point.
+	 * Power-on C64 system.
 	 */
 	protected void reset() {
 		super.reset();
@@ -250,9 +250,8 @@ public class Player extends HardwareEnsemble {
 		// According to the configuration, the SIDs must be updated.
 		createOrUpdateSIDs();
 
-		// Auto-start program, if we have one.
 		if (tune == SidTune.RESET) {
-			// Normal reset code path using auto-start
+			// Normal reset code path executing auto-start command
 			c64.getEventScheduler().schedule(new Event("Auto-start event") {
 				@Override
 				public void event() throws InterruptedException {
@@ -266,7 +265,7 @@ public class Player extends HardwareEnsemble {
 				}
 			}, RESET_INIT_DELAY);
 		} else {
-			// Tune code path using auto-start
+			// reset code path for tunes
 			c64.getEventScheduler().schedule(new Event("Tune init event") {
 				@Override
 				public void event() throws InterruptedException {
@@ -499,7 +498,8 @@ public class Player extends HardwareEnsemble {
 		}
 		playList = PlayList.getInstance(config, tune);
 
-		CPUClock cpuClock = CPUClock.getCPUClock(config, tune);
+		CPUClock cpuClock = CPUClock.getCPUClock(config.getEmulationSection(),
+				tune);
 		setClock(cpuClock);
 
 		AudioConfig audioConfig = AudioConfig.getInstance(config
@@ -527,7 +527,7 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Create configured SID chip implementation (emulation/hardware).
+	 * Create configured SID chip implementation (software/hardware).
 	 */
 	private SIDBuilder createSIDBuilder(CPUClock cpuClock,
 			AudioConfig audioConfig) {
@@ -606,7 +606,7 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Change SIDs according to the configured emulation and chip models.
+	 * Change SIDs according to the current tune.
 	 */
 	public final void createOrUpdateSIDs() {
 		IEmulationSection emulation = config.getEmulationSection();
@@ -648,6 +648,7 @@ public class Player extends HardwareEnsemble {
 	 * player is paused).
 	 * 
 	 * @throws InterruptedException
+	 *             audio production interrupted
 	 */
 	private boolean play() throws InterruptedException {
 		for (int i = 0; stateProperty.get() == State.RUNNING
@@ -669,7 +670,11 @@ public class Player extends HardwareEnsemble {
 				: State.EXIT;
 	}
 
+	/**
+	 * Close player.
+	 */
 	private void close() {
+		// Safely remove ALL SIDs
 		configureSIDs((sidNum, sid) -> {
 			sidBuilder.unlock(sid);
 			c64.getPla().setSID(sidNum, null);
@@ -737,15 +742,6 @@ public class Player extends HardwareEnsemble {
 	public final void lastSong() {
 		playList.last();
 		stateProperty.set(State.RESTART);
-	}
-
-	/**
-	 * Get current number of SID devices.
-	 * 
-	 * @return current number of SID devices.
-	 */
-	public int getSIDCount() {
-		return sidBuilder.getSIDCount();
 	}
 
 	/**

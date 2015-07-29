@@ -24,6 +24,7 @@ package resid_builder.resid;
 import java.util.function.IntConsumer;
 
 import libsidplay.common.ChipModel;
+import libsidplay.common.Potentiometer;
 import libsidplay.common.SIDChip;
 
 /**
@@ -67,10 +68,12 @@ public final class SID implements SIDChip {
 	private final ExternalFilter externalFilter = new ExternalFilter();
 
 	/** Paddle X register support */
-	private final Potentiometer potX = new Potentiometer();
+	private final Potentiometer potX = new Potentiometer() {
+	};
 
 	/** Paddle Y register support */
-	private final Potentiometer potY = new Potentiometer();
+	private final Potentiometer potY = new Potentiometer() {
+	};
 
 	/** Last written value */
 	private byte busValue;

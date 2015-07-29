@@ -2,7 +2,7 @@ package sidplay;
 
 import static libsidplay.config.IAudioSection.DEFAULT_AUDIO;
 import static libsidplay.config.IAudioSection.DEFAULT_BUFFER_SIZE;
-import static libsidplay.config.IAudioSection.DEFAULT_FREQUENCY;
+import static libsidplay.config.IAudioSection.DEFAULT_SAMPLING_RATE;
 import static libsidplay.config.IEmulationSection.DEFAULT_CLOCK_SPEED;
 import static libsidplay.config.IEmulationSection.DEFAULT_EMULATION;
 import static libsidplay.config.IEmulationSection.DEFAULT_ENGINE;
@@ -31,6 +31,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
+import libsidplay.common.SamplingRate;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
@@ -84,7 +85,7 @@ public class ConsolePlayer {
 	private Boolean single = DEFAULT_SINGLE_TRACK;
 
 	@Parameter(names = { "--frequency", "-f" }, descriptionKey = "FREQUENCY")
-	private Integer frequency = DEFAULT_FREQUENCY;
+	private SamplingRate samplingRate = DEFAULT_SAMPLING_RATE;
 
 	@Parameter(names = { "--dualSID", "-d" }, descriptionKey = "DUAL_SID")
 	private Boolean dualSID = DEFAULT_FORCE_STEREO_TUNE;
@@ -108,7 +109,7 @@ public class ConsolePlayer {
 	private Boolean disable3rdSIDFilter = !DEFAULT_USE_3SID_FILTER;
 
 	@Parameter(names = { "--forceModel", "-m" }, descriptionKey = "FORCE_MODEL")
-	private ChipModel forceModel = null;
+	private ChipModel forceModel = ChipModel.AUTO;
 
 	@Parameter(names = { "--defaultModel", "-u" }, descriptionKey = "DEFAULT_MODEL")
 	private ChipModel defaultModel = DEFAULT_SID_MODEL;
@@ -154,7 +155,7 @@ public class ConsolePlayer {
 		config.getSidplay2Section().setDefaultPlayLength(defaultLength);
 		config.getSidplay2Section().setEnableDatabase(enableSidDatabase);
 		config.getAudioSection().setAudio(audio);
-		config.getAudioSection().setFrequency(frequency);
+		config.getAudioSection().setSamplingRate(samplingRate);
 		config.getAudioSection().setBufferSize(bufferSize);
 		config.getEmulationSection().setEngine(engine);
 		config.getEmulationSection().setDefaultEmulation(defaultEmulation);

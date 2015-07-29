@@ -54,7 +54,7 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 	}
 
 	/**
-	 * Stop mixing SID chip.
+	 * Release a SID chip implementation (stop mixing SID chip).
 	 */
 	@Override
 	public void unlock(final SIDEmu sid) {

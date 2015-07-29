@@ -41,8 +41,8 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final Emulation getUserEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "UserEmulation", null,
-				Emulation.class);
+		return iniReader.getPropertyEnum("Emulation", "UserEmulation",
+				DEFAULT_USER_EMULATION);
 	}
 
 	@Override
@@ -52,8 +52,8 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final Emulation getStereoEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "StereoEmulation", null,
-				Emulation.class);
+		return iniReader.getPropertyEnum("Emulation", "StereoEmulation",
+				DEFAULT_STEREO_EMULATION);
 	}
 
 	@Override
@@ -63,8 +63,8 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final Emulation getThirdEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "3rdEmulation", null,
-				Emulation.class);
+		return iniReader.getPropertyEnum("Emulation", "3rdEmulation",
+				DEFAULT_3SID_EMULATION, Emulation.class);
 	}
 
 	@Override
@@ -107,8 +107,8 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final ChipModel getUserSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "UserSidModel", null,
-				ChipModel.class);
+		return iniReader.getPropertyEnum("Emulation", "UserSidModel",
+				DEFAULT_USER_MODEL);
 	}
 
 	@Override
@@ -118,14 +118,14 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final ChipModel getStereoSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "StereoSidModel", null,
-				ChipModel.class);
+		return iniReader.getPropertyEnum("Emulation", "StereoSidModel",
+				DEFAULT_STEREO_MODEL);
 	}
 
 	@Override
 	public final ChipModel getThirdSIDModel() {
-		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel", null,
-				ChipModel.class);
+		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel",
+				DEFAULT_3SID_MODEL);
 	}
 
 	@Override

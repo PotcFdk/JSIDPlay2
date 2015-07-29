@@ -4,14 +4,16 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import libsidplay.common.PSIDDriver;
 import libsidplay.common.SamplingMethod;
+import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
 
 @Embeddable
 public class AudioSection implements IAudioSection {
 
-	public static final String DEFAULT_SID_DRIVER = "/libsidplay/sidtune/psiddriver.asm";
+	public static final PSIDDriver DEFAULT_SID_DRIVER = PSIDDriver.JSIDPLAY2;
 
 	private Audio audio = DEFAULT_AUDIO;
 
@@ -26,13 +28,14 @@ public class AudioSection implements IAudioSection {
 		this.audio = audio;
 	}
 
-	private String sidDriver = DEFAULT_SID_DRIVER;
+	private PSIDDriver sidDriver = DEFAULT_SID_DRIVER;
 
-	public String getSidDriver() {
+	@Enumerated(EnumType.STRING)
+	public PSIDDriver getSidDriver() {
 		return sidDriver;
 	}
 
-	public void setSidDriver(final String sidDriver) {
+	public void setSidDriver(final PSIDDriver sidDriver) {
 		this.sidDriver = sidDriver;
 	}
 
@@ -48,16 +51,17 @@ public class AudioSection implements IAudioSection {
 		this.device = device;
 	}
 
-	private int frequency = DEFAULT_FREQUENCY;
+	private SamplingRate samplingRate = DEFAULT_SAMPLING_RATE;
 
+	@Enumerated(EnumType.STRING)
 	@Override
-	public int getFrequency() {
-		return this.frequency;
+	public SamplingRate getSamplingRate() {
+		return this.samplingRate;
 	}
 
 	@Override
-	public void setFrequency(int freq) {
-		this.frequency = freq;
+	public void setSamplingRate(SamplingRate samplingRate) {
+		this.samplingRate = samplingRate;
 	}
 
 	private SamplingMethod sampling = DEFAULT_SAMPLING;

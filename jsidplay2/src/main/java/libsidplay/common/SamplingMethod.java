@@ -1,16 +1,8 @@
 package libsidplay.common;
 
 public enum SamplingMethod {
-	DECIMATE("Decimate"), RESAMPLE("Resample");
-
-	final String description;
-
-	SamplingMethod(String description) {
-		this.description = description;
-	}
-
-	@Override
-	public String toString() {
-		return description;
-	}
+	/** Zero order resampler */
+	DECIMATE,
+	/** Two pass sinc resampler */
+	RESAMPLE;
 }

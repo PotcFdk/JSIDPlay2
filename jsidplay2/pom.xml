@@ -287,28 +287,31 @@
 							<includes>
 								<include>netsiddev/*</include>
 								<include>netsiddev/ini/*</include>
-								<include>resid_builder/resample/**/*.class</include>
-								<include>resid_builder/resid/**/*.class</include>
-								<include>resid_builder/residfp/**/*.class</include>
+								<include>resid_builder/resample/*.class</include>
+								<include>resid_builder/resid/*.class</include>
+								<include>resid_builder/residfp/*.class</include>
 								<include>libsidplay/common/ChipModel.class</include>
 								<include>libsidplay/common/CPUClock.class</include>
+								<include>libsidplay/common/Potentiometer.class</include>
 								<include>libsidplay/common/SamplingMethod.class</include>
+								<include>libsidplay/common/SamplingRate.class</include>
 								<include>libsidplay/common/SIDChip.class</include>
-								<include>sidplay/audio/*.class</include>
 								<include>libsidplay/config/IAudioSection.class</include>
 								<include>libsidplay/config/IFilterSection.class</include>
+								<include>sidplay/audio/Audio.class</include>
+								<include>sidplay/audio/AudioConfig.class</include>
+								<include>sidplay/audio/AudioDriver.class</include>
+								<include>sidplay/audio/JavaSound.class</include>
 								<include>sidplay/ini/IniSection.class</include>
 								<include>sidplay/ini/IniReader.class</include>
 								<include>sidplay/ini/IniAudioSection.class</include>
 								<include>sidplay/ini/IniFilterSection.class</include>
 							</includes>
 							<excludes>
-								<exclude>resid_builder/resid/ReSID*.class</exclude>
-								<exclude>resid_builder/residfp/ReSIDfp*.class</exclude>
-								<exclude>sidplay/audio/MP3*.class</exclude>
-								<exclude>sidplay/audio/Cmp*.class</exclude>
-								<exclude>sidplay/audio/Wav*.class</exclude>
-								<exclude>sidplay/audio/Proxy*.class</exclude>
+								<exclude>resid_builder/resid/ReSID.class</exclude>
+								<exclude>resid_builder/resid/ReSID$FakeStereo.class</exclude>
+								<exclude>resid_builder/residfp/ReSIDfp.class</exclude>
+								<exclude>resid_builder/residfp/ReSIDfp$FakeStereo.class</exclude>
 							</excludes>
 							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
 							<finalName>jsiddevice-${project.version}</finalName>
@@ -440,7 +443,7 @@
 			<plugin>
 				<groupId>com.github.wvengen</groupId>
 				<artifactId>proguard-maven-plugin</artifactId>
-				<version>2.0.8</version>
+				<version>2.0.10</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

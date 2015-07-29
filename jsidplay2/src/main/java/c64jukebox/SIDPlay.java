@@ -188,10 +188,6 @@ public class SIDPlay extends Applet {
 		return player.time();
 	}
 
-	public int getHardSID_SID_Count() {
-		return player.getSIDCount();
-	}
-
 	//
 	// Helpers
 	//

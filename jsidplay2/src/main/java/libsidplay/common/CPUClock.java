@@ -1,17 +1,19 @@
 package libsidplay.common;
 
-import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
-import libsidplay.sidtune.SidTuneInfo;
+import libsidplay.sidtune.SidTune.Clock;
 
 public enum CPUClock {
-	PAL(985248.4, 50), NTSC(1022727.14, 60);
+	/** PAL region clock frequency and screen refresh */
+	PAL(985248.4, 50),
+	/** NTSC region clock frequency and screen refresh */
+	NTSC(1022727.14, 60);
 
 	private final double frequency;
 	private final double refresh;
 
-	CPUClock(double frequency, double refresh) {
+	private CPUClock(double frequency, double refresh) {
 		this.frequency = frequency;
 		this.refresh = refresh;
 	}
@@ -38,26 +40,23 @@ public enum CPUClock {
 	 * 
 	 * @return CPU clock to be used for the tune
 	 */
-	public static CPUClock getCPUClock(IConfig config, SidTune tune) {
-		IEmulationSection emulation = config.getEmulationSection();
-		SidTuneInfo tuneInfo = tune != null ? tune.getInfo() : null;
-		CPUClock cpuFreq = emulation.getUserClockSpeed();
-		if (cpuFreq == null) {
-			cpuFreq = emulation.getDefaultClockSpeed();
-			if (tuneInfo != null) {
-				switch (tuneInfo.getClockSpeed()) {
-				case UNKNOWN:
-				case ANY:
-					cpuFreq = emulation.getDefaultClockSpeed();
-					break;
-				case PAL:
-				case NTSC:
-					cpuFreq = CPUClock.valueOf(tuneInfo.getClockSpeed()
-							.toString());
-					break;
-				}
-			}
+	public static CPUClock getCPUClock(IEmulationSection emulation, SidTune tune) {
+		CPUClock forcedCPUClock = emulation.getUserClockSpeed();
+		Clock tuneCPUClock = tune != null ? tune.getInfo().getClockSpeed()
+				: null;
+		CPUClock defaultCPUClock = emulation.getDefaultClockSpeed();
+		if (forcedCPUClock != null) {
+			return forcedCPUClock;
 		}
-		return cpuFreq;
+		if (tuneCPUClock == null) {
+			return defaultCPUClock;
+		}
+		switch (tuneCPUClock) {
+		case PAL:
+		case NTSC:
+			return CPUClock.valueOf(tuneCPUClock.toString());
+		default:
+			return defaultCPUClock;
+		}
 	}
 }

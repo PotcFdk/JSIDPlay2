@@ -8,8 +8,14 @@ import libsidplay.common.Engine;
 public interface IEmulationSection {
 	static final Engine DEFAULT_ENGINE = Engine.EMULATION;
 	static final Emulation DEFAULT_EMULATION = Emulation.RESIDFP;
+	static final Emulation DEFAULT_USER_EMULATION = Emulation.DEFAULT;
+	static final Emulation DEFAULT_STEREO_EMULATION = Emulation.DEFAULT;
+	static final Emulation DEFAULT_3SID_EMULATION = Emulation.DEFAULT;
 	static final CPUClock DEFAULT_CLOCK_SPEED = CPUClock.PAL;
 	static final ChipModel DEFAULT_SID_MODEL = ChipModel.MOS6581;
+	static final ChipModel DEFAULT_USER_MODEL = ChipModel.AUTO;
+	static final ChipModel DEFAULT_STEREO_MODEL = ChipModel.AUTO;
+	static final ChipModel DEFAULT_3SID_MODEL = ChipModel.AUTO;
 	static final int DEFAULT_HARD_SID_6581 = 1;
 	static final int DEFAULT_HARD_SID_8580 = 2;
 	static final boolean DEFAULT_USE_FILTER = true;

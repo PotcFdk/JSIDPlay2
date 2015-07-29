@@ -75,6 +75,8 @@ public class ReSIDfp extends ReSIDBase {
 		}
 	}
 
+	private SID sidImpl;
+
 	/**
 	 * Constructor
 	 *
@@ -86,16 +88,19 @@ public class ReSIDfp extends ReSIDBase {
 	}
 
 	@Override
+	protected SIDChip createSID() {
+		return sidImpl = new SID();
+	}
+
+	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
 		boolean enable = emulation.isFilterEnable(sidNum);
-		SID sidImpl = (SID) sid;
 		sidImpl.getFilter6581().enable(enable);
 		sidImpl.getFilter8580().enable(enable);
 	}
 
 	@Override
 	public void setFilter(IConfig config, int sidNum) {
-		SID sidImpl = (SID) sid;
 		final Filter6581 filter6581 = sidImpl.getFilter6581();
 		final Filter8580 filter8580 = sidImpl.getFilter8580();
 
@@ -135,14 +140,10 @@ public class ReSIDfp extends ReSIDBase {
 	 * @return String of credits.
 	 */
 	public static final String credits() {
-		String m_credit = "MOS6581/8580 (SID) - Antti S. Lankila's resid-fp (distortion simulation):\n";
-		m_credit += "\tCopyright (©) 1999-2004 Dag Lem <resid@nimrod.no>\n";
-		m_credit += "\tCopyright (©) 2005-2011 Antti S. Lankila <alankila@bel.fi>\n";
-		return m_credit;
+		String credit = "MOS6581/8580 (SID) - Antti S. Lankila's resid-fp (distortion simulation):\n";
+		credit += "\tCopyright (©) 1999-2004 Dag Lem <resid@nimrod.no>\n";
+		credit += "\tCopyright (©) 2005-2011 Antti S. Lankila <alankila@bel.fi>\n";
+		return credit;
 	}
 
-	@Override
-	protected SIDChip createSID() {
-		return new SID();
-	}
 }

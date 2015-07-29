@@ -3,7 +3,6 @@ package ui;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Consumer;
 
 import javafx.application.Application;
@@ -116,15 +115,17 @@ public class JSidPlay2Main extends Application {
 	}
 
 	/**
-	 * Play tune, if command line argument provided.
+	 * Play tune, if command line argument provided (except of options).
 	 */
 	private void processCommandLineArgs() {
-		List<String> raw = getParameters().getRaw();
-		if (raw.size() != 0) {
-			try {
-				player.play(SidTune.load(new File(raw.get(0))));
-			} catch (IOException | SidTuneError e) {
-				e.printStackTrace();
+		for (String arg : getParameters().getRaw()) {
+			if (!arg.startsWith("-")) {
+				try {
+					player.play(SidTune.load(new File(arg)));
+				} catch (IOException | SidTuneError e) {
+					e.printStackTrace();
+				}
+				break;
 			}
 		}
 	}
@@ -132,7 +133,7 @@ public class JSidPlay2Main extends Application {
 	@Override
 	public void stop() {
 		player.stopC64();
-		// Eject medias: Make it possible to auto-delete temporary files
+		// Eject media: Make it possible to auto-delete temporary files
 		for (final C1541 floppy : player.getFloppies()) {
 			try {
 				floppy.getDiskController().ejectDisk();

@@ -1,6 +1,7 @@
 package sidplay.ini;
 
 import libsidplay.common.SamplingMethod;
+import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
 
@@ -41,20 +42,20 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 * @return Playback/Recording frequency
 	 */
 	@Override
-	public final int getFrequency() {
-		return iniReader
-				.getPropertyInt("Audio", "Frequency", DEFAULT_FREQUENCY);
+	public final SamplingRate getSamplingRate() {
+		return iniReader.getPropertyEnum("Audio", "Sampling Rate",
+				DEFAULT_SAMPLING_RATE);
 	}
 
 	/**
 	 * Setter of the Playback/Recording frequency.
 	 * 
-	 * @param freq
+	 * @param samplingRate
 	 *            Playback/Recording frequency
 	 */
 	@Override
-	public final void setFrequency(final int freq) {
-		iniReader.setProperty("Audio", "Frequency", freq);
+	public final void setSamplingRate(final SamplingRate samplingRate) {
+		iniReader.setProperty("Audio", "Sampling Rate", samplingRate);
 	}
 
 	/**

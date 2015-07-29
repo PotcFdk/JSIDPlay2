@@ -19,7 +19,7 @@
  * @author Ken Händel
  *
  */
-package resid_builder.resid;
+package libsidplay.common;
 
 /**
  * Potentiometer representation.
@@ -29,13 +29,13 @@ package resid_builder.resid;
  * @author Ken Händel
  * @author Dag Lem
  */
-final class Potentiometer {
+public interface Potentiometer {
 	/**
 	 * Read paddle value. Not modeled.
 	 *
 	 * @return paddle value (always 0xff)
 	 */
-	protected byte readPOT() {
+	default byte readPOT() {
 		return (byte) 0xff;
 	}
 }

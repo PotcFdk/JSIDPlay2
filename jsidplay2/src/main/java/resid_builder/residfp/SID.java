@@ -25,6 +25,7 @@ import java.util.function.IntConsumer;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
+import libsidplay.common.Potentiometer;
 
 public class SID implements SIDChip {
 	private static final int INPUTDIGIBOOST = -0x9500;
@@ -59,10 +60,12 @@ public class SID implements SIDChip {
 	private final ExternalFilter externalFilter = new ExternalFilter();
 
 	/** Paddle X register support */
-	private final Potentiometer potX = new Potentiometer();
+	private final Potentiometer potX = new Potentiometer() {
+	};
 
 	/** Paddle Y register support */
-	private final Potentiometer potY = new Potentiometer();
+	private final Potentiometer potY = new Potentiometer() {
+	};
 
 	/** Last written value */
 	private byte busValue;

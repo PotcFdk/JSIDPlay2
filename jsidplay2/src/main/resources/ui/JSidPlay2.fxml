@@ -121,7 +121,7 @@
 									<MenuItem text="%C64_SK" onAction="#c64" />
 									<MenuItem text="%FORUM64_DE" onAction="#forum64" />
 									<MenuItem text="%LEMON64_COM" onAction="#lemon64" />
-									<MenuItem text="%JSIDPLAY2" onAction="#jsidplay2" />
+									<MenuItem text="%JSIDPLAY2_SRC" onAction="#jsidplay2" />
 								</Menu>
 								<MenuItem text="%PRINTER" onAction="#printer" />
 								<MenuItem text="%CONSOLE" onAction="#console" />
@@ -312,7 +312,8 @@
 								</ImageView>
 							</graphic>
 						</ToggleButton>
-						<ToggleButton focusTraversable="false" onAction="#fastForward" fx:id="fastForward2">
+						<ToggleButton focusTraversable="false" onAction="#fastForward"
+							fx:id="fastForward2">
 							<tooltip>
 								<Tooltip text="%FAST_FORWARD2" />
 							</tooltip>
@@ -366,60 +367,15 @@
 				</AnchorPane>
 				<AnchorPane>
 					<HBox AnchorPane.leftAnchor="10" alignment="CENTER">
-						<ComboBox onAction="#setVideoStandard" fx:id="videoStandardBox">
-							<items>
-								<FXCollections fx:factory="observableArrayList">
-									<CPUClock fx:value="PAL" />
-									<CPUClock fx:value="NTSC" />
-								</FXCollections>
-							</items>
-						</ComboBox>
-						<ComboBox onAction="#setEngine" fx:id="engineBox">
-							<items>
-								<FXCollections fx:factory="observableArrayList">
-									<Engine fx:value="EMULATION" />
-									<Engine fx:value="HARDSID" />
-								</FXCollections>
-							</items>
-						</ComboBox>
+						<ComboBox onAction="#setVideoStandard" fx:id="videoStandardBox" />
+						<ComboBox onAction="#setEngine" fx:id="engineBox" />
 						<ComboBox onAction="#setSIDDriver" fx:id="sidDriverBox"
-							maxWidth="150">
-							<items>
-								<FXCollections fx:factory="observableArrayList">
-									<String fx:value="/libsidplay/sidtune/psiddriver.asm" />
-									<String fx:value="/libsidplay/sidtune/psiddriver_vice.asm" />
-								</FXCollections>
-							</items>
-						</ComboBox>
-						<ComboBox onAction="#setAudio" fx:id="audioBox" maxWidth="200">
-							<items>
-								<FXCollections fx:factory="observableArrayList">
-									<Audio fx:value="SOUNDCARD" />
-									<Audio fx:value="LIVE_WAV" />
-									<Audio fx:value="LIVE_MP3" />
-									<Audio fx:value="COMPARE_MP3" />
-								</FXCollections>
-							</items>
-						</ComboBox>
+							maxWidth="150" />
+						<ComboBox onAction="#setAudio" fx:id="audioBox" maxWidth="200" />
 						<ComboBox onAction="#setDevice" fx:id="devicesBox"
 							maxWidth="150" />
-						<ComboBox onAction="#setSampling" fx:id="samplingBox">
-							<items>
-								<FXCollections fx:factory="observableArrayList">
-									<SamplingMethod fx:value="DECIMATE" />
-									<SamplingMethod fx:value="RESAMPLE" />
-								</FXCollections>
-							</items>
-						</ComboBox>
-						<ComboBox onAction="#setSamplingRate" fx:id="samplingRateBox">
-							<items>
-								<FXCollections fx:factory="observableArrayList">
-									<Integer fx:value="44100" />
-									<Integer fx:value="48000" />
-									<Integer fx:value="96000" />
-								</FXCollections>
-							</items>
-						</ComboBox>
+						<ComboBox onAction="#setSampling" fx:id="samplingBox" />
+						<ComboBox onAction="#setSamplingRate" fx:id="samplingRateBox" />
 						<Button onAction="#showVolume" fx:id="volumeButton">
 							<graphic>
 								<ImageView>

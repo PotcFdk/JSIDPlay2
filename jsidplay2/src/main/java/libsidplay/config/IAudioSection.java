@@ -1,13 +1,14 @@
 package libsidplay.config;
 
 import libsidplay.common.SamplingMethod;
+import libsidplay.common.SamplingRate;
 import sidplay.audio.Audio;
 
 public interface IAudioSection {
 
 	static final Audio DEFAULT_AUDIO = Audio.SOUNDCARD;
 	static final int DEFAULT_DEVICE = 0;
-	static final int DEFAULT_FREQUENCY = 48000;
+	static final SamplingRate DEFAULT_SAMPLING_RATE = SamplingRate.MEDIUM;
 	static final SamplingMethod DEFAULT_SAMPLING = SamplingMethod.DECIMATE;
 	static final boolean DEFAULT_PLAY_ORIGINAL = false;
 	static final float DEFAULT_MAIN_VOLUME = 0.f;
@@ -42,15 +43,15 @@ public interface IAudioSection {
 	 * 
 	 * @return Playback/Recording frequency
 	 */
-	int getFrequency();
+	SamplingRate getSamplingRate();
 
 	/**
-	 * Setter of the Playback/Recording frequency.
+	 * Setter of the sampling rate.
 	 * 
-	 * @param freq
-	 *            Playback/Recording frequency
+	 * @param sampligRate
+	 *            sampling rate
 	 */
-	void setFrequency(int freq);
+	void setSamplingRate(SamplingRate sampligRate);
 
 	/**
 	 * Getter of the sampling method.
