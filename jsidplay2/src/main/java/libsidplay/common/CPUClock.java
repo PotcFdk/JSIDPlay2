@@ -54,7 +54,7 @@ public enum CPUClock {
 		switch (tuneCPUClock) {
 		case PAL:
 		case NTSC:
-			return CPUClock.valueOf(tuneCPUClock.toString());
+			return valueOf(tuneCPUClock.toString());
 		default:
 			return defaultCPUClock;
 		}

@@ -46,7 +46,7 @@ public enum ChipModel {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
-		if (forcedChipModel != ChipModel.AUTO) {
+		if (forcedChipModel != AUTO) {
 			return forcedChipModel;
 		}
 		if (tuneSidModel == null) {
@@ -55,7 +55,7 @@ public enum ChipModel {
 		switch (tuneSidModel) {
 		case MOS6581:
 		case MOS8580:
-			return ChipModel.valueOf(tuneSidModel.toString());
+			return valueOf(tuneSidModel.toString());
 		default:
 			return defaultSidModel;
 		}
