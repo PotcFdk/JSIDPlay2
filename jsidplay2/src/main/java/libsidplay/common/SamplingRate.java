@@ -10,7 +10,7 @@ public enum SamplingRate {
 
 	private int frequency;
 
-	private SamplingRate(int frequency) {
+	private SamplingRate(final int frequency) {
 		this.frequency = frequency;
 	}
 
