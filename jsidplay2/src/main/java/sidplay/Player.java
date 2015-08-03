@@ -51,6 +51,7 @@ import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import libsidutils.STIL;
 import libsidutils.STIL.STILEntry;
 import libsidutils.SidDatabase;
@@ -60,6 +61,7 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.MP3Driver.MP3Stream;
+import sidplay.ini.IniConfig;
 import sidplay.player.PlayList;
 import sidplay.player.State;
 import sidplay.player.Timer;
@@ -881,6 +883,30 @@ public class Player extends HardwareEnsemble {
 		credits.append(resid_builder.residfp.ReSIDfp.credits());
 		credits.append(hardsid_builder.HardSID.credits());
 		return credits.toString();
+	}
+
+	/**
+	 * Test main: Play a tune.
+	 * 
+	 * @param args
+	 *            the filename of the tune is the first arg
+	 * @throws SidTuneError
+	 * @throws IOException
+	 */
+	public static void main(final String[] args) throws IOException,
+			SidTuneError {
+		if (args.length < 1) {
+			System.err.println("Missing argument: <filename>");
+			System.exit(-1);
+		}
+		// Load tune
+		final SidTune tune = SidTune.load(new File(args[0]));
+
+		// Create player
+		final Player player = new Player(new IniConfig());
+
+		// start C64
+		player.play(tune);
 	}
 
 }
