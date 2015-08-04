@@ -19,8 +19,9 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -62,6 +63,7 @@ import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.components.cart.CartridgeType;
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
@@ -90,6 +92,7 @@ import ui.diskcollection.DiskCollectionType;
 import ui.emulationsettings.EmulationSettings;
 import ui.entities.config.AudioSection;
 import ui.entities.config.C1541Section;
+import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.PrinterSection;
 import ui.entities.config.SidPlay2Section;
@@ -192,14 +195,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	protected ProgressBar progress;
 
-	private ObservableList<CPUClock> videoStandards;
-	private ObservableList<PSIDDriver> drivers;
-	private ObservableList<Engine> engines;
-	private ObservableList<Audio> audioDrivers;
-	private ObservableList<Device> devices;
-	private ObservableList<SamplingMethod> samplingMethods;
-	private ObservableList<SamplingRate> samplingRates;
-
 	private Scene scene;
 	private Timeline timer;
 	private long lastUpdate;
@@ -209,6 +204,44 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private BooleanProperty nextFavoriteDisabledState;
 	private Tooltip statusTooltip;
 
+	private class StateChangeListener implements ChangeListener<State> {
+		@Override
+		public void changed(ObservableValue<? extends State> observable,
+				State oldValue, State newValue) {
+			SidTune sidTune = util.getPlayer().getTune();
+			Platform.runLater(() -> nextFavoriteDisabledState
+					.set(sidTune == SidTune.RESET || newValue == State.QUIT));
+			if (newValue == State.START) {
+				Platform.runLater(() -> {
+					enableDisableHardSIDSettings();
+					enableDisableCompareDriverSettings();
+
+					getPlayerId();
+					lastUpdate = util.getPlayer().getC64().getEventScheduler()
+							.getTime(Phase.PHI1);
+					updatePlayerButtons(newValue);
+
+					final Tab selectedItem = tabbedPane.getSelectionModel()
+							.getSelectedItem();
+					boolean doNotSwitch = selectedItem != null
+							&& (MusicCollection.class
+									.isAssignableFrom(selectedItem.getClass()) || Favorites.class
+									.isAssignableFrom(selectedItem.getClass()));
+					if (sidTune == SidTune.RESET
+							|| (sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
+						video();
+						tabbedPane.getSelectionModel().select(
+								tabbedPane
+										.getTabs()
+										.stream()
+										.filter((tab) -> tab.getId().equals(
+												Video.ID)).findFirst().get());
+					}
+				});
+			}
+		}
+	}
+
 	public JSidPlay2(Stage primaryStage, Player player) {
 		super(primaryStage, player);
 	}
@@ -217,8 +250,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void initialize() {
 		this.duringInitialization = true;
 
-		ResourceBundle bundle = util.getBundle();
-		AudioSection audioSection = util.getConfig().getAudioSection();
+		final ResourceBundle bundle = util.getBundle();
+		final Configuration config = util.getConfig();
+		final SidPlay2Section sidplay2Section = (SidPlay2Section) config
+				.getSidplay2Section();
+		final AudioSection audioSection = config.getAudioSection();
+		final IEmulationSection emulationSection = config.getEmulationSection();
+		final C1541Section c1541Section = config.getC1541Section();
+		final PrinterSection printer = (PrinterSection) config
+				.getPrinterSection();
 
 		this.tuneSpeed = new StringBuilder();
 		this.playerId = new StringBuilder();
@@ -232,176 +272,106 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 		util.getPlayer().setRecordingFilenameProvider(this);
 		util.getPlayer().setExtendImagePolicy(this);
-		util.getPlayer()
-				.stateProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							SidTune sidTune = util.getPlayer().getTune();
-							Platform.runLater(() -> nextFavoriteDisabledState
-									.set(sidTune == SidTune.RESET
-											|| newValue == State.QUIT));
-							if (newValue == State.START) {
-								Platform.runLater(() -> {
-									getPlayerId();
-									lastUpdate = util.getPlayer().getC64()
-											.getEventScheduler()
-											.getTime(Phase.PHI1);
-									updatePlayerButtons(newValue);
+		util.getPlayer().stateProperty().addListener(new StateChangeListener());
 
-									final Tab selectedItem = tabbedPane
-											.getSelectionModel()
-											.getSelectedItem();
-									boolean doNotSwitch = selectedItem != null
-											&& (MusicCollection.class
-													.isAssignableFrom(selectedItem
-															.getClass()) || Favorites.class
-													.isAssignableFrom(selectedItem
-															.getClass()));
-									if (sidTune == SidTune.RESET
-											|| (sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
-										video();
-										tabbedPane
-												.getSelectionModel()
-												.select(tabbedPane
-														.getTabs()
-														.stream()
-														.filter((tab) -> tab
-																.getId()
-																.equals(Video.ID))
-														.findFirst().get());
-									}
-								});
-							}
-						});
-		pauseContinue.selectedProperty().bindBidirectional(
-				pauseContinue2.selectedProperty());
-
-		fastForward2.selectedProperty().bindBidirectional(
-				fastForward.selectedProperty());
-
-		nextFavoriteDisabledState = new SimpleBooleanProperty(true);
-		nextFavorite.disableProperty().bind(nextFavoriteDisabledState);
-
-		updatePlayerButtons(util.getPlayer().stateProperty().get());
-
-		audioDrivers = FXCollections.<Audio> observableArrayList(
-				Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
-				Audio.COMPARE_MP3);
 		audioBox.setConverter(new EnumToString<Audio>(bundle));
-		audioBox.setItems(audioDrivers);
-		Audio audio = audioSection.getAudio();
-		audioBox.getSelectionModel().select(audio);
+		audioBox.setItems(FXCollections.<Audio> observableArrayList(
+				Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
+				Audio.COMPARE_MP3));
+		audioBox.getSelectionModel().select(audioSection.getAudio());
 
-		drivers = FXCollections.<PSIDDriver> observableArrayList(PSIDDriver
-				.values());
 		sidDriverBox.setConverter(new EnumToString<PSIDDriver>(bundle));
-		sidDriverBox.setItems(drivers);
+		sidDriverBox.setItems(FXCollections
+				.<PSIDDriver> observableArrayList(PSIDDriver.values()));
 		sidDriverBox.getSelectionModel().select(audioSection.getSidDriver());
 
-		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
-		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
-		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
-
-		devices = JavaSound.getDevices();
-		devicesBox.setItems(devices);
-		int device = audioSection.getDevice();
+		devicesBox.setItems(JavaSound.getDevices());
 		devicesBox.getSelectionModel().select(
-				device < devices.size() ? device : 0);
+				Math.min(audioSection.getDevice(),
+						devicesBox.getItems().size() - 1));
 
-		samplingMethods = FXCollections
-				.<SamplingMethod> observableArrayList(SamplingMethod.values());
 		samplingBox.setConverter(new EnumToString<SamplingMethod>(bundle));
-		samplingBox.setItems(samplingMethods);
+		samplingBox.setItems(FXCollections
+				.<SamplingMethod> observableArrayList(SamplingMethod.values()));
 		samplingBox.getSelectionModel().select(audioSection.getSampling());
 
-		samplingRates = FXCollections
-				.<SamplingRate> observableArrayList(SamplingRate.values());
-		SamplingRate samplingRate = audioSection.getSamplingRate();
 		samplingRateBox.setConverter(new EnumToString<SamplingRate>(bundle));
-		samplingRateBox.setItems(samplingRates);
-		samplingRateBox.getSelectionModel().select(samplingRate);
+		samplingRateBox.setItems(FXCollections
+				.<SamplingRate> observableArrayList(SamplingRate.values()));
+		samplingRateBox.getSelectionModel().select(
+				audioSection.getSamplingRate());
 
-		videoStandards = FXCollections.<CPUClock> observableArrayList(CPUClock
-				.values());
 		videoStandardBox.setConverter(new EnumToString<CPUClock>(bundle));
-		videoStandardBox.setItems(videoStandards);
+		videoStandardBox.setItems(FXCollections
+				.<CPUClock> observableArrayList(CPUClock.values()));
 		videoStandardBox.getSelectionModel().select(
-				CPUClock.getCPUClock(util.getConfig().getEmulationSection(),
-						util.getPlayer().getTune()));
+				CPUClock.getCPUClock(emulationSection, util.getPlayer()
+						.getTune()));
 
 		hardsid6581Box.getSelectionModel().select(
-				util.getConfig().getEmulationSection().getHardsid6581());
+				emulationSection.getHardsid6581());
 		hardsid8580Box.getSelectionModel().select(
-				util.getConfig().getEmulationSection().getHardsid8580());
+				emulationSection.getHardsid8580());
 
-		engines = FXCollections.<Engine> observableArrayList(Engine.values());
 		engineBox.setConverter(new EnumToString<Engine>(bundle));
-		engineBox.setItems(engines);
-		Engine engine = util.getConfig().getEmulationSection().getEngine();
-		engineBox.getSelectionModel().select(engine);
+		engineBox.setItems(FXCollections.<Engine> observableArrayList(Engine
+				.values()));
+		engineBox.getSelectionModel().select(emulationSection.getEngine());
 
-		hardsid6581Box.setDisable(!Engine.HARDSID.equals(engine));
-		hardsid8580Box.setDisable(!Engine.HARDSID.equals(engine));
-		hardsid6581Label.setDisable(!Engine.HARDSID.equals(engine));
-		hardsid8580Label.setDisable(!Engine.HARDSID.equals(engine));
-
-		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
-				.getSidplay2Section();
-
-		int seconds = sidplay2.getDefaultPlayLength();
+		int seconds = sidplay2Section.getDefaultPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60,
 				seconds % 60));
-		sidplay2.defaultPlayLengthProperty().addListener(
+		sidplay2Section.defaultPlayLengthProperty().addListener(
 				(observable, oldValue, newValue) -> defaultTime.setText(String
 						.format("%02d:%02d", newValue.intValue() / 60,
 								newValue.intValue() % 60)));
 
-		enableSldb.setSelected(sidplay2.isEnableDatabase());
-		sidplay2.enableDatabaseProperty().addListener(
+		enableSldb.setSelected(sidplay2Section.isEnableDatabase());
+		sidplay2Section.enableDatabaseProperty().addListener(
 				(observable, oldValue, newValue) -> enableSldb
 						.setSelected(newValue));
 
-		singleSong.setSelected(sidplay2.isSingle());
-		sidplay2.singleProperty().addListener(
+		singleSong.setSelected(sidplay2Section.isSingle());
+		sidplay2Section.singleProperty().addListener(
 				(observable, oldValue, newValue) -> singleSong
 						.setSelected(newValue));
 
 		playMP3.setSelected(audioSection.isPlayOriginal());
 		playEmulation.setSelected(!audioSection.isPlayOriginal());
 
-		C1541Section c1541Section = (C1541Section) util.getConfig()
-				.getC1541Section();
+		updatePlayerButtons(util.getPlayer().stateProperty().get());
+		enableDisableCompareDriverSettings();
+		enableDisableHardSIDSettings();
+
+		pauseContinue.selectedProperty().bindBidirectional(
+				pauseContinue2.selectedProperty());
+		fastForward2.selectedProperty().bindBidirectional(
+				fastForward.selectedProperty());
+		nextFavoriteDisabledState = new SimpleBooleanProperty(true);
+		nextFavorite.disableProperty().bind(nextFavoriteDisabledState);
 		driveOn.selectedProperty().bindBidirectional(
 				c1541Section.driveOnProperty());
 		parCable.selectedProperty().bindBidirectional(
 				c1541Section.parallelCableProperty());
 		driveSoundOn.selectedProperty().bindBidirectional(
 				c1541Section.driveSoundOnProperty());
-		PrinterSection printer = (PrinterSection) util.getConfig()
-				.getPrinterSection();
 		turnPrinterOn.selectedProperty().bindBidirectional(
 				printer.printerOnProperty());
 
-		FloppyType floppyType = util.getConfig().getC1541Section()
-				.getFloppyType();
+		FloppyType floppyType = c1541Section.getFloppyType();
 		(floppyType == FloppyType.C1541 ? c1541 : c1541_II).setSelected(true);
-		ExtendImagePolicy extendImagePolicy = util.getConfig()
-				.getC1541Section().getExtendImagePolicy();
+		ExtendImagePolicy extendImagePolicy = c1541Section
+				.getExtendImagePolicy();
 		(extendImagePolicy == ExtendImagePolicy.EXTEND_NEVER ? neverExtend
 				: extendImagePolicy == ExtendImagePolicy.EXTEND_ASK ? askExtend
 						: accessExtend).setSelected(true);
-		expand2000.setSelected(util.getConfig().getC1541Section()
-				.isRamExpansionEnabled0());
-		expand4000.setSelected(util.getConfig().getC1541Section()
-				.isRamExpansionEnabled1());
-		expand6000.setSelected(util.getConfig().getC1541Section()
-				.isRamExpansionEnabled2());
-		expand8000.setSelected(util.getConfig().getC1541Section()
-				.isRamExpansionEnabled3());
-		expandA000.setSelected(util.getConfig().getC1541Section()
-				.isRamExpansionEnabled4());
+		expand2000.setSelected(c1541Section.isRamExpansionEnabled0());
+		expand4000.setSelected(c1541Section.isRamExpansionEnabled1());
+		expand6000.setSelected(c1541Section.isRamExpansionEnabled2());
+		expand8000.setSelected(c1541Section.isRamExpansionEnabled3());
+		expandA000.setSelected(c1541Section.isRamExpansionEnabled4());
 
-		for (ViewEntity view : util.getConfig().getViews()) {
+		for (ViewEntity view : config.getViews()) {
 			addView(view.getFxId());
 		}
 		this.duringInitialization = false;
@@ -411,75 +381,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		timer = new Timeline(frame);
 		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
-	}
-
-	private void addView(String id) {
-		if (Video.ID.equals(id)) {
-			video();
-		} else if (Asm.ID.equals(id)) {
-			asm();
-		} else if (Oscilloscope.ID.equals(id)) {
-			oscilloscope();
-		} else if (MusicCollection.HVSC_ID.equals(id)) {
-			hvsc();
-		} else if (MusicCollection.CGSC_ID.equals(id)) {
-			cgsc();
-		} else if (DiskCollection.HVMEC_ID.equals(id)) {
-			hvmec();
-		} else if (DiskCollection.DEMOS_ID.equals(id)) {
-			demos();
-		} else if (DiskCollection.MAGS_ID.equals(id)) {
-			mags();
-		} else if (GameBase.ID.equals(id)) {
-			gamebase();
-		} else if (Favorites.ID.equals(id)) {
-			favorites();
-		} else if (Printer.ID.equals(id)) {
-			printer();
-		} else if (Console.ID.equals(id)) {
-			console();
-		} else if (SidDump.ID.equals(id)) {
-			sidDump();
-		} else if (SidReg.ID.equals(id)) {
-			sidRegisters();
-		} else if (Disassembler.ID.equals(id)) {
-			disassembler();
-		} else if (WebViewType.CSDB.name().equals(id)) {
-			csdb();
-		} else if (WebViewType.CODEBASE64.name().equals(id)) {
-			codebase64();
-		} else if (WebViewType.REMIX_KWED_ORG.name().equals(id)) {
-			remixKweqOrg();
-		} else if (WebViewType.SID_OTH4_COM.name().equals(id)) {
-			sidOth4Com();
-		} else if (WebViewType.C64_SK.name().equals(id)) {
-			c64();
-		} else if (WebViewType.FORUM64_DE.name().equals(id)) {
-			forum64();
-		} else if (WebViewType.LEMON64_COM.name().equals(id)) {
-			lemon64();
-		} else if (WebViewType.JSIDPLAY2.name().equals(id)) {
-			jsidplay2();
-		}
-	}
-
-	private void updatePlayerButtons(State state) {
-		pauseContinue.setSelected(false);
-		normalSpeed.setSelected(true);
-
-		PlayList playList = util.getPlayer().getPlayList();
-
-		previous.setDisable(!playList.hasPrevious());
-		previous2.setDisable(previous.isDisable());
-		next.setDisable(!playList.hasNext());
-		next2.setDisable(next.isDisable());
-
-		previous.setText(String.format(util.getBundle().getString("PREVIOUS2")
-				+ " (%d/%d)", playList.getPrevious(), playList.getLength()));
-		previous2ToolTip.setText(previous.getText());
-		next.setText(String.format(util.getBundle().getString("NEXT2")
-				+ " (%d/%d)", playList.getNext(), playList.getLength()));
-		next2ToolTip.setText(next.getText());
 	}
 
 	@Override
@@ -956,13 +857,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void setAudio() {
-		Audio audio = audioBox.getSelectionModel().getSelectedItem();
-		util.getConfig().getAudioSection().setAudio(audio);
-
-		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
-		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
-		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
-
+		util.getConfig().getAudioSection()
+				.setAudio(audioBox.getSelectionModel().getSelectedItem());
 		util.getPlayer().updateAudioDriver();
 		restart();
 	}
@@ -982,15 +878,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			Device device = devicesBox.getSelectionModel().getSelectedItem();
 			int deviceIndex = devicesBox.getItems().indexOf(device);
 			util.getConfig().getAudioSection().setDevice(deviceIndex);
-			if (!this.duringInitialization) {
-				AudioDriver driver = util.getPlayer().getAudioDriver();
-				if (driver instanceof JavaSound) {
-					JavaSound js = (JavaSound) driver;
-					try {
-						js.setAudioDevice(device.getInfo());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+			AudioDriver driver = util.getPlayer().getAudioDriver();
+			if (driver instanceof JavaSound) {
+				JavaSound js = (JavaSound) driver;
+				try {
+					js.setAudioDevice(device.getInfo());
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -1014,12 +908,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void setEngine() {
-		Engine engine = engineBox.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulationSection().setEngine(engine);
-		hardsid6581Box.setDisable(!Engine.HARDSID.equals(engine));
-		hardsid8580Box.setDisable(!Engine.HARDSID.equals(engine));
-		hardsid6581Label.setDisable(!Engine.HARDSID.equals(engine));
-		hardsid8580Label.setDisable(!Engine.HARDSID.equals(engine));
+		util.getConfig().getEmulationSection()
+				.setEngine(engineBox.getSelectionModel().getSelectedItem());
 		restart();
 	}
 
@@ -1329,6 +1219,90 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void about() {
 		new About(util.getPlayer()).open();
+	}
+
+	private void enableDisableHardSIDSettings() {
+		Engine engine = util.getConfig().getEmulationSection().getEngine();
+		hardsid6581Box.setDisable(!Engine.HARDSID.equals(engine));
+		hardsid8580Box.setDisable(!Engine.HARDSID.equals(engine));
+		hardsid6581Label.setDisable(!Engine.HARDSID.equals(engine));
+		hardsid8580Label.setDisable(!Engine.HARDSID.equals(engine));
+	}
+
+	private void enableDisableCompareDriverSettings() {
+		Audio audio = util.getConfig().getAudioSection().getAudio();
+		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
+		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
+		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
+	}
+
+	private void addView(String id) {
+		if (Video.ID.equals(id)) {
+			video();
+		} else if (Asm.ID.equals(id)) {
+			asm();
+		} else if (Oscilloscope.ID.equals(id)) {
+			oscilloscope();
+		} else if (MusicCollection.HVSC_ID.equals(id)) {
+			hvsc();
+		} else if (MusicCollection.CGSC_ID.equals(id)) {
+			cgsc();
+		} else if (DiskCollection.HVMEC_ID.equals(id)) {
+			hvmec();
+		} else if (DiskCollection.DEMOS_ID.equals(id)) {
+			demos();
+		} else if (DiskCollection.MAGS_ID.equals(id)) {
+			mags();
+		} else if (GameBase.ID.equals(id)) {
+			gamebase();
+		} else if (Favorites.ID.equals(id)) {
+			favorites();
+		} else if (Printer.ID.equals(id)) {
+			printer();
+		} else if (Console.ID.equals(id)) {
+			console();
+		} else if (SidDump.ID.equals(id)) {
+			sidDump();
+		} else if (SidReg.ID.equals(id)) {
+			sidRegisters();
+		} else if (Disassembler.ID.equals(id)) {
+			disassembler();
+		} else if (WebViewType.CSDB.name().equals(id)) {
+			csdb();
+		} else if (WebViewType.CODEBASE64.name().equals(id)) {
+			codebase64();
+		} else if (WebViewType.REMIX_KWED_ORG.name().equals(id)) {
+			remixKweqOrg();
+		} else if (WebViewType.SID_OTH4_COM.name().equals(id)) {
+			sidOth4Com();
+		} else if (WebViewType.C64_SK.name().equals(id)) {
+			c64();
+		} else if (WebViewType.FORUM64_DE.name().equals(id)) {
+			forum64();
+		} else if (WebViewType.LEMON64_COM.name().equals(id)) {
+			lemon64();
+		} else if (WebViewType.JSIDPLAY2.name().equals(id)) {
+			jsidplay2();
+		}
+	}
+
+	private void updatePlayerButtons(State state) {
+		pauseContinue.setSelected(false);
+		normalSpeed.setSelected(true);
+
+		PlayList playList = util.getPlayer().getPlayList();
+
+		previous.setDisable(!playList.hasPrevious());
+		previous2.setDisable(previous.isDisable());
+		next.setDisable(!playList.hasNext());
+		next2.setDisable(next.isDisable());
+
+		previous.setText(String.format(util.getBundle().getString("PREVIOUS2")
+				+ " (%d/%d)", playList.getPrevious(), playList.getLength()));
+		previous2ToolTip.setText(previous.getText());
+		next.setText(String.format(util.getBundle().getString("NEXT2")
+				+ " (%d/%d)", playList.getNext(), playList.getLength()));
+		next2ToolTip.setText(next.getText());
 	}
 
 	private void addTab(Tab tab) {
