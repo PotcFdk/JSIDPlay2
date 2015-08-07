@@ -52,7 +52,6 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
-import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.PSIDDriver;
 import libsidplay.common.SamplingMethod;
@@ -197,10 +196,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	private Scene scene;
 	private Timeline timer;
-	private long lastUpdate;
 	private int oldHalfTrack, hardcopyCounter;
 	private boolean duringInitialization, oldMotorOn;
-	private StringBuilder tuneSpeed, playerId, playerinfos;
+	private StringBuilder playerId, playerinfos;
 	private BooleanProperty nextFavoriteDisabledState;
 	private Tooltip statusTooltip;
 
@@ -213,13 +211,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 					.set(sidTune == SidTune.RESET || newValue == State.QUIT));
 			if (newValue == State.START) {
 				Platform.runLater(() -> {
+					updatePlayerButtons(newValue);
 					enableDisableHardSIDSettings();
 					enableDisableCompareDriverSettings();
 
 					getPlayerId();
-					lastUpdate = util.getPlayer().getC64().getEventScheduler()
-							.getTime(Phase.PHI1);
-					updatePlayerButtons(newValue);
 
 					final Tab selectedItem = tabbedPane.getSelectionModel()
 							.getSelectedItem();
@@ -260,7 +256,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		final PrinterSection printer = (PrinterSection) config
 				.getPrinterSection();
 
-		this.tuneSpeed = new StringBuilder();
 		this.playerId = new StringBuilder();
 		this.playerinfos = new StringBuilder();
 		this.scene = tabbedPane.getScene();
@@ -1393,7 +1388,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		if (datasette.getMotor()) {
 			progress.setProgress(datasette.getProgress() / 100f);
 		}
-		determineTuneSpeed();
 		// final status bar text
 		StringBuilder line = new StringBuilder();
 		line.append(String.format("%s: %s, ",
@@ -1401,7 +1395,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		line.append(determineVideoNorm());
 		line.append(determineChipModel());
 		line.append(playerId);
-		line.append(tuneSpeed);
+		double tuneSpeed = util.getPlayer().getC64().determineTuneSpeed();
+		if (tuneSpeed > 0) {
+			line.append(String.format("%s: %.1fx, ", util.getBundle()
+					.getString("SPEED"), tuneSpeed));
+		}
 		line.append(determineSong());
 		if (datasette.getMotor()) {
 			line.append(String.format("%s: %03d, ",
@@ -1506,31 +1504,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 				playerId.append(", ");
 				break;
 			}
-		}
-	}
-
-	private void determineTuneSpeed() {
-		if (util.getPlayer().getTune() != null) {
-			C64 c64 = util.getPlayer().getC64();
-			final EventScheduler ctx = c64.getEventScheduler();
-			final CPUClock systemClock = c64.getClock();
-			final double waitClocks = systemClock.getCpuFrequency();
-			final long now = ctx.getTime(Event.Phase.PHI1);
-			final double interval = now - lastUpdate;
-			if (interval >= waitClocks) {
-				lastUpdate = now;
-				final double callsSinceLastRead = c64
-						.callsToPlayRoutineSinceLastTime()
-						* waitClocks
-						/ interval;
-				/* convert to number of calls per frame */
-				tuneSpeed.setLength(0);
-				tuneSpeed.append(util.getBundle().getString("SPEED")).append(
-						String.format(": %.1fx, ", callsSinceLastRead
-								/ systemClock.getRefresh()));
-			}
-		} else {
-			tuneSpeed.setLength(0);
 		}
 	}
 

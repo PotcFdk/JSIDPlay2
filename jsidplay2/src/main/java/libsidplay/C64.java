@@ -75,8 +75,12 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	/** System event context */
 	protected final EventScheduler context;
 
-	/** Number of entrances to play routine */
+	/** Number of entrances to play routine to determine tune speed */
 	protected int callsToPlayRoutine;
+	/** Last time tune speed has been measured */
+	private long lastUpdate;
+	/** detected tune speed */
+	private double tuneSpeed;
 
 	/** Playroutine address */
 	protected int playAddr;
@@ -261,10 +265,22 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		this.playAddr = playAddr;
 	}
 
-	public final int callsToPlayRoutineSinceLastTime() {
-		final int val = callsToPlayRoutine;
-		callsToPlayRoutine = 0;
-		return val;
+	/**
+	 * Determine tune speed (calls of play routine per frame).
+	 * 
+	 * @return current tune speed
+	 */
+	public final double determineTuneSpeed() {
+		final double cpuFreq = clock.getCpuFrequency();
+		final long now = context.getTime(Event.Phase.PHI1);
+		final double interval = now - lastUpdate;
+		if (interval >= cpuFreq) {
+			lastUpdate = now;
+			tuneSpeed = (callsToPlayRoutine * cpuFreq)
+					/ (interval * clock.getRefresh());
+			callsToPlayRoutine = 0;
+		}
+		return tuneSpeed;
 	}
 
 	public final void setParallelCable(final IParallelCable parallelCable) {
@@ -425,6 +441,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		ramBank.reset();
 
 		callsToPlayRoutine = 0;
+		lastUpdate = 0;
+		tuneSpeed = 0;
 		playAddr = -1;
 	}
 
