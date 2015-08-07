@@ -38,7 +38,7 @@ public class Update extends C64Window {
 		} catch (NullPointerException | IOException e) {
 		}
 		// check latest version
-		float latestVersion = Integer.MAX_VALUE;
+		float latestVersion = Integer.MIN_VALUE;
 		try {
 			Properties latestProperties = new Properties();
 			URL resource = new URL(
