@@ -97,7 +97,7 @@ public class EmulationSettings extends C64Window {
 
 		mainBalance.setValue(util.getConfig().getAudioSection()
 				.getMainBalance());
-		mainBalance.setLabelFormatter(new DoubleToString());
+		mainBalance.setLabelFormatter(new DoubleToString(1));
 		mainBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
@@ -107,7 +107,7 @@ public class EmulationSettings extends C64Window {
 				});
 		secondBalance.setValue(util.getConfig().getAudioSection()
 				.getSecondBalance());
-		secondBalance.setLabelFormatter(new DoubleToString());
+		secondBalance.setLabelFormatter(new DoubleToString(1));
 		secondBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
@@ -117,7 +117,7 @@ public class EmulationSettings extends C64Window {
 				});
 		thirdBalance.setValue(util.getConfig().getAudioSection()
 				.getThirdBalance());
-		thirdBalance.setLabelFormatter(new DoubleToString());
+		thirdBalance.setLabelFormatter(new DoubleToString(1));
 		thirdBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()

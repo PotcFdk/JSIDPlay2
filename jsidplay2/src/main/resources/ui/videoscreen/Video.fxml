@@ -24,7 +24,7 @@
 		AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
 		AnchorPane.topAnchor="0">
 		<left>
-			<TitledPane fx:id="monitor" collapsible="false">
+			<TitledPane fx:id="monitor" collapsible="true">
 				<StackPane>
 					<Canvas fx:id="screen" />
 					<ImageView fx:id="monitorBorder">
@@ -142,48 +142,66 @@
 			<TitledPane text="%MONITOR_SETTINGS" expanded="false">
 				<HBox>
 					<VBox alignment="TOP_CENTER">
-						<Label fx:id="brightnessValue" text="0.0" />
-						<Slider fx:id="brightness" min="0" max="200" />
+						<Label fx:id="brightnessValue" text="0.00" />
+						<Slider fx:id="brightness" min="-1" max="1" value="0.00"
+							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+							majorTickUnit="0.01" showTickMarks="true" />
 						<Label text="%BRIGHTNESS" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
-						<Label fx:id="contrastValue" text="0.0" />
-						<Slider fx:id="contrast" min="0" max="200" />
+						<Label fx:id="contrastValue" text="1.00" />
+						<Slider fx:id="contrast" min="0" max="2" value="1.00"
+							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+							majorTickUnit="0.01" showTickMarks="true" />
 						<Label text="%CONTRAST" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
-						<Label fx:id="gammaValue" text="0.0" />
-						<Slider fx:id="gamma" min="0" max="70" />
+						<Label fx:id="gammaValue" text="2.00" />
+						<Slider fx:id="gamma" min="1.8" max="2.5" value="2.00"
+							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+							majorTickUnit="0.01" showTickMarks="true" />
 						<Label text="%GAMMA" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
-						<Label fx:id="saturationValue" text="0.0" />
-						<Slider fx:id="saturation" min="0" max="100" />
+						<Label fx:id="saturationValue" text="0.50" />
+						<Slider fx:id="saturation" min="0" max="1" value="0.50"
+							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+							majorTickUnit="0.01" showTickMarks="true" />
 						<Label text="%SATURATION" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
-						<Label fx:id="phaseShiftValue" text="0.0" />
-						<Slider fx:id="phaseShift" min="0" max="90" />
+						<Label fx:id="phaseShiftValue" text="-0.15" />
+						<Slider fx:id="phaseShift" min="-0.45" max="0.45" value="-0.15"
+							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+							majorTickUnit="0.01" showTickMarks="true" />
 						<Label text="%PHASE_SHIFT" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
-						<Label fx:id="offsetValue" text="0.0" />
-						<Slider fx:id="offset" min="0" max="190" />
+						<Label fx:id="offsetValue" text="0.9" />
+						<Slider fx:id="offset" min="0.1" max="2" value="0.9"
+							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+							majorTickUnit="0.01" showTickMarks="true" />
 						<Label text="%OFFSET" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
-						<Label fx:id="tintValue" text="0.0" />
-						<Slider fx:id="tint" min="0" max="20" />
+						<Label fx:id="tintValue" text="0.00" />
+						<Slider fx:id="tint" min="-0.1" max="0.1" value="0.00"
+							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+							majorTickUnit="0.01" showTickMarks="true" />
 						<Label text="%TINT" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
-						<Label fx:id="blurValue" text="0.0" />
-						<Slider fx:id="blur" min="0" max="100" />
+						<Label fx:id="blurValue" text="0.50" />
+						<Slider fx:id="blur" min="0.5" max="1.5" value="0.50"
+							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+							majorTickUnit="0.01" showTickMarks="true" />
 						<Label text="%BLUR" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
-						<Label fx:id="bleedValue" text="0.0" />
-						<Slider fx:id="bleed" min="0" max="10" />
+						<Label fx:id="bleedValue" text="0.50" />
+						<Slider fx:id="bleed" min="0" max="1" value="0.50"
+							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+							majorTickUnit="0.01" showTickMarks="true" />
 						<Label text="%BLEED" />
 					</VBox>
 					<VBox alignment="BASELINE_CENTER">

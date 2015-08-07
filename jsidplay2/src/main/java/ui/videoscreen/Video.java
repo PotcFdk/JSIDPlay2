@@ -40,6 +40,7 @@ import libsidplay.sidtune.SidTuneError;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
+import ui.common.DoubleToString;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.SidPlay2Section;
@@ -104,101 +105,114 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				saturation, phaseShift, offset, tint, blur, bleed)) {
 			slider.getStyleClass().add("knobStyle");
 		}
-		brightness.valueProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							float brightnessNewValue = round((newValue
-									.floatValue() - 100.f) / 100.f);
-							brightnessValue.textProperty().set(
-									String.valueOf(brightnessNewValue));
-							getC64().getPalVIC().getPalette()
-									.setBrightness(brightnessNewValue);
-							getC64().getNtscVIC().getPalette()
-									.setBrightness(brightnessNewValue);
-						});
-		contrast.valueProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							float contrastNewValue = round(newValue
-									.floatValue() / 100.f);
-							contrastValue.textProperty().set(
-									String.valueOf(contrastNewValue));
-							getC64().getPalVIC().getPalette()
-									.setContrast(contrastNewValue);
-							getC64().getNtscVIC().getPalette()
-									.setContrast(contrastNewValue);
-						});
-		gamma.valueProperty().addListener((observable, oldValue, newValue) -> {
-			float gammaNewValue = round((newValue.floatValue() + 180) / 100.f);
-			gammaValue.textProperty().set(String.valueOf(gammaNewValue));
-			getC64().getPalVIC().getPalette().setGamma(gammaNewValue);
-			getC64().getNtscVIC().getPalette().setGamma(gammaNewValue);
-		});
-		saturation.valueProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							float saturationNewValue = round(newValue
-									.floatValue() / 100.f);
-							saturationValue.textProperty().set(
-									String.valueOf(saturationNewValue));
-							getC64().getPalVIC().getPalette()
-									.setSaturation(saturationNewValue);
-							getC64().getNtscVIC().getPalette()
-									.setSaturation(saturationNewValue);
-						});
-		phaseShift.valueProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							float phaseShiftNewValue = round((newValue
-									.floatValue() - 45.f) / 100.f);
-							phaseShiftValue.textProperty().set(
-									String.valueOf(phaseShiftNewValue));
-							getC64().getPalVIC().getPalette()
-									.setPhaseShift(phaseShiftNewValue);
-							getC64().getNtscVIC().getPalette()
-									.setPhaseShift(phaseShiftNewValue);
-						});
-		offset.valueProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							float offsetNewValue = round((newValue.floatValue() + 10.f) / 100.f);
-							offsetValue.textProperty().set(
-									String.valueOf(offsetNewValue));
-							getC64().getPalVIC().getPalette()
-									.setOffset(offsetNewValue);
-							getC64().getNtscVIC().getPalette()
-									.setOffset(offsetNewValue);
-						});
-		tint.valueProperty().addListener((observable, oldValue, newValue) -> {
-			float tintNewValue = round((newValue.floatValue() - 10.f) / 100.f);
-			tintValue.textProperty().set(String.valueOf(tintNewValue));
-			getC64().getPalVIC().getPalette().setTint(tintNewValue);
-			getC64().getNtscVIC().getPalette().setTint(tintNewValue);
-		});
-		blur.valueProperty().addListener((observable, oldValue, newValue) -> {
-			float blurNewValue = round((newValue.floatValue() + 50.f) / 100.f);
-			blurValue.textProperty().set(String.valueOf(blurNewValue));
-			getC64().getPalVIC().getPalette().setLuminanceC(blurNewValue);
-			getC64().getNtscVIC().getPalette().setLuminanceC(blurNewValue);
-		});
-		bleed.valueProperty().addListener((observable, oldValue, newValue) -> {
-			float bleedNewValue = round(newValue.floatValue() / 10.f);
-			bleedValue.textProperty().set(String.valueOf(bleedNewValue));
-			getC64().getPalVIC().getPalette().setDotCreep(bleedNewValue);
-			getC64().getNtscVIC().getPalette().setDotCreep(bleedNewValue);
-		});
-		brightness
-				.setValue(getC64().getPalVIC().getPalette().getBrightness() * 100 + 100.);
-		contrast.setValue(getC64().getPalVIC().getPalette().getContrast() * 100);
-		gamma.setValue(getC64().getPalVIC().getPalette().getGamma() * 100 - 180.);
-		saturation
-				.setValue(getC64().getPalVIC().getPalette().getSaturation() * 100);
-		phaseShift
-				.setValue(getC64().getPalVIC().getPalette().getPhaseShift() + 45.);
-		offset.setValue(getC64().getPalVIC().getPalette().getOffset() * 100 - 10.);
-		tint.setValue(getC64().getPalVIC().getPalette().getTint() * 100 + 10.);
-		blur.setValue(getC64().getPalVIC().getPalette().getLuminanceC() * 100 - 50.);
-		bleed.setValue(getC64().getPalVIC().getPalette().getDotCreep() * 10);
+		brightness.setLabelFormatter(new DoubleToString(2));
+		brightness.setValue(getC64().getPalVIC().getPalette().getBrightness());
+		brightness.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					brightnessValue.textProperty().set(
+							brightness.getLabelFormatter().toString(
+									newValue.doubleValue()));
+					getC64().getPalVIC().getPalette()
+							.setBrightness(newValue.floatValue());
+					getC64().getNtscVIC().getPalette()
+							.setBrightness(newValue.floatValue());
+				});
+		contrast.setLabelFormatter(new DoubleToString(2));
+		contrast.setValue(getC64().getPalVIC().getPalette().getContrast());
+		contrast.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					contrastValue.textProperty().set(
+							contrast.getLabelFormatter().toString(
+									newValue.doubleValue()));
+					getC64().getPalVIC().getPalette()
+							.setContrast(newValue.floatValue());
+					getC64().getNtscVIC().getPalette()
+							.setContrast(newValue.floatValue());
+				});
+		gamma.setLabelFormatter(new DoubleToString(2));
+		gamma.setValue(getC64().getPalVIC().getPalette().getGamma());
+		gamma.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					gammaValue.textProperty().set(
+							gamma.getLabelFormatter().toString(
+									newValue.doubleValue()));
+					getC64().getPalVIC().getPalette()
+							.setGamma(newValue.floatValue());
+					getC64().getNtscVIC().getPalette()
+							.setGamma(newValue.floatValue());
+				});
+		saturation.setLabelFormatter(new DoubleToString(2));
+		saturation.setValue(getC64().getPalVIC().getPalette().getSaturation());
+		saturation.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					saturationValue.textProperty().set(
+							saturation.getLabelFormatter().toString(
+									newValue.doubleValue()));
+					getC64().getPalVIC().getPalette()
+							.setSaturation(newValue.floatValue());
+					getC64().getNtscVIC().getPalette()
+							.setSaturation(newValue.floatValue());
+				});
+		phaseShift.setLabelFormatter(new DoubleToString(2));
+		phaseShift.setValue(getC64().getPalVIC().getPalette().getPhaseShift());
+		phaseShift.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					phaseShiftValue.textProperty().set(
+							phaseShift.getLabelFormatter().toString(
+									newValue.doubleValue()));
+					getC64().getPalVIC().getPalette()
+							.setPhaseShift(newValue.floatValue());
+					getC64().getNtscVIC().getPalette()
+							.setPhaseShift(newValue.floatValue());
+				});
+		offset.setLabelFormatter(new DoubleToString(2));
+		offset.setValue(getC64().getPalVIC().getPalette().getOffset());
+		offset.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					offsetValue.textProperty().set(
+							offset.getLabelFormatter().toString(
+									newValue.doubleValue()));
+					getC64().getPalVIC().getPalette()
+							.setOffset(newValue.floatValue());
+					getC64().getNtscVIC().getPalette()
+							.setOffset(newValue.floatValue());
+				});
+		tint.setLabelFormatter(new DoubleToString(2));
+		tint.setValue(getC64().getPalVIC().getPalette().getTint());
+		tint.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					tintValue.textProperty().set(
+							tint.getLabelFormatter().toString(
+									newValue.doubleValue()));
+					getC64().getPalVIC().getPalette()
+							.setTint(newValue.floatValue());
+					getC64().getNtscVIC().getPalette()
+							.setTint(newValue.floatValue());
+				});
+		blur.setLabelFormatter(new DoubleToString(2));
+		blur.setValue(getC64().getPalVIC().getPalette().getLuminanceC());
+		blur.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					blurValue.textProperty().set(
+							blur.getLabelFormatter().toString(
+									newValue.doubleValue()));
+					getC64().getPalVIC().getPalette()
+							.setLuminanceC(newValue.floatValue());
+					getC64().getNtscVIC().getPalette()
+							.setLuminanceC(newValue.floatValue());
+				});
+		bleed.setLabelFormatter(new DoubleToString(2));
+		bleed.setValue(getC64().getPalVIC().getPalette().getDotCreep());
+		bleed.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					bleedValue.textProperty().set(
+							bleed.getLabelFormatter().toString(
+									newValue.doubleValue()));
+					getC64().getPalVIC().getPalette()
+							.setDotCreep(newValue.floatValue());
+					getC64().getNtscVIC().getPalette()
+							.setDotCreep(newValue.floatValue());
+				});
 
 		setupVideoScreen();
 		setVisibilityBasedOnChipType(util.getPlayer().getTune());
@@ -377,15 +391,11 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				});
 	}
 
-	private float round(float f) {
-		return (int) (f * 100) / 100f;
-	}
-
 	private void updatePeripheralImages() {
 		final Duration duration = Duration.millis(1000);
 		final KeyFrame oneFrame = new KeyFrame(
 				duration,
-				(evt) -> {
+				evt -> {
 					DatasetteStatus datasetteStatus = util.getPlayer()
 							.getDatasette().getStatus();
 					tapeName.setText(util.getPlayer().getDatasette()
