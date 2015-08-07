@@ -210,8 +210,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	@Override
 	public void doClose() {
-		getC64().getPalVIC().setPixelConsumer(pixels->{});
-		getC64().getNtscVIC().setPixelConsumer(pixels->{});
+		getC64().getPalVIC().setPixelConsumer(pixels -> {
+		});
+		getC64().getNtscVIC().setPixelConsumer(pixels -> {
+		});
 	}
 
 	@FXML
@@ -318,8 +320,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(),
 				getC64().getVIC().getBorderHeight());
 		pixelFormat = PixelFormat.getIntArgbInstance();
-		getC64().getPalVIC().setPixelConsumer(pixels->{});
-		getC64().getNtscVIC().setPixelConsumer(pixels->{});
+		getC64().getPalVIC().setPixelConsumer(pixels -> {
+		});
+		getC64().getNtscVIC().setPixelConsumer(pixels -> {
+		});
 		getC64().getVIC().setPixelConsumer(this);
 	}
 
@@ -459,7 +463,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
 		if (sidTune != null && sidTune.getInfo().getPlayAddr() != 0) {
-			if (getChipModel(sidTune) == ChipModel.MOS6581) {
+			if (ChipModel.getChipModel(util.getConfig().getEmulationSection(),
+					sidTune, 0) == ChipModel.MOS6581) {
 				// Old SID chip model? Show breadbox
 				breadbox.setVisible(true);
 				for (Node node : Arrays.asList(screen, monitorBorder, pc64)) {
@@ -479,29 +484,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			}
 			for (Node node : Arrays.asList(breadbox, pc64)) {
 				node.setVisible(false);
-			}
-		}
-	}
-
-	private ChipModel getChipModel(SidTune sidTune) {
-		ChipModel userSidModel = util.getConfig().getEmulationSection()
-				.getUserSidModel();
-		if (userSidModel != null) {
-			return userSidModel;
-		} else {
-			if (sidTune != null) {
-				switch (sidTune.getInfo().getSid1Model()) {
-				case MOS6581:
-					return ChipModel.MOS6581;
-				case MOS8580:
-					return ChipModel.MOS8580;
-				default:
-					return util.getConfig().getEmulationSection()
-							.getDefaultSidModel();
-				}
-			} else {
-				return util.getConfig().getEmulationSection()
-						.getDefaultSidModel();
 			}
 		}
 	}

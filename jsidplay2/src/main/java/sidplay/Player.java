@@ -262,7 +262,8 @@ public class Player extends HardwareEnsemble {
 							// Auto-start tape needs someone to press play
 							datasette.control(Control.START);
 						}
-						typeInCommand();
+						typeInCommand(command);
+						command = null;
 					}
 				}
 			}, RESET_INIT_DELAY);
@@ -280,7 +281,8 @@ public class Player extends HardwareEnsemble {
 						final int loadAddr = tune.getInfo().getLoadAddr();
 						command = loadAddr == 0x0801 ? RUN : String.format(SYS,
 								loadAddr);
-						typeInCommand();
+						typeInCommand(command);
+						command = null;
 					}
 				}
 			}, tune.getInitDelay());
@@ -292,14 +294,13 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Simulate a user typed-in command.
 	 */
-	private void typeInCommand() {
+	public void typeInCommand(String command) {
 		byte[] ram = c64.getRAM();
 		final int length = Math.min(command.length(), MAX_COMMAND_LEN);
 		for (int charNum = 0; charNum < length; charNum++) {
 			ram[RAM_COMAND + charNum] = (byte) command.charAt(charNum);
 		}
 		ram[RAM_COMMAND_LEN] = (byte) length;
-		command = null;
 	}
 
 	/**
