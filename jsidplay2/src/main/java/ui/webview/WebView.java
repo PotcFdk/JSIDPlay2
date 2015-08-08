@@ -41,7 +41,7 @@ public class WebView extends Tab implements UIPart {
 	private TextField urlField;
 	@FXML
 	private ToggleButton showTuneInfoButton;
-	
+
 	private Convenience convenience;
 	private ObjectProperty<WebViewType> type;
 	private String url;
@@ -56,6 +56,30 @@ public class WebView extends Tab implements UIPart {
 			progressProperty.setValue(newValue);
 		}
 	};
+
+	private ChangeListener<? super String> locationListener = (observable,
+			oldValue, newValue) -> {
+		urlField.setText(newValue);
+		try {
+			if (convenience.autostart(new URL(newValue), LEXICALLY_FIRST_MEDIA,
+					null)) {
+				util.setPlayingTab(this);
+			}
+		} catch (IOException | SidTuneError | URISyntaxException e) {
+			// ignore
+		}
+	};
+
+	private ChangeListener<? super Number> historyListener = (observable,
+			oldValue, newValue) -> {
+		backward.setDisable(newValue.intValue() <= 0);
+		forward.setDisable(newValue.intValue() + 1 >= engine.getHistory()
+				.getEntries().size());
+
+	};
+
+	private ChangeListener<? super WebViewType> loadUrlListener = (observable,
+			oldValue, newValue) -> engine.load(url);
 
 	private boolean showTuneInfos;
 
@@ -82,36 +106,19 @@ public class WebView extends Tab implements UIPart {
 			}
 		});
 		type = new SimpleObjectProperty<>();
-		type.addListener((observable, oldValue, newValue) -> engine.load(url));
+		type.addListener(loadUrlListener);
 		engine = webView.getEngine();
-		engine.getHistory()
-				.currentIndexProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							backward.setDisable(newValue.intValue() <= 0);
-							forward.setDisable(newValue.intValue() + 1 >= engine
-									.getHistory().getEntries().size());
-
-						});
-		engine.locationProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							urlField.setText(newValue);
-							try {
-								if (convenience.autostart(new URL(newValue),
-										LEXICALLY_FIRST_MEDIA, null)) {
-									util.setPlayingTab(this);
-								}
-							} catch (IOException | SidTuneError
-									| URISyntaxException e) {
-								// ignore
-							}
-						});
+		engine.getHistory().currentIndexProperty().addListener(historyListener);
+		engine.locationProperty().addListener(locationListener);
 		engine.getLoadWorker().progressProperty().addListener(changeListener);
 	}
 
 	@Override
 	public void doClose() {
+		type.removeListener(loadUrlListener);
+		engine.getHistory().currentIndexProperty()
+				.removeListener(historyListener);
+		engine.locationProperty().removeListener(locationListener);
 		engine.getLoadWorker().progressProperty()
 				.removeListener(changeListener);
 	}
