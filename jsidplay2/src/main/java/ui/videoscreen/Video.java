@@ -1,5 +1,15 @@
 package ui.videoscreen;
 
+import static libsidplay.config.ISidPlay2Section.DEFAULT_BLEED;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_BLUR;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_BRIGHTNESS;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_CONTRAST;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_GAMMA;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_OFFSET;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_PHASE_SHIFT;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_SATURATION;
+import static libsidplay.config.ISidPlay2Section.DEFAULT_TINT;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -41,6 +51,7 @@ import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
 import ui.common.DoubleToString;
+import ui.common.FloatToString;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.SidPlay2Section;
@@ -49,16 +60,6 @@ import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 import de.schlichtherle.truezip.file.TFile;
-
-import static ui.entities.config.SidPlay2Section.DEFAULT_BRIGHTNESS;
-import static ui.entities.config.SidPlay2Section.DEFAULT_CONTRAST;
-import static ui.entities.config.SidPlay2Section.DEFAULT_GAMMA;
-import static ui.entities.config.SidPlay2Section.DEFAULT_SATURATION;
-import static ui.entities.config.SidPlay2Section.DEFAULT_PHASE_SHIFT;
-import static ui.entities.config.SidPlay2Section.DEFAULT_OFFSET;
-import static ui.entities.config.SidPlay2Section.DEFAULT_TINT;
-import static ui.entities.config.SidPlay2Section.DEFAULT_BLUR;
-import static ui.entities.config.SidPlay2Section.DEFAULT_BLEED;
 
 public class Video extends Tab implements UIPart, Consumer<int[]> {
 	public static final String ID = "VIDEO";
@@ -120,137 +121,103 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		brightness.setValue(sidplay2Section.getBrightness());
 		brightness.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					brightnessValue.textProperty().set(
-							brightness.getLabelFormatter().toString(
-									newValue.doubleValue()));
 					sidplay2Section.setBrightness(newValue.floatValue());
 					getC64().configureVICs(
 							vic -> vic.getPalette().setBrightness(
 									newValue.floatValue()));
 				});
-		brightnessValue.textProperty().set(
-				brightness.getLabelFormatter().toString(
-						(double) sidplay2Section.getBrightness()));
 		contrast.setLabelFormatter(new DoubleToString(2));
 		contrast.setValue(sidplay2Section.getContrast());
 		contrast.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					contrastValue.textProperty().set(
-							contrast.getLabelFormatter().toString(
-									newValue.doubleValue()));
 					sidplay2Section.setContrast(newValue.floatValue());
 					getC64().configureVICs(
 							vic -> vic.getPalette().setContrast(
 									newValue.floatValue()));
 				});
-		contrastValue.textProperty().set(
-				contrast.getLabelFormatter().toString(
-						(double) sidplay2Section.getContrast()));
 		gamma.setLabelFormatter(new DoubleToString(2));
 		gamma.setValue(sidplay2Section.getGamma());
 		gamma.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					gammaValue.textProperty().set(
-							gamma.getLabelFormatter().toString(
-									newValue.doubleValue()));
 					sidplay2Section.setGamma(newValue.floatValue());
 					getC64().configureVICs(
 							vic -> vic.getPalette().setGamma(
 									newValue.floatValue()));
 				});
-		gammaValue.textProperty().set(
-				gamma.getLabelFormatter().toString(
-						(double) sidplay2Section.getGamma()));
 		saturation.setLabelFormatter(new DoubleToString(2));
 		saturation.setValue(sidplay2Section.getSaturation());
 		saturation.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					saturationValue.textProperty().set(
-							saturation.getLabelFormatter().toString(
-									newValue.doubleValue()));
 					sidplay2Section.setSaturation(newValue.floatValue());
 					getC64().configureVICs(
 							vic -> vic.getPalette().setSaturation(
 									newValue.floatValue()));
 				});
-		saturationValue.textProperty().set(
-				saturation.getLabelFormatter().toString(
-						(double) sidplay2Section.getSaturation()));
 		phaseShift.setLabelFormatter(new DoubleToString(2));
 		phaseShift.setValue(sidplay2Section.getPhaseShift());
 		phaseShift.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					phaseShiftValue.textProperty().set(
-							phaseShift.getLabelFormatter().toString(
-									newValue.doubleValue()));
 					sidplay2Section.setPhaseShift(newValue.floatValue());
 					getC64().configureVICs(
 							vic -> vic.getPalette().setPhaseShift(
 									newValue.floatValue()));
 				});
-		phaseShiftValue.textProperty().set(
-				phaseShift.getLabelFormatter().toString(
-						(double) sidplay2Section.getPhaseShift()));
 		offset.setLabelFormatter(new DoubleToString(2));
 		offset.setValue(sidplay2Section.getOffset());
 		offset.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					offsetValue.textProperty().set(
-							offset.getLabelFormatter().toString(
-									newValue.doubleValue()));
 					sidplay2Section.setOffset(newValue.floatValue());
 					getC64().configureVICs(
 							vic -> vic.getPalette().setOffset(
 									newValue.floatValue()));
 				});
-		offsetValue.textProperty().set(
-				offset.getLabelFormatter().toString(
-						(double) sidplay2Section.getOffset()));
 		tint.setLabelFormatter(new DoubleToString(2));
 		tint.setValue(sidplay2Section.getTint());
 		tint.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					tintValue.textProperty().set(
-							tint.getLabelFormatter().toString(
-									newValue.doubleValue()));
 					sidplay2Section.setTint(newValue.floatValue());
 					getC64().configureVICs(
 							vic -> vic.getPalette().setTint(
 									newValue.floatValue()));
 				});
-		tintValue.textProperty().set(
-				tint.getLabelFormatter().toString(
-						(double) sidplay2Section.getTint()));
 		blur.setLabelFormatter(new DoubleToString(2));
 		blur.setValue(sidplay2Section.getBlur());
 		blur.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					blurValue.textProperty().set(
-							blur.getLabelFormatter().toString(
-									newValue.doubleValue()));
 					sidplay2Section.setBlur(newValue.floatValue());
 					getC64().configureVICs(
 							vic -> vic.getPalette().setLuminanceC(
 									newValue.floatValue()));
 				});
-		blurValue.textProperty().set(
-				blur.getLabelFormatter().toString(
-						(double) sidplay2Section.getBlur()));
 		bleed.setLabelFormatter(new DoubleToString(2));
 		bleed.setValue(sidplay2Section.getBleed());
 		bleed.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					bleedValue.textProperty().set(
-							bleed.getLabelFormatter().toString(
-									newValue.doubleValue()));
 					sidplay2Section.setBleed(newValue.floatValue());
 					getC64().configureVICs(
 							vic -> vic.getPalette().setDotCreep(
 									newValue.floatValue()));
 				});
-		bleedValue.textProperty().set(
-				bleed.getLabelFormatter().toString(
-						(double) sidplay2Section.getBleed()));
+
+		brightnessValue.textProperty().bindBidirectional(
+				sidplay2Section.brightnessProperty(), new FloatToString(2));
+		contrastValue.textProperty().bindBidirectional(
+				sidplay2Section.contrastProperty(), new FloatToString(2));
+		gammaValue.textProperty().bindBidirectional(
+				sidplay2Section.gammaProperty(), new FloatToString(2));
+		saturationValue.textProperty().bindBidirectional(
+				sidplay2Section.saturationProperty(), new FloatToString(2));
+		phaseShiftValue.textProperty().bindBidirectional(
+				sidplay2Section.phaseShiftProperty(), new FloatToString(2));
+		offsetValue.textProperty().bindBidirectional(
+				sidplay2Section.offsetProperty(), new FloatToString(2));
+		tintValue.textProperty().bindBidirectional(
+				sidplay2Section.tintProperty(), new FloatToString(2));
+		blurValue.textProperty().bindBidirectional(
+				sidplay2Section.blurProperty(), new FloatToString(2));
+		bleedValue.textProperty().bindBidirectional(
+				sidplay2Section.bleedProperty(), new FloatToString(2));
+
 		updatePalette();
 
 		setupVideoScreen();

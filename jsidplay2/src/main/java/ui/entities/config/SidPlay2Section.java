@@ -4,8 +4,10 @@ import java.io.File;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -360,94 +362,139 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.videoScaling = videoScaling;
 	}
 
-	private float brightness = DEFAULT_BRIGHTNESS;
+	private ObjectProperty<Float> brightnessProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_BRIGHTNESS);
 
 	public float getBrightness() {
-		return brightness;
+		return brightnessProperty.get();
 	}
 
 	public void setBrightness(float brightness) {
-		this.brightness = brightness;
+		this.brightnessProperty.set(brightness);
 	}
 
-	private float contrast = DEFAULT_CONTRAST;
+	public final ObjectProperty<Float> brightnessProperty() {
+		return brightnessProperty;
+	}
+
+	private ObjectProperty<Float> contrastProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_CONTRAST);
 
 	public float getContrast() {
-		return contrast;
+		return contrastProperty.get();
 	}
 
 	public void setContrast(float contrast) {
-		this.contrast = contrast;
+		this.contrastProperty.set(contrast);
 	}
 
-	private float gamma = DEFAULT_GAMMA;
+	public final ObjectProperty<Float> contrastProperty() {
+		return contrastProperty;
+	}
+
+	private ObjectProperty<Float> gammaProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_GAMMA);
 
 	public float getGamma() {
-		return gamma;
+		return gammaProperty.get();
 	}
 
 	public void setGamma(float gamma) {
-		this.gamma = gamma;
+		this.gammaProperty.set(gamma);
 	}
 
-	private float saturation = DEFAULT_SATURATION;
+	public final ObjectProperty<Float> gammaProperty() {
+		return gammaProperty;
+	}
+
+	private ObjectProperty<Float> saturationProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_SATURATION);
 
 	public float getSaturation() {
-		return saturation;
+		return saturationProperty.get();
 	}
 
 	public void setSaturation(float saturation) {
-		this.saturation = saturation;
+		this.saturationProperty.set(saturation);
 	}
 
-	private float phaseShift = DEFAULT_PHASE_SHIFT;
+	public final ObjectProperty<Float> saturationProperty() {
+		return saturationProperty;
+	}
+
+	private ObjectProperty<Float> phaseShiftProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_PHASE_SHIFT);
 
 	public float getPhaseShift() {
-		return phaseShift;
+		return phaseShiftProperty.get();
 	}
 
 	public void setPhaseShift(float phaseShift) {
-		this.phaseShift = phaseShift;
+		this.phaseShiftProperty.set(phaseShift);
 	}
 
-	private float offset = DEFAULT_OFFSET;
+	public final ObjectProperty<Float> phaseShiftProperty() {
+		return phaseShiftProperty;
+	}
+
+	private ObjectProperty<Float> offsetProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_OFFSET);
 
 	public float getOffset() {
-		return offset;
+		return offsetProperty.get();
 	}
 
 	public void setOffset(float offset) {
-		this.offset = offset;
+		this.offsetProperty.set(offset);
 	}
 
-	private float tint = DEFAULT_TINT;
+	public final ObjectProperty<Float> offsetProperty() {
+		return offsetProperty;
+	}
+
+	private ObjectProperty<Float> tintProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_TINT);
 
 	public float getTint() {
-		return tint;
+		return tintProperty.get();
 	}
 
 	public void setTint(float tint) {
-		this.tint = tint;
+		this.tintProperty.set(tint);
 	}
 
-	private float blur = DEFAULT_BLUR;
+	public final ObjectProperty<Float> tintProperty() {
+		return tintProperty;
+	}
+
+	private ObjectProperty<Float> blurProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_BLUR);
 
 	public float getBlur() {
-		return blur;
+		return blurProperty.get();
 	}
 
 	public void setBlur(float blur) {
-		this.blur = blur;
+		this.blurProperty.set(blur);
 	}
 
-	private float bleed = DEFAULT_BLEED;
+	public final ObjectProperty<Float> blurProperty() {
+		return blurProperty;
+	}
+
+	private ObjectProperty<Float> bleedProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_BLEED);
 
 	public float getBleed() {
-		return bleed;
+		return bleedProperty.get();
 	}
 
 	public void setBleed(float bleed) {
-		this.bleed = bleed;
+		this.bleedProperty.set(bleed);
+	}
+
+	public final ObjectProperty<Float> bleedProperty() {
+		return bleedProperty;
 	}
 
 	private BooleanProperty turboTapeProperty = new SimpleBooleanProperty(
