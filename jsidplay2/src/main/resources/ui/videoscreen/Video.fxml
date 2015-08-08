@@ -18,6 +18,7 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.Label?>
 <?scenebuilder-preview-i18n-resource Video.properties?>
+<?import java.lang.String?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<BorderPane AnchorPane.bottomAnchor="0"
@@ -145,63 +146,99 @@
 						<Label fx:id="brightnessValue" text="0.00" />
 						<Slider fx:id="brightness" min="-1" max="1" value="0.00"
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
-							majorTickUnit="0.01" showTickMarks="true" />
+							majorTickUnit="0.01" showTickMarks="true">
+							<styleClass>
+								<String fx:value="knobStyle" />
+							</styleClass>
+						</Slider>
 						<Label text="%BRIGHTNESS" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
 						<Label fx:id="contrastValue" text="1.00" />
 						<Slider fx:id="contrast" min="0" max="2" value="1.00"
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
-							majorTickUnit="0.01" showTickMarks="true" />
+							majorTickUnit="0.01" showTickMarks="true">
+							<styleClass>
+								<String fx:value="knobStyle" />
+							</styleClass>
+						</Slider>
 						<Label text="%CONTRAST" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
 						<Label fx:id="gammaValue" text="2.00" />
 						<Slider fx:id="gamma" min="1.8" max="2.5" value="2.00"
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
-							majorTickUnit="0.01" showTickMarks="true" />
+							majorTickUnit="0.01" showTickMarks="true">
+							<styleClass>
+								<String fx:value="knobStyle" />
+							</styleClass>
+						</Slider>
 						<Label text="%GAMMA" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
 						<Label fx:id="saturationValue" text="0.50" />
 						<Slider fx:id="saturation" min="0" max="1" value="0.50"
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
-							majorTickUnit="0.01" showTickMarks="true" />
+							majorTickUnit="0.01" showTickMarks="true">
+							<styleClass>
+								<String fx:value="knobStyle" />
+							</styleClass>
+						</Slider>
 						<Label text="%SATURATION" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
 						<Label fx:id="phaseShiftValue" text="-15" />
 						<Slider fx:id="phaseShift" min="-45" max="45" value="-15"
 							minorTickCount="1" snapToTicks="true" blockIncrement="1"
-							majorTickUnit="1" showTickMarks="true" />
+							majorTickUnit="1" showTickMarks="true">
+							<styleClass>
+								<String fx:value="knobStyle" />
+							</styleClass>
+						</Slider>
 						<Label text="%PHASE_SHIFT" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
 						<Label fx:id="offsetValue" text="0.9" />
 						<Slider fx:id="offset" min="0.1" max="2" value="0.9"
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
-							majorTickUnit="0.01" showTickMarks="true" />
+							majorTickUnit="0.01" showTickMarks="true">
+							<styleClass>
+								<String fx:value="knobStyle" />
+							</styleClass>
+						</Slider>
 						<Label text="%OFFSET" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
 						<Label fx:id="tintValue" text="0.00" />
 						<Slider fx:id="tint" min="-0.1" max="0.1" value="0.00"
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
-							majorTickUnit="0.01" showTickMarks="true" />
+							majorTickUnit="0.01" showTickMarks="true">
+							<styleClass>
+								<String fx:value="knobStyle" />
+							</styleClass>
+						</Slider>
 						<Label text="%TINT" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
 						<Label fx:id="blurValue" text="0.50" />
 						<Slider fx:id="blur" min="0.5" max="1.5" value="0.50"
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
-							majorTickUnit="0.01" showTickMarks="true" />
+							majorTickUnit="0.01" showTickMarks="true">
+							<styleClass>
+								<String fx:value="knobStyle" />
+							</styleClass>
+						</Slider>
 						<Label text="%BLUR" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
 						<Label fx:id="bleedValue" text="0.50" />
 						<Slider fx:id="bleed" min="0" max="1" value="0.50"
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
-							majorTickUnit="0.01" showTickMarks="true" />
+							majorTickUnit="0.01" showTickMarks="true">
+							<styleClass>
+								<String fx:value="knobStyle" />
+							</styleClass>
+						</Slider>
 						<Label text="%BLEED" />
 					</VBox>
 					<VBox alignment="BASELINE_CENTER">

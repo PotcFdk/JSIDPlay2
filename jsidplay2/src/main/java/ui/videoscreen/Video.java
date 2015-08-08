@@ -20,6 +20,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -58,7 +59,6 @@ import ui.filefilter.CartFileExtensions;
 import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
-import de.schlichtherle.truezip.file.TFile;
 
 public class Video extends Tab implements UIPart, Consumer<int[]> {
 	public static final String ID = "VIDEO";
@@ -85,13 +85,22 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private Label tapeName, diskName, cartridgeName;
 
-	private UIUtil util;
-
 	private WritableImage vicImage;
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
 	private WritablePixelFormat<IntBuffer> pixelFormat;
+
+	private UIUtil util;
+
+	private ChangeListener<? super State> stateListener = (arg0, arg1, arg2) -> {
+		if (arg2 == State.START) {
+			Platform.runLater(() -> {
+				setupVideoScreen();
+				setVisibilityBasedOnChipType(util.getPlayer().getTune());
+			});
+		}
+	};
 
 	public Video(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
@@ -104,18 +113,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private void initialize() {
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 
-		util.getPlayer().stateProperty().addListener((arg0, arg1, arg2) -> {
-			if (arg2 == State.START) {
-				Platform.runLater(() -> {
-					setupVideoScreen();
-					setVisibilityBasedOnChipType(util.getPlayer().getTune());
-				});
-			}
-		});
-		for (Slider slider : Arrays.asList(brightness, contrast, gamma,
-				saturation, phaseShift, offset, tint, blur, bleed)) {
-			slider.getStyleClass().add("knobStyle");
-		}
+		util.getPlayer().stateProperty().addListener(stateListener);
 		NumberToString<Double> doubleToString = new NumberToString<Double>(2);
 		brightness.setLabelFormatter(doubleToString);
 		brightness.setValue(sidplay2Section.getBrightness());
@@ -199,8 +197,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 									newValue.floatValue()));
 				});
 
-		updateSliders();
-
 		NumberToString<Float> floatToString = new NumberToString<Float>(2);
 		brightnessValue.textProperty().bindBidirectional(
 				sidplay2Section.brightnessProperty(), floatToString);
@@ -231,6 +227,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	@Override
 	public void doClose() {
+		util.getPlayer().stateProperty().removeListener(stateListener);
 		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
 		}));
 	}
@@ -256,7 +253,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				.getWindow());
 		if (file != null) {
 			try {
-				util.getPlayer().insertTape(new TFile(file));
+				util.getPlayer().insertTape(file);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
@@ -278,7 +275,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				.getWindow());
 		if (file != null) {
 			try {
-				util.getPlayer().insertDisk(new TFile(file));
+				util.getPlayer().insertDisk(file);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format(
 						"Cannot insert media file '%s'.",
@@ -300,8 +297,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				.getWindow());
 		if (file != null) {
 			try {
-				util.getPlayer().insertCartridge(CartridgeType.CRT,
-						new TFile(file));
+				util.getPlayer().insertCartridge(CartridgeType.CRT, file);
 				util.getPlayer().play(SidTune.RESET);
 
 			} catch (IOException | SidTuneError e) {
@@ -334,15 +330,12 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		tint.setValue(DEFAULT_TINT);
 		blur.setValue(DEFAULT_BLUR);
 		bleed.setValue(DEFAULT_BLEED);
-		updateSliders();
-		updatePalette();
-	}
-
-	private void updateSliders() {
 		for (Slider slider : Arrays.asList(brightness, contrast, gamma,
 				saturation, phaseShift, offset, tint, blur, bleed)) {
+			// skin update not done automatically!?
 			slider.requestLayout();
 		}
+		updatePalette();
 	}
 
 	/**
@@ -515,7 +508,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	}
 
 	/**
-	 * Make C64 image visible, if the internal util.getPlayer() is used.
+	 * Make breadbox/pc64 image visible, if the internal SID player is used.
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
 		if (sidTune != null && sidTune.getInfo().getPlayAddr() != 0) {
@@ -548,6 +541,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	public void accept(int[] pixels) {
 		Platform.runLater(() -> {
 			final VIC vic = getC64().getVIC();
+			// sanity check: don't update during change of CPUClock
 			if (vicImage.getHeight() == vic.getBorderHeight()) {
 				vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(),
 						vic.getBorderHeight(), pixelFormat, pixels, 0,
