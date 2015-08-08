@@ -219,8 +219,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		bleedValue.textProperty().bindBidirectional(
 				sidplay2Section.bleedProperty(), floatToString);
 
-		updatePalette();
-
 		setupVideoScreen();
 		setVisibilityBasedOnChipType(util.getPlayer().getTune());
 
