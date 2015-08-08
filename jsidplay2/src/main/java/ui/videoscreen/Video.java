@@ -50,8 +50,7 @@ import libsidplay.sidtune.SidTuneError;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
-import ui.common.DoubleToString;
-import ui.common.FloatToString;
+import ui.common.NumberToString;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.SidPlay2Section;
@@ -117,7 +116,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				saturation, phaseShift, offset, tint, blur, bleed)) {
 			slider.getStyleClass().add("knobStyle");
 		}
-		brightness.setLabelFormatter(new DoubleToString(2));
+		NumberToString<Double> doubleToString = new NumberToString<Double>(2);
+		brightness.setLabelFormatter(doubleToString);
 		brightness.setValue(sidplay2Section.getBrightness());
 		brightness.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -126,7 +126,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setBrightness(
 									newValue.floatValue()));
 				});
-		contrast.setLabelFormatter(new DoubleToString(2));
+		contrast.setLabelFormatter(doubleToString);
 		contrast.setValue(sidplay2Section.getContrast());
 		contrast.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -135,7 +135,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setContrast(
 									newValue.floatValue()));
 				});
-		gamma.setLabelFormatter(new DoubleToString(2));
+		gamma.setLabelFormatter(doubleToString);
 		gamma.setValue(sidplay2Section.getGamma());
 		gamma.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -144,7 +144,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setGamma(
 									newValue.floatValue()));
 				});
-		saturation.setLabelFormatter(new DoubleToString(2));
+		saturation.setLabelFormatter(doubleToString);
 		saturation.setValue(sidplay2Section.getSaturation());
 		saturation.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -153,7 +153,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setSaturation(
 									newValue.floatValue()));
 				});
-		phaseShift.setLabelFormatter(new DoubleToString(2));
+		phaseShift.setLabelFormatter(doubleToString);
 		phaseShift.setValue(sidplay2Section.getPhaseShift());
 		phaseShift.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -162,7 +162,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setPhaseShift(
 									newValue.floatValue()));
 				});
-		offset.setLabelFormatter(new DoubleToString(2));
+		offset.setLabelFormatter(doubleToString);
 		offset.setValue(sidplay2Section.getOffset());
 		offset.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -171,7 +171,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setOffset(
 									newValue.floatValue()));
 				});
-		tint.setLabelFormatter(new DoubleToString(2));
+		tint.setLabelFormatter(doubleToString);
 		tint.setValue(sidplay2Section.getTint());
 		tint.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -180,7 +180,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setTint(
 									newValue.floatValue()));
 				});
-		blur.setLabelFormatter(new DoubleToString(2));
+		blur.setLabelFormatter(doubleToString);
 		blur.setValue(sidplay2Section.getBlur());
 		blur.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -189,7 +189,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setLuminanceC(
 									newValue.floatValue()));
 				});
-		bleed.setLabelFormatter(new DoubleToString(2));
+		bleed.setLabelFormatter(doubleToString);
 		bleed.setValue(sidplay2Section.getBleed());
 		bleed.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -199,24 +199,25 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 									newValue.floatValue()));
 				});
 
+		NumberToString<Float> floatToString = new NumberToString<Float>(2);
 		brightnessValue.textProperty().bindBidirectional(
-				sidplay2Section.brightnessProperty(), new FloatToString(2));
+				sidplay2Section.brightnessProperty(), floatToString);
 		contrastValue.textProperty().bindBidirectional(
-				sidplay2Section.contrastProperty(), new FloatToString(2));
+				sidplay2Section.contrastProperty(), floatToString);
 		gammaValue.textProperty().bindBidirectional(
-				sidplay2Section.gammaProperty(), new FloatToString(2));
+				sidplay2Section.gammaProperty(), floatToString);
 		saturationValue.textProperty().bindBidirectional(
-				sidplay2Section.saturationProperty(), new FloatToString(2));
+				sidplay2Section.saturationProperty(), floatToString);
 		phaseShiftValue.textProperty().bindBidirectional(
-				sidplay2Section.phaseShiftProperty(), new FloatToString(2));
+				sidplay2Section.phaseShiftProperty(), floatToString);
 		offsetValue.textProperty().bindBidirectional(
-				sidplay2Section.offsetProperty(), new FloatToString(2));
+				sidplay2Section.offsetProperty(), floatToString);
 		tintValue.textProperty().bindBidirectional(
-				sidplay2Section.tintProperty(), new FloatToString(2));
+				sidplay2Section.tintProperty(), floatToString);
 		blurValue.textProperty().bindBidirectional(
-				sidplay2Section.blurProperty(), new FloatToString(2));
+				sidplay2Section.blurProperty(), floatToString);
 		bleedValue.textProperty().bindBidirectional(
-				sidplay2Section.bleedProperty(), new FloatToString(2));
+				sidplay2Section.bleedProperty(), floatToString);
 
 		updatePalette();
 

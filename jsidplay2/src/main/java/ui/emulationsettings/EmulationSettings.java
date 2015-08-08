@@ -25,8 +25,8 @@ import libsidplay.sidtune.SidTune;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
-import ui.common.DoubleToString;
 import ui.common.EnumToString;
+import ui.common.NumberToString;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.FilterSection;
 
@@ -95,9 +95,10 @@ public class EmulationSettings extends C64Window {
 		thirdFilters = FXCollections.<String> observableArrayList();
 		thirdFilter.setItems(thirdFilters);
 
+		NumberToString<Double> doubleToString = new NumberToString<Double>(1);
 		mainBalance.setValue(util.getConfig().getAudioSection()
 				.getMainBalance());
-		mainBalance.setLabelFormatter(new DoubleToString(1));
+		mainBalance.setLabelFormatter(doubleToString);
 		mainBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
@@ -107,7 +108,7 @@ public class EmulationSettings extends C64Window {
 				});
 		secondBalance.setValue(util.getConfig().getAudioSection()
 				.getSecondBalance());
-		secondBalance.setLabelFormatter(new DoubleToString(1));
+		secondBalance.setLabelFormatter(doubleToString);
 		secondBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
@@ -117,7 +118,7 @@ public class EmulationSettings extends C64Window {
 				});
 		thirdBalance.setValue(util.getConfig().getAudioSection()
 				.getThirdBalance());
-		thirdBalance.setLabelFormatter(new DoubleToString(1));
+		thirdBalance.setLabelFormatter(doubleToString);
 		thirdBalance.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					util.getConfig().getAudioSection()
