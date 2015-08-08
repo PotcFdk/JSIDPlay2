@@ -199,6 +199,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 									newValue.floatValue()));
 				});
 
+		updateSliders();
+
 		NumberToString<Float> floatToString = new NumberToString<Float>(2);
 		brightnessValue.textProperty().bindBidirectional(
 				sidplay2Section.brightnessProperty(), floatToString);
@@ -312,7 +314,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	@FXML
 	private void updatePalette() {
-		updateSliders();
 		getC64().getEventScheduler().scheduleThreadSafe(
 				new Event("Update Palette") {
 					@Override
@@ -333,6 +334,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		tint.setValue(DEFAULT_TINT);
 		blur.setValue(DEFAULT_BLUR);
 		bleed.setValue(DEFAULT_BLEED);
+		updateSliders();
 		updatePalette();
 	}
 
