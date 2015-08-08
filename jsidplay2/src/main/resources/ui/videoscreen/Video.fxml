@@ -170,10 +170,10 @@
 						<Label text="%SATURATION" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
-						<Label fx:id="phaseShiftValue" text="-0.15" />
-						<Slider fx:id="phaseShift" min="-0.45" max="0.45" value="-0.15"
-							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
-							majorTickUnit="0.01" showTickMarks="true" />
+						<Label fx:id="phaseShiftValue" text="-15" />
+						<Slider fx:id="phaseShift" min="-45" max="45" value="-15"
+							minorTickCount="1" snapToTicks="true" blockIncrement="1"
+							majorTickUnit="1" showTickMarks="true" />
 						<Label text="%PHASE_SHIFT" />
 					</VBox>
 					<VBox alignment="TOP_CENTER">
