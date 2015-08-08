@@ -49,6 +49,7 @@ import libsidplay.components.mos656x.VIC;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
+import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -504,6 +505,19 @@ public class Player extends HardwareEnsemble {
 		CPUClock cpuClock = CPUClock.getCPUClock(config.getEmulationSection(),
 				tune);
 		setClock(cpuClock);
+
+		c64.configureVICs(vic -> {
+			ISidPlay2Section sidplay2section = config.getSidplay2Section();
+			vic.getPalette().setBrightness(sidplay2section.getBrightness());
+			vic.getPalette().setContrast(sidplay2section.getContrast());
+			vic.getPalette().setGamma(sidplay2section.getGamma());
+			vic.getPalette().setSaturation(sidplay2section.getSaturation());
+			vic.getPalette().setPhaseShift(sidplay2section.getPhaseShift());
+			vic.getPalette().setOffset(sidplay2section.getOffset());
+			vic.getPalette().setTint(sidplay2section.getTint());
+			vic.getPalette().setLuminanceC(sidplay2section.getBlur());
+			vic.getPalette().setDotCreep(sidplay2section.getBleed());
+		});
 
 		AudioConfig audioConfig = AudioConfig.getInstance(config
 				.getAudioSection());

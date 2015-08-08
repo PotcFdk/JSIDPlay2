@@ -62,10 +62,10 @@ import static ui.entities.config.SidPlay2Section.DEFAULT_BLEED;
 
 public class Video extends Tab implements UIPart, Consumer<int[]> {
 	public static final String ID = "VIDEO";
-	private static final double MONITOR_MARGIN_LEFT = 35;
-	private static final double MONITOR_MARGIN_RIGHT = 35;
-	private static final double MONITOR_MARGIN_TOP = 28;
-	private static final double MONITOR_MARGIN_BOTTOM = 40;
+	private static double MARGIN_LEFT;
+	private static double MARGIN_RIGHT;
+	private static double MARGIN_TOP;
+	private static double MARGIN_BOTTOM;
 
 	@FXML
 	private TitledPane monitor;
@@ -91,7 +91,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	private int marginLeft, marginRight, marginTop, marginBottom;
 	private WritablePixelFormat<IntBuffer> pixelFormat;
 
 	public Video(C64Window window, Player player) {
@@ -129,6 +128,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setBrightness(
 									newValue.floatValue()));
 				});
+		brightnessValue.textProperty().set(
+				brightness.getLabelFormatter().toString(
+						(double) sidplay2Section.getBrightness()));
 		contrast.setLabelFormatter(new DoubleToString(2));
 		contrast.setValue(sidplay2Section.getContrast());
 		contrast.valueProperty().addListener(
@@ -141,6 +143,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setContrast(
 									newValue.floatValue()));
 				});
+		contrastValue.textProperty().set(
+				contrast.getLabelFormatter().toString(
+						(double) sidplay2Section.getContrast()));
 		gamma.setLabelFormatter(new DoubleToString(2));
 		gamma.setValue(sidplay2Section.getGamma());
 		gamma.valueProperty().addListener(
@@ -153,6 +158,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setGamma(
 									newValue.floatValue()));
 				});
+		gammaValue.textProperty().set(
+				gamma.getLabelFormatter().toString(
+						(double) sidplay2Section.getGamma()));
 		saturation.setLabelFormatter(new DoubleToString(2));
 		saturation.setValue(sidplay2Section.getSaturation());
 		saturation.valueProperty().addListener(
@@ -165,6 +173,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setSaturation(
 									newValue.floatValue()));
 				});
+		saturationValue.textProperty().set(
+				saturation.getLabelFormatter().toString(
+						(double) sidplay2Section.getSaturation()));
 		phaseShift.setLabelFormatter(new DoubleToString(2));
 		phaseShift.setValue(sidplay2Section.getPhaseShift());
 		phaseShift.valueProperty().addListener(
@@ -177,6 +188,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setPhaseShift(
 									newValue.floatValue()));
 				});
+		phaseShiftValue.textProperty().set(
+				phaseShift.getLabelFormatter().toString(
+						(double) sidplay2Section.getPhaseShift()));
 		offset.setLabelFormatter(new DoubleToString(2));
 		offset.setValue(sidplay2Section.getOffset());
 		offset.valueProperty().addListener(
@@ -189,6 +203,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setOffset(
 									newValue.floatValue()));
 				});
+		offsetValue.textProperty().set(
+				offset.getLabelFormatter().toString(
+						(double) sidplay2Section.getOffset()));
 		tint.setLabelFormatter(new DoubleToString(2));
 		tint.setValue(sidplay2Section.getTint());
 		tint.valueProperty().addListener(
@@ -201,6 +218,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setTint(
 									newValue.floatValue()));
 				});
+		tintValue.textProperty().set(
+				tint.getLabelFormatter().toString(
+						(double) sidplay2Section.getTint()));
 		blur.setLabelFormatter(new DoubleToString(2));
 		blur.setValue(sidplay2Section.getBlur());
 		blur.valueProperty().addListener(
@@ -213,6 +233,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setLuminanceC(
 									newValue.floatValue()));
 				});
+		blurValue.textProperty().set(
+				blur.getLabelFormatter().toString(
+						(double) sidplay2Section.getBlur()));
 		bleed.setLabelFormatter(new DoubleToString(2));
 		bleed.setValue(sidplay2Section.getBleed());
 		bleed.valueProperty().addListener(
@@ -225,6 +248,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setDotCreep(
 									newValue.floatValue()));
 				});
+		bleedValue.textProperty().set(
+				bleed.getLabelFormatter().toString(
+						(double) sidplay2Section.getBleed()));
 		updatePalette();
 
 		setupVideoScreen();
@@ -355,19 +381,35 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Connect VIC output with screen.
 	 */
 	private void setupVideoScreen() {
-		double screenScale = ((SidPlay2Section) util.getConfig()
-				.getSidplay2Section()).getVideoScaling();
-		marginLeft = (int) (MONITOR_MARGIN_LEFT * screenScale);
-		marginRight = (int) (MONITOR_MARGIN_RIGHT * screenScale);
-		marginTop = (int) (MONITOR_MARGIN_TOP * screenScale);
-		marginBottom = (int) (MONITOR_MARGIN_BOTTOM * screenScale);
-		screen.setWidth(screenScale * getC64().getVIC().getBorderWidth());
-		screen.setHeight(screenScale * getC64().getVIC().getBorderHeight());
+		MARGIN_LEFT = 35;
+		MARGIN_RIGHT = 35;
+		if (util.getPlayer().getC64().getClock().getRefresh() == 50) {
+			// PAL (more rows, less frames per second)
+			MARGIN_TOP = 28;
+			MARGIN_BOTTOM = 40;
+		} else {
+			// NTSC (less rows, more frames per second)
+			MARGIN_TOP = 28. + 10.;
+			MARGIN_BOTTOM = 40. + 12.;
+		}
+
+		double scale = ((SidPlay2Section) util.getConfig().getSidplay2Section())
+				.getVideoScaling();
+		screen.getGraphicsContext2D().clearRect(0, 0,
+				screen.widthProperty().get(), screen.heightProperty().get());
+		screen.setWidth(getC64().getVIC().getBorderWidth());
+		screen.setHeight(getC64().getVIC().getBorderHeight());
+		screen.setScaleX(scale);
+		screen.setScaleY(scale);
 		for (ImageView imageView : Arrays.asList(monitorBorder, breadbox, pc64)) {
-			imageView.setScaleX(screen.getWidth()
-					/ imageView.getImage().getWidth());
-			imageView.setScaleY(screen.getHeight()
-					/ imageView.getImage().getHeight());
+			imageView
+					.setScaleX(scale
+							* screen.getWidth()
+							/ (imageView.getImage().getWidth() + MARGIN_LEFT + MARGIN_RIGHT));
+			imageView
+					.setScaleY(scale
+							* screen.getHeight()
+							/ (imageView.getImage().getHeight() + MARGIN_TOP + MARGIN_BOTTOM));
 		}
 		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(),
 				getC64().getVIC().getBorderHeight());
@@ -536,17 +578,18 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	@Override
 	public void accept(int[] pixels) {
-		// get VIC of the pixel here, in UI thread that could have changed
-		// eventually
-		final VIC vic = getC64().getVIC();
 		Platform.runLater(() -> {
-			vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(),
-					vic.getBorderHeight(), pixelFormat, pixels, 0,
-					vic.getBorderWidth());
-			screen.getGraphicsContext2D().drawImage(vicImage, 0, 0,
-					vic.getBorderWidth(), vic.getBorderHeight(), marginLeft,
-					marginTop, screen.getWidth() - (marginLeft + marginRight),
-					screen.getHeight() - (marginTop + marginBottom));
+			final VIC vic = getC64().getVIC();
+			if (vicImage.getHeight() == vic.getBorderHeight()) {
+				vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(),
+						vic.getBorderHeight(), pixelFormat, pixels, 0,
+						vic.getBorderWidth());
+				screen.getGraphicsContext2D().drawImage(vicImage, 0, 0,
+						vic.getBorderWidth(), vic.getBorderHeight(),
+						MARGIN_LEFT, MARGIN_TOP,
+						screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
+						screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
+			}
 		});
 	}
 

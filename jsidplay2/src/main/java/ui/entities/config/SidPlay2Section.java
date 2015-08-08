@@ -25,15 +25,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final int DEFAULT_FRAME_HEIGHT = 830;
 	public static final boolean DEFAULT_FULL_SCREEN = false;
 	public static final float DEFAULT_VIDEO_SCALING = 2.f;
-	public static final float DEFAULT_BRIGHTNESS = 0f;
-	public static final float DEFAULT_CONTRAST = 1f;
-	public static final float DEFAULT_GAMMA = 2f;
-	public static final float DEFAULT_SATURATION = .5f;
-	public static final float DEFAULT_PHASE_SHIFT = -.15f;
-	public static final float DEFAULT_OFFSET = .9f;
-	public static final float DEFAULT_TINT = 0f;
-	public static final float DEFAULT_BLUR = .5f;
-	public static final float DEFAULT_BLEED = .5f;
 
 	private int version;
 

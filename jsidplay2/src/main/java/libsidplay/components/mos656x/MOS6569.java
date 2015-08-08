@@ -43,7 +43,6 @@ public final class MOS6569 extends VIC {
 
 	public MOS6569(PLA pla, EventScheduler context) {
 		super(pla, context, 63);
-		updatePalette();
 	}
 
 	private static final int FIRST_DISPLAY_LINE = 15;
@@ -426,6 +425,7 @@ public final class MOS6569 extends VIC {
 	@Override
 	public final void reset() {
 		super.reset();
+		updatePalette();
 		lineCycle = 9; // preincremented at event
 		context.schedule(event, 0, Phase.PHI1);
 	}

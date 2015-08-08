@@ -116,6 +116,82 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 		iniReader.setProperty("SIDPlay2", "Temp Dir", path);
 	}
 
+	public float getBrightness() {
+		return iniReader.getPropertyFloat("SIDPlay2", "Brightness",
+				DEFAULT_BRIGHTNESS);
+	}
+
+	public void setBrightness(float brightness) {
+		iniReader.setProperty("SIDPlay2", "Brightness", brightness);
+	}
+
+	public float getContrast() {
+		return iniReader.getPropertyFloat("SIDPlay2", "Contrast",
+				DEFAULT_CONTRAST);
+	}
+
+	public void setContrast(float contrast) {
+		iniReader.setProperty("SIDPlay2", "Contrast", contrast);
+	}
+
+	public float getGamma() {
+		return iniReader.getPropertyFloat("SIDPlay2", "Gamma", DEFAULT_GAMMA);
+	}
+
+	public void setGamma(float gamma) {
+		iniReader.setProperty("SIDPlay2", "Gamma", gamma);
+	}
+
+	public float getSaturation() {
+		return iniReader.getPropertyFloat("SIDPlay2", "Saturation",
+				DEFAULT_SATURATION);
+	}
+
+	public void setSaturation(float saturation) {
+		iniReader.setProperty("SIDPlay2", "Saturation", saturation);
+	}
+
+	public float getPhaseShift() {
+		return iniReader.getPropertyFloat("SIDPlay2", "Phase Shift",
+				DEFAULT_PHASE_SHIFT);
+	}
+
+	public void setPhaseShift(float phaseShift) {
+		iniReader.setProperty("SIDPlay2", "Phase Shift", phaseShift);
+	}
+
+	public float getOffset() {
+		return iniReader.getPropertyFloat("SIDPlay2", "Offset", DEFAULT_OFFSET);
+	}
+
+	public void setOffset(float offset) {
+		iniReader.setProperty("SIDPlay2", "Offset", offset);
+	}
+
+	public float getTint() {
+		return iniReader.getPropertyFloat("SIDPlay2", "Tint", DEFAULT_TINT);
+	}
+
+	public void setTint(float tint) {
+		iniReader.setProperty("SIDPlay2", "Tint", tint);
+	}
+
+	public float getBlur() {
+		return iniReader.getPropertyFloat("SIDPlay2", "Blur", DEFAULT_BLUR);
+	}
+
+	public void setBlur(float blur) {
+		iniReader.setProperty("SIDPlay2", "Blur", blur);
+	}
+
+	public float getBleed() {
+		return iniReader.getPropertyFloat("SIDPlay2", "Bleed", DEFAULT_BLEED);
+	}
+
+	public void setBleed(float bleed) {
+		iniReader.setProperty("SIDPlay2", "Bleed", bleed);
+	}
+
 	@Override
 	public boolean isTurboTape() {
 		return iniReader.getPropertyBool("SIDPlay2", "TurboTape",

@@ -21,7 +21,6 @@ public class MOS6567 extends VIC {
 
 	public MOS6567(PLA pla, EventScheduler context) {
 		super(pla, context, 65);
-		updatePalette();
 	}
 
 	private static final int MAX_RASTERS = 263;
@@ -410,6 +409,7 @@ public class MOS6567 extends VIC {
 	@Override
 	public final void reset() {
 		super.reset();
+		updatePalette();
 		lineCycle = 9; // preincremented at event
 		context.schedule(event, 0, Phase.PHI1);
 	}
