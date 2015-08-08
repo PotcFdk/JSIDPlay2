@@ -125,10 +125,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							brightness.getLabelFormatter().toString(
 									newValue.doubleValue()));
 					sidplay2Section.setBrightness(newValue.floatValue());
-					getC64().getPalVIC().getPalette()
-							.setBrightness(newValue.floatValue());
-					getC64().getNtscVIC().getPalette()
-							.setBrightness(newValue.floatValue());
+					getC64().configureVICs(
+							vic -> vic.getPalette().setBrightness(
+									newValue.floatValue()));
 				});
 		contrast.setLabelFormatter(new DoubleToString(2));
 		contrast.setValue(sidplay2Section.getContrast());
@@ -138,10 +137,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							contrast.getLabelFormatter().toString(
 									newValue.doubleValue()));
 					sidplay2Section.setContrast(newValue.floatValue());
-					getC64().getPalVIC().getPalette()
-							.setContrast(newValue.floatValue());
-					getC64().getNtscVIC().getPalette()
-							.setContrast(newValue.floatValue());
+					getC64().configureVICs(
+							vic -> vic.getPalette().setContrast(
+									newValue.floatValue()));
 				});
 		gamma.setLabelFormatter(new DoubleToString(2));
 		gamma.setValue(sidplay2Section.getGamma());
@@ -151,10 +149,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							gamma.getLabelFormatter().toString(
 									newValue.doubleValue()));
 					sidplay2Section.setGamma(newValue.floatValue());
-					getC64().getPalVIC().getPalette()
-							.setGamma(newValue.floatValue());
-					getC64().getNtscVIC().getPalette()
-							.setGamma(newValue.floatValue());
+					getC64().configureVICs(
+							vic -> vic.getPalette().setGamma(
+									newValue.floatValue()));
 				});
 		saturation.setLabelFormatter(new DoubleToString(2));
 		saturation.setValue(sidplay2Section.getSaturation());
@@ -164,10 +161,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							saturation.getLabelFormatter().toString(
 									newValue.doubleValue()));
 					sidplay2Section.setSaturation(newValue.floatValue());
-					getC64().getPalVIC().getPalette()
-							.setSaturation(newValue.floatValue());
-					getC64().getNtscVIC().getPalette()
-							.setSaturation(newValue.floatValue());
+					getC64().configureVICs(
+							vic -> vic.getPalette().setSaturation(
+									newValue.floatValue()));
 				});
 		phaseShift.setLabelFormatter(new DoubleToString(2));
 		phaseShift.setValue(sidplay2Section.getPhaseShift());
@@ -177,10 +173,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							phaseShift.getLabelFormatter().toString(
 									newValue.doubleValue()));
 					sidplay2Section.setPhaseShift(newValue.floatValue());
-					getC64().getPalVIC().getPalette()
-							.setPhaseShift(newValue.floatValue());
-					getC64().getNtscVIC().getPalette()
-							.setPhaseShift(newValue.floatValue());
+					getC64().configureVICs(
+							vic -> vic.getPalette().setPhaseShift(
+									newValue.floatValue()));
 				});
 		offset.setLabelFormatter(new DoubleToString(2));
 		offset.setValue(sidplay2Section.getOffset());
@@ -190,10 +185,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							offset.getLabelFormatter().toString(
 									newValue.doubleValue()));
 					sidplay2Section.setOffset(newValue.floatValue());
-					getC64().getPalVIC().getPalette()
-							.setOffset(newValue.floatValue());
-					getC64().getNtscVIC().getPalette()
-							.setOffset(newValue.floatValue());
+					getC64().configureVICs(
+							vic -> vic.getPalette().setOffset(
+									newValue.floatValue()));
 				});
 		tint.setLabelFormatter(new DoubleToString(2));
 		tint.setValue(sidplay2Section.getTint());
@@ -203,10 +197,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							tint.getLabelFormatter().toString(
 									newValue.doubleValue()));
 					sidplay2Section.setTint(newValue.floatValue());
-					getC64().getPalVIC().getPalette()
-							.setTint(newValue.floatValue());
-					getC64().getNtscVIC().getPalette()
-							.setTint(newValue.floatValue());
+					getC64().configureVICs(
+							vic -> vic.getPalette().setTint(
+									newValue.floatValue()));
 				});
 		blur.setLabelFormatter(new DoubleToString(2));
 		blur.setValue(sidplay2Section.getBlur());
@@ -216,10 +209,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							blur.getLabelFormatter().toString(
 									newValue.doubleValue()));
 					sidplay2Section.setBlur(newValue.floatValue());
-					getC64().getPalVIC().getPalette()
-							.setLuminanceC(newValue.floatValue());
-					getC64().getNtscVIC().getPalette()
-							.setLuminanceC(newValue.floatValue());
+					getC64().configureVICs(
+							vic -> vic.getPalette().setLuminanceC(
+									newValue.floatValue()));
 				});
 		bleed.setLabelFormatter(new DoubleToString(2));
 		bleed.setValue(sidplay2Section.getBleed());
@@ -229,10 +221,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							bleed.getLabelFormatter().toString(
 									newValue.doubleValue()));
 					sidplay2Section.setBleed(newValue.floatValue());
-					getC64().getPalVIC().getPalette()
-							.setDotCreep(newValue.floatValue());
-					getC64().getNtscVIC().getPalette()
-							.setDotCreep(newValue.floatValue());
+					getC64().configureVICs(
+							vic -> vic.getPalette().setDotCreep(
+									newValue.floatValue()));
 				});
 		updatePalette();
 
@@ -246,10 +237,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	@Override
 	public void doClose() {
-		getC64().getPalVIC().setPixelConsumer(pixels -> {
-		});
-		getC64().getNtscVIC().setPixelConsumer(pixels -> {
-		});
+		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
+		}));
 	}
 
 	@FXML
@@ -336,10 +325,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				new Event("Update Palette") {
 					@Override
 					public void event() throws InterruptedException {
-						for (VIC vic : Arrays.asList(getC64().getPalVIC(),
-								getC64().getNtscVIC())) {
-							vic.updatePalette();
-						}
+						getC64().configureVICs(vic -> vic.updatePalette());
 					}
 				});
 	}
@@ -386,10 +372,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(),
 				getC64().getVIC().getBorderHeight());
 		pixelFormat = PixelFormat.getIntArgbInstance();
-		getC64().getPalVIC().setPixelConsumer(pixels -> {
-		});
-		getC64().getNtscVIC().setPixelConsumer(pixels -> {
-		});
+		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
+		}));
 		getC64().getVIC().setPixelConsumer(this);
 	}
 
@@ -552,8 +536,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	@Override
 	public void accept(int[] pixels) {
+		// get VIC of the pixel here, in UI thread that could have changed
+		// eventually
+		final VIC vic = getC64().getVIC();
 		Platform.runLater(() -> {
-			VIC vic = getC64().getVIC();
 			vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(),
 					vic.getBorderHeight(), pixelFormat, pixels, 0,
 					vic.getBorderWidth());

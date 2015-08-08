@@ -1,5 +1,7 @@
 package libsidplay;
 
+import java.util.function.Consumer;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -484,12 +486,15 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		return clock == CPUClock.NTSC ? ntscVic : palVic;
 	}
 
-	public final VIC getPalVIC() {
-		return palVic;
-	}
-
-	public final VIC getNtscVIC() {
-		return ntscVic;
+	/**
+	 * Configure PAL and NTSC VIC.
+	 * 
+	 * @param action
+	 *            VIC consumer
+	 */
+	public void configureVICs(Consumer<VIC> action) {
+		action.accept(palVic);
+		action.accept(ntscVic);
 	}
 
 	/**
