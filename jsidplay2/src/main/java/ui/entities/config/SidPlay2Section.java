@@ -25,6 +25,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final int DEFAULT_FRAME_HEIGHT = 830;
 	public static final boolean DEFAULT_FULL_SCREEN = false;
 	public static final float DEFAULT_VIDEO_SCALING = 2.f;
+	public static final float DEFAULT_BRIGHTNESS = 0f;
+	public static final float DEFAULT_CONTRAST = 1f;
+	public static final float DEFAULT_GAMMA = 2f;
+	public static final float DEFAULT_SATURATION = .5f;
+	public static final float DEFAULT_PHASE_SHIFT = -.15f;
+	public static final float DEFAULT_OFFSET = .9f;
+	public static final float DEFAULT_TINT = 0f;
+	public static final float DEFAULT_BLUR = .5f;
+	public static final float DEFAULT_BLEED = .5f;
 
 	private int version;
 
@@ -83,11 +92,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public void setFadeInTime(int fadeInTime) {
 		fadeInTimeProperty.set(fadeInTime);
 	}
-	
+
 	public IntegerProperty fadeInTimeProperty() {
 		return fadeInTimeProperty;
 	}
-	
+
 	private IntegerProperty fadeOutTimeProperty = new SimpleIntegerProperty(
 			DEFAULT_FADE_OUT_TIME);
 
@@ -103,7 +112,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public IntegerProperty fadeOutTimeProperty() {
 		return fadeOutTimeProperty;
 	}
-	
+
 	private PlaybackType playbackType = DEFAULT_PLAYBACK_TYPE;
 
 	@Enumerated(EnumType.STRING)
@@ -358,6 +367,96 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public void setVideoScaling(double videoScaling) {
 		this.videoScaling = videoScaling;
+	}
+
+	private float brightness = DEFAULT_BRIGHTNESS;
+
+	public float getBrightness() {
+		return brightness;
+	}
+
+	public void setBrightness(float brightness) {
+		this.brightness = brightness;
+	}
+
+	private float contrast = DEFAULT_CONTRAST;
+
+	public float getContrast() {
+		return contrast;
+	}
+
+	public void setContrast(float contrast) {
+		this.contrast = contrast;
+	}
+
+	private float gamma = DEFAULT_GAMMA;
+
+	public float getGamma() {
+		return gamma;
+	}
+
+	public void setGamma(float gamma) {
+		this.gamma = gamma;
+	}
+
+	private float saturation = DEFAULT_SATURATION;
+
+	public float getSaturation() {
+		return saturation;
+	}
+
+	public void setSaturation(float saturation) {
+		this.saturation = saturation;
+	}
+
+	private float phaseShift = DEFAULT_PHASE_SHIFT;
+
+	public float getPhaseShift() {
+		return phaseShift;
+	}
+
+	public void setPhaseShift(float phaseShift) {
+		this.phaseShift = phaseShift;
+	}
+
+	private float offset = DEFAULT_OFFSET;
+
+	public float getOffset() {
+		return offset;
+	}
+
+	public void setOffset(float offset) {
+		this.offset = offset;
+	}
+
+	private float tint = DEFAULT_TINT;
+
+	public float getTint() {
+		return tint;
+	}
+
+	public void setTint(float tint) {
+		this.tint = tint;
+	}
+
+	private float blur = DEFAULT_BLUR;
+
+	public float getBlur() {
+		return blur;
+	}
+
+	public void setBlur(float blur) {
+		this.blur = blur;
+	}
+
+	private float bleed = DEFAULT_BLEED;
+
+	public float getBleed() {
+		return bleed;
+	}
+
+	public void setBleed(float bleed) {
+		this.bleed = bleed;
 	}
 
 	private BooleanProperty turboTapeProperty = new SimpleBooleanProperty(

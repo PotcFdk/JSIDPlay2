@@ -206,6 +206,7 @@
 					</VBox>
 					<VBox alignment="BASELINE_CENTER">
 						<Button text="%APPLY" onAction="#updatePalette" />
+						<Button text="%DEFAULT" onAction="#defaultPalette" />
 					</VBox>
 				</HBox>
 			</TitledPane>

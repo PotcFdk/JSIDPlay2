@@ -50,6 +50,16 @@ import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 import de.schlichtherle.truezip.file.TFile;
 
+import static ui.entities.config.SidPlay2Section.DEFAULT_BRIGHTNESS;
+import static ui.entities.config.SidPlay2Section.DEFAULT_CONTRAST;
+import static ui.entities.config.SidPlay2Section.DEFAULT_GAMMA;
+import static ui.entities.config.SidPlay2Section.DEFAULT_SATURATION;
+import static ui.entities.config.SidPlay2Section.DEFAULT_PHASE_SHIFT;
+import static ui.entities.config.SidPlay2Section.DEFAULT_OFFSET;
+import static ui.entities.config.SidPlay2Section.DEFAULT_TINT;
+import static ui.entities.config.SidPlay2Section.DEFAULT_BLUR;
+import static ui.entities.config.SidPlay2Section.DEFAULT_BLEED;
+
 public class Video extends Tab implements UIPart, Consumer<int[]> {
 	public static final String ID = "VIDEO";
 	private static final double MONITOR_MARGIN_LEFT = 35;
@@ -93,6 +103,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	@FXML
 	private void initialize() {
+		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
+
 		util.getPlayer().stateProperty().addListener((arg0, arg1, arg2) -> {
 			if (arg2 == State.START) {
 				Platform.runLater(() -> {
@@ -106,113 +118,123 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			slider.getStyleClass().add("knobStyle");
 		}
 		brightness.setLabelFormatter(new DoubleToString(2));
-		brightness.setValue(getC64().getPalVIC().getPalette().getBrightness());
+		brightness.setValue(sidplay2Section.getBrightness());
 		brightness.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					brightnessValue.textProperty().set(
 							brightness.getLabelFormatter().toString(
 									newValue.doubleValue()));
+					sidplay2Section.setBrightness(newValue.floatValue());
 					getC64().getPalVIC().getPalette()
 							.setBrightness(newValue.floatValue());
 					getC64().getNtscVIC().getPalette()
 							.setBrightness(newValue.floatValue());
 				});
 		contrast.setLabelFormatter(new DoubleToString(2));
-		contrast.setValue(getC64().getPalVIC().getPalette().getContrast());
+		contrast.setValue(sidplay2Section.getContrast());
 		contrast.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					contrastValue.textProperty().set(
 							contrast.getLabelFormatter().toString(
 									newValue.doubleValue()));
+					sidplay2Section.setContrast(newValue.floatValue());
 					getC64().getPalVIC().getPalette()
 							.setContrast(newValue.floatValue());
 					getC64().getNtscVIC().getPalette()
 							.setContrast(newValue.floatValue());
 				});
 		gamma.setLabelFormatter(new DoubleToString(2));
-		gamma.setValue(getC64().getPalVIC().getPalette().getGamma());
+		gamma.setValue(sidplay2Section.getGamma());
 		gamma.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					gammaValue.textProperty().set(
 							gamma.getLabelFormatter().toString(
 									newValue.doubleValue()));
+					sidplay2Section.setGamma(newValue.floatValue());
 					getC64().getPalVIC().getPalette()
 							.setGamma(newValue.floatValue());
 					getC64().getNtscVIC().getPalette()
 							.setGamma(newValue.floatValue());
 				});
 		saturation.setLabelFormatter(new DoubleToString(2));
-		saturation.setValue(getC64().getPalVIC().getPalette().getSaturation());
+		saturation.setValue(sidplay2Section.getSaturation());
 		saturation.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					saturationValue.textProperty().set(
 							saturation.getLabelFormatter().toString(
 									newValue.doubleValue()));
+					sidplay2Section.setSaturation(newValue.floatValue());
 					getC64().getPalVIC().getPalette()
 							.setSaturation(newValue.floatValue());
 					getC64().getNtscVIC().getPalette()
 							.setSaturation(newValue.floatValue());
 				});
 		phaseShift.setLabelFormatter(new DoubleToString(2));
-		phaseShift.setValue(getC64().getPalVIC().getPalette().getPhaseShift());
+		phaseShift.setValue(sidplay2Section.getPhaseShift());
 		phaseShift.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					phaseShiftValue.textProperty().set(
 							phaseShift.getLabelFormatter().toString(
 									newValue.doubleValue()));
+					sidplay2Section.setPhaseShift(newValue.floatValue());
 					getC64().getPalVIC().getPalette()
 							.setPhaseShift(newValue.floatValue());
 					getC64().getNtscVIC().getPalette()
 							.setPhaseShift(newValue.floatValue());
 				});
 		offset.setLabelFormatter(new DoubleToString(2));
-		offset.setValue(getC64().getPalVIC().getPalette().getOffset());
+		offset.setValue(sidplay2Section.getOffset());
 		offset.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					offsetValue.textProperty().set(
 							offset.getLabelFormatter().toString(
 									newValue.doubleValue()));
+					sidplay2Section.setOffset(newValue.floatValue());
 					getC64().getPalVIC().getPalette()
 							.setOffset(newValue.floatValue());
 					getC64().getNtscVIC().getPalette()
 							.setOffset(newValue.floatValue());
 				});
 		tint.setLabelFormatter(new DoubleToString(2));
-		tint.setValue(getC64().getPalVIC().getPalette().getTint());
+		tint.setValue(sidplay2Section.getTint());
 		tint.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					tintValue.textProperty().set(
 							tint.getLabelFormatter().toString(
 									newValue.doubleValue()));
+					sidplay2Section.setTint(newValue.floatValue());
 					getC64().getPalVIC().getPalette()
 							.setTint(newValue.floatValue());
 					getC64().getNtscVIC().getPalette()
 							.setTint(newValue.floatValue());
 				});
 		blur.setLabelFormatter(new DoubleToString(2));
-		blur.setValue(getC64().getPalVIC().getPalette().getLuminanceC());
+		blur.setValue(sidplay2Section.getBlur());
 		blur.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					blurValue.textProperty().set(
 							blur.getLabelFormatter().toString(
 									newValue.doubleValue()));
+					sidplay2Section.setBlur(newValue.floatValue());
 					getC64().getPalVIC().getPalette()
 							.setLuminanceC(newValue.floatValue());
 					getC64().getNtscVIC().getPalette()
 							.setLuminanceC(newValue.floatValue());
 				});
 		bleed.setLabelFormatter(new DoubleToString(2));
-		bleed.setValue(getC64().getPalVIC().getPalette().getDotCreep());
+		bleed.setValue(sidplay2Section.getBleed());
 		bleed.valueProperty().addListener(
 				(observable, oldValue, newValue) -> {
 					bleedValue.textProperty().set(
 							bleed.getLabelFormatter().toString(
 									newValue.doubleValue()));
+					sidplay2Section.setBleed(newValue.floatValue());
 					getC64().getPalVIC().getPalette()
 							.setDotCreep(newValue.floatValue());
 					getC64().getNtscVIC().getPalette()
 							.setDotCreep(newValue.floatValue());
 				});
+		updatePalette();
 
 		setupVideoScreen();
 		setVisibilityBasedOnChipType(util.getPlayer().getTune());
@@ -309,8 +331,38 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	@FXML
 	private void updatePalette() {
-		getC64().getPalVIC().updatePalette();
-		getC64().getNtscVIC().updatePalette();
+		updateSliders();
+		getC64().getEventScheduler().scheduleThreadSafe(
+				new Event("Update Palette") {
+					@Override
+					public void event() throws InterruptedException {
+						for (VIC vic : Arrays.asList(getC64().getPalVIC(),
+								getC64().getNtscVIC())) {
+							vic.updatePalette();
+						}
+					}
+				});
+	}
+
+	@FXML
+	private void defaultPalette() {
+		brightness.setValue(DEFAULT_BRIGHTNESS);
+		contrast.setValue(DEFAULT_CONTRAST);
+		gamma.setValue(DEFAULT_GAMMA);
+		saturation.setValue(DEFAULT_SATURATION);
+		phaseShift.setValue(DEFAULT_PHASE_SHIFT);
+		offset.setValue(DEFAULT_OFFSET);
+		tint.setValue(DEFAULT_TINT);
+		blur.setValue(DEFAULT_BLUR);
+		bleed.setValue(DEFAULT_BLEED);
+		updatePalette();
+	}
+
+	private void updateSliders() {
+		for (Slider slider : Arrays.asList(brightness, contrast, gamma,
+				saturation, phaseShift, offset, tint, blur, bleed)) {
+			slider.requestLayout();
+		}
 	}
 
 	/**

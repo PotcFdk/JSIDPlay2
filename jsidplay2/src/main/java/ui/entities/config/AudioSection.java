@@ -137,7 +137,7 @@ public class AudioSection implements IAudioSection {
 		this.thirdVolume = volume;
 	}
 
-	private float mainBalance = 0f;
+	private float mainBalance = DEFAULT_MAIN_BALANCE;
 
 	@Override
 	public float getMainBalance() {
