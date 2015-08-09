@@ -19,6 +19,8 @@
 <?import javafx.scene.control.Label?>
 <?scenebuilder-preview-i18n-resource Video.properties?>
 <?import java.lang.String?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.geometry.Insets?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<BorderPane AnchorPane.bottomAnchor="0"
@@ -241,8 +243,9 @@
 						</Slider>
 						<Label text="%BLEED" />
 					</VBox>
-					<VBox alignment="BASELINE_CENTER">
+					<VBox alignment="BASELINE_CENTER" spacing="10">
 						<Button text="%APPLY" onAction="#updatePalette" />
+						<CheckBox text="%APPLY_IMMEDIATELY" fx:id="applyImmediately" />
 						<Button text="%DEFAULT" onAction="#defaultPalette" />
 					</VBox>
 				</HBox>

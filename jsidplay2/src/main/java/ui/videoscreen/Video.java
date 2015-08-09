@@ -24,6 +24,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
@@ -77,6 +78,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Slider brightness, contrast, gamma, saturation, phaseShift, offset,
 			tint, blur, bleed;
 	@FXML
+	private CheckBox applyImmediately;
+	@FXML
 	private Label brightnessValue, contrastValue, gammaValue, saturationValue,
 			phaseShiftValue, offsetValue, tintValue, blurValue, bleedValue;
 	@FXML
@@ -123,6 +126,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					getC64().configureVICs(
 							vic -> vic.getPalette().setBrightness(
 									newValue.floatValue()));
+					if (applyImmediately.isSelected()) {
+						updatePalette();
+					}
 				});
 		contrast.setLabelFormatter(doubleToString);
 		contrast.setValue(sidplay2Section.getContrast());
@@ -132,6 +138,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					getC64().configureVICs(
 							vic -> vic.getPalette().setContrast(
 									newValue.floatValue()));
+					if (applyImmediately.isSelected()) {
+						updatePalette();
+					}
 				});
 		gamma.setLabelFormatter(doubleToString);
 		gamma.setValue(sidplay2Section.getGamma());
@@ -141,6 +150,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					getC64().configureVICs(
 							vic -> vic.getPalette().setGamma(
 									newValue.floatValue()));
+					if (applyImmediately.isSelected()) {
+						updatePalette();
+					}
 				});
 		saturation.setLabelFormatter(doubleToString);
 		saturation.setValue(sidplay2Section.getSaturation());
@@ -150,6 +162,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					getC64().configureVICs(
 							vic -> vic.getPalette().setSaturation(
 									newValue.floatValue()));
+					if (applyImmediately.isSelected()) {
+						updatePalette();
+					}
 				});
 		phaseShift.setLabelFormatter(doubleToString);
 		phaseShift.setValue(sidplay2Section.getPhaseShift());
@@ -159,6 +174,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					getC64().configureVICs(
 							vic -> vic.getPalette().setPhaseShift(
 									newValue.floatValue()));
+					if (applyImmediately.isSelected()) {
+						updatePalette();
+					}
 				});
 		offset.setLabelFormatter(doubleToString);
 		offset.setValue(sidplay2Section.getOffset());
@@ -168,6 +186,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					getC64().configureVICs(
 							vic -> vic.getPalette().setOffset(
 									newValue.floatValue()));
+					if (applyImmediately.isSelected()) {
+						updatePalette();
+					}
 				});
 		tint.setLabelFormatter(doubleToString);
 		tint.setValue(sidplay2Section.getTint());
@@ -177,6 +198,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					getC64().configureVICs(
 							vic -> vic.getPalette().setTint(
 									newValue.floatValue()));
+					if (applyImmediately.isSelected()) {
+						updatePalette();
+					}
 				});
 		blur.setLabelFormatter(doubleToString);
 		blur.setValue(sidplay2Section.getBlur());
@@ -186,6 +210,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					getC64().configureVICs(
 							vic -> vic.getPalette().setLuminanceC(
 									newValue.floatValue()));
+					if (applyImmediately.isSelected()) {
+						updatePalette();
+					}
 				});
 		bleed.setLabelFormatter(doubleToString);
 		bleed.setValue(sidplay2Section.getBleed());
@@ -195,6 +222,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					getC64().configureVICs(
 							vic -> vic.getPalette().setDotCreep(
 									newValue.floatValue()));
+					if (applyImmediately.isSelected()) {
+						updatePalette();
+					}
 				});
 
 		NumberToString<Float> floatToString = new NumberToString<Float>(2);
@@ -330,11 +360,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		tint.setValue(DEFAULT_TINT);
 		blur.setValue(DEFAULT_BLUR);
 		bleed.setValue(DEFAULT_BLEED);
-		for (Slider slider : Arrays.asList(brightness, contrast, gamma,
-				saturation, phaseShift, offset, tint, blur, bleed)) {
-			// skin update not done automatically!?
-			slider.requestLayout();
-		}
 		updatePalette();
 	}
 

@@ -1,10 +1,13 @@
 package ui.common;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.StackPane;
 
 import com.sun.javafx.scene.control.behavior.SliderBehavior;
+
 /**
  * A simple knob skin for slider
  * 
@@ -45,26 +48,38 @@ public class KnobSkin extends SkinBase<Slider> {
 		knob.getChildren().add(knobDot);
 
 		SliderBehavior behavior = new SliderBehavior(getSkinnable());
-		
+
 		getSkinnable().setOnKeyPressed((ke) -> getSkinnable().requestLayout());
 		getSkinnable().setOnKeyReleased((ke) -> getSkinnable().requestLayout());
-		getSkinnable().setOnMousePressed((me) -> {
-				double dragStart = mouseToValue(me.getX(), me.getY());
-				double zeroOneValue = (getSkinnable().getValue() - getSkinnable()
-						.getMin())
-						/ (getSkinnable().getMax() - getSkinnable().getMin());
-				dragOffset = zeroOneValue - dragStart;
-				behavior.thumbPressed(me, dragStart);
-				behavior.trackPress(me, dragStart);
+		getSkinnable()
+				.setOnMousePressed(
+						me -> {
+							double dragStart = mouseToValue(me.getX(),
+									me.getY());
+							double zeroOneValue = (getSkinnable().getValue() - getSkinnable()
+									.getMin())
+									/ (getSkinnable().getMax() - getSkinnable()
+											.getMin());
+							dragOffset = zeroOneValue - dragStart;
+							behavior.thumbPressed(me, dragStart);
+							behavior.trackPress(me, dragStart);
+							getSkinnable().requestLayout();
+						});
+		getSkinnable().setOnMouseReleased(me -> behavior.thumbReleased(me));
+		getSkinnable().setOnMouseDragged(
+				me -> {
+					behavior.thumbDragged(me,
+							mouseToValue(me.getX(), me.getY()) + dragOffset);
+					getSkinnable().requestLayout();
+				});
+		getSkinnable().valueProperty().addListener(new ChangeListener<Number>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Number> observable,
+					Number oldValue, Number newValue) {
 				getSkinnable().requestLayout();
 			}
-		);
-		getSkinnable().setOnMouseReleased(
-				(me) -> behavior.thumbReleased(me));
-		getSkinnable().setOnMouseDragged(
-				(me) -> {behavior.thumbDragged(me,
-						mouseToValue(me.getX(), me.getY()) + dragOffset);
-		getSkinnable().requestLayout();});
+		});
 	}
 
 	private double mouseToValue(double mouseX, double mouseY) {
@@ -81,7 +96,7 @@ public class KnobSkin extends SkinBase<Slider> {
 		double value = 1 - ((topZeroAngle - minAngle) / (maxAngle - minAngle));
 		return value;
 	}
-	
+
 	private void rotateKnob() {
 		Slider s = getSkinnable();
 		double zeroOneValue = (s.getValue() - s.getMin())
@@ -91,8 +106,7 @@ public class KnobSkin extends SkinBase<Slider> {
 	}
 
 	@Override
-	protected void layoutChildren(double x, double y, double w,
-			double h) {
+	protected void layoutChildren(double x, double y, double w, double h) {
 		// calculate the available space
 		double cx = x + (w / 2);
 		double cy = y + (h / 2);
@@ -145,5 +159,5 @@ public class KnobSkin extends SkinBase<Slider> {
 			double rightInset, double bottomInset, double leftInset) {
 		return Double.MAX_VALUE;
 	}
-	
+
 }
