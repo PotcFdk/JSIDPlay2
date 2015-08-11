@@ -400,9 +400,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(),
 				getC64().getVIC().getBorderHeight());
 		pixelFormat = PixelFormat.getIntArgbInstance();
-		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
-		}));
-		getC64().getVIC().setPixelConsumer(this);
 	}
 
 	/**
@@ -536,29 +533,29 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Make breadbox/pc64 image visible, if the internal SID player is used.
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
-		if (sidTune != null && sidTune.getInfo().getPlayAddr() != 0) {
+		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
+		}));
+		if (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0) {
+			// SID Tune is loaded and uses internal player?
+			screen.setVisible(false);
+			monitorBorder.setVisible(false);
 			if (ChipModel.getChipModel(util.getConfig().getEmulationSection(),
 					sidTune, 0) == ChipModel.MOS6581) {
 				// Old SID chip model? Show breadbox
 				breadbox.setVisible(true);
-				for (Node node : Arrays.asList(screen, monitorBorder, pc64)) {
-					node.setVisible(false);
-				}
+				pc64.setVisible(false);
 			} else {
 				// New SID chip model? Show PC 64
 				pc64.setVisible(true);
-				for (Node node : Arrays.asList(screen, monitorBorder, breadbox)) {
-					node.setVisible(false);
-				}
+				breadbox.setVisible(false);
 			}
 		} else {
-			// Show video screen and monitor
-			for (Node node : Arrays.asList(screen, monitorBorder)) {
-				node.setVisible(true);
-			}
-			for (Node node : Arrays.asList(breadbox, pc64)) {
-				node.setVisible(false);
-			}
+			// Normal RESET: Show video screen and monitor
+			breadbox.setVisible(false);
+			pc64.setVisible(false);
+			screen.setVisible(true);
+			monitorBorder.setVisible(true);
+			getC64().getVIC().setPixelConsumer(this);
 		}
 	}
 
