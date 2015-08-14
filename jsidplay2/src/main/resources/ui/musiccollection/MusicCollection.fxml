@@ -93,7 +93,7 @@
 					<ComboBox fx:id="searchCriteria" onAction="#searchCategory" />
 					<StackPane>
 						<TypeTextField fx:id="stringTextField" type="String"
-							visible="false" onAction="#doSetValue" />
+							visible="true" onAction="#doSetValue" />
 						<TypeTextField fx:id="integerTextField" type="Integer"
 							visible="false" onAction="#doSetValue" />
 						<TypeTextField fx:id="longTextField" type="Long"

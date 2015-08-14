@@ -18,12 +18,15 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -36,12 +39,12 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.WindowEvent;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -58,6 +61,7 @@ import libsidutils.WebUtils;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
+import ui.common.EnumToString;
 import ui.common.TypeTextField;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -68,7 +72,6 @@ import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
-import ui.entities.collection.StilEntry_;
 import ui.entities.collection.service.VersionService;
 import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
@@ -110,25 +113,6 @@ public class MusicCollection extends Tab implements UIPart {
 	private static final String HVSC_URL = "http://www.hvsc.de/";
 	private static final String CGSC_URL = "http://www.c64music.co.uk/";
 
-	private class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
-		public SearchCriteria(SingularAttribute<DECLARING_CLASS, JAVA_TYPE> att) {
-			this.attribute = att;
-		}
-
-		private SingularAttribute<DECLARING_CLASS, JAVA_TYPE> attribute;
-
-		public SingularAttribute<DECLARING_CLASS, JAVA_TYPE> getAttribute() {
-			return attribute;
-		}
-
-		@Override
-		public String toString() {
-			return util.getBundle().getString(
-					attribute.getDeclaringType().getJavaType().getSimpleName()
-							+ "." + attribute.getName());
-		}
-	}
-
 	@FXML
 	private CheckBox autoConfiguration;
 	@FXML
@@ -162,43 +146,19 @@ public class MusicCollection extends Tab implements UIPart {
 
 	private UIUtil util;
 
-	private ObservableList<TuneInfo> tuneInfos;
-	private ObservableList<SearchScope> searchScopes;
-	private ObservableList<SearchResult> searchResults;
-	private ObservableList<SearchCriteria<?, ?>> searchCriterias;
-	private ObservableList<Enum<?>> comboItems;
-
 	private ObjectProperty<MusicCollectionType> type;
 
-	public MusicCollectionType getType() {
-		return type.get();
-	}
-
-	public void setType(MusicCollectionType type) {
-		switch (type) {
-		case HVSC:
-			setId(HVSC_ID);
-			setCollectionURL(HVSC_URL);
-			break;
-
-		case CGSC:
-			setId(CGSC_ID);
-			setCollectionURL(CGSC_URL);
-			break;
-
-		default:
-			break;
-		}
-		setText(util.getBundle().getString(getId()));
-		this.type.set(type);
-	}
+	private ObservableList<TuneInfo> tuneInfos;
+	private ObservableList<Enum<?>> comboItems;
+	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems = FXCollections
+			.<TreeItem<File>> observableArrayList();
 
 	private String collectionURL;
 
 	private EntityManager em;
 	private VersionService versionService;
 
-	private TuneFileFilter fileFilter = new TuneFileFilter();
+	private final FileFilter tuneFilter = new TuneFileFilter();
 	private SearchThread searchThread;
 	private Object savedState, searchForValue, recentlySearchedForValue;
 	private SearchCriteria<?, ?> recentlySearchedCriteria;
@@ -208,178 +168,136 @@ public class MusicCollection extends Tab implements UIPart {
 
 	private FavoritesSection favoritesToAddSearchResult;
 
-	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems = FXCollections
-			.<TreeItem<File>> observableArrayList();
+	private ChangeListener<? super State> tuneMatcherListener = (observable,
+			oldValue, newValue) -> {
+		if (newValue == State.START
+				&& util.getPlayer().getTune() != SidTune.RESET) {
+			Platform.runLater(() -> {
+				if (fileBrowser.getRoot() != null) {
+					// auto-expand current selected tune
+					SidTune tune = util.getPlayer().getTune();
+					String collectionName = util.getPlayer()
+							.getSidDatabaseInfo(db -> db.getPath(tune), "");
+					showNextHit(new TFile(fileBrowser.getRoot().getValue(),
+							collectionName));
+				}
+			});
+		}
+	};
+
+	private ChangeListener<? super TreeItem<File>> tuneInfoListener = (
+			observable, oldValue, newValue) -> {
+		for (MenuItem item : Arrays.asList(soasc6581R2, soasc6581R4,
+				soasc8580R5)) {
+			item.setDisable(true);
+		}
+		if (newValue != null && newValue.getValue().isFile()) {
+			File tuneFile = newValue.getValue();
+			try {
+				SidTune sidTune = SidTune.load(tuneFile);
+				showPhoto(sidTune);
+				showTuneInfos(tuneFile, sidTune);
+				getSOASCURL(sidTune, tuneFile);
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
+		}
+	};
+
+	private EventHandler<WindowEvent> contextMenuEvent = event -> {
+		final TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
+				.getSelectedItem();
+		showStil.setDisable(selectedItem == null
+				|| !((MusicCollectionTreeItem) selectedItem).hasSTIL());
+		convertToPSID64.setDisable(selectedItem == null);
+
+		SidPlay2Section sidplay2Section = (SidPlay2Section) util.getPlayer()
+				.getConfig().getSidplay2Section();
+		List<FavoritesSection> favorites = ((Configuration) util.getConfig())
+				.getFavorites();
+		addToFavoritesMenu.getItems().clear();
+		for (final FavoritesSection section : favorites) {
+			MenuItem item = new MenuItem(section.getName());
+			item.setOnAction(event2 -> {
+				addFavorites(sidplay2Section, section,
+						Collections.singletonList(selectedItem.getValue()));
+			});
+			addToFavoritesMenu.getItems().add(item);
+		}
+		addToFavoritesMenu.setDisable(addToFavoritesMenu.getItems().isEmpty());
+	};
 
 	public MusicCollection(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		setContent((Node) util.parse());
 	}
 
+	public MusicCollectionType getType() {
+		return type.get();
+	}
+
+	public void setType(MusicCollectionType type) {
+		switch (type) {
+		case HVSC:
+			setId(HVSC_ID);
+			collectionURL = HVSC_URL;
+			break;
+
+		case CGSC:
+			setId(CGSC_ID);
+			collectionURL = CGSC_URL;
+			break;
+
+		default:
+			break;
+		}
+		setText(util.getBundle().getString(getId()));
+		this.type.set(type);
+	}
+
 	@FXML
 	private void initialize() {
-		util.getPlayer()
-				.stateProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							if (newValue == State.START
-									&& util.getPlayer().getTune() != SidTune.RESET) {
-								Platform.runLater(() -> {
-									if (fileBrowser.getRoot() != null) {
-										// auto-expand current selected tune
-										SidTune tune = util.getPlayer()
-												.getTune();
-										String collectionName = util
-												.getPlayer()
-												.getSidDatabaseInfo(
-														db -> db.getPath(tune),
-														"");
-										showNextHit(new TFile(fileBrowser
-												.getRoot().getValue(),
-												collectionName));
-									}
-								});
-							}
-						});
+		util.getPlayer().stateProperty().addListener(tuneMatcherListener);
 		tuneInfos = FXCollections.<TuneInfo> observableArrayList();
 		tuneInfoTable.setItems(tuneInfos);
 
-		SearchScope forward = new SearchScope(util.getBundle().getString(
-				"FORWARD"), () -> true);
-		SearchScope backward = new SearchScope(util.getBundle().getString(
-				"BACKWARD"), () -> false);
-		searchScopes = FXCollections.<SearchScope> observableArrayList(forward,
-				backward);
-		searchScope.setItems(searchScopes);
-		searchScope.getSelectionModel().select(forward);
+		searchScope
+				.setConverter(new EnumToString<SearchScope>(util.getBundle()));
+		searchScope.setItems(FXCollections
+				.<SearchScope> observableArrayList(SearchScope.values()));
+		searchScope.getSelectionModel().select(SearchScope.FORWARD);
 
-		SearchResult addToFavorites = new SearchResult(util.getBundle()
-				.getString("ADD_TO_A_NEW_PLAYLIST"),
-				(file) -> createNewFavoritesTab(), (file) -> addFavorite(
-						favoritesToAddSearchResult, file));
-		SearchResult showNextHit = new SearchResult(util.getBundle().getString(
-				"SHOW_NEXT_MATCH"), (file) -> {
-		}, (file) -> {
-			stopSearch(file);
-			Platform.runLater(() -> showNextHit(file));
-		});
-		searchResults = FXCollections.<SearchResult> observableArrayList(
-				addToFavorites, showNextHit);
-		searchResult.setItems(searchResults);
-		searchResult.getSelectionModel().select(showNextHit);
+		searchResult.setConverter(new EnumToString<SearchResult>(util
+				.getBundle()));
+		searchResult.setItems(FXCollections
+				.<SearchResult> observableArrayList(SearchResult.values()));
+		searchResult.getSelectionModel().select(SearchResult.SHOW_NEXT_MATCH);
 
-		searchCriterias = FXCollections
-				.<SearchCriteria<?, ?>> observableArrayList();
-		searchCriteria.setItems(searchCriterias);
-		for (SingularAttribute<? extends Object, ?> singularAttribute : Arrays
-				.asList(HVSCEntry_.path, HVSCEntry_.name, HVSCEntry_.title,
-						HVSCEntry_.author, HVSCEntry_.released,
-						HVSCEntry_.format, HVSCEntry_.playerId,
-						HVSCEntry_.noOfSongs, HVSCEntry_.startSong,
-						HVSCEntry_.clockFreq, HVSCEntry_.speed,
-						HVSCEntry_.sidModel1, HVSCEntry_.sidModel2,
-						HVSCEntry_.compatibility, HVSCEntry_.tuneLength,
-						HVSCEntry_.audio, HVSCEntry_.sidChipBase1,
-						HVSCEntry_.sidChipBase2, HVSCEntry_.driverAddress,
-						HVSCEntry_.loadAddress, HVSCEntry_.loadLength,
-						HVSCEntry_.initAddress, HVSCEntry_.playerAddress,
-						HVSCEntry_.fileDate, HVSCEntry_.fileSizeKb,
-						HVSCEntry_.tuneSizeB, HVSCEntry_.relocStartPage,
-						HVSCEntry_.relocNoPages, StilEntry_.stilName,
-						StilEntry_.stilAuthor, StilEntry_.stilTitle,
-						StilEntry_.stilArtist, StilEntry_.stilComment)) {
-			@SuppressWarnings({ "rawtypes", "unchecked" })
-			SearchCriteria<?, ?> criteria = new SearchCriteria(
-					singularAttribute);
-			searchCriterias.add(criteria);
-		}
+		searchCriteria
+				.setConverter(new SearchCriteriaToString(util.getBundle()));
+		searchCriteria.setItems(FXCollections
+				.<SearchCriteria<?, ?>> observableArrayList(SearchCriteria
+						.getSearchableAttributes()));
 		searchCriteria.getSelectionModel().select(0);
 
 		comboItems = FXCollections.<Enum<?>> observableArrayList();
 		combo.setItems(comboItems);
 
-		fileBrowser.setCellFactory((value) -> {
-			return new TreeCell<File>() {
-				@Override
-				protected void updateItem(File item, boolean empty) {
-					super.updateItem(item, empty);
-					if (!empty) {
-						setText(item.getName());
-						setGraphic(getTreeItem().getGraphic());
-					} else {
-						setText("");
-						setGraphic(null);
-					}
-				}
-			};
-		});
-		fileBrowser.setOnKeyPressed((event) -> {
-			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-					.getSelectedItem();
+		contextMenu.setOnShown(contextMenuEvent);
+
+		fileBrowser.setCellFactory(treeView -> new FileTreeCell());
+		fileBrowser.getSelectionModel().selectedItemProperty()
+				.addListener(tuneInfoListener);
+		fileBrowser.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
-				if (selectedItem != null
-						&& !selectedItem.equals(fileBrowser.getRoot())
-						&& selectedItem.getValue().isFile()) {
-					playTune(selectedItem.getValue());
-				}
+				playSelected();
 			}
 
 		});
-		fileBrowser
-				.getSelectionModel()
-				.selectedItemProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							for (MenuItem item : Arrays.asList(soasc6581R2,
-									soasc6581R4, soasc8580R5)) {
-								item.setDisable(true);
-							}
-							if (newValue != null
-									&& newValue.getValue().isFile()) {
-								File tuneFile = newValue.getValue();
-								try {
-									SidTune sidTune = SidTune.load(tuneFile);
-									showPhoto(sidTune);
-									showTuneInfos(tuneFile, sidTune);
-									getSOASCURL(sidTune, tuneFile);
-								} catch (IOException | SidTuneError e) {
-									e.printStackTrace();
-								}
-							}
-						});
-		fileBrowser
-				.setOnMousePressed((event) -> {
-					final TreeItem<File> selectedItem = fileBrowser
-							.getSelectionModel().getSelectedItem();
-					if (selectedItem != null
-							&& selectedItem.getValue().isFile()
-							&& event.isPrimaryButtonDown()
-							&& event.getClickCount() > 1) {
-						playTune(selectedItem.getValue());
-					}
-				});
-		contextMenu.setOnShown((event) -> {
-			final TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-					.getSelectedItem();
-			showStil.setDisable(selectedItem == null
-					|| !((MusicCollectionTreeItem) selectedItem).hasSTIL());
-			convertToPSID64.setDisable(selectedItem == null);
-
-			List<FavoritesSection> favorites = ((Configuration) util
-					.getConfig()).getFavorites();
-			addToFavoritesMenu.getItems().clear();
-			for (final FavoritesSection section : favorites) {
-				MenuItem item = new MenuItem(section.getName());
-				item.setOnAction((event2) -> {
-					addFavorites(
-							Collections.singletonList(selectedItem.getValue()),
-							section);
-				});
-				addToFavoritesMenu.getItems().add(item);
+		fileBrowser.setOnMousePressed((event) -> {
+			if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
+				playSelected();
 			}
-			addToFavoritesMenu.setDisable(addToFavoritesMenu.getItems()
-					.isEmpty());
-
 		});
 
 		type = new SimpleObjectProperty<>();
@@ -408,36 +326,10 @@ public class MusicCollection extends Tab implements UIPart {
 		});
 	}
 
-	private final FileFilter tuneFilter = new TuneFileFilter();
-
-	public void addFavorites(List<File> files, FavoritesSection section) {
-		for (int i = 0; files != null && i < files.size(); i++) {
-			final File file = files.get(i);
-			if (file.isDirectory()) {
-				addFavorites(Arrays.asList(file.listFiles()), section);
-			} else {
-				if (tuneFilter.accept(file)) {
-					addFavorite(section, file);
-				}
-			}
-		}
-	}
-
-	private void getSOASCURL(SidTune sidTune, File tuneFile) {
-		if (sidTune != null) {
-			final SidTuneInfo tuneInfo = sidTune.getInfo();
-			File rootFile = new File(util.getConfig().getSidplay2Section()
-					.getHvsc());
-			String collectionName = PathUtils.getCollectionName(new TFile(
-					rootFile), tuneFile.getPath());
-			if (collectionName != null && getType() == MusicCollectionType.HVSC) {
-				hvscName = collectionName.replace(".sid", "");
-				currentSong = tuneInfo.getCurrentSong();
-				for (MenuItem item : Arrays.asList(soasc6581R2, soasc6581R4,
-						soasc8580R5)) {
-					item.setDisable(false);
-				}
-			}
+	public void doClose() {
+		util.getPlayer().stateProperty().removeListener(tuneMatcherListener);
+		if (em != null) {
+			em.getEntityManagerFactory().close();
 		}
 	}
 
@@ -454,9 +346,11 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void convertToPSID64() {
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) (util.getConfig()
+				.getSidplay2Section());
+		TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
+				.getSelectedItem();
 		DirectoryChooser fileDialog = new DirectoryChooser();
-		final SidPlay2Section sidPlay2Section = (SidPlay2Section) (util
-				.getConfig().getSidplay2Section());
 		fileDialog
 				.setInitialDirectory(sidPlay2Section.getLastDirectoryFolder());
 		final File directory = fileDialog.showDialog(fileBrowser.getScene()
@@ -464,8 +358,6 @@ public class MusicCollection extends Tab implements UIPart {
 		if (directory != null) {
 			util.getConfig().getSidplay2Section()
 					.setLastDirectory(directory.getAbsolutePath());
-			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-					.getSelectedItem();
 			Psid64 c = new Psid64();
 			c.setTmpDir(util.getConfig().getSidplay2Section().getTmpDir());
 			c.setVerbose(true);
@@ -609,14 +501,6 @@ public class MusicCollection extends Tab implements UIPart {
 		startSearch(false);
 	}
 
-	public String getCollectionURL() {
-		return collectionURL;
-	}
-
-	public void setCollectionURL(String collectionURL) {
-		this.collectionURL = collectionURL;
-	}
-
 	private void setSearchEditorVisible() {
 		for (Node node : Arrays.asList(stringTextField, integerTextField,
 				longTextField, shortTextField, combo)) {
@@ -682,38 +566,28 @@ public class MusicCollection extends Tab implements UIPart {
 			versionService = new VersionService(em);
 			collectionDir.setText(rootFile.getAbsolutePath());
 
-			if (rootFile.exists()) {
-				SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-						.getConfig().getSidplay2Section();
-				if (getType() == MusicCollectionType.HVSC) {
-					util.getConfig().getSidplay2Section()
-							.setHvsc(rootFile.getAbsolutePath());
-					File theRootFile = sidPlay2Section.getHvscFile();
-					setSongLengthDatabase(sidPlay2Section.getHvsc());
-					setSTIL(sidPlay2Section.getHvsc());
-					fileBrowser.setRoot(new MusicCollectionTreeItem(util
-							.getPlayer(), theRootFile));
-				} else if (getType() == MusicCollectionType.CGSC) {
-					util.getConfig().getSidplay2Section()
-							.setCgsc(rootFile.getAbsolutePath());
-					File theRootFile = sidPlay2Section.getCgscFile();
-					fileBrowser.setRoot(new MusicCollectionTreeItem(util
-							.getPlayer(), theRootFile));
-				}
-				MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
-				cellFactory
-						.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItems);
-				fileBrowser.setCellFactory(cellFactory);
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
+					.getConfig().getSidplay2Section();
+			if (getType() == MusicCollectionType.HVSC) {
+				util.getConfig().getSidplay2Section()
+						.setHvsc(rootFile.getAbsolutePath());
+				File theRootFile = sidPlay2Section.getHvscFile();
+				setSongLengthDatabase(sidPlay2Section.getHvsc());
+				setSTIL(sidPlay2Section.getHvsc());
+				fileBrowser.setRoot(new MusicCollectionTreeItem(util
+						.getPlayer(), theRootFile));
+			} else if (getType() == MusicCollectionType.CGSC) {
+				util.getConfig().getSidplay2Section()
+						.setCgsc(rootFile.getAbsolutePath());
+				File theRootFile = sidPlay2Section.getCgscFile();
+				fileBrowser.setRoot(new MusicCollectionTreeItem(util
+						.getPlayer(), theRootFile));
 			}
-
+			MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
+			cellFactory.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItems);
+			fileBrowser.setCellFactory(cellFactory);
 		}
 		doResetSearch();
-	}
-
-	public void doClose() {
-		if (em != null) {
-			em.getEntityManagerFactory().close();
-		}
 	}
 
 	private void setSTIL(String hvscRoot) {
@@ -790,25 +664,32 @@ public class MusicCollection extends Tab implements UIPart {
 		 * validate database: version is inserted only after successful create
 		 * completes.
 		 */
-		if (!forceRecreate) {
-			if (!versionService.isExpectedVersion()) {
-				forceRecreate = true;
-			}
+		if (!forceRecreate && !versionService.isExpectedVersion()) {
+			forceRecreate = true;
 		}
 
+		Consumer<Boolean> searchStart;
+		Consumer<File> searchHit;
 		if (forceRecreate) {
+			searchStart = reCreate -> {
+				disableSearch();
+				Platform.runLater(() -> util.progressProperty(fileBrowser).set(
+						ProgressBar.INDETERMINATE_PROGRESS));
+			};
+			searchHit = file -> {
+			};
+			searchStart.accept(forceRecreate);
+
 			final File root = fileBrowser.getRoot().getValue();
 			searchThread = new SearchIndexerThread(root);
 			searchThread.addSearchListener(new ISearchListener() {
 				@Override
 				public void searchStart() {
-					disableSearch();
-					Platform.runLater(() -> util.progressProperty(fileBrowser)
-							.set(ProgressBar.INDETERMINATE_PROGRESS));
 				}
 
 				@Override
 				public void searchHit(File match) {
+					searchHit.accept(match);
 				}
 
 				@Override
@@ -824,16 +705,37 @@ public class MusicCollection extends Tab implements UIPart {
 
 			searchThread.start();
 		} else {
-			searchResult.getSelectionModel().getSelectedItem().getSearchStart()
-					.accept(forceRecreate);
+			SidPlay2Section sidplay2Section = (SidPlay2Section) util
+					.getPlayer().getConfig().getSidplay2Section();
+
+			SearchResult result = searchResult.getSelectionModel()
+					.getSelectedItem();
+			switch (result) {
+			case ADD_TO_A_NEW_PLAYLIST:
+				searchStart = file -> createNewFavoritesTab();
+				searchHit = file -> addFavorite(sidplay2Section,
+						favoritesToAddSearchResult, file);
+				break;
+
+			case SHOW_NEXT_MATCH:
+			default:
+				searchStart = file -> {
+				};
+				searchHit = file -> {
+					stopSearch(file);
+					Platform.runLater(() -> showNextHit(file));
+				};
+				break;
+			}
+			searchStart.accept(forceRecreate);
 			setSearchValue();
-			final SearchInIndexThread t = new SearchInIndexThread(em,
-					searchScope.getSelectionModel().getSelectedItem()
-							.getForward().getAsBoolean()) {
+			final SearchInIndexThread t = new SearchInIndexThread(
+					em,
+					searchScope.getSelectionModel().getSelectedItem() == SearchScope.FORWARD) {
 				@Override
 				public List<File> getFiles(String filePath) {
 					return PathUtils.getFiles(filePath, fileBrowser.getRoot()
-							.getValue(), fileFilter);
+							.getValue(), tuneFilter);
 				}
 			};
 			t.addSearchListener(new ISearchListener() {
@@ -844,8 +746,7 @@ public class MusicCollection extends Tab implements UIPart {
 
 				@Override
 				public void searchHit(File match) {
-					searchResult.getSelectionModel().getSelectedItem()
-							.getSearchHit().accept(match);
+					searchHit.accept(match);
 				}
 
 				@Override
@@ -915,7 +816,7 @@ public class MusicCollection extends Tab implements UIPart {
 		File rootFile = rootItem.getValue();
 		String filePath = matchFile.getPath();
 		TreeItem<File> curItem = rootItem;
-		for (File file : PathUtils.getFiles(filePath, rootFile, fileFilter)) {
+		for (File file : PathUtils.getFiles(filePath, rootFile, tuneFilter)) {
 			for (TreeItem<File> childItem : curItem.getChildren()) {
 				if (file.equals(childItem.getValue())) {
 					pathSegs.add(childItem);
@@ -944,26 +845,6 @@ public class MusicCollection extends Tab implements UIPart {
 		((Configuration) util.getConfig()).getFavorites().add(newFavorites);
 	}
 
-	private void addFavorite(FavoritesSection section, File file) {
-		if (!file.isFile()) {
-			// ignore directories
-			return;
-		}
-		try {
-			SidTune tune = SidTune.load(file);
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getPlayer().getConfig().getSidplay2Section();
-			String collectionName = PathUtils.getCollectionName(
-					sidPlay2Section.getHvscFile(), file.getPath());
-			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
-					.getSidDatabaseInfo(db -> db.getFullSongLength(tune), 0),
-					collectionName, file, tune);
-			section.getFavorites().add(entry);
-		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void downloadStart(String url) {
 		System.out.println("Download URL: <" + url + ">");
 		try {
@@ -980,6 +861,58 @@ public class MusicCollection extends Tab implements UIPart {
 			}, new URL(url)).start();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void getSOASCURL(SidTune sidTune, File tuneFile) {
+		final SidTuneInfo tuneInfo = sidTune.getInfo();
+		File rootFile = new File(util.getConfig().getSidplay2Section()
+				.getHvsc());
+		String collectionName = PathUtils.getCollectionName(
+				new TFile(rootFile), tuneFile.getPath());
+		if (collectionName != null && getType() == MusicCollectionType.HVSC) {
+			hvscName = collectionName.replace(".sid", "");
+			currentSong = tuneInfo.getCurrentSong();
+			for (MenuItem item : Arrays.asList(soasc6581R2, soasc6581R4,
+					soasc8580R5)) {
+				item.setDisable(false);
+			}
+		}
+	}
+
+	private void addFavorites(SidPlay2Section sidplay2Section,
+			FavoritesSection section, List<File> files) {
+		for (File file : files) {
+			if (file.isDirectory()) {
+				addFavorites(sidplay2Section, section,
+						Arrays.asList(file.listFiles()));
+			} else if (file.isFile() && tuneFilter.accept(file)) {
+				addFavorite(sidplay2Section, section, file);
+			}
+		}
+	}
+
+	private void addFavorite(SidPlay2Section sidPlay2Section,
+			FavoritesSection section, File file) {
+		try {
+			SidTune tune = SidTune.load(file);
+			String collectionName = PathUtils.getCollectionName(
+					sidPlay2Section.getHvscFile(), file.getPath());
+			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
+					.getSidDatabaseInfo(db -> db.getFullSongLength(tune), 0),
+					collectionName, file, tune);
+			section.getFavorites().add(entry);
+		} catch (IOException | SidTuneError e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void playSelected() {
+		final TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
+				.getSelectedItem();
+		if (selectedItem != null && !selectedItem.equals(fileBrowser.getRoot())
+				&& selectedItem.getValue().isFile()) {
+			playTune(selectedItem.getValue());
 		}
 	}
 
