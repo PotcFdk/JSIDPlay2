@@ -139,8 +139,8 @@ public class JavaSound implements AudioDriver {
 	@Override
 	public synchronized void close() {
 		if (dataLine != null && dataLine.isActive()) {
-			dataLine.stop();
 			dataLine.flush();
+			dataLine.stop();
 			dataLine.close();
 		}
 	}
