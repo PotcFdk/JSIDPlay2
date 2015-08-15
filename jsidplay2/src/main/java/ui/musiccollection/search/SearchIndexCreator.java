@@ -4,6 +4,7 @@
 package ui.musiccollection.search;
 
 import java.io.File;
+import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
 
@@ -13,7 +14,7 @@ import ui.entities.collection.service.HVSCEntryService;
 import ui.entities.collection.service.STILService;
 import ui.entities.collection.service.VersionService;
 
-public final class SearchIndexCreator implements ISearchListener {
+public final class SearchIndexCreator {
 
 	private EntityManager em;
 	private HVSCEntryService hvscEntryService;
@@ -33,36 +34,6 @@ public final class SearchIndexCreator implements ISearchListener {
 		this.versionService = new VersionService(em);
 	}
 
-	@Override
-	public void searchStart() {
-		clearPreviousSearchIndex();
-
-		em.getTransaction().begin();
-	}
-
-	@Override
-	public void searchHit(final File matchFile) {
-		if (!matchFile.isFile()) {
-			return;
-		}
-		try {
-			String collectionRelName = PathUtils.getCollectionName(root,
-					matchFile.getPath());
-			if (collectionRelName != null) {
-				hvscEntryService.add(player, collectionRelName, matchFile);
-			}
-		} catch (final Exception e) {
-			System.err.println("Indexing failure on: "
-					+ matchFile.getAbsolutePath() + ": " + e.getMessage());
-		}
-	}
-
-	@Override
-	public void searchStop(final boolean canceled) {
-		versionService.setExpectedVersion();
-		em.getTransaction().commit();
-	}
-
 	/**
 	 * Clear current database.
 	 */
@@ -80,4 +51,36 @@ public final class SearchIndexCreator implements ISearchListener {
 		}
 	}
 
+	public Consumer<Void> getSearchStart() {
+		return x -> {
+			clearPreviousSearchIndex();
+
+			em.getTransaction().begin();
+		};
+	}
+
+	public Consumer<File> getSearchHit() {
+		return file -> {
+			if (!file.isFile()) {
+				return;
+			}
+			try {
+				String collectionRelName = PathUtils.getCollectionName(root,
+						file.getPath());
+				if (collectionRelName != null) {
+					hvscEntryService.add(player, collectionRelName, file);
+				}
+			} catch (final Exception e) {
+				System.err.println("Indexing failure on: "
+						+ file.getAbsolutePath() + ": " + e.getMessage());
+			}
+		};
+	}
+
+	public Consumer<Boolean> getSearchStop() {
+		return cancelled -> {
+			versionService.setExpectedVersion();
+			em.getTransaction().commit();
+		};
+	}
 }

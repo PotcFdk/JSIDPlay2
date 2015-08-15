@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.function.Consumer;
 
 import ui.filefilter.TuneFileFilter;
 
@@ -16,21 +17,18 @@ public class SearchIndexerThread extends SearchThread {
 	protected FileFilter fFileFilter = new TuneFileFilter();
 	protected Queue<File> fQueue = new LinkedList<File>();
 
-	public SearchIndexerThread(final File root) {
-		super(true);
+	public SearchIndexerThread(final File root, Consumer<Void> searchStart,
+			Consumer<File> searchHit, Consumer<Boolean> searchStop) {
+		super(true, searchStart, searchHit, searchStop);
 		fQueue.add(root);
 	}
 
 	@Override
 	public void run() {
-		for (final ISearchListener listener : fListeners) {
-			listener.searchStart();
-		}
+		searchStart.accept(null);
 		while (!fAborted && !fQueue.isEmpty()) {
 			final File tmp = fQueue.remove();
-			for (final ISearchListener listener : fListeners) {
-				listener.searchHit(tmp);
-			}
+			searchHit.accept(tmp);
 			File[] childs = tmp.listFiles(fFileFilter);
 			if (childs != null) {
 				for (final File child : childs) {
@@ -38,9 +36,7 @@ public class SearchIndexerThread extends SearchThread {
 				}
 			}
 		}
-		for (final ISearchListener listener : fListeners) {
-			listener.searchStop(fAborted);
-		}
+		searchStop.accept(fAborted);
 	}
 
 	@Override

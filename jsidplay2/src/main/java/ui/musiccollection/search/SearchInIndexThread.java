@@ -2,13 +2,13 @@ package ui.musiccollection.search;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.SingularAttribute;
 
 import ui.entities.collection.service.HVSCEntryService;
 import ui.entities.collection.service.HVSCEntryService.HVSCEntries;
-
 
 public abstract class SearchInIndexThread extends SearchThread {
 
@@ -19,16 +19,16 @@ public abstract class SearchInIndexThread extends SearchThread {
 	private HVSCEntryService hvscEntryService;
 	private HVSCEntries state;
 
-	public SearchInIndexThread(EntityManager em, boolean forward) {
-		super(forward);
+	public SearchInIndexThread(EntityManager em, boolean forward,
+			Consumer<Void> searchStart, Consumer<File> searchHit,
+			Consumer<Boolean> searchStop) {
+		super(forward, searchStart, searchHit, searchStop);
 		hvscEntryService = new HVSCEntryService(em);
 	}
 
 	@Override
 	public void run() {
-		for (ISearchListener listener : fListeners) {
-			listener.searchStart();
-		}
+		searchStart.accept(null);
 
 		if (state == null) {
 			state = hvscEntryService.search(field, fieldValue, caseSensitive,
@@ -36,19 +36,15 @@ public abstract class SearchInIndexThread extends SearchThread {
 		}
 		while (!fAborted && (fForward ? state.next() : state.prev())) {
 			String filePath = state.getPath();
-			for (ISearchListener listener : fListeners) {
-				List<File> file = getFiles(filePath);
-				if (file.size() > 0) {
-					listener.searchHit(file.get(file.size() - 1));
-				}
+			List<File> file = getFiles(filePath);
+			if (file.size() > 0) {
+				searchHit.accept(file.get(file.size() - 1));
 			}
 		}
 		if (!fAborted) {
 			state = null;
 		}
-		for (ISearchListener listener : fListeners) {
-			listener.searchStop(fAborted);
-		}
+		searchStop.accept(fAborted);
 	}
 
 	public abstract List<File> getFiles(String filePath);

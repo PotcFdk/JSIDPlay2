@@ -77,7 +77,6 @@ import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.TuneFileFilter;
-import ui.musiccollection.search.ISearchListener;
 import ui.musiccollection.search.SearchInIndexThread;
 import ui.musiccollection.search.SearchIndexCreator;
 import ui.musiccollection.search.SearchIndexerThread;
@@ -668,41 +667,29 @@ public class MusicCollection extends Tab implements UIPart {
 			forceRecreate = true;
 		}
 
-		Consumer<Boolean> searchStart;
+		Consumer<Void> searchStart;
 		Consumer<File> searchHit;
+		Consumer<Boolean> searchStop;
 		if (forceRecreate) {
-			searchStart = reCreate -> {
+			SearchIndexCreator searchIndexCreator = new SearchIndexCreator(
+					fileBrowser.getRoot().getValue(), util.getPlayer(), em);
+			searchStart = x -> {
 				disableSearch();
 				Platform.runLater(() -> util.progressProperty(fileBrowser).set(
 						ProgressBar.INDETERMINATE_PROGRESS));
+				searchIndexCreator.getSearchStart().accept(x);
 			};
-			searchHit = file -> {
+			searchHit = searchIndexCreator.getSearchHit();
+			searchStop = cancelled -> {
+				enableSearch();
+				Platform.runLater(() -> util.progressProperty(fileBrowser).set(
+						0));
+				searchIndexCreator.getSearchStop().accept(cancelled);
 			};
-			searchStart.accept(forceRecreate);
 
 			final File root = fileBrowser.getRoot().getValue();
-			searchThread = new SearchIndexerThread(root);
-			searchThread.addSearchListener(new ISearchListener() {
-				@Override
-				public void searchStart() {
-				}
-
-				@Override
-				public void searchHit(File match) {
-					searchHit.accept(match);
-				}
-
-				@Override
-				public void searchStop(boolean canceled) {
-					enableSearch();
-					Platform.runLater(() -> util.progressProperty(fileBrowser)
-							.set(0));
-				}
-
-			});
-			searchThread.addSearchListener(new SearchIndexCreator(fileBrowser
-					.getRoot().getValue(), util.getPlayer(), em));
-
+			searchThread = new SearchIndexerThread(root, searchStart,
+					searchHit, searchStop);
 			searchThread.start();
 		} else {
 			SidPlay2Section sidplay2Section = (SidPlay2Section) util
@@ -712,49 +699,42 @@ public class MusicCollection extends Tab implements UIPart {
 					.getSelectedItem();
 			switch (result) {
 			case ADD_TO_A_NEW_PLAYLIST:
-				searchStart = file -> createNewFavoritesTab();
+				searchStart = file -> {
+					disableSearch();
+					createNewFavoritesTab();
+				};
 				searchHit = file -> addFavorite(sidplay2Section,
 						favoritesToAddSearchResult, file);
+				searchStop = cancelled -> {
+					enableSearch();
+				};
 				break;
 
 			case SHOW_NEXT_MATCH:
 			default:
-				searchStart = file -> {
+				searchStart = x -> {
+					disableSearch();
 				};
 				searchHit = file -> {
 					stopSearch(file);
 					Platform.runLater(() -> showNextHit(file));
 				};
+				searchStop = cancelled -> {
+					enableSearch();
+				};
 				break;
 			}
-			searchStart.accept(forceRecreate);
 			setSearchValue();
 			final SearchInIndexThread t = new SearchInIndexThread(
 					em,
-					searchScope.getSelectionModel().getSelectedItem() == SearchScope.FORWARD) {
+					searchScope.getSelectionModel().getSelectedItem() == SearchScope.FORWARD,
+					searchStart, searchHit, searchStop) {
 				@Override
 				public List<File> getFiles(String filePath) {
 					return PathUtils.getFiles(filePath, fileBrowser.getRoot()
 							.getValue(), tuneFilter);
 				}
 			};
-			t.addSearchListener(new ISearchListener() {
-				@Override
-				public void searchStart() {
-					disableSearch();
-				}
-
-				@Override
-				public void searchHit(File match) {
-					searchHit.accept(match);
-				}
-
-				@Override
-				public void searchStop(boolean canceled) {
-					enableSearch();
-				}
-
-			});
 			t.setField(getSelectedField());
 			t.setFieldValue(searchForValue);
 			t.setCaseSensitive(false);

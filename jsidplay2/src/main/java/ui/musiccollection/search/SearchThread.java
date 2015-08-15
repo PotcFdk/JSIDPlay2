@@ -1,6 +1,7 @@
 package ui.musiccollection.search;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.util.function.Consumer;
 
 /**
  * Common Search thread
@@ -20,10 +21,9 @@ public abstract class SearchThread extends Thread {
 	 */
 	protected boolean fAborted;
 
-	/**
-	 * List of added search listeners
-	 */
-	protected ArrayList<ISearchListener> fListeners = new ArrayList<ISearchListener>();
+	protected Consumer<Void> searchStart;
+	protected Consumer<File> searchHit;
+	protected Consumer<Boolean> searchStop;
 
 	/**
 	 * Create a new search thread
@@ -31,19 +31,13 @@ public abstract class SearchThread extends Thread {
 	 * @param forward
 	 *            search direction (forward/backward)
 	 */
-	public SearchThread(boolean forward) {
+	public SearchThread(boolean forward, Consumer<Void> searchStart,
+			Consumer<File> searchHit, Consumer<Boolean> searchStop) {
 		fForward = forward;
+		this.searchStart = searchStart;
+		this.searchHit = searchHit;
+		this.searchStop = searchStop;
 		setPriority(MIN_PRIORITY);
-	}
-
-	/**
-	 * Add a new search listener to be notified of the current search state
-	 * 
-	 * @param listener
-	 *            the listener to add
-	 */
-	public void addSearchListener(ISearchListener listener) {
-		fListeners.add(listener);
 	}
 
 	/**
@@ -58,12 +52,13 @@ public abstract class SearchThread extends Thread {
 
 	/**
 	 * Get search direction
+	 * 
 	 * @return true - forward, false backward
 	 */
 	public boolean getDirection() {
 		return fForward;
 	}
-	
+
 	/**
 	 * Get current search state
 	 * 
