@@ -73,7 +73,6 @@ import ui.entities.PersistenceProperties;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.service.VersionService;
-import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.TuneFileFilter;
@@ -143,21 +142,21 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private Menu addToFavoritesMenu;
 
+	private final FileFilter tuneFilter = new TuneFileFilter();
+
 	private UIUtil util;
 
 	private ObjectProperty<MusicCollectionType> type;
 
 	private ObservableList<TuneInfo> tuneInfos;
 	private ObservableList<Enum<?>> comboItems;
-	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems = FXCollections
-			.<TreeItem<File>> observableArrayList();
+	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems;
 
 	private String collectionURL;
 
 	private EntityManager em;
 	private VersionService versionService;
 
-	private final FileFilter tuneFilter = new TuneFileFilter();
 	private SearchThread searchThread;
 	private Object savedState, searchForValue, recentlySearchedForValue;
 	private SearchCriteria<?, ?> recentlySearchedCriteria;
@@ -212,8 +211,7 @@ public class MusicCollection extends Tab implements UIPart {
 
 		SidPlay2Section sidplay2Section = (SidPlay2Section) util.getPlayer()
 				.getConfig().getSidplay2Section();
-		List<FavoritesSection> favorites = ((Configuration) util.getConfig())
-				.getFavorites();
+		List<FavoritesSection> favorites = util.getConfig().getFavorites();
 		addToFavoritesMenu.getItems().clear();
 		for (final FavoritesSection section : favorites) {
 			MenuItem item = new MenuItem(section.getName());
@@ -282,6 +280,9 @@ public class MusicCollection extends Tab implements UIPart {
 		comboItems = FXCollections.<Enum<?>> observableArrayList();
 		combo.setItems(comboItems);
 
+		currentlyPlayedTreeItems = FXCollections
+				.<TreeItem<File>> observableArrayList();
+
 		contextMenu.setOnShown(contextMenuEvent);
 
 		fileBrowser.setCellFactory(treeView -> new FileTreeCell());
@@ -293,7 +294,7 @@ public class MusicCollection extends Tab implements UIPart {
 			}
 
 		});
-		fileBrowser.setOnMousePressed((event) -> {
+		fileBrowser.setOnMousePressed(event -> {
 			if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
 				playSelected();
 			}
@@ -505,7 +506,9 @@ public class MusicCollection extends Tab implements UIPart {
 				longTextField, shortTextField, combo)) {
 			node.setVisible(false);
 		}
-		Class<?> type = getSelectedField().getJavaType();
+		SearchCriteria<?, ?> selectedItem = searchCriteria.getSelectionModel()
+				.getSelectedItem();
+		Class<?> type = selectedItem.getAttribute().getJavaType();
 		if (type == Long.class) {
 			longTextField.setVisible(true);
 		} else if (type == Integer.class || type == Date.class) {
@@ -527,7 +530,9 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void setSearchValue() {
-		Class<?> type = getSelectedField().getJavaType();
+		SearchCriteria<?, ?> selectedItem = searchCriteria.getSelectionModel()
+				.getSelectedItem();
+		Class<?> type = selectedItem.getAttribute().getJavaType();
 		if (type == Integer.class) {
 			searchForValue = integerTextField.getValue();
 		} else if (type == Long.class) {
@@ -543,11 +548,6 @@ public class MusicCollection extends Tab implements UIPart {
 			cal.set((Integer) integerTextField.getValue(), 1, 1);
 			searchForValue = cal.getTime();
 		}
-	}
-
-	private SingularAttribute<?, ?> getSelectedField() {
-		return ((SearchCriteria<?, ?>) searchCriteria.getSelectionModel()
-				.getSelectedItem()).getAttribute();
 	}
 
 	private void setRoot(final File rootFile) {
@@ -674,54 +674,56 @@ public class MusicCollection extends Tab implements UIPart {
 			SearchIndexCreator searchIndexCreator = new SearchIndexCreator(
 					fileBrowser.getRoot().getValue(), util.getPlayer(), em);
 			searchStart = x -> {
-				disableSearch();
-				Platform.runLater(() -> util.progressProperty(fileBrowser).set(
-						ProgressBar.INDETERMINATE_PROGRESS));
+				Platform.runLater(() -> {
+					disableSearch();
+					util.progressProperty(fileBrowser).set(
+							ProgressBar.INDETERMINATE_PROGRESS);
+				});
 				searchIndexCreator.getSearchStart().accept(x);
 			};
 			searchHit = searchIndexCreator.getSearchHit();
 			searchStop = cancelled -> {
-				enableSearch();
-				Platform.runLater(() -> util.progressProperty(fileBrowser).set(
-						0));
+				Platform.runLater(() -> {
+					enableSearch();
+					util.progressProperty(fileBrowser).set(0);
+				});
 				searchIndexCreator.getSearchStop().accept(cancelled);
 			};
 
-			final File root = fileBrowser.getRoot().getValue();
-			searchThread = new SearchIndexerThread(root, searchStart,
-					searchHit, searchStop);
+			searchThread = new SearchIndexerThread(fileBrowser.getRoot()
+					.getValue(), searchStart, searchHit, searchStop);
 			searchThread.start();
 		} else {
 			SidPlay2Section sidplay2Section = (SidPlay2Section) util
 					.getPlayer().getConfig().getSidplay2Section();
 
-			SearchResult result = searchResult.getSelectionModel()
-					.getSelectedItem();
-			switch (result) {
+			switch (searchResult.getSelectionModel().getSelectedItem()) {
 			case ADD_TO_A_NEW_PLAYLIST:
 				searchStart = file -> {
-					disableSearch();
+					Platform.runLater(() -> disableSearch());
 					createNewFavoritesTab();
 				};
 				searchHit = file -> addFavorite(sidplay2Section,
 						favoritesToAddSearchResult, file);
-				searchStop = cancelled -> {
-					enableSearch();
-				};
+				searchStop = cancelled -> Platform
+						.runLater(() -> enableSearch());
 				break;
 
 			case SHOW_NEXT_MATCH:
 			default:
-				searchStart = x -> {
-					disableSearch();
-				};
+				searchStart = x -> Platform.runLater(() -> disableSearch());
 				searchHit = file -> {
-					stopSearch(file);
-					Platform.runLater(() -> showNextHit(file));
+					// ignore directories
+					if (file.isFile()) {
+						searchThread.setAborted(true);
+						Platform.runLater(() -> {
+							enableSearch();
+							showNextHit(file);
+						});
+					}
 				};
-				searchStop = cancelled -> {
-					enableSearch();
-				};
+				searchStop = cancelled -> Platform
+						.runLater(() -> enableSearch());
 				break;
 			}
 			setSearchValue();
@@ -735,7 +737,8 @@ public class MusicCollection extends Tab implements UIPart {
 							.getValue(), tuneFilter);
 				}
 			};
-			t.setField(getSelectedField());
+			t.setField(searchCriteria.getSelectionModel().getSelectedItem()
+					.getAttribute());
 			t.setFieldValue(searchForValue);
 			t.setCaseSensitive(false);
 			if (searchOptionsChanged) {
@@ -749,34 +752,20 @@ public class MusicCollection extends Tab implements UIPart {
 
 	}
 
-	private void stopSearch(File current) {
-		if (!current.isFile()) {
-			// ignore directories
-			return;
-		}
-		searchThread.setAborted(true);
-		enableSearch();
-
-	}
-
 	private void disableSearch() {
-		Platform.runLater(() -> {
-			startSearch.setDisable(true);
-			stopSearch.setDisable(false);
-			resetSearch.setDisable(true);
-			createSearchIndex.setDisable(true);
-		});
+		startSearch.setDisable(true);
+		stopSearch.setDisable(false);
+		resetSearch.setDisable(true);
+		createSearchIndex.setDisable(true);
 	}
 
 	private void enableSearch() {
 		// remember search state
 		savedState = searchThread.getSearchState();
-		Platform.runLater(() -> {
-			startSearch.setDisable(false);
-			stopSearch.setDisable(true);
-			resetSearch.setDisable(false);
-			createSearchIndex.setDisable(false);
-		});
+		startSearch.setDisable(false);
+		stopSearch.setDisable(true);
+		resetSearch.setDisable(false);
+		createSearchIndex.setDisable(false);
 	}
 
 	private void showNextHit(final File matchFile) {
@@ -822,7 +811,7 @@ public class MusicCollection extends Tab implements UIPart {
 		FavoritesSection newFavorites = new FavoritesSection();
 		newFavorites.setName(util.getBundle().getString("NEW_TAB"));
 		favoritesToAddSearchResult = newFavorites;
-		((Configuration) util.getConfig()).getFavorites().add(newFavorites);
+		util.getConfig().getFavorites().add(newFavorites);
 	}
 
 	private void downloadStart(String url) {

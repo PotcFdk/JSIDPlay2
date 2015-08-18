@@ -38,6 +38,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.util.Duration;
 import libsidplay.C64;
+import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.components.c1530.Datasette.DatasetteStatus;
@@ -63,8 +64,8 @@ import ui.virtualKeyboard.Keyboard;
 
 public class Video extends Tab implements UIPart, Consumer<int[]> {
 	public static final String ID = "VIDEO";
-	private static double MARGIN_LEFT;
-	private static double MARGIN_RIGHT;
+	private static final double MARGIN_LEFT = 35;
+	private static final double MARGIN_RIGHT = 35;
 	private static double MARGIN_TOP;
 	private static double MARGIN_BOTTOM;
 
@@ -367,16 +368,13 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Connect VIC output with screen.
 	 */
 	private void setupVideoScreen() {
-		MARGIN_LEFT = 35;
-		MARGIN_RIGHT = 35;
-		if (util.getPlayer().getC64().getClock().getRefresh() == 50) {
-			// PAL (more rows, less frames per second)
+		if (util.getPlayer().getC64().getClock() == CPUClock.PAL) {
 			MARGIN_TOP = 28;
 			MARGIN_BOTTOM = 40;
 		} else {
-			// NTSC (less rows, more frames per second)
-			MARGIN_TOP = 28. + 10.;
-			MARGIN_BOTTOM = 40. + 12.;
+			// NTSC
+			MARGIN_TOP = 38;
+			MARGIN_BOTTOM = 52;
 		}
 
 		double scale = ((SidPlay2Section) util.getConfig().getSidplay2Section())
