@@ -9,6 +9,7 @@ import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
 import ui.entities.collection.HVSCEntry;
+import ui.entities.collection.StilEntry;
 
 public class STILService {
 
@@ -18,7 +19,8 @@ public class STILService {
 		this.em = em;
 	};
 
-	public void add(Function<String, STILEntry> stilFnct, final HVSCEntry hvscEntry) {
+	public void add(Function<String, STILEntry> stilFnct,
+			final HVSCEntry hvscEntry) {
 		STILEntry stilEntry = stilFnct.apply(hvscEntry.getPath());
 		if (stilEntry != null) {
 			// get STIL Global Comment
@@ -34,12 +36,7 @@ public class STILService {
 
 	private void addSTILInfo(HVSCEntry hvscEntry, ArrayList<Info> infos) {
 		for (Info info : infos) {
-			ui.entities.collection.StilEntry stil = new ui.entities.collection.StilEntry();
-			stil.setStilName(info.name);
-			stil.setStilAuthor(info.author);
-			stil.setStilTitle(info.title);
-			stil.setStilArtist(info.artist);
-			stil.setStilComment(info.comment);
+			StilEntry stil = new StilEntry(info);
 			stil.setHvscEntry(hvscEntry);
 			try {
 				em.persist(stil);

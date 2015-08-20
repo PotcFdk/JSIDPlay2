@@ -3,7 +3,6 @@ package ui.musiccollection;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -71,7 +70,6 @@ import ui.download.ProgressListener;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.collection.HVSCEntry;
-import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.service.VersionService;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
@@ -185,17 +183,16 @@ public class MusicCollection extends Tab implements UIPart {
 
 	private ChangeListener<? super TreeItem<File>> tuneInfoListener = (
 			observable, oldValue, newValue) -> {
-		for (MenuItem item : Arrays.asList(soasc6581R2, soasc6581R4,
-				soasc8580R5)) {
-			item.setDisable(true);
-		}
 		if (newValue != null && newValue.getValue().isFile()) {
 			File tuneFile = newValue.getValue();
 			try {
 				SidTune sidTune = SidTune.load(tuneFile);
-				showPhoto(sidTune);
-				showTuneInfos(tuneFile, sidTune);
-				getSOASCURL(sidTune, tuneFile);
+				if (getType() == MusicCollectionType.HVSC) {
+					enableSOASC(sidTune.getInfo(), tuneFile);
+					showPhoto(sidTune.getInfo());
+				}
+				showTuneInfos(tuneFile, sidTune,
+						(MusicCollectionTreeItem) newValue);
 			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();
 			}
@@ -607,49 +604,6 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 	}
 
-	private void showPhoto(SidTune sidTune) {
-		Collection<String> infoString = sidTune.getInfo().getInfoString();
-		if (infoString.size() > 1) {
-			Iterator<String> it = infoString.iterator();
-			/* String name = */it.next();
-			String author = it.next();
-			photograph.setImage(SidAuthors.getImage(author));
-		}
-	}
-
-	private void showTuneInfos(File tuneFile, SidTune tune) {
-		tuneInfos.clear();
-		String collectionName = PathUtils.getCollectionName(fileBrowser
-				.getRoot().getValue(), tuneFile.getPath());
-		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
-				.getSidDatabaseInfo(db -> db.getFullSongLength(tune), 0),
-				collectionName, tuneFile, tune);
-
-		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
-			if (field.getName().equals(HVSCEntry_.id.getName())) {
-				continue;
-			}
-			if (!(SingularAttribute.class.isAssignableFrom(field.getType()))) {
-				continue;
-			}
-			TuneInfo tuneInfo = new TuneInfo();
-			String name = util.getBundle().getString(
-					HVSCEntry.class.getSimpleName() + "." + field.getName());
-			tuneInfo.setName(name);
-			try {
-				SingularAttribute<?, ?> singleAttribute = (SingularAttribute<?, ?>) field
-						.get(entry);
-				Object value = ((Method) singleAttribute.getJavaMember())
-						.invoke(entry);
-				tuneInfo.setValue(String.valueOf(value != null ? value : ""));
-			} catch (IllegalArgumentException | IllegalAccessException
-					| InvocationTargetException e) {
-			}
-			tuneInfos.add(tuneInfo);
-		}
-
-	}
-
 	private void startSearch(boolean forceRecreate) {
 		if (searchThread != null && searchThread.isAlive()) {
 			return;
@@ -833,18 +787,52 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 	}
 
-	private void getSOASCURL(SidTune sidTune, File tuneFile) {
-		final SidTuneInfo tuneInfo = sidTune.getInfo();
-		File rootFile = new File(util.getConfig().getSidplay2Section()
-				.getHvsc());
-		String collectionName = PathUtils.getCollectionName(
-				new TFile(rootFile), tuneFile.getPath());
-		if (collectionName != null && getType() == MusicCollectionType.HVSC) {
-			hvscName = collectionName.replace(".sid", "");
+	private void enableSOASC(SidTuneInfo tuneInfo, File tuneFile) {
+		soasc6581R2.setDisable(true);
+		soasc6581R4.setDisable(true);
+		soasc8580R5.setDisable(true);
+		File hvscFile = util.getConfig().getSidplay2Section().getHvscFile();
+		hvscName = PathUtils.getCollectionName(hvscFile, tuneFile.getPath());
+		if (hvscName != null) {
+			hvscName = hvscName.replace(".sid", "");
 			currentSong = tuneInfo.getCurrentSong();
-			for (MenuItem item : Arrays.asList(soasc6581R2, soasc6581R4,
-					soasc8580R5)) {
-				item.setDisable(false);
+			soasc6581R2.setDisable(false);
+			soasc6581R4.setDisable(false);
+			soasc8580R5.setDisable(false);
+		}
+	}
+
+	private void showPhoto(SidTuneInfo info) {
+		Collection<String> infoString = info.getInfoString();
+		if (infoString.size() > 1) {
+			Iterator<String> it = infoString.iterator();
+			/* String name = */it.next();
+			String author = it.next();
+			photograph.setImage(SidAuthors.getImage(author));
+		}
+	}
+
+	private void showTuneInfos(File tuneFile, SidTune tune,
+			MusicCollectionTreeItem treeItem) {
+		String collectionName = PathUtils.getCollectionName(fileBrowser
+				.getRoot().getValue(), tuneFile.getPath());
+		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
+				.getSidDatabaseInfo(db -> db.getFullSongLength(tune), 0),
+				collectionName, tuneFile, tune);
+		tuneInfos.clear();
+		for (SearchCriteria<?, ?> field : searchCriteria.getItems()) {
+			SingularAttribute<?, ?> singleAttribute = field.getAttribute();
+			String name = searchCriteria.getConverter().toString(field);
+			Object value = "";
+			try {
+				value = ((Method) singleAttribute.getJavaMember())
+						.invoke(entry);
+				TuneInfo tuneInfo = new TuneInfo();
+				tuneInfo.setName(name);
+				tuneInfo.setValue(String.valueOf(value != null ? value : ""));
+				tuneInfos.add(tuneInfo);
+			} catch (IllegalArgumentException | IllegalAccessException
+					| InvocationTargetException e) {
 			}
 		}
 	}

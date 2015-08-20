@@ -62,19 +62,19 @@
 			<contextMenu>
 				<ContextMenu fx:id="contextMenu">
 					<items>
-						<MenuItem fx:id="showStil" text="%SHOW_STIL" disable="false"
+						<MenuItem fx:id="showStil" text="%SHOW_STIL" disable="true"
 							onAction="#showSTIL" />
 						<Menu text="%CONVERT_TO">
 							<MenuItem fx:id="convertToPSID64" text="%PSID64"
-								onAction="#convertToPSID64" />
+								onAction="#convertToPSID64" disable="true" />
 						</Menu>
 						<Menu fx:id="addToFavoritesMenu" text="%ADD_TO_FAVORITES" />
 						<MenuItem fx:id="soasc6581R2" text="%DOWNLOAD_R2"
-							onAction="#startDownload6581R2" />
+							onAction="#startDownload6581R2" disable="true" />
 						<MenuItem fx:id="soasc6581R4" text="%DOWNLOAD_R4"
-							onAction="#startDownload6581R4" />
+							onAction="#startDownload6581R4" disable="true" />
 						<MenuItem fx:id="soasc8580R5" text="%DOWNLOAD_R5"
-							onAction="#startDownload8580R5" />
+							onAction="#startDownload8580R5" disable="true" />
 					</items>
 				</ContextMenu>
 			</contextMenu>

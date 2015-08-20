@@ -9,9 +9,23 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import libsidutils.STIL.Info;
+
 @Entity
 @Access(AccessType.PROPERTY)
 public class StilEntry {
+
+	public StilEntry() {
+	}
+
+	public StilEntry(Info info) {
+		stilName = info.name;
+		stilAuthor = info.author;
+		stilTitle = info.title;
+		stilArtist = info.artist;
+		stilComment = info.comment;
+	}
+
 	private int id;
 
 	@Id

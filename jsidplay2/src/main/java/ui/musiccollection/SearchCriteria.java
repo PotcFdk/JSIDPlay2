@@ -36,9 +36,10 @@ class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
 						HVSCEntry_.initAddress, HVSCEntry_.playerAddress,
 						HVSCEntry_.fileDate, HVSCEntry_.fileSizeKb,
 						HVSCEntry_.tuneSizeB, HVSCEntry_.relocStartPage,
-						HVSCEntry_.relocNoPages, StilEntry_.stilName,
-						StilEntry_.stilAuthor, StilEntry_.stilTitle,
-						StilEntry_.stilArtist, StilEntry_.stilComment)) {
+						HVSCEntry_.relocNoPages, HVSCEntry_.stilGlbComment,
+						StilEntry_.stilName, StilEntry_.stilAuthor,
+						StilEntry_.stilTitle, StilEntry_.stilArtist,
+						StilEntry_.stilComment)) {
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			SearchCriteria<?, ?> criteria = new SearchCriteria(
 					singularAttribute);
