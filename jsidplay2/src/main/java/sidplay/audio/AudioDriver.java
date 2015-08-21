@@ -47,7 +47,8 @@ public interface AudioDriver {
 	 * 
 	 * Audio will be resumed automatically on next write().
 	 */
-	void pause();
+	default void pause() {
+	};
 
 	/**
 	 * Free the audio device. (Counterpart of open().)

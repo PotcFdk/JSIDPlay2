@@ -76,7 +76,9 @@ public class JavaSound implements AudioDriver {
 	public synchronized void setAudioDevice(final Mixer.Info info)
 			throws IOException {
 		// first close previous dataLine when it is already present
-		close();
+		if (dataLine != null) {
+			close();
+		}
 
 		int retries = 3;
 		do {
@@ -138,9 +140,11 @@ public class JavaSound implements AudioDriver {
 
 	@Override
 	public synchronized void close() {
-		if (dataLine != null && dataLine.isActive()) {
-			dataLine.flush();
+		if (dataLine.isActive()) {
 			dataLine.stop();
+			dataLine.flush();
+		}
+		if (dataLine.isOpen()) {
 			dataLine.close();
 		}
 	}

@@ -129,10 +129,6 @@ public abstract class MP3Driver implements AudioDriver {
 	}
 
 	@Override
-	public void pause() {
-	}
-
-	@Override
 	public void close() {
 		if (jump3r != null) {
 			jump3r.close();

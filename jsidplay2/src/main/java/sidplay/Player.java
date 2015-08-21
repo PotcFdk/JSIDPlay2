@@ -403,9 +403,11 @@ public class Player extends HardwareEnsemble {
 	 * Start player thread.
 	 */
 	public final void startC64() {
-		playerThread = new Thread(playerRunnable);
-		playerThread.setPriority(Thread.MAX_PRIORITY);
-		playerThread.start();
+		if (playerThread == null || !playerThread.isAlive()) {
+			playerThread = new Thread(playerRunnable);
+			playerThread.setPriority(Thread.MAX_PRIORITY);
+			playerThread.start();
+		}
 	}
 
 	/**

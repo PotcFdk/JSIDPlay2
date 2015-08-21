@@ -94,10 +94,6 @@ public class WavFile implements AudioDriver {
 	}
 
 	@Override
-	public void pause() {
-	}
-
-	@Override
 	public void close() {
 		try {
 			wavHdr.length = samplesWritten + HEADER_LENGTH - HEADER_OFFSET;
