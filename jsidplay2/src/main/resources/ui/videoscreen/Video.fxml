@@ -252,7 +252,10 @@
 					</VBox>
 					<VBox alignment="BASELINE_CENTER" spacing="10">
 						<Button text="%APPLY" onAction="#apply" />
-						<CheckBox text="%APPLY_IMMEDIATELY" fx:id="applyImmediately" selected="true"/>
+						<CheckBox text="%APPLY_IMMEDIATELY" fx:id="applyImmediately"
+							selected="true" />
+						<CheckBox text="%SHOW_MONITOR_BORDER" fx:id="showMonitorBorder"
+							onAction="#showMonitorBorder" selected="true" />
 						<Button text="%DEFAULT" onAction="#defaultPalette" />
 					</VBox>
 				</HBox>

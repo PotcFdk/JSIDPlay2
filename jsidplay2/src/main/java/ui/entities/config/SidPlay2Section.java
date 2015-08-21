@@ -27,6 +27,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final int DEFAULT_FRAME_HEIGHT = 830;
 	public static final boolean DEFAULT_FULL_SCREEN = false;
 	public static final float DEFAULT_VIDEO_SCALING = 2.f;
+	public static final boolean DEFAULT_SHOW_MONITOR = true;
 
 	private int version;
 
@@ -365,6 +366,21 @@ public class SidPlay2Section implements ISidPlay2Section {
 	
 	public ObjectProperty<Float> videoScalingProperty() {
 		return videoScalingProperty;
+	}
+
+	private ObjectProperty<Boolean> showMonitorProperty = new SimpleObjectProperty<Boolean>(
+			DEFAULT_SHOW_MONITOR);
+
+	public boolean isShowMonitor() {
+		return showMonitorProperty.get();
+	}
+
+	public void setShowMonitor(boolean showMonitor) {
+		showMonitorProperty.set(showMonitor);
+	}
+	
+	public ObjectProperty<Boolean> showMonitorProperty() {
+		return showMonitorProperty;
 	}
 
 	private ObjectProperty<Float> brightnessProperty = new SimpleObjectProperty<Float>(

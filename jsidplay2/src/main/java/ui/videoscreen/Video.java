@@ -79,7 +79,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Slider scaling, brightness, contrast, gamma, saturation,
 			phaseShift, offset, tint, blur, bleed;
 	@FXML
-	private CheckBox applyImmediately;
+	private CheckBox applyImmediately, showMonitorBorder;
 	@FXML
 	private Label scalingValue, brightnessValue, contrastValue, gammaValue,
 			saturationValue, phaseShiftValue, offsetValue, tintValue,
@@ -260,6 +260,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				sidplay2Section.blurProperty(), floatToString);
 		bleedValue.textProperty().bindBidirectional(
 				sidplay2Section.bleedProperty(), floatToString);
+		showMonitorBorder.selectedProperty().bindBidirectional(
+				sidplay2Section.showMonitorProperty());
 
 		setupVideoScreen();
 		setVisibilityBasedOnChipType(util.getPlayer().getTune());
@@ -365,10 +367,16 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	}
 
 	@FXML
+	private void showMonitorBorder() {
+		util.getConfig().getSidplay2Section()
+				.setShowMonitor(showMonitorBorder.isSelected());
+		setVisibilityBasedOnChipType(util.getPlayer().getTune());
+	}
+
+	@FXML
 	private void defaultPalette() {
-		boolean selected = applyImmediately.isSelected();
 		applyImmediately.setSelected(false);
-		
+
 		scaling.setValue(DEFAULT_VIDEO_SCALING);
 		brightness.setValue(DEFAULT_BRIGHTNESS);
 		contrast.setValue(DEFAULT_CONTRAST);
@@ -381,7 +389,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		bleed.setValue(DEFAULT_BLEED);
 		apply();
 
-		applyImmediately.setSelected(selected);
+		util.getConfig().getSidplay2Section().setShowMonitor(true);
+		showMonitorBorder();
+
+		applyImmediately.setSelected(true);
 	}
 
 	/**
@@ -567,7 +578,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			breadbox.setVisible(false);
 			pc64.setVisible(false);
 			screen.setVisible(true);
-			monitorBorder.setVisible(true);
+			monitorBorder.setVisible(showMonitorBorder.isSelected());
 			getC64().getVIC().setPixelConsumer(this);
 		}
 	}
