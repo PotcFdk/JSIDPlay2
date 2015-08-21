@@ -10,6 +10,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
 import libsidplay.components.cart.CartridgeType;
+import libsidplay.components.cart.supported.REU;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.Player;
@@ -107,6 +108,9 @@ public class Convenience {
 		}
 		if (toAttach != null) {
 			if (tuneFileFilter.accept(toAttach)) {
+				if (!(player.getC64().getCartridge() instanceof REU)) {
+					player.getC64().ejectCartridge();
+				}
 				player.play(SidTune.load(toAttach));
 				autoStartedFile.accept(toAttach);
 				return true;
@@ -174,8 +178,19 @@ public class Convenience {
 			memberFile.deleteOnExit();
 			if (memberFile.isFile() && isSupportedMedia(memberFile)
 					&& mediaTester.test(memberFile, toAttach)) {
-				toAttach = memberFile;
-			} else if (memberFile.isDirectory() && !memberFile.getName().equals(MACOSX)) {
+
+				if (memberFile.getName().toLowerCase(Locale.ENGLISH)
+						.endsWith(".reu")) {
+					try {
+						player.insertCartridge(CartridgeType.REU, memberFile);
+					} catch (IOException | SidTuneError e) {
+						e.printStackTrace();
+					}
+				} else {
+					toAttach = memberFile;
+				}
+			} else if (memberFile.isDirectory()
+					&& !memberFile.getName().equals(MACOSX)) {
 				File toAttachChild = getToAttach(memberFile.getPath(),
 						new TFile(memberFile), mediaTester, toAttach);
 				if (toAttachChild != null) {

@@ -6,7 +6,7 @@ import java.util.Locale;
 
 public class CartFileFilter implements FileFilter {
 
-	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".crt" };
+	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".reu", ".crt" };
 
 	@Override
 	public boolean accept(File file) {
