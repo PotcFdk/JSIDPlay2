@@ -352,14 +352,19 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.fullScreen = fullScreen;
 	}
 
-	private double videoScaling = DEFAULT_VIDEO_SCALING;
+	private ObjectProperty<Float> videoScalingProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_VIDEO_SCALING);
 
-	public double getVideoScaling() {
-		return videoScaling;
+	public float getVideoScaling() {
+		return videoScalingProperty.get();
 	}
 
-	public void setVideoScaling(double videoScaling) {
-		this.videoScaling = videoScaling;
+	public void setVideoScaling(float videoScaling) {
+		videoScalingProperty.set(videoScaling);
+	}
+	
+	public ObjectProperty<Float> videoScalingProperty() {
+		return videoScalingProperty;
 	}
 
 	private ObjectProperty<Float> brightnessProperty = new SimpleObjectProperty<Float>(

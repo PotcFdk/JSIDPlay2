@@ -141,6 +141,17 @@
 			<TitledPane text="%MONITOR_SETTINGS" expanded="false">
 				<HBox>
 					<VBox alignment="TOP_CENTER">
+						<Label fx:id="scalingValue" text="1.00" />
+						<Slider fx:id="scaling" min="0" max="3" value="2.00"
+							minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
+							majorTickUnit="0.1" showTickMarks="true">
+							<styleClass>
+								<String fx:value="knobStyle" />
+							</styleClass>
+						</Slider>
+						<Label text="%SCALING" />
+					</VBox>
+					<VBox alignment="TOP_CENTER">
 						<Label fx:id="brightnessValue" text="0.00" />
 						<Slider fx:id="brightness" min="-1" max="1" value="0.00"
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
@@ -240,8 +251,8 @@
 						<Label text="%BLEED" />
 					</VBox>
 					<VBox alignment="BASELINE_CENTER" spacing="10">
-						<Button text="%APPLY" onAction="#updatePalette" />
-						<CheckBox text="%APPLY_IMMEDIATELY" fx:id="applyImmediately" />
+						<Button text="%APPLY" onAction="#apply" />
+						<CheckBox text="%APPLY_IMMEDIATELY" fx:id="applyImmediately" selected="true"/>
 						<Button text="%DEFAULT" onAction="#defaultPalette" />
 					</VBox>
 				</HBox>

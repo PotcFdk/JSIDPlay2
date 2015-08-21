@@ -9,6 +9,7 @@ import static libsidplay.config.ISidPlay2Section.DEFAULT_OFFSET;
 import static libsidplay.config.ISidPlay2Section.DEFAULT_PHASE_SHIFT;
 import static libsidplay.config.ISidPlay2Section.DEFAULT_SATURATION;
 import static libsidplay.config.ISidPlay2Section.DEFAULT_TINT;
+import static ui.entities.config.SidPlay2Section.DEFAULT_VIDEO_SCALING;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,6 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.util.Duration;
 import libsidplay.C64;
-import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.components.c1530.Datasette.DatasetteStatus;
@@ -64,10 +64,10 @@ import ui.virtualKeyboard.Keyboard;
 
 public class Video extends Tab implements UIPart, Consumer<int[]> {
 	public static final String ID = "VIDEO";
-	private static final double MARGIN_LEFT = 35;
-	private static final double MARGIN_RIGHT = 35;
-	private static double MARGIN_TOP;
-	private static double MARGIN_BOTTOM;
+	private static final double MARGIN_LEFT = 55;
+	private static final double MARGIN_RIGHT = 55;
+	private static final double MARGIN_TOP = 38;
+	private static final double MARGIN_BOTTOM = 48;
 
 	@FXML
 	private TitledPane monitor;
@@ -76,13 +76,14 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private ImageView monitorBorder, breadbox, pc64;
 	@FXML
-	private Slider brightness, contrast, gamma, saturation, phaseShift, offset,
-			tint, blur, bleed;
+	private Slider scaling, brightness, contrast, gamma, saturation,
+			phaseShift, offset, tint, blur, bleed;
 	@FXML
 	private CheckBox applyImmediately;
 	@FXML
-	private Label brightnessValue, contrastValue, gammaValue, saturationValue,
-			phaseShiftValue, offsetValue, tintValue, blurValue, bleedValue;
+	private Label scalingValue, brightnessValue, contrastValue, gammaValue,
+			saturationValue, phaseShiftValue, offsetValue, tintValue,
+			blurValue, bleedValue;
 	@FXML
 	private ImageView datasetteOff, datasetteLoad, datasetteSave, c1541Off,
 			c1541On, c1541Load, c1541IIOff, c1541IIOn, c1541IILoad;
@@ -119,6 +120,16 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 		util.getPlayer().stateProperty().addListener(stateListener);
 		NumberToString<Double> doubleToString = new NumberToString<Double>(2);
+
+		scaling.setLabelFormatter(doubleToString);
+		scaling.setValue(sidplay2Section.getVideoScaling());
+		scaling.valueProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					sidplay2Section.setVideoScaling(newValue.floatValue());
+					if (applyImmediately.isSelected()) {
+						updateScaling();
+					}
+				});
 		brightness.setLabelFormatter(doubleToString);
 		brightness.setValue(sidplay2Section.getBrightness());
 		brightness.valueProperty().addListener(
@@ -128,7 +139,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setBrightness(
 									newValue.floatValue()));
 					if (applyImmediately.isSelected()) {
-						updatePalette();
+						apply();
 					}
 				});
 		contrast.setLabelFormatter(doubleToString);
@@ -140,7 +151,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setContrast(
 									newValue.floatValue()));
 					if (applyImmediately.isSelected()) {
-						updatePalette();
+						apply();
 					}
 				});
 		gamma.setLabelFormatter(doubleToString);
@@ -152,7 +163,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setGamma(
 									newValue.floatValue()));
 					if (applyImmediately.isSelected()) {
-						updatePalette();
+						apply();
 					}
 				});
 		saturation.setLabelFormatter(doubleToString);
@@ -164,7 +175,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setSaturation(
 									newValue.floatValue()));
 					if (applyImmediately.isSelected()) {
-						updatePalette();
+						apply();
 					}
 				});
 		phaseShift.setLabelFormatter(doubleToString);
@@ -176,7 +187,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setPhaseShift(
 									newValue.floatValue()));
 					if (applyImmediately.isSelected()) {
-						updatePalette();
+						apply();
 					}
 				});
 		offset.setLabelFormatter(doubleToString);
@@ -188,7 +199,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setOffset(
 									newValue.floatValue()));
 					if (applyImmediately.isSelected()) {
-						updatePalette();
+						apply();
 					}
 				});
 		tint.setLabelFormatter(doubleToString);
@@ -200,7 +211,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setTint(
 									newValue.floatValue()));
 					if (applyImmediately.isSelected()) {
-						updatePalette();
+						apply();
 					}
 				});
 		blur.setLabelFormatter(doubleToString);
@@ -212,7 +223,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setLuminanceC(
 									newValue.floatValue()));
 					if (applyImmediately.isSelected()) {
-						updatePalette();
+						apply();
 					}
 				});
 		bleed.setLabelFormatter(doubleToString);
@@ -224,11 +235,13 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							vic -> vic.getPalette().setDotCreep(
 									newValue.floatValue()));
 					if (applyImmediately.isSelected()) {
-						updatePalette();
+						apply();
 					}
 				});
 
 		NumberToString<Float> floatToString = new NumberToString<Float>(2);
+		scalingValue.textProperty().bindBidirectional(
+				sidplay2Section.videoScalingProperty(), floatToString);
 		brightnessValue.textProperty().bindBidirectional(
 				sidplay2Section.brightnessProperty(), floatToString);
 		contrastValue.textProperty().bindBidirectional(
@@ -340,7 +353,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	}
 
 	@FXML
-	private void updatePalette() {
+	private void apply() {
+		updateScaling();
 		getC64().getEventScheduler().scheduleThreadSafe(
 				new Event("Update Palette") {
 					@Override
@@ -352,6 +366,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	@FXML
 	private void defaultPalette() {
+		boolean selected = applyImmediately.isSelected();
+		applyImmediately.setSelected(false);
+		
+		scaling.setValue(DEFAULT_VIDEO_SCALING);
 		brightness.setValue(DEFAULT_BRIGHTNESS);
 		contrast.setValue(DEFAULT_CONTRAST);
 		gamma.setValue(DEFAULT_GAMMA);
@@ -361,28 +379,28 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		tint.setValue(DEFAULT_TINT);
 		blur.setValue(DEFAULT_BLUR);
 		bleed.setValue(DEFAULT_BLEED);
-		updatePalette();
+		apply();
+
+		applyImmediately.setSelected(selected);
 	}
 
 	/**
 	 * Connect VIC output with screen.
 	 */
 	private void setupVideoScreen() {
-		if (util.getPlayer().getC64().getClock() == CPUClock.PAL) {
-			MARGIN_TOP = 28;
-			MARGIN_BOTTOM = 40;
-		} else {
-			// NTSC
-			MARGIN_TOP = 38;
-			MARGIN_BOTTOM = 52;
-		}
-
-		double scale = ((SidPlay2Section) util.getConfig().getSidplay2Section())
-				.getVideoScaling();
 		screen.getGraphicsContext2D().clearRect(0, 0,
 				screen.widthProperty().get(), screen.heightProperty().get());
 		screen.setWidth(getC64().getVIC().getBorderWidth());
 		screen.setHeight(getC64().getVIC().getBorderHeight());
+		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(),
+				getC64().getVIC().getBorderHeight());
+		pixelFormat = PixelFormat.getIntArgbInstance();
+		updateScaling();
+	}
+
+	private void updateScaling() {
+		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
+		double scale = sidplay2Section.getVideoScaling();
 		screen.setScaleX(scale);
 		screen.setScaleY(scale);
 		for (ImageView imageView : Arrays.asList(monitorBorder, breadbox, pc64)) {
@@ -395,9 +413,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 							* screen.getHeight()
 							/ (imageView.getImage().getHeight() + MARGIN_TOP + MARGIN_BOTTOM));
 		}
-		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(),
-				getC64().getVIC().getBorderHeight());
-		pixelFormat = PixelFormat.getIntArgbInstance();
 	}
 
 	/**
