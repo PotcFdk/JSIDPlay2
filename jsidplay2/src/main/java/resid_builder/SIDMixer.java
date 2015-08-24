@@ -89,7 +89,8 @@ public class SIDMixer implements Mixer {
 				sampler.rewind();
 			}
 			// Accumulate sample data with respect to fast forward factor
-			int pos = 0, valL = 0, valR = 0, factor = 0;
+			int pos = 0, valL = 0, valR = 0;
+			int mask = (1 << fastForward) - 1;
 			for (; pos < audioBufferL.capacity(); pos++) {
 				valL += audioBufferL.get(pos);
 				valR += audioBufferR.get(pos);
@@ -97,7 +98,7 @@ public class SIDMixer implements Mixer {
 				audioBufferR.put(pos, 0);
 
 				// once enough samples have been accumulated, write output
-				if (++factor == 1 << fastForward) {
+				if ((pos & mask) == mask) {
 					int dither = triangularDithering();
 
 					putSample(resamplerL, valL >> fastForward, dither);
@@ -107,7 +108,7 @@ public class SIDMixer implements Mixer {
 						driver.buffer().clear();
 					}
 					// zero accumulator
-					valL = valR = factor = 0;
+					valL = valR = 0;
 				}
 			}
 			context.schedule(this, pos);
