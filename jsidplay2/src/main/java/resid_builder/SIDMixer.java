@@ -89,8 +89,8 @@ public class SIDMixer implements Mixer {
 				sampler.rewind();
 			}
 			// Accumulate sample data with respect to fast forward factor
-			int valL = 0, valR = 0, factor = 0;
-			for (int pos = 0; pos < audioBufferL.capacity(); pos++) {
+			int pos = 0, valL = 0, valR = 0, factor = 0;
+			for (; pos < audioBufferL.capacity(); pos++) {
 				valL += audioBufferL.get(pos);
 				valR += audioBufferR.get(pos);
 				audioBufferL.put(pos, 0);
@@ -110,7 +110,7 @@ public class SIDMixer implements Mixer {
 					valL = valR = factor = 0;
 				}
 			}
-			context.schedule(this, audioBufferL.capacity());
+			context.schedule(this, pos);
 		}
 
 		/**
@@ -385,9 +385,7 @@ public class SIDMixer implements Mixer {
 	 * Doubles speed factor.
 	 */
 	public void fastForward() {
-		if (++fastForward > MAX_FAST_FORWARD) {
-			fastForward = MAX_FAST_FORWARD;
-		}
+		fastForward = Math.min(fastForward + 1, MAX_FAST_FORWARD);
 	}
 
 	/**
