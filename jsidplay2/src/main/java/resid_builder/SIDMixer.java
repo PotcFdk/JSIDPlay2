@@ -103,10 +103,6 @@ public class SIDMixer implements Mixer {
 
 					putSample(resamplerL, valL >> fastForward, dither);
 					putSample(resamplerR, valR >> fastForward, dither);
-					if (!driver.buffer().hasRemaining()) {
-						driver.write();
-						driver.buffer().clear();
-					}
 					// zero accumulator
 					valL = valR = 0;
 				}
@@ -129,8 +125,9 @@ public class SIDMixer implements Mixer {
 		 *            sample value
 		 * @param dither
 		 *            triangularly shaped noise
+		 * @throws InterruptedException 
 		 */
-		private final void putSample(Resampler resampler, int value, int dither) {
+		private final void putSample(Resampler resampler, int value, int dither) throws InterruptedException {
 			if (resampler.input(value >> 10)) {
 				value = resampler.output() + dither;
 				if (value > 32767) {
@@ -139,7 +136,10 @@ public class SIDMixer implements Mixer {
 				if (value < -32768) {
 					value = -32768;
 				}
-				driver.buffer().putShort((short) value);
+				if (!driver.buffer().putShort((short) value).hasRemaining()) {
+					driver.write();
+					driver.buffer().clear();
+				}
 			}
 		}
 
