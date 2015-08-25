@@ -28,7 +28,7 @@ import sidplay.audio.AudioDriver;
  */
 public class SIDMixer implements Mixer {
 	/**
-	 * Maximum fast forward factor (1 << 5 = 32).
+	 * Maximum fast forward factor (1 << 5 = 32x).
 	 */
 	public static final int MAX_FAST_FORWARD = 5;
 
@@ -173,7 +173,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * SIDs to mix their sound output.
 	 */
-	protected List<ReSIDBase> sids = new ArrayList<ReSIDBase>();
+	protected List<ReSIDBase> sids = new ArrayList<ReSIDBase>(PLA.MAX_SIDS);
 
 	/**
 	 * Mixer WITHOUT audio output, just clocking SID chips.
