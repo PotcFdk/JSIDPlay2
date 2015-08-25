@@ -134,6 +134,16 @@ public class ReSIDfp extends ReSIDBase {
 		}
 	}
 
+	@Override
+	public byte readENV(int voiceNum) {
+		return sidImpl.voice[voiceNum].envelope.readENV();
+	}
+
+	@Override
+	public byte readOSC(int voiceNum) {
+		return sidImpl.voice[voiceNum].wave.readOSC(sid.getChipModel());
+	}
+
 	/**
 	 * Credits string.
 	 *

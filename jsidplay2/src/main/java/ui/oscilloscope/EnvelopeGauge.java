@@ -32,7 +32,7 @@ public final class EnvelopeGauge extends SIDGauge {
 	@Override
 	public SIDGauge sample(SIDEmu sidemu) {
 		if (sidemu instanceof ReSIDBase) {
-			accumulate(getValue(((ReSIDBase)sidemu).getSID().readENV(getVoice())));
+			accumulate(getValue(((ReSIDBase)sidemu).readENV(getVoice())));
 		} else {
 			accumulate(0f);
 		}

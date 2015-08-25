@@ -112,9 +112,9 @@ public abstract class ReSIDBase extends SIDEmu {
 		return sid.getInputDigiBoost();
 	}
 
-	public SIDChip getSID() {
-		return sid;
-	}
+	public abstract byte readENV(int voiceNum);
+
+	public abstract byte readOSC(int voiceNum);
 	
 	protected abstract SIDChip createSID();
 

@@ -448,13 +448,4 @@ public class SID implements SIDChip {
 		return model.equals(ChipModel.MOS8580) ? INPUTDIGIBOOST : 0;
 	}
 
-	@Override
-	public byte readENV(int voiceNum) {
-		return voice[voiceNum].envelope.readENV();
-	}
-
-	@Override
-	public byte readOSC(int voiceNum) {
-		return voice[voiceNum].wave.readOSC(model);
-	}
 }
