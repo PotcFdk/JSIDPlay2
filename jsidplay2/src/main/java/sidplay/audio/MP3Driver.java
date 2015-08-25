@@ -31,6 +31,18 @@ public abstract class MP3Driver implements AudioDriver {
 				throws IOException {
 			return new FileOutputStream(recordingFilename + ".mp3");
 		}
+		
+		@Override
+		public void close() {
+			super.close();
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	/**
@@ -40,11 +52,6 @@ public abstract class MP3Driver implements AudioDriver {
 	 * 
 	 */
 	public static class MP3Stream extends MP3Driver {
-
-		/**
-		 * Output stream to write the encoded MP3 to.
-		 */
-		private OutputStream out;
 
 		/**
 		 * Use several instances for parallel emulator instances, where
@@ -61,6 +68,7 @@ public abstract class MP3Driver implements AudioDriver {
 		protected OutputStream getOut(String recordingFilename) {
 			return out;
 		}
+		
 	}
 
 	/**
@@ -83,7 +91,7 @@ public abstract class MP3Driver implements AudioDriver {
 	/**
 	 * Output stream to write the encoded MP3 to.
 	 */
-	private OutputStream out;
+	protected OutputStream out;
 	/**
 	 * Jump3r encoder.
 	 */
@@ -132,13 +140,6 @@ public abstract class MP3Driver implements AudioDriver {
 	public void close() {
 		if (jump3r != null) {
 			jump3r.close();
-		}
-		if (out != null) {
-			try {
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
