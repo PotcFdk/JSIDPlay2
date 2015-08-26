@@ -78,6 +78,21 @@ public class SIDMixer implements Mixer {
 		 */
 		private int oldRandomValue;
 
+		/**
+		 * The mixer mixes the generated sound samples into the drivers audio
+		 * buffer.
+		 * <OL>
+		 * <LI>Clock SIDs to fill audio buffer.
+		 * <LI>Accumulate samples to implement fast forwarding.
+		 * <LI>Resample the SID output, because the sample frequency is
+		 * different to the clock frequency.
+		 * <LI>Add dithering to reduce quantization noise, when moving to a
+		 * format with less precision.
+		 * <LI>Cut-off overflow samples.
+		 * </OL>
+		 * <B>Note:</B><BR>
+		 * Audio buffer is cleared after reading for the next event.
+		 */
 		@Override
 		public void event() throws InterruptedException {
 			// Clock SIDs to fill audio buffer
@@ -91,6 +106,7 @@ public class SIDMixer implements Mixer {
 			// Accumulate sample data with respect to fast forward factor
 			int pos = 0, valL = 0, valR = 0;
 			int mask = (1 << fastForward) - 1;
+			final ByteBuffer buffer = driver.buffer();
 			for (; pos < audioBufferL.capacity(); pos++) {
 				valL += audioBufferL.get(pos);
 				valR += audioBufferR.get(pos);
@@ -101,44 +117,25 @@ public class SIDMixer implements Mixer {
 				if ((pos & mask) == mask) {
 					int dither = triangularDithering();
 
-					putSample(resamplerL, valL >> fastForward, dither);
-					putSample(resamplerR, valR >> fastForward, dither);
+					if (resamplerL.input(valL >> fastForward >> 10)) {
+						buffer.putShort((short) Math.max(
+								Math.min(resamplerL.output() + dither, 32767),
+								-32768));
+					}
+					if (resamplerR.input(valR >> fastForward >> 10)) {
+						if (!buffer.putShort(
+								(short) Math.max(Math.min(resamplerR.output()
+										+ dither, 32767), -32768))
+								.hasRemaining()) {
+							driver.write();
+							buffer.clear();
+						}
+					}
 					// zero accumulator
 					valL = valR = 0;
 				}
 			}
 			context.schedule(this, pos);
-		}
-
-		/**
-		 * <OL>
-		 * <LI>Resample the SID output, because the sample frequency is
-		 * different to the clock frequency .
-		 * <LI>Add dithering to reduce quantization noise, when moving to a
-		 * format with less precision.
-		 * <LI>Cut-off overflow samples.
-		 * </OL>
-		 * 
-		 * @param resampler
-		 *            resampler
-		 * @param value
-		 *            sample value
-		 * @param dither
-		 *            triangularly shaped noise
-		 * @throws InterruptedException
-		 */
-		private void putSample(final Resampler resampler, final int value,
-				final int dither) throws InterruptedException {
-			if (resampler.input(value >> 10)) {
-				final ByteBuffer buffer = driver.buffer();
-				if (!buffer.putShort(
-						(short) Math.max(
-								Math.min(resampler.output() + dither, 32767),
-								-32768)).hasRemaining()) {
-					driver.write();
-					buffer.clear();
-				}
-			}
 		}
 
 		/**
