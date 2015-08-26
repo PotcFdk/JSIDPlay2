@@ -854,7 +854,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	private void setAudio() {
 		util.getConfig().getAudioSection()
 				.setAudio(audioBox.getSelectionModel().getSelectedItem());
-		util.getPlayer().updateAudioDriver();
 		restart();
 	}
 

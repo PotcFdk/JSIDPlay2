@@ -24,6 +24,7 @@ import hardsid_builder.HardSIDBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -147,11 +148,6 @@ public class Player extends HardwareEnsemble {
 	private AudioDriver audioDriver, oldAudioDriver;
 
 	/**
-	 * Update audio driver next time player opens a tune.
-	 */
-	private boolean updateAudioDriver;
-
-	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
 	private SIDBuilder sidBuilder;
@@ -173,7 +169,6 @@ public class Player extends HardwareEnsemble {
 	 */
 	public Player(IConfig config) {
 		super(config);
-		this.audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 		this.playList = PlayList.getInstance(config, SidTune.RESET);
 		this.timer = new Timer(this) {
 
@@ -524,8 +519,10 @@ public class Player extends HardwareEnsemble {
 		AudioConfig audioConfig = AudioConfig.getInstance(config
 				.getAudioSection());
 
-		if (updateAudioDriver) {
-			updateAudioDriver = false;
+		// Audio driver different to Audio enum members are on hold!
+		if (audioDriver == null
+				|| Arrays.stream(Audio.values()).anyMatch(
+						audio -> audio.getAudioDriver() == audioDriver)) {
 			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 		}
 
@@ -560,16 +557,6 @@ public class Player extends HardwareEnsemble {
 		default:
 			throw new RuntimeException("Unknown engine type: " + engine);
 		}
-	}
-
-	/**
-	 * Re-read audio config to update audio driver.<BR>
-	 * Note: Normally this is done only once, initially.
-	 * 
-	 * @see Audio
-	 */
-	public final void updateAudioDriver() {
-		updateAudioDriver = true;
 	}
 
 	/**
