@@ -1,11 +1,11 @@
 package de.haendel.impl;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
 import libsidplay.sidtune.SidTuneError;
+import sidplay.audio.AudioDriver;
 import ui.entities.config.Configuration;
 
 public interface IJSIDPlay2 {
@@ -39,14 +39,8 @@ public interface IJSIDPlay2 {
 	 *            configuration with quality settings
 	 * @param resource
 	 *            SID resource relative to ROOT_DIR
-	 * @param out
-	 *            output stream to stream the resulton-the-fly
-	 * @param cbr
-	 *            constant bit rate (-1=auto)
-	 * @param vbr
-	 *            variable bit rate quality (0=best, 5=medium, 9=worst)
-	 * @param isVbr
-	 *            Use variable bit rate mode? (or constant bit rate mode)
+	 * @param driver
+	 * 			  audio driver
 	 * @throws InterruptedException
 	 *             player aborted
 	 * @throws IOException
@@ -54,9 +48,8 @@ public interface IJSIDPlay2 {
 	 * @throws SidTuneError
 	 *             invalid tune
 	 */
-	void convert(Configuration config, String resource, OutputStream out,
-			int cbr, int vbr, boolean isVbr) throws InterruptedException,
-			IOException, SidTuneError;
+	void convert(Configuration config, String resource, AudioDriver driver)
+			throws InterruptedException, IOException, SidTuneError;
 
 	/**
 	 * Get composer photo

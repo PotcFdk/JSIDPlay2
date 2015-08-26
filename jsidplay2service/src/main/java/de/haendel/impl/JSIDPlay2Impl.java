@@ -6,7 +6,6 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -35,7 +34,7 @@ import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
 import libsidutils.SidDatabase;
 import sidplay.Player;
-import sidplay.audio.MP3Driver.MP3Stream;
+import sidplay.audio.AudioDriver;
 import sidplay.ini.IniConfig;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
@@ -127,15 +126,10 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	}
 
 	@Override
-	public void convert(Configuration config, String resource,
-			OutputStream out, int cbr, int vbr, boolean isVbr)
+	public void convert(Configuration config, String resource, AudioDriver driver)
 			throws InterruptedException, IOException, SidTuneError {
 		Player player = new Player(config);
 		player.setSidDatabase(getSidDatabase(HVSC_ROOT));
-		MP3Stream driver = new MP3Stream(out);
-		driver.setCbr(cbr);
-		driver.setVbrQuality(vbr);
-		driver.setVbr(isVbr);
 		player.setAudioDriver(driver);
 		player.play(SidTune.load(getAbsoluteFile(resource)));
 		player.waitForC64();

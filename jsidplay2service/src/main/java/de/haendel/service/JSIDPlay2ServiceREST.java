@@ -22,6 +22,7 @@ import libsidplay.common.Emulation;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.sidtune.SidTuneError;
+import sidplay.audio.MP3Driver.MP3Stream;
 import ui.entities.config.Configuration;
 import de.haendel.impl.IJSIDPlay2;
 
@@ -132,8 +133,11 @@ public class JSIDPlay2ServiceREST {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
 				try {
-					jsidplay2Service.convert(cfg, filePath, output, cbr, vbr,
-							isVbr);
+					MP3Stream driver = new MP3Stream(output);
+					driver.setCbr(cbr);
+					driver.setVbrQuality(vbr);
+					driver.setVbr(isVbr);
+					jsidplay2Service.convert(cfg, filePath, driver);
 				} catch (InterruptedException e) {
 					throw new WebApplicationException(e);
 				} catch (SidTuneError e) {
