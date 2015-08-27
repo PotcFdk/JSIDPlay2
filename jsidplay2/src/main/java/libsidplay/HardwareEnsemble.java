@@ -27,6 +27,7 @@ import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.config.IC1541Section;
 import libsidplay.config.IConfig;
+import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PRG2TAP;
@@ -232,6 +233,18 @@ public class HardwareEnsemble {
 	 * Reset hardware.
 	 */
 	protected void reset() {
+		c64.configureVICs(vic -> {
+			ISidPlay2Section sidplay2section = config.getSidplay2Section();
+			vic.getPalette().setBrightness(sidplay2section.getBrightness());
+			vic.getPalette().setContrast(sidplay2section.getContrast());
+			vic.getPalette().setGamma(sidplay2section.getGamma());
+			vic.getPalette().setSaturation(sidplay2section.getSaturation());
+			vic.getPalette().setPhaseShift(sidplay2section.getPhaseShift());
+			vic.getPalette().setOffset(sidplay2section.getOffset());
+			vic.getPalette().setTint(sidplay2section.getTint());
+			vic.getPalette().setLuminanceC(sidplay2section.getBlur());
+			vic.getPalette().setDotCreep(sidplay2section.getBleed());
+		});
 		c64.reset();
 		iecBus.reset();
 		datasette.reset();
