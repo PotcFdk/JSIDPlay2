@@ -52,6 +52,7 @@ public class ConfigService {
 			JAXBContext jaxbContext = JAXBContext
 					.newInstance(Configuration.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			marshaller.marshal(config, file);
 		} catch (JAXBException e) {
 			e.printStackTrace();

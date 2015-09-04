@@ -608,7 +608,7 @@ public class Configuration implements IConfig {
 						new KeyTableEntity(KeyCode.P.getName(), KeyTableEntry.P),
 						new KeyTableEntity(KeyCode.SEMICOLON.getName(),
 								KeyTableEntry.AT),
-						new KeyTableEntity(KeyCode.EQUALS.getName(),
+						new KeyTableEntity(KeyCode.PLUS.getName(),
 								KeyTableEntry.STAR),
 						new KeyTableEntity(KeyCode.LESS.getName(),
 								KeyTableEntry.ARROW_UP),
