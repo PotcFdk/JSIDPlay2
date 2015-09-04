@@ -132,9 +132,7 @@ public class SidIdInfo extends SidIdBase {
 				while (stok.hasMoreTokens()) {
 					final String token = stok.nextToken();
 					if (token.length() > 0) {
-						if (token.length() == 0) {
-							playerInfoSection = null;
-						} else if (token.startsWith(NAME_TOKEN)) {
+						if (token.startsWith(NAME_TOKEN)) {
 							playerInfoSection.setName(token
 									.substring(NAME_TOKEN.length()));
 						} else if (token.startsWith(AUTHOR_TOKEN)) {

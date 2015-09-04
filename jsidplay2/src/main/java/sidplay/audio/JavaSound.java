@@ -97,13 +97,8 @@ public class JavaSound implements AudioDriver {
 				sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
 				return;
 			} catch (LineUnavailableException e) {
-				try {
-					// Retry, most commonly when a requested line is already in
-					// use by another applicationm, retry
-					Thread.sleep(5000);
-				} catch (InterruptedException e1) {
-					retries = 0;
-				}
+				// Retry, most commonly when a requested line is already in
+				// use by another applicationm, retry
 			}
 		} while (retries-- > 0);
 		throw new IOException("JavaSound: source data Line already in use?");

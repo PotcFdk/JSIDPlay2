@@ -80,8 +80,8 @@ public class GeoRAM extends Cartridge {
 
 	public GeoRAM(DataInputStream dis, PLA pla, int sizeKB) throws IOException {
 		super(pla);
-		assert sizeKB == 64 || sizeKB == 128 || sizeKB == 256 || sizeKB == 512
-				|| sizeKB == 1 << 10 || sizeKB == 2 << 10;
+		assert sizeKB == 0 || sizeKB == 64 || sizeKB == 128 || sizeKB == 256
+				|| sizeKB == 512 || sizeKB == 1 << 10 || sizeKB == 2 << 10;
 
 		if (sizeKB == 0) {
 			// empty file means maximum size!

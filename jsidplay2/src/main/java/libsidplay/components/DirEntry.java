@@ -101,12 +101,8 @@ public abstract class DirEntry {
 		if (fileType != -1) {
 			// append extension if applicable
 			int ft = fileType & BITMASK_FILETYPE;
-			if (ft >= FILETYPE_DEL && ft <= FILETYPE_REL) {
-				// " DEL" | "PRG" ...
-				fn.append(" ").append(FILETYPES[ft - FILETYPE_DEL]);
-			} else {
-				fn.append(" ?");
-			}
+			// " DEL" | "PRG" ...
+			fn.append(" ").append(FILETYPES[ft - FILETYPE_DEL]);
 		}
 		return fn.toString();
 	}

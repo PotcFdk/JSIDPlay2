@@ -101,7 +101,7 @@ public class REU extends Cartridge {
 
 	public REU(DataInputStream dis, PLA pla, int sizeKB) throws IOException {
 		super(pla);
-		assert sizeKB == 128 || sizeKB == 512 || sizeKB == 256
+		assert sizeKB == 0 || sizeKB == 128 || sizeKB == 512 || sizeKB == 256
 				|| sizeKB == 2 << 10 || sizeKB == 16 << 10;
 
 		if (sizeKB == 0) {

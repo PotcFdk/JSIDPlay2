@@ -840,9 +840,9 @@ public class MusicCollection extends Tab implements UIPart {
 	private void addFavorites(SidPlay2Section sidplay2Section,
 			FavoritesSection section, List<File> files) {
 		for (File file : files) {
-			if (file.isDirectory()) {
-				addFavorites(sidplay2Section, section,
-						Arrays.asList(file.listFiles()));
+			final File[] listFiles = file.listFiles();
+			if (file.isDirectory() && listFiles != null) {
+				addFavorites(sidplay2Section, section, Arrays.asList(listFiles));
 			} else if (file.isFile() && tuneFilter.accept(file)) {
 				addFavorite(sidplay2Section, section, file);
 			}

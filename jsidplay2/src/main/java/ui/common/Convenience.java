@@ -173,7 +173,11 @@ public class Convenience {
 	 */
 	private File getToAttach(String dir, File file,
 			BiPredicate<File, File> mediaTester, File toAttach) {
-		for (File member : file.listFiles()) {
+		final File[] listFiles = file.listFiles();
+		if (listFiles == null) {
+			return toAttach;
+		}
+		for (File member : listFiles) {
 			File memberFile = new File(dir, member.getName());
 			memberFile.deleteOnExit();
 			if (memberFile.isFile() && isSupportedMedia(memberFile)

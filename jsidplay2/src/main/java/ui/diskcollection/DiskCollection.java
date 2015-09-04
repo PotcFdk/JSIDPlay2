@@ -358,7 +358,11 @@ public class DiskCollection extends Tab implements UIPart {
 				rootItem.getValue(), null);
 		if (parentFiles.size() > 0) {
 			File parentFile = parentFiles.get(parentFiles.size() - 1);
-			for (File photoFile : parentFile.listFiles()) {
+			final File[] listFiles = parentFile.listFiles();
+			if (listFiles == null) {
+				return null;
+			}
+			for (File photoFile : listFiles) {
 				if (!photoFile.isDirectory()
 						&& screenshotsFileFilter.accept(photoFile)) {
 					return photoFile;

@@ -355,12 +355,11 @@ public class FavoritesTab extends Tab implements UIPart {
 	void addFavorites(List<File> files) {
 		for (int i = 0; files != null && i < files.size(); i++) {
 			final File file = files.get(i);
-			if (file.isDirectory()) {
-				addFavorites(Arrays.asList(file.listFiles()));
-			} else {
-				if (tuneFilter.accept(file)) {
-					addFavorite(file);
-				}
+			final File[] listFiles = file.listFiles();
+			if (file.isDirectory() && listFiles!=null) {
+				addFavorites(Arrays.asList(listFiles));
+			} else if (tuneFilter.accept(file)) {
+				addFavorite(file);
 			}
 		}
 	}
