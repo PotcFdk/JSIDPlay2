@@ -1,21 +1,20 @@
 /**
- * 
+ *
  */
 package netsiddev;
 
 public final class SIDWrite {
-	private static final byte PURE_DELAY = -1;
-	private static final byte END = -2;
-
 	private final int chip;
 	private final byte reg;
 	private final byte value;
 	private final int cycles;
+	private boolean pureDelay;
+	private boolean end;
 
 	/**
 	 * This command is a general write command to SID.
 	 * Reg must be between 0 .. 0x1f and cycles > 0.
-	 * 
+	 *
 	 * @param chip    The specified SID chip to write to.
 	 * @param reg     The SID register to write to.
 	 * @param data    The data to write to the specified SID register.
@@ -26,38 +25,37 @@ public final class SIDWrite {
 		if (reg < 0 || reg > 0x1f) {
 			throw new InvalidCommandException("Register value is not between 0 .. 0x1f: " + reg);
 		}
+
 		if (cycles < 0) {
 			throw new InvalidCommandException("Cycle interval must be >= 0: " + cycles);
 		}
-		
+
 		this.chip = chip;
 		this.reg = reg;
 		this.value = data;
 		this.cycles = cycles;
+		this.pureDelay = false;
+		this.end = false;
 	}
 
-	private SIDWrite(final int sid, final byte cmd, final int cycles) throws InvalidCommandException {
-		if (cycles <= 0) {
-			throw new InvalidCommandException("Cycle interval must be > 0: " + cycles);
-		}
-
-		this.chip = sid;
-		this.reg = cmd;
-		this.value = 0;
-		this.cycles = cycles;
+	private SIDWrite(final int chip, final int cycles) throws InvalidCommandException {
+		this(chip, (byte) 0, (byte) 0, cycles);
+		this.pureDelay = true;
 	}
 
-	private SIDWrite(final int sid, final byte cmd) {
-		this.chip = sid;
-		this.reg = cmd;
+	private SIDWrite() {
+		this.chip = 0;
+		this.reg = 0;
 		this.value = 0;
 		this.cycles = 0;
+		this.pureDelay = false;
+		this.end = true;
 	}
 
 	/**
 	 * This command instructs AudioGeneratorThread about the need to execute a pure delay on specified SID.
 	 * Throws if cycles < 0.
-	 * 
+	 *
 	 * @param sid    The SID to execute a pure delay on.
 	 * @param cycles Amount of cycles to execute the pure delay for.
 	 *
@@ -65,34 +63,34 @@ public final class SIDWrite {
 	 * @throws InvalidCommandException
 	 */
 	public static SIDWrite makePureDelay(final int sid, final int cycles) throws InvalidCommandException {
-		return new SIDWrite(sid, PURE_DELAY, cycles);
+		return new SIDWrite(sid, cycles);
 	}
-	
+
 	/**
 	 * Is command a no-write command?
-	 * 
-	 * @return True if the command is a no-write command; false otherwise.
+	 *
+	 * @return True if the SIDWrite object is a no-write command; false otherwise.
 	 */
 	protected boolean isPureDelay() {
-		return reg == PURE_DELAY;
+		return pureDelay;
 	}
 
 	/**
 	 * This command instructs AudioGeneratorThread to exit cleanly.
-	 * 
+	 *
 	 * @return A new SIDWrite instance.
 	 */
 	public static SIDWrite makeEnd() {
-		return new SIDWrite(0, END);
+		return new SIDWrite();
 	}
 
 	/**
 	 * Is an "END" command?
-	 * 
-	 * @return True if the reg is an END command; false otherwise.
+	 *
+	 * @return True if the SIDWrite object is an END command; false otherwise.
 	 */
 	protected boolean isEnd() {
-		return reg == END;
+		return end;
 	}
 
 	/**
