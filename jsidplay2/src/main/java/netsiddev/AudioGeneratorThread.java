@@ -23,7 +23,7 @@ import sidplay.audio.JavaSound;
 /**
  * Audio generating thread which communicates with SIDWrite source over a
  * BlockingQueue.
- * 
+ *
  * @author Antti Lankila
  */
 public class AudioGeneratorThread extends Thread {
@@ -69,7 +69,7 @@ public class AudioGeneratorThread extends Thread {
 	private int[] sidPositionR;
 
 	private int[] audioBufferPos;
-	
+
 	private Mixer.Info mixerInfo;
 	private boolean deviceChanged = false;
 
@@ -82,7 +82,7 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Triangularly shaped noise source for audio applications. Output of this
 	 * PRNG is between ]-1, 1[.
-	 * 
+	 *
 	 * @return triangular noise sample
 	 */
 	protected int triangularDithering() {
@@ -128,7 +128,7 @@ public class AudioGeneratorThread extends Thread {
 			}
 			refreshParams();
 
-			while (true) {
+			while (!interrupted()) {
 				SIDWrite write = sidCommandQueue.poll();
 
 				/* Ran out of writes? */
@@ -252,6 +252,7 @@ public class AudioGeneratorThread extends Thread {
 				}
 			}
 		} catch (final InterruptedException e) {
+			e.printStackTrace();
 		} catch (final IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -261,7 +262,7 @@ public class AudioGeneratorThread extends Thread {
 
 	/**
 	 * Reset the specified SID and sets the volume afterwards.
-	 * 
+	 *
 	 * @param sidNumber
 	 *            The specified SID to reset.
 	 * @param volume
@@ -274,7 +275,7 @@ public class AudioGeneratorThread extends Thread {
 
 	/**
 	 * Mute a SID's voice.
-	 * 
+	 *
 	 * @param sidNumber
 	 *            The specified SID to mute the voice of.
 	 * @param voiceNo
@@ -288,7 +289,7 @@ public class AudioGeneratorThread extends Thread {
 
 	/**
 	 * Change the output device
-	 * 
+	 *
 	 * @param deviceInfo
 	 */
 	public void changeDevice(final Mixer.Info deviceInfo) {
@@ -298,7 +299,7 @@ public class AudioGeneratorThread extends Thread {
 
 	/**
 	 * Set NTSC/PAL time source.
-	 * 
+	 *
 	 * @param clock
 	 *            The specified clock value to set.
 	 */
@@ -309,7 +310,7 @@ public class AudioGeneratorThread extends Thread {
 
 	/**
 	 * Set quality of audio output.
-	 * 
+	 *
 	 * @param samplingMethod
 	 *            The desired sampling method to use.
 	 */
@@ -352,7 +353,7 @@ public class AudioGeneratorThread extends Thread {
 
 	/**
 	 * Acquire command queue handle.
-	 * 
+	 *
 	 * @return command queue
 	 */
 	public BlockingQueue<SIDWrite> getSidCommandQueue() {
