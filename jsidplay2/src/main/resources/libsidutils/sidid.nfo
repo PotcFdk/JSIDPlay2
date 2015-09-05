@@ -628,13 +628,6 @@ REFERENCE: http://csdb.dk/release/?id=18767
    AUTHOR: Aleksi Eeben
 REFERENCE: http://csdb.dk/release/?id=18767
 
-Jon_Dunn&Paul_Hughes
-     NAME: Music Driver
-   AUTHOR: Jonathan Dunn & Paul Hughes
-  COMMENT: The music driver/player has been co-written by Jonathan Dunn and
-           Paul Hughes. More info about the player:
-           http://www.pauliehughes.com/page22/page22.html
-
 Jonas_Hulten
    AUTHOR: Jonas Hultén
 
@@ -961,6 +954,12 @@ Ozzy_Oldschool_V2
 
 Paul_Hughes
    AUTHOR: Paul Hughes
+
+MusDriver/Paul_Hughes
+     NAME: Music Driver
+   AUTHOR: Paul Hughes
+  COMMENT: More info about the player:
+           http://www.pauliehughes.com/page22/page22.html
 
 Paradroid/Lameplayer
    AUTHOR: Paradroid
@@ -1366,6 +1365,10 @@ TheTracker/Hitmen
  RELEASED: 1998 Hitmen
 REFERENCE: http://csdb.dk/release/?id=3385
 
+Thiel_Sound_System
+     NAME: David Dwyer Thiel Sound System (DDTSS)
+   AUTHOR: David Thiel
+
 Toaster_Digi
    AUTHOR: Tomasz Przybylski (Toaster)
 
@@ -1410,6 +1413,11 @@ REFERENCE: http://csdb.dk/release/?id=122333
 
 Vibrants/JO
    AUTHOR: Poul-Jesper Olsen (JO)
+
+Virtuoso
+   AUTHOR: Hein Holt
+ RELEASED: 2015 Vision
+REFERENCE: http://csdb.dk/release/?id=139247
 
 VoiceEater
    AUTHOR: Rolf Runar Bakke
