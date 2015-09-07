@@ -28,6 +28,11 @@ import sidplay.audio.AudioDriver;
  */
 public class SIDMixer implements Mixer {
 	/**
+	 * Scaler to use fast int multiplication while setting volume.
+	 */
+	private static final int VOLUME_SCALER = 10;
+
+	/**
 	 * Maximum fast forward factor (1 << 5 = 32x).
 	 */
 	public static final int MAX_FAST_FORWARD = 5;
@@ -105,8 +110,6 @@ public class SIDMixer implements Mixer {
 			}
 			// Accumulate sample data with respect to fast forward factor
 			int pos = 0, valL = 0, valR = 0;
-			int mask = (1 << fastForward) - 1;
-			final ByteBuffer buffer = driver.buffer();
 			for (; pos < audioBufferL.capacity(); pos++) {
 				valL += audioBufferL.get(pos);
 				valR += audioBufferR.get(pos);
@@ -114,15 +117,15 @@ public class SIDMixer implements Mixer {
 				audioBufferR.put(pos, 0);
 
 				// once enough samples have been accumulated, write output
-				if ((pos & mask) == mask) {
+				if ((pos & fastForwardBitMask) == fastForwardBitMask) {
 					int dither = triangularDithering();
 
-					if (resamplerL.input(valL >> fastForward >> 10)) {
+					if (resamplerL.input(valL >> fastForwardShift)) {
 						buffer.putShort((short) Math.max(
 								Math.min(resamplerL.output() + dither, 32767),
 								-32768));
 					}
-					if (resamplerR.input(valR >> fastForward >> 10)) {
+					if (resamplerR.input(valR >> fastForwardShift)) {
 						if (!buffer.putShort(
 								(short) Math.max(Math.min(resamplerR.output()
 										+ dither, 32767), -32768))
@@ -210,14 +213,19 @@ public class SIDMixer implements Mixer {
 	private float[] positionR = new float[PLA.MAX_SIDS];
 
 	/**
-	 * Fast forward factor (1 << fastForward).
+	 * Fast forward factor (fastForwardShift=1<<(10+factor))
 	 */
-	private int fastForward;
+	private int fastForwardShift, fastForwardBitMask;
 
 	/**
 	 * Fade-in/fade-out enabled.
 	 */
 	private boolean fadeInFadeOutEnabled;
+
+	/**
+	 * Audio driver buffer.
+	 */
+	private ByteBuffer buffer;
 
 	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock,
 			AudioConfig audioConfig, AudioDriver audioDriver) {
@@ -239,7 +247,9 @@ public class SIDMixer implements Mixer {
 	}
 
 	public void reset() {
-		this.fadeInFadeOutEnabled = config.getSidplay2Section().getFadeInTime() != 0
+		normalSpeed();
+		buffer = driver.buffer();
+		fadeInFadeOutEnabled = config.getSidplay2Section().getFadeInTime() != 0
 				|| config.getSidplay2Section().getFadeOutTime() != 0;
 		context.schedule(nullAudio, 0, Event.Phase.PHI2);
 	}
@@ -320,7 +330,8 @@ public class SIDMixer implements Mixer {
 	public void setVolume(int sidNum, float volumeInDB) {
 		assert volumeInDB >= -6 && volumeInDB <= 6;
 
-		volume[sidNum] = (int) (Math.pow(10, volumeInDB / 10) * 1024);
+		volume[sidNum] = (int) (Math.pow(VOLUME_SCALER, volumeInDB
+				/ VOLUME_SCALER) * (1 << VOLUME_SCALER));
 		updateSampleMixerVolume();
 	}
 
@@ -381,18 +392,21 @@ public class SIDMixer implements Mixer {
 	 * Doubles speed factor.
 	 */
 	public void fastForward() {
-		fastForward = Math.min(fastForward + 1, MAX_FAST_FORWARD);
+		fastForwardShift = Math.min(fastForwardShift + 1, MAX_FAST_FORWARD
+				+ VOLUME_SCALER);
+		fastForwardBitMask = (1 << (fastForwardShift - VOLUME_SCALER)) - 1;
 	}
 
 	/**
 	 * Use normal speed factor.
 	 */
 	public void normalSpeed() {
-		fastForward = 0;
+		fastForwardShift = VOLUME_SCALER;
+		fastForwardBitMask = 0;
 	}
 
 	public boolean isFastForward() {
-		return fastForward != 0;
+		return fastForwardShift > VOLUME_SCALER;
 	}
 
 }
