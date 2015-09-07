@@ -17,13 +17,13 @@ import java.util.function.IntConsumer;
 class SampleMixer implements IntConsumer {
 	/**
 	 * 
-	 * Extends SampleMixer with fade-in/fade-out feature to smoothly
-	 * increase/decrease volume.
+	 * Extends SampleMixer with linear fade-in/fade-out feature to smoothly
+	 * increase/decrease volume. TODO implement logarithmic type?
 	 * 
 	 * @author ken
 	 *
 	 */
-	static class FadingSampleMixer extends SampleMixer {
+	static class LinearFadingSampleMixer extends SampleMixer {
 		/**
 		 * Fade-in/fade-out time in clock ticks.
 		 */
@@ -33,7 +33,7 @@ class SampleMixer implements IntConsumer {
 		 * Currently configured volume level.
 		 */
 		private int maxVolL, maxVolR;
-		
+
 		/**
 		 * Fade-in/fade-out clock steps until next volume change and current
 		 * fade-in and fade-out counters for left and right speaker.
@@ -41,7 +41,7 @@ class SampleMixer implements IntConsumer {
 		private long fadeInStepL, fadeInStepR, fadeOutStepL, fadeOutStepR,
 				fadeInValL, fadeInValR, fadeOutValL, fadeOutValR;
 
-		FadingSampleMixer(IntBuffer audioBufferL, IntBuffer audioBufferR) {
+		LinearFadingSampleMixer(IntBuffer audioBufferL, IntBuffer audioBufferR) {
 			super(audioBufferL, audioBufferR);
 		}
 
@@ -81,7 +81,7 @@ class SampleMixer implements IntConsumer {
 			this.maxVolL = volumeL;
 			this.maxVolR = volumeR;
 		}
-		
+
 		@Override
 		public void accept(int sample) {
 			if (fadeInClocks > 0) {

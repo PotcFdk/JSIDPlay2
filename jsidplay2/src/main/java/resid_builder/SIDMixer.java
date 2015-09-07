@@ -15,7 +15,7 @@ import libsidplay.common.SIDEmu;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
-import resid_builder.SampleMixer.FadingSampleMixer;
+import resid_builder.SampleMixer.LinearFadingSampleMixer;
 import resid_builder.resample.Resampler;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
@@ -271,7 +271,7 @@ public class SIDMixer implements Mixer {
 	 */
 	public void fadeIn(int fadeIn) {
 		for (ReSIDBase sid : sids) {
-			FadingSampleMixer sampler = (FadingSampleMixer) sid.getSampler();
+			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid.getSampler();
 			sampler.setFadeIn((long) (fadeIn * cpuClock.getCpuFrequency()));
 		}
 	}
@@ -284,7 +284,7 @@ public class SIDMixer implements Mixer {
 	 */
 	public void fadeOut(int fadeOut) {
 		for (ReSIDBase sid : sids) {
-			FadingSampleMixer sampler = (FadingSampleMixer) sid.getSampler();
+			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid.getSampler();
 			sampler.setFadeOut((long) (fadeOut * cpuClock.getCpuFrequency()));
 		}
 	}
@@ -361,7 +361,7 @@ public class SIDMixer implements Mixer {
 		IntBuffer intBufferL = audioBufferL.duplicate();
 		IntBuffer intBufferR = audioBufferR.duplicate();
 		if (fadeInFadeOutEnabled) {
-			sid.setSampler(new FadingSampleMixer(intBufferL, intBufferR));
+			sid.setSampler(new LinearFadingSampleMixer(intBufferL, intBufferR));
 		} else {
 			sid.setSampler(new SampleMixer(intBufferL, intBufferR));
 		}
