@@ -511,7 +511,7 @@ public class HardwareEnsemble {
 	public final void insertCartridge(final CartridgeType type, final int sizeKB)
 			throws IOException, SidTuneError {
 		c64.ejectCartridge();
-		c64.setCartridge(Cartridge.create(c64.getPla(), type, sizeKB));
+		c64.setCartridge(Cartridge.create(c64.pla, type, sizeKB));
 	}
 
 	/**
@@ -528,7 +528,7 @@ public class HardwareEnsemble {
 			throws IOException, SidTuneError {
 		config.getSidplay2Section().setLastDirectory(file.getParent());
 		c64.ejectCartridge();
-		c64.setCartridge(Cartridge.read(c64.getPla(), type, file));
+		c64.setCartridge(Cartridge.read(c64.pla, type, file));
 	}
 
 }
