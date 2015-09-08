@@ -271,7 +271,8 @@ public class SIDMixer implements Mixer {
 	 */
 	public void fadeIn(int fadeIn) {
 		for (ReSIDBase sid : sids) {
-			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid.getSampler();
+			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid
+					.getSampler();
 			sampler.setFadeIn((long) (fadeIn * cpuClock.getCpuFrequency()));
 		}
 	}
@@ -284,7 +285,8 @@ public class SIDMixer implements Mixer {
 	 */
 	public void fadeOut(int fadeOut) {
 		for (ReSIDBase sid : sids) {
-			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid.getSampler();
+			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid
+					.getSampler();
 			sampler.setFadeOut((long) (fadeOut * cpuClock.getCpuFrequency()));
 		}
 	}
@@ -330,8 +332,7 @@ public class SIDMixer implements Mixer {
 	public void setVolume(int sidNum, float volumeInDB) {
 		assert volumeInDB >= -6 && volumeInDB <= 6;
 
-		volume[sidNum] = (int) (Math.pow(VOLUME_SCALER, volumeInDB
-				/ VOLUME_SCALER) * (1 << VOLUME_SCALER));
+		volume[sidNum] = (int) (Math.pow(10, volumeInDB / 10) * (1 << VOLUME_SCALER));
 		updateSampleMixerVolume();
 	}
 
@@ -394,7 +395,7 @@ public class SIDMixer implements Mixer {
 	public void fastForward() {
 		fastForwardShift = Math.min(fastForwardShift + 1, MAX_FAST_FORWARD
 				+ VOLUME_SCALER);
-		fastForwardBitMask = (1 << (fastForwardShift - VOLUME_SCALER)) - 1;
+		fastForwardBitMask = (1 << fastForwardShift - VOLUME_SCALER) - 1;
 	}
 
 	/**
@@ -406,7 +407,7 @@ public class SIDMixer implements Mixer {
 	}
 
 	public boolean isFastForward() {
-		return fastForwardShift > VOLUME_SCALER;
+		return fastForwardShift - VOLUME_SCALER != 0;
 	}
 
 }
