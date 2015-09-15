@@ -334,15 +334,16 @@
 						</goals>
 						<configuration>
 							<includes>
-								<include>**/*</include>
+								<include>c64jukebox/**</include>
+								<include>hardsid_builder/**</include>
+								<include>libsidplay/**</include>
+								<include>libsidutils/**</include>
+								<include>resid_builder/**</include>
+								<include>sidplay/**</include>
 							</includes>
 							<excludes>
-								<exclude>ui/**</exclude>
-								<exclude>hardsid/**</exclude>
-								<exclude>netsiddev/**</exclude>
 								<exclude>hardsid_builder/driver/**</exclude>
 								<exclude>hardsid_builder/lib/**</exclude>
-								<exclude>libpsid64/**</exclude>
 							</excludes>
 							<outputDirectory>${project.build.directory}/deploy/online/webstart</outputDirectory>
 							<finalName>c64jukebox-${project.version}</finalName>
