@@ -654,8 +654,10 @@ public class MusicCollection extends Tab implements UIPart {
 			switch (searchResult.getSelectionModel().getSelectedItem()) {
 			case ADD_TO_A_NEW_PLAYLIST:
 				searchStart = file -> {
-					Platform.runLater(() -> disableSearch());
-					createNewFavoritesTab();
+					Platform.runLater(() -> {
+						disableSearch();
+						createNewFavoritesTab();
+					});
 				};
 				searchHit = file -> addFavorite(sidplay2Section,
 						favoritesToAddSearchResult, file);
