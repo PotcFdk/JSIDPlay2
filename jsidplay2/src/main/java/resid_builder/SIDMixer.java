@@ -58,7 +58,7 @@ public class SIDMixer implements Mixer {
 				// rewind
 				sampler.rewind();
 			}
-			context.schedule(this, audioBufferL.capacity());
+			context.schedule(this, bufferSize);
 		}
 	}
 
@@ -108,13 +108,12 @@ public class SIDMixer implements Mixer {
 				// rewind
 				sampler.rewind();
 			}
-			// Accumulate sample data with respect to fast forward factor
+			// Read from audio buffers
+			// (Accumulate sample data with respect to fast forward factor)
 			int pos = 0, valL = 0, valR = 0;
-			for (; pos < audioBufferL.capacity(); pos++) {
-				valL += audioBufferL.get(pos);
-				valR += audioBufferR.get(pos);
-				audioBufferL.put(pos, 0);
-				audioBufferR.put(pos, 0);
+			for (; pos < bufferSize; pos++) {
+				valL += audioBufferL.get();
+				valR += audioBufferR.get();
 
 				// once enough samples have been accumulated, write output
 				if ((pos & fastForwardBitMask) == fastForwardBitMask) {
@@ -138,7 +137,16 @@ public class SIDMixer implements Mixer {
 					valL = valR = 0;
 				}
 			}
-			context.schedule(this, pos);
+			// Erase audio buffers
+			audioBufferL.flip();
+			audioBufferR.flip();
+			for (pos = 0; pos < bufferSize; pos++) {
+				audioBufferL.put(0);
+				audioBufferR.put(0);
+			}
+			audioBufferL.clear();
+			audioBufferR.clear();
+			context.schedule(this, bufferSize);
 		}
 
 		/**
@@ -190,6 +198,11 @@ public class SIDMixer implements Mixer {
 	private IntBuffer audioBufferL, audioBufferR;
 
 	/**
+	 * Capacity of the Audio buffers audioBufferL and audioBufferR.
+	 */
+	private int bufferSize;
+
+	/**
 	 * Resampler of sample output for two channels (stereo).
 	 */
 	private Resampler resamplerL, resamplerR;
@@ -234,11 +247,12 @@ public class SIDMixer implements Mixer {
 		this.cpuClock = cpuClock;
 		this.driver = audioDriver;
 		IAudioSection audioSection = config.getAudioSection();
+		this.bufferSize = audioSection.getBufferSize();
 		this.audioBufferL = ByteBuffer
-				.allocateDirect(Integer.BYTES * audioSection.getBufferSize())
+				.allocateDirect(Integer.BYTES * bufferSize)
 				.order(ByteOrder.nativeOrder()).asIntBuffer();
 		this.audioBufferR = ByteBuffer
-				.allocateDirect(Integer.BYTES * audioSection.getBufferSize())
+				.allocateDirect(Integer.BYTES * bufferSize)
 				.order(ByteOrder.nativeOrder()).asIntBuffer();
 		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(),
 				audioSection.getSampling(), audioConfig.getFrameRate(), 20000);
