@@ -136,9 +136,9 @@ class SampleMixer implements IntConsumer {
 		bufferR.put(bufferR.get(bufferR.position()) + sample * volumeR);
 	}
 
-	void rewind() {
-		bufferL.rewind();
-		bufferR.rewind();
+	void clear() {
+		bufferL.clear();
+		bufferR.clear();
 	}
 
 }

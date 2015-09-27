@@ -55,8 +55,7 @@ public class SIDMixer implements Mixer {
 				SampleMixer sampler = (SampleMixer) sid.getSampler();
 				// clock SID to the present moment
 				sid.clock();
-				// rewind
-				sampler.rewind();
+				sampler.clear();
 			}
 			context.schedule(this, bufferSize);
 		}
@@ -105,8 +104,7 @@ public class SIDMixer implements Mixer {
 				SampleMixer sampler = (SampleMixer) sid.getSampler();
 				// clock SID to the present moment
 				sid.clock();
-				// rewind
-				sampler.rewind();
+				sampler.clear();
 			}
 			// Read from audio buffers
 			int valL = 0, valR = 0;
