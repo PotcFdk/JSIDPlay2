@@ -109,14 +109,14 @@ public class SIDMixer implements Mixer {
 				sampler.rewind();
 			}
 			// Read from audio buffers
-			// (Accumulate sample data with respect to fast forward factor)
-			int pos = 0, valL = 0, valR = 0;
-			for (; pos < bufferSize; pos++) {
+			int valL = 0, valR = 0;
+			for (int i = 0; i < bufferSize; i++) {
+				// Accumulate sample data with respect to fast forward factor
 				valL += audioBufferL.get();
 				valR += audioBufferR.get();
 
 				// once enough samples have been accumulated, write output
-				if ((pos & fastForwardBitMask) == fastForwardBitMask) {
+				if ((i & fastForwardBitMask) == fastForwardBitMask) {
 					int dither = triangularDithering();
 
 					if (resamplerL.input(valL >> fastForwardShift)) {
@@ -140,7 +140,7 @@ public class SIDMixer implements Mixer {
 			// Erase audio buffers
 			audioBufferL.flip();
 			audioBufferR.flip();
-			for (pos = 0; pos < bufferSize; pos++) {
+			for (int i = 0; i < bufferSize; i++) {
 				audioBufferL.put(0);
 				audioBufferR.put(0);
 			}
@@ -193,7 +193,7 @@ public class SIDMixer implements Mixer {
 	private Event mixerAudio = new MixerEvent("MixerAudio");
 
 	/**
-	 * Audio buffer for two channels (stereo).
+	 * Audio buffers for two channels (stereo).
 	 */
 	private IntBuffer audioBufferL, audioBufferR;
 
