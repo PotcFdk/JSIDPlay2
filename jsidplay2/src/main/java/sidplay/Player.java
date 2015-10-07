@@ -640,6 +640,8 @@ public class Player extends HardwareEnsemble {
 	 * Play routine (clock chips until audio buffer is filled completely or
 	 * player is paused).
 	 * 
+	 * @return continue to play next time?
+	 * 
 	 * @throws InterruptedException
 	 *             audio production interrupted
 	 */
@@ -654,7 +656,7 @@ public class Player extends HardwareEnsemble {
 
 	/**
 	 * Get end state according to the configuration.<BR>
-	 * Looping tunes restart the player, otherwise it gets stopped.
+	 * Loop song? Restart the player, otherwise stop.
 	 * 
 	 * @return end state of the player
 	 */
@@ -679,7 +681,7 @@ public class Player extends HardwareEnsemble {
 	 * Play tune.
 	 * 
 	 * @param tune
-	 *            file to play the tune (SidTune.RESET means just reset C64)
+	 *            tune to play (SidTune.RESET means just reset C64)
 	 */
 	public final void play(final SidTune tune) {
 		stopC64();
@@ -691,7 +693,8 @@ public class Player extends HardwareEnsemble {
 	 * Pause player.
 	 */
 	public final void pause() {
-		if (stateProperty.get() == State.QUIT) {
+		if (stateProperty.get() == State.QUIT
+				|| stateProperty.get() == State.EXIT) {
 			play(tune);
 		} else if (stateProperty.get() == State.PAUSED) {
 			stateProperty.set(State.RUNNING);
