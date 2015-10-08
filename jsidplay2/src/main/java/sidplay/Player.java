@@ -144,8 +144,8 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Audio driver.
 	 */
-	private AudioDriver audioDriver, oldAudioDriver;
-
+	private AudioDriver audioDriver = Audio.SOUNDCARD.getAudioDriver(),
+			oldAudioDriver;
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -506,9 +506,8 @@ public class Player extends HardwareEnsemble {
 				.getAudioSection());
 
 		// Audio driver different to Audio enum members are on hold!
-		if (audioDriver == null
-				|| Arrays.stream(Audio.values()).anyMatch(
-						audio -> audio.getAudioDriver() == audioDriver)) {
+		if (Arrays.stream(Audio.values()).anyMatch(
+				audio -> audio.getAudioDriver().equals(audioDriver))) {
 			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 		}
 
