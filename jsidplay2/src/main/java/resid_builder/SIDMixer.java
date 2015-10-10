@@ -28,14 +28,14 @@ import sidplay.audio.AudioDriver;
  */
 public class SIDMixer implements Mixer {
 	/**
-	 * Scaler to use fast int multiplication while setting volume.
-	 */
-	private static final int VOLUME_SCALER = 10;
-
-	/**
 	 * Maximum fast forward factor (1 << 5 = 32x).
 	 */
 	public static final int MAX_FAST_FORWARD = 5;
+
+	/**
+	 * Scaler to use fast int multiplication while setting volume.
+	 */
+	private static final int VOLUME_SCALER = 10;
 
 	/**
 	 * NullAudio ignores generated sound samples. This is used, before timer
@@ -76,11 +76,16 @@ public class SIDMixer implements Mixer {
 		/**
 		 * Random source for triangular dithering
 		 */
-		private Random RANDOM = new Random();
+		private final Random RANDOM = new Random();
 		/**
 		 * State of HP-TPDF.
 		 */
 		private int oldRandomValue;
+
+		/**
+		 * Fast forward factor (fastForwardShift=1<<(10+factor))
+		 */
+		private int fastForwardShift, fastForwardBitMask;
 
 		/**
 		 * The mixer mixes the generated sound samples into the drivers audio
@@ -164,79 +169,75 @@ public class SIDMixer implements Mixer {
 	/**
 	 * System event context.
 	 */
-	protected EventScheduler context;
+	protected final EventScheduler context;
 
 	/**
 	 * Configuration
 	 */
-	protected IConfig config;
+	protected final IConfig config;
 
 	/**
 	 * CPU clock.
 	 */
-	protected CPUClock cpuClock;
+	protected final CPUClock cpuClock;
 
 	/**
 	 * SIDs to mix their sound output.
 	 */
-	protected List<ReSIDBase> sids = new ArrayList<ReSIDBase>(PLA.MAX_SIDS);
+	protected final List<ReSIDBase> sids = new ArrayList<ReSIDBase>(
+			PLA.MAX_SIDS);
 
 	/**
 	 * Mixer WITHOUT audio output, just clocking SID chips.
 	 */
-	private Event nullAudio = new NullAudioEvent("NullAudio");
+	private final Event nullAudio = new NullAudioEvent("NullAudio");
 	/**
 	 * Mixer clocking SID chips and producing audio output.
 	 */
-	private Event mixerAudio = new MixerEvent("MixerAudio");
+	private final MixerEvent mixerAudio = new MixerEvent("MixerAudio");
 
 	/**
 	 * Audio buffers for two channels (stereo).
 	 */
-	private IntBuffer audioBufferL, audioBufferR;
+	private final IntBuffer audioBufferL, audioBufferR;
 
 	/**
 	 * Capacity of the Audio buffers audioBufferL and audioBufferR.
 	 */
-	private int bufferSize;
+	private final int bufferSize;
 
 	/**
 	 * Resampler of sample output for two channels (stereo).
 	 */
-	private Resampler resamplerL, resamplerR;
+	private final Resampler resamplerL, resamplerR;
 
 	/**
 	 * Audio driver
 	 */
-	private AudioDriver driver;
+	private final AudioDriver driver;
 
 	/**
 	 * Volume of all SIDs.
 	 */
-	private int[] volume = new int[PLA.MAX_SIDS];
+	private final int[] volume = new int[PLA.MAX_SIDS];
 	/**
 	 * SID audibility on the left speaker of all SIDs 0(silent)..1(loud).
 	 */
-	private float[] positionL = new float[PLA.MAX_SIDS];
+	private final float[] positionL = new float[PLA.MAX_SIDS];
 	/**
 	 * SID audibility on the right speaker of all SIDs 0(silent)..1(loud).
 	 */
-	private float[] positionR = new float[PLA.MAX_SIDS];
-
-	/**
-	 * Fast forward factor (fastForwardShift=1<<(10+factor))
-	 */
-	private int fastForwardShift, fastForwardBitMask;
+	private final float[] positionR = new float[PLA.MAX_SIDS];
 
 	/**
 	 * Fade-in/fade-out enabled.
 	 */
-	private boolean fadeInFadeOutEnabled;
+	private final boolean fadeInFadeOutEnabled;
 
 	/**
 	 * Audio driver buffer.
 	 */
-	private ByteBuffer buffer;
+	private final ByteBuffer buffer;
 
 	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock,
 			AudioConfig audioConfig, AudioDriver audioDriver) {
@@ -245,6 +246,7 @@ public class SIDMixer implements Mixer {
 		this.cpuClock = cpuClock;
 		this.driver = audioDriver;
 		IAudioSection audioSection = config.getAudioSection();
+		this.buffer = driver.buffer();
 		this.bufferSize = audioSection.getBufferSize();
 		this.audioBufferL = ByteBuffer
 				.allocateDirect(Integer.BYTES * bufferSize)
@@ -256,19 +258,17 @@ public class SIDMixer implements Mixer {
 				audioSection.getSampling(), audioConfig.getFrameRate(), 20000);
 		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(),
 				audioSection.getSampling(), audioConfig.getFrameRate(), 20000);
+		this.fadeInFadeOutEnabled = config.getSidplay2Section().getFadeInTime() != 0
+				|| config.getSidplay2Section().getFadeOutTime() != 0;
 	}
 
 	public void reset() {
 		normalSpeed();
-		buffer = driver.buffer();
-		fadeInFadeOutEnabled = config.getSidplay2Section().getFadeInTime() != 0
-				|| config.getSidplay2Section().getFadeOutTime() != 0;
 		context.schedule(nullAudio, 0, Event.Phase.PHI2);
 	}
 
 	/**
-	 * Starts mixing the outputs of several SIDs. Write samples to the sound
-	 * buffer.
+	 * Starts mixing the outputs of several SIDs.
 	 */
 	public void start() {
 		context.cancel(nullAudio);
@@ -405,21 +405,22 @@ public class SIDMixer implements Mixer {
 	 * Doubles speed factor.
 	 */
 	public void fastForward() {
-		fastForwardShift = Math.min(fastForwardShift + 1, MAX_FAST_FORWARD
-				+ VOLUME_SCALER);
-		fastForwardBitMask = (1 << fastForwardShift - VOLUME_SCALER) - 1;
+		mixerAudio.fastForwardShift = Math.min(mixerAudio.fastForwardShift + 1,
+				MAX_FAST_FORWARD + VOLUME_SCALER);
+		mixerAudio.fastForwardBitMask = (1 << mixerAudio.fastForwardShift
+				- VOLUME_SCALER) - 1;
 	}
 
 	/**
 	 * Use normal speed factor.
 	 */
 	public void normalSpeed() {
-		fastForwardShift = VOLUME_SCALER;
-		fastForwardBitMask = 0;
+		mixerAudio.fastForwardShift = VOLUME_SCALER;
+		mixerAudio.fastForwardBitMask = 0;
 	}
 
 	public boolean isFastForward() {
-		return fastForwardShift - VOLUME_SCALER != 0;
+		return mixerAudio.fastForwardShift - VOLUME_SCALER != 0;
 	}
 
 }

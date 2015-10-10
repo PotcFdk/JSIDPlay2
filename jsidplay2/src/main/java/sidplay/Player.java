@@ -244,9 +244,10 @@ public class Player extends HardwareEnsemble {
 		timer.reset();
 		configureMixer(mixer -> mixer.reset());
 
-		// According to the configuration, the SIDs must be updated.
+		// Create SIDs
 		createOrUpdateSIDs();
 
+		// Create auto-start event
 		if (tune == SidTune.RESET) {
 			// Normal reset code path executing auto-start command
 			c64.getEventScheduler().schedule(new Event("Auto-start event") {
@@ -498,14 +499,15 @@ public class Player extends HardwareEnsemble {
 		}
 		playList = PlayList.getInstance(config, tune);
 
-		CPUClock cpuClock = CPUClock.getCPUClock(config.getEmulationSection(),
-				tune);
+		// PAL/NTSC
+		final CPUClock cpuClock = CPUClock.getCPUClock(
+				config.getEmulationSection(), tune);
 		setClock(cpuClock);
 
 		AudioConfig audioConfig = AudioConfig.getInstance(config
 				.getAudioSection());
 
-		// Audio driver different to Audio enum members are on hold!
+		// Note: Audio driver different to Audio enum members are on hold!
 		if (Arrays.stream(Audio.values()).anyMatch(
 				audio -> audio.getAudioDriver().equals(audioDriver))) {
 			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
@@ -514,9 +516,6 @@ public class Player extends HardwareEnsemble {
 		// replace driver settings for mp3
 		audioDriver = handleMP3(config, tune, audioDriver);
 
-		// create SID builder for hardware or emulation
-		sidBuilder = createSIDBuilder(cpuClock, audioConfig);
-
 		// open audio driver
 		try {
 			String recordingFilename = recordingFilenameProvider.apply(tune);
@@ -524,6 +523,10 @@ public class Player extends HardwareEnsemble {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+
+		// Create SID builder (software emulation or hardware)
+		sidBuilder = createSIDBuilder(cpuClock, audioConfig, audioDriver);
+
 		reset();
 		stateProperty.set(State.START);
 	}
@@ -532,7 +535,7 @@ public class Player extends HardwareEnsemble {
 	 * Create configured SID chip implementation (software/hardware).
 	 */
 	private SIDBuilder createSIDBuilder(CPUClock cpuClock,
-			AudioConfig audioConfig) {
+			AudioConfig audioConfig, AudioDriver audioDriver) {
 		final Engine engine = config.getEmulationSection().getEngine();
 		switch (engine) {
 		case EMULATION:
