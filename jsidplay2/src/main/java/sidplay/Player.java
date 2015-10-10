@@ -494,9 +494,8 @@ public class Player extends HardwareEnsemble {
 	 * @throws InterruptedException
 	 */
 	private void open() throws InterruptedException {
-		if (stateProperty.get() == State.RESTART) {
-			stateProperty.set(State.STOPPED);
-		}
+		stateProperty.set(State.STOPPED);
+
 		playList = PlayList.getInstance(config, tune);
 
 		// PAL/NTSC
