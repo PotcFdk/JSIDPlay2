@@ -46,7 +46,6 @@ public interface IConfiguration {
 	String DEFAULT_FILTER_8580 = "FilterAverage8580";
 	String DEFAULT_RESIDFP_FILTER_6581 = "FilterAlankila6581R4AR_3789";
 	String DEFAULT_RESIDFP_FILTER_8580 = "FilterTrurl8580R5_3691";
-	String DEFAULT_IS_VBR = Boolean.FALSE.toString();
 	String DEFAULT_CBR = "64";
 	String DEFAULT_VBR = "0";
 
@@ -137,10 +136,6 @@ public interface IConfiguration {
 	String getFrequency();
 
 	void setFrequency(String frequency);
-
-	boolean isVbr();
-	
-	void setIsVbr(boolean newValue);
 
 	String getCbr();
 	

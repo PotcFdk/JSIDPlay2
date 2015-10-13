@@ -41,12 +41,15 @@ import java.util.List;
 import java.util.Random;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Environment;
@@ -263,6 +266,9 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 
 	private Uri getURI(IConfiguration configuration, String resource)
 			throws URISyntaxException {
+		ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
 		StringBuilder query = new StringBuilder();
 		query.append(PAR_BUFFER_SIZE + "=" + configuration.getBufferSize()
 				+ "&");
@@ -299,7 +305,11 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		query.append(PAR_SAMPLING_METHOD + "="
 				+ configuration.getSamplingMethod() + "&");
 		query.append(PAR_FREQUENCY + "=" + configuration.getFrequency() + "&");
-		query.append(PAR_IS_VBR + "=" + configuration.isVbr() + "&");
+		if (mWifi.isConnected()) {
+			query.append(PAR_IS_VBR + "=true&");
+		} else {
+			query.append(PAR_IS_VBR + "=false&");
+		}
 		query.append(PAR_CBR + "=" + configuration.getCbr() + "&");
 		query.append(PAR_VBR + "=" + configuration.getVbr());
 
