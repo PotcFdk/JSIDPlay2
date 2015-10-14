@@ -30,10 +30,14 @@ import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_6581
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_STEREO_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_STEREO_FILTER_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_THIRD_FILTER_6581;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_THIRD_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_SAMPLING_METHOD;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_SINGLE_SONG;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_THIRD_FILTER_6581;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_THIRD_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_VBR;
 import static de.haendel.jsidplay2.config.IConfiguration.RESAMPLE;
 import static de.haendel.jsidplay2.config.IConfiguration.RESID;
@@ -82,14 +86,18 @@ public class ConfigurationTab extends TabBase {
 						new View[] { filter6581txt, filter6581, filter8580txt,
 								filter8580, stereoFilter6581txt,
 								stereoFilter6581, stereoFilter8580txt,
-								stereoFilter8580 }, isReSid);
+								stereoFilter8580, thirdFilter6581txt,
+								thirdFilter6581, thirdFilter8580txt,
+								thirdFilter8580 }, isReSid);
 
 				boolean isReSidFp = newValue.equals("RESIDFP");
 				updateFiltersVisibility(new View[] { reSIDfpFilter6581txt,
 						reSIDfpFilter6581, reSIDfpFilter8580txt,
 						reSIDfpFilter8580, reSIDfpStereoFilter6581txt,
 						reSIDfpStereoFilter6581, reSIDfpStereoFilter8580txt,
-						reSIDfpStereoFilter8580 }, isReSidFp);
+						reSIDfpStereoFilter8580, reSIDfpThirdFilter6581txt,
+						reSIDfpThirdFilter6581, reSIDfpThirdFilter8580txt,
+						reSIDfpThirdFilter8580 }, isReSidFp);
 				configuration.setDefaultEmulation(newValue);
 			} else if (PAR_DEFAULT_MODEL.equals(parName)) {
 				configuration.setDefaultModel(newValue);
@@ -113,6 +121,14 @@ public class ConfigurationTab extends TabBase {
 				configuration.setReSIDfpStereoFilter6581(newValue);
 			} else if (PAR_RESIDFP_STEREO_FILTER_8580.equals(parName)) {
 				configuration.setReSIDfpStereoFilter8580(newValue);
+			} else if (PAR_THIRD_FILTER_6581.equals(parName)) {
+				configuration.setThirdFilter6581(newValue);
+			} else if (PAR_THIRD_FILTER_8580.equals(parName)) {
+				configuration.setThirdFilter8580(newValue);
+			} else if (PAR_RESIDFP_THIRD_FILTER_6581.equals(parName)) {
+				configuration.setReSIDfpThirdFilter6581(newValue);
+			} else if (PAR_RESIDFP_THIRD_FILTER_8580.equals(parName)) {
+				configuration.setReSIDfpThirdFilter8580(newValue);
 			}
 		}
 
@@ -161,9 +177,12 @@ public class ConfigurationTab extends TabBase {
 			reSIDfpFilter8580txt;
 
 	private Spinner samplingMethod, frequency, stereoFilter6581,
-			stereoFilter8580, reSIDfpStereoFilter6581, reSIDfpStereoFilter8580;
+	stereoFilter8580, reSIDfpStereoFilter6581, reSIDfpStereoFilter8580, thirdFilter6581,
+	thirdFilter8580, reSIDfpThirdFilter6581, reSIDfpThirdFilter8580;
 	private TextView stereoFilter6581txt, stereoFilter8580txt,
-			reSIDfpStereoFilter6581txt, reSIDfpStereoFilter8580txt;
+	reSIDfpStereoFilter6581txt, reSIDfpStereoFilter8580txt,
+	thirdFilter6581txt, thirdFilter8580txt,
+	reSIDfpThirdFilter6581txt, reSIDfpThirdFilter8580txt;
 	private EditText cbr, vbr;
 
 	private SharedPreferences preferences;
@@ -221,6 +240,24 @@ public class ConfigurationTab extends TabBase {
 				.findViewById(R.id.reSIDfpStereoFilter8580);
 		reSIDfpStereoFilter8580txt = (TextView) activity
 				.findViewById(R.id.reSIDfpStereoFilter8580txt);
+
+		thirdFilter6581 = (Spinner) activity
+				.findViewById(R.id.thirdFilter6581);
+		thirdFilter6581txt = (TextView) activity
+				.findViewById(R.id.thirdFilter6581txt);
+		thirdFilter8580 = (Spinner) activity
+				.findViewById(R.id.thirdFilter8580);
+		thirdFilter8580txt = (TextView) activity
+				.findViewById(R.id.thirdFilter8580txt);
+		reSIDfpThirdFilter6581 = (Spinner) activity
+				.findViewById(R.id.reSIDfpThirdFilter6581);
+		reSIDfpThirdFilter6581txt = (TextView) activity
+				.findViewById(R.id.reSIDfpThirdFilter6581txt);
+		reSIDfpThirdFilter8580 = (Spinner) activity
+				.findViewById(R.id.reSIDfpThirdFilter8580);
+		reSIDfpThirdFilter8580txt = (TextView) activity
+				.findViewById(R.id.reSIDfpThirdFilter8580txt);
+		
 		cbr = (EditText) activity.findViewById(R.id.cbr);
 		vbr = (EditText) activity.findViewById(R.id.vbr);
 
@@ -301,6 +338,27 @@ public class ConfigurationTab extends TabBase {
 						PAR_RESIDFP_STEREO_FILTER_8580, preferences.getString(
 								PAR_RESIDFP_STEREO_FILTER_8580,
 								DEFAULT_RESIDFP_FILTER_8580));
+
+
+				ui.setupSpinner(activity, thirdFilter6581, filter6581List
+						.toArray(new String[0]), PAR_THIRD_FILTER_6581,
+						preferences.getString(PAR_THIRD_FILTER_6581,
+								DEFAULT_FILTER_6581));
+				ui.setupSpinner(activity, thirdFilter8580, filter8580List
+						.toArray(new String[0]), PAR_THIRD_FILTER_8580,
+						preferences.getString(PAR_THIRD_FILTER_8580,
+								DEFAULT_FILTER_8580));
+				ui.setupSpinner(activity, reSIDfpThirdFilter6581,
+						reSidFpFilter6581List.toArray(new String[0]),
+						PAR_RESIDFP_THIRD_FILTER_6581, preferences.getString(
+								PAR_RESIDFP_THIRD_FILTER_6581,
+								DEFAULT_RESIDFP_FILTER_6581));
+				ui.setupSpinner(activity, reSIDfpThirdFilter8580,
+						reSidFpFilter8580List.toArray(new String[0]),
+						PAR_RESIDFP_THIRD_FILTER_8580, preferences.getString(
+								PAR_RESIDFP_THIRD_FILTER_8580,
+								DEFAULT_RESIDFP_FILTER_8580));
+			
 			}
 		}.execute();
 	}

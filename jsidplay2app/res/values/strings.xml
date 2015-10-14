@@ -59,6 +59,10 @@
     <string name="stereoResid8580">Stereo Filter 8580:</string>
     <string name="stereoResidfp6581">Stereo Filter 6581:</string>
     <string name="stereoResidfp8580">Stereo Filter 8580:</string>
+    <string name="thirdResid6581">3-SID Filter 6581:</string>
+    <string name="thirdResid8580">3-SID Filter 8580:</string>
+    <string name="thirdResidfp6581">3-SID Filter 6581:</string>
+    <string name="thirdResidfp8580">3-SID Filter 8580:</string>
     <string name="about">Android App of JSIDPlay2 - Music Player &amp; C64 SID Chip Emulator\n
 JSIDPlay2 is copyrighted to:\n
 2007-2015 Ken H&#228;ndel,\n
@@ -84,5 +88,6 @@ Source code can be found at:\n
     <string name="label_service_jsidplay2">JSIDPlay2</string>
     <string name="desc_service_jsidplay2">MediaPlayer of JSIDPlay2</string>
     <string name="cbr">CBR in Kb (not in WLAN)</string>
-    <string name="vbr">VBR Quality (only in WLAN)</string>
+    <string name="vbr">VBR Quality (WLAN, only)</string>
+
 </resources>

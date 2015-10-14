@@ -18,10 +18,14 @@ import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_6581
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_STEREO_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_STEREO_FILTER_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_THIRD_FILTER_6581;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_RESIDFP_THIRD_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_SAMPLING_METHOD;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_SINGLE_SONG;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_6581;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_STEREO_FILTER_8580;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_THIRD_FILTER_6581;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_THIRD_FILTER_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_VBR;
 
 import java.io.BufferedReader;
@@ -300,6 +304,15 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 				+ configuration.getReSIDfpStereoFilter6581() + "&");
 		query.append(PAR_RESIDFP_STEREO_FILTER_8580 + "="
 				+ configuration.getReSIDfpStereoFilter8580() + "&");
+
+		query.append(PAR_THIRD_FILTER_6581 + "="
+				+ configuration.getThirdFilter6581() + "&");
+		query.append(PAR_THIRD_FILTER_8580 + "="
+				+ configuration.getThirdFilter8580() + "&");
+		query.append(PAR_RESIDFP_THIRD_FILTER_6581 + "="
+				+ configuration.getReSIDfpThirdFilter6581() + "&");
+		query.append(PAR_RESIDFP_THIRD_FILTER_8580 + "="
+				+ configuration.getReSIDfpThirdFilter8580() + "&");
 		query.append(PAR_DIGI_BOOSTED_8580 + "="
 				+ configuration.isDigiBoosted8580() + "&");
 		query.append(PAR_SAMPLING_METHOD + "="

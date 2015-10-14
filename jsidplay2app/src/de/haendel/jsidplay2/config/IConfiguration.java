@@ -12,12 +12,16 @@ public interface IConfiguration {
 	String PAR_FREQUENCY = "frequency";
 	String PAR_FILTER_6581 = "filter6581";
 	String PAR_STEREO_FILTER_6581 = "stereoFilter6581";
+	String PAR_THIRD_FILTER_6581 = "thirdFilter6581";
 	String PAR_FILTER_8580 = "filter8580";
 	String PAR_STEREO_FILTER_8580 = "stereoFilter8580";
+	String PAR_THIRD_FILTER_8580 = "thirdFilter8580";
 	String PAR_RESIDFP_FILTER_6581 = "reSIDfpFilter6581";
 	String PAR_RESIDFP_STEREO_FILTER_6581 = "reSIDfpStereoFilter6581";
+	String PAR_RESIDFP_THIRD_FILTER_6581 = "reSIDfpThirdFilter6581";
 	String PAR_RESIDFP_FILTER_8580 = "reSIDfpFilter8580";
 	String PAR_RESIDFP_STEREO_FILTER_8580 = "reSIDfpStereoFilter8580";
+	String PAR_RESIDFP_THIRD_FILTER_8580 = "reSIDfpThirdFilter8580";
 	String PAR_DIGI_BOOSTED_8580 = "digiBoosted8580";
 	String PAR_IS_VBR = "isVbr";
 	String PAR_CBR = "cbr";
@@ -125,6 +129,26 @@ public interface IConfiguration {
 
 	void setReSIDfpStereoFilter8580(String residFpFilter8580);
 
+
+
+	String getThirdFilter6581();
+
+	void setThirdFilter6581(String filter6581);
+
+	String getThirdFilter8580();
+
+	void setThirdFilter8580(String filter8580);
+
+	String getReSIDfpThirdFilter6581();
+
+	void setReSIDfpThirdFilter6581(String residFpFilter6581);
+
+	String getReSIDfpThirdFilter8580();
+
+	void setReSIDfpThirdFilter8580(String residFpFilter8580);
+
+
+	
 	boolean isDigiBoosted8580();
 
 	void setDigiBoosted8580(boolean digiBoosted);

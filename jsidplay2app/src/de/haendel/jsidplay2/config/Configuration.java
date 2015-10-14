@@ -213,6 +213,55 @@ public class Configuration implements IConfiguration {
 		this.reSIDfpStereoFilter8580 = residFpFilter8580;
 	}
 
+	private String thirdFilter6581;
+
+	@Override
+	public String getThirdFilter6581() {
+		return thirdFilter6581;
+	}
+
+	@Override
+	public void setThirdFilter6581(String filter6581) {
+		this.thirdFilter6581 = filter6581;
+
+	}
+
+	private String thirdFilter8580;
+
+	@Override
+	public String getThirdFilter8580() {
+		return thirdFilter8580;
+	}
+
+	@Override
+	public void setThirdFilter8580(String filter8580) {
+		this.thirdFilter8580 = filter8580;
+	}
+
+	private String reSIDfpThirdFilter6581;
+
+	@Override
+	public String getReSIDfpThirdFilter6581() {
+		return reSIDfpThirdFilter6581;
+	}
+
+	@Override
+	public void setReSIDfpThirdFilter6581(String residFpFilter6581) {
+		this.reSIDfpThirdFilter6581 = residFpFilter6581;
+	}
+
+	private String reSIDfpThirdFilter8580;
+
+	@Override
+	public String getReSIDfpThirdFilter8580() {
+		return reSIDfpThirdFilter8580;
+	}
+
+	@Override
+	public void setReSIDfpThirdFilter8580(String residFpFilter8580) {
+		this.reSIDfpThirdFilter8580 = residFpFilter8580;
+	}
+
 	private boolean digiBoosted8580;
 
 	@Override
