@@ -91,7 +91,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * RAM location for a user typed-in command.
 	 */
-	private static final int RAM_COMAND = 0x277;
+	private static final int RAM_COMMAND = 0x277;
 	/**
 	 * RAM location for a user typed-in command length.
 	 */
@@ -294,7 +294,7 @@ public class Player extends HardwareEnsemble {
 		byte[] ram = c64.getRAM();
 		final int length = Math.min(command.length(), MAX_COMMAND_LEN);
 		for (int charNum = 0; charNum < length; charNum++) {
-			ram[RAM_COMAND + charNum] = (byte) command.charAt(charNum);
+			ram[RAM_COMMAND + charNum] = (byte) command.charAt(charNum);
 		}
 		ram[RAM_COMMAND_LEN] = (byte) length;
 	}
