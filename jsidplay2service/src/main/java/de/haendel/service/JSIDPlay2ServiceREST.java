@@ -120,8 +120,8 @@ public class JSIDPlay2ServiceREST {
 		cfg.getAudioSection().setMainVolume(4f);
 		cfg.getAudioSection().setSecondVolume(4f);
 		cfg.getAudioSection().setThirdVolume(4f);
-		cfg.getAudioSection().setMainBalance(0.4f);
-		cfg.getAudioSection().setSecondBalance(0.6f);
+		cfg.getAudioSection().setMainBalance(0.5f);
+		cfg.getAudioSection().setSecondBalance(0.5f);
 		cfg.getAudioSection().setThirdBalance(0.5f);
 		cfg.getEmulationSection().setDefaultEmulation(emulation);
 		cfg.getEmulationSection().setDefaultSidModel(defaultSidModel);
