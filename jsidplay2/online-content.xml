@@ -115,10 +115,10 @@
 			</fx:platform>
 		</fx:jar>
 		<!-- Unsign already signed jar -->
-		<jar destfile="${webstart_dir}/bcprov-jdk16-stripped-1.46.jar">
-			<zipfileset src="${webstart_dir}/bcprov-jdk16-1.46.jar" excludes="META-INF/**/*" />
+		<jar destfile="${webstart_dir}/bcprov-jdk15on-stripped-1.52.jar">
+			<zipfileset src="${webstart_dir}/bcprov-jdk15on-1.52.jar" excludes="META-INF/**/*" />
 		</jar>
-		<move file="${webstart_dir}/bcprov-jdk16-stripped-1.46.jar" tofile="${webstart_dir}/bcprov-jdk16-1.46.jar" />
+		<move file="${webstart_dir}/bcprov-jdk15on-stripped-1.52.jar" tofile="${webstart_dir}/bcprov-jdk15on-1.52.jar" />
 		<!-- Add required manifest attributes to ALL jars-->
 		<apply executable="${java.home}/../bin/jar" failonerror="true">
 			<arg value="ufm" />

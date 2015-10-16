@@ -4,6 +4,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>kickassembler</groupId>
   <artifactId>kickassembler</artifactId>
-  <version>3.36</version>
+  <version>3.4.1</version>
   <description>POM was created from install:install-file</description>
 </project>

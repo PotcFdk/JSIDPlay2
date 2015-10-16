@@ -20,7 +20,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<debug>true</debug>
 		<codebase>http://haendel.ddns.net/~ken/</codebase>
-		<!--codebase>http://kenchis.t15.org/jsidplay2/javafx/</codebase-->
+		<!--codebase>http://kenchis.t15.org/jsidplay2/javafx/</codebase -->
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
@@ -66,71 +66,71 @@
 		<dependency>
 			<groupId>kickassembler</groupId>
 			<artifactId>kickassembler</artifactId>
-			<version>3.36</version>
+			<version>3.4.1</version>
 		</dependency>
 		<dependency>
-			<groupId>ucanaccess</groupId>
+			<groupId>net.sf.ucanaccess</groupId>
 			<artifactId>ucanaccess</artifactId>
-			<version>2.0.6_3</version>
+			<version>3.0.1</version>
 			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-file</artifactId>
-			<version>7.7.6</version>
+			<version>7.7.9</version>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-driver-zip</artifactId>
-			<version>7.7.6</version>
+			<version>7.7.9</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-driver-tar</artifactId>
-			<version>7.7.6</version>
+			<version>7.7.9</version>
 			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.3.4.Final</version>
+			<version>5.0.2.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
-			<version>2.3.2</version>
+			<version>2.3.3</version>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.4.1</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.java.jinput</groupId>
 			<artifactId>jinput</artifactId>
-			<version>2.0.5</version>
+			<version>2.0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>net.java.jinput</groupId>
 			<artifactId>jinput-platform</artifactId>
-			<version>2.0.5</version>
+			<version>2.0.6</version>
 			<classifier>natives-windows</classifier>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>2.0.3</version>
+			<version>2.1.2</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.beust</groupId>
 			<artifactId>jcommander</artifactId>
-			<version>1.35</version>
+			<version>1.48</version>
 		</dependency>
 
 		<dependency>

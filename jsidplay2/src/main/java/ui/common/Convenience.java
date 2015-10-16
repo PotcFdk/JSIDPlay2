@@ -50,7 +50,8 @@ public class Convenience {
 	private final CartFileFilter cartFileFilter = new CartFileFilter();
 
 	private Player player;
-	private Consumer<File> autoStartedFile;
+	private Consumer<File> autoStartedFile = file -> {
+	};
 
 	public Convenience(Player player) {
 		this.player = player;

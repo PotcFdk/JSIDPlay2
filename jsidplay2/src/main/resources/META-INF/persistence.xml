@@ -50,7 +50,6 @@
 			<property name="hibernate.connection.username" value=""/>
 			<property name="hibernate.connection.password" value=""/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
-			<property name="hibernate.hbm2ddl.auto" value="update"/>
 		</properties>
 	</persistence-unit>
 	<persistence-unit name="collection-ds" transaction-type="RESOURCE_LOCAL">
@@ -67,7 +66,6 @@
 			<property name="hibernate.connection.username" value=""/>
 			<property name="hibernate.connection.password" value=""/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
-			<property name="hibernate.hbm2ddl.auto" value="update"/>
 		</properties>
 	</persistence-unit>
 </persistence>
