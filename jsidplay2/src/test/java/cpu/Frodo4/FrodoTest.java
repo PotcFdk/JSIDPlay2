@@ -19,6 +19,7 @@ public class FrodoTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDADB() {
+		click("#VIDEO");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
@@ -38,6 +39,7 @@ public class FrodoTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDE00all() {
+		click("#VIDEO");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);

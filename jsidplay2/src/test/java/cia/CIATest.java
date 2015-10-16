@@ -17,6 +17,7 @@ public class CIATest extends JSIDPlay2Test {
 
 	@Test
 	public void detectCIA6526() {
+		click("#VIDEO");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
@@ -29,6 +30,7 @@ public class CIATest extends JSIDPlay2Test {
 	
 	@Test
 	public void timerBCountsA() {
+		click("#VIDEO");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
