@@ -9,7 +9,7 @@
 	<fileSets>
 		<fileSet>
 			<directory>${project.build.directory}/standalone</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 		</fileSet>
 	</fileSets>
 </assembly>

@@ -166,7 +166,6 @@
 			</resource>
 		</resources>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -180,28 +179,44 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- http://mavennatives.googlecode.com/svn/eclipse-update/ -->
-				<groupId>com.googlecode.mavennatives</groupId>
-				<artifactId>maven-nativedependencies-plugin</artifactId>
-				<version>0.0.7</version>
-				<executions>
-					<execution>
-						<id>unpacknatives</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<nativesTargetDir>${project.build.directory}/standalone</nativesTargetDir>
-							<separateDirs>false</separateDirs>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
+					<execution>
+						<id>unpack-natives</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+					          <artifactItem>
+								<groupId>net.java.jinput</groupId>
+								<artifactId>jinput-platform</artifactId>
+								<version>2.0.6</version>
+								<classifier>natives-windows</classifier>
+					            <type>jar</type>
+					            <outputDirectory>${project.build.directory}/standalone</outputDirectory>
+					          </artifactItem>
+					          <artifactItem>
+								<groupId>net.java.jinput</groupId>
+								<artifactId>jinput-platform</artifactId>
+								<version>2.0.6</version>
+								<classifier>natives-linux</classifier>
+					            <type>jar</type>
+					            <outputDirectory>${project.build.directory}/standalone</outputDirectory>
+					          </artifactItem>
+					          <artifactItem>
+								<groupId>net.java.jinput</groupId>
+								<artifactId>jinput-platform</artifactId>
+								<version>2.0.6</version>
+								<classifier>natives-osx</classifier>
+					            <type>jar</type>
+					            <outputDirectory>${project.build.directory}/standalone</outputDirectory>
+					          </artifactItem>
+					        </artifactItems>
+						</configuration>
+					</execution>
 					<execution>
 						<id>copy-dependencies</id>
 						<phase>package</phase>
@@ -246,7 +261,7 @@
 									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 									<addClasspath>true</addClasspath>
-									<mainClass>ui.JSidPlay2Main</mainClass>
+									<mainClass>${javafx.main.class}</mainClass>
 								</manifest>
 							</archive>
 							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
@@ -379,16 +394,17 @@
 							<resources>
 								<resource>
 									<directory>src/main/deploy/c64jukebox</directory>
-									<excludes>
-										<exclude>**/*.htm</exclude>
-									</excludes>
-								</resource>
-								<resource>
-									<directory>src/main/deploy/c64jukebox</directory>
 									<filtering>true</filtering>
 									<includes>
 										<include>**/*.htm</include>
 									</includes>
+								</resource>
+								<resource>
+									<directory>src/main/deploy/c64jukebox</directory>
+									<filtering>false</filtering>
+									<excludes>
+										<exclude>**/*.htm</exclude>
+									</excludes>
 								</resource>
 							</resources>
 						</configuration>
@@ -404,18 +420,19 @@
 							<resources>
 								<resource>
 									<directory>src/main/deploy/jsidplay2</directory>
-									<excludes>
-										<exclude>**/*.htm</exclude>
-										<exclude>**/*.txt</exclude>
-									</excludes>
-								</resource>
-								<resource>
-									<directory>src/main/deploy/jsidplay2</directory>
 									<filtering>true</filtering>
 									<includes>
 										<include>**/*.htm</include>
 										<include>**/*.txt</include>
 									</includes>
+								</resource>
+								<resource>
+									<directory>src/main/deploy/jsidplay2</directory>
+									<filtering>false</filtering>
+									<excludes>
+										<exclude>**/*.htm</exclude>
+										<exclude>**/*.txt</exclude>
+									</excludes>
 								</resource>
 							</resources>
 						</configuration>
@@ -454,7 +471,6 @@
 					</execution>
 				</executions>
 				<configuration>
-					<proguardVersion>5.1</proguardVersion>
 					<obfuscate>true</obfuscate>
 					<injar>deploy/jsiddevice-${project.version}.jar</injar>
 					<outjar>deploy/jsiddevice-${project.version}-proguard.jar</outjar>
@@ -470,7 +486,7 @@
 					<dependency>
 						<groupId>net.sf.proguard</groupId>
 						<artifactId>proguard-base</artifactId>
-						<version>5.1</version>
+						<version>5.2</version>
 						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
@@ -534,7 +550,7 @@
 			<plugin>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
-				<version>1.7.4</version>
+				<version>1.7.8</version>
 				<executions>
 					<execution>
 						<id>launch4j</id>
@@ -560,7 +576,7 @@
 								<windowTitle>Error</windowTitle>
 							</singleInstance>
 							<classPath>
-								<mainClass>ui.JSidPlay2Main</mainClass>
+								<mainClass>${javafx.main.class}</mainClass>
 								<jarLocation>.</jarLocation>
 								<addDependencies>true</addDependencies>
 							</classPath>
@@ -638,7 +654,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.4</version>
+				<version>2.6</version>
 				<configuration>
 					<descriptors>
 						<descriptor>src/main/assembly/zip.xml</descriptor>
@@ -660,7 +676,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
-				<version>2.4</version>
+				<version>2.5.2</version>
 				<executions>
 					<execution>
 						<id>default-install</id>
@@ -687,7 +703,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.7</version>
+				<version>2.8.2</version>
 				<executions>
 					<execution>
 						<id>default-deploy</id>
@@ -698,7 +714,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>wagon-maven-plugin</artifactId>
-				<version>1.0-beta-5</version>
+				<version>1.0</version>
 				<executions>
 					<execution>
 						<id>copy</id>
