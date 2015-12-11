@@ -14,8 +14,8 @@ public interface IAudioSection {
 	static final float DEFAULT_MAIN_VOLUME = 0.f;
 	static final float DEFAULT_SECOND_VOLUME = 0.f;
 	static final float DEFAULT_THIRD_VOLUME = 0.f;
-	static final float DEFAULT_MAIN_BALANCE = 0.f;
-	static final float DEFAULT_SECOND_BALANCE = 1.f;
+	static final float DEFAULT_MAIN_BALANCE = .5f;
+	static final float DEFAULT_SECOND_BALANCE = .5f;
 	static final float DEFAULT_THIRD_BALANCE = .5f;
 	static final int DEFAULT_BUFFER_SIZE = 2500;
 
