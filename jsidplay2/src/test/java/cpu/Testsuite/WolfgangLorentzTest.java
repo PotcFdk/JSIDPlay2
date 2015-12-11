@@ -98,7 +98,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 
 	private boolean checkFinish() {
 		for (int i = 1; i < 40; i++) {
-			if (checkScreenMessage("finish", i, 1)) {
+			if (checkScreenMessage("completed", i, 18)) {
 				return true;
 			}
 		}
