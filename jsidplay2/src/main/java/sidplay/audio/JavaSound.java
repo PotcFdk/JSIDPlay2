@@ -98,7 +98,7 @@ public class JavaSound implements AudioDriver {
 				return;
 			} catch (LineUnavailableException e) {
 				// Retry, most commonly when a requested line is already in
-				// use by another applicationm, retry
+				// use by another application (Linux)
 			}
 		} while (retries-- > 0);
 		throw new IOException("JavaSound: source data Line already in use?");
