@@ -67,7 +67,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.SettableFuture;
 
-public abstract class GuiTest {
+public abstract class GuiTest implements Timeouts {
+
 	private static final SettableFuture<Stage> stageFuture = SettableFuture
 			.create();
 	protected static Stage stage;
@@ -101,6 +102,7 @@ public abstract class GuiTest {
 			stageFuture.set(launchApp());
 			try {
 				stage = targetWindow(stageFuture.get(25, TimeUnit.SECONDS));
+				sleep(JSIDPLAY2_STARTUP_TIMEOUT);
 				FXTestUtils.bringToFront(stage);
 			} catch (Exception e) {
 				throw new RuntimeException("Unable to show stage", e);

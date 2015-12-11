@@ -14,7 +14,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 	public void detectSidModelTest() {
 		config.getSidplay2Section().setLastDirectory("target/test-classes/sid");
 
-		config.getEmulationSection().setUserSidModel(null);
+		config.getEmulationSection().setUserSidModel(ChipModel.AUTO);
 		config.getEmulationSection().setDefaultSidModel(ChipModel.MOS8580);
 		click("#file");
 		click("#load");

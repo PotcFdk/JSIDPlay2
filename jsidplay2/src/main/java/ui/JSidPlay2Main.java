@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -75,6 +77,8 @@ public class JSidPlay2Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
+		
 		player = new Player(getConfiguration());
 		player.setMenuHook(menuHook);
 		player.startC64();

@@ -15,9 +15,6 @@ import ui.JSidPlay2;
 import ui.entities.config.Configuration;
 
 public class JSIDPlay2Test extends GuiTest {
-	protected static final int FILE_BROWSER_OPENED_TIMEOUT = 1000;
-	protected static final int SID_TUNE_LOADED_TIMEOUT = 5000;
-	protected static final int SCHEDULE_THREADSAFE_TIMEOUT = 2000;
 
 	protected Configuration config;
 	protected Player player;
