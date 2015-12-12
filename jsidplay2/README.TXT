@@ -65,3 +65,9 @@ How to debug Java WebStart applications:
 set JAVAWS_VM_ARGS="-Xdebug -Dnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=8000"
 "c:\Program Files\Java\jdk1.7.0_07\bin\javaws.exe" http://kenchis.t15.org/jsidplay2/jsidplay2.jnlp
 	
+Feedback from SIDIN#15 (TODO)
+However actually JSidPlay2 miss some emulator facilities like run it at the max velocity (there is
+only a fast forward) or to delay it like you can do in Vice, or speed up disk read, but all the pro -
+gram I test are running fine.
+The is only a note for Linux users: you need to use official Oracle Java 1.8 to run it, as Open -
+JDK is not able to pick up all the stuff and execute it.
