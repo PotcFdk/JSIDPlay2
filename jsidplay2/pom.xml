@@ -109,13 +109,6 @@
 			<version>2.0.6</version>
 		</dependency>
 		<dependency>
-			<groupId>net.java.jinput</groupId>
-			<artifactId>jinput-platform</artifactId>
-			<version>2.0.6</version>
-			<classifier>natives-windows</classifier>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
 			<version>2.1.2</version>
@@ -189,7 +182,6 @@
 								<artifactId>jinput-platform</artifactId>
 								<version>2.0.6</version>
 								<classifier>natives-windows</classifier>
-					            <type>jar</type>
 					            <outputDirectory>${project.build.directory}/standalone</outputDirectory>
 					          </artifactItem>
 					          <artifactItem>
@@ -197,7 +189,6 @@
 								<artifactId>jinput-platform</artifactId>
 								<version>2.0.6</version>
 								<classifier>natives-linux</classifier>
-					            <type>jar</type>
 					            <outputDirectory>${project.build.directory}/standalone</outputDirectory>
 					          </artifactItem>
 					          <artifactItem>
@@ -205,7 +196,6 @@
 								<artifactId>jinput-platform</artifactId>
 								<version>2.0.6</version>
 								<classifier>natives-osx</classifier>
-					            <type>jar</type>
 					            <outputDirectory>${project.build.directory}/standalone</outputDirectory>
 					          </artifactItem>
 					        </artifactItems>
