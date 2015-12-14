@@ -113,7 +113,7 @@
 			<artifactId>jinput-platform</artifactId>
 			<version>2.0.6</version>
 			<classifier>natives-windows</classifier>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
@@ -221,7 +221,6 @@
 							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
 							<includeScope>runtime</includeScope>
 							<excludeScope>provided</excludeScope>
-							<excludeArtifactIds>jinput-platform</excludeArtifactIds>
 						</configuration>
 					</execution>
 					<execution>
