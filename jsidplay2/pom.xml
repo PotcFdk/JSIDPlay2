@@ -19,6 +19,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<debug>true</debug>
+		<debuglevel>lines,vars,source</debuglevel>
 		<codebase>http://haendel.ddns.net/~ken/</codebase>
 		<!--codebase>http://kenchis.t15.org/jsidplay2/javafx/</codebase -->
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
@@ -156,11 +157,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.1</version>
+				<version>2.3.2</version>
 				<configuration>
 					<debug>${debug}</debug>
 					<encoding>UTF-8</encoding>
-					<debuglevel>lines,vars,source</debuglevel>
+					<debuglevel>${debuglevel}</debuglevel>
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
