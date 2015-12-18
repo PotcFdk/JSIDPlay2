@@ -40,9 +40,9 @@ public class ReSIDfp extends ReSIDBase {
 	 *
 	 */
 	public static class FakeStereo extends ReSIDfp {
-		private IEmulationSection emulationSection;
-		private int prevNum;
-		private List<ReSIDBase> sids;
+		private final IEmulationSection emulationSection;
+		private final int prevNum;
+		private final List<ReSIDBase> sids;
 
 		public FakeStereo(final EventScheduler context, final IConfig config,
 				final int prevNum, final List<ReSIDBase> sids) {
@@ -141,7 +141,7 @@ public class ReSIDfp extends ReSIDBase {
 
 	@Override
 	public byte readOSC(int voiceNum) {
-		return sidImpl.voice[voiceNum].wave.readOSC(sid.getChipModel());
+		return sidImpl.voice[voiceNum].wave.readOSC(sidImpl.getChipModel());
 	}
 
 	/**

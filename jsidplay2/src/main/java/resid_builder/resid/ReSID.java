@@ -40,9 +40,9 @@ public class ReSID extends ReSIDBase {
 	 *
 	 */
 	public static class FakeStereo extends ReSID {
-		private IEmulationSection emulationSection;
-		private int prevNum;
-		private List<ReSIDBase> sids;
+		private final IEmulationSection emulationSection;
+		private final int prevNum;
+		private final List<ReSIDBase> sids;
 
 		public FakeStereo(final EventScheduler context, final IConfig config,
 				final int prevNum, final List<ReSIDBase> sids) {
