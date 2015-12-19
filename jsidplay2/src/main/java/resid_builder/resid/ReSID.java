@@ -75,7 +75,7 @@ public class ReSID extends ReSIDBase {
 		}
 	}
 
-	private SID sidImpl;
+	private final SID sidImpl = (SID) createSID();
 
 	/**
 	 * Constructor
@@ -89,7 +89,7 @@ public class ReSID extends ReSIDBase {
 
 	@Override
 	protected SIDChip createSID() {
-		return sidImpl = new SID();
+		return new SID();
 	}
 
 	@Override
