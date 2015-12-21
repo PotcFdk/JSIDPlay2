@@ -344,8 +344,19 @@ public class SIDMixer implements Mixer {
 	public void setVolume(int sidNum, float volumeInDB) {
 		assert volumeInDB >= -6 && volumeInDB <= 6;
 
-		volume[sidNum] = (int) (Math.pow(10, volumeInDB / 10) * (1 << VOLUME_SCALER));
+		volume[sidNum] = (int) (DECIBEL_TO_LINEAR(volumeInDB) * (1 << VOLUME_SCALER));
 		updateSampleMixerVolume();
+	}
+
+	/**
+	 * db-to-linear(x) = 10^(x / 20)
+	 * 
+	 * @param decibel
+	 *            decibel value to convert
+	 * @return converted linear value
+	 */
+	static double DECIBEL_TO_LINEAR(float decibel) {
+		return Math.pow(10, decibel / 20);
 	}
 
 	/**
