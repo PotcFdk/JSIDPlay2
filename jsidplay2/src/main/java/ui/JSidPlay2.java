@@ -50,6 +50,7 @@ import javax.imageio.ImageIO;
 import libsidplay.C64;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
+import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -245,6 +246,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void initialize() {
 		this.duringInitialization = true;
+		getStage().setTitle(
+				util.getBundle().getString("TITLE")
+						+ String.format(", %s: %s", util.getBundle()
+								.getString("RELEASE"), DATE));
 
 		final ResourceBundle bundle = util.getBundle();
 		final Configuration config = util.getConfig();
@@ -1389,9 +1394,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		}
 		// final status bar text
 		StringBuilder line = new StringBuilder();
-		line.append(String.format("%s: %s, ",
-				util.getBundle().getString("RELEASE"), DATE));
 		line.append(determineVideoNorm());
+		line.append(determineEmulation());
 		line.append(determineChipModel());
 		line.append(playerId);
 		double tuneSpeed = util.getPlayer().getC64().determineTuneSpeed();
@@ -1436,6 +1440,27 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 						.getPlayer().getTune(), 2);
 				line.append(String.format("+%s(at 0x%4x)", thirdModel,
 						thirdSidBase));
+			}
+		}
+		line.append(", ");
+		return line.toString();
+	}
+
+	private String determineEmulation() {
+		EmulationSection emulation = util.getConfig().getEmulationSection();
+		StringBuilder line = new StringBuilder();
+		line.append(String.format("%s",
+				Emulation
+						.getEmulation(emulation, util.getPlayer().getTune(), 0)
+						.name()));
+		if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
+			String stereoEmulation = Emulation.getEmulation(emulation,
+					util.getPlayer().getTune(), 1).name();
+			line.append(String.format("+%s", stereoEmulation));
+			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
+				String thirdEmulation = Emulation.getEmulation(emulation,
+						util.getPlayer().getTune(), 2).name();
+				line.append(String.format("+%s", thirdEmulation));
 			}
 		}
 		line.append(", ");

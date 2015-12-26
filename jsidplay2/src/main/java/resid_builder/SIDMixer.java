@@ -83,7 +83,8 @@ public class SIDMixer implements Mixer {
 		private int oldRandomValue;
 
 		/**
-		 * Fast forward factor (fastForwardShift=1<<(10+factor))
+		 * Fast forward factor:<BR>
+		 * fastForwardShift=1<<(VOLUME_SCALER+fastForwardFactor)
 		 */
 		private int fastForwardShift, fastForwardBitMask;
 
@@ -100,11 +101,11 @@ public class SIDMixer implements Mixer {
 		 * <LI>Cut-off overflow samples.
 		 * </OL>
 		 * <B>Note:</B><BR>
-		 * Audio buffer is cleared after reading for the next event.
+		 * Audio buffer is cleared afterwards to get refilled during next event.
 		 */
 		@Override
 		public void event() throws InterruptedException {
-			// Clock SIDs to fill audio buffer
+			// Clock SIDs to fill the audio buffer
 			for (ReSIDBase sid : sids) {
 				SampleMixer sampler = (SampleMixer) sid.getSampler();
 				// clock SID to the present moment
@@ -123,15 +124,15 @@ public class SIDMixer implements Mixer {
 					int dither = triangularDithering();
 
 					if (resamplerL.input(valL >> fastForwardShift)) {
-						buffer.putShort((short) Math.max(
-								Math.min(resamplerL.output() + dither, 32767),
-								-32768));
+						buffer.putShort((short) Math.max(Math.min(
+								resamplerL.output() + dither, Short.MAX_VALUE),
+								Short.MIN_VALUE));
 					}
 					if (resamplerR.input(valR >> fastForwardShift)) {
 						if (!buffer.putShort(
 								(short) Math.max(Math.min(resamplerR.output()
-										+ dither, 32767), -32768))
-								.hasRemaining()) {
+										+ dither, Short.MAX_VALUE),
+										Short.MIN_VALUE)).hasRemaining()) {
 							driver.write();
 							buffer.clear();
 						}
