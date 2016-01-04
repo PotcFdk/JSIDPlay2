@@ -303,7 +303,7 @@ public class Player extends HardwareEnsemble {
 	 * @param command
 	 *            basic command after reset
 	 */
-	public final void setCommand(final String command) {
+	private void setCommand(final String command) {
 		this.command = command;
 	}
 
