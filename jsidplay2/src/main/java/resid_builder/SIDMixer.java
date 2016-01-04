@@ -357,7 +357,7 @@ public class SIDMixer implements Mixer {
 	 * @return converted linear value
 	 */
 	static double DECIBEL_TO_LINEAR(float decibel) {
-		return Math.pow(10, decibel / 20);
+		return Math.pow(10., decibel / 20.);
 	}
 
 	/**
@@ -398,16 +398,16 @@ public class SIDMixer implements Mixer {
 	 * Stereo or 3-SID output: Use speaker audibility and volume.
 	 */
 	private void updateSampleMixerVolume() {
-		boolean stereo = sids.size() > 1;
+		boolean mono = sids.size() == 1;
 		int sidNum = 0;
 		for (ReSIDBase sid : sids) {
 			SampleMixer sampler = (SampleMixer) sid.getSampler();
-			if (stereo) {
+			if (mono) {
+				sampler.setVolume(volume[sidNum], volume[sidNum]);
+			} else {
 				int volumeL = (int) (volume[sidNum] * positionL[sidNum]);
 				int volumeR = (int) (volume[sidNum] * positionR[sidNum]);
 				sampler.setVolume(volumeL, volumeR);
-			} else {
-				sampler.setVolume(volume[sidNum], volume[sidNum]);
 			}
 			sidNum++;
 		}

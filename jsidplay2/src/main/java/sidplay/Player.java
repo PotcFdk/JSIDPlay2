@@ -76,12 +76,12 @@ import sidplay.player.Timer;
 public class Player extends HardwareEnsemble {
 
 	/**
-	 * Delay in cycles, for normal RESET code path, before autostart commands
+	 * Delay in cycles, for normal RESET code path, before auto-start commands
 	 * are executed (~2.5 seconds).
 	 */
 	private static final int RESET_INIT_DELAY = 2500000;
 	/**
-	 * Timeout (in ms) for sleeping if player is paused.
+	 * Timeout (in ms) for sleeping, if player is paused.
 	 */
 	private static final int PAUSE_SLEEP_TIME = 250;
 	/**
@@ -142,7 +142,7 @@ public class Player extends HardwareEnsemble {
 	private Consumer<Player> interactivityHook = player -> {
 	};
 	/**
-	 * Audio driver.
+	 * Currently used audio driver.
 	 */
 	private AudioDriver audioDriver = Audio.SOUNDCARD.getAudioDriver(),
 			oldAudioDriver;
@@ -159,7 +159,7 @@ public class Player extends HardwareEnsemble {
 	 */
 	private SidDatabase sidDatabase;
 	/**
-	 * Create a filename to be used for recording.
+	 * Create a base name of a filename to be used for recording.
 	 */
 	private Function<SidTune, String> recordingFilenameProvider = tune -> "jsidplay2";
 
@@ -259,7 +259,6 @@ public class Player extends HardwareEnsemble {
 							datasette.control(Control.START);
 						}
 						typeInCommand(command);
-						command = null;
 					}
 				}
 			}, RESET_INIT_DELAY);
@@ -278,7 +277,6 @@ public class Player extends HardwareEnsemble {
 						command = loadAddr == 0x0801 ? RUN : String.format(SYS,
 								loadAddr);
 						typeInCommand(command);
-						command = null;
 					}
 				}
 			}, tune.getInitDelay());
@@ -300,16 +298,6 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * What is the current playing time in secs.
-	 * 
-	 * @return the current playing time in secs
-	 */
-	public final int time() {
-		final EventScheduler c = c64.getEventScheduler();
-		return (int) (c.getTime(Phase.PHI2) / c.getCyclesPerSecond());
-	}
-
-	/**
 	 * Enter basic command after reset.
 	 * 
 	 * @param command
@@ -317,6 +305,16 @@ public class Player extends HardwareEnsemble {
 	 */
 	public final void setCommand(final String command) {
 		this.command = command;
+	}
+
+	/**
+	 * What is the current playing time in secs.
+	 * 
+	 * @return the current playing time in secs
+	 */
+	public final int time() {
+		final EventScheduler c = c64.getEventScheduler();
+		return (int) (c.getTime(Phase.PHI2) / c.getCyclesPerSecond());
 	}
 
 	/**
@@ -687,6 +685,20 @@ public class Player extends HardwareEnsemble {
 	public final void play(final SidTune tune) {
 		stopC64();
 		setTune(tune);
+		setCommand(null);
+		startC64();
+	}
+
+	/**
+	 * Reset C64 and enter basic command.
+	 * 
+	 * @param command
+	 *            basic command to be entered after a normal reset
+	 */
+	public final void resetC64(String command) {
+		stopC64();
+		setTune(SidTune.RESET);
+		setCommand(command);
 		startC64();
 	}
 

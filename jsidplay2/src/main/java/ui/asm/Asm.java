@@ -107,13 +107,9 @@ public class Asm extends Tab implements UIPart {
 			InputStream asm = new ByteArrayInputStream(contents.getText()
 					.getBytes("UTF-8"));
 			byte[] assembly = assembler.assemble(ASM_RESOURCE, asm, globals);
-			int startAddress = (assembly[0] & 0xff)
-					+ ((assembly[1] & 0xff) << 8);
 			InputStream is = new ByteArrayInputStream(assembly);
 			SidTune tune = SidTune.load("assembly.prg", is);
 			status.setText("");
-			util.getPlayer()
-					.setCommand(String.format("SYS %d\r", startAddress));
 			util.getPlayer().play(tune);
 		} catch (AsmError e) {
 			if (e.getDebugInfo() != null) {

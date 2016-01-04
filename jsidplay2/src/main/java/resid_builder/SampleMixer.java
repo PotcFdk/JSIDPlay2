@@ -46,7 +46,7 @@ class SampleMixer implements IntConsumer {
 		}
 
 		/**
-		 * Set fade-in time. Increae volume from zero to the maximum.
+		 * Set fade-in time. Increase volume from zero to the maximum.
 		 * 
 		 * @param fadeIn
 		 *            fade-in time in clock ticks

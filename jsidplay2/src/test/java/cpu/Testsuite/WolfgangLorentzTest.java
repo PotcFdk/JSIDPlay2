@@ -1,7 +1,6 @@
 package cpu.Testsuite;
 
 import static javafx.scene.input.KeyCode.ENTER;
-import static libsidplay.sidtune.SidTune.RESET;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,8 +26,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 		type("Disk1.d64");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
-		player.setCommand("LOAD\"*\",8\rRUN\r");
-		player.play(RESET);
+		player.resetC64("LOAD\"*\",8\rRUN\r");
 		while (!checkDiskChange(2)) {
 			sleep(10000);
 			if (checkTestFailed()) {
@@ -45,8 +43,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 		type("Disk2.d64");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
-		player.setCommand("LOAD\"*\",8\rRUN\r");
-		player.play(RESET);
+		player.resetC64("LOAD\"*\",8\rRUN\r");
 		while (!checkDiskChange(3)) {
 			sleep(10000);
 			if (checkTestFailed()) {
@@ -63,8 +60,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 		type("Disk3.d64");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
-		player.setCommand("LOAD\"*\",8\rRUN\r");
-		player.play(RESET);
+		player.resetC64("LOAD\"*\",8\rRUN\r");
 		while (!checkFinish()) {
 			sleep(10000);
 			if (checkTestFailed()) {

@@ -152,8 +152,7 @@ public class Convenience {
 			player.play(SidTune.load(file));
 			autoStartedFile.accept(file);
 		} else {
-			player.setCommand(command);
-			player.play(SidTune.RESET);
+			player.resetC64(command);
 		}
 	}
 
