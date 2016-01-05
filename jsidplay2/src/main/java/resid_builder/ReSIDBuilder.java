@@ -129,7 +129,7 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 	}
 
 	/**
-	 * Create a new SID chip implemention.
+	 * Create a new SID chip implementation.
 	 * 
 	 * @param sidImplCls
 	 *            SID implementation class

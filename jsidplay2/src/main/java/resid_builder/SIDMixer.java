@@ -356,7 +356,7 @@ public class SIDMixer implements Mixer {
 	 *            decibel value to convert
 	 * @return converted linear value
 	 */
-	static double DECIBEL_TO_LINEAR(float decibel) {
+	private static double DECIBEL_TO_LINEAR(float decibel) {
 		return Math.pow(10., decibel / 20.);
 	}
 
