@@ -6,7 +6,7 @@ public enum PSIDDriver {
 	/** VICE PSID driver */
 	VICE("/libsidplay/sidtune/psiddriver_vice.asm");
 
-	private String driverPath;
+	private final String driverPath;
 
 	private PSIDDriver(String driverPath) {
 		this.driverPath = driverPath;

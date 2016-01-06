@@ -81,7 +81,8 @@ public class JoystickSettings extends C64Window {
 		activateJoy1.setSelected(util.getPlayer().getC64()
 				.isJoystickConnected(0));
 		select(controllers, joystickSettings.getDeviceName1(), device1);
-
+		chooseDevice1();
+		
 		Controller controller1 = device1.getSelectionModel().getSelectedItem();
 		select(controller1, joystickSettings.getComponentNameUp1(), up1);
 		select(controller1, joystickSettings.getComponentNameDown1(), down1);
@@ -98,6 +99,7 @@ public class JoystickSettings extends C64Window {
 		activateJoy2.setSelected(util.getPlayer().getC64()
 				.isJoystickConnected(1));
 		select(controllers, joystickSettings.getDeviceName2(), device2);
+		chooseDevice2();
 
 		Controller controller2 = device2.getSelectionModel().getSelectedItem();
 		select(controller2, joystickSettings.getComponentNameUp2(), up2);
@@ -114,16 +116,12 @@ public class JoystickSettings extends C64Window {
 
 		// periodically update joystick test tables
 		final Duration oneFrameAmt = Duration.millis(1000);
-		final KeyFrame oneFrame = new KeyFrame(oneFrameAmt, (evt) -> {
+		final KeyFrame oneFrame = new KeyFrame(oneFrameAmt, evt -> {
 			if (activateJoy1.isSelected()) {
-				// XXX better way to update table?
-				testTable1.getColumns().get(1).setVisible(false);
-				testTable1.getColumns().get(1).setVisible(true);
+				testTable1.refresh();
 			}
 			if (activateJoy2.isSelected()) {
-				// XXX better way to update table?
-				testTable2.getColumns().get(1).setVisible(false);
-				testTable2.getColumns().get(1).setVisible(true);
+				testTable2.refresh();
 			}
 		});
 		timer = new Timeline(oneFrame);
@@ -183,8 +181,10 @@ public class JoystickSettings extends C64Window {
 	@FXML
 	private void chooseDevice1() {
 		Controller controller1 = device1.getSelectionModel().getSelectedItem();
-		components1.setAll(controller1.getComponents());
-		util.getConfig().getJoystickSection().setDeviceName1(controller1.getName());
+		if (controller1 != null) {
+			components1.setAll(controller1.getComponents());
+			util.getConfig().getJoystickSection().setDeviceName1(controller1.getName());
+		}
 	}
 
 	@FXML
@@ -285,8 +285,10 @@ public class JoystickSettings extends C64Window {
 	@FXML
 	private void chooseDevice2() {
 		Controller controller2 = device2.getSelectionModel().getSelectedItem();
-		components2.setAll(controller2.getComponents());
-		util.getConfig().getJoystickSection().setDeviceName2(controller2.getName());
+		if (controller2 != null) {
+			components2.setAll(controller2.getComponents());
+			util.getConfig().getJoystickSection().setDeviceName2(controller2.getName());
+		}
 	}
 
 	@FXML

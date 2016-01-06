@@ -248,8 +248,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		this.duringInitialization = true;
 		getStage().setTitle(
 				util.getBundle().getString("TITLE")
-						+ String.format(", %s: %s", util.getBundle()
-								.getString("RELEASE"), DATE));
+						+ String.format(", %s: %s",
+								util.getBundle().getString("RELEASE"), DATE));
 
 		final ResourceBundle bundle = util.getBundle();
 		final Configuration config = util.getConfig();
@@ -1010,10 +1010,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			try {
 				Runtime.getRuntime().exec("pavucontrol");
 			} catch (IOException e2) {
-				String toolTip = "For Linux PulseAudio: pavucontrol not found!";
-				volumeButton.setDisable(true);
-				volumeButton.setTooltip(new Tooltip(toolTip));
-				System.err.println(toolTip);
+				try {
+					Runtime.getRuntime().exec("kmix");
+				} catch (IOException e3) {
+					String toolTip = "For Linux: pavucontrol(PulseAudio) or kmix(ALSA) not found!";
+					volumeButton.setDisable(true);
+					volumeButton.setTooltip(new Tooltip(toolTip));
+					System.err.println(toolTip);
+				}
 			}
 		} else if (OS.indexOf("mac") >= 0) {
 			String toolTip = "For OSX: N.Y.I!";

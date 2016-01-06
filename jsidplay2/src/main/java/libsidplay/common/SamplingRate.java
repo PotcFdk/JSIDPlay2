@@ -8,7 +8,7 @@ public enum SamplingRate {
 	/** 96 KHz */
 	HIGH(96000);
 
-	private int frequency;
+	private final int frequency;
 
 	private SamplingRate(final int frequency) {
 		this.frequency = frequency;
