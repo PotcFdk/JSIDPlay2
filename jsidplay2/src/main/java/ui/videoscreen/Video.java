@@ -430,7 +430,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Connect Keyboard with C64 keyboard.
 	 */
 	private void setupKeyboard() {
-		monitor.setOnKeyPressed((event) -> {
+		monitor.setOnKeyPressed(event -> {
 			KeyTableEntry keyTableEntry = util.getConfig().getKeyTabEntry(
 					event.getCode().getName());
 

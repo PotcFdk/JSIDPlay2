@@ -386,178 +386,6 @@ public class Configuration implements IConfig {
 		INITIAL_VIEWS.add(new ViewEntity(Video.ID));
 	}
 
-	private Integer id;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@XmlTransient
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	private SidPlay2Section sidplay2 = new SidPlay2Section();
-
-	public void setSidplay2Section(SidPlay2Section sidplay2) {
-		this.sidplay2 = sidplay2;
-	}
-
-	@Embedded
-	@Override
-	public SidPlay2Section getSidplay2Section() {
-		return sidplay2;
-	}
-
-	private OnlineSection online = new OnlineSection();
-
-	@Embedded
-	public OnlineSection getOnlineSection() {
-		return online;
-	}
-
-	public void setOnlineSection(OnlineSection online) {
-		this.online = online;
-	}
-
-	private C1541Section c1541 = new C1541Section();
-
-	public void setC1541Section(C1541Section c1541) {
-		this.c1541 = c1541;
-	}
-
-	@Override
-	@Embedded
-	public C1541Section getC1541Section() {
-		return c1541;
-	}
-
-	private PrinterSection printer = new PrinterSection();
-
-	public void setPrinterSection(PrinterSection printer) {
-		this.printer = printer;
-	}
-
-	@Embedded
-	@Override
-	public PrinterSection getPrinterSection() {
-		return printer;
-	}
-
-	private JoystickSection joystickSection = new JoystickSection();
-
-	public void setJoystickSection(JoystickSection joystick) {
-		this.joystickSection = joystick;
-	}
-
-	@Embedded
-	public JoystickSection getJoystickSection() {
-		return joystickSection;
-	}
-
-	private AudioSection audioSection = new AudioSection();
-
-	public void setAudioSection(AudioSection audio) {
-		this.audioSection = audio;
-	}
-
-	@Embedded
-	@Override
-	public AudioSection getAudioSection() {
-		return audioSection;
-	}
-
-	private EmulationSection emulationSection = new EmulationSection();
-
-	public void setEmulationSection(EmulationSection emulation) {
-		this.emulationSection = emulation;
-	}
-
-	@Embedded
-	@Override
-	public EmulationSection getEmulationSection() {
-		return emulationSection;
-	}
-
-	private String currentFavorite;
-
-	public String getCurrentFavorite() {
-		return currentFavorite;
-	}
-
-	public void setCurrentFavorite(String currentFavorite) {
-		this.currentFavorite = currentFavorite;
-	}
-
-	private final List<FavoritesSection> INITIAL_FAVORITES;
-	{
-		INITIAL_FAVORITES = new ArrayList<FavoritesSection>();
-		FavoritesSection dbFavoritesSection;
-		dbFavoritesSection = new FavoritesSection();
-		INITIAL_FAVORITES.add(dbFavoritesSection);
-	}
-
-	protected List<FavoritesSection> favorites = INITIAL_FAVORITES;
-
-	protected ObservableList<FavoritesSection> observableFavorites;
-
-	public void setFavorites(List<FavoritesSection> favorites) {
-		this.favorites = favorites;
-	}
-
-	@OneToMany(cascade = CascadeType.ALL)
-	public List<FavoritesSection> getFavorites() {
-		if (favorites == null) {
-			favorites = new ArrayList<FavoritesSection>();
-		}
-		return getObservableFavorites();
-	}
-
-	@Transient
-	public ObservableList<FavoritesSection> getObservableFavorites() {
-		if (observableFavorites == null) {
-			observableFavorites = FXCollections
-					.<FavoritesSection> observableArrayList(favorites);
-			Bindings.bindContent(favorites, observableFavorites);
-		}
-		return observableFavorites;
-	}
-
-	protected List<ViewEntity> views = INITIAL_VIEWS;
-
-	private ObservableList<ViewEntity> observableViews;
-
-	@OneToMany(cascade = CascadeType.ALL)
-	public List<ViewEntity> getViews() {
-		if (observableViews == null) {
-			observableViews = FXCollections
-					.<ViewEntity> observableArrayList(views);
-			Bindings.bindContent(views, observableViews);
-		}
-		return observableViews;
-	}
-
-	public void setViews(List<ViewEntity> views) {
-		this.views = views;
-	}
-
-	private List<FilterSection> filter = INITIAL_FILTERS;
-
-	public void setFilterSection(List<FilterSection> filter) {
-		this.filter = filter;
-	}
-
-	@OneToMany(cascade = CascadeType.ALL)
-	@Override
-	public List<FilterSection> getFilterSection() {
-		if (filter == null) {
-			filter = new ArrayList<FilterSection>();
-		}
-		return filter;
-	}
-
 	private final List<KeyTableEntity> INITIAL_KEYCODES;
 	{
 		INITIAL_KEYCODES = new ArrayList<KeyTableEntity>();
@@ -666,15 +494,185 @@ public class Configuration implements IConfig {
 		INITIAL_KEYCODES.addAll(keyCodes);
 	}
 
+	private final List<FavoritesSection> INITIAL_FAVORITES;
+	{
+		INITIAL_FAVORITES = new ArrayList<FavoritesSection>();
+		INITIAL_FAVORITES.add(new FavoritesSection());
+	}
+
+	private Integer id;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@XmlTransient
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	private SidPlay2Section sidplay2 = new SidPlay2Section();
+
+	public void setSidplay2Section(SidPlay2Section sidplay2) {
+		this.sidplay2 = sidplay2;
+	}
+
+	@Embedded
+	@Override
+	public SidPlay2Section getSidplay2Section() {
+		return sidplay2;
+	}
+
+	private OnlineSection online = new OnlineSection();
+
+	@Embedded
+	public OnlineSection getOnlineSection() {
+		return online;
+	}
+
+	public void setOnlineSection(OnlineSection online) {
+		this.online = online;
+	}
+
+	private C1541Section c1541 = new C1541Section();
+
+	public void setC1541Section(C1541Section c1541) {
+		this.c1541 = c1541;
+	}
+
+	@Override
+	@Embedded
+	public C1541Section getC1541Section() {
+		return c1541;
+	}
+
+	private PrinterSection printer = new PrinterSection();
+
+	public void setPrinterSection(PrinterSection printer) {
+		this.printer = printer;
+	}
+
+	@Embedded
+	@Override
+	public PrinterSection getPrinterSection() {
+		return printer;
+	}
+
+	private JoystickSection joystickSection = new JoystickSection();
+
+	public void setJoystickSection(JoystickSection joystick) {
+		this.joystickSection = joystick;
+	}
+
+	@Embedded
+	public JoystickSection getJoystickSection() {
+		return joystickSection;
+	}
+
+	private AudioSection audioSection = new AudioSection();
+
+	public void setAudioSection(AudioSection audio) {
+		this.audioSection = audio;
+	}
+
+	@Embedded
+	@Override
+	public AudioSection getAudioSection() {
+		return audioSection;
+	}
+
+	private EmulationSection emulationSection = new EmulationSection();
+
+	public void setEmulationSection(EmulationSection emulation) {
+		this.emulationSection = emulation;
+	}
+
+	@Embedded
+	@Override
+	public EmulationSection getEmulationSection() {
+		return emulationSection;
+	}
+
+	private String currentFavorite;
+
+	public void setCurrentFavorite(String currentFavorite) {
+		this.currentFavorite = currentFavorite;
+	}
+
+	public String getCurrentFavorite() {
+		return currentFavorite;
+	}
+
+	protected List<FavoritesSection> favorites = INITIAL_FAVORITES;
+
+	private ObservableList<FavoritesSection> observableFavorites;
+
+	public void setFavorites(List<FavoritesSection> favorites) {
+		this.favorites = favorites;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
+	public List<FavoritesSection> getFavorites() {
+		if (favorites == null) {
+			favorites = new ArrayList<FavoritesSection>();
+		}
+		return getObservableFavorites();
+	}
+
+	@Transient
+	public ObservableList<FavoritesSection> getObservableFavorites() {
+		if (observableFavorites == null) {
+			observableFavorites = FXCollections
+					.<FavoritesSection> observableArrayList(favorites);
+			Bindings.bindContent(favorites, observableFavorites);
+		}
+		return observableFavorites;
+	}
+
+	protected List<ViewEntity> views = INITIAL_VIEWS;
+
+	private ObservableList<ViewEntity> observableViews;
+
+	@OneToMany(cascade = CascadeType.ALL)
+	public List<ViewEntity> getViews() {
+		if (observableViews == null) {
+			observableViews = FXCollections
+					.<ViewEntity> observableArrayList(views);
+			Bindings.bindContent(views, observableViews);
+		}
+		return observableViews;
+	}
+
+	public void setViews(List<ViewEntity> views) {
+		this.views = views;
+	}
+
+	private List<FilterSection> filter = INITIAL_FILTERS;
+
+	public void setFilterSection(List<FilterSection> filter) {
+		this.filter = filter;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@Override
+	public List<FilterSection> getFilterSection() {
+		if (filter == null) {
+			filter = new ArrayList<FilterSection>();
+		}
+		return filter;
+	}
+
 	private List<KeyTableEntity> keyCodeMap = INITIAL_KEYCODES;
+
+	public void setKeyCodeMap(List<KeyTableEntity> keyCodeMap) {
+		this.keyCodeMap = keyCodeMap;
+	}
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<KeyTableEntity> getKeyCodeMap() {
 		return keyCodeMap;
-	}
-
-	public void setKeyCodeMap(List<KeyTableEntity> keyCodeMap) {
-		this.keyCodeMap = keyCodeMap;
 	}
 
 	public KeyTableEntry getKeyTabEntry(String key) {
