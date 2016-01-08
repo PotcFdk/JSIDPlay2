@@ -397,7 +397,7 @@ public class Player extends HardwareEnsemble {
 	 */
 	public final void startC64() {
 		if (playerThread == null || !playerThread.isAlive()) {
-			playerThread = new Thread(playerRunnable);
+			playerThread = new Thread(playerRunnable, "Player");
 			playerThread.setPriority(Thread.MAX_PRIORITY);
 			playerThread.start();
 		}
@@ -408,25 +408,27 @@ public class Player extends HardwareEnsemble {
 	 */
 	public final void stopC64() {
 		try {
-			while (playerThread != null && playerThread.isAlive()) {
+			if (playerThread != null && playerThread.isAlive()) {
 				quit();
 				playerThread.join(3000);
-				// If the player can not be stopped clean:
-				playerThread.interrupt();
+				if (playerThread.isAlive()) {
+					// still alive? emergency stop
+					playerThread.interrupt();
+				}
 			}
 		} catch (InterruptedException e) {
-			// unclean player thread halt (interrupted)
+			// unclean player thread stop
 		}
 	}
 
 	/**
-	 * Wait for termination of the player thread.
+	 * Wait forever for termination of the player thread.
 	 * 
 	 * @throws InterruptedException
 	 */
 	public final void waitForC64() throws InterruptedException {
-		while (playerThread != null && playerThread.isAlive()) {
-			Thread.sleep(1000);
+		if (playerThread != null) {
+			playerThread.join(0);
 		}
 	}
 
