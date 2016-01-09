@@ -301,7 +301,7 @@ public class ConsoleIO {
 				break;
 
 			case 'p':
-				player.pause();
+				player.pauseContinue();
 				break;
 
 			case '1':

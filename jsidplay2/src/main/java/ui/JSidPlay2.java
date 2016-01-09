@@ -72,7 +72,6 @@ import libsidutils.SidIdInfo.PlayerInfoSection;
 import libsidutils.WebUtils;
 import sidplay.Player;
 import sidplay.audio.Audio;
-import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
@@ -447,7 +446,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 
 	@FXML
 	private void pause() {
-		util.getPlayer().pause();
+		util.getPlayer().pauseContinue();
 	}
 
 	@FXML
@@ -485,8 +484,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 	@FXML
 	private void nextFavorite() {
 		final C64 c64 = util.getPlayer().getC64();
-		if (util.getPlayer().stateProperty().get() == State.PAUSED) {
-			util.getPlayer().pause();
+		if (util.getPlayer().stateProperty().get() == State.PAUSE) {
+			util.getPlayer().pauseContinue();
 		}
 		final EventScheduler ctx = c64.getEventScheduler();
 		ctx.scheduleThreadSafe(new Event("Timer End To Play Next Favorite!") {
@@ -877,14 +876,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 			Device device = devicesBox.getSelectionModel().getSelectedItem();
 			int deviceIndex = devicesBox.getItems().indexOf(device);
 			util.getConfig().getAudioSection().setDevice(deviceIndex);
-			AudioDriver driver = util.getPlayer().getAudioDriver();
-			if (driver instanceof JavaSound) {
-				JavaSound js = (JavaSound) driver;
-				try {
-					js.setAudioDevice(device.getInfo());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			JavaSound js = (JavaSound) Audio.SOUNDCARD.getAudioDriver();
+			try {
+				js.setAudioDevice(device.getInfo());
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -1375,7 +1371,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
 		boolean motorOn = util.getConfig().getC1541Section().isDriveSoundOn()
-				&& util.getPlayer().stateProperty().get() == State.RUNNING
+				&& util.getPlayer().stateProperty().get() == State.PLAY
 				&& c1541.getDiskController().isMotorOn();
 		if (!oldMotorOn && motorOn) {
 			MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);

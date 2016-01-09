@@ -45,7 +45,7 @@ public class SidReg extends Tab implements UIPart {
 
 	private ChangeListener<State> sidRegStop = (observable, oldValue,
 			newValue) -> {
-		if (newValue == State.EXIT) {
+		if (newValue == State.END) {
 			Platform.runLater(() -> recordSidWrites(false));
 		}
 	};

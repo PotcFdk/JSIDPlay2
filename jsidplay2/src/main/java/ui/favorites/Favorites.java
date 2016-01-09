@@ -65,7 +65,7 @@ public class Favorites extends Tab implements UIPart {
 
 	private ChangeListener<? super State> nextTuneListener = (observable,
 			oldValue, newValue) -> {
-		if (newValue == State.EXIT) {
+		if (newValue == State.END) {
 			Platform.runLater(() -> playNextTune());
 		}
 	};

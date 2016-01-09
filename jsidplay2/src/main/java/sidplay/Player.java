@@ -61,7 +61,7 @@ import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
-import sidplay.audio.MP3Driver.MP3Stream;
+import sidplay.audio.MP3Driver;
 import sidplay.ini.IniConfig;
 import sidplay.player.PlayList;
 import sidplay.player.State;
@@ -110,7 +110,7 @@ public class Player extends HardwareEnsemble {
 	 * Music player state.
 	 */
 	private ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
-			State.STOPPED);
+			State.STOP);
 	/**
 	 * Play timer.
 	 */
@@ -470,11 +470,11 @@ public class Player extends HardwareEnsemble {
 				// Open tune
 				open();
 				menuHook.accept(Player.this);
-				// Play next chunk of sound data, until it gets stopped
-				stateProperty.set(State.RUNNING);
+				// Play next chunk of sound data
+				stateProperty.set(State.PLAY);
 				while (play()) {
 					// Pause? sleep for awhile
-					if (stateProperty.get() == State.PAUSED) {
+					if (stateProperty.get() == State.PAUSE) {
 						Thread.sleep(PAUSE_SLEEP_TIME);
 					}
 					interactivityHook.accept(Player.this);
@@ -494,7 +494,7 @@ public class Player extends HardwareEnsemble {
 	 * @throws InterruptedException
 	 */
 	private void open() throws InterruptedException {
-		stateProperty.set(State.STOPPED);
+		stateProperty.set(State.STOP);
 
 		playList = PlayList.getInstance(config, tune);
 
@@ -548,21 +548,12 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Get the currently used audio driver.
-	 * 
-	 * @return current audio driver
-	 */
-	public AudioDriver getAudioDriver() {
-		return audioDriver;
-	}
-
-	/**
 	 * Set alternative audio driver (not contained in {@link Audio}).<BR>
 	 * For example, If it is required to use a new instance of audio driver each
 	 * time the player plays a tune.
 	 * 
 	 * @param driver
-	 *            for example {@link MP3Stream}
+	 *            for example {@link MP3Driver.MP3Stream}
 	 */
 	public final void setAudioDriver(final AudioDriver driver) {
 		this.audioDriver = driver;
@@ -647,23 +638,22 @@ public class Player extends HardwareEnsemble {
 	 *             audio production interrupted
 	 */
 	private boolean play() throws InterruptedException {
-		for (int i = 0; stateProperty.get() == State.RUNNING
+		for (int i = 0; stateProperty.get() == State.PLAY
 				&& i < config.getAudioSection().getBufferSize(); i++) {
 			c64.getEventScheduler().clock();
 		}
-		return stateProperty.get() == State.RUNNING
-				|| stateProperty.get() == State.PAUSED;
+		return stateProperty.get() == State.PLAY
+				|| stateProperty.get() == State.PAUSE;
 	}
 
 	/**
 	 * Get end state according to the configuration.<BR>
-	 * Loop song? Restart the player, otherwise stop.
+	 * Loop song? Restart the player, otherwise end tune.
 	 * 
 	 * @return end state of the player
 	 */
 	private State getEndState() {
-		return config.getSidplay2Section().isLoop() ? State.RESTART
-				: State.EXIT;
+		return config.getSidplay2Section().isLoop() ? State.RESTART : State.END;
 	}
 
 	/**
@@ -705,16 +695,17 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Pause player.
+	 * Pause or continue the player.
 	 */
-	public final void pause() {
+	public final void pauseContinue() {
 		if (stateProperty.get() == State.QUIT
-				|| stateProperty.get() == State.EXIT) {
+				|| stateProperty.get() == State.END) {
 			play(tune);
-		} else if (stateProperty.get() == State.PAUSED) {
-			stateProperty.set(State.RUNNING);
+		} else if (stateProperty.get() == State.PAUSE) {
+			stateProperty.set(State.PLAY);
+			// audio driver continues automatically, next call of write!
 		} else {
-			stateProperty.set(State.PAUSED);
+			stateProperty.set(State.PAUSE);
 			audioDriver.pause();
 		}
 	}

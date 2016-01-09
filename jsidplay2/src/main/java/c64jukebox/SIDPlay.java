@@ -123,7 +123,7 @@ public class SIDPlay extends Applet {
 	 * Pause/Continue the player.
 	 */
 	public void pauseOrContinueSID() {
-		player.pause();
+		player.pauseContinue();
 	}
 
 	/**

@@ -87,14 +87,14 @@ public class Oscilloscope extends Tab implements UIPart {
 			newValue) -> {
 		final EventScheduler ctx = util.getPlayer().getC64()
 				.getEventScheduler();
-		if (newValue == State.RUNNING) {
+		if (newValue == State.PLAY) {
 			if (!ctx.isPending(highResolutionEvent)) {
 				ctx.schedule(highResolutionEvent, 0, Phase.PHI2);
 			}
 			Platform.runLater(() -> {
 				startOscilloscope();
 			});
-		} else if (newValue == State.PAUSED) {
+		} else if (newValue == State.PAUSE) {
 			ctx.cancel(highResolutionEvent);
 			Platform.runLater(() -> {
 				stopOscilloscope();
