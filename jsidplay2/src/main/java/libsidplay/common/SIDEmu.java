@@ -72,8 +72,6 @@ public abstract class SIDEmu {
 
 	public abstract void clock();
 
-	public abstract ChipModel getChipModel();
-
 	public abstract void setChipModel(final ChipModel model);
 
 	public abstract void setClockFrequency(double cpuFrequency);

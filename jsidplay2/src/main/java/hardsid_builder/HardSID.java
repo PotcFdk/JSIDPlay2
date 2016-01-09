@@ -196,8 +196,7 @@ public class HardSID extends SIDEmu {
 		return true;
 	}
 
-	@Override
-	public ChipModel getChipModel() {
+	ChipModel getChipModel() {
 		return chipModel;
 	}
 

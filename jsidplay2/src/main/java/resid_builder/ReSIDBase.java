@@ -32,11 +32,11 @@ public abstract class ReSIDBase extends SIDEmu {
 		reset((byte) 0xf);
 	}
 
-	public void setSampler(IntConsumer sampler) {
+	void setSampler(IntConsumer sampler) {
 		this.sampler = sampler;
 	}
 
-	public IntConsumer getSampler() {
+	IntConsumer getSampler() {
 		return sampler;
 	}
 
@@ -98,11 +98,6 @@ public abstract class ReSIDBase extends SIDEmu {
 	}
 
 	@Override
-	public ChipModel getChipModel() {
-		return sid.getChipModel();
-	}
-
-	@Override
 	public void input(int input) {
 		sid.input(input);
 	}
@@ -115,7 +110,7 @@ public abstract class ReSIDBase extends SIDEmu {
 	public abstract byte readENV(int voiceNum);
 
 	public abstract byte readOSC(int voiceNum);
-	
+
 	protected abstract SIDChip createSID();
 
 }
