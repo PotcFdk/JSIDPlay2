@@ -182,12 +182,12 @@ public class Player extends HardwareEnsemble {
 			 * <LI>Single tune or end of play list? Stop player (except loop)
 			 * <LI>Else play next song
 			 * </UL>
-			 * 
+			 * <B>Note:</B> MP3 tunes are not stopped!
 			 * @see sidplay.player.Timer#end()
 			 */
 			@Override
 			public void end() {
-				if (tune != SidTune.RESET) {
+				if (tune != SidTune.RESET && !(tune instanceof MP3Tune)) {
 					if (config.getSidplay2Section().isSingle()
 							|| !playList.hasNext()) {
 						stateProperty.set(getEndState());
@@ -198,25 +198,27 @@ public class Player extends HardwareEnsemble {
 			}
 
 			/**
-			 * If a tune starts playing, fade-in volume.
+			 * If a tune starts playing, fade-in volume.<BR>
+			 * <B>Note:</B> MP3 tunes do not fade-in!
 			 * 
 			 * @see sidplay.player.Timer#fadeInStart(int)
 			 */
 			@Override
 			public void fadeInStart(int fadeIn) {
-				if (tune != SidTune.RESET) {
+				if (tune != SidTune.RESET && !(tune instanceof MP3Tune)) {
 					configureMixer(mixer -> mixer.fadeIn(fadeIn));
 				}
 			}
 
 			/**
-			 * If a tune is short before stop time, fade-out volume.
+			 * If a tune is short before stop time, fade-out volume.<BR>
+			 * <B>Note:</B> MP3 tunes do not fade-out!
 			 * 
 			 * @see sidplay.player.Timer#fadeOutStart(int)
 			 */
 			@Override
 			public void fadeOutStart(int fadeOut) {
-				if (tune != SidTune.RESET) {
+				if (tune != SidTune.RESET && !(tune instanceof MP3Tune)) {
 					configureMixer(mixer -> mixer.fadeOut(fadeOut));
 				}
 			}
