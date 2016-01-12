@@ -7,11 +7,9 @@ public enum State {
 	PLAY,
 	/** Player paused */
 	PAUSE,
-	/** Player temporarily stopped and is about to be reconfigured */
-	STOP,
 	/** Player ended, because the play time is over */
 	END,
-	/** Player restarts after playing a tune */
+	/** Player restarts the same tune */
 	RESTART,
 	/** Player was quit */
 	QUIT

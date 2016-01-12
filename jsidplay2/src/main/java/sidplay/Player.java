@@ -110,7 +110,7 @@ public class Player extends HardwareEnsemble {
 	 * Music player state.
 	 */
 	private ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
-			State.STOP);
+			State.QUIT);
 	/**
 	 * Play timer.
 	 */
@@ -495,8 +495,6 @@ public class Player extends HardwareEnsemble {
 	 * @throws InterruptedException
 	 */
 	private void open() throws InterruptedException {
-		stateProperty.set(State.STOP);
-
 		playList = PlayList.getInstance(config, tune);
 
 		// PAL/NTSC
