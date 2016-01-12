@@ -405,16 +405,11 @@ public class Player extends HardwareEnsemble {
 	 */
 	public final void stopC64() {
 		try {
-			if (playerThread != null && playerThread.isAlive()) {
+			while (playerThread != null && playerThread.isAlive()) {
 				quit();
-				playerThread.join(3000);
-				if (playerThread.isAlive()) {
-					// still alive? emergency stop
-					playerThread.interrupt();
-				}
+				playerThread.join(PAUSE_SLEEP_TIME);
 			}
 		} catch (InterruptedException e) {
-			// unclean player thread stop
 		}
 	}
 

@@ -128,7 +128,7 @@ public class FavoritesTab extends Tab implements UIPart {
 							|| favoritesTable.getSortOrder().size() > 0);
 				});
 		favoritesTable
-				.setOnMousePressed((event) -> {
+				.setOnMousePressed(event -> {
 					final HVSCEntry hvscEntry = favoritesTable
 							.getSelectionModel().getSelectedItem();
 					SidPlay2Section sidPlay2Section = (SidPlay2Section) util
@@ -143,7 +143,7 @@ public class FavoritesTab extends Tab implements UIPart {
 						favoritesTable.scrollTo(hvscEntry);
 					}
 				});
-		favoritesTable.setOnKeyPressed((event) -> {
+		favoritesTable.setOnKeyPressed(event -> {
 			final HVSCEntry hvscEntry = favoritesTable.getSelectionModel()
 					.getSelectedItem();
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
@@ -159,7 +159,7 @@ public class FavoritesTab extends Tab implements UIPart {
 				removeSelectedFavorites();
 			}
 		});
-		filterField.setOnKeyReleased((event) -> {
+		filterField.setOnKeyReleased(event -> {
 			filter(filterField.getText());
 		});
 
@@ -356,7 +356,7 @@ public class FavoritesTab extends Tab implements UIPart {
 		for (int i = 0; files != null && i < files.size(); i++) {
 			final File file = files.get(i);
 			final File[] listFiles = file.listFiles();
-			if (file.isDirectory() && listFiles!=null) {
+			if (file.isDirectory() && listFiles != null) {
 				addFavorites(Arrays.asList(listFiles));
 			} else if (tuneFilter.accept(file)) {
 				addFavorite(file);
