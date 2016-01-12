@@ -76,32 +76,24 @@ public class JavaSound implements AudioDriver {
 	public synchronized void setAudioDevice(final Mixer.Info info)
 			throws IOException {
 		// first close previous dataLine when it is already present
-		if (dataLine != null) {
-			close();
+		close();
+		try {
+			dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
+			dataLine.open(dataLine.getFormat(), cfg.bufferFrames * Short.BYTES
+					* cfg.channels);
+
+			// The actual buffer size for the open line may differ from the
+			// requested buffer size, therefore
+			cfg.bufferFrames = dataLine.getBufferSize() / Short.BYTES
+					/ cfg.channels;
+
+			sampleBuffer = ByteBuffer.allocate(
+					cfg.getChunkFrames() * Short.BYTES * cfg.channels).order(
+					ByteOrder.LITTLE_ENDIAN);
+		} catch (LineUnavailableException e) {
+			// When a requested line is already in use by another application
+			throw new IOException(e);
 		}
-
-		int retries = 3;
-		do {
-			try {
-				dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
-				dataLine.open(dataLine.getFormat(), cfg.bufferFrames
-						* Short.BYTES * cfg.channels);
-
-				// The actual buffer size for the open line may differ from the
-				// requested buffer size, therefore
-				cfg.bufferFrames = dataLine.getBufferSize() / Short.BYTES
-						/ cfg.channels;
-
-				sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames()
-						* Short.BYTES * cfg.channels);
-				sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				return;
-			} catch (LineUnavailableException e) {
-				// Retry, most commonly when a requested line is already in
-				// use by another application (Linux)
-			}
-		} while (retries-- > 0);
-		throw new IOException("JavaSound: source data Line already in use?");
 	}
 
 	@Override
