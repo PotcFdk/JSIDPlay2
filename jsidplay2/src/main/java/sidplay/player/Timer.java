@@ -5,6 +5,7 @@ import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.config.IConfig;
+import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 
 /**
@@ -88,6 +89,7 @@ public abstract class Timer {
 	/**
 	 * Update timer end.
 	 * <UL>
+	 * <LI>MP3 tune? We always play forever
 	 * <LI>SLDB enabled and song length well known? Use song length
 	 * <LI>default length? Use default length relative to start
 	 * <LI>default length == 0? Play forever
@@ -100,6 +102,10 @@ public abstract class Timer {
 		cancel(endTimeEvent);
 		if (fadeOut != 0) {
 			cancel(fadeOutStartTimeEvent);
+		}
+		// MP3 tune length is undetermined, therefore we always play forever
+		if (tune instanceof MP3Tune) {
+			return;
 		}
 		// Only for tunes: check song length
 		if (tune != SidTune.RESET

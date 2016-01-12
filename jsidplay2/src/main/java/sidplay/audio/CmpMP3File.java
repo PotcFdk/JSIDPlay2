@@ -56,7 +56,8 @@ public class CmpMP3File extends JavaSound {
 	@Override
 	public void write() throws InterruptedException {
 		if (!jump3r.decode(mp3JavaSound.buffer())) {
-			throw new InterruptedException();
+			// Terminate MP3 play-back
+			throw new InterruptedException(CmpMP3File.class.getSimpleName());
 		}
 		if (playOriginal) {
 			mp3JavaSound.write();
