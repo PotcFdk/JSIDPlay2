@@ -1,7 +1,7 @@
 package sidplay.player;
 
 public enum State {
-	/** Player about to start to play a tune */
+	/** Player starts to play a tune */
 	START,
 	/** Player playing */
 	PLAY,
@@ -11,6 +11,6 @@ public enum State {
 	END,
 	/** Player restarts the same tune */
 	RESTART,
-	/** Player was quit */
+	/** Player quit */
 	QUIT
 }

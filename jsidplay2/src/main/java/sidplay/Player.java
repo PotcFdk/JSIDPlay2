@@ -466,6 +466,7 @@ public class Player extends HardwareEnsemble {
 			try {
 				// Open tune
 				open();
+				stateProperty.set(State.START);
 				menuHook.accept(Player.this);
 				// Play next chunk of sound data
 				stateProperty.set(State.PLAY);
@@ -526,7 +527,6 @@ public class Player extends HardwareEnsemble {
 		sidBuilder = createSIDBuilder(cpuClock, audioConfig, audioDriver);
 
 		reset();
-		stateProperty.set(State.START);
 	}
 
 	/**
