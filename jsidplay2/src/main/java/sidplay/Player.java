@@ -103,14 +103,12 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Auto-start commands.
 	 */
-	private static final String RUN = "RUN\r", SYS = "SYS%d\r",
-			LOAD = "LOAD\r";
+	private static final String RUN = "RUN\r", SYS = "SYS%d\r", LOAD = "LOAD\r";
 
 	/**
 	 * Music player state.
 	 */
-	private ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(
-			State.QUIT);
+	private ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(State.QUIT);
 	/**
 	 * Play timer.
 	 */
@@ -144,8 +142,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Currently used audio driver.
 	 */
-	private AudioDriver audioDriver = Audio.SOUNDCARD.getAudioDriver(),
-			oldAudioDriver;
+	private AudioDriver audioDriver = Audio.SOUNDCARD.getAudioDriver(), oldAudioDriver;
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -182,13 +179,13 @@ public class Player extends HardwareEnsemble {
 			 * <LI>Single tune or end of play list? Stop player (except loop)
 			 * <LI>Else play next song
 			 * </UL>
+			 * 
 			 * @see sidplay.player.Timer#end()
 			 */
 			@Override
 			public void end() {
 				if (tune != SidTune.RESET) {
-					if (config.getSidplay2Section().isSingle()
-							|| !playList.hasNext()) {
+					if (config.getSidplay2Section().isSingle() || !playList.hasNext()) {
 						stateProperty.set(getEndState());
 					} else {
 						nextSong();
@@ -198,6 +195,7 @@ public class Player extends HardwareEnsemble {
 
 			/**
 			 * If a tune starts playing, fade-in volume.
+			 * 
 			 * @see sidplay.player.Timer#fadeInStart(int)
 			 */
 			@Override
@@ -209,6 +207,7 @@ public class Player extends HardwareEnsemble {
 
 			/**
 			 * If a tune is short before stop time, fade-out volume.
+			 * 
 			 * @see sidplay.player.Timer#fadeOutStart(int)
 			 */
 			@Override
@@ -271,8 +270,7 @@ public class Player extends HardwareEnsemble {
 					} else {
 						// Start basic program or machine code routine
 						final int loadAddr = tune.getInfo().getLoadAddr();
-						command = loadAddr == 0x0801 ? RUN : String.format(SYS,
-								loadAddr);
+						command = loadAddr == 0x0801 ? RUN : String.format(SYS, loadAddr);
 						typeInCommand(command);
 					}
 				}
@@ -404,23 +402,24 @@ public class Player extends HardwareEnsemble {
 	 * Stop player thread.
 	 */
 	public final void stopC64() {
-		try {
-			while (playerThread != null && playerThread.isAlive()) {
-				quit();
-				playerThread.join(PAUSE_SLEEP_TIME);
-			}
-		} catch (InterruptedException e) {
-		}
+		stopC64(true);
 	}
 
 	/**
-	 * Wait forever for termination of the player thread.
+	 * Stop or wait for player thread.
 	 * 
-	 * @throws InterruptedException
+	 * @param quitOrWait
+	 *            quit player (true) or wait for termination, only (false)
 	 */
-	public final void waitForC64() throws InterruptedException {
-		if (playerThread != null) {
-			playerThread.join(0);
+	public final void stopC64(boolean quitOrWait) {
+		try {
+			while (playerThread != null && playerThread.isAlive()) {
+				if (quitOrWait) {
+					quit();
+				}
+				playerThread.join(PAUSE_SLEEP_TIME);
+			}
+		} catch (InterruptedException e) {
 		}
 	}
 
@@ -494,16 +493,13 @@ public class Player extends HardwareEnsemble {
 		playList = PlayList.getInstance(config, tune);
 
 		// PAL/NTSC
-		final CPUClock cpuClock = CPUClock.getCPUClock(
-				config.getEmulationSection(), tune);
+		final CPUClock cpuClock = CPUClock.getCPUClock(config.getEmulationSection(), tune);
 		setClock(cpuClock);
 
-		AudioConfig audioConfig = AudioConfig.getInstance(config
-				.getAudioSection());
+		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudioSection());
 
 		// Note: Audio driver different to Audio enum members are on hold!
-		if (Arrays.stream(Audio.values()).anyMatch(
-				audio -> audio.getAudioDriver().equals(audioDriver))) {
+		if (Arrays.stream(Audio.values()).anyMatch(audio -> audio.getAudioDriver().equals(audioDriver))) {
 			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 		}
 
@@ -527,13 +523,11 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Create configured SID chip implementation (software/hardware).
 	 */
-	private SIDBuilder createSIDBuilder(CPUClock cpuClock,
-			AudioConfig audioConfig, AudioDriver audioDriver) {
+	private SIDBuilder createSIDBuilder(CPUClock cpuClock, AudioConfig audioConfig, AudioDriver audioDriver) {
 		final Engine engine = config.getEmulationSection().getEngine();
 		switch (engine) {
 		case EMULATION:
-			return new ReSIDBuilder(c64.getEventScheduler(), config,
-					audioConfig, cpuClock, audioDriver);
+			return new ReSIDBuilder(c64.getEventScheduler(), config, audioConfig, cpuClock, audioDriver);
 		case HARDSID:
 			return new HardSIDBuilder(c64.getEventScheduler(), config);
 		default:
@@ -557,8 +551,7 @@ public class Player extends HardwareEnsemble {
 	 * MP3 play-back is using the COMPARE audio driver. Old settings are saved
 	 * (playing mp3) and restored (next time normal tune is played).
 	 */
-	private AudioDriver handleMP3(final IConfig config, final SidTune tune,
-			AudioDriver audioDriver) {
+	private AudioDriver handleMP3(final IConfig config, final SidTune tune, AudioDriver audioDriver) {
 		AudioDriver newAudioDriver = audioDriver;
 		if (oldAudioDriver == null && tune instanceof MP3Tune) {
 			// save settings before MP3 gets played
@@ -632,12 +625,10 @@ public class Player extends HardwareEnsemble {
 	 *             audio production interrupted
 	 */
 	private boolean play() throws InterruptedException {
-		for (int i = 0; stateProperty.get() == State.PLAY
-				&& i < config.getAudioSection().getBufferSize(); i++) {
+		for (int i = 0; stateProperty.get() == State.PLAY && i < config.getAudioSection().getBufferSize(); i++) {
 			c64.getEventScheduler().clock();
 		}
-		return stateProperty.get() == State.PLAY
-				|| stateProperty.get() == State.PAUSE;
+		return stateProperty.get() == State.PLAY || stateProperty.get() == State.PAUSE;
 	}
 
 	/**
@@ -692,8 +683,7 @@ public class Player extends HardwareEnsemble {
 	 * Pause or continue the player.
 	 */
 	public final void pauseContinue() {
-		if (stateProperty.get() == State.QUIT
-				|| stateProperty.get() == State.END) {
+		if (stateProperty.get() == State.QUIT || stateProperty.get() == State.END) {
 			play(tune);
 		} else if (stateProperty.get() == State.PAUSE) {
 			stateProperty.set(State.PLAY);
@@ -780,8 +770,7 @@ public class Player extends HardwareEnsemble {
 	 *            default value, if database is not set
 	 * @return song length database info
 	 */
-	public final <T> T getSidDatabaseInfo(Function<SidDatabase, T> function,
-			T defaultValue) {
+	public final <T> T getSidDatabaseInfo(Function<SidDatabase, T> function, T defaultValue) {
 		return sidDatabase != null ? function.apply(sidDatabase) : defaultValue;
 	}
 
@@ -803,8 +792,7 @@ public class Player extends HardwareEnsemble {
 	 * @return Sid Tune Information List info
 	 */
 	public final STILEntry getStilEntry(String collectionName) {
-		return stil != null && collectionName != null ? stil
-				.getSTILEntry(collectionName) : null;
+		return stil != null && collectionName != null ? stil.getSTILEntry(collectionName) : null;
 	}
 
 	/**
@@ -813,8 +801,7 @@ public class Player extends HardwareEnsemble {
 	 * @param recordingFilenameProvider
 	 *            provider of recording filenames
 	 */
-	public void setRecordingFilenameProvider(
-			Function<SidTune, String> recordingFilenameProvider) {
+	public void setRecordingFilenameProvider(Function<SidTune, String> recordingFilenameProvider) {
 		this.recordingFilenameProvider = recordingFilenameProvider;
 	}
 
@@ -887,8 +874,7 @@ public class Player extends HardwareEnsemble {
 	 * @throws SidTuneError
 	 * @throws IOException
 	 */
-	public static void main(final String[] args) throws IOException,
-			SidTuneError {
+	public static void main(final String[] args) throws IOException, SidTuneError {
 		if (args.length < 1) {
 			System.err.println("Missing argument: <filename>");
 			System.exit(-1);
