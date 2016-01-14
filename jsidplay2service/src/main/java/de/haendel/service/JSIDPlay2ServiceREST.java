@@ -151,8 +151,6 @@ public class JSIDPlay2ServiceREST {
 					driver.setVbrQuality(vbr);
 					driver.setVbr(isVbr);
 					jsidplay2Service.convert(cfg, filePath, driver);
-				} catch (InterruptedException e) {
-					throw new WebApplicationException(e);
 				} catch (SidTuneError e) {
 					throw new WebApplicationException(e);
 				} finally {
