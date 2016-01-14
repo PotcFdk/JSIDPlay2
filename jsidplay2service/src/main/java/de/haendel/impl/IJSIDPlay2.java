@@ -40,16 +40,13 @@ public interface IJSIDPlay2 {
 	 * @param resource
 	 *            SID resource relative to ROOT_DIR
 	 * @param driver
-	 * 			  audio driver
-	 * @throws InterruptedException
-	 *             player aborted
+	 *            audio driver
 	 * @throws IOException
 	 *             file read error
 	 * @throws SidTuneError
 	 *             invalid tune
 	 */
-	void convert(Configuration config, String resource, AudioDriver driver)
-			throws InterruptedException, IOException, SidTuneError;
+	void convert(Configuration config, String resource, AudioDriver driver) throws IOException, SidTuneError;
 
 	/**
 	 * Get composer photo
@@ -75,8 +72,7 @@ public interface IJSIDPlay2 {
 	 * @throws SidTuneError
 	 *             invalid tune
 	 */
-	Map<String, String> getTuneInfos(String resource) throws IOException,
-			SidTuneError;
+	Map<String, String> getTuneInfos(String resource) throws IOException, SidTuneError;
 
 	/**
 	 * Get all filter names.

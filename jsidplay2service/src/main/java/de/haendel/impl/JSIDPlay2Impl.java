@@ -50,9 +50,9 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	 * Contains a mapping: Author to picture resource path.
 	 */
 	private static final Properties SID_AUTHORS = new Properties();
+
 	static {
-		try (InputStream is = SidTune.class
-				.getResourceAsStream("pictures.properties")) {
+		try (InputStream is = SidTune.class.getResourceAsStream("pictures.properties")) {
 			SID_AUTHORS.load(is);
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
@@ -84,8 +84,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 		File[] listFiles = file.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
-				return pathname.isDirectory() || filter == null
-						|| pathname.getName().matches(filter);
+				return pathname.isDirectory() || filter == null || pathname.getName().matches(filter);
 			}
 		});
 		ArrayList<String> result = new ArrayList<String>();
@@ -126,13 +125,12 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	}
 
 	@Override
-	public void convert(Configuration config, String resource, AudioDriver driver)
-			throws InterruptedException, IOException, SidTuneError {
+	public void convert(Configuration config, String resource, AudioDriver driver) throws IOException, SidTuneError {
 		Player player = new Player(config);
 		player.setSidDatabase(getSidDatabase(HVSC_ROOT));
 		player.setAudioDriver(driver);
 		player.play(SidTune.load(getAbsoluteFile(resource)));
-		player.waitForC64();
+		player.stopC64(false);
 	}
 
 	private SidDatabase getSidDatabase(String hvscRoot) throws IOException {
@@ -157,8 +155,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 				String photo = SID_AUTHORS.getProperty(author);
 				if (photo != null) {
 					ByteArrayOutputStream s = new ByteArrayOutputStream();
-					try (InputStream is = SidTune.class
-							.getResourceAsStream("Photos/" + photo)) {
+					try (InputStream is = SidTune.class.getResourceAsStream("Photos/" + photo)) {
 						int n = 1;
 						while (n > 0) {
 							byte[] b = new byte[4096];
@@ -175,8 +172,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	}
 
 	@Override
-	public Map<String, String> getTuneInfos(String resource)
-			throws IOException, SidTuneError {
+	public Map<String, String> getTuneInfos(String resource) throws IOException, SidTuneError {
 		Map<String, String> tuneInfos = new HashMap<String, String>();
 		File tuneFile = getAbsoluteFile(resource);
 		SidTune tune = SidTune.load(tuneFile);
@@ -191,13 +187,11 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			};
 			HVSCEntry hvscEntry = new HVSCEntry(lengthFnct, "", tuneFile, tune);
 
-			STILEntry stilEntry = db.getPath(tune) != null ? stil
-					.getSTILEntry(db.getPath(tune)) : null;
+			STILEntry stilEntry = db.getPath(tune) != null ? stil.getSTILEntry(db.getPath(tune)) : null;
 			if (stilEntry != null) {
 				hvscEntry.setStilGlbComment(stilEntry.globalComment);
 				StringBuffer stilText = formatStilText(stilEntry);
-				tuneInfos.put(StilEntry.class.getSimpleName() + ".text",
-						stilText.toString());
+				tuneInfos.put(StilEntry.class.getSimpleName() + ".text", stilText.toString());
 			}
 			for (Field field : HVSCEntry_.class.getDeclaredFields()) {
 				if (field.getName().equals(HVSCEntry_.id.getName())) {
@@ -206,16 +200,12 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 				if (!(SingularAttribute.class.isAssignableFrom(field.getType()))) {
 					continue;
 				}
-				String name = HVSCEntry.class.getSimpleName() + "."
-						+ field.getName();
+				String name = HVSCEntry.class.getSimpleName() + "." + field.getName();
 				Object value = null;
 				try {
-					SingularAttribute<?, ?> singleAttribute = (SingularAttribute<?, ?>) field
-							.get(hvscEntry);
-					value = ((Method) singleAttribute.getJavaMember())
-							.invoke(hvscEntry);
-				} catch (IllegalArgumentException | IllegalAccessException
-						| InvocationTargetException e) {
+					SingularAttribute<?, ?> singleAttribute = (SingularAttribute<?, ?>) field.get(hvscEntry);
+					value = ((Method) singleAttribute.getJavaMember()).invoke(hvscEntry);
+				} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
 				}
 				tuneInfos.put(name, String.valueOf(value != null ? value : ""));
 			}
@@ -224,8 +214,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	}
 
 	private STIL getSTIL(String hvscRoot) {
-		try (FileInputStream input = new FileInputStream(new File(HVSC_ROOT,
-				STIL.STIL_FILE))) {
+		try (FileInputStream input = new FileInputStream(new File(HVSC_ROOT, STIL.STIL_FILE))) {
 			return new STIL(input);
 		} catch (Exception e) {
 			// ignore
@@ -268,8 +257,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			}
 			subTuneNo++;
 		}
-		return result.append("                                        ")
-				.toString();
+		return result.append("                                        ").toString();
 	}
 
 	private void writeSTILEntry(StringBuffer buffer, Info info) {
@@ -300,10 +288,8 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 		List<String> result = new ArrayList<String>();
 		IniConfig cfg = new IniConfig();
 		List<? extends IFilterSection> filterSection = cfg.getFilterSection();
-		for (Iterator<? extends IFilterSection> iterator = filterSection
-				.iterator(); iterator.hasNext();) {
-			final IFilterSection iFilterSection = (IFilterSection) iterator
-					.next();
+		for (Iterator<? extends IFilterSection> iterator = filterSection.iterator(); iterator.hasNext();) {
+			final IFilterSection iFilterSection = (IFilterSection) iterator.next();
 			if (iFilterSection.isReSIDFilter6581()) {
 				result.add("RESID_MOS6581_" + iFilterSection.getName());
 			} else if (iFilterSection.isReSIDFilter8580()) {
