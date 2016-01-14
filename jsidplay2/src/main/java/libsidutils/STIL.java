@@ -68,7 +68,7 @@ public class STIL {
 		String lastProp = null;
 		StringBuilder cmts = new StringBuilder();
 
-		try (@SuppressWarnings("resource")
+		try (
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(
 				input, "ISO-8859-1"))) {
 			String line;
