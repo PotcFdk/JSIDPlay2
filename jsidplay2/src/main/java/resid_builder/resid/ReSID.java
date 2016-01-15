@@ -44,8 +44,8 @@ public class ReSID extends ReSIDBase {
 		private final int prevNum;
 		private final List<ReSIDBase> sids;
 
-		public FakeStereo(final EventScheduler context, final IConfig config,
-				final int prevNum, final List<ReSIDBase> sids) {
+		public FakeStereo(final EventScheduler context, final IConfig config, final int prevNum,
+				final List<ReSIDBase> sids) {
 			super(context);
 			this.emulationSection = config.getEmulationSection();
 			this.prevNum = prevNum;
@@ -95,27 +95,45 @@ public class ReSID extends ReSIDBase {
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
 		boolean enable = emulation.isFilterEnable(sidNum);
-		sidImpl.getFilter6581().enable(enable);
-		sidImpl.getFilter8580().enable(enable);
+		switch (sidImpl.getChipModel()) {
+		case MOS6581:
+			sidImpl.getFilter6581().enable(enable);
+			break;
+		case MOS8580:
+			sidImpl.getFilter8580().enable(enable);
+			break;
+		default:
+			throw new RuntimeException("Unknown SID chip model: " + sidImpl.getChipModel());
+		}
 	}
 
 	@Override
 	public void setFilter(IConfig config, int sidNum) {
-		final Filter6581 filter6581 = sidImpl.getFilter6581();
-		final Filter8580 filter8580 = sidImpl.getFilter8580();
-
-		String filterName6581 = config.getEmulationSection().getFilterName(
-				sidNum, Emulation.RESID, ChipModel.MOS6581);
-		String filterName8580 = config.getEmulationSection().getFilterName(
-				sidNum, Emulation.RESID, ChipModel.MOS8580);
-		for (IFilterSection filter : config.getFilterSection()) {
-			if (sidImpl.getChipModel() == ChipModel.MOS6581 && filter.getName().equals(filterName6581)
-					&& filter.isReSIDFilter6581()) {
-				filter6581.setFilterCurve(filter.getFilter6581CurvePosition());
-			} else if (sidImpl.getChipModel() == ChipModel.MOS8580 && filter.getName().equals(filterName8580)
-					&& filter.isReSIDFilter8580()) {
-				filter8580.setFilterCurve(filter.getFilter8580CurvePosition());
+		IEmulationSection emulationSection = config.getEmulationSection();
+		switch (sidImpl.getChipModel()) {
+		case MOS6581:
+			String filterName6581 = emulationSection.getFilterName(sidNum, Emulation.RESID, ChipModel.MOS6581);
+			final Filter6581 filter6581 = sidImpl.getFilter6581();
+			for (IFilterSection filter : config.getFilterSection()) {
+				if (filter.getName().equals(filterName6581) && filter.isReSIDFilter6581()) {
+					filter6581.setFilterCurve(filter.getFilter6581CurvePosition());
+					break;
+				}
 			}
+
+			break;
+		case MOS8580:
+			String filterName8580 = emulationSection.getFilterName(sidNum, Emulation.RESID, ChipModel.MOS8580);
+			final Filter8580 filter8580 = sidImpl.getFilter8580();
+			for (IFilterSection filter : config.getFilterSection()) {
+				if (filter.getName().equals(filterName8580) && filter.isReSIDFilter8580()) {
+					filter8580.setFilterCurve(filter.getFilter8580CurvePosition());
+					break;
+				}
+			}
+			break;
+		default:
+			throw new RuntimeException("Unknown SID chip model: " + sidImpl.getChipModel());
 		}
 	}
 
