@@ -75,7 +75,7 @@ public class ReSIDfp extends ReSIDBase {
 		}
 	}
 
-	private final SID sidImpl = (SID) createSID();
+	private SID sidImpl;
 
 	/**
 	 * Constructor
@@ -89,7 +89,7 @@ public class ReSIDfp extends ReSIDBase {
 
 	@Override
 	protected SIDChip createSID() {
-		return new SID();
+		return sidImpl = new SID();
 	}
 
 	@Override
@@ -108,14 +108,14 @@ public class ReSIDfp extends ReSIDBase {
 				sidNum, Emulation.RESIDFP, ChipModel.MOS6581);
 		String filterName8580 = config.getEmulationSection().getFilterName(
 				sidNum, Emulation.RESIDFP, ChipModel.MOS8580);
-		if (filterName6581 == null) {
+		if (sidImpl.getChipModel() == ChipModel.MOS6581 && filterName6581 == null) {
 			filter6581.setCurveAndDistortionDefaults();
 		}
-		if (filterName8580 == null) {
+		if (sidImpl.getChipModel() == ChipModel.MOS8580 && filterName8580 == null) {
 			filter8580.setCurveAndDistortionDefaults();
 		}
 		for (IFilterSection filter : config.getFilterSection()) {
-			if (filter.getName().equals(filterName6581)
+			if (sidImpl.getChipModel() == ChipModel.MOS6581 && filter.getName().equals(filterName6581)
 					&& filter.isReSIDfpFilter6581()) {
 				filter6581.setCurveProperties(filter.getBaseresistance(),
 						filter.getOffset(), filter.getSteepness(),
@@ -124,7 +124,7 @@ public class ReSIDfp extends ReSIDBase {
 						filter.getNonlinearity(), filter.getResonanceFactor());
 				sidImpl.set6581VoiceNonlinearity(filter.getVoiceNonlinearity());
 				filter6581.setNonLinearity(filter.getVoiceNonlinearity());
-			} else if (filter.getName().equals(filterName8580)
+			} else if (sidImpl.getChipModel() == ChipModel.MOS8580 && filter.getName().equals(filterName8580)
 					&& filter.isReSIDfpFilter8580()) {
 				filter8580.setCurveProperties(filter.getK(), filter.getB(), 0,
 						0);

@@ -75,7 +75,7 @@ public class ReSID extends ReSIDBase {
 		}
 	}
 
-	private final SID sidImpl = (SID) createSID();
+	private SID sidImpl;
 
 	/**
 	 * Constructor
@@ -89,7 +89,7 @@ public class ReSID extends ReSIDBase {
 
 	@Override
 	protected SIDChip createSID() {
-		return new SID();
+		return sidImpl = new SID();
 	}
 
 	@Override
@@ -109,10 +109,10 @@ public class ReSID extends ReSIDBase {
 		String filterName8580 = config.getEmulationSection().getFilterName(
 				sidNum, Emulation.RESID, ChipModel.MOS8580);
 		for (IFilterSection filter : config.getFilterSection()) {
-			if (filter.getName().equals(filterName6581)
+			if (sidImpl.getChipModel() == ChipModel.MOS6581 && filter.getName().equals(filterName6581)
 					&& filter.isReSIDFilter6581()) {
 				filter6581.setFilterCurve(filter.getFilter6581CurvePosition());
-			} else if (filter.getName().equals(filterName8580)
+			} else if (sidImpl.getChipModel() == ChipModel.MOS8580 && filter.getName().equals(filterName8580)
 					&& filter.isReSIDFilter8580()) {
 				filter8580.setFilterCurve(filter.getFilter8580CurvePosition());
 			}
