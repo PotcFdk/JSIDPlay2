@@ -465,17 +465,15 @@ public class Player extends HardwareEnsemble {
 				// Play next chunk of sound data
 				stateProperty.set(State.PLAY);
 				while (play()) {
-					// Pause? sleep for awhile
+					// Pause? sleep awhile
 					if (stateProperty.get() == State.PAUSE) {
 						Thread.sleep(PAUSE_SLEEP_TIME);
 					}
 					interactivityHook.accept(Player.this);
 				}
+			} catch (CmpMP3File.MP3Termination e) {
+				stateProperty.set(State.END);
 			} catch (InterruptedException e) {
-				// MP3 termination
-				if (CmpMP3File.class.getSimpleName().equals(e.getMessage())) {
-					stateProperty.set(State.END);
-				}
 			} finally {
 				// Don't forget to close
 				close();

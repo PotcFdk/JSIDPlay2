@@ -13,6 +13,10 @@ import lowlevel.LameDecoder;
  */
 public class CmpMP3File extends JavaSound {
 
+	public static class MP3Termination extends InterruptedException {
+		private static final long serialVersionUID = -7204524330347735933L;
+	}
+	
 	/**
 	 * Play MP3 (true) or emulation (false).
 	 */
@@ -56,8 +60,7 @@ public class CmpMP3File extends JavaSound {
 	@Override
 	public void write() throws InterruptedException {
 		if (!jump3r.decode(mp3JavaSound.buffer())) {
-			// Terminate MP3 play-back
-			throw new InterruptedException(CmpMP3File.class.getSimpleName());
+			throw new MP3Termination();
 		}
 		if (playOriginal) {
 			mp3JavaSound.write();
