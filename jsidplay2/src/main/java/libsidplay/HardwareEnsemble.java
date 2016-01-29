@@ -11,6 +11,7 @@ import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
+import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.C1541Runner;
 import libsidplay.components.c1541.DisconnectedParallelCable;
 import libsidplay.components.c1541.DiskImage;
@@ -18,12 +19,10 @@ import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.components.c1541.IParallelCable;
 import libsidplay.components.c1541.SameThreadC1541Runner;
 import libsidplay.components.c1541.VIACore;
-import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.cart.Cartridge;
 import libsidplay.components.cart.CartridgeType;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
-import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.config.IC1541Section;
 import libsidplay.config.IConfig;
@@ -33,7 +32,6 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.PRG2TAP;
 import libsidutils.PRG2TAPProgram;
 import libsidutils.PathUtils;
-import libsidutils.disassembler.SimpleDisassembler;
 
 /**
  * The HardwareEnsemble contains a C64 computer and additional peripherals.<BR>
@@ -85,6 +83,11 @@ public class HardwareEnsemble {
 	private IExtendImageListener policy;
 
 	/**
+	 * Turn on/off debug.
+	 */
+	private boolean debug;
+
+	/**
 	 * Create a complete hardware setup (C64, tape/disk drive, printer and
 	 * more).
 	 */
@@ -104,7 +107,7 @@ public class HardwareEnsemble {
 			}
 		};
 
-		this.c64 = new C64() {
+		this.c64 = new C64(debug) {
 			@Override
 			public void printerUserportWriteData(final byte data) {
 				if (config.getPrinterSection().isPrinterOn()) {
@@ -166,8 +169,7 @@ public class HardwareEnsemble {
 
 		this.iecBus.setFloppies(floppies);
 		this.iecBus.setSerialDevices(serialDevices);
-		this.c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(),
-				c1541.getEventScheduler());
+		this.c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(), c1541.getEventScheduler());
 	}
 
 	/**
@@ -299,10 +301,8 @@ public class HardwareEnsemble {
 	 * @param connected
 	 *            connected enable
 	 */
-	public final void connectC64AndC1541WithParallelCable(
-			final boolean connected) {
-		final IParallelCable cable = connected ? makeCableBetweenC64AndC1541()
-				: new DisconnectedParallelCable();
+	public final void connectC64AndC1541WithParallelCable(final boolean connected) {
+		final IParallelCable cable = connected ? makeCableBetweenC64AndC1541() : new DisconnectedParallelCable();
 		c64.setParallelCable(cable);
 		for (final C1541 floppy : floppies) {
 			floppy.getBusController().setParallelCable(cable);
@@ -319,12 +319,10 @@ public class HardwareEnsemble {
 		return new IParallelCable() {
 
 			protected byte parallelCableCpuValue = (byte) 0xff;
-			protected final byte parallelCableDriveValue[] = { (byte) 0xff,
-					(byte) 0xff, (byte) 0xff, (byte) 0xff };
+			protected final byte parallelCableDriveValue[] = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
 
 			@Override
-			public void driveWrite(final byte data, final boolean handshake,
-					final int dnr) {
+			public void driveWrite(final byte data, final boolean handshake, final int dnr) {
 				c64.cia2.setFlag(handshake);
 				parallelCableDriveValue[dnr & ~0x08] = data;
 			}
@@ -365,8 +363,7 @@ public class HardwareEnsemble {
 			public void pulse() {
 				c1541Runner.synchronize(0);
 				for (final C1541 floppy : floppies) {
-					floppy.getBusController().signal(VIACore.VIA_SIG_CB1,
-							VIACore.VIA_SIG_FALL);
+					floppy.getBusController().signal(VIACore.VIA_SIG_CB1, VIACore.VIA_SIG_FALL);
 				}
 			}
 		};
@@ -386,11 +383,10 @@ public class HardwareEnsemble {
 	 * Enable CPU debugging (opcode stringifier).
 	 * 
 	 * @param cpuDebug
-	 *            opcode stringifier to produce CPU debug output.
+	 *            use opcode stringifier to produce CPU debug output.
 	 */
 	public final void setDebug(final boolean cpuDebug) {
-		final MOS6510 cpu = c64.getCPU();
-		cpu.setDebug(cpuDebug ? SimpleDisassembler.getInstance() : null);
+		this.debug = cpuDebug;
 	}
 
 	/**
@@ -406,16 +402,14 @@ public class HardwareEnsemble {
 	 * @throws IOException
 	 *             error reading the ROMs
 	 */
-	public final void installJiffyDOS(final File c64kernalFile,
-			final File c1541kernalFile) throws IOException, SidTuneError {
-		try (DataInputStream dis = new DataInputStream(new FileInputStream(
-				c64kernalFile))) {
+	public final void installJiffyDOS(final File c64kernalFile, final File c1541kernalFile)
+			throws IOException, SidTuneError {
+		try (DataInputStream dis = new DataInputStream(new FileInputStream(c64kernalFile))) {
 			byte[] c64Kernal = new byte[0x2000];
 			dis.readFully(c64Kernal);
 			c64.setCustomKernal(c64Kernal);
 		}
-		try (DataInputStream dis = new DataInputStream(new FileInputStream(
-				c1541kernalFile))) {
+		try (DataInputStream dis = new DataInputStream(new FileInputStream(c1541kernalFile))) {
 			byte[] c1541Kernal = new byte[0x4000];
 			dis.readFully(c1541Kernal);
 			for (final C1541 floppy : floppies) {
@@ -452,8 +446,7 @@ public class HardwareEnsemble {
 	 * @throws IOException
 	 *             image read error
 	 */
-	public final void insertDisk(final File file) throws IOException,
-			SidTuneError {
+	public final void insertDisk(final File file) throws IOException, SidTuneError {
 		// automatically turn drive on
 		config.getSidplay2Section().setLastDirectory(file.getParent());
 		config.getC1541Section().setDriveOn(true);
@@ -474,8 +467,7 @@ public class HardwareEnsemble {
 	 * @throws IOException
 	 *             image read error
 	 */
-	public final void insertTape(final File file) throws IOException,
-			SidTuneError {
+	public final void insertTape(final File file) throws IOException, SidTuneError {
 		config.getSidplay2Section().setLastDirectory(file.getParent());
 		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".tap")) {
 			// Everything, which is not a tape convert to tape first
@@ -508,8 +500,7 @@ public class HardwareEnsemble {
 	 * @throws IOException
 	 *             never thrown here
 	 */
-	public final void insertCartridge(final CartridgeType type, final int sizeKB)
-			throws IOException, SidTuneError {
+	public final void insertCartridge(final CartridgeType type, final int sizeKB) throws IOException, SidTuneError {
 		c64.ejectCartridge();
 		c64.setCartridge(Cartridge.create(c64.pla, type, sizeKB));
 	}
@@ -524,8 +515,7 @@ public class HardwareEnsemble {
 	 * @throws IOException
 	 *             image read error
 	 */
-	public final void insertCartridge(final CartridgeType type, final File file)
-			throws IOException, SidTuneError {
+	public final void insertCartridge(final CartridgeType type, final File file) throws IOException, SidTuneError {
 		config.getSidplay2Section().setLastDirectory(file.getParent());
 		c64.ejectCartridge();
 		c64.setCartridge(Cartridge.read(c64.pla, type, file));

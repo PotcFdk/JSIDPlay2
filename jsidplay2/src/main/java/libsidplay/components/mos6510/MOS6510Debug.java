@@ -17,44 +17,120 @@ package libsidplay.components.mos6510;
 
 import static libsidplay.components.mos6510.IOpCode.*;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import libsidplay.common.Event.Phase;
+import libsidplay.common.EventScheduler;
+
 /**
- * Cycle-exact 6502/6510 emulation core.
+ * MOS6510 debug implementation to trace CPU state each time a command gets
+ * fetched and each time interrupt routine gets started or ends.
  * 
- * Code is based on work by Simon A. White <sidplay2@yahoo.com>.
- * Original Java port by Ken Händel. Later on, it has been hacked to
- * improve compatibility with Lorenz suite on VICE's test suite.
- * 
- * @author Antti Lankila
+ * @author Ken Händel
  */
-public class MOS6510Debug {
-	protected static void dumpState(long time, MOS6510 cpu) {
+public abstract class MOS6510Debug extends MOS6510 {
+
+	/** Logger for MOS6510 class */
+	protected static final Logger MOS6510 = Logger.getLogger(MOS6510.class.getName());
+
+	/** Debug info */
+	protected int instrStartPC, instrOperand;
+
+	/** Opcode stringifier */
+	protected IMOS6510Disassembler disassembler;
+
+	public MOS6510Debug(final EventScheduler context, final boolean floppyCPU) {
+		super(context, floppyCPU);
+	}
+
+	/**
+	 * Set CPU disassembler implementation.
+	 * 
+	 * @param disass
+	 */
+	public final void setDisassembler(final IMOS6510Disassembler disass) {
+		disassembler = disass;
+	}
+
+	@Override
+	protected void FetchHighAddr() {
+		super.FetchHighAddr();
+
+		// Next line used for Debug
+		instrOperand = Cycle_EffectiveAddress;
+	}
+
+	@Override
+	protected void FetchLowPointer() {
+		super.FetchLowPointer();
+		instrOperand = Cycle_Pointer;
+	}
+
+	@Override
+	protected void FetchHighPointer() {
+		super.FetchHighPointer();
+		instrOperand = Cycle_Pointer;
+	}
+
+	@Override
+	protected void interrupt() {
+		if (MOS6510.isLoggable(Level.FINE)) {
+			final long cycles = context.getTime(Phase.PHI2);
+			MOS6510.fine("****************************************************");
+			MOS6510.fine(String.format(" interrupt (%d)", cycles));
+			MOS6510.fine("****************************************************");
+			dumpState(cycles, this);
+		}
+		super.interrupt();
+	}
+
+	@Override
+	protected void interruptEnd() {
+		if (MOS6510.isLoggable(Level.FINE)) {
+			MOS6510.fine("****************************************************");
+		}
+		super.interruptEnd();
+	}
+
+	@Override
+	protected void fetchNextOpcode() {
+		if (MOS6510.isLoggable(Level.FINE)) {
+			dumpState(context.getTime(Phase.PHI2), this);
+		}
+		// Next line used for Debug
+		instrStartPC = Register_ProgramCounter;
+
+		super.fetchNextOpcode();
+	}
+
+	protected void dumpState(long time, MOS6510 cpu) {
 		final StringBuffer m_fdbg = new StringBuffer();
 		m_fdbg.append(String.format(" PC  I  A  X  Y  SP  DR PR NV-BDIZC  Instruction (%d)\n", time));
-		m_fdbg.append(String.format("%04x ", cpu.instrStartPC));
-		m_fdbg.append(cpu.irqAssertedOnPin ? "t" : "f");
-		m_fdbg.append(String.format("%02x ", cpu.Register_Accumulator & 0xff));
-		m_fdbg.append(String.format("%02x ", cpu.Register_X & 0xff));
-		m_fdbg.append(String.format("%02x ", cpu.Register_Y & 0xff));
-		m_fdbg.append(String.format("%02x%02x ", MOS6510.SP_PAGE, cpu.Register_StackPointer & 0xff));
-		m_fdbg.append(String.format("%02x ", cpu.cpuRead(0)));
-		m_fdbg.append(String.format("%02x ", cpu.cpuRead(1)));
+		m_fdbg.append(String.format("%04x ", instrStartPC));
+		m_fdbg.append(irqAssertedOnPin ? "t" : "f");
+		m_fdbg.append(String.format("%02x ", Register_Accumulator & 0xff));
+		m_fdbg.append(String.format("%02x ", Register_X & 0xff));
+		m_fdbg.append(String.format("%02x ", Register_Y & 0xff));
+		m_fdbg.append(String.format("%02x%02x ", SP_PAGE, Register_StackPointer & 0xff));
+		m_fdbg.append(String.format("%02x ", cpuRead(0)));
+		m_fdbg.append(String.format("%02x ", cpuRead(1)));
 
-		m_fdbg.append(cpu.flagN ? "1" : "0");
-		m_fdbg.append(cpu.getFlagV() ? "1" : "0");
-		m_fdbg.append(cpu.flagU ? "1" : "0");
-		// normally it's not possible to read the B flag except by pushing it to stack and extracting it
-		// immediately afterwards, which reads 1 for B. We return the last pushed value.
-		m_fdbg.append(cpu.flagB ? "1" : "0");
-		m_fdbg.append(cpu.flagD ? "1" : "0");
-		m_fdbg.append(cpu.flagI ? "1" : "0");
-		m_fdbg.append(cpu.flagZ ? "1" : "0");
-		m_fdbg.append(cpu.flagC ? "1" : "0");
+		m_fdbg.append(flagN ? "1" : "0");
+		m_fdbg.append(getFlagV() ? "1" : "0");
+		m_fdbg.append(flagU ? "1" : "0");
+		// normally it's not possible to read the B flag except by pushing it to
+		// stack and extracting it
+		// immediately afterwards, which reads 1 for B. We return the last
+		// pushed value.
+		m_fdbg.append(flagB ? "1" : "0");
+		m_fdbg.append(flagD ? "1" : "0");
+		m_fdbg.append(flagI ? "1" : "0");
+		m_fdbg.append(flagZ ? "1" : "0");
+		m_fdbg.append(flagC ? "1" : "0");
 
-		int opcode = cpu.cycleCount >> 3;
-		int instrOperand = cpu.instrOperand;
-		byte Cycle_Data = cpu.Cycle_Data;
-		int Cycle_EffectiveAddress = cpu.Cycle_EffectiveAddress;
-		
+		int opcode = cycleCount >> 3;
+
 		m_fdbg.append(String.format("  %02x ", opcode));
 
 		switch (opcode) {
@@ -65,7 +141,7 @@ public class MOS6510Debug {
 		case RORn:
 			m_fdbg.append("      ");
 			break;
-			// Zero Page Addressing Mode Handler
+		// Zero Page Addressing Mode Handler
 		case ADCz:
 		case ANDz:
 		case ASLz:
@@ -101,7 +177,7 @@ public class MOS6510Debug {
 			// ASOz AXSz DCMz INSz LSEz - Optional Opcode Names
 			m_fdbg.append(String.format("%02x    ", instrOperand));
 			break;
-			// Zero Page with X Offset Addressing Mode Handler
+		// Zero Page with X Offset Addressing Mode Handler
 		case ADCzx:
 		case ANDzx:
 		case ASLzx:
@@ -133,7 +209,7 @@ public class MOS6510Debug {
 			// ASOzx DCMzx INSzx LSEzx - Optional Opcode Names
 			m_fdbg.append(String.format("%02x    ", instrOperand & 0xff));
 			break;
-			// Zero Page with Y Offset Addressing Mode Handler
+		// Zero Page with Y Offset Addressing Mode Handler
 		case LDXzy:
 		case STXzy:
 		case SAXzy:
@@ -141,7 +217,7 @@ public class MOS6510Debug {
 			// AXSzx - Optional Opcode Names
 			m_fdbg.append(String.format("%02x    ", instrOperand));
 			break;
-			// Absolute Addressing Mode Handler
+		// Absolute Addressing Mode Handler
 		case ADCa:
 		case ANDa:
 		case ASLa:
@@ -177,7 +253,7 @@ public class MOS6510Debug {
 			// ASOa AXSa DCMa INSa LSEa - Optional Opcode Names
 			m_fdbg.append(String.format("%02x %02x ", instrOperand & 0xff, instrOperand >> 8));
 			break;
-			// Absolute With X Offset Addresing Mode Handler
+		// Absolute With X Offset Addresing Mode Handler
 		case ADCax:
 		case ANDax:
 		case ASLax:
@@ -209,7 +285,7 @@ public class MOS6510Debug {
 			// ASOax DCMax INSax LSEax SAYax - Optional Opcode Names
 			m_fdbg.append(String.format("%02x %02x ", instrOperand & 0xff, instrOperand >> 8));
 			break;
-			// Absolute With Y Offset Addresing Mode Handler
+		// Absolute With Y Offset Addresing Mode Handler
 		case ADCay:
 		case ANDay:
 		case CMPay:
@@ -233,7 +309,7 @@ public class MOS6510Debug {
 			// ASOay AXAay DCMay INSax LSEay TASay XASay - Optional Opcode Names
 			m_fdbg.append(String.format("%02x %02x ", instrOperand & 0xff, instrOperand >> 8));
 			break;
-			// Immediate and Relative Addressing Mode Handler
+		// Immediate and Relative Addressing Mode Handler
 		case ADCb:
 		case ANDb:
 		case ANCb:
@@ -268,11 +344,11 @@ public class MOS6510Debug {
 		case SBXb:
 			m_fdbg.append(String.format("%02x    ", Cycle_Data & 0xff));
 			break;
-			// Indirect Addressing Mode Handler
+		// Indirect Addressing Mode Handler
 		case JMPi:
 			m_fdbg.append(String.format("%02x %02x ", instrOperand & 0xff, instrOperand >> 8));
 			break;
-			// Indexed with X Preinc Addressing Mode Handler
+		// Indexed with X Preinc Addressing Mode Handler
 		case ADCix:
 		case ANDix:
 		case CMPix:
@@ -292,7 +368,7 @@ public class MOS6510Debug {
 			// ASOix AXSix DCMix INSix LSEix - Optional Opcode Names
 			m_fdbg.append(String.format("%02x    ", instrOperand));
 			break;
-			// Indexed with Y Postinc Addressing Mode Handler
+		// Indexed with Y Postinc Addressing Mode Handler
 		case ADCiy:
 		case ANDiy:
 		case CMPiy:
@@ -317,7 +393,7 @@ public class MOS6510Debug {
 			break;
 		}
 
-		m_fdbg.append(cpu.disassembler.disassemble(opcode, instrOperand, Cycle_EffectiveAddress));
+		m_fdbg.append(disassembler.disassemble(opcode, instrOperand, Cycle_EffectiveAddress));
 
 		switch (opcode) {
 		// Zero Page Addressing Mode Handler
@@ -350,7 +426,7 @@ public class MOS6510Debug {
 			// ASOz AXSz DCMz INSz LSEz - Optional Opcode Names
 			m_fdbg.append(String.format(" {%02x}", Cycle_Data));
 			break;
-			// Zero Page with X Offset Addressing Mode Handler
+		// Zero Page with X Offset Addressing Mode Handler
 		case ADCzx:
 		case ANDzx:
 		case ASLzx:
@@ -385,7 +461,7 @@ public class MOS6510Debug {
 			m_fdbg.append(String.format(" [%04x]", Cycle_EffectiveAddress));
 			break;
 
-			// Zero Page with Y Offset Addressing Mode Handler
+		// Zero Page with Y Offset Addressing Mode Handler
 		case LAXzy:
 		case LDXzy:
 			// AXSzx - Optional Opcode Names
@@ -396,7 +472,7 @@ public class MOS6510Debug {
 			m_fdbg.append(String.format(" [%04x]", Cycle_EffectiveAddress));
 			break;
 
-			// Absolute Addressing Mode Handler
+		// Absolute Addressing Mode Handler
 		case ADCa:
 		case ANDa:
 		case ASLa:
@@ -425,7 +501,7 @@ public class MOS6510Debug {
 			// ASOa AXSa DCMa INSa LSEa - Optional Opcode Names
 			m_fdbg.append(String.format(" {%02x}", Cycle_Data));
 			break;
-			// Absolute With X Offset Addresing Mode Handler
+		// Absolute With X Offset Addresing Mode Handler
 		case ADCax:
 		case ANDax:
 		case ASLax:
@@ -460,7 +536,7 @@ public class MOS6510Debug {
 			m_fdbg.append(String.format(" [%04x]", Cycle_EffectiveAddress));
 			break;
 
-			// Absolute With Y Offset Addresing Mode Handler
+		// Absolute With Y Offset Addresing Mode Handler
 		case ADCay:
 		case ANDay:
 		case CMPay:
@@ -487,7 +563,7 @@ public class MOS6510Debug {
 			m_fdbg.append(String.format(" [%04x]", Cycle_EffectiveAddress));
 			break;
 
-			// Relative Addressing Mode Handler
+		// Relative Addressing Mode Handler
 		case BCCr:
 		case BCSr:
 		case BEQr:
@@ -499,12 +575,12 @@ public class MOS6510Debug {
 			// this is already part of CPUParser.getDebug()
 			break;
 
-			// Indirect Addressing Mode Handler
+		// Indirect Addressing Mode Handler
 		case JMPi:
 			m_fdbg.append(String.format(" [%04x]", Cycle_EffectiveAddress));
 			break;
 
-			// Indexed with X Preinc Addressing Mode Handler
+		// Indexed with X Preinc Addressing Mode Handler
 		case ADCix:
 		case ANDix:
 		case CMPix:
@@ -527,7 +603,7 @@ public class MOS6510Debug {
 			m_fdbg.append(String.format(" [%04x]", Cycle_EffectiveAddress));
 			break;
 
-			// Indexed with Y Postinc Addressing Mode Handler
+		// Indexed with Y Postinc Addressing Mode Handler
 		case ADCiy:
 		case ANDiy:
 		case CMPiy:
@@ -554,6 +630,6 @@ public class MOS6510Debug {
 			break;
 		}
 
-		MOS6510.MOS6510.info(m_fdbg.toString());
+		MOS6510.info(m_fdbg.toString());
 	}
 }

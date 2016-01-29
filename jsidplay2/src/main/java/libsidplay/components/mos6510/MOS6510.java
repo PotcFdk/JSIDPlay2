@@ -17,9 +17,6 @@ package libsidplay.components.mos6510;
 
 import static libsidplay.components.mos6510.IOpCode.*;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -39,10 +36,6 @@ public abstract class MOS6510 {
 
 	/** Stack page location */
 	protected static final byte SP_PAGE = 0x01;
-
-	/** Logger for MOS6510 class */
-	protected static final Logger MOS6510 = Logger.getLogger(MOS6510.class
-			.getName());
 
 	/**
 	 * IRQ/NMI magic limit values. Need to be larger than about 0x103 << 3, but
@@ -76,13 +69,13 @@ public abstract class MOS6510 {
 	private static final int ANE_CONST = 0xee;
 
 	/** Our event context copy. */
-	private final EventScheduler context;
+	protected final EventScheduler context;
 
 	/** RDY pin state (stop CPU on read) */
 	private boolean rdy;
 
 	/** Table of CPU opcode implementations */
-	private final Runnable[] instrTable = new Runnable[0x101 << 3];
+	private final Runnable[] instrTable = new Runnable[0x100 << 3];
 
 	/**
 	 * true - Represents an instruction subcycle that writes. Whereas false -
@@ -113,9 +106,6 @@ public abstract class MOS6510 {
 	protected boolean flagI;
 	protected boolean flagU;
 	protected boolean flagB;
-
-	/** Debug info */
-	protected int instrStartPC, instrOperand;
 
 	/** IRQ asserted on CPU */
 	protected boolean irqAssertedOnPin;
@@ -175,9 +165,6 @@ public abstract class MOS6510 {
 		}
 	};
 
-	/** Opcode stringifier */
-	protected IMOS6510Disassembler disassembler;
-
 	/**
 	 * Initialize CPU Emulation (Registers)
 	 */
@@ -205,30 +192,25 @@ public abstract class MOS6510 {
 
 	protected void interruptsAndNextOpcode() {
 		if (cycleCount > interruptCycle + 2) {
-			if (disassembler != null && MOS6510.isLoggable(Level.FINE)) {
-				final long cycles = context.getTime(Phase.PHI2);
-				MOS6510.fine("****************************************************");
-				MOS6510.fine(String.format(" interrupt (%d)", cycles));
-				MOS6510.fine("****************************************************");
-				MOS6510Debug.dumpState(cycles, this);
-			}
-
-			cpuRead(Register_ProgramCounter);
-			cycleCount = BRKn << 3;
-			flagB = false;
-			interruptCycle = MAX;
+			interrupt();
 		} else {
 			fetchNextOpcode();
 		}
 	}
 
-	protected void fetchNextOpcode() {
-		if (disassembler != null && MOS6510.isLoggable(Level.FINE)) {
-			MOS6510Debug.dumpState(context.getTime(Phase.PHI2), this);
-		}
-		// Next line used for Debug
-		instrStartPC = Register_ProgramCounter;
+	protected void interrupt() {
+		cpuRead(Register_ProgramCounter);
+		cycleCount = BRKn << 3;
+		flagB = false;
+		interruptCycle = MAX;
+	}
 
+	protected void interruptEnd() {
+		Register_ProgramCounter = Cycle_EffectiveAddress;
+		interruptsAndNextOpcode();
+	}
+	
+	protected void fetchNextOpcode() {
 		cycleCount = (cpuRead(Register_ProgramCounter) & 0xff) << 3;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
 
@@ -298,9 +280,6 @@ public abstract class MOS6510 {
 		// Get the high byte of an address from memory
 		Cycle_EffectiveAddress |= (cpuRead(Register_ProgramCounter) & 0xff) << 8;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
-
-		// Next line used for Debug
-		instrOperand = Cycle_EffectiveAddress;
 	}
 
 	/**
@@ -395,7 +374,6 @@ public abstract class MOS6510 {
 	protected void FetchLowPointer() {
 		Cycle_Pointer = cpuRead(Register_ProgramCounter) & 0xff;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
-		instrOperand = Cycle_Pointer;
 	}
 
 	/**
@@ -409,7 +387,6 @@ public abstract class MOS6510 {
 	protected void FetchHighPointer() {
 		Cycle_Pointer |= (cpuRead(Register_ProgramCounter) & 0xff) << 8;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
-		instrOperand = Cycle_Pointer;
 	}
 
 	/**
@@ -572,7 +549,7 @@ public abstract class MOS6510 {
 	 * @param context
 	 *            The Event Context
 	 */
-	public MOS6510(final EventScheduler context) {
+	public MOS6510(final EventScheduler context, final boolean floppyCPU) {
 		this.context = context;
 
 		// Initialize Processor Registers
@@ -1783,14 +1760,7 @@ public abstract class MOS6510 {
 
 				instrTable[buildCycle++] = () -> PopHighPC();
 
-				instrTable[buildCycle++] = () -> {
-					if (disassembler != null && MOS6510.isLoggable(Level.FINE)) {
-						MOS6510.fine("****************************************************");
-					}
-
-					Register_ProgramCounter = Cycle_EffectiveAddress;
-					interruptsAndNextOpcode();
-				};
+				instrTable[buildCycle++] = () -> interruptEnd();
 				break;
 
 			case RTSn:
@@ -2190,15 +2160,6 @@ public abstract class MOS6510 {
 		flagU = (sr & 0x20) != 0;
 		setFlagV((sr & 0x40) != 0);
 		flagN = (sr & 0x80) != 0;
-	}
-
-	/**
-	 * Set CPU disassembler implementation.
-	 * 
-	 * @param disass
-	 */
-	public final void setDebug(final IMOS6510Disassembler disass) {
-		disassembler = disass;
 	}
 
 	/**

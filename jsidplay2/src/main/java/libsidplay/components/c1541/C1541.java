@@ -159,7 +159,7 @@ public final class C1541 {
 		this.id = deviceID;
 
 		// Create a CPU for the floppy disk drive
-		cpu = new MOS6510(context) {
+		cpu = new MOS6510(context, true) {
 			/**
 			 * Read from address
 			 * 

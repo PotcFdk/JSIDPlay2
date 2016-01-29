@@ -1,0 +1,47 @@
+Feature to compare VICE and JSIDPlay2 via socket connection after each instruction.
+Implemented to compare Edge of Disgrace.
+Some synchronization start has been found, where both implementations are exactly at
+the same state. From here on the compare their states each instruction fetch until a difference has
+been detected. VICE sends its state to JSIDPlay2 and JSIDPlay2 compares with its own state.
+
+Build VICE:
+===========
+cd /home/ken/Downloads/vice-2.4
+# install eventually missing Ubuntu packages (e.g. my Ubuntu 15.10)
+sudo apt-get install libxt-dev libxaw7-dev libreadline-dev
+# enable debug symbols
+./configure CFLAGS='-g' CXXFLAGS='-g'
+# Remove optimization flags from all Makefiles: e.g. -O2
+<do it with your favorite editor here!>
+
+cp mainc64cpu.c into the src folder
+
+make
+sudo make install
+
+Fix directories once:
+=====================
+sudo mv /usr/local/lib64/vice /usr/local/lib/
+
+Debug EoD using VICE:
+=====================
+ddd --args x64sc -autostart "/media/readyshare/Ken/c64/JSIDPlay2/eod bug/EdgeOfDisgrace_1a.d64"
+
+File/Open Source...
+"Type" main*
+"Select" mainc64cpu.c
+"Click" Open
+
+Strg+F 246171754
+"Click"
+
+Set Breakpoint:
+===============
+"Right Click at the left side of the editor"
+"Set Breakpoint"
+
+(Order is important here!)
+1. Start JSIDPlay2Frame (beforehand: instantiate MOS6510ViceSync instead of MOS6510 within source code and set C64.setDebug(true))
+2. In DDD (Debugger) for VICE click run
+
+Comunication is via socket connection (port=6510)

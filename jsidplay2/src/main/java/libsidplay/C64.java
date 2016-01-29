@@ -14,6 +14,7 @@ import libsidplay.components.joystick.IJoystick;
 import libsidplay.components.keyboard.Keyboard;
 import libsidplay.components.mos6510.IMOS6510Extension;
 import libsidplay.components.mos6510.MOS6510;
+import libsidplay.components.mos6510.MOS6510Debug;
 import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.MOS6567;
 import libsidplay.components.mos656x.MOS6569;
@@ -22,6 +23,7 @@ import libsidplay.components.pla.Bank;
 import libsidplay.components.pla.PLA;
 import libsidplay.components.printer.UserportPrinterEnvironment;
 import libsidplay.components.ram.SystemRAMBank;
+import libsidutils.disassembler.SimpleDisassembler;
 
 /**
  * Commodore 64 emulation core.
@@ -35,8 +37,7 @@ import libsidplay.components.ram.SystemRAMBank;
  * @author Ken Händel
  * 
  */
-public abstract class C64 implements DatasetteEnvironment, C1541Environment,
-		UserportPrinterEnvironment {
+public abstract class C64 implements DatasetteEnvironment, C1541Environment, UserportPrinterEnvironment {
 	/** Currently active CIA model. */
 	private static final MOS6526.Model CIAMODEL = MOS6526.Model.MOS6526;
 
@@ -133,7 +134,9 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		/** State of processor port pins. */
 		private byte dataOut;
 
-		/** $01 bits 6 and 7 fall-off cycles (1->0), average is about 350 msec */
+		/**
+		 * $01 bits 6 and 7 fall-off cycles (1->0), average is about 350 msec
+		 */
 		private static final long C64_CPU_DATA_PORT_FALL_OFF_CYCLES = 350000;
 
 		/** cycle that should invalidate the unused bits of the data port. */
@@ -210,8 +213,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 						dataFalloffBit7 = false;
 					}
 				}
-				return (byte) (dataRead & 0xff - (((!dataSetBit6 ? 1 : 0) << 6) + ((!dataSetBit7 ? 1
-						: 0) << 7)));
+				return (byte) (dataRead & 0xff - (((!dataSetBit6 ? 1 : 0) << 6) + ((!dataSetBit7 ? 1 : 0) << 7)));
 			} else {
 				return ramBank.read(address);
 			}
@@ -222,13 +224,11 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 			if (address == 0) {
 				if (dataSetBit7 && (value & 0x80) == 0 && !dataFalloffBit7) {
 					dataFalloffBit7 = true;
-					dataSetClkBit7 = context.getTime(Phase.PHI2)
-							+ C64_CPU_DATA_PORT_FALL_OFF_CYCLES;
+					dataSetClkBit7 = context.getTime(Phase.PHI2) + C64_CPU_DATA_PORT_FALL_OFF_CYCLES;
 				}
 				if (dataSetBit6 && (value & 0x40) == 0 && !dataFalloffBit6) {
 					dataFalloffBit6 = true;
-					dataSetClkBit6 = context.getTime(Phase.PHI2)
-							+ C64_CPU_DATA_PORT_FALL_OFF_CYCLES;
+					dataSetClkBit6 = context.getTime(Phase.PHI2) + C64_CPU_DATA_PORT_FALL_OFF_CYCLES;
 				}
 				if (dataSetBit7 && (value & 0x80) != 0 && dataFalloffBit7) {
 					dataFalloffBit7 = false;
@@ -278,8 +278,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		final double interval = now - lastUpdate;
 		if (interval >= cpuFreq) {
 			lastUpdate = now;
-			tuneSpeed = (callsToPlayRoutine * cpuFreq)
-					/ (interval * clock.getRefresh());
+			tuneSpeed = (callsToPlayRoutine * cpuFreq) / (interval * clock.getRefresh());
 			callsToPlayRoutine = 0;
 		}
 		return tuneSpeed;
@@ -289,34 +288,62 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 		this.parallelCable = parallelCable;
 	}
 
-	public C64() {
+	public C64(boolean debug) {
 		context = new EventScheduler();
 
 		pla = new PLA(context, zeroRAMBank, ramBank);
 
-		cpu = new MOS6510(context) {
-			@Override
-			public byte cpuRead(final int address) {
-				return pla.cpuRead(address);
-			}
-
-			@Override
-			public void cpuWrite(final int address, final byte value) {
-				pla.cpuWrite(address, value);
-			}
-
-			@Override
-			protected void doJSR() {
-				super.doJSR();
-				if (Register_ProgramCounter == playAddr) {
-					if (playRoutineObserver != null) {
-						final long time = context.getTime(Event.Phase.PHI2);
-						playRoutineObserver.fetch(time);
-					}
-					callsToPlayRoutine++;
+//		debug=true;
+		if (debug) {
+			cpu = new MOS6510Debug/*MOS6510ViceSync*/(context, false) {
+				@Override
+				public byte cpuRead(final int address) {
+					return pla.cpuRead(address);
 				}
-			}
-		};
+
+				@Override
+				public void cpuWrite(final int address, final byte value) {
+					pla.cpuWrite(address, value);
+				}
+
+				@Override
+				protected void doJSR() {
+					super.doJSR();
+					if (Register_ProgramCounter == playAddr) {
+						if (playRoutineObserver != null) {
+							final long time = context.getTime(Event.Phase.PHI2);
+							playRoutineObserver.fetch(time);
+						}
+						callsToPlayRoutine++;
+					}
+				}
+			};
+			((MOS6510Debug) cpu).setDisassembler(SimpleDisassembler.getInstance());
+		} else {
+			cpu = new MOS6510(context, false) {
+				@Override
+				public byte cpuRead(final int address) {
+					return pla.cpuRead(address);
+				}
+
+				@Override
+				public void cpuWrite(final int address, final byte value) {
+					pla.cpuWrite(address, value);
+				}
+
+				@Override
+				protected void doJSR() {
+					super.doJSR();
+					if (Register_ProgramCounter == playAddr) {
+						if (playRoutineObserver != null) {
+							final long time = context.getTime(Event.Phase.PHI2);
+							playRoutineObserver.fetch(time);
+						}
+						callsToPlayRoutine++;
+					}
+				}
+			};
+		}
 		pla.setCpu(cpu);
 
 		palVic = new MOS6569(pla, context);
@@ -548,8 +575,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 
 				@Override
 				public void write(final int address, final byte value) {
-					throw new RuntimeException(
-							"This bank should never be mapped to W mode");
+					throw new RuntimeException("This bank should never be mapped to W mode");
 				}
 			});
 		}
@@ -572,10 +598,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment,
 	 * @param joystickReader
 	 *            joystick implementation or null (disconnected)
 	 */
-	public final void setJoystick(final int portNumber,
-			final IJoystick joystickReader) {
-		joystickPort[portNumber] = joystickReader == null ? disconnectedJoystick
-				: joystickReader;
+	public final void setJoystick(final int portNumber, final IJoystick joystickReader) {
+		joystickPort[portNumber] = joystickReader == null ? disconnectedJoystick : joystickReader;
 	}
 
 	/**
