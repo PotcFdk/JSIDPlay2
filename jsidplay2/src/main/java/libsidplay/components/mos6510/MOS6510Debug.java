@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import libsidplay.common.Event.Phase;
+import libsidutils.disassembler.SimpleDisassembler;
 import libsidplay.common.EventScheduler;
 
 /**
@@ -29,7 +30,7 @@ import libsidplay.common.EventScheduler;
  * 
  * @author Ken Händel
  */
-public abstract class MOS6510Debug extends MOS6510 {
+public class MOS6510Debug extends MOS6510 {
 
 	/** Logger for MOS6510 class */
 	protected static final Logger MOS6510 = Logger.getLogger(MOS6510.class.getName());
@@ -40,17 +41,9 @@ public abstract class MOS6510Debug extends MOS6510 {
 	/** Opcode stringifier */
 	protected IMOS6510Disassembler disassembler;
 
-	public MOS6510Debug(final EventScheduler context, final boolean floppyCPU) {
-		super(context, floppyCPU);
-	}
-
-	/**
-	 * Set CPU disassembler implementation.
-	 * 
-	 * @param disass
-	 */
-	public final void setDisassembler(final IMOS6510Disassembler disass) {
-		disassembler = disass;
+	public MOS6510Debug(final EventScheduler context) {
+		super(context);
+		this.disassembler = SimpleDisassembler.getInstance();
 	}
 
 	@Override
@@ -113,11 +106,11 @@ public abstract class MOS6510Debug extends MOS6510 {
 		m_fdbg.append(String.format("%02x ", Register_X & 0xff));
 		m_fdbg.append(String.format("%02x ", Register_Y & 0xff));
 		m_fdbg.append(String.format("%02x%02x ", SP_PAGE, Register_StackPointer & 0xff));
-		m_fdbg.append(String.format("%02x ", cpuRead(0)));
-		m_fdbg.append(String.format("%02x ", cpuRead(1)));
+		m_fdbg.append(String.format("%02x ", cpuRead.apply(0)));
+		m_fdbg.append(String.format("%02x ", cpuRead.apply(1)));
 
 		m_fdbg.append(flagN ? "1" : "0");
-		m_fdbg.append(getFlagV() ? "1" : "0");
+		m_fdbg.append(flagV ? "1" : "0");
 		m_fdbg.append(flagU ? "1" : "0");
 		// normally it's not possible to read the B flag except by pushing it to
 		// stack and extracting it

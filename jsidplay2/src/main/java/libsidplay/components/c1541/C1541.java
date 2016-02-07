@@ -42,17 +42,17 @@ public final class C1541 {
 	private static final int ROM_SIZE = 0x4000;
 	private static final byte[] C1541 = new byte[ROM_SIZE];
 	private static final byte[] C1541_II = new byte[ROM_SIZE];
+
 	static {
-		try (DataInputStream isC1541 = new DataInputStream(
-				C1541.class.getResourceAsStream(C1541_ROM));
-				DataInputStream isC1541_II = new DataInputStream(
-						C1541.class.getResourceAsStream(C1541_II_ROM))) {
+		try (DataInputStream isC1541 = new DataInputStream(C1541.class.getResourceAsStream(C1541_ROM));
+				DataInputStream isC1541_II = new DataInputStream(C1541.class.getResourceAsStream(C1541_II_ROM))) {
 			isC1541.readFully(C1541);
 			isC1541_II.readFully(C1541_II);
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
+
 	/**
 	 * Size of the floppy RAM.
 	 */
@@ -159,95 +159,7 @@ public final class C1541 {
 		this.id = deviceID;
 
 		// Create a CPU for the floppy disk drive
-		cpu = new MOS6510(context, true) {
-			/**
-			 * Read from address
-			 * 
-			 * Implementing chips: 74LS42 (binary-to-decimal decoder, with 4
-			 * input bins of A10, A11, A12, A15 and 10 output values, where: 0,
-			 * 1 -> RAM, 6 -> BC, 7 -> DC, giving the mapping 0, 0x400, 0x1800
-			 * and 0x1c00 for the A0-A12 lines, and excluding the 74LS42 for A15
-			 * lines (ROM).
-			 * 
-			 * Address lines such as 0x8000 - 0xffff result in select of ROM,
-			 * with A13 line controlling which ROM image. CPU line A14 is not
-			 * connected.
-			 * 
-			 * @param address
-			 *            memory address
-			 */
-			@Override
-			public byte cpuRead(final int address) {
-				final int ramExpSelect = address >> 13;
-				if (ramExpSelect > 0 && ramExpSelect <= EXP_RAM_BANKS
-						&& getRAMExpEnabled()[ramExpSelect - 1]) {
-					// 8KB Ram expansion selected
-					return getRAMExpand()[ramExpSelect - 1][address & 0x1fff];
-				}
-				if (address < 0x8000) {
-					final int chip = address & 0x1c00;
-					if (chip < RAM_SIZE) {
-						return getRAM()[address & 0x7ff];
-					}
-					if (chip == 0x1800) {
-						return getBusController().read(address & 0xf);
-					}
-					if (chip == 0x1c00) {
-						return getDiskController().read(address & 0xf);
-					}
-					/* Unconnected bus. */
-					return (byte) 0xff;
-				} else {
-					return getROM()[address & 0x3fff];
-				}
-			}
-
-			/**
-			 * Write to address
-			 * 
-			 * @param address
-			 *            memory address
-			 */
-			@Override
-			public void cpuWrite(final int address, final byte data) {
-				final int ramExpSelect = address >> 13;
-				if (ramExpSelect > 0 && ramExpSelect <= EXP_RAM_BANKS
-						&& getRAMExpEnabled()[ramExpSelect - 1]) {
-					// 8KB Ram expansion selected
-					getRAMExpand()[ramExpSelect - 1][address & 0x1fff] = data;
-				}
-				if (address < 0x8000) {
-					final int chip = address & 0x1c00;
-					if (chip < RAM_SIZE) {
-						getRAM()[address & 0x7ff] = data;
-					}
-					if (chip == 0x1800) {
-						getBusController().write(address & 0xf, data);
-					}
-					if (chip == 0x1c00) {
-						getDiskController().write(address & 0xf, data);
-					}
-				}
-			}
-
-			/**
-			 * The V flag is connected to the disk controller's byte ready
-			 * -line. The controller sets the overflow flag during disk rotation
-			 * whenever 8 bits have passed under the R/W head and the control
-			 * line isn't masked.
-			 */
-			@Override
-			public boolean getFlagV() {
-				getDiskController().rotateDisk();
-				return super.getFlagV();
-			}
-
-			@Override
-			public void setFlagV(final boolean state) {
-				getDiskController().rotateDisk();
-				super.setFlagV(state);
-			}
-		};
+		cpu = new MOS6510(context);
 
 		// Create the Bus Controller
 		viaBc = new VIA6522BC(deviceID, iecBus) {
@@ -258,8 +170,7 @@ public final class C1541 {
 
 			@Override
 			protected void alarmSet(final Event alarm, final long ti) {
-				getEventScheduler().scheduleAbsolute(alarm, ti,
-						Event.Phase.PHI1);
+				getEventScheduler().scheduleAbsolute(alarm, ti, Event.Phase.PHI1);
 			}
 
 			@Override
@@ -282,8 +193,7 @@ public final class C1541 {
 
 			@Override
 			protected void alarmSet(final Event alarm, final long ti) {
-				getEventScheduler().scheduleAbsolute(alarm, ti,
-						Event.Phase.PHI1);
+				getEventScheduler().scheduleAbsolute(alarm, ti, Event.Phase.PHI1);
 			}
 
 			@Override
@@ -301,6 +211,80 @@ public final class C1541 {
 				setDiskName(attached ? imageName : null);
 			}
 		};
+
+		/**
+		 * The V flag is connected to the disk controller's byte ready -line.
+		 * The controller sets the overflow flag during disk rotation whenever 8
+		 * bits have passed under the R/W head and the control line isn't
+		 * masked.
+		 */
+		cpu.setVFlagHandler(flagV -> {
+			viaDc.rotateDisk();
+			return flagV;
+		});
+		cpu.setMemoryHandler(address -> {
+			/**
+			 * Read from address
+			 * 
+			 * Implementing chips: 74LS42 (binary-to-decimal decoder, with 4
+			 * input bins of A10, A11, A12, A15 and 10 output values, where: 0,
+			 * 1 -> RAM, 6 -> BC, 7 -> DC, giving the mapping 0, 0x400, 0x1800
+			 * and 0x1c00 for the A0-A12 lines, and excluding the 74LS42 for A15
+			 * lines (ROM).
+			 * 
+			 * Address lines such as 0x8000 - 0xffff result in select of ROM,
+			 * with A13 line controlling which ROM image. CPU line A14 is not
+			 * connected.
+			 * 
+			 * @param address
+			 *            memory address
+			 */
+			final int ramExpSelect = address >> 13;
+			if (ramExpSelect > 0 && ramExpSelect <= EXP_RAM_BANKS && getRAMExpEnabled()[ramExpSelect - 1]) {
+				// 8KB Ram expansion selected
+				return getRAMExpand()[ramExpSelect - 1][address & 0x1fff];
+			}
+			if (address < 0x8000) {
+				final int chip = address & 0x1c00;
+				if (chip < RAM_SIZE) {
+					return getRAM()[address & 0x7ff];
+				}
+				if (chip == 0x1800) {
+					return getBusController().read(address & 0xf);
+				}
+				if (chip == 0x1c00) {
+					return getDiskController().read(address & 0xf);
+				}
+				/* Unconnected bus. */
+				return (byte) 0xff;
+			} else {
+				return getROM()[address & 0x3fff];
+			}
+		} , (address, data) -> {
+			/**
+			 * Write to address
+			 * 
+			 * @param address
+			 *            memory address
+			 */
+			final int ramExpSelect = address >> 13;
+			if (ramExpSelect > 0 && ramExpSelect <= EXP_RAM_BANKS && getRAMExpEnabled()[ramExpSelect - 1]) {
+				// 8KB Ram expansion selected
+				getRAMExpand()[ramExpSelect - 1][address & 0x1fff] = data;
+			}
+			if (address < 0x8000) {
+				final int chip = address & 0x1c00;
+				if (chip < RAM_SIZE) {
+					getRAM()[address & 0x7ff] = data;
+				}
+				if (chip == 0x1800) {
+					getBusController().write(address & 0xf, data);
+				}
+				if (chip == 0x1c00) {
+					getDiskController().write(address & 0xf, data);
+				}
+			}
+		});
 
 		// Setup specific floppy type
 		setFloppyType(type);
@@ -476,8 +460,7 @@ public final class C1541 {
 				break;
 
 			default:
-				throw new RuntimeException("Unsupported floppy type: "
-						+ floppyType);
+				throw new RuntimeException("Unsupported floppy type: " + floppyType);
 			}
 		}
 	}

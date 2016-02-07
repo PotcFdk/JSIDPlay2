@@ -28,15 +28,15 @@ import libsidplay.components.mos6510.MOS6510Debug;
  * 
  * @author Ken Händel
  */
-public abstract class MOS6510ViceSync extends MOS6510Debug {
+public class MOS6510ViceSync extends MOS6510Debug {
 
 	private ViceSync sync;
 
 	private long lastClk;
 	private boolean connectedToJava = false;
 
-	public MOS6510ViceSync(final EventScheduler context, final boolean floppyCPU) {
-		super(context, floppyCPU);
+	public MOS6510ViceSync(final EventScheduler context) {
+		super(context);
 	}
 
 	@Override

@@ -23,7 +23,6 @@ import libsidplay.components.pla.Bank;
 import libsidplay.components.pla.PLA;
 import libsidplay.components.printer.UserportPrinterEnvironment;
 import libsidplay.components.ram.SystemRAMBank;
-import libsidutils.disassembler.SimpleDisassembler;
 
 /**
  * Commodore 64 emulation core.
@@ -293,57 +292,17 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 		pla = new PLA(context, zeroRAMBank, ramBank);
 
-//		debug=true;
-		if (debug) {
-			cpu = new MOS6510Debug/*MOS6510ViceSync*/(context, false) {
-				@Override
-				public byte cpuRead(final int address) {
-					return pla.cpuRead(address);
+		cpu = debug ? new MOS6510Debug/* MOS6510ViceSync */(context) : new MOS6510(context);
+		cpu.setMemoryHandler(address -> pla.cpuRead(address), (address, value) -> pla.cpuWrite(address, value));
+		cpu.setJSRHandler(Register_ProgramCounter -> {
+			if (Register_ProgramCounter == playAddr) {
+				if (playRoutineObserver != null) {
+					final long time = context.getTime(Event.Phase.PHI2);
+					playRoutineObserver.fetch(time);
 				}
-
-				@Override
-				public void cpuWrite(final int address, final byte value) {
-					pla.cpuWrite(address, value);
-				}
-
-				@Override
-				protected void doJSR() {
-					super.doJSR();
-					if (Register_ProgramCounter == playAddr) {
-						if (playRoutineObserver != null) {
-							final long time = context.getTime(Event.Phase.PHI2);
-							playRoutineObserver.fetch(time);
-						}
-						callsToPlayRoutine++;
-					}
-				}
-			};
-			((MOS6510Debug) cpu).setDisassembler(SimpleDisassembler.getInstance());
-		} else {
-			cpu = new MOS6510(context, false) {
-				@Override
-				public byte cpuRead(final int address) {
-					return pla.cpuRead(address);
-				}
-
-				@Override
-				public void cpuWrite(final int address, final byte value) {
-					pla.cpuWrite(address, value);
-				}
-
-				@Override
-				protected void doJSR() {
-					super.doJSR();
-					if (Register_ProgramCounter == playAddr) {
-						if (playRoutineObserver != null) {
-							final long time = context.getTime(Event.Phase.PHI2);
-							playRoutineObserver.fetch(time);
-						}
-						callsToPlayRoutine++;
-					}
-				}
-			};
-		}
+				callsToPlayRoutine++;
+			}
+		});
 		pla.setCpu(cpu);
 
 		palVic = new MOS6569(pla, context);

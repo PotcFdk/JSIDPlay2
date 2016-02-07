@@ -17,6 +17,10 @@ package libsidplay.components.mos6510;
 
 import static libsidplay.components.mos6510.IOpCode.*;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -30,7 +34,7 @@ import libsidplay.common.EventScheduler;
  * 
  * @author Antti Lankila
  */
-public abstract class MOS6510 {
+public class MOS6510 {
 	/** Status register interrupt bit. */
 	public static final int SR_INTERRUPT = 2;
 
@@ -107,6 +111,12 @@ public abstract class MOS6510 {
 	protected boolean flagU;
 	protected boolean flagB;
 
+	protected Function<Boolean, Boolean> v = flagV -> flagV;
+	protected Consumer<Integer> jsr = Register_ProgramCounter -> {
+	};
+	protected Function<Integer, Byte> cpuRead;
+	protected BiConsumer<Integer, Byte> cpuWrite;
+	
 	/** IRQ asserted on CPU */
 	protected boolean irqAssertedOnPin;
 
@@ -122,6 +132,29 @@ public abstract class MOS6510 {
 	/** RST requested? */
 	protected boolean rstFlag;
 
+	public void setMemoryHandler(final Function<Integer, Byte> cpuRead, final BiConsumer<Integer, Byte> cpuWrite) {
+		this.cpuRead = cpuRead;
+		this.cpuWrite = cpuWrite;
+	}
+
+	public void setJSRHandler(final Consumer<Integer> jsr) {
+		this.jsr = jsr;
+	}
+	
+	public void setVFlagHandler(final Function<Boolean, Boolean> v) {
+		this.v = v;
+	}
+	
+	/**
+	 * Set the value of V flag (often related to the SO pin)
+	 * 
+	 * @param flag
+	 *            new V flag state
+	 */
+	public void setFlagV(final boolean flag) {
+		flagV = flag;
+	}
+	
 	/**
 	 * Evaluate when to execute an interrupt. Calling this method can also
 	 * result in the decision that no interrupt at all needs to be scheduled.
@@ -169,6 +202,8 @@ public abstract class MOS6510 {
 	 * Initialize CPU Emulation (Registers)
 	 */
 	private void Initialise() {
+		assert cpuRead != null && cpuWrite != null;
+
 		// Reset stack
 		Register_StackPointer = (byte) 0xff;
 
@@ -199,7 +234,7 @@ public abstract class MOS6510 {
 	}
 
 	protected void interrupt() {
-		cpuRead(Register_ProgramCounter);
+		cpuRead.apply(Register_ProgramCounter);
 		cycleCount = BRKn << 3;
 		flagB = false;
 		interruptCycle = MAX;
@@ -211,7 +246,7 @@ public abstract class MOS6510 {
 	}
 	
 	protected void fetchNextOpcode() {
-		cycleCount = (cpuRead(Register_ProgramCounter) & 0xff) << 3;
+		cycleCount = (cpuRead.apply(Register_ProgramCounter) & 0xff) << 3;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
 
 		if (!rstFlag && !nmiFlag && !(!flagI && irqAssertedOnPin)) {
@@ -236,7 +271,7 @@ public abstract class MOS6510 {
 	 * </UL>
 	 */
 	protected void FetchLowAddr() {
-		Cycle_EffectiveAddress = cpuRead(Register_ProgramCounter) & 0xff;
+		Cycle_EffectiveAddress = cpuRead.apply(Register_ProgramCounter) & 0xff;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
 	}
 
@@ -278,7 +313,7 @@ public abstract class MOS6510 {
 	 */
 	protected void FetchHighAddr() {
 		// Get the high byte of an address from memory
-		Cycle_EffectiveAddress |= (cpuRead(Register_ProgramCounter) & 0xff) << 8;
+		Cycle_EffectiveAddress |= (cpuRead.apply(Register_ProgramCounter) & 0xff) << 8;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
 	}
 
@@ -329,7 +364,7 @@ public abstract class MOS6510 {
 	 * </UL>
 	 */
 	protected void FetchLowEffAddr() {
-		Cycle_EffectiveAddress = cpuRead(Cycle_Pointer) & 0xff;
+		Cycle_EffectiveAddress = cpuRead.apply(Cycle_Pointer) & 0xff;
 	}
 
 	/**
@@ -343,7 +378,7 @@ public abstract class MOS6510 {
 	 */
 	protected void FetchHighEffAddr() {
 		Cycle_Pointer = Cycle_Pointer & 0xff00 | Cycle_Pointer + 1 & 0xff;
-		Cycle_EffectiveAddress |= (cpuRead(Cycle_Pointer) & 0xff) << 8;
+		Cycle_EffectiveAddress |= (cpuRead.apply(Cycle_Pointer) & 0xff) << 8;
 	}
 
 	/**
@@ -372,7 +407,7 @@ public abstract class MOS6510 {
 	 * </UL>
 	 */
 	protected void FetchLowPointer() {
-		Cycle_Pointer = cpuRead(Register_ProgramCounter) & 0xff;
+		Cycle_Pointer = cpuRead.apply(Register_ProgramCounter) & 0xff;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
 	}
 
@@ -385,7 +420,7 @@ public abstract class MOS6510 {
 	 * </UL>
 	 */
 	protected void FetchHighPointer() {
-		Cycle_Pointer |= (cpuRead(Register_ProgramCounter) & 0xff) << 8;
+		Cycle_Pointer |= (cpuRead.apply(Register_ProgramCounter) & 0xff) << 8;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
 	}
 
@@ -393,14 +428,14 @@ public abstract class MOS6510 {
 	 * Write Cycle_Data to effective address.
 	 */
 	protected void PutEffAddrDataByte() {
-		cpuWrite(Cycle_EffectiveAddress, Cycle_Data);
+		cpuWrite.accept(Cycle_EffectiveAddress, Cycle_Data);
 	}
 
 	/**
 	 * Push Program Counter Low Byte on stack, decrement S
 	 */
 	protected void PushLowPC() {
-		cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff,
+		cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff,
 				(byte) (Register_ProgramCounter & 0xff));
 		Register_StackPointer--;
 	}
@@ -409,7 +444,7 @@ public abstract class MOS6510 {
 	 * Push Program Counter High Byte on stack, decrement S
 	 */
 	protected void PushHighPC() {
-		cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff,
+		cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff,
 				(byte) (Register_ProgramCounter >> 8));
 		Register_StackPointer--;
 	}
@@ -418,7 +453,7 @@ public abstract class MOS6510 {
 	 * Push P on stack, decrement S
 	 */
 	protected void PushSR() {
-		cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff,
+		cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff,
 				getStatusRegister());
 		Register_StackPointer--;
 	}
@@ -428,7 +463,7 @@ public abstract class MOS6510 {
 	 */
 	protected void PopLowPC() {
 		Register_StackPointer++;
-		Cycle_EffectiveAddress = cpuRead(SP_PAGE << 8 | Register_StackPointer
+		Cycle_EffectiveAddress = cpuRead.apply(SP_PAGE << 8 | Register_StackPointer
 				& 0xff) & 0xff;
 	}
 
@@ -437,7 +472,7 @@ public abstract class MOS6510 {
 	 */
 	protected void PopHighPC() {
 		Register_StackPointer++;
-		Cycle_EffectiveAddress |= (cpuRead(SP_PAGE << 8 | Register_StackPointer
+		Cycle_EffectiveAddress |= (cpuRead.apply(SP_PAGE << 8 | Register_StackPointer
 				& 0xff) & 0xff) << 8;
 	}
 
@@ -447,27 +482,8 @@ public abstract class MOS6510 {
 	protected void PopSR() {
 		// Get status register off stack
 		Register_StackPointer++;
-		setStatusRegister(cpuRead(SP_PAGE << 8 | Register_StackPointer & 0xff));
+		setStatusRegister(cpuRead.apply(SP_PAGE << 8 | Register_StackPointer & 0xff));
 		flagB = flagU = true;
-	}
-
-	/**
-	 * Acquire the value of V flag.
-	 * 
-	 * @return The V flag value.
-	 */
-	public boolean getFlagV() {
-		return flagV;
-	}
-
-	/**
-	 * Set the value of V flag (often related to the SO pin)
-	 * 
-	 * @param flag
-	 *            new V flag state
-	 */
-	public void setFlagV(boolean flag) {
-		flagV = flag;
 	}
 
 	/** BCD adding */
@@ -490,7 +506,7 @@ public abstract class MOS6510 {
 
 			flagZ = (regAC2 & 0xff) == 0;
 			flagN = (hi & 0x80) != 0;
-			setFlagV(((hi ^ A) & 0x80) != 0 && ((A ^ s) & 0x80) == 0);
+			flagV = v.apply(((hi ^ A) & 0x80) != 0 && ((A ^ s) & 0x80) == 0);
 			if (hi > 0x90) {
 				hi += 0x60;
 			}
@@ -500,7 +516,7 @@ public abstract class MOS6510 {
 		} else {
 			// Binary mode
 			flagC = regAC2 > 0xff;
-			setFlagV(((regAC2 ^ A) & 0x80) != 0 && ((A ^ s) & 0x80) == 0);
+			flagV = v.apply(((regAC2 ^ A) & 0x80) != 0 && ((A ^ s) & 0x80) == 0);
 			setFlagsNZ(Register_Accumulator = (byte) regAC2);
 		}
 	}
@@ -513,7 +529,7 @@ public abstract class MOS6510 {
 		final int regAC2 = A - s - C;
 
 		flagC = regAC2 >= 0;
-		setFlagV(((regAC2 ^ A) & 0x80) != 0 && ((A ^ s) & 0x80) != 0);
+		flagV = v.apply(((regAC2 ^ A) & 0x80) != 0 && ((A ^ s) & 0x80) != 0);
 		setFlagsNZ((byte) regAC2);
 
 		if (flagD) {
@@ -534,11 +550,6 @@ public abstract class MOS6510 {
 		}
 	}
 
-	/** Override doJSR() to catch cpu JSR instructions. */
-	protected void doJSR() {
-		Register_ProgramCounter = Cycle_EffectiveAddress;
-	}
-
 	private static enum AccessMode {
 		WRITE, READ
 	}
@@ -549,7 +560,7 @@ public abstract class MOS6510 {
 	 * @param context
 	 *            The Event Context
 	 */
-	public MOS6510(final EventScheduler context, final boolean floppyCPU) {
+	public MOS6510(final EventScheduler context) {
 		this.context = context;
 
 		// Initialize Processor Registers
@@ -568,7 +579,7 @@ public abstract class MOS6510 {
 		};
 
 		/* issue throw-away read. Some people use these to ACK CIA IRQs. */
-		final Runnable throwAwayReadStealable = () -> cpuRead(Cycle_HighByteWrongEffectiveAddress);
+		final Runnable throwAwayReadStealable = () -> cpuRead.apply(Cycle_HighByteWrongEffectiveAddress);
 
 		final Runnable writeToEffectiveAddress = () -> PutEffAddrDataByte();
 
@@ -626,7 +637,7 @@ public abstract class MOS6510 {
 			case TXSn:
 			case TYAn:
 				/* read the next opcode byte from memory (and throw it away) */
-				instrTable[buildCycle++] = () -> cpuRead(Register_ProgramCounter);
+				instrTable[buildCycle++] = () -> cpuRead.apply(Register_ProgramCounter);
 				break;
 
 			// Immediate and Relative Addressing Mode Handler
@@ -666,7 +677,7 @@ public abstract class MOS6510 {
 			case SBCb_1:
 			case SBXb:
 				instrTable[buildCycle++] = () -> {
-					Cycle_Data = cpuRead(Register_ProgramCounter);
+					Cycle_Data = cpuRead.apply(Register_ProgramCounter);
 					if (flagB) {
 						Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
 					}
@@ -1007,7 +1018,7 @@ public abstract class MOS6510 {
 			}
 
 			if (access == AccessMode.READ) {
-				instrTable[buildCycle++] = () -> Cycle_Data = cpuRead(Cycle_EffectiveAddress);
+				instrTable[buildCycle++] = () -> Cycle_Data = cpuRead.apply(Cycle_EffectiveAddress);
 			}
 
 			// ---------------------------------------------------------------------------------------
@@ -1070,7 +1081,7 @@ public abstract class MOS6510 {
 					if (flagD) {
 						flagN = flagC;
 						flagZ = Register_Accumulator == 0;
-						setFlagV(((data ^ Register_Accumulator) & 0x40) != 0);
+						flagV = v.apply(((data ^ Register_Accumulator) & 0x40) != 0);
 
 						if ((data & 0x0f) + (data & 0x01) > 5) {
 							Register_Accumulator = (byte) (Register_Accumulator & 0xf0 | Register_Accumulator + 6 & 0x0f);
@@ -1082,7 +1093,7 @@ public abstract class MOS6510 {
 					} else {
 						setFlagsNZ(Register_Accumulator);
 						flagC = (Register_Accumulator & 0x40) != 0;
-						setFlagV((Register_Accumulator & 0x40 ^ (Register_Accumulator & 0x20) << 1) != 0);
+						flagV = v.apply((Register_Accumulator & 0x40 ^ (Register_Accumulator & 0x20) << 1) != 0);
 					}
 					interruptsAndNextOpcode();
 				};
@@ -1153,10 +1164,12 @@ public abstract class MOS6510 {
 						condition = !flagN;
 						break;
 					case BVCr:
-						condition = !getFlagV();
+						v.apply(flagV);
+						condition = !flagV;
 						break;
 					case BVSr:
-						condition = getFlagV();
+						v.apply(flagV);
+						condition = flagV;
 						break;
 					default:
 						throw new RuntimeException("non-branch opcode: " + _i);
@@ -1180,7 +1193,7 @@ public abstract class MOS6510 {
 					 */
 					if (condition) {
 						/* issue the spurious read for next insn here. */
-						cpuRead(Register_ProgramCounter);
+						cpuRead.apply(Register_ProgramCounter);
 
 						Cycle_HighByteWrongEffectiveAddress = Register_ProgramCounter
 								& 0xff00
@@ -1217,7 +1230,7 @@ public abstract class MOS6510 {
 				instrTable[buildCycle++] = () -> {
 					flagZ = (Register_Accumulator & Cycle_Data) == 0;
 					flagN = Cycle_Data < 0;
-					setFlagV((Cycle_Data & 0x40) != 0);
+					flagV = v.apply((Cycle_Data & 0x40) != 0);
 					interruptsAndNextOpcode();
 				};
 				break;
@@ -1251,9 +1264,9 @@ public abstract class MOS6510 {
 					flagI = true;
 				};
 
-				instrTable[buildCycle++] = () -> Register_ProgramCounter = cpuRead(Cycle_EffectiveAddress) & 0xff;
+				instrTable[buildCycle++] = () -> Register_ProgramCounter = cpuRead.apply(Cycle_EffectiveAddress) & 0xff;
 
-				instrTable[buildCycle++] = () -> Register_ProgramCounter |= (cpuRead(Cycle_EffectiveAddress + 1) & 0xff) << 8;
+				instrTable[buildCycle++] = () -> Register_ProgramCounter |= (cpuRead.apply(Cycle_EffectiveAddress + 1) & 0xff) << 8;
 
 				instrTable[buildCycle++] = () -> fetchNextOpcode();
 				break;
@@ -1282,7 +1295,7 @@ public abstract class MOS6510 {
 
 			case CLVn:
 				instrTable[buildCycle++] = () -> {
-					setFlagV(false);
+					flagV = v.apply(false);
 					interruptsAndNextOpcode();
 				};
 				break;
@@ -1445,7 +1458,8 @@ public abstract class MOS6510 {
 			case JMPw:
 			case JMPi:
 				instrTable[buildCycle++] = () -> {
-					doJSR();
+					Register_ProgramCounter = Cycle_EffectiveAddress;
+					jsr.accept(Register_ProgramCounter);
 					interruptsAndNextOpcode();
 				};
 				break;
@@ -1591,7 +1605,7 @@ public abstract class MOS6510 {
 			case PHAn:
 				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = () -> {
-					cpuWrite(SP_PAGE << 8 | Register_StackPointer & 0xff,
+					cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff,
 							Register_Accumulator);
 					Register_StackPointer--;
 				};
@@ -1609,7 +1623,7 @@ public abstract class MOS6510 {
 
 				instrTable[buildCycle++] = () -> {
 					Register_StackPointer++;
-					setFlagsNZ(Register_Accumulator = cpuRead(SP_PAGE << 8
+					setFlagsNZ(Register_Accumulator = cpuRead.apply(SP_PAGE << 8
 							| Register_StackPointer & 0xff));
 				};
 				break;
@@ -1773,7 +1787,7 @@ public abstract class MOS6510 {
 				instrTable[buildCycle++] = () -> PopHighPC();
 
 				instrTable[buildCycle++] = () -> {
-					cpuRead(Cycle_EffectiveAddress);
+					cpuRead.apply(Cycle_EffectiveAddress);
 					Register_ProgramCounter = Cycle_EffectiveAddress + 1 & 0xffff;
 				};
 				break;
@@ -2127,7 +2141,8 @@ public abstract class MOS6510 {
 		if (flagN) {
 			sr |= 0x80;
 		}
-		if (getFlagV()) {
+		v.apply(flagV);
+		if (flagV) {
 			sr |= 0x40;
 		}
 		if (flagU) {
@@ -2158,7 +2173,7 @@ public abstract class MOS6510 {
 		flagD = (sr & 0x08) != 0;
 		flagB = (sr & 0x10) != 0;
 		flagU = (sr & 0x20) != 0;
-		setFlagV((sr & 0x40) != 0);
+		flagV = v.apply((sr & 0x40) != 0);
 		flagN = (sr & 0x80) != 0;
 	}
 
@@ -2173,29 +2188,11 @@ public abstract class MOS6510 {
 	 * @return the value under PC
 	 */
 	public final byte getStalledOnByte() {
-		return cpuRead(Register_ProgramCounter);
+		return cpuRead.apply(Register_ProgramCounter);
 	}
 
 	public final EventScheduler getEventScheduler() {
 		return context;
 	}
 
-	/**
-	 * Get data from system environment
-	 * 
-	 * @param address
-	 *            The address to read the data from.
-	 * @return data byte CPU requested
-	 */
-	protected abstract byte cpuRead(int address);
-
-	/**
-	 * Write data to system environment
-	 * 
-	 * @param address
-	 *            The system address to write the value to.
-	 * @param value
-	 *            The value to write to the system address.
-	 */
-	protected abstract void cpuWrite(int address, byte value);
 }
