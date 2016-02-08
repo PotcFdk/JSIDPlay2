@@ -1,5 +1,6 @@
 package libsidplay;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Consumer;
 
 import libsidplay.common.CPUClock;
@@ -14,7 +15,6 @@ import libsidplay.components.joystick.IJoystick;
 import libsidplay.components.keyboard.Keyboard;
 import libsidplay.components.mos6510.IMOS6510Extension;
 import libsidplay.components.mos6510.MOS6510;
-import libsidplay.components.mos6510.MOS6510Debug;
 import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.MOS6567;
 import libsidplay.components.mos656x.MOS6569;
@@ -287,12 +287,17 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		this.parallelCable = parallelCable;
 	}
 
-	public C64(boolean debug) {
+	public C64(Class<? extends MOS6510> cpuClass) {
 		context = new EventScheduler();
 
 		pla = new PLA(context, zeroRAMBank, ramBank);
 
-		cpu = debug ? new MOS6510Debug/* MOS6510ViceSync */(context) : new MOS6510(context);
+		try {
+			cpu = cpuClass.getConstructor(EventScheduler.class).newInstance(context);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException("Cannot create MOS6510 instance of: " + cpuClass);
+		}
 		cpu.setMemoryHandler(address -> pla.cpuRead(address), (address, value) -> pla.cpuWrite(address, value));
 		cpu.setJSRHandler(Register_ProgramCounter -> {
 			if (Register_ProgramCounter == playAddr) {

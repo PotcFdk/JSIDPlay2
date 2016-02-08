@@ -23,15 +23,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.collections.ObservableList;
-
 import javax.sound.sampled.Mixer.Info;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.Parameters;
+
+import javafx.collections.ObservableList;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.SamplingRate;
+import libsidplay.components.mos6510.MOS6510;
+import libsidplay.components.mos6510.MOS6510Debug;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
@@ -43,11 +49,6 @@ import sidplay.consoleplayer.ConsoleIO;
 import sidplay.consoleplayer.TimeConverter;
 import sidplay.consoleplayer.VerboseValidator;
 import sidplay.ini.IniConfig;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.Parameters;
 
 @Parameters(resourceBundle = "sidplay.consoleplayer.ConsolePlayer")
 public class ConsolePlayer {
@@ -169,7 +170,7 @@ public class ConsolePlayer {
 		config.getEmulationSection().setStereoFilter(!disableStereoFilter);
 		config.getEmulationSection().setThirdSIDFilter(!disable3rdSIDFilter);
 
-		final Player player = new Player(config);
+		final Player player = new Player(config, cpuDebug ? MOS6510Debug.class : MOS6510.class);
 		try {
 			final SidTune tune = SidTune.load(new File(filenames.get(0)));
 			player.setTune(tune);
@@ -184,7 +185,6 @@ public class ConsolePlayer {
 				}
 				return filename;
 			});
-			player.setDebug(cpuDebug);
 			player.getTimer().setStart(startTime);
 
 			if (config.getSidplay2Section().isEnableDatabase()) {

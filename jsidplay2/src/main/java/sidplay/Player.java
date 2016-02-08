@@ -164,7 +164,14 @@ public class Player extends HardwareEnsemble {
 	 * Create a Music Player.
 	 */
 	public Player(IConfig config) {
-		super(config);
+		this(config, MOS6510.class);
+	}
+
+	/**
+	 * Create a Music Player.
+	 */
+	public Player(IConfig config, Class<? extends MOS6510> cpuClass) {
+		super(config, cpuClass);
 		this.playList = PlayList.getInstance(config, SidTune.RESET);
 		this.timer = new Timer(this) {
 

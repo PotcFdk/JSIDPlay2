@@ -23,6 +23,7 @@ import libsidplay.components.cart.Cartridge;
 import libsidplay.components.cart.CartridgeType;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
+import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.config.IC1541Section;
 import libsidplay.config.IConfig;
@@ -83,15 +84,17 @@ public class HardwareEnsemble {
 	private IExtendImageListener policy;
 
 	/**
-	 * Turn on/off debug.
-	 */
-	private boolean debug;
-
-	/**
 	 * Create a complete hardware setup (C64, tape/disk drive, printer and
 	 * more).
 	 */
 	public HardwareEnsemble(IConfig config) {
+		this(config, MOS6510.class);
+	}
+	/**
+	 * Create a complete hardware setup (C64, tape/disk drive, printer and
+	 * more).
+	 */
+	public HardwareEnsemble(IConfig config, Class<? extends MOS6510> cpuClass) {
 		this.config = config;
 		this.iecBus = new IECBus();
 
@@ -107,7 +110,7 @@ public class HardwareEnsemble {
 			}
 		};
 
-		this.c64 = new C64(debug) {
+		this.c64 = new C64(cpuClass) {
 			@Override
 			public void printerUserportWriteData(final byte data) {
 				if (config.getPrinterSection().isPrinterOn()) {
@@ -377,16 +380,6 @@ public class HardwareEnsemble {
 	 */
 	public final void enablePrinter(boolean printerOn) {
 		printer.turnPrinterOnOff(printerOn);
-	}
-
-	/**
-	 * Enable CPU debugging (opcode stringifier).
-	 * 
-	 * @param cpuDebug
-	 *            use opcode stringifier to produce CPU debug output.
-	 */
-	public final void setDebug(final boolean cpuDebug) {
-		this.debug = cpuDebug;
 	}
 
 	/**
