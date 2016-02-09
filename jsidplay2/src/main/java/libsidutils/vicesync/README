@@ -41,7 +41,7 @@ Set Breakpoint:
 "Set Breakpoint"
 
 (Order is important here!)
-1. Start JSIDPlay2Frame (beforehand: instantiate MOS6510ViceSync instead of MOS6510 within source code and set C64.setDebug(true))
+1. Start JSIDPlay2Frame (beforehand: Use MOS6510ViceSync.class instead of MOS6510.class in Player.java's constructor)
 2. In DDD (Debugger) for VICE click run
 
 Comunication is via socket connection (port=6510)

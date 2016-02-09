@@ -20,8 +20,6 @@
  */
 package sidplay;
 
-import hardsid_builder.HardSIDBuilder;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,6 +28,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import hardsid_builder.HardSIDBuilder;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

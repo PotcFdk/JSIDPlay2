@@ -31,14 +31,15 @@ public class ViceSync {
 	}
 
 	public static class MOS6510State {
-		long clk;
+		long clk, syncClk;
 		int pc, a, x, y, sp;
 
 		public MOS6510State() {
 		}
 
-		public MOS6510State(int register_ProgramCounter, byte register_Accumulator, byte register_X, byte register_Y,
+		public MOS6510State(long syncClk, int register_ProgramCounter, byte register_Accumulator, byte register_X, byte register_Y,
 				byte register_StackPointer) {
+			this.syncClk = syncClk;
 			pc = register_ProgramCounter;
 			a = register_Accumulator & 0xff;
 			x = register_X & 0xff;
@@ -56,14 +57,14 @@ public class ViceSync {
 			boolean ok = other != null && other.pc == pc && other.a == a && other.x == x && other.y == y
 					&& other.sp == sp;
 			if (!ok) {
-				System.err.println("!");
+				System.err.println("Difference detected!");
 			}
 			return ok;
 		}
 
 		@Override
 		public String toString() {
-			return String.format("%d: pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x", clk, pc, (byte) a, (byte) x, (byte) y,
+			return String.format("%d - %d: pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x", clk, syncClk, pc, (byte) a, (byte) x, (byte) y,
 					(byte) sp);
 		}
 	}
@@ -83,6 +84,10 @@ public class ViceSync {
 					case "clk":
 						// clock
 						state.clk = Long.parseLong(tk.substring(del + 1, tk.length()));
+						break;
+					case "syncClk":
+						// relative clock
+						state.syncClk = Long.parseLong(tk.substring(del + 1, tk.length()));
 						break;
 					case "pc":
 						// Program counter

@@ -509,6 +509,7 @@ void maincpu_resync_limits(void) {
 int connectedToJava = 0;
 int sockfd;
 DWORD javaClock=0;
+DWORD syncClk=0;
 
 int connectToJava(char *hostname, int port) {
     int portno;
@@ -532,6 +533,7 @@ int connectToJava(char *hostname, int port) {
       serv_addr.sin_port = htons(portno);
       if (connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
         exit(0);
+      syncClk = maincpu_clk;
       connectedToJava = 1;
     }
     return 0;
@@ -654,10 +656,10 @@ void maincpu_mainloop(void)
       reg_sp == 232) {
       connectToJava("localhost", 6510);
   }
-
+//16457 -> 16466   OK: 16457: pc=0d99(3481), a=b7, x=20, y=04, sp=e8
   char buf[512];
-  sprintf(buf, "clk=%d, pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x\n",
-                CLK, reg_pc, reg_a, reg_x, reg_y, reg_sp);
+  sprintf(buf, "clk=%d, syncClk=%d, pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x\n",
+                CLK, (CLK-syncClk), reg_pc, reg_a, reg_x, reg_y, reg_sp);
   sendToJava(buf);
 
 /*

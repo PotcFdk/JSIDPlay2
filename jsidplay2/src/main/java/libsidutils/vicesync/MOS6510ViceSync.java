@@ -18,6 +18,7 @@ package libsidutils.vicesync;
 import java.io.IOException;
 
 import libsidplay.common.EventScheduler;
+import libsidplay.common.Event.Phase;
 import libsidplay.components.mos6510.MOS6510Debug;
 
 /**
@@ -32,7 +33,7 @@ public class MOS6510ViceSync extends MOS6510Debug {
 
 	private ViceSync sync;
 
-	private long lastClk;
+	private long syncClk;
 	private boolean connectedToJava = false;
 
 	public MOS6510ViceSync(final EventScheduler context) {
@@ -52,7 +53,7 @@ public class MOS6510ViceSync extends MOS6510Debug {
 				String received = sync.receive();
 				ViceSync.MOS6510State viceState = sync.getState(received);
 				sync.send("start\n");
-				lastClk = viceState.getClk();
+				syncClk = context.getTime(Phase.PHI2);
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.exit(0);
@@ -60,21 +61,19 @@ public class MOS6510ViceSync extends MOS6510Debug {
 		} else if (connectedToJava) {
 			try {
 				String received = sync.receive();
-				ViceSync.MOS6510State jsidplay2State = new ViceSync.MOS6510State(Register_ProgramCounter,
+				ViceSync.MOS6510State jsidplay2State = new ViceSync.MOS6510State(context.getTime(Phase.PHI2)-syncClk, Register_ProgramCounter,
 						Register_Accumulator, Register_X, Register_Y, Register_StackPointer);
 				ViceSync.MOS6510State viceState = sync.getState(received);
-				lastClk = viceState.getClk();
-				if (viceState.getClk() == 55292330 || viceState.getClk() == 55288505) {
+				if (viceState.getClk() == 55292330 || (viceState.getClk() == 55288505)) {
+					// 55292330 - 16457: pc=0d99(3481), a=b7, x=20, y=04, sp=e8
 					sync.send("break\n");
-					System.out.println("Until here we have exactly the same state!!!" + ", CLK=" + lastClk);
+					System.out.println("Until here we have exactly the same state!!!");
 				}
 				if (!jsidplay2State.equals(viceState)) {
-					// clk=55292332 last=55292330 OR 55288509
-					// last= 55288505
-					// clk=55275873, pc=0ea2, a=19, x=7e, y=01, sp=e8
-					// clk=55288509: pc=1e04, a=01(is 0), x=7e, y=01, sp=ea
+					// clk=55292332
+					// (clk=55288509: pc=1e04, a=01(is 0), x=7e, y=01, sp=ea)
 					System.out.println("This is the first point where they differ, do some analysis here!!!");
-					System.err.println("Differs: " + jsidplay2State.equals(viceState) + ", CLK=" + lastClk);
+					System.err.println("Differs: " + jsidplay2State.equals(viceState));
 				}
 				sync.send("thanks!\n");
 
