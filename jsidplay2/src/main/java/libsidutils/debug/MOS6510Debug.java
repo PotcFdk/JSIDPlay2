@@ -13,7 +13,7 @@
  * @author Ken Händel
  *
  */
-package libsidplay.components.mos6510;
+package libsidutils.debug;
 
 import static libsidplay.components.mos6510.IOpCode.*;
 
@@ -21,6 +21,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import libsidplay.common.Event.Phase;
+import libsidplay.components.mos6510.MOS6510;
+import libsidutils.disassembler.IMOS6510Disassembler;
 import libsidutils.disassembler.SimpleDisassembler;
 import libsidplay.common.EventScheduler;
 

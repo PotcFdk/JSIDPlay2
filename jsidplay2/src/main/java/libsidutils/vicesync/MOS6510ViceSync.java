@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import libsidplay.common.EventScheduler;
 import libsidplay.common.Event.Phase;
-import libsidplay.components.mos6510.MOS6510Debug;
+import libsidutils.debug.MOS6510Debug;
 
 /**
  * Alpha: Feature to compare VICE and JSIDPlay2 implementation by running both

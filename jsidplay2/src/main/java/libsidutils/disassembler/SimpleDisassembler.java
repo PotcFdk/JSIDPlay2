@@ -7,8 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import libsidplay.components.mos6510.IMOS6510Disassembler;
-
 public class SimpleDisassembler implements IMOS6510Disassembler {
 	private static HashMap<Integer, CPUCommand> cpuCommands = new HashMap<Integer, CPUCommand>();
 	private static SimpleDisassembler theInstance;

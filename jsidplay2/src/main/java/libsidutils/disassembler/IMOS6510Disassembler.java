@@ -1,4 +1,4 @@
-package libsidplay.components.mos6510;
+package libsidutils.disassembler;
 
 public interface IMOS6510Disassembler {
 
