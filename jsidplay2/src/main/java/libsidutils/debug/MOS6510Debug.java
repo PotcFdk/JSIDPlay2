@@ -41,18 +41,15 @@ public class MOS6510Debug extends MOS6510 {
 	protected int instrStartPC, instrOperand;
 
 	/** Opcode stringifier */
-	protected IMOS6510Disassembler disassembler;
+	protected IMOS6510Disassembler disassembler = SimpleDisassembler.getInstance();
 
 	public MOS6510Debug(final EventScheduler context) {
 		super(context);
-		this.disassembler = SimpleDisassembler.getInstance();
 	}
 
 	@Override
 	protected void FetchHighAddr() {
 		super.FetchHighAddr();
-
-		// Next line used for Debug
 		instrOperand = Cycle_EffectiveAddress;
 	}
 
@@ -93,9 +90,7 @@ public class MOS6510Debug extends MOS6510 {
 		if (MOS6510.isLoggable(Level.FINE)) {
 			dumpState(context.getTime(Phase.PHI2), this);
 		}
-		// Next line used for Debug
 		instrStartPC = Register_ProgramCounter;
-
 		super.fetchNextOpcode();
 	}
 
