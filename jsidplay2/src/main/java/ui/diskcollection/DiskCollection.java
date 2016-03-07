@@ -389,7 +389,7 @@ public class DiskCollection extends Tab implements UIPart {
 	private File extractGZip(File file) {
 		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
 			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
-			File dst = new File(tmpDir, PathUtils.getBaseNameNoExt(file
+			File dst = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file
 					.getName()));
 			try (InputStream is = new GZIPInputStream(
 					new TFileInputStream(file))) {

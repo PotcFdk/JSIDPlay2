@@ -73,7 +73,7 @@ public class MP3Tune extends SidTune {
 			mp3.decoder.read(randomAccessFile);
 			final String title = mp3.decoder.getTitle();
 			mp3.info.infoString.add(title != null ? title : PathUtils
-					.getBaseNameNoExt(file.getName()));
+					.getFilenameWithoutSuffix(file.getName()));
 			String interpret = mp3.decoder.getInterpret();
 			String albumInterpret = mp3.decoder.getAlbumInterpret();
 			String genre = mp3.decoder.getGenre();

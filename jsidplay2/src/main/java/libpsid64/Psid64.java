@@ -599,11 +599,10 @@ public class Psid64 {
 			File hvscRoot) throws IOException, SidTuneError {
 		tune = SidTune.load(file);
 		tune.setSelectedSong(null);
-		String collectionName = PathUtils.getCollectionName(hvscRoot,
-				file.getPath());
+		String collectionName = PathUtils.getCollectionName(hvscRoot, file);
 		stilEntry = player.getStilEntry(collectionName);
 
-		File tmpFile = new File(tmpDir, PathUtils.getBaseNameNoExt(file
+		File tmpFile = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file
 				.getName()) + ".prg.tmp");
 		tmpFile.deleteOnExit();
 		try (OutputStream outfile = new FileOutputStream(tmpFile)) {
@@ -614,7 +613,7 @@ public class Psid64 {
 		final PUCrunch puCrunch = new PUCrunch();
 		puCrunch.setVerbose(verbose);
 		puCrunch.crunch(tmpFile.getAbsolutePath(),
-				new File(target, PathUtils.getBaseNameNoExt(file.getName())
+				new File(target, PathUtils.getFilenameWithoutSuffix(file.getName())
 						+ ".prg").getAbsolutePath());
 	}
 

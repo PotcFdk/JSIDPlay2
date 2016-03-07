@@ -794,7 +794,7 @@ public class MusicCollection extends Tab implements UIPart {
 		soasc6581R4.setDisable(true);
 		soasc8580R5.setDisable(true);
 		File hvscFile = util.getConfig().getSidplay2Section().getHvscFile();
-		hvscName = PathUtils.getCollectionName(hvscFile, tuneFile.getPath());
+		hvscName = PathUtils.getCollectionName(hvscFile, tuneFile);
 		if (hvscName != null) {
 			hvscName = hvscName.replace(".sid", "");
 			currentSong = tuneInfo.getCurrentSong();
@@ -817,7 +817,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void showTuneInfos(File tuneFile, SidTune tune,
 			MusicCollectionTreeItem treeItem) {
 		String collectionName = PathUtils.getCollectionName(fileBrowser
-				.getRoot().getValue(), tuneFile.getPath());
+				.getRoot().getValue(), tuneFile);
 		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
 				.getSidDatabaseInfo(db -> db.getFullSongLength(tune), 0),
 				collectionName, tuneFile, tune);
@@ -855,8 +855,7 @@ public class MusicCollection extends Tab implements UIPart {
 			FavoritesSection section, File file) {
 		try {
 			SidTune tune = SidTune.load(file);
-			String collectionName = PathUtils.getCollectionName(
-					sidPlay2Section.getHvscFile(), file.getPath());
+			String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
 			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
 					.getSidDatabaseInfo(db -> db.getFullSongLength(tune), 0),
 					collectionName, file, tune);

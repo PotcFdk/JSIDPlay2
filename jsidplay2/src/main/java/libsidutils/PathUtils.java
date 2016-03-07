@@ -13,29 +13,57 @@ import java.util.regex.Pattern;
  * 
  * @author Ken Händel
  */
-@SuppressWarnings("resource")
 public class PathUtils {
 	/**
-	 * ZIP entries uses slash, Windows uses backslash.
+	 * Linux, OSX and ZIP entries use slash, Windows uses backslash.
 	 */
-	private static final Pattern separator = Pattern.compile("[/\\\\]");
+	private static final Pattern SEPARATOR = Pattern.compile("[/\\\\]");
 
-	public static final String getCollectionName(final File collectionRoot, final String path) {
-		return toPath(getFiles(path, collectionRoot, null));
+	/**
+	 * Create a filename of the given path relative to the collection root dir.
+	 * 
+	 * @param collectionRoot
+	 *            root file of the path
+	 * @param file
+	 *            file to get the relative path for
+	 * @return relative path to the collection root file (empty string, if the
+	 *         path is not relative to the collection root file)
+	 */
+	public static final String getCollectionName(final File collectionRoot, final File file) {
+		return createFilename(getFiles(file.getPath(), collectionRoot, null));
 	}
 
-	private static final String toPath(List<File> files) {
+	/**
+	 * Reverse function of {@link #getFiles(String, File, FileFilter)}.<BR>
+	 * e.g. [File(a), File(b), File(c)] -> "/a/b/c"
+	 * 
+	 * @param files
+	 *            file list to create a filename for
+	 * @return filename filename where each path segment is delimited by a
+	 *         slash.
+	 */
+	private static final String createFilename(List<File> files) {
 		StringBuilder result = new StringBuilder();
-		for (File pathSeg : files) {
-			Scanner scanner = new Scanner(pathSeg.getName()).useDelimiter("/");
-			result.append("/").append(scanner.next());
+		for (File file : files) {
+			result.append("/").append(file.getName());
 		}
 		return result.toString();
 	}
 
+	/**
+	 * Get file for a given path. The path can be relative to HVSC or CGSC or
+	 * even absolute.
+	 * 
+	 * @param path
+	 *            path to get a file for
+	 * @param hvscRoot
+	 *            root of HVSC
+	 * @param cgscRoot
+	 *            root of CGSC
+	 * @return file of the path
+	 */
 	public static final File getFile(String path, File hvscRoot, File cgscRoot) {
-		List<File> files;
-		files = PathUtils.getFiles(path, hvscRoot, null);
+		List<File> files = PathUtils.getFiles(path, hvscRoot, null);
 		if (files.size() > 0) {
 			// relative path name of HVSC?
 			return files.get(files.size() - 1);
@@ -45,9 +73,27 @@ public class PathUtils {
 			// relative path name of CGSC?
 			return files.get(files.size() - 1);
 		}
+		// absolute path name
 		return new File(path);
 	}
 
+	/**
+	 * Get the file list of the given file path. Each entry corresponds to a
+	 * path segment. It is sorted from parent to child.<BR>
+	 * e.g. "&lt;root>/a/b/c" -> [File(a), File(b), File(c)]
+	 * 
+	 * @param filePath
+	 *            file path to get the file list for. Each path segment is
+	 *            delimited by slash or backslash.
+	 * @param rootFile
+	 *            Root file to start. The first path segment must match a direct
+	 *            child of rootPath and so on.
+	 * @param fileFilter
+	 *            Files contained in the file filter are visible as child files
+	 *            (null means filter disabled)
+	 * @return a file list sorted from the parent file to the child file (empty
+	 *         list, if the path is wrong or incomplete)
+	 */
 	public static final List<File> getFiles(String filePath, File rootFile, FileFilter fileFilter) {
 		if (rootFile == null) {
 			return Collections.emptyList();
@@ -60,31 +106,45 @@ public class PathUtils {
 				filePath = filePath.substring(1);
 			}
 		}
-		final ArrayList<File> pathSegs = new ArrayList<File>();
-		File curFile = rootFile;
-		Scanner scanner = new Scanner(filePath).useDelimiter(separator);
-		outer: while (scanner.hasNext()) {
-			final String pathSeg = scanner.next();
-			File[] childFiles = curFile.listFiles(fileFilter);
-			if (childFiles != null) {
-				for (File childFile : childFiles) {
-					if (childFile.getName().equals(pathSeg)) {
-						curFile = childFile;
-						pathSegs.add(curFile);
-						continue outer;
+		final List<File> pathSegs = new ArrayList<File>();
+		try (Scanner scanner = new Scanner(filePath)) {
+			scanner.useDelimiter(SEPARATOR);
+			nextPathSeg: while (scanner.hasNext()) {
+				final String pathSeg = scanner.next();
+				File[] childFiles = rootFile.listFiles(fileFilter);
+				if (childFiles != null) {
+					for (File childFile : childFiles) {
+						if (childFile.getName().equals(pathSeg)) {
+							pathSegs.add(rootFile = childFile);
+							continue nextPathSeg;
+						}
 					}
 				}
+				return Collections.emptyList();
 			}
-			return Collections.emptyList();
+			return pathSegs;
 		}
-		return pathSegs;
 	}
 
-	public static final String getBaseNameNoExt(final String name) {
-		return name.substring(0, name.length()-getExtension(name).length());
+	/**
+	 * Strip suffix of a filename.
+	 * 
+	 * @param filename
+	 *            filename to get the basename for
+	 * @return filename without suffix (e.g. "Bombo.sid" -> "Bombo")
+	 */
+	public static final String getFilenameWithoutSuffix(final String filename) {
+		return filename.substring(0, filename.length() - getFilenameSuffix(filename).length());
 	}
 
-	public static final String getExtension(final String filename) {
+	/**
+	 * Get suffix of a filename.
+	 * 
+	 * @param filename
+	 *            filename to get the suffix for
+	 * @return suffix of a filename (e.g. "Bombo.sid" -> ".sid")
+	 */
+	public static final String getFilenameSuffix(final String filename) {
 		int lastIndexOf = filename.lastIndexOf('.');
 		return lastIndexOf != -1 ? filename.substring(lastIndexOf) : "";
 	}

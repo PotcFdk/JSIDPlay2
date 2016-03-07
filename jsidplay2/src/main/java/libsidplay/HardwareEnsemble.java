@@ -468,7 +468,7 @@ public class HardwareEnsemble {
 			final File convertedTape = new File(tmpDir, file.getName() + ".tap");
 			convertedTape.deleteOnExit();
 			SidTune prog = SidTune.load(file);
-			String name = PathUtils.getBaseNameNoExt(file.getName());
+			String name = PathUtils.getFilenameWithoutSuffix(file.getName());
 			PRG2TAPProgram program = new PRG2TAPProgram(prog, name);
 
 			PRG2TAP prg2tap = new PRG2TAP();

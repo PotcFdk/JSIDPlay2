@@ -288,8 +288,8 @@ public class FavoritesTab extends Tab implements UIPart {
 			int number) {
 		String newName = name;
 		if (number > 1) {
-			newName = PathUtils.getBaseNameNoExt(name) + "_" + number
-					+ PathUtils.getExtension(name);
+			newName = PathUtils.getFilenameWithoutSuffix(name) + "_" + number
+					+ PathUtils.getFilenameSuffix(name);
 		}
 		File newFile = new File(directory, newName);
 		if (newFile.exists()) {
@@ -539,8 +539,7 @@ public class FavoritesTab extends Tab implements UIPart {
 			tune = SidTune.load(file);
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
 					.getPlayer().getConfig().getSidplay2Section();
-			String collectionName = PathUtils.getCollectionName(
-					sidPlay2Section.getHvscFile(), file.getPath());
+			String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
 			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
 					.getSidDatabaseInfo(db -> db.getFullSongLength(tune), 0),
 					collectionName, file, tune);

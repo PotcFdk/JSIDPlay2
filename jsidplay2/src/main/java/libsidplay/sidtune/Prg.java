@@ -64,7 +64,7 @@ class Prg extends SidTune {
 
 	protected static SidTune load(final String name, final byte[] dataBuf)
 			throws SidTuneError {
-		if (!PathUtils.getExtension(name).equalsIgnoreCase(".prg")
+		if (!PathUtils.getFilenameSuffix(name).equalsIgnoreCase(".prg")
 				|| dataBuf.length < 2) {
 			throw new SidTuneError(
 					"Bad file extension expected: .prg and length > 2");
@@ -76,7 +76,7 @@ class Prg extends SidTune {
 		prg.info.c64dataLen = dataBuf.length - prg.programOffset;
 		prg.info.loadAddr = (dataBuf[0] & 0xff) + ((dataBuf[1] & 0xff) << 8);
 
-		prg.info.infoString.add(PathUtils.getBaseNameNoExt(name));
+		prg.info.infoString.add(PathUtils.getFilenameWithoutSuffix(name));
 
 		prg.convertOldStyleSpeedToTables(~0);
 		return prg;

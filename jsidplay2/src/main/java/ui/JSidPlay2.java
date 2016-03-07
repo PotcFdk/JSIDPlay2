@@ -1602,7 +1602,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		String name = infos.hasNext() ? infos.next().replaceAll(
 				"[:\\\\/*?|<>]", "_") : defaultName;
 		String filename = new File(util.getConfig().getSidplay2Section()
-				.getTmpDir(), PathUtils.getBaseNameNoExt(name))
+				.getTmpDir(), PathUtils.getFilenameWithoutSuffix(name))
 				.getAbsolutePath();
 		if (info.getSongs() > 1) {
 			filename += String.format("-%02d", info.getCurrentSong());

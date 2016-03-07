@@ -178,7 +178,7 @@ public class ConsolePlayer {
 			player.setRecordingFilenameProvider(theTune -> {
 				File file = new File(recordingFilename);
 				String filename = new File(file.getParentFile(), PathUtils
-						.getBaseNameNoExt(file.getName())).getAbsolutePath();
+						.getFilenameWithoutSuffix(file.getName())).getAbsolutePath();
 				if (theTune.getInfo().getSongs() > 1) {
 					filename += String.format("-%02d", theTune.getInfo()
 							.getCurrentSong());

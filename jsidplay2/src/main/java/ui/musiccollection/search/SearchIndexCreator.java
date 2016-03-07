@@ -65,8 +65,7 @@ public final class SearchIndexCreator {
 				return;
 			}
 			try {
-				String collectionRelName = PathUtils.getCollectionName(root,
-						file.getPath());
+				String collectionRelName = PathUtils.getCollectionName(root, file);
 				if (collectionRelName != null) {
 					hvscEntryService.add(player, collectionRelName, file);
 				}

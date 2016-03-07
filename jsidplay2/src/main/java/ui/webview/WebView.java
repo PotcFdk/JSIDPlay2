@@ -100,7 +100,7 @@ public class WebView extends Tab implements UIPart {
 		convenience = new Convenience(util.getPlayer());
 		convenience.setAutoStartedFile((file) -> {
 			if (showTuneInfos
-					&& PathUtils.getExtension(file.getName()).equalsIgnoreCase(
+					&& PathUtils.getFilenameSuffix(file.getName()).equalsIgnoreCase(
 							".sid")) {
 				showTuneInfos(util.getPlayer().getTune(), file);
 			}
