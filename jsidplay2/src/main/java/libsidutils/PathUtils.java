@@ -20,8 +20,7 @@ public class PathUtils {
 	 */
 	private static final Pattern separator = Pattern.compile("[/\\\\]");
 
-	public static final String getCollectionName(final File collectionRoot,
-			final String path) {
+	public static final String getCollectionName(final File collectionRoot, final String path) {
 		return toPath(getFiles(path, collectionRoot, null));
 	}
 
@@ -49,15 +48,13 @@ public class PathUtils {
 		return new File(path);
 	}
 
-	public static final List<File> getFiles(String filePath, File rootFile,
-			FileFilter fileFilter) {
+	public static final List<File> getFiles(String filePath, File rootFile, FileFilter fileFilter) {
 		if (rootFile == null) {
 			return Collections.emptyList();
 		}
 		String rootPath = rootFile.getPath();
 		if (filePath.startsWith(rootPath)) {
-			// remove root folder and separator
-			// not for ZIP file entries
+			// remove root folder and separator (not for ZIP file entries)
 			filePath = filePath.substring(rootPath.length());
 			if (filePath.length() > 0) {
 				filePath = filePath.substring(1);
@@ -68,8 +65,7 @@ public class PathUtils {
 		Scanner scanner = new Scanner(filePath).useDelimiter(separator);
 		outer: while (scanner.hasNext()) {
 			final String pathSeg = scanner.next();
-			File[] childFiles = fileFilter != null ? curFile
-					.listFiles(fileFilter) : curFile.listFiles();
+			File[] childFiles = curFile.listFiles(fileFilter);
 			if (childFiles != null) {
 				for (File childFile : childFiles) {
 					if (childFile.getName().equals(pathSeg)) {
@@ -85,25 +81,12 @@ public class PathUtils {
 	}
 
 	public static final String getBaseNameNoExt(final String name) {
-		int lastIndexOf = name.lastIndexOf('.');
-		final String basename;
-		if (lastIndexOf != -1) {
-			basename = name.substring(0, lastIndexOf);
-		} else {
-			basename = name;
-		}
-		return basename;
+		return name.substring(0, name.length()-getExtension(name).length());
 	}
 
 	public static final String getExtension(final String filename) {
 		int lastIndexOf = filename.lastIndexOf('.');
-		final String ext;
-		if (lastIndexOf != -1) {
-			ext = filename.substring(lastIndexOf);
-		} else {
-			ext = "";
-		}
-		return ext;
+		return lastIndexOf != -1 ? filename.substring(lastIndexOf) : "";
 	}
 
 }
