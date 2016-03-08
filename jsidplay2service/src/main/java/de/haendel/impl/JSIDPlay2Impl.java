@@ -182,7 +182,7 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			IntSupplier lengthFnct = new IntSupplier() {
 				@Override
 				public int getAsInt() {
-					return db != null ? db.getFullSongLength(tune) : 0;
+					return db != null ? db.getTuneLength(tune) : 0;
 				}
 			};
 			HVSCEntry hvscEntry = new HVSCEntry(lengthFnct, "", tuneFile, tune);
