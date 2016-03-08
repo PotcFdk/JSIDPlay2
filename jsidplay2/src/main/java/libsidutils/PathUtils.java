@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 /**
- * This class provides a general filename utility functions.
+ * This class provides general filename utility functions.
  * 
  * @author Ken Händel
  */
@@ -21,6 +21,9 @@ public class PathUtils {
 
 	/**
 	 * Create a filename of the given path relative to the collection root dir.
+	 * <BR>
+	 * e.g. "&lt;root>/MUSICIANS/D/Daglish_Ben/Bombo.sid" ->
+	 * "/MUSICIANS/D/Daglish_Ben/Bombo.sid"
 	 * 
 	 * @param collectionRoot
 	 *            root file of the path
@@ -35,7 +38,8 @@ public class PathUtils {
 
 	/**
 	 * Reverse function of {@link #getFiles(String, File, FileFilter)}.<BR>
-	 * e.g. [File(a), File(b), File(c)] -> "/a/b/c"
+	 * e.g. [File(D), File(Daglish_Ben), File(Bombo.sid)] ->
+	 * "/MUSICIANS/D/Daglish_Ben/Bombo.sid"
 	 * 
 	 * @param files
 	 *            file list to create a filename for
@@ -52,10 +56,13 @@ public class PathUtils {
 
 	/**
 	 * Get file for a given path. The path can be relative to HVSC or CGSC or
-	 * even absolute.
+	 * even absolute.<BR>
+	 * e.g. "&lt;root>/MUSICIANS/D/Daglish_Ben/Bombo.sid" ->
+	 * File(/MUSICIANS/D/Daglish_Ben/Bombo.sid)
 	 * 
 	 * @param path
-	 *            path to get a file for
+	 *            path to get a file for, possible root directory can be either
+	 *            hvscRoot or cgscRoot or none, if absolute
 	 * @param hvscRoot
 	 *            root of HVSC
 	 * @param cgscRoot
@@ -80,9 +87,10 @@ public class PathUtils {
 	/**
 	 * Get the file list of the given file path. Each entry corresponds to a
 	 * path segment. It is sorted from parent to child.<BR>
-	 * e.g. "&lt;root>/a/b/c" -> [File(a), File(b), File(c)]
+	 * e.g. "&lt;root>/MUSICIANS/D/Daglish_Ben/Bombo.sid" -> [File(MUSICIANS),
+	 * File(D), File(Daglish_Ben), File(Bombo.sid)]
 	 * 
-	 * @param filePath
+	 * @param path
 	 *            file path to get the file list for. Each path segment is
 	 *            delimited by slash or backslash.
 	 * @param rootFile
@@ -94,20 +102,20 @@ public class PathUtils {
 	 * @return a file list sorted from the parent file to the child file (empty
 	 *         list, if the path is wrong or incomplete)
 	 */
-	public static final List<File> getFiles(String filePath, File rootFile, FileFilter fileFilter) {
+	public static final List<File> getFiles(String path, File rootFile, FileFilter fileFilter) {
 		if (rootFile == null) {
 			return Collections.emptyList();
 		}
 		String rootPath = rootFile.getPath();
-		if (filePath.startsWith(rootPath)) {
+		if (path.startsWith(rootPath)) {
 			// remove root folder and separator (not for ZIP file entries)
-			filePath = filePath.substring(rootPath.length());
-			if (filePath.length() > 0) {
-				filePath = filePath.substring(1);
+			path = path.substring(rootPath.length());
+			if (path.length() > 0) {
+				path = path.substring(1);
 			}
 		}
 		final List<File> pathSegs = new ArrayList<File>();
-		try (Scanner scanner = new Scanner(filePath)) {
+		try (Scanner scanner = new Scanner(path)) {
 			scanner.useDelimiter(SEPARATOR);
 			nextPathSeg: while (scanner.hasNext()) {
 				final String pathSeg = scanner.next();
@@ -130,7 +138,7 @@ public class PathUtils {
 	 * Strip suffix of a filename.
 	 * 
 	 * @param filename
-	 *            filename to get the basename for
+	 *            filename to get the suffix for
 	 * @return filename without suffix (e.g. "Bombo.sid" -> "Bombo")
 	 */
 	public static final String getFilenameWithoutSuffix(final String filename) {
