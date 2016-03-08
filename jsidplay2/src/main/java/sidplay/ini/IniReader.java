@@ -267,7 +267,7 @@ public class IniReader {
 	 * 
 	 * @param time
 	 *            syntax to parse
-	 * @return song length in seconds
+	 * @return song length in seconds (-1 means syntax error)
 	 */
 	public static int parseTime(final String time) {
 		Matcher m = TIME_VALUE.matcher(time);
