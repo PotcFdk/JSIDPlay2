@@ -40,13 +40,30 @@ import java.util.regex.Pattern;
  * @author Antti S. Lankila
  */
 public class IniReader {
+	/**
+	 * Commented line syntax.<BR>
+	 * e.g. "; comment" or "# comment"
+	 */
 	private static final Pattern COMMENT = Pattern.compile("[;#].*");
-	private static final Pattern SECTION_HEADING = Pattern
-			.compile("\\[(\\w+)\\]");
-	private static final Pattern KEY_VALUE = Pattern
-			.compile("(\\w+(?:\\s+\\w+)*)\\s*=\\s*(.*)");
-	private static final Pattern TIME_VALUE = Pattern
-			.compile("(?:([0-9]{1,2}):)?([0-9]{1,2})");
+	/**
+	 * Section heading syntax<BR>
+	 * e.g. "[Heading]"
+	 */
+	private static final Pattern SECTION_HEADING = Pattern.compile("\\[(\\w+)\\]");
+	/**
+	 * Key value syntax<BR>
+	 * e.g. "Key String=Value String"
+	 */
+	private static final Pattern KEY_VALUE = Pattern.compile("(\\w+(?:\\s+\\w+)*)\\s*=\\s*(.*)");
+	/**
+	 * Song length.<BR>
+	 * Syntax: "min:sec(attribute)"<BR>
+	 * e.g. "0:16(M)" for explanations please refer to file
+	 * "DOCUMENTS/Songlengths.faq" contained in HVSC.
+	 */
+	private static final Pattern TIME_VALUE = Pattern.compile("([0-9]{1,2}):([0-9]{2})(?:\\(.*)?");
+
+	private static final int SECONDS_IN_A_MINUTE = 60;
 
 	private final Map<String, Map<String, String>> sections = new LinkedHashMap<String, Map<String, String>>();
 
@@ -116,8 +133,7 @@ public class IniReader {
 				continue;
 			}
 
-			throw new RuntimeException(String.format(
-					"Unrecognized line in ini config: %s", line));
+			throw new RuntimeException(String.format("Unrecognized line in ini config: %s", line));
 		}
 	}
 
@@ -156,8 +172,7 @@ public class IniReader {
 		dirty = false;
 	}
 
-	public String getPropertyString(final String section, final String key,
-			final String defaultValue) {
+	public String getPropertyString(final String section, final String key, final String defaultValue) {
 		final Map<String, String> map = sections.get(section);
 		if (map != null) {
 			final String value = map.get(key);
@@ -168,8 +183,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public float getPropertyFloat(final String section, final String key,
-			final float defaultValue) {
+	public float getPropertyFloat(final String section, final String key, final float defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return Float.parseFloat(s);
@@ -177,8 +191,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public int getPropertyInt(final String section, final String key,
-			final int defaultValue) {
+	public int getPropertyInt(final String section, final String key, final int defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null && !s.equals("")) {
 			return Integer.decode(s);
@@ -186,8 +199,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public boolean getPropertyBool(final String section, final String key,
-			final boolean defaultValue) {
+	public boolean getPropertyBool(final String section, final String key, final boolean defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return Boolean.valueOf(s);
@@ -195,8 +207,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public int getPropertyTime(final String section, final String key,
-			final int defaultValue) {
+	public int getPropertyTime(final String section, final String key, final int defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return parseTime(s);
@@ -204,14 +215,11 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public <T extends Enum<T>> T getPropertyEnum(String section, String key,
-			T defaultValue) {
-		return getPropertyEnum(section, key, defaultValue,
-				defaultValue.getClass());
+	public <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue) {
+		return getPropertyEnum(section, key, defaultValue, defaultValue.getClass());
 	}
 
-	public <T extends Enum<T>> T getPropertyEnum(String section, String key,
-			T defaultValue, Class<?> class1) {
+	public <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue, Class<?> class1) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			try {
@@ -232,8 +240,7 @@ public class IniReader {
 		if (settings == null) {
 			sections.put(section, settings = new HashMap<String, String>());
 		}
-		String newValue = value instanceof Enum ? ((Enum<?>) value).name()
-				: String.valueOf(value);
+		String newValue = value instanceof Enum ? ((Enum<?>) value).name() : String.valueOf(value);
 
 		String oldValue = null;
 		if (settings.containsKey(key)) {
@@ -254,26 +261,21 @@ public class IniReader {
 	}
 
 	/**
-	 * Convert time from string in mm:ss style
+	 * Parse time syntax to determine the song length in seconds.<BR>
+	 * e.g. "0:16(M)" -> 16<BR>
+	 * Attribute in braces is used in the song length database.
 	 * 
-	 * @param str
-	 *            time
-	 * @return seconds
+	 * @param time
+	 *            syntax to parse
+	 * @return song length in seconds
 	 */
-	public static int parseTime(final String str) {
-		Matcher m = TIME_VALUE.matcher(str);
+	public static int parseTime(final String time) {
+		Matcher m = TIME_VALUE.matcher(time);
 		if (!m.matches()) {
+			System.err.println("Failed to parse song length time: " + time);
 			return -1;
 		}
-
-		int time = 0;
-
-		if (m.group(1) != null) {
-			time += Integer.valueOf(m.group(1)) * 60;
-		}
-
-		time += Integer.valueOf(m.group(2));
-
-		return time;
+		return Integer.parseInt(m.group(1)) * SECONDS_IN_A_MINUTE + Integer.parseInt(m.group(2));
 	}
+
 }

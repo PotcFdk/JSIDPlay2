@@ -72,7 +72,7 @@ public class HVSCEntryService {
 		SidTune tune = tuneFile.isFile() ? SidTune.load(tuneFile) : null;
 		HVSCEntry hvscEntry = new HVSCEntry(
 				() -> player.getSidDatabaseInfo(db -> db
-						.getFullSongLength(tune), 0), path, tuneFile, tune);
+						.getTuneLength(tune), 0), path, tuneFile, tune);
 		stilService.add(stilPath -> player.getStilEntry(stilPath), hvscEntry);
 
 		try {
