@@ -16,6 +16,7 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
+import libsidutils.Petscii;
 import libsidutils.STIL.Info;
 import libsidutils.STIL.STILEntry;
 import libsidutils.STIL.TuneEntry;
@@ -156,7 +157,7 @@ public class Psid64 {
 		if (freePages.getStilPage() != null) {
 			byte[] data = new byte[stilText.length()];
 			for (int i = 0; i < stilText.length(); i++) {
-				data[i] = Screen.iso2scr(stilText.charAt(i));
+				data[i] = Petscii.asciiToPetscii(stilText.charAt(i));
 			}
 			data[data.length - 1] = (byte) 0xff;
 			memoryBlock = new MemoryBlock();
@@ -306,8 +307,8 @@ public class Psid64 {
 		globals.put("playAddr", String.valueOf(tuneInfo.getPlayAddr()));
 		globals.put("songs", String.valueOf(tuneInfo.getSongs()));
 		globals.put("speed", String.valueOf(tune.getSongSpeedArray()));
-		globals.put("initIOMap", String.valueOf(iomap(tuneInfo.getInitAddr())));
-		globals.put("playIOMap", String.valueOf(iomap(tuneInfo.getPlayAddr())));
+		globals.put("initIOMap", String.valueOf(tune.iomap(tuneInfo.getInitAddr())));
+		globals.put("playIOMap", String.valueOf(tune.iomap(tuneInfo.getPlayAddr())));
 		globals.put("stilPage", String.valueOf(stil));
 		String resource;
 		if (freePages.getScreenPage() == null) {
@@ -317,31 +318,6 @@ public class Psid64 {
 		}
 		InputStream asm = Psid64.class.getResourceAsStream(resource);
 		return assembler.assemble(resource, asm, globals);
-	}
-
-	/**
-	 * @param addr
-	 *            A 16-bit effective address
-	 * @return A default bank-select value for $01
-	 */
-	private int iomap(int addr) {
-		// Force Real C64 Compatibility
-		SidTuneInfo tuneInfo = tune.getInfo();
-		if (tuneInfo.getCompatibility() == SidTune.Compatibility.RSIDv2
-				|| tuneInfo.getCompatibility() == SidTune.Compatibility.RSIDv3
-				|| addr == 0) {
-			return 0; // Special case, converted to 0x37 later
-		}
-		if (addr < 0xa000) {
-			return 0x37; // Basic-ROM, Kernal-ROM, I/O
-		}
-		if (addr < 0xd000) {
-			return 0x36; // Kernal-ROM, I/O
-		}
-		if (addr >= 0xe000) {
-			return 0x35; // I/O only
-		}
-		return 0x34; // RAM only
 	}
 
 	private StringBuffer formatStilText() {

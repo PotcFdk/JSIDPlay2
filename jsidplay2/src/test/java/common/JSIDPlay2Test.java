@@ -1,17 +1,16 @@
 package common;
 
-import javafx.scene.Parent;
-import javafx.stage.Stage;
-import libpsid64.Screen;
-import libsidplay.C64;
-import libsidplay.common.Event;
-
 import org.junit.Before;
 import org.loadui.testfx.utils.FXTestUtils;
 
+import javafx.scene.Parent;
+import javafx.stage.Stage;
+import libsidplay.C64;
+import libsidplay.common.Event;
+import libsidutils.Petscii;
 import sidplay.Player;
-import ui.JSidPlay2Main;
 import ui.JSidPlay2;
+import ui.JSidPlay2Main;
 import ui.entities.config.Configuration;
 
 public class JSIDPlay2Test extends GuiTest {
@@ -42,7 +41,7 @@ public class JSIDPlay2Test extends GuiTest {
 		final byte[] ram = player.getC64().getRAM();
 		final int offset = ((row - 1) * 40) + (column - 1);
 		for (int i = 0; i < expected.length(); i++) {
-			final byte screenCode = Screen.iso2scr(expected.charAt(i));
+			final byte screenCode = Petscii.asciiToPetscii(expected.charAt(i));
 			if (ram[0x0400 + offset + i] != screenCode) {
 				return false;
 			}
