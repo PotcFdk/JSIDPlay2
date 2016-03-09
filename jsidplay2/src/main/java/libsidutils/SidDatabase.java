@@ -49,10 +49,7 @@ public class SidDatabase {
 	public int getSongLength(final SidTune tune) {
 		final int songNum = tune.getInfo().getCurrentSong();
 		final String md5 = tune.getMD5Digest();
-		if (songNum == 0 || md5 == null) {
-			return 0;
-		}
-		return getLength(md5, songNum);
+		return songNum == 0 || md5 == null ? 0 : getLength(md5, songNum);
 	}
 
 	/**

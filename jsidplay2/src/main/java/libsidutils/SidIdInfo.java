@@ -112,7 +112,7 @@ public class SidIdInfo extends SidIdBase {
 		}
 	}
 
-	private ArrayList<PlayerInfoSection> playerInfoList;
+	private List<PlayerInfoSection> playerInfoList;
 
 	/**
 	 * Read configuration file and configure the SID-ID class.
