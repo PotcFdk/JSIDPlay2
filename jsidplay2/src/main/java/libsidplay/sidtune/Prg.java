@@ -24,9 +24,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
 import libsidutils.PathUtils;
-import libsidutils.SidIdInfo;
-import libsidutils.SidIdInfo.PlayerInfoSection;
-import libsidutils.SidIdV2;
+import libsidutils.sidid.SidIdInfo;
+import libsidutils.sidid.SidIdV2;
+import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 
 class Prg extends SidTune {
 

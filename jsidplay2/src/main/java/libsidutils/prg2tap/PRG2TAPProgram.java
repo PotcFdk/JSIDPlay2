@@ -1,4 +1,4 @@
-package libsidutils;
+package libsidutils.prg2tap;
 
 import libsidplay.components.DirEntry;
 import libsidplay.sidtune.SidTune;

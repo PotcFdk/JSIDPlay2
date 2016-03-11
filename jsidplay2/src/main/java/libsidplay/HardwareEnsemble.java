@@ -30,9 +30,9 @@ import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.PRG2TAP;
-import libsidutils.PRG2TAPProgram;
 import libsidutils.PathUtils;
+import libsidutils.prg2tap.PRG2TAP;
+import libsidutils.prg2tap.PRG2TAPProgram;
 
 /**
  * The HardwareEnsemble contains a C64 computer and additional peripherals.<BR>

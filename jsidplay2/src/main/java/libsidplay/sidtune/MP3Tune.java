@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 import libsidutils.PathUtils;
-import libsidutils.SidIdInfo.PlayerInfoSection;
+import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 import lowlevel.ID3V2Decoder;
 
 /**

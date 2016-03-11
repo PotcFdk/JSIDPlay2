@@ -26,7 +26,7 @@ import java.util.Collection;
 
 import libsidplay.config.IEmulationSection;
 import libsidutils.Petscii;
-import libsidutils.SidIdInfo.PlayerInfoSection;
+import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 
 /**
  * @author Ken Händel

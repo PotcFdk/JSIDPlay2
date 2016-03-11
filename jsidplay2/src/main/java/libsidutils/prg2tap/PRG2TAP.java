@@ -11,7 +11,7 @@
  * This file belongs to the prg->wav part
  * This file is part of the command-line version of WAV-PRG
  */
-package libsidutils;
+package libsidutils.prg2tap;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
