@@ -41,7 +41,7 @@ public class JSIDPlay2Test extends GuiTest {
 		final byte[] ram = player.getC64().getRAM();
 		final int offset = ((row - 1) * 40) + (column - 1);
 		for (int i = 0; i < expected.length(); i++) {
-			final byte screenCode = Petscii.asciiToPetscii(expected.charAt(i));
+			final byte screenCode = Petscii.iso88591ToPetscii(expected.charAt(i));
 			if (ram[0x0400 + offset + i] != screenCode) {
 				return false;
 			}

@@ -309,7 +309,7 @@ public abstract class SidTune {
 			final int startOffset) {
 		StringBuilder result = new StringBuilder();
 		for (int idx = startOffset; idx < petscii.length; idx++) {
-			final byte out = Petscii.petsciiToAscii(petscii[idx]);
+			final byte out = Petscii.petsciiToIso88591(petscii[idx]);
 			result.append((char) (out & 0xff));
 		}
 		return result.toString();

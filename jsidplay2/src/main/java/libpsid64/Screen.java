@@ -130,7 +130,7 @@ public class Screen {
 
 	private void clear() {
 		for (int i = 0; i < SCREEN_SIZE; ++i) {
-			screen[i] = Petscii.asciiToPetscii(' ');
+			screen[i] = Petscii.iso88591ToPetscii(' ');
 		}
 	}
 
@@ -147,7 +147,7 @@ public class Screen {
 			moveDown();
 		} else {
 			int offs = offset(x, y);
-			screen[offs] = (byte) Petscii.asciiToPetscii((char) c);
+			screen[offs] = (byte) Petscii.iso88591ToPetscii((char) c);
 			moveRight();
 		}
 	}

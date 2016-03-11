@@ -157,7 +157,7 @@ public class Psid64 {
 		if (freePages.getStilPage() != null) {
 			byte[] data = new byte[stilText.length()];
 			for (int i = 0; i < stilText.length(); i++) {
-				data[i] = Petscii.asciiToPetscii(stilText.charAt(i));
+				data[i] = Petscii.iso88591ToPetscii(stilText.charAt(i));
 			}
 			data[data.length - 1] = (byte) 0xff;
 			memoryBlock = new MemoryBlock();

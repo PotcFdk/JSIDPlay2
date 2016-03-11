@@ -70,12 +70,12 @@ public class PathUtils {
 	 * @return file of the path
 	 */
 	public static final File getFile(String path, File hvscRoot, File cgscRoot) {
-		List<File> files = PathUtils.getFiles(path, hvscRoot, null);
+		List<File> files = getFiles(path, hvscRoot, null);
 		if (files.size() > 0) {
 			// relative path name of HVSC?
 			return files.get(files.size() - 1);
 		}
-		files = PathUtils.getFiles(path, cgscRoot, null);
+		files = getFiles(path, cgscRoot, null);
 		if (files.size() > 0) {
 			// relative path name of CGSC?
 			return files.get(files.size() - 1);
