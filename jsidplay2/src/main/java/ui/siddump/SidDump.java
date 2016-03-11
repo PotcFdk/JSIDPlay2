@@ -23,8 +23,8 @@ import javafx.stage.FileChooser;
 import javax.xml.parsers.ParserConfigurationException;
 
 import libsidplay.sidtune.SidTune;
-import libsidutils.SIDDumpConfiguration;
-import libsidutils.SIDDumpConfiguration.SIDDumpPlayer;
+import libsidutils.siddump.SIDDumpConfiguration;
+import libsidutils.siddump.SIDDumpConfiguration.SIDDumpPlayer;
 import netsiddev.InvalidCommandException;
 
 import org.xml.sax.SAXException;

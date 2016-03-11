@@ -1,16 +1,16 @@
 package ui.siddump;
 
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.ATTACK_DECAY_1;
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FILTERCTRL;
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FILTERFREQ_HI;
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FILTERFREQ_LO;
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FREQ_HI_1;
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FREQ_LO_1;
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.PULSE_HI_1;
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.PULSE_LO_1;
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.SUSTAIN_RELEASE_1;
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.VOL;
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.WAVEFORM_1;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.ATTACK_DECAY_1;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.FILTERCTRL;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.FILTERFREQ_HI;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.FILTERFREQ_LO;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.FREQ_HI_1;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.FREQ_LO_1;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.PULSE_HI_1;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.PULSE_LO_1;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.SUSTAIN_RELEASE_1;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.VOL;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.WAVEFORM_1;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -27,7 +27,7 @@ import java.util.regex.MatchResult;
 import javafx.collections.ObservableList;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.mos6510.IMOS6510Extension;
-import libsidutils.SIDDumpConfiguration.SIDDumpReg;
+import libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg;
 import netsiddev.InvalidCommandException;
 import sidplay.Player;
 import ui.entities.config.Configuration;

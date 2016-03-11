@@ -1,4 +1,4 @@
-package libsidutils;
+package libsidutils.siddump;
 
 import java.io.File;
 import java.io.FileInputStream;

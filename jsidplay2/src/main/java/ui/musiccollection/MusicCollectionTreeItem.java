@@ -12,7 +12,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import libsidutils.PathUtils;
-import libsidutils.STIL.STILEntry;
+import libsidutils.stil.STIL.STILEntry;
 import sidplay.Player;
 import ui.JSidPlay2Main;
 import ui.entities.config.SidPlay2Section;

@@ -1,4 +1,4 @@
-package libsidutils;
+package libsidutils.siddatabase;
 
 import java.io.IOException;
 import java.io.InputStream;

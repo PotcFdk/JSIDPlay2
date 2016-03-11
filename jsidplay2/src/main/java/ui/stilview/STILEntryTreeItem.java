@@ -5,8 +5,8 @@ import java.util.Collection;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
-import libsidutils.STIL.STILEntry;
-import libsidutils.STIL.TuneEntry;
+import libsidutils.stil.STIL.STILEntry;
+import libsidutils.stil.STIL.TuneEntry;
 
 public class STILEntryTreeItem extends TreeItem<Object> {
 

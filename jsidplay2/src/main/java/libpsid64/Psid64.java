@@ -17,11 +17,11 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import libsidutils.Petscii;
-import libsidutils.STIL.Info;
-import libsidutils.STIL.STILEntry;
-import libsidutils.STIL.TuneEntry;
 import libsidutils.assembler.KickAssembler;
 import libsidutils.cruncher.PUCrunch;
+import libsidutils.stil.STIL.Info;
+import libsidutils.stil.STIL.STILEntry;
+import libsidutils.stil.STIL.TuneEntry;
 
 //   psid64 - create a C64 executable from a PSID file
 //   Copyright (C) 2001-2003  Roland Hermans <rolandh@users.sourceforge.net>

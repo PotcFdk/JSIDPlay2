@@ -1,7 +1,7 @@
 package ui.stilview;
 
 import javafx.scene.control.TreeItem;
-import libsidutils.STIL.Info;
+import libsidutils.stil.STIL.Info;
 
 public class InfoTreeItem extends TreeItem<Object>{
 

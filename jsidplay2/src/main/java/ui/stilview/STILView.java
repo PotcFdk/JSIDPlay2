@@ -6,9 +6,9 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import libsidutils.STIL.Info;
-import libsidutils.STIL.STILEntry;
-import libsidutils.STIL.TuneEntry;
+import libsidutils.stil.STIL.Info;
+import libsidutils.stil.STIL.STILEntry;
+import libsidutils.stil.STIL.TuneEntry;
 import sidplay.Player;
 import ui.common.C64Window;
 

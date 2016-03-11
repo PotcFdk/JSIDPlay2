@@ -1,6 +1,6 @@
 package ui.siddump;
 
-import static libsidutils.SIDDumpConfiguration.SIDDumpReg.FILTERFREQ_LO;
+import static libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg.FILTERFREQ_LO;
 
 import java.util.Collection;
 import java.util.Vector;
@@ -8,7 +8,7 @@ import java.util.concurrent.BlockingQueue;
 
 import javafx.collections.ObservableList;
 import libsidplay.config.IConfig;
-import libsidutils.SIDDumpConfiguration.SIDDumpReg;
+import libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg;
 import netsiddev.AudioGeneratorThread;
 import netsiddev.InvalidCommandException;
 import netsiddev.SIDWrite;

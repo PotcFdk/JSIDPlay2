@@ -5,9 +5,9 @@ import java.util.function.Function;
 
 import javax.persistence.EntityManager;
 
-import libsidutils.STIL.Info;
-import libsidutils.STIL.STILEntry;
-import libsidutils.STIL.TuneEntry;
+import libsidutils.stil.STIL.Info;
+import libsidutils.stil.STIL.STILEntry;
+import libsidutils.stil.STIL.TuneEntry;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.StilEntry;
 

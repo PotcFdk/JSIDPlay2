@@ -1,4 +1,4 @@
-package libsidutils;
+package libsidutils.stil;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

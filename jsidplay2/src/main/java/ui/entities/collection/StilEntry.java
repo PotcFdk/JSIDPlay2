@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import libsidutils.STIL.Info;
+import libsidutils.stil.STIL.Info;
 
 @Entity
 @Access(AccessType.PROPERTY)
