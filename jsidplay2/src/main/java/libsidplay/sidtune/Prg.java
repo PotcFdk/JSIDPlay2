@@ -31,6 +31,7 @@ import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 class Prg extends SidTune {
 
 	protected static final MessageDigest MD5_DIGEST;
+
 	static {
 		try {
 			MD5_DIGEST = MessageDigest.getInstance("MD5");
@@ -40,6 +41,7 @@ class Prg extends SidTune {
 	}
 
 	private static final SidIdV2 SID_ID = new SidIdV2();
+
 	static {
 		try {
 			SID_ID.readconfig();
@@ -50,6 +52,7 @@ class Prg extends SidTune {
 	}
 
 	private static final SidIdInfo SID_ID_INFO = new SidIdInfo();
+
 	static {
 		try {
 			SID_ID_INFO.readconfig();
@@ -62,12 +65,9 @@ class Prg extends SidTune {
 
 	protected byte[] program;
 
-	protected static SidTune load(final String name, final byte[] dataBuf)
-			throws SidTuneError {
-		if (!PathUtils.getFilenameSuffix(name).equalsIgnoreCase(".prg")
-				|| dataBuf.length < 2) {
-			throw new SidTuneError(
-					"Bad file extension expected: .prg and length > 2");
+	protected static SidTune load(final String name, final byte[] dataBuf) throws SidTuneError {
+		if (!PathUtils.getFilenameSuffix(name).equalsIgnoreCase(".prg") || dataBuf.length < 2) {
+			throw new SidTuneError("Bad file extension expected: .prg and length > 2");
 		}
 		final Prg prg = new Prg();
 
@@ -83,8 +83,7 @@ class Prg extends SidTune {
 	}
 
 	@Override
-	public void save(final String filename, final boolean overwrite)
-			throws IOException {
+	public void save(final String filename, final boolean overwrite) throws IOException {
 		try (FileOutputStream out = new FileOutputStream(filename, !overwrite)) {
 			out.write(program);
 		}
@@ -106,8 +105,7 @@ class Prg extends SidTune {
 		mem[0xaf] = (byte) (end >> 8);
 
 		// Copy data from cache to the correct destination.
-		System.arraycopy(program, programOffset, mem, info.loadAddr,
-				info.c64dataLen);
+		System.arraycopy(program, programOffset, mem, info.loadAddr, info.c64dataLen);
 		return -1;
 	}
 
@@ -145,9 +143,9 @@ class Prg extends SidTune {
 	}
 
 	@Override
-	public long getInitDelay() {
-		/* Wait 2.5 seconds before initializing PRG/P00. */
-		return 2500000;
+	protected long getInitDelay() {
+		/* Wait for completion of a normal reset before initializing PRG/P00. */
+		return RESET_INIT_DELAY;
 	}
 
 }

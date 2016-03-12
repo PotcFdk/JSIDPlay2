@@ -53,12 +53,6 @@ public class MP3Tune extends SidTune {
 		return null;
 	}
 
-	@Override
-	public long getInitDelay() {
-		// MP3 can play immediately
-		return 0;
-	}
-
 	public static final SidTune load(final File file) throws IOException,
 			SidTuneError {
 		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
@@ -115,6 +109,12 @@ public class MP3Tune extends SidTune {
 
 	public String getMP3Filename() {
 		return mp3Filename;
+	}
+
+	@Override
+	protected long getInitDelay() {
+		// MP3 can play immediately
+		return 0;
 	}
 
 }

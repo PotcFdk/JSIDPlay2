@@ -658,10 +658,8 @@ class PSid extends Prg {
 	@Override
 	public long getInitDelay() {
 		// 2.5ms does not always work well (Synth_sample)!
-		return info.compatibility == Compatibility.RSID_BASIC
-				|| info.compatibility == Compatibility.RSIDv2
-				|| info.compatibility == Compatibility.RSIDv3 ? super
-				.getInitDelay() : 2500;
+		return info.compatibility == Compatibility.RSID_BASIC || info.compatibility == Compatibility.RSIDv2
+				|| info.compatibility == Compatibility.RSIDv3 ? RESET_INIT_DELAY : 2500;
 	}
 
 }

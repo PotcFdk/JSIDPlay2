@@ -75,11 +75,6 @@ import sidplay.player.Timer;
 public class Player extends HardwareEnsemble {
 
 	/**
-	 * Delay in cycles, for normal RESET code path, before auto-start commands
-	 * are executed (~2.5 seconds).
-	 */
-	private static final int RESET_INIT_DELAY = 2500000;
-	/**
 	 * Timeout (in ms) for sleeping, if player is paused.
 	 */
 	private static final int PAUSE_SLEEP_TIME = 250;
@@ -250,11 +245,11 @@ public class Player extends HardwareEnsemble {
 		createOrUpdateSIDs();
 
 		// Create auto-start event
-		if (tune == SidTune.RESET) {
-			// Normal reset code path executing auto-start command
-			c64.getEventScheduler().schedule(new Event("Auto-start event") {
-				@Override
-				public void event() throws InterruptedException {
+		c64.getEventScheduler().schedule(new Event("Auto-start event") {
+			@Override
+			public void event() throws InterruptedException {
+				if (tune == SidTune.RESET) {
+					// Normal reset code path executing auto-start command
 					if (command != null) {
 						if (command.startsWith(LOAD)) {
 							// Auto-start tape needs someone to press play
@@ -262,13 +257,8 @@ public class Player extends HardwareEnsemble {
 						}
 						typeInCommand(command);
 					}
-				}
-			}, RESET_INIT_DELAY);
-		} else {
-			// reset code path for tunes
-			c64.getEventScheduler().schedule(new Event("Tune init event") {
-				@Override
-				public void event() throws InterruptedException {
+				} else {
+					// reset code path for tunes
 					int driverAddress = tune.placeProgramInMemory(c64.getRAM());
 					if (driverAddress != -1) {
 						// Start SID player driver, if available
@@ -279,11 +269,11 @@ public class Player extends HardwareEnsemble {
 						command = loadAddr == 0x0801 ? RUN : String.format(SYS, loadAddr);
 						typeInCommand(command);
 					}
+					// Set play-back address to feedback call frames counter.
+					c64.setPlayAddr(tune.getInfo().getPlayAddr());
 				}
-			}, tune.getInitDelay());
-			// Set play-back address to feedback call frames counter.
-			c64.setPlayAddr(tune.getInfo().getPlayAddr());
-		}
+			}
+		}, SidTune.getInitDelay(tune));
 	}
 
 	/**

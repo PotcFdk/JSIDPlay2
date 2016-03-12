@@ -33,19 +33,26 @@ import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
  * 
  */
 public abstract class SidTune {
+	/**
+	 * Do not load a tune, just reset C64.
+	 */
 	public static final SidTune RESET = null;
+	/**
+	 * Delay in cycles to wait for completion of a normal RESET.
+	 */
+	protected static final int RESET_INIT_DELAY = 2500000;
 
 	private static Constructor<?> TFILE_IS = null;
+
 	static {
 		// support for files contained in a ZIP (optionally in the classpath)
 		try {
-			TFILE_IS = (Constructor<?>) Class.forName(
-					"de.schlichtherle.truezip.file.TFileInputStream")
+			TFILE_IS = (Constructor<?>) Class.forName("de.schlichtherle.truezip.file.TFileInputStream")
 					.getConstructor(File.class);
-		} catch (ClassNotFoundException | NoSuchMethodException
-				| SecurityException e) {
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
 		}
 	}
+
 	/**
 	 * Maximum possible file size of C64 programs to load.
 	 */
@@ -121,8 +128,7 @@ public abstract class SidTune {
 	 * @throws IOException
 	 * @throws SidTuneError
 	 */
-	public static SidTune load(final File file) throws IOException,
-			SidTuneError {
+	public static SidTune load(final File file) throws IOException, SidTuneError {
 		try {
 			return MP3Tune.load(file);
 		} catch (SidTuneError e1) {
@@ -150,8 +156,7 @@ public abstract class SidTune {
 	 *             If the stream cannot be read.
 	 * @throws SidTuneError
 	 */
-	public static SidTune load(String url, final InputStream stream)
-			throws IOException, SidTuneError {
+	public static SidTune load(String url, final InputStream stream) throws IOException, SidTuneError {
 		return loadCommon(url, getFileContents(stream));
 	}
 
@@ -169,8 +174,7 @@ public abstract class SidTune {
 	 *             If the stream cannot be read.
 	 * @throws SidTuneError
 	 */
-	private static SidTune loadCommon(String name, byte[] fileBuffer)
-			throws SidTuneError {
+	private static SidTune loadCommon(String name, byte[] fileBuffer) throws SidTuneError {
 		try {
 			return PSid.load(name, fileBuffer);
 		} catch (SidTuneError e1) {
@@ -193,16 +197,14 @@ public abstract class SidTune {
 	 *            The chosen song.
 	 */
 	public final void setSelectedSong(final Integer song) {
-		info.currentSong = song == null || song > info.songs ? info.startSong
-				: song;
+		info.currentSong = song == null || song > info.songs ? info.startSong : song;
 	}
 
 	/**
 	 * @return The active sub-song number
 	 */
 	public int getSelectedSong() {
-		return info.currentSong == 0 || info.currentSong > info.songs ? info.startSong
-				: info.currentSong;
+		return info.currentSong == 0 || info.currentSong > info.songs ? info.startSong : info.currentSong;
 	}
 
 	/**
@@ -226,23 +228,19 @@ public abstract class SidTune {
 	 * @throws IOException
 	 *             if the file could not be found.
 	 */
-	protected static final byte[] getFileContents(final File file)
-			throws IOException {
-		try (InputStream is = TFILE_IS != null ? (InputStream) TFILE_IS
-				.newInstance(file) : new FileInputStream(file)) {
+	protected static final byte[] getFileContents(final File file) throws IOException {
+		try (InputStream is = TFILE_IS != null ? (InputStream) TFILE_IS.newInstance(file) : new FileInputStream(file)) {
 			return getFileContents(is);
-		} catch (InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
 			throw new IOException(file.getAbsolutePath());
 		}
 	}
 
-	private static byte[] getFileContents(final InputStream stream)
-			throws IOException {
+	private static byte[] getFileContents(final InputStream stream) throws IOException {
 		final byte[] fileBuf = new byte[MAX_MEM_64K];
 		int count, len = 0;
-		while (len < MAX_MEM_64K
-				&& (count = stream.read(fileBuf, len, MAX_MEM_64K - len)) >= 0) {
+		while (len < MAX_MEM_64K && (count = stream.read(fileBuf, len, MAX_MEM_64K - len)) >= 0) {
 			len += count;
 		}
 		return Arrays.copyOf(fileBuf, len);
@@ -305,8 +303,7 @@ public abstract class SidTune {
 	 * 
 	 * @return The Petscii data converted to ASCII.
 	 */
-	protected static final String convertPetsciiToAscii(final byte[] petscii,
-			final int startOffset) {
+	protected static final String convertPetsciiToAscii(final byte[] petscii, final int startOffset) {
 		StringBuilder result = new StringBuilder();
 		for (int idx = startOffset; idx < petscii.length; idx++) {
 			final byte out = Petscii.petsciiToIso88591(petscii[idx]);
@@ -338,6 +335,56 @@ public abstract class SidTune {
 	}
 
 	/**
+	 * Is specified SID number in use?
+	 * <OL>
+	 * <LI>0 - first SID is always used
+	 * <LI>1 - second SID is only used for stereo tunes
+	 * <LI>2 - third SID is used for 3-SID tunes
+	 * </OL>
+	 */
+	public static boolean isSIDUsed(IEmulationSection emulation, SidTune tune, int sidNum) {
+		return getSIDAddress(emulation, tune, sidNum) != 0;
+	}
+
+	/**
+	 * Get SID address of specified SID number
+	 * <OL>
+	 * <LI>0xd400 - always used for first SID
+	 * <LI>forced SID base - configured value for forced stereo output
+	 * <LI>tune SID base - SID base detected by tune information
+	 * <LI>0 - SID is not used
+	 * </OL>
+	 * Note: this function is static, even if no tune is loaded stereo mode can
+	 * be configured!
+	 */
+	public static int getSIDAddress(IEmulationSection emulation, SidTune tune, int sidNum) {
+		boolean forcedStereoTune;
+		int forcedSidBase;
+		int tuneChipBase;
+		switch (sidNum) {
+		case 0:
+			return 0xd400;
+		case 1:
+			forcedStereoTune = emulation.isForceStereoTune();
+			forcedSidBase = emulation.getDualSidBase();
+			tuneChipBase = tune != RESET ? tune.getInfo().getSidChipBase(sidNum) : 0;
+			break;
+		case 2:
+			forcedStereoTune = emulation.isForce3SIDTune();
+			forcedSidBase = emulation.getThirdSIDBase();
+			tuneChipBase = tune != RESET ? tune.getInfo().getSidChipBase(sidNum) : 0;
+			break;
+		default:
+			throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
+		if (forcedStereoTune) {
+			return forcedSidBase;
+		} else {
+			return tuneChipBase;
+		}
+	}
+
+	/**
 	 * Copy program into C64 memory.
 	 * 
 	 * @param c64buf
@@ -355,8 +402,7 @@ public abstract class SidTune {
 	 *            overwriting any file.
 	 * @throws IOException
 	 */
-	public abstract void save(final String destFileName,
-			final boolean overWriteFlag) throws IOException;
+	public abstract void save(final String destFileName, final boolean overWriteFlag) throws IOException;
 
 	/**
 	 * Identify the player ID of a tune
@@ -375,67 +421,16 @@ public abstract class SidTune {
 	public abstract PlayerInfoSection getPlayerInfo(String playerName);
 
 	/**
-	 * Return delay in C64 clocks before song init is done.
-	 */
-	public abstract long getInitDelay();
-
-	/**
 	 * MD5 for song length detection.
 	 */
 	public abstract String getMD5Digest();
 
 	/**
-	 * Is specified SID number in use?
-	 * <OL>
-	 * <LI>0 - first SID is always used
-	 * <LI>1 - second SID is only used for stereo tunes
-	 * <LI>2 - third SID is used for 3-SID tunes
-	 * </OL>
+	 * Return delay in C64 clocks before song init is done.
 	 */
-	public static boolean isSIDUsed(IEmulationSection emulation, SidTune tune,
-			int sidNum) {
-		return getSIDAddress(emulation, tune, sidNum) != 0;
-	}
+	protected abstract long getInitDelay();
 
-	/**
-	 * Get SID address of specified SID number
-	 * <OL>
-	 * <LI>0xd400 - always used for first SID
-	 * <LI>forced SID base - configured value for forced stereo output
-	 * <LI>tune SID base - SID base detected by tune information
-	 * <LI>0 - SID is not used
-	 * </OL>
-	 * Note: this function is static, even if no tune is loaded stereo mode can
-	 * be configured!
-	 */
-	public static int getSIDAddress(IEmulationSection emulation, SidTune tune,
-			int sidNum) {
-		boolean forcedStereoTune;
-		int forcedSidBase;
-		int tuneChipBase;
-		switch (sidNum) {
-		case 0:
-			return 0xd400;
-		case 1:
-			forcedStereoTune = emulation.isForceStereoTune();
-			forcedSidBase = emulation.getDualSidBase();
-			tuneChipBase = tune != RESET ? tune.getInfo()
-					.getSidChipBase(sidNum) : 0;
-			break;
-		case 2:
-			forcedStereoTune = emulation.isForce3SIDTune();
-			forcedSidBase = emulation.getThirdSIDBase();
-			tuneChipBase = tune != RESET ? tune.getInfo()
-					.getSidChipBase(sidNum) : 0;
-			break;
-		default:
-			throw new RuntimeException("Maximum supported SIDS exceeded!");
-		}
-		if (forcedStereoTune) {
-			return forcedSidBase;
-		} else {
-			return tuneChipBase;
-		}
+	public static long getInitDelay(SidTune tune) {
+		return tune != null ? tune.getInitDelay() : RESET_INIT_DELAY;
 	}
-
 }
