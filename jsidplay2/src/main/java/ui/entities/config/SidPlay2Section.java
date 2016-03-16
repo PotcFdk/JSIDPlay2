@@ -183,6 +183,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public void setCgsc(String cgsc) {
 		this.cgsc = cgsc;
+		this.cgscFile = null;
 		getCgscFile();
 	}
 
@@ -206,6 +207,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	public void setHvsc(String hvsc) {
 		this.hvsc = hvsc;
+		this.hvscFile = null;
 		getHvscFile();
 	}
 
