@@ -66,7 +66,7 @@ public class Petscii {
 	 * 
 	 * @param c
 	 *            ISO8859_1 character
-	 * @return PETSCII character
+	 * @return PETSCII byte
 	 */
 	public static byte iso88591ToPetscii(char c) {
 		return (byte) ISO8859_1_TO_PETSCII[c & 0xff];
@@ -76,11 +76,11 @@ public class Petscii {
 	 * Convert PETSCII to ISO8859_1 characters.
 	 * 
 	 * @param c
-	 *            PETSCII character
+	 *            PETSCII byte
 	 * @return ISO8859_1 character (unmapped characters are converted to space)
 	 */
-	public static byte petsciiToIso88591(byte c) {
+	public static char petsciiToIso88591(byte c) {
 		byte b = (byte) PETSCII_TO_ISO8859_1[c & 0xff];
-		return b != 1 ? b : 32;
+		return b != 1 ? (char) (b & 0xff) : ' ';
 	}
 }
