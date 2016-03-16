@@ -306,8 +306,7 @@ public abstract class SidTune {
 	protected static final String convertPetsciiToAscii(final byte[] petscii, final int startOffset) {
 		StringBuilder result = new StringBuilder();
 		for (int idx = startOffset; idx < petscii.length; idx++) {
-			final byte out = Petscii.petsciiToIso88591(petscii[idx]);
-			result.append((char) (out & 0xff));
+			result.append(Petscii.petsciiToIso88591(petscii[idx]));
 		}
 		return result.toString();
 	}
