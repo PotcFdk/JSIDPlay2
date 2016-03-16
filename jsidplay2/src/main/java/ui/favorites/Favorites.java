@@ -176,7 +176,7 @@ public class Favorites extends Tab implements UIPart {
 			}
 		});
 		Platform.runLater(() -> {
-			favoritesList.getScene().setOnDragOver((event) -> {
+			favoritesList.setOnDragOver((event) -> {
 				Dragboard db = event.getDragboard();
 				if (db.hasFiles()) {
 					event.acceptTransferModes(TransferMode.COPY);
@@ -184,7 +184,7 @@ public class Favorites extends Tab implements UIPart {
 					event.consume();
 				}
 			});
-			favoritesList.getScene().setOnDragDropped((event) -> {
+			favoritesList.setOnDragDropped((event) -> {
 				Dragboard db = event.getDragboard();
 				boolean success = false;
 				if (db.hasFiles()) {

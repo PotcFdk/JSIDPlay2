@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
+import javax.imageio.ImageIO;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -39,14 +41,13 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.media.AudioClip;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import javax.imageio.ImageIO;
-
 import libsidplay.C64;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
@@ -380,6 +381,31 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener,
 		timer = new Timeline(frame);
 		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
+		Platform.runLater(() -> {
+			scene.setOnDragOver(event -> {
+				Dragboard db = event.getDragboard();
+				if (db.hasFiles()) {
+					event.acceptTransferModes(TransferMode.COPY);
+				} else {
+					event.consume();
+				}
+			});
+			scene.setOnDragDropped(event -> {
+				Dragboard db = event.getDragboard();
+				boolean success = false;
+				if (db.hasFiles()) {
+					success = true;
+					List<File> files = db.getFiles();
+					try {
+						playTune(SidTune.load(files.get(0)));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				event.setDropCompleted(success);
+				event.consume();
+			});
+		});
 	}
 
 	@Override
