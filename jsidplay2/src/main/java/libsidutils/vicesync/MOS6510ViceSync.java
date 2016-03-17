@@ -52,6 +52,7 @@ public class MOS6510ViceSync extends MOS6510Debug {
 				connectedToJava = true;
 				String received = sync.receive();
 				ViceSync.MOS6510State viceState = sync.getState(received);
+				System.out.println(viceState);
 				sync.send("start\n");
 				syncClk = context.getTime(Phase.PHI2);
 			} catch (IOException e) {

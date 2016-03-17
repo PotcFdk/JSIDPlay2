@@ -489,7 +489,7 @@ class PSid extends Prg {
 
 				model3 = (header.flags >> 8) & 3;
 
-				/* Handle 2nd SID chip location */
+				/* Handle 3rd SID chip location */
 				int sid3loc = 0xd000 | (header.sidChip3MiddleNybbles & 0xff) << 4;
 				if (((sid3loc >= 0xd420 && sid3loc < 0xd800) || sid3loc >= 0xde00)
 						&& (sid3loc & 0x10) == 0) {
@@ -602,9 +602,6 @@ class PSid extends Prg {
 			saveAddr[0] = (byte) (info.loadAddr & 255);
 			saveAddr[1] = (byte) (info.loadAddr >> 8);
 			fos.write(saveAddr);
-
-			// Data starts at: bufferaddr + fileoffset
-			// Data length: datafilelen - fileoffset
 			fos.write(program, programOffset, info.c64dataLen);
 		}
 
@@ -657,7 +654,7 @@ class PSid extends Prg {
 
 	@Override
 	public long getInitDelay() {
-		// 2.5ms does not always work well (Synth_sample)!
+		// 2.5ms does not always work well (e.g. RSIDs like Synth_sample)!
 		return info.compatibility == Compatibility.RSID_BASIC || info.compatibility == Compatibility.RSIDv2
 				|| info.compatibility == Compatibility.RSIDv3 ? RESET_INIT_DELAY : 2500;
 	}
