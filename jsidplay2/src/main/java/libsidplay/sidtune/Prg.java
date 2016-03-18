@@ -105,7 +105,7 @@ class Prg extends SidTune {
 		mem[0xaf] = (byte) (end >> 8);
 
 		// Copy data from cache to the correct destination.
-		System.arraycopy(program, programOffset, mem, info.loadAddr, info.c64dataLen);
+		System.arraycopy(program, programOffset, mem, start, end - start);
 		return -1;
 	}
 

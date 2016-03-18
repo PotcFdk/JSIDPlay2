@@ -28,13 +28,12 @@ public class T64 extends Prg {
 		}
 		final T64 t64 = new T64();
 		final T64Entry entry = t64.getEntry(dataBuf, 1);
-
 		t64.program = dataBuf;
 		t64.programOffset = entry.programOffset;
 		t64.info.loadAddr = entry.loadAddr;
-		t64.info.c64dataLen = entry.c64dataLen;
+		t64.info.c64dataLen = Math.min(entry.c64dataLen, dataBuf.length - t64.programOffset); // don't trust entry.c64dataLen
 
-		t64.info.infoString.add(PathUtils.getFilenameWithoutSuffix(name));
+		t64.info.infoString.add(convertPetsciiToAscii(entry.name, 0));
 
 		t64.convertOldStyleSpeedToTables(~0);
 		return t64;
@@ -60,10 +59,8 @@ public class T64 extends Prg {
 		final byte type = dataBuf[pos++];
 		final byte fileType = dataBuf[pos++];
 		if (pos + 32 > dataBuf.length
-				|| type != 1
-				|| (fileType & DirEntry.BITMASK_FILETYPE) != DirEntry.FILETYPE_PRG) {
-			throw new SidTuneError(
-					"Illegal T64 entry type, must be PRG normal tape file");
+				|| (type != 1 && (fileType & DirEntry.BITMASK_FILETYPE) != DirEntry.FILETYPE_PRG)) {
+			throw new SidTuneError("Illegal T64 entry type, must be PRG normal tape file");
 		}
 		final T64Entry entry = new T64Entry();
 		// Get start address (or Load address)
