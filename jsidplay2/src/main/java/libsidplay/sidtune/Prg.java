@@ -25,8 +25,8 @@ import java.util.Collection;
 
 import libsidutils.PathUtils;
 import libsidutils.sidid.SidIdInfo;
-import libsidutils.sidid.SidIdV2;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
+import libsidutils.sidid.SidIdV2;
 
 class Prg extends SidTune {
 
@@ -78,7 +78,6 @@ class Prg extends SidTune {
 
 		prg.info.infoString.add(PathUtils.getFilenameWithoutSuffix(name));
 
-		prg.convertOldStyleSpeedToTables(~0);
 		return prg;
 	}
 
@@ -133,13 +132,7 @@ class Prg extends SidTune {
 
 	@Override
 	public String getMD5Digest() {
-		byte[] myMD5 = new byte[info.c64dataLen];
-		System.arraycopy(program, programOffset, myMD5, 0, info.c64dataLen);
-		StringBuilder md5 = new StringBuilder();
-		for (final byte encryptMsg : MD5_DIGEST.digest(myMD5)) {
-			md5.append(String.format("%02x", encryptMsg & 0xff));
-		}
-		return md5.toString();
+		return null;
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.util.Locale;
 
 import libsidutils.PathUtils;
+import libsidutils.Petscii;
 
 /**
  * File format from PC64. PC64 automatically generates the filename from the cbm
@@ -93,9 +94,9 @@ class P00 extends Prg {
 		p00.info.loadAddr = (dataBuf[X00Header.SIZE] & 0xff)
 				| ((dataBuf[X00Header.SIZE + 1] & 0xff) << 8);
 
-		p00.info.infoString.add(convertPetsciiToAscii(header.name, 0));
+		final String credit = Petscii.petsciiToIso88591(header.name);
+		p00.info.infoString.add(credit);
 
-		p00.convertOldStyleSpeedToTables(~0);
 		return p00;
 	}
 }

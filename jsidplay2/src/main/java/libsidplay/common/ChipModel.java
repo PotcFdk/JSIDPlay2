@@ -55,7 +55,7 @@ public enum ChipModel {
 		switch (tuneSidModel) {
 		case MOS6581:
 		case MOS8580:
-			return valueOf(tuneSidModel.toString());
+			return tuneSidModel.asChipModel();
 		default:
 			return defaultSidModel;
 		}

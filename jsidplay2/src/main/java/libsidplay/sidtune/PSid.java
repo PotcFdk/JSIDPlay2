@@ -226,6 +226,13 @@ class PSid extends Prg {
 
 	private static final int PSID_BASIC = 1 << 1;
 
+	/**
+	 * PSID file format limit.
+	 */
+	private static final int SIDTUNE_MAX_SONGS = 256;
+
+	private Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
+
 	private final KickAssembler assembler = new KickAssembler();
 
 	@Override
@@ -244,10 +251,8 @@ class PSid extends Prg {
 		globals.put("pc", String.valueOf(info.determinedDriverAddr));
 		globals.put("songNum", String.valueOf(info.currentSong));
 		globals.put("songs", String.valueOf(info.songs));
-		globals.put("songSpeed", String
-				.valueOf(songSpeed[info.currentSong - 1] == Speed.CIA_1A ? 1
-						: 0));
-		globals.put("speed", String.valueOf(getSongSpeedArray()));
+		globals.put("songSpeed", String.valueOf(getSongSpeed(info.currentSong) == Speed.CIA_1A ? 1 : 0));
+		globals.put("speed", String.valueOf(getSongSpeedWord()));
 		globals.put("loadAddr", String.valueOf(info.loadAddr));
 		globals.put("initAddr", String.valueOf(info.initAddr));
 		globals.put("playAddr", String.valueOf(info.playAddr));
@@ -515,6 +520,15 @@ class PSid extends Prg {
 		psid.info.infoString.add(header.getString(header.released));
 
 		if ((header.flags & PSID_MUS) != 0) {
+			// Check setting compatibility for MUS playback
+			if (psid.info.compatibility != Compatibility.PSIDv2 || psid.info.relocStartPage != 0 || psid.info.relocPages != 0) {
+				throw new SidTuneError("Incompatibility for MUS playback");
+			}
+			for (int i = 0; i < psid.info.songs; i++) {
+				if (psid.songSpeed[i] != Speed.CIA_1A) {
+					throw new SidTuneError("Incompatible song speed VBI for MUS playback");
+				}
+			}
 			return Mus.load(psid.info, psid.programOffset, dataBuf);
 		}
 
@@ -522,6 +536,39 @@ class PSid extends Prg {
 		psid.findPlaceForDriver();
 
 		return psid;
+	}
+
+	/**
+	 * Convert 32-bit PSID-style speed word to internal tables.
+	 * 
+	 * @param speed
+	 *            The speed to convert.
+	 */
+	private void convertOldStyleSpeedToTables(long speed) {
+		for (int s = 0; s < SIDTUNE_MAX_SONGS; s++) {
+			int i = s > 31 ? 31 : s;
+			if ((speed & (1 << i)) != 0) {
+				songSpeed[s] = Speed.CIA_1A;
+			} else {
+				songSpeed[s] = Speed.VBI;
+			}
+		}
+	}
+
+	@Override
+	public int getSongSpeedWord() {
+		int speed = 0;
+		for (int i = 0; i < 32; ++i) {
+			if (songSpeed[i] != SidTune.Speed.VBI) {
+				speed |= 1 << i;
+			}
+		}
+		return speed;
+	}
+
+	@Override
+	public Speed getSongSpeed(int selected) {
+		return songSpeed[selected - 1];
 	}
 
 	@Override
@@ -541,7 +588,7 @@ class PSid extends Prg {
 			header.data = PHeader.SIZE;
 			header.songs = (short) info.songs;
 			header.start = (short) info.startSong;
-			header.speed = getSongSpeedArray();
+			header.speed = getSongSpeedWord();
 
 			header.init = (short) info.initAddr;
 			header.relocStartPage = (byte) info.relocStartPage;
@@ -613,7 +660,7 @@ class PSid extends Prg {
 	 * @return MD5 checksum as hex string
 	 */
 	@Override
-	public final String getMD5Digest() {
+	public String getMD5Digest() {
 		// Include C64 data.
 		final byte[] myMD5 = new byte[info.c64dataLen + 6 + info.songs
 				+ (info.clockSpeed == SidTune.Clock.NTSC ? 1 : 0)];
@@ -626,7 +673,7 @@ class PSid extends Prg {
 		myMD5[i++] = (byte) (info.songs & 0xff);
 		myMD5[i++] = (byte) (info.songs >> 8);
 		for (int s = 1; s <= info.songs; s++) {
-			myMD5[i++] = (byte) songSpeed[s - 1].speedValue();
+			myMD5[i++] = (byte) getSongSpeed(s).speedValue();
 		}
 		// Deal with PSID v2NG clock speed flags: Let only NTSC
 		// clock speed change the MD5 fingerprint. That way the

@@ -306,7 +306,7 @@ public class Psid64 {
 		globals.put("initAddr", String.valueOf(tuneInfo.getInitAddr()));
 		globals.put("playAddr", String.valueOf(tuneInfo.getPlayAddr()));
 		globals.put("songs", String.valueOf(tuneInfo.getSongs()));
-		globals.put("speed", String.valueOf(tune.getSongSpeedArray()));
+		globals.put("speed", String.valueOf(tune.getSongSpeedWord()));
 		globals.put("initIOMap", String.valueOf(tune.iomap(tuneInfo.getInitAddr())));
 		globals.put("playIOMap", String.valueOf(tune.iomap(tuneInfo.getPlayAddr())));
 		globals.put("stilPage", String.valueOf(stil));

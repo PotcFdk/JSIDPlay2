@@ -83,4 +83,21 @@ public class Petscii {
 		byte b = (byte) PETSCII_TO_ISO8859_1[c & 0xff];
 		return b != 1 ? (char) (b & 0xff) : ' ';
 	}
+
+	/**
+	 * Converts PETSCII to ISO8859_1 characters.
+	 * 
+	 * @param petscii
+	 *            PETSCII bytes.
+	 * 
+	 * @return ISO8859_1 characters.
+	 */
+	public static final String petsciiToIso88591(final byte[] petscii) {
+		StringBuilder result = new StringBuilder();
+		for (int idx = 0; idx < petscii.length; idx++) {
+			result.append(petsciiToIso88591(petscii[idx]));
+		}
+		return result.toString();
+	}
+
 }

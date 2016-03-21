@@ -11,6 +11,7 @@ import java.util.Collection;
 import libsidplay.components.DirEntry;
 import libsidplay.components.Directory;
 import libsidutils.PathUtils;
+import libsidutils.Petscii;
 
 public class T64 extends Prg {
 
@@ -33,9 +34,9 @@ public class T64 extends Prg {
 		t64.info.loadAddr = entry.loadAddr;
 		t64.info.c64dataLen = Math.min(entry.c64dataLen, dataBuf.length - t64.programOffset); // don't trust entry.c64dataLen
 
-		t64.info.infoString.add(convertPetsciiToAscii(entry.name, 0));
+		final String credit = Petscii.petsciiToIso88591(entry.name);
+		t64.info.infoString.add(credit);
 
-		t64.convertOldStyleSpeedToTables(~0);
 		return t64;
 	}
 

@@ -24,8 +24,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.config.IEmulationSection;
-import libsidutils.Petscii;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 
 /**
@@ -58,13 +59,15 @@ public abstract class SidTune {
 	 */
 	private static final int MAX_MEM_64K = 65536;
 
-	/**
-	 * Also PSID file format limit.
-	 */
-	protected static final int SIDTUNE_MAX_SONGS = 256;
-
 	public enum Speed {
-		VBI(0), CIA_1A(60);
+		/**
+		 * vertical blank interrupt (50Hz PAL, 60Hz NTSC)
+		 */
+		VBI(0),
+		/**
+		 * CIA 1 timer interrupt (default 60Hz)
+		 */
+		CIA_1A(60);
 
 		private int speed;
 
@@ -81,14 +84,34 @@ public abstract class SidTune {
 	 * Possible clock speeds of a SidTune.
 	 */
 	public enum Clock {
-		UNKNOWN, PAL, NTSC, ANY
+		UNKNOWN(CPUClock.PAL), PAL(CPUClock.PAL), NTSC(CPUClock.NTSC), ANY(CPUClock.PAL);
+
+		private CPUClock cpuClock;
+
+		private Clock(final CPUClock cpuClock) {
+			this.cpuClock = cpuClock;
+		}
+
+		public CPUClock asCPUClock() {
+			return cpuClock;
+		}
 	}
 
 	/**
 	 * Possible models the SidTunes were meant to play on.
 	 */
 	public enum Model {
-		UNKNOWN, MOS6581, MOS8580, ANY
+		UNKNOWN(ChipModel.MOS6581), MOS6581(ChipModel.MOS6581), MOS8580(ChipModel.MOS8580), ANY(ChipModel.MOS6581);
+
+		private ChipModel chipModel;
+
+		private Model(final ChipModel chipModel) {
+			this.chipModel = chipModel;
+		}
+
+		public ChipModel asChipModel() {
+			return chipModel;
+		}
 	}
 
 	/**
@@ -100,16 +123,7 @@ public abstract class SidTune {
 
 	protected SidTuneInfo info = new SidTuneInfo();
 
-	protected final Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
-
 	protected static String PSIDDRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
-
-	/**
-	 * Constructor
-	 */
-	protected SidTune() {
-		Arrays.fill(songSpeed, Speed.VBI);
-	}
 
 	public static void useDriver(String sidDriver) {
 		if (sidDriver != null) {
@@ -277,51 +291,6 @@ public abstract class SidTune {
 	}
 
 	/**
-	 * Convert 32-bit PSID-style speed word to internal tables.
-	 * 
-	 * @param speed
-	 *            The speed to convert.
-	 */
-	protected final void convertOldStyleSpeedToTables(long speed) {
-		for (int s = 0; s < SIDTUNE_MAX_SONGS; s++) {
-			int i = s > 31 ? 31 : s;
-			if ((speed & (1 << i)) != 0) {
-				songSpeed[s] = Speed.CIA_1A;
-			} else {
-				songSpeed[s] = Speed.VBI;
-			}
-		}
-	}
-
-	/**
-	 * Converts Petscii to Ascii.
-	 * 
-	 * @param petscii
-	 *            The Petscii encoded data.
-	 * @param startOffset
-	 *            The offset to begin converting the Petscii data to Ascii.
-	 * 
-	 * @return The Petscii data converted to ASCII.
-	 */
-	protected static final String convertPetsciiToAscii(final byte[] petscii, final int startOffset) {
-		StringBuilder result = new StringBuilder();
-		for (int idx = startOffset; idx < petscii.length; idx++) {
-			result.append(Petscii.petsciiToIso88591(petscii[idx]));
-		}
-		return result.toString();
-	}
-
-	public final int getSongSpeedArray() {
-		int speed = 0;
-		for (int i = 0; i < 32; ++i) {
-			if (songSpeed[i] != SidTune.Speed.VBI) {
-				speed |= 1 << i;
-			}
-		}
-		return speed;
-	}
-
-	/**
 	 * Gets the speed of the selected song.
 	 * 
 	 * @param selected
@@ -329,8 +298,25 @@ public abstract class SidTune {
 	 * 
 	 * @return The speed of the selected song.
 	 */
-	public final Speed getSongSpeed(int selected) {
-		return songSpeed[selected - 1];
+	public Speed getSongSpeed(int selected) {
+		return Speed.CIA_1A;
+	}
+
+	/**
+	 * Create 32-bit PSID-style speed word.
+	 * 
+	 * Each bit in 'speed' specifies the speed for the corresponding tune
+	 * number, i.e. bit 0 specifies the speed for tune 1. If there are more than
+	 * 32 tunes, the speed specified for tune 32 is also used for all higher
+	 * numbered tunes.
+	 * 
+	 * A 0 bit specifies vertical blank interrupt (50Hz PAL, 60Hz NTSC), and a 1
+	 * bit specifies CIA 1 timer interrupt (default 60Hz).
+	 * 
+	 * @return 32-bit PSID-style speed word (defaults to CIA 1 timer interrupt)
+	 */
+	public int getSongSpeedWord() {
+		return ~0;
 	}
 
 	/**
@@ -430,6 +416,6 @@ public abstract class SidTune {
 	protected abstract long getInitDelay();
 
 	public static long getInitDelay(SidTune tune) {
-		return tune != null ? tune.getInitDelay() : RESET_INIT_DELAY;
+		return tune != RESET ? tune.getInitDelay() : RESET_INIT_DELAY;
 	}
 }

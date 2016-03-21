@@ -855,7 +855,13 @@ public class MusicCollection extends Tab implements UIPart {
 			FavoritesSection section, File file) {
 		try {
 			SidTune tune = SidTune.load(file);
-			String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
+			
+			String collectionName;
+			if (getType() == MusicCollectionType.HVSC) {
+				collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
+			} else {
+				collectionName = PathUtils.getCollectionName(sidPlay2Section.getCgscFile(), file);
+			}
 			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
 					.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
 					collectionName, file, tune);
