@@ -82,8 +82,8 @@ class Prg extends SidTune {
 	}
 
 	@Override
-	public void save(final String filename, final boolean overwrite) throws IOException {
-		try (FileOutputStream out = new FileOutputStream(filename, !overwrite)) {
+	public void save(final String filename) throws IOException {
+		try (FileOutputStream out = new FileOutputStream(filename)) {
 			out.write(program);
 		}
 	}

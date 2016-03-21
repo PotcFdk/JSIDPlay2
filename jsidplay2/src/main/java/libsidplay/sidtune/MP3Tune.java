@@ -35,8 +35,7 @@ public class MP3Tune extends SidTune {
 	}
 
 	@Override
-	public void save(String destFileName, boolean overWriteFlag)
-			throws IOException {
+	public void save(String destFileName) throws IOException {
 		throw new RuntimeException("Saving of this format is not possible!");
 	}
 
@@ -53,8 +52,7 @@ public class MP3Tune extends SidTune {
 		return null;
 	}
 
-	public static final SidTune load(final File file) throws IOException,
-			SidTuneError {
+	public static final SidTune load(final File file) throws IOException, SidTuneError {
 		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			throw new SidTuneError("Bad file extension expected: .mp3");
 		}
@@ -66,8 +64,7 @@ public class MP3Tune extends SidTune {
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
 			mp3.decoder.read(randomAccessFile);
 			final String title = mp3.decoder.getTitle();
-			mp3.info.infoString.add(title != null ? title : PathUtils
-					.getFilenameWithoutSuffix(file.getName()));
+			mp3.info.infoString.add(title != null ? title : PathUtils.getFilenameWithoutSuffix(file.getName()));
 			String interpret = mp3.decoder.getInterpret();
 			String albumInterpret = mp3.decoder.getAlbumInterpret();
 			String genre = mp3.decoder.getGenre();
@@ -81,11 +78,9 @@ public class MP3Tune extends SidTune {
 			String album = mp3.decoder.getAlbum();
 			String year = mp3.decoder.getYear();
 			if (album != null && year != null) {
-				mp3.info.infoString.add(album + " (" + year + ")"
-						+ (genre != null ? " / " + genre : ""));
+				mp3.info.infoString.add(album + " (" + year + ")" + (genre != null ? " / " + genre : ""));
 			} else if (album != null) {
-				mp3.info.infoString.add(album
-						+ (genre != null ? " / " + genre : ""));
+				mp3.info.infoString.add(album + (genre != null ? " / " + genre : ""));
 			} else {
 				mp3.info.infoString.add("<?>");
 			}

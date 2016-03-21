@@ -53,8 +53,8 @@ class Mus extends PSid {
 	}
 
 	@Override
-	public void save(final String destFileName, final boolean overWriteFlag) throws IOException {
-		try (FileOutputStream fMyOut = new FileOutputStream(destFileName, !overWriteFlag)) {
+	public void save(final String destFileName) throws IOException {
+		try (FileOutputStream fMyOut = new FileOutputStream(destFileName)) {
 			fMyOut.write(program);
 		}
 	}

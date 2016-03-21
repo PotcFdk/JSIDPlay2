@@ -381,13 +381,9 @@ public abstract class SidTune {
 	/**
 	 * @param destFileName
 	 *            Destination for the file.
-	 * @param overWriteFlag
-	 *            true = Overwrite existing file, false = Default<BR>
-	 *            One could imagine an "Are you sure ?"-checkbox before
-	 *            overwriting any file.
 	 * @throws IOException
 	 */
-	public abstract void save(final String destFileName, final boolean overWriteFlag) throws IOException;
+	public abstract void save(final String destFileName) throws IOException;
 
 	/**
 	 * Identify the player ID of a tune
