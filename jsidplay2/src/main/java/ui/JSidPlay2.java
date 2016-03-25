@@ -220,8 +220,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 									|| Favorites.class.isAssignableFrom(selectedItem.getClass()));
 					if (sidTune == SidTune.RESET || (sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
 						video();
-						tabbedPane.getSelectionModel().select(tabbedPane.getTabs().stream()
-								.filter((tab) -> tab.getId().equals(Video.ID)).findFirst().get());
 					}
 				});
 			}
