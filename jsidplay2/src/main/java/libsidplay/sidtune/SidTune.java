@@ -335,7 +335,7 @@ public abstract class SidTune {
 	 * Get SID address of specified SID number
 	 * <OL>
 	 * <LI>0xd400 - always used for first SID
-	 * <LI>forced SID base - configured value for forced stereo output
+	 * <LI>forced SID base - configured value for forced stereo or 3-SID output
 	 * <LI>tune SID base - SID base detected by tune information
 	 * <LI>0 - SID is not used
 	 * </OL>
