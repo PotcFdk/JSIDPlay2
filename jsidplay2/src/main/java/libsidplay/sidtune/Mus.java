@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import libsidutils.PathUtils;
@@ -35,7 +36,7 @@ class Mus extends PSid {
 	protected static String MUSDRIVER2_ASM = "/libsidplay/sidtune/musdriver2.asm";
 
 	/** Known SID names. MUS loader scans for these. */
-	private static final String DEFAULT_MUS_NAMES[] = new String[] { ".mus", ".str", "_a.mus", "_b.mus" };
+	private static final List<String> DEFAULT_MUS_NAMES = Arrays.asList(".mus", ".str", "_a.mus", "_b.mus");
 
 	private static final String ERR_SIDTUNE_INVALID = "ERROR: File contains invalid data";
 
@@ -48,6 +49,7 @@ class Mus extends PSid {
 	private static final int STR_SID2_ADDR = 0xd500;
 
 	private final KickAssembler assembler = new KickAssembler();
+
 	/**
 	 * Needed for MUS/STR player installation.
 	 */
@@ -59,38 +61,29 @@ class Mus extends PSid {
 		return super.placeProgramInMemory(c64buf);
 	}
 
-	private static boolean detect(File musFile, final byte[] buffer, final int[] voice3Index) {
-		if (musFile != null) {
-			boolean correctExtension = false;
-			for (String ext : DEFAULT_MUS_NAMES) {
-				if (musFile.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)) {
-					correctExtension = true;
-					break;
-				}
-			}
-			if (!correctExtension) {
-				return false;
-			}
-		}
+	private int detect(File musFile, final byte[] buffer, final boolean isStereoTune) throws SidTuneError {
+		String suffix = PathUtils.getFilenameSuffix(musFile.getName().toLowerCase(Locale.ENGLISH));
+		if (!DEFAULT_MUS_NAMES.stream().anyMatch(ext -> suffix.endsWith(ext)))
+			throw new SidTuneError(isStereoTune ? SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
 		if (buffer == null || buffer.length < 8) {
-			return false;
+			throw new SidTuneError(isStereoTune ? SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
 		}
-
 		// Add length of voice 1 data.
-		final int voice1Index = 2 + 3 * 2 + ((buffer[2] & 0xff) + ((buffer[3] & 0xff) << 8));
+		final int voice1DataEnd = 2 + 3 * 2 + ((buffer[2] & 0xff) + ((buffer[3] & 0xff) << 8));
 		// Add length of voice 2 data.
-		final int voice2Index = voice1Index + ((buffer[4] & 0xff) + ((buffer[5] & 0xff) << 8));
+		final int voice2DataEnd = voice1DataEnd + ((buffer[4] & 0xff) + ((buffer[5] & 0xff) << 8));
 		// Add length of voice 3 data.
-		voice3Index[0] = voice2Index + ((buffer[6] & 0xff) + ((buffer[7] & 0xff) << 8));
+		final int voice3DataEnd = voice2DataEnd + ((buffer[6] & 0xff) + ((buffer[7] & 0xff) << 8));
 
-		/*
-		 * validate that voice3 is still inside the buffer and that each track
-		 * ends with HLT
-		 */
-		return voice3Index[0] - 1 < buffer.length
-				&& ((buffer[voice1Index - 1] & 0xff) + ((buffer[voice1Index - 2] & 0xff) << 8)) == MUS_HLT_CMD
-				&& ((buffer[voice2Index - 1] & 0xff) + ((buffer[voice2Index - 2] & 0xff) << 8)) == MUS_HLT_CMD
-				&& ((buffer[voice3Index[0] - 1] & 0xff) + ((buffer[voice3Index[0] - 2] & 0xff) << 8)) == MUS_HLT_CMD;
+		// validate that voice3 is still inside the buffer and that each track
+		// ends with HLT
+		if (!(voice3DataEnd - 1 < buffer.length
+				&& ((buffer[voice1DataEnd - 1] & 0xff) + ((buffer[voice1DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD
+				&& ((buffer[voice2DataEnd - 1] & 0xff) + ((buffer[voice2DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD
+				&& ((buffer[voice3DataEnd - 1] & 0xff) + ((buffer[voice3DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD)) {
+			throw new SidTuneError(isStereoTune ? SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
+		}
+		return voice3DataEnd;
 	}
 
 	/**
@@ -99,23 +92,14 @@ class Mus extends PSid {
 	 */
 	protected static SidTune load(final File musFile, final byte[] dataBuf) throws SidTuneError {
 		final Mus mus = new Mus();
-		mus.info.compatibility = Compatibility.PSIDv2;
 		mus.loadWithProvidedMetadata(musFile, dataBuf);
 		return mus;
 	}
 
 	private void loadWithProvidedMetadata(final File musFile, final byte[] musBuf) throws SidTuneError {
-		final int[] voice3Index = new int[1];
-		if (!detect(musFile, musBuf, voice3Index)) {
-			throw new SidTuneError(ERR_SIDTUNE_INVALID);
-		}
-
-		info.songs = info.startSong = 1;
+		int voice3DataEnd = detect(musFile, musBuf, false);
 
 		musDataLen = musBuf.length;
-		info.loadAddr = MUS_DATA_ADDR;
-
-		int afterMusData = voice3Index[0];
 
 		/*
 		 * FIXME: dealing with credits is problematic. The data is unstructured,
@@ -123,37 +107,27 @@ class Mus extends PSid {
 		 * is title, second is author, third is release, but that's actually not
 		 * very likely.
 		 */
-		if (afterMusData < musBuf.length - 1) {
-			String credit = Petscii.petsciiToIso88591(Arrays.copyOfRange(musBuf, afterMusData, musBuf.length - 1));
-			afterMusData += credit.length() + 1;
-			info.commentString.add(credit);
+		if (voice3DataEnd < musBuf.length - 1) {
+			info.commentString.add(getCredits(musBuf, voice3DataEnd));
+			voice3DataEnd += getCredits(musBuf, voice3DataEnd).length() + 1;
 		}
 
 		// load stereo tune as well, if available
 		byte[] strBuf = null;
-		File stereoFile = null;
-		if (musFile != null) {
-			stereoFile = getStereoTune(musFile);
-			if (stereoFile != null) {
-				try {
-					strBuf = getFileContents(stereoFile);
-				} catch (IOException e) {
-					// ignore missing stereo tune
-				}
+		File stereoFile = getStereoTune(musFile);
+		if (stereoFile != null) {
+			try {
+				strBuf = getFileContents(stereoFile);
+			} catch (IOException e) {
+				// ignore missing stereo tune
 			}
 		}
 
 		if (strBuf != null) {
-			if (!detect(stereoFile, strBuf, voice3Index)) {
-				throw new SidTuneError(SIDTUNE_2ND_INVALID);
-			}
+			voice3DataEnd = detect(musFile, musBuf, true);
 
-			afterMusData = voice3Index[0];
-
-			if (afterMusData < strBuf.length - 1) {
-				final String credit = Petscii
-						.petsciiToIso88591(Arrays.copyOfRange(strBuf, afterMusData, strBuf.length - 1));
-				info.commentString.add(credit);
+			if (voice3DataEnd < strBuf.length - 1) {
+				info.commentString.add(getCredits(strBuf, voice3DataEnd));
 			}
 
 			info.sidChipBase2 = STR_SID2_ADDR;
@@ -164,6 +138,9 @@ class Mus extends PSid {
 			info.playAddr = 0xec80;
 		}
 
+		info.loadAddr = MUS_DATA_ADDR;
+		info.songs = info.startSong = 1;
+		info.compatibility = Compatibility.PSIDv2;
 		info.infoString.add(PathUtils.getFilenameWithoutSuffix(musFile.getName()));
 		info.infoString.add("<?>");
 		info.infoString.add("<?>");
@@ -174,8 +151,12 @@ class Mus extends PSid {
 		if (strBuf != null) {
 			System.arraycopy(strBuf, 0, program, musBuf.length, strBuf.length);
 		}
-
 		findPlaceForDriver();
+	}
+
+	private String getCredits(byte[] musBuf, int voice3DataEnd) {
+		byte[] creditsBytes = Arrays.copyOfRange(musBuf, voice3DataEnd, musBuf.length - 1);
+		return Petscii.petsciiToIso88591(creditsBytes);
 	}
 
 	/**
@@ -187,18 +168,17 @@ class Mus extends PSid {
 	 * @return stereo file
 	 */
 	private static File getStereoTune(final File file) {
-		final String fileName = file.getName();
+		// Get all sibling files
 		final File[] siblings = file.getParentFile().listFiles((dir, name) -> {
-			for (String ext : DEFAULT_MUS_NAMES) {
-				if (name.toLowerCase(Locale.ENGLISH).endsWith(ext)) {
-					return true;
-				}
-			}
-			return false;
+			String suffix = PathUtils.getFilenameSuffix(name.toLowerCase(Locale.ENGLISH));
+			return DEFAULT_MUS_NAMES.stream().filter(ext -> suffix.endsWith(ext)).findFirst().isPresent();
 		});
+		// For each possible MUS/STR extension, check if there is ...
 		for (String extension : DEFAULT_MUS_NAMES) {
-			String test = fileName.replaceFirst("(_[aA]|_[bB])?\\.\\w+$", extension);
-			if (!fileName.equalsIgnoreCase(test)) {
+			String test = file.getName().replaceFirst("(_[aA]|_[bB])?\\.\\w+$", extension);
+			// ... a corresponding stereo file with a different extension
+			// (e.g. MUS/STR, _A.MUS, _B.MUS)
+			if (!file.getName().equalsIgnoreCase(test)) {
 				for (File sibling : siblings) {
 					if (sibling.getName().equalsIgnoreCase(test)) {
 						return sibling;
@@ -211,6 +191,7 @@ class Mus extends PSid {
 
 	private void installMusPlayers(final byte[] c64buf) {
 		{
+			// Assemble MUS player 1
 			HashMap<String, String> globals = new HashMap<String, String>();
 			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER1_ASM);
 			byte[] driver = assembler.assemble(MUSDRIVER1_ASM, asm, globals);
@@ -224,20 +205,23 @@ class Mus extends PSid {
 			}
 
 			// Install MUS player #1.
-			int dest = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
-			System.arraycopy(driver, 2, c64buf, dest, driver.length - 2);
+			int driverAddr = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
+			System.arraycopy(driver, 2, c64buf, driverAddr, driver.length - 2);
+			
 			// Point player #1 to data #1.
 			c64buf[data_low + 1] = MUS_DATA_ADDR + 2 & 0xFF;
 			c64buf[data_high + 1] = MUS_DATA_ADDR + 2 >> 8;
 		}
 		if (info.sidChipBase2 != 0) {
+			// Assemble MUS player 2
 			HashMap<String, String> globals = new HashMap<String, String>();
 			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER2_ASM);
 			byte[] driver = assembler.assemble(MUSDRIVER2_ASM, asm, globals);
 
 			// Install MUS player #2.
-			int dest = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
-			System.arraycopy(driver, 2, c64buf, dest, driver.length - 2);
+			int driverAddr = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
+			System.arraycopy(driver, 2, c64buf, driverAddr, driver.length - 2);
+
 			// Point player #2 to data #2.
 			Integer data_low = assembler.getLabels().get("data_low");
 			Integer data_high = assembler.getLabels().get("data_high");
