@@ -108,8 +108,9 @@ class Mus extends PSid {
 		 * very likely.
 		 */
 		if (voice3DataEnd < musBuf.length - 1) {
-			info.commentString.add(getCredits(musBuf, voice3DataEnd));
-			voice3DataEnd += getCredits(musBuf, voice3DataEnd).length() + 1;
+			String credits = getCredits(musBuf, voice3DataEnd);
+			info.commentString.add(credits);
+			voice3DataEnd += credits.length() + 1;
 		}
 
 		// load stereo tune as well, if available
@@ -207,7 +208,7 @@ class Mus extends PSid {
 			// Install MUS player #1.
 			int driverAddr = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
 			System.arraycopy(driver, 2, c64buf, driverAddr, driver.length - 2);
-			
+
 			// Point player #1 to data #1.
 			c64buf[data_low + 1] = MUS_DATA_ADDR + 2 & 0xFF;
 			c64buf[data_high + 1] = MUS_DATA_ADDR + 2 >> 8;
