@@ -578,7 +578,7 @@ class PSid extends Prg {
 				break;
 			}
 
-			// @FIXME@ Need better solution. Make it possible to override MUS
+			// FIXME Need better solution. Make it possible to override MUS
 			// strings
 			if (info.infoString.size() == 3) {
 				Iterator<String> descriptionIt = info.infoString.iterator();
@@ -588,14 +588,17 @@ class PSid extends Prg {
 				if (title.length() == 32 || author.length() == 32 || released.length() == 32) {
 					header.version = 3;
 				}
+				byte[] titleBytes = title.getBytes("ISO-8859-1");
 				for (int i = 0; i < title.length(); i++) {
-					header.name[i] = (byte) title.charAt(i); // ISO-8859-1
+					header.name[i] = titleBytes[i];
 				}
+				byte[] authorBytes = author.getBytes("ISO-8859-1");
 				for (int i = 0; i < author.length(); i++) {
-					header.author[i] = (byte) author.charAt(i); // ISO-8859-1
+					header.author[i] = authorBytes[i];
 				}
+				byte[] releasedBytes = released.getBytes("ISO-8859-1");
 				for (int i = 0; i < released.length(); i++) {
-					header.released[i] = (byte) released.charAt(i); // ISO-8859-1
+					header.released[i] = releasedBytes[i];
 				}
 			}
 

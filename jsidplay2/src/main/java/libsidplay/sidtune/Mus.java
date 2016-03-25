@@ -40,7 +40,7 @@ class Mus extends PSid {
 
 	private static final String ERR_SIDTUNE_INVALID = "ERROR: File contains invalid data";
 
-	private static final String SIDTUNE_2ND_INVALID = "ERROR: 2nd file contains invalid data";
+	private static final String ERR_SIDTUNE_2ND_INVALID = "ERROR: 2nd file contains invalid data";
 
 	private static final int MUS_HLT_CMD = 0x14F;
 
@@ -64,9 +64,9 @@ class Mus extends PSid {
 	private int detect(File musFile, final byte[] buffer, final boolean isStereoTune) throws SidTuneError {
 		String suffix = PathUtils.getFilenameSuffix(musFile.getName().toLowerCase(Locale.ENGLISH));
 		if (!DEFAULT_MUS_NAMES.stream().anyMatch(ext -> suffix.endsWith(ext)))
-			throw new SidTuneError(isStereoTune ? SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
+			throw new SidTuneError(isStereoTune ? ERR_SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
 		if (buffer == null || buffer.length < 8) {
-			throw new SidTuneError(isStereoTune ? SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
+			throw new SidTuneError(isStereoTune ? ERR_SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
 		}
 		// Add length of voice 1 data.
 		final int voice1DataEnd = 2 + 3 * 2 + ((buffer[2] & 0xff) + ((buffer[3] & 0xff) << 8));
@@ -81,7 +81,7 @@ class Mus extends PSid {
 				&& ((buffer[voice1DataEnd - 1] & 0xff) + ((buffer[voice1DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD
 				&& ((buffer[voice2DataEnd - 1] & 0xff) + ((buffer[voice2DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD
 				&& ((buffer[voice3DataEnd - 1] & 0xff) + ((buffer[voice3DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD)) {
-			throw new SidTuneError(isStereoTune ? SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
+			throw new SidTuneError(isStereoTune ? ERR_SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
 		}
 		return voice3DataEnd;
 	}
