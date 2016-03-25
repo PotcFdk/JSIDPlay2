@@ -412,6 +412,7 @@ public class Favorites extends Tab implements UIPart {
 		newTab.setFavorites(this);
 
 		favoritesList.getTabs().add(newTab);
+		favoritesList.getSelectionModel().select(newTab);
 	}
 
 	private void renameTab(FavoritesTab selectedTab, String name) {
