@@ -2025,7 +2025,7 @@ public class MOS6510 {
 
 			/*
 			 * missing an addressing mode or implementation makes opcode
-			 * invalid. Thse are normally called HLT instructions. In the
+			 * invalid. These are normally called HLT instructions. In the
 			 * hardware, the CPU state machine locks up and will never recover.
 			 */
 			if (!(legalMode && legalInstr)) {
