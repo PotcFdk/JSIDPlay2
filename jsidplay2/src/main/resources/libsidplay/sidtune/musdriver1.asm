@@ -1503,7 +1503,9 @@ loop137:
         stx $e15d
         sty $e15e
         jsr $e1cf
+data_low:
         ldx #$00
+data_high:
         ldy #$09
         jsr $e200
         lda #$07

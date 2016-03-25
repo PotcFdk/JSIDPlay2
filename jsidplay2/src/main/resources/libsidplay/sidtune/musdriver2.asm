@@ -1490,7 +1490,9 @@ loop163:
         stx $f15d
         sty $f15e
         jsr $f1cf
+data_low:
         ldx #$00
+data_high:
         ldy #$09
         jsr $f200
         lda #$07

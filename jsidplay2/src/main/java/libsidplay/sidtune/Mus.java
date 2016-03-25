@@ -239,13 +239,21 @@ class Mus extends PSid {
 			HashMap<String, String> globals = new HashMap<String, String>();
 			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER1_ASM);
 			byte[] driver = assembler.assemble(MUSDRIVER1_ASM, asm, globals);
+			Integer data_low = assembler.getLabels().get("data_low");
+			Integer data_high = assembler.getLabels().get("data_high");
+			if (data_low == null) {
+				throw new RuntimeException("Label data_low not found in " + MUSDRIVER1_ASM);
+			}
+			if (data_high == null) {
+				throw new RuntimeException("Label data_high not found in " + MUSDRIVER1_ASM);
+			}
 
 			// Install MUS player #1.
 			int dest = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
 			System.arraycopy(driver, 2, c64buf, dest, driver.length - 2);
 			// Point player #1 to data #1.
-			c64buf[dest + 0xc6e] = MUS_DATA_ADDR + 2 & 0xFF;
-			c64buf[dest + 0xc70] = MUS_DATA_ADDR + 2 >> 8;
+			c64buf[data_low+1] = MUS_DATA_ADDR + 2 & 0xFF;
+			c64buf[data_high+1] = MUS_DATA_ADDR + 2 >> 8;
 		}
 		if (info.sidChipBase2 != 0) {
 			HashMap<String, String> globals = new HashMap<String, String>();
@@ -256,8 +264,16 @@ class Mus extends PSid {
 			int dest = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
 			System.arraycopy(driver, 2, c64buf, dest, driver.length - 2);
 			// Point player #2 to data #2.
-			c64buf[dest + 0xc6e] = (byte) (MUS_DATA_ADDR + musDataLen + 2 & 0xFF);
-			c64buf[dest + 0xc70] = (byte) (MUS_DATA_ADDR + musDataLen + 2 >> 8);
+			Integer data_low = assembler.getLabels().get("data_low");
+			Integer data_high = assembler.getLabels().get("data_high");
+			if (data_low == null) {
+				throw new RuntimeException("Label data_low not found in " + MUSDRIVER2_ASM);
+			}
+			if (data_high == null) {
+				throw new RuntimeException("Label data_high not found in " + MUSDRIVER2_ASM);
+			}
+			c64buf[data_low+1] = (byte) (MUS_DATA_ADDR + musDataLen + 2 & 0xFF);
+			c64buf[data_high+1] = (byte) (MUS_DATA_ADDR + musDataLen + 2 >> 8);
 		}
 	}
 
