@@ -18,6 +18,7 @@
 package libsidplay.sidtune;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Locale;
 
 import libsidutils.PathUtils;
@@ -33,7 +34,7 @@ import libsidutils.Petscii;
  * removing characters stopping as soon as the filename becomes <= 8. The
  * removal of characters occurs in three passes, the first removes all '_', then
  * vowels and finally numerics. If the filename is still greater than 8 it is
- * truncated. struct X00Header
+ * truncated.
  * 
  * @author Ken Händel
  * 
@@ -70,8 +71,8 @@ class P00 extends Prg {
 
 		private byte name[] = new byte[NAME_LEN];
 
-		public Object getId() {
-			return new String(id, 0, 7);
+		public String getId() {
+			return new String(id, 0, 7, Charset.forName("ISO-8859-1"));
 		}
 	}
 
@@ -93,9 +94,7 @@ class P00 extends Prg {
 		p00.info.c64dataLen = dataBuf.length - p00.programOffset;
 		p00.info.loadAddr = (dataBuf[X00Header.SIZE] & 0xff)
 				| ((dataBuf[X00Header.SIZE + 1] & 0xff) << 8);
-
-		final String credit = Petscii.petsciiToIso88591(header.name);
-		p00.info.infoString.add(credit);
+		p00.info.infoString.add(Petscii.petsciiToIso88591(header.name));
 
 		return p00;
 	}
