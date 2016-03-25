@@ -55,18 +55,11 @@ class Mus extends PSid {
 
 	@Override
 	public int placeProgramInMemory(final byte[] c64buf) {
-		installPlayer(c64buf);
+		installMusPlayers(c64buf);
 		return super.placeProgramInMemory(c64buf);
 	}
 
-	@Override
-	public void save(final String destFileName) throws IOException {
-		try (FileOutputStream fMyOut = new FileOutputStream(destFileName)) {
-			fMyOut.write(program);
-		}
-	}
-
-	private static boolean detect(File musFile, final byte[] buffer, final int startIndex, final int[] voice3Index) {
+	private static boolean detect(File musFile, final byte[] buffer, final int[] voice3Index) {
 		if (musFile != null) {
 			boolean correctExtension = false;
 			for (String ext : DEFAULT_MUS_NAMES) {
@@ -79,17 +72,16 @@ class Mus extends PSid {
 				return false;
 			}
 		}
-		if (buffer == null || buffer.length < startIndex + 8) {
+		if (buffer == null || buffer.length < 8) {
 			return false;
 		}
 
 		// Add length of voice 1 data.
-		final int voice1Index = 2 + 3 * 2 + ((buffer[startIndex + 2] & 0xff) + ((buffer[startIndex + 3] & 0xff) << 8));
+		final int voice1Index = 2 + 3 * 2 + ((buffer[2] & 0xff) + ((buffer[3] & 0xff) << 8));
 		// Add length of voice 2 data.
-		final int voice2Index = voice1Index
-				+ ((buffer[startIndex + 4] & 0xff) + ((buffer[startIndex + 5] & 0xff) << 8));
+		final int voice2Index = voice1Index + ((buffer[4] & 0xff) + ((buffer[5] & 0xff) << 8));
 		// Add length of voice 3 data.
-		voice3Index[0] = voice2Index + ((buffer[startIndex + 6] & 0xff) + ((buffer[startIndex + 7] & 0xff) << 8));
+		voice3Index[0] = voice2Index + ((buffer[6] & 0xff) + ((buffer[7] & 0xff) << 8));
 
 		/*
 		 * validate that voice3 is still inside the buffer and that each track
@@ -99,17 +91,6 @@ class Mus extends PSid {
 				&& ((buffer[voice1Index - 1] & 0xff) + ((buffer[voice1Index - 2] & 0xff) << 8)) == MUS_HLT_CMD
 				&& ((buffer[voice2Index - 1] & 0xff) + ((buffer[voice2Index - 2] & 0xff) << 8)) == MUS_HLT_CMD
 				&& ((buffer[voice3Index[0] - 1] & 0xff) + ((buffer[voice3Index[0] - 2] & 0xff) << 8)) == MUS_HLT_CMD;
-	}
-
-	/**
-	 * Load MUS mono tune with provided meta-data contained in a PSID.
-	 */
-	protected static SidTune load(SidTuneInfo info, int programOffset, byte[] dataBuf) throws SidTuneError {
-		Mus mus = new Mus();
-		mus.info = info;
-		mus.programOffset = programOffset;
-		mus.loadWithProvidedMetadata(null, dataBuf);
-		return mus;
 	}
 
 	/**
@@ -125,7 +106,7 @@ class Mus extends PSid {
 
 	private void loadWithProvidedMetadata(final File musFile, final byte[] musBuf) throws SidTuneError {
 		final int[] voice3Index = new int[1];
-		if (!detect(musFile, musBuf, programOffset, voice3Index)) {
+		if (!detect(musFile, musBuf, voice3Index)) {
 			throw new SidTuneError(ERR_SIDTUNE_INVALID);
 		}
 
@@ -134,7 +115,7 @@ class Mus extends PSid {
 		musDataLen = musBuf.length;
 		info.loadAddr = MUS_DATA_ADDR;
 
-		int infoStringLocation = voice3Index[0];
+		int afterMusData = voice3Index[0];
 
 		/*
 		 * FIXME: dealing with credits is problematic. The data is unstructured,
@@ -142,13 +123,13 @@ class Mus extends PSid {
 		 * is title, second is author, third is release, but that's actually not
 		 * very likely.
 		 */
-		{
-			final String credit = Petscii
-					.petsciiToIso88591(Arrays.copyOfRange(musBuf, infoStringLocation, musBuf.length));
-			infoStringLocation += credit.length() + 1;
+		if (afterMusData < musBuf.length - 1) {
+			String credit = Petscii.petsciiToIso88591(Arrays.copyOfRange(musBuf, afterMusData, musBuf.length - 1));
+			afterMusData += credit.length() + 1;
 			info.commentString.add(credit);
 		}
 
+		// load stereo tune as well, if available
 		byte[] strBuf = null;
 		File stereoFile = null;
 		if (musFile != null) {
@@ -162,23 +143,16 @@ class Mus extends PSid {
 			}
 		}
 
-		// If we appear to have additional data at the end, check is it's
-		// another mus file (but only if a second file isn't supplied)
-		if (strBuf == null && infoStringLocation < musBuf.length) {
-			strBuf = Arrays.copyOfRange(musBuf, infoStringLocation, musBuf.length);
-		}
-
 		if (strBuf != null) {
-			if (!detect(stereoFile, strBuf, 0, voice3Index)) {
+			if (!detect(stereoFile, strBuf, voice3Index)) {
 				throw new SidTuneError(SIDTUNE_2ND_INVALID);
 			}
 
-			infoStringLocation = voice3Index[0];
+			afterMusData = voice3Index[0];
 
-			{
+			if (afterMusData < strBuf.length - 1) {
 				final String credit = Petscii
-						.petsciiToIso88591(Arrays.copyOfRange(strBuf, infoStringLocation, strBuf.length));
-				infoStringLocation += credit.length() + 1;
+						.petsciiToIso88591(Arrays.copyOfRange(strBuf, afterMusData, strBuf.length - 1));
 				info.commentString.add(credit);
 			}
 
@@ -195,7 +169,7 @@ class Mus extends PSid {
 		info.infoString.add("<?>");
 
 		program = new byte[musBuf.length + (strBuf != null ? strBuf.length : 0)];
-		info.c64dataLen = program.length - programOffset;
+		info.c64dataLen = program.length;
 		System.arraycopy(musBuf, 0, program, 0, musBuf.length);
 		if (strBuf != null) {
 			System.arraycopy(strBuf, 0, program, musBuf.length, strBuf.length);
@@ -235,7 +209,7 @@ class Mus extends PSid {
 		return null;
 	}
 
-	private void installPlayer(final byte[] c64buf) {
+	private void installMusPlayers(final byte[] c64buf) {
 		{
 			HashMap<String, String> globals = new HashMap<String, String>();
 			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER1_ASM);
@@ -253,8 +227,8 @@ class Mus extends PSid {
 			int dest = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
 			System.arraycopy(driver, 2, c64buf, dest, driver.length - 2);
 			// Point player #1 to data #1.
-			c64buf[data_low+1] = MUS_DATA_ADDR + 2 & 0xFF;
-			c64buf[data_high+1] = MUS_DATA_ADDR + 2 >> 8;
+			c64buf[data_low + 1] = MUS_DATA_ADDR + 2 & 0xFF;
+			c64buf[data_high + 1] = MUS_DATA_ADDR + 2 >> 8;
 		}
 		if (info.sidChipBase2 != 0) {
 			HashMap<String, String> globals = new HashMap<String, String>();
@@ -273,14 +247,21 @@ class Mus extends PSid {
 			if (data_high == null) {
 				throw new RuntimeException("Label data_high not found in " + MUSDRIVER2_ASM);
 			}
-			c64buf[data_low+1] = (byte) (MUS_DATA_ADDR + musDataLen + 2 & 0xFF);
-			c64buf[data_high+1] = (byte) (MUS_DATA_ADDR + musDataLen + 2 >> 8);
+			c64buf[data_low + 1] = (byte) (MUS_DATA_ADDR + musDataLen + 2 & 0xFF);
+			c64buf[data_high + 1] = (byte) (MUS_DATA_ADDR + musDataLen + 2 >> 8);
 		}
 	}
 
 	@Override
 	public String getMD5Digest() {
 		return null;
+	}
+
+	@Override
+	public void save(final String destFileName) throws IOException {
+		try (FileOutputStream fMyOut = new FileOutputStream(destFileName)) {
+			fMyOut.write(program);
+		}
 	}
 
 }

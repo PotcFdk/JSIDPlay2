@@ -375,6 +375,9 @@ class PSid extends Prg {
 			throw new SidTuneError(String.format("Header too short: %d, expected (%d)", dataBuf.length, PHeader.SIZE));
 		}
 		final PHeader header = new PHeader(dataBuf);
+		if ((header.flags & PSID_MUS) != 0) {
+			throw new SidTuneError("MUS-specific PSIDs are not supported by this player");
+		}
 
 		final PSid psid = new PSid();
 		psid.program = dataBuf;
@@ -493,20 +496,6 @@ class PSid extends Prg {
 		psid.info.infoString.add(header.getString(header.name));
 		psid.info.infoString.add(header.getString(header.author));
 		psid.info.infoString.add(header.getString(header.released));
-
-		if ((header.flags & PSID_MUS) != 0) {
-			// Check setting compatibility for MUS playback
-			if (psid.info.compatibility != Compatibility.PSIDv2 || psid.info.relocStartPage != 0
-					|| psid.info.relocPages != 0) {
-				throw new SidTuneError("Incompatibility for MUS playback");
-			}
-			for (int i = 0; i < psid.info.songs; i++) {
-				if (psid.songSpeed[i] != Speed.CIA_1A) {
-					throw new SidTuneError("Incompatible song speed VBI for MUS playback");
-				}
-			}
-			return Mus.load(psid.info, psid.programOffset, dataBuf);
-		}
 
 		psid.resolveAddrs();
 		psid.findPlaceForDriver();
