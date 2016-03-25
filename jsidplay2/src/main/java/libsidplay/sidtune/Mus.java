@@ -125,7 +125,7 @@ class Mus extends PSid {
 		}
 
 		if (strBuf != null) {
-			voice3DataEnd = detect(musFile, musBuf, true);
+			voice3DataEnd = detect(stereoFile, strBuf, true);
 
 			if (voice3DataEnd < strBuf.length - 1) {
 				info.commentString.add(getCredits(strBuf, voice3DataEnd));
