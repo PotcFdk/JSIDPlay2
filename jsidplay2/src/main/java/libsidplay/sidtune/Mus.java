@@ -72,6 +72,7 @@ class Mus extends PSid {
 			for (String ext : DEFAULT_MUS_NAMES) {
 				if (musFile.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)) {
 					correctExtension = true;
+					break;
 				}
 			}
 			if (!correctExtension) {
