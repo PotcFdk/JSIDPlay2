@@ -107,7 +107,7 @@ class Mus extends PSid {
 		 * is title, second is author, third is release, but that's actually not
 		 * very likely.
 		 */
-		if (voice3DataEnd < musBuf.length - 1) {
+		if (voice3DataEnd < musBuf.length) {
 			String credits = getCredits(musBuf, voice3DataEnd);
 			info.commentString.add(credits);
 			voice3DataEnd += credits.length() + 1;
@@ -127,7 +127,7 @@ class Mus extends PSid {
 		if (strBuf != null) {
 			voice3DataEnd = detect(stereoFile, strBuf, true);
 
-			if (voice3DataEnd < strBuf.length - 1) {
+			if (voice3DataEnd < strBuf.length) {
 				info.commentString.add(getCredits(strBuf, voice3DataEnd));
 			}
 
