@@ -187,7 +187,8 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 			};
 			HVSCEntry hvscEntry = new HVSCEntry(lengthFnct, "", tuneFile, tune);
 
-			STILEntry stilEntry = db.getPath(tune) != null ? stil.getSTILEntry(db.getPath(tune)) : null;
+			String path = db.getPath(tune);
+			STILEntry stilEntry = path.length() > 0 ? stil.getSTILEntry(path) : null;
 			if (stilEntry != null) {
 				hvscEntry.setStilGlbComment(stilEntry.globalComment);
 				StringBuffer stilText = formatStilText(stilEntry);
