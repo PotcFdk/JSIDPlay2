@@ -61,12 +61,12 @@ class Mus extends PSid {
 		return super.placeProgramInMemory(c64buf);
 	}
 
-	private int detect(File musFile, final byte[] buffer, final boolean isStereoTune) throws SidTuneError {
+	private int detect(File musFile, final byte[] buffer, final String errorMessage) throws SidTuneError {
 		String suffix = PathUtils.getFilenameSuffix(musFile.getName().toLowerCase(Locale.ENGLISH));
 		if (!DEFAULT_MUS_NAMES.stream().anyMatch(ext -> suffix.endsWith(ext)))
-			throw new SidTuneError(isStereoTune ? ERR_SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
+			throw new SidTuneError(errorMessage);
 		if (buffer == null || buffer.length < 8) {
-			throw new SidTuneError(isStereoTune ? ERR_SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
+			throw new SidTuneError(errorMessage);
 		}
 		// Add length of voice 1 data.
 		final int voice1DataEnd = 2 + 3 * 2 + ((buffer[2] & 0xff) + ((buffer[3] & 0xff) << 8));
@@ -81,7 +81,7 @@ class Mus extends PSid {
 				&& ((buffer[voice1DataEnd - 1] & 0xff) + ((buffer[voice1DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD
 				&& ((buffer[voice2DataEnd - 1] & 0xff) + ((buffer[voice2DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD
 				&& ((buffer[voice3DataEnd - 1] & 0xff) + ((buffer[voice3DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD)) {
-			throw new SidTuneError(isStereoTune ? ERR_SIDTUNE_2ND_INVALID : ERR_SIDTUNE_INVALID);
+			throw new SidTuneError(errorMessage);
 		}
 		return voice3DataEnd;
 	}
@@ -97,7 +97,7 @@ class Mus extends PSid {
 	}
 
 	private void loadWithProvidedMetadata(final File musFile, final byte[] musBuf) throws SidTuneError {
-		int voice3DataEnd = detect(musFile, musBuf, false);
+		int voice3DataEnd = detect(musFile, musBuf, ERR_SIDTUNE_INVALID);
 
 		musDataLen = musBuf.length;
 
@@ -125,7 +125,7 @@ class Mus extends PSid {
 		}
 
 		if (strBuf != null) {
-			voice3DataEnd = detect(stereoFile, strBuf, true);
+			voice3DataEnd = detect(stereoFile, strBuf, ERR_SIDTUNE_2ND_INVALID);
 
 			if (voice3DataEnd < strBuf.length) {
 				info.commentString.add(getCredits(strBuf, voice3DataEnd));
@@ -200,7 +200,7 @@ class Mus extends PSid {
 			init = assembler.getLabels().get("init");
 			start = assembler.getLabels().get("start");
 			checkLabels(MUSDRIVER1_ASM, data_low, data_high, init, start);
-			installMusPlayer(c64buf, MUS_DATA_ADDR + 2, driver, data_low, data_high);
+			installMusPlayer(c64buf, MUS_DATA_ADDR, driver, data_low, data_high);
 		}
 		if (info.sidChipBase2 != 0) {
 			// Assemble MUS player 2
@@ -213,7 +213,7 @@ class Mus extends PSid {
 			init = assembler.getLabels().get("init");
 			start = assembler.getLabels().get("start");
 			checkLabels(MUSDRIVER2_ASM, data_low, data_high, init, start);
-			installMusPlayer(c64buf, MUS_DATA_ADDR + 2 + musDataLen, driver, data_low, data_high);
+			installMusPlayer(c64buf, MUS_DATA_ADDR + musDataLen, driver, data_low, data_high);
 
 			info.initAddr = init;
 			info.playAddr = start;
@@ -246,8 +246,8 @@ class Mus extends PSid {
 		System.arraycopy(driver, 2, c64buf, driverAddr, driver.length - 2);
 
 		// Point MUS player to data.
-		c64buf[data_low + 1] = (byte) (musDataAddr & 0xFF);
-		c64buf[data_high + 1] = (byte) (musDataAddr >> 8);
+		c64buf[data_low + 1] = (byte) (2 + musDataAddr & 0xFF);
+		c64buf[data_high + 1] = (byte) (2 + musDataAddr >> 8);
 
 	}
 
