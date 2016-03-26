@@ -397,7 +397,10 @@ public class Favorites extends Tab implements UIPart {
 		if (!util.getConfig().getSidplay2Section().isLoop()) {
 			if (pt == PlaybackType.RANDOM_HVSC) {
 				// random HVSC
-				currentlyPlayedFavorites = null;
+				if (currentlyPlayedFavorites != null) {
+					currentlyPlayedFavorites.deselectCurrentlyPlayedHVSCEntry();
+					currentlyPlayedFavorites = null;
+				}
 				playNextRandom();
 			} else if (pt == PlaybackType.RANDOM_ALL) {
 				// random all favorites tabs

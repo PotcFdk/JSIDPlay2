@@ -109,6 +109,9 @@ public class MusicCollection extends Tab implements UIPart {
 	private static final String HVSC_URL = "http://www.hvsc.de/";
 	private static final String CGSC_URL = "http://www.c64music.co.uk/";
 
+	private static final String HVSC_DS = PersistenceProperties.HVSC_DS;
+	private static final String CGSC_DS = PersistenceProperties.CGSC_DS;
+	
 	@FXML
 	private CheckBox autoConfiguration;
 	@FXML
@@ -128,15 +131,13 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private TextField collectionDir;
 	@FXML
-	private TypeTextField stringTextField, integerTextField, longTextField,
-			shortTextField;
+	private TypeTextField stringTextField, integerTextField, longTextField, shortTextField;
 	@FXML
 	private ComboBox<Enum<?>> combo;
 	@FXML
 	private ContextMenu contextMenu;
 	@FXML
-	private MenuItem showStil, convertToPSID64, soasc6581R2, soasc6581R4,
-			soasc8580R5;
+	private MenuItem showStil, convertToPSID64, soasc6581R2, soasc6581R4, soasc8580R5;
 	@FXML
 	private Menu addToFavoritesMenu;
 
@@ -150,7 +151,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private ObservableList<Enum<?>> comboItems;
 	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems;
 
-	private String collectionURL;
+	private String collectionURL, collectionDS;
 
 	private EntityManager em;
 	private VersionService versionService;
@@ -164,25 +165,20 @@ public class MusicCollection extends Tab implements UIPart {
 
 	private FavoritesSection favoritesToAddSearchResult;
 
-	private ChangeListener<? super State> tuneMatcherListener = (observable,
-			oldValue, newValue) -> {
-		if (newValue == State.START
-				&& util.getPlayer().getTune() != SidTune.RESET) {
+	private ChangeListener<? super State> tuneMatcherListener = (observable, oldValue, newValue) -> {
+		if (newValue == State.START && util.getPlayer().getTune() != SidTune.RESET) {
 			Platform.runLater(() -> {
 				if (fileBrowser.getRoot() != null) {
 					// auto-expand current selected tune
 					SidTune tune = util.getPlayer().getTune();
-					String collectionName = util.getPlayer()
-							.getSidDatabaseInfo(db -> db.getPath(tune), "");
-					showNextHit(new TFile(fileBrowser.getRoot().getValue(),
-							collectionName));
+					String collectionName = util.getPlayer().getSidDatabaseInfo(db -> db.getPath(tune), "");
+					showNextHit(new TFile(fileBrowser.getRoot().getValue(), collectionName));
 				}
 			});
 		}
 	};
 
-	private ChangeListener<? super TreeItem<File>> tuneInfoListener = (
-			observable, oldValue, newValue) -> {
+	private ChangeListener<? super TreeItem<File>> tuneInfoListener = (observable, oldValue, newValue) -> {
 		if (newValue != null && newValue.getValue().isFile()) {
 			File tuneFile = newValue.getValue();
 			try {
@@ -191,8 +187,7 @@ public class MusicCollection extends Tab implements UIPart {
 					enableSOASC(sidTune.getInfo(), tuneFile);
 					showPhoto(sidTune.getInfo());
 				}
-				showTuneInfos(tuneFile, sidTune,
-						(MusicCollectionTreeItem) newValue);
+				showTuneInfos(tuneFile, sidTune, (MusicCollectionTreeItem) newValue);
 			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();
 			}
@@ -200,21 +195,17 @@ public class MusicCollection extends Tab implements UIPart {
 	};
 
 	private EventHandler<WindowEvent> contextMenuEvent = event -> {
-		final TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-				.getSelectedItem();
-		showStil.setDisable(selectedItem == null
-				|| !((MusicCollectionTreeItem) selectedItem).hasSTIL());
+		final TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
+		showStil.setDisable(selectedItem == null || !((MusicCollectionTreeItem) selectedItem).hasSTIL());
 		convertToPSID64.setDisable(selectedItem == null);
 
-		SidPlay2Section sidplay2Section = (SidPlay2Section) util.getPlayer()
-				.getConfig().getSidplay2Section();
+		SidPlay2Section sidplay2Section = (SidPlay2Section) util.getPlayer().getConfig().getSidplay2Section();
 		List<FavoritesSection> favorites = util.getConfig().getFavorites();
 		addToFavoritesMenu.getItems().clear();
 		for (final FavoritesSection section : favorites) {
 			MenuItem item = new MenuItem(section.getName());
 			item.setOnAction(event2 -> {
-				addFavorites(sidplay2Section, section,
-						Collections.singletonList(selectedItem.getValue()));
+				addFavorites(sidplay2Section, section, Collections.singletonList(selectedItem.getValue()));
 			});
 			addToFavoritesMenu.getItems().add(item);
 		}
@@ -235,11 +226,13 @@ public class MusicCollection extends Tab implements UIPart {
 		case HVSC:
 			setId(HVSC_ID);
 			collectionURL = HVSC_URL;
+			collectionDS = HVSC_DS;
 			break;
 
 		case CGSC:
 			setId(CGSC_ID);
 			collectionURL = CGSC_URL;
+			collectionDS = CGSC_DS;
 			break;
 
 		default:
@@ -255,36 +248,28 @@ public class MusicCollection extends Tab implements UIPart {
 		tuneInfos = FXCollections.<TuneInfo> observableArrayList();
 		tuneInfoTable.setItems(tuneInfos);
 
-		searchScope
-				.setConverter(new EnumToString<SearchScope>(util.getBundle()));
-		searchScope.setItems(FXCollections
-				.<SearchScope> observableArrayList(SearchScope.values()));
+		searchScope.setConverter(new EnumToString<SearchScope>(util.getBundle()));
+		searchScope.setItems(FXCollections.<SearchScope> observableArrayList(SearchScope.values()));
 		searchScope.getSelectionModel().select(SearchScope.FORWARD);
 
-		searchResult.setConverter(new EnumToString<SearchResult>(util
-				.getBundle()));
-		searchResult.setItems(FXCollections
-				.<SearchResult> observableArrayList(SearchResult.values()));
+		searchResult.setConverter(new EnumToString<SearchResult>(util.getBundle()));
+		searchResult.setItems(FXCollections.<SearchResult> observableArrayList(SearchResult.values()));
 		searchResult.getSelectionModel().select(SearchResult.SHOW_NEXT_MATCH);
 
-		searchCriteria
-				.setConverter(new SearchCriteriaToString(util.getBundle()));
-		searchCriteria.setItems(FXCollections
-				.<SearchCriteria<?, ?>> observableArrayList(SearchCriteria
-						.getSearchableAttributes()));
+		searchCriteria.setConverter(new SearchCriteriaToString(util.getBundle()));
+		searchCriteria.setItems(
+				FXCollections.<SearchCriteria<?, ?>> observableArrayList(SearchCriteria.getSearchableAttributes()));
 		searchCriteria.getSelectionModel().select(0);
 
 		comboItems = FXCollections.<Enum<?>> observableArrayList();
 		combo.setItems(comboItems);
 
-		currentlyPlayedTreeItems = FXCollections
-				.<TreeItem<File>> observableArrayList();
+		currentlyPlayedTreeItems = FXCollections.<TreeItem<File>> observableArrayList();
 
 		contextMenu.setOnShown(contextMenuEvent);
 
 		fileBrowser.setCellFactory(treeView -> new FileTreeCell());
-		fileBrowser.getSelectionModel().selectedItemProperty()
-				.addListener(tuneInfoListener);
+		fileBrowser.getSelectionModel().selectedItemProperty().addListener(tuneInfoListener);
 		fileBrowser.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				playSelected();
@@ -303,22 +288,20 @@ public class MusicCollection extends Tab implements UIPart {
 				String initialRoot;
 				switch (getType()) {
 				case HVSC:
-					initialRoot = util.getConfig().getSidplay2Section()
-							.getHvsc();
+					initialRoot = util.getConfig().getSidplay2Section().getHvsc();
 					break;
 
 				case CGSC:
-					initialRoot = util.getConfig().getSidplay2Section()
-							.getCgsc();
+					initialRoot = util.getConfig().getSidplay2Section().getCgsc();
 					break;
 
 				default:
-					throw new RuntimeException(
-							"Illegal music collection type: " + type);
+					throw new RuntimeException("Illegal music collection type: " + type);
 				}
 				if (initialRoot != null) {
 					setRoot(new File(initialRoot));
 				}
+				tuneMatcherListener.changed(null, null, State.START);
 			});
 		});
 	}
@@ -332,8 +315,8 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void showSTIL() {
-		MusicCollectionTreeItem selectedItem = (MusicCollectionTreeItem) fileBrowser
-				.getSelectionModel().getSelectedItem();
+		MusicCollectionTreeItem selectedItem = (MusicCollectionTreeItem) fileBrowser.getSelectionModel()
+				.getSelectedItem();
 		if (selectedItem != null && selectedItem.hasSTIL()) {
 			STILView stilInfo = new STILView(util.getPlayer());
 			stilInfo.setEntry(selectedItem.getStilEntry());
@@ -343,24 +326,18 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void convertToPSID64() {
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) (util.getConfig()
-				.getSidplay2Section());
-		TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-				.getSelectedItem();
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) (util.getConfig().getSidplay2Section());
+		TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
 		DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog
-				.setInitialDirectory(sidPlay2Section.getLastDirectoryFolder());
-		final File directory = fileDialog.showDialog(fileBrowser.getScene()
-				.getWindow());
+		fileDialog.setInitialDirectory(sidPlay2Section.getLastDirectoryFolder());
+		final File directory = fileDialog.showDialog(fileBrowser.getScene().getWindow());
 		if (directory != null) {
-			util.getConfig().getSidplay2Section()
-					.setLastDirectory(directory.getAbsolutePath());
+			util.getConfig().getSidplay2Section().setLastDirectory(directory.getAbsolutePath());
 			Psid64 c = new Psid64();
 			c.setTmpDir(util.getConfig().getSidplay2Section().getTmpDir());
 			c.setVerbose(true);
 			try {
-				c.convertFiles(util.getPlayer(),
-						new File[] { selectedItem.getValue() }, directory,
+				c.convertFiles(util.getPlayer(), new File[] { selectedItem.getValue() }, directory,
 						sidPlay2Section.getHvscFile());
 			} catch (IOException | SidTuneError e) {
 				e.printStackTrace();
@@ -404,9 +381,8 @@ public class MusicCollection extends Tab implements UIPart {
 		if (autoConfiguration.isSelected()) {
 			autoConfiguration.setDisable(true);
 			try {
-				DownloadThread downloadThread = new DownloadThread(
-						util.getConfig(), new ProgressListener(util,
-								fileBrowser) {
+				DownloadThread downloadThread = new DownloadThread(util.getConfig(),
+						new ProgressListener(util, fileBrowser) {
 
 							@Override
 							public void downloaded(final File downloadedFile) {
@@ -429,8 +405,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void searchCategory() {
 		if (searchCriteria.getSelectionModel().getSelectedItem() != recentlySearchedCriteria) {
 			searchOptionsChanged = true;
-			recentlySearchedCriteria = searchCriteria.getSelectionModel()
-					.getSelectedItem();
+			recentlySearchedCriteria = searchCriteria.getSelectionModel().getSelectedItem();
 		}
 		setSearchEditorVisible();
 	}
@@ -455,11 +430,8 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private void doCreateSearchIndex() {
 		YesNoDialog dialog = new YesNoDialog(util.getPlayer());
-		dialog.getStage().setTitle(
-				util.getBundle().getString("CREATE_SEARCH_DATABASE"));
-		dialog.setText(String.format(
-				util.getBundle().getString("RECREATE_DATABASE"), type.get()
-						.toString()));
+		dialog.getStage().setTitle(util.getBundle().getString("CREATE_SEARCH_DATABASE"));
+		dialog.setText(String.format(util.getBundle().getString("RECREATE_DATABASE"), type.get().toString()));
 		dialog.getConfirmed().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
 				startSearch(true);
@@ -471,13 +443,11 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private void doBrowse() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2Section())).getLastDirectoryFolder());
-		File directory = fileDialog.showDialog(autoConfiguration.getScene()
-				.getWindow());
+		fileDialog.setInitialDirectory(
+				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		File directory = fileDialog.showDialog(autoConfiguration.getScene().getWindow());
 		if (directory != null) {
-			util.getConfig().getSidplay2Section()
-					.setLastDirectory(directory.getAbsolutePath());
+			util.getConfig().getSidplay2Section().setLastDirectory(directory.getAbsolutePath());
 			setRoot(directory);
 		}
 	}
@@ -490,8 +460,7 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private void doSetValue() {
 		setSearchValue();
-		if (searchForValue != null
-				&& !searchForValue.equals(recentlySearchedForValue)) {
+		if (searchForValue != null && !searchForValue.equals(recentlySearchedForValue)) {
 			searchOptionsChanged = true;
 			recentlySearchedForValue = searchForValue;
 		}
@@ -499,12 +468,10 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void setSearchEditorVisible() {
-		for (Node node : Arrays.asList(stringTextField, integerTextField,
-				longTextField, shortTextField, combo)) {
+		for (Node node : Arrays.asList(stringTextField, integerTextField, longTextField, shortTextField, combo)) {
 			node.setVisible(false);
 		}
-		SearchCriteria<?, ?> selectedItem = searchCriteria.getSelectionModel()
-				.getSelectedItem();
+		SearchCriteria<?, ?> selectedItem = searchCriteria.getSelectionModel().getSelectedItem();
 		Class<?> type = selectedItem.getAttribute().getJavaType();
 		if (type == Long.class) {
 			longTextField.setVisible(true);
@@ -527,8 +494,7 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void setSearchValue() {
-		SearchCriteria<?, ?> selectedItem = searchCriteria.getSelectionModel()
-				.getSelectedItem();
+		SearchCriteria<?, ?> selectedItem = searchCriteria.getSelectionModel().getSelectedItem();
 		Class<?> type = selectedItem.getAttribute().getJavaType();
 		if (type == Integer.class) {
 			searchForValue = integerTextField.getValue();
@@ -552,32 +518,26 @@ public class MusicCollection extends Tab implements UIPart {
 			if (em != null) {
 				em.getEntityManagerFactory().close();
 			}
-			em = Persistence.createEntityManagerFactory(
-					PersistenceProperties.COLLECTION_DS,
-					new PersistenceProperties(new File(
-							rootFile.getParentFile(), type.get().toString())
-							.getAbsolutePath(), Database.HSQL_FILE))
+			em = Persistence.createEntityManagerFactory(collectionDS,
+					new PersistenceProperties(
+							new File(rootFile.getParentFile(), type.get().toString()).getAbsolutePath(),
+							Database.HSQL_FILE))
 					.createEntityManager();
 
 			versionService = new VersionService(em);
 			collectionDir.setText(rootFile.getAbsolutePath());
 
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2Section();
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
 			if (getType() == MusicCollectionType.HVSC) {
-				util.getConfig().getSidplay2Section()
-						.setHvsc(rootFile.getAbsolutePath());
+				util.getConfig().getSidplay2Section().setHvsc(rootFile.getAbsolutePath());
 				File theRootFile = sidPlay2Section.getHvscFile();
 				setSongLengthDatabase(sidPlay2Section.getHvsc());
 				setSTIL(sidPlay2Section.getHvsc());
-				fileBrowser.setRoot(new MusicCollectionTreeItem(util
-						.getPlayer(), theRootFile));
+				fileBrowser.setRoot(new MusicCollectionTreeItem(util.getPlayer(), theRootFile));
 			} else if (getType() == MusicCollectionType.CGSC) {
-				util.getConfig().getSidplay2Section()
-						.setCgsc(rootFile.getAbsolutePath());
+				util.getConfig().getSidplay2Section().setCgsc(rootFile.getAbsolutePath());
 				File theRootFile = sidPlay2Section.getCgscFile();
-				fileBrowser.setRoot(new MusicCollectionTreeItem(util
-						.getPlayer(), theRootFile));
+				fileBrowser.setRoot(new MusicCollectionTreeItem(util.getPlayer(), theRootFile));
 			}
 			MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
 			cellFactory.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItems);
@@ -587,8 +547,7 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void setSTIL(String hvscRoot) {
-		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
-				STIL.STIL_FILE))) {
+		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot, STIL.STIL_FILE))) {
 			util.getPlayer().setSTIL(new STIL(input));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -596,8 +555,7 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void setSongLengthDatabase(String hvscRoot) {
-		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot,
-				SidDatabase.SONGLENGTHS_FILE))) {
+		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot, SidDatabase.SONGLENGTHS_FILE))) {
 			util.getPlayer().setSidDatabase(new SidDatabase(input));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -625,13 +583,12 @@ public class MusicCollection extends Tab implements UIPart {
 		Consumer<File> searchHit;
 		Consumer<Boolean> searchStop;
 		if (forceRecreate) {
-			SearchIndexCreator searchIndexCreator = new SearchIndexCreator(
-					fileBrowser.getRoot().getValue(), util.getPlayer(), em);
+			SearchIndexCreator searchIndexCreator = new SearchIndexCreator(fileBrowser.getRoot().getValue(),
+					util.getPlayer(), em);
 			searchStart = x -> {
 				Platform.runLater(() -> {
 					disableSearch();
-					util.progressProperty(fileBrowser).set(
-							ProgressBar.INDETERMINATE_PROGRESS);
+					util.progressProperty(fileBrowser).set(ProgressBar.INDETERMINATE_PROGRESS);
 				});
 				searchIndexCreator.getSearchStart().accept(x);
 			};
@@ -644,12 +601,11 @@ public class MusicCollection extends Tab implements UIPart {
 				searchIndexCreator.getSearchStop().accept(cancelled);
 			};
 
-			searchThread = new SearchIndexerThread(fileBrowser.getRoot()
-					.getValue(), searchStart, searchHit, searchStop);
+			searchThread = new SearchIndexerThread(fileBrowser.getRoot().getValue(), searchStart, searchHit,
+					searchStop);
 			searchThread.start();
 		} else {
-			SidPlay2Section sidplay2Section = (SidPlay2Section) util
-					.getPlayer().getConfig().getSidplay2Section();
+			SidPlay2Section sidplay2Section = (SidPlay2Section) util.getPlayer().getConfig().getSidplay2Section();
 
 			switch (searchResult.getSelectionModel().getSelectedItem()) {
 			case ADD_TO_A_NEW_PLAYLIST:
@@ -659,10 +615,8 @@ public class MusicCollection extends Tab implements UIPart {
 						createNewFavoritesTab();
 					});
 				};
-				searchHit = file -> addFavorite(sidplay2Section,
-						favoritesToAddSearchResult, file);
-				searchStop = cancelled -> Platform
-						.runLater(() -> enableSearch());
+				searchHit = file -> addFavorite(sidplay2Section, favoritesToAddSearchResult, file);
+				searchStop = cancelled -> Platform.runLater(() -> enableSearch());
 				break;
 
 			case SHOW_NEXT_MATCH:
@@ -678,23 +632,19 @@ public class MusicCollection extends Tab implements UIPart {
 						});
 					}
 				};
-				searchStop = cancelled -> Platform
-						.runLater(() -> enableSearch());
+				searchStop = cancelled -> Platform.runLater(() -> enableSearch());
 				break;
 			}
 			setSearchValue();
-			final SearchInIndexThread t = new SearchInIndexThread(
-					em,
-					searchScope.getSelectionModel().getSelectedItem() == SearchScope.FORWARD,
-					searchStart, searchHit, searchStop) {
+			final SearchInIndexThread t = new SearchInIndexThread(em,
+					searchScope.getSelectionModel().getSelectedItem() == SearchScope.FORWARD, searchStart, searchHit,
+					searchStop) {
 				@Override
 				public List<File> getFiles(String filePath) {
-					return PathUtils.getFiles(filePath, fileBrowser.getRoot()
-							.getValue(), tuneFilter);
+					return PathUtils.getFiles(filePath, fileBrowser.getRoot().getValue(), tuneFilter);
 				}
 			};
-			t.setField(searchCriteria.getSelectionModel().getSelectedItem()
-					.getAttribute());
+			t.setField(searchCriteria.getSelectionModel().getSelectedItem().getAttribute());
 			t.setFieldValue(searchForValue);
 			t.setCaseSensitive(false);
 			if (searchOptionsChanged) {
@@ -730,9 +680,7 @@ public class MusicCollection extends Tab implements UIPart {
 			return;
 		}
 		TreeItem<File> rootItem = fileBrowser.getRoot();
-		if (rootItem == null
-				|| matchFile.getName().toLowerCase(Locale.ENGLISH)
-						.endsWith(".mp3")) {
+		if (rootItem == null || matchFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			return;
 		}
 		List<TreeItem<File>> pathSegs = new ArrayList<TreeItem<File>>();
@@ -752,11 +700,9 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 		if (pathSegs.size() > 0) {
 			currentlyPlayedTreeItems.setAll(pathSegs);
-			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-					.getSelectedItem();
+			TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
 			TreeItem<File> treeItem = pathSegs.get(pathSegs.size() - 1);
-			if (selectedItem == null
-					|| !treeItem.getValue().equals(selectedItem.getValue())) {
+			if (selectedItem == null || !treeItem.getValue().equals(selectedItem.getValue())) {
 				fileBrowser.getSelectionModel().select(treeItem);
 				fileBrowser.scrollTo(fileBrowser.getRow(treeItem));
 			}
@@ -773,8 +719,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void downloadStart(String url) {
 		System.out.println("Download URL: <" + url + ">");
 		try {
-			new DownloadThread(util.getConfig(), new ProgressListener(util,
-					fileBrowser) {
+			new DownloadThread(util.getConfig(), new ProgressListener(util, fileBrowser) {
 
 				@Override
 				public void downloaded(final File downloadedFile) {
@@ -814,12 +759,9 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 	}
 
-	private void showTuneInfos(File tuneFile, SidTune tune,
-			MusicCollectionTreeItem treeItem) {
-		String collectionName = PathUtils.getCollectionName(fileBrowser
-				.getRoot().getValue(), tuneFile);
-		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
-				.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
+	private void showTuneInfos(File tuneFile, SidTune tune, MusicCollectionTreeItem treeItem) {
+		String collectionName = PathUtils.getCollectionName(fileBrowser.getRoot().getValue(), tuneFile);
+		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
 				collectionName, tuneFile, tune);
 		tuneInfos.clear();
 		for (SearchCriteria<?, ?> field : searchCriteria.getItems()) {
@@ -827,20 +769,17 @@ public class MusicCollection extends Tab implements UIPart {
 			String name = searchCriteria.getConverter().toString(field);
 			Object value = "";
 			try {
-				value = ((Method) singleAttribute.getJavaMember())
-						.invoke(entry);
+				value = ((Method) singleAttribute.getJavaMember()).invoke(entry);
 				TuneInfo tuneInfo = new TuneInfo();
 				tuneInfo.setName(name);
 				tuneInfo.setValue(String.valueOf(value != null ? value : ""));
 				tuneInfos.add(tuneInfo);
-			} catch (IllegalArgumentException | IllegalAccessException
-					| InvocationTargetException e) {
+			} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
 			}
 		}
 	}
 
-	private void addFavorites(SidPlay2Section sidplay2Section,
-			FavoritesSection section, List<File> files) {
+	private void addFavorites(SidPlay2Section sidplay2Section, FavoritesSection section, List<File> files) {
 		for (File file : files) {
 			final File[] listFiles = file.listFiles();
 			if (file.isDirectory() && listFiles != null) {
@@ -851,19 +790,17 @@ public class MusicCollection extends Tab implements UIPart {
 		}
 	}
 
-	private void addFavorite(SidPlay2Section sidPlay2Section,
-			FavoritesSection section, File file) {
+	private void addFavorite(SidPlay2Section sidPlay2Section, FavoritesSection section, File file) {
 		try {
 			SidTune tune = SidTune.load(file);
-			
+
 			String collectionName;
 			if (getType() == MusicCollectionType.HVSC) {
 				collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
 			} else {
 				collectionName = PathUtils.getCollectionName(sidPlay2Section.getCgscFile(), file);
 			}
-			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
-					.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
+			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
 					collectionName, file, tune);
 			section.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
@@ -872,10 +809,8 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void playSelected() {
-		final TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-				.getSelectedItem();
-		if (selectedItem != null && !selectedItem.equals(fileBrowser.getRoot())
-				&& selectedItem.getValue().isFile()) {
+		final TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
+		if (selectedItem != null && !selectedItem.equals(fileBrowser.getRoot()) && selectedItem.getValue().isFile()) {
 			playTune(selectedItem.getValue());
 		}
 	}

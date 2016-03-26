@@ -6,7 +6,8 @@ public class PersistenceProperties extends HashMap<String, String> {
 	private static final long serialVersionUID = -4166092050575739736L;
 
 	public static final String CONFIG_DS = "configuration-ds";
-	public static final String COLLECTION_DS = "collection-ds";
+	public static final String HVSC_DS = "hvsc-ds";
+	public static final String CGSC_DS = "cgsc-ds";
 	public static final String GAMEBASE_DS = "gamebase-ds";
 
 	public PersistenceProperties(String name, Database type) {

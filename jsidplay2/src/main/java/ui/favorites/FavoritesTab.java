@@ -643,6 +643,10 @@ public class FavoritesTab extends Tab implements UIPart {
 		}
 	}
 
+	void deselectCurrentlyPlayedHVSCEntry() {
+		currentlyPlayedHVSCEntryProperty.set(null);
+	}
+	
 	void playTune(final HVSCEntry hvscEntry) {
 		favorites.setCurrentlyPlayedFavorites(this);
 		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig()

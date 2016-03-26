@@ -52,7 +52,24 @@
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 		</properties>
 	</persistence-unit>
-	<persistence-unit name="collection-ds" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="hvsc-ds" transaction-type="RESOURCE_LOCAL">
+		<description>HVSC Entities</description>
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+
+		<class>ui.entities.collection.Version</class>
+		<class>ui.entities.collection.HVSCEntry</class>
+		<class>ui.entities.collection.StilEntry</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+		<properties>
+			<property name="hibernate.connection.username" value=""/>
+			<property name="hibernate.connection.password" value=""/>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
+		</properties>
+	</persistence-unit>
+	<persistence-unit name="cgsc-ds" transaction-type="RESOURCE_LOCAL">
 		<description>HVSC Entities</description>
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
