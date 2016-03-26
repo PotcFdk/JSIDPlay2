@@ -13,5 +13,9 @@ public enum PlaybackType {
 	/**
 	 * Play random tunes within ALL favorites list
 	 */
-	RANDOM_ALL
+	RANDOM_ALL,
+	/**
+	 * Play random tunes within HVSC
+	 */
+	RANDOM_HVSC
 }

@@ -89,6 +89,11 @@ public class IniReader {
 		return sections.keySet().toArray(new String[] {});
 	}
 
+	public String[] sectionProperties(String section) {
+		Map<String, String> properties = sections.get(section);
+		return properties.keySet().toArray(new String[] {});
+	}
+
 	private void initialize(final BufferedReader r) throws IOException {
 		Map<String, String> section = null;
 		StringBuilder comment = new StringBuilder();

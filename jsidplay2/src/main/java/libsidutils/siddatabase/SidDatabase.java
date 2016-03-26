@@ -2,6 +2,7 @@ package libsidutils.siddatabase;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 
 import libsidplay.sidtune.SidTune;
 import sidplay.ini.IniReader;
@@ -65,6 +66,16 @@ public class SidDatabase {
 	public String getPath(final SidTune tune) {
 		final String md5 = tune.getMD5Digest();
 		final String comment = md5 != null ? database.getPropertyString("Database", "_" + md5, null) : null;
+		return comment != null ? comment.substring(1).trim() : "";
+	}
+
+	protected Random random = new Random();
+
+	public String getRandomPath() {
+		String[] sectionProperties = database.sectionProperties("Database");
+		int rndIndex = (Math.abs(random.nextInt(Integer.MAX_VALUE)) % sectionProperties.length) & Integer.MAX_VALUE - 1;
+		String md5Comment = sectionProperties[rndIndex];
+		final String comment = md5Comment != null ? database.getPropertyString("Database", "_" + md5Comment, null) : null;
 		return comment != null ? comment.substring(1).trim() : "";
 	}
 

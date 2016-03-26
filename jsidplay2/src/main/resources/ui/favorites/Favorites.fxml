@@ -137,6 +137,9 @@
 					<RadioButton text="%RANDOM_ALL_PLAYLISTS" toggleGroup="$playbackGroup"
 						fx:id="randomAll" GridPane.rowIndex="1" GridPane.columnIndex="3"
 						onAction="#randomAll" />
+					<RadioButton text="%RANDOM_HVSC" toggleGroup="$playbackGroup"
+						fx:id="randomHVSC" GridPane.rowIndex="1" GridPane.columnIndex="4"
+						onAction="#randomHVSC" />
 
 					<RadioButton text="%REPEAT_OFF" selected="true"
 						toggleGroup="$repeatGroup" fx:id="repeatOff" GridPane.rowIndex="2"
