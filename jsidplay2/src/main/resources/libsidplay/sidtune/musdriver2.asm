@@ -1511,7 +1511,9 @@ loop164:
         sta $f000
         rts
         brk
+init:
         jsr $ec60
         jmp $fc60
+start:
         jsr $ec80
         jmp $fc80

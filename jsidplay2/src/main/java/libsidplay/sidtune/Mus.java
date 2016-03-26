@@ -46,7 +46,7 @@ class Mus extends PSid {
 
 	private static final int MUS_DATA_ADDR = 0x0900;
 
-	private static final int STR_SID2_ADDR = 0xd500;
+	private static final int DUAL_SID_BASE = 0xd500;
 
 	private final KickAssembler assembler = new KickAssembler();
 
@@ -131,12 +131,7 @@ class Mus extends PSid {
 				info.commentString.add(getCredits(strBuf, voice3DataEnd));
 			}
 
-			info.sidChipBase2 = STR_SID2_ADDR;
-			info.initAddr = 0xfc90;
-			info.playAddr = 0xfc96;
-		} else {
-			info.initAddr = 0xec60;
-			info.playAddr = 0xec80;
+			info.sidChipBase2 = DUAL_SID_BASE;
 		}
 
 		info.loadAddr = MUS_DATA_ADDR;
@@ -165,8 +160,8 @@ class Mus extends PSid {
 	 * *_a.mus/*_b.mus .
 	 * 
 	 * @param file
-	 *            file to get the stereo tune for.
-	 * @return stereo file
+	 *            file to get the stereo tune for (e.g. name.mus).
+	 * @return stereo file (e.g. name.str)
 	 */
 	private static File getStereoTune(final File file) {
 		// Get all sibling files
@@ -177,10 +172,11 @@ class Mus extends PSid {
 		// For each possible MUS/STR extension, check if there is ...
 		for (String extension : DEFAULT_MUS_NAMES) {
 			String test = file.getName().replaceFirst("(_[aA]|_[bB])?\\.\\w+$", extension);
-			// ... a corresponding stereo file with a different extension
-			// (e.g. MUS/STR, _A.MUS, _B.MUS)
+			// ... a corresponding stereo file with a different extension ...
 			if (!file.getName().equalsIgnoreCase(test)) {
 				for (File sibling : siblings) {
+					// ... which matches a siblings name
+					// (e.g. MUS/STR, _A.MUS, _B.MUS)
 					if (sibling.getName().equalsIgnoreCase(test)) {
 						return sibling;
 					}
@@ -191,50 +187,68 @@ class Mus extends PSid {
 	}
 
 	private void installMusPlayers(final byte[] c64buf) {
+		Integer init;
+		Integer start;
 		{
 			// Assemble MUS player 1
 			HashMap<String, String> globals = new HashMap<String, String>();
 			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER1_ASM);
 			byte[] driver = assembler.assemble(MUSDRIVER1_ASM, asm, globals);
+			// Install MUS player 1
 			Integer data_low = assembler.getLabels().get("data_low");
 			Integer data_high = assembler.getLabels().get("data_high");
-			if (data_low == null) {
-				throw new RuntimeException("Label data_low not found in " + MUSDRIVER1_ASM);
-			}
-			if (data_high == null) {
-				throw new RuntimeException("Label data_high not found in " + MUSDRIVER1_ASM);
-			}
-
-			// Install MUS player #1.
-			int driverAddr = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
-			System.arraycopy(driver, 2, c64buf, driverAddr, driver.length - 2);
-
-			// Point player #1 to data #1.
-			c64buf[data_low + 1] = MUS_DATA_ADDR + 2 & 0xFF;
-			c64buf[data_high + 1] = MUS_DATA_ADDR + 2 >> 8;
+			init = assembler.getLabels().get("init");
+			start = assembler.getLabels().get("start");
+			checkLabels(MUSDRIVER1_ASM, data_low, data_high, init, start);
+			installMusPlayer(c64buf, MUS_DATA_ADDR + 2, driver, data_low, data_high);
 		}
 		if (info.sidChipBase2 != 0) {
 			// Assemble MUS player 2
 			HashMap<String, String> globals = new HashMap<String, String>();
 			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER2_ASM);
 			byte[] driver = assembler.assemble(MUSDRIVER2_ASM, asm, globals);
-
-			// Install MUS player #2.
-			int driverAddr = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
-			System.arraycopy(driver, 2, c64buf, driverAddr, driver.length - 2);
-
-			// Point player #2 to data #2.
+			// Install MUS player 2
 			Integer data_low = assembler.getLabels().get("data_low");
 			Integer data_high = assembler.getLabels().get("data_high");
-			if (data_low == null) {
-				throw new RuntimeException("Label data_low not found in " + MUSDRIVER2_ASM);
-			}
-			if (data_high == null) {
-				throw new RuntimeException("Label data_high not found in " + MUSDRIVER2_ASM);
-			}
-			c64buf[data_low + 1] = (byte) (MUS_DATA_ADDR + musDataLen + 2 & 0xFF);
-			c64buf[data_high + 1] = (byte) (MUS_DATA_ADDR + musDataLen + 2 >> 8);
+			init = assembler.getLabels().get("init");
+			start = assembler.getLabels().get("start");
+			checkLabels(MUSDRIVER2_ASM, data_low, data_high, init, start);
+			installMusPlayer(c64buf, MUS_DATA_ADDR + 2 + musDataLen, driver, data_low, data_high);
+
+			info.initAddr = init;
+			info.playAddr = start;
+		} else {
+			info.initAddr = init;
+			info.playAddr = start;
 		}
+	}
+
+	private void checkLabels(final String asmSource, final Integer data_low, final Integer data_high,
+			final Integer init, final Integer start) {
+		if (data_low == null) {
+			throw new RuntimeException("Label data_low not found in " + asmSource);
+		}
+		if (data_high == null) {
+			throw new RuntimeException("Label data_high not found in " + asmSource);
+		}
+		if (init == null) {
+			throw new RuntimeException("Label init not found in " + asmSource);
+		}
+		if (start == null) {
+			throw new RuntimeException("Label start not found in " + asmSource);
+		}
+	}
+
+	private void installMusPlayer(final byte[] c64buf, final int musDataAddr, final byte[] driver,
+			final Integer data_low, final Integer data_high) {
+		// Install MUS player
+		int driverAddr = (driver[0] & 0xff) + ((driver[1] & 0xff) << 8);
+		System.arraycopy(driver, 2, c64buf, driverAddr, driver.length - 2);
+
+		// Point MUS player to data.
+		c64buf[data_low + 1] = (byte) (musDataAddr & 0xFF);
+		c64buf[data_high + 1] = (byte) (musDataAddr >> 8);
+
 	}
 
 	@Override

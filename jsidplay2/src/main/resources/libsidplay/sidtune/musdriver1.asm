@@ -1498,6 +1498,7 @@ loop139:
 loop137:
         rts
         brk
+init:
         ldx #$51
         ldy #$ec
         stx $e15d
@@ -1516,6 +1517,7 @@ loop138b:
         brk
         brk
         brk
+start:
         lda #$00
         and #$ff
         beq loop138b
