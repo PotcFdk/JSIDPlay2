@@ -76,7 +76,7 @@ public class SidDatabase {
 		int rndIndex = (Math.abs(random.nextInt(Integer.MAX_VALUE)) % sectionProperties.length) & Integer.MAX_VALUE - 1;
 		String md5Comment = sectionProperties[rndIndex];
 		final String comment = md5Comment != null ? database.getPropertyString("Database", "_" + md5Comment, null) : null;
-		return comment != null ? comment.substring(1).trim() : "";
+		return comment != null ? comment.substring(1).trim() : null;
 	}
 
 	/**

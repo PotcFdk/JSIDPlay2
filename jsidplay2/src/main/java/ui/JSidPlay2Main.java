@@ -59,6 +59,11 @@ public class JSidPlay2Main extends Application {
 				System.out.print(", sub-song: ");
 				System.out.print(info.getCurrentSong());
 			}
+			String path = player.getSidDatabaseInfo(db -> db.getPath(player.getTune()), "");
+			if (path.length() > 0) {
+				System.out.print(", ");
+				System.out.print(path);
+			}
 			System.out.println();
 		}
 	};
@@ -78,7 +83,7 @@ public class JSidPlay2Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
-		
+
 		player = new Player(getConfiguration());
 		player.setMenuHook(menuHook);
 		player.startC64();
@@ -86,14 +91,12 @@ public class JSidPlay2Main extends Application {
 		final JSidPlay2 jSidplay2 = new JSidPlay2(primaryStage, player);
 		jSidplay2.open();
 		// Set default position and size
-		final SidPlay2Section section = (SidPlay2Section) player.getConfig()
-				.getSidplay2Section();
+		final SidPlay2Section section = (SidPlay2Section) player.getConfig().getSidplay2Section();
 		if (section.getFullScreen() != null) {
 			primaryStage.setFullScreen(section.getFullScreen());
 		}
-		primaryStage.fullScreenProperty().addListener(
-				(observable, oldValue, newValue) -> section
-						.setFullScreen(newValue));
+		primaryStage.fullScreenProperty()
+				.addListener((observable, oldValue, newValue) -> section.setFullScreen(newValue));
 		final Scene scene = primaryStage.getScene();
 		if (scene != null) {
 			Window window = scene.getWindow();
@@ -101,18 +104,12 @@ public class JSidPlay2Main extends Application {
 			window.setY(section.getFrameY());
 			window.setWidth(section.getFrameWidth());
 			window.setHeight(section.getFrameHeight());
-			window.widthProperty().addListener(
-					(observable, oldValue, newValue) -> section
-							.setFrameWidth(newValue.intValue()));
-			window.heightProperty().addListener(
-					(observable, oldValue, newValue) -> section
-							.setFrameHeight(newValue.intValue()));
-			window.xProperty().addListener(
-					(observable, oldValue, newValue) -> section
-							.setFrameX(newValue.intValue()));
-			window.yProperty().addListener(
-					(observable, oldValue, newValue) -> section
-							.setFrameY(newValue.intValue()));
+			window.widthProperty()
+					.addListener((observable, oldValue, newValue) -> section.setFrameWidth(newValue.intValue()));
+			window.heightProperty()
+					.addListener((observable, oldValue, newValue) -> section.setFrameHeight(newValue.intValue()));
+			window.xProperty().addListener((observable, oldValue, newValue) -> section.setFrameX(newValue.intValue()));
+			window.yProperty().addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
 			processCommandLineArgs();
 		}
 		testInstance = jSidplay2;
@@ -152,14 +149,12 @@ public class JSidPlay2Main extends Application {
 		}
 		configService.commit((Configuration) player.getConfig());
 
-		configService.exportCfg((Configuration) player.getConfig(),
-				getConfigPath());
+		configService.exportCfg((Configuration) player.getConfig(), getConfigPath());
 
 		em.getEntityManagerFactory().close();
 
 		// Really persist the databases
-		org.hsqldb.DatabaseManager
-				.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);
+		org.hsqldb.DatabaseManager.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);
 	}
 
 	//
@@ -172,10 +167,8 @@ public class JSidPlay2Main extends Application {
 	 * @return the players configuration to be used
 	 */
 	private Configuration getConfiguration() {
-		em = Persistence.createEntityManagerFactory(
-				PersistenceProperties.CONFIG_DS,
-				new PersistenceProperties(CONFIG_FILE, Database.HSQL_MEM))
-				.createEntityManager();
+		em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
+				new PersistenceProperties(CONFIG_FILE, Database.HSQL_MEM)).createEntityManager();
 		configService = new ConfigService(em);
 		return configService.importCfg(getConfigPath());
 	}
@@ -186,8 +179,7 @@ public class JSidPlay2Main extends Application {
 	 * @return XML configuration file
 	 */
 	private File getConfigPath() {
-		for (final String s : new String[] { System.getProperty("user.dir"),
-				System.getProperty("user.home"), }) {
+		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
 			File configPlace = new File(s, CONFIG_FILE + ".xml");
 			if (configPlace.exists()) {
 				return configPlace;

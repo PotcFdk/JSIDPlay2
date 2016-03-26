@@ -398,16 +398,7 @@ public class Favorites extends Tab implements UIPart {
 			if (pt == PlaybackType.RANDOM_HVSC) {
 				// random HVSC
 				currentlyPlayedFavorites = null;
-				String rndPath = util.getPlayer().getSidDatabaseInfo(db -> db.getRandomPath(), null);
-				if (rndPath != null) {
-					File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvscFile(),
-							sidPlay2Section.getCgscFile());
-					try {
-						util.getPlayer().play(SidTune.load(file));
-					} catch (IOException | SidTuneError e) {
-						e.printStackTrace();
-					}
-				}
+				playNextRandom();
 			} else if (pt == PlaybackType.RANDOM_ALL) {
 				// random all favorites tabs
 				favoritesList.getSelectionModel()
@@ -421,6 +412,20 @@ public class Favorites extends Tab implements UIPart {
 					&& pt != PlaybackType.PLAYBACK_OFF) {
 				// normal playback
 				currentlyPlayedFavorites.playNext();
+			}
+		}
+	}
+
+	private void playNextRandom() {
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+		String rndPath = util.getPlayer().getSidDatabaseInfo(db -> db.getRandomPath(), null);
+		if (rndPath != null) {
+			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
+			util.setPlayingTab(this);
+			try {
+				util.getPlayer().play(SidTune.load(file));
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
 			}
 		}
 	}
