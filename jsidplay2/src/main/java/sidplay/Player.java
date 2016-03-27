@@ -619,7 +619,7 @@ public class Player extends HardwareEnsemble {
 	 *             audio production interrupted
 	 */
 	private boolean play() throws InterruptedException {
-		for (int i = 0; stateProperty.get() == State.PLAY && i < config.getAudioSection().getBufferSize(); i++) {
+		for (int i = 0; i < config.getAudioSection().getBufferSize(); i++) {
 			c64.getEventScheduler().clock();
 		}
 		return stateProperty.get() == State.PLAY || stateProperty.get() == State.PAUSE;
