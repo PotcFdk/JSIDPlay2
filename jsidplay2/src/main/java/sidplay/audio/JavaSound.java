@@ -39,8 +39,8 @@ public class JavaSound implements AudioDriver {
 	private ByteBuffer sampleBuffer;
 
 	@Override
-	public synchronized void open(final AudioConfig cfg,
-			String recordingFilename) throws IOException {
+	public synchronized void open(final AudioConfig cfg, String recordingFilename)
+			throws IOException, LineUnavailableException {
 		int device = cfg.getDevice();
 		ObservableList<Device> devices = getDevices();
 		if (device < devices.size()) {
@@ -51,7 +51,7 @@ public class JavaSound implements AudioDriver {
 	}
 
 	public synchronized void open(final AudioConfig cfg, final Mixer.Info info)
-			throws IOException {
+			throws IOException, LineUnavailableException {
 		this.cfg = cfg;
 		boolean signed = true;
 		boolean bigEndian = false;
@@ -74,26 +74,21 @@ public class JavaSound implements AudioDriver {
 	}
 
 	public synchronized void setAudioDevice(final Mixer.Info info)
-			throws IOException {
+			throws LineUnavailableException {
 		// first close previous dataLine when it is already present
 		close();
-		try {
-			dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
-			dataLine.open(dataLine.getFormat(), cfg.bufferFrames * Short.BYTES
-					* cfg.channels);
+		dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
+		dataLine.open(dataLine.getFormat(), cfg.bufferFrames * Short.BYTES
+				* cfg.channels);
 
-			// The actual buffer size for the open line may differ from the
-			// requested buffer size, therefore
-			cfg.bufferFrames = dataLine.getBufferSize() / Short.BYTES
-					/ cfg.channels;
+		// The actual buffer size for the open line may differ from the
+		// requested buffer size, therefore
+		cfg.bufferFrames = dataLine.getBufferSize() / Short.BYTES
+				/ cfg.channels;
 
-			sampleBuffer = ByteBuffer.allocate(
-					cfg.getChunkFrames() * Short.BYTES * cfg.channels).order(
-					ByteOrder.LITTLE_ENDIAN);
-		} catch (LineUnavailableException e) {
-			// When a requested line is already in use by another application
-			throw new IOException(e);
-		}
+		sampleBuffer = ByteBuffer.allocate(
+				cfg.getChunkFrames() * Short.BYTES * cfg.channels).order(
+				ByteOrder.LITTLE_ENDIAN);
 	}
 
 	@Override

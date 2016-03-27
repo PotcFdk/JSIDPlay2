@@ -3,6 +3,7 @@ package sidplay;
 import static libsidplay.config.IAudioSection.DEFAULT_AUDIO;
 import static libsidplay.config.IAudioSection.DEFAULT_BUFFER_SIZE;
 import static libsidplay.config.IAudioSection.DEFAULT_SAMPLING_RATE;
+import static libsidplay.config.IAudioSection.DEFAULT_DEVICE;
 import static libsidplay.config.IEmulationSection.DEFAULT_CLOCK_SPEED;
 import static libsidplay.config.IEmulationSection.DEFAULT_EMULATION;
 import static libsidplay.config.IEmulationSection.DEFAULT_ENGINE;
@@ -23,14 +24,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sound.sampled.Mixer.Info;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
-import javafx.collections.ObservableList;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
@@ -65,7 +63,7 @@ public class ConsolePlayer {
 	private int bufferSize = DEFAULT_BUFFER_SIZE;
 
 	@Parameter(names = { "--deviceIndex", "-A" }, descriptionKey = "DEVICEINDEX")
-	private Integer deviceIdx;
+	private Integer deviceIdx = DEFAULT_DEVICE;
 
 	@Parameter(names = { "--engine", "-E" }, descriptionKey = "ENGINE")
 	private Engine engine = DEFAULT_ENGINE;
@@ -140,6 +138,12 @@ public class ConsolePlayer {
 			commander.setCaseSensitiveOptions(true);
 			if (help || filenames.size() != 1) {
 				commander.usage();
+				int deviceIdx = 0;
+				for (Device device : JavaSound.getDevices()) {
+					System.out.printf("    --deviceIndex %d -> %s (%s)\n", (deviceIdx++),
+							device.getInfo().getName(), device.getInfo()
+									.getDescription());
+				}
 				exit(1);
 			}
 		} catch (ParameterException e) {
@@ -158,6 +162,7 @@ public class ConsolePlayer {
 		config.getAudioSection().setAudio(audio);
 		config.getAudioSection().setSamplingRate(samplingRate);
 		config.getAudioSection().setBufferSize(bufferSize);
+		config.getAudioSection().setDevice(deviceIdx);
 		config.getEmulationSection().setEngine(engine);
 		config.getEmulationSection().setDefaultEmulation(defaultEmulation);
 		config.getEmulationSection().setForceStereoTune(dualSID);
@@ -177,11 +182,10 @@ public class ConsolePlayer {
 			tune.setSelectedSong(song);
 			player.setRecordingFilenameProvider(theTune -> {
 				File file = new File(recordingFilename);
-				String filename = new File(file.getParentFile(), PathUtils
-						.getFilenameWithoutSuffix(file.getName())).getAbsolutePath();
+				String filename = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()))
+						.getAbsolutePath();
 				if (theTune.getInfo().getSongs() > 1) {
-					filename += String.format("-%02d", theTune.getInfo()
-							.getCurrentSong());
+					filename += String.format("-%02d", theTune.getInfo().getCurrentSong());
 				}
 				return filename;
 			});
@@ -190,43 +194,20 @@ public class ConsolePlayer {
 			if (config.getSidplay2Section().isEnableDatabase()) {
 				setSIDDatabase(player);
 			}
-			if (isRecording()
-					&& defaultLength == 0
-					&& player.getSidDatabaseInfo(db -> db.getSongLength(tune),
-							0) == 0) {
-				System.err
-						.println("ERROR: unknown song length in record mode"
-								+ " (please use option --defaultLength or configure song length database)");
+			if (isRecording() && defaultLength == 0
+					&& player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0) == 0) {
+				System.err.println("ERROR: unknown song length in record mode"
+						+ " (please use option --defaultLength or configure song length database)");
 				exit(1);
 			}
 			ConsoleIO consoleIO = new ConsoleIO(config, filenames.get(0));
-			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet,
-					System.out));
+			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet, System.out));
 			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
 
 			player.startC64();
 		} catch (IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
 			exit(1);
-		}
-
-		// Set SOUNDCARD audio device
-		if (deviceIdx != null) {
-			JavaSound js = (JavaSound) Audio.SOUNDCARD.getAudioDriver();
-			ObservableList<Device> devices = JavaSound.getDevices();
-			try {
-				Info info = devices.get(deviceIdx).getInfo();
-				js.setAudioDevice(info);
-			} catch (IndexOutOfBoundsException | IOException e) {
-				int deviceIdx = 0;
-				for (Device device : JavaSound.getDevices()) {
-					System.err.printf("device %d = %s (%s)\n", (deviceIdx++),
-							device.getInfo().getName(), device.getInfo()
-									.getDescription());
-				}
-				System.err.println(e.getMessage());
-				exit(1);
-			}
 		}
 	}
 
@@ -243,8 +224,7 @@ public class ConsolePlayer {
 	}
 
 	private boolean isRecording() {
-		return audio == Audio.WAV || audio == Audio.MP3
-				|| audio == Audio.LIVE_WAV || audio == Audio.LIVE_MP3;
+		return audio == Audio.WAV || audio == Audio.MP3 || audio == Audio.LIVE_WAV || audio == Audio.LIVE_MP3;
 	}
 
 	private void exit(int rc) {

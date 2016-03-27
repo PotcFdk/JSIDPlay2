@@ -18,6 +18,8 @@ package sidplay.audio;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import javax.sound.sampled.LineUnavailableException;
+
 public interface AudioDriver {
 
 	/**
@@ -30,8 +32,9 @@ public interface AudioDriver {
 	 * @param recordingFilename
 	 *            name for a recording
 	 * @throws IOException
+	 * @throws LineUnavailableException
 	 */
-	void open(AudioConfig cfg, String recordingFilename) throws IOException;
+	void open(AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException;
 
 	/**
 	 * Write the complete contents of ByteBuffer to audio device.

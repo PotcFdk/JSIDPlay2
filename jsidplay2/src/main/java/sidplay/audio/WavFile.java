@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
+import javax.sound.sampled.LineUnavailableException;
+
 /**
  * File based driver to create a WAV file.
  * 
@@ -61,7 +63,7 @@ public class WavFile implements AudioDriver {
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename)
-			throws IOException {
+			throws IOException, LineUnavailableException {
 		final int blockAlign = Short.BYTES * cfg.channels;
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);

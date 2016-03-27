@@ -28,6 +28,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.sound.sampled.LineUnavailableException;
+
 import hardsid_builder.HardSIDBuilder;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -504,7 +506,7 @@ public class Player extends HardwareEnsemble {
 		try {
 			String recordingFilename = recordingFilenameProvider.apply(tune);
 			audioDriver.open(audioConfig, recordingFilename);
-		} catch (IOException e) {
+		} catch (IOException | LineUnavailableException e) {
 			throw new RuntimeException(e);
 		}
 

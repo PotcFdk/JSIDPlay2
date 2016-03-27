@@ -3,6 +3,8 @@ package sidplay.audio;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import javax.sound.sampled.LineUnavailableException;
+
 /**
  * Proxy driver to use two different sound drivers.
  * 
@@ -17,7 +19,7 @@ public class ProxyDriver implements AudioDriver {
 	 * Create a proxy driver
 	 * 
 	 * @param driver1
-	 *            sound driver, that buffer gest filled
+	 *            sound driver, that buffer gets filled
 	 * @param driver2
 	 *            sound driver, that gets the copied sample buffer
 	 */
@@ -28,7 +30,7 @@ public class ProxyDriver implements AudioDriver {
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename)
-			throws IOException {
+			throws IOException, LineUnavailableException {
 		driverOne.open(cfg, recordingFilename);
 		driverTwo.open(cfg, recordingFilename);
 	}

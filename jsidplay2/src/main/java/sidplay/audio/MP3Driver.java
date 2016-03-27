@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.LineUnavailableException;
 
 import lowlevel.LameEncoder;
 import mp3.MPEGMode;
@@ -111,7 +112,7 @@ public abstract class MP3Driver implements AudioDriver {
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename)
-			throws IOException {
+			throws IOException, LineUnavailableException {
 		final int blockAlign = Short.BYTES * cfg.channels;
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);

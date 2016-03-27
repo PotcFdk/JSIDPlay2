@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 
@@ -253,7 +254,7 @@ public class AudioGeneratorThread extends Thread {
 			}
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
-		} catch (final IOException e) {
+		} catch (final IOException | LineUnavailableException e) {
 			e.printStackTrace();
 		} finally {
 			driver.close();
