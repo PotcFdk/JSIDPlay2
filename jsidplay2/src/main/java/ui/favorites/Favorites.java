@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
@@ -23,8 +25,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import libsidplay.sidtune.SidTune;
-import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
@@ -39,8 +39,6 @@ import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileExtensions;
-import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TFileInputStream;
 
 public class Favorites extends Tab implements UIPart {
 
@@ -394,41 +392,23 @@ public class Favorites extends Tab implements UIPart {
 		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
 		PlaybackType pt = sidPlay2Section.getPlaybackType();
 
-		if (!util.getConfig().getSidplay2Section().isLoop()) {
-			if (pt == PlaybackType.RANDOM_HVSC) {
-				// random HVSC
-				if (currentlyPlayedFavorites != null) {
-					currentlyPlayedFavorites.deselectCurrentlyPlayedHVSCEntry();
-					currentlyPlayedFavorites = null;
-				}
-				playNextRandom();
-			} else if (pt == PlaybackType.RANDOM_ALL) {
-				// random all favorites tabs
+		if (!sidPlay2Section.isLoop()) {
+			if (pt == PlaybackType.RANDOM_ALL) {
 				favoritesList.getSelectionModel()
 						.select(Math.abs(random.nextInt(Integer.MAX_VALUE)) % favoritesList.getTabs().size());
 				currentlyPlayedFavorites = getSelectedTab();
 				currentlyPlayedFavorites.playNextRandom();
-			} else if (currentlyPlayedFavorites != null && pt == PlaybackType.RANDOM_ONE) {
-				// random one favorites tab
+			} else if (pt == PlaybackType.RANDOM_ONE && currentlyPlayedFavorites != null) {
 				currentlyPlayedFavorites.playNextRandom();
-			} else if (currentlyPlayedFavorites != null && util.getPlayer().getTune() != null
-					&& pt != PlaybackType.PLAYBACK_OFF) {
-				// normal playback
+			} else if (pt == PlaybackType.NORMAL && currentlyPlayedFavorites != null
+					&& util.getPlayer().getTune() != null) {
 				currentlyPlayedFavorites.playNext();
-			}
-		}
-	}
-
-	private void playNextRandom() {
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
-		String rndPath = util.getPlayer().getSidDatabaseInfo(db -> db.getRandomPath(), null);
-		if (rndPath != null) {
-			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
-			util.setPlayingTab(this);
-			try {
-				util.getPlayer().play(SidTune.load(file));
-			} catch (IOException | SidTuneError e) {
-				e.printStackTrace();
+			} else {
+				// PlaybackType.RANDOM_HVSC || PlaybackType.PLAYBACK_OFF
+				if (currentlyPlayedFavorites != null) {
+					currentlyPlayedFavorites.deselectCurrentlyPlayedHVSCEntry();
+					currentlyPlayedFavorites = null;
+				}
 			}
 		}
 	}

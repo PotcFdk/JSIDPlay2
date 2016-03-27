@@ -99,6 +99,7 @@ import ui.entities.config.PrinterSection;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.ViewEntity;
 import ui.favorites.Favorites;
+import ui.favorites.PlaybackType;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.RomFileExtensions;
@@ -212,7 +213,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 					enableDisableHardSIDSettings();
 					enableDisableCompareDriverSettings();
 
-					getPlayerId();
+					setPlayerIdAndInfos();
 
 					final Tab selectedItem = tabbedPane.getSelectionModel().getSelectedItem();
 					boolean doNotSwitch = selectedItem != null
@@ -220,6 +221,17 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 									|| Favorites.class.isAssignableFrom(selectedItem.getClass()));
 					if (sidTune == SidTune.RESET || (sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
 						video();
+					}
+				});
+			} else if (newValue.equals(State.END)) {
+				Platform.runLater(() -> {
+					SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+					PlaybackType pt = sidPlay2Section.getPlaybackType();
+
+					if (!sidPlay2Section.isLoop()) {
+						if (pt == PlaybackType.RANDOM_HVSC) {
+							playNextRandomHVSC();
+						}
 					}
 				});
 			}
@@ -461,16 +473,19 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void nextFavorite() {
 		final C64 c64 = util.getPlayer().getC64();
-		if (util.getPlayer().stateProperty().get() == State.PAUSE) {
+		if (util.getPlayer().stateProperty().get() == State.PAUSE
+				|| util.getPlayer().stateProperty().get() == State.QUIT
+				|| util.getPlayer().stateProperty().get() == State.END) {
 			util.getPlayer().pauseContinue();
+		} else if (util.getPlayer().stateProperty().get() == State.PLAY) {
+			final EventScheduler ctx = c64.getEventScheduler();
+			ctx.scheduleThreadSafe(new Event("Timer End To Play Next Favorite!") {
+				@Override
+				public void event() {
+					util.getPlayer().getTimer().end();
+				}
+			});
 		}
-		final EventScheduler ctx = c64.getEventScheduler();
-		ctx.scheduleThreadSafe(new Event("Timer End To Play Next Favorite!") {
-			@Override
-			public void event() {
-				util.getPlayer().getTimer().end();
-			}
-		});
 	}
 
 	@FXML
@@ -1299,6 +1314,22 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		util.getPlayer().play(tune);
 	}
 
+	private void playNextRandomHVSC() {
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+		String rndPath = util.getPlayer().getSidDatabaseInfo(db -> db.getRandomPath(), null);
+		if (rndPath != null) {
+			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
+			hvsc();
+			util.setPlayingTab(tabbedPane.getTabs().stream()
+					.filter((tab) -> tab.getId().equals(MusicCollection.HVSC_ID)).findFirst().get());
+			try {
+				util.getPlayer().play(SidTune.load(file));
+			} catch (IOException | SidTuneError e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/**
 	 * Set all the internal information of the emulation in the status bar.
 	 */
@@ -1419,7 +1450,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		return "";
 	}
 
-	private void getPlayerId() {
+	private void setPlayerIdAndInfos() {
 		playerinfos.setLength(0);
 		playerId.setLength(0);
 		SidTune tune = util.getPlayer().getTune();
