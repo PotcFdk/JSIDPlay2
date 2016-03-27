@@ -201,6 +201,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	private StringBuilder playerId, playerinfos;
 	private BooleanProperty nextFavoriteDisabledState;
 	private Tooltip statusTooltip;
+	private StateChangeListener nextTuneListener;
 
 	private class StateChangeListener implements ChangeListener<State> {
 		@Override
@@ -260,6 +261,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		this.playerinfos = new StringBuilder();
 		this.scene = tabbedPane.getScene();
 		this.statusTooltip = new Tooltip();
+		this.nextTuneListener = new StateChangeListener();
 		this.status.setOnMouseClicked(e -> {
 			if (status.getUserData() != null)
 				WebUtils.browse(status.getUserData().toString());
@@ -267,7 +269,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 		util.getPlayer().setRecordingFilenameProvider(this);
 		util.getPlayer().setExtendImagePolicy(this);
-		util.getPlayer().stateProperty().addListener(new StateChangeListener());
+		util.getPlayer().stateProperty().addListener(nextTuneListener);
 
 		audioBox.setConverter(new EnumToString<Audio>(bundle));
 		audioBox.setItems(FXCollections.<Audio> observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
@@ -379,6 +381,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@Override
 	public void doClose() {
+		util.getPlayer().stateProperty().removeListener(nextTuneListener);
 		timer.stop();
 	}
 
