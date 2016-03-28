@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -280,13 +281,12 @@ class PSid extends Prg {
 	 * @return True if the addresses could be resolved.
 	 * @throws SidTuneError
 	 */
-	private boolean resolveAddrs() throws SidTuneError {
+	private void resolveAddrs() throws SidTuneError {
 		// Originally used as a first attempt at an RSID
 		// style format. Now reserved for future use
 		if (info.playAddr == 0xffff) {
 			info.playAddr = 0;
 		}
-
 		// loadAddr = 0 means, the address is stored in front of the C64 data.
 		if (info.loadAddr == 0) {
 			if (info.c64dataLen < 2) {
@@ -296,7 +296,6 @@ class PSid extends Prg {
 			programOffset += 2;
 			info.c64dataLen -= 2;
 		}
-
 		if (info.compatibility == Compatibility.RSID_BASIC) {
 			if (info.initAddr != 0) {
 				throw new SidTuneError("Init address given for a RSID tune with BASIC flag");
@@ -304,7 +303,6 @@ class PSid extends Prg {
 		} else if (info.initAddr == 0) {
 			info.initAddr = info.loadAddr;
 		}
-		return true;
 	}
 
 	/**
@@ -540,7 +538,7 @@ class PSid extends Prg {
 	public void save(final String name) throws IOException {
 		try (FileOutputStream fos = new FileOutputStream(name)) {
 			final PHeader header = new PHeader();
-			header.id = "PSID".getBytes();
+			header.id = "PSID".getBytes(Charset.forName("ISO-8859-1"));
 			if (info.sidChipBase3 != 0) {
 				header.version = 4;
 			} else if (info.sidChipBase2 != 0) {
@@ -566,7 +564,7 @@ class PSid extends Prg {
 
 			case RSIDv2:
 			case RSIDv3:
-				header.id = "RSID".getBytes();
+				header.id = "RSID".getBytes(Charset.forName("ISO-8859-1"));
 				header.speed = 0;
 				break;
 
