@@ -49,7 +49,7 @@ import sidplay.consoleplayer.VerboseValidator;
 import sidplay.ini.IniConfig;
 
 @Parameters(resourceBundle = "sidplay.consoleplayer.ConsolePlayer")
-public class ConsolePlayer {
+final public class ConsolePlayer {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
@@ -138,74 +138,63 @@ public class ConsolePlayer {
 			commander.setCaseSensitiveOptions(true);
 			if (help || filenames.size() != 1) {
 				commander.usage();
-				int deviceIdx = 0;
-				for (Device device : JavaSound.getDevices()) {
-					System.out.printf("    --deviceIndex %d -> %s (%s)\n", (deviceIdx++),
-							device.getInfo().getName(), device.getInfo()
-									.getDescription());
-				}
+				printSoundcardDevices();
 				exit(1);
 			}
-		} catch (ParameterException e) {
-			System.err.println(e.getMessage());
-			exit(1);
-		}
-		// Cannot loop while recording audio files
-		if (isRecording()) {
-			loop = false;
-		}
-		final IniConfig config = new IniConfig(true);
-		config.getSidplay2Section().setLoop(loop);
-		config.getSidplay2Section().setSingle(single);
-		config.getSidplay2Section().setDefaultPlayLength(defaultLength);
-		config.getSidplay2Section().setEnableDatabase(enableSidDatabase);
-		config.getAudioSection().setAudio(audio);
-		config.getAudioSection().setSamplingRate(samplingRate);
-		config.getAudioSection().setBufferSize(bufferSize);
-		config.getAudioSection().setDevice(deviceIdx);
-		config.getEmulationSection().setEngine(engine);
-		config.getEmulationSection().setDefaultEmulation(defaultEmulation);
-		config.getEmulationSection().setForceStereoTune(dualSID);
-		config.getEmulationSection().setForce3SIDTune(thirdSID);
-		config.getEmulationSection().setUserClockSpeed(forceClock);
-		config.getEmulationSection().setDefaultClockSpeed(defaultClock);
-		config.getEmulationSection().setUserSidModel(forceModel);
-		config.getEmulationSection().setDefaultSidModel(defaultModel);
-		config.getEmulationSection().setFilter(!disableFilter);
-		config.getEmulationSection().setStereoFilter(!disableStereoFilter);
-		config.getEmulationSection().setThirdSIDFilter(!disable3rdSIDFilter);
+			// Cannot loop while recording audio files
+			if (isRecording()) {
+				loop = false;
+			}
+			final IniConfig config = new IniConfig(true);
+			config.getSidplay2Section().setLoop(loop);
+			config.getSidplay2Section().setSingle(single);
+			config.getSidplay2Section().setDefaultPlayLength(defaultLength);
+			config.getSidplay2Section().setEnableDatabase(enableSidDatabase);
+			config.getAudioSection().setAudio(audio);
+			config.getAudioSection().setSamplingRate(samplingRate);
+			config.getAudioSection().setBufferSize(bufferSize);
+			config.getAudioSection().setDevice(deviceIdx);
+			config.getEmulationSection().setEngine(engine);
+			config.getEmulationSection().setDefaultEmulation(defaultEmulation);
+			config.getEmulationSection().setForceStereoTune(dualSID);
+			config.getEmulationSection().setForce3SIDTune(thirdSID);
+			config.getEmulationSection().setUserClockSpeed(forceClock);
+			config.getEmulationSection().setDefaultClockSpeed(defaultClock);
+			config.getEmulationSection().setUserSidModel(forceModel);
+			config.getEmulationSection().setDefaultSidModel(defaultModel);
+			config.getEmulationSection().setFilter(!disableFilter);
+			config.getEmulationSection().setStereoFilter(!disableStereoFilter);
+			config.getEmulationSection().setThirdSIDFilter(!disable3rdSIDFilter);
 
-		final Player player = new Player(config, cpuDebug ? MOS6510Debug.class : MOS6510.class);
-		try {
-			final SidTune tune = SidTune.load(new File(filenames.get(0)));
-			player.setTune(tune);
+			String filename = filenames.get(0);
+			final SidTune tune = SidTune.load(new File(filename));
 			tune.setSelectedSong(song);
-			player.setRecordingFilenameProvider(theTune -> {
-				File file = new File(recordingFilename);
-				String filename = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()))
-						.getAbsolutePath();
-				if (theTune.getInfo().getSongs() > 1) {
-					filename += String.format("-%02d", theTune.getInfo().getCurrentSong());
-				}
-				return filename;
-			});
+			final Player player = new Player(config, cpuDebug ? MOS6510Debug.class : MOS6510.class);
+			player.setTune(tune);
 			player.getTimer().setStart(startTime);
-
+			final ConsoleIO consoleIO = new ConsoleIO(config, filename);
+			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet, System.out));
+			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
 			if (config.getSidplay2Section().isEnableDatabase()) {
 				setSIDDatabase(player);
 			}
+			player.setRecordingFilenameProvider(theTune -> {
+				File file = new File(recordingFilename);
+				String basename = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()))
+						.getAbsolutePath();
+				if (theTune.getInfo().getSongs() > 1) {
+					basename += String.format("-%02d", theTune.getInfo().getCurrentSong());
+				}
+				return basename;
+			});
 			if (isRecording() && defaultLength == 0
 					&& player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0) == 0) {
 				System.err.println("ERROR: unknown song length in record mode"
 						+ " (please use option --defaultLength or configure song length database)");
 				exit(1);
 			}
-			ConsoleIO consoleIO = new ConsoleIO(config, filenames.get(0));
-			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet, System.out));
-			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
-
 			player.startC64();
-		} catch (IOException | SidTuneError e) {
+		} catch (ParameterException | IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
 			exit(1);
 		}
@@ -225,6 +214,14 @@ public class ConsolePlayer {
 
 	private boolean isRecording() {
 		return audio == Audio.WAV || audio == Audio.MP3 || audio == Audio.LIVE_WAV || audio == Audio.LIVE_MP3;
+	}
+
+	private void printSoundcardDevices() {
+		int deviceIdx = 0;
+		for (Device device : JavaSound.getDevices()) {
+			System.out.printf("    --deviceIndex %d -> %s (%s)\n", (deviceIdx++), device.getInfo().getName(),
+					device.getInfo().getDescription());
+		}
 	}
 
 	private void exit(int rc) {
