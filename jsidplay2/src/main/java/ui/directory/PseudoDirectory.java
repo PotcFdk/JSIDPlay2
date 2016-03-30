@@ -1,4 +1,4 @@
-package libsidutils.directory;
+package ui.directory;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +10,11 @@ import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import libsidutils.directory.CartridgeDirectory;
+import libsidutils.directory.DirEntry;
+import libsidutils.directory.Directory;
+import libsidutils.directory.DiskDirectory;
+import libsidutils.directory.T64Directory;
 import sidplay.Player;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.config.SidPlay2Section;

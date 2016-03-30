@@ -15,7 +15,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import libsidutils.directory.DirEntry;
-import libsidutils.directory.PseudoDirectory;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
