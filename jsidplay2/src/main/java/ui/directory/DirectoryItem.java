@@ -2,7 +2,7 @@ package ui.directory;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import libsidplay.components.DirEntry;
+import libsidutils.directory.DirEntry;
 
 public class DirectoryItem {
 	private ObjectProperty<DirEntry> dirEntry = new SimpleObjectProperty<DirEntry>();

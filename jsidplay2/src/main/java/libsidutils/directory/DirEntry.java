@@ -1,4 +1,4 @@
-package libsidplay.components;
+package libsidutils.directory;
 
 import java.io.File;
 import java.io.IOException;

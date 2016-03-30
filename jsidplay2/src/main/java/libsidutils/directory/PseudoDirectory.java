@@ -1,4 +1,4 @@
-package ui.directory;
+package libsidutils.directory;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,14 +6,9 @@ import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Locale;
 
-import libsidplay.components.DirEntry;
-import libsidplay.components.Directory;
-import libsidplay.components.c1541.DiskImage;
-import libsidplay.components.cart.Cartridge;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidplay.sidtune.T64;
 import libsidutils.PathUtils;
 import sidplay.Player;
 import ui.entities.collection.HVSCEntry;
@@ -45,11 +40,11 @@ public class PseudoDirectory {
 	public static final Directory getDirectory(Player player, final File file,
 			final IConfig cfg) throws IOException {
 		if (diskFilter.accept(file)) {
-			return DiskImage.getDirectory(file);
+			return DiskDirectory.getDirectory(file);
 		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".t64")) {
-			return T64.getDirectory(file);
+			return T64Directory.getDirectory(file);
 		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".crt")) {
-			return Cartridge.getDirectory(file);
+			return CartridgeDirectory.getDirectory(file);
 		} else if (tuneFilter.accept(file)) {
 			return getTuneAsDirectory(player, file, cfg);
 		}

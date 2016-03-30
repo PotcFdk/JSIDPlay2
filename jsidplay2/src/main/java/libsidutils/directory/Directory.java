@@ -1,4 +1,4 @@
-package libsidplay.components;
+package libsidutils.directory;
 
 import java.util.ArrayList;
 import java.util.Collection;

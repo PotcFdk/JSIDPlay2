@@ -14,7 +14,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
-import libsidplay.components.DirEntry;
+import libsidutils.directory.DirEntry;
+import libsidutils.directory.PseudoDirectory;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -120,7 +121,7 @@ public class Directory extends AnchorPane implements UIPart {
 		dirColumn.setText(previewFile.getName());
 		directoryEntries.clear();
 		try {
-			libsidplay.components.Directory dir = PseudoDirectory.getDirectory(
+			libsidutils.directory.Directory dir = PseudoDirectory.getDirectory(
 					util.getPlayer(), previewFile, util.getConfig());
 			if (dir != null) {
 				// Print directory title/id

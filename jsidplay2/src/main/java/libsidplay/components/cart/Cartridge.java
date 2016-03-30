@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import libsidplay.common.Event;
-import libsidplay.components.Directory;
 import libsidplay.components.cart.supported.ActionReplay;
 import libsidplay.components.cart.supported.AtomicPower;
 import libsidplay.components.cart.supported.Comal80;
@@ -35,7 +34,7 @@ public class Cartridge {
 	private static final Charset ISO88591 = Charset.forName("ISO-8859-1");
 
 	/** CCS64 cartridge type map */
-	enum CRTType {
+	public enum CRTType {
 		NORMAL, ACTION_REPLAY, KCS_POWER_CARTRIDGE, FINAL_CARTRIDGE_III, SIMONS_BASIC, OCEAN_TYPE_1, EXPERT_CARTRIDGE, FUN_PLAY__POWER_PLAY,
 
 		SUPER_GAMES, ATOMIC_POWER, EPYX_FASTLOAD, WESTERMANN_LEARNING, REX_UTILITY, FINAL_CARTRIDGE_I, MAGIC_FORMEL, C64_GAME_SYSTEM__SYSTEM_3,
@@ -46,7 +45,7 @@ public class Cartridge {
 
 		EASYFLASH;
 
-		private static CRTType getType(byte[] header) {
+		public static CRTType getType(byte[] header) {
 			if (!new String(header, 0, 0x10, ISO88591)
 					.equals("C64 CARTRIDGE   ")) {
 				throw new RuntimeException("File is not a .CRT file");
@@ -320,18 +319,4 @@ public class Cartridge {
 		return getClass().getSimpleName();
 	}
 
-	public static Directory getDirectory(File file) throws IOException {
-		Directory dir = new Directory();
-		try (DataInputStream dis = new DataInputStream(
-				new FileInputStream(file))) {
-			final byte[] header = new byte[0x40];
-			dis.readFully(header);
-			CRTType type = CRTType.getType(header);
-			// directory title: cartridge type
-			dir.setTitle(type.toString().replace('_', '-').getBytes(ISO88591));
-			// directory id: size in KB
-			dir.setId(String.valueOf(file.length() >> 10).getBytes(ISO88591));
-		}
-		return dir;
-	}
 }
