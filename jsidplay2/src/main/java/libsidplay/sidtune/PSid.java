@@ -576,8 +576,6 @@ class PSid extends Prg {
 				break;
 			}
 
-			// FIXME Need better solution. Make it possible to override MUS
-			// strings
 			if (info.infoString.size() == 3) {
 				Iterator<String> descriptionIt = info.infoString.iterator();
 				String title = descriptionIt.next();
