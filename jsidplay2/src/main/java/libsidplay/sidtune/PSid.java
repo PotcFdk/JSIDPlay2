@@ -217,6 +217,8 @@ class PSid extends Prg {
 
 	}
 
+	private static final String PSIDDRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
+
 	//
 	// PSID_SPECIFIC and PSID_BASIC are mutually exclusive
 	//
@@ -271,6 +273,9 @@ class PSid extends Prg {
 		Integer start = assembler.getLabels().get("start");
 		if (start == null) {
 			throw new RuntimeException("Label start not found in " + PSIDDRIVER_ASM);
+		}
+		if ((info.determinedDriverLength + 255) >> 8 != 1) {
+			throw new RuntimeException("Driver must not be greater than one block! " + PSIDDRIVER_ASM);
 		}
 		return start;
 	}

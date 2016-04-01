@@ -369,8 +369,6 @@
 					<HBox AnchorPane.leftAnchor="10" alignment="CENTER">
 						<ComboBox onAction="#setVideoStandard" fx:id="videoStandardBox" />
 						<ComboBox onAction="#setEngine" fx:id="engineBox" />
-						<ComboBox onAction="#setSIDDriver" fx:id="sidDriverBox"
-							maxWidth="150" />
 						<ComboBox onAction="#setAudio" fx:id="audioBox" maxWidth="200" />
 						<ComboBox onAction="#setDevice" fx:id="devicesBox"
 							maxWidth="150" />

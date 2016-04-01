@@ -123,14 +123,6 @@ public abstract class SidTune {
 
 	protected SidTuneInfo info = new SidTuneInfo();
 
-	protected static String PSIDDRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
-
-	public static void useDriver(String sidDriver) {
-		if (sidDriver != null) {
-			PSIDDRIVER_ASM = sidDriver;
-		}
-	}
-
 	/**
 	 * Loads a file into a SidTune. Support of a lot of tunes here.
 	 * 

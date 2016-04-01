@@ -4,7 +4,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import libsidplay.common.PSIDDriver;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
@@ -12,8 +11,6 @@ import sidplay.audio.Audio;
 
 @Embeddable
 public class AudioSection implements IAudioSection {
-
-	public static final PSIDDriver DEFAULT_SID_DRIVER = PSIDDriver.JSIDPLAY2;
 
 	private Audio audio = DEFAULT_AUDIO;
 
@@ -26,17 +23,6 @@ public class AudioSection implements IAudioSection {
 	@Override
 	public void setAudio(Audio audio) {
 		this.audio = audio;
-	}
-
-	private PSIDDriver sidDriver = DEFAULT_SID_DRIVER;
-
-	@Enumerated(EnumType.STRING)
-	public PSIDDriver getSidDriver() {
-		return sidDriver;
-	}
-
-	public void setSidDriver(final PSIDDriver sidDriver) {
-		this.sidDriver = sidDriver;
 	}
 
 	private int device = DEFAULT_DEVICE;

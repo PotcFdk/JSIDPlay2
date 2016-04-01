@@ -56,7 +56,6 @@ import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.PSIDDriver;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.components.c1530.Datasette;
@@ -170,8 +169,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private ComboBox<Audio> audioBox;
 	@FXML
-	private ComboBox<PSIDDriver> sidDriverBox;
-	@FXML
 	private ComboBox<Device> devicesBox;
 	@FXML
 	private ComboBox<Engine> engineBox;
@@ -275,10 +272,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		audioBox.setItems(FXCollections.<Audio> observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
 				Audio.COMPARE_MP3));
 		audioBox.getSelectionModel().select(audioSection.getAudio());
-
-		sidDriverBox.setConverter(new EnumToString<PSIDDriver>(bundle));
-		sidDriverBox.setItems(FXCollections.<PSIDDriver> observableArrayList(PSIDDriver.values()));
-		sidDriverBox.getSelectionModel().select(audioSection.getSidDriver());
 
 		devicesBox.setItems(JavaSound.getDevices());
 		devicesBox.getSelectionModel().select(Math.min(audioSection.getDevice(), devicesBox.getItems().size() - 1));
@@ -822,14 +815,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void setAudio() {
 		util.getConfig().getAudioSection().setAudio(audioBox.getSelectionModel().getSelectedItem());
-		restart();
-	}
-
-	@FXML
-	private void setSIDDriver() {
-		PSIDDriver sidDriver = sidDriverBox.getSelectionModel().getSelectedItem();
-		util.getConfig().getAudioSection().setSidDriver(sidDriver);
-		SidTune.useDriver(sidDriver.getDriverPath());
 		restart();
 	}
 
