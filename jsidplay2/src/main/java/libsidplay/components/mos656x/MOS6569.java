@@ -47,7 +47,6 @@ public final class MOS6569 extends VIC {
 
 	private static final int FIRST_DISPLAY_LINE = 15;
 	private static final int LAST_DISPLAY_LINE = 300;
-	private static final int CYCLES_PER_LINE = 63;
 	private static final int MAX_RASTERS = 312;
 
 	protected void doPHI1Fetch() {

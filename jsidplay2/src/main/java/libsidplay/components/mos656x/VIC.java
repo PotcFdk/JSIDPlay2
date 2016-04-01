@@ -227,7 +227,7 @@ public abstract class VIC extends Bank {
 	/** Set when new frame starts. */
 	protected boolean startOfFrame;
 	/** Number of cycles per line. */
-	private final int CYCLES_PER_LINE;
+	protected final int CYCLES_PER_LINE;
 	/** Is CIA asserting lightpen? */
 	private boolean lpAsserted;
 

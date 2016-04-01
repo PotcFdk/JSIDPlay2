@@ -24,7 +24,6 @@ public class MOS6567 extends VIC {
 	}
 
 	private static final int MAX_RASTERS = 263;
-	private static final int CYCLES_PER_LINE = 65;
 	private static final int FIRST_DISPLAY_LINE = 40;
 	private static final int LAST_DISPLAY_LINE = 13;
 
