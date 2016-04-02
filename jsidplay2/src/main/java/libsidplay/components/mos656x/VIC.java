@@ -228,6 +228,8 @@ public abstract class VIC extends Bank {
 	protected boolean startOfFrame;
 	/** Number of cycles per line. */
 	protected final int CYCLES_PER_LINE;
+	/** Number of raster lines */
+	protected final int MAX_RASTERS;
 	/** Is CIA asserting lightpen? */
 	private boolean lpAsserted;
 
@@ -242,11 +244,12 @@ public abstract class VIC extends Bank {
 	 * @param context
 	 * @param cpl
 	 */
-	public VIC(PLA pla, final EventScheduler context, int cpl) {
+	public VIC(PLA pla, final EventScheduler context, int cpl, int maxRasters) {
 		this.pla = pla;
 		this.context = context;
 
 		CYCLES_PER_LINE = cpl;
+		MAX_RASTERS = maxRasters;
 
 		for (int i = 0; i < sprites.length; i++) {
 			sprites[i] = new Sprite(spriteLinkedListHead, i);
@@ -807,30 +810,32 @@ public abstract class VIC extends Bank {
 
 	/** Handle lightpen state change */
 	protected void lightpenEdgeDetector() {
-		if (!lpAsserted) {
-			return;
+		if (rasterY != MAX_RASTERS - 1) {
+			if (!lpAsserted) {
+				return;
+			}
+	
+			if (lpTriggered) {
+				return;
+			}
+			lpTriggered = true;
+	
+			lpx = (byte) getCurrentSpriteCycle();
+			lpx++;
+			if (lpx == CYCLES_PER_LINE) {
+				lpx = 0;
+			}
+	
+			lpx <<= 2;
+			lpx += context.phase() == Phase.PHI1 ? 1 : 2;
+	
+			lpy = (byte) (rasterY & 0xff);
+			if (lineCycle == 9) {
+				lpy++;
+			}
+	
+			activateIRQFlag(MOS656X_INTERRUPT_LP);
 		}
-
-		if (lpTriggered) {
-			return;
-		}
-		lpTriggered = true;
-
-		lpx = (byte) getCurrentSpriteCycle();
-		lpx++;
-		if (lpx == CYCLES_PER_LINE) {
-			lpx = 0;
-		}
-
-		lpx <<= 2;
-		lpx += context.phase() == Phase.PHI1 ? 1 : 2;
-
-		lpy = (byte) (rasterY & 0xff);
-		if (lineCycle == 9) {
-			lpy++;
-		}
-
-		activateIRQFlag(MOS656X_INTERRUPT_LP);
 	}
 
 	/**
@@ -1202,7 +1207,9 @@ public abstract class VIC extends Bank {
 		return pla.vicReadMemoryPHI2(address);
 	}
 
-	public abstract int getBorderWidth();
+	public int getBorderWidth() {
+		return (40 + 4 + 4) * 8;
+	}
 
 	public abstract int getBorderHeight();
 

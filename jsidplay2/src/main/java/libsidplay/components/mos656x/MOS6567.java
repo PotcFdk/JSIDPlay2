@@ -20,10 +20,9 @@ public class MOS6567 extends VIC {
 	private final Palette palette = new Palette();
 
 	public MOS6567(PLA pla, EventScheduler context) {
-		super(pla, context, 65);
+		super(pla, context, 65, 263);
 	}
 
-	private static final int MAX_RASTERS = 263;
 	private static final int FIRST_DISPLAY_LINE = 40;
 	private static final int LAST_DISPLAY_LINE = 13;
 
@@ -411,18 +410,6 @@ public class MOS6567 extends VIC {
 		updatePalette();
 		lineCycle = 9; // preincremented at event
 		context.schedule(event, 0, Phase.PHI1);
-	}
-
-	@Override
-	protected void lightpenEdgeDetector() {
-		if (rasterY != MAX_RASTERS - 1) {
-			super.lightpenEdgeDetector();
-		}
-	}
-
-	@Override
-	public int getBorderWidth() {
-		return (40 + 4 + 4) * 8;
 	}
 
 	@Override
