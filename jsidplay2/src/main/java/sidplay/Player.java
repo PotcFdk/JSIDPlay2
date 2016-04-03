@@ -456,14 +456,12 @@ public class Player extends HardwareEnsemble {
 		// Run until the player gets stopped
 		do {
 			try {
-				// Open tune
 				open();
 				stateProperty.set(State.START);
 				menuHook.accept(Player.this);
 				// Play next chunk of sound data
 				stateProperty.set(State.PLAY);
 				while (play()) {
-					// Pause? sleep awhile
 					if (stateProperty.get() == State.PAUSE) {
 						Thread.sleep(PAUSE_SLEEP_TIME);
 					}
@@ -473,7 +471,6 @@ public class Player extends HardwareEnsemble {
 				stateProperty.set(State.END);
 			} catch (InterruptedException e) {
 			} finally {
-				// Don't forget to close
 				close();
 			}
 			// "Play it once, Sam. For old times' sake."
@@ -658,10 +655,7 @@ public class Player extends HardwareEnsemble {
 	 *            tune to play (SidTune.RESET means just reset C64)
 	 */
 	public final void play(final SidTune tune) {
-		stopC64();
-		setTune(tune);
-		setCommand(null);
-		startC64();
+		play(tune, null);
 	}
 
 	/**
@@ -671,8 +665,20 @@ public class Player extends HardwareEnsemble {
 	 *            basic command to be entered after a normal reset
 	 */
 	public final void resetC64(String command) {
+		play(SidTune.RESET, command);
+	}
+
+	/**
+	 * Turn C64 off and on, load a tune and enter basic command.
+	 * 
+	 * @param tune
+	 *            tune to play (SidTune.RESET means just reset C64)
+	 * @param command
+	 *            basic command to be entered after a normal reset
+	 */
+	private final void play(final SidTune tune, final String command) {
 		stopC64();
-		setTune(SidTune.RESET);
+		setTune(tune);
 		setCommand(command);
 		startC64();
 	}
@@ -773,21 +779,21 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Set Sid Tune Information List (STIL)
+	 * Set SID Tune Information List (STIL)
 	 * 
 	 * @param stil
-	 *            Sid Tune Information List
+	 *            SID Tune Information List
 	 */
 	public final void setSTIL(STIL stil) {
 		this.stil = stil;
 	}
 
 	/**
-	 * Get Sid Tune Information List info.
+	 * Get SID Tune Information List info.
 	 * 
 	 * @param collectionName
 	 *            entry path to get infos for
-	 * @return Sid Tune Information List info
+	 * @return SID Tune Information List info
 	 */
 	public final STILEntry getStilEntry(String collectionName) {
 		return stil != null && collectionName != null ? stil.getSTILEntry(collectionName) : null;
@@ -877,13 +883,8 @@ public class Player extends HardwareEnsemble {
 			System.err.println("Missing argument: <filename>");
 			System.exit(-1);
 		}
-		// Load tune
 		final SidTune tune = SidTune.load(new File(args[0]));
-
-		// Create player
 		final Player player = new Player(new IniConfig());
-
-		// start C64
 		player.play(tune);
 	}
 
