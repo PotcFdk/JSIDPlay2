@@ -13,6 +13,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -29,8 +30,7 @@ import ui.common.UIUtil;
 import ui.tuneinfos.TuneInfos;
 
 public class WebView extends Tab implements UIPart {
-	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file,
-			toAttach) -> toAttach == null
+	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file, toAttach) -> toAttach == null
 			|| file.getName().compareTo(toAttach.getName()) < 0;
 
 	@FXML
@@ -41,6 +41,8 @@ public class WebView extends Tab implements UIPart {
 	private TextField urlField;
 	@FXML
 	private ToggleButton showTuneInfoButton;
+	@FXML
+	private Slider zoom;
 
 	private Convenience convenience;
 	private ObjectProperty<WebViewType> type;
@@ -49,20 +51,17 @@ public class WebView extends Tab implements UIPart {
 
 	private UIUtil util;
 
-	private ChangeListener<? super Number> changeListener = (observable,
-			oldValue, newValue) -> {
+	private ChangeListener<? super Number> changeListener = (observable, oldValue, newValue) -> {
 		DoubleProperty progressProperty = util.progressProperty(webView);
 		if (progressProperty != null) {
 			progressProperty.setValue(newValue);
 		}
 	};
 
-	private ChangeListener<? super String> locationListener = (observable,
-			oldValue, newValue) -> {
+	private ChangeListener<? super String> locationListener = (observable, oldValue, newValue) -> {
 		urlField.setText(newValue);
 		try {
-			if (convenience.autostart(new URL(newValue), LEXICALLY_FIRST_MEDIA,
-					null)) {
+			if (convenience.autostart(new URL(newValue), LEXICALLY_FIRST_MEDIA, null)) {
 				util.setPlayingTab(this);
 			}
 		} catch (IOException | SidTuneError | URISyntaxException e) {
@@ -70,16 +69,13 @@ public class WebView extends Tab implements UIPart {
 		}
 	};
 
-	private ChangeListener<? super Number> historyListener = (observable,
-			oldValue, newValue) -> {
+	private ChangeListener<? super Number> historyListener = (observable, oldValue, newValue) -> {
 		backward.setDisable(newValue.intValue() <= 0);
-		forward.setDisable(newValue.intValue() + 1 >= engine.getHistory()
-				.getEntries().size());
+		forward.setDisable(newValue.intValue() + 1 >= engine.getHistory().getEntries().size());
 
 	};
 
-	private ChangeListener<? super WebViewType> loadUrlListener = (observable,
-			oldValue, newValue) -> engine.load(url);
+	private ChangeListener<? super WebViewType> loadUrlListener = (observable, oldValue, newValue) -> engine.load(url);
 
 	private boolean showTuneInfos;
 
@@ -98,10 +94,8 @@ public class WebView extends Tab implements UIPart {
 	@FXML
 	private void initialize() {
 		convenience = new Convenience(util.getPlayer());
-		convenience.setAutoStartedFile((file) -> {
-			if (showTuneInfos
-					&& PathUtils.getFilenameSuffix(file.getName()).equalsIgnoreCase(
-							".sid")) {
+		convenience.setAutoStartedFile(file -> {
+			if (showTuneInfos && PathUtils.getFilenameSuffix(file.getName()).equalsIgnoreCase(".sid")) {
 				showTuneInfos(util.getPlayer().getTune(), file);
 			}
 		});
@@ -111,16 +105,20 @@ public class WebView extends Tab implements UIPart {
 		engine.getHistory().currentIndexProperty().addListener(historyListener);
 		engine.locationProperty().addListener(locationListener);
 		engine.getLoadWorker().progressProperty().addListener(changeListener);
+
+		zoom.valueProperty().addListener((observable, oldValue, newValue) -> {
+			util.getConfig().getOnlineSection().setZoom(newValue.doubleValue());
+			webView.setZoom(newValue.doubleValue());
+		});
+		zoom.setValue(util.getConfig().getOnlineSection().getZoom());
 	}
 
 	@Override
 	public void doClose() {
 		type.removeListener(loadUrlListener);
-		engine.getHistory().currentIndexProperty()
-				.removeListener(historyListener);
+		engine.getHistory().currentIndexProperty().removeListener(historyListener);
 		engine.locationProperty().removeListener(locationListener);
-		engine.getLoadWorker().progressProperty()
-				.removeListener(changeListener);
+		engine.getLoadWorker().progressProperty().removeListener(changeListener);
 	}
 
 	@FXML

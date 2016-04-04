@@ -89,7 +89,6 @@ public class JSidPlay2Main extends Application {
 		player.startC64();
 
 		final JSidPlay2 jSidplay2 = new JSidPlay2(primaryStage, player);
-		jSidplay2.open();
 		// Set default position and size
 		final SidPlay2Section section = (SidPlay2Section) player.getConfig().getSidplay2Section();
 		if (section.getFullScreen() != null) {
@@ -112,6 +111,7 @@ public class JSidPlay2Main extends Application {
 			window.yProperty().addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
 			processCommandLineArgs();
 		}
+		jSidplay2.open();
 		testInstance = jSidplay2;
 	}
 

@@ -12,6 +12,8 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class OnlineSection {
 
+	private static final double DEF_ZOOM = 1.5;
+	
 	private static final String MAFIFEST_URL_KEY = "url:";
 
 	/**
@@ -134,4 +136,13 @@ public class OnlineSection {
 		soasc8580R5 = soasc8580r5;
 	}
 
+	private double zoom = DEF_ZOOM;
+	
+	public double getZoom() {
+		return zoom;
+	}
+	
+	public void setZoom(double zoom) {
+		this.zoom = zoom;
+	}
 }
