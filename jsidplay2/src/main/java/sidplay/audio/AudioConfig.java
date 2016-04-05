@@ -57,8 +57,7 @@ public class AudioConfig {
 	 * @return AudioConfig for current specification
 	 */
 	public static AudioConfig getInstance(IAudioSection audio) {
-		return new AudioConfig(audio.getSamplingRate().getFrequency(), 2,
-				audio.getDevice());
+		return new AudioConfig(audio.getSamplingRate().getFrequency(), 2, audio.getDevice());
 	}
 
 	/**

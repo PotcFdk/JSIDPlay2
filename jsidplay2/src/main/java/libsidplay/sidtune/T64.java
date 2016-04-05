@@ -25,8 +25,7 @@ public class T64 extends Prg {
 		public byte[] name;
 	}
 
-	protected static SidTune load(final String name, final byte[] dataBuf)
-			throws SidTuneError {
+	protected static SidTune load(final String name, final byte[] dataBuf) throws SidTuneError {
 		if (!PathUtils.getFilenameSuffix(name).equalsIgnoreCase(".t64")) {
 			throw new SidTuneError("Bad file extension expected: .t64");
 		}
@@ -35,7 +34,9 @@ public class T64 extends Prg {
 		t64.program = dataBuf;
 		t64.programOffset = entry.programOffset;
 		t64.info.loadAddr = entry.loadAddr;
-		t64.info.c64dataLen = Math.min(entry.c64dataLen, dataBuf.length - t64.programOffset); // don't trust entry.c64dataLen
+		t64.info.c64dataLen = Math.min(entry.c64dataLen, dataBuf.length - t64.programOffset); // don't
+																								// trust
+																								// entry.c64dataLen
 
 		final String credit = Petscii.petsciiToIso88591(entry.name);
 		t64.info.infoString.add(credit);
@@ -51,30 +52,25 @@ public class T64 extends Prg {
 	 * @param entryNum
 	 *            entry number to load
 	 */
-	public T64Entry getEntry(final byte[] dataBuf, final int entryNum)
-			throws SidTuneError {
+	public T64Entry getEntry(final byte[] dataBuf, final int entryNum) throws SidTuneError {
 		int totalEntries = ((dataBuf[35] & 0xff) << 8) | (dataBuf[34] & 0xff);
 		if (entryNum < 1 || entryNum > totalEntries) {
-			throw new SidTuneError("Illegal T64 entry number: " + entryNum
-					+ ", must be 1.." + totalEntries);
+			throw new SidTuneError("Illegal T64 entry number: " + entryNum + ", must be 1.." + totalEntries);
 		}
-		int pos = 32 /* header */+ 32 * entryNum;
+		int pos = 32 /* header */ + 32 * entryNum;
 		// expect 1 (Normal tape file) and PRG
 		final byte type = dataBuf[pos++];
 		final byte fileType = dataBuf[pos++];
-		if (pos + 32 > dataBuf.length
-				|| (type != 1 && (fileType & BITMASK_FILETYPE) != FILETYPE_PRG)) {
+		if (pos + 32 > dataBuf.length || (type != 1 && (fileType & BITMASK_FILETYPE) != FILETYPE_PRG)) {
 			throw new SidTuneError("Illegal T64 entry type, must be PRG normal tape file");
 		}
 		final T64Entry entry = new T64Entry();
 		// Get start address (or Load address)
-		entry.loadAddr = (dataBuf[pos++] & 0xff)
-				+ ((dataBuf[pos++] & 0xff) << 8);
+		entry.loadAddr = (dataBuf[pos++] & 0xff) + ((dataBuf[pos++] & 0xff) << 8);
 
 		// Get end address (actual end address in memory, if the file was loaded
 		// into a C64).
-		entry.c64dataLen = (dataBuf[pos++] & 0xff)
-				+ ((dataBuf[pos++] & 0xff) << 8);
+		entry.c64dataLen = (dataBuf[pos++] & 0xff) + ((dataBuf[pos++] & 0xff) << 8);
 		entry.c64dataLen -= entry.loadAddr;
 
 		// skip unused
@@ -95,10 +91,9 @@ public class T64 extends Prg {
 		return entry;
 	}
 
-	public void save(File file, byte[] program, final int programOffset,
-			final int c64dataLen, final int loadAddr) throws IOException {
-		try (DataOutputStream dout = new DataOutputStream(new FileOutputStream(
-				file))) {
+	public void save(File file, byte[] program, final int programOffset, final int c64dataLen, final int loadAddr)
+			throws IOException {
+		try (DataOutputStream dout = new DataOutputStream(new FileOutputStream(file))) {
 			dout.writeByte(loadAddr & 0xff);
 			dout.writeByte((loadAddr >> 8) & 0xff);
 			dout.write(program, programOffset, c64dataLen);

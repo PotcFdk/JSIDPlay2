@@ -9,15 +9,13 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.util.Callback;
 
-public class MusicCollectionCellFactory implements
-		Callback<TreeView<File>, TreeCell<File>> {
+public class MusicCollectionCellFactory implements Callback<TreeView<File>, TreeCell<File>> {
 
 	private static final String CURRENTLY_PLAYED_FILE_ROW = "currentlyPlayedRow";
 
 	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems;
 
-	public void setCurrentlyPlayedTreeItems(
-			ObservableList<TreeItem<File>> currentlyPlayedTreeItems) {
+	public void setCurrentlyPlayedTreeItems(ObservableList<TreeItem<File>> currentlyPlayedTreeItems) {
 		this.currentlyPlayedTreeItems = currentlyPlayedTreeItems;
 	}
 
@@ -50,8 +48,7 @@ public class MusicCollectionCellFactory implements
 		}
 
 		private boolean isCurrentlyPlayed() {
-			return currentlyPlayedTreeItems.stream()
-					.filter(treeItem -> treeItem.getValue().equals(getItem()))
+			return currentlyPlayedTreeItems.stream().filter(treeItem -> treeItem.getValue().equals(getItem()))
 					.findFirst().isPresent();
 		}
 

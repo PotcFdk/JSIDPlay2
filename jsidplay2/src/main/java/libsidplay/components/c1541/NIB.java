@@ -71,8 +71,7 @@ public class NIB extends G64 {
 	 * @param readOnly
 	 *            mount read-only?
 	 */
-	public NIB(final GCR gcr, final String fileName, final RandomAccessFile fd,
-			final boolean readOnly) {
+	public NIB(final GCR gcr, final String fileName, final RandomAccessFile fd, final boolean readOnly) {
 		super(gcr, fileName, fd, readOnly);
 	}
 
@@ -87,8 +86,7 @@ public class NIB extends G64 {
 		// Check image header
 		fd.readFully(nibHeader);
 		if (!new String(nibHeader, "ISO-8859-1").startsWith(IMAGE_HEADER)) {
-			throw new IOException(
-					String.format("GCR image is not MNIB-1541-RAW format."));
+			throw new IOException(String.format("GCR image is not MNIB-1541-RAW format."));
 		}
 		// Check track number
 		tracks = MAX_TRACKS_1541;
@@ -146,12 +144,11 @@ public class NIB extends G64 {
 				Arrays.fill(trackData, (byte) 0x55);
 				trackData[0] = (byte) 0xff;
 			} else if (trackLen > GCR.NUM_MAX_BYTES_TRACK) {
-				System.err.printf("  Warning: track too long, cropping to %d!",
-						GCR.NUM_MAX_BYTES_TRACK);
+				System.err.printf("  Warning: track too long, cropping to %d!", GCR.NUM_MAX_BYTES_TRACK);
 				trackLen = GCR.NUM_MAX_BYTES_TRACK;
 			}
 			trackSize[track] = trackLen;
-			// System.out.printf("- track length:  %d\n", trackLen);
+			// System.out.printf("- track length: %d\n", trackLen);
 
 			gcr.setTrackData(trackData, trackDataPos, GCR.NUM_MAX_BYTES_TRACK);
 			trackDataPos += GCR.NUM_MAX_BYTES_TRACK;
@@ -201,7 +198,7 @@ public class NIB extends G64 {
 		/* maximum position allowed for cycle */
 		int stopPos = nibTrack + MNIB_TRACK_LENGTH - MATCH_LENGTH;
 
-		for (int startPos = nibTrack; true; ) {
+		for (int startPos = nibTrack; true;) {
 			/* cycle search variable */
 			int syncPos;
 			if ((syncPos = startPos + MIN_TRACK_LENGTH) >= stopPos) {
@@ -257,9 +254,7 @@ public class NIB extends G64 {
 		while (pos < bufferEnd) {
 			if ((pos = findSync(gcrData, pos, bufferEnd)) == -1)
 				return -1;
-			if ((gcrData[pos + 0] == 0x52)
-					&& ((gcrData[pos + 1] & 0xc0) == 0x40)
-					&& ((gcrData[pos + 2] & 0x0f) == 0x05)
+			if ((gcrData[pos + 0] == 0x52) && ((gcrData[pos + 1] & 0xc0) == 0x40) && ((gcrData[pos + 2] & 0x0f) == 0x05)
 					&& ((gcrData[pos + 3] & 0xfc) == 0x28)) {
 				break;
 			}
@@ -286,8 +281,7 @@ public class NIB extends G64 {
 				pos = gcrEnd;
 				return -1; /* not found */
 			}
-			if (((gcrData[pos + 0] & 0x03) == 0x03)
-					&& (gcrData[pos + 1] == (byte) 0xff))
+			if (((gcrData[pos + 0] & 0x03) == 0x03) && (gcrData[pos + 1] == (byte) 0xff))
 				break;
 			pos++;
 		}

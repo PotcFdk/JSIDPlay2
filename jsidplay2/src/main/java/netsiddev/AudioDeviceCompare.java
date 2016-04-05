@@ -2,8 +2,7 @@ package netsiddev;
 
 import java.util.Comparator;
 
-public class AudioDeviceCompare implements
-		Comparator<AudioDevice> {
+public class AudioDeviceCompare implements Comparator<AudioDevice> {
 
 	private String primaryDeviceName = "Primary Sound Driver";
 
@@ -31,7 +30,7 @@ public class AudioDeviceCompare implements
 			return devName1.compareTo(devName2);
 		}
 	}
-	
+
 	public void setPrimaryDeviceName(String primaryDeviceName) {
 		this.primaryDeviceName = primaryDeviceName;
 	}

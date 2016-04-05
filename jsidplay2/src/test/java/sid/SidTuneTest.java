@@ -32,8 +32,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadPSidStereoTest() {
-		config.getSidplay2Section().setLastDirectory(
-				"target/test-classes/sid/examples/stereo/2sids/Nata");
+		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples/stereo/2sids/Nata");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
@@ -53,8 +52,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadPSidTest() {
-		config.getSidplay2Section().setLastDirectory(
-				"target/test-classes/sid/examples");
+		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
@@ -65,16 +63,14 @@ public class SidTuneTest extends JSIDPlay2Test {
 		// Driver
 		Assert.assertTrue(checkRam(0xc000, new byte[] { 0x4c, 0x00, 0x08 }));
 		// Load/Play
-		Assert.assertTrue(checkRam(0x0800,
-				new byte[] { 0x4c, (byte) 0xb6, 0x66 }));
+		Assert.assertTrue(checkRam(0x0800, new byte[] { 0x4c, (byte) 0xb6, 0x66 }));
 		// Init
 		Assert.assertTrue(checkRam(0x0803, new byte[] { (byte) 0xa2, 0x35 }));
 	}
 
 	@Test
 	public void loadP00Test() {
-		config.getSidplay2Section().setLastDirectory(
-				"target/test-classes/sid/examples");
+		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
@@ -82,14 +78,12 @@ public class SidTuneTest extends JSIDPlay2Test {
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
-		Assert.assertTrue(checkRam(0x0801, new byte[] { (byte) 0xde, 0x38,
-				(byte) 0xa9 }));
+		Assert.assertTrue(checkRam(0x0801, new byte[] { (byte) 0xde, 0x38, (byte) 0xa9 }));
 	}
 
 	@Test
 	public void loadMusTest() {
-		config.getSidplay2Section().setLastDirectory(
-				"target/test-classes/sid/examples");
+		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
@@ -98,8 +92,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		sleep(SID_TUNE_LOADED_TIMEOUT);
 
 		// Driver
-		Assert.assertTrue(checkRam(0x0400, new byte[] { 0x4c, (byte) 0x80,
-				(byte) 0xec }));
+		Assert.assertTrue(checkRam(0x0400, new byte[] { 0x4c, (byte) 0x80, (byte) 0xec }));
 		// Load
 		Assert.assertTrue(checkRam(0x0900, new byte[] { (byte) 0xc9, 0x28 }));
 		// Init
@@ -110,8 +103,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadMusStereoTest() {
-		config.getSidplay2Section().setLastDirectory(
-				"target/test-classes/sid/examples/stereo");
+		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples/stereo");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
@@ -122,22 +114,18 @@ public class SidTuneTest extends JSIDPlay2Test {
 		Assert.assertNotNull(player.getC64().getPla().getSID(0));
 		Assert.assertNotNull(player.getC64().getPla().getSID(1));
 		// Driver
-		Assert.assertTrue(checkRam(0x0400, new byte[] { 0x4c, (byte) 0x96,
-				(byte) 0xfc }));
+		Assert.assertTrue(checkRam(0x0400, new byte[] { 0x4c, (byte) 0x96, (byte) 0xfc }));
 		// Load
 		Assert.assertTrue(checkRam(0x0900, new byte[] { 0x00 }));
 		// Init
-		Assert.assertTrue(checkRam(0xfc90,
-				new byte[] { 0x20, 0x60, (byte) 0xec }));
+		Assert.assertTrue(checkRam(0xfc90, new byte[] { 0x20, 0x60, (byte) 0xec }));
 		// Play
-		Assert.assertTrue(checkRam(0xfc96, new byte[] { 0x20, (byte) 0x80,
-				(byte) 0xec }));
+		Assert.assertTrue(checkRam(0xfc96, new byte[] { 0x20, (byte) 0x80, (byte) 0xec }));
 	}
 
 	@Test
 	public void loadPrgTest() {
-		config.getSidplay2Section().setLastDirectory(
-				"target/test-classes/sid/examples");
+		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
@@ -150,8 +138,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 	@Test
 	public void loadPSid3SidTest() {
-		config.getSidplay2Section().setLastDirectory(
-				"target/test-classes/sid/examples/stereo/3sids");
+		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples/stereo/3sids");
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);

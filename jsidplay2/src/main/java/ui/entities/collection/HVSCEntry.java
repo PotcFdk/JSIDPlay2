@@ -33,8 +33,7 @@ public class HVSCEntry {
 	public HVSCEntry() {
 	}
 
-	public HVSCEntry(final IntSupplier lengthFnct, final String path,
-			final File tuneFile, SidTune tune) {
+	public HVSCEntry(final IntSupplier lengthFnct, final String path, final File tuneFile, SidTune tune) {
 		this.name = tuneFile.getName();
 		this.path = path.length() > 0 ? path : tuneFile.getPath();
 		if (tune != null) {
@@ -53,8 +52,7 @@ public class HVSCEntry {
 			this.format = tune.getClass().getSimpleName();
 			StringBuilder ids = new StringBuilder();
 			tune.identify().stream().forEach(id -> ids.append(',').append(id));
-			this.playerId = ids.length() > 0 ? ids.substring(1) : ids
-					.toString();
+			this.playerId = ids.length() > 0 ? ids.substring(1) : ids.toString();
 			this.noOfSongs = info.getSongs();
 			this.startSong = info.getStartSong();
 			this.clockFreq = info.getClockSpeed();
@@ -64,9 +62,7 @@ public class HVSCEntry {
 			this.sidModel3 = info.getSid3Model();
 			this.compatibility = info.getCompatibility();
 			this.tuneLength = Long.valueOf(lengthFnct.getAsInt());
-			this.audio = info.getSidChipBase(1) != 0 ? info.getSidChipBase(2) != 0 ? "3-SID"
-					: "Stereo"
-					: "Mono";
+			this.audio = info.getSidChipBase(1) != 0 ? info.getSidChipBase(2) != 0 ? "3-SID" : "Stereo" : "Mono";
 			this.sidChipBase1 = info.getSidChipBase(0);
 			this.sidChipBase2 = info.getSidChipBase(1);
 			this.sidChipBase3 = info.getSidChipBase(2);

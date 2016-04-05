@@ -49,8 +49,7 @@ public class Split {
 
 		byte[] buffer = new byte[1 << 20];
 		BufferedOutputStream os = null;
-		try (BufferedInputStream is = new BufferedInputStream(
-				new FileInputStream(new File(filename)), 1 << 20)) {
+		try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(new File(filename)), 1 << 20)) {
 			int bytesRead = 0, totalBytesRead = 0;
 			os = createOutputStream(output);
 			int len = Math.min(buffer.length, totalBytes - totalBytesRead);
@@ -80,14 +79,11 @@ public class Split {
 	}
 
 	private String createOutputFilename(String filename, int partNum) {
-		return filename.substring(0, filename.lastIndexOf(".zip"))
-				+ String.format(".%03d", partNum);
+		return filename.substring(0, filename.lastIndexOf(".zip")) + String.format(".%03d", partNum);
 	}
 
-	private BufferedOutputStream createOutputStream(String filename)
-			throws FileNotFoundException {
-		return new BufferedOutputStream(
-				new FileOutputStream(new File(filename)), 1 << 20);
+	private BufferedOutputStream createOutputStream(String filename) throws FileNotFoundException {
+		return new BufferedOutputStream(new FileOutputStream(new File(filename)), 1 << 20);
 	}
 
 }

@@ -13,26 +13,23 @@ import javax.persistence.Embeddable;
 public class OnlineSection {
 
 	private static final double DEF_ZOOM = 1.5;
-	
+
 	private static final String MAFIFEST_URL_KEY = "url:";
 
 	/**
 	 * URL where the JSIDPlay2 is deployed to.
 	 */
 	private static final String DEPLOYMENT_URL;
+
 	static {
 		String codebase = "http://kenchis.t15.org/jsidplay2/javafx/";
 		try {
 			// Determine download URL from project URL
-			URI uri = OnlineSection.class.getResource("/META-INF/MANIFEST.MF")
-					.toURI();
-			FileSystems.newFileSystem(uri,
-					Collections.singletonMap("create", "true"));
-			Optional<String> url = Files.lines(Paths.get(uri))
-					.filter(s -> s.startsWith(MAFIFEST_URL_KEY)).findFirst();
+			URI uri = OnlineSection.class.getResource("/META-INF/MANIFEST.MF").toURI();
+			FileSystems.newFileSystem(uri, Collections.singletonMap("create", "true"));
+			Optional<String> url = Files.lines(Paths.get(uri)).filter(s -> s.startsWith(MAFIFEST_URL_KEY)).findFirst();
 			if (url.isPresent()) {
-				codebase = url.get().substring(MAFIFEST_URL_KEY.length())
-						.trim();
+				codebase = url.get().substring(MAFIFEST_URL_KEY.length()).trim();
 			}
 		} catch (Exception e) {
 			// MANIFEST.MF is only available in a release version!
@@ -103,8 +100,7 @@ public class OnlineSection {
 
 	private static final String SOASC_BASE = "http://www.se2a1.net/soasc/dl.php?d=";
 
-	private String soasc6581R2 = SOASC_BASE
-			+ "soasc/soasc_mp3{0}_T{1,number,00}.sid_MOS6581R2.mp3";
+	private String soasc6581R2 = SOASC_BASE + "soasc/soasc_mp3{0}_T{1,number,00}.sid_MOS6581R2.mp3";
 
 	public String getSoasc6581R2() {
 		return soasc6581R2;
@@ -114,8 +110,7 @@ public class OnlineSection {
 		soasc6581R2 = soasc6581r2;
 	}
 
-	private String soasc6581R4 = SOASC_BASE
-			+ "soasc/soasc_mp3{0}_T{1,number,00}.sid_MOS6581R4.mp3";
+	private String soasc6581R4 = SOASC_BASE + "soasc/soasc_mp3{0}_T{1,number,00}.sid_MOS6581R4.mp3";
 
 	public String getSoasc6581R4() {
 		return soasc6581R4;
@@ -125,8 +120,7 @@ public class OnlineSection {
 		soasc6581R4 = soasc6581r4;
 	}
 
-	private String soasc8580R5 = SOASC_BASE
-			+ "soasc/soasc_mp3{0}_T{1,number,00}.sid_CSG8580R5.mp3";
+	private String soasc8580R5 = SOASC_BASE + "soasc/soasc_mp3{0}_T{1,number,00}.sid_CSG8580R5.mp3";
 
 	public String getSoasc8580R5() {
 		return soasc8580R5;
@@ -137,11 +131,11 @@ public class OnlineSection {
 	}
 
 	private double zoom = DEF_ZOOM;
-	
+
 	public double getZoom() {
 		return zoom;
 	}
-	
+
 	public void setZoom(double zoom) {
 		this.zoom = zoom;
 	}

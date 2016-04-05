@@ -104,9 +104,8 @@ public interface IC1541Section {
 		case 4:
 			return isRamExpansionEnabled4();
 		default:
-			throw new RuntimeException(String.format(
-					"Unsupported Ram Expansion: %d (max=%d)", selector,
-					MAX_RAM_EXPANSIONS));
+			throw new RuntimeException(
+					String.format("Unsupported Ram Expansion: %d (max=%d)", selector, MAX_RAM_EXPANSIONS));
 		}
 	}
 

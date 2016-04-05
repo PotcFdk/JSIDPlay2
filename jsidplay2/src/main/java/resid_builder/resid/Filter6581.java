@@ -13,28 +13,28 @@ package resid_builder.resid;
 public final class Filter6581 extends Filter {
 	/** Filter highpass state. */
 	private int Vhp;
-	
+
 	/** Filter bandpass state. */
 	private int Vbp;
-	
+
 	/** Filter lowpass state. */
 	private int Vlp;
 
 	/** Current volume amplifier setting. */
 	private char[] currentGain;
-	
+
 	/** Current filter/voice mixer setting. */
 	private char[] currentMixer;
-	
+
 	/** Filter input summer setting. */
 	private char[] currentSummer;
-	
+
 	/** Filter resonance value. */
 	private char[] currentResonance;
 
 	/** VCR + associated capacitor connected to highpass output. */
 	private final Integrator hpIntegrator;
-	
+
 	/** VCR + associated capacitor connected to lowpass output. */
 	private final Integrator bpIntegrator;
 
@@ -42,14 +42,14 @@ public final class Filter6581 extends Filter {
 	private int ve;
 
 	private final int voiceScaleS14, voiceDC, vo_T16;
-	
+
 	private final char[] f0_dac;
-	
+
 	private final char[][] mixer, summer, gain;
-	
+
 	protected Filter6581() {
 		super();
-		
+
 		voiceScaleS14 = FilterModelConfig.getVoiceScaleS14();
 		voiceDC = FilterModelConfig.getVoiceDC();
 		vo_T16 = FilterModelConfig.getVO_T16();
@@ -62,17 +62,19 @@ public final class Filter6581 extends Filter {
 
 		input(0);
 	}
-	
+
 	/**
 	 * Set filter curve type based on single parameter.
 	 * 
-	 * @param curvePosition 0 .. 1, where 0 sets center frequency high ("light") and 1 sets it low ("dark")
+	 * @param curvePosition
+	 *            0 .. 1, where 0 sets center frequency high ("light") and 1
+	 *            sets it low ("dark")
 	 */
 	public void setFilterCurve(double curvePosition) {
 		System.arraycopy(FilterModelConfig.getDAC(FilterModelConfig.getDacZero(curvePosition)), 0, f0_dac, 0, 2048);
 		updatedCenterFrequency();
 	}
-	
+
 	@Override
 	protected int clock(final int voice1, final int voice2, final int voice3) {
 		int v1 = (voice1 * voiceScaleS14 >> 18) + voiceDC;

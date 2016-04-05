@@ -39,7 +39,9 @@ import sidplay.ini.IniReader;
  * 
  */
 public class JSIDDeviceConfig {
-	/** Bump this each time you want to invalidate jsiddevice.ini files on disk */
+	/**
+	 * Bump this each time you want to invalidate jsiddevice.ini files on disk
+	 */
 	protected static final int REQUIRED_CONFIG_VERSION = 1;
 
 	/** Name of our config file. */
@@ -50,7 +52,7 @@ public class JSIDDeviceConfig {
 
 	/** Device name prefix of JSIDDEVICE 1.0 */
 	private static final String JSIDDEVICE1_NAME_PREFIX = "JSidDevice";
-	
+
 	private IniJSIDDeviceSection jsiddeviceSection;
 
 	private IAudioSection audioSection;
@@ -58,13 +60,13 @@ public class JSIDDeviceConfig {
 	protected IniReader iniReader;
 
 	private String[] filterList;
-	
+
 	/** ReSid device names are sorted by filter strength and SID model */
 	public class compareReSidFilterNames implements Comparator<String> {
 		private static final String LIGHT8580 = "Light8580";
 		private static final String LIGHT = "Light";
 		private static final String DARK = "Dark";
-		
+
 		public int compare(String o1, String o2) {
 			if (o1.startsWith(LIGHT) && !o2.startsWith(LIGHT)) {
 				return -1;
@@ -78,35 +80,35 @@ public class JSIDDeviceConfig {
 				}
 				return -o1.compareTo(o2);
 			}
-			
+
 			if (o1.startsWith(DARK) && !o2.startsWith(DARK)) {
 				return 1;
 			} else if (o2.startsWith(DARK) && !o1.startsWith(DARK)) {
 				return -1;
-			} 
+			}
 			return o1.compareTo(o2);
 		}
 	}
-	
+
 	private void clear() {
 		jsiddeviceSection = new IniJSIDDeviceSection(iniReader);
 		audioSection = new IniAudioSection(iniReader);
-		
+
 		final List<String> filters = new ArrayList<String>();
 		final List<String> filtersResidfp = new ArrayList<String>();
 		final List<String> filtersResid = new ArrayList<String>();
-		
+
 		for (final String heading : iniReader.listSections()) {
 			if (!heading.matches("Filter.*")) {
 				continue;
 			}
-			
+
 			String filterName = heading.substring(6);
-			
+
 			if (filterName.startsWith(JSIDDEVICE1_NAME_PREFIX)) {
 				filters.add(filterName);
 			} else {
-				IFilterSection iniFilter =  getFilter(filterName);
+				IFilterSection iniFilter = getFilter(filterName);
 				if (iniFilter.isReSIDfpFilter6581() || iniFilter.isReSIDfpFilter8580()) {
 					filtersResidfp.add(filterName);
 				} else {
@@ -121,7 +123,7 @@ public class JSIDDeviceConfig {
 
 		filters.addAll(filtersResid);
 		filters.addAll(filtersResidfp);
-		
+
 		filterList = filters.toArray(new String[] {});
 	}
 
@@ -152,7 +154,8 @@ public class JSIDDeviceConfig {
 				System.err.println("INI reading failed: " + e.getMessage());
 			}
 
-			System.out.println("INI file old/broken (version=" + jsiddeviceSection.getVersion() + "). Using default settings.");
+			System.out.println(
+					"INI file old/broken (version=" + jsiddeviceSection.getVersion() + "). Using default settings.");
 		}
 
 		readInternal();
@@ -180,7 +183,7 @@ public class JSIDDeviceConfig {
 					return configPlace;
 				}
 			}
-			
+
 			return configPlace;
 		} catch (final AccessControlException e) {
 			// No external config file in the ui version
@@ -212,7 +215,7 @@ public class JSIDDeviceConfig {
 	}
 
 	public void write() {
-		if (! iniReader.isDirty()) {
+		if (!iniReader.isDirty()) {
 			return;
 		}
 

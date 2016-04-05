@@ -29,8 +29,7 @@ public class IniFilterSection implements IFilterSection {
 
 	@Override
 	public void setFilter8580CurvePosition(float filter8580CurvePosition) {
-		ini.setProperty(name, "Filter8580CurvePosition",
-				filter8580CurvePosition);
+		ini.setProperty(name, "Filter8580CurvePosition", filter8580CurvePosition);
 	}
 
 	@Override
@@ -40,8 +39,7 @@ public class IniFilterSection implements IFilterSection {
 
 	@Override
 	public void setFilter6581CurvePosition(float filter6581CurvePosition) {
-		ini.setProperty(name, "Filter6581CurvePosition",
-				filter6581CurvePosition);
+		ini.setProperty(name, "Filter6581CurvePosition", filter6581CurvePosition);
 	}
 
 	public float getAttenuation() {
@@ -65,8 +63,7 @@ public class IniFilterSection implements IFilterSection {
 	}
 
 	public void setVoiceNonlinearity(float voiceNonlinearity) {
-		ini.setProperty(name, "VoiceNonlinearity",
-				String.valueOf(voiceNonlinearity));
+		ini.setProperty(name, "VoiceNonlinearity", String.valueOf(voiceNonlinearity));
 	}
 
 	public float getBaseresistance() {
@@ -74,8 +71,7 @@ public class IniFilterSection implements IFilterSection {
 	}
 
 	public void setBaseresistance(float baseresistance) {
-		ini.setProperty(name, "Type3BaseResistance",
-				String.valueOf(baseresistance));
+		ini.setProperty(name, "Type3BaseResistance", String.valueOf(baseresistance));
 	}
 
 	public float getOffset() {
@@ -99,8 +95,7 @@ public class IniFilterSection implements IFilterSection {
 	}
 
 	public void setMinimumfetresistance(float minimumfetresistance) {
-		ini.setProperty(name, "Type3MinimumFETResistance",
-				String.valueOf(minimumfetresistance));
+		ini.setProperty(name, "Type3MinimumFETResistance", String.valueOf(minimumfetresistance));
 	}
 
 	public float getK() {
@@ -124,7 +119,6 @@ public class IniFilterSection implements IFilterSection {
 	}
 
 	public void setResonanceFactor(float resonanceFactor) {
-		ini.setProperty(name, "ResonanceFactor",
-				String.valueOf(resonanceFactor));
+		ini.setProperty(name, "ResonanceFactor", String.valueOf(resonanceFactor));
 	}
 }

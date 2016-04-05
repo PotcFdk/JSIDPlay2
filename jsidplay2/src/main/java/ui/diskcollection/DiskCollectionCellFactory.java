@@ -6,8 +6,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
 import javafx.util.Callback;
 
-public class DiskCollectionCellFactory implements
-		Callback<TreeView<File>, TreeCell<File>> {
+public class DiskCollectionCellFactory implements Callback<TreeView<File>, TreeCell<File>> {
 
 	@Override
 	public TreeCell<File> call(TreeView<File> param) {

@@ -47,15 +47,12 @@ package libsidutils.stringsearch;
  *                O(mn) (worst case)
  * </pre>
  * 
- * @see <a href="http://www.dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz">
- *      http://www.dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz
- </a>
- * @see <a href="http://www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz">
- *      http://www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz
- </a>
- * @see <a href="http://citeseer.nj.nec.com/navarro98bitparallel.html">
- *      http://citeseer.nj.nec.com/navarro98bitparallel.html
- </a>
+ * @see <a href="http://www.dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz"> http://www.
+ *      dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz </a>
+ * @see <a href="http://www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz"> http://
+ *      www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz </a>
+ * @see <a href="http://citeseer.nj.nec.com/navarro98bitparallel.html"> http://
+ *      citeseer.nj.nec.com/navarro98bitparallel.html </a>
  * @author <a href="mailto:jb@eaio.de">Johann Burkard</a>
  * @version 1.2
  */
@@ -115,16 +112,14 @@ public class BNDM extends StringSearch {
 	 *      byte[], java.lang.Object)
 	 */
 	@Override
-	public int searchBytes(byte[] text, int textStart, int textEnd,
-			byte[] pattern, Object processed) {
+	public int searchBytes(byte[] text, int textStart, int textEnd, byte[] pattern, Object processed) {
 
 		/* comment:start */
 
 		return javaSearchBytes(text, textStart, textEnd, pattern, processed);
 	}
 
-	private int javaSearchBytes(byte[] text, int textStart, int textEnd,
-			byte[] pattern, Object processed) {
+	private int javaSearchBytes(byte[] text, int textStart, int textEnd, byte[] pattern, Object processed) {
 
 		/* comment:end */
 
@@ -159,8 +154,7 @@ public class BNDM extends StringSearch {
 	 *      char[], Object)
 	 */
 	@Override
-	public int searchChars(char[] text, int textStart, int textEnd,
-			char[] pattern, Object processed) {
+	public int searchChars(char[] text, int textStart, int textEnd, char[] pattern, Object processed) {
 
 		CharIntMap b = (CharIntMap) processed;
 

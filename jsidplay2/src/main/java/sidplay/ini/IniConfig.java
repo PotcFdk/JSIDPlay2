@@ -120,9 +120,7 @@ public class IniConfig implements IConfig {
 	private File getINIPath(boolean createIfNotExists) {
 		try {
 			File configPlace = null;
-			for (final String s : new String[] {
-					System.getProperty("user.dir"),
-					System.getProperty("user.home"), }) {
+			for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
 				configPlace = new File(s, FILE_NAME);
 				if (configPlace.exists()) {
 					return configPlace;
@@ -150,14 +148,15 @@ public class IniConfig implements IConfig {
 	}
 
 	private void readInternal() {
-		final InputStream is = getClass().getClassLoader().getResourceAsStream(
-				"sidplay/ini/" + FILE_NAME);
+		final InputStream is = getClass().getClassLoader().getResourceAsStream("sidplay/ini/" + FILE_NAME);
 		System.out.println("Use internal INI file: " + FILE_NAME);
 
 		try {
 			iniReader = new IniReader(is);
 			clear();
-			/* Set the current version so that we detect old versions in future. */
+			/*
+			 * Set the current version so that we detect old versions in future.
+			 */
 			sidplay2Section.setVersion(REQUIRED_CONFIG_VERSION);
 			is.close();
 		} catch (final IOException e) {

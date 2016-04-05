@@ -51,32 +51,24 @@ public class KnobSkin extends SkinBase<Slider> {
 
 		getSkinnable().setOnKeyPressed((ke) -> getSkinnable().requestLayout());
 		getSkinnable().setOnKeyReleased((ke) -> getSkinnable().requestLayout());
-		getSkinnable()
-				.setOnMousePressed(
-						me -> {
-							double dragStart = mouseToValue(me.getX(),
-									me.getY());
-							double zeroOneValue = (getSkinnable().getValue() - getSkinnable()
-									.getMin())
-									/ (getSkinnable().getMax() - getSkinnable()
-											.getMin());
-							dragOffset = zeroOneValue - dragStart;
-							behavior.thumbPressed(me, dragStart);
-							behavior.trackPress(me, dragStart);
-							getSkinnable().requestLayout();
-						});
+		getSkinnable().setOnMousePressed(me -> {
+			double dragStart = mouseToValue(me.getX(), me.getY());
+			double zeroOneValue = (getSkinnable().getValue() - getSkinnable().getMin())
+					/ (getSkinnable().getMax() - getSkinnable().getMin());
+			dragOffset = zeroOneValue - dragStart;
+			behavior.thumbPressed(me, dragStart);
+			behavior.trackPress(me, dragStart);
+			getSkinnable().requestLayout();
+		});
 		getSkinnable().setOnMouseReleased(me -> behavior.thumbReleased(me));
-		getSkinnable().setOnMouseDragged(
-				me -> {
-					behavior.thumbDragged(me,
-							mouseToValue(me.getX(), me.getY()) + dragOffset);
-					getSkinnable().requestLayout();
-				});
+		getSkinnable().setOnMouseDragged(me -> {
+			behavior.thumbDragged(me, mouseToValue(me.getX(), me.getY()) + dragOffset);
+			getSkinnable().requestLayout();
+		});
 		getSkinnable().valueProperty().addListener(new ChangeListener<Number>() {
 
 			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				getSkinnable().requestLayout();
 			}
 		});
@@ -85,8 +77,7 @@ public class KnobSkin extends SkinBase<Slider> {
 	private double mouseToValue(double mouseX, double mouseY) {
 		double cx = getSkinnable().getWidth() / 2;
 		double cy = getSkinnable().getHeight() / 2;
-		double mouseAngle = Math.toDegrees(Math.atan((mouseY - cy)
-				/ (mouseX - cx)));
+		double mouseAngle = Math.toDegrees(Math.atan((mouseY - cy) / (mouseX - cx)));
 		double topZeroAngle;
 		if (mouseX < cx) {
 			topZeroAngle = 90 - mouseAngle;
@@ -99,8 +90,7 @@ public class KnobSkin extends SkinBase<Slider> {
 
 	private void rotateKnob() {
 		Slider s = getSkinnable();
-		double zeroOneValue = (s.getValue() - s.getMin())
-				/ (s.getMax() - s.getMin());
+		double zeroOneValue = (s.getValue() - s.getMin()) / (s.getMax() - s.getMin());
 		double angle = minAngle + ((maxAngle - minAngle) * zeroOneValue);
 		knob.setRotate(angle);
 	}
@@ -125,38 +115,38 @@ public class KnobSkin extends SkinBase<Slider> {
 	}
 
 	@Override
-	protected double computeMinWidth(double height, double topInset,
-			double rightInset, double bottomInset, double leftInset) {
+	protected double computeMinWidth(double height, double topInset, double rightInset, double bottomInset,
+			double leftInset) {
 		return (leftInset + knob.minWidth(-1) + rightInset);
 	}
 
 	@Override
-	protected double computeMinHeight(double width, double topInset,
-			double rightInset, double bottomInset, double leftInset) {
+	protected double computeMinHeight(double width, double topInset, double rightInset, double bottomInset,
+			double leftInset) {
 		return (topInset + knob.minHeight(-1) + bottomInset);
 	}
 
 	@Override
-	protected double computePrefWidth(double height, double topInset,
-			double rightInset, double bottomInset, double leftInset) {
+	protected double computePrefWidth(double height, double topInset, double rightInset, double bottomInset,
+			double leftInset) {
 		return (leftInset + knob.prefWidth(-1) + rightInset);
 	}
 
 	@Override
-	protected double computePrefHeight(double width, double topInset,
-			double rightInset, double bottomInset, double leftInset) {
+	protected double computePrefHeight(double width, double topInset, double rightInset, double bottomInset,
+			double leftInset) {
 		return (topInset + knob.prefHeight(-1) + bottomInset);
 	}
 
 	@Override
-	protected double computeMaxWidth(double height, double topInset,
-			double rightInset, double bottomInset, double leftInset) {
+	protected double computeMaxWidth(double height, double topInset, double rightInset, double bottomInset,
+			double leftInset) {
 		return Double.MAX_VALUE;
 	}
 
 	@Override
-	protected double computeMaxHeight(double width, double topInset,
-			double rightInset, double bottomInset, double leftInset) {
+	protected double computeMaxHeight(double width, double topInset, double rightInset, double bottomInset,
+			double leftInset) {
 		return Double.MAX_VALUE;
 	}
 

@@ -17,8 +17,7 @@ public class DiskCollectionTreeItem extends TreeItem<File> {
 	private boolean hasLoadedChildren;
 	private boolean isLeaf;
 
-	public DiskCollectionTreeItem(File file, File rootFile,
-			FileFilter fileFilter) {
+	public DiskCollectionTreeItem(File file, File rootFile, FileFilter fileFilter) {
 		super(file);
 		this.rootFile = rootFile;
 		this.isLeaf = file.isFile();
@@ -43,23 +42,16 @@ public class DiskCollectionTreeItem extends TreeItem<File> {
 		Collection<DiskCollectionTreeItem> children = new ArrayList<DiskCollectionTreeItem>();
 		File[] listFiles = getValue().listFiles(fileFilter);
 		if (listFiles != null) {
-			Arrays.sort(
-					listFiles,
-					(a, b) -> {
-						Integer aw = a.isFile() ? 1 : 0;
-						Integer bw = b.isFile() ? 1 : 0;
-						if (aw.equals(bw)) {
-							return a.getName()
-									.toLowerCase(Locale.ENGLISH)
-									.compareTo(
-											b.getName().toLowerCase(
-													Locale.ENGLISH));
-						}
-						return aw.compareTo(bw);
-					});
+			Arrays.sort(listFiles, (a, b) -> {
+				Integer aw = a.isFile() ? 1 : 0;
+				Integer bw = b.isFile() ? 1 : 0;
+				if (aw.equals(bw)) {
+					return a.getName().toLowerCase(Locale.ENGLISH).compareTo(b.getName().toLowerCase(Locale.ENGLISH));
+				}
+				return aw.compareTo(bw);
+			});
 			for (File file : listFiles) {
-				children.add(new DiskCollectionTreeItem(file, rootFile,
-						fileFilter));
+				children.add(new DiskCollectionTreeItem(file, rootFile, fileFilter));
 			}
 		}
 		super.getChildren().setAll(children);

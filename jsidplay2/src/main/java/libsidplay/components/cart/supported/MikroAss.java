@@ -10,8 +10,7 @@ import libsidplay.components.pla.PLA;
 public class MikroAss extends Cartridge {
 	protected final byte[] romL;
 
-	public MikroAss(final DataInputStream dis, final PLA pla)
-			throws IOException {
+	public MikroAss(final DataInputStream dis, final PLA pla) throws IOException {
 		super(pla);
 		final byte[] chipHeader = new byte[0x10];
 		dis.readFully(chipHeader);
@@ -52,7 +51,7 @@ public class MikroAss extends Cartridge {
 	public Bank getIO2() {
 		return io2Bank;
 	}
-	
+
 	@Override
 	public void reset() {
 		super.reset();

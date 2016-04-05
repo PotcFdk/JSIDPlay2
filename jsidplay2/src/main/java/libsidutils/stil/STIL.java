@@ -59,8 +59,7 @@ public class STIL {
 	public STIL(InputStream input) throws Exception {
 		fastMap.clear();
 
-		Pattern p = Pattern
-				.compile("(NAME|AUTHOR|TITLE|ARTIST|COMMENT): *(.*)");
+		Pattern p = Pattern.compile("(NAME|AUTHOR|TITLE|ARTIST|COMMENT): *(.*)");
 
 		STILEntry entry = null;
 		TuneEntry tuneEntry = null;
@@ -68,9 +67,7 @@ public class STIL {
 		String lastProp = null;
 		StringBuilder cmts = new StringBuilder();
 
-		try (
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(
-				input, "ISO-8859-1"))) {
+		try (final BufferedReader reader = new BufferedReader(new InputStreamReader(input, "ISO-8859-1"))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				if (line.startsWith("#")) {
@@ -96,8 +93,7 @@ public class STIL {
 
 				if (line.startsWith("(#")) {
 					if (entry == null) {
-						throw new RuntimeException(
-								"Invalid format in STIL file: '(#' before '/'.");
+						throw new RuntimeException("Invalid format in STIL file: '(#' before '/'.");
 					}
 
 					// subtune
@@ -122,22 +118,21 @@ public class STIL {
 				}
 
 				if (entry == null) {
-					throw new RuntimeException("No entry to put data in: "
-							+ line);
+					throw new RuntimeException("No entry to put data in: " + line);
 				}
 
 				if (lastInfo == null) {
-					throw new RuntimeException("No context to put data in: "
-							+ line);
+					throw new RuntimeException("No context to put data in: " + line);
 				}
 
 				Matcher m = p.matcher(line);
 				if (m.matches()) {
 					lastProp = m.group(1);
 
-					/* If a field repeats, that starts a new tuneinfo structure. */
-					Field f = lastInfo.getClass().getField(
-							lastProp.toLowerCase(Locale.ENGLISH));
+					/*
+					 * If a field repeats, that starts a new tuneinfo structure.
+					 */
+					Field f = lastInfo.getClass().getField(lastProp.toLowerCase(Locale.ENGLISH));
 					if (f.get(lastInfo) != null) {
 						lastInfo = new Info();
 						if (tuneEntry != null) {
@@ -149,8 +144,7 @@ public class STIL {
 					f.set(lastInfo, m.group(2));
 				} else if (lastProp != null) {
 					/* Concat more shit after the previous line */
-					Field f = lastInfo.getClass().getField(
-							lastProp.toLowerCase(Locale.ENGLISH));
+					Field f = lastInfo.getClass().getField(lastProp.toLowerCase(Locale.ENGLISH));
 					f.set(lastInfo, f.get(lastInfo) + "\n" + line);
 				}
 			}

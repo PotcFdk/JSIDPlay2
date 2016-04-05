@@ -1,8 +1,8 @@
 package resid_builder.resid;
 
-
 /**
- * Java port of the reSID 1.0 filter VCR+opamp+capacitor element (integrator) by Dag Lem.
+ * Java port of the reSID 1.0 filter VCR+opamp+capacitor element (integrator) by
+ * Dag Lem.
  * 
  * Java port and subthreshold current simulation added by Antti S. Lankila.
  * 
@@ -17,25 +17,25 @@ final class Integrator {
 		this.vcr_Vg = vcr_Vg;
 		this.vcr_n_Ids_term = vcr_n_Ids_term;
 		this.opamp_rev = opamp_rev;
-		
+
 		this.Vddt = Vddt;
 		this.n_snake = n_snake;
 	}
-	
+
 	protected void setVw(int Vw) {
 		Vddt_Vw_2 = (Vddt - Vw) * (Vddt - Vw) >>> 1;
 	}
-	
+
 	protected int solve(final int vi) {
 		// "Snake" voltages for triode mode calculation.
 		int Vgst = Vddt - x;
 		int Vgdt = Vddt - vi;
-		int Vgdt_2 = Vgdt*Vgdt;
+		int Vgdt_2 = Vgdt * Vgdt;
 
 		// "Snake" current, scaled by (1/m)*2^13*m*2^16*m*2^16*2^-15 = m*2^30
-		int n_I_snake = n_snake*((Vgst*Vgst >>> 15) - (Vgdt_2 >>> 15));
+		int n_I_snake = n_snake * ((Vgst * Vgst >>> 15) - (Vgdt_2 >>> 15));
 
-		// VCR gate voltage.       // Scaled by m*2^16
+		// VCR gate voltage. // Scaled by m*2^16
 		// Vg = Vddt - sqrt(((Vddt - Vw)^2 + Vgdt^2)/2)
 		int Vg = vcr_Vg[(Vddt_Vw_2 >>> 16) + (Vgdt_2 >>> 17)];
 

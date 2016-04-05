@@ -318,9 +318,8 @@ public abstract class Datasette {
 		if (currentImage == null) {
 			return;
 		}
-		currentImage.counter = (MAX_COUNTER - counterOffset + (int) (DS_G * (Math
-				.sqrt(currentImage.cycleCounter / context.getCyclesPerSecond()
-						* DS_C1 + DS_C2) - DS_C3)))
+		currentImage.counter = (MAX_COUNTER - counterOffset + (int) (DS_G
+				* (Math.sqrt(currentImage.cycleCounter / context.getCyclesPerSecond() * DS_C1 + DS_C2) - DS_C3)))
 				% MAX_COUNTER;
 
 		if (lastCounter != currentImage.counter) {
@@ -335,9 +334,8 @@ public abstract class Datasette {
 		if (currentImage == null) {
 			return;
 		}
-		counterOffset = (MAX_COUNTER + (int) (DS_G * (Math
-				.sqrt(currentImage.cycleCounter / context.getCyclesPerSecond()
-						* DS_C1 + DS_C2) - DS_C3)))
+		counterOffset = (MAX_COUNTER + (int) (DS_G
+				* (Math.sqrt(currentImage.cycleCounter / context.getCyclesPerSecond() * DS_C1 + DS_C2) - DS_C3)))
 				% MAX_COUNTER;
 		updateCounter();
 	}
@@ -353,8 +351,7 @@ public abstract class Datasette {
 	private boolean moveBufferForward(final int offset) {
 		if (nextTap + offset >= lastTap) {
 			try {
-				currentImage.fd.seek(currentImage.currentFilePosition
-						+ currentImage.offset);
+				currentImage.fd.seek(currentImage.currentFilePosition + currentImage.offset);
 			} catch (IOException e) {
 				System.err.println("Cannot read in tap-file.");
 				return false;
@@ -389,8 +386,7 @@ public abstract class Datasette {
 				nextTap = currentImage.currentFilePosition;
 			}
 			try {
-				currentImage.fd.seek(currentImage.currentFilePosition - nextTap
-						+ currentImage.offset);
+				currentImage.fd.seek(currentImage.currentFilePosition - nextTap + currentImage.offset);
 			} catch (IOException e) {
 				System.err.println("Cannot read in tap-file.");
 				return false;
@@ -430,8 +426,7 @@ public abstract class Datasette {
 				return false;
 			}
 			gd.dir *= 4;
-			gd.gap = (tapBuffer[(int) (readTap + 1)] & 0xff)
-					+ ((tapBuffer[(int) (readTap + 2)] & 0xff) << 8)
+			gd.gap = (tapBuffer[(int) (readTap + 1)] & 0xff) + ((tapBuffer[(int) (readTap + 2)] & 0xff) << 8)
 					+ ((tapBuffer[(int) (readTap + 3)] & 0xff) << 16);
 		}
 
@@ -534,8 +529,7 @@ public abstract class Datasette {
 			if (direction > 0) {
 				readTap = readGapForward();
 			} else {
-				if (currentImage.version == 0 || nextTap < 4
-						|| 0 != tapBuffer[(int) (nextTap - 4)]) {
+				if (currentImage.version == 0 || nextTap < 4 || 0 != tapBuffer[(int) (nextTap - 4)]) {
 					readTap = readGapBackwardV0();
 				} else {
 					try {
@@ -566,8 +560,7 @@ public abstract class Datasette {
 				if (direction > 0) {
 					readTap = readGapForward();
 				} else {
-					if (currentImage.version == 0 || nextTap < 4
-							|| 0 != tapBuffer[(int) (nextTap - 4)]) {
+					if (currentImage.version == 0 || nextTap < 4 || 0 != tapBuffer[(int) (nextTap - 4)]) {
 						readTap = readGapBackwardV0();
 					} else {
 						try {
@@ -601,8 +594,7 @@ public abstract class Datasette {
 			if (direction > 0) {
 				readTap = readGapForward();
 			} else {
-				if (currentImage.version == 0 || nextTap < 4
-						|| 0 != tapBuffer[(int) (nextTap - 4)]) {
+				if (currentImage.version == 0 || nextTap < 4 || 0 != tapBuffer[(int) (nextTap - 4)]) {
 					readTap = readGapBackwardV0();
 				} else {
 					try {
@@ -660,22 +652,15 @@ public abstract class Datasette {
 			break;
 		case FORWARD:
 			direction = 1;
-			speedOfTape = DS_RPS_FAST
-					/ DS_G
-					* Math.sqrt(4 * Math.PI * DS_D * DS_V_PLAY
-							/ context.getCyclesPerSecond()
-							* currentImage.cycleCounter + 4 * Math.PI * Math.PI
-							* DS_R * DS_R);
+			speedOfTape = DS_RPS_FAST / DS_G
+					* Math.sqrt(
+							4 * Math.PI * DS_D * DS_V_PLAY / context.getCyclesPerSecond() * currentImage.cycleCounter
+									+ 4 * Math.PI * Math.PI * DS_R * DS_R);
 			break;
 		case REWIND:
 			direction = -1;
-			speedOfTape = DS_RPS_FAST
-					/ DS_G
-					* Math.sqrt(4
-							* Math.PI
-							* DS_D
-							* DS_V_PLAY
-							/ context.getCyclesPerSecond()
+			speedOfTape = DS_RPS_FAST / DS_G
+					* Math.sqrt(4 * Math.PI * DS_D * DS_V_PLAY / context.getCyclesPerSecond()
 							* (currentImage.cycleCounterTotal - currentImage.cycleCounter)
 							+ 4 * Math.PI * Math.PI * DS_R * DS_R);
 			break;
@@ -781,8 +766,7 @@ public abstract class Datasette {
 	 */
 	protected void internalReset() throws IOException {
 		if (currentImage != null) {
-			if (mode == Control.START || mode == Control.FORWARD
-					|| mode == Control.REWIND) {
+			if (mode == Control.START || mode == Control.FORWARD || mode == Control.REWIND) {
 				this.context.cancel(event);
 			}
 			control(Control.STOP);
@@ -820,8 +804,7 @@ public abstract class Datasette {
 	 *             tape image read error
 	 */
 	protected void startMotor() throws IOException {
-		currentImage.fd.seek(currentImage.currentFilePosition
-				+ currentImage.offset);
+		currentImage.fd.seek(currentImage.currentFilePosition + currentImage.offset);
 		if (!context.isPending(event)) {
 			this.context.schedule(event, MOTOR_DELAY);
 		}
@@ -920,8 +903,7 @@ public abstract class Datasette {
 			if (!flag && motor && motorStopClk == 0) {
 				motorStopClk = context.getTime(Phase.PHI1) + MOTOR_DELAY;
 				if (!context.isPending(event)) {
-					this.context.scheduleAbsolute(event, motorStopClk,
-							Phase.PHI1);
+					this.context.scheduleAbsolute(event, motorStopClk, Phase.PHI1);
 				}
 			}
 		}

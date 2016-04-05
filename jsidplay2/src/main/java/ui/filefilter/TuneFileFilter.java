@@ -9,8 +9,8 @@ import java.util.Locale;
 
 public final class TuneFileFilter implements FileFilter {
 
-	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".sid",
-			".dat", ".c64", ".prg", ".p00", ".mus", ".str", ".mp3", ".zip" };
+	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".sid", ".dat", ".c64", ".prg", ".p00", ".mus",
+			".str", ".mp3", ".zip" };
 
 	@Override
 	public boolean accept(File file) {

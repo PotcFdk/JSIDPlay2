@@ -37,8 +37,8 @@ package libsidutils.stringsearch;
  * pattern to save the time required to build up character tables.
  * <p>
  * Some of the Objects returned from {@link #processBytes(byte[])},
- * {@link #processChars(char[])}, might implement
- * the {@link java.io.Serializable} interface and enable you to serialize
+ * {@link #processChars(char[])}, might implement the
+ * {@link java.io.Serializable} interface and enable you to serialize
  * pre-processed Objects to disk, see concrete implementations for details.
  * 
  * @author <a href="mailto:jb@eaio.com">Johann Burkard</a>
@@ -119,8 +119,7 @@ abstract class StringSearch {
 	 * @see #searchBytes(byte[], int, int, byte[], Object)
 	 */
 	public final int searchBytes(byte[] text, int textStart, byte[] pattern) {
-		return searchBytes(text, textStart, text.length, pattern,
-				processBytes(pattern));
+		return searchBytes(text, textStart, text.length, pattern, processBytes(pattern));
 	}
 
 	/**
@@ -216,8 +215,8 @@ abstract class StringSearch {
 	 *            the <code>char</code> array containing the pattern, may not be
 	 *            <code>null</code>
 	 * @param processed
-	 *            an Object as returned from {@link #processChars(char[])},
-	 *            may not be <code>null</code>
+	 *            an Object as returned from {@link #processChars(char[])}, may
+	 *            not be <code>null</code>
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchChars(char[], int, int, char[], Object)
 	 */
@@ -241,8 +240,7 @@ abstract class StringSearch {
 	 * @see #searchChars(char[], int, int, char[], Object)
 	 */
 	public final int searchChars(char[] text, int textStart, char[] pattern) {
-		return searchChars(text, textStart, text.length, pattern,
-				processChars(pattern));
+		return searchChars(text, textStart, text.length, pattern, processChars(pattern));
 	}
 
 	/**
@@ -257,13 +255,12 @@ abstract class StringSearch {
 	 *            the <code>char</code> array containing the pattern, may not be
 	 *            <code>null</code>
 	 * @param processed
-	 *            an Object as returned from {@link #processChars(char[])},
-	 *            may not be <code>null</code>
+	 *            an Object as returned from {@link #processChars(char[])}, may
+	 *            not be <code>null</code>
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchChars(char[], int, int, char[], Object)
 	 */
-	public final int searchChars(char[] text, int textStart, char[] pattern,
-			Object processed) {
+	public final int searchChars(char[] text, int textStart, char[] pattern, Object processed) {
 
 		return searchChars(text, textStart, text.length, pattern, processed);
 
@@ -286,11 +283,9 @@ abstract class StringSearch {
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchChars(char[], int, int, char[], Object)
 	 */
-	public final int searchChars(char[] text, int textStart, int textEnd,
-			char[] pattern) {
+	public final int searchChars(char[] text, int textStart, int textEnd, char[] pattern) {
 
-		return searchChars(text, textStart, textEnd, pattern,
-				processChars(pattern));
+		return searchChars(text, textStart, textEnd, pattern, processChars(pattern));
 
 	}
 
@@ -307,12 +302,11 @@ abstract class StringSearch {
 	 * @param pattern
 	 *            the pattern to search for, may not be <code>null</code>
 	 * @param processed
-	 *            an Object as returned from {@link #processChars(char[])},
-	 *            may not be <code>null</code>
+	 *            an Object as returned from {@link #processChars(char[])}, may
+	 *            not be <code>null</code>
 	 * @return the position in the text or -1 if the pattern was not found
 	 */
-	public abstract int searchChars(char[] text, int textStart, int textEnd,
-			char[] pattern, Object processed);
+	public abstract int searchChars(char[] text, int textStart, int textEnd, char[] pattern, Object processed);
 
 	/* String searching methods */
 

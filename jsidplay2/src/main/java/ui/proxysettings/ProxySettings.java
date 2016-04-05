@@ -22,8 +22,7 @@ public class ProxySettings extends C64Window {
 		proxyEnable.setSelected(util.getConfig().getSidplay2Section().isEnableProxy());
 		proxyHost.setText(util.getConfig().getSidplay2Section().getProxyHostname());
 		proxyHost.setEditable(proxyEnable.isSelected());
-		proxyPort.setText(String.valueOf(util.getConfig().getSidplay2Section()
-				.getProxyPort()));
+		proxyPort.setText(String.valueOf(util.getConfig().getSidplay2Section().getProxyPort()));
 		proxyPort.setEditable(proxyEnable.isSelected());
 	}
 
@@ -41,11 +40,8 @@ public class ProxySettings extends C64Window {
 
 	@FXML
 	private void setProxyPort() {
-		util.getConfig()
-				.getSidplay2Section()
-				.setProxyPort(
-						proxyPort.getText().length() > 0 ? Integer
-								.valueOf(proxyPort.getText()) : 80);
+		util.getConfig().getSidplay2Section()
+				.setProxyPort(proxyPort.getText().length() > 0 ? Integer.valueOf(proxyPort.getText()) : 80);
 	}
 
 }

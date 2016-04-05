@@ -11,7 +11,7 @@ public class Normal extends Cartridge {
 	protected byte[] roml, romh;
 
 	private boolean exrom, game;
-	
+
 	private final Bank romlBank = new Bank() {
 		@Override
 		public byte read(int address) {
@@ -22,7 +22,7 @@ public class Normal extends Cartridge {
 			}
 		}
 	};
-	
+
 	private final Bank romhBank = new Bank() {
 		@Override
 		public byte read(int address) {
@@ -33,20 +33,22 @@ public class Normal extends Cartridge {
 			}
 		}
 	};
-	
+
 	public Normal(DataInputStream dis, final PLA pla) throws IOException {
 		super(pla);
 		byte[] header = new byte[0x10];
-		
+
 		dis.readFully(header);
 
 		if (header[0xe] == 0x10) {
-			/* This is ultimax cartridge. I'm expecting it to only have a single
-			 * ROM file, which I'll mirror twice into the ROMH region. */
+			/*
+			 * This is ultimax cartridge. I'm expecting it to only have a single
+			 * ROM file, which I'll mirror twice into the ROMH region.
+			 */
 			byte[] data = new byte[0x1000];
 			dis.readFully(data);
 			romh = new byte[0x2000];
-			System.arraycopy(data, 0, romh, 0,      0x1000);
+			System.arraycopy(data, 0, romh, 0, 0x1000);
 			System.arraycopy(data, 0, romh, 0x1000, 0x1000);
 			exrom = false;
 			game = true;
@@ -64,7 +66,7 @@ public class Normal extends Cartridge {
 			exrom = false;
 		}
 	}
-	
+
 	@Override
 	public Bank getRoml() {
 		return romlBank;

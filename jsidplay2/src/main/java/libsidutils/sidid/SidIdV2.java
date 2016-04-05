@@ -49,8 +49,7 @@ public final class SidIdV2 extends SidIdBase {
 		 * @param subPattern
 		 *            Is this a splitted sub pattern to match?
 		 */
-		public Pattern(final byte[] p, final Object pre,
-				final boolean subPattern) {
+		public Pattern(final byte[] p, final Object pre, final boolean subPattern) {
 			this.pattern = p;
 			this.preProcessedPattern = pre;
 			this.isSubPattern = subPattern;
@@ -228,8 +227,7 @@ public final class SidIdV2 extends SidIdBase {
 	 *            the byte array containing the text
 	 * @return true - one of the patterns have matched, false otherwise
 	 */
-	private boolean matchOneOf(final ArrayList<ArrayList<Pattern>> orList,
-			final byte[] prg) {
+	private boolean matchOneOf(final ArrayList<ArrayList<Pattern>> orList, final byte[] prg) {
 		for (final ArrayList<Pattern> andList : orList) {
 			if (matchAllOf(andList, prg)) {
 				return true;
@@ -247,8 +245,7 @@ public final class SidIdV2 extends SidIdBase {
 	 *            the byte array containing the text
 	 * @return true - all patterns have matched, false otherwise
 	 */
-	private boolean matchAllOf(final ArrayList<Pattern> andList,
-			final byte[] prg) {
+	private boolean matchAllOf(final ArrayList<Pattern> andList, final byte[] prg) {
 		int prgOffset = 0;
 		for (final Pattern pattern : andList) {
 			// Determine the range to search for
@@ -262,8 +259,8 @@ public final class SidIdV2 extends SidIdBase {
 				}
 			}
 			// search for the pattern
-			final int index = search.searchBytes(prg, prgOffset, prgEnd,
-					pattern.getPattern(), pattern.getPreProcessedPattern());
+			final int index = search.searchBytes(prg, prgOffset, prgEnd, pattern.getPattern(),
+					pattern.getPreProcessedPattern());
 			if (index == -1) {
 				// not found
 				return false;
@@ -280,8 +277,9 @@ public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * Read configuration file and configure the SID-ID class.
-	 * @throws IOException 
-	 * @throws NumberFormatException 
+	 * 
+	 * @throws IOException
+	 * @throws NumberFormatException
 	 */
 	public void readconfig() throws NumberFormatException, IOException {
 		sections = new ArrayList<PlayerSection>();
@@ -289,8 +287,7 @@ public final class SidIdV2 extends SidIdBase {
 		final ArrayList<Byte> byteList = new ArrayList<Byte>();
 		String line;
 		try (final BufferedReader br = new BufferedReader(
-				new InputStreamReader(new ByteArrayInputStream(
-						readConfiguration(FNAME, SID_ID_PKG))))) {
+				new InputStreamReader(new ByteArrayInputStream(readConfiguration(FNAME, SID_ID_PKG))))) {
 			while ((line = br.readLine()) != null) {
 				final StringTokenizer stok = new StringTokenizer(line, " ");
 				while (stok.hasMoreTokens()) {
@@ -315,15 +312,13 @@ public final class SidIdV2 extends SidIdBase {
 							andBytes(section, byteList);
 						} else if (token.length() == 2) {
 							// Add hex value
-							byteList.add(Integer.valueOf(token, HEX_RADIX)
-									.byteValue());
+							byteList.add(Integer.valueOf(token, HEX_RADIX).byteValue());
 						} else {
 							// Create new player section
 							if (section != null) {
 								// last section is always empty. (refer to
 								// "end")
-								section.getOrList().remove(
-										section.getOrList().size() - 1);
+								section.getOrList().remove(section.getOrList().size() - 1);
 							}
 							section = new PlayerSection(origToken);
 							sections.add(section);
@@ -347,11 +342,9 @@ public final class SidIdV2 extends SidIdBase {
 	 * @param byteList
 	 *            the bytes to add
 	 */
-	private void andBytes(final PlayerSection section,
-			final ArrayList<Byte> byteList) {
+	private void andBytes(final PlayerSection section, final ArrayList<Byte> byteList) {
 		// get last orList entry
-		final ArrayList<Pattern> lastOr = section.getOrList().get(
-				section.getOrList().size() - 1);
+		final ArrayList<Pattern> lastOr = section.getOrList().get(section.getOrList().size() - 1);
 		// If patterns exceed the maximum pattern length
 		// create logical ANDed sup-patterns
 		int byteListOffset = 0;
@@ -359,15 +352,13 @@ public final class SidIdV2 extends SidIdBase {
 		boolean isSubPattern = false;
 		while (byteCount > MAX_KEY_LENGTH) {
 			// add up to the maximum pattern length
-			andBytesMaxPtnLength(lastOr, byteList, byteListOffset,
-					MAX_KEY_LENGTH, isSubPattern);
+			andBytesMaxPtnLength(lastOr, byteList, byteListOffset, MAX_KEY_LENGTH, isSubPattern);
 			byteCount -= MAX_KEY_LENGTH;
 			byteListOffset += MAX_KEY_LENGTH;
 			isSubPattern = true;
 		}
 		// add the remaining bytes to the last entry (AND)
-		andBytesMaxPtnLength(lastOr, byteList, byteListOffset, byteCount,
-				isSubPattern);
+		andBytesMaxPtnLength(lastOr, byteList, byteListOffset, byteCount, isSubPattern);
 
 		// empty read bytes
 		byteList.clear();
@@ -388,16 +379,14 @@ public final class SidIdV2 extends SidIdBase {
 	 * @param isSubPattern
 	 *            is this a splitted sub-pattern?
 	 */
-	private void andBytesMaxPtnLength(final ArrayList<Pattern> ptnList,
-			final ArrayList<Byte> byteList, final int byteListOffset,
-			final int byteCount, final boolean isSubPattern) {
+	private void andBytesMaxPtnLength(final ArrayList<Pattern> ptnList, final ArrayList<Byte> byteList,
+			final int byteListOffset, final int byteCount, final boolean isSubPattern) {
 		assert byteCount <= MAX_KEY_LENGTH;
 		final byte[] and = new byte[byteCount];
 		for (int i = 0; i < and.length; i++) {
 			and[i] = byteList.get(i + byteListOffset);
 		}
-		ptnList.add(new Pattern(and, search.processBytes(and, (byte) '?'),
-				isSubPattern));
+		ptnList.add(new Pattern(and, search.processBytes(and, (byte) '?'), isSubPattern));
 	}
 
 }

@@ -4,18 +4,22 @@ import libsidplay.common.SIDChip;
 import libsidplay.config.IFilterSection;
 
 public final class FilterModelConfig {
-	private static final double[][] opamp_voltage = {
-			{ 0.75, 10.02 }, // Approximate start of actual range
-			{ 2.50, 10.13 }, { 2.75, 10.12 }, { 2.90, 10.04 }, { 3.00, 9.92 },
-			{ 3.10, 9.74 }, { 3.25, 9.40 }, { 3.50, 8.68 },
-			{ 4.00, 6.90 },
-			{ 4.25, 5.88 },
-			{ 4.53, 4.53 }, // Working point (vi = vo)
-			{ 4.75, 3.20 },
-			{ 4.90, 2.30 }, // Change of curvature
-			{ 4.95, 2.05 }, { 5.00, 1.90 }, { 5.10, 1.71 }, { 5.25, 1.57 },
-			{ 5.50, 1.41 }, { 6.00, 1.23 }, { 7.50, 1.02 }, { 9.00, 0.93 },
-			{ 10.25, 0.91 }, // Approximate end of actual range
+	private static final double[][] opamp_voltage = { { 0.75, 10.02 }, // Approximate
+																		// start
+																		// of
+																		// actual
+																		// range
+			{ 2.50, 10.13 }, { 2.75, 10.12 }, { 2.90, 10.04 }, { 3.00, 9.92 }, { 3.10, 9.74 }, { 3.25, 9.40 },
+			{ 3.50, 8.68 }, { 4.00, 6.90 }, { 4.25, 5.88 }, { 4.53, 4.53 }, // Working
+																			// point
+																			// (vi
+																			// =
+																			// vo)
+			{ 4.75, 3.20 }, { 4.90, 2.30 }, // Change of curvature
+			{ 4.95, 2.05 }, { 5.00, 1.90 }, { 5.10, 1.71 }, { 5.25, 1.57 }, { 5.50, 1.41 }, { 6.00, 1.23 },
+			{ 7.50, 1.02 }, { 9.00, 0.93 }, { 10.25, 0.91 }, // Approximate end
+																// of actual
+																// range
 	};
 
 	private static final double voice_voltage_range = 1.5;
@@ -74,8 +78,7 @@ public final class FilterModelConfig {
 		// vc -> vx
 		double[][] scaled_voltage = new double[opamp_voltage.length][2];
 		for (int i = 0; i < opamp_voltage.length; i++) {
-			scaled_voltage[i][0] = (N16
-					* (opamp_voltage[i][0] - opamp_voltage[i][1]) + (1 << 16)) / 2;
+			scaled_voltage[i][0] = (N16 * (opamp_voltage[i][0] - opamp_voltage[i][1]) + (1 << 16)) / 2;
 			scaled_voltage[i][1] = N16 * opamp_voltage[i][0];
 		}
 
@@ -103,8 +106,7 @@ public final class FilterModelConfig {
 			summer[i] = new char[size];
 			for (int vi = 0; vi < summer[i].length; vi++) {
 				double vin = vmin + vi / N16 / idiv; /* vmin .. vmax */
-				summer[i][vi] = (char) ((opampModel.solve(idiv, vin) - vmin)
-						* N16 + 0.5);
+				summer[i][vi] = (char) ((opampModel.solve(idiv, vin) - vmin) * N16 + 0.5);
 			}
 		}
 
@@ -125,9 +127,9 @@ public final class FilterModelConfig {
 			opampModel.reset();
 			mixer[i] = new char[size];
 			for (int vi = 0; vi < mixer[i].length; vi++) {
-				double vin = vmin + vi / N16 / (i == 0 ? 1 : i); /* vmin .. vmax */
-				mixer[i][vi] = (char) ((opampModel.solve(i * 8.0 / 6.0, vin) - vmin)
-						* N16 + 0.5);
+				double vin = vmin
+						+ vi / N16 / (i == 0 ? 1 : i); /* vmin .. vmax */
+				mixer[i][vi] = (char) ((opampModel.solve(i * 8.0 / 6.0, vin) - vmin) * N16 + 0.5);
 			}
 		}
 
@@ -141,8 +143,7 @@ public final class FilterModelConfig {
 			opampModel.reset();
 			for (int vi = 0; vi < FilterModelConfig.gain[n8].length; vi++) {
 				double vin = vmin + vi / N16; /* vmin .. vmax */
-				gain[n8][vi] = (char) ((opampModel.solve(n8 / 8.0, vin) - vmin)
-						* N16 + 0.5);
+				gain[n8][vi] = (char) ((opampModel.solve(n8 / 8.0, vin) - vmin) * N16 + 0.5);
 			}
 		}
 
@@ -174,8 +175,7 @@ public final class FilterModelConfig {
 		/* 1st term is used for clamping and must therefore be fixed to 0. */
 		vcr_n_Ids_term[0] = 0;
 		for (int Vgx = 1; Vgx < (1 << 16); Vgx++) {
-			double log_term = Math.log(1 + Math.exp((Vgx / N16 - k * Vth)
-					/ (2 * Ut)));
+			double log_term = Math.log(1 + Math.exp((Vgx / N16 - k * Vth) / (2 * Ut)));
 			// Scaled by m*2^15
 			vcr_n_Ids_term[Vgx] = (char) (n_Is * log_term * log_term + .5);
 		}
@@ -223,8 +223,7 @@ public final class FilterModelConfig {
 					fcd += dac[j];
 				}
 			}
-			f0_dac[i] = (char) (N16
-					* (dac_zero + fcd * dac_scale / (1 << bits)) + 0.5);
+			f0_dac[i] = (char) (N16 * (dac_zero + fcd * dac_scale / (1 << bits)) + 0.5);
 		}
 		return f0_dac;
 	}
@@ -232,8 +231,7 @@ public final class FilterModelConfig {
 	public static Integrator buildIntegrator() {
 		double N16 = norm * ((1 << 16) - 1);
 		int Vddt = (int) (N16 * (Vdd - Vth) + .5);
-		int n_snake = (int) ((1 << 13) / norm
-				* (uCox_snake / 2 * WL_snake * 1.0e-6 / C) + 0.5);
+		int n_snake = (int) ((1 << 13) / norm * (uCox_snake / 2 * WL_snake * 1.0e-6 / C) + 0.5);
 		return new Integrator(vcr_Vg, vcr_n_Ids_term, opamp_rev, Vddt, n_snake);
 	}
 
@@ -243,10 +241,7 @@ public final class FilterModelConfig {
 		double n_snake = uCox_snake / 2 * WL_snake;
 		double n_I_snake = n_snake * (Vgst * Vgst - Vgdt * Vgdt);
 
-		double Vg = Vdd
-				- Vth
-				- Math.sqrt(Math.pow(Vdd - Vth - Vw, 2) / 2 + Math.pow(Vgdt, 2)
-						/ 2);
+		double Vg = Vdd - Vth - Math.sqrt(Math.pow(Vdd - Vth - Vw, 2) / 2 + Math.pow(Vgdt, 2) / 2);
 		double Vgs = Vg - vx;
 		double Vgd = Vg - vi;
 

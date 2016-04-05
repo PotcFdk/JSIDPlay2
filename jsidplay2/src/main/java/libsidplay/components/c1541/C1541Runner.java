@@ -9,8 +9,7 @@ public abstract class C1541Runner extends Event {
 	private int conversionFactor, accum;
 	private long c64LastTime;
 
-	public C1541Runner(final EventScheduler c64Context,
-			final EventScheduler c1541Context) {
+	public C1541Runner(final EventScheduler c64Context, final EventScheduler c1541Context) {
 		super("C64 permits C1541 to continue");
 		this.c64Context = c64Context;
 		this.c1541Context = c1541Context;

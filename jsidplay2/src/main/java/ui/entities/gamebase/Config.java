@@ -11,7 +11,7 @@ import javax.persistence.Id;
 public class Config {
 	private int majorVersion;
 
-	@Column(name="MAJORVERSION")
+	@Column(name = "MAJORVERSION")
 	public int getMajorVersion() {
 		return majorVersion;
 	}
@@ -22,7 +22,7 @@ public class Config {
 
 	private int minorVersion;
 
-	@Column(name="MINORVERSION")
+	@Column(name = "MINORVERSION")
 	public int getMinorVersion() {
 		return minorVersion;
 	}
@@ -34,7 +34,7 @@ public class Config {
 	private int officialUpdate;
 
 	@Id
-	@Column(name="OFFICIALUPDATE")
+	@Column(name = "OFFICIALUPDATE")
 	public int getOfficialUpdate() {
 		return officialUpdate;
 	}

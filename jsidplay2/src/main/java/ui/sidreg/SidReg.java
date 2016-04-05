@@ -29,9 +29,8 @@ public class SidReg extends Tab implements UIPart {
 	private ToggleButton startStop;
 
 	@FXML
-	private CheckBox freq1, freq2, freq3, pulse1, pulse2, pulse3, ctrl1, ctrl2,
-			ctrl3, ad1, ad2, ad3, sr1, sr2, sr3, filter, vol, paddles, osc3,
-			env3;
+	private CheckBox freq1, freq2, freq3, pulse1, pulse2, pulse3, ctrl1, ctrl2, ctrl3, ad1, ad2, ad3, sr1, sr2, sr3,
+			filter, vol, paddles, osc3, env3;
 
 	@FXML
 	private Button selectAll, deselectAll;;
@@ -43,8 +42,7 @@ public class SidReg extends Tab implements UIPart {
 	private ObservableList<SidRegWrite> allSidRegWrites;
 	private Set<String> filters;
 
-	private ChangeListener<State> sidRegStop = (observable, oldValue,
-			newValue) -> {
+	private ChangeListener<State> sidRegStop = (observable, oldValue, newValue) -> {
 		if (newValue == State.END) {
 			Platform.runLater(() -> recordSidWrites(false));
 		}
@@ -62,8 +60,7 @@ public class SidReg extends Tab implements UIPart {
 	@FXML
 	private void initialize() {
 		util.getPlayer().stateProperty().addListener(sidRegStop);
-		filteredSidRegWrites = FXCollections
-				.<SidRegWrite> observableArrayList();
+		filteredSidRegWrites = FXCollections.<SidRegWrite> observableArrayList();
 		regTable.setItems(filteredSidRegWrites);
 		allSidRegWrites = FXCollections.<SidRegWrite> observableArrayList();
 		filters = new HashSet<String>();
@@ -163,9 +160,8 @@ public class SidReg extends Tab implements UIPart {
 
 	@FXML
 	private void doSelectAll() {
-		for (CheckBox checkBox : Arrays.asList(freq1, freq2, freq3, pulse1,
-				pulse2, pulse3, ctrl1, ctrl2, ctrl3, ad1, ad2, ad3, sr1, sr2,
-				sr3, filter, vol, paddles, osc3, env3)) {
+		for (CheckBox checkBox : Arrays.asList(freq1, freq2, freq3, pulse1, pulse2, pulse3, ctrl1, ctrl2, ctrl3, ad1,
+				ad2, ad3, sr1, sr2, sr3, filter, vol, paddles, osc3, env3)) {
 			checkBox.setSelected(true);
 		}
 		doUpdateFilter();
@@ -173,9 +169,8 @@ public class SidReg extends Tab implements UIPart {
 
 	@FXML
 	private void doDeselectAll() {
-		for (CheckBox checkBox : Arrays.asList(freq1, freq2, freq3, pulse1,
-				pulse2, pulse3, ctrl1, ctrl2, ctrl3, ad1, ad2, ad3, sr1, sr2,
-				sr3, filter, vol, paddles, osc3, env3)) {
+		for (CheckBox checkBox : Arrays.asList(freq1, freq2, freq3, pulse1, pulse2, pulse3, ctrl1, ctrl2, ctrl3, ad1,
+				ad2, ad3, sr1, sr2, sr3, filter, vol, paddles, osc3, env3)) {
 			checkBox.setSelected(false);
 		}
 		doUpdateFilter();

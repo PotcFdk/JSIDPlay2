@@ -11,14 +11,12 @@ import sidplay.Player;
 import ui.JSidPlay2Main;
 import ui.entities.collection.HVSCEntry;
 
-public class FavoritesCellFactory implements
-		Callback<TableColumn<HVSCEntry, ?>, TableCell<HVSCEntry, ?>> {
+public class FavoritesCellFactory implements Callback<TableColumn<HVSCEntry, ?>, TableCell<HVSCEntry, ?>> {
 
-	private static final Image STIL_ICON = new Image(JSidPlay2Main.class
-			.getResource("icons/stil.png").toString());
+	private static final Image STIL_ICON = new Image(JSidPlay2Main.class.getResource("icons/stil.png").toString());
 
-	private static final Image NO_STIL_ICON = new Image(JSidPlay2Main.class
-			.getResource("icons/stil_no.png").toString());
+	private static final Image NO_STIL_ICON = new Image(
+			JSidPlay2Main.class.getResource("icons/stil_no.png").toString());
 
 	private static final String CURRENTLY_PLAYED_FILE_ROW = "currentlyPlayedRow";
 
@@ -29,15 +27,13 @@ public class FavoritesCellFactory implements
 		this.player = player;
 	}
 
-	public void setCurrentlyPlayedHVSCEntryProperty(
-			ObjectProperty<HVSCEntry> currentlyPlayedHVSCEntryProperty) {
+	public void setCurrentlyPlayedHVSCEntryProperty(ObjectProperty<HVSCEntry> currentlyPlayedHVSCEntryProperty) {
 		this.currentlyPlayedHVSCEntryProperty = currentlyPlayedHVSCEntryProperty;
 	}
 
 	protected final class TableCellImpl extends TableCell<HVSCEntry, Object> {
 
-		private ChangeListener<HVSCEntry> listener = (observable, oldValue,
-				newValue) -> setCellStyle();
+		private ChangeListener<HVSCEntry> listener = (observable, oldValue, newValue) -> setCellStyle();
 
 		public TableCellImpl() {
 			currentlyPlayedHVSCEntryProperty.addListener(listener);
@@ -76,8 +72,7 @@ public class FavoritesCellFactory implements
 
 		private void setCellStyle() {
 			getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
-			if (!isEmpty()
-					&& getHVSCEntry() == currentlyPlayedHVSCEntryProperty.get()) {
+			if (!isEmpty() && getHVSCEntry() == currentlyPlayedHVSCEntryProperty.get()) {
 				getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
 			}
 		}

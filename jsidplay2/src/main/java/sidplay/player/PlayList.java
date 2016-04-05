@@ -50,8 +50,7 @@ public class PlayList {
 	/**
 	 * Get instance results in a new play-list each time the tune changes.
 	 */
-	public static final PlayList getInstance(final IConfig config,
-			final SidTune tune) {
+	public static final PlayList getInstance(final IConfig config, final SidTune tune) {
 		if (tune == SidTune.RESET) {
 			return NONE;
 		}

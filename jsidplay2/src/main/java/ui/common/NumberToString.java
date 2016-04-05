@@ -23,8 +23,7 @@ public final class NumberToString<T extends Number> extends StringConverter<T> {
 
 	@Override
 	public T fromString(String string) {
-		throw new RuntimeException(
-				"Unsupported conversion of string to number: " + string);
+		throw new RuntimeException("Unsupported conversion of string to number: " + string);
 	}
 
 }

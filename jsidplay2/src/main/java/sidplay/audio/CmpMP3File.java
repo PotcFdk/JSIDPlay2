@@ -18,7 +18,7 @@ public class CmpMP3File extends JavaSound {
 	public static class MP3Termination extends InterruptedException {
 		private static final long serialVersionUID = -7204524330347735933L;
 	}
-	
+
 	/**
 	 * Play MP3 (true) or emulation (false).
 	 */
@@ -38,25 +38,22 @@ public class CmpMP3File extends JavaSound {
 	protected JavaSound mp3JavaSound = new JavaSound();
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename)
-			throws IOException, LineUnavailableException {
+	public void open(final AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException {
 		super.open(cfg, recordingFilename);
 
 		jump3r = new LameDecoder(mp3File.getAbsolutePath());
 
-		mp3JavaSound.open(
-				new AudioConfig(jump3r.getSampleRate(), jump3r.getChannels(),
-						cfg.getDevice()) {
-					@Override
-					public int getChunkFrames() {
-						return jump3r.getFrameSize();
-					}
+		mp3JavaSound.open(new AudioConfig(jump3r.getSampleRate(), jump3r.getChannels(), cfg.getDevice()) {
+			@Override
+			public int getChunkFrames() {
+				return jump3r.getFrameSize();
+			}
 
-					@Override
-					public int getFrameRate() {
-						return jump3r.getSampleRate();
-					}
-				}, recordingFilename);
+			@Override
+			public int getFrameRate() {
+				return jump3r.getSampleRate();
+			}
+		}, recordingFilename);
 	}
 
 	@Override

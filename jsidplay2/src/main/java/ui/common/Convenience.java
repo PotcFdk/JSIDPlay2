@@ -37,8 +37,7 @@ public class Convenience {
 	/**
 	 * Auto-start commands.
 	 */
-	private static final String LOAD_8_1_RUN = "LOAD\"*\",8,1\rRUN\r",
-			LOAD_RUN = "LOAD\rRUN\r";
+	private static final String LOAD_8_1_RUN = "LOAD\"*\",8,1\rRUN\r", LOAD_RUN = "LOAD\rRUN\r";
 
 	private static final String ILLEGAL_FILENAME_CHARS = "[?:]";
 	private static final String FILE_SEPARATOR = "/";
@@ -81,12 +80,11 @@ public class Convenience {
 	 * @throws SidTuneError
 	 *             invalid tune
 	 */
-	public boolean autostart(URL url, BiPredicate<File, File> isMediaToAttach,
-			File autoStartFile) throws IOException, SidTuneError,
-			URISyntaxException {
+	public boolean autostart(URL url, BiPredicate<File, File> isMediaToAttach, File autoStartFile)
+			throws IOException, SidTuneError, URISyntaxException {
 		String tmpDir = player.getConfig().getSidplay2Section().getTmpDir();
-		String name = new File(url.toURI().getSchemeSpecificPart()
-				.replaceAll(ILLEGAL_FILENAME_CHARS, FILE_SEPARATOR)).getName();
+		String name = new File(url.toURI().getSchemeSpecificPart().replaceAll(ILLEGAL_FILENAME_CHARS, FILE_SEPARATOR))
+				.getName();
 		TFile zip = null;
 		File toAttach = null;
 		try (InputStream in = url.openConnection().getInputStream()) {
@@ -146,8 +144,7 @@ public class Convenience {
 	 * @throws SidTuneError
 	 *             invalid tune
 	 */
-	private void autoStart(File file, String command) throws IOException,
-			SidTuneError {
+	private void autoStart(File file, String command) throws IOException, SidTuneError {
 		if (file != null) {
 			player.play(SidTune.load(file));
 			autoStartedFile.accept(file);
@@ -171,8 +168,7 @@ public class Convenience {
 	 *            current media to attach
 	 * @return media to attach
 	 */
-	private File getToAttach(String dir, File file,
-			BiPredicate<File, File> mediaTester, File toAttach) {
+	private File getToAttach(String dir, File file, BiPredicate<File, File> mediaTester, File toAttach) {
 		final File[] listFiles = file.listFiles();
 		if (listFiles == null) {
 			return toAttach;
@@ -180,11 +176,9 @@ public class Convenience {
 		for (File member : listFiles) {
 			File memberFile = new File(dir, member.getName());
 			memberFile.deleteOnExit();
-			if (memberFile.isFile() && isSupportedMedia(memberFile)
-					&& mediaTester.test(memberFile, toAttach)) {
+			if (memberFile.isFile() && isSupportedMedia(memberFile) && mediaTester.test(memberFile, toAttach)) {
 
-				if (memberFile.getName().toLowerCase(Locale.ENGLISH)
-						.endsWith(".reu")) {
+				if (memberFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".reu")) {
 					try {
 						player.insertCartridge(CartridgeType.REU, memberFile);
 					} catch (IOException | SidTuneError e) {
@@ -193,10 +187,8 @@ public class Convenience {
 				} else {
 					toAttach = memberFile;
 				}
-			} else if (memberFile.isDirectory()
-					&& !memberFile.getName().equals(MACOSX)) {
-				File toAttachChild = getToAttach(memberFile.getPath(),
-						new TFile(memberFile), mediaTester, toAttach);
+			} else if (memberFile.isDirectory() && !memberFile.getName().equals(MACOSX)) {
+				File toAttachChild = getToAttach(memberFile.getPath(), new TFile(memberFile), mediaTester, toAttach);
 				if (toAttachChild != null) {
 					toAttach = toAttachChild;
 				}
@@ -213,8 +205,8 @@ public class Convenience {
 	 * @return is it a well-known format
 	 */
 	private boolean isSupportedMedia(File file) {
-		return cartFileFilter.accept(file) || tuneFileFilter.accept(file)
-				|| diskFileFilter.accept(file) || tapeFileFilter.accept(file);
+		return cartFileFilter.accept(file) || tuneFileFilter.accept(file) || diskFileFilter.accept(file)
+				|| tapeFileFilter.accept(file);
 	}
 
 	/**

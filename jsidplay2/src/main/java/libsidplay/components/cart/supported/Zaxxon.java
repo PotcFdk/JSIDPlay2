@@ -9,11 +9,11 @@ import libsidplay.components.pla.PLA;
 
 public class Zaxxon extends Cartridge {
 	protected final byte[] roml;
-	
+
 	protected final byte[][] romh;
 
 	protected byte[] romhActive;
-	
+
 	private final Bank romlBank = new Bank() {
 		@Override
 		public byte read(int address) {
@@ -49,8 +49,7 @@ public class Zaxxon extends Cartridge {
 
 		// the reason both 0x10 and 0x20 are OK is that the first 0x10 is only
 		// used, and the second part is probably just a mirror of the first.
-		if (chipHeader[0xc] != (byte) 0x80
-				|| (chipHeader[0xe] != 0x10 && chipHeader[0xe] != 0x20))
+		if (chipHeader[0xc] != (byte) 0x80 || (chipHeader[0xe] != 0x10 && chipHeader[0xe] != 0x20))
 			throw new IOException("Unexpected Chip header!");
 
 		int bankLen = (chipHeader[0xe] & 0xff) << 8;
@@ -78,7 +77,7 @@ public class Zaxxon extends Cartridge {
 	public Bank getRomh() {
 		return romhBank;
 	}
-	
+
 	@Override
 	public void reset() {
 		super.reset();

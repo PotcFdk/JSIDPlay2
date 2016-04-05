@@ -24,7 +24,8 @@ public class HsidDLL2 {
 	public native int HardSID_Version();
 
 	/**
-	 * typedef void (CALLBACK* lpHardSID_Delay)(Uint8 DeviceID, Uint16 Cycles);<BR>
+	 * typedef void (CALLBACK* lpHardSID_Delay)(Uint8 DeviceID, Uint16 Cycles);
+	 * <BR>
 	 * HardSID_Delay = (lpHardSID_Delay) GetProcAddress(hardsiddll,
 	 * "HardSID_Delay");
 	 * 
@@ -43,7 +44,8 @@ public class HsidDLL2 {
 	public native int HardSID_Devices();
 
 	/**
-	 * typedef void (CALLBACK* HsidDLL2_Filter_t) (BYTE DeviceID, BOOL filter);<BR>
+	 * typedef void (CALLBACK* HsidDLL2_Filter_t) (BYTE DeviceID, BOOL filter);
+	 * <BR>
 	 * Filter = (HsidDLL2_Filter_t) GetProcAddress(hardsiddll,
 	 * "HardSID_Filter");
 	 * 
@@ -62,7 +64,8 @@ public class HsidDLL2 {
 	public native void HardSID_Flush(int DeviceID);
 
 	/**
-	 * typedef void (CALLBACK* HsidDLL2_MuteAll_t) (BYTE DeviceID, BOOL mute);<BR>
+	 * typedef void (CALLBACK* HsidDLL2_MuteAll_t) (BYTE DeviceID, BOOL mute);
+	 * <BR>
 	 * MuteAll = (HsidDLL2_MuteAll_t) GetProcAddress(hardsiddll,
 	 * "HardSID_MuteAll");
 	 * 
@@ -102,8 +105,7 @@ public class HsidDLL2 {
 	 * @param SID_reg
 	 * @param data
 	 */
-	public native void HardSID_Write(int DeviceID, int cycles, int SID_reg,
-			int data);
+	public native void HardSID_Write(int DeviceID, int cycles, int SID_reg, int data);
 
 	/**
 	 * typedef void (CALLBACK* HsidDLL2_Reset_t) (BYTE DeviceID);<BR>
@@ -138,7 +140,8 @@ public class HsidDLL2 {
 	public native void HardSID_Unlock(int DeviceID);
 
 	/**
-	 * typedef void (CALLBACK* HsidDLL2_Reset2_t) (BYTE DeviceID, BYTE volume);<BR>
+	 * typedef void (CALLBACK* HsidDLL2_Reset2_t) (BYTE DeviceID, BYTE volume);
+	 * <BR>
 	 * Reset2 = (HsidDLL2_Reset2_t) GetProcAddress(hardsiddll,
 	 * "HardSID_Reset2");
 	 * 
@@ -168,7 +171,8 @@ public class HsidDLL2 {
 	 * @param DeviceID
 	 * @param channel
 	 * @param mute
-	 * @param x ?
+	 * @param x
+	 *            ?
 	 * @since 2.07
 	 */
 	public native void HardSID_Mute2(int DeviceID, int channel, boolean mute, boolean x);
@@ -225,10 +229,11 @@ public class HsidDLL2 {
 
 	/**
 	 * typedef BYTE (CALLBACK* HsidDLL2_GetHardSIDCount_t) ();<BR>
-	 * GetHardSIDCount = (HsidDLL2_GetHardSIDCount_t) GetProcAddress(hardsiddll, "GetHardSIDCount");
+	 * GetHardSIDCount = (HsidDLL2_GetHardSIDCount_t) GetProcAddress(hardsiddll,
+	 * "GetHardSIDCount");
 	 */
 	public native int GetHardSIDCount();
-	
+
 	// unknown functions:
 
 	// GetDLLVersion, HardSID_Group, HardSID_Try_Write,

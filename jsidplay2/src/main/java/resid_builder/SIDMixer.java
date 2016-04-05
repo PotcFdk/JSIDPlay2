@@ -124,15 +124,12 @@ public class SIDMixer implements Mixer {
 					int dither = triangularDithering();
 
 					if (resamplerL.input(valL >> fastForwardShift)) {
-						buffer.putShort((short) Math.max(Math.min(
-								resamplerL.output() + dither, Short.MAX_VALUE),
+						buffer.putShort((short) Math.max(Math.min(resamplerL.output() + dither, Short.MAX_VALUE),
 								Short.MIN_VALUE));
 					}
 					if (resamplerR.input(valR >> fastForwardShift)) {
-						if (!buffer.putShort(
-								(short) Math.max(Math.min(resamplerR.output()
-										+ dither, Short.MAX_VALUE),
-										Short.MIN_VALUE)).hasRemaining()) {
+						if (!buffer.putShort((short) Math.max(Math.min(resamplerR.output() + dither, Short.MAX_VALUE),
+								Short.MIN_VALUE)).hasRemaining()) {
 							driver.write();
 							buffer.clear();
 						}
@@ -185,8 +182,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * SIDs to mix their sound output.
 	 */
-	protected final List<ReSIDBase> sids = new ArrayList<ReSIDBase>(
-			PLA.MAX_SIDS);
+	protected final List<ReSIDBase> sids = new ArrayList<ReSIDBase>(PLA.MAX_SIDS);
 
 	/**
 	 * Mixer WITHOUT audio output, just clocking SID chips.
@@ -240,8 +236,8 @@ public class SIDMixer implements Mixer {
 	 */
 	private final ByteBuffer buffer;
 
-	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock,
-			AudioConfig audioConfig, AudioDriver audioDriver) {
+	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock, AudioConfig audioConfig,
+			AudioDriver audioDriver) {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
@@ -249,16 +245,14 @@ public class SIDMixer implements Mixer {
 		IAudioSection audioSection = config.getAudioSection();
 		this.buffer = driver.buffer();
 		this.bufferSize = audioSection.getBufferSize();
-		this.audioBufferL = ByteBuffer
-				.allocateDirect(Integer.BYTES * bufferSize)
-				.order(ByteOrder.nativeOrder()).asIntBuffer();
-		this.audioBufferR = ByteBuffer
-				.allocateDirect(Integer.BYTES * bufferSize)
-				.order(ByteOrder.nativeOrder()).asIntBuffer();
-		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(),
-				audioSection.getSampling(), audioConfig.getFrameRate(), 20000);
-		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(),
-				audioSection.getSampling(), audioConfig.getFrameRate(), 20000);
+		this.audioBufferL = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(ByteOrder.nativeOrder())
+				.asIntBuffer();
+		this.audioBufferR = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(ByteOrder.nativeOrder())
+				.asIntBuffer();
+		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(), audioSection.getSampling(),
+				audioConfig.getFrameRate(), 20000);
+		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(), audioSection.getSampling(),
+				audioConfig.getFrameRate(), 20000);
 		this.fadeInFadeOutEnabled = config.getSidplay2Section().getFadeInTime() != 0
 				|| config.getSidplay2Section().getFadeOutTime() != 0;
 	}
@@ -284,8 +278,7 @@ public class SIDMixer implements Mixer {
 	 */
 	public void fadeIn(int fadeIn) {
 		for (ReSIDBase sid : sids) {
-			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid
-					.getSampler();
+			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid.getSampler();
 			sampler.setFadeIn((long) (fadeIn * cpuClock.getCpuFrequency()));
 		}
 	}
@@ -298,8 +291,7 @@ public class SIDMixer implements Mixer {
 	 */
 	public void fadeOut(int fadeOut) {
 		for (ReSIDBase sid : sids) {
-			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid
-					.getSampler();
+			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid.getSampler();
 			sampler.setFadeOut((long) (fadeOut * cpuClock.getCpuFrequency()));
 		}
 	}
@@ -417,10 +409,8 @@ public class SIDMixer implements Mixer {
 	 * Doubles speed factor.
 	 */
 	public void fastForward() {
-		mixerAudio.fastForwardShift = Math.min(mixerAudio.fastForwardShift + 1,
-				MAX_FAST_FORWARD + VOLUME_SCALER);
-		mixerAudio.fastForwardBitMask = (1 << mixerAudio.fastForwardShift
-				- VOLUME_SCALER) - 1;
+		mixerAudio.fastForwardShift = Math.min(mixerAudio.fastForwardShift + 1, MAX_FAST_FORWARD + VOLUME_SCALER);
+		mixerAudio.fastForwardBitMask = (1 << mixerAudio.fastForwardShift - VOLUME_SCALER) - 1;
 	}
 
 	/**

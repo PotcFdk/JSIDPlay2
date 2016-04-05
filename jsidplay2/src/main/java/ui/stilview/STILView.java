@@ -36,12 +36,11 @@ public class STILView extends C64Window {
 	@FXML
 	private void initialize() {
 		splitPane.setDividerPosition(0, 0.3);
-		tree.getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					if (newValue != null) {
-						setTextAreaFromTree(newValue.getValue());
-					}
-				});
+		tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				setTextAreaFromTree(newValue.getValue());
+			}
+		});
 	}
 
 	public void setEntry(STILEntry entry) {
@@ -78,8 +77,7 @@ public class STILView extends C64Window {
 	}
 
 	private void writeEntry(final STILEntry entry) {
-		addText(util.getBundle().getString("FILENAME"), entry.filename,
-				STYLE_FILENAME);
+		addText(util.getBundle().getString("FILENAME"), entry.filename, STYLE_FILENAME);
 		if (entry.globalComment != null) {
 			addText("", entry.globalComment.trim(), STYLE_NORMAL);
 		}
@@ -87,8 +85,7 @@ public class STILView extends C64Window {
 
 	private void writeSubTune(final TuneEntry tuneEntry) {
 		addNewLine();
-		addText(util.getBundle().getString("SUBTUNE"),
-				String.valueOf(tuneEntry.tuneNo) + " ", STYLE_SUBTUNE);
+		addText(util.getBundle().getString("SUBTUNE"), String.valueOf(tuneEntry.tuneNo) + " ", STYLE_SUBTUNE);
 		if (tuneEntry.globalComment != null) {
 			addText("", tuneEntry.globalComment.trim(), STYLE_COMMENT);
 		}
@@ -102,16 +99,13 @@ public class STILView extends C64Window {
 			addText(util.getBundle().getString("NAME"), info.name, STYLE_NAME);
 		}
 		if (info.author != null) {
-			addText(util.getBundle().getString("AUTHOR"), info.author,
-					STYLE_AUTHOR);
+			addText(util.getBundle().getString("AUTHOR"), info.author, STYLE_AUTHOR);
 		}
 		if (info.title != null) {
-			addText(util.getBundle().getString("TITLE"), info.title,
-					STYLE_TITLE);
+			addText(util.getBundle().getString("TITLE"), info.title, STYLE_TITLE);
 		}
 		if (info.artist != null) {
-			addText(util.getBundle().getString("ARTIST"), info.artist,
-					STYLE_ARTIST);
+			addText(util.getBundle().getString("ARTIST"), info.artist, STYLE_ARTIST);
 		}
 	}
 

@@ -8,9 +8,8 @@ public class CPUCommand {
 	private final int byteCount;
 	private final String cycles;
 
-	public CPUCommand(final int opCode, final String cmd,
-			final String addressing, final String format, final int byteCount,
-			final String cycles) {
+	public CPUCommand(final int opCode, final String cmd, final String addressing, final String format,
+			final int byteCount, final String cycles) {
 		this.opCode = opCode;
 		this.cmd = cmd;
 		this.addressing = addressing;

@@ -82,9 +82,13 @@ public class PUCrunch {
 	private static final int FIXF_C64 = 1;
 	private static final int FIXF_MACHMASK = 0xff; /* Must be exactly correct */
 
-	private static final int FIXF_WRAP = 256; /* If requested, must be present */
+	private static final int FIXF_WRAP = 256; /*
+												 * If requested, must be present
+												 */
 	private static final int FIXF_DLZ = 512; /* If requested, must be present */
-	private static final int FIXF_BASIC = 1024; /* If requested, must be present */
+	private static final int FIXF_BASIC = 1024; /*
+												 * If requested, must be present
+												 */
 
 	private static final int FIXF_FAST = 2048;
 	private static final int FIXF_SHORT = 4096;
@@ -92,24 +96,19 @@ public class PUCrunch {
 	private static final int FIXF_MUSTMASK = (FIXF_WRAP | FIXF_DLZ | FIXF_BASIC);
 
 	private static final Decruncher DECRUNCHERS[] = {
-			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64.asm",
-					"C64", FIXF_C64),
-			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64S.asm",
-					"C64 short", FIXF_C64 | FIXF_SHORT),
-			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64SB.asm",
-					"C64 short basic", FIXF_C64 | FIXF_SHORT | FIXF_BASIC),
-			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64SW.asm",
-					"C64 short wrap", FIXF_C64 | FIXF_SHORT | FIXF_WRAP),
-			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64D.asm",
-					"C64 delta", FIXF_C64 | FIXF_DLZ),
-			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64F.asm",
-					"C64 fast", FIXF_C64 | FIXF_FAST),
-			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64W.asm",
-					"C64 wrap", FIXF_C64 | FIXF_WRAP),
-			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64WD.asm",
-					"C64 wrap delta", FIXF_C64 | FIXF_WRAP | FIXF_DLZ),
-			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64WF.asm",
-					"C64 fast wrap", FIXF_C64 | FIXF_WRAP | FIXF_FAST), };
+			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64.asm", "C64", FIXF_C64),
+			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64S.asm", "C64 short", FIXF_C64 | FIXF_SHORT),
+			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64SB.asm", "C64 short basic",
+					FIXF_C64 | FIXF_SHORT | FIXF_BASIC),
+			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64SW.asm", "C64 short wrap",
+					FIXF_C64 | FIXF_SHORT | FIXF_WRAP),
+			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64D.asm", "C64 delta", FIXF_C64 | FIXF_DLZ),
+			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64F.asm", "C64 fast", FIXF_C64 | FIXF_FAST),
+			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64W.asm", "C64 wrap", FIXF_C64 | FIXF_WRAP),
+			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64WD.asm", "C64 wrap delta",
+					FIXF_C64 | FIXF_WRAP | FIXF_DLZ),
+			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64WF.asm", "C64 fast wrap",
+					FIXF_C64 | FIXF_WRAP | FIXF_FAST), };
 
 	private static final int F_AUTO = (1 << 2);
 	private static final int F_NOOPT = (1 << 3);
@@ -125,24 +124,18 @@ public class PUCrunch {
 	private static final int F_NORLE = (1 << 9);
 	private static final int OUT_SIZE = 2000000;
 
-	private int maxGamma = 7, reservedBytes = 2, escBits = 2, escMask = 0xc0,
-			extraLZPosBits = 0, rleUsed = 15, memConfig = 0x37,
-			cliConfig = 0x58, lrange = (((2 << maxGamma) - 3) * 256),
-			maxlzlen = (2 << maxGamma),
-			maxrlelen = (((2 << maxGamma) - 2) * 256), size = 0,
-			bitMask = 0x80, timesDLz = 0, inlen, lzopt = 0;
+	private int maxGamma = 7, reservedBytes = 2, escBits = 2, escMask = 0xc0, extraLZPosBits = 0, rleUsed = 15,
+			memConfig = 0x37, cliConfig = 0x58, lrange = (((2 << maxGamma) - 3) * 256), maxlzlen = (2 << maxGamma),
+			maxrlelen = (((2 << maxGamma) - 2) * 256), size = 0, bitMask = 0x80, timesDLz = 0, inlen, lzopt = 0;
 
-	private byte[] outBuffer = new byte[OUT_SIZE], indata, newesc,
-			rleValues = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private byte[] outBuffer = new byte[OUT_SIZE], indata, newesc, rleValues = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-	private int lenValue[] = new int[256], rleHist[] = new int[256],
-			rleLen[] = new int[256];
+	private int lenValue[] = new int[256], rleHist[] = new int[256], rleLen[] = new int[256];
 
 	private int lenStat[][] = new int[8][4];
 
-	private int[] rle, elr, lzlen, lzpos, lzmlen, lzmpos, lzlen2, lzpos2, mode,
-			backSkip, length;
+	private int[] rle, elr, lzlen, lzpos, lzmlen, lzmpos, lzlen2, lzpos2, mode, backSkip, length;
 
 	private boolean verbose = false;
 
@@ -159,12 +152,14 @@ public class PUCrunch {
 				if (((dc.getFlags() & type) & FIXF_MUSTMASK) == (type & FIXF_MUSTMASK)) {
 
 					/* Haven't found any match or this is better */
-					if (null == best
-							|| ((type & FIXF_WRAP) == (dc.getFlags() & FIXF_WRAP) && (0 == (type & (FIXF_FAST | FIXF_SHORT)) || (dc
-									.getFlags() & type & (FIXF_FAST | FIXF_SHORT)) != 0)))
+					if (null == best || ((type & FIXF_WRAP) == (dc.getFlags() & FIXF_WRAP)
+							&& (0 == (type & (FIXF_FAST | FIXF_SHORT))
+									|| (dc.getFlags() & type & (FIXF_FAST | FIXF_SHORT)) != 0)))
 						best = dc;
 					/* If requirements match exactly, can return */
-					/* Assumes that non-wraps are located before wrap versions */
+					/*
+					 * Assumes that non-wraps are located before wrap versions
+					 */
 					if ((type & (FIXF_FAST | FIXF_SHORT)) == (dc.getFlags() & (FIXF_FAST | FIXF_SHORT))) {
 						return dc;
 					}
@@ -177,9 +172,8 @@ public class PUCrunch {
 		return best;
 	}
 
-	private void SavePack(int type, PrintStream fp, int start, int exec,
-			int escape, int endAddr, int progEnd, boolean enable2MHz,
-			int memStart, int memEnd) {
+	private void SavePack(int type, PrintStream fp, int start, int exec, int escape, int endAddr, int progEnd,
+			boolean enable2MHz, int memStart, int memEnd) {
 		int overlap = 0;
 		if (endAddr > memEnd) {
 			overlap = endAddr - memEnd;
@@ -190,11 +184,8 @@ public class PUCrunch {
 			 * then copy the rest of it to end at $ffff.
 			 */
 			if (overlap > 22) {
-				System.err.printf("Warning: data overlap is %d, but only 22 "
-						+ "is totally safe!\n", overlap);
-				System.err.printf(
-						"The data from $61 to $%02x is overwritten.\n",
-						0x4b + overlap);
+				System.err.printf("Warning: data overlap is %d, but only 22 " + "is totally safe!\n", overlap);
+				System.err.printf("The data from $61 to $%02x is overwritten.\n", 0x4b + overlap);
 			}
 		}
 		if (overlap != 0) {
@@ -206,13 +197,10 @@ public class PUCrunch {
 		HashMap<String, String> globals = new HashMap<String, String>();
 		globals.put("pc", String.valueOf(memStart));
 		globals.put("ftFastDisable", String.valueOf(enable2MHz ? 1 : 0));
-		globals.put("ftOverlap",
-				String.valueOf(overlap != 0 ? (overlap - 1) : 0));
-		globals.put("ftOverlapAddr",
-				String.valueOf(rleUsed - 15 + size - overlap));
+		globals.put("ftOverlap", String.valueOf(overlap != 0 ? (overlap - 1) : 0));
+		globals.put("ftOverlapAddr", String.valueOf(rleUsed - 15 + size - overlap));
 		globals.put("ftSizePages", String.valueOf((size >> 8) + 1));
-		globals.put("ftSizeAddr",
-				String.valueOf(rleUsed - 15 + size - 0x100 - overlap));
+		globals.put("ftSizeAddr", String.valueOf(rleUsed - 15 + size - 0x100 - overlap));
 		globals.put("ftEndAddr", String.valueOf(endAddr - 0x100));
 		globals.put("ftEscBits", String.valueOf(escBits));
 		globals.put("ftEscValue", String.valueOf(escape >> (8 - escBits)));
@@ -227,8 +215,7 @@ public class PUCrunch {
 		for (int i = 1; i <= 15; i++) {
 			globals.put("rleValue" + i, String.valueOf(rleValues[i]));
 		}
-		InputStream asm = PUCrunch.class.getResourceAsStream(dc
-				.getResourceName());
+		InputStream asm = PUCrunch.class.getResourceAsStream(dc.getResourceName());
 		byte[] header = assembler.assemble(dc.getResourceName(), asm, globals);
 
 		fp.write(header, 0, header.length + rleUsed - 15);
@@ -256,7 +243,8 @@ public class PUCrunch {
 		int bits = 0, count = 0;
 
 		while (value > 1) {
-			bits = (bits << 1) | (value & 1); /* is reversed compared to value */
+			bits = (bits << 1)
+					| (value & 1); /* is reversed compared to value */
 			value >>= 1;
 			count++;
 			PutBit(1);
@@ -349,7 +337,7 @@ public class PUCrunch {
 			}
 		}
 		/* System.out.printf("RLECode n: 0x%02x\n", data); */
-		PutValue(16/* 32 */+ (data >> 4/* 3 */));
+		PutValue(16/* 32 */ + (data >> 4/* 3 */));
 
 		PutNBits(data, 4/* 3 */);
 
@@ -361,7 +349,7 @@ public class PUCrunch {
 		int i;
 
 		for (i = 0; i < 256; i++)
-			rleLen[i] = lenValue[16/* 32 */+ 0] + 4/* 3 */;
+			rleLen[i] = lenValue[16/* 32 */ + 0] + 4/* 3 */;
 		for (i = 1; i < 16 /* 32 */; i++)
 			rleLen[rleValues[i] & 0xff] = lenValue[i];
 	}
@@ -377,8 +365,7 @@ public class PUCrunch {
 				len = 0;
 			} else {
 				int tmp = Math.min(len, maxrlelen);
-				out += escBits + 3 + maxGamma + 8
-						+ lenValue[((tmp - 1) >> 8) + 1] + rleLen[data];
+				out += escBits + 3 + maxGamma + 8 + lenValue[((tmp - 1) >> 8) + 1] + rleLen[data];
 
 				len -= tmp;
 			}
@@ -431,8 +418,7 @@ public class PUCrunch {
 				PutBit(1);
 				PutBit(1);
 
-				PutValue((1 << maxGamma)
-						+ (((len - 1) & 0xff) >> (8 - maxGamma)));
+				PutValue((1 << maxGamma) + (((len - 1) & 0xff) >> (8 - maxGamma)));
 
 				PutNBits((len - 1), 8 - maxGamma);
 				PutValue(((len - 1) >> 8) + 1);
@@ -448,8 +434,7 @@ public class PUCrunch {
 			PutBit(1);
 			PutBit(1);
 
-			PutValue((1 << maxGamma)
-					+ (((maxrlelen - 1) & 0xff) >> (8 - maxGamma)));
+			PutValue((1 << maxGamma) + (((maxrlelen - 1) & 0xff) >> (8 - maxGamma)));
 
 			PutNBits((maxrlelen - 1) & 0xff, 8 - maxGamma);
 			PutValue(((maxrlelen - 1) >> 8) + 1);
@@ -483,13 +468,11 @@ public class PUCrunch {
 				return escBits + 2 + 8;
 			return 100000;
 		}
-		return escBits + 8 + extraLZPosBits
-				+ lenValue[((lzpos - 1) >> (8 + extraLZPosBits)) + 1] + lzlen < 257 ? lenValue[lzlen - 1]
-				: 50;
+		return escBits + 8 + extraLZPosBits + lenValue[((lzpos - 1) >> (8 + extraLZPosBits)) + 1] + lzlen < 257
+				? lenValue[lzlen - 1] : 50;
 	}
 
-	private void OutputLz(int esc, int lzlen, int lzpos, byte[] data,
-			int dataPos, int curpos) {
+	private void OutputLz(int esc, int lzlen, int lzpos, byte[] data, int dataPos, int curpos) {
 		if (lzlen == 2)
 			lenStat[0][1]++;
 		else if (lzlen <= 4)
@@ -534,9 +517,7 @@ public class PUCrunch {
 				PutValue(lzlen - 1);
 				PutBit(0);
 				if (lzpos > 256)
-					System.err.printf(
-							"Error at %d: lzpos too long (%d) for lzlen==2\n",
-							curpos, lzpos);
+					System.err.printf("Error at %d: lzpos too long (%d) for lzlen==2\n", curpos, lzpos);
 				PutNBits(((lzpos - 1) & 0xff) ^ 0xff, 8);
 			} else {
 				PutValue(lzlen - 1);
@@ -554,8 +535,7 @@ public class PUCrunch {
 		for (int i = inlen - 1; i >= 0; i--) {
 			int r1 = 8 + length[i + 1], r2, r3;
 
-			if (0 == lzlen[i] && 0 == rle[i]
-					&& (null == lzlen2 || 0 == lzlen2[i])
+			if (0 == lzlen[i] && 0 == rle[i] && (null == lzlen2 || 0 == lzlen2[i])
 
 			) {
 				length[i] = r1;
@@ -639,8 +619,7 @@ public class PUCrunch {
 
 				if (optimize != 0 && lzlen[i] > 2) {
 					int ii, mini = lzlen[i], minv = r3, mino = lzpos[i];
-					int topLen = LenLz(lzlen[i], lzpos[i])
-							- lenValue[lzlen[i] - 1];
+					int topLen = LenLz(lzlen[i], lzpos[i]) - lenValue[lzlen[i] - 1];
 
 					/*
 					 * Check only the original length and all shorter lengths
@@ -775,8 +754,7 @@ public class PUCrunch {
 			b[i] = a[i] = -1;
 
 		if (states > 256) {
-			System.err.printf("Escape optimize: only 256 states (%d)!\n",
-					states);
+			System.err.printf("Escape optimize: only 256 states (%d)!\n", states);
 			return 0;
 		}
 
@@ -936,20 +914,15 @@ public class PUCrunch {
 		int escape = 0;
 
 		if (lzsz < 0 || lzsz > lrange) {
-			System.err.printf(
-					"LZ range must be from 0 to %d (was %d). Set to %d.\n",
-					lrange, lzsz, lrange);
+			System.err.printf("LZ range must be from 0 to %d (was %d). Set to %d.\n", lrange, lzsz, lrange);
 			lzsz = lrange;
 		}
 		if (lzsz > 65535) {
-			System.err
-					.printf("LZ range must be from 0 to 65535 (was %d). Set to 65535.\n",
-							lzsz);
+			System.err.printf("LZ range must be from 0 to 65535 (was %d). Set to 65535.\n", lzsz);
 			lzsz = 65535;
 		}
 		if (0 == lzsz)
-			System.err
-					.printf("Warning: zero LZ range. Only RLE packing used.\n");
+			System.err.printf("Warning: zero LZ range. Only RLE packing used.\n");
 
 		InitRleLen();
 		length = new int[inlen + 1];
@@ -998,10 +971,10 @@ public class PUCrunch {
 				 * byte-by-byte is good enough.
 				 */
 				a = p;
-				int val = indata[a++] & 0xff; /*
-											 * if this were uchar, it would go
-											 * to stack..
-											 */
+				int val = indata[a++]
+						& 0xff; /*
+								 * if this were uchar, it would go to stack..
+								 */
 				int top = inlen - p;
 				int rlelen = 1;
 
@@ -1062,18 +1035,18 @@ public class PUCrunch {
 					 * is.
 					 */
 
-					i = lastPair[((indata[p + (rlep - 1)] & 0xff) << 8)
-							| (indata[p + rlep] & 0xff)] - 1;
+					i = lastPair[((indata[p + (rlep - 1)] & 0xff) << 8) | (indata[p + rlep] & 0xff)] - 1;
 					while (i >= bot /* && i>=rlep-1 */) { /*
-														 * bot>=rlep-1, i>=bot
-														 * ==> i>=rlep-1
-														 */
+															 * bot>=rlep-1,
+															 * i>=bot ==>
+															 * i>=rlep-1
+															 */
 
 						/* Equal number of A's ? */
-						if (0 == (rlep - 1) || rle[i - (rlep - 1)] == rlep) { /*
-																			 * 'head'
-																			 * matches
-																			 */
+						if (0 == (rlep - 1) || rle[i
+								- (rlep - 1)] == rlep) { /*
+															 * 'head' matches
+															 */
 							/*
 							 * Check the hash values corresponding to the last
 							 * two bytes of the currently longest match and the
@@ -1090,13 +1063,11 @@ public class PUCrunch {
 
 								/* the 2 first bytes ARE the same.. */
 								j = 2;
-								while (j < topindex
-										&& indata[a++] == indata[b++])
+								while (j < topindex && indata[a++] == indata[b++])
 									j++;
 
 								if (j + rlep - 1 > maxval) {
-									int tmplen = j + rlep - 1, tmppos = p - i
-											+ rlep - 1;
+									int tmplen = j + rlep - 1, tmppos = p - i + rlep - 1;
 
 									if (tmplen > maxlzlen)
 										tmplen = maxlzlen;
@@ -1109,8 +1080,7 @@ public class PUCrunch {
 									 * Accept only versions that really are
 									 * shorter
 									 */
-									if (tmplen * 8 - LenLz(tmplen, tmppos) > maxval
-											* 8 - LenLz(maxval, maxpos)) {
+									if (tmplen * 8 - LenLz(tmplen, tmppos) > maxval * 8 - LenLz(maxval, maxpos)) {
 										maxval = tmplen;
 										maxpos = tmppos;
 										hashCompare = hashValue[p + maxval - 2];
@@ -1160,9 +1130,7 @@ public class PUCrunch {
 						}
 					}
 					if (p + maxval > inlen) {
-						System.err
-								.printf("Error @ %d, lzlen %d, pos %d - exceeds inlen\n",
-										p, maxval, maxpos);
+						System.err.printf("Error @ %d, lzlen %d, pos %d - exceeds inlen\n", p, maxval, maxpos);
 						maxval = inlen - p;
 					}
 					if (lzmlen[p] < maxval) {
@@ -1171,16 +1139,14 @@ public class PUCrunch {
 					}
 					if (maxpos <= 256 || maxval > 2) {
 						if (maxpos < 0)
-							System.err.printf("Error @ %d, lzlen %d, pos %d\n",
-									p, maxval, maxpos);
+							System.err.printf("Error @ %d, lzlen %d, pos %d\n", p, maxval, maxpos);
 						lzlen[p] = (maxval < maxlzlen) ? maxval : maxlzlen;
 						lzpos[p] = maxpos;
 					}
 				}
 			}
 			/* check LZ77 code again, ROT1..255 */
-			if ((type & FIXF_DLZ) != 0
-					&& /* rle[p]<maxlzlen && */p + rle[p] + 1 < inlen) {
+			if ((type & FIXF_DLZ) != 0 && /* rle[p]<maxlzlen && */p + rle[p] + 1 < inlen) {
 				int rot;
 
 				for (rot = 1; rot < 255/* BUG:?should be 256? */; rot++) {
@@ -1202,8 +1168,8 @@ public class PUCrunch {
 					 * is no 2-byte match, don't look further, because there
 					 * can't be a longer match.
 					 */
-					i = lastPair[((((indata[p] & 0xff) + rot) & 0xff) << 8)
-							| (((indata[p + 1] & 0xff) + rot) & 0xff)] - 1;
+					i = lastPair[((((indata[p] & 0xff) + rot) & 0xff) << 8) | (((indata[p + 1] & 0xff) + rot) & 0xff)]
+							- 1;
 					if (i >= 0 && i >= bot) {
 						/* Got a 2-byte match at least */
 						maxval = 2;
@@ -1227,16 +1193,16 @@ public class PUCrunch {
 						i = lastPair[((((indata[p + (rlep - 1)] & 0xff) + rot) & 0xff) << 8)
 								| (((indata[p + rlep] & 0xff) + rot) & 0xff)] - 1;
 						while (i >= bot /* && i>=rlep-1 */) { /*
-															 * bot>=rlep-1,
-															 * i>=bot ==>
-															 * i>=rlep-1
-															 */
+																 * bot>=rlep-1,
+																 * i>=bot ==>
+																 * i>=rlep-1
+																 */
 
 							/* Equal number of A's ? */
-							if (0 == (rlep - 1) || rle[i - (rlep - 1)] == rlep) { /*
-																				 * 'head'
-																				 * matches
-																				 */
+							if (0 == (rlep - 1) || rle[i - (rlep
+									- 1)] == rlep) { /*
+														 * 'head' matches
+														 */
 								/*
 								 * Check the hash values corresponding to the
 								 * last two bytes of the currently longest match
@@ -1256,8 +1222,7 @@ public class PUCrunch {
 										j++;
 
 									if (j + rlep - 1 > maxval) {
-										int tmplen = j + rlep - 1, tmppos = p
-												- i + rlep - 1;
+										int tmplen = j + rlep - 1, tmppos = p - i + rlep - 1;
 
 										if (tmplen > maxlzlen)
 											tmplen = maxlzlen;
@@ -1266,8 +1231,7 @@ public class PUCrunch {
 										 * Accept only versions that really are
 										 * shorter
 										 */
-										if (tmplen * 8 - LenLz(tmplen, tmppos) > maxval
-												* 8 - LenLz(maxval, maxpos)) {
+										if (tmplen * 8 - LenLz(tmplen, tmppos) > maxval * 8 - LenLz(maxval, maxpos)) {
 											maxval = tmplen;
 											maxpos = tmppos;
 
@@ -1286,18 +1250,13 @@ public class PUCrunch {
 						}
 
 						if (p + maxval > inlen) {
-							System.err
-									.printf("Error @ %d, lzlen %d, pos %d - exceeds inlen\n",
-											p, maxval, maxpos);
+							System.err.printf("Error @ %d, lzlen %d, pos %d - exceeds inlen\n", p, maxval, maxpos);
 							maxval = inlen - p;
 						}
-						if (maxval > 3
-								&& maxpos <= 256
+						if (maxval > 3 && maxpos <= 256
 								&& (maxval > lzlen2[p] || (maxval == lzlen2[p] && maxpos < lzpos2[p]))) {
 							if (maxpos < 0)
-								System.err.printf(
-										"Error @ %d, lzlen %d, pos %d\n", p,
-										maxval, maxpos);
+								System.err.printf("Error @ %d, lzlen %d, pos %d\n", p, maxval, maxpos);
 							lzlen2[p] = (maxval < maxlzlen) ? maxval : maxlzlen;
 							lzpos2[p] = maxpos;
 						}
@@ -1356,7 +1315,9 @@ public class PUCrunch {
 
 				escMask = (0xff00 >> escBits) & 0xff;
 
-				/* Find the optimum path for selected escape bits (no optimize) */
+				/*
+				 * Find the optimum path for selected escape bits (no optimize)
+				 */
 				OptimizeLength(0);
 
 				/* Optimize the escape selections for this path & escBits */
@@ -1366,7 +1327,9 @@ public class PUCrunch {
 				escape = escapeCont.intVal;
 				other = otherCont.intVal;
 
-				/* Compare value: bits lost for escaping -- bits lost for prefix */
+				/*
+				 * Compare value: bits lost for escaping -- bits lost for prefix
+				 */
 				c = (escBits + 3) * escaped + other * escBits;
 				if (c < mv) {
 					mb = escBits;
@@ -1382,7 +1345,9 @@ public class PUCrunch {
 				escBits = 0;
 				escMask = 0;
 
-				/* Find the optimum path for selected escape bits (no optimize) */
+				/*
+				 * Find the optimum path for selected escape bits (no optimize)
+				 */
 				OptimizeLength(0);
 				/* Optimize the escape selections for this path & escBits */
 				IntContainer escapeCont = new IntContainer(escape);
@@ -1500,7 +1465,7 @@ public class PUCrunch {
 
 					/* Re-search matches to get the closest one */
 					if (lzopt != 0 && /* If any changes to lengths.. */
-					lzlen[p] > 2 /* && lzlen[p] > rle[p] */) {
+							lzlen[p] > 2 /* && lzlen[p] > rle[p] */) {
 						int bot = p - lzpos[p] + 1;
 						int rlep = rle[p];
 
@@ -1513,17 +1478,16 @@ public class PUCrunch {
 						i = p - backSkip[p];
 						while (i >= bot /* && i>=rlep-1 */) {
 							/* Equal number of A's ? */
-							if (rlep == 1 || rle[i - rlep + 1] == rlep) { /*
-																		 * 'head'
-																		 * matches
-																		 */
+							if (rlep == 1 || rle[i - rlep
+									+ 1] == rlep) { /*
+													 * 'head' matches
+													 */
 								a = i + 1; /* match */
 								int b = p + rlep - 1 + 1; /* curpos */
 								int topindex = inlen - (p + rlep - 1);
 
 								j = 1;
-								while (j < topindex
-										&& indata[a++] == indata[b++])
+								while (j < topindex && indata[a++] == indata[b++])
 									j++;
 
 								if (j + rlep - 1 >= lzlen[p]) {
@@ -1570,11 +1534,7 @@ public class PUCrunch {
 			case DLZ:
 				for (i = 0; i < lzlen2[p]; i++)
 					length[p + i] = size;
-				OutputDLz(
-						escape,
-						lzlen2[p],
-						lzpos2[p],
-						((indata[p] & 0xff) - (indata[p - lzpos2[p]] & 0xff)) & 0xff);
+				OutputDLz(escape, lzlen2[p], lzpos2[p], ((indata[p] & 0xff) - (indata[p - lzpos2[p]] & 0xff)) & 0xff);
 				p += lzlen2[p];
 				break;
 
@@ -1642,27 +1602,22 @@ public class PUCrunch {
 		return execAddr;
 	}
 
-	private void printCrunchInput(String input, int startAddr, int memStart,
-			int execAddr) {
+	private void printCrunchInput(String input, int startAddr, int memStart, int execAddr) {
 		if (verbose) {
 			System.out.println("Crunching " + input);
-			System.out.printf("Load address 0x%04x, End address 0x%04x\n",
-					startAddr, startAddr + inlen - 1);
+			System.out.printf("Load address 0x%04x, End address 0x%04x\n", startAddr, startAddr + inlen - 1);
 			System.out.printf("Exec address 0x%04x\n", execAddr);
 			System.out.printf("New load address 0x%04x\n", memStart);
-			System.out.printf("Interrupts %s and memory config set to $%02x "
-					+ "after decompression\n", (cliConfig == 0x58) ? "enabled"
-					: "disabled", memConfig);
+			System.out.printf("Interrupts %s and memory config set to $%02x " + "after decompression\n",
+					(cliConfig == 0x58) ? "enabled" : "disabled", memConfig);
 		}
 	}
 
-	private void printCrunchingResult(int start, int endAddr, int memStart,
-			int overlap, Decruncher dc, byte[] header) {
+	private void printCrunchingResult(int start, int endAddr, int memStart, int overlap, Decruncher dc, byte[] header) {
 		if (verbose) {
 			Map<String, Integer> labels = assembler.getLabels();
 			int stackUsed = labels.get("ftStackSize");
-			int ibufferUsed = labels.get("ftIBufferSize") != null ? labels
-					.get("ftIBufferSize") : 0;
+			int ibufferUsed = labels.get("ftIBufferSize") != null ? labels.get("ftIBufferSize") : 0;
 
 			System.out.printf("Saving %s\n", dc.getName());
 
@@ -1682,16 +1637,15 @@ public class PUCrunch {
 			if (ibufferUsed != 0) {
 				System.out.printf("$200-$%x, ", 0x200 + ibufferUsed);
 			}
-			System.out.printf("and $%04x-$%04x.\n",
-					(start < memStart + 1) ? start : memStart + 1, endAddr - 1);
-			System.out.printf("Uncompressed %d bytes, Compressed %d bytes\n",
-					inlen, header.length + rleUsed - 15 + size);
+			System.out.printf("and $%04x-$%04x.\n", (start < memStart + 1) ? start : memStart + 1, endAddr - 1);
+			System.out.printf("Uncompressed %d bytes, Compressed %d bytes\n", inlen,
+					header.length + rleUsed - 15 + size);
 		}
 	}
 
 	public void crunch(String input, String output) throws IOException {
-		try (DataInputStream infp = new DataInputStream(new FileInputStream(
-				input)); PrintStream outfp = new PrintStream(output)) {
+		try (DataInputStream infp = new DataInputStream(new FileInputStream(input));
+				PrintStream outfp = new PrintStream(output)) {
 
 			initValueLen();
 
@@ -1700,14 +1654,12 @@ public class PUCrunch {
 			/* Read in the data */
 			indata = new byte[lrange];
 			int count = 0;
-			while (inlen < lrange
-					&& (count = infp.read(indata, inlen, lrange - inlen)) >= 0) {
+			while (inlen < lrange && (count = infp.read(indata, inlen, lrange - inlen)) >= 0) {
 				inlen += count;
 			}
 
 			if (startAddr < 0x258 || startAddr + inlen - 1 > 0xffff) {
-				throw new RuntimeException(
-						"Only programs from 0x0258 to 0xffff can be compressed");
+				throw new RuntimeException("Only programs from 0x0258 to 0xffff can be compressed");
 			}
 
 			// C64, wrap active, basic
@@ -1721,26 +1673,22 @@ public class PUCrunch {
 				if ((type & FIXF_BASIC) != 0) {
 					execAddr = 0xa7ae;
 				} else {
-					throw new RuntimeException(
-							"Note: The execution address was not detected correctly!");
+					throw new RuntimeException("Note: The execution address was not detected correctly!");
 				}
 			}
 			printCrunchInput(input, startAddr, memStart, execAddr);
 
 			int flags = F_2MHZ | F_AUTO | F_AUTOEX;
 
-			int startEscape = PackLz77(lrange, flags, startAddr + inlen,
-					memEnd, type);
+			int startEscape = PackLz77(lrange, flags, startAddr + inlen, memEnd, type);
 			// end for uncompressed data
 			int endAddr = startAddr + inlen;
 			int progEnd = endAddr;
 			// estimated maximum decruncher size
 			int maxDecruncherLen = 512;
-			if (endAddr - ((size + 0xff) & ~0xff) < memStart + maxDecruncherLen
-					+ 3) {
+			if (endAddr - ((size + 0xff) & ~0xff) < memStart + maxDecruncherLen + 3) {
 				/* would overwrite the decompressor, move a bit upwards */
-				endAddr = memStart + maxDecruncherLen + 3
-						+ ((size + 0xff) & ~0xff);
+				endAddr = memStart + maxDecruncherLen + 3 + ((size + 0xff) & ~0xff);
 			}
 			/* 3 bytes reserved for EOF */
 			/* bytes reserved for temporary data expansion (escaped chars) */
@@ -1750,15 +1698,13 @@ public class PUCrunch {
 				type &= ~FIXF_DLZ;
 			}
 			if ((memStart & 0xff) != 1) {
-				throw new RuntimeException(String.format(
-						"Misaligned basic start 0x%04x\n", memStart));
+				throw new RuntimeException(String.format("Misaligned basic start 0x%04x\n", memStart));
 			} else if (memStart > 9999) {
 				/* The basic line only holds 4 digits.. */
-				throw new RuntimeException(String.format(
-						"Too high basic start 0x%04x\n", memStart));
+				throw new RuntimeException(String.format("Too high basic start 0x%04x\n", memStart));
 			}
-			SavePack(type, outfp, startAddr, execAddr, startEscape, endAddr,
-					progEnd, (flags & F_2MHZ) != 0, memStart, memEnd);
+			SavePack(type, outfp, startAddr, execAddr, startEscape, endAddr, progEnd, (flags & F_2MHZ) != 0, memStart,
+					memEnd);
 		}
 	}
 

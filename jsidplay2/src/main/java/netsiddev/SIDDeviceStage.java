@@ -14,20 +14,20 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 
 	public SIDDeviceStage() {
 		util = new SIDDeviceUIUtil();
-		
+
 		Scene scene = (Scene) util.parse(this);
 		scene.setOnKeyPressed((ke) -> {
 			if ((ke.getCode() == KeyCode.ESCAPE) || (ke.getCode() == KeyCode.ENTER)) {
 				close();
 			}
 		});
-		
+
 		setScene(scene);
 		resizableProperty().set(false);
 
 		initStyle(StageStyle.UTILITY);
 		setAlwaysOnTop(true);
-		
+
 		setTitle(util.getBundle().getString("TITLE"));
 		centerOnScreen();
 	}
@@ -37,7 +37,7 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 			showAndWait();
 		} else {
 			show();
-		}		
+		}
 	}
 
 	public boolean isWait() {

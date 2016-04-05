@@ -72,8 +72,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	 * @param upperBound
 	 * @throws IllegalLogarithmicRangeException
 	 */
-	private void validateBounds(double lowerBound, double upperBound)
-			throws IllegalLogarithmicRangeException {
+	private void validateBounds(double lowerBound, double upperBound) throws IllegalLogarithmicRangeException {
 		if (lowerBound < 0 || upperBound < 0 || lowerBound > upperBound) {
 			throw new IllegalLogarithmicRangeException(
 					"The logarithmic range should be include to ]0,Double.MAX_VALUE] and the lowerBound should be less than the upperBound");
@@ -136,8 +135,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	// properties defined into the ValueAxis class.
 	@Override
 	protected Number[] getRange() {
-		return new Number[] { lowerBoundProperty().get(),
-				upperBoundProperty().get() };
+		return new Number[] { lowerBoundProperty().get(), upperBoundProperty().get() };
 	}
 
 	// The getTickMarkLabel is only used to convert the number value to a string
@@ -161,8 +159,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 			Number lowerBound = ((Number[]) range)[0];
 			Number upperBound = ((Number[]) range)[1];
 			try {
-				validateBounds(lowerBound.doubleValue(),
-						upperBound.doubleValue());
+				validateBounds(lowerBound.doubleValue(), upperBound.doubleValue());
 			} catch (IllegalLogarithmicRangeException e) {
 			}
 
@@ -177,13 +174,9 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	public Number getValueForDisplay(double displayPosition) {
 		double delta = logUpperBound.get() - logLowerBound.get();
 		if (getSide().isVertical()) {
-			return Math.pow(10,
-					(((displayPosition - getHeight()) / -getHeight()) * delta)
-							+ logLowerBound.get());
+			return Math.pow(10, (((displayPosition - getHeight()) / -getHeight()) * delta) + logLowerBound.get());
 		} else {
-			return Math.pow(10,
-					(((displayPosition / getWidth()) * delta) + logLowerBound
-							.get()));
+			return Math.pow(10, (((displayPosition / getWidth()) * delta) + logLowerBound.get()));
 		}
 	}
 
@@ -210,7 +203,8 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 		private static final long serialVersionUID = -1874700637219400970L;
 
 		/**
-		 * @param message Error message
+		 * @param message
+		 *            Error message
 		 */
 		public IllegalLogarithmicRangeException(String message) {
 			super(message);

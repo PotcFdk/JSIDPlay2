@@ -23,7 +23,7 @@ public class Comal80 extends Cartridge {
 	 * ROMH banks 0..3 (each of size 0x2000).
 	 */
 	protected final byte[][] romHBanks;
-	
+
 	/**
 	 * Load a Comal80 cartridge.
 	 * 
@@ -41,8 +41,7 @@ public class Comal80 extends Cartridge {
 		romHBanks = new byte[4][0x2000];
 		for (int i = 0; i < 4; i++) {
 			dis.readFully(chipHeader);
-			if (chipHeader[0xc] != (byte) 0xa0 && chipHeader[0xe] != 0x40
-					&& chipHeader[0xb] > 3)
+			if (chipHeader[0xc] != (byte) 0xa0 && chipHeader[0xe] != 0x40 && chipHeader[0xb] > 3)
 				throw new RuntimeException("Unexpected Chip header!");
 			int bank = chipHeader[0xb] & 0xff;
 			dis.readFully(romLBanks[bank]);
@@ -93,7 +92,7 @@ public class Comal80 extends Cartridge {
 	public Bank getIO1() {
 		return io1Bank;
 	}
-	
+
 	@Override
 	public void reset() {
 		super.reset();

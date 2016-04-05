@@ -45,8 +45,7 @@ public class Printer extends Tab implements UIPart, IPaper {
 
 	@FXML
 	private void clearPaper() {
-		paper.getGraphicsContext2D().clearRect(0, 0, paper.getWidth(),
-				paper.getHeight());
+		paper.getGraphicsContext2D().clearRect(0, 0, paper.getWidth(), paper.getHeight());
 		y = 0;
 	}
 
@@ -59,8 +58,7 @@ public class Printer extends Tab implements UIPart, IPaper {
 		switch (out) {
 		case OUTPUT_NEWLINE:
 			// newline
-			final boolean[] toPrint = Arrays.copyOf(currentPixelRow,
-					MPS803.MAX_WIDTH);
+			final boolean[] toPrint = Arrays.copyOf(currentPixelRow, MPS803.MAX_WIDTH);
 			Arrays.fill(currentPixelRow, false);
 			x = 0;
 			final int paperY = y;

@@ -11,13 +11,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="MUSICIANS")
+@Table(name = "MUSICIANS")
 @Access(AccessType.PROPERTY)
 public class Musicians {
 	private int id;
-	
+
 	@Id
-	@Column(name="MU_ID")
+	@Column(name = "MU_ID")
 	public int getId() {
 		return id;
 	}
@@ -27,9 +27,9 @@ public class Musicians {
 	}
 
 	private Games games;
-	
-	@OneToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="MU_ID")
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "MU_ID")
 	public Games getGames() {
 		return games;
 	}
@@ -39,10 +39,10 @@ public class Musicians {
 	}
 
 	// private Blob? photo;
-	
+
 	private String musician;
 
-	@Column(name="MUSICIAN")
+	@Column(name = "MUSICIAN")
 	public String getMusician() {
 		return musician;
 	}
@@ -53,7 +53,7 @@ public class Musicians {
 
 	private String group;
 
-	@Column(name="GRP")
+	@Column(name = "GRP")
 	public String getGroup() {
 		return group;
 	}
@@ -64,7 +64,7 @@ public class Musicians {
 
 	private String nickname;
 
-	@Column(name="NICK")
+	@Column(name = "NICK")
 	public String getNickname() {
 		return nickname;
 	}

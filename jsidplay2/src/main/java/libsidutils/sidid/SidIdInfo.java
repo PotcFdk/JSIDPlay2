@@ -125,32 +125,25 @@ public class SidIdInfo extends SidIdBase {
 		PlayerInfoSection playerInfoSection = null;
 		String line;
 		try (final BufferedReader br = new BufferedReader(
-				new InputStreamReader(new ByteArrayInputStream(
-						readConfiguration(FNAME, SID_ID_PKG))))) {
+				new InputStreamReader(new ByteArrayInputStream(readConfiguration(FNAME, SID_ID_PKG))))) {
 			while ((line = br.readLine()) != null) {
 				final StringTokenizer stok = new StringTokenizer(line, "\n");
 				while (stok.hasMoreTokens()) {
 					final String token = stok.nextToken();
 					if (token.length() > 0) {
 						if (token.startsWith(NAME_TOKEN)) {
-							playerInfoSection.setName(token
-									.substring(NAME_TOKEN.length()));
+							playerInfoSection.setName(token.substring(NAME_TOKEN.length()));
 						} else if (token.startsWith(AUTHOR_TOKEN)) {
-							playerInfoSection.setAuthor(token
-									.substring(AUTHOR_TOKEN.length()));
+							playerInfoSection.setAuthor(token.substring(AUTHOR_TOKEN.length()));
 						} else if (token.startsWith(RELEASED_TOKEN)) {
-							playerInfoSection.setReleased(token
-									.substring(RELEASED_TOKEN.length()));
+							playerInfoSection.setReleased(token.substring(RELEASED_TOKEN.length()));
 						} else if (token.startsWith(COMMENT_TOKEN)) {
-							playerInfoSection.setComment(token.substring(
-									COMMENT_TOKEN.length()).trim());
+							playerInfoSection.setComment(token.substring(COMMENT_TOKEN.length()).trim());
 						} else if (token.startsWith(REFERENCE_TOKEN)) {
-							playerInfoSection.setReference(token
-									.substring(REFERENCE_TOKEN.length()));
+							playerInfoSection.setReference(token.substring(REFERENCE_TOKEN.length()));
 						} else if (token.startsWith(" ")) {
 							// comment being continued...
-							playerInfoSection.setComment(playerInfoSection
-									.getComment() + "\n" + token);
+							playerInfoSection.setComment(playerInfoSection.getComment() + "\n" + token);
 						} else {
 							// player name
 							playerInfoSection = new PlayerInfoSection(token);

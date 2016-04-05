@@ -67,12 +67,10 @@ public class HVSCEntryService {
 		this.stilService = new STILService(em);
 	};
 
-	public HVSCEntry add(Player player, final String path, final File tuneFile)
-			throws IOException, SidTuneError {
+	public HVSCEntry add(Player player, final String path, final File tuneFile) throws IOException, SidTuneError {
 		SidTune tune = tuneFile.isFile() ? SidTune.load(tuneFile) : null;
-		HVSCEntry hvscEntry = new HVSCEntry(
-				() -> player.getSidDatabaseInfo(db -> db
-						.getTuneLength(tune), 0), path, tuneFile, tune);
+		HVSCEntry hvscEntry = new HVSCEntry(() -> player.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0), path,
+				tuneFile, tune);
 		stilService.add(stilPath -> player.getStilEntry(stilPath), hvscEntry);
 
 		try {
@@ -85,8 +83,8 @@ public class HVSCEntryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public HVSCEntries search(SingularAttribute<?, ?> field, Object fieldValue,
-			boolean caseSensitive, boolean fForward) {
+	public HVSCEntries search(SingularAttribute<?, ?> field, Object fieldValue, boolean caseSensitive,
+			boolean fForward) {
 		Class<?> entityType = field.getDeclaringType().getJavaType();
 		Class<?> fieldType = field.getJavaType();
 
@@ -104,10 +102,8 @@ public class HVSCEntryService {
 				assert (fieldValue.getClass() == Date.class);
 				// SELECT distinct h.path FROM HVSCEntry h WHERE
 				// YEAR(h.<fieldName>) = <value>
-				Path<Date> fieldName = h
-						.get((SingularAttribute<HVSCEntry, Date>) field);
-				Expression<Integer> year = cb.function("YEAR", Integer.class,
-						fieldName);
+				Path<Date> fieldName = h.get((SingularAttribute<HVSCEntry, Date>) field);
+				Expression<Integer> year = cb.function("YEAR", Integer.class, fieldName);
 				Calendar cal = Calendar.getInstance();
 				cal.setTime((Date) fieldValue);
 				predicate = cb.equal(year, cal.get(Calendar.YEAR));
@@ -115,23 +111,19 @@ public class HVSCEntryService {
 				assert (fieldValue.getClass() == String.class);
 				// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName>
 				// LIKE <value>
-				Path<String> fieldName = h
-						.get((SingularAttribute<HVSCEntry, String>) field);
-				predicate = fieldNameLikeFieldValue(cb, fieldName,
-						fieldValue.toString(), caseSensitive, fieldType);
+				Path<String> fieldName = h.get((SingularAttribute<HVSCEntry, String>) field);
+				predicate = fieldNameLikeFieldValue(cb, fieldName, fieldValue.toString(), caseSensitive, fieldType);
 			} else {
 				// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName> =
 				// <value>
-				Path<Object> fieldName = h
-						.get((SingularAttribute<HVSCEntry, Object>) field);
+				Path<Object> fieldName = h.get((SingularAttribute<HVSCEntry, Object>) field);
 				predicate = cb.equal(fieldName, fieldValue);
 			}
 		} else {
 			// if (entityType == StilEntry.class)
 			assert (fieldValue.getClass() == String.class);
 			Root<StilEntry> s = q.from(StilEntry.class);
-			Join<ui.entities.collection.StilEntry, HVSCEntry> h = s.join(
-					StilEntry_.hvscEntry, JoinType.INNER);
+			Join<ui.entities.collection.StilEntry, HVSCEntry> h = s.join(StilEntry_.hvscEntry, JoinType.INNER);
 			Path<String> path = h.get(HVSCEntry_.path);
 			q.select(path).distinct(true);
 
@@ -139,28 +131,22 @@ public class HVSCEntryService {
 				assert (fieldValue.getClass() == String.class);
 				// SELECT distinct h.path FROM STIL s INNER JOIN s.hvscEntry h
 				// WHERE s.<fieldName> LIKE <value>
-				Path<String> fieldName = s
-						.get((SingularAttribute<StilEntry, String>) field);
-				predicate = fieldNameLikeFieldValue(cb, fieldName,
-						fieldValue.toString(), caseSensitive, fieldType);
+				Path<String> fieldName = s.get((SingularAttribute<StilEntry, String>) field);
+				predicate = fieldNameLikeFieldValue(cb, fieldName, fieldValue.toString(), caseSensitive, fieldType);
 			} else {
 				// SELECT distinct h.path FROM STIL s INNER JOIN s.hvscEntry h
 				// WHERE s.<fieldName> = <value>
-				Path<Object> fieldName = s
-						.get((SingularAttribute<StilEntry, Object>) field);
+				Path<Object> fieldName = s.get((SingularAttribute<StilEntry, Object>) field);
 				predicate = cb.equal(fieldName, fieldValue);
 			}
 		}
-		return new HVSCEntries(em.createQuery(q.where(predicate))
-				.getResultList(), fForward);
+		return new HVSCEntries(em.createQuery(q.where(predicate)).getResultList(), fForward);
 	}
 
-	private Predicate fieldNameLikeFieldValue(CriteriaBuilder cb,
-			Path<String> fieldNm, String fieldValue, boolean caseSensitive,
-			Class<?> type) {
+	private Predicate fieldNameLikeFieldValue(CriteriaBuilder cb, Path<String> fieldNm, String fieldValue,
+			boolean caseSensitive, Class<?> type) {
 		if (!caseSensitive) {
-			return cb.like(cb.lower(fieldNm),
-					"%" + fieldValue.toLowerCase(Locale.GERMAN) + "%");
+			return cb.like(cb.lower(fieldNm), "%" + fieldValue.toLowerCase(Locale.GERMAN) + "%");
 		} else {
 			return cb.like(fieldNm, "%" + fieldValue + "%");
 		}

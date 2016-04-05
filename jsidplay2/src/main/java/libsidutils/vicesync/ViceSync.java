@@ -37,8 +37,8 @@ public class ViceSync {
 		public MOS6510State() {
 		}
 
-		public MOS6510State(long syncClk, int register_ProgramCounter, byte register_Accumulator, byte register_X, byte register_Y,
-				byte register_StackPointer) {
+		public MOS6510State(long syncClk, int register_ProgramCounter, byte register_Accumulator, byte register_X,
+				byte register_Y, byte register_StackPointer) {
 			this.syncClk = syncClk;
 			pc = register_ProgramCounter;
 			a = register_Accumulator & 0xff;
@@ -64,8 +64,8 @@ public class ViceSync {
 
 		@Override
 		public String toString() {
-			return String.format("%d - %d: pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x", clk, syncClk, pc, (byte) a, (byte) x, (byte) y,
-					(byte) sp);
+			return String.format("%d - %d: pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x", clk, syncClk, pc, (byte) a,
+					(byte) x, (byte) y, (byte) sp);
 		}
 	}
 

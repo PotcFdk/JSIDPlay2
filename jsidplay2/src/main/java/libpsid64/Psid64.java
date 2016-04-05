@@ -168,12 +168,9 @@ public class Psid64 {
 			memoryBlock.setDescription("STIL text");
 			memBlocks.add(memoryBlock);
 		}
-		Collections.sort(memBlocks,
-				(a, b) -> a.getStartAddress() - b.getStartAddress());
-		final int driver = freePages.getDriverPage() != null ? freePages
-				.getDriverPage() << 8 : 0;
-		final int charset = freePages.getCharPage() != null ? freePages
-				.getCharPage() << 8 : 0;
+		Collections.sort(memBlocks, (a, b) -> a.getStartAddress() - b.getStartAddress());
+		final int driver = freePages.getDriverPage() != null ? freePages.getDriverPage() << 8 : 0;
+		final int charset = freePages.getCharPage() != null ? freePages.getCharPage() << 8 : 0;
 
 		printMemoryMap(memBlocks, charset);
 
@@ -196,8 +193,7 @@ public class Psid64 {
 			int blockNum = memBlocks.size() - i - 1 + (used ? 0 : MAX_BLOCKS);
 			int blockStart = used ? memBlocks.get(i).getStartAddress() : 0;
 			int blockSize = used ? memBlocks.get(i).getSize() : 0;
-			globals.put("block" + blockNum + "Start",
-					String.valueOf(blockStart));
+			globals.put("block" + blockNum + "Start", String.valueOf(blockStart));
 			globals.put("block" + blockNum + "Size", String.valueOf(blockSize));
 		}
 		InputStream asm = Psid64.class.getResourceAsStream(PSID64_BOOT_ASM);
@@ -208,8 +204,7 @@ public class Psid64 {
 		// append memory blocks to PSID64 boot code
 		int destPos = psidBoot.length;
 		for (MemoryBlock memBlock : memBlocks) {
-			System.arraycopy(memBlock.getData(), memBlock.getDataOff(),
-					programData, destPos, memBlock.getSize());
+			System.arraycopy(memBlock.getData(), memBlock.getDataOff(), programData, destPos, memBlock.getSize());
 			destPos += memBlock.getSize();
 		}
 		return programData;
@@ -227,8 +222,7 @@ public class Psid64 {
 		// then copy the BASIC program
 		final byte c64buf[] = new byte[65536];
 		tune.placeProgramInMemory(c64buf);
-		System.arraycopy(c64buf, tuneInfo.getLoadAddr(), programData, 2,
-				tuneInfo.getC64dataLen());
+		System.arraycopy(c64buf, tuneInfo.getLoadAddr(), programData, 2, tuneInfo.getC64dataLen());
 
 		printBasicMemoryMap(tuneInfo);
 
@@ -245,8 +239,7 @@ public class Psid64 {
 		}
 	}
 
-	private void printMemoryMap(final List<MemoryBlock> memBlocks,
-			final int charset) {
+	private void printMemoryMap(final List<MemoryBlock> memBlocks, final int charset) {
 		if (verbose) {
 			final PrintStream out = System.out;
 
@@ -254,19 +247,16 @@ public class Psid64 {
 			boolean charsetPrinted = false;
 			for (MemoryBlock memBlock : memBlocks) {
 				if (!charsetPrinted && memBlock.getStartAddress() > charset) {
-					out.printf("  $%04x-$%04x  Character set", charset, charset
-							+ 256 * NUM_CHAR_PAGES);
+					out.printf("  $%04x-$%04x  Character set", charset, charset + 256 * NUM_CHAR_PAGES);
 					out.println();
 					charsetPrinted = true;
 				}
 				out.printf("  $%04x-$%04x  %s", memBlock.getStartAddress(),
-						memBlock.getStartAddress() + memBlock.getSize(),
-						memBlock.getDescription());
+						memBlock.getStartAddress() + memBlock.getSize(), memBlock.getDescription());
 				out.println();
 			}
 			if (!charsetPrinted) {
-				out.printf("  $%04x-$%04x  Character set", charset, charset
-						+ 256 * NUM_CHAR_PAGES);
+				out.printf("  $%04x-$%04x  Character set", charset, charset + 256 * NUM_CHAR_PAGES);
 				out.println();
 			}
 		}
@@ -275,8 +265,7 @@ public class Psid64 {
 	private byte[] initDriver(FreeMemPages freePages) {
 		SidTuneInfo tuneInfo = tune.getInfo();
 
-		int screenPage = freePages.getScreenPage() != null ? freePages
-				.getScreenPage() : 0;
+		int screenPage = freePages.getScreenPage() != null ? freePages.getScreenPage() : 0;
 		int screen = screenPage << 8;
 		int screenSongNum = 0;
 		if (tuneInfo.getSongs() > 1) {
@@ -291,10 +280,8 @@ public class Psid64 {
 		// video screen address
 		int vsa = (screenPage & 0x3c) << 2;
 		// character memory base address
-		int charset = freePages.getCharPage() != null ? freePages.getCharPage() >> 2 & 0x0e
-				: 0x06;
-		int stil = freePages.getStilPage() != null ? freePages.getStilPage()
-				: 0;
+		int charset = freePages.getCharPage() != null ? freePages.getCharPage() >> 2 & 0x0e : 0x06;
+		int stil = freePages.getStilPage() != null ? freePages.getStilPage() : 0;
 
 		HashMap<String, String> globals = new HashMap<String, String>();
 		globals.put("pc", String.valueOf(freePages.getDriverPage() << 8));
@@ -367,8 +354,7 @@ public class Psid64 {
 			}
 			subTuneNo++;
 		}
-		return result.append("                                        ")
-				.toString();
+		return result.append("                                        ").toString();
 	}
 
 	private void writeSTILEntry(StringBuffer buffer, Info info) {
@@ -408,8 +394,7 @@ public class Psid64 {
 		SidTuneInfo tuneInfo = tune.getInfo();
 		if (tuneInfo.getRelocStartPage() == 0x00) {
 			// Used memory ranges. calculated below
-			int used[] = { 0x00, 0x03, 0xa0, 0xbf, 0xd0, 0xff,
-					tuneInfo.getLoadAddr() >> 8,
+			int used[] = { 0x00, 0x03, 0xa0, 0xbf, 0xd0, 0xff, tuneInfo.getLoadAddr() >> 8,
 					tuneInfo.getLoadAddr() + tuneInfo.getC64dataLen() - 1 >> 8 };
 
 			// Mark used pages in table.
@@ -421,32 +406,25 @@ public class Psid64 {
 					pages[j] = true;
 				}
 			}
-		} else if (tuneInfo.getRelocStartPage() != 0xff
-				&& tuneInfo.getRelocPages() != 0) {
+		} else if (tuneInfo.getRelocStartPage() != 0xff && tuneInfo.getRelocPages() != 0) {
 			// the available pages have been specified in the PSID file
-			int endp = Math.min(
-					(tuneInfo.getRelocStartPage() + tuneInfo.getRelocPages()),
-					MAX_PAGES);
+			int endp = Math.min((tuneInfo.getRelocStartPage() + tuneInfo.getRelocPages()), MAX_PAGES);
 
 			// check that the relocation information does not use the following
 			// memory areas: 0x0000-0x03FF, 0xA000-0xBFFF and 0xD000-0xFFFF
 			if (tuneInfo.getRelocStartPage() < 0x04
-					|| 0xa0 <= tuneInfo.getRelocStartPage()
-					&& tuneInfo.getRelocStartPage() <= 0xbf
-					|| tuneInfo.getRelocStartPage() >= 0xd0 || endp - 1 < 0x04
-					|| 0xa0 <= endp - 1 && endp - 1 <= 0xbf || endp - 1 >= 0xd0) {
-				throw new RuntimeException(
-						"PSID64: Not enough memory for driver and screen!");
+					|| 0xa0 <= tuneInfo.getRelocStartPage() && tuneInfo.getRelocStartPage() <= 0xbf
+					|| tuneInfo.getRelocStartPage() >= 0xd0 || endp - 1 < 0x04 || 0xa0 <= endp - 1 && endp - 1 <= 0xbf
+					|| endp - 1 >= 0xd0) {
+				throw new RuntimeException("PSID64: Not enough memory for driver and screen!");
 			}
 
 			for (int i = 0; i < MAX_PAGES; ++i) {
-				pages[i] = tuneInfo.getRelocStartPage() <= i && i < endp ? false
-						: true;
+				pages[i] = tuneInfo.getRelocStartPage() <= i && i < endp ? false : true;
 			}
 		} else {
 			// not a single page is available
-			throw new RuntimeException(
-					"PSID64: Not enough memory for driver and screen!");
+			throw new RuntimeException("PSID64: Not enough memory for driver and screen!");
 		}
 
 		for (int i = 0; i < 4; ++i) {
@@ -464,8 +442,7 @@ public class Psid64 {
 
 				// check if screen area is available
 				int scr = bank + j;
-				if (pages[scr] || pages[scr + 1] || pages[scr + 2]
-						|| pages[scr + 3]) {
+				if (pages[scr] || pages[scr + 1] || pages[scr + 2] || pages[scr + 3]) {
 					continue;
 				}
 
@@ -479,36 +456,30 @@ public class Psid64 {
 						}
 						// check if character rom area is available
 						int chars = bank + k;
-						if (pages[chars] || pages[chars + 1]
-								|| pages[chars + 2] || pages[chars + 3]
-								|| pages[chars + 4] || pages[chars + 5]
-								|| pages[chars + 6] || pages[chars + 7]) {
+						if (pages[chars] || pages[chars + 1] || pages[chars + 2] || pages[chars + 3] || pages[chars + 4]
+								|| pages[chars + 5] || pages[chars + 6] || pages[chars + 7]) {
 							continue;
 						}
-						Integer driver = findSpace(pages, scr, chars, null,
-								NUM_EXTDRV_PAGES);
+						Integer driver = findSpace(pages, scr, chars, null, NUM_EXTDRV_PAGES);
 						if (driver != null) {
 							FreeMemPages freePrages = new FreeMemPages();
 							freePrages.setDriverPage(driver);
 							freePrages.setScreenPage(scr);
 							freePrages.setCharPage(chars);
 							if (stilSize != 0) {
-								freePrages.setStilPage(findSpace(pages, scr,
-										chars, driver, stilSize));
+								freePrages.setStilPage(findSpace(pages, scr, chars, driver, stilSize));
 							}
 							return freePrages;
 						}
 					}
 				} else {
-					Integer driver = findSpace(pages, scr, null, null,
-							NUM_EXTDRV_PAGES);
+					Integer driver = findSpace(pages, scr, null, null, NUM_EXTDRV_PAGES);
 					if (driver != null) {
 						FreeMemPages freePages = new FreeMemPages();
 						freePages.setDriverPage(driver);
 						freePages.setScreenPage(scr);
 						if (stilSize != 0) {
-							freePages.setStilPage(findSpace(pages, scr, null,
-									driver, stilSize));
+							freePages.setStilPage(findSpace(pages, scr, null, driver, stilSize));
 						}
 						return freePages;
 					}
@@ -521,8 +492,7 @@ public class Psid64 {
 			freePrages.setDriverPage(driver);
 			return freePrages;
 		}
-		throw new RuntimeException(
-				"PSID64: Not enough memory for driver and screen!");
+		throw new RuntimeException("PSID64: Not enough memory for driver and screen!");
 	}
 
 	/**
@@ -541,16 +511,12 @@ public class Psid64 {
 	 * @return first page of free consecutive memory pages (null means not
 	 *         found)
 	 */
-	private Integer findSpace(boolean pages[], Integer scr, Integer chars,
-			Integer driver, int size) {
+	private Integer findSpace(boolean pages[], Integer scr, Integer chars, Integer driver, int size) {
 		int firstPage = 0;
 		for (int i = 0; i < MAX_PAGES; ++i) {
-			if (pages[i]
-					|| (scr != null && scr <= i && i < scr + NUM_SCREEN_PAGES)
-					|| (chars != null && chars <= i && i < chars
-							+ NUM_CHAR_PAGES)
-					|| (driver != null && driver <= i && i < driver
-							+ NUM_EXTDRV_PAGES)) {
+			if (pages[i] || (scr != null && scr <= i && i < scr + NUM_SCREEN_PAGES)
+					|| (chars != null && chars <= i && i < chars + NUM_CHAR_PAGES)
+					|| (driver != null && driver <= i && i < driver + NUM_EXTDRV_PAGES)) {
 				if (i - firstPage >= size) {
 					return firstPage;
 				}
@@ -560,8 +526,7 @@ public class Psid64 {
 		return null;
 	}
 
-	public void convertFiles(Player player, File[] files, File target,
-			File hvscRoot) throws IOException, SidTuneError {
+	public void convertFiles(Player player, File[] files, File target, File hvscRoot) throws IOException, SidTuneError {
 		for (File file : files) {
 			if (file.isDirectory()) {
 				convertFiles(player, file.listFiles(), target, hvscRoot);
@@ -571,15 +536,14 @@ public class Psid64 {
 		}
 	}
 
-	private void convertToPSID64(Player player, File file, File target,
-			File hvscRoot) throws IOException, SidTuneError {
+	private void convertToPSID64(Player player, File file, File target, File hvscRoot)
+			throws IOException, SidTuneError {
 		tune = SidTune.load(file);
 		tune.setSelectedSong(null);
 		String collectionName = PathUtils.getCollectionName(hvscRoot, file);
 		stilEntry = player.getStilEntry(collectionName);
 
-		File tmpFile = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file
-				.getName()) + ".prg.tmp");
+		File tmpFile = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file.getName()) + ".prg.tmp");
 		tmpFile.deleteOnExit();
 		try (OutputStream outfile = new FileOutputStream(tmpFile)) {
 			// convert to PSID64
@@ -589,8 +553,7 @@ public class Psid64 {
 		final PUCrunch puCrunch = new PUCrunch();
 		puCrunch.setVerbose(verbose);
 		puCrunch.crunch(tmpFile.getAbsolutePath(),
-				new File(target, PathUtils.getFilenameWithoutSuffix(file.getName())
-						+ ".prg").getAbsolutePath());
+				new File(target, PathUtils.getFilenameWithoutSuffix(file.getName()) + ".prg").getAbsolutePath());
 	}
 
 }

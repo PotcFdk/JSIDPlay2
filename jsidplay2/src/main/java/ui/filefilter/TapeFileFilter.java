@@ -6,9 +6,8 @@ import java.util.Locale;
 
 public class TapeFileFilter implements FileFilter {
 
-	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".tap",
-			".t64", ".prg", ".p00", ".zip", ".tap.gz", ".t64.gz", ".prg.gz",
-			".p00.gz" };
+	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".tap", ".t64", ".prg", ".p00", ".zip",
+			".tap.gz", ".t64.gz", ".prg.gz", ".p00.gz" };
 
 	@Override
 	public boolean accept(File file) {

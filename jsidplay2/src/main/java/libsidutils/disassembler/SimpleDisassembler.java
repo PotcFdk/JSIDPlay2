@@ -48,8 +48,8 @@ public class SimpleDisassembler implements IMOS6510Disassembler {
 			final int nextByte = ram[instrAddress + 1 & 0xffff] & 0xff;
 			if ((cmd.getOpCode() & 0x1F) == 0x10) { // Branch; replace by
 													// address
-				base += String.format(cmd.getFormat(), nextByte, instrAddress
-						+ cmd.getByteCount() + (byte) nextByte & 0xffff);
+				base += String.format(cmd.getFormat(), nextByte,
+						instrAddress + cmd.getByteCount() + (byte) nextByte & 0xffff);
 			} else {
 				base += String.format(cmd.getFormat(), nextByte);
 			}
@@ -57,15 +57,13 @@ public class SimpleDisassembler implements IMOS6510Disassembler {
 		} else if (cmd.getByteCount() == 3) {
 			base += ":";
 			base += String.format(cmd.getFormat(),
-					((ram[instrAddress + 2 & 0xffff] & 0xff) << 8)
-							| (ram[instrAddress + 1 & 0xffff] & 0xff));
+					((ram[instrAddress + 2 & 0xffff] & 0xff) << 8) | (ram[instrAddress + 1 & 0xffff] & 0xff));
 		}
 
 		return base;
 	}
 
-	public String disassemble(final int opcode, final int operand,
-			final int address) {
+	public String disassemble(final int opcode, final int operand, final int address) {
 		final CPUCommand cmd = cpuCommands.get(opcode);
 		String base = cmd.getCmd() + cmd.getAddressing();
 		if (cmd.getByteCount() == 2) {
@@ -82,8 +80,8 @@ public class SimpleDisassembler implements IMOS6510Disassembler {
 	}
 
 	static private void parse() throws IOException {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				SimpleDisassembler.class.getResourceAsStream("cpu.properties")))) {
+		try (BufferedReader reader = new BufferedReader(
+				new InputStreamReader(SimpleDisassembler.class.getResourceAsStream("cpu.properties")))) {
 			String line;
 			while (null != (line = reader.readLine())) {
 				final String[] args = line.split(":");
@@ -95,8 +93,7 @@ public class SimpleDisassembler implements IMOS6510Disassembler {
 				final int byteCount = Integer.parseInt(args[4]);
 
 				final String cycles = args.length < 5 ? "" : args[4];
-				final CPUCommand cpuCmd = new CPUCommand(opCode, cmd,
-						addressing, format, byteCount, cycles);
+				final CPUCommand cpuCmd = new CPUCommand(opCode, cmd, addressing, format, byteCount, cycles);
 				cpuCommands.put(opCode, cpuCmd);
 			}
 		}

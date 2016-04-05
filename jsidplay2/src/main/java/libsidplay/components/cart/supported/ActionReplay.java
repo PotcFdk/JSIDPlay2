@@ -35,14 +35,14 @@ import libsidplay.components.pla.Bank;
 import libsidplay.components.pla.PLA;
 
 public class ActionReplay extends Cartridge {
-	
+
 	boolean isActive;
 
 	/**
 	 * Currently active ROML bank.
 	 */
 	protected int currentRomBank;
-	
+
 	/**
 	 * ROML banks 0..3 (each of size 0x2000).
 	 */
@@ -52,8 +52,7 @@ public class ActionReplay extends Cartridge {
 
 	protected final byte[] ram = new byte[0x2000];
 
-	public ActionReplay(final DataInputStream dis, final PLA pla)
-			throws IOException {
+	public ActionReplay(final DataInputStream dis, final PLA pla) throws IOException {
 		super(pla);
 		final byte[] chipHeader = new byte[0x10];
 
@@ -66,7 +65,7 @@ public class ActionReplay extends Cartridge {
 			dis.readFully(romLBanks[bank]);
 		}
 	}
-	
+
 	protected final Bank io1Bank = new Bank() {
 		@Override
 		public byte read(int address) {
@@ -75,62 +74,62 @@ public class ActionReplay extends Cartridge {
 
 		@Override
 		public void write(int address, byte value) {
-		    if (isActive) {
-			    pla.setGameExrom((value & 1) == 0, (value & 2) != 0);
-		    	currentRomBank = (value >> 3) & 3;
-		    	exportRam = (value & 0x20) != 0;
-			    if ((value & 0x40) != 0) {
-			    	setNMI(false);
-			    }
+			if (isActive) {
+				pla.setGameExrom((value & 1) == 0, (value & 2) != 0);
+				currentRomBank = (value >> 3) & 3;
+				exportRam = (value & 0x20) != 0;
+				if ((value & 0x40) != 0) {
+					setNMI(false);
+				}
 
-			    if ((value & 0x4) != 0) {
-			    	isActive = false;
-			    }
-		    }
+				if ((value & 0x4) != 0) {
+					isActive = false;
+				}
+			}
 		}
 	};
 
 	protected final Bank io2Bank = new Bank() {
 		@Override
 		public byte read(int address) {
-		    if (!isActive) {
-		    	return pla.getDisconnectedBusBank().read(address);
-		    }
-		    if (exportRam)
-		        return ram[address & 0x1fff];
+			if (!isActive) {
+				return pla.getDisconnectedBusBank().read(address);
+			}
+			if (exportRam)
+				return ram[address & 0x1fff];
 
-		    return romLBanks[currentRomBank][address & 0x1fff];
+			return romLBanks[currentRomBank][address & 0x1fff];
 		}
 
 		@Override
 		public void write(int address, byte value) {
-		    if (isActive) {
-	            if (exportRam)
-	                ram[address & 0x1fff] = value;
-		    }
+			if (isActive) {
+				if (exportRam)
+					ram[address & 0x1fff] = value;
+			}
 		}
 	};
 
 	protected final Bank romlBank = new Bank() {
 		@Override
 		public byte read(int address) {
-		    if (exportRam)
-		        return ram[address & 0x1fff];
+			if (exportRam)
+				return ram[address & 0x1fff];
 
-		    return romLBanks[currentRomBank][address & 0x1fff];
+			return romLBanks[currentRomBank][address & 0x1fff];
 		}
 
 		@Override
 		public void write(int address, byte value) {
-		    if (exportRam)
-		        ram[address & 0x1fff] = value;
+			if (exportRam)
+				ram[address & 0x1fff] = value;
 		}
 	};
 
 	protected final Bank romhBank = new Bank() {
 		@Override
 		public byte read(int address) {
-		    return romLBanks[currentRomBank][address & 0x1fff];
+			return romLBanks[currentRomBank][address & 0x1fff];
 		}
 
 		@Override
@@ -157,7 +156,7 @@ public class ActionReplay extends Cartridge {
 	public Bank getIO2() {
 		return io2Bank;
 	}
-	
+
 	@Override
 	public void reset() {
 		super.reset();
@@ -165,19 +164,19 @@ public class ActionReplay extends Cartridge {
 		io1Bank.write(0xde00, (byte) 0);
 		Arrays.fill(ram, (byte) 0);
 	}
-	
+
 	@Override
 	public void installBankHooks(Bank[] cpuReadMap, Bank[] cpuWriteMap) {
-		if (! exportRam) {
+		if (!exportRam) {
 			return;
 		}
-		
-		for (int i = 8; i < 10; i ++) {
+
+		for (int i = 8; i < 10; i++) {
 			final Bank origBank = cpuWriteMap[i];
 			if (origBank == romlBank) {
 				continue;
 			}
-			
+
 			cpuWriteMap[i] = new Bank() {
 				@Override
 				public void write(int address, byte value) {
@@ -187,7 +186,7 @@ public class ActionReplay extends Cartridge {
 			};
 		}
 	}
-	
+
 	private final Event newCartRomConfig = new Event("ActionReplay freeze") {
 		@Override
 		public void event() {
@@ -195,7 +194,7 @@ public class ActionReplay extends Cartridge {
 			io1Bank.write(0xde00, (byte) 0x23);
 		}
 	};
-	
+
 	@Override
 	public void doFreeze() {
 		pla.setNMI(true);

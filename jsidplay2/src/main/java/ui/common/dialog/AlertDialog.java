@@ -14,7 +14,7 @@ public class AlertDialog extends C64Window {
 
 	public AlertDialog(Player player) {
 		super(player);
-		setWait(true);		
+		setWait(true);
 	}
 
 	@FXML

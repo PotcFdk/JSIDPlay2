@@ -37,8 +37,7 @@ public class HardSID extends SIDEmu {
 		@Override
 		public void event() {
 			final int cycles = clocksSinceLastAccess();
-			hsidDll.HardSID_Delay(chipNum,
-					cycles / hardSIDBuilder.getSIDCount());
+			hsidDll.HardSID_Delay(chipNum, cycles / hardSIDBuilder.getSIDCount());
 			context.schedule(event, HARDSID_DELAY_CYCLES, Event.Phase.PHI2);
 		}
 	};
@@ -53,8 +52,8 @@ public class HardSID extends SIDEmu {
 
 	private HardSIDBuilder hardSIDBuilder;
 
-	public HardSID(HardSIDBuilder hardSIDBuilder, EventScheduler context,
-			final HsidDLL2 hsidDll, final int sid, final ChipModel model) {
+	public HardSID(HardSIDBuilder hardSIDBuilder, EventScheduler context, final HsidDLL2 hsidDll, final int sid,
+			final ChipModel model) {
 		super(context);
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hsidDll = hsidDll;
@@ -169,16 +168,12 @@ public class HardSID extends SIDEmu {
 		} else {
 			// Check major version
 			if (hsidDll.HardSID_Version() >> 8 < HSID_VERSION_MIN >> 8) {
-				throw new RuntimeException(String.format(
-						"HARDSID ERROR: HardSID.dll not V%d",
-						HSID_VERSION_MIN >> 8));
+				throw new RuntimeException(String.format("HARDSID ERROR: HardSID.dll not V%d", HSID_VERSION_MIN >> 8));
 			}
 			// Check minor version
 			if (hsidDll.HardSID_Version() < HSID_VERSION_MIN) {
-				throw new RuntimeException(
-						String.format(
-								"HARDSID ERROR: HardSID.dll must be V%02d.%02d or greater",
-								HSID_VERSION_MIN >> 8, HSID_VERSION_MIN & 0xff));
+				throw new RuntimeException(String.format("HARDSID ERROR: HardSID.dll must be V%02d.%02d or greater",
+						HSID_VERSION_MIN >> 8, HSID_VERSION_MIN & 0xff));
 			}
 			if (hsidDll.HardSID_Version() >= HSID_VERSION_204) {
 				// If the player switches to the next song of a tune
@@ -202,8 +197,7 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void setChipModel(final ChipModel model) {
-		System.err
-				.println("HardSID WARNING: SID model cannot be changed on the fly!");
+		System.err.println("HardSID WARNING: SID model cannot be changed on the fly!");
 	}
 
 	@Override
@@ -220,8 +214,7 @@ public class HardSID extends SIDEmu {
 	}
 
 	public static final String credits() {
-		return "HardSID V1.0.1 Engine:\n"
-				+ "\tCopyright (©) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
+		return "HardSID V1.0.1 Engine:\n" + "\tCopyright (©) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
 	}
 
 }

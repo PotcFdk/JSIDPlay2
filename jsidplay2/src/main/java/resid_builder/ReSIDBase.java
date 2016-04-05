@@ -11,8 +11,7 @@ import libsidplay.common.SIDEmu;
 
 public abstract class ReSIDBase extends SIDEmu {
 
-	private static final Logger RESID = Logger.getLogger(ReSIDBase.class
-			.getName());
+	private static final Logger RESID = Logger.getLogger(ReSIDBase.class.getName());
 
 	private final SIDChip sid = createSID();
 

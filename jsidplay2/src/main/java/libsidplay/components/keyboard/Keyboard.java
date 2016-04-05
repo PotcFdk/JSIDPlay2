@@ -59,8 +59,7 @@ public abstract class Keyboard {
 	 * @return read adjustment, to be AND connected to the normal register
 	 *         output
 	 */
-	private synchronized byte readMatrix(final byte selected,
-			final boolean wantRow) {
+	private synchronized byte readMatrix(final byte selected, final boolean wantRow) {
 		/* temporarily adjust all matrices with controls for reading */
 		byte result = (byte) 0xff;
 		for (KeyTableEntry kte : keysDown) {

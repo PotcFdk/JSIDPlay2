@@ -12,7 +12,7 @@ import libsidplay.components.pla.Bank;
 public final class SystemRAMBank extends Bank {
 	/** C64 RAM area */
 	private final byte ram[] = new byte[65536];
-	
+
 	public void reset() {
 		// Initialize RAM with powerup pattern
 		Arrays.fill(ram, (byte) 0);
@@ -20,17 +20,17 @@ public final class SystemRAMBank extends Bank {
 			Arrays.fill(ram, i, i + 64, (byte) 0xff);
 		}
 	}
-		
+
 	@Override
 	public byte read(int address) {
 		return ram[address];
 	}
-		
+
 	@Override
 	public void write(int address, byte value) {
 		ram[address] = value;
 	}
-		
+
 	public byte[] array() {
 		return ram;
 	}

@@ -605,8 +605,7 @@ public interface IEmulationSection {
 	 *            SID chip model
 	 * @return the current filter name
 	 */
-	default String getFilterName(int sidNum, Emulation emulation,
-			ChipModel chipModel) {
+	default String getFilterName(int sidNum, Emulation emulation, ChipModel chipModel) {
 		switch (chipModel) {
 		case MOS6581:
 			switch (emulation) {
@@ -622,8 +621,7 @@ public interface IEmulationSection {
 					return getThirdSIDFilter6581();
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: "
-							+ sidNum + "!");
+					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
 
 				}
 			case RESIDFP:
@@ -638,13 +636,11 @@ public interface IEmulationSection {
 					return getReSIDfpThirdSIDFilter6581();
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: "
-							+ sidNum + "!");
+					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
 
 				}
 			default:
-				throw new RuntimeException("Unknown emulation type: "
-						+ emulation + "!");
+				throw new RuntimeException("Unknown emulation type: " + emulation + "!");
 			}
 
 		case MOS8580:
@@ -661,8 +657,7 @@ public interface IEmulationSection {
 					return getThirdSIDFilter8580();
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: "
-							+ sidNum + "!");
+					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
 
 				}
 			case RESIDFP:
@@ -677,13 +672,11 @@ public interface IEmulationSection {
 					return getReSIDfpThirdSIDFilter8580();
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: "
-							+ sidNum + "!");
+					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
 
 				}
 			default:
-				throw new RuntimeException("Unknown emulation type: "
-						+ emulation + "!");
+				throw new RuntimeException("Unknown emulation type: " + emulation + "!");
 			}
 		default:
 			throw new RuntimeException("Unknown chip model: " + chipModel + "!");
@@ -703,8 +696,7 @@ public interface IEmulationSection {
 	 * @param filterName
 	 *            filter name
 	 */
-	default void setFilterName(int sidNum, Emulation emulation,
-			ChipModel chipModel, String filterName) {
+	default void setFilterName(int sidNum, Emulation emulation, ChipModel chipModel, String filterName) {
 		switch (chipModel) {
 		case MOS6581:
 			switch (emulation) {
@@ -722,8 +714,7 @@ public interface IEmulationSection {
 					break;
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: "
-							+ sidNum + "!");
+					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
 
 				}
 				break;
@@ -742,14 +733,12 @@ public interface IEmulationSection {
 					break;
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: "
-							+ sidNum + "!");
+					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
 
 				}
 				break;
 			default:
-				throw new RuntimeException("Unknown emulation type: "
-						+ emulation + "!");
+				throw new RuntimeException("Unknown emulation type: " + emulation + "!");
 			}
 			break;
 
@@ -770,8 +759,7 @@ public interface IEmulationSection {
 					break;
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: "
-							+ sidNum + "!");
+					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
 
 				}
 				break;
@@ -790,14 +778,12 @@ public interface IEmulationSection {
 					break;
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: "
-							+ sidNum + "!");
+					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
 
 				}
 				break;
 			default:
-				throw new RuntimeException("Unknown emulation type: "
-						+ emulation + "!");
+				throw new RuntimeException("Unknown emulation type: " + emulation + "!");
 			}
 			break;
 		default:

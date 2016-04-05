@@ -21,7 +21,6 @@
  */
 package resid_builder.resid;
 
-
 /**
  * Representation of SID voice block.
  * 
@@ -37,15 +36,16 @@ public final class Voice {
 	/**
 	 * Amplitude modulated waveform output.
 	 *
-	 * The waveform DAC generates a voltage between 5 and 12 V corresponding
-	 * to oscillator state 0 .. 4095.
+	 * The waveform DAC generates a voltage between 5 and 12 V corresponding to
+	 * oscillator state 0 .. 4095.
 	 *
-	 * The envelope DAC generates a voltage between waveform gen output and
-	 * the 5V level, corresponding to envelope state 0 .. 255.
+	 * The envelope DAC generates a voltage between waveform gen output and the
+	 * 5V level, corresponding to envelope state 0 .. 255.
 	 *
 	 * Ideal range [-2048*255, 2047*255].
 	 *
-	 * @param ringModulator Ring-modulator for waveform
+	 * @param ringModulator
+	 *            Ring-modulator for waveform
 	 * @return waveformgenerator output
 	 */
 	protected int output(final WaveformGenerator ringModulator) {
@@ -55,7 +55,8 @@ public final class Voice {
 	/**
 	 * Constructor.
 	 */
-	protected Voice() {}
+	protected Voice() {
+	}
 
 	// ----------------------------------------------------------------------------
 	// Register functions.
@@ -64,7 +65,8 @@ public final class Voice {
 	/**
 	 * Register functions.
 	 *
-	 * @param control Control register value.
+	 * @param control
+	 *            Control register value.
 	 */
 	public void writeCONTROL_REG(final byte control) {
 		wave.writeCONTROL_REG(control);

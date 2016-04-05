@@ -29,8 +29,7 @@ public class ProxyDriver implements AudioDriver {
 	}
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename)
-			throws IOException, LineUnavailableException {
+	public void open(final AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException {
 		driverOne.open(cfg, recordingFilename);
 		driverTwo.open(cfg, recordingFilename);
 	}
@@ -45,8 +44,7 @@ public class ProxyDriver implements AudioDriver {
 	public void write() throws InterruptedException {
 		driverOne.write();
 		// Driver two's buffer gets the content of driver one's buffer
-		System.arraycopy(buffer().array(), 0, driverTwo.buffer().array(), 0,
-				driverTwo.buffer().capacity());
+		System.arraycopy(buffer().array(), 0, driverTwo.buffer().array(), 0, driverTwo.buffer().capacity());
 		driverTwo.write();
 	}
 

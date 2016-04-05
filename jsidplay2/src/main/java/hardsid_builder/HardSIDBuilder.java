@@ -76,23 +76,19 @@ public class HardSIDBuilder implements SIDBuilder {
 		try {
 			driverPath = extract(config, "/hardsid/cpp/Debug/", "HardSID.dll");
 		} catch (IOException e) {
-			throw new RuntimeException(
-					String.format("HARDSID ERROR: HardSID.dll not found"));
+			throw new RuntimeException(String.format("HARDSID ERROR: HardSID.dll not found"));
 		}
 		// Extract original HardSID4U driver, loaded by the driver above
 		try {
 			extract(config, "/hardsid/cpp/Debug/", "HardSID_orig.dll");
 		} catch (IOException e) {
-			throw new RuntimeException(
-					String.format("HARDSID ERROR: HardSID_orig.dll not found"));
+			throw new RuntimeException(String.format("HARDSID ERROR: HardSID_orig.dll not found"));
 		}
 		// Extract JNI driver wrapper
 		try {
-			System.load(extract(config, "/hardsid_builder/cpp/Debug/",
-					"JHardSID.dll"));
+			System.load(extract(config, "/hardsid_builder/cpp/Debug/", "JHardSID.dll"));
 		} catch (IOException e) {
-			throw new RuntimeException(
-					String.format("HARDSID ERROR: JHardSID.dll not found!"));
+			throw new RuntimeException(String.format("HARDSID ERROR: JHardSID.dll not found!"));
 		}
 		// Go and use JNI driver wrapper
 		hsidDLL = new HsidDLL2();
@@ -111,15 +107,13 @@ public class HardSIDBuilder implements SIDBuilder {
 			final ChipModel chipModel = getChipModel(tune, sidNum);
 			final int deviceIdx = getModelDependantDevice(chipModel, sidNum);
 			if (deviceIdx < hsidDLL.HardSID_Devices()) {
-				HardSID hsid = new HardSID(this, context, hsidDLL, deviceIdx,
-						chipModel);
+				HardSID hsid = new HardSID(this, context, hsidDLL, deviceIdx, chipModel);
 				if (hsid.lock(true)) {
 					sids.add(hsid);
 					return hsid;
 				}
 			} else {
-				System.err
-						.println("HARDSID ERROR: System doesn't have enough SID chips.");
+				System.err.println("HARDSID ERROR: System doesn't have enough SID chips.");
 			}
 		}
 		return oldHardSID;
@@ -152,8 +146,7 @@ public class HardSIDBuilder implements SIDBuilder {
 	 * @throws IOException
 	 *             I/O error
 	 */
-	private String extract(final IConfig config, final String path,
-			final String libName) throws IOException {
+	private String extract(final IConfig config, final String path, final String libName) throws IOException {
 		File f = new File(new File(config.getSidplay2Section().getTmpDir()), libName);
 		if (!f.exists()) {
 			f.deleteOnExit();
@@ -172,11 +165,9 @@ public class HardSIDBuilder implements SIDBuilder {
 	 * @throws IOException
 	 *             I/O error
 	 */
-	private void writeResource(final String resource, final File file)
-			throws IOException {
+	private void writeResource(final String resource, final File file) throws IOException {
 		try (InputStream is = getClass().getResourceAsStream(resource);
-				OutputStream os = new BufferedOutputStream(
-						new FileOutputStream(file))) {
+				OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
 			int bytesRead;
 			byte[] buffer = new byte[MAX_BUFFER_SIZE];
 			while ((bytesRead = is.read(buffer)) != -1) {
@@ -202,14 +193,12 @@ public class HardSIDBuilder implements SIDBuilder {
 	 * @return desired chip model
 	 */
 	private ChipModel getChipModel(SidTune tune, int sidNum) {
-		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(),
-				tune, sidNum);
+		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
 		if (sids.size() > 0) {
 			// Stereo device? Use a HardSID device different to the first SID
 			ChipModel modelAlreadyInUse = sids.get(0).getChipModel();
 			if (chipModel == modelAlreadyInUse) {
-				chipModel = (chipModel == ChipModel.MOS6581) ? ChipModel.MOS8580
-						: ChipModel.MOS6581;
+				chipModel = (chipModel == ChipModel.MOS6581) ? ChipModel.MOS8580 : ChipModel.MOS6581;
 			}
 		}
 		return chipModel;

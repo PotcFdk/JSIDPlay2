@@ -10,8 +10,7 @@ final class RBCWrapper implements ReadableByteChannel {
 	private ReadableByteChannel rbc;
 	private long readSoFar;
 
-	RBCWrapper(ReadableByteChannel rbc, long expectedSize,
-			RBCWrapperDelegate delegate) {
+	RBCWrapper(ReadableByteChannel rbc, long expectedSize, RBCWrapperDelegate delegate) {
 		this.delegate = delegate;
 		this.expectedSize = expectedSize;
 		this.rbc = rbc;
@@ -32,8 +31,7 @@ final class RBCWrapper implements ReadableByteChannel {
 		int n;
 		if ((n = rbc.read(bb)) > 0) {
 			readSoFar += n;
-			double progress = expectedSize > 0 ? (double) readSoFar
-					/ (double) expectedSize * 100.0 : 0.0;
+			double progress = expectedSize > 0 ? (double) readSoFar / (double) expectedSize * 100.0 : 0.0;
 			delegate.rbcProgressCallback(this, progress);
 		}
 

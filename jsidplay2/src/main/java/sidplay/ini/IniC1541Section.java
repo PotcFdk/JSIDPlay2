@@ -43,8 +43,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	 */
 	@Override
 	public final boolean isParallelCable() {
-		return iniReader.getPropertyBool("C1541", "ParallelCable",
-				DEFAULT_PARALLEL_CABLE);
+		return iniReader.getPropertyBool("C1541", "ParallelCable", DEFAULT_PARALLEL_CABLE);
 	}
 
 	/**
@@ -65,32 +64,27 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	 */
 	@Override
 	public final boolean isRamExpansionEnabled0() {
-		return iniReader.getPropertyBool("C1541", "RamExpand0x2000",
-				DEFAULT_RAM_EXPAND_0X2000);
+		return iniReader.getPropertyBool("C1541", "RamExpand0x2000", DEFAULT_RAM_EXPAND_0X2000);
 	}
 
 	@Override
 	public final boolean isRamExpansionEnabled1() {
-		return iniReader.getPropertyBool("C1541", "RamExpand0x4000",
-				DEFAULT_RAM_EXPAND_0X4000);
+		return iniReader.getPropertyBool("C1541", "RamExpand0x4000", DEFAULT_RAM_EXPAND_0X4000);
 	}
 
 	@Override
 	public final boolean isRamExpansionEnabled2() {
-		return iniReader.getPropertyBool("C1541", "RamExpand0x6000",
-				DEFAULT_RAM_EXPAND_0X6000);
+		return iniReader.getPropertyBool("C1541", "RamExpand0x6000", DEFAULT_RAM_EXPAND_0X6000);
 	}
 
 	@Override
 	public final boolean isRamExpansionEnabled3() {
-		return iniReader.getPropertyBool("C1541", "RamExpand0x8000",
-				DEFAULT_RAM_EXPAND_0X8000);
+		return iniReader.getPropertyBool("C1541", "RamExpand0x8000", DEFAULT_RAM_EXPAND_0X8000);
 	}
 
 	@Override
 	public final boolean isRamExpansionEnabled4() {
-		return iniReader.getPropertyBool("C1541", "RamExpand0xA000",
-				DEFAULT_RAM_EXPAND_0XA000);
+		return iniReader.getPropertyBool("C1541", "RamExpand0xA000", DEFAULT_RAM_EXPAND_0XA000);
 	}
 
 	/**
@@ -142,7 +136,6 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	 */
 	@Override
 	public final FloppyType getFloppyType() {
-		return iniReader.getPropertyEnum("C1541", "FloppyType",
-				DEFAULT_FLOPPY_TYPE);
+		return iniReader.getPropertyEnum("C1541", "FloppyType", DEFAULT_FLOPPY_TYPE);
 	}
 }

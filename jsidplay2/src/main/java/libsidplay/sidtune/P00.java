@@ -76,11 +76,9 @@ class P00 extends Prg {
 		}
 	}
 
-	protected static SidTune load(final String name, final byte[] dataBuf)
-			throws SidTuneError {
+	protected static SidTune load(final String name, final byte[] dataBuf) throws SidTuneError {
 		String ext = PathUtils.getFilenameSuffix(name).toUpperCase(Locale.ENGLISH);
-		if (dataBuf.length < X00Header.SIZE + 2 || ext.length() != 4
-				|| '0' != ext.charAt(2) || '0' != ext.charAt(3)) {
+		if (dataBuf.length < X00Header.SIZE + 2 || ext.length() != 4 || '0' != ext.charAt(2) || '0' != ext.charAt(3)) {
 			throw new SidTuneError("Bad file extension expected: .p00");
 		}
 		final X00Header header = new X00Header(dataBuf);
@@ -92,8 +90,7 @@ class P00 extends Prg {
 		p00.program = dataBuf;
 		p00.programOffset = X00Header.SIZE + 2;
 		p00.info.c64dataLen = dataBuf.length - p00.programOffset;
-		p00.info.loadAddr = (dataBuf[X00Header.SIZE] & 0xff)
-				| ((dataBuf[X00Header.SIZE + 1] & 0xff) << 8);
+		p00.info.loadAddr = (dataBuf[X00Header.SIZE] & 0xff) | ((dataBuf[X00Header.SIZE + 1] & 0xff) << 8);
 		p00.info.infoString.add(Petscii.petsciiToIso88591(header.name));
 
 		return p00;

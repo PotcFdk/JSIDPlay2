@@ -18,8 +18,7 @@ import sidplay.audio.AudioConfig;
 public class SidDumpReplayer {
 	private static final int SID_WRITE_DELAY = 6;
 
-	private static final String FILTER_NAME[] = { "Off", "Low", "Bnd", "L+B",
-			"Hi ", "L+H", "B+H", "LBH" };
+	private static final String FILTER_NAME[] = { "Off", "Low", "Bnd", "L+B", "Hi ", "L+H", "B+H", "LBH" };
 
 	private boolean fAborted;
 
@@ -55,8 +54,7 @@ public class SidDumpReplayer {
 		this.leftVolume = f;
 	}
 
-	public void replay(ObservableList<SidDumpOutput> sidDumpOutputs)
-			throws InvalidCommandException {
+	public void replay(ObservableList<SidDumpOutput> sidDumpOutputs) throws InvalidCommandException {
 
 		if (fRegOrder == null) {
 			// no SID write order, no playback!
@@ -70,8 +68,7 @@ public class SidDumpReplayer {
 		 * FIXME: support for HardSID playback of recordings is lost. Will fix
 		 * later.
 		 */
-		agt = new AudioGeneratorThread(AudioConfig.getInstance(cfg
-				.getAudioSection()));
+		agt = new AudioGeneratorThread(AudioConfig.getInstance(cfg.getAudioSection()));
 		agt.setSidArray(new SID[] { sid });
 		agt.setLevelAdjustment(0, decibelsToCentibels());
 		BlockingQueue<SIDWrite> queue = agt.getSidCommandQueue();
@@ -124,12 +121,10 @@ public class SidDumpReplayer {
 						final int adsr = Integer.valueOf(col, 16);
 						if ((register + 2) % 7 == 0) {
 							// ATTACK/DECAY
-							queue.put(new SIDWrite(0, register,
-									(byte) (adsr >> 8), SID_WRITE_DELAY));
+							queue.put(new SIDWrite(0, register, (byte) (adsr >> 8), SID_WRITE_DELAY));
 						} else {
 							// SUSTAIN/RELEASE
-							queue.put(new SIDWrite(0, register,
-									(byte) (adsr & 0xff), SID_WRITE_DELAY));
+							queue.put(new SIDWrite(0, register, (byte) (adsr & 0xff), SID_WRITE_DELAY));
 						}
 						cmd++;
 						break;
@@ -150,12 +145,10 @@ public class SidDumpReplayer {
 						final int freq = Integer.valueOf(col, 16);
 						if (register % 7 == 0) {
 							// FREQ_LO
-							queue.put(new SIDWrite(0, register, (byte) freq,
-									SID_WRITE_DELAY));
+							queue.put(new SIDWrite(0, register, (byte) freq, SID_WRITE_DELAY));
 						} else {
 							// FREQ_HI
-							queue.put(new SIDWrite(0, register,
-									(byte) (freq >> 8), SID_WRITE_DELAY));
+							queue.put(new SIDWrite(0, register, (byte) (freq >> 8), SID_WRITE_DELAY));
 						}
 						cmd++;
 						break;
@@ -176,11 +169,9 @@ public class SidDumpReplayer {
 
 						final int pulse = Integer.valueOf(col.trim(), 16);
 						if ((register + 5) % 7 == 0) {
-							queue.put(new SIDWrite(0, register, (byte) pulse,
-									SID_WRITE_DELAY));
+							queue.put(new SIDWrite(0, register, (byte) pulse, SID_WRITE_DELAY));
 						} else {
-							queue.put(new SIDWrite(0, register,
-									(byte) (pulse >> 8), SID_WRITE_DELAY));
+							queue.put(new SIDWrite(0, register, (byte) (pulse >> 8), SID_WRITE_DELAY));
 						}
 						cmd++;
 						break;
@@ -196,8 +187,7 @@ public class SidDumpReplayer {
 							break;
 						}
 						final int wf = Integer.valueOf(col.trim(), 16);
-						queue.put(new SIDWrite(0, register, (byte) wf,
-								SID_WRITE_DELAY));
+						queue.put(new SIDWrite(0, register, (byte) wf, SID_WRITE_DELAY));
 						cmd++;
 						break;
 
@@ -213,12 +203,10 @@ public class SidDumpReplayer {
 						final int fcut = Integer.valueOf(col.trim(), 16);
 						if (aFRegOrder == FILTERFREQ_LO) {
 							// FILTERFREQ_LO
-							queue.put(new SIDWrite(0, register,
-									(byte) (fcut >> 5 & 0x07), SID_WRITE_DELAY));
+							queue.put(new SIDWrite(0, register, (byte) (fcut >> 5 & 0x07), SID_WRITE_DELAY));
 						} else {
 							// FILTERFREQ_HI
-							queue.put(new SIDWrite(0, register,
-									(byte) (fcut >> 8), SID_WRITE_DELAY));
+							queue.put(new SIDWrite(0, register, (byte) (fcut >> 8), SID_WRITE_DELAY));
 						}
 						cmd++;
 						break;
@@ -232,27 +220,23 @@ public class SidDumpReplayer {
 							break;
 						}
 						final int typ = Integer.valueOf(col.trim(), 16);
-						queue.put(new SIDWrite(0, register, (byte) typ,
-								SID_WRITE_DELAY));
+						queue.put(new SIDWrite(0, register, (byte) typ, SID_WRITE_DELAY));
 						cmd++;
 						break;
 
 					case VOL:
 						// Typ und Mastervolume
 						coln = 18;
-						String colFilt = getColumnValue(examineRows.get(coln),
-								coln);
+						String colFilt = getColumnValue(examineRows.get(coln), coln);
 						coln = 19;
-						String colMast = getColumnValue(examineRows.get(coln),
-								coln);
+						String colMast = getColumnValue(examineRows.get(coln), coln);
 
 						if (colFilt.startsWith(".") && colMast.startsWith(".")) {
 							break;
 						}
 
 						if (!colMast.startsWith(".")) {
-							volume = (byte) (volume & 0xf0 | Integer.parseInt(
-									colMast, 16));
+							volume = (byte) (volume & 0xf0 | Integer.parseInt(colMast, 16));
 						}
 						if (!colFilt.startsWith(".")) {
 							String cmp = colFilt.trim();
@@ -263,8 +247,7 @@ public class SidDumpReplayer {
 								}
 							}
 						}
-						queue.put(new SIDWrite(0, register, volume,
-								SID_WRITE_DELAY));
+						queue.put(new SIDWrite(0, register, volume, SID_WRITE_DELAY));
 						cmd++;
 						break;
 
@@ -274,8 +257,7 @@ public class SidDumpReplayer {
 				}
 
 				/* Fill up to 1 frame delay */
-				queue.put(SIDWrite.makePureDelay(0, 1000000 / fReplayFreq - cmd
-						* SID_WRITE_DELAY));
+				queue.put(SIDWrite.makePureDelay(0, 1000000 / fReplayFreq - cmd * SID_WRITE_DELAY));
 
 				time += 1000000 / fReplayFreq;
 				while (agt.getPlaybackClock() < time - 100000) {

@@ -124,8 +124,7 @@ public class IECBus {
 
 		if (((oldCpuBus ^ cpuBus) & 0x10) != 0) {
 			for (final C1541 drive : drives) {
-				drive.getBusController().signal(VIACore.VIA_SIG_CA1,
-						(cpuBus & 0x10) != 0 ? 0 : VIACore.VIA_SIG_RISE);
+				drive.getBusController().signal(VIACore.VIA_SIG_CA1, (cpuBus & 0x10) != 0 ? 0 : VIACore.VIA_SIG_RISE);
 			}
 		}
 		for (final C1541 drive : drives) {
@@ -153,8 +152,8 @@ public class IECBus {
 	}
 
 	protected final void setDriveBus(final int deviceNum) {
-		drvBus[deviceNum] = (byte) ((drvData[deviceNum] & 0xff) << 3 & 0x40 | (drvData[deviceNum] & 0xff) << 6
-				& ((~drvData[deviceNum] ^ cpuBus) & 0xff) << 3 & 0x80);
+		drvBus[deviceNum] = (byte) ((drvData[deviceNum] & 0xff) << 3 & 0x40
+				| (drvData[deviceNum] & 0xff) << 6 & ((~drvData[deviceNum] ^ cpuBus) & 0xff) << 3 & 0x80);
 	}
 
 	protected final void updatePorts() {

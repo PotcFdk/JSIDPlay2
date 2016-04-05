@@ -17,8 +17,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	public final int getVersion() {
-		return iniReader.getPropertyInt("SIDPlay2", "Version",
-				IConfig.REQUIRED_CONFIG_VERSION);
+		return iniReader.getPropertyInt("SIDPlay2", "Version", IConfig.REQUIRED_CONFIG_VERSION);
 	}
 
 	@Override
@@ -28,8 +27,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	public final boolean isEnableDatabase() {
-		return iniReader.getPropertyBool("SIDPlay2", "EnableDatabase",
-				DEFAULT_ENABLE_DATABASE);
+		return iniReader.getPropertyBool("SIDPlay2", "EnableDatabase", DEFAULT_ENABLE_DATABASE);
 	}
 
 	@Override
@@ -39,26 +37,23 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	public final int getDefaultPlayLength() {
-		return iniReader.getPropertyTime("SIDPlay2", "Default Play Length",
-				DEFAULT_PLAY_LENGTH);
+		return iniReader.getPropertyTime("SIDPlay2", "Default Play Length", DEFAULT_PLAY_LENGTH);
 	}
 
 	@Override
 	public final void setDefaultPlayLength(final int playLength) {
-		iniReader.setProperty("SIDPlay2", "Default Play Length", String.format(
-				"%02d:%02d", (playLength / 60), (playLength % 60)));
+		iniReader.setProperty("SIDPlay2", "Default Play Length",
+				String.format("%02d:%02d", (playLength / 60), (playLength % 60)));
 	}
 
 	@Override
 	public int getFadeInTime() {
-		return iniReader.getPropertyTime("SIDPlay2", "Fade In Time",
-				DEFAULT_FADE_IN_TIME);
+		return iniReader.getPropertyTime("SIDPlay2", "Fade In Time", DEFAULT_FADE_IN_TIME);
 	}
 
 	@Override
 	public int getFadeOutTime() {
-		return iniReader.getPropertyTime("SIDPlay2", "Fade Out Time",
-				DEFAULT_FADE_OUT_TIME);
+		return iniReader.getPropertyTime("SIDPlay2", "Fade Out Time", DEFAULT_FADE_OUT_TIME);
 	}
 
 	@Override
@@ -73,8 +68,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	public final boolean isSingle() {
-		return iniReader.getPropertyBool("SIDPlay2", "SingleTrack",
-				DEFAULT_SINGLE_TRACK);
+		return iniReader.getPropertyBool("SIDPlay2", "SingleTrack", DEFAULT_SINGLE_TRACK);
 	}
 
 	@Override
@@ -104,11 +98,8 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	public final String getTmpDir() {
-		return iniReader.getPropertyString(
-				"SIDPlay2",
-				"Temp Dir",
-				System.getProperty("user.home")
-						+ System.getProperty("file.separator") + ".jsidplay2");
+		return iniReader.getPropertyString("SIDPlay2", "Temp Dir",
+				System.getProperty("user.home") + System.getProperty("file.separator") + ".jsidplay2");
 	}
 
 	@Override
@@ -117,8 +108,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	public float getBrightness() {
-		return iniReader.getPropertyFloat("SIDPlay2", "Brightness",
-				DEFAULT_BRIGHTNESS);
+		return iniReader.getPropertyFloat("SIDPlay2", "Brightness", DEFAULT_BRIGHTNESS);
 	}
 
 	public void setBrightness(float brightness) {
@@ -126,8 +116,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	public float getContrast() {
-		return iniReader.getPropertyFloat("SIDPlay2", "Contrast",
-				DEFAULT_CONTRAST);
+		return iniReader.getPropertyFloat("SIDPlay2", "Contrast", DEFAULT_CONTRAST);
 	}
 
 	public void setContrast(float contrast) {
@@ -143,8 +132,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	public float getSaturation() {
-		return iniReader.getPropertyFloat("SIDPlay2", "Saturation",
-				DEFAULT_SATURATION);
+		return iniReader.getPropertyFloat("SIDPlay2", "Saturation", DEFAULT_SATURATION);
 	}
 
 	public void setSaturation(float saturation) {
@@ -152,8 +140,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	public float getPhaseShift() {
-		return iniReader.getPropertyFloat("SIDPlay2", "Phase Shift",
-				DEFAULT_PHASE_SHIFT);
+		return iniReader.getPropertyFloat("SIDPlay2", "Phase Shift", DEFAULT_PHASE_SHIFT);
 	}
 
 	public void setPhaseShift(float phaseShift) {
@@ -194,8 +181,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	public boolean isTurboTape() {
-		return iniReader.getPropertyBool("SIDPlay2", "TurboTape",
-				DEFAULT_TURBO_TAPE);
+		return iniReader.getPropertyBool("SIDPlay2", "TurboTape", DEFAULT_TURBO_TAPE);
 	}
 
 	@Override

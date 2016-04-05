@@ -46,13 +46,11 @@ public final class PLA {
 	private static final byte[] CHAR = new byte[CHAR_LENGTH];
 	private static final byte[] BASIC = new byte[BASIC_LENGTH];
 	private static final byte[] KERNAL = new byte[KERNAL_LENGTH];
+
 	static {
-		try (DataInputStream isChar = new DataInputStream(
-				PLA.class.getResourceAsStream(CHAR_ROM));
-				DataInputStream isBasic = new DataInputStream(
-						PLA.class.getResourceAsStream(BASIC_ROM));
-				DataInputStream isKernal = new DataInputStream(
-						PLA.class.getResourceAsStream(KERNAL_ROM))) {
+		try (DataInputStream isChar = new DataInputStream(PLA.class.getResourceAsStream(CHAR_ROM));
+				DataInputStream isBasic = new DataInputStream(PLA.class.getResourceAsStream(BASIC_ROM));
+				DataInputStream isKernal = new DataInputStream(PLA.class.getResourceAsStream(KERNAL_ROM))) {
 			isChar.readFully(CHAR);
 			isBasic.readFully(BASIC);
 			isKernal.readFully(KERNAL);
@@ -60,6 +58,7 @@ public final class PLA {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
+
 	private static final Bank characterRomBank = new Bank() {
 		@Override
 		public byte read(final int address) {
@@ -68,8 +67,7 @@ public final class PLA {
 
 		@Override
 		public void write(final int address, final byte value) {
-			throw new RuntimeException(
-					"This bank should never be mapped to W mode");
+			throw new RuntimeException("This bank should never be mapped to W mode");
 		}
 	};
 
@@ -81,8 +79,7 @@ public final class PLA {
 
 		@Override
 		public void write(final int address, final byte value) {
-			throw new RuntimeException(
-					"This bank should never be mapped to W mode");
+			throw new RuntimeException("This bank should never be mapped to W mode");
 		}
 	};
 
@@ -94,8 +91,7 @@ public final class PLA {
 
 		@Override
 		public void write(final int address, final byte value) {
-			throw new RuntimeException(
-					"This bank should never be mapped to W mode");
+			throw new RuntimeException("This bank should never be mapped to W mode");
 		}
 	};
 
@@ -162,8 +158,7 @@ public final class PLA {
 		/**
 		 * Install a SID register write listener for a specific SID chip number.
 		 */
-		public void setSidWriteListener(final int chipNum,
-				final SIDListener listener) {
+		public void setSidWriteListener(final int chipNum, final SIDListener listener) {
 			sidWriteListener[chipNum] = listener;
 		}
 
@@ -193,8 +188,7 @@ public final class PLA {
 			}
 			if (sidWriteListener[chipNum] != null) {
 				final long time = context.getTime(Event.Phase.PHI2);
-				sidWriteListener[chipNum].write(time, chipNum, address
-						& SIDEmu.REG_COUNT - 1, value);
+				sidWriteListener[chipNum].write(time, chipNum, address & SIDEmu.REG_COUNT - 1, value);
 			}
 		}
 
@@ -217,8 +211,7 @@ public final class PLA {
 	private final Bank colorRamDisconnectedBusBank = new Bank() {
 		@Override
 		public byte read(final int address) {
-			return (byte) (colorRamBank.read(address) | disconnectedBusBank
-					.read(address) & 0xf0);
+			return (byte) (colorRamBank.read(address) | disconnectedBusBank.read(address) & 0xf0);
 		}
 
 		@Override
@@ -310,8 +303,7 @@ public final class PLA {
 	/** Cartridge DMA */
 	private boolean cartridgeDma;
 
-	public PLA(final EventScheduler context, final Bank zeroRAMBank,
-			final Bank ramBank) {
+	public PLA(final EventScheduler context, final Bank zeroRAMBank, final Bank ramBank) {
 		this.context = context;
 		this.ramBank = ramBank;
 		nullCartridge = Cartridge.nullCartridge(this);
@@ -362,8 +354,8 @@ public final class PLA {
 		setGameExrom(game, exrom, game, exrom);
 	}
 
-	public void setGameExrom(final boolean gamephi1, final boolean exromphi1,
-			final boolean gamephi2, final boolean exromphi2) {
+	public void setGameExrom(final boolean gamephi1, final boolean exromphi1, final boolean gamephi2,
+			final boolean exromphi2) {
 		gamePHI1 = gamephi1;
 		exromPHI1 = exromphi1;
 		updateMappingPHI1();
@@ -473,17 +465,17 @@ public final class PLA {
 	}
 
 	private void updateMappingPHI2() {
-		/* Ultimax mode ignores the CPU port, so it's best treated separately. */
+		/*
+		 * Ultimax mode ignores the CPU port, so it's best treated separately.
+		 */
 		if (exromPHI2 && !gamePHI2) {
 			for (int i : new int[] { 1, 2, 3, 4, 5, 6, 7, 0xa, 0xb, 0xc }) {
 				cpuReadMap[i] = cpuWriteMap[i] = cartridge.getUltimaxMemory();
 			}
-			cpuReadMap[0x8] = cpuReadMap[0x9] = cpuWriteMap[0x8] = cpuWriteMap[0x9] = cartridge
-					.getRoml();
+			cpuReadMap[0x8] = cpuReadMap[0x9] = cpuWriteMap[0x8] = cpuWriteMap[0x9] = cartridge.getRoml();
 			cpuReadMap[0xd] = ioBank;
 			cpuWriteMap[0xd] = ioBank;
-			cpuReadMap[0xe] = cpuReadMap[0xf] = cpuWriteMap[0xe] = cpuWriteMap[0xf] = cartridge
-					.getRomh();
+			cpuReadMap[0xe] = cpuReadMap[0xf] = cpuWriteMap[0xe] = cpuWriteMap[0xf] = cartridge.getRomh();
 		} else {
 			for (int i : new int[] { 1, 2, 3, 4, 5, 6, 7, 0xc }) {
 				cpuReadMap[i] = cpuWriteMap[i] = ramBank;
@@ -535,8 +527,7 @@ public final class PLA {
 			// # A15 & A14 & !A13 & A12 & !_AEC & !R__W & _EXROM & !_GAME);
 
 			/* i/o or character */
-			if (io && (basic || kernal)
-					&& (gamePHI2 || !gamePHI2 && !exromPHI2)) {
+			if (io && (basic || kernal) && (gamePHI2 || !gamePHI2 && !exromPHI2)) {
 				cpuReadMap[0xd] = cpuWriteMap[0xd] = ioBank;
 				// !CHAROM = (_HIRAM & !_CHAREN & A15 & A14 & !A13 & A12 & !_AEC
 				// & R__W & _GAME
@@ -546,9 +537,7 @@ public final class PLA {
 				// !_EXROM & !_GAME
 				// # _VA14 & _AEC & _GAME & !VA13 & VA12
 				// # _VA14 & _AEC & !_EXROM & !_GAME & !VA13 & VA12 );
-			} else if (!io
-					&& ((basic || kernal) && gamePHI2 || kernal && !gamePHI2
-							&& !exromPHI2)) {
+			} else if (!io && ((basic || kernal) && gamePHI2 || kernal && !gamePHI2 && !exromPHI2)) {
 				cpuReadMap[0xd] = characterRomBank;
 				cpuWriteMap[0xd] = ramBank;
 			} else {
@@ -559,8 +548,7 @@ public final class PLA {
 			// !KERNAL = (_HIRAM & A15 & A14 & A13 & !_AEC & R__W & _GAME
 			// #_HIRAM & A15 & A14 & A13 & !_AEC & R__W & !_EXROM & !_GAME );
 			if (kernal & (gamePHI2 || !gamePHI2 && !exromPHI2)) {
-				cpuReadMap[0xe] = cpuReadMap[0xf] = customKernalRomBank != null ? customKernalRomBank
-						: kernalRomBank;
+				cpuReadMap[0xe] = cpuReadMap[0xf] = customKernalRomBank != null ? customKernalRomBank : kernalRomBank;
 			} else {
 				cpuReadMap[0xe] = cpuReadMap[0xf] = ramBank;
 			}

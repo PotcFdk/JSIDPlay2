@@ -82,23 +82,23 @@ public class EasyFlash extends Cartridge {
 	 */
 	private static final byte easyflashMemconfig[] = {
 
-	/* jumper off, mode 0, trough 00,01,10,11 in game/exrom bits */
-	3, /* exrom high, game low, jumper off */
-	3, /* Reserved, don't use this */
-	1, /* exrom low, game low, jumper off */
-	1, /* Reserved, don't use this */
+			/* jumper off, mode 0, trough 00,01,10,11 in game/exrom bits */
+			3, /* exrom high, game low, jumper off */
+			3, /* Reserved, don't use this */
+			1, /* exrom low, game low, jumper off */
+			1, /* Reserved, don't use this */
 
-	/* jumper off, mode 1, trough 00,01,10,11 in game/exrom bits */
-	2, 3, 0, 1,
+			/* jumper off, mode 1, trough 00,01,10,11 in game/exrom bits */
+			2, 3, 0, 1,
 
-	/* jumper on, mode 0, trough 00,01,10,11 in game/exrom bits */
-	2, /* exrom high, game low, jumper on */
-	3, /* Reserved, don't use this */
-	0, /* exrom low, game low, jumper on */
-	1, /* Reserved, don't use this */
+			/* jumper on, mode 0, trough 00,01,10,11 in game/exrom bits */
+			2, /* exrom high, game low, jumper on */
+			3, /* Reserved, don't use this */
+			0, /* exrom low, game low, jumper on */
+			1, /* Reserved, don't use this */
 
-	/* jumper on, mode 1, trough 00,01,10,11 in game/exrom bits */
-	2, 3, 0, 1, };
+			/* jumper on, mode 1, trough 00,01,10,11 in game/exrom bits */
+			2, 3, 0, 1, };
 
 	/** extra RAM */
 	private byte[] easyflashRam = new byte[256];
@@ -120,8 +120,7 @@ public class EasyFlash extends Cartridge {
 		default:
 			/* mode register we only remember led, mode, exrom, game */
 			easyflashRegister02 = (byte) (value & 0x87);
-			byte memMode = easyflashMemconfig[(easyflashJumper << 3)
-					| (easyflashRegister02 & 0x07)];
+			byte memMode = easyflashMemconfig[(easyflashJumper << 3) | (easyflashRegister02 & 0x07)];
 			// TODO KSC: check me!
 			// cart_config_changed_slotmain(memMode, memMode, CMODE_READ);
 			/* bit3 = jumper, bit2 = mode, bit1 = !exrom, bit0 = game */
@@ -148,10 +147,8 @@ public class EasyFlash extends Cartridge {
 
 	protected void easyflashIO1Dump() {
 		System.out.printf("Mode %d, LED %s, jumper %s\n",
-				easyflashMemconfig[(easyflashJumper << 3)
-						| (easyflashRegister02 & 0x07)],
-				(easyflashRegister02 & 0x80) != 0 ? "on" : "off",
-				easyflashJumper != 0 ? "on" : "off");
+				easyflashMemconfig[(easyflashJumper << 3) | (easyflashRegister02 & 0x07)],
+				(easyflashRegister02 & 0x80) != 0 ? "on" : "off", easyflashJumper != 0 ? "on" : "off");
 	}
 
 	/* --------------------------------------------------------------------- */
@@ -185,9 +182,8 @@ public class EasyFlash extends Cartridge {
 		easyflashCrtWrite = val;
 	}
 
-	private void easyflashWriteChipIfNotEmpty(RandomAccessFile fd,
-			final byte[] chipheader, final byte[] data, int dataPos)
-			throws IOException {
+	private void easyflashWriteChipIfNotEmpty(RandomAccessFile fd, final byte[] chipheader, final byte[] data,
+			int dataPos) throws IOException {
 		if (!easyflashCheckEmpty(data, dataPos)) {
 			fd.write(chipheader, 0, 0x10);
 			fd.write(data, dataPos, 0x2000);
@@ -197,23 +193,19 @@ public class EasyFlash extends Cartridge {
 	/* --------------------------------------------------------------------- */
 
 	public byte easyflashRomlRead(int addr) {
-		return core.flash040CoreRead(easyflashStateLow,
-				((easyflashRegister00 & 0xff) << 13) + (addr & 0x1fff));
+		return core.flash040CoreRead(easyflashStateLow, ((easyflashRegister00 & 0xff) << 13) + (addr & 0x1fff));
 	}
 
 	public void easyflashRomlStore(int addr, byte value) {
-		core.flash040CoreStore(easyflashStateLow,
-				((easyflashRegister00 & 0xff) << 13) + (addr & 0x1fff), value);
+		core.flash040CoreStore(easyflashStateLow, ((easyflashRegister00 & 0xff) << 13) + (addr & 0x1fff), value);
 	}
 
 	public byte easyflashRomhRead(int addr) {
-		return core.flash040CoreRead(easyflashStateHigh,
-				((easyflashRegister00 & 0xff) << 13) + (addr & 0x1fff));
+		return core.flash040CoreRead(easyflashStateHigh, ((easyflashRegister00 & 0xff) << 13) + (addr & 0x1fff));
 	}
 
 	public void easyflashRomhStore(int addr, byte value) {
-		core.flash040CoreStore(easyflashStateHigh,
-				((easyflashRegister00 & 0xff) << 13) + (addr & 0x1fff), value);
+		core.flash040CoreStore(easyflashStateHigh, ((easyflashRegister00 & 0xff) << 13) + (addr & 0x1fff), value);
 	}
 
 	/* --------------------------------------------------------------------- */
@@ -227,16 +219,13 @@ public class EasyFlash extends Cartridge {
 		easyflashStateLow = new Flash040Core.Flash040Context();
 		easyflashStateHigh = new Flash040Core.Flash040Context();
 
-		core.flash040coreInit(easyflashStateLow, pla.getCPU()
-				.getEventScheduler(),
+		core.flash040coreInit(easyflashStateLow, pla.getCPU().getEventScheduler(),
 				Flash040Core.Flash040Type.FLASH040_TYPE_B, romlBanks);
 		System.arraycopy(rawcart, 0, easyflashStateLow.flashData, 0, 0x80000);
 
-		core.flash040coreInit(easyflashStateHigh, pla.getCPU()
-				.getEventScheduler(),
+		core.flash040coreInit(easyflashStateHigh, pla.getCPU().getEventScheduler(),
 				Flash040Core.Flash040Type.FLASH040_TYPE_B, romhBanks);
-		System.arraycopy(rawcart, 0x80000, easyflashStateHigh.flashData, 0,
-				0x80000);
+		System.arraycopy(rawcart, 0x80000, easyflashStateHigh.flashData, 0, 0x80000);
 	}
 
 	/* --------------------------------------------------------------------- */
@@ -245,8 +234,7 @@ public class EasyFlash extends Cartridge {
 		easyflashFilename = filename;
 	}
 
-	public void easyflashBinAttach(String filename, byte[] rawcart)
-			throws IOException {
+	public void easyflashBinAttach(String filename, byte[] rawcart) throws IOException {
 		easyflashFiletype = 0;
 		Arrays.fill(rawcart, 0, 0x100000, (byte) 0xff);
 
@@ -261,8 +249,7 @@ public class EasyFlash extends Cartridge {
 		easyflashCommonAttach(filename);
 	}
 
-	public boolean easyflashCRTAttach(DataInputStream dis, byte[] rawcart,
-			final String filename) throws IOException {
+	public boolean easyflashCRTAttach(DataInputStream dis, byte[] rawcart, final String filename) throws IOException {
 		byte[] chipheader = new byte[0x10];
 
 		easyflashFiletype = 0;
@@ -280,12 +267,10 @@ public class EasyFlash extends Cartridge {
 			int length = ((chipheader[0xe] & 0xff) << 8) | (chipheader[0xf] & 0xff);
 
 			if (length == 0x2000) {
-				if (bank >= EASYFLASH_N_BANKS
-						|| !(offset == 0x8000 || offset == 0xa000 || offset == 0xe000)) {
+				if (bank >= EASYFLASH_N_BANKS || !(offset == 0x8000 || offset == 0xa000 || offset == 0xe000)) {
 					return false;
 				}
-				dis.read(rawcart, (bank << 13)
-						| (offset == 0x8000 ? 0 << 19 : 1 << 19), 0x2000);
+				dis.read(rawcart, (bank << 13) | (offset == 0x8000 ? 0 << 19 : 1 << 19), 0x2000);
 			} else if (length == 0x4000) {
 				if (bank >= EASYFLASH_N_BANKS || offset != 0x8000) {
 					return false;
@@ -342,19 +327,17 @@ public class EasyFlash extends Cartridge {
 			byte[] header = new byte[0x40];
 			byte[] chipheader = new byte[0x10];
 
-			System.arraycopy(CRT_HEADER.getBytes(US_ASCII), 0, header, 0,
-					CRT_HEADER.getBytes(US_ASCII).length);
+			System.arraycopy(CRT_HEADER.getBytes(US_ASCII), 0, header, 0, CRT_HEADER.getBytes(US_ASCII).length);
 
 			header[0x13] = 0x40;
 			header[0x14] = 0x01;
 			header[0x17] = CARTRIDGE_EASYFLASH;
 			header[0x18] = 0x01;
-			System.arraycopy(STRING_EASYFLASH.getBytes(US_ASCII), 0, header,
-					0x20, STRING_EASYFLASH.getBytes(US_ASCII).length);
+			System.arraycopy(STRING_EASYFLASH.getBytes(US_ASCII), 0, header, 0x20,
+					STRING_EASYFLASH.getBytes(US_ASCII).length);
 			fd.write(header);
 
-			System.arraycopy(CHIP_HEADER.getBytes(US_ASCII), 0, chipheader, 0,
-					CHIP_HEADER.getBytes(US_ASCII).length);
+			System.arraycopy(CHIP_HEADER.getBytes(US_ASCII), 0, chipheader, 0, CHIP_HEADER.getBytes(US_ASCII).length);
 			chipheader[0x06] = 0x20;
 			chipheader[0x07] = 0x10;
 			chipheader[0x09] = 0x02;
@@ -362,17 +345,15 @@ public class EasyFlash extends Cartridge {
 			for (int i = 0; i < EASYFLASH_N_BANKS; i++) {
 				chipheader[0x0b] = (byte) i;
 				chipheader[0x0c] = (byte) 0x80;
-				easyflashWriteChipIfNotEmpty(fd, chipheader,
-						easyflashStateLow.flashData, i << 13);
+				easyflashWriteChipIfNotEmpty(fd, chipheader, easyflashStateLow.flashData, i << 13);
 				chipheader[0x0c] = (byte) 0xa0;
-				easyflashWriteChipIfNotEmpty(fd, chipheader,
-						easyflashStateHigh.flashData, i << 13);
+				easyflashWriteChipIfNotEmpty(fd, chipheader, easyflashStateHigh.flashData, i << 13);
 			}
 		}
 	}
 
-	/* ---------------------------------------------------------------------*/ 
-	
+	/* --------------------------------------------------------------------- */
+
 	protected static final Charset US_ASCII = Charset.forName("US-ASCII");
 	/**
 	 * see http://skoe.de/easyflash/
@@ -384,8 +365,7 @@ public class EasyFlash extends Cartridge {
 	private static String CHIP_HEADER = "CHIP";
 	private static byte CARTRIDGE_EASYFLASH = 32;
 
-	private byte[] romlBanks = new byte[0x80000],
-			romhBanks = new byte[0x80000];
+	private byte[] romlBanks = new byte[0x80000], romhBanks = new byte[0x80000];
 
 	/** Expansion port ROML/ROMH/RAM banking. */
 	int romlBankNum, romhBankNum;
@@ -404,8 +384,7 @@ public class EasyFlash extends Cartridge {
 		// ultimax_memptr_update();
 	}
 
-	public EasyFlash(final DataInputStream dis, final PLA pla)
-			throws IOException {
+	public EasyFlash(final DataInputStream dis, final PLA pla) throws IOException {
 		super(pla);
 		final byte[] rawcart = new byte[0x100000];
 		// TODO: get filename for saveing

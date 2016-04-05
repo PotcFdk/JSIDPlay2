@@ -30,8 +30,7 @@ public class Disassembler extends Tab implements UIPart {
 
 	private final class DisassemblerRefresh implements ChangeListener<State> {
 		@Override
-		public void changed(ObservableValue<? extends State> observable,
-				State oldValue, State newValue) {
+		public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
 			if (newValue == State.START) {
 				Platform.runLater(() -> setTune());
 			}
@@ -43,8 +42,7 @@ public class Disassembler extends Tab implements UIPart {
 	@FXML
 	private TextField address, startAddress, endAddress;
 	@FXML
-	private Button driverAddress, loadAddress, initAddress, playerAddress,
-			save;
+	private Button driverAddress, loadAddress, initAddress, playerAddress, save;
 	@FXML
 	private TableView<AssemblyLine> memoryTable;
 
@@ -52,8 +50,7 @@ public class Disassembler extends Tab implements UIPart {
 
 	private DisassemblerRefresh disassemblerRefresh;
 
-	private static final Map<Integer, CPUCommand> fCommands = SimpleDisassembler
-			.getCpuCommands();
+	private static final Map<Integer, CPUCommand> fCommands = SimpleDisassembler.getCpuCommands();
 
 	private UIUtil util;
 
@@ -115,11 +112,8 @@ public class Disassembler extends Tab implements UIPart {
 		if (tuneInfo.getDeterminedDriverAddr() == 0) {
 			return "N/A";
 		} else {
-			return String.format(
-					"0x%04x - 0x%04x",
-					tuneInfo.getDeterminedDriverAddr(),
-					tuneInfo.getDeterminedDriverAddr()
-							+ tuneInfo.getDeterminedDriverLength() - 1);
+			return String.format("0x%04x - 0x%04x", tuneInfo.getDeterminedDriverAddr(),
+					tuneInfo.getDeterminedDriverAddr() + tuneInfo.getDeterminedDriverLength() - 1);
 		}
 	}
 
@@ -130,16 +124,14 @@ public class Disassembler extends Tab implements UIPart {
 		int offset = startAddr;
 		do {
 			CPUCommand cmd = fCommands.get(ram[offset & 0xffff] & 0xff);
-			AssemblyLine assemblyLine = createAssemblyLine(ram,
-					offset & 0xffff, cmd);
+			AssemblyLine assemblyLine = createAssemblyLine(ram, offset & 0xffff, cmd);
 			assemblyLines.add(assemblyLine);
 			offset += cmd.getByteCount();
 		} while (offset <= 0xffff);
 		// });
 	}
 
-	protected AssemblyLine createAssemblyLine(byte[] ram, int startAddr,
-			CPUCommand cmd) {
+	protected AssemblyLine createAssemblyLine(byte[] ram, int startAddr, CPUCommand cmd) {
 		AssemblyLine assemblyLine = new AssemblyLine();
 		assemblyLine.setAddress(String.format("%04X", startAddr & 0xffff));
 		StringBuilder hexBytes = new StringBuilder();
@@ -147,8 +139,7 @@ public class Disassembler extends Tab implements UIPart {
 			hexBytes.append(String.format("%02X ", ram[startAddr + i & 0xffff]));
 		}
 		assemblyLine.setBytes(hexBytes.toString());
-		String[] parts = SimpleDisassembler.getInstance()
-				.getDisassembly(ram, startAddr).split(":", 2);
+		String[] parts = SimpleDisassembler.getInstance().getDisassembly(ram, startAddr).split(":", 2);
 		assemblyLine.setMnemonic(parts[0]);
 		if (parts.length == 2) {
 			assemblyLine.setOperands(parts[1]);
@@ -197,8 +188,7 @@ public class Disassembler extends Tab implements UIPart {
 	@FXML
 	private void saveMemory() {
 		FileChooser fileDialog = new FileChooser();
-		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
-				.getSidplay2Section();
+		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig().getSidplay2Section();
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File file = fileDialog.showSaveDialog(save.getScene().getWindow());
 		if (file != null) {

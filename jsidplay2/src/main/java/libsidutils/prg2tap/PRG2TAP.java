@@ -154,8 +154,7 @@ public class PRG2TAP {
 		}
 	}
 
-	private void slowConvert(final byte[] data, int startAddr, int length,
-			final int leadinLen) throws IOException {
+	private void slowConvert(final byte[] data, int startAddr, int length, final int leadinLen) throws IOException {
 		for (int i = 0; i < leadinLen; i++) {
 			addSilence(PULSE_LENGTH[0]);
 		}
@@ -219,8 +218,7 @@ public class PRG2TAP {
 		}
 	}
 
-	private void turbotapeConvert(final PRG2TAPProgram program)
-			throws IOException {
+	private void turbotapeConvert(final PRG2TAPProgram program) throws IOException {
 		for (int i = 0; i < 630; i++) {
 			turbotapeWriteByte((byte) 2);
 		}
@@ -230,10 +228,8 @@ public class PRG2TAP {
 		turbotapeWriteByte((byte) 1);
 		turbotapeWriteByte((byte) ((program.getStartAddr()) & 0xFF));
 		turbotapeWriteByte((byte) ((program.getStartAddr() >> 8) & 0xFF));
-		turbotapeWriteByte((byte) ((program.getStartAddr() + program
-				.getLength()) & 0xFF));
-		turbotapeWriteByte((byte) ((program.getStartAddr()
-				+ program.getLength() >> 8) & 0xFF));
+		turbotapeWriteByte((byte) ((program.getStartAddr() + program.getLength()) & 0xFF));
+		turbotapeWriteByte((byte) ((program.getStartAddr() + program.getLength() >> 8) & 0xFF));
 		turbotapeWriteByte((byte) 0);
 		for (int i = 0; i < MAX_NAME_LENGTH; i++) {
 			turbotapeWriteByte(program.getName()[i]);

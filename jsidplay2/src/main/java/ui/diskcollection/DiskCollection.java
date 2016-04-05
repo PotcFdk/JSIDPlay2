@@ -55,8 +55,7 @@ public class DiskCollection extends Tab implements UIPart {
 	private static final String HVMEC_DATA = "DATA";
 	private static final String HVMEC_CONTROL = "CONTROL";
 
-	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file,
-			toAttach) -> toAttach == null
+	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file, toAttach) -> toAttach == null
 			|| file.getName().compareTo(toAttach.getName()) < 0;
 
 	@FXML
@@ -113,13 +112,11 @@ public class DiskCollection extends Tab implements UIPart {
 
 		@Override
 		public boolean accept(File file) {
-			if (getType() == DiskCollectionType.HVMEC && file.isDirectory()
-					&& file.getName().equals(HVMEC_CONTROL)) {
+			if (getType() == DiskCollectionType.HVMEC && file.isDirectory() && file.getName().equals(HVMEC_CONTROL)) {
 				return false;
 			}
 			file = extractGZip(file);
-			return diskFileFilter.accept(file) || tapeFileFilter.accept(file)
-					|| docsFileFilter.accept(file);
+			return diskFileFilter.accept(file) || tapeFileFilter.accept(file) || docsFileFilter.accept(file);
 		}
 	};
 
@@ -132,30 +129,21 @@ public class DiskCollection extends Tab implements UIPart {
 	private void initialize() {
 		convenience = new Convenience(util.getPlayer());
 		directory.getAutoStartFileProperty().addListener(
-				(observable) -> attachAndRunDemo(fileBrowser
-						.getSelectionModel().getSelectedItem().getValue(),
+				(observable) -> attachAndRunDemo(fileBrowser.getSelectionModel().getSelectedItem().getValue(),
 						directory.getAutoStartFileProperty().get()));
-		fileBrowser
-				.getSelectionModel()
-				.selectedItemProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							if (newValue != null
-									&& newValue.getValue().isFile()) {
-								File file = newValue.getValue();
-								showScreenshot(file);
-								try {
-									directory.loadPreview(extract(file));
-								} catch (Exception e) {
-									System.err.println(String.format(
-											"Cannot insert media file '%s'.",
-											file.getAbsolutePath()));
-								}
-							}
-						});
+		fileBrowser.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null && newValue.getValue().isFile()) {
+				File file = newValue.getValue();
+				showScreenshot(file);
+				try {
+					directory.loadPreview(extract(file));
+				} catch (Exception e) {
+					System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
+				}
+			}
+		});
 		fileBrowser.setOnKeyPressed((event) -> {
-			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-					.getSelectedItem();
+			TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
 			if (event.getCode() == KeyCode.ENTER && selectedItem != null) {
 				if (selectedItem.getValue().isFile()) {
 					File file = selectedItem.getValue();
@@ -165,23 +153,16 @@ public class DiskCollection extends Tab implements UIPart {
 				}
 			}
 		});
-		fileBrowser
-				.setOnMousePressed((event) -> {
-					final TreeItem<File> selectedItem = fileBrowser
-							.getSelectionModel().getSelectedItem();
-					if (selectedItem != null
-							&& selectedItem.getValue().isFile()
-							&& event.isPrimaryButtonDown()
-							&& event.getClickCount() > 1) {
-						attachAndRunDemo(fileBrowser.getSelectionModel()
-								.getSelectedItem().getValue(), null);
-					}
-				});
+		fileBrowser.setOnMousePressed((event) -> {
+			final TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
+			if (selectedItem != null && selectedItem.getValue().isFile() && event.isPrimaryButtonDown()
+					&& event.getClickCount() > 1) {
+				attachAndRunDemo(fileBrowser.getSelectionModel().getSelectedItem().getValue(), null);
+			}
+		});
 		contextMenu.setOnShown((event) -> {
-			TreeItem<File> selectedItem = fileBrowser.getSelectionModel()
-					.getSelectedItem();
-			boolean disable = selectedItem == null
-					|| !selectedItem.getValue().isFile();
+			TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
+			boolean disable = selectedItem == null || !selectedItem.getValue().isFile();
 			start.setDisable(disable);
 			attachDisk.setDisable(disable);
 		});
@@ -191,26 +172,22 @@ public class DiskCollection extends Tab implements UIPart {
 				String initialRoot;
 				switch (getType()) {
 				case HVMEC:
-					this.downloadUrl = util.getConfig().getOnlineSection()
-							.getHvmecUrl();
+					this.downloadUrl = util.getConfig().getOnlineSection().getHvmecUrl();
 					initialRoot = util.getConfig().getSidplay2Section().getHVMEC();
 					break;
 
 				case DEMOS:
-					this.downloadUrl = util.getConfig().getOnlineSection()
-							.getDemosUrl();
+					this.downloadUrl = util.getConfig().getOnlineSection().getDemosUrl();
 					initialRoot = util.getConfig().getSidplay2Section().getDemos();
 					break;
 
 				case MAGS:
-					this.downloadUrl = util.getConfig().getOnlineSection()
-							.getMagazinesUrl();
+					this.downloadUrl = util.getConfig().getOnlineSection().getMagazinesUrl();
 					initialRoot = util.getConfig().getSidplay2Section().getMags();
 					break;
 
 				default:
-					throw new RuntimeException(
-							"Illegal disk collection type : " + type);
+					throw new RuntimeException("Illegal disk collection type : " + type);
 				}
 				if (initialRoot != null) {
 					setRootFile(new File(initialRoot));
@@ -224,9 +201,8 @@ public class DiskCollection extends Tab implements UIPart {
 		if (autoConfiguration.isSelected()) {
 			autoConfiguration.setDisable(true);
 			try {
-				DownloadThread downloadThread = new DownloadThread(
-						util.getConfig(), new ProgressListener(util,
-								fileBrowser) {
+				DownloadThread downloadThread = new DownloadThread(util.getConfig(),
+						new ProgressListener(util, fileBrowser) {
 
 							@Override
 							public void downloaded(final File downloadedFile) {
@@ -247,31 +223,26 @@ public class DiskCollection extends Tab implements UIPart {
 
 	@FXML
 	private void attachDisk() {
-		File file = fileBrowser.getSelectionModel().getSelectedItem()
-				.getValue();
+		File file = fileBrowser.getSelectionModel().getSelectedItem().getValue();
 		try {
 			File extractedFile = extract(file);
 			util.getPlayer().insertDisk(extractedFile);
 		} catch (IOException | SidTuneError e) {
-			System.err.println(String.format("Cannot insert media file '%s'.",
-					file.getAbsolutePath()));
+			System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
 		}
 	}
 
 	@FXML
 	private void start() {
-		attachAndRunDemo(fileBrowser.getSelectionModel().getSelectedItem()
-				.getValue(), null);
+		attachAndRunDemo(fileBrowser.getSelectionModel().getSelectedItem().getValue(), null);
 	}
 
 	@FXML
 	private void doBrowse() {
 		DirectoryChooser fileDialog = new DirectoryChooser();
-		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig()
-				.getSidplay2Section();
+		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig().getSidplay2Section();
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
-		File directory = fileDialog.showDialog(autoConfiguration.getScene()
-				.getWindow());
+		File directory = fileDialog.showDialog(autoConfiguration.getScene().getWindow());
 		if (directory != null) {
 			sidplay2.setLastDirectory(directory.getAbsolutePath());
 			setRootFile(directory);
@@ -283,18 +254,14 @@ public class DiskCollection extends Tab implements UIPart {
 			collectionDir.setText(rootFile.getAbsolutePath());
 
 			final File theRootFile = new TFile(rootFile);
-			fileBrowser.setRoot(new DiskCollectionTreeItem(theRootFile,
-					theRootFile, fileBrowserFileFilter));
+			fileBrowser.setRoot(new DiskCollectionTreeItem(theRootFile, theRootFile, fileBrowserFileFilter));
 
 			if (getType() == DiskCollectionType.HVMEC) {
-				util.getConfig().getSidplay2Section()
-						.setHVMEC(rootFile.getAbsolutePath());
+				util.getConfig().getSidplay2Section().setHVMEC(rootFile.getAbsolutePath());
 			} else if (getType() == DiskCollectionType.DEMOS) {
-				util.getConfig().getSidplay2Section()
-						.setDemos(rootFile.getAbsolutePath());
+				util.getConfig().getSidplay2Section().setDemos(rootFile.getAbsolutePath());
 			} else if (getType() == DiskCollectionType.MAGS) {
-				util.getConfig().getSidplay2Section()
-						.setMags(rootFile.getAbsolutePath());
+				util.getConfig().getSidplay2Section().setMags(rootFile.getAbsolutePath());
 			}
 		}
 	}
@@ -313,14 +280,11 @@ public class DiskCollection extends Tab implements UIPart {
 		} else {
 			try {
 				File extractedFile = extract(file);
-				if (convenience.autostart(extractedFile.toURI().toURL(),
-						LEXICALLY_FIRST_MEDIA, autoStartFile)) {
+				if (convenience.autostart(extractedFile.toURI().toURL(), LEXICALLY_FIRST_MEDIA, autoStartFile)) {
 					util.setPlayingTab(this);
 				}
 			} catch (IOException | SidTuneError | URISyntaxException e) {
-				System.err.println(String.format(
-						"Cannot insert media file '%s'.",
-						file.getAbsolutePath()));
+				System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
 			}
 		}
 	}
@@ -351,11 +315,9 @@ public class DiskCollection extends Tab implements UIPart {
 		if (rootItem == null) {
 			return null;
 		}
-		String parentPath = getType() == DiskCollectionType.HVMEC ? file
-				.getParentFile().getPath().replace(HVMEC_DATA, HVMEC_CONTROL)
-				: file.getParentFile().getPath();
-		List<File> parentFiles = PathUtils.getFiles(parentPath,
-				rootItem.getValue(), null);
+		String parentPath = getType() == DiskCollectionType.HVMEC
+				? file.getParentFile().getPath().replace(HVMEC_DATA, HVMEC_CONTROL) : file.getParentFile().getPath();
+		List<File> parentFiles = PathUtils.getFiles(parentPath, rootItem.getValue(), null);
 		if (parentFiles.size() > 0) {
 			File parentFile = parentFiles.get(parentFiles.size() - 1);
 			final File[] listFiles = parentFile.listFiles();
@@ -363,8 +325,7 @@ public class DiskCollection extends Tab implements UIPart {
 				return null;
 			}
 			for (File photoFile : listFiles) {
-				if (!photoFile.isDirectory()
-						&& screenshotsFileFilter.accept(photoFile)) {
+				if (!photoFile.isDirectory() && screenshotsFileFilter.accept(photoFile)) {
 					return photoFile;
 				}
 			}
@@ -389,10 +350,8 @@ public class DiskCollection extends Tab implements UIPart {
 	private File extractGZip(File file) {
 		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
 			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
-			File dst = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file
-					.getName()));
-			try (InputStream is = new GZIPInputStream(
-					new TFileInputStream(file))) {
+			File dst = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file.getName()));
+			try (InputStream is = new GZIPInputStream(new TFileInputStream(file))) {
 				if (!dst.exists()) {
 					TFile.cp(is, dst);
 				}

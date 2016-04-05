@@ -48,27 +48,22 @@ public class MOS6510 {
 	private static final int MAX = 65536;
 
 	/**
-	 * The result of the ANE opcode is A = ((A | CONST) & X &
-	 * IMM), with CONST apparently being both chip- and
-	 * temperature dependent.
+	 * The result of the ANE opcode is A = ((A | CONST) & X & IMM), with CONST
+	 * apparently being both chip- and temperature dependent.
 	 * 
-	 * The commonly used value for CONST in various documents is
-	 * 0xee, which is however not to be taken for granted (as it
-	 * is unstable). see here: http://visual6502
-	 * .org/wiki/index.php?title=6502_Opcode_8B_(XAA,_ANE)
+	 * The commonly used value for CONST in various documents is 0xee, which is
+	 * however not to be taken for granted (as it is unstable). see here:
+	 * http://visual6502 .org/wiki/index.php?title=6502_Opcode_8B_(XAA,_ANE)
 	 * 
-	 * as seen in the list, there are several possible values,
-	 * and its origin is still kinda unknown. instead of the
-	 * commonly used 0xee we use 0xff here, since this will make
-	 * the only known occurance of this opcode in actual code
-	 * work. see here: https://sourceforge
-	 * .net/tracker/?func=detail&aid=2110948
-	 * &group_id=223021&atid=1057617
+	 * as seen in the list, there are several possible values, and its origin is
+	 * still kinda unknown. instead of the commonly used 0xee we use 0xff here,
+	 * since this will make the only known occurance of this opcode in actual
+	 * code work. see here: https://sourceforge
+	 * .net/tracker/?func=detail&aid=2110948 &group_id=223021&atid=1057617
 	 * 
-	 * FIXME: in the unlikely event that other code surfaces
-	 * that depends on another CONST value, it probably has to
-	 * be made configurable somehow if no value can be found
-	 * that works for both.
+	 * FIXME: in the unlikely event that other code surfaces that depends on
+	 * another CONST value, it probably has to be made configurable somehow if
+	 * no value can be found that works for both.
 	 */
 	private static final int ANE_CONST = 0xee;
 
@@ -116,7 +111,7 @@ public class MOS6510 {
 	};
 	protected Function<Integer, Byte> cpuRead;
 	protected BiConsumer<Integer, Byte> cpuWrite;
-	
+
 	/** IRQ asserted on CPU */
 	protected boolean irqAssertedOnPin;
 
@@ -140,11 +135,11 @@ public class MOS6510 {
 	public void setJSRHandler(final Consumer<Integer> jsr) {
 		this.jsr = jsr;
 	}
-	
+
 	public void setVFlagHandler(final Function<Boolean, Boolean> v) {
 		this.v = v;
 	}
-	
+
 	/**
 	 * Set the value of V flag (often related to the SO pin)
 	 * 
@@ -154,7 +149,7 @@ public class MOS6510 {
 	public void setFlagV(final boolean flag) {
 		flagV = flag;
 	}
-	
+
 	/**
 	 * Evaluate when to execute an interrupt. Calling this method can also
 	 * result in the decision that no interrupt at all needs to be scheduled.
@@ -244,7 +239,7 @@ public class MOS6510 {
 		Register_ProgramCounter = Cycle_EffectiveAddress;
 		interruptsAndNextOpcode();
 	}
-	
+
 	protected void fetchNextOpcode() {
 		cycleCount = (cpuRead.apply(Register_ProgramCounter) & 0xff) << 3;
 		Register_ProgramCounter = Register_ProgramCounter + 1 & 0xffff;
@@ -331,8 +326,7 @@ public class MOS6510 {
 		FetchHighAddr();
 		Cycle_HighByteWrongEffectiveAddress = Cycle_EffectiveAddress & 0xff00
 				| Cycle_EffectiveAddress + Register_X & 0xff;
-		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_X & 0xff)
-				& 0xffff;
+		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_X & 0xff) & 0xffff;
 	}
 
 	/**
@@ -349,8 +343,7 @@ public class MOS6510 {
 		FetchHighAddr();
 		Cycle_HighByteWrongEffectiveAddress = Cycle_EffectiveAddress & 0xff00
 				| Cycle_EffectiveAddress + Register_Y & 0xff;
-		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_Y & 0xff)
-				& 0xffff;
+		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_Y & 0xff) & 0xffff;
 	}
 
 	/**
@@ -393,8 +386,7 @@ public class MOS6510 {
 		FetchHighEffAddr();
 		Cycle_HighByteWrongEffectiveAddress = Cycle_EffectiveAddress & 0xff00
 				| Cycle_EffectiveAddress + Register_Y & 0xff;
-		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_Y & 0xff)
-				& 0xffff;
+		Cycle_EffectiveAddress = Cycle_EffectiveAddress + (Register_Y & 0xff) & 0xffff;
 	}
 
 	/**
@@ -435,8 +427,7 @@ public class MOS6510 {
 	 * Push Program Counter Low Byte on stack, decrement S
 	 */
 	protected void PushLowPC() {
-		cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff,
-				(byte) (Register_ProgramCounter & 0xff));
+		cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff, (byte) (Register_ProgramCounter & 0xff));
 		Register_StackPointer--;
 	}
 
@@ -444,8 +435,7 @@ public class MOS6510 {
 	 * Push Program Counter High Byte on stack, decrement S
 	 */
 	protected void PushHighPC() {
-		cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff,
-				(byte) (Register_ProgramCounter >> 8));
+		cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff, (byte) (Register_ProgramCounter >> 8));
 		Register_StackPointer--;
 	}
 
@@ -453,8 +443,7 @@ public class MOS6510 {
 	 * Push P on stack, decrement S
 	 */
 	protected void PushSR() {
-		cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff,
-				getStatusRegister());
+		cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff, getStatusRegister());
 		Register_StackPointer--;
 	}
 
@@ -463,8 +452,7 @@ public class MOS6510 {
 	 */
 	protected void PopLowPC() {
 		Register_StackPointer++;
-		Cycle_EffectiveAddress = cpuRead.apply(SP_PAGE << 8 | Register_StackPointer
-				& 0xff) & 0xff;
+		Cycle_EffectiveAddress = cpuRead.apply(SP_PAGE << 8 | Register_StackPointer & 0xff) & 0xff;
 	}
 
 	/**
@@ -472,8 +460,7 @@ public class MOS6510 {
 	 */
 	protected void PopHighPC() {
 		Register_StackPointer++;
-		Cycle_EffectiveAddress |= (cpuRead.apply(SP_PAGE << 8 | Register_StackPointer
-				& 0xff) & 0xff) << 8;
+		Cycle_EffectiveAddress |= (cpuRead.apply(SP_PAGE << 8 | Register_StackPointer & 0xff) & 0xff) << 8;
 	}
 
 	/**
@@ -958,8 +945,7 @@ public class MOS6510 {
 			case STAix:
 				instrTable[buildCycle++] = () -> FetchLowPointer();
 
-				instrTable[buildCycle++] = () -> Cycle_Pointer = Cycle_Pointer
-						+ Register_X & 0xFF;
+				instrTable[buildCycle++] = () -> Cycle_Pointer = Cycle_Pointer + Register_X & 0xFF;
 
 				instrTable[buildCycle++] = () -> FetchLowEffAddr();
 
@@ -1064,8 +1050,8 @@ public class MOS6510 {
 
 			case ANEb: // Also known as XAA
 				instrTable[buildCycle++] = () -> {
-					setFlagsNZ(Register_Accumulator = (byte) ((Register_Accumulator | ANE_CONST)
-							& Register_X & Cycle_Data));
+					setFlagsNZ(Register_Accumulator = (byte) ((Register_Accumulator | ANE_CONST) & Register_X
+							& Cycle_Data));
 					interruptsAndNextOpcode();
 				};
 				break;
@@ -1084,7 +1070,8 @@ public class MOS6510 {
 						flagV = v.apply(((data ^ Register_Accumulator) & 0x40) != 0);
 
 						if ((data & 0x0f) + (data & 0x01) > 5) {
-							Register_Accumulator = (byte) (Register_Accumulator & 0xf0 | Register_Accumulator + 6 & 0x0f);
+							Register_Accumulator = (byte) (Register_Accumulator & 0xf0
+									| Register_Accumulator + 6 & 0x0f);
 						}
 						flagC = (data + (data & 0x10) & 0x1f0) > 0x50;
 						if (flagC) {
@@ -1195,13 +1182,9 @@ public class MOS6510 {
 						/* issue the spurious read for next insn here. */
 						cpuRead.apply(Register_ProgramCounter);
 
-						Cycle_HighByteWrongEffectiveAddress = Register_ProgramCounter
-								& 0xff00
-								| Register_ProgramCounter
-								+ Cycle_Data
-								& 0xff;
-						Cycle_EffectiveAddress = Register_ProgramCounter
-								+ Cycle_Data & 0xffff;
+						Cycle_HighByteWrongEffectiveAddress = Register_ProgramCounter & 0xff00
+								| Register_ProgramCounter + Cycle_Data & 0xff;
+						Cycle_EffectiveAddress = Register_ProgramCounter + Cycle_Data & 0xffff;
 						if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
 							cycleCount += 1;
 							/*
@@ -1266,7 +1249,8 @@ public class MOS6510 {
 
 				instrTable[buildCycle++] = () -> Register_ProgramCounter = cpuRead.apply(Cycle_EffectiveAddress) & 0xff;
 
-				instrTable[buildCycle++] = () -> Register_ProgramCounter |= (cpuRead.apply(Cycle_EffectiveAddress + 1) & 0xff) << 8;
+				instrTable[buildCycle++] = () -> Register_ProgramCounter |= (cpuRead.apply(Cycle_EffectiveAddress + 1)
+						& 0xff) << 8;
 
 				instrTable[buildCycle++] = () -> fetchNextOpcode();
 				break;
@@ -1605,8 +1589,7 @@ public class MOS6510 {
 			case PHAn:
 				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = () -> {
-					cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff,
-							Register_Accumulator);
+					cpuWrite.accept(SP_PAGE << 8 | Register_StackPointer & 0xff, Register_Accumulator);
 					Register_StackPointer--;
 				};
 				break;
@@ -1623,8 +1606,7 @@ public class MOS6510 {
 
 				instrTable[buildCycle++] = () -> {
 					Register_StackPointer++;
-					setFlagsNZ(Register_Accumulator = cpuRead.apply(SP_PAGE << 8
-							| Register_StackPointer & 0xff));
+					setFlagsNZ(Register_Accumulator = cpuRead.apply(SP_PAGE << 8 | Register_StackPointer & 0xff));
 				};
 				break;
 
@@ -1820,8 +1802,7 @@ public class MOS6510 {
 
 			case SBXb:
 				instrTable[buildCycle++] = () -> {
-					final int tmp = (Register_X & Register_Accumulator & 0xff)
-							- (Cycle_Data & 0xff);
+					final int tmp = (Register_X & Register_Accumulator & 0xff) - (Cycle_Data & 0xff);
 					setFlagsNZ(Register_X = (byte) tmp);
 					flagC = tmp >= 0;
 					interruptsAndNextOpcode();
@@ -1858,8 +1839,7 @@ public class MOS6510 {
 				instrTable[buildCycle++] = () -> {
 					Cycle_Data = (byte) (Register_X & Register_Accumulator & (Cycle_EffectiveAddress >> 8) + 1);
 					if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
-								| Cycle_EffectiveAddress & 0xff;
+						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8 | Cycle_EffectiveAddress & 0xff;
 					}
 					PutEffAddrDataByte();
 				};
@@ -1869,11 +1849,9 @@ public class MOS6510 {
 				processorCycleNoSteal[buildCycle] = true;
 				instrTable[buildCycle++] = () -> {
 					Register_StackPointer = (byte) (Register_Accumulator & Register_X);
-					Cycle_Data = (byte) ((Cycle_EffectiveAddress >> 8) + 1
-							& Register_StackPointer & 0xff);
+					Cycle_Data = (byte) ((Cycle_EffectiveAddress >> 8) + 1 & Register_StackPointer & 0xff);
 					if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
-								| Cycle_EffectiveAddress & 0xff;
+						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8 | Cycle_EffectiveAddress & 0xff;
 					}
 					PutEffAddrDataByte();
 				};
@@ -1884,8 +1862,7 @@ public class MOS6510 {
 				instrTable[buildCycle++] = () -> {
 					Cycle_Data = (byte) (Register_X & (Cycle_EffectiveAddress >> 8) + 1);
 					if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
-								| Cycle_EffectiveAddress & 0xff;
+						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8 | Cycle_EffectiveAddress & 0xff;
 					}
 					PutEffAddrDataByte();
 				};
@@ -1896,8 +1873,7 @@ public class MOS6510 {
 				instrTable[buildCycle++] = () -> {
 					Cycle_Data = (byte) (Register_Y & (Cycle_EffectiveAddress >> 8) + 1);
 					if (Cycle_HighByteWrongEffectiveAddress != Cycle_EffectiveAddress) {
-						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8
-								| Cycle_EffectiveAddress & 0xff;
+						Cycle_EffectiveAddress = (Cycle_Data & 0xff) << 8 | Cycle_EffectiveAddress & 0xff;
 					}
 					PutEffAddrDataByte();
 				};
@@ -2054,8 +2030,7 @@ public class MOS6510 {
 	 * @return credit string
 	 */
 	public static String credits() {
-		return "MOS6510 (CPU)\n" + "\t(©) 2000 Simon A. White\n"
-				+ "\t(©) 2008-2010 Antti S. Lankila\n";
+		return "MOS6510 (CPU)\n" + "\t(©) 2000 Simon A. White\n" + "\t(©) 2008-2010 Antti S. Lankila\n";
 	}
 
 	/**

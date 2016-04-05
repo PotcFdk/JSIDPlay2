@@ -51,45 +51,56 @@ public final class WaveformCalculator {
 	}
 
 	/*
-	 * the "bits wrong" figures below are not directly comparable. 0 bits are very easy to predict, and waveforms that are mostly zero have low scores. More comparable scores would be found by
-	 * dividing with the count of 1-bits, or something.
+	 * the "bits wrong" figures below are not directly comparable. 0 bits are
+	 * very easy to predict, and waveforms that are mostly zero have low scores.
+	 * More comparable scores would be found by dividing with the count of
+	 * 1-bits, or something.
 	 */
 	private static final CombinedWaveformConfig config[][] = new CombinedWaveformConfig[][] {
-		{ /* kevtris chip G (6581r2/r3) */
-			new CombinedWaveformConfig(0.880815f, 0f, 0f, 0.3279614f, 0.5999545f), // error 1795
-			new CombinedWaveformConfig(0.8924618f, 2.014781f, 1.003332f, 0.02992322f, 0.0f), // error 11610
-			new CombinedWaveformConfig(0.8646501f, 1.712586f, 1.137704f, 0.02845423f, 0f), // error 21307
-			new CombinedWaveformConfig(0.9527834f, 1.794777f, 0f, 0.09806272f, 0.7752482f), // error 196
-		}, { /* kevtris chip V (8580) */
-			new CombinedWaveformConfig(0.9781665f, 0f, 0.9899469f, 8.087667f, 0.8226412f), // error 5546
-			new CombinedWaveformConfig(0.9097769f, 2.039997f, 0.9584096f, 0.1765447f, 0f), // error 18763
-			new CombinedWaveformConfig(0.9231212f, 2.084788f, 0.9493895f, 0.1712518f, 0f), // error 17103
-			new CombinedWaveformConfig(0.9845552f, 1.415612f, 0.9703883f, 3.68829f, 0.8265008f), // error 3319
-		},
-	};
+			{ /* kevtris chip G (6581r2/r3) */
+					new CombinedWaveformConfig(0.880815f, 0f, 0f, 0.3279614f, 0.5999545f), // error
+																							// 1795
+					new CombinedWaveformConfig(0.8924618f, 2.014781f, 1.003332f, 0.02992322f, 0.0f), // error
+																										// 11610
+					new CombinedWaveformConfig(0.8646501f, 1.712586f, 1.137704f, 0.02845423f, 0f), // error
+																									// 21307
+					new CombinedWaveformConfig(0.9527834f, 1.794777f, 0f, 0.09806272f, 0.7752482f), // error
+																									// 196
+			},
+			{ /* kevtris chip V (8580) */
+					new CombinedWaveformConfig(0.9781665f, 0f, 0.9899469f, 8.087667f, 0.8226412f), // error
+																									// 5546
+					new CombinedWaveformConfig(0.9097769f, 2.039997f, 0.9584096f, 0.1765447f, 0f), // error
+																									// 18763
+					new CombinedWaveformConfig(0.9231212f, 2.084788f, 0.9493895f, 0.1712518f, 0f), // error
+																									// 17103
+					new CombinedWaveformConfig(0.9845552f, 1.415612f, 0.9703883f, 3.68829f, 0.8265008f), // error
+																											// 3319
+			}, };
 
 	/**
 	 * Build waveform tables for use by WaveformGenerator. The method returns 3
 	 * tables in an Object[] wrapper:
 	 * 
-	 * 1. float[11][4096] wftable: the analog values in the waveform table
-	 * 2. float[12] dac table for values of the nonlinear bits used in waveforms.
+	 * 1. float[11][4096] wftable: the analog values in the waveform table 2.
+	 * float[12] dac table for values of the nonlinear bits used in waveforms.
 	 * 3. byte[11][4096] wfdigital: the digital values in the waveform table.
 	 * 
-	 * The wf* tables are structured as follows: indices 0 .. 6 correspond
-	 * to SID waveforms of 1 to 7 with pulse width value set to 0x1000 (never
-	 * triggered). Indices 7 .. 10 correspond to the pulse waveforms with
-	 * width set to 0x000 (always triggered).
+	 * The wf* tables are structured as follows: indices 0 .. 6 correspond to
+	 * SID waveforms of 1 to 7 with pulse width value set to 0x1000 (never
+	 * triggered). Indices 7 .. 10 correspond to the pulse waveforms with width
+	 * set to 0x000 (always triggered).
 	 * 
-	 * @param model Chip model to use
+	 * @param model
+	 *            Chip model to use
 	 * @return Table suite
 	 */
 	protected static short[][] buildTable(ChipModel model) {
 		CombinedWaveformConfig[] cfgArray = config[model == ChipModel.MOS6581 ? 0 : 1];
-		
-		if (! CACHE.containsKey(cfgArray)) {
+
+		if (!CACHE.containsKey(cfgArray)) {
 			short[][] wftable = new short[8][4096];
-			
+
 			for (int accumulator = 0; accumulator < 1 << 24; accumulator += 1 << 12) {
 				int idx = (accumulator >> 12);
 				wftable[0][idx] = 0xfff;
@@ -111,13 +122,16 @@ public final class WaveformCalculator {
 	/**
 	 * Generate bitstate based on emulation of combined waves.
 	 * 
-	 * @param config the {@link CombinedWaveformConfig} to use.
-	 * @param waveform the waveform to emulate, 1 .. 7
-	 * @param accumulator the accumulator value.
+	 * @param config
+	 *            the {@link CombinedWaveformConfig} to use.
+	 * @param waveform
+	 *            the waveform to emulate, 1 .. 7
+	 * @param accumulator
+	 *            the accumulator value.
 	 */
 	private static short calculateCombinedWaveform(CombinedWaveformConfig config, int waveform, int accumulator) {
 		final float[] o = new float[12];
-		
+
 		/* S with strong top bit for 6581 */
 		for (int i = 0; i < 12; i++) {
 			o[i] = (accumulator >> 12 & (1 << i)) != 0 ? 1f : 0f;
@@ -184,7 +198,7 @@ public final class WaveformCalculator {
 				value |= 1 << i;
 			}
 		}
-		
+
 		return value;
 	}
 }

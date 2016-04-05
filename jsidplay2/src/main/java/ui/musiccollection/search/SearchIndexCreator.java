@@ -24,8 +24,7 @@ public final class SearchIndexCreator {
 	private Player player;
 	private File root;
 
-	public SearchIndexCreator(File root, final Player player,
-			final EntityManager em) {
+	public SearchIndexCreator(File root, final Player player, final EntityManager em) {
 		this.root = root;
 		this.player = player;
 		this.em = em;
@@ -70,8 +69,7 @@ public final class SearchIndexCreator {
 					hvscEntryService.add(player, collectionRelName, file);
 				}
 			} catch (final Exception e) {
-				System.err.println("Indexing failure on: "
-						+ file.getAbsolutePath() + ": " + e.getMessage());
+				System.err.println("Indexing failure on: " + file.getAbsolutePath() + ": " + e.getMessage());
 			}
 		};
 	}

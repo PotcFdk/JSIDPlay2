@@ -9,8 +9,7 @@ import java.util.Locale;
 
 public final class ScreenshotFileFilter implements FileFilter {
 
-	public static final String defaultFileNameExt[] = new String[] { ".png",
-			".gif", ".jpg" };
+	public static final String defaultFileNameExt[] = new String[] { ".png", ".gif", ".jpg" };
 
 	@Override
 	public boolean accept(File file) {

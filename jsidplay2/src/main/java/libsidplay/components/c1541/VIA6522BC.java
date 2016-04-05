@@ -55,7 +55,8 @@ public abstract class VIA6522BC extends VIACore {
 	/**
 	 * Set a parallel cable.
 	 * 
-	 * @param cable parallel cable
+	 * @param cable
+	 *            parallel cable
 	 */
 	public final void setParallelCable(final IParallelCable cable) {
 		this.parallelCable = cable;
@@ -94,8 +95,7 @@ public abstract class VIA6522BC extends VIACore {
 
 	@Override
 	public final void storePra(final int addr, final byte value) {
-		getParallelCable().driveWrite(value, (via[VIA_PCR] & 0xe) == 0xa,
-				deviceId);
+		getParallelCable().driveWrite(value, (via[VIA_PCR] & 0xe) == 0xa, deviceId);
 	}
 
 	@Override
@@ -119,9 +119,8 @@ public abstract class VIA6522BC extends VIACore {
 
 	@Override
 	public final byte readPra() {
-		return (byte) (via[VIACore.VIA_PRA] & via[VIACore.VIA_DDRA] | getParallelCable()
-				.driveRead((via[VIA_PCR] & 0xe) == 0xa)
-				& ~via[VIACore.VIA_DDRA]);
+		return (byte) (via[VIACore.VIA_PRA] & via[VIACore.VIA_DDRA]
+				| getParallelCable().driveRead((via[VIA_PCR] & 0xe) == 0xa) & ~via[VIACore.VIA_DDRA]);
 	}
 
 	@Override

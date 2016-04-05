@@ -21,8 +21,7 @@ public class Gauge extends VBox implements UIPart {
 	static {
 		for (int i = 0; i < gaugeColors.length; i++) {
 			int color = Math.round((float) Math.sqrt(i / 255f) * 255f);
-			gaugeColors[i] = new Color((color >> 8) / 255.,
-					(color & 0xff) / 255., 0, 1.);
+			gaugeColors[i] = new Color((color >> 8) / 255., (color & 0xff) / 255., 0, 1.);
 		}
 	}
 

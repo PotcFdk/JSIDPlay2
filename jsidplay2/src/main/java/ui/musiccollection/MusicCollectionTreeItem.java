@@ -20,11 +20,9 @@ import ui.filefilter.TuneFileFilter;
 
 public class MusicCollectionTreeItem extends TreeItem<File> {
 
-	private static final Image stilIcon = new Image(JSidPlay2Main.class
-			.getResource("icons/stil.png").toString());
+	private static final Image stilIcon = new Image(JSidPlay2Main.class.getResource("icons/stil.png").toString());
 
-	private static final Image noStilIcon = new Image(JSidPlay2Main.class
-			.getResource("icons/stil_no.png").toString());
+	private static final Image noStilIcon = new Image(JSidPlay2Main.class.getResource("icons/stil_no.png").toString());
 
 	private final FileFilter fFileFilter = new TuneFileFilter();
 	private boolean hasLoadedChildren;
@@ -39,8 +37,7 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		this.player = player;
 		this.isLeaf = file.isFile();
 		if (isLeaf && player != null) {
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) player
-					.getConfig().getSidplay2Section();
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) player.getConfig().getSidplay2Section();
 			String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
 			this.stilEntry = player.getStilEntry(collectionName);
 			this.hasSTIL = stilEntry != null;
@@ -73,32 +70,22 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		Collection<MusicCollectionTreeItem> children = new ArrayList<MusicCollectionTreeItem>();
 		File[] listFiles = getValue().listFiles(fFileFilter);
 		if (listFiles != null) {
-			Arrays.stream(listFiles)
-					.sorted((a, b) -> {
-						Integer aw = a.isFile() ? 1 : 0;
-						Integer bw = b.isFile() ? 1 : 0;
-						if (aw.equals(bw)) {
-							return a.getName()
-									.toLowerCase(Locale.ENGLISH)
-									.compareTo(
-											b.getName().toLowerCase(
-													Locale.ENGLISH));
-						}
-						return aw.compareTo(bw);
-					})
-					.forEach(
-							file -> {
-								MusicCollectionTreeItem childItem = new MusicCollectionTreeItem(
-										player, file);
-								children.add(childItem);
-								if (childItem.hasSTIL()) {
-									childItem
-											.setGraphic(new ImageView(stilIcon));
-								} else {
-									childItem.setGraphic(new ImageView(
-											noStilIcon));
-								}
-							});
+			Arrays.stream(listFiles).sorted((a, b) -> {
+				Integer aw = a.isFile() ? 1 : 0;
+				Integer bw = b.isFile() ? 1 : 0;
+				if (aw.equals(bw)) {
+					return a.getName().toLowerCase(Locale.ENGLISH).compareTo(b.getName().toLowerCase(Locale.ENGLISH));
+				}
+				return aw.compareTo(bw);
+			}).forEach(file -> {
+				MusicCollectionTreeItem childItem = new MusicCollectionTreeItem(player, file);
+				children.add(childItem);
+				if (childItem.hasSTIL()) {
+					childItem.setGraphic(new ImageView(stilIcon));
+				} else {
+					childItem.setGraphic(new ImageView(noStilIcon));
+				}
+			});
 		}
 		super.getChildren().setAll(children);
 	}

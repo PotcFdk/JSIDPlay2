@@ -30,11 +30,9 @@ public class Update extends C64Window {
 		float currentVersion = Integer.MAX_VALUE;
 		try {
 			Properties currentProperties = new Properties();
-			URL resource = JSidPlay2Main.class
-					.getResource("/META-INF/maven/jsidplay2/jsidplay2/pom.properties");
+			URL resource = JSidPlay2Main.class.getResource("/META-INF/maven/jsidplay2/jsidplay2/pom.properties");
 			currentProperties.load(resource.openConnection().getInputStream());
-			currentVersion = Float.parseFloat(currentProperties
-					.getProperty("version"));
+			currentVersion = Float.parseFloat(currentProperties.getProperty("version"));
 		} catch (NullPointerException | IOException e) {
 		}
 		// check latest version
@@ -44,14 +42,12 @@ public class Update extends C64Window {
 			URL resource = new URL(
 					"http://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/latest.properties?format=raw");
 			latestProperties.load(resource.openConnection().getInputStream());
-			latestVersion = Float.parseFloat(latestProperties
-					.getProperty("version"));
+			latestVersion = Float.parseFloat(latestProperties.getProperty("version"));
 		} catch (NullPointerException | IOException e) {
 		}
 		final boolean updateAvailable = latestVersion > currentVersion;
 		latestVersionLink.setVisible(updateAvailable);
-		update.setText(util.getBundle().getString(
-				updateAvailable ? "UPDATE_AVAILABLE" : "NO_UPDATE"));
+		update.setText(util.getBundle().getString(updateAvailable ? "UPDATE_AVAILABLE" : "NO_UPDATE"));
 	}
 
 	@FXML

@@ -65,8 +65,7 @@ public class Directory extends AnchorPane implements UIPart {
 		directoryEntries = FXCollections.<DirectoryItem> observableArrayList();
 		directory.setItems(directoryEntries);
 		directory.setOnKeyPressed((event) -> {
-			DirectoryItem selectedItem = directory.getSelectionModel()
-					.getSelectedItem();
+			DirectoryItem selectedItem = directory.getSelectionModel().getSelectedItem();
 			if (event.getCode() == KeyCode.ENTER && selectedItem != null) {
 				autoStartProgram();
 			}
@@ -80,8 +79,7 @@ public class Directory extends AnchorPane implements UIPart {
 
 	@FXML
 	private void doSwitchFont() {
-		fontSet = fontSet == TRUE_TYPE_FONT_BIG ? TRUE_TYPE_FONT_SMALL
-				: TRUE_TYPE_FONT_BIG;
+		fontSet = fontSet == TRUE_TYPE_FONT_BIG ? TRUE_TYPE_FONT_SMALL : TRUE_TYPE_FONT_BIG;
 		fontSetHeader = fontSetHeader == TRUE_TYPE_FONT_INVERSE_BIG ? TRUE_TYPE_FONT_INVERSE_SMALL
 				: TRUE_TYPE_FONT_INVERSE_BIG;
 		loadPreview(previewFile);
@@ -93,15 +91,13 @@ public class Directory extends AnchorPane implements UIPart {
 
 	protected void autoStartProgram() {
 		try {
-			DirectoryItem dirItem = directory.getSelectionModel()
-					.getSelectedItem();
+			DirectoryItem dirItem = directory.getSelectionModel().getSelectedItem();
 			if (dirItem == null) {
 				return;
 			}
 			DirEntry dirEntry = dirItem.getDirEntry();
 			if (dirEntry != null) {
-				File autoStartFile = new File(util.getConfig()
-						.getSidplay2Section().getTmpDir(),
+				File autoStartFile = new File(util.getConfig().getSidplay2Section().getTmpDir(),
 						dirEntry.getValidFilename() + ".prg");
 				autoStartFile.deleteOnExit();
 				dirEntry.save(autoStartFile);
@@ -120,8 +116,8 @@ public class Directory extends AnchorPane implements UIPart {
 		dirColumn.setText(previewFile.getName());
 		directoryEntries.clear();
 		try {
-			libsidutils.directory.Directory dir = PseudoDirectory.getDirectory(
-					util.getPlayer(), previewFile, util.getConfig());
+			libsidutils.directory.Directory dir = PseudoDirectory.getDirectory(util.getPlayer(), previewFile,
+					util.getConfig());
 			if (dir != null) {
 				// Print directory title/id
 				DirectoryItem headerItem = new DirectoryItem();
@@ -146,8 +142,7 @@ public class Directory extends AnchorPane implements UIPart {
 			}
 		} catch (IOException ioE) {
 			DirectoryItem dirItem = new DirectoryItem();
-			dirItem.setText(print("SORRY, NO PREVIEW AVAILABLE!",
-					TRUE_TYPE_FONT_BIG));
+			dirItem.setText(print("SORRY, NO PREVIEW AVAILABLE!", TRUE_TYPE_FONT_BIG));
 			directoryEntries.add(dirItem);
 		}
 		DirectoryItem dirItem = new DirectoryItem();

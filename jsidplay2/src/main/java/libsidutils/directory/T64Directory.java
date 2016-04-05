@@ -30,13 +30,10 @@ public class T64Directory {
 			for (int entryNum = 1; entryNum <= totalEntries; entryNum++) {
 				try {
 					final T64Entry entry = t64.getEntry(data, entryNum);
-					dirEntries.add(new DirEntry(entry.c64dataLen, entry.name,
-							(byte) 0x82) {
+					dirEntries.add(new DirEntry(entry.c64dataLen, entry.name, (byte) 0x82) {
 						@Override
-						public void save(final File autostartFile)
-								throws IOException {
-							t64.save(autostartFile, data, entry.programOffset,
-									entry.c64dataLen, entry.loadAddr);
+						public void save(final File autostartFile) throws IOException {
+							t64.save(autostartFile, data, entry.programOffset, entry.c64dataLen, entry.loadAddr);
 						}
 					});
 				} catch (SidTuneError e) {

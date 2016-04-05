@@ -162,7 +162,7 @@ public class Games {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;

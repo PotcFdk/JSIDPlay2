@@ -142,14 +142,14 @@ public class SidTuneInfo {
 
 	public final int getSidChipBase(int sidNum) {
 		switch (sidNum) {
-			case 0 :
-				return sidChipBase1;
-			case 1 :
-				return sidChipBase2;
-			case 2 :
-				return sidChipBase3;
-			default :
-				throw new RuntimeException("Maximum supported SIDS exceeded!");
+		case 0:
+			return sidChipBase1;
+		case 1:
+			return sidChipBase2;
+		case 2:
+			return sidChipBase3;
+		default:
+			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
 	}
 
@@ -176,6 +176,7 @@ public class SidTuneInfo {
 	public final Model getSid2Model() {
 		return sid2Model;
 	}
+
 	public final Model getSid3Model() {
 		return sid3Model;
 	}

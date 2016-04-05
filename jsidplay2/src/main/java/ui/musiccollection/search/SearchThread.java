@@ -31,8 +31,8 @@ public abstract class SearchThread extends Thread {
 	 * @param forward
 	 *            search direction (forward/backward)
 	 */
-	public SearchThread(boolean forward, Consumer<Void> searchStart,
-			Consumer<File> searchHit, Consumer<Boolean> searchStop) {
+	public SearchThread(boolean forward, Consumer<Void> searchStart, Consumer<File> searchHit,
+			Consumer<Boolean> searchStop) {
 		fForward = forward;
 		this.searchStart = searchStart;
 		this.searchHit = searchHit;

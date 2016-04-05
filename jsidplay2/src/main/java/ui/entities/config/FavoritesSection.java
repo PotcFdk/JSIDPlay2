@@ -128,8 +128,7 @@ public class FavoritesSection {
 	@Transient
 	public ObservableList<HVSCEntry> getObservableFavorites() {
 		if (observableFavorites == null) {
-			observableFavorites = FXCollections
-					.<HVSCEntry> observableArrayList(favorites);
+			observableFavorites = FXCollections.<HVSCEntry> observableArrayList(favorites);
 			Bindings.bindContent(favorites, observableFavorites);
 		}
 		return observableFavorites;

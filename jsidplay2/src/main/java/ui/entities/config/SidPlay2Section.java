@@ -41,8 +41,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.version = version;
 	}
 
-	private BooleanProperty enableDatabaseProperty = new SimpleBooleanProperty(
-			DEFAULT_ENABLE_DATABASE);
+	private BooleanProperty enableDatabaseProperty = new SimpleBooleanProperty(DEFAULT_ENABLE_DATABASE);
 
 	@Override
 	public boolean isEnableDatabase() {
@@ -58,8 +57,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return enableDatabaseProperty;
 	}
 
-	private IntegerProperty defaultPlayLengthProperty = new SimpleIntegerProperty(
-			DEFAULT_PLAY_LENGTH);
+	private IntegerProperty defaultPlayLengthProperty = new SimpleIntegerProperty(DEFAULT_PLAY_LENGTH);
 
 	@Override
 	public int getDefaultPlayLength() {
@@ -75,8 +73,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return defaultPlayLengthProperty;
 	}
 
-	private IntegerProperty fadeInTimeProperty = new SimpleIntegerProperty(
-			DEFAULT_FADE_IN_TIME);
+	private IntegerProperty fadeInTimeProperty = new SimpleIntegerProperty(DEFAULT_FADE_IN_TIME);
 
 	@Override
 	public int getFadeInTime() {
@@ -91,8 +88,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return fadeInTimeProperty;
 	}
 
-	private IntegerProperty fadeOutTimeProperty = new SimpleIntegerProperty(
-			DEFAULT_FADE_OUT_TIME);
+	private IntegerProperty fadeOutTimeProperty = new SimpleIntegerProperty(DEFAULT_FADE_OUT_TIME);
 
 	@Override
 	public int getFadeOutTime() {
@@ -128,8 +124,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.loop = loop;
 	}
 
-	private BooleanProperty singleProperty = new SimpleBooleanProperty(
-			DEFAULT_SINGLE_TRACK);
+	private BooleanProperty singleProperty = new SimpleBooleanProperty(DEFAULT_SINGLE_TRACK);
 
 	@Override
 	public boolean isSingle() {
@@ -292,8 +287,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return null;
 	}
 
-	private String tmpDir = System.getProperty("user.home")
-			+ System.getProperty("file.separator") + ".jsidplay2";
+	private String tmpDir = System.getProperty("user.home") + System.getProperty("file.separator") + ".jsidplay2";
 
 	@Override
 	public String getTmpDir() {
@@ -355,8 +349,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.fullScreen = fullScreen;
 	}
 
-	private ObjectProperty<Float> videoScalingProperty = new SimpleObjectProperty<Float>(
-			DEFAULT_VIDEO_SCALING);
+	private ObjectProperty<Float> videoScalingProperty = new SimpleObjectProperty<Float>(DEFAULT_VIDEO_SCALING);
 
 	public float getVideoScaling() {
 		return videoScalingProperty.get();
@@ -365,13 +358,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public void setVideoScaling(float videoScaling) {
 		videoScalingProperty.set(videoScaling);
 	}
-	
+
 	public ObjectProperty<Float> videoScalingProperty() {
 		return videoScalingProperty;
 	}
 
-	private ObjectProperty<Boolean> showMonitorProperty = new SimpleObjectProperty<Boolean>(
-			DEFAULT_SHOW_MONITOR);
+	private ObjectProperty<Boolean> showMonitorProperty = new SimpleObjectProperty<Boolean>(DEFAULT_SHOW_MONITOR);
 
 	public boolean isShowMonitor() {
 		return showMonitorProperty.get();
@@ -380,13 +372,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public void setShowMonitor(boolean showMonitor) {
 		showMonitorProperty.set(showMonitor);
 	}
-	
+
 	public ObjectProperty<Boolean> showMonitorProperty() {
 		return showMonitorProperty;
 	}
 
-	private ObjectProperty<Float> brightnessProperty = new SimpleObjectProperty<Float>(
-			DEFAULT_BRIGHTNESS);
+	private ObjectProperty<Float> brightnessProperty = new SimpleObjectProperty<Float>(DEFAULT_BRIGHTNESS);
 
 	public float getBrightness() {
 		return brightnessProperty.get();
@@ -400,8 +391,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return brightnessProperty;
 	}
 
-	private ObjectProperty<Float> contrastProperty = new SimpleObjectProperty<Float>(
-			DEFAULT_CONTRAST);
+	private ObjectProperty<Float> contrastProperty = new SimpleObjectProperty<Float>(DEFAULT_CONTRAST);
 
 	public float getContrast() {
 		return contrastProperty.get();
@@ -415,8 +405,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return contrastProperty;
 	}
 
-	private ObjectProperty<Float> gammaProperty = new SimpleObjectProperty<Float>(
-			DEFAULT_GAMMA);
+	private ObjectProperty<Float> gammaProperty = new SimpleObjectProperty<Float>(DEFAULT_GAMMA);
 
 	public float getGamma() {
 		return gammaProperty.get();
@@ -430,8 +419,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return gammaProperty;
 	}
 
-	private ObjectProperty<Float> saturationProperty = new SimpleObjectProperty<Float>(
-			DEFAULT_SATURATION);
+	private ObjectProperty<Float> saturationProperty = new SimpleObjectProperty<Float>(DEFAULT_SATURATION);
 
 	public float getSaturation() {
 		return saturationProperty.get();
@@ -445,8 +433,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return saturationProperty;
 	}
 
-	private ObjectProperty<Float> phaseShiftProperty = new SimpleObjectProperty<Float>(
-			DEFAULT_PHASE_SHIFT);
+	private ObjectProperty<Float> phaseShiftProperty = new SimpleObjectProperty<Float>(DEFAULT_PHASE_SHIFT);
 
 	public float getPhaseShift() {
 		return phaseShiftProperty.get();
@@ -460,8 +447,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return phaseShiftProperty;
 	}
 
-	private ObjectProperty<Float> offsetProperty = new SimpleObjectProperty<Float>(
-			DEFAULT_OFFSET);
+	private ObjectProperty<Float> offsetProperty = new SimpleObjectProperty<Float>(DEFAULT_OFFSET);
 
 	public float getOffset() {
 		return offsetProperty.get();
@@ -475,8 +461,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return offsetProperty;
 	}
 
-	private ObjectProperty<Float> tintProperty = new SimpleObjectProperty<Float>(
-			DEFAULT_TINT);
+	private ObjectProperty<Float> tintProperty = new SimpleObjectProperty<Float>(DEFAULT_TINT);
 
 	public float getTint() {
 		return tintProperty.get();
@@ -490,8 +475,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return tintProperty;
 	}
 
-	private ObjectProperty<Float> blurProperty = new SimpleObjectProperty<Float>(
-			DEFAULT_BLUR);
+	private ObjectProperty<Float> blurProperty = new SimpleObjectProperty<Float>(DEFAULT_BLUR);
 
 	public float getBlur() {
 		return blurProperty.get();
@@ -505,8 +489,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return blurProperty;
 	}
 
-	private ObjectProperty<Float> bleedProperty = new SimpleObjectProperty<Float>(
-			DEFAULT_BLEED);
+	private ObjectProperty<Float> bleedProperty = new SimpleObjectProperty<Float>(DEFAULT_BLEED);
 
 	public float getBleed() {
 		return bleedProperty.get();
@@ -520,8 +503,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return bleedProperty;
 	}
 
-	private BooleanProperty turboTapeProperty = new SimpleBooleanProperty(
-			DEFAULT_TURBO_TAPE);
+	private BooleanProperty turboTapeProperty = new SimpleBooleanProperty(DEFAULT_TURBO_TAPE);
 
 	@Override
 	public boolean isTurboTape() {

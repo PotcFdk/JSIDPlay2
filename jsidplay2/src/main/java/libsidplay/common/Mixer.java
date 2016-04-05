@@ -1,8 +1,8 @@
 package libsidplay.common;
 
 /**
- * Interface for SID mixer controls. A SID builder that implements this interface
- * gets controlled by the player.
+ * Interface for SID mixer controls. A SID builder that implements this
+ * interface gets controlled by the player.
  * 
  * @author ken
  *

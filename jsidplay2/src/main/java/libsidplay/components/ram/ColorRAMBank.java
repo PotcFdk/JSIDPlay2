@@ -10,7 +10,7 @@ public final class ColorRAMBank extends Bank {
 	public void reset() {
 		Arrays.fill(ram, (byte) 0);
 	}
-		
+
 	@Override
 	public void write(int address, byte value) {
 		ram[address & 0x3ff] = (byte) (value & 0xf);

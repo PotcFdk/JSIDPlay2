@@ -55,14 +55,12 @@ public class JavaSound implements AudioDriver {
 		this.cfg = cfg;
 		boolean signed = true;
 		boolean bigEndian = false;
-		this.audioFormat = new AudioFormat(cfg.frameRate, Short.SIZE,
-				cfg.channels, signed, bigEndian);
+		this.audioFormat = new AudioFormat(cfg.frameRate, Short.SIZE, cfg.channels, signed, bigEndian);
 		setAudioDevice(info);
 	}
 
 	public static final ObservableList<Device> getDevices() {
-		ObservableList<Device> devices = FXCollections
-				.<Device> observableArrayList();
+		ObservableList<Device> devices = FXCollections.<Device> observableArrayList();
 		for (Info info : AudioSystem.getMixerInfo()) {
 			Mixer mixer = AudioSystem.getMixer(info);
 			Line.Info lineInfo = new Line.Info(SourceDataLine.class);
@@ -73,22 +71,18 @@ public class JavaSound implements AudioDriver {
 		return devices;
 	}
 
-	public synchronized void setAudioDevice(final Mixer.Info info)
-			throws LineUnavailableException {
+	public synchronized void setAudioDevice(final Mixer.Info info) throws LineUnavailableException {
 		// first close previous dataLine when it is already present
 		close();
 		dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
-		dataLine.open(dataLine.getFormat(), cfg.bufferFrames * Short.BYTES
-				* cfg.channels);
+		dataLine.open(dataLine.getFormat(), cfg.bufferFrames * Short.BYTES * cfg.channels);
 
 		// The actual buffer size for the open line may differ from the
 		// requested buffer size, therefore
-		cfg.bufferFrames = dataLine.getBufferSize() / Short.BYTES
-				/ cfg.channels;
+		cfg.bufferFrames = dataLine.getBufferSize() / Short.BYTES / cfg.channels;
 
-		sampleBuffer = ByteBuffer.allocate(
-				cfg.getChunkFrames() * Short.BYTES * cfg.channels).order(
-				ByteOrder.LITTLE_ENDIAN);
+		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.channels)
+				.order(ByteOrder.LITTLE_ENDIAN);
 	}
 
 	@Override

@@ -82,10 +82,10 @@ public class Screen {
 		hasFlags = addFlag(hasFlags, tuneInfo.getClockSpeed().toString());
 		hasFlags = addFlag(hasFlags, tuneInfo.getSid1Model().toString());
 		int sid2midNibbles = (tuneInfo.getSidChipBase(1) >> 4) & 0xff;
-		if (((sid2midNibbles & 1) == 0)
-				&& (((0x42 <= sid2midNibbles) && (sid2midNibbles <= 0x7e)) || ((0xe0 <= sid2midNibbles) && (sid2midNibbles <= 0xfe)))) {
-			hasFlags = addFlag(hasFlags, tuneInfo.getSid2Model().toString()
-					+ String.format(" at $%04x", tuneInfo.getSidChipBase(1)));
+		if (((sid2midNibbles & 1) == 0) && (((0x42 <= sid2midNibbles) && (sid2midNibbles <= 0x7e))
+				|| ((0xe0 <= sid2midNibbles) && (sid2midNibbles <= 0xfe)))) {
+			hasFlags = addFlag(hasFlags,
+					tuneInfo.getSid2Model().toString() + String.format(" at $%04x", tuneInfo.getSidChipBase(1)));
 		}
 		if (!hasFlags) {
 			write("-");
@@ -103,8 +103,7 @@ public class Screen {
 			write(" [1-0, A");
 		} else {
 			write("[1-0, A-");
-			putchar(tuneInfo.getSongs() <= 36 ? tuneInfo.getSongs() - 11 + 'A'
-					: 'Z');
+			putchar(tuneInfo.getSongs() <= 36 ? tuneInfo.getSongs() - 11 + 'A' : 'Z');
 		}
 		write("] Select song [+] Next song\n");
 		write("  [-] Previous song [DEL] Blank screen\n");

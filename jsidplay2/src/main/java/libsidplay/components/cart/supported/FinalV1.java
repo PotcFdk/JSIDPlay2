@@ -10,10 +10,9 @@ import libsidplay.components.pla.Bank;
 import libsidplay.components.pla.PLA;
 
 /**
- * This cartridge has a freeze button. It is assumed that the freeze
- * occurs by triggering NMI in the CPU. It is not known whether the NMI state is
- * held low while in cartridge. Releasing the freeze doesn't seem to really work,
- * either.
+ * This cartridge has a freeze button. It is assumed that the freeze occurs by
+ * triggering NMI in the CPU. It is not known whether the NMI state is held low
+ * while in cartridge. Releasing the freeze doesn't seem to really work, either.
  */
 public class FinalV1 extends Cartridge {
 	protected final byte[] roml = new byte[0x2000];
@@ -28,7 +27,7 @@ public class FinalV1 extends Cartridge {
 		dis.readFully(roml);
 		dis.readFully(romh);
 	}
-	
+
 	private final Bank io1Bank = new Bank() {
 		@Override
 		public byte read(int address) {
@@ -60,7 +59,7 @@ public class FinalV1 extends Cartridge {
 	private final Bank romlBank = new Bank() {
 		@Override
 		public byte read(int address) {
-		    return roml[address & 0x1fff];
+			return roml[address & 0x1fff];
 		}
 
 		@Override
@@ -109,7 +108,7 @@ public class FinalV1 extends Cartridge {
 			}
 		}, 3, Phase.PHI1);
 	}
-	
+
 	@Override
 	public void reset() {
 		super.reset();

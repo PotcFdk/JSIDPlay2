@@ -6,8 +6,7 @@ import javafx.util.StringConverter;
 
 import javax.persistence.metamodel.SingularAttribute;
 
-public final class SearchCriteriaToString extends
-		StringConverter<SearchCriteria<?, ?>> {
+public final class SearchCriteriaToString extends StringConverter<SearchCriteria<?, ?>> {
 
 	private final ResourceBundle bundle;
 
@@ -23,8 +22,6 @@ public final class SearchCriteriaToString extends
 	@Override
 	public String toString(SearchCriteria<?, ?> object) {
 		SingularAttribute<?, ?> attribute = object.getAttribute();
-		return bundle.getString(attribute.getDeclaringType().getJavaType()
-				.getSimpleName()
-				+ "." + attribute.getName());
+		return bundle.getString(attribute.getDeclaringType().getJavaType().getSimpleName() + "." + attribute.getName());
 	}
 }

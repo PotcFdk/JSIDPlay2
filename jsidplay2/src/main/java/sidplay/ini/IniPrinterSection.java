@@ -21,8 +21,7 @@ public class IniPrinterSection extends IniSection implements IPrinterSection {
 	 */
 	@Override
 	public final boolean isPrinterOn() {
-		return iniReader.getPropertyBool("Printer", "PrinterOn",
-				DEFAULT_PRINTER_ON);
+		return iniReader.getPropertyBool("Printer", "PrinterOn", DEFAULT_PRINTER_ON);
 	}
 
 	/**

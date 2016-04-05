@@ -41,10 +41,8 @@ public final class FilterGauge extends SIDGauge {
 		super.updateGauge(sidemu);
 		if (sidemu != null) {
 			final byte vol = sidemu.readInternalRegister(0x18);
-			setText((localizer != null ? localizer.getString("FILTER") : "")
-					+ " " + ((vol & 0x10) != 0 ? "L" : "")
-					+ ((vol & 0x20) != 0 ? "B" : "")
-					+ ((vol & 0x40) != 0 ? "H" : ""));
+			setText((localizer != null ? localizer.getString("FILTER") : "") + " " + ((vol & 0x10) != 0 ? "L" : "")
+					+ ((vol & 0x20) != 0 ? "B" : "") + ((vol & 0x40) != 0 ? "H" : ""));
 		}
 	}
 }

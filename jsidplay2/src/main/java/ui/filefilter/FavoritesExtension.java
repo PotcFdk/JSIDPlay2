@@ -1,6 +1,5 @@
 package ui.filefilter;
 
-
 public interface FavoritesExtension {
 	final String EXTENSION = "*.js2";
 

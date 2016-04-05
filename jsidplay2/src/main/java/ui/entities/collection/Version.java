@@ -14,15 +14,15 @@ public class Version {
 	private int id;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	public int getId() {
 		return id;
 	}
-	
+
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	private int version;
 
 	public int getVersion() {
@@ -32,5 +32,5 @@ public class Version {
 	public void setVersion(int version) {
 		this.version = version;
 	}
-	
+
 }

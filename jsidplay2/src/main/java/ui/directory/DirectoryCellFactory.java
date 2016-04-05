@@ -16,19 +16,17 @@ import javafx.util.Callback;
  * 
  */
 public class DirectoryCellFactory
-		implements
-		Callback<TableColumn<DirectoryItem, String>, TableCell<DirectoryItem, String>> {
+		implements Callback<TableColumn<DirectoryItem, String>, TableCell<DirectoryItem, String>> {
 
 	protected Font c64Font;
+
 	{
-		InputStream fontStream = JSidPlay2Main.class
-				.getResourceAsStream("fonts/C64_Elite_Mono_v1.0-STYLE.ttf");
+		InputStream fontStream = JSidPlay2Main.class.getResourceAsStream("fonts/C64_Elite_Mono_v1.0-STYLE.ttf");
 		c64Font = Font.loadFont(fontStream, 10);
 	}
 
 	@Override
-	public TableCell<DirectoryItem, String> call(
-			final TableColumn<DirectoryItem, String> column) {
+	public TableCell<DirectoryItem, String> call(final TableColumn<DirectoryItem, String> column) {
 		final TableCell<DirectoryItem, String> cell = new TableCell<DirectoryItem, String>() {
 			@Override
 			public void updateItem(String value, boolean empty) {

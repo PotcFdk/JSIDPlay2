@@ -34,7 +34,7 @@ import libsidplay.common.EventScheduler;
  */
 public abstract class Flash040Core {
 	private Logger FLASH_DEBUG = Logger.getLogger(Flash040Core.class.getName());
-	
+
 	public enum Flash040Type {
 		/* 29F040 */
 		FLASH040_TYPE_NORMAL,
@@ -47,19 +47,7 @@ public abstract class Flash040Core {
 	};
 
 	private enum Flash040State {
-		FLASH040_STATE_READ,
-		FLASH040_STATE_MAGIC_1,
-		FLASH040_STATE_MAGIC_2,
-		FLASH040_STATE_AUTOSELECT,
-		FLASH040_STATE_BYTE_PROGRAM,
-		FLASH040_STATE_BYTE_PROGRAM_ERROR,
-		FLASH040_STATE_ERASE_MAGIC_1,
-		FLASH040_STATE_ERASE_MAGIC_2,
-		FLASH040_STATE_ERASE_SELECT,
-		FLASH040_STATE_CHIP_ERASE,
-		FLASH040_STATE_SECTOR_ERASE,
-		FLASH040_STATE_SECTOR_ERASE_TIMEOUT,
-		FLASH040_STATE_SECTOR_ERASE_SUSPEND
+		FLASH040_STATE_READ, FLASH040_STATE_MAGIC_1, FLASH040_STATE_MAGIC_2, FLASH040_STATE_AUTOSELECT, FLASH040_STATE_BYTE_PROGRAM, FLASH040_STATE_BYTE_PROGRAM_ERROR, FLASH040_STATE_ERASE_MAGIC_1, FLASH040_STATE_ERASE_MAGIC_2, FLASH040_STATE_ERASE_SELECT, FLASH040_STATE_CHIP_ERASE, FLASH040_STATE_SECTOR_ERASE, FLASH040_STATE_SECTOR_ERASE_TIMEOUT, FLASH040_STATE_SECTOR_ERASE_SUSPEND
 	};
 
 	private static final int FLASH040_ERASE_MASK_SIZE = 8;
@@ -86,9 +74,8 @@ public abstract class Flash040Core {
 	private static int ERASE_CHIP_CYCLES = 8192;
 
 	protected static class FlashTypes {
-		protected FlashTypes(byte manufacturer, byte device, int sz,
-				int secMask, int secSize, int secShift, int mag1Addr,
-				int mag2Addr, int mag1Mask, int mag2Mask, byte status) {
+		protected FlashTypes(byte manufacturer, byte device, int sz, int secMask, int secSize, int secShift,
+				int mag1Addr, int mag2Addr, int mag1Mask, int mag2Mask, byte status) {
 			manufacturerID = manufacturer;
 			deviceID = device;
 			size = sz;
@@ -117,28 +104,33 @@ public abstract class Flash040Core {
 
 	protected static FlashTypes FlashTypes[] = {
 			/* 29F040 */
-			new FlashTypes((byte) 0x01, (byte) 0xa4, 0x80000, 0x70000, 0x10000,
-					16, 0x5555, 0x2aaa, 0x7fff, 0x7fff, (byte) 0x40),
+			new FlashTypes((byte) 0x01, (byte) 0xa4, 0x80000, 0x70000, 0x10000, 16, 0x5555, 0x2aaa, 0x7fff, 0x7fff,
+					(byte) 0x40),
 			/* 29F040B */
-			new FlashTypes((byte) 0x01, (byte) 0xa4, 0x80000, 0x70000, 0x10000,
-					16, 0x555, 0x2aa, 0x7ff, 0x7ff, (byte) 0x40),
+			new FlashTypes((byte) 0x01, (byte) 0xa4, 0x80000, 0x70000, 0x10000, 16, 0x555, 0x2aa, 0x7ff, 0x7ff,
+					(byte) 0x40),
 			/* 29F010 */
-			new FlashTypes((byte) 0x01, (byte) 0x20, 0x20000, 0x1c000, 0x04000,
-					14, 0x5555, 0x2aaa, 0x7fff, 0x7fff, (byte) 0x40),
+			new FlashTypes((byte) 0x01, (byte) 0x20, 0x20000, 0x1c000, 0x04000, 14, 0x5555, 0x2aaa, 0x7fff, 0x7fff,
+					(byte) 0x40),
 			/* 29F032B with A0/1 swap */
-			new FlashTypes((byte) 0x01, (byte) 0x41, 0x400000, 0x3f0000,
-					0x10000, 16, 0x556, 0x2a9, 0x7ff, 0x7ff, (byte) 0x44), };
+			new FlashTypes((byte) 0x01, (byte) 0x41, 0x400000, 0x3f0000, 0x10000, 16, 0x556, 0x2a9, 0x7ff, 0x7ff,
+					(byte) 0x44), };
 
-	/* -------------------------------------------------------------------------- */ 
-	
+	/*
+	 * -------------------------------------------------------------------------
+	 * -
+	 */
+
 	private boolean flashMagic1(Flash040Context flash040Context, int addr) {
-		return ((addr & FlashTypes[flash040Context.flashType.ordinal()].magic1Mask) == FlashTypes[flash040Context.flashType
-				.ordinal()].magic1Addr);
+		return ((addr
+				& FlashTypes[flash040Context.flashType.ordinal()].magic1Mask) == FlashTypes[flash040Context.flashType
+						.ordinal()].magic1Addr);
 	}
 
 	private boolean flashMagic2(Flash040Context flash040Context, int addr) {
-		return ((addr & FlashTypes[flash040Context.flashType.ordinal()].magic2Mask) == FlashTypes[flash040Context.flashType
-				.ordinal()].magic2Addr);
+		return ((addr
+				& FlashTypes[flash040Context.flashType.ordinal()].magic2Mask) == FlashTypes[flash040Context.flashType
+						.ordinal()].magic2Addr);
 	}
 
 	private void flashClearEraseMask(Flash040Context flash040Context) {
@@ -153,17 +145,14 @@ public abstract class Flash040Core {
 		return sector * sectorSize;
 	}
 
-	private int flashAddrToSectorNumber(Flash040Context flash040Context,
-			int addr) {
-		int sectorAddr = FlashTypes[flash040Context.flashType.ordinal()].sectorMask
-				& addr;
+	private int flashAddrToSectorNumber(Flash040Context flash040Context, int addr) {
+		int sectorAddr = FlashTypes[flash040Context.flashType.ordinal()].sectorMask & addr;
 		int sectorShift = FlashTypes[flash040Context.flashType.ordinal()].sectorShift;
 
 		return sectorAddr >> sectorShift;
 	}
 
-	private void flashAddSectorToEraseMask(Flash040Context flash040Context,
-			int addr) {
+	private void flashAddSectorToEraseMask(Flash040Context flash040Context, int addr) {
 		int sectorNum = flashAddrToSectorNumber(flash040Context, addr);
 
 		flash040Context.eraseMask[sectorNum >> 3] |= (byte) (1 << (sectorNum & 0x7));
@@ -173,29 +162,23 @@ public abstract class Flash040Core {
 		int sectorSize = FlashTypes[flash040Context.flashType.ordinal()].sectorSize;
 		int sectorAddr = flashSectorToAddr(flash040Context, sector);
 
-		FLASH_DEBUG.fine(String.format("Erasing 0x%x - 0x%x", sectorAddr,
-				sectorAddr + sectorSize - 1));
-		Arrays.fill(flash040Context.flashData, sectorAddr, sectorSize,
-				(byte) 0xff);
+		FLASH_DEBUG.fine(String.format("Erasing 0x%x - 0x%x", sectorAddr, sectorAddr + sectorSize - 1));
+		Arrays.fill(flash040Context.flashData, sectorAddr, sectorSize, (byte) 0xff);
 		flash040Context.flashDirty = 1;
 	}
 
 	private void flashEraseChip(Flash040Context flash040Context) {
 		FLASH_DEBUG.fine(("Erasing chip"));
-		Arrays.fill(flash040Context.flashData, 0,
-				FlashTypes[flash040Context.flashType.ordinal()].size,
-				(byte) 0xff);
+		Arrays.fill(flash040Context.flashData, 0, FlashTypes[flash040Context.flashType.ordinal()].size, (byte) 0xff);
 		flash040Context.flashDirty = 1;
 	}
 
-	private boolean flashProgramByte(Flash040Context flash040Context, int addr,
-			byte byt) {
+	private boolean flashProgramByte(Flash040Context flash040Context, int addr, byte byt) {
 		byte oldData = flash040Context.flashData[addr];
 		byte newData = (byte) (oldData & byt);
 
-		FLASH_DEBUG.fine(String.format(
-				"Programming 0x%05x with 0x%02x (%02x->%02x)", addr, byt,
-				oldData, oldData & byt));
+		FLASH_DEBUG
+				.fine(String.format("Programming 0x%05x with 0x%02x (%02x->%02x)", addr, byt, oldData, oldData & byt));
 		flash040Context.programByte = byt;
 		flash040Context.flashData[addr] = newData;
 		flash040Context.flashDirty = 1;
@@ -204,15 +187,14 @@ public abstract class Flash040Core {
 	}
 
 	private byte flashWriteOperationStatus(Flash040Context flash040Context) {
-		return (byte) (((flash040Context.programByte ^ 0x80) & 0x80) /*
-															 * DQ7 = inverse of
-															 * programmed data
-															 */
+		return (byte) (((flash040Context.programByte ^ 0x80)
+				& 0x80) /*
+						 * DQ7 = inverse of programmed data
+						 */
 				| ((maincpuClk() & 2) << 5) /*
-												 * DQ6 = toggle bit (2 us)
-												 */
-				| (1 << 5) /* DQ5 = timeout */)
-		;
+											 * DQ6 = toggle bit (2 us)
+											 */
+				| (1 << 5) /* DQ5 = timeout */);
 	}
 
 	private byte flashEraseOperationStatus(Flash040Context flash040Context) {
@@ -221,8 +203,7 @@ public abstract class Flash040Core {
 
 		/* toggle the toggle bit(s) */
 		/* FIXME better toggle bit II emulation */
-		flash040Context.programByte ^= FlashTypes[flash040Context.flashType
-				.ordinal()].statusToggleBits;
+		flash040Context.programByte ^= FlashTypes[flash040Context.flashType.ordinal()].statusToggleBits;
 
 		/* DQ3 = sector erase timer */
 		if (flash040Context.flashState != Flash040State.FLASH040_STATE_SECTOR_ERASE_TIMEOUT) {
@@ -232,13 +213,15 @@ public abstract class Flash040Core {
 		return v;
 	}
 
-	/* -------------------------------------------------------------------------- */ 
-	
+	/*
+	 * -------------------------------------------------------------------------
+	 * -
+	 */
+
 	protected void eraseAlarmHandler(Flash040Context flash040Context) {
 		alarmUnset(flash040Context.eraseAlarm);
 
-		FLASH_DEBUG.fine(String.format("Erase alarm, state %s",
-				flash040Context.flashState));
+		FLASH_DEBUG.fine(String.format("Erase alarm, state %s", flash040Context.flashState));
 
 		switch (flash040Context.flashState) {
 		case FLASH040_STATE_SECTOR_ERASE_TIMEOUT:
@@ -259,8 +242,7 @@ public abstract class Flash040Core {
 			}
 
 			if (m != 0) {
-				alarmSet(flash040Context.eraseAlarm, maincpuClk()
-						+ ERASE_SECTOR_CYCLES);
+				alarmSet(flash040Context.eraseAlarm, maincpuClk() + ERASE_SECTOR_CYCLES);
 			} else {
 				flash040Context.flashState = flash040Context.flashBaseState;
 			}
@@ -272,18 +254,18 @@ public abstract class Flash040Core {
 			break;
 
 		default:
-			FLASH_DEBUG.fine(String.format(
-					"Erase alarm - error, state %s unhandled!",
-					flash040Context.flashState));
+			FLASH_DEBUG.fine(String.format("Erase alarm - error, state %s unhandled!", flash040Context.flashState));
 			break;
 		}
 
 	}
 
-	/* -------------------------------------------------------------------------- */
-	 
-	public void flash040CoreStore(Flash040Context flash040Context, int addr,
-			byte byt) {
+	/*
+	 * -------------------------------------------------------------------------
+	 * -
+	 */
+
+	public void flash040CoreStore(Flash040Context flash040Context, int addr, byte byt) {
 		Flash040State oldState = flash040Context.flashState;
 		Flash040State oldBaseState = flash040Context.flashBaseState;
 
@@ -357,14 +339,12 @@ public abstract class Flash040Core {
 			if (flashMagic1(flash040Context, addr) && (byt == 0x10)) {
 				flash040Context.flashState = Flash040State.FLASH040_STATE_CHIP_ERASE;
 				flash040Context.programByte = 0;
-				alarmSet(flash040Context.eraseAlarm, maincpuClk()
-						+ ERASE_CHIP_CYCLES);
+				alarmSet(flash040Context.eraseAlarm, maincpuClk() + ERASE_CHIP_CYCLES);
 			} else if (byt == 0x30) {
 				flashAddSectorToEraseMask(flash040Context, addr);
 				flash040Context.programByte = 0;
 				flash040Context.flashState = Flash040State.FLASH040_STATE_SECTOR_ERASE_TIMEOUT;
-				alarmSet(flash040Context.eraseAlarm, maincpuClk()
-						+ ERASE_SECTOR_TIMEOUT_CYCLES);
+				alarmSet(flash040Context.eraseAlarm, maincpuClk() + ERASE_SECTOR_TIMEOUT_CYCLES);
 			} else {
 				flash040Context.flashState = flash040Context.flashBaseState;
 			}
@@ -391,8 +371,7 @@ public abstract class Flash040Core {
 		case FLASH040_STATE_SECTOR_ERASE_SUSPEND:
 			if (byt == 0x30) {
 				flash040Context.flashState = Flash040State.FLASH040_STATE_SECTOR_ERASE;
-				alarmSet(flash040Context.eraseAlarm, maincpuClk()
-						+ ERASE_SECTOR_CYCLES);
+				alarmSet(flash040Context.eraseAlarm, maincpuClk() + ERASE_SECTOR_CYCLES);
 			}
 			break;
 
@@ -412,10 +391,8 @@ public abstract class Flash040Core {
 			break;
 		}
 
-		FLASH_DEBUG.fine(String.format(
-				"Write %02x to %05x, state %s->%s (base state %s->%s)", byt,
-				addr, oldState, flash040Context.flashState, oldBaseState,
-				flash040Context.flashBaseState));
+		FLASH_DEBUG.fine(String.format("Write %02x to %05x, state %s->%s (base state %s->%s)", byt, addr, oldState,
+				flash040Context.flashState, oldBaseState, flash040Context.flashBaseState));
 	}
 
 	public byte flash040CoreRead(Flash040Context flash040Context, int addr) {
@@ -469,10 +446,9 @@ public abstract class Flash040Core {
 			break;
 		}
 
-		if (FLASH_DEBUG.isLoggable(Level.FINE)
-				&& oldState != Flash040State.FLASH040_STATE_READ) {
-			FLASH_DEBUG.fine(String.format("Read %02x from %05x, state %s.%s",
-					value, addr, oldState, flash040Context.flashState));
+		if (FLASH_DEBUG.isLoggable(Level.FINE) && oldState != Flash040State.FLASH040_STATE_READ) {
+			FLASH_DEBUG.fine(String.format("Read %02x from %05x, state %s.%s", value, addr, oldState,
+					flash040Context.flashState));
 		}
 
 		flash040Context.lastRead = value;
@@ -492,8 +468,8 @@ public abstract class Flash040Core {
 		alarmUnset(flash040Context.eraseAlarm);
 	}
 
-	public void flash040coreInit(final Flash040Context flash040Context,
-			EventScheduler alarmContext, Flash040Type type, byte[] data) {
+	public void flash040coreInit(final Flash040Context flash040Context, EventScheduler alarmContext, Flash040Type type,
+			byte[] data) {
 		FLASH_DEBUG.fine(("Init"));
 		flash040Context.flashData = data;
 		flash040Context.flashType = type;
@@ -515,8 +491,11 @@ public abstract class Flash040Core {
 		FLASH_DEBUG.fine(("Shutdown"));
 	}
 
-	/* -------------------------------------------------------------------------- */ 
-	
+	/*
+	 * -------------------------------------------------------------------------
+	 * -
+	 */
+
 	protected abstract long maincpuClk();
 
 	protected abstract void alarmUnset(Event erase_alarm);

@@ -19,8 +19,7 @@ public class SidIdBase {
 	 *             read error
 	 */
 	protected byte[] load(final String name) throws IOException {
-		try (final DataInputStream in = new DataInputStream(
-				new FileInputStream(name))) {
+		try (final DataInputStream in = new DataInputStream(new FileInputStream(name))) {
 			final int length = (int) new File(name).length();
 			final byte[] buffer = new byte[length];
 			in.readFully(buffer);
@@ -28,11 +27,11 @@ public class SidIdBase {
 		}
 	}
 
-
 	/**
 	 * Load configuration file.
-	 * @param fname 
-	 * @param pkg 
+	 * 
+	 * @param fname
+	 * @param pkg
 	 * 
 	 * @return the configuration file entries
 	 */
@@ -52,23 +51,21 @@ public class SidIdBase {
 
 	/**
 	 * Read from internal SID-ID configuration file.
-	 * @param fname 
-	 * @param pkg 
+	 * 
+	 * @param fname
+	 * @param pkg
 	 * 
 	 * @return the contents
 	 */
 	private byte[] readInternal(String fname, String pkg) {
-		try (final InputStream inputStream = getClass().getClassLoader()
-				.getResourceAsStream(pkg + fname)) {
+		try (final InputStream inputStream = getClass().getClassLoader().getResourceAsStream(pkg + fname)) {
 			if (inputStream == null) {
-				throw new RuntimeException("Internal SIDID not found: "
-						+ pkg + fname);
+				throw new RuntimeException("Internal SIDID not found: " + pkg + fname);
 			}
 			final int length = inputStream.available();
 			final byte[] data = new byte[length];
 			int count, pos = 0;
-			while (pos < length
-					&& (count = inputStream.read(data, pos, length - pos)) >= 0) {
+			while (pos < length && (count = inputStream.read(data, pos, length - pos)) >= 0) {
 				pos += count;
 			}
 			if (pos != length) {
@@ -77,8 +74,7 @@ public class SidIdBase {
 			return data;
 		} catch (final IOException e) {
 			e.printStackTrace();
-			throw new RuntimeException("Internal SIDID not found: "
-					+ pkg + fname);
+			throw new RuntimeException("Internal SIDID not found: " + pkg + fname);
 		}
 	}
 
@@ -88,7 +84,8 @@ public class SidIdBase {
 	 * <LI>current working dir
 	 * <LI>user home dir
 	 * </OL>
-	 * @param fname 
+	 * 
+	 * @param fname
 	 * 
 	 * @return the configuration file or null (not found)
 	 */
@@ -113,7 +110,7 @@ public class SidIdBase {
 	 * 
 	 * @param location
 	 *            the path to search in
-	 * @param fname 
+	 * @param fname
 	 * @return the file (caller should check exists)
 	 */
 	private File locate(final String location, String fname) {

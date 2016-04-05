@@ -18,12 +18,11 @@ public class SidAuthors {
 	 * Contains a mapping: Author to picture resource path.
 	 */
 	private static final Properties SID_AUTHORS = new Properties();
+
 	static {
-		try (InputStream is = SidTune.class
-				.getResourceAsStream("pictures.properties")) {
+		try (InputStream is = SidTune.class.getResourceAsStream("pictures.properties")) {
 			SID_AUTHORS.load(is);
-			for (Iterator<Object> authors = SID_AUTHORS.keySet().iterator(); authors
-					.hasNext();) {
+			for (Iterator<Object> authors = SID_AUTHORS.keySet().iterator(); authors.hasNext();) {
 				String author = (String) authors.next();
 				String photo = SID_AUTHORS.getProperty(author);
 				photo = "Photos/" + photo;

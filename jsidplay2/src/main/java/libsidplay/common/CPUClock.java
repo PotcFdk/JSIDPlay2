@@ -42,8 +42,7 @@ public enum CPUClock {
 	 */
 	public static CPUClock getCPUClock(IEmulationSection emulation, SidTune tune) {
 		CPUClock forcedCPUClock = emulation.getUserClockSpeed();
-		Clock tuneCPUClock = tune != null ? tune.getInfo().getClockSpeed()
-				: null;
+		Clock tuneCPUClock = tune != null ? tune.getInfo().getClockSpeed() : null;
 		CPUClock defaultCPUClock = emulation.getDefaultClockSpeed();
 		if (forcedCPUClock != null) {
 			return forcedCPUClock;

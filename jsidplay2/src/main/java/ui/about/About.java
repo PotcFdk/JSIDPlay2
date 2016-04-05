@@ -13,11 +13,11 @@ import ui.common.C64Window;
 
 public class About extends C64Window {
 	private static Properties properties = new Properties();
+
 	static {
 		properties.setProperty("version", "(beta)");
 		try {
-			URL resource = JSidPlay2Main.class
-					.getResource("/META-INF/maven/jsidplay2/jsidplay2/pom.properties");
+			URL resource = JSidPlay2Main.class.getResource("/META-INF/maven/jsidplay2/jsidplay2/pom.properties");
 			properties.load(resource.openConnection().getInputStream());
 		} catch (NullPointerException | IOException e) {
 		}

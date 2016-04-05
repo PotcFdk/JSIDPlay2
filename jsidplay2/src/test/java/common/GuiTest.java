@@ -69,16 +69,15 @@ import com.google.common.util.concurrent.SettableFuture;
 
 public abstract class GuiTest implements Timeouts {
 
-	private static final SettableFuture<Stage> stageFuture = SettableFuture
-			.create();
+	private static final SettableFuture<Stage> stageFuture = SettableFuture.create();
 	protected static Stage stage;
 
-    private static final Map<MouseButton, Integer> BUTTONS = ImmutableMap.of( MouseButton.PRIMARY,
-            InputEvent.BUTTON1_MASK, MouseButton.MIDDLE, InputEvent.BUTTON2_MASK, MouseButton.SECONDARY,
-            InputEvent.BUTTON3_MASK );
+	private static final Map<MouseButton, Integer> BUTTONS = ImmutableMap.of(MouseButton.PRIMARY,
+			InputEvent.BUTTON1_MASK, MouseButton.MIDDLE, InputEvent.BUTTON2_MASK, MouseButton.SECONDARY,
+			InputEvent.BUTTON3_MASK);
 
-    private final Robot robot;
-    private long moveTime = 175;
+	private final Robot robot;
+	private long moveTime = 175;
 
 	@Before
 	public void setupStage() throws Throwable {
@@ -117,8 +116,7 @@ public abstract class GuiTest implements Timeouts {
 		return window;
 	}
 
-	public static OffsetTarget offset(Object target, double offsetX,
-			double offsetY) {
+	public static OffsetTarget offset(Object target, double offsetX, double offsetY) {
 		return new OffsetTarget(target, offsetX, offsetY);
 	}
 
@@ -132,21 +130,19 @@ public abstract class GuiTest implements Timeouts {
 	}
 
 	public static Stage findStageByTitle(final String titleRegex) {
-		return Iterables.find(Iterables.filter(getWindows(), Stage.class),
-				new Predicate<Stage>() {
-					@Override
-					public boolean apply(Stage input) {
-						return input.getTitle().matches(titleRegex);
-					}
-				});
+		return Iterables.find(Iterables.filter(getWindows(), Stage.class), new Predicate<Stage>() {
+			@Override
+			public boolean apply(Stage input) {
+				return input.getTitle().matches(titleRegex);
+			}
+		});
 	}
 
 	private static Set<Node> findAll(String query, Object parent) {
 		try {
 			if (parent instanceof String) {
 				final String titleRegex = (String) parent;
-				return findAll(query,
-						targetWindow(findStageByTitle(titleRegex)).getScene());
+				return findAll(query, targetWindow(findStageByTitle(titleRegex)).getScene());
 			} else if (parent instanceof Node) {
 				Node node = (Node) parent;
 				targetWindow(node.getScene().getWindow());
@@ -187,11 +183,9 @@ public abstract class GuiTest implements Timeouts {
 		return new LinkedHashSet<>(visibleNodes);
 	}
 
-	private static void assertNodesFound(Object query,
-			Collection<? extends Node> foundNodes) {
+	private static void assertNodesFound(Object query, Collection<? extends Node> foundNodes) {
 		if (foundNodes.isEmpty())
-			throw new NoNodesFoundException("No nodes matched '" + query
-					+ "'. Screenshot saved as "
+			throw new NoNodesFoundException("No nodes matched '" + query + "'. Screenshot saved as "
 					+ captureScreenshot().getAbsolutePath() + ".");
 	}
 
@@ -214,16 +208,12 @@ public abstract class GuiTest implements Timeouts {
 					parent = ((PopupWindow) input).getOwnerWindow();
 				}
 
-				return parent == lastSeenWindow || parent != null
-						&& apply(parent);
+				return parent == lastSeenWindow || parent != null && apply(parent);
 			}
 		};
-		Iterable<Window> descendants = Iterables.filter(getWindows(),
-				isDescendant);
-		Iterable<Window> rest = Iterables.filter(getWindows(),
-				Predicates.not(isDescendant));
-		for (Window descendant : ImmutableList
-				.copyOf(concat(descendants, rest))) {
+		Iterable<Window> descendants = Iterables.filter(getWindows(), isDescendant);
+		Iterable<Window> rest = Iterables.filter(getWindows(), Predicates.not(isDescendant));
+		for (Window descendant : ImmutableList.copyOf(concat(descendants, rest))) {
 			results.addAll(findAll(query, descendant));
 		}
 		return results;
@@ -232,8 +222,7 @@ public abstract class GuiTest implements Timeouts {
 	@SuppressWarnings("unchecked")
 	public static <T extends Node> T find(String selector, Object parent) {
 		return checkNotNull((T) getFirst(findAll(selector, parent), null),
-				"Query [%s] select [%s] resulted in no nodes found!", parent,
-				selector);
+				"Query [%s] select [%s] resulted in no nodes found!", parent, selector);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -244,15 +233,12 @@ public abstract class GuiTest implements Timeouts {
 		if (isCssQuery) {
 			foundNode = findByCssSelector(query);
 			if (foundNode == null)
-				throw new NoNodesFoundException(
-						"No nodes matched the CSS query '" + query
-								+ "'! Screenshot saved as "
-								+ captureScreenshot().getAbsolutePath());
+				throw new NoNodesFoundException("No nodes matched the CSS query '" + query + "'! Screenshot saved as "
+						+ captureScreenshot().getAbsolutePath());
 		} else {
 			foundNode = (T) find(hasText(query));
 			if (foundNode == null)
-				throw new NoNodesFoundException("No nodes found with label '"
-						+ query + "'! Screenshot saved as "
+				throw new NoNodesFoundException("No nodes found with label '" + query + "'! Screenshot saved as "
 						+ captureScreenshot().getAbsolutePath());
 		}
 
@@ -292,8 +278,7 @@ public abstract class GuiTest implements Timeouts {
 		File screenshot = new File("screenshot" + new Date().getTime() + ".png");
 		try {
 			BufferedImage image = new Robot()
-					.createScreenCapture(new Rectangle(Toolkit
-							.getDefaultToolkit().getScreenSize()));
+					.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
 			ImageIO.write(image, "png", screenshot);
 		} catch (Exception e) {
 			e.printStackTrace(); // To change body of catch statement use File |
@@ -302,8 +287,7 @@ public abstract class GuiTest implements Timeouts {
 		return screenshot;
 	}
 
-	public static void waitUntil(final Node node,
-			final Matcher<Object> condition, int timeoutInSeconds) {
+	public static void waitUntil(final Node node, final Matcher<Object> condition, int timeoutInSeconds) {
 		TestUtils.awaitCondition(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
@@ -318,18 +302,15 @@ public abstract class GuiTest implements Timeouts {
 	 * @param node
 	 * @param condition
 	 */
-	public static void waitUntil(final Node node,
-			final Matcher<Object> condition) {
+	public static void waitUntil(final Node node, final Matcher<Object> condition) {
 		waitUntil(node, condition, 15);
 	}
 
-	public static <T> void waitUntil(final T value,
-			final Matcher<? super T> condition) {
+	public static <T> void waitUntil(final T value, final Matcher<? super T> condition) {
 		waitUntil(value, condition, 15);
 	}
 
-	public static <T> void waitUntil(final Callable<T> callable,
-			final Matcher<? super T> condition) {
+	public static <T> void waitUntil(final Callable<T> callable, final Matcher<? super T> condition) {
 		TestUtils.awaitCondition(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
@@ -338,8 +319,7 @@ public abstract class GuiTest implements Timeouts {
 		}, 15);
 	}
 
-	public static <T> void waitUntil(final T value,
-			final Matcher<? super T> condition, int timeoutInSeconds) {
+	public static <T> void waitUntil(final T value, final Matcher<? super T> condition, int timeoutInSeconds) {
 		TestUtils.awaitCondition(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
@@ -348,13 +328,11 @@ public abstract class GuiTest implements Timeouts {
 		}, timeoutInSeconds);
 	}
 
-	public static <T extends Node> void waitUntil(final T node,
-			final Predicate<T> condition) {
+	public static <T extends Node> void waitUntil(final T node, final Predicate<T> condition) {
 		waitUntil(node, condition, 15);
 	}
 
-	public static <T extends Node> void waitUntil(final T node,
-			final Predicate<T> condition, int timeoutInSeconds) {
+	public static <T extends Node> void waitUntil(final T node, final Predicate<T> condition, int timeoutInSeconds) {
 		TestUtils.awaitCondition(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
@@ -366,13 +344,12 @@ public abstract class GuiTest implements Timeouts {
 	@SuppressWarnings("unchecked")
 	private static <T extends Node> T findByCssSelector(final String selector) {
 		Set<Node> locallyFound = findAll(selector);
-		Iterable<Node> globallyFound = concat(transform(getWindows(),
-				new Function<Window, Iterable<Node>>() {
-					@Override
-					public Iterable<Node> apply(Window input) {
-						return findAll(selector, input);
-					}
-				}));
+		Iterable<Node> globallyFound = concat(transform(getWindows(), new Function<Window, Iterable<Node>>() {
+			@Override
+			public Iterable<Node> apply(Window input) {
+				return findAll(selector, input);
+			}
+		}));
 
 		Iterables.addAll(locallyFound, globallyFound);
 		assertNodesFound(selector, locallyFound);
@@ -383,14 +360,12 @@ public abstract class GuiTest implements Timeouts {
 
 	@SuppressWarnings("unchecked")
 	public static <T extends Node> T find(final Matcher<Object> matcher) {
-		Iterable<Set<Node>> found = transform(getWindows(),
-				new Function<Window, Set<Node>>() {
-					@Override
-					public Set<Node> apply(Window input) {
-						return findAllRecursively(matcher, input.getScene()
-								.getRoot());
-					}
-				});
+		Iterable<Set<Node>> found = transform(getWindows(), new Function<Window, Set<Node>>() {
+			@Override
+			public Set<Node> apply(Window input) {
+				return findAllRecursively(matcher, input.getScene().getRoot());
+			}
+		});
 
 		Set<Node> foundFlattened = flattenSets(found);
 
@@ -399,14 +374,12 @@ public abstract class GuiTest implements Timeouts {
 	}
 
 	public static <T extends Node> T find(final Predicate<T> predicate) {
-		Iterable<Set<T>> found = transform(getWindows(),
-				new Function<Window, Set<T>>() {
-					@Override
-					public Set<T> apply(Window input) {
-						return findAllRecursively(predicate, input.getScene()
-								.getRoot());
-					}
-				});
+		Iterable<Set<T>> found = transform(getWindows(), new Function<Window, Set<T>>() {
+			@Override
+			public Set<T> apply(Window input) {
+				return findAllRecursively(predicate, input.getScene().getRoot());
+			}
+		});
 
 		Set<T> foundFlattened = flattenSets(found);
 
@@ -427,8 +400,7 @@ public abstract class GuiTest implements Timeouts {
 		return getVisibleNodes(foundNodes);
 	}
 
-	private static Set<Node> findAllRecursively(Matcher<Object> matcher,
-			Node parent) {
+	private static Set<Node> findAllRecursively(Matcher<Object> matcher, Node parent) {
 		Set<Node> found = new HashSet<Node>();
 		if (matcher.matches(parent)) {
 			found.add(parent);
@@ -441,15 +413,13 @@ public abstract class GuiTest implements Timeouts {
 		return ImmutableSet.copyOf(found);
 	}
 
-	public static <T extends Node> Set<T> findAll(Predicate<T> predicate,
-			Node parent) {
+	public static <T extends Node> Set<T> findAll(Predicate<T> predicate, Node parent) {
 		Set<T> foundNodes = findAllRecursively(predicate, parent);
 		assertNodesFound(predicate, foundNodes);
 		return getVisibleNodes(foundNodes);
 	}
 
-	private static <T extends Node> Set<T> findAllRecursively(
-			Predicate<T> predicate, Node parent) {
+	private static <T extends Node> Set<T> findAllRecursively(Predicate<T> predicate, Node parent) {
 		Set<T> found = new HashSet<T>();
 		try {
 			@SuppressWarnings("unchecked")
@@ -473,127 +443,111 @@ public abstract class GuiTest implements Timeouts {
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 
 	public GuiTest() {
-        try
-        {
-            robot = new Robot();
-        }
-        catch( AWTException e )
-        {
-            throw new IllegalArgumentException( e );
-        }
+		try {
+			robot = new Robot();
+		} catch (AWTException e) {
+			throw new IllegalArgumentException(e);
+		}
 		this.controller = new ScreenController() {
-		    @Override
-		    public Point2D getMouse()
-		    {
-		        Point awtPoint = MouseInfo.getPointerInfo().getLocation();
-		        return new Point2D( awtPoint.getX(), awtPoint.getY() );
-		    }
+			@Override
+			public Point2D getMouse() {
+				Point awtPoint = MouseInfo.getPointerInfo().getLocation();
+				return new Point2D(awtPoint.getX(), awtPoint.getY());
+			}
 
-		    @Override
-		    public void position( double x, double y )
-		    {
-		        robot.mouseMove((int) x, (int) y);
-		    }
+			@Override
+			public void position(double x, double y) {
+				robot.mouseMove((int) x, (int) y);
+			}
 
-		    @Override
-		    public void move( double x, double y )
-		    {
-		        // Calculate how far we need to go
-		        Point position = MouseInfo.getPointerInfo().getLocation();
-		        double distanceX = x - position.getX();
-		        double distanceY = y - position.getY();
-		        double distance = Math.sqrt( Math.pow(distanceX, 2) + Math.pow(distanceY, 2) );
-		        
-		        // The maximum time for the movement is "moveTime". Far movements will make the cursor go faster.
-		        // In order to be not too slow on small distances, the minimum speed is 1 pixel per millisecond.
-		        double totalTime = moveTime;
-		        if (distance < totalTime) {
-		            totalTime = Math.max(1, distance);
-		        }
+			@Override
+			public void move(double x, double y) {
+				// Calculate how far we need to go
+				Point position = MouseInfo.getPointerInfo().getLocation();
+				double distanceX = x - position.getX();
+				double distanceY = y - position.getY();
+				double distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
 
-		        double speedX = distanceX / totalTime;
-		        double speedY = distanceY / totalTime;
-		        for (int time = 0; time < totalTime; time++) {
+				// The maximum time for the movement is "moveTime". Far
+				// movements will make the cursor go faster.
+				// In order to be not too slow on small distances, the minimum
+				// speed is 1 pixel per millisecond.
+				double totalTime = moveTime;
+				if (distance < totalTime) {
+					totalTime = Math.max(1, distance);
+				}
 
-		            int newX = position.x + (int) (speedX * time);
-		            int newY = position.y + (int) (speedY * time);
-		            robot.mouseMove(newX, newY);
+				double speedX = distanceX / totalTime;
+				double speedY = distanceY / totalTime;
+				for (int time = 0; time < totalTime; time++) {
 
-		            try
-		            {
-		                Thread.sleep( 1 );
-		            }
-		            catch( InterruptedException e )
-		            {
-		                return;
-		            }
+					int newX = position.x + (int) (speedX * time);
+					int newY = position.y + (int) (speedY * time);
+					robot.mouseMove(newX, newY);
 
-		        }
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						return;
+					}
 
-		        // We should be less than one step away from the target
-		        // => Make one last step to hit it.
-		        robot.mouseMove((int) x, (int) y);
-		        FXTestUtils.awaitEvents();
-		    }
+				}
 
-		    @Override
-		    public void press( MouseButton button )
-		    {
-		        if( button == null )
-		        {
-		            return;
-		        }
-		        robot.mousePress( BUTTONS.get( button ) );
-		        FXTestUtils.awaitEvents();
-		    }
+				// We should be less than one step away from the target
+				// => Make one last step to hit it.
+				robot.mouseMove((int) x, (int) y);
+				FXTestUtils.awaitEvents();
+			}
 
-		    @Override
-		    public void release( MouseButton button )
-		    {
-		        if( button == null )
-		        {
-		            return;
-		        }
-		        robot.mouseRelease( BUTTONS.get( button ) );
-		        FXTestUtils.awaitEvents();
-		    }
+			@Override
+			public void press(MouseButton button) {
+				if (button == null) {
+					return;
+				}
+				robot.mousePress(BUTTONS.get(button));
+				FXTestUtils.awaitEvents();
+			}
 
-		    @SuppressWarnings("deprecation")
-		    @Override
-		    public void press( KeyCode key )
-		    {
-		        robot.keyPress( key.impl_getCode() );
-		        FXTestUtils.awaitEvents();
-		    }
+			@Override
+			public void release(MouseButton button) {
+				if (button == null) {
+					return;
+				}
+				robot.mouseRelease(BUTTONS.get(button));
+				FXTestUtils.awaitEvents();
+			}
 
-		    @SuppressWarnings("deprecation")
-		    @Override
-		    public void release( KeyCode key )
-		    {
-		        robot.keyRelease( key.impl_getCode() );
-		        FXTestUtils.awaitEvents();
-		    }
-		    
-		    @SuppressWarnings("deprecation")
-		    @Override
-		    public void pressNoWait( KeyCode key )
-		    {
-		        robot.keyPress( key.impl_getCode() );
-		    }
+			@SuppressWarnings("deprecation")
+			@Override
+			public void press(KeyCode key) {
+				robot.keyPress(key.impl_getCode());
+				FXTestUtils.awaitEvents();
+			}
 
-		    @SuppressWarnings("deprecation")
-		    @Override
-		    public void releaseNoWait( KeyCode key )
-		    {
-		        robot.keyRelease( key.impl_getCode() );
-		    }
-		    
-		    @Override
-		    public void scroll( int amount )
-		    {
-		        robot.mouseWheel( amount );
-		        FXTestUtils.awaitEvents();
-		    }
+			@SuppressWarnings("deprecation")
+			@Override
+			public void release(KeyCode key) {
+				robot.keyRelease(key.impl_getCode());
+				FXTestUtils.awaitEvents();
+			}
+
+			@SuppressWarnings("deprecation")
+			@Override
+			public void pressNoWait(KeyCode key) {
+				robot.keyPress(key.impl_getCode());
+			}
+
+			@SuppressWarnings("deprecation")
+			@Override
+			public void releaseNoWait(KeyCode key) {
+				robot.keyRelease(key.impl_getCode());
+			}
+
+			@Override
+			public void scroll(int amount) {
+				robot.mouseWheel(amount);
+				FXTestUtils.awaitEvents();
+			}
 		};
 	}
 
@@ -624,14 +578,9 @@ public abstract class GuiTest implements Timeouts {
 		} else if (window instanceof Number) {
 			targetWindow(getWindowByIndex(((Number) window).intValue()));
 		} else if (window instanceof Class<?>) {
-			targetWindow(Iterables.find(getWindows(),
-					Predicates.instanceOf((Class<?>) window)));
+			targetWindow(Iterables.find(getWindows(), Predicates.instanceOf((Class<?>) window)));
 		} else {
-			Preconditions
-					.checkArgument(
-							false,
-							"Unable to identify Window based on the given argument: %s",
-							window);
+			Preconditions.checkArgument(false, "Unable to identify Window based on the given argument: %s", window);
 		}
 
 		return this;
@@ -664,8 +613,7 @@ public abstract class GuiTest implements Timeouts {
 		return click(buttons);
 	}
 
-	public <T extends Node> GuiTest click(Predicate<T> p,
-			MouseButton... buttons) {
+	public <T extends Node> GuiTest click(Predicate<T> p, MouseButton... buttons) {
 		move(p);
 		return click(buttons);
 	}
@@ -1105,13 +1053,10 @@ public abstract class GuiTest implements Timeouts {
 		return new Point2D(x, y);
 	}
 
-	private static Bounds sceneBoundsToScreenBounds(Bounds sceneBounds,
-			Scene scene) {
+	private static Bounds sceneBoundsToScreenBounds(Bounds sceneBounds, Scene scene) {
 		Window window = targetWindow(scene.getWindow());
-		BoundingBox b = new BoundingBox(window.getX() + scene.getX()
-				+ sceneBounds.getMinX(), window.getY() + scene.getY()
-				+ sceneBounds.getMinY(), sceneBounds.getWidth(),
-				sceneBounds.getHeight());
+		BoundingBox b = new BoundingBox(window.getX() + scene.getX() + sceneBounds.getMinX(),
+				window.getY() + scene.getY() + sceneBounds.getMinY(), sceneBounds.getWidth(), sceneBounds.getHeight());
 		return b;
 	}
 
@@ -1127,19 +1072,16 @@ public abstract class GuiTest implements Timeouts {
 			Node node = (Node) target;
 			Bounds nodeBounds = node.localToScene(node.getBoundsInLocal());
 			Scene scene = node.getScene();
-			Bounds sceneBounds = new BoundingBox(0, 0, scene.getWidth(),
-					scene.getHeight());
+			Bounds sceneBounds = new BoundingBox(0, 0, scene.getWidth(), scene.getHeight());
 			Bounds clickableArea = intersection(nodeBounds, sceneBounds);
-			return pointFor(sceneBoundsToScreenBounds(clickableArea,
-					node.getScene()));
+			return pointFor(sceneBoundsToScreenBounds(clickableArea, node.getScene()));
 		} else if (target instanceof Scene) {
 			Scene scene = (Scene) target;
-			return pointFor(sceneBoundsToScreenBounds(new BoundingBox(0, 0,
-					scene.getWidth(), scene.getHeight()), scene));
+			return pointFor(
+					sceneBoundsToScreenBounds(new BoundingBox(0, 0, scene.getWidth(), scene.getHeight()), scene));
 		} else if (target instanceof Window) {
 			Window window = targetWindow((Window) target);
-			return pointFor(new BoundingBox(window.getX(), window.getY(),
-					window.getWidth(), window.getHeight()));
+			return pointFor(new BoundingBox(window.getX(), window.getY(), window.getWidth(), window.getHeight()));
 		} else if (target instanceof Matcher) {
 			return pointFor(find((Matcher<Object>) target));
 		} else if (target instanceof Predicate) {
@@ -1151,12 +1093,10 @@ public abstract class GuiTest implements Timeouts {
 			Pos oldPos = nodePosition;
 			Point2D targetPoint = pos(Pos.TOP_LEFT).pointFor(offset.target);
 			pos(oldPos);
-			return new Point2D(targetPoint.getX() + offset.offsetX,
-					targetPoint.getY() + offset.offsetY);
+			return new Point2D(targetPoint.getX() + offset.offsetX, targetPoint.getY() + offset.offsetY);
 		}
 
-		throw new IllegalArgumentException("Unable to get coordinates for: "
-				+ target);
+		throw new IllegalArgumentException("Unable to get coordinates for: " + target);
 	}
 
 	static class OffsetTarget {

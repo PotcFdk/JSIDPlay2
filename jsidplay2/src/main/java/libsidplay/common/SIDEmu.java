@@ -20,8 +20,8 @@ import libsidplay.config.IEmulationSection;
 
 /**
  * Base class for hardware or software based SID emulaton. All register write
- * access is recorded and can be read by
- * {@link #readInternalRegister(int)} (side-effect free).
+ * access is recorded and can be read by {@link #readInternalRegister(int)}
+ * (side-effect free).
  * 
  * @author ken
  *

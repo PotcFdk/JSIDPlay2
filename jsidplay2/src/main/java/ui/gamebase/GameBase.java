@@ -57,8 +57,7 @@ public class GameBase extends Tab implements UIPart {
 				if (downloadedFile == null) {
 					return;
 				}
-				final SidPlay2Section sidplay2 = (SidPlay2Section) util
-						.getConfig().getSidplay2Section();
+				final SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig().getSidplay2Section();
 				final String tmpDir = sidplay2.getTmpDir();
 				TFile zip = new TFile(downloadedFile);
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
@@ -66,9 +65,7 @@ public class GameBase extends Tab implements UIPart {
 					enableGameBase.setDisable(true);
 					setLettersDisable(true);
 				});
-				File dbFile = new File(tmpDir,
-						zip.listFiles((dir, name) -> name.endsWith(EXT_MDB))[0]
-								.getName());
+				File dbFile = new File(tmpDir, zip.listFiles((dir, name) -> name.endsWith(EXT_MDB))[0].getName());
 				sidplay2.setGameBase64(dbFile.getAbsolutePath());
 				connect(dbFile);
 				Platform.runLater(() -> {
@@ -121,8 +118,7 @@ public class GameBase extends Tab implements UIPart {
 		filterField.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				GameBasePage page = (GameBasePage) letter.getSelectionModel()
-						.getSelectedItem();
+				GameBasePage page = (GameBasePage) letter.getSelectionModel().getSelectedItem();
 				if (filterField.getText().trim().length() == 0) {
 					page.filter("");
 				} else {
@@ -134,49 +130,32 @@ public class GameBase extends Tab implements UIPart {
 
 		for (Tab tab : letter.getTabs()) {
 			GameBasePage page = (GameBasePage) tab;
-			page.getGamebaseTable()
-					.getSelectionModel()
-					.selectedItemProperty()
-					.addListener(
-							(observable, oldValue, newValue) -> {
-								if (newValue != null) {
-									comment.setText(newValue.getComment());
-									String genre = newValue.getGenres()
-											.getGenre();
-									String pGenre = newValue.getGenres()
-											.getParentGenres().getParentGenre();
-									if (pGenre != null && pGenre.length() != 0) {
-										category.setText(pGenre + "-" + genre);
-									} else {
-										category.setText(genre);
-									}
-									infos.setText(String.format(
-											util.getBundle().getString(
-													"PUBLISHER"), newValue
-													.getYears().getYear(),
-											newValue.getPublishers()
-													.getPublisher()));
-									musician.setText(newValue.getMusicians()
-											.getMusician());
-									programmer.setText(newValue
-											.getProgrammers().getProgrammer());
-									String sidFilename = newValue
-											.getSidFilename();
-									linkMusic
-											.setText(sidFilename != null ? sidFilename
-													: "");
-									linkMusic.setDisable(sidFilename == null
-											|| sidFilename.length() == 0);
-								}
-							});
+			page.getGamebaseTable().getSelectionModel().selectedItemProperty()
+					.addListener((observable, oldValue, newValue) -> {
+						if (newValue != null) {
+							comment.setText(newValue.getComment());
+							String genre = newValue.getGenres().getGenre();
+							String pGenre = newValue.getGenres().getParentGenres().getParentGenre();
+							if (pGenre != null && pGenre.length() != 0) {
+								category.setText(pGenre + "-" + genre);
+							} else {
+								category.setText(genre);
+							}
+							infos.setText(String.format(util.getBundle().getString("PUBLISHER"),
+									newValue.getYears().getYear(), newValue.getPublishers().getPublisher()));
+							musician.setText(newValue.getMusicians().getMusician());
+							programmer.setText(newValue.getProgrammers().getProgrammer());
+							String sidFilename = newValue.getSidFilename();
+							linkMusic.setText(sidFilename != null ? sidFilename : "");
+							linkMusic.setDisable(sidFilename == null || sidFilename.length() == 0);
+						}
+					});
 		}
-		letter.getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					selectTab((GameBasePage) newValue);
-				});
+		letter.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			selectTab((GameBasePage) newValue);
+		});
 		Platform.runLater(() -> {
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2Section();
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
 			String initialRoot = sidPlay2Section.getGameBase64();
 			if (initialRoot != null && new File(initialRoot).exists()) {
 				gameBaseFile.setText(initialRoot);
@@ -188,24 +167,20 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	private void doEnableGameBase() {
 		if (enableGameBase.isSelected()) {
-			File dbFile = new File(util.getConfig().getSidplay2Section()
-					.getTmpDir(), "GameBase64.mdb");
+			File dbFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), "GameBase64.mdb");
 			if (dbFile.exists()) {
 				// There is already a database file downloaded earlier.
 				// Therefore we try to connect
 
-				SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-						.getConfig().getSidplay2Section();
+				SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
 				sidPlay2Section.setGameBase64(dbFile.getAbsolutePath());
 				gameBaseFile.setText(dbFile.getAbsolutePath());
 				setRoot(dbFile);
 			} else {
 				enableGameBase.setDisable(true);
 				try {
-					final URL url = new URL(util.getConfig().getOnlineSection()
-							.getGamebaseUrl());
-					DownloadThread downloadThread = new DownloadThread(
-							util.getConfig(),
+					final URL url = new URL(util.getConfig().getOnlineSection().getGamebaseUrl());
+					DownloadThread downloadThread = new DownloadThread(util.getConfig(),
 							new GameBaseListener(util, letter), url);
 					downloadThread.start();
 				} catch (MalformedURLException e) {
@@ -218,8 +193,7 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	private void downloadMusic() {
 		try {
-			URL url = new URL(GB64_MUSIC_DOWNLOAD_URL
-					+ linkMusic.getText().replace('\\', '/'));
+			URL url = new URL(GB64_MUSIC_DOWNLOAD_URL + linkMusic.getText().replace('\\', '/'));
 			try (InputStream is = url.openStream()) {
 				util.getPlayer().play(SidTune.load(linkMusic.getText(), is));
 				util.setPlayingTab(this);
@@ -232,14 +206,12 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	private void doBrowse() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.getExtensionFilters().add(
-				new ExtensionFilter(MDBFileExtensions.DESCRIPTION,
-						MDBFileExtensions.EXTENSIONS));
+		fileDialog.getExtensionFilters()
+				.add(new ExtensionFilter(MDBFileExtensions.DESCRIPTION, MDBFileExtensions.EXTENSIONS));
 		File file = fileDialog.showOpenDialog(letter.getScene().getWindow());
 		if (file != null) {
 			gameBaseFile.setText(file.getAbsolutePath());
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) util
-					.getConfig().getSidplay2Section();
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
 			sidPlay2Section.setGameBase64(file.getAbsolutePath());
 			File theRootFile = sidPlay2Section.getGameBase64File();
 			gameBaseFile.setText(file.getAbsolutePath());
@@ -274,10 +246,8 @@ public class GameBase extends Tab implements UIPart {
 		if (em != null) {
 			em.getEntityManagerFactory().close();
 		}
-		em = Persistence.createEntityManagerFactory(
-				PersistenceProperties.GAMEBASE_DS,
-				new PersistenceProperties(dbFile.getAbsolutePath(),
-						Database.MSACCESS)).createEntityManager();
+		em = Persistence.createEntityManagerFactory(PersistenceProperties.GAMEBASE_DS,
+				new PersistenceProperties(dbFile.getAbsolutePath(), Database.MSACCESS)).createEntityManager();
 		gamesService = new GamesService(em);
 	}
 

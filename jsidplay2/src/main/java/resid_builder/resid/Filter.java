@@ -23,7 +23,7 @@
  */
 package resid_builder.resid;
 
-/** 
+/**
  * SID filter base class
  * 
  * @author Ken Händel
@@ -51,7 +51,7 @@ public abstract class Filter {
 	 * Selects which inputs to route through filter.
 	 */
 	private byte filt;
-	
+
 	/**
 	 * Routing to filter or outside filter
 	 */
@@ -80,9 +80,12 @@ public abstract class Filter {
 	/**
 	 * SID clocking - 1 cycle
 	 * 
-	 * @param v1 voice 1 in
-	 * @param v2 voice 2 in
-	 * @param v3 voice 3 in
+	 * @param v1
+	 *            voice 1 in
+	 * @param v2
+	 *            voice 2 in
+	 * @param v3
+	 *            voice 3 in
 	 * @return filtered output
 	 */
 	protected abstract int clock(int v1, int v2, int v3);
@@ -90,7 +93,8 @@ public abstract class Filter {
 	/**
 	 * Enable filter.
 	 * 
-	 * @param enable Enable/Disable the filter.
+	 * @param enable
+	 *            Enable/Disable the filter.
 	 */
 	public void enable(final boolean enable) {
 		enabled = enable;
@@ -154,7 +158,7 @@ public abstract class Filter {
 			filt3 = (filt & 4) != 0;
 			filtE = (filt & 8) != 0;
 		}
-		
+
 		updatedMixing();
 	}
 
@@ -169,7 +173,7 @@ public abstract class Filter {
 		bp = (mode_vol & 0x20) != 0;
 		hp = (mode_vol & 0x40) != 0;
 		voice3off = (mode_vol & 0x80) != 0;
-		
+
 		updatedMixing();
 	}
 
@@ -182,11 +186,11 @@ public abstract class Filter {
 	 * Set filter resonance.
 	 */
 	protected abstract void updatedResonance();
-	
+
 	/**
 	 * Mixing configuration modified (offsets change)
 	 */
 	protected abstract void updatedMixing();
-	
+
 	protected abstract void input(int input);
 }

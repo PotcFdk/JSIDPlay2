@@ -50,13 +50,12 @@ public class JSIDPlay2Test extends GuiTest {
 	}
 
 	protected void schedule(java.util.function.Consumer<C64> c) {
-		player.getC64().getEventScheduler()
-				.scheduleThreadSafe(new Event("Test Event") {
-					@Override
-					public void event() throws InterruptedException {
-						c.accept(player.getC64());
-					}
-				});
+		player.getC64().getEventScheduler().scheduleThreadSafe(new Event("Test Event") {
+			@Override
+			public void event() throws InterruptedException {
+				c.accept(player.getC64());
+			}
+		});
 	}
 
 	@Override

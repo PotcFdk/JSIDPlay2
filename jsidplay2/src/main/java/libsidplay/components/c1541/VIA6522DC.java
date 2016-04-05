@@ -226,8 +226,8 @@ public abstract class VIA6522DC extends VIACore {
 		}
 		image = DiskImage.attach(rot.getGCR(), file);
 		rot.getGCR().attach();
-		System.out.printf("Unit %d: " + image.getClass().getSimpleName()
-				+ " disk image attached: %s.\n", id, file.getAbsolutePath());
+		System.out.printf("Unit %d: " + image.getClass().getSimpleName() + " disk image attached: %s.\n", id,
+				file.getAbsolutePath());
 		diskAttachedDetached(file.getName(), true);
 		return image;
 	}
@@ -246,8 +246,8 @@ public abstract class VIA6522DC extends VIACore {
 			detachClk = cpuClk();
 			rot.getGCR().detach();
 			image.detach();
-			System.out.printf("Unit %d: " + image.getClass().getSimpleName()
-					+ " disk image detached: %s.\n", id, image.fileName);
+			System.out.printf("Unit %d: " + image.getClass().getSimpleName() + " disk image detached: %s.\n", id,
+					image.fileName);
 			diskAttachedDetached(image.fileName, false);
 			image = null;
 		}
@@ -312,9 +312,7 @@ public abstract class VIA6522DC extends VIACore {
 			try {
 				image.gcrDataWriteback(currentHalfTrack >> 1);
 			} catch (final IOException e) {
-				System.err.println(String.format(
-						"Error writing T:%d to disk image.",
-						currentHalfTrack >> 1));
+				System.err.println(String.format("Error writing T:%d to disk image.", currentHalfTrack >> 1));
 			}
 		}
 	}
@@ -413,11 +411,9 @@ public abstract class VIA6522DC extends VIACore {
 		 * that during write mode, the read circuitry is disconnected and
 		 * therefore it's likely that you will read 0xff if you change the DDR.
 		 */
-		byte encoderDecoderValue = readWriteMode == Mode.READ ? gcrRead
-				: (byte) 0xff;
+		byte encoderDecoderValue = readWriteMode == Mode.READ ? gcrRead : (byte) 0xff;
 
-		return (byte) (encoderDecoderValue & ~via[VIACore.VIA_DDRA] | via[VIACore.VIA_PRA]
-				& via[VIACore.VIA_DDRA]);
+		return (byte) (encoderDecoderValue & ~via[VIACore.VIA_DDRA] | via[VIACore.VIA_PRA] & via[VIACore.VIA_DDRA]);
 	}
 
 	/**
@@ -433,9 +429,8 @@ public abstract class VIA6522DC extends VIACore {
 	@Override
 	protected final byte readPrb() {
 		rotateDisk();
-		return (byte) ((rot.syncFound() | writeProtectSense())
-				& ~via[VIACore.VIA_DDRB] | via[VIACore.VIA_PRB]
-				& via[VIACore.VIA_DDRB]);
+		return (byte) ((rot.syncFound() | writeProtectSense()) & ~via[VIACore.VIA_DDRB]
+				| via[VIACore.VIA_PRB] & via[VIACore.VIA_DDRB]);
 	}
 
 	/**

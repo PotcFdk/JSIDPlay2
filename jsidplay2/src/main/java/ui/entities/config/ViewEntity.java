@@ -11,14 +11,14 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Access(AccessType.PROPERTY)
 public class ViewEntity {
-	
+
 	public ViewEntity() {
 	}
-	
+
 	public ViewEntity(String fxId) {
 		this.fxId = fxId;
 	}
-	
+
 	private Integer id;
 
 	@Id
@@ -33,11 +33,11 @@ public class ViewEntity {
 	}
 
 	private String fxId;
-	
+
 	public String getFxId() {
 		return fxId;
 	}
-	
+
 	public void setFxId(String fxId) {
 		this.fxId = fxId;
 	}

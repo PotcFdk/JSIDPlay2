@@ -101,8 +101,8 @@ public class REU extends Cartridge {
 
 	public REU(DataInputStream dis, PLA pla, int sizeKB) throws IOException {
 		super(pla);
-		assert sizeKB == 0 || sizeKB == 128 || sizeKB == 512 || sizeKB == 256
-				|| sizeKB == 2 << 10 || sizeKB == 16 << 10;
+		assert sizeKB == 0 || sizeKB == 128 || sizeKB == 512 || sizeKB == 256 || sizeKB == 2 << 10
+				|| sizeKB == 16 << 10;
 
 		if (sizeKB == 0) {
 			// empty file means maximum size!
@@ -313,8 +313,7 @@ public class REU extends Cartridge {
 		}
 
 		if (ba) {
-			pla.getCPU().getEventScheduler()
-					.schedule(dmaEvent, 0, Event.Phase.PHI2);
+			pla.getCPU().getEventScheduler().schedule(dmaEvent, 0, Event.Phase.PHI2);
 		} else {
 			pla.getCPU().getEventScheduler().cancel(dmaEvent);
 		}
@@ -337,8 +336,7 @@ public class REU extends Cartridge {
 	}
 
 	protected void beginDma() {
-		pla.getCPU().getEventScheduler()
-				.schedule(dmaBeginEvent, 0, Event.Phase.PHI1);
+		pla.getCPU().getEventScheduler().schedule(dmaBeginEvent, 0, Event.Phase.PHI1);
 	}
 
 	private final Event dmaBeginEvent = new Event("REU DMA Begin") {
@@ -351,8 +349,7 @@ public class REU extends Cartridge {
 
 			/* Schedule DMA operation to begin on the next PHI2 */
 			if (ba) {
-				pla.getCPU().getEventScheduler()
-						.schedule(dmaEvent, 0, Event.Phase.PHI2);
+				pla.getCPU().getEventScheduler().schedule(dmaEvent, 0, Event.Phase.PHI2);
 			}
 		}
 	};
@@ -388,8 +385,7 @@ public class REU extends Cartridge {
 				dmaLen = shadowDmaLen;
 			}
 
-			pla.getCPU().getEventScheduler()
-					.schedule(dmaEndEvent, 0, Event.Phase.PHI1);
+			pla.getCPU().getEventScheduler().schedule(dmaEndEvent, 0, Event.Phase.PHI1);
 		}
 
 		@Override
@@ -409,8 +405,7 @@ public class REU extends Cartridge {
 				if (swapReadPhase) {
 					swapReadPhase = false;
 					swapData = pla.cpuRead(baseAddr);
-					pla.getCPU().getEventScheduler()
-							.schedule(this, 1, Event.Phase.PHI2);
+					pla.getCPU().getEventScheduler().schedule(this, 1, Event.Phase.PHI2);
 					return;
 				} else {
 					swapReadPhase = true;
@@ -448,8 +443,7 @@ public class REU extends Cartridge {
 				dmaLen--;
 				/* If no verify errors yet, continue */
 				if (oldVerifyError == 0) {
-					pla.getCPU().getEventScheduler()
-							.schedule(this, 1, Event.Phase.PHI2);
+					pla.getCPU().getEventScheduler().schedule(this, 1, Event.Phase.PHI2);
 				} else {
 					finish();
 				}

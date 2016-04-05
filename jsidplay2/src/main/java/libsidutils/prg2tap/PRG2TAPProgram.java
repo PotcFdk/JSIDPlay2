@@ -26,9 +26,9 @@ public class PRG2TAPProgram {
 	}
 
 	public final static byte[] filenameTopetscii(final String str, int maxLen) {
-		return str.substring(0, Math.min(maxLen, str.length())).toUpperCase()
-				.replace('_', '-').getBytes(ISO88591);
+		return str.substring(0, Math.min(maxLen, str.length())).toUpperCase().replace('_', '-').getBytes(ISO88591);
 	}
+
 	public byte[] getName() {
 		return name;
 	}

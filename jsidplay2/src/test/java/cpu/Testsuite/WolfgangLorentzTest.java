@@ -14,8 +14,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 	@Before
 	public void setup() {
 		super.setup();
-		config.getSidplay2Section().setLastDirectory(
-				"target/test-classes/cpu/Testsuite/d64");
+		config.getSidplay2Section().setLastDirectory("target/test-classes/cpu/Testsuite/d64");
 	};
 
 	@Test
@@ -74,8 +73,7 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 			return true;
 		}
 		for (int i = 1; i < 40; i++) {
-			if (checkScreenMessage("before", i, 1)
-					|| checkScreenMessage("init", i, 1)
+			if (checkScreenMessage("before", i, 1) || checkScreenMessage("init", i, 1)
 					|| checkScreenMessage("right", i, 1)) {
 				return true;
 			}

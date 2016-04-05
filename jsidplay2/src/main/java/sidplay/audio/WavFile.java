@@ -62,8 +62,7 @@ public class WavFile implements AudioDriver {
 	private final WavHeader wavHdr = new WavHeader();
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename)
-			throws IOException, LineUnavailableException {
+	public void open(final AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException {
 		final int blockAlign = Short.BYTES * cfg.channels;
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);

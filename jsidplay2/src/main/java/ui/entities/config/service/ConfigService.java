@@ -27,8 +27,7 @@ public class ConfigService {
 		}
 
 		Configuration config = new Configuration();
-		config.getSidplay2Section().setVersion(
-				Configuration.REQUIRED_CONFIG_VERSION);
+		config.getSidplay2Section().setVersion(Configuration.REQUIRED_CONFIG_VERSION);
 		em.persist(config);
 		flush();
 		return config;
@@ -39,8 +38,7 @@ public class ConfigService {
 		CriteriaQuery<Configuration> q = cb.createQuery(Configuration.class);
 		Root<Configuration> h = q.from(Configuration.class);
 		q.select(h);
-		List<Configuration> resultList = em.createQuery(q).setMaxResults(1)
-				.getResultList();
+		List<Configuration> resultList = em.createQuery(q).setMaxResults(1).getResultList();
 		if (resultList.size() != 0) {
 			return resultList.get(0);
 		}
@@ -49,8 +47,7 @@ public class ConfigService {
 
 	public void exportCfg(Configuration config, File file) {
 		try {
-			JAXBContext jaxbContext = JAXBContext
-					.newInstance(Configuration.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			marshaller.marshal(config, file);
@@ -62,8 +59,7 @@ public class ConfigService {
 	public Configuration importCfg(File file) {
 		if (file.exists()) {
 			try {
-				JAXBContext jaxbContext = JAXBContext
-						.newInstance(Configuration.class);
+				JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
 				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 				Object obj = unmarshaller.unmarshal(file);
 				if (obj instanceof Configuration) {

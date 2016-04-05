@@ -17,8 +17,7 @@ public class SidRegWrite {
 	public SidRegWrite() {
 	}
 
-	public SidRegWrite(Long absCycles, Long relCycles, Integer chipNum,
-			String description, String value) {
+	public SidRegWrite(Long absCycles, Long relCycles, Integer chipNum, String description, String value) {
 		setAbsCycles(absCycles);
 		setRelCycles(relCycles);
 		setChipNum(chipNum);

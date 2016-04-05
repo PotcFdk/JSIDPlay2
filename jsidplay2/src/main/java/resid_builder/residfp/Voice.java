@@ -34,15 +34,16 @@ public final class Voice {
 	/**
 	 * Amplitude modulated waveform output.
 	 *
-	 * The waveform DAC generates a voltage between 5 and 12 V corresponding
-	 * to oscillator state 0 .. 4095.
+	 * The waveform DAC generates a voltage between 5 and 12 V corresponding to
+	 * oscillator state 0 .. 4095.
 	 *
-	 * The envelope DAC generates a voltage between waveform gen output and
-	 * the 5V level, corresponding to envelope state 0 .. 255.
+	 * The envelope DAC generates a voltage between waveform gen output and the
+	 * 5V level, corresponding to envelope state 0 .. 255.
 	 *
 	 * Ideal range [-2048*255, 2047*255].
 	 *
-	 * @param ringModulator Ring-modulator for waveform
+	 * @param ringModulator
+	 *            Ring-modulator for waveform
 	 * @return waveformgenerator output
 	 */
 	float output(final WaveformGenerator ringModulator) {
@@ -52,19 +53,21 @@ public final class Voice {
 	/**
 	 * Constructor.
 	 */
-	protected Voice() {}
+	protected Voice() {
+	}
 
 	/**
 	 * Set chip model.
 	 * 
-	 * There is some level from each voice even if the env is down and osc
-	 * is stopped. You can hear this by routing a voice into filter (filter
-	 * should be kept disabled for this) as the master level changes. This
-	 * tunable determines this static offset and affects the volume of digis.
+	 * There is some level from each voice even if the env is down and osc is
+	 * stopped. You can hear this by routing a voice into filter (filter should
+	 * be kept disabled for this) as the master level changes. This tunable
+	 * determines this static offset and affects the volume of digis.
 	 * 
 	 * 6581 digis are quite loud, and 8580 digis still there but much fainter.
 	 *
-	 * @param model chip model to use
+	 * @param model
+	 *            chip model to use
 	 */
 	public void setChipModel(final ChipModel model) {
 		if (model == ChipModel.MOS6581) {
@@ -72,7 +75,7 @@ public final class Voice {
 		} else {
 			voiceOffset = -0x100 * 0xff;
 		}
-	} 
+	}
 
 	// ----------------------------------------------------------------------------
 	// Register functions.
@@ -81,8 +84,10 @@ public final class Voice {
 	/**
 	 * Register functions.
 	 * 
-	 * @param ring_modulator Ring modulator for waveform
-	 * @param control Control register value.
+	 * @param ring_modulator
+	 *            Ring modulator for waveform
+	 * @param control
+	 *            Control register value.
 	 */
 	public void writeCONTROL_REG(final WaveformGenerator ring_modulator, final byte control) {
 		wave.writeCONTROL_REG(ring_modulator, control);
@@ -102,7 +107,8 @@ public final class Voice {
 	/**
 	 * Voice mute.
 	 * 
-	 * @param enable Is voice enabled?
+	 * @param enable
+	 *            Is voice enabled?
 	 */
 	public void mute(final boolean enable) {
 		muted = enable;

@@ -12,8 +12,7 @@ import libsidplay.config.IEmulationSection;
  * @author Ken Händel
  * 
  */
-public class IniEmulationSection extends IniSection implements
-		IEmulationSection {
+public class IniEmulationSection extends IniSection implements IEmulationSection {
 	protected IniEmulationSection(IniReader iniReader) {
 		super(iniReader);
 	}
@@ -30,8 +29,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public Emulation getDefaultEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "DefaultEmulation",
-				DEFAULT_EMULATION);
+		return iniReader.getPropertyEnum("Emulation", "DefaultEmulation", DEFAULT_EMULATION);
 	}
 
 	@Override
@@ -41,8 +39,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final Emulation getUserEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "UserEmulation",
-				DEFAULT_USER_EMULATION);
+		return iniReader.getPropertyEnum("Emulation", "UserEmulation", DEFAULT_USER_EMULATION);
 	}
 
 	@Override
@@ -52,8 +49,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final Emulation getStereoEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "StereoEmulation",
-				DEFAULT_STEREO_EMULATION);
+		return iniReader.getPropertyEnum("Emulation", "StereoEmulation", DEFAULT_STEREO_EMULATION);
 	}
 
 	@Override
@@ -63,8 +59,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final Emulation getThirdEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "3rdEmulation",
-				DEFAULT_3SID_EMULATION, Emulation.class);
+		return iniReader.getPropertyEnum("Emulation", "3rdEmulation", DEFAULT_3SID_EMULATION, Emulation.class);
 	}
 
 	@Override
@@ -74,8 +69,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final CPUClock getDefaultClockSpeed() {
-		return iniReader.getPropertyEnum("Emulation", "DefaultClockSpeed",
-				DEFAULT_CLOCK_SPEED);
+		return iniReader.getPropertyEnum("Emulation", "DefaultClockSpeed", DEFAULT_CLOCK_SPEED);
 	}
 
 	@Override
@@ -85,8 +79,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final CPUClock getUserClockSpeed() {
-		return iniReader.getPropertyEnum("Emulation", "UserClockSpeed", null,
-				CPUClock.class);
+		return iniReader.getPropertyEnum("Emulation", "UserClockSpeed", null, CPUClock.class);
 	}
 
 	@Override
@@ -96,8 +89,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final ChipModel getDefaultSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "DefaultSidModel",
-				DEFAULT_SID_MODEL);
+		return iniReader.getPropertyEnum("Emulation", "DefaultSidModel", DEFAULT_SID_MODEL);
 	}
 
 	@Override
@@ -107,8 +99,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final ChipModel getUserSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "UserSidModel",
-				DEFAULT_USER_MODEL);
+		return iniReader.getPropertyEnum("Emulation", "UserSidModel", DEFAULT_USER_MODEL);
 	}
 
 	@Override
@@ -118,14 +109,12 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final ChipModel getStereoSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "StereoSidModel",
-				DEFAULT_STEREO_MODEL);
+		return iniReader.getPropertyEnum("Emulation", "StereoSidModel", DEFAULT_STEREO_MODEL);
 	}
 
 	@Override
 	public final ChipModel getThirdSIDModel() {
-		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel",
-				DEFAULT_3SID_MODEL);
+		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel", DEFAULT_3SID_MODEL);
 	}
 
 	@Override
@@ -140,8 +129,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final int getHardsid6581() {
-		return iniReader.getPropertyInt("Emulation", "HardSID6581",
-				DEFAULT_HARD_SID_6581);
+		return iniReader.getPropertyInt("Emulation", "HardSID6581", DEFAULT_HARD_SID_6581);
 	}
 
 	@Override
@@ -151,8 +139,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final int getHardsid8580() {
-		return iniReader.getPropertyInt("Emulation", "HardSID8580",
-				DEFAULT_HARD_SID_8580);
+		return iniReader.getPropertyInt("Emulation", "HardSID8580", DEFAULT_HARD_SID_8580);
 	}
 
 	@Override
@@ -162,20 +149,17 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final boolean isFilter() {
-		return iniReader.getPropertyBool("Emulation", "UseFilter",
-				DEFAULT_USE_FILTER);
+		return iniReader.getPropertyBool("Emulation", "UseFilter", DEFAULT_USE_FILTER);
 	}
 
 	@Override
 	public final boolean isStereoFilter() {
-		return iniReader.getPropertyBool("Emulation", "UseStereoFilter",
-				DEFAULT_USE_STEREO_FILTER);
+		return iniReader.getPropertyBool("Emulation", "UseStereoFilter", DEFAULT_USE_STEREO_FILTER);
 	}
 
 	@Override
 	public final boolean isThirdSIDFilter() {
-		return iniReader.getPropertyBool("Emulation", "Use3rdSIDFilter",
-				DEFAULT_USE_3SID_FILTER);
+		return iniReader.getPropertyBool("Emulation", "Use3rdSIDFilter", DEFAULT_USE_3SID_FILTER);
 	}
 
 	@Override
@@ -195,8 +179,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public int getSidNumToRead() {
-		return iniReader.getPropertyInt("Emulation", "SidNumToRead",
-				DEFAULT_SID_NUM_TO_READ);
+		return iniReader.getPropertyInt("Emulation", "SidNumToRead", DEFAULT_SID_NUM_TO_READ);
 	}
 
 	@Override
@@ -206,8 +189,7 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final boolean isDigiBoosted8580() {
-		return iniReader.getPropertyBool("Emulation", "DigiBoosted8580",
-				DEFAULT_DIGI_BOOSTED_8580);
+		return iniReader.getPropertyBool("Emulation", "DigiBoosted8580", DEFAULT_DIGI_BOOSTED_8580);
 	}
 
 	@Override
@@ -217,38 +199,32 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final int getDualSidBase() {
-		return iniReader.getPropertyInt("Emulation", "dualSidBase",
-				DEFAULT_DUAL_SID_BASE);
+		return iniReader.getPropertyInt("Emulation", "dualSidBase", DEFAULT_DUAL_SID_BASE);
 	}
 
 	@Override
 	public final int getThirdSIDBase() {
-		return iniReader.getPropertyInt("Emulation", "thirdSIDBase",
-				DEFAULT_THIRD_SID_BASE);
+		return iniReader.getPropertyInt("Emulation", "thirdSIDBase", DEFAULT_THIRD_SID_BASE);
 	}
 
 	@Override
 	public final void setDualSidBase(final int base) {
-		iniReader.setProperty("Emulation", "dualSidBase",
-				String.format("0x%04x", base));
+		iniReader.setProperty("Emulation", "dualSidBase", String.format("0x%04x", base));
 	}
 
 	@Override
 	public final void setThirdSIDBase(final int base) {
-		iniReader.setProperty("Emulation", "thirdSIDBase",
-				String.format("0x%04x", base));
+		iniReader.setProperty("Emulation", "thirdSIDBase", String.format("0x%04x", base));
 	}
 
 	@Override
 	public final boolean isForceStereoTune() {
-		return iniReader.getPropertyBool("Emulation", "forceStereoTune",
-				DEFAULT_FORCE_STEREO_TUNE);
+		return iniReader.getPropertyBool("Emulation", "forceStereoTune", DEFAULT_FORCE_STEREO_TUNE);
 	}
 
 	@Override
 	public final boolean isForce3SIDTune() {
-		return iniReader.getPropertyBool("Emulation", "force3SIDTune",
-				DEFAULT_FORCE_3SID_TUNE);
+		return iniReader.getPropertyBool("Emulation", "force3SIDTune", DEFAULT_FORCE_3SID_TUNE);
 	}
 
 	@Override
@@ -263,20 +239,17 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final String getFilter6581() {
-		return iniReader.getPropertyString("Emulation", "Filter6581",
-				DEFAULT_FILTER_6581);
+		return iniReader.getPropertyString("Emulation", "Filter6581", DEFAULT_FILTER_6581);
 	}
 
 	@Override
 	public final String getStereoFilter6581() {
-		return iniReader.getPropertyString("Emulation", "Stereo_Filter6581",
-				DEFAULT_STEREO_FILTER_6581);
+		return iniReader.getPropertyString("Emulation", "Stereo_Filter6581", DEFAULT_STEREO_FILTER_6581);
 	}
 
 	@Override
 	public final String getThirdSIDFilter6581() {
-		return iniReader.getPropertyString("Emulation", "3rdSID_Filter6581",
-				DEFAULT_3SID_FILTER_6581);
+		return iniReader.getPropertyString("Emulation", "3rdSID_Filter6581", DEFAULT_3SID_FILTER_6581);
 	}
 
 	@Override
@@ -296,20 +269,17 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final String getFilter8580() {
-		return iniReader.getPropertyString("Emulation", "Filter8580",
-				DEFAULT_FILTER_8580);
+		return iniReader.getPropertyString("Emulation", "Filter8580", DEFAULT_FILTER_8580);
 	}
 
 	@Override
 	public final String getStereoFilter8580() {
-		return iniReader.getPropertyString("Emulation", "Stereo_Filter8580",
-				DEFAULT_STEREO_FILTER_8580);
+		return iniReader.getPropertyString("Emulation", "Stereo_Filter8580", DEFAULT_STEREO_FILTER_8580);
 	}
 
 	@Override
 	public final String getThirdSIDFilter8580() {
-		return iniReader.getPropertyString("Emulation", "3rdSID_Filter8580",
-				DEFAULT_3SID_FILTER_8580);
+		return iniReader.getPropertyString("Emulation", "3rdSID_Filter8580", DEFAULT_3SID_FILTER_8580);
 	}
 
 	@Override
@@ -329,21 +299,18 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final String getReSIDfpFilter6581() {
-		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter6581",
-				DEFAULT_ReSIDfp_FILTER_6581);
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter6581", DEFAULT_ReSIDfp_FILTER_6581);
 	}
 
 	@Override
 	public final String getReSIDfpStereoFilter6581() {
-		return iniReader
-				.getPropertyString("Emulation", "ReSIDfp_Stereo_Filter6581",
-						DEFAULT_ReSIDfp_STEREO_FILTER_6581);
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_Stereo_Filter6581",
+				DEFAULT_ReSIDfp_STEREO_FILTER_6581);
 	}
 
 	@Override
 	public final String getReSIDfpThirdSIDFilter6581() {
-		return iniReader.getPropertyString("Emulation",
-				"ReSIDfp_3rdSID_Filter6581", DEFAULT_ReSIDfp_3SID_FILTER_6581);
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_3rdSID_Filter6581", DEFAULT_ReSIDfp_3SID_FILTER_6581);
 	}
 
 	@Override
@@ -353,33 +320,28 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final void setReSIDfpStereoFilter6581(final String filterName) {
-		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter6581",
-				filterName);
+		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter6581", filterName);
 	}
 
 	@Override
 	public final void setReSIDfpThirdSIDFilter6581(final String filterName) {
-		iniReader.setProperty("Emulation", "ReSIDfp_3rdSID_Filter6581",
-				filterName);
+		iniReader.setProperty("Emulation", "ReSIDfp_3rdSID_Filter6581", filterName);
 	}
 
 	@Override
 	public final String getReSIDfpFilter8580() {
-		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter8580",
-				DEFAULT_ReSIDfp_FILTER_8580);
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter8580", DEFAULT_ReSIDfp_FILTER_8580);
 	}
 
 	@Override
 	public final String getReSIDfpStereoFilter8580() {
-		return iniReader
-				.getPropertyString("Emulation", "ReSIDfp_Stereo_Filter8580",
-						DEFAULT_ReSIDfp_STEREO_FILTER_8580);
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_Stereo_Filter8580",
+				DEFAULT_ReSIDfp_STEREO_FILTER_8580);
 	}
 
 	@Override
 	public final String getReSIDfpThirdSIDFilter8580() {
-		return iniReader.getPropertyString("Emulation",
-				"ReSIDfp_3rdSID_Filter8580", DEFAULT_ReSIDfp_3SID_FILTER_8580);
+		return iniReader.getPropertyString("Emulation", "ReSIDfp_3rdSID_Filter8580", DEFAULT_ReSIDfp_3SID_FILTER_8580);
 	}
 
 	public final void setReSIDfpFilter8580(final String filterName) {
@@ -388,14 +350,12 @@ public class IniEmulationSection extends IniSection implements
 
 	@Override
 	public final void setReSIDfpStereoFilter8580(final String filterName) {
-		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter8580",
-				filterName);
+		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter8580", filterName);
 	}
 
 	@Override
 	public final void setReSIDfpThirdSIDFilter8580(final String filterName) {
-		iniReader.setProperty("Emulation", "ReSIDfp_3rdSID_Filter8580",
-				filterName);
+		iniReader.setProperty("Emulation", "ReSIDfp_3rdSID_Filter8580", filterName);
 	}
 
 }

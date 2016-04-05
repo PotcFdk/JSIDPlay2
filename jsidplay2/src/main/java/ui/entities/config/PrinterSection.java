@@ -10,8 +10,7 @@ import libsidplay.config.IPrinterSection;
 @Embeddable
 public class PrinterSection implements IPrinterSection {
 
-	private BooleanProperty printerOnProperty = new SimpleBooleanProperty(
-			DEFAULT_PRINTER_ON);
+	private BooleanProperty printerOnProperty = new SimpleBooleanProperty(DEFAULT_PRINTER_ON);
 
 	@Override
 	public boolean isPrinterOn() {

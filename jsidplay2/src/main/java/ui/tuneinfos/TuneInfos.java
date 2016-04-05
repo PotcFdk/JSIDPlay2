@@ -38,8 +38,7 @@ public class TuneInfos extends C64Window {
 
 	public void showTuneInfos(File tuneFile, SidTune tune) {
 		tuneInfos.clear();
-		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer()
-				.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0), "",
+		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0), "",
 				tuneFile, tune);
 
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
@@ -50,17 +49,13 @@ public class TuneInfos extends C64Window {
 				continue;
 			}
 			TuneInfo tuneInfo = new TuneInfo();
-			String name = util.getBundle().getString(
-					HVSCEntry.class.getSimpleName() + "." + field.getName());
+			String name = util.getBundle().getString(HVSCEntry.class.getSimpleName() + "." + field.getName());
 			tuneInfo.setName(name);
 			try {
-				SingularAttribute<?, ?> singleAttribute = (SingularAttribute<?, ?>) field
-						.get(entry);
-				Object value = ((Method) singleAttribute.getJavaMember())
-						.invoke(entry);
+				SingularAttribute<?, ?> singleAttribute = (SingularAttribute<?, ?>) field.get(entry);
+				Object value = ((Method) singleAttribute.getJavaMember()).invoke(entry);
 				tuneInfo.setValue(String.valueOf(value != null ? value : ""));
-			} catch (IllegalArgumentException | IllegalAccessException
-					| InvocationTargetException e) {
+			} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
 			}
 			tuneInfos.add(tuneInfo);
 		}

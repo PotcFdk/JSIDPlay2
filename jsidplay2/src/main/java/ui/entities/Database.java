@@ -15,8 +15,7 @@ public enum Database {
 	/**
 	 * MSAccess Database
 	 */
-	MSACCESS("net.ucanaccess.jdbc.UcanaccessDriver",
-			"jdbc:ucanaccess://${name};showschema=true");
+	MSACCESS("net.ucanaccess.jdbc.UcanaccessDriver", "jdbc:ucanaccess://${name};showschema=true");
 
 	private String jdbcDriver;
 	private String jdbcUrl;

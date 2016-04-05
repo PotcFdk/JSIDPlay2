@@ -12,9 +12,7 @@ public class PersistenceProperties extends HashMap<String, String> {
 
 	public PersistenceProperties(String name, Database type) {
 		put("hibernate.connection.driver_class", type.getJdbcDriver());
-		put("hibernate.connection.url",
-				type.getJdbcUrl().replace("${name}",
-						name));
+		put("hibernate.connection.url", type.getJdbcUrl().replace("${name}", name));
 	}
 
 }

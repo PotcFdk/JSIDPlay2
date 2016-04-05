@@ -26,9 +26,8 @@ final class JoystickReader implements IJoystick {
 	private byte bits;
 	private float upValue, downValue, leftValue, rightValue, fireValue;
 
-	public JoystickReader(Controller controller, Component up, Component down,
-			Component left, Component right, Component fire, float upValue,
-			float downValue, float leftValue, float rightValue, float fireValue) {
+	public JoystickReader(Controller controller, Component up, Component down, Component left, Component right,
+			Component fire, float upValue, float downValue, float leftValue, float rightValue, float fireValue) {
 		this.controller = controller;
 		this.up = up;
 		this.down = down;
@@ -54,24 +53,19 @@ final class JoystickReader implements IJoystick {
 			lastPollingTime = currentTime;
 
 			bits = (byte) 0xff;
-			if (up != null
-					&& Math.abs(up.getPollData() - upValue) < DELTA_VALUE) {
+			if (up != null && Math.abs(up.getPollData() - upValue) < DELTA_VALUE) {
 				bits ^= 1;
 			}
-			if (down != null
-					&& Math.abs(down.getPollData() - downValue) < DELTA_VALUE) {
+			if (down != null && Math.abs(down.getPollData() - downValue) < DELTA_VALUE) {
 				bits ^= 2;
 			}
-			if (left != null
-					&& Math.abs(left.getPollData() - leftValue) < DELTA_VALUE) {
+			if (left != null && Math.abs(left.getPollData() - leftValue) < DELTA_VALUE) {
 				bits ^= 4;
 			}
-			if (right != null
-					&& Math.abs(right.getPollData() - rightValue) < DELTA_VALUE) {
+			if (right != null && Math.abs(right.getPollData() - rightValue) < DELTA_VALUE) {
 				bits ^= 8;
 			}
-			if (fire != null
-					&& Math.abs(fire.getPollData() - fireValue) < DELTA_VALUE) {
+			if (fire != null && Math.abs(fire.getPollData() - fireValue) < DELTA_VALUE) {
 				bits ^= 16;
 			}
 		}

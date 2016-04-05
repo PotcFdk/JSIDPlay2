@@ -24,20 +24,34 @@
 package resid_builder.residfp;
 
 /**
- * The SID filter is modeled with a two-integrator-loop biquadratic filter, which has been confirmed by Bob Yannes to be the actual circuit used in the SID chip.
+ * The SID filter is modeled with a two-integrator-loop biquadratic filter,
+ * which has been confirmed by Bob Yannes to be the actual circuit used in the
+ * SID chip.
  * <P>
- * Measurements show that excellent emulation of the SID filter is achieved, except when high resonance is combined with high sustain levels. In this case the SID op-amps are performing less than
- * ideally and are causing some peculiar behavior of the SID filter. This however seems to have more effect on the overall amplitude than on the color of the sound.
+ * Measurements show that excellent emulation of the SID filter is achieved,
+ * except when high resonance is combined with high sustain levels. In this case
+ * the SID op-amps are performing less than ideally and are causing some
+ * peculiar behavior of the SID filter. This however seems to have more effect
+ * on the overall amplitude than on the color of the sound.
  * <P>
- * The theory for the filter circuit can be found in "Microelectric Circuits" by Adel S. Sedra and Kenneth C. Smith. The circuit is modeled based on the explanation found there except that an
- * additional inverter is used in the feedback from the bandpass output, allowing the summer op-amp to operate in single-ended mode. This yields inverted filter outputs with levels independent of Q,
- * which corresponds with the results obtained from a real SID.
+ * The theory for the filter circuit can be found in "Microelectric Circuits" by
+ * Adel S. Sedra and Kenneth C. Smith. The circuit is modeled based on the
+ * explanation found there except that an additional inverter is used in the
+ * feedback from the bandpass output, allowing the summer op-amp to operate in
+ * single-ended mode. This yields inverted filter outputs with levels
+ * independent of Q, which corresponds with the results obtained from a real
+ * SID.
  * <P>
- * We have been able to model the summer and the two integrators of the circuit to form components of an IIR filter. Vhp is the output of the summer, Vbp is the output of the first integrator, and Vlp
- * is the output of the second integrator in the filter circuit.
+ * We have been able to model the summer and the two integrators of the circuit
+ * to form components of an IIR filter. Vhp is the output of the summer, Vbp is
+ * the output of the first integrator, and Vlp is the output of the second
+ * integrator in the filter circuit.
  * <P>
- * According to Bob Yannes, the active stages of the SID filter are not really op-amps. Rather, simple NMOS inverters are used. By biasing an inverter into its region of quasi-linear operation using a
- * feedback resistor from input to output, a MOS inverter can be made to act like an op-amp for small signals centered around the switching threshold.
+ * According to Bob Yannes, the active stages of the SID filter are not really
+ * op-amps. Rather, simple NMOS inverters are used. By biasing an inverter into
+ * its region of quasi-linear operation using a feedback resistor from input to
+ * output, a MOS inverter can be made to act like an op-amp for small signals
+ * centered around the switching threshold.
  * <P>
  * Qualified guesses at SID filter schematics are depicted below.
  * 
@@ -155,10 +169,14 @@ public abstract class Filter {
 	/**
 	 * SID clocking - 1 cycle
 	 * 
-	 * @param v1 voice 1 in
-	 * @param v2 voice 2 in
-	 * @param v3 voice 3 in
-	 * @param vE external audio in
+	 * @param v1
+	 *            voice 1 in
+	 * @param v2
+	 *            voice 2 in
+	 * @param v3
+	 *            voice 3 in
+	 * @param vE
+	 *            external audio in
 	 * @return filtered output
 	 */
 

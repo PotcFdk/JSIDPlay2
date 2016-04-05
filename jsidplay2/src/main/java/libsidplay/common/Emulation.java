@@ -20,8 +20,7 @@ public enum Emulation {
 	 * 
 	 * @return SID emulation to be used for SID number
 	 */
-	public static Emulation getEmulation(IEmulationSection emulationSection,
-			SidTune tune, int sidNum) {
+	public static Emulation getEmulation(IEmulationSection emulationSection, SidTune tune, int sidNum) {
 		Emulation forcedEmulation;
 		Emulation defaultEmulation = emulationSection.getDefaultEmulation();
 		switch (sidNum) {
@@ -37,7 +36,6 @@ public enum Emulation {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
-		return forcedEmulation != Emulation.DEFAULT ? forcedEmulation
-				: defaultEmulation;
+		return forcedEmulation != Emulation.DEFAULT ? forcedEmulation : defaultEmulation;
 	}
 }

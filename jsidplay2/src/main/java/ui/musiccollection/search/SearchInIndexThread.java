@@ -19,8 +19,7 @@ public abstract class SearchInIndexThread extends SearchThread {
 	private HVSCEntryService hvscEntryService;
 	private HVSCEntries state;
 
-	public SearchInIndexThread(EntityManager em, boolean forward,
-			Consumer<Void> searchStart, Consumer<File> searchHit,
+	public SearchInIndexThread(EntityManager em, boolean forward, Consumer<Void> searchStart, Consumer<File> searchHit,
 			Consumer<Boolean> searchStop) {
 		super(forward, searchStart, searchHit, searchStop);
 		hvscEntryService = new HVSCEntryService(em);
@@ -31,8 +30,7 @@ public abstract class SearchInIndexThread extends SearchThread {
 		searchStart.accept(null);
 
 		if (state == null) {
-			state = hvscEntryService.search(field, fieldValue, caseSensitive,
-					fForward);
+			state = hvscEntryService.search(field, fieldValue, caseSensitive, fForward);
 		}
 		while (!fAborted && (fForward ? state.next() : state.prev())) {
 			String filePath = state.getPath();

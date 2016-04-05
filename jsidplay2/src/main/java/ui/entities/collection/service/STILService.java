@@ -19,8 +19,7 @@ public class STILService {
 		this.em = em;
 	};
 
-	public void add(Function<String, STILEntry> stilFnct,
-			final HVSCEntry hvscEntry) {
+	public void add(Function<String, STILEntry> stilFnct, final HVSCEntry hvscEntry) {
 		STILEntry stilEntry = stilFnct.apply(hvscEntry.getPath());
 		if (stilEntry != null) {
 			// get STIL Global Comment

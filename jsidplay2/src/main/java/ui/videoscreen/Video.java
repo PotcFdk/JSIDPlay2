@@ -76,17 +76,15 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private ImageView monitorBorder, breadbox, pc64;
 	@FXML
-	private Slider scaling, brightness, contrast, gamma, saturation,
-			phaseShift, offset, tint, blur, bleed;
+	private Slider scaling, brightness, contrast, gamma, saturation, phaseShift, offset, tint, blur, bleed;
 	@FXML
 	private CheckBox applyImmediately, showMonitorBorder;
 	@FXML
-	private Label scalingValue, brightnessValue, contrastValue, gammaValue,
-			saturationValue, phaseShiftValue, offsetValue, tintValue,
-			blurValue, bleedValue;
+	private Label scalingValue, brightnessValue, contrastValue, gammaValue, saturationValue, phaseShiftValue,
+			offsetValue, tintValue, blurValue, bleedValue;
 	@FXML
-	private ImageView datasetteOff, datasetteLoad, datasetteSave, c1541Off,
-			c1541On, c1541Load, c1541IIOff, c1541IIOn, c1541IILoad;
+	private ImageView datasetteOff, datasetteLoad, datasetteSave, c1541Off, c1541On, c1541Load, c1541IIOff, c1541IIOn,
+			c1541IILoad;
 	@FXML
 	private Label tapeName, diskName, cartridgeName;
 
@@ -123,145 +121,106 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 		scaling.setLabelFormatter(doubleToString);
 		scaling.setValue(sidplay2Section.getVideoScaling());
-		scaling.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					sidplay2Section.setVideoScaling(newValue.floatValue());
-					if (applyImmediately.isSelected()) {
-						updateScaling();
-					}
-				});
+		scaling.valueProperty().addListener((observable, oldValue, newValue) -> {
+			sidplay2Section.setVideoScaling(newValue.floatValue());
+			if (applyImmediately.isSelected()) {
+				updateScaling();
+			}
+		});
 		brightness.setLabelFormatter(doubleToString);
 		brightness.setValue(sidplay2Section.getBrightness());
-		brightness.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					sidplay2Section.setBrightness(newValue.floatValue());
-					getC64().configureVICs(
-							vic -> vic.getPalette().setBrightness(
-									newValue.floatValue()));
-					if (applyImmediately.isSelected()) {
-						apply();
-					}
-				});
+		brightness.valueProperty().addListener((observable, oldValue, newValue) -> {
+			sidplay2Section.setBrightness(newValue.floatValue());
+			getC64().configureVICs(vic -> vic.getPalette().setBrightness(newValue.floatValue()));
+			if (applyImmediately.isSelected()) {
+				apply();
+			}
+		});
 		contrast.setLabelFormatter(doubleToString);
 		contrast.setValue(sidplay2Section.getContrast());
-		contrast.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					sidplay2Section.setContrast(newValue.floatValue());
-					getC64().configureVICs(
-							vic -> vic.getPalette().setContrast(
-									newValue.floatValue()));
-					if (applyImmediately.isSelected()) {
-						apply();
-					}
-				});
+		contrast.valueProperty().addListener((observable, oldValue, newValue) -> {
+			sidplay2Section.setContrast(newValue.floatValue());
+			getC64().configureVICs(vic -> vic.getPalette().setContrast(newValue.floatValue()));
+			if (applyImmediately.isSelected()) {
+				apply();
+			}
+		});
 		gamma.setLabelFormatter(doubleToString);
 		gamma.setValue(sidplay2Section.getGamma());
-		gamma.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					sidplay2Section.setGamma(newValue.floatValue());
-					getC64().configureVICs(
-							vic -> vic.getPalette().setGamma(
-									newValue.floatValue()));
-					if (applyImmediately.isSelected()) {
-						apply();
-					}
-				});
+		gamma.valueProperty().addListener((observable, oldValue, newValue) -> {
+			sidplay2Section.setGamma(newValue.floatValue());
+			getC64().configureVICs(vic -> vic.getPalette().setGamma(newValue.floatValue()));
+			if (applyImmediately.isSelected()) {
+				apply();
+			}
+		});
 		saturation.setLabelFormatter(doubleToString);
 		saturation.setValue(sidplay2Section.getSaturation());
-		saturation.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					sidplay2Section.setSaturation(newValue.floatValue());
-					getC64().configureVICs(
-							vic -> vic.getPalette().setSaturation(
-									newValue.floatValue()));
-					if (applyImmediately.isSelected()) {
-						apply();
-					}
-				});
+		saturation.valueProperty().addListener((observable, oldValue, newValue) -> {
+			sidplay2Section.setSaturation(newValue.floatValue());
+			getC64().configureVICs(vic -> vic.getPalette().setSaturation(newValue.floatValue()));
+			if (applyImmediately.isSelected()) {
+				apply();
+			}
+		});
 		phaseShift.setLabelFormatter(doubleToString);
 		phaseShift.setValue(sidplay2Section.getPhaseShift());
-		phaseShift.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					sidplay2Section.setPhaseShift(newValue.floatValue());
-					getC64().configureVICs(
-							vic -> vic.getPalette().setPhaseShift(
-									newValue.floatValue()));
-					if (applyImmediately.isSelected()) {
-						apply();
-					}
-				});
+		phaseShift.valueProperty().addListener((observable, oldValue, newValue) -> {
+			sidplay2Section.setPhaseShift(newValue.floatValue());
+			getC64().configureVICs(vic -> vic.getPalette().setPhaseShift(newValue.floatValue()));
+			if (applyImmediately.isSelected()) {
+				apply();
+			}
+		});
 		offset.setLabelFormatter(doubleToString);
 		offset.setValue(sidplay2Section.getOffset());
-		offset.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					sidplay2Section.setOffset(newValue.floatValue());
-					getC64().configureVICs(
-							vic -> vic.getPalette().setOffset(
-									newValue.floatValue()));
-					if (applyImmediately.isSelected()) {
-						apply();
-					}
-				});
+		offset.valueProperty().addListener((observable, oldValue, newValue) -> {
+			sidplay2Section.setOffset(newValue.floatValue());
+			getC64().configureVICs(vic -> vic.getPalette().setOffset(newValue.floatValue()));
+			if (applyImmediately.isSelected()) {
+				apply();
+			}
+		});
 		tint.setLabelFormatter(doubleToString);
 		tint.setValue(sidplay2Section.getTint());
-		tint.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					sidplay2Section.setTint(newValue.floatValue());
-					getC64().configureVICs(
-							vic -> vic.getPalette().setTint(
-									newValue.floatValue()));
-					if (applyImmediately.isSelected()) {
-						apply();
-					}
-				});
+		tint.valueProperty().addListener((observable, oldValue, newValue) -> {
+			sidplay2Section.setTint(newValue.floatValue());
+			getC64().configureVICs(vic -> vic.getPalette().setTint(newValue.floatValue()));
+			if (applyImmediately.isSelected()) {
+				apply();
+			}
+		});
 		blur.setLabelFormatter(doubleToString);
 		blur.setValue(sidplay2Section.getBlur());
-		blur.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					sidplay2Section.setBlur(newValue.floatValue());
-					getC64().configureVICs(
-							vic -> vic.getPalette().setLuminanceC(
-									newValue.floatValue()));
-					if (applyImmediately.isSelected()) {
-						apply();
-					}
-				});
+		blur.valueProperty().addListener((observable, oldValue, newValue) -> {
+			sidplay2Section.setBlur(newValue.floatValue());
+			getC64().configureVICs(vic -> vic.getPalette().setLuminanceC(newValue.floatValue()));
+			if (applyImmediately.isSelected()) {
+				apply();
+			}
+		});
 		bleed.setLabelFormatter(doubleToString);
 		bleed.setValue(sidplay2Section.getBleed());
-		bleed.valueProperty().addListener(
-				(observable, oldValue, newValue) -> {
-					sidplay2Section.setBleed(newValue.floatValue());
-					getC64().configureVICs(
-							vic -> vic.getPalette().setDotCreep(
-									newValue.floatValue()));
-					if (applyImmediately.isSelected()) {
-						apply();
-					}
-				});
+		bleed.valueProperty().addListener((observable, oldValue, newValue) -> {
+			sidplay2Section.setBleed(newValue.floatValue());
+			getC64().configureVICs(vic -> vic.getPalette().setDotCreep(newValue.floatValue()));
+			if (applyImmediately.isSelected()) {
+				apply();
+			}
+		});
 
 		NumberToString<Float> floatToString = new NumberToString<Float>(2);
-		scalingValue.textProperty().bindBidirectional(
-				sidplay2Section.videoScalingProperty(), floatToString);
-		brightnessValue.textProperty().bindBidirectional(
-				sidplay2Section.brightnessProperty(), floatToString);
-		contrastValue.textProperty().bindBidirectional(
-				sidplay2Section.contrastProperty(), floatToString);
-		gammaValue.textProperty().bindBidirectional(
-				sidplay2Section.gammaProperty(), floatToString);
-		saturationValue.textProperty().bindBidirectional(
-				sidplay2Section.saturationProperty(), floatToString);
-		phaseShiftValue.textProperty().bindBidirectional(
-				sidplay2Section.phaseShiftProperty(), floatToString);
-		offsetValue.textProperty().bindBidirectional(
-				sidplay2Section.offsetProperty(), floatToString);
-		tintValue.textProperty().bindBidirectional(
-				sidplay2Section.tintProperty(), floatToString);
-		blurValue.textProperty().bindBidirectional(
-				sidplay2Section.blurProperty(), floatToString);
-		bleedValue.textProperty().bindBidirectional(
-				sidplay2Section.bleedProperty(), floatToString);
-		showMonitorBorder.selectedProperty().bindBidirectional(
-				sidplay2Section.showMonitorProperty());
+		scalingValue.textProperty().bindBidirectional(sidplay2Section.videoScalingProperty(), floatToString);
+		brightnessValue.textProperty().bindBidirectional(sidplay2Section.brightnessProperty(), floatToString);
+		contrastValue.textProperty().bindBidirectional(sidplay2Section.contrastProperty(), floatToString);
+		gammaValue.textProperty().bindBidirectional(sidplay2Section.gammaProperty(), floatToString);
+		saturationValue.textProperty().bindBidirectional(sidplay2Section.saturationProperty(), floatToString);
+		phaseShiftValue.textProperty().bindBidirectional(sidplay2Section.phaseShiftProperty(), floatToString);
+		offsetValue.textProperty().bindBidirectional(sidplay2Section.offsetProperty(), floatToString);
+		tintValue.textProperty().bindBidirectional(sidplay2Section.tintProperty(), floatToString);
+		blurValue.textProperty().bindBidirectional(sidplay2Section.blurProperty(), floatToString);
+		bleedValue.textProperty().bindBidirectional(sidplay2Section.bleedProperty(), floatToString);
+		showMonitorBorder.selectedProperty().bindBidirectional(sidplay2Section.showMonitorProperty());
 
 		setupVideoScreen();
 		setVisibilityBasedOnChipType(util.getPlayer().getTune());
@@ -289,21 +248,17 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2Section())).getLastDirectoryFolder());
-		fileDialog.getExtensionFilters().add(
-				new ExtensionFilter(TapeFileExtensions.DESCRIPTION,
-						TapeFileExtensions.EXTENSIONS));
+		fileDialog.setInitialDirectory(
+				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.getExtensionFilters()
+				.add(new ExtensionFilter(TapeFileExtensions.DESCRIPTION, TapeFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_TAPE"));
-		final File file = fileDialog.showOpenDialog(screen.getScene()
-				.getWindow());
+		final File file = fileDialog.showOpenDialog(screen.getScene().getWindow());
 		if (file != null) {
 			try {
 				util.getPlayer().insertTape(file);
 			} catch (IOException | SidTuneError e) {
-				System.err.println(String.format(
-						"Cannot insert media file '%s'.",
-						file.getAbsolutePath()));
+				System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
 			}
 		}
 	}
@@ -311,21 +266,17 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2Section())).getLastDirectoryFolder());
-		fileDialog.getExtensionFilters().add(
-				new ExtensionFilter(DiskFileExtensions.DESCRIPTION,
-						DiskFileExtensions.EXTENSIONS));
+		fileDialog.setInitialDirectory(
+				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.getExtensionFilters()
+				.add(new ExtensionFilter(DiskFileExtensions.DESCRIPTION, DiskFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_DISK"));
-		final File file = fileDialog.showOpenDialog(screen.getScene()
-				.getWindow());
+		final File file = fileDialog.showOpenDialog(screen.getScene().getWindow());
 		if (file != null) {
 			try {
 				util.getPlayer().insertDisk(file);
 			} catch (IOException | SidTuneError e) {
-				System.err.println(String.format(
-						"Cannot insert media file '%s'.",
-						file.getAbsolutePath()));
+				System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
 			}
 		}
 	}
@@ -333,23 +284,19 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private void insertCartridge() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2Section())).getLastDirectoryFolder());
-		fileDialog.getExtensionFilters().add(
-				new ExtensionFilter(CartFileExtensions.DESCRIPTION,
-						CartFileExtensions.EXTENSIONS));
+		fileDialog.setInitialDirectory(
+				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.getExtensionFilters()
+				.add(new ExtensionFilter(CartFileExtensions.DESCRIPTION, CartFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));
-		final File file = fileDialog.showOpenDialog(screen.getScene()
-				.getWindow());
+		final File file = fileDialog.showOpenDialog(screen.getScene().getWindow());
 		if (file != null) {
 			try {
 				util.getPlayer().insertCartridge(CartridgeType.CRT, file);
 				util.getPlayer().play(SidTune.RESET);
 
 			} catch (IOException | SidTuneError e) {
-				System.err.println(String.format(
-						"Cannot insert media file '%s'.",
-						file.getAbsolutePath()));
+				System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
 			}
 		}
 	}
@@ -357,19 +304,17 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private void apply() {
 		updateScaling();
-		getC64().getEventScheduler().scheduleThreadSafe(
-				new Event("Update Palette") {
-					@Override
-					public void event() throws InterruptedException {
-						getC64().configureVICs(vic -> vic.updatePalette());
-					}
-				});
+		getC64().getEventScheduler().scheduleThreadSafe(new Event("Update Palette") {
+			@Override
+			public void event() throws InterruptedException {
+				getC64().configureVICs(vic -> vic.updatePalette());
+			}
+		});
 	}
 
 	@FXML
 	private void showMonitorBorder() {
-		util.getConfig().getSidplay2Section()
-				.setShowMonitor(showMonitorBorder.isSelected());
+		util.getConfig().getSidplay2Section().setShowMonitor(showMonitorBorder.isSelected());
 		setVisibilityBasedOnChipType(util.getPlayer().getTune());
 	}
 
@@ -399,12 +344,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Connect VIC output with screen.
 	 */
 	private void setupVideoScreen() {
-		screen.getGraphicsContext2D().clearRect(0, 0,
-				screen.widthProperty().get(), screen.heightProperty().get());
+		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
 		screen.setWidth(getC64().getVIC().getBorderWidth());
 		screen.setHeight(getC64().getVIC().getBorderHeight());
-		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(),
-				getC64().getVIC().getBorderHeight());
+		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(), getC64().getVIC().getBorderHeight());
 		pixelFormat = PixelFormat.getIntArgbInstance();
 		updateScaling();
 	}
@@ -415,14 +358,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		screen.setScaleX(scale);
 		screen.setScaleY(scale);
 		for (ImageView imageView : Arrays.asList(monitorBorder, breadbox, pc64)) {
-			imageView
-					.setScaleX(scale
-							* screen.getWidth()
-							/ (imageView.getImage().getWidth() + MARGIN_LEFT + MARGIN_RIGHT));
-			imageView
-					.setScaleY(scale
-							* screen.getHeight()
-							/ (imageView.getImage().getHeight() + MARGIN_TOP + MARGIN_BOTTOM));
+			imageView.setScaleX(
+					scale * screen.getWidth() / (imageView.getImage().getWidth() + MARGIN_LEFT + MARGIN_RIGHT));
+			imageView.setScaleY(
+					scale * screen.getHeight() / (imageView.getImage().getHeight() + MARGIN_TOP + MARGIN_BOTTOM));
 		}
 	}
 
@@ -431,8 +370,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 */
 	private void setupKeyboard() {
 		monitor.setOnKeyPressed(event -> {
-			KeyTableEntry keyTableEntry = util.getConfig().getKeyTabEntry(
-					event.getCode().getName());
+			KeyTableEntry keyTableEntry = util.getConfig().getKeyTabEntry(event.getCode().getName());
 
 			if (event.isShiftDown()) {
 				pressC64Key(KeyTableEntry.SHIFT_LEFT);
@@ -457,97 +395,82 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	}
 
 	private void pressC64Key(final KeyTableEntry key) {
-		getC64().getEventScheduler().scheduleThreadSafe(
-				new Event("Virtual Keyboard Key Pressed: " + key.name()) {
-					@Override
-					public void event() throws InterruptedException {
-						getC64().getKeyboard().keyPressed(key);
-					}
-				});
+		getC64().getEventScheduler().scheduleThreadSafe(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
+			@Override
+			public void event() throws InterruptedException {
+				getC64().getKeyboard().keyPressed(key);
+			}
+		});
 	}
 
 	private void releaseC64Key(final KeyTableEntry key) {
-		getC64().getEventScheduler().scheduleThreadSafe(
-				new Event("Virtual Keyboard Key Released: " + key.name()) {
-					@Override
-					public void event() throws InterruptedException {
-						getC64().getKeyboard().keyReleased(key);
-					}
-				});
+		getC64().getEventScheduler().scheduleThreadSafe(new Event("Virtual Keyboard Key Released: " + key.name()) {
+			@Override
+			public void event() throws InterruptedException {
+				getC64().getKeyboard().keyReleased(key);
+			}
+		});
 	}
 
 	private void updatePeripheralImages() {
 		final Duration duration = Duration.millis(1000);
-		final KeyFrame oneFrame = new KeyFrame(
-				duration,
-				evt -> {
-					DatasetteStatus datasetteStatus = util.getPlayer()
-							.getDatasette().getStatus();
-					tapeName.setText(util.getPlayer().getDatasette()
-							.getTapeImage().getName());
-					switch (datasetteStatus) {
-					case OFF:
-						datasetteOff.setVisible(true);
-						for (ImageView imageView : Arrays.asList(datasetteLoad,
-								datasetteSave)) {
-							imageView.setVisible(false);
-						}
-						break;
-					case LOAD:
-						datasetteLoad.setVisible(true);
-						for (ImageView imageView : Arrays.asList(datasetteOff,
-								datasetteSave)) {
-							imageView.setVisible(false);
-						}
-						break;
-					case SAVE:
-						datasetteSave.setVisible(true);
-						for (ImageView imageView : Arrays.asList(datasetteOff,
-								datasetteLoad)) {
-							imageView.setVisible(false);
-						}
-						break;
+		final KeyFrame oneFrame = new KeyFrame(duration, evt -> {
+			DatasetteStatus datasetteStatus = util.getPlayer().getDatasette().getStatus();
+			tapeName.setText(util.getPlayer().getDatasette().getTapeImage().getName());
+			switch (datasetteStatus) {
+			case OFF:
+				datasetteOff.setVisible(true);
+				for (ImageView imageView : Arrays.asList(datasetteLoad, datasetteSave)) {
+					imageView.setVisible(false);
+				}
+				break;
+			case LOAD:
+				datasetteLoad.setVisible(true);
+				for (ImageView imageView : Arrays.asList(datasetteOff, datasetteSave)) {
+					imageView.setVisible(false);
+				}
+				break;
+			case SAVE:
+				datasetteSave.setVisible(true);
+				for (ImageView imageView : Arrays.asList(datasetteOff, datasetteLoad)) {
+					imageView.setVisible(false);
+				}
+				break;
 
-					default:
-						throw new RuntimeException(
-								"Unexpected datasette status: "
-										+ datasetteStatus);
-					}
-					final C1541 firstC1541 = util.getPlayer().getFloppies()[0];
-					diskName.setText(firstC1541.getDiskName());
-					FloppyStatus floppyStatus = firstC1541.getStatus();
-					switch (floppyStatus) {
-					case OFF:
-						c1541Off.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
-						c1541IIOff.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
-						for (ImageView imageView : Arrays.asList(c1541On,
-								c1541IIOn, c1541Load, c1541IILoad)) {
-							imageView.setVisible(false);
-						}
-						break;
-					case ON:
-						c1541On.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
-						c1541IIOn.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
-						for (ImageView imageView : Arrays.asList(c1541Off,
-								c1541IIOff, c1541Load, c1541IILoad)) {
-							imageView.setVisible(false);
-						}
-						break;
-					case LOAD:
-						c1541Load.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
-						c1541IILoad.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
-						for (ImageView imageView : Arrays.asList(c1541Off,
-								c1541IIOff, c1541On, c1541IIOn)) {
-							imageView.setVisible(false);
-						}
-						break;
+			default:
+				throw new RuntimeException("Unexpected datasette status: " + datasetteStatus);
+			}
+			final C1541 firstC1541 = util.getPlayer().getFloppies()[0];
+			diskName.setText(firstC1541.getDiskName());
+			FloppyStatus floppyStatus = firstC1541.getStatus();
+			switch (floppyStatus) {
+			case OFF:
+				c1541Off.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
+				c1541IIOff.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
+				for (ImageView imageView : Arrays.asList(c1541On, c1541IIOn, c1541Load, c1541IILoad)) {
+					imageView.setVisible(false);
+				}
+				break;
+			case ON:
+				c1541On.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
+				c1541IIOn.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
+				for (ImageView imageView : Arrays.asList(c1541Off, c1541IIOff, c1541Load, c1541IILoad)) {
+					imageView.setVisible(false);
+				}
+				break;
+			case LOAD:
+				c1541Load.setVisible(firstC1541.getFloppyType() == FloppyType.C1541);
+				c1541IILoad.setVisible(firstC1541.getFloppyType() == FloppyType.C1541_II);
+				for (ImageView imageView : Arrays.asList(c1541Off, c1541IIOff, c1541On, c1541IIOn)) {
+					imageView.setVisible(false);
+				}
+				break;
 
-					default:
-						throw new RuntimeException("Unexpected floppy status: "
-								+ floppyStatus);
-					}
-					cartridgeName.setText(getC64().getCartridge().toString());
-				});
+			default:
+				throw new RuntimeException("Unexpected floppy status: " + floppyStatus);
+			}
+			cartridgeName.setText(getC64().getCartridge().toString());
+		});
 		timer = new Timeline(oneFrame);
 		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
@@ -563,8 +486,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			// SID Tune is loaded and uses internal player?
 			screen.setVisible(false);
 			monitorBorder.setVisible(false);
-			if (ChipModel.getChipModel(util.getConfig().getEmulationSection(),
-					sidTune, 0) == ChipModel.MOS6581) {
+			if (ChipModel.getChipModel(util.getConfig().getEmulationSection(), sidTune, 0) == ChipModel.MOS6581) {
 				// Old SID chip model? Show breadbox
 				breadbox.setVisible(true);
 				pc64.setVisible(false);
@@ -589,13 +511,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			final VIC vic = getC64().getVIC();
 			// sanity check: don't update during change of CPUClock
 			if (vicImage.getHeight() == vic.getBorderHeight()) {
-				vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(),
-						vic.getBorderHeight(), pixelFormat, pixels, 0,
-						vic.getBorderWidth());
-				screen.getGraphicsContext2D().drawImage(vicImage, 0, 0,
-						vic.getBorderWidth(), vic.getBorderHeight(),
-						MARGIN_LEFT, MARGIN_TOP,
-						screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
+				vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(), pixelFormat,
+						pixels, 0, vic.getBorderWidth());
+				screen.getGraphicsContext2D().drawImage(vicImage, 0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
+						MARGIN_LEFT, MARGIN_TOP, screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
 						screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
 			}
 		});

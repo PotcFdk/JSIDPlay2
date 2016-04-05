@@ -44,7 +44,7 @@ import java.nio.charset.Charset;
  */
 public class Tap {
 	private static final Charset ISO88591 = Charset.forName("ISO-8859-1");
-	
+
 	/**
 	 * Size of the TAP file header.
 	 */
@@ -122,7 +122,7 @@ public class Tap {
 	public boolean isReadOnly() {
 		return readOnly;
 	}
-	
+
 	/**
 	 * Has the tap changed? We correct the size then.
 	 */
@@ -150,8 +150,7 @@ public class Tap {
 		}
 
 		String checkName = new String(buf, TAP_HDR_MAGIC_OFFSET, 12, ISO88591);
-		if (!checkName.startsWith("C64-TAPE-RAW")
-				&& !checkName.startsWith("C16-TAPE-RAW")) {
+		if (!checkName.startsWith("C64-TAPE-RAW") && !checkName.startsWith("C16-TAPE-RAW")) {
 			return false;
 		}
 		version = buf[TAP_HDR_VERSION];
@@ -221,8 +220,7 @@ public class Tap {
 	 *             tape image write error
 	 */
 	private void writeFilesize(final int[] buf) throws IOException {
-		ByteBuffer b = ByteBuffer.wrap(new byte[1 << 2]).order(
-				ByteOrder.LITTLE_ENDIAN);
+		ByteBuffer b = ByteBuffer.wrap(new byte[1 << 2]).order(ByteOrder.LITTLE_ENDIAN);
 		b.asIntBuffer().put(buf, 0, 1);
 		b.rewind();
 		fd.write(b.array(), 0, 1 << 2);
@@ -231,7 +229,8 @@ public class Tap {
 	/**
 	 * Got to the start position of the tape image.
 	 * 
-	 * @throws IOException tape image write error
+	 * @throws IOException
+	 *             tape image write error
 	 */
 	final void seekStart() throws IOException {
 		currentFilePosition = 0;

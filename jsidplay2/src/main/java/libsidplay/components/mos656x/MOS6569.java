@@ -99,8 +99,7 @@ public final class MOS6569 extends VIC {
 					address &= bitmapMemBase | vc << 3 | rc;
 				} else {
 					int n = lineCycle == 1 ? 39 : lineCycle - 25;
-					address &= charMemBase | (videoMatrixData[n] & 0xff) << 3
-							| rc;
+					address &= charMemBase | (videoMatrixData[n] & 0xff) << 3 | rc;
 				}
 				vc = vc + 1 & 0x3ff;
 			}
@@ -130,8 +129,7 @@ public final class MOS6569 extends VIC {
 			}
 			lineCycle++;
 
-			if (graphicsRendering
-					&& (lineCycle >= 23 || lineCycle < 71 - CYCLES_PER_LINE)) {
+			if (graphicsRendering && (lineCycle >= 23 || lineCycle < 71 - CYCLES_PER_LINE)) {
 				drawSpritesAndGraphics();
 			} else {
 				spriteCollisionsOnly();
@@ -200,8 +198,7 @@ public final class MOS6569 extends VIC {
 			case 5:
 				/* sprite 0 data access */
 				fetchSpriteData(0);
-				setBA(!sprites[0].isDMA() && !sprites[1].isDMA()
-						&& !sprites[2].isDMA());
+				setBA(!sprites[0].isDMA() && !sprites[1].isDMA() && !sprites[2].isDMA());
 				break;
 
 			case 6:
@@ -213,8 +210,7 @@ public final class MOS6569 extends VIC {
 			case 7:
 				/* sprite 1 data access */
 				fetchSpriteData(1);
-				setBA(!sprites[1].isDMA() && !sprites[2].isDMA()
-						&& !sprites[3].isDMA());
+				setBA(!sprites[1].isDMA() && !sprites[2].isDMA() && !sprites[3].isDMA());
 				break;
 
 			case 8:
@@ -226,8 +222,7 @@ public final class MOS6569 extends VIC {
 			case 9:
 				/* sprite 2 data access */
 				fetchSpriteData(2);
-				setBA(!sprites[2].isDMA() && !sprites[3].isDMA()
-						&& !sprites[4].isDMA());
+				setBA(!sprites[2].isDMA() && !sprites[3].isDMA() && !sprites[4].isDMA());
 				break;
 
 			case 10: {
@@ -275,20 +270,16 @@ public final class MOS6569 extends VIC {
 				previousLineIndex = 0;
 				if (rasterY == FIRST_DISPLAY_LINE) {
 					/* current row odd? -> start with even, init, swap */
-					linePaletteCurrent = (rasterY & 1) != 0 ? linePaletteEven
-							: linePaletteOdd;
-					combinedLinesCurrent = (rasterY & 1) != 0 ? combinedLinesEven
-							: combinedLinesOdd;
+					linePaletteCurrent = (rasterY & 1) != 0 ? linePaletteEven : linePaletteOdd;
+					combinedLinesCurrent = (rasterY & 1) != 0 ? combinedLinesEven : combinedLinesOdd;
 					graphicsRendering = true;
 					nextPixel = 0;
 					for (int i = 0; i < previousLineDecodedColor.length; i++) {
 						previousLineDecodedColor[i] = linePaletteCurrent[0];
 					}
 				}
-				linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven
-						: linePaletteOdd;
-				combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven
-						: combinedLinesOdd;
+				linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven : linePaletteOdd;
+				combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven : combinedLinesOdd;
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
@@ -312,8 +303,7 @@ public final class MOS6569 extends VIC {
 					lightpenEdgeDetector();
 				}
 
-				setBA(!sprites[3].isDMA() && !sprites[4].isDMA()
-						&& !sprites[5].isDMA());
+				setBA(!sprites[3].isDMA() && !sprites[4].isDMA() && !sprites[5].isDMA());
 				fetchSpriteData(3);
 				break;
 			}
@@ -327,8 +317,7 @@ public final class MOS6569 extends VIC {
 			case 13:
 				/* sprite 4 data access */
 				fetchSpriteData(4);
-				setBA(!sprites[4].isDMA() && !sprites[5].isDMA()
-						&& !sprites[6].isDMA());
+				setBA(!sprites[4].isDMA() && !sprites[5].isDMA() && !sprites[6].isDMA());
 				break;
 
 			case 14:
@@ -340,8 +329,7 @@ public final class MOS6569 extends VIC {
 			case 15:
 				/* sprite 5 data access access */
 				fetchSpriteData(5);
-				setBA(!sprites[5].isDMA() && !sprites[6].isDMA()
-						&& !sprites[7].isDMA());
+				setBA(!sprites[5].isDMA() && !sprites[6].isDMA() && !sprites[7].isDMA());
 				break;
 
 			case 16:
@@ -435,16 +423,11 @@ public final class MOS6569 extends VIC {
 
 	@Override
 	public void updatePalette() {
-		palette.calculatePalette(Palette
-				.buildPaletteVariant(VIC.Model.MOS6567R8));
-		System.arraycopy(palette.getEvenLines(), 0, combinedLinesEven, 0,
-				combinedLinesEven.length);
-		System.arraycopy(palette.getOddLines(), 0, combinedLinesOdd, 0,
-				combinedLinesOdd.length);
-		System.arraycopy(palette.getEvenFiltered(), 0, linePaletteEven, 0,
-				linePaletteEven.length);
-		System.arraycopy(palette.getOddFiltered(), 0, linePaletteOdd, 0,
-				linePaletteOdd.length);
+		palette.calculatePalette(Palette.buildPaletteVariant(VIC.Model.MOS6567R8));
+		System.arraycopy(palette.getEvenLines(), 0, combinedLinesEven, 0, combinedLinesEven.length);
+		System.arraycopy(palette.getOddLines(), 0, combinedLinesOdd, 0, combinedLinesOdd.length);
+		System.arraycopy(palette.getEvenFiltered(), 0, linePaletteEven, 0, linePaletteEven.length);
+		System.arraycopy(palette.getOddFiltered(), 0, linePaletteOdd, 0, linePaletteOdd.length);
 	}
 
 	@Override

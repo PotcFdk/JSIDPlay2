@@ -31,8 +31,8 @@ import sidplay.audio.AudioDriver;
 
 public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 
-	public ReSIDBuilder(EventScheduler context, IConfig config,
-			AudioConfig audioConfig, CPUClock cpuClock, AudioDriver audioDriver) {
+	public ReSIDBuilder(EventScheduler context, IConfig config, AudioConfig audioConfig, CPUClock cpuClock,
+			AudioDriver audioDriver) {
 		super(context, config, cpuClock, audioConfig, audioDriver);
 	}
 
@@ -47,8 +47,7 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
 		sid.setFilter(config, sidNum);
 		sid.setFilterEnable(emulationSection, sidNum);
-		sid.input(emulationSection.isDigiBoosted8580() ? sid
-				.getInputDigiBoost() : 0);
+		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
 		add(sidNum, sid);
 		return sid;
 	}
@@ -78,11 +77,9 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 	 */
 	private ReSIDBase getOrCreateSID(SIDEmu oldSIDEmu, SidTune tune, int sidNum) {
 		final IEmulationSection emulationSection = config.getEmulationSection();
-		final Emulation emulation = Emulation.getEmulation(emulationSection,
-				tune, sidNum);
+		final Emulation emulation = Emulation.getEmulation(emulationSection, tune, sidNum);
 		boolean fakeStereo = isFakeStereoSid(tune, sidNum);
-		Class<? extends ReSIDBase> sidImplClass = getSIDImplClass(emulation,
-				fakeStereo);
+		Class<? extends ReSIDBase> sidImplClass = getSIDImplClass(emulation, fakeStereo);
 		if (oldSIDEmu != null && oldSIDEmu.getClass().equals(sidImplClass)) {
 			// the implementing class does not change, re-use!
 			return (ReSIDBase) oldSIDEmu;
@@ -116,8 +113,7 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 	 *            fake-stereo mode (two SIDs at the same address)
 	 * @return SID implementation class
 	 */
-	private Class<? extends ReSIDBase> getSIDImplClass(
-			final Emulation emulation, final boolean fakeStereo) {
+	private Class<? extends ReSIDBase> getSIDImplClass(final Emulation emulation, final boolean fakeStereo) {
 		switch (emulation) {
 		case RESID:
 			return fakeStereo ? ReSID.FakeStereo.class : ReSID.class;
@@ -137,8 +133,7 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 	 *            current SID number
 	 * @return new SID chip
 	 */
-	private ReSIDBase createSID(final Class<? extends ReSIDBase> sidImplCls,
-			int sidNum) {
+	private ReSIDBase createSID(final Class<? extends ReSIDBase> sidImplCls, int sidNum) {
 		if (ReSID.class.equals(sidImplCls)) {
 			return new ReSID(context);
 		} else if (ReSIDfp.class.equals(sidImplCls)) {

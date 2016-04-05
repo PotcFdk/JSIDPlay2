@@ -36,12 +36,12 @@ import java.io.ObjectOutput;
  * The CharIntMap is a collection to save <code>char</code> to <code>int</code>
  * mappings in. The CharIntMap is destined to provide fast access to skip tables
  * while being both Unicode-safe and more RAM-effective than a naive
- * <code>int</code> array.
- * <br><br>
+ * <code>int</code> array. <br>
+ * <br>
  * The CharIntMap is initialized by specifying the extent between the lowest and
  * the highest occuring character and the lowest occuring character. Only an
- * array of size <code>highest - lowest + 1</code> is constructed.
- * <br><br>
+ * array of size <code>highest - lowest + 1</code> is constructed. <br>
+ * <br>
  * There's usually no need to construct a CharIntMap yourself, it is done
  * automatically for you in the pre-processing methods.
  * 
@@ -58,13 +58,16 @@ class CharIntMap implements Externalizable, Cloneable {
 	/**
 	 * Constructor for CharIntMap. Required for Serialization.
 	 */
-	public CharIntMap() {}
+	public CharIntMap() {
+	}
 
 	/**
 	 * Constructor for CharIntMap.
 	 * 
-	 * @param extent the extent of the text
-	 * @param lowest the lowest occuring character
+	 * @param extent
+	 *            the extent of the text
+	 * @param lowest
+	 *            the lowest occuring character
 	 */
 	public CharIntMap(final int extent, final char lowest) {
 		this(extent, lowest, 0);
@@ -73,10 +76,13 @@ class CharIntMap implements Externalizable, Cloneable {
 	/**
 	 * Constructor for CharIntMap.
 	 * 
-	 * @param extent the extent of the text
-	 * @param lowest the lowest occuring character
-	 * @param defaultValue a default value to initialize the underlying
-	 * <code>int</code> array with
+	 * @param extent
+	 *            the extent of the text
+	 * @param lowest
+	 *            the lowest occuring character
+	 * @param defaultValue
+	 *            a default value to initialize the underlying <code>int</code>
+	 *            array with
 	 */
 
 	public CharIntMap(final int extent, final char lowest, final int defaultValue) {
@@ -110,20 +116,21 @@ class CharIntMap implements Externalizable, Cloneable {
 	/**
 	 * Returns the stored value for the given <code>char</code>.
 	 * 
-	 * @param c the <code>char</code>
+	 * @param c
+	 *            the <code>char</code>
 	 * @return the stored value
 	 */
 	public int get(final char c) {
 
 		/*
-		 * For the Sun VM, the char version accelerates some algorithms by 5 to 10 %,
-		 * in the IBM VM, there is no difference.
+		 * For the Sun VM, the char version accelerates some algorithms by 5 to
+		 * 10 %, in the IBM VM, there is no difference.
 		 */
 
-		//  int x = c - lowest;
-		//  if (x < 0 || x >= array.length) {
-		//   return defaultValue;
-		//  }
+		// int x = c - lowest;
+		// if (x < 0 || x >= array.length) {
+		// return defaultValue;
+		// }
 
 		final char x = (char) (c - lowest);
 		if (x >= array.length) {
@@ -135,20 +142,22 @@ class CharIntMap implements Externalizable, Cloneable {
 	/**
 	 * Sets the stored value for the given <code>char</code>.
 	 * 
-	 * @param c the <code>char</code>
-	 * @param val the new value
+	 * @param c
+	 *            the <code>char</code>
+	 * @param val
+	 *            the new value
 	 */
 	public void set(final char c, final int val) {
 
 		/*
-		 * For the Sun VM, the char version accelerates some algorithms by 5 to 10 %,
-		 * in the IBM VM, there is no difference.
+		 * For the Sun VM, the char version accelerates some algorithms by 5 to
+		 * 10 %, in the IBM VM, there is no difference.
 		 */
 
-		//  int x = c - lowest;
-		//  if (x < 0 || x >= array.length) {
-		//   return;
-		//  }
+		// int x = c - lowest;
+		// if (x < 0 || x >= array.length) {
+		// return;
+		// }
 
 		final char x = (char) (c - lowest);
 		if (x >= array.length) {
@@ -177,6 +186,7 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Returns the highest char that mappings can be saved for.
+	 * 
 	 * @return char
 	 */
 	public char getHighest() {
@@ -186,7 +196,8 @@ class CharIntMap implements Externalizable, Cloneable {
 	/**
 	 * Returns if this Object is equal to another Object.
 	 * 
-	 * @param obj the other Object
+	 * @param obj
+	 *            the other Object
 	 * @return if this Object is equal
 	 * @see java.lang.Object#equals(Object)
 	 */
@@ -207,11 +218,9 @@ class CharIntMap implements Externalizable, Cloneable {
 		}
 		if (array == null && m.array == null) {
 			return true;
-		}
-		else if (array != null && m.array == null) {
+		} else if (array != null && m.array == null) {
 			return false;
-		}
-		else if (array == null && m.array != null) {
+		} else if (array == null && m.array != null) {
 			return false;
 		}
 		for (int i = 0; i < array.length; i++) {
@@ -274,8 +283,7 @@ class CharIntMap implements Externalizable, Cloneable {
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		if (array == null) {
 			out.writeInt(0);
-		}
-		else {
+		} else {
 			out.writeInt(array.length);
 			for (final int element : array) {
 				out.writeInt(element);
@@ -288,8 +296,7 @@ class CharIntMap implements Externalizable, Cloneable {
 	/**
 	 * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
 	 */
-	public void readExternal(final ObjectInput in)
-	throws IOException, ClassNotFoundException {
+	public void readExternal(final ObjectInput in) throws IOException, ClassNotFoundException {
 		final int l = in.readInt();
 		if (l > 0) {
 			array = new int[l];

@@ -31,8 +31,7 @@ public class GameBasePage extends Tab implements UIPart {
 	private static final String GB64_SCREENSHOT_DOWNLOAD_URL = "http://www.gb64.com/Screenshots/";
 	private static final String GB64_GAMES_DOWNLOAD_URL = "http://gamebase64.hardabasht.com/games/";
 
-	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file,
-			toAttach) -> toAttach == null
+	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file, toAttach) -> toAttach == null
 			|| file.getName().compareTo(toAttach.getName()) < 0;
 
 	@FXML
@@ -42,8 +41,8 @@ public class GameBasePage extends Tab implements UIPart {
 	private ImageView screenshot;
 	private String fileToRun;
 	private final BiPredicate<File, File> FILE_TO_RUN_DETECTOR = (file,
-			toAttach) -> (fileToRun.length() == 0 && LEXICALLY_FIRST_MEDIA
-			.test(file, toAttach)) || fileToRun.equals(file.getName());
+			toAttach) -> (fileToRun.length() == 0 && LEXICALLY_FIRST_MEDIA.test(file, toAttach))
+					|| fileToRun.equals(file.getName());
 	private ObservableList<Games> allGames;
 	private ObservableList<Games> filteredGames;
 
@@ -62,64 +61,47 @@ public class GameBasePage extends Tab implements UIPart {
 		gamebaseTable.setItems(filteredGames);
 		gamebaseTable.setOnKeyPressed((event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
-				Games game = gamebaseTable.getSelectionModel()
-						.getSelectedItem();
+				Games game = gamebaseTable.getSelectionModel().getSelectedItem();
 				startGame(game);
 			}
 		});
 		gamebaseTable.setOnMousePressed((event) -> {
 			if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
-				Games game = gamebaseTable.getSelectionModel()
-						.getSelectedItem();
+				Games game = gamebaseTable.getSelectionModel().getSelectedItem();
 				startGame(game);
 			}
 		});
-		gamebaseTable
-				.getSelectionModel()
-				.selectedItemProperty()
-				.addListener(
-						(observable, oldValue, newValue) -> {
-							if (newValue != null) {
-								if (newValue.getScreenshotFilename().isEmpty()) {
-									System.out
-											.println("Screenshot is not available on GameBase64: "
-													+ newValue.getName());
-								} else {
-									try {
-										URL url = new URL(
-												GB64_SCREENSHOT_DOWNLOAD_URL
-														+ newValue
-																.getScreenshotFilename()
-																.replace('\\',
-																		'/'));
-										if (screenshot == null) {
-											screenshot = (ImageView) gamebaseTable
-													.getScene().lookup(
-															"#screenshot");
-										}
-										if (screenshot != null) {
-											Platform.runLater(() -> screenshot
-													.setImage(new Image(url
-															.toString())));
-										}
-									} catch (MalformedURLException e) {
-										System.err.println(e.getMessage());
-									}
-								}
-							}
-						});
+		gamebaseTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				if (newValue.getScreenshotFilename().isEmpty()) {
+					System.out.println("Screenshot is not available on GameBase64: " + newValue.getName());
+				} else {
+					try {
+						URL url = new URL(
+								GB64_SCREENSHOT_DOWNLOAD_URL + newValue.getScreenshotFilename().replace('\\', '/'));
+						if (screenshot == null) {
+							screenshot = (ImageView) gamebaseTable.getScene().lookup("#screenshot");
+						}
+						if (screenshot != null) {
+							Platform.runLater(() -> screenshot.setImage(new Image(url.toString())));
+						}
+					} catch (MalformedURLException e) {
+						System.err.println(e.getMessage());
+					}
+				}
+			}
+		});
 	}
 
 	protected void startGame(Games game) {
 		if (game.getFilename().isEmpty()) {
-			System.out.println("Game is not available on GameBase64: "
-					+ game.getName());
+			System.out.println("Game is not available on GameBase64: " + game.getName());
 			return;
 		}
 		try {
 			fileToRun = game.getFileToRun();
-			if (convenience.autostart(new URL(GB64_GAMES_DOWNLOAD_URL
-					+ game.getFilename().replace('\\', '/')).toURI().toURL(),
+			if (convenience.autostart(
+					new URL(GB64_GAMES_DOWNLOAD_URL + game.getFilename().replace('\\', '/')).toURI().toURL(),
 					FILE_TO_RUN_DETECTOR, null)) {
 				util.setPlayingTab(this);
 			}

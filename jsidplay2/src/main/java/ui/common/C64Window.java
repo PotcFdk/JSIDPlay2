@@ -67,7 +67,7 @@ public abstract class C64Window implements UIPart {
 		part.doClose();
 		uiParts.remove(part);
 	}
-	
+
 	public Stage getStage() {
 		return stage;
 	}

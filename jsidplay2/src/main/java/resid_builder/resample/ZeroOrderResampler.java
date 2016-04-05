@@ -7,16 +7,16 @@ package resid_builder.resample;
  */
 public class ZeroOrderResampler implements Resampler {
 	private int cachedSample;
-	
+
 	private final int cyclesPerSample;
 	private int sampleOffset;
 	private int output;
-	
+
 	public ZeroOrderResampler(double clockFrequency, double samplingFrequency) {
 		cyclesPerSample = (int) (clockFrequency / samplingFrequency * 1024f);
 		reset();
 	}
-	
+
 	public boolean input(int sample) {
 		boolean ready = false;
 
@@ -28,14 +28,14 @@ public class ZeroOrderResampler implements Resampler {
 		sampleOffset -= 1024;
 
 		cachedSample = sample;
-		
+
 		return ready;
 	}
 
 	public int output() {
 		return output;
 	}
-	
+
 	public void reset() {
 		sampleOffset = 0;
 		cachedSample = 0;

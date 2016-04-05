@@ -46,8 +46,7 @@ public class Cartridge {
 		EASYFLASH;
 
 		public static CRTType getType(byte[] header) {
-			if (!new String(header, 0, 0x10, ISO88591)
-					.equals("C64 CARTRIDGE   ")) {
+			if (!new String(header, 0, 0x10, ISO88591).equals("C64 CARTRIDGE   ")) {
 				throw new RuntimeException("File is not a .CRT file");
 			}
 			return values()[(header[0x16] & 0xff) << 8 | (header[0x17] & 0xff)];
@@ -128,8 +127,8 @@ public class Cartridge {
 	 *            size in KB
 	 * @return a cartridge instance
 	 */
-	public static final Cartridge create(final PLA pla,
-			final CartridgeType cartType, final int sizeKB) throws IOException {
+	public static final Cartridge create(final PLA pla, final CartridgeType cartType, final int sizeKB)
+			throws IOException {
 		switch (cartType) {
 		case GEORAM:
 			return new GeoRAM(null, pla, sizeKB);
@@ -152,10 +151,8 @@ public class Cartridge {
 	 *            file to load from
 	 * @return a cartridge instance
 	 */
-	public static Cartridge read(final PLA pla, final CartridgeType cartType,
-			final File file) throws IOException {
-		try (final DataInputStream dis = new DataInputStream(
-				new FileInputStream(file))) {
+	public static Cartridge read(final PLA pla, final CartridgeType cartType, final File file) throws IOException {
+		try (final DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
 			switch (cartType) {
 			case GEORAM:
 				return new GeoRAM(dis, pla, (int) (file.length() >> 10));
@@ -194,8 +191,7 @@ public class Cartridge {
 				case MAGIC_DESK__DOMARK__HES_AUSTRALIA:
 					return new MagicDesk(dis, pla);
 				default:
-					throw new RuntimeException("Cartridges of format: " + type
-							+ " unsupported");
+					throw new RuntimeException("Cartridges of format: " + type + " unsupported");
 				}
 			default:
 				throw new RuntimeException("Cartridge unsupported");
@@ -246,13 +242,12 @@ public class Cartridge {
 	 * Subclasses need to override doFreeze().
 	 */
 	public final void freeze() {
-		pla.getCPU().getEventScheduler()
-				.scheduleThreadSafe(new Event("Freeze TS") {
-					@Override
-					public void event() {
-						Cartridge.this.doFreeze();
-					}
-				});
+		pla.getCPU().getEventScheduler().scheduleThreadSafe(new Event("Freeze TS") {
+			@Override
+			public void event() {
+				Cartridge.this.doFreeze();
+			}
+		});
 	}
 
 	/**

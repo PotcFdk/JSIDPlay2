@@ -88,10 +88,11 @@ public abstract class VIC extends Bank {
 	private static final byte COL_ECM = 8;
 	private static final byte COL_NONE = 9;
 
-	private static final byte[] videoModeColorDecoder = { COL_D021, COL_D021,
-			COL_CBUF, COL_CBUF, /* ECM=0 BMM=0 MCM=0 */
+	private static final byte[] videoModeColorDecoder = { COL_D021, COL_D021, COL_CBUF,
+			COL_CBUF, /* ECM=0 BMM=0 MCM=0 */
 			COL_D021, COL_D022, COL_D023, COL_CBUF_MC, /* ECM=0 BMM=0 MCM=1 */
-			COL_VBUF_L, COL_VBUF_L, COL_VBUF_H, COL_VBUF_H, /* ECM=0 BMM=1 MCM=0 */
+			COL_VBUF_L, COL_VBUF_L, COL_VBUF_H,
+			COL_VBUF_H, /* ECM=0 BMM=1 MCM=0 */
 			COL_D021, COL_VBUF_H, COL_VBUF_L, COL_CBUF, /* ECM=0 BMM=1 MCM=1 */
 			COL_ECM, COL_ECM, COL_CBUF, COL_CBUF, /* ECM=1 BMM=0 MCM=0 */
 			COL_NONE, COL_NONE, COL_NONE, COL_NONE, /* ECM=1 BMM=0 MCM=1 */
@@ -117,9 +118,13 @@ public abstract class VIC extends Bank {
 	private int phi1DataPipe;
 
 	protected int[] combinedLinesCurrent;
-	/** Table for looking up color using a packed 2x8 value for even rasterlines */
+	/**
+	 * Table for looking up color using a packed 2x8 value for even rasterlines
+	 */
 	protected final int[] combinedLinesEven = new int[256 * 256];
-	/** Table for looking up color using a packed 2x8 value for odd rasterlines */
+	/**
+	 * Table for looking up color using a packed 2x8 value for odd rasterlines
+	 */
 	protected final int[] combinedLinesOdd = new int[256 * 256];
 	/** Prevailing VIC color palette for current line (odd/even) */
 	protected byte[] linePaletteCurrent;
@@ -282,8 +287,7 @@ public abstract class VIC extends Bank {
 	 * @return x-coordinate
 	 */
 	private int readSpriteXCoordinate(final int spriteNo) {
-		return (registers[0x00 + (spriteNo << 1)] & 0xff)
-				+ ((registers[0x10] & 1 << spriteNo) != 0 ? 256 : 0);
+		return (registers[0x00 + (spriteNo << 1)] & 0xff) + ((registers[0x10] & 1 << spriteNo) != 0 ? 256 : 0);
 	}
 
 	/**
@@ -325,8 +329,7 @@ public abstract class VIC extends Bank {
 	}
 
 	protected boolean evaluateIsBadLine() {
-		return areBadLinesEnabled && rasterY >= FIRST_DMA_LINE
-				&& rasterY <= LAST_DMA_LINE && (rasterY & 7) == yscroll;
+		return areBadLinesEnabled && rasterY >= FIRST_DMA_LINE && rasterY <= LAST_DMA_LINE && (rasterY & 7) == yscroll;
 	}
 
 	/** Signal CPU interrupt if requested by VIC. */
@@ -379,6 +382,7 @@ public abstract class VIC extends Bank {
 	 * high pits, making the complete value %00001111000000001111000011111111.
 	 */
 	protected static final int[] singleColorLUT = new int[16];
+
 	static {
 		for (int in = 0; in < 16; in++) {
 			int out = 0;
@@ -428,13 +432,11 @@ public abstract class VIC extends Bank {
 				videoModeColors[COL_CBUF_MC] = (byte) (latchedColor & 0x7);
 				videoModeColors[COL_VBUF_L] = (byte) (latchedVmd & 0xf);
 				videoModeColors[COL_VBUF_H] = (byte) (latchedVmd >> 4 & 0xf);
-				videoModeColors[COL_ECM] = videoModeColors[COL_D021
-						+ ((latchedVmd >> 6) & 0x3)];
+				videoModeColors[COL_ECM] = videoModeColors[COL_D021 + ((latchedVmd >> 6) & 0x3)];
 
 				mcFlip = true;
 				if (renderCycle < 40 && !showBorderVertical) {
-					latchedVmd = isDisplayActive ? videoMatrixData[renderCycle]
-							: 0;
+					latchedVmd = isDisplayActive ? videoMatrixData[renderCycle] : 0;
 					latchedColor = isDisplayActive ? colorData[renderCycle] : 0;
 					phi1DataPipe ^= (phi1DataPipe ^ phi1Data << 16) & 0xff0000;
 				}
@@ -453,7 +455,8 @@ public abstract class VIC extends Bank {
 			 * This monster asks a question: are we going to render multicolor
 			 * pixels now?
 			 */
-			if (((videoModeColorDecoderOffset & 4) != 0 && !(videoModeColorDecoderOffset == 4 && videoModeColors[COL_CBUF] < 8))) {
+			if (((videoModeColorDecoderOffset & 4) != 0
+					&& !(videoModeColorDecoderOffset == 4 && videoModeColors[COL_CBUF] < 8))) {
 
 				/*
 				 * It would be great if the below expression could be SIMDified,
@@ -474,8 +477,7 @@ public abstract class VIC extends Bank {
 					 * Convert to one of the 9 possible values VIC can output at
 					 * a time
 					 */
-					int color = videoModeColorDecoder[videoModeColorDecoderOffset
-							| pixelColor];
+					int color = videoModeColorDecoder[videoModeColorDecoderOffset | pixelColor];
 					/* Convert to final color index in the vic-ii palette. */
 					graphicsDataBuffer |= videoModeColors[color];
 					/* Separate data channel for sprite priority handling */
@@ -576,8 +578,7 @@ public abstract class VIC extends Bank {
 
 			final int priorityMask = current.getNextPriorityMask();
 			spriteForegroundMask &= ~priorityData | priorityMask;
-			graphicsDataBuffer ^= (current.colorBuffer ^ graphicsDataBuffer)
-					& spriteForegroundMask;
+			graphicsDataBuffer ^= (current.colorBuffer ^ graphicsDataBuffer) & spriteForegroundMask;
 
 			/* exhausted this sprite's data? */
 			if (current.consuming) {
@@ -614,9 +615,7 @@ public abstract class VIC extends Bank {
 				oldGraphicsData <<= 4;
 				final byte lineColor = linePaletteCurrent[oldGraphicsData >>> 16];
 				final byte previousLineColor = previousLineDecodedColor[previousLineIndex];
-				pixels[nextPixel++] = ALPHA
-						| combinedLinesCurrent[lineColor & 0xff
-								| previousLineColor << 8 & 0xff00];
+				pixels[nextPixel++] = ALPHA | combinedLinesCurrent[lineColor & 0xff | previousLineColor << 8 & 0xff00];
 				previousLineDecodedColor[previousLineIndex++] = lineColor;
 			}
 			graphicsDataBuffer <<= 16;
@@ -690,8 +689,7 @@ public abstract class VIC extends Bank {
 		}
 		sprite.repeatPixels();
 
-		sprite.setSpriteByte(2,
-				vicReadMemoryPHI2(sprites[n].getCurrentByteAddress()));
+		sprite.setSpriteByte(2, vicReadMemoryPHI2(sprites[n].getCurrentByteAddress()));
 	}
 
 	/**
@@ -703,8 +701,7 @@ public abstract class VIC extends Bank {
 	protected void fetchSpriteData(final int n) {
 		Sprite sprite = sprites[n];
 		sprite.setSpriteByte(1, phi1Data);
-		sprite.setSpriteByte(0,
-				vicReadMemoryPHI2(sprite.getCurrentByteAddress()));
+		sprite.setSpriteByte(0, vicReadMemoryPHI2(sprite.getCurrentByteAddress()));
 
 		final int x = sprites[n].getX();
 		if (x == 0x16f + 0x10 * n) {
@@ -732,7 +729,7 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-		// Raster Counter
+			// Raster Counter
 		case 0x12:
 			value = (byte) rasterY;
 			break;
@@ -764,8 +761,8 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-		// for addresses < $20 read from register directly, when < $2f set
-		// bits of high nibble to 1, for >= $2f return $ff
+			// for addresses < $20 read from register directly, when < $2f set
+			// bits of high nibble to 1, for >= $2f return $ff
 		default:
 			if (register < 0x20) {
 				value = registers[register];
@@ -780,9 +777,10 @@ public abstract class VIC extends Bank {
 		return value;
 	}
 
-	/** Display is enabled because badline condition was on for at least 1 clock */
-	private final Event makeDisplayActive = new Event(
-			"Activate display due to badline") {
+	/**
+	 * Display is enabled because badline condition was on for at least 1 clock
+	 */
+	private final Event makeDisplayActive = new Event("Activate display due to badline") {
 		@Override
 		public void event() {
 			isDisplayActive = true;
@@ -814,26 +812,26 @@ public abstract class VIC extends Bank {
 			if (!lpAsserted) {
 				return;
 			}
-	
+
 			if (lpTriggered) {
 				return;
 			}
 			lpTriggered = true;
-	
+
 			lpx = (byte) getCurrentSpriteCycle();
 			lpx++;
 			if (lpx == CYCLES_PER_LINE) {
 				lpx = 0;
 			}
-	
+
 			lpx <<= 2;
 			lpx += context.phase() == Phase.PHI1 ? 1 : 2;
-	
+
 			lpy = (byte) (rasterY & 0xff);
 			if (lineCycle == 9) {
 				lpy++;
 			}
-	
+
 			activateIRQFlag(MOS656X_INTERRUPT_LP);
 		}
 	}
@@ -870,7 +868,7 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-		// y-coordinate of a spriteID has been modified
+			// y-coordinate of a spriteID has been modified
 		case 0x01:
 		case 0x03:
 		case 0x05:
@@ -960,7 +958,7 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-		// the sprite y-expansion byte has changed
+			// the sprite y-expansion byte has changed
 		case 0x17: {
 			for (int i = 0; i < 8; i++) {
 				final boolean expandY = (data & 1 << i) != 0;
@@ -969,7 +967,7 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-		// the cached video memory base addresses might have changed
+			// the cached video memory base addresses might have changed
 		case 0x18:
 			determineVideoMemoryBaseAddresses();
 			break;
@@ -989,13 +987,12 @@ public abstract class VIC extends Bank {
 		// the sprite priority byte has changed
 		case 0x1b: {
 			for (int i = 0, m = 1; i < 8; i++, m <<= 1) {
-				this.sprites[i]
-						.setPriorityOverForegroundGraphics((data & m) == 0);
+				this.sprites[i].setPriorityOverForegroundGraphics((data & m) == 0);
 			}
 			break;
 		}
 
-		// Sprites O-7 Multi-Color Mode Selection
+			// Sprites O-7 Multi-Color Mode Selection
 		case 0x1c:
 			for (int i = 0, m = 1; i < 8; ++i, m <<= 1) {
 				this.sprites[i].setMulticolor((data & m) != 0);
@@ -1010,7 +1007,7 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-		// the border color was changed
+			// the border color was changed
 		case 0x20:
 			borderColor = (data & 0xf) * 0x11111111;
 			break;

@@ -16,7 +16,7 @@ public class SIDDeviceSettings {
 	private static final SIDDeviceSettings instance = new SIDDeviceSettings();
 
 	private Properties props = new java.util.Properties();
-	
+
 	private SIDDeviceSettings() {
 		load();
 	}
@@ -45,18 +45,16 @@ public class SIDDeviceSettings {
 	 * @return digi boost value from the settings.
 	 */
 	public synchronized boolean getDigiBoostEnabled() {
-		return Boolean.TRUE.equals(Boolean.valueOf(props
-				.getProperty(PROPERTY_DIGI_BOOST)));
+		return Boolean.TRUE.equals(Boolean.valueOf(props.getProperty(PROPERTY_DIGI_BOOST)));
 	}
-	
+
 	/**
 	 * @return if external connections are allowed.
 	 */
 	public synchronized boolean getAllowExternalConnections() {
-		return Boolean.TRUE.equals(Boolean.valueOf(props
-				.getProperty(ALLOW_EXTERNAL_CONNECTIONS)));
-	}	
-	
+		return Boolean.TRUE.equals(Boolean.valueOf(props.getProperty(ALLOW_EXTERNAL_CONNECTIONS)));
+	}
+
 	/**
 	 * @param deviceIndex
 	 *            the device index to be saved
@@ -74,7 +72,7 @@ public class SIDDeviceSettings {
 		props.setProperty(PROPERTY_DIGI_BOOST, String.valueOf(digiBoost));
 		save();
 	}
-	
+
 	/**
 	 * @param allowExternalConnections
 	 *            specifies if external connection are allowed
@@ -82,7 +80,7 @@ public class SIDDeviceSettings {
 	public synchronized void saveAllowExternalConnections(boolean allowExternalConnections) {
 		props.setProperty(ALLOW_EXTERNAL_CONNECTIONS, String.valueOf(allowExternalConnections));
 		save();
-	}	
+	}
 
 	public void load() {
 		try (FileInputStream fis = new FileInputStream(FILE_NAME_PROPERTIES)) {

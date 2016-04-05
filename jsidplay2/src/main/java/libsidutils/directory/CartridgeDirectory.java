@@ -13,8 +13,7 @@ public class CartridgeDirectory {
 
 	public static Directory getDirectory(File file) throws IOException {
 		Directory dir = new Directory();
-		try (DataInputStream dis = new DataInputStream(
-				new FileInputStream(file))) {
+		try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
 			final byte[] header = new byte[0x40];
 			dis.readFully(header);
 			CRTType type = CRTType.getType(header);

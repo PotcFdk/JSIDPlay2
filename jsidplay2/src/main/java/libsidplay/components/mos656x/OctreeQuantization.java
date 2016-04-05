@@ -10,13 +10,13 @@ import java.util.TreeSet;
 
 /**
  * Classic octree color quantization algorithm. Given a histogram as packed
- * color value and count of occurences, computes and returns the optimal
- * palette when requested from the state of the tree.
+ * color value and count of occurences, computes and returns the optimal palette
+ * when requested from the state of the tree.
  * <p>
- * The class operates on 24-bit colors. The components are called red, green
- * and blue, but they can be anything. The components should be in some coding
- * that compensates for eye's different sensitivity for errors in each component,
- * as the color distance calculation and quantization assumes so.
+ * The class operates on 24-bit colors. The components are called red, green and
+ * blue, but they can be anything. The components should be in some coding that
+ * compensates for eye's different sensitivity for errors in each component, as
+ * the color distance calculation and quantization assumes so.
  * 
  * @author Antti Lankila
  */
@@ -26,12 +26,14 @@ class OctreeQuantization {
 
 	/** Bits per component in color lookup bucket */
 	private static final int MAX_BUCKET_DEPTH = 2;
-	
+
 	private static final int COMPONENT_MASK = (1 << MAX_DEPTH) - 1;
 
-	/** Fast color lookup in least-squares sense- Each color is put in bucket. */
+	/**
+	 * Fast color lookup in least-squares sense- Each color is put in bucket.
+	 */
 	final List<List<Node>> buckets = new ArrayList<List<Node>>();
-	
+
 	/** The start of quantization tree. */
 	final Node root = new Node(null);
 
@@ -45,7 +47,8 @@ class OctreeQuantization {
 	 * Quantizer instance. Make a new quantizer for specific number of colors,
 	 * add colors, and finally ask for palette.
 	 * 
-	 * @param max size of palette to quantize to.
+	 * @param max
+	 *            size of palette to quantize to.
 	 */
 	protected OctreeQuantization(final int max) {
 		this.max = max;
@@ -78,21 +81,24 @@ class OctreeQuantization {
 			int b = (packed >> (MAX_DEPTH * 0 + depth - 1)) & 1;
 			return r << 2 | g << 1 | b;
 		}
-		
+
 		/**
 		 * Add a weighed pixel into tree.
 		 *
-		 * @param packed the packed data to add.
-		 * @param weight the weight of this pixel
-		 * @param depth current depth
+		 * @param packed
+		 *            the packed data to add.
+		 * @param weight
+		 *            the weight of this pixel
+		 * @param depth
+		 *            current depth
 		 */
 		protected void add(final int packed, final int weight, final int depth) {
 			reference += weight;
 
 			if (leaf) {
-				red +=   (packed >> (MAX_DEPTH * 2) & COMPONENT_MASK) * weight;
+				red += (packed >> (MAX_DEPTH * 2) & COMPONENT_MASK) * weight;
 				green += (packed >> (MAX_DEPTH * 1) & COMPONENT_MASK) * weight;
-				blue +=  (packed >> (MAX_DEPTH * 0) & COMPONENT_MASK) * weight;
+				blue += (packed >> (MAX_DEPTH * 0) & COMPONENT_MASK) * weight;
 				return;
 			}
 
@@ -111,8 +117,10 @@ class OctreeQuantization {
 		/**
 		 * Find nearest node in tree to color
 		 * 
-		 * @param packed the color to look for
-		 * @param depth current depth
+		 * @param packed
+		 *            the color to look for
+		 * @param depth
+		 *            current depth
 		 * @return nearest node
 		 */
 		@SuppressWarnings("unused")
@@ -124,12 +132,14 @@ class OctreeQuantization {
 				return children[i].find(packed, depth - 1);
 			}
 
-			/* In a general case we might end up in situation where this node is not
-			 * a leaf node. However, because we only ask after colors that are added
-			 * to the tree, we will always be a leaf here. */
+			/*
+			 * In a general case we might end up in situation where this node is
+			 * not a leaf node. However, because we only ask after colors that
+			 * are added to the tree, we will always be a leaf here.
+			 */
 			return this;
 		}
-		
+
 		/**
 		 * Reduce a node and mark it as leaf.
 		 * <p>
@@ -137,7 +147,8 @@ class OctreeQuantization {
 		 * reference count of parent remains unchanged.
 		 * <p>
 		 * Because we are calling reduce always for the least referenced parent,
-		 * every parent candidate for reduction can only have leaf nodes under it.
+		 * every parent candidate for reduction can only have leaf nodes under
+		 * it.
 		 * <p>
 		 */
 		protected void reduce() {
@@ -173,8 +184,8 @@ class OctreeQuantization {
 		}
 
 		/**
-		 * Calculate distance in 3d geometric terms between two colors.
-		 * YUV palette is used: it should be perceptively linear coding system.
+		 * Calculate distance in 3d geometric terms between two colors. YUV
+		 * palette is used: it should be perceptively linear coding system.
 		 * 
 		 * @param a
 		 * @return distance squared.
@@ -190,8 +201,10 @@ class OctreeQuantization {
 	/**
 	 * Add a color to quantization algorithm.
 	 * 
-	 * @param color The packed color to add.
-	 * @param weight Number of occurences of this color. (How important it is.)
+	 * @param color
+	 *            The packed color to add.
+	 * @param weight
+	 *            Number of occurences of this color. (How important it is.)
 	 */
 	protected void addColor(final int color, final int weight) {
 		root.add(color, weight, MAX_DEPTH);
@@ -207,13 +220,15 @@ class OctreeQuantization {
 			return;
 		}
 
-		/* Create a sorted tree that can be used to select the least useful
+		/*
+		 * Create a sorted tree that can be used to select the least useful
 		 * colors.
 		 */
 		final TreeSet<Node> parentSet = new TreeSet<Node>(new Comparator<Node>() {
 			public int compare(final Node o1, final Node o2) {
-				/* Tree is sorted according to usage count and secondarily by
-				 * id to disambiguate equally used colors.
+				/*
+				 * Tree is sorted according to usage count and secondarily by id
+				 * to disambiguate equally used colors.
 				 */
 				if (o1.reference > o2.reference) {
 					return 1;
@@ -247,12 +262,12 @@ class OctreeQuantization {
 			parent.reduce();
 			parentSet.add(parent.parent);
 		}
-		
+
 	}
-	
+
 	/**
-	 * Returns the optimized palette of constructor-time specified length.
-	 * Pads with 0 if more colors were requested than existed in source material.
+	 * Returns the optimized palette of constructor-time specified length. Pads
+	 * with 0 if more colors were requested than existed in source material.
 	 * 
 	 * @return
 	 */
@@ -261,14 +276,14 @@ class OctreeQuantization {
 
 		/* Construct accelerator structure */
 		buckets.clear();
-		for (int i = 0; i < 1 << 3 * MAX_BUCKET_DEPTH; i ++) {
+		for (int i = 0; i < 1 << 3 * MAX_BUCKET_DEPTH; i++) {
 			buckets.add(new ArrayList<Node>());
 		}
 
 		int i = 0;
 		final int[] finalPalette = new int[max];
 		for (final Node node : leaves) {
-			finalPalette[i ++] = node.toPacked();
+			finalPalette[i++] = node.toPacked();
 			bucketStore(node);
 		}
 
@@ -276,9 +291,9 @@ class OctreeQuantization {
 	}
 
 	/**
-	 * Generate color buckets for faster color lookup. Each color
-	 * is distributed to the buckets at granularity of 2 bits
-	 * per component (4 * 4 * 4 = 64 buckets in total).
+	 * Generate color buckets for faster color lookup. Each color is distributed
+	 * to the buckets at granularity of 2 bits per component (4 * 4 * 4 = 64
+	 * buckets in total).
 	 * 
 	 * @param node
 	 */
@@ -288,12 +303,12 @@ class OctreeQuantization {
 		int r_ref = (color >> MAX_DEPTH * 2) & COMPONENT_MASK;
 		int g_ref = (color >> MAX_DEPTH * 1) & COMPONENT_MASK;
 		int b_ref = (color >> MAX_DEPTH * 0) & COMPONENT_MASK;
-	
+
 		/* Reduced to 2 bits now. */
 		r_ref >>= MAX_DEPTH - MAX_BUCKET_DEPTH;
 		g_ref >>= MAX_DEPTH - MAX_BUCKET_DEPTH;
 		b_ref >>= MAX_DEPTH - MAX_BUCKET_DEPTH;
-		
+
 		/* Scan the cube around the reference value */
 		for (int dr = -1; dr <= 0; dr += 1) {
 			for (int dg = -1; dg <= 0; dg += 1) {
@@ -301,7 +316,7 @@ class OctreeQuantization {
 					int r = r_ref + dr;
 					int g = g_ref + dg;
 					int b = b_ref + db;
-					
+
 					/* Exclude outside buckets */
 					if (r < 0 || g < 0 || b < 0) {
 						continue;
@@ -320,7 +335,8 @@ class OctreeQuantization {
 	/**
 	 * Do a nearest-node scan looking for best match.
 	 * 
-	 * @param color Color to get the best match of.
+	 * @param color
+	 *            Color to get the best match of.
 	 *
 	 * @return best node from simple scan
 	 */
@@ -329,18 +345,18 @@ class OctreeQuantization {
 		int r_ref = (color >> MAX_DEPTH * 2) & COMPONENT_MASK;
 		int g_ref = (color >> MAX_DEPTH * 1) & COMPONENT_MASK;
 		int b_ref = (color >> MAX_DEPTH * 0) & COMPONENT_MASK;
-	
+
 		/* Reduced to 3 bits now. */
 		int rb = r_ref >> MAX_DEPTH - MAX_BUCKET_DEPTH;
 		int gb = g_ref >> MAX_DEPTH - MAX_BUCKET_DEPTH;
 		int bb = b_ref >> MAX_DEPTH - MAX_BUCKET_DEPTH;
 		int bucketIdx = rb << MAX_BUCKET_DEPTH * 2 | gb << MAX_BUCKET_DEPTH * 1 | bb << MAX_BUCKET_DEPTH * 0;
 		Iterable<Node> bucket = buckets.get(bucketIdx);
-		if (! bucket.iterator().hasNext()) {
+		if (!bucket.iterator().hasNext()) {
 			/* Nothing nearby. Hopefully this doesn't happen often. */
 			bucket = leaves;
 		}
-		
+
 		int bestDistance = Integer.MAX_VALUE;
 		Node bestMatch = null;
 
@@ -357,9 +373,10 @@ class OctreeQuantization {
 			}
 		}
 
-		assert(bestMatch != null);
-		//Node fast = root.find(color, MAX_DEPTH);		
-		//System.out.println("All that work paid off by: " + fast.distance(bestMatch));
+		assert (bestMatch != null);
+		// Node fast = root.find(color, MAX_DEPTH);
+		// System.out.println("All that work paid off by: " +
+		// fast.distance(bestMatch));
 		return bestMatch.toPacked();
 	}
 }

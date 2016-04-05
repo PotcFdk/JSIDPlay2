@@ -33,7 +33,7 @@ public final class Sprite extends Event {
 		}
 
 		/* no display bit? ignore event. */
-		if (! display) {
+		if (!display) {
 			return;
 		}
 
@@ -53,7 +53,7 @@ public final class Sprite extends Event {
 			firstMultiColorRead = true;
 		}
 
-		consumedLineData = lineData << 8-delayLength;
+		consumedLineData = lineData << 8 - delayLength;
 		lineData = 0;
 
 		prevPixel = 0;
@@ -110,9 +110,15 @@ public final class Sprite extends Event {
 	private int mcBase;
 	/** Data byte at DMA */
 	private int mc;
-	/** This is the first read of a line for an Y-expanded sprite? (no pointer increment) */
+	/**
+	 * This is the first read of a line for an Y-expanded sprite? (no pointer
+	 * increment)
+	 */
 	private boolean firstYRead;
-	/** This is the first read of a pixel for an X-expanded sprite? (consuming read) */
+	/**
+	 * This is the first read of a pixel for an X-expanded sprite? (consuming
+	 * read)
+	 */
 	private boolean firstXRead;
 
 	/** Sprite position */
@@ -128,8 +134,8 @@ public final class Sprite extends Event {
 	/** Does the sprite have priority over the screen background? */
 	private boolean priorityOverForegroundGraphics;
 	/**
-	 * The masking to be used for migrating color 1 as foreground color
-	 * during sprite priority bit handling
+	 * The masking to be used for migrating color 1 as foreground color during
+	 * sprite priority bit handling
 	 */
 	private int priorityMask;
 
@@ -145,7 +151,8 @@ public final class Sprite extends Event {
 	/**
 	 * Set the X-coordinate of the sprite
 	 * 
-	 * @param x new X-coordinate
+	 * @param x
+	 *            new X-coordinate
 	 */
 	public final void setX(final int x) {
 		this.x = x;
@@ -163,7 +170,8 @@ public final class Sprite extends Event {
 	/**
 	 * Set the Y-coordinate of the sprite
 	 * 
-	 * @param y new Y-coordinate
+	 * @param y
+	 *            new Y-coordinate
 	 */
 	public final void setY(final int y) {
 		this.y = y;
@@ -181,8 +189,10 @@ public final class Sprite extends Event {
 		}
 
 		priorityOverForegroundGraphics = priority;
-		/* the flag takes effect after 6 pixels,
-		 * hence changes to it look like this. */
+		/*
+		 * the flag takes effect after 6 pixels, hence changes to it look like
+		 * this.
+		 */
 		if (priorityOverForegroundGraphics) {
 			priorityMask = 0xff000000;
 		} else {
@@ -202,7 +212,8 @@ public final class Sprite extends Event {
 	/**
 	 * Set whether the sprite is currently enabled
 	 * 
-	 * @param enabled true if enabled
+	 * @param enabled
+	 *            true if enabled
 	 */
 	public final void setEnabled(final boolean enabled) {
 		this.enabled = enabled;
@@ -211,7 +222,8 @@ public final class Sprite extends Event {
 	/**
 	 * Set expandX flag for horizontal expansion
 	 * 
-	 * @param expandX true if expanded
+	 * @param expandX
+	 *            true if expanded
 	 */
 	public final void setExpandX(final boolean expandX) {
 		this.expandX = expandX;
@@ -220,8 +232,10 @@ public final class Sprite extends Event {
 	/**
 	 * Set expandY flag for vertical expansion
 	 *
-	 * @param expandY true if expanded
-	 * @param crunchCycle whether to do sprite crunch
+	 * @param expandY
+	 *            true if expanded
+	 * @param crunchCycle
+	 *            whether to do sprite crunch
 	 */
 	public final void setExpandY(final boolean expandY, final boolean crunchCycle) {
 		if (this.expandY == expandY) {
@@ -230,7 +244,7 @@ public final class Sprite extends Event {
 		this.expandY = expandY;
 
 		/* clearing y expansion bit resets the flip-flop */
-		if (! expandY) {
+		if (!expandY) {
 			firstYRead = false;
 			/* line crunch. */
 			if (crunchCycle) {
@@ -242,7 +256,8 @@ public final class Sprite extends Event {
 	/**
 	 * Change multicolor flag.
 	 * 
-	 * @param multiColor true if multicolor
+	 * @param multiColor
+	 *            true if multicolor
 	 */
 	public final void setMulticolor(final boolean multiColor) {
 		this.multiColor = multiColor;
@@ -274,7 +289,7 @@ public final class Sprite extends Event {
 	 * Set the address we read the sprite data from
 	 * 
 	 * @param pointerByte
-	 *              address to read from
+	 *            address to read from
 	 */
 	public final void setPointerByte(final byte pointerByte) {
 		this.pointerByte = pointerByte;
@@ -294,7 +309,7 @@ public final class Sprite extends Event {
 		lineData &= ~(0xff << (idx * 8));
 		lineData |= (value & 0xff) << (idx * 8);
 	}
-	
+
 	/** Begin rendering sprite on a line */
 	public void initDmaAccess() {
 		mc = mcBase;
@@ -304,7 +319,7 @@ public final class Sprite extends Event {
 	public final void finishDmaAccess() {
 		// we have to read this line again if the Y-expansion is set and this
 		// was the first read
-		if (! firstYRead) {
+		if (!firstYRead) {
 			mcBase = mc;
 		}
 	}
@@ -316,11 +331,11 @@ public final class Sprite extends Event {
 		}
 	}
 
-	/** Read the color number of the next pixel of the current sprite line.
+	/**
+	 * Read the color number of the next pixel of the current sprite line.
 	 * 
-	 * Colors 0, 1 are background colors,
-	 * color 2 sprite color #2,
-	 * colors 3-> sprite-specific colors.
+	 * Colors 0, 1 are background colors, color 2 sprite color #2, colors 3->
+	 * sprite-specific colors.
 	 */
 	private boolean multiColorLatched;
 	private int prevPixel;
@@ -343,7 +358,7 @@ public final class Sprite extends Event {
 	public final int getColor(int idx) {
 		return color[idx];
 	}
-	
+
 	protected int colorBuffer;
 
 	protected final int indexBits;
@@ -358,7 +373,8 @@ public final class Sprite extends Event {
 	public final int calculateNext8Pixels() {
 		int priorityBuffer = 0;
 
-		/* Common case of unexpanded sprite. We happen to know how to do these
+		/*
+		 * Common case of unexpanded sprite. We happen to know how to do these
 		 * very efficiently. Watch...
 		 */
 		if (!expandX && !expandXLatched && !multiColor && !multiColorLatched) {
@@ -373,26 +389,26 @@ public final class Sprite extends Event {
 			colorBuffer = color[2] * 0x11111111 & priority;
 			return priority;
 		}
-		
+
 		colorBuffer = 0;
-		
-		/* sprite state:
+
+		/*
+		 * sprite state:
 		 * 
-		 * 1) multicolor 4-state: on, off, turning on, turning off
-		 * 2) expand-x 4-state: on, off, turning on, turning off
-		 * 3) expandx current flop
-		 * 4) multicolor current flop
+		 * 1) multicolor 4-state: on, off, turning on, turning off 2) expand-x
+		 * 4-state: on, off, turning on, turning off 3) expandx current flop 4)
+		 * multicolor current flop
 		 * 
 		 * yielding 64 different decoding combinations + first pixel handling
 		 * for the flop-related cases.
 		 */
 
-		for (int pixelIndex = 0; pixelIndex < 8; pixelIndex ++) {
+		for (int pixelIndex = 0; pixelIndex < 8; pixelIndex++) {
 			switch (pixelIndex) {
 			case 6:
 				if (expandXLatched != expandX) {
 					expandXLatched = expandX;
-					if (! expandXLatched) {
+					if (!expandXLatched) {
 						firstXRead = true;
 					}
 				}
@@ -411,7 +427,7 @@ public final class Sprite extends Event {
 						if (consumedLineData == 0) {
 							consuming = false;
 						}
-						
+
 						prevPriority = (consumedLineData >>> 30) != 0 ? 0xf : 0;
 						prevPixel = color[consumedLineData >>> 30];
 					}
@@ -420,7 +436,7 @@ public final class Sprite extends Event {
 					if (consumedLineData == 0) {
 						consuming = false;
 					}
-					
+
 					prevPriority = consumedLineData >> 31 & 0xf;
 					prevPixel = prevPriority & color[2];
 				}
@@ -432,11 +448,11 @@ public final class Sprite extends Event {
 
 			colorBuffer <<= 4;
 			colorBuffer |= prevPixel;
-			
+
 			priorityBuffer <<= 4;
 			priorityBuffer |= prevPriority;
 		}
-		
+
 		return priorityBuffer;
 	}
 

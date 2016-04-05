@@ -11,13 +11,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="YEARS")
+@Table(name = "YEARS")
 @Access(AccessType.PROPERTY)
 public class Years {
 	private int id;
-	
+
 	@Id
-	@Column(name="YE_ID")
+	@Column(name = "YE_ID")
 	public int getId() {
 		return id;
 	}
@@ -27,9 +27,9 @@ public class Years {
 	}
 
 	private Games games;
-	
-	@OneToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="YE_ID")
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "YE_ID")
 	public Games getGames() {
 		return games;
 	}
@@ -40,7 +40,7 @@ public class Years {
 
 	private int year;
 
-	@Column(name="YEAR")
+	@Column(name = "YEAR")
 	public int getYear() {
 		return year;
 	}

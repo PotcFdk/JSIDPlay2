@@ -59,15 +59,13 @@ public interface Resampler {
 	 * @param samplingFrequency
 	 *            Desired output sampling rate
 	 */
-	static Resampler createResampler(final double clockFrequency,
-			final SamplingMethod method, final double samplingFrequency,
-			double highestAccurateFrequency) {
+	static Resampler createResampler(final double clockFrequency, final SamplingMethod method,
+			final double samplingFrequency, double highestAccurateFrequency) {
 		switch (method) {
 		case DECIMATE:
 			return new ZeroOrderResampler(clockFrequency, samplingFrequency);
 		case RESAMPLE:
-			return new TwoPassSincResampler(clockFrequency, samplingFrequency,
-					highestAccurateFrequency);
+			return new TwoPassSincResampler(clockFrequency, samplingFrequency, highestAccurateFrequency);
 		default:
 			throw new RuntimeException("Unknown sampling method: " + method);
 		}

@@ -28,11 +28,10 @@ public abstract class MP3Driver implements AudioDriver {
 	 */
 	public static class MP3File extends MP3Driver {
 		@Override
-		protected OutputStream getOut(String recordingFilename)
-				throws IOException {
+		protected OutputStream getOut(String recordingFilename) throws IOException {
 			return new FileOutputStream(recordingFilename + ".mp3");
 		}
-		
+
 		@Override
 		public void close() {
 			super.close();
@@ -69,7 +68,7 @@ public abstract class MP3Driver implements AudioDriver {
 		protected OutputStream getOut(String recordingFilename) {
 			return out;
 		}
-		
+
 	}
 
 	/**
@@ -111,16 +110,13 @@ public abstract class MP3Driver implements AudioDriver {
 	}
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename)
-			throws IOException, LineUnavailableException {
+	public void open(final AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException {
 		final int blockAlign = Short.BYTES * cfg.channels;
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, Short.SIZE,
-				cfg.channels, true, false);
-		jump3r = new LameEncoder(audioFormat, cbr, MPEGMode.STEREO, vbrQuality,
-				vbr);
+		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, Short.SIZE, cfg.channels, true, false);
+		jump3r = new LameEncoder(audioFormat, cbr, MPEGMode.STEREO, vbrQuality, vbr);
 		out = getOut(recordingFilename);
 	}
 
@@ -128,8 +124,7 @@ public abstract class MP3Driver implements AudioDriver {
 	public void write() throws InterruptedException {
 		try {
 			byte[] encoded = new byte[jump3r.getMP3BufferSize()];
-			int bytesWritten = jump3r.encodeBuffer(sampleBuffer.array(), 0,
-					sampleBuffer.capacity(), encoded);
+			int bytesWritten = jump3r.encodeBuffer(sampleBuffer.array(), 0, sampleBuffer.capacity(), encoded);
 			out.write(encoded, 0, bytesWritten);
 		} catch (ArrayIndexOutOfBoundsException | IOException e) {
 			e.printStackTrace();
@@ -149,6 +144,5 @@ public abstract class MP3Driver implements AudioDriver {
 		return sampleBuffer;
 	}
 
-	protected abstract OutputStream getOut(String recordingFilename)
-			throws IOException;
+	protected abstract OutputStream getOut(String recordingFilename) throws IOException;
 }

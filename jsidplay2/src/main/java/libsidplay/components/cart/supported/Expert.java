@@ -10,10 +10,12 @@ import libsidplay.components.pla.PLA;
 /**
  * We emulate this cartridge in the ON mode.
  * 
- * Electrically, the cartridge can only switch between ultimax and no cartridge mode.
+ * Electrically, the cartridge can only switch between ultimax and no cartridge
+ * mode.
  * 
- * However, the ultimax mode is only enabled when accesses to the region 0x8000-0x9fff
- * and 0xe000-0xffff occur. This is why the other regions like IO and RAM still work.
+ * However, the ultimax mode is only enabled when accesses to the region
+ * 0x8000-0x9fff and 0xe000-0xffff occur. This is why the other regions like IO
+ * and RAM still work.
  * 
  * @author AL
  */
@@ -22,7 +24,7 @@ public class Expert extends Cartridge {
 	protected final byte[] ram;
 
 	protected boolean ultimaxHackOn;
-	
+
 	private final Bank io1Bank = new Bank() {
 		@Override
 		public byte read(int address) {
@@ -93,7 +95,7 @@ public class Expert extends Cartridge {
 
 	@Override
 	public void installBankHooks(Bank[] cpuReadMap, Bank[] cpuWriteMap) {
-		if (! ultimaxHackOn) {
+		if (!ultimaxHackOn) {
 			return;
 		}
 		cpuReadMap[0x8] = cpuWriteMap[0x8] = romlBank;
@@ -101,7 +103,7 @@ public class Expert extends Cartridge {
 		cpuReadMap[0xe] = cpuWriteMap[0xe] = romhBank;
 		cpuReadMap[0xf] = cpuWriteMap[0xf] = romhBank;
 	}
-	
+
 	@Override
 	public Bank getIO1() {
 		return io1Bank;

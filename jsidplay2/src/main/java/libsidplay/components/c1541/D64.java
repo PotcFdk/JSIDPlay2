@@ -45,8 +45,7 @@ public final class D64 extends DiskImage {
 	 */
 	private byte[] errorInfo;
 
-	public D64(final GCR gcr, final String fileName, final RandomAccessFile fd,
-			final boolean readOnly) {
+	public D64(final GCR gcr, final String fileName, final RandomAccessFile fd, final boolean readOnly) {
 		super(gcr, fileName, fd, readOnly);
 	}
 
@@ -98,8 +97,8 @@ public final class D64 extends DiskImage {
 			fd.readFully(errorInfo, 0, imageBlocks);
 		}
 
-//		System.out.printf("D64 disk image recognised: %s, %d tracks%s.\n",
-//				filename, tracks, readOnly ? " (read only)" : "");
+		// System.out.printf("D64 disk image recognised: %s, %d tracks%s.\n",
+		// filename, tracks, readOnly ? " (read only)" : "");
 
 		// set Disk ID
 		byte[] sectorBytes = new byte[D64_SECTOR_SIZE];
@@ -124,22 +123,18 @@ public final class D64 extends DiskImage {
 
 			int sectorPerTrack = SECTOR_MAP_D64[SPEED_MAP_1541[track - 1]];
 			for (int sector = 0; sector < sectorPerTrack; sector++) {
-				final DOSErrorCodes errorCode = readSector(gcrSectorBytes, 1,
-						track, sector);
+				final DOSErrorCodes errorCode = readSector(gcrSectorBytes, 1, track, sector);
 				if (errorCode == CBMDOS_IPE_READ_ERROR_SYNC) {
 					// If the data block is not found, the whole track gets
 					// zeroed
 					gcrDataPos = (track - 1) * GCR.NUM_MAX_BYTES_TRACK;
-					gcr.setTrackData(gcrDataPos, GCR.NUM_MAX_BYTES_TRACK,
-							(byte) 0x00);
+					gcr.setTrackData(gcrDataPos, GCR.NUM_MAX_BYTES_TRACK, (byte) 0x00);
 					break;
 				}
-				gcr.convertSectorToGCR(gcrSectorBytes, gcrDataPos, track,
-						sector, diskID1, diskID2, errorCode);
+				gcr.convertSectorToGCR(gcrSectorBytes, gcrDataPos, track, sector, diskID1, diskID2, errorCode);
 
 				// Point to the GCR data where the next sector is located
-				gcrDataPos += GAPS_BETWEEN_SECTORS[SPEED_MAP_1541[track - 1]]
-						+ GCR_SECTOR_SIZE_WITH_HEADER;
+				gcrDataPos += GAPS_BETWEEN_SECTORS[SPEED_MAP_1541[track - 1]] + GCR_SECTOR_SIZE_WITH_HEADER;
 			}
 		}
 	}
@@ -159,9 +154,8 @@ public final class D64 extends DiskImage {
 	 * @throws IOException
 	 *             error reading disk image
 	 */
-	private DOSErrorCodes readSector(final byte[] sectorBytes,
-			final int sectorBytesPos, final int track, final int sector)
-			throws IOException {
+	private DOSErrorCodes readSector(final byte[] sectorBytes, final int sectorBytesPos, final int track,
+			final int sector) throws IOException {
 		int sectorCount = getSectorCount(track, sector);
 		fd.seek(sectorCount << 8);
 		fd.readFully(sectorBytes, sectorBytesPos, D64_SECTOR_SIZE);
@@ -205,18 +199,13 @@ public final class D64 extends DiskImage {
 
 		// Write back each sector of the track
 		for (int sector = 0; sector < sectorsPerTrack; sector++) {
-			int gcrDataPos = gcr.findSectorHeader(track, sector,
-					trackSize[track - 1]);
+			int gcrDataPos = gcr.findSectorHeader(track, sector, trackSize[track - 1]);
 			if (gcrDataPos == -1) {
-				System.err.println(String.format(
-						"Could not find header of T:%d S:%d.", track, sector));
+				System.err.println(String.format("Could not find header of T:%d S:%d.", track, sector));
 			} else {
-				gcrDataPos = gcr.findSectorData(gcrDataPos,
-						trackSize[track - 1]);
+				gcrDataPos = gcr.findSectorData(gcrDataPos, trackSize[track - 1]);
 				if (gcrDataPos == -1) {
-					System.err.println(String.format(
-							"Could not find data sync of T:%d S:%d.", track,
-							sector));
+					System.err.println(String.format("Could not find data sync of T:%d S:%d.", track, sector));
 				} else {
 					gcrDataWritebackSector(gcrDataPos, track, sector);
 				}
@@ -253,14 +242,11 @@ public final class D64 extends DiskImage {
 	 * @throws IOException
 	 *             disk image write error
 	 */
-	private void gcrDataWritebackSector(final int offset, final int track,
-			final int sector) throws IOException {
+	private void gcrDataWritebackSector(final int offset, final int track, final int sector) throws IOException {
 		byte[] sectorBytes = new byte[GCR.SECTOR_SIZE];
 		gcr.convertGCRToSector(sectorBytes, offset, trackSize[track - 1]);
 		if (sectorBytes[0] != GCR.DATA_HEADER_START) {
-			System.err.println(String
-					.format("Could not find data block id of T:%d S:%d.",
-							track, sector));
+			System.err.println(String.format("Could not find data block id of T:%d S:%d.", track, sector));
 		} else {
 			writeSector(sectorBytes, 1, track, sector);
 		}
@@ -280,8 +266,7 @@ public final class D64 extends DiskImage {
 	 * @throws IOException
 	 *             disk image write error
 	 */
-	private void writeSector(final byte[] sectorBytes,
-			final int sectorBytesPos, final int track, final int sector)
+	private void writeSector(final byte[] sectorBytes, final int sectorBytesPos, final int track, final int sector)
 			throws IOException {
 		int sectorCount = getSectorCount(track, sector);
 		fd.seek(sectorCount << 8);

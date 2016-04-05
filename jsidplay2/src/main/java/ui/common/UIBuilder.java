@@ -25,15 +25,11 @@ final class UIBuilder implements BuilderFactory {
 	public Builder<?> getBuilder(Class<?> type) {
 		if (UIPart.class.isAssignableFrom(type)) {
 			try {
-				Constructor<?> constructor = type.getConstructor(new Class[] {
-						C64Window.class, Player.class });
-				return (Builder<?>) constructor.newInstance(this.window,
-						this.player);
-			} catch (NoSuchMethodException | SecurityException
-					| InstantiationException | IllegalAccessException
+				Constructor<?> constructor = type.getConstructor(new Class[] { C64Window.class, Player.class });
+				return (Builder<?>) constructor.newInstance(this.window, this.player);
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(
-						"UIPart implementations require a specific constructor!");
+				throw new RuntimeException("UIPart implementations require a specific constructor!");
 			}
 		}
 		return defaultBuilderFactory.getBuilder(type);

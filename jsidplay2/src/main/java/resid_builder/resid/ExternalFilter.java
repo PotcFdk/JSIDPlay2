@@ -28,9 +28,12 @@ package resid_builder.resid;
  * 3-dB frequency 16Hz (the latter provided an audio equipment input impedance
  * of 1kOhm).
  * <P>
- * The STC networks are connected with a BJT supposedly meant to act as a unity gain buffer, which is not really how it works. A more elaborate model would include the BJT, however DC circuit analysis
- * yields BJT base-emitter and emitter-base impedances sufficiently low to produce additional low-pass and high-pass 3dB-frequencies in the order of hundreds of kHz. This calls for a sampling
- * frequency of several MHz, which is far too high for practical use.
+ * The STC networks are connected with a BJT supposedly meant to act as a unity
+ * gain buffer, which is not really how it works. A more elaborate model would
+ * include the BJT, however DC circuit analysis yields BJT base-emitter and
+ * emitter-base impedances sufficiently low to produce additional low-pass and
+ * high-pass 3dB-frequencies in the order of hundreds of kHz. This calls for a
+ * sampling frequency of several MHz, which is far too high for practical use.
  * 
  * @author Ken Händel
  * @author Dag Lem
@@ -48,17 +51,17 @@ final class ExternalFilter {
 	private int Vhp;
 
 	private int w0lp_1_s7;
-	
+
 	private int w0hp_1_s20;
-	
+
 	/**
 	 * SID clocking - 1 cycle.
 	 * 
 	 * @param Vi
 	 */
 	protected final int clock(int Vi) {
-		int dVlp = (w0lp_1_s7*((Vi << 11) - Vlp) >> 7);
-		int dVhp = (w0hp_1_s20*(Vlp - Vhp) >> 20);
+		int dVlp = (w0lp_1_s7 * ((Vi << 11) - Vlp) >> 7);
+		int dVhp = (w0hp_1_s20 * (Vlp - Vhp) >> 20);
 		Vlp += dVlp;
 		Vhp += dVhp;
 		return (Vlp - Vhp) >> 11;
@@ -79,8 +82,8 @@ final class ExternalFilter {
 	protected void setClockFrequency(final double frequency) {
 		// Low-pass: R = 10kOhm, C = 1000pF; w0l = 1/RC = 1/(1e4*1e-9) = 100000
 		// High-pass: R = 1kOhm, C = 10uF; w0h = 1/RC = 1/(1e3*1e-5) = 100
-		w0lp_1_s7 = (int) (100000/frequency*(1 << 7) + 0.5);
-		w0hp_1_s20 = (int) (10/frequency*(1 << 20) + 0.5);
+		w0lp_1_s7 = (int) (100000 / frequency * (1 << 7) + 0.5);
+		w0hp_1_s20 = (int) (10 / frequency * (1 << 20) + 0.5);
 	}
 
 	/**

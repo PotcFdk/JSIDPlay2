@@ -20,8 +20,7 @@ import ui.entities.config.Configuration;
 
 public class UIUtil {
 
-	private static final Image PLAYED_ICON = new Image(JSidPlay2Main.class
-			.getResource("icons/play.png").toString());
+	private static final Image PLAYED_ICON = new Image(JSidPlay2Main.class.getResource("icons/play.png").toString());
 
 	private C64Window window;
 	/** Model */
@@ -64,8 +63,7 @@ public class UIUtil {
 		while (p != null) {
 			if (p instanceof TabPane) {
 				TabPane tabPane = (TabPane) p;
-				tabPane.getSelectionModel().selectedItemProperty().get()
-						.setGraphic(new ImageView(PLAYED_ICON));
+				tabPane.getSelectionModel().selectedItemProperty().get().setGraphic(new ImageView(PLAYED_ICON));
 			}
 			p = p.getParent();
 		}
@@ -87,8 +85,7 @@ public class UIUtil {
 
 	public final DoubleProperty progressProperty(Node node) {
 		if (progressProperty == null && node.getScene() != null) {
-			ProgressBar progressBar = (ProgressBar) node.getScene().lookup(
-					"#progress");
+			ProgressBar progressBar = (ProgressBar) node.getScene().lookup("#progress");
 			if (progressBar != null) {
 				progressProperty = progressBar.progressProperty();
 			}

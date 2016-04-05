@@ -90,6 +90,7 @@ public class HardwareEnsemble {
 	public HardwareEnsemble(IConfig config) {
 		this(config, MOS6510.class);
 	}
+
 	/**
 	 * Create a complete hardware setup (C64, tape/disk drive, printer and
 	 * more).

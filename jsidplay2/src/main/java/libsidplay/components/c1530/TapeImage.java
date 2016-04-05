@@ -41,7 +41,6 @@ public class TapeImage {
 	 */
 	private Tap tap;
 
-
 	/**
 	 * Tape image file.
 	 */
@@ -58,8 +57,7 @@ public class TapeImage {
 	 * @throws IOException
 	 *             cannot read tape image
 	 */
-	public final boolean imageAttach(final Datasette datasette,
-		final File tapeFile) throws IOException {
+	public final boolean imageAttach(final Datasette datasette, final File tapeFile) throws IOException {
 		// try to open tap file
 		final Tap newTap = new Tap();
 		if (!newTap.open(tapeFile)) {
@@ -71,14 +69,12 @@ public class TapeImage {
 
 		this.tapeFile = tapeFile;
 		this.tap = newTap;
-		
+
 		// insert tap into datasette
 		datasette.setTapeImage(newTap);
 
 		System.out.printf("TAP image '%s' attached.\n", tapeFile.getName());
-		System.out.println(String.format(
-				"TAP image version: %d, system: %d.", newTap.version,
-				newTap.system));
+		System.out.println(String.format("TAP image version: %d, system: %d.", newTap.version, newTap.system));
 		return true;
 	}
 

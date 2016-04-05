@@ -12,13 +12,17 @@ public final class SIDWrite {
 	private boolean end;
 
 	/**
-	 * This command is a general write command to SID.
-	 * Reg must be between 0 .. 0x1f and cycles > 0.
+	 * This command is a general write command to SID. Reg must be between 0 ..
+	 * 0x1f and cycles > 0.
 	 *
-	 * @param chip    The specified SID chip to write to.
-	 * @param reg     The SID register to write to.
-	 * @param data    The data to write to the specified SID register.
-	 * @param cycles  Cycles to spend on writing the data.
+	 * @param chip
+	 *            The specified SID chip to write to.
+	 * @param reg
+	 *            The SID register to write to.
+	 * @param data
+	 *            The data to write to the specified SID register.
+	 * @param cycles
+	 *            Cycles to spend on writing the data.
 	 * @throws InvalidCommandException
 	 */
 	public SIDWrite(final int chip, final byte reg, final byte data, final int cycles) throws InvalidCommandException {
@@ -53,11 +57,13 @@ public final class SIDWrite {
 	}
 
 	/**
-	 * This command instructs AudioGeneratorThread about the need to execute a pure delay on specified SID.
-	 * Throws if cycles < 0.
+	 * This command instructs AudioGeneratorThread about the need to execute a
+	 * pure delay on specified SID. Throws if cycles < 0.
 	 *
-	 * @param sid    The SID to execute a pure delay on.
-	 * @param cycles Amount of cycles to execute the pure delay for.
+	 * @param sid
+	 *            The SID to execute a pure delay on.
+	 * @param cycles
+	 *            Amount of cycles to execute the pure delay for.
 	 *
 	 * @return A new SIDWrite instance.
 	 * @throws InvalidCommandException
@@ -69,7 +75,8 @@ public final class SIDWrite {
 	/**
 	 * Is command a no-write command?
 	 *
-	 * @return True if the SIDWrite object is a no-write command; false otherwise.
+	 * @return True if the SIDWrite object is a no-write command; false
+	 *         otherwise.
 	 */
 	protected boolean isPureDelay() {
 		return pureDelay;
@@ -114,7 +121,8 @@ public final class SIDWrite {
 	/**
 	 * Gets the value being written to the register in this SIDWrite instance.
 	 *
-	 * @return The value being written to the register in this SIDWrite instance.
+	 * @return The value being written to the register in this SIDWrite
+	 *         instance.
 	 */
 	protected byte getValue() {
 		return value;

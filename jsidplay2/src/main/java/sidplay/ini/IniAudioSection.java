@@ -43,8 +43,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final SamplingRate getSamplingRate() {
-		return iniReader.getPropertyEnum("Audio", "Sampling Rate",
-				DEFAULT_SAMPLING_RATE);
+		return iniReader.getPropertyEnum("Audio", "Sampling Rate", DEFAULT_SAMPLING_RATE);
 	}
 
 	/**
@@ -138,8 +137,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final float getMainVolume() {
-		return iniReader.getPropertyFloat("Audio", "MainVolume",
-				DEFAULT_MAIN_VOLUME);
+		return iniReader.getPropertyFloat("Audio", "MainVolume", DEFAULT_MAIN_VOLUME);
 	}
 
 	/**
@@ -160,8 +158,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public float getSecondVolume() {
-		return iniReader.getPropertyFloat("Audio", "SecondVolume",
-				DEFAULT_SECOND_VOLUME);
+		return iniReader.getPropertyFloat("Audio", "SecondVolume", DEFAULT_SECOND_VOLUME);
 	}
 
 	/**
@@ -182,8 +179,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public float getThirdVolume() {
-		return iniReader.getPropertyFloat("Audio", "ThirdVolume",
-				DEFAULT_THIRD_VOLUME);
+		return iniReader.getPropertyFloat("Audio", "ThirdVolume", DEFAULT_THIRD_VOLUME);
 	}
 
 	/**
@@ -199,8 +195,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public float getMainBalance() {
-		return iniReader.getPropertyFloat("Audio", "MainBalance",
-				DEFAULT_MAIN_BALANCE);
+		return iniReader.getPropertyFloat("Audio", "MainBalance", DEFAULT_MAIN_BALANCE);
 	}
 
 	@Override
@@ -210,8 +205,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public float getSecondBalance() {
-		return iniReader.getPropertyFloat("Audio", "SecondBalance",
-				DEFAULT_SECOND_BALANCE);
+		return iniReader.getPropertyFloat("Audio", "SecondBalance", DEFAULT_SECOND_BALANCE);
 	}
 
 	@Override
@@ -221,8 +215,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public float getThirdBalance() {
-		return iniReader.getPropertyFloat("Audio", "ThirdBalance",
-				DEFAULT_THIRD_BALANCE);
+		return iniReader.getPropertyFloat("Audio", "ThirdBalance", DEFAULT_THIRD_BALANCE);
 	}
 
 	@Override

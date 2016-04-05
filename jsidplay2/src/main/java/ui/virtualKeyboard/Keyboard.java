@@ -12,15 +12,12 @@ import ui.common.C64Window;
 public class Keyboard extends C64Window {
 
 	@FXML
-	private Button arrowLeft, one, two, three, four, five, six, seven, eight,
-			nine, zero, plus, minus, pound, clrHome, insDel, q, w, e, r, t, y,
-			u, i, o, p, at, asterisk, arrowUp, restore, a, s, d, f, g, h, j, k,
-			l, colon, semicolon, equals, ret, z, x, c, v, b, n, m, comma,
-			period, slash, cursorUpDown, cursorLeftRight, space, f1, f3, f5,
-			f7;
+	private Button arrowLeft, one, two, three, four, five, six, seven, eight, nine, zero, plus, minus, pound, clrHome,
+			insDel, q, w, e, r, t, y, u, i, o, p, at, asterisk, arrowUp, restore, a, s, d, f, g, h, j, k, l, colon,
+			semicolon, equals, ret, z, x, c, v, b, n, m, comma, period, slash, cursorUpDown, cursorLeftRight, space, f1,
+			f3, f5, f7;
 	@FXML
-	private ToggleButton runStop, shift, commodore, shiftLock, ctrl,
-			rightShift;
+	private ToggleButton runStop, shift, commodore, shiftLock, ctrl, rightShift;
 
 	public Keyboard(Player player) {
 		super(player);
@@ -450,23 +447,21 @@ public class Keyboard extends C64Window {
 	}
 
 	private void pressC64Key(final KeyTableEntry key) {
-		getC64().getEventScheduler().scheduleThreadSafe(
-				new Event("Virtual Keyboard Key Pressed: " + key.name()) {
-					@Override
-					public void event() throws InterruptedException {
-						getC64().getKeyboard().keyPressed(key);
-					}
-				});
+		getC64().getEventScheduler().scheduleThreadSafe(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
+			@Override
+			public void event() throws InterruptedException {
+				getC64().getKeyboard().keyPressed(key);
+			}
+		});
 	}
 
 	private void releaseC64Key(final KeyTableEntry key) {
-		getC64().getEventScheduler().scheduleThreadSafe(
-				new Event("Virtual Keyboard Key Released: " + key.name()) {
-					@Override
-					public void event() throws InterruptedException {
-						getC64().getKeyboard().keyReleased(key);
-					}
-				});
+		getC64().getEventScheduler().scheduleThreadSafe(new Event("Virtual Keyboard Key Released: " + key.name()) {
+			@Override
+			public void event() throws InterruptedException {
+				getC64().getKeyboard().keyReleased(key);
+			}
+		});
 	}
 
 	@FXML

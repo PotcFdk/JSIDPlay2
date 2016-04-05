@@ -190,8 +190,8 @@ public enum DOSErrorCodes {
 	 */
 	CBMDOS_IPE_STARTUP_MESSAGE(73),
 	/**
-	 * 74 DRIVE NOT READY: There was no disk in drive, when there was an
-	 * attempt to access it.
+	 * 74 DRIVE NOT READY: There was no disk in drive, when there was an attempt
+	 * to access it.
 	 */
 	CBMDOS_IPE_NOT_READY(74);
 
@@ -248,7 +248,7 @@ public enum DOSErrorCodes {
 			return CBMDOS_IPE_OK;
 		}
 	}
-	
+
 	/**
 	 * Get error code.
 	 * 

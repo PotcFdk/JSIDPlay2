@@ -98,15 +98,14 @@ import libsidplay.components.printer.paper.ConsolePaper;
  * @author Ken Händel
  * 
  */
-public abstract class MPS803 extends SerialIECDevice implements
-		UserportPrinterEnvironment {
+public abstract class MPS803 extends SerialIECDevice implements UserportPrinterEnvironment {
 
 	private static final String CHAR_ROM = "/libsidplay/roms/mps803char.bin";
 
 	private static final byte[] MPS803_CHARSET_BIN = new byte[3584];
+
 	static {
-		try (DataInputStream is = new DataInputStream(
-				MPS803.class.getResourceAsStream(CHAR_ROM))) {
+		try (DataInputStream is = new DataInputStream(MPS803.class.getResourceAsStream(CHAR_ROM))) {
 			is.readFully(MPS803_CHARSET_BIN);
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
@@ -536,12 +535,9 @@ public abstract class MPS803 extends SerialIECDevice implements
 				 * double-width using dot matrix that is 7 dots high and 12 dots
 				 * wide.
 				 */
-				for (int x = 0; lineBufferPos + x * 2 + 1 < 480
-						&& x < CHAR_WIDTH; x++) {
-					lineBuffer[lineBufferPos + x * 2][y] = getCharsetBit(c, x,
-							y);
-					lineBuffer[lineBufferPos + x * 2 + 1][y] = getCharsetBit(c,
-							x, y);
+				for (int x = 0; lineBufferPos + x * 2 + 1 < 480 && x < CHAR_WIDTH; x++) {
+					lineBuffer[lineBufferPos + x * 2][y] = getCharsetBit(c, x, y);
+					lineBuffer[lineBufferPos + x * 2 + 1][y] = getCharsetBit(c, x, y);
 				}
 			} else {
 				/*
@@ -574,8 +570,7 @@ public abstract class MPS803 extends SerialIECDevice implements
 		 * background.
 		 */
 		boolean reverse = isState(STATE_REVERSE);
-		return (MPS803_CHARSET_BIN[chr * CHAR_HEIGHT + row] & (1 << (CHAR_HEIGHT - bit))) != 0 ? !reverse
-				: reverse;
+		return (MPS803_CHARSET_BIN[chr * CHAR_HEIGHT + row] & (1 << (CHAR_HEIGHT - bit))) != 0 ? !reverse : reverse;
 	}
 
 	/**
@@ -584,8 +579,7 @@ public abstract class MPS803 extends SerialIECDevice implements
 	private void writeLine() {
 		for (int y = 0; y < CHAR_HEIGHT; y++) {
 			for (int x = 0; x < MAX_WIDTH; x++)
-				paper.put(lineBuffer[x][y] ? IPaper.Outputs.OUTPUT_PIXEL_BLACK
-						: IPaper.Outputs.OUTPUT_PIXEL_WHITE);
+				paper.put(lineBuffer[x][y] ? IPaper.Outputs.OUTPUT_PIXEL_BLACK : IPaper.Outputs.OUTPUT_PIXEL_WHITE);
 			paper.put(IPaper.Outputs.OUTPUT_NEWLINE);
 		}
 
@@ -631,8 +625,7 @@ public abstract class MPS803 extends SerialIECDevice implements
 		for (int i = 0; i < repeatN; i++) {
 			for (int x = 0; x < bitCnt; x++) {
 				for (int y = 0; y < CHAR_HEIGHT; y++) {
-					lineBuffer[lineBufferPos + x][y] = lineBuffer[lineBufferPos
-							- bitCnt + x][y];
+					lineBuffer[lineBufferPos + x][y] = lineBuffer[lineBufferPos - bitCnt + x][y];
 				}
 			}
 			lineBufferPos += bitCnt;

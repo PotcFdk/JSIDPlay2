@@ -1,13 +1,11 @@
 package resid_builder.resid;
 
-
 /**
- * Filter for 8580 chip based on simple linear approximation
- * of the FC control.
+ * Filter for 8580 chip based on simple linear approximation of the FC control.
  * 
- * This is like the original reSID filter except the phase
- * of BP output has been inverted. I saw samplings on the internet
- * that indicated it would genuinely happen like this.
+ * This is like the original reSID filter except the phase of BP output has been
+ * inverted. I saw samplings on the internet that indicated it would genuinely
+ * happen like this.
  * 
  * @author Ken Händel
  * @author Dag Lem
@@ -17,17 +15,17 @@ public class Filter8580 extends Filter {
 	float Vlp, Vbp, Vhp;
 	float ve, w0, _1_div_Q;
 	private double highFreq = 12500;
-	
+
 	protected Filter8580() {
 		super();
 	}
-	
+
 	@Override
 	protected final int clock(int voice1, int voice2, int voice3) {
 		voice1 >>= 7;
 		voice2 >>= 7;
 		voice3 >>= 7;
-		
+
 		int Vi = 0;
 		float Vo = 0;
 		if (filt1) {
@@ -52,14 +50,14 @@ public class Filter8580 extends Filter {
 		} else {
 			Vo += ve;
 		}
-		
-		float dVbp = w0 * Vhp;
-	    float dVlp = w0 * Vbp;
-	    Vbp -= dVbp;
-	    Vlp -= dVlp;
-	    Vhp = (Vbp*_1_div_Q) - Vlp - Vi + (float) Math.random();
 
-	    if (lp) {
+		float dVbp = w0 * Vhp;
+		float dVlp = w0 * Vbp;
+		Vbp -= dVbp;
+		Vlp -= dVlp;
+		Vhp = (Vbp * _1_div_Q) - Vlp - Vi + (float) Math.random();
+
+		if (lp) {
 			Vo += Vlp;
 		}
 		if (bp) {
@@ -68,18 +66,18 @@ public class Filter8580 extends Filter {
 		if (hp) {
 			Vo += Vhp;
 		}
-		
+
 		return (int) Vo * vol >> 4;
 	}
 
 	@Override
 	protected void updatedCenterFrequency() {
-		w0 = (float) (2*Math.PI*highFreq*fc/2047/1e6);
+		w0 = (float) (2 * Math.PI * highFreq * fc / 2047 / 1e6);
 	}
 
 	@Override
 	protected void updatedResonance() {
-		_1_div_Q = 1f / (0.707f + res/15f);
+		_1_div_Q = 1f / (0.707f + res / 15f);
 	}
 
 	@Override

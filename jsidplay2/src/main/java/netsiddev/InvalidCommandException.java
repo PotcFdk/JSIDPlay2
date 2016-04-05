@@ -23,6 +23,5 @@ public class InvalidCommandException extends Exception {
 		}
 		return error;
 	}
-	
-	
+
 }

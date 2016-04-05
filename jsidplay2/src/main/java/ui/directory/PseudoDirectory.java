@@ -42,8 +42,7 @@ public class PseudoDirectory {
 	 * @throws IOException
 	 *             can not open file
 	 */
-	public static final Directory getDirectory(Player player, final File file,
-			final IConfig cfg) throws IOException {
+	public static final Directory getDirectory(Player player, final File file, final IConfig cfg) throws IOException {
 		if (diskFilter.accept(file)) {
 			return DiskDirectory.getDirectory(file);
 		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".t64")) {
@@ -56,8 +55,7 @@ public class PseudoDirectory {
 		return null;
 	}
 
-	private static Directory getTuneAsDirectory(Player player, File file,
-			IConfig cfg) throws IOException {
+	private static Directory getTuneAsDirectory(Player player, File file, IConfig cfg) throws IOException {
 		Directory dir = new Directory();
 		SidTune tune;
 		try {
@@ -65,20 +63,17 @@ public class PseudoDirectory {
 		} catch (SidTuneError e) {
 			throw new IOException();
 		}
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) player.getConfig()
-				.getSidplay2Section();
+		SidPlay2Section sidPlay2Section = (SidPlay2Section) player.getConfig().getSidplay2Section();
 		String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
-		HVSCEntry entry = new HVSCEntry(
-				() -> player.getSidDatabaseInfo(db -> db
-						.getTuneLength(tune), 0), collectionName, file, tune);
-		final String title = entry.getTitle() != null ? entry.getTitle()
-				: entry.getName();
+		HVSCEntry entry = new HVSCEntry(() -> player.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
+				collectionName, file, tune);
+		final String title = entry.getTitle() != null ? entry.getTitle() : entry.getName();
 
 		// Directory title: tune title or filename
 		dir.setTitle(DirEntry.asciiTopetscii(title, 16));
 		// Directory id: start song '/' song count
-		dir.setId((String.valueOf(entry.getStartSong()) + "/" + String
-				.valueOf(Math.max(1, entry.getNoOfSongs()))).getBytes(ISO88591));
+		dir.setId((String.valueOf(entry.getStartSong()) + "/" + String.valueOf(Math.max(1, entry.getNoOfSongs())))
+				.getBytes(ISO88591));
 		Collection<DirEntry> entries = dir.getDirEntries();
 
 		addProperty(entries, "TITLE", entry.getTitle());
@@ -96,34 +91,24 @@ public class PseudoDirectory {
 		addProperty(entries, "COMPAT", String.valueOf(entry.getCompatibility()));
 		addProperty(entries, "TUNE_LGTH", String.valueOf(entry.getTuneLength()));
 		addProperty(entries, "AUDIO", entry.getAudio());
-		addProperty(entries, "CHIP_BASE1",
-				String.valueOf(entry.getSidChipBase1()));
-		addProperty(entries, "CHIP_BASE2",
-				String.valueOf(entry.getSidChipBase2()));
-		addProperty(entries, "CHIP_BASE3",
-				String.valueOf(entry.getSidChipBase3()));
-		addProperty(entries, "DRV_ADDR",
-				String.valueOf(entry.getDriverAddress()));
-		addProperty(entries, "LOAD_ADDR",
-				String.valueOf(entry.getLoadAddress()));
+		addProperty(entries, "CHIP_BASE1", String.valueOf(entry.getSidChipBase1()));
+		addProperty(entries, "CHIP_BASE2", String.valueOf(entry.getSidChipBase2()));
+		addProperty(entries, "CHIP_BASE3", String.valueOf(entry.getSidChipBase3()));
+		addProperty(entries, "DRV_ADDR", String.valueOf(entry.getDriverAddress()));
+		addProperty(entries, "LOAD_ADDR", String.valueOf(entry.getLoadAddress()));
 		addProperty(entries, "LOAD_LGTH", String.valueOf(entry.getLoadLength()));
-		addProperty(entries, "INIT_ADDR",
-				String.valueOf(entry.getInitAddress()));
-		addProperty(entries, "PLY_ADDR",
-				String.valueOf(entry.getPlayerAddress()));
+		addProperty(entries, "INIT_ADDR", String.valueOf(entry.getInitAddress()));
+		addProperty(entries, "PLY_ADDR", String.valueOf(entry.getPlayerAddress()));
 		addProperty(entries, "FILE_DATE", String.valueOf(entry.getFileDate()));
 		addProperty(entries, "SIZE_KB", String.valueOf(entry.getFileSizeKb()));
 		addProperty(entries, "SIZE_B", String.valueOf(entry.getTuneSizeB()));
-		addProperty(entries, "RELOC_PAGE",
-				String.valueOf(entry.getRelocStartPage()));
-		addProperty(entries, "RELOC_PAGES",
-				String.valueOf(entry.getRelocNoPages()));
+		addProperty(entries, "RELOC_PAGE", String.valueOf(entry.getRelocStartPage()));
+		addProperty(entries, "RELOC_PAGES", String.valueOf(entry.getRelocNoPages()));
 
 		return dir;
 	}
 
-	private static void addProperty(Collection<DirEntry> entries,
-			String property, String value) {
+	private static void addProperty(Collection<DirEntry> entries, String property, String value) {
 		byte[] filename = DirEntry.asciiTopetscii(property + "=" + value, 20);
 		// Pseudo directory entry: tune property '=' value
 		entries.add(new DirEntry(0, filename, (byte) -1) {

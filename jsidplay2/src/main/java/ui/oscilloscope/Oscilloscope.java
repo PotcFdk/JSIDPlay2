@@ -45,23 +45,22 @@ public class Oscilloscope extends Tab implements UIPart {
 				sampleGauges(chipNum, sid, (repaint & 127) == 0);
 			});
 			++repaint;
-			util.getPlayer().getC64().getEventScheduler()
-					.schedule(highResolutionEvent, 128);
+			util.getPlayer().getC64().getEventScheduler().schedule(highResolutionEvent, 128);
 		}
 	}
 
 	@FXML
-	protected CheckBox muteVoice1, muteVoice2, muteVoice3, muteVoice4,
-			muteVoice5, muteVoice6, muteVoice7, muteVoice8, muteVoice9;
+	protected CheckBox muteVoice1, muteVoice2, muteVoice3, muteVoice4, muteVoice5, muteVoice6, muteVoice7, muteVoice8,
+			muteVoice9;
 	@FXML
-	private WaveGauge waveMono_0, waveMono_1, waveMono_2, waveStereo_0,
-			waveStereo_1, waveStereo_2, wave3Sid_0, wave3Sid_1, wave3Sid_2;
+	private WaveGauge waveMono_0, waveMono_1, waveMono_2, waveStereo_0, waveStereo_1, waveStereo_2, wave3Sid_0,
+			wave3Sid_1, wave3Sid_2;
 	@FXML
-	private EnvelopeGauge envMono_0, envMono_1, envMono_2, envStereo_0,
-			envStereo_1, envStereo_2, env3Sid_0, env3Sid_1, env3Sid_2;
+	private EnvelopeGauge envMono_0, envMono_1, envMono_2, envStereo_0, envStereo_1, envStereo_2, env3Sid_0, env3Sid_1,
+			env3Sid_2;
 	@FXML
-	private FrequencyGauge freqMono_0, freqMono_1, freqMono_2, freqStereo_0,
-			freqStereo_1, freqStereo_2, freq3Sid_0, freq3Sid_1, freq3Sid_2;
+	private FrequencyGauge freqMono_0, freqMono_1, freqMono_2, freqStereo_0, freqStereo_1, freqStereo_2, freq3Sid_0,
+			freq3Sid_1, freq3Sid_2;
 	@FXML
 	private VolumeGauge volumeMono, volumeStereo, volume3Sid;
 	@FXML
@@ -83,10 +82,8 @@ public class Oscilloscope extends Tab implements UIPart {
 		setText(util.getBundle().getString(getId()));
 	}
 
-	private ChangeListener<? super State> listener = (observable, oldValue,
-			newValue) -> {
-		final EventScheduler ctx = util.getPlayer().getC64()
-				.getEventScheduler();
+	private ChangeListener<? super State> listener = (observable, oldValue, newValue) -> {
+		final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
 		if (newValue == State.PLAY) {
 			if (!ctx.isPending(highResolutionEvent)) {
 				ctx.schedule(highResolutionEvent, 0, Phase.PHI2);
@@ -128,31 +125,20 @@ public class Oscilloscope extends Tab implements UIPart {
 			updateGauges(chipNum, Gauge::reset);
 		}
 		pt.setOnFinished(evt -> {
-			util.getPlayer().configureSIDs(
-					(chipNum, sid) -> updateGauges(chipNum,
-							gauge -> gauge.updateGauge(sid)));
+			util.getPlayer().configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid)));
 		});
 		st.setCycleCount(Timeline.INDEFINITE);
 		st.playFromStart();
 
-		util.getPlayer().configureSID(0,
-				sid -> sid.setVoiceMute(0, muteVoice1.isSelected()));
-		util.getPlayer().configureSID(0,
-				sid -> sid.setVoiceMute(1, muteVoice2.isSelected()));
-		util.getPlayer().configureSID(0,
-				sid -> sid.setVoiceMute(2, muteVoice3.isSelected()));
-		util.getPlayer().configureSID(1,
-				sid -> sid.setVoiceMute(0, muteVoice4.isSelected()));
-		util.getPlayer().configureSID(1,
-				sid -> sid.setVoiceMute(1, muteVoice5.isSelected()));
-		util.getPlayer().configureSID(1,
-				sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
-		util.getPlayer().configureSID(2,
-				sid -> sid.setVoiceMute(0, muteVoice7.isSelected()));
-		util.getPlayer().configureSID(2,
-				sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
-		util.getPlayer().configureSID(2,
-				sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
+		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(0, muteVoice1.isSelected()));
+		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(1, muteVoice2.isSelected()));
+		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(2, muteVoice3.isSelected()));
+		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(0, muteVoice4.isSelected()));
+		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(1, muteVoice5.isSelected()));
+		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
+		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(0, muteVoice7.isSelected()));
+		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
+		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
 	}
 
 	private void stopOscilloscope() {
@@ -161,8 +147,7 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	@Override
 	public void doClose() {
-		final EventScheduler ctx = util.getPlayer().getC64()
-				.getEventScheduler();
+		final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
 		ctx.scheduleThreadSafe(new Event("Cancel Oscilloscope") {
 			@Override
 			public void event() throws InterruptedException {
@@ -175,56 +160,47 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	@FXML
 	private void doMuteVoice1() {
-		util.getPlayer().configureSID(0,
-				sid -> sid.setVoiceMute(0, muteVoice1.isSelected()));
+		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(0, muteVoice1.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice2() {
-		util.getPlayer().configureSID(0,
-				sid -> sid.setVoiceMute(1, muteVoice2.isSelected()));
+		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(1, muteVoice2.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice3() {
-		util.getPlayer().configureSID(0,
-				sid -> sid.setVoiceMute(2, muteVoice3.isSelected()));
+		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(2, muteVoice3.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice4() {
-		util.getPlayer().configureSID(1,
-				sid -> sid.setVoiceMute(0, muteVoice4.isSelected()));
+		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(0, muteVoice4.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice5() {
-		util.getPlayer().configureSID(1,
-				sid -> sid.setVoiceMute(1, muteVoice5.isSelected()));
+		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(1, muteVoice5.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice6() {
-		util.getPlayer().configureSID(1,
-				sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
+		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice7() {
-		util.getPlayer().configureSID(2,
-				sid -> sid.setVoiceMute(0, muteVoice7.isSelected()));
+		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(0, muteVoice7.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice8() {
-		util.getPlayer().configureSID(2,
-				sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
+		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice9() {
-		util.getPlayer().configureSID(2,
-				sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
+		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
 	}
 
 	/**
@@ -237,8 +213,7 @@ public class Oscilloscope extends Tab implements UIPart {
 	 * @param isLowerResolution
 	 *            lower resolution event occured (less precision)
 	 */
-	private void sampleGauges(Integer chipNum, SIDEmu sid,
-			boolean isLowerResolution) {
+	private void sampleGauges(Integer chipNum, SIDEmu sid, boolean isLowerResolution) {
 		switch (chipNum) {
 		case 0:
 			waveMono_0.sample(sid).advance();

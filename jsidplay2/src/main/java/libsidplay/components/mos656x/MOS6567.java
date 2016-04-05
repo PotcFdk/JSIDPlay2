@@ -80,8 +80,7 @@ public class MOS6567 extends VIC {
 				if ((registers[0x11] & 0x20) != 0) {
 					address &= bitmapMemBase | vc << 3 | rc;
 				} else {
-					address &= charMemBase | (videoMatrixData[n] & 0xff) << 3
-							| rc;
+					address &= charMemBase | (videoMatrixData[n] & 0xff) << 3 | rc;
 				}
 				vc = vc + 1 & 0x3ff;
 			}
@@ -111,8 +110,7 @@ public class MOS6567 extends VIC {
 			}
 			lineCycle++;
 
-			if (graphicsRendering
-					&& (lineCycle >= 23 || lineCycle < 71 - CYCLES_PER_LINE)) {
+			if (graphicsRendering && (lineCycle >= 23 || lineCycle < 71 - CYCLES_PER_LINE)) {
 				drawSpritesAndGraphics();
 			} else {
 				spriteCollisionsOnly();
@@ -170,8 +168,7 @@ public class MOS6567 extends VIC {
 
 				/* sprite 0 data access */
 				fetchSpriteData(0);
-				setBA(!sprites[0].isDMA() && !sprites[1].isDMA()
-						&& !sprites[2].isDMA());
+				setBA(!sprites[0].isDMA() && !sprites[1].isDMA() && !sprites[2].isDMA());
 				break;
 
 			case 5:
@@ -183,8 +180,7 @@ public class MOS6567 extends VIC {
 			case 6:
 				/* sprite 1 data access */
 				fetchSpriteData(1);
-				setBA(!sprites[1].isDMA() && !sprites[2].isDMA()
-						&& !sprites[3].isDMA());
+				setBA(!sprites[1].isDMA() && !sprites[2].isDMA() && !sprites[3].isDMA());
 				break;
 
 			case 7:
@@ -196,8 +192,7 @@ public class MOS6567 extends VIC {
 			case 8:
 				/* sprite 2 data access */
 				fetchSpriteData(2);
-				setBA(!sprites[2].isDMA() && !sprites[3].isDMA()
-						&& !sprites[4].isDMA());
+				setBA(!sprites[2].isDMA() && !sprites[3].isDMA() && !sprites[4].isDMA());
 				break;
 
 			case 9:
@@ -250,27 +245,22 @@ public class MOS6567 extends VIC {
 				previousLineIndex = 0;
 				if (rasterY == FIRST_DISPLAY_LINE) {
 					/* current row odd? -> start with even, init, swap */
-					linePaletteCurrent = (rasterY & 1) != 0 ? linePaletteEven
-							: linePaletteOdd;
-					combinedLinesCurrent = (rasterY & 1) != 0 ? combinedLinesEven
-							: combinedLinesOdd;
+					linePaletteCurrent = (rasterY & 1) != 0 ? linePaletteEven : linePaletteOdd;
+					combinedLinesCurrent = (rasterY & 1) != 0 ? combinedLinesEven : combinedLinesOdd;
 					graphicsRendering = true;
 					nextPixel = 0;
 					for (int i = 0; i < previousLineDecodedColor.length; i++) {
 						previousLineDecodedColor[i] = linePaletteCurrent[0];
 					}
 				}
-				linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven
-						: linePaletteOdd;
-				combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven
-						: combinedLinesOdd;
+				linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven : linePaletteOdd;
+				combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven : combinedLinesOdd;
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
 					pixelConsumer.accept(pixels);
 				}
-				setBA(!sprites[3].isDMA() && !sprites[4].isDMA()
-						&& !sprites[5].isDMA());
+				setBA(!sprites[3].isDMA() && !sprites[4].isDMA() && !sprites[5].isDMA());
 				fetchSpriteData(3);
 				break;
 			}
@@ -294,8 +284,7 @@ public class MOS6567 extends VIC {
 			case 12:
 				/* sprite 4 data access */
 				fetchSpriteData(4);
-				setBA(!sprites[4].isDMA() && !sprites[5].isDMA()
-						&& !sprites[6].isDMA());
+				setBA(!sprites[4].isDMA() && !sprites[5].isDMA() && !sprites[6].isDMA());
 				break;
 
 			case 13:
@@ -307,8 +296,7 @@ public class MOS6567 extends VIC {
 			case 14:
 				/* sprite 5 data access access */
 				fetchSpriteData(5);
-				setBA(!sprites[5].isDMA() && !sprites[6].isDMA()
-						&& !sprites[7].isDMA());
+				setBA(!sprites[5].isDMA() && !sprites[6].isDMA() && !sprites[7].isDMA());
 				break;
 
 			case 15:
@@ -419,16 +407,11 @@ public class MOS6567 extends VIC {
 
 	@Override
 	public void updatePalette() {
-		palette.calculatePalette(Palette
-				.buildPaletteVariant(VIC.Model.MOS6567R8));
-		System.arraycopy(palette.getEvenLines(), 0, combinedLinesEven, 0,
-				combinedLinesEven.length);
-		System.arraycopy(palette.getOddLines(), 0, combinedLinesOdd, 0,
-				combinedLinesOdd.length);
-		System.arraycopy(palette.getEvenFiltered(), 0, linePaletteEven, 0,
-				linePaletteEven.length);
-		System.arraycopy(palette.getOddFiltered(), 0, linePaletteOdd, 0,
-				linePaletteOdd.length);
+		palette.calculatePalette(Palette.buildPaletteVariant(VIC.Model.MOS6567R8));
+		System.arraycopy(palette.getEvenLines(), 0, combinedLinesEven, 0, combinedLinesEven.length);
+		System.arraycopy(palette.getOddLines(), 0, combinedLinesOdd, 0, combinedLinesOdd.length);
+		System.arraycopy(palette.getEvenFiltered(), 0, linePaletteEven, 0, linePaletteEven.length);
+		System.arraycopy(palette.getOddFiltered(), 0, linePaletteOdd, 0, linePaletteOdd.length);
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import java.util.function.Consumer;
 
 import ui.filefilter.TuneFileFilter;
 
-
 public class SearchIndexerThread extends SearchThread {
 
 	/**
@@ -17,8 +16,8 @@ public class SearchIndexerThread extends SearchThread {
 	protected FileFilter fFileFilter = new TuneFileFilter();
 	protected Queue<File> fQueue = new LinkedList<File>();
 
-	public SearchIndexerThread(final File root, Consumer<Void> searchStart,
-			Consumer<File> searchHit, Consumer<Boolean> searchStop) {
+	public SearchIndexerThread(final File root, Consumer<Void> searchStart, Consumer<File> searchHit,
+			Consumer<Boolean> searchStop) {
 		super(true, searchStart, searchHit, searchStop);
 		fQueue.add(root);
 	}

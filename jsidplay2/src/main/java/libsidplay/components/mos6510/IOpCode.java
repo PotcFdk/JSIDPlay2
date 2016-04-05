@@ -292,9 +292,9 @@ public interface IOpCode {
 	public static final int LDAay = 0xB9;
 	public static final int CMPay = 0xD9;
 	public static final int SBCay = 0xF9;
-	
+
 	//
-	
+
 	public static final int TXSn = 0x9A;
 	public static final int TSXn = 0xBA;
 

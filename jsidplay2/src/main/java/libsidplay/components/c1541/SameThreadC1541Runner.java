@@ -13,8 +13,7 @@ public class SameThreadC1541Runner extends C1541Runner {
 		}
 	};
 
-	public SameThreadC1541Runner(final EventScheduler c64Context,
-			final EventScheduler c1541Context) {
+	public SameThreadC1541Runner(final EventScheduler c64Context, final EventScheduler c1541Context) {
 		super(c64Context, c1541Context);
 	}
 

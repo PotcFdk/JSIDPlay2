@@ -120,7 +120,7 @@ public class AudioGeneratorThread extends Thread {
 			/* Do sound 10 ms at a time. */
 			final int audioLength = 10000;
 			/* Allocate audio buffer for two channels (stereo) */
-			int[] outAudioBuffer = new int[audioLength*2];
+			int[] outAudioBuffer = new int[audioLength * 2];
 
 			/* Wait for configuration/commands initially. */
 			synchronized (sidCommandQueue) {
@@ -134,10 +134,8 @@ public class AudioGeneratorThread extends Thread {
 
 				/* Ran out of writes? */
 				if (write == null) {
-					long predictedExhaustionTime = System.currentTimeMillis()
-							+ driver.getRemainingPlayTime();
-					while (!quicklyDiscardAudio.get()
-							&& System.currentTimeMillis() < predictedExhaustionTime) {
+					long predictedExhaustionTime = System.currentTimeMillis() + driver.getRemainingPlayTime();
+					while (!quicklyDiscardAudio.get() && System.currentTimeMillis() < predictedExhaustionTime) {
 						/*
 						 * Sleep for 1 ms, then re-check quicklyDiscardAudio
 						 * flag.
@@ -174,14 +172,14 @@ public class AudioGeneratorThread extends Thread {
 						audioBufferPos[sid] = 0;
 						sids[sidNum].clock(piece, sample -> {
 							sample = sample * sidLevel[sid] >> 10;
-							outAudioBuffer[audioBufferPos[sid]   << 1 | 0] += sample * sidPositionL[sid] >> 10;
+							outAudioBuffer[audioBufferPos[sid] << 1 | 0] += sample * sidPositionL[sid] >> 10;
 							outAudioBuffer[audioBufferPos[sid]++ << 1 | 1] += sample * sidPositionR[sid] >> 10;
 						});
 					}
 
 					/*
-					 * XXX Note: We might define stereo sinc resampler to do both
-					 * passes at once. This should be a win because the FIR
+					 * XXX Note: We might define stereo sinc resampler to do
+					 * both passes at once. This should be a win because the FIR
 					 * table would only have to be fetched once.
 					 */
 
@@ -243,8 +241,7 @@ public class AudioGeneratorThread extends Thread {
 				}
 
 				if (!write.isPureDelay()) {
-					sids[write.getChip()].write(write.getRegister(),
-							write.getValue());
+					sids[write.getChip()].write(write.getRegister(), write.getValue());
 				}
 
 				if (deviceChanged) {
@@ -328,18 +325,17 @@ public class AudioGeneratorThread extends Thread {
 		for (int i = 0; i < sids.length; i++) {
 			sids[i].setClockFrequency(sidClocking.getCpuFrequency());
 		}
-		resamplerL = Resampler.createResampler(sidClocking.getCpuFrequency(),
-				sidSampling, audioConfig.getFrameRate(), 20000);
-		resamplerR = Resampler.createResampler(sidClocking.getCpuFrequency(),
-				sidSampling, audioConfig.getFrameRate(), 20000);
+		resamplerL = Resampler.createResampler(sidClocking.getCpuFrequency(), sidSampling, audioConfig.getFrameRate(),
+				20000);
+		resamplerR = Resampler.createResampler(sidClocking.getCpuFrequency(), sidSampling, audioConfig.getFrameRate(),
+				20000);
 	}
 
 	public void setPosition(int sidNumber, int position) {
 		if (sids.length > 1) {
 			float rightFraction = (position + 100) / 200f;
 			float leftFraction = 1f - rightFraction;
-			float power = (float) Math.sqrt(leftFraction * leftFraction
-					+ rightFraction * rightFraction);
+			float power = (float) Math.sqrt(leftFraction * leftFraction + rightFraction * rightFraction);
 			sidPositionL[sidNumber] = (int) (1024 * leftFraction / power);
 			sidPositionR[sidNumber] = (int) (1024 * rightFraction / power);
 		} else {

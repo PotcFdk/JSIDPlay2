@@ -27,11 +27,9 @@ public class G64 extends DiskImage {
 	/**
 	 * Speed zone (0..3) of the disk image (for every track and every byte).
 	 */
-	private int[] speedZoneMap = new int[GCR.MAX_GCR_TRACKS
-			* GCR.NUM_MAX_BYTES_TRACK];
+	private int[] speedZoneMap = new int[GCR.MAX_GCR_TRACKS * GCR.NUM_MAX_BYTES_TRACK];
 
-	public G64(final GCR gcr, final String fileName, final RandomAccessFile fd,
-			final boolean readOnly) {
+	public G64(final GCR gcr, final String fileName, final RandomAccessFile fd, final boolean readOnly) {
 		super(gcr, fileName, fd, readOnly);
 	}
 
@@ -47,27 +45,23 @@ public class G64 extends DiskImage {
 		final byte[] header = new byte[IMAGE_HEADER.length()];
 		fd.readFully(header);
 		if (!new String(header, "ISO-8859-1").equals(IMAGE_HEADER)) {
-			throw new IOException(
-					String.format("GCR image is not GCR-1541 format."));
+			throw new IOException(String.format("GCR image is not GCR-1541 format."));
 		}
 		// Check version number
 		final int version = fd.read();
 		if (version != 0) {
-			throw new IOException(String.format(
-					"Unknown GCR image version %d.", version));
+			throw new IOException(String.format("Unknown GCR image version %d.", version));
 		}
 		// Check track number
 		tracks = fd.read() >> 1;
 		if (tracks < MIN_TRACKS_1541 || tracks > MAX_TRACKS_1541) {
-			throw new IOException(String.format(
-					"Invalid number of tracks (%d).", tracks));
+			throw new IOException(String.format("Invalid number of tracks (%d).", tracks));
 		}
 		// Check GCR raw track size
 		final int rawTrackSize = fd.read() + (fd.read() << 8);
 		if (rawTrackSize != GCR.NUM_MAX_BYTES_TRACK) {
-			throw new IOException(String.format(
-					"Unexpected GCR raw track size: %s (expected: %s)",
-					rawTrackSize, GCR.NUM_MAX_BYTES_TRACK));
+			throw new IOException(String.format("Unexpected GCR raw track size: %s (expected: %s)", rawTrackSize,
+					GCR.NUM_MAX_BYTES_TRACK));
 		}
 
 		// Read offsets to track data
@@ -82,8 +76,7 @@ public class G64 extends DiskImage {
 		for (int track = 1; track <= MAX_TRACKS_1541; track++) {
 			// Initialize GCR data and speed zone data
 			gcr.setTrackData(trackDataPos, GCR.NUM_MAX_BYTES_TRACK, (byte) 0xff);
-			Arrays.fill(speedZoneMap, zoneDataPos, zoneDataPos
-					+ (GCR.NUM_MAX_BYTES_TRACK >> 2), 0x00);
+			Arrays.fill(speedZoneMap, zoneDataPos, zoneDataPos + (GCR.NUM_MAX_BYTES_TRACK >> 2), 0x00);
 
 			trackSize[track - 1] = DiskImage.RAW_TRACK_SIZE[SPEED_MAP_1541[track - 1]];
 
@@ -94,10 +87,7 @@ public class G64 extends DiskImage {
 				fd.seek(gcrTrackDataStart);
 				int trackLen = fd.read() + (fd.read() << 8);
 				if (trackLen > GCR.NUM_MAX_BYTES_TRACK) {
-					throw new IOException(
-							String.format(
-									"Track field length %d is not supported.",
-									trackLen));
+					throw new IOException(String.format("Track field length %d is not supported.", trackLen));
 				}
 				trackSize[track - 1] = trackLen;
 
@@ -109,8 +99,7 @@ public class G64 extends DiskImage {
 
 				if (speedZoneOffsets[(track - 1) << 1] <= 3) {
 					// Speed zone 0-3 of the whole track
-					Arrays.fill(speedZoneMap, zoneDataPos, zoneDataPos
-							+ GCR.NUM_MAX_BYTES_TRACK,
+					Arrays.fill(speedZoneMap, zoneDataPos, zoneDataPos + GCR.NUM_MAX_BYTES_TRACK,
 							speedZoneOffsets[(track - 1) << 1]);
 				} else {
 					// Speed zone is offset to variable speed data
@@ -156,8 +145,7 @@ public class G64 extends DiskImage {
 			// Extended track will be written
 			if (track > tracks) {
 				// Allowed to extend the disk image to 40 tracks?
-				if (extendImageListener != null
-						&& !extendImageListener.isAllowed()) {
+				if (extendImageListener != null && !extendImageListener.isAllowed()) {
 					// Forbidden by policy
 					return;
 				}
@@ -170,8 +158,7 @@ public class G64 extends DiskImage {
 		// next track.
 		int gap = GCR.NUM_MAX_BYTES_TRACK - trackSize[track - 1];
 		if (gap > 0) {
-			gcr.setTrackData(((track - 1) * GCR.NUM_MAX_BYTES_TRACK),
-					trackSize[track - 1] + gap, (byte) 0);
+			gcr.setTrackData(((track - 1) * GCR.NUM_MAX_BYTES_TRACK), trackSize[track - 1] + gap, (byte) 0);
 		}
 
 		// Write track length
@@ -181,23 +168,20 @@ public class G64 extends DiskImage {
 
 		// Write track
 		fd.seek(gcrTrackDataStart + 2);
-		fd.write(gcr.getTrackData(((track - 1) * GCR.NUM_MAX_BYTES_TRACK),
-				GCR.NUM_MAX_BYTES_TRACK));
+		fd.write(gcr.getTrackData(((track - 1) * GCR.NUM_MAX_BYTES_TRACK), GCR.NUM_MAX_BYTES_TRACK));
 
 		if (speedZoneMap != null) {
 			// Detect different speed zones within a track
 			for (int i = 0; i < GCR.NUM_MAX_BYTES_TRACK; i++) {
-				if ((speedZoneMap[(track - 1) * GCR.NUM_MAX_BYTES_TRACK] != speedZoneMap[(track - 1)
-						* GCR.NUM_MAX_BYTES_TRACK + i])) {
-					System.err.printf("Saving different speed zones"
-							+ " is not supported yet (track=%d).", track);
+				if ((speedZoneMap[(track - 1)
+						* GCR.NUM_MAX_BYTES_TRACK] != speedZoneMap[(track - 1) * GCR.NUM_MAX_BYTES_TRACK + i])) {
+					System.err.printf("Saving different speed zones" + " is not supported yet (track=%d).", track);
 					return;
 				}
 			}
 			// Detect speed zones to add
 			if (speedZoneOffsets[(track - 1) << 1] > 3) {
-				System.err.printf("Adding new speed zones"
-						+ " is not supported yet (track=%d).", track);
+				System.err.printf("Adding new speed zones" + " is not supported yet (track=%d).", track);
 				return;
 			}
 			// Write speed zones
@@ -218,8 +202,7 @@ public class G64 extends DiskImage {
 	 * @return value with endianness flipped
 	 */
 	private int flip(final int value) {
-		return (value >> 24) & 0xff | (value >> 8) & 0xff00 | (value << 8)
-				& 0xff0000 | (value << 24);
+		return (value >> 24) & 0xff | (value >> 8) & 0xff00 | (value << 8) & 0xff0000 | (value << 24);
 	}
 
 	/**
@@ -235,8 +218,7 @@ public class G64 extends DiskImage {
 	 * @throws IOException
 	 *             read error occurred
 	 */
-	private void readIntLittleEndian(final RandomAccessFile fd,
-			final int[] buf, final int num) throws IOException {
+	private void readIntLittleEndian(final RandomAccessFile fd, final int[] buf, final int num) throws IOException {
 		for (int i = 0; i < num; i++) {
 			buf[i] = flip(fd.readInt());
 		}

@@ -27,7 +27,7 @@ public class CIATest extends JSIDPlay2Test {
 
 		Assert.assertTrue(player.getC64().getRAM()[0xc093] == 0x0c);
 	}
-	
+
 	@Test
 	public void timerBCountsA() {
 		click("#VIDEO");

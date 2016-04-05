@@ -54,8 +54,7 @@ public final class EventScheduler {
 
 		@Override
 		public void event() {
-			throw new RuntimeException(
-					"Event scheduler ran out of events to execute");
+			throw new RuntimeException("Event scheduler ran out of events to execute");
 		}
 	};
 
@@ -69,16 +68,14 @@ public final class EventScheduler {
 
 		@Override
 		public void event() {
-			throw new RuntimeException(
-					"Event scheduler executed the root event");
+			throw new RuntimeException("Event scheduler executed the root event");
 		}
 	};
 
 	/**
 	 * Periodic thread-safe event scheduling mechanism.
 	 */
-	private final Event threadSafeQueueingEvent = new Event(
-			"Inject events in thread-safe manner.") {
+	private final Event threadSafeQueueingEvent = new Event("Inject events in thread-safe manner.") {
 		@Override
 		public void event() throws InterruptedException {
 			synchronized (threadSafeQueue) {
@@ -122,12 +119,10 @@ public final class EventScheduler {
 	 * @param phase
 	 *            The phase when to fire the event.
 	 */
-	public void schedule(final Event event, final long cycles,
-			final Event.Phase phase) {
+	public void schedule(final Event event, final long cycles, final Event.Phase phase) {
 		// this strange formulation always selects the next available slot
 		// regardless of specified phase.
-		event.triggerTime = (cycles << 1) + currentTime
-				+ (currentTime & 1 ^ (phase == Event.Phase.PHI1 ? 0 : 1));
+		event.triggerTime = (cycles << 1) + currentTime + (currentTime & 1 ^ (phase == Event.Phase.PHI1 ? 0 : 1));
 		addEventToSchedule(event);
 	}
 
@@ -155,8 +150,7 @@ public final class EventScheduler {
 	 *            Phase when event fires
 	 */
 	public void scheduleAbsolute(Event event, long absoluteCycles, Phase phase) {
-		event.triggerTime = (absoluteCycles << 1)
-				+ (phase == Phase.PHI2 ? 1 : 0);
+		event.triggerTime = (absoluteCycles << 1) + (phase == Phase.PHI2 ? 1 : 0);
 		addEventToSchedule(event);
 	}
 

@@ -62,9 +62,8 @@ public abstract class DiskImage {
 	/**
 	 * Standard settings: Track (1-42) to speedzone (0-3) map.
 	 */
-	protected static final int SPEED_MAP_1541[] = { 3, 3, 3, 3, 3, 3, 3, 3, 3,
-			3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	protected static final int SPEED_MAP_1541[] = { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2,
+			2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 	/**
 	 * Size of the GCR data of each track.
@@ -95,8 +94,7 @@ public abstract class DiskImage {
 	 */
 	protected IExtendImageListener extendImageListener;
 
-	protected DiskImage(final GCR gcr, final String fileName,
-			final RandomAccessFile fd, final boolean readOnly) {
+	protected DiskImage(final GCR gcr, final String fileName, final RandomAccessFile fd, final boolean readOnly) {
 		this.gcr = gcr;
 		this.fileName = fileName;
 		this.fd = fd;
@@ -114,17 +112,14 @@ public abstract class DiskImage {
 	 * @throws IOException
 	 *             disk image file could not be attached
 	 */
-	public final static DiskImage attach(final GCR gcr, final File file)
-			throws IOException {
+	public final static DiskImage attach(final GCR gcr, final File file) throws IOException {
 		assert file != null;
 
 		// Open image file
 		boolean readOnly = !file.canWrite();
-		try (RandomAccessFile fd = new RandomAccessFile(file,
-				file.canWrite() ? "rw" : "r")) {
+		try (RandomAccessFile fd = new RandomAccessFile(file, file.canWrite() ? "rw" : "r")) {
 			// Try to detect image type
-			final byte header[] = new byte[Math.max(G64.IMAGE_HEADER.length(),
-					NIB.IMAGE_HEADER.length())];
+			final byte header[] = new byte[Math.max(G64.IMAGE_HEADER.length(), NIB.IMAGE_HEADER.length())];
 			fd.readFully(header, 0, header.length);
 			fd.seek(0);
 			final String headerString = new String(header, "ISO-8859-1");
@@ -195,8 +190,8 @@ public abstract class DiskImage {
 	/**
 	 * Nr of tracks * max sectors per track.
 	 */
-	public  static final int MAX_OVERALL_SECTORS = MAX_SECTORS_PER_TRACK
-			* MAX_TRACKS_1541;
+	public static final int MAX_OVERALL_SECTORS = MAX_SECTORS_PER_TRACK * MAX_TRACKS_1541;
+
 	public boolean getDiskSector(int track, int sector, byte[] currSector) {
 		// check if the track is within range
 		if (track < 1 || track > tracks) {
@@ -204,25 +199,18 @@ public abstract class DiskImage {
 		}
 		gcr.setHalfTrack(track << 1, trackSize[track - 1], trackSize[track - 1]);
 
-		int gcrDataPos = gcr.findSectorHeader(track, sector,
-				trackSize[track - 1]);
+		int gcrDataPos = gcr.findSectorHeader(track, sector, trackSize[track - 1]);
 		if (gcrDataPos == -1) {
-			System.err.println(String.format(
-					"Could not find header of T:%d S:%d.", track, sector));
+			System.err.println(String.format("Could not find header of T:%d S:%d.", track, sector));
 		} else {
 			gcrDataPos = gcr.findSectorData(gcrDataPos, trackSize[track - 1]);
 			if (gcrDataPos == -1) {
-				System.err.println(String
-						.format("Could not find data sync of T:%d S:%d.",
-								track, sector));
+				System.err.println(String.format("Could not find data sync of T:%d S:%d.", track, sector));
 				return false;
 			} else {
-				gcr.convertGCRToSector(currSector, gcrDataPos,
-						trackSize[track - 1]);
+				gcr.convertGCRToSector(currSector, gcrDataPos, trackSize[track - 1]);
 				if (currSector[0] != GCR.DATA_HEADER_START) {
-					System.err.println(String.format(
-							"Could not find data block id of T:%d S:%d.",
-							track, sector));
+					System.err.println(String.format("Could not find data block id of T:%d S:%d.", track, sector));
 					return false;
 				} else {
 					return true;
@@ -232,10 +220,8 @@ public abstract class DiskImage {
 		return false;
 	}
 
-	public final boolean save(final File file, final byte startTrack,
-			final byte startSector) throws IOException {
-		try (DataOutputStream dout = new DataOutputStream(new FileOutputStream(
-				file))) {
+	public final boolean save(final File file, final byte startTrack, final byte startSector) throws IOException {
+		try (DataOutputStream dout = new DataOutputStream(new FileOutputStream(file))) {
 			byte[] currSector = new byte[GCR.SECTOR_SIZE];
 			byte nextTrack, nextSector;
 			int offset;

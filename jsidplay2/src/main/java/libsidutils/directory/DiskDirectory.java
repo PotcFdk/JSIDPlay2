@@ -17,8 +17,7 @@ public class DiskDirectory {
 	 */
 	private static final int DIR_ENTRY_SIZE = 32;
 
-	public static final Directory getDirectory(final File file)
-			throws IOException {
+	public static final Directory getDirectory(final File file) throws IOException {
 		final Directory dir = new Directory();
 		final DiskImage img = DiskImage.attach(new GCR(), file);
 
@@ -37,10 +36,8 @@ public class DiskDirectory {
 		}
 		byte[] diskName = new byte[16];
 		byte[] diskID = new byte[5];
-		System.arraycopy(sectorBytes, afterBamInfos, diskName, 0,
-				diskName.length);
-		System.arraycopy(sectorBytes, afterBamInfos + 18, diskID, 0,
-				diskID.length);
+		System.arraycopy(sectorBytes, afterBamInfos, diskName, 0, diskName.length);
+		System.arraycopy(sectorBytes, afterBamInfos + 18, diskID, 0, diskID.length);
 		dir.setSingleSided((sectorBytes[4] & 0x80) == 0);
 		dir.setTitle(diskName);
 		dir.setId(diskID);
@@ -72,8 +69,7 @@ public class DiskDirectory {
 
 			// cyclic check and enter sector index info (but only if first dir
 			// entry)
-			if (nextEntry == 0 && currNextTrack != 0
-					&& arrCyclicAccessInfo[nextSector] != 0) {
+			if (nextEntry == 0 && currNextTrack != 0 && arrCyclicAccessInfo[nextSector] != 0) {
 				break;
 			} else {
 				arrCyclicAccessInfo[nextSector]++;
@@ -86,8 +82,7 @@ public class DiskDirectory {
 
 			final byte[] entryBytes = new byte[DIR_ENTRY_SIZE];
 			// read next file entry
-			System.arraycopy(currSector, 1 + nextEntry * DIR_ENTRY_SIZE,
-					entryBytes, 0, DIR_ENTRY_SIZE);
+			System.arraycopy(currSector, 1 + nextEntry * DIR_ENTRY_SIZE, entryBytes, 0, DIR_ENTRY_SIZE);
 			final byte fileType = entryBytes[2];
 			if (fileType != DirEntry.FILETYPE_DEL) {
 				final byte firstFileTrack = entryBytes[3];
@@ -96,8 +91,7 @@ public class DiskDirectory {
 				System.arraycopy(entryBytes, 5, fn, 0, 16);
 				final byte lowByte = entryBytes[30];
 				final byte highByte = entryBytes[31];
-				final int nrSectors = (lowByte & 0xff)
-						+ ((highByte & 0xff) << 8);
+				final int nrSectors = (lowByte & 0xff) + ((highByte & 0xff) << 8);
 				dir.getDirEntries().add(new DirEntry(nrSectors, fn, fileType) {
 					/**
 					 * Save the program of this directory entry to the specified

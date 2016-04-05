@@ -38,8 +38,8 @@ class SampleMixer implements IntConsumer {
 		 * Fade-in/fade-out clock steps until next volume change and current
 		 * fade-in and fade-out counters for left and right speaker.
 		 */
-		private long fadeInStepL, fadeInStepR, fadeOutStepL, fadeOutStepR,
-				fadeInValL, fadeInValR, fadeOutValL, fadeOutValR;
+		private long fadeInStepL, fadeInStepR, fadeOutStepL, fadeOutStepR, fadeInValL, fadeInValR, fadeOutValL,
+				fadeOutValR;
 
 		LinearFadingSampleMixer(IntBuffer audioBufferL, IntBuffer audioBufferR) {
 			super(audioBufferL, audioBufferR);
@@ -54,10 +54,8 @@ class SampleMixer implements IntConsumer {
 		public void setFadeIn(long fadeIn) {
 			this.fadeInClocks = fadeIn;
 			super.setVolume(0, 0);
-			fadeInValL = fadeInStepL = maxVolL != 0 ? fadeInClocks / maxVolL
-					: 0;
-			fadeInValR = fadeInStepR = maxVolR != 0 ? fadeInClocks / maxVolR
-					: 0;
+			fadeInValL = fadeInStepL = maxVolL != 0 ? fadeInClocks / maxVolL : 0;
+			fadeInValR = fadeInStepR = maxVolR != 0 ? fadeInClocks / maxVolR : 0;
 		}
 
 		/**
@@ -69,10 +67,8 @@ class SampleMixer implements IntConsumer {
 		public void setFadeOut(long fadeOut) {
 			this.fadeOutClocks = fadeOut;
 			super.setVolume(maxVolL, maxVolR);
-			fadeOutValL = fadeOutStepL = maxVolL != 0 ? fadeOutClocks / maxVolL
-					: 0;
-			fadeOutValR = fadeOutStepR = maxVolR != 0 ? fadeOutClocks / maxVolR
-					: 0;
+			fadeOutValL = fadeOutStepL = maxVolL != 0 ? fadeOutClocks / maxVolL : 0;
+			fadeOutValR = fadeOutStepR = maxVolR != 0 ? fadeOutClocks / maxVolR : 0;
 		}
 
 		@Override

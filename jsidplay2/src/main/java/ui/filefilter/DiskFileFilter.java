@@ -6,8 +6,8 @@ import java.util.Locale;
 
 public class DiskFileFilter implements FileFilter {
 
-	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".d64",
-			".g64", ".nib", ".zip", ".d64.gz", ".g64.gz", ".nib.gz" };
+	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".d64", ".g64", ".nib", ".zip", ".d64.gz",
+			".g64.gz", ".nib.gz" };
 
 	@Override
 	public boolean accept(File file) {

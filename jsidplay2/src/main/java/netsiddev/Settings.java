@@ -63,7 +63,7 @@ public class Settings extends SIDDeviceStage {
 		allowExternalConnections.setSelected(settings.getAllowExternalConnections());
 		digiBoost.setSelected(settings.getDigiBoostEnabled());
 	}
-	
+
 	public void open() throws IOException {
 		okButton.requestFocus();
 		super.open();
@@ -75,7 +75,7 @@ public class Settings extends SIDDeviceStage {
 		ClientContext.changeDevice(device.getInfo());
 		settings.saveDeviceIndex(device.getIndex());
 	}
-	
+
 	@FXML
 	private void setAllowExternalConnections() {
 		boolean isAllowExternalConnections = allowExternalConnections.isSelected();

@@ -22,8 +22,7 @@ public enum ChipModel {
 	 * 
 	 * @return chip model to be used for SID number
 	 */
-	public static ChipModel getChipModel(IEmulationSection emulation,
-			SidTune tune, int sidNum) {
+	public static ChipModel getChipModel(IEmulationSection emulation, SidTune tune, int sidNum) {
 		ChipModel forcedChipModel;
 		Model tuneSidModel;
 		ChipModel defaultSidModel;

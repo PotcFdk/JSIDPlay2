@@ -37,8 +37,7 @@ package libsidutils.stringsearch;
  * Example:
  * 
  * <pre>
- * int[] positions = new ShiftOrMismatches().searchString(&quot;this is null&quot;, &quot;nall&quot;,
- * 		1);
+ * int[] positions = new ShiftOrMismatches().searchString(&quot;this is null&quot;, &quot;nall&quot;, 1);
  * </pre>
  * 
  * positions[0] would be 8, positions[1] (the number of mismatches) would be 1.
@@ -133,8 +132,7 @@ abstract class MismatchSearch extends StringSearch {
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
 	@Override
-	public final int searchBytes(byte[] text, int textStart, int textEnd,
-			byte[] pattern, Object processed) {
+	public final int searchBytes(byte[] text, int textStart, int textEnd, byte[] pattern, Object processed) {
 
 		return searchBytes(text, textStart, textEnd, pattern, processed, 0)[0];
 	}
@@ -155,8 +153,7 @@ abstract class MismatchSearch extends StringSearch {
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
 	public final int[] searchBytes(byte[] text, byte[] pattern, int k) {
-		return searchBytes(text, 0, text.length, pattern, processBytes(pattern,
-				k), k);
+		return searchBytes(text, 0, text.length, pattern, processBytes(pattern, k), k);
 	}
 
 	/**
@@ -177,8 +174,7 @@ abstract class MismatchSearch extends StringSearch {
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
-	public final int[] searchBytes(byte[] text, byte[] pattern,
-			Object processed, int k) {
+	public final int[] searchBytes(byte[] text, byte[] pattern, Object processed, int k) {
 
 		return searchBytes(text, 0, text.length, pattern, processed, k);
 	}
@@ -200,11 +196,9 @@ abstract class MismatchSearch extends StringSearch {
 	 * @return int the position in the text or -1 if the pattern was not found
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
-	public final int[] searchBytes(byte[] text, int textEnd, byte[] pattern,
-			int k) {
+	public final int[] searchBytes(byte[] text, int textEnd, byte[] pattern, int k) {
 
-		return searchBytes(text, 0, textEnd, pattern, processBytes(pattern, k),
-				k);
+		return searchBytes(text, 0, textEnd, pattern, processBytes(pattern, k), k);
 
 	}
 
@@ -225,8 +219,7 @@ abstract class MismatchSearch extends StringSearch {
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
-	public final int[] searchBytes(byte[] text, int textEnd, byte[] pattern,
-			Object processed, int k) {
+	public final int[] searchBytes(byte[] text, int textEnd, byte[] pattern, Object processed, int k) {
 
 		return searchBytes(text, 0, textEnd, pattern, processed, k);
 
@@ -251,11 +244,9 @@ abstract class MismatchSearch extends StringSearch {
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
-	public final int[] searchBytes(byte[] text, int textStart, int textEnd,
-			byte[] pattern, int k) {
+	public final int[] searchBytes(byte[] text, int textStart, int textEnd, byte[] pattern, int k) {
 
-		return searchBytes(text, textStart, textEnd, pattern, processBytes(
-				pattern, k), k);
+		return searchBytes(text, textStart, textEnd, pattern, processBytes(pattern, k), k);
 
 	}
 
@@ -280,8 +271,7 @@ abstract class MismatchSearch extends StringSearch {
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #processBytes(byte[], int)
 	 */
-	public abstract int[] searchBytes(byte[] text, int textStart, int textEnd,
-			byte[] pattern, Object processed, int k);
+	public abstract int[] searchBytes(byte[] text, int textStart, int textEnd, byte[] pattern, Object processed, int k);
 
 	/*
 	 * Char searching methods
@@ -295,8 +285,7 @@ abstract class MismatchSearch extends StringSearch {
 	 * @see #processChars(char[], int)
 	 */
 	@Override
-	public final int searchChars(char[] text, int textStart, int textEnd,
-			char[] pattern, Object processed) {
+	public final int searchChars(char[] text, int textStart, int textEnd, char[] pattern, Object processed) {
 
 		return searchChars(text, textStart, textEnd, pattern, processed, 0)[0];
 	}
@@ -314,8 +303,7 @@ abstract class MismatchSearch extends StringSearch {
 	 * @see #searchChars(char[], int, int, char[], Object, int)
 	 */
 	public final int[] searchChars(char[] text, char[] pattern, int k) {
-		return searchChars(text, 0, text.length, pattern, processChars(pattern,
-				k), k);
+		return searchChars(text, 0, text.length, pattern, processChars(pattern, k), k);
 	}
 
 	/**
@@ -334,8 +322,7 @@ abstract class MismatchSearch extends StringSearch {
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchChars(char[], int, int, char[], Object, int)
 	 */
-	public final int[] searchChars(char[] text, char[] pattern,
-			Object processed, int k) {
+	public final int[] searchChars(char[] text, char[] pattern, Object processed, int k) {
 
 		return searchChars(text, 0, text.length, pattern, processed, k);
 
@@ -356,11 +343,9 @@ abstract class MismatchSearch extends StringSearch {
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchChars(char[], int, int, char[], Object)
 	 */
-	public final int[] searchChars(char[] text, int textStart, char[] pattern,
-			int k) {
+	public final int[] searchChars(char[] text, int textStart, char[] pattern, int k) {
 
-		return searchChars(text, textStart, text.length, pattern, processChars(
-				pattern, k), k);
+		return searchChars(text, textStart, text.length, pattern, processChars(pattern, k), k);
 
 	}
 
@@ -383,8 +368,7 @@ abstract class MismatchSearch extends StringSearch {
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchChars(char[], int, int, char[], Object, int)
 	 */
-	public final int[] searchChars(char[] text, int textStart, char[] pattern,
-			Object processed, int k) {
+	public final int[] searchChars(char[] text, int textStart, char[] pattern, Object processed, int k) {
 
 		return searchChars(text, textStart, text.length, pattern, processed, k);
 
@@ -406,11 +390,9 @@ abstract class MismatchSearch extends StringSearch {
 	 *            the maximum number of mismatches (the editing distance)
 	 * @return the position in the text or -1 if the pattern was not found
 	 */
-	public final int[] searchChars(char[] text, int textStart, int textEnd,
-			char[] pattern, int k) {
+	public final int[] searchChars(char[] text, int textStart, int textEnd, char[] pattern, int k) {
 
-		return searchChars(text, textStart, textEnd, pattern, processChars(
-				pattern, k), k);
+		return searchChars(text, textStart, textEnd, pattern, processChars(pattern, k), k);
 	}
 
 	/**
@@ -433,6 +415,5 @@ abstract class MismatchSearch extends StringSearch {
 	 *            the maximum number of mismatches (the editing distance)
 	 * @return the position in the text or -1 if the pattern was not found
 	 */
-	public abstract int[] searchChars(char[] text, int textStart, int textEnd,
-			char[] pattern, Object processed, int k);
+	public abstract int[] searchChars(char[] text, int textStart, int textEnd, char[] pattern, Object processed, int k);
 }

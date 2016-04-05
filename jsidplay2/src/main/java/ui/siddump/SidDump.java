@@ -50,8 +50,8 @@ public class SidDump extends Tab implements UIPart {
 	@FXML
 	private CheckBox timeInSeconds, lowResolutionMode;
 	@FXML
-	private TextField firstFrame, noteSpacing, maxRecordLength, patternSpacing,
-			oldNoteFactor, tableFontSize, baseFreq, baseNote, callsPerFrame;
+	private TextField firstFrame, noteSpacing, maxRecordLength, patternSpacing, oldNoteFactor, tableFontSize, baseFreq,
+			baseNote, callsPerFrame;
 	@FXML
 	private ComboBox<SIDDumpPlayer> regPlayer;
 	@FXML
@@ -69,8 +69,7 @@ public class SidDump extends Tab implements UIPart {
 
 	private UIUtil util;
 
-	private ChangeListener<State> changeListener = (observable, oldValue,
-			newValue) -> {
+	private ChangeListener<State> changeListener = (observable, oldValue, newValue) -> {
 		if (newValue == State.START) {
 			Platform.runLater(() -> setTune(util.getPlayer().getTune()));
 		}
@@ -92,8 +91,7 @@ public class SidDump extends Tab implements UIPart {
 
 	@FXML
 	private void initialize() {
-		sidDumpExtension = new SidDumpExtension(util.getPlayer(),
-				util.getConfig()) {
+		sidDumpExtension = new SidDumpExtension(util.getPlayer(), util.getConfig()) {
 
 			@Override
 			public void add(final SidDumpOutput output) {
@@ -131,19 +129,15 @@ public class SidDump extends Tab implements UIPart {
 	@FXML
 	private void doLoadDump() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2Section())).getLastDirectoryFolder());
-		final File file = fileDialog.showOpenDialog(loadDump.getScene()
-				.getWindow());
+		fileDialog.setInitialDirectory(
+				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		final File file = fileDialog.showOpenDialog(loadDump.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
 			sidDumpExtension.load(file.getAbsolutePath());
-			noteSpacing.setText(String.valueOf(sidDumpExtension
-					.getNoteSpacing()));
-			patternSpacing.setText(String.valueOf(sidDumpExtension
-					.getPatternSpacing()));
-			firstFrame
-					.setText(String.valueOf(sidDumpExtension.getFirstFrame()));
+			noteSpacing.setText(String.valueOf(sidDumpExtension.getNoteSpacing()));
+			patternSpacing.setText(String.valueOf(sidDumpExtension.getPatternSpacing()));
+			firstFrame.setText(String.valueOf(sidDumpExtension.getFirstFrame()));
 			lowResolutionMode.setSelected(sidDumpExtension.getLowRes());
 			loadAddress = sidDumpExtension.getLoadAddress();
 			initAddress = sidDumpExtension.getInitAddress();
@@ -156,10 +150,9 @@ public class SidDump extends Tab implements UIPart {
 	@FXML
 	private void doSaveDump() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(((SidPlay2Section) (util.getConfig()
-				.getSidplay2Section())).getLastDirectoryFolder());
-		final File file = fileDialog.showSaveDialog(saveDump.getScene()
-				.getWindow());
+		fileDialog.setInitialDirectory(
+				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		final File file = fileDialog.showSaveDialog(saveDump.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
 			sidDumpExtension.save(file.getAbsolutePath(), sidDumpOutputs);
@@ -207,16 +200,14 @@ public class SidDump extends Tab implements UIPart {
 
 	@FXML
 	private void doSetPlayer() {
-		sidDumpExtension.setRegOrder(regPlayer.getSelectionModel()
-				.getSelectedItem().getRegs());
+		sidDumpExtension.setRegOrder(regPlayer.getSelectionModel().getSelectedItem().getRegs());
 	}
 
 	@FXML
 	private void doSetNoteSpacing() {
 		final Tooltip tooltip = new Tooltip();
 		try {
-			noteSpacing.getStyleClass().removeAll(CELL_VALUE_OK,
-					CELL_VALUE_ERROR);
+			noteSpacing.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 			if (Integer.parseInt(noteSpacing.getText()) >= 0) {
 				tooltip.setText(util.getBundle().getString("NOTE_SPACING_TIP"));
 				noteSpacing.setTooltip(tooltip);
@@ -234,16 +225,14 @@ public class SidDump extends Tab implements UIPart {
 	@FXML
 	private void doSetMaxRecordLength() {
 		final Tooltip tooltip = new Tooltip();
-		maxRecordLength.getStyleClass().removeAll(CELL_VALUE_OK,
-				CELL_VALUE_ERROR);
+		maxRecordLength.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 		seconds = IniReader.parseTime(maxRecordLength.getText());
 		if (seconds != -1) {
 			tooltip.setText(util.getBundle().getString("MAX_RECORD_LENGTH_TIP"));
 			maxRecordLength.setTooltip(tooltip);
 			maxRecordLength.getStyleClass().add(CELL_VALUE_OK);
 		} else {
-			tooltip.setText(util.getBundle().getString(
-					"MAX_RECORD_LENGTH_FORMAT"));
+			tooltip.setText(util.getBundle().getString("MAX_RECORD_LENGTH_FORMAT"));
 			maxRecordLength.setTooltip(tooltip);
 			maxRecordLength.getStyleClass().add(CELL_VALUE_ERROR);
 		}
@@ -253,11 +242,9 @@ public class SidDump extends Tab implements UIPart {
 	private void doSetPatternSpacing() {
 		final Tooltip tooltip = new Tooltip();
 		try {
-			patternSpacing.getStyleClass().removeAll(CELL_VALUE_OK,
-					CELL_VALUE_ERROR);
+			patternSpacing.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 			if (Integer.parseInt(patternSpacing.getText()) >= 0) {
-				tooltip.setText(util.getBundle().getString(
-						"PATTERN_SPACING_TIP"));
+				tooltip.setText(util.getBundle().getString("PATTERN_SPACING_TIP"));
 				patternSpacing.setTooltip(tooltip);
 				patternSpacing.getStyleClass().add(CELL_VALUE_OK);
 			} else {
@@ -274,11 +261,9 @@ public class SidDump extends Tab implements UIPart {
 	private void doSetOldNoteFactor() {
 		final Tooltip tooltip = new Tooltip();
 		try {
-			oldNoteFactor.getStyleClass().removeAll(CELL_VALUE_OK,
-					CELL_VALUE_ERROR);
+			oldNoteFactor.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 			if (Float.parseFloat(oldNoteFactor.getText()) >= 1) {
-				tooltip.setText(util.getBundle().getString(
-						"OLD_NOTE_FACTOR_TIP"));
+				tooltip.setText(util.getBundle().getString("OLD_NOTE_FACTOR_TIP"));
 				oldNoteFactor.setTooltip(tooltip);
 				oldNoteFactor.getStyleClass().add(CELL_VALUE_OK);
 			} else {
@@ -314,20 +299,15 @@ public class SidDump extends Tab implements UIPart {
 	private void doSetTableFontSize() {
 		final Tooltip tooltip = new Tooltip();
 		try {
-			tableFontSize.getStyleClass().removeAll(CELL_VALUE_OK,
-					CELL_VALUE_ERROR);
+			tableFontSize.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 			int fontSizeVal = Integer.parseInt(tableFontSize.getText());
 			if (fontSizeVal > 0 && fontSizeVal <= 24) {
-				tooltip.setText(util.getBundle().getString(
-						"TABLE_FONT_SIZE_TIP"));
+				tooltip.setText(util.getBundle().getString("TABLE_FONT_SIZE_TIP"));
 				tableFontSize.setTooltip(tooltip);
 				tableFontSize.getStyleClass().add(CELL_VALUE_OK);
-				dumpTable.setStyle(String.format("-fx-font-size:%d.0px;}",
-						fontSizeVal));
-				for (TableColumn<SidDumpOutput, ?> column : dumpTable
-						.getColumns()) {
-					column.setStyle(String.format("-fx-font-size:%d.0px;",
-							fontSizeVal));
+				dumpTable.setStyle(String.format("-fx-font-size:%d.0px;}", fontSizeVal));
+				for (TableColumn<SidDumpOutput, ?> column : dumpTable.getColumns()) {
+					column.setStyle(String.format("-fx-font-size:%d.0px;", fontSizeVal));
 
 				}
 			} else {
@@ -364,12 +344,10 @@ public class SidDump extends Tab implements UIPart {
 	private void doSetCallsPerFrame() {
 		final Tooltip tooltip = new Tooltip();
 		try {
-			callsPerFrame.getStyleClass().removeAll(CELL_VALUE_OK,
-					CELL_VALUE_ERROR);
+			callsPerFrame.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 			final int speed = Integer.parseInt(callsPerFrame.getText());
 			if (speed >= 1) {
-				tooltip.setText(util.getBundle().getString(
-						"CALLS_PER_FRAME_TIP"));
+				tooltip.setText(util.getBundle().getString("CALLS_PER_FRAME_TIP"));
 				callsPerFrame.setTooltip(tooltip);
 				callsPerFrame.getStyleClass().add(CELL_VALUE_OK);
 				sidDumpExtension.setReplayFrequency(speed * 50);
@@ -387,8 +365,7 @@ public class SidDump extends Tab implements UIPart {
 	private void doSetFirstFrame() {
 		final Tooltip tooltip = new Tooltip();
 		try {
-			firstFrame.getStyleClass().removeAll(CELL_VALUE_OK,
-					CELL_VALUE_ERROR);
+			firstFrame.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 			if (Long.parseLong(firstFrame.getText()) >= 0) {
 				tooltip.setText(util.getBundle().getString("FIRST_FRAME_TIP"));
 				firstFrame.setTooltip(tooltip);
@@ -420,8 +397,7 @@ public class SidDump extends Tab implements UIPart {
 		sidDumpExtension.setCurrentSong(subTune);
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
-			int length = util.getPlayer().getSidDatabaseInfo(
-					db -> db.getSongLength(tune), 0);
+			int length = util.getPlayer().getSidDatabaseInfo(db -> db.getSongLength(tune), 0);
 			if (length == 0) {
 				length = util.getConfig().getSidplay2Section().getDefaultPlayLength();
 				if (length == 0) {
@@ -429,34 +405,27 @@ public class SidDump extends Tab implements UIPart {
 					length = 60;
 				}
 			}
-			maxRecordLength.setText(String.format("%02d:%02d",
-					(length / 60 % 100), (length % 60)));
+			maxRecordLength.setText(String.format("%02d:%02d", (length / 60 % 100), (length % 60)));
 			sidDumpExtension.setRecordLength(length);
 		} else {
 			sidDumpExtension.setRecordLength(seconds);
 		}
 		sidDumpExtension.setTimeInSeconds(timeInSeconds.isSelected());
-		sidDumpExtension.setOldNoteFactor(Float.parseFloat(oldNoteFactor
-				.getText()));
+		sidDumpExtension.setOldNoteFactor(Float.parseFloat(oldNoteFactor.getText()));
 		sidDumpExtension.setBaseFreq(Integer.decode(baseFreq.getText()));
 		sidDumpExtension.setBaseNote(Integer.decode(baseNote.getText()));
-		sidDumpExtension.setPatternSpacing(Integer.valueOf(patternSpacing
-				.getText()));
-		sidDumpExtension
-				.setNoteSpacing(Integer.parseInt(noteSpacing.getText()));
+		sidDumpExtension.setPatternSpacing(Integer.valueOf(patternSpacing.getText()));
+		sidDumpExtension.setNoteSpacing(Integer.parseInt(noteSpacing.getText()));
 		sidDumpExtension.setLowRes(lowResolutionMode.isSelected());
 
 		if (tune.getInfo().getPlayAddr() == 0) {
 			startStopRecording.setSelected(false);
-			startStopRecording.setTooltip(new Tooltip(util.getBundle()
-					.getString("NOT_AVAILABLE")));
+			startStopRecording.setTooltip(new Tooltip(util.getBundle().getString("NOT_AVAILABLE")));
 		} else {
 			startStopRecording.setTooltip(new Tooltip(null));
 		}
-		sidDumpExtension.setLeftVolume(util.getConfig().getAudioSection()
-				.getMainVolume());
-		sidDumpExtension.setRegOrder(regPlayer.getSelectionModel()
-				.getSelectedItem().getRegs());
+		sidDumpExtension.setLeftVolume(util.getConfig().getAudioSection().getMainVolume());
+		sidDumpExtension.setRegOrder(regPlayer.getSelectionModel().getSelectedItem().getRegs());
 		sidDumpExtension.init();
 	}
 

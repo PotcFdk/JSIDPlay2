@@ -37,8 +37,7 @@ public class ConsoleOutput extends VBox implements UIPart {
 	public PrintStream getPrintStream(final OutputStream original) {
 		return new PrintStream(new OutputStream() {
 
-			public synchronized void write(final byte[] b, final int off,
-					final int len) throws IOException {
+			public synchronized void write(final byte[] b, final int off, final int len) throws IOException {
 				original.write(b, off, len);
 				print(new String(b, off, len));
 			}

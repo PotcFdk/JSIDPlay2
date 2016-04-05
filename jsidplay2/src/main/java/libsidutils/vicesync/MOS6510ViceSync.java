@@ -62,8 +62,8 @@ public class MOS6510ViceSync extends MOS6510Debug {
 		} else if (connectedToJava) {
 			try {
 				String received = sync.receive();
-				ViceSync.MOS6510State jsidplay2State = new ViceSync.MOS6510State(context.getTime(Phase.PHI2)-syncClk, Register_ProgramCounter,
-						Register_Accumulator, Register_X, Register_Y, Register_StackPointer);
+				ViceSync.MOS6510State jsidplay2State = new ViceSync.MOS6510State(context.getTime(Phase.PHI2) - syncClk,
+						Register_ProgramCounter, Register_Accumulator, Register_X, Register_Y, Register_StackPointer);
 				ViceSync.MOS6510State viceState = sync.getState(received);
 				if (viceState.getClk() == 55292330 || (viceState.getClk() == 55288505)) {
 					// 55292330 - 16457: pc=0d99(3481), a=b7, x=20, y=04, sp=e8

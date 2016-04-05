@@ -36,8 +36,7 @@ public class SIDPlay extends Applet {
 		// autostart if playsid parameter is set initially
 		if (getAppletContext() != null) {
 			String startSong = getParameter("startSong");
-			playSID(getParameter("playsid"),
-					startSong != null ? Integer.valueOf(startSong) : -1);
+			playSID(getParameter("playsid"), startSong != null ? Integer.valueOf(startSong) : -1);
 		}
 		callJavaScript("javascript:start()");
 	}
@@ -196,8 +195,7 @@ public class SIDPlay extends Applet {
 		if (tune != null) {
 			return tune;
 		}
-		try (InputStream stream = new URL(url).openConnection()
-				.getInputStream()) {
+		try (InputStream stream = new URL(url).openConnection().getInputStream()) {
 			tune = SidTune.load(url, stream);
 			map.put(url, tune);
 			return tune;

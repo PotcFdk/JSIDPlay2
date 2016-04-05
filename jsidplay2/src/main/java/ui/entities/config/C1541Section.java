@@ -17,8 +17,7 @@ public class C1541Section implements IC1541Section {
 	public static final boolean DEFAULT_DRIVE_SOUND = false;
 	public static final ExtendImagePolicy DEFAULT_EXTEND_IMAGE_POLICY = ExtendImagePolicy.EXTEND_ACCESS;
 
-	private BooleanProperty driveOnProperty = new SimpleBooleanProperty(
-			DEFAULT_DRIVE_ON);
+	private BooleanProperty driveOnProperty = new SimpleBooleanProperty(DEFAULT_DRIVE_ON);
 
 	@Override
 	public boolean isDriveOn() {
@@ -34,8 +33,7 @@ public class C1541Section implements IC1541Section {
 		return driveOnProperty;
 	}
 
-	private BooleanProperty driveSoundOnProperty = new SimpleBooleanProperty(
-			DEFAULT_DRIVE_SOUND);
+	private BooleanProperty driveSoundOnProperty = new SimpleBooleanProperty(DEFAULT_DRIVE_SOUND);
 
 	public boolean isDriveSoundOn() {
 		return driveSoundOnProperty.get();
@@ -49,8 +47,7 @@ public class C1541Section implements IC1541Section {
 		return driveSoundOnProperty;
 	}
 
-	private BooleanProperty parallelCableProperty = new SimpleBooleanProperty(
-			DEFAULT_PARALLEL_CABLE);
+	private BooleanProperty parallelCableProperty = new SimpleBooleanProperty(DEFAULT_PARALLEL_CABLE);
 
 	@Override
 	public boolean isParallelCable() {

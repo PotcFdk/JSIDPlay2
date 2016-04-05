@@ -41,8 +41,7 @@ public class SID implements SIDChip {
 	private static final int BUS_TTL = 34000;
 
 	/** SID voices */
-	public final Voice[] voice = new Voice[] { new Voice(), new Voice(),
-			new Voice() };
+	public final Voice[] voice = new Voice[] { new Voice(), new Voice(), new Voice() };
 
 	/** Currently active filter */
 	private Filter filter;
@@ -118,8 +117,7 @@ public class SID implements SIDChip {
 	 *            highest bit that may be set in input.
 	 * @return the analog value as modeled from the R-2R network.
 	 */
-	static float kinkedDac(final int input, final float nonLinearity,
-			final int maxBit) {
+	static float kinkedDac(final int input, final float nonLinearity, final int maxBit) {
 		float value = 0f;
 		int currentBit = 1;
 		float weight = 1f;
@@ -166,20 +164,17 @@ public class SID implements SIDChip {
 			filter = filter8580;
 			nonLinearity = 1f;
 		} else {
-			throw new RuntimeException("Don't know how to handle chip type "
-					+ model);
+			throw new RuntimeException("Don't know how to handle chip type " + model);
 		}
 
 		/* calculate waveform-related tables, feed them to the generator */
-		final Object[] tables = WaveformCalculator.rebuildWftable(model,
-				nonLinearity);
+		final Object[] tables = WaveformCalculator.rebuildWftable(model, nonLinearity);
 
 		/* update voice offsets */
 		for (int i = 0; i < 3; i++) {
 			voice[i].setChipModel(model);
 			voice[i].envelope.setNonLinearity(nonLinearity);
-			voice[i].wave.setWftable((float[][]) tables[0],
-					(float[]) tables[1], (byte[][]) tables[2]);
+			voice[i].wave.setWftable((float[][]) tables[0], (float[]) tables[1], (byte[][]) tables[2]);
 		}
 	}
 
@@ -248,9 +243,8 @@ public class SID implements SIDChip {
 		case 0x1a:
 			return potY.readPOT();
 		case 0x1b:
-			return model == ChipModel.MOS6581 ? voice[2].wave
-					.readOSC6581(voice[0].wave) : voice[2].wave
-					.readOSC8580(voice[0].wave);
+			return model == ChipModel.MOS6581 ? voice[2].wave.readOSC6581(voice[0].wave)
+					: voice[2].wave.readOSC8580(voice[0].wave);
 		case 0x1c:
 			return voice[2].envelope.readENV();
 		default:
@@ -430,8 +424,7 @@ public class SID implements SIDChip {
 		voice[1].envelope.clock();
 		voice[2].envelope.clock();
 
-		return externalFilter.clock(filter.clock(
-				voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),
+		return externalFilter.clock(filter.clock(voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),
 				voice[2].output(voice[1].wave), ext_in));
 	}
 

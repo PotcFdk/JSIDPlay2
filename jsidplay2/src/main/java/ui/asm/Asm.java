@@ -65,12 +65,10 @@ public class Asm extends Tab implements UIPart {
 			contents.setText(s.useDelimiter("\\A").next());
 		}
 		varNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		varNameColumn.setOnEditCommit((evt) -> evt.getTableView().getItems()
-				.get(evt.getTablePosition().getRow())
-				.setName(evt.getNewValue()));
+		varNameColumn.setOnEditCommit(
+				(evt) -> evt.getTableView().getItems().get(evt.getTablePosition().getRow()).setName(evt.getNewValue()));
 		varValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		varValueColumn.setOnEditCommit((evt) -> evt.getTableView().getItems()
-				.get(evt.getTablePosition().getRow())
+		varValueColumn.setOnEditCommit((evt) -> evt.getTableView().getItems().get(evt.getTablePosition().getRow())
 				.setValue(evt.getNewValue()));
 		variables = FXCollections.<Variable> observableArrayList();
 		variablesTable.setItems(variables);
@@ -91,8 +89,7 @@ public class Asm extends Tab implements UIPart {
 
 	@FXML
 	private void removeVariable() {
-		final Variable selectedItem = variablesTable.getSelectionModel()
-				.getSelectedItem();
+		final Variable selectedItem = variablesTable.getSelectionModel().getSelectedItem();
 		if (selectedItem != null) {
 			variables.remove(selectedItem);
 		}
@@ -102,10 +99,8 @@ public class Asm extends Tab implements UIPart {
 	private void compile() {
 		try {
 			HashMap<String, String> globals = new HashMap<String, String>();
-			variables.stream().forEach(
-					(var) -> globals.put(var.getName(), var.getValue()));
-			InputStream asm = new ByteArrayInputStream(contents.getText()
-					.getBytes("UTF-8"));
+			variables.stream().forEach((var) -> globals.put(var.getName(), var.getValue()));
+			InputStream asm = new ByteArrayInputStream(contents.getText().getBytes("UTF-8"));
 			byte[] assembly = assembler.assemble(ASM_RESOURCE, asm, globals);
 			InputStream is = new ByteArrayInputStream(assembly);
 			SidTune tune = SidTune.load("assembly.prg", is);

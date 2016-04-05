@@ -111,7 +111,7 @@ public class MusicCollection extends Tab implements UIPart {
 
 	private static final String HVSC_DS = PersistenceProperties.HVSC_DS;
 	private static final String CGSC_DS = PersistenceProperties.CGSC_DS;
-	
+
 	@FXML
 	private CheckBox autoConfiguration;
 	@FXML

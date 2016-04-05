@@ -126,8 +126,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		File crcFile = download(getCrcUrl(), false);
 		boolean checkCrc = checkCrc(crcFile, file);
 		if (!checkCrc) {
-			System.err
-					.println("Online file contents has changed, re-download!");
+			System.err.println("Online file contents has changed, re-download!");
 			return false;
 		}
 		return true;
@@ -135,9 +134,8 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private Proxy getProxy() {
 		if (config.getSidplay2Section().isEnableProxy()) {
-			final SocketAddress addr = new InetSocketAddress(config
-					.getSidplay2Section().getProxyHostname(), config.getSidplay2Section()
-					.getProxyPort());
+			final SocketAddress addr = new InetSocketAddress(config.getSidplay2Section().getProxyHostname(),
+					config.getSidplay2Section().getProxyPort());
 			return new Proxy(Proxy.Type.HTTP, addr);
 		} else {
 			return Proxy.NO_PROXY;
@@ -148,8 +146,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		return checkExistingURL(getURL(1));
 	}
 
-	private File downloadAndMergeChunks() throws IOException,
-			MalformedURLException {
+	private File downloadAndMergeChunks() throws IOException, MalformedURLException {
 		File downloadedFile;
 		List<File> chunks = new ArrayList<File>();
 		int part = 1;
@@ -168,12 +165,10 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private boolean checkExistingURL(URL currentURL) throws IOException {
 		HttpURLConnection connection = getConnection(currentURL);
-		return connection.getResponseCode() == HttpURLConnection.HTTP_OK
-				&& connection.getContentLength() >= 0;
+		return connection.getResponseCode() == HttpURLConnection.HTTP_OK && connection.getContentLength() >= 0;
 	}
 
-	private HttpURLConnection getConnection(URL currentURL) throws IOException,
-			ProtocolException {
+	private HttpURLConnection getConnection(URL currentURL) throws IOException, ProtocolException {
 		HttpURLConnection.setFollowRedirects(true);
 		HttpURLConnection connection;
 		connection = (HttpURLConnection) currentURL.openConnection(proxy);
@@ -189,13 +184,10 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 			FileOutputStream fos = null;
 			try {
-				long contentLength = getConnection(currentURL)
-						.getContentLength();
+				long contentLength = getConnection(currentURL).getContentLength();
 
-				final URLConnection connection = currentURL
-						.openConnection(proxy);
-				ReadableByteChannel rbc = new RBCWrapper(
-						Channels.newChannel(connection.getInputStream()),
+				final URLConnection connection = currentURL.openConnection(proxy);
+				ReadableByteChannel rbc = new RBCWrapper(Channels.newChannel(connection.getInputStream()),
 						contentLength, this);
 				fos = new FileOutputStream(file);
 				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
@@ -205,9 +197,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 				}
 			} catch (IOException e) {
 				if (retry) {
-					System.err.println(String.format(
-							"Download failed for %s, next try!",
-							currentURL.getPath()));
+					System.err.println(String.format("Download failed for %s, next try!", currentURL.getPath()));
 				} else {
 					throw e;
 				}
@@ -221,9 +211,8 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 				}
 			}
 		} while (tries != MAX_TRY_COUNT);
-		throw new IOException(String.format(
-				"Download error for %s, i have tried %d times! ",
-				currentURL.getPath(), MAX_TRY_COUNT));
+		throw new IOException(
+				String.format("Download error for %s, i have tried %d times! ", currentURL.getPath(), MAX_TRY_COUNT));
 	}
 
 	private boolean hasNextPart(int part) throws IOException {
@@ -231,8 +220,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private File createLocalFile(URL currentURL) {
-		return new File(config.getSidplay2Section().getTmpDir(), new File(
-				currentURL.toString()).getName());
+		return new File(config.getSidplay2Section().getTmpDir(), new File(currentURL.toString()).getName());
 	}
 
 	private File mergeChunks(List<File> chunks) throws IOException {
@@ -253,10 +241,9 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	private File merge(File resultFile, File chunk) throws IOException {
 		File tmp = File.createTempFile("jsidplay2", "tmp");
 		tmp.deleteOnExit();
-		try (InputStream is = new BufferedInputStream(new SequenceInputStream(
-				new FileInputStream(resultFile), new FileInputStream(chunk)));
-				OutputStream os = new BufferedOutputStream(
-						new FileOutputStream(tmp))) {
+		try (InputStream is = new BufferedInputStream(
+				new SequenceInputStream(new FileInputStream(resultFile), new FileInputStream(chunk)));
+				OutputStream os = new BufferedOutputStream(new FileOutputStream(tmp))) {
 			int bytesRead;
 			byte[] buffer = new byte[MAX_BUFFER_SIZE];
 			while ((bytesRead = is.read(buffer)) != -1) {
@@ -272,8 +259,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private boolean checkCrc(File crcFile, File download) throws IOException {
 		Properties properties = new Properties();
-		try (BufferedInputStream stream = new BufferedInputStream(
-				new FileInputStream(crcFile))) {
+		try (BufferedInputStream stream = new BufferedInputStream(new FileInputStream(crcFile))) {
 			properties.load(stream);
 		}
 		try {
@@ -293,8 +279,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	public static long calculateCRC32(File file) throws IOException {
-		try (CheckedInputStream cis = new CheckedInputStream(
-				new FileInputStream(file), new CRC32())) {
+		try (CheckedInputStream cis = new CheckedInputStream(new FileInputStream(file), new CRC32())) {
 			byte[] buffer = new byte[MAX_BUFFER_SIZE];
 			while (cis.read(buffer) >= 0) {
 			}
@@ -326,8 +311,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	public static void main(String[] args) {
 		try {
 			long checksum = calculateCRC32(new File(args[0]));
-			System.out
-					.println(String.format("%8X", checksum).replace(' ', '0'));
+			System.out.println(String.format("%8X", checksum).replace(' ', '0'));
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

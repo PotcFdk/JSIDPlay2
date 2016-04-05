@@ -9,12 +9,12 @@ public class Alert extends SIDDeviceStage {
 
 	@FXML
 	private Text message;
-	
+
 	public Alert() {
 		resizableProperty().set(true);
-		setWait(true);		
+		setWait(true);
 	}
-	
+
 	@FXML
 	private void okPressed(ActionEvent event) {
 		((Stage) message.getScene().getWindow()).close();

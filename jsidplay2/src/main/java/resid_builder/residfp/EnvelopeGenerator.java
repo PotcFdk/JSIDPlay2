@@ -25,8 +25,10 @@ package resid_builder.residfp;
  * A 15 bit counter is used to implement the envelope rates, in effect dividing
  * the clock to the envelope counter by the currently selected rate period.
  * <P>
- * In addition, another counter is used to implement the exponential envelope decay, in effect further dividing the clock to the envelope counter. The period of this counter is set to 1, 2, 4, 8, 16,
- * 30 at the envelope counter values 255, 93, 54, 26, 14, 6, respectively.
+ * In addition, another counter is used to implement the exponential envelope
+ * decay, in effect further dividing the clock to the envelope counter. The
+ * period of this counter is set to 1, 2, 4, 8, 16, 30 at the envelope counter
+ * values 255, 93, 54, 26, 14, 6, respectively.
  * 
  * @author Ken Händel
  * 
@@ -100,23 +102,37 @@ public final class EnvelopeGenerator {
 	 * Lookup table to convert from attack, decay, or release value to rate
 	 * counter period.
 	 * <P>
-	 * Rate counter periods are calculated from the Envelope Rates table in the Programmer's Reference Guide. The rate counter period is the number of cycles between each increment of the envelope
-	 * counter. The rates have been verified by sampling ENV3.
+	 * Rate counter periods are calculated from the Envelope Rates table in the
+	 * Programmer's Reference Guide. The rate counter period is the number of
+	 * cycles between each increment of the envelope counter. The rates have
+	 * been verified by sampling ENV3.
 	 * <P>
-	 * The rate counter is a 16 bit register which is incremented each cycle. When the counter reaches a specific comparison value, the envelope counter is incremented (attack) or decremented
-	 * (decay/release) and the counter is zeroed.
+	 * The rate counter is a 16 bit register which is incremented each cycle.
+	 * When the counter reaches a specific comparison value, the envelope
+	 * counter is incremented (attack) or decremented (decay/release) and the
+	 * counter is zeroed.
 	 * <P>
-	 * NB! Sampling ENV3 shows that the calculated values are not exact. It may seem like most calculated values have been rounded (.5 is rounded down) and 1 has beed added to the result. A possible
-	 * explanation for this is that the SID designers have used the calculated values directly as rate counter comparison values, not considering a one cycle delay to zero the counter. This would
-	 * yield an actual period of comparison value + 1.
+	 * NB! Sampling ENV3 shows that the calculated values are not exact. It may
+	 * seem like most calculated values have been rounded (.5 is rounded down)
+	 * and 1 has beed added to the result. A possible explanation for this is
+	 * that the SID designers have used the calculated values directly as rate
+	 * counter comparison values, not considering a one cycle delay to zero the
+	 * counter. This would yield an actual period of comparison value + 1.
 	 * <P>
-	 * The time of the first envelope count can not be exactly controlled, except possibly by resetting the chip. Because of this we cannot do cycle exact sampling and must devise another method to
-	 * calculate the rate counter periods.
+	 * The time of the first envelope count can not be exactly controlled,
+	 * except possibly by resetting the chip. Because of this we cannot do cycle
+	 * exact sampling and must devise another method to calculate the rate
+	 * counter periods.
 	 * <P>
-	 * The exact rate counter periods can be determined e.g. by counting the number of cycles from envelope level 1 to envelope level 129, and dividing the number of cycles by 128. CIA1 timer A and B
-	 * in linked mode can perform the cycle count. This is the method used to find the rates below.
+	 * The exact rate counter periods can be determined e.g. by counting the
+	 * number of cycles from envelope level 1 to envelope level 129, and
+	 * dividing the number of cycles by 128. CIA1 timer A and B in linked mode
+	 * can perform the cycle count. This is the method used to find the rates
+	 * below.
 	 * <P>
-	 * To avoid the ADSR delay bug, sampling of ENV3 should be done using sustain = release = 0. This ensures that the attack state will not lower the current rate counter period.
+	 * To avoid the ADSR delay bug, sampling of ENV3 should be done using
+	 * sustain = release = 0. This ensures that the attack state will not lower
+	 * the current rate counter period.
 	 * <P>
 	 * The ENV3 sampling code below yields a maximum timing error of 14 cycles.
 	 * 
@@ -130,52 +146,71 @@ public final class EnvelopeGenerator {
 	 *      bne l2
 	 * </pre>
 	 * 
-	 * This yields a maximum error for the calculated rate period of 14/128 cycles. The described method is thus sufficient for exact calculation of the rate periods.
+	 * This yields a maximum error for the calculated rate period of 14/128
+	 * cycles. The described method is thus sufficient for exact calculation of
+	 * the rate periods.
 	 */
-	private static final int[] ENVELOPE_PERIOD = {
-		9, //   2ms*1.0MHz/256 =     7.81
-		32, //   8ms*1.0MHz/256 =    31.25
-		63, //  16ms*1.0MHz/256 =    62.50
-		95, //  24ms*1.0MHz/256 =    93.75
-		149, //  38ms*1.0MHz/256 =   148.44
-		220, //  56ms*1.0MHz/256 =   218.75
-		267, //  68ms*1.0MHz/256 =   265.63
-		313, //  80ms*1.0MHz/256 =   312.50
-		392, // 100ms*1.0MHz/256 =   390.63
-		977, // 250ms*1.0MHz/256 =   976.56
-		1954, // 500ms*1.0MHz/256 =  1953.13
-		3126, // 800ms*1.0MHz/256 =  3125.00
-		3907, //   1 s*1.0MHz/256 =  3906.25
-		11720, //   3 s*1.0MHz/256 = 11718.75
-		19532, //   5 s*1.0MHz/256 = 19531.25
-		31251 //   8 s*1.0MHz/256 = 31250.00
+	private static final int[] ENVELOPE_PERIOD = { 9, // 2ms*1.0MHz/256 = 7.81
+			32, // 8ms*1.0MHz/256 = 31.25
+			63, // 16ms*1.0MHz/256 = 62.50
+			95, // 24ms*1.0MHz/256 = 93.75
+			149, // 38ms*1.0MHz/256 = 148.44
+			220, // 56ms*1.0MHz/256 = 218.75
+			267, // 68ms*1.0MHz/256 = 265.63
+			313, // 80ms*1.0MHz/256 = 312.50
+			392, // 100ms*1.0MHz/256 = 390.63
+			977, // 250ms*1.0MHz/256 = 976.56
+			1954, // 500ms*1.0MHz/256 = 1953.13
+			3126, // 800ms*1.0MHz/256 = 3125.00
+			3907, // 1 s*1.0MHz/256 = 3906.25
+			11720, // 3 s*1.0MHz/256 = 11718.75
+			19532, // 5 s*1.0MHz/256 = 19531.25
+			31251 // 8 s*1.0MHz/256 = 31250.00
 	};
 
 	/**
 	 * The 16 selectable sustain levels.
 	 * <P>
-	 * For decay and release, the clock to the envelope counter is sequentially divided by 1, 2, 4, 8, 16, 30, 1 to create a piece-wise linear approximation of an exponential. The exponential counter
-	 * period is loaded at the envelope counter values 255, 93, 54, 26, 14, 6, 0. The period can be different for the same envelope counter value, depending on whether the envelope has been rising
-	 * (attack -> release) or sinking (decay/release).
+	 * For decay and release, the clock to the envelope counter is sequentially
+	 * divided by 1, 2, 4, 8, 16, 30, 1 to create a piece-wise linear
+	 * approximation of an exponential. The exponential counter period is loaded
+	 * at the envelope counter values 255, 93, 54, 26, 14, 6, 0. The period can
+	 * be different for the same envelope counter value, depending on whether
+	 * the envelope has been rising (attack -> release) or sinking
+	 * (decay/release).
 	 * <P>
-	 * Since it is not possible to reset the rate counter (the test bit has no influence on the envelope generator whatsoever) a method must be devised to do cycle exact sampling of ENV3 to do the
-	 * investigation. This is possible with knowledge of the rate period for A=0, found above.
+	 * Since it is not possible to reset the rate counter (the test bit has no
+	 * influence on the envelope generator whatsoever) a method must be devised
+	 * to do cycle exact sampling of ENV3 to do the investigation. This is
+	 * possible with knowledge of the rate period for A=0, found above.
 	 * <P>
-	 * The CPU can be synchronized with ENV3 by first synchronizing with the rate counter by setting A=0 and wait in a carefully timed loop for the envelope counter _not_ to change for 9 cycles. We
-	 * can then wait for a specific value of ENV3 with another timed loop to fully synchronize with ENV3.
+	 * The CPU can be synchronized with ENV3 by first synchronizing with the
+	 * rate counter by setting A=0 and wait in a carefully timed loop for the
+	 * envelope counter _not_ to change for 9 cycles. We can then wait for a
+	 * specific value of ENV3 with another timed loop to fully synchronize with
+	 * ENV3.
 	 * <P>
-	 * At the first period when an exponential counter period larger than one is used (decay or relase), one extra cycle is spent before the envelope is decremented. The envelope output is then
-	 * delayed one cycle until the state is changed to attack. Now one cycle less will be spent before the envelope is incremented, and the situation is normalized.
+	 * At the first period when an exponential counter period larger than one is
+	 * used (decay or relase), one extra cycle is spent before the envelope is
+	 * decremented. The envelope output is then delayed one cycle until the
+	 * state is changed to attack. Now one cycle less will be spent before the
+	 * envelope is incremented, and the situation is normalized.
 	 * <P>
-	 * The delay is probably caused by the comparison with the exponential counter, and does not seem to affect the rate counter. This has been verified by timing 256 consecutive complete envelopes
-	 * with A = D = R = 1, S = 0, using CIA1 timer A and B in linked mode. If the rate counter is not affected the period of each complete envelope is
+	 * The delay is probably caused by the comparison with the exponential
+	 * counter, and does not seem to affect the rate counter. This has been
+	 * verified by timing 256 consecutive complete envelopes with A = D = R = 1,
+	 * S = 0, using CIA1 timer A and B in linked mode. If the rate counter is
+	 * not affected the period of each complete envelope is
 	 * <P>
 	 * (255 + 162*1 + 39*2 + 28*4 + 12*8 + 8*16 + 6*30)*32 = 756*32 = 32352
 	 * <P>
-	 * which corresponds exactly to the timed value divided by the number of complete envelopes.
+	 * which corresponds exactly to the timed value divided by the number of
+	 * complete envelopes.
 	 * <P>
 	 * <P>
-	 * From the sustain levels it follows that both the low and high 4 bits of the envelope counter are compared to the 4-bit sustain value. This has been verified by sampling ENV3.
+	 * From the sustain levels it follows that both the low and high 4 bits of
+	 * the envelope counter are compared to the 4-bit sustain value. This has
+	 * been verified by sampling ENV3.
 	 */
 
 	/**
@@ -210,7 +245,7 @@ public final class EnvelopeGenerator {
 				// then frozen at zero; to unlock this situation the state must
 				// be changed to release, then to attack. This has been verified
 				// by sampling ENV3.
-				if (++ envelopeValue == (byte) 0xff) {
+				if (++envelopeValue == (byte) 0xff) {
 					state = State.DECAY_SUSTAIN;
 					/* no ADSR delay bug possible, because rateCounter = 0 */
 					rateCounterPeriod = ENVELOPE_PERIOD[decay];
@@ -231,7 +266,7 @@ public final class EnvelopeGenerator {
 			switch (envelopeValue) {
 			case (byte) 0xff:
 				exponentialCounterPeriod = 1;
-			break;
+				break;
 			case 0x5d:
 				exponentialCounterPeriod = 2;
 				break;
@@ -258,9 +293,9 @@ public final class EnvelopeGenerator {
 	}
 
 	/**
-	 * Set nonlinearity parameter for imperfect analog DAC emulation.
-	 * 1.0 means perfect 8580-like linearity, values between 0.95 - 0.97
-	 * are probably realistic 6581 nonlinearity values.
+	 * Set nonlinearity parameter for imperfect analog DAC emulation. 1.0 means
+	 * perfect 8580-like linearity, values between 0.95 - 0.97 are probably
+	 * realistic 6581 nonlinearity values.
 	 * 
 	 * @param nonLinearity
 	 */
@@ -273,7 +308,8 @@ public final class EnvelopeGenerator {
 	/**
 	 * Constructor.
 	 */
-	protected EnvelopeGenerator() {}
+	protected EnvelopeGenerator() {
+	}
 
 	/**
 	 * SID reset.
@@ -318,7 +354,8 @@ public final class EnvelopeGenerator {
 	protected void writeCONTROL_REG(final byte control) {
 		final boolean gate_next = (control & 0x01) != 0;
 
-		// The rate counter is never reset, thus there will be a delay before the
+		// The rate counter is never reset, thus there will be a delay before
+		// the
 		// envelope counter starts counting up (attack) or down (release).
 
 		// Gate bit on: Start attack, decay, sustain.
@@ -356,10 +393,10 @@ public final class EnvelopeGenerator {
 	 */
 	protected void writeSUSTAIN_RELEASE(final byte sustain_release) {
 		sustain = sustain_release >> 4 & 0x0f;
-				release = sustain_release & 0x0f;
-				if (state == State.RELEASE) {
-					cpuUpdateRatePeriod(ENVELOPE_PERIOD[release]);
-				}
+		release = sustain_release & 0x0f;
+		if (state == State.RELEASE) {
+			cpuUpdateRatePeriod(ENVELOPE_PERIOD[release]);
+		}
 	}
 
 	/**
@@ -381,46 +418,56 @@ public final class EnvelopeGenerator {
 	}
 
 	/**
-	 * When CPU updates rate period, check for ADSR delay bug before
-	 * allowing the update to proceed.
+	 * When CPU updates rate period, check for ADSR delay bug before allowing
+	 * the update to proceed.
 	 * 
 	 * @param newRateCounterPeriod
 	 */
 	private void cpuUpdateRatePeriod(final int newRateCounterPeriod) {
-		/* Handle edge case: cpu writing the same value that is already set
-		 * in the register. This can't cause a ADSR delay bug. */
+		/*
+		 * Handle edge case: cpu writing the same value that is already set in
+		 * the register. This can't cause a ADSR delay bug.
+		 */
 		if (rateCounterPeriod == newRateCounterPeriod) {
 			return;
 		}
 		rateCounterPeriod = newRateCounterPeriod;
 
-		/* The ADSR counter is XOR shift register with 0x7fff unique values.
-		 * If the rate_period is adjusted to a value already seen in this cycle,
+		/*
+		 * The ADSR counter is XOR shift register with 0x7fff unique values. If
+		 * the rate_period is adjusted to a value already seen in this cycle,
 		 * the register will wrap around. This is known as the ADSR delay bug.
 		 *
-		 * To simplify the hot path calculation, we simulate this through observing
-		 * that we add the 0x7fff cycle delay by changing the rate_counter variable
-		 * directly. This takes care of the 99 % common case. However, playroutine
-		 * could make multiple consecutive rate_period adjustments, in which case we
-		 * need to cancel the previous adjustment. */
+		 * To simplify the hot path calculation, we simulate this through
+		 * observing that we add the 0x7fff cycle delay by changing the
+		 * rate_counter variable directly. This takes care of the 99 % common
+		 * case. However, playroutine could make multiple consecutive
+		 * rate_period adjustments, in which case we need to cancel the previous
+		 * adjustment.
+		 */
 
 		/* if the new period exceeds 0x7fff, we need to wrap */
 		if (rateCounterPeriod - rateCounter > 0x7fff) {
 			rateCounter += 0x7fff;
 		}
 
-		/* simulate 0x7fff wrap-around, if the period is less than the current value */
+		/*
+		 * simulate 0x7fff wrap-around, if the period is less than the current
+		 * value
+		 */
 		if (rateCounterPeriod <= rateCounter) {
 			rateCounter -= 0x7fff;
 		}
 
-		/* What about adjustment that sets period to the exact same value as the XOR
-		 * register? This would warrant testing, complicated though as it is. We know,
-		 * however, that the SID is clocked at PHI1 and the write from CPU arrives at
-		 * PHI2. It is probable that the SID has already determined whether XOR value
-		 * matches at that clock, and the CPU adjustment can only take effect the next
-		 * cycle. This consideration is reflected by the > rather than >= and
-		 * <= rather than < in the two comparisons above.
+		/*
+		 * What about adjustment that sets period to the exact same value as the
+		 * XOR register? This would warrant testing, complicated though as it
+		 * is. We know, however, that the SID is clocked at PHI1 and the write
+		 * from CPU arrives at PHI2. It is probable that the SID has already
+		 * determined whether XOR value matches at that clock, and the CPU
+		 * adjustment can only take effect the next cycle. This consideration is
+		 * reflected by the > rather than >= and <= rather than < in the two
+		 * comparisons above.
 		 */
 	}
 }

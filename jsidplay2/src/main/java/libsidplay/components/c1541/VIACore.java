@@ -168,7 +168,6 @@ public abstract class VIACore {
 	public static final int VIA_SIG_FALL = 0;
 	public static final int VIA_SIG_RISE = 1;
 
-	
 	/**
 	 * Registers
 	 */
@@ -196,7 +195,7 @@ public abstract class VIACore {
 
 	protected boolean enabled;
 
-	private final Event t1Alarm;	
+	private final Event t1Alarm;
 	private final Event t2Alarm;
 
 	private boolean lastState;
@@ -314,8 +313,7 @@ public abstract class VIACore {
 			}
 			pb7 ^= nuf & 1;
 
-			tau = TAUOFFSET + tal + 2
-					+ (rclk - (rclk - tau + TAUOFFSET) % (tal + 2));
+			tau = TAUOFFSET + tal + 2 + (rclk - (rclk - tau + TAUOFFSET) % (tal + 2));
 			if (rclk == tau - tal - 1) {
 				pb7xx = 1;
 			}
@@ -324,7 +322,7 @@ public abstract class VIACore {
 		if (tau == rclk) {
 			pb7x = 1;
 		}
-		
+
 		tal = (char) ((via[VIA_T1LL] & 0xff) + ((via[VIA_T1LH] & 0xff) << 8));
 	}
 
@@ -332,7 +330,9 @@ public abstract class VIACore {
 		tbl = (char) ((via[VIA_T2CL] & 0xff) + ((via[VIA_T2CH] & 0xff) << 8));
 	}
 
-	/* ------------------------------------------------------------------------- */
+	/*
+	 * -------------------------------------------------------------------------
+	 */
 	public final void disable() {
 		alarmUnset(t1Alarm);
 		alarmUnset(t2Alarm);
@@ -368,7 +368,7 @@ public abstract class VIACore {
 		tai = 0;
 		tbi = 0;
 		lastState = false;
-		
+
 		oldpa = (byte) 0xff;
 		oldpb = (byte) 0xff;
 
@@ -394,8 +394,7 @@ public abstract class VIACore {
 			break;
 		case VIA_SIG_CA2:
 			if (0 == (via[VIA_PCR] & 0x08)) {
-				ifr |= ((edge << 2 ^ via[VIA_PCR]) & 0x04) != 0 ? 0
-						: VIA_IM_CA2;
+				ifr |= ((edge << 2 ^ via[VIA_PCR]) & 0x04) != 0 ? 0 : VIA_IM_CA2;
 				checkInterrupts();
 			}
 			break;
@@ -411,8 +410,7 @@ public abstract class VIACore {
 			break;
 		case VIA_SIG_CB2:
 			if (0 == (via[VIA_PCR] & 0x80)) {
-				ifr |= ((edge << 6 ^ via[VIA_PCR]) & 0x40) != 0 ? 0
-						: VIA_IM_CB2;
+				ifr |= ((edge << 6 ^ via[VIA_PCR]) & 0x40) != 0 ? 0 : VIA_IM_CB2;
 				checkInterrupts();
 			}
 			break;
@@ -575,8 +573,7 @@ public abstract class VIACore {
 							pb7o = 1;
 						} else {
 							pb7o = 0;
-							if ((via[VIA_ACR] & 0x80) != 0 && pb7x != 0
-									&& 0 == pb7xx) {
+							if ((via[VIA_ACR] & 0x80) != 0 && pb7x != 0 && 0 == pb7xx) {
 								pb7 ^= 1;
 							}
 						}
@@ -696,7 +693,7 @@ public abstract class VIACore {
 			return b;
 		}
 
-		/* Timers */
+			/* Timers */
 		case VIA_T1CL /* TIMER_AL */: /* timer A low */
 			ifr &= ~VIA_IM_T1;
 			checkInterrupts();
@@ -726,10 +723,9 @@ public abstract class VIACore {
 		}
 
 		case VIA_IER: /* 6522 Interrupt Control Register */
-			return (byte) (ier /* [VIA_IER] */| 0x80);
+			return (byte) (ier /* [VIA_IER] */ | 0x80);
 
 		} /* switch */
-
 
 		return via[addr];
 	}
@@ -758,16 +754,28 @@ public abstract class VIACore {
 	}
 
 	protected abstract void alarmSet(final Event alarm, final long ti);
+
 	protected abstract void alarmUnset(final Event alarm);
+
 	protected abstract long cpuClk();
+
 	protected abstract void setIRQ(boolean irq);
+
 	protected abstract void storePra(int addr, byte value);
+
 	protected abstract void storePrb(byte value);
+
 	protected abstract void storeAcr(byte value);
+
 	protected abstract void storeSr(byte value);
+
 	protected abstract void storeT2l(byte value);
+
 	protected abstract byte readPra();
+
 	protected abstract byte readPrb();
+
 	protected abstract void setCa2(int state);
+
 	protected abstract void setCb2(int state);
 }

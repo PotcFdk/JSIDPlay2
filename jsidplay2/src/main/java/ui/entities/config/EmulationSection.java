@@ -77,6 +77,7 @@ public class EmulationSection implements IEmulationSection {
 	public void setThirdEmulation(Emulation thirdEmulation) {
 		this.thirdEmulation = thirdEmulation;
 	}
+
 	private CPUClock defaultClockSpeed = DEFAULT_CLOCK_SPEED;
 
 	@Enumerated(EnumType.STRING)

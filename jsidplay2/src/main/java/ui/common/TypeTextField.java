@@ -23,8 +23,7 @@ public class TypeTextField extends TextField {
 	private String pattern;
 
 	private void setPattern(String type) {
-		if (type.equals("Long") || type.equals("Integer")
-				|| type.equals("Date") || type.equals("Short")) {
+		if (type.equals("Long") || type.equals("Integer") || type.equals("Date") || type.equals("Short")) {
 			pattern = NUMBERS;
 		} else if (type.equals("Float")) {
 			pattern = FLOATS;

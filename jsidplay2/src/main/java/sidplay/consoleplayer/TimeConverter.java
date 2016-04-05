@@ -15,7 +15,6 @@ public class TimeConverter implements IStringConverter<Integer> {
 		} else if (s.length == 2) {
 			return Integer.parseInt(s[0]) * 60 + Integer.parseInt(s[1]);
 		}
-		throw new ParameterException(
-				"Invalid time, expected [mm:]ss (found " + value + ")");
+		throw new ParameterException("Invalid time, expected [mm:]ss (found " + value + ")");
 	}
 }

@@ -42,15 +42,14 @@ public final class SID implements SIDChip {
 	 * Output scaler.
 	 */
 	private static final int OUTPUT_LEVEL = 359;
-	
+
 	/**
 	 * Bus value stays alive for some time after each operation.
 	 */
 	private static final int BUS_TTL = 0x9000;
 
 	/** SID voices */
-	public final Voice[] voice = new Voice[] { new Voice(), new Voice(),
-			new Voice() };
+	public final Voice[] voice = new Voice[] { new Voice(), new Voice(), new Voice() };
 
 	/** Currently active filter */
 	private Filter filter;
@@ -120,8 +119,7 @@ public final class SID implements SIDChip {
 	 * @param term
 	 *            is the dac terminated by a 2R resistor? (6581 DACs are not)
 	 */
-	static void kinkedDac(final double[] dac, final double _2R_div_R,
-			final boolean term) {
+	static void kinkedDac(final double[] dac, final double _2R_div_R, final boolean term) {
 		final double INFINITY = 1e6;
 
 		// Calculate voltage contribution by each individual bit in the R-2R
@@ -133,8 +131,7 @@ public final class SID implements SIDChip {
 			double R = 1; // Normalized R
 			double _2R = _2R_div_R * R; // 2R
 			double Rn = term ? // Rn = 2R for correct termination,
-			_2R
-					: INFINITY; // INFINITY for missing termination.
+					_2R : INFINITY; // INFINITY for missing termination.
 
 			// Calculate DAC "tail" resistance by repeated parallel
 			// substitution.
@@ -202,8 +199,7 @@ public final class SID implements SIDChip {
 		} else if (model == ChipModel.MOS8580) {
 			filter = filter8580;
 		} else {
-			throw new RuntimeException("Don't know how to handle chip type "
-					+ model);
+			throw new RuntimeException("Don't know how to handle chip type " + model);
 		}
 
 		/* calculate waveform-related tables, feed them to the generator */
@@ -503,8 +499,7 @@ public final class SID implements SIDChip {
 		voice[1].envelope.clock();
 		voice[2].envelope.clock();
 
-		return externalFilter.clock(filter.clock(
-				voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),
+		return externalFilter.clock(filter.clock(voice[0].output(voice[2].wave), voice[1].output(voice[0].wave),
 				voice[2].output(voice[1].wave)));
 	}
 
@@ -516,8 +511,7 @@ public final class SID implements SIDChip {
 		if (sync) {
 			/* Synchronize the 3 waveform generators. */
 			for (int i = 0; i < 3; i++) {
-				voice[i].wave.synchronize(voice[(i + 1) % 3].wave,
-						voice[(i + 2) % 3].wave);
+				voice[i].wave.synchronize(voice[(i + 1) % 3].wave, voice[(i + 2) % 3].wave);
 			}
 		}
 
@@ -527,13 +521,11 @@ public final class SID implements SIDChip {
 			int accumulator = voice[i].wave.accumulator;
 			int freq = voice[i].wave.freq;
 
-			if (voice[i].wave.test || freq == 0
-					|| !voice[(i + 1) % 3].wave.sync) {
+			if (voice[i].wave.test || freq == 0 || !voice[(i + 1) % 3].wave.sync) {
 				continue;
 			}
 
-			int thisVoiceSync = ((0x7fffff - accumulator) & 0xffffff) / freq
-					+ 1;
+			int thisVoiceSync = ((0x7fffff - accumulator) & 0xffffff) / freq + 1;
 			if (thisVoiceSync < nextVoiceSync) {
 				nextVoiceSync = thisVoiceSync;
 			}

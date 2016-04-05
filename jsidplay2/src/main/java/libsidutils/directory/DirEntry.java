@@ -42,8 +42,7 @@ public abstract class DirEntry {
 	/**
 	 * All file extensions.
 	 */
-	private static final String[] FILETYPES = new String[] { "DEL", "SEQ",
-			"PRG", "USR", "REL" };
+	private static final String[] FILETYPES = new String[] { "DEL", "SEQ", "PRG", "USR", "REL" };
 
 	/**
 	 * Used disk blocks (disk) or number of bytes (tape).
@@ -83,8 +82,7 @@ public abstract class DirEntry {
 	 *            file type
 	 * @return quoted file name and type string
 	 */
-	public final static String convertFilename(final byte[] fileName,
-			final int fileType) {
+	public final static String convertFilename(final byte[] fileName, final int fileType) {
 		StringBuffer fn = new StringBuffer();
 		// BEGIN include filename in quotes
 		fn.append("\"");
@@ -117,16 +115,14 @@ public abstract class DirEntry {
 	 * @return PETSCII bytes
 	 */
 	public final static byte[] asciiTopetscii(final String str, int maxLen) {
-		return str.substring(0, Math.min(maxLen, str.length())).toUpperCase()
-				.replace('_', '-').getBytes(ISO88591);
+		return str.substring(0, Math.min(maxLen, str.length())).toUpperCase().replace('_', '-').getBytes(ISO88591);
 	}
 
 	/**
 	 * Get string representation of this directory entry.
 	 */
 	public String toString() {
-		return String.format("%-3d  %s", blocks,
-				convertFilename(filename, fileType));
+		return String.format("%-3d  %s", blocks, convertFilename(filename, fileType));
 	}
 
 	/**
@@ -136,8 +132,7 @@ public abstract class DirEntry {
 	 */
 	public final String getValidFilename() {
 		final String convertFilename = convertFilename(filename, -1);
-		return convertFilename.substring(1, convertFilename.length() - 1)
-				.replace('/', '_');
+		return convertFilename.substring(1, convertFilename.length() - 1).replace('/', '_');
 	}
 
 	/**

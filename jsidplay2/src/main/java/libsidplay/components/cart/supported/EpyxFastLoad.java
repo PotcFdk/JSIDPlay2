@@ -13,8 +13,7 @@ public class EpyxFastLoad extends Cartridge {
 	 */
 	protected final byte[] romL;
 
-	public EpyxFastLoad(final DataInputStream is, final PLA pla)
-			throws IOException {
+	public EpyxFastLoad(final DataInputStream is, final PLA pla) throws IOException {
 		super(pla);
 		final byte[] chipHeader = new byte[0x10];
 
@@ -36,13 +35,13 @@ public class EpyxFastLoad extends Cartridge {
 	private final Bank io2Bank = new Bank() {
 		@Override
 		public byte read(int address) {
-		    if (address == 0xdf18) {
-		    	pla.setGameExrom(true, false);
-		    }
-		    if (address == 0xdf38) {
-		    	pla.setGameExrom(true, true);
-		    }
-		    return romL[address & 0x1fff];
+			if (address == 0xdf18) {
+				pla.setGameExrom(true, false);
+			}
+			if (address == 0xdf38) {
+				pla.setGameExrom(true, true);
+			}
+			return romL[address & 0x1fff];
 		}
 
 		@Override
@@ -59,7 +58,7 @@ public class EpyxFastLoad extends Cartridge {
 	public Bank getIO2() {
 		return io2Bank;
 	}
-	
+
 	@Override
 	public void reset() {
 		super.reset();

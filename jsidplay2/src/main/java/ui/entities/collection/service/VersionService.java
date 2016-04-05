@@ -7,7 +7,6 @@ import javax.persistence.Query;
 
 import ui.entities.collection.Version;
 
-
 public class VersionService {
 	private static final int CORRECT_VERSION = 1;
 
@@ -22,8 +21,7 @@ public class VersionService {
 		try {
 			Query q = em.createQuery("from Version");
 			List<Version> list = q.getResultList();
-			return list.size() != 0
-					&& list.get(0).getVersion() == CORRECT_VERSION;
+			return list.size() != 0 && list.get(0).getVersion() == CORRECT_VERSION;
 		} catch (Exception e) {
 			// database corrupt?
 			return false;

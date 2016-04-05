@@ -35,17 +35,14 @@ public class MagicDesk extends Cartridge {
 	 */
 	protected final byte[][] romLBanks;
 
-	public MagicDesk(final DataInputStream dis, final PLA pla)
-			throws IOException {
+	public MagicDesk(final DataInputStream dis, final PLA pla) throws IOException {
 		super(pla);
 		final byte[] chipHeader = new byte[0x10];
 
 		romLBanks = new byte[16][0x2000];
 		for (int i = 0; i < 16 && dis.available() > 0; i++) {
 			dis.readFully(chipHeader);
-			if (chipHeader[0xb] >= (byte) 0x40
-					|| (chipHeader[0xc] & 0xff) != 0x80
-					&& (chipHeader[0xc] & 0xff) != 0xa0)
+			if (chipHeader[0xb] >= (byte) 0x40 || (chipHeader[0xc] & 0xff) != 0x80 && (chipHeader[0xc] & 0xff) != 0xa0)
 				throw new RuntimeException("Unexpected Chip header!");
 			int bank = chipHeader[0xb] & 0xff;
 			dis.readFully(romLBanks[bank]);
