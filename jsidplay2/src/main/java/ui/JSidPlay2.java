@@ -336,7 +336,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		expandA000.setSelected(c1541Section.isRamExpansionEnabled4());
 
 		for (ViewEntity view : config.getViews()) {
-			addView(view.getFxId());
+			Platform.runLater(() -> addView(view.getFxId()));
 		}
 		this.duringInitialization = false;
 
