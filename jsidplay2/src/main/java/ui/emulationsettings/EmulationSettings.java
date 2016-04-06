@@ -36,15 +36,17 @@ public class EmulationSettings extends C64Window {
 		@Override
 		public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
 			if (newValue == State.START) {
-				Platform.runLater(() -> {
-					updateSettingsForTune(util.getPlayer().getTune());
-				});
+				Platform.runLater(() -> updateSettingsForTune(util.getPlayer().getTune()));
 			}
 		}
 	}
 
 	private enum StereoMode {
 		AUTO, FAKE_STEREO, STEREO, THREE_SID,
+	}
+
+	private enum SidReads {
+		FIRST_SID, SECOND_SID, THIRD_SID
 	}
 
 	private static final int STEP = 3;
@@ -54,7 +56,9 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private ComboBox<ChipModel> sid1Model, sid2Model, sid3Model, defaultModel;
 	@FXML
-	private ComboBox<String> mainFilter, secondFilter, thirdFilter, sidToRead;
+	private ComboBox<String> mainFilter, secondFilter, thirdFilter;
+	@FXML
+	private ComboBox<SidReads> sidToRead;
 	@FXML
 	private ComboBox<StereoMode> stereoMode;
 	@FXML
@@ -68,7 +72,8 @@ public class EmulationSettings extends C64Window {
 
 	private ObservableList<Emulation> sid1Emulations, sid2Emulations, sid3Emulations, defaultEmulations;
 	private ObservableList<ChipModel> sid1Models, sid2Models, sid3Models, defaultModels;
-	private ObservableList<String> sidReads, mainFilters, secondFilters, thirdFilters;
+	private ObservableList<String> mainFilters, secondFilters, thirdFilters;
+	private ObservableList<SidReads> sidReads;
 	private ObservableList<StereoMode> stereoModes;
 
 	private ChangeListener<State> emulationChange;
@@ -136,8 +141,8 @@ public class EmulationSettings extends C64Window {
 		baseAddress.setText(String.format("0x%4x", emulationSection.getDualSidBase()));
 		thirdAddress.setText(String.format("0x%4x", emulationSection.getThirdSIDBase()));
 
-		sidReads = FXCollections.<String> observableArrayList();
-		sidReads.addAll(bundle.getString("FIRST_SID"), bundle.getString("SECOND_SID"), bundle.getString("THIRD_SID"));
+		sidReads = FXCollections.<SidReads> observableArrayList(SidReads.values());
+		sidToRead.setConverter(new EnumToString<SidReads>(bundle));
 		sidToRead.setItems(sidReads);
 		sidToRead.getSelectionModel().select(emulationSection.getSidNumToRead());
 
@@ -171,14 +176,12 @@ public class EmulationSettings extends C64Window {
 		sid3Model.setItems(sid3Models);
 		sid3Model.getSelectionModel().select(emulationSection.getThirdSIDModel());
 
-		defaultModels = FXCollections.<ChipModel> observableArrayList();
-		defaultModels.addAll(ChipModel.MOS6581, ChipModel.MOS8580);
+		defaultModels = FXCollections.<ChipModel> observableArrayList(ChipModel.MOS6581, ChipModel.MOS8580);
 		defaultModel.setConverter(new EnumToString<ChipModel>(bundle));
 		defaultModel.setItems(defaultModels);
 		defaultModel.getSelectionModel().select(emulationSection.getDefaultSidModel());
 
-		defaultEmulations = FXCollections.<Emulation> observableArrayList();
-		defaultEmulations.addAll(Emulation.RESID, Emulation.RESIDFP);
+		defaultEmulations = FXCollections.<Emulation> observableArrayList(Emulation.RESID, Emulation.RESIDFP);
 		defaultEmulation.setConverter(new EnumToString<Emulation>(bundle));
 		defaultEmulation.setItems(defaultEmulations);
 		defaultEmulation.getSelectionModel().select(emulationSection.getDefaultEmulation());
