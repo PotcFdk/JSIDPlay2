@@ -165,16 +165,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private FavoritesSection favoritesToAddSearchResult;
 
 	private ChangeListener<? super State> tuneMatcherListener = (observable, oldValue, newValue) -> {
-		if (newValue == State.START && util.getPlayer().getTune() != SidTune.RESET) {
-			Platform.runLater(() -> {
-				if (fileBrowser.getRoot() != null) {
-					// auto-expand current selected tune
-					SidTune tune = util.getPlayer().getTune();
-					String collectionName = util.getPlayer().getSidDatabaseInfo(db -> db.getPath(tune), "");
-					showNextHit(new TFile(fileBrowser.getRoot().getValue(), collectionName));
-				}
-			});
-		}
+		Platform.runLater(() -> showCurrentTune());
 	};
 
 	private ChangeListener<? super TreeItem<File>> tuneInfoListener = (observable, oldValue, newValue) -> {
@@ -299,15 +290,24 @@ public class MusicCollection extends Tab implements UIPart {
 				}
 				if (initialRoot != null) {
 					setRoot(new File(initialRoot));
+					showCurrentTune();
 				}
-				tuneMatcherListener.changed(null, null, State.START);
 			});
 		});
 	}
 
+	private void showCurrentTune() {
+		if (util.getPlayer().getTune() != SidTune.RESET && fileBrowser.getRoot() != null) {
+			// auto-expand current selected tune
+			SidTune tune = util.getPlayer().getTune();
+			String collectionName = util.getPlayer().getSidDatabaseInfo(db -> db.getPath(tune), "");
+			showNextHit(new TFile(fileBrowser.getRoot().getValue(), collectionName));
+		}
+	}
+
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(tuneMatcherListener);
-		if (em != null) {
+		if (em != null && em.isOpen()) {
 			em.getEntityManagerFactory().close();
 		}
 	}
@@ -693,9 +693,9 @@ public class MusicCollection extends Tab implements UIPart {
 		for (File file : PathUtils.getFiles(filePath, rootFile, tuneFilter)) {
 			for (TreeItem<File> childItem : curItem.getChildren()) {
 				if (file.equals(childItem.getValue())) {
-					pathSegs.add(childItem);
-					curItem = childItem;
+					pathSegs.add(curItem = childItem);
 					childItem.setExpanded(true);
+					break;
 				}
 			}
 		}
