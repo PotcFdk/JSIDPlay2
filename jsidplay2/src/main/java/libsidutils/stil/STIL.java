@@ -1,6 +1,7 @@
 package libsidutils.stil;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -56,7 +57,7 @@ public class STIL {
 
 	private final HashMap<String, STILEntry> fastMap = new HashMap<String, STILEntry>();
 
-	public STIL(InputStream input) throws Exception {
+	public STIL(InputStream input) throws IOException, NoSuchFieldException, IllegalAccessException {
 		fastMap.clear();
 
 		Pattern p = Pattern.compile("(NAME|AUTHOR|TITLE|ARTIST|COMMENT): *(.*)");

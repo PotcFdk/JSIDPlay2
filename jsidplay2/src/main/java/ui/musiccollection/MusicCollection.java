@@ -19,6 +19,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+import javax.persistence.metamodel.SingularAttribute;
+
+import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -44,11 +50,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
-import javax.persistence.metamodel.SingularAttribute;
-
 import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -79,8 +80,6 @@ import ui.musiccollection.search.SearchIndexCreator;
 import ui.musiccollection.search.SearchIndexerThread;
 import ui.musiccollection.search.SearchThread;
 import ui.stilview.STILView;
-import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TFileInputStream;
 
 /**
  * Common view base for HVSC and CGSC collections. Loosely based on Rhythmbox,
@@ -514,51 +513,53 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void setRoot(final File rootFile) {
-		if (rootFile.exists()) {
-			if (em != null) {
-				em.getEntityManagerFactory().close();
-			}
-			em = Persistence.createEntityManagerFactory(collectionDS,
-					new PersistenceProperties(
-							new File(rootFile.getParentFile(), type.get().toString()).getAbsolutePath(),
-							Database.HSQL_FILE))
-					.createEntityManager();
-
-			versionService = new VersionService(em);
-			collectionDir.setText(rootFile.getAbsolutePath());
-
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
-			if (getType() == MusicCollectionType.HVSC) {
-				util.getConfig().getSidplay2Section().setHvsc(rootFile.getAbsolutePath());
-				File theRootFile = sidPlay2Section.getHvscFile();
-				setSongLengthDatabase(sidPlay2Section.getHvsc());
-				setSTIL(sidPlay2Section.getHvsc());
+		try {
+			if (rootFile.exists()) {
+				File theRootFile = null;
+				SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
+				if (getType() == MusicCollectionType.HVSC) {
+					setSongLengthDatabase(rootFile.getAbsolutePath());
+					setSTIL(rootFile.getAbsolutePath());
+					sidPlay2Section.setHvsc(rootFile.getAbsolutePath());
+					theRootFile = sidPlay2Section.getHvscFile();
+				} else if (getType() == MusicCollectionType.CGSC) {
+					sidPlay2Section.setCgsc(rootFile.getAbsolutePath());
+					theRootFile = sidPlay2Section.getCgscFile();
+				}
 				fileBrowser.setRoot(new MusicCollectionTreeItem(util.getPlayer(), theRootFile));
-			} else if (getType() == MusicCollectionType.CGSC) {
-				util.getConfig().getSidplay2Section().setCgsc(rootFile.getAbsolutePath());
-				File theRootFile = sidPlay2Section.getCgscFile();
-				fileBrowser.setRoot(new MusicCollectionTreeItem(util.getPlayer(), theRootFile));
+				collectionDir.setText(rootFile.getAbsolutePath());
+				MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
+				cellFactory.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItems);
+				fileBrowser.setCellFactory(cellFactory);
+
+				if (em != null && em.getEntityManagerFactory().isOpen()) {
+					em.getEntityManagerFactory().close();
+				}
+				em = Persistence.createEntityManagerFactory(collectionDS,
+						new PersistenceProperties(
+								new File(rootFile.getParentFile(), type.get().toString()).getAbsolutePath(),
+								Database.HSQL_FILE))
+						.createEntityManager();
+				versionService = new VersionService(em);
 			}
-			MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
-			cellFactory.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItems);
-			fileBrowser.setCellFactory(cellFactory);
+			doResetSearch();
+		} catch (IOException e) {
+			System.err.printf("Cannot configure Music Collection type: %s, File not found: %s\n", getType(),
+					e.getMessage());
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			System.err.printf("Cannot configure Music Collection type: %s, Error: %s\n", e.getMessage());
 		}
-		doResetSearch();
 	}
 
-	private void setSTIL(String hvscRoot) {
+	private void setSTIL(String hvscRoot) throws IOException, NoSuchFieldException, IllegalAccessException {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot, STIL.STIL_FILE))) {
 			util.getPlayer().setSTIL(new STIL(input));
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
-	private void setSongLengthDatabase(String hvscRoot) {
+	private void setSongLengthDatabase(String hvscRoot) throws IOException {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot, SidDatabase.SONGLENGTHS_FILE))) {
 			util.getPlayer().setSidDatabase(new SidDatabase(input));
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
