@@ -362,7 +362,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 					List<File> files = db.getFiles();
 					try {
 						playTune(SidTune.load(files.get(0)));
-					} catch (Exception e) {
+					} catch (IOException | SidTuneError e) {
 						e.printStackTrace();
 					}
 				}

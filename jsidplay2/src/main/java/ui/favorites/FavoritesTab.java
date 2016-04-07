@@ -18,6 +18,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import javax.persistence.metamodel.SingularAttribute;
+
+import com.sun.javafx.scene.control.skin.TableColumnHeader;
+
+import de.schlichtherle.truezip.file.TFile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -39,9 +44,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
-
-import javax.persistence.metamodel.SingularAttribute;
-
 import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -50,6 +52,7 @@ import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
+import ui.common.dialog.AlertDialog;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.config.Configuration;
@@ -59,10 +62,6 @@ import ui.entities.config.SidPlay2Section;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileFilter;
 import ui.stilview.STILView;
-
-import com.sun.javafx.scene.control.skin.TableColumnHeader;
-
-import de.schlichtherle.truezip.file.TFile;
 
 public class FavoritesTab extends Tab implements UIPart {
 
@@ -293,7 +292,7 @@ public class FavoritesTab extends Tab implements UIPart {
 			try {
 				c.convertFiles(util.getPlayer(), files.toArray(new File[0]), directory, sidPlay2Section.getHvscFile());
 			} catch (IOException | SidTuneError e) {
-				e.printStackTrace();
+				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 			}
 		}
 
@@ -481,7 +480,7 @@ public class FavoritesTab extends Tab implements UIPart {
 					collectionName, file, tune);
 			favoritesSection.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
+			openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 		}
 	}
 
@@ -583,8 +582,16 @@ public class FavoritesTab extends Tab implements UIPart {
 			currentlyPlayedHVSCEntryProperty.set(hvscEntry);
 			favoritesTable.scrollTo(hvscEntry);
 		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
+			openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 		}
+	}
+
+	private void openErrorDialog(String msg) {
+		AlertDialog alertDialog = new AlertDialog(util.getPlayer());
+		alertDialog.getStage().setTitle(util.getBundle().getString("ALERT_TITLE"));
+		alertDialog.setText(msg);
+		alertDialog.setWait(true);
+		alertDialog.open();
 	}
 
 	public void setFavorites(Favorites favorites) {

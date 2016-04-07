@@ -1,6 +1,7 @@
 package ui.favorites;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
@@ -344,16 +345,20 @@ public class Favorites extends Tab implements UIPart {
 	private void setSongLengthDatabase(String hvscRoot) {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot, SidDatabase.SONGLENGTHS_FILE))) {
 			util.getPlayer().setSidDatabase(new SidDatabase(input));
+		} catch (FileNotFoundException e) {
+			System.err.println(String.format(util.getBundle().getString("ERR_FILE_NOT_FOUND"), e.getMessage()));
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 	}
 
 	private void setSTIL(String hvscRoot) {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot, STIL.STIL_FILE))) {
 			util.getPlayer().setSTIL(new STIL(input));
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			System.err.println(String.format(util.getBundle().getString("ERR_FILE_NOT_FOUND"), e.getMessage()));
+		} catch (NoSuchFieldException | IllegalAccessException | IOException e) {
+			System.err.println(e.getMessage());
 		}
 	}
 

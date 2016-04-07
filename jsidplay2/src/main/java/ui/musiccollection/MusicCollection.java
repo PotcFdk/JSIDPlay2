@@ -2,6 +2,7 @@ package ui.musiccollection;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,7 +21,9 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.SingularAttribute;
 
 import de.schlichtherle.truezip.file.TFile;
@@ -65,6 +68,7 @@ import ui.common.EnumToString;
 import ui.common.TypeTextField;
 import ui.common.UIPart;
 import ui.common.UIUtil;
+import ui.common.dialog.AlertDialog;
 import ui.common.dialog.YesNoDialog;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
@@ -179,7 +183,7 @@ public class MusicCollection extends Tab implements UIPart {
 				}
 				showTuneInfos(tuneFile, sidTune, (MusicCollectionTreeItem) newValue);
 			} catch (IOException | SidTuneError e) {
-				e.printStackTrace();
+				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()), getType());
 			}
 		}
 	};
@@ -339,7 +343,7 @@ public class MusicCollection extends Tab implements UIPart {
 				c.convertFiles(util.getPlayer(), new File[] { selectedItem.getValue() }, directory,
 						sidPlay2Section.getHvscFile());
 			} catch (IOException | SidTuneError e) {
-				e.printStackTrace();
+				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()), getType());
 			}
 		}
 	}
@@ -514,41 +518,50 @@ public class MusicCollection extends Tab implements UIPart {
 
 	private void setRoot(final File rootFile) {
 		try {
-			if (rootFile.exists()) {
-				File theRootFile = null;
-				SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-				if (getType() == MusicCollectionType.HVSC) {
-					setSongLengthDatabase(rootFile.getAbsolutePath());
-					setSTIL(rootFile.getAbsolutePath());
-					sidPlay2Section.setHvsc(rootFile.getAbsolutePath());
-					theRootFile = sidPlay2Section.getHvscFile();
-				} else if (getType() == MusicCollectionType.CGSC) {
-					sidPlay2Section.setCgsc(rootFile.getAbsolutePath());
-					theRootFile = sidPlay2Section.getCgscFile();
-				}
-				fileBrowser.setRoot(new MusicCollectionTreeItem(util.getPlayer(), theRootFile));
-				collectionDir.setText(rootFile.getAbsolutePath());
-				MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
-				cellFactory.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItems);
-				fileBrowser.setCellFactory(cellFactory);
-
-				if (em != null && em.getEntityManagerFactory().isOpen()) {
-					em.getEntityManagerFactory().close();
-				}
-				em = Persistence.createEntityManagerFactory(collectionDS,
-						new PersistenceProperties(
-								new File(rootFile.getParentFile(), type.get().toString()).getAbsolutePath(),
-								Database.HSQL_FILE))
-						.createEntityManager();
-				versionService = new VersionService(em);
+			File theRootFile = null;
+			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
+			if (getType() == MusicCollectionType.HVSC) {
+				setSongLengthDatabase(rootFile.getAbsolutePath());
+				setSTIL(rootFile.getAbsolutePath());
+				sidPlay2Section.setHvsc(rootFile.getAbsolutePath());
+				theRootFile = sidPlay2Section.getHvscFile();
+			} else if (getType() == MusicCollectionType.CGSC) {
+				sidPlay2Section.setCgsc(rootFile.getAbsolutePath());
+				theRootFile = sidPlay2Section.getCgscFile();
 			}
-			doResetSearch();
-		} catch (IOException e) {
-			System.err.printf("Cannot configure Music Collection type: %s, File not found: %s\n", getType(),
-					e.getMessage());
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			System.err.printf("Cannot configure Music Collection type: %s, Error: %s\n", e.getMessage());
+			setViewRoot(theRootFile);
+
+			if (em != null && em.getEntityManagerFactory().isOpen()) {
+				em.getEntityManagerFactory().close();
+			}
+			File dbFilename = new File(rootFile.getParentFile(), type.get().toString());
+			PersistenceProperties pp = new PersistenceProperties(dbFilename.getAbsolutePath(), Database.HSQL_FILE);
+			EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(collectionDS, pp);
+			em = emFactory.createEntityManager();
+			versionService = new VersionService(em);
+		} catch (FileNotFoundException e) {
+			openErrorDialog(String.format(util.getBundle().getString("ERR_FILE_NOT_FOUND"), e.getMessage()), getType());
+		} catch (IOException | NoSuchFieldException | IllegalAccessException | PersistenceException
+				| IllegalStateException e) {
+			openErrorDialog(e.getMessage(), getType());
 		}
+	}
+
+	private void openErrorDialog(String msg, MusicCollectionType type) {
+		AlertDialog alertDialog = new AlertDialog(util.getPlayer());
+		alertDialog.getStage().setTitle(util.getBundle().getString("ALERT_TITLE"));
+		alertDialog.setText(String.format(util.getBundle().getString("ERR_CANNOT_CONFIGURE"), type) + msg);
+		alertDialog.setWait(true);
+		alertDialog.open();
+	}
+
+	private void setViewRoot(final File theRootFile) {
+		MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
+		cellFactory.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItems);
+		fileBrowser.setRoot(new MusicCollectionTreeItem(util.getPlayer(), theRootFile));
+		fileBrowser.setCellFactory(cellFactory);
+		collectionDir.setText(theRootFile.getAbsolutePath());
+		doResetSearch();
 	}
 
 	private void setSTIL(String hvscRoot) throws IOException, NoSuchFieldException, IllegalAccessException {
@@ -805,7 +818,7 @@ public class MusicCollection extends Tab implements UIPart {
 					collectionName, file, tune);
 			section.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
+			openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()), getType());
 		}
 	}
 
@@ -821,7 +834,7 @@ public class MusicCollection extends Tab implements UIPart {
 		try {
 			util.getPlayer().play(SidTune.load(file));
 		} catch (IOException | SidTuneError e) {
-			e.printStackTrace();
+			openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()), getType());
 		}
 	}
 
