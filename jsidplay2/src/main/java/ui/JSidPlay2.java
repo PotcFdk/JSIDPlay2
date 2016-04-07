@@ -84,6 +84,7 @@ import ui.asm.Asm;
 import ui.common.C64Window;
 import ui.common.EnumToString;
 import ui.common.UIPart;
+import ui.common.dialog.AlertDialog;
 import ui.common.dialog.YesNoDialog;
 import ui.console.Console;
 import ui.disassembler.Disassembler;
@@ -363,7 +364,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 					try {
 						playTune(SidTune.load(files.get(0)));
 					} catch (IOException | SidTuneError e) {
-						e.printStackTrace();
+						openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 					}
 				}
 				event.setDropCompleted(success);
@@ -391,7 +392,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			try {
 				playTune(SidTune.load(file));
 			} catch (IOException | SidTuneError e) {
-				e.printStackTrace();
+				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 			}
 		}
 	}
@@ -412,7 +413,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 				util.getPlayer().insertCartridge(CartridgeType.REU, file);
 				util.getPlayer().play(SidTune.load(tmpFile));
 			} catch (IOException | SidTuneError e) {
-				e.printStackTrace();
+				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 			}
 		}
 	}
@@ -578,8 +579,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	private void ejectTape() {
 		try {
 			util.getPlayer().getDatasette().ejectTape();
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -788,8 +789,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 				try {
 					util.getPlayer().installJiffyDOS(c64kernalFile, c1541kernalFile);
 					util.getPlayer().play(SidTune.RESET);
-				} catch (IOException | SidTuneError ex) {
-					ex.printStackTrace();
+				} catch (IOException | SidTuneError e) {
+					openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 				}
 			}
 		}
@@ -1305,7 +1306,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			try {
 				util.getPlayer().play(SidTune.load(file));
 			} catch (IOException | SidTuneError e) {
-				e.printStackTrace();
+				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 			}
 		}
 	}
@@ -1525,4 +1526,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		return filename;
 	}
 
+	private void openErrorDialog(String msg) {
+		AlertDialog alertDialog = new AlertDialog(util.getPlayer());
+		alertDialog.getStage().setTitle(util.getBundle().getString("ALERT_TITLE"));
+		alertDialog.setText(msg);
+		alertDialog.setWait(true);
+		alertDialog.open();
+	}
 }
