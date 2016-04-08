@@ -469,7 +469,8 @@ public class Player extends HardwareEnsemble {
 				}
 			} catch (CmpMP3File.MP3Termination e) {
 				stateProperty.set(State.END);
-			} catch (InterruptedException e) {
+			} catch (InterruptedException | IOException | LineUnavailableException e) {
+				throw new RuntimeException(e.getMessage());
 			} finally {
 				close();
 			}
@@ -480,35 +481,30 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Open player, that means basically: Reset C64 and start playing the tune.
 	 * 
+	 * <B>Note:</B> Audio driver different to {@link Audio} members are on hold!
+	 * 
 	 * @throws InterruptedException
+	 * @throws LineUnavailableException
+	 * @throws IOException
 	 */
-	private void open() throws InterruptedException {
+	private void open() throws InterruptedException, IOException, LineUnavailableException {
 		playList = PlayList.getInstance(config, tune);
 
 		// PAL/NTSC
-		final CPUClock cpuClock = CPUClock.getCPUClock(config.getEmulationSection(), tune);
-		setClock(cpuClock);
+		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));
 
-		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudioSection());
-
-		// Note: Audio driver different to Audio enum members are on hold!
 		if (Arrays.stream(Audio.values()).anyMatch(audio -> audio.getAudioDriver().equals(audioDriver))) {
 			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
+			// replace driver settings for mp3
+			audioDriver = handleMP3(config, tune, audioDriver);
 		}
-
-		// replace driver settings for mp3
-		audioDriver = handleMP3(config, tune, audioDriver);
+		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudioSection());
 
 		// open audio driver
-		try {
-			String recordingFilename = recordingFilenameProvider.apply(tune);
-			audioDriver.open(audioConfig, recordingFilename);
-		} catch (IOException | LineUnavailableException e) {
-			throw new RuntimeException(e);
-		}
+		audioDriver.open(audioConfig, recordingFilenameProvider.apply(tune));
 
 		// Create SID builder (software emulation or hardware)
-		sidBuilder = createSIDBuilder(cpuClock, audioConfig, audioDriver);
+		sidBuilder = createSIDBuilder(getC64().getClock(), audioConfig, audioDriver);
 
 		reset();
 	}
