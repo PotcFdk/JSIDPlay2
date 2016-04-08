@@ -597,6 +597,10 @@ public class MusicCollection extends Tab implements UIPart {
 		Consumer<File> searchHit;
 		Consumer<Boolean> searchStop;
 		if (forceRecreate) {
+			if (!em.isOpen()) {
+				openErrorDialog(String.format(util.getBundle().getString("ERR_DATABASE")), getType());
+				return;
+			}
 			SearchIndexCreator searchIndexCreator = new SearchIndexCreator(fileBrowser.getRoot().getValue(),
 					util.getPlayer(), em);
 			searchStart = x -> {
