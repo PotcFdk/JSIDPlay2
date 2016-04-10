@@ -189,7 +189,7 @@ public class Player extends HardwareEnsemble {
 			public void end() {
 				if (tune != SidTune.RESET) {
 					if (config.getSidplay2Section().isSingle() || !playList.hasNext()) {
-						stateProperty.set(getEndState());
+						stateProperty.set(config.getSidplay2Section().isLoop() ? State.RESTART : State.END);
 					} else {
 						nextSong();
 					}
@@ -232,6 +232,27 @@ public class Player extends HardwareEnsemble {
 		File tmpDir = new File(config.getSidplay2Section().getTmpDir());
 		if (!tmpDir.exists()) {
 			tmpDir.mkdirs();
+		}
+	}
+
+	@Override
+	protected void setClock(CPUClock cpuFreq) {
+		super.setClock(cpuFreq);
+		sidBuilder = createSIDBuilder(cpuFreq, audioDriver);
+	}
+
+	/**
+	 * Create configured SID chip implementation (software/hardware).
+	 */
+	private SIDBuilder createSIDBuilder(CPUClock cpuClock, AudioDriver audioDriver) {
+		final Engine engine = config.getEmulationSection().getEngine();
+		switch (engine) {
+		case EMULATION:
+			return new ReSIDBuilder(c64.getEventScheduler(), config, cpuClock, audioDriver);
+		case HARDSID:
+			return new HardSIDBuilder(c64.getEventScheduler(), config);
+		default:
+			throw new RuntimeException("Unknown engine type: " + engine);
 		}
 	}
 
@@ -490,38 +511,19 @@ public class Player extends HardwareEnsemble {
 	private void open() throws InterruptedException, IOException, LineUnavailableException {
 		playList = PlayList.getInstance(config, tune);
 
-		// PAL/NTSC
-		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));
-
 		if (Arrays.stream(Audio.values()).anyMatch(audio -> audio.getAudioDriver().equals(audioDriver))) {
 			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
 			// replace driver settings for mp3
 			audioDriver = handleMP3(config, tune, audioDriver);
 		}
-		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudioSection());
-
 		// open audio driver
+		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudioSection());
 		audioDriver.open(audioConfig, recordingFilenameProvider.apply(tune));
 
-		// Create SID builder (software emulation or hardware)
-		sidBuilder = createSIDBuilder(getC64().getClock(), audioConfig, audioDriver);
+		// PAL/NTSC
+		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));
 
 		reset();
-	}
-
-	/**
-	 * Create configured SID chip implementation (software/hardware).
-	 */
-	private SIDBuilder createSIDBuilder(CPUClock cpuClock, AudioConfig audioConfig, AudioDriver audioDriver) {
-		final Engine engine = config.getEmulationSection().getEngine();
-		switch (engine) {
-		case EMULATION:
-			return new ReSIDBuilder(c64.getEventScheduler(), config, audioConfig, cpuClock, audioDriver);
-		case HARDSID:
-			return new HardSIDBuilder(c64.getEventScheduler(), config);
-		default:
-			throw new RuntimeException("Unknown engine type: " + engine);
-		}
 	}
 
 	/**
@@ -620,16 +622,6 @@ public class Player extends HardwareEnsemble {
 			}
 		}
 		return stateProperty.get() == State.PLAY || stateProperty.get() == State.PAUSE;
-	}
-
-	/**
-	 * Get end state according to the configuration.<BR>
-	 * Loop song? Restart the player, otherwise end tune.
-	 * 
-	 * @return end state of the player
-	 */
-	private State getEndState() {
-		return config.getSidplay2Section().isLoop() ? State.RESTART : State.END;
 	}
 
 	/**

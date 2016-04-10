@@ -12,12 +12,13 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDEmu;
+import libsidplay.common.SamplingMethod;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
+import libsidplay.config.ISidPlay2Section;
 import resid_builder.SampleMixer.LinearFadingSampleMixer;
 import resid_builder.resample.Resampler;
-import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 
 /**
@@ -236,8 +237,7 @@ public class SIDMixer implements Mixer {
 	 */
 	private final ByteBuffer buffer;
 
-	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock, AudioConfig audioConfig,
-			AudioDriver audioDriver) {
+	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock, AudioDriver audioDriver) {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
@@ -249,12 +249,14 @@ public class SIDMixer implements Mixer {
 				.asIntBuffer();
 		this.audioBufferR = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(ByteOrder.nativeOrder())
 				.asIntBuffer();
-		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(), audioSection.getSampling(),
-				audioConfig.getFrameRate(), 20000);
-		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(), audioSection.getSampling(),
-				audioConfig.getFrameRate(), 20000);
-		this.fadeInFadeOutEnabled = config.getSidplay2Section().getFadeInTime() != 0
-				|| config.getSidplay2Section().getFadeOutTime() != 0;
+		SamplingMethod samplingMethod = audioSection.getSampling();
+		int samplingFrequency = audioSection.getSamplingRate().getFrequency();
+		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(), samplingMethod, samplingFrequency,
+				20000);
+		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(), samplingMethod, samplingFrequency,
+				20000);
+		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
+		this.fadeInFadeOutEnabled = sidplay2Section.getFadeInTime() != 0 || sidplay2Section.getFadeOutTime() != 0;
 	}
 
 	public void reset() {

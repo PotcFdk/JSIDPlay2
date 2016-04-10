@@ -26,14 +26,12 @@ import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.ReSID;
 import resid_builder.residfp.ReSIDfp;
-import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 
 public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 
-	public ReSIDBuilder(EventScheduler context, IConfig config, AudioConfig audioConfig, CPUClock cpuClock,
-			AudioDriver audioDriver) {
-		super(context, config, cpuClock, audioConfig, audioDriver);
+	public ReSIDBuilder(EventScheduler context, IConfig config, CPUClock cpuClock, AudioDriver audioDriver) {
+		super(context, config, cpuClock, audioDriver);
 	}
 
 	/**
