@@ -28,6 +28,9 @@ import libsidplay.config.IEmulationSection;
  */
 public abstract class SIDEmu {
 
+	/** SID base address */
+	public static final int DEF_BASE_ADDRESS = 0xd400;
+
 	/** Number of SID chip registers. */
 	public final static int REG_COUNT = 32;
 
@@ -40,10 +43,30 @@ public abstract class SIDEmu {
 	/** Internal cache of SID register state, used for GUI feedback. */
 	private final byte[] registers = new byte[REG_COUNT];
 
+	/** SID chip number 0..MAX_SIDS */
+	private int sidNum;
+	/** SID chip base address */
+	private int baseAddress = DEF_BASE_ADDRESS;
+	/** SID chip listener */
+	private SIDListener listener;
+	
 	public SIDEmu(EventScheduler context) {
 		this.context = context;
 	}
 
+	public int getBaseAddress() {
+		return baseAddress;
+	}
+	
+	public void setBaseAddress(int baseAddress) {
+		this.baseAddress = baseAddress;
+	}
+
+	public void setListener(int sidNum, SIDListener listener) {
+		this.listener = listener;
+		this.sidNum = sidNum;
+	}
+	
 	/**
 	 * Side effect free read access.
 	 * 
@@ -57,6 +80,10 @@ public abstract class SIDEmu {
 
 	public void write(final int addr, final byte data) {
 		registers[addr] = data;
+		if (listener != null) {
+			final long time = context.getTime(Event.Phase.PHI2);
+			listener.write(time, sidNum, addr, data);
+		}
 	}
 
 	protected int clocksSinceLastAccess() {
@@ -64,6 +91,10 @@ public abstract class SIDEmu {
 		int diff = (int) (now - lastTime);
 		lastTime = now;
 		return diff;
+	}
+
+	public void clearClocksSinceLastAccess() {
+		lastTime = context.getTime(Event.Phase.PHI2);
 	}
 
 	public abstract void reset(byte volume);

@@ -373,7 +373,8 @@ public class EmulationSettings extends C64Window {
 	private void setDigiBoost() {
 		boolean boost8580Enabled = boosted8580.isSelected();
 		util.getConfig().getEmulationSection().setDigiBoosted8580(boost8580Enabled);
-		util.getPlayer().configureSIDs((num, sid) -> sid.input(boost8580Enabled ? sid.getInputDigiBoost() : 0));
+		util.getPlayer().getC64()
+				.configureSIDs((num, sid) -> sid.input(boost8580Enabled ? sid.getInputDigiBoost() : 0));
 	}
 
 	@FXML
@@ -427,7 +428,7 @@ public class EmulationSettings extends C64Window {
 			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(new Event("Update SIDs") {
 				@Override
 				public void event() throws InterruptedException {
-					util.getPlayer().createOrUpdateSIDs();
+					util.getPlayer().getC64().plugInSIDs();
 				}
 			});
 		}

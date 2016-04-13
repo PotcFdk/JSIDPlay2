@@ -39,30 +39,6 @@ public class SIDMixer implements Mixer {
 	private static final int VOLUME_SCALER = 10;
 
 	/**
-	 * NullAudio ignores generated sound samples. This is used, before timer
-	 * start has been reached.
-	 * 
-	 * @author ken
-	 *
-	 */
-	private final class NullAudioEvent extends Event {
-		private NullAudioEvent(String name) {
-			super(name);
-		}
-
-		@Override
-		public void event() throws InterruptedException {
-			for (ReSIDBase sid : sids) {
-				SampleMixer sampler = (SampleMixer) sid.getSampler();
-				// clock SID to the present moment
-				sid.clock();
-				sampler.clear();
-			}
-			context.schedule(this, bufferSize);
-		}
-	}
-
-	/**
 	 * The mixer mixes the generated sound samples into the drivers audio
 	 * buffer. This is used, after timer start has been reached.
 	 * 
@@ -186,10 +162,6 @@ public class SIDMixer implements Mixer {
 	protected final List<ReSIDBase> sids = new ArrayList<ReSIDBase>(PLA.MAX_SIDS);
 
 	/**
-	 * Mixer WITHOUT audio output, just clocking SID chips.
-	 */
-	private final Event nullAudio = new NullAudioEvent("NullAudio");
-	/**
 	 * Mixer clocking SID chips and producing audio output.
 	 */
 	private final MixerEvent mixerAudio = new MixerEvent("MixerAudio");
@@ -261,14 +233,12 @@ public class SIDMixer implements Mixer {
 
 	public void reset() {
 		normalSpeed();
-		context.schedule(nullAudio, 0, Event.Phase.PHI2);
 	}
 
 	/**
 	 * Starts mixing the outputs of several SIDs.
 	 */
 	public void start() {
-		context.cancel(nullAudio);
 		context.schedule(mixerAudio, 0, Event.Phase.PHI2);
 	}
 

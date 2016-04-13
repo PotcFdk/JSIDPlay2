@@ -40,7 +40,7 @@ public class Oscilloscope extends Tab implements UIPart {
 
 		@Override
 		public void event() {
-			util.getPlayer().configureSIDs((chipNum, sid) -> {
+			util.getPlayer().getC64().configureSIDs((chipNum, sid) -> {
 				sid.clock();
 				sampleGauges(chipNum, sid, (repaint & 127) == 0);
 			});
@@ -125,20 +125,21 @@ public class Oscilloscope extends Tab implements UIPart {
 			updateGauges(chipNum, Gauge::reset);
 		}
 		pt.setOnFinished(evt -> {
-			util.getPlayer().configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid)));
+			util.getPlayer().getC64()
+					.configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid)));
 		});
 		st.setCycleCount(Timeline.INDEFINITE);
 		st.playFromStart();
 
-		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(0, muteVoice1.isSelected()));
-		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(1, muteVoice2.isSelected()));
-		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(2, muteVoice3.isSelected()));
-		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(0, muteVoice4.isSelected()));
-		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(1, muteVoice5.isSelected()));
-		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
-		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(0, muteVoice7.isSelected()));
-		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
-		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
+		util.getPlayer().getC64().configureSID(0, sid -> sid.setVoiceMute(0, muteVoice1.isSelected()));
+		util.getPlayer().getC64().configureSID(0, sid -> sid.setVoiceMute(1, muteVoice2.isSelected()));
+		util.getPlayer().getC64().configureSID(0, sid -> sid.setVoiceMute(2, muteVoice3.isSelected()));
+		util.getPlayer().getC64().configureSID(1, sid -> sid.setVoiceMute(0, muteVoice4.isSelected()));
+		util.getPlayer().getC64().configureSID(1, sid -> sid.setVoiceMute(1, muteVoice5.isSelected()));
+		util.getPlayer().getC64().configureSID(1, sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
+		util.getPlayer().getC64().configureSID(2, sid -> sid.setVoiceMute(0, muteVoice7.isSelected()));
+		util.getPlayer().getC64().configureSID(2, sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
+		util.getPlayer().getC64().configureSID(2, sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
 	}
 
 	private void stopOscilloscope() {
@@ -160,47 +161,47 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	@FXML
 	private void doMuteVoice1() {
-		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(0, muteVoice1.isSelected()));
+		util.getPlayer().getC64().configureSID(0, sid -> sid.setVoiceMute(0, muteVoice1.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice2() {
-		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(1, muteVoice2.isSelected()));
+		util.getPlayer().getC64().configureSID(0, sid -> sid.setVoiceMute(1, muteVoice2.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice3() {
-		util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(2, muteVoice3.isSelected()));
+		util.getPlayer().getC64().configureSID(0, sid -> sid.setVoiceMute(2, muteVoice3.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice4() {
-		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(0, muteVoice4.isSelected()));
+		util.getPlayer().getC64().configureSID(1, sid -> sid.setVoiceMute(0, muteVoice4.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice5() {
-		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(1, muteVoice5.isSelected()));
+		util.getPlayer().getC64().configureSID(1, sid -> sid.setVoiceMute(1, muteVoice5.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice6() {
-		util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
+		util.getPlayer().getC64().configureSID(1, sid -> sid.setVoiceMute(2, muteVoice6.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice7() {
-		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(0, muteVoice7.isSelected()));
+		util.getPlayer().getC64().configureSID(2, sid -> sid.setVoiceMute(0, muteVoice7.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice8() {
-		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
+		util.getPlayer().getC64().configureSID(2, sid -> sid.setVoiceMute(1, muteVoice8.isSelected()));
 	}
 
 	@FXML
 	private void doMuteVoice9() {
-		util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
+		util.getPlayer().getC64().configureSID(2, sid -> sid.setVoiceMute(2, muteVoice9.isSelected()));
 	}
 
 	/**

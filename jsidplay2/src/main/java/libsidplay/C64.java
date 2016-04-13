@@ -1,16 +1,22 @@
 package libsidplay;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SIDEmu;
 import libsidplay.components.c1530.DatasetteEnvironment;
 import libsidplay.components.c1541.C1541Environment;
 import libsidplay.components.c1541.IParallelCable;
 import libsidplay.components.cart.Cartridge;
+import libsidplay.components.cart.CartridgeType;
 import libsidplay.components.joystick.IJoystick;
 import libsidplay.components.keyboard.Keyboard;
 import libsidplay.components.mos6510.IMOS6510Extension;
@@ -44,7 +50,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	protected CPUClock clock;
 
 	/** MMU chip */
-	protected final PLA pla;
+	private final PLA pla;
 
 	/** CPU */
 	private final MOS6510 cpu;
@@ -255,6 +261,22 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/** Zero page memory bank */
 	private final ZeroRAMBank zeroRAMBank = new ZeroRAMBank();
+
+	/**
+	 * Decides which SID chips we need (SID number and old SID to new SID).
+	 */
+	private BiFunction<Integer, SIDEmu, SIDEmu> sidCreator;
+
+	/**
+	 * Set a SID chip creator to assign SID chip implementations.
+	 * 
+	 * @param sidCreator
+	 *            Responsible to decide which SID chips we need (SID number and
+	 *            old SID to new SID)
+	 */
+	public void setSidCreator(BiFunction<Integer, SIDEmu, SIDEmu> sidCreator) {
+		this.sidCreator = sidCreator;
+	}
 
 	/**
 	 * Set play routine address to watch by CPU emulation.
@@ -478,6 +500,34 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	}
 
 	/**
+	 * Plug-in required SID chips.
+	 */
+	public final void plugInSIDs() {
+		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+			SIDEmu oldSid = pla.getSIDBank().getSID(sidNum);
+			SIDEmu newSid = sidCreator.apply(sidNum, oldSid);
+			if (newSid != null) {
+				pla.getSIDBank().plugInSID(sidNum, newSid);
+			} else if (oldSid != null) {
+				pla.getSIDBank().unplugSID(sidNum, oldSid);
+			}
+		}
+	}
+
+	/**
+	 * Un-plug SID
+	 * 
+	 * @param chipNo
+	 *            (0..MAX_SIDS-1)
+	 * @param sid
+	 */
+	public void unplugSID(final int chipNo, SIDEmu sid) {
+		if (sid != null) {
+			pla.getSIDBank().unplugSID(chipNo, sid);
+		}
+	}
+
+	/**
 	 * Configure PAL and NTSC VIC.
 	 * 
 	 * @param action
@@ -489,12 +539,42 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	}
 
 	/**
+	 * Configure all available SIDs.
+	 * 
+	 * @param action
+	 *            SID chip consumer
+	 */
+	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
+		for (int chipNum = 0; chipNum < PLA.MAX_SIDS; chipNum++) {
+			final SIDEmu sid = pla.getSIDBank().getSID(chipNum);
+			if (sid != null) {
+				action.accept(chipNum, sid);
+			}
+		}
+	}
+
+	/**
+	 * Configure one specific SID.
+	 * 
+	 * @param chipNum
+	 *            SID chip number
+	 * @param action
+	 *            SID chip consumer
+	 */
+	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
+		final SIDEmu sid = pla.getSIDBank().getSID(chipNum);
+		if (sid != null) {
+			action.accept(sid);
+		}
+	}
+
+	/**
 	 * Set system clock (PAL/NTSC).
 	 * 
 	 * @param clock
 	 *            system clock (PAL/NTSC)
 	 */
-	public void setClock(final CPUClock clock) {
+	protected void setClock(final CPUClock clock) {
 		this.clock = clock;
 
 		context.setCyclesPerSecond(clock.getCpuFrequency());
@@ -577,18 +657,32 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		return !joystickPort[portNumber].equals(disconnectedJoystick);
 	}
 
-	public PLA getPla() {
-		return pla;
+	/**
+	 * Insert a cartridge of a given size with empty contents.
+	 * 
+	 * @param type
+	 *            cartridge type
+	 * @param sizeKB
+	 *            size in KB
+	 * @throws IOException
+	 *             never thrown here
+	 */
+	public final void setCartridge(final CartridgeType type, final int sizeKB) throws IOException {
+		pla.setCartridge(Cartridge.create(pla, type, sizeKB));
 	}
 
 	/**
-	 * Set current multi purpose cartridge into the expansion port of the C64.
-	 *
-	 * @param cartridge
-	 *            multi purpose cartridge
+	 * Insert a cartridge loading an image file.
+	 * 
+	 * @param type
+	 *            cartridge type
+	 * @param file
+	 *            file to load the RAM contents
+	 * @throws IOException
+	 *             image read error
 	 */
-	public final void setCartridge(Cartridge cartridge) {
-		pla.setCartridge(cartridge);
+	public final void setCartridge(final CartridgeType type, final File file) throws IOException {
+		pla.setCartridge(Cartridge.read(pla, type, file));
 	}
 
 	/**

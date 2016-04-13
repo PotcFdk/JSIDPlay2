@@ -177,29 +177,30 @@ public class SidReg extends Tab implements UIPart {
 	}
 
 	protected void recordSidWrites(final boolean enable) {
-		SidRegExtension sidRegExtension = null;
+		final SidRegExtension sidRegExtension = new SidRegExtension() {
+
+			@Override
+			public void sidWrite(final SidRegWrite output) {
+				Platform.runLater(() -> {
+					allSidRegWrites.add(output);
+					if (allSidRegWrites.size() % REFRESH_RATE == 0) {
+						doUpdateFilter();
+					}
+				});
+			}
+
+			@Override
+			public void clear() {
+				Platform.runLater(() -> allSidRegWrites.clear());
+			}
+
+		};
+		sidRegExtension.setbundle(util.getBundle());
+		sidRegExtension.init();
 		if (enable) {
-			sidRegExtension = new SidRegExtension() {
-
-				@Override
-				public void sidWrite(final SidRegWrite output) {
-					Platform.runLater(() -> {
-						allSidRegWrites.add(output);
-						if (allSidRegWrites.size() % REFRESH_RATE == 0) {
-							doUpdateFilter();
-						}
-					});
-				}
-
-				@Override
-				public void clear() {
-					Platform.runLater(() -> allSidRegWrites.clear());
-				}
-
-			};
-			sidRegExtension.setbundle(util.getBundle());
-			sidRegExtension.init();
+			util.getPlayer().getC64().configureSIDs((sidNum, sidEmu) -> {
+				sidEmu.setListener(sidNum, sidRegExtension);
+			});
 		}
-		util.getPlayer().setSidWriteListener(sidRegExtension);
 	}
 }

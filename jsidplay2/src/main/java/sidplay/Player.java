@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -42,13 +41,10 @@ import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
-import libsidplay.common.SIDEmu;
-import libsidplay.common.SIDListener;
 import libsidplay.components.c1530.Datasette.Control;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
-import libsidplay.components.pla.PLA;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.MP3Tune;
@@ -173,6 +169,7 @@ public class Player extends HardwareEnsemble {
 
 			@Override
 			public void start() {
+				c64.plugInSIDs();
 				configureMixer(mixer -> mixer.start());
 			}
 
@@ -239,6 +236,18 @@ public class Player extends HardwareEnsemble {
 	protected void setClock(CPUClock cpuFreq) {
 		super.setClock(cpuFreq);
 		sidBuilder = createSIDBuilder(cpuFreq, audioDriver);
+		c64.setSidCreator((sidNum, sidEmu) -> {
+			final IEmulationSection emulation = config.getEmulationSection();
+			if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
+				sidEmu = sidBuilder.lock(sidEmu, sidNum, tune);
+				sidEmu.setBaseAddress(SidTune.getSIDAddress(emulation, tune, sidNum));
+				return sidEmu;
+			} else if (sidEmu != null) {
+				// Safely remove SIDs no more in use
+				sidBuilder.unlock(sidEmu);
+			}
+			return null;
+		});
 	}
 
 	/**
@@ -263,9 +272,6 @@ public class Player extends HardwareEnsemble {
 		super.reset();
 		timer.reset();
 		configureMixer(mixer -> mixer.reset());
-
-		// Create SIDs
-		createOrUpdateSIDs();
 
 		// Create auto-start event
 		c64.getEventScheduler().schedule(new Event("Auto-start event") {
@@ -362,36 +368,6 @@ public class Player extends HardwareEnsemble {
 	 */
 	public final void setTune(final SidTune tune) {
 		this.tune = tune;
-	}
-
-	/**
-	 * Configure all available SIDs.
-	 * 
-	 * @param action
-	 *            SID chip consumer
-	 */
-	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
-		for (int chipNum = 0; chipNum < PLA.MAX_SIDS; chipNum++) {
-			final SIDEmu sid = c64.getPla().getSID(chipNum);
-			if (sid != null) {
-				action.accept(chipNum, sid);
-			}
-		}
-	}
-
-	/**
-	 * Configure one specific SID.
-	 * 
-	 * @param chipNum
-	 *            SID chip number
-	 * @param action
-	 *            SID chip consumer
-	 */
-	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
-		final SIDEmu sid = c64.getPla().getSID(chipNum);
-		if (sid != null) {
-			action.accept(sid);
-		}
 	}
 
 	/**
@@ -569,44 +545,6 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Change SIDs according to the current tune.
-	 */
-	public final void createOrUpdateSIDs() {
-		IEmulationSection emulation = config.getEmulationSection();
-		c64.getPla().clearSIDAddresses();
-		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-			SIDEmu sid = c64.getPla().getSID(sidNum);
-			if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
-				sid = sidBuilder.lock(sid, sidNum, tune);
-				c64.getPla().setSID(sidNum, sid);
-				int base = SidTune.getSIDAddress(emulation, tune, sidNum);
-				c64.getPla().setSIDAddress(sidNum, base);
-			} else if (sid != null) {
-				// Safely remove SIDs no more in use
-				sidBuilder.unlock(sid);
-				c64.getPla().setSID(sidNum, null);
-			}
-		}
-	}
-
-	/**
-	 * Register a SID write register listener for all SID chips in use.
-	 * 
-	 * @param sidListener
-	 *            SID write register listener
-	 */
-	public void setSidWriteListener(SIDListener sidListener) {
-		IEmulationSection emulation = config.getEmulationSection();
-		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-			if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
-				c64.getPla().setSidWriteListener(sidNum, sidListener);
-			} else {
-				c64.getPla().setSidWriteListener(sidNum, null);
-			}
-		}
-	}
-
-	/**
 	 * Play routine (clock chips until audio buffer is filled completely or
 	 * player is paused).
 	 * 
@@ -629,9 +567,9 @@ public class Player extends HardwareEnsemble {
 	 */
 	private void close() {
 		// Safely remove ALL SIDs
-		configureSIDs((sidNum, sid) -> {
+		c64.configureSIDs((sidNum, sid) -> {
 			sidBuilder.unlock(sid);
-			c64.getPla().setSID(sidNum, null);
+			c64.unplugSID(sidNum, sid);
 		});
 		audioDriver.close();
 	}

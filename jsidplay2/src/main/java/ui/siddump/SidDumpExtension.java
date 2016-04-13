@@ -375,7 +375,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		fFetchedRow = 0;
 		fPatternNum = 1;
 		fNoteNum = 1;
-		player.configureSID(0, sid -> fSid = sid);
+		player.getC64().configureSID(0, sid -> fSid = sid);
 	}
 
 	private void clearChannelStructures() {

@@ -19,7 +19,6 @@ import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.components.c1541.IParallelCable;
 import libsidplay.components.c1541.SameThreadC1541Runner;
 import libsidplay.components.c1541.VIACore;
-import libsidplay.components.cart.Cartridge;
 import libsidplay.components.cart.CartridgeType;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
@@ -496,7 +495,7 @@ public class HardwareEnsemble {
 	 */
 	public final void insertCartridge(final CartridgeType type, final int sizeKB) throws IOException, SidTuneError {
 		c64.ejectCartridge();
-		c64.setCartridge(Cartridge.create(c64.pla, type, sizeKB));
+		c64.setCartridge(type, sizeKB);
 	}
 
 	/**
@@ -512,7 +511,7 @@ public class HardwareEnsemble {
 	public final void insertCartridge(final CartridgeType type, final File file) throws IOException, SidTuneError {
 		config.getSidplay2Section().setLastDirectory(file.getParent());
 		c64.ejectCartridge();
-		c64.setCartridge(Cartridge.read(c64.pla, type, file));
+		c64.setCartridge(type, file);
 	}
 
 }
