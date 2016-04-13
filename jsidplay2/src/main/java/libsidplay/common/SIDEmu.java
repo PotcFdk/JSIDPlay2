@@ -43,7 +43,7 @@ public abstract class SIDEmu {
 	/** Internal cache of SID register state, used for GUI feedback. */
 	private final byte[] registers = new byte[REG_COUNT];
 
-	/** SID chip number 0..MAX_SIDS */
+	/** SID chip number (0..MAX_SIDS-1) */
 	private int sidNum;
 	/** SID chip base address */
 	private int baseAddress = DEF_BASE_ADDRESS;
