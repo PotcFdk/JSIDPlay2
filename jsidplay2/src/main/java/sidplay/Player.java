@@ -531,7 +531,7 @@ public class Player extends HardwareEnsemble {
 		if (tune instanceof MP3Tune) {
 			// Change driver settings to use comparison driver for MP3 play-back
 			MP3Tune mp3Tune = (MP3Tune) tune;
-			newAudioDriver = new CmpMP3File();
+			newAudioDriver = (CmpMP3File) Audio.COMPARE_MP3.getAudioDriver();
 			config.getAudioSection().setPlayOriginal(true);
 			config.getAudioSection().setMp3File(mp3Tune.getMP3Filename());
 		}

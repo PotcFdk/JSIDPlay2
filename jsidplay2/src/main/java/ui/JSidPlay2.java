@@ -200,6 +200,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	private BooleanProperty nextFavoriteDisabledState;
 	private Tooltip statusTooltip;
 	private StateChangeListener nextTuneListener;
+	private boolean isRunning;
 
 	private class StateChangeListener implements ChangeListener<State> {
 		@Override
@@ -207,6 +208,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			SidTune sidTune = util.getPlayer().getTune();
 			Platform.runLater(() -> nextFavoriteDisabledState.set(sidTune == SidTune.RESET || newValue == State.QUIT));
 			if (newValue == State.START) {
+				isRunning = true;
 				Platform.runLater(() -> {
 					updatePlayerButtons(newValue);
 					enableDisableHardSIDSettings();
@@ -1315,6 +1317,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	 * Set all the internal information of the emulation in the status bar.
 	 */
 	protected void setStatusLine() {
+		if (!isRunning) {
+			return;
+		}
 		// Get status information of the first disk drive
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
