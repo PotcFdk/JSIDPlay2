@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -41,6 +42,7 @@ import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
+import libsidplay.common.SIDEmu;
 import libsidplay.components.c1530.Datasette.Control;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos6526.MOS6526;
@@ -152,6 +154,19 @@ public class Player extends HardwareEnsemble {
 	 */
 	private Function<SidTune, String> recordingFilenameProvider = tune -> "jsidplay2";
 
+	private final BiFunction<Integer, SIDEmu, SIDEmu> sidCreator = (sidNum, sidEmu) -> {
+		final IEmulationSection emulation = config.getEmulationSection();
+		if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
+			sidEmu = sidBuilder.lock(sidEmu, sidNum, tune);
+			sidEmu.setBaseAddress(SidTune.getSIDAddress(emulation, tune, sidNum));
+			return sidEmu;
+		} else if (sidEmu != null) {
+			// Safely remove SIDs no more in use
+			sidBuilder.unlock(sidEmu);
+		}
+		return null;
+	};
+	
 	/**
 	 * Create a Music Player.
 	 */
@@ -236,18 +251,7 @@ public class Player extends HardwareEnsemble {
 	protected void setClock(CPUClock cpuFreq) {
 		super.setClock(cpuFreq);
 		sidBuilder = createSIDBuilder(cpuFreq, audioDriver);
-		c64.setSidCreator((sidNum, sidEmu) -> {
-			final IEmulationSection emulation = config.getEmulationSection();
-			if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
-				sidEmu = sidBuilder.lock(sidEmu, sidNum, tune);
-				sidEmu.setBaseAddress(SidTune.getSIDAddress(emulation, tune, sidNum));
-				return sidEmu;
-			} else if (sidEmu != null) {
-				// Safely remove SIDs no more in use
-				sidBuilder.unlock(sidEmu);
-			}
-			return null;
-		});
+		c64.setSidCreator(sidCreator);
 	}
 
 	/**
