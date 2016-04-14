@@ -172,22 +172,19 @@ public final class PLA {
 
 		/** Plug-in SID chip implementation of a specific SID chip number. */
 		public void plugInSID(final int chipNum, final SIDEmu sidEmu) {
-			assignSID(chipNum, sidEmu, sidEmu.getBaseAddress());
+			sidemu[chipNum] = sidEmu;
+			int address = sidEmu.getBaseAddress();
+			sidmapper[address  >> 5 & MAPPER_SIZE - 1] = chipNum;
+			sidBankUsed[address >> 8 & 0xf] = true;
+			sidEmu.clearClocksSinceLastAccess();
 		}
 
 		/** Un-plug SID chip implementation of a specific SID chip number. */
 		public void unplugSID(final int chipNum, final SIDEmu sidEmu) {
-			assignSID(chipNum, null, sidEmu.getBaseAddress());
-		}
-
-		/** Assign / un-assign SID chip at a specific base address */
-		public void assignSID(final int chipNum, final SIDEmu sidEmu, final int address) {
-			sidemu[chipNum] = sidEmu;
-			sidmapper[address >> 5 & MAPPER_SIZE - 1] = sidEmu != null ? chipNum : 0;
-			sidBankUsed[address >> 8 & 0xf] = sidEmu != null;
-			if (sidEmu != null) {
-				sidEmu.clearClocksSinceLastAccess();
-			}
+			sidemu[chipNum] = null;
+			int address = sidEmu.getBaseAddress();
+			sidmapper[address >> 5 & MAPPER_SIZE - 1] = 0;
+			sidBankUsed[address >> 8 & 0xf] = false;
 		}
 
 	}
