@@ -154,19 +154,26 @@ public class Player extends HardwareEnsemble {
 	 */
 	private Function<SidTune, String> recordingFilenameProvider = tune -> "jsidplay2";
 
-	private final BiFunction<Integer, SIDEmu, SIDEmu> sidCreator = (sidNum, sidEmu) -> {
+	/**
+	 * Insert required SIDs. use SID builder to create/destroy SIDs.
+	 */
+	private final BiFunction<Integer, SIDEmu, SIDEmu> insertSIDs = (sidNum, sidEmu) -> {
 		final IEmulationSection emulation = config.getEmulationSection();
 		if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
 			sidEmu = sidBuilder.lock(sidEmu, sidNum, tune);
 			sidEmu.setBaseAddress(SidTune.getSIDAddress(emulation, tune, sidNum));
 			return sidEmu;
-		} else if (sidEmu != null) {
-			// Safely remove SIDs no more in use
+		} else if (sidEmu != SIDEmu.NONE) {
 			sidBuilder.unlock(sidEmu);
 		}
-		return null;
+		return SIDEmu.NONE;
 	};
-	
+
+	/**
+	 * Eject all SIDs.
+	 */
+	private BiFunction<Integer, SIDEmu, SIDEmu> ejectSIDs = (sidNum, sidEmu) -> SIDEmu.NONE;
+
 	/**
 	 * Create a Music Player.
 	 */
@@ -184,7 +191,7 @@ public class Player extends HardwareEnsemble {
 
 			@Override
 			public void start() {
-				c64.plugInSIDs();
+				c64.configureSIDChips(insertSIDs);
 				configureMixer(mixer -> mixer.start());
 			}
 
@@ -251,7 +258,6 @@ public class Player extends HardwareEnsemble {
 	protected void setClock(CPUClock cpuFreq) {
 		super.setClock(cpuFreq);
 		sidBuilder = createSIDBuilder(cpuFreq, audioDriver);
-		c64.setSidCreator(sidCreator);
 	}
 
 	/**
@@ -267,6 +273,10 @@ public class Player extends HardwareEnsemble {
 		default:
 			throw new RuntimeException("Unknown engine type: " + engine);
 		}
+	}
+
+	public void updateSIDChips() {
+		c64.configureSIDChips(insertSIDs);
 	}
 
 	/**
@@ -570,11 +580,7 @@ public class Player extends HardwareEnsemble {
 	 * Close player.
 	 */
 	private void close() {
-		// Safely remove ALL SIDs
-		c64.configureSIDs((sidNum, sid) -> {
-			sidBuilder.unlock(sid);
-			c64.unplugSID(sidNum, sid);
-		});
+		c64.configureSIDChips(ejectSIDs);
 		audioDriver.close();
 	}
 

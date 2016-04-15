@@ -633,7 +633,15 @@ public class MusicCollection extends Tab implements UIPart {
 						createNewFavoritesTab();
 					});
 				};
-				searchHit = file -> addFavorite(sidplay2Section, favoritesToAddSearchResult, file);
+				searchHit = file -> {
+					while (favoritesToAddSearchResult == null) {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					addFavorite(sidplay2Section, favoritesToAddSearchResult, file);};
 				searchStop = cancelled -> Platform.runLater(() -> enableSearch());
 				break;
 

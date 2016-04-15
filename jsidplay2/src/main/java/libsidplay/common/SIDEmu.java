@@ -28,6 +28,9 @@ import libsidplay.config.IEmulationSection;
  */
 public abstract class SIDEmu {
 
+	/** no SID chip */
+	public static final SIDEmu NONE = null;
+	
 	/** SID base address */
 	public static final int DEF_BASE_ADDRESS = 0xd400;
 

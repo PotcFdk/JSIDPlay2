@@ -125,18 +125,20 @@ public final class PLA {
 		/** Contains a SID chip implementation for each SID chip number. */
 		private final SIDEmu[] sidemu = new SIDEmu[MAX_SIDS];
 
-		/** Is a SID assigned to a bank number? */
-		private boolean[] sidBankUsed = new boolean[MAX_BANKS];
+		/**
+		 * SID assigned to a bank number? Each bit represents a chip number.
+		 */
+		private int[] sidBankUsed = new int[MAX_BANKS];
 
 		/** Reset SID chips using highest volume setting. */
 		private void reset() {
 			Arrays.fill(sidmapper, 0);
-			Arrays.fill(sidBankUsed, false);
+			Arrays.fill(sidBankUsed, 0);
 		}
 
 		/** Is a specific memory bank in use by SID? */
 		private boolean isUsed(int bankNum) {
-			return sidBankUsed[bankNum];
+			return sidBankUsed[bankNum] != 0;
 		}
 
 		/**
@@ -174,17 +176,17 @@ public final class PLA {
 		public void plugInSID(final int chipNum, final SIDEmu sidEmu) {
 			sidemu[chipNum] = sidEmu;
 			int address = sidEmu.getBaseAddress();
-			sidmapper[address  >> 5 & MAPPER_SIZE - 1] = chipNum;
-			sidBankUsed[address >> 8 & 0xf] = true;
+			sidmapper[address >> 5 & MAPPER_SIZE - 1] = chipNum;
+			sidBankUsed[address >> 8 & 0xf] |= 1 << chipNum;
 			sidEmu.clearClocksSinceLastAccess();
 		}
 
 		/** Un-plug SID chip implementation of a specific SID chip number. */
 		public void unplugSID(final int chipNum, final SIDEmu sidEmu) {
-			sidemu[chipNum] = null;
+			sidemu[chipNum] = SIDEmu.NONE;
 			int address = sidEmu.getBaseAddress();
 			sidmapper[address >> 5 & MAPPER_SIZE - 1] = 0;
-			sidBankUsed[address >> 8 & 0xf] = false;
+			sidBankUsed[address >> 8 & 0xf] &= ~(1 << chipNum);
 		}
 
 	}
