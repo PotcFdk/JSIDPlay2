@@ -157,7 +157,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Insert required SIDs. use SID builder to create/destroy SIDs.
 	 */
-	private final BiFunction<Integer, SIDEmu, SIDEmu> insertSIDs = (sidNum, sidEmu) -> {
+	private final BiFunction<Integer, SIDEmu, SIDEmu> requiredSIDs = (sidNum, sidEmu) -> {
 		final IEmulationSection emulation = config.getEmulationSection();
 		if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
 			sidEmu = sidBuilder.lock(sidEmu, sidNum, tune);
@@ -172,7 +172,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Eject all SIDs.
 	 */
-	private BiFunction<Integer, SIDEmu, SIDEmu> ejectSIDs = (sidNum, sidEmu) -> SIDEmu.NONE;
+	private BiFunction<Integer, SIDEmu, SIDEmu> noSIDs = (sidNum, sidEmu) -> SIDEmu.NONE;
 
 	/**
 	 * Create a Music Player.
@@ -191,7 +191,7 @@ public class Player extends HardwareEnsemble {
 
 			@Override
 			public void start() {
-				c64.insertSIDChips(insertSIDs);
+				c64.insertSIDChips(requiredSIDs);
 				configureMixer(mixer -> mixer.start());
 			}
 
@@ -257,13 +257,13 @@ public class Player extends HardwareEnsemble {
 	@Override
 	protected void setClock(CPUClock cpuFreq) {
 		super.setClock(cpuFreq);
-		sidBuilder = createSIDBuilder(cpuFreq, audioDriver);
+		sidBuilder = createSIDBuilder(cpuFreq);
 	}
 
 	/**
 	 * Create configured SID chip implementation (software/hardware).
 	 */
-	private SIDBuilder createSIDBuilder(CPUClock cpuClock, AudioDriver audioDriver) {
+	private SIDBuilder createSIDBuilder(CPUClock cpuClock) {
 		final Engine engine = config.getEmulationSection().getEngine();
 		switch (engine) {
 		case EMULATION:
@@ -275,8 +275,11 @@ public class Player extends HardwareEnsemble {
 		}
 	}
 
+	/**
+	 * Call to update SID chips each time configuration has been changed.
+	 */
 	public void updateSIDChips() {
-		c64.insertSIDChips(insertSIDs);
+		c64.insertSIDChips(requiredSIDs);
 	}
 
 	/**
@@ -580,7 +583,7 @@ public class Player extends HardwareEnsemble {
 	 * Close player.
 	 */
 	private void close() {
-		c64.insertSIDChips(ejectSIDs);
+		c64.insertSIDChips(noSIDs);
 		audioDriver.close();
 	}
 

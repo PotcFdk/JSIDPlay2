@@ -472,19 +472,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void nextFavorite() {
 		final C64 c64 = util.getPlayer().getC64();
-		if (util.getPlayer().stateProperty().get() == State.PAUSE
-				|| util.getPlayer().stateProperty().get() == State.QUIT
-				|| util.getPlayer().stateProperty().get() == State.END) {
-			util.getPlayer().pauseContinue();
-		} else if (util.getPlayer().stateProperty().get() == State.PLAY) {
-			final EventScheduler ctx = c64.getEventScheduler();
-			ctx.scheduleThreadSafe(new Event("Timer End To Play Next Favorite!") {
-				@Override
-				public void event() {
+		final EventScheduler ctx = c64.getEventScheduler();
+		ctx.scheduleThreadSafe(new Event("Timer End To Play Next Favorite!") {
+			@Override
+			public void event() {
+				if (util.getPlayer().stateProperty().get() == State.PLAY) {
 					util.getPlayer().getTimer().end();
 				}
-			});
-		}
+			}
+		});
 	}
 
 	@FXML
