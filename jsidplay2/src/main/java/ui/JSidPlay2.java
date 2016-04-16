@@ -134,10 +134,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	}
 
 	private static final String NUVIE_PLAYER_PRG = "/libsidplay/roms/nuvieplayer-v1.0.prg";
-	private static final byte[] NUVIE_PLAYER = new byte[2884];
+	private static byte[] NUVIE_PLAYER;
 
 	static {
 		try (DataInputStream is = new DataInputStream(JSidPlay2.class.getResourceAsStream(NUVIE_PLAYER_PRG))) {
+			URL us = JSidPlay2Main.class.getResource(NUVIE_PLAYER_PRG);
+			NUVIE_PLAYER = new byte[us.openConnection().getContentLength()];
 			is.readFully(NUVIE_PLAYER);
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
