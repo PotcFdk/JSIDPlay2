@@ -369,8 +369,11 @@ public class SIDMixer implements Mixer {
 			if (mono) {
 				sampler.setVolume(volume[sidNum], volume[sidNum]);
 			} else {
-				int volumeL = (int) (volume[sidNum] * positionL[sidNum]);
-				int volumeR = (int) (volume[sidNum] * positionR[sidNum]);
+				float leftFraction = positionL[sidNum];
+				float rightFraction = positionR[sidNum];
+				float power = (float) Math.sqrt(leftFraction * leftFraction + rightFraction * rightFraction);
+				int volumeL = (int) (volume[sidNum] * leftFraction / power);
+				int volumeR = (int) (volume[sidNum] * rightFraction / power);
 				sampler.setVolume(volumeL, volumeR);
 			}
 			sidNum++;
