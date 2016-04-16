@@ -484,20 +484,22 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	}
 
 	/**
-	 * Configure SID chips to be used.
+	 * Insert SID chips to be used.
 	 * 
 	 * @param sidCreator
-	 *            Responsible to decide which SID chips we need (SIDEmu) and which we
-	 *            don't (SIDEmu.NONE). SID number and old SID mapped to new SID.
+	 *            Responsible to decide which SID chips we need (SIDEmu) and
+	 *            which we don't need (SIDEmu.NONE). SID number and old SID
+	 *            mapped to new SID.
 	 */
-	public final void configureSIDChips(BiFunction<Integer, SIDEmu, SIDEmu> sidCreator) {
+	public final void insertSIDChips(BiFunction<Integer, SIDEmu, SIDEmu> sidCreator) {
 		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 			SIDEmu oldSid = pla.getSIDBank().getSID(sidNum);
+			if (oldSid != SIDEmu.NONE) {
+				pla.getSIDBank().unplugSID(sidNum, oldSid);
+			}
 			SIDEmu newSid = sidCreator.apply(sidNum, oldSid);
 			if (newSid != SIDEmu.NONE) {
 				pla.getSIDBank().plugInSID(sidNum, newSid);
-			} else if (oldSid != SIDEmu.NONE) {
-				pla.getSIDBank().unplugSID(sidNum, oldSid);
 			}
 		}
 	}

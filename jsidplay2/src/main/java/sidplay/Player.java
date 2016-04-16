@@ -191,7 +191,7 @@ public class Player extends HardwareEnsemble {
 
 			@Override
 			public void start() {
-				c64.configureSIDChips(insertSIDs);
+				c64.insertSIDChips(insertSIDs);
 				configureMixer(mixer -> mixer.start());
 			}
 
@@ -276,7 +276,7 @@ public class Player extends HardwareEnsemble {
 	}
 
 	public void updateSIDChips() {
-		c64.configureSIDChips(insertSIDs);
+		c64.insertSIDChips(insertSIDs);
 	}
 
 	/**
@@ -580,7 +580,7 @@ public class Player extends HardwareEnsemble {
 	 * Close player.
 	 */
 	private void close() {
-		c64.configureSIDChips(ejectSIDs);
+		c64.insertSIDChips(ejectSIDs);
 		audioDriver.close();
 	}
 
