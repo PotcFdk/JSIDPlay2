@@ -47,9 +47,9 @@ import libsidplay.components.c1530.Datasette.Control;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
+import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
-import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.siddatabase.SidDatabase;
@@ -136,7 +136,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Currently used audio driver.
 	 */
-	private AudioDriver audioDriver = Audio.SOUNDCARD.getAudioDriver(), oldAudioDriver;
+	private AudioDriver audioDriver = Audio.SOUNDCARD.getAudioDriver();
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -504,13 +504,12 @@ public class Player extends HardwareEnsemble {
 	private void open() throws InterruptedException, IOException, LineUnavailableException {
 		playList = PlayList.getInstance(config, tune);
 
+		IAudioSection audioSection = config.getAudioSection();
 		if (Arrays.stream(Audio.values()).anyMatch(audio -> audio.getAudioDriver().equals(audioDriver))) {
-			audioDriver = config.getAudioSection().getAudio().getAudioDriver();
-			// replace driver settings for mp3
-			audioDriver = handleMP3(config, tune, audioDriver);
+			audioDriver = audioSection.getAudio().getAudioDriver(audioSection, tune);
 		}
 		// open audio driver
-		AudioConfig audioConfig = AudioConfig.getInstance(config.getAudioSection());
+		AudioConfig audioConfig = AudioConfig.getInstance(audioSection);
 		audioDriver.open(audioConfig, recordingFilenameProvider.apply(tune));
 
 		// PAL/NTSC
@@ -529,36 +528,6 @@ public class Player extends HardwareEnsemble {
 	 */
 	public final void setAudioDriver(final AudioDriver driver) {
 		this.audioDriver = driver;
-	}
-
-	/**
-	 * MP3 play-back is using the COMPARE audio driver. Old settings are saved
-	 * (playing mp3) and restored (next time normal tune is played).
-	 */
-	private AudioDriver handleMP3(final IConfig config, final SidTune tune, AudioDriver audioDriver) {
-		AudioDriver newAudioDriver = audioDriver;
-		if (oldAudioDriver == null && tune instanceof MP3Tune) {
-			// save settings before MP3 gets played
-			oldAudioDriver = audioDriver;
-		} else if (oldAudioDriver != null && !(tune instanceof MP3Tune)) {
-			// restore settings after MP3 has been played last time
-			newAudioDriver = oldAudioDriver;
-			oldAudioDriver = null;
-		}
-		if (tune instanceof MP3Tune) {
-			// Change driver settings to use comparison driver for MP3 play-back
-			MP3Tune mp3Tune = (MP3Tune) tune;
-			newAudioDriver = Audio.COMPARE_MP3.getAudioDriver();
-			config.getAudioSection().setPlayOriginal(true);
-			config.getAudioSection().setMp3File(mp3Tune.getMP3Filename());
-		}
-		if (newAudioDriver instanceof CmpMP3File) {
-			// Configure compare driver settings
-			CmpMP3File cmp = (CmpMP3File) newAudioDriver;
-			cmp.setPlayOriginal(config.getAudioSection().isPlayOriginal());
-			cmp.setMp3File(new File(config.getAudioSection().getMp3File()));
-		}
-		return newAudioDriver;
 	}
 
 	/**
