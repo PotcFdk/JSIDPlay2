@@ -73,7 +73,6 @@ import libsidutils.WebUtils;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 import sidplay.Player;
 import sidplay.audio.Audio;
-import sidplay.audio.CmpMP3File;
 import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
 import sidplay.ini.IniReader;
@@ -1484,9 +1483,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	private void setPlayOriginal(final boolean playOriginal) {
 		util.getConfig().getAudioSection().setPlayOriginal(playOriginal);
-		if (util.getConfig().getAudioSection().getAudio().getAudioDriver() instanceof CmpMP3File) {
-			((CmpMP3File) util.getConfig().getAudioSection().getAudio().getAudioDriver()).setPlayOriginal(playOriginal);
-		}
 	}
 
 	@Override

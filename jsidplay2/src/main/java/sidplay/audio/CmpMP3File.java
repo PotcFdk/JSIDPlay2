@@ -1,10 +1,10 @@
 package sidplay.audio;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.sound.sampled.LineUnavailableException;
 
+import libsidplay.config.IAudioSection;
 import lowlevel.LameDecoder;
 
 /**
@@ -20,15 +20,6 @@ public class CmpMP3File extends JavaSound {
 	}
 
 	/**
-	 * Play MP3 (true) or emulation (false).
-	 */
-	private boolean playOriginal;
-	/**
-	 * MP3 file to play.
-	 */
-	private File mp3File;
-
-	/**
 	 * Jump3r decoder.
 	 */
 	protected LameDecoder jump3r;
@@ -37,11 +28,17 @@ public class CmpMP3File extends JavaSound {
 	 */
 	protected JavaSound mp3JavaSound = new JavaSound();
 
+	private IAudioSection audioSection;
+
+	void setAudioSection(final IAudioSection audioSection) {
+		this.audioSection = audioSection;
+	}
+
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException {
 		super.open(cfg, recordingFilename);
 
-		jump3r = new LameDecoder(mp3File.getAbsolutePath());
+		jump3r = new LameDecoder(audioSection.getMp3File());
 
 		mp3JavaSound.open(new AudioConfig(jump3r.getSampleRate(), jump3r.getChannels(), cfg.getDevice()) {
 			@Override
@@ -61,7 +58,7 @@ public class CmpMP3File extends JavaSound {
 		if (!jump3r.decode(mp3JavaSound.buffer())) {
 			throw new MP3Termination();
 		}
-		if (playOriginal) {
+		if (audioSection.isPlayOriginal()) {
 			mp3JavaSound.write();
 		} else {
 			super.write();
@@ -81,14 +78,6 @@ public class CmpMP3File extends JavaSound {
 		if (jump3r != null) {
 			jump3r.close();
 		}
-	}
-
-	public void setPlayOriginal(final boolean playOriginal) {
-		this.playOriginal = playOriginal;
-	}
-
-	public void setMp3File(File mp3File) {
-		this.mp3File = mp3File;
 	}
 
 }

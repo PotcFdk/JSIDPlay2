@@ -1,7 +1,5 @@
 package sidplay.audio;
 
-import java.io.File;
-
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
@@ -18,9 +16,10 @@ public enum Audio {
 	LIVE_WAV(new ProxyDriver(new JavaSound(), new WavFile())),
 	/** Java Sound API plus MP3 file write. */
 	LIVE_MP3(new ProxyDriver(new JavaSound(), new MP3File())),
-	/** Java Sound API plus playback of MP3 recording. */
-	COMPARE_MP3(new CmpMP3File());
+	/** Java Sound API plus play-back of MP3 recording. */
+	COMPARE_MP3(CMP_MP3 = new CmpMP3File());
 
+	private final static CmpMP3File CMP_MP3;
 	private AudioDriver oldAudioDriver;
 
 	private Audio(AudioDriver audioDriver) {
@@ -53,16 +52,12 @@ public enum Audio {
 		}
 		if (tune instanceof MP3Tune) {
 			// Change driver settings to use comparison driver for MP3 play-back
-			MP3Tune mp3Tune = (MP3Tune) tune;
-			newAudioDriver = COMPARE_MP3.getAudioDriver();
 			audioSection.setPlayOriginal(true);
-			audioSection.setMp3File(mp3Tune.getMP3Filename());
+			audioSection.setMp3File(((MP3Tune) tune).getMP3Filename());
+			newAudioDriver = CMP_MP3;
 		}
-		if (newAudioDriver instanceof CmpMP3File) {
-			// Configure compare driver settings
-			CmpMP3File cmp = (CmpMP3File) newAudioDriver;
-			cmp.setPlayOriginal(audioSection.isPlayOriginal());
-			cmp.setMp3File(new File(audioSection.getMp3File()));
+		if (CMP_MP3.equals(newAudioDriver)) {
+			CMP_MP3.setAudioSection(audioSection);
 		}
 		return newAudioDriver;
 	}
