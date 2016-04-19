@@ -90,6 +90,7 @@ public class WavFile implements AudioDriver {
 			file.write(sampleBuffer.array(), 0, len);
 			samplesWritten += len;
 		} catch (final IOException e) {
+			e.printStackTrace();
 			throw new InterruptedException();
 		}
 	}

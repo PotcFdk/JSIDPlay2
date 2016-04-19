@@ -147,9 +147,9 @@ public final class PLA {
 		 */
 		@Override
 		public byte read(final int address) {
-			final int chipNum = sidmapper[address >> 5 & MAPPER_SIZE - 1];
-			if (sidemu[chipNum] != null) {
-				return sidemu[chipNum].read(address & SIDEmu.REG_COUNT - 1);
+			final SIDEmu sid = sidemu[sidmapper[address >> 5 & MAPPER_SIZE - 1]];
+			if (sid != null) {
+				return sid.read(address & SIDEmu.REG_COUNT - 1);
 			} else {
 				return (byte) 0xff;
 			}
@@ -161,9 +161,9 @@ public final class PLA {
 		 */
 		@Override
 		public void write(final int address, final byte value) {
-			final int chipNum = sidmapper[address >> 5 & MAPPER_SIZE - 1];
-			if (sidemu[chipNum] != null) {
-				sidemu[chipNum].write(address & SIDEmu.REG_COUNT - 1, value);
+			final SIDEmu sid = sidemu[sidmapper[address >> 5 & MAPPER_SIZE - 1]];
+			if (sid != null) {
+				sid.write(address & SIDEmu.REG_COUNT - 1, value);
 			}
 		}
 

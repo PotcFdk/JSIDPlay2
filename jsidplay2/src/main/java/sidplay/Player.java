@@ -521,7 +521,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Set alternative audio driver (not contained in {@link Audio}).<BR>
 	 * For example, If it is required to use a new instance of audio driver each
-	 * time the player plays a tune.
+	 * time the player plays a tune (e.g. {@link MP3Stream})
 	 * 
 	 * @param driver
 	 *            for example {@link MP3Driver.MP3Stream}
@@ -532,7 +532,7 @@ public class Player extends HardwareEnsemble {
 
 	/**
 	 * Play routine (clock chips until audio buffer is filled completely or
-	 * player is paused).
+	 * player gets paused).
 	 * 
 	 * @return continue to play next time?
 	 * 

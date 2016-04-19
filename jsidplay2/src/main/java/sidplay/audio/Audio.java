@@ -19,9 +19,8 @@ public enum Audio {
 	/** Java Sound API plus play-back of MP3 recording. */
 	COMPARE_MP3(CMP_MP3 = new CmpMP3File());
 
-	private final static CmpMP3File CMP_MP3;
-	private AudioDriver oldAudioDriver;
-
+	private final AudioDriver audioDriver;
+	
 	private Audio(AudioDriver audioDriver) {
 		this.audioDriver = audioDriver;
 	}
@@ -30,8 +29,9 @@ public enum Audio {
 		return audioDriver;
 	}
 
-	private final AudioDriver audioDriver;
-
+	private final static CmpMP3File CMP_MP3;
+	private AudioDriver oldAudioDriver;
+	
 	public final AudioDriver getAudioDriver(final IAudioSection audioSection, SidTune tune) {
 		return handleMP3(audioSection, tune, audioDriver);
 	}
