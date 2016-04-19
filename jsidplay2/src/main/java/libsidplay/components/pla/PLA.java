@@ -178,7 +178,6 @@ public final class PLA {
 			int address = sidEmu.getBaseAddress();
 			sidmapper[address >> 5 & MAPPER_SIZE - 1] = chipNum;
 			sidBankUsed[address >> 8 & 0xf] |= 1 << chipNum;
-			sidEmu.clearClocksSinceLastAccess();
 		}
 
 		/** Un-plug SID chip implementation of a specific SID chip number. */

@@ -80,6 +80,7 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 		Class<? extends ReSIDBase> sidImplClass = getSIDImplClass(emulation, fakeStereo);
 		if (oldSIDEmu != null && oldSIDEmu.getClass().equals(sidImplClass)) {
 			// the implementing class does not change, re-use!
+			oldSIDEmu.clearClocksSinceLastAccess();
 			return (ReSIDBase) oldSIDEmu;
 		}
 		return createSID(sidImplClass, sidNum);
