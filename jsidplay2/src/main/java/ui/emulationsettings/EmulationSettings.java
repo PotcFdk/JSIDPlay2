@@ -428,7 +428,7 @@ public class EmulationSettings extends C64Window {
 			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(new Event("Update SIDs") {
 				@Override
 				public void event() throws InterruptedException {
-					util.getPlayer().updateSIDChips();
+					util.getPlayer().updateSIDChipConfiguration();
 				}
 			});
 		}

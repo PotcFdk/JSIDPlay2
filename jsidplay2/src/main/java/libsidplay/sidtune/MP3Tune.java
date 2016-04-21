@@ -29,9 +29,9 @@ public class MP3Tune extends SidTune {
 	private ID3V2Decoder decoder = new ID3V2Decoder();
 
 	@Override
-	public int placeProgramInMemory(byte[] c64buf) {
+	public Integer placeProgramInMemory(byte[] c64buf) {
 		// No program to load
-		return -1;
+		return null;
 	}
 
 	@Override

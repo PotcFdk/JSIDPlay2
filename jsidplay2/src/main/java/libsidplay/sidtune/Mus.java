@@ -56,7 +56,7 @@ class Mus extends PSid {
 	private int musDataLen;
 
 	@Override
-	public int placeProgramInMemory(final byte[] c64buf) {
+	public Integer placeProgramInMemory(final byte[] c64buf) {
 		installMusPlayers(c64buf);
 		return super.placeProgramInMemory(c64buf);
 	}

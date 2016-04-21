@@ -89,7 +89,7 @@ class Prg extends SidTune {
 	}
 
 	@Override
-	public int placeProgramInMemory(final byte[] mem) {
+	public Integer placeProgramInMemory(final byte[] mem) {
 		final int start = info.loadAddr;
 		final int end = start + info.c64dataLen;
 		mem[0x2d] = (byte) (end & 0xff);
@@ -105,7 +105,7 @@ class Prg extends SidTune {
 
 		// Copy data from cache to the correct destination.
 		System.arraycopy(program, programOffset, mem, start, end - start);
-		return -1;
+		return null;
 	}
 
 	/**

@@ -239,11 +239,11 @@ class PSid extends Prg {
 	private final KickAssembler assembler = new KickAssembler();
 
 	@Override
-	public int placeProgramInMemory(final byte[] mem) {
+	public Integer placeProgramInMemory(final byte[] mem) {
 		super.placeProgramInMemory(mem);
 		if (info.compatibility == Compatibility.RSID_BASIC) {
 			mem[0x30c] = (byte) (info.currentSong - 1);
-			return -1;
+			return null;
 		} else {
 			return psidInstallDriver(mem);
 		}

@@ -196,21 +196,24 @@ public class Player extends HardwareEnsemble {
 			}
 
 			/**
-			 * If a tune ends:
-			 * <UL>
-			 * <LI>Single tune or end of play list? Stop player (except loop)
-			 * <LI>Else play next song
-			 * </UL>
+			 * If a tune ends, there are these possibilities:
+			 * <OL>
+			 * <LI>Play next song (except singles)
+			 * <LI>Play again looping song
+			 * <LI>End tune
+			 * </OL>
 			 * 
 			 * @see sidplay.player.Timer#end()
 			 */
 			@Override
 			public void end() {
 				if (tune != SidTune.RESET) {
-					if (config.getSidplay2Section().isSingle() || !playList.hasNext()) {
-						stateProperty.set(config.getSidplay2Section().isLoop() ? State.RESTART : State.END);
-					} else {
+					if (!config.getSidplay2Section().isSingle() && playList.hasNext()) {
 						nextSong();
+					} else if (config.getSidplay2Section().isLoop()) {
+						stateProperty.set(State.RESTART);
+					} else {
+						stateProperty.set(State.END);
 					}
 				}
 			}
@@ -276,9 +279,9 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Call to update SID chips each time configuration has been changed.
+	 * Call to update SID chips each time SID configuration has been changed.
 	 */
-	public void updateSIDChips() {
+	public void updateSIDChipConfiguration() {
 		c64.insertSIDChips(requiredSIDs);
 	}
 
@@ -290,33 +293,30 @@ public class Player extends HardwareEnsemble {
 		timer.reset();
 		configureMixer(mixer -> mixer.reset());
 
-		// Create auto-start event
-		c64.getEventScheduler().schedule(new Event("Auto-start event") {
+		c64.getEventScheduler().schedule(new Event("Auto-start") {
 			@Override
 			public void event() throws InterruptedException {
-				if (tune == SidTune.RESET) {
-					// Normal reset code path executing auto-start command
-					if (command != null) {
-						if (command.startsWith(LOAD)) {
-							// Auto-start tape needs someone to press play
-							datasette.control(Control.START);
-						}
-						typeInCommand(command);
-					}
-				} else {
-					// reset code path for tunes
-					int driverAddress = tune.placeProgramInMemory(c64.getRAM());
-					if (driverAddress != -1) {
-						// Start SID player driver, if available
+				if (tune != SidTune.RESET) {
+					// for tunes: Install player into RAM
+					Integer driverAddress = tune.placeProgramInMemory(c64.getRAM());
+					if (driverAddress != null) {
+						// Set play address to feedback call frames counter.
+						c64.setPlayAddr(tune.getInfo().getPlayAddr());
+						// Start SID player driver
 						c64.getCPU().forcedJump(driverAddress);
 					} else {
-						// Start basic program or machine code routine
+						// No player: Start basic program or assembler code
 						final int loadAddr = tune.getInfo().getLoadAddr();
 						command = loadAddr == 0x0801 ? RUN : String.format(SYS, loadAddr);
-						typeInCommand(command);
 					}
-					// Set play-back address to feedback call frames counter.
-					c64.setPlayAddr(tune.getInfo().getPlayAddr());
+				}
+				if (command != null) {
+					if (command.startsWith(LOAD)) {
+						// Load from tape needs someone to press play
+						datasette.control(Control.START);
+					}
+					// Enter basic command
+					typeInCommand(command);
 				}
 			}
 		}, SidTune.getInitDelay(tune));
@@ -476,9 +476,6 @@ public class Player extends HardwareEnsemble {
 				// Play next chunk of sound data
 				stateProperty.set(State.PLAY);
 				while (play()) {
-					if (stateProperty.get() == State.PAUSE) {
-						Thread.sleep(PAUSE_SLEEP_TIME);
-					}
 					interactivityHook.accept(Player.this);
 				}
 			} catch (CmpMP3File.MP3Termination e) {
@@ -544,6 +541,9 @@ public class Player extends HardwareEnsemble {
 			for (int i = 0; i < config.getAudioSection().getBufferSize(); i++) {
 				c64.getEventScheduler().clock();
 			}
+		}
+		if (stateProperty.get() == State.PAUSE) {
+			Thread.sleep(PAUSE_SLEEP_TIME);
 		}
 		return stateProperty.get() == State.PLAY || stateProperty.get() == State.PAUSE;
 	}

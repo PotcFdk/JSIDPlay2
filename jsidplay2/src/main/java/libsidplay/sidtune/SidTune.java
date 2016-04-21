@@ -366,10 +366,10 @@ public abstract class SidTune {
 	 * Copy program into C64 memory.
 	 * 
 	 * @param c64buf
-	 * @return
+	 * @return play driver address
 	 * @throws SidTuneError
 	 */
-	public abstract int placeProgramInMemory(final byte[] c64buf);
+	public abstract Integer placeProgramInMemory(final byte[] c64buf);
 
 	/**
 	 * @param destFileName
