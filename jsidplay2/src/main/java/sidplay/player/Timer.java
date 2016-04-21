@@ -125,7 +125,7 @@ public abstract class Timer {
 			// use default length (is meant to be relative to start)
 			end = schedule(start + end, endTimeEvent);
 			if (fadeOut != 0) {
-				schedule(end - fadeOut, fadeOutStartTimeEvent);
+				schedule(start + end - fadeOut, fadeOutStartTimeEvent);
 			}
 		}
 	}
