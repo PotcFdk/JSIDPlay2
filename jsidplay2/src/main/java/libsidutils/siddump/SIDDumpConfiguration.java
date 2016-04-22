@@ -20,6 +20,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class SIDDumpConfiguration {
+	/**
+	 * Package of the internal configuration file.
+	 */
+	private static final String SID_ID_PKG = "libsidutils/siddump/";
 	private static final String FILE_NAME = "siddump.xml";
 
 	public enum SIDDumpReg {
@@ -97,8 +101,8 @@ public class SIDDumpConfiguration {
 				return new FileInputStream(file);
 			}
 		}
-		System.out.println("Using internal SIDDump file: " + FILE_NAME);
-		return SIDDumpConfiguration.class.getResourceAsStream(FILE_NAME);
+		System.out.println("Using internal SIDDump file: " + SID_ID_PKG + FILE_NAME);
+		return getClass().getClassLoader().getResourceAsStream(SID_ID_PKG + FILE_NAME);
 	}
 
 	private void parse(Document siddump) {

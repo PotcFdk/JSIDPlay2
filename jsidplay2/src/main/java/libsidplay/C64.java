@@ -90,9 +90,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	/** detected tune speed */
 	private double tuneSpeed;
 
-	/** Playroutine address */
-	protected int playAddr;
-
 	/** The interested party for playroutine entrances. */
 	protected IMOS6510Extension playRoutineObserver;
 
@@ -269,7 +266,15 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	 *            Observe calls of SID player (JSR $PlayAddr).
 	 */
 	public void setPlayAddr(final int playAddr) {
-		this.playAddr = playAddr;
+		cpu.setJSRHandler(Register_ProgramCounter -> {
+			if (Register_ProgramCounter == playAddr) {
+				if (playRoutineObserver != null) {
+					final long time = context.getTime(Event.Phase.PHI2);
+					playRoutineObserver.fetch(time);
+				}
+				callsToPlayRoutine++;
+			}
+		});
 	}
 
 	/**
@@ -305,15 +310,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 			throw new RuntimeException("Cannot create MOS6510 instance of: " + cpuClass);
 		}
 		cpu.setMemoryHandler(address -> pla.cpuRead(address), (address, value) -> pla.cpuWrite(address, value));
-		cpu.setJSRHandler(Register_ProgramCounter -> {
-			if (Register_ProgramCounter == playAddr) {
-				if (playRoutineObserver != null) {
-					final long time = context.getTime(Event.Phase.PHI2);
-					playRoutineObserver.fetch(time);
-				}
-				callsToPlayRoutine++;
-			}
-		});
 		pla.setCpu(cpu);
 
 		palVic = new MOS6569(pla, context);
@@ -432,6 +428,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		context.reset();
 		keyboard.reset();
 		pla.reset();
+		cpu.setJSRHandler(Register_ProgramCounter -> {
+		});
 		cpu.triggerRST();
 		cia1.reset();
 		cia2.reset();
@@ -442,7 +440,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		callsToPlayRoutine = 0;
 		lastUpdate = 0;
 		tuneSpeed = 0;
-		playAddr = -1;
 	}
 
 	/**

@@ -25,9 +25,9 @@ import libsidutils.assembler.KickAssembler;
 
 public class PRG2TAP {
 
-	private static final String TURBO_HEADER_ASM = "/libsidutils/PRG2TAP_TurboHeader.asm";
-	private static final String TURBO_DATA_ASM = "/libsidutils/PRG2TAP_TurboData.asm";
-	private static final String SLOW_HEADER_ASM = "/libsidutils/PRG2TAP_SlowHeader.asm";
+	private static final String TURBO_HEADER_ASM = "/libsidutils/prg2tap/PRG2TAP_TurboHeader.asm";
+	private static final String TURBO_DATA_ASM = "/libsidutils/prg2tap/PRG2TAP_TurboData.asm";
+	private static final String SLOW_HEADER_ASM = "/libsidutils/prg2tap/PRG2TAP_SlowHeader.asm";
 
 	static final int MAX_NAME_LENGTH = 16;
 	private static final int TAP_HEADER_SIZE = 20;

@@ -136,7 +136,7 @@ public final class SidIdV2 extends SidIdBase {
 	/**
 	 * Package of the internal configuration file.
 	 */
-	private static final String SID_ID_PKG = "libsidutils/";
+	private static final String SID_ID_PKG = "libsidutils/sidid/";
 
 	/**
 	 * Name of the configuration file.
