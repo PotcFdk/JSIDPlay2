@@ -173,17 +173,15 @@ public final class PLA {
 		}
 
 		/** Plug-in SID chip implementation of a specific SID chip number. */
-		public void plugInSID(final int chipNum, final SIDEmu sidEmu) {
+		public void plugInSID(final int chipNum, final SIDEmu sidEmu, final int address) {
 			sidemu[chipNum] = sidEmu;
-			int address = sidEmu.getBaseAddress();
 			sidmapper[address >> 5 & MAPPER_SIZE - 1] = chipNum;
 			sidBankUsed[address >> 8 & 0xf] |= 1 << chipNum;
 		}
 
 		/** Un-plug SID chip implementation of a specific SID chip number. */
-		public void unplugSID(final int chipNum, final SIDEmu sidEmu) {
+		public void unplugSID(final int chipNum, final SIDEmu sidEmu, final int address) {
 			sidemu[chipNum] = SIDEmu.NONE;
-			int address = sidEmu.getBaseAddress();
 			sidmapper[address >> 5 & MAPPER_SIZE - 1] = 0;
 			sidBankUsed[address >> 8 & 0xf] &= ~(1 << chipNum);
 		}

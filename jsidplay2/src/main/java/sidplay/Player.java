@@ -27,6 +27,7 @@ import java.util.Properties;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -49,7 +50,6 @@ import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
-import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.siddatabase.SidDatabase;
@@ -61,6 +61,7 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.MP3Driver;
+import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.ini.IniConfig;
 import sidplay.player.PlayList;
 import sidplay.player.State;
@@ -153,26 +154,26 @@ public class Player extends HardwareEnsemble {
 	 * Create a base name of a filename to be used for recording.
 	 */
 	private Function<SidTune, String> recordingFilenameProvider = tune -> "jsidplay2";
-
 	/**
 	 * Insert required SIDs. use SID builder to create/destroy SIDs.
 	 */
-	private final BiFunction<Integer, SIDEmu, SIDEmu> requiredSIDs = (sidNum, sidEmu) -> {
-		final IEmulationSection emulation = config.getEmulationSection();
-		if (SidTune.isSIDUsed(emulation, tune, sidNum)) {
-			sidEmu = sidBuilder.lock(sidEmu, sidNum, tune);
-			sidEmu.setBaseAddress(SidTune.getSIDAddress(emulation, tune, sidNum));
-			return sidEmu;
+	private BiFunction<Integer, SIDEmu, SIDEmu> requiredSIDs = (sidNum, sidEmu) -> {
+		if (SidTune.isSIDUsed(config.getEmulationSection(), tune, sidNum)) {
+			return sidBuilder.lock(sidEmu, sidNum, tune);
 		} else if (sidEmu != SIDEmu.NONE) {
 			sidBuilder.unlock(sidEmu);
 		}
 		return SIDEmu.NONE;
 	};
-
 	/**
 	 * Eject all SIDs.
 	 */
 	private BiFunction<Integer, SIDEmu, SIDEmu> noSIDs = (sidNum, sidEmu) -> SIDEmu.NONE;
+	/**
+	 * Set base address of required SIDs.
+	 */
+	private IntFunction<Integer> sidLocator = sidNum -> SidTune.getSIDAddress(config.getEmulationSection(), tune,
+			sidNum);
 
 	/**
 	 * Create a Music Player.
@@ -191,7 +192,7 @@ public class Player extends HardwareEnsemble {
 
 			@Override
 			public void start() {
-				c64.insertSIDChips(requiredSIDs);
+				c64.insertSIDChips(requiredSIDs, sidLocator);
 				configureMixer(mixer -> mixer.start());
 			}
 
@@ -282,7 +283,7 @@ public class Player extends HardwareEnsemble {
 	 * Call to update SID chips each time SID configuration has been changed.
 	 */
 	public void updateSIDChipConfiguration() {
-		c64.insertSIDChips(requiredSIDs);
+		c64.insertSIDChips(requiredSIDs, sidLocator);
 	}
 
 	/**
@@ -552,7 +553,7 @@ public class Player extends HardwareEnsemble {
 	 * Close player.
 	 */
 	private void close() {
-		c64.insertSIDChips(noSIDs);
+		c64.insertSIDChips(noSIDs, sidLocator);
 		audioDriver.close();
 	}
 

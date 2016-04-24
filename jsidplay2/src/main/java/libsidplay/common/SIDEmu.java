@@ -48,21 +48,11 @@ public abstract class SIDEmu {
 
 	/** SID chip number (0..MAX_SIDS-1) */
 	private int sidNum;
-	/** SID chip base address */
-	private int baseAddress = DEF_BASE_ADDRESS;
 	/** SID chip listener */
 	private SIDListener listener;
 	
 	public SIDEmu(EventScheduler context) {
 		this.context = context;
-	}
-
-	public int getBaseAddress() {
-		return baseAddress;
-	}
-	
-	public void setBaseAddress(int baseAddress) {
-		this.baseAddress = baseAddress;
 	}
 
 	public void setListener(int sidNum, SIDListener listener) {
