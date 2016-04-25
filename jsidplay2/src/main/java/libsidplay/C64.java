@@ -394,13 +394,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 				parallelCable.pulse();
 				C64.this.printerUserportWriteData(regs[PRB]);
 			}
-
-			@Override
-			public void reset() {
-				super.reset();
-				C64.this.printerUserportWriteStrobe(true);
-				C64.this.printerUserportWriteData((byte) 0xff);
-			}
 		};
 		pla.setCia2(cia2);
 
