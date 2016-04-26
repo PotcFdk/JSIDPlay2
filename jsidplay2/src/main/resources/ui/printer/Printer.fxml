@@ -7,17 +7,15 @@
 <?import javafx.scene.control.Button?>
 <?scenebuilder-preview-i18n-resource Printer.properties?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-	AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
-	AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
-	<BorderPane>
+<AnchorPane xmlns:fx="http://javafx.com/fxml">
+	<BorderPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+				AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 		<top>
 			<Button text="%CLEAR_PAPER" onAction="#clearPaper" />
 		</top>
 		<bottom>
-			<ScrollPane prefWidth="480" prefHeight="600">
-				<Canvas fx:id="paper" cache="true" cacheHint="SPEED" width="480"
-					height="600" />
+			<ScrollPane fx:id="scroll" prefWidth="480" prefHeight="600">
+				<Canvas fx:id="paper" width="480" height="600" />
 			</ScrollPane>
 		</bottom>
 	</BorderPane>

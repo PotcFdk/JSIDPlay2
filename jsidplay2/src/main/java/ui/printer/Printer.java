@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
 import libsidplay.components.printer.IPaper;
@@ -20,6 +21,8 @@ public class Printer extends Tab implements UIPart, IPaper {
 
 	public static final String ID = "PRINTER";
 
+	@FXML
+	private ScrollPane scroll;
 	@FXML
 	protected Canvas paper;
 
@@ -37,8 +40,6 @@ public class Printer extends Tab implements UIPart, IPaper {
 
 	@FXML
 	private void initialize() {
-		// paper.setScaleX(2);
-		// paper.setScaleY(2);
 		paper.setWidth(MPS803.MAX_WIDTH);
 		util.getPlayer().getPrinter().setPaper(this);
 	}
@@ -61,17 +62,20 @@ public class Printer extends Tab implements UIPart, IPaper {
 			final boolean[] toPrint = Arrays.copyOf(currentPixelRow, MPS803.MAX_WIDTH);
 			Arrays.fill(currentPixelRow, false);
 			x = 0;
-			final int paperY = y;
+			int paperY = y;
 			y++;
-			if (paperY < paper.getHeight()) {
-				Platform.runLater(() -> {
-					GraphicsContext g = paper.getGraphicsContext2D();
-					for (int paperX = 0; paperX < toPrint.length; paperX++) {
-						g.setStroke(toPrint[paperX] ? Color.BLACK : Color.WHITE);
-						g.strokeLine(paperX, paperY, paperX, paperY);
-					}
-				});
-			}
+			Platform.runLater(() -> {
+				GraphicsContext g = paper.getGraphicsContext2D();
+				if (paperY >= paper.getHeight()) {
+					paper.setTranslateY(paperY-paper.getHeight());
+					paper.setHeight(paperY);
+					scroll.setVvalue(1.0); 
+				}
+				for (int paperX = 0; paperX < toPrint.length; paperX++) {
+					g.setStroke(toPrint[paperX] ? Color.BLACK : Color.WHITE);
+					g.strokeLine(paperX, paperY, paperX, paperY);
+				}
+			});
 			break;
 		case OUTPUT_PIXEL_BLACK:
 			// black pixel
