@@ -67,6 +67,7 @@ public class Printer extends Tab implements UIPart, IPaper {
 			Platform.runLater(() -> {
 				GraphicsContext g = paper.getGraphicsContext2D();
 				if (paperY >= paper.getHeight()) {
+					// endless paper scroll
 					paper.setTranslateY(paperY-paper.getHeight());
 					paper.setHeight(paperY);
 					scroll.setVvalue(1.0); 
@@ -78,15 +79,11 @@ public class Printer extends Tab implements UIPart, IPaper {
 			});
 			break;
 		case OUTPUT_PIXEL_BLACK:
-			// black pixel
-			if (x < MPS803.MAX_WIDTH)
-				currentPixelRow[x] = true;
-			x++;
-			break;
+		case OUTPUT_PIXEL_WHITE:
 		default:
-			// white pixel
+			// black/white pixel
 			if (x < MPS803.MAX_WIDTH)
-				currentPixelRow[x] = false;
+				currentPixelRow[x] = out == Outputs.OUTPUT_PIXEL_BLACK;
 			x++;
 			break;
 		}
