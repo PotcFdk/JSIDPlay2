@@ -768,7 +768,8 @@ public class MusicCollection extends Tab implements UIPart {
 		hvscName = PathUtils.getCollectionName(hvscFile, tuneFile);
 		if (hvscName != null) {
 			hvscName = hvscName.replace(".sid", "");
-			currentSong = tuneInfo.getCurrentSong();
+			int current = tuneInfo.getCurrentSong();
+			currentSong = current == 0 || tuneInfo.getCurrentSong() > tuneInfo.getSongs() ? tuneInfo.getStartSong() : current;
 			soasc6581R2.setDisable(false);
 			soasc6581R4.setDisable(false);
 			soasc8580R5.setDisable(false);
