@@ -16,7 +16,9 @@ import ui.common.UIPart;
 import ui.common.UIUtil;
 
 public class ConsoleOutput extends VBox implements UIPart {
-
+	
+	private StringBuilder output = new StringBuilder();
+	
 	@FXML
 	protected TextArea console;
 	@FXML
@@ -32,6 +34,7 @@ public class ConsoleOutput extends VBox implements UIPart {
 	@FXML
 	private void clearConsole() {
 		console.clear();
+		output.setLength(0);
 	}
 
 	public PrintStream getPrintStream(final OutputStream original) {
@@ -49,7 +52,13 @@ public class ConsoleOutput extends VBox implements UIPart {
 			}
 
 			private void print(String str) {
-				Platform.runLater(() -> console.appendText(str));
+				output.append(str);
+				if (str.indexOf('\n') != -1) {
+					Platform.runLater(() -> {
+						console.setText(output.toString());
+						console.setScrollTop(Double.MAX_VALUE);
+					});
+				}
 			}
 
 		});

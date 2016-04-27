@@ -385,6 +385,10 @@ public final class C1541 {
 		powerOn = on;
 	}
 
+	public boolean isPowerOn() {
+		return powerOn;
+	}
+	
 	/**
 	 * Set the actual type of floppy to be used (change ROM).
 	 * 

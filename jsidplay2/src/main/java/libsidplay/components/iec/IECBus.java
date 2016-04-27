@@ -124,11 +124,16 @@ public class IECBus {
 
 		if (((oldCpuBus ^ cpuBus) & 0x10) != 0) {
 			for (final C1541 drive : drives) {
-				drive.getBusController().signal(VIACore.VIA_SIG_CA1, (cpuBus & 0x10) != 0 ? 0 : VIACore.VIA_SIG_RISE);
+				if (drive.isPowerOn()) {
+					drive.getBusController().signal(VIACore.VIA_SIG_CA1,
+							(cpuBus & 0x10) != 0 ? 0 : VIACore.VIA_SIG_RISE);
+				}
 			}
 		}
 		for (final C1541 drive : drives) {
-			setDriveBus(drive.getID());
+			if (drive.isPowerOn()) {
+				setDriveBus(drive.getID());
+			}
 		}
 		updatePorts();
 	}

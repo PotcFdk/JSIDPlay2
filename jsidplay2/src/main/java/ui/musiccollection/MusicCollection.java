@@ -164,7 +164,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private SearchCriteria<?, ?> recentlySearchedCriteria;
 	private boolean searchOptionsChanged;
 	private String hvscName;
-	private int currentSong;
+	private int selectedSong;
 
 	private FavoritesSection favoritesToAddSearchResult;
 
@@ -351,19 +351,19 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private void startDownload6581R2() {
 		final String url = util.getConfig().getOnlineSection().getSoasc6581R2();
-		downloadStart(MessageFormat.format(url, hvscName, currentSong).trim());
+		downloadStart(MessageFormat.format(url, hvscName, selectedSong).trim());
 	}
 
 	@FXML
 	private void startDownload6581R4() {
 		final String url = util.getConfig().getOnlineSection().getSoasc6581R4();
-		downloadStart(MessageFormat.format(url, hvscName, currentSong).trim());
+		downloadStart(MessageFormat.format(url, hvscName, selectedSong).trim());
 	}
 
 	@FXML
 	private void startDownload8580R5() {
 		final String url = util.getConfig().getOnlineSection().getSoasc8580R5();
-		downloadStart(MessageFormat.format(url, hvscName, currentSong).trim());
+		downloadStart(MessageFormat.format(url, hvscName, selectedSong).trim());
 	}
 
 	@FXML
@@ -768,8 +768,7 @@ public class MusicCollection extends Tab implements UIPart {
 		hvscName = PathUtils.getCollectionName(hvscFile, tuneFile);
 		if (hvscName != null) {
 			hvscName = hvscName.replace(".sid", "");
-			int current = tuneInfo.getCurrentSong();
-			currentSong = current == 0 || tuneInfo.getCurrentSong() > tuneInfo.getSongs() ? tuneInfo.getStartSong() : current;
+			selectedSong = tuneInfo.getSelectedSong();
 			soasc6581R2.setDisable(false);
 			soasc6581R4.setDisable(false);
 			soasc8580R5.setDisable(false);

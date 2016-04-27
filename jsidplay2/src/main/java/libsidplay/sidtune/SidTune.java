@@ -198,23 +198,6 @@ public abstract class SidTune {
 	}
 
 	/**
-	 * Select sub-song number (null = default starting song).
-	 * 
-	 * @param song
-	 *            The chosen song.
-	 */
-	public final void setSelectedSong(final Integer song) {
-		info.currentSong = song == null || song > info.songs ? info.startSong : song;
-	}
-
-	/**
-	 * @return The active sub-song number
-	 */
-	public int getSelectedSong() {
-		return info.currentSong == 0 || info.currentSong > info.songs ? info.startSong : info.currentSong;
-	}
-
-	/**
 	 * Retrieve sub-song specific information. Beware! Still member-wise copy!
 	 * 
 	 * @return Sub-song specific information about the currently loaded tune.
@@ -251,36 +234,6 @@ public abstract class SidTune {
 			len += count;
 		}
 		return Arrays.copyOf(fileBuf, len);
-	}
-
-	/**
-	 * Temporary hack till real bank switching code added
-	 * 
-	 * @param addr
-	 *            A 16-bit effective address
-	 * @return A default bank-select value for $01.
-	 */
-	public int iomap(final int addr) {
-		switch (info.compatibility) {
-		case RSIDv2:
-		case RSIDv3:
-		case RSID_BASIC:
-			return 0; // Special case, converted to 0x37 later
-		default:
-			if (addr == 0) {
-				return 0; // Special case, converted to 0x37 later
-			}
-			if (addr < 0xa000) {
-				return 0x37; // Basic-ROM, Kernal-ROM, I/O
-			}
-			if (addr < 0xd000) {
-				return 0x36; // Kernal-ROM, I/O
-			}
-			if (addr >= 0xe000) {
-				return 0x35; // I/O only
-			}
-			return 0x34; // RAM only (special I/O in PlaySID mode)
-		}
 	}
 
 	/**

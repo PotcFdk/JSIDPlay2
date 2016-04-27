@@ -12,6 +12,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
 import libsidplay.components.printer.IPaper;
 import libsidplay.components.printer.mps803.MPS803;
+import libsidplay.components.printer.paper.ConsolePaper;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -44,6 +45,12 @@ public class Printer extends Tab implements UIPart, IPaper {
 		util.getPlayer().getPrinter().setPaper(this);
 	}
 
+	@Override
+	public void doClose() {
+		// set default paper
+		util.getPlayer().getPrinter().setPaper(new ConsolePaper());
+	}
+	
 	@FXML
 	private void clearPaper() {
 		paper.getGraphicsContext2D().clearRect(0, 0, paper.getWidth(), paper.getHeight());

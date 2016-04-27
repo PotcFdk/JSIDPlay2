@@ -37,8 +37,8 @@ public class HVSCEntry {
 		this.name = tuneFile.getName();
 		this.path = path.length() > 0 ? path : tuneFile.getPath();
 		if (tune != null) {
-			tune.setSelectedSong(1);
 			SidTuneInfo info = tune.getInfo();
+			info.setSelectedSong(1);
 			Iterator<String> descriptionIt = info.getInfoString().iterator();
 			if (descriptionIt.hasNext()) {
 				this.title = descriptionIt.next();

@@ -294,8 +294,8 @@ public class Psid64 {
 		globals.put("playAddr", String.valueOf(tuneInfo.getPlayAddr()));
 		globals.put("songs", String.valueOf(tuneInfo.getSongs()));
 		globals.put("speed", String.valueOf(tune.getSongSpeedWord()));
-		globals.put("initIOMap", String.valueOf(tune.iomap(tuneInfo.getInitAddr())));
-		globals.put("playIOMap", String.valueOf(tune.iomap(tuneInfo.getPlayAddr())));
+		globals.put("initIOMap", String.valueOf(tuneInfo.iomap(tuneInfo.getInitAddr())));
+		globals.put("playIOMap", String.valueOf(tuneInfo.iomap(tuneInfo.getPlayAddr())));
 		globals.put("stilPage", String.valueOf(stil));
 		String resource;
 		if (freePages.getScreenPage() == null) {
@@ -539,7 +539,7 @@ public class Psid64 {
 	private void convertToPSID64(Player player, File file, File target, File hvscRoot)
 			throws IOException, SidTuneError {
 		tune = SidTune.load(file);
-		tune.setSelectedSong(null);
+		tune.getInfo().setSelectedSong(null);
 		String collectionName = PathUtils.getCollectionName(hvscRoot, file);
 		stilEntry = player.getStilEntry(collectionName);
 

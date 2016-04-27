@@ -79,7 +79,7 @@ public class SIDPlay extends Applet {
 			return;
 		}
 		SidTune tune = getTune(urlName);
-		tune.setSelectedSong(songNum != -1 ? songNum : null);
+		tune.getInfo().setSelectedSong(songNum != -1 ? songNum : null);
 		player.play(tune);
 	}
 

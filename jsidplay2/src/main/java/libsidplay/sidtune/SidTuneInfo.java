@@ -205,4 +205,51 @@ public class SidTuneInfo {
 		return determinedDriverLength;
 	}
 
+	/**
+	 * Temporary hack till real bank switching code added
+	 * 
+	 * @param addr
+	 *            A 16-bit effective address
+	 * @return A default bank-select value for $01.
+	 */
+	public int iomap(final int addr) {
+		switch (compatibility) {
+		case RSIDv2:
+		case RSIDv3:
+		case RSID_BASIC:
+			return 0; // Special case, converted to 0x37 later
+		default:
+			if (addr == 0) {
+				return 0; // Special case, converted to 0x37 later
+			}
+			if (addr < 0xa000) {
+				return 0x37; // Basic-ROM, Kernal-ROM, I/O
+			}
+			if (addr < 0xd000) {
+				return 0x36; // Kernal-ROM, I/O
+			}
+			if (addr >= 0xe000) {
+				return 0x35; // I/O only
+			}
+			return 0x34; // RAM only (special I/O in PlaySID mode)
+		}
+	}
+
+	/**
+	 * Select sub-song number (null = default starting song).
+	 * 
+	 * @param song
+	 *            The chosen song.
+	 */
+	public final void setSelectedSong(final Integer song) {
+		currentSong = song == null || song > songs ? startSong : song;
+	}
+
+	/**
+	 * @return The active sub-song number
+	 */
+	public int getSelectedSong() {
+		return currentSong == 0 || currentSong > songs ? startSong : currentSong;
+	}
+
 }

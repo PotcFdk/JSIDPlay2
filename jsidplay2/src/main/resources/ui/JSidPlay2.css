@@ -53,10 +53,12 @@
 
 .errorConsole {
 	-fx-text-fill: red;
+	-fx-font-family: monospace;
 }
 
 .outputConsole {
 	-fx-text-fill: black;
+	-fx-font-family: monospace;
 }
 
 #status {

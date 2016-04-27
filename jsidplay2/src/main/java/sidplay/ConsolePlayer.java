@@ -168,7 +168,7 @@ final public class ConsolePlayer {
 
 			String filename = filenames.get(0);
 			final SidTune tune = SidTune.load(new File(filename));
-			tune.setSelectedSong(song);
+			tune.getInfo().setSelectedSong(song);
 			final Player player = new Player(config, cpuDebug ? MOS6510Debug.class : MOS6510.class);
 			player.setTune(tune);
 			player.getTimer().setStart(startTime);

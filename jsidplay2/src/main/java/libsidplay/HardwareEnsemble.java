@@ -169,6 +169,7 @@ public class HardwareEnsemble {
 		this.floppies = new C1541[] { c1541 };
 		this.serialDevices = new SerialIECDevice[] { printer };
 
+		this.iecBus.setFloppies(floppies);
 		this.iecBus.setSerialDevices(serialDevices);
 		this.c1541Runner = new SameThreadC1541Runner(c64.getEventScheduler(), c1541.getEventScheduler());
 	}
@@ -284,10 +285,8 @@ public class HardwareEnsemble {
 			@Override
 			public void event() {
 				if (on) {
-					iecBus.setFloppies(floppies);
 					c1541Runner.reset();
 				} else {
-					iecBus.setFloppies(new C1541[0]);
 					c1541Runner.cancel();
 				}
 				for (C1541 floppy : floppies) {

@@ -260,8 +260,8 @@ class PSid extends Prg {
 		globals.put("initAddr", String.valueOf(info.initAddr));
 		globals.put("playAddr", String.valueOf(info.playAddr));
 		globals.put("powerOnDelay", String.valueOf((int) (0x100 + (System.currentTimeMillis() & 0x1ff))));
-		globals.put("initIOMap", String.valueOf(iomap(info.initAddr)));
-		globals.put("playIOMap", String.valueOf(iomap(info.playAddr)));
+		globals.put("initIOMap", String.valueOf(info.iomap(info.initAddr)));
+		globals.put("playIOMap", String.valueOf(info.iomap(info.playAddr)));
 		globals.put("videoMode", String.valueOf(info.clockSpeed == Clock.PAL ? 1 : 0));
 		globals.put("flags",
 				String.valueOf(info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3

@@ -42,7 +42,7 @@ public class PlayList {
 	private PlayList(final IConfig config, final SidTune tune) {
 		this.config = config;
 		this.tune = tune;
-		this.current = tune.getSelectedSong();
+		this.current = tune.getInfo().getSelectedSong();
 		this.length = tune.getInfo().getSongs();
 		this.first = current;
 	}
@@ -57,7 +57,7 @@ public class PlayList {
 		if (singleton.tune != tune) {
 			singleton = new PlayList(config, tune);
 		}
-		singleton.tune.setSelectedSong(singleton.current);
+		singleton.tune.getInfo().setSelectedSong(singleton.current);
 		return singleton;
 	}
 
