@@ -131,7 +131,7 @@ class Mus extends PSid {
 				info.commentString.add(getCredits(strBuf, voice3DataEnd));
 			}
 
-			info.setSIDChipBase(1, DUAL_SID_BASE);
+			info.sidChipBase[1] = DUAL_SID_BASE;
 		}
 
 		info.loadAddr = MUS_DATA_ADDR;

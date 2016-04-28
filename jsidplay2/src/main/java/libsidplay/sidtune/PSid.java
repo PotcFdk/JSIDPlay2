@@ -467,7 +467,7 @@ class PSid extends Prg {
 				/* Handle 2nd SID chip location */
 				int sid2loc = 0xd000 | (header.sidChip2MiddleNybbles & 0xff) << 4;
 				if (((sid2loc >= 0xd420 && sid2loc < 0xd800) || sid2loc >= 0xde00) && (sid2loc & 0x10) == 0) {
-					psid.info.setSIDChipBase(1, sid2loc);
+					psid.info.sidChipBase[1] = sid2loc;
 					if (model2 == 0) {
 						// If Unknown then SID will be same SID as the first SID
 						model2 = model1;
@@ -479,7 +479,7 @@ class PSid extends Prg {
 				/* Handle 3rd SID chip location */
 				int sid3loc = 0xd000 | (header.sidChip3MiddleNybbles & 0xff) << 4;
 				if (((sid3loc >= 0xd420 && sid3loc < 0xd800) || sid3loc >= 0xde00) && (sid3loc & 0x10) == 0) {
-					psid.info.setSIDChipBase(2, sid3loc);
+					psid.info.sidChipBase[2] = sid3loc;
 					if (model3 == 0) {
 						// If Unknown then SID will be same SID as the first SID
 						model3 = model1;
@@ -488,9 +488,9 @@ class PSid extends Prg {
 			}
 		}
 		psid.info.clockSpeed = Clock.values()[clock];
-		psid.info.setSIDModel(0, Model.values()[model1]);
-		psid.info.setSIDModel(1, Model.values()[model2]);
-		psid.info.setSIDModel(2, Model.values()[model3]);
+		psid.info.sidModel[0] = Model.values()[model1];
+		psid.info.sidModel[1] = Model.values()[model2];
+		psid.info.sidModel[2] = Model.values()[model3];
 
 		// Create the speed/clock setting table.
 		psid.convertOldStyleSpeedToTables(speed);

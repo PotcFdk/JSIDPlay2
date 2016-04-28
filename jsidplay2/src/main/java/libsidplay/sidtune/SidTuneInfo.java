@@ -62,11 +62,6 @@ public class SidTuneInfo {
 	protected Model[] sidModel = new Model[PLA.MAX_SIDS];
 
 	/**
-	 * intended speed, see top
-	 */
-	protected Clock clockSpeed = Clock.UNKNOWN;
-
-	/**
 	 * First available page for relocation
 	 */
 	protected short relocStartPage;
@@ -76,6 +71,11 @@ public class SidTuneInfo {
 	 */
 	protected short relocPages;
 
+	/**
+	 * intended speed, see top
+	 */
+	protected Clock clockSpeed = Clock.UNKNOWN;
+	
 	/**
 	 * compatibility requirements
 	 */
@@ -141,16 +141,8 @@ public class SidTuneInfo {
 		return sidChipBase[sidNum];
 	}
 
-	public void setSIDChipBase(int sidNum, int base) {
-		this.sidChipBase[sidNum] = base;
-	}
-
 	public final Model getSIDModel(int sidNum) {
 		return sidModel[sidNum];
-	}
-
-	public void setSIDModel(int sidNum, Model model) {
-		this.sidModel[sidNum] = model;
 	}
 
 	public final int getCurrentSong() {
