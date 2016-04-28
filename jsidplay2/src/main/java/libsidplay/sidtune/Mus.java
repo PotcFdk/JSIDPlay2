@@ -131,7 +131,7 @@ class Mus extends PSid {
 				info.commentString.add(getCredits(strBuf, voice3DataEnd));
 			}
 
-			info.sidChipBase2 = DUAL_SID_BASE;
+			info.setSIDChipBase(1, DUAL_SID_BASE);
 		}
 
 		info.loadAddr = MUS_DATA_ADDR;
@@ -202,7 +202,7 @@ class Mus extends PSid {
 			checkLabels(MUSDRIVER1_ASM, data_low, data_high, init, start);
 			installMusPlayer(c64buf, MUS_DATA_ADDR, driver, data_low, data_high);
 		}
-		if (info.sidChipBase2 != 0) {
+		if (info.getSIDChipBase(1) != 0) {
 			// Assemble MUS player 2
 			HashMap<String, String> globals = new HashMap<String, String>();
 			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER2_ASM);
@@ -214,13 +214,9 @@ class Mus extends PSid {
 			start = assembler.getLabels().get("start");
 			checkLabels(MUSDRIVER2_ASM, data_low, data_high, init, start);
 			installMusPlayer(c64buf, MUS_DATA_ADDR + musDataLen, driver, data_low, data_high);
-
-			info.initAddr = init;
-			info.playAddr = start;
-		} else {
-			info.initAddr = init;
-			info.playAddr = start;
 		}
+		info.initAddr = init;
+		info.playAddr = start;
 	}
 
 	private void checkLabels(final String asmSource, final Integer data_low, final Integer data_high,

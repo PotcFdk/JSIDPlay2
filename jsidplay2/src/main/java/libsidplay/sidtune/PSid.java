@@ -467,7 +467,7 @@ class PSid extends Prg {
 				/* Handle 2nd SID chip location */
 				int sid2loc = 0xd000 | (header.sidChip2MiddleNybbles & 0xff) << 4;
 				if (((sid2loc >= 0xd420 && sid2loc < 0xd800) || sid2loc >= 0xde00) && (sid2loc & 0x10) == 0) {
-					psid.info.sidChipBase2 = sid2loc;
+					psid.info.setSIDChipBase(1, sid2loc);
 					if (model2 == 0) {
 						// If Unknown then SID will be same SID as the first SID
 						model2 = model1;
@@ -479,7 +479,7 @@ class PSid extends Prg {
 				/* Handle 3rd SID chip location */
 				int sid3loc = 0xd000 | (header.sidChip3MiddleNybbles & 0xff) << 4;
 				if (((sid3loc >= 0xd420 && sid3loc < 0xd800) || sid3loc >= 0xde00) && (sid3loc & 0x10) == 0) {
-					psid.info.sidChipBase3 = sid3loc;
+					psid.info.setSIDChipBase(2, sid3loc);
 					if (model3 == 0) {
 						// If Unknown then SID will be same SID as the first SID
 						model3 = model1;
@@ -487,10 +487,10 @@ class PSid extends Prg {
 				}
 			}
 		}
-		psid.info.clockSpeed = SidTune.Clock.values()[clock];
-		psid.info.sid1Model = SidTune.Model.values()[model1];
-		psid.info.sid2Model = SidTune.Model.values()[model2];
-		psid.info.sid3Model = SidTune.Model.values()[model3];
+		psid.info.clockSpeed = Clock.values()[clock];
+		psid.info.setSIDModel(0, Model.values()[model1]);
+		psid.info.setSIDModel(1, Model.values()[model2]);
+		psid.info.setSIDModel(2, Model.values()[model3]);
 
 		// Create the speed/clock setting table.
 		psid.convertOldStyleSpeedToTables(speed);
@@ -527,7 +527,7 @@ class PSid extends Prg {
 	public int getSongSpeedWord() {
 		int speed = 0;
 		for (int i = 0; i < 32; ++i) {
-			if (songSpeed[i] != SidTune.Speed.VBI) {
+			if (songSpeed[i] != Speed.VBI) {
 				speed |= 1 << i;
 			}
 		}
@@ -544,9 +544,9 @@ class PSid extends Prg {
 		try (FileOutputStream fos = new FileOutputStream(name)) {
 			final PHeader header = new PHeader();
 			header.id = "PSID".getBytes(Charset.forName("ISO-8859-1"));
-			if (info.sidChipBase3 != 0) {
+			if (info.getSIDChipBase(2) != 0) {
 				header.version = 4;
-			} else if (info.sidChipBase2 != 0) {
+			} else if (info.getSIDChipBase(1) != 0) {
 				header.version = 3;
 			} else {
 				header.version = 2;
@@ -604,9 +604,9 @@ class PSid extends Prg {
 			}
 
 			tmpFlags |= info.clockSpeed.ordinal() << 2;
-			tmpFlags |= info.sid1Model.ordinal() << 4;
-			tmpFlags |= info.sid2Model.ordinal() << 6;
-			tmpFlags |= info.sid3Model.ordinal() << 8;
+			tmpFlags |= info.getSIDModel(0).ordinal() << 4;
+			tmpFlags |= info.getSIDModel(1).ordinal() << 6;
+			tmpFlags |= info.getSIDModel(2).ordinal() << 8;
 			header.flags = tmpFlags;
 
 			fos.write(header.getArray());
@@ -629,7 +629,7 @@ class PSid extends Prg {
 	public String getMD5Digest() {
 		// Include C64 data.
 		final byte[] myMD5 = new byte[info.c64dataLen + 6 + info.songs
-				+ (info.clockSpeed == SidTune.Clock.NTSC ? 1 : 0)];
+				+ (info.clockSpeed == Clock.NTSC ? 1 : 0)];
 		System.arraycopy(program, programOffset, myMD5, 0, info.c64dataLen);
 		int i = info.c64dataLen;
 		myMD5[i++] = (byte) (info.initAddr & 0xff);
@@ -645,7 +645,7 @@ class PSid extends Prg {
 		// clock speed change the MD5 fingerprint. That way the
 		// fingerprint of a PAL-speed sidtune in PSID v1, v2, and
 		// PSID v2NG format is the same.
-		if (info.clockSpeed == SidTune.Clock.NTSC) {
+		if (info.clockSpeed == Clock.NTSC) {
 			myMD5[i++] = (byte) info.clockSpeed.ordinal();
 			// NB! If the fingerprint is used as an index into a
 			// song-lengths database or cache, modify above code to

@@ -18,6 +18,7 @@ package libsidplay.sidtune;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import libsidplay.components.pla.PLA;
 import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
@@ -30,37 +31,35 @@ import libsidplay.sidtune.SidTune.Model;
  * 
  */
 public class SidTuneInfo {
-	protected int loadAddr;
-
-	protected int initAddr;
-
-	protected int playAddr;
-
-	protected int songs = 1;
-
-	protected int startSong = 1;
-
 	/**
-	 * The SID chip base address used by the sidtune.
+	 * Load/Init and Play address.
 	 */
-	protected int sidChipBase1 = 0xd400;
+	protected int loadAddr, initAddr, playAddr;
 
 	/**
-	 * The SID chip base address used by the sidtune.
-	 * 
-	 * 0xD??0 (2nd SID) or 0 (no 2nd SID)
+	 * Total number of songs contained in a tune.
 	 */
-	protected int sidChipBase2;
-	protected int sidChipBase3;
-
-	//
-	// Available after song initialization.
-	//
+	protected int songs;
+	
+	/**
+	 * Start song number.
+	 */
+	protected int startSong;
 
 	/**
-	 * the one that has been initialized
+	 * The one song that has been initialized
 	 */
 	protected int currentSong;
+
+	/**
+	 * The SID chip base address for each SID.
+	 */
+	protected int[] sidChipBase = new int[PLA.MAX_SIDS];
+
+	/**
+	 * SID Model for each SID.
+	 */
+	protected Model[] sidModel = new Model[PLA.MAX_SIDS];
 
 	/**
 	 * intended speed, see top
@@ -76,17 +75,6 @@ public class SidTuneInfo {
 	 * Number of pages available for relocation
 	 */
 	protected short relocPages;
-
-	/**
-	 * Sid Model required for this sid
-	 */
-	protected Model sid1Model = Model.UNKNOWN;
-
-	/**
-	 * Sid Model required for this sid
-	 */
-	protected Model sid2Model = Model.UNKNOWN;
-	protected Model sid3Model = Model.UNKNOWN;
 
 	/**
 	 * compatibility requirements
@@ -120,6 +108,15 @@ public class SidTuneInfo {
 	 */
 	protected int determinedDriverLength;
 
+	public SidTuneInfo() {
+		this.songs = 1;
+		this.startSong = 1;
+		this.sidChipBase[0] = 0xd400;
+		for (int i = 0; i < sidModel.length; i++) {
+			this.sidModel[i] = Model.UNKNOWN;
+		}
+	}
+
 	public final int getLoadAddr() {
 		return loadAddr;
 	}
@@ -140,17 +137,20 @@ public class SidTuneInfo {
 		return startSong;
 	}
 
-	public final int getSidChipBase(int sidNum) {
-		switch (sidNum) {
-		case 0:
-			return sidChipBase1;
-		case 1:
-			return sidChipBase2;
-		case 2:
-			return sidChipBase3;
-		default:
-			throw new RuntimeException("Maximum supported SIDS exceeded!");
-		}
+	public final int getSIDChipBase(int sidNum) {
+		return sidChipBase[sidNum];
+	}
+
+	public void setSIDChipBase(int sidNum, int base) {
+		this.sidChipBase[sidNum] = base;
+	}
+
+	public final Model getSIDModel(int sidNum) {
+		return sidModel[sidNum];
+	}
+
+	public void setSIDModel(int sidNum, Model model) {
+		this.sidModel[sidNum] = model;
 	}
 
 	public final int getCurrentSong() {
@@ -167,18 +167,6 @@ public class SidTuneInfo {
 
 	public final short getRelocPages() {
 		return relocPages;
-	}
-
-	public final Model getSid1Model() {
-		return sid1Model;
-	}
-
-	public final Model getSid2Model() {
-		return sid2Model;
-	}
-
-	public final Model getSid3Model() {
-		return sid3Model;
 	}
 
 	public final Compatibility getCompatibility() {
@@ -203,6 +191,23 @@ public class SidTuneInfo {
 
 	public final int getDeterminedDriverLength() {
 		return determinedDriverLength;
+	}
+
+	/**
+	 * Select sub-song number (null = default starting song).
+	 * 
+	 * @param song
+	 *            The chosen song.
+	 */
+	public final void setSelectedSong(final Integer song) {
+		currentSong = song == null || song > songs ? startSong : song;
+	}
+
+	/**
+	 * @return The active sub-song number
+	 */
+	public int getSelectedSong() {
+		return currentSong == 0 || currentSong > songs ? startSong : currentSong;
 	}
 
 	/**
@@ -233,23 +238,6 @@ public class SidTuneInfo {
 			}
 			return 0x34; // RAM only (special I/O in PlaySID mode)
 		}
-	}
-
-	/**
-	 * Select sub-song number (null = default starting song).
-	 * 
-	 * @param song
-	 *            The chosen song.
-	 */
-	public final void setSelectedSong(final Integer song) {
-		currentSong = song == null || song > songs ? startSong : song;
-	}
-
-	/**
-	 * @return The active sub-song number
-	 */
-	public int getSelectedSong() {
-		return currentSong == 0 || currentSong > songs ? startSong : currentSong;
 	}
 
 }

@@ -298,12 +298,12 @@ public abstract class SidTune {
 		case 1:
 			forcedStereoTune = emulation.isForceStereoTune();
 			forcedSidBase = emulation.getDualSidBase();
-			tuneChipBase = tune != RESET ? tune.getInfo().getSidChipBase(sidNum) : 0;
+			tuneChipBase = tune != RESET ? tune.getInfo().getSIDChipBase(sidNum) : 0;
 			break;
 		case 2:
 			forcedStereoTune = emulation.isForce3SIDTune();
 			forcedSidBase = emulation.getThirdSIDBase();
-			tuneChipBase = tune != RESET ? tune.getInfo().getSidChipBase(sidNum) : 0;
+			tuneChipBase = tune != RESET ? tune.getInfo().getSIDChipBase(sidNum) : 0;
 			break;
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");

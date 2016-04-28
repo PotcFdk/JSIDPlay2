@@ -29,17 +29,17 @@ public enum ChipModel {
 		switch (sidNum) {
 		case 0:
 			forcedChipModel = emulation.getUserSidModel();
-			tuneSidModel = tune != null ? tune.getInfo().getSid1Model() : null;
+			tuneSidModel = tune != null ? tune.getInfo().getSIDModel(0) : null;
 			defaultSidModel = emulation.getDefaultSidModel();
 			break;
 		case 1:
 			forcedChipModel = emulation.getStereoSidModel();
-			tuneSidModel = tune != null ? tune.getInfo().getSid2Model() : null;
+			tuneSidModel = tune != null ? tune.getInfo().getSIDModel(1) : null;
 			defaultSidModel = getChipModel(emulation, tune, 0);
 			break;
 		case 2:
 			forcedChipModel = emulation.getThirdSIDModel();
-			tuneSidModel = tune != null ? tune.getInfo().getSid3Model() : null;
+			tuneSidModel = tune != null ? tune.getInfo().getSIDModel(2) : null;
 			defaultSidModel = getChipModel(emulation, tune, 0);
 			break;
 		default:

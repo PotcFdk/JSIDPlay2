@@ -80,12 +80,12 @@ public class Screen {
 			hasFlags = addFlag(hasFlags, "PlaySID");
 		}
 		hasFlags = addFlag(hasFlags, tuneInfo.getClockSpeed().toString());
-		hasFlags = addFlag(hasFlags, tuneInfo.getSid1Model().toString());
-		int sid2midNibbles = (tuneInfo.getSidChipBase(1) >> 4) & 0xff;
+		hasFlags = addFlag(hasFlags, tuneInfo.getSIDModel(0).toString());
+		int sid2midNibbles = (tuneInfo.getSIDChipBase(1) >> 4) & 0xff;
 		if (((sid2midNibbles & 1) == 0) && (((0x42 <= sid2midNibbles) && (sid2midNibbles <= 0x7e))
 				|| ((0xe0 <= sid2midNibbles) && (sid2midNibbles <= 0xfe)))) {
 			hasFlags = addFlag(hasFlags,
-					tuneInfo.getSid2Model().toString() + String.format(" at $%04x", tuneInfo.getSidChipBase(1)));
+					tuneInfo.getSIDModel(1).toString() + String.format(" at $%04x", tuneInfo.getSIDChipBase(1)));
 		}
 		if (!hasFlags) {
 			write("-");
