@@ -286,7 +286,7 @@ public class EmulationSettings extends C64Window {
 		ChipModel chipModel = sid1Model.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulationSection().setUserSidModel(chipModel);
 		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
-		updateChipModels();
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -294,7 +294,7 @@ public class EmulationSettings extends C64Window {
 		ChipModel chipModel = sid2Model.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulationSection().setStereoSidModel(chipModel);
 		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
-		updateChipModels();
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -302,7 +302,7 @@ public class EmulationSettings extends C64Window {
 		ChipModel chipModel = sid3Model.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulationSection().setThirdSIDModel(chipModel);
 		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
-		updateChipModels();
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -320,7 +320,7 @@ public class EmulationSettings extends C64Window {
 		Integer dualSidBase = Integer.decode(baseAddress.getText());
 		util.getConfig().getEmulationSection().setDualSidBase(dualSidBase);
 		enableStereoSettings(util.getPlayer().getTune());
-		updateChipModels();
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -328,7 +328,7 @@ public class EmulationSettings extends C64Window {
 		Integer decode = Integer.decode(thirdAddress.getText());
 		util.getConfig().getEmulationSection().setThirdSIDBase(decode);
 		enableStereoSettings(util.getPlayer().getTune());
-		updateChipModels();
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -356,7 +356,8 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulationSection().setForce3SIDTune(false);
 		}
 		enableStereoSettings(util.getPlayer().getTune());
-		updateChipModels();
+		// stereo mode change: plugIn required SID chips
+		updateSIDChipConfiguration();
 		// stereo mode changes has an impact on all filter curves
 		drawFilterCurve(mainFilter, mainFilterCurve);
 		drawFilterCurve(secondFilter, secondFilterCurve);
@@ -380,21 +381,21 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private void setMainFilter() {
 		setFilter(0, mainFilter);
-		updateChipModels();
+		updateSIDChipConfiguration();
 		drawFilterCurve(mainFilter, mainFilterCurve);
 	}
 
 	@FXML
 	private void setSecondFilter() {
 		setFilter(1, secondFilter);
-		updateChipModels();
+		updateSIDChipConfiguration();
 		drawFilterCurve(secondFilter, secondFilterCurve);
 	}
 
 	@FXML
 	private void setThirdFilter() {
 		setFilter(2, thirdFilter);
-		updateChipModels();
+		updateSIDChipConfiguration();
 		drawFilterCurve(thirdFilter, thirdFilterCurve);
 	}
 
@@ -423,7 +424,7 @@ public class EmulationSettings extends C64Window {
 	/**
 	 * Update SID configuration on-the-fly.
 	 */
-	private void updateChipModels() {
+	private void updateSIDChipConfiguration() {
 		if (!duringInitialization) {
 			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(new Event("Update SIDs") {
 				@Override
