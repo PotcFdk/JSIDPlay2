@@ -59,8 +59,6 @@ public class MP3Tune extends SidTune {
 		final MP3Tune mp3 = new MP3Tune();
 
 		mp3.mp3Filename = file.getAbsolutePath();
-		mp3.info.startSong = 1;
-		mp3.info.songs = 1;
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
 			mp3.decoder.read(randomAccessFile);
 			final String title = mp3.decoder.getTitle();

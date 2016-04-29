@@ -135,7 +135,6 @@ class Mus extends PSid {
 		}
 
 		info.loadAddr = MUS_DATA_ADDR;
-		info.songs = info.startSong = 1;
 		info.compatibility = Compatibility.PSIDv2;
 		info.infoString.add(PathUtils.getFilenameWithoutSuffix(musFile.getName()));
 		info.infoString.add("<?>");
