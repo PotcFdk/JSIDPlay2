@@ -51,8 +51,7 @@ public class UIUtil {
 		try (InputStream is = fxml.openStream()) {
 			return fxmlLoader.load(is);
 		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Unparsable View: " + fxml);
+			throw new RuntimeException("Unparsable View: " + fxml, e);
 		}
 	}
 
