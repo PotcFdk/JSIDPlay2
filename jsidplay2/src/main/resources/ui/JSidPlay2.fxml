@@ -228,6 +228,7 @@
 									</MenuItem>
 									<MenuItem text="%EJECT_DISK" onAction="#ejectDisk" />
 									<MenuItem text="%RESET_DRIVE" onAction="#resetDrive" />
+									<MenuItem text="%INSERT_EMPTY_DISK" onAction="#insertEmptyDisk" />
 								</Menu>
 								<Menu text="%PRINTER">
 									<CheckMenuItem text="%TURN_PRINTER_ON" onAction="#printerOn"

@@ -117,24 +117,24 @@ public abstract class DiskImage {
 
 		// Open image file
 		boolean readOnly = !file.canWrite();
-		try (RandomAccessFile fd = new RandomAccessFile(file, file.canWrite() ? "rw" : "r")) {
-			// Try to detect image type
-			final byte header[] = new byte[Math.max(G64.IMAGE_HEADER.length(), NIB.IMAGE_HEADER.length())];
-			fd.readFully(header, 0, header.length);
-			fd.seek(0);
-			final String headerString = new String(header, "ISO-8859-1");
-			// Create specific disk image
-			final DiskImage image;
-			if (headerString.startsWith(G64.IMAGE_HEADER)) {
-				image = new G64(gcr, file.getName(), fd, readOnly);
-			} else if (headerString.startsWith(NIB.IMAGE_HEADER)) {
-				image = new NIB(gcr, file.getName(), fd, readOnly);
-			} else {
-				image = new D64(gcr, file.getName(), fd, readOnly);
-			}
-			image.attach();
-			return image;
+		// not auto-closed, but closed on detach, because of write operations, later!
+		RandomAccessFile fd = new RandomAccessFile(file, file.canWrite() ? "rw" : "r");
+		// Try to detect image type
+		final byte header[] = new byte[Math.max(G64.IMAGE_HEADER.length(), NIB.IMAGE_HEADER.length())];
+		fd.readFully(header, 0, header.length);
+		fd.seek(0);
+		final String headerString = new String(header, "ISO-8859-1");
+		// Create specific disk image
+		final DiskImage image;
+		if (headerString.startsWith(G64.IMAGE_HEADER)) {
+			image = new G64(gcr, file.getName(), fd, readOnly);
+		} else if (headerString.startsWith(NIB.IMAGE_HEADER)) {
+			image = new NIB(gcr, file.getName(), fd, readOnly);
+		} else {
+			image = new D64(gcr, file.getName(), fd, readOnly);
 		}
+		image.attach();
+		return image;
 	}
 
 	/**

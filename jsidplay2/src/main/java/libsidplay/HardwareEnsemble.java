@@ -351,19 +351,25 @@ public class HardwareEnsemble {
 
 			@Override
 			public void c64Write(final byte data) {
-				c1541Runner.synchronize(0);
+				if (config.getC1541Section().isDriveOn()) {
+					c1541Runner.synchronize(0);
+				}
 				parallelCableCpuValue = data;
 			}
 
 			@Override
 			public byte c64Read() {
-				c1541Runner.synchronize(0);
+				if (config.getC1541Section().isDriveOn()) {
+					c1541Runner.synchronize(0);
+				}
 				return parallelCableValue();
 			}
 
 			@Override
 			public void pulse() {
-				c1541Runner.synchronize(0);
+				if (config.getC1541Section().isDriveOn()) {
+					c1541Runner.synchronize(0);
+				}
 				for (final C1541 floppy : floppies) {
 					floppy.getBusController().signal(VIACore.VIA_SIG_CB1, VIACore.VIA_SIG_FALL);
 				}

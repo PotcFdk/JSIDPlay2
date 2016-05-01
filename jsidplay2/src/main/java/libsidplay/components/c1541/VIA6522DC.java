@@ -312,6 +312,7 @@ public abstract class VIA6522DC extends VIACore {
 			try {
 				image.gcrDataWriteback(currentHalfTrack >> 1);
 			} catch (final IOException e) {
+				System.err.println(e.getMessage());
 				System.err.println(String.format("Error writing T:%d to disk image.", currentHalfTrack >> 1));
 			}
 		}

@@ -145,6 +145,19 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		}
 	}
 
+	private static final String EMPTY_D64 = "/libsidplay/components/c1541/empty.d64";
+	private static byte[] EMPTY_DISK;
+
+	static {
+		try (DataInputStream is = new DataInputStream(JSidPlay2.class.getResourceAsStream(EMPTY_D64))) {
+			URL us = JSidPlay2Main.class.getResource(EMPTY_D64);
+			EMPTY_DISK = new byte[us.openConnection().getContentLength()];
+			is.readFully(EMPTY_DISK);
+		} catch (IOException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
+
 	private static final AudioClip MOTORSOUND_AUDIOCLIP = new AudioClip(
 			JSidPlay2.class.getResource("/ui/sounds/motor.wav").toString());
 	private static final AudioClip TRACKSOUND_AUDIOCLIP = new AudioClip(
@@ -687,6 +700,31 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void resetDrive() {
 		getFirstFloppy().reset();
+	}
+
+	@FXML
+	private void insertEmptyDisk() {
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(
+				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.getExtensionFilters().add(new ExtensionFilter("Disk Image (D64)", "*.d64"));
+		fileDialog.setTitle(util.getBundle().getString("INSERT_EMPTY_DISK"));
+		final File file = fileDialog.showSaveDialog(scene.getWindow());
+		if (file != null) {
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".d64");
+			try (DataOutputStream os = new DataOutputStream(new FileOutputStream(target))) {
+				os.write(EMPTY_DISK);
+			} catch (IOException e) {
+				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_WRITE_ERROR"), e.getMessage()));
+			}
+			video();
+			try {
+				util.getPlayer().insertDisk(target);
+			} catch (IOException | SidTuneError e) {
+				System.err.println(String.format("Cannot insert media file '%s'.", target.getAbsolutePath()));
+			}
+		}
 	}
 
 	@FXML
