@@ -19,11 +19,11 @@
 <?scenebuilder-preview-i18n-resource Video.properties?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<BorderPane AnchorPane.bottomAnchor="0"
-		AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-		AnchorPane.topAnchor="0">
+	<BorderPane AnchorPane.bottomAnchor="10"
+		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+		AnchorPane.topAnchor="10">
 		<left>
-			<TitledPane fx:id="monitor" collapsible="false">
+			<TitledPane fx:id="monitor" text="%MONITOR" collapsible="true">
 				<StackPane>
 					<Canvas fx:id="screen" />
 					<ImageView fx:id="monitorBorder">

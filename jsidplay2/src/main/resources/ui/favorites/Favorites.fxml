@@ -26,7 +26,7 @@
 		<ToggleGroup fx:id="repeatGroup" />
 	</fx:define>
 	<BorderPane AnchorPane.bottomAnchor="10"
-		AnchorPane.leftAnchor="10" AnchorPane.topAnchor="10">
+		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 		<center>
 			<VBox>
 				<HBox alignment="CENTER">
