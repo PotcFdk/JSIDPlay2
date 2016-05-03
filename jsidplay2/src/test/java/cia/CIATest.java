@@ -21,6 +21,7 @@ public class CIATest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("cia_detection.prg");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
@@ -34,6 +35,7 @@ public class CIATest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("cmp-b-counts-a.prg");
 		push(ENTER);
 		sleep(15000);

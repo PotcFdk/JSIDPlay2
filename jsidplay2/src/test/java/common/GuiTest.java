@@ -899,11 +899,22 @@ public abstract class GuiTest implements Timeouts {
 		for (int i = 0; i < text.length(); i++) {
 			type(text.charAt(i));
 			try {
-				Thread.sleep(25);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 			}
 		}
 		return this;
+	}
+
+	public void clearText() {
+		KeyCode[] modifiers = new KeyCode[] { KeyCode.CONTROL };
+		press(modifiers);
+		type(KeyCode.A);
+		release(modifiers);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+		}
 	}
 
 	public GuiTest type(char character) {

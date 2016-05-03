@@ -19,6 +19,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("sid_detection.prg");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
@@ -36,6 +37,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("Anthrox_2SID.sid");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
@@ -56,6 +58,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("Turrican_2-The_Final_Fight.sid");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
@@ -74,6 +77,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("PUZZLEND.p00");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
@@ -87,6 +91,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("Angie_A.mus");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
@@ -107,6 +112,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("Safety_Dance.mus");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
@@ -129,6 +135,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("radiantx_spiral_silicon_towers.prg");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
@@ -142,6 +149,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("Arcade_Memories_3SID.sid");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);

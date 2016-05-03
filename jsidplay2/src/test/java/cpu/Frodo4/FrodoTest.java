@@ -23,6 +23,7 @@ public class FrodoTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("dadb.prg");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
@@ -43,6 +44,7 @@ public class FrodoTest extends JSIDPlay2Test {
 		click("#file");
 		click("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
+		clearText();
 		type("de00all-sys49152.prg");
 		push(ENTER);
 		sleep(SID_TUNE_LOADED_TIMEOUT);
