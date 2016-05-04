@@ -1,0 +1,107 @@
+= JSIDPlay2 User Guide
+
+== Introduction
+
+*Commodore 64 (C64)* is a very popular Home Computer of the 80's
+
+*SID (Sound Interface Device)*
+is the name of the sound chip of the Commodore 64.
+It is a synthesizer which can be programmed in Basic and Assembler to produce sound output.
+
+*SID music* or alternatively a *SID tune* is a program running on the C64, that produces sound.
+It is therefore required to emulate a complete C64 in order to run any program producing sound.
+SID is also a file extension used for SID tunes. A SID tune sometimes contains multiple songs.
+Emulators such as JSIDPlay2 are able to play the songs contained in a SID tune.
+
+*JSIDPlay2* is a software that makes it possible to listen to SID music of the Commodore 64.
+Beside that, it is a complete, very compatible and cycle exact Commodore 64 emulator.
+It emulates not just a naked C64, but many additional devices as well. Datasette, Floppy, Printer and
+multi-purpose cartridges. On top of that many useful tools dealing with SIDs have been added.
+
+== SID collections on the Internet
+
+SID music has been and still is collected at several sites throughout the Internet. +
+The most popular collections are:
+
+* High Voltage SID Collection (HVSC) - the biggest SID music collection on earth http://www.hvsc.de/
+* Compute's Gazette SID Collection (CGSC) - A collection of COMPUTE!'s Sidplayer music containing tons of stereo files
+http://www.btinternet.com/~pweighill/music/
+* Stone Oakvalley's Authentic SID Collection (SOASC=) - A recording project containing SID music both in SID and MP3 format.
+http://www.6581-8580.com
+
+== Supported File Formats
+
+.Supported File Formats
+|===
+|  |  
+
+| SID | HVSC format (PSID v1-4, RSID v2,3 or Basic), the old MUS-specific PSIDs are no more supported by this player!
+| MUS | CGSC stereo format (voices 1-3)
+| STR | CGSC stereo format (voices 4-6)
+| DAT | SID music data
+| PRG | C64 program files (a C64 program)
+| P00 | C64 program files created by the abandoned PC64 emulator
+| D64 | Disk image
+| G64 | Disk image
+| NIB | Disk Image (read-only support)
+| TAP | Tape image
+| T64 | Tape program files
+| REU | Ram Expansion Unit memory dump
+| CRT | Cartridge memory dump
+| MP3 | the popular and lossy compression sound format (not C64 related)
+
+|===
+
+.Supported Cartridge Formats
+|===
+|  
+
+| Action Replay
+| Atomic Power
+| Comal 80
+| EasyFlash
+| Epyx FastLoad
+| Expert
+| Final Cartridge v1
+| Final Cartridge v3
+| Magic Desk (32Kb, 64Kb and 128Kb)
+| MikroAss
+| Normal
+| Rex
+| Zaxxon
+| GeoRAM (64kb, 128kb, 256kb, 512kb, 1024kb, 2048kb and 2048kb)
+| REU (1700: 128 kB, 1750: 512 kB, 1764: 256 kB, 1750 XL: 2 MB and 16 MB which was never produced)
+
+|===
+
+JSIDPlay2 can play:
+
+* Mono sound
+* Stereo sound
+* 3-SID sound
+* or even switch between MP3 recording and emulation on-the-fly for comparison reasons
+
+We emulate up to 3 SID chips at the same time plugged into a C64
+and using configurable base addresses for the second and the third SID chip at:
+
+* 0xd400 (always reserved for the first SID chip)
+* 0xd000-0xdfff (128 places every 32 bytes)
+* 0xde00
+* 0xdf00
+
+JSIDPlay2 can emulate SID sound in many different ways:
+
+* Dag Lem's resid 1.0 beta
+* Antti S. Lankila's resid-fp (distortion simulation efforts and combined waveforms)
+* HardSID4U USB driver for Windows to make use of the real SID hardware
+
+Sound output can be recorded as:
+
+* WAV (lossless)
+* MP3 (lossy)
+
+== Compatibility
+
+== System Requirements
+
+== Distributions
