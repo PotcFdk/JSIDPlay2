@@ -155,6 +155,35 @@
 		</resources>
 		<plugins>
 			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>1.5.3</version> 
+				<executions>
+					<execution>
+						<id>output-html</id> 
+						<phase>generate-resources</phase> 
+						<goals>
+							<goal>process-asciidoc</goal> 
+						</goals>
+						<configuration>
+							<backend>html</backend>
+							<doctype>book</doctype>                    
+							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
+							<attributes>
+								<name>${project.name}</name>
+								<codebase>${codebase}</codebase>
+								<artifactId>${project.artifactId}</artifactId>
+								<version>${project.version}</version>
+								<!-- Display anchors on html document-->
+								<sectanchors>true</sectanchors>
+								<!-- enable the TOC with 3 levels-->
+								<toclevels>3</toclevels>
+							</attributes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
@@ -419,6 +448,9 @@
 										<exclude>**/*.txt</exclude>
 									</excludes>
 								</resource>
+								<resource>
+									<directory>src/main/asciidoc/images</directory>
+								</resource>
 							</resources>
 						</configuration>
 					</execution>
@@ -637,7 +669,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+  			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
@@ -718,5 +750,42 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.asciidoctor
+										</groupId>
+										<artifactId>
+											asciidoctor-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.5.3,)
+										</versionRange>
+										<goals>
+											<goal>
+												process-asciidoc
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 </project>
