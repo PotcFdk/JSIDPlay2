@@ -60,14 +60,14 @@ http://www.6581-8580.com
 | Atomic Power
 | Comal 80
 | EasyFlash
-| Epyx FastLoad
-| Expert
+| Epyx FastLoader
+| Expert Cartridge
 | Final Cartridge v1
-| Final Cartridge v3
+| Final Cartridge v3 (87, 88)
 | Magic Desk (32Kb, 64Kb and 128Kb)
 | MikroAss
-| Normal
-| Rex
+| Generic 8Kb
+| Rexx Datentechnik
 | Zaxxon
 | GeoRAM (64kb, 128kb, 256kb, 512kb, 1024kb, 2048kb and 2048kb)
 | REU (1700: 128 kB, 1750: 512 kB, 1764: 256 kB, 1750 XL: 2 MB and 16 MB which was never produced)
@@ -102,6 +102,24 @@ Sound output can be recorded as:
 
 == Compatibility
 
+JSIDPlay2 is known to be a very accurate C64 emulator.
+It emulates all components of a C64 and some important peripherals.
+The emulation is cycle exact and passes many test programs.
+
+* CPU
+We pass the entire Lorentz suite. The CPU compatibility should be very good.
+* CIA
+We pass Lorenz suite's CIA tests, and various VICE testprograms. The CIA compatibility should be very good.
+* VIC
+We have a reasonably good, cycle-exact simulation of the VIC, and pass some very complicated VICE testprograms
+such as the irqdma suite. However, some sprite tests like those used by various emutesters,
+and some inline video mode changes are buggy.
+* C1541
+The disk drive is very compatible. All chips are emulated cycle exact, although a few loaders deny to work.
+* ReSID 1.0 beta. Sound work is always ongoing.
+
 == System Requirements
 
-== Distributions
+== Configuration
+
+== Distribution variants
