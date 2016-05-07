@@ -1,24 +1,20 @@
 = JSIDPlay2 User Guide
 
+:toc:
+:toc-position: right
+
 == Introduction
 
-*Commodore 64 (C64)* is a very popular Home Computer of the 80's
+I am a C64 fan since 1986 as many other people are. I played games, watched demos and read books, but when the time goes by, all activities stopped slowly in the beginning of the 90s. 
+But one thing from the past i actually do until today, that is listening the precious SID music of all the talented music artists and demo groups. So many thanks to all of you for your work.
 
-*SID (Sound Interface Device)*
-is the name of the sound chip of the Commodore 64.
-It is a synthesizer which can be programmed in Basic and Assembler to produce sound output.
-
-*SID music* or alternatively a *SID tune* is a program running on the C64, that produces sound.
-It is therefore required to emulate a complete C64 in order to run any program producing sound.
-SID is also a file extension used for SID tunes. A SID tune sometimes contains multiple songs.
-Emulators such as JSIDPlay2 are able to play the songs contained in a SID tune.
-
-*JSIDPlay2* is a software that makes it possible to listen to SID music of the Commodore 64.
-Beside that, it is a complete, very compatible and cycle exact Commodore 64 emulator.
-It emulates not just a naked C64, but many additional devices as well. Datasette, Floppy, Printer and
-multi-purpose cartridges. On top of that many useful tools dealing with SIDs have been added.
-
-== SID collections on the Internet
+JSIDPlay2 is a tribute to the C64 scene and the golden times of the company Commodore. Its purpose is to bring the feeling back we had when we were young and
+it wants to demonstrate what a wonderful and powerful machine with so many restrictions could accomplish,
+namely the people learned to life with these restrictions and got creative to make things happen, that nobody would have believed thirty years ago.
+Many people started their business career from these roots, because of a strong interest and thinking of the fun they had playing and working
+with their old home computers.
+ 
+== SID music
 
 SID music has been and still is collected at several sites throughout the Internet. +
 The most popular collections are:
@@ -91,18 +87,19 @@ and using configurable base addresses for the second and the third SID chip at:
 
 JSIDPlay2 can emulate SID sound in many different ways:
 
-* Dag Lem's resid 1.0 beta
-* Antti S. Lankila's resid-fp (distortion simulation efforts and combined waveforms)
+* Dag Lem's resid 1.0 beta re-implementation
+* Antti S. Lankila's resid-fp re-implementation (adding distortion simulation and calculation of the combined waveforms)
 * HardSID4U USB driver for Windows to make use of the real SID hardware
 
 Sound output can be recorded as:
 
 * WAV (lossless)
-* MP3 (lossy)
+* MP3 at variable bit rate (lossy)
 
 == Compatibility
 
 JSIDPlay2 is known to be a very accurate C64 emulator.
+All tunes you will find should work.
 It emulates all components of a C64 and some important peripherals.
 The emulation is cycle exact and passes many test programs.
 
@@ -120,6 +117,169 @@ The disk drive is very compatible. All chips are emulated cycle exact, although 
 
 == System Requirements
 
+JSIDPlay2 User Interface (UI) version is a Java application making use of JavaFX for the UI.
+
+* Supported Operating Systems are Linux, Windows and MacOSX
+
+* Oracle Java 8 is required to launch JSIDPlay2, however linux users can use as an alternative openjdk 8 and
+must then install openjfx as well.
+
+== Launch JSIDPlay2
+
+Note: Whereas *Windows* users get an executable (.EXE) to launch:
+
+----
+jsidplay2-{version}.exe # <1>
+jsidplay2_console-{version}.exe # <2>
+---- 
+<1> Launch User interface version
+<2> Launch Console version
+
+other operating systems launch JSIDPlay2 using the following command:
+
+----
+cd Downloads/jsidplay2-{version}
+java -jar jsidplay2-{version}.jar # <1>
+java -jar jsidplay2_console-{version}.jar # <2>
+---- 
+<1> Launch User interface version
+<2> Launch Console version
+ 
 == Configuration
 
+JSIDPlay2 user interface version is configured using an XML file. +
+The first time JSIDPlay2 the user interface version gets started the configuration file is created in the users home directory:
+
+Windows:
+
+ C:\Users\ken\jsidplay2.xml
+
+Linux:
+
+ /home/ken/jsidplay2.xml
+
+OSX:
+
+ /Users/ken/jsidplay2.xml
+
+JSIDPlay2 console version is configured using an INI file. +
+The first time JSIDPlay2 the console version gets started the configuration file is created in the users home directory:
+
+Windows:
+
+ C:\Users\ken\sidplay2.ini
+
+Linux:
+
+ /home/ken/sidplay2.ini
+
+OSX:
+
+ /Users/ken/sidplay2.ini
+
+If you want to place JSIDPlay2 on an USB stick you can move it to the current working directory as well.
+Search order is:
+
+1. Current working directory
+2. Home directory
+
+TIP: If JSIDPlay2 denies to launch the most probable reason is that the configuration can not be read.
+It is a good idea to move it away and to restart.
+
+Additionally JSIDPlay2 always creates a temporary folder in the home folder, if it does not exist.
+
+Windows:
+
+ C:\Users\ken\.jsidplay2
+
+Linux:
+
+ /home/ken/.jsidplay2
+
+OSX:
+
+ /Users/ken/.jsidplay2
+
+JSIDPlay2 stores downloads, temporary created files and such here.
+
 == Distribution variants
+
+JSIDPlay2 exists in two alternative versions:
+
+* Console version is for execution in a terminal or command prompt. It has no user interface and no graphical output.
+ Its purpose is just to play a SID tune. However it prints out a little text based menu and reacts on keyboard input.
+
+----
+Use INI file: /home/ken/sidplay2.ini
++------------------------------------------------------+
+| Java SIDPLAY - Music Player & C64 SID Chip Emulator  |
++------------------------------------------------------+
+| Title        :            Turrican 2-The Final Fight |
+| Author       :       Markus Siebold & Stefan Hartwig |
+| Released     :                     1991 Rainbow Arts |
++------------------------------------------------------+
+| Playlist     :                     1/9 (tune 1/9[1]) |
+| Song Length  :                                 03:00 |
++------------------------------------------------------+
+Keyboard control (press enter after command):
+< > - play previous/next song
+h e - play first/last tune
+, . - normal/faster speed
+p   - pause/continue player
+1   - mute voice 1
+2   - mute voice 2
+3   - mute voice 3
+4   - mute voice 1 (stereo-SID)
+5   - mute voice 2 (stereo-SID)
+6   - mute voice 3 (stereo-SID)
+7   - mute voice 1 (3-SID)
+8   - mute voice 2 (3-SID)
+9   - mute voice 3 (3-SID)
+f   - enable/disable filter
+g   - enable/disable stereo filter
+G   - enable/disable 3-SID filter
+q   - quit player
+----
+ 
+* User interface version is the more complete C64 emulator with video screen output and access to additional tools.
+ you can create and save favorite tunes and configure completely by keyboard or mouse.
+
+image:StartScreen.jpg[JSidplay2 {version} - Start Screen]
+
+== Troubleshooting
+
+[glossary]
+== Glossary
+
+C64:: Commodore 64 (C64) is a very popular Home Computer of the 80's
+
+SID:: SID (Sound Interface Device)
+is the name of the sound chip of the Commodore 64.
+It is a synthesizer which can be programmed in Basic and Assembler to produce sound output.
+
+SID music:: SID music or alternatively a *SID tune* is a program running on the C64, that produces sound.
+It is therefore required to emulate a complete C64 in order to run any program producing sound.
+SID is also a file extension used for SID tunes. A SID tune sometimes contains multiple songs.
+Emulators such as JSIDPlay2 are able to play the songs contained in a SID tune.
+
+JSIDPlay2:: JSIDPlay2 is a software that makes it possible to listen to SID music of the Commodore 64.
+Beside that, it is a complete, very compatible and cycle exact Commodore 64 emulator.
+It emulates not just a naked C64, but many additional devices as well. Datasette, Floppy, Printer and
+multi-purpose cartridges. On top of that many useful tools dealing with SIDs have been added.
+	
+[appendix]
+== Copyright and License
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA

@@ -169,13 +169,17 @@
 							<backend>html</backend>
 							<doctype>book</doctype>                    
 							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
+							<headerFooter>true</headerFooter>
 							<attributes>
 								<name>${project.name}</name>
 								<codebase>${codebase}</codebase>
 								<artifactId>${project.artifactId}</artifactId>
 								<version>${project.version}</version>
+								
 								<!-- Display anchors on html document-->
 								<sectanchors>true</sectanchors>
+								<!-- Table of contents -->
+								<toc/>
 								<!-- enable the TOC with 3 levels-->
 								<toclevels>3</toclevels>
 							</attributes>
