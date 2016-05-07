@@ -1,4 +1,4 @@
-= JSIDPlay2 - Homepage
+= link:https://sourceforge.net/projects/jsidplay2/[JSIDPlay2] - Homepage
 
 == Introduction
 
@@ -35,6 +35,10 @@ JSidplay2 is able to
 * be configured by an INI file containing emulation and player settings
 * be integrated into Java enabled platforms
 * being used like a real C64 (watching demos, playing games etc.)
+
+== User Guide (work in progress)
+
+Here you can find link:{codebase}UserGuide.html[documentation]
 
 == Latest Beta
 
