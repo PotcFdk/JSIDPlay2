@@ -10,7 +10,7 @@ But one thing from the past i actually do until today, that is listening the pre
 
 JSIDPlay2 is a tribute to the C64 scene and the golden times of the company Commodore. Its purpose is to bring the feeling back we had when we were young and
 it wants to demonstrate what a wonderful and powerful machine with so many restrictions could accomplish,
-namely the people learned to life with these restrictions and got creative to make things happen, that nobody would have believed thirty years ago.
+namely the people learned to live with these restrictions and got creative to make things happen, that nobody would have believed thirty years ago.
 Many people started their business career from these roots, because of a strong interest and thinking of the fun they had playing and working
 with their old home computers.
  
@@ -128,15 +128,17 @@ must then install openjfx as well.
 
 Note: Whereas *Windows* users get an executable (.EXE) to launch:
 
+[source,subs="attributes+"]
 ----
 jsidplay2-{version}.exe # <1>
 jsidplay2_console-{version}.exe # <2>
----- 
+----
 <1> Launch User interface version
 <2> Launch Console version
 
 other operating systems launch JSIDPlay2 using the following command:
 
+[source,subs="attributes+"]
 ----
 cd Downloads/jsidplay2-{version}
 java -jar jsidplay2-{version}.jar # <1>
@@ -209,6 +211,7 @@ JSIDPlay2 exists in two alternative versions:
 * Console version is for execution in a terminal or command prompt. It has no user interface and no graphical output.
  Its purpose is just to play a SID tune. However it prints out a little text based menu and reacts on keyboard input.
 
+[source,subs="attributes+"]
 ----
 Use INI file: /home/ken/sidplay2.ini
 +------------------------------------------------------+
@@ -245,6 +248,21 @@ q   - quit player
  you can create and save favorite tunes and configure completely by keyboard or mouse.
 
 image:StartScreen.jpg[JSidplay2 {version} - Start Screen]
+
+== JSIDPlay2 User Interface
+
+= Screen Layout
+
+In the following image the general layout of the UI is shown.
+  
+image:ScreenLayout.jpg[JSidplay2 {version} - Screen Layout]
+
+The main window is divided in several regions:
+
+1. Menubar - reveals all possible functions of JSIDPlay2 by a classic menu
+2. Toolbar - For always visible and important settings like emulation, sound device and sampling parameters
+3. Tabs Area - User configurable additional information
+4. Status Line - For the currently chosen settings like chip type, song speed and peripheral device infos
 
 == Troubleshooting
 
