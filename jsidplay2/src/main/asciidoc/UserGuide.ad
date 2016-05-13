@@ -24,6 +24,7 @@ The most popular collections are:
 http://www.btinternet.com/~pweighill/music/
 * Stone Oakvalley's Authentic SID Collection (SOASC=) - A recording project containing SID music both in SID and MP3 format.
 http://www.6581-8580.com
+* HVMEC (High Voltage Music Engine Collection) - A collection of music editors, trackers and other music and sound effect makers
 
 == Supported File Formats
 
@@ -263,6 +264,46 @@ The main window is divided in several regions:
 2. Toolbar - For always visible and important settings like emulation, sound device and sampling parameters
 3. Tabs Area - User configurable additional information
 4. Status Line - For the currently chosen settings like chip type, song speed and peripheral device infos
+
+==== Menubar
+
+.File Menu
+|===
+|  |  
+
+| File/Load... | load a tune, reset C64 and immediately start playing
+| File/Load REU Video... | Insert a REU (Ram Expansion Unit) memory dump containing video data, reset C64 and immediately start playing using NUVIE video player 1.0
+| File/Reset | Reset C64
+| File/Quit | Quit JSIDPlay2
+
+|===
+
+Selecting a specific View menu entry will open various tabs in the tabs area.
+Each tab can be opened exactly once.
+ 
+.View Menu
+|===
+|  |  
+
+| View/Video Screen | Show video screen
+| View/Oscilloscope | Show oscilloscope with real-time SID output
+| View/Favorites | Show the favorites browser
+| View/Music Collections/HVSC | Show the music collection HVSC
+| View/Music Collections/CGSC | Show the music collection CGSC
+| View/Disk Collections/HVMEC | Show the disk collection HVMEC
+| View/Disk Collections/Demos | Show the demo disk collection
+| View/Disk Collections/Magazines | Show the disk magazine collection
+| View/Tools/SID Dump | Record notes while playing tune
+| View/Tools/SID Registers | Show register writes  while playing tune
+| View/Tools/Assembler | Use kickassembler to assemble machine code into C64 RAM
+| View/Tools/Disassembler | Simple Disassembler possibility of the C64 RAM
+| View/Online/<website> | Open a web browser view for that site
+| View/Online/JSIDPlay2 Source Code | Show source code of JSIDPlay2 in a web browser view
+| View/Printer | Open the printer view (as a replacement for paper)
+| View/Console | Show console output and error messages
+
+
+|===
 
 == Troubleshooting
 
