@@ -179,7 +179,7 @@
 								<!-- Display anchors on html document-->
 								<sectanchors>true</sectanchors>
 								<!-- Table of contents -->
-								<!-- toc/-->
+								<toc />
 								<!-- enable the TOC with 3 levels-->
 								<toclevels>3</toclevels>
 							</attributes>

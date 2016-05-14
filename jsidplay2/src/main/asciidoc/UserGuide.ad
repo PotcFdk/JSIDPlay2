@@ -267,6 +267,8 @@ The main window is divided in several regions:
 
 ==== Menubar
 
+The file menu is for loading a tune from file basically.
+
 .File Menu
 |===
 |  |  
@@ -302,6 +304,50 @@ Each tab can be opened exactly once.
 | View/Printer | Open the printer view (as a replacement for paper)
 | View/Console | Show console output and error messages
 
+
+|===
+
+The player menu is to control playback of a tune.
+ 
+.Player Menu
+|===
+|  |  
+
+| Player/Pause | Player will be paused
+| Player/Previous | Play previous song of a tune
+| Player/Next | Play next song of a tune
+| Player/Normal speed | Play song in normal speed
+| Player/Fast Forward | Play song twice as fast (up to 5x)
+| Player/Stop | Stop emulation, song playback stopped
+
+|===
+
+The devices/Datasette menu is the interface to the keys on a magnetic tape data storage device (datasette),
+where a tape can be inserted to store program data.
+
+.Devices/Datasette Menu
+|===
+|  |  
+
+| Devices/Datasette/Record | Press Record key on device
+| Devices/Datasette/Play | Press Play on device
+| Devices/Datasette/Rewind | Press Rewind key on device to control storage medium position
+| Devices/Datasette/Forward | Press Forward on device to control storage medium position
+| Devices/Datasette/Stop | Press Stop key on device
+| Devices/Datasette/Reset Counter | Reset the counter of the storage medium position to zero
+| Devices/Datasette/Insert Tape... | Insert a tape into the datasette
+| Devices/Datasette/Eject Tape... | Physically eject a tape from the datasette
+
+|===
+
+The devices floppy menu is the interface to the floppy disk device using
+a disk as the storage medium (a thin and flexible magnetic storage medium) for data storage
+
+.Devices/Floppy Menu
+|===
+|  |  
+
+| Devices/Floppy/Turn Drive On | Switch power on/off key
 
 |===
 
