@@ -153,6 +153,8 @@ java -jar jsidplay2_console-{version}.jar # <2>
 JSIDPlay2 user interface version is configured using an XML file. +
 The first time JSIDPlay2 the user interface version gets started the configuration file is created in the users home directory:
 
+CAUTION: Please replace my user name "ken" with yours in these examples.
+
 Windows:
 
  C:\Users\ken\jsidplay2.xml
@@ -335,7 +337,7 @@ where a tape can be inserted to store program data.
 | Devices/Datasette/Forward | Press Forward on device to control storage medium position
 | Devices/Datasette/Stop | Press Stop key on device
 | Devices/Datasette/Reset Counter | Reset the counter of the storage medium position to zero
-| Devices/Datasette/Insert Tape... | Insert a tape into the datasette
+| Devices/Datasette/Insert Tape... | Insert a tape into the datasette (.TAP file format). Different file formats are converted to turbo tape (default)
 | Devices/Datasette/Eject Tape... | Physically eject a tape from the datasette
 
 |===
