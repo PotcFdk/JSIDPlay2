@@ -350,6 +350,95 @@ a disk as the storage medium (a thin and flexible magnetic storage medium) for d
 |  |  
 
 | Devices/Floppy/Turn Drive On | Switch power on/off key
+| Devices/Floppy/Drive Sound | Play pre-recorded floppy disk drive sound for disk rotation and track change
+| Devices/Floppy/Parallel Cable | Connect floppy disk drive and C64 using a parallel cable for faster disk read/write speed
+| Devices/Floppy/Floppy Type/C1541 | Choose C-1541 as the floppy disk drive device (old model)
+| Devices/Floppy/Floppy Type/C1541-II | Choose C-1541-II as the floppy disk drive device (new model)
+| Devices/Floppy/40 Track handling/Never Extend | Normally a disk uses 35 tracks, but can be formatted using up to 40 tracks. This option means a disk will never extend to 40 tracks.
+| Devices/Floppy/40 Track handling/Ask On Extend | Ask the user, if the floppy disk should extend to 40 tracks.
+| Devices/Floppy/40 Track handling/Extend On Access | The floppy disk should extend to 40 tracks automatically.
+| Devices/Floppy/Memory Expansion/8K RAM Expansion 0x2000 | The floppy disk drive memory gets 8Kb extra RAM at 0x2000.
+| Devices/Floppy/Memory Expansion/8K RAM Expansion 0x4000 | The floppy disk drive memory gets 8Kb extra RAM at 0x4000.
+| Devices/Floppy/Memory Expansion/8K RAM Expansion 0x6000 | The floppy disk drive memory gets 8Kb extra RAM at 0x6000.
+| Devices/Floppy/Memory Expansion/8K RAM Expansion 0x8000 | The floppy disk drive memory gets 8Kb extra RAM at 0x8000.
+| Devices/Floppy/Memory Expansion/8K RAM Expansion 0xA000 | The floppy disk drive memory gets 8Kb extra RAM at 0xA000.
+| Devices/Floppy/Insert Disk... | Insert a disk into the floppy disk drive
+| Devices/Floppy/Eject Disk | Remove disk out of the floppy disk drive
+| Devices/Floppy/Reset Floppy | Reset floppy disk drive. Normally it does not have a reset button and will be reset altogether with the C64
+| Devices/Floppy/Create and Insert Empty Disk (D64) | Insert a new empty floppy disk into the floppy disk drive
+
+|===
+
+The devices printer menu is the interface to the printer device using
+a printer tab with graphical output as the paper to print on. The printer MPS-803 is currently supported.
+
+.Devices/Printer menu
+|===
+|  |  
+
+| Devices/Printer/Turn Printer On | Switch power on/off key
+
+|===
+
+The devices cartridge menu is the interface to the various multi-purpose cartridges currently supported by JSIDPlay2.
+
+.Devices/Cartridge menu
+|===
+|  |  
+
+| Devices/Cartridge/Insert Cartridge... | Insert a multi-purpose cartridge. The cartridge type will be auto-detected by reading the cartridge header.
+| Devices/Cartridge/GeoRAM/Insert GeoRAM... | Insert a RAM expansion cartridge GeoRAM. The RAM size is determined by the cartridge contents.
+| Devices/Cartridge/GeoRAM/Insert GeoRAM (64KB) | Insert a RAM expansion cartridge GeoRAM of 64Kb size with empty contents.
+| Devices/Cartridge/GeoRAM/Insert GeoRAM (128KB) | Insert a RAM expansion cartridge GeoRAM of 128KB size with empty contents.
+| Devices/Cartridge/GeoRAM/Insert GeoRAM (256KB) | Insert a RAM expansion cartridge GeoRAM of 256KB size with empty contents.
+| Devices/Cartridge/GeoRAM/Insert GeoRAM (512KB) | Insert a RAM expansion cartridge GeoRAM of 512KB size with empty contents.
+| Devices/Cartridge/GeoRAM/Insert GeoRAM (1024KB) | Insert a RAM expansion cartridge GeoRAM of 1024KB size with empty contents.
+| Devices/Cartridge/GeoRAM/Insert GeoRAM (2048KB) | Insert a RAM expansion cartridge GeoRAM of 2048KB size with empty contents.
+| Devices/Cartridge/GeoRAM/Insert REU... | Insert a RAM expansion cartridge REU. The RAM size is determined by the cartridge contents.
+| Devices/Cartridge/GeoRAM/Insert REU (128KB) | Insert a RAM expansion cartridge REU of 128KB size with empty contents.
+| Devices/Cartridge/GeoRAM/Insert REU (256KB) | Insert a RAM expansion cartridge REU of 256KB size with empty contents.
+| Devices/Cartridge/GeoRAM/Insert REU (512KB) | Insert a RAM expansion cartridge REU of 512KB size with empty contents.
+| Devices/Cartridge/GeoRAM/Insert REU (2MB) | Insert a RAM expansion cartridge REU of 2MB size with empty contents.
+| Devices/Cartridge/GeoRAM/Insert REU (16MB) | Insert a RAM expansion cartridge REU of 16MB size with empty contents. This REU size has never been manufactured, but is very popular in the scene.
+| Devices/Cartridge/Eject Cartridge | Disconnect multi-purpose cartridge from C64
+| Devices/Cartridge/Freeze | Press the freeze button on the multi-purpose cartridge
+| Devices/Install JiffyDos... | Install the very compatible floppy speeder JiffyDOS by selection the custom ROM files for C64 and C-1541. JiffyDOS is sold separately.
+| Devices/Uninstall JiffyDos | Uninstall the floppy speeder JiffyDOS by removing the custom ROM files out of C64 and C-1541.
+
+|===
+
+The devices hardcopy menu is to make screenshot of the video screen of the C64.
+
+.Devices/Hardcopy menu
+|===
+|  |  
+
+| Hardcopy/GIF | Create a hardcopy of the C64 video screen output in GIF format. Output is stored in the temporary folder of JSIDPlay2.
+| Hardcopy/JPG | Create a hardcopy of the C64 video screen output in JPG format. Output is stored in the temporary folder of JSIDPlay2.
+| Hardcopy/PNG | Create a hardcopy of the C64 video screen output in PNG format. Output is stored in the temporary folder of JSIDPlay2.
+
+|===
+
+The settings menu opens a new window to configure JSIDPlay2. All settings will be persisted.
+
+.Settings menu
+|===
+|  |  
+
+| Settings/Emulation Settings... | Open the emulation settings window of JSIDPlay2.
+| Settings/Joystick Settings... | Open the joystick settings window of JSIDPlay2.
+| Settings/Proxy Settings... | Open the proxy settings to be used for internet connections.
+
+|===
+
+The help menu provides access to user help and credits.
+
+.Help menu
+|===
+|  |  
+
+| Help/Check For Updates | Check for updates of JSIDPlay2.
+| Help/About | Open the about box with the credits of all supporters of JSIDPlay2.
 
 |===
 
