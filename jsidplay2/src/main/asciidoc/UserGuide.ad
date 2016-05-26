@@ -265,7 +265,7 @@ The main window is divided in several regions:
 1. Menubar - reveals all possible functions of JSIDPlay2 by a classic menu
 2. Toolbar - For always visible and important settings like emulation, sound device and sampling parameters
 3. Tabs Area - User configurable additional information
-4. Status Line - For the currently chosen settings like chip type, song speed and peripheral device infos
+4. Statusbar - For the currently chosen settings like chip type, song speed and peripheral device infos
 
 ==== Menubar
 
@@ -316,7 +316,7 @@ The player menu is to control playback of a tune.
 |  |  
 
 | Player/Pause | Player will be paused
-| Player/Previous | Play previous song of a tune
+| Player/Previous | Play previous song of a tune. After the first 4 seconds the current song is restarted instead.
 | Player/Next | Play next song of a tune
 | Player/Normal speed | Play song in normal speed
 | Player/Fast Forward | Play song twice as fast (up to 5x)
@@ -441,6 +441,8 @@ The help menu provides access to user help and credits.
 | Help/About | Open the about box with the credits of all supporters of JSIDPlay2.
 
 |===
+
+==== Tabs Area
 
 ==== Statusbar
 
