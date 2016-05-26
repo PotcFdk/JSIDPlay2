@@ -251,10 +251,10 @@ public abstract class SidTune {
 	/**
 	 * Create 32-bit PSID-style speed word.
 	 * 
-	 * Each bit in 'speed' specifies the speed for the corresponding tune
-	 * number, i.e. bit 0 specifies the speed for tune 1. If there are more than
-	 * 32 tunes, the speed specified for tune 32 is also used for all higher
-	 * numbered tunes.
+	 * Each bit in 'speed' specifies the speed for the corresponding song
+	 * number, i.e. bit 0 specifies the speed for song 1. If there are more than
+	 * 32 song, the speed specified for song 32 is also used for all higher
+	 * numbered songs.
 	 * 
 	 * A 0 bit specifies vertical blank interrupt (50Hz PAL, 60Hz NTSC), and a 1
 	 * bit specifies CIA 1 timer interrupt (default 60Hz).
