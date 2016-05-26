@@ -442,6 +442,37 @@ The help menu provides access to user help and credits.
 
 |===
 
+==== Statusbar
+
+The status bar shows currently active settings and emulator status.
+Additionally a progress bar shows background task activity.
+Status bar infos are comma separated.
+
+.Status information
+|===
+|  |  
+
+| "PAL" or "NTSC" | Shows the currently chosen video norm.
+PAL region clock frequency is 985248.4 whereas NTSC region clock frequency is 1022727.14.
+| "RESID" or "RESIDFP" | Shows the currently used SID emulation engine.
+RESID is ReSID 1.0 beta by Dag Lem whereas RESIDFP is Antti S. Lankila's resid-fp (distortion simulation).
+If multiple SIDs are used, each SIDs emulation type is printed separated by a plus sign.
+| "MOS6581" or "MOS8580" | Shows the currently plugged-in SID chip type, that is emulated.
+If multiple SIDs are used, each SIDs SID chip type is printed separated by a plus sign and
+each additional SIDs base address is printed hexadecimal in brackets, eg. "MOS6581(at 0xd420)".
+| "Player: DMC" | Shows the currently identified player of the tune, e.g. Demo Music Creator System (DMC).
+Players are identified by memory analysis of the play routine identity scanner tool SIDId.
+A click on the tool tip of the status bar opens a browser window of the online available player.
+| "Speed: 2,0x" | Shows the speed of the tune (how many times the player routine is called within a frame).
+| "Song: 1/7" | Shows the currently played song number and the available number of songs within a tune,
+but only if more than one song is available.
+| "Datasette Counter: 001" | Shows the counter of the storage medium position, if a tape has been inserted and the motor is on.
+| "Floppy Track: 18" | Shows the the read/write head position of the floppy disk drive, if a disk has been inserted and the motor is on.
+| "Time: 00:01/04:37" | Shows the current playing time of a tune or song in minutes and seconds.
+If the song length is well-known, it is separated by a slash and printed as well.
+
+|===
+
 == Troubleshooting
 
 [glossary]
