@@ -329,7 +329,7 @@ class ClientContext {
 
 		case TRY_SET_CLOCKING:
 			if (dataLength != 1) {
-				throw new InvalidCommandException("SET_CLOCKING needs 1 byte (0=NTSC, 1=PAL)", dataLength);
+				throw new InvalidCommandException("SET_CLOCKING needs 1 byte (0=PAL, 1=NTSC)", dataLength);
 			}
 
 			if (!eventConsumerThread.waitUntilQueueReady(MAX_TIME_TO_WAIT_FOR_QUEUE)) {
