@@ -1,15 +1,4 @@
 /**
- *                                 Main Library Code
- *                                SIDs Mixer Routines
- *                             Library Configuration Code
- *                    xa65 - 6502 cross assembler and utility suite
- *                          reloc65 - relocates 'o65' files
- *        Copyright (C) 1997 André Fachat (a.fachat@physik.tu-chemnitz.de)
- *        ----------------------------------------------------------------
- *  begin                : Fri Jun 9 2000
- *  copyright            : (C) 2000 by Simon White
- *  email                : s_a_white@email.com
- *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -177,15 +166,23 @@ public class Player extends HardwareEnsemble {
 
 	/**
 	 * Create a Music Player.
+	 * 
+	 * @param config
+	 *            configuration
 	 */
-	public Player(IConfig config) {
+	public Player(final IConfig config) {
 		this(config, MOS6510.class);
 	}
 
 	/**
 	 * Create a Music Player.
+	 * 
+	 * @param config
+	 *            configuration
+	 * @param cpuClass
+	 *            CPU class implementation
 	 */
-	public Player(IConfig config, Class<? extends MOS6510> cpuClass) {
+	public Player(final IConfig config, final Class<? extends MOS6510> cpuClass) {
 		super(config, cpuClass);
 		this.playList = PlayList.getInstance(config, SidTune.RESET);
 		this.timer = new Timer(this) {
@@ -225,7 +222,7 @@ public class Player extends HardwareEnsemble {
 			 * @see sidplay.player.Timer#fadeInStart(int)
 			 */
 			@Override
-			public void fadeInStart(int fadeIn) {
+			public void fadeInStart(final int fadeIn) {
 				if (tune != SidTune.RESET) {
 					configureMixer(mixer -> mixer.fadeIn(fadeIn));
 				}
@@ -237,7 +234,7 @@ public class Player extends HardwareEnsemble {
 			 * @see sidplay.player.Timer#fadeOutStart(int)
 			 */
 			@Override
-			public void fadeOutStart(int fadeOut) {
+			public void fadeOutStart(final int fadeOut) {
 				if (tune != SidTune.RESET) {
 					configureMixer(mixer -> mixer.fadeOut(fadeOut));
 				}
@@ -259,15 +256,19 @@ public class Player extends HardwareEnsemble {
 	}
 
 	@Override
-	protected void setClock(CPUClock cpuFreq) {
+	protected final void setClock(final CPUClock cpuFreq) {
 		super.setClock(cpuFreq);
 		sidBuilder = createSIDBuilder(cpuFreq);
 	}
 
 	/**
 	 * Create configured SID chip implementation (software/hardware).
+	 * 
+	 * @param cpuClock
+	 *            CPU clock frequency
+	 * @return SID builder
 	 */
-	private SIDBuilder createSIDBuilder(CPUClock cpuClock) {
+	private SIDBuilder createSIDBuilder(final CPUClock cpuClock) {
 		final Engine engine = config.getEmulationSection().getEngine();
 		switch (engine) {
 		case EMULATION:
@@ -282,14 +283,14 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Call to update SID chips each time SID configuration has been changed.
 	 */
-	public void updateSIDChipConfiguration() {
+	public final void updateSIDChipConfiguration() {
 		c64.insertSIDChips(requiredSIDs, sidLocator);
 	}
 
 	/**
 	 * Power-on C64 system.
 	 */
-	protected void reset() {
+	protected final void reset() {
 		super.reset();
 		timer.reset();
 		configureMixer(mixer -> mixer.reset());
@@ -325,8 +326,11 @@ public class Player extends HardwareEnsemble {
 
 	/**
 	 * Simulate a user typed-in command.
+	 * 
+	 * @param command
+	 *            command to type-in
 	 */
-	public void typeInCommand(String command) {
+	public final void typeInCommand(final String command) {
 		byte[] ram = c64.getRAM();
 		final int length = Math.min(command.length(), MAX_COMMAND_LEN);
 		for (int charNum = 0; charNum < length; charNum++) {
@@ -357,6 +361,8 @@ public class Player extends HardwareEnsemble {
 
 	/**
 	 * Get current play-list.
+	 * 
+	 * @return current tune-based play list
 	 */
 	public final PlayList getPlayList() {
 		return playList;
@@ -364,6 +370,8 @@ public class Player extends HardwareEnsemble {
 
 	/**
 	 * Get current timer.
+	 * 
+	 * @return song length timer
 	 */
 	public final Timer getTimer() {
 		return timer;
@@ -394,7 +402,7 @@ public class Player extends HardwareEnsemble {
 	 * @param action
 	 *            mixer consumer
 	 */
-	public final void configureMixer(Consumer<Mixer> action) {
+	public final void configureMixer(final Consumer<Mixer> action) {
 		if (sidBuilder instanceof Mixer) {
 			action.accept((Mixer) sidBuilder);
 		}
@@ -424,7 +432,7 @@ public class Player extends HardwareEnsemble {
 	 * @param quitOrWait
 	 *            quit player (true) or wait for termination, only (false)
 	 */
-	public final void stopC64(boolean quitOrWait) {
+	public final void stopC64(final boolean quitOrWait) {
 		try {
 			while (playerThread != null && playerThread.isAlive()) {
 				if (quitOrWait) {
@@ -442,7 +450,7 @@ public class Player extends HardwareEnsemble {
 	 * @param menuHook
 	 *            menu hook
 	 */
-	public final void setMenuHook(Consumer<Player> menuHook) {
+	public final void setMenuHook(final Consumer<Player> menuHook) {
 		this.menuHook = menuHook;
 	}
 
@@ -451,12 +459,12 @@ public class Player extends HardwareEnsemble {
 	 * 
 	 * @param interactivityHook
 	 */
-	public final void setInteractivityHook(Consumer<Player> interactivityHook) {
+	public final void setInteractivityHook(final Consumer<Player> interactivityHook) {
 		this.interactivityHook = interactivityHook;
 	}
 
 	/**
-	 * Get the player's state
+	 * Get the player's state,
 	 * 
 	 * @return the player's state
 	 */
@@ -496,8 +504,11 @@ public class Player extends HardwareEnsemble {
 	 * <B>Note:</B> Audio driver different to {@link Audio} members are on hold!
 	 * 
 	 * @throws InterruptedException
+	 *             audio play-back interrupted
 	 * @throws LineUnavailableException
+	 *             audio line currently in use
 	 * @throws IOException
+	 *             audio output file cannot be written
 	 */
 	private void open() throws InterruptedException, IOException, LineUnavailableException {
 		playList = PlayList.getInstance(config, tune);
@@ -585,7 +596,7 @@ public class Player extends HardwareEnsemble {
 	 * @param command
 	 *            basic command to be entered after a normal reset
 	 */
-	private final void play(final SidTune tune, final String command) {
+	private void play(final SidTune tune, final String command) {
 		stopC64();
 		setTune(tune);
 		setCommand(command);
@@ -648,11 +659,13 @@ public class Player extends HardwareEnsemble {
 	 * 
 	 * @param function
 	 *            mixer function to apply
+	 * @param <T>
+	 *            mixer info return type
 	 * @param defaultValue
 	 *            default value, if SIDBuilder does not implement a mixer
 	 * @return mixer info
 	 */
-	public final <T> T getMixerInfo(Function<Mixer, T> function, T defaultValue) {
+	public final <T> T getMixerInfo(final Function<Mixer, T> function, final T defaultValue) {
 		boolean isMixer = sidBuilder instanceof Mixer;
 		return isMixer ? function.apply((Mixer) sidBuilder) : defaultValue;
 	}
@@ -670,7 +683,7 @@ public class Player extends HardwareEnsemble {
 	 * @param sidDatabase
 	 *            song length database
 	 */
-	public final void setSidDatabase(SidDatabase sidDatabase) {
+	public final void setSidDatabase(final SidDatabase sidDatabase) {
 		this.sidDatabase = sidDatabase;
 	}
 
@@ -679,21 +692,23 @@ public class Player extends HardwareEnsemble {
 	 * 
 	 * @param function
 	 *            SidDatabase function to apply
+	 * @param <T>
+	 *            SidDatabase return type
 	 * @param defaultValue
 	 *            default value, if database is not set
 	 * @return song length database info
 	 */
-	public final <T> T getSidDatabaseInfo(Function<SidDatabase, T> function, T defaultValue) {
+	public final <T> T getSidDatabaseInfo(final Function<SidDatabase, T> function, final T defaultValue) {
 		return sidDatabase != null ? function.apply(sidDatabase) : defaultValue;
 	}
 
 	/**
-	 * Set SID Tune Information List (STIL)
+	 * Set SID Tune Information List (STIL).
 	 * 
 	 * @param stil
 	 *            SID Tune Information List
 	 */
-	public final void setSTIL(STIL stil) {
+	public final void setSTIL(final STIL stil) {
 		this.stil = stil;
 	}
 
@@ -704,7 +719,7 @@ public class Player extends HardwareEnsemble {
 	 *            entry path to get infos for
 	 * @return SID Tune Information List info
 	 */
-	public final STILEntry getStilEntry(String collectionName) {
+	public final STILEntry getStilEntry(final String collectionName) {
 		return stil != null && collectionName != null ? stil.getSTILEntry(collectionName) : null;
 	}
 
@@ -714,16 +729,18 @@ public class Player extends HardwareEnsemble {
 	 * @param recordingFilenameProvider
 	 *            provider of recording filenames
 	 */
-	public void setRecordingFilenameProvider(Function<SidTune, String> recordingFilenameProvider) {
+	public final void setRecordingFilenameProvider(final Function<SidTune, String> recordingFilenameProvider) {
 		this.recordingFilenameProvider = recordingFilenameProvider;
 	}
 
 	/**
 	 * The credits for the authors of many parts of this emulator.
 	 * 
+	 * @param properties
+	 *            containing dynamic values for the credits
 	 * @return the credits
 	 */
-	public final String getCredits(Properties properties) {
+	public final String getCredits(final Properties properties) {
 		final StringBuffer credits = new StringBuffer();
 		credits.append("Java Version and User Interface v");
 		credits.append(properties.getProperty("version"));
@@ -785,7 +802,9 @@ public class Player extends HardwareEnsemble {
 	 * @param args
 	 *            the filename of the tune is the first arg
 	 * @throws SidTuneError
+	 *             SID tune error
 	 * @throws IOException
+	 *             tune file cannot be read
 	 */
 	public static void main(final String[] args) throws IOException, SidTuneError {
 		if (args.length < 1) {
