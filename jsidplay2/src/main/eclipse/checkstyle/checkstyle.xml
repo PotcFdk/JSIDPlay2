@@ -7,18 +7,21 @@
 <!--
     Checkstyle-Configuration: JSIDPlay2 Checks
     Description: 
-Slightly modified version of Sun Checks that better matches the default code formatter setting of Eclipse and JSIDPlay2.
+Slightly modified version of Sun Checks that better matches the default code formatter setting of Eclipse and JsiPlay2.
 -->
 <module name="Checker">
   <property name="severity" value="warning"/>
   <module name="TreeWalker">
     <property name="tabWidth" value="4"/>
     <module name="JavadocMethod">
+      <property name="scope" value="protected"/>
       <property name="suppressLoadErrors" value="true"/>
     </module>
     <module name="JavadocType"/>
     <module name="JavadocVariable"/>
-    <module name="JavadocStyle"/>
+    <module name="JavadocStyle">
+      <property name="endOfSentenceFormat" value="([.?!][ \t\n\r\f&lt;])|($)"/>
+    </module>
     <module name="ConstantName"/>
     <module name="LocalFinalVariableName"/>
     <module name="LocalVariableName"/>

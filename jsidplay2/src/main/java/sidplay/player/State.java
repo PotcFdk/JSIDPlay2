@@ -1,5 +1,11 @@
 package sidplay.player;
 
+/**
+ * SID player state.
+ * 
+ * @author ken
+ *
+ */
 public enum State {
 	/** Player starts to play a tune */
 	START,

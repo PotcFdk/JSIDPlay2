@@ -14,28 +14,40 @@ import libsidplay.sidtune.SidTune;
  * Additionally the fade-in and fade-out start time notification has been added.
  */
 public abstract class Timer {
-	final Event startTimeEvent = new Event("Timer Start") {
+	/**
+	 * Tune start time has been reached
+	 */
+	private Event startTimeEvent = new Event("Timer Start") {
 		@Override
 		public void event() throws InterruptedException {
 			start();
 		}
 	};
 
-	final Event endTimeEvent = new Event("Timer End") {
+	/**
+	 * Tune end time has been reached
+	 */
+	private Event endTimeEvent = new Event("Timer End") {
 		@Override
 		public void event() throws InterruptedException {
 			end();
 		}
 	};
 
-	final Event fadeInStartTimeEvent = new Event("Fade-in Start") {
+	/**
+	 * Tune fade-in time has been reached
+	 */
+	private Event fadeInStartTimeEvent = new Event("Fade-in Start") {
 		@Override
 		public void event() throws InterruptedException {
 			fadeInStart(fadeIn);
 		}
 	};
 
-	final Event fadeOutStartTimeEvent = new Event("Fade-out Start") {
+	/**
+	 * Tune fade-out time has been reached
+	 */
+	private Event fadeOutStartTimeEvent = new Event("Fade-out Start") {
 		@Override
 		public void event() throws InterruptedException {
 			fadeOutStart(fadeOut);
@@ -67,14 +79,29 @@ public abstract class Timer {
 	 */
 	private final Player player;
 
+	/**
+	 * Create a song length timer for the player
+	 * 
+	 * @param player
+	 *            SID player
+	 */
 	public Timer(final Player player) {
 		this.player = player;
 	}
 
-	public void setStart(int start) {
+	/**
+	 * Set tune start time
+	 * 
+	 * @param start
+	 *            start time
+	 */
+	public final void setStart(final int start) {
 		this.start = start;
 	}
 
+	/**
+	 * Reset timer events
+	 */
 	public final void reset() {
 		final IConfig config = player.getConfig();
 		fadeIn = config.getSidplay2Section().getFadeInTime();
@@ -133,8 +160,13 @@ public abstract class Timer {
 	/**
 	 * Schedule start or end timer event.<BR>
 	 * Note: If the event is in the past: trigger immediately
+	 * 
+	 * @param seconds
+	 *            absolute schedule time in seconds
+	 * @param event
+	 *            timer event to schedule
 	 */
-	private long schedule(long seconds, Event event) {
+	private long schedule(final long seconds, final Event event) {
 		EventScheduler eventScheduler = player.getC64().getEventScheduler();
 		double cyclesPerSecond = eventScheduler.getCyclesPerSecond();
 		long absoluteCycles = (long) (seconds * cyclesPerSecond);
@@ -150,20 +182,40 @@ public abstract class Timer {
 
 	/**
 	 * Cancel event.
+	 * 
+	 * @param timer
+	 *            evebt to cancel
 	 */
-	private void cancel(Event event) {
+	private void cancel(final Event event) {
 		player.getC64().getEventScheduler().cancel(event);
 	}
 
-	public long getEnd() {
+	/**
+	 * Get tune end time in cycles
+	 * 
+	 * @return tune end time
+	 */
+	public final long getEnd() {
 		return end;
 	}
 
+	/**
+	 * Notification of tune start
+	 */
 	public abstract void start();
 
+	/**
+	 * Notification of tune end
+	 */
 	public abstract void end();
 
+	/**
+	 * Notification of tune fade-in start
+	 */
 	public abstract void fadeInStart(int fadeIn);
 
+	/**
+	 * Notification of tune fade-out start
+	 */
 	public abstract void fadeOutStart(int fadeOut);
 }

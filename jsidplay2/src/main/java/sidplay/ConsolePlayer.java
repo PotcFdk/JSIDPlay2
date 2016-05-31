@@ -131,7 +131,7 @@ final public class ConsolePlayer {
 	@Parameter(description = "filename")
 	private List<String> filenames = new ArrayList<String>();
 
-	private ConsolePlayer(String[] args) {
+	private ConsolePlayer(final String[] args) {
 		try {
 			JCommander commander = new JCommander(this, args);
 			commander.setProgramName(getClass().getName());

@@ -49,8 +49,14 @@ public class PlayList {
 
 	/**
 	 * Get instance results in a new play-list each time the tune changes.
+	 * 
+	 * @param config
+	 *            configuration
+	 * @param tune
+	 *            SID tune
+	 * @return play list of the current tune
 	 */
-	public static final PlayList getInstance(final IConfig config, final SidTune tune) {
+	public static PlayList getInstance(final IConfig config, final SidTune tune) {
 		if (tune == SidTune.RESET) {
 			return NONE;
 		}
@@ -62,7 +68,9 @@ public class PlayList {
 	}
 
 	/**
-	 * Get currently selected play list entry
+	 * Get currently selected play list entry.
+	 * 
+	 * @return current song number
 	 */
 	public int getCurrent() {
 		return current;
@@ -70,6 +78,8 @@ public class PlayList {
 
 	/**
 	 * Get current track (play list entry relative to the first).
+	 * 
+	 * @return track number
 	 */
 	public int getTrackNum() {
 		int start = current - first + 1;
@@ -77,7 +87,9 @@ public class PlayList {
 	}
 
 	/**
-	 * Get number of entries
+	 * Get number of entries.
+	 * 
+	 * @return number of songs
 	 */
 	public int getLength() {
 		return length;
@@ -114,6 +126,8 @@ public class PlayList {
 
 	/**
 	 * Is a previous play list entry available?
+	 * 
+	 * @return is a previous song available?
 	 */
 	public boolean hasPrevious() {
 		return current != first;
@@ -121,6 +135,8 @@ public class PlayList {
 
 	/**
 	 * Is a next play list entry available?
+	 * 
+	 * @return is a next song available?
 	 */
 	public boolean hasNext() {
 		return getNext() != first;
@@ -128,6 +144,8 @@ public class PlayList {
 
 	/**
 	 * Get previous play list entry.
+	 * 
+	 * @return the previous song of the play list
 	 */
 	public int getPrevious() {
 		int previous = config.getSidplay2Section().isSingle() ? current : current - 1;
@@ -136,12 +154,17 @@ public class PlayList {
 
 	/**
 	 * Get next play list entry.
+	 * 
+	 * @return the next song of the play list
 	 */
 	public int getNext() {
 		int next = config.getSidplay2Section().isSingle() ? current : current + 1;
 		return next > length ? 1 : next;
 	}
 
+	/**
+	 * Default play list, if no tune has been loaded.
+	 */
 	private static final PlayList NONE = new PlayList() {
 		@Override
 		public int getCurrent() {
@@ -195,5 +218,8 @@ public class PlayList {
 		}
 
 	};
+	/**
+	 * Single instance play list per tune.
+	 */
 	private static PlayList singleton = NONE;
 }
