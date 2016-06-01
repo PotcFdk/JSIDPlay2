@@ -46,10 +46,6 @@ public class CmpMP3File extends JavaSound {
 				return jump3r.getFrameSize();
 			}
 
-			@Override
-			public int getFrameRate() {
-				return jump3r.getSampleRate();
-			}
 		}, recordingFilename);
 	}
 

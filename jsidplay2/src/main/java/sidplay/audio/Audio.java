@@ -5,6 +5,12 @@ import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.MP3Driver.MP3File;
 
+/**
+ * Audio output.
+ * 
+ * @author ken
+ *
+ */
 public enum Audio {
 	/** Java Sound API. */
 	SOUNDCARD(new JavaSound()),
@@ -20,19 +26,39 @@ public enum Audio {
 	COMPARE_MP3(CMP_MP3 = new CmpMP3File());
 
 	private final AudioDriver audioDriver;
-	
-	private Audio(AudioDriver audioDriver) {
+
+	/**
+	 * Create audio output using the audio driver
+	 * 
+	 * @param audioDriver
+	 *            audio driver
+	 */
+	Audio(final AudioDriver audioDriver) {
 		this.audioDriver = audioDriver;
 	}
 
+	/**
+	 * Get audio driver
+	 * 
+	 * @return audio driver
+	 */
 	public final AudioDriver getAudioDriver() {
 		return audioDriver;
 	}
 
-	private final static CmpMP3File CMP_MP3;
+	private static final CmpMP3File CMP_MP3;
 	private AudioDriver oldAudioDriver;
-	
-	public final AudioDriver getAudioDriver(final IAudioSection audioSection, SidTune tune) {
+
+	/**
+	 * Get audio driver for tune.
+	 * 
+	 * @param audioSection
+	 *            configuration
+	 * @param tune
+	 *            SID tune
+	 * @return audio driver to use
+	 */
+	public final AudioDriver getAudioDriver(final IAudioSection audioSection, final SidTune tune) {
 		return handleMP3(audioSection, tune, audioDriver);
 	}
 

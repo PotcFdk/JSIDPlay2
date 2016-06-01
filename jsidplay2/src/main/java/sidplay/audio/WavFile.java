@@ -63,16 +63,16 @@ public class WavFile implements AudioDriver {
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException {
-		final int blockAlign = Short.BYTES * cfg.channels;
+		final int blockAlign = Short.BYTES * cfg.getChannels();
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
 		wavHdr.length = HEADER_LENGTH - HEADER_OFFSET;
 		wavHdr.format = 1;
-		wavHdr.channels = (short) cfg.channels;
-		wavHdr.sampleFreq = cfg.frameRate;
-		wavHdr.bytesPerSec = cfg.frameRate * blockAlign;
+		wavHdr.channels = (short) cfg.getChannels();
+		wavHdr.sampleFreq = cfg.getFrameRate();
+		wavHdr.bytesPerSec = cfg.getFrameRate() * blockAlign;
 		wavHdr.blockAlign = (short) blockAlign;
 		wavHdr.bitsPerSample = 16;
 

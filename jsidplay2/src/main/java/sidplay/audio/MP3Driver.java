@@ -111,11 +111,11 @@ public abstract class MP3Driver implements AudioDriver {
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException {
-		final int blockAlign = Short.BYTES * cfg.channels;
+		final int blockAlign = Short.BYTES * cfg.getChannels();
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		AudioFormat audioFormat = new AudioFormat(cfg.frameRate, Short.SIZE, cfg.channels, true, false);
+		AudioFormat audioFormat = new AudioFormat(cfg.getFrameRate(), Short.SIZE, cfg.getChannels(), true, false);
 		jump3r = new LameEncoder(audioFormat, cbr, MPEGMode.STEREO, vbrQuality, vbr);
 		out = getOut(recordingFilename);
 	}

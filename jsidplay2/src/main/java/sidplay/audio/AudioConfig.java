@@ -18,11 +18,17 @@ package sidplay.audio;
 import libsidplay.config.IAudioSection;
 import resid_builder.SIDMixer;
 
+/**
+ * Audio configuration (frame rate, channels, etc.)
+ * 
+ * @author ken
+ *
+ */
 public class AudioConfig {
-	protected final int frameRate;
-	protected final int channels;
-	protected int bufferFrames;
-	protected final int deviceIdx;
+	private final int frameRate;
+	private final int channels;
+	private int bufferFrames;
+	private final int deviceIdx;
 
 	/**
 	 * This instance represents the requested audio configuration
@@ -34,7 +40,7 @@ public class AudioConfig {
 	 * @param deviceIdx
 	 *            The sound device number.
 	 */
-	protected AudioConfig(int frameRate, int channels, int deviceIdx) {
+	protected AudioConfig(final int frameRate, final int channels, final int deviceIdx) {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.deviceIdx = deviceIdx;
@@ -56,7 +62,7 @@ public class AudioConfig {
 	 * 
 	 * @return AudioConfig for current specification
 	 */
-	public static AudioConfig getInstance(IAudioSection audio) {
+	public static AudioConfig getInstance(final IAudioSection audio) {
 		return new AudioConfig(audio.getSamplingRate().getFrequency(), 2, audio.getDevice());
 	}
 
@@ -65,7 +71,7 @@ public class AudioConfig {
 	 * 
 	 * @return The audio framerate of this AudioConfig.
 	 */
-	public int getFrameRate() {
+	public final int getFrameRate() {
 		return frameRate;
 	}
 
@@ -85,15 +91,36 @@ public class AudioConfig {
 	 * 
 	 * @return The size of this AudioConfig's audio buffer in frames.
 	 */
-	public int getBufferFrames() {
+	public final int getBufferFrames() {
 		return bufferFrames;
 	}
 
-	public int getChannels() {
+	/**
+	 * The actual buffer size for the open audio line may differ from the
+	 * requested buffer size, therefore
+	 * 
+	 * @param bufferFrames
+	 *            available buffer frames
+	 */
+	public final void setBufferFrames(final int bufferFrames) {
+		this.bufferFrames = bufferFrames;
+	}
+
+	/**
+	 * Get number of audio channels
+	 * 
+	 * @return audio channels
+	 */
+	public final int getChannels() {
 		return channels;
 	}
 
-	public int getDevice() {
+	/**
+	 * Get currently used audio device
+	 * 
+	 * @return audio device
+	 */
+	public final int getDevice() {
 		return deviceIdx;
 	}
 
