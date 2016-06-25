@@ -878,12 +878,20 @@ public class MOS6510 {
 			case ORAay:
 			case SBCay:
 				access = AccessMode.READ;
-
+				final int _i = i;
 				instrTable[buildCycle++] = () -> FetchLowAddr();
 
 				instrTable[buildCycle++] = () -> {
 					FetchHighAddrY();
-					if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
+					boolean condition = Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress;
+					switch (_i) {
+					case ADCay:
+						// EoD workaround, but wrong (therefore inactive)
+						// best guess: page boundary crossing is wrong!
+						// condition = true;
+						break;
+					}
+					if (condition) {
 						cycleCount++;
 					}
 				};
