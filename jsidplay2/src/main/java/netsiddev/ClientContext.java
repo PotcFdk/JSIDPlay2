@@ -24,6 +24,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
+import netsiddev.ini.IniJSIDDeviceAudioSection;
 import netsiddev.ini.JSIDDeviceConfig;
 import sidplay.audio.AudioConfig;
 
@@ -539,7 +540,9 @@ class ClientContext {
 							sc.configureBlocking(false);
 
 							sc.register(selector, SelectionKey.OP_READ);
-							ClientContext cc = new ClientContext(AudioConfig.getInstance(config.audio()),
+							IniJSIDDeviceAudioSection audio = config.audio();
+							AudioConfig audioConfig = new AudioConfig(audio.getSamplingRate().getFrequency(), 2, audio.getDevice());
+							ClientContext cc = new ClientContext(audioConfig,
 									config.jsiddevice().getLatency());
 							clientContextMap.put(sc, cc);
 							System.out.println("New client: " + cc);

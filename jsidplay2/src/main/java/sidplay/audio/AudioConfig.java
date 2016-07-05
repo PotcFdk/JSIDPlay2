@@ -40,7 +40,7 @@ public class AudioConfig {
 	 * @param deviceIdx
 	 *            The sound device number.
 	 */
-	protected AudioConfig(final int frameRate, final int channels, final int deviceIdx) {
+	public AudioConfig(final int frameRate, final int channels, final int deviceIdx) {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.deviceIdx = deviceIdx;

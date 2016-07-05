@@ -25,9 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import libsidplay.config.IAudioSection;
 import libsidplay.config.IFilterSection;
-import sidplay.ini.IniAudioSection;
 import sidplay.ini.IniFilterSection;
 import sidplay.ini.IniReader;
 
@@ -55,7 +53,7 @@ public class JSIDDeviceConfig {
 
 	private IniJSIDDeviceSection jsiddeviceSection;
 
-	private IAudioSection audioSection;
+	private IniJSIDDeviceAudioSection audioSection;
 
 	protected IniReader iniReader;
 
@@ -92,7 +90,7 @@ public class JSIDDeviceConfig {
 
 	private void clear() {
 		jsiddeviceSection = new IniJSIDDeviceSection(iniReader);
-		audioSection = new IniAudioSection(iniReader);
+		audioSection = new IniJSIDDeviceAudioSection(iniReader);
 
 		final List<String> filters = new ArrayList<String>();
 		final List<String> filtersResidfp = new ArrayList<String>();
@@ -230,7 +228,7 @@ public class JSIDDeviceConfig {
 		return jsiddeviceSection;
 	}
 
-	public final IAudioSection audio() {
+	public final IniJSIDDeviceAudioSection audio() {
 		return audioSection;
 	}
 
