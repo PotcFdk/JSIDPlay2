@@ -17,6 +17,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.TextFieldTableCell;
+import kickassu.errors.AsmError;
+import kickassu.exceptions.AsmErrorException;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.WebUtils;
@@ -25,7 +27,6 @@ import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import cml.kickass.exceptions.AsmError;
 
 public class Asm extends Tab implements UIPart {
 
@@ -106,9 +107,9 @@ public class Asm extends Tab implements UIPart {
 			SidTune tune = SidTune.load("assembly.prg", is);
 			status.setText("");
 			util.getPlayer().play(tune);
-		} catch (AsmError e) {
-			if (e.getDebugInfo() != null) {
-				highlightError(e);
+		} catch (AsmErrorException e) {
+			if (e.getError() != null) {
+				highlightError(e.getError());
 			}
 			status.setText(e.getMessage());
 		} catch (UnsupportedEncodingException e) {
@@ -123,12 +124,12 @@ public class Asm extends Tab implements UIPart {
 		int line = 0;
 		try (Scanner s = new Scanner(contents.getText())) {
 			s.useDelimiter("\n");
-			while (s.hasNext() && line < e.getDebugInfo().getLine()) {
+			while (s.hasNext() && line < e.getRange().getStartLineNo()) {
 				pos += s.next().length() + 1;
 				line++;
 			}
 		}
-		contents.positionCaret(pos + e.getDebugInfo().getCollumn());
+		contents.positionCaret(pos + e.getRange().getStartLinePos());
 		contents.selectNextWord();
 	}
 }

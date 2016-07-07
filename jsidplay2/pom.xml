@@ -67,7 +67,7 @@
 		<dependency>
 			<groupId>kickassembler</groupId>
 			<artifactId>kickassembler</artifactId>
-			<version>3.4.1</version>
+			<version>4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.ucanaccess</groupId>

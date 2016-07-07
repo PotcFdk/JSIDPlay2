@@ -7,7 +7,7 @@
 	.byte 0
 basic:	.word 0
 	sei
-	.if (cmdLineVars.get("ftFastDisable").asNumber()==1) inc $d030 else bit $d030
+	.if (cmdLineVars.get("ftFastDisable").asNumber()==1) inc $d030; else bit $d030
 	lda #$38
 	sta $01
 .label ftIBufferSize=*+1
@@ -180,7 +180,7 @@ loop3:
 loop9:
 	lda #cmdLineVars.get("ftMemConfig").asNumber()
 	sta $01
-	.if (cmdLineVars.get("ftFastDisable").asNumber()==1) dec $d030 else bit $d030
+	.if (cmdLineVars.get("ftFastDisable").asNumber()==1) dec $d030; else bit $d030
 	lda target2+1
 	sta $2d
 	lda target2+2
