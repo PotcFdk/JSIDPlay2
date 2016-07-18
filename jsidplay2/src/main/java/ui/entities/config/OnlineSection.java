@@ -22,7 +22,7 @@ public class OnlineSection {
 	private static final String DEPLOYMENT_URL;
 
 	static {
-		String codebase = "http://kenchis.t15.org/jsidplay2/javafx/";
+		String codebase = "http://haendel.ddns.net/~ken/";
 		try {
 			// Determine download URL from project URL
 			URI uri = OnlineSection.class.getResource("/META-INF/MANIFEST.MF").toURI();
@@ -38,7 +38,7 @@ public class OnlineSection {
 		DEPLOYMENT_URL = codebase;
 	}
 
-	private String hvscUrl = DEPLOYMENT_URL + "C64Music.zip";
+	private String hvscUrl = DEPLOYMENT_URL + "online/hvsc/C64Music.zip";
 
 	public String getHvscUrl() {
 		return hvscUrl;
@@ -48,7 +48,7 @@ public class OnlineSection {
 		this.hvscUrl = hvscUrl;
 	}
 
-	private String cgscUrl = DEPLOYMENT_URL + "CGSC.zip";
+	private String cgscUrl = DEPLOYMENT_URL + "online/cgsc/CGSC.zip";
 
 	public String getCgscUrl() {
 		return cgscUrl;
@@ -58,7 +58,7 @@ public class OnlineSection {
 		this.cgscUrl = cgscUrl;
 	}
 
-	private String hvmecUrl = DEPLOYMENT_URL + "HVMEC.zip";
+	private String hvmecUrl = DEPLOYMENT_URL + "online/hvmec/HVMEC.zip";
 
 	public String getHvmecUrl() {
 		return hvmecUrl;
@@ -68,7 +68,7 @@ public class OnlineSection {
 		this.hvmecUrl = hvmecUrl;
 	}
 
-	private String demosUrl = DEPLOYMENT_URL + "Demos.zip";
+	private String demosUrl = DEPLOYMENT_URL + "online/demos/Demos.zip";
 
 	public String getDemosUrl() {
 		return demosUrl;
@@ -78,7 +78,7 @@ public class OnlineSection {
 		this.demosUrl = demosUrl;
 	}
 
-	private String magazinesUrl = DEPLOYMENT_URL + "C64Magazines.zip";
+	private String magazinesUrl = DEPLOYMENT_URL + "online/magazines/C64Magazines.zip";
 
 	public String getMagazinesUrl() {
 		return magazinesUrl;
@@ -88,7 +88,7 @@ public class OnlineSection {
 		this.magazinesUrl = magazinesUrl;
 	}
 
-	private String gamebaseUrl = DEPLOYMENT_URL + "GameBase64.zip";
+	private String gamebaseUrl = DEPLOYMENT_URL + "online/gamebase/GameBase64.zip";
 
 	public String getGamebaseUrl() {
 		return gamebaseUrl;

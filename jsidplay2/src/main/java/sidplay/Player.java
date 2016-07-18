@@ -69,6 +69,11 @@ public class Player extends HardwareEnsemble {
 	 */
 	private static final int PAUSE_SLEEP_TIME = 250;
 	/**
+	 * Timeout (in ms) for quitting the player.
+	 */
+	private static final int PAUSE_QUIT_TIME = 1000;
+	
+	/**
 	 * Previous song select timeout (< 4 secs).
 	 */
 	private static final int PREV_SONG_TIMEOUT = 4;
@@ -438,7 +443,11 @@ public class Player extends HardwareEnsemble {
 				if (quitOrWait) {
 					quit();
 				}
-				playerThread.join(PAUSE_SLEEP_TIME);
+				playerThread.join(PAUSE_QUIT_TIME);
+				if (playerThread.isAlive()) {
+					// emergency break, if audio driver is locked
+					playerThread.interrupt();
+				}
 			}
 		} catch (InterruptedException e) {
 		}
