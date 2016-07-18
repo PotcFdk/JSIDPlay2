@@ -95,6 +95,12 @@ public class MOS6510Debug extends MOS6510 {
 	}
 
 	protected void dumpState(long time, MOS6510 cpu) {
+		final String m_fdbg = getState(time);
+
+		MOS6510.info(m_fdbg);
+	}
+
+	protected String getState(long time) {
 		final StringBuffer m_fdbg = new StringBuffer();
 		m_fdbg.append(String.format(" PC  I  A  X  Y  SP  DR PR NV-BDIZC  Instruction (%d)\n", time));
 		m_fdbg.append(String.format("%04x ", instrStartPC));
@@ -619,7 +625,6 @@ public class MOS6510Debug extends MOS6510 {
 		default:
 			break;
 		}
-
-		MOS6510.info(m_fdbg.toString());
+		return m_fdbg.toString();
 	}
 }
