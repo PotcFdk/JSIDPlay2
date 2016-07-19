@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import java.net.URL?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.Group?>
@@ -24,27 +27,30 @@
 	<stylesheets>
 		<URL value="@Asm.css" />
 	</stylesheets>
-	<VBox>
-		<Hyperlink text="%HOMEPAGE" textFill="BLUE" underline="true"
-			onAction="#gotoHomepage" />
-		<HBox AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
-			AnchorPane.topAnchor="10" prefHeight="600">
-			<TextArea editable="true" fx:id="contents" />
-			<VBox alignment="TOP_CENTER" >
-				<TableView editable="true" minWidth="320" minHeight="200"
-					fx:id="variablesTable">
+	<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
+		<children>
+			<Hyperlink text="%HOMEPAGE" textFill="BLUE" underline="true"
+				onAction="#gotoHomepage" GridPane.rowIndex="0" GridPane.columnIndex="0"
+				GridPane.columnSpan="2" />
+			<TextArea editable="true" fx:id="contents"
+				GridPane.rowIndex="1" GridPane.columnIndex="0" />
+			<VBox alignment="TOP_CENTER" GridPane.rowIndex="1"
+				GridPane.columnIndex="1">
+				<TableView editable="true" fx:id="variablesTable"
+					VBox.vgrow="ALWAYS">
 					<rowFactory>
 						<VariablesRowFactory />
 					</rowFactory>
 					<columns>
 						<TableColumn text="%VAR_NAME" fx:id="varNameColumn"
-							prefWidth="100" editable="true">
+							editable="true">
 							<cellValueFactory>
 								<PropertyValueFactory property="name" />
 							</cellValueFactory>
 						</TableColumn>
-						<TableColumn text="%VAR_VALUE" prefWidth="200"
-							editable="true" fx:id="varValueColumn">
+						<TableColumn text="%VAR_VALUE" editable="true"
+							fx:id="varValueColumn">
 							<cellValueFactory>
 								<PropertyValueFactory property="value" />
 							</cellValueFactory>
@@ -77,9 +83,24 @@
 				<Button text="%COMPILE" onAction="#compile"
 					AnchorPane.bottomAnchor="10" />
 			</VBox>
-		</HBox>
-		<TitledPane text="%ERRORS">
-			<Label fx:id="status" />
-		</TitledPane>
-	</VBox>
+			<TitledPane text="%ERRORS" GridPane.rowIndex="2"
+				GridPane.columnIndex="0" GridPane.columnSpan="2">
+				<Label fx:id="status" alignment="TOP_LEFT"/>
+			</TitledPane>
+		</children>
+		<columnConstraints>
+			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+				percentWidth="60.0" prefWidth="100.0" />
+			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+				percentWidth="40.0" prefWidth="100.0" />
+		</columnConstraints>
+		<rowConstraints>
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="3.0" prefHeight="100.0" valignment="TOP" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="77.0" prefHeight="100.0" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="20.0" prefHeight="100.0" valignment="TOP" />
+		</rowConstraints>
+	</GridPane>
 </AnchorPane>

@@ -119,7 +119,8 @@ public class KickAssembler {
 		} catch (AsmErrorException e) {
 			AsmError asmError = e.getError();
 			asmError.setCallStack(evaluationState.getCallStack());
-			System.err.println(StackTraceErrorPrinter.instance.printError(asmError, evaluationState));
+			System.err.println(asmError.getOneLineString(evaluationState));
+			throw new AsmErrorException(asmError);
 		} catch (Exception e) {
 			System.err.println(e);
 		}

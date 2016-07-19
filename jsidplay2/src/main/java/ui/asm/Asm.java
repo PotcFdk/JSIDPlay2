@@ -60,6 +60,7 @@ public class Asm extends Tab implements UIPart {
 
 	@FXML
 	private void initialize() {
+		status.setPrefHeight(Double.MAX_VALUE);
 		assembler = new KickAssembler();
 		InputStream is = Asm.class.getResourceAsStream(ASM_EXAMPLE);
 		try (Scanner s = new Scanner(is, "ISO-8859-1")) {
@@ -73,6 +74,8 @@ public class Asm extends Tab implements UIPart {
 				.setValue(evt.getNewValue()));
 		variables = FXCollections.<Variable> observableArrayList();
 		variablesTable.setItems(variables);
+		varNameColumn.prefWidthProperty().bind(variablesTable.widthProperty().multiply(0.4));
+		varValueColumn.prefWidthProperty().bind(variablesTable.widthProperty().multiply(0.6));
 	}
 
 	@FXML
@@ -122,14 +125,16 @@ public class Asm extends Tab implements UIPart {
 	private void highlightError(AsmError e) {
 		int pos = 0;
 		int line = 0;
-		try (Scanner s = new Scanner(contents.getText())) {
-			s.useDelimiter("\n");
-			while (s.hasNext() && line < e.getRange().getStartLineNo()) {
-				pos += s.next().length() + 1;
-				line++;
+		if (e.getRange()!=null) {
+			try (Scanner s = new Scanner(contents.getText())) {
+				s.useDelimiter("\n");
+				while (s.hasNext() && line < e.getRange().getStartLineNo()-1) {
+					pos += s.next().length() + 1;
+					line++;
+				}
 			}
+			contents.positionCaret(pos + e.getRange().getStartLinePos() - 1);
 		}
-		contents.positionCaret(pos + e.getRange().getStartLinePos());
 		contents.selectNextWord();
 	}
 }
