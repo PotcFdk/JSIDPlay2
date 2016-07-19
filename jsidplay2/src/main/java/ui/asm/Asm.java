@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -17,6 +18,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import kickassu.errors.AsmError;
 import kickassu.exceptions.AsmErrorException;
 import libsidplay.sidtune.SidTune;
@@ -72,10 +75,26 @@ public class Asm extends Tab implements UIPart {
 		varValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		varValueColumn.setOnEditCommit((evt) -> evt.getTableView().getItems().get(evt.getTablePosition().getRow())
 				.setValue(evt.getNewValue()));
-		variables = FXCollections.<Variable> observableArrayList();
+		variables = FXCollections.<Variable>observableArrayList();
 		variablesTable.setItems(variables);
 		varNameColumn.prefWidthProperty().bind(variablesTable.widthProperty().multiply(0.4));
 		varValueColumn.prefWidthProperty().bind(variablesTable.widthProperty().multiply(0.6));
+
+		contents.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.Z && event.isControlDown()) {
+					contents.undo();
+					event.consume();
+				}
+				if (event.getCode() == KeyCode.Y && event.isControlDown()) {
+					contents.redo();
+					event.consume();
+				}
+
+			}
+		});
 	}
 
 	@FXML
@@ -125,10 +144,10 @@ public class Asm extends Tab implements UIPart {
 	private void highlightError(AsmError e) {
 		int pos = 0;
 		int line = 0;
-		if (e.getRange()!=null) {
+		if (e.getRange() != null) {
 			try (Scanner s = new Scanner(contents.getText())) {
 				s.useDelimiter("\n");
-				while (s.hasNext() && line < e.getRange().getStartLineNo()-1) {
+				while (s.hasNext() && line < e.getRange().getStartLineNo() - 1) {
 					pos += s.next().length() + 1;
 					line++;
 				}
