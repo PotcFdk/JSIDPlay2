@@ -2,6 +2,8 @@
 
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
@@ -19,90 +21,120 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
 	<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
 		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
-		<CheckBox text="%AUTO_CONFIGURATION" fx:id="enableGameBase"
-			onAction="#doEnableGameBase" GridPane.rowIndex="0"
-			GridPane.columnIndex="0" GridPane.columnSpan="2" />
-		<HBox GridPane.rowIndex="1" GridPane.columnIndex="0">
-			<Label text="%REG_EXPR_FILTER" />
-			<TextField fx:id="filterField" />
-		</HBox>
-		<TitledPane text="%INDEX" collapsible="false"
-			GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.rowSpan="7"
-			GridPane.valignment="TOP" minWidth="400" GridPane.hgrow="ALWAYS"
-			GridPane.vgrow="ALWAYS">
-			<TabPane focusTraversable="false" fx:id="letter"
-				tabClosingPolicy="UNAVAILABLE">
-				<GameBasePage text="#" disable="true" />
-				<GameBasePage text="A" disable="true" />
-				<GameBasePage text="B" disable="true" />
-				<GameBasePage text="C" disable="true" />
-				<GameBasePage text="D" disable="true" />
-				<GameBasePage text="E" disable="true" />
-				<GameBasePage text="F" disable="true" />
-				<GameBasePage text="G" disable="true" />
-				<GameBasePage text="H" disable="true" />
-				<GameBasePage text="I" disable="true" />
-				<GameBasePage text="J" disable="true" />
-				<GameBasePage text="K" disable="true" />
-				<GameBasePage text="L" disable="true" />
-				<GameBasePage text="M" disable="true" />
-				<GameBasePage text="N" disable="true" />
-				<GameBasePage text="O" disable="true" />
-				<GameBasePage text="P" disable="true" />
-				<GameBasePage text="Q" disable="true" />
-				<GameBasePage text="R" disable="true" />
-				<GameBasePage text="S" disable="true" />
-				<GameBasePage text="T" disable="true" />
-				<GameBasePage text="U" disable="true" />
-				<GameBasePage text="V" disable="true" />
-				<GameBasePage text="W" disable="true" />
-				<GameBasePage text="X" disable="true" />
-				<GameBasePage text="Y" disable="true" />
-				<GameBasePage text="Z" disable="true" />
-			</TabPane>
-		</TitledPane>
-		<ImageView fx:id="screenshot" fitWidth="320" fitHeight="200"
-			preserveRatio="true" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-		<TitledPane text="%INFOS" collapsible="false"
-			GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="320">
-			<TextField fx:id="infos" />
-		</TitledPane>
-		<TitledPane text="%PROGRAMMER" collapsible="false"
-			GridPane.rowIndex="4" GridPane.columnIndex="1" maxWidth="320">
-			<TextField fx:id="programmer" />
-		</TitledPane>
-		<TitledPane text="%CATEGORY" collapsible="false"
-			GridPane.rowIndex="5" GridPane.columnIndex="1" maxWidth="320">
-			<TextField fx:id="category" />
-		</TitledPane>
-		<TitledPane text="%MUSICIAN" collapsible="false"
-			GridPane.rowIndex="6" GridPane.columnIndex="1" maxWidth="320">
-			<TextField fx:id="musician" />
-		</TitledPane>
-		<TitledPane text="%COMMENT" collapsible="false"
-			GridPane.rowIndex="7" GridPane.columnIndex="1" maxWidth="320">
-			<TextArea fx:id="comment" maxWidth="320" maxHeight="40" />
-		</TitledPane>
-		<Button text="%MUSIC_GET" fx:id="linkMusic" onAction="#downloadMusic"
-			GridPane.rowIndex="8" GridPane.columnIndex="1" minWidth="320" />
-		<TitledPane text="%CONFIGURATION" collapsible="true"
-			expanded="false" GridPane.rowIndex="9" GridPane.columnIndex="0"
-			GridPane.columnSpan="3">
-			<HBox>
-				<Label text="%BASE_DIR" />
-				<TextField fx:id="gameBaseFile" disable="true" />
-				<Button text="%BROWSE" onAction="#doBrowse">
-					<graphic>
-						<ImageView>
-							<image>
-								<Image url="@/ui/icons/browse.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</Button>
-				<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
-					onAction="#gotoURL" />
+		<children>
+			<CheckBox text="%AUTO_CONFIGURATION" fx:id="enableGameBase"
+				onAction="#doEnableGameBase" GridPane.rowIndex="0"
+				GridPane.columnIndex="0" GridPane.columnSpan="2" />
+			<HBox GridPane.rowIndex="1" GridPane.columnIndex="0">
+				<Label text="%REG_EXPR_FILTER" />
+				<TextField fx:id="filterField" />
 			</HBox>
-		</TitledPane>
+			<TitledPane fx:id="contents" text="%INDEX" collapsible="false"
+				GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.rowSpan="7"
+				GridPane.valignment="TOP" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+				<TabPane focusTraversable="false" fx:id="letter"
+					tabClosingPolicy="UNAVAILABLE">
+					<GameBasePage text="#" disable="true" />
+					<GameBasePage text="A" disable="true" />
+					<GameBasePage text="B" disable="true" />
+					<GameBasePage text="C" disable="true" />
+					<GameBasePage text="D" disable="true" />
+					<GameBasePage text="E" disable="true" />
+					<GameBasePage text="F" disable="true" />
+					<GameBasePage text="G" disable="true" />
+					<GameBasePage text="H" disable="true" />
+					<GameBasePage text="I" disable="true" />
+					<GameBasePage text="J" disable="true" />
+					<GameBasePage text="K" disable="true" />
+					<GameBasePage text="L" disable="true" />
+					<GameBasePage text="M" disable="true" />
+					<GameBasePage text="N" disable="true" />
+					<GameBasePage text="O" disable="true" />
+					<GameBasePage text="P" disable="true" />
+					<GameBasePage text="Q" disable="true" />
+					<GameBasePage text="R" disable="true" />
+					<GameBasePage text="S" disable="true" />
+					<GameBasePage text="T" disable="true" />
+					<GameBasePage text="U" disable="true" />
+					<GameBasePage text="V" disable="true" />
+					<GameBasePage text="W" disable="true" />
+					<GameBasePage text="X" disable="true" />
+					<GameBasePage text="Y" disable="true" />
+					<GameBasePage text="Z" disable="true" />
+				</TabPane>
+			</TitledPane>
+			<ImageView fx:id="screenshot" fitWidth="320" fitHeight="200"
+				GridPane.halignment="CENTER" GridPane.valignment="CENTER"
+				preserveRatio="true" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+			<TitledPane text="%INFOS" collapsible="false"
+				GridPane.rowIndex="3" GridPane.columnIndex="1">
+				<TextField fx:id="infos" />
+			</TitledPane>
+			<TitledPane text="%PROGRAMMER" collapsible="false"
+				GridPane.rowIndex="4" GridPane.columnIndex="1">
+				<TextField fx:id="programmer" />
+			</TitledPane>
+			<TitledPane text="%CATEGORY" collapsible="false"
+				GridPane.rowIndex="5" GridPane.columnIndex="1">
+				<TextField fx:id="category" />
+			</TitledPane>
+			<TitledPane text="%MUSICIAN" collapsible="false"
+				GridPane.rowIndex="6" GridPane.columnIndex="1">
+				<TextField fx:id="musician" />
+			</TitledPane>
+			<TitledPane text="%COMMENT" collapsible="false"
+				GridPane.rowIndex="7" GridPane.columnIndex="1">
+				<TextArea fx:id="comment" />
+			</TitledPane>
+			<Button text="%MUSIC_GET" fx:id="linkMusic" onAction="#downloadMusic"
+				GridPane.rowIndex="8" GridPane.columnIndex="1" />
+			<TitledPane text="%CONFIGURATION" collapsible="true"
+				expanded="false" GridPane.rowIndex="9" GridPane.columnIndex="0"
+				GridPane.columnSpan="3">
+				<HBox>
+					<Label text="%BASE_DIR" />
+					<TextField fx:id="gameBaseFile" disable="true" />
+					<Button text="%BROWSE" onAction="#doBrowse">
+						<graphic>
+							<ImageView>
+								<image>
+									<Image url="@/ui/icons/browse.png" />
+								</image>
+							</ImageView>
+						</graphic>
+					</Button>
+					<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
+						onAction="#gotoURL" />
+				</HBox>
+			</TitledPane>
+		</children>
+		<columnConstraints>
+			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+				percentWidth="60.0" prefWidth="100.0" />
+			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+				percentWidth="40.0" prefWidth="100.0" />
+		</columnConstraints>
+		<rowConstraints>
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="3.0" prefHeight="100.0" valignment="TOP" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="3.0" prefHeight="100.0" valignment="TOP" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="36.0" prefHeight="100.0" valignment="TOP" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="8.0" prefHeight="100.0" valignment="TOP" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="8.0" prefHeight="100.0" valignment="TOP" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="8.0" prefHeight="100.0" valignment="TOP" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="8.0" prefHeight="100.0" valignment="TOP" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="8.0" prefHeight="100.0" valignment="TOP" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="8.0" prefHeight="100.0" valignment="TOP" />
+			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+				percentHeight="10.0" prefHeight="100.0" valignment="TOP" />
+		</rowConstraints>
 	</GridPane>
 </AnchorPane>

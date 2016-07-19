@@ -16,6 +16,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -25,6 +26,7 @@ import javax.persistence.Persistence;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.PathUtils;
 import libsidutils.WebUtils;
 import sidplay.Player;
 import ui.common.C64Window;
@@ -91,6 +93,8 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	protected TextField dbFileField, filterField;
 	@FXML
+	protected TitledPane contents;
+	@FXML
 	protected TabPane letter;
 	@FXML
 	protected TextField infos, programmer, category, musician;
@@ -128,6 +132,7 @@ public class GameBase extends Tab implements UIPart {
 
 		});
 
+		contents.setPrefHeight(Double.MAX_VALUE);
 		for (Tab tab : letter.getTabs()) {
 			GameBasePage page = (GameBasePage) tab;
 			page.getGamebaseTable().getSelectionModel().selectedItemProperty()
@@ -147,7 +152,7 @@ public class GameBase extends Tab implements UIPart {
 							programmer.setText(newValue.getProgrammers().getProgrammer());
 							String sidFilename = newValue.getSidFilename();
 							linkMusic.setText(sidFilename != null ? sidFilename : "");
-							linkMusic.setDisable(sidFilename == null || sidFilename.length() == 0);
+							linkMusic.setVisible(sidFilename != null && sidFilename.length() > 0);
 						}
 					});
 		}
@@ -193,11 +198,16 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	private void downloadMusic() {
 		try {
-			URL url = new URL(GB64_MUSIC_DOWNLOAD_URL + linkMusic.getText().replace('\\', '/'));
-			try (InputStream is = url.openStream()) {
-				util.getPlayer().play(SidTune.load(linkMusic.getText(), is));
-				util.setPlayingTab(this);
-			}
+			SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+			File file = PathUtils.getFile(linkMusic.getText().replace('\\', '/'), sidPlay2Section.getHvscFile(),
+					sidPlay2Section.getCgscFile());
+			util.getPlayer().play(SidTune.load(file));
+			util.setPlayingTab(this);
+//			URL url = new URL(GB64_MUSIC_DOWNLOAD_URL + linkMusic.getText().replace('\\', '/'));
+//			try (InputStream is = url.openStream()) {
+//				util.getPlayer().play(SidTune.load(linkMusic.getText(), is));
+//				util.setPlayingTab(this);
+//			}
 		} catch (IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
 		}
