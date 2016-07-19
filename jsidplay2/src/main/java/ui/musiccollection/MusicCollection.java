@@ -45,8 +45,10 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
@@ -119,6 +121,10 @@ public class MusicCollection extends Tab implements UIPart {
 	private CheckBox autoConfiguration;
 	@FXML
 	private TableView<TuneInfo> tuneInfoTable;
+	@FXML
+	private TableColumn<TuneInfo,String> nameColumn, valueColumn;
+	@FXML
+	private TitledPane photographPane;
 	@FXML
 	private ImageView photograph;
 	@FXML
@@ -241,7 +247,11 @@ public class MusicCollection extends Tab implements UIPart {
 		util.getPlayer().stateProperty().addListener(tuneMatcherListener);
 		tuneInfos = FXCollections.<TuneInfo> observableArrayList();
 		tuneInfoTable.setItems(tuneInfos);
-
+		tuneInfoTable.setPrefHeight(Double.MAX_VALUE);
+		photographPane.setPrefHeight(Double.MAX_VALUE);
+		nameColumn.prefWidthProperty().bind(tuneInfoTable.widthProperty().multiply(0.4));
+		valueColumn.prefWidthProperty().bind(tuneInfoTable.widthProperty().multiply(0.6));
+		
 		searchScope.setConverter(new EnumToString<SearchScope>(util.getBundle()));
 		searchScope.setItems(FXCollections.<SearchScope> observableArrayList(SearchScope.values()));
 		searchScope.getSelectionModel().select(SearchScope.FORWARD);
