@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.VBox?>
 <?import ui.console.ConsoleOutput?>
@@ -8,15 +11,25 @@
 <?scenebuilder-preview-i18n-resource Console.properties?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<BorderPane AnchorPane.bottomAnchor="10"
-		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
-		AnchorPane.topAnchor="10">
-		<top>
-			<ConsoleOutput fx:id="out" />
-		</top>
-		<bottom>
-			<ConsoleOutput fx:id="err" />
-		</bottom>
-	</BorderPane>
+	<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
+		<children>
+			<ConsoleOutput fx:id="out" GridPane.columnIndex="0"
+				GridPane.rowIndex="0" />
+			<ConsoleOutput fx:id="err" GridPane.columnIndex="0"
+				GridPane.rowIndex="1" />
+		</children>
+		<columnConstraints>
+			<ColumnConstraints minWidth="10.0" percentWidth="100.0"
+				prefWidth="100.0" hgrow="SOMETIMES" />
+		</columnConstraints>
+		<rowConstraints>
+			<RowConstraints minHeight="10.0" percentHeight="50.0"
+				prefHeight="100.0" vgrow="SOMETIMES" />
+			<RowConstraints minHeight="10.0" percentHeight="50.0"
+				prefHeight="100.0" valignment="TOP" vgrow="SOMETIMES" />
+		</rowConstraints>
+
+	</GridPane>
 </AnchorPane>
 
