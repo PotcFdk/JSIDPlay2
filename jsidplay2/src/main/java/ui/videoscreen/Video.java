@@ -357,6 +357,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		double scale = sidplay2Section.getVideoScaling();
 		screen.setScaleX(scale);
 		screen.setScaleY(scale);
+		monitor.setPrefHeight(Integer.MAX_VALUE);
 		for (ImageView imageView : Arrays.asList(monitorBorder, breadbox, pc64)) {
 			imageView.setScaleX(
 					scale * screen.getWidth() / (imageView.getImage().getWidth() + MARGIN_LEFT + MARGIN_RIGHT));

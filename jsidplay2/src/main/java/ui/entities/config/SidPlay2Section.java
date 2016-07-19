@@ -23,10 +23,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public static final int DEFAULT_PROXY_PORT = 80;
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
-	public static final int DEFAULT_FRAME_WIDTH = 1024;
-	public static final int DEFAULT_FRAME_HEIGHT = 830;
+	public static final int DEFAULT_FRAME_WIDTH = 1126;
+	public static final int DEFAULT_FRAME_HEIGHT = 996;
 	public static final boolean DEFAULT_FULL_SCREEN = false;
-	public static final float DEFAULT_VIDEO_SCALING = 2.f;
+	public static final float DEFAULT_VIDEO_SCALING = 2.5f;
 	public static final boolean DEFAULT_SHOW_MONITOR = true;
 
 	private int version;
