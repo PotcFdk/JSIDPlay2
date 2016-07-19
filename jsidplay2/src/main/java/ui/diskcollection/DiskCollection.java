@@ -128,6 +128,7 @@ public class DiskCollection extends Tab implements UIPart {
 	@FXML
 	private void initialize() {
 		convenience = new Convenience(util.getPlayer());
+		directory.setPrefHeight(Double.MAX_VALUE);
 		directory.getAutoStartFileProperty().addListener(
 				(observable) -> attachAndRunDemo(fileBrowser.getSelectionModel().getSelectedItem().getValue(),
 						directory.getAutoStartFileProperty().get()));

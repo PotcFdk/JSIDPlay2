@@ -13,14 +13,14 @@ import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import libsidutils.directory.DirEntry;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 
-public class Directory extends AnchorPane implements UIPart {
+public class Directory extends VBox implements UIPart {
 
 	/**
 	 * Upper case letters.
@@ -62,6 +62,7 @@ public class Directory extends AnchorPane implements UIPart {
 
 	@FXML
 	private void initialize() {
+		dirColumn.prefWidthProperty().bind(directory.widthProperty());
 		directoryEntries = FXCollections.<DirectoryItem> observableArrayList();
 		directory.setItems(directoryEntries);
 		directory.setOnKeyPressed((event) -> {

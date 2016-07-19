@@ -11,10 +11,10 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml">
 	<Button text="%SWITCH_FONT" focusTraversable="false" onAction="#doSwitchFont" />
-	<TableView fx:id="directory" minHeight="500">
+	<TableView fx:id="directory">
 		<columns>
 			<TableColumn fx:id="dirColumn" text="" editable="false"
-				sortable="false" prefWidth="320">
+				sortable="false">
 				<cellValueFactory>
 					<PropertyValueFactory property="text" />
 				</cellValueFactory>
