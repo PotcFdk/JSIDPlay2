@@ -85,7 +85,7 @@ public class GameBase extends Tab implements UIPart {
 
 	private static final String GB64_URL = "http://www.gb64.com";
 
-	private static final String GB64_MUSIC_DOWNLOAD_URL = "http://www.gb64.com/C64Music/";
+	private static final String GB64_MUSIC_DOWNLOAD_URL = "http://www.se2a1.net/soasc/SID/";
 
 	@FXML
 	protected CheckBox enableGameBase;
