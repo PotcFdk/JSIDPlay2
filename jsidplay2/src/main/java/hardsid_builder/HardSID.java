@@ -87,7 +87,6 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public byte read(int addr) {
-		addr &= 0x1f;
 		clock();
 		/*
 		 * Workaround: If real HardSID4U devices are used in addition to the
@@ -115,7 +114,6 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void write(int addr, final byte data) {
-		addr &= 0x1f;
 		clock();
 		super.write(addr, data);
 		int cycles = clocksSinceLastAccess();

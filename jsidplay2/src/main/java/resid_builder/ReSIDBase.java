@@ -48,14 +48,12 @@ public abstract class ReSIDBase extends SIDEmu {
 
 	@Override
 	public byte read(int addr) {
-		addr &= 0x1f;
 		clock();
 		return sid.read(addr);
 	}
 
 	@Override
 	public void write(int addr, final byte data) {
-		addr &= 0x1f;
 		clock();
 		super.write(addr, data);
 		sid.write(addr, data);
