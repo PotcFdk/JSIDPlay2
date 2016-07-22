@@ -6,6 +6,11 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+
+import de.schlichtherle.truezip.file.TArchiveDetector;
+import de.schlichtherle.truezip.file.TFile;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,10 +25,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
-
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
@@ -39,8 +40,6 @@ import ui.entities.PersistenceProperties;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.gamebase.service.GamesService;
 import ui.filefilter.MDBFileExtensions;
-import de.schlichtherle.truezip.file.TArchiveDetector;
-import de.schlichtherle.truezip.file.TFile;
 
 public class GameBase extends Tab implements UIPart {
 
@@ -198,18 +197,22 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	private void downloadMusic() {
 		try {
+			URL url = new URL(GB64_MUSIC_DOWNLOAD_URL + linkMusic.getText().replace('\\', '/'));
+			try (InputStream is = url.openStream()) {
+				util.getPlayer().play(SidTune.load(linkMusic.getText(), is));
+				util.setPlayingTab(this);
+			}
+		} catch (IOException | SidTuneError e) {
+			System.err.println(e.getMessage());
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
 			File file = PathUtils.getFile(linkMusic.getText().replace('\\', '/'), sidPlay2Section.getHvscFile(),
 					sidPlay2Section.getCgscFile());
-			util.getPlayer().play(SidTune.load(file));
-			util.setPlayingTab(this);
-//			URL url = new URL(GB64_MUSIC_DOWNLOAD_URL + linkMusic.getText().replace('\\', '/'));
-//			try (InputStream is = url.openStream()) {
-//				util.getPlayer().play(SidTune.load(linkMusic.getText(), is));
-//				util.setPlayingTab(this);
-//			}
-		} catch (IOException | SidTuneError e) {
-			System.err.println(e.getMessage());
+			try {
+				util.getPlayer().play(SidTune.load(file));
+				util.setPlayingTab(this);
+			} catch (IOException | SidTuneError e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
