@@ -444,7 +444,7 @@ public class Player extends HardwareEnsemble {
 					quit();
 				}
 				playerThread.join(PAUSE_QUIT_TIME);
-				if (playerThread.isAlive()) {
+				if (quitOrWait && playerThread.isAlive()) {
 					// emergency break, if audio driver is locked
 					playerThread.interrupt();
 				}
