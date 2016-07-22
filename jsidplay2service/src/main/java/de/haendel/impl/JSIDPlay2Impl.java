@@ -84,6 +84,8 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 		File[] listFiles = file.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
+				if (pathname.isDirectory() && pathname.getName().endsWith(".tmp"))
+					return false;
 				return pathname.isDirectory() || filter == null || pathname.getName().matches(filter);
 			}
 		});
