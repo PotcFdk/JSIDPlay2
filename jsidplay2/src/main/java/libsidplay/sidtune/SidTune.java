@@ -26,7 +26,7 @@ import java.util.Collection;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
-import libsidplay.common.SIDEmu;
+import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 
@@ -294,7 +294,7 @@ public abstract class SidTune {
 		int tuneChipBase;
 		switch (sidNum) {
 		case 0:
-			return SIDEmu.DEF_BASE_ADDRESS;
+			return SIDChip.DEF_BASE_ADDRESS;
 		case 1:
 			forcedStereoTune = emulation.isForceStereoTune();
 			forcedSidBase = emulation.getDualSidBase();

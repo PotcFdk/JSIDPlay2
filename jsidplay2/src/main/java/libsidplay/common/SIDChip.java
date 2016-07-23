@@ -9,10 +9,14 @@ import java.util.function.IntConsumer;
  *
  */
 public interface SIDChip {
-	/**
-	 * Max SID filter FC value.
-	 */
+	/** Max SID filter FC value. */
 	static final int FC_MAX = 2048;
+
+	/** SID base address */
+	public static final int DEF_BASE_ADDRESS = 0xd400;
+
+	/** Number of SID chip registers. */
+	public static final int REG_COUNT = 32;
 
 	void clock(int piece, IntConsumer sample);
 

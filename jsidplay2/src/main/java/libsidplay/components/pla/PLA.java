@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.cart.Cartridge;
 import libsidplay.components.mos6510.MOS6510;
@@ -149,7 +150,7 @@ public final class PLA {
 		public byte read(final int address) {
 			final SIDEmu sid = sidemu[sidmapper[address >> 5 & MAPPER_SIZE - 1]];
 			if (sid != null) {
-				return sid.read(address & SIDEmu.REG_COUNT - 1);
+				return sid.read(address & SIDChip.REG_COUNT - 1);
 			} else {
 				return (byte) 0xff;
 			}
@@ -163,7 +164,7 @@ public final class PLA {
 		public void write(final int address, final byte value) {
 			final SIDEmu sid = sidemu[sidmapper[address >> 5 & MAPPER_SIZE - 1]];
 			if (sid != null) {
-				sid.write(address & SIDEmu.REG_COUNT - 1, value);
+				sid.write(address & SIDChip.REG_COUNT - 1, value);
 			}
 		}
 
