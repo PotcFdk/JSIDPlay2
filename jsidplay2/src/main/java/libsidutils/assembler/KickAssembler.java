@@ -20,10 +20,8 @@ import kickass.state.scope.symboltable.SymbolStatus;
 import kickass.tools.tuples.Pair;
 import kickass.values.ConstantReferenceValue;
 import kickass.values.HashtableValue;
-import kickassu.configuration.parameters.KickAssemblerParameters;
 import kickassu.errors.AsmError;
 import kickassu.errors.printers.OneLineErrorPrinter;
-import kickassu.errors.printers.StackTraceErrorPrinter;
 import kickassu.exceptions.AsmErrorException;
 
 public class KickAssembler {
@@ -31,7 +29,6 @@ public class KickAssembler {
 	private static class Assembly {
 
 		private ByteBuffer data;
-		private int start;
 
 		public Assembly(List<MemoryBlock> memBlocks) throws AsmErrorException {
 			memBlocks.removeIf(mem -> mem.isVirtual());
@@ -40,7 +37,7 @@ public class KickAssembler {
 				throw new AsmErrorException("Error: No data in memory!", null);
 			}
 			MemoryBlock memoryblock = (MemoryBlock) memBlocks.get(0);
-			start = memoryblock.getStartAdress();
+			int start = memoryblock.getStartAdress();
 			int end = start + memoryblock.getSize();
 			for (int curBlock = 1; curBlock < memBlocks.size(); curBlock++) {
 				memoryblock = (MemoryBlock) memBlocks.get(curBlock);
@@ -55,10 +52,9 @@ public class KickAssembler {
 			data = ByteBuffer.allocate(Short.BYTES + end - start).order(ByteOrder.LITTLE_ENDIAN);
 			data.asShortBuffer().put((short) start);
 			for (MemoryBlock memoryBlock : memBlocks) {
-				data.position(Short.BYTES + memoryBlock.getStartAdress() - start);
-				for (byte byt : memoryBlock.getMemory()) {
-					data.put(byt);
-				}
+				int offset = Short.BYTES + memoryBlock.getStartAdress() - start;
+				data.position(offset);
+				data.put(memoryBlock.getMemory(), 0, memoryblock.getMemory().length);
 			}
 		}
 
@@ -74,10 +70,9 @@ public class KickAssembler {
 	 * @return assembly bytes of the ASM resource
 	 */
 	public byte[] assemble(String resource, InputStream asm, final Map<String, String> globals) {
-		evaluationState = new EvaluationState();
-		evaluationState.setMaxMemoryAddress(65635);
 		try {
-			KickAssemblerParameters kickAssemblerParameters = evaluationState.getKickAssemblerParams();
+			evaluationState = new EvaluationState();
+			evaluationState.setMaxMemoryAddress(65635);
 			HashtableValue hashtableValue = new HashtableValue().addStringValues(globals);
 			hashtableValue.lock(null);
 			evaluationState.getSystemNamespace().getScope()
@@ -86,9 +81,6 @@ public class KickAssembler {
 					.setStatus(SymbolStatus.defined);
 
 			AsmNode asmNode = AssemblerToolbox.loadAndLexOrError(asm, resource, evaluationState, null);
-			if (asmNode == null) {
-				return null;
-			}
 			asmNode = new NamespaceNode(asmNode, evaluationState.getRootNamespace());
 			AsmNodeList asmNodeList = new AsmNodeList(asmNode);
 			ScopeAndSymbolPageNode scopeAndSymbolPageNode = new ScopeAndSymbolPageNode(asmNodeList,
@@ -110,21 +102,19 @@ public class KickAssembler {
 						null);
 			} while (!asmNode2.isFinished());
 
-			MainOutputReciever mainOutputReciever = new MainOutputReciever(8192,
-					kickAssemblerParameters.allowFileOutput, evaluationState.getMaxMemoryAddress());
+			MainOutputReciever mainOutputReciever = new MainOutputReciever(8192, false,
+					evaluationState.getMaxMemoryAddress());
 			asmNode2.deliverOutput(mainOutputReciever);
 			mainOutputReciever.finish();
 			return new Assembly(mainOutputReciever.getMemoryBlocks()).getData();
-
 		} catch (AsmErrorException e) {
 			AsmError asmError = e.getError();
 			asmError.setCallStack(evaluationState.getCallStack());
-			System.err.println(asmError.getOneLineString(evaluationState));
+			System.err.println(OneLineErrorPrinter.instance.printError(asmError, evaluationState));
 			throw new AsmErrorException(asmError);
 		} catch (Exception e) {
-			System.err.println(e);
+			throw new RuntimeException("Internal Error!");
 		}
-		throw new AsmErrorException("Internal Error!");
 	}
 
 	private void printErrorsAndTerminate(EvaluationState evaluationState) {
@@ -135,7 +125,6 @@ public class KickAssembler {
 				AsmError asmError = evaluationState.getErrors().get(i);
 				System.err.println("  " + OneLineErrorPrinter.instance.printError(asmError, evaluationState));
 			}
-			System.err.println();
 			throw new AsmErrorException(evaluationState.getErrors().get(0));
 		}
 	}
