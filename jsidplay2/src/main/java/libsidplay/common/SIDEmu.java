@@ -40,8 +40,6 @@ public abstract class SIDEmu {
 	/** Internal cache of SID register state, used for GUI feedback. */
 	private final byte[] registers = new byte[SIDChip.REG_COUNT];
 
-	/** SID chip number (0..MAX_SIDS-1) */
-	private int sidNum;
 	/** SID chip listener */
 	private SIDListener listener;
 	
@@ -49,9 +47,8 @@ public abstract class SIDEmu {
 		this.context = context;
 	}
 
-	public void setListener(int sidNum, SIDListener listener) {
+	public void setListener(SIDListener listener) {
 		this.listener = listener;
-		this.sidNum = sidNum;
 	}
 	
 	/**
@@ -69,7 +66,7 @@ public abstract class SIDEmu {
 		registers[addr] = data;
 		if (listener != null) {
 			final long time = context.getTime(Event.Phase.PHI2);
-			listener.write(time, sidNum, addr, data);
+			listener.write(time, addr, data);
 		}
 	}
 

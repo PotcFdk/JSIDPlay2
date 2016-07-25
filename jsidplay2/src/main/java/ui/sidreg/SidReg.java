@@ -60,9 +60,9 @@ public class SidReg extends Tab implements UIPart {
 	@FXML
 	private void initialize() {
 		util.getPlayer().stateProperty().addListener(sidRegStop);
-		filteredSidRegWrites = FXCollections.<SidRegWrite> observableArrayList();
+		filteredSidRegWrites = FXCollections.<SidRegWrite>observableArrayList();
 		regTable.setItems(filteredSidRegWrites);
-		allSidRegWrites = FXCollections.<SidRegWrite> observableArrayList();
+		allSidRegWrites = FXCollections.<SidRegWrite>observableArrayList();
 		filters = new HashSet<String>();
 		doUpdateFilter();
 	}
@@ -177,28 +177,31 @@ public class SidReg extends Tab implements UIPart {
 	}
 
 	protected void recordSidWrites(final boolean enable) {
-		final SidRegExtension sidRegExtension = new SidRegExtension() {
-
-			@Override
-			public void sidWrite(final SidRegWrite output) {
-				Platform.runLater(() -> {
-					allSidRegWrites.add(output);
-					if (allSidRegWrites.size() % REFRESH_RATE == 0) {
-						doUpdateFilter();
-					}
-				});
-			}
-
-			@Override
-			public void clear() {
-				Platform.runLater(() -> allSidRegWrites.clear());
-			}
-
-		};
-		sidRegExtension.setbundle(util.getBundle());
-		sidRegExtension.init();
 		util.getPlayer().getC64().configureSIDs((sidNum, sidEmu) -> {
-			sidEmu.setListener(sidNum, enable ? sidRegExtension : null);
+			if (enable) {
+				final SidRegExtension sidRegExtension = new SidRegExtension(sidNum) {
+
+					@Override
+					public void sidWrite(final SidRegWrite output) {
+						Platform.runLater(() -> {
+							allSidRegWrites.add(output);
+							if (allSidRegWrites.size() % REFRESH_RATE == 0) {
+								doUpdateFilter();
+							}
+						});
+					}
+
+					@Override
+					public void clear() {
+						Platform.runLater(() -> allSidRegWrites.clear());
+					}
+				};
+				sidRegExtension.setbundle(util.getBundle());
+				sidRegExtension.init();
+				sidEmu.setListener(sidRegExtension);
+			} else {
+				sidEmu.setListener(null);
+			}
 		});
 	}
 }
