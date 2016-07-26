@@ -114,34 +114,26 @@ public class ReSIDfp extends ReSIDBase {
 		case MOS6581:
 			String filterName6581 = emulationSection.getFilterName(sidNum, Emulation.RESIDFP, ChipModel.MOS6581);
 			final Filter6581 filter6581 = sidImpl.getFilter6581();
-			if (filterName6581 == null) {
-				filter6581.setCurveAndDistortionDefaults();
-			} else {
-				for (IFilterSection filter : config.getFilterSection()) {
-					if (filter.getName().equals(filterName6581) && filter.isReSIDfpFilter6581()) {
-						filter6581.setCurveProperties(filter.getBaseresistance(), filter.getOffset(),
-								filter.getSteepness(), filter.getMinimumfetresistance());
-						filter6581.setDistortionProperties(filter.getAttenuation(), filter.getNonlinearity(),
-								filter.getResonanceFactor());
-						sidImpl.set6581VoiceNonlinearity(filter.getVoiceNonlinearity());
-						filter6581.setNonLinearity(filter.getVoiceNonlinearity());
-						break;
-					}
+			for (IFilterSection filter : config.getFilterSection()) {
+				if (filter.getName().equals(filterName6581) && filter.isReSIDfpFilter6581()) {
+					filter6581.setCurveProperties(filter.getBaseresistance(), filter.getOffset(), filter.getSteepness(),
+							filter.getMinimumfetresistance());
+					filter6581.setDistortionProperties(filter.getAttenuation(), filter.getNonlinearity(),
+							filter.getResonanceFactor());
+					sidImpl.set6581VoiceNonlinearity(filter.getVoiceNonlinearity());
+					filter6581.setNonLinearity(filter.getVoiceNonlinearity());
+					break;
 				}
 			}
 			break;
 		case MOS8580:
 			String filterName8580 = emulationSection.getFilterName(sidNum, Emulation.RESIDFP, ChipModel.MOS8580);
 			final Filter8580 filter8580 = sidImpl.getFilter8580();
-			if (filterName8580 == null) {
-				filter8580.setCurveAndDistortionDefaults();
-			} else {
-				for (IFilterSection filter : config.getFilterSection()) {
-					if (filter.getName().equals(filterName8580) && filter.isReSIDfpFilter8580()) {
-						filter8580.setCurveProperties(filter.getK(), filter.getB(), 0, 0);
-						filter8580.setDistortionProperties(0, 0, filter.getResonanceFactor());
-						break;
-					}
+			for (IFilterSection filter : config.getFilterSection()) {
+				if (filter.getName().equals(filterName8580) && filter.isReSIDfpFilter8580()) {
+					filter8580.setCurveProperties(filter.getK(), filter.getB(), 0, 0);
+					filter8580.setDistortionProperties(0, 0, filter.getResonanceFactor());
+					break;
 				}
 			}
 			break;
