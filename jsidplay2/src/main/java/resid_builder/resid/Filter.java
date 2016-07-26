@@ -97,13 +97,12 @@ public abstract class Filter {
 	 *            Enable/Disable the filter.
 	 */
 	public void enable(final boolean enable) {
-		enabled = enable;
-		if (enabled) {
+		if (!enabled && enable) {
 			writeRES_FILT(filt);
-		} else {
+		} else if (enabled && !enable) {
 			filt1 = filt2 = filt3 = filtE = false;
-			lp = bp = hp = false;
 		}
+		enabled = enable;
 	}
 
 	protected void setClockFrequency(final double clock) {
