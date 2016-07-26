@@ -103,6 +103,7 @@ public abstract class Filter {
 		} else if (enabled && !enable) {
 			enabled = enable;
 			filt1 = filt2 = filt3 = filtE = false;
+			updatedMixing();
 		}
 	}
 
