@@ -98,11 +98,12 @@ public abstract class Filter {
 	 */
 	public void enable(final boolean enable) {
 		if (!enabled && enable) {
+			enabled = enable;
 			writeRES_FILT(filt);
 		} else if (enabled && !enable) {
+			enabled = enable;
 			filt1 = filt2 = filt3 = filtE = false;
 		}
-		enabled = enable;
 	}
 
 	protected void setClockFrequency(final double clock) {
