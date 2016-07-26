@@ -276,9 +276,12 @@ public class EmulationSettings extends C64Window {
 		Emulation emulation = defaultEmulation.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulationSection().setDefaultEmulation(emulation);
 		// default emulation has an impact on all emulation settings
+		duringInitialization = true;
 		setSid1Emulation();
 		setSid2Emulation();
 		setSid3Emulation();
+		duringInitialization = false;
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -310,9 +313,12 @@ public class EmulationSettings extends C64Window {
 		ChipModel chipModel = (ChipModel) defaultModel.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulationSection().setDefaultSidModel(chipModel);
 		// default chip model has an impact on all chip model settings
+		duringInitialization = true;
 		setSid1Model();
 		setSid2Model();
 		setSid3Model();
+		duringInitialization = false;
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
