@@ -47,10 +47,8 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 		sid.setFilter(config, sidNum);
 		sid.setFilterEnable(emulationSection, sidNum);
 		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
-		if (oldSIDEmu != null) {
-			for (int i = 0; i < SIDChip.REG_COUNT; i++) {
-				sid.write(i, oldSIDEmu.readInternalRegister(i));
-			}
+		for (int i = 0; oldSIDEmu != null && i < SIDChip.REG_COUNT; i++) {
+			sid.write(i, oldSIDEmu.readInternalRegister(i));
 		}
 		add(sidNum, sid);
 		return sid;
