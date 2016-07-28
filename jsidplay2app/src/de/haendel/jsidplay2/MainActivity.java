@@ -172,6 +172,11 @@ public class MainActivity extends Activity implements PlayListener {
 		}
 	}
 
+	public void justPlay(View view) {
+		String resource = sidTab.getCurrentTune();
+		jsidplay2service.playSong(new JSIDPlay2Service.PlayListEntry(resource));
+	}
+
 	// connect to the service
 	final ServiceConnection jsidplay2Connection = new ServiceConnection() {
 

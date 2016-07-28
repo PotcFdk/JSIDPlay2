@@ -12,7 +12,7 @@
     <string name="user_jsidplay2">jsidplay2</string>
     <string name="password">password</string>
     <string name="btn_download">as SID</string>
-    <string name="btn_mp3">add MP3 Stream to PlayList</string>
+    <string name="btn_play">Play</string><string name="btn_mp3">add MP3 Stream to PlayList</string>
     <string name="tune_hint">SID Tune</string>
     <string name="HVSCEntry.path">Full Path</string>
     <string name="HVSCEntry.name">File Name</string>
@@ -89,5 +89,6 @@ Source code can be found at:\n
     <string name="desc_service_jsidplay2">MediaPlayer of JSIDPlay2</string>
     <string name="cbr">CBR in Kb (not in WLAN)</string>
     <string name="vbr">VBR Quality (WLAN, only)</string>
+    
 
 </resources>

@@ -79,7 +79,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 
 		private String resource;
 
-		private PlayListEntry(String resource) {
+		public PlayListEntry(String resource) {
 			this.resource = resource;
 		}
 

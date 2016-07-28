@@ -588,7 +588,15 @@
                         android:onClick="asSid"
                         android:text="@string/btn_download"
                         android:visibility="gone" />
-
+                    
+                    <Button
+                        android:id="@+id/justPlay"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="justPlay"
+                        android:text="@string/btn_play" />
+                    
                     <Button
                         android:id="@+id/asMp3"
                         style="?android:attr/buttonStyleSmall"
