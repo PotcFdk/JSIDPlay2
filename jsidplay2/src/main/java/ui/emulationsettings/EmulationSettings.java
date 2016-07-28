@@ -261,21 +261,24 @@ public class EmulationSettings extends C64Window {
 	private void setSid1Emulation() {
 		Emulation emulation = sid1Emulation.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulationSection().setUserEmulation(emulation);
-		setSid1Model();
+		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid2Emulation() {
 		Emulation emulation = sid2Emulation.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulationSection().setStereoEmulation(emulation);
-		setSid2Model();
+		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid3Emulation() {
 		Emulation emulation = sid3Emulation.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulationSection().setThirdEmulation(emulation);
-		setSid3Model();
+		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
