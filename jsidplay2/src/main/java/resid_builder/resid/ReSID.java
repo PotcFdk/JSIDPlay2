@@ -120,7 +120,6 @@ public class ReSID extends ReSIDBase {
 					break;
 				}
 			}
-
 			break;
 		case MOS8580:
 			String filterName8580 = emulationSection.getFilterName(sidNum, Emulation.RESID, ChipModel.MOS8580);
