@@ -101,6 +101,8 @@ public abstract class PlayListTab extends TabBase {
 	}
 
 	public void gotoRow(final int currentSong) {
+		if (currentSong==-1)
+			return;
 		favoritesScroll.post(new Runnable() {
 			@Override
 			public void run() {
