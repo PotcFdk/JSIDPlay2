@@ -80,6 +80,13 @@ public class EmulationSettings extends C64Window {
 
 	private boolean duringInitialization;
 
+	private Event updateSidEvent = new Event("Update SID Chip Configuration") {
+		@Override
+		public void event() throws InterruptedException {
+			util.getPlayer().updateSIDChipConfiguration();
+		}
+	};
+
 	public EmulationSettings(Player player) {
 		super(player);
 	}
@@ -91,11 +98,11 @@ public class EmulationSettings extends C64Window {
 		ResourceBundle bundle = util.getBundle();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-		mainFilters = FXCollections.<String> observableArrayList();
+		mainFilters = FXCollections.<String>observableArrayList();
 		mainFilter.setItems(mainFilters);
-		secondFilters = FXCollections.<String> observableArrayList();
+		secondFilters = FXCollections.<String>observableArrayList();
 		secondFilter.setItems(secondFilters);
-		thirdFilters = FXCollections.<String> observableArrayList();
+		thirdFilters = FXCollections.<String>observableArrayList();
 		thirdFilter.setItems(thirdFilters);
 
 		NumberToString<Double> doubleToString = new NumberToString<Double>(1);
@@ -134,54 +141,54 @@ public class EmulationSettings extends C64Window {
 			util.getPlayer().configureMixer(b -> b.setVolume(2, newValue.floatValue()));
 		});
 
-		stereoModes = FXCollections.<StereoMode> observableArrayList(StereoMode.values());
+		stereoModes = FXCollections.<StereoMode>observableArrayList(StereoMode.values());
 		stereoMode.setConverter(new EnumToString<StereoMode>(bundle));
 		stereoMode.setItems(stereoModes);
 
 		baseAddress.setText(String.format("0x%4x", emulationSection.getDualSidBase()));
 		thirdAddress.setText(String.format("0x%4x", emulationSection.getThirdSIDBase()));
 
-		sidReads = FXCollections.<SidReads> observableArrayList(SidReads.values());
+		sidReads = FXCollections.<SidReads>observableArrayList(SidReads.values());
 		sidToRead.setConverter(new EnumToString<SidReads>(bundle));
 		sidToRead.setItems(sidReads);
 		sidToRead.getSelectionModel().select(emulationSection.getSidNumToRead());
 
-		sid1Emulations = FXCollections.<Emulation> observableArrayList(Emulation.values());
+		sid1Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
 		sid1Emulation.setConverter(new EnumToString<Emulation>(bundle));
 		sid1Emulation.setItems(sid1Emulations);
 		sid1Emulation.getSelectionModel().select(emulationSection.getUserEmulation());
 
-		sid2Emulations = FXCollections.<Emulation> observableArrayList(Emulation.values());
+		sid2Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
 		sid2Emulation.setConverter(new EnumToString<Emulation>(bundle));
 		sid2Emulation.setItems(sid2Emulations);
 		sid2Emulation.getSelectionModel().select(emulationSection.getStereoEmulation());
 
-		sid3Emulations = FXCollections.<Emulation> observableArrayList(Emulation.values());
+		sid3Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
 		sid3Emulation.setConverter(new EnumToString<Emulation>(bundle));
 		sid3Emulation.setItems(sid3Emulations);
 		sid3Emulation.getSelectionModel().select(emulationSection.getThirdEmulation());
 
-		sid1Models = FXCollections.<ChipModel> observableArrayList(ChipModel.values());
+		sid1Models = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
 		sid1Model.setConverter(new EnumToString<ChipModel>(bundle));
 		sid1Model.setItems(sid1Models);
 		sid1Model.getSelectionModel().select(emulationSection.getUserSidModel());
 
-		sid2Models = FXCollections.<ChipModel> observableArrayList(ChipModel.values());
+		sid2Models = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
 		sid2Model.setConverter(new EnumToString<ChipModel>(bundle));
 		sid2Model.setItems(sid2Models);
 		sid2Model.getSelectionModel().select(emulationSection.getStereoSidModel());
 
-		sid3Models = FXCollections.<ChipModel> observableArrayList(ChipModel.values());
+		sid3Models = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
 		sid3Model.setConverter(new EnumToString<ChipModel>(bundle));
 		sid3Model.setItems(sid3Models);
 		sid3Model.getSelectionModel().select(emulationSection.getThirdSIDModel());
 
-		defaultModels = FXCollections.<ChipModel> observableArrayList(ChipModel.MOS6581, ChipModel.MOS8580);
+		defaultModels = FXCollections.<ChipModel>observableArrayList(ChipModel.MOS6581, ChipModel.MOS8580);
 		defaultModel.setConverter(new EnumToString<ChipModel>(bundle));
 		defaultModel.setItems(defaultModels);
 		defaultModel.getSelectionModel().select(emulationSection.getDefaultSidModel());
 
-		defaultEmulations = FXCollections.<Emulation> observableArrayList(Emulation.RESID, Emulation.RESIDFP);
+		defaultEmulations = FXCollections.<Emulation>observableArrayList(Emulation.RESID, Emulation.RESIDFP);
 		defaultEmulation.setConverter(new EnumToString<Emulation>(bundle));
 		defaultEmulation.setItems(defaultEmulations);
 		defaultEmulation.getSelectionModel().select(emulationSection.getDefaultEmulation());
@@ -276,11 +283,9 @@ public class EmulationSettings extends C64Window {
 		Emulation emulation = defaultEmulation.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulationSection().setDefaultEmulation(emulation);
 		// default emulation has an impact on all emulation settings
-		duringInitialization = true;
 		setSid1Emulation();
 		setSid2Emulation();
 		setSid3Emulation();
-		duringInitialization = false;
 		updateSIDChipConfiguration();
 	}
 
@@ -313,11 +318,9 @@ public class EmulationSettings extends C64Window {
 		ChipModel chipModel = (ChipModel) defaultModel.getSelectionModel().getSelectedItem();
 		util.getConfig().getEmulationSection().setDefaultSidModel(chipModel);
 		// default chip model has an impact on all chip model settings
-		duringInitialization = true;
 		setSid1Model();
 		setSid2Model();
 		setSid3Model();
-		duringInitialization = false;
 		updateSIDChipConfiguration();
 	}
 
@@ -432,12 +435,8 @@ public class EmulationSettings extends C64Window {
 	 */
 	private void updateSIDChipConfiguration() {
 		if (!duringInitialization) {
-			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(new Event("Update SIDs") {
-				@Override
-				public void event() throws InterruptedException {
-					util.getPlayer().updateSIDChipConfiguration();
-				}
-			});
+			util.getPlayer().getC64().getEventScheduler().cancel(updateSidEvent);
+			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(updateSidEvent);
 		}
 	}
 

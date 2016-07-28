@@ -23,6 +23,7 @@
 <?import ui.emulationsettings.LogarithmicAxis?>
 <?scenebuilder-preview-i18n-resource EmulationSettings.properties?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.geometry.Insets?>
 
 <Scene xmlns:fx="http://javafx.com/fxml" width="1024" height="768">
 	<stylesheets>
@@ -96,6 +97,9 @@
 			<TitledPane text="%FILTER">
 				<GridPane gridLinesVisible="true">
 					<BorderPane GridPane.columnIndex="0">
+						<padding>
+							<Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
+						</padding>
 						<top>
 							<VBox>
 								<HBox>
@@ -130,6 +134,9 @@
 						</center>
 					</BorderPane>
 					<BorderPane GridPane.columnIndex="1">
+						<padding>
+							<Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
+						</padding>
 						<top>
 							<VBox>
 								<HBox>
@@ -166,6 +173,9 @@
 						</center>
 					</BorderPane>
 					<BorderPane GridPane.columnIndex="2">
+						<padding>
+							<Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
+						</padding>
 						<top>
 							<VBox>
 								<HBox>
