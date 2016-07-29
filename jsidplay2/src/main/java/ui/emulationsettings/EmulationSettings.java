@@ -289,7 +289,6 @@ public class EmulationSettings extends C64Window {
 		setSid1Emulation();
 		setSid2Emulation();
 		setSid3Emulation();
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -324,7 +323,6 @@ public class EmulationSettings extends C64Window {
 		setSid1Model();
 		setSid2Model();
 		setSid3Model();
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
