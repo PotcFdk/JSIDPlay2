@@ -289,7 +289,12 @@ public class Player extends HardwareEnsemble {
 	 * Call to update SID chips each time SID configuration has been changed.
 	 */
 	public final void updateSIDChipConfiguration() {
-		c64.insertSIDChips(requiredSIDs, sidLocator);
+		c64.getEventScheduler().scheduleThreadSafe(new Event("Update SID Chip Configuration") {
+			@Override
+			public void event() throws InterruptedException {
+				c64.insertSIDChips(requiredSIDs, sidLocator);
+			}
+		});
 	}
 
 	/**

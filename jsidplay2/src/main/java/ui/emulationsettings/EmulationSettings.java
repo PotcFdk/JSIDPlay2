@@ -17,7 +17,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
-import libsidplay.common.Event;
 import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IFilterSection;
@@ -79,13 +78,6 @@ public class EmulationSettings extends C64Window {
 	private ChangeListener<State> emulationChange;
 
 	private boolean duringInitialization;
-
-	private Event updateSidEvent = new Event("Update SID Chip Configuration") {
-		@Override
-		public void event() throws InterruptedException {
-			util.getPlayer().updateSIDChipConfiguration();
-		}
-	};
 
 	public EmulationSettings(Player player) {
 		super(player);
@@ -366,12 +358,10 @@ public class EmulationSettings extends C64Window {
 			util.getConfig().getEmulationSection().setForce3SIDTune(false);
 		}
 		enableStereoSettings(util.getPlayer().getTune());
-		// stereo mode change: plugIn required SID chips
-		updateSIDChipConfiguration();
 		// stereo mode changes has an impact on all filter curves
-		drawFilterCurve(mainFilter, mainFilterCurve);
-		drawFilterCurve(secondFilter, secondFilterCurve);
-		drawFilterCurve(thirdFilter, thirdFilterCurve);
+		setMainFilter();
+		setSecondFilter();
+		setThirdFilter();
 	}
 
 	@FXML
@@ -436,8 +426,7 @@ public class EmulationSettings extends C64Window {
 	 */
 	private void updateSIDChipConfiguration() {
 		if (!duringInitialization) {
-			util.getPlayer().getC64().getEventScheduler().cancel(updateSidEvent);
-			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(updateSidEvent);
+			util.getPlayer().updateSIDChipConfiguration();
 		}
 	}
 
