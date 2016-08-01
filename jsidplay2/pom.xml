@@ -85,16 +85,6 @@
 			<artifactId>truezip-driver-zip</artifactId>
 			<version>7.7.9</version>
 			<scope>runtime</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bouncycastle</groupId>
-					<artifactId>bcprov-jdk15on</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>de.schlichtherle.truezip</groupId>
-					<artifactId>truezip-swing</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
