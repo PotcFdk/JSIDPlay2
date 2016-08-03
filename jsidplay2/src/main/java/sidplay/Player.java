@@ -759,7 +759,7 @@ public class Player extends HardwareEnsemble {
 		credits.append("Java Version and User Interface v");
 		credits.append(properties.getProperty("version"));
 		credits.append(":\n");
-		credits.append("\tCopyright (©) 2007-2015 Ken Händel\n");
+		credits.append("\tCopyright (©) 2007-2016 Ken Händel\n");
 		credits.append("\thttp://sourceforge.net/projects/jsidplay2/\n");
 		credits.append("Distortion Simulation and development: Antti S. Lankila\n");
 		credits.append("\thttp://bel.fi/~alankila/c64-sw/\n");
