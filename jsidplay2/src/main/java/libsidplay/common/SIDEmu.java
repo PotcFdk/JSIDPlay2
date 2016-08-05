@@ -77,10 +77,6 @@ public abstract class SIDEmu {
 		return diff;
 	}
 
-	public void clearClocksSinceLastAccess() {
-		lastTime = context.getTime(Event.Phase.PHI2);
-	}
-
 	public abstract void reset(byte volume);
 
 	public abstract byte read(int addr);
