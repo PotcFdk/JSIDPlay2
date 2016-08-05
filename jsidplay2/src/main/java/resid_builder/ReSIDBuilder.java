@@ -59,7 +59,7 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 	 */
 	@Override
 	public void unlock(final SIDEmu sid) {
-		remove(sid);
+		remove((ReSIDBase) sid);
 	}
 
 	/**

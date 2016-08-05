@@ -11,7 +11,6 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.Mixer;
-import libsidplay.common.SIDEmu;
 import libsidplay.common.SamplingMethod;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
@@ -293,8 +292,9 @@ public class SIDMixer implements Mixer {
 	 * @param sid
 	 *            SID to remove
 	 */
-	public void remove(SIDEmu sid) {
+	public void remove(ReSIDBase sid) {
 		sids.remove(sid);
+		sid.setSampler(null);
 		updateSampleMixerVolume();
 	}
 
