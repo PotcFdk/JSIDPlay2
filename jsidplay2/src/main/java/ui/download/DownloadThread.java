@@ -64,6 +64,8 @@ import ui.entities.config.Configuration;
  * 
  */
 public class DownloadThread extends Thread implements RBCWrapperDelegate {
+	private static final String ILLEGAL_FILENAME_CHARS = "[?:]";
+	private static final String REPLACEMENT_ILLEGAL_CHAR = "_";
 	public static final int MAX_BUFFER_SIZE = 1 << 20;
 	private static final int MAX_TRY_COUNT = 3;
 
@@ -233,9 +235,11 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private File createLocalFile(URL currentURL) {
 		try {
-			return new File(config.getSidplay2Section().getTmpDir(), new File(currentURL.toURI().getPath()).getName());
+			return new File(config.getSidplay2Section().getTmpDir(), new File(currentURL.toURI().getPath()).getName()
+					.replaceAll(ILLEGAL_FILENAME_CHARS, REPLACEMENT_ILLEGAL_CHAR));
 		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
+			return new File(config.getSidplay2Section().getTmpDir(), new File(currentURL.getPath()).getName()
+					.replaceAll(ILLEGAL_FILENAME_CHARS, REPLACEMENT_ILLEGAL_CHAR));
 		}
 	}
 
