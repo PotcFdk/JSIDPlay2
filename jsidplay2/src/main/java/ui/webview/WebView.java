@@ -2,10 +2,12 @@ package ui.webview;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.BiPredicate;
 
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,6 +29,8 @@ import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.UIPart;
 import ui.common.UIUtil;
+import ui.download.DownloadThread;
+import ui.download.IDownloadListener;
 import ui.tuneinfos.TuneInfos;
 
 public class WebView extends Tab implements UIPart {
@@ -51,21 +55,47 @@ public class WebView extends Tab implements UIPart {
 
 	private UIUtil util;
 
-	private ChangeListener<? super Number> changeListener = (observable, oldValue, newValue) -> {
-		DoubleProperty progressProperty = util.progressProperty(webView);
-		if (progressProperty != null) {
-			progressProperty.setValue(newValue);
-		}
+	private ChangeListener<? super Number> progressListener = (observable, oldValue, newValue) -> {
+		Platform.runLater(() -> {
+			DoubleProperty progressProperty = util.progressProperty(webView);
+			if (progressProperty != null) {
+				progressProperty.setValue(newValue);
+			}
+		});
 	};
 
 	private ChangeListener<? super String> locationListener = (observable, oldValue, newValue) -> {
-		urlField.setText(newValue);
 		try {
-			if (convenience.autostart(new URL(newValue), LEXICALLY_FIRST_MEDIA, null)) {
-				util.setPlayingTab(this);
-			}
-		} catch (IOException | SidTuneError | URISyntaxException e) {
-			// ignore
+			if (!convenience.isSupported(new File(newValue)))
+				return;
+			urlField.setText(newValue);
+			new DownloadThread(util.getConfig(), new IDownloadListener() {
+
+				@Override
+				public void downloadStop(File downloadedFile) {
+					try {
+						if (downloadedFile != null
+								&& convenience.autostart(downloadedFile, LEXICALLY_FIRST_MEDIA, null)) {
+							downloadedFile.deleteOnExit();
+							Platform.runLater(() -> {
+								util.setPlayingTab(WebView.this);
+							});
+						}
+					} catch (IOException | SidTuneError | URISyntaxException e) {
+						// ignore
+					}
+				}
+
+				@Override
+				public void downloadStep(int step) {
+					DoubleProperty progressProperty = util.progressProperty(webView);
+					if (progressProperty != null) {
+						progressProperty.setValue(step / 100.f);
+					}
+				}
+			}, new URL(newValue), false).start();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
 	};
 
@@ -75,7 +105,7 @@ public class WebView extends Tab implements UIPart {
 
 	};
 
-	private ChangeListener<? super WebViewType> loadUrlListener = (observable, oldValue, newValue) -> engine.load(url);
+	private ChangeListener<? super WebViewType> loadUrlListener = (observable, oldValue, newValue) -> home();
 
 	private boolean showTuneInfos;
 
@@ -104,7 +134,7 @@ public class WebView extends Tab implements UIPart {
 		engine = webView.getEngine();
 		engine.getHistory().currentIndexProperty().addListener(historyListener);
 		engine.locationProperty().addListener(locationListener);
-		engine.getLoadWorker().progressProperty().addListener(changeListener);
+		engine.getLoadWorker().progressProperty().addListener(progressListener);
 
 		zoom.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getConfig().getOnlineSection().setZoom(newValue.doubleValue());
@@ -118,7 +148,7 @@ public class WebView extends Tab implements UIPart {
 		type.removeListener(loadUrlListener);
 		engine.getHistory().currentIndexProperty().removeListener(historyListener);
 		engine.locationProperty().removeListener(locationListener);
-		engine.getLoadWorker().progressProperty().removeListener(changeListener);
+		engine.getLoadWorker().progressProperty().removeListener(progressListener);
 	}
 
 	@FXML

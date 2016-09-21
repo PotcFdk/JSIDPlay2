@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.SocketAddress;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
@@ -25,8 +26,8 @@ import java.util.Properties;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
-import ui.entities.config.Configuration;
 import de.schlichtherle.truezip.file.TFile;
+import ui.entities.config.Configuration;
 
 /**
  * DownloadManager downloads a large file from a server. If the file is splitted
@@ -72,11 +73,18 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private Proxy proxy;
 
+	private boolean handleCrcAndSplits;
+
 	public DownloadThread(Configuration cfg, IDownloadListener listener, URL url) {
+		this(cfg, listener, url, true);
+	}
+
+	public DownloadThread(Configuration cfg, IDownloadListener listener, URL url, boolean handleCrcAndSplits) {
 		this.config = cfg;
 		this.url = url;
 		this.listener = listener;
 		this.proxy = getProxy();
+		this.handleCrcAndSplits = handleCrcAndSplits;
 	}
 
 	@Override
@@ -94,7 +102,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		// Part 2: Download file(s)
 		File downloadedFile = null;
 		try {
-			boolean isSplittedInChunks = isSplittedInChunks();
+			boolean isSplittedInChunks = handleCrcAndSplits && isSplittedInChunks();
 			if (isSplittedInChunks) {
 				downloadedFile = downloadAndMergeChunks();
 			} else {
@@ -107,13 +115,15 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		}
 		// Part 3: Optional CRC check
 		try {
-			File crcFile = download(getCrcUrl(), false);
-			boolean checkCrc = checkCrc(crcFile, downloadedFile);
-			if (!checkCrc) {
-				System.err.println("CRC32 check failed!");
-				downloadedFile = null;
-			} else {
-				System.out.println("CRC32 check OK for download: " + url);
+			if (handleCrcAndSplits) {
+				File crcFile = download(getCrcUrl(), false);
+				boolean checkCrc = checkCrc(crcFile, downloadedFile);
+				if (!checkCrc) {
+					System.err.println("CRC32 check failed!");
+					downloadedFile = null;
+				} else {
+					System.out.println("CRC32 check OK for download: " + url);
+				}
 			}
 		} catch (IOException ioE) {
 			// ignore missing CRC file
@@ -123,6 +133,8 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private boolean alreadyAvailable(File file) throws IOException {
+		if (!handleCrcAndSplits)
+			return file.exists() && file.canRead() && file.length() > 0;
 		File crcFile = download(getCrcUrl(), false);
 		boolean checkCrc = checkCrc(crcFile, file);
 		if (!checkCrc) {
@@ -220,7 +232,11 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private File createLocalFile(URL currentURL) {
-		return new File(config.getSidplay2Section().getTmpDir(), new File(currentURL.toString()).getName());
+		try {
+			return new File(config.getSidplay2Section().getTmpDir(), new File(currentURL.toURI().getPath()).getName());
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private File mergeChunks(List<File> chunks) throws IOException {

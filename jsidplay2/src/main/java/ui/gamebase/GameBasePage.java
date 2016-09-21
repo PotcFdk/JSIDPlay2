@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.BiPredicate;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -24,6 +25,8 @@ import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.UIPart;
 import ui.common.UIUtil;
+import ui.download.DownloadThread;
+import ui.download.IDownloadListener;
 import ui.entities.gamebase.Games;
 
 public class GameBasePage extends Tab implements UIPart {
@@ -56,8 +59,8 @@ public class GameBasePage extends Tab implements UIPart {
 	@FXML
 	private void initialize() {
 		convenience = new Convenience(util.getPlayer());
-		allGames = FXCollections.<Games> observableArrayList();
-		filteredGames = FXCollections.<Games> observableArrayList();
+		allGames = FXCollections.<Games>observableArrayList();
+		filteredGames = FXCollections.<Games>observableArrayList();
 		gamebaseTable.setItems(filteredGames);
 		gamebaseTable.setOnKeyPressed((event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
@@ -100,12 +103,33 @@ public class GameBasePage extends Tab implements UIPart {
 		}
 		try {
 			fileToRun = game.getFileToRun();
-			if (convenience.autostart(
-					new URL(GB64_GAMES_DOWNLOAD_URL + game.getFilename().replace('\\', '/')).toURI().toURL(),
-					FILE_TO_RUN_DETECTOR, null)) {
-				util.setPlayingTab(this);
-			}
-		} catch (IOException | SidTuneError | URISyntaxException e) {
+
+			new DownloadThread(util.getConfig(), new IDownloadListener() {
+
+				@Override
+				public void downloadStop(File downloadedFile) {
+					try {
+						if (downloadedFile != null
+								&& convenience.autostart(downloadedFile, FILE_TO_RUN_DETECTOR, null)) {
+							downloadedFile.deleteOnExit();
+							Platform.runLater(() -> {
+								util.setPlayingTab(GameBasePage.this);
+							});
+						}
+					} catch (IOException | SidTuneError | URISyntaxException e) {
+						// ignore
+					}
+				}
+
+				@Override
+				public void downloadStep(int step) {
+					DoubleProperty progressProperty = util.progressProperty(gamebaseTable);
+					if (progressProperty != null) {
+						progressProperty.setValue(step / 100.f);
+					}
+				}
+			}, new URL(GB64_GAMES_DOWNLOAD_URL + game.getFilename().replace('\\', '/')), false).start();
+		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
 	}

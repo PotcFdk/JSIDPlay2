@@ -2,13 +2,13 @@ package ui.common;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Locale;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
+import de.schlichtherle.truezip.file.TArchiveDetector;
+import de.schlichtherle.truezip.file.TFile;
 import libsidplay.components.cart.CartridgeType;
 import libsidplay.components.cart.supported.REU;
 import libsidplay.sidtune.SidTune;
@@ -18,8 +18,6 @@ import ui.filefilter.CartFileFilter;
 import ui.filefilter.DiskFileFilter;
 import ui.filefilter.TapeFileFilter;
 import ui.filefilter.TuneFileFilter;
-import de.schlichtherle.truezip.file.TArchiveDetector;
-import de.schlichtherle.truezip.file.TFile;
 
 /**
  * Automation for the Player.
@@ -38,9 +36,6 @@ public class Convenience {
 	 * Auto-start commands.
 	 */
 	private static final String LOAD_8_1_RUN = "LOAD\"*\",8,1\rRUN\r", LOAD_RUN = "LOAD\rRUN\r";
-
-	private static final String ILLEGAL_FILENAME_CHARS = "[?:]";
-	private static final String FILE_SEPARATOR = "/";
 
 	private static final String ZIP_EXT = ".zip";
 	private final TuneFileFilter tuneFileFilter = new TuneFileFilter();
@@ -80,24 +75,22 @@ public class Convenience {
 	 * @throws SidTuneError
 	 *             invalid tune
 	 */
-	public boolean autostart(URL url, BiPredicate<File, File> isMediaToAttach, File autoStartFile)
+	public boolean autostart(File file, BiPredicate<File, File> isMediaToAttach, File autoStartFile)
 			throws IOException, SidTuneError, URISyntaxException {
 		String tmpDir = player.getConfig().getSidplay2Section().getTmpDir();
-		String name = new File(url.toURI().getSchemeSpecificPart().replaceAll(ILLEGAL_FILENAME_CHARS, FILE_SEPARATOR))
-				.getName();
+		String name = file.getName();
 		TFile zip = null;
 		File toAttach = null;
-		try (InputStream in = url.openConnection().getInputStream()) {
+		try {
 			if (name.toLowerCase(Locale.US).endsWith(ZIP_EXT)) {
 				// uncompress zip
-				zip = copyToTmp(in, new TFile(tmpDir, name));
+				zip = new TFile(file);
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
 				// search media file to attach
 				toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
 			} else {
-				File attachFile = new File(tmpDir, name);
-				if (isSupportedMedia(attachFile)) {
-					toAttach = copyToTmp(in, attachFile);
+				if (isSupportedMedia(file)) {
+					toAttach = file;
 				}
 			}
 		} finally {
@@ -130,6 +123,19 @@ public class Convenience {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Check if the file is supported for auto-start.
+	 * 
+	 * @param file
+	 *            file to be checked
+	 * @return we support the file to auto-start
+	 */
+	public boolean isSupported(File file) {
+		return file.getName().toLowerCase(Locale.US).endsWith(ZIP_EXT) || tuneFileFilter.accept(file)
+				|| diskFileFilter.accept(file) || tapeFileFilter.accept(file) || cartFileFilter.accept(file);
+
 	}
 
 	/**
@@ -207,29 +213,6 @@ public class Convenience {
 	private boolean isSupportedMedia(File file) {
 		return cartFileFilter.accept(file) || tuneFileFilter.accept(file) || diskFileFilter.accept(file)
 				|| tapeFileFilter.accept(file);
-	}
-
-	/**
-	 * Copy input stream to a file in the temporary directory.
-	 */
-	private TFile copyToTmp(InputStream in, TFile zip) throws IOException {
-		if (!zip.exists()) {
-			TFile.cp(in, zip);
-		}
-		return zip;
-	}
-
-	/**
-	 * Copy file to temporary directory.<BR>
-	 * 
-	 * Note: file is marked to be deleted on system exit
-	 */
-	private File copyToTmp(InputStream in, File out) throws IOException {
-		out.deleteOnExit();
-		if (!out.exists()) {
-			TFile.cp(in, out);
-		}
-		return out;
 	}
 
 }

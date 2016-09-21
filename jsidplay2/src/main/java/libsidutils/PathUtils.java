@@ -122,7 +122,7 @@ public class PathUtils {
 				File[] childFiles = rootFile.listFiles(fileFilter);
 				if (childFiles != null) {
 					for (File childFile : childFiles) {
-						if (childFile.getName().equals(pathSeg)) {
+						if (childFile.getName().equalsIgnoreCase(pathSeg)) {
 							pathSegs.add(rootFile = childFile);
 							continue nextPathSeg;
 						}
