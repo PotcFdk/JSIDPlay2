@@ -9,15 +9,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.SocketAddress;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ import ui.entities.config.Configuration;
  * 
  */
 public class DownloadThread extends Thread implements RBCWrapperDelegate {
+	private static final String UTF_8 = "UTF-8";
 	private static final String ILLEGAL_FILENAME_CHARS = "[?:]";
 	private static final String REPLACEMENT_ILLEGAL_CHAR = "_";
 	public static final int MAX_BUFFER_SIZE = 1 << 20;
@@ -191,6 +193,12 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private File download(URL currentURL, boolean retry) throws IOException {
+		String decoded;
+		try {
+			decoded = URLDecoder.decode(currentURL.toString(), UTF_8);
+		} catch (UnsupportedEncodingException e1) {
+			throw new RuntimeException(e1);
+		}
 		int tries = 0;
 		do {
 			tries++;
@@ -211,7 +219,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 				}
 			} catch (IOException e) {
 				if (retry) {
-					System.err.println(String.format("Download failed for %s, next try!", currentURL.getPath()));
+					System.err.println(String.format("Download failed for %s, next try!", decoded));
 				} else {
 					throw e;
 				}
@@ -225,8 +233,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 				}
 			}
 		} while (tries != MAX_TRY_COUNT);
-		throw new IOException(
-				String.format("Download error for %s, i have tried %d times! ", currentURL.getPath(), MAX_TRY_COUNT));
+		throw new IOException(String.format("Download error for %s, i have tried %d times! ", decoded, MAX_TRY_COUNT));
 	}
 
 	private boolean hasNextPart(int part) throws IOException {
@@ -235,11 +242,12 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private File createLocalFile(URL currentURL) {
 		try {
-			return new File(config.getSidplay2Section().getTmpDir(), new File(currentURL.toURI().getPath()).getName()
-					.replaceAll(ILLEGAL_FILENAME_CHARS, REPLACEMENT_ILLEGAL_CHAR));
-		} catch (URISyntaxException e) {
-			return new File(config.getSidplay2Section().getTmpDir(), new File(currentURL.getPath()).getName()
-					.replaceAll(ILLEGAL_FILENAME_CHARS, REPLACEMENT_ILLEGAL_CHAR));
+			String decoded = URLDecoder.decode(currentURL.getFile(), UTF_8);
+			String name = new File(decoded).getName();
+			return new File(config.getSidplay2Section().getTmpDir(),
+					name.replaceAll(ILLEGAL_FILENAME_CHARS, REPLACEMENT_ILLEGAL_CHAR));
+		} catch (UnsupportedEncodingException e1) {
+			throw new RuntimeException(e1);
 		}
 	}
 
