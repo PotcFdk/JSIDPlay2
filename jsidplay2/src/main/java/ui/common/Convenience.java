@@ -88,10 +88,8 @@ public class Convenience {
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
 				// search media file to attach
 				toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
-			} else {
-				if (isSupportedMedia(file)) {
-					toAttach = file;
-				}
+			} else if (isSupportedMedia(file)) {
+				toAttach = file;
 			}
 		} finally {
 			if (zip != null) {

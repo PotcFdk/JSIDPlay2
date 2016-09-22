@@ -35,7 +35,7 @@ public abstract class C64Window implements UIPart {
 		this.stage = stage;
 		util = new UIUtil(this, player, this);
 		scene = (Scene) util.parse();
-		scene.setOnKeyPressed((ke) -> {
+		scene.setOnKeyPressed(ke -> {
 			if (ke.getCode() == KeyCode.ESCAPE) {
 				close();
 			}
@@ -44,7 +44,7 @@ public abstract class C64Window implements UIPart {
 		if (stage.getTitle() == null) {
 			stage.setTitle(util.getBundle().getString("TITLE"));
 		}
-		stage.setOnCloseRequest((event) -> close());
+		stage.setOnCloseRequest(event -> close());
 		stage.setScene(scene);
 	}
 
