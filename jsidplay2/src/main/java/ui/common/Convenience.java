@@ -56,7 +56,7 @@ public class Convenience {
 	}
 
 	/**
-	 * Download C64 bundle (ZIP containing well-known formats or un-zipped
+	 * Auto-start C64 bundle (ZIP containing well-known formats or un-zipped
 	 * entry). Attach specific disk/tape/cartridge and automatically start
 	 * entry.<BR>
 	 * 
