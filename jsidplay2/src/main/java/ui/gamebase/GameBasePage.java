@@ -124,9 +124,7 @@ public class GameBasePage extends Tab implements UIPart {
 				@Override
 				public void downloadStep(int step) {
 					DoubleProperty progressProperty = util.progressProperty(gamebaseTable);
-					if (progressProperty != null) {
-						progressProperty.setValue(step / 100.f);
-					}
+					progressProperty.setValue(step / 100.f);
 				}
 			}, new URL(GB64_GAMES_DOWNLOAD_URL + game.getFilename().replace('\\', '/')), false).start();
 		} catch (IOException e) {

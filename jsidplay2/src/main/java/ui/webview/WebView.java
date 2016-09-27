@@ -58,9 +58,7 @@ public class WebView extends Tab implements UIPart {
 	private ChangeListener<? super Number> progressListener = (observable, oldValue, newValue) -> {
 		Platform.runLater(() -> {
 			DoubleProperty progressProperty = util.progressProperty(webView);
-			if (progressProperty != null) {
-				progressProperty.setValue(newValue);
-			}
+			progressProperty.setValue(newValue);
 		});
 	};
 
@@ -89,9 +87,7 @@ public class WebView extends Tab implements UIPart {
 				@Override
 				public void downloadStep(int step) {
 					DoubleProperty progressProperty = util.progressProperty(webView);
-					if (progressProperty != null) {
-						progressProperty.setValue(step / 100.f);
-					}
+					progressProperty.setValue(step / 100.f);
 				}
 			}, new URL(newValue), false).start();
 		} catch (MalformedURLException e) {

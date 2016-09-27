@@ -1009,16 +1009,16 @@ public abstract class Datasette {
 		return currentImage.counter;
 	}
 
-	public int getProgress() {
+	public float getProgress() {
 		if (!motor) {
 			// No motor activity,
 			// signal finish
-			return 100;
+			return 1.f;
 		}
 		if (currentImage == null || currentImage.cycleCounterTotal == 0) {
 			return 0;
 		}
-		return (int) (((float) currentImage.cycleCounter / currentImage.cycleCounterTotal) * 100);
+		return ((float) currentImage.cycleCounter / currentImage.cycleCounterTotal);
 	}
 
 	/**

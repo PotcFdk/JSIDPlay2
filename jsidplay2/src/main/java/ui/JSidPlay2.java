@@ -21,6 +21,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -120,44 +121,6 @@ import ui.webview.WebViewType;
 
 public class JSidPlay2 extends C64Window implements IExtendImageListener, Function<SidTune, String> {
 
-	/** Build date calculated from our own modify time */
-	private static String DATE = "unknown";
-
-	static {
-		try {
-			URL us = JSidPlay2Main.class.getResource("/" + JSidPlay2.class.getName().replace('.', '/') + ".class");
-			Date date = new Date(us.openConnection().getLastModified());
-			DATE = DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
-		} catch (IOException e) {
-		}
-	}
-
-	private static final String NUVIE_PLAYER_PRG = "/libsidplay/roms/nuvieplayer-v1.0.prg";
-	private static byte[] NUVIE_PLAYER;
-
-	static {
-		try (DataInputStream is = new DataInputStream(JSidPlay2.class.getResourceAsStream(NUVIE_PLAYER_PRG))) {
-			URL us = JSidPlay2Main.class.getResource(NUVIE_PLAYER_PRG);
-			NUVIE_PLAYER = new byte[us.openConnection().getContentLength()];
-			is.readFully(NUVIE_PLAYER);
-		} catch (IOException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
-
-	private static final String EMPTY_D64 = "/libsidplay/components/c1541/empty.d64";
-	private static byte[] EMPTY_DISK;
-
-	static {
-		try (DataInputStream is = new DataInputStream(JSidPlay2.class.getResourceAsStream(EMPTY_D64))) {
-			URL us = JSidPlay2Main.class.getResource(EMPTY_D64);
-			EMPTY_DISK = new byte[us.openConnection().getContentLength()];
-			is.readFully(EMPTY_DISK);
-		} catch (IOException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
-
 	private static final AudioClip MOTORSOUND_AUDIOCLIP = new AudioClip(
 			JSidPlay2.class.getResource("/ui/sounds/motor.wav").toString());
 	private static final AudioClip TRACKSOUND_AUDIOCLIP = new AudioClip(
@@ -165,6 +128,36 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
+
+	/** Build date calculated from our own modify time */
+	private static String DATE = "unknown";
+	/** NUVIE video player */
+	private static final String NUVIE_PLAYER_PRG = "/libsidplay/roms/nuvieplayer-v1.0.prg";
+	private static byte[] NUVIE_PLAYER;
+	/** Empty disk image */
+	private static final String EMPTY_D64 = "/libsidplay/components/c1541/empty.d64";
+	private static byte[] EMPTY_DISK;
+
+	static {
+		try (DataInputStream is = new DataInputStream(JSidPlay2.class.getResourceAsStream(NUVIE_PLAYER_PRG));
+				DataInputStream is2 = new DataInputStream(JSidPlay2.class.getResourceAsStream(EMPTY_D64))) {
+			URL us = JSidPlay2Main.class.getResource("/" + JSidPlay2.class.getName().replace('.', '/') + ".class");
+			Date date = new Date(us.openConnection().getLastModified());
+			DATE = DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
+
+			URL us2 = JSidPlay2Main.class.getResource(NUVIE_PLAYER_PRG);
+			NUVIE_PLAYER = new byte[us2.openConnection().getContentLength()];
+			is.readFully(NUVIE_PLAYER);
+
+			URL us3 = JSidPlay2Main.class.getResource(EMPTY_D64);
+			EMPTY_DISK = new byte[us3.openConnection().getContentLength()];
+			is2.readFully(EMPTY_DISK);
+			
+			MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);
+		} catch (IOException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 
 	@FXML
 	protected CheckMenuItem pauseContinue, driveOn, driveSoundOn, parCable, expand2000, expand4000, expand6000,
@@ -214,7 +207,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	private BooleanProperty nextFavoriteDisabledState;
 	private Tooltip statusTooltip;
 	private StateChangeListener nextTuneListener;
-	private boolean isRunning;
 
 	private class StateChangeListener implements ChangeListener<State> {
 		@Override
@@ -222,7 +214,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			SidTune sidTune = util.getPlayer().getTune();
 			Platform.runLater(() -> nextFavoriteDisabledState.set(sidTune == SidTune.RESET || newValue == State.QUIT));
 			if (newValue == State.START) {
-				isRunning = true;
 				Platform.runLater(() -> {
 					updatePlayerButtons(newValue);
 					enableDisableHardSIDSettings();
@@ -286,7 +277,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		util.getPlayer().stateProperty().addListener(nextTuneListener);
 
 		audioBox.setConverter(new EnumToString<Audio>(bundle));
-		audioBox.setItems(FXCollections.<Audio> observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
+		audioBox.setItems(FXCollections.<Audio>observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
 				Audio.COMPARE_MP3));
 		audioBox.getSelectionModel().select(audioSection.getAudio());
 
@@ -294,22 +285,22 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		devicesBox.getSelectionModel().select(Math.min(audioSection.getDevice(), devicesBox.getItems().size() - 1));
 
 		samplingBox.setConverter(new EnumToString<SamplingMethod>(bundle));
-		samplingBox.setItems(FXCollections.<SamplingMethod> observableArrayList(SamplingMethod.values()));
+		samplingBox.setItems(FXCollections.<SamplingMethod>observableArrayList(SamplingMethod.values()));
 		samplingBox.getSelectionModel().select(audioSection.getSampling());
 
 		samplingRateBox.setConverter(new EnumToString<SamplingRate>(bundle));
-		samplingRateBox.setItems(FXCollections.<SamplingRate> observableArrayList(SamplingRate.values()));
+		samplingRateBox.setItems(FXCollections.<SamplingRate>observableArrayList(SamplingRate.values()));
 		samplingRateBox.getSelectionModel().select(audioSection.getSamplingRate());
 
 		videoStandardBox.setConverter(new EnumToString<CPUClock>(bundle));
-		videoStandardBox.setItems(FXCollections.<CPUClock> observableArrayList(CPUClock.values()));
+		videoStandardBox.setItems(FXCollections.<CPUClock>observableArrayList(CPUClock.values()));
 		videoStandardBox.getSelectionModel().select(CPUClock.getCPUClock(emulationSection, util.getPlayer().getTune()));
 
 		hardsid6581Box.getSelectionModel().select(emulationSection.getHardsid6581());
 		hardsid8580Box.getSelectionModel().select(emulationSection.getHardsid8580());
 
 		engineBox.setConverter(new EnumToString<Engine>(bundle));
-		engineBox.setItems(FXCollections.<Engine> observableArrayList(Engine.values()));
+		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.values()));
 		engineBox.getSelectionModel().select(emulationSection.getEngine());
 
 		int seconds = sidplay2Section.getDefaultPlayLength();
@@ -393,6 +384,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(nextTuneListener);
 		timer.stop();
+		stopSong();
+		Platform.exit();
 	}
 
 	@FXML
@@ -444,7 +437,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void quit() {
 		close();
-		Platform.exit();
 	}
 
 	@FXML
@@ -1280,9 +1272,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		if (!views.stream().anyMatch(tool -> tool.getFxId().equals(tab.getId()))) {
 			views.add(new ViewEntity(tab.getId()));
 		}
-		tab.setOnClosed((evt) -> {
+		tab.setOnClosed(evt -> {
 			close((UIPart) tab);
-			views.removeIf((view) -> view.getFxId().equals(tab.getId()));
+			views.removeIf(view -> view.getFxId().equals(tab.getId()));
 		});
 		tabbedPane.getTabs().add(tab);
 		tabbedPane.getSelectionModel().select(tab);
@@ -1352,16 +1344,15 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	 * Set all the internal information of the emulation in the status bar.
 	 */
 	protected void setStatusLine() {
-		if (!isRunning) {
+		ReadOnlyObjectProperty<State> state = util.getPlayer().stateProperty();
+		if (!(state.get().equals(State.PLAY) || state.get().equals(State.PAUSE))) {
 			return;
 		}
 		// Get status information of the first disk drive
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
-		boolean motorOn = util.getConfig().getC1541Section().isDriveSoundOn()
-				&& util.getPlayer().stateProperty().get() == State.PLAY && c1541.getDiskController().isMotorOn();
+		boolean motorOn = util.getConfig().getC1541Section().isDriveSoundOn() && c1541.getDiskController().isMotorOn();
 		if (!oldMotorOn && motorOn) {
-			MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);
 			MOTORSOUND_AUDIOCLIP.play();
 		} else if (oldMotorOn && !motorOn) {
 			MOTORSOUND_AUDIOCLIP.stop();
@@ -1377,7 +1368,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		final Datasette datasette = util.getPlayer().getDatasette();
 		// Datasette tape progress
 		if (datasette.getMotor()) {
-			progress.setProgress(datasette.getProgress() / 100f);
+			progress.setProgress(datasette.getProgress());
 		}
 		// final status bar text
 		StringBuilder line = new StringBuilder();
