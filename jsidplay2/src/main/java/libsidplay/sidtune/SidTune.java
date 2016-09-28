@@ -299,8 +299,17 @@ public abstract class SidTune {
 			forcedStereoTune = emulation.isForceStereoTune();
 			forcedSidBase = emulation.getDualSidBase();
 			tuneChipBase = tune != RESET ? tune.getInfo().getSIDChipBase(sidNum) : 0;
+			if (tuneChipBase == 0 && !forcedStereoTune && emulation.isFakeStereo()) {
+				// A mono tune, that is not forced to play in stereo mode shall
+				// be played in fake stereo mode (2-SID at same base address)
+				return 0xd400;
+			}
 			break;
 		case 2:
+			if (getSIDAddress(emulation, tune, 1) == 0xd400) {
+				// never use 3-SID in fake stereo mode
+				return 0;
+			}
 			forcedStereoTune = emulation.isForce3SIDTune();
 			forcedSidBase = emulation.getThirdSIDBase();
 			tuneChipBase = tune != RESET ? tune.getInfo().getSIDChipBase(sidNum) : 0;

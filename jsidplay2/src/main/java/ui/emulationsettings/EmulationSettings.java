@@ -41,7 +41,7 @@ public class EmulationSettings extends C64Window {
 	}
 
 	private enum StereoMode {
-		AUTO, FAKE_STEREO, STEREO, THREE_SID,
+		AUTO, STEREO, THREE_SID,
 	}
 
 	private enum SidReads {
@@ -64,6 +64,8 @@ public class EmulationSettings extends C64Window {
 	private TextField baseAddress, thirdAddress;
 	@FXML
 	private CheckBox boosted8580;
+	@FXML
+	private CheckBox fakeStereo;
 	@FXML
 	private Slider mainVolume, secondVolume, thirdVolume, mainBalance, secondBalance, thirdBalance;
 	@FXML
@@ -186,6 +188,7 @@ public class EmulationSettings extends C64Window {
 		defaultEmulation.getSelectionModel().select(emulationSection.getDefaultEmulation());
 
 		boosted8580.setSelected(emulationSection.isDigiBoosted8580());
+		fakeStereo.setSelected(emulationSection.isFakeStereo());
 
 		emulationChange = new EmulationChange();
 		util.getPlayer().stateProperty().addListener(emulationChange);
@@ -207,14 +210,9 @@ public class EmulationSettings extends C64Window {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
 		boolean third = SidTune.isSIDUsed(emulationSection, tune, 2);
-		int sidBase = SidTune.getSIDAddress(emulationSection, tune, 0);
-		int dualSidBase = SidTune.getSIDAddress(emulationSection, tune, 1);
 		boolean isForcedStereo = second && emulationSection.isForceStereoTune();
-		boolean isFakeStereo = isForcedStereo && dualSidBase == sidBase;
 		boolean isForced3Sid = third && emulationSection.isForce3SIDTune();
-		if (isFakeStereo) {
-			stereoMode.getSelectionModel().select(StereoMode.FAKE_STEREO);
-		} else if (isForced3Sid) {
+		if (isForced3Sid) {
 			stereoMode.getSelectionModel().select(StereoMode.THREE_SID);
 		} else if (isForcedStereo) {
 			stereoMode.getSelectionModel().select(StereoMode.STEREO);
@@ -237,7 +235,7 @@ public class EmulationSettings extends C64Window {
 		thirdFilter.setDisable(!third);
 		thirdFilterCurve.setDisable(!third);
 		// fake stereo, only:
-		sidToRead.setDisable(!(isFakeStereo));
+		sidToRead.setDisable(!(emulationSection.isFakeStereo()));
 		// forced stereo or forced 3-SID, only:
 		baseAddress.setDisable(!(isForcedStereo || isForced3Sid));
 		// forced 3-SID, only:
@@ -334,25 +332,23 @@ public class EmulationSettings extends C64Window {
 	}
 
 	@FXML
+	private void setFakeStereo() {
+		boolean isFakeStereo = fakeStereo.isSelected();
+		util.getConfig().getEmulationSection().setFakeStereo(isFakeStereo);
+		enableStereoSettings(util.getPlayer().getTune());
+		setMainFilter();
+		setSecondFilter();
+	}
+	
+	@FXML
 	private void setStereoMode() {
 		StereoMode mode = stereoMode.getSelectionModel().getSelectedItem();
-		if (mode == StereoMode.FAKE_STEREO) {
-			util.getConfig().getEmulationSection().setForceStereoTune(true);
-			util.getConfig().getEmulationSection().setForce3SIDTune(false);
-			util.getConfig().getEmulationSection().setDualSidBase(0xd400);
-			baseAddress.setText("0xd400");
-		} else if (mode == StereoMode.THREE_SID) {
+		if (mode == StereoMode.THREE_SID) {
 			util.getConfig().getEmulationSection().setForceStereoTune(true);
 			util.getConfig().getEmulationSection().setForce3SIDTune(true);
-			util.getConfig().getEmulationSection().setDualSidBase(0xd420);
-			util.getConfig().getEmulationSection().setThirdSIDBase(0xd440);
-			baseAddress.setText("0xd420");
-			thirdAddress.setText("0xd440");
 		} else if (mode == StereoMode.STEREO) {
 			util.getConfig().getEmulationSection().setForceStereoTune(true);
 			util.getConfig().getEmulationSection().setForce3SIDTune(false);
-			util.getConfig().getEmulationSection().setDualSidBase(0xd420);
-			baseAddress.setText("0xd420");
 		} else {
 			util.getConfig().getEmulationSection().setForceStereoTune(false);
 			util.getConfig().getEmulationSection().setForce3SIDTune(false);

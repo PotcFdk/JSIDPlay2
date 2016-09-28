@@ -25,6 +25,7 @@ public interface IEmulationSection {
 	static final boolean DEFAULT_DIGI_BOOSTED_8580 = false;
 	static final int DEFAULT_DUAL_SID_BASE = 0xd420;
 	static final int DEFAULT_THIRD_SID_BASE = 0xd440;
+	static final boolean DEFAULT_FAKE_STEREO = false;
 	static final boolean DEFAULT_FORCE_STEREO_TUNE = false;
 	static final boolean DEFAULT_FORCE_3SID_TUNE = false;
 
@@ -475,17 +476,32 @@ public interface IEmulationSection {
 	void setThirdSIDBase(int base);
 
 	/**
-	 * @return SID chip to read from (FakeStereo)
+	 * @return SID chip to read from (fake stereo)
 	 */
 	int getSidNumToRead();
 
 	/**
-	 * Setter of the SID chip to read from (FakeStereo).
+	 * Setter of the SID chip to read from (fake stereo).
 	 * 
 	 * @param sidNumToRead
-	 *            SID chip to read from (FakeStereo)
+	 *            SID chip to read from (fake stereo)
 	 */
 	void setSidNumToRead(int sidNumToRead);
+
+	/**
+	 * Getter of the fake stereo mode.
+	 * 
+	 * @return the fake stereo mode
+	 */
+	boolean isFakeStereo();
+
+	/**
+	 * Setter of the fake stereo mode.
+	 * 
+	 * @param fakeStereo
+	 *            fake stereo mode
+	 */
+	void setFakeStereo(boolean fakeStereo);
 
 	/**
 	 * Getter of the forced playback stereo mode.

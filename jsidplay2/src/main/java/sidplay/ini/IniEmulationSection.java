@@ -218,6 +218,16 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	public final boolean isFakeStereo() {
+		return iniReader.getPropertyBool("Emulation", "fakeStereo", DEFAULT_FAKE_STEREO);
+	}
+	
+	@Override
+	public final void setFakeStereo(boolean fakeStereo) {
+		iniReader.setProperty("Emulation", "fakeStereo", fakeStereo);
+	}
+
+	@Override
 	public final boolean isForceStereoTune() {
 		return iniReader.getPropertyBool("Emulation", "forceStereoTune", DEFAULT_FORCE_STEREO_TUNE);
 	}

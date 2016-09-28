@@ -238,6 +238,16 @@ public class EmulationSection implements IEmulationSection {
 		this.thirdSIDBase = dualSidBase;
 	}
 
+	private boolean fakeStereo = DEFAULT_FAKE_STEREO;
+
+	public void setFakeStereo(boolean fakeStereo) {
+		this.fakeStereo = fakeStereo;
+	}
+
+	@Override
+	public boolean isFakeStereo() {
+		return fakeStereo;
+	}
 	private boolean forceStereoTune = DEFAULT_FORCE_STEREO_TUNE;
 
 	@Override
