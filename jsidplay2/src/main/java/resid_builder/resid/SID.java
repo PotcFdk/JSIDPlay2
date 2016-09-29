@@ -74,7 +74,7 @@ public final class SID implements SIDChip {
 	private byte busValue;
 
 	/** Time to live for the last written value */
-	private int busValueTtl, databus_ttl;
+	private int busValueTtl, databus_ttl, write_address, write_pipeline;
 
 	/**
 	 * Currently active chip model.
@@ -85,12 +85,6 @@ public final class SID implements SIDChip {
 	 * Time until synchronize() must be run.
 	 */
 	private int nextVoiceSync;
-
-	/** Delayed MOS8580 write register */
-	private int delayedOffset;
-
-	/** Delayed MOS8580 write value */
-	private byte delayedValue;
 
 	private final boolean[] muted = new boolean[3];
 
@@ -240,7 +234,8 @@ public final class SID implements SIDChip {
 
 		busValue = 0;
 		busValueTtl = 0;
-		delayedOffset = -1;
+		write_pipeline = 0;
+		write_address = 0;
 		voiceSync(false);
 	}
 
@@ -281,33 +276,27 @@ public final class SID implements SIDChip {
 	 */
 	@Override
 	public byte read(final int offset) {
-		final byte value;
-
 		switch (offset) {
 		case 0x19:
-			value = potX.readPOT();
-			
+			busValue = potX.readPOT();
 			busValueTtl = databus_ttl;
 			break;
 		case 0x1a:
-			value = potY.readPOT();
+			busValue = potY.readPOT();
 			busValueTtl = databus_ttl;
 			break;
 		case 0x1b:
-			value = voice[2].wave.readOSC();
+			busValue = voice[2].wave.readOSC();
 			break;
 		case 0x1c:
-			value = voice[2].envelope.readENV();
+			busValue = voice[2].envelope.readENV();
 			busValueTtl = databus_ttl;
 			break;
 		default:
-			value = busValue;
 			busValueTtl /= 2;
 			break;
 		}
-
-		busValue = value;
-		return value;
+		return busValue;
 	}
 
 	/**
@@ -320,101 +309,106 @@ public final class SID implements SIDChip {
 	 */
 	@Override
 	public void write(final int offset, final byte value) {
+		write_address = offset;
 		busValue = value;
 		busValueTtl = databus_ttl;
 
 		if (model == ChipModel.MOS8580) {
-			delayedOffset = offset;
-			delayedValue = value;
+			// Fake one cycle pipeline delay on the MOS8580
+			// when using non cycle accurate emulation.
+			// This will make the SID detection method work.
+			write_pipeline = 1;
 		} else {
-			writeImmediate(offset, value);
+			write();
 		}
 	}
 
-	private void writeImmediate(final int offset, final byte value) {
-		switch (offset) {
+	private void write() {
+		switch (write_address) {
 		case 0x00:
-			voice[0].wave.writeFREQ_LO(value);
+			voice[0].wave.writeFREQ_LO(busValue);
 			break;
 		case 0x01:
-			voice[0].wave.writeFREQ_HI(value);
+			voice[0].wave.writeFREQ_HI(busValue);
 			break;
 		case 0x02:
-			voice[0].wave.writePW_LO(value);
+			voice[0].wave.writePW_LO(busValue);
 			break;
 		case 0x03:
-			voice[0].wave.writePW_HI(value);
+			voice[0].wave.writePW_HI(busValue);
 			break;
 		case 0x04:
-			voice[0].writeCONTROL_REG(muted[0] ? 0 : value);
+			voice[0].writeCONTROL_REG(muted[0] ? 0 : busValue);
 			break;
 		case 0x05:
-			voice[0].envelope.writeATTACK_DECAY(value);
+			voice[0].envelope.writeATTACK_DECAY(busValue);
 			break;
 		case 0x06:
-			voice[0].envelope.writeSUSTAIN_RELEASE(value);
+			voice[0].envelope.writeSUSTAIN_RELEASE(busValue);
 			break;
 		case 0x07:
-			voice[1].wave.writeFREQ_LO(value);
+			voice[1].wave.writeFREQ_LO(busValue);
 			break;
 		case 0x08:
-			voice[1].wave.writeFREQ_HI(value);
+			voice[1].wave.writeFREQ_HI(busValue);
 			break;
 		case 0x09:
-			voice[1].wave.writePW_LO(value);
+			voice[1].wave.writePW_LO(busValue);
 			break;
 		case 0x0a:
-			voice[1].wave.writePW_HI(value);
+			voice[1].wave.writePW_HI(busValue);
 			break;
 		case 0x0b:
-			voice[1].writeCONTROL_REG(muted[1] ? 0 : value);
+			voice[1].writeCONTROL_REG(muted[1] ? 0 : busValue);
 			break;
 		case 0x0c:
-			voice[1].envelope.writeATTACK_DECAY(value);
+			voice[1].envelope.writeATTACK_DECAY(busValue);
 			break;
 		case 0x0d:
-			voice[1].envelope.writeSUSTAIN_RELEASE(value);
+			voice[1].envelope.writeSUSTAIN_RELEASE(busValue);
 			break;
 		case 0x0e:
-			voice[2].wave.writeFREQ_LO(value);
+			voice[2].wave.writeFREQ_LO(busValue);
 			break;
 		case 0x0f:
-			voice[2].wave.writeFREQ_HI(value);
+			voice[2].wave.writeFREQ_HI(busValue);
 			break;
 		case 0x10:
-			voice[2].wave.writePW_LO(value);
+			voice[2].wave.writePW_LO(busValue);
 			break;
 		case 0x11:
-			voice[2].wave.writePW_HI(value);
+			voice[2].wave.writePW_HI(busValue);
 			break;
 		case 0x12:
-			voice[2].writeCONTROL_REG(muted[2] ? 0 : value);
+			voice[2].writeCONTROL_REG(muted[2] ? 0 : busValue);
 			break;
 		case 0x13:
-			voice[2].envelope.writeATTACK_DECAY(value);
+			voice[2].envelope.writeATTACK_DECAY(busValue);
 			break;
 		case 0x14:
-			voice[2].envelope.writeSUSTAIN_RELEASE(value);
+			voice[2].envelope.writeSUSTAIN_RELEASE(busValue);
 			break;
 		case 0x15:
-			filter6581.writeFC_LO(value);
-			filter8580.writeFC_LO(value);
+			filter6581.writeFC_LO(busValue);
+			filter8580.writeFC_LO(busValue);
 			break;
 		case 0x16:
-			filter6581.writeFC_HI(value);
-			filter8580.writeFC_HI(value);
+			filter6581.writeFC_HI(busValue);
+			filter8580.writeFC_HI(busValue);
 			break;
 		case 0x17:
-			filter6581.writeRES_FILT(value);
-			filter8580.writeRES_FILT(value);
+			filter6581.writeRES_FILT(busValue);
+			filter8580.writeRES_FILT(busValue);
 			break;
 		case 0x18:
-			filter6581.writeMODE_VOL(value);
-			filter8580.writeMODE_VOL(value);
+			filter6581.writeMODE_VOL(busValue);
+			filter8580.writeMODE_VOL(busValue);
 			break;
 		default:
 			break;
 		}
+		// Tell clock() that the pipeline is empty.
+		write_pipeline = 0;
 
 		/* Update voicesync just in case. */
 		voiceSync(false);
@@ -466,22 +460,27 @@ public final class SID implements SIDChip {
 	 */
 	@Override
 	public final void clock(int cycles, IntConsumer sample) {
+		// Pipelined writes on the MOS8580.
+		if (write_pipeline != 0 && cycles > 0) {
+			// Step one cycle by a recursive call to ourselves.
+			write_pipeline = 0;
+			clock(1, sample);
+			write();
+			cycles -= 1;
+		}
+
+		if (cycles <= 0) {
+			return;
+		}
+
 		ageBusValue(cycles);
 
 		while (cycles != 0) {
 			int delta_t = Math.min(nextVoiceSync, cycles);
 			if (delta_t > 0) {
-				if (delayedOffset != -1) {
-					delta_t = 1;
-				}
 
 				for (int i = 0; i < delta_t; i++) {
 					sample.accept(clock() * OUTPUT_LEVEL >> 8);
-				}
-
-				if (delayedOffset != -1) {
-					writeImmediate(delayedOffset, delayedValue);
-					delayedOffset = -1;
 				}
 
 				cycles -= delta_t;

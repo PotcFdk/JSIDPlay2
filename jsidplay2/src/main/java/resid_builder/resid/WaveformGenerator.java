@@ -82,9 +82,7 @@ public final class WaveformGenerator {
 
 	private short[] wave;
 
-	// 8580 tri/saw pipeline
-	private int waveform_output, osc3, tri_saw_pipeline;
-	private ChipModel sidModel;
+	private int waveform_output;
 	
 
 	protected void setWaveformModels(short[][] models) {
@@ -102,7 +100,6 @@ public final class WaveformGenerator {
 	 *            The {@link ChipModel} to use.
 	 */
 	protected void setChipModel(final ChipModel chipModel) {
-		sidModel = chipModel;
 		final double dacBits[] = new double[12];
 		SID.kinkedDac(dacBits, chipModel == ChipModel.MOS6581 ? 2.20 : 2.00, chipModel == ChipModel.MOS8580);
 
@@ -236,16 +233,6 @@ public final class WaveformGenerator {
 			int ix = (accumulator ^ (~ringModulator.accumulator & ring_msb_mask)) >> 12;
 			waveform_output = wave[ix] & (no_pulse | pulse_output) & no_noise_or_noise_output;
 		
-		    // Triangle/Sawtooth output is delayed half cycle on 8580.
-		    // This will appear as a one cycle delay on OSC3 as it is
-		    // latched in the first phase of the clock.
-			if ((waveform & 3) != 0 && (sidModel == ChipModel.MOS8580)) {
-				osc3 = tri_saw_pipeline & (no_pulse | pulse_output) & no_noise_or_noise_output;
-				tri_saw_pipeline = wave[ix];
-			} else {
-				osc3 = waveform_output;
-			}
-					         
 			if (waveform > 0x8 && !test && shift_pipeline != 1) {
 				// Combined waveforms write to the shift register.
 				write_shift_register();
@@ -392,7 +379,7 @@ public final class WaveformGenerator {
 	 * @return OSC3 value
 	 */
 	public byte readOSC() {
-		return (byte) (osc3 >> 4);
+		return (byte) (waveform_output >> 4);
 	}
 
 	/**
@@ -401,7 +388,6 @@ public final class WaveformGenerator {
 	protected void reset() {
 		// accumulator is not changed on reset, but on power-on (not modeled)
 		accumulator = 0x555555;
-		tri_saw_pipeline = 0x555;
 		
 		freq = 0;
 		pw = 0;
@@ -423,7 +409,6 @@ public final class WaveformGenerator {
 		shift_pipeline = 0;
 
 		waveform_output = 0;
-		osc3=0;
 		floating_output_ttl = 0;
 	}
 }
