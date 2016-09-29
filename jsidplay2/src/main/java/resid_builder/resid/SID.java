@@ -43,10 +43,6 @@ public final class SID implements SIDChip {
 	 */
 	private static final int OUTPUT_LEVEL = 359;
 
-	/**
-	 * Bus value stays alive for some time after each operation.
-	 */
-	private static final int BUS_TTL = 0x9000;
 
 	/** SID voices */
 	public final Voice[] voice = new Voice[] { new Voice(), new Voice(), new Voice() };
@@ -78,7 +74,7 @@ public final class SID implements SIDChip {
 	private byte busValue;
 
 	/** Time to live for the last written value */
-	private int busValueTtl;
+	private int busValueTtl, databus_ttl;
 
 	/**
 	 * Currently active chip model.
@@ -193,6 +189,18 @@ public final class SID implements SIDChip {
 	@Override
 	public void setChipModel(final ChipModel model) {
 		this.model = model;
+		
+		/*
+		  results from real C64 (testprogs/SID/bitfade/delayfrq0.prg):
+		
+		  (new SID) (250469/8580R5) (250469/8580R5)
+		  delayfrq0    ~7a000        ~108000
+		
+		  (old SID) (250407/6581)
+		  delayfrq0    ~01d00
+		
+		 */
+		databus_ttl = model == ChipModel.MOS8580 ? 0xa2000 : 0x1d00;
 
 		if (model == ChipModel.MOS6581) {
 			filter = filter6581;
@@ -278,18 +286,19 @@ public final class SID implements SIDChip {
 		switch (offset) {
 		case 0x19:
 			value = potX.readPOT();
-			busValueTtl = BUS_TTL;
+			
+			busValueTtl = databus_ttl;
 			break;
 		case 0x1a:
 			value = potY.readPOT();
-			busValueTtl = BUS_TTL;
+			busValueTtl = databus_ttl;
 			break;
 		case 0x1b:
 			value = voice[2].wave.readOSC();
 			break;
 		case 0x1c:
 			value = voice[2].envelope.readENV();
-			busValueTtl = BUS_TTL;
+			busValueTtl = databus_ttl;
 			break;
 		default:
 			value = busValue;
@@ -312,7 +321,7 @@ public final class SID implements SIDChip {
 	@Override
 	public void write(final int offset, final byte value) {
 		busValue = value;
-		busValueTtl = BUS_TTL;
+		busValueTtl = databus_ttl;
 
 		if (model == ChipModel.MOS8580) {
 			delayedOffset = offset;
