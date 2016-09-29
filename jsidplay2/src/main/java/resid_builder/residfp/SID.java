@@ -35,11 +35,6 @@ public class SID implements SIDChip {
 	 */
 	private static final float OUTPUT_LEVEL = 32768f / (2047.f * 255.f * 3.0f * 2.0f);
 
-	/**
-	 * Bus value stays alive for some time after each operation.
-	 */
-	private static final int BUS_TTL = 34000;
-
 	/** SID voices */
 	public final Voice[] voice = new Voice[] { new Voice(), new Voice(), new Voice() };
 
@@ -70,7 +65,7 @@ public class SID implements SIDChip {
 	private byte busValue;
 
 	/** Time to live for the last written value */
-	private int busValueTtl;
+	private int busValueTtl, databus_ttl;
 
 	/**
 	 * Currently active chip model.
@@ -154,6 +149,17 @@ public class SID implements SIDChip {
 	@Override
 	public void setChipModel(final ChipModel model) {
 		this.model = model;
+		/*
+		  results from real C64 (testprogs/SID/bitfade/delayfrq0.prg):
+		
+		  (new SID) (250469/8580R5) (250469/8580R5)
+		  delayfrq0    ~7a000        ~108000
+		
+		  (old SID) (250407/6581)
+		  delayfrq0    ~01d00
+		
+		 */
+		databus_ttl = model == ChipModel.MOS8580 ? 0xa2000 : 0x1d00;
 
 		final float nonLinearity;
 		if (model == ChipModel.MOS6581) {
@@ -237,19 +243,33 @@ public class SID implements SIDChip {
 	 */
 	@Override
 	public byte read(final int offset) {
+		final byte value;
 		switch (offset) {
 		case 0x19:
-			return potX.readPOT();
+			value = potX.readPOT();
+			
+			busValueTtl = databus_ttl;
+			break;
 		case 0x1a:
-			return potY.readPOT();
+			value = potY.readPOT();
+			busValueTtl = databus_ttl;
+			break;
 		case 0x1b:
-			return model == ChipModel.MOS6581 ? voice[2].wave.readOSC6581(voice[0].wave)
+			value = model == ChipModel.MOS6581 ? voice[2].wave.readOSC6581(voice[0].wave)
 					: voice[2].wave.readOSC8580(voice[0].wave);
+			break;
 		case 0x1c:
-			return voice[2].envelope.readENV();
+			value = voice[2].envelope.readENV();
+			busValueTtl = databus_ttl;
+			break;
 		default:
-			return busValue;
+			value = busValue;
+			busValueTtl /= 2;
+			break;
 		}
+
+		busValue = value;
+		return value;
 	}
 
 	/**
@@ -263,7 +283,7 @@ public class SID implements SIDChip {
 	@Override
 	public void write(final int offset, final byte value) {
 		busValue = value;
-		busValueTtl = BUS_TTL;
+		busValueTtl = databus_ttl;
 
 		switch (offset) {
 		case 0x00:
