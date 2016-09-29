@@ -210,8 +210,8 @@ public class EmulationSettings extends C64Window {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
 		boolean third = SidTune.isSIDUsed(emulationSection, tune, 2);
-		boolean isForcedStereo = second && emulationSection.isForceStereoTune();
-		boolean isForced3Sid = third && emulationSection.isForce3SIDTune();
+		boolean isForcedStereo = emulationSection.isForceStereoTune();
+		boolean isForced3Sid = emulationSection.isForce3SIDTune();
 		if (isForced3Sid) {
 			stereoMode.getSelectionModel().select(StereoMode.THREE_SID);
 		} else if (isForcedStereo) {
@@ -339,7 +339,7 @@ public class EmulationSettings extends C64Window {
 		setMainFilter();
 		setSecondFilter();
 	}
-	
+
 	@FXML
 	private void setStereoMode() {
 		StereoMode mode = stereoMode.getSelectionModel().getSelectedItem();
