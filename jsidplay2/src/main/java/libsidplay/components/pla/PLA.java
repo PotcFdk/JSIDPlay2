@@ -119,7 +119,7 @@ public final class PLA {
 		private final static int MAPPER_SIZE = 128;
 
 		/**
-		 * SID Mapping table. Maps a SID chip base address to a SID chip number.
+		 * SID Mapping table. Maps a SID chip base address to each SID.
 		 */
 		private final int sidmapper[] = new int[MAPPER_SIZE];
 
@@ -131,7 +131,7 @@ public final class PLA {
 		 */
 		private int[] sidBankUsed = new int[MAX_BANKS];
 
-		/** Reset SID chips using highest volume setting. */
+		/** Reset mapping of memory banks. */
 		private void reset() {
 			Arrays.fill(sidmapper, 0);
 			Arrays.fill(sidBankUsed, 0);
