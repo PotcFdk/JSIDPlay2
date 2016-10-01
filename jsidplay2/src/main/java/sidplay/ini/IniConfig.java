@@ -90,7 +90,7 @@ public class IniConfig implements IConfig {
 		read(createIfNotExists, false);
 	}
 
-	public IniConfig(boolean createIfNotExists, boolean internalOnly) {
+	private IniConfig(boolean createIfNotExists, boolean internalOnly) {
 		iniPath = getINIPath(createIfNotExists);
 		read(createIfNotExists, internalOnly);
 	}
