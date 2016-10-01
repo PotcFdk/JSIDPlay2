@@ -1,7 +1,6 @@
 package libsidplay.config;
 
 public interface IPrinterSection {
-	static final boolean DEFAULT_PRINTER_ON = false;
 
 	/**
 	 * Printer turned on?

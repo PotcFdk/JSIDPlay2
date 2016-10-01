@@ -1,14 +1,14 @@
 package ui.videoscreen;
 
-import static libsidplay.config.ISidPlay2Section.DEFAULT_BLEED;
-import static libsidplay.config.ISidPlay2Section.DEFAULT_BLUR;
-import static libsidplay.config.ISidPlay2Section.DEFAULT_BRIGHTNESS;
-import static libsidplay.config.ISidPlay2Section.DEFAULT_CONTRAST;
-import static libsidplay.config.ISidPlay2Section.DEFAULT_GAMMA;
-import static libsidplay.config.ISidPlay2Section.DEFAULT_OFFSET;
-import static libsidplay.config.ISidPlay2Section.DEFAULT_PHASE_SHIFT;
-import static libsidplay.config.ISidPlay2Section.DEFAULT_SATURATION;
-import static libsidplay.config.ISidPlay2Section.DEFAULT_TINT;
+import static sidplay.ini.IniDefaults.DEFAULT_BLEED;
+import static sidplay.ini.IniDefaults.DEFAULT_BLUR;
+import static sidplay.ini.IniDefaults.DEFAULT_BRIGHTNESS;
+import static sidplay.ini.IniDefaults.DEFAULT_CONTRAST;
+import static sidplay.ini.IniDefaults.DEFAULT_GAMMA;
+import static sidplay.ini.IniDefaults.DEFAULT_OFFSET;
+import static sidplay.ini.IniDefaults.DEFAULT_PHASE_SHIFT;
+import static sidplay.ini.IniDefaults.DEFAULT_SATURATION;
+import static sidplay.ini.IniDefaults.DEFAULT_TINT;
 import static ui.entities.config.SidPlay2Section.DEFAULT_VIDEO_SCALING;
 
 import java.io.File;

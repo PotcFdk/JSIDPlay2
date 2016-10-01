@@ -1,5 +1,18 @@
 package ui.entities.config;
 
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
+import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
+import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
+import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_MAIN_VOLUME;
+import static sidplay.ini.IniDefaults.DEFAULT_PLAY_ORIGINAL;
+import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING;
+import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING_RATE;
+import static sidplay.ini.IniDefaults.DEFAULT_SECOND_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_SECOND_VOLUME;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
+
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

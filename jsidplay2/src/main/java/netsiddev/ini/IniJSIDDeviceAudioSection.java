@@ -29,7 +29,7 @@ public class IniJSIDDeviceAudioSection extends IniSection {
 	 * @return Playback/Recording frequency
 	 */
 	public final SamplingRate getSamplingRate() {
-		return iniReader.getPropertyEnum("Audio", "Sampling Rate", SamplingRate.MEDIUM);
+		return iniReader.getPropertyEnum("Audio", "Sampling Rate", SamplingRate.MEDIUM, SamplingRate.class);
 	}
 
 	/**

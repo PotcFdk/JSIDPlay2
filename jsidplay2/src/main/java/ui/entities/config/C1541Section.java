@@ -1,12 +1,19 @@
 package ui.entities.config;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import static sidplay.ini.IniDefaults.DEFAULT_DRIVE_ON;
+import static sidplay.ini.IniDefaults.DEFAULT_FLOPPY_TYPE;
+import static sidplay.ini.IniDefaults.DEFAULT_PARALLEL_CABLE;
+import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X2000;
+import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X4000;
+import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X6000;
+import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X8000;
+import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0XA000;
 
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.config.IC1541Section;

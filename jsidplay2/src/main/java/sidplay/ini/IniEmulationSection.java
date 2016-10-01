@@ -1,5 +1,34 @@
 package sidplay.ini;
 
+import static libsidplay.common.CPUClock.PAL;
+import static libsidplay.common.ChipModel.MOS6581;
+import static libsidplay.common.Emulation.RESID;
+import static libsidplay.common.Engine.EMULATION;
+import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_DIGI_BOOSTED_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_DUAL_SID_BASE;
+import static sidplay.ini.IniDefaults.DEFAULT_FAKE_STEREO;
+import static sidplay.ini.IniDefaults.DEFAULT_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
+import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
+import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
+import static sidplay.ini.IniDefaults.DEFAULT_STEREO_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_STEREO_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_SID_BASE;
+import static sidplay.ini.IniDefaults.DEFAULT_USE_3SID_FILTER;
+import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
+import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
@@ -19,7 +48,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 
 	@Override
 	public Engine getEngine() {
-		return iniReader.getPropertyEnum("Emulation", "Engine", DEFAULT_ENGINE);
+		return iniReader.getPropertyEnum("Emulation", "Engine", EMULATION, Engine.class);
 	}
 
 	@Override
@@ -29,7 +58,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 
 	@Override
 	public Emulation getDefaultEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "DefaultEmulation", DEFAULT_EMULATION);
+		return iniReader.getPropertyEnum("Emulation", "DefaultEmulation", RESID, Emulation.class);
 	}
 
 	@Override
@@ -39,7 +68,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 
 	@Override
 	public final Emulation getUserEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "UserEmulation", DEFAULT_USER_EMULATION);
+		return iniReader.getPropertyEnum("Emulation", "UserEmulation", RESID, Emulation.class);
 	}
 
 	@Override
@@ -49,7 +78,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 
 	@Override
 	public final Emulation getStereoEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "StereoEmulation", DEFAULT_STEREO_EMULATION);
+		return iniReader.getPropertyEnum("Emulation", "StereoEmulation", RESID, Emulation.class);
 	}
 
 	@Override
@@ -59,7 +88,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 
 	@Override
 	public final Emulation getThirdEmulation() {
-		return iniReader.getPropertyEnum("Emulation", "3rdEmulation", DEFAULT_3SID_EMULATION, Emulation.class);
+		return iniReader.getPropertyEnum("Emulation", "3rdEmulation", RESID, Emulation.class);
 	}
 
 	@Override
@@ -69,7 +98,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 
 	@Override
 	public final CPUClock getDefaultClockSpeed() {
-		return iniReader.getPropertyEnum("Emulation", "DefaultClockSpeed", DEFAULT_CLOCK_SPEED);
+		return iniReader.getPropertyEnum("Emulation", "DefaultClockSpeed", PAL, CPUClock.class);
 	}
 
 	@Override
@@ -89,7 +118,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 
 	@Override
 	public final ChipModel getDefaultSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "DefaultSidModel", DEFAULT_SID_MODEL);
+		return iniReader.getPropertyEnum("Emulation", "DefaultSidModel", MOS6581, ChipModel.class);
 	}
 
 	@Override
@@ -99,7 +128,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 
 	@Override
 	public final ChipModel getUserSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "UserSidModel", DEFAULT_USER_MODEL);
+		return iniReader.getPropertyEnum("Emulation", "UserSidModel", MOS6581, ChipModel.class);
 	}
 
 	@Override
@@ -109,12 +138,12 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 
 	@Override
 	public final ChipModel getStereoSidModel() {
-		return iniReader.getPropertyEnum("Emulation", "StereoSidModel", DEFAULT_STEREO_MODEL);
+		return iniReader.getPropertyEnum("Emulation", "StereoSidModel", MOS6581, ChipModel.class);
 	}
 
 	@Override
 	public final ChipModel getThirdSIDModel() {
-		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel", DEFAULT_3SID_MODEL);
+		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel", MOS6581, ChipModel.class);
 	}
 
 	@Override

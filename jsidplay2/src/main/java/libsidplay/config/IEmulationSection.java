@@ -6,44 +6,6 @@ import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 
 public interface IEmulationSection {
-	static final Engine DEFAULT_ENGINE = Engine.EMULATION;
-	static final Emulation DEFAULT_EMULATION = Emulation.RESIDFP;
-	static final Emulation DEFAULT_USER_EMULATION = Emulation.DEFAULT;
-	static final Emulation DEFAULT_STEREO_EMULATION = Emulation.DEFAULT;
-	static final Emulation DEFAULT_3SID_EMULATION = Emulation.DEFAULT;
-	static final CPUClock DEFAULT_CLOCK_SPEED = CPUClock.PAL;
-	static final ChipModel DEFAULT_SID_MODEL = ChipModel.MOS6581;
-	static final ChipModel DEFAULT_USER_MODEL = ChipModel.AUTO;
-	static final ChipModel DEFAULT_STEREO_MODEL = ChipModel.AUTO;
-	static final ChipModel DEFAULT_3SID_MODEL = ChipModel.AUTO;
-	static final int DEFAULT_HARD_SID_6581 = 1;
-	static final int DEFAULT_HARD_SID_8580 = 2;
-	static final boolean DEFAULT_USE_FILTER = true;
-	static final boolean DEFAULT_USE_STEREO_FILTER = true;
-	static final boolean DEFAULT_USE_3SID_FILTER = true;
-	static final int DEFAULT_SID_NUM_TO_READ = 0;
-	static final boolean DEFAULT_DIGI_BOOSTED_8580 = false;
-	static final int DEFAULT_DUAL_SID_BASE = 0xd420;
-	static final int DEFAULT_THIRD_SID_BASE = 0xd440;
-	static final boolean DEFAULT_FAKE_STEREO = false;
-	static final boolean DEFAULT_FORCE_STEREO_TUNE = false;
-	static final boolean DEFAULT_FORCE_3SID_TUNE = false;
-
-	static final String DEFAULT_FILTER_6581 = "FilterAverage6581";
-	static final String DEFAULT_STEREO_FILTER_6581 = "FilterAverage6581";
-	static final String DEFAULT_3SID_FILTER_6581 = "FilterAverage6581";
-
-	static final String DEFAULT_FILTER_8580 = "FilterAverage8580";
-	static final String DEFAULT_STEREO_FILTER_8580 = "FilterAverage8580";
-	static final String DEFAULT_3SID_FILTER_8580 = "FilterAverage8580";
-
-	static final String DEFAULT_ReSIDfp_FILTER_6581 = "FilterAlankila6581R4AR_3789";
-	static final String DEFAULT_ReSIDfp_STEREO_FILTER_6581 = "FilterAlankila6581R4AR_3789";
-	static final String DEFAULT_ReSIDfp_3SID_FILTER_6581 = "FilterAlankila6581R4AR_3789";
-
-	static final String DEFAULT_ReSIDfp_FILTER_8580 = "FilterTrurl8580R5_3691";
-	static final String DEFAULT_ReSIDfp_STEREO_FILTER_8580 = "FilterTrurl8580R5_3691";
-	static final String DEFAULT_ReSIDfp_3SID_FILTER_8580 = "FilterTrurl8580R5_3691";
 
 	/**
 	 * Getter of the SID engine to be used.

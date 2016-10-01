@@ -1,10 +1,11 @@
 package ui.entities.config;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import static sidplay.ini.IniDefaults.DEFAULT_PRINTER_ON;
 
 import javax.persistence.Embeddable;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import libsidplay.config.IPrinterSection;
 
 @Embeddable

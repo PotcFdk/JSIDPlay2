@@ -6,19 +6,6 @@ import sidplay.audio.Audio;
 
 public interface IAudioSection {
 
-	static final Audio DEFAULT_AUDIO = Audio.SOUNDCARD;
-	static final int DEFAULT_DEVICE = 0;
-	static final SamplingRate DEFAULT_SAMPLING_RATE = SamplingRate.MEDIUM;
-	static final SamplingMethod DEFAULT_SAMPLING = SamplingMethod.DECIMATE;
-	static final boolean DEFAULT_PLAY_ORIGINAL = false;
-	static final float DEFAULT_MAIN_VOLUME = 0.f;
-	static final float DEFAULT_SECOND_VOLUME = 0.f;
-	static final float DEFAULT_THIRD_VOLUME = 0.f;
-	static final float DEFAULT_MAIN_BALANCE = .5f;
-	static final float DEFAULT_SECOND_BALANCE = .5f;
-	static final float DEFAULT_THIRD_BALANCE = .5f;
-	static final int DEFAULT_BUFFER_SIZE = 2500;
-
 	/**
 	 * Getter of the audio to be used.
 	 * 

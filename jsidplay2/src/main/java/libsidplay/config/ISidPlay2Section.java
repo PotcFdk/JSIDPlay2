@@ -2,24 +2,6 @@ package libsidplay.config;
 
 public interface ISidPlay2Section {
 
-	static final boolean DEFAULT_ENABLE_DATABASE = true;
-	static final int DEFAULT_PLAY_LENGTH = 3 * 60;
-	static final int DEFAULT_FADE_IN_TIME = 0;
-	static final int DEFAULT_FADE_OUT_TIME = 0;
-	static final boolean DEFAULT_LOOP = false;
-	static final boolean DEFAULT_SINGLE_TRACK = false;
-	static final boolean DEFAULT_ENABLE_PROXY = false;
-	static final float DEFAULT_BRIGHTNESS = 0f;
-	static final float DEFAULT_CONTRAST = 1f;
-	static final float DEFAULT_GAMMA = 2f;
-	static final float DEFAULT_SATURATION = .5f;
-	static final float DEFAULT_PHASE_SHIFT = -15f;
-	static final float DEFAULT_OFFSET = .9f;
-	static final float DEFAULT_TINT = 0f;
-	static final float DEFAULT_BLUR = .5f;
-	static final float DEFAULT_BLEED = .5f;
-	static final boolean DEFAULT_TURBO_TAPE = true;
-
 	/**
 	 * Get INI file version.
 	 * 

@@ -1,18 +1,10 @@
 package libsidplay.config;
 
+import static sidplay.ini.IniDefaults.MAX_RAM_EXPANSIONS;
+
 import libsidplay.components.c1541.C1541.FloppyType;
 
 public interface IC1541Section {
-
-	static final boolean DEFAULT_DRIVE_ON = false;
-	static final boolean DEFAULT_PARALLEL_CABLE = false;
-	static final int MAX_RAM_EXPANSIONS = 5;
-	static final boolean DEFAULT_RAM_EXPAND_0X2000 = false;
-	static final boolean DEFAULT_RAM_EXPAND_0X4000 = false;
-	static final boolean DEFAULT_RAM_EXPAND_0X6000 = false;
-	static final boolean DEFAULT_RAM_EXPAND_0X8000 = false;
-	static final boolean DEFAULT_RAM_EXPAND_0XA000 = false;
-	static final FloppyType DEFAULT_FLOPPY_TYPE = FloppyType.C1541;
 
 	/**
 	 * Drive turned on?

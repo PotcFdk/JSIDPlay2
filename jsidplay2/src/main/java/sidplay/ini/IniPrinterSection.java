@@ -1,5 +1,7 @@
 package sidplay.ini;
 
+import static sidplay.ini.IniDefaults.DEFAULT_PRINTER_ON;
+
 import libsidplay.config.IPrinterSection;
 
 /**

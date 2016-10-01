@@ -1,5 +1,18 @@
 package sidplay.ini;
 
+import static libsidplay.common.SamplingMethod.DECIMATE;
+import static libsidplay.common.SamplingRate.LOW;
+import static sidplay.audio.Audio.SOUNDCARD;
+import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
+import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
+import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_MAIN_VOLUME;
+import static sidplay.ini.IniDefaults.DEFAULT_PLAY_ORIGINAL;
+import static sidplay.ini.IniDefaults.DEFAULT_SECOND_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_SECOND_VOLUME;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
+
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
@@ -18,7 +31,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public Audio getAudio() {
-		return iniReader.getPropertyEnum("Audio", "Audio", DEFAULT_AUDIO);
+		return iniReader.getPropertyEnum("Audio", "Audio", SOUNDCARD, Audio.class);
 	}
 
 	@Override
@@ -43,7 +56,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final SamplingRate getSamplingRate() {
-		return iniReader.getPropertyEnum("Audio", "Sampling Rate", DEFAULT_SAMPLING_RATE);
+		return iniReader.getPropertyEnum("Audio", "Sampling Rate", LOW, SamplingRate.class);
 	}
 
 	/**
@@ -64,7 +77,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final SamplingMethod getSampling() {
-		return iniReader.getPropertyEnum("Audio", "Sampling", DEFAULT_SAMPLING);
+		return iniReader.getPropertyEnum("Audio", "Sampling", DECIMATE, SamplingMethod.class);
 	}
 
 	/**
@@ -223,15 +236,13 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 		iniReader.setProperty("Audio", "ThirdBalance", balance);
 	}
 
-	private int bufferSize = DEFAULT_BUFFER_SIZE;
-
 	@Override
 	public int getBufferSize() {
-		return bufferSize;
+		return iniReader.getPropertyInt("Audio", "Buffer Size", DEFAULT_BUFFER_SIZE);
 	}
 
 	@Override
 	public void setBufferSize(int bufferSize) {
-		this.bufferSize = bufferSize;
+		iniReader.setProperty("Audio", "Buffer Size", bufferSize);
 	}
 }

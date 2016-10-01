@@ -1,5 +1,22 @@
 package sidplay.ini;
 
+import static sidplay.ini.IniDefaults.DEFAULT_BLEED;
+import static sidplay.ini.IniDefaults.DEFAULT_BLUR;
+import static sidplay.ini.IniDefaults.DEFAULT_BRIGHTNESS;
+import static sidplay.ini.IniDefaults.DEFAULT_CONTRAST;
+import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_DATABASE;
+import static sidplay.ini.IniDefaults.DEFAULT_FADE_IN_TIME;
+import static sidplay.ini.IniDefaults.DEFAULT_FADE_OUT_TIME;
+import static sidplay.ini.IniDefaults.DEFAULT_GAMMA;
+import static sidplay.ini.IniDefaults.DEFAULT_LOOP;
+import static sidplay.ini.IniDefaults.DEFAULT_OFFSET;
+import static sidplay.ini.IniDefaults.DEFAULT_PHASE_SHIFT;
+import static sidplay.ini.IniDefaults.DEFAULT_PLAY_LENGTH;
+import static sidplay.ini.IniDefaults.DEFAULT_SATURATION;
+import static sidplay.ini.IniDefaults.DEFAULT_SINGLE_TRACK;
+import static sidplay.ini.IniDefaults.DEFAULT_TINT;
+import static sidplay.ini.IniDefaults.DEFAULT_TURBO_TAPE;
+
 import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
 

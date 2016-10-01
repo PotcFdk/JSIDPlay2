@@ -77,33 +77,45 @@ public class IniConfig implements IConfig {
 		return filters;
 	}
 
+	public static IConfig getDefault() {
+		return new IniConfig(false, true);
+	}
+	
 	public IniConfig() {
-		this(false);
+		this(false, false);
 	}
 
 	public IniConfig(boolean createIfNotExists) {
 		iniPath = getINIPath(createIfNotExists);
-		read(createIfNotExists);
+		read(createIfNotExists, false);
 	}
 
-	private void read(boolean createIfNotExists) {
-		if (iniPath != null && iniPath.exists()) {
-			try (FileInputStream is = new FileInputStream(iniPath)) {
-				iniReader = new IniReader(is);
-				clear();
-				/* validate loaded configuration */
-				if (sidplay2Section.getVersion() == REQUIRED_CONFIG_VERSION) {
-					System.out.println("Use INI file: " + iniPath);
-					return;
+	public IniConfig(boolean createIfNotExists, boolean internalOnly) {
+		iniPath = getINIPath(createIfNotExists);
+		read(createIfNotExists, internalOnly);
+	}
+
+	private void read(boolean createIfNotExists, boolean internalOnly) {
+		if (!internalOnly) {
+			if (iniPath != null && iniPath.exists()) {
+				try (FileInputStream is = new FileInputStream(iniPath)) {
+					iniReader = new IniReader(is);
+					clear();
+					/* validate loaded configuration */
+					if (sidplay2Section.getVersion() == REQUIRED_CONFIG_VERSION) {
+						System.out.println("Use INI file: " + iniPath);
+						return;
+					}
+				} catch (final Exception e) {
+					throw new RuntimeException(e);
 				}
-			} catch (final Exception e) {
-				throw new RuntimeException(e);
+				createINIBackup(iniPath);
 			}
-			createINIBackup(iniPath);
+			System.out.println("Use internal INI file: " + FILE_NAME);
 		}
 
 		readInternal();
-		if (iniPath != null && !iniPath.exists() && createIfNotExists) {
+		if (!internalOnly && iniPath != null && !iniPath.exists() && createIfNotExists) {
 			write();
 		}
 	}
@@ -149,7 +161,6 @@ public class IniConfig implements IConfig {
 
 	private void readInternal() {
 		final InputStream is = getClass().getClassLoader().getResourceAsStream("sidplay/ini/" + FILE_NAME);
-		System.out.println("Use internal INI file: " + FILE_NAME);
 
 		try {
 			iniReader = new IniReader(is);

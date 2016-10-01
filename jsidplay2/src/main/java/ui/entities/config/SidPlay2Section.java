@@ -1,22 +1,39 @@
 package ui.entities.config;
 
-import java.io.File;
+import static sidplay.ini.IniDefaults.DEFAULT_BLEED;
+import static sidplay.ini.IniDefaults.DEFAULT_BLUR;
+import static sidplay.ini.IniDefaults.DEFAULT_BRIGHTNESS;
+import static sidplay.ini.IniDefaults.DEFAULT_CONTRAST;
+import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_DATABASE;
+import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_PROXY;
+import static sidplay.ini.IniDefaults.DEFAULT_FADE_IN_TIME;
+import static sidplay.ini.IniDefaults.DEFAULT_FADE_OUT_TIME;
+import static sidplay.ini.IniDefaults.DEFAULT_GAMMA;
+import static sidplay.ini.IniDefaults.DEFAULT_LOOP;
+import static sidplay.ini.IniDefaults.DEFAULT_OFFSET;
+import static sidplay.ini.IniDefaults.DEFAULT_PHASE_SHIFT;
+import static sidplay.ini.IniDefaults.DEFAULT_PLAY_LENGTH;
+import static sidplay.ini.IniDefaults.DEFAULT_SATURATION;
+import static sidplay.ini.IniDefaults.DEFAULT_SINGLE_TRACK;
+import static sidplay.ini.IniDefaults.DEFAULT_TINT;
+import static sidplay.ini.IniDefaults.DEFAULT_TURBO_TAPE;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import java.io.File;
 
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
+import de.schlichtherle.truezip.file.TFile;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import libsidplay.config.ISidPlay2Section;
 import ui.favorites.PlaybackType;
-import de.schlichtherle.truezip.file.TFile;
 
 @Embeddable
 public class SidPlay2Section implements ISidPlay2Section {

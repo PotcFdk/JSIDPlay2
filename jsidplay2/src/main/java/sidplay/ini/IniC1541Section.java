@@ -1,5 +1,14 @@
 package sidplay.ini;
 
+import static sidplay.ini.IniDefaults.DEFAULT_DRIVE_ON;
+import static sidplay.ini.IniDefaults.DEFAULT_FLOPPY_TYPE;
+import static sidplay.ini.IniDefaults.DEFAULT_PARALLEL_CABLE;
+import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X2000;
+import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X4000;
+import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X6000;
+import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X8000;
+import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0XA000;
+
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.config.IC1541Section;
 
@@ -136,6 +145,6 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	 */
 	@Override
 	public final FloppyType getFloppyType() {
-		return iniReader.getPropertyEnum("C1541", "FloppyType", DEFAULT_FLOPPY_TYPE);
+		return iniReader.getPropertyEnum("C1541", "FloppyType", DEFAULT_FLOPPY_TYPE, FloppyType.class);
 	}
 }

@@ -220,10 +220,6 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue) {
-		return getPropertyEnum(section, key, defaultValue, defaultValue.getClass());
-	}
-
 	public <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue, Class<?> class1) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
