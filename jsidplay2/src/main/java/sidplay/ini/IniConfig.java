@@ -77,27 +77,36 @@ public class IniConfig implements IConfig {
 		return filters;
 	}
 
+	/**
+	 * Get default configuration, read from internal sidplay2.ini file.
+	 * 
+	 * @return default configuration
+	 */
 	public static IConfig getDefault() {
-		return new IniConfig(false, true);
+		return new IniConfig(false, null);
 	}
-	
+
+	/**
+	 * Read configuration file (external or internal, if it does not exist).
+	 */
 	public IniConfig() {
-		this(false, false);
+		this(false, getINIPath(false));
 	}
 
+	/**
+	 * Read configuration file (external or internal, if it does not exist).<BR>
+	 * 
+	 * @param createIfNotExists
+	 *            If external configuration file does not exist, create it
+	 */
 	public IniConfig(boolean createIfNotExists) {
-		iniPath = getINIPath(createIfNotExists);
-		read(createIfNotExists, false);
+		this(createIfNotExists, getINIPath(createIfNotExists));
 	}
 
-	private IniConfig(boolean createIfNotExists, boolean internalOnly) {
-		iniPath = getINIPath(createIfNotExists);
-		read(createIfNotExists, internalOnly);
-	}
-
-	private void read(boolean createIfNotExists, boolean internalOnly) {
-		if (!internalOnly) {
-			if (iniPath != null && iniPath.exists()) {
+	public IniConfig(boolean createIfNotExists, File iniPath) {
+		this.iniPath = iniPath;
+		if (iniPath != null) {
+			if (iniPath.exists()) {
 				try (FileInputStream is = new FileInputStream(iniPath)) {
 					iniReader = new IniReader(is);
 					clear();
@@ -115,7 +124,7 @@ public class IniConfig implements IConfig {
 		}
 
 		readInternal();
-		if (!internalOnly && iniPath != null && !iniPath.exists() && createIfNotExists) {
+		if (iniPath != null && !iniPath.exists() && createIfNotExists) {
 			write();
 		}
 	}
@@ -129,7 +138,7 @@ public class IniConfig implements IConfig {
 	 * 
 	 * @return the absolute path name of the INI file to use
 	 */
-	private File getINIPath(boolean createIfNotExists) {
+	private static File getINIPath(boolean createIfNotExists) {
 		try {
 			File configPlace = null;
 			for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
