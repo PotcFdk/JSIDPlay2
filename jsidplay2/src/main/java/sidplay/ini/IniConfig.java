@@ -42,6 +42,8 @@ public class IniConfig implements IConfig {
 	/** Name of our config file. */
 	private static final String FILE_NAME = "sidplay2.ini";
 
+	private static IniConfig singleInstance;
+
 	/** INI configuration filename or null (use internal configuration) */
 	private final File iniPath;
 
@@ -78,12 +80,16 @@ public class IniConfig implements IConfig {
 	}
 
 	/**
-	 * Get default configuration, read from internal sidplay2.ini file.
+	 * Get default configuration, read from internal sidplay2.ini file.<BR>
+	 * This is a Single instance!
 	 * 
 	 * @return default configuration
 	 */
 	public static IniConfig getDefault() {
-		return new IniConfig(false, null);
+		if (singleInstance == null) {
+			singleInstance = new IniConfig(false, null);
+		}
+		return singleInstance;
 	}
 
 	/**
