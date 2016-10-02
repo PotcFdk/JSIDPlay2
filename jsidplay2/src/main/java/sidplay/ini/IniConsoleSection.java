@@ -1,5 +1,7 @@
 package sidplay.ini;
 
+import static sidplay.ini.IniDefaults.*;
+
 /**
  * Console section of the INI file.
  * 
@@ -7,15 +9,6 @@ package sidplay.ini;
  * 
  */
 public class IniConsoleSection extends IniSection {
-	public static final String DEFAULT_CHAR_TOP_LEFT = "'+'";
-	public static final String DEFAULT_CHAR_TOP_RIGTH = "'+'";
-	public static final String DEFAULT_CHAR_BOTTOM_LEFT = "'+'";
-	public static final String DEFAULT_CHAR_BOTTOM_RIGHT = "'+'";
-	public static final String DEFAULT_CHAR_VERTICAL = "'|'";
-	public static final String DEFAULT_CHAR_HORIZONTAL = "'-'";
-	public static final String DEFAULT_CHAR_JUNCTION_LEFT = "'-'";
-	public static final String DEFAULT_CHAR_JUNCTION_RIGHT = "'-'";
-
 	protected IniConsoleSection(IniReader iniReader) {
 		super(iniReader);
 	}
@@ -27,11 +20,11 @@ public class IniConsoleSection extends IniSection {
 	 */
 
 	public final char getTopLeft() {
-		return getChar(iniReader.getPropertyString("Console", "Char Top Left", DEFAULT_CHAR_TOP_LEFT), '+');
+		return iniReader.getPropertyChar("Console", "Char Top Left", DEFAULT_CHAR_TOP_LEFT);
 	}
 
 	public void setTopLeft(char topLeft) {
-		iniReader.setProperty("Console", "Char Top Left", String.valueOf((int) topLeft));
+		iniReader.setProperty("Console", "Char Top Left", topLeft);
 	}
 
 	/**
@@ -41,11 +34,11 @@ public class IniConsoleSection extends IniSection {
 	 */
 
 	public final char getTopRight() {
-		return getChar(iniReader.getPropertyString("Console", "Char Top Right", DEFAULT_CHAR_TOP_RIGTH), '+');
+		return iniReader.getPropertyChar("Console", "Char Top Right", DEFAULT_CHAR_TOP_RIGHT);
 	}
 
 	public void setTopRight(char topRight) {
-		iniReader.setProperty("Console", "Char Top Right", String.valueOf((int) topRight));
+		iniReader.setProperty("Console", "Char Top Right", topRight);
 	}
 
 	/**
@@ -55,11 +48,11 @@ public class IniConsoleSection extends IniSection {
 	 */
 
 	public final char getBottomLeft() {
-		return getChar(iniReader.getPropertyString("Console", "Char Bottom Left", DEFAULT_CHAR_BOTTOM_LEFT), '+');
+		return iniReader.getPropertyChar("Console", "Char Bottom Left", DEFAULT_CHAR_BOTTOM_LEFT);
 	}
 
 	public void setBottomLeft(char bottomLeft) {
-		iniReader.setProperty("Console", "Char Bottom Left", String.valueOf((int) bottomLeft));
+		iniReader.setProperty("Console", "Char Bottom Left", bottomLeft);
 	}
 
 	/**
@@ -69,11 +62,11 @@ public class IniConsoleSection extends IniSection {
 	 */
 
 	public final char getBottomRight() {
-		return getChar(iniReader.getPropertyString("Console", "Char Bottom Right", DEFAULT_CHAR_BOTTOM_RIGHT), '+');
+		return iniReader.getPropertyChar("Console", "Char Bottom Right", DEFAULT_CHAR_BOTTOM_RIGHT);
 	}
 
 	public void setBottomRight(char bottomRight) {
-		iniReader.setProperty("Console", "Char Bottom Right", String.valueOf((int) bottomRight));
+		iniReader.setProperty("Console", "Char Bottom Right", bottomRight);
 	}
 
 	/**
@@ -83,11 +76,11 @@ public class IniConsoleSection extends IniSection {
 	 */
 
 	public final char getVertical() {
-		return getChar(iniReader.getPropertyString("Console", "Char Vertical", DEFAULT_CHAR_VERTICAL), '|');
+		return iniReader.getPropertyChar("Console", "Char Vertical", DEFAULT_CHAR_VERTICAL);
 	}
 
 	public void setVertical(char vertical) {
-		iniReader.setProperty("Console", "Char Vertical", String.valueOf((int) vertical));
+		iniReader.setProperty("Console", "Char Vertical", vertical);
 	}
 
 	/**
@@ -97,11 +90,11 @@ public class IniConsoleSection extends IniSection {
 	 */
 
 	public final char getHorizontal() {
-		return getChar(iniReader.getPropertyString("Console", "Char Horizontal", DEFAULT_CHAR_HORIZONTAL), '-');
+		return iniReader.getPropertyChar("Console", "Char Horizontal", DEFAULT_CHAR_HORIZONTAL);
 	}
 
 	public void setHorizontal(char horizontal) {
-		iniReader.setProperty("Console", "Char Horizontal", String.valueOf((int) horizontal));
+		iniReader.setProperty("Console", "Char Horizontal", horizontal);
 	}
 
 	/**
@@ -111,11 +104,11 @@ public class IniConsoleSection extends IniSection {
 	 */
 
 	public final char getJunctionLeft() {
-		return getChar(iniReader.getPropertyString("Console", "Char Junction Left", DEFAULT_CHAR_JUNCTION_LEFT), '-');
+		return iniReader.getPropertyChar("Console", "Char Junction Left", DEFAULT_CHAR_JUNCTION_LEFT);
 	}
 
 	public void setJunctionLeft(char junctionLeft) {
-		iniReader.setProperty("Console", "Char Junction Left", String.valueOf((int) junctionLeft));
+		iniReader.setProperty("Console", "Char Junction Left", junctionLeft);
 	}
 
 	/**
@@ -125,35 +118,11 @@ public class IniConsoleSection extends IniSection {
 	 */
 
 	public final char getJunctionRight() {
-		return getChar(iniReader.getPropertyString("Console", "Char Junction Right", DEFAULT_CHAR_JUNCTION_RIGHT), '-');
+		return iniReader.getPropertyChar("Console", "Char Junction Right", DEFAULT_CHAR_JUNCTION_RIGHT);
 	}
 
 	public void setJunctionRight(char junctionRight) {
-		iniReader.setProperty("Console", "Char Junction Right", String.valueOf((int) junctionRight));
-	}
-
-	private static char getChar(final String str, final char defaultChar) {
-		char c = 0;
-		if (str.length() == 0) {
-			return defaultChar;
-		}
-		// Check if we have an actual Character
-		if (str.charAt(0) == '\'') {
-			if (str.charAt(2) != '\'') {
-				throw new RuntimeException("Invalid character notation: " + str);
-			} else {
-				c = str.charAt(1);
-			}
-		} // Nope is number
-		else {
-			c = (char) Integer.parseInt(str);
-		}
-
-		// Clip off special characters
-		if (c >= 32) {
-			return c;
-		}
-		return defaultChar;
+		iniReader.setProperty("Console", "Char Junction Right", junctionRight);
 	}
 
 }

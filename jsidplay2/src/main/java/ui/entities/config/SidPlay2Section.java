@@ -5,7 +5,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_BLUR;
 import static sidplay.ini.IniDefaults.DEFAULT_BRIGHTNESS;
 import static sidplay.ini.IniDefaults.DEFAULT_CONTRAST;
 import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_DATABASE;
-import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_PROXY;
 import static sidplay.ini.IniDefaults.DEFAULT_FADE_IN_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_FADE_OUT_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_GAMMA;
@@ -38,6 +37,7 @@ import ui.favorites.PlaybackType;
 @Embeddable
 public class SidPlay2Section implements ISidPlay2Section {
 
+	boolean DEFAULT_ENABLE_PROXY = false;
 	public static final int DEFAULT_PROXY_PORT = 80;
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
 	public static final int DEFAULT_FRAME_WIDTH = 1126;

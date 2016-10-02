@@ -212,6 +212,14 @@ public class IniReader {
 		return defaultValue;
 	}
 
+	public char getPropertyChar(final String section, final String key, final char defaultValue) {
+		final String s = getPropertyString(section, key, null);
+		if (s != null && s.length() > 2 && s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'') {
+			return s.substring(1, s.length() - 1).toCharArray()[0];
+		}
+		return defaultValue;
+	}
+
 	public int getPropertyTime(final String section, final String key, final int defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
@@ -241,7 +249,8 @@ public class IniReader {
 		if (settings == null) {
 			sections.put(section, settings = new HashMap<String, String>());
 		}
-		String newValue = value instanceof Enum ? ((Enum<?>) value).name() : String.valueOf(value);
+		String newValue = value instanceof Character ? "\'" + value + "\'"
+				: value instanceof Enum ? ((Enum<?>) value).name() : String.valueOf(value);
 
 		String oldValue = null;
 		if (settings.containsKey(key)) {

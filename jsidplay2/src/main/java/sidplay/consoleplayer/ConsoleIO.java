@@ -34,7 +34,7 @@ public class ConsoleIO {
 		if (quiet) {
 			return;
 		}
-		final IniConsoleSection console = config.getConsole();
+		final IniConsoleSection console = config.getConsoleSection();
 
 		final SidTune tune = player.getTune();
 		final PlayList playList = player.getPlayList();

@@ -1,13 +1,14 @@
 package sidplay.ini;
 
-import static libsidplay.common.SamplingMethod.DECIMATE;
-import static libsidplay.common.SamplingRate.LOW;
-import static sidplay.audio.Audio.SOUNDCARD;
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_VOLUME;
+import static sidplay.ini.IniDefaults.DEFAULT_MP3_FILE;
 import static sidplay.ini.IniDefaults.DEFAULT_PLAY_ORIGINAL;
+import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING;
+import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING_RATE;
 import static sidplay.ini.IniDefaults.DEFAULT_SECOND_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_SECOND_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_BALANCE;
@@ -31,7 +32,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public Audio getAudio() {
-		return iniReader.getPropertyEnum("Audio", "Audio", SOUNDCARD, Audio.class);
+		return iniReader.getPropertyEnum("Audio", "Audio", DEFAULT_AUDIO, Audio.class);
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final SamplingRate getSamplingRate() {
-		return iniReader.getPropertyEnum("Audio", "Sampling Rate", LOW, SamplingRate.class);
+		return iniReader.getPropertyEnum("Audio", "Sampling Rate", DEFAULT_SAMPLING_RATE, SamplingRate.class);
 	}
 
 	/**
@@ -77,7 +78,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final SamplingMethod getSampling() {
-		return iniReader.getPropertyEnum("Audio", "Sampling", DECIMATE, SamplingMethod.class);
+		return iniReader.getPropertyEnum("Audio", "Sampling", DEFAULT_SAMPLING, SamplingMethod.class);
 	}
 
 	/**
@@ -92,18 +93,13 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	/**
-	 * Play recorded (original) or emulated tune.
-	 */
-	protected boolean playOriginal = DEFAULT_PLAY_ORIGINAL;
-
-	/**
 	 * Do we play the recording?
 	 * 
 	 * @return play the recording
 	 */
 	@Override
 	public final boolean isPlayOriginal() {
-		return playOriginal;
+		return iniReader.getPropertyBool("Audio", "Play Original", DEFAULT_PLAY_ORIGINAL);
 	}
 
 	/**
@@ -114,13 +110,8 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final void setPlayOriginal(final boolean original) {
-		this.playOriginal = original;
+		iniReader.setProperty("Audio", "Play Original", original);
 	}
-
-	/**
-	 * Recorded tune filename.
-	 */
-	protected String mp3File;
 
 	/**
 	 * Getter of the recorded tune filename.
@@ -129,7 +120,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 */
 	@Override
 	public final String getMp3File() {
-		return iniReader.getPropertyString("Audio", "MP3File", null);
+		return iniReader.getPropertyString("Audio", "MP3File", DEFAULT_MP3_FILE);
 	}
 
 	/**

@@ -82,7 +82,7 @@ public class IniConfig implements IConfig {
 	 * 
 	 * @return default configuration
 	 */
-	public static IConfig getDefault() {
+	public static IniConfig getDefault() {
 		return new IniConfig(false, null);
 	}
 
@@ -212,7 +212,7 @@ public class IniConfig implements IConfig {
 		return printerSection;
 	}
 
-	public final IniConsoleSection getConsole() {
+	public final IniConsoleSection getConsoleSection() {
 		return consoleSection;
 	}
 

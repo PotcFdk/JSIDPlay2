@@ -8,6 +8,8 @@ import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_DATABASE;
 import static sidplay.ini.IniDefaults.DEFAULT_FADE_IN_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_FADE_OUT_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_GAMMA;
+import static sidplay.ini.IniDefaults.DEFAULT_HVSC_DIR;
+import static sidplay.ini.IniDefaults.DEFAULT_LAST_DIR;
 import static sidplay.ini.IniDefaults.DEFAULT_LOOP;
 import static sidplay.ini.IniDefaults.DEFAULT_OFFSET;
 import static sidplay.ini.IniDefaults.DEFAULT_PHASE_SHIFT;
@@ -95,7 +97,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	public final String getHvsc() {
-		return iniReader.getPropertyString("SIDPlay2", "HVSC Dir", null);
+		return iniReader.getPropertyString("SIDPlay2", "HVSC Dir", DEFAULT_HVSC_DIR);
 	}
 
 	@Override
@@ -105,7 +107,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	public final String getLastDirectory() {
-		return iniReader.getPropertyString("SIDPlay2", "Last Directory", null);
+		return iniReader.getPropertyString("SIDPlay2", "Last Directory", DEFAULT_LAST_DIR);
 	}
 
 	@Override

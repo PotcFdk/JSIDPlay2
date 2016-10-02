@@ -9,7 +9,6 @@ import libsidplay.common.SamplingRate;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IC1541Section;
-import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IPrinterSection;
 import libsidplay.config.ISidPlay2Section;
@@ -22,7 +21,7 @@ import sidplay.audio.Audio;
  *
  */
 public interface IniDefaults {
-	IConfig DEFAULTS = IniConfig.getDefault();
+	IniConfig DEFAULTS = IniConfig.getDefault();
 
 	// SIDPlay2 Section
 
@@ -33,7 +32,8 @@ public interface IniDefaults {
 	int DEFAULT_FADE_OUT_TIME = SIDPLAY2_SECTION.getFadeOutTime();
 	boolean DEFAULT_LOOP = SIDPLAY2_SECTION.isLoop();
 	boolean DEFAULT_SINGLE_TRACK = SIDPLAY2_SECTION.isSingle();
-	boolean DEFAULT_ENABLE_PROXY = false;
+	String DEFAULT_HVSC_DIR = SIDPLAY2_SECTION.getHvsc();
+	String DEFAULT_LAST_DIR = SIDPLAY2_SECTION.getLastDirectory();
 	float DEFAULT_BRIGHTNESS = SIDPLAY2_SECTION.getBrightness();
 	float DEFAULT_CONTRAST = SIDPLAY2_SECTION.getContrast();
 	float DEFAULT_GAMMA = SIDPLAY2_SECTION.getGamma();
@@ -44,30 +44,9 @@ public interface IniDefaults {
 	float DEFAULT_BLUR = SIDPLAY2_SECTION.getBlur();
 	float DEFAULT_BLEED = SIDPLAY2_SECTION.getBleed();
 	boolean DEFAULT_TURBO_TAPE = SIDPLAY2_SECTION.isTurboTape();
-
-	// Audio Section
-
-	IAudioSection AUDIO_SECTION = DEFAULTS.getAudioSection();
-	Audio DEFAULT_AUDIO = AUDIO_SECTION.getAudio();
-	int DEFAULT_DEVICE = AUDIO_SECTION.getDevice();
-	SamplingRate DEFAULT_SAMPLING_RATE = AUDIO_SECTION.getSamplingRate();
-	SamplingMethod DEFAULT_SAMPLING = AUDIO_SECTION.getSampling();
-	boolean DEFAULT_PLAY_ORIGINAL = AUDIO_SECTION.isPlayOriginal();
-	float DEFAULT_MAIN_VOLUME = AUDIO_SECTION.getMainVolume();
-	float DEFAULT_SECOND_VOLUME = AUDIO_SECTION.getSecondVolume();
-	float DEFAULT_THIRD_VOLUME = AUDIO_SECTION.getThirdVolume();
-	float DEFAULT_MAIN_BALANCE = AUDIO_SECTION.getMainBalance();
-	float DEFAULT_SECOND_BALANCE = AUDIO_SECTION.getSecondBalance();
-	float DEFAULT_THIRD_BALANCE = AUDIO_SECTION.getThirdBalance();
-	int DEFAULT_BUFFER_SIZE = AUDIO_SECTION.getBufferSize();
-
-	// Printer Section
-
-	IPrinterSection PRINTER_SECTION = DEFAULTS.getPrinterSection();
-	boolean DEFAULT_PRINTER_ON = PRINTER_SECTION.isPrinterOn();
-
+	
 	// C1541 Section
-
+	
 	IC1541Section C1541_SECTION = DEFAULTS.getC1541Section();
 	boolean DEFAULT_DRIVE_ON = C1541_SECTION.isDriveOn();
 	boolean DEFAULT_PARALLEL_CABLE = C1541_SECTION.isParallelCable();
@@ -79,6 +58,40 @@ public interface IniDefaults {
 	boolean DEFAULT_RAM_EXPAND_0XA000 = C1541_SECTION.isRamExpansionEnabled4();
 	FloppyType DEFAULT_FLOPPY_TYPE = C1541_SECTION.getFloppyType();
 
+	// Printer Section
+
+	IPrinterSection PRINTER_SECTION = DEFAULTS.getPrinterSection();
+	boolean DEFAULT_PRINTER_ON = PRINTER_SECTION.isPrinterOn();
+
+	// Console Section
+	
+	IniConsoleSection CONSOLE_SECTION = DEFAULTS.getConsoleSection();
+	char DEFAULT_CHAR_TOP_LEFT = CONSOLE_SECTION.getTopLeft();
+	char DEFAULT_CHAR_TOP_RIGHT = CONSOLE_SECTION.getTopRight();
+	char DEFAULT_CHAR_BOTTOM_LEFT = CONSOLE_SECTION.getBottomLeft();
+	char DEFAULT_CHAR_BOTTOM_RIGHT = CONSOLE_SECTION.getBottomRight();
+	char DEFAULT_CHAR_VERTICAL = CONSOLE_SECTION.getVertical();
+	char DEFAULT_CHAR_HORIZONTAL = CONSOLE_SECTION.getHorizontal();
+	char DEFAULT_CHAR_JUNCTION_LEFT = CONSOLE_SECTION.getJunctionLeft();
+	char DEFAULT_CHAR_JUNCTION_RIGHT = CONSOLE_SECTION.getJunctionRight();
+
+	// Audio Section
+	
+	IAudioSection AUDIO_SECTION = DEFAULTS.getAudioSection();
+	Audio DEFAULT_AUDIO = AUDIO_SECTION.getAudio();
+	int DEFAULT_DEVICE = AUDIO_SECTION.getDevice();
+	SamplingRate DEFAULT_SAMPLING_RATE = AUDIO_SECTION.getSamplingRate();
+	SamplingMethod DEFAULT_SAMPLING = AUDIO_SECTION.getSampling();
+	boolean DEFAULT_PLAY_ORIGINAL = AUDIO_SECTION.isPlayOriginal();
+	String DEFAULT_MP3_FILE = AUDIO_SECTION.getMp3File();
+	float DEFAULT_MAIN_VOLUME = AUDIO_SECTION.getMainVolume();
+	float DEFAULT_SECOND_VOLUME = AUDIO_SECTION.getSecondVolume();
+	float DEFAULT_THIRD_VOLUME = AUDIO_SECTION.getThirdVolume();
+	float DEFAULT_MAIN_BALANCE = AUDIO_SECTION.getMainBalance();
+	float DEFAULT_SECOND_BALANCE = AUDIO_SECTION.getSecondBalance();
+	float DEFAULT_THIRD_BALANCE = AUDIO_SECTION.getThirdBalance();
+	int DEFAULT_BUFFER_SIZE = AUDIO_SECTION.getBufferSize();
+
 	// Emulator Section
 
 	IEmulationSection EMULATOR_SECTION = DEFAULTS.getEmulationSection();
@@ -88,6 +101,7 @@ public interface IniDefaults {
 	Emulation DEFAULT_STEREO_EMULATION = EMULATOR_SECTION.getStereoEmulation();
 	Emulation DEFAULT_3SID_EMULATION = EMULATOR_SECTION.getThirdEmulation();
 	CPUClock DEFAULT_CLOCK_SPEED = EMULATOR_SECTION.getDefaultClockSpeed();
+	CPUClock DEFAULT_USER_CLOCK_SPEED = EMULATOR_SECTION.getUserClockSpeed();
 	ChipModel DEFAULT_SID_MODEL = EMULATOR_SECTION.getDefaultSidModel();
 	ChipModel DEFAULT_USER_MODEL = EMULATOR_SECTION.getUserSidModel();
 	ChipModel DEFAULT_STEREO_MODEL = EMULATOR_SECTION.getStereoSidModel();
