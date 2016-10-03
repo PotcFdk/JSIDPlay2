@@ -170,28 +170,28 @@ public class DiskCollection extends Tab implements UIPart {
 		type = new SimpleObjectProperty<>();
 		type.addListener((observable, oldValue, newValue) -> {
 			Platform.runLater(() -> {
-				String initialRoot;
+				File initialRoot;
 				switch (getType()) {
 				case HVMEC:
 					this.downloadUrl = util.getConfig().getOnlineSection().getHvmecUrl();
-					initialRoot = util.getConfig().getSidplay2Section().getHVMEC();
+					initialRoot = util.getConfig().getSidplay2Section().getHVMECFile();
 					break;
 
 				case DEMOS:
 					this.downloadUrl = util.getConfig().getOnlineSection().getDemosUrl();
-					initialRoot = util.getConfig().getSidplay2Section().getDemos();
+					initialRoot = util.getConfig().getSidplay2Section().getDemosFile();
 					break;
 
 				case MAGS:
 					this.downloadUrl = util.getConfig().getOnlineSection().getMagazinesUrl();
-					initialRoot = util.getConfig().getSidplay2Section().getMags();
+					initialRoot = util.getConfig().getSidplay2Section().getMagsFile();
 					break;
 
 				default:
 					throw new RuntimeException("Illegal disk collection type : " + type);
 				}
 				if (initialRoot != null) {
-					setRootFile(new File(initialRoot));
+					setRootFile(initialRoot);
 				}
 			});
 		});

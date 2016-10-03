@@ -25,13 +25,17 @@ import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
 import de.schlichtherle.truezip.file.TFile;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import libsidplay.config.ISidPlay2Section;
+import ui.common.FileToStringConverter;
 import ui.favorites.PlaybackType;
 
 @Embeddable
@@ -45,6 +49,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final boolean DEFAULT_FULL_SCREEN = false;
 	public static final float DEFAULT_VIDEO_SCALING = 2.5f;
 	public static final boolean DEFAULT_SHOW_MONITOR = true;
+
+	public SidPlay2Section() {
+		Bindings.bindBidirectional(this.demos, demosFile, new FileToStringConverter());
+		Bindings.bindBidirectional(this.HVMEC, HVMECFile, new FileToStringConverter());
+		Bindings.bindBidirectional(this.mags, magsFile, new FileToStringConverter());
+		Bindings.bindBidirectional(this.hvsc, hvscFile, new FileToStringConverter());
+		Bindings.bindBidirectional(this.cgsc, cgscFile, new FileToStringConverter());
+		Bindings.bindBidirectional(this.gameBase64, gameBase64File, new FileToStringConverter());
+	}
 
 	private int version;
 
@@ -157,101 +170,102 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return singleProperty;
 	}
 
-	private String HVMEC;
+	private ObjectProperty<File> HVMECFile = new SimpleObjectProperty<File>();
+	private StringProperty HVMEC = new SimpleStringProperty();
+
+	@Transient
+	public File getHVMECFile() {
+		return HVMECFile.get();
+	}
 
 	public String getHVMEC() {
-		return HVMEC;
+		return HVMEC.get();
 	}
 
 	public void setHVMEC(String hVMEC) {
-		HVMEC = hVMEC;
+		HVMEC.set(hVMEC);
 	}
 
-	private String demos;
+	private ObjectProperty<File> demosFile = new SimpleObjectProperty<File>();
+	private StringProperty demos = new SimpleStringProperty();
+
+	@Transient
+	public File getDemosFile() {
+		return demosFile.get();
+	}
 
 	public String getDemos() {
-		return demos;
+		return demos.get();
 	}
 
 	public void setDemos(String demos) {
-		this.demos = demos;
+		this.demos.set(demos);
 	}
 
-	private String mags;
+	private ObjectProperty<File> magsFile = new SimpleObjectProperty<File>();
+	private StringProperty mags = new SimpleStringProperty();
 
 	public String getMags() {
-		return mags;
+		return mags.get();
+	}
+
+	@Transient
+	public File getMagsFile() {
+		return magsFile.get();
 	}
 
 	public void setMags(String mags) {
-		this.mags = mags;
+		this.mags.set(mags);
 	}
 
-	private String cgsc;
-
-	public String getCgsc() {
-		return cgsc;
-	}
-
-	public void setCgsc(String cgsc) {
-		this.cgsc = cgsc;
-		this.cgscFile = null;
-		getCgscFile();
-	}
-
-	private volatile File cgscFile;
+	private ObjectProperty<File> cgscFile = new SimpleObjectProperty<File>();
+	private StringProperty cgsc = new SimpleStringProperty();
 
 	@Transient
 	public File getCgscFile() {
-		if (cgscFile == null && cgsc != null) {
-			cgscFile = new TFile(cgsc);
-		}
-		return cgscFile;
+		return cgscFile.get();
 	}
 
-	private String hvsc;
+	public String getCgsc() {
+		return cgsc.get();
+	}
+
+	public void setCgsc(String cgsc) {
+		this.cgsc.set(cgsc);
+	}
+
+	private ObjectProperty<File> hvscFile = new SimpleObjectProperty<File>();
+	private StringProperty hvsc = new SimpleStringProperty();
+
+	@Transient
+	public File getHvscFile() {
+		return hvscFile.get();
+	}
 
 	@Override
 	public String getHvsc() {
-		return hvsc;
+		return hvsc.get();
 	}
 
 	@Override
 	public void setHvsc(String hvsc) {
-		this.hvsc = hvsc;
-		this.hvscFile = null;
-		getHvscFile();
+		this.hvsc.set(hvsc);
 	}
 
-	private volatile File hvscFile;
-
-	@Transient
-	public File getHvscFile() {
-		if (hvscFile == null && hvsc != null) {
-			hvscFile = new TFile(hvsc);
-		}
-		return hvscFile;
-	}
-
-	private String gameBase64;
-
-	public String getGameBase64() {
-		return gameBase64;
-	}
-
-	public void setGameBase64(String gameBase64) {
-		this.gameBase64 = gameBase64;
-		getGameBase64File();
-	}
-
-	private volatile File gameBase64File;
+	private ObjectProperty<File> gameBase64File = new SimpleObjectProperty<File>();
+	private StringProperty gameBase64 = new SimpleStringProperty();
 
 	@Transient
 	public File getGameBase64File() {
-		if (gameBase64File == null && gameBase64 != null) {
-			gameBase64File = new TFile(gameBase64);
-		}
-		return gameBase64File;
+		return gameBase64File.get();
+	}
+
+	public String getGameBase64() {
+		return gameBase64.get();
+	}
+
+	public void setGameBase64(String gameBase64) {
+		this.gameBase64.set(gameBase64);
 	}
 
 	private boolean enableProxy = DEFAULT_ENABLE_PROXY;

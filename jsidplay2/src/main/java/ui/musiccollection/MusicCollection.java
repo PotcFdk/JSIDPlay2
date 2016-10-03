@@ -289,21 +289,21 @@ public class MusicCollection extends Tab implements UIPart {
 		type = new SimpleObjectProperty<>();
 		type.addListener((observable, oldValue, newValue) -> {
 			Platform.runLater(() -> {
-				String initialRoot;
+				File initialRoot;
 				switch (getType()) {
 				case HVSC:
-					initialRoot = util.getConfig().getSidplay2Section().getHvsc();
+					initialRoot = util.getConfig().getSidplay2Section().getHvscFile();
 					break;
 
 				case CGSC:
-					initialRoot = util.getConfig().getSidplay2Section().getCgsc();
+					initialRoot = util.getConfig().getSidplay2Section().getCgscFile();
 					break;
 
 				default:
 					throw new RuntimeException("Illegal music collection type: " + type);
 				}
 				if (initialRoot != null) {
-					setRoot(new File(initialRoot));
+					setRoot(initialRoot);
 					showCurrentTune();
 				}
 			});
