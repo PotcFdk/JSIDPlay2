@@ -39,6 +39,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
@@ -48,69 +50,89 @@ import libsidplay.config.IEmulationSection;
 @Embeddable
 public class EmulationSection implements IEmulationSection {
 
-	private Engine engine = DEFAULT_ENGINE;
+	private ObjectProperty<Engine> engine = new SimpleObjectProperty<Engine>(DEFAULT_ENGINE);
+
+	public ObjectProperty<Engine> engineProperty() {
+		return engine;
+	}
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public Engine getEngine() {
-		return this.engine;
+		return this.engine.get();
 	}
 
 	@Override
 	public void setEngine(Engine engine) {
-		this.engine = engine;
+		this.engine.set(engine);
 	}
 
-	private Emulation defaultEmulation = DEFAULT_EMULATION;
+	private ObjectProperty<Emulation> defaultEmulation = new SimpleObjectProperty<Emulation>(DEFAULT_EMULATION);
+
+	public ObjectProperty<Emulation> defaultEmulationProperty() {
+		return defaultEmulation;
+	}
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public Emulation getDefaultEmulation() {
-		return this.defaultEmulation;
+		return this.defaultEmulation.get();
 	}
 
 	@Override
 	public void setDefaultEmulation(Emulation emulation) {
-		this.defaultEmulation = emulation;
+		this.defaultEmulation.set(emulation);
 	}
 
-	private Emulation userEmulation = DEFAULT_USER_EMULATION;
+	private ObjectProperty<Emulation> userEmulation = new SimpleObjectProperty<Emulation>(DEFAULT_USER_EMULATION);
+
+	public ObjectProperty<Emulation> userEmulationProperty() {
+		return userEmulation;
+	}
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public Emulation getUserEmulation() {
-		return this.userEmulation;
+		return this.userEmulation.get();
 	}
 
 	@Override
 	public void setUserEmulation(Emulation userEmulation) {
-		this.userEmulation = userEmulation;
+		this.userEmulation.set(userEmulation);
 	}
 
-	private Emulation stereoEmulation = DEFAULT_STEREO_EMULATION;
+	private ObjectProperty<Emulation> stereoEmulation = new SimpleObjectProperty<Emulation>(DEFAULT_STEREO_EMULATION);
+
+	public ObjectProperty<Emulation> stereoEmulationProperty() {
+		return stereoEmulation;
+	}
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public Emulation getStereoEmulation() {
-		return this.stereoEmulation;
+		return this.stereoEmulation.get();
 	}
 
 	@Override
 	public void setStereoEmulation(Emulation stereoEmulation) {
-		this.stereoEmulation = stereoEmulation;
+		this.stereoEmulation.set(stereoEmulation);
 	}
 
-	private Emulation thirdEmulation = DEFAULT_3SID_EMULATION;
+	private ObjectProperty<Emulation> thirdEmulation = new SimpleObjectProperty<Emulation>(DEFAULT_3SID_EMULATION);
+
+	public ObjectProperty<Emulation> thirdEmulationProperty() {
+		return thirdEmulation;
+	}
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public Emulation getThirdEmulation() {
-		return this.thirdEmulation;
+		return this.thirdEmulation.get();
 	}
 
 	@Override
 	public void setThirdEmulation(Emulation thirdEmulation) {
-		this.thirdEmulation = thirdEmulation;
+		this.thirdEmulation.set(thirdEmulation);
 	}
 
 	private CPUClock defaultClockSpeed = DEFAULT_CLOCK_SPEED;

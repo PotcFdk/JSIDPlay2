@@ -143,18 +143,18 @@ public class EmulationSettings extends C64Window {
 
 		sid1Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
 		sid1Emulation.setConverter(new EnumToString<Emulation>(bundle));
+		sid1Emulation.valueProperty().bindBidirectional(emulationSection.userEmulationProperty());
 		sid1Emulation.setItems(sid1Emulations);
-		sid1Emulation.getSelectionModel().select(emulationSection.getUserEmulation());
 
 		sid2Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
 		sid2Emulation.setConverter(new EnumToString<Emulation>(bundle));
+		sid2Emulation.valueProperty().bindBidirectional(emulationSection.stereoEmulationProperty());
 		sid2Emulation.setItems(sid2Emulations);
-		sid2Emulation.getSelectionModel().select(emulationSection.getStereoEmulation());
 
 		sid3Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
 		sid3Emulation.setConverter(new EnumToString<Emulation>(bundle));
+		sid3Emulation.valueProperty().bindBidirectional(emulationSection.thirdEmulationProperty());
 		sid3Emulation.setItems(sid3Emulations);
-		sid3Emulation.getSelectionModel().select(emulationSection.getThirdEmulation());
 
 		sid1Models = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
 		sid1Model.setConverter(new EnumToString<ChipModel>(bundle));
@@ -178,8 +178,8 @@ public class EmulationSettings extends C64Window {
 
 		defaultEmulations = FXCollections.<Emulation>observableArrayList(Emulation.RESID, Emulation.RESIDFP);
 		defaultEmulation.setConverter(new EnumToString<Emulation>(bundle));
+		defaultEmulation.valueProperty().bindBidirectional(emulationSection.defaultEmulationProperty());
 		defaultEmulation.setItems(defaultEmulations);
-		defaultEmulation.getSelectionModel().select(emulationSection.getDefaultEmulation());
 
 		boosted8580.setSelected(emulationSection.isDigiBoosted8580());
 		fakeStereo.setSelected(emulationSection.isFakeStereo());
@@ -243,32 +243,24 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setSid1Emulation() {
-		Emulation emulation = sid1Emulation.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulationSection().setUserEmulation(emulation);
 		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
 		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid2Emulation() {
-		Emulation emulation = sid2Emulation.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulationSection().setStereoEmulation(emulation);
 		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
 		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid3Emulation() {
-		Emulation emulation = sid3Emulation.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulationSection().setThirdEmulation(emulation);
 		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
 		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setDefaultEmulation() {
-		Emulation emulation = defaultEmulation.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulationSection().setDefaultEmulation(emulation);
 		// default emulation has an impact on all emulation settings
 		setSid1Emulation();
 		setSid2Emulation();

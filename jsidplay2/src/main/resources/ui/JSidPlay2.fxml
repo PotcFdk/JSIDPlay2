@@ -397,8 +397,7 @@
 						<CheckBox text="%RESPECT_SONG_LENGTH" fx:id="enableSldb"
 							onAction="#doEnableSldb">
 						</CheckBox>
-						<CheckBox text="%SINGLE_SONG" fx:id="singleSong"
-							onAction="#playSingleSong">
+						<CheckBox text="%SINGLE_SONG" fx:id="singleSong">
 						</CheckBox>
 					</HBox>
 					<HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">

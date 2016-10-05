@@ -66,7 +66,6 @@ import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.components.cart.CartridgeType;
-import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
@@ -219,7 +218,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			if (newValue == State.START) {
 				Platform.runLater(() -> {
 					updatePlayerButtons(newValue);
-					enableDisableHardSIDSettings();
 
 					setPlayerIdAndInfos();
 
@@ -260,7 +258,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		final Configuration config = util.getConfig();
 		final SidPlay2Section sidplay2Section = (SidPlay2Section) config.getSidplay2Section();
 		final AudioSection audioSection = config.getAudioSection();
-		final IEmulationSection emulationSection = config.getEmulationSection();
+		final EmulationSection emulationSection = config.getEmulationSection();
 		final C1541Section c1541Section = config.getC1541Section();
 		final PrinterSection printer = (PrinterSection) config.getPrinterSection();
 
@@ -281,6 +279,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		audioBox.setConverter(new EnumToString<Audio>(bundle));
 		audioBox.setItems(FXCollections.<Audio>observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
 				Audio.COMPARE_MP3));
+		audioBox.valueProperty().addListener((obj, o, n) -> {
+			mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(n));
+			playMP3.setDisable(!Audio.COMPARE_MP3.equals(n));
+			playEmulation.setDisable(!Audio.COMPARE_MP3.equals(n));
+		});
 		audioBox.valueProperty().bindBidirectional(audioSection.audioProperty());
 
 		devicesBox.setItems(JavaSound.getDevices());
@@ -303,29 +306,28 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 		engineBox.setConverter(new EnumToString<Engine>(bundle));
 		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.values()));
-		engineBox.getSelectionModel().select(emulationSection.getEngine());
+		engineBox.valueProperty().addListener((obj, o, n) -> {
+			hardsid6581Box.setDisable(!Engine.HARDSID.equals(n));
+			hardsid8580Box.setDisable(!Engine.HARDSID.equals(n));
+			hardsid6581Label.setDisable(!Engine.HARDSID.equals(n));
+			hardsid8580Label.setDisable(!Engine.HARDSID.equals(n));
+		});
+		engineBox.valueProperty().bindBidirectional(emulationSection.engineProperty());
 
 		int seconds = sidplay2Section.getDefaultPlayLength();
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60, seconds % 60));
 		sidplay2Section.defaultPlayLengthProperty().addListener((observable, oldValue, newValue) -> defaultTime
 				.setText(String.format("%02d:%02d", newValue.intValue() / 60, newValue.intValue() % 60)));
 
-		enableSldb.setSelected(sidplay2Section.isEnableDatabase());
-		sidplay2Section.enableDatabaseProperty()
-				.addListener((observable, oldValue, newValue) -> enableSldb.setSelected(newValue));
-
-		singleSong.setSelected(sidplay2Section.isSingle());
-		sidplay2Section.singleProperty()
-				.addListener((observable, oldValue, newValue) -> singleSong.setSelected(newValue));
+		enableSldb.selectedProperty().bindBidirectional(sidplay2Section.enableDatabaseProperty());
+		singleSong.selectedProperty().bindBidirectional(sidplay2Section.singleProperty());
 
 		playEmulation.selectedProperty().set(!audioSection.isPlayOriginal());
 		playMP3.selectedProperty().set(audioSection.isPlayOriginal());
 		audioSection.playOriginalProperty().bindBidirectional(playMP3.selectedProperty());
-		playMP3.selectedProperty().addListener((obj,o,n)->playEmulation.selectedProperty().set(!n));
-		
+		playMP3.selectedProperty().addListener((obj, o, n) -> playEmulation.selectedProperty().set(!n));
+
 		updatePlayerButtons(util.getPlayer().stateProperty().get());
-		enableDisableCompareDriverSettings();
-		enableDisableHardSIDSettings();
 
 		pauseContinue.selectedProperty().bindBidirectional(pauseContinue2.selectedProperty());
 		fastForward2.selectedProperty().bindBidirectional(fastForward.selectedProperty());
@@ -594,13 +596,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void turnDriveOn() {
-		util.getPlayer().enableFloppyDiskDrives(driveOn.isSelected());
+		util.getPlayer().enableFloppyDiskDrives(util.getConfig().getC1541Section().isDriveOn());
 	}
 
 	@FXML
 	private void parallelCable() {
-		util.getPlayer().connectC64AndC1541WithParallelCable(parCable.isSelected());
-		util.getConfig().getC1541Section().setParallelCable(parCable.isSelected());
+		util.getPlayer().connectC64AndC1541WithParallelCable(util.getConfig().getC1541Section().isParallelCable());
 	}
 
 	@FXML
@@ -632,27 +633,27 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void expansion0x2000() {
-		getFirstFloppy().setRamExpansion(0, expand2000.isSelected());
+		getFirstFloppy().setRamExpansion(0, util.getConfig().getC1541Section().isRamExpansionEnabled0());
 	}
 
 	@FXML
 	private void expansion0x4000() {
-		getFirstFloppy().setRamExpansion(1, expand4000.isSelected());
+		getFirstFloppy().setRamExpansion(1, util.getConfig().getC1541Section().isRamExpansionEnabled1());
 	}
 
 	@FXML
 	private void expansion0x6000() {
-		getFirstFloppy().setRamExpansion(2, expand6000.isSelected());
+		getFirstFloppy().setRamExpansion(2, util.getConfig().getC1541Section().isRamExpansionEnabled2());
 	}
 
 	@FXML
 	private void expansion0x8000() {
-		getFirstFloppy().setRamExpansion(3, expand8000.isSelected());
+		getFirstFloppy().setRamExpansion(3, util.getConfig().getC1541Section().isRamExpansionEnabled3());
 	}
 
 	@FXML
 	private void expansion0xA000() {
-		getFirstFloppy().setRamExpansion(4, expandA000.isSelected());
+		getFirstFloppy().setRamExpansion(4, util.getConfig().getC1541Section().isRamExpansionEnabled4());
 	}
 
 	@FXML
@@ -714,7 +715,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void printerOn() {
-		util.getPlayer().enablePrinter(turnPrinterOn.isSelected());
+		util.getPlayer().enablePrinter(util.getConfig().getPrinterSection().isPrinterOn());
 	}
 
 	@FXML
@@ -836,8 +837,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void setAudio() {
-		util.getConfig().getAudioSection().setAudio(audioBox.getSelectionModel().getSelectedItem());
-		enableDisableCompareDriverSettings();
 		restart();
 	}
 
@@ -860,7 +859,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void setEngine() {
-		util.getConfig().getEmulationSection().setEngine(engineBox.getSelectionModel().getSelectedItem());
 		restart();
 	}
 
@@ -880,7 +878,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void doEnableSldb() {
-		util.getConfig().getSidplay2Section().setEnableDatabase(enableSldb.isSelected());
 		final C64 c64 = util.getPlayer().getC64();
 		final EventScheduler ctx = c64.getEventScheduler();
 		ctx.scheduleThreadSafe(new Event("Update Play Timer!") {
@@ -889,11 +886,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 				util.getPlayer().getTimer().updateEnd();
 			}
 		});
-	}
-
-	@FXML
-	private void playSingleSong() {
-		util.getConfig().getSidplay2Section().setSingle(singleSong.isSelected());
 	}
 
 	@FXML
@@ -1160,21 +1152,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void about() {
 		new About(util.getPlayer()).open();
-	}
-
-	private void enableDisableHardSIDSettings() {
-		Engine engine = util.getConfig().getEmulationSection().getEngine();
-		hardsid6581Box.setDisable(!Engine.HARDSID.equals(engine));
-		hardsid8580Box.setDisable(!Engine.HARDSID.equals(engine));
-		hardsid6581Label.setDisable(!Engine.HARDSID.equals(engine));
-		hardsid8580Label.setDisable(!Engine.HARDSID.equals(engine));
-	}
-
-	private void enableDisableCompareDriverSettings() {
-		Audio audio = util.getConfig().getAudioSection().getAudio();
-		mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(audio));
-		playMP3.setDisable(!Audio.COMPARE_MP3.equals(audio));
-		playEmulation.setDisable(!Audio.COMPARE_MP3.equals(audio));
 	}
 
 	private void addView(String id) {
