@@ -714,7 +714,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void printerOn() {
-		util.getConfig().getPrinterSection().setPrinterOn(turnPrinterOn.isSelected());
 		util.getPlayer().enablePrinter(turnPrinterOn.isSelected());
 	}
 
