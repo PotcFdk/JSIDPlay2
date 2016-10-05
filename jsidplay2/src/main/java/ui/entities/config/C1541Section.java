@@ -13,7 +13,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.config.IC1541Section;
@@ -26,6 +28,10 @@ public class C1541Section implements IC1541Section {
 
 	private BooleanProperty driveOnProperty = new SimpleBooleanProperty(DEFAULT_DRIVE_ON);
 
+	public BooleanProperty driveOnProperty() {
+		return driveOnProperty;
+	}
+	
 	@Override
 	public boolean isDriveOn() {
 		return driveOnProperty.get();
@@ -36,12 +42,12 @@ public class C1541Section implements IC1541Section {
 		driveOnProperty.set(driveOn);
 	}
 
-	public BooleanProperty driveOnProperty() {
-		return driveOnProperty;
-	}
-
 	private BooleanProperty driveSoundOnProperty = new SimpleBooleanProperty(DEFAULT_DRIVE_SOUND);
 
+	public BooleanProperty driveSoundOnProperty() {
+		return driveSoundOnProperty;
+	}
+	
 	public boolean isDriveSoundOn() {
 		return driveSoundOnProperty.get();
 	}
@@ -50,12 +56,12 @@ public class C1541Section implements IC1541Section {
 		driveSoundOnProperty.set(driveSoundOn);
 	}
 
-	public BooleanProperty driveSoundOnProperty() {
-		return driveSoundOnProperty;
-	}
-
 	private BooleanProperty parallelCableProperty = new SimpleBooleanProperty(DEFAULT_PARALLEL_CABLE);
 
+	public BooleanProperty parallelCableProperty() {
+		return parallelCableProperty;
+	}
+	
 	@Override
 	public boolean isParallelCable() {
 		return parallelCableProperty.get();
@@ -66,92 +72,116 @@ public class C1541Section implements IC1541Section {
 		parallelCableProperty.set(parallelCable);
 	}
 
-	public BooleanProperty parallelCableProperty() {
-		return parallelCableProperty;
+	private BooleanProperty ramExpansionEnabled0 = new SimpleBooleanProperty(DEFAULT_RAM_EXPAND_0X2000);
+
+	public BooleanProperty ramExpansionEnabled0Property() {
+		return ramExpansionEnabled0;
 	}
-
-	private boolean ramExpansionEnabled0 = DEFAULT_RAM_EXPAND_0X2000;
-
+	
 	@Override
 	public boolean isRamExpansionEnabled0() {
-		return this.ramExpansionEnabled0;
+		return this.ramExpansionEnabled0.get();
 	}
 
 	@Override
 	public void setRamExpansionEnabled0(boolean on) {
-		this.ramExpansionEnabled0 = on;
+		this.ramExpansionEnabled0.set(on);
 	}
 
-	private boolean ramExpansionEnabled1 = DEFAULT_RAM_EXPAND_0X4000;
+	private BooleanProperty ramExpansionEnabled1 = new SimpleBooleanProperty(DEFAULT_RAM_EXPAND_0X4000);
 
+	public BooleanProperty ramExpansionEnabled1Property() {
+		return ramExpansionEnabled1;
+	}
+	
 	@Override
 	public boolean isRamExpansionEnabled1() {
-		return this.ramExpansionEnabled1;
+		return this.ramExpansionEnabled1.get();
 	}
 
 	@Override
 	public void setRamExpansionEnabled1(boolean on) {
-		this.ramExpansionEnabled1 = on;
+		this.ramExpansionEnabled1.set(on);
 	}
 
-	private boolean ramExpansionEnabled2 = DEFAULT_RAM_EXPAND_0X6000;
+	private BooleanProperty ramExpansionEnabled2 = new SimpleBooleanProperty(DEFAULT_RAM_EXPAND_0X6000);
 
+	public BooleanProperty ramExpansionEnabled2Property() {
+		return ramExpansionEnabled2;
+	}
+	
 	@Override
 	public boolean isRamExpansionEnabled2() {
-		return this.ramExpansionEnabled2;
+		return this.ramExpansionEnabled2.get();
 	}
 
 	@Override
 	public void setRamExpansionEnabled2(boolean on) {
-		this.ramExpansionEnabled2 = on;
+		this.ramExpansionEnabled2.set(on);
 	}
 
-	private boolean ramExpansionEnabled3 = DEFAULT_RAM_EXPAND_0X8000;
+	private BooleanProperty ramExpansionEnabled3 = new SimpleBooleanProperty(DEFAULT_RAM_EXPAND_0X8000);
 
+	public BooleanProperty ramExpansionEnabled3Property() {
+		return ramExpansionEnabled3;
+	}
+	
 	@Override
 	public boolean isRamExpansionEnabled3() {
-		return this.ramExpansionEnabled3;
+		return this.ramExpansionEnabled3.get();
 	}
 
 	@Override
 	public void setRamExpansionEnabled3(boolean on) {
-		this.ramExpansionEnabled3 = on;
+		this.ramExpansionEnabled3.set(on);
 	}
 
-	private boolean ramExpansionEnabled4 = DEFAULT_RAM_EXPAND_0XA000;
+	private BooleanProperty ramExpansionEnabled4 = new SimpleBooleanProperty(DEFAULT_RAM_EXPAND_0XA000);
 
+	public BooleanProperty ramExpansionEnabled4Property() {
+		return ramExpansionEnabled4;
+	}
+	
 	@Override
 	public boolean isRamExpansionEnabled4() {
-		return this.ramExpansionEnabled4;
+		return this.ramExpansionEnabled4.get();
 	}
 
 	@Override
 	public void setRamExpansionEnabled4(boolean on) {
-		this.ramExpansionEnabled4 = on;
+		this.ramExpansionEnabled4.set(on);
 	}
 
-	private ExtendImagePolicy extendImagePolicy = DEFAULT_EXTEND_IMAGE_POLICY;
+	private ObjectProperty<ExtendImagePolicy> extendImagePolicy = new SimpleObjectProperty<ExtendImagePolicy>(DEFAULT_EXTEND_IMAGE_POLICY);
 
-	public void setExtendImagePolicy(ExtendImagePolicy policy) {
-		this.extendImagePolicy = policy;
+	public ObjectProperty<ExtendImagePolicy> extendImagePolicyProperty() {
+		return extendImagePolicy;
 	}
-
+	
 	@Enumerated(EnumType.STRING)
 	public ExtendImagePolicy getExtendImagePolicy() {
-		return this.extendImagePolicy;
+		return this.extendImagePolicy.get();
+	}
+	
+	public void setExtendImagePolicy(ExtendImagePolicy policy) {
+		this.extendImagePolicy.set(policy);
 	}
 
-	private FloppyType floppyType = DEFAULT_FLOPPY_TYPE;
+	private ObjectProperty<FloppyType> floppyType = new SimpleObjectProperty<FloppyType>(DEFAULT_FLOPPY_TYPE);
 
-	@Override
-	public void setFloppyType(FloppyType floppyType) {
-		this.floppyType = floppyType;
+	public ObjectProperty<FloppyType> floppyTypeProperty() {
+		return floppyType;
 	}
-
+	
 	@Enumerated(EnumType.STRING)
 	@Override
 	public FloppyType getFloppyType() {
-		return floppyType;
+		return floppyType.get();
+	}
+	
+	@Override
+	public void setFloppyType(FloppyType floppyType) {
+		this.floppyType.set(floppyType);
 	}
 
 }

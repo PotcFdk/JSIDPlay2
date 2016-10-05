@@ -42,6 +42,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -189,6 +190,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	protected RadioButton playMP3, playEmulation;
 	@FXML
+	ToggleGroup playSourceGroup;
+	@FXML
 	protected Button previous2, next2, nextFavorite, volumeButton, mp3Browse;
 	@FXML
 	protected Tooltip previous2ToolTip, next2ToolTip;
@@ -217,7 +220,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 				Platform.runLater(() -> {
 					updatePlayerButtons(newValue);
 					enableDisableHardSIDSettings();
-					enableDisableCompareDriverSettings();
 
 					setPlayerIdAndInfos();
 
@@ -279,18 +281,18 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		audioBox.setConverter(new EnumToString<Audio>(bundle));
 		audioBox.setItems(FXCollections.<Audio>observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
 				Audio.COMPARE_MP3));
-		audioBox.getSelectionModel().select(audioSection.getAudio());
+		audioBox.valueProperty().bindBidirectional(audioSection.audioProperty());
 
 		devicesBox.setItems(JavaSound.getDevices());
 		devicesBox.getSelectionModel().select(Math.min(audioSection.getDevice(), devicesBox.getItems().size() - 1));
 
 		samplingBox.setConverter(new EnumToString<SamplingMethod>(bundle));
 		samplingBox.setItems(FXCollections.<SamplingMethod>observableArrayList(SamplingMethod.values()));
-		samplingBox.getSelectionModel().select(audioSection.getSampling());
+		samplingBox.valueProperty().bindBidirectional(audioSection.samplingProperty());
 
 		samplingRateBox.setConverter(new EnumToString<SamplingRate>(bundle));
 		samplingRateBox.setItems(FXCollections.<SamplingRate>observableArrayList(SamplingRate.values()));
-		samplingRateBox.getSelectionModel().select(audioSection.getSamplingRate());
+		samplingRateBox.valueProperty().bindBidirectional(audioSection.samplingRateProperty());
 
 		videoStandardBox.setConverter(new EnumToString<CPUClock>(bundle));
 		videoStandardBox.setItems(FXCollections.<CPUClock>observableArrayList(CPUClock.values()));
@@ -316,9 +318,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		sidplay2Section.singleProperty()
 				.addListener((observable, oldValue, newValue) -> singleSong.setSelected(newValue));
 
-		playMP3.setSelected(audioSection.isPlayOriginal());
-		playEmulation.setSelected(!audioSection.isPlayOriginal());
-
+		playEmulation.selectedProperty().set(!audioSection.isPlayOriginal());
+		playMP3.selectedProperty().set(audioSection.isPlayOriginal());
+		audioSection.playOriginalProperty().bindBidirectional(playMP3.selectedProperty());
+		playMP3.selectedProperty().addListener((obj,o,n)->playEmulation.selectedProperty().set(!n));
+		
 		updatePlayerButtons(util.getPlayer().stateProperty().get());
 		enableDisableCompareDriverSettings();
 		enableDisableHardSIDSettings();
@@ -337,11 +341,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		ExtendImagePolicy extendImagePolicy = c1541Section.getExtendImagePolicy();
 		(extendImagePolicy == ExtendImagePolicy.EXTEND_NEVER ? neverExtend
 				: extendImagePolicy == ExtendImagePolicy.EXTEND_ASK ? askExtend : accessExtend).setSelected(true);
-		expand2000.setSelected(c1541Section.isRamExpansionEnabled0());
-		expand4000.setSelected(c1541Section.isRamExpansionEnabled1());
-		expand6000.setSelected(c1541Section.isRamExpansionEnabled2());
-		expand8000.setSelected(c1541Section.isRamExpansionEnabled3());
-		expandA000.setSelected(c1541Section.isRamExpansionEnabled4());
+		expand2000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled0Property());
+		expand4000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled1Property());
+		expand6000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled2Property());
+		expand8000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled3Property());
+		expandA000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled4Property());
 
 		for (ViewEntity view : config.getViews()) {
 			Platform.runLater(() -> addView(view.getFxId()));
@@ -590,13 +594,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void turnDriveOn() {
-		util.getConfig().getC1541Section().setDriveOn(driveOn.isSelected());
 		util.getPlayer().enableFloppyDiskDrives(driveOn.isSelected());
-	}
-
-	@FXML
-	private void driveSound() {
-		util.getConfig().getC1541Section().setDriveSoundOn(driveSoundOn.isSelected());
 	}
 
 	@FXML
@@ -635,31 +633,26 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void expansion0x2000() {
 		getFirstFloppy().setRamExpansion(0, expand2000.isSelected());
-		util.getConfig().getC1541Section().setRamExpansionEnabled0(expand2000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x4000() {
 		getFirstFloppy().setRamExpansion(1, expand4000.isSelected());
-		util.getConfig().getC1541Section().setRamExpansionEnabled1(expand4000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x6000() {
 		getFirstFloppy().setRamExpansion(2, expand6000.isSelected());
-		util.getConfig().getC1541Section().setRamExpansionEnabled2(expand6000.isSelected());
 	}
 
 	@FXML
 	private void expansion0x8000() {
 		getFirstFloppy().setRamExpansion(3, expand8000.isSelected());
-		util.getConfig().getC1541Section().setRamExpansionEnabled3(expand8000.isSelected());
 	}
 
 	@FXML
 	private void expansion0xA000() {
 		getFirstFloppy().setRamExpansion(4, expandA000.isSelected());
-		util.getConfig().getC1541Section().setRamExpansionEnabled4(expandA000.isSelected());
 	}
 
 	@FXML
@@ -845,6 +838,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void setAudio() {
 		util.getConfig().getAudioSection().setAudio(audioBox.getSelectionModel().getSelectedItem());
+		enableDisableCompareDriverSettings();
 		restart();
 	}
 
@@ -857,15 +851,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void setSampling() {
-		SamplingMethod sampling = samplingBox.getSelectionModel().getSelectedItem();
-		util.getConfig().getAudioSection().setSampling(sampling);
 		restart();
 	}
 
 	@FXML
 	private void setSamplingRate() {
-		SamplingRate samplingRate = samplingRateBox.getSelectionModel().getSelectedItem();
-		util.getConfig().getAudioSection().setSamplingRate(samplingRate);
 		restart();
 	}
 
@@ -923,16 +913,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			defaultTime.setTooltip(tooltip);
 			defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
 		}
-	}
-
-	@FXML
-	private void playEmulatedSound() {
-		setPlayOriginal(false);
-	}
-
-	@FXML
-	private void playRecordedSound() {
-		setPlayOriginal(true);
 	}
 
 	@FXML
@@ -1508,10 +1488,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		if (!duringInitialization) {
 			util.getPlayer().play(util.getPlayer().getTune());
 		}
-	}
-
-	private void setPlayOriginal(final boolean playOriginal) {
-		util.getConfig().getAudioSection().setPlayOriginal(playOriginal);
 	}
 
 	@Override

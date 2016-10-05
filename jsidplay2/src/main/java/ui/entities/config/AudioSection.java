@@ -13,174 +13,245 @@ import static sidplay.ini.IniDefaults.DEFAULT_SECOND_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
 
+import java.io.File;
+
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
+import ui.common.FileToStringConverter;
 
 @Embeddable
 public class AudioSection implements IAudioSection {
 
-	private Audio audio = DEFAULT_AUDIO;
+	public AudioSection() {
+		Bindings.bindBidirectional(this.mp3, mp3File, new FileToStringConverter());
+	}
+
+	private ObjectProperty<Audio> audio = new SimpleObjectProperty<Audio>(DEFAULT_AUDIO);
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public Audio getAudio() {
-		return audio;
+		return audio.get();
 	}
 
 	@Override
 	public void setAudio(Audio audio) {
-		this.audio = audio;
+		this.audio.set(audio);
 	}
 
-	private int device = DEFAULT_DEVICE;
+	public ObjectProperty<Audio> audioProperty() {
+		return audio;
+	}
+
+	private IntegerProperty device = new SimpleIntegerProperty(DEFAULT_DEVICE);
 
 	@Override
 	public int getDevice() {
-		return device;
+		return device.get();
 	}
 
 	@Override
 	public void setDevice(int device) {
-		this.device = device;
+		this.device.set(device);
 	}
 
-	private SamplingRate samplingRate = DEFAULT_SAMPLING_RATE;
+	public IntegerProperty deviceProperty() {
+		return device;
+	}
+
+	private ObjectProperty<SamplingRate> samplingRate = new SimpleObjectProperty<SamplingRate>(DEFAULT_SAMPLING_RATE);
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public SamplingRate getSamplingRate() {
-		return this.samplingRate;
+		return this.samplingRate.get();
 	}
 
 	@Override
 	public void setSamplingRate(SamplingRate samplingRate) {
-		this.samplingRate = samplingRate;
+		this.samplingRate.set(samplingRate);
 	}
 
-	private SamplingMethod sampling = DEFAULT_SAMPLING;
+	public ObjectProperty<SamplingRate> samplingRateProperty() {
+		return samplingRate;
+	}
+
+	private ObjectProperty<SamplingMethod> sampling = new SimpleObjectProperty<SamplingMethod>(DEFAULT_SAMPLING);
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public SamplingMethod getSampling() {
-		return this.sampling;
+		return this.sampling.get();
 	}
 
 	@Override
 	public void setSampling(SamplingMethod method) {
-		this.sampling = method;
+		this.sampling.set(method);
 	}
 
-	private boolean playOriginal = DEFAULT_PLAY_ORIGINAL;
+	public ObjectProperty<SamplingMethod> samplingProperty() {
+		return sampling;
+	}
+
+	private BooleanProperty playOriginal = new SimpleBooleanProperty(DEFAULT_PLAY_ORIGINAL);
 
 	@Override
 	public boolean isPlayOriginal() {
-		return playOriginal;
+		return playOriginal.get();
 	}
 
 	@Override
 	public void setPlayOriginal(boolean original) {
-		this.playOriginal = original;
+		this.playOriginal.set(original);
 	}
 
-	private String mp3File;
+	public BooleanProperty playOriginalProperty() {
+		return playOriginal;
+	}
+
+	private ObjectProperty<File> mp3File = new SimpleObjectProperty<File>();
+	private StringProperty mp3 = new SimpleStringProperty();
+
+	public ObjectProperty<File> mp3FileProperty() {
+		return mp3File;
+	}
 
 	@Override
 	public String getMp3File() {
-		return this.mp3File;
+		return this.mp3.get();
 	}
 
 	@Override
 	public void setMp3File(String recording) {
-		this.mp3File = recording;
+		this.mp3.set(recording);
 	}
 
-	private float mainVolume = DEFAULT_MAIN_VOLUME;
+	private FloatProperty mainVolume = new SimpleFloatProperty(DEFAULT_MAIN_VOLUME);
+
+	public FloatProperty mainVolumeProperty() {
+		return mainVolume;
+	}
 
 	@Override
 	public float getMainVolume() {
-		return this.mainVolume;
+		return this.mainVolume.get();
 	}
 
 	@Override
 	public void setMainVolume(float volume) {
-		this.mainVolume = volume;
+		this.mainVolume.set(volume);
 	}
 
-	private float secondVolume = DEFAULT_SECOND_VOLUME;
+	private FloatProperty secondVolume = new SimpleFloatProperty(DEFAULT_SECOND_VOLUME);
+
+	public FloatProperty secondVolumeProperty() {
+		return secondVolume;
+	}
 
 	@Override
 	public float getSecondVolume() {
-		return this.secondVolume;
+		return this.secondVolume.get();
 	}
 
 	@Override
 	public void setSecondVolume(float volume) {
-		this.secondVolume = volume;
+		this.secondVolume.set(volume);
 	}
 
-	private float thirdVolume = DEFAULT_THIRD_VOLUME;
+	private FloatProperty thirdVolume = new SimpleFloatProperty(DEFAULT_THIRD_VOLUME);
+
+	public FloatProperty thirdVolumeProperty() {
+		return thirdVolume;
+	}
 
 	@Override
 	public float getThirdVolume() {
-		return this.thirdVolume;
+		return this.thirdVolume.get();
 	}
 
 	@Override
 	public void setThirdVolume(float volume) {
-		this.thirdVolume = volume;
+		this.thirdVolume.set(volume);
 	}
 
-	private float mainBalance = DEFAULT_MAIN_BALANCE;
+	private FloatProperty mainBalance = new SimpleFloatProperty(DEFAULT_MAIN_BALANCE);
+
+	public FloatProperty mainBalanceProperty() {
+		return mainBalance;
+	}
 
 	@Override
 	public float getMainBalance() {
-		return this.mainBalance;
+		return this.mainBalance.get();
 	}
 
 	@Override
 	public void setMainBalance(float balance) {
-		this.mainBalance = balance;
+		this.mainBalance.set(balance);
 	}
 
-	private float secondBalance = DEFAULT_SECOND_BALANCE;
+	private FloatProperty secondBalance = new SimpleFloatProperty(DEFAULT_SECOND_BALANCE);
+
+	public FloatProperty secondBalanceProperty() {
+		return secondBalance;
+	}
 
 	@Override
 	public float getSecondBalance() {
-		return this.secondBalance;
+		return this.secondBalance.get();
 	}
 
 	@Override
 	public void setSecondBalance(float right) {
-		this.secondBalance = right;
+		this.secondBalance.set(right);
 	}
 
-	private float thirdBalance = DEFAULT_THIRD_BALANCE;
+	private FloatProperty thirdBalance = new SimpleFloatProperty(DEFAULT_THIRD_BALANCE);
+
+	public FloatProperty thirdBalanceProperty() {
+		return thirdBalance;
+	}
 
 	@Override
 	public float getThirdBalance() {
-		return this.thirdBalance;
+		return this.thirdBalance.get();
 	}
 
 	@Override
 	public void setThirdBalance(float third) {
-		this.thirdBalance = third;
+		this.thirdBalance.set(third);
 	}
 
-	private int bufferSize = DEFAULT_BUFFER_SIZE;
+	private IntegerProperty bufferSize = new SimpleIntegerProperty(DEFAULT_BUFFER_SIZE);
 
-	@Override
-	public int getBufferSize() {
+	public IntegerProperty bufferSizeProperty() {
 		return bufferSize;
 	}
 
 	@Override
+	public int getBufferSize() {
+		return bufferSize.get();
+	}
+
+	@Override
 	public void setBufferSize(int bufferSize) {
-		this.bufferSize = bufferSize;
+		this.bufferSize.set(bufferSize);
 	}
 }

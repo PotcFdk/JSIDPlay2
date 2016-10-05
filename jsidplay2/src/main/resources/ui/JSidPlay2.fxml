@@ -190,8 +190,7 @@
 								<Menu text="%FLOPPY">
 									<CheckMenuItem text="%TURN_DRIVE_ON" onAction="#turnDriveOn"
 										fx:id="driveOn" />
-									<CheckMenuItem text="%DRIVE_SOUND" onAction="#driveSound"
-										fx:id="driveSoundOn" />
+									<CheckMenuItem text="%DRIVE_SOUND" fx:id="driveSoundOn" />
 									<CheckMenuItem text="%PARALLEL_CABLE" onAction="#parallelCable"
 										fx:id="parCable" />
 									<Menu text="%FLOPPY_TYPE">
@@ -456,9 +455,9 @@
 						<HBox>
 							<VBox>
 								<RadioButton text="%EMU" fx:id="playEmulation"
-									onAction="#playEmulatedSound" toggleGroup="$playSourceGroup" />
+									toggleGroup="$playSourceGroup" />
 								<RadioButton text="%RECORDING" fx:id="playMP3"
-									onAction="#playRecordedSound" toggleGroup="$playSourceGroup" />
+									toggleGroup="$playSourceGroup" />
 							</VBox>
 						</HBox>
 						<Button fx:id="mp3Browse" onAction="#doBrowse">
