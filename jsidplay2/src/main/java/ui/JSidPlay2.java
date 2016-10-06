@@ -298,11 +298,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		samplingRateBox.valueProperty().bindBidirectional(audioSection.samplingRateProperty());
 
 		videoStandardBox.setConverter(new EnumToString<CPUClock>(bundle));
+		videoStandardBox.valueProperty().bindBidirectional(emulationSection.defaultClockSpeedProperty());
 		videoStandardBox.setItems(FXCollections.<CPUClock>observableArrayList(CPUClock.values()));
-		videoStandardBox.getSelectionModel().select(CPUClock.getCPUClock(emulationSection, util.getPlayer().getTune()));
-
-		hardsid6581Box.getSelectionModel().select(emulationSection.getHardsid6581());
-		hardsid8580Box.getSelectionModel().select(emulationSection.getHardsid8580());
+		
+		hardsid6581Box.valueProperty().bindBidirectional(emulationSection.hardsid6581Property());
+		hardsid8580Box.valueProperty().bindBidirectional(emulationSection.hardsid8580Property());
 
 		engineBox.setConverter(new EnumToString<Engine>(bundle));
 		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.values()));
@@ -517,8 +517,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void setVideoStandard() {
-		CPUClock videoStandard = videoStandardBox.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulationSection().setDefaultClockSpeed(videoStandard);
 		restart();
 	}
 
@@ -864,15 +862,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void setSid6581() {
-		int hardsid6581 = hardsid6581Box.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulationSection().setHardsid6581(hardsid6581);
 		restart();
 	}
 
 	@FXML
 	private void setSid8580() {
-		int hardsid8580 = hardsid8580Box.getSelectionModel().getSelectedItem();
-		util.getConfig().getEmulationSection().setHardsid8580(hardsid8580);
 		restart();
 	}
 

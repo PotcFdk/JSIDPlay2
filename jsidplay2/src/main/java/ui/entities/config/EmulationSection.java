@@ -39,7 +39,11 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
@@ -135,176 +139,267 @@ public class EmulationSection implements IEmulationSection {
 		this.thirdEmulation.set(thirdEmulation);
 	}
 
-	private CPUClock defaultClockSpeed = DEFAULT_CLOCK_SPEED;
+	private ObjectProperty<CPUClock> defaultClockSpeed = new SimpleObjectProperty<CPUClock>(DEFAULT_CLOCK_SPEED);
+
+	public ObjectProperty<CPUClock> defaultClockSpeedProperty() {
+		return defaultClockSpeed;
+	}
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public CPUClock getDefaultClockSpeed() {
-		return this.defaultClockSpeed;
+		return this.defaultClockSpeed.get();
 	}
 
 	@Override
 	public void setDefaultClockSpeed(CPUClock speed) {
-		this.defaultClockSpeed = speed;
+		this.defaultClockSpeed.set(speed);
 	}
 
-	private CPUClock userClockSpeed;
+	private ObjectProperty<CPUClock> userClockSpeed = new SimpleObjectProperty<CPUClock>();
+
+	public ObjectProperty<CPUClock> userClockSpeedProperty() {
+		return userClockSpeed;
+	}
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public CPUClock getUserClockSpeed() {
-		return userClockSpeed;
+		return userClockSpeed.get();
 	}
 
 	@Override
 	public void setUserClockSpeed(CPUClock userClockSpeed) {
-		this.userClockSpeed = userClockSpeed;
+		this.userClockSpeed.set(userClockSpeed);
 	}
 
-	private ChipModel defaultSidModel = DEFAULT_SID_MODEL;
+	private ObjectProperty<ChipModel> defaultSidModel = new SimpleObjectProperty<ChipModel>(DEFAULT_SID_MODEL);
+
+	public ObjectProperty<ChipModel> defaultSidModelProperty() {
+		return defaultSidModel;
+	}
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public ChipModel getDefaultSidModel() {
-		return defaultSidModel;
+		return defaultSidModel.get();
 	}
 
 	@Override
 	public void setDefaultSidModel(ChipModel defaultSidModel) {
-		this.defaultSidModel = defaultSidModel;
+		this.defaultSidModel.set(defaultSidModel);
 	}
 
-	private ChipModel userSidModel = DEFAULT_USER_MODEL;
+	private ObjectProperty<ChipModel> userSidModel = new SimpleObjectProperty<ChipModel>(DEFAULT_USER_MODEL);
+
+	public ObjectProperty<ChipModel> userSidModelProperty() {
+		return userSidModel;
+	}
 
 	@Enumerated(EnumType.STRING)
 	@Override
 	public ChipModel getUserSidModel() {
-		return userSidModel;
+		return userSidModel.get();
 	}
 
 	@Override
 	public void setUserSidModel(ChipModel userSidModel) {
-		this.userSidModel = userSidModel;
+		this.userSidModel.set(userSidModel);
 	}
 
-	private int hardsid6581 = DEFAULT_HARD_SID_6581;
+	private ObjectProperty<ChipModel> stereoSidModel = new SimpleObjectProperty<ChipModel>(DEFAULT_STEREO_MODEL);
+
+	public ObjectProperty<ChipModel> stereoSidModelProperty() {
+		return stereoSidModel;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public ChipModel getStereoSidModel() {
+		return stereoSidModel.get();
+	}
 
 	@Override
-	public int getHardsid6581() {
+	public void setStereoSidModel(ChipModel stereoSidModel) {
+		this.stereoSidModel.set(stereoSidModel);
+	}
+
+	private ObjectProperty<ChipModel> thirdSIDModel = new SimpleObjectProperty<ChipModel>(DEFAULT_3SID_MODEL);
+
+	public ObjectProperty<ChipModel> thirdSIDModelProperty() {
+		return thirdSIDModel;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public ChipModel getThirdSIDModel() {
+		return thirdSIDModel.get();
+	}
+
+	@Override
+	public void setThirdSIDModel(ChipModel stereoSidModel) {
+		this.thirdSIDModel.set(stereoSidModel);
+	}
+
+	private ObjectProperty<Integer> hardsid6581 = new SimpleObjectProperty<Integer>(DEFAULT_HARD_SID_6581);
+
+	public ObjectProperty<Integer> hardsid6581Property() {
 		return hardsid6581;
+	}
+	
+	@Override
+	public int getHardsid6581() {
+		return hardsid6581.get();
 	}
 
 	@Override
 	public void setHardsid6581(int hardsid6581) {
-		this.hardsid6581 = hardsid6581;
+		this.hardsid6581.set(hardsid6581);
 	}
 
-	private int hardsid8580 = DEFAULT_HARD_SID_8580;
+	private ObjectProperty<Integer> hardsid8580 = new SimpleObjectProperty<Integer>(DEFAULT_HARD_SID_8580);
 
+	public ObjectProperty<Integer> hardsid8580Property() {
+		return hardsid8580;
+	}
+	
 	@Override
 	public int getHardsid8580() {
-		return hardsid8580;
+		return hardsid8580.get();
 	}
 
 	@Override
 	public void setHardsid8580(int hardsid8580) {
-		this.hardsid8580 = hardsid8580;
+		this.hardsid8580.set(hardsid8580);
 	}
 
-	private boolean filter = DEFAULT_USE_FILTER;
+	private BooleanProperty filter = new SimpleBooleanProperty(DEFAULT_USE_FILTER);
 
-	@Override
-	public boolean isFilter() {
+	public BooleanProperty filterProperty() {
 		return filter;
 	}
 
 	@Override
-	public void setFilter(boolean isFilter) {
-		this.filter = isFilter;
+	public boolean isFilter() {
+		return filter.get();
 	}
 
-	private boolean stereoFilter = DEFAULT_USE_STEREO_FILTER;
-
 	@Override
-	public boolean isStereoFilter() {
+	public void setFilter(boolean isFilter) {
+		this.filter.set(isFilter);
+	}
+
+	private BooleanProperty stereoFilter = new SimpleBooleanProperty(DEFAULT_USE_STEREO_FILTER);
+
+	public BooleanProperty stereoFilterProperty() {
 		return stereoFilter;
 	}
 
 	@Override
-	public void setStereoFilter(boolean isFilter) {
-		this.stereoFilter = isFilter;
+	public boolean isStereoFilter() {
+		return stereoFilter.get();
 	}
 
-	private boolean thirdSIDFilter = DEFAULT_USE_3SID_FILTER;
-
 	@Override
-	public boolean isThirdSIDFilter() {
+	public void setStereoFilter(boolean isFilter) {
+		this.stereoFilter.set(isFilter);
+	}
+
+	private BooleanProperty thirdSIDFilter = new SimpleBooleanProperty(DEFAULT_USE_3SID_FILTER);
+
+	public BooleanProperty thirdSIDFilterProperty() {
 		return thirdSIDFilter;
 	}
 
 	@Override
-	public void setThirdSIDFilter(boolean isFilter) {
-		this.thirdSIDFilter = isFilter;
+	public boolean isThirdSIDFilter() {
+		return thirdSIDFilter.get();
 	}
 
-	private int sidNumToRead = DEFAULT_SID_NUM_TO_READ;
+	@Override
+	public void setThirdSIDFilter(boolean isFilter) {
+		this.thirdSIDFilter.set(isFilter);
+	}
 
+	private ObjectProperty<Integer> sidNumToRead = new SimpleObjectProperty<Integer>(DEFAULT_SID_NUM_TO_READ);
+
+	public ObjectProperty<Integer> sidNumToReadProperty() {
+		return sidNumToRead;
+	}
+	
 	@Override
 	public int getSidNumToRead() {
-		return sidNumToRead;
+		return sidNumToRead.get();
 	}
 
 	@Override
 	public void setSidNumToRead(int sidNumToRead) {
-		this.sidNumToRead = sidNumToRead;
+		this.sidNumToRead.set(sidNumToRead);
 	}
 
-	private boolean digiBoosted8580 = DEFAULT_DIGI_BOOSTED_8580;
+	private BooleanProperty digiBoosted8580 = new SimpleBooleanProperty(DEFAULT_DIGI_BOOSTED_8580);
 
-	@Override
-	public boolean isDigiBoosted8580() {
+	public BooleanProperty digiBoosted8580Property() {
 		return digiBoosted8580;
 	}
 
 	@Override
+	public boolean isDigiBoosted8580() {
+		return digiBoosted8580.get();
+	}
+
+	@Override
 	public void setDigiBoosted8580(boolean isDigiBoosted8580) {
-		this.digiBoosted8580 = isDigiBoosted8580;
+		this.digiBoosted8580.set(isDigiBoosted8580);
 	}
 
-	private int dualSidBase = DEFAULT_DUAL_SID_BASE;
+	private BooleanProperty fakeStereo = new SimpleBooleanProperty(DEFAULT_FAKE_STEREO);
 
-	@Override
-	public int getDualSidBase() {
-		return dualSidBase;
-	}
-
-	@Override
-	public void setDualSidBase(int dualSidBase) {
-		this.dualSidBase = dualSidBase;
-	}
-
-	private int thirdSIDBase = DEFAULT_THIRD_SID_BASE;
-
-	@Override
-	public int getThirdSIDBase() {
-		return thirdSIDBase;
-	}
-
-	@Override
-	public void setThirdSIDBase(int dualSidBase) {
-		this.thirdSIDBase = dualSidBase;
-	}
-
-	private boolean fakeStereo = DEFAULT_FAKE_STEREO;
-
-	public void setFakeStereo(boolean fakeStereo) {
-		this.fakeStereo = fakeStereo;
+	public BooleanProperty fakeStereoProperty() {
+		return fakeStereo;
 	}
 
 	@Override
 	public boolean isFakeStereo() {
-		return fakeStereo;
+		return fakeStereo.get();
 	}
+
+	public void setFakeStereo(boolean fakeStereo) {
+		this.fakeStereo.set(fakeStereo);
+	}
+
+	private IntegerProperty dualSidBase = new SimpleIntegerProperty(DEFAULT_DUAL_SID_BASE);
+
+	public IntegerProperty dualSidBaseProperty() {
+		return dualSidBase;
+	}
+
+	@Override
+	public int getDualSidBase() {
+		return dualSidBase.get();
+	}
+
+	@Override
+	public void setDualSidBase(int dualSidBase) {
+		this.dualSidBase.set(dualSidBase);
+	}
+
+	private IntegerProperty thirdSIDBase = new SimpleIntegerProperty(DEFAULT_THIRD_SID_BASE);
+
+	public IntegerProperty thirdSIDBaseProperty() {
+		return thirdSIDBase;
+	}
+
+	@Override
+	public int getThirdSIDBase() {
+		return thirdSIDBase.get();
+	}
+
+	@Override
+	public void setThirdSIDBase(int dualSidBase) {
+		this.thirdSIDBase.set(dualSidBase);
+	}
+
 	private boolean forceStereoTune = DEFAULT_FORCE_STEREO_TUNE;
 
 	@Override
@@ -327,32 +422,6 @@ public class EmulationSection implements IEmulationSection {
 	@Override
 	public void setForce3SIDTune(boolean isForceStereoTune) {
 		this.force3SIDTune = isForceStereoTune;
-	}
-
-	private ChipModel stereoSidModel = DEFAULT_STEREO_MODEL;
-
-	@Enumerated(EnumType.STRING)
-	@Override
-	public ChipModel getStereoSidModel() {
-		return stereoSidModel;
-	}
-
-	@Override
-	public void setStereoSidModel(ChipModel stereoSidModel) {
-		this.stereoSidModel = stereoSidModel;
-	}
-
-	private ChipModel thirdSIDModel = DEFAULT_3SID_MODEL;
-
-	@Enumerated(EnumType.STRING)
-	@Override
-	public ChipModel getThirdSIDModel() {
-		return thirdSIDModel;
-	}
-
-	@Override
-	public void setThirdSIDModel(ChipModel stereoSidModel) {
-		this.thirdSIDModel = stereoSidModel;
 	}
 
 	private String filter6581 = DEFAULT_FILTER_6581;
