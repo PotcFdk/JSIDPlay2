@@ -323,9 +323,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		singleSong.selectedProperty().bindBidirectional(sidplay2Section.singleProperty());
 
 		playEmulation.selectedProperty().set(!audioSection.isPlayOriginal());
-		playMP3.selectedProperty().set(audioSection.isPlayOriginal());
-		audioSection.playOriginalProperty().bindBidirectional(playMP3.selectedProperty());
 		playMP3.selectedProperty().addListener((obj, o, n) -> playEmulation.selectedProperty().set(!n));
+		playMP3.selectedProperty().bindBidirectional(audioSection.playOriginalProperty());
 
 		updatePlayerButtons(util.getPlayer().stateProperty().get());
 
