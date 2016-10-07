@@ -45,6 +45,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
@@ -400,172 +402,228 @@ public class EmulationSection implements IEmulationSection {
 		this.thirdSIDBase.set(dualSidBase);
 	}
 
-	private boolean forceStereoTune = DEFAULT_FORCE_STEREO_TUNE;
+	private BooleanProperty forceStereoTune = new SimpleBooleanProperty(DEFAULT_FORCE_STEREO_TUNE);
 
-	@Override
-	public boolean isForceStereoTune() {
+	public BooleanProperty forceStereoTuneProperty() {
 		return forceStereoTune;
 	}
 
 	@Override
-	public void setForceStereoTune(boolean isForceStereoTune) {
-		this.forceStereoTune = isForceStereoTune;
+	public boolean isForceStereoTune() {
+		return forceStereoTune.get();
 	}
 
-	private boolean force3SIDTune = DEFAULT_FORCE_3SID_TUNE;
-
 	@Override
-	public boolean isForce3SIDTune() {
+	public void setForceStereoTune(boolean isForceStereoTune) {
+		this.forceStereoTune.set(isForceStereoTune);
+	}
+
+	private BooleanProperty force3SIDTune = new SimpleBooleanProperty(DEFAULT_FORCE_3SID_TUNE);
+
+	public BooleanProperty force3SIDTuneProperty() {
 		return force3SIDTune;
 	}
 
 	@Override
-	public void setForce3SIDTune(boolean isForceStereoTune) {
-		this.force3SIDTune = isForceStereoTune;
+	public boolean isForce3SIDTune() {
+		return force3SIDTune.get();
 	}
 
-	private String filter6581 = DEFAULT_FILTER_6581;
-
 	@Override
-	public String getFilter6581() {
+	public void setForce3SIDTune(boolean isForceStereoTune) {
+		this.force3SIDTune.set(isForceStereoTune);
+	}
+
+	private StringProperty filter6581 = new SimpleStringProperty(DEFAULT_FILTER_6581);
+
+	public StringProperty filter6581Property() {
 		return filter6581;
 	}
 
 	@Override
-	public void setFilter6581(String filter6581) {
-		this.filter6581 = filter6581;
+	public String getFilter6581() {
+		return filter6581.get();
 	}
 
-	private String stereoFilter6581 = DEFAULT_STEREO_FILTER_6581;
-
 	@Override
-	public String getStereoFilter6581() {
+	public void setFilter6581(String filter6581) {
+		this.filter6581.set(filter6581);
+	}
+
+	private StringProperty stereoFilter6581 = new SimpleStringProperty(DEFAULT_STEREO_FILTER_6581);
+
+	public StringProperty stereoFilter6581Property() {
 		return stereoFilter6581;
 	}
 
 	@Override
-	public void setStereoFilter6581(String filter6581) {
-		this.stereoFilter6581 = filter6581;
+	public String getStereoFilter6581() {
+		return stereoFilter6581.get();
 	}
 
-	private String thirdSIDFilter6581 = DEFAULT_3SID_FILTER_6581;
-
 	@Override
-	public String getThirdSIDFilter6581() {
+	public void setStereoFilter6581(String filter6581) {
+		this.stereoFilter6581.set(filter6581);
+	}
+
+	private StringProperty thirdSIDFilter6581 = new SimpleStringProperty(DEFAULT_3SID_FILTER_6581);
+
+	public StringProperty thirdSIDFilter6581Property() {
 		return thirdSIDFilter6581;
 	}
 
 	@Override
-	public void setThirdSIDFilter6581(String filter6581) {
-		this.thirdSIDFilter6581 = filter6581;
+	public String getThirdSIDFilter6581() {
+		return thirdSIDFilter6581.get();
 	}
 
-	private String filter8580 = DEFAULT_FILTER_8580;
-
 	@Override
-	public String getFilter8580() {
+	public void setThirdSIDFilter6581(String filter6581) {
+		this.thirdSIDFilter6581.set(filter6581);
+	}
+
+	private StringProperty filter8580 = new SimpleStringProperty(DEFAULT_FILTER_8580);
+
+	public StringProperty filter8580Property() {
 		return filter8580;
 	}
 
 	@Override
-	public void setFilter8580(String filter8580) {
-		this.filter8580 = filter8580;
+	public String getFilter8580() {
+		return filter8580.get();
 	}
 
-	private String stereoFilter8580 = DEFAULT_STEREO_FILTER_8580;
-
 	@Override
-	public String getStereoFilter8580() {
+	public void setFilter8580(String filter8580) {
+		this.filter8580.set(filter8580);
+	}
+
+	private StringProperty stereoFilter8580 = new SimpleStringProperty(DEFAULT_STEREO_FILTER_8580);
+
+	public StringProperty stereoFilter8580Property() {
 		return stereoFilter8580;
 	}
 
 	@Override
-	public void setStereoFilter8580(String filter8580) {
-		this.stereoFilter8580 = filter8580;
+	public String getStereoFilter8580() {
+		return stereoFilter8580.get();
 	}
 
-	private String thirdSIDFilter8580 = DEFAULT_3SID_FILTER_8580;
-
 	@Override
-	public String getThirdSIDFilter8580() {
+	public void setStereoFilter8580(String filter8580) {
+		this.stereoFilter8580.set(filter8580);
+	}
+
+	private StringProperty thirdSIDFilter8580 = new SimpleStringProperty(DEFAULT_3SID_FILTER_8580);
+
+	public StringProperty thirdSIDFilter8580Property() {
 		return thirdSIDFilter8580;
 	}
 
 	@Override
-	public void setThirdSIDFilter8580(String filter8580) {
-		this.thirdSIDFilter8580 = filter8580;
+	public String getThirdSIDFilter8580() {
+		return thirdSIDFilter8580.get();
 	}
 
-	private String reSIDfpFilter6581 = DEFAULT_ReSIDfp_FILTER_6581;
-
 	@Override
-	public String getReSIDfpFilter6581() {
+	public void setThirdSIDFilter8580(String filter8580) {
+		this.thirdSIDFilter8580.set(filter8580);
+	}
+
+	private StringProperty reSIDfpFilter6581 = new SimpleStringProperty(DEFAULT_ReSIDfp_FILTER_6581);
+
+	public StringProperty reSIDfpFilter6581Property() {
 		return reSIDfpFilter6581;
 	}
 
 	@Override
-	public void setReSIDfpFilter6581(String reSIDfpFilter6581) {
-		this.reSIDfpFilter6581 = reSIDfpFilter6581;
+	public String getReSIDfpFilter6581() {
+		return reSIDfpFilter6581.get();
 	}
 
-	private String reSIDfpStereoFilter6581 = DEFAULT_ReSIDfp_STEREO_FILTER_6581;
-
 	@Override
-	public String getReSIDfpStereoFilter6581() {
+	public void setReSIDfpFilter6581(String reSIDfpFilter6581) {
+		this.reSIDfpFilter6581.set(reSIDfpFilter6581);
+	}
+
+	private StringProperty reSIDfpStereoFilter6581 = new SimpleStringProperty(DEFAULT_ReSIDfp_STEREO_FILTER_6581);
+
+	public StringProperty reSIDfpStereoFilter6581Property() {
 		return reSIDfpStereoFilter6581;
 	}
 
 	@Override
-	public void setReSIDfpStereoFilter6581(String reSIDfpFilter6581) {
-		this.reSIDfpStereoFilter6581 = reSIDfpFilter6581;
+	public String getReSIDfpStereoFilter6581() {
+		return reSIDfpStereoFilter6581.get();
 	}
 
-	private String reSIDfp3rdSIDFilter6581 = DEFAULT_ReSIDfp_3SID_FILTER_6581;
-
 	@Override
-	public String getReSIDfpThirdSIDFilter6581() {
+	public void setReSIDfpStereoFilter6581(String reSIDfpFilter6581) {
+		this.reSIDfpStereoFilter6581.set(reSIDfpFilter6581);
+	}
+
+	private StringProperty reSIDfp3rdSIDFilter6581 = new SimpleStringProperty(DEFAULT_ReSIDfp_3SID_FILTER_6581);
+
+	public StringProperty reSIDfp3rdSIDFilter6581Property() {
 		return reSIDfp3rdSIDFilter6581;
 	}
 
 	@Override
-	public void setReSIDfpThirdSIDFilter6581(String reSIDfpFilter6581) {
-		this.reSIDfp3rdSIDFilter6581 = reSIDfpFilter6581;
+	public String getReSIDfpThirdSIDFilter6581() {
+		return reSIDfp3rdSIDFilter6581.get();
 	}
 
-	private String reSIDfpFilter8580 = DEFAULT_ReSIDfp_FILTER_8580;
-
 	@Override
-	public String getReSIDfpFilter8580() {
+	public void setReSIDfpThirdSIDFilter6581(String reSIDfpFilter6581) {
+		this.reSIDfp3rdSIDFilter6581.set(reSIDfpFilter6581);
+	}
+
+	private StringProperty reSIDfpFilter8580 = new SimpleStringProperty(DEFAULT_ReSIDfp_FILTER_8580);
+
+	public StringProperty reSIDfpFilter8580Property() {
 		return reSIDfpFilter8580;
 	}
 
 	@Override
-	public void setReSIDfpFilter8580(String reSIDfpFilter8580) {
-		this.reSIDfpFilter8580 = reSIDfpFilter8580;
+	public String getReSIDfpFilter8580() {
+		return reSIDfpFilter8580.get();
 	}
 
-	private String reSIDfpStereoFilter8580 = DEFAULT_ReSIDfp_STEREO_FILTER_8580;
-
 	@Override
-	public String getReSIDfpStereoFilter8580() {
+	public void setReSIDfpFilter8580(String reSIDfpFilter8580) {
+		this.reSIDfpFilter8580.set(reSIDfpFilter8580);
+	}
+
+	private StringProperty reSIDfpStereoFilter8580 = new SimpleStringProperty(DEFAULT_ReSIDfp_STEREO_FILTER_8580);
+
+	public StringProperty reSIDfpStereoFilter858Property() {
 		return reSIDfpStereoFilter8580;
 	}
 
 	@Override
-	public void setReSIDfpStereoFilter8580(String reSIDfpFilter8580) {
-		this.reSIDfpStereoFilter8580 = reSIDfpFilter8580;
+	public String getReSIDfpStereoFilter8580() {
+		return reSIDfpStereoFilter8580.get();
 	}
 
-	private String reSIDfp3rdSIDFilter8580 = DEFAULT_ReSIDfp_3SID_FILTER_8580;
-
 	@Override
-	public String getReSIDfpThirdSIDFilter8580() {
+	public void setReSIDfpStereoFilter8580(String reSIDfpFilter8580) {
+		this.reSIDfpStereoFilter8580.set(reSIDfpFilter8580);
+	}
+
+	private StringProperty reSIDfp3rdSIDFilter8580 = new SimpleStringProperty(DEFAULT_ReSIDfp_3SID_FILTER_8580);
+
+	public StringProperty reSIDfp3rdSIDFilter8580Property() {
 		return reSIDfp3rdSIDFilter8580;
 	}
 
 	@Override
+	public String getReSIDfpThirdSIDFilter8580() {
+		return reSIDfp3rdSIDFilter8580.get();
+	}
+
+	@Override
 	public void setReSIDfpThirdSIDFilter8580(String reSIDfpFilter8580) {
-		this.reSIDfp3rdSIDFilter8580 = reSIDfpFilter8580;
+		this.reSIDfp3rdSIDFilter8580.set(reSIDfpFilter8580);
 	}
 
 }

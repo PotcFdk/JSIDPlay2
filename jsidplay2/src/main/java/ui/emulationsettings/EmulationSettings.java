@@ -100,18 +100,17 @@ public class EmulationSettings extends C64Window {
 		thirdFilters = FXCollections.<String>observableArrayList();
 		thirdFilter.setItems(thirdFilters);
 
-		NumberToString<Double> doubleToString = new NumberToString<Double>(1);
-		mainBalance.setLabelFormatter(doubleToString);
+		mainBalance.setLabelFormatter(new NumberToString<Double>(1));
 		mainBalance.valueProperty().bindBidirectional(util.getConfig().getAudioSection().mainBalanceProperty());
 		mainBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setBalance(0, newValue.floatValue()));
 		});
-		secondBalance.setLabelFormatter(doubleToString);
+		secondBalance.setLabelFormatter(new NumberToString<Double>(1));
 		secondBalance.valueProperty().bindBidirectional(util.getConfig().getAudioSection().secondBalanceProperty());
 		secondBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setBalance(1, newValue.floatValue()));
 		});
-		thirdBalance.setLabelFormatter(doubleToString);
+		thirdBalance.setLabelFormatter(new NumberToString<Double>(1));
 		thirdBalance.valueProperty().bindBidirectional(util.getConfig().getAudioSection().thirdBalanceProperty());
 		thirdBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setBalance(2, newValue.floatValue()));
