@@ -61,6 +61,7 @@ import ui.common.C64Window;
 import ui.common.NumberToString;
 import ui.common.UIPart;
 import ui.common.UIUtil;
+import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.DiskFileExtensions;
@@ -73,6 +74,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private static final double MARGIN_RIGHT = 55;
 	private static final double MARGIN_TOP = 38;
 	private static final double MARGIN_BOTTOM = 48;
+	private static final int QUEUE_CAPACITY = 10;
 
 	@FXML
 	private TitledPane monitor;
@@ -96,10 +98,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	final int queueCapacity = 10; // may need tuning
-	final BlockingQueue<Image> frameQueue = new ArrayBlockingQueue<>(queueCapacity);
-	final AtomicReference<Image> nextFrame = new AtomicReference<>();
-	private int vicFrames = 0;
+	private final BlockingQueue<Image> frameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+	private final AtomicReference<Image> nextFrame = new AtomicReference<>();
+	private int vicFrames;
 
 	private ScheduledService<Void> screenUpdateService = new ScheduledService<Void>() {
 		@Override
@@ -129,8 +130,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private ChangeListener<? super State> stateListener = (arg0, arg1, arg2) -> {
 		if (arg2 == State.START) {
 			Platform.runLater(() -> {
-				setupVideoScreen();
-				setVisibilityBasedOnChipType(util.getPlayer().getTune());
+				SidTune tune = util.getPlayer().getTune();
+				EmulationSection emulationSection = util.getConfig().getEmulationSection();
+				setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune).getRefresh());
+				setVisibilityBasedOnChipType(tune);
 			});
 		}
 	};
@@ -252,9 +255,11 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		bleedValue.textProperty().bindBidirectional(sidplay2Section.bleedProperty(), floatToString);
 		showMonitorBorder.selectedProperty().bindBidirectional(sidplay2Section.showMonitorProperty());
 
-		setupVideoScreen();
-		setVisibilityBasedOnChipType(util.getPlayer().getTune());
-
+		SidTune tune = util.getPlayer().getTune();
+		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune).getRefresh());
+		setVisibilityBasedOnChipType(tune);
+		
 		setupKeyboard();
 
 		updatePeripheralImages();
@@ -374,7 +379,11 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	/**
 	 * Connect VIC output with screen.
 	 */
-	private void setupVideoScreen() {
+	private void setupVideoScreen(final double refresh) {
+		screenUpdateService.setPeriod(Duration.millis(1000. / refresh));
+		frameQueue.clear();
+		vicFrames = 0;
+
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
 		screen.setWidth(getC64().getVIC().getBorderWidth());
 		screen.setHeight(getC64().getVIC().getBorderHeight());
@@ -512,9 +521,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Make breadbox/pc64 image visible, if the internal SID player is used.
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
-		double refresh = CPUClock.getCPUClock(util.getConfig().getEmulationSection(), sidTune).getRefresh();
-		screenUpdateService.setPeriod(Duration.millis(1000. / refresh));
-
 		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
 		}));
 		if (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0) {
