@@ -13,8 +13,10 @@ import static ui.entities.config.SidPlay2Section.DEFAULT_VIDEO_SCALING;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import javafx.animation.Animation;
@@ -22,6 +24,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -30,15 +34,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
-import javafx.scene.image.WritablePixelFormat;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.util.Duration;
 import libsidplay.C64;
+import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.components.c1530.Datasette.DatasetteStatus;
@@ -88,11 +93,35 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private Label tapeName, diskName, cartridgeName;
 
-	private WritableImage vicImage;
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	private WritablePixelFormat<IntBuffer> pixelFormat;
+	final int queueCapacity = 60; // may need tuning
+	final BlockingQueue<Image> frameQueue = new ArrayBlockingQueue<>(queueCapacity);
+	final AtomicReference<Image> nextFrame = new AtomicReference<>();
+
+	private ScheduledService<Void> screenUpdateService = new ScheduledService<Void>() {
+		@Override
+		protected Task<Void> createTask() {
+			return new Task<Void>() {
+				public Void call() throws InterruptedException {
+					Image image = frameQueue.take();
+					if (nextFrame.getAndSet(image) == null) {
+						Image img = nextFrame.getAndSet(null);
+						final VIC vic = getC64().getVIC();
+						// sanity check: don't update during change of CPUClock
+						if (image.getHeight() == vic.getBorderHeight()) {
+							screen.getGraphicsContext2D().drawImage(img, 0, 0, vic.getBorderWidth(),
+									vic.getBorderHeight(), MARGIN_LEFT, MARGIN_TOP,
+									screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
+									screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
+						}
+					}
+					return null;
+				}
+			};
+		}
+	};
 
 	private UIUtil util;
 
@@ -235,6 +264,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		util.getPlayer().stateProperty().removeListener(stateListener);
 		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
 		}));
+		screenUpdateService.cancel();
 	}
 
 	@FXML
@@ -347,8 +377,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
 		screen.setWidth(getC64().getVIC().getBorderWidth());
 		screen.setHeight(getC64().getVIC().getBorderHeight());
-		vicImage = new WritableImage(getC64().getVIC().getBorderWidth(), getC64().getVIC().getBorderHeight());
-		pixelFormat = PixelFormat.getIntArgbInstance();
 		updateScaling();
 	}
 
@@ -475,12 +503,17 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		timer = new Timeline(oneFrame);
 		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
+
+		screenUpdateService.start();
 	}
 
 	/**
 	 * Make breadbox/pc64 image visible, if the internal SID player is used.
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
+		double refresh = CPUClock.getCPUClock(util.getConfig().getEmulationSection(), sidTune).getRefresh();
+		screenUpdateService.setPeriod(Duration.millis(1000. / refresh));
+
 		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
 		}));
 		if (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0) {
@@ -508,21 +541,20 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	@Override
 	public void accept(int[] pixels) {
-		Platform.runLater(() -> {
+		try {
 			final VIC vic = getC64().getVIC();
-			// sanity check: don't update during change of CPUClock
-			if (vicImage.getHeight() == vic.getBorderHeight()) {
-				vicImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(), pixelFormat,
-						pixels, 0, vic.getBorderWidth());
-				screen.getGraphicsContext2D().drawImage(vicImage, 0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
-						MARGIN_LEFT, MARGIN_TOP, screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
-						screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
-			}
-		});
+			WritableImage image = new WritableImage(getC64().getVIC().getBorderWidth(),
+					getC64().getVIC().getBorderHeight());
+			image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
+					PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
+			frameQueue.put(image);
+		} catch (InterruptedException e) {
+			System.err.println("Info: VIC frame skipped!");
+		}
 	}
 
-	public WritableImage getVicImage() {
-		return vicImage;
+	public Image getVicImage() {
+		return frameQueue.peek();
 	}
 
 	private C64 getC64() {

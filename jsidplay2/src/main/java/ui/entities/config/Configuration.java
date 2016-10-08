@@ -76,7 +76,6 @@ public class Configuration implements IConfig {
 	}
 
 	private final List<KeyTableEntity> INITIAL_KEYCODES;
-
 	{
 		INITIAL_KEYCODES = new ArrayList<KeyTableEntity>();
 		List<KeyTableEntity> keyCodes = Arrays.asList(new KeyTableEntity(KeyCode.A.getName(), KeyTableEntry.A),
@@ -151,7 +150,6 @@ public class Configuration implements IConfig {
 	}
 
 	private final List<FavoritesSection> INITIAL_FAVORITES;
-
 	{
 		INITIAL_FAVORITES = new ArrayList<FavoritesSection>();
 		INITIAL_FAVORITES.add(new FavoritesSection());
