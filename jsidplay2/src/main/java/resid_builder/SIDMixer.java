@@ -28,11 +28,6 @@ import sidplay.audio.AudioDriver;
  */
 public class SIDMixer implements Mixer {
 	/**
-	 * Maximum fast forward factor (1 << 5 = 32x).
-	 */
-	public static final int MAX_FAST_FORWARD = 5;
-
-	/**
 	 * Scaler to use fast int multiplication while setting volume.
 	 */
 	private static final int VOLUME_SCALER = 10;
@@ -400,4 +395,7 @@ public class SIDMixer implements Mixer {
 		return mixerAudio.fastForwardShift - VOLUME_SCALER != 0;
 	}
 
+	public int getFastForwardBitMask() {
+		return mixerAudio.fastForwardBitMask;
+	}
 }

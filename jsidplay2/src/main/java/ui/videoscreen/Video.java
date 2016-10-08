@@ -96,9 +96,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	final int queueCapacity = 60; // may need tuning
+	final int queueCapacity = 10; // may need tuning
 	final BlockingQueue<Image> frameQueue = new ArrayBlockingQueue<>(queueCapacity);
 	final AtomicReference<Image> nextFrame = new AtomicReference<>();
+	private int vicFrames = 0;
 
 	private ScheduledService<Void> screenUpdateService = new ScheduledService<Void>() {
 		@Override
@@ -539,15 +540,27 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		}
 	}
 
+	/**
+	 * Queue an image per frame of VIC screen output.
+	 * 
+	 * Fast forward skips frames and produces output for each Xth frame (X = 1x,
+	 * 2x, 3x, ... , 32x).
+	 * 
+	 * @see java.util.function.Consumer#accept(java.lang.Object)
+	 */
 	@Override
 	public void accept(int[] pixels) {
 		try {
-			final VIC vic = getC64().getVIC();
-			WritableImage image = new WritableImage(getC64().getVIC().getBorderWidth(),
-					getC64().getVIC().getBorderHeight());
-			image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
-					PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
-			frameQueue.put(image);
+			int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 1);
+			if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
+				vicFrames = 0;
+				final VIC vic = getC64().getVIC();
+				WritableImage image = new WritableImage(getC64().getVIC().getBorderWidth(),
+						getC64().getVIC().getBorderHeight());
+				image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
+						PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
+				frameQueue.put(image);
+			}
 		} catch (InterruptedException e) {
 			System.err.println("Info: VIC frame skipped!");
 		}

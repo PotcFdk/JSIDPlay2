@@ -10,6 +10,11 @@ package libsidplay.common;
 public interface Mixer {
 
 	/**
+	 * Maximum fast forward factor (1 << 5 = 32x).
+	 */
+	public static final int MAX_FAST_FORWARD = 5;
+
+	/**
 	 * Reset.
 	 */
 	void reset();
@@ -71,4 +76,8 @@ public interface Mixer {
 	 */
 	boolean isFastForward();
 
+	/**
+	 * @return bit mask of current speed factor (1 << 1x, 2x, ... , 32x) - 1
+	 */
+	public int getFastForwardBitMask();
 }
