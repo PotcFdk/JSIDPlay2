@@ -551,7 +551,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@Override
 	public void accept(int[] pixels) {
 		try {
-			int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 1);
+			int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 			if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 				vicFrames = 0;
 				final VIC vic = getC64().getVIC();
