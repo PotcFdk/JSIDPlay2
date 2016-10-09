@@ -72,7 +72,7 @@ public class Player extends HardwareEnsemble {
 	 * Timeout (in ms) for quitting the player.
 	 */
 	private static final int PAUSE_QUIT_TIME = 1000;
-	
+
 	/**
 	 * Previous song select timeout (< 4 secs).
 	 */
@@ -286,13 +286,29 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Call to update SID chips each time SID configuration has been changed.
+	 * Call to update SID chips each time SID configuration has been changed
+	 * thread-safe.
 	 */
 	public final void updateSIDChipConfiguration() {
 		c64.getEventScheduler().scheduleThreadSafe(new Event("Update SID Chip Configuration") {
 			@Override
 			public void event() throws InterruptedException {
 				c64.insertSIDChips(requiredSIDs, sidLocator);
+			}
+		});
+	}
+
+	/**
+	 * Call to configure VIC chips thread-safe.
+	 * 
+	 * @param action
+	 *            VIC configuration action
+	 */
+	public final void configureVICs(Consumer<VIC> action) {
+		c64.getEventScheduler().scheduleThreadSafe(new Event("Configure VICs") {
+			@Override
+			public void event() throws InterruptedException {
+				c64.configureVICs(action);
 			}
 		});
 	}

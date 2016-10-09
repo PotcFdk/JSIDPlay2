@@ -158,66 +158,60 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				updateScaling();
 			}
 		});
+
 		brightness.setLabelFormatter(new NumberToString<>(2));
 		brightness.valueProperty().bindBidirectional(sidplay2Section.brightnessProperty());
 		brightnessValue.textProperty().bindBidirectional(sidplay2Section.brightnessProperty(), new NumberToString<>(2));
-		brightness.valueProperty().addListener((observable, oldValue, newValue) -> {
-			safeConfigureVICs(vic -> vic.getPalette().setBrightness(newValue.floatValue()),
-					applyImmediately.isSelected());
-		});
+		brightness.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
+				vic -> vic.getPalette().setBrightness(newValue.floatValue()), applyImmediately.isSelected()));
+
 		contrast.setLabelFormatter(new NumberToString<>(2));
 		contrast.valueProperty().bindBidirectional(sidplay2Section.contrastProperty());
 		contrastValue.textProperty().bindBidirectional(sidplay2Section.contrastProperty(), new NumberToString<>(2));
-		contrast.valueProperty().addListener((observable, oldValue, newValue) -> {
-			safeConfigureVICs(vic -> vic.getPalette().setContrast(newValue.floatValue()),
-					applyImmediately.isSelected());
-		});
+		contrast.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
+				vic -> vic.getPalette().setContrast(newValue.floatValue()), applyImmediately.isSelected()));
+
 		gamma.setLabelFormatter(new NumberToString<>(2));
 		gamma.valueProperty().bindBidirectional(sidplay2Section.gammaProperty());
 		gammaValue.textProperty().bindBidirectional(sidplay2Section.gammaProperty(), new NumberToString<>(2));
-		gamma.valueProperty().addListener((observable, oldValue, newValue) -> {
-			safeConfigureVICs(vic -> vic.getPalette().setGamma(newValue.floatValue()), applyImmediately.isSelected());
-		});
+		gamma.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
+				vic -> vic.getPalette().setGamma(newValue.floatValue()), applyImmediately.isSelected()));
+
 		saturation.setLabelFormatter(new NumberToString<>(2));
 		saturation.valueProperty().bindBidirectional(sidplay2Section.saturationProperty());
 		saturationValue.textProperty().bindBidirectional(sidplay2Section.saturationProperty(), new NumberToString<>(2));
-		saturation.valueProperty().addListener((observable, oldValue, newValue) -> {
-			safeConfigureVICs(vic -> vic.getPalette().setSaturation(newValue.floatValue()),
-					applyImmediately.isSelected());
-		});
+		saturation.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
+				vic -> vic.getPalette().setSaturation(newValue.floatValue()), applyImmediately.isSelected()));
+
 		phaseShift.setLabelFormatter(new NumberToString<>(2));
 		phaseShift.valueProperty().bindBidirectional(sidplay2Section.phaseShiftProperty());
 		phaseShiftValue.textProperty().bindBidirectional(sidplay2Section.phaseShiftProperty(), new NumberToString<>(2));
-		phaseShift.valueProperty().addListener((observable, oldValue, newValue) -> {
-			safeConfigureVICs(vic -> vic.getPalette().setPhaseShift(newValue.floatValue()),
-					applyImmediately.isSelected());
-		});
+		phaseShift.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
+				vic -> vic.getPalette().setPhaseShift(newValue.floatValue()), applyImmediately.isSelected()));
+
 		offset.setLabelFormatter(new NumberToString<>(2));
 		offset.valueProperty().bindBidirectional(sidplay2Section.offsetProperty());
 		offsetValue.textProperty().bindBidirectional(sidplay2Section.offsetProperty(), new NumberToString<>(2));
-		offset.valueProperty().addListener((observable, oldValue, newValue) -> {
-			safeConfigureVICs(vic -> vic.getPalette().setOffset(newValue.floatValue()), applyImmediately.isSelected());
-		});
+		offset.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
+				vic -> vic.getPalette().setOffset(newValue.floatValue()), applyImmediately.isSelected()));
+
 		tint.setLabelFormatter(new NumberToString<>(2));
 		tint.valueProperty().bindBidirectional(sidplay2Section.tintProperty());
 		tintValue.textProperty().bindBidirectional(sidplay2Section.tintProperty(), new NumberToString<>(2));
-		tint.valueProperty().addListener((observable, oldValue, newValue) -> {
-			safeConfigureVICs(vic -> vic.getPalette().setTint(newValue.floatValue()), applyImmediately.isSelected());
-		});
+		tint.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
+				vic -> vic.getPalette().setTint(newValue.floatValue()), applyImmediately.isSelected()));
+
 		blur.setLabelFormatter(new NumberToString<>(2));
 		blur.valueProperty().bindBidirectional(sidplay2Section.blurProperty());
 		blurValue.textProperty().bindBidirectional(sidplay2Section.blurProperty(), new NumberToString<>(2));
-		blur.valueProperty().addListener((observable, oldValue, newValue) -> {
-			safeConfigureVICs(vic -> vic.getPalette().setLuminanceC(newValue.floatValue()),
-					applyImmediately.isSelected());
-		});
+		blur.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
+				vic -> vic.getPalette().setLuminanceC(newValue.floatValue()), applyImmediately.isSelected()));
+
 		bleed.setLabelFormatter(new NumberToString<>(2));
 		bleed.valueProperty().bindBidirectional(sidplay2Section.bleedProperty());
 		bleedValue.textProperty().bindBidirectional(sidplay2Section.bleedProperty(), new NumberToString<>(2));
-		bleed.valueProperty().addListener((observable, oldValue, newValue) -> {
-			safeConfigureVICs(vic -> vic.getPalette().setDotCreep(newValue.floatValue()),
-					applyImmediately.isSelected());
-		});
+		bleed.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
+				vic -> vic.getPalette().setDotCreep(newValue.floatValue()), applyImmediately.isSelected()));
 
 		showMonitorBorder.selectedProperty().bindBidirectional(sidplay2Section.showMonitorProperty());
 
@@ -233,8 +227,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(stateListener);
-		safeConfigureVICs(vic -> vic.setPixelConsumer(pixels -> {
-		}), false);
+		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
+		}));
 		screenUpdateService.cancel();
 		frameQueue.clear();
 	}
@@ -306,19 +300,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private void apply() {
 		updateScaling();
-		safeConfigureVICs(vic -> vic.updatePalette(), true);
-	}
-
-	private void safeConfigureVICs(Consumer<VIC> action, boolean apply) {
-		util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(new Event("Configure VICs") {
-			@Override
-			public void event() throws InterruptedException {
-				util.getPlayer().getC64().configureVICs(action);
-				if (apply) {
-					util.getPlayer().getC64().configureVICs(vic -> vic.updatePalette());
-				}
-			}
-		});
+		util.getPlayer().configureVICs(vic -> vic.updatePalette());
 	}
 
 	@FXML
@@ -496,8 +478,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Make breadbox/pc64 image visible, if the internal SID player is used.
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
-		safeConfigureVICs(vic -> vic.setPixelConsumer(pixels -> {
-		}), false);
+		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
+		}));
 		if (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0) {
 			// SID Tune is loaded and uses internal player?
 			screen.setVisible(false);
@@ -517,8 +499,15 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			pc64.setVisible(false);
 			screen.setVisible(true);
 			monitorBorder.setVisible(showMonitorBorder.isSelected());
-			safeConfigureVICs(vic -> vic.setPixelConsumer(this), false);
+			util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(this));
 		}
+	}
+
+	private void updateVICChipConfiguration(Consumer<VIC> action, boolean apply) {
+		util.getPlayer().configureVICs(action.andThen(vic -> {
+			if (apply)
+				vic.updatePalette();
+		}));
 	}
 
 	/**
