@@ -101,7 +101,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private final BlockingQueue<int[]> frameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 	private final AtomicReference<int[]> nextFrame = new AtomicReference<>();
 	private int vicFrames;
-	private WritableImage lastVICImage;
 
 	private UIUtil util;
 
@@ -111,18 +110,13 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			return new Task<Void>() {
 
 				public Void call() throws InterruptedException {
-					int[] pixels = frameQueue.take();
-					if (nextFrame.getAndSet(pixels) == null) {
-						int[] img = nextFrame.getAndSet(null);
-						final VIC vic = getC64().getVIC();
-						WritableImage image = new WritableImage(getC64().getVIC().getBorderWidth(),
-								getC64().getVIC().getBorderHeight());
-						image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
-								PixelFormat.getIntArgbInstance(), img, 0, vic.getBorderWidth());
-						lastVICImage = image;
+					int[] framePixels = frameQueue.take();
+					if (nextFrame.getAndSet(framePixels) == null) {
+						WritableImage image = createImage(nextFrame.getAndSet(null));
 						// sanity check: don't update during change of CPUClock
-						if (lastVICImage.getHeight() == vic.getBorderHeight()) {
-							screen.getGraphicsContext2D().drawImage(lastVICImage, 0, 0, vic.getBorderWidth(),
+						final VIC vic = getC64().getVIC();
+						if (image.getHeight() == vic.getBorderHeight()) {
+							screen.getGraphicsContext2D().drawImage(image, 0, 0, vic.getBorderWidth(),
 									vic.getBorderHeight(), MARGIN_LEFT, MARGIN_TOP,
 									screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
 									screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
@@ -563,11 +557,20 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	}
 
 	public Image getVicImage() {
-		return lastVICImage;
+		return createImage(frameQueue.peek());
 	}
 
 	private C64 getC64() {
 		return util.getPlayer().getC64();
+	}
+
+	private WritableImage createImage(int[] pixels) {
+		final VIC vic = getC64().getVIC();
+		WritableImage lastFrameImage = new WritableImage(getC64().getVIC().getBorderWidth(),
+				getC64().getVIC().getBorderHeight());
+		lastFrameImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
+				PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
+		return lastFrameImage;
 	}
 
 }
