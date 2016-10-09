@@ -27,9 +27,11 @@ import javax.persistence.Transient;
 import de.schlichtherle.truezip.file.TFile;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -380,7 +382,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.fullScreen = fullScreen;
 	}
 
-	private ObjectProperty<Float> videoScalingProperty = new SimpleObjectProperty<Float>(DEFAULT_VIDEO_SCALING);
+	private FloatProperty videoScalingProperty = new SimpleFloatProperty(DEFAULT_VIDEO_SCALING);
 
 	public float getVideoScaling() {
 		return videoScalingProperty.get();
@@ -390,7 +392,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		videoScalingProperty.set(videoScaling);
 	}
 
-	public ObjectProperty<Float> videoScalingProperty() {
+	public FloatProperty videoScalingProperty() {
 		return videoScalingProperty;
 	}
 
@@ -408,7 +410,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return showMonitorProperty;
 	}
 
-	private ObjectProperty<Float> brightnessProperty = new SimpleObjectProperty<Float>(DEFAULT_BRIGHTNESS);
+	private FloatProperty brightnessProperty = new SimpleFloatProperty(DEFAULT_BRIGHTNESS);
 
 	public float getBrightness() {
 		return brightnessProperty.get();
@@ -418,11 +420,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.brightnessProperty.set(brightness);
 	}
 
-	public final ObjectProperty<Float> brightnessProperty() {
+	public final FloatProperty brightnessProperty() {
 		return brightnessProperty;
 	}
 
-	private ObjectProperty<Float> contrastProperty = new SimpleObjectProperty<Float>(DEFAULT_CONTRAST);
+	private FloatProperty contrastProperty = new SimpleFloatProperty(DEFAULT_CONTRAST);
 
 	public float getContrast() {
 		return contrastProperty.get();
@@ -432,11 +434,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.contrastProperty.set(contrast);
 	}
 
-	public final ObjectProperty<Float> contrastProperty() {
+	public final FloatProperty contrastProperty() {
 		return contrastProperty;
 	}
 
-	private ObjectProperty<Float> gammaProperty = new SimpleObjectProperty<Float>(DEFAULT_GAMMA);
+	private FloatProperty gammaProperty = new SimpleFloatProperty(DEFAULT_GAMMA);
 
 	public float getGamma() {
 		return gammaProperty.get();
@@ -446,11 +448,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.gammaProperty.set(gamma);
 	}
 
-	public final ObjectProperty<Float> gammaProperty() {
+	public final FloatProperty gammaProperty() {
 		return gammaProperty;
 	}
 
-	private ObjectProperty<Float> saturationProperty = new SimpleObjectProperty<Float>(DEFAULT_SATURATION);
+	private FloatProperty saturationProperty = new SimpleFloatProperty(DEFAULT_SATURATION);
 
 	public float getSaturation() {
 		return saturationProperty.get();
@@ -460,11 +462,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.saturationProperty.set(saturation);
 	}
 
-	public final ObjectProperty<Float> saturationProperty() {
+	public final FloatProperty saturationProperty() {
 		return saturationProperty;
 	}
 
-	private ObjectProperty<Float> phaseShiftProperty = new SimpleObjectProperty<Float>(DEFAULT_PHASE_SHIFT);
+	private FloatProperty phaseShiftProperty = new SimpleFloatProperty(DEFAULT_PHASE_SHIFT);
 
 	public float getPhaseShift() {
 		return phaseShiftProperty.get();
@@ -474,11 +476,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.phaseShiftProperty.set(phaseShift);
 	}
 
-	public final ObjectProperty<Float> phaseShiftProperty() {
+	public final FloatProperty phaseShiftProperty() {
 		return phaseShiftProperty;
 	}
 
-	private ObjectProperty<Float> offsetProperty = new SimpleObjectProperty<Float>(DEFAULT_OFFSET);
+	private FloatProperty offsetProperty = new SimpleFloatProperty(DEFAULT_OFFSET);
 
 	public float getOffset() {
 		return offsetProperty.get();
@@ -488,11 +490,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.offsetProperty.set(offset);
 	}
 
-	public final ObjectProperty<Float> offsetProperty() {
+	public final FloatProperty offsetProperty() {
 		return offsetProperty;
 	}
 
-	private ObjectProperty<Float> tintProperty = new SimpleObjectProperty<Float>(DEFAULT_TINT);
+	private FloatProperty tintProperty = new SimpleFloatProperty(DEFAULT_TINT);
 
 	public float getTint() {
 		return tintProperty.get();
@@ -502,11 +504,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.tintProperty.set(tint);
 	}
 
-	public final ObjectProperty<Float> tintProperty() {
+	public final FloatProperty tintProperty() {
 		return tintProperty;
 	}
 
-	private ObjectProperty<Float> blurProperty = new SimpleObjectProperty<Float>(DEFAULT_BLUR);
+	private FloatProperty blurProperty = new SimpleFloatProperty(DEFAULT_BLUR);
 
 	public float getBlur() {
 		return blurProperty.get();
@@ -516,11 +518,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.blurProperty.set(blur);
 	}
 
-	public final ObjectProperty<Float> blurProperty() {
+	public final FloatProperty blurProperty() {
 		return blurProperty;
 	}
 
-	private ObjectProperty<Float> bleedProperty = new SimpleObjectProperty<Float>(DEFAULT_BLEED);
+	private FloatProperty bleedProperty = new SimpleFloatProperty(DEFAULT_BLEED);
 
 	public float getBleed() {
 		return bleedProperty.get();
@@ -530,7 +532,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.bleedProperty.set(bleed);
 	}
 
-	public final ObjectProperty<Float> bleedProperty() {
+	public final FloatProperty bleedProperty() {
 		return bleedProperty;
 	}
 
