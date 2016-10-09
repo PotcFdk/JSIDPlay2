@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import javafx.animation.Animation;
@@ -99,7 +98,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Timeline timer;
 
 	private final BlockingQueue<int[]> frameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
-	private final AtomicReference<int[]> nextFrame = new AtomicReference<>();
 	private int vicFrames;
 
 	private UIUtil util;
@@ -111,16 +109,14 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 				public Void call() throws InterruptedException {
 					int[] framePixels = frameQueue.take();
-					if (nextFrame.getAndSet(framePixels) == null) {
-						WritableImage image = createImage(nextFrame.getAndSet(null));
-						// sanity check: don't update during change of CPUClock
-						final VIC vic = getC64().getVIC();
-						if (image.getHeight() == vic.getBorderHeight()) {
-							screen.getGraphicsContext2D().drawImage(image, 0, 0, vic.getBorderWidth(),
-									vic.getBorderHeight(), MARGIN_LEFT, MARGIN_TOP,
-									screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
-									screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
-						}
+					WritableImage image = createImage(framePixels);
+					final VIC vic = getC64().getVIC();
+					// sanity check: don't update during change of CPUClock
+					if (image.getHeight() == vic.getBorderHeight()) {
+						screen.getGraphicsContext2D().drawImage(image, 0, 0, vic.getBorderWidth(),
+								vic.getBorderHeight(), MARGIN_LEFT, MARGIN_TOP,
+								screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
+								screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
 					}
 					return null;
 				}
