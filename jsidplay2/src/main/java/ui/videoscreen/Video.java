@@ -150,6 +150,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
 		util.getPlayer().stateProperty().addListener(stateListener);
+
 		scaling.setLabelFormatter(new NumberToString<>(2));
 		scaling.valueProperty().bindBidirectional(sidplay2Section.videoScalingProperty());
 		scalingValue.textProperty().bindBidirectional(sidplay2Section.videoScalingProperty(), new NumberToString<>(2));
@@ -227,10 +228,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(stateListener);
-		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
-		}));
+		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> frameQueue.clear()));
 		screenUpdateService.cancel();
-		frameQueue.clear();
 	}
 
 	@FXML
@@ -478,8 +477,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Make breadbox/pc64 image visible, if the internal SID player is used.
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
-		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
-		}));
+		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> frameQueue.clear()));
 		if (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0) {
 			// SID Tune is loaded and uses internal player?
 			screen.setVisible(false);
@@ -527,7 +525,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				frameQueue.put(pixels);
 			}
 		} catch (InterruptedException e) {
-			System.err.println("Info: VIC frame skipped!");
+			// VIC frame may eventually be skipped!
 		}
 	}
 
