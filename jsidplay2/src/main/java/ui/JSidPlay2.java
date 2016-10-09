@@ -102,7 +102,6 @@ import ui.favorites.Favorites;
 import ui.favorites.PlaybackType;
 import ui.filefilter.CartFileExtensions;
 import ui.filefilter.DiskFileExtensions;
-import ui.filefilter.RomFileExtensions;
 import ui.filefilter.TapeFileExtensions;
 import ui.filefilter.TuneFileExtensions;
 import ui.gamebase.GameBase;
@@ -152,7 +151,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			URL us3 = JSidPlay2Main.class.getResource(EMPTY_D64);
 			EMPTY_DISK = new byte[us3.openConnection().getContentLength()];
 			is2.readFully(EMPTY_DISK);
-			
+
 			MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
@@ -300,7 +299,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		videoStandardBox.setConverter(new EnumToString<CPUClock>(bundle));
 		videoStandardBox.valueProperty().bindBidirectional(emulationSection.defaultClockSpeedProperty());
 		videoStandardBox.setItems(FXCollections.<CPUClock>observableArrayList(CPUClock.values()));
-		
+
 		hardsid6581Box.valueProperty().bindBidirectional(emulationSection.hardsid6581Property());
 		hardsid8580Box.valueProperty().bindBidirectional(emulationSection.hardsid8580Property());
 
@@ -787,32 +786,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void installJiffyDos() {
-		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setTitle(util.getBundle().getString("CHOOSE_C64_KERNAL_ROM"));
-		fileDialog.getExtensionFilters()
-				.add(new ExtensionFilter(RomFileExtensions.DESCRIPTION, RomFileExtensions.EXTENSIONS));
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
-		final File c64kernalFile = fileDialog.showOpenDialog(scene.getWindow());
-		if (c64kernalFile != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(c64kernalFile.getParent());
-			final FileChooser c1541FileDialog = new FileChooser();
-			c1541FileDialog.setTitle(util.getBundle().getString("CHOOSE_C1541_KERNAL_ROM"));
-			c1541FileDialog.setInitialDirectory(
-					((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
-			c1541FileDialog.getExtensionFilters()
-					.add(new ExtensionFilter(RomFileExtensions.DESCRIPTION, RomFileExtensions.EXTENSIONS));
-			final File c1541kernalFile = c1541FileDialog.showOpenDialog(scene.getWindow());
-			if (c1541kernalFile != null) {
-				util.getConfig().getSidplay2Section().setLastDirectory(c1541kernalFile.getParent());
-				try {
-					util.getPlayer().installJiffyDOS(c64kernalFile, c1541kernalFile);
-					util.getPlayer().play(SidTune.RESET);
-				} catch (IOException | SidTuneError e) {
-					openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
-				}
-			}
-		}
+		util.getPlayer().installJiffyDOS();
+		reset();
 	}
 
 	@FXML

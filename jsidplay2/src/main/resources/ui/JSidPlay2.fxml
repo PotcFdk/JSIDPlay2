@@ -207,6 +207,10 @@
 										<RadioMenuItem text="%EXTEND_ON_ACCESS"
 											toggleGroup="$extensionGroup" onAction="#extendAccess" fx:id="accessExtend" />
 									</Menu>
+									<Menu text="%JIFFYDOS">
+										<MenuItem text="%INSTALL" onAction="#installJiffyDos" />
+										<MenuItem text="%UNINSTALL" onAction="#uninstallJiffyDos" />
+									</Menu>
 									<Menu text="%MEMORY">
 										<CheckMenuItem text="%8K_RAM_EXPANSION_0X2000"
 											onAction="#expansion0x2000" fx:id="expand2000" />
@@ -260,8 +264,6 @@
 									<MenuItem text="%EJECT_CARTRIDGE" onAction="#ejectCartridge" />
 									<MenuItem text="%FREEZE" onAction="#freezeCartridge" />
 								</Menu>
-								<MenuItem text="%INSTALL_JIFFYDOS" onAction="#installJiffyDos" />
-								<MenuItem text="%UNINSTALL_JIFFYDOS" onAction="#uninstallJiffyDos" />
 							</Menu>
 							<Menu text="%HARDCOPY">
 								<MenuItem text="%HARDCOPY_GIF" onAction="#doHardcopyGif" />

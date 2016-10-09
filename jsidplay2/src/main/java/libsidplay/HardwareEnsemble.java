@@ -4,7 +4,6 @@ import static sidplay.ini.IniDefaults.MAX_RAM_EXPANSIONS;
 
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -44,6 +43,24 @@ import libsidutils.prg2tap.PRG2TAPProgram;
  * 
  */
 public class HardwareEnsemble {
+	private static final String JIFFYDOS_C64_ROM = "/libsidplay/roms/JiffyDOS C64 Kernal 6.01.bin";
+	private static final String JIFFYDOS_C1541_ROM = "/libsidplay/roms/JiffyDOS 1541 5.0.bin";
+	private static final int JIFFYDOS_C64_ROM_SIZE = 0x2000;
+	private static final int JIFFYDOS_C1541_ROM_SIZE = 0x4000;
+	private static final byte[] JIFFYDOS_C64_KERNAL = new byte[JIFFYDOS_C64_ROM_SIZE];
+	private static final byte[] JIFFYDOS_C1541 = new byte[JIFFYDOS_C1541_ROM_SIZE];
+
+	static {
+		try (DataInputStream isJiffyDosC64 = new DataInputStream(
+				HardwareEnsemble.class.getResourceAsStream(JIFFYDOS_C64_ROM));
+				DataInputStream isJiffyDosC1541 = new DataInputStream(
+						HardwareEnsemble.class.getResourceAsStream(JIFFYDOS_C1541_ROM))) {
+			isJiffyDosC64.readFully(JIFFYDOS_C64_KERNAL);
+			isJiffyDosC1541.readFully(JIFFYDOS_C1541);
+		} catch (IOException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 
 	/**
 	 * Configuration.
@@ -391,30 +408,11 @@ public class HardwareEnsemble {
 
 	/**
 	 * Install Jiffy DOS floppy speeder.
-	 * 
-	 * Replace the Kernal ROM and replace the floppy ROM additionally.<BR>
-	 * Note: Floppy kernal is replaced in all drives!
-	 * 
-	 * @param c64kernalFile
-	 *            C64 Kernal replacement
-	 * @param c1541kernalFile
-	 *            C1541 Kernal replacement
-	 * @throws IOException
-	 *             error reading the ROMs
 	 */
-	public final void installJiffyDOS(final File c64kernalFile, final File c1541kernalFile)
-			throws IOException, SidTuneError {
-		try (DataInputStream dis = new DataInputStream(new FileInputStream(c64kernalFile))) {
-			byte[] c64Kernal = new byte[0x2000];
-			dis.readFully(c64Kernal);
-			c64.setCustomKernal(c64Kernal);
-		}
-		try (DataInputStream dis = new DataInputStream(new FileInputStream(c1541kernalFile))) {
-			byte[] c1541Kernal = new byte[0x4000];
-			dis.readFully(c1541Kernal);
-			for (final C1541 floppy : floppies) {
-				floppy.setCustomKernalRom(c1541Kernal);
-			}
+	public final void installJiffyDOS() {
+		c64.setCustomKernal(JIFFYDOS_C64_KERNAL);
+		for (final C1541 floppy : floppies) {
+			floppy.setCustomKernalRom(JIFFYDOS_C1541);
 		}
 	}
 
