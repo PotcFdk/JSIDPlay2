@@ -41,7 +41,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.util.Duration;
-import libsidplay.C64;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
@@ -110,7 +109,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				public Void call() throws InterruptedException {
 					int[] framePixels = frameQueue.take();
 					WritableImage image = createImage(framePixels);
-					final VIC vic = getC64().getVIC();
+					final VIC vic = util.getPlayer().getC64().getVIC();
 					// sanity check: don't update during change of CPUClock
 					if (image.getHeight() == vic.getBorderHeight()) {
 						screen.getGraphicsContext2D().drawImage(image, 0, 0, vic.getBorderWidth(),
@@ -163,7 +162,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		brightness.valueProperty().bindBidirectional(sidplay2Section.brightnessProperty());
 		brightnessValue.textProperty().bindBidirectional(sidplay2Section.brightnessProperty(), new NumberToString<>(2));
 		brightness.valueProperty().addListener((observable, oldValue, newValue) -> {
-			getC64().configureVICs(vic -> vic.getPalette().setBrightness(newValue.floatValue()));
+			safeConfigureVICs(vic -> vic.getPalette().setBrightness(newValue.floatValue()));
 			if (applyImmediately.isSelected()) {
 				apply();
 			}
@@ -172,7 +171,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		contrast.valueProperty().bindBidirectional(sidplay2Section.contrastProperty());
 		contrastValue.textProperty().bindBidirectional(sidplay2Section.contrastProperty(), new NumberToString<>(2));
 		contrast.valueProperty().addListener((observable, oldValue, newValue) -> {
-			getC64().configureVICs(vic -> vic.getPalette().setContrast(newValue.floatValue()));
+			safeConfigureVICs(vic -> vic.getPalette().setContrast(newValue.floatValue()));
 			if (applyImmediately.isSelected()) {
 				apply();
 			}
@@ -181,7 +180,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		gamma.valueProperty().bindBidirectional(sidplay2Section.gammaProperty());
 		gammaValue.textProperty().bindBidirectional(sidplay2Section.gammaProperty(), new NumberToString<>(2));
 		gamma.valueProperty().addListener((observable, oldValue, newValue) -> {
-			getC64().configureVICs(vic -> vic.getPalette().setGamma(newValue.floatValue()));
+			safeConfigureVICs(vic -> vic.getPalette().setGamma(newValue.floatValue()));
 			if (applyImmediately.isSelected()) {
 				apply();
 			}
@@ -190,7 +189,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		saturation.valueProperty().bindBidirectional(sidplay2Section.saturationProperty());
 		saturationValue.textProperty().bindBidirectional(sidplay2Section.saturationProperty(), new NumberToString<>(2));
 		saturation.valueProperty().addListener((observable, oldValue, newValue) -> {
-			getC64().configureVICs(vic -> vic.getPalette().setSaturation(newValue.floatValue()));
+			safeConfigureVICs(vic -> vic.getPalette().setSaturation(newValue.floatValue()));
 			if (applyImmediately.isSelected()) {
 				apply();
 			}
@@ -199,7 +198,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		phaseShift.valueProperty().bindBidirectional(sidplay2Section.phaseShiftProperty());
 		phaseShiftValue.textProperty().bindBidirectional(sidplay2Section.phaseShiftProperty(), new NumberToString<>(2));
 		phaseShift.valueProperty().addListener((observable, oldValue, newValue) -> {
-			getC64().configureVICs(vic -> vic.getPalette().setPhaseShift(newValue.floatValue()));
+			safeConfigureVICs(vic -> vic.getPalette().setPhaseShift(newValue.floatValue()));
 			if (applyImmediately.isSelected()) {
 				apply();
 			}
@@ -208,7 +207,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		offset.valueProperty().bindBidirectional(sidplay2Section.offsetProperty());
 		offsetValue.textProperty().bindBidirectional(sidplay2Section.offsetProperty(), new NumberToString<>(2));
 		offset.valueProperty().addListener((observable, oldValue, newValue) -> {
-			getC64().configureVICs(vic -> vic.getPalette().setOffset(newValue.floatValue()));
+			safeConfigureVICs(vic -> vic.getPalette().setOffset(newValue.floatValue()));
 			if (applyImmediately.isSelected()) {
 				apply();
 			}
@@ -217,7 +216,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		tint.valueProperty().bindBidirectional(sidplay2Section.tintProperty());
 		tintValue.textProperty().bindBidirectional(sidplay2Section.tintProperty(), new NumberToString<>(2));
 		tint.valueProperty().addListener((observable, oldValue, newValue) -> {
-			getC64().configureVICs(vic -> vic.getPalette().setTint(newValue.floatValue()));
+			safeConfigureVICs(vic -> vic.getPalette().setTint(newValue.floatValue()));
 			if (applyImmediately.isSelected()) {
 				apply();
 			}
@@ -226,7 +225,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		blur.valueProperty().bindBidirectional(sidplay2Section.blurProperty());
 		blurValue.textProperty().bindBidirectional(sidplay2Section.blurProperty(), new NumberToString<>(2));
 		blur.valueProperty().addListener((observable, oldValue, newValue) -> {
-			getC64().configureVICs(vic -> vic.getPalette().setLuminanceC(newValue.floatValue()));
+			safeConfigureVICs(vic -> vic.getPalette().setLuminanceC(newValue.floatValue()));
 			if (applyImmediately.isSelected()) {
 				apply();
 			}
@@ -235,7 +234,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		bleed.valueProperty().bindBidirectional(sidplay2Section.bleedProperty());
 		bleedValue.textProperty().bindBidirectional(sidplay2Section.bleedProperty(), new NumberToString<>(2));
 		bleed.valueProperty().addListener((observable, oldValue, newValue) -> {
-			getC64().configureVICs(vic -> vic.getPalette().setDotCreep(newValue.floatValue()));
+			safeConfigureVICs(vic -> vic.getPalette().setDotCreep(newValue.floatValue()));
 			if (applyImmediately.isSelected()) {
 				apply();
 			}
@@ -255,7 +254,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(stateListener);
-		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
+		safeConfigureVICs(vic -> vic.setPixelConsumer(pixels -> {
 		}));
 		screenUpdateService.cancel();
 		frameQueue.clear();
@@ -328,10 +327,14 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private void apply() {
 		updateScaling();
-		getC64().getEventScheduler().scheduleThreadSafe(new Event("Update Palette") {
+		safeConfigureVICs(vic -> vic.updatePalette());
+	}
+
+	private void safeConfigureVICs(Consumer<VIC> action) {
+		util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(new Event("Configure VICs") {
 			@Override
 			public void event() throws InterruptedException {
-				getC64().configureVICs(vic -> vic.updatePalette());
+				util.getPlayer().getC64().configureVICs(action);
 			}
 		});
 	}
@@ -373,8 +376,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		vicFrames = 0;
 
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
-		screen.setWidth(getC64().getVIC().getBorderWidth());
-		screen.setHeight(getC64().getVIC().getBorderHeight());
+		screen.setWidth(util.getPlayer().getC64().getVIC().getBorderWidth());
+		screen.setHeight(util.getPlayer().getC64().getVIC().getBorderHeight());
 		updateScaling();
 	}
 
@@ -422,21 +425,23 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	}
 
 	private void pressC64Key(final KeyTableEntry key) {
-		getC64().getEventScheduler().scheduleThreadSafe(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
-			@Override
-			public void event() throws InterruptedException {
-				getC64().getKeyboard().keyPressed(key);
-			}
-		});
+		util.getPlayer().getC64().getEventScheduler()
+				.scheduleThreadSafe(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
+					@Override
+					public void event() throws InterruptedException {
+						util.getPlayer().getC64().getKeyboard().keyPressed(key);
+					}
+				});
 	}
 
 	private void releaseC64Key(final KeyTableEntry key) {
-		getC64().getEventScheduler().scheduleThreadSafe(new Event("Virtual Keyboard Key Released: " + key.name()) {
-			@Override
-			public void event() throws InterruptedException {
-				getC64().getKeyboard().keyReleased(key);
-			}
-		});
+		util.getPlayer().getC64().getEventScheduler()
+				.scheduleThreadSafe(new Event("Virtual Keyboard Key Released: " + key.name()) {
+					@Override
+					public void event() throws InterruptedException {
+						util.getPlayer().getC64().getKeyboard().keyReleased(key);
+					}
+				});
 	}
 
 	private void updatePeripheralImages() {
@@ -496,7 +501,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			default:
 				throw new RuntimeException("Unexpected floppy status: " + floppyStatus);
 			}
-			cartridgeName.setText(getC64().getCartridge().toString());
+			cartridgeName.setText(util.getPlayer().getC64().getCartridge().toString());
 		});
 		timer = new Timeline(oneFrame);
 		timer.setCycleCount(Animation.INDEFINITE);
@@ -509,7 +514,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Make breadbox/pc64 image visible, if the internal SID player is used.
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
-		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
+		safeConfigureVICs(vic -> vic.setPixelConsumer(pixels -> {
 		}));
 		if (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0) {
 			// SID Tune is loaded and uses internal player?
@@ -530,7 +535,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			pc64.setVisible(false);
 			screen.setVisible(true);
 			monitorBorder.setVisible(showMonitorBorder.isSelected());
-			getC64().getVIC().setPixelConsumer(this);
+			safeConfigureVICs(vic -> vic.setPixelConsumer(this));
 		}
 	}
 
@@ -559,14 +564,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		return createImage(frameQueue.peek());
 	}
 
-	private C64 getC64() {
-		return util.getPlayer().getC64();
-	}
-
 	private WritableImage createImage(int[] pixels) {
-		final VIC vic = getC64().getVIC();
-		WritableImage lastFrameImage = new WritableImage(getC64().getVIC().getBorderWidth(),
-				getC64().getVIC().getBorderHeight());
+		final VIC vic = util.getPlayer().getC64().getVIC();
+		WritableImage lastFrameImage = new WritableImage(vic.getBorderWidth(), vic.getBorderHeight());
 		lastFrameImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
 				PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
 		return lastFrameImage;
