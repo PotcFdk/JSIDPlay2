@@ -37,6 +37,21 @@ public interface IC1541Section {
 	void setParallelCable(boolean on);
 
 	/**
+	 * Is floppy speeder Jiffydos installed?
+	 * 
+	 * @return floppy speeder Jiffydos installed?
+	 */
+	boolean isJiffyDosInstalled();
+
+	/**
+	 * Install floppy speeder Jiffydos.
+	 * 
+	 * @param on
+	 *            Floppy speeder Jiffydos installed?
+	 */
+	void setJiffyDosInstalled(boolean on);
+
+	/**
 	 * Is RAM expansion at some particular slot enabled
 	 *
 	 * @return state enabled?

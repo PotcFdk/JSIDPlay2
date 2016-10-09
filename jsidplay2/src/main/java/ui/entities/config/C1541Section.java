@@ -1,7 +1,9 @@
 package ui.entities.config;
+
 import static sidplay.ini.IniDefaults.DEFAULT_DRIVE_ON;
 import static sidplay.ini.IniDefaults.DEFAULT_FLOPPY_TYPE;
 import static sidplay.ini.IniDefaults.DEFAULT_PARALLEL_CABLE;
+import static sidplay.ini.IniDefaults.DEFAULT_JIFFYDOS_INSTALLED;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X2000;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X4000;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X6000;
@@ -31,7 +33,7 @@ public class C1541Section implements IC1541Section {
 	public BooleanProperty driveOnProperty() {
 		return driveOnProperty;
 	}
-	
+
 	@Override
 	public boolean isDriveOn() {
 		return driveOnProperty.get();
@@ -47,7 +49,7 @@ public class C1541Section implements IC1541Section {
 	public BooleanProperty driveSoundOnProperty() {
 		return driveSoundOnProperty;
 	}
-	
+
 	public boolean isDriveSoundOn() {
 		return driveSoundOnProperty.get();
 	}
@@ -61,7 +63,7 @@ public class C1541Section implements IC1541Section {
 	public BooleanProperty parallelCableProperty() {
 		return parallelCableProperty;
 	}
-	
+
 	@Override
 	public boolean isParallelCable() {
 		return parallelCableProperty.get();
@@ -72,12 +74,28 @@ public class C1541Section implements IC1541Section {
 		parallelCableProperty.set(parallelCable);
 	}
 
+	private BooleanProperty jiffyDosInstalled = new SimpleBooleanProperty(DEFAULT_JIFFYDOS_INSTALLED);
+
+	public BooleanProperty jiffyDosInstalledProperty() {
+		return jiffyDosInstalled;
+	}
+
+	@Override
+	public boolean isJiffyDosInstalled() {
+		return this.jiffyDosInstalled.get();
+	}
+
+	@Override
+	public void setJiffyDosInstalled(boolean on) {
+		this.jiffyDosInstalled.set(on);
+	}
+
 	private BooleanProperty ramExpansionEnabled0 = new SimpleBooleanProperty(DEFAULT_RAM_EXPAND_0X2000);
 
 	public BooleanProperty ramExpansionEnabled0Property() {
 		return ramExpansionEnabled0;
 	}
-	
+
 	@Override
 	public boolean isRamExpansionEnabled0() {
 		return this.ramExpansionEnabled0.get();
@@ -93,7 +111,7 @@ public class C1541Section implements IC1541Section {
 	public BooleanProperty ramExpansionEnabled1Property() {
 		return ramExpansionEnabled1;
 	}
-	
+
 	@Override
 	public boolean isRamExpansionEnabled1() {
 		return this.ramExpansionEnabled1.get();
@@ -109,7 +127,7 @@ public class C1541Section implements IC1541Section {
 	public BooleanProperty ramExpansionEnabled2Property() {
 		return ramExpansionEnabled2;
 	}
-	
+
 	@Override
 	public boolean isRamExpansionEnabled2() {
 		return this.ramExpansionEnabled2.get();
@@ -125,7 +143,7 @@ public class C1541Section implements IC1541Section {
 	public BooleanProperty ramExpansionEnabled3Property() {
 		return ramExpansionEnabled3;
 	}
-	
+
 	@Override
 	public boolean isRamExpansionEnabled3() {
 		return this.ramExpansionEnabled3.get();
@@ -141,7 +159,7 @@ public class C1541Section implements IC1541Section {
 	public BooleanProperty ramExpansionEnabled4Property() {
 		return ramExpansionEnabled4;
 	}
-	
+
 	@Override
 	public boolean isRamExpansionEnabled4() {
 		return this.ramExpansionEnabled4.get();
@@ -152,17 +170,18 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled4.set(on);
 	}
 
-	private ObjectProperty<ExtendImagePolicy> extendImagePolicy = new SimpleObjectProperty<ExtendImagePolicy>(DEFAULT_EXTEND_IMAGE_POLICY);
+	private ObjectProperty<ExtendImagePolicy> extendImagePolicy = new SimpleObjectProperty<ExtendImagePolicy>(
+			DEFAULT_EXTEND_IMAGE_POLICY);
 
 	public ObjectProperty<ExtendImagePolicy> extendImagePolicyProperty() {
 		return extendImagePolicy;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public ExtendImagePolicy getExtendImagePolicy() {
 		return this.extendImagePolicy.get();
 	}
-	
+
 	public void setExtendImagePolicy(ExtendImagePolicy policy) {
 		this.extendImagePolicy.set(policy);
 	}
@@ -172,13 +191,13 @@ public class C1541Section implements IC1541Section {
 	public ObjectProperty<FloppyType> floppyTypeProperty() {
 		return floppyType;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	@Override
 	public FloppyType getFloppyType() {
 		return floppyType.get();
 	}
-	
+
 	@Override
 	public void setFloppyType(FloppyType floppyType) {
 		this.floppyType.set(floppyType);

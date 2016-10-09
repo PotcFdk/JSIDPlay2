@@ -3,6 +3,7 @@ package sidplay.ini;
 import static sidplay.ini.IniDefaults.DEFAULT_DRIVE_ON;
 import static sidplay.ini.IniDefaults.DEFAULT_FLOPPY_TYPE;
 import static sidplay.ini.IniDefaults.DEFAULT_PARALLEL_CABLE;
+import static sidplay.ini.IniDefaults.DEFAULT_JIFFYDOS_INSTALLED;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X2000;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X4000;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X6000;
@@ -64,6 +65,16 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	@Override
 	public final void setParallelCable(final boolean on) {
 		iniReader.setProperty("C1541", "ParallelCable", on);
+	}
+
+	@Override
+	public boolean isJiffyDosInstalled() {
+		return iniReader.getPropertyBool("C1541", "JiffyDos Installed", DEFAULT_JIFFYDOS_INSTALLED);
+	}
+
+	@Override
+	public void setJiffyDosInstalled(boolean on) {
+		iniReader.setProperty("C1541", "JiffyDos Installed", on);
 	}
 
 	/**

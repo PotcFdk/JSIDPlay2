@@ -193,6 +193,8 @@
 									<CheckMenuItem text="%DRIVE_SOUND" fx:id="driveSoundOn" />
 									<CheckMenuItem text="%PARALLEL_CABLE" onAction="#parallelCable"
 										fx:id="parCable" />
+									<CheckMenuItem text="%JIFFYDOS"
+										onAction="#installJiffyDos" fx:id="installJiffyDos" />
 									<Menu text="%FLOPPY_TYPE">
 										<RadioMenuItem text="%C1541" toggleGroup="$floppyGroup"
 											onAction="#floppyTypeC1541" fx:id="c1541" />
@@ -206,10 +208,6 @@
 											toggleGroup="$extensionGroup" onAction="#extendAsk" fx:id="askExtend" />
 										<RadioMenuItem text="%EXTEND_ON_ACCESS"
 											toggleGroup="$extensionGroup" onAction="#extendAccess" fx:id="accessExtend" />
-									</Menu>
-									<Menu text="%JIFFYDOS">
-										<MenuItem text="%INSTALL" onAction="#installJiffyDos" />
-										<MenuItem text="%UNINSTALL" onAction="#uninstallJiffyDos" />
 									</Menu>
 									<Menu text="%MEMORY">
 										<CheckMenuItem text="%8K_RAM_EXPANSION_0X2000"

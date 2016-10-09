@@ -159,8 +159,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	}
 
 	@FXML
-	protected CheckMenuItem pauseContinue, driveOn, driveSoundOn, parCable, expand2000, expand4000, expand6000,
-			expand8000, expandA000, turnPrinterOn;
+	protected CheckMenuItem pauseContinue, driveOn, driveSoundOn, parCable, installJiffyDos, expand2000, expand4000,
+			expand6000, expand8000, expandA000, turnPrinterOn;
 	@FXML
 	protected RadioMenuItem fastForward, normalSpeed, c1541, c1541_II, neverExtend, askExtend, accessExtend;
 	@FXML
@@ -333,6 +333,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		nextFavorite.disableProperty().bind(nextFavoriteDisabledState);
 		driveOn.selectedProperty().bindBidirectional(c1541Section.driveOnProperty());
 		parCable.selectedProperty().bindBidirectional(c1541Section.parallelCableProperty());
+		installJiffyDos.selectedProperty().bindBidirectional(c1541Section.jiffyDosInstalledProperty());
 		driveSoundOn.selectedProperty().bindBidirectional(c1541Section.driveSoundOnProperty());
 		turnPrinterOn.selectedProperty().bindBidirectional(printer.printerOnProperty());
 
@@ -601,6 +602,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	}
 
 	@FXML
+	private void installJiffyDos() {
+		reset();
+	}
+
+	@FXML
 	private void floppyTypeC1541() {
 		getFirstFloppy().setFloppyType(FloppyType.C1541);
 		util.getConfig().getC1541Section().setFloppyType(FloppyType.C1541);
@@ -782,18 +788,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void insertREU16384() {
 		insertCartridge(CartridgeType.REU, 16384);
-	}
-
-	@FXML
-	private void installJiffyDos() {
-		util.getPlayer().installJiffyDOS();
-		reset();
-	}
-
-	@FXML
-	private void uninstallJiffyDos() {
-		util.getPlayer().uninstallJiffyDOS();
-		reset();
 	}
 
 	@FXML

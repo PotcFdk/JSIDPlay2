@@ -268,18 +268,20 @@ public class HardwareEnsemble {
 			vic.getPalette().setLuminanceC(sidplay2section.getBlur());
 			vic.getPalette().setDotCreep(sidplay2section.getBleed());
 		});
+		final IC1541Section c1541Section = config.getC1541Section();
+		c64.setCustomKernal(c1541Section.isJiffyDosInstalled() ? JIFFYDOS_C64_KERNAL : null);
 		c64.reset();
 		iecBus.reset();
 		datasette.reset();
 
 		// Reset Floppies
-		final IC1541Section c1541Section = config.getC1541Section();
 		for (final C1541 floppy : floppies) {
 			floppy.setFloppyType(c1541Section.getFloppyType());
 			for (int selector = 0; selector < MAX_RAM_EXPANSIONS; selector++) {
 				boolean hasRamExpansion = c1541Section.isRamExpansion(selector);
 				floppy.setRamExpansion(selector, hasRamExpansion);
 			}
+			floppy.setCustomKernalRom(c1541Section.isJiffyDosInstalled() ? JIFFYDOS_C1541 : null);
 			floppy.reset();
 		}
 		enableFloppyDiskDrives(c1541Section.isDriveOn());
@@ -404,26 +406,6 @@ public class HardwareEnsemble {
 	 */
 	public final void enablePrinter(boolean printerOn) {
 		printer.turnPrinterOnOff(printerOn);
-	}
-
-	/**
-	 * Install Jiffy DOS floppy speeder.
-	 */
-	public final void installJiffyDOS() {
-		c64.setCustomKernal(JIFFYDOS_C64_KERNAL);
-		for (final C1541 floppy : floppies) {
-			floppy.setCustomKernalRom(JIFFYDOS_C1541);
-		}
-	}
-
-	/**
-	 * Uninstall Jiffy DOS floppy speeder.
-	 */
-	public final void uninstallJiffyDOS() {
-		c64.setCustomKernal(null);
-		for (final C1541 floppy : floppies) {
-			floppy.setCustomKernalRom(null);
-		}
 	}
 
 	/**

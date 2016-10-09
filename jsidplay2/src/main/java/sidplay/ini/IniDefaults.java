@@ -50,6 +50,7 @@ public interface IniDefaults {
 	IC1541Section C1541_SECTION = DEFAULTS.getC1541Section();
 	boolean DEFAULT_DRIVE_ON = C1541_SECTION.isDriveOn();
 	boolean DEFAULT_PARALLEL_CABLE = C1541_SECTION.isParallelCable();
+	boolean DEFAULT_JIFFYDOS_INSTALLED = C1541_SECTION.isJiffyDosInstalled();
 	int MAX_RAM_EXPANSIONS = 5;
 	boolean DEFAULT_RAM_EXPAND_0X2000 = C1541_SECTION.isRamExpansionEnabled0();
 	boolean DEFAULT_RAM_EXPAND_0X4000 = C1541_SECTION.isRamExpansionEnabled1();
