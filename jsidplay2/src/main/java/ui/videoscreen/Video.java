@@ -133,6 +133,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune).getRefresh());
 				setVisibilityBasedOnChipType(tune);
 			});
+		} else if (newValue == State.QUIT || newValue == State.END) {
+			frameQueue.clear();
 		}
 	};
 
@@ -256,6 +258,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		getC64().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
 		}));
 		screenUpdateService.cancel();
+		frameQueue.clear();
 	}
 
 	@FXML
