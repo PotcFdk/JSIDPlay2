@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 
 import javafx.animation.Animation;
@@ -72,7 +75,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private static final double MARGIN_RIGHT = 55;
 	private static final double MARGIN_TOP = 38;
 	private static final double MARGIN_BOTTOM = 48;
-	private static final int QUEUE_CAPACITY = 10;
+	private static final int QUEUE_CAPACITY = 60;
 
 	@FXML
 	private TitledPane monitor;
@@ -334,6 +337,17 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Connect VIC output with screen.
 	 */
 	private void setupVideoScreen(final double refresh) {
+		ScheduledExecutorService schdExctr = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+			private ThreadFactory defaultThreadFactory = Executors.defaultThreadFactory();
+
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread t = defaultThreadFactory.newThread(r);
+				t.setPriority(Thread.MAX_PRIORITY);
+				return t;
+			}
+		});
+		screenUpdateService.setExecutor(schdExctr);
 		screenUpdateService.setPeriod(Duration.millis(1000. / refresh));
 		frameQueue.clear();
 		vicFrames = 0;
@@ -522,13 +536,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 			if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 				vicFrames = 0;
-				// better drop frames, instead of blocking!
-				if (frameQueue.size() < QUEUE_CAPACITY) {
-					frameQueue.put(pixels);
-				}
+				frameQueue.put(pixels);
 			}
 		} catch (InterruptedException e) {
-			// VIC frame may eventually be skipped!
 		}
 	}
 
