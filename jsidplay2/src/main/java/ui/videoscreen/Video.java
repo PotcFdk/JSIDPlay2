@@ -522,7 +522,10 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 			if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 				vicFrames = 0;
-				frameQueue.put(pixels);
+				// better drop frames, instead of blocking!
+				if (frameQueue.size() < QUEUE_CAPACITY) {
+					frameQueue.put(pixels);
+				}
 			}
 		} catch (InterruptedException e) {
 			// VIC frame may eventually be skipped!
