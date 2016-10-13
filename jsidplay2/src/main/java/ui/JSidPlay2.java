@@ -44,6 +44,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.media.AudioClip;
@@ -1410,9 +1411,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		try {
 			Video videoScreen = (Video) tabbedPane.getTabs().stream().filter((tab) -> tab.getId().equals(Video.ID))
 					.findFirst().get();
-			ImageIO.write(SwingFXUtils.fromFXImage(videoScreen.getVicImage(), null), format,
-					new File(util.getConfig().getSidplay2Section().getTmpDir(),
-							"screenshot" + (++hardcopyCounter) + "." + format));
+			Image vicImage = videoScreen.getVicImage();
+			if (vicImage != null) {
+				ImageIO.write(SwingFXUtils.fromFXImage(vicImage, null), format,
+						new File(util.getConfig().getSidplay2Section().getTmpDir(),
+								"screenshot" + (++hardcopyCounter) + "." + format));
+			} else {
+				System.err.println("Screenshot not possible, there is currently no frame!");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

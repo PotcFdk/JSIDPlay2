@@ -99,7 +99,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	private final BlockingQueue<WritableImage> frameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+	private final BlockingQueue<Image> frameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 	private int vicFrames;
 
 	private UIUtil util;
@@ -110,9 +110,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			return new Task<Void>() {
 
 				public Void call() throws InterruptedException {
-					WritableImage image = frameQueue.take();
-					final VIC vic = util.getPlayer().getC64().getVIC();
-					screen.getGraphicsContext2D().drawImage(image, 0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
+					Image image = frameQueue.take();
+					screen.getGraphicsContext2D().drawImage(image, 0, 0, image.getWidth(), image.getHeight(),
 							MARGIN_LEFT, MARGIN_TOP, screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
 							screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
 					return null;
@@ -524,34 +523,42 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Fast forward skips frames and produces output for each Xth frame (X = 1x,
 	 * 2x, 3x, ... , 32x).
 	 * 
+	 * On buffer overrun we sleep for some time.
+	 * 
 	 * @see java.util.function.Consumer#accept(java.lang.Object)
 	 */
 	@Override
 	public void accept(int[] pixels) {
 		try {
+			// skip frame(s) on fast forward
 			int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 			if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 				vicFrames = 0;
-				// prevent buffer overrun at ~75%!
+				// create image with copy of pixels to prevent tearing
+				Image image = createImage(Arrays.copyOf(pixels, pixels.length));
+				// prevent buffer overrun at ~75% queue size!
 				if (frameQueue.size() > (QUEUE_CAPACITY * 3) >> 2) {
 					Thread.sleep(QUEUE_CAPACITY * 10);
 				}
-				frameQueue.put(createImage(Arrays.copyOf(pixels, pixels.length)));
+				frameQueue.put(image);
 			}
 		} catch (InterruptedException e) {
 		}
 	}
 
-	public Image getVicImage() {
-		return frameQueue.peek();
+	private Image createImage(int[] pixels) {
+		final VIC vic = util.getPlayer().getC64().getVIC();
+		WritableImage image = new WritableImage(vic.getBorderWidth(), vic.getBorderHeight());
+		image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
+				PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
+		return image;
 	}
 
-	private WritableImage createImage(int[] pixels) {
-		final VIC vic = util.getPlayer().getC64().getVIC();
-		WritableImage lastFrameImage = new WritableImage(vic.getBorderWidth(), vic.getBorderHeight());
-		lastFrameImage.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
-				PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
-		return lastFrameImage;
+	/**
+	 * @return VIC image with current frame
+	 */
+	public Image getVicImage() {
+		return frameQueue.peek();
 	}
 
 }
