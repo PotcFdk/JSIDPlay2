@@ -532,10 +532,11 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 			if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 				vicFrames = 0;
-				frameQueue.put(createImage(Arrays.copyOf(pixels, pixels.length)));
+				// prevent buffer overrun at ~75%!
 				if (frameQueue.size() > (QUEUE_CAPACITY * 3) >> 2) {
-					Thread.sleep(250); // prevent buffer overrun!
+					Thread.sleep(QUEUE_CAPACITY * 10);
 				}
+				frameQueue.put(createImage(Arrays.copyOf(pixels, pixels.length)));
 			}
 		} catch (InterruptedException e) {
 		}
