@@ -75,7 +75,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private static final double MARGIN_RIGHT = 55;
 	private static final double MARGIN_TOP = 38;
 	private static final double MARGIN_BOTTOM = 48;
-	private static final int QUEUE_CAPACITY = 60;
+	private static final int QUEUE_CAPACITY = 30;
 
 	@FXML
 	private TitledPane monitor;
@@ -99,7 +99,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	private final BlockingQueue<int[]> frameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+	private final BlockingQueue<WritableImage> frameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 	private int vicFrames;
 
 	private UIUtil util;
@@ -110,8 +110,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			return new Task<Void>() {
 
 				public Void call() throws InterruptedException {
-					int[] framePixels = frameQueue.take();
-					WritableImage image = createImage(framePixels);
+					WritableImage image = frameQueue.take();
 					final VIC vic = util.getPlayer().getC64().getVIC();
 					screen.getGraphicsContext2D().drawImage(image, 0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
 							MARGIN_LEFT, MARGIN_TOP, screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
@@ -131,8 +130,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune).getRefresh());
 				setVisibilityBasedOnChipType(tune);
 			});
-		} else if (newValue == State.QUIT || newValue == State.END) {
-			frameQueue.clear();
 		}
 	};
 
@@ -227,7 +224,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(stateListener);
-		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> frameQueue.clear()));
+		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
+		}));
 		screenUpdateService.cancel();
 	}
 
@@ -339,6 +337,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			@Override
 			public Thread newThread(Runnable r) {
 				Thread t = defaultThreadFactory.newThread(r);
+				t.setDaemon(true);
 				t.setPriority(Thread.MAX_PRIORITY);
 				return t;
 			}
@@ -487,7 +486,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Make breadbox/pc64 image visible, if the internal SID player is used.
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
-		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> frameQueue.clear()));
+		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
+		}));
 		if (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0) {
 			// SID Tune is loaded and uses internal player?
 			screen.setVisible(false);
@@ -532,14 +532,17 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 			if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 				vicFrames = 0;
-				frameQueue.put(pixels);
+				frameQueue.put(createImage(Arrays.copyOf(pixels, pixels.length)));
+				if (frameQueue.size() > (QUEUE_CAPACITY * 3) >> 2) {
+					Thread.sleep(250); // prevent buffer overrun!
+				}
 			}
 		} catch (InterruptedException e) {
 		}
 	}
 
 	public Image getVicImage() {
-		return createImage(frameQueue.peek());
+		return frameQueue.peek();
 	}
 
 	private WritableImage createImage(int[] pixels) {
