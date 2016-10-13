@@ -113,13 +113,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					int[] framePixels = frameQueue.take();
 					WritableImage image = createImage(framePixels);
 					final VIC vic = util.getPlayer().getC64().getVIC();
-					// sanity check: don't update during change of CPUClock
-					if (image.getHeight() == vic.getBorderHeight()) {
-						screen.getGraphicsContext2D().drawImage(image, 0, 0, vic.getBorderWidth(),
-								vic.getBorderHeight(), MARGIN_LEFT, MARGIN_TOP,
-								screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
-								screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
-					}
+					screen.getGraphicsContext2D().drawImage(image, 0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
+							MARGIN_LEFT, MARGIN_TOP, screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
+							screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
 					return null;
 				}
 
