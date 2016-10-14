@@ -75,7 +75,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private static final double MARGIN_RIGHT = 55;
 	private static final double MARGIN_TOP = 38;
 	private static final double MARGIN_BOTTOM = 48;
-	private static final int QUEUE_CAPACITY = 30;
+	private static final int FRAMES_CAPACITY = 30;
 
 	@FXML
 	private TitledPane monitor;
@@ -99,7 +99,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	private final List<Image> frameQueue = new ArrayList<>(QUEUE_CAPACITY);
+	private final List<Image> frameList = new ArrayList<>(FRAMES_CAPACITY);
 	private Image lastFrame;
 	private int vicFrames;
 
@@ -111,11 +111,11 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			return new Task<Void>() {
 
 				public Void call() throws InterruptedException {
-					synchronized (frameQueue) {
-						if (frameQueue.isEmpty()) {
+					synchronized (frameList) {
+						if (frameList.isEmpty()) {
 							return null;
 						}
-						lastFrame = frameQueue.remove(0);
+						lastFrame = frameList.remove(0);
 					}
 					screen.getGraphicsContext2D().drawImage(lastFrame, 0, 0, lastFrame.getWidth(),
 							lastFrame.getHeight(), MARGIN_LEFT, MARGIN_TOP,
@@ -350,7 +350,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		});
 		screenUpdateService.setExecutor(schdExctr);
 		screenUpdateService.setPeriod(Duration.millis(1000. / refresh));
-		frameQueue.clear();
+		synchronized (frameList) {
+			frameList.clear();
+		}
 		vicFrames = 0;
 
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
@@ -543,12 +545,16 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				vicFrames = 0;
 				// create image with copy of pixels to prevent tearing
 				Image image = createImage(Arrays.copyOf(pixels, pixels.length));
-				// prevent buffer overrun at ~75% queue size!
-				if (frameQueue.size() > (QUEUE_CAPACITY * 3) >> 2) {
-					Thread.sleep(QUEUE_CAPACITY * 10);
+				boolean nearFull = false;
+				synchronized (frameList) {
+					frameList.add(image);
+					// prevent buffer overrun at ~75% queue size!
+					if (frameList.size() > (FRAMES_CAPACITY * 3) >> 2) {
+						nearFull = true;
+					}
 				}
-				synchronized (frameQueue) {
-					frameQueue.add(image);
+				if (nearFull) {
+					Thread.sleep(FRAMES_CAPACITY * 10);
 				}
 			}
 		} catch (InterruptedException e) {
