@@ -13,12 +13,13 @@ import static ui.entities.config.SidPlay2Section.DEFAULT_VIDEO_SCALING;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import javafx.animation.Animation;
@@ -99,7 +100,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	private final BlockingQueue<Image> frameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+	private final AtomicReference<Image> lastFrame= new AtomicReference<Image>(null);
+	private final List<Image> frameQueue = new ArrayList<>(QUEUE_CAPACITY);
 	private int vicFrames;
 
 	private UIUtil util;
@@ -110,7 +112,13 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			return new Task<Void>() {
 
 				public Void call() throws InterruptedException {
-					Image image = frameQueue.take();
+					Image image;
+					synchronized (frameQueue) {
+						if (frameQueue.isEmpty()) {
+							return null;
+						}
+						image = frameQueue.remove(0);
+					}
 					screen.getGraphicsContext2D().drawImage(image, 0, 0, image.getWidth(), image.getHeight(),
 							MARGIN_LEFT, MARGIN_TOP, screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
 							screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
@@ -536,11 +544,14 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 				vicFrames = 0;
 				// create image with copy of pixels to prevent tearing
 				Image image = createImage(Arrays.copyOf(pixels, pixels.length));
+				lastFrame.set(image);
 				// prevent buffer overrun at ~75% queue size!
 				if (frameQueue.size() > (QUEUE_CAPACITY * 3) >> 2) {
 					Thread.sleep(QUEUE_CAPACITY * 10);
 				}
-				frameQueue.put(image);
+				synchronized (frameQueue) {
+					frameQueue.add(image);
+				}
 			}
 		} catch (InterruptedException e) {
 		}
@@ -558,7 +569,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * @return VIC image with current frame
 	 */
 	public Image getVicImage() {
-		return frameQueue.peek();
+		return lastFrame.get();
 	}
 
 }
