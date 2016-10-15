@@ -178,13 +178,15 @@ public class WebView extends Tab implements UIPart {
 	}
 
 	private void showTuneInfos(SidTune sidTune, File tuneFile) {
-		TuneInfos tuneInfos = new TuneInfos(util.getPlayer());
+		Platform.runLater(() -> {
+			TuneInfos tuneInfos = new TuneInfos(util.getPlayer());
 
-		tuneInfos.getStage().initModality(Modality.WINDOW_MODAL);
-		tuneInfos.getStage().initOwner(urlField.getScene().getWindow());
+			tuneInfos.getStage().initModality(Modality.WINDOW_MODAL);
+			tuneInfos.getStage().initOwner(urlField.getScene().getWindow());
 
-		tuneInfos.open();
-		tuneInfos.showTuneInfos(tuneFile, sidTune);
+			tuneInfos.open();
+			tuneInfos.showTuneInfos(tuneFile, sidTune);
+		});
 	}
 
 	public final String getCollectionURL() {
