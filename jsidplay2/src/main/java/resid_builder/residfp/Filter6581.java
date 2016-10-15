@@ -164,11 +164,6 @@ public final class Filter6581 extends Filter {
 
 		final float _1_div_caps_freq = (float) (1 / (SIDCAPS_6581 * clockFrequency));
 
-		/*
-		 * Try to avoid overflow when filter curve is being changed. This isn't
-		 * really right, the play thread should be suspended first...
-		 */
-		Vlp = Vhp = Vbp = 0;
 		for (int j = 0; j < fcBase.length; j++) {
 			final float fcBaseValue = fcBase[j];
 			for (int i = 0; i < distBase.length; i++) {
