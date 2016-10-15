@@ -424,10 +424,10 @@ public class EmulationSettings extends C64Window {
 				for (int fc = 0; fc < SIDChip.FC_MAX; fc += STEP) {
 					if (filter.isReSIDFilter6581() || filter.isReSIDFilter8580()) {
 						double data = resid_builder.resid.FilterModelConfig.estimateFrequency(filter, fc);
-						series.getData().add(new XYChart.Data<Number, Number>(fc, (int) data));
+						series.getData().add(new XYChart.Data<Number, Number>(fc, data));
 					} else if (filter.isReSIDfpFilter6581() || filter.isReSIDfpFilter8580()) {
 						double data = resid_builder.residfp.FilterModelConfig.estimateFrequency(filter, fc);
-						series.getData().add(new XYChart.Data<Number, Number>(fc, (int) data));
+						series.getData().add(new XYChart.Data<Number, Number>(fc, data));
 					}
 				}
 			}
