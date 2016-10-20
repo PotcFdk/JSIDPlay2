@@ -383,6 +383,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 				event.setDropCompleted(success);
 				event.consume();
 			});
+			util.getPlayer().startC64();
 		});
 	}
 

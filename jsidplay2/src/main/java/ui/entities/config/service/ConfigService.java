@@ -21,28 +21,32 @@ public class ConfigService {
 		this.em = em;
 	};
 
-	public Configuration create(Configuration oldConfiguration) {
-		if (oldConfiguration != null) {
-			remove(oldConfiguration);
-		}
-
-		Configuration config = new Configuration();
-		config.getSidplay2Section().setVersion(Configuration.REQUIRED_CONFIG_VERSION);
-		em.persist(config);
-		flush();
-		return config;
-	}
-
 	public Configuration getOrCreate() {
+		Configuration configuration = null;
+		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Configuration> q = cb.createQuery(Configuration.class);
 		Root<Configuration> h = q.from(Configuration.class);
 		q.select(h);
 		List<Configuration> resultList = em.createQuery(q).setMaxResults(1).getResultList();
 		if (resultList.size() != 0) {
-			return resultList.get(0);
+			configuration = resultList.get(0);
+			if (configuration.getSidplay2Section().getVersion() == Configuration.REQUIRED_CONFIG_VERSION) {
+				return configuration;
+			}
 		}
-		return create(null);
+		return create(configuration);
+	}
+	
+	public Configuration create(Configuration oldConfiguration) {
+		if (oldConfiguration != null) {
+			em.remove(oldConfiguration);
+			em.clear();
+		}
+		Configuration config = new Configuration();
+		config.getSidplay2Section().setVersion(Configuration.REQUIRED_CONFIG_VERSION);
+		em.persist(config);
+		return config;
 	}
 
 	public void exportCfg(Configuration config, File file) {
@@ -67,7 +71,6 @@ public class ConfigService {
 
 					Configuration mergedConfig = em.merge(detachedConfig);
 					em.persist(mergedConfig);
-					flush();
 
 					return mergedConfig;
 				}
@@ -78,29 +81,10 @@ public class ConfigService {
 		return create(null);
 	}
 
-	private void remove(Configuration config) {
-		em.remove(config);
-		flush();
-		em.clear();
-	}
-
 	public void commit(Configuration config) {
 		em.getTransaction().begin();
 		try {
 			em.persist(config);
-			em.getTransaction().commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			if (em.getTransaction().isActive()) {
-				em.getTransaction().rollback();
-			}
-		}
-	}
-
-	private void flush() {
-		em.getTransaction().begin();
-		try {
-			em.flush();
 			em.getTransaction().commit();
 		} catch (Exception e) {
 			e.printStackTrace();

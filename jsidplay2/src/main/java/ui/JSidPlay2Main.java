@@ -86,7 +86,6 @@ public class JSidPlay2Main extends Application {
 
 		player = new Player(getConfiguration());
 		player.setMenuHook(menuHook);
-		player.startC64();
 
 		final JSidPlay2 jSidplay2 = new JSidPlay2(primaryStage, player);
 		// Set default position and size
@@ -171,6 +170,12 @@ public class JSidPlay2Main extends Application {
 				new PersistenceProperties(CONFIG_FILE, Database.HSQL_MEM)).createEntityManager();
 		configService = new ConfigService(em);
 		return configService.importCfg(getConfigPath());
+		/*
+		em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
+				new PersistenceProperties(CONFIG_FILE, Database.HSQL_FILE)).createEntityManager();
+		configService = new ConfigService(em);
+		return configService.getOrCreate();
+		*/
 	}
 
 	/**
