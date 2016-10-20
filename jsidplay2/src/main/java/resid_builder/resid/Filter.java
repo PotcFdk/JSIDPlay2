@@ -178,6 +178,8 @@ public abstract class Filter {
 		updatedMixing();
 	}
 
+	protected abstract void zeroDenormals();
+	
 	/**
 	 * Set filter cutoff frequency.
 	 */

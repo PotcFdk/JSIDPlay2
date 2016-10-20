@@ -67,6 +67,15 @@ final class ExternalFilter {
 		return (Vlp - Vhp) >> 11;
 	}
 
+	protected final void zeroDenormals() {
+		if (Vhp > -1e-12f && Vhp < 1e-12f) {
+			Vhp = 0;
+		}
+		if (Vlp > -1e-12f && Vlp < 1e-12f) {
+			Vlp = 0;
+		}
+	}
+
 	/**
 	 * Constructor.
 	 */

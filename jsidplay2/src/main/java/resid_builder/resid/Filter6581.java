@@ -12,13 +12,13 @@ package resid_builder.resid;
  */
 public final class Filter6581 extends Filter {
 	/** Filter highpass state. */
-	private int Vhp;
+	protected int Vhp;
 
 	/** Filter bandpass state. */
-	private int Vbp;
+	protected int Vbp;
 
 	/** Filter lowpass state. */
-	private int Vlp;
+	protected int Vlp;
 
 	/** Current volume amplifier setting. */
 	private char[] currentGain;
@@ -122,6 +122,9 @@ public final class Filter6581 extends Filter {
 			Vo += Vhp;
 		}
 		return currentGain[currentMixer[Vo]] - (1 << 15);
+	}
+
+	protected final void zeroDenormals() {
 	}
 
 	@Override

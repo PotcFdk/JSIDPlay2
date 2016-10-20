@@ -17,6 +17,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.Event;
 import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IFilterSection;
@@ -340,8 +341,13 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setDigiBoost() {
-		util.getPlayer().getC64().configureSIDs((num, sid) -> sid
-				.input(util.getConfig().getEmulationSection().isDigiBoosted8580() ? sid.getInputDigiBoost() : 0));
+		util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(new Event("Update SID Chip Configuration") {
+			@Override
+			public void event() throws InterruptedException {
+				util.getPlayer().getC64().configureSIDs((num, sid) -> sid.input(
+						util.getConfig().getEmulationSection().isDigiBoosted8580() ? sid.getInputDigiBoost() : 0));
+			}
+		});
 	}
 
 	@FXML

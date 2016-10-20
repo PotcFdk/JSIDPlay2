@@ -482,6 +482,8 @@ public final class SID implements SIDChip {
 				for (int i = 0; i < delta_t; i++) {
 					sample.accept(clock() * OUTPUT_LEVEL >> 8);
 				}
+				filter.zeroDenormals();
+				externalFilter.zeroDenormals();
 
 				cycles -= delta_t;
 				nextVoiceSync -= delta_t;
