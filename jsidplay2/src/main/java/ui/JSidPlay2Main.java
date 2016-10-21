@@ -2,23 +2,32 @@ package ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.Parameters;
+
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
+import libsidutils.PathUtils;
 import sidplay.Player;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
@@ -32,7 +41,34 @@ import ui.entities.config.service.ConfigService;
  * 
  *         SID Player main class
  */
+@Parameters(resourceBundle = "ui.JSidPlay2Main")
 public class JSidPlay2Main extends Application {
+
+	/**
+	 * Configuration types offered by JSIDPlay2
+	 * 
+	 * @author ken
+	 *
+	 */
+	private enum ConfigurationType {
+		/**
+		 * Use XML configuration files
+		 */
+		XML,
+		/**
+		 * Use binary database files
+		 */
+		DATABASE
+	}
+
+	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
+	private Boolean help = Boolean.FALSE;
+
+	@Parameter(names = { "--configurationType", "-c" }, descriptionKey = "CONFIGURATION_TYPE")
+	private ConfigurationType configurationType = ConfigurationType.XML;
+
+	@Parameter(description = "filename")
+	private List<String> filenames = new ArrayList<String>();
 
 	/**
 	 * Filename of the jsidplay2 configuration XML file.
@@ -84,6 +120,8 @@ public class JSidPlay2Main extends Application {
 	public void start(Stage primaryStage) {
 		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 
+		processCommandLineArgs();
+
 		player = new Player(getConfiguration());
 		player.setMenuHook(menuHook);
 
@@ -108,25 +146,40 @@ public class JSidPlay2Main extends Application {
 					.addListener((observable, oldValue, newValue) -> section.setFrameHeight(newValue.intValue()));
 			window.xProperty().addListener((observable, oldValue, newValue) -> section.setFrameX(newValue.intValue()));
 			window.yProperty().addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
-			processCommandLineArgs();
 		}
 		jSidplay2.open();
 		testInstance = jSidplay2;
 	}
 
 	/**
-	 * Play tune, if command line argument provided (except of options).
+	 * Parse optional command line arguments.
 	 */
 	private void processCommandLineArgs() {
-		for (String arg : getParameters().getRaw()) {
-			if (!arg.startsWith("-")) {
-				try {
-					player.play(SidTune.load(new File(arg)));
-				} catch (IOException | SidTuneError e) {
-					e.printStackTrace();
+		try {
+			Parameters parameters = getParameters();
+			if (parameters != null) {
+				JCommander commander = new JCommander(this, parameters.getRaw().toArray(new String[0]));
+				commander.setProgramName(getClass().getName());
+				commander.setCaseSensitiveOptions(true);
+				if (help) {
+					commander.usage();
+					System.out.println("Press <enter> to exit!");
+					System.in.read();
+					System.exit(0);
 				}
-				break;
+				Platform.runLater(() -> {
+					Optional<String> filename = filenames.stream().findFirst();
+					if (filename.isPresent()) {
+						try {
+							player.setTune(SidTune.load(new File(filename.get())));
+						} catch (IOException | SidTuneError e) {
+							System.err.println(e.getMessage());
+						}
+					}
+				});
 			}
+		} catch (ParameterException | IOException e) {
+			System.err.println(e.getMessage());
 		}
 	}
 
@@ -146,14 +199,17 @@ public class JSidPlay2Main extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		configService.commit((Configuration) player.getConfig());
+		switch (configurationType) {
+		case DATABASE:
+			configService.persist((Configuration) player.getConfig());
+			break;
 
-		configService.exportCfg((Configuration) player.getConfig(), getConfigPath());
-
-		em.getEntityManagerFactory().close();
-
-		// Really persist the databases
-		org.hsqldb.DatabaseManager.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);
+		case XML:
+		default:
+			configService.exportCfg((Configuration) player.getConfig(), getConfigPath());
+			break;
+		}
+		configService.close();
 	}
 
 	//
@@ -166,16 +222,22 @@ public class JSidPlay2Main extends Application {
 	 * @return the players configuration to be used
 	 */
 	private Configuration getConfiguration() {
-		em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
-				new PersistenceProperties(CONFIG_FILE, Database.HSQL_MEM)).createEntityManager();
-		configService = new ConfigService(em);
-		return configService.importCfg(getConfigPath());
-		/*
-		em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
-				new PersistenceProperties(CONFIG_FILE, Database.HSQL_FILE)).createEntityManager();
-		configService = new ConfigService(em);
-		return configService.getOrCreate();
-		*/
+		switch (configurationType) {
+		case DATABASE:
+			em = Persistence
+					.createEntityManagerFactory(PersistenceProperties.CONFIG_DS, new PersistenceProperties(
+							PathUtils.getFilenameWithoutSuffix(getConfigPath().getAbsolutePath()), Database.HSQL_FILE))
+					.createEntityManager();
+			configService = new ConfigService(em);
+			return configService.getOrCreate();
+
+		case XML:
+		default:
+			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
+					new PersistenceProperties(CONFIG_FILE, Database.HSQL_MEM)).createEntityManager();
+			configService = new ConfigService(em);
+			return configService.importCfg(getConfigPath());
+		}
 	}
 
 	/**
