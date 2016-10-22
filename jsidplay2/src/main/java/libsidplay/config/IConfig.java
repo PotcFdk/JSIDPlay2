@@ -5,7 +5,7 @@ import java.util.List;
 public interface IConfig {
 
 	/** Bump this each time you want to invalidate the configuration */
-	int REQUIRED_CONFIG_VERSION = 19;
+	int REQUIRED_CONFIG_VERSION = 20;
 
 	ISidPlay2Section getSidplay2Section();
 
