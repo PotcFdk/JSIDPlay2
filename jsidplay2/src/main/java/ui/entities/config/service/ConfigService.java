@@ -66,7 +66,7 @@ public class ConfigService {
 					.createEntityManagerFactory(PersistenceProperties.CONFIG_DS, new PersistenceProperties(
 							PathUtils.getFilenameWithoutSuffix(getConfigPath().getAbsolutePath()), Database.HSQL_FILE))
 					.createEntityManager();
-			return getOrCreate();
+			return get();
 
 		case XML:
 		default:
@@ -90,27 +90,13 @@ public class ConfigService {
 	}
 
 	/**
-	 * Search for the configuration. Search in CWD and in the HOME folder.
+	 * Get configuration database.
 	 * 
-	 * @return XML configuration file
-	 */
-	private File getConfigPath() {
-		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(s, CONFIG_FILE + ".xml");
-			if (configPlace.exists()) {
-				return configPlace;
-			}
-		}
-		// default directory
-		return new File(System.getProperty("user.home"), CONFIG_FILE + ".xml");
-	}
-
-	/**
-	 * Get configuration database. If absent or invalid, create a new one.
+	 * If absent or invalid, create a new one.
 	 * 
 	 * @return configuration
 	 */
-	private Configuration getOrCreate() {
+	private Configuration get() {
 		Configuration configuration = null;
 		// read configuration from database
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -146,7 +132,7 @@ public class ConfigService {
 		persist(configuration);
 		return configuration;
 	}
-	
+
 	/**
 	 * Remove configuration database.
 	 * 
@@ -197,6 +183,8 @@ public class ConfigService {
 	/**
 	 * Import configuration database from an XML file.
 	 * 
+	 * If absent or invalid, create a new one.
+	 * 
 	 * @param file
 	 *            XML file to import
 	 * @return imported configuration
@@ -209,7 +197,7 @@ public class ConfigService {
 				Object obj = unmarshaller.unmarshal(file);
 				if (obj instanceof Configuration) {
 					Configuration detachedConfig = (Configuration) obj;
-					
+
 					// configuration version check
 					if (detachedConfig.getSidplay2Section().getVersion() == IConfig.REQUIRED_CONFIG_VERSION) {
 						Configuration mergedConfig = em.merge(detachedConfig);
@@ -225,7 +213,7 @@ public class ConfigService {
 		}
 		return create();
 	}
-	
+
 	/**
 	 * Export configuration database into an XML file.
 	 * 
@@ -243,6 +231,22 @@ public class ConfigService {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Search for the configuration. Search in CWD and in the HOME folder.
+	 * 
+	 * @return XML configuration file
+	 */
+	private File getConfigPath() {
+		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(s, CONFIG_FILE + ".xml");
+			if (configPlace.exists()) {
+				return configPlace;
+			}
+		}
+		// default directory
+		return new File(System.getProperty("user.home"), CONFIG_FILE + ".xml");
 	}
 
 	/**
