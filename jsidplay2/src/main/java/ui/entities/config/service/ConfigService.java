@@ -165,7 +165,6 @@ public class ConfigService {
 				em.getTransaction().rollback();
 			}
 		}
-		em.clear();
 	}
 
 	/**
