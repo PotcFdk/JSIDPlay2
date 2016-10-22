@@ -13,9 +13,7 @@ import static ui.entities.config.SidPlay2Section.DEFAULT_VIDEO_SCALING;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -76,7 +74,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private static final double MARGIN_RIGHT = 55;
 	private static final double MARGIN_TOP = 38;
 	private static final double MARGIN_BOTTOM = 48;
-	private static final int FRAMES_CAPACITY = 30;
 
 	@FXML
 	private TitledPane monitor;
@@ -100,8 +97,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	private final List<Image> frameList = new ArrayList<>(FRAMES_CAPACITY);
-	private Image lastFrame;
+	private Object syncFrame = new Object();
+	private Image frame, lastFrame;
 	private int vicFrames;
 
 	private UIUtil util;
@@ -112,11 +109,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			return new Task<Void>() {
 
 				public Void call() throws InterruptedException {
-					synchronized (frameList) {
-						if (frameList.isEmpty()) {
-							return null;
-						}
-						lastFrame = frameList.remove(0);
+					synchronized (syncFrame) {
+						lastFrame = frame;
 					}
 					screen.getGraphicsContext2D().drawImage(lastFrame, 0, 0, lastFrame.getWidth(),
 							lastFrame.getHeight(), MARGIN_LEFT, MARGIN_TOP,
@@ -226,6 +220,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		setupKeyboard();
 
 		updatePeripheralImages();
+		screenUpdateService.start();
 	}
 
 	@Override
@@ -338,6 +333,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Connect VIC output with screen.
 	 */
 	private void setupVideoScreen(final double refresh) {
+		vicFrames = 0;
 		ScheduledExecutorService schdExctr = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
 			private ThreadFactory defaultThreadFactory = Executors.defaultThreadFactory();
 
@@ -351,10 +347,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		});
 		screenUpdateService.setExecutor(schdExctr);
 		screenUpdateService.setPeriod(Duration.millis(1000. / refresh));
-		synchronized (frameList) {
-			frameList.clear();
-		}
-		vicFrames = 0;
 
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
 		screen.setWidth(util.getPlayer().getC64().getVIC().getBorderWidth());
@@ -487,8 +479,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		timer = new Timeline(oneFrame);
 		timer.setCycleCount(Animation.INDEFINITE);
 		timer.playFromStart();
-
-		screenUpdateService.start();
 	}
 
 	/**
@@ -541,26 +531,15 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 */
 	@Override
 	public void accept(int[] pixels) {
-		try {
-			// skip frame(s) on fast forward
-			int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 0);
-			if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
-				vicFrames = 0;
-				// create image with copy of pixels to prevent tearing
-				Image image = createImage(Arrays.copyOf(pixels, pixels.length));
-				boolean nearFull = false;
-				synchronized (frameList) {
-					frameList.add(image);
-					// prevent buffer overrun at ~75% queue size!
-					if (frameList.size() > (FRAMES_CAPACITY * 3) >> 2) {
-						nearFull = true;
-					}
-				}
-				if (nearFull) {
-					Thread.sleep(FRAMES_CAPACITY * 5);
-				}
+		// skip frame(s) on fast forward
+		int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 0);
+		if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
+			vicFrames = 0;
+			// create image with copy of pixels to prevent tearing
+			Image image = createImage(Arrays.copyOf(pixels, pixels.length));
+			synchronized (syncFrame) {
+				frame = image;
 			}
-		} catch (InterruptedException e) {
 		}
 	}
 
