@@ -39,6 +39,8 @@ import libsidplay.sidtune.SidTune;
  */
 public class HardSIDBuilder implements SIDBuilder {
 
+	private static final int HSID_VERSION_MIN = 0x0207;
+
 	/**
 	 * Output buffer size.
 	 */
@@ -98,34 +100,34 @@ public class HardSIDBuilder implements SIDBuilder {
 			throw new RuntimeException(driverPath + " could not be loaded!");
 		}
 		hsidDLL.InitHardSID_Mapper();
+		if (hsidDLL.HardSID_Version() < HSID_VERSION_MIN) {
+			throw new RuntimeException("HARDSID ERROR: HardSID4U version 2.07 is at least required!");
+		}
 	}
 
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
-		// we cannot reconfigure already existing HardSIDs
-		if (oldHardSID == null) {
-			final ChipModel chipModel = getChipModel(tune, sidNum);
-			final int deviceIdx = getModelDependantDevice(chipModel, sidNum);
-			if (deviceIdx < hsidDLL.HardSID_Devices()) {
-				HardSID hsid = new HardSID(this, context, hsidDLL, deviceIdx, chipModel);
-				if (hsid.lock(true)) {
-					sids.add(hsid);
-					return hsid;
-				}
-			} else {
-				System.err.println("HARDSID ERROR: System doesn't have enough SID chips.");
+		final ChipModel chipModel = getChipModel(tune, sidNum);
+		final int deviceIdx = getModelDependantDevice(chipModel, sidNum);
+		if (deviceIdx < hsidDLL.HardSID_Devices()) {
+			if (oldHardSID != null) {
+				// always re-use hardware SID chips, if configuration changes
+				// the purpose is to ignore chip model changes!
+				return oldHardSID;
 			}
+			HardSID hsid = new HardSID(this, context, hsidDLL, deviceIdx, chipModel);
+			hsid.lock();
+			sids.add(hsid);
+			return hsid;
 		}
-		return oldHardSID;
+		throw new RuntimeException("HARDSID ERROR: System doesn't have enough SID chips.");
 	}
 
 	@Override
 	public void unlock(final SIDEmu device) {
 		HardSID hardSid = (HardSID) device;
-		if (sids.remove(device) && hardSid.lock(false)) {
-			hardSid.flush();
-			hardSid.reset((byte) 0);
-		}
+		hardSid.unlock();
+		sids.remove(device);
 	}
 
 	public int getSIDCount() {

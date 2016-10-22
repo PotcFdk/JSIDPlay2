@@ -17,6 +17,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
@@ -235,6 +236,8 @@ public class EmulationSettings extends C64Window {
 		baseAddress.setDisable(!(isForcedStereo || isForced3Sid));
 		// forced 3-SID, only:
 		thirdAddress.setDisable(!isForced3Sid);
+		// fake stereo does not work for HardSID4U
+		fakeStereo.setDisable(emulationSection.getEngine()==Engine.HARDSID);
 	}
 
 	@Override

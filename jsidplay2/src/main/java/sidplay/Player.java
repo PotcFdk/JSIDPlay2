@@ -162,7 +162,12 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Eject all SIDs.
 	 */
-	private BiFunction<Integer, SIDEmu, SIDEmu> noSIDs = (sidNum, sidEmu) -> SIDEmu.NONE;
+	private BiFunction<Integer, SIDEmu, SIDEmu> noSIDs = (sidNum, sidEmu) -> {
+		if (sidEmu != SIDEmu.NONE) {
+			sidBuilder.unlock(sidEmu);
+		}
+		return SIDEmu.NONE;
+	};
 	/**
 	 * Set base address of required SIDs.
 	 */
