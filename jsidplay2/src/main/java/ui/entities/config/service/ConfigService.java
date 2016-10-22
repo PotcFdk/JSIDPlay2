@@ -75,6 +75,7 @@ public class ConfigService {
 			return importCfg(getConfigPath());
 		}
 	}
+
 	public void save(Configuration configuration) {
 		switch (configurationType) {
 		case DATABASE:
@@ -87,7 +88,7 @@ public class ConfigService {
 			break;
 		}
 	}
-	
+
 	/**
 	 * Search for the configuration. Search in CWD and in the HOME folder.
 	 * 
@@ -123,6 +124,8 @@ public class ConfigService {
 			if (configuration.getSidplay2Section().getVersion() == IConfig.REQUIRED_CONFIG_VERSION) {
 				return configuration;
 			}
+			File configPath = getConfigPath();
+			createBackup(configuration, configPath);
 		}
 		// remove old configuration
 		if (configuration != null) {
@@ -133,13 +136,35 @@ public class ConfigService {
 	}
 
 	/**
+	 * Create a backup of the current configuration.
+	 * 
+	 * @param configuration
+	 *            configuration to backup
+	 * @param configPath
+	 *            path to save the backup
+	 */
+	private void createBackup(Configuration configuration, File configPath) {
+		File file = new File(configPath.getParentFile(), configPath.getName() + ".bak");
+		exportCfg(configuration, file);
+	}
+
+	/**
 	 * Remove configuration database.
 	 * 
 	 * @param configuration
 	 *            configuration to remove
 	 */
 	private void remove(Configuration configuration) {
-		em.remove(configuration);
+		try {
+			em.getTransaction().begin();
+			em.remove(configuration);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+		}
 		em.clear();
 	}
 
@@ -173,7 +198,7 @@ public class ConfigService {
 			}
 		}
 	}
-	
+
 	/**
 	 * Close configuration database.
 	 */
@@ -186,17 +211,17 @@ public class ConfigService {
 	/**
 	 * Export configuration database into an XML file.
 	 * 
-	 * @param configation
+	 * @param configuration
 	 *            configuration to export
 	 * @param file
 	 *            target file of the export
 	 */
-	private void exportCfg(Configuration configation, File file) {
+	private void exportCfg(Configuration configuration, File file) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			marshaller.marshal(configation, file);
+			marshaller.marshal(configuration, file);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
@@ -218,10 +243,14 @@ public class ConfigService {
 				if (obj instanceof Configuration) {
 					Configuration detachedConfig = (Configuration) obj;
 
-					Configuration mergedConfig = em.merge(detachedConfig);
-					persist(mergedConfig);
-
-					return mergedConfig;
+					// configuration version check
+					if (detachedConfig.getSidplay2Section().getVersion() == IConfig.REQUIRED_CONFIG_VERSION) {
+						Configuration mergedConfig = em.merge(detachedConfig);
+						persist(mergedConfig);
+						return mergedConfig;
+					}
+					File configPath = getConfigPath();
+					createBackup(detachedConfig, configPath);
 				}
 			} catch (JAXBException e) {
 				System.err.println(e.getMessage());
