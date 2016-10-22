@@ -80,6 +80,34 @@ public class ConfigService {
 	}
 
 	/**
+	 * Persist configuration database.
+	 * 
+	 * @param config
+	 *            configuration to persist
+	 */
+	public void persist(Configuration config) {
+		try {
+			em.getTransaction().begin();
+			em.persist(config);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+		}
+	}
+	
+	/**
+	 * Close configuration database.
+	 */
+	public void close() {
+		em.getEntityManagerFactory().close();
+		// Really persist the databases
+		org.hsqldb.DatabaseManager.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);
+	}
+
+	/**
 	 * Export configuration database into an XML file.
 	 * 
 	 * @param configation
@@ -126,31 +154,4 @@ public class ConfigService {
 		return create();
 	}
 
-	/**
-	 * Persist configuration database.
-	 * 
-	 * @param config
-	 *            configuration to persist
-	 */
-	public void persist(Configuration config) {
-		try {
-			em.getTransaction().begin();
-			em.persist(config);
-			em.getTransaction().commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			if (em.getTransaction().isActive()) {
-				em.getTransaction().rollback();
-			}
-		}
-	}
-
-	/**
-	 * Close configuration database.
-	 */
-	public void close() {
-		em.getEntityManagerFactory().close();
-		// Really persist the databases
-		org.hsqldb.DatabaseManager.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);
-	}
 }

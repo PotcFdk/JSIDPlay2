@@ -19,7 +19,6 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -118,13 +117,17 @@ public class JSidPlay2Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
-
-		processCommandLineArgs();
-
-		player = new Player(getConfiguration());
+		player = new Player(getConfigurationFromCommandLineArgs());
 		player.setMenuHook(menuHook);
-
+		// automatically load tune on start-up
+		Optional<String> filename = filenames.stream().findFirst();
+		if (filename.isPresent()) {
+			try {
+				player.setTune(SidTune.load(new File(filename.get())));
+			} catch (IOException | SidTuneError e) {
+				System.err.println(e.getMessage());
+			}
+		}
 		final JSidPlay2 jSidplay2 = new JSidPlay2(primaryStage, player);
 		// Set default position and size
 		final SidPlay2Section section = (SidPlay2Section) player.getConfig().getSidplay2Section();
@@ -153,8 +156,10 @@ public class JSidPlay2Main extends Application {
 
 	/**
 	 * Parse optional command line arguments.
+	 * 
+	 * @return configuration database chosen by command line arguments
 	 */
-	private void processCommandLineArgs() {
+	private Configuration getConfigurationFromCommandLineArgs() {
 		try {
 			Parameters parameters = getParameters();
 			if (parameters != null) {
@@ -167,20 +172,11 @@ public class JSidPlay2Main extends Application {
 					System.in.read();
 					System.exit(0);
 				}
-				Platform.runLater(() -> {
-					Optional<String> filename = filenames.stream().findFirst();
-					if (filename.isPresent()) {
-						try {
-							player.setTune(SidTune.load(new File(filename.get())));
-						} catch (IOException | SidTuneError e) {
-							System.err.println(e.getMessage());
-						}
-					}
-				});
 			}
 		} catch (ParameterException | IOException e) {
 			System.err.println(e.getMessage());
 		}
+		return getConfiguration();
 	}
 
 	@Override
@@ -222,6 +218,7 @@ public class JSidPlay2Main extends Application {
 	 * @return the players configuration to be used
 	 */
 	private Configuration getConfiguration() {
+		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 		switch (configurationType) {
 		case DATABASE:
 			em = Persistence

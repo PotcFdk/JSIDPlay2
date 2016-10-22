@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -136,13 +137,14 @@ final public class ConsolePlayer {
 			JCommander commander = new JCommander(this, args);
 			commander.setProgramName(getClass().getName());
 			commander.setCaseSensitiveOptions(true);
-			if (help || filenames.size() != 1) {
+			Optional<String> filename = filenames.stream().findFirst();
+			if (help || !filename.isPresent()) {
 				commander.usage();
 				printSoundcardDevices();
 				exit(1);
 			}
-			// Cannot loop while recording audio files
 			if (isRecording()) {
+				System.out.println("Warning: Loop has been disabled while recording audio files!");
 				loop = false;
 			}
 			final IniConfig config = new IniConfig(true);
@@ -166,13 +168,12 @@ final public class ConsolePlayer {
 			config.getEmulationSection().setStereoFilter(!disableStereoFilter);
 			config.getEmulationSection().setThirdSIDFilter(!disable3rdSIDFilter);
 
-			String filename = filenames.get(0);
-			final SidTune tune = SidTune.load(new File(filename));
+			final SidTune tune = SidTune.load(new File(filename.get()));
 			tune.getInfo().setSelectedSong(song);
 			final Player player = new Player(config, cpuDebug ? MOS6510Debug.class : MOS6510.class);
 			player.setTune(tune);
 			player.getTimer().setStart(startTime);
-			final ConsoleIO consoleIO = new ConsoleIO(config, filename);
+			final ConsoleIO consoleIO = new ConsoleIO(config, filename.get());
 			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet, System.out));
 			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
 			if (config.getSidplay2Section().isEnableDatabase()) {
