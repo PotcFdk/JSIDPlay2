@@ -136,18 +136,17 @@ public class ConfigService {
 	}
 
 	/**
-	 * Create a backup of the current configuration.
+	 * Create a new configuration and persist into the database.
 	 * 
-	 * @param configuration
-	 *            configuration to backup
-	 * @param configPath
-	 *            path to save the backup
+	 * @return newly created configuration
 	 */
-	private void createBackup(Configuration configuration, File configPath) {
-		File file = new File(configPath.getParentFile(), configPath.getName() + ".bak");
-		exportCfg(configuration, file);
+	private Configuration create() {
+		Configuration configuration = new Configuration();
+		configuration.getSidplay2Section().setVersion(IConfig.REQUIRED_CONFIG_VERSION);
+		persist(configuration);
+		return configuration;
 	}
-
+	
 	/**
 	 * Remove configuration database.
 	 * 
@@ -165,18 +164,6 @@ public class ConfigService {
 				em.getTransaction().rollback();
 			}
 		}
-	}
-
-	/**
-	 * Create a new configuration and persist into the database.
-	 * 
-	 * @return newly created configuration
-	 */
-	private Configuration create() {
-		Configuration configuration = new Configuration();
-		configuration.getSidplay2Section().setVersion(IConfig.REQUIRED_CONFIG_VERSION);
-		persist(configuration);
-		return configuration;
 	}
 
 	/**
@@ -208,6 +195,38 @@ public class ConfigService {
 	}
 
 	/**
+	 * Import configuration database from an XML file.
+	 * 
+	 * @param file
+	 *            XML file to import
+	 * @return imported configuration
+	 */
+	private Configuration importCfg(File file) {
+		if (file.exists()) {
+			try {
+				JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+				Object obj = unmarshaller.unmarshal(file);
+				if (obj instanceof Configuration) {
+					Configuration detachedConfig = (Configuration) obj;
+					
+					// configuration version check
+					if (detachedConfig.getSidplay2Section().getVersion() == IConfig.REQUIRED_CONFIG_VERSION) {
+						Configuration mergedConfig = em.merge(detachedConfig);
+						persist(mergedConfig);
+						return mergedConfig;
+					}
+					File configPath = getConfigPath();
+					createBackup(detachedConfig, configPath);
+				}
+			} catch (JAXBException e) {
+				System.err.println(e.getMessage());
+			}
+		}
+		return create();
+	}
+	
+	/**
 	 * Export configuration database into an XML file.
 	 * 
 	 * @param configuration
@@ -227,35 +246,16 @@ public class ConfigService {
 	}
 
 	/**
-	 * Import configuration database from an XML file.
+	 * Create a backup of the current configuration.
 	 * 
-	 * @param file
-	 *            XML file to import
-	 * @return imported configuration
+	 * @param configuration
+	 *            configuration to backup
+	 * @param configPath
+	 *            path to save the backup
 	 */
-	private Configuration importCfg(File file) {
-		if (file.exists()) {
-			try {
-				JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
-				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-				Object obj = unmarshaller.unmarshal(file);
-				if (obj instanceof Configuration) {
-					Configuration detachedConfig = (Configuration) obj;
-
-					// configuration version check
-					if (detachedConfig.getSidplay2Section().getVersion() == IConfig.REQUIRED_CONFIG_VERSION) {
-						Configuration mergedConfig = em.merge(detachedConfig);
-						persist(mergedConfig);
-						return mergedConfig;
-					}
-					File configPath = getConfigPath();
-					createBackup(detachedConfig, configPath);
-				}
-			} catch (JAXBException e) {
-				System.err.println(e.getMessage());
-			}
-		}
-		return create();
+	private void createBackup(Configuration configuration, File configPath) {
+		File file = new File(configPath.getParentFile(), configPath.getName() + ".bak");
+		exportCfg(configuration, file);
 	}
 
 }
