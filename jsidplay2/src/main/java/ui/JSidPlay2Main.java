@@ -7,11 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -26,13 +21,11 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.PathUtils;
 import sidplay.Player;
-import ui.entities.Database;
-import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
+import ui.entities.config.service.ConfigService.ConfigurationType;
 
 /**
  * @author Ken Händel
@@ -42,23 +35,6 @@ import ui.entities.config.service.ConfigService;
  */
 @Parameters(resourceBundle = "ui.JSidPlay2Main")
 public class JSidPlay2Main extends Application {
-
-	/**
-	 * Configuration types offered by JSIDPlay2
-	 * 
-	 * @author ken
-	 *
-	 */
-	private enum ConfigurationType {
-		/**
-		 * Use XML configuration files
-		 */
-		XML,
-		/**
-		 * Use binary database files
-		 */
-		DATABASE
-	}
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
@@ -102,11 +78,6 @@ public class JSidPlay2Main extends Application {
 			System.out.println();
 		}
 	};
-
-	/**
-	 * Database support.
-	 */
-	private EntityManager em;
 
 	/**
 	 * Config service class.
@@ -195,16 +166,7 @@ public class JSidPlay2Main extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		switch (configurationType) {
-		case DATABASE:
-			configService.persist((Configuration) player.getConfig());
-			break;
-
-		case XML:
-		default:
-			configService.exportCfg((Configuration) player.getConfig(), getConfigPath());
-			break;
-		}
+		configService.save((Configuration) player.getConfig());
 		configService.close();
 	}
 
@@ -218,39 +180,8 @@ public class JSidPlay2Main extends Application {
 	 * @return the players configuration to be used
 	 */
 	private Configuration getConfiguration() {
-		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
-		switch (configurationType) {
-		case DATABASE:
-			em = Persistence
-					.createEntityManagerFactory(PersistenceProperties.CONFIG_DS, new PersistenceProperties(
-							PathUtils.getFilenameWithoutSuffix(getConfigPath().getAbsolutePath()), Database.HSQL_FILE))
-					.createEntityManager();
-			configService = new ConfigService(em);
-			return configService.getOrCreate();
-
-		case XML:
-		default:
-			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
-					new PersistenceProperties(CONFIG_FILE, Database.HSQL_MEM)).createEntityManager();
-			configService = new ConfigService(em);
-			return configService.importCfg(getConfigPath());
-		}
-	}
-
-	/**
-	 * Search for the configuration. Search in CWD and in the HOME folder.
-	 * 
-	 * @return XML configuration file
-	 */
-	private File getConfigPath() {
-		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(s, CONFIG_FILE + ".xml");
-			if (configPlace.exists()) {
-				return configPlace;
-			}
-		}
-		// default directory
-		return new File(System.getProperty("user.home"), CONFIG_FILE + ".xml");
+		configService = new ConfigService(configurationType);
+		return configService.load();
 	}
 
 	/**

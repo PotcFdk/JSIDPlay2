@@ -2,8 +2,11 @@ package ui.entities.config.service;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -13,6 +16,9 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import libsidplay.config.IConfig;
+import libsidutils.PathUtils;
+import ui.entities.Database;
+import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
 
 /**
@@ -22,10 +28,80 @@ import ui.entities.config.Configuration;
  *
  */
 public class ConfigService {
+	/**
+	 * Configuration types offered by JSIDPlay2
+	 * 
+	 * @author ken
+	 *
+	 */
+	public enum ConfigurationType {
+		/**
+		 * Use XML configuration files
+		 */
+		XML,
+		/**
+		 * Use binary database files
+		 */
+		DATABASE
+	}
+
+	/**
+	 * Filename of the jsidplay2 configuration XML file.
+	 */
+	public static final String CONFIG_FILE = "jsidplay2";
+
 	private EntityManager em;
 
-	public ConfigService(EntityManager em) {
-		this.em = em;
+	private ConfigurationType configurationType;
+
+	public ConfigService(ConfigurationType configurationType) {
+		this.configurationType = configurationType;
+		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
+	}
+
+	public Configuration load() {
+		switch (configurationType) {
+		case DATABASE:
+			em = Persistence
+					.createEntityManagerFactory(PersistenceProperties.CONFIG_DS, new PersistenceProperties(
+							PathUtils.getFilenameWithoutSuffix(getConfigPath().getAbsolutePath()), Database.HSQL_FILE))
+					.createEntityManager();
+			return getOrCreate();
+
+		case XML:
+		default:
+			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
+					new PersistenceProperties(CONFIG_FILE, Database.HSQL_MEM)).createEntityManager();
+			return importCfg(getConfigPath());
+		}
+	}
+	public void save(Configuration configuration) {
+		switch (configurationType) {
+		case DATABASE:
+			persist(configuration);
+			break;
+
+		case XML:
+		default:
+			exportCfg(configuration, getConfigPath());
+			break;
+		}
+	}
+	
+	/**
+	 * Search for the configuration. Search in CWD and in the HOME folder.
+	 * 
+	 * @return XML configuration file
+	 */
+	private File getConfigPath() {
+		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(s, CONFIG_FILE + ".xml");
+			if (configPlace.exists()) {
+				return configPlace;
+			}
+		}
+		// default directory
+		return new File(System.getProperty("user.home"), CONFIG_FILE + ".xml");
 	}
 
 	/**
@@ -33,7 +109,7 @@ public class ConfigService {
 	 * 
 	 * @return configuration
 	 */
-	public Configuration getOrCreate() {
+	private Configuration getOrCreate() {
 		Configuration configuration = null;
 		// read configuration from database
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -85,7 +161,7 @@ public class ConfigService {
 	 * @param config
 	 *            configuration to persist
 	 */
-	public void persist(Configuration config) {
+	private void persist(Configuration config) {
 		try {
 			em.getTransaction().begin();
 			em.persist(config);
@@ -115,7 +191,7 @@ public class ConfigService {
 	 * @param file
 	 *            target file of the export
 	 */
-	public void exportCfg(Configuration configation, File file) {
+	private void exportCfg(Configuration configation, File file) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
@@ -133,7 +209,7 @@ public class ConfigService {
 	 *            XML file to import
 	 * @return imported configuration
 	 */
-	public Configuration importCfg(File file) {
+	private Configuration importCfg(File file) {
 		if (file.exists()) {
 			try {
 				JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
