@@ -557,7 +557,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					}
 				}
 				if (nearFull) {
-					Thread.sleep(FRAMES_CAPACITY * 10);
+					Thread.sleep(FRAMES_CAPACITY * 5);
 				}
 			}
 		} catch (InterruptedException e) {
