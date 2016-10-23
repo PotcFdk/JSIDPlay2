@@ -74,7 +74,7 @@ public final class SID implements SIDChip {
 	private byte busValue;
 
 	/** Time to live for the last written value */
-	private int busValueTtl, databus_ttl, write_address, write_pipeline;
+	private int busValueTtl, databus_ttl, write_address;
 
 	/**
 	 * Currently active chip model.
@@ -234,7 +234,6 @@ public final class SID implements SIDChip {
 
 		busValue = 0;
 		busValueTtl = 0;
-		write_pipeline = 0;
 		write_address = 0;
 		voiceSync(false);
 	}
@@ -286,7 +285,8 @@ public final class SID implements SIDChip {
 			busValueTtl = databus_ttl;
 			break;
 		case 0x1b:
-			busValue = voice[2].wave.readOSC();
+			busValue = model == ChipModel.MOS6581 ? voice[2].wave.readOSC6581(voice[0].wave)
+					: voice[2].wave.readOSC8580(voice[0].wave);
 			break;
 		case 0x1c:
 			busValue = voice[2].envelope.readENV();
@@ -313,17 +313,6 @@ public final class SID implements SIDChip {
 		busValue = value;
 		busValueTtl = databus_ttl;
 
-		if (model == ChipModel.MOS8580) {
-			// Fake one cycle pipeline delay on the MOS8580
-			// when using non cycle accurate emulation.
-			// This will make the SID detection method work.
-			write_pipeline = 1;
-		} else {
-			write();
-		}
-	}
-
-	private void write() {
 		switch (write_address) {
 		case 0x00:
 			voice[0].wave.writeFREQ_LO(busValue);
@@ -407,8 +396,6 @@ public final class SID implements SIDChip {
 		default:
 			break;
 		}
-		// Tell clock() that the pipeline is empty.
-		write_pipeline = 0;
 
 		/* Update voicesync just in case. */
 		voiceSync(false);
@@ -460,15 +447,6 @@ public final class SID implements SIDChip {
 	 */
 	@Override
 	public final void clock(int cycles, IntConsumer sample) {
-		// Pipelined writes on the MOS8580.
-		if (write_pipeline != 0 && cycles > 0) {
-			// Step one cycle by a recursive call to ourselves.
-			write_pipeline = 0;
-			clock(1, sample);
-			write();
-			cycles -= 1;
-		}
-
 		if (cycles <= 0) {
 			return;
 		}

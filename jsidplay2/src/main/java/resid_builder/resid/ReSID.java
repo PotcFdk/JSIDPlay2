@@ -143,7 +143,7 @@ public class ReSID extends ReSIDBase {
 
 	@Override
 	public byte readOSC(int voiceNum) {
-		return sidImpl.voice[voiceNum].wave.readOSC();
+		return sidImpl.voice[voiceNum].wave.readOSC(sidImpl.getChipModel());
 	}
 
 	/**

@@ -41,7 +41,7 @@ public final class WaveformGenerator {
 	private final short[] dac = new short[4096];
 
 	/** Current and previous accumulator value. */
-	protected int accumulator;
+	protected int accumulator, accumulator_prev;
 
 	// Tell whether the accumulator MSB was set high on this cycle.
 	private boolean msb_rising;
@@ -130,6 +130,8 @@ public final class WaveformGenerator {
 			// The test bit sets pulse high.
 			pulse_output = 0xfff;
 		} else {
+			accumulator_prev = accumulator;
+
 			// Calculate new accumulator value;
 			int accumulator_next = (accumulator + freq) & 0xffffff;
 			int accumulator_bits_set = ~accumulator & accumulator_next;
@@ -268,6 +270,86 @@ public final class WaveformGenerator {
 	}
 
 	/**
+	 * Read OSC3 value (6581, not latched/delayed version)
+	 *
+	 * @return OSC3 value
+	 */
+	public byte readOSC(int ringAccumulator, int myAccumulator) {
+		// Set output value.
+		if (waveform != 0) {
+			// The bit masks no_pulse and no_noise are used to achieve
+			// branch-free
+			// calculation of the output value.
+			int ix = (myAccumulator ^ (~ringAccumulator & ring_msb_mask)) >> 12;
+			waveform_output = wave[ix] & (no_pulse | pulse_output) & no_noise_or_noise_output;
+		
+			if (waveform > 0x8 && !test && shift_pipeline != 1) {
+				// Combined waveforms write to the shift register.
+				write_shift_register();
+			}
+		} else {
+			// Age floating DAC input.
+			if (floating_output_ttl != 0 && --floating_output_ttl == 0) {
+				waveform_output = 0;
+			}
+		}
+
+		// The pulse level is defined as (accumulator >> 12) >= pw ? 0xfff :
+		// 0x000.
+		// The expression -((accumulator >> 12) >= pw) & 0xfff yields the same
+		// results without any branching (and thus without any pipeline stalls).
+		// NB! This expression relies on that the result of a boolean expression
+		// is either 0 or 1, and furthermore requires two's complement integer.
+		// A few more cycles may be saved by storing the pulse width left
+		// shifted
+		// 12 bits, and dropping the and with 0xfff (this is valid since pulse
+		// is
+		// used as a bit mask on 12 bit values), yielding the expression
+		// -(accumulator >= pw24). However this only results in negligible
+		// savings.
+
+		// The result of the pulse width compare is delayed one cycle.
+		// Push next pulse level into pulse level pipeline.
+		pulse_output = ((accumulator >> 12) >= pw) ? 0xfff : 0x000;
+
+		// DAC imperfections are emulated by using waveform_output as an index
+		// into a DAC lookup table. readOSC() uses waveform_output directly.
+		return (byte) (waveform_output >> 4);
+	}
+
+	/**
+	 * Read OSC3 value (6581, not latched/delayed version)
+	 * 
+	 * @param ring_modulator
+	 *            The ring modulating partner of this waveform
+	 * @return OSC3 value
+	 */
+	protected byte readOSC6581(final WaveformGenerator ring_modulator) {
+		return readOSC(ring_modulator.accumulator, accumulator);
+	}
+
+	/**
+	 * Read OSC3 value (8580, 1-clock latched version). Waveforms 0 and 8 and
+	 * above are not appropriately delayed by 1 clock. It should not be
+	 * noticeable for 0 and > 8, but noise is not correctly delayed.
+	 * 
+	 * @param ring_modulator
+	 *            The ring modulating partner of this waveform
+	 * @return OSC3 value
+	 */
+	protected byte readOSC8580(final WaveformGenerator ring_modulator) {
+		return readOSC(ring_modulator.accumulator_prev, accumulator_prev);
+	}
+
+	public byte readOSC(ChipModel model) {
+		if (model == ChipModel.MOS6581) {
+			return readOSC8580(this);
+		} else {
+			return readOSC6581(this);
+		}
+	}
+
+	/**
 	 * Constructor.
 	 */
 	protected WaveformGenerator() {
@@ -348,6 +430,7 @@ public final class WaveformGenerator {
 		if (!test_prev && test) {
 			// Reset accumulator.
 			accumulator = 0;
+			accumulator_prev = 0;
 
 			// Flush shift pipeline.
 			shift_pipeline = 0;
@@ -374,20 +457,11 @@ public final class WaveformGenerator {
 	}
 
 	/**
-	 * Read OSC3 value (6581, not latched/delayed version)
-	 *
-	 * @return OSC3 value
-	 */
-	public byte readOSC() {
-		return (byte) (waveform_output >> 4);
-	}
-
-	/**
 	 * SID reset.
 	 */
 	protected void reset() {
 		// accumulator is not changed on reset, but on power-on (not modeled)
-		accumulator = 0x555555;
+		accumulator = accumulator_prev = 0x555555;
 		
 		freq = 0;
 		pw = 0;
