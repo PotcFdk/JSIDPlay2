@@ -28,8 +28,8 @@ import libsidplay.common.Potentiometer;
 import libsidplay.common.SIDChip;
 
 /**
- * MOS6581/MOS8580 emulation. Based on reSID 0.16 by Dag Lem, and then hacked on
- * by Antti S. Lankila. Ported to Java by Ken Händel.
+ * MOS6581/MOS8580 emulation. Based on reSID 1.0beta by Dag Lem, ported to Java
+ * by Antti S. Lankila. Slight changes by Ken händel.
  * 
  * @author Ken Händel
  * @author Dag Lem
@@ -42,7 +42,6 @@ public final class SID implements SIDChip {
 	 * Output scaler.
 	 */
 	private static final int OUTPUT_LEVEL = 359;
-
 
 	/** SID voices */
 	public final Voice[] voice = new Voice[] { new Voice(), new Voice(), new Voice() };
@@ -183,17 +182,19 @@ public final class SID implements SIDChip {
 	@Override
 	public void setChipModel(final ChipModel model) {
 		this.model = model;
-		
-		/*
-		  results from real C64 (testprogs/SID/bitfade/delayfrq0.prg):
-		
-		  (new SID) (250469/8580R5) (250469/8580R5)
-		  delayfrq0    ~7a000        ~108000
-		
-		  (old SID) (250407/6581)
-		  delayfrq0    ~01d00
-		
-		 */
+
+		/**
+		 * <pre>
+		 * results from real C64 (testprogs/SID/bitfade/delayfrq0.prg):
+		 *
+		 * (new SID) (250469/8580R5) (250469/8580R5)
+		 * delayfrq0    ~7a000        ~108000
+		 *
+		 * (old SID) (250407/6581)
+		 * delayfrq0    ~01d00
+		 *
+		 * </pre>
+		 **/
 		databus_ttl = model == ChipModel.MOS8580 ? 0xa2000 : 0x1d00;
 
 		if (model == ChipModel.MOS6581) {
@@ -447,10 +448,6 @@ public final class SID implements SIDChip {
 	 */
 	@Override
 	public final void clock(int cycles, IntConsumer sample) {
-		if (cycles <= 0) {
-			return;
-		}
-
 		ageBusValue(cycles);
 
 		while (cycles != 0) {
