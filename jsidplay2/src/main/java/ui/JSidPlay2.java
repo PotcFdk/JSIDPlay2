@@ -256,11 +256,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 		final ResourceBundle bundle = util.getBundle();
 		final Configuration config = util.getConfig();
-		final SidPlay2Section sidplay2Section = (SidPlay2Section) config.getSidplay2Section();
+		final SidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final AudioSection audioSection = config.getAudioSection();
 		final EmulationSection emulationSection = config.getEmulationSection();
 		final C1541Section c1541Section = config.getC1541Section();
-		final PrinterSection printer = (PrinterSection) config.getPrinterSection();
+		final PrinterSection printer = config.getPrinterSection();
 
 		this.playerId = new StringBuilder();
 		this.playerinfos = new StringBuilder();
