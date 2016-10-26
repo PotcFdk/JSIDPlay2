@@ -73,32 +73,21 @@ public class HardSIDBuilder implements SIDBuilder {
 	public HardSIDBuilder(EventScheduler context, IConfig config) {
 		this.context = context;
 		this.config = config;
-		// Extract fake HardSID driver recognizing fake and real devices
-		String driverPath;
+		// Extract original HardSID4U driver, loaded by JNI driver wrapper below
 		try {
-			driverPath = extract(config, "/hardsid/cpp/Debug/", "HardSID.dll");
-		} catch (IOException e) {
-			throw new RuntimeException(String.format("HARDSID ERROR: HardSID.dll not found"));
-		}
-		// Extract original HardSID4U driver, loaded by the driver above
-		try {
-			extract(config, "/hardsid/cpp/Debug/", "HardSID_orig.dll");
+			extract(config, "/hardsid_builder/win32/Release/", "HardSID.dll");
 		} catch (IOException e) {
 			throw new RuntimeException(String.format("HARDSID ERROR: HardSID_orig.dll not found"));
 		}
-		// Extract JNI driver wrapper
+		// Extract and Load JNI driver wrapper recognizing netsiddev devices and real devices
 		try {
-			System.load(extract(config, "/hardsid_builder/cpp/Debug/", "JHardSID.dll"));
+			System.load(extract(config, "/hardsid_builder/win32/Release/", "JHardSID.dll"));
 		} catch (IOException e) {
 			throw new RuntimeException(String.format("HARDSID ERROR: JHardSID.dll not found!"));
 		}
 		// Go and use JNI driver wrapper
 		hsidDLL = new HsidDLL2();
-		// JNI driver wrapper loads the fake HardSID driver
-		// (that internally loads the original HardSID driver)
-		if (!hsidDLL.LoadLibrary(driverPath)) {
-			throw new RuntimeException(driverPath + " could not be loaded!");
-		}
+		// JNI driver wrapper loads the HardSID driver
 		hsidDLL.InitHardSID_Mapper();
 		if (hsidDLL.HardSID_Version() < HSID_VERSION_MIN) {
 			throw new RuntimeException("HARDSID ERROR: HardSID4U version 2.07 is at least required!");
