@@ -3,8 +3,8 @@ sudo apt-get install mingw-w64
 
 HardSID driver wrapper:
 =======================
-This driver is a wrapper around the original hardsid.dll driver provided by
-www.hardsid.com
+This driver is a wrapper around the original usb driver functions contained in hardsid_usb.lib
+provided by www.hardsid.com
 It makes it possible to use the native HardSID driver via Java Native Interface (JNI).
 
 Fake HardSID driver:
@@ -31,5 +31,6 @@ a running jsidplay2 emulator.
 Additional Notes:
 1. Later implementation has moved the implementation of the fake devices to the external
 program jsiddevice.exe
-2. A 64 bit version of our driver has been added to the Debug64 folder, but the original
-driver HardSID_orig.dll is not available as a 64 bit version, yet!?
+2. A 64 bit version of HardSID4U usb driver is not available as a 64 bit version, yet!?
+
+Original HardSID.dll is currently unused!
