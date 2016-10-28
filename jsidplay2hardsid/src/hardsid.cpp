@@ -212,6 +212,8 @@ HSID_USB_WSTATE flush_cmd_buffer(BOOL give_up_if_busy,
 JNIEXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1DeviceCount(JNIEnv *,
 		jobject) {
 	BYTE erg = 	hardsid_usb_getdevcount();
+	if (connected && erg == 0)
+		erg = 1;
 	return (jint) erg;
 }
 
