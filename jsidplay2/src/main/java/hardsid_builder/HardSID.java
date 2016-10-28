@@ -25,7 +25,7 @@ import libsidplay.config.IEmulationSection;
  * 
  */
 public class HardSID extends SIDEmu {
-	private static final int HARDSID_DELAY_CYCLES = 500;
+	private static final int HARDSID_DELAY_CYCLES = 250;
 
 	/** Number of SID slots */
 	public static final int SID_DEVICES = 8;
@@ -33,7 +33,9 @@ public class HardSID extends SIDEmu {
 	private final Event event = new Event("HardSID Delay") {
 		@Override
 		public void event() {
-			delay();
+			int cycles = delay();
+			if (cycles > 0)
+				hardSID.HardSID_Delay(deviceID, chipNum, cycles);
 			context.schedule(event, HARDSID_DELAY_CYCLES, Event.Phase.PHI2);
 		}
 	};
@@ -57,10 +59,13 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void reset(final byte volume) {
-		clocksSinceLastAccess();
+		int cycles = delay();
+		if (cycles > 0)
+			hardSID.HardSID_Delay(deviceID, chipNum, cycles);
+		
 		hardSID.HardSID_Reset(deviceID, chipNum);
 		for (int i = 0; i < SIDChip.REG_COUNT; i++) {
-			write(i, (byte)0);
+			hardSID.HardSID_Write(deviceID, chipNum, 4, i, 0);
 		}
 		hardSID.HardSID_Flush(deviceID, chipNum);
 	}
@@ -97,18 +102,15 @@ public class HardSID extends SIDEmu {
 			hardSID.HardSID_Delay(deviceID, chipNum, 0xFFFF);
 			cycles -= 0xFFFF;
 		}
-		if (cycles > 0)
-			hardSID.HardSID_Delay(deviceID, chipNum, cycles);
 		return cycles;
 	}
 
 	protected void lock() {
-		System.out.println("Lock: " + chipNum);
+		reset((byte) 0x0);
 		context.schedule(event, 0, Event.Phase.PHI2);
 	}
 
 	protected void unlock() {
-		System.out.println("unLock: " + chipNum);
 		reset((byte) 0x0);
 		context.cancel(event);
 	}

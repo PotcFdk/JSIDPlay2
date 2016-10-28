@@ -63,6 +63,8 @@ public class HardSIDBuilder implements SIDBuilder {
 	 */
 	private int deviceID;
 
+	private static boolean initialized;
+
 	/**
 	 * @param config
 	 *            configuration
@@ -70,12 +72,15 @@ public class HardSIDBuilder implements SIDBuilder {
 	public HardSIDBuilder(EventScheduler context, IConfig config) {
 		this.context = context;
 		this.config = config;
-		// Extract and Load JNI driver wrapper recognizing netsiddev devices and
-		// real devices
-		try {
-			System.load(extract(config, "/hardsid_builder/win32/Release/", "JHardSID.dll"));
-		} catch (IOException e) {
-			throw new RuntimeException(String.format("HARDSID ERROR: JHardSID.dll not found!"));
+		if (!initialized) {
+			// Extract and Load JNI driver wrapper recognizing netsiddev devices and
+			// real devices
+			try {
+				System.load(extract(config, "/hardsid_builder/win32/Release/", "JHardSID.dll"));
+				initialized = true;
+			} catch (IOException e) {
+				throw new RuntimeException(String.format("HARDSID ERROR: JHardSID.dll not found!"));
+			}
 		}
 		// Go and use JNI driver wrapper
 		hardSID = new HardSID4U();
@@ -96,28 +101,12 @@ public class HardSIDBuilder implements SIDBuilder {
 	 *             I/O error
 	 */
 	private String extract(final IConfig config, final String path, final String libName) throws IOException {
-		File f = new File(new File(config.getSidplay2Section().getTmpDir()), libName);
-		if (!f.exists()) {
-		f.deleteOnExit();
-		writeResource(path + libName, f);
-		}
-		return f.getAbsolutePath();
-	}
-
-	/**
-	 * Write class path resource to a file.
-	 * 
-	 * @param resource
-	 *            class path resource
-	 * @param file
-	 *            output file
-	 * @throws IOException
-	 *             I/O error
-	 */
-	private void writeResource(final String resource, final File file) throws IOException {
-		try (InputStream is = getClass().getResourceAsStream(resource)) {
+		File file = new File(new File(config.getSidplay2Section().getTmpDir()), libName);
+		file.deleteOnExit();
+		try (InputStream is = getClass().getResourceAsStream(path + libName)) {
 			Files.copy(is, Paths.get(file.getAbsolutePath()));
 		}
+		return file.getAbsolutePath();
 	}
 
 	@Override
@@ -145,10 +134,6 @@ public class HardSIDBuilder implements SIDBuilder {
 		HardSID hardSid = (HardSID) sidEmu;
 		hardSid.unlock();
 		sids.remove(sidEmu);
-	}
-
-	public int getSIDCount() {
-		return sids.size();
 	}
 
 	/**
@@ -193,7 +178,7 @@ public class HardSIDBuilder implements SIDBuilder {
 		int sid8580 = config.getEmulationSection().getHardsid8580();
 		if (sidNum == 2) {
 			// 3-SID: for now choose next available free slot
-			for (int i = 0; i < getSIDCount(); i++) {
+			for (int i = 0; i < sids.size(); i++) {
 				if (i != sid6581 && i != sid8580) {
 					return i;
 				}
