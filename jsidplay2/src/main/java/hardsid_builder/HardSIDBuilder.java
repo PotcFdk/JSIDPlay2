@@ -1,11 +1,10 @@
 package hardsid_builder;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +38,6 @@ import libsidplay.sidtune.SidTune;
  */
 public class HardSIDBuilder implements SIDBuilder {
 
-	private static final int HSID_VERSION_MIN = 0x0207;
-
-	/**
-	 * Output buffer size.
-	 */
-	public static final int MAX_BUFFER_SIZE = 1 << 20;
-
 	/**
 	 * System event context.
 	 */
@@ -59,12 +51,17 @@ public class HardSIDBuilder implements SIDBuilder {
 	/**
 	 * Native library wrapper.
 	 */
-	private static HsidDLL2 hsidDLL;
+	private static HardSID4U hardSID;
 
 	/**
 	 * Already used HardSIDs.
 	 */
 	private List<HardSID> sids = new ArrayList<HardSID>();
+
+	/**
+	 * Device number, if more than one USB devices is connected.
+	 */
+	private int deviceID;
 
 	/**
 	 * @param config
@@ -73,54 +70,15 @@ public class HardSIDBuilder implements SIDBuilder {
 	public HardSIDBuilder(EventScheduler context, IConfig config) {
 		this.context = context;
 		this.config = config;
-		// Extract original HardSID4U driver, loaded by JNI driver wrapper below
-		try {
-			extract(config, "/hardsid_builder/win32/Release/", "HardSID.dll");
-		} catch (IOException e) {
-			throw new RuntimeException(String.format("HARDSID ERROR: HardSID_orig.dll not found"));
-		}
-		// Extract and Load JNI driver wrapper recognizing netsiddev devices and real devices
+		// Extract and Load JNI driver wrapper recognizing netsiddev devices and
+		// real devices
 		try {
 			System.load(extract(config, "/hardsid_builder/win32/Release/", "JHardSID.dll"));
 		} catch (IOException e) {
 			throw new RuntimeException(String.format("HARDSID ERROR: JHardSID.dll not found!"));
 		}
 		// Go and use JNI driver wrapper
-		hsidDLL = new HsidDLL2();
-		// JNI driver wrapper loads the HardSID driver
-		hsidDLL.InitHardSID_Mapper();
-		if (hsidDLL.HardSID_Version() < HSID_VERSION_MIN) {
-			throw new RuntimeException("HARDSID ERROR: HardSID4U version 2.07 is at least required!");
-		}
-	}
-
-	@Override
-	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
-		final ChipModel chipModel = getChipModel(tune, sidNum);
-		final int deviceIdx = getModelDependantDevice(chipModel, sidNum);
-		if (deviceIdx < hsidDLL.HardSID_Devices()) {
-			if (oldHardSID != null) {
-				// always re-use hardware SID chips, if configuration changes
-				// the purpose is to ignore chip model changes!
-				return oldHardSID;
-			}
-			HardSID hsid = new HardSID(this, context, hsidDLL, deviceIdx, chipModel);
-			hsid.lock();
-			sids.add(hsid);
-			return hsid;
-		}
-		throw new RuntimeException("HARDSID ERROR: System doesn't have enough SID chips.");
-	}
-
-	@Override
-	public void unlock(final SIDEmu device) {
-		HardSID hardSid = (HardSID) device;
-		hardSid.unlock();
-		sids.remove(device);
-	}
-
-	public int getSIDCount() {
-		return sids.size();
+		hardSID = new HardSID4U();
 	}
 
 	/**
@@ -140,8 +98,8 @@ public class HardSIDBuilder implements SIDBuilder {
 	private String extract(final IConfig config, final String path, final String libName) throws IOException {
 		File f = new File(new File(config.getSidplay2Section().getTmpDir()), libName);
 		if (!f.exists()) {
-			f.deleteOnExit();
-			writeResource(path + libName, f);
+		f.deleteOnExit();
+		writeResource(path + libName, f);
 		}
 		return f.getAbsolutePath();
 	}
@@ -157,25 +115,51 @@ public class HardSIDBuilder implements SIDBuilder {
 	 *             I/O error
 	 */
 	private void writeResource(final String resource, final File file) throws IOException {
-		try (InputStream is = getClass().getResourceAsStream(resource);
-				OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
-			int bytesRead;
-			byte[] buffer = new byte[MAX_BUFFER_SIZE];
-			while ((bytesRead = is.read(buffer)) != -1) {
-				os.write(buffer, 0, bytesRead);
-			}
+		try (InputStream is = getClass().getResourceAsStream(resource)) {
+			Files.copy(is, Paths.get(file.getAbsolutePath()));
 		}
+	}
+
+	@Override
+	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
+		final ChipModel chipModel = getChipModel(tune, sidNum);
+		final int chipNum = getModelDependantSidNum(chipModel, sidNum);
+		if (deviceID < hardSID.HardSID_DeviceCount() && chipNum < hardSID.HardSID_SIDCount(deviceID)) {
+			if (oldHardSID != null) {
+				// always re-use hardware SID chips, if configuration changes
+				// the purpose is to ignore chip model changes!
+				return oldHardSID;
+			}
+			HardSID hsid = new HardSID(context, hardSID, deviceID, chipNum, chipModel);
+			hsid.lock();
+			sids.add(hsid);
+			return hsid;
+		}
+		throw new RuntimeException(
+				String.format("HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)",
+						deviceID, chipNum));
+	}
+
+	@Override
+	public void unlock(final SIDEmu sidEmu) {
+		HardSID hardSid = (HardSID) sidEmu;
+		hardSid.unlock();
+		sids.remove(sidEmu);
+	}
+
+	public int getSIDCount() {
+		return sids.size();
 	}
 
 	/**
 	 * Choose desired chip model.
 	 * <OL>
 	 * <LI>Detect chip model of specific SID number
-	 * <LI>For the second device (stereo) always use the other model
+	 * <LI>For the second SID (stereo) always use the other model
 	 * </OL>
-	 * Note: In mono mode we always want to use a device depending on the
-	 * correct chip model. But, in stereo mode we need another device. Therefore
-	 * we change the chip model to match the second configured device.
+	 * Note: In mono mode we always want to use a SID depending on the correct
+	 * chip model. But, in stereo mode we need another SID. Therefore we change
+	 * the chip model to match the second configured SID.
 	 * 
 	 * @param tune
 	 *            current tune
@@ -186,7 +170,7 @@ public class HardSIDBuilder implements SIDBuilder {
 	private ChipModel getChipModel(SidTune tune, int sidNum) {
 		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
 		if (sids.size() > 0) {
-			// Stereo device? Use a HardSID device different to the first SID
+			// Stereo SID? Use a HardSID SID different to the first SID
 			ChipModel modelAlreadyInUse = sids.get(0).getChipModel();
 			if (chipModel == modelAlreadyInUse) {
 				chipModel = (chipModel == ChipModel.MOS6581) ? ChipModel.MOS8580 : ChipModel.MOS6581;
@@ -196,15 +180,15 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	/**
-	 * Get device index based on the desired chip model.
+	 * Get SID index based on the desired chip model.
 	 * 
 	 * @param chipModel
 	 *            desired chip model
 	 * @param sidNum
 	 *            current SID number
-	 * @return device index of the desired HardSID device
+	 * @return SID index of the desired HardSID SID
 	 */
-	private int getModelDependantDevice(final ChipModel chipModel, int sidNum) {
+	private int getModelDependantSidNum(final ChipModel chipModel, int sidNum) {
 		int sid6581 = config.getEmulationSection().getHardsid6581();
 		int sid8580 = config.getEmulationSection().getHardsid8580();
 		if (sidNum == 2) {

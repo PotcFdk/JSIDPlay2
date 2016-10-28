@@ -44,7 +44,6 @@ import javafx.stage.Modality;
 import javafx.util.Duration;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
-import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.components.c1530.Datasette.DatasetteStatus;
 import libsidplay.components.c1541.C1541;
@@ -488,9 +487,8 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
 		}));
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		if (emulationSection.getEngine() == Engine.HARDSID
-				|| (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0)) {
-			// HardSID4U or SID Tune is loaded and uses internal player?
+		if (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0) {
+			// SID Tune is loaded and uses internal player?
 			screen.setVisible(false);
 			monitorBorder.setVisible(false);
 			if (ChipModel.getChipModel(emulationSection, sidTune, 0) == ChipModel.MOS6581) {

@@ -3,6 +3,7 @@ package hardsid_builder;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -32,47 +33,41 @@ public class HardSID extends SIDEmu {
 	private final Event event = new Event("HardSID Delay") {
 		@Override
 		public void event() {
-			final int cycles = clocksSinceLastAccess();
-			hsidDll.HardSID_Delay(chipNum, cycles / hardSIDBuilder.getSIDCount());
+			delay();
 			context.schedule(event, HARDSID_DELAY_CYCLES, Event.Phase.PHI2);
 		}
 	};
 
-	private final HsidDLL2 hsidDll;
+	private final HardSID4U hardSID;
+
+	private final int deviceID;
 
 	private final int chipNum;
 
 	private ChipModel chipModel;
 
-	private HardSIDBuilder hardSIDBuilder;
-
-	public HardSID(HardSIDBuilder hardSIDBuilder, EventScheduler context, final HsidDLL2 hsidDll, final int sid,
+	public HardSID(EventScheduler context, final HardSID4U hardSID, final int deviceID, final int sid,
 			final ChipModel model) {
 		super(context);
-		this.hardSIDBuilder = hardSIDBuilder;
-		this.hsidDll = hsidDll;
+		this.hardSID = hardSID;
+		this.deviceID = deviceID;
 		this.chipNum = sid;
 		this.chipModel = model;
-		reset((byte) 0xf);
 	}
 
 	@Override
 	public void reset(final byte volume) {
 		clocksSinceLastAccess();
-		hsidDll.HardSID_Reset2(chipNum, volume);
+		hardSID.HardSID_Reset(deviceID, chipNum);
+		for (int i = 0; i < SIDChip.REG_COUNT; i++) {
+			write(i, (byte)0);
+		}
+		hardSID.HardSID_Flush(deviceID, chipNum);
 	}
 
 	@Override
 	public byte read(int addr) {
 		clock();
-		/*
-		 * Workaround: If real HardSID4U devices are used in addition to the
-		 * fake devices -> drop read support. Otherwise HardSID 4U won't play
-		 * for some unknown reason.
-		 */
-		if (hsidDll.HardSID_Devices() > SID_DEVICES) {
-			return (byte) 0xff;
-		}
 		/*
 		 * HardSID4U does not support reads. This works against jsidplay2 faking
 		 * to be hardsid, of course. But we should have some way to ask if the
@@ -80,41 +75,41 @@ public class HardSID extends SIDEmu {
 		 * just to do this and maybe get it right, than never do it and always
 		 * get it wrong.
 		 */
-		int cycles = clocksSinceLastAccess();
-		while (cycles > 0xFFFF) {
-			hsidDll.HardSID_Delay(chipNum, 0xFFFF);
-			cycles -= 0xFFFF;
-		}
-
-		return (byte) hsidDll.HardSID_Read(chipNum, cycles, addr);
+		int cycles = delay();
+		return (byte) hardSID.HardSID_Read(deviceID, chipNum, cycles, addr);
 	}
 
 	@Override
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		int cycles = clocksSinceLastAccess();
-
-		while (cycles > 0xFFFF) {
-			hsidDll.HardSID_Delay(chipNum, 0xFFFF);
-			cycles -= 0xFFFF;
-		}
-		hsidDll.HardSID_Write(chipNum, cycles, addr, data);
+		int cycles = delay();
+		hardSID.HardSID_Write(deviceID, chipNum, cycles, addr, data);
 	}
 
 	@Override
 	public void clock() {
 	}
 
+	private int delay() {
+		int cycles = clocksSinceLastAccess();
+		while (cycles > 0xFFFF) {
+			hardSID.HardSID_Delay(deviceID, chipNum, 0xFFFF);
+			cycles -= 0xFFFF;
+		}
+		if (cycles > 0)
+			hardSID.HardSID_Delay(deviceID, chipNum, cycles);
+		return cycles;
+	}
+
 	protected void lock() {
-		hsidDll.HardSID_Lock(chipNum);
-		reset((byte) 0x0);
+		System.out.println("Lock: " + chipNum);
 		context.schedule(event, 0, Event.Phase.PHI2);
 	}
 
 	protected void unlock() {
+		System.out.println("unLock: " + chipNum);
 		reset((byte) 0x0);
-		hsidDll.HardSID_Unlock(chipNum);
 		context.cancel(event);
 	}
 
@@ -124,13 +119,10 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
-		boolean enable = emulation.isFilterEnable(sidNum);
-		hsidDll.HardSID_Filter(chipNum, enable);
 	}
 
 	@Override
 	public void setVoiceMute(final int num, final boolean mute) {
-		hsidDll.HardSID_Mute2(chipNum, num, mute, false);
 	}
 
 	protected ChipModel getChipModel() {
