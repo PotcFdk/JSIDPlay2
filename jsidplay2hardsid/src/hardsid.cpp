@@ -56,7 +56,6 @@ enum {
 	MAX_WRITE_CYCLES = 4096, /* c64 cycles */
 	CMD_BUFFER_SIZE = 4096, /* bytes */
 	WAIT_BETWEEN_ATTEMPTS = 2, /* ms */
-	MINIMUM_DELAY_BETWEEN_WRITES = 4
 };
 
 // socket connection to JSIDPlay2
@@ -97,6 +96,7 @@ BOOL contact_jsidplay2() {
 }
 
 void cleanup() {
+	hardsid_usb_close();
 	if (connectedSocket != 0) {
 		closesocket(connectedSocket);
 		connectedSocket = 0;
@@ -244,6 +244,10 @@ JNIEXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Read(JNIEnv *,
 	WORD Cycles = cycles;
 	BYTE SID_reg = reg;
 	if (SidNum < hardsid_usb_getsidcount(DeviceID)) {
+		if (Cycles > 0) {
+			while (hardsid_usb_delay(DeviceID, Cycles) == HSID_USB_WSTATE_BUSY)
+				Sleep(0);
+		}
 		return (jint) 0xff;	//unsupported reads!
 	} else {
 		SidNum -= hardsid_usb_getsidcount(DeviceID);
@@ -281,6 +285,10 @@ HSID_USB_WSTATE maybe_send_writes_to_server() {
 // then send it to JSIDPlay2 to be queued there and executed
 BYTE HardSID_Try_Write(BYTE DeviceID, BYTE SidNum, WORD Cycles, BYTE SID_reg, BYTE Data) {
 	if (SidNum < hardsid_usb_getsidcount(DeviceID)) {
+		if (Cycles > 0) {
+			while (hardsid_usb_delay(DeviceID, Cycles) == HSID_USB_WSTATE_BUSY)
+				Sleep(0);
+		}
 		//issues a write
 		//if the hardware buffer is full, sleeps the thread until there is some space for this write
 		while (hardsid_usb_write(DeviceID, (SidNum << 5) | SID_reg, Data)
@@ -351,7 +359,6 @@ JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Reset(JNIEnv *,
 	BYTE DeviceID = deviceIdx;
 	BYTE SidNum = sidNum;
 	if (SidNum < hardsid_usb_getsidcount(DeviceID)) {
-		hardsid_usb_flush(DeviceID);
 		hardsid_usb_abortplay(DeviceID);
 	} else {
 		SidNum -= hardsid_usb_getsidcount(DeviceID);
@@ -381,9 +388,7 @@ JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Delay(JNIEnv *,
 	BYTE SidNum = sidNum;
 	WORD Cycles = cycles;
 	if (SidNum < hardsid_usb_getsidcount(DeviceID)) {
-		// If the required delay is too long for a 16-bit value, do it like this:
-
-		if (Cycles > MINIMUM_DELAY_BETWEEN_WRITES) {
+		if (Cycles > 0) {
 			while (hardsid_usb_delay(DeviceID, Cycles) == HSID_USB_WSTATE_BUSY)
 				Sleep(0);
 		}
