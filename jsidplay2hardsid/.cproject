@@ -102,7 +102,7 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.2028128629" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release"/>
 							<tool command="i686-w64-mingw32-g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}JHardSID.dll ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.658925637" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
-								<option id="gnu.cpp.link.option.flags.719056552" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-static-libstdc++ -static-libgcc  -Wl,--kill-at -Wl,-wrap=ultoa" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.719056552" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-static-libstdc++ -static-libgcc  -Wl,--kill-at -Wl,-wrap=ultoa -Wl,--enable-stdcall-fixup" valueType="string"/>
 								<option id="gnu.cpp.link.option.shared.330938416" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.libs.78536602" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="ws2_32"/>

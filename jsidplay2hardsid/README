@@ -10,7 +10,7 @@ It makes it possible to use the native HardSID driver via Java Native Interface 
 Fake HardSID driver:
 ====================
 It emulates the existence of one or more HardSID sound cards (http://www.hardsid.com/).
-The first devices are provided by the original hardsid.dll driver provided by
+The first SIDs are provided by the original hardsid.dll driver provided by
 www.hardsid.com
 On top of the real sound card devices 8 virtual devices are added by jsidplay2.
 That way one can switch between sound output using a HardSID4U sound card and the
@@ -31,6 +31,6 @@ a running jsidplay2 emulator.
 Additional Notes:
 1. Later implementation has moved the implementation of the fake devices to the external
 program jsiddevice.exe
-2. A 64 bit version of HardSID4U usb driver is not available as a 64 bit version, yet!?
+2. A 64 bit version of HardSID4U usb driver is not available as a 64 bit version.
 
-Original HardSID.dll is currently unused!
+HardSID.dll is no more used, instead we use hardsid_usb.lib!
