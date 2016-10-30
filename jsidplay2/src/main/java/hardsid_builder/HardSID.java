@@ -69,13 +69,6 @@ public class HardSID extends SIDEmu {
 	@Override
 	public byte read(int addr) {
 		clock();
-		/*
-		 * HardSID4U does not support reads. This works against jsidplay2 faking
-		 * to be hardsid, of course. But we should have some way to ask if the
-		 * chip can or can't do a proper read operation. For now, it's better
-		 * just to do this and maybe get it right, than never do it and always
-		 * get it wrong.
-		 */
 		delay();
 		return (byte) hardSID.HardSID_Read(deviceID, chipNum, addr);
 	}
