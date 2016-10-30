@@ -120,9 +120,9 @@ public class HardSIDBuilder implements SIDBuilder {
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			HardSID hsid = new HardSID(context, hardSID, deviceID, chipNum, chipModel);
-			hsid.lock();
+			HardSID hsid = new HardSID(context, this, hardSID, deviceID, chipNum, chipModel);
 			sids.add(hsid);
+			hsid.lock();
 			return hsid;
 		}
 		throw new RuntimeException(
@@ -130,6 +130,10 @@ public class HardSIDBuilder implements SIDBuilder {
 						deviceID, chipNum));
 	}
 
+	int getSidCount() {
+		return sids.size();
+	}
+	
 	@Override
 	public void unlock(final SIDEmu sidEmu) {
 		HardSID hardSid = (HardSID) sidEmu;

@@ -43,9 +43,12 @@ public class HardSID extends SIDEmu {
 
 	private ChipModel chipModel;
 
-	public HardSID(EventScheduler context, final HardSID4U hardSID, final int deviceID, final int sid,
+	private HardSIDBuilder hardSIDBuilder;
+
+	public HardSID(EventScheduler context, HardSIDBuilder hardSIDBuilder, final HardSID4U hardSID, final int deviceID, final int sid,
 			final ChipModel model) {
 		super(context);
+		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
 		this.deviceID = deviceID;
 		this.chipNum = sid;
@@ -90,7 +93,7 @@ public class HardSID extends SIDEmu {
 	}
 
 	private void delay() {
-		int cycles = clocksSinceLastAccess();
+		int cycles = clocksSinceLastAccess() / hardSIDBuilder.getSidCount();
 		while (cycles > 0xFFFF) {
 			hardSID.HardSID_Delay(deviceID, 0xFFFF);
 			cycles -= 0xFFFF;
