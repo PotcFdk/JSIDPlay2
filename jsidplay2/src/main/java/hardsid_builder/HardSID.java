@@ -27,15 +27,10 @@ import libsidplay.config.IEmulationSection;
 public class HardSID extends SIDEmu {
 	private static final int HARDSID_DELAY_CYCLES = 250;
 
-	/** Number of SID slots */
-	public static final int SID_DEVICES = 8;
-
 	private final Event event = new Event("HardSID Delay") {
 		@Override
 		public void event() {
-			int cycles = delay();
-			if (cycles > 0)
-				hardSID.HardSID_Delay(deviceID, cycles);
+			delay();
 			context.schedule(event, HARDSID_DELAY_CYCLES, Event.Phase.PHI2);
 		}
 	};
@@ -59,15 +54,13 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void reset(final byte volume) {
-		int cycles = delay();
-		if (cycles > 0)
-			hardSID.HardSID_Delay(deviceID, cycles);
-		
-		hardSID.HardSID_Reset(deviceID);
+		delay();
 		for (int i = 0; i < SIDChip.REG_COUNT; i++) {
-			hardSID.HardSID_Write(deviceID, chipNum, 4, i, 0);
+			hardSID.HardSID_Write(deviceID, chipNum, i, 0);
+			hardSID.HardSID_Delay(deviceID, 4);
 		}
 		hardSID.HardSID_Flush(deviceID);
+		hardSID.HardSID_Reset(deviceID);
 	}
 
 	@Override
@@ -80,29 +73,30 @@ public class HardSID extends SIDEmu {
 		 * just to do this and maybe get it right, than never do it and always
 		 * get it wrong.
 		 */
-		int cycles = delay();
-		return (byte) hardSID.HardSID_Read(deviceID, chipNum, cycles, addr);
+		delay();
+		return (byte) hardSID.HardSID_Read(deviceID, chipNum, addr);
 	}
 
 	@Override
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		int cycles = delay();
-		hardSID.HardSID_Write(deviceID, chipNum, cycles, addr, data);
+		delay();
+		hardSID.HardSID_Write(deviceID, chipNum, addr, data);
 	}
 
 	@Override
 	public void clock() {
 	}
 
-	private int delay() {
+	private void delay() {
 		int cycles = clocksSinceLastAccess();
 		while (cycles > 0xFFFF) {
 			hardSID.HardSID_Delay(deviceID, 0xFFFF);
 			cycles -= 0xFFFF;
 		}
-		return cycles;
+		if (cycles > 0)
+			hardSID.HardSID_Delay(deviceID, cycles);
 	}
 
 	protected void lock() {
