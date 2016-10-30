@@ -31,23 +31,23 @@ EXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1SIDCount
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Read
- * Signature: (IIII)I
+ * Signature: (III)I
  */
 EXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Read
-  (JNIEnv *, jobject, jint, jint, jint, jint);
+  (JNIEnv *, jobject, jint, jint, jint);
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Write
- * Signature: (IIIII)V
+ * Signature: (IIII)V
  */
 EXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Write
-  (JNIEnv *, jobject, jint, jint, jint, jint, jint);
+  (JNIEnv *, jobject, jint, jint, jint, jint);
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Reset
- * Signature: (II)V
+ * Signature: (I)V
  */
 EXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Reset
   (JNIEnv *, jobject, jint);

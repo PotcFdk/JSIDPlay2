@@ -37,27 +37,6 @@ HSID_USB_WSTATE hardsid_usb_delay(BYTE dev_id, WORD cycles);
 void hardsid_usb_abortplay(BYTE dev_id);
 }
 
-// constants: HardSID commands
-typedef enum {
-	CMD_FLUSH,
-	CMD_WAIT_FLUSH,
-	CMD_MUTE,
-	CMD_RESET,
-	CMD_TRY_DELAY,
-	CMD_TRY_WRITE,
-	CMD_TRY_READ
-} command_t;
-typedef enum {
-	RSP_OK, RSP_BUSY, RSP_ERR, RSP_READ
-} response_t;
-
-enum {
-	JSIDPLAY2_DEVICES = 8,
-	MAX_WRITE_CYCLES = 4096, /* c64 cycles */
-	CMD_BUFFER_SIZE = 4096, /* bytes */
-	WAIT_BETWEEN_ATTEMPTS = 2, /* ms */
-};
-
 BOOL APIENTRY DllMain(HINSTANCE hModule, DWORD ul_reason_for_call,
 		LPVOID lpReserved) {
 	switch (ul_reason_for_call) {
@@ -108,49 +87,29 @@ JNIEXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1SIDCount(JNIEnv 
  * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Read(JNIEnv *,
-		jobject, jint deviceId, jint sidNum, jint cycles, jint reg) {
-	BYTE DeviceID = deviceId;
+		jobject, jint deviceId, jint sidNum, jint reg) {
+	//BYTE DeviceID = deviceId;
 	//BYTE SidNum = sidNum;
-	WORD Cycles = cycles;
 	//BYTE SID_reg = reg;
-	if (Cycles > 0) {
-		while (hardsid_usb_delay(DeviceID, Cycles) == HSID_USB_WSTATE_BUSY)
-			Sleep(0);
-	}
-	return (jint) 0xff;	//unsupported reads!
-}
-
-// Add a SID write to the ring buffer, until it is full,
-// then send it to JSIDPlay2 to be queued there and executed
-BYTE HardSID_Try_Write(BYTE DeviceID, BYTE SidNum, WORD Cycles, BYTE SID_reg, BYTE Data) {
-	if (Cycles > 0) {
-		while (hardsid_usb_delay(DeviceID, Cycles) == HSID_USB_WSTATE_BUSY)
-			Sleep(0);
-	}
-	//issues a write
-	//if the hardware buffer is full, sleeps the thread until there is some space for this write
-	while (hardsid_usb_write(DeviceID, (SidNum << 5) | SID_reg, Data)
-			== HSID_USB_WSTATE_BUSY)
-		Sleep(0);
-	return 0;
+	return (jint) 0xff;	//unsupported read!
 }
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Write
- * Signature: (IIIII)V
+ * Signature: (IIII)V
  */
 JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Write(JNIEnv *,
-		jobject, jint deviceIdx, jint sidNum, jint cycles, jint reg, jint dat) {
+		jobject, jint deviceIdx, jint sidNum, jint reg, jint dat) {
 	BYTE DeviceID = deviceIdx;
 	BYTE SidNum = sidNum;
-	WORD Cycles = cycles;
 	BYTE SID_reg = reg;
 	BYTE Data = dat;
-	while (HardSID_Try_Write(DeviceID, SidNum, Cycles, SID_reg, Data)
-			== HSID_USB_WSTATE_BUSY) {
-		// Try_Write sleeps for us
-	}
+	//issues a write
+	//if the hardware buffer is full, sleeps the thread until there is some space for this write
+	while (hardsid_usb_write(DeviceID, (SidNum << 5) | SID_reg, Data)
+			== HSID_USB_WSTATE_BUSY)
+		Sleep(0);
 }
 
 /*
