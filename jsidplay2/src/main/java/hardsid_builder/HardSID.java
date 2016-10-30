@@ -58,12 +58,12 @@ public class HardSID extends SIDEmu {
 	@Override
 	public void reset(final byte volume) {
 		delay();
+		hardSID.HardSID_Reset(deviceID);
 		for (int i = 0; i < SIDChip.REG_COUNT; i++) {
 			hardSID.HardSID_Write(deviceID, chipNum, i, 0);
 			hardSID.HardSID_Delay(deviceID, 4);
 		}
 		hardSID.HardSID_Flush(deviceID);
-		hardSID.HardSID_Reset(deviceID);
 	}
 
 	@Override
