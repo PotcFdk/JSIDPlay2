@@ -94,12 +94,12 @@ public class NetSIDDev extends SIDEmu {
 				e.printStackTrace();
 			}
 		}
+		reset((byte) 0x0);
 		context.schedule(event, 0, Event.Phase.PHI2);
 		sidCnt++;
 	}
 
 	public void unlock() {
-		reset((byte) 0x0);
 		if (connectedSocket != null && sidCnt == 1) {
 			try {
 				connectedSocket.close();
