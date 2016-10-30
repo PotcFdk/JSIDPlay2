@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,7 +105,7 @@ public class HardSIDBuilder implements SIDBuilder {
 		File file = new File(new File(config.getSidplay2Section().getTmpDir()), libName);
 		file.deleteOnExit();
 		try (InputStream is = getClass().getResourceAsStream(path + libName)) {
-			Files.copy(is, Paths.get(file.getAbsolutePath()));
+			Files.copy(is, Paths.get(file.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
 		}
 		return file.getAbsolutePath();
 	}

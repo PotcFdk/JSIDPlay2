@@ -44,6 +44,7 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import libsidutils.stil.STIL.STILEntry;
+import netsiddev_builder.NetSIDDevBuilder;
 import resid_builder.ReSIDBuilder;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
@@ -283,6 +284,8 @@ public class Player extends HardwareEnsemble {
 		switch (engine) {
 		case EMULATION:
 			return new ReSIDBuilder(c64.getEventScheduler(), config, cpuClock, audioDriver);
+		case NETSID:
+			return new NetSIDDevBuilder(c64.getEventScheduler(), config);
 		case HARDSID:
 			return new HardSIDBuilder(c64.getEventScheduler(), config);
 		default:

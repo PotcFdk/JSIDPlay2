@@ -35,7 +35,7 @@ public class HardSID extends SIDEmu {
 		public void event() {
 			int cycles = delay();
 			if (cycles > 0)
-				hardSID.HardSID_Delay(deviceID, chipNum, cycles);
+				hardSID.HardSID_Delay(deviceID, cycles);
 			context.schedule(event, HARDSID_DELAY_CYCLES, Event.Phase.PHI2);
 		}
 	};
@@ -61,13 +61,13 @@ public class HardSID extends SIDEmu {
 	public void reset(final byte volume) {
 		int cycles = delay();
 		if (cycles > 0)
-			hardSID.HardSID_Delay(deviceID, chipNum, cycles);
+			hardSID.HardSID_Delay(deviceID, cycles);
 		
-		hardSID.HardSID_Reset(deviceID, chipNum);
+		hardSID.HardSID_Reset(deviceID);
 		for (int i = 0; i < SIDChip.REG_COUNT; i++) {
 			hardSID.HardSID_Write(deviceID, chipNum, 4, i, 0);
 		}
-		hardSID.HardSID_Flush(deviceID, chipNum);
+		hardSID.HardSID_Flush(deviceID);
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class HardSID extends SIDEmu {
 	private int delay() {
 		int cycles = clocksSinceLastAccess();
 		while (cycles > 0xFFFF) {
-			hardSID.HardSID_Delay(deviceID, chipNum, 0xFFFF);
+			hardSID.HardSID_Delay(deviceID, 0xFFFF);
 			cycles -= 0xFFFF;
 		}
 		return cycles;

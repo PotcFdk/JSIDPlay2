@@ -9,9 +9,9 @@ public class HardSID4U {
 
 	native void HardSID_Write(int DeviceID, int chipNum, int cycles, int SID_reg, int data);
 
-	native void HardSID_Reset(int DeviceID, int chipNum);
+	native void HardSID_Reset(int DeviceID);
 
-	native void HardSID_Delay(int DeviceID, int chipNum, int Cycles);
+	native void HardSID_Delay(int DeviceID, int Cycles);
 
-	native void HardSID_Flush(int DeviceID, int chipNum);
+	native void HardSID_Flush(int DeviceID);
 }
