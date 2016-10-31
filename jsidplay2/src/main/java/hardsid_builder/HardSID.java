@@ -37,15 +37,15 @@ public class HardSID extends SIDEmu {
 
 	private final HardSID4U hardSID;
 
-	private final int deviceID;
+	private final byte deviceID;
 
-	private final int chipNum;
+	private final byte chipNum;
 
 	private ChipModel chipModel;
 
 	private HardSIDBuilder hardSIDBuilder;
 
-	public HardSID(EventScheduler context, HardSIDBuilder hardSIDBuilder, final HardSID4U hardSID, final int deviceID, final int sid,
+	public HardSID(EventScheduler context, HardSIDBuilder hardSIDBuilder, final HardSID4U hardSID, final byte deviceID, final byte sid,
 			final ChipModel model) {
 		super(context);
 		this.hardSIDBuilder = hardSIDBuilder;
@@ -59,9 +59,9 @@ public class HardSID extends SIDEmu {
 	public void reset(final byte volume) {
 		delay();
 		hardSID.HardSID_Reset(deviceID);
-		for (int i = 0; i < SIDChip.REG_COUNT; i++) {
-			hardSID.HardSID_Write(deviceID, chipNum, i, 0);
-			hardSID.HardSID_Delay(deviceID, 4);
+		for (byte i = 0; i < SIDChip.REG_COUNT; i++) {
+			hardSID.HardSID_Write(deviceID, chipNum, i, (byte) 0);
+			hardSID.HardSID_Delay(deviceID, (short) 4);
 		}
 		hardSID.HardSID_Flush(deviceID);
 	}
@@ -70,7 +70,7 @@ public class HardSID extends SIDEmu {
 	public byte read(int addr) {
 		clock();
 		delay();
-		return (byte) hardSID.HardSID_Read(deviceID, chipNum, addr);
+		return hardSID.HardSID_Read(deviceID, chipNum, (byte) addr);
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class HardSID extends SIDEmu {
 		clock();
 		super.write(addr, data);
 		delay();
-		hardSID.HardSID_Write(deviceID, chipNum, addr, data);
+		hardSID.HardSID_Write(deviceID, chipNum, (byte) addr, data);
 	}
 
 	@Override
@@ -88,11 +88,11 @@ public class HardSID extends SIDEmu {
 	private void delay() {
 		int cycles = clocksSinceLastAccess() / hardSIDBuilder.getSidCount();
 		while (cycles > 0xFFFF) {
-			hardSID.HardSID_Delay(deviceID, 0xFFFF);
+			hardSID.HardSID_Delay(deviceID, (short) 0xFFFF);
 			cycles -= 0xFFFF;
 		}
 		if (cycles > 0)
-			hardSID.HardSID_Delay(deviceID, cycles);
+			hardSID.HardSID_Delay(deviceID, (short) cycles);
 	}
 
 	protected void lock() {

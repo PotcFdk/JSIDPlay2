@@ -62,7 +62,7 @@ public class HardSIDBuilder implements SIDBuilder {
 	/**
 	 * Device number, if more than one USB devices is connected.
 	 */
-	private int deviceID;
+	private byte deviceID;
 
 	private static boolean initialized;
 
@@ -113,7 +113,7 @@ public class HardSIDBuilder implements SIDBuilder {
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
 		final ChipModel chipModel = getChipModel(tune, sidNum);
-		final int chipNum = getModelDependantSidNum(chipModel, sidNum);
+		final byte chipNum = getModelDependantSidNum(chipModel, sidNum);
 		if (deviceID < hardSID.HardSID_DeviceCount() && chipNum < hardSID.HardSID_SIDCount(deviceID)) {
 			if (oldHardSID != null) {
 				// always re-use hardware SID chips, if configuration changes
@@ -178,18 +178,18 @@ public class HardSIDBuilder implements SIDBuilder {
 	 *            current SID number
 	 * @return SID index of the desired HardSID SID
 	 */
-	private int getModelDependantSidNum(final ChipModel chipModel, int sidNum) {
+	private byte getModelDependantSidNum(final ChipModel chipModel, int sidNum) {
 		int sid6581 = config.getEmulationSection().getHardsid6581();
 		int sid8580 = config.getEmulationSection().getHardsid8580();
 		if (sidNum == 2) {
 			// 3-SID: for now choose next available free slot
-			for (int i = 0; i < sids.size(); i++) {
+			for (byte i = 0; i < sids.size(); i++) {
 				if (i != sid6581 && i != sid8580) {
 					return i;
 				}
 			}
 		}
-		return chipModel == ChipModel.MOS6581 ? sid6581 : sid8580;
+		return (byte) (chipModel == ChipModel.MOS6581 ? sid6581 : sid8580);
 	}
 
 }

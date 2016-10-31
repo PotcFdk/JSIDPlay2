@@ -1,17 +1,17 @@
 package hardsid_builder;
 
 public class HardSID4U {
-	native int HardSID_DeviceCount();
+	native byte HardSID_DeviceCount();
 
-	native int HardSID_SIDCount(int DeviceID);
+	native byte HardSID_SIDCount(byte DeviceID);
 
-	native int HardSID_Read(int DeviceID, int chipNum, int SID_reg);
+	native byte HardSID_Read(byte DeviceID, byte chipNum, byte SID_reg);
 
-	native void HardSID_Write(int DeviceID, int chipNum, int SID_reg, int data);
+	native void HardSID_Write(byte DeviceID, byte chipNum, byte SID_reg, byte data);
 
-	native void HardSID_Reset(int DeviceID);
+	native void HardSID_Reset(byte DeviceID);
 
-	native void HardSID_Delay(int DeviceID, int Cycles);
+	native void HardSID_Delay(byte DeviceID, short Cycles);
 
-	native void HardSID_Flush(int DeviceID);
+	native void HardSID_Flush(byte DeviceID);
 }
