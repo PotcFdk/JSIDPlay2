@@ -86,7 +86,7 @@ public class HardSID extends SIDEmu {
 	}
 
 	private void delay() {
-		int cycles = clocksSinceLastAccess() / hardSIDBuilder.getSidCount();
+		int cycles = Math.max(4, clocksSinceLastAccess() / hardSIDBuilder.getSidCount());
 		while (cycles > 0xFFFF) {
 			hardSID.HardSID_Delay(deviceID, (short) 0xFFFF);
 			cycles -= 0xFFFF;
