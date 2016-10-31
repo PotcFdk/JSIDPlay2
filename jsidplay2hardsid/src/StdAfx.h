@@ -16,10 +16,21 @@
 #include <direct.h>
 #include <sstream>
 #include <comdef.h>
-//#include <winbase.h>
 
 #include <windows.h>
 #include <winsock2.h>
+
+// stuff required to link against hardsid_usb.lib (that was built using MSVC)
+
+extern "C" {
+extern char *__cdecl __wrap_ultoa(unsigned long _Val, char *_Dstbuf,
+		int _Radix) {
+	return _ultoa(_Val, _Dstbuf, _Radix);
+}
+
+extern void __cdecl __security_check_cookie() {
+}
+}
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

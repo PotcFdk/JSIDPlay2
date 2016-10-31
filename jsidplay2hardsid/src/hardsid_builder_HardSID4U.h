@@ -8,65 +8,61 @@
 extern "C" {
 #endif
 
-#undef EXPORT
-#define EXPORT __declspec(dllexport) JNIEXPORT
-
-
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_DeviceCount
- * Signature: ()I
+ * Signature: ()B
  */
-EXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1DeviceCount
+JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1DeviceCount
   (JNIEnv *, jobject);
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_SIDCount
- * Signature: (I)I
+ * Signature: (B)B
  */
-EXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1SIDCount
-  (JNIEnv *, jobject, jint);
+JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1SIDCount
+  (JNIEnv *, jobject, jbyte);
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Read
- * Signature: (III)I
+ * Signature: (BBB)B
  */
-EXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Read
-  (JNIEnv *, jobject, jint, jint, jint);
+JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Read
+  (JNIEnv *, jobject, jbyte, jbyte, jbyte);
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Write
- * Signature: (IIII)V
+ * Signature: (BBBB)V
  */
-EXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Write
-  (JNIEnv *, jobject, jint, jint, jint, jint);
+JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Write
+  (JNIEnv *, jobject, jbyte, jbyte, jbyte, jbyte);
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Reset
- * Signature: (I)V
+ * Signature: (B)V
  */
-EXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Reset
-  (JNIEnv *, jobject, jint);
+JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Reset
+  (JNIEnv *, jobject, jbyte);
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Delay
- * Signature: (II)V
+ * Signature: (BS)V
  */
-EXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Delay
-  (JNIEnv *, jobject, jint, jint);
+JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Delay
+  (JNIEnv *, jobject, jbyte, jshort);
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Flush
- * Signature: (I)V
+ * Signature: (B)V
  */
-EXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Flush
-  (JNIEnv *, jobject, jint);
+JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Flush
+  (JNIEnv *, jobject, jbyte);
 
 #ifdef __cplusplus
 }

@@ -1,8 +1,6 @@
 #include "StdAfx.h"
 #include "hardsid_builder_HardSID4U.h"
 
-using namespace std;
-
 typedef enum {
 	HSID_USB_WSTATE_OK = 1,
 	HSID_USB_WSTATE_BUSY,
@@ -61,46 +59,47 @@ BOOL APIENTRY DllMain(HINSTANCE hModule, DWORD ul_reason_for_call,
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_DeviceCount
- * Signature: ()I
+ * Signature: ()B
  */
-JNIEXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1DeviceCount(JNIEnv *,
-		jobject) {
-	BYTE erg = 	hardsid_usb_getdevcount();
-	return (jint) erg;
+__declspec(dllexport) JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1DeviceCount(
+		JNIEnv *, jobject) {
+	BYTE erg = hardsid_usb_getdevcount();
+	return (jbyte) erg;
 }
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_SIDCount
- * Signature: (I)I
+ * Signature: (B)B
  */
-JNIEXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1SIDCount(JNIEnv *,
-		jobject, jint deviceId) {
+__declspec(dllexport) JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1SIDCount(
+		JNIEnv *, jobject, jbyte deviceId) {
 	BYTE DeviceID = deviceId;
 	BYTE Sids = hardsid_usb_getsidcount(DeviceID);
-	return (jint) Sids;
+	return (jbyte) Sids;
 }
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Read
- * Signature: (III)I
+ * Signature: (BBB)B
  */
-JNIEXPORT jint JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Read(JNIEnv *,
-		jobject, jint deviceId, jint sidNum, jint reg) {
+__declspec(dllexport) JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Read(
+		JNIEnv *, jobject, jbyte deviceId, jbyte sidNum, jbyte reg) {
 	//BYTE DeviceID = deviceId;
 	//BYTE SidNum = sidNum;
 	//BYTE SID_reg = reg;
-	return (jint) 0xff;	//unsupported read!
+	return (jbyte) 0xff;	//unsupported read!
 }
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Write
- * Signature: (IIII)V
+ * Signature: (BBBB)V
  */
-JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Write(JNIEnv *,
-		jobject, jint deviceIdx, jint sidNum, jint reg, jint dat) {
+__declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Write(
+		JNIEnv *, jobject, jbyte deviceIdx, jbyte sidNum, jbyte reg,
+		jbyte dat) {
 	BYTE DeviceID = deviceIdx;
 	BYTE SidNum = sidNum;
 	BYTE SID_reg = reg;
@@ -115,10 +114,10 @@ JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Write(JNIEnv *,
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Reset
- * Signature: (I)V
+ * Signature: (B)V
  */
-JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Reset(JNIEnv *,
-		jobject, jint deviceIdx) {
+__declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Reset(
+		JNIEnv *, jobject, jbyte deviceIdx) {
 	BYTE DeviceID = deviceIdx;
 	hardsid_usb_abortplay(DeviceID);
 }
@@ -126,10 +125,10 @@ JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Reset(JNIEnv *,
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Delay
- * Signature: (II)V
+ * Signature: (BS)V
  */
-JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Delay(JNIEnv *,
-		jobject, jint deviceIdx, jint cycles) {
+__declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Delay(
+		JNIEnv *, jobject, jbyte deviceIdx, jshort cycles) {
 	BYTE DeviceID = deviceIdx;
 	WORD Cycles = cycles;
 	if (Cycles > 0) {
@@ -141,23 +140,11 @@ JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Delay(JNIEnv *,
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Flush
- * Signature: (I)V
+ * Signature: (B)V
  */
-JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Flush(JNIEnv *,
-		jobject, jint deviceIdx) {
+__declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Flush(
+		JNIEnv *, jobject, jbyte deviceIdx) {
 	BYTE DeviceID = deviceIdx;
 	while (hardsid_usb_flush(DeviceID) == HSID_USB_WSTATE_BUSY)
 		Sleep(0);
-}
-
-// stuff required to link against hardsid_usb.lib (that was built using MSVC)
-
-extern "C" {
-extern char *__cdecl __wrap_ultoa(unsigned long _Val, char *_Dstbuf,
-		int _Radix) {
-	return _ultoa(_Val, _Dstbuf, _Radix);
-}
-
-extern void __cdecl __security_check_cookie() {
-}
 }
