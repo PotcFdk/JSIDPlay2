@@ -7,30 +7,5 @@ This driver is a wrapper around the original usb driver functions contained in h
 provided by www.hardsid.com
 It makes it possible to use the native HardSID driver via Java Native Interface (JNI).
 
-Fake HardSID driver:
-====================
-It emulates the existence of one or more HardSID sound cards (http://www.hardsid.com/).
-The first SIDs are provided by the original hardsid.dll driver provided by
-www.hardsid.com
-On top of the real sound card devices 8 virtual devices are added by jsidplay2.
-That way one can switch between sound output using a HardSID4U sound card and the
-emulation using jsidplay2.
-
-Sound output by jsidplay2 is implemented using a socket connection (port is 6581)
-to transfer all SID writes and execute them in the SID emulator environment.
-
-Therefore, compatible software that is able to use HardSID4U as an output device
-detects up to 16 devices:
-up to 4 HardSID PCI card real devices
-up to 4 HardSID4U USB devices
-and 8 jsidplay2 fake devices
-The available number of devices depends on
-the actual number of real devices connected to your Computer and the availability of
-a running jsidplay2 emulator.
-
-Additional Notes:
-1. Later implementation has moved the implementation of the fake devices to the external
-program jsiddevice.exe
-2. A 64 bit version of HardSID4U usb driver is not available as a 64 bit version.
-
-HardSID.dll is no more used, instead we use hardsid_usb.lib!
+Note:
+HardSID4U usb driver (hardsid_usb.lib) is not available as a 64 bit version.
