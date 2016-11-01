@@ -285,7 +285,7 @@ public class Player extends HardwareEnsemble {
 		case EMULATION:
 			return new ReSIDBuilder(c64.getEventScheduler(), config, cpuClock, audioDriver);
 		case NETSID:
-			return new NetSIDDevBuilder(c64.getEventScheduler(), config);
+			return new NetSIDDevBuilder(c64.getEventScheduler(), config, tune);
 		case HARDSID:
 			return new HardSIDBuilder(c64.getEventScheduler(), config);
 		default:

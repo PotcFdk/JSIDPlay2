@@ -18,10 +18,10 @@ public class NetSIDDevBuilder implements SIDBuilder {
 	private List<NetSIDDev> sids = new ArrayList<NetSIDDev>();
 	private NetSIDConnection connection;
 
-	public NetSIDDevBuilder(EventScheduler context, IConfig config) {
+	public NetSIDDevBuilder(EventScheduler context, IConfig config, SidTune tune) {
 		this.context = context;
 		this.config = config;
-		connection = NetSIDConnection.getInstance();
+		connection = NetSIDConnection.getInstance(config, tune);
 	}
 
 	@Override

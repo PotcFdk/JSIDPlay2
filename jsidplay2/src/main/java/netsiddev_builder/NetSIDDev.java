@@ -10,16 +10,8 @@ import libsidplay.config.IEmulationSection;
 public class NetSIDDev extends SIDEmu {
 	private static final int DELAY_CYCLES = 250;
 
-	private static final int CMD_BUFFER_SIZE = 4096;
-
 	private int sidNum;
-
-	// writes buffered at client
-	byte cmd_buffer[] = new byte[CMD_BUFFER_SIZE];
-	// index at cmd_buffer.
-	int cmd_index;
-	// cycles queued in command.
-	int cmd_buffer_cycles;
+	private NetSIDConnection connection;
 
 	private final Event event = new Event("NetSIDDev Delay") {
 		@Override
@@ -30,7 +22,6 @@ public class NetSIDDev extends SIDEmu {
 			context.schedule(event, DELAY_CYCLES, Event.Phase.PHI2);
 		}
 	};
-	private NetSIDConnection connection;
 
 	private int delay() {
 		int cycles = clocksSinceLastAccess();

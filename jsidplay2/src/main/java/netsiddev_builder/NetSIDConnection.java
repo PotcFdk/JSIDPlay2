@@ -13,6 +13,9 @@ import static netsiddev_builder.NetSIDResponse.READ;
 import java.io.IOException;
 import java.net.Socket;
 
+import libsidplay.config.IConfig;
+import libsidplay.sidtune.SidTune;
+
 public class NetSIDConnection {
 
 	private static final int MAX_WRITE_CYCLES = 4096; /* c64 cycles */
@@ -25,27 +28,33 @@ public class NetSIDConnection {
 	int cmd_index;
 	// cycles queued in command.
 	int cmd_buffer_cycles;
+	private int sidCnt;
 
 	
 	private static Socket connectedSocket;
 
 	private static NetSIDConnection instance;
 
-	private NetSIDConnection() {
+	private NetSIDConnection(IConfig config, SidTune tune) {
 		try {
 			connectedSocket = new Socket("127.0.0.1", 6581);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		setSIDCount(1);
+		sidCnt = 1;
+		sidCnt += SidTune.isSIDUsed(config.getEmulationSection(), tune, 1)?1:0;
+		sidCnt += SidTune.isSIDUsed(config.getEmulationSection(), tune, 2)?1:0;
+		setSIDCount(sidCnt);
 
-		setSIDModel(0, 0);
+		for (int i = 0; i < sidCnt; i++) {
+			setSIDModel(i, i);
+		}
 
 	}
 
-	public static final NetSIDConnection getInstance() {
+	public static final NetSIDConnection getInstance(IConfig config, SidTune tune) {
 		if (instance == null) {
-			instance = new NetSIDConnection();
+			instance = new NetSIDConnection(config, tune);
 		}
 		return instance;
 	}
@@ -210,12 +219,13 @@ public class NetSIDConnection {
 	}
 
 	public void delay(int sidNum, int cycles) {
+		cycles /= sidCnt;
 		/* deal with unsubmitted writes */
 		if (cmd_index != 0) {
 			try {
 				flush_cmd_buffer(false, null);
 			} catch (IOException | InterruptedException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 			cmd_buffer_cycles = 0;
 		}
@@ -228,7 +238,7 @@ public class NetSIDConnection {
 		try {
 			flush_cmd_buffer(false, null);
 		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
