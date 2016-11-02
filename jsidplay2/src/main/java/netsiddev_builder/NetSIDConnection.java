@@ -48,10 +48,6 @@ public class NetSIDConnection {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		sidCnt = 1;
-		sidCnt += SidTune.isSIDUsed(config.getEmulationSection(), tune, 1)?1:0;
-		sidCnt += SidTune.isSIDUsed(config.getEmulationSection(), tune, 2)?1:0;
-
 		cmd_index = 0;
 		cmd_buffer_cycles = 0;
 		cmd_buffer[cmd_index++] = CMD_TRY_SET_SID_COUNT.cmd;
@@ -63,7 +59,7 @@ public class NetSIDConnection {
 			throw new RuntimeException(e);
 		}
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < PLA.MAX_SIDS; i++) {
 			cmd_index = 0;
 			cmd_buffer_cycles = 0;
 			cmd_buffer[cmd_index++] = TRY_SET_SID_MODEL.cmd;
@@ -286,7 +282,7 @@ public class NetSIDConnection {
 		cmd_buffer[cmd_index++] = TRY_SET_SAMPLING.cmd;
 		cmd_buffer[cmd_index++] = (byte) sidNum; /* SID number */
 		cmd_index += 2;
-		cmd_buffer[cmd_index++] = (byte) (SamplingMethod.RESAMPLE.ordinal()) /* sampling */;
+		cmd_buffer[cmd_index++] = (byte) (SamplingMethod.DECIMATE.ordinal()) /* sampling */;
 		try {
 			flush_cmd_buffer(false, null);
 		} catch (IOException | InterruptedException e) {
