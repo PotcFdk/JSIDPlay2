@@ -5,6 +5,10 @@ import static netsiddev_builder.NetSIDCommand.CMD_TRY_DELAY;
 import static netsiddev_builder.NetSIDCommand.CMD_TRY_RESET;
 import static netsiddev_builder.NetSIDCommand.CMD_TRY_SET_SID_COUNT;
 import static netsiddev_builder.NetSIDCommand.CMD_TRY_WRITE;
+import static netsiddev_builder.NetSIDCommand.SET_SID_LEVEL;
+import static netsiddev_builder.NetSIDCommand.SET_SID_POSITION;
+import static netsiddev_builder.NetSIDCommand.TRY_SET_CLOCKING;
+import static netsiddev_builder.NetSIDCommand.TRY_SET_SAMPLING;
 import static netsiddev_builder.NetSIDCommand.TRY_SET_SID_MODEL;
 import static netsiddev_builder.NetSIDResponse.BUSY;
 import static netsiddev_builder.NetSIDResponse.OK;
@@ -13,6 +17,9 @@ import static netsiddev_builder.NetSIDResponse.READ;
 import java.io.IOException;
 import java.net.Socket;
 
+import libsidplay.common.CPUClock;
+import libsidplay.common.SamplingMethod;
+import libsidplay.components.pla.PLA;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 
@@ -20,7 +27,7 @@ public class NetSIDConnection {
 
 	private static final int MAX_WRITE_CYCLES = 4096; /* c64 cycles */
 	private static final int WAIT_BETWEEN_ATTEMPTS = 2; /* ms */
-	private static final int CMD_BUFFER_SIZE = 4096;
+	public static final int CMD_BUFFER_SIZE = 4096;
 	
 	// writes buffered at client
 	byte cmd_buffer[] = new byte[CMD_BUFFER_SIZE];
@@ -44,12 +51,55 @@ public class NetSIDConnection {
 		sidCnt = 1;
 		sidCnt += SidTune.isSIDUsed(config.getEmulationSection(), tune, 1)?1:0;
 		sidCnt += SidTune.isSIDUsed(config.getEmulationSection(), tune, 2)?1:0;
-		setSIDCount(sidCnt);
 
-		for (int i = 0; i < sidCnt; i++) {
-			setSIDModel(i, i);
+		cmd_index = 0;
+		cmd_buffer_cycles = 0;
+		cmd_buffer[cmd_index++] = CMD_TRY_SET_SID_COUNT.cmd;
+		cmd_buffer[cmd_index++] = (byte) PLA.MAX_SIDS; /* SID count */
+		cmd_index += 2;
+		try {
+			flush_cmd_buffer(false, null);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
 		}
 
+		for (int i = 0; i < 3; i++) {
+			cmd_index = 0;
+			cmd_buffer_cycles = 0;
+			cmd_buffer[cmd_index++] = TRY_SET_SID_MODEL.cmd;
+			cmd_buffer[cmd_index++] = (byte) i; /* SID number */
+			cmd_index += 2;
+			cmd_buffer[cmd_index++] = (byte) i /* SID model */;
+			try {
+				flush_cmd_buffer(false, null);
+			} catch (IOException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+
+			cmd_index = 0;
+			cmd_buffer_cycles = 0;
+			cmd_buffer[cmd_index++] = SET_SID_LEVEL.cmd;
+			cmd_buffer[cmd_index++] = (byte) i; /* SID number */
+			cmd_index += 2;
+			cmd_buffer[cmd_index++] = (byte) (1024); /* level */
+			try {
+				flush_cmd_buffer(false, null);
+			} catch (IOException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+
+			cmd_index = 0;
+			cmd_buffer_cycles = 0;
+			cmd_buffer[cmd_index++] = SET_SID_POSITION.cmd;
+			cmd_buffer[cmd_index++] = (byte) i; /* SID number */
+			cmd_index += 2;
+			cmd_buffer[cmd_index++] = (byte) (0); /* position */
+			try {
+				flush_cmd_buffer(false, null);
+			} catch (IOException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	public static final NetSIDConnection getInstance(IConfig config, SidTune tune) {
@@ -57,33 +107,6 @@ public class NetSIDConnection {
 			instance = new NetSIDConnection(config, tune);
 		}
 		return instance;
-	}
-
-	public void setSIDCount(int i) {
-		cmd_index = 0;
-		cmd_buffer_cycles = 0;
-		cmd_buffer[cmd_index++] = CMD_TRY_SET_SID_COUNT.cmd;
-		cmd_buffer[cmd_index++] = (byte) 1; /* SID count */
-		cmd_index += 2;
-		try {
-			flush_cmd_buffer(false, null);
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void setSIDModel(int sidNum, int i) {
-		cmd_index = 0;
-		cmd_buffer_cycles = 0;
-		cmd_buffer[cmd_index++] = TRY_SET_SID_MODEL.cmd;
-		cmd_buffer[cmd_index++] = (byte) sidNum; /* SID number */
-		cmd_index += 2;
-		cmd_buffer[cmd_index++] = 0 /* SID model */;
-		try {
-			flush_cmd_buffer(false, null);
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public void flush(int sidNum) {
@@ -219,7 +242,6 @@ public class NetSIDConnection {
 	}
 
 	public void delay(int sidNum, int cycles) {
-		cycles /= sidCnt;
 		/* deal with unsubmitted writes */
 		if (cmd_index != 0) {
 			try {
@@ -242,5 +264,35 @@ public class NetSIDConnection {
 		}
 	}
 
+	public int getSidCount() {
+		return sidCnt;
+	}
+
+	public void setClockFrequency(int sidNum, double cpuFrequency) {
+		cmd_index = 0;
+		cmd_buffer_cycles = 0;
+		cmd_buffer[cmd_index++] = TRY_SET_CLOCKING.cmd;
+		cmd_buffer[cmd_index++] = (byte) sidNum; /* SID number */
+		cmd_index += 2;
+		cmd_buffer[cmd_index++] = (byte) (CPUClock.PAL.getCpuFrequency()==cpuFrequency?0:1) /* SID model */;
+		try {
+			flush_cmd_buffer(false, null);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+
+		cmd_index = 0;
+		cmd_buffer_cycles = 0;
+		cmd_buffer[cmd_index++] = TRY_SET_SAMPLING.cmd;
+		cmd_buffer[cmd_index++] = (byte) sidNum; /* SID number */
+		cmd_index += 2;
+		cmd_buffer[cmd_index++] = (byte) (SamplingMethod.RESAMPLE.ordinal()) /* sampling */;
+		try {
+			flush_cmd_buffer(false, null);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
 
 }
