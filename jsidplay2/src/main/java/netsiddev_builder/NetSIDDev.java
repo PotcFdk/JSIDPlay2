@@ -9,7 +9,7 @@ import libsidplay.config.IEmulationSection;
 
 public class NetSIDDev extends SIDEmu {
 
-	private static final int DELAY_CYCLES = 250;
+	private static final int DELAY_CYCLES = 256;
 	
 	private int sidNum;
 	private NetSIDConnection connection;
@@ -19,22 +19,11 @@ public class NetSIDDev extends SIDEmu {
 
 		@Override
 		public void event() {
-			int cycles = delay();
-			if (cycles > 0)
-				connection.delay(sidNum, cycles);
-
+			connection.delay(sidNum, DELAY_CYCLES / netSIDDevBuilder.getSidCount());
+			clocksSinceLastAccess();
 			context.schedule(event, DELAY_CYCLES, Event.Phase.PHI2);
 		}
 	};
-
-	private int delay() {
-		int cycles = Math.max(4, clocksSinceLastAccess() / netSIDDevBuilder.getSidCount());
-		while (cycles > 0xFFFF) {
-			connection.delay(sidNum, 0xFFFF);
-			cycles -= 0xFFFF;
-		}
-		return cycles;
-	}
 
 	public NetSIDDev(EventScheduler context, NetSIDDevBuilder builder, NetSIDConnection connection, final int sidNum, final ChipModel model) {
 		super(context);
@@ -52,7 +41,6 @@ public class NetSIDDev extends SIDEmu {
 	@Override
 	public byte read(int addr) {
 		clock();
-		delay();
 		return (byte) 0xff;
 	}
 
@@ -60,7 +48,7 @@ public class NetSIDDev extends SIDEmu {
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		connection.addWrite(sidNum, delay(), (byte) addr, data);
+		connection.addWrite(sidNum, clocksSinceLastAccess() / netSIDDevBuilder.getSidCount(), (byte) addr, data);
 	}
 
 	@Override

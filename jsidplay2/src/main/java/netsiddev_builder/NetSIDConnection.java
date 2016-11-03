@@ -25,7 +25,7 @@ import libsidplay.sidtune.SidTune;
 
 public class NetSIDConnection {
 
-	private static final int MAX_WRITE_CYCLES = 4096; /* c64 cycles */
+	public static final int MAX_WRITE_CYCLES = 4096; /* c64 cycles */
 	private static final int WAIT_BETWEEN_ATTEMPTS = 2; /* ms */
 	public static final int CMD_BUFFER_SIZE = 4096;
 	
