@@ -1,6 +1,6 @@
 package netsiddev_builder;
 
-enum NetSIDCommand {
+public enum NetSIDCommand {
 	CMD_FLUSH(0),
 	CMD_TRY_SET_SID_COUNT(1),
 	CMD_MUTE(2),
@@ -24,5 +24,9 @@ enum NetSIDCommand {
 
 	private NetSIDCommand(int cmd) {
 		this.cmd = (byte) cmd;
+	}
+	
+	public byte getCmd() {
+		return cmd;
 	}
 }

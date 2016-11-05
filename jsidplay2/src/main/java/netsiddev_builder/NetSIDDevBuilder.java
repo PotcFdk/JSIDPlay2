@@ -25,33 +25,31 @@ public class NetSIDDevBuilder implements SIDBuilder {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
-		connection = NetSIDConnection.getInstance(config, tune);
+		if (connection != null)
+			connection.close();
+		connection = new NetSIDConnection(config, tune);
 	}
 
 	@Override
 	public SIDEmu lock(SIDEmu sidEmu, int sidNum, SidTune tune) {
 		final ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
-		final NetSIDDev sid = new NetSIDDev(context, this, connection, sidNum, chipModel);
+		final NetSIDDev sid = new NetSIDDev(context, connection, sidNum, chipModel);
 		IEmulationSection emulationSection = config.getEmulationSection();
 //		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
 //		sid.setFilter(config, sidNum);
 //		sid.setFilterEnable(emulationSection, sidNum);
 		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
-		sids.add(sid);
 		sid.lock();
+		sids.add(sid);
 		return sid;
 	}
 
 	@Override
 	public void unlock(SIDEmu device) {
-		NetSIDDev sid = (NetSIDDev) device;
-		sid.unlock();
-		sids.remove(sid);
-	}
-	
-	public int getSidCount() {
-		return sids.size();
+		NetSIDDev impl = (NetSIDDev) device;
+		impl.unlock();
+		sids.remove(impl);
 	}
 
 }

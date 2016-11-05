@@ -1,138 +1,81 @@
 package netsiddev_builder;
 
-import static netsiddev_builder.NetSIDCommand.CMD_FLUSH;
-import static netsiddev_builder.NetSIDCommand.CMD_TRY_DELAY;
-import static netsiddev_builder.NetSIDCommand.CMD_TRY_RESET;
-import static netsiddev_builder.NetSIDCommand.CMD_TRY_SET_SID_COUNT;
-import static netsiddev_builder.NetSIDCommand.CMD_TRY_WRITE;
-import static netsiddev_builder.NetSIDCommand.SET_SID_LEVEL;
-import static netsiddev_builder.NetSIDCommand.SET_SID_POSITION;
-import static netsiddev_builder.NetSIDCommand.TRY_SET_CLOCKING;
-import static netsiddev_builder.NetSIDCommand.TRY_SET_SAMPLING;
-import static netsiddev_builder.NetSIDCommand.TRY_SET_SID_MODEL;
 import static netsiddev_builder.NetSIDResponse.BUSY;
 import static netsiddev_builder.NetSIDResponse.OK;
 import static netsiddev_builder.NetSIDResponse.READ;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
-import libsidplay.common.CPUClock;
-import libsidplay.common.SamplingMethod;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
+import netsiddev_builder.commands.Flush;
+import netsiddev_builder.commands.NetSIDPkg;
+import netsiddev_builder.commands.SetSIDClocking;
+import netsiddev_builder.commands.SetSIDCount;
+import netsiddev_builder.commands.SetSIDLevel;
+import netsiddev_builder.commands.SetSIDModel;
+import netsiddev_builder.commands.SetSIDPosition;
+import netsiddev_builder.commands.TryDelay;
+import netsiddev_builder.commands.TryReset;
+import netsiddev_builder.commands.TryWrite;
 
 public class NetSIDConnection {
 
-	public static final int MAX_WRITE_CYCLES = 4096; /* c64 cycles */
-	private static final int WAIT_BETWEEN_ATTEMPTS = 2; /* ms */
-	public static final int CMD_BUFFER_SIZE = 4096;
-	
-	// writes buffered at client
-	byte cmd_buffer[] = new byte[CMD_BUFFER_SIZE];
-	// index at cmd_buffer.
-	int cmd_index;
-	// cycles queued in command.
-	int cmd_buffer_cycles;
-	private int sidCnt;
+	private static final int PORT = 6581;
+	private static final String HOSTNAME = "127.0.0.1";
+	private static final int MAX_WRITE_CYCLES = 4096; /* c64 cycles */
+	private static final int WAIT_BETWEEN_ATTEMPTS = 1; /* ms */
+	private static final int CMD_BUFFER_SIZE = 4096;
 
-	
 	private static Socket connectedSocket;
 
-	private static NetSIDConnection instance;
+	private List<NetSIDPkg> commands = new ArrayList<>();
+	private int commandsCycles;
 
-	private NetSIDConnection(IConfig config, SidTune tune) {
+	private TryWrite tryWrite;
+	byte result[] = new byte[2];
+
+	public NetSIDConnection(IConfig config, SidTune tune) {
 		try {
-			connectedSocket = new Socket("127.0.0.1", 6581);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		cmd_index = 0;
-		cmd_buffer_cycles = 0;
-		cmd_buffer[cmd_index++] = CMD_TRY_SET_SID_COUNT.cmd;
-		cmd_buffer[cmd_index++] = (byte) PLA.MAX_SIDS; /* SID count */
-		cmd_index += 2;
-		try {
-			flush_cmd_buffer(false, null);
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+			connectedSocket = new Socket(HOSTNAME, PORT);
 
-		for (int i = 0; i < PLA.MAX_SIDS; i++) {
-			cmd_index = 0;
-			cmd_buffer_cycles = 0;
-			cmd_buffer[cmd_index++] = TRY_SET_SID_MODEL.cmd;
-			cmd_buffer[cmd_index++] = (byte) i; /* SID number */
-			cmd_index += 2;
-			cmd_buffer[cmd_index++] = (byte) i /* SID model */;
-			try {
-				flush_cmd_buffer(false, null);
-			} catch (IOException | InterruptedException e) {
-				throw new RuntimeException(e);
+			commands.add(new SetSIDCount((byte) PLA.MAX_SIDS));
+			for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+				commands.add(new SetSIDModel((byte) sidNum, (byte) sidNum));
+				commands.add(new SetSIDLevel((byte) sidNum, (byte) 0));
+				commands.add(new SetSIDPosition((byte) sidNum, (byte) 0));
 			}
-
-			cmd_index = 0;
-			cmd_buffer_cycles = 0;
-			cmd_buffer[cmd_index++] = SET_SID_LEVEL.cmd;
-			cmd_buffer[cmd_index++] = (byte) i; /* SID number */
-			cmd_index += 2;
-			cmd_buffer[cmd_index++] = (byte) (1024); /* level */
-			try {
-				flush_cmd_buffer(false, null);
-			} catch (IOException | InterruptedException e) {
-				throw new RuntimeException(e);
-			}
-
-			cmd_index = 0;
-			cmd_buffer_cycles = 0;
-			cmd_buffer[cmd_index++] = SET_SID_POSITION.cmd;
-			cmd_buffer[cmd_index++] = (byte) i; /* SID number */
-			cmd_index += 2;
-			cmd_buffer[cmd_index++] = (byte) (0); /* position */
-			try {
-				flush_cmd_buffer(false, null);
-			} catch (IOException | InterruptedException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	public static final NetSIDConnection getInstance(IConfig config, SidTune tune) {
-		if (instance == null) {
-			instance = new NetSIDConnection(config, tune);
-		}
-		return instance;
-	}
-
-	public void flush(int sidNum) {
-		cmd_index = 0;
-		cmd_buffer_cycles = 0;
-		cmd_buffer[cmd_index++] = CMD_FLUSH.cmd;
-		cmd_buffer[cmd_index++] = (byte) sidNum; /* SID number */
-		cmd_index += 2;
-		try {
-			flush_cmd_buffer(false, null);
+			flush(false, null);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void reset(int sidNum, byte volume) {
-		cmd_buffer[cmd_index++] = CMD_TRY_RESET.cmd;
-		cmd_buffer[cmd_index++] = (byte) sidNum; /* SID number */
-		cmd_index += 2;
-		cmd_buffer[cmd_index++] = volume;
+	public void flush(byte sidNum) {
+		commands.add(new Flush(sidNum));
 		try {
-			flush_cmd_buffer(false, null);
+			flush(false, null);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void addWrite(int sidNum, int cycles, byte addr, byte data) {
+	public void reset(byte sidNum, byte volume) {
+		commands.add(new TryReset(sidNum, volume));
 		try {
-			while (tryWrite((byte) sidNum, cycles, (byte) addr, data) == BUSY) {
+			flush(false, null);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void addWrite(byte sidNum, int cycles, byte addr, byte data) {
+		try {
+			while (tryWrite(sidNum, cycles, (byte) addr, data) == BUSY) {
 				// Try_Write sleeps for us
 			}
 		} catch (InterruptedException | IOException e) {
@@ -142,7 +85,8 @@ public class NetSIDConnection {
 
 	// Add a SID write to the ring buffer, until it is full,
 	// then send it to JSIDPlay2 to be queued there and executed
-	NetSIDResponse tryWrite(byte SidNum, int Cycles, byte SID_reg, byte Data) throws InterruptedException, IOException {
+	private NetSIDResponse tryWrite(byte sidNum, int cycles, byte reg, byte data)
+			throws InterruptedException, IOException {
 		/*
 		 * flush writes after a bit of buffering. If no flush, then returns OK
 		 * and we queue more. If flush attempt fails, we must cancel.
@@ -158,19 +102,14 @@ public class NetSIDConnection {
 			return BUSY;
 		}
 
-		if (cmd_index == 0) {
+		if (commands.size() == 0) {
 			/* start new write buffering sequence */
-			cmd_buffer[cmd_index++] = CMD_TRY_WRITE.cmd;
-			cmd_buffer[cmd_index++] = SidNum;
-			cmd_index += 2;
+			tryWrite = new TryWrite(sidNum);
+			commands.add(tryWrite);
 		}
-
 		/* add write to queue */
-		cmd_buffer[cmd_index++] = (byte) ((Cycles & 0xff00) >> 8);
-		cmd_buffer[cmd_index++] = (byte) (Cycles & 0xff);
-		cmd_buffer[cmd_index++] = SID_reg;
-		cmd_buffer[cmd_index++] = Data;
-		cmd_buffer_cycles += Cycles;
+		tryWrite.addWrite(cycles, reg, data);
+		commandsCycles += cycles;
 		/*
 		 * NB: if flush attempt fails, we have nevertheless queued command
 		 * locally and thus are allowed to return OK in any case.
@@ -180,27 +119,21 @@ public class NetSIDConnection {
 		return OK;
 	}
 
-	NetSIDResponse flush_cmd_buffer(boolean give_up_if_busy, byte[] readResult)
-			throws IOException, InterruptedException {
-		while (true) {
-			byte result[] = new byte[2];
-			/*
-			 * Fill in packet data length so that server knows when entire
-			 * packet has been read.
-			 */
-			int data_length = cmd_index - 4;
-			cmd_buffer[2] = (byte) ((data_length >> 8) & 0xff);
-			cmd_buffer[3] = (byte) (data_length & 0xff);
+	private NetSIDResponse flush(boolean give_up_if_busy, byte[] readResult) throws IOException, InterruptedException {
+		while (commands.size() > 0) {
+			NetSIDPkg cmd = commands.get(0);
 
-			connectedSocket.getOutputStream().write(cmd_buffer, 0, cmd_index);
-
+			connectedSocket.getOutputStream().write(cmd.toByteArrayWithLength());
 			connectedSocket.getInputStream().read(result);
 
-			int rc = result[0];
-
 			/* server accepted. Reset variables. */
-			if (rc == OK.resp) {
-				cmd_index = 0;
+			int rc = result[0];
+			if (rc == OK.resp || rc == READ.resp) {
+				if (rc == READ.resp)
+					readResult[0] = result[1];
+				commands.remove(0);
+				if (commands.size() > 0)
+					continue;
 				return OK;
 			}
 
@@ -211,84 +144,50 @@ public class NetSIDConnection {
 				Thread.sleep(WAIT_BETWEEN_ATTEMPTS);
 				continue;
 			}
-
-			/*
-			 * the only caller that uses TRY_READ passes "false" on
-			 * give_up_if_busy, so this is the only way this can end, barring
-			 * errors.
-			 */
-			if (rc == READ.resp) {
-				cmd_index = 0;
-				readResult[0] = result[1];
-				return OK;
-			}
-			throw new RuntimeException("Server error");
-		}
-	}
-
-	NetSIDResponse maybe_send_writes_to_server() throws IOException, InterruptedException {
-		/* flush writes after a bit of buffering */
-		if (cmd_index == cmd_buffer.length || cmd_buffer_cycles > MAX_WRITE_CYCLES) {
-			if (flush_cmd_buffer(true, null) == BUSY) {
-				return BUSY;
-			}
-			cmd_buffer_cycles = 0;
+			throw new RuntimeException("Server error: Unexpected response!");
 		}
 		return OK;
 	}
 
-	public void delay(int sidNum, int cycles) {
-		/* deal with unsubmitted writes */
-		if (cmd_index != 0) {
-			try {
-				flush_cmd_buffer(false, null);
-			} catch (IOException | InterruptedException e) {
-				throw new RuntimeException(e);
+	private NetSIDResponse maybe_send_writes_to_server() throws IOException, InterruptedException {
+		/* flush writes after a bit of buffering */
+		if (commands.size() == CMD_BUFFER_SIZE || commandsCycles > MAX_WRITE_CYCLES) {
+			if (flush(true, null) == BUSY) {
+				return BUSY;
 			}
-			cmd_buffer_cycles = 0;
+			commandsCycles = 0;
 		}
+		return OK;
+	}
 
-		cmd_buffer[cmd_index++] = CMD_TRY_DELAY.cmd;
-		cmd_buffer[cmd_index++] = (byte) sidNum; /* SID number */
-		cmd_index += 2;
-		cmd_buffer[cmd_index++] = (byte) ((cycles & 0xff00) >> 8);
-		cmd_buffer[cmd_index++] = (byte) (cycles & 0xff);
+	public void delay(byte sidNum, byte cycles) {
 		try {
-			flush_cmd_buffer(false, null);
+			/* deal with unsubmitted writes */
+			flush(false, null);
+			commandsCycles = 0;
+
+			commands.add(new TryDelay(sidNum, cycles));
+			flush(false, null);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public int getSidCount() {
-		return sidCnt;
+	public void setClockFrequency(byte sidNum, double cpuFrequency) {
+		try {
+			commands.add(new SetSIDClocking(sidNum, cpuFrequency));
+			flush(false, null);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public void setClockFrequency(int sidNum, double cpuFrequency) {
-		cmd_index = 0;
-		cmd_buffer_cycles = 0;
-		cmd_buffer[cmd_index++] = TRY_SET_CLOCKING.cmd;
-		cmd_buffer[cmd_index++] = (byte) sidNum; /* SID number */
-		cmd_index += 2;
-		cmd_buffer[cmd_index++] = (byte) (CPUClock.PAL.getCpuFrequency()==cpuFrequency?0:1) /* SID model */;
+	public void close() {
 		try {
-			flush_cmd_buffer(false, null);
-		} catch (IOException | InterruptedException e) {
+			connectedSocket.close();
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-
-		cmd_index = 0;
-		cmd_buffer_cycles = 0;
-		cmd_buffer[cmd_index++] = TRY_SET_SAMPLING.cmd;
-		cmd_buffer[cmd_index++] = (byte) sidNum; /* SID number */
-		cmd_index += 2;
-		cmd_buffer[cmd_index++] = (byte) (SamplingMethod.DECIMATE.ordinal()) /* sampling */;
-		try {
-			flush_cmd_buffer(false, null);
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-
 	}
 
 }

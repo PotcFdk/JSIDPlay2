@@ -8,33 +8,27 @@ import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
 public class NetSIDDev extends SIDEmu {
-
-	private static final int DELAY_CYCLES = 256;
-	
-	private int sidNum;
+	private byte sidNum;
 	private NetSIDConnection connection;
-	private NetSIDDevBuilder netSIDDevBuilder;
 
-	private final Event event = new Event("NetSIDDev Delay") {
-
-		@Override
-		public void event() {
-			connection.delay(sidNum, DELAY_CYCLES / netSIDDevBuilder.getSidCount());
-			clocksSinceLastAccess();
-			context.schedule(event, DELAY_CYCLES, Event.Phase.PHI2);
-		}
-	};
-
-	public NetSIDDev(EventScheduler context, NetSIDDevBuilder builder, NetSIDConnection connection, final int sidNum, final ChipModel model) {
+	public NetSIDDev(EventScheduler context, NetSIDConnection connection, final int sidNum, final ChipModel model) {
 		super(context);
 		this.connection = connection;
-		this.sidNum = sidNum;
-		this.netSIDDevBuilder = builder;
+		this.sidNum = (byte) sidNum;
+	}
+
+	public void lock() {
+		reset((byte) 0xf);
+		context.schedule(event, 0, Event.Phase.PHI2);
+	}
+
+	public void unlock() {
+		reset((byte) 0xf);
+		context.cancel(event);
 	}
 
 	@Override
 	public void reset(byte volume) {
-		connection.flush(sidNum);
 		connection.reset(sidNum, (byte) volume);
 	}
 
@@ -44,11 +38,25 @@ public class NetSIDDev extends SIDEmu {
 		return (byte) 0xff;
 	}
 
+	private final Event event = new Event("NetSIDDev Delay") {
+
+		@Override
+		public void event() {
+			final long now = context.getTime(Event.Phase.PHI2);
+			int diff = (int) (now - lastTime);
+			if (diff > 0xFFFF) {
+				lastTime += 0xFFFF;
+				connection.delay(sidNum, (byte) 0xFFFF);
+			}
+			context.schedule(event, 0xFFFF, Event.Phase.PHI2);
+		}
+	};
+
 	@Override
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		connection.addWrite(sidNum, clocksSinceLastAccess() / netSIDDevBuilder.getSidCount(), (byte) addr, data);
+		connection.addWrite(sidNum, clocksSinceLastAccess(), (byte) addr, data);
 	}
 
 	@Override
@@ -66,20 +74,15 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void input(int input) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public int getInputDigiBoost() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void setVoiceMute(int num, boolean mute) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -88,14 +91,6 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
-	}
-
-	public void lock() {
-		context.schedule(event, 0);
-		reset((byte) 0xf);
-	}
-	public void unlock() {
-		context.cancel(event);
 	}
 
 }
