@@ -29,6 +29,7 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void reset(byte volume) {
+		connection.flush(sidNum);
 		connection.reset(sidNum, (byte) volume);
 	}
 
