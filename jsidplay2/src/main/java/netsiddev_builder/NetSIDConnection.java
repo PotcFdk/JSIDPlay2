@@ -97,7 +97,7 @@ public class NetSIDConnection {
 			commands.add(tryWrite);
 		}
 		/* add write to queue */
-		tryWrite.addWrite(cycles, reg, data);
+		tryWrite.addWrite(cycles, (byte) ((reg & 0x1f) | (sidNum << 5)), data);
 		/*
 		 * NB: if flush attempt fails, we have nevertheless queued command
 		 * locally and thus are allowed to return OK in any case.
