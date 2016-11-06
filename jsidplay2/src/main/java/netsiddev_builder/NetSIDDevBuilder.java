@@ -27,7 +27,7 @@ public class NetSIDDevBuilder implements SIDBuilder {
 		this.cpuClock = cpuClock;
 		if (connection != null)
 			connection.close();
-		connection = new NetSIDConnection(config, tune);
+		connection = new NetSIDConnection(context, config, tune);
 	}
 
 	@Override

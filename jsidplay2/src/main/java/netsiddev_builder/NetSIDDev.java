@@ -43,12 +43,7 @@ public class NetSIDDev extends SIDEmu {
 
 		@Override
 		public void event() {
-			final long now = context.getTime(Event.Phase.PHI2);
-			int diff = (int) (now - lastTime);
-			if (diff > 0xFFFF) {
-				lastTime += 0xFFFF;
-				connection.delay(sidNum, (byte) 0xFFFF);
-			}
+			connection.eventuallyDelay(sidNum);
 			context.schedule(event, 0xFFFF, Event.Phase.PHI2);
 		}
 	};
@@ -57,7 +52,7 @@ public class NetSIDDev extends SIDEmu {
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		connection.addWrite(sidNum, clocksSinceLastAccess(), (byte) addr, data);
+		connection.addWrite(sidNum, (byte) addr, data);
 	}
 
 	@Override

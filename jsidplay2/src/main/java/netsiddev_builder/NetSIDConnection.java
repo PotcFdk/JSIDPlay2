@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import libsidplay.common.Event;
+import libsidplay.common.EventScheduler;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
@@ -29,12 +31,15 @@ public class NetSIDConnection {
 	private static final int MAX_WRITE_CYCLES = 4096; /* c64 cycles */
 	private static final int CMD_BUFFER_SIZE = 4096;
 
+	private EventScheduler context;
 	private static Socket connectedSocket;
 	private List<NetSIDPkg> commands = new ArrayList<>();
 	private TryWrite tryWrite;
 	private byte result[] = new byte[2];
+	protected long lastSIDWriteTime;
 
-	public NetSIDConnection(IConfig config, SidTune tune) {
+	public NetSIDConnection(EventScheduler context, IConfig config, SidTune tune) {
+		this.context = context;
 		try {
 			connectedSocket = new Socket(HOSTNAME, PORT);
 
@@ -68,9 +73,37 @@ public class NetSIDConnection {
 		}
 	}
 
-	public void addWrite(byte sidNum, int cycles, byte addr, byte data) {
+	private int clocksSinceLastAccess() {
+		final long now = context.getTime(Event.Phase.PHI2);
+		int diff = (int) (now - lastSIDWriteTime);
+		lastSIDWriteTime = now;
+		return diff;
+	}
+
+	public void eventuallyDelay(byte sidNum) {
+		final long now = context.getTime(Event.Phase.PHI2);
+		int diff = (int) (now - lastSIDWriteTime);
+		if (diff > 0xFFFF) {
+			lastSIDWriteTime += 0xFFFF;
+			delay(sidNum, (byte) 0xFFFF);
+		}
+	}
+
+	private void delay(byte sidNum, byte cycles) {
 		try {
-			while (tryWrite(sidNum, cycles, (byte) addr, data) == BUSY) {
+			/* deal with unsubmitted writes */
+			flush(false, null);
+			
+			commands.add(new TryDelay(sidNum, cycles));
+			flush(false, null);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public void addWrite(byte sidNum, byte addr, byte data) {
+		try {
+			while (tryWrite(sidNum, clocksSinceLastAccess(), (byte) addr, data) == BUSY) {
 				// Try_Write sleeps for us
 			}
 		} catch (InterruptedException | IOException e) {
@@ -149,18 +182,6 @@ public class NetSIDConnection {
 			}
 		}
 		return OK;
-	}
-
-	public void delay(byte sidNum, byte cycles) {
-		try {
-			/* deal with unsubmitted writes */
-			flush(false, null);
-
-			commands.add(new TryDelay(sidNum, cycles));
-			flush(false, null);
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public void setClockFrequency(byte sidNum, double cpuFrequency) {
