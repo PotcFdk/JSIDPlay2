@@ -32,22 +32,28 @@
 					GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" />
 				<CheckBox fx:id="muteVoice3" onAction="#doMuteVoice3" text="%MUTE_VOICE_3"
 					GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" />
+				<CheckBox fx:id="muteVoice4" onAction="#doMuteVoice4" text="%MUTE_VOICE_4"
+					GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" />
 				<Label text="%STEREO_SID_" GridPane.columnIndex="0"
 					GridPane.rowIndex="1" />
-				<CheckBox fx:id="muteVoice4" onAction="#doMuteVoice4" text="%MUTE_VOICE_1"
+				<CheckBox fx:id="muteVoice5" onAction="#doMuteVoice5" text="%MUTE_VOICE_1"
 					GridPane.columnIndex="1" GridPane.rowIndex="1" />
-				<CheckBox fx:id="muteVoice5" onAction="#doMuteVoice5" text="%MUTE_VOICE_2"
+				<CheckBox fx:id="muteVoice6" onAction="#doMuteVoice6" text="%MUTE_VOICE_2"
 					GridPane.columnIndex="2" GridPane.rowIndex="1" />
-				<CheckBox fx:id="muteVoice6" onAction="#doMuteVoice6" text="%MUTE_VOICE_3"
+				<CheckBox fx:id="muteVoice7" onAction="#doMuteVoice7" text="%MUTE_VOICE_3"
 					GridPane.columnIndex="3" GridPane.rowIndex="1" />
+				<CheckBox fx:id="muteVoice8" onAction="#doMuteVoice8" text="%MUTE_VOICE_4"
+					GridPane.columnIndex="4" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS" />
 				<Label text="%3SID_" GridPane.columnIndex="0"
 					GridPane.rowIndex="2" />
-				<CheckBox fx:id="muteVoice7" onAction="#doMuteVoice7" text="%MUTE_VOICE_1"
+				<CheckBox fx:id="muteVoice9" onAction="#doMuteVoice9" text="%MUTE_VOICE_1"
 					GridPane.columnIndex="1" GridPane.rowIndex="2" />
-				<CheckBox fx:id="muteVoice8" onAction="#doMuteVoice8" text="%MUTE_VOICE_2"
+				<CheckBox fx:id="muteVoice10" onAction="#doMuteVoice10" text="%MUTE_VOICE_2"
 					GridPane.columnIndex="2" GridPane.rowIndex="2" />
-				<CheckBox fx:id="muteVoice9" onAction="#doMuteVoice9" text="%MUTE_VOICE_3"
+				<CheckBox fx:id="muteVoice11" onAction="#doMuteVoice11" text="%MUTE_VOICE_3"
 					GridPane.columnIndex="3" GridPane.rowIndex="2" />
+				<CheckBox fx:id="muteVoice12" onAction="#doMuteVoice12" text="%MUTE_VOICE_4"
+					GridPane.columnIndex="4" GridPane.rowIndex="2" GridPane.hgrow="ALWAYS" />
 			</GridPane>
 		</top>
 		<center>

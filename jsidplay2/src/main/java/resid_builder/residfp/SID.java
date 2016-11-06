@@ -78,6 +78,8 @@ public class SID implements SIDChip {
 	/** 6581 nonlinearity term used for all DACs */
 	private float nonLinearity6581;
 
+	private boolean samplesMuted;
+
 	/**
 	 * Set DAC nonlinearity for 6581 emulation.
 	 * 
@@ -203,6 +205,7 @@ public class SID implements SIDChip {
 
 		busValue = 0;
 		busValueTtl = 0;
+		samplesMuted = false;
 	}
 
 	/**
@@ -362,8 +365,10 @@ public class SID implements SIDChip {
 			filter8580.writeRES_FILT(value);
 			break;
 		case 0x18:
-			filter6581.writeMODE_VOL(value);
-			filter8580.writeMODE_VOL(value);
+			if (!samplesMuted) {
+				filter6581.writeMODE_VOL(value);
+				filter8580.writeMODE_VOL(value);
+			}
 			break;
 		default:
 			break;
@@ -375,12 +380,16 @@ public class SID implements SIDChip {
 	 * 
 	 * @param channel
 	 *            channe to modify
-	 * @param enable
+	 * @param mute
 	 *            is muted?
 	 */
 	@Override
-	public void mute(final int channel, final boolean enable) {
-		voice[channel].mute(enable);
+	public void mute(final int channel, final boolean mute) {
+		if (channel < 3) {
+			voice[channel].mute(mute);
+		} else {
+			samplesMuted = mute;
+		}
 	}
 
 	/**

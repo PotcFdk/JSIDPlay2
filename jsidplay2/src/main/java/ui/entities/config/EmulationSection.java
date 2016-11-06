@@ -22,6 +22,18 @@ import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE4;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_EMULATION;
@@ -432,6 +444,198 @@ public class EmulationSection implements IEmulationSection {
 	@Override
 	public void setForce3SIDTune(boolean isForceStereoTune) {
 		this.force3SIDTune.set(isForceStereoTune);
+	}
+
+	private BooleanProperty muteVoice1 = new SimpleBooleanProperty(DEFAULT_MUTE_VOICE1);
+
+	public BooleanProperty muteVoice1Property() {
+		return muteVoice1;
+	}
+
+	@Override
+	public boolean isMuteVoice1() {
+		return muteVoice1.get();
+	}
+
+	@Override
+	public void setMuteVoice1(boolean mute) {
+		muteVoice1.set(mute);
+	}
+
+	private BooleanProperty muteVoice2 = new SimpleBooleanProperty(DEFAULT_MUTE_VOICE2);
+
+	public BooleanProperty muteVoice2Property() {
+		return muteVoice2;
+	}
+
+	@Override
+	public boolean isMuteVoice2() {
+		return muteVoice2.get();
+	}
+
+	@Override
+	public void setMuteVoice2(boolean mute) {
+		muteVoice2.set(mute);
+	}
+
+	private BooleanProperty muteVoice3 = new SimpleBooleanProperty(DEFAULT_MUTE_VOICE3);
+
+	public BooleanProperty muteVoice3Property() {
+		return muteVoice3;
+	}
+
+	@Override
+	public boolean isMuteVoice3() {
+		return muteVoice3.get();
+	}
+
+	@Override
+	public void setMuteVoice3(boolean mute) {
+		muteVoice3.set(mute);
+	}
+
+	private BooleanProperty muteVoice4 = new SimpleBooleanProperty(DEFAULT_MUTE_VOICE4);
+
+	public BooleanProperty muteVoice4Property() {
+		return muteVoice4;
+	}
+
+	@Override
+	public boolean isMuteVoice4() {
+		return muteVoice4.get();
+	}
+
+	@Override
+	public void setMuteVoice4(boolean mute) {
+		muteVoice4.set(mute);
+	}
+
+	private BooleanProperty muteStereoVoice1 = new SimpleBooleanProperty(DEFAULT_MUTE_STEREO_VOICE1);
+
+	public BooleanProperty muteStereoVoice1Property() {
+		return muteStereoVoice1;
+	}
+
+	@Override
+	public boolean isMuteStereoVoice1() {
+		return muteStereoVoice1.get();
+	}
+
+	@Override
+	public void setMuteStereoVoice1(boolean mute) {
+		muteStereoVoice1.set(mute);
+	}
+
+	private BooleanProperty muteStereoVoice2 = new SimpleBooleanProperty(DEFAULT_MUTE_STEREO_VOICE2);
+
+	public BooleanProperty muteStereoVoice2Property() {
+		return muteStereoVoice2;
+	}
+
+	@Override
+	public boolean isMuteStereoVoice2() {
+		return muteStereoVoice2.get();
+	}
+
+	@Override
+	public void setMuteStereoVoice2(boolean mute) {
+		muteStereoVoice2.set(mute);
+	}
+
+	private BooleanProperty muteStereoVoice3 = new SimpleBooleanProperty(DEFAULT_MUTE_STEREO_VOICE3);
+
+	public BooleanProperty muteStereoVoice3Property() {
+		return muteStereoVoice3;
+	}
+
+	@Override
+	public boolean isMuteStereoVoice3() {
+		return muteStereoVoice3.get();
+	}
+
+	@Override
+	public void setMuteStereoVoice3(boolean mute) {
+		muteStereoVoice3.set(mute);
+	}
+
+	private BooleanProperty muteStereoVoice4 = new SimpleBooleanProperty(DEFAULT_MUTE_STEREO_VOICE4);
+
+	public BooleanProperty muteStereoVoice4Property() {
+		return muteStereoVoice4;
+	}
+
+	@Override
+	public boolean isMuteStereoVoice4() {
+		return muteStereoVoice4.get();
+	}
+
+	@Override
+	public void setMuteStereoVoice4(boolean mute) {
+		muteStereoVoice4.set(mute);
+	}
+
+	private BooleanProperty muteThirdSIDVoice1 = new SimpleBooleanProperty(DEFAULT_MUTE_THIRDSID_VOICE1);
+
+	public BooleanProperty muteThirdSIDVoice1Property() {
+		return muteThirdSIDVoice1;
+	}
+
+	@Override
+	public boolean isMuteThirdSIDVoice1() {
+		return muteThirdSIDVoice1.get();
+	}
+
+	@Override
+	public void setMuteThirdSIDVoice1(boolean mute) {
+		muteThirdSIDVoice1.set(mute);
+	}
+
+	private BooleanProperty muteThirdSIDVoice2 = new SimpleBooleanProperty(DEFAULT_MUTE_THIRDSID_VOICE2);
+
+	public BooleanProperty muteThirdSIDVoice2Property() {
+		return muteThirdSIDVoice2;
+	}
+
+	@Override
+	public boolean isMuteThirdSIDVoice2() {
+		return muteThirdSIDVoice2.get();
+	}
+
+	@Override
+	public void setMuteThirdSIDVoice2(boolean mute) {
+		muteThirdSIDVoice2.set(mute);
+	}
+
+	private BooleanProperty muteThirdSIDVoice3 = new SimpleBooleanProperty(DEFAULT_MUTE_THIRDSID_VOICE3);
+
+	public BooleanProperty muteThirdSIDVoice3Property() {
+		return muteThirdSIDVoice3;
+	}
+
+	@Override
+	public boolean isMuteThirdSIDVoice3() {
+		return muteThirdSIDVoice3.get();
+	}
+
+	@Override
+	public void setMuteThirdSIDVoice3(boolean mute) {
+		muteThirdSIDVoice3.set(mute);
+	}
+
+	private BooleanProperty muteThirdSIDVoice4 = new SimpleBooleanProperty(DEFAULT_MUTE_THIRDSID_VOICE4);
+
+	public BooleanProperty muteThirdSIDVoice4Property() {
+		return muteThirdSIDVoice4;
+	}
+
+	@Override
+	public boolean isMuteThirdSIDVoice4() {
+		return muteThirdSIDVoice4.get();
+	}
+
+	@Override
+	public void setMuteThirdSIDVoice4(boolean mute) {
+		muteStereoVoice4.set(mute);
 	}
 
 	private StringProperty filter6581 = new SimpleStringProperty(DEFAULT_FILTER_6581);

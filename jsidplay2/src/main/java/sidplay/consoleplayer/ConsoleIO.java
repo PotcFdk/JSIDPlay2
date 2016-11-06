@@ -23,7 +23,7 @@ public class ConsoleIO {
 
 	private String filename;
 
-	private boolean v1mute, v2mute, v3mute, v4mute, v5mute, v6mute, v7mute, v8mute, v9mute;
+	private boolean v1mute, v2mute, v3mute, v4mute, v5mute, v6mute, v7mute, v8mute, v9mute, v10mute, v11mute, v12mute;
 
 	public ConsoleIO(IniConfig config, String filename) {
 		this.config = config;
@@ -207,6 +207,9 @@ public class ConsoleIO {
 		out.println(BUNDLE.getString("MUTE_7"));
 		out.println(BUNDLE.getString("MUTE_8"));
 		out.println(BUNDLE.getString("MUTE_9"));
+		out.println(BUNDLE.getString("MUTE_10"));
+		out.println(BUNDLE.getString("MUTE_11"));
+		out.println(BUNDLE.getString("MUTE_12"));
 		out.println(BUNDLE.getString("FILTER_ENABLE"));
 		out.println(BUNDLE.getString("STEREO_FILTER_ENABLE"));
 		out.println(BUNDLE.getString("3RD_SID_FILTER_ENABLE"));
@@ -278,32 +281,47 @@ public class ConsoleIO {
 
 			case '4':
 				v4mute = !v4mute;
-				player.getC64().configureSID(1, sid -> sid.setVoiceMute(0, v4mute));
+				player.getC64().configureSID(0, sid -> sid.setVoiceMute(3, v4mute));
 				break;
 
 			case '5':
 				v5mute = !v5mute;
-				player.getC64().configureSID(1, sid -> sid.setVoiceMute(1, v5mute));
+				player.getC64().configureSID(1, sid -> sid.setVoiceMute(0, v5mute));
 				break;
 
 			case '6':
 				v6mute = !v6mute;
-				player.getC64().configureSID(1, sid -> sid.setVoiceMute(2, v6mute));
+				player.getC64().configureSID(1, sid -> sid.setVoiceMute(1, v6mute));
 				break;
 
 			case '7':
 				v7mute = !v7mute;
-				player.getC64().configureSID(2, sid -> sid.setVoiceMute(0, v7mute));
+				player.getC64().configureSID(1, sid -> sid.setVoiceMute(2, v7mute));
 				break;
 
 			case '8':
 				v8mute = !v8mute;
-				player.getC64().configureSID(2, sid -> sid.setVoiceMute(1, v8mute));
+				player.getC64().configureSID(1, sid -> sid.setVoiceMute(3, v8mute));
 				break;
 
 			case '9':
 				v9mute = !v9mute;
-				player.getC64().configureSID(2, sid -> sid.setVoiceMute(2, v9mute));
+				player.getC64().configureSID(2, sid -> sid.setVoiceMute(0, v9mute));
+				break;
+
+			case 'a':
+				v10mute = !v10mute;
+				player.getC64().configureSID(2, sid -> sid.setVoiceMute(1, v10mute));
+				break;
+
+			case 'b':
+				v11mute = !v11mute;
+				player.getC64().configureSID(2, sid -> sid.setVoiceMute(2, v11mute));
+				break;
+
+			case 'c':
+				v12mute = !v12mute;
+				player.getC64().configureSID(2, sid -> sid.setVoiceMute(3, v12mute));
 				break;
 
 			case 'f': {

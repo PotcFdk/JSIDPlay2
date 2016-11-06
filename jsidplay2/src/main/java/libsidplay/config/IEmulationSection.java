@@ -496,6 +496,186 @@ public interface IEmulationSection {
 	void setForce3SIDTune(boolean force);
 
 	/**
+	 * Getter of mute voice 1
+	 * 
+	 * @return mute voice 1
+	 */
+	boolean isMuteVoice1();
+
+	/**
+	 * Setter of mute voice 1
+	 * 
+	 * @param mute
+	 *            mute voice 1
+	 */
+	void setMuteVoice1(boolean mute);
+
+	/**
+	 * Getter of mute voice 2
+	 * 
+	 * @return mute voice 2
+	 */
+	boolean isMuteVoice2();
+
+	/**
+	 * Setter of mute voice 2
+	 * 
+	 * @param mute
+	 *            mute voice 2
+	 */
+	void setMuteVoice2(boolean mute);
+
+	/**
+	 * Getter of mute voice 3
+	 * 
+	 * @return mute voice 3
+	 */
+	boolean isMuteVoice3();
+
+	/**
+	 * Setter of mute voice 3
+	 * 
+	 * @param mute
+	 *            mute voice 3
+	 */
+	void setMuteVoice3(boolean mute);
+
+	/**
+	 * Getter of mute voice 4
+	 * 
+	 * @return mute voice 4
+	 */
+	boolean isMuteVoice4();
+
+	/**
+	 * Setter of mute voice 4
+	 * 
+	 * @param mute
+	 *            mute voice 4
+	 */
+	void setMuteVoice4(boolean mute);
+
+	/**
+	 * Getter of stereo mute voice 1
+	 * 
+	 * @return stereo mute voice 1
+	 */
+	boolean isMuteStereoVoice1();
+
+	/**
+	 * Setter of stereo mute voice 1
+	 * 
+	 * @param mute
+	 *            stereo mute voice 1
+	 */
+	void setMuteStereoVoice1(boolean mute);
+
+	/**
+	 * Getter of stereo mute voice 2
+	 * 
+	 * @return stereo mute voice 2
+	 */
+	boolean isMuteStereoVoice2();
+
+	/**
+	 * Setter of stereo mute voice 2
+	 * 
+	 * @param mute
+	 *            stereo mute voice 2
+	 */
+	void setMuteStereoVoice2(boolean mute);
+
+	/**
+	 * Getter of stereo mute voice 3
+	 * 
+	 * @return stereo mute voice 3
+	 */
+	boolean isMuteStereoVoice3();
+
+	/**
+	 * Setter of stereo mute voice 3
+	 * 
+	 * @param mute
+	 *            stereo mute voice 3
+	 */
+	void setMuteStereoVoice3(boolean mute);
+
+	/**
+	 * Getter of stereo mute voice 4
+	 * 
+	 * @return stereo mute voice 4
+	 */
+	boolean isMuteStereoVoice4();
+
+	/**
+	 * Setter of stereo mute voice 4
+	 * 
+	 * @param mute
+	 *            stereo mute voice 4
+	 */
+	void setMuteStereoVoice4(boolean mute);
+
+	/**
+	 * Getter of 3-SID mute voice 1
+	 * 
+	 * @return 3-SID mute voice 1
+	 */
+	boolean isMuteThirdSIDVoice1();
+
+	/**
+	 * Setter of 3-SID mute voice 1
+	 * 
+	 * @param mute
+	 *            3-SID mute voice 1
+	 */
+	void setMuteThirdSIDVoice1(boolean mute);
+
+	/**
+	 * Getter of 3-SID mute voice 2
+	 * 
+	 * @return 3-SID mute voice 2
+	 */
+	boolean isMuteThirdSIDVoice2();
+
+	/**
+	 * Setter of 3-SID mute voice 2
+	 * 
+	 * @param mute
+	 *            3-SID mute voice 2
+	 */
+	void setMuteThirdSIDVoice2(boolean mute);
+
+	/**
+	 * Getter of 3-SID mute voice 3
+	 * 
+	 * @return 3-SID mute voice 3
+	 */
+	boolean isMuteThirdSIDVoice3();
+
+	/**
+	 * Setter of 3-SID mute voice 3
+	 * 
+	 * @param mute
+	 *            3-SID mute voice 3
+	 */
+	void setMuteThirdSIDVoice3(boolean mute);
+
+	/**
+	 * Getter of 3-SID mute voice 4
+	 * 
+	 * @return 3-SID mute voice 4
+	 */
+	boolean isMuteThirdSIDVoice4();
+
+	/**
+	 * Setter of 3-SID mute voice 4
+	 * 
+	 * @param mute
+	 *            3-SID mute voice 4
+	 */
+	void setMuteThirdSIDVoice4(boolean mute);
+
+	/**
 	 * Getter of the the stereo SID model.
 	 * 
 	 * @return the stereo SID model
@@ -511,17 +691,17 @@ public interface IEmulationSection {
 	void setStereoSidModel(ChipModel model);
 
 	/**
-	 * Getter of the the stereo SID model.
+	 * Getter of the the 3-SID model.
 	 * 
-	 * @return the stereo SID model
+	 * @return the 3-SID model
 	 */
 	ChipModel getThirdSIDModel();
 
 	/**
-	 * Setter of the the stereo SID model.
+	 * Setter of the the 3-SID model.
 	 * 
 	 * @param model
-	 *            the the stereo SID model
+	 *            the the 3-SID model
 	 */
 	void setThirdSIDModel(ChipModel model);
 
@@ -769,4 +949,49 @@ public interface IEmulationSection {
 		}
 	}
 
+	default boolean isMuteVoice(int sidNum, int voice) {
+		switch (sidNum) {
+		case 0:
+			switch (voice) {
+			case 0:
+				return isMuteVoice1();
+			case 1:
+				return isMuteVoice2();
+			case 2:
+				return isMuteVoice3();
+			case 3:
+				return isMuteVoice4();
+			default:
+				throw new RuntimeException("Unknown voice: " + voice + "!");
+			}
+		case 1:
+			switch (voice) {
+			case 0:
+				return isMuteStereoVoice1();
+			case 1:
+				return isMuteStereoVoice2();
+			case 2:
+				return isMuteStereoVoice3();
+			case 3:
+				return isMuteStereoVoice4();
+			default:
+				throw new RuntimeException("Unknown voice: " + voice + "!");
+			}
+		case 2:
+			switch (voice) {
+			case 0:
+				return isMuteThirdSIDVoice1();
+			case 1:
+				return isMuteThirdSIDVoice2();
+			case 2:
+				return isMuteThirdSIDVoice3();
+			case 3:
+				return isMuteThirdSIDVoice4();
+			default:
+				throw new RuntimeException("Unknown voice: " + voice + "!");
+			}
+		default:
+			throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+		}
+	}
 }

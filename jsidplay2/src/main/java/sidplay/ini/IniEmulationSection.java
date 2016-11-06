@@ -13,6 +13,18 @@ import static sidplay.ini.IniDefaults.DEFAULT_FAKE_STEREO;
 import static sidplay.ini.IniDefaults.DEFAULT_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE4;
 import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_8580;
@@ -281,6 +293,126 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	@Override
 	public final void setForce3SIDTune(final boolean force) {
 		iniReader.setProperty("Emulation", "force3SIDTune", force);
+	}
+
+	@Override
+	public boolean isMuteVoice1() {
+		return iniReader.getPropertyBool("Emulation", "muteVoice1", DEFAULT_MUTE_VOICE1);
+	}
+
+	@Override
+	public void setMuteVoice1(boolean mute) {
+		iniReader.setProperty("Emulation", "muteVoice1", mute);
+	}
+
+	@Override
+	public boolean isMuteVoice2() {
+		return iniReader.getPropertyBool("Emulation", "muteVoice2", DEFAULT_MUTE_VOICE2);
+	}
+
+	@Override
+	public void setMuteVoice2(boolean mute) {
+		iniReader.setProperty("Emulation", "muteVoice2", mute);
+	}
+
+	@Override
+	public boolean isMuteVoice3() {
+		return iniReader.getPropertyBool("Emulation", "muteVoice3", DEFAULT_MUTE_VOICE3);
+	}
+
+	@Override
+	public void setMuteVoice3(boolean mute) {
+		iniReader.setProperty("Emulation", "muteVoice3", mute);
+	}
+
+	@Override
+	public boolean isMuteVoice4() {
+		return iniReader.getPropertyBool("Emulation", "muteVoice4", DEFAULT_MUTE_VOICE4);
+	}
+
+	@Override
+	public void setMuteVoice4(boolean mute) {
+		iniReader.setProperty("Emulation", "muteVoice4", mute);
+	}
+
+	@Override
+	public boolean isMuteStereoVoice1() {
+		return iniReader.getPropertyBool("Emulation", "muteStereoVoice1", DEFAULT_MUTE_STEREO_VOICE1);
+	}
+
+	@Override
+	public void setMuteStereoVoice1(boolean mute) {
+		iniReader.setProperty("Emulation", "muteStereoVoice1", mute);
+	}
+
+	@Override
+	public boolean isMuteStereoVoice2() {
+		return iniReader.getPropertyBool("Emulation", "muteStereoVoice2", DEFAULT_MUTE_STEREO_VOICE2);
+	}
+
+	@Override
+	public void setMuteStereoVoice2(boolean mute) {
+		iniReader.setProperty("Emulation", "muteStereoVoice2", mute);
+	}
+
+	@Override
+	public boolean isMuteStereoVoice3() {
+		return iniReader.getPropertyBool("Emulation", "muteStereoVoice3", DEFAULT_MUTE_STEREO_VOICE3);
+	}
+
+	@Override
+	public void setMuteStereoVoice3(boolean mute) {
+		iniReader.setProperty("Emulation", "muteStereoVoice3", mute);
+	}
+
+	@Override
+	public boolean isMuteStereoVoice4() {
+		return iniReader.getPropertyBool("Emulation", "muteStereoVoice4", DEFAULT_MUTE_STEREO_VOICE4);
+	}
+
+	@Override
+	public void setMuteStereoVoice4(boolean mute) {
+		iniReader.setProperty("Emulation", "muteStereoVoice4", mute);
+	}
+
+	@Override
+	public boolean isMuteThirdSIDVoice1() {
+		return iniReader.getPropertyBool("Emulation", "muteThirdSIDVoice1", DEFAULT_MUTE_THIRDSID_VOICE1);
+	}
+
+	@Override
+	public void setMuteThirdSIDVoice1(boolean mute) {
+		iniReader.setProperty("Emulation", "muteThirdSIDVoice1", mute);
+	}
+
+	@Override
+	public boolean isMuteThirdSIDVoice2() {
+		return iniReader.getPropertyBool("Emulation", "muteThirdSIDVoice2", DEFAULT_MUTE_THIRDSID_VOICE2);
+	}
+
+	@Override
+	public void setMuteThirdSIDVoice2(boolean mute) {
+		iniReader.setProperty("Emulation", "muteThirdSIDVoice2", mute);
+	}
+
+	@Override
+	public boolean isMuteThirdSIDVoice3() {
+		return iniReader.getPropertyBool("Emulation", "muteThirdSIDVoice3", DEFAULT_MUTE_THIRDSID_VOICE3);
+	}
+
+	@Override
+	public void setMuteThirdSIDVoice3(boolean mute) {
+		iniReader.setProperty("Emulation", "muteThirdSIDVoice3", mute);
+	}
+
+	@Override
+	public boolean isMuteThirdSIDVoice4() {
+		return iniReader.getPropertyBool("Emulation", "muteThirdSIDVoice4", DEFAULT_MUTE_THIRDSID_VOICE4);
+	}
+
+	@Override
+	public void setMuteThirdSIDVoice4(boolean mute) {
+		iniReader.setProperty("Emulation", "muteThirdSIDVoice4", mute);
 	}
 
 	@Override

@@ -87,6 +87,8 @@ public final class SID implements SIDChip {
 
 	private final boolean[] muted = new boolean[3];
 
+	private boolean samplesMuted;
+
 	/**
 	 * Estimate DAC nonlinearity. The SID contains R-2R ladder, and some likely
 	 * errors in the resistor lengths which result in errors depending on the
@@ -237,6 +239,7 @@ public final class SID implements SIDChip {
 		busValueTtl = 0;
 		write_address = 0;
 		voiceSync(false);
+		samplesMuted = false;
 	}
 
 	/**
@@ -391,8 +394,10 @@ public final class SID implements SIDChip {
 			filter8580.writeRES_FILT(busValue);
 			break;
 		case 0x18:
-			filter6581.writeMODE_VOL(busValue);
-			filter8580.writeMODE_VOL(busValue);
+			if (!samplesMuted) {
+				filter6581.writeMODE_VOL(busValue);
+				filter8580.writeMODE_VOL(busValue);
+			}
 			break;
 		default:
 			break;
@@ -406,13 +411,17 @@ public final class SID implements SIDChip {
 	 * SID voice muting.
 	 * 
 	 * @param channel
-	 *            channe to modify
-	 * @param enable
+	 *            channel to modify
+	 * @param mute
 	 *            is muted?
 	 */
 	@Override
-	public void mute(final int channel, final boolean enable) {
-		muted[channel] = enable;
+	public void mute(final int channel, final boolean mute) {
+		if (channel < 3) {
+			muted[channel] = mute;
+		} else {
+			samplesMuted = mute;
+		}
 	}
 
 	/**
