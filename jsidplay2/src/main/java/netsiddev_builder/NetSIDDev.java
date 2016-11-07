@@ -1,6 +1,7 @@
 package netsiddev_builder;
 
 import libsidplay.common.ChipModel;
+import libsidplay.common.Emulation;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
@@ -10,12 +11,22 @@ import libsidplay.config.IEmulationSection;
 public class NetSIDDev extends SIDEmu {
 	private byte sidNum;
 	private NetSIDConnection connection;
+	private ChipModel chipModel;
 
 	public NetSIDDev(EventScheduler context, NetSIDConnection connection, final int sidNum, final ChipModel model) {
 		super(context);
 		this.connection = connection;
 		this.sidNum = (byte) sidNum;
+		this.chipModel = model;
 	}
+
+	private final Event event = new Event("NetSIDDev Delay") {
+
+		@Override
+		public void event() {
+			context.schedule(event, connection.eventuallyDelay(sidNum), Event.Phase.PHI2);
+		}
+	};
 
 	public void lock() {
 		reset((byte) 0xf);
@@ -36,17 +47,8 @@ public class NetSIDDev extends SIDEmu {
 	@Override
 	public byte read(int addr) {
 		clock();
-		return (byte) 0xff;
+		return connection.read(sidNum, (byte) addr);
 	}
-
-	private final Event event = new Event("NetSIDDev Delay") {
-
-		@Override
-		public void event() {
-			connection.eventuallyDelay(sidNum);
-			context.schedule(event, 0xFFFF, Event.Phase.PHI2);
-		}
-	};
 
 	@Override
 	public void write(int addr, final byte data) {
@@ -78,11 +80,25 @@ public class NetSIDDev extends SIDEmu {
 	}
 
 	@Override
-	public void setVoiceMute(int num, boolean mute) {
+	public void setVoiceMute(int voice, boolean mute) {
+		connection.mute(sidNum, (byte) voice, mute);
 	}
 
 	@Override
 	public void setFilter(IConfig config, int sidNum) {
+		IEmulationSection emulationSection = config.getEmulationSection();
+		switch (chipModel) {
+		case MOS6581:
+			String filterName6581 = emulationSection.getFilterName(sidNum, Emulation.RESIDFP, ChipModel.MOS6581);
+			connection.setChipModel((byte) sidNum, filterName6581);
+			break;
+		case MOS8580:
+			String filterName8580 = emulationSection.getFilterName(sidNum, Emulation.RESIDFP, ChipModel.MOS8580);
+			connection.setChipModel((byte) sidNum, filterName8580);
+			break;
+		default:
+			throw new RuntimeException("Unknown SID chip model: " + chipModel);
+		}
 	}
 
 	@Override

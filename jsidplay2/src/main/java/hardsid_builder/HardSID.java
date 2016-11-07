@@ -58,8 +58,8 @@ public class HardSID extends SIDEmu {
 		hardSID.HardSID_Flush(deviceID);
 		hardSID.HardSID_Reset(deviceID);
 		for (byte i = 0; i < SIDChip.REG_COUNT; i++) {
-			hardSID.HardSID_Write(deviceID, chipNum, i, (byte) 0);
 			hardSID.HardSID_Delay(deviceID, (short) 4);
+			hardSID.HardSID_Write(deviceID, chipNum, i, (byte) 0);
 		}
 		hardSID.HardSID_Flush(deviceID);
 	}
