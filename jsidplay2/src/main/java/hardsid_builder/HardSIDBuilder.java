@@ -42,6 +42,8 @@ public class HardSIDBuilder implements SIDBuilder {
 
 	private static final int HARDSID_DELAY = 250;
 
+	private static final int HARDSID_MIN_DELAY = 4;
+
 	/**
 	 * System event context.
 	 */
@@ -203,7 +205,7 @@ public class HardSIDBuilder implements SIDBuilder {
 
 	public long eventuallyDelay(byte sidNum) {
 		final long now = context.getTime(Event.Phase.PHI2);
-		while ((int) (now - lastSIDWriteTime) > HARDSID_DELAY) {
+		while ((int) (now - lastSIDWriteTime) > HARDSID_DELAY+HARDSID_MIN_DELAY) {
 			lastSIDWriteTime += HARDSID_DELAY;
 			hardSID.HardSID_Delay(deviceID, (byte) HARDSID_DELAY);
 		}
