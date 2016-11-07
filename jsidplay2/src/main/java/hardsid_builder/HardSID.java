@@ -29,7 +29,7 @@ public class HardSID extends SIDEmu {
 	private final Event event = new Event("HardSID Delay") {
 		@Override
 		public void event() {
-			context.schedule(event, hardSIDBuilder.eventuallyDelay(chipNum), Event.Phase.PHI2);
+			context.schedule(event, hardSIDBuilder.eventuallyDelay(), Event.Phase.PHI2);
 		}
 	};
 
@@ -55,6 +55,7 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void reset(final byte volume) {
+		hardSID.HardSID_Flush(deviceID);
 		hardSID.HardSID_Reset(deviceID);
 		for (byte i = 0; i < SIDChip.REG_COUNT; i++) {
 			hardSID.HardSID_Write(deviceID, chipNum, i, (byte) 0);

@@ -81,7 +81,8 @@ public class HardSIDBuilder implements SIDBuilder {
 		this.context = context;
 		this.config = config;
 		if (!initialized) {
-			// Extract and Load JNI driver wrapper recognizing netsiddev devices and
+			// Extract and Load JNI driver wrapper recognizing netsiddev devices
+			// and
 			// real devices
 			try {
 				System.load(extract(config, "/hardsid_builder/win32/Release/", "JHardSID.dll"));
@@ -140,7 +141,7 @@ public class HardSIDBuilder implements SIDBuilder {
 	int getSidCount() {
 		return sids.size();
 	}
-	
+
 	@Override
 	public void unlock(final SIDEmu sidEmu) {
 		HardSID hardSid = (HardSID) sidEmu;
@@ -196,20 +197,20 @@ public class HardSIDBuilder implements SIDBuilder {
 					return i;
 				}
 			}
-			throw new RuntimeException(
-					String.format("HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)",
-							deviceID, hardSID.HardSID_SIDCount(deviceID)));
+			throw new RuntimeException(String.format(
+					"HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)", deviceID,
+					hardSID.HardSID_SIDCount(deviceID)));
 		}
 		return (byte) (chipModel == ChipModel.MOS6581 ? sid6581 : sid8580);
 	}
 
-	public long eventuallyDelay(byte sidNum) {
+	public long eventuallyDelay() {
 		final long now = context.getTime(Event.Phase.PHI2);
-		while ((int) (now - lastSIDWriteTime) > HARDSID_DELAY+HARDSID_MIN_DELAY) {
+		while (now - lastSIDWriteTime > HARDSID_DELAY + HARDSID_MIN_DELAY) {
 			lastSIDWriteTime += HARDSID_DELAY;
 			hardSID.HardSID_Delay(deviceID, (byte) HARDSID_DELAY);
 		}
-		if ((int) (now - lastSIDWriteTime) > 0)
+		if (now - lastSIDWriteTime > 0)
 			hardSID.HardSID_Delay(deviceID, (short) (now - lastSIDWriteTime));
 		lastSIDWriteTime = now;
 		return HARDSID_DELAY;
