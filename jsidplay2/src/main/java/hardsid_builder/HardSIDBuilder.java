@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import libsidplay.common.ChipModel;
+import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
@@ -39,6 +40,8 @@ import libsidplay.sidtune.SidTune;
  */
 public class HardSIDBuilder implements SIDBuilder {
 
+	private static final int HARDSID_DELAY = 250;
+
 	/**
 	 * System event context.
 	 */
@@ -63,6 +66,8 @@ public class HardSIDBuilder implements SIDBuilder {
 	 * Device number, if more than one USB devices is connected.
 	 */
 	private byte deviceID;
+
+	protected long lastSIDWriteTime;
 
 	private static boolean initialized;
 
@@ -183,13 +188,29 @@ public class HardSIDBuilder implements SIDBuilder {
 		int sid8580 = config.getEmulationSection().getHardsid8580();
 		if (sidNum == 2) {
 			// 3-SID: for now choose next available free slot
-			for (byte i = 0; i < sids.size(); i++) {
+			for (byte i = 0; i < hardSID.HardSID_SIDCount(deviceID); i++) {
 				if (i != sid6581 && i != sid8580) {
+					System.err.println("Use 1st:" + sid6581 + ", 2nd:" + sid8580 + ", 3rd:" + i);
 					return i;
 				}
 			}
+			throw new RuntimeException(
+					String.format("HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)",
+							deviceID, hardSID.HardSID_SIDCount(deviceID)));
 		}
 		return (byte) (chipModel == ChipModel.MOS6581 ? sid6581 : sid8580);
+	}
+
+	public long eventuallyDelay(byte sidNum) {
+		final long now = context.getTime(Event.Phase.PHI2);
+		while ((int) (now - lastSIDWriteTime) > HARDSID_DELAY) {
+			lastSIDWriteTime += HARDSID_DELAY;
+			hardSID.HardSID_Delay(deviceID, (byte) HARDSID_DELAY);
+		}
+		if ((int) (now - lastSIDWriteTime) > 0)
+			hardSID.HardSID_Delay(deviceID, (short) (now - lastSIDWriteTime));
+		lastSIDWriteTime = now;
+		return HARDSID_DELAY;
 	}
 
 }
