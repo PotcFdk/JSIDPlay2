@@ -39,11 +39,11 @@ public class NetSIDConnection {
 	private static final int CMD_BUFFER_SIZE = 4096;
 
 	private EventScheduler context;
-	private static Socket connectedSocket;
+	private Socket connectedSocket;
 	private List<NetSIDPkg> commands = new ArrayList<>();
 	private TryWrite tryWrite;
 	private byte readResult, configInfo[] = new byte[255];
-	protected long lastSIDWriteTime;
+	private long lastSIDWriteTime;
 	private Map<String, Byte> filterNameToConfig = new HashMap<>();
 
 	public NetSIDConnection(EventScheduler context, IConfig config, SidTune tune) {
@@ -121,9 +121,6 @@ public class NetSIDConnection {
 
 	private byte getConfigCount() {
 		try {
-			/* deal with unsubmitted writes */
-			flush(false);
-
 			commands.add(new GetConfigCount());
 			flush(false);
 			return readResult;
@@ -134,9 +131,6 @@ public class NetSIDConnection {
 
 	private String getConfigInfo(byte sidNum, byte[] chipModel) {
 		try {
-			/* deal with unsubmitted writes */
-			flush(false);
-
 			commands.add(new GetConfigInfo(sidNum));
 			flush(false);
 			chipModel[0] = readResult;
@@ -283,7 +277,7 @@ public class NetSIDConnection {
 			Byte model = filterNameToConfig.get(filterName);
 			if (model == null) {
 				model = sidNum;
-				System.err.println("Undefined Filter: " + filterName);
+				System.err.println("Undefined Filter: " + filterName + ", will use instead: " + sidNum);
 			}
 			commands.add(new SetSIDModel((byte) sidNum, model));
 			flush(false);
@@ -292,12 +286,15 @@ public class NetSIDConnection {
 		}
 	}
 
-	public void close() {
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
 		try {
-			connectedSocket.close();
+			if (connectedSocket != null) {
+				connectedSocket.close();
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
 }

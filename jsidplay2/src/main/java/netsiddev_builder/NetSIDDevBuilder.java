@@ -1,8 +1,5 @@
 package netsiddev_builder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
@@ -17,7 +14,6 @@ public class NetSIDDevBuilder implements SIDBuilder {
 	private EventScheduler context;
 	private IConfig config;
 
-	private List<NetSIDDev> sids = new ArrayList<NetSIDDev>();
 	private NetSIDConnection connection;
 	private CPUClock cpuClock;
 
@@ -25,8 +21,6 @@ public class NetSIDDevBuilder implements SIDBuilder {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
-		if (connection != null)
-			connection.close();
 		connection = new NetSIDConnection(context, config, tune);
 	}
 
@@ -49,7 +43,6 @@ public class NetSIDDevBuilder implements SIDBuilder {
 			sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
 		}
 		sid.lock();
-		sids.add(sid);
 		return sid;
 	}
 
@@ -57,7 +50,6 @@ public class NetSIDDevBuilder implements SIDBuilder {
 	public void unlock(SIDEmu device) {
 		NetSIDDev impl = (NetSIDDev) device;
 		impl.unlock();
-		sids.remove(impl);
 	}
 
 }
