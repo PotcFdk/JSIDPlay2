@@ -203,7 +203,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	protected TabPane tabbedPane;
 	@FXML
-	private Label status, hardsid6581Label, hardsid8580Label;
+	private Label tracks, status, hardsid6581Label, hardsid8580Label;
 	@FXML
 	protected ProgressBar progress;
 
@@ -223,6 +223,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			Platform.runLater(() -> nextFavoriteDisabledState.set(sidTune == SidTune.RESET || newValue == State.QUIT));
 			if (newValue == State.START) {
 				Platform.runLater(() -> {
+					if (sidTune != SidTune.RESET) {
+						tracks.setText(String.format("%2d/%2d", sidTune.getInfo().getCurrentSong(),
+								sidTune.getInfo().getSongs()));
+					} else {
+						tracks.setText("");
+					}
 					updatePlayerButtons(newValue);
 
 					setPlayerIdAndInfos();
@@ -392,6 +398,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 				event.setDropCompleted(success);
 				event.consume();
 			});
+			tabbedPane.requestFocus();
 			util.getPlayer().startC64();
 		});
 	}

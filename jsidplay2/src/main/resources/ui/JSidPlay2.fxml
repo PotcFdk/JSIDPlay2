@@ -47,6 +47,7 @@
 <?import ui.console.Console?>
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
 <?scenebuilder-classpath-element ../../../../target/classes?>
+<?import javafx.geometry.Insets?>
 <Scene>
 	<stylesheets>
 		<URL value="@JSidPlay2.css" />
@@ -193,8 +194,8 @@
 									<CheckMenuItem text="%DRIVE_SOUND" fx:id="driveSoundOn" />
 									<CheckMenuItem text="%PARALLEL_CABLE" onAction="#parallelCable"
 										fx:id="parCable" />
-									<CheckMenuItem text="%JIFFYDOS"
-										onAction="#installJiffyDos" fx:id="installJiffyDos" />
+									<CheckMenuItem text="%JIFFYDOS" onAction="#installJiffyDos"
+										fx:id="installJiffyDos" />
 									<Menu text="%FLOPPY_TYPE">
 										<RadioMenuItem text="%C1541" toggleGroup="$floppyGroup"
 											onAction="#floppyTypeC1541" fx:id="c1541" />
@@ -286,6 +287,15 @@
 						</menus>
 					</MenuBar>
 					<HBox AnchorPane.rightAnchor="10">
+						<padding>
+							<Insets top="5.0" bottom="5.0" />
+						</padding>
+						<HBox alignment="CENTER_RIGHT">
+							<padding>
+								<Insets right="10.0" />
+							</padding>
+							<Label fx:id="tracks" />
+						</HBox>
 						<Button focusTraversable="false" onAction="#previousSong"
 							fx:id="previous2">
 							<tooltip>
@@ -387,9 +397,13 @@
 				</AnchorPane>
 				<HBox>
 					<HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+						<spacing>10</spacing>
+						<padding>
+							<Insets left="10.0" right="10.0" />
+						</padding>
 						<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
 						<TextField fx:id="defaultTime" onAction="#setDefaultTime"
-							prefWidth="60">
+							prefWidth="60" >
 							<tooltip>
 								<Tooltip text="%DEFAULT_LENGTH_TIP"></Tooltip>
 							</tooltip>
@@ -401,6 +415,10 @@
 						</CheckBox>
 					</HBox>
 					<HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+						<spacing>10</spacing>
+						<padding>
+							<Insets left="10.0" right="10.0" />
+						</padding>
 						<Label text="%6581" fx:id="hardsid6581Label" />
 						<ComboBox fx:id="hardsid6581Box" onAction="#setSid6581">
 							<items>
