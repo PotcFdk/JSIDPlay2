@@ -13,6 +13,7 @@ import java.util.Map;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SamplingMethod;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
@@ -26,6 +27,7 @@ import netsiddev_builder.commands.SetSIDCount;
 import netsiddev_builder.commands.SetSIDLevel;
 import netsiddev_builder.commands.SetSIDModel;
 import netsiddev_builder.commands.SetSIDPosition;
+import netsiddev_builder.commands.SetSIDSampling;
 import netsiddev_builder.commands.TryDelay;
 import netsiddev_builder.commands.TryRead;
 import netsiddev_builder.commands.TryReset;
@@ -33,6 +35,7 @@ import netsiddev_builder.commands.TryWrite;
 
 public class NetSIDConnection {
 
+	private static final int REGULAR_DELAY = 0xFFFF;
 	private static final int PORT = 6581;
 	private static final String HOSTNAME = "127.0.0.1";
 	private static final int MAX_WRITE_CYCLES = 4096; /* c64 cycles */
@@ -63,6 +66,9 @@ public class NetSIDConnection {
 			commands.add(new SetSIDCount((byte) PLA.MAX_SIDS));
 			for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 				commands.add(new SetSIDModel((byte) sidNum, (byte) sidNum));
+			}
+			for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+				commands.add(new SetSIDSampling((byte) sidNum, (byte) SamplingMethod.RESAMPLE.ordinal()));
 				commands.add(new SetSIDLevel((byte) sidNum, (byte) 0));
 				commands.add(new SetSIDPosition((byte) sidNum, (byte) 0));
 			}
@@ -73,8 +79,8 @@ public class NetSIDConnection {
 	}
 
 	public void flush(byte sidNum) {
-		commands.add(new Flush(sidNum));
 		try {
+			commands.add(new Flush(sidNum));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -82,8 +88,11 @@ public class NetSIDConnection {
 	}
 
 	public void reset(byte sidNum, byte volume) {
-		commands.add(new TryReset(sidNum, volume));
 		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+
+			commands.add(new TryReset(sidNum, volume));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -100,14 +109,14 @@ public class NetSIDConnection {
 	public long eventuallyDelay(byte sidNum) {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
-		if (diff > 0xFFFF) {
-			lastSIDWriteTime += 0xFFFF;
-			delay(sidNum, (byte) 0xFFFF);
+		if (diff > (REGULAR_DELAY << 1)) {
+			lastSIDWriteTime += REGULAR_DELAY;
+			delay(sidNum, REGULAR_DELAY);
 		}
-		return 0xFFFF;
+		return REGULAR_DELAY;
 	}
 
-	private void delay(byte sidNum, byte cycles) {
+	private void delay(byte sidNum, int cycles) {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
@@ -121,6 +130,9 @@ public class NetSIDConnection {
 
 	private byte getConfigCount() {
 		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+
 			commands.add(new GetConfigCount());
 			flush(false);
 			return readResult;
@@ -131,6 +143,9 @@ public class NetSIDConnection {
 
 	private String getConfigInfo(byte sidNum, byte[] chipModel) {
 		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+
 			commands.add(new GetConfigInfo(sidNum));
 			flush(false);
 			chipModel[0] = readResult;
@@ -170,7 +185,7 @@ public class NetSIDConnection {
 
 	public void addWrite(byte sidNum, byte addr, byte data) {
 		try {
-			while (tryWrite(sidNum, clocksSinceLastAccess(), (byte) addr, data) == BUSY) {
+			while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == BUSY) {
 				// Try_Write sleeps for us
 			}
 		} catch (InterruptedException | IOException e) {
@@ -197,7 +212,7 @@ public class NetSIDConnection {
 			commands.add(tryWrite);
 		}
 		/* add write to queue */
-		tryWrite.addWrite(cycles, (byte) ((reg & 0x1f) | (sidNum << 5)), data);
+		tryWrite.addWrite(cycles, (byte) (reg | (sidNum << 5)), data);
 		/*
 		 * NB: if flush attempt fails, we have nevertheless queued command
 		 * locally and thus are allowed to return OK in any case.
@@ -247,7 +262,7 @@ public class NetSIDConnection {
 	}
 
 	private void sleepDependingOnCyclesSent() throws InterruptedException {
-		if (tryWrite.getCyclesSentToServer() > 3072) {
+		if (tryWrite.getCyclesSentToServer() > (MAX_WRITE_CYCLES * 3 >> 2)) {
 			Thread.sleep(Math.max(1, tryWrite.getCyclesSentToServer() / 1000 - 3));
 		}
 	}
@@ -265,6 +280,9 @@ public class NetSIDConnection {
 
 	public void setClockFrequency(byte sidNum, double cpuFrequency) {
 		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+
 			commands.add(new SetSIDClocking(sidNum, cpuFrequency));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
@@ -274,6 +292,9 @@ public class NetSIDConnection {
 
 	public void setChipModel(byte sidNum, String filterName) {
 		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+
 			Byte model = filterNameToConfig.get(filterName);
 			if (model == null) {
 				model = sidNum;
