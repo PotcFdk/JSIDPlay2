@@ -35,11 +35,12 @@ import netsiddev_builder.commands.TryWrite;
 
 public class NetSIDConnection {
 
-	private static final int REGULAR_DELAY = 0xFFFF;
 	private static final int PORT = 6581;
 	private static final String HOSTNAME = "127.0.0.1";
-	private static final int MAX_WRITE_CYCLES = 4096; /* c64 cycles */
+
+	private static final int MAX_WRITE_CYCLES = 4096;
 	private static final int CMD_BUFFER_SIZE = 4096;
+	private static final int REGULAR_DELAY = 0xFFFF;
 
 	private EventScheduler context;
 	private Socket connectedSocket;
