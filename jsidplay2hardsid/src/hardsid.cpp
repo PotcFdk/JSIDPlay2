@@ -82,28 +82,38 @@ __declspec(dllexport) JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_Ha
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Read
- * Signature: (BBB)B
+ * Signature: (BBSB)B
  */
 __declspec(dllexport) JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Read(
-		JNIEnv *, jobject, jbyte deviceId, jbyte sidNum, jbyte reg) {
-	//BYTE DeviceID = deviceId;
+		JNIEnv *, jobject, jbyte deviceId, jbyte sidNum, jshort cycles, jbyte reg) {
+	BYTE DeviceID = deviceId;
 	//BYTE SidNum = sidNum;
+	BYTE Cycles = cycles;
 	//BYTE SID_reg = reg;
+	if (Cycles > 0) {
+		while (hardsid_usb_delay(DeviceID, Cycles) == HSID_USB_WSTATE_BUSY)
+			Sleep(0);
+	}
 	return (jbyte) 0xff;	//unsupported read!
 }
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Write
- * Signature: (BBBB)V
+ * Signature: (BBSBB)V
  */
 __declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Write(
-		JNIEnv *, jobject, jbyte deviceIdx, jbyte sidNum, jbyte reg,
+		JNIEnv *, jobject, jbyte deviceIdx, jbyte sidNum, jshort cycles, jbyte reg,
 		jbyte dat) {
 	BYTE DeviceID = deviceIdx;
 	BYTE SidNum = sidNum;
+	BYTE Cycles = cycles;
 	BYTE SID_reg = reg;
 	BYTE Data = dat;
+	if (Cycles > 0) {
+		while (hardsid_usb_delay(DeviceID, Cycles) == HSID_USB_WSTATE_BUSY)
+			Sleep(0);
+	}
 	//issues a write
 	//if the hardware buffer is full, sleeps the thread until there is some space for this write
 	while (hardsid_usb_write(DeviceID, (SidNum << 5) | SID_reg, Data)

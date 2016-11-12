@@ -27,18 +27,18 @@ JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1SIDCount
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Read
- * Signature: (BBB)B
+ * Signature: (BBSB)B
  */
 JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Read
-  (JNIEnv *, jobject, jbyte, jbyte, jbyte);
+  (JNIEnv *, jobject, jbyte, jbyte, jshort, jbyte);
 
 /*
  * Class:     hardsid_builder_HardSID4U
  * Method:    HardSID_Write
- * Signature: (BBBB)V
+ * Signature: (BBSBB)V
  */
 JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Write
-  (JNIEnv *, jobject, jbyte, jbyte, jbyte, jbyte);
+  (JNIEnv *, jobject, jbyte, jbyte, jshort, jbyte, jbyte);
 
 /*
  * Class:     hardsid_builder_HardSID4U
