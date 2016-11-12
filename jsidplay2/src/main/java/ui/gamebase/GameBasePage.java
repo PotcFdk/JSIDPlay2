@@ -34,9 +34,6 @@ public class GameBasePage extends Tab implements UIPart {
 	private static final String GB64_SCREENSHOT_DOWNLOAD_URL = "http://www.gb64.com/Screenshots/";
 	private static final String GB64_GAMES_DOWNLOAD_URL = "http://gamebase64.hardabasht.com/games/";
 
-	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file, toAttach) -> toAttach == null
-			|| file.getName().compareTo(toAttach.getName()) < 0;
-
 	@FXML
 	private TableView<Games> gamebaseTable;
 
@@ -44,7 +41,7 @@ public class GameBasePage extends Tab implements UIPart {
 	private ImageView screenshot;
 	private String fileToRun;
 	private final BiPredicate<File, File> FILE_TO_RUN_DETECTOR = (file,
-			toAttach) -> (fileToRun.length() == 0 && LEXICALLY_FIRST_MEDIA.test(file, toAttach))
+			toAttach) -> (fileToRun.length() == 0 && Convenience.LEXICALLY_FIRST_MEDIA.test(file, toAttach))
 					|| fileToRun.equals(file.getName());
 	private ObservableList<Games> allGames;
 	private ObservableList<Games> filteredGames;

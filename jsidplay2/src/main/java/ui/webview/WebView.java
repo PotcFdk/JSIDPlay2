@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.function.BiPredicate;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -34,8 +33,6 @@ import ui.download.IDownloadListener;
 import ui.tuneinfos.TuneInfos;
 
 public class WebView extends Tab implements UIPart {
-	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file, toAttach) -> toAttach == null
-			|| file.getName().compareTo(toAttach.getName()) < 0;
 
 	@FXML
 	private Button backward, forward;
@@ -73,7 +70,7 @@ public class WebView extends Tab implements UIPart {
 				public void downloadStop(File downloadedFile) {
 					try {
 						if (downloadedFile != null
-								&& convenience.autostart(downloadedFile, LEXICALLY_FIRST_MEDIA, null)) {
+								&& convenience.autostart(downloadedFile, Convenience.LEXICALLY_FIRST_MEDIA, null)) {
 							downloadedFile.deleteOnExit();
 							Platform.runLater(() -> {
 								util.setPlayingTab(WebView.this);

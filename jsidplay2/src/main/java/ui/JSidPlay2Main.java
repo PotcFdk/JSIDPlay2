@@ -2,6 +2,7 @@ package ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,7 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import sidplay.Player;
+import ui.common.Convenience;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
@@ -44,11 +46,6 @@ public class JSidPlay2Main extends Application {
 
 	@Parameter(description = "filename")
 	private List<String> filenames = new ArrayList<String>();
-
-	/**
-	 * Filename of the jsidplay2 configuration XML file.
-	 */
-	public static final String CONFIG_FILE = "jsidplay2";
 
 	/**
 	 * Player
@@ -94,8 +91,8 @@ public class JSidPlay2Main extends Application {
 		Optional<String> filename = filenames.stream().findFirst();
 		if (filename.isPresent()) {
 			try {
-				player.setTune(SidTune.load(new File(filename.get())));
-			} catch (IOException | SidTuneError e) {
+				new Convenience(player).autostart(new File(filename.get()), Convenience.LEXICALLY_FIRST_MEDIA, null);
+			} catch (IOException | SidTuneError | URISyntaxException e) {
 				System.err.println(e.getMessage());
 			}
 		}

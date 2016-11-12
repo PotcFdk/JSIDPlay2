@@ -32,6 +32,9 @@ public class Convenience {
 	 */
 	private static final String MACOSX = "__MACOSX";
 
+	public static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file, toAttach) -> toAttach == null
+			|| file.getName().compareTo(toAttach.getName()) < 0;
+
 	/**
 	 * Auto-start commands.
 	 */

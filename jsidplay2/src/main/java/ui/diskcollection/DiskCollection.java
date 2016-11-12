@@ -10,7 +10,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.BiPredicate;
 import java.util.zip.GZIPInputStream;
 
 import javafx.application.Platform;
@@ -54,9 +53,6 @@ public class DiskCollection extends Tab implements UIPart {
 	public static final String HVMEC_ID = "HVMEC";
 	private static final String HVMEC_DATA = "DATA";
 	private static final String HVMEC_CONTROL = "CONTROL";
-
-	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file, toAttach) -> toAttach == null
-			|| file.getName().compareTo(toAttach.getName()) < 0;
 
 	@FXML
 	private CheckBox autoConfiguration;
@@ -281,7 +277,7 @@ public class DiskCollection extends Tab implements UIPart {
 		} else {
 			try {
 				File extractedFile = extract(file);
-				if (convenience.autostart(extractedFile, LEXICALLY_FIRST_MEDIA, autoStartFile)) {
+				if (convenience.autostart(extractedFile, Convenience.LEXICALLY_FIRST_MEDIA, autoStartFile)) {
 					util.setPlayingTab(this);
 				}
 			} catch (IOException | SidTuneError | URISyntaxException e) {

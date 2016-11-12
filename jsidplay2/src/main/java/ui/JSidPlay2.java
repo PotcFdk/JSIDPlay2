@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 import javax.imageio.ImageIO;
@@ -131,9 +130,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
-
-	private static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file, toAttach) -> toAttach == null
-			|| file.getName().compareTo(toAttach.getName()) < 0;
 
 	/** Build date calculated from our own modify time */
 	private static String DATE = "unknown";
@@ -390,7 +386,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 						video();
 						util.setPlayingTab(tabbedPane.getTabs().stream().filter((tab) -> tab.getId().equals(Video.ID))
 								.findFirst().get());
-						new Convenience(util.getPlayer()).autostart(files.get(0), LEXICALLY_FIRST_MEDIA, null);
+						new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA, null);
 					} catch (IOException | SidTuneError | URISyntaxException e) {
 						openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 					}
