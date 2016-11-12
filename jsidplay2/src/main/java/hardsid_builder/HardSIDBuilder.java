@@ -40,7 +40,7 @@ import libsidplay.sidtune.SidTune;
  */
 public class HardSIDBuilder implements SIDBuilder {
 
-	private static final int REGULAR_DELAY = 250;
+	private static final short REGULAR_DELAY = 256;
 
 	/**
 	 * System event context.
@@ -210,7 +210,7 @@ public class HardSIDBuilder implements SIDBuilder {
 		int diff = (int) (now - lastSIDWriteTime);
 		if (diff > (REGULAR_DELAY << 1)) {
 			lastSIDWriteTime += REGULAR_DELAY;
-			hardSID.HardSID_Delay(deviceID, (short) REGULAR_DELAY);
+			hardSID.HardSID_Delay(deviceID, REGULAR_DELAY);
 		}
 		return REGULAR_DELAY;
 	}

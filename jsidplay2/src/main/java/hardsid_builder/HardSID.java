@@ -3,6 +3,7 @@ package hardsid_builder;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -24,6 +25,7 @@ import libsidplay.config.IEmulationSection;
  * 
  */
 public class HardSID extends SIDEmu {
+	private static final short SHORTEST_DELAY = 4;
 
 	private final Event event = new Event("HardSID Delay") {
 		@Override
@@ -54,9 +56,11 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void reset(final byte volume) {
-		hardSID.HardSID_Flush(deviceID);
 		hardSID.HardSID_Reset(deviceID);
-		hardSID.HardSID_Write(deviceID, chipNum, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) 0x18, volume);
+		for (byte reg = 0; reg < SIDChip.REG_COUNT; reg++) {
+			hardSID.HardSID_Write(deviceID, chipNum, SHORTEST_DELAY, reg, (byte) 0);
+		}
+		hardSID.HardSID_Write(deviceID, chipNum, SHORTEST_DELAY, (byte) 0xf, volume);
 		hardSID.HardSID_Flush(deviceID);
 	}
 

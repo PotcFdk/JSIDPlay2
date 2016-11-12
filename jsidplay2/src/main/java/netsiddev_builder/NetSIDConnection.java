@@ -40,7 +40,7 @@ public class NetSIDConnection {
 
 	private static final int MAX_WRITE_CYCLES = 4096;
 	private static final int CMD_BUFFER_SIZE = 4096;
-	private static final int REGULAR_DELAY = 0xFFFF;
+	private static final int REGULAR_DELAY = 0x7FFF;
 
 	private EventScheduler context;
 	private Socket connectedSocket;
@@ -151,35 +151,6 @@ public class NetSIDConnection {
 			flush(false);
 	
 			commands.add(new Mute(sidNum, voice, mute));
-			flush(false);
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private int clocksSinceLastAccess() {
-		final long now = context.getTime(Event.Phase.PHI2);
-		int diff = (int) (now - lastSIDWriteTime);
-		lastSIDWriteTime = now;
-		return diff;
-	}
-
-	long eventuallyDelay(byte sidNum) {
-		final long now = context.getTime(Event.Phase.PHI2);
-		int diff = (int) (now - lastSIDWriteTime);
-		if (diff > (REGULAR_DELAY << 1)) {
-			lastSIDWriteTime += REGULAR_DELAY;
-			delay(sidNum, REGULAR_DELAY);
-		}
-		return REGULAR_DELAY;
-	}
-
-	private void delay(byte sidNum, int cycles) {
-		try {
-			/* deal with unsubmitted writes */
-			flush(false);
-
-			commands.add(new TryDelay(sidNum, cycles));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -299,6 +270,35 @@ public class NetSIDConnection {
 			}
 		}
 		return OK;
+	}
+
+	private int clocksSinceLastAccess() {
+		final long now = context.getTime(Event.Phase.PHI2);
+		int diff = (int) (now - lastSIDWriteTime);
+		lastSIDWriteTime = now;
+		return diff;
+	}
+
+	long eventuallyDelay(byte sidNum) {
+		final long now = context.getTime(Event.Phase.PHI2);
+		int diff = (int) (now - lastSIDWriteTime);
+		if (diff > (REGULAR_DELAY << 1)) {
+			lastSIDWriteTime += REGULAR_DELAY;
+			delay(sidNum, REGULAR_DELAY);
+		}
+		return REGULAR_DELAY;
+	}
+
+	private void delay(byte sidNum, int cycles) {
+		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+	
+			commands.add(new TryDelay(sidNum, cycles));
+			flush(false);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
