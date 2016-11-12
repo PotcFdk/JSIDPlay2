@@ -40,7 +40,7 @@ public class NetSIDConnection {
 
 	private static final int MAX_WRITE_CYCLES = 4096;
 	private static final int CMD_BUFFER_SIZE = 4096;
-	private static final int REGULAR_DELAY = 0x7FFF;
+	private static final int REGULAR_DELAY = 0xFFFF;
 
 	private EventScheduler context;
 	private Socket connectedSocket;
