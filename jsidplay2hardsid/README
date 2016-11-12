@@ -29,13 +29,14 @@ Install Java 32-Bit
 Install USB Driver (hardsidusb.*) from directory resources/driver
 Press F8 on Windows boot
 Choose deactivate Driver signature checks and continue booting.
-
-In JSIDPlay2 switch from Emulation to HardSID4U.
+Connect HardSID4U device to your real computer.
+Allow Windows to use USB hardware with Virtual box Toolbar icon in the bottom right side of the window.
+Start JSIDPlay2 and switch from Emulation to HardSID4U.
 Check console, that there are no error messages.
 
-Hard-wire HardSID4U: connect mixed/out into the microfone/in of your computer.
+Hard-wire HardSID4U: connect mixed/out into the Microfone/in of your computer.
 
-In Ubuntu Linux with Pulseaudio installed transport microfone sound to speakers;
+In Ubuntu Linux with Pulseaudio installed transport Microfone sound to speakers;
 Open a terminal and type:
 parec --latency-msec=1 | pacat --latency-msec=1
 
