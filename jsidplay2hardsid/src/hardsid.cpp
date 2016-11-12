@@ -129,6 +129,8 @@ __declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_Har
 __declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Reset(
 		JNIEnv *, jobject, jbyte deviceIdx) {
 	BYTE DeviceID = deviceIdx;
+	while (hardsid_usb_flush(DeviceID) == HSID_USB_WSTATE_BUSY)
+		Sleep(0);
 	hardsid_usb_abortplay(DeviceID);
 }
 
