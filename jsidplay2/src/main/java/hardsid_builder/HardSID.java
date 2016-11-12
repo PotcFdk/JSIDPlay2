@@ -54,8 +54,10 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void reset(final byte volume) {
+		hardSID.HardSID_Flush(deviceID);
 		hardSID.HardSID_Reset(deviceID);
 		hardSID.HardSID_Write(deviceID, chipNum, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) 0x18, volume);
+		hardSID.HardSID_Flush(deviceID);
 	}
 
 	@Override
@@ -76,7 +78,6 @@ public class HardSID extends SIDEmu {
 	}
 
 	protected void lock() {
-		reset((byte) 0x0);
 		context.schedule(event, 0, Event.Phase.PHI2);
 	}
 
