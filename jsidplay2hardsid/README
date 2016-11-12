@@ -1,5 +1,12 @@
+Create on buntu Linux:
+======================
 sudo apt-get install mingw-w64
 
+In Eclipse CDT change Project/Properties (add OpenJDK include paths to both compilers)
+GCC/C++ Compiler/Settings/Includes
+GCC/C Compiler/Settings/Includes
+/usr/lib/jvm/java-8-openjdk-amd64/include
+/usr/lib/jvm/java-8-openjdk-amd64/include/linux
 
 HardSID driver wrapper:
 =======================
