@@ -136,10 +136,6 @@ public class HardSIDBuilder implements SIDBuilder {
 						deviceID, chipNum));
 	}
 
-	int getSidCount() {
-		return sids.size();
-	}
-
 	@Override
 	public void unlock(final SIDEmu sidEmu) {
 		HardSID hardSid = (HardSID) sidEmu;
