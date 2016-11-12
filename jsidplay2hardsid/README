@@ -1,5 +1,5 @@
-Create on buntu Linux:
-======================
+Create on Ubuntu Linux:
+=======================
 sudo apt-get install mingw-w64
 
 In Eclipse CDT change Project/Properties (add OpenJDK include paths to both compilers)
@@ -10,9 +10,9 @@ GCC/C Compiler/Settings/Includes
 
 HardSID driver wrapper:
 =======================
-This driver is a wrapper around the original usb driver functions contained in hardsid_usb.lib
+This driver is a wrapper around the original USB driver functions contained in hardsid_usb.lib
 provided by www.hardsid.com
 It makes it possible to use the native HardSID driver via Java Native Interface (JNI).
 
 Note:
-HardSID4U usb driver (hardsid_usb.lib) is not available as a 64 bit version.
+HardSID4U USB driver (hardsid_usb.lib) is not available as a 64 bit version.
