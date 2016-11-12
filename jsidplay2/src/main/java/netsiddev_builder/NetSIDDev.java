@@ -40,7 +40,6 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void reset(byte volume) {
-		connection.flush(sidNum);
 		connection.reset(sidNum, (byte) volume);
 	}
 
@@ -54,7 +53,7 @@ public class NetSIDDev extends SIDEmu {
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		connection.addWrite(sidNum, (byte) addr, data);
+		connection.write(sidNum, (byte) addr, data);
 	}
 
 	@Override
@@ -90,11 +89,11 @@ public class NetSIDDev extends SIDEmu {
 		switch (chipModel) {
 		case MOS6581:
 			String filterName6581 = emulationSection.getFilterName(sidNum, Emulation.RESIDFP, ChipModel.MOS6581);
-			connection.setChipModel((byte) sidNum, filterName6581);
+			connection.setFilter((byte) sidNum, filterName6581);
 			break;
 		case MOS8580:
 			String filterName8580 = emulationSection.getFilterName(sidNum, Emulation.RESIDFP, ChipModel.MOS8580);
-			connection.setChipModel((byte) sidNum, filterName8580);
+			connection.setFilter((byte) sidNum, filterName8580);
 			break;
 		default:
 			throw new RuntimeException("Unknown SID chip model: " + chipModel);

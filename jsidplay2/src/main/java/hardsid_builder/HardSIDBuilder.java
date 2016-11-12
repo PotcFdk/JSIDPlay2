@@ -40,9 +40,7 @@ import libsidplay.sidtune.SidTune;
  */
 public class HardSIDBuilder implements SIDBuilder {
 
-	private static final int HARDSID_DELAY = 250;
-
-	private static final int HARDSID_MIN_DELAY = 4;
+	private static final int REGULAR_DELAY = 250;
 
 	/**
 	 * System event context.
@@ -204,16 +202,21 @@ public class HardSIDBuilder implements SIDBuilder {
 		return (byte) (chipModel == ChipModel.MOS6581 ? sid6581 : sid8580);
 	}
 
-	public long eventuallyDelay() {
+	int clocksSinceLastAccess() {
 		final long now = context.getTime(Event.Phase.PHI2);
-		while (now - lastSIDWriteTime > HARDSID_DELAY + HARDSID_MIN_DELAY) {
-			lastSIDWriteTime += HARDSID_DELAY;
-			hardSID.HardSID_Delay(deviceID, (byte) HARDSID_DELAY);
-		}
-		if (now - lastSIDWriteTime > 0)
-			hardSID.HardSID_Delay(deviceID, (short) (now - lastSIDWriteTime));
+		int diff = (int) (now - lastSIDWriteTime);
 		lastSIDWriteTime = now;
-		return HARDSID_DELAY;
+		return diff;
+	}
+
+	long eventuallyDelay() {
+		final long now = context.getTime(Event.Phase.PHI2);
+		int diff = (int) (now - lastSIDWriteTime);
+		if (diff > (REGULAR_DELAY << 1)) {
+			lastSIDWriteTime += REGULAR_DELAY;
+			hardSID.HardSID_Delay(deviceID, (short) REGULAR_DELAY);
+		}
+		return REGULAR_DELAY;
 	}
 
 }

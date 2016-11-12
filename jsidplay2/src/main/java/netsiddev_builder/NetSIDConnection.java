@@ -48,7 +48,7 @@ public class NetSIDConnection {
 	private TryWrite tryWrite;
 	private byte readResult, configInfo[] = new byte[255];
 	private long lastSIDWriteTime;
-	private Map<String, Byte> filterNameToConfig = new HashMap<>();
+	private Map<String, Byte> filterNameToSIDModel = new HashMap<>();
 
 	public NetSIDConnection(EventScheduler context, IConfig config, SidTune tune) {
 		this.context = context;
@@ -61,13 +61,14 @@ public class NetSIDConnection {
 				String name = getConfigInfo(i, chipModel);
 				ChipModel model = chipModel[0] == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581;
 				System.out.println(name + " (" + model + ")");
-				filterNameToConfig.put("Filter" + name, i);
+				filterNameToSIDModel.put("Filter" + name, i);
 			}
-
+			// Initialize SIDs on server side
 			commands.add(new SetSIDCount((byte) PLA.MAX_SIDS));
 			for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 				commands.add(new SetSIDModel((byte) sidNum, (byte) sidNum));
 			}
+			// Set global settings
 			for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 				commands.add(new SetSIDSampling((byte) sidNum, (byte) SamplingMethod.RESAMPLE.ordinal()));
 				commands.add(new SetSIDLevel((byte) sidNum, (byte) 0));
@@ -79,9 +80,29 @@ public class NetSIDConnection {
 		}
 	}
 
-	public void flush(byte sidNum) {
+	public void setFilter(byte sidNum, String filterName) {
 		try {
-			commands.add(new Flush(sidNum));
+			/* deal with unsubmitted writes */
+			flush(false);
+	
+			Byte model = filterNameToSIDModel.get(filterName);
+			if (model == null) {
+				model = sidNum;
+				System.err.println("Undefined Filter: " + filterName + ", will use instead: " + sidNum);
+			}
+			commands.add(new SetSIDModel((byte) sidNum, model));
+			flush(false);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void setClockFrequency(byte sidNum, double cpuFrequency) {
+		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+	
+			commands.add(new SetSIDClocking(sidNum, cpuFrequency));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -92,8 +113,44 @@ public class NetSIDConnection {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
-
+	
+			commands.add(new Flush(sidNum));
 			commands.add(new TryReset(sidNum, volume));
+			flush(false);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public byte read(byte sidNum, byte addr) {
+		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+	
+			commands.add(new TryRead(sidNum, clocksSinceLastAccess(), addr));
+			flush(false);
+			return readResult;
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void write(byte sidNum, byte addr, byte data) {
+		try {
+			while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == BUSY) {
+				// Try_Write sleeps for us
+			}
+		} catch (InterruptedException | IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void mute(byte sidNum, byte voice, boolean mute) {
+		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+	
+			commands.add(new Mute(sidNum, voice, mute));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -107,7 +164,7 @@ public class NetSIDConnection {
 		return diff;
 	}
 
-	public long eventuallyDelay(byte sidNum) {
+	long eventuallyDelay(byte sidNum) {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
 		if (diff > (REGULAR_DELAY << 1)) {
@@ -155,41 +212,6 @@ public class NetSIDConnection {
 			}
 			return new String(configInfo, 0, i, "ISO-8859-1");
 		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void mute(byte sidNum, byte voice, boolean mute) {
-		try {
-			/* deal with unsubmitted writes */
-			flush(false);
-
-			commands.add(new Mute(sidNum, voice, mute));
-			flush(false);
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public byte read(byte sidNum, byte addr) {
-		try {
-			/* deal with unsubmitted writes */
-			flush(false);
-
-			commands.add(new TryRead(sidNum, clocksSinceLastAccess(), addr));
-			flush(false);
-			return readResult;
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void addWrite(byte sidNum, byte addr, byte data) {
-		try {
-			while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == BUSY) {
-				// Try_Write sleeps for us
-			}
-		} catch (InterruptedException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -277,35 +299,6 @@ public class NetSIDConnection {
 			}
 		}
 		return OK;
-	}
-
-	public void setClockFrequency(byte sidNum, double cpuFrequency) {
-		try {
-			/* deal with unsubmitted writes */
-			flush(false);
-
-			commands.add(new SetSIDClocking(sidNum, cpuFrequency));
-			flush(false);
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void setChipModel(byte sidNum, String filterName) {
-		try {
-			/* deal with unsubmitted writes */
-			flush(false);
-
-			Byte model = filterNameToConfig.get(filterName);
-			if (model == null) {
-				model = sidNum;
-				System.err.println("Undefined Filter: " + filterName + ", will use instead: " + sidNum);
-			}
-			commands.add(new SetSIDModel((byte) sidNum, model));
-			flush(false);
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	@Override

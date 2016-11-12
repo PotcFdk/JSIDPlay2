@@ -3,7 +3,6 @@ package hardsid_builder;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -55,26 +54,21 @@ public class HardSID extends SIDEmu {
 
 	@Override
 	public void reset(final byte volume) {
-		hardSID.HardSID_Flush(deviceID);
 		hardSID.HardSID_Reset(deviceID);
-		for (byte i = 0; i < SIDChip.REG_COUNT; i++) {
-			hardSID.HardSID_Delay(deviceID, (short) 4);
-			hardSID.HardSID_Write(deviceID, chipNum, i, (byte) 0);
-		}
-		hardSID.HardSID_Flush(deviceID);
+		hardSID.HardSID_Write(deviceID, chipNum, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) 0x18, volume);
 	}
 
 	@Override
 	public byte read(int addr) {
 		clock();
-		return hardSID.HardSID_Read(deviceID, chipNum, (byte) addr);
+		return hardSID.HardSID_Read(deviceID, chipNum, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) addr);
 	}
 
 	@Override
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		hardSID.HardSID_Write(deviceID, chipNum, (byte) addr, data);
+		hardSID.HardSID_Write(deviceID, chipNum, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) addr, data);
 	}
 
 	@Override

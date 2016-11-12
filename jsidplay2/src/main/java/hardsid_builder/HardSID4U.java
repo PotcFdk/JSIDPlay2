@@ -5,9 +5,9 @@ public class HardSID4U {
 
 	native byte HardSID_SIDCount(byte DeviceID);
 
-	native byte HardSID_Read(byte DeviceID, byte chipNum, byte SID_reg);
+	native byte HardSID_Read(byte DeviceID, byte chipNum, short Cycles, byte SID_reg);
 
-	native void HardSID_Write(byte DeviceID, byte chipNum, byte SID_reg, byte data);
+	native void HardSID_Write(byte DeviceID, byte chipNum, short Cycles, byte SID_reg, byte data);
 
 	native void HardSID_Reset(byte DeviceID);
 
