@@ -85,22 +85,16 @@ public class Convenience {
 	public boolean autostart(File file, BiPredicate<File, File> isMediaToAttach, File autoStartFile)
 			throws IOException, SidTuneError, URISyntaxException {
 		String tmpDir = player.getConfig().getSidplay2Section().getTmpDir();
-		TFile zip = null;
+		TFile zip = new TFile(file);
 		File toAttach = null;
-		try {
-			zip = new TFile(file);
-			if (zip.isArchive()) {
-				// uncompress zip
-				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
-				// search media file to attach
-				toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
-			} else if (isSupportedMedia(file)) {
-				toAttach = file;
-			}
-		} finally {
-			if (zip != null) {
-				TFile.rm_r(zip);
-			}
+		if (zip.isArchive()) {
+			// uncompress zip
+			TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
+			// search media file to attach
+			toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
+			TFile.rm_r(zip);
+		} else if (isSupportedMedia(file)) {
+			toAttach = file;
 		}
 		if (toAttach != null) {
 			if (tuneFileFilter.accept(toAttach)) {
