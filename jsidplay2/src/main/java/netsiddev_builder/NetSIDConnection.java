@@ -282,7 +282,7 @@ public class NetSIDConnection {
 	long eventuallyDelay(byte sidNum) {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
-		if (diff > (REGULAR_DELAY << 1)) {
+		if (diff > REGULAR_DELAY << 1) {
 			lastSIDWriteTime += REGULAR_DELAY;
 			delay(sidNum, REGULAR_DELAY);
 		}

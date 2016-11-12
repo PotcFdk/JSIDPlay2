@@ -42,6 +42,8 @@ public class HardSIDBuilder implements SIDBuilder {
 
 	private static final short REGULAR_DELAY = 256;
 
+	static final short SHORTEST_DELAY = 4;
+
 	/**
 	 * System event context.
 	 */
@@ -202,13 +204,13 @@ public class HardSIDBuilder implements SIDBuilder {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
 		lastSIDWriteTime = now;
-		return diff;
+		return Math.max(SHORTEST_DELAY, diff);
 	}
 
 	long eventuallyDelay() {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
-		if (diff > (REGULAR_DELAY << 1)) {
+		if (diff > REGULAR_DELAY << 1) {
 			lastSIDWriteTime += REGULAR_DELAY;
 			hardSID.HardSID_Delay(deviceID, REGULAR_DELAY);
 		}
