@@ -32,19 +32,23 @@ public class Convenience {
 	 */
 	private static final String MACOSX = "__MACOSX";
 
+	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
+	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
+	private static final TapeFileFilter tapeFileFilter = new TapeFileFilter();
+	private static final CartFileFilter cartFileFilter = new CartFileFilter();
+
+	/**
+	 * Magically chooses files to be attached, rules are:
+	 * Attach first supported file,
+	 * eventually replace by lexically first disk or tape (e.g. side A, not B).
+	 */
 	public static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file, toAttach) -> toAttach == null
-			|| file.getName().compareTo(toAttach.getName()) < 0;
+			|| !tuneFileFilter.accept(file) && file.getName().compareTo(toAttach.getName()) < 0;
 
 	/**
 	 * Auto-start commands.
 	 */
 	private static final String LOAD_8_1_RUN = "LOAD\"*\",8,1\rRUN\r", LOAD_RUN = "LOAD\rRUN\r";
-
-	private static final String ZIP_EXT = ".zip";
-	private final TuneFileFilter tuneFileFilter = new TuneFileFilter();
-	private final DiskFileFilter diskFileFilter = new DiskFileFilter();
-	private final TapeFileFilter tapeFileFilter = new TapeFileFilter();
-	private final CartFileFilter cartFileFilter = new CartFileFilter();
 
 	private Player player;
 	private Consumer<File> autoStartedFile = file -> {
@@ -81,13 +85,12 @@ public class Convenience {
 	public boolean autostart(File file, BiPredicate<File, File> isMediaToAttach, File autoStartFile)
 			throws IOException, SidTuneError, URISyntaxException {
 		String tmpDir = player.getConfig().getSidplay2Section().getTmpDir();
-		String name = file.getName();
 		TFile zip = null;
 		File toAttach = null;
 		try {
-			if (name.toLowerCase(Locale.US).endsWith(ZIP_EXT)) {
+			zip = new TFile(file);
+			if (zip.isArchive()) {
 				// uncompress zip
-				zip = new TFile(file);
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
 				// search media file to attach
 				toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
@@ -124,19 +127,6 @@ public class Convenience {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Check if the file is supported for auto-start.
-	 * 
-	 * @param file
-	 *            file to be checked
-	 * @return we support the file to auto-start
-	 */
-	public boolean isSupported(File file) {
-		return file.getName().toLowerCase(Locale.US).endsWith(ZIP_EXT) || tuneFileFilter.accept(file)
-				|| diskFileFilter.accept(file) || tapeFileFilter.accept(file) || cartFileFilter.accept(file);
-
 	}
 
 	/**
@@ -211,7 +201,7 @@ public class Convenience {
 	 *            file to check
 	 * @return is it a well-known format
 	 */
-	private boolean isSupportedMedia(File file) {
+	public boolean isSupportedMedia(File file) {
 		return cartFileFilter.accept(file) || tuneFileFilter.accept(file) || diskFileFilter.accept(file)
 				|| tapeFileFilter.accept(file);
 	}

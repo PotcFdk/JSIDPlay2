@@ -61,7 +61,7 @@ public class WebView extends Tab implements UIPart {
 
 	private ChangeListener<? super String> locationListener = (observable, oldValue, newValue) -> {
 		try {
-			if (!convenience.isSupported(new File(newValue)))
+			if (!convenience.isSupportedMedia(new File(newValue)))
 				return;
 			urlField.setText(newValue);
 			new DownloadThread(util.getConfig(), new IDownloadListener() {
