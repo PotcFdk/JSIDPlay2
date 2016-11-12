@@ -1,13 +1,3 @@
-Create on Ubuntu Linux:
-=======================
-sudo apt-get install mingw-w64
-
-In Eclipse CDT change Project/Properties (add OpenJDK include paths to both compilers)
-GCC/C++ Compiler/Settings/Includes
-GCC/C Compiler/Settings/Includes
-/usr/lib/jvm/java-8-openjdk-amd64/include
-/usr/lib/jvm/java-8-openjdk-amd64/include/linux
-
 HardSID driver wrapper:
 =======================
 This driver is a wrapper around the original USB driver functions contained in hardsid_usb.lib
@@ -16,3 +6,37 @@ It makes it possible to use the native HardSID driver via Java Native Interface 
 
 Note:
 HardSID4U USB driver (hardsid_usb.lib) is not available as a 64 bit version.
+
+Create the DLL for Windows on Ubuntu Linux:
+===========================================
+We do cross-compilation here, therefore install:
+sudo apt-get install mingw-w64
+
+In Eclipse CDT change Project/Properties (add OpenJDK include paths to both compilers)
+GCC/C++ Compiler/Settings/Includes
+GCC/C Compiler/Settings/Includes
+/usr/lib/jvm/java-8-openjdk-amd64/include
+/usr/lib/jvm/java-8-openjdk-amd64/include/linux
+Click on Menu/Project/Build All
+Copy DLL to JSIDPlay2 directory
+src/main/resources/hardsid_builder/win32/release
+
+Test:
+=====
+Windows is guest in Virtual Box, Ubuntu Linux is host:
+Launch Windows Vista
+Install Java 32-Bit
+Install USB Driver (hardsidusb.*) from directory resources/driver
+Press F8 on Windows boot
+Choose deactivate Driver signature checks and continue booting.
+
+In JSIDPlay2 switch from Emulation to HardSID4U.
+Check console, that there are no error messages.
+
+Hard-wire HardSID4U: connect mixed/out into the microfone/in of your computer.
+
+In Ubuntu Linux with Pulseaudio installed transport microfone sound to speakers;
+Open a terminal and type:
+parec --latency-msec=1 | pacat --latency-msec=1
+
+Enjoy!
