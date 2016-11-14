@@ -57,10 +57,12 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void clock() {
+		// nothing to do
 	}
 
 	@Override
 	public void setChipModel(ChipModel model) {
+		// is already configured by setFilter()
 	}
 
 	@Override
@@ -70,10 +72,12 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void input(int input) {
+		// configured in the NetSIDDevice user interface
 	}
 
 	@Override
 	public int getInputDigiBoost() {
+		// XXX unsupported by NetSIDDevice
 		return 0;
 	}
 
@@ -101,6 +105,7 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
+		// XXX unsupported by NetSIDDevice
 	}
 
 }

@@ -4,6 +4,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
+import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -26,17 +27,22 @@ public class NetSIDDevBuilder implements SIDBuilder {
 
 	@Override
 	public SIDEmu lock(SIDEmu sidEmu, int sidNum, SidTune tune) {
-		unlock(sidEmu);
+		if (sidEmu != null) {
+			unlock(sidEmu);
+		}
 		final ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
 		final NetSIDDev sid = new NetSIDDev(context, connection, sidNum, chipModel);
 		IEmulationSection emulationSection = config.getEmulationSection();
-//		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
+		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
 		sid.setFilter(config, sidNum);
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
-//		sid.setFilterEnable(emulationSection, sidNum);
-//		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
+		sid.setFilterEnable(emulationSection, sidNum);
+		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
 		for (int voice = 0; voice < 4; voice++) {
 			sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
+		}
+		for (int i = 0; sidEmu != null && i < SIDChip.REG_COUNT; i++) {
+			sid.write(i, sidEmu.readInternalRegister(i));
 		}
 		sid.lock();
 		return sid;
@@ -45,9 +51,7 @@ public class NetSIDDevBuilder implements SIDBuilder {
 	@Override
 	public void unlock(SIDEmu device) {
 		NetSIDDev impl = (NetSIDDev) device;
-		if (impl != null) {
-			impl.unlock();
-		}
+		impl.unlock();
 	}
 
 }
