@@ -177,7 +177,7 @@ public class SidReg extends Tab implements UIPart {
 	}
 
 	protected void recordSidWrites(final boolean enable) {
-		util.getPlayer().getC64().configureSIDs((sidNum, sidEmu) -> {
+		util.getPlayer().configureSIDs((sidNum, sidEmu) -> {
 			if (enable) {
 				final SidRegExtension sidRegExtension = new SidRegExtension(sidNum) {
 

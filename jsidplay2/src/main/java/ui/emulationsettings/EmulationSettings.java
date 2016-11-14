@@ -18,7 +18,6 @@ import javafx.scene.control.TextField;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
-import libsidplay.common.Event;
 import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IFilterSection;
@@ -237,7 +236,7 @@ public class EmulationSettings extends C64Window {
 		// forced 3-SID, only:
 		thirdAddress.setDisable(!isForced3Sid);
 		// fake stereo does not work for HardSID4U
-		fakeStereo.setDisable(emulationSection.getEngine()==Engine.HARDSID);
+		fakeStereo.setDisable(emulationSection.getEngine() == Engine.HARDSID);
 	}
 
 	@Override
@@ -344,13 +343,8 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setDigiBoost() {
-		util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(new Event("Update SID Chip Configuration") {
-			@Override
-			public void event() throws InterruptedException {
-				util.getPlayer().getC64().configureSIDs((num, sid) -> sid.input(
-						util.getConfig().getEmulationSection().isDigiBoosted8580() ? sid.getInputDigiBoost() : 0));
-			}
-		});
+		util.getPlayer().configureSIDs((num, sid) -> sid
+				.input(util.getConfig().getEmulationSection().isDigiBoosted8580() ? sid.getInputDigiBoost() : 0));
 	}
 
 	@FXML
