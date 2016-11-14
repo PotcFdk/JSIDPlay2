@@ -18,6 +18,7 @@ public class NetSIDDev extends SIDEmu {
 		this.connection = connection;
 		this.sidNum = (byte) sidNum;
 		this.chipModel = model;
+		reset((byte) 0xf);
 	}
 
 	private final Event event = new Event("NetSIDDev Delay") {
@@ -29,12 +30,10 @@ public class NetSIDDev extends SIDEmu {
 	};
 
 	public void lock() {
-		reset((byte) 0xf);
 		context.schedule(event, 0, Event.Phase.PHI2);
 	}
 
 	public void unlock() {
-		reset((byte) 0xf);
 		context.cancel(event);
 	}
 

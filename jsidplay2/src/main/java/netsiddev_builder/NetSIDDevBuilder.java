@@ -26,22 +26,19 @@ public class NetSIDDevBuilder implements SIDBuilder {
 
 	@Override
 	public SIDEmu lock(SIDEmu sidEmu, int sidNum, SidTune tune) {
-		if (sidEmu != null) {
-			// always re-use hardware SID chips, if configuration changes
-			// the purpose is to ignore chip model changes!
-			return sidEmu;
-		}
+		unlock(sidEmu);
 		final ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
 		final NetSIDDev sid = new NetSIDDev(context, connection, sidNum, chipModel);
 		IEmulationSection emulationSection = config.getEmulationSection();
 //		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
-		sid.setClockFrequency(cpuClock.getCpuFrequency());
 		sid.setFilter(config, sidNum);
+		sid.setClockFrequency(cpuClock.getCpuFrequency());
 //		sid.setFilterEnable(emulationSection, sidNum);
-		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
+//		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
 		for (int voice = 0; voice < 4; voice++) {
 			sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
 		}
+		connection.resetWriteTime();
 		sid.lock();
 		return sid;
 	}
@@ -49,7 +46,10 @@ public class NetSIDDevBuilder implements SIDBuilder {
 	@Override
 	public void unlock(SIDEmu device) {
 		NetSIDDev impl = (NetSIDDev) device;
-		impl.unlock();
+		if (impl != null) {
+			impl.unlock();
+		}
+		connection.resetWriteTime();
 	}
 
 }

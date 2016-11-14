@@ -266,82 +266,82 @@ public class ConsoleIO {
 
 			case '1':
 				v1mute = !v1mute;
-				player.getC64().configureSID(0, sid -> sid.setVoiceMute(0, v1mute));
+				player.configureSID(0, sid -> sid.setVoiceMute(0, v1mute));
 				break;
 
 			case '2':
 				v2mute = !v2mute;
-				player.getC64().configureSID(0, sid -> sid.setVoiceMute(1, v2mute));
+				player.configureSID(0, sid -> sid.setVoiceMute(1, v2mute));
 				break;
 
 			case '3':
 				v3mute = !v3mute;
-				player.getC64().configureSID(0, sid -> sid.setVoiceMute(2, v3mute));
+				player.configureSID(0, sid -> sid.setVoiceMute(2, v3mute));
 				break;
 
 			case '4':
 				v4mute = !v4mute;
-				player.getC64().configureSID(0, sid -> sid.setVoiceMute(3, v4mute));
+				player.configureSID(0, sid -> sid.setVoiceMute(3, v4mute));
 				break;
 
 			case '5':
 				v5mute = !v5mute;
-				player.getC64().configureSID(1, sid -> sid.setVoiceMute(0, v5mute));
+				player.configureSID(1, sid -> sid.setVoiceMute(0, v5mute));
 				break;
 
 			case '6':
 				v6mute = !v6mute;
-				player.getC64().configureSID(1, sid -> sid.setVoiceMute(1, v6mute));
+				player.configureSID(1, sid -> sid.setVoiceMute(1, v6mute));
 				break;
 
 			case '7':
 				v7mute = !v7mute;
-				player.getC64().configureSID(1, sid -> sid.setVoiceMute(2, v7mute));
+				player.configureSID(1, sid -> sid.setVoiceMute(2, v7mute));
 				break;
 
 			case '8':
 				v8mute = !v8mute;
-				player.getC64().configureSID(1, sid -> sid.setVoiceMute(3, v8mute));
+				player.configureSID(1, sid -> sid.setVoiceMute(3, v8mute));
 				break;
 
 			case '9':
 				v9mute = !v9mute;
-				player.getC64().configureSID(2, sid -> sid.setVoiceMute(0, v9mute));
+				player.configureSID(2, sid -> sid.setVoiceMute(0, v9mute));
 				break;
 
 			case 'a':
 				v10mute = !v10mute;
-				player.getC64().configureSID(2, sid -> sid.setVoiceMute(1, v10mute));
+				player.configureSID(2, sid -> sid.setVoiceMute(1, v10mute));
 				break;
 
 			case 'b':
 				v11mute = !v11mute;
-				player.getC64().configureSID(2, sid -> sid.setVoiceMute(2, v11mute));
+				player.configureSID(2, sid -> sid.setVoiceMute(2, v11mute));
 				break;
 
 			case 'c':
 				v12mute = !v12mute;
-				player.getC64().configureSID(2, sid -> sid.setVoiceMute(3, v12mute));
+				player.configureSID(2, sid -> sid.setVoiceMute(3, v12mute));
 				break;
 
 			case 'f': {
 				boolean filterEnable = emulation.isFilter() ^ true;
 				emulation.setFilter(filterEnable);
-				player.getC64().configureSID(0, sid -> sid.setFilterEnable(emulation, 0));
+				player.configureSID(0, sid -> sid.setFilterEnable(emulation, 0));
 				break;
 			}
 
 			case 'g': {
 				boolean filterEnable = emulation.isStereoFilter() ^ true;
 				emulation.setStereoFilter(filterEnable);
-				player.getC64().configureSID(1, sid -> sid.setFilterEnable(emulation, 1));
+				player.configureSID(1, sid -> sid.setFilterEnable(emulation, 1));
 				break;
 			}
 
 			case 'G': {
 				boolean filterEnable = emulation.isThirdSIDFilter() ^ true;
 				emulation.setThirdSIDFilter(filterEnable);
-				player.getC64().configureSID(2, sid -> sid.setFilterEnable(emulation, 2));
+				player.configureSID(2, sid -> sid.setFilterEnable(emulation, 2));
 				break;
 			}
 

@@ -13,7 +13,6 @@ import java.util.Map;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SamplingMethod;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
@@ -43,7 +42,7 @@ public class NetSIDConnection {
 	private static final int REGULAR_DELAY = 0xFFFF;
 
 	private EventScheduler context;
-	private Socket connectedSocket;
+	private static Socket connectedSocket;
 	private List<NetSIDPkg> commands = new ArrayList<>();
 	private TryWrite tryWrite;
 	private byte readResult, configInfo[] = new byte[255];
@@ -53,7 +52,9 @@ public class NetSIDConnection {
 	public NetSIDConnection(EventScheduler context, IConfig config, SidTune tune) {
 		this.context = context;
 		try {
-			connectedSocket = new Socket(HOSTNAME, PORT);
+			if (connectedSocket == null || !connectedSocket.isConnected()) {
+				connectedSocket = new Socket(HOSTNAME, PORT);
+			}
 
 			// Check available SIDs
 			for (byte i = 0; i < (int) getConfigCount(); i++) {
@@ -70,12 +71,12 @@ public class NetSIDConnection {
 			}
 			// Set global settings
 			for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-				commands.add(new SetSIDSampling((byte) sidNum, (byte) SamplingMethod.RESAMPLE.ordinal()));
+				commands.add(
+						new SetSIDSampling((byte) sidNum, (byte) config.getAudioSection().getSampling().ordinal()));
 				commands.add(new SetSIDLevel((byte) sidNum, (byte) 0));
 				commands.add(new SetSIDPosition((byte) sidNum, (byte) 0));
 			}
-			flush(false);
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -84,7 +85,7 @@ public class NetSIDConnection {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
-	
+
 			Byte model = filterNameToSIDModel.get(filterName);
 			if (model == null) {
 				model = sidNum;
@@ -101,7 +102,7 @@ public class NetSIDConnection {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
-	
+
 			commands.add(new SetSIDClocking(sidNum, cpuFrequency));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
@@ -113,7 +114,7 @@ public class NetSIDConnection {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
-	
+
 			commands.add(new Flush(sidNum));
 			commands.add(new TryReset(sidNum, volume));
 			flush(false);
@@ -126,7 +127,7 @@ public class NetSIDConnection {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
-	
+
 			commands.add(new TryRead(sidNum, clocksSinceLastAccess(), addr));
 			flush(false);
 			return readResult;
@@ -149,7 +150,7 @@ public class NetSIDConnection {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
-	
+
 			commands.add(new Mute(sidNum, voice, mute));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
@@ -222,6 +223,10 @@ public class NetSIDConnection {
 
 			connectedSocket.getOutputStream().write(cmd.toByteArrayWithLength());
 			int rc = connectedSocket.getInputStream().read();
+			if (rc == -1) {
+				connectedSocket.close();
+				throw new RuntimeException("Server closed the connection!");
+			}
 			switch (NetSIDResponse.values()[rc]) {
 			case INFO:
 				// chip model
@@ -293,7 +298,7 @@ public class NetSIDConnection {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
-	
+
 			commands.add(new TryDelay(sidNum, cycles));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
@@ -301,15 +306,7 @@ public class NetSIDConnection {
 		}
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		try {
-			if (connectedSocket != null) {
-				connectedSocket.close();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	public void resetWriteTime() {
+		clocksSinceLastAccess();
 	}
 }

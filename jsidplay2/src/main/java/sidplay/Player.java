@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -317,6 +318,38 @@ public class Player extends HardwareEnsemble {
 			@Override
 			public void event() throws InterruptedException {
 				c64.configureVICs(action);
+			}
+		});
+	}
+
+	/**
+	 * Configure all available SIDs.
+	 * 
+	 * @param action
+	 *            SID chip consumer
+	 */
+	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
+		c64.getEventScheduler().scheduleThreadSafe(new Event("Configure SIDs") {
+			@Override
+			public void event() throws InterruptedException {
+				c64.configureSIDs(action);
+			}
+		});
+	}
+
+	/**
+	 * Configure one specific SID.
+	 * 
+	 * @param chipNum
+	 *            SID chip number
+	 * @param action
+	 *            SID chip consumer
+	 */
+	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
+		c64.getEventScheduler().scheduleThreadSafe(new Event("Configure SID") {
+			@Override
+			public void event() throws InterruptedException {
+				c64.configureSID(chipNum, action);
 			}
 		});
 	}
