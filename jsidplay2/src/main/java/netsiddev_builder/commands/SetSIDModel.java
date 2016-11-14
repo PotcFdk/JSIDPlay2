@@ -1,6 +1,6 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.TRY_SET_SID_MODEL;
+import netsiddev.Command;
 
 public class SetSIDModel implements NetSIDPkg {
 	private byte sidNum;
@@ -12,6 +12,6 @@ public class SetSIDModel implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { TRY_SET_SID_MODEL.getCmd(), sidNum, 0, 0, config };
+		return new byte[] { (byte) Command.TRY_SET_SID_MODEL.ordinal(), sidNum, 0, 0, config };
 	}
 }

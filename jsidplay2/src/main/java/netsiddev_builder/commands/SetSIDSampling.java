@@ -1,6 +1,6 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.TRY_SET_SAMPLING;
+import netsiddev.Command;
 
 public class SetSIDSampling implements NetSIDPkg {
 	private byte sidNum;
@@ -12,6 +12,6 @@ public class SetSIDSampling implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { TRY_SET_SAMPLING.getCmd(), sidNum, 0, 0, sampling };
+		return new byte[] { (byte) Command.TRY_SET_SAMPLING.ordinal(), sidNum, 0, 0, sampling };
 	}
 }

@@ -1,6 +1,6 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.CMD_MUTE;
+import netsiddev.Command;
 
 public class Mute implements NetSIDPkg {
 	private byte sidNum;
@@ -14,6 +14,6 @@ public class Mute implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { CMD_MUTE.getCmd(), sidNum, 0, 0, voice, mute };
+		return new byte[] { (byte) Command.MUTE.ordinal(), sidNum, 0, 0, voice, mute };
 	}
 }

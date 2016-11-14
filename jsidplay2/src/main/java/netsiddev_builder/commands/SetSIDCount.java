@@ -1,6 +1,6 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.CMD_TRY_SET_SID_COUNT;
+import netsiddev.Command;
 
 public class SetSIDCount implements NetSIDPkg {
 	private byte numSids;
@@ -10,6 +10,6 @@ public class SetSIDCount implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { CMD_TRY_SET_SID_COUNT.getCmd(), numSids, 0, 0 };
+		return new byte[] { (byte) Command.TRY_SET_SID_COUNT.ordinal(), numSids, 0, 0 };
 	}
 }

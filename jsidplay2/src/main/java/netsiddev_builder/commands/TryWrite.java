@@ -1,9 +1,9 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.CMD_TRY_WRITE;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import netsiddev.Command;
 
 public class TryWrite implements NetSIDPkg {
 	private byte sidNum;
@@ -22,9 +22,9 @@ public class TryWrite implements NetSIDPkg {
 	public int getCyclesSentToServer() {
 		return cyclesSentToServer;
 	}
-	
+
 	public byte[] toByteArray() {
-		byte[] head = new byte[] { CMD_TRY_WRITE.getCmd(), sidNum, 0, 0 };
+		byte[] head = new byte[] { (byte) Command.TRY_WRITE.ordinal(), sidNum, 0, 0 };
 		byte[] cmd = new byte[head.length + (writes.size() << 2)];
 		System.arraycopy(head, 0, cmd, 0, head.length);
 		int i = head.length;

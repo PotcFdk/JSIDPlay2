@@ -1,8 +1,7 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.TRY_SET_CLOCKING;
-
-import libsidplay.common.CPUClock;;
+import libsidplay.common.CPUClock;
+import netsiddev.Command;;
 
 public class SetSIDClocking implements NetSIDPkg {
 	private byte sidNum;
@@ -14,7 +13,7 @@ public class SetSIDClocking implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { TRY_SET_CLOCKING.getCmd(), sidNum, 0, 0,
+		return new byte[] { (byte) Command.TRY_SET_CLOCKING.ordinal(), sidNum, 0, 0,
 				(byte) (CPUClock.PAL.getCpuFrequency() == cpuFrequency ? 0 : 1) };
 	}
 }

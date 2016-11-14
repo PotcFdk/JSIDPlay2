@@ -1,6 +1,6 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.CMD_TRY_READ;
+import netsiddev.Command;
 
 public class TryRead implements NetSIDPkg {
 	private byte sidNum;
@@ -14,7 +14,7 @@ public class TryRead implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { CMD_TRY_READ.getCmd(), sidNum, 0, 0, (byte) ((cycles >> 8) & 0xff),
+		return new byte[] { (byte) Command.TRY_READ.ordinal(), sidNum, 0, 0, (byte) ((cycles >> 8) & 0xff),
 				(byte) (cycles & 0xff), register };
 	}
 }

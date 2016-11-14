@@ -1,6 +1,6 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.SET_SID_LEVEL;
+import netsiddev.Command;
 
 public class SetSIDLevel implements NetSIDPkg {
 	private byte sidNum;
@@ -12,6 +12,6 @@ public class SetSIDLevel implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { SET_SID_LEVEL.getCmd(), sidNum, 0, 0, levelDb };
+		return new byte[] { (byte) Command.SET_SID_LEVEL.ordinal(), sidNum, 0, 0, levelDb };
 	}
 }

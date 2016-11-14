@@ -1,6 +1,6 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.CMD_FLUSH;
+import netsiddev.Command;
 
 public class Flush implements NetSIDPkg {
 	private byte sidNum;
@@ -10,6 +10,6 @@ public class Flush implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { CMD_FLUSH.getCmd(), sidNum, 0, 0 };
+		return new byte[] { (byte) Command.FLUSH.ordinal(), sidNum, 0, 0 };
 	}
 }

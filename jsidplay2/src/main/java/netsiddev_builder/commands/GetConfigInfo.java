@@ -1,6 +1,6 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.GET_CONFIG_INFO;
+import netsiddev.Command;
 
 public class GetConfigInfo implements NetSIDPkg {
 	private byte sidNum;
@@ -10,6 +10,6 @@ public class GetConfigInfo implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { GET_CONFIG_INFO.getCmd(), sidNum, 0, 0 };
+		return new byte[] { (byte) Command.GET_CONFIG_INFO.ordinal(), sidNum, 0, 0 };
 	}
 }

@@ -1,8 +1,5 @@
 package netsiddev_builder;
 
-import static netsiddev_builder.NetSIDResponse.BUSY;
-import static netsiddev_builder.NetSIDResponse.OK;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -16,6 +13,7 @@ import libsidplay.common.EventScheduler;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
+import netsiddev.Response;
 import netsiddev_builder.commands.Flush;
 import netsiddev_builder.commands.GetConfigCount;
 import netsiddev_builder.commands.GetConfigInfo;
@@ -138,7 +136,7 @@ public class NetSIDConnection {
 
 	public void write(byte sidNum, byte addr, byte data) {
 		try {
-			while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == BUSY) {
+			while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == Response.BUSY) {
 				// Try_Write sleeps for us
 			}
 		} catch (InterruptedException | IOException e) {
@@ -190,15 +188,14 @@ public class NetSIDConnection {
 
 	// Add a SID write to the ring buffer, until it is full,
 	// then send it to JSIDPlay2 to be queued there and executed
-	private NetSIDResponse tryWrite(byte sidNum, int cycles, byte reg, byte data)
-			throws InterruptedException, IOException {
+	private Response tryWrite(byte sidNum, int cycles, byte reg, byte data) throws InterruptedException, IOException {
 		/*
 		 * flush writes after a bit of buffering. If no flush, then returns OK
 		 * and we queue more. If flush attempt fails, we must cancel.
 		 */
-		if (maybe_send_writes_to_server() == BUSY) {
+		if (maybe_send_writes_to_server() == Response.BUSY) {
 			sleepDependingOnCyclesSent();
-			return BUSY;
+			return Response.BUSY;
 		}
 
 		if (commands.isEmpty()) {
@@ -214,10 +211,10 @@ public class NetSIDConnection {
 		 */
 		maybe_send_writes_to_server();
 
-		return OK;
+		return Response.OK;
 	}
 
-	private NetSIDResponse flush(boolean give_up_if_busy) throws IOException, InterruptedException {
+	private Response flush(boolean give_up_if_busy) throws IOException, InterruptedException {
 		while (!commands.isEmpty()) {
 			final NetSIDPkg cmd = commands.get(0);
 
@@ -227,7 +224,7 @@ public class NetSIDConnection {
 				connectedSocket.close();
 				throw new RuntimeException("Server closed the connection!");
 			}
-			switch (NetSIDResponse.values()[rc]) {
+			switch (Response.values()[rc]) {
 			case INFO:
 				// chip model
 				readResult = (byte) connectedSocket.getInputStream().read();
@@ -248,7 +245,7 @@ public class NetSIDConnection {
 				continue;
 			case BUSY:
 				if (give_up_if_busy) {
-					return BUSY;
+					return Response.BUSY;
 				}
 				sleepDependingOnCyclesSent();
 				continue;
@@ -257,7 +254,7 @@ public class NetSIDConnection {
 				throw new RuntimeException("Server error: Unexpected response!");
 			}
 		}
-		return OK;
+		return Response.OK;
 	}
 
 	private void sleepDependingOnCyclesSent() throws InterruptedException {
@@ -266,15 +263,15 @@ public class NetSIDConnection {
 		}
 	}
 
-	private NetSIDResponse maybe_send_writes_to_server() throws IOException, InterruptedException {
+	private Response maybe_send_writes_to_server() throws IOException, InterruptedException {
 		/* flush writes after a bit of buffering */
 		if (commands.size() == CMD_BUFFER_SIZE
 				|| (tryWrite != null && tryWrite.getCyclesSentToServer() > MAX_WRITE_CYCLES)) {
-			if (flush(true) == BUSY) {
-				return BUSY;
+			if (flush(true) == Response.BUSY) {
+				return Response.BUSY;
 			}
 		}
-		return OK;
+		return Response.OK;
 	}
 
 	private int clocksSinceLastAccess() {

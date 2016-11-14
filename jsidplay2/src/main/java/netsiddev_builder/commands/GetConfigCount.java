@@ -1,10 +1,10 @@
 package netsiddev_builder.commands;
 
-import static netsiddev_builder.NetSIDCommand.GET_CONFIG_COUNT;
+import netsiddev.Command;
 
 public class GetConfigCount implements NetSIDPkg {
 
 	public byte[] toByteArray() {
-		return new byte[] { GET_CONFIG_COUNT.getCmd(), 0, 0, 0 };
+		return new byte[] { (byte) Command.GET_CONFIG_COUNT.ordinal(), 0, 0, 0 };
 	}
 }
