@@ -19,6 +19,11 @@ e.g. FTP
 e.g. copy
 -DserverId=
 -DserverUrl=file:///home/ken
+
+e.g. SSH copy
+-DserverId=
+-DserverUrl=scp://ken:special@192.168.1.1/home/ken
+
 -DremoteDir=public_html
 
 Optional:
