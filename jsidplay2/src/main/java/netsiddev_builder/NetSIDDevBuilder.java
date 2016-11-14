@@ -35,9 +35,10 @@ public class NetSIDDevBuilder implements SIDBuilder {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
 		sid.setFilter(config, sidNum);
-		sid.setClockFrequency(cpuClock.getCpuFrequency());
 		sid.setFilterEnable(emulationSection, sidNum);
 		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
+		// this triggers refreshParams on the server side, therefore the last!
+		sid.setClockFrequency(cpuClock.getCpuFrequency());
 		for (int voice = 0; voice < 4; voice++) {
 			sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
 		}
