@@ -305,8 +305,4 @@ public class NetSIDConnection {
 			throw new RuntimeException(e);
 		}
 	}
-
-	public void resetWriteTime() {
-		clocksSinceLastAccess();
-	}
 }

@@ -38,7 +38,6 @@ public class NetSIDDevBuilder implements SIDBuilder {
 		for (int voice = 0; voice < 4; voice++) {
 			sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
 		}
-		connection.resetWriteTime();
 		sid.lock();
 		return sid;
 	}
@@ -49,7 +48,6 @@ public class NetSIDDevBuilder implements SIDBuilder {
 		if (impl != null) {
 			impl.unlock();
 		}
-		connection.resetWriteTime();
 	}
 
 }
