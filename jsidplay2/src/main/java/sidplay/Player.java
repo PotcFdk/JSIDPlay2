@@ -299,11 +299,8 @@ public class Player extends HardwareEnsemble {
 	 * thread-safe.
 	 */
 	public final void updateSIDChipConfiguration() {
-		c64.getEventScheduler().scheduleThreadSafe(new Event("Update SID Chip Configuration") {
-			@Override
-			public void event() throws InterruptedException {
-				c64.insertSIDChips(requiredSIDs, sidLocator);
-			}
+		executeInPlayerThread("Update SID Chip Configuration", () -> {
+			c64.insertSIDChips(requiredSIDs, sidLocator);
 		});
 	}
 
@@ -314,11 +311,8 @@ public class Player extends HardwareEnsemble {
 	 *            VIC configuration action
 	 */
 	public final void configureVICs(Consumer<VIC> action) {
-		c64.getEventScheduler().scheduleThreadSafe(new Event("Configure VICs") {
-			@Override
-			public void event() throws InterruptedException {
-				c64.configureVICs(action);
-			}
+		executeInPlayerThread("Configure VICs", () -> {
+			c64.configureVICs(action);
 		});
 	}
 
@@ -329,11 +323,8 @@ public class Player extends HardwareEnsemble {
 	 *            SID chip consumer
 	 */
 	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
-		c64.getEventScheduler().scheduleThreadSafe(new Event("Configure SIDs") {
-			@Override
-			public void event() throws InterruptedException {
-				c64.configureSIDs(action);
-			}
+		executeInPlayerThread("Configure SIDs", () -> {
+			c64.configureSIDs(action);
 		});
 	}
 
@@ -346,12 +337,45 @@ public class Player extends HardwareEnsemble {
 	 *            SID chip consumer
 	 */
 	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
-		c64.getEventScheduler().scheduleThreadSafe(new Event("Configure SID") {
-			@Override
-			public void event() throws InterruptedException {
-				c64.configureSID(chipNum, action);
+		executeInPlayerThread("Configure SID", () -> {
+			c64.configureSID(chipNum, action);
+		});
+	}
+
+	/**
+	 * Configure the mixer, optionally implemented by SID builder.
+	 * 
+	 * @param action
+	 *            mixer consumer
+	 */
+	public final void configureMixer(final Consumer<Mixer> action) {
+		executeInPlayerThread("Configure Mixer", () -> {
+			if (sidBuilder instanceof Mixer) {
+				action.accept((Mixer) sidBuilder);
 			}
 		});
+	}
+
+	/**
+	 * The runnable is executed immediately in player thread or scheduled
+	 * thread-safe.
+	 * 
+	 * @param eventName
+	 *            event name for scheduling
+	 * @param runnable
+	 *            runnable to execute in player thread
+	 */
+	private void executeInPlayerThread(String eventName, Runnable runnable) {
+		if (Thread.currentThread().equals(playerThread)) {
+			runnable.run();
+		} else {
+			c64.getEventScheduler().scheduleThreadSafe(new Event(eventName) {
+				@Override
+				public void event() throws InterruptedException {
+					runnable.run();
+				}
+			});
+		}
 	}
 
 	/**
@@ -461,18 +485,6 @@ public class Player extends HardwareEnsemble {
 	 */
 	public final void setTune(final SidTune tune) {
 		this.tune = tune;
-	}
-
-	/**
-	 * Configure the mixer, optionally implemented by SID builder.
-	 * 
-	 * @param action
-	 *            mixer consumer
-	 */
-	public final void configureMixer(final Consumer<Mixer> action) {
-		if (sidBuilder instanceof Mixer) {
-			action.accept((Mixer) sidBuilder);
-		}
 	}
 
 	/**
