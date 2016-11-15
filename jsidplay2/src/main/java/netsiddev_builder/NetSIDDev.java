@@ -5,6 +5,7 @@ import libsidplay.common.Emulation;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
+import libsidplay.common.SamplingMethod;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
@@ -106,6 +107,10 @@ public class NetSIDDev extends SIDEmu {
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
 		// XXX unsupported by NetSIDDevice
+	}
+
+	public void setSampling(SamplingMethod sampling) {
+		connection.setSampling((byte) sidNum, sampling);
 	}
 
 }

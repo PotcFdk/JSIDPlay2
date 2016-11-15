@@ -14,8 +14,8 @@ import java.util.Map;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SamplingMethod;
 import libsidplay.components.pla.PLA;
-import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import netsiddev.Response;
 import netsiddev_builder.commands.Flush;
@@ -51,7 +51,7 @@ public class NetSIDConnection {
 	private long lastSIDWriteTime;
 	private Map<String, Byte> filterNameToSIDModel = new HashMap<>();
 
-	public NetSIDConnection(EventScheduler context, IConfig config, SidTune tune) {
+	public NetSIDConnection(EventScheduler context, SidTune tune) {
 		this.context = context;
 		try {
 			if (connectedSocket == null || !connectedSocket.isConnected()) {
@@ -71,12 +71,6 @@ public class NetSIDConnection {
 			for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 				commands.add(new SetSIDModel(sidNum, sidNum));
 			}
-			// Set global settings
-			for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-				commands.add(new SetSIDSampling(sidNum, (byte) config.getAudioSection().getSampling().ordinal()));
-				commands.add(new SetSIDLevel(sidNum, (byte) 0));
-				commands.add(new SetSIDPosition(sidNum, (byte) 0));
-			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -89,8 +83,8 @@ public class NetSIDConnection {
 
 			Byte model = filterNameToSIDModel.get(filterName);
 			if (model == null) {
-				model = sidNum;
-				System.err.println("Undefined Filter: " + filterName + ", will use instead: " + sidNum);
+				model = 0;
+				System.err.println("Undefined Filter: " + filterName + ", will use " + model + " instead!");
 			}
 			commands.add(new SetSIDModel(sidNum, model));
 			flush(false);
@@ -105,6 +99,18 @@ public class NetSIDConnection {
 			flush(false);
 
 			commands.add(new SetSIDClocking(sidNum, cpuFrequency));
+			flush(false);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void setSampling(byte sidNum, SamplingMethod sampling) {
+		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+
+			commands.add(new SetSIDSampling((byte) sidNum, (byte) sampling.ordinal()));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -153,6 +159,30 @@ public class NetSIDConnection {
 			flush(false);
 
 			commands.add(new Mute(sidNum, voice, mute));
+			flush(false);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void setVolume(int sidNum, float volume) {
+		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+
+			commands.add(new SetSIDLevel((byte) sidNum, (byte) (volume * 5)));
+			flush(false);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void setBalance(int sidNum, float balance) {
+		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+
+			commands.add(new SetSIDPosition((byte) sidNum, (byte) ((200 * balance) - 100)));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -299,4 +329,5 @@ public class NetSIDConnection {
 			throw new RuntimeException(e);
 		}
 	}
+
 }
