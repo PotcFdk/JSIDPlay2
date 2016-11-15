@@ -1,5 +1,9 @@
 package netsiddev_builder;
 
+import static netsiddev.Response.BUSY;
+import static netsiddev.Response.INFO;
+import static netsiddev.Response.OK;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -55,7 +59,7 @@ public class NetSIDConnection {
 			}
 
 			// Check available SIDs
-			for (byte i = 0; i < (int) getConfigCount(); i++) {
+			for (byte i = 0; i < getConfigCount(); i++) {
 				byte[] chipModel = new byte[1];
 				String name = getConfigInfo(i, chipModel);
 				ChipModel model = chipModel[0] == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581;
@@ -64,15 +68,14 @@ public class NetSIDConnection {
 			}
 			// Initialize SIDs on server side
 			commands.add(new SetSIDCount((byte) PLA.MAX_SIDS));
-			for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-				commands.add(new SetSIDModel((byte) sidNum, (byte) sidNum));
+			for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+				commands.add(new SetSIDModel(sidNum, sidNum));
 			}
 			// Set global settings
-			for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-				commands.add(
-						new SetSIDSampling((byte) sidNum, (byte) config.getAudioSection().getSampling().ordinal()));
-				commands.add(new SetSIDLevel((byte) sidNum, (byte) 0));
-				commands.add(new SetSIDPosition((byte) sidNum, (byte) 0));
+			for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+				commands.add(new SetSIDSampling(sidNum, (byte) config.getAudioSection().getSampling().ordinal()));
+				commands.add(new SetSIDLevel(sidNum, (byte) 0));
+				commands.add(new SetSIDPosition(sidNum, (byte) 0));
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -89,7 +92,7 @@ public class NetSIDConnection {
 				model = sidNum;
 				System.err.println("Undefined Filter: " + filterName + ", will use instead: " + sidNum);
 			}
-			commands.add(new SetSIDModel((byte) sidNum, model));
+			commands.add(new SetSIDModel(sidNum, model));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -136,7 +139,7 @@ public class NetSIDConnection {
 
 	public void write(byte sidNum, byte addr, byte data) {
 		try {
-			while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == Response.BUSY) {
+			while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == BUSY) {
 				// Try_Write sleeps for us
 			}
 		} catch (InterruptedException | IOException e) {
@@ -193,9 +196,9 @@ public class NetSIDConnection {
 		 * flush writes after a bit of buffering. If no flush, then returns OK
 		 * and we queue more. If flush attempt fails, we must cancel.
 		 */
-		if (maybe_send_writes_to_server() == Response.BUSY) {
+		if (maybe_send_writes_to_server() == BUSY) {
 			sleepDependingOnCyclesSent();
-			return Response.BUSY;
+			return BUSY;
 		}
 
 		if (commands.isEmpty()) {
@@ -211,50 +214,44 @@ public class NetSIDConnection {
 		 */
 		maybe_send_writes_to_server();
 
-		return Response.OK;
+		return OK;
 	}
 
-	private Response flush(boolean give_up_if_busy) throws IOException, InterruptedException {
+	private Response flush(boolean giveUpIfBusy) throws IOException, InterruptedException {
 		while (!commands.isEmpty()) {
-			final NetSIDPkg cmd = commands.get(0);
+			final NetSIDPkg cmd = commands.remove(0);
 
 			connectedSocket.getOutputStream().write(cmd.toByteArrayWithLength());
 			int rc = connectedSocket.getInputStream().read();
 			if (rc == -1) {
-				connectedSocket.close();
 				throw new RuntimeException("Server closed the connection!");
 			}
 			switch (Response.values()[rc]) {
+			case READ:
+			case COUNT:
 			case INFO:
-				// chip model
+				// read result / configuration count / chip model
 				readResult = (byte) connectedSocket.getInputStream().read();
-				// 0 terminated name
-				for (int i = 0; i < 255; i++) {
+				// INFO: 0 terminated name
+				for (int i = 0; rc == INFO.ordinal() && i < configInfo.length; i++) {
 					connectedSocket.getInputStream().read(configInfo, i, 1);
 					if (configInfo[i] == 0)
 						break;
 				}
-				commands.remove(0);
-				continue;
-			case READ:
-			case COUNT:
-				// read result or configuration count
-				readResult = (byte) connectedSocket.getInputStream().read();
 			case OK:
-				commands.remove(0);
 				continue;
 			case BUSY:
-				if (give_up_if_busy) {
-					return Response.BUSY;
+				commands.add(0, cmd);
+				if (giveUpIfBusy) {
+					return BUSY;
 				}
 				sleepDependingOnCyclesSent();
 				continue;
-
 			default:
 				throw new RuntimeException("Server error: Unexpected response!");
 			}
 		}
-		return Response.OK;
+		return OK;
 	}
 
 	private void sleepDependingOnCyclesSent() throws InterruptedException {
@@ -267,11 +264,11 @@ public class NetSIDConnection {
 		/* flush writes after a bit of buffering */
 		if (commands.size() == CMD_BUFFER_SIZE
 				|| (tryWrite != null && tryWrite.getCyclesSentToServer() > MAX_WRITE_CYCLES)) {
-			if (flush(true) == Response.BUSY) {
-				return Response.BUSY;
+			if (flush(true) == BUSY) {
+				return BUSY;
 			}
 		}
-		return Response.OK;
+		return OK;
 	}
 
 	private int clocksSinceLastAccess() {
@@ -284,7 +281,7 @@ public class NetSIDConnection {
 	long eventuallyDelay(byte sidNum) {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
-		if (diff > REGULAR_DELAY << 1) {
+		if (diff > REGULAR_DELAY << 1) { // next writes must not be too soon!
 			lastSIDWriteTime += REGULAR_DELAY;
 			delay(sidNum, REGULAR_DELAY);
 		}
