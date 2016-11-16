@@ -322,6 +322,19 @@ public abstract class SidTune {
 	}
 
 	/**
+	 * Detect fake-stereo SID (second SID at the same address).
+	 * 
+	 * @param tune
+	 *            current tune
+	 * @param sidNum
+	 *            current SID number
+	 * @return fake-stereo SID has been detected
+	 */
+	public static boolean isFakeStereoSid(IEmulationSection emulation, SidTune tune, int sidNum) {
+		return sidNum > 0 && getSIDAddress(emulation, tune, sidNum - 1) == getSIDAddress(emulation, tune, sidNum);
+	}
+
+	/**
 	 * Copy program into C64 memory.
 	 * 
 	 * @param c64buf

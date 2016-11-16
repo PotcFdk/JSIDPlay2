@@ -1,5 +1,8 @@
 package netsiddev_builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.EventScheduler;
@@ -7,6 +10,7 @@ import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
+import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -19,6 +23,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	private NetSIDConnection connection;
 	private CPUClock cpuClock;
+	private List<NetSIDDev> sids = new ArrayList<>();
 
 	public NetSIDDevBuilder(EventScheduler context, IConfig config, SidTune tune, CPUClock cpuClock) {
 		this.context = context;
@@ -31,11 +36,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public SIDEmu lock(SIDEmu sidEmu, int sidNum, SidTune tune) {
 		IAudioSection audioSection = config.getAudioSection();
 		IEmulationSection emulationSection = config.getEmulationSection();
-		if (sidEmu != null) {
-			unlock(sidEmu);
-		}
-		final ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
-		final NetSIDDev sid = new NetSIDDev(context, connection, sidNum, chipModel);
+		final NetSIDDev sid = createSID(emulationSection, sidEmu, tune, sidNum);
 		sid.setSampling(audioSection.getSampling());
 		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
 		sid.setFilter(config, sidNum);
@@ -43,8 +44,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
 		// this triggers refreshParams on the server side, therefore the last!
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
-		setVolume(sidNum, audioSection.getVolume(sidNum));
-		setBalance(sidNum, audioSection.getBalance(sidNum));
 		for (int voice = 0; voice < 4; voice++) {
 			sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
 		}
@@ -52,13 +51,44 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 			sid.write(i, sidEmu.readInternalRegister(i));
 		}
 		sid.lock();
+		sids.add(sid);
+		setVolume(sidNum, audioSection.getVolume(sidNum));
+		setBalance(sidNum, audioSection.getBalance(sidNum));
+		return sid;
+	}
+
+	/**
+	 * Create NetworkSIDDevice, formerly used NetworkSIDDevice is removed
+	 * beforehand.
+	 * 
+	 * @param oldSIDEmu
+	 *            currently used NetworkSIDDevice
+	 * @param tune
+	 *            current tune
+	 * @param sidNum
+	 *            current SID number
+	 * 
+	 * @return new NetworkSIDDevice
+	 */
+	private NetSIDDev createSID(IEmulationSection emulationSection, SIDEmu sidEmu, SidTune tune, int sidNum) {
+		if (sidEmu != null) {
+			unlock(sidEmu);
+		}
+		final ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
+		final NetSIDDev sid;
+		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
+			sid = new NetSIDDev.FakeStereo(context, connection, sidNum, chipModel, config, sids);
+		} else {
+			sid = new NetSIDDev(context, connection, sidNum, chipModel);
+		}
 		return sid;
 	}
 
 	@Override
 	public void unlock(SIDEmu device) {
-		NetSIDDev impl = (NetSIDDev) device;
-		impl.unlock();
+		NetSIDDev sid = (NetSIDDev) device;
+		sid.unlock();
+		sids.remove(sid);
 	}
 
 	@Override
@@ -83,7 +113,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void setVolume(int sidNum, float volume) {
-		connection.setVolume(sidNum, volume);
+		connection.setVolume(sidNum, volume + (PLA.MAX_SIDS - sids.size()) * PLA.MAX_SIDS);
 	}
 
 	@Override

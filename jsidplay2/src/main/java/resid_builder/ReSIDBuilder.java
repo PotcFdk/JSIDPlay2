@@ -83,30 +83,13 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 	private ReSIDBase getOrCreateSID(SIDEmu oldSIDEmu, SidTune tune, int sidNum) {
 		final IEmulationSection emulationSection = config.getEmulationSection();
 		final Emulation emulation = Emulation.getEmulation(emulationSection, tune, sidNum);
-		boolean fakeStereo = isFakeStereoSid(tune, sidNum);
+		boolean fakeStereo = SidTune.isFakeStereoSid(emulationSection, tune, sidNum);
 		Class<? extends ReSIDBase> sidImplClass = getSIDImplClass(emulation, fakeStereo);
 		if (oldSIDEmu != null && oldSIDEmu.getClass().equals(sidImplClass)) {
 			// the implementing class does not change, re-use!
 			return (ReSIDBase) oldSIDEmu;
 		}
 		return createSID(sidImplClass, sidNum);
-	}
-
-	/**
-	 * Detect fake-stereo SID (second SID at the same address).
-	 * 
-	 * @param tune
-	 *            current tune
-	 * @param sidNum
-	 *            current SID number
-	 * @return fake-stereo SID has been detected
-	 */
-	private boolean isFakeStereoSid(SidTune tune, int sidNum) {
-		int prevNum = sidNum > 0 ? sidNum - 1 : sidNum;
-		IEmulationSection emulationSection = config.getEmulationSection();
-		int prevAddres = SidTune.getSIDAddress(emulationSection, tune, prevNum);
-		int baseAddress = SidTune.getSIDAddress(emulationSection, tune, sidNum);
-		return sidNum > 0 && prevAddres == baseAddress;
 	}
 
 	/**

@@ -182,7 +182,7 @@ public class NetSIDConnection {
 			/* deal with unsubmitted writes */
 			flush(false);
 
-			commands.add(new SetSIDPosition((byte) sidNum, (byte) ((200 * balance) - 100)));
+			commands.add(new SetSIDPosition((byte) sidNum, (byte) ((200 * (1 - balance)) - 100)));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
