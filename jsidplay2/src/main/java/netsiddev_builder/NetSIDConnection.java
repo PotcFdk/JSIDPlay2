@@ -110,7 +110,7 @@ public class NetSIDConnection {
 			/* deal with unsubmitted writes */
 			flush(false);
 
-			commands.add(new SetSIDSampling((byte) sidNum, (byte) sampling.ordinal()));
+			commands.add(new SetSIDSampling(sidNum, (byte) sampling.ordinal()));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -165,24 +165,24 @@ public class NetSIDConnection {
 		}
 	}
 
-	public void setVolume(int sidNum, float volume) {
+	public void setVolume(byte sidNum, float volume) {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
 
-			commands.add(new SetSIDLevel((byte) sidNum, (byte) (volume * 5)));
+			commands.add(new SetSIDLevel(sidNum, (byte) (volume * 5)));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void setBalance(int sidNum, float balance) {
+	public void setBalance(byte sidNum, float balance) {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
 
-			commands.add(new SetSIDPosition((byte) sidNum, (byte) ((200 * (1 - balance)) - 100)));
+			commands.add(new SetSIDPosition(sidNum, (byte) ((200 * (1 - balance)) - 100)));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);

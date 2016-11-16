@@ -57,33 +57,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		return sid;
 	}
 
-	/**
-	 * Create NetworkSIDDevice, formerly used NetworkSIDDevice is removed
-	 * beforehand.
-	 * 
-	 * @param oldSIDEmu
-	 *            currently used NetworkSIDDevice
-	 * @param tune
-	 *            current tune
-	 * @param sidNum
-	 *            current SID number
-	 * 
-	 * @return new NetworkSIDDevice
-	 */
-	private NetSIDDev createSID(IEmulationSection emulationSection, SIDEmu sidEmu, SidTune tune, int sidNum) {
-		if (sidEmu != null) {
-			unlock(sidEmu);
-		}
-		final ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
-		final NetSIDDev sid;
-		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
-			sid = new NetSIDDev.FakeStereo(context, connection, sidNum, chipModel, config, sids);
-		} else {
-			sid = new NetSIDDev(context, connection, sidNum, chipModel);
-		}
-		return sid;
-	}
-
 	@Override
 	public void unlock(SIDEmu device) {
 		NetSIDDev sid = (NetSIDDev) device;
@@ -113,12 +86,12 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void setVolume(int sidNum, float volume) {
-		connection.setVolume(sidNum, volume + (PLA.MAX_SIDS - sids.size()) * PLA.MAX_SIDS);
+		connection.setVolume((byte) sidNum, volume + (PLA.MAX_SIDS - sids.size()) * PLA.MAX_SIDS);
 	}
 
 	@Override
 	public void setBalance(int sidNum, float balance) {
-		connection.setBalance(sidNum, balance);
+		connection.setBalance((byte) sidNum, balance);
 	}
 
 	@Override
@@ -141,6 +114,31 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public int getFastForwardBitMask() {
 		// XXX unsupported by NetSIDDevice
 		return 0;
+	}
+
+	/**
+	 * Create NetworkSIDDevice, formerly used NetworkSIDDevice is removed
+	 * beforehand.
+	 * 
+	 * @param oldSIDEmu
+	 *            currently used NetworkSIDDevice
+	 * @param tune
+	 *            current tune
+	 * @param sidNum
+	 *            current SID number
+	 * 
+	 * @return new NetworkSIDDevice
+	 */
+	private NetSIDDev createSID(IEmulationSection emulationSection, SIDEmu sidEmu, SidTune tune, int sidNum) {
+		if (sidEmu != null) {
+			unlock(sidEmu);
+		}
+		final ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
+		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
+			return new NetSIDDev.FakeStereo(context, connection, sidNum, chipModel, config, sids);
+		} else {
+			return new NetSIDDev(context, connection, sidNum, chipModel);
+		}
 	}
 
 }
