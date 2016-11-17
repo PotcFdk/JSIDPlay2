@@ -96,24 +96,22 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void fastForward() {
-		// XXX unsupported by NetSIDDevice
+		connection.fastForward();
 	}
 
 	@Override
 	public void normalSpeed() {
-		// XXX unsupported by NetSIDDevice
+		connection.normalSpeed();
 	}
 
 	@Override
 	public boolean isFastForward() {
-		// XXX unsupported by NetSIDDevice
-		return false;
+		return connection.isFastForward();
 	}
 
 	@Override
 	public int getFastForwardBitMask() {
-		// XXX unsupported by NetSIDDevice
-		return 0;
+		return connection.getFastForwardBitMask();
 	}
 
 	/**

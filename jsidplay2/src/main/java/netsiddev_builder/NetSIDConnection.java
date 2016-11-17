@@ -50,6 +50,7 @@ public class NetSIDConnection {
 	private byte readResult, configInfo[] = new byte[255];
 	private long lastSIDWriteTime;
 	private Map<String, Byte> filterNameToSIDModel = new HashMap<>();
+	private int fastForwardFactor;
 
 	public NetSIDConnection(EventScheduler context, SidTune tune) {
 		this.context = context;
@@ -305,12 +306,12 @@ public class NetSIDConnection {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
 		lastSIDWriteTime = now;
-		return diff;
+		return diff >> fastForwardFactor;
 	}
 
 	long eventuallyDelay(byte sidNum) {
 		final long now = context.getTime(Event.Phase.PHI2);
-		int diff = (int) (now - lastSIDWriteTime);
+		int diff = (int) (now - lastSIDWriteTime) >> fastForwardFactor;
 		if (diff > REGULAR_DELAY << 1) { // next writes must not be too soon!
 			lastSIDWriteTime += REGULAR_DELAY;
 			delay(sidNum, REGULAR_DELAY);
@@ -328,6 +329,22 @@ public class NetSIDConnection {
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void fastForward() {
+		fastForwardFactor++;
+	}
+
+	public void normalSpeed() {
+		fastForwardFactor = 0;
+	}
+
+	public boolean isFastForward() {
+		return fastForwardFactor != 0;
+	}
+
+	public int getFastForwardBitMask() {
+		return (1 << fastForwardFactor) - 1;
 	}
 
 }
