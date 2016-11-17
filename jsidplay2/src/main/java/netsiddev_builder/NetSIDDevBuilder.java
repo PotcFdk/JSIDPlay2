@@ -10,7 +10,6 @@ import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
-import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -29,7 +28,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
-		connection = new NetSIDConnection(context, tune);
+		this.connection = new NetSIDConnection(context, tune);
 	}
 
 	@Override
@@ -42,7 +41,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		sid.setFilter(config, sidNum);
 		sid.setFilterEnable(emulationSection, sidNum);
 		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
-		// this triggers refreshParams on the server side, therefore the last!
+		// this triggers refreshParams on the server side, therefore the last:
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
 		for (int voice = 0; voice < 4; voice++) {
 			sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
@@ -86,7 +85,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void setVolume(int sidNum, float volume) {
-		connection.setVolume((byte) sidNum, volume + (PLA.MAX_SIDS - sids.size()) * PLA.MAX_SIDS);
+		connection.setVolume((byte) sidNum, volume);
 	}
 
 	@Override

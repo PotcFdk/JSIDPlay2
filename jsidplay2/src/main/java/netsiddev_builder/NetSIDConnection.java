@@ -176,7 +176,7 @@ public class NetSIDConnection {
 			/* deal with unsubmitted writes */
 			flush(false);
 
-			commands.add(new SetSIDLevel(sidNum, (byte) (volume * 5)));
+			commands.add(new SetSIDLevel(sidNum, (byte) (volume)));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -330,7 +330,7 @@ public class NetSIDConnection {
 			flush(false);
 
 			commands.add(new TryDelay(sidNum, cycles));
-			flush(false);
+			flush(true);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
