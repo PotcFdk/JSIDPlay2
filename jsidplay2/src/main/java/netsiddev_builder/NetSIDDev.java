@@ -37,7 +37,9 @@ public class NetSIDDev extends SIDEmu {
 		@Override
 		public byte read(int addr) {
 			if (emulationSection.getSidNumToRead() <= prevNum) {
-				return sids.get(prevNum).read(addr);
+				NetSIDDev prevSID = sids.get(prevNum);
+				if (prevSID != this)
+					return prevSID.read(addr);
 			}
 			return super.read(addr);
 		}
@@ -45,7 +47,9 @@ public class NetSIDDev extends SIDEmu {
 		@Override
 		public byte readInternalRegister(int addr) {
 			if (emulationSection.getSidNumToRead() <= prevNum) {
-				return sids.get(prevNum).readInternalRegister(addr);
+				NetSIDDev prevSID = sids.get(prevNum);
+				if (prevSID != this)
+					return prevSID.readInternalRegister(addr);
 			}
 			return super.readInternalRegister(addr);
 		}
@@ -53,7 +57,9 @@ public class NetSIDDev extends SIDEmu {
 		@Override
 		public void write(int addr, byte data) {
 			super.write(addr, data);
-			sids.get(prevNum).write(addr, data);
+			NetSIDDev prevSID = sids.get(prevNum);
+			if (prevSID != this)
+				prevSID.write(addr, data);
 		}
 	}
 
@@ -120,12 +126,12 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void input(int input) {
-		// configured in the NetSIDDevice user interface
+		// configured in the JSIDDevice user interface
 	}
 
 	@Override
 	public int getInputDigiBoost() {
-		// XXX unsupported by NetSIDDevice
+		// configured in the JSIDDevice user interface
 		return 0;
 	}
 
@@ -153,7 +159,7 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
-		// XXX unsupported by NetSIDDevice
+		// XXX unsupported by JSIDDevice
 	}
 
 	public void setSampling(SamplingMethod sampling) {

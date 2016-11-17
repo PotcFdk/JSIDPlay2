@@ -71,17 +71,17 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void start() {
-		// XXX unsupported by NetSIDDevice
+		connection.start();
 	}
 
 	@Override
 	public void fadeIn(int fadeIn) {
-		// XXX unsupported by NetSIDDevice
+		// XXX unsupported by JSIDDevice
 	}
 
 	@Override
 	public void fadeOut(int fadeOut) {
-		// XXX unsupported by NetSIDDevice
+		// XXX unsupported by JSIDDevice
 	}
 
 	@Override

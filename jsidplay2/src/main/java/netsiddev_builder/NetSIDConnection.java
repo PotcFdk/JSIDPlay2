@@ -51,6 +51,7 @@ public class NetSIDConnection {
 	private long lastSIDWriteTime;
 	private Map<String, Byte> filterNameToSIDModel = new HashMap<>();
 	private int fastForwardFactor;
+	private boolean startTimeReached;
 
 	public NetSIDConnection(EventScheduler context, SidTune tune) {
 		this.context = context;
@@ -145,12 +146,16 @@ public class NetSIDConnection {
 	}
 
 	public void write(byte sidNum, byte addr, byte data) {
-		try {
-			while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == BUSY) {
-				// Try_Write sleeps for us
+		if (startTimeReached) {
+			try {
+				while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == BUSY) {
+					// Try_Write sleeps for us
+				}
+			} catch (InterruptedException | IOException e) {
+				throw new RuntimeException(e);
 			}
-		} catch (InterruptedException | IOException e) {
-			throw new RuntimeException(e);
+		} else {
+			delay(sidNum, clocksSinceLastAccess());
 		}
 	}
 
@@ -329,6 +334,10 @@ public class NetSIDConnection {
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void start() {
+		startTimeReached = true;
 	}
 
 	public void fastForward() {

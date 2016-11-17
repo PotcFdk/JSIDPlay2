@@ -55,7 +55,9 @@ public class ReSIDfp extends ReSIDBase {
 		@Override
 		public byte read(int addr) {
 			if (emulationSection.getSidNumToRead() <= prevNum) {
-				return sids.get(prevNum).read(addr);
+				ReSIDBase prevSID = sids.get(prevNum);
+				if (prevSID != this)
+					return prevSID.read(addr);
 			}
 			return super.read(addr);
 		}
@@ -63,7 +65,9 @@ public class ReSIDfp extends ReSIDBase {
 		@Override
 		public byte readInternalRegister(int addr) {
 			if (emulationSection.getSidNumToRead() <= prevNum) {
-				return sids.get(prevNum).readInternalRegister(addr);
+				ReSIDBase prevSID = sids.get(prevNum);
+				if (prevSID != this)
+					return prevSID.readInternalRegister(addr);
 			}
 			return super.readInternalRegister(addr);
 		}
@@ -71,7 +75,9 @@ public class ReSIDfp extends ReSIDBase {
 		@Override
 		public void write(int addr, byte data) {
 			super.write(addr, data);
-			sids.get(prevNum).write(addr, data);
+			ReSIDBase prevSID = sids.get(prevNum);
+			if (prevSID != this)
+				prevSID.write(addr, data);
 		}
 	}
 
