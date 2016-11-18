@@ -1057,7 +1057,7 @@ public interface IEmulationSection {
 			default:
 				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}
-
+			break;
 		case MOS8580:
 			switch (engine) {
 			case EMULATION:
