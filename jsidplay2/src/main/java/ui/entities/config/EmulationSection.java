@@ -16,16 +16,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_8580;
-import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_6581;
-import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_8580;
-import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
-import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
-import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
-import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
@@ -34,6 +24,22 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_STEREO_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_STEREO_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_EMULATION;
@@ -260,7 +266,7 @@ public class EmulationSection implements IEmulationSection {
 	public ObjectProperty<Integer> hardsid6581Property() {
 		return hardsid6581;
 	}
-	
+
 	@Override
 	public int getHardsid6581() {
 		return hardsid6581.get();
@@ -276,7 +282,7 @@ public class EmulationSection implements IEmulationSection {
 	public ObjectProperty<Integer> hardsid8580Property() {
 		return hardsid8580;
 	}
-	
+
 	@Override
 	public int getHardsid8580() {
 		return hardsid8580.get();
@@ -340,7 +346,7 @@ public class EmulationSection implements IEmulationSection {
 	public ObjectProperty<Integer> sidNumToReadProperty() {
 		return sidNumToRead;
 	}
-	
+
 	@Override
 	public int getSidNumToRead() {
 		return sidNumToRead.get();
@@ -636,6 +642,102 @@ public class EmulationSection implements IEmulationSection {
 	@Override
 	public void setMuteThirdSIDVoice4(boolean mute) {
 		muteStereoVoice4.set(mute);
+	}
+
+	private StringProperty netSIDFilter6581 = new SimpleStringProperty(DEFAULT_NETSID_FILTER_6581);
+
+	public StringProperty netSIDFilter6581Property() {
+		return netSIDFilter6581;
+	}
+
+	@Override
+	public String getNetSIDFilter6581() {
+		return netSIDFilter6581.get();
+	}
+
+	@Override
+	public void setNetSIDFilter6581(String netSIDFilter6581) {
+		this.netSIDFilter6581.set(netSIDFilter6581);
+	}
+
+	private StringProperty netSIDStereoFilter6581 = new SimpleStringProperty(DEFAULT_NETSID_STEREO_FILTER_6581);
+
+	public StringProperty netSIDStereoFilter6581Property() {
+		return netSIDStereoFilter6581;
+	}
+
+	@Override
+	public String getNetSIDStereoFilter6581() {
+		return netSIDStereoFilter6581.get();
+	}
+
+	@Override
+	public void setNetSIDStereoFilter6581(String netSIDFilter6581) {
+		this.netSIDStereoFilter6581.set(netSIDFilter6581);
+	}
+
+	private StringProperty netSID3rdSIDFilter6581 = new SimpleStringProperty(DEFAULT_NETSID_3SID_FILTER_6581);
+
+	public StringProperty netSID3rdSIDFilter6581Property() {
+		return netSID3rdSIDFilter6581;
+	}
+
+	@Override
+	public String getNetSIDThirdSIDFilter6581() {
+		return netSID3rdSIDFilter6581.get();
+	}
+
+	@Override
+	public void setNetSIDThirdSIDFilter6581(String netSIDFilter6581) {
+		this.netSID3rdSIDFilter6581.set(netSIDFilter6581);
+	}
+
+	private StringProperty netSIDFilter8580 = new SimpleStringProperty(DEFAULT_NETSID_FILTER_8580);
+
+	public StringProperty netSIDFilter8580Property() {
+		return netSIDFilter8580;
+	}
+
+	@Override
+	public String getNetSIDFilter8580() {
+		return netSIDFilter8580.get();
+	}
+
+	@Override
+	public void setNetSIDFilter8580(String netSIDFilter8580) {
+		this.netSIDFilter8580.set(netSIDFilter8580);
+	}
+
+	private StringProperty netSIDStereoFilter8580 = new SimpleStringProperty(DEFAULT_NETSID_STEREO_FILTER_8580);
+
+	public StringProperty netSIDStereoFilter858Property() {
+		return netSIDStereoFilter8580;
+	}
+
+	@Override
+	public String getNetSIDStereoFilter8580() {
+		return netSIDStereoFilter8580.get();
+	}
+
+	@Override
+	public void setNetSIDStereoFilter8580(String netSIDFilter8580) {
+		this.netSIDStereoFilter8580.set(netSIDFilter8580);
+	}
+
+	private StringProperty netSID3rdSIDFilter8580 = new SimpleStringProperty(DEFAULT_NETSID_3SID_FILTER_8580);
+
+	public StringProperty netSID3rdSIDFilter8580Property() {
+		return netSID3rdSIDFilter8580;
+	}
+
+	@Override
+	public String getNetSIDThirdSIDFilter8580() {
+		return netSID3rdSIDFilter8580.get();
+	}
+
+	@Override
+	public void setNetSIDThirdSIDFilter8580(String netSIDFilter8580) {
+		this.netSID3rdSIDFilter8580.set(netSIDFilter8580);
 	}
 
 	private StringProperty filter6581 = new SimpleStringProperty(DEFAULT_FILTER_6581);

@@ -218,6 +218,96 @@ public interface IEmulationSection {
 	void setThirdSIDFilter(boolean enable);
 
 	/**
+	 * Getter of the filter setting of MOS6581 for NetSID.
+	 * 
+	 * @return the filter setting of MOS6581 for NetSID
+	 */
+	String getNetSIDFilter6581();
+
+	/**
+	 * Getter of the stereo filter setting of MOS6581 for NetSID.
+	 * 
+	 * @return the stereo filter setting of MOS6581 for NetSID
+	 */
+	String getNetSIDStereoFilter6581();
+
+	/**
+	 * Getter of the 3-SID filter setting of MOS6581 for NetSID.
+	 * 
+	 * @return the 3-SID filter setting of MOS6581 for NetSID
+	 */
+	String getNetSIDThirdSIDFilter6581();
+
+	/**
+	 * Setter of the filter setting of MOS6581 for NetSID.
+	 * 
+	 * @param filterName
+	 *            filter setting of MOS6581 for NetSID
+	 */
+	void setNetSIDFilter6581(String filterName);
+
+	/**
+	 * Setter of the stereo filter setting of MOS6581 for NetSID.
+	 * 
+	 * @param filterName
+	 *            stereo filter setting of MOS6581 for NetSID
+	 */
+	void setNetSIDStereoFilter6581(String filterName);
+
+	/**
+	 * Setter of the 3-SID filter setting of MOS6581 for NetSID.
+	 * 
+	 * @param filterName
+	 *            3-SID filter setting of MOS6581 for NetSID
+	 */
+	void setNetSIDThirdSIDFilter6581(String filterName);
+
+	/**
+	 * Getter of the filter setting of CSG8580.
+	 * 
+	 * @return the filter setting of CSG8580
+	 */
+	String getNetSIDFilter8580();
+
+	/**
+	 * Getter of the stereo filter setting of CSG8580.
+	 * 
+	 * @return the stereo filter setting of CSG8580
+	 */
+	String getNetSIDStereoFilter8580();
+
+	/**
+	 * Getter of the 3-SID filter setting of CSG8580.
+	 * 
+	 * @return the 3-SID filter setting of CSG8580
+	 */
+	String getNetSIDThirdSIDFilter8580();
+
+	/**
+	 * Setter of the filter setting of CSG8680.
+	 * 
+	 * @param filterName
+	 *            filter setting of CSG8680
+	 */
+	void setNetSIDFilter8580(String filterName);
+
+	/**
+	 * Setter of the stereo filter setting of CSG8680.
+	 * 
+	 * @param filterName
+	 *            stereo filter setting of CSG8680
+	 */
+	void setNetSIDStereoFilter8580(String filterName);
+
+	/**
+	 * Setter of the 3-SID filter setting of CSG8680.
+	 * 
+	 * @param filterName
+	 *            3-SID filter setting of CSG8680
+	 */
+	void setNetSIDThirdSIDFilter8580(String filterName);
+
+	/**
 	 * Getter of the filter setting of MOS6581.
 	 * 
 	 * @return the filter setting of MOS6581
@@ -804,8 +894,20 @@ public interface IEmulationSection {
 					throw new RuntimeException("Unknown emulation type: " + emulation + "!");
 				}
 			case NETSID:
-				// TODO: 6581, NETSID
-				return "";
+				switch (sidNum) {
+				case 0:
+					return getNetSIDFilter6581();
+
+				case 1:
+					return getNetSIDStereoFilter6581();
+
+				case 2:
+					return getNetSIDThirdSIDFilter6581();
+
+				default:
+					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+
+				}
 			default:
 				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}
@@ -849,8 +951,20 @@ public interface IEmulationSection {
 					throw new RuntimeException("Unknown emulation type: " + emulation + "!");
 				}
 			case NETSID:
-				// TODO: 8580, NETSID
-				return "";
+				switch (sidNum) {
+				case 0:
+					return getNetSIDFilter8580();
+
+				case 1:
+					return getNetSIDStereoFilter8580();
+
+				case 2:
+					return getNetSIDThirdSIDFilter8580();
+
+				default:
+					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+
+				}
 			default:
 				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}
@@ -873,40 +987,66 @@ public interface IEmulationSection {
 	 * @param filterName
 	 *            filter name
 	 */
-	default void setFilterName(int sidNum, Emulation emulation, ChipModel chipModel, String filterName) {
+	default void setFilterName(int sidNum, Engine engine, Emulation emulation, ChipModel chipModel, String filterName) {
 		switch (chipModel) {
 		case MOS6581:
-			switch (emulation) {
-			case RESID:
-				switch (sidNum) {
-				case 0:
-					setFilter6581(filterName);
-					break;
-				case 1:
-					setStereoFilter6581(filterName);
-					break;
+			switch (engine) {
+			case EMULATION:
+			case HARDSID:
+				switch (emulation) {
+				case RESID:
+					switch (sidNum) {
+					case 0:
+						setFilter6581(filterName);
+						break;
+					case 1:
+						setStereoFilter6581(filterName);
+						break;
 
-				case 2:
-					setThirdSIDFilter6581(filterName);
-					break;
+					case 2:
+						setThirdSIDFilter6581(filterName);
+						break;
 
+					default:
+						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+
+					}
+					break;
+				case RESIDFP:
+					switch (sidNum) {
+					case 0:
+						setReSIDfpFilter6581(filterName);
+						break;
+
+					case 1:
+						setReSIDfpStereoFilter6581(filterName);
+						break;
+
+					case 2:
+						setReSIDfpThirdSIDFilter6581(filterName);
+						break;
+
+					default:
+						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+
+					}
+					break;
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
-
+					throw new RuntimeException("Unknown emulation type: " + emulation + "!");
 				}
 				break;
-			case RESIDFP:
+			case NETSID:
 				switch (sidNum) {
 				case 0:
-					setReSIDfpFilter6581(filterName);
+					setNetSIDFilter6581(filterName);
 					break;
 
 				case 1:
-					setReSIDfpStereoFilter6581(filterName);
+					setNetSIDStereoFilter6581(filterName);
 					break;
 
 				case 2:
-					setReSIDfpThirdSIDFilter6581(filterName);
+					setNetSIDThirdSIDFilter6581(filterName);
 					break;
 
 				default:
@@ -915,43 +1055,68 @@ public interface IEmulationSection {
 				}
 				break;
 			default:
-				throw new RuntimeException("Unknown emulation type: " + emulation + "!");
+				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}
-			break;
 
 		case MOS8580:
-			switch (emulation) {
-			case RESID:
-				switch (sidNum) {
-				case 0:
-					setFilter8580(filterName);
-					break;
+			switch (engine) {
+			case EMULATION:
+			case HARDSID:
+				switch (emulation) {
+				case RESID:
+					switch (sidNum) {
+					case 0:
+						setFilter8580(filterName);
+						break;
 
-				case 1:
-					setStereoFilter8580(filterName);
-					break;
+					case 1:
+						setStereoFilter8580(filterName);
+						break;
 
-				case 2:
-					setThirdSIDFilter8580(filterName);
-					break;
+					case 2:
+						setThirdSIDFilter8580(filterName);
+						break;
 
+					default:
+						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+
+					}
+					break;
+				case RESIDFP:
+					switch (sidNum) {
+					case 0:
+						setReSIDfpFilter8580(filterName);
+						break;
+
+					case 1:
+						setReSIDfpStereoFilter8580(filterName);
+						break;
+
+					case 2:
+						setReSIDfpThirdSIDFilter8580(filterName);
+						break;
+
+					default:
+						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+
+					}
+					break;
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
-
+					throw new RuntimeException("Unknown emulation type: " + emulation + "!");
 				}
 				break;
-			case RESIDFP:
+			case NETSID:
 				switch (sidNum) {
 				case 0:
-					setReSIDfpFilter8580(filterName);
+					setNetSIDFilter8580(filterName);
 					break;
 
 				case 1:
-					setReSIDfpStereoFilter8580(filterName);
+					setNetSIDStereoFilter8580(filterName);
 					break;
 
 				case 2:
-					setReSIDfpThirdSIDFilter8580(filterName);
+					setNetSIDThirdSIDFilter8580(filterName);
 					break;
 
 				default:
@@ -960,7 +1125,7 @@ public interface IEmulationSection {
 				}
 				break;
 			default:
-				throw new RuntimeException("Unknown emulation type: " + emulation + "!");
+				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}
 			break;
 		default:

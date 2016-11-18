@@ -70,7 +70,7 @@ public class NetSIDDev extends SIDEmu {
 		reset((byte) 0xf);
 	}
 
-	private final Event event = new Event("NetSIDDev Delay") {
+	private final Event event = new Event("JSIDDevice Delay") {
 
 		@Override
 		public void event() {

@@ -13,10 +13,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_FAKE_STEREO;
 import static sidplay.ini.IniDefaults.DEFAULT_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
+import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
@@ -25,9 +24,16 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE4;
-import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
-import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_6581;
-import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_STEREO_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_STEREO_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
@@ -164,12 +170,12 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setStereoSidModel(final ChipModel model) {
 		iniReader.setProperty("Emulation", "StereoSidModel", model);
 	}
-	
+
 	@Override
 	public final ChipModel getThirdSIDModel() {
 		return iniReader.getPropertyEnum("Emulation", "3rdSIDModel", DEFAULT_3SID_MODEL, ChipModel.class);
 	}
-	
+
 	@Override
 	public final void setThirdSIDModel(final ChipModel model) {
 		iniReader.setProperty("Emulation", "3rdSIDModel", model);
@@ -204,7 +210,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setFilter(final boolean enable) {
 		iniReader.setProperty("Emulation", "UseFilter", enable);
 	}
-	
+
 	@Override
 	public final boolean isStereoFilter() {
 		return iniReader.getPropertyBool("Emulation", "UseStereoFilter", DEFAULT_USE_STEREO_FILTER);
@@ -219,7 +225,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final boolean isThirdSIDFilter() {
 		return iniReader.getPropertyBool("Emulation", "Use3rdSIDFilter", DEFAULT_USE_3SID_FILTER);
 	}
-	
+
 	@Override
 	public final void setThirdSIDFilter(final boolean enable) {
 		iniReader.setProperty("Emulation", "Use3rdSIDFilter", enable);
@@ -254,7 +260,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setDualSidBase(final int base) {
 		iniReader.setProperty("Emulation", "dualSidBase", String.format("0x%04x", base));
 	}
-	
+
 	@Override
 	public final int getThirdSIDBase() {
 		return iniReader.getPropertyInt("Emulation", "thirdSIDBase", DEFAULT_THIRD_SID_BASE);
@@ -269,7 +275,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final boolean isFakeStereo() {
 		return iniReader.getPropertyBool("Emulation", "fakeStereo", DEFAULT_FAKE_STEREO);
 	}
-	
+
 	@Override
 	public final void setFakeStereo(boolean fakeStereo) {
 		iniReader.setProperty("Emulation", "fakeStereo", fakeStereo);
@@ -416,6 +422,65 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	public final String getNetSIDFilter6581() {
+		return iniReader.getPropertyString("Emulation", "NetSID_Filter6581", DEFAULT_NETSID_FILTER_6581);
+	}
+
+	@Override
+	public final void setNetSIDFilter6581(final String filterName) {
+		iniReader.setProperty("Emulation", "NetSID_Filter6581", filterName);
+	}
+
+	@Override
+	public final String getNetSIDStereoFilter6581() {
+		return iniReader.getPropertyString("Emulation", "NetSID_Stereo_Filter6581", DEFAULT_NETSID_STEREO_FILTER_6581);
+	}
+
+	@Override
+	public final void setNetSIDStereoFilter6581(final String filterName) {
+		iniReader.setProperty("Emulation", "NetSID_Stereo_Filter6581", filterName);
+	}
+
+	@Override
+	public final String getNetSIDThirdSIDFilter6581() {
+		return iniReader.getPropertyString("Emulation", "NetSID_3rdSID_Filter6581", DEFAULT_NETSID_3SID_FILTER_6581);
+	}
+
+	@Override
+	public final void setNetSIDThirdSIDFilter6581(final String filterName) {
+		iniReader.setProperty("Emulation", "NetSID_3rdSID_Filter6581", filterName);
+	}
+
+	@Override
+	public final String getNetSIDFilter8580() {
+		return iniReader.getPropertyString("Emulation", "NetSID_Filter8580", DEFAULT_NETSID_FILTER_8580);
+	}
+
+	public final void setNetSIDFilter8580(final String filterName) {
+		iniReader.setProperty("Emulation", "NetSID_Filter8580", filterName);
+	}
+
+	@Override
+	public final String getNetSIDStereoFilter8580() {
+		return iniReader.getPropertyString("Emulation", "NetSID_Stereo_Filter8580", DEFAULT_NETSID_STEREO_FILTER_8580);
+	}
+
+	@Override
+	public final void setNetSIDStereoFilter8580(final String filterName) {
+		iniReader.setProperty("Emulation", "NetSID_Stereo_Filter8580", filterName);
+	}
+
+	@Override
+	public final String getNetSIDThirdSIDFilter8580() {
+		return iniReader.getPropertyString("Emulation", "NetSID_3rdSID_Filter8580", DEFAULT_NETSID_3SID_FILTER_8580);
+	}
+
+	@Override
+	public final void setNetSIDThirdSIDFilter8580(final String filterName) {
+		iniReader.setProperty("Emulation", "NetSID_3rdSID_Filter8580", filterName);
+	}
+
+	@Override
 	public final String getFilter6581() {
 		return iniReader.getPropertyString("Emulation", "Filter6581", DEFAULT_FILTER_6581);
 	}
@@ -424,7 +489,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "Filter6581", filterName);
 	}
-	
+
 	@Override
 	public final String getStereoFilter6581() {
 		return iniReader.getPropertyString("Emulation", "Stereo_Filter6581", DEFAULT_STEREO_FILTER_6581);
@@ -439,7 +504,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final String getThirdSIDFilter6581() {
 		return iniReader.getPropertyString("Emulation", "3rdSID_Filter6581", DEFAULT_3SID_FILTER_6581);
 	}
-	
+
 	@Override
 	public final void setThirdSIDFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "3rdSID_Filter6581", filterName);
@@ -454,7 +519,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "Filter8580", filterName);
 	}
-	
+
 	@Override
 	public final String getStereoFilter8580() {
 		return iniReader.getPropertyString("Emulation", "Stereo_Filter8580", DEFAULT_STEREO_FILTER_8580);
@@ -464,7 +529,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setStereoFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "Stereo_Filter8580", filterName);
 	}
-	
+
 	@Override
 	public final String getThirdSIDFilter8580() {
 		return iniReader.getPropertyString("Emulation", "3rdSID_Filter8580", DEFAULT_3SID_FILTER_8580);
@@ -484,7 +549,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setReSIDfpFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Filter6581", filterName);
 	}
-	
+
 	@Override
 	public final String getReSIDfpStereoFilter6581() {
 		return iniReader.getPropertyString("Emulation", "ReSIDfp_Stereo_Filter6581",
@@ -495,7 +560,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setReSIDfpStereoFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter6581", filterName);
 	}
-	
+
 	@Override
 	public final String getReSIDfpThirdSIDFilter6581() {
 		return iniReader.getPropertyString("Emulation", "ReSIDfp_3rdSID_Filter6581", DEFAULT_ReSIDfp_3SID_FILTER_6581);
@@ -514,7 +579,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setReSIDfpFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Filter8580", filterName);
 	}
-	
+
 	@Override
 	public final String getReSIDfpStereoFilter8580() {
 		return iniReader.getPropertyString("Emulation", "ReSIDfp_Stereo_Filter8580",
@@ -525,7 +590,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public final void setReSIDfpStereoFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter8580", filterName);
 	}
-	
+
 	@Override
 	public final String getReSIDfpThirdSIDFilter8580() {
 		return iniReader.getPropertyString("Emulation", "ReSIDfp_3rdSID_Filter8580", DEFAULT_ReSIDfp_3SID_FILTER_8580);

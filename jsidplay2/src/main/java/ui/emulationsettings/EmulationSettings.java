@@ -386,9 +386,10 @@ public class EmulationSettings extends C64Window {
 		emulationSection.setFilterEnable(sidNum, !filterDisabled);
 
 		SidTune tune = util.getPlayer().getTune();
+		Engine engine = emulationSection.getEngine();
 		Emulation emulation = Emulation.getEmulation(emulationSection, tune, sidNum);
 		ChipModel model = ChipModel.getChipModel(emulationSection, tune, sidNum);
-		emulationSection.setFilterName(sidNum, emulation, model, !filterDisabled ? filterName : null);
+		emulationSection.setFilterName(sidNum, engine, emulation, model, !filterDisabled ? filterName : null);
 	}
 
 	/**
