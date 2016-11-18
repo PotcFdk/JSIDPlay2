@@ -50,7 +50,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		for (int i = 0; sidEmu != null && i < SIDChip.REG_COUNT; i++) {
 			sid.write(i, sidEmu.readInternalRegister(i));
 		}
-		connection.flush((byte) sidNum);
 		if (sidEmu != null) {
 			((NetSIDDev)sidEmu).unlock();
 		}
