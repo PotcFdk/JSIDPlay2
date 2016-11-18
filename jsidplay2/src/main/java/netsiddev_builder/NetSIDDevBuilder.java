@@ -44,17 +44,21 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
 		// this triggers refreshParams on the server side, therefore the last:
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
-		for (int voice = 0; voice < 3; voice++) {
+		for (int voice = 0; voice < (connection.getNetworkProtocolVersion() < 3 ? 3 : 4); voice++) {
 			sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
 		}
 		for (int i = 0; sidEmu != null && i < SIDChip.REG_COUNT; i++) {
 			sid.write(i, sidEmu.readInternalRegister(i));
 		}
+		connection.flush((byte) sidNum);
 		if (sidEmu != null) {
-			unlock(sidEmu);
+			((NetSIDDev)sidEmu).unlock();
 		}
 		sid.lock();
-		sids.add(sid);
+		if (sidNum < sids.size())
+			sids.set(sidNum, sid);
+		else
+			sids.add(sid);
 		setVolume(sidNum, audioSection.getVolume(sidNum));
 		setBalance(sidNum, audioSection.getBalance(sidNum));
 		return sid;

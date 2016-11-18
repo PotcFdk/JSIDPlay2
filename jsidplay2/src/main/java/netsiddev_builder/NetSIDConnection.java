@@ -22,6 +22,7 @@ import netsiddev.Response;
 import netsiddev_builder.commands.Flush;
 import netsiddev_builder.commands.GetConfigCount;
 import netsiddev_builder.commands.GetConfigInfo;
+import netsiddev_builder.commands.GetVersion;
 import netsiddev_builder.commands.Mute;
 import netsiddev_builder.commands.NetSIDPkg;
 import netsiddev_builder.commands.SetSIDClocking;
@@ -53,12 +54,14 @@ public class NetSIDConnection {
 	private static Map<Pair<ChipModel, String>, Byte> filterNameToSIDModel = new HashMap<>();
 	private int fastForwardFactor;
 	private boolean startTimeReached;
+	private byte VERSION;
 
 	public NetSIDConnection(EventScheduler context, SidTune tune) {
 		this.context = context;
 		try {
 			if (connectedSocket == null || !connectedSocket.isConnected()) {
 				connectedSocket = new Socket(HOSTNAME, PORT);
+				VERSION = getVersion();
 				// Check available SIDs
 				for (byte config = 0; config < getConfigCount(); config++) {
 					byte[] chipModel = new byte[1];
@@ -79,12 +82,16 @@ public class NetSIDConnection {
 		}
 	}
 
+	public int getNetworkProtocolVersion() {
+		return VERSION;
+	}
+
 	public void setFilter(byte sidNum, ChipModel chipModel, String filterName) {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
 
-			Byte model = filterNameToSIDModel.get(new Pair<ChipModel,String>(chipModel, filterName));
+			Byte model = filterNameToSIDModel.get(new Pair<ChipModel, String>(chipModel, filterName));
 			if (model == null) {
 				model = 0;
 				System.err.println("Undefined Filter: " + filterName + ", will use " + model + " instead!");
@@ -124,6 +131,18 @@ public class NetSIDConnection {
 			flush(false);
 
 			commands.add(new SetSIDSampling(sidNum, (byte) sampling.ordinal()));
+			flush(false);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void flush(byte sidNum) {
+		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+
+			commands.add(new Flush(sidNum));
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -206,6 +225,19 @@ public class NetSIDConnection {
 		}
 	}
 
+	private byte getVersion() {
+		try {
+			/* deal with unsubmitted writes */
+			flush(false);
+
+			commands.add(new GetVersion());
+			flush(false);
+			return readResult;
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private byte getConfigCount() {
 		try {
 			/* deal with unsubmitted writes */
@@ -277,6 +309,7 @@ public class NetSIDConnection {
 			case READ:
 			case COUNT:
 			case INFO:
+			case VERSION:
 				// read result / configuration count / chip model
 				readResult = (byte) connectedSocket.getInputStream().read();
 				// INFO: 0 terminated name

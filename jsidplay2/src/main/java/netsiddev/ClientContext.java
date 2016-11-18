@@ -42,7 +42,7 @@ class ClientContext {
 	private static final Charset ISO_8859 = Charset.forName("ISO-8859-1");
 
 	/** See class comment for definition of version 2. */
-	private static final byte SID_NETWORK_PROTOCOL_VERSION = 2;
+	private static final byte SID_NETWORK_PROTOCOL_VERSION = 3;
 
 	/** Maximum time to wait for queue in milliseconds. */
 	private static final long MAX_TIME_TO_WAIT_FOR_QUEUE = 20;
