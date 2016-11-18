@@ -50,6 +50,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		for (int i = 0; sidEmu != null && i < SIDChip.REG_COUNT; i++) {
 			sid.write(i, sidEmu.readInternalRegister(i));
 		}
+		if (sidEmu != null) {
+			unlock(sidEmu);
+		}
 		sid.lock();
 		sids.add(sid);
 		setVolume(sidNum, audioSection.getVolume(sidNum));
@@ -128,9 +131,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	 * @return new NetworkSIDDevice
 	 */
 	private NetSIDDev createSID(IEmulationSection emulationSection, SIDEmu sidEmu, SidTune tune, int sidNum) {
-		if (sidEmu != null) {
-			unlock(sidEmu);
-		}
 		final ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
 			return new NetSIDDev.FakeStereo(context, connection, sidNum, chipModel, config, sids);

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.util.Pair;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -49,7 +50,7 @@ public class NetSIDConnection {
 	private TryWrite tryWrite;
 	private byte readResult, configInfo[] = new byte[255];
 	private long lastSIDWriteTime;
-	private Map<String, Byte> filterNameToSIDModel = new HashMap<>();
+	private static Map<Pair<ChipModel, String>, Byte> filterNameToSIDModel = new HashMap<>();
 	private int fastForwardFactor;
 	private boolean startTimeReached;
 
@@ -58,16 +59,16 @@ public class NetSIDConnection {
 		try {
 			if (connectedSocket == null || !connectedSocket.isConnected()) {
 				connectedSocket = new Socket(HOSTNAME, PORT);
+				// Check available SIDs
+				for (byte config = 0; config < getConfigCount(); config++) {
+					byte[] chipModel = new byte[1];
+					String filter = getConfigInfo(config, chipModel);
+					ChipModel model = chipModel[0] == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581;
+					System.out.println(filter);
+					filterNameToSIDModel.put(new Pair<>(model, filter), config);
+				}
 			}
 
-			// Check available SIDs
-			for (byte i = 0; i < getConfigCount(); i++) {
-				byte[] chipModel = new byte[1];
-				String name = getConfigInfo(i, chipModel);
-				ChipModel model = chipModel[0] == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581;
-				System.out.println(name + " (" + model + ")");
-				filterNameToSIDModel.put("Filter" + name, i);
-			}
 			// Initialize SIDs on server side
 			commands.add(new SetSIDCount((byte) PLA.MAX_SIDS));
 			for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
@@ -78,12 +79,12 @@ public class NetSIDConnection {
 		}
 	}
 
-	public void setFilter(byte sidNum, String filterName) {
+	public void setFilter(byte sidNum, ChipModel chipModel, String filterName) {
 		try {
 			/* deal with unsubmitted writes */
 			flush(false);
 
-			Byte model = filterNameToSIDModel.get(filterName);
+			Byte model = filterNameToSIDModel.get(new Pair<ChipModel,String>(chipModel, filterName));
 			if (model == null) {
 				model = 0;
 				System.err.println("Undefined Filter: " + filterName + ", will use " + model + " instead!");
@@ -93,6 +94,16 @@ public class NetSIDConnection {
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static List<String> getFilters(ChipModel model) {
+		List<String> filters = new ArrayList<>();
+		for (Pair<ChipModel, String> filter : filterNameToSIDModel.keySet()) {
+			if (filter.getKey() == model)
+				filters.add(filter.getValue());
+		}
+		filters.sort((s1, s2) -> s1.compareToIgnoreCase(s2));
+		return filters;
 	}
 
 	public void setClockFrequency(byte sidNum, double cpuFrequency) {

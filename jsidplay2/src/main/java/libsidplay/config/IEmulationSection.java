@@ -763,79 +763,98 @@ public interface IEmulationSection {
 	 *            SID chip model
 	 * @return the current filter name
 	 */
-	default String getFilterName(int sidNum, Emulation emulation, ChipModel chipModel) {
+	default String getFilterName(int sidNum, Engine engine, Emulation emulation, ChipModel chipModel) {
 		switch (chipModel) {
 		case MOS6581:
-			switch (emulation) {
-			case RESID:
-				switch (sidNum) {
-				case 0:
-					return getFilter6581();
+			switch (engine) {
+			case EMULATION:
+			case HARDSID:
+				switch (emulation) {
+				case RESID:
+					switch (sidNum) {
+					case 0:
+						return getFilter6581();
 
-				case 1:
-					return getStereoFilter6581();
+					case 1:
+						return getStereoFilter6581();
 
-				case 2:
-					return getThirdSIDFilter6581();
+					case 2:
+						return getThirdSIDFilter6581();
 
+					default:
+						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+
+					}
+				case RESIDFP:
+					switch (sidNum) {
+					case 0:
+						return getReSIDfpFilter6581();
+
+					case 1:
+						return getReSIDfpStereoFilter6581();
+
+					case 2:
+						return getReSIDfpThirdSIDFilter6581();
+
+					default:
+						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+
+					}
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
-
+					throw new RuntimeException("Unknown emulation type: " + emulation + "!");
 				}
-			case RESIDFP:
-				switch (sidNum) {
-				case 0:
-					return getReSIDfpFilter6581();
-
-				case 1:
-					return getReSIDfpStereoFilter6581();
-
-				case 2:
-					return getReSIDfpThirdSIDFilter6581();
-
-				default:
-					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
-
-				}
+			case NETSID:
+				// TODO: 6581, NETSID
+				return "";
 			default:
-				throw new RuntimeException("Unknown emulation type: " + emulation + "!");
+				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}
 
 		case MOS8580:
-			switch (emulation) {
-			case RESID:
-				switch (sidNum) {
-				case 0:
-					return getFilter8580();
+			switch (engine) {
+			case EMULATION:
+			case HARDSID:
+				switch (emulation) {
+				case RESID:
+					switch (sidNum) {
+					case 0:
+						return getFilter8580();
 
-				case 1:
-					return getStereoFilter8580();
+					case 1:
+						return getStereoFilter8580();
 
-				case 2:
-					return getThirdSIDFilter8580();
+					case 2:
+						return getThirdSIDFilter8580();
 
+					default:
+						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+
+					}
+				case RESIDFP:
+					switch (sidNum) {
+					case 0:
+						return getReSIDfpFilter8580();
+
+					case 1:
+						return getReSIDfpStereoFilter8580();
+
+					case 2:
+						return getReSIDfpThirdSIDFilter8580();
+
+					default:
+						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+
+					}
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
-
+					throw new RuntimeException("Unknown emulation type: " + emulation + "!");
 				}
-			case RESIDFP:
-				switch (sidNum) {
-				case 0:
-					return getReSIDfpFilter8580();
-
-				case 1:
-					return getReSIDfpStereoFilter8580();
-
-				case 2:
-					return getReSIDfpThirdSIDFilter8580();
-
-				default:
-					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
-
-				}
+			case NETSID:
+				// TODO: 8580, NETSID
+				return "";
 			default:
-				throw new RuntimeException("Unknown emulation type: " + emulation + "!");
+				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}
+
 		default:
 			throw new RuntimeException("Unknown chip model: " + chipModel + "!");
 		}

@@ -19,6 +19,7 @@ import java.util.List;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.Engine;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDChip;
 import libsidplay.config.IConfig;
@@ -55,9 +56,7 @@ public class ReSIDfp extends ReSIDBase {
 		@Override
 		public byte read(int addr) {
 			if (emulationSection.getSidNumToRead() <= prevNum) {
-				ReSIDBase prevSID = sids.get(prevNum);
-				if (prevSID != this)
-					return prevSID.read(addr);
+				return sids.get(prevNum).read(addr);
 			}
 			return super.read(addr);
 		}
@@ -65,9 +64,7 @@ public class ReSIDfp extends ReSIDBase {
 		@Override
 		public byte readInternalRegister(int addr) {
 			if (emulationSection.getSidNumToRead() <= prevNum) {
-				ReSIDBase prevSID = sids.get(prevNum);
-				if (prevSID != this)
-					return prevSID.readInternalRegister(addr);
+				return sids.get(prevNum).readInternalRegister(addr);
 			}
 			return super.readInternalRegister(addr);
 		}
@@ -75,9 +72,7 @@ public class ReSIDfp extends ReSIDBase {
 		@Override
 		public void write(int addr, byte data) {
 			super.write(addr, data);
-			ReSIDBase prevSID = sids.get(prevNum);
-			if (prevSID != this)
-				prevSID.write(addr, data);
+			sids.get(prevNum).write(addr, data);
 		}
 	}
 
@@ -118,7 +113,8 @@ public class ReSIDfp extends ReSIDBase {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		switch (sidImpl.getChipModel()) {
 		case MOS6581:
-			String filterName6581 = emulationSection.getFilterName(sidNum, Emulation.RESIDFP, ChipModel.MOS6581);
+			String filterName6581 = emulationSection.getFilterName(sidNum, Engine.EMULATION, Emulation.RESIDFP,
+					ChipModel.MOS6581);
 			final Filter6581 filter6581 = sidImpl.getFilter6581();
 			for (IFilterSection filter : config.getFilterSection()) {
 				if (filter.getName().equals(filterName6581) && filter.isReSIDfpFilter6581()) {
@@ -133,7 +129,8 @@ public class ReSIDfp extends ReSIDBase {
 			}
 			break;
 		case MOS8580:
-			String filterName8580 = emulationSection.getFilterName(sidNum, Emulation.RESIDFP, ChipModel.MOS8580);
+			String filterName8580 = emulationSection.getFilterName(sidNum, Engine.EMULATION, Emulation.RESIDFP,
+					ChipModel.MOS8580);
 			final Filter8580 filter8580 = sidImpl.getFilter8580();
 			for (IFilterSection filter : config.getFilterSection()) {
 				if (filter.getName().equals(filterName8580) && filter.isReSIDfpFilter8580()) {

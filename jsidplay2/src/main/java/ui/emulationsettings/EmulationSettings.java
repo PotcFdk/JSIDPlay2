@@ -22,6 +22,7 @@ import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IFilterSection;
 import libsidplay.sidtune.SidTune;
+import netsiddev_builder.NetSIDConnection;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
@@ -456,31 +457,42 @@ public class EmulationSettings extends C64Window {
 
 		boolean filterEnable = emulationSection.isFilterEnable(num);
 
+		Engine engine = emulationSection.getEngine();
 		Emulation emulation = Emulation.getEmulation(emulationSection, tune, num);
 		ChipModel model = ChipModel.getChipModel(emulationSection, tune, num);
-		String filterName = filterEnable ? emulationSection.getFilterName(num, emulation, model) : null;
+		String filterName = filterEnable ? emulationSection.getFilterName(num, engine, emulation, model) : null;
 
 		filters.clear();
-		filters.add("");
-		for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
-			if (emulation.equals(Emulation.RESIDFP)) {
-				if (filterSection.isReSIDfpFilter6581() && model == ChipModel.MOS6581) {
-					filters.add(filterSection.getName());
-				} else if (filterSection.isReSIDfpFilter8580() && model == ChipModel.MOS8580) {
-					filters.add(filterSection.getName());
-				}
+		if (engine == Engine.NETSID) {
+			filters.add("");
+			filters.addAll(NetSIDConnection.getFilters(model));
+			if (filterEnable) {
+				filter.getSelectionModel().select(filterName);
 			} else {
-				if (filterSection.isReSIDFilter6581() && model == ChipModel.MOS6581) {
-					filters.add(filterSection.getName());
-				} else if (filterSection.isReSIDFilter8580() && model == ChipModel.MOS8580) {
-					filters.add(filterSection.getName());
+				filter.getSelectionModel().select(0);
+			}
+		} else {
+			filters.add("");
+			for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
+				if (emulation.equals(Emulation.RESIDFP)) {
+					if (filterSection.isReSIDfpFilter6581() && model == ChipModel.MOS6581) {
+						filters.add(filterSection.getName());
+					} else if (filterSection.isReSIDfpFilter8580() && model == ChipModel.MOS8580) {
+						filters.add(filterSection.getName());
+					}
+				} else {
+					if (filterSection.isReSIDFilter6581() && model == ChipModel.MOS6581) {
+						filters.add(filterSection.getName());
+					} else if (filterSection.isReSIDFilter8580() && model == ChipModel.MOS8580) {
+						filters.add(filterSection.getName());
+					}
 				}
 			}
-		}
-		if (filterEnable) {
-			filter.getSelectionModel().select(filterName);
-		} else {
-			filter.getSelectionModel().select(0);
+			if (filterEnable) {
+				filter.getSelectionModel().select(filterName);
+			} else {
+				filter.getSelectionModel().select(0);
+			}
 		}
 	}
 

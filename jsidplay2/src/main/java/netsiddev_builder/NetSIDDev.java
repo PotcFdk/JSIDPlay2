@@ -4,6 +4,7 @@ import java.util.List;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
@@ -37,9 +38,7 @@ public class NetSIDDev extends SIDEmu {
 		@Override
 		public byte read(int addr) {
 			if (emulationSection.getSidNumToRead() <= prevNum) {
-				NetSIDDev prevSID = sids.get(prevNum);
-				if (prevSID != this)
-					return prevSID.read(addr);
+				return sids.get(prevNum).read(addr);
 			}
 			return super.read(addr);
 		}
@@ -47,9 +46,7 @@ public class NetSIDDev extends SIDEmu {
 		@Override
 		public byte readInternalRegister(int addr) {
 			if (emulationSection.getSidNumToRead() <= prevNum) {
-				NetSIDDev prevSID = sids.get(prevNum);
-				if (prevSID != this)
-					return prevSID.readInternalRegister(addr);
+				return sids.get(prevNum).readInternalRegister(addr);
 			}
 			return super.readInternalRegister(addr);
 		}
@@ -57,9 +54,7 @@ public class NetSIDDev extends SIDEmu {
 		@Override
 		public void write(int addr, byte data) {
 			super.write(addr, data);
-			NetSIDDev prevSID = sids.get(prevNum);
-			if (prevSID != this)
-				prevSID.write(addr, data);
+			sids.get(prevNum).write(addr, data);
 		}
 	}
 
@@ -145,12 +140,14 @@ public class NetSIDDev extends SIDEmu {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		switch (chipModel) {
 		case MOS6581:
-			String filterName6581 = emulationSection.getFilterName(sidNum, Emulation.RESIDFP, ChipModel.MOS6581);
-			connection.setFilter((byte) sidNum, filterName6581);
+			String filterName6581 = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.RESIDFP,
+					ChipModel.MOS6581);
+			connection.setFilter((byte) sidNum, chipModel, filterName6581);
 			break;
 		case MOS8580:
-			String filterName8580 = emulationSection.getFilterName(sidNum, Emulation.RESIDFP, ChipModel.MOS8580);
-			connection.setFilter((byte) sidNum, filterName8580);
+			String filterName8580 = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.RESIDFP,
+					ChipModel.MOS8580);
+			connection.setFilter((byte) sidNum, chipModel, filterName8580);
 			break;
 		default:
 			throw new RuntimeException("Unknown SID chip model: " + chipModel);
