@@ -67,7 +67,6 @@ public class NetSIDConnection {
 					byte[] chipModel = new byte[1];
 					String filter = getConfigInfo(config, chipModel);
 					ChipModel model = chipModel[0] == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581;
-					System.out.println(filter);
 					filterNameToSIDModel.put(new Pair<>(model, filter), config);
 				}
 			}
