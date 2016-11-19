@@ -48,6 +48,11 @@ public class MOS6510 {
 	private static final int MAX = 65536;
 
 	/**
+	 * Hack for Edge of Disgrace.
+	 */
+	private boolean EOD;
+
+	/**
 	 * The result of the ANE opcode is A = ((A | CONST) & X & IMM), with CONST
 	 * apparently being both chip- and temperature dependent.
 	 * 
@@ -868,6 +873,19 @@ public class MOS6510 {
 
 			// Absolute With Y Offset Addressing Mode Handler (Read)
 			case ADCay:
+				access = AccessMode.READ;
+				// final int _i = i;
+				instrTable[buildCycle++] = () -> FetchLowAddr();
+
+				instrTable[buildCycle++] = () -> {
+					FetchHighAddrY();
+					if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress || EOD) {
+						cycleCount++;
+					}
+				};
+
+				instrTable[buildCycle++] = throwAwayReadStealable;
+				break;
 			case ANDay:
 			case CMPay:
 			case EORay:
@@ -886,18 +904,6 @@ public class MOS6510 {
 					if (Cycle_EffectiveAddress == Cycle_HighByteWrongEffectiveAddress) {
 						cycleCount++;
 					}
-					// boolean condition = Cycle_EffectiveAddress ==
-					// Cycle_HighByteWrongEffectiveAddress;
-					// switch (_i) {
-					// case ADCay:
-					// // EoD workaround, but wrong (therefore inactive)
-					// // best guess: page boundary crossing is wrong!
-					// // condition = true;
-					// break;
-					// }
-					// if (condition) {
-					// cycleCount++;
-					// }
 				};
 
 				instrTable[buildCycle++] = throwAwayReadStealable;
@@ -2180,6 +2186,10 @@ public class MOS6510 {
 
 	public final EventScheduler getEventScheduler() {
 		return context;
+	}
+
+	public void setEODHack(boolean hack) {
+		EOD = hack;
 	}
 
 }

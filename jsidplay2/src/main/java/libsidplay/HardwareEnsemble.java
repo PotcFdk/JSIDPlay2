@@ -4,7 +4,13 @@ import static sidplay.ini.IniDefaults.MAX_RAM_EXPANSIONS;
 
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Locale;
 
 import libsidplay.common.CPUClock;
@@ -43,6 +49,18 @@ import libsidutils.prg2tap.PRG2TAPProgram;
  * 
  */
 public class HardwareEnsemble {
+	private static final MessageDigest MD5_DIGEST;
+	private static final byte[] EOD_HACK = new byte[] { (byte) 0xD4, 0x1D, (byte) 0x8C, (byte) 0xD9, (byte) 0x8F, 0x00,
+			(byte) 0xB2, 0x04, (byte) 0xE9, (byte) 0x80, 0x09, (byte) 0x98, (byte) 0xEC, (byte) 0xF8, 0x42, 0x7E, };
+
+	static {
+		try {
+			MD5_DIGEST = MessageDigest.getInstance("MD5");
+		} catch (final NoSuchAlgorithmException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
+
 	private static final String JIFFYDOS_C64_ROM = "/libsidplay/roms/JiffyDOS C64 Kernal 6.01.bin";
 	private static final String JIFFYDOS_C1541_ROM = "/libsidplay/roms/JiffyDOS 1541 5.0.bin";
 	private static final int JIFFYDOS_C64_ROM_SIZE = 0x2000;
@@ -435,6 +453,24 @@ public class HardwareEnsemble {
 		DiskImage disk = floppies[0].getDiskController().insertDisk(file);
 		if (policy != null) {
 			disk.setExtendImagePolicy(policy);
+		}
+		installHack(file);
+	}
+
+	private void installHack(File file) {
+		try {
+			try (InputStream is = new FileInputStream(file);
+					DigestInputStream dis = new DigestInputStream(is, MD5_DIGEST)) {
+				/* Read decorated stream (dis) to EOF as normal... */
+				byte[] digest = MD5_DIGEST.digest();
+				boolean hack = Arrays.equals(digest, EOD_HACK);
+				if (hack) {
+					System.err.println("Edge of Disgrace hack has been installed!");
+				}
+				c64.getCPU().setEODHack(hack);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
