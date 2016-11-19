@@ -2,11 +2,11 @@ package libsidplay;
 
 import static sidplay.ini.IniDefaults.MAX_RAM_EXPANSIONS;
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -50,8 +50,8 @@ import libsidutils.prg2tap.PRG2TAPProgram;
  */
 public class HardwareEnsemble {
 	private static final MessageDigest MD5_DIGEST;
-	private static final byte[] EOD_HACK = new byte[] { (byte) 0xD4, 0x1D, (byte) 0x8C, (byte) 0xD9, (byte) 0x8F, 0x00,
-			(byte) 0xB2, 0x04, (byte) 0xE9, (byte) 0x80, 0x09, (byte) 0x98, (byte) 0xEC, (byte) 0xF8, 0x42, 0x7E, };
+	private static final byte[] EOD_HACK = new byte[] { (byte) 0xEE, (byte) 0xAD, 0x56, 0x30, (byte) 0x90, 0x46, 0x37,
+			(byte) 0xCD, 0x3D, 0x4C, (byte) 0x85, (byte) 0x8F, 0x50, (byte) 0x86, 0x51, (byte) 0x92, };
 
 	static {
 		try {
@@ -459,11 +459,19 @@ public class HardwareEnsemble {
 
 	private void installHack(File file) {
 		try {
-			try (InputStream is = new FileInputStream(file);
+			try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(file));
 					DigestInputStream dis = new DigestInputStream(is, MD5_DIGEST)) {
 				/* Read decorated stream (dis) to EOF as normal... */
-				byte[] digest = MD5_DIGEST.digest();
-				boolean hack = Arrays.equals(digest, EOD_HACK);
+				// read the file and update the hash calculation
+				while (dis.read() != -1)
+					;
+
+				// get the hash value as byte array
+				byte[] hash = MD5_DIGEST.digest();
+				for (final byte anEncryptMsg : hash) {
+					System.out.printf("0x%02X, ", anEncryptMsg & 0xff);
+				}
+				boolean hack = Arrays.equals(hash, EOD_HACK);
 				if (hack) {
 					System.err.println("Edge of Disgrace hack has been installed!");
 				}
