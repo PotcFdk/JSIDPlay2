@@ -466,7 +466,7 @@ public class EmulationSettings extends C64Window {
 		filters.clear();
 		if (engine == Engine.NETSID) {
 			filters.add("");
-			filters.addAll(NetSIDConnection.getFilters(model));
+			filters.addAll(NetSIDConnection.getFilterNames(model));
 			if (filterEnable) {
 				filter.getSelectionModel().select(filterName);
 			} else {

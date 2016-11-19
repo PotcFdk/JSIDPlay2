@@ -142,12 +142,12 @@ public class NetSIDDev extends SIDEmu {
 		case MOS6581:
 			String filterName6581 = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.RESIDFP,
 					ChipModel.MOS6581);
-			connection.setFilter((byte) sidNum, chipModel, filterName6581);
+			connection.setSIDByFilterName((byte) sidNum, chipModel, filterName6581);
 			break;
 		case MOS8580:
 			String filterName8580 = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.RESIDFP,
 					ChipModel.MOS8580);
-			connection.setFilter((byte) sidNum, chipModel, filterName8580);
+			connection.setSIDByFilterName((byte) sidNum, chipModel, filterName8580);
 			break;
 		default:
 			throw new RuntimeException("Unknown SID chip model: " + chipModel);

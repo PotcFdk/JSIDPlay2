@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javafx.util.Pair;
 import libsidplay.common.ChipModel;
@@ -65,47 +67,42 @@ public class NetSIDConnection {
 			if (connectedSocket == null || !connectedSocket.isConnected()) {
 				connectedSocket = new Socket(HOSTNAME, PORT);
 				VERSION = getVersion();
-				// Check available SIDs
+				// Get all available SIDs
 				for (byte config = 0; config < getConfigCount(); config++) {
 					byte[] chipModel = new byte[1];
 					String filter = getConfigInfo(config, chipModel);
 					ChipModel model = chipModel[0] == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581;
 					filterNameToSIDModel.put(new Pair<>(model, filter), config);
 				}
-			}
-
-			// Initialize SIDs on server side
-			commands.add(new SetSIDCount((byte) PLA.MAX_SIDS));
-			for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-				commands.add(new SetSIDModel(sidNum, sidNum));
+				// Initialize SIDs on server side
+				commands.add(new SetSIDCount((byte) PLA.MAX_SIDS));
+				for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+					commands.add(new SetSIDModel(sidNum, sidNum));
+				}
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public static List<String> getFilters(ChipModel model) {
-		List<String> filters = new ArrayList<>();
-		for (Pair<ChipModel, String> filter : filterNameToSIDModel.keySet()) {
-			if (filter.getKey() == model)
-				filters.add(filter.getValue());
-		}
-		filters.sort((s1, s2) -> s1.compareToIgnoreCase(s2));
-		return filters;
-	}
-	
 	private byte getVersion() {
 		return addReadCommandAfterFlushingWrites(() -> new GetVersion());
 	}
-	
-	public void setFilter(byte sidNum, ChipModel chipModel, final String filterName) {
+
+	public static List<String> getFilterNames(ChipModel model) {
+		return filterNameToSIDModel.keySet().stream().filter(p -> p.getKey() == model).map(p -> p.getValue())
+				.sorted((s1, s2) -> s1.compareToIgnoreCase(s2)).collect(Collectors.toList());
+	}
+
+	public void setSIDByFilterName(byte sidNum, final ChipModel chipModel, final String filterName) {
 		addCommandsAfterFlushingWrites(() -> {
-			Byte model = filterNameToSIDModel.get(new Pair<ChipModel, String>(chipModel, filterName));
-			if (model == null) {
-				model = 0;
-				System.err.println("Undefined Filter: " + filterName + ", will use " + model + " instead!");
+			Optional<Pair<ChipModel, String>> filter = filterNameToSIDModel.keySet().stream()
+					.filter(p -> p.getKey() == chipModel && p.getValue().equals(filterName)).findFirst();
+			if (filter.isPresent()) {
+				return new NetSIDPkg[] { new SetSIDModel(sidNum, filterNameToSIDModel.get(filter.get())) };
 			}
-			return new NetSIDPkg[] { new SetSIDModel(sidNum, model) };
+			System.err.println("Undefined Filter: " + filterName + ", will use first available filter, instead!");
+			return new NetSIDPkg[] { new SetSIDModel(sidNum, (byte) 0) };
 		});
 	}
 
