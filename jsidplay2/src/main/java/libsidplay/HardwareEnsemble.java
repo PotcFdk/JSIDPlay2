@@ -467,11 +467,7 @@ public class HardwareEnsemble {
 					;
 
 				// get the hash value as byte array
-				byte[] hash = MD5_DIGEST.digest();
-				for (final byte anEncryptMsg : hash) {
-					System.out.printf("0x%02X, ", anEncryptMsg & 0xff);
-				}
-				boolean hack = Arrays.equals(hash, EOD_HACK);
+				boolean hack = Arrays.equals(MD5_DIGEST.digest(), EOD_HACK);
 				if (hack) {
 					System.err.println("Edge of Disgrace hack has been installed!");
 				}
