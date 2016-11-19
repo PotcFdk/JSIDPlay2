@@ -29,7 +29,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
-		this.connection = new NetSIDConnection(context, tune);
+		this.connection = new NetSIDConnection(context);
 	}
 
 	@Override
