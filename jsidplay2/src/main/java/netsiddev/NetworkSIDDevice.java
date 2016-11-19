@@ -29,7 +29,7 @@ import resid_builder.residfp.Filter8580;
  * <p>
  * GENERAL OVERVIEW
  * <p>
- * Version 2 of the protocol is structured as a request-response protocol:
+ * Version 2 and 3 of the protocol is structured as a request-response protocol:
  * <ul>
  * <li>Requests are variable length, with minimum packet size 4 bytes. There are
  * 3 fields and an amorphous data blob:
@@ -93,7 +93,9 @@ import resid_builder.residfp.Filter8580;
  * <ul>
  * <li>data packet must contain two 8-bit unsigned bytes:
  * <ul>
- * <li>the voice number from 0 to 2
+ * <li>the voice number from 0 to 3 (voice number 3 (digi) is supported since
+ * version 3. For version 2 of the protocol only voice numbers 0 to 2 are
+ * supported.
  * <li>0 or 1 to disable/enable voice
  * <li>this command bypasses buffer and takes immediate effect.
  * </ul>
@@ -229,9 +231,10 @@ import resid_builder.residfp.Filter8580;
  * <li>Version 1 contains all commands up to 7 (VERSION). There were 8 SID
  * devices where bit 0 gave 6581/8580, bit 1 PAL/NTSC and bit 2
  * RESAMPLE/DECIMATE mode of operation.
- * <li>Version 2 contains commands SAMPLING and CLOCKING. There are 4 different
- * SID devices, 3x 6581 and 1x 8580. The commands SAMPLING and CLOCKING can be
- * used to set particular SID kind.
+ * <li>Version 2 contains commands SAMPLING, CLOCKING, SID_POSITION and
+ * SID_LEVEL. There are multiple SID devices of type 6581 and 8580. The
+ * commands SAMPLING and CLOCKING can be used to set particular SID kind.
+ * <li>Version 3 supports muting of voice number 3 (digi channel).
  * </ul>
  * 
  * NOTES
