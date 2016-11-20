@@ -191,7 +191,18 @@ public class NetSIDConnection {
 	}
 
 	public byte read(byte sidNum, byte addr) {
-		return addReadCommandAfterFlushingWrites(() -> new TryRead(sidNum, clocksSinceLastAccess(), addr));
+		if (commands.size() > 0 && commands.get(0) instanceof TryWrite
+				&& ((TryWrite) commands.get(0)).getSidNum() == sidNum) {
+			tryWrite.changeToTryRead(clocksSinceLastAccess(), addr);
+			try {
+				flush(false);
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			}
+			return readResult;
+		} else {
+			return addReadCommandAfterFlushingWrites(() -> new TryRead(sidNum, clocksSinceLastAccess(), addr));
+		}
 	}
 
 	public void write(byte sidNum, byte addr, byte data) {
