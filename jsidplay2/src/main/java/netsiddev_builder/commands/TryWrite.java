@@ -27,6 +27,13 @@ public class TryWrite implements NetSIDPkg {
 		cyclesSentToServer += cycles;
 	}
 
+	public void changeToTryRead(int cycles, byte addr) {
+		isRead = true;
+		readCycles = cycles;
+		readAddr = addr;
+		cyclesSentToServer += cycles;
+	}
+
 	public int getCyclesSentToServer() {
 		return cyclesSentToServer;
 	}
@@ -50,10 +57,4 @@ public class TryWrite implements NetSIDPkg {
 		return cmd;
 	}
 
-	public void changeToTryRead(int cycles, byte addr) {
-		isRead = true;
-		readCycles = cycles;
-		readAddr = addr;
-		cyclesSentToServer += readCycles;
-	}
 }
