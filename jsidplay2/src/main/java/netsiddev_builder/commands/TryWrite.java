@@ -54,5 +54,6 @@ public class TryWrite implements NetSIDPkg {
 		isRead = true;
 		readCycles = cycles;
 		readAddr = addr;
+		cyclesSentToServer += readCycles;
 	}
 }
