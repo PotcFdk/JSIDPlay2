@@ -45,4 +45,14 @@ public interface SIDBuilder {
 	 */
 	void unlock(SIDEmu device);
 
+	/**
+	 * Reset.
+	 */
+	void reset();
+
+	/**
+	 * Pause player.
+	 */
+	default void pause() {
+	}
 }

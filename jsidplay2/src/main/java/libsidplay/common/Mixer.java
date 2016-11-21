@@ -15,11 +15,6 @@ public interface Mixer {
 	public static final int MAX_FAST_FORWARD = 5;
 
 	/**
-	 * Reset.
-	 */
-	void reset();
-
-	/**
 	 * Timer start reached, audio output should be produced.
 	 */
 	void start();
@@ -81,9 +76,4 @@ public interface Mixer {
 	 */
 	int getFastForwardBitMask();
 
-	/**
-	 * Pause player.
-	 */
-	default void pause() {
-	}
 }

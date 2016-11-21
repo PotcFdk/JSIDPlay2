@@ -225,10 +225,6 @@ public class SIDMixer implements Mixer {
 		this.fadeInFadeOutEnabled = sidplay2Section.getFadeInTime() != 0 || sidplay2Section.getFadeOutTime() != 0;
 	}
 
-	public void reset() {
-		normalSpeed();
-	}
-
 	/**
 	 * Starts mixing the outputs of several SIDs.
 	 */

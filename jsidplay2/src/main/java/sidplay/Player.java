@@ -384,7 +384,7 @@ public class Player extends HardwareEnsemble {
 	protected final void reset() {
 		super.reset();
 		timer.reset();
-		configureMixer(mixer -> mixer.reset());
+		sidBuilder.reset();
 
 		c64.getEventScheduler().schedule(new Event("Auto-start") {
 			@Override
@@ -698,7 +698,7 @@ public class Player extends HardwareEnsemble {
 		} else {
 			stateProperty.set(State.PAUSE);
 			audioDriver.pause();
-			configureMixer(mixer->mixer.pause());
+			sidBuilder.pause();
 		}
 	}
 
