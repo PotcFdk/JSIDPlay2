@@ -696,9 +696,11 @@ public class Player extends HardwareEnsemble {
 			stateProperty.set(State.PLAY);
 			// audio driver continues automatically, next call of write!
 		} else {
-			stateProperty.set(State.PAUSE);
-			audioDriver.pause();
-			sidBuilder.pause();
+			executeInPlayerThread("Pause", () -> {
+				stateProperty.set(State.PAUSE);
+				audioDriver.pause();
+				sidBuilder.pause();
+			});
 		}
 	}
 
