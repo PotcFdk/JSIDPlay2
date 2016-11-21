@@ -161,7 +161,7 @@ public class NetSIDConnection {
 		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSIDClocking(cpuFrequency) });
 	}
 
-	public void setSampling(byte sidNum, SamplingMethod sampling) {
+	public void setSampling(SamplingMethod sampling) {
 		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSIDSampling((byte) sampling.ordinal()) });
 	}
 

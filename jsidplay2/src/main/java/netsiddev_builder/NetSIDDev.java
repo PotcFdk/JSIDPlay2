@@ -139,12 +139,12 @@ public class NetSIDDev extends SIDEmu {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		switch (chipModel) {
 		case MOS6581:
-			String filterName6581 = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.RESIDFP,
+			String filterName6581 = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT,
 					ChipModel.MOS6581);
 			connection.setSIDByFilterName((byte) sidNum, chipModel, filterName6581);
 			break;
 		case MOS8580:
-			String filterName8580 = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.RESIDFP,
+			String filterName8580 = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT,
 					ChipModel.MOS8580);
 			connection.setSIDByFilterName((byte) sidNum, chipModel, filterName8580);
 			break;
@@ -159,7 +159,7 @@ public class NetSIDDev extends SIDEmu {
 	}
 
 	public void setSampling(SamplingMethod sampling) {
-		connection.setSampling((byte) sidNum, sampling);
+		connection.setSampling(sampling);
 	}
 
 }
