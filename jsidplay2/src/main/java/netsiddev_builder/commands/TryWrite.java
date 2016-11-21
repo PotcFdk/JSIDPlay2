@@ -7,21 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TryWrite implements NetSIDPkg {
-	private byte sidNum;
 	private List<Write> writes = new ArrayList<>();
 	private int cyclesSentToServer;
 	private boolean isRead;
 	private int readCycles;
 	private byte readAddr;
 
-	public TryWrite(byte sidNum) {
-		this.sidNum = sidNum;
-	}
-
-	public byte getSidNum() {
-		return sidNum;
-	}
-	
 	public void addWrite(int cycles, byte reg, byte data) {
 		writes.add(new Write(cycles, reg, data));
 		cyclesSentToServer += cycles;
@@ -39,7 +30,7 @@ public class TryWrite implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		byte[] head = new byte[] { (byte) (isRead ? TRY_READ : TRY_WRITE).ordinal(), sidNum, 0, 0 };
+		byte[] head = new byte[] { (byte) (isRead ? TRY_READ : TRY_WRITE).ordinal(), 0, 0, 0 };
 		byte[] cmd = new byte[head.length + (writes.size() << 2) + (isRead ? 3 : 0)];
 		System.arraycopy(head, 0, cmd, 0, head.length);
 		int i = head.length;

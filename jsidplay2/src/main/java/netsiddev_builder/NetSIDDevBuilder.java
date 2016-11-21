@@ -72,7 +72,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void reset() {
-		// nothing to do
+		connection.reset((byte) 0xf);
 	}
 
 	@Override
@@ -122,9 +122,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void pause() {
-		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-			connection.flush(sidNum);
-		}
+		connection.flush();
 	}
 	
 	/**

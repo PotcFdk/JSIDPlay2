@@ -67,7 +67,6 @@ public class NetSIDDev extends SIDEmu {
 		this.connection = connection;
 		this.sidNum = (byte) sidNum;
 		this.chipModel = model;
-		reset((byte) 0xf);
 	}
 
 	private final Event event = new Event("JSIDDevice Delay") {
@@ -88,7 +87,7 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void reset(byte volume) {
-		connection.reset(sidNum, (byte) volume);
+		// nothing to do
 	}
 
 	@Override
@@ -116,7 +115,7 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void setClockFrequency(double cpuFrequency) {
-		connection.setClockFrequency(sidNum, cpuFrequency);
+		connection.setClockFrequency(cpuFrequency);
 	}
 
 	@Override

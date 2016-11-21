@@ -157,20 +157,20 @@ public class NetSIDConnection {
 				new String(configInfo, 0, chIdx, ISO_8859_1));
 	}
 
-	public void setClockFrequency(byte sidNum, double cpuFrequency) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSIDClocking(sidNum, cpuFrequency) });
+	public void setClockFrequency(double cpuFrequency) {
+		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSIDClocking(cpuFrequency) });
 	}
 
 	public void setSampling(byte sidNum, SamplingMethod sampling) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSIDSampling(sidNum, (byte) sampling.ordinal()) });
+		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSIDSampling((byte) sampling.ordinal()) });
 	}
 
-	public void flush(byte sidNum) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new Flush(sidNum) });
+	public void flush() {
+		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new Flush() });
 	}
 
-	public void reset(byte sidNum, byte volume) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new Flush(sidNum), new TryReset(sidNum, volume) });
+	public void reset(byte volume) {
+		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new Flush(), new TryReset(volume) });
 	}
 
 	public void mute(byte sidNum, byte voice, boolean mute) {
@@ -191,8 +191,7 @@ public class NetSIDConnection {
 	}
 
 	public byte read(byte sidNum, byte addr) {
-		if (!commands.isEmpty() && commands.get(0) instanceof TryWrite
-				&& ((TryWrite) commands.get(0)).getSidNum() == sidNum) {
+		if (!commands.isEmpty() && commands.get(0) instanceof TryWrite) {
 			try {
 				tryWrite.changeToTryRead(clocksSinceLastAccess(), addr);
 				flush(false);
@@ -253,7 +252,7 @@ public class NetSIDConnection {
 
 		if (commands.isEmpty()) {
 			/* start new write buffering sequence */
-			tryWrite = new TryWrite(sidNum);
+			tryWrite = new TryWrite();
 			commands.add(tryWrite);
 		}
 		/* add write to queue */
