@@ -120,6 +120,13 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		return connection.getFastForwardBitMask();
 	}
 
+	@Override
+	public void pause() {
+		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+			connection.flush(sidNum);
+		}
+	}
+	
 	/**
 	 * Create NetworkSIDDevice, formerly used NetworkSIDDevice is removed
 	 * beforehand.

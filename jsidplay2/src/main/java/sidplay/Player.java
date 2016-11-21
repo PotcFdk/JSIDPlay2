@@ -698,6 +698,7 @@ public class Player extends HardwareEnsemble {
 		} else {
 			stateProperty.set(State.PAUSE);
 			audioDriver.pause();
+			configureMixer(mixer->mixer.pause());
 		}
 	}
 

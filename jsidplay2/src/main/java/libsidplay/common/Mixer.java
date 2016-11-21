@@ -79,5 +79,11 @@ public interface Mixer {
 	/**
 	 * @return bit mask of current speed factor (1 << 1x, 2x, ... , 32x) - 1
 	 */
-	public int getFastForwardBitMask();
+	int getFastForwardBitMask();
+
+	/**
+	 * Pause player.
+	 */
+	default void pause() {
+	}
 }
