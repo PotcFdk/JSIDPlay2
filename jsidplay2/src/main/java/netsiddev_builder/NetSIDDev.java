@@ -131,7 +131,7 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void setVoiceMute(int voice, boolean mute) {
-		connection.mute(sidNum, (byte) voice, mute);
+		connection.setVoiceMute(sidNum, (byte) voice, mute);
 	}
 
 	@Override
