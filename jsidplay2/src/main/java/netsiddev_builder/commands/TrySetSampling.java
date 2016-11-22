@@ -2,11 +2,13 @@ package netsiddev_builder.commands;
 
 import static netsiddev.Command.TRY_SET_SAMPLING;
 
+import libsidplay.common.SamplingMethod;
+
 public class TrySetSampling implements NetSIDPkg {
 	private byte sampling;
 
-	public TrySetSampling(byte sampling) {
-		this.sampling = sampling;
+	public TrySetSampling(SamplingMethod sampling) {
+		this.sampling = (byte) sampling.ordinal();
 	}
 
 	public byte[] toByteArray() {

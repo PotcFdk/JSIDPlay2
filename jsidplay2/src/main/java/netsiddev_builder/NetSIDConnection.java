@@ -93,15 +93,6 @@ public class NetSIDConnection {
 	}
 
 	/**
-	 * Fore compatibility resolving issues.
-	 * 
-	 * @return network protocol version
-	 */
-	private byte getNetworkProtocolVersion() {
-		return addReadCommandAfterFlushingWrites(() -> new GetVersion());
-	}
-
-	/**
 	 * @param model
 	 *            chip model
 	 * @return sorted filter names of the desired chip model (case-insensitive)
@@ -135,13 +126,6 @@ public class NetSIDConnection {
 	}
 
 	/**
-	 * @return SID count of the NetworkSIDDevice
-	 */
-	private byte getSIDCount() {
-		return addReadCommandAfterFlushingWrites(() -> new GetConfigCount());
-	}
-
-	/**
 	 * Get SID information from NetworkSIDDevice.
 	 * 
 	 * @param sidNum
@@ -157,12 +141,26 @@ public class NetSIDConnection {
 				new String(configInfo, 0, chIdx, ISO_8859_1));
 	}
 
+	/**
+	 * @return network protocol version
+	 */
+	private byte getNetworkProtocolVersion() {
+		return addReadCommandAfterFlushingWrites(() -> new GetVersion());
+	}
+
+	/**
+	 * @return SID count of the NetworkSIDDevice
+	 */
+	private byte getSIDCount() {
+		return addReadCommandAfterFlushingWrites(() -> new GetConfigCount());
+	}
+
 	public void setClockFrequency(double cpuFrequency) {
 		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetClocking(cpuFrequency) });
 	}
 
 	public void setSampling(SamplingMethod sampling) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new TrySetSampling((byte) sampling.ordinal()) });
+		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new TrySetSampling(sampling) });
 	}
 
 	public void flush() {
@@ -178,12 +176,11 @@ public class NetSIDConnection {
 	}
 
 	public void setVolume(byte sidNum, float volume) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSidLevel(sidNum, (byte) (volume * 5)) });
+		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSidLevel(sidNum, volume) });
 	}
 
 	public void setBalance(byte sidNum, float balance) {
-		addCommandsAfterFlushingWrites(
-				() -> new NetSIDPkg[] { new SetSidPosition(sidNum, (byte) (200 * (1 - balance) - 100)) });
+		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSidPosition(sidNum, balance) });
 	}
 
 	private void delay(byte sidNum, int cycles) {

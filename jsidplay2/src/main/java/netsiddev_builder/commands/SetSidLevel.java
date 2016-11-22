@@ -6,9 +6,9 @@ public class SetSidLevel implements NetSIDPkg {
 	private byte sidNum;
 	private byte levelDb;
 
-	public SetSidLevel(byte sidNum, byte levelDb) {
+	public SetSidLevel(byte sidNum, float volume) {
 		this.sidNum = sidNum;
-		this.levelDb = levelDb;
+		this.levelDb = (byte) (volume * 5);
 	}
 
 	public byte[] toByteArray() {
