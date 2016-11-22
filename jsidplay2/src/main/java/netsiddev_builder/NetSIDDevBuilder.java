@@ -67,9 +67,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	}
 
 	private void updateMixer(IAudioSection audioSection) {
-		for (int i = 0; i < sids.size(); i++) {
-			setVolume(i, audioSection.getVolume(i));
-			setBalance(i, audioSection.getBalance(i));
+		for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
+			setVolume(sidNum, audioSection.getVolume(sidNum));
+			setBalance(sidNum, audioSection.getBalance(sidNum));
 		}
 	}
 
