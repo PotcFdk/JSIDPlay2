@@ -50,10 +50,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		for (int i = 0; sidEmu != null && i < SIDChip.REG_COUNT; i++) {
 			sid.write(i, sidEmu.readInternalRegister(i));
 		}
-		if (sidEmu != null) {
-			((NetSIDDev)sidEmu).unlock();
-		}
-		sid.lock();
 		if (sidNum < sids.size())
 			sids.set(sidNum, sid);
 		else
@@ -66,7 +62,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	@Override
 	public void unlock(SIDEmu device) {
 		NetSIDDev sid = (NetSIDDev) device;
-		sid.unlock();
+		connection.flush();
 		sids.remove(sid);
 	}
 

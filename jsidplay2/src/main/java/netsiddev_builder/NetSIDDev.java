@@ -5,7 +5,6 @@ import java.util.List;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
-import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import libsidplay.common.SamplingMethod;
@@ -69,23 +68,6 @@ public class NetSIDDev extends SIDEmu {
 		this.chipModel = model;
 	}
 
-	private final Event event = new Event("JSIDDevice Delay") {
-
-		@Override
-		public void event() {
-			context.schedule(event, connection.eventuallyDelay(sidNum), Event.Phase.PHI2);
-		}
-	};
-
-	public void lock() {
-		context.schedule(event, 0, Event.Phase.PHI2);
-	}
-
-	public void unlock() {
-		context.cancel(event);
-		connection.flush();
-	}
-
 	@Override
 	public void reset(byte volume) {
 		// nothing to do
@@ -138,20 +120,8 @@ public class NetSIDDev extends SIDEmu {
 	@Override
 	public void setFilter(IConfig config, int sidNum) {
 		IEmulationSection emulationSection = config.getEmulationSection();
-		switch (chipModel) {
-		case MOS6581:
-			String filterName6581 = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT,
-					ChipModel.MOS6581);
-			connection.setFilter((byte) sidNum, chipModel, filterName6581);
-			break;
-		case MOS8580:
-			String filterName8580 = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT,
-					ChipModel.MOS8580);
-			connection.setFilter((byte) sidNum, chipModel, filterName8580);
-			break;
-		default:
-			throw new RuntimeException("Unknown SID chip model: " + chipModel);
-		}
+		String filterName = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT, chipModel);
+		connection.setFilter((byte) sidNum, chipModel, filterName);
 	}
 
 	@Override

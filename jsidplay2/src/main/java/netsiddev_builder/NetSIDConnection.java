@@ -63,6 +63,15 @@ public class NetSIDConnection {
 	private boolean startTimeReached;
 	private static Map<Pair<ChipModel, String>, Byte> filterNameToSIDModel = new HashMap<>();
 
+	private final Event event = new Event("JSIDDevice Delay") {
+
+		@Override
+		public void event() {
+			// XXX we just delay and clock first SID for reading, does this have an impact?
+			context.schedule(event, eventuallyDelay((byte) 0), Event.Phase.PHI2);
+		}
+	};
+
 	/**
 	 * Establish a single instance connection to a NetworkSIDDevice.
 	 * 
@@ -153,6 +162,9 @@ public class NetSIDConnection {
 	public void reset(byte volume) {
 		send(() -> new Flush());
 		send(() -> new TryReset(volume));
+		if (!context.isPending(event)) {
+			context.schedule(event, 0, Event.Phase.PHI2);
+		}
 	}
 
 	public void setVoiceMute(byte sidNum, byte voice, boolean mute) {
