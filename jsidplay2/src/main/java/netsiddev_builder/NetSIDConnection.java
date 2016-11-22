@@ -56,7 +56,8 @@ public class NetSIDConnection {
 	private static Socket connectedSocket;
 	private List<NetSIDPkg> commands = new ArrayList<>();
 	private TryWrite tryWrite;
-	private byte readResult, configInfo[] = new byte[255];
+	private byte readResult;
+	private String configName;
 	private long lastSIDWriteTime;
 	private int fastForwardFactor;
 	private boolean startTimeReached;
@@ -113,7 +114,7 @@ public class NetSIDConnection {
 	 * @param filterName
 	 *            desired filter name
 	 */
-	public void setSIDByFilterName(byte sidNum, final ChipModel chipModel, final String filterName) {
+	public void setFilter(byte sidNum, final ChipModel chipModel, final String filterName) {
 		send(() -> {
 			Optional<Pair<ChipModel, String>> filter = filterNameToSIDModel.keySet().stream()
 					.filter(p -> p.getKey() == chipModel && p.getValue().equals(filterName)).findFirst();
@@ -125,34 +126,16 @@ public class NetSIDConnection {
 		});
 	}
 
-	/**
-	 * Get SID information from NetworkSIDDevice.
-	 * 
-	 * @param sidNum
-	 *            SID chip number
-	 * @return SID filter name and SID chip model
-	 */
-	private Pair<ChipModel, String> getSIDInfo(byte sidNum) {
-		send(() -> new GetConfigInfo(sidNum));
-		int chIdx = 0;
-		for (; configInfo[chIdx] != 0 && chIdx < configInfo.length; chIdx++) {
-		}
-		return new Pair<>(readResult == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581,
-				new String(configInfo, 0, chIdx, ISO_8859_1));
-	}
-
-	/**
-	 * @return network protocol version
-	 */
 	private byte getNetworkProtocolVersion() {
 		return sendReceive(() -> new GetVersion());
 	}
 
-	/**
-	 * @return SID count of the NetworkSIDDevice
-	 */
 	private byte getSIDCount() {
 		return sendReceive(() -> new GetConfigCount());
+	}
+
+	private Pair<ChipModel, String> getSIDInfo(byte sidNum) {
+		return sendReceiveConfig(() -> new GetConfigInfo(sidNum));
 	}
 
 	public void setClockFrequency(double cpuFrequency) {
@@ -168,7 +151,8 @@ public class NetSIDConnection {
 	}
 
 	public void reset(byte volume) {
-		send(() -> new Flush(), () -> new TryReset(volume));
+		send(() -> new Flush());
+		send(() -> new TryReset(volume));
 	}
 
 	public void setVoiceMute(byte sidNum, byte voice, boolean mute) {
@@ -181,10 +165,6 @@ public class NetSIDConnection {
 
 	public void setBalance(byte sidNum, float balance) {
 		send(() -> new SetSidPosition(sidNum, balance));
-	}
-
-	private void delay(byte sidNum, int cycles) {
-		send(() -> new TryDelay(sidNum, cycles));
 	}
 
 	public byte read(byte sidNum, byte addr) {
@@ -213,21 +193,22 @@ public class NetSIDConnection {
 		}
 	}
 
-	@SafeVarargs
-	private final byte sendReceive(Supplier<NetSIDPkg>... cmdToAdd) {
+	private Pair<ChipModel, String> sendReceiveConfig(Supplier<NetSIDPkg> cmdToAdd) {
+		send(cmdToAdd);
+		return new Pair<>(readResult == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581, configName);
+	}
+
+	private byte sendReceive(Supplier<NetSIDPkg> cmdToAdd) {
 		send(cmdToAdd);
 		return readResult;
 	}
 
-	@SafeVarargs
-	private final void send(Supplier<NetSIDPkg>... cmdToAdd) {
+	private final void send(Supplier<NetSIDPkg> cmdToAdd) {
 		try {
 			// deal with unsubmitted writes
 			flush(false);
 
-			for (Supplier<NetSIDPkg> netSIDPkg : cmdToAdd) {
-				commands.add(netSIDPkg.get());
-			}
+			commands.add(cmdToAdd.get());
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -235,14 +216,16 @@ public class NetSIDConnection {
 
 	}
 
-	// Add a SID write to the ring buffer, until it is full,
-	// then send it to JSIDPlay2 to be queued there and executed
+	/**
+	 * Add a SID write to the ring buffer, until it is full, then send it to
+	 * JSIDPlay2 to be queued there and executed
+	 */
 	private Response tryWrite(byte sidNum, int cycles, byte reg, byte data) throws InterruptedException, IOException {
 		/*
 		 * flush writes after a bit of buffering. If no flush, then returns OK
 		 * and we queue more. If flush attempt fails, we must cancel.
 		 */
-		if (maybe_send_writes_to_server() == BUSY) {
+		if (maybeSendWritesToServer() == BUSY) {
 			sleepDependingOnCyclesSent();
 			return BUSY;
 		}
@@ -258,7 +241,7 @@ public class NetSIDConnection {
 		 * NB: if flush attempt fails, we have nevertheless queued command
 		 * locally and thus are allowed to return OK in any case.
 		 */
-		maybe_send_writes_to_server();
+		maybeSendWritesToServer();
 
 		return OK;
 	}
@@ -276,15 +259,8 @@ public class NetSIDConnection {
 			case VERSION:
 			case READ:
 			case COUNT:
-			case INFO:
-				// version / read result / configuration count / chip model
+				// version / read result / configuration count
 				readResult = (byte) connectedSocket.getInputStream().read();
-				// INFO: 0 terminated name
-				for (int i = 0; rc == INFO.ordinal() && i < configInfo.length; i++) {
-					connectedSocket.getInputStream().read(configInfo, i, 1);
-					if (configInfo[i] == 0)
-						break;
-				}
 			case OK:
 				continue;
 			case BUSY:
@@ -293,6 +269,21 @@ public class NetSIDConnection {
 					return BUSY;
 				}
 				sleepDependingOnCyclesSent();
+				continue;
+			case INFO:
+				// chip model
+				readResult = (byte) connectedSocket.getInputStream().read();
+				// 0 terminated name
+				if (rc == INFO.ordinal()) {
+					byte[] configInfo = new byte[255];
+					int chIdx;
+					for (chIdx = 0; chIdx < configInfo.length; chIdx++) {
+						connectedSocket.getInputStream().read(configInfo, chIdx, 1);
+						if (configInfo[chIdx] <= 0)
+							break;
+					}
+					configName = new String(configInfo, 0, chIdx, ISO_8859_1);
+				}
 				continue;
 			default:
 				throw new RuntimeException("Server error: Unexpected response!");
@@ -307,7 +298,7 @@ public class NetSIDConnection {
 		}
 	}
 
-	private Response maybe_send_writes_to_server() throws IOException, InterruptedException {
+	private Response maybeSendWritesToServer() throws IOException, InterruptedException {
 		/* flush writes after a bit of buffering */
 		if (commands.size() == CMD_BUFFER_SIZE
 				|| (tryWrite != null && tryWrite.getCyclesSentToServer() > MAX_WRITE_CYCLES)) {
@@ -325,13 +316,13 @@ public class NetSIDConnection {
 		return diff >> fastForwardFactor;
 	}
 
-	long eventuallyDelay(byte sidNum) {
+	protected long eventuallyDelay(byte sidNum) {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime) >> fastForwardFactor;
 		// next writes must not be too soon, therefore * 2!
 		if (diff > REGULAR_DELAY << 1) {
 			lastSIDWriteTime += REGULAR_DELAY;
-			delay(sidNum, REGULAR_DELAY);
+			send(() -> new TryDelay(sidNum, REGULAR_DELAY));
 		}
 		return REGULAR_DELAY;
 	}
