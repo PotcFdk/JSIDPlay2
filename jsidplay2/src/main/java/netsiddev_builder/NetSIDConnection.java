@@ -114,7 +114,7 @@ public class NetSIDConnection {
 	 *            desired filter name
 	 */
 	public void setSIDByFilterName(byte sidNum, final ChipModel chipModel, final String filterName) {
-		addCommandsAfterFlushingWrites(() -> {
+		send(() -> {
 			Optional<Pair<ChipModel, String>> filter = filterNameToSIDModel.keySet().stream()
 					.filter(p -> p.getKey() == chipModel && p.getValue().equals(filterName)).findFirst();
 			if (filter.isPresent()) {
@@ -133,7 +133,7 @@ public class NetSIDConnection {
 	 * @return SID filter name and SID chip model
 	 */
 	private Pair<ChipModel, String> getSIDInfo(byte sidNum) {
-		addCommandsAfterFlushingWrites(() -> new GetConfigInfo(sidNum));
+		send(() -> new GetConfigInfo(sidNum));
 		int chIdx = 0;
 		for (; configInfo[chIdx] != 0 && chIdx < configInfo.length; chIdx++) {
 		}
@@ -145,46 +145,46 @@ public class NetSIDConnection {
 	 * @return network protocol version
 	 */
 	private byte getNetworkProtocolVersion() {
-		return addReadCommandAfterFlushingWrites(() -> new GetVersion());
+		return sendReceive(() -> new GetVersion());
 	}
 
 	/**
 	 * @return SID count of the NetworkSIDDevice
 	 */
 	private byte getSIDCount() {
-		return addReadCommandAfterFlushingWrites(() -> new GetConfigCount());
+		return sendReceive(() -> new GetConfigCount());
 	}
 
 	public void setClockFrequency(double cpuFrequency) {
-		addCommandsAfterFlushingWrites(() -> new SetClocking(cpuFrequency));
+		send(() -> new SetClocking(cpuFrequency));
 	}
 
 	public void setSampling(SamplingMethod sampling) {
-		addCommandsAfterFlushingWrites(() -> new TrySetSampling(sampling));
+		send(() -> new TrySetSampling(sampling));
 	}
 
 	public void flush() {
-		addCommandsAfterFlushingWrites(() -> new Flush());
+		send(() -> new Flush());
 	}
 
 	public void reset(byte volume) {
-		addCommandsAfterFlushingWrites(() -> new Flush(), () -> new TryReset(volume));
+		send(() -> new Flush(), () -> new TryReset(volume));
 	}
 
 	public void mute(byte sidNum, byte voice, boolean mute) {
-		addCommandsAfterFlushingWrites(() -> new Mute(sidNum, voice, mute));
+		send(() -> new Mute(sidNum, voice, mute));
 	}
 
 	public void setVolume(byte sidNum, float volume) {
-		addCommandsAfterFlushingWrites(() -> new SetSidLevel(sidNum, volume));
+		send(() -> new SetSidLevel(sidNum, volume));
 	}
 
 	public void setBalance(byte sidNum, float balance) {
-		addCommandsAfterFlushingWrites(() -> new SetSidPosition(sidNum, balance));
+		send(() -> new SetSidPosition(sidNum, balance));
 	}
 
 	private void delay(byte sidNum, int cycles) {
-		addCommandsAfterFlushingWrites(() -> new TryDelay(sidNum, cycles));
+		send(() -> new TryDelay(sidNum, cycles));
 	}
 
 	public byte read(byte sidNum, byte addr) {
@@ -197,7 +197,7 @@ public class NetSIDConnection {
 				throw new RuntimeException(e);
 			}
 		} else {
-			return addReadCommandAfterFlushingWrites(() -> new TryRead(sidNum, clocksSinceLastAccess(), addr));
+			return sendReceive(() -> new TryRead(sidNum, clocksSinceLastAccess(), addr));
 		}
 	}
 
@@ -213,13 +213,14 @@ public class NetSIDConnection {
 		}
 	}
 
-	private byte addReadCommandAfterFlushingWrites(Supplier<NetSIDPkg> cmdToAdd) {
-		addCommandsAfterFlushingWrites(cmdToAdd);
+	@SafeVarargs
+	private final byte sendReceive(Supplier<NetSIDPkg>... cmdToAdd) {
+		send(cmdToAdd);
 		return readResult;
 	}
 
 	@SafeVarargs
-	private final void addCommandsAfterFlushingWrites(Supplier<NetSIDPkg>... cmdToAdd) {
+	private final void send(Supplier<NetSIDPkg>... cmdToAdd) {
 		try {
 			// deal with unsubmitted writes
 			flush(false);
