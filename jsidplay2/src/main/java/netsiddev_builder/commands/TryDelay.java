@@ -1,18 +1,18 @@
 package netsiddev_builder.commands;
 
-import netsiddev.Command;;
+import static netsiddev.Command.TRY_DELAY;
 
 public class TryDelay implements NetSIDPkg {
 	private byte sidNum;
-	private int cycles;
+	private byte cyclesHigh, cyclesLow;
 
 	public TryDelay(byte sidNum, int cycles) {
 		this.sidNum = sidNum;
-		this.cycles = cycles;
+		this.cyclesHigh = (byte) ((cycles >> 8) & 0xff);
+		this.cyclesLow = (byte) (cycles & 0xff);
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { (byte) Command.TRY_DELAY.ordinal(), sidNum, 0, 0, (byte) ((cycles >> 8) & 0xff),
-				(byte) (cycles & 0xff) };
+		return new byte[] { (byte) TRY_DELAY.ordinal(), sidNum, 0, 0, cyclesHigh, cyclesLow };
 	}
 }

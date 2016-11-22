@@ -1,10 +1,10 @@
 package netsiddev_builder.commands;
 
-import netsiddev.Command;
+import static netsiddev.Command.FLUSH;
 
 public class Flush implements NetSIDPkg {
 
 	public byte[] toByteArray() {
-		return new byte[] { (byte) Command.FLUSH.ordinal(), 0, 0, 0 };
+		return new byte[] { (byte) FLUSH.ordinal(), 0, 0, 0 };
 	}
 }

@@ -28,12 +28,12 @@ import netsiddev_builder.commands.GetConfigInfo;
 import netsiddev_builder.commands.GetVersion;
 import netsiddev_builder.commands.Mute;
 import netsiddev_builder.commands.NetSIDPkg;
-import netsiddev_builder.commands.SetSIDClocking;
-import netsiddev_builder.commands.SetSIDCount;
-import netsiddev_builder.commands.SetSIDLevel;
-import netsiddev_builder.commands.SetSIDModel;
-import netsiddev_builder.commands.SetSIDPosition;
-import netsiddev_builder.commands.SetSIDSampling;
+import netsiddev_builder.commands.SetClocking;
+import netsiddev_builder.commands.TrySetSidCount;
+import netsiddev_builder.commands.SetSidLevel;
+import netsiddev_builder.commands.TrySetSidModel;
+import netsiddev_builder.commands.SetSidPosition;
+import netsiddev_builder.commands.TrySetSampling;
 import netsiddev_builder.commands.TryDelay;
 import netsiddev_builder.commands.TryRead;
 import netsiddev_builder.commands.TryReset;
@@ -82,9 +82,9 @@ public class NetSIDConnection {
 					filterNameToSIDModel.put(new Pair<>(filter.getKey(), filter.getValue()), config);
 				}
 				// Initialize SIDs on server side
-				commands.add(new SetSIDCount((byte) PLA.MAX_SIDS));
+				commands.add(new TrySetSidCount((byte) PLA.MAX_SIDS));
 				for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-					commands.add(new SetSIDModel(sidNum, sidNum));
+					commands.add(new TrySetSidModel(sidNum, sidNum));
 				}
 			}
 		} catch (IOException e) {
@@ -127,10 +127,10 @@ public class NetSIDConnection {
 			Optional<Pair<ChipModel, String>> filter = filterNameToSIDModel.keySet().stream()
 					.filter(p -> p.getKey() == chipModel && p.getValue().equals(filterName)).findFirst();
 			if (filter.isPresent()) {
-				return new NetSIDPkg[] { new SetSIDModel(sidNum, filterNameToSIDModel.get(filter.get())) };
+				return new NetSIDPkg[] { new TrySetSidModel(sidNum, filterNameToSIDModel.get(filter.get())) };
 			}
 			System.err.println("Undefined Filter: " + filterName + ", will use first available filter, instead!");
-			return new NetSIDPkg[] { new SetSIDModel(sidNum, (byte) 0) };
+			return new NetSIDPkg[] { new TrySetSidModel(sidNum, (byte) 0) };
 		});
 	}
 
@@ -158,11 +158,11 @@ public class NetSIDConnection {
 	}
 
 	public void setClockFrequency(double cpuFrequency) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSIDClocking(cpuFrequency) });
+		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetClocking(cpuFrequency) });
 	}
 
 	public void setSampling(SamplingMethod sampling) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSIDSampling((byte) sampling.ordinal()) });
+		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new TrySetSampling((byte) sampling.ordinal()) });
 	}
 
 	public void flush() {
@@ -178,12 +178,12 @@ public class NetSIDConnection {
 	}
 
 	public void setVolume(byte sidNum, float volume) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSIDLevel(sidNum, (byte) (volume * 5)) });
+		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSidLevel(sidNum, (byte) (volume * 5)) });
 	}
 
 	public void setBalance(byte sidNum, float balance) {
 		addCommandsAfterFlushingWrites(
-				() -> new NetSIDPkg[] { new SetSIDPosition(sidNum, (byte) (200 * (1 - balance) - 100)) });
+				() -> new NetSIDPkg[] { new SetSidPosition(sidNum, (byte) (200 * (1 - balance) - 100)) });
 	}
 
 	private void delay(byte sidNum, int cycles) {
@@ -213,8 +213,6 @@ public class NetSIDConnection {
 			} catch (InterruptedException | IOException e) {
 				throw new RuntimeException(e);
 			}
-		} else {
-			delay(sidNum, clocksSinceLastAccess());
 		}
 	}
 

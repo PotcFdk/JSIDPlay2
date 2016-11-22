@@ -1,20 +1,20 @@
 package netsiddev_builder.commands;
 
-import netsiddev.Command;
+import static netsiddev.Command.TRY_READ;
 
 public class TryRead implements NetSIDPkg {
 	private byte sidNum;
-	private int cycles;
+	private byte cyclesHigh, cyclesLow;
 	private byte register;
 
 	public TryRead(byte sidNum, int cycles, byte register) {
 		this.sidNum = sidNum;
-		this.cycles = cycles;
+		this.cyclesHigh = (byte) ((cycles >> 8) & 0xff);
+		this.cyclesLow = (byte) (cycles & 0xff);
 		this.register = register;
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { (byte) Command.TRY_READ.ordinal(), sidNum, 0, 0, (byte) ((cycles >> 8) & 0xff),
-				(byte) (cycles & 0xff), register };
+		return new byte[] { (byte) TRY_READ.ordinal(), sidNum, 0, 0, cyclesHigh, cyclesLow, register };
 	}
 }

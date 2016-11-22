@@ -1,6 +1,6 @@
 package netsiddev_builder.commands;
 
-import netsiddev.Command;
+import static netsiddev.Command.TRY_RESET;
 
 public class TryReset implements NetSIDPkg {
 	private byte volume;
@@ -10,6 +10,6 @@ public class TryReset implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { (byte) Command.TRY_RESET.ordinal(), 0, 0, 0, volume };
+		return new byte[] { (byte) TRY_RESET.ordinal(), 0, 0, 0, volume };
 	}
 }
