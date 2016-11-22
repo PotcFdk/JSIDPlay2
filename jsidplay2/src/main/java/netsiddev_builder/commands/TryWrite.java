@@ -10,6 +10,7 @@ public class TryWrite implements NetSIDPkg {
 	private List<Write> writes = new ArrayList<>();
 	private int cyclesSentToServer;
 	private boolean isRead;
+	private byte sidNumToRead;
 	private int readCycles;
 	private byte readAddr;
 
@@ -18,8 +19,9 @@ public class TryWrite implements NetSIDPkg {
 		cyclesSentToServer += cycles;
 	}
 
-	public void changeToTryRead(int cycles, byte addr) {
+	public void changeToTryRead(byte sidNum, int cycles, byte addr) {
 		isRead = true;
+		sidNumToRead = sidNum;
 		readCycles = cycles;
 		readAddr = addr;
 		cyclesSentToServer += cycles;
@@ -30,7 +32,7 @@ public class TryWrite implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		byte[] head = new byte[] { (byte) (isRead ? TRY_READ : TRY_WRITE).ordinal(), 0, 0, 0 };
+		byte[] head = new byte[] { (byte) (isRead ? TRY_READ : TRY_WRITE).ordinal(), isRead ? sidNumToRead : 0, 0, 0 };
 		byte[] cmd = new byte[head.length + (writes.size() << 2) + (isRead ? 3 : 0)];
 		System.arraycopy(head, 0, cmd, 0, head.length);
 		int i = head.length;

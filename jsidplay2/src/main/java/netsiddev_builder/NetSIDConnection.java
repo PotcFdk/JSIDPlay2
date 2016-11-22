@@ -193,7 +193,7 @@ public class NetSIDConnection {
 	public byte read(byte sidNum, byte addr) {
 		if (!commands.isEmpty() && commands.get(0) instanceof TryWrite) {
 			try {
-				tryWrite.changeToTryRead(clocksSinceLastAccess(), addr);
+				tryWrite.changeToTryRead(sidNum, clocksSinceLastAccess(), addr);
 				flush(false);
 				return readResult;
 			} catch (IOException | InterruptedException e) {
