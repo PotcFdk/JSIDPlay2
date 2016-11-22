@@ -4,14 +4,14 @@ import static netsiddev.Command.SET_SID_LEVEL;
 
 public class SetSidLevel implements NetSIDPkg {
 	private byte sidNum;
-	private byte levelDb;
+	private byte volume;
 
-	public SetSidLevel(byte sidNum, float volume) {
+	public SetSidLevel(byte sidNum, byte volume) {
 		this.sidNum = sidNum;
-		this.levelDb = (byte) (volume * 5);
+		this.volume = volume;
 	}
 
 	public byte[] toByteArray() {
-		return new byte[] { (byte) SET_SID_LEVEL.ordinal(), sidNum, 0, 0, levelDb };
+		return new byte[] { (byte) SET_SID_LEVEL.ordinal(), sidNum, 0, 0, volume };
 	}
 }

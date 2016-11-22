@@ -34,10 +34,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public SIDEmu lock(SIDEmu sidEmu, int sidNum, SidTune tune) {
-		IAudioSection audioSection = config.getAudioSection();
 		IEmulationSection emulationSection = config.getEmulationSection();
 		final NetSIDDev sid = createSID(emulationSection, sidEmu, tune, sidNum);
-		sid.setSampling(audioSection.getSampling());
+		sid.setSampling(config.getAudioSection().getSampling());
 		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
 		sid.setFilter(config, sidNum);
 		sid.setFilterEnable(emulationSection, sidNum);
@@ -54,16 +53,23 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 			sids.set(sidNum, sid);
 		else
 			sids.add(sid);
-		setVolume(sidNum, audioSection.getVolume(sidNum));
-		setBalance(sidNum, audioSection.getBalance(sidNum));
+		updateMixer(config.getAudioSection());
 		return sid;
 	}
 
 	@Override
 	public void unlock(SIDEmu device) {
 		NetSIDDev sid = (NetSIDDev) device;
-		connection.flush();
 		sids.remove(sid);
+		updateMixer(config.getAudioSection());
+		connection.flush();
+	}
+
+	private void updateMixer(IAudioSection audioSection) {
+		for (int i = 0; i < sids.size(); i++) {
+			setVolume(i, audioSection.getVolume(i));
+			setBalance(i, audioSection.getBalance(i));
+		}
 	}
 
 	@Override
@@ -88,7 +94,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void setVolume(int sidNum, float volume) {
-		connection.setVolume((byte) sidNum, (volume + (PLA.MAX_SIDS - sids.size()) * PLA.MAX_SIDS) / sids.size());
+		// XXX magic formula, maybe wrong!
+		float vol = 5 * (volume + (PLA.MAX_SIDS - sids.size()) * PLA.MAX_SIDS) / sids.size();
+		connection.setVolume((byte) sidNum, (byte) vol);
 	}
 
 	@Override
@@ -120,7 +128,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public void pause() {
 		connection.flush();
 	}
-	
+
 	/**
 	 * Create NetworkSIDDevice, formerly used NetworkSIDDevice is removed
 	 * beforehand.

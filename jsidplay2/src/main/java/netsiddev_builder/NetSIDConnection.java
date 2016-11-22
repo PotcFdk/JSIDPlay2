@@ -171,7 +171,7 @@ public class NetSIDConnection {
 		send(() -> new Mute(sidNum, voice, mute));
 	}
 
-	public void setVolume(byte sidNum, float volume) {
+	public void setVolume(byte sidNum, byte volume) {
 		send(() -> new SetSidLevel(sidNum, volume));
 	}
 
