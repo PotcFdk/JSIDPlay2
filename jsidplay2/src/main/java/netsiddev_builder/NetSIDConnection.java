@@ -52,7 +52,7 @@ public class NetSIDConnection {
 	private static final int BUFFER_NEAR_FULL = MAX_WRITE_CYCLES * 3 >> 2;
 	private static final int REGULAR_DELAY = 0xFFFF;
 
-	byte VERSION;
+	private byte VERSION;
 	private EventScheduler context;
 	private static Socket connectedSocket;
 	private List<NetSIDPkg> commands = new ArrayList<>();
@@ -182,7 +182,9 @@ public class NetSIDConnection {
 	}
 
 	public void setVoiceMute(byte sidNum, byte voice, boolean mute) {
-		send(() -> new Mute(sidNum, voice, mute));
+		if (VERSION >= 3 || voice < 3) {
+			send(() -> new Mute(sidNum, voice, mute));
+		}
 	}
 
 	public void setVolume(byte sidNum, byte volume) {
