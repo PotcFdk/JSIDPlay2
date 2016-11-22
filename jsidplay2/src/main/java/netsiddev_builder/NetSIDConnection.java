@@ -29,14 +29,14 @@ import netsiddev_builder.commands.GetVersion;
 import netsiddev_builder.commands.Mute;
 import netsiddev_builder.commands.NetSIDPkg;
 import netsiddev_builder.commands.SetClocking;
-import netsiddev_builder.commands.TrySetSidCount;
 import netsiddev_builder.commands.SetSidLevel;
-import netsiddev_builder.commands.TrySetSidModel;
 import netsiddev_builder.commands.SetSidPosition;
-import netsiddev_builder.commands.TrySetSampling;
 import netsiddev_builder.commands.TryDelay;
 import netsiddev_builder.commands.TryRead;
 import netsiddev_builder.commands.TryReset;
+import netsiddev_builder.commands.TrySetSampling;
+import netsiddev_builder.commands.TrySetSidCount;
+import netsiddev_builder.commands.TrySetSidModel;
 import netsiddev_builder.commands.TryWrite;
 
 public class NetSIDConnection {
@@ -118,10 +118,10 @@ public class NetSIDConnection {
 			Optional<Pair<ChipModel, String>> filter = filterNameToSIDModel.keySet().stream()
 					.filter(p -> p.getKey() == chipModel && p.getValue().equals(filterName)).findFirst();
 			if (filter.isPresent()) {
-				return new NetSIDPkg[] { new TrySetSidModel(sidNum, filterNameToSIDModel.get(filter.get())) };
+				return new TrySetSidModel(sidNum, filterNameToSIDModel.get(filter.get()));
 			}
 			System.err.println("Undefined Filter: " + filterName + ", will use first available filter, instead!");
-			return new NetSIDPkg[] { new TrySetSidModel(sidNum, (byte) 0) };
+			return new TrySetSidModel(sidNum, (byte) 0);
 		});
 	}
 
@@ -133,7 +133,7 @@ public class NetSIDConnection {
 	 * @return SID filter name and SID chip model
 	 */
 	private Pair<ChipModel, String> getSIDInfo(byte sidNum) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new GetConfigInfo(sidNum) });
+		addCommandsAfterFlushingWrites(() -> new GetConfigInfo(sidNum));
 		int chIdx = 0;
 		for (; configInfo[chIdx] != 0 && chIdx < configInfo.length; chIdx++) {
 		}
@@ -156,35 +156,35 @@ public class NetSIDConnection {
 	}
 
 	public void setClockFrequency(double cpuFrequency) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetClocking(cpuFrequency) });
+		addCommandsAfterFlushingWrites(() -> new SetClocking(cpuFrequency));
 	}
 
 	public void setSampling(SamplingMethod sampling) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new TrySetSampling(sampling) });
+		addCommandsAfterFlushingWrites(() -> new TrySetSampling(sampling));
 	}
 
 	public void flush() {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new Flush() });
+		addCommandsAfterFlushingWrites(() -> new Flush());
 	}
 
 	public void reset(byte volume) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new Flush(), new TryReset(volume) });
+		addCommandsAfterFlushingWrites(() -> new Flush(), () -> new TryReset(volume));
 	}
 
 	public void mute(byte sidNum, byte voice, boolean mute) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new Mute(sidNum, voice, mute) });
+		addCommandsAfterFlushingWrites(() -> new Mute(sidNum, voice, mute));
 	}
 
 	public void setVolume(byte sidNum, float volume) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSidLevel(sidNum, volume) });
+		addCommandsAfterFlushingWrites(() -> new SetSidLevel(sidNum, volume));
 	}
 
 	public void setBalance(byte sidNum, float balance) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new SetSidPosition(sidNum, balance) });
+		addCommandsAfterFlushingWrites(() -> new SetSidPosition(sidNum, balance));
 	}
 
 	private void delay(byte sidNum, int cycles) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { new TryDelay(sidNum, cycles) });
+		addCommandsAfterFlushingWrites(() -> new TryDelay(sidNum, cycles));
 	}
 
 	public byte read(byte sidNum, byte addr) {
@@ -214,17 +214,18 @@ public class NetSIDConnection {
 	}
 
 	private byte addReadCommandAfterFlushingWrites(Supplier<NetSIDPkg> cmdToAdd) {
-		addCommandsAfterFlushingWrites(() -> new NetSIDPkg[] { cmdToAdd.get() });
+		addCommandsAfterFlushingWrites(cmdToAdd);
 		return readResult;
 	}
 
-	private void addCommandsAfterFlushingWrites(Supplier<NetSIDPkg[]> cmdToAdd) {
+	@SafeVarargs
+	private final void addCommandsAfterFlushingWrites(Supplier<NetSIDPkg>... cmdToAdd) {
 		try {
 			// deal with unsubmitted writes
 			flush(false);
 
-			for (NetSIDPkg netSIDPkg : cmdToAdd.get()) {
-				commands.add(netSIDPkg);
+			for (Supplier<NetSIDPkg> netSIDPkg : cmdToAdd) {
+				commands.add(netSIDPkg.get());
 			}
 			flush(false);
 		} catch (IOException | InterruptedException e) {
