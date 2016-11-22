@@ -21,6 +21,7 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SamplingMethod;
 import libsidplay.components.pla.PLA;
+import libsidplay.config.IEmulationSection;
 import netsiddev.Response;
 import netsiddev_builder.commands.Flush;
 import netsiddev_builder.commands.GetConfigCount;
@@ -67,7 +68,7 @@ public class NetSIDConnection {
 
 		@Override
 		public void event() {
-			// XXX we just delay and clock first SID for reading, does this have an impact?
+			// XXX we just delay and clock first SID for reading, side-effect?
 			context.schedule(event, eventuallyDelay((byte) 0), Event.Phase.PHI2);
 		}
 	};
@@ -167,6 +168,19 @@ public class NetSIDConnection {
 		}
 	}
 
+	protected void setMute(IEmulationSection emulationSection) {
+		try {
+			for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+				for (byte voice = 0; voice < (VERSION < 3 ? 3 : 4); voice++) {
+					commands.add(new Mute(sidNum, voice, emulationSection.isMuteVoice(sidNum, voice)));
+				}
+			}
+			flush(false);
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public void setVoiceMute(byte sidNum, byte voice, boolean mute) {
 		send(() -> new Mute(sidNum, voice, mute));
 	}
@@ -225,7 +239,6 @@ public class NetSIDConnection {
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	/**

@@ -112,6 +112,10 @@ public class NetSIDDev extends SIDEmu {
 		return 0;
 	}
 
+	protected void setMute(IEmulationSection emulationSection) {
+		connection.setMute(emulationSection);
+	}
+
 	@Override
 	public void setVoiceMute(int voice, boolean mute) {
 		connection.setVoiceMute(sidNum, (byte) voice, mute);
