@@ -60,9 +60,12 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	@Override
 	public void unlock(SIDEmu device) {
 		NetSIDDev sid = (NetSIDDev) device;
+		connection.flush();
+		for (byte reg = 0; reg < SIDChip.REG_COUNT; reg++) {
+			connection.write((byte) sids.indexOf(sid), reg, (byte) 0);
+		}
 		sids.remove(sid);
 		updateMixer(config.getAudioSection());
-		connection.flush();
 	}
 
 	private void updateMixer(IAudioSection audioSection) {
