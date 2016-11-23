@@ -1349,14 +1349,30 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	private String determineEmulation() {
 		EmulationSection emulation = util.getConfig().getEmulationSection();
 		StringBuilder line = new StringBuilder();
-		line.append(String.format("%s", Emulation.getEmulation(emulation, util.getPlayer().getTune(), 0).name()));
-		if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
-			String stereoEmulation = Emulation.getEmulation(emulation, util.getPlayer().getTune(), 1).name();
-			line.append(String.format("+%s", stereoEmulation));
-			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
-				String thirdEmulation = Emulation.getEmulation(emulation, util.getPlayer().getTune(), 2).name();
-				line.append(String.format("+%s", thirdEmulation));
+		switch (emulation.getEngine()) {
+		case EMULATION:
+			line.append(String.format("%s", Emulation.getEmulation(emulation, util.getPlayer().getTune(), 0).name()));
+			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
+				String stereoEmulation = Emulation.getEmulation(emulation, util.getPlayer().getTune(), 1).name();
+				line.append(String.format("+%s", stereoEmulation));
+				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
+					String thirdEmulation = Emulation.getEmulation(emulation, util.getPlayer().getTune(), 2).name();
+					line.append(String.format("+%s", thirdEmulation));
+				}
 			}
+			break;
+		case NETSID:
+		case HARDSID:
+			line.append(String.format("%s", emulation.getEngine().name()));
+			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
+				line.append(String.format("+%s", emulation.getEngine().name()));
+				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
+					line.append(String.format("+%s", emulation.getEngine().name()));
+				}
+			}
+			break;
+		default:
+			break;
 		}
 		line.append(", ");
 		return line.toString();
