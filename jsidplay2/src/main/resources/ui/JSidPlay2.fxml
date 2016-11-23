@@ -48,6 +48,7 @@
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
 <?scenebuilder-classpath-element ../../../../target/classes?>
 <?import javafx.geometry.Insets?>
+<?import ui.common.TypeTextField?>
 <Scene>
 	<stylesheets>
 		<URL value="@JSidPlay2.css" />
@@ -419,6 +420,20 @@
 						<padding>
 							<Insets left="10.0" right="10.0" />
 						</padding>
+						<Label text="%HOSTNAME" fx:id="hostnameLabel" />
+						<TextField fx:id="hostname" onAction="#setHostname"
+							prefWidth="80" >
+							<tooltip>
+								<Tooltip text="%HOSTNAME_TIP"></Tooltip>
+							</tooltip>
+						</TextField>
+						<Label text="%PORT" fx:id="portLabel" />
+						<TypeTextField type="Integer" fx:id="port" onAction="#setPort"
+							prefWidth="60" >
+							<tooltip>
+								<Tooltip text="%PORT_TIP"></Tooltip>
+							</tooltip>
+						</TypeTextField>
 						<Label text="%6581" fx:id="hardsid6581Label" />
 						<ComboBox fx:id="hardsid6581Box" onAction="#setSid6581">
 							<items>

@@ -28,6 +28,8 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_HOST;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
@@ -291,6 +293,38 @@ public class EmulationSection implements IEmulationSection {
 	@Override
 	public void setHardsid8580(int hardsid8580) {
 		this.hardsid8580.set(hardsid8580);
+	}
+
+	private StringProperty netSidDevHostProperty = new SimpleStringProperty(DEFAULT_NETSIDDEV_HOST);
+
+	public StringProperty netSidDevHostProperty() {
+		return netSidDevHostProperty;
+	}
+
+	@Override
+	public String getNetSIDDevHost() {
+		return netSidDevHostProperty.get();
+	}
+
+	@Override
+	public void setNetSIDDevHost(String hostname) {
+		this.netSidDevHostProperty.set(hostname);
+	}
+
+	private ObjectProperty<Integer> netSidDevPortProperty = new SimpleObjectProperty<Integer>(DEFAULT_NETSIDDEV_PORT);
+
+	public ObjectProperty<Integer> netSidDevPortProperty() {
+		return netSidDevPortProperty;
+	}
+
+	@Override
+	public int getNetSIDDevPort() {
+		return netSidDevPortProperty.get();
+	}
+
+	@Override
+	public void setNetSIDDevPort(int port) {
+		this.netSidDevPortProperty.set(port);
 	}
 
 	private BooleanProperty filter = new SimpleBooleanProperty(DEFAULT_USE_FILTER);

@@ -4,6 +4,7 @@ import static netsiddev.Response.BUSY;
 import static netsiddev.Response.OK;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -39,19 +40,21 @@ import netsiddev_builder.commands.TrySetSidModel;
 import netsiddev_builder.commands.TryWrite;
 
 public class NetSIDConnection {
-	private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
-
-	private static final int PORT = 6581;
-	private static final String HOSTNAME = "127.0.0.1";
+	/**
+	 * Timeout to establish a connection to a NetworkSIDDevice im ms.
+	 */
+	private static final int SOCKET_CONNECT_TIMEOUT = 5000;
 
 	private static final int CYCLES_TO_MILLIS = 1000;
 	private static final int MAX_WRITE_CYCLES = 4096;
 	private static final int CMD_BUFFER_SIZE = 4096;
 	private static final int BUFFER_NEAR_FULL = MAX_WRITE_CYCLES * 3 >> 2;
 	private static final int REGULAR_DELAY = 0xFFFF;
-
+	private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
+	
 	private byte VERSION;
 	private EventScheduler context;
+	private static boolean disconnect;
 	private static Socket connectedSocket;
 	private List<NetSIDPkg> commands = new ArrayList<>(CMD_BUFFER_SIZE);
 	private TryWrite tryWrite = new TryWrite();
@@ -80,11 +83,24 @@ public class NetSIDConnection {
 	 * @param context
 	 *            event context
 	 */
-	public NetSIDConnection(EventScheduler context) {
+	public NetSIDConnection(EventScheduler context, String hostname, int port) {
 		this.context = context;
 		try {
+			if (disconnect) {
+				if (connectedSocket != null) {
+					try {
+						connectedSocket.close();
+					} catch (IOException e) {
+						System.err.println("NetworkSIDDevice Socket close failed!");
+					}
+				}
+				connectedSocket = null;
+				disconnect = false;
+			}
 			if (connectedSocket == null || !connectedSocket.isConnected()) {
-				connectedSocket = new Socket(HOSTNAME, PORT);
+				System.out.printf("Connect to NetworkSIDDevice: %s (%d)\n", hostname, port);
+				connectedSocket = new Socket();
+				connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 				VERSION = getNetworkProtocolVersion();
 				// Get all available SIDs
 				for (byte config = 0; config < getSIDCount(); config++) {
@@ -167,11 +183,11 @@ public class NetSIDConnection {
 
 	protected void setMute(IEmulationSection emulationSection) {
 		try {
-		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-			for (byte voice = 0; voice < (VERSION < 3 ? 3 : 4); voice++) {
-				commands.add(new Mute(sidNum, voice, emulationSection.isMuteVoice(sidNum, voice)));
+			for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+				for (byte voice = 0; voice < (VERSION < 3 ? 3 : 4); voice++) {
+					commands.add(new Mute(sidNum, voice, emulationSection.isMuteVoice(sidNum, voice)));
+				}
 			}
-		}
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -375,6 +391,10 @@ public class NetSIDConnection {
 
 	public int getFastForwardBitMask() {
 		return (1 << fastForwardFactor) - 1;
+	}
+
+	public static void disconnect() {
+		disconnect = true;
 	}
 
 }

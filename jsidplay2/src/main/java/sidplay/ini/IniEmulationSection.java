@@ -16,6 +16,8 @@ import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_HOST;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
@@ -201,6 +203,26 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "HardSID8580", chip);
 	}
 
+	@Override
+	public String getNetSIDDevHost() {
+		return iniReader.getPropertyString("Emulation", "NetSIDDev Host", DEFAULT_NETSIDDEV_HOST);
+	}
+	
+	@Override
+	public void setNetSIDDevHost(String hostname) {
+		iniReader.setProperty("Emulation", "NetSIDDev Host", hostname);
+	}
+	
+	@Override
+	public int getNetSIDDevPort() {
+		return iniReader.getPropertyInt("Emulation", "NetSIDDev Port", DEFAULT_NETSIDDEV_PORT);
+	}
+	
+	@Override
+	public void setNetSIDDevPort(int port) {
+		iniReader.setProperty("Emulation", "NetSIDDev Port", port);
+	}
+	
 	@Override
 	public final boolean isFilter() {
 		return iniReader.getPropertyBool("Emulation", "UseFilter", DEFAULT_USE_FILTER);

@@ -173,6 +173,34 @@ public interface IEmulationSection {
 	void setHardsid8580(int chip);
 
 	/**
+	 * Getter of the host name of a NetworkSIDDevice.
+	 * 
+	 * @return host name of a NetworkSIDDevice
+	 */
+	String getNetSIDDevHost();
+
+	/**
+	 * Setter of the host name of a NetworkSIDDevice.
+	 * 
+	 * @param hostname host name of a NetworkSIDDevice
+	 */
+	void setNetSIDDevHost(String hostname);
+
+	/**
+	 * Getter of the port address of a NetworkSIDDevice.
+	 * 
+	 * @return port address of a NetworkSIDDevice
+	 */
+	int getNetSIDDevPort();
+
+	/**
+	 * Setter of the port address of a NetworkSIDDevice.
+	 * 
+	 * @param port port address of a NetworkSIDDevice
+	 */
+	void setNetSIDDevPort(int port);
+
+	/**
 	 * Is SID filter enabled?
 	 * 
 	 * @return filter enabled

@@ -29,7 +29,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
-		this.connection = new NetSIDConnection(context);
+		IEmulationSection emulationSection = config.getEmulationSection();
+		this.connection = new NetSIDConnection(context, emulationSection.getNetSIDDevHost(),
+				emulationSection.getNetSIDDevPort());
 	}
 
 	@Override
@@ -58,8 +60,8 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	@Override
 	public void unlock(SIDEmu device) {
 		NetSIDDev sid = (NetSIDDev) device;
-		connection.flush();
 		byte sidNum = (byte) sids.indexOf(sid);
+		connection.flush();
 		for (byte reg = 0; reg < SIDChip.REG_COUNT; reg++) {
 			connection.write(sidNum, reg, (byte) 0);
 		}

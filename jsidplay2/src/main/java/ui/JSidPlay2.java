@@ -21,6 +21,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -53,6 +54,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.util.converter.IntegerStringConverter;
 import libsidplay.C64;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
@@ -74,6 +76,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import libsidutils.WebUtils;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
+import netsiddev_builder.NetSIDConnection;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
@@ -185,7 +188,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private CheckBox enableSldb, singleSong;
 	@FXML
-	private TextField defaultTime;
+	private TextField defaultTime, hostname, port;
 	@FXML
 	private ToggleButton pauseContinue2, fastForward2;
 	@FXML
@@ -199,7 +202,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	protected TabPane tabbedPane;
 	@FXML
-	private Label tracks, status, hardsid6581Label, hardsid8580Label;
+	private Label tracks, status, hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label;
 	@FXML
 	protected ProgressBar progress;
 
@@ -319,6 +322,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			hardsid8580Box.setDisable(!Engine.HARDSID.equals(n));
 			hardsid6581Label.setDisable(!Engine.HARDSID.equals(n));
 			hardsid8580Label.setDisable(!Engine.HARDSID.equals(n));
+			hostnameLabel.setDisable(!Engine.NETSID.equals(n));
+			hostname.setDisable(!Engine.NETSID.equals(n));
+			portLabel.setDisable(!Engine.NETSID.equals(n));
+			port.setDisable(!Engine.NETSID.equals(n));
 		});
 		engineBox.valueProperty().bindBidirectional(emulationSection.engineProperty());
 
@@ -326,6 +333,10 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		defaultTime.setText(String.format("%02d:%02d", seconds / 60, seconds % 60));
 		sidplay2Section.defaultPlayLengthProperty().addListener((observable, oldValue, newValue) -> defaultTime
 				.setText(String.format("%02d:%02d", newValue.intValue() / 60, newValue.intValue() % 60)));
+
+		hostname.textProperty().bindBidirectional(emulationSection.netSidDevHostProperty());
+		Bindings.bindBidirectional(port.textProperty(), emulationSection.netSidDevPortProperty(),
+				new IntegerStringConverter());
 
 		enableSldb.selectedProperty().bindBidirectional(sidplay2Section.enableDatabaseProperty());
 		singleSong.selectedProperty().bindBidirectional(sidplay2Section.singleProperty());
@@ -386,7 +397,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 						video();
 						util.setPlayingTab(tabbedPane.getTabs().stream().filter((tab) -> tab.getId().equals(Video.ID))
 								.findFirst().get());
-						new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA, null);
+						new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA,
+								null);
 					} catch (IOException | SidTuneError | URISyntaxException e) {
 						openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 					}
@@ -849,6 +861,18 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void setSid8580() {
+		restart();
+	}
+
+	@FXML
+	private void setHostname() {
+		NetSIDConnection.disconnect();
+		restart();
+	}
+
+	@FXML
+	private void setPort() {
+		NetSIDConnection.disconnect();
 		restart();
 	}
 
