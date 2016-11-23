@@ -51,10 +51,10 @@ public class NetSIDConnection {
 	private static final int BUFFER_NEAR_FULL = MAX_WRITE_CYCLES * 3 >> 2;
 	private static final int REGULAR_DELAY = 0xFFFF;
 	private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
-	
+
 	private byte VERSION;
 	private EventScheduler context;
-	private static boolean disconnect;
+	private static boolean connectionInvalid;
 	private static Socket connectedSocket;
 	private List<NetSIDPkg> commands = new ArrayList<>(CMD_BUFFER_SIZE);
 	private TryWrite tryWrite = new TryWrite();
@@ -86,21 +86,12 @@ public class NetSIDConnection {
 	public NetSIDConnection(EventScheduler context, String hostname, int port) {
 		this.context = context;
 		try {
-			if (disconnect) {
-				if (connectedSocket != null) {
-					try {
-						connectedSocket.close();
-					} catch (IOException e) {
-						System.err.println("NetworkSIDDevice Socket close failed!");
-					}
-				}
-				connectedSocket = null;
-				disconnect = false;
+			if (connectionInvalid) {
+				closeConnection();
+				connectionInvalid = false;
 			}
 			if (connectedSocket == null || !connectedSocket.isConnected()) {
-				System.out.printf("Connect to NetworkSIDDevice: %s (%d)\n", hostname, port);
-				connectedSocket = new Socket();
-				connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
+				openConnection(hostname, port);
 				VERSION = getNetworkProtocolVersion();
 				// Get all available SIDs
 				for (byte config = 0; config < getSIDCount(); config++) {
@@ -116,6 +107,23 @@ public class NetSIDConnection {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void openConnection(String hostname, int port) throws IOException {
+		System.out.printf("Connect to NetworkSIDDevice: %s (%d)\n", hostname, port);
+		connectedSocket = new Socket();
+		connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
+	}
+
+	private void closeConnection() {
+		if (connectedSocket != null) {
+			try {
+				connectedSocket.close();
+			} catch (IOException e) {
+				System.err.println("NetworkSIDDevice socket cannot be closed!");
+			}
+		}
+		connectedSocket = null;
 	}
 
 	/**
@@ -393,8 +401,8 @@ public class NetSIDConnection {
 		return (1 << fastForwardFactor) - 1;
 	}
 
-	public static void disconnect() {
-		disconnect = true;
+	public static void invalidateConnection() {
+		connectionInvalid = true;
 	}
 
 }

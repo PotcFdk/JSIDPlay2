@@ -866,13 +866,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void setHostname() {
-		NetSIDConnection.disconnect();
+		NetSIDConnection.invalidateConnection();
 		restart();
 	}
 
 	@FXML
 	private void setPort() {
-		NetSIDConnection.disconnect();
+		NetSIDConnection.invalidateConnection();
 		restart();
 	}
 
