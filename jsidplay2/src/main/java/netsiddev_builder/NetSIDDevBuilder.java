@@ -44,8 +44,8 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		// this triggers refreshParams on the server side, therefore the last:
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
 		sid.setMute(config.getEmulationSection());
-		for (int i = 0; sidEmu != null && i < SIDChip.REG_COUNT; i++) {
-			sid.write(i, sidEmu.readInternalRegister(i));
+		for (byte addr = 0; sidEmu != null && addr < SIDChip.REG_COUNT; addr++) {
+			sid.write(addr, sidEmu.readInternalRegister(addr));
 		}
 		if (sidNum < sids.size())
 			sids.set(sidNum, sid);
@@ -59,8 +59,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public void unlock(SIDEmu device) {
 		NetSIDDev sid = (NetSIDDev) device;
 		connection.flush();
+		byte sidNum = (byte) sids.indexOf(sid);
 		for (byte reg = 0; reg < SIDChip.REG_COUNT; reg++) {
-			connection.write((byte) sids.indexOf(sid), reg, (byte) 0);
+			connection.write(sidNum, reg, (byte) 0);
 		}
 		sids.remove(sid);
 		updateMixer(config.getAudioSection());

@@ -1,7 +1,6 @@
 package netsiddev_builder;
 
 import static netsiddev.Response.BUSY;
-import static netsiddev.Response.INFO;
 import static netsiddev.Response.OK;
 
 import java.io.IOException;
@@ -33,7 +32,6 @@ import netsiddev_builder.commands.SetClocking;
 import netsiddev_builder.commands.SetSidLevel;
 import netsiddev_builder.commands.SetSidPosition;
 import netsiddev_builder.commands.TryDelay;
-import netsiddev_builder.commands.TryRead;
 import netsiddev_builder.commands.TryReset;
 import netsiddev_builder.commands.TrySetSampling;
 import netsiddev_builder.commands.TrySetSidCount;
@@ -55,8 +53,8 @@ public class NetSIDConnection {
 	private byte VERSION;
 	private EventScheduler context;
 	private static Socket connectedSocket;
-	private List<NetSIDPkg> commands = new ArrayList<>();
-	private TryWrite tryWrite;
+	private List<NetSIDPkg> commands = new ArrayList<>(CMD_BUFFER_SIZE);
+	private TryWrite tryWrite = new TryWrite();
 	private byte readResult;
 	private String configName;
 	private long lastSIDWriteTime;
@@ -68,7 +66,8 @@ public class NetSIDConnection {
 
 		@Override
 		public void event() {
-			// XXX we just delay and clock first SID for reading, side-effect?
+			// XXX we just delay and clock first SID for reading, is that
+			// enough?
 			context.schedule(event, eventuallyDelay((byte) 0), Event.Phase.PHI2);
 		}
 	};
@@ -163,18 +162,16 @@ public class NetSIDConnection {
 	public void reset(byte volume) {
 		send(() -> new Flush());
 		send(() -> new TryReset(volume));
-		if (!context.isPending(event)) {
-			context.schedule(event, 0, Event.Phase.PHI2);
-		}
+		context.schedule(event, 0, Event.Phase.PHI2);
 	}
 
 	protected void setMute(IEmulationSection emulationSection) {
 		try {
-			for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-				for (byte voice = 0; voice < (VERSION < 3 ? 3 : 4); voice++) {
-					commands.add(new Mute(sidNum, voice, emulationSection.isMuteVoice(sidNum, voice)));
-				}
+		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+			for (byte voice = 0; voice < (VERSION < 3 ? 3 : 4); voice++) {
+				commands.add(new Mute(sidNum, voice, emulationSection.isMuteVoice(sidNum, voice)));
 			}
+		}
 			flush(false);
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
@@ -198,14 +195,16 @@ public class NetSIDConnection {
 	public byte read(byte sidNum, byte addr) {
 		if (!commands.isEmpty() && commands.get(0) instanceof TryWrite) {
 			try {
-				tryWrite.changeToTryRead(sidNum, clocksSinceLastAccess(), addr);
+				tryWrite.toTryRead(sidNum, clocksSinceLastAccess(), addr);
 				flush(false);
 				return readResult;
 			} catch (IOException | InterruptedException e) {
 				throw new RuntimeException(e);
 			}
 		} else {
-			return sendReceive(() -> new TryRead(sidNum, clocksSinceLastAccess(), addr));
+			tryWrite = new TryWrite();
+			tryWrite.toTryRead(sidNum, clocksSinceLastAccess(), addr);
+			return sendReceive(() -> tryWrite);
 		}
 	}
 
@@ -245,7 +244,7 @@ public class NetSIDConnection {
 
 	/**
 	 * Add a SID write to the ring buffer, until it is full, then send it to
-	 * JSIDPlay2 to be queued there and executed
+	 * NetworkSIDDevice to be queued there and executed
 	 */
 	private Response tryWrite(byte sidNum, int cycles, byte reg, byte data) throws InterruptedException, IOException {
 		/*
@@ -278,16 +277,13 @@ public class NetSIDConnection {
 			final NetSIDPkg cmd = commands.remove(0);
 
 			connectedSocket.getOutputStream().write(cmd.toByteArrayWithLength());
-			int rc = connectedSocket.getInputStream().read();
-			if (rc == -1) {
-				throw new RuntimeException("Server closed the connection!");
-			}
+			byte rc = readResponse();
 			switch (Response.values()[rc]) {
 			case VERSION:
 			case READ:
 			case COUNT:
 				// version / read result / configuration count
-				readResult = (byte) connectedSocket.getInputStream().read();
+				readResult = readResponse();
 			case OK:
 				continue;
 			case BUSY:
@@ -299,24 +295,30 @@ public class NetSIDConnection {
 				continue;
 			case INFO:
 				// chip model
-				readResult = (byte) connectedSocket.getInputStream().read();
+				readResult = readResponse();
 				// 0 terminated name
-				if (rc == INFO.ordinal()) {
-					byte[] configInfo = new byte[255];
-					int chIdx;
-					for (chIdx = 0; chIdx < configInfo.length; chIdx++) {
-						connectedSocket.getInputStream().read(configInfo, chIdx, 1);
-						if (configInfo[chIdx] <= 0)
-							break;
-					}
-					configName = new String(configInfo, 0, chIdx, ISO_8859_1);
+				byte[] configInfo = new byte[255];
+				int chIdx;
+				for (chIdx = 0; chIdx < configInfo.length; chIdx++) {
+					connectedSocket.getInputStream().read(configInfo, chIdx, 1);
+					if (configInfo[chIdx] <= 0)
+						break;
 				}
+				configName = new String(configInfo, 0, chIdx, ISO_8859_1);
 				continue;
 			default:
-				throw new RuntimeException("Server error: Unexpected response!");
+				throw new RuntimeException("Server error: Unexpected response: " + rc);
 			}
 		}
 		return OK;
+	}
+
+	private byte readResponse() throws IOException {
+		int rc = connectedSocket.getInputStream().read();
+		if (rc == -1) {
+			throw new RuntimeException("Server closed the connection!");
+		}
+		return (byte) rc;
 	}
 
 	private void sleepDependingOnCyclesSent() throws InterruptedException {
@@ -325,10 +327,11 @@ public class NetSIDConnection {
 		}
 	}
 
+	/**
+	 * Flush writes after a bit of buffering
+	 **/
 	private Response maybeSendWritesToServer() throws IOException, InterruptedException {
-		/* flush writes after a bit of buffering */
-		if (commands.size() == CMD_BUFFER_SIZE
-				|| (tryWrite != null && tryWrite.getCyclesSentToServer() > MAX_WRITE_CYCLES)) {
+		if (commands.size() == CMD_BUFFER_SIZE || tryWrite.getCyclesSentToServer() > MAX_WRITE_CYCLES) {
 			if (flush(true) == BUSY) {
 				return BUSY;
 			}

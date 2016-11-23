@@ -19,7 +19,7 @@ public class TryWrite implements NetSIDPkg {
 		cyclesSentToServer += cycles;
 	}
 
-	public void changeToTryRead(byte sidNum, int cycles, byte addr) {
+	public void toTryRead(byte sidNum, int cycles, byte addr) {
 		isRead = true;
 		sidNumToRead = sidNum;
 		readCycles = cycles;

@@ -81,9 +81,7 @@ public class HardSIDBuilder implements SIDBuilder {
 		this.context = context;
 		this.config = config;
 		if (!initialized) {
-			// Extract and Load JNI driver wrapper recognizing netsiddev devices
-			// and
-			// real devices
+			// Extract and Load JNI driver wrapper recognizing real HardSID4U devices
 			try {
 				System.load(extract(config, "/hardsid_builder/win32/Release/", "JHardSID.dll"));
 				initialized = true;
