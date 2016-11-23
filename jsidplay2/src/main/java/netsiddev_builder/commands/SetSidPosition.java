@@ -6,9 +6,9 @@ public class SetSidPosition implements NetSIDPkg {
 	private byte sidNum;
 	private byte position;
 
-	public SetSidPosition(byte sidNum, float balance) {
+	public SetSidPosition(byte sidNum, byte balance) {
 		this.sidNum = sidNum;
-		this.position = (byte) (200 * balance - 100);
+		this.position = balance;
 	}
 
 	public byte[] toByteArray() {

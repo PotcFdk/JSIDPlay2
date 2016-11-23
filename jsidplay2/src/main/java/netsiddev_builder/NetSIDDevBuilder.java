@@ -102,7 +102,8 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void setBalance(int sidNum, float balance) {
-		connection.setBalance((byte) sidNum, balance);
+		float position = 200 * balance - 100;
+		connection.setBalance((byte) sidNum, (byte) position);
 	}
 
 	@Override

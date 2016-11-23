@@ -191,7 +191,7 @@ public class NetSIDConnection {
 		send(() -> new SetSidLevel(sidNum, volume));
 	}
 
-	public void setBalance(byte sidNum, float balance) {
+	public void setBalance(byte sidNum, byte balance) {
 		send(() -> new SetSidPosition(sidNum, balance));
 	}
 
