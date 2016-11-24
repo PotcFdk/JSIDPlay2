@@ -32,10 +32,12 @@ public class TryWrite implements NetSIDPkg {
 	}
 
 	public byte[] toByteArray() {
-		byte[] head = new byte[] { (byte) (isRead ? TRY_READ : TRY_WRITE).ordinal(), isRead ? sidNumToRead : 0, 0, 0 };
-		byte[] cmd = new byte[head.length + (writes.size() << 2) + (isRead ? 3 : 0)];
-		System.arraycopy(head, 0, cmd, 0, head.length);
-		int i = head.length;
+		int i = 0;
+		byte[] cmd = new byte[4/*head.length*/ + (writes.size() << 2) + (isRead ? 3 : 0)];
+		cmd[i++] = (byte) (isRead ? TRY_READ : TRY_WRITE).ordinal();
+		cmd[i++] = isRead ? sidNumToRead : 0;
+		cmd[i++] = 0;
+		cmd[i++] = 0;
 		for (Write write : writes) {
 			cmd[i++] = (byte) ((write.getCycles() >> 8) & 0xff);
 			cmd[i++] = (byte) (write.getCycles() & 0xff);
