@@ -10,7 +10,6 @@ import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
-import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -98,14 +97,17 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void setVolume(int sidNum, float volume) {
-		// XXX magic formula, maybe wrong!
-		float vol = 5 * (volume + (PLA.MAX_SIDS - sids.size()) * PLA.MAX_SIDS) / sids.size();
-		connection.setVolume((byte) sidNum, (byte) vol);
+		// -6db..6db (client)
+		// 0..30 (server)
+		float level = (volume + 6f) * 30f / 12f;
+		connection.setVolume((byte) sidNum, (byte) level);
 	}
 
 	@Override
 	public void setBalance(int sidNum, float balance) {
-		float position = 200 * balance - 100;
+		// 0..1 (client)
+		// -50..50 (server)
+		float position = sids.size() > 1 ? 100f * balance - 50f : 0;
 		connection.setBalance((byte) sidNum, (byte) position);
 	}
 
