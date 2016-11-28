@@ -49,7 +49,7 @@ public class NetSIDConnection {
 	private static final int MAX_WRITE_CYCLES = 4096;
 	private static final int CMD_BUFFER_SIZE = 4096;
 	private static final int BUFFER_NEAR_FULL = MAX_WRITE_CYCLES * 3 >> 2;
-	private static final int REGULAR_DELAY = 0xFFFF;
+	private static final int REGULAR_DELAY = MAX_WRITE_CYCLES;
 	private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
 	private byte VERSION;
