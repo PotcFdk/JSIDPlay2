@@ -464,16 +464,10 @@ public class EmulationSettings extends C64Window {
 		String filterName = filterEnable ? emulationSection.getFilterName(num, engine, emulation, model) : null;
 
 		filters.clear();
+		filters.add("");
 		if (engine == Engine.NETSID) {
-			filters.add("");
 			filters.addAll(NetSIDConnection.getFilterNames(model));
-			if (filterEnable) {
-				filter.getSelectionModel().select(filterName);
-			} else {
-				filter.getSelectionModel().select(0);
-			}
 		} else {
-			filters.add("");
 			for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
 				if (emulation.equals(Emulation.RESIDFP)) {
 					if (filterSection.isReSIDfpFilter6581() && model == ChipModel.MOS6581) {
@@ -489,11 +483,11 @@ public class EmulationSettings extends C64Window {
 					}
 				}
 			}
-			if (filterEnable) {
-				filter.getSelectionModel().select(filterName);
-			} else {
-				filter.getSelectionModel().select(0);
-			}
+		}
+		if (filterEnable) {
+			filter.getSelectionModel().select(filterName);
+		} else {
+			filter.getSelectionModel().select(0);
 		}
 	}
 
