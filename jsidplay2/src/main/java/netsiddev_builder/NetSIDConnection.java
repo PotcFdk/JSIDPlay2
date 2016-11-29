@@ -90,7 +90,7 @@ public class NetSIDConnection {
 				closeConnection();
 				connectionInvalid = false;
 			}
-			if (connectedSocket == null || !connectedSocket.isConnected()) {
+			if (connectedSocket == null || connectedSocket.isClosed()) {
 				openConnection(hostname, port);
 				VERSION = getNetworkProtocolVersion();
 				// Get all available SIDs
@@ -105,6 +105,7 @@ public class NetSIDConnection {
 				}
 			}
 		} catch (IOException e) {
+			closeConnection();
 			throw new RuntimeException(e);
 		}
 	}
@@ -116,14 +117,13 @@ public class NetSIDConnection {
 	}
 
 	private void closeConnection() {
-		if (connectedSocket != null) {
+		if (connectedSocket != null && !connectedSocket.isClosed()) {
 			try {
 				connectedSocket.close();
 			} catch (IOException e) {
 				System.err.println("NetworkSIDDevice socket cannot be closed!");
 			}
 		}
-		connectedSocket = null;
 	}
 
 	/**
@@ -198,6 +198,7 @@ public class NetSIDConnection {
 			}
 			flush(false);
 		} catch (IOException | InterruptedException e) {
+			closeConnection();
 			throw new RuntimeException(e);
 		}
 	}
@@ -239,6 +240,7 @@ public class NetSIDConnection {
 					// Try_Write sleeps for us
 				}
 			} catch (InterruptedException | IOException e) {
+				closeConnection();
 				throw new RuntimeException(e);
 			}
 		}
@@ -262,6 +264,7 @@ public class NetSIDConnection {
 			commands.add(cmdToAdd.get());
 			flush(false);
 		} catch (IOException | InterruptedException e) {
+			closeConnection();
 			throw new RuntimeException(e);
 		}
 	}
@@ -331,6 +334,7 @@ public class NetSIDConnection {
 				configName = new String(configInfo, 0, chIdx, ISO_8859_1);
 				continue;
 			default:
+				closeConnection();
 				throw new RuntimeException("Server error: Unexpected response: " + rc);
 			}
 		}
@@ -340,6 +344,7 @@ public class NetSIDConnection {
 	private byte readResponse() throws IOException {
 		int rc = connectedSocket.getInputStream().read();
 		if (rc == -1) {
+			closeConnection();
 			throw new RuntimeException("Server closed the connection!");
 		}
 		return (byte) rc;
@@ -355,7 +360,7 @@ public class NetSIDConnection {
 	 * Flush writes after a bit of buffering
 	 **/
 	private Response maybeSendWritesToServer() throws IOException, InterruptedException {
-		if (commands.size() == CMD_BUFFER_SIZE || tryWrite.getCyclesSentToServer() > MAX_WRITE_CYCLES) {
+		if (commands.size() > CMD_BUFFER_SIZE || tryWrite.getCyclesSentToServer() > MAX_WRITE_CYCLES) {
 			if (flush(true) == BUSY) {
 				return BUSY;
 			}
