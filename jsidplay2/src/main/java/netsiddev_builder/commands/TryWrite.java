@@ -7,23 +7,52 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TryWrite implements NetSIDPkg {
-	private List<Write> writes = new ArrayList<>();
-	private int cyclesSendToServer;
-	private boolean isRead;
-	private byte sidNumToRead;
-	private int readCycles;
-	private byte readAddr;
+
+	public class TryRead extends TryWrite {
+		private byte sidNumToRead;
+		private int readCycles;
+		private byte readAddr;
+
+		public TryRead(TryWrite tryWrite, byte sidNum, int cycles, byte addr) {
+			this(sidNum, cycles, addr);
+			for (Write write : tryWrite.writes) {
+				addWrite(write.getCycles(), write.getReg(), write.getData());
+			}
+		}
+
+		public TryRead(byte sidNum, int cycles, byte addr) {
+			sidNumToRead = sidNum;
+			readCycles = cycles;
+			readAddr = addr;
+			cyclesSendToServer = cycles;
+		}
+
+		@Override
+		public byte[] toByteArray() {
+			int i = 0;
+			byte[] cmd = new byte[4 + (writes.size() << 2) + 3];
+			cmd[i++] = (byte) TRY_READ.ordinal();
+			cmd[i++] = sidNumToRead;
+			cmd[i++] = 0;
+			cmd[i++] = 0;
+			for (Write write : writes) {
+				cmd[i++] = (byte) ((write.getCycles() >> 8) & 0xff);
+				cmd[i++] = (byte) (write.getCycles() & 0xff);
+				cmd[i++] = write.getReg();
+				cmd[i++] = write.getData();
+			}
+			cmd[i++] = (byte) ((readCycles >> 8) & 0xff);
+			cmd[i++] = (byte) (readCycles & 0xff);
+			cmd[i++] = readAddr;
+			return cmd;
+		}
+	}
+	
+	protected List<Write> writes = new ArrayList<>();
+	protected int cyclesSendToServer;
 
 	public void addWrite(int cycles, byte reg, byte data) {
 		writes.add(new Write(cycles, reg, data));
-		cyclesSendToServer += cycles;
-	}
-
-	public void toTryRead(byte sidNum, int cycles, byte addr) {
-		isRead = true;
-		sidNumToRead = sidNum;
-		readCycles = cycles;
-		readAddr = addr;
 		cyclesSendToServer += cycles;
 	}
 
@@ -33,9 +62,9 @@ public class TryWrite implements NetSIDPkg {
 
 	public byte[] toByteArray() {
 		int i = 0;
-		byte[] cmd = new byte[4/*head.length*/ + (writes.size() << 2) + (isRead ? 3 : 0)];
-		cmd[i++] = (byte) (isRead ? TRY_READ : TRY_WRITE).ordinal();
-		cmd[i++] = isRead ? sidNumToRead : 0;
+		byte[] cmd = new byte[4 + (writes.size() << 2)];
+		cmd[i++] = (byte) TRY_WRITE.ordinal();
+		cmd[i++] = 0;
 		cmd[i++] = 0;
 		cmd[i++] = 0;
 		for (Write write : writes) {
@@ -43,11 +72,6 @@ public class TryWrite implements NetSIDPkg {
 			cmd[i++] = (byte) (write.getCycles() & 0xff);
 			cmd[i++] = write.getReg();
 			cmd[i++] = write.getData();
-		}
-		if (isRead) {
-			cmd[i++] = (byte) ((readCycles >> 8) & 0xff);
-			cmd[i++] = (byte) (readCycles & 0xff);
-			cmd[i++] = readAddr;
 		}
 		return cmd;
 	}
