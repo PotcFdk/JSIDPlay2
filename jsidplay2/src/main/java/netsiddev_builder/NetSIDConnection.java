@@ -186,7 +186,6 @@ public class NetSIDConnection {
 	public void reset(byte volume) {
 		send(() -> new Flush());
 		send(() -> new TryReset(volume));
-		context.schedule(event, 0, Event.Phase.PHI2);
 	}
 
 	protected void setMute(IEmulationSection emulationSection) {
@@ -218,27 +217,22 @@ public class NetSIDConnection {
 	}
 
 	public byte read(byte sidNum, byte addr) {
-		if (!commands.isEmpty() && commands.get(0) instanceof TryWrite) {
+		if (startTimeReached) {
 			try {
-				tryWrite.toTryRead(sidNum, clocksSinceLastAccess(), addr);
-				flush(false);
-				return readResult;
+				return tryRead(sidNum, clocksSinceLastAccess(), addr);
 			} catch (IOException | InterruptedException e) {
+				closeConnection();
 				throw new RuntimeException(e);
 			}
-		} else {
-			tryWrite = new TryWrite();
-			tryWrite.toTryRead(sidNum, clocksSinceLastAccess(), addr);
-			return sendReceive(() -> tryWrite);
 		}
+		return (byte) 0xff;
 	}
 
 	public void write(byte sidNum, byte addr, byte data) {
 		if (startTimeReached) {
 			try {
-				while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == BUSY) {
-					// Try_Write sleeps for us
-				}
+				while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == BUSY)
+					;
 			} catch (InterruptedException | IOException e) {
 				closeConnection();
 				throw new RuntimeException(e);
@@ -266,6 +260,25 @@ public class NetSIDConnection {
 		} catch (IOException | InterruptedException e) {
 			closeConnection();
 			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Add a SID read to the ring buffer, then immediately send it to
+	 * NetworkSIDDevice to be queued there and executed, since a SID read is
+	 * implemented to be always the last command after a series of writes
+	 */
+	private byte tryRead(byte sidNum, int cycles, byte addr) throws IOException, InterruptedException {
+		if (!commands.isEmpty() && commands.get(0) instanceof TryWrite) {
+			// derive a SID read from a series of writes and immediately flush
+			tryWrite.toTryRead(sidNum, cycles, addr);
+			flush(false);
+			return readResult;
+		} else {
+			// Perform a single SID read (bad performance)
+			tryWrite = new TryWrite();
+			tryWrite.toTryRead(sidNum, cycles, addr);
+			return sendReceive(() -> tryWrite);
 		}
 	}
 
@@ -351,8 +364,8 @@ public class NetSIDConnection {
 	}
 
 	private void sleepDependingOnCyclesSent() throws InterruptedException {
-		if (tryWrite.getCyclesSentToServer() > BUFFER_NEAR_FULL) {
-			Thread.sleep(Math.max(1, tryWrite.getCyclesSentToServer() / CYCLES_TO_MILLIS - 3));
+		if (tryWrite.getCyclesSendToServer() > BUFFER_NEAR_FULL) {
+			Thread.sleep(Math.max(1, tryWrite.getCyclesSendToServer() / CYCLES_TO_MILLIS - 3));
 		}
 	}
 
@@ -360,7 +373,7 @@ public class NetSIDConnection {
 	 * Flush writes after a bit of buffering
 	 **/
 	private Response maybeSendWritesToServer() throws IOException, InterruptedException {
-		if (commands.size() > CMD_BUFFER_SIZE || tryWrite.getCyclesSentToServer() > MAX_WRITE_CYCLES) {
+		if (commands.size() > CMD_BUFFER_SIZE || tryWrite.getCyclesSendToServer() > MAX_WRITE_CYCLES) {
 			if (flush(true) == BUSY) {
 				return BUSY;
 			}
@@ -388,6 +401,7 @@ public class NetSIDConnection {
 
 	public void start() {
 		startTimeReached = true;
+		context.schedule(event, 0, Event.Phase.PHI2);
 	}
 
 	public void fastForward() {
