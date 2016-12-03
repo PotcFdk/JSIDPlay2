@@ -112,9 +112,9 @@ public class NetSIDConnection {
 	}
 
 	private void openConnection(String hostname, int port) throws IOException {
-		System.out.printf("Connect to NetworkSIDDevice: %s (%d)\n", hostname, port);
 		connectedSocket = new Socket();
 		connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
+		System.out.printf("Connected to NetworkSIDDevice: %s (%d)\n", hostname, port);
 	}
 
 	private void closeConnection() {
@@ -155,7 +155,6 @@ public class NetSIDConnection {
 			if (filter.isPresent()) {
 				return new TrySetSidModel(sidNum, filterNameToSIDModel.get(filter.get()));
 			}
-			System.err.println("Undefined Filter: " + filterName + ", will use first available filter, instead!");
 			return new TrySetSidModel(sidNum, (byte) 0);
 		});
 	}
@@ -271,10 +270,10 @@ public class NetSIDConnection {
 	 */
 	private byte tryRead(byte sidNum, int cycles, byte addr) throws IOException, InterruptedException {
 		if (!commands.isEmpty() && commands.get(0) instanceof TryWrite) {
-			// derive a SID read from a series of writes and immediately flush
+			// derive a SID read from a series of writes
 			tryWrite = new TryRead((TryWrite) commands.remove(0), sidNum, cycles, addr);
 		} else {
-			// Perform a single SID read (bad performance)
+			// Perform a single SID read without writes (bad performance)
 			tryWrite = new TryRead(sidNum, cycles, addr);
 		}
 		return sendReceive(() -> tryWrite);
@@ -369,9 +368,9 @@ public class NetSIDConnection {
 
 	/**
 	 * Flush writes after a bit of buffering
-	 **/
+	 */
 	private Response maybeSendWritesToServer() throws IOException, InterruptedException {
-		if (commands.size() > CMD_BUFFER_SIZE || tryWrite.getCyclesSendToServer() > MAX_WRITE_CYCLES) {
+		if (commands.size() >= CMD_BUFFER_SIZE || tryWrite.getCyclesSendToServer() >= MAX_WRITE_CYCLES) {
 			if (flush(true) == BUSY) {
 				return BUSY;
 			}
