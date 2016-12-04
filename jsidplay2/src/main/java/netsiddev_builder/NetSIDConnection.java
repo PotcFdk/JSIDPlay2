@@ -219,7 +219,7 @@ public class NetSIDConnection {
 	public byte read(byte sidNum, byte addr) {
 		if (startTimeReached) {
 			try {
-				return tryRead(sidNum, clocksSinceLastAccess(), addr);
+				return tryRead(sidNum, clocksSinceLastAccess() >> fastForwardFactor, addr);
 			} catch (IOException | InterruptedException e) {
 				closeConnection();
 				throw new RuntimeException(e);
@@ -231,7 +231,7 @@ public class NetSIDConnection {
 	public void write(byte sidNum, byte addr, byte data) {
 		if (startTimeReached) {
 			try {
-				while (tryWrite(sidNum, clocksSinceLastAccess(), addr, data) == BUSY)
+				while (tryWrite(sidNum, clocksSinceLastAccess() >> fastForwardFactor, addr, data) == BUSY)
 					;
 			} catch (InterruptedException | IOException e) {
 				closeConnection();
@@ -382,16 +382,16 @@ public class NetSIDConnection {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
 		lastSIDWriteTime = now;
-		return diff >> fastForwardFactor;
+		return diff;
 	}
 
 	protected long eventuallyDelay(byte sidNum) {
 		final long now = context.getTime(Event.Phase.PHI2);
-		int diff = (int) (now - lastSIDWriteTime) >> fastForwardFactor;
+		int diff = (int) (now - lastSIDWriteTime);
 		// next writes must not be too soon, therefore * 2!
 		if (diff > REGULAR_DELAY << 1) {
 			lastSIDWriteTime += REGULAR_DELAY;
-			send(() -> new TryDelay(sidNum, REGULAR_DELAY));
+			send(() -> new TryDelay(sidNum, REGULAR_DELAY >> fastForwardFactor));
 		}
 		return REGULAR_DELAY;
 	}
