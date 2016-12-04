@@ -7,7 +7,6 @@ import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import libsidplay.common.SamplingMethod;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
@@ -112,10 +111,6 @@ public class NetSIDDev extends SIDEmu {
 		return 0;
 	}
 
-	protected void setMute(IEmulationSection emulationSection) {
-		connection.setMute(emulationSection);
-	}
-
 	@Override
 	public void setVoiceMute(int voice, boolean mute) {
 		connection.setVoiceMute(sidNum, (byte) voice, mute);
@@ -131,10 +126,6 @@ public class NetSIDDev extends SIDEmu {
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
 		// XXX unsupported by JSIDDevice
-	}
-
-	public void setSampling(SamplingMethod sampling) {
-		connection.setSampling(sampling);
 	}
 
 }

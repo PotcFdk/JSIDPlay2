@@ -37,14 +37,14 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public SIDEmu lock(SIDEmu sidEmu, int sidNum, SidTune tune) {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		final NetSIDDev sid = createSID(emulationSection, sidEmu, tune, sidNum);
-		sid.setSampling(config.getAudioSection().getSampling());
+		connection.setSampling(config.getAudioSection().getSampling());
 		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
 		sid.setFilter(config, sidNum);
 		sid.setFilterEnable(emulationSection, sidNum);
 		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
 		// this triggers refreshParams on the server side, therefore the last:
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
-		sid.setMute(config.getEmulationSection());
+		connection.setMute(config.getEmulationSection());
 		for (byte addr = 0; sidEmu != null && addr < SIDChip.REG_COUNT; addr++) {
 			sid.write(addr, sidEmu.readInternalRegister(addr));
 		}
