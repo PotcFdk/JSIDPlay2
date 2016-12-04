@@ -333,11 +333,10 @@ public class AudioGeneratorThread extends Thread {
 
 	public void setPosition(int sidNumber, int position) {
 		if (sids.length > 1) {
-			float rightFraction = (position + 100) / 200f;
-			float leftFraction = 1f - rightFraction;
-			float power = (float) Math.sqrt(leftFraction * leftFraction + rightFraction * rightFraction);
-			sidPositionL[sidNumber] = (int) (1024 * leftFraction / power);
-			sidPositionR[sidNumber] = (int) (1024 * rightFraction / power);
+			float rightFraction = (position >= 0) ? 1 : (100 + position) / 100f;
+			float leftFraction = (position <= 0) ? 1 : (100 - position) / 100f;
+			sidPositionL[sidNumber] = (int) (1024 * leftFraction);
+			sidPositionR[sidNumber] = (int) (1024 * rightFraction);
 		} else {
 			sidPositionL[sidNumber] = 1024;
 			sidPositionR[sidNumber] = 1024;
