@@ -33,7 +33,6 @@ import netsiddev_builder.commands.SetClocking;
 import netsiddev_builder.commands.SetSidLevel;
 import netsiddev_builder.commands.SetSidPosition;
 import netsiddev_builder.commands.TryDelay;
-import netsiddev_builder.commands.TryRead;
 import netsiddev_builder.commands.TryReset;
 import netsiddev_builder.commands.TrySetSampling;
 import netsiddev_builder.commands.TrySetSidCount;
@@ -271,10 +270,10 @@ public class NetSIDConnection {
 	private byte tryRead(byte sidNum, int cycles, byte addr) throws IOException, InterruptedException {
 		if (!commands.isEmpty() && commands.get(0) instanceof TryWrite) {
 			// derive a SID read from a series of writes
-			tryWrite = new TryRead((TryWrite) commands.remove(0), sidNum, cycles, addr);
+			tryWrite = tryWrite.new TryRead((TryWrite) commands.remove(0), sidNum, cycles, addr);
 		} else {
 			// Perform a single SID read without writes (bad performance)
-			tryWrite = new TryRead(sidNum, cycles, addr);
+			tryWrite = new TryWrite().new TryRead(sidNum, cycles, addr);
 		}
 		return sendReceive(() -> tryWrite);
 	}
