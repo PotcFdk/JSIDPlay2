@@ -301,6 +301,7 @@ public class SIDMixer implements Mixer {
 		assert volumeInDB >= -6 && volumeInDB <= 6;
 
 		volume[sidNum] = (int) (DECIBEL_TO_LINEAR(volumeInDB) * (1 << VOLUME_SCALER));
+		System.out.println("volumeInDB=" + volumeInDB + ", volume[sidNum]=" + volume[sidNum]);
 		updateSampleMixerVolume();
 	}
 
@@ -328,6 +329,7 @@ public class SIDMixer implements Mixer {
 
 		positionL[sidNum] = 1 - balance;
 		positionR[sidNum] = balance;
+		System.out.println("balance=" + balance + ", positionL[sidNum]=" + positionL[sidNum] + ", positionR[sidNum]=" + positionR[sidNum]);
 		updateSampleMixerVolume();
 	}
 
@@ -362,9 +364,8 @@ public class SIDMixer implements Mixer {
 			} else {
 				float leftFraction = positionL[sidNum];
 				float rightFraction = positionR[sidNum];
-				float power = (float) Math.sqrt(leftFraction * leftFraction + rightFraction * rightFraction);
-				int volumeL = (int) (volume[sidNum] * leftFraction / power);
-				int volumeR = (int) (volume[sidNum] * rightFraction / power);
+				int volumeL = (int) (volume[sidNum] * leftFraction);
+				int volumeR = (int) (volume[sidNum] * rightFraction);
 				sampler.setVolume(volumeL, volumeR);
 			}
 			sidNum++;

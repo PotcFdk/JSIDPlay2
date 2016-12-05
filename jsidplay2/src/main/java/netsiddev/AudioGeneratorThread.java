@@ -335,6 +335,7 @@ public class AudioGeneratorThread extends Thread {
 		if (sids.length > 1) {
 			float rightFraction = (position >= 0) ? 1 : (100 + position) / 100f;
 			float leftFraction = (position <= 0) ? 1 : (100 - position) / 100f;
+			System.out.println("position=" + position + ", leftFraction=" + leftFraction + ", rightFraction="+rightFraction);
 			sidPositionL[sidNumber] = (int) (1024 * leftFraction);
 			sidPositionR[sidNumber] = (int) (1024 * rightFraction);
 		} else {
@@ -345,6 +346,7 @@ public class AudioGeneratorThread extends Thread {
 
 	public void setLevelAdjustment(int sid, int level) {
 		sidLevel[sid] = (int) (1024 * Math.pow(10.0, level / 100.0));
+		System.out.println("level=" + level + ", factor=" + Math.pow(10.0, level / 100.0));
 	}
 
 	/**

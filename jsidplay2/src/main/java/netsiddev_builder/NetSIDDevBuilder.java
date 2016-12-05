@@ -98,8 +98,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	@Override
 	public void setVolume(int sidNum, float volume) {
 		// -6db..6db (client)
-		// 0..30 (server)
-		float level = (volume + 6f) * 30f / 12f;
+		// -50..50 (server)
+		float level = (((volume + 6f) * 100f) / 12f) - 50f;
+		System.out.println("volume=" + volume + ", level=" + level);
 		connection.setVolume((byte) sidNum, (byte) level);
 	}
 
@@ -107,7 +108,8 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public void setBalance(int sidNum, float balance) {
 		// 0..1 (client)
 		// -100..100 (server)
-		float position = sids.size() == 1 ? 0 : 200f * balance - 100f;
+		float position = sids.size() == 1 ? 0 : (balance - 0.5f) * 200f;
+		System.out.println("balance=" + balance + ", position=" + position);
 		connection.setBalance((byte) sidNum, (byte) position);
 	}
 
