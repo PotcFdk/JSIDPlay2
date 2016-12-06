@@ -10,6 +10,7 @@ import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
+import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -108,9 +109,15 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public void setBalance(int sidNum, float balance) {
 		// 0..1 (client)
 		// -100..100 (server)
-		float position = sids.size() == 1 ? 0 : (balance - 0.5f) * 200f;
-		System.out.println("balance=" + balance + ", position=" + position);
-		connection.setBalance((byte) sidNum, (byte) position);
+		if (sids.size() == 1) {
+			float position = 0;
+			System.out.println("balance=" + balance + ", position=" + position);
+			connection.setBalance((byte) sidNum, (byte) position);
+		} else {
+			float position = -100f + (balance) * 200f * 1 / (PLA.MAX_SIDS - 1);
+			System.out.println("balance=" + balance + ", position=" + position);
+			connection.setBalance((byte) sidNum, (byte) position);
+		}
 	}
 
 	@Override
