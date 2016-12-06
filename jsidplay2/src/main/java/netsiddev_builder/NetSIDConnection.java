@@ -30,8 +30,8 @@ import netsiddev_builder.commands.GetVersion;
 import netsiddev_builder.commands.Mute;
 import netsiddev_builder.commands.NetSIDPkg;
 import netsiddev_builder.commands.SetClocking;
+import netsiddev_builder.commands.SetSidBalance;
 import netsiddev_builder.commands.SetSidLevel;
-import netsiddev_builder.commands.SetSidPosition;
 import netsiddev_builder.commands.TryDelay;
 import netsiddev_builder.commands.TryReset;
 import netsiddev_builder.commands.TrySetSampling;
@@ -52,10 +52,11 @@ public class NetSIDConnection {
 	private static final int REGULAR_DELAY = MAX_WRITE_CYCLES >> 2;
 	private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
-	private byte VERSION;
-	private EventScheduler context;
 	private static boolean connectionInvalid;
 	private static Socket connectedSocket;
+	private static byte VERSION;
+	private static Map<Pair<ChipModel, String>, Byte> filterNameToSIDModel = new HashMap<>();
+	private EventScheduler context;
 	private List<NetSIDPkg> commands = new ArrayList<>(CMD_BUFFER_SIZE);
 	private TryWrite tryWrite = new TryWrite();
 	private byte readResult;
@@ -63,7 +64,6 @@ public class NetSIDConnection {
 	private long lastSIDWriteTime;
 	private int fastForwardFactor;
 	private boolean startTimeReached;
-	private static Map<Pair<ChipModel, String>, Byte> filterNameToSIDModel = new HashMap<>();
 
 	private final Event event = new Event("JSIDDevice Delay") {
 
@@ -211,8 +211,10 @@ public class NetSIDConnection {
 		send(() -> new SetSidLevel(sidNum, volume));
 	}
 
-	public void setBalance(byte sidNum, byte balance) {
-		send(() -> new SetSidPosition(sidNum, balance));
+	public void setBalance(byte sidNum, byte balanceL, byte balanceR) {
+		if (VERSION >= 3) {
+			send(() -> new SetSidBalance(sidNum, balanceL, balanceR));
+		}
 	}
 
 	public byte read(byte sidNum, byte addr) {

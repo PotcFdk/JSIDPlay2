@@ -24,6 +24,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	private NetSIDConnection connection;
 	private CPUClock cpuClock;
 	private List<NetSIDDev> sids = new ArrayList<>();
+	private float balanceL, balanceR;
 
 	public NetSIDDevBuilder(EventScheduler context, IConfig config, SidTune tune, CPUClock cpuClock) {
 		this.context = context;
@@ -112,11 +113,15 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		if (sids.size() == 1) {
 			float position = 0;
 			System.out.println("balance=" + balance + ", position=" + position);
-			connection.setBalance((byte) sidNum, (byte) position);
+			connection.setBalance((byte) sidNum, (byte) position, (byte) position);
 		} else {
-			float position = -100f + (balance) * 200f * 1 / (PLA.MAX_SIDS - 1);
-			System.out.println("balance=" + balance + ", position=" + position);
-			connection.setBalance((byte) sidNum, (byte) position);
+			this.balanceL = 1 - balance;
+			this.balanceR = balance;
+
+			float positionL = -100f + balanceL * 200f * 1 / (PLA.MAX_SIDS - 1);
+			float positionR = +100f - balanceR * 200f * 1 / (PLA.MAX_SIDS - 1);
+			System.out.println("balance=" + balance + ", positionL=" + positionL + ", positionR=" + positionR);
+			connection.setBalance((byte) sidNum, (byte) positionL, (byte) positionR);
 		}
 	}
 
