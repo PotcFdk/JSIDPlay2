@@ -30,8 +30,8 @@ import netsiddev_builder.commands.GetVersion;
 import netsiddev_builder.commands.Mute;
 import netsiddev_builder.commands.NetSIDPkg;
 import netsiddev_builder.commands.SetClocking;
-import netsiddev_builder.commands.SetSidBalance;
 import netsiddev_builder.commands.SetSidLevel;
+import netsiddev_builder.commands.SetSidPosition;
 import netsiddev_builder.commands.TryDelay;
 import netsiddev_builder.commands.TryReset;
 import netsiddev_builder.commands.TrySetSampling;
@@ -211,10 +211,8 @@ public class NetSIDConnection {
 		send(() -> new SetSidLevel(sidNum, volume));
 	}
 
-	public void setBalance(byte sidNum, byte balanceL, byte balanceR) {
-		if (VERSION >= 3) {
-			send(() -> new SetSidBalance(sidNum, balanceL, balanceR));
-		}
+	public void setSidPosition(byte sidNum, byte position) {
+		send(() -> new SetSidPosition(sidNum, position));
 	}
 
 	public byte read(byte sidNum, byte addr) {

@@ -23,7 +23,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	private NetSIDConnection connection;
 	private CPUClock cpuClock;
 	private List<NetSIDDev> sids = new ArrayList<>();
-	private float balanceL, balanceR;
 
 	public NetSIDDevBuilder(EventScheduler context, IConfig config, SidTune tune, CPUClock cpuClock) {
 		this.context = context;
@@ -101,7 +100,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		// -6db..6db (client)
 		// -50..50 (server)
 		float level = (((volume + 6f) * 100f) / 12f) - 50f;
-		System.out.println("volume=" + volume + ", level=" + level);
 		connection.setVolume((byte) sidNum, (byte) level);
 	}
 
@@ -110,17 +108,10 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		// 0..1 (client)
 		// -100..100 (server)
 		if (sids.size() == 1) {
-			float position = 0;
-			System.out.println("balance=" + balance + ", position=" + position);
-			connection.setBalance((byte) sidNum, (byte) position, (byte) position);
+			connection.setSidPosition((byte) sidNum, (byte) 0);
 		} else {
-			this.balanceL = 1 - balance;
-			this.balanceR = balance;
-
-			float positionL = -100f + balanceL * 200f;
-			float positionR = +100f - balanceR * 200f;
-			System.out.println("balance=" + balance + ", positionL=" + positionL + ", positionR=" + positionR);
-			connection.setBalance((byte) sidNum, (byte) positionL, (byte) positionR);
+			float position = -100f + balance * 200f;
+			connection.setSidPosition((byte) sidNum, (byte) position);
 		}
 	}
 

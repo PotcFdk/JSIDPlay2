@@ -331,23 +331,10 @@ public class AudioGeneratorThread extends Thread {
 				20000);
 	}
 
-	public void setBalance(int sidNumber, int positionL, int positionR) {
-		if (sids.length > 1) {
-			float leftFraction = (positionL >= 0) ? 1 : (100 + positionL) / 100f;
-			float rightFraction = (positionR <= 0) ? 1 : (100 - positionR) / 100f;
-			System.out.println("positionL=" + positionL + "positionR=" + positionR + ", leftFraction=" + leftFraction + ", rightFraction="+rightFraction);
-			sidPositionL[sidNumber] = (int) (1024 * leftFraction);
-			sidPositionR[sidNumber] = (int) (1024 * rightFraction);
-		} else {
-			sidPositionL[sidNumber] = 1024;
-			sidPositionR[sidNumber] = 1024;
-		}
-	}
-
 	public void setPosition(int sidNumber, int position) {
 		if (sids.length > 1) {
-			float rightFraction = (position >= 0) ? 1 : (100 + position) / 100f;
 			float leftFraction = (position <= 0) ? 1 : (100 - position) / 100f;
+			float rightFraction = (position >= 0) ? 1 : (100 + position) / 100f;
 			sidPositionL[sidNumber] = (int) (1024 * leftFraction);
 			sidPositionR[sidNumber] = (int) (1024 * rightFraction);
 		} else {
@@ -358,7 +345,6 @@ public class AudioGeneratorThread extends Thread {
 
 	public void setLevelAdjustment(int sid, int level) {
 		sidLevel[sid] = (int) (1024 * Math.pow(10.0, level / 100.0));
-		System.out.println("level=" + level + ", factor=" + Math.pow(10.0, level / 100.0));
 	}
 
 	/**

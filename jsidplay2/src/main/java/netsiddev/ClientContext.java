@@ -354,15 +354,6 @@ class ClientContext {
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;
 
-		case SET_SID_BALANCE:
-			if (dataLength != 2) {
-				throw new InvalidCommandException("SET_SID_BALANCE needs 2 byte", dataLength);
-			}
-
-			eventConsumerThread.setBalance(sidNumber, dataRead.get(4), dataRead.get(5));
-			dataWrite.put((byte) Response.OK.ordinal());
-			break;
-
 		case SET_SID_LEVEL:
 			if (dataLength != 1) {
 				throw new InvalidCommandException("SET_SID_LEVEL needs 1 byte", dataLength);
