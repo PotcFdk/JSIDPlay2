@@ -11,19 +11,9 @@ and uploads target/deploy to web-server
 Set the following properties in Eclipse: Preferences/Run/Debug StringSubstitution
 or at command line: using -D
 
-e.g. FTP
--DserverId=
--DserverUrl=ftp://<user>:<password>@kenchis.t15.org
--DremoteDir=/jsidplay2/javafx
-
-e.g. copy
--DserverId=
--DserverUrl=file:///home/ken
-
 e.g. SSH copy
 -DserverId=
--DserverUrl=scp://ken:special@192.168.1.1/home/ken
-
+-DserverUrl=scp://ken:<password>@192.168.1.1/home/ken
 -DremoteDir=public_html
 
 Optional:
