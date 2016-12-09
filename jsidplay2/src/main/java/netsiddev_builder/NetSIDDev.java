@@ -49,10 +49,21 @@ public class NetSIDDev extends SIDEmu {
 			return super.readInternalRegister(addr);
 		}
 
+		/**
+		 * Order of writes is important, since SID read flushes the write queue!
+		 * (Polly_Rock.sid)
+		 * 
+		 * @see netsiddev_builder.NetSIDDev#write(int, byte)
+		 */
 		@Override
 		public void write(int addr, byte data) {
-			super.write(addr, data);
-			sids.get(prevNum).write(addr, data);
+			if (emulationSection.getSidNumToRead() <= prevNum) {
+				sids.get(prevNum).write(addr, data);
+				super.write(addr, data);
+			} else {
+				super.write(addr, data);
+				sids.get(prevNum).write(addr, data);
+			}
 		}
 	}
 
