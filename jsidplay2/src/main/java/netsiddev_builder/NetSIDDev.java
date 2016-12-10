@@ -68,16 +68,16 @@ public class NetSIDDev extends SIDEmu {
 	}
 
 	private byte sidNum;
-	private NetSIDClient connection;
+	private NetSIDClient client;
 	private ChipModel chipModel;
 
 	public NetSIDDev(EventScheduler context, NetSIDClient connection, final int sidNum, final ChipModel model) {
 		super(context);
-		this.connection = connection;
+		this.client = connection;
 		this.sidNum = (byte) sidNum;
 		this.chipModel = model;
 	}
-
+	
 	@Override
 	public void reset(byte volume) {
 		// nothing to do
@@ -86,14 +86,14 @@ public class NetSIDDev extends SIDEmu {
 	@Override
 	public byte read(int addr) {
 		clock();
-		return connection.read(sidNum, (byte) addr);
+		return client.read(sidNum, (byte) addr);
 	}
 
 	@Override
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		connection.write(sidNum, (byte) addr, data);
+		client.write(sidNum, (byte) addr, data);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void setClockFrequency(double cpuFrequency) {
-		connection.setClockFrequency(cpuFrequency);
+		client.setClockFrequency(cpuFrequency);
 	}
 
 	@Override
@@ -118,24 +118,25 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public int getInputDigiBoost() {
-		// configured in the JSIDDevice user interface
+		// XXX unsupported by JSIDDevice
 		return 0;
 	}
 
 	@Override
 	public void setVoiceMute(int voice, boolean mute) {
-		connection.setVoiceMute(sidNum, (byte) voice, mute);
+		client.setVoiceMute(sidNum, (byte) voice, mute);
 	}
 
 	@Override
 	public void setFilter(IConfig config, int sidNum) {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		String filterName = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT, chipModel);
-		connection.setFilter((byte) sidNum, chipModel, filterName);
+		client.setFilter((byte) sidNum, chipModel, filterName);
 	}
 
 	@Override
 	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
+		System.err.println("Filter enable unsupported by network SID client");
 		// XXX unsupported by JSIDDevice
 	}
 

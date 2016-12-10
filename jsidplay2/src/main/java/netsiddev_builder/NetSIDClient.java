@@ -75,10 +75,10 @@ public class NetSIDClient {
 	 * @param context
 	 *            event context
 	 */
-	public NetSIDClient(EventScheduler context, String hostname, int port) {
+	public NetSIDClient(EventScheduler context, IEmulationSection emulationSection) {
 		this.context = context;
 		try {
-			connection.open(hostname, port);
+			connection.open(emulationSection.getNetSIDDevHost(), emulationSection.getNetSIDDevPort());
 		} catch (IOException e) {
 			connection.close();
 			throw new RuntimeException(e);
@@ -135,7 +135,6 @@ public class NetSIDClient {
 				commands.add(new Mute(sidNum, voice, emulationSection.isMuteVoice(sidNum, voice)));
 			}
 		}
-		softFlush();
 	}
 
 	private byte getNetworkProtocolVersion() {
@@ -222,7 +221,7 @@ public class NetSIDClient {
 		softFlush();
 	}
 
-	private void softFlush() {
+	void softFlush() {
 		try {
 			flush(false);
 		} catch (IOException | InterruptedException e) {

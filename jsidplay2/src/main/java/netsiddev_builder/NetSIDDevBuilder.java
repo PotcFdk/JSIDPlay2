@@ -5,6 +5,8 @@ import java.util.List;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
+import libsidplay.common.Emulation;
+import libsidplay.common.Engine;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
@@ -28,23 +30,22 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
-		IEmulationSection emulationSection = config.getEmulationSection();
-		this.client = new NetSIDClient(context, emulationSection.getNetSIDDevHost(),
-				emulationSection.getNetSIDDevPort());
+		this.client = new NetSIDClient(context, config.getEmulationSection());
 	}
 
 	@Override
 	public SIDEmu lock(SIDEmu sidEmu, int sidNum, SidTune tune) {
+		IAudioSection audioSection = config.getAudioSection();
 		IEmulationSection emulationSection = config.getEmulationSection();
-		final NetSIDDev sid = createSID(emulationSection, sidEmu, tune, sidNum);
-		client.setSampling(config.getAudioSection().getSampling());
-		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
-		sid.setFilter(config, sidNum);
-		sid.setFilterEnable(emulationSection, sidNum);
-		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
-		// this triggers refreshParams on the server side, therefore the last:
-		sid.setClockFrequency(cpuClock.getCpuFrequency());
+		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
+		String filterName = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT, chipModel);
+
+		final NetSIDDev sid = createSID(emulationSection, chipModel, sidEmu, tune, sidNum);
+		client.setSampling(audioSection.getSampling());
+		client.setFilter((byte) sidNum, chipModel, filterName);
+		client.setClockFrequency(cpuClock.getCpuFrequency());
 		client.setMute(config.getEmulationSection());
+		client.softFlush();
 		for (byte addr = 0; sidEmu != null && addr < SIDChip.REG_COUNT; addr++) {
 			sid.write(addr, sidEmu.readInternalRegister(addr));
 		}
@@ -52,7 +53,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 			sids.set(sidNum, sid);
 		else
 			sids.add(sid);
-		updateMixer(config.getAudioSection());
+		updateMixer(audioSection);
 		return sid;
 	}
 
@@ -66,6 +67,15 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		}
 		sids.remove(sid);
 		updateMixer(config.getAudioSection());
+	}
+
+	private NetSIDDev createSID(IEmulationSection emulationSection, ChipModel chipModel, SIDEmu sidEmu, SidTune tune,
+			int sidNum) {
+		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
+			return new NetSIDDev.FakeStereo(context, client, sidNum, chipModel, config, sids);
+		} else {
+			return new NetSIDDev(context, client, sidNum, chipModel);
+		}
 	}
 
 	private void updateMixer(IAudioSection audioSection) {
@@ -87,11 +97,13 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void fadeIn(int fadeIn) {
+		System.err.println("Fade-in unsupported by network SID client");
 		// XXX unsupported by JSIDDevice
 	}
 
 	@Override
 	public void fadeOut(int fadeOut) {
+		System.err.println("Fade-out unsupported by network SID client");
 		// XXX unsupported by JSIDDevice
 	}
 
@@ -138,27 +150,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	@Override
 	public void pause() {
 		client.flush();
-	}
-
-	/**
-	 * Create NetworkSIDDevice.
-	 * 
-	 * @param oldSIDEmu
-	 *            currently used NetworkSIDDevice
-	 * @param tune
-	 *            current tune
-	 * @param sidNum
-	 *            current SID number
-	 * 
-	 * @return new NetworkSIDDevice
-	 */
-	private NetSIDDev createSID(IEmulationSection emulationSection, SIDEmu sidEmu, SidTune tune, int sidNum) {
-		final ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
-		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
-			return new NetSIDDev.FakeStereo(context, client, sidNum, chipModel, config, sids);
-		} else {
-			return new NetSIDDev(context, client, sidNum, chipModel);
-		}
 	}
 
 }
