@@ -36,6 +36,7 @@
 					<VBox GridPane.columnIndex="0" GridPane.rowIndex="0"
 						alignment="TOP_CENTER" GridPane.hgrow="ALWAYS">
 						<Label text="%MAIN_SID_LEVEL" />
+						<Label fx:id="mainVolumeValue" />
 						<Slider fx:id="mainVolume" min="-6" max="6" value="0"
 							blockIncrement="1" majorTickUnit="0.1" />
 						<Label text="%MAIN_BALANCE" />
@@ -46,6 +47,7 @@
 					<VBox GridPane.columnIndex="1" GridPane.rowIndex="0"
 						alignment="TOP_CENTER" GridPane.hgrow="ALWAYS">
 						<Label text="%SECOND_SID_LEVEL" />
+						<Label fx:id="secondVolumeValue" />
 						<Slider fx:id="secondVolume" min="-6" max="6" value="0"
 							blockIncrement="1" majorTickUnit="0.1" />
 						<Label text="%SECOND_BALANCE" />
@@ -56,6 +58,7 @@
 					<VBox GridPane.columnIndex="2" GridPane.rowIndex="0"
 						alignment="TOP_CENTER" GridPane.hgrow="ALWAYS">
 						<Label text="%THIRD_SID_LEVEL" />
+						<Label fx:id="thirdVolumeValue" />
 						<Slider fx:id="thirdVolume" min="-6" max="6" value="0"
 							blockIncrement="1" majorTickUnit="0.1" />
 						<Label text="%THIRD_BALANCE" />

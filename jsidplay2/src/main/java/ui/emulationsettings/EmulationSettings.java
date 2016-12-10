@@ -13,6 +13,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import libsidplay.common.ChipModel;
@@ -29,6 +30,7 @@ import ui.common.C64Window;
 import ui.common.EnumToString;
 import ui.common.HexNumberToString;
 import ui.common.NumberToString;
+import ui.entities.config.AudioSection;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.FilterSection;
 
@@ -72,6 +74,8 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private Slider mainVolume, secondVolume, thirdVolume, mainBalance, secondBalance, thirdBalance;
 	@FXML
+	Label mainVolumeValue, secondVolumeValue, thirdVolumeValue;
+	@FXML
 	private LineChart<Number, Number> mainFilterCurve, secondFilterCurve, thirdFilterCurve;
 
 	private ObservableList<Emulation> sid1Emulations, sid2Emulations, sid3Emulations, defaultEmulations;
@@ -93,6 +97,7 @@ public class EmulationSettings extends C64Window {
 		duringInitialization = true;
 
 		ResourceBundle bundle = util.getBundle();
+		AudioSection audioSection = util.getConfig().getAudioSection();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
 		mainFilters = FXCollections.<String>observableArrayList();
@@ -103,30 +108,34 @@ public class EmulationSettings extends C64Window {
 		thirdFilter.setItems(thirdFilters);
 
 		mainBalance.setLabelFormatter(new NumberToString<Double>(1));
-		mainBalance.valueProperty().bindBidirectional(util.getConfig().getAudioSection().mainBalanceProperty());
+		mainBalance.valueProperty().bindBidirectional(audioSection.mainBalanceProperty());
 		mainBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setBalance(0, newValue.floatValue()));
 		});
 		secondBalance.setLabelFormatter(new NumberToString<Double>(1));
-		secondBalance.valueProperty().bindBidirectional(util.getConfig().getAudioSection().secondBalanceProperty());
+		secondBalance.valueProperty().bindBidirectional(audioSection.secondBalanceProperty());
 		secondBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setBalance(1, newValue.floatValue()));
 		});
 		thirdBalance.setLabelFormatter(new NumberToString<Double>(1));
-		thirdBalance.valueProperty().bindBidirectional(util.getConfig().getAudioSection().thirdBalanceProperty());
+		thirdBalance.valueProperty().bindBidirectional(audioSection.thirdBalanceProperty());
 		thirdBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setBalance(2, newValue.floatValue()));
 		});
 
-		mainVolume.valueProperty().bindBidirectional(util.getConfig().getAudioSection().mainVolumeProperty());
+		mainVolume.valueProperty().bindBidirectional(audioSection.mainVolumeProperty());
+		mainVolumeValue.textProperty().bindBidirectional(audioSection.mainVolumeProperty(), new NumberToString<>(2));
 		mainVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setVolume(0, newValue.floatValue()));
 		});
-		secondVolume.valueProperty().bindBidirectional(util.getConfig().getAudioSection().secondVolumeProperty());
+		secondVolume.valueProperty().bindBidirectional(audioSection.secondVolumeProperty());
+		secondVolumeValue.textProperty().bindBidirectional(audioSection.secondVolumeProperty(),
+				new NumberToString<>(2));
 		secondVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(b -> b.setVolume(1, newValue.floatValue()));
 		});
-		thirdVolume.valueProperty().bindBidirectional(util.getConfig().getAudioSection().thirdVolumeProperty());
+		thirdVolume.valueProperty().bindBidirectional(audioSection.thirdVolumeProperty());
+		thirdVolumeValue.textProperty().bindBidirectional(audioSection.thirdVolumeProperty(), new NumberToString<>(2));
 		thirdVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(b -> b.setVolume(2, newValue.floatValue()));
 		});
