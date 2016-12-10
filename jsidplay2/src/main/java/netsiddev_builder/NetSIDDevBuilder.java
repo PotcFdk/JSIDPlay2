@@ -44,7 +44,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		client.setSampling(audioSection.getSampling());
 		client.setFilter((byte) sidNum, chipModel, filterName);
 		client.setClockFrequency(cpuClock.getCpuFrequency());
-		client.setMute(config.getEmulationSection());
+		client.addMutes(config.getEmulationSection());
 		client.softFlush();
 		for (byte addr = 0; sidEmu != null && addr < SIDChip.REG_COUNT; addr++) {
 			sid.write(addr, sidEmu.readInternalRegister(addr));

@@ -46,7 +46,7 @@ public class NetSIDClient {
 
 	private NetSIDDevConnection connection = NetSIDDevConnection.getInstance();
 
-	private static Map<Pair<ChipModel, String>, Byte> FILTER_NAME_TO_SID_MODEL = new HashMap<>();
+	private static Map<Pair<ChipModel, String>, Byte> FILTER_TO_SID_MODEL = new HashMap<>();
 
 	private byte version;
 	private EventScheduler context;
@@ -84,17 +84,13 @@ public class NetSIDClient {
 			throw new RuntimeException(e);
 		}
 		version = getNetworkProtocolVersion();
-		// Get all available SIDs
-		FILTER_NAME_TO_SID_MODEL.clear();
-		for (byte config = 0; config < getSIDCount(); config++) {
-			Pair<ChipModel, String> filter = getSIDInfo(config);
-			FILTER_NAME_TO_SID_MODEL.put(new Pair<>(filter.getKey(), filter.getValue()), config);
+		// Get all available SID models
+		FILTER_TO_SID_MODEL.clear();
+		for (byte config = 0; config < getConfigCount(); config++) {
+			Pair<ChipModel, String> filter = getConfigInfo(config);
+			FILTER_TO_SID_MODEL.put(new Pair<>(filter.getKey(), filter.getValue()), config);
 		}
-		// Initialize SIDs on server side
-		commands.add(new TrySetSidCount((byte) PLA.MAX_SIDS));
-		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-			commands.add(new TrySetSidModel(sidNum, sidNum));
-		}
+		addSetSidModels();
 	}
 
 	/**
@@ -103,8 +99,30 @@ public class NetSIDClient {
 	 * @return sorted filter names of the desired chip model (case-insensitive)
 	 */
 	public static List<String> getFilterNames(ChipModel model) {
-		return FILTER_NAME_TO_SID_MODEL.keySet().stream().filter(p -> p.getKey() == model).map(p -> p.getValue())
+		return FILTER_TO_SID_MODEL.keySet().stream().filter(p -> p.getKey() == model).map(p -> p.getValue())
 				.sorted((s1, s2) -> s1.compareToIgnoreCase(s2)).collect(Collectors.toList());
+	}
+
+	/**
+	 * Add setting all SidModels to the first available configuration to the
+	 * command queue without soft flush.
+	 */
+	private void addSetSidModels() {
+		commands.add(new TrySetSidCount((byte) PLA.MAX_SIDS));
+		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+			commands.add(new TrySetSidModel(sidNum, (byte) 0));
+		}
+	}
+
+	/**
+	 * Add setting all voice mutes to the command queue without soft flush.
+	 */
+	void addMutes(IEmulationSection emulationSection) {
+		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+			for (byte voice = 0; voice < (version < 3 ? 3 : 4); voice++) {
+				commands.add(new Mute(sidNum, voice, emulationSection.isMuteVoice(sidNum, voice)));
+			}
+		}
 	}
 
 	/**
@@ -120,32 +138,24 @@ public class NetSIDClient {
 	 */
 	void setFilter(byte sidNum, final ChipModel chipModel, final String filterName) {
 		send(() -> {
-			Optional<Pair<ChipModel, String>> filter = FILTER_NAME_TO_SID_MODEL.keySet().stream()
-					.filter(p -> p.getKey() == chipModel && p.getValue().equals(filterName)).findFirst();
+			Optional<Pair<ChipModel, String>> filter = FILTER_TO_SID_MODEL.keySet().stream()
+					.filter(p -> p.getKey().equals(chipModel) && p.getValue().equals(filterName)).findFirst();
 			if (filter.isPresent()) {
-				return new TrySetSidModel(sidNum, FILTER_NAME_TO_SID_MODEL.get(filter.get()));
+				return new TrySetSidModel(sidNum, FILTER_TO_SID_MODEL.get(filter.get()));
 			}
 			return new TrySetSidModel(sidNum, (byte) 0);
 		});
-	}
-
-	void setMute(IEmulationSection emulationSection) {
-		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-			for (byte voice = 0; voice < (version < 3 ? 3 : 4); voice++) {
-				commands.add(new Mute(sidNum, voice, emulationSection.isMuteVoice(sidNum, voice)));
-			}
-		}
 	}
 
 	private byte getNetworkProtocolVersion() {
 		return sendReceive(() -> new GetVersion());
 	}
 
-	private byte getSIDCount() {
+	private byte getConfigCount() {
 		return sendReceive(() -> new GetConfigCount());
 	}
 
-	private Pair<ChipModel, String> getSIDInfo(byte sidNum) {
+	private Pair<ChipModel, String> getConfigInfo(byte sidNum) {
 		return sendReceiveConfig(() -> new GetConfigInfo(sidNum));
 	}
 
@@ -204,18 +214,18 @@ public class NetSIDClient {
 		}
 	}
 
-	private Pair<ChipModel, String> sendReceiveConfig(Supplier<NetSIDPkg> cmdToAdd) {
-		send(cmdToAdd);
+	private Pair<ChipModel, String> sendReceiveConfig(Supplier<NetSIDPkg> cmd) {
+		send(cmd);
 		return new Pair<>(readResult == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581, configName);
 	}
 
-	private byte sendReceive(Supplier<NetSIDPkg> cmdToAdd) {
-		send(cmdToAdd);
+	private byte sendReceive(Supplier<NetSIDPkg> cmd) {
+		send(cmd);
 		return readResult;
 	}
 
 	private final void send(Supplier<NetSIDPkg> cmd) {
-		// deal with unsubmitted writes
+		// transmit unsent writes
 		softFlush();
 		commands.add(cmd.get());
 		softFlush();
@@ -237,40 +247,36 @@ public class NetSIDClient {
 	 */
 	private byte tryRead(byte sidNum, int cycles, byte addr) throws IOException, InterruptedException {
 		if (!commands.isEmpty() && commands.get(0) instanceof TryWrite) {
-			// derive a SID read from a series of writes
+			// Replace TryWrite by TryRead (READ terminates a series of writes)
 			tryWrite = new TryRead((TryWrite) commands.remove(0), sidNum, cycles, addr);
 		} else {
 			// Perform a single SID read without writes (poor performance)
 			tryWrite = new TryRead(sidNum, cycles, addr);
 		}
+		// we must send here, since a READ is always the termination of writes!
 		return sendReceive(() -> tryWrite);
 	}
 
 	/**
-	 * Add a SID write to the ring buffer, until it is full, then send it to
+	 * Add a SID write to the buffer, until it is full, then send it to
 	 * NetworkSIDDevice to be queued there and executed
 	 */
 	private Response tryWrite(byte sidNum, int cycles, byte reg, byte data) throws InterruptedException, IOException {
-		/*
-		 * flush writes after a bit of buffering. If no flush, then returns OK
-		 * and we queue more. If flush attempt fails, we must cancel.
-		 */
+		// flush writes after a bit of buffering. If it fails, we must cancel.
 		if (maybeSendWritesToServer() == BUSY) {
 			sleepDependingOnCyclesSent();
 			return BUSY;
 		}
 
 		if (commands.isEmpty()) {
-			/* start new write buffering sequence */
+			// start new write buffering sequence
 			tryWrite = new TryWrite();
 			commands.add(tryWrite);
 		}
-		/* add write to queue */
+		// add write to queue
 		tryWrite.addWrite(cycles, (byte) (reg | (sidNum << 5)), data);
-		/*
-		 * NB: if flush attempt fails, we have nevertheless queued command
-		 * locally and thus are allowed to return OK in any case.
-		 */
+		// NB: if flush attempt fails, we have nevertheless queued command
+		// locally and thus are allowed to return OK in any case.
 		maybeSendWritesToServer();
 
 		return OK;
@@ -299,7 +305,7 @@ public class NetSIDClient {
 				sleepDependingOnCyclesSent();
 				continue;
 			case INFO:
-				// chip model
+				// chip model and SID name
 				readResult = readResponse();
 				configName = connection.readString();
 				continue;
@@ -348,8 +354,7 @@ public class NetSIDClient {
 	private long eventuallyDelay(byte sidNum) {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
-		// next writes must not be too soon, therefore * 2!
-		if (diff > REGULAR_DELAY << 1) {
+		if (diff > REGULAR_DELAY) {
 			lastSIDWriteTime += REGULAR_DELAY;
 			send(() -> new TryDelay(sidNum, REGULAR_DELAY >> fastForwardFactor));
 		}
