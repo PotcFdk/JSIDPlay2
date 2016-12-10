@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import sidplay.Player;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -25,7 +26,7 @@ public abstract class C64Window implements UIPart {
 	 */
 	public C64Window(Player player) {
 		this(new Stage(), player);
-		this.stage.centerOnScreen();
+		Platform.runLater(() -> this.stage.centerOnScreen());
 	}
 
 	/**
