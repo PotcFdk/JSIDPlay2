@@ -22,7 +22,7 @@ import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IFilterSection;
 import libsidplay.sidtune.SidTune;
-import netsiddev_builder.NetSIDConnection;
+import netsiddev_builder.NetSIDClient;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
@@ -466,7 +466,7 @@ public class EmulationSettings extends C64Window {
 		filters.clear();
 		filters.add("");
 		if (engine == Engine.NETSID) {
-			filters.addAll(NetSIDConnection.getFilterNames(model));
+			filters.addAll(NetSIDClient.getFilterNames(model));
 		} else {
 			for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
 				if (emulation.equals(Emulation.RESIDFP)) {

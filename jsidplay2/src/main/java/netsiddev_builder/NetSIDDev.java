@@ -25,7 +25,7 @@ public class NetSIDDev extends SIDEmu {
 		private final int prevNum;
 		private final List<NetSIDDev> sids;
 
-		public FakeStereo(EventScheduler context, NetSIDConnection connection, final int sidNum, final ChipModel model,
+		public FakeStereo(EventScheduler context, NetSIDClient connection, final int sidNum, final ChipModel model,
 				final IConfig config, final List<NetSIDDev> sids) {
 			super(context, connection, sidNum, model);
 			this.emulationSection = config.getEmulationSection();
@@ -68,10 +68,10 @@ public class NetSIDDev extends SIDEmu {
 	}
 
 	private byte sidNum;
-	private NetSIDConnection connection;
+	private NetSIDClient connection;
 	private ChipModel chipModel;
 
-	public NetSIDDev(EventScheduler context, NetSIDConnection connection, final int sidNum, final ChipModel model) {
+	public NetSIDDev(EventScheduler context, NetSIDClient connection, final int sidNum, final ChipModel model) {
 		super(context);
 		this.connection = connection;
 		this.sidNum = (byte) sidNum;

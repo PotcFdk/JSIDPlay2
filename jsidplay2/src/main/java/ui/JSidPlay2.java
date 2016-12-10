@@ -76,7 +76,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import libsidutils.WebUtils;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
-import netsiddev_builder.NetSIDConnection;
+import netsiddev_builder.NetSIDDevConnection;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
@@ -866,13 +866,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void setHostname() {
-		NetSIDConnection.invalidateConnection();
+		NetSIDDevConnection.getInstance().invalidate();
 		restart();
 	}
 
 	@FXML
 	private void setPort() {
-		NetSIDConnection.invalidateConnection();
+		NetSIDDevConnection.getInstance().invalidate();
 		restart();
 	}
 

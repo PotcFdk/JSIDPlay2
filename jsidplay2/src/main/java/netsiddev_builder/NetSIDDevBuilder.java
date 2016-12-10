@@ -20,7 +20,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	private EventScheduler context;
 	private IConfig config;
 
-	private NetSIDConnection connection;
+	private NetSIDClient client;
 	private CPUClock cpuClock;
 	private List<NetSIDDev> sids = new ArrayList<>();
 
@@ -29,7 +29,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		this.config = config;
 		this.cpuClock = cpuClock;
 		IEmulationSection emulationSection = config.getEmulationSection();
-		this.connection = new NetSIDConnection(context, emulationSection.getNetSIDDevHost(),
+		this.client = new NetSIDClient(context, emulationSection.getNetSIDDevHost(),
 				emulationSection.getNetSIDDevPort());
 	}
 
@@ -37,14 +37,14 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public SIDEmu lock(SIDEmu sidEmu, int sidNum, SidTune tune) {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		final NetSIDDev sid = createSID(emulationSection, sidEmu, tune, sidNum);
-		connection.setSampling(config.getAudioSection().getSampling());
+		client.setSampling(config.getAudioSection().getSampling());
 		sid.setChipModel(ChipModel.getChipModel(emulationSection, tune, sidNum));
 		sid.setFilter(config, sidNum);
 		sid.setFilterEnable(emulationSection, sidNum);
 		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
 		// this triggers refreshParams on the server side, therefore the last:
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
-		connection.setMute(config.getEmulationSection());
+		client.setMute(config.getEmulationSection());
 		for (byte addr = 0; sidEmu != null && addr < SIDChip.REG_COUNT; addr++) {
 			sid.write(addr, sidEmu.readInternalRegister(addr));
 		}
@@ -60,9 +60,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public void unlock(SIDEmu device) {
 		NetSIDDev sid = (NetSIDDev) device;
 		byte sidNum = (byte) sids.indexOf(sid);
-		connection.flush();
+		client.flush();
 		for (byte reg = 0; reg < SIDChip.REG_COUNT; reg++) {
-			connection.write(sidNum, reg, (byte) 0);
+			client.write(sidNum, reg, (byte) 0);
 		}
 		sids.remove(sid);
 		updateMixer(config.getAudioSection());
@@ -77,12 +77,12 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void reset() {
-		connection.reset((byte) 0xf);
+		client.reset((byte) 0xf);
 	}
 
 	@Override
 	public void start() {
-		connection.start();
+		client.start();
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		// -6db..6db (client)
 		// -50..50 (server)
 		float level = (((volume + 6f) * 100f) / 12f) - 50f;
-		connection.setVolume((byte) sidNum, (byte) level);
+		client.setVolume((byte) sidNum, (byte) level);
 	}
 
 	@Override
@@ -108,36 +108,36 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		// 0..1 (client)
 		// -100..100 (server)
 		if (sids.size() == 1) {
-			connection.setSidPosition((byte) sidNum, (byte) 0);
+			client.setSidPosition((byte) sidNum, (byte) 0);
 		} else {
 			float position = -100f + balance * 200f;
-			connection.setSidPosition((byte) sidNum, (byte) position);
+			client.setSidPosition((byte) sidNum, (byte) position);
 		}
 	}
 
 	@Override
 	public void fastForward() {
-		connection.fastForward();
+		client.fastForward();
 	}
 
 	@Override
 	public void normalSpeed() {
-		connection.normalSpeed();
+		client.normalSpeed();
 	}
 
 	@Override
 	public boolean isFastForward() {
-		return connection.isFastForward();
+		return client.isFastForward();
 	}
 
 	@Override
 	public int getFastForwardBitMask() {
-		return connection.getFastForwardBitMask();
+		return client.getFastForwardBitMask();
 	}
 
 	@Override
 	public void pause() {
-		connection.flush();
+		client.flush();
 	}
 
 	/**
@@ -155,9 +155,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	private NetSIDDev createSID(IEmulationSection emulationSection, SIDEmu sidEmu, SidTune tune, int sidNum) {
 		final ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
-			return new NetSIDDev.FakeStereo(context, connection, sidNum, chipModel, config, sids);
+			return new NetSIDDev.FakeStereo(context, client, sidNum, chipModel, config, sids);
 		} else {
-			return new NetSIDDev(context, connection, sidNum, chipModel);
+			return new NetSIDDev(context, client, sidNum, chipModel);
 		}
 	}
 

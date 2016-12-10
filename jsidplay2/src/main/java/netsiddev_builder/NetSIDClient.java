@@ -4,9 +4,6 @@ import static netsiddev.Response.BUSY;
 import static netsiddev.Response.OK;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,25 +37,18 @@ import netsiddev_builder.commands.TrySetSidCount;
 import netsiddev_builder.commands.TrySetSidModel;
 import netsiddev_builder.commands.TryWrite;
 
-public class NetSIDConnection {
-	/**
-	 * Timeout to establish a connection to a NetworkSIDDevice im ms.
-	 */
-	private static final int SOCKET_CONNECT_TIMEOUT = 5000;
-
+public class NetSIDClient {
 	private static final int CYCLES_TO_MILLIS = 1000;
 	private static final int MAX_WRITE_CYCLES = 4096;
 	private static final int MAX_BUFFER_SIZE = 4096;
 	private static final int BUFFER_NEAR_FULL = MAX_WRITE_CYCLES * 3 >> 2;
 	private static final int REGULAR_DELAY = MAX_WRITE_CYCLES >> 2;
-	private static final int MAX_INFO_LENGTH = 255;
-	private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
-	private static boolean connectionInvalidated;
-	private static Socket connectedSocket;
-	private static byte VERSION;
-	private static Map<Pair<ChipModel, String>, Byte> filterNameToSIDModel = new HashMap<>();
+	private NetSIDDevConnection connection = NetSIDDevConnection.getInstance();
 
+	private static Map<Pair<ChipModel, String>, Byte> FILTER_NAME_TO_SID_MODEL = new HashMap<>();
+
+	private byte version;
 	private EventScheduler context;
 	private List<NetSIDPkg> commands = new ArrayList<>(MAX_BUFFER_SIZE);
 	private TryWrite tryWrite = new TryWrite();
@@ -85,46 +75,25 @@ public class NetSIDConnection {
 	 * @param context
 	 *            event context
 	 */
-	public NetSIDConnection(EventScheduler context, String hostname, int port) {
+	public NetSIDClient(EventScheduler context, String hostname, int port) {
 		this.context = context;
 		try {
-			if (connectionInvalidated) {
-				closeConnection();
-				connectionInvalidated = false;
-			}
-			if (connectedSocket == null || connectedSocket.isClosed()) {
-				openConnection(hostname, port);
-				VERSION = getNetworkProtocolVersion();
-				// Get all available SIDs
-				for (byte config = 0; config < getSIDCount(); config++) {
-					Pair<ChipModel, String> filter = getSIDInfo(config);
-					filterNameToSIDModel.put(new Pair<>(filter.getKey(), filter.getValue()), config);
-				}
-				// Initialize SIDs on server side
-				commands.add(new TrySetSidCount((byte) PLA.MAX_SIDS));
-				for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-					commands.add(new TrySetSidModel(sidNum, sidNum));
-				}
-			}
+			connection.open(hostname, port);
 		} catch (IOException e) {
-			closeConnection();
+			connection.close();
 			throw new RuntimeException(e);
 		}
-	}
-
-	private void openConnection(String hostname, int port) throws IOException {
-		connectedSocket = new Socket();
-		connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
-		System.out.printf("Connected to NetworkSIDDevice: %s (%d)\n", hostname, port);
-	}
-
-	private void closeConnection() {
-		if (connectedSocket != null && !connectedSocket.isClosed()) {
-			try {
-				connectedSocket.close();
-			} catch (IOException e) {
-				System.err.println("NetworkSIDDevice socket cannot be closed!");
-			}
+		version = getNetworkProtocolVersion();
+		// Get all available SIDs
+		FILTER_NAME_TO_SID_MODEL.clear();
+		for (byte config = 0; config < getSIDCount(); config++) {
+			Pair<ChipModel, String> filter = getSIDInfo(config);
+			FILTER_NAME_TO_SID_MODEL.put(new Pair<>(filter.getKey(), filter.getValue()), config);
+		}
+		// Initialize SIDs on server side
+		commands.add(new TrySetSidCount((byte) PLA.MAX_SIDS));
+		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+			commands.add(new TrySetSidModel(sidNum, sidNum));
 		}
 	}
 
@@ -134,7 +103,7 @@ public class NetSIDConnection {
 	 * @return sorted filter names of the desired chip model (case-insensitive)
 	 */
 	public static List<String> getFilterNames(ChipModel model) {
-		return filterNameToSIDModel.keySet().stream().filter(p -> p.getKey() == model).map(p -> p.getValue())
+		return FILTER_NAME_TO_SID_MODEL.keySet().stream().filter(p -> p.getKey() == model).map(p -> p.getValue())
 				.sorted((s1, s2) -> s1.compareToIgnoreCase(s2)).collect(Collectors.toList());
 	}
 
@@ -151,10 +120,10 @@ public class NetSIDConnection {
 	 */
 	void setFilter(byte sidNum, final ChipModel chipModel, final String filterName) {
 		send(() -> {
-			Optional<Pair<ChipModel, String>> filter = filterNameToSIDModel.keySet().stream()
+			Optional<Pair<ChipModel, String>> filter = FILTER_NAME_TO_SID_MODEL.keySet().stream()
 					.filter(p -> p.getKey() == chipModel && p.getValue().equals(filterName)).findFirst();
 			if (filter.isPresent()) {
-				return new TrySetSidModel(sidNum, filterNameToSIDModel.get(filter.get()));
+				return new TrySetSidModel(sidNum, FILTER_NAME_TO_SID_MODEL.get(filter.get()));
 			}
 			return new TrySetSidModel(sidNum, (byte) 0);
 		});
@@ -162,7 +131,7 @@ public class NetSIDConnection {
 
 	void setMute(IEmulationSection emulationSection) {
 		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-			for (byte voice = 0; voice < (VERSION < 3 ? 3 : 4); voice++) {
+			for (byte voice = 0; voice < (version < 3 ? 3 : 4); voice++) {
 				commands.add(new Mute(sidNum, voice, emulationSection.isMuteVoice(sidNum, voice)));
 			}
 		}
@@ -199,7 +168,7 @@ public class NetSIDConnection {
 	}
 
 	public void setVoiceMute(byte sidNum, byte voice, boolean mute) {
-		if (VERSION >= 3 || voice < 3) {
+		if (version >= 3 || voice < 3) {
 			send(() -> new Mute(sidNum, voice, mute));
 		}
 	}
@@ -217,7 +186,7 @@ public class NetSIDConnection {
 			try {
 				return tryRead(sidNum, clocksSinceLastAccess() >> fastForwardFactor, addr);
 			} catch (IOException | InterruptedException e) {
-				closeConnection();
+				connection.close();
 				throw new RuntimeException(e);
 			}
 		}
@@ -230,7 +199,7 @@ public class NetSIDConnection {
 				while (tryWrite(sidNum, clocksSinceLastAccess() >> fastForwardFactor, addr, data) == BUSY)
 					;
 			} catch (InterruptedException | IOException e) {
-				closeConnection();
+				connection.close();
 				throw new RuntimeException(e);
 			}
 		}
@@ -257,7 +226,7 @@ public class NetSIDConnection {
 		try {
 			flush(false);
 		} catch (IOException | InterruptedException e) {
-			closeConnection();
+			connection.close();
 			throw new RuntimeException(e);
 		}
 	}
@@ -312,7 +281,7 @@ public class NetSIDConnection {
 		while (!commands.isEmpty()) {
 			final NetSIDPkg cmd = commands.remove(0);
 
-			connectedSocket.getOutputStream().write(cmd.toByteArrayWithLength());
+			connection.send(cmd.toByteArrayWithLength());
 
 			byte rc = readResponse();
 			switch (Response.values()[rc]) {
@@ -333,18 +302,10 @@ public class NetSIDConnection {
 			case INFO:
 				// chip model
 				readResult = readResponse();
-				// 0 terminated name
-				byte[] configInfo = new byte[MAX_INFO_LENGTH];
-				int chIdx;
-				for (chIdx = 0; chIdx < configInfo.length; chIdx++) {
-					connectedSocket.getInputStream().read(configInfo, chIdx, 1);
-					if (configInfo[chIdx] <= 0)
-						break;
-				}
-				configName = new String(configInfo, 0, chIdx, ISO_8859_1);
+				configName = connection.readString();
 				continue;
 			default:
-				closeConnection();
+				connection.close();
 				throw new RuntimeException("Server error: Unexpected response: " + rc);
 			}
 		}
@@ -352,9 +313,9 @@ public class NetSIDConnection {
 	}
 
 	private byte readResponse() throws IOException {
-		int rc = connectedSocket.getInputStream().read();
+		int rc = connection.receive();
 		if (rc == -1) {
-			closeConnection();
+			connection.close();
 			throw new RuntimeException("Server closed the connection!");
 		}
 		return (byte) rc;
@@ -415,10 +376,6 @@ public class NetSIDConnection {
 
 	public int getFastForwardBitMask() {
 		return (1 << fastForwardFactor) - 1;
-	}
-
-	public static void invalidateConnection() {
-		connectionInvalidated = true;
 	}
 
 }
