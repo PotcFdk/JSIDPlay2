@@ -12,10 +12,19 @@ import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
+import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
+import netsiddev_builder.commands.Flush;
+import netsiddev_builder.commands.Mute;
+import netsiddev_builder.commands.SetClocking;
+import netsiddev_builder.commands.SetSidLevel;
+import netsiddev_builder.commands.SetSidPosition;
+import netsiddev_builder.commands.TryReset;
+import netsiddev_builder.commands.TrySetSampling;
+import netsiddev_builder.commands.TrySetSidModel;
 
 public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
@@ -41,10 +50,15 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		String filterName = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT, chipModel);
 
 		final NetSIDDev sid = createSID(emulationSection, chipModel, sidEmu, tune, sidNum);
-		client.setSampling(audioSection.getSampling());
-		client.setFilter((byte) sidNum, chipModel, filterName);
-		client.setClockFrequency(cpuClock.getCpuFrequency());
-		client.addMutes(config.getEmulationSection());
+		client.addAndSend(new Flush());
+		client.add(new TrySetSampling(audioSection.getSampling()));
+		client.add(new TrySetSidModel((byte) sidNum, chipModel, filterName));
+		client.add(new SetClocking(cpuClock.getCpuFrequency()));
+		for (byte sidNum2 = 0; sidNum2 < PLA.MAX_SIDS; sidNum2++) {
+			for (byte voice = 0; voice < (client.getVersion() < 3 ? 3 : 4); voice++) {
+				client.add(new Mute(sidNum2, voice, emulationSection.isMuteVoice(sidNum2, voice)));
+			}
+		}
 		client.softFlush();
 		for (byte addr = 0; sidEmu != null && addr < SIDChip.REG_COUNT; addr++) {
 			sid.write(addr, sidEmu.readInternalRegister(addr));
@@ -59,13 +73,8 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void unlock(SIDEmu device) {
-		NetSIDDev sid = (NetSIDDev) device;
-		byte sidNum = (byte) sids.indexOf(sid);
-		client.flush();
-		for (byte reg = 0; reg < SIDChip.REG_COUNT; reg++) {
-			client.write(sidNum, reg, (byte) 0);
-		}
-		sids.remove(sid);
+		reset();
+		sids.remove(device);
 		updateMixer(config.getAudioSection());
 	}
 
@@ -83,11 +92,13 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 			setVolume(sidNum, audioSection.getVolume(sidNum));
 			setBalance(sidNum, audioSection.getBalance(sidNum));
 		}
+		client.softFlush();
 	}
 
 	@Override
 	public void reset() {
-		client.reset((byte) 0xf);
+		client.add(new Flush());
+		client.addAndSend(new TryReset((byte) 0xf));
 	}
 
 	@Override
@@ -112,18 +123,19 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		// -6db..6db (client)
 		// -50..50 (server)
 		float level = (((volume + 6f) * 100f) / 12f) - 50f;
-		client.setVolume((byte) sidNum, (byte) level);
+		client.add(new SetSidLevel((byte) sidNum, (byte) level));
 	}
 
 	@Override
 	public void setBalance(int sidNum, float balance) {
 		// 0..1 (client)
 		// -100..100 (server)
-		if (sids.size() == 1) {
-			client.setSidPosition((byte) sidNum, (byte) 0);
+		boolean isMono = sids.size() == 1;
+		if (isMono) {
+			client.add(new SetSidPosition((byte) sidNum, (byte) 0));
 		} else {
 			float position = -100f + balance * 200f;
-			client.setSidPosition((byte) sidNum, (byte) position);
+			client.add(new SetSidPosition((byte) sidNum, (byte) position));
 		}
 	}
 
@@ -149,7 +161,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void pause() {
-		client.flush();
+		client.addAndSend(new Flush());
 	}
 
 }

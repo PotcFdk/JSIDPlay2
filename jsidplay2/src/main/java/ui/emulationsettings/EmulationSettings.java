@@ -23,7 +23,7 @@ import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IFilterSection;
 import libsidplay.sidtune.SidTune;
-import netsiddev_builder.NetSIDClient;
+import netsiddev_builder.commands.TrySetSidModel;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
@@ -473,10 +473,10 @@ public class EmulationSettings extends C64Window {
 		String filterName = filterEnable ? emulationSection.getFilterName(num, engine, emulation, model) : null;
 
 		filters.clear();
-		filters.add("");
 		if (engine == Engine.NETSID) {
-			filters.addAll(NetSIDClient.getFilterNames(model));
+			filters.addAll(TrySetSidModel.getFilterNames(model));
 		} else {
+			filters.add("");
 			for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
 				if (emulation.equals(Emulation.RESIDFP)) {
 					if (filterSection.isReSIDfpFilter6581() && model == ChipModel.MOS6581) {

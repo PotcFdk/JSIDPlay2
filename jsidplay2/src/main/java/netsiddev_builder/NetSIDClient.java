@@ -5,34 +5,21 @@ import static netsiddev.Response.OK;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javafx.util.Pair;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SamplingMethod;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IEmulationSection;
 import netsiddev.Response;
-import netsiddev_builder.commands.Flush;
 import netsiddev_builder.commands.GetConfigCount;
 import netsiddev_builder.commands.GetConfigInfo;
 import netsiddev_builder.commands.GetVersion;
-import netsiddev_builder.commands.Mute;
 import netsiddev_builder.commands.NetSIDPkg;
-import netsiddev_builder.commands.SetClocking;
-import netsiddev_builder.commands.SetSidLevel;
-import netsiddev_builder.commands.SetSidPosition;
 import netsiddev_builder.commands.TryDelay;
 import netsiddev_builder.commands.TryRead;
-import netsiddev_builder.commands.TryReset;
-import netsiddev_builder.commands.TrySetSampling;
 import netsiddev_builder.commands.TrySetSidCount;
 import netsiddev_builder.commands.TrySetSidModel;
 import netsiddev_builder.commands.TryWrite;
@@ -45,8 +32,6 @@ public class NetSIDClient {
 	private static final int REGULAR_DELAY = MAX_WRITE_CYCLES >> 2;
 
 	private NetSIDDevConnection connection = NetSIDDevConnection.getInstance();
-
-	private static Map<Pair<ChipModel, String>, Byte> FILTER_TO_SID_MODEL = new HashMap<>();
 
 	private byte version;
 	private EventScheduler context;
@@ -83,24 +68,18 @@ public class NetSIDClient {
 			connection.close();
 			throw new RuntimeException(e);
 		}
-		version = getNetworkProtocolVersion();
+		version = sendReceive(new GetVersion());
 		// Get all available SID models
-		FILTER_TO_SID_MODEL.clear();
-		for (byte config = 0; config < getConfigCount(); config++) {
-			Pair<ChipModel, String> filter = getConfigInfo(config);
-			FILTER_TO_SID_MODEL.put(new Pair<>(filter.getKey(), filter.getValue()), config);
+		TrySetSidModel.getFilterToSidModel().clear();
+		for (byte config = 0; config < sendReceive(new GetConfigCount()); config++) {
+			Pair<ChipModel, String> filter = sendReceiveConfig(new GetConfigInfo(config));
+			TrySetSidModel.getFilterToSidModel().put(new Pair<>(filter.getKey(), filter.getValue()), config);
 		}
 		addSetSidModels();
 	}
 
-	/**
-	 * @param model
-	 *            chip model
-	 * @return sorted filter names of the desired chip model (case-insensitive)
-	 */
-	public static List<String> getFilterNames(ChipModel model) {
-		return FILTER_TO_SID_MODEL.keySet().stream().filter(p -> p.getKey() == model).map(p -> p.getValue())
-				.sorted((s1, s2) -> s1.compareToIgnoreCase(s2)).collect(Collectors.toList());
+	public byte getVersion() {
+		return version;
 	}
 
 	/**
@@ -112,82 +91,6 @@ public class NetSIDClient {
 		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 			commands.add(new TrySetSidModel(sidNum, (byte) 0));
 		}
-	}
-
-	/**
-	 * Add setting all voice mutes to the command queue without soft flush.
-	 */
-	void addMutes(IEmulationSection emulationSection) {
-		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
-			for (byte voice = 0; voice < (version < 3 ? 3 : 4); voice++) {
-				commands.add(new Mute(sidNum, voice, emulationSection.isMuteVoice(sidNum, voice)));
-			}
-		}
-	}
-
-	/**
-	 * Lookup SID configuration of the desired name and configure
-	 * NetworkSIDDevice accordingly.
-	 * 
-	 * @param sidNum
-	 *            SID chip number
-	 * @param chipModel
-	 *            SID chip model
-	 * @param filterName
-	 *            desired filter name
-	 */
-	void setFilter(byte sidNum, final ChipModel chipModel, final String filterName) {
-		send(() -> {
-			Optional<Pair<ChipModel, String>> filter = FILTER_TO_SID_MODEL.keySet().stream()
-					.filter(p -> p.getKey().equals(chipModel) && p.getValue().equals(filterName)).findFirst();
-			if (filter.isPresent()) {
-				return new TrySetSidModel(sidNum, FILTER_TO_SID_MODEL.get(filter.get()));
-			}
-			return new TrySetSidModel(sidNum, (byte) 0);
-		});
-	}
-
-	private byte getNetworkProtocolVersion() {
-		return sendReceive(() -> new GetVersion());
-	}
-
-	private byte getConfigCount() {
-		return sendReceive(() -> new GetConfigCount());
-	}
-
-	private Pair<ChipModel, String> getConfigInfo(byte sidNum) {
-		return sendReceiveConfig(() -> new GetConfigInfo(sidNum));
-	}
-
-	public void setClockFrequency(double cpuFrequency) {
-		send(() -> new SetClocking(cpuFrequency));
-	}
-
-	public void setSampling(SamplingMethod sampling) {
-		send(() -> new TrySetSampling(sampling));
-	}
-
-	public void flush() {
-		send(() -> new Flush());
-	}
-
-	public void reset(byte volume) {
-		send(() -> new Flush());
-		send(() -> new TryReset(volume));
-	}
-
-	public void setVoiceMute(byte sidNum, byte voice, boolean mute) {
-		if (version >= 3 || voice < 3) {
-			send(() -> new Mute(sidNum, voice, mute));
-		}
-	}
-
-	public void setVolume(byte sidNum, byte volume) {
-		send(() -> new SetSidLevel(sidNum, volume));
-	}
-
-	public void setSidPosition(byte sidNum, byte position) {
-		send(() -> new SetSidPosition(sidNum, position));
 	}
 
 	public byte read(byte sidNum, byte addr) {
@@ -214,21 +117,25 @@ public class NetSIDClient {
 		}
 	}
 
-	private Pair<ChipModel, String> sendReceiveConfig(Supplier<NetSIDPkg> cmd) {
-		send(cmd);
+	private Pair<ChipModel, String> sendReceiveConfig(NetSIDPkg cmd) {
+		addAndSend(cmd);
 		return new Pair<>(readResult == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581, configName);
 	}
 
-	private byte sendReceive(Supplier<NetSIDPkg> cmd) {
-		send(cmd);
+	private byte sendReceive(NetSIDPkg cmd) {
+		addAndSend(cmd);
 		return readResult;
 	}
 
-	private final void send(Supplier<NetSIDPkg> cmd) {
+	final void addAndSend(NetSIDPkg cmd) {
 		// transmit unsent writes
 		softFlush();
-		commands.add(cmd.get());
+		add(cmd);
 		softFlush();
+	}
+
+	final boolean add(NetSIDPkg cmd) {
+		return commands.add(cmd);
 	}
 
 	void softFlush() {
@@ -254,7 +161,7 @@ public class NetSIDClient {
 			tryWrite = new TryRead(sidNum, cycles, addr);
 		}
 		// we must send here, since a READ is always the termination of writes!
-		return sendReceive(() -> tryWrite);
+		return sendReceive(tryWrite);
 	}
 
 	/**
@@ -356,7 +263,7 @@ public class NetSIDClient {
 		int diff = (int) (now - lastSIDWriteTime);
 		if (diff > REGULAR_DELAY) {
 			lastSIDWriteTime += REGULAR_DELAY;
-			send(() -> new TryDelay(sidNum, REGULAR_DELAY >> fastForwardFactor));
+			addAndSend(new TryDelay(sidNum, REGULAR_DELAY >> fastForwardFactor));
 		}
 		return REGULAR_DELAY;
 	}

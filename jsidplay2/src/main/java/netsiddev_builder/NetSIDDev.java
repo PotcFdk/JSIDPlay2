@@ -9,6 +9,9 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
+import netsiddev_builder.commands.Mute;
+import netsiddev_builder.commands.SetClocking;
+import netsiddev_builder.commands.TrySetSidModel;
 
 public class NetSIDDev extends SIDEmu {
 
@@ -77,7 +80,7 @@ public class NetSIDDev extends SIDEmu {
 		this.sidNum = (byte) sidNum;
 		this.chipModel = model;
 	}
-	
+
 	@Override
 	public void reset(byte volume) {
 		// nothing to do
@@ -108,7 +111,7 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void setClockFrequency(double cpuFrequency) {
-		client.setClockFrequency(cpuFrequency);
+		client.addAndSend(new SetClocking(cpuFrequency));
 	}
 
 	@Override
@@ -124,14 +127,16 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public void setVoiceMute(int voice, boolean mute) {
-		client.setVoiceMute(sidNum, (byte) voice, mute);
+		if (client.getVersion() >= 3 || voice < 3) {
+			client.addAndSend(new Mute((byte) sidNum, (byte) voice, mute));
+		}
 	}
 
 	@Override
 	public void setFilter(IConfig config, int sidNum) {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		String filterName = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT, chipModel);
-		client.setFilter((byte) sidNum, chipModel, filterName);
+		client.addAndSend(new TrySetSidModel((byte) sidNum, chipModel, filterName));
 	}
 
 	@Override
