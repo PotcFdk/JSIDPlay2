@@ -214,7 +214,7 @@ public class NetSIDClient {
 			case INFO:
 				// chip model and SID name
 				readResult = readResponse();
-				configName = connection.readString();
+				configName = connection.receiveString();
 				continue;
 			default:
 				connection.close();

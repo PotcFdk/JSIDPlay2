@@ -138,13 +138,13 @@ public class NetSIDDevConnection {
 	}
 
 	/**
-	 * Read zero terminated byte array as string (ISO-88-59-1).
+	 * Receive zero terminated byte array as string (ISO-88-59-1).
 	 * 
 	 * @return string received from server.
 	 * @throws IOException
 	 *             socket I/O error
 	 */
-	public String readString() throws IOException {
+	public String receiveString() throws IOException {
 		int chIdx;
 		for (chIdx = 0; chIdx < stringBytes.length; chIdx++) {
 			connectedSocket.getInputStream().read(stringBytes, chIdx, 1);
