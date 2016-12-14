@@ -108,7 +108,8 @@ public class NetSIDClient {
 	public void write(byte sidNum, byte addr, byte data) {
 		if (startTimeReached) {
 			try {
-				while (tryWrite(sidNum, clocksSinceLastAccess() >> fastForwardFactor, addr, data) == BUSY)
+				int clocksSinceLastAccess = clocksSinceLastAccess();
+				while (tryWrite(sidNum, clocksSinceLastAccess >> fastForwardFactor, addr, data) == BUSY)
 					;
 			} catch (InterruptedException | IOException e) {
 				connection.close();

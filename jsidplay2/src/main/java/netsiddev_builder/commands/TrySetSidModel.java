@@ -17,14 +17,35 @@ public class TrySetSidModel implements NetSIDPkg {
 
 	private static Map<Pair<ChipModel, String>, Byte> FILTER_TO_SID_MODEL = new HashMap<>();
 
+	/**
+	 * Use SID model of desired filter name and chip model.
+	 * 
+	 * <B>Note:</B> If filter name is not found use first configuration of
+	 * desired chip model. If there is still no match use always the first
+	 * available configuration (there must be at least one available).
+	 * 
+	 * @param sidNum
+	 *            SID chip number
+	 * @param chipModel
+	 *            SID chip model
+	 * @param filterName
+	 *            desired filter name
+	 */
 	public TrySetSidModel(byte sidNum, ChipModel chipModel, String filterName) {
 		this.sidNum = sidNum;
-		final Optional<Pair<ChipModel, String>> configuration = FILTER_TO_SID_MODEL.keySet().stream()
-				.filter(p -> p.getKey().equals(chipModel) && p.getValue().equals(filterName)).findFirst();
+		Optional<Pair<ChipModel, String>> configuration = FILTER_TO_SID_MODEL.keySet().stream()
+				.filter(p -> p.getValue().equals(filterName) && p.getKey().equals(chipModel)).findFirst();
 		if (configuration.isPresent()) {
 			this.config = FILTER_TO_SID_MODEL.get(configuration.get());
 		} else {
-			System.err.println("TrySetSidModel: Use default config for filter name=" + filterName);
+			System.err.printf("TrySetSidModel: Filter name %s not found!", filterName);
+			Optional<String> filter = getFilterNames(chipModel).stream().findFirst();
+			if (filter.isPresent()) {
+				this.config = FILTER_TO_SID_MODEL.get(new Pair<ChipModel, String>(chipModel, filter.get()));
+				System.err.printf("  TrySetSidModel: Use first configuration of chip model=%s, instead!\n", chipModel);
+			} else {
+				System.err.println("  TrySetSidModel: Use first avalable configuration, instead!");
+			}
 		}
 	}
 

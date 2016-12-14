@@ -44,13 +44,13 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public SIDEmu lock(SIDEmu sidEmu, int sidNum, SidTune tune) {
+		reset();
 		IAudioSection audioSection = config.getAudioSection();
 		IEmulationSection emulationSection = config.getEmulationSection();
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		String filterName = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT, chipModel);
 
 		final NetSIDDev sid = createSID(emulationSection, chipModel, sidEmu, tune, sidNum);
-		client.addAndSend(new Flush());
 		client.add(new TrySetSampling(audioSection.getSampling()));
 		client.add(new TrySetSidModel((byte) sidNum, chipModel, filterName));
 		client.add(new SetClocking(cpuClock.getCpuFrequency()));
@@ -92,7 +92,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 			setVolume(sidNum, audioSection.getVolume(sidNum));
 			setBalance(sidNum, audioSection.getBalance(sidNum));
 		}
-		client.softFlush();
 	}
 
 	@Override
@@ -122,7 +121,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public void setVolume(int sidNum, float volume) {
 		// -6db..6db (client)
 		// -50..50 (server)
-		float level = (((volume + 6f) * 100f) / 12f) - 50f;
+		float level = -50f + ((volume + 6f) / 12f) * 100f;
 		client.add(new SetSidLevel((byte) sidNum, (byte) level));
 	}
 
