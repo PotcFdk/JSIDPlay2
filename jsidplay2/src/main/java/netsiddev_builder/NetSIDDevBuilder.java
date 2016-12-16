@@ -22,7 +22,6 @@ import netsiddev_builder.commands.Mute;
 import netsiddev_builder.commands.SetClocking;
 import netsiddev_builder.commands.SetSidLevel;
 import netsiddev_builder.commands.SetSidPosition;
-import netsiddev_builder.commands.TryReset;
 import netsiddev_builder.commands.TrySetSampling;
 import netsiddev_builder.commands.TrySetSidModel;
 
@@ -44,13 +43,13 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public SIDEmu lock(SIDEmu sidEmu, int sidNum, SidTune tune) {
-		reset();
 		IAudioSection audioSection = config.getAudioSection();
 		IEmulationSection emulationSection = config.getEmulationSection();
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		String filterName = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT, chipModel);
 
 		final NetSIDDev sid = createSID(emulationSection, chipModel, sidEmu, tune, sidNum);
+		client.init((byte) 0xf);
 		client.add(new TrySetSampling(audioSection.getSampling()));
 		client.add(new TrySetSidModel((byte) sidNum, chipModel, filterName));
 		client.add(new SetClocking(cpuClock.getCpuFrequency()));
@@ -73,7 +72,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void unlock(SIDEmu device) {
-		reset();
+		client.init((byte) 0x0);
 		sids.remove(device);
 		updateMixer(config.getAudioSection());
 	}
@@ -92,12 +91,12 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 			setVolume(sidNum, audioSection.getVolume(sidNum));
 			setBalance(sidNum, audioSection.getBalance(sidNum));
 		}
+		client.softFlush();
 	}
 
 	@Override
 	public void reset() {
-		client.add(new Flush());
-		client.addAndSend(new TryReset((byte) 0xf));
+		// nothing to do
 	}
 
 	@Override

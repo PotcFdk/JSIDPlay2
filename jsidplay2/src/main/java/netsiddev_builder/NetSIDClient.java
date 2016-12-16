@@ -14,12 +14,14 @@ import libsidplay.common.EventScheduler;
 import libsidplay.components.pla.PLA;
 import libsidplay.config.IEmulationSection;
 import netsiddev.Response;
+import netsiddev_builder.commands.Flush;
 import netsiddev_builder.commands.GetConfigCount;
 import netsiddev_builder.commands.GetConfigInfo;
 import netsiddev_builder.commands.GetVersion;
 import netsiddev_builder.commands.NetSIDPkg;
 import netsiddev_builder.commands.TryDelay;
 import netsiddev_builder.commands.TryRead;
+import netsiddev_builder.commands.TryReset;
 import netsiddev_builder.commands.TrySetSidCount;
 import netsiddev_builder.commands.TrySetSidModel;
 import netsiddev_builder.commands.TryWrite;
@@ -76,6 +78,7 @@ public class NetSIDClient {
 			TrySetSidModel.getFilterToSidModel().put(new Pair<>(filter.getKey(), filter.getValue()), config);
 		}
 		addSetSidModels();
+		softFlush();
 	}
 
 	public byte getVersion() {
@@ -84,13 +87,26 @@ public class NetSIDClient {
 
 	/**
 	 * Add setting all SidModels to the first available configuration to the
-	 * command queue without soft flush.
+	 * command queue to initialize server side properly.
 	 */
 	private void addSetSidModels() {
 		commands.add(new TrySetSidCount((byte) PLA.MAX_SIDS));
 		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
 			commands.add(new TrySetSidModel(sidNum, (byte) 0));
 		}
+	}
+
+	/**
+	 * Initialize: Drop unprocessed writes and add flush and reset to the
+	 * command queue
+	 * 
+	 * @param volume
+	 *            volume for reset
+	 */
+	public void init(byte volume) {
+		commands.clear();
+		add(new Flush());
+		add(new TryReset(volume));
 	}
 
 	public byte read(byte sidNum, byte addr) {
