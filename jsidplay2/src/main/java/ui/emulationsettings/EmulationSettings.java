@@ -284,6 +284,10 @@ public class EmulationSettings extends C64Window {
 	private void setSid1Model() {
 		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
 		updateSIDChipConfiguration();
+		// 1st chip model chip model has an impact on all chip model settings
+		// (Automatic - use 1st chip model)
+		setSid2Model();
+		setSid3Model();
 	}
 
 	@FXML
@@ -302,8 +306,8 @@ public class EmulationSettings extends C64Window {
 	private void setDefaultModel() {
 		// default chip model has an impact on all chip model settings
 		setSid1Model();
-		setSid2Model();
-		setSid3Model();
+		// already called: setSid2Model();
+		// already called: setSid3Model();
 	}
 
 	@FXML
