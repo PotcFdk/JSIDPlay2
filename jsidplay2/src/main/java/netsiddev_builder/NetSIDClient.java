@@ -43,7 +43,6 @@ public class NetSIDClient {
 	private String configName;
 	private long lastSIDWriteTime;
 	private int fastForwardFactor;
-	private boolean startTimeReached;
 
 	private final Event event = new Event("JSIDDevice Delay") {
 
@@ -110,27 +109,22 @@ public class NetSIDClient {
 	}
 
 	public byte read(byte sidNum, byte addr) {
-		if (startTimeReached) {
-			try {
-				return tryRead(sidNum, clocksSinceLastAccess() >> fastForwardFactor, addr);
-			} catch (IOException | InterruptedException e) {
-				connection.close();
-				throw new RuntimeException(e);
-			}
+		try {
+			return tryRead(sidNum, clocksSinceLastAccess() >> fastForwardFactor, addr);
+		} catch (IOException | InterruptedException e) {
+			connection.close();
+			throw new RuntimeException(e);
 		}
-		return (byte) 0xff;
 	}
 
 	public void write(byte sidNum, byte addr, byte data) {
-		if (startTimeReached) {
-			try {
-				int clocksSinceLastAccess = clocksSinceLastAccess();
-				while (tryWrite(sidNum, clocksSinceLastAccess >> fastForwardFactor, addr, data) == BUSY)
-					;
-			} catch (InterruptedException | IOException e) {
-				connection.close();
-				throw new RuntimeException(e);
-			}
+		try {
+			int clocksSinceLastAccess = clocksSinceLastAccess();
+			while (tryWrite(sidNum, clocksSinceLastAccess >> fastForwardFactor, addr, data) == BUSY)
+				;
+		} catch (InterruptedException | IOException e) {
+			connection.close();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -286,7 +280,6 @@ public class NetSIDClient {
 	}
 
 	public void start() {
-		startTimeReached = true;
 		context.schedule(event, 0, Event.Phase.PHI2);
 	}
 
