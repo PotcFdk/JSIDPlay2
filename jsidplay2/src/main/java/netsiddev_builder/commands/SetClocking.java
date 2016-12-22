@@ -4,7 +4,7 @@ import static libsidplay.common.CPUClock.PAL;
 import static netsiddev.Command.TRY_SET_CLOCKING;
 
 public class SetClocking implements NetSIDPkg {
-	private byte cpuFrequency;
+	private final byte cpuFrequency;
 
 	public SetClocking(double cpuFrequency) {
 		this.cpuFrequency = (byte) (PAL.getCpuFrequency() == cpuFrequency ? 0 : 1);

@@ -3,9 +3,9 @@ package netsiddev_builder.commands;
 import static netsiddev.Command.TRY_READ;
 
 public class TryRead extends TryWrite {
-	private byte sidNumToRead;
-	private int readCycles;
-	private byte readAddr;
+	private final byte sidNumToRead;
+	private final int readCycles;
+	private final byte readAddr;
 
 	public TryRead(TryWrite tryWrite, byte sidNum, int cycles, byte addr) {
 		this(sidNum, cycles, addr);

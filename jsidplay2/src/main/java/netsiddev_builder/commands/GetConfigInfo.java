@@ -3,7 +3,7 @@ package netsiddev_builder.commands;
 import static netsiddev.Command.GET_CONFIG_INFO;
 
 public class GetConfigInfo implements NetSIDPkg {
-	private byte sidNum;
+	private final byte sidNum;
 
 	public GetConfigInfo(byte sidNum) {
 		this.sidNum = sidNum;

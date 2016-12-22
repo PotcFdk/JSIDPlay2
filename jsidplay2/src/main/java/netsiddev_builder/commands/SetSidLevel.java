@@ -3,8 +3,8 @@ package netsiddev_builder.commands;
 import static netsiddev.Command.SET_SID_LEVEL;
 
 public class SetSidLevel implements NetSIDPkg {
-	private byte sidNum;
-	private byte volume;
+	private final byte sidNum;
+	private final byte volume;
 
 	public SetSidLevel(byte sidNum, byte volume) {
 		this.sidNum = sidNum;

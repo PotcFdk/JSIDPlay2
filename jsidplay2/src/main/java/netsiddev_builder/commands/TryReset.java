@@ -3,7 +3,7 @@ package netsiddev_builder.commands;
 import static netsiddev.Command.TRY_RESET;
 
 public class TryReset implements NetSIDPkg {
-	private byte volume;
+	private final byte volume;
 
 	public TryReset(byte volume) {
 		this.volume = volume;

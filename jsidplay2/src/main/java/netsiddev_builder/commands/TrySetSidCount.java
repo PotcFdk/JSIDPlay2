@@ -3,7 +3,7 @@ package netsiddev_builder.commands;
 import static netsiddev.Command.TRY_SET_SID_COUNT;
 
 public class TrySetSidCount implements NetSIDPkg {
-	private byte numSids;
+	private final byte numSids;
 
 	public TrySetSidCount(byte numSids) {
 		this.numSids = numSids;

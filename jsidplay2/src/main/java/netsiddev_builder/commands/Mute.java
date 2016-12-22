@@ -3,9 +3,9 @@ package netsiddev_builder.commands;
 import static netsiddev.Command.MUTE;
 
 public class Mute implements NetSIDPkg {
-	private byte sidNum;
-	private byte voice;
-	private byte mute;
+	private final byte sidNum;
+	private final byte voice;
+	private final byte mute;
 
 	public Mute(byte sidNum, byte voice, boolean mute) {
 		this.sidNum = sidNum;

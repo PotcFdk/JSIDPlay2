@@ -2,9 +2,9 @@ package netsiddev_builder.commands;
 
 public class Write {
 
-	private int cycles;
-	private byte reg;
-	private byte data;
+	private final int cycles;
+	private final byte reg;
+	private final byte data;
 
 	public Write(int cycles, byte reg, byte data) {
 		this.cycles = cycles;

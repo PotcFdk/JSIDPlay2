@@ -7,7 +7,7 @@ import java.util.List;
 
 public class TryWrite implements NetSIDPkg {
 
-	protected List<Write> writes = new ArrayList<>();
+	protected final List<Write> writes = new ArrayList<>();
 	protected int cyclesSendToServer;
 
 	public void addWrite(int cycles, byte reg, byte data) {

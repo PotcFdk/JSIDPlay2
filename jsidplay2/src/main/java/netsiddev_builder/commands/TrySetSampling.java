@@ -5,7 +5,7 @@ import static netsiddev.Command.TRY_SET_SAMPLING;
 import libsidplay.common.SamplingMethod;
 
 public class TrySetSampling implements NetSIDPkg {
-	private byte sampling;
+	private final byte sampling;
 
 	public TrySetSampling(SamplingMethod sampling) {
 		this.sampling = (byte) sampling.ordinal();

@@ -12,8 +12,8 @@ import javafx.util.Pair;
 import libsidplay.common.ChipModel;
 
 public class TrySetSidModel implements NetSIDPkg {
-	private byte sidNum;
-	private byte config;
+	private final byte sidNum;
+	private final byte config;
 
 	private static Map<Pair<ChipModel, String>, Byte> FILTER_TO_SID_MODEL = new HashMap<>();
 
@@ -45,6 +45,7 @@ public class TrySetSidModel implements NetSIDPkg {
 				System.err.printf("  TrySetSidModel: Use first configuration of chip model=%s, instead!\n", chipModel);
 			} else {
 				System.err.println("  TrySetSidModel: Use first avalable configuration, instead!");
+				this.config = 0;
 			}
 		}
 	}

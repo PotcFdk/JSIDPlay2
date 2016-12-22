@@ -3,8 +3,8 @@ package netsiddev_builder.commands;
 import static netsiddev.Command.TRY_DELAY;
 
 public class TryDelay implements NetSIDPkg {
-	private byte sidNum;
-	private byte cyclesHigh, cyclesLow;
+	private final byte sidNum;
+	private final byte cyclesHigh, cyclesLow;
 
 	public TryDelay(byte sidNum, int cycles) {
 		this.sidNum = sidNum;
