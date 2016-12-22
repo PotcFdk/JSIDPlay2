@@ -36,8 +36,9 @@ public class NetSIDClient {
 	private NetSIDDevConnection connection = NetSIDDevConnection.getInstance();
 
 	private static byte version;
-	private EventScheduler context;
-	private List<NetSIDPkg> commands = new ArrayList<>(MAX_BUFFER_SIZE);
+	private final EventScheduler context;
+	private final IEmulationSection emulationSection;
+	private final List<NetSIDPkg> commands = new ArrayList<>(MAX_BUFFER_SIZE);
 	private TryWrite tryWrite = new TryWrite();
 	private byte readResult;
 	private String configName;
@@ -48,8 +49,9 @@ public class NetSIDClient {
 
 		@Override
 		public void event() {
-			// XXX we just delay and clock first SID for reading, enough?
-			context.schedule(event, eventuallyDelay((byte) 0), Event.Phase.PHI2);
+			// Pure delay is added to the server side queue for all SIDs in use.
+			// SID chip number just matters for SID reads, only!
+			context.schedule(event, eventuallyDelay((byte) emulationSection.getSidNumToRead()), Event.Phase.PHI2);
 		}
 	};
 
@@ -63,6 +65,7 @@ public class NetSIDClient {
 	 */
 	public NetSIDClient(EventScheduler context, IEmulationSection emulationSection) {
 		this.context = context;
+		this.emulationSection = emulationSection;
 		boolean wasNotConnectedYet = connection.isDisconnected();
 		try {
 			connection.open(emulationSection.getNetSIDDevHost(), emulationSection.getNetSIDDevPort());

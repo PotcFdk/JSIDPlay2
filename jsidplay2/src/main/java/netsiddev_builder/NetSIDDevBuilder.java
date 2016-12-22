@@ -27,12 +27,12 @@ import netsiddev_builder.commands.TrySetSidModel;
 
 public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
-	private EventScheduler context;
-	private IConfig config;
+	private final EventScheduler context;
+	private final IConfig config;
 
-	private NetSIDClient client;
-	private CPUClock cpuClock;
-	private List<NetSIDDev> sids = new ArrayList<>();
+	private final CPUClock cpuClock;
+	private final NetSIDClient client;
+	private final List<NetSIDDev> sids = new ArrayList<>();
 
 	public NetSIDDevBuilder(EventScheduler context, IConfig config, SidTune tune, CPUClock cpuClock) {
 		this.context = context;
