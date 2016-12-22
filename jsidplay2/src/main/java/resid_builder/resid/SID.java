@@ -394,7 +394,8 @@ public final class SID implements SIDChip {
 			filter8580.writeRES_FILT(busValue);
 			break;
 		case 0x18:
-			if (!samplesMuted) {
+			// samples muted? Fade-in is allowed anyway
+			if (!samplesMuted || (value & 0xf) >= filter6581.vol) {
 				filter6581.writeMODE_VOL(busValue);
 				filter8580.writeMODE_VOL(busValue);
 			}

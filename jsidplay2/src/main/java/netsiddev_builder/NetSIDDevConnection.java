@@ -39,7 +39,7 @@ public class NetSIDDevConnection {
 	}
 
 	/**
-	 * Connect to server, if not already connected
+	 * Connect to server, if not already connected or connection changed
 	 * 
 	 * @param hostname
 	 *            server host name
@@ -152,6 +152,10 @@ public class NetSIDDevConnection {
 				break;
 		}
 		return new String(stringBytes, 0, chIdx, ISO_8859_1);
+	}
+
+	public boolean isDisconnected() {
+		return connection.isInvalidated() || connection.isClosed();
 	}
 
 }

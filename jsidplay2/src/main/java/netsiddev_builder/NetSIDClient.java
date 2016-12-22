@@ -35,7 +35,7 @@ public class NetSIDClient {
 
 	private NetSIDDevConnection connection = NetSIDDevConnection.getInstance();
 
-	private byte version;
+	private static byte version;
 	private EventScheduler context;
 	private List<NetSIDPkg> commands = new ArrayList<>(MAX_BUFFER_SIZE);
 	private TryWrite tryWrite = new TryWrite();
@@ -63,21 +63,24 @@ public class NetSIDClient {
 	 */
 	public NetSIDClient(EventScheduler context, IEmulationSection emulationSection) {
 		this.context = context;
+		boolean wasNotConnectedYet = connection.isDisconnected();
 		try {
 			connection.open(emulationSection.getNetSIDDevHost(), emulationSection.getNetSIDDevPort());
 		} catch (IOException e) {
 			connection.close();
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage());
 		}
-		version = sendReceive(new GetVersion());
-		// Get all available SID models
-		TrySetSidModel.getFilterToSidModel().clear();
-		for (byte config = 0; config < sendReceive(new GetConfigCount()); config++) {
-			Pair<ChipModel, String> filter = sendReceiveConfig(new GetConfigInfo(config));
-			TrySetSidModel.getFilterToSidModel().put(new Pair<>(filter.getKey(), filter.getValue()), config);
+		// Get version and all available SID models once per connection
+		if (TrySetSidModel.getFilterToSidModel().isEmpty() || wasNotConnectedYet) {
+			version = sendReceive(new GetVersion());
+			TrySetSidModel.getFilterToSidModel().clear();
+			for (byte config = 0; config < sendReceive(new GetConfigCount()); config++) {
+				Pair<ChipModel, String> filter = sendReceiveConfig(new GetConfigInfo(config));
+				TrySetSidModel.getFilterToSidModel().put(new Pair<>(filter.getKey(), filter.getValue()), config);
+			}
+			addSetSidModels();
+			softFlush();
 		}
-		addSetSidModels();
-		softFlush();
 	}
 
 	public byte getVersion() {
@@ -103,6 +106,7 @@ public class NetSIDClient {
 	 *            volume for reset
 	 */
 	public void init(byte volume) {
+		clocksSinceLastAccess();
 		commands.clear();
 		add(new Flush());
 		add(new TryReset(volume));
