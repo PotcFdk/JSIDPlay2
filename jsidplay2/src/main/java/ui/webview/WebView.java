@@ -47,7 +47,6 @@ public class WebView extends Tab implements UIPart {
 
 	private Convenience convenience;
 	private ObjectProperty<WebViewType> type;
-	private String url;
 	private WebEngine engine;
 
 	private UIUtil util;
@@ -98,7 +97,7 @@ public class WebView extends Tab implements UIPart {
 
 	};
 
-	private ChangeListener<? super WebViewType> loadUrlListener = (observable, oldValue, newValue) -> home();
+	private ChangeListener<? super WebViewType> loadUrlListener = (observable, oldValue, newValue) -> engine.load(urlField.getText());
 
 	private boolean showTuneInfos;
 
@@ -156,7 +155,8 @@ public class WebView extends Tab implements UIPart {
 
 	@FXML
 	private void home() {
-		engine.load(url);
+		urlField.setText(type.get().getUrl());
+		setUrl();
 	}
 
 	@FXML
@@ -186,12 +186,8 @@ public class WebView extends Tab implements UIPart {
 		});
 	}
 
-	public final String getCollectionURL() {
-		return url;
-	}
-
-	public final void setURL(String url) {
-		this.url = url;
+	private void setURL(String url) {
+		this.urlField.setText(url);
 	}
 
 }
