@@ -8,8 +8,6 @@ import java.net.URL;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -46,7 +44,7 @@ public class WebView extends Tab implements UIPart {
 	private Slider zoom;
 
 	private Convenience convenience;
-	private ObjectProperty<WebViewType> type;
+	private WebViewType type;
 	private WebEngine engine;
 
 	private UIUtil util;
@@ -60,9 +58,9 @@ public class WebView extends Tab implements UIPart {
 
 	private ChangeListener<? super String> locationListener = (observable, oldValue, newValue) -> {
 		try {
+			urlField.setText(newValue);
 			if (!convenience.isSupportedMedia(new File(newValue)))
 				return;
-			urlField.setText(newValue);
 			new DownloadThread(util.getConfig(), new IDownloadListener() {
 
 				@Override
@@ -97,8 +95,6 @@ public class WebView extends Tab implements UIPart {
 
 	};
 
-	private ChangeListener<? super WebViewType> loadUrlListener = (observable, oldValue, newValue) -> engine.load(urlField.getText());
-
 	private boolean showTuneInfos;
 
 	public WebView(final C64Window window, final Player player) {
@@ -107,10 +103,10 @@ public class WebView extends Tab implements UIPart {
 	}
 
 	public void setType(WebViewType type) {
+		this.type = type;
 		setId(type.name());
-		setURL(type.getUrl());
 		setText(util.getBundle().getString(getId()));
-		this.type.set(type);
+		home();
 	}
 
 	@FXML
@@ -121,8 +117,6 @@ public class WebView extends Tab implements UIPart {
 				showTuneInfos(util.getPlayer().getTune(), file);
 			}
 		});
-		type = new SimpleObjectProperty<>();
-		type.addListener(loadUrlListener);
 		engine = webView.getEngine();
 		engine.getHistory().currentIndexProperty().addListener(historyListener);
 		engine.locationProperty().addListener(locationListener);
@@ -137,7 +131,6 @@ public class WebView extends Tab implements UIPart {
 
 	@Override
 	public void doClose() {
-		type.removeListener(loadUrlListener);
 		engine.getHistory().currentIndexProperty().removeListener(historyListener);
 		engine.locationProperty().removeListener(locationListener);
 		engine.getLoadWorker().progressProperty().removeListener(progressListener);
@@ -155,7 +148,7 @@ public class WebView extends Tab implements UIPart {
 
 	@FXML
 	private void home() {
-		urlField.setText(type.get().getUrl());
+		urlField.setText(type.getUrl());
 		setUrl();
 	}
 
@@ -184,10 +177,6 @@ public class WebView extends Tab implements UIPart {
 			tuneInfos.open();
 			tuneInfos.showTuneInfos(tuneFile, sidTune);
 		});
-	}
-
-	private void setURL(String url) {
-		this.urlField.setText(url);
 	}
 
 }
