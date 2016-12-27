@@ -10,17 +10,17 @@ import javafx.beans.property.StringProperty;
 public class SidRegWrite {
 	private LongProperty absCycles = new SimpleLongProperty();
 	private LongProperty relCycles = new SimpleLongProperty();;
-	private IntegerProperty chipNum = new SimpleIntegerProperty();
+	private IntegerProperty baseAddr = new SimpleIntegerProperty();
 	private StringProperty description = new SimpleStringProperty();
 	private StringProperty value = new SimpleStringProperty();
 
 	public SidRegWrite() {
 	}
 
-	public SidRegWrite(Long absCycles, Long relCycles, Integer chipNum, String description, String value) {
+	public SidRegWrite(Long absCycles, Long relCycles, Integer baseAddr, String description, String value) {
 		setAbsCycles(absCycles);
 		setRelCycles(relCycles);
-		setChipNum(chipNum);
+		setBaseAddr(baseAddr);
 		setDescription(description);
 		setValue(value);
 	}
@@ -41,12 +41,12 @@ public class SidRegWrite {
 		relCycles.set(value);
 	}
 
-	public Integer getChipNum() {
-		return chipNum.get();
+	public Integer getBaseAddr() {
+		return baseAddr.get();
 	}
 
-	public void setChipNum(Integer value) {
-		chipNum.set(value);
+	public void setBaseAddr(Integer value) {
+		baseAddr.set(value);
 	}
 
 	public String getDescription() {

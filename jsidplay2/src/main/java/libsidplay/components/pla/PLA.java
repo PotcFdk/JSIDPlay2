@@ -8,6 +8,7 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
+import libsidplay.common.SIDListener;
 import libsidplay.components.cart.Cartridge;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos656x.VIC;
@@ -131,6 +132,15 @@ public final class PLA {
 		 */
 		private int[] sidBankUsed = new int[MAX_BANKS];
 
+		/**
+		 * SID chip listener
+		 */
+		private SIDListener listener;
+		
+		public void setListener(SIDListener listener) {
+			this.listener = listener;
+		}
+		
 		/** Reset mapping of memory banks. */
 		private void reset() {
 			Arrays.fill(sidmapper, 0);
@@ -165,6 +175,10 @@ public final class PLA {
 			final SIDEmu sid = sidemu[sidmapper[address >> 5 & MAPPER_SIZE - 1]];
 			if (sid != null) {
 				sid.write(address & SIDChip.REG_COUNT - 1, value);
+				if (listener != null) {
+					final long time = context.getTime(Event.Phase.PHI2);
+					listener.write(time, address, value);
+				}
 			}
 		}
 

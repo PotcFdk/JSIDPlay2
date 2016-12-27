@@ -13,6 +13,7 @@ import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
+import libsidplay.common.SIDListener;
 import libsidplay.components.c1530.DatasetteEnvironment;
 import libsidplay.components.c1541.C1541Environment;
 import libsidplay.components.c1541.IParallelCable;
@@ -537,6 +538,13 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		if (sid != SIDEmu.NONE) {
 			action.accept(sid);
 		}
+	}
+
+	/**
+	 * Get SID register write notifications.
+	 */
+	public void setListener(SIDListener listener) {
+		pla.getSIDBank().setListener(listener);
 	}
 
 	/**

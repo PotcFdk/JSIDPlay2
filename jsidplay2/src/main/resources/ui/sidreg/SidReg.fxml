@@ -128,9 +128,9 @@
 						<PropertyValueFactory property="relCycles" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="%COL_CHIP_NUM" prefWidth="50">
+				<TableColumn text="%COL_BASE" prefWidth="50">
 					<cellValueFactory>
-						<PropertyValueFactory property="chipNum" />
+						<PropertyValueFactory property="baseAddr" />
 					</cellValueFactory>
 				</TableColumn>
 				<TableColumn text="%COL_DESCRIPTION" prefWidth="300">

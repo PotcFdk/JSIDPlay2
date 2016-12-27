@@ -34,23 +34,13 @@ public abstract class SIDEmu {
 	/** Event context */
 	protected final EventScheduler context;
 
-	/** Last time chip was accessed. */
-	protected long lastTime;
-
 	/** Internal cache of SID register state, used for GUI feedback. */
 	private final byte[] registers = new byte[SIDChip.REG_COUNT];
 
-	/** SID chip listener */
-	private SIDListener listener;
-	
 	public SIDEmu(EventScheduler context) {
 		this.context = context;
 	}
 
-	public void setListener(SIDListener listener) {
-		this.listener = listener;
-	}
-	
 	/**
 	 * Side effect free read access.
 	 * 
@@ -64,17 +54,6 @@ public abstract class SIDEmu {
 
 	public void write(final int addr, final byte data) {
 		registers[addr] = data;
-		if (listener != null) {
-			final long time = context.getTime(Event.Phase.PHI2);
-			listener.write(time, addr, data);
-		}
-	}
-
-	protected int clocksSinceLastAccess() {
-		final long now = context.getTime(Event.Phase.PHI2);
-		int diff = (int) (now - lastTime);
-		lastTime = now;
-		return diff;
 	}
 
 	public abstract void reset(byte volume);

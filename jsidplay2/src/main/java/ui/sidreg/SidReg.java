@@ -69,6 +69,7 @@ public class SidReg extends Tab implements UIPart {
 
 	@Override
 	public void doClose() {
+		util.getPlayer().getC64().setListener(null);
 		util.getPlayer().stateProperty().removeListener(sidRegStop);
 	}
 
@@ -177,31 +178,29 @@ public class SidReg extends Tab implements UIPart {
 	}
 
 	protected void recordSidWrites(final boolean enable) {
-		util.getPlayer().configureSIDs((sidNum, sidEmu) -> {
-			if (enable) {
-				final SidRegExtension sidRegExtension = new SidRegExtension(sidNum) {
-
-					@Override
-					public void sidWrite(final SidRegWrite output) {
-						Platform.runLater(() -> {
-							allSidRegWrites.add(output);
-							if (allSidRegWrites.size() % REFRESH_RATE == 0) {
-								doUpdateFilter();
-							}
-						});
-					}
-
-					@Override
-					public void clear() {
-						Platform.runLater(() -> allSidRegWrites.clear());
-					}
-				};
-				sidRegExtension.setbundle(util.getBundle());
-				sidRegExtension.init();
-				sidEmu.setListener(sidRegExtension);
-			} else {
-				sidEmu.setListener(null);
-			}
-		});
+		if (enable) {
+			final SidRegExtension sidRegExtension = new SidRegExtension() {
+				
+				@Override
+				public void sidWrite(final SidRegWrite output) {
+					Platform.runLater(() -> {
+						allSidRegWrites.add(output);
+						if (allSidRegWrites.size() % REFRESH_RATE == 0) {
+							doUpdateFilter();
+						}
+					});
+				}
+				
+				@Override
+				public void clear() {
+					Platform.runLater(() -> allSidRegWrites.clear());
+				}
+			};
+			sidRegExtension.setbundle(util.getBundle());
+			sidRegExtension.init();
+			util.getPlayer().getC64().setListener(sidRegExtension);
+		} else {
+			util.getPlayer().getC64().setListener(null);
+		}
 	}
 }

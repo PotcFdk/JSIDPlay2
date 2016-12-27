@@ -16,24 +16,18 @@ public abstract class SidRegExtension implements SIDListener {
 
 	private long fTime;
 
-	/** SID chip number (0..MAX_SIDS-1) */
-	private int chipNum;
-
-	public SidRegExtension(int sidNum) {
-		this.chipNum = sidNum;
-	}
-	
 	public void setbundle(ResourceBundle l) {
 		bundle = l;
 	}
 
 	@Override
 	public void write(final long time, final int addr, final byte data) {
+		
 		if (fTime == 0) {
 			fTime = time;
 		}
 		final long relTime = time - fTime;
-		final SidRegWrite row = new SidRegWrite(time, relTime, chipNum, bundle.getString(description[addr]),
+		final SidRegWrite row = new SidRegWrite(time, relTime, addr & 0xffe0, bundle.getString(description[addr & 0xf]),
 				String.format("$%02X", data & 0xff));
 
 		sidWrite(row);

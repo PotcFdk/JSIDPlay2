@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import libsidplay.common.ChipModel;
+import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
@@ -19,6 +20,11 @@ public abstract class ReSIDBase extends SIDEmu {
 	 * Consumes samples of the SID while clocking.
 	 */
 	private IntConsumer sampler;
+
+	/**
+	 * Last time chip was accessed.
+	 */
+	protected long lastTime;
 
 	/**
 	 * Constructor
@@ -109,5 +115,12 @@ public abstract class ReSIDBase extends SIDEmu {
 	public abstract byte readOSC(int voiceNum);
 
 	protected abstract SIDChip createSID();
+
+	protected int clocksSinceLastAccess() {
+		final long now = context.getTime(Event.Phase.PHI2);
+		int diff = (int) (now - lastTime);
+		lastTime = now;
+		return diff;
+	}
 
 }
