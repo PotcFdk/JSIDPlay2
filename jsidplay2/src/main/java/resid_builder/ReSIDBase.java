@@ -16,6 +16,8 @@ public abstract class ReSIDBase extends SIDEmu {
 
 	private final SIDChip sid = createSID();
 
+	private EventScheduler context;
+	
 	/**
 	 * Consumes samples of the SID while clocking.
 	 */
@@ -33,7 +35,7 @@ public abstract class ReSIDBase extends SIDEmu {
 	 *            {@link EventScheduler} context to use.
 	 */
 	public ReSIDBase(EventScheduler context) {
-		super(context);
+		this.context = context;
 		reset((byte) 0xf);
 	}
 

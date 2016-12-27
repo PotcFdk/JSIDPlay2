@@ -27,7 +27,6 @@ import netsiddev_builder.commands.TrySetSidModel;
 
 public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
-	private final EventScheduler context;
 	private final IConfig config;
 
 	private final CPUClock cpuClock;
@@ -35,7 +34,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	private final List<NetSIDDev> sids = new ArrayList<>();
 
 	public NetSIDDevBuilder(EventScheduler context, IConfig config, SidTune tune, CPUClock cpuClock) {
-		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
 		this.client = new NetSIDClient(context, config.getEmulationSection());
@@ -80,9 +78,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	private NetSIDDev createSID(IEmulationSection emulationSection, ChipModel chipModel, SIDEmu sidEmu, SidTune tune,
 			int sidNum) {
 		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
-			return new NetSIDDev.FakeStereo(context, client, sidNum, chipModel, config, sids);
+			return new NetSIDDev.FakeStereo(client, sidNum, chipModel, config, sids);
 		} else {
-			return new NetSIDDev(context, client, sidNum, chipModel);
+			return new NetSIDDev(client, sidNum, chipModel);
 		}
 	}
 

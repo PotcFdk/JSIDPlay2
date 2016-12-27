@@ -31,15 +31,8 @@ public abstract class SIDEmu {
 	/** no SID chip */
 	public static final SIDEmu NONE = null;
 	
-	/** Event context */
-	protected final EventScheduler context;
-
 	/** Internal cache of SID register state, used for GUI feedback. */
 	private final byte[] registers = new byte[SIDChip.REG_COUNT];
-
-	public SIDEmu(EventScheduler context) {
-		this.context = context;
-	}
 
 	/**
 	 * Side effect free read access.

@@ -33,6 +33,8 @@ public class HardSID extends SIDEmu {
 		}
 	};
 
+	private EventScheduler context;
+	
 	private final HardSID4U hardSID;
 
 	private final byte deviceID;
@@ -45,7 +47,7 @@ public class HardSID extends SIDEmu {
 
 	public HardSID(EventScheduler context, HardSIDBuilder hardSIDBuilder, final HardSID4U hardSID, final byte deviceID, final byte sid,
 			final ChipModel model) {
-		super(context);
+		this.context  = context;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
 		this.deviceID = deviceID;

@@ -5,7 +5,6 @@ import java.util.List;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
-import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -28,9 +27,9 @@ public class NetSIDDev extends SIDEmu {
 		private final int prevNum;
 		private final List<NetSIDDev> sids;
 
-		public FakeStereo(EventScheduler context, NetSIDClient connection, final int sidNum, final ChipModel model,
+		public FakeStereo(NetSIDClient connection, final int sidNum, final ChipModel model,
 				final IConfig config, final List<NetSIDDev> sids) {
-			super(context, connection, sidNum, model);
+			super(connection, sidNum, model);
 			this.emulationSection = config.getEmulationSection();
 			this.prevNum = sidNum - 1;
 			this.sids = sids;
@@ -74,8 +73,7 @@ public class NetSIDDev extends SIDEmu {
 	private NetSIDClient client;
 	private ChipModel chipModel;
 
-	public NetSIDDev(EventScheduler context, NetSIDClient connection, final int sidNum, final ChipModel model) {
-		super(context);
+	public NetSIDDev(NetSIDClient connection, final int sidNum, final ChipModel model) {
 		this.client = connection;
 		this.sidNum = (byte) sidNum;
 		this.chipModel = model;
