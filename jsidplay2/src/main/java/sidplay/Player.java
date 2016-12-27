@@ -299,9 +299,7 @@ public class Player extends HardwareEnsemble {
 	 * thread-safe.
 	 */
 	public final void updateSIDChipConfiguration() {
-		executeInPlayerThread("Update SID Chip Configuration", () -> {
-			c64.insertSIDChips(requiredSIDs, sidLocator);
-		});
+		executeInPlayerThread("Update SID Chip Configuration", () -> c64.insertSIDChips(requiredSIDs, sidLocator));
 	}
 
 	/**
@@ -311,9 +309,7 @@ public class Player extends HardwareEnsemble {
 	 *            VIC configuration action
 	 */
 	public final void configureVICs(Consumer<VIC> action) {
-		executeInPlayerThread("Configure VICs", () -> {
-			c64.configureVICs(action);
-		});
+		executeInPlayerThread("Configure VICs", () -> c64.configureVICs(action));
 	}
 
 	/**
@@ -323,9 +319,7 @@ public class Player extends HardwareEnsemble {
 	 *            SID chip consumer
 	 */
 	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
-		executeInPlayerThread("Configure SIDs", () -> {
-			c64.configureSIDs(action);
-		});
+		executeInPlayerThread("Configure SIDs", () ->  c64.configureSIDs(action));
 	}
 
 	/**
@@ -337,9 +331,7 @@ public class Player extends HardwareEnsemble {
 	 *            SID chip consumer
 	 */
 	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
-		executeInPlayerThread("Configure SID", () -> {
-			c64.configureSID(chipNum, action);
-		});
+		executeInPlayerThread("Configure SID", () -> c64.configureSID(chipNum, action));
 	}
 
 	/**
