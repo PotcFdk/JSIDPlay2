@@ -144,11 +144,6 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	@Override
-	public void reset() {
-		// nothing to do
-	}
-
-	@Override
 	public void pause() {
 		// flush for HardSID4U does not have any effect!? Therefore left empty!
 	}

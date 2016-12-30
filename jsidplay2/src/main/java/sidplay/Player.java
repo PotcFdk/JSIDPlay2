@@ -376,7 +376,6 @@ public class Player extends HardwareEnsemble {
 	protected final void reset() {
 		super.reset();
 		timer.reset();
-		sidBuilder.reset();
 
 		c64.getEventScheduler().schedule(new Event("Auto-start") {
 			@Override

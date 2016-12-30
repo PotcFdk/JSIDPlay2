@@ -3,7 +3,7 @@ package libsidplay.common;
 public enum Engine {
 	/** Hardware (HardSID4U) */
 	HARDSID,
-	/** Software (NetSIDdevice) */
+	/** Software (NetSIDDevice) */
 	NETSID,
 	/** Software (RESID,RESIDfp) */
 	EMULATION;

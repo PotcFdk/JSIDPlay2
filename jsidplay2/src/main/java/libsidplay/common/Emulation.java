@@ -15,7 +15,7 @@ public enum Emulation {
 	 * Detect SID emulation of specified SID number
 	 * <OL>
 	 * <LI>forced SID emulation
-	 * <LI>default SID emulaton
+	 * <LI>default SID emulation
 	 * </OL>
 	 * 
 	 * @return SID emulation to be used for SID number

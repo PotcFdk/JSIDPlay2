@@ -93,11 +93,6 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	}
 
 	@Override
-	public void reset() {
-		// nothing to do
-	}
-
-	@Override
 	public void start() {
 		client.start();
 	}

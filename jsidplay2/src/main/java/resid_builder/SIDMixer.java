@@ -223,6 +223,7 @@ public class SIDMixer implements Mixer {
 				20000);
 		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		this.fadeInFadeOutEnabled = sidplay2Section.getFadeInTime() != 0 || sidplay2Section.getFadeOutTime() != 0;
+		normalSpeed();
 	}
 
 	/**

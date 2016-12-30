@@ -86,13 +86,11 @@ public class NetSIDDev extends SIDEmu {
 
 	@Override
 	public byte read(int addr) {
-		clock();
 		return client.read(sidNum, (byte) addr);
 	}
 
 	@Override
 	public void write(int addr, final byte data) {
-		clock();
 		super.write(addr, data);
 		client.write(sidNum, (byte) addr, data);
 	}

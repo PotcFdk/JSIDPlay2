@@ -65,11 +65,6 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 		remove((ReSIDBase) sid);
 	}
 
-	@Override
-	public void reset() {
-		normalSpeed();
-	}
-
 	/**
 	 * Create SID emulation of a specific emulation type or re-use already used
 	 * SID chip, if implementation does not change.<BR>
