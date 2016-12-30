@@ -543,8 +543,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	/**
 	 * Get SID register write notifications.
 	 */
-	public void setListener(SIDListener listener) {
-		pla.getSIDBank().setListener(listener);
+	public void setSIDListener(SIDListener listener) {
+		pla.getSIDBank().setSIDListener(listener);
 	}
 
 	/**

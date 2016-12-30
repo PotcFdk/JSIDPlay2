@@ -137,7 +137,7 @@ public final class PLA {
 		 */
 		private SIDListener listener;
 		
-		public void setListener(SIDListener listener) {
+		public void setSIDListener(SIDListener listener) {
 			this.listener = listener;
 		}
 		

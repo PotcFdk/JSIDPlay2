@@ -69,7 +69,7 @@ public class SidReg extends Tab implements UIPart {
 
 	@Override
 	public void doClose() {
-		util.getPlayer().getC64().setListener(null);
+		util.getPlayer().getC64().setSIDListener(null);
 		util.getPlayer().stateProperty().removeListener(sidRegStop);
 	}
 
@@ -198,9 +198,9 @@ public class SidReg extends Tab implements UIPart {
 			};
 			sidRegExtension.setbundle(util.getBundle());
 			sidRegExtension.init();
-			util.getPlayer().getC64().setListener(sidRegExtension);
+			util.getPlayer().getC64().setSIDListener(sidRegExtension);
 		} else {
-			util.getPlayer().getC64().setListener(null);
+			util.getPlayer().getC64().setSIDListener(null);
 		}
 	}
 }
