@@ -49,24 +49,15 @@ import libsidutils.prg2tap.PRG2TAPProgram;
  * 
  */
 public class HardwareEnsemble {
-	private static final MessageDigest MD5_DIGEST;
-	private static final byte[] EOD_HACK = new byte[] { (byte) 0xEE, (byte) 0xAD, 0x56, 0x30, (byte) 0x90, 0x46, 0x37,
-			(byte) 0xCD, 0x3D, 0x4C, (byte) 0x85, (byte) 0x8F, 0x50, (byte) 0x86, 0x51, (byte) 0x92, };
-
-	static {
-		try {
-			MD5_DIGEST = MessageDigest.getInstance("MD5");
-		} catch (final NoSuchAlgorithmException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
-
 	private static final String JIFFYDOS_C64_ROM = "/libsidplay/roms/JiffyDOS C64 Kernal 6.01.bin";
 	private static final String JIFFYDOS_C1541_ROM = "/libsidplay/roms/JiffyDOS 1541 5.0.bin";
 	private static final int JIFFYDOS_C64_ROM_SIZE = 0x2000;
 	private static final int JIFFYDOS_C1541_ROM_SIZE = 0x4000;
 	private static final byte[] JIFFYDOS_C64_KERNAL = new byte[JIFFYDOS_C64_ROM_SIZE];
 	private static final byte[] JIFFYDOS_C1541 = new byte[JIFFYDOS_C1541_ROM_SIZE];
+	private static final MessageDigest MD5_DIGEST;
+	private static final byte[] EOD_HACK = new byte[] { (byte) 0xEE, (byte) 0xAD, 0x56, 0x30, (byte) 0x90, 0x46, 0x37,
+			(byte) 0xCD, 0x3D, 0x4C, (byte) 0x85, (byte) 0x8F, 0x50, (byte) 0x86, 0x51, (byte) 0x92, };
 
 	static {
 		try (DataInputStream isJiffyDosC64 = new DataInputStream(
@@ -75,7 +66,8 @@ public class HardwareEnsemble {
 						HardwareEnsemble.class.getResourceAsStream(JIFFYDOS_C1541_ROM))) {
 			isJiffyDosC64.readFully(JIFFYDOS_C64_KERNAL);
 			isJiffyDosC1541.readFully(JIFFYDOS_C1541);
-		} catch (IOException e) {
+			MD5_DIGEST = MessageDigest.getInstance("MD5");
+		} catch (final NoSuchAlgorithmException | IOException e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
