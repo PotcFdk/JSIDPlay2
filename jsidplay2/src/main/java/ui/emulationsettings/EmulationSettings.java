@@ -1,5 +1,7 @@
 package ui.emulationsettings;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -11,6 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -52,8 +55,6 @@ public class EmulationSettings extends C64Window {
 	private enum SidReads {
 		FIRST_SID, SECOND_SID, THIRD_SID
 	}
-
-	private static final int STEP = 3;
 
 	@FXML
 	private ComboBox<Emulation> sid1Emulation, sid2Emulation, sid3Emulation, defaultEmulation;
@@ -99,6 +100,16 @@ public class EmulationSettings extends C64Window {
 		ResourceBundle bundle = util.getBundle();
 		AudioSection audioSection = util.getConfig().getAudioSection();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+
+		mainFilterCurve.setAnimated(false);
+		mainFilterCurve.setCreateSymbols(false);
+		mainFilterCurve.setLegendVisible(false);
+		secondFilterCurve.setAnimated(false);
+		secondFilterCurve.setCreateSymbols(false);
+		secondFilterCurve.setLegendVisible(false);
+		thirdFilterCurve.setAnimated(false);
+		thirdFilterCurve.setCreateSymbols(false);
+		thirdFilterCurve.setLegendVisible(false);
 
 		mainFilters = FXCollections.<String>observableArrayList();
 		mainFilter.setItems(mainFilters);
@@ -284,7 +295,7 @@ public class EmulationSettings extends C64Window {
 	private void setSid1Model() {
 		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
 		updateSIDChipConfiguration();
-		// 1st chip model chip model has an impact on all chip model settings
+		// 1st chip model has an impact on all chip model settings
 		// (Automatic - use 1st chip model)
 		setSid2Model();
 		setSid3Model();
@@ -426,7 +437,8 @@ public class EmulationSettings extends C64Window {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		series.setName(util.getBundle().getString("FILTERCURVE_TITLE"));
-		filterCurve.getData().clear();
+
+		List<Data<Number, Number>> dataList = new ArrayList<>();
 
 		SidTune tune = util.getPlayer().getTune();
 
@@ -439,18 +451,22 @@ public class EmulationSettings extends C64Window {
 			FilterSection filter = optFilter.get();
 			// stereo curve or 3-SID curve currently not used?
 			if (!((filterCurve == secondFilterCurve && !second) || (filterCurve == thirdFilterCurve && !third))) {
-				for (int fc = 0; fc < SIDChip.FC_MAX; fc += STEP) {
+				for (int fc = 0; fc < SIDChip.FC_MAX; fc++) {
 					if (filter.isReSIDFilter6581() || filter.isReSIDFilter8580()) {
 						double data = resid_builder.resid.FilterModelConfig.estimateFrequency(filter, fc);
-						series.getData().add(new XYChart.Data<Number, Number>(fc, data));
+						dataList.add(new XYChart.Data<Number, Number>(fc, data));
 					} else if (filter.isReSIDfpFilter6581() || filter.isReSIDfpFilter8580()) {
 						double data = resid_builder.residfp.FilterModelConfig.estimateFrequency(filter, fc);
-						series.getData().add(new XYChart.Data<Number, Number>(fc, data));
+						dataList.add(new XYChart.Data<Number, Number>(fc, data));
 					}
 				}
 			}
 		}
-		filterCurve.getData().add(series);
+		series.setData(FXCollections.observableArrayList(dataList));
+
+		List<XYChart.Series<Number, Number>> seriesList = new ArrayList<>();
+		seriesList.add(series);
+		filterCurve.setData(FXCollections.observableArrayList(seriesList));
 	}
 
 	/**
