@@ -148,7 +148,7 @@ public abstract class Timer {
 		}
 		// ... or play default length (0 means forever)
 		end = config.getSidplay2Section().getDefaultPlayLength();
-		if (end != 0) {
+		if (end > 0) {
 			// use default length (is meant to be relative to start)
 			end = schedule(start + end, endTimeEvent);
 			if (fadeOut != 0) {

@@ -81,7 +81,6 @@ import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
-import sidplay.ini.IniReader;
 import sidplay.player.PlayList;
 import sidplay.player.State;
 import ui.about.About;
@@ -89,6 +88,7 @@ import ui.asm.Asm;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.EnumToString;
+import ui.common.TimeNumberStringConverter;
 import ui.common.UIPart;
 import ui.common.dialog.AlertDialog;
 import ui.common.dialog.YesNoDialog;
@@ -329,10 +329,22 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		});
 		engineBox.valueProperty().bindBidirectional(emulationSection.engineProperty());
 
-		int seconds = sidplay2Section.getDefaultPlayLength();
-		defaultTime.setText(String.format("%02d:%02d", seconds / 60, seconds % 60));
-		sidplay2Section.defaultPlayLengthProperty().addListener((observable, oldValue, newValue) -> defaultTime
-				.setText(String.format("%02d:%02d", newValue.intValue() / 60, newValue.intValue() % 60)));
+		Bindings.bindBidirectional(defaultTime.textProperty(), sidplay2Section.defaultPlayLengthProperty(),
+				new TimeNumberStringConverter());
+		sidplay2Section.defaultPlayLengthProperty().addListener((obj, o, n) -> {
+			final Tooltip tooltip = new Tooltip();
+			defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+			if (n.intValue() != -1) {
+				util.getPlayer().getTimer().updateEnd();
+				tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
+				defaultTime.setTooltip(tooltip);
+				defaultTime.getStyleClass().add(CELL_VALUE_OK);
+			} else {
+				tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_FORMAT"));
+				defaultTime.setTooltip(tooltip);
+				defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
+			}
+		});
 
 		hostname.textProperty().bindBidirectional(emulationSection.netSidDevHostProperty());
 		Bindings.bindBidirectional(port.textProperty(), emulationSection.netSidDevPortProperty(),
@@ -886,24 +898,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 				util.getPlayer().getTimer().updateEnd();
 			}
 		});
-	}
-
-	@FXML
-	private void setDefaultTime() {
-		final Tooltip tooltip = new Tooltip();
-		defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-		final int secs = IniReader.parseTime(defaultTime.getText());
-		if (secs != -1) {
-			util.getConfig().getSidplay2Section().setDefaultPlayLength(secs);
-			util.getPlayer().getTimer().updateEnd();
-			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
-			defaultTime.setTooltip(tooltip);
-			defaultTime.getStyleClass().add(CELL_VALUE_OK);
-		} else {
-			tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_FORMAT"));
-			defaultTime.setTooltip(tooltip);
-			defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
-		}
 	}
 
 	@FXML

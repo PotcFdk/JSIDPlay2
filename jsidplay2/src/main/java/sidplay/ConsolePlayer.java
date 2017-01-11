@@ -188,7 +188,7 @@ final public class ConsolePlayer {
 				}
 				return basename;
 			});
-			if (isRecording() && defaultLength == 0
+			if (isRecording() && defaultLength <= 0
 					&& player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0) == 0) {
 				System.err.println("ERROR: unknown song length in record mode"
 						+ " (please use option --defaultLength or configure song length database)");

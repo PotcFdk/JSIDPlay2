@@ -403,8 +403,7 @@
 							<Insets left="10.0" right="10.0" />
 						</padding>
 						<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
-						<TextField fx:id="defaultTime" onAction="#setDefaultTime"
-							prefWidth="60" >
+						<TextField fx:id="defaultTime" prefWidth="60" >
 							<tooltip>
 								<Tooltip text="%DEFAULT_LENGTH_TIP"></Tooltip>
 							</tooltip>

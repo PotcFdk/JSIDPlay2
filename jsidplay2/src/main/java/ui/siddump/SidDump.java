@@ -400,7 +400,7 @@ public class SidDump extends Tab implements UIPart {
 			int length = util.getPlayer().getSidDatabaseInfo(db -> db.getSongLength(tune), 0);
 			if (length == 0) {
 				length = util.getConfig().getSidplay2Section().getDefaultPlayLength();
-				if (length == 0) {
+				if (length <= 0) {
 					// default
 					length = 60;
 				}
