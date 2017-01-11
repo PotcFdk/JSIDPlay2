@@ -251,7 +251,7 @@ public class EmulationSettings extends C64Window {
 		thirdFilter.setDisable(!third);
 		thirdFilterCurve.setDisable(!third);
 		// fake stereo, only:
-		sidToRead.setDisable(!(emulationSection.isFakeStereo()));
+		sidToRead.setDisable(!emulationSection.isFakeStereo());
 		// forced stereo or forced 3-SID, only:
 		baseAddress.setDisable(!(isForcedStereo || isForced3Sid));
 		// forced 3-SID, only:
@@ -296,7 +296,7 @@ public class EmulationSettings extends C64Window {
 		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
 		updateSIDChipConfiguration();
 		// 1st chip model has an impact on all chip model settings
-		// (Automatic - use 1st chip model)
+		// (because "Automatic" means: use 1st chip model)
 		setSid2Model();
 		setSid3Model();
 	}
@@ -435,15 +435,12 @@ public class EmulationSettings extends C64Window {
 	 */
 	private void drawFilterCurve(final ComboBox<String> filterBox, LineChart<Number, Number> filterCurve) {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-		series.setName(util.getBundle().getString("FILTERCURVE_TITLE"));
-
-		List<Data<Number, Number>> dataList = new ArrayList<>();
 
 		SidTune tune = util.getPlayer().getTune();
-
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
 		boolean third = SidTune.isSIDUsed(emulationSection, tune, 2);
+		
+		List<Data<Number, Number>> dataList = new ArrayList<>();
 
 		Optional<FilterSection> optFilter = util.getConfig().getFilterSection().stream()
 				.filter(f -> f.getName().equals(filterBox.getSelectionModel().getSelectedItem())).findFirst();
@@ -462,6 +459,7 @@ public class EmulationSettings extends C64Window {
 				}
 			}
 		}
+		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		series.setData(FXCollections.observableArrayList(dataList));
 
 		List<XYChart.Series<Number, Number>> seriesList = new ArrayList<>();
@@ -485,12 +483,11 @@ public class EmulationSettings extends C64Window {
 	private void addFilters(final SidTune tune, int num, ObservableList<String> filters, ComboBox<String> filter) {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-		boolean filterEnable = emulationSection.isFilterEnable(num);
-
 		Engine engine = emulationSection.getEngine();
 		Emulation emulation = Emulation.getEmulation(emulationSection, tune, num);
 		ChipModel model = ChipModel.getChipModel(emulationSection, tune, num);
-		String filterName = filterEnable ? emulationSection.getFilterName(num, engine, emulation, model) : null;
+		String filterName = emulationSection.getFilterName(num, engine, emulation, model);
+		boolean filterEnable = emulationSection.isFilterEnable(num);
 
 		filters.clear();
 		if (engine == Engine.NETSID) {
