@@ -6,7 +6,7 @@ import javafx.util.converter.NumberStringConverter;
 import libsidutils.siddatabase.TimeConverter;
 
 /**
- * Convert time in minutes and seconds ([mm:]ss) to number (seconds)
+ * Convert time in minutes and seconds (mm:ss) to number (seconds)
  */
 public class TimeToStringConverter extends NumberStringConverter {
 	@Override
