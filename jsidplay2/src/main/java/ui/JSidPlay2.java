@@ -88,7 +88,7 @@ import ui.asm.Asm;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.EnumToString;
-import ui.common.TimeNumberStringConverter;
+import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.common.dialog.AlertDialog;
 import ui.common.dialog.YesNoDialog;
@@ -330,7 +330,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		engineBox.valueProperty().bindBidirectional(emulationSection.engineProperty());
 
 		Bindings.bindBidirectional(defaultTime.textProperty(), sidplay2Section.defaultPlayLengthProperty(),
-				new TimeNumberStringConverter());
+				new TimeToStringConverter());
 		sidplay2Section.defaultPlayLengthProperty().addListener((obj, o, n) -> {
 			final Tooltip tooltip = new Tooltip();
 			defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);

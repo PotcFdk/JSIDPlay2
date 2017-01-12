@@ -95,7 +95,7 @@ public class SidDatabase {
 	 */
 	private int getLength(final String md5, final int songNum) {
 		final String times = database.getPropertyString("Database", md5, null);
-		return times != null ? IniReader.parseTime(times.split(" ")[songNum - 1]) : 0;
+		return times != null ? new TimeConverter().fromString(times.split(" ")[songNum - 1]) : 0;
 	}
 
 }

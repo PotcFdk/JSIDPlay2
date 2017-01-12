@@ -27,9 +27,8 @@
 	<stylesheets>
 		<URL value="@SidDump.css" />
 	</stylesheets>
-	<VBox AnchorPane.bottomAnchor="10"
-		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
-		AnchorPane.topAnchor="10" fx:id="root">
+	<VBox AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10" fx:id="root">
 		<HBox>
 			<ToggleButton text="%START_STOP_RECORDING" fx:id="startStopRecording"
 				onAction="#doStartStopRecording">
@@ -54,8 +53,7 @@
 					GridPane.rowIndex="0">
 				</Label>
 				<TextField fx:id="maxRecordLength" text="00:00"
-					onAction="#doSetMaxRecordLength" GridPane.columnIndex="1"
-					GridPane.rowIndex="0">
+					GridPane.columnIndex="1" GridPane.rowIndex="0">
 					<tooltip>
 						<Tooltip text="%MAX_RECORD_LENGTH_TIP" />
 					</tooltip>
@@ -169,7 +167,8 @@
 					</ImageView>
 				</graphic>
 			</Button>
-			<ToggleButton text="%REPLAY_ALL" fx:id="replayAll" onAction="#doReplayAll">
+			<ToggleButton text="%REPLAY_ALL" fx:id="replayAll"
+				onAction="#doReplayAll">
 				<graphic>
 					<ImageView>
 						<image>
@@ -179,7 +178,7 @@
 				</graphic>
 			</ToggleButton>
 		</HBox>
-		<TableView fx:id="dumpTable" >
+		<TableView fx:id="dumpTable">
 			<columns>
 				<TableColumn text="%TIME">
 					<cellValueFactory>

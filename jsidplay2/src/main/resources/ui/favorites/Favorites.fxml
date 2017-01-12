@@ -26,7 +26,8 @@
 		<ToggleGroup fx:id="repeatGroup" />
 	</fx:define>
 	<BorderPane AnchorPane.bottomAnchor="10"
-		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
+		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+		AnchorPane.topAnchor="10">
 		<center>
 			<VBox>
 				<HBox alignment="CENTER">
@@ -111,16 +112,16 @@
 				<GridPane hgap="10">
 					<Label text="%FADE_IN_LENGTH" alignment="CENTER_RIGHT"
 						GridPane.rowIndex="0" GridPane.columnIndex="0" />
-					<TextField fx:id="fadeInTime" onAction="#setFadeInTime"
-						GridPane.rowIndex="0" GridPane.columnIndex="1">
+					<TextField fx:id="fadeInTime" GridPane.rowIndex="0"
+						GridPane.columnIndex="1">
 						<tooltip>
 							<Tooltip text="%FADE_IN_LENGTH_TIP"></Tooltip>
 						</tooltip>
 					</TextField>
 					<Label text="%FADE_OUT_LENGTH" alignment="CENTER_RIGHT"
 						GridPane.rowIndex="0" GridPane.columnIndex="2" />
-					<TextField fx:id="fadeOutTime" onAction="#setFadeOutTime"
-						GridPane.rowIndex="0" GridPane.columnIndex="3">
+					<TextField fx:id="fadeOutTime" GridPane.rowIndex="0"
+						GridPane.columnIndex="3">
 						<tooltip>
 							<Tooltip text="%FADE_OUT_LENGTH_TIP"></Tooltip>
 						</tooltip>

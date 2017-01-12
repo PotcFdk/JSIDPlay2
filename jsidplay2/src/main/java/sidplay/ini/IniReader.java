@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import libsidutils.siddatabase.TimeConverter;
+
 /**
  * This class can read properties files in Microsoft .ini file style and
  * provides an interface to read string, integer and boolean values. The .ini
@@ -55,15 +57,6 @@ public class IniReader {
 	 * e.g. "Key String=Value String"
 	 */
 	private static final Pattern KEY_VALUE = Pattern.compile("(\\w+(?:\\s+\\w+)*)\\s*=\\s*(.*)");
-	/**
-	 * Song length.<BR>
-	 * Syntax: "min:sec(attribute)"<BR>
-	 * e.g. "0:16(M)" for explanations please refer to file
-	 * "DOCUMENTS/Songlengths.faq" contained in HVSC.
-	 */
-	private static final Pattern TIME_VALUE = Pattern.compile("([0-9]{1,2}):([0-9]{2})(?:\\(.*)?");
-
-	private static final int SECONDS_IN_A_MINUTE = 60;
 
 	private final Map<String, Map<String, String>> sections = new LinkedHashMap<String, Map<String, String>>();
 
@@ -270,22 +263,12 @@ public class IniReader {
 		}
 	}
 
-	/**
-	 * Parse time syntax to determine the song length in seconds.<BR>
-	 * e.g. "0:16(M)" -> 16<BR>
-	 * Attribute in braces is used in the song length database.
-	 * 
-	 * @param time
-	 *            syntax to parse
-	 * @return song length in seconds (-1 means syntax error)
-	 */
-	public static int parseTime(final String time) {
-		Matcher m = TIME_VALUE.matcher(time);
-		if (!m.matches()) {
-			System.err.println("Failed to parse song length time: " + time);
-			return -1;
+	private int parseTime(final String time) {
+		int seconds = new TimeConverter().fromString(time).intValue();
+		if (seconds == -1) {
+			System.err.println("Invalid time, expected mm:ss (found " + time + ")");
 		}
-		return Integer.parseInt(m.group(1)) * SECONDS_IN_A_MINUTE + Integer.parseInt(m.group(2));
+		return seconds;
 	}
 
 }

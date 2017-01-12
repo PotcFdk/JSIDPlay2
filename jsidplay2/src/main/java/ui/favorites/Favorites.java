@@ -9,6 +9,7 @@ import java.util.Random;
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -30,9 +31,9 @@ import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
-import sidplay.ini.IniReader;
 import sidplay.player.State;
 import ui.common.C64Window;
+import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.Configuration;
@@ -79,24 +80,49 @@ public class Favorites extends Tab implements UIPart {
 
 	@FXML
 	private void initialize() {
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+		SidPlay2Section sidplay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
 
 		// Not already configured, yet?
-		if (sidPlay2Section.getHvsc() != null) {
-			setSongLengthDatabase(sidPlay2Section.getHvsc());
-			setSTIL(sidPlay2Section.getHvsc());
+		if (sidplay2Section.getHvsc() != null) {
+			setSongLengthDatabase(sidplay2Section.getHvsc());
+			setSTIL(sidplay2Section.getHvsc());
 		}
 
-		int fadeInSeconds = sidPlay2Section.getFadeInTime();
-		fadeInTime.setText(String.format("%02d:%02d", fadeInSeconds / 60, fadeInSeconds % 60));
-		sidPlay2Section.fadeInTimeProperty().addListener((observable, oldValue, newValue) -> fadeInTime
-				.setText(String.format("%02d:%02d", newValue.intValue() / 60, newValue.intValue() % 60)));
-		int fadeOutSeconds = sidPlay2Section.getFadeOutTime();
-		fadeOutTime.setText(String.format("%02d:%02d", fadeOutSeconds / 60, fadeOutSeconds % 60));
-		sidPlay2Section.fadeOutTimeProperty().addListener((observable, oldValue, newValue) -> fadeOutTime
-				.setText(String.format("%02d:%02d", newValue.intValue() / 60, newValue.intValue() % 60)));
+		Bindings.bindBidirectional(fadeInTime.textProperty(), sidplay2Section.fadeInTimeProperty(),
+				new TimeToStringConverter());
+		sidplay2Section.fadeInTimeProperty().addListener((obj, o, n) -> {
+			final Tooltip tooltip = new Tooltip();
+			fadeInTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+			if (n.intValue() != -1) {
+				util.getPlayer().getTimer().updateEnd();
+				tooltip.setText(util.getBundle().getString("FADE_IN_LENGTH_TIP"));
+				fadeInTime.setTooltip(tooltip);
+				fadeInTime.getStyleClass().add(CELL_VALUE_OK);
+			} else {
+				tooltip.setText(util.getBundle().getString("FADE_IN_LENGTH_FORMAT"));
+				fadeInTime.setTooltip(tooltip);
+				fadeInTime.getStyleClass().add(CELL_VALUE_ERROR);
+			}
+		});
 
-		PlaybackType pt = sidPlay2Section.getPlaybackType();
+		Bindings.bindBidirectional(fadeOutTime.textProperty(), sidplay2Section.fadeOutTimeProperty(),
+				new TimeToStringConverter());
+		sidplay2Section.fadeOutTimeProperty().addListener((obj, o, n) -> {
+			final Tooltip tooltip = new Tooltip();
+			fadeOutTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+			if (n.intValue() != -1) {
+				util.getPlayer().getTimer().updateEnd();
+				tooltip.setText(util.getBundle().getString("FADE_OUT_LENGTH_TIP"));
+				fadeOutTime.setTooltip(tooltip);
+				fadeOutTime.getStyleClass().add(CELL_VALUE_OK);
+			} else {
+				tooltip.setText(util.getBundle().getString("FADE_OUT_LENGTH_FORMAT"));
+				fadeOutTime.setTooltip(tooltip);
+				fadeOutTime.getStyleClass().add(CELL_VALUE_ERROR);
+			}
+		});
+
+		PlaybackType pt = sidplay2Section.getPlaybackType();
 		switch (pt) {
 		case PLAYBACK_OFF:
 			off.setSelected(true);
@@ -269,42 +295,6 @@ public class Favorites extends Tab implements UIPart {
 	@FXML
 	private void renameTab() {
 		renameTab(getSelectedTab(), renameTab.getText());
-	}
-
-	@FXML
-	private void setFadeInTime() {
-		final Tooltip tooltip = new Tooltip();
-		fadeInTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-		final int secs = IniReader.parseTime(fadeInTime.getText());
-		if (secs != -1) {
-			util.getConfig().getSidplay2Section().setFadeInTime(secs);
-			util.getPlayer().getTimer().updateEnd();
-			tooltip.setText(util.getBundle().getString("FADE_IN_LENGTH_TIP"));
-			fadeInTime.setTooltip(tooltip);
-			fadeInTime.getStyleClass().add(CELL_VALUE_OK);
-		} else {
-			tooltip.setText(util.getBundle().getString("FADE_IN_LENGTH_FORMAT"));
-			fadeInTime.setTooltip(tooltip);
-			fadeInTime.getStyleClass().add(CELL_VALUE_ERROR);
-		}
-	}
-
-	@FXML
-	private void setFadeOutTime() {
-		final Tooltip tooltip = new Tooltip();
-		fadeOutTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-		final int secs = IniReader.parseTime(fadeOutTime.getText());
-		if (secs != -1) {
-			util.getConfig().getSidplay2Section().setFadeOutTime(secs);
-			util.getPlayer().getTimer().updateEnd();
-			tooltip.setText(util.getBundle().getString("FADE_OUT_LENGTH_TIP"));
-			fadeOutTime.setTooltip(tooltip);
-			fadeOutTime.getStyleClass().add(CELL_VALUE_OK);
-		} else {
-			tooltip.setText(util.getBundle().getString("FADE_OUT_LENGTH_FORMAT"));
-			fadeOutTime.setTooltip(tooltip);
-			fadeOutTime.getStyleClass().add(CELL_VALUE_ERROR);
-		}
 	}
 
 	@FXML

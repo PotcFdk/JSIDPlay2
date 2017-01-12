@@ -3,6 +3,10 @@ package ui.siddump;
 import java.io.File;
 import java.io.IOException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -19,20 +23,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import libsidplay.sidtune.SidTune;
 import libsidutils.siddump.SIDDumpConfiguration;
 import libsidutils.siddump.SIDDumpConfiguration.SIDDumpPlayer;
 import netsiddev.InvalidCommandException;
-
-import org.xml.sax.SAXException;
-
 import sidplay.Player;
-import sidplay.ini.IniReader;
 import sidplay.player.State;
 import ui.common.C64Window;
+import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.entities.config.SidPlay2Section;
@@ -105,9 +103,25 @@ public class SidDump extends Tab implements UIPart {
 		};
 		util.getPlayer().stateProperty().addListener(changeListener);
 
-		sidDumpOutputs = FXCollections.<SidDumpOutput> observableArrayList();
+		maxRecordLength.textProperty().addListener((obj,o,n)-> {
+			final Tooltip tooltip = new Tooltip();
+			maxRecordLength.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+			seconds = new TimeToStringConverter().fromString(maxRecordLength.getText()).intValue();
+			if (seconds != -1) {
+				sidDumpExtension.setRecordLength(seconds);
+
+				tooltip.setText(util.getBundle().getString("MAX_RECORD_LENGTH_TIP"));
+				maxRecordLength.setTooltip(tooltip);
+				maxRecordLength.getStyleClass().add(CELL_VALUE_OK);
+			} else {
+				tooltip.setText(util.getBundle().getString("MAX_RECORD_LENGTH_FORMAT"));
+				maxRecordLength.setTooltip(tooltip);
+				maxRecordLength.getStyleClass().add(CELL_VALUE_ERROR);
+			}
+		});
+		sidDumpOutputs = FXCollections.<SidDumpOutput>observableArrayList();
 		dumpTable.setItems(sidDumpOutputs);
-		sidDumpPlayers = FXCollections.<SIDDumpPlayer> observableArrayList();
+		sidDumpPlayers = FXCollections.<SIDDumpPlayer>observableArrayList();
 		regPlayer.setItems(sidDumpPlayers);
 		SIDDumpConfiguration sidDump;
 		try {
@@ -219,22 +233,6 @@ public class SidDump extends Tab implements UIPart {
 			tooltip.setText(util.getBundle().getString("NOTE_SPACING_NEG"));
 			noteSpacing.setTooltip(tooltip);
 			noteSpacing.getStyleClass().add(CELL_VALUE_ERROR);
-		}
-	}
-
-	@FXML
-	private void doSetMaxRecordLength() {
-		final Tooltip tooltip = new Tooltip();
-		maxRecordLength.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-		seconds = IniReader.parseTime(maxRecordLength.getText());
-		if (seconds != -1) {
-			tooltip.setText(util.getBundle().getString("MAX_RECORD_LENGTH_TIP"));
-			maxRecordLength.setTooltip(tooltip);
-			maxRecordLength.getStyleClass().add(CELL_VALUE_OK);
-		} else {
-			tooltip.setText(util.getBundle().getString("MAX_RECORD_LENGTH_FORMAT"));
-			maxRecordLength.setTooltip(tooltip);
-			maxRecordLength.getStyleClass().add(CELL_VALUE_ERROR);
 		}
 	}
 
@@ -405,7 +403,7 @@ public class SidDump extends Tab implements UIPart {
 					length = 60;
 				}
 			}
-			maxRecordLength.setText(String.format("%02d:%02d", (length / 60 % 100), (length % 60)));
+			maxRecordLength.setText(new TimeToStringConverter().toString(length));
 			sidDumpExtension.setRecordLength(length);
 		} else {
 			sidDumpExtension.setRecordLength(seconds);

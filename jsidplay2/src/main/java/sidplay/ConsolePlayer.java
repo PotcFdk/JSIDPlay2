@@ -45,7 +45,7 @@ import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
 import sidplay.audio.JavaSound.Device;
 import sidplay.consoleplayer.ConsoleIO;
-import sidplay.consoleplayer.TimeConverter;
+import sidplay.consoleplayer.ParameterTimeConverter;
 import sidplay.consoleplayer.VerboseValidator;
 import sidplay.ini.IniConfig;
 
@@ -114,10 +114,10 @@ final public class ConsolePlayer {
 	@Parameter(names = { "--defaultModel", "-u" }, descriptionKey = "DEFAULT_MODEL")
 	private ChipModel defaultModel = DEFAULT_SID_MODEL;
 
-	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = TimeConverter.class)
+	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = ParameterTimeConverter.class)
 	private Integer startTime = 0;
 
-	@Parameter(names = { "--defaultLength", "-g" }, descriptionKey = "DEFAULT_LENGTH", converter = TimeConverter.class)
+	@Parameter(names = { "--defaultLength", "-g" }, descriptionKey = "DEFAULT_LENGTH", converter = ParameterTimeConverter.class)
 	private Integer defaultLength = DEFAULT_PLAY_LENGTH;
 
 	@Parameter(names = { "--enableSidDatabase", "-n" }, descriptionKey = "ENABLE_SID_DATABASE", arity = 1)
