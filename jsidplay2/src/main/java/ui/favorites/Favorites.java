@@ -36,7 +36,6 @@ import ui.common.C64Window;
 import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.FavoritesExtension;
@@ -80,7 +79,7 @@ public class Favorites extends Tab implements UIPart {
 
 	@FXML
 	private void initialize() {
-		SidPlay2Section sidplay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 
 		// Not already configured, yet?
 		if (sidplay2Section.getHvsc() != null) {
@@ -167,12 +166,12 @@ public class Favorites extends Tab implements UIPart {
 		favoritesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			// Save last selected tab
 			if (newValue != null) {
-				((Configuration) util.getConfig()).setCurrentFavorite(newValue.getText());
+				util.getConfig().setCurrentFavorite(newValue.getText());
 			}
 		});
 		Platform.runLater(() -> {
 			// Initially select last selected tab
-			String currentFavorite = ((Configuration) util.getConfig()).getCurrentFavorite();
+			String currentFavorite = util.getConfig().getCurrentFavorite();
 			for (FavoritesSection favorite : favorites) {
 				addTab(favorite);
 			}
@@ -218,8 +217,7 @@ public class Favorites extends Tab implements UIPart {
 	@FXML
 	private void addFavorites() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
 		final List<File> files = fileDialog.showOpenMultipleDialog(favoritesList.getScene().getWindow());
@@ -250,8 +248,7 @@ public class Favorites extends Tab implements UIPart {
 	@FXML
 	private void loadFavorites() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSION));
 		final File file = fileDialog.showOpenDialog(favoritesList.getScene().getWindow());
@@ -268,8 +265,7 @@ public class Favorites extends Tab implements UIPart {
 	@FXML
 	private void saveFavoritesAs() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSION));
 		final File file = fileDialog.showSaveDialog(favoritesList.getScene().getWindow());
@@ -286,7 +282,7 @@ public class Favorites extends Tab implements UIPart {
 
 	@FXML
 	private void addTab() {
-		List<FavoritesSection> favorites = ((Configuration) util.getConfig()).getFavorites();
+		List<FavoritesSection> favorites = util.getConfig().getFavorites();
 		FavoritesSection favoritesSection = new FavoritesSection();
 		favoritesSection.setName(util.getBundle().getString("NEW_TAB"));
 		favorites.add(favoritesSection);
@@ -299,27 +295,27 @@ public class Favorites extends Tab implements UIPart {
 
 	@FXML
 	private void off() {
-		((SidPlay2Section) util.getConfig().getSidplay2Section()).setPlaybackType(PlaybackType.PLAYBACK_OFF);
+		util.getConfig().getSidplay2Section().setPlaybackType(PlaybackType.PLAYBACK_OFF);
 	}
 
 	@FXML
 	private void normal() {
-		((SidPlay2Section) util.getConfig().getSidplay2Section()).setPlaybackType(PlaybackType.NORMAL);
+		util.getConfig().getSidplay2Section().setPlaybackType(PlaybackType.NORMAL);
 	}
 
 	@FXML
 	private void randomOne() {
-		((SidPlay2Section) util.getConfig().getSidplay2Section()).setPlaybackType(PlaybackType.RANDOM_ONE);
+		util.getConfig().getSidplay2Section().setPlaybackType(PlaybackType.RANDOM_ONE);
 	}
 
 	@FXML
 	private void randomAll() {
-		((SidPlay2Section) util.getConfig().getSidplay2Section()).setPlaybackType(PlaybackType.RANDOM_ALL);
+		util.getConfig().getSidplay2Section().setPlaybackType(PlaybackType.RANDOM_ALL);
 	}
 
 	@FXML
 	private void randomHVSC() {
-		((SidPlay2Section) util.getConfig().getSidplay2Section()).setPlaybackType(PlaybackType.RANDOM_HVSC);
+		util.getConfig().getSidplay2Section().setPlaybackType(PlaybackType.RANDOM_HVSC);
 	}
 
 	@FXML
@@ -384,7 +380,7 @@ public class Favorites extends Tab implements UIPart {
 	}
 
 	protected void playNextTune() {
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		PlaybackType pt = sidPlay2Section.getPlaybackType();
 
 		if (!sidPlay2Section.isLoop()) {

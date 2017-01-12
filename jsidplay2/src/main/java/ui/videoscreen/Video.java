@@ -241,8 +241,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TapeFileExtensions.DESCRIPTION, TapeFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_TAPE"));
@@ -259,8 +258,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(DiskFileExtensions.DESCRIPTION, DiskFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_DISK"));
@@ -277,8 +275,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	@FXML
 	private void insertCartridge() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(CartFileExtensions.DESCRIPTION, CartFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));

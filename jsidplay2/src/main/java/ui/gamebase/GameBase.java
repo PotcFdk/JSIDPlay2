@@ -58,7 +58,7 @@ public class GameBase extends Tab implements UIPart {
 				if (downloadedFile == null) {
 					return;
 				}
-				final SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig().getSidplay2Section();
+				final SidPlay2Section sidplay2 = util.getConfig().getSidplay2Section();
 				final String tmpDir = sidplay2.getTmpDir();
 				TFile zip = new TFile(downloadedFile);
 				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
@@ -159,7 +159,7 @@ public class GameBase extends Tab implements UIPart {
 			selectTab((GameBasePage) newValue);
 		});
 		Platform.runLater(() -> {
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 			String initialRoot = sidPlay2Section.getGameBase64();
 			if (initialRoot != null && new File(initialRoot).exists()) {
 				gameBaseFile.setText(initialRoot);
@@ -176,7 +176,7 @@ public class GameBase extends Tab implements UIPart {
 				// There is already a database file downloaded earlier.
 				// Therefore we try to connect
 
-				SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+				SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 				sidPlay2Section.setGameBase64(dbFile.getAbsolutePath());
 				gameBaseFile.setText(dbFile.getAbsolutePath());
 				setRoot(dbFile);
@@ -204,7 +204,7 @@ public class GameBase extends Tab implements UIPart {
 			}
 		} catch (IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 			File file = PathUtils.getFile(linkMusic.getText().replace('\\', '/'), sidPlay2Section.getHvscFile(),
 					sidPlay2Section.getCgscFile());
 			try {
@@ -224,7 +224,7 @@ public class GameBase extends Tab implements UIPart {
 		File file = fileDialog.showOpenDialog(letter.getScene().getWindow());
 		if (file != null) {
 			gameBaseFile.setText(file.getAbsolutePath());
-			SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 			sidPlay2Section.setGameBase64(file.getAbsolutePath());
 			File theRootFile = sidPlay2Section.getGameBase64File();
 			gameBaseFile.setText(file.getAbsolutePath());

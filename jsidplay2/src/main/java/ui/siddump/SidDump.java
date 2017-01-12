@@ -33,7 +33,6 @@ import ui.common.C64Window;
 import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.entities.config.SidPlay2Section;
 
 public class SidDump extends Tab implements UIPart {
 
@@ -143,8 +142,7 @@ public class SidDump extends Tab implements UIPart {
 	@FXML
 	private void doLoadDump() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		final File file = fileDialog.showOpenDialog(loadDump.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
@@ -164,8 +162,7 @@ public class SidDump extends Tab implements UIPart {
 	@FXML
 	private void doSaveDump() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		final File file = fileDialog.showSaveDialog(saveDump.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());

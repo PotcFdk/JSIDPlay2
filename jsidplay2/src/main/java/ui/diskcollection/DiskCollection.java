@@ -237,7 +237,7 @@ public class DiskCollection extends Tab implements UIPart {
 	@FXML
 	private void doBrowse() {
 		DirectoryChooser fileDialog = new DirectoryChooser();
-		SidPlay2Section sidplay2 = (SidPlay2Section) util.getConfig().getSidplay2Section();
+		SidPlay2Section sidplay2 = util.getConfig().getSidplay2Section();
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene().getWindow());
 		if (directory != null) {

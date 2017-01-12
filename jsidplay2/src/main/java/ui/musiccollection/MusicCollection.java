@@ -199,7 +199,7 @@ public class MusicCollection extends Tab implements UIPart {
 		showStil.setDisable(selectedItem == null || !((MusicCollectionTreeItem) selectedItem).hasSTIL());
 		convertToPSID64.setDisable(selectedItem == null);
 
-		SidPlay2Section sidplay2Section = (SidPlay2Section) util.getPlayer().getConfig().getSidplay2Section();
+		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 		List<FavoritesSection> favorites = util.getConfig().getFavorites();
 		addToFavoritesMenu.getItems().clear();
 		for (final FavoritesSection section : favorites) {
@@ -339,7 +339,7 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void convertToPSID64() {
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) (util.getConfig().getSidplay2Section());
+		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
 		DirectoryChooser fileDialog = new DirectoryChooser();
 		fileDialog.setInitialDirectory(sidPlay2Section.getLastDirectoryFolder());
@@ -456,8 +456,7 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private void doBrowse() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene().getWindow());
 		if (directory != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(directory.getAbsolutePath());
@@ -633,7 +632,7 @@ public class MusicCollection extends Tab implements UIPart {
 					searchStop);
 			searchThread.start();
 		} else {
-			SidPlay2Section sidplay2Section = (SidPlay2Section) util.getPlayer().getConfig().getSidplay2Section();
+			SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 
 			switch (searchResult.getSelectionModel().getSelectedItem()) {
 			case ADD_TO_A_NEW_PLAYLIST:

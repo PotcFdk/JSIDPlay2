@@ -242,7 +242,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 				});
 			} else if (newValue.equals(State.END)) {
 				Platform.runLater(() -> {
-					SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+					SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 					PlaybackType pt = sidPlay2Section.getPlaybackType();
 
 					if (!sidPlay2Section.isLoop()) {
@@ -434,8 +434,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void load() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
@@ -452,8 +451,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void playVideo() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(CartFileExtensions.DESCRIPTION, CartFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(scene.getWindow());
@@ -605,8 +603,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TapeFileExtensions.DESCRIPTION, TapeFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_TAPE"));
@@ -699,8 +696,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(DiskFileExtensions.DESCRIPTION, DiskFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_DISK"));
@@ -731,8 +727,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	private void insertEmptyDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(new ExtensionFilter("Disk Image (D64)", "*.d64"));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_EMPTY_DISK"));
 		final File file = fileDialog.showSaveDialog(scene.getWindow());
@@ -1240,8 +1235,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	private void chooseCartridge(final CartridgeType type) {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(
-				((SidPlay2Section) (util.getConfig().getSidplay2Section())).getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(CartFileExtensions.DESCRIPTION, CartFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));
@@ -1275,7 +1269,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	}
 
 	private void playNextRandomHVSC() {
-		SidPlay2Section sidPlay2Section = (SidPlay2Section) util.getConfig().getSidplay2Section();
+		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		String rndPath = util.getPlayer().getSidDatabaseInfo(db -> db.getRandomPath(), null);
 		if (rndPath != null) {
 			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
