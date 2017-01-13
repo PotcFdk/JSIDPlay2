@@ -69,10 +69,14 @@ import ui.virtualKeyboard.Keyboard;
 
 public class Video extends Tab implements UIPart, Consumer<int[]> {
 	public static final String ID = "VIDEO";
-	private static final double MARGIN_LEFT = 55;
-	private static final double MARGIN_RIGHT = 55;
-	private static final double MARGIN_TOP = 38;
-	private static final double MARGIN_BOTTOM = 48;
+	private static final double PAL_MARGIN_LEFT = 55;
+	private static final double PAL_MARGIN_RIGHT = 55;
+	private static final double PAL_MARGIN_TOP = 45;
+	private static final double PAL_MARGIN_BOTTOM = 55;
+	private static final double NTSC_MARGIN_LEFT = 55;
+	private static final double NTSC_MARGIN_RIGHT = 55;
+	private static final double NTSC_MARGIN_TOP = 38;
+	private static final double NTSC_MARGIN_BOTTOM = 48;
 
 	@FXML
 	private TitledPane monitor;
@@ -99,6 +103,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	private Object syncFrame = new Object();
 	private Image frame, lastFrame;
 	private int vicFrames;
+	private double marginLeft, marginRight, marginTop, marginBottom;
 
 	private UIUtil util;
 
@@ -112,9 +117,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 						lastFrame = frame;
 					}
 					screen.getGraphicsContext2D().drawImage(lastFrame, 0, 0, lastFrame.getWidth(),
-							lastFrame.getHeight(), MARGIN_LEFT, MARGIN_TOP,
-							screen.getWidth() - (MARGIN_LEFT + MARGIN_RIGHT),
-							screen.getHeight() - (MARGIN_TOP + MARGIN_BOTTOM));
+							lastFrame.getHeight(), marginLeft, marginTop,
+							screen.getWidth() - (marginLeft + marginRight),
+							screen.getHeight() - (marginTop + marginBottom));
 					return null;
 				}
 
@@ -127,7 +132,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			Platform.runLater(() -> {
 				SidTune tune = util.getPlayer().getTune();
 				EmulationSection emulationSection = util.getConfig().getEmulationSection();
-				setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune).getRefresh());
+				setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));
 				setVisibilityBasedOnChipType(tune);
 			});
 		}
@@ -213,7 +218,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		showMonitorBorder.selectedProperty().bindBidirectional(sidplay2Section.showMonitorProperty());
 
 		SidTune tune = util.getPlayer().getTune();
-		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune).getRefresh());
+		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));
 		setVisibilityBasedOnChipType(tune);
 
 		setupKeyboard();
@@ -328,7 +333,19 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	/**
 	 * Connect VIC output with screen.
 	 */
-	private void setupVideoScreen(final double refresh) {
+	private void setupVideoScreen(final CPUClock cpuClock) {
+		if (cpuClock == CPUClock.PAL) {
+			marginLeft = PAL_MARGIN_LEFT;
+			marginRight = PAL_MARGIN_RIGHT;
+			marginTop = PAL_MARGIN_TOP;
+			marginBottom = PAL_MARGIN_BOTTOM;
+		} else {
+			marginLeft = NTSC_MARGIN_LEFT;
+			marginRight = NTSC_MARGIN_RIGHT;
+			marginTop = NTSC_MARGIN_TOP;
+			marginBottom = NTSC_MARGIN_BOTTOM;
+		}
+
 		vicFrames = 0;
 		ScheduledExecutorService schdExctr = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
 			private ThreadFactory defaultThreadFactory = Executors.defaultThreadFactory();
@@ -342,7 +359,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			}
 		});
 		screenUpdateService.setExecutor(schdExctr);
-		screenUpdateService.setPeriod(Duration.millis(1000. / refresh));
+		screenUpdateService.setPeriod(Duration.millis(1000. / cpuClock.getRefresh()));
 
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
 		screen.setWidth(util.getPlayer().getC64().getVIC().getBorderWidth());
@@ -358,9 +375,9 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		monitor.setPrefHeight(Integer.MAX_VALUE);
 		for (ImageView imageView : Arrays.asList(monitorBorder, breadbox, pc64)) {
 			imageView.setScaleX(
-					scale * screen.getWidth() / (imageView.getImage().getWidth() + MARGIN_LEFT + MARGIN_RIGHT));
+					scale * screen.getWidth() / (imageView.getImage().getWidth() + marginLeft + marginRight));
 			imageView.setScaleY(
-					scale * screen.getHeight() / (imageView.getImage().getHeight() + MARGIN_TOP + MARGIN_BOTTOM));
+					scale * screen.getHeight() / (imageView.getImage().getHeight() + marginTop + marginBottom));
 		}
 	}
 

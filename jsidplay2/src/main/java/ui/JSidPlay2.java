@@ -219,18 +219,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		@Override
 		public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
 			SidTune sidTune = util.getPlayer().getTune();
-			Platform.runLater(() -> nextFavoriteDisabledState.set(sidTune == SidTune.RESET || newValue == State.QUIT));
-			if (newValue == State.START) {
-				Platform.runLater(() -> {
-					if (sidTune != SidTune.RESET) {
-						tracks.setText(String.format("%2d/%2d", sidTune.getInfo().getCurrentSong(),
-								sidTune.getInfo().getSongs()));
-					} else {
-						tracks.setText("");
-					}
-					updatePlayerButtons(newValue);
-
-					setPlayerIdAndInfos();
+			Platform.runLater(() -> {
+				nextFavoriteDisabledState.set(sidTune == SidTune.RESET || newValue == State.QUIT);
+				if (newValue == State.START) {
+					setCurrentTrack(sidTune);
+					setPlayerIdAndInfos(sidTune);
+					updatePlayerButtons(util.getPlayer().getPlayList());
 
 					final Tab selectedItem = tabbedPane.getSelectionModel().getSelectedItem();
 					boolean doNotSwitch = selectedItem != null
@@ -239,20 +233,60 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 					if (sidTune == SidTune.RESET || (sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
 						video();
 					}
-				});
-			} else if (newValue.equals(State.END)) {
-				Platform.runLater(() -> {
-					SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-					PlaybackType pt = sidPlay2Section.getPlaybackType();
+				} else if (newValue.equals(State.END)) {
+					SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
+					PlaybackType pt = sidplay2Section.getPlaybackType();
 
-					if (!sidPlay2Section.isLoop()) {
+					if (!sidplay2Section.isLoop()) {
 						if (pt == PlaybackType.RANDOM_HVSC) {
 							playNextRandomHVSC();
 						}
 					}
-				});
+				}
+			});
+		}
+
+		private void setCurrentTrack(SidTune sidTune) {
+			if (sidTune != SidTune.RESET) {
+				tracks.setText(
+						String.format("%2d/%2d", sidTune.getInfo().getCurrentSong(), sidTune.getInfo().getSongs()));
+			} else {
+				tracks.setText("");
 			}
 		}
+
+		/**
+		 * Set SID Tune Player (name) and Details (author, released, comment and
+		 * CSDB link)
+		 * 
+		 * e.g. player ID: Soedesoft, author: Jeroen Soede and Michiel Soede,
+		 * etc.
+		 * 
+		 * @param sidTune
+		 *            tune containing player details
+		 */
+		private void setPlayerIdAndInfos(SidTune sidTune) {
+			playerId.setLength(0);
+			playerinfos.setLength(0);
+			if (sidTune != SidTune.RESET) {
+				for (final String id : sidTune.identify()) {
+					playerId.append(util.getBundle().getString("PLAYER_ID")).append(": ").append(id);
+					PlayerInfoSection playerInfo = sidTune.getPlayerInfo(id);
+					status.setUserData(null);
+					if (playerInfo != null) {
+						playerinfos.append(playerInfo.toString()).append("\n");
+						status.setUserData(playerInfo.getReference());
+					}
+					playerId.setLength(playerId.length() - (id.length() - Math.min(id.length(), 14)));
+					if (id.length() > 14) {
+						playerId.append("...");
+					}
+					playerId.append(", ");
+					break;
+				}
+			}
+		}
+
 	}
 
 	public JSidPlay2(Stage primaryStage, Player player) {
@@ -357,7 +391,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		playMP3.selectedProperty().addListener((obj, o, n) -> playEmulation.selectedProperty().set(!n));
 		playMP3.selectedProperty().bindBidirectional(audioSection.playOriginalProperty());
 
-		updatePlayerButtons(util.getPlayer().stateProperty().get());
+		updatePlayerButtons(util.getPlayer().getPlayList());
 
 		pauseContinue.selectedProperty().bindBidirectional(pauseContinue2.selectedProperty());
 		fastForward2.selectedProperty().bindBidirectional(fastForward.selectedProperty());
@@ -1193,11 +1227,9 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 		}
 	}
 
-	private void updatePlayerButtons(State state) {
+	private void updatePlayerButtons(PlayList playList) {
 		pauseContinue.setSelected(false);
 		normalSpeed.setSelected(true);
-
-		PlayList playList = util.getPlayer().getPlayList();
 
 		previous.setDisable(!playList.hasPrevious());
 		previous2.setDisable(previous.isDisable());
@@ -1420,31 +1452,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			return String.format("/%02d:%02d", (songLength / 60 % 100), (songLength % 60));
 		}
 		return "";
-	}
-
-	private void setPlayerIdAndInfos() {
-		playerinfos.setLength(0);
-		playerId.setLength(0);
-		SidTune tune = util.getPlayer().getTune();
-		if (tune != null) {
-			for (final String id : tune.identify()) {
-				playerId.append(util.getBundle().getString("PLAYER_ID")).append(": ").append(id);
-				PlayerInfoSection playerInfo = tune.getPlayerInfo(id);
-				if (playerInfo != null) {
-					playerinfos.append(playerInfo.toString()).append("\n");
-					status.setUserData(playerInfo.getReference());
-				} else {
-					status.setUserData(null);
-				}
-				int length = id.length();
-				playerId.setLength(playerId.length() - (length - Math.min(length, 14)));
-				if (length > 14) {
-					playerId.append("...");
-				}
-				playerId.append(", ");
-				break;
-			}
-		}
 	}
 
 	private void createHardCopy(String format) {
