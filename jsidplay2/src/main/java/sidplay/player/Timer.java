@@ -184,7 +184,7 @@ public abstract class Timer {
 	 * Cancel event.
 	 * 
 	 * @param timer
-	 *            evebt to cancel
+	 *            event to cancel
 	 */
 	private void cancel(final Event event) {
 		player.getC64().getEventScheduler().cancel(event);

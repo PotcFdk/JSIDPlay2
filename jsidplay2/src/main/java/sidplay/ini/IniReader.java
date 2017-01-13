@@ -94,7 +94,7 @@ public class IniReader {
 
 		while ((line = r.readLine()) != null) {
 			line = line.trim();
-			if (line.equals("")) {
+			if (line.isEmpty()) {
 				continue;
 			}
 
