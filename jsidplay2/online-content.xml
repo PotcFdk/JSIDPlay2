@@ -127,7 +127,9 @@
 		<move file="${webstart_dir}/bcprov-jdk15on-stripped-1.52.jar" tofile="${webstart_dir}/bcprov-jdk15on-1.52.jar" />
 		<!-- Add required manifest attributes to ALL jars-->
 		<foreach target="manifest" param="jarToUpdate">
-		    <fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar,c64jukebox-${project.version}.jar" />
+			<path>
+				<fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar,c64jukebox-${project.version}.jar" />
+			</path>
 		</foreach>
 		<!-- sign all jars using the SAME certificate -->
 		<exec executable="${java.home}/../bin/keytool" dir="${webstart_dir}" failonerror="true">
