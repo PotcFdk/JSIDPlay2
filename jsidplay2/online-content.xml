@@ -30,7 +30,7 @@
 	<property name="gamebase_name" value="GameBase64" />
 	<!-- webstart -->
 	<property name="webstart_dir" location="${result_dir}/webstart" />
-
+	
 	<target name="all" depends="compress_jsiddevice_exe,zip_jsiddevice,webstart,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import,updateVersion" />
 
 	<!-- ================================= 
@@ -93,6 +93,12 @@
          ================================= -->
 	<target name="webstart">
 		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath="${java.home}/../lib/ant-javafx.jar" />
+		<taskdef resource="net/sf/antcontrib/antlib.xml">
+	        <classpath>
+	            <pathelement location="${ant-contrib-jar}" />
+	        </classpath>
+		</taskdef> 
+
 		<!-- Compile stylesheets -->
 		<fx:csstobin outdir="target/classes">
 			<fileset dir="target/classes" includes="**/*.css" />
@@ -120,13 +126,9 @@
 		</jar>
 		<move file="${webstart_dir}/bcprov-jdk15on-stripped-1.52.jar" tofile="${webstart_dir}/bcprov-jdk15on-1.52.jar" />
 		<!-- Add required manifest attributes to ALL jars-->
-		<apply executable="${java.home}/../bin/jar" failonerror="true">
-			<arg value="ufm" />
-			<srcfile />
-			<arg value="${result_dir}/webstart/addToManifest.txt" />
-			<fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar,c64jukebox-${project.version}.jar"/>
-		</apply>
-		<delete file="${result_dir}/webstart/addToManifest.txt" />
+		<foreach target="manifest" param="jarToUpdate">
+		    <fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar,c64jukebox-${project.version}.jar" />
+		</foreach>
 		<!-- sign all jars using the SAME certificate -->
 		<exec executable="${java.home}/../bin/keytool" dir="${webstart_dir}" failonerror="true">
 			<arg line="-selfcert -genkey -alias jsidplay2 -storepass jsidplay2 -keypass jsidplay2 -keystore jsidplay2.jks" />
@@ -159,6 +161,22 @@
 		</fx:deploy>
 	</target>
 
+	<target name="manifest">
+		<jar update="true" file="${jarToUpdate}">
+			<manifest>
+				<attribute name="Application-Name" value="${project.name}"/>
+				<attribute name="Permissions" value="all-permissions"/>
+				<attribute name="Codebase" value="${codebase}"/>
+			    <attribute name="Specification-Title" value="${project.name}"/>
+				<attribute name="Specification-Version" value="${project.version}"/>
+				<attribute name="Specification-Vendor" value="${project.organization.name}"/>
+				<attribute name="Implementation-Title" value="${project.name}"/>
+				<attribute name="Implementation-Version" value="${project.version}"/>
+				<attribute name="Implementation-Vendor" value="${project.organization.name}"/>
+				<attribute name="Implementation-Vendor-Id" value="${project.artifactId}"/>
+			  </manifest>
+		</jar>
+	</target>
 	<!-- ================================= 
           target: gb64_import
           Description:

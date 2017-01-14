@@ -119,7 +119,6 @@
 			<artifactId>jcommander</artifactId>
 			<version>1.48</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.loadui</groupId>
 			<artifactId>testFx</artifactId>
@@ -563,6 +562,8 @@
 									<property name="javafx.main.class" value="${javafx.main.class}" />
 									<property name="javafx.run.width" value="${javafx.run.width}" />
 									<property name="javafx.run.height" value="${javafx.run.height}" />
+									<property name="ant-contrib-jar"
+										value="${project.basedir}/antcontrib/ant-contrib-1.0b3.jar" />
 								</ant>
 							</target>
 						</configuration>
