@@ -458,25 +458,6 @@
 							</resources>
 						</configuration>
 					</execution>
-					<execution>
-						<id>copy-resources-webstart</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/deploy/online/webstart</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/main/webstart</directory>
-									<filtering>true</filtering>
-									<includes>
-										<include>**/*.txt</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 			<plugin>
