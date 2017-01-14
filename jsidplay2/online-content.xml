@@ -163,6 +163,11 @@
 		</fx:deploy>
 	</target>
 
+	<!-- ================================= 
+          target: manifest
+          Description:
+          Updates META-INF/MANIFEST.MF inside Jar
+         ================================= -->
 	<target name="manifest">
 		<jar update="true" file="${jarToUpdate}">
 			<manifest>
