@@ -143,11 +143,6 @@ public class HardSIDBuilder implements SIDBuilder {
 		sids.remove(sidEmu);
 	}
 
-	@Override
-	public void pause() {
-		// flush for HardSID4U does not have any effect!? Therefore left empty!
-	}
-	
 	/**
 	 * Choose desired chip model.
 	 * <OL>
