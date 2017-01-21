@@ -174,7 +174,7 @@
 				<attribute name="Application-Name" value="${project.name}"/>
 				<attribute name="Permissions" value="all-permissions"/>
 				<attribute name="Codebase" value="${codebase}"/>
-			    <attribute name="Specification-Title" value="${project.name}"/>
+				<attribute name="Specification-Title" value="${project.name}"/>
 				<attribute name="Specification-Version" value="${project.version}"/>
 				<attribute name="Specification-Vendor" value="${project.organization.name}"/>
 				<attribute name="Implementation-Title" value="${project.name}"/>
