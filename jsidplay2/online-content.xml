@@ -82,6 +82,7 @@
 		<zip level="9" destfile="${deploy_dir}/${jsiddevice}.zip" compress="true">
 			<fileset dir="${deploy_dir}">
 				<include name="${jsiddevice}.*" />
+				<exclude name="${jsiddevice}.zip" />
 			</fileset>
 		</zip>
 	</target>
