@@ -18,7 +18,7 @@ import kickass.misc.MemoryBlock;
 import kickass.state.EvaluationState;
 import kickass.state.scope.symboltable.SymbolStatus;
 import kickass.tools.tuples.Pair;
-import kickass.values.ConstantReferenceValue;
+import kickass.valueholder.ConstantValueHolder;
 import kickass.values.HashtableValue;
 import kickassu.errors.AsmError;
 import kickassu.errors.printers.OneLineErrorPrinter;
@@ -76,11 +76,14 @@ public class KickAssembler {
 			HashtableValue hashtableValue = new HashtableValue().addStringValues(globals);
 			hashtableValue.lock(null);
 			evaluationState.getSystemNamespace().getScope()
-					.defineErrorIfExist("cmdLineVars", arrReferenceValue -> new ConstantReferenceValue(hashtableValue),
+					.defineErrorIfExist("cmdLineVars", arrReferenceValue -> new ConstantValueHolder(hashtableValue),
 							evaluationState, "ERROR! cmdLineVars is already defined", null)
 					.setStatus(SymbolStatus.defined);
 
 			AsmNode asmNode = AssemblerToolbox.loadAndLexOrError(asm, resource, evaluationState, null);
+			if (asmNode == null) {
+				throw new RuntimeException("Parse error for assembler resource: " + resource);
+			}
 			asmNode = new NamespaceNode(asmNode, evaluationState.getRootNamespace());
 			AsmNodeList asmNodeList = new AsmNodeList(asmNode);
 			ScopeAndSymbolPageNode scopeAndSymbolPageNode = new ScopeAndSymbolPageNode(asmNodeList,
@@ -103,7 +106,7 @@ public class KickAssembler {
 			} while (!asmNode2.isFinished());
 
 			MainOutputReciever mainOutputReciever = new MainOutputReciever(8192, false,
-					evaluationState.getMaxMemoryAddress());
+					evaluationState.getMaxMemoryAddress(),null);
 			asmNode2.deliverOutput(mainOutputReciever);
 			mainOutputReciever.finish();
 			return new Assembly(mainOutputReciever.getMemoryBlocks()).getData();
