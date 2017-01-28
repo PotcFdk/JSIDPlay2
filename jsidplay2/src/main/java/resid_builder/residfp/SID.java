@@ -380,7 +380,7 @@ public class SID implements SIDChip {
 	 * SID voice muting.
 	 * 
 	 * @param channel
-	 *            channe to modify
+	 *            channel to modify
 	 * @param mute
 	 *            is muted?
 	 */
