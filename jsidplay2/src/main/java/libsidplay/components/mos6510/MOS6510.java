@@ -874,7 +874,6 @@ public class MOS6510 {
 			// Absolute With Y Offset Addressing Mode Handler (Read)
 			case ADCay:
 				access = AccessMode.READ;
-				// final int _i = i;
 				instrTable[buildCycle++] = () -> FetchLowAddr();
 
 				instrTable[buildCycle++] = () -> {
@@ -896,7 +895,6 @@ public class MOS6510 {
 			case ORAay:
 			case SBCay:
 				access = AccessMode.READ;
-				// final int _i = i;
 				instrTable[buildCycle++] = () -> FetchLowAddr();
 
 				instrTable[buildCycle++] = () -> {
