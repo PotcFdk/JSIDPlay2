@@ -31,32 +31,16 @@ import libsidutils.sidid.SidIdV2;
 class Prg extends SidTune {
 
 	protected static final MessageDigest MD5_DIGEST;
-
+	private static final SidIdV2 SID_ID = new SidIdV2();
+	private static final SidIdInfo SID_ID_INFO = new SidIdInfo();
+	
 	static {
 		try {
 			MD5_DIGEST = MessageDigest.getInstance("MD5");
-		} catch (final NoSuchAlgorithmException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
-
-	private static final SidIdV2 SID_ID = new SidIdV2();
-
-	static {
-		try {
 			SID_ID.readconfig();
 			SID_ID.setMultiScan(true);
-		} catch (NumberFormatException | IOException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
-
-	private static final SidIdInfo SID_ID_INFO = new SidIdInfo();
-
-	static {
-		try {
 			SID_ID_INFO.readconfig();
-		} catch (IOException e) {
+		} catch (final NoSuchAlgorithmException | IOException e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
