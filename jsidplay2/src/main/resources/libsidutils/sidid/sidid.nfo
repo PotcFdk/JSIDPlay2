@@ -48,7 +48,10 @@ Arne/AFL
    AUTHOR: Arne Puszelski (Arne)
 
 Artlace
+     NAME: Artlace Editor (ARL-Editor)
    AUTHOR: Artúr Bujdosó (Artlace)
+ RELEASED: 1993 Rebels
+REFERENCE: http://csdb.dk/release/?id=152723
 
 Artline_Designs
    AUTHOR: Antti Kangas (AK)
@@ -459,8 +462,8 @@ GMC_V2.0/Superiors
 
 GoatTracker_V1.x
    AUTHOR: Lasse Öörni (Cadaver)
- RELEASED: 2002 Covert Bitops
-REFERENCE: http://csdb.dk/release/?id=6072
+ RELEASED: 2001 Covert Bitops
+REFERENCE: http://csdb.dk/release/?id=152697
 
 GoatTracker_V2.x
    AUTHOR: Lasse Öörni (Cadaver)
@@ -971,8 +974,8 @@ Odie_tiny
 
 OdinTracker
    AUTHOR: Zoltán Konyha (Zed)
- RELEASED: 2001
-REFERENCE: http://csdb.dk/release/?id=2628
+ RELEASED: 2000
+REFERENCE: http://csdb.dk/release/?id=12577
 
 Oeyvind_Jergan
    AUTHOR: Øyvind Jergan
@@ -1026,8 +1029,13 @@ REFERENCE: http://csdb.dk/release/?id=122335
 
 PollyTracker
    AUTHOR: Aleksi Eeben
- RELEASED: 1995
+ RELEASED: 2005
 REFERENCE: http://csdb.dk/release/?id=18605
+
+Polyanna
+   AUTHOR: Aleksi Eeben
+ RELEASED: 2017
+REFERENCE: http://csdb.dk/release/?id=153091
 
 Power_Music
    AUTHOR: Michael Kukat (Raster Buster)
@@ -1425,6 +1433,11 @@ Trasher_Digi
 
 Trident/Active
    AUTHOR: Adam Dunkels (Trident)
+
+Twice_Effect_Editor
+     NAME: Twice Effect Music Editor
+   AUTHOR: Mario Kriwanek (MOK)
+ RELEASED: 1991 Twice Effect
 
 Twynn
    AUTHOR: Ruud den Bekker (Twynn)
