@@ -54,6 +54,7 @@ ZIP - Every emulation format can be contained within a ZIP file. We treat ZIPs l
 Normally a sound card is used to play music, but you can choose the following things alternatively:
 - Buy a HardSID4U soundcard for your PC (www.hardsid.com) and choose that for sound output. Connection is via USB cable.
   Be aware, that 32-bit driver in combinaton with 32-bit Java is supported, only!
+- Use a JSIDDevice for sound output communicating via socket connection (port 6581)
 - Listen to MP3 sound file (Yes, we support playback of MP3 even the collection in playlists!)
 - Listen a tune and write a WAV file to your harddisk at the same time.
 - Listen a tune and write a MP3 file to your harddisk at the same time.
@@ -98,7 +99,7 @@ We have added support for various classic cartridges and the CRT format. We can 
 and some freezer cartridges.
 Cartridge support is limited to Action Replay, Atomic Power, Comal80, Epyx FastLoader, Expert Cartridge,
 Final Cartridge, Final Cartridge III (87, 88), Rexx Datentechnik, Zaxxon and Easyflash.
-REU is supportet as well (16 MB), just check out the excellent BlueREU demo by Crest.
+REU is supported as well (16 MB), just check out the excellent BlueREU demo by Crest.
 
 11. What does that mean: java.lang.UnsatisfiedLinkError: no jinput-XXX in java.library.path?
 JSIDPlay2 has joystick support, but that is not directly supported in Java.

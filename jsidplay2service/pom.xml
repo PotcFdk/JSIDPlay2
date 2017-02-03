@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>jsidplay2</groupId>
 			<artifactId>jsidplay2</artifactId>
-			<version>3.7</version>
+			<version>3.8</version>
 		</dependency>
 		<dependency>
 			<groupId>jsidplay2</groupId>
