@@ -29,7 +29,7 @@ final class UIBuilder implements BuilderFactory {
 				return (Builder<?>) constructor.newInstance(this.window, this.player);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException("UIPart implementations require a specific constructor!");
+				throw new RuntimeException("UIPart implementations require a specific constructor!", e);
 			}
 		}
 		return defaultBuilderFactory.getBuilder(type);

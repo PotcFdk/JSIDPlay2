@@ -116,10 +116,12 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 					synchronized (syncFrame) {
 						lastFrame = frame;
 					}
-					screen.getGraphicsContext2D().drawImage(lastFrame, 0, 0, lastFrame.getWidth(),
-							lastFrame.getHeight(), marginLeft, marginTop,
-							screen.getWidth() - (marginLeft + marginRight),
-							screen.getHeight() - (marginTop + marginBottom));
+					if (lastFrame != null) {
+						screen.getGraphicsContext2D().drawImage(lastFrame, 0, 0, lastFrame.getWidth(),
+								lastFrame.getHeight(), marginLeft, marginTop,
+								screen.getWidth() - (marginLeft + marginRight),
+								screen.getHeight() - (marginTop + marginBottom));
+					}
 					return null;
 				}
 
