@@ -5,11 +5,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.TabPane?>
 <?import java.net.URL?>
-<?import ui.menu.MainMenu?>
+<?import ui.menu.Menu?>
+<?import ui.toolbar.ToolBar?>
 <?import ui.statusbar.StatusBar?>
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
 <?scenebuilder-classpath-element ../../../../target/classes?>
-<?import ui.toolbar.ToolBar?>
 <Scene>
 	<stylesheets>
 		<URL value="@JSidPlay2.css" />
@@ -17,7 +17,7 @@
 	<BorderPane xmlns:fx="http://javafx.com/fxml">
 		<top>
 			<VBox>
-				<MainMenu />
+				<Menu />
 				<ToolBar />
 			</VBox>
 		</top>
