@@ -26,7 +26,6 @@ import libsidutils.WebUtils;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 import sidplay.Player;
 import sidplay.player.State;
-import ui.JSidPlay2;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -35,9 +34,9 @@ import ui.entities.config.EmulationSection;
 public class StatusBar extends AnchorPane implements UIPart {
 
 	private static final AudioClip MOTORSOUND_AUDIOCLIP = new AudioClip(
-			JSidPlay2.class.getResource("/ui/sounds/motor.wav").toString());
+			StatusBar.class.getResource("/ui/sounds/motor.wav").toString());
 	private static final AudioClip TRACKSOUND_AUDIOCLIP = new AudioClip(
-			JSidPlay2.class.getResource("/ui/sounds/track.wav").toString());
+			StatusBar.class.getResource("/ui/sounds/track.wav").toString());
 
 	static {
 		MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);

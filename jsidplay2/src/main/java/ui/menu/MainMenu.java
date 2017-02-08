@@ -96,8 +96,8 @@ public class MainMenu extends AnchorPane implements UIPart {
 	private static byte[] EMPTY_DISK;
 
 	static {
-		try (DataInputStream is2 = new DataInputStream(JSidPlay2.class.getResourceAsStream(EMPTY_D64));
-				DataInputStream is = new DataInputStream(JSidPlay2.class.getResourceAsStream(NUVIE_PLAYER_PRG))) {
+		try (DataInputStream is2 = new DataInputStream(MainMenu.class.getResourceAsStream(EMPTY_D64));
+				DataInputStream is = new DataInputStream(MainMenu.class.getResourceAsStream(NUVIE_PLAYER_PRG))) {
 			URL us3 = JSidPlay2Main.class.getResource(EMPTY_D64);
 			EMPTY_DISK = new byte[us3.openConnection().getContentLength()];
 			is2.readFully(EMPTY_DISK);
@@ -175,9 +175,6 @@ public class MainMenu extends AnchorPane implements UIPart {
 		this.window = (JSidPlay2) window;
 	}
 
-	/**
-	 * 
-	 */
 	@FXML
 	private void initialize() {
 		final Configuration config = util.getConfig();

@@ -19,8 +19,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.geometry.Insets?>
 <?scenebuilder-preview-i18n-resource MainMenu.properties?>
-<?scenebuilder-classpath-element ../../../../target/classes?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:id="main" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
+<?scenebuilder-classpath-element ../../../../../target/classes?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:id="main"
+	AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
 	<fx:define>
 		<ToggleGroup fx:id="playSpeedGroup" />
 		<ToggleGroup fx:id="videoCaptureGroup" />
@@ -34,27 +35,27 @@
 				<items>
 					<MenuItem text="%LOAD" onAction="#load" fx:id="load">
 						<accelerator>
-							<KeyCodeCombination alt="UP" code="L"
-								control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+							<KeyCodeCombination alt="UP" code="L" control="DOWN"
+								meta="UP" shift="UP" shortcut="DOWN" />
 						</accelerator>
 					</MenuItem>
 					<MenuItem text="%LOAD_REU_VIDEO" onAction="#playVideo">
 						<accelerator>
-							<KeyCodeCombination alt="UP" code="V"
-								control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+							<KeyCodeCombination alt="UP" code="V" control="DOWN"
+								meta="UP" shift="UP" shortcut="DOWN" />
 						</accelerator>
 					</MenuItem>
 					<MenuItem text="%RESET" onAction="#reset">
 						<accelerator>
-							<KeyCodeCombination alt="UP" code="R"
-								control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+							<KeyCodeCombination alt="UP" code="R" control="DOWN"
+								meta="UP" shift="UP" shortcut="DOWN" />
 						</accelerator>
 					</MenuItem>
 					<SeparatorMenuItem />
 					<MenuItem text="%QUIT" onAction="#quit" fx:id="quit">
 						<accelerator>
-							<KeyCodeCombination alt="UP" code="Q"
-								control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+							<KeyCodeCombination alt="UP" code="Q" control="DOWN"
+								meta="UP" shift="UP" shortcut="DOWN" />
 						</accelerator>
 					</MenuItem>
 				</items>
@@ -94,15 +95,13 @@
 			</Menu>
 			<Menu text="%PLAYER">
 				<items>
-					<CheckMenuItem text="%PAUSE" onAction="#pause"
-						fx:id="pauseContinue">
+					<CheckMenuItem text="%PAUSE" onAction="#pause" fx:id="pauseContinue">
 						<accelerator>
-							<KeyCodeCombination alt="UP" code="P"
-								control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+							<KeyCodeCombination alt="UP" code="P" control="DOWN"
+								meta="UP" shift="UP" shortcut="DOWN" />
 						</accelerator>
 					</CheckMenuItem>
-					<MenuItem text="%PREVIOUS" onAction="#previousSong"
-						fx:id="previous">
+					<MenuItem text="%PREVIOUS" onAction="#previousSong" fx:id="previous">
 						<accelerator>
 							<KeyCodeCombination alt="UP" code="MINUS"
 								control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
@@ -115,8 +114,7 @@
 						</accelerator>
 					</MenuItem>
 					<RadioMenuItem text="%NORMAL_SPEED" selected="true"
-						toggleGroup="$playSpeedGroup" onAction="#playNormalSpeed"
-						fx:id="normalSpeed">
+						toggleGroup="$playSpeedGroup" onAction="#playNormalSpeed" fx:id="normalSpeed">
 						<accelerator>
 							<KeyCodeCombination alt="UP" code="COMMA"
 								control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
@@ -131,8 +129,8 @@
 					</RadioMenuItem>
 					<MenuItem text="%STOP" onAction="#stopSong">
 						<accelerator>
-							<KeyCodeCombination alt="UP" code="T"
-								control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+							<KeyCodeCombination alt="UP" code="T" control="DOWN"
+								meta="UP" shift="UP" shortcut="DOWN" />
 						</accelerator>
 					</MenuItem>
 				</items>
@@ -170,10 +168,10 @@
 					<Menu text="%40_TRACK_HANDLING">
 						<RadioMenuItem text="%NEVER_EXTEND" toggleGroup="$extensionGroup"
 							onAction="#extendNever" fx:id="neverExtend" />
-						<RadioMenuItem text="%ASK_ON_EXTEND"
-							toggleGroup="$extensionGroup" onAction="#extendAsk" fx:id="askExtend" />
-						<RadioMenuItem text="%EXTEND_ON_ACCESS"
-							toggleGroup="$extensionGroup" onAction="#extendAccess" fx:id="accessExtend" />
+						<RadioMenuItem text="%ASK_ON_EXTEND" toggleGroup="$extensionGroup"
+							onAction="#extendAsk" fx:id="askExtend" />
+						<RadioMenuItem text="%EXTEND_ON_ACCESS" toggleGroup="$extensionGroup"
+							onAction="#extendAccess" fx:id="accessExtend" />
 					</Menu>
 					<Menu text="%MEMORY">
 						<CheckMenuItem text="%8K_RAM_EXPANSION_0X2000"
@@ -204,8 +202,8 @@
 				<Menu text="%CARTRIDGE">
 					<MenuItem text="%INSERT_CARTRIDGE" onAction="#insertCartridge">
 						<accelerator>
-							<KeyCodeCombination alt="UP" code="C"
-								control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+							<KeyCodeCombination alt="UP" code="C" control="DOWN"
+								meta="UP" shift="UP" shortcut="DOWN" />
 						</accelerator>
 					</MenuItem>
 					<Menu text="%GEORAM">
@@ -234,8 +232,8 @@
 				<MenuItem text="%HARDCOPY_JPG" onAction="#doHardcopyJpg" />
 				<MenuItem text="%HARDCOPY_PNG" onAction="#doHardcopyPng">
 					<accelerator>
-						<KeyCodeCombination alt="UP" code="N"
-							control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+						<KeyCodeCombination alt="UP" code="N" control="DOWN"
+							meta="UP" shift="UP" shortcut="DOWN" />
 					</accelerator>
 				</MenuItem>
 			</Menu>
@@ -300,8 +298,7 @@
 				</ImageView>
 			</graphic>
 		</ToggleButton>
-		<Button focusTraversable="false" onAction="#nextSong"
-			fx:id="next2">
+		<Button focusTraversable="false" onAction="#nextSong" fx:id="next2">
 			<tooltip>
 				<Tooltip text="%NEXT2" fx:id="next2ToolTip" />
 			</tooltip>
