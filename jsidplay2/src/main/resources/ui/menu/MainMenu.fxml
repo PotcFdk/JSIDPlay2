@@ -1,54 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Scene?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.Menu?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.input.KeyCombination?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.collections.FXCollections?> 
-<?import java.lang.Integer?>
-<?import java.lang.String?>
-<?import java.net.URL?>
-<?import libsidplay.common.Engine?>
-<?import libsidplay.common.SamplingMethod?>
-<?import libsidplay.common.CPUClock?>
-<?import sidplay.audio.Audio?>
-<?import ui.musiccollection.MusicCollection?>
-<?import ui.diskcollection.DiskCollection?>
-<?import ui.oscilloscope.Oscilloscope?>
-<?import ui.videoscreen.Video?>
-<?import ui.gamebase.GameBase?>
-<?import ui.favorites.Favorites?>
-<?import ui.asm.Asm?>
-<?import ui.printer.Printer?>
-<?import ui.console.Console?>
+<?import javafx.geometry.Insets?>
 <?scenebuilder-preview-i18n-resource MainMenu.properties?>
 <?scenebuilder-classpath-element ../../../../target/classes?>
-<?import javafx.geometry.Insets?>
-<?import ui.common.TypeTextField?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:id="main" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
 	<fx:define>
 		<ToggleGroup fx:id="playSpeedGroup" />
