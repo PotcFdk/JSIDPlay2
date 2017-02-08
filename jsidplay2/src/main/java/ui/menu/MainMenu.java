@@ -164,7 +164,6 @@ public class MainMenu extends AnchorPane implements UIPart {
 	}
 
 	private BooleanProperty nextFavoriteDisabledState;
-	private StateChangeListener nextTuneListener;
 	private int hardcopyCounter;
 
 	private UIUtil util;
@@ -176,6 +175,9 @@ public class MainMenu extends AnchorPane implements UIPart {
 		this.window = (JSidPlay2) window;
 	}
 
+	/**
+	 * 
+	 */
 	@FXML
 	private void initialize() {
 		final Configuration config = util.getConfig();
@@ -203,8 +205,7 @@ public class MainMenu extends AnchorPane implements UIPart {
 		expand8000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled3Property());
 		expandA000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled4Property());
 
-		this.nextTuneListener = new StateChangeListener();
-		util.getPlayer().stateProperty().addListener(nextTuneListener);
+		util.getPlayer().stateProperty().addListener(new StateChangeListener());
 
 		updatePlayerButtons(util.getPlayer().getPlayList());
 
@@ -289,7 +290,7 @@ public class MainMenu extends AnchorPane implements UIPart {
 
 	@FXML
 	private void quit() {
-		window.getStage().close();
+		window.close();
 	}
 
 	@FXML
@@ -546,7 +547,7 @@ public class MainMenu extends AnchorPane implements UIPart {
 			} catch (IOException e) {
 				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_WRITE_ERROR"), e.getMessage()));
 			}
-			// video();
+			video();
 			try {
 				util.getPlayer().insertDisk(target);
 			} catch (IOException | SidTuneError e) {

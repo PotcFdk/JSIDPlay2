@@ -61,9 +61,4 @@ public class TuneInfos extends C64Window {
 		}
 	}
 
-	@Override
-	@FXML
-	protected void close() {
-		super.close();
-	}
 }
