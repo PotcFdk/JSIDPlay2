@@ -25,6 +25,7 @@ import hardsid_builder.HardSIDBuilder;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Engine;
@@ -175,6 +176,16 @@ public class Player extends HardwareEnsemble {
 	 */
 	private IntFunction<Integer> sidLocator = sidNum -> SidTune.getSIDAddress(config.getEmulationSection(), tune,
 			sidNum);
+	/**
+	 * Player paused? Stop audio production.
+	 */
+	private ChangeListener<? super State> pauseListener = (s, oldValue, newValue) -> {
+		if (newValue == State.PAUSE) {
+			audioDriver.pause();
+			sidBuilder.pause();
+			// audio driver continues automatically, next call of write!
+		}
+	};
 
 	/**
 	 * Create a Music Player.
@@ -319,7 +330,7 @@ public class Player extends HardwareEnsemble {
 	 *            SID chip consumer
 	 */
 	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
-		executeInPlayerThread("Configure SIDs", () ->  c64.configureSIDs(action));
+		executeInPlayerThread("Configure SIDs", () -> c64.configureSIDs(action));
 	}
 
 	/**
@@ -598,6 +609,7 @@ public class Player extends HardwareEnsemble {
 		// PAL/NTSC
 		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));
 
+		stateProperty.addListener(pauseListener);
 		reset();
 	}
 
@@ -638,6 +650,7 @@ public class Player extends HardwareEnsemble {
 	 * Close player.
 	 */
 	private void close() {
+		stateProperty.removeListener(pauseListener);
 		c64.insertSIDChips(noSIDs, sidLocator);
 		audioDriver.close();
 	}
@@ -685,13 +698,8 @@ public class Player extends HardwareEnsemble {
 			play(tune);
 		} else if (stateProperty.get() == State.PAUSE) {
 			stateProperty.set(State.PLAY);
-			// audio driver continues automatically, next call of write!
 		} else {
-			executeInPlayerThread("Pause", () -> {
-				stateProperty.set(State.PAUSE);
-				audioDriver.pause();
-				sidBuilder.pause();
-			});
+			stateProperty.set(State.PAUSE);
 		}
 	}
 
