@@ -1,4 +1,4 @@
-package ui.menu;
+package ui.menubar;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -87,7 +87,7 @@ import ui.videoscreen.Video;
 import ui.webview.WebView;
 import ui.webview.WebViewType;
 
-public class Menu extends AnchorPane implements UIPart {
+public class MenuBar extends AnchorPane implements UIPart {
 	/** NUVIE video player */
 	private static final String NUVIE_PLAYER_PRG = "/libsidplay/roms/nuvieplayer-v1.0.prg";
 	private static byte[] NUVIE_PLAYER;
@@ -96,8 +96,8 @@ public class Menu extends AnchorPane implements UIPart {
 	private static byte[] EMPTY_DISK;
 
 	static {
-		try (DataInputStream is2 = new DataInputStream(Menu.class.getResourceAsStream(EMPTY_D64));
-				DataInputStream is = new DataInputStream(Menu.class.getResourceAsStream(NUVIE_PLAYER_PRG))) {
+		try (DataInputStream is2 = new DataInputStream(MenuBar.class.getResourceAsStream(EMPTY_D64));
+				DataInputStream is = new DataInputStream(MenuBar.class.getResourceAsStream(NUVIE_PLAYER_PRG))) {
 			URL us3 = JSidPlay2Main.class.getResource(EMPTY_D64);
 			EMPTY_DISK = new byte[us3.openConnection().getContentLength()];
 			is2.readFully(EMPTY_DISK);
@@ -169,7 +169,7 @@ public class Menu extends AnchorPane implements UIPart {
 	private UIUtil util;
 	private JSidPlay2 window;
 
-	public Menu(C64Window window, Player player) {
+	public MenuBar(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		getChildren().add((Node) util.parse());
 		this.window = (JSidPlay2) window;

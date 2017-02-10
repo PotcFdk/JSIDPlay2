@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.TabPane?>
 <?import java.net.URL?>
-<?import ui.menu.Menu?>
+<?import ui.menubar.MenuBar?>
 <?import ui.toolbar.ToolBar?>
 <?import ui.statusbar.StatusBar?>
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
@@ -17,7 +17,7 @@
 	<BorderPane xmlns:fx="http://javafx.com/fxml">
 		<top>
 			<VBox>
-				<Menu />
+				<MenuBar />
 				<ToolBar />
 			</VBox>
 		</top>

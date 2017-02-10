@@ -537,7 +537,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	 * Queue an image per frame of VIC screen output.
 	 * 
 	 * Fast forward skips frames and produces output for each Xth frame (X = 1x,
-	 * 2x, 3x, ... , 32x).
+	 * 2x, 4x, ... , 32x).
 	 * 
 	 * On buffer overrun we sleep for some time.
 	 * 
@@ -549,7 +549,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 		if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 			vicFrames = 0;
-			// create image with copy of pixels to prevent tearing
+			// create image with a copy of the pixels to prevent tearing
 			Image image = createImage(Arrays.copyOf(pixels, pixels.length));
 			synchronized (syncFrame) {
 				frame = image;
