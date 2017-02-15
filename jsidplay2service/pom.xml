@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>kickassembler</groupId>
 			<artifactId>kickassembler</artifactId>
-			<version>4.7</version>
+			<version>4.8</version>
 		</dependency>
 		<dependency>
 			<groupId>jsidplay2</groupId>
