@@ -268,11 +268,10 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	 *            Observe calls of SID player (JSR $PlayAddr).
 	 */
 	public void setPlayAddr(final int playAddr) {
-		cpu.setJSRHandler(Register_ProgramCounter -> {
+		cpu.setJmpJsrHandler(Register_ProgramCounter -> {
 			if (Register_ProgramCounter == playAddr) {
 				if (playRoutineObserver != null) {
-					final long time = context.getTime(Event.Phase.PHI2);
-					playRoutineObserver.fetch(time);
+					playRoutineObserver.jmpJsr();
 				}
 				callsToPlayRoutine++;
 			}
@@ -423,7 +422,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		context.reset();
 		keyboard.reset();
 		pla.reset();
-		cpu.setJSRHandler(Register_ProgramCounter -> {
+		cpu.setJmpJsrHandler(Register_ProgramCounter -> {
 		});
 		cpu.triggerRST();
 		cia1.reset();

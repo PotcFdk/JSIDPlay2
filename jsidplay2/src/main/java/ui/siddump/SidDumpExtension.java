@@ -427,7 +427,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	 *            time in CPU
 	 */
 	@Override
-	public void fetch(final long cpuTime) {
+	public void jmpJsr() {
 		// ignore first call
 		if (fFirstTime) {
 			fFirstTime = false;

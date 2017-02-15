@@ -112,7 +112,7 @@ public class MOS6510 {
 	protected boolean flagB;
 
 	protected Function<Boolean, Boolean> v = flagV -> flagV;
-	protected Consumer<Integer> jsr = Register_ProgramCounter -> {
+	protected Consumer<Integer> jmpJsr = Register_ProgramCounter -> {
 	};
 	protected Function<Integer, Byte> cpuRead;
 	protected BiConsumer<Integer, Byte> cpuWrite;
@@ -137,8 +137,8 @@ public class MOS6510 {
 		this.cpuWrite = cpuWrite;
 	}
 
-	public void setJSRHandler(final Consumer<Integer> jsr) {
-		this.jsr = jsr;
+	public void setJmpJsrHandler(final Consumer<Integer> jmpJsr) {
+		this.jmpJsr = jmpJsr;
 	}
 
 	public void setVFlagHandler(final Function<Boolean, Boolean> v) {
@@ -1459,7 +1459,7 @@ public class MOS6510 {
 			case JMPi:
 				instrTable[buildCycle++] = () -> {
 					Register_ProgramCounter = Cycle_EffectiveAddress;
-					jsr.accept(Register_ProgramCounter);
+					jmpJsr.accept(Register_ProgramCounter);
 					interruptsAndNextOpcode();
 				};
 				break;
