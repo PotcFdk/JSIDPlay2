@@ -14,7 +14,7 @@ import kickass.asmnode.metanodes.AsmNodeList;
 import kickass.asmnode.metanodes.NamespaceNode;
 import kickass.asmnode.metanodes.ScopeAndSymbolPageNode;
 import kickass.asmnode.output.reciever.MainOutputReciever;
-import kickass.misc.MemoryBlock;
+import kickass.segments.MemoryBlock;
 import kickass.state.EvaluationState;
 import kickass.state.scope.symboltable.SymbolStatus;
 import kickass.tools.tuples.Pair;
@@ -23,6 +23,7 @@ import kickass.values.HashtableValue;
 import kickassu.errors.AsmError;
 import kickassu.errors.printers.OneLineErrorPrinter;
 import kickassu.exceptions.AsmErrorException;
+import kickassu.parsing.sourcelocation.SourceRange;
 
 public class KickAssembler {
 
@@ -88,28 +89,29 @@ public class KickAssembler {
 			AsmNodeList asmNodeList = new AsmNodeList(asmNode);
 			ScopeAndSymbolPageNode scopeAndSymbolPageNode = new ScopeAndSymbolPageNode(asmNodeList,
 					evaluationState.getSystemNamespace().getScope());
-			evaluationState.prepareNewParse();
+			evaluationState.prepareNewPass();
 			AsmNode asmNode2 = scopeAndSymbolPageNode.executeMetaRegistrations(evaluationState);
 			asmNode2 = asmNode2.executePrepass(evaluationState);
 			printErrorsAndTerminate(evaluationState);
 			do {
-				evaluationState.prepareNewParse();
+				evaluationState.prepareNewPass();
 				asmNode2 = asmNode2.executePass(evaluationState);
-				if (evaluationState.getMadeMetaProgress() || asmNode2.isFinished())
-					continue;
-				evaluationState.prepareNewParse();
-				evaluationState.setFailOnInvalidValue(true);
-				asmNode2 = asmNode2.executePass(evaluationState);
-				throw new AsmErrorException(
-						"Made no progress and cant solve the program.. You should have gotten an error. Contact the author!",
-						null);
+				evaluationState.getSegmentManager().postPass();
+				if (!evaluationState.getMadeMetaProgress() && !asmNode2.isFinished()) {
+					evaluationState.prepareNewPass();
+					evaluationState.setFailOnInvalidValue(true);
+					asmNode2.executePass(evaluationState);
+					throw new AsmErrorException(
+							"Made no progress and can\'t solve the program.. You should have gotten an error. Contact the author!",
+							(SourceRange) null);
+				}
 			} while (!asmNode2.isFinished());
 
 			MainOutputReciever mainOutputReciever = new MainOutputReciever(8192, false,
-					evaluationState.getMaxMemoryAddress(),null);
+					evaluationState.getMaxMemoryAddress(), null);
 			asmNode2.deliverOutput(mainOutputReciever);
 			mainOutputReciever.finish();
-			return new Assembly(mainOutputReciever.getMemoryBlocks()).getData();
+			return new Assembly(mainOutputReciever.getSegments().get("Default")).getData();
 		} catch (AsmErrorException e) {
 			AsmError asmError = e.getError();
 			asmError.setCallStack(evaluationState.getCallStack());

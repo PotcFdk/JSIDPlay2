@@ -361,7 +361,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			}
 		});
 		screenUpdateService.setExecutor(schdExctr);
-		screenUpdateService.setPeriod(Duration.millis(1000. / cpuClock.getRefresh()));
+		screenUpdateService.setPeriod(Duration.millis(1000. / cpuClock.getScreenRefresh()));
 
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
 		screen.setWidth(util.getPlayer().getC64().getVIC().getBorderWidth());

@@ -9,6 +9,16 @@
  */
 package sidplay;
 
+import static libsidplay.common.SIDEmu.NONE;
+import static libsidplay.sidtune.SidTune.RESET;
+import static sidplay.audio.Audio.SOUNDCARD;
+import static sidplay.player.State.END;
+import static sidplay.player.State.PAUSE;
+import static sidplay.player.State.PLAY;
+import static sidplay.player.State.QUIT;
+import static sidplay.player.State.RESTART;
+import static sidplay.player.State.START;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -100,7 +110,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Music player state.
 	 */
-	private ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(State.QUIT);
+	private ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(QUIT);
 	/**
 	 * Play timer.
 	 */
@@ -112,7 +122,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Currently played tune.
 	 */
-	private SidTune tune = SidTune.RESET;
+	private SidTune tune = RESET;
 	/**
 	 * Auto-start command to be typed-in after reset.
 	 */
@@ -134,7 +144,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Currently used audio driver.
 	 */
-	private AudioDriver audioDriver = Audio.SOUNDCARD.getAudioDriver();
+	private AudioDriver audioDriver = SOUNDCARD.getAudioDriver();
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -157,19 +167,19 @@ public class Player extends HardwareEnsemble {
 	private BiFunction<Integer, SIDEmu, SIDEmu> requiredSIDs = (sidNum, sidEmu) -> {
 		if (SidTune.isSIDUsed(config.getEmulationSection(), tune, sidNum)) {
 			return sidBuilder.lock(sidEmu, sidNum, tune);
-		} else if (sidEmu != SIDEmu.NONE) {
+		} else if (sidEmu != NONE) {
 			sidBuilder.unlock(sidEmu);
 		}
-		return SIDEmu.NONE;
+		return NONE;
 	};
 	/**
 	 * Eject all SIDs.
 	 */
 	private BiFunction<Integer, SIDEmu, SIDEmu> noSIDs = (sidNum, sidEmu) -> {
-		if (sidEmu != SIDEmu.NONE) {
+		if (sidEmu != NONE) {
 			sidBuilder.unlock(sidEmu);
 		}
-		return SIDEmu.NONE;
+		return NONE;
 	};
 	/**
 	 * Set base address of required SIDs.
@@ -180,7 +190,7 @@ public class Player extends HardwareEnsemble {
 	 * Player paused? Stop audio production.
 	 */
 	private ChangeListener<? super State> pauseListener = (s, oldValue, newValue) -> {
-		if (newValue == State.PAUSE) {
+		if (newValue == PAUSE) {
 			audioDriver.pause();
 			sidBuilder.pause();
 			// audio driver continues automatically, next call of write!
@@ -207,7 +217,7 @@ public class Player extends HardwareEnsemble {
 	 */
 	public Player(final IConfig config, final Class<? extends MOS6510> cpuClass) {
 		super(config, cpuClass);
-		this.playList = PlayList.getInstance(config, SidTune.RESET);
+		this.playList = PlayList.getInstance(config, RESET);
 		this.timer = new Timer(this) {
 
 			@Override
@@ -228,13 +238,13 @@ public class Player extends HardwareEnsemble {
 			 */
 			@Override
 			public void end() {
-				if (tune != SidTune.RESET) {
+				if (tune != RESET) {
 					if (!config.getSidplay2Section().isSingle() && playList.hasNext()) {
 						nextSong();
 					} else if (config.getSidplay2Section().isLoop()) {
-						stateProperty.set(State.RESTART);
+						stateProperty.set(RESTART);
 					} else {
-						stateProperty.set(State.END);
+						stateProperty.set(END);
 					}
 				}
 			}
@@ -246,7 +256,7 @@ public class Player extends HardwareEnsemble {
 			 */
 			@Override
 			public void fadeInStart(final int fadeIn) {
-				if (tune != SidTune.RESET) {
+				if (tune != RESET) {
 					configureMixer(mixer -> mixer.fadeIn(fadeIn));
 				}
 			}
@@ -258,7 +268,7 @@ public class Player extends HardwareEnsemble {
 			 */
 			@Override
 			public void fadeOutStart(final int fadeOut) {
-				if (tune != SidTune.RESET) {
+				if (tune != RESET) {
 					configureMixer(mixer -> mixer.fadeOut(fadeOut));
 				}
 			}
@@ -391,7 +401,7 @@ public class Player extends HardwareEnsemble {
 		c64.getEventScheduler().schedule(new Event("Auto-start") {
 			@Override
 			public void event() throws InterruptedException {
-				if (tune != SidTune.RESET) {
+				if (tune != RESET) {
 					// for tunes: Install player into RAM
 					Integer driverAddress = tune.placeProgramInMemory(c64.getRAM());
 					if (driverAddress != null) {
@@ -565,22 +575,22 @@ public class Player extends HardwareEnsemble {
 		do {
 			try {
 				open();
-				stateProperty.set(State.START);
+				stateProperty.set(START);
 				menuHook.accept(Player.this);
 				// Play next chunk of sound data
-				stateProperty.set(State.PLAY);
+				stateProperty.set(PLAY);
 				while (play()) {
 					interactivityHook.accept(Player.this);
 				}
 			} catch (CmpMP3File.MP3Termination e) {
-				stateProperty.set(State.END);
+				stateProperty.set(END);
 			} catch (InterruptedException | IOException | LineUnavailableException e) {
 				throw new RuntimeException(e.getMessage());
 			} finally {
 				close();
 			}
 			// "Play it once, Sam. For old times' sake."
-		} while (stateProperty.get() == State.RESTART);
+		} while (stateProperty.get() == RESTART);
 	};
 
 	/**
@@ -635,15 +645,15 @@ public class Player extends HardwareEnsemble {
 	 *             audio production interrupted
 	 */
 	private boolean play() throws InterruptedException {
-		if (stateProperty.get() == State.PLAY) {
+		if (stateProperty.get() == PLAY) {
 			for (int i = 0; i < config.getAudioSection().getBufferSize(); i++) {
 				c64.getEventScheduler().clock();
 			}
 		}
-		if (stateProperty.get() == State.PAUSE) {
+		if (stateProperty.get() == PAUSE) {
 			Thread.sleep(PAUSE_SLEEP_TIME);
 		}
-		return stateProperty.get() == State.PLAY || stateProperty.get() == State.PAUSE;
+		return stateProperty.get() == PLAY || stateProperty.get() == PAUSE;
 	}
 
 	/**
@@ -659,7 +669,7 @@ public class Player extends HardwareEnsemble {
 	 * Play tune.
 	 * 
 	 * @param tune
-	 *            tune to play (SidTune.RESET means just reset C64)
+	 *            tune to play (RESET means just reset C64)
 	 */
 	public final void play(final SidTune tune) {
 		play(tune, null);
@@ -672,7 +682,7 @@ public class Player extends HardwareEnsemble {
 	 *            basic command to be entered after a normal reset
 	 */
 	public final void resetC64(String command) {
-		play(SidTune.RESET, command);
+		play(RESET, command);
 	}
 
 	/**
@@ -694,12 +704,12 @@ public class Player extends HardwareEnsemble {
 	 * Pause or continue the player.
 	 */
 	public final void pauseContinue() {
-		if (stateProperty.get() == State.QUIT || stateProperty.get() == State.END) {
+		if (stateProperty.get() == QUIT || stateProperty.get() == END) {
 			play(tune);
-		} else if (stateProperty.get() == State.PAUSE) {
-			stateProperty.set(State.PLAY);
+		} else if (stateProperty.get() == PAUSE) {
+			stateProperty.set(PLAY);
 		} else {
-			stateProperty.set(State.PAUSE);
+			stateProperty.set(PAUSE);
 		}
 	}
 
@@ -708,7 +718,7 @@ public class Player extends HardwareEnsemble {
 	 */
 	public final void nextSong() {
 		playList.next();
-		stateProperty.set(State.RESTART);
+		stateProperty.set(RESTART);
 	}
 
 	/**
@@ -720,7 +730,7 @@ public class Player extends HardwareEnsemble {
 		if (time() < PREV_SONG_TIMEOUT) {
 			playList.previous();
 		}
-		stateProperty.set(State.RESTART);
+		stateProperty.set(RESTART);
 	}
 
 	/**
@@ -728,7 +738,7 @@ public class Player extends HardwareEnsemble {
 	 */
 	public final void firstSong() {
 		playList.first();
-		stateProperty.set(State.RESTART);
+		stateProperty.set(RESTART);
 	}
 
 	/**
@@ -736,7 +746,7 @@ public class Player extends HardwareEnsemble {
 	 */
 	public final void lastSong() {
 		playList.last();
-		stateProperty.set(State.RESTART);
+		stateProperty.set(RESTART);
 	}
 
 	/**
@@ -759,7 +769,7 @@ public class Player extends HardwareEnsemble {
 	 * Quit player.
 	 */
 	public final void quit() {
-		stateProperty.set(State.QUIT);
+		stateProperty.set(QUIT);
 	}
 
 	/**

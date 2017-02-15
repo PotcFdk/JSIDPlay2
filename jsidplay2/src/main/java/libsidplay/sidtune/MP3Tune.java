@@ -54,7 +54,7 @@ public class MP3Tune extends SidTune {
 
 	public static final SidTune load(final File file) throws IOException, SidTuneError {
 		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
-			throw new SidTuneError("Bad file extension, expected: .mp3");
+			throw new SidTuneError("MP3: Bad file extension, expected: .mp3");
 		}
 		final MP3Tune mp3 = new MP3Tune();
 

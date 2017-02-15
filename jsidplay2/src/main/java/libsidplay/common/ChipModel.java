@@ -1,5 +1,8 @@
 package libsidplay.common;
 
+import static libsidplay.sidtune.SidTune.RESET;
+import static libsidplay.sidtune.SidTune.Model.UNKNOWN;
+
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Model;
@@ -13,14 +16,16 @@ public enum ChipModel {
 	MOS8580;
 
 	/**
-	 * Detect chip model of specified SID number
+	 * Detect chip model of specified SID number in the following order:
 	 * <OL>
-	 * <LI>forced chip model
-	 * <LI>chip model provided by tune information
-	 * <LI>default chip model or use 1st chip model (for 2nd or 3rd chip)
+	 * <LI>SID model forced by user configuration
+	 * <LI>chip model provided by tune information (auto detected) and if
+	 * unknown, then
+	 * <LI>default chip model for the 1st SID and for 2nd or 3rd chip use the
+	 * same chip model as for the 1st SID
 	 * </OL>
 	 * 
-	 * @return chip model to be used for SID number
+	 * @return chip model to be used for SID number 0..MAX_SIDS-1
 	 */
 	public static ChipModel getChipModel(IEmulationSection emulation, SidTune tune, int sidNum) {
 		ChipModel forcedChipModel;
@@ -29,17 +34,17 @@ public enum ChipModel {
 		switch (sidNum) {
 		case 0:
 			forcedChipModel = emulation.getUserSidModel();
-			tuneSidModel = tune != null ? tune.getInfo().getSIDModel(0) : null;
+			tuneSidModel = tune != RESET ? tune.getInfo().getSIDModel(0) : UNKNOWN;
 			defaultSidModel = emulation.getDefaultSidModel();
 			break;
 		case 1:
 			forcedChipModel = emulation.getStereoSidModel();
-			tuneSidModel = tune != null ? tune.getInfo().getSIDModel(1) : null;
+			tuneSidModel = tune != RESET ? tune.getInfo().getSIDModel(1) : UNKNOWN;
 			defaultSidModel = getChipModel(emulation, tune, 0);
 			break;
 		case 2:
 			forcedChipModel = emulation.getThirdSIDModel();
-			tuneSidModel = tune != null ? tune.getInfo().getSIDModel(2) : null;
+			tuneSidModel = tune != RESET ? tune.getInfo().getSIDModel(2) : UNKNOWN;
 			defaultSidModel = getChipModel(emulation, tune, 0);
 			break;
 		default:
@@ -48,7 +53,7 @@ public enum ChipModel {
 		if (forcedChipModel != AUTO) {
 			return forcedChipModel;
 		}
-		if (tuneSidModel == null) {
+		if (tuneSidModel == UNKNOWN) {
 			return defaultSidModel;
 		}
 		switch (tuneSidModel) {

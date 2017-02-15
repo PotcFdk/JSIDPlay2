@@ -79,12 +79,12 @@ class P00 extends Prg {
 	protected static SidTune load(final String name, final byte[] dataBuf) throws SidTuneError {
 		String ext = PathUtils.getFilenameSuffix(name).toUpperCase(Locale.ENGLISH);
 		if (dataBuf.length < X00Header.SIZE + 2 || ext.length() != 4 || '0' != ext.charAt(2) || '0' != ext.charAt(3)) {
-			throw new SidTuneError("Bad file extension expected: .p00");
+			throw new SidTuneError("P00: Bad file extension expected: .p00");
 		}
 		final X00Header header = new X00Header(dataBuf);
 		X00Format type = X00Format.valueOf(String.valueOf(ext.charAt(1)));
 		if (type != X00Format.P || !header.getId().equals(SIDTUNE_ID)) {
-			throw new SidTuneError("Bad program type, expected: C64File, PRG");
+			throw new SidTuneError("P00: Bad program type, expected: C64File, PRG");
 		}
 		final P00 p00 = new P00();
 		p00.program = dataBuf;

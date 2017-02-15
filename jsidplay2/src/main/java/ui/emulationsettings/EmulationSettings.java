@@ -405,14 +405,17 @@ public class EmulationSettings extends C64Window {
 	private void setFilter(int sidNum, ComboBox<String> filterBox) {
 		IEmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-		String filterName = filterBox.getSelectionModel().getSelectedItem();
-		boolean filterDisabled = "".equals(filterName);
-		emulationSection.setFilterEnable(sidNum, !filterDisabled);
-
 		SidTune tune = util.getPlayer().getTune();
 		Engine engine = emulationSection.getEngine();
 		Emulation emulation = Emulation.getEmulation(emulationSection, tune, sidNum);
 		ChipModel model = ChipModel.getChipModel(emulationSection, tune, sidNum);
+		if (engine == Engine.HARDSID) {
+			return;
+		}
+		String filterName = filterBox.getSelectionModel().getSelectedItem();
+		boolean filterDisabled = filterName.isEmpty();
+
+		emulationSection.setFilterEnable(sidNum, !filterDisabled);
 		emulationSection.setFilterName(sidNum, engine, emulation, model, !filterDisabled ? filterName : null);
 	}
 
@@ -439,7 +442,7 @@ public class EmulationSettings extends C64Window {
 		SidTune tune = util.getPlayer().getTune();
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
 		boolean third = SidTune.isSIDUsed(emulationSection, tune, 2);
-		
+
 		List<Data<Number, Number>> dataList = new ArrayList<>();
 
 		Optional<FilterSection> optFilter = util.getConfig().getFilterSection().stream()
@@ -486,13 +489,12 @@ public class EmulationSettings extends C64Window {
 		Engine engine = emulationSection.getEngine();
 		Emulation emulation = Emulation.getEmulation(emulationSection, tune, num);
 		ChipModel model = ChipModel.getChipModel(emulationSection, tune, num);
-		String filterName = emulationSection.getFilterName(num, engine, emulation, model);
-		boolean filterEnable = emulationSection.isFilterEnable(num);
 
 		filters.clear();
 		if (engine == Engine.NETSID) {
 			filters.addAll(TrySetSidModel.getFilterNames(model));
-		} else {
+			filter.getSelectionModel().select(emulationSection.getFilterName(num, engine, emulation, model));
+		} else if (engine == Engine.EMULATION) {
 			filters.add("");
 			for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
 				if (emulation.equals(Emulation.RESIDFP)) {
@@ -509,11 +511,11 @@ public class EmulationSettings extends C64Window {
 					}
 				}
 			}
-		}
-		if (filterEnable) {
-			filter.getSelectionModel().select(filterName);
-		} else {
-			filter.getSelectionModel().select(0);
+			if (emulationSection.isFilterEnable(num)) {
+				filter.getSelectionModel().select(emulationSection.getFilterName(num, engine, emulation, model));
+			} else {
+				filter.getSelectionModel().select(0);
+			}
 		}
 	}
 

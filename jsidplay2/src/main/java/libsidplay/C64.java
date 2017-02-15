@@ -290,7 +290,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		final double interval = now - lastUpdate;
 		if (interval >= cpuFreq) {
 			lastUpdate = now;
-			tuneSpeed = (callsToPlayRoutine * cpuFreq) / (interval * clock.getRefresh());
+			tuneSpeed = (callsToPlayRoutine * cpuFreq) / (interval * clock.getScreenRefresh());
 			callsToPlayRoutine = 0;
 		}
 		return tuneSpeed;
@@ -557,8 +557,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		this.clock = clock;
 
 		context.setCyclesPerSecond(clock.getCpuFrequency());
-		cia1.setDayOfTimeRate(clock.getCyclesPerFrame());
-		cia2.setDayOfTimeRate(clock.getCyclesPerFrame());
+		cia1.setDayOfTimeRate(clock.getCpuFrequency() / clock.getScreenRefresh());
+		cia2.setDayOfTimeRate(clock.getCpuFrequency() / clock.getScreenRefresh());
 		pla.setVic(getVIC());
 	}
 

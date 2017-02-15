@@ -51,7 +51,7 @@ class Prg extends SidTune {
 
 	protected static SidTune load(final String name, final byte[] dataBuf) throws SidTuneError {
 		if (!PathUtils.getFilenameSuffix(name).equalsIgnoreCase(".prg") || dataBuf.length < 2) {
-			throw new SidTuneError("Bad file extension expected: .prg and length > 2");
+			throw new SidTuneError("PRG: Bad file extension expected: .prg and length > 2");
 		}
 		final Prg prg = new Prg();
 

@@ -15,6 +15,9 @@
  */
 package libsidplay.sidtune;
 
+import static libsidplay.common.SIDChip.DEF_BASE_ADDRESS;
+import static libsidplay.sidtune.SidTune.Speed.CIA_1A;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,7 +29,6 @@ import java.util.Collection;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
-import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 
@@ -85,7 +87,7 @@ public abstract class SidTune {
 	 * Possible clock speeds of a SidTune.
 	 */
 	public enum Clock {
-		UNKNOWN(CPUClock.PAL), PAL(CPUClock.PAL), NTSC(CPUClock.NTSC), ANY(CPUClock.PAL);
+		UNKNOWN(null), PAL(CPUClock.PAL), NTSC(CPUClock.NTSC), ANY(null);
 
 		private CPUClock cpuClock;
 
@@ -102,7 +104,7 @@ public abstract class SidTune {
 	 * Possible models the SidTunes were meant to play on.
 	 */
 	public enum Model {
-		UNKNOWN(ChipModel.MOS6581), MOS6581(ChipModel.MOS6581), MOS8580(ChipModel.MOS8580), ANY(ChipModel.MOS6581);
+		UNKNOWN(null), MOS6581(ChipModel.MOS6581), MOS8580(ChipModel.MOS8580), ANY(null);
 
 		private ChipModel chipModel;
 
@@ -122,10 +124,8 @@ public abstract class SidTune {
 		PSIDv1, PSIDv2, PSIDv3, PSIDv4, RSID_BASIC, RSIDv2, RSIDv3
 	}
 
-	protected SidTuneInfo info = new SidTuneInfo();
-
 	/**
-	 * Loads a file into a SidTune. Support of a lot of tunes here.
+	 * Loads a file as a SidTune (PSID, PRG, P00, T64, MUS, MP3).
 	 * 
 	 * @param file
 	 *            The file to load.
@@ -138,19 +138,22 @@ public abstract class SidTune {
 	public static SidTune load(final File file) throws IOException, SidTuneError {
 		try {
 			return MP3Tune.load(file);
-		} catch (SidTuneError e1) {
-			byte[] fileBuffer = getFileContents(file);
+		} catch (SidTuneError mp3Error) {
+			byte[] fileContents = getContents(file);
 			try {
-				return loadCommon(file.getName(), fileBuffer);
-			} catch (SidTuneError e2) {
-				return Mus.load(file, fileBuffer);
+				return load(file.getName(), fileContents);
+			} catch (SidTuneError commonError) {
+				try {
+					return Mus.load(file, fileContents);
+				} catch (SidTuneError musError) {
+					throw (SidTuneError) mp3Error.initCause(musError.initCause(commonError));
+				}
 			}
 		}
 	}
 
 	/**
-	 * Loads an InputStream into a SidTune. Note: file based tunes are not
-	 * supported (MUS/STR files, MP3)
+	 * Loads an InputStream as a SidTune (PSID, PRG, P00, T64).
 	 * 
 	 * @param url
 	 *            URL of the given stream
@@ -164,15 +167,15 @@ public abstract class SidTune {
 	 * @throws SidTuneError
 	 */
 	public static SidTune load(String url, final InputStream stream) throws IOException, SidTuneError {
-		return loadCommon(url, getFileContents(stream));
+		return load(url, getContents(stream));
 	}
 
 	/**
-	 * Load tune. Try several common SID tune formats to load.
+	 * Load tune (PSID, PRG, P00, T64).
 	 * 
 	 * @param name
-	 *            name of the file (e.g. to check extension)
-	 * @param fileBuffer
+	 *            name of the file (for file extension check)
+	 * @param fileContents
 	 *            The tune data to load.
 	 * 
 	 * @return A SidTune of the specified contents.
@@ -181,29 +184,24 @@ public abstract class SidTune {
 	 *             If the stream cannot be read.
 	 * @throws SidTuneError
 	 */
-	private static SidTune loadCommon(String name, byte[] fileBuffer) throws SidTuneError {
+	protected static SidTune load(String name, byte[] fileContents) throws SidTuneError {
 		try {
-			return PSid.load(name, fileBuffer);
-		} catch (SidTuneError e1) {
+			return PSid.load(name, fileContents);
+		} catch (SidTuneError psidError) {
 			try {
-				return Prg.load(name, fileBuffer);
-			} catch (SidTuneError e2) {
+				return Prg.load(name, fileContents);
+			} catch (SidTuneError prgError) {
 				try {
-					return P00.load(name, fileBuffer);
-				} catch (SidTuneError e3) {
-					return T64.load(name, fileBuffer);
+					return P00.load(name, fileContents);
+				} catch (SidTuneError p00Error) {
+					try {
+						return T64.load(name, fileContents);
+					} catch (SidTuneError t64Error) {
+						throw (SidTuneError) t64Error.initCause(p00Error.initCause(prgError.initCause(psidError)));
+					}
 				}
 			}
 		}
-	}
-
-	/**
-	 * Retrieve sub-song specific information. Beware! Still member-wise copy!
-	 * 
-	 * @return Sub-song specific information about the currently loaded tune.
-	 */
-	public final SidTuneInfo getInfo() {
-		return info;
 	}
 
 	/**
@@ -218,22 +216,33 @@ public abstract class SidTune {
 	 * @throws IOException
 	 *             if the file could not be found.
 	 */
-	protected static final byte[] getFileContents(final File file) throws IOException {
+	protected static final byte[] getContents(final File file) throws IOException {
 		try (InputStream is = TFILE_IS != null ? (InputStream) TFILE_IS.newInstance(file) : new FileInputStream(file)) {
-			return getFileContents(is);
+			return getContents(is);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
-			throw new IOException(file.getAbsolutePath());
+			throw new IOException(file.getAbsolutePath(), e);
 		}
 	}
 
-	private static byte[] getFileContents(final InputStream stream) throws IOException {
+	private static byte[] getContents(final InputStream stream) throws IOException {
 		final byte[] fileBuf = new byte[MAX_MEM_64K];
 		int count, len = 0;
 		while (len < MAX_MEM_64K && (count = stream.read(fileBuf, len, MAX_MEM_64K - len)) >= 0) {
 			len += count;
 		}
 		return Arrays.copyOf(fileBuf, len);
+	}
+
+	protected SidTuneInfo info = new SidTuneInfo();
+
+	/**
+	 * Retrieve sub-song specific information.
+	 * 
+	 * @return Sub-song specific information about the currently loaded tune.
+	 */
+	public final SidTuneInfo getInfo() {
+		return info;
 	}
 
 	/**
@@ -245,7 +254,7 @@ public abstract class SidTune {
 	 * @return The speed of the selected song.
 	 */
 	public Speed getSongSpeed(int selected) {
-		return Speed.CIA_1A;
+		return CIA_1A;
 	}
 
 	/**
@@ -266,6 +275,19 @@ public abstract class SidTune {
 	}
 
 	/**
+	 * Detect fake-stereo SID (second SID at the same address).
+	 * 
+	 * @param tune
+	 *            current tune
+	 * @param sidNum
+	 *            current SID number
+	 * @return fake-stereo SID has been detected
+	 */
+	public static boolean isFakeStereoSid(IEmulationSection emulation, SidTune tune, int sidNum) {
+		return sidNum > 0 && getSIDAddress(emulation, tune, sidNum - 1) == getSIDAddress(emulation, tune, sidNum);
+	}
+
+	/**
 	 * Is specified SID number in use?
 	 * <OL>
 	 * <LI>0 - first SID is always used
@@ -281,7 +303,7 @@ public abstract class SidTune {
 	 * Get SID address of specified SID number
 	 * <OL>
 	 * <LI>0xd400 - always used for first SID
-	 * <LI>fake stereo - a second SID at the same address
+	 * <LI>fake stereo - a second SID at the same address (0xd400)
 	 * <LI>forced SID base - configured value for forced stereo or 3-SID output
 	 * <LI>tune SID base - SID base detected by tune information
 	 * <LI>0 - SID is not used
@@ -291,19 +313,19 @@ public abstract class SidTune {
 	 */
 	public static int getSIDAddress(IEmulationSection emulation, SidTune tune, int sidNum) {
 		boolean forcedStereoTune;
-		int forcedSidBase;
-		int tuneChipBase;
+		int forcedSidBase, tuneChipBase;
 		switch (sidNum) {
 		case 0:
-			return SIDChip.DEF_BASE_ADDRESS;
+			return DEF_BASE_ADDRESS;
 		case 1:
 			forcedStereoTune = emulation.isForceStereoTune();
 			forcedSidBase = emulation.getDualSidBase();
 			tuneChipBase = tune != RESET ? tune.getInfo().getSIDChipBase(sidNum) : 0;
 			if (tuneChipBase == 0 && !forcedStereoTune && emulation.isFakeStereo()) {
 				// A mono tune, not already forced to play in stereo mode shall
-				// be played in fake stereo mode (2-SID at same base address)
-				return SIDChip.DEF_BASE_ADDRESS;
+				// be played in fake stereo mode (2nd SID at the same base
+				// address)
+				return DEF_BASE_ADDRESS;
 			}
 			break;
 		case 2:
@@ -319,19 +341,6 @@ public abstract class SidTune {
 		} else {
 			return tuneChipBase;
 		}
-	}
-
-	/**
-	 * Detect fake-stereo SID (second SID at the same address).
-	 * 
-	 * @param tune
-	 *            current tune
-	 * @param sidNum
-	 *            current SID number
-	 * @return fake-stereo SID has been detected
-	 */
-	public static boolean isFakeStereoSid(IEmulationSection emulation, SidTune tune, int sidNum) {
-		return sidNum > 0 && getSIDAddress(emulation, tune, sidNum - 1) == getSIDAddress(emulation, tune, sidNum);
 	}
 
 	/**

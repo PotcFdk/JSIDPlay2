@@ -12,13 +12,13 @@ public enum Emulation {
 	RESIDFP;
 
 	/**
-	 * Detect SID emulation of specified SID number
+	 * Detect SID emulation of specified SID number in the following order:
 	 * <OL>
-	 * <LI>forced SID emulation
+	 * <LI>SID emulation forced by user configuration
 	 * <LI>default SID emulation
 	 * </OL>
 	 * 
-	 * @return SID emulation to be used for SID number
+	 * @return SID emulation to be used for SID number 0..MAX_SIDS-1
 	 */
 	public static Emulation getEmulation(IEmulationSection emulationSection, SidTune tune, int sidNum) {
 		Emulation forcedEmulation;
@@ -36,6 +36,6 @@ public enum Emulation {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
-		return forcedEmulation != Emulation.DEFAULT ? forcedEmulation : defaultEmulation;
+		return forcedEmulation != DEFAULT ? forcedEmulation : defaultEmulation;
 	}
 }

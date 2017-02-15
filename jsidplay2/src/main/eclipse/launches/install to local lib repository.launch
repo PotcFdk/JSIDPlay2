@@ -9,7 +9,7 @@
 <listEntry value="file=/home/ken/Downloads/KickAss.jar"/>
 <listEntry value="groupId=kickassembler"/>
 <listEntry value="artifactId=kickassembler"/>
-<listEntry value="version=4.7"/>
+<listEntry value="version=4.8"/>
 <listEntry value="packaging=jar"/>
 <listEntry value="localRepositoryPath=lib"/>
 </listAttribute>

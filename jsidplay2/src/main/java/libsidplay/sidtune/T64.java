@@ -27,7 +27,7 @@ public class T64 extends Prg {
 
 	protected static SidTune load(final String name, final byte[] dataBuf) throws SidTuneError {
 		if (!PathUtils.getFilenameSuffix(name).equalsIgnoreCase(".t64")) {
-			throw new SidTuneError("Bad file extension expected: .t64");
+			throw new SidTuneError("T64: Bad file extension expected: .t64");
 		}
 		final T64 t64 = new T64();
 		final T64Entry entry = t64.getEntry(dataBuf, 1);
@@ -55,14 +55,14 @@ public class T64 extends Prg {
 	public T64Entry getEntry(final byte[] dataBuf, final int entryNum) throws SidTuneError {
 		int totalEntries = ((dataBuf[35] & 0xff) << 8) | (dataBuf[34] & 0xff);
 		if (entryNum < 1 || entryNum > totalEntries) {
-			throw new SidTuneError("Illegal T64 entry number: " + entryNum + ", must be 1.." + totalEntries);
+			throw new SidTuneError("T64: Illegal T64 entry number: " + entryNum + ", must be 1.." + totalEntries);
 		}
 		int pos = 32 /* header */ + 32 * entryNum;
 		// expect 1 (Normal tape file) and PRG
 		final byte type = dataBuf[pos++];
 		final byte fileType = dataBuf[pos++];
 		if (pos + 32 > dataBuf.length || (type != 1 && (fileType & BITMASK_FILETYPE) != FILETYPE_PRG)) {
-			throw new SidTuneError("Illegal T64 entry type, must be PRG normal tape file");
+			throw new SidTuneError("T64: Illegal T64 entry type, must be PRG normal tape file");
 		}
 		final T64Entry entry = new T64Entry();
 		// Get start address (or Load address)

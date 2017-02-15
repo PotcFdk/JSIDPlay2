@@ -38,9 +38,9 @@ class Mus extends PSid {
 	/** Known SID names. MUS loader scans for these. */
 	private static final List<String> DEFAULT_MUS_NAMES = Arrays.asList(".mus", ".str", "_a.mus", "_b.mus");
 
-	private static final String ERR_SIDTUNE_INVALID = "ERROR: File contains invalid data";
+	private static final String ERR_SIDTUNE_INVALID = "MUS: file contains invalid data";
 
-	private static final String ERR_SIDTUNE_2ND_INVALID = "ERROR: 2nd file contains invalid data";
+	private static final String ERR_SIDTUNE_2ND_INVALID = "MUS: 2nd file contains invalid data";
 
 	private static final int MUS_HLT_CMD = 0x14F;
 
@@ -118,7 +118,7 @@ class Mus extends PSid {
 		File stereoFile = getStereoTune(musFile);
 		if (stereoFile != null) {
 			try {
-				strBuf = getFileContents(stereoFile);
+				strBuf = getContents(stereoFile);
 			} catch (IOException e) {
 				// ignore missing stereo tune
 			}

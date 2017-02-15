@@ -20,7 +20,6 @@ package libsidplay.sidtune;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -33,6 +32,8 @@ import libsidplay.components.mos6510.MOS6510;
 import libsidutils.assembler.KickAssembler;
 
 class PSid extends Prg {
+
+	private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
 	/**
 	 * Header has been extended for 'RSID' format<BR>
@@ -208,9 +209,9 @@ class PSid extends Prg {
 		private byte sidChip3MiddleNybbles;
 
 		private String getString(byte[] info) {
-			try (Scanner sc = new Scanner(new String(info, "ISO-8859-1"))) {
+			try (Scanner sc = new Scanner(new String(info, ISO_8859_1))) {
 				return sc.useDelimiter("\0").next();
-			} catch (NoSuchElementException | UnsupportedEncodingException e) {
+			} catch (NoSuchElementException e) {
 				return "<?>";
 			}
 		}
@@ -295,7 +296,7 @@ class PSid extends Prg {
 		// loadAddr = 0 means, the address is stored in front of the C64 data.
 		if (info.loadAddr == 0) {
 			if (info.c64dataLen < 2) {
-				throw new SidTuneError("Song is truncated");
+				throw new SidTuneError("PSID: Song is truncated");
 			}
 			info.loadAddr = (program[programOffset] & 0xff) + ((program[programOffset + 1] & 0xff) << 8);
 			programOffset += 2;
@@ -303,7 +304,7 @@ class PSid extends Prg {
 		}
 		if (info.compatibility == Compatibility.RSID_BASIC) {
 			if (info.initAddr != 0) {
-				throw new SidTuneError("Init address given for a RSID tune with BASIC flag");
+				throw new SidTuneError("PSID: Init address given for a RSID tune with BASIC flag");
 			}
 		} else if (info.initAddr == 0) {
 			info.initAddr = info.loadAddr;
@@ -329,13 +330,13 @@ class PSid extends Prg {
 			final short startp = info.relocStartPage;
 			final short endp = (short) (startp + info.relocPages - 1 & 0xff);
 			if (endp < startp) {
-				throw new SidTuneError(String
-						.format("Relocation info is invalid: end before start: end=%02x, start=%02x", endp, startp));
+				throw new SidTuneError(String.format(
+						"PSID: Relocation info is invalid: end before start: end=%02x, start=%02x", endp, startp));
 			}
 
 			if (startp <= startlp && endp >= startlp || startp <= endlp && endp >= endlp) {
 				throw new SidTuneError(String.format(
-						"Relocation info is invalid: relocation in middle of song tune itself: songstart=%02x, songend=%02x, relocstart=%02x, relocend=%02x",
+						"PSID: Relocation info is invalid: relocation in middle of song tune itself: songstart=%02x, songend=%02x, relocstart=%02x, relocend=%02x",
 						startlp, endlp, startp, endp));
 			}
 
@@ -344,7 +345,7 @@ class PSid extends Prg {
 			if (startp < 0x04 || 0xa0 <= startp && startp <= 0xbf || startp >= 0xd0 || 0xa0 <= endp && endp <= 0xbf
 					|| endp >= 0xd0) {
 				throw new SidTuneError(String.format(
-						"Relocation info is invalid: beyond acceptable bounds (kernal, basic, io, < 4th page): %02x-%02x",
+						"PSID: Relocation info is invalid: beyond acceptable bounds (kernal, basic, io, < 4th page): %02x-%02x",
 						startp, endp));
 			}
 		}
@@ -368,18 +369,19 @@ class PSid extends Prg {
 		}
 
 		if (info.determinedDriverAddr == 0) {
-			throw new SidTuneError("Can't relocate tune: no pages left to store driver.");
+			throw new SidTuneError("PSID: Can't relocate tune: no pages left to store driver.");
 		}
 
 	}
 
 	protected static SidTune load(final String name, final byte[] dataBuf) throws SidTuneError {
 		if (dataBuf.length < PHeader.SIZE) {
-			throw new SidTuneError(String.format("Header too short: %d, expected (%d)", dataBuf.length, PHeader.SIZE));
+			throw new SidTuneError(
+					String.format("PSID: Header too short: %d, expected (%d)", dataBuf.length, PHeader.SIZE));
 		}
 		final PHeader header = new PHeader(dataBuf);
 		if ((header.flags & PSID_MUS) != 0) {
-			throw new SidTuneError("MUS-specific PSIDs are not supported by this player");
+			throw new SidTuneError("PSID: MUS-specific PSIDs are not supported by this player");
 		}
 
 		final PSid psid = new PSid();
@@ -415,7 +417,7 @@ class PSid extends Prg {
 			case 2:
 				psid.info.compatibility = Compatibility.PSIDv2;
 				if ((header.flags & PSID_SPECIFIC) != 0) {
-					throw new SidTuneError("PSID-specific files are not supported by this player");
+					throw new SidTuneError("PSID: PSID-specific files are not supported by this player");
 				}
 				break;
 			case 3:
@@ -425,7 +427,7 @@ class PSid extends Prg {
 				psid.info.compatibility = Compatibility.PSIDv4;
 				break;
 			default:
-				throw new SidTuneError("PSID version must be 1, 2, 3 or 4, now: " + header.version);
+				throw new SidTuneError("PSID: PSID version must be 1, 2, 3 or 4, now: " + header.version);
 			}
 		} else if (Arrays.equals(header.id, new byte[] { 'R', 'S', 'I', 'D' })) {
 			if ((header.flags & PSID_BASIC) != 0) {
@@ -439,15 +441,15 @@ class PSid extends Prg {
 					psid.info.compatibility = Compatibility.RSIDv3;
 					break;
 				default:
-					throw new SidTuneError("RSID version must be 2 or 3, now: " + header.version);
+					throw new SidTuneError("PSID: RSID version must be 2 or 3, now: " + header.version);
 				}
 			}
 			if (psid.info.loadAddr != 0 || psid.info.playAddr != 0 || speed != 0) {
-				throw new SidTuneError("RSID tune specified load, play or speed information.");
+				throw new SidTuneError("PSID: RSID tune specified load, play or speed information.");
 			}
 			speed = ~0; /* CIA */
 		} else {
-			throw new SidTuneError("Bad PSID header, expected (PSID or RSID)");
+			throw new SidTuneError("PSID: Bad PSID header, expected (PSID or RSID)");
 		}
 
 		int clock = 0;
@@ -543,7 +545,7 @@ class PSid extends Prg {
 	public void save(final String name) throws IOException {
 		try (FileOutputStream fos = new FileOutputStream(name)) {
 			final PHeader header = new PHeader();
-			header.id = "PSID".getBytes(Charset.forName("ISO-8859-1"));
+			header.id = "PSID".getBytes(ISO_8859_1);
 			if (info.getSIDChipBase(2) != 0) {
 				header.version = 4;
 			} else if (info.getSIDChipBase(1) != 0) {
@@ -569,7 +571,7 @@ class PSid extends Prg {
 
 			case RSIDv2:
 			case RSIDv3:
-				header.id = "RSID".getBytes(Charset.forName("ISO-8859-1"));
+				header.id = "RSID".getBytes(ISO_8859_1);
 				header.speed = 0;
 				break;
 
@@ -589,15 +591,15 @@ class PSid extends Prg {
 				if (title.length() == 32 || author.length() == 32 || released.length() == 32) {
 					header.version = 3;
 				}
-				byte[] titleBytes = title.getBytes("ISO-8859-1");
+				byte[] titleBytes = title.getBytes(ISO_8859_1);
 				for (int i = 0; i < title.length(); i++) {
 					header.name[i] = titleBytes[i];
 				}
-				byte[] authorBytes = author.getBytes("ISO-8859-1");
+				byte[] authorBytes = author.getBytes(ISO_8859_1);
 				for (int i = 0; i < author.length(); i++) {
 					header.author[i] = authorBytes[i];
 				}
-				byte[] releasedBytes = released.getBytes("ISO-8859-1");
+				byte[] releasedBytes = released.getBytes(ISO_8859_1);
 				for (int i = 0; i < released.length(); i++) {
 					header.released[i] = releasedBytes[i];
 				}
@@ -628,8 +630,7 @@ class PSid extends Prg {
 	@Override
 	public String getMD5Digest() {
 		// Include C64 data.
-		final byte[] myMD5 = new byte[info.c64dataLen + 6 + info.songs
-				+ (info.clockSpeed == Clock.NTSC ? 1 : 0)];
+		final byte[] myMD5 = new byte[info.c64dataLen + 6 + info.songs + (info.clockSpeed == Clock.NTSC ? 1 : 0)];
 		System.arraycopy(program, programOffset, myMD5, 0, info.c64dataLen);
 		int i = info.c64dataLen;
 		myMD5[i++] = (byte) (info.initAddr & 0xff);

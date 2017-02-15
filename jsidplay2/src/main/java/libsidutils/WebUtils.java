@@ -21,10 +21,8 @@ public class WebUtils {
 				if (desktop.isSupported(Desktop.Action.BROWSE)) {
 					try {
 						desktop.browse(new URL(link).toURI());
-					} catch (final IOException ioe) {
-						ioe.printStackTrace();
-					} catch (final URISyntaxException urie) {
-						urie.printStackTrace();
+					} catch (final IOException | URISyntaxException e) {
+						e.printStackTrace();
 					}
 				}
 			} else {

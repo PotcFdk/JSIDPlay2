@@ -1,5 +1,8 @@
 package libsidplay.common;
 
+import static libsidplay.sidtune.SidTune.RESET;
+import static libsidplay.sidtune.SidTune.Clock.UNKNOWN;
+
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Clock;
@@ -10,31 +13,27 @@ public enum CPUClock {
 	/** NTSC region clock frequency and screen refresh */
 	NTSC(1022727.14, 60);
 
-	private final double frequency;
-	private final double refresh;
+	private final double cpuFrequency, screenRefresh;
 
-	private CPUClock(double frequency, double refresh) {
-		this.frequency = frequency;
-		this.refresh = refresh;
+	private CPUClock(double cpuFrequency, double screenRefresh) {
+		this.cpuFrequency = cpuFrequency;
+		this.screenRefresh = screenRefresh;
 	}
 
 	public double getCpuFrequency() {
-		return frequency;
+		return cpuFrequency;
 	}
 
-	public double getCyclesPerFrame() {
-		return frequency / refresh;
-	}
-
-	public double getRefresh() {
-		return refresh;
+	public double getScreenRefresh() {
+		return screenRefresh;
 	}
 
 	/**
-	 * Detect CPU clock of specific tune.
+	 * Detect CPU clock of a specific tune in the following order:
 	 * <OL>
-	 * <LI>forced CPU clock
-	 * <LI>CPU clock provided by tune information
+	 * <LI>CPU clock forced by user configuration
+	 * <LI>CPU clock provided by tune information (auto detected) and if
+	 * unknown, then
 	 * <LI>default CPU clock
 	 * </OL>
 	 * 
@@ -42,12 +41,12 @@ public enum CPUClock {
 	 */
 	public static CPUClock getCPUClock(IEmulationSection emulation, SidTune tune) {
 		CPUClock forcedCPUClock = emulation.getUserClockSpeed();
-		Clock tuneCPUClock = tune != null ? tune.getInfo().getClockSpeed() : null;
+		Clock tuneCPUClock = tune != RESET ? tune.getInfo().getClockSpeed() : UNKNOWN;
 		CPUClock defaultCPUClock = emulation.getDefaultClockSpeed();
 		if (forcedCPUClock != null) {
 			return forcedCPUClock;
 		}
-		if (tuneCPUClock == null) {
+		if (tuneCPUClock == UNKNOWN) {
 			return defaultCPUClock;
 		}
 		switch (tuneCPUClock) {
