@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -221,13 +220,11 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue, Class<?> class1) {
+	public <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue, Class<T> class1) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			try {
-				Method m = class1.getMethod("valueOf", String.class);
-				@SuppressWarnings("unchecked")
-				T value = (T) m.invoke(null, s.toUpperCase(Locale.US));
+				T value = (T) Enum.valueOf(class1, s.toUpperCase(Locale.US));
 				return value;
 			} catch (Exception e) {
 				throw new RuntimeException(e);
