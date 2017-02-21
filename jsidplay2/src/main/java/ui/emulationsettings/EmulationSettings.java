@@ -413,7 +413,7 @@ public class EmulationSettings extends C64Window {
 			return;
 		}
 		String filterName = filterBox.getSelectionModel().getSelectedItem();
-		boolean filterDisabled = filterName.isEmpty();
+		boolean filterDisabled = filterName == null || filterName.isEmpty();
 
 		emulationSection.setFilterEnable(sidNum, !filterDisabled);
 		emulationSection.setFilterName(sidNum, engine, emulation, model, !filterDisabled ? filterName : null);
