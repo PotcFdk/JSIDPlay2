@@ -10,7 +10,6 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
@@ -99,7 +98,7 @@ public class WebView extends Tab implements UIPart {
 
 	public WebView(final C64Window window, final Player player) {
 		util = new UIUtil(window, player, this);
-		setContent((Node) util.parse());
+		util.parse(this);
 	}
 
 	public void setType(WebViewType type) {

@@ -6,9 +6,8 @@
 <?scenebuilder-preview-i18n-resource StatusBar.properties?>
 <?scenebuilder-classpath-element ../../../../../target/classes?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:id="main"
-	AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.AnchorPane">
 	<Label fx:id="status" AnchorPane.leftAnchor="10" />
 	<ProgressBar fx:id="progress" progress="0"
 		AnchorPane.rightAnchor="10" />
-</AnchorPane>
+</fx:root>

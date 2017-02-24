@@ -12,11 +12,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
+import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -43,8 +44,6 @@ import ui.filefilter.DiskFileFilter;
 import ui.filefilter.DocsFileFilter;
 import ui.filefilter.ScreenshotFileFilter;
 import ui.filefilter.TapeFileFilter;
-import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TFileInputStream;
 
 public class DiskCollection extends Tab implements UIPart {
 
@@ -118,7 +117,7 @@ public class DiskCollection extends Tab implements UIPart {
 
 	public DiskCollection(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		setContent((Node) util.parse());
+		util.parse(this);
 	}
 
 	@FXML

@@ -27,7 +27,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -142,7 +141,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	public Video(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		setContent((Node) util.parse());
+		util.parse(this);
 		setId(ID);
 		setText(util.getBundle().getString(getId()));
 	}

@@ -42,12 +42,19 @@ public class UIUtil {
 	}
 
 	public Object parse() {
+		return parse(null);
+	}
+
+	public Object parse(Object root) {
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		URL fxml = this.controller.getFxml();
 		fxmlLoader.setLocation(fxml);
 		fxmlLoader.setBuilderFactory(new UIBuilder(this.window, this.player));
 		fxmlLoader.setResources(this.bundle);
 		fxmlLoader.setController(this.controller);
+		if (root != null) {
+			fxmlLoader.setRoot(root);
+		}
 		try (InputStream is = fxml.openStream()) {
 			return fxmlLoader.load(is);
 		} catch (IOException e) {

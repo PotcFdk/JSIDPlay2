@@ -9,7 +9,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Tab;
@@ -52,7 +51,7 @@ public class SidReg extends Tab implements UIPart {
 
 	public SidReg(final C64Window window, final Player player) {
 		util = new UIUtil(window, player, this);
-		setContent((Node) util.parse());
+		util.parse(this);
 		setId(ID);
 		setText(util.getBundle().getString(getId()));
 	}

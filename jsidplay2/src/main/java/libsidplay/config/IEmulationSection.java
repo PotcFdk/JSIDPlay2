@@ -875,7 +875,8 @@ public interface IEmulationSection {
 	 * Get the current filter name depending of the SID number, emulation type
 	 * and chip model.
 	 * 
-	 * <B>Note:</B> HARDSID filters are not software controllable!
+	 * <B>Note:</B> HARDSID filters are not software controllable (we return
+	 * emulation settings here)!
 	 * 
 	 * @param sidNum
 	 *            SId number
@@ -890,6 +891,7 @@ public interface IEmulationSection {
 		case MOS6581:
 			switch (engine) {
 			case EMULATION:
+			case HARDSID:
 				switch (emulation) {
 				case RESID:
 					switch (sidNum) {
@@ -939,8 +941,6 @@ public interface IEmulationSection {
 					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
 
 				}
-			case HARDSID:
-				throw new RuntimeException("Filters cannot be get for engine: " + engine + "!");
 			default:
 				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}
@@ -948,6 +948,7 @@ public interface IEmulationSection {
 		case MOS8580:
 			switch (engine) {
 			case EMULATION:
+			case HARDSID:
 				switch (emulation) {
 				case RESID:
 					switch (sidNum) {
@@ -997,8 +998,6 @@ public interface IEmulationSection {
 					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
 
 				}
-			case HARDSID:
-				throw new RuntimeException("Filters cannot be get for engine: " + engine + "!");
 			default:
 				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}
@@ -1012,7 +1011,8 @@ public interface IEmulationSection {
 	 * Set the current filter name depending of the SID number, emulation type
 	 * and chip model.
 	 *
-	 * <B>Note:</B> HARDSID filters are not software controllable!
+	 * <B>Note:</B> HARDSID filters are not software controllable (we set
+	 * emulation settings here)!
 	 * 
 	 * @param sidNum
 	 *            SId number
@@ -1028,6 +1028,7 @@ public interface IEmulationSection {
 		case MOS6581:
 			switch (engine) {
 			case EMULATION:
+			case HARDSID:
 				switch (emulation) {
 				case RESID:
 					switch (sidNum) {
@@ -1089,8 +1090,6 @@ public interface IEmulationSection {
 
 				}
 				break;
-			case HARDSID:
-				throw new RuntimeException("Filters cannot be set for engine: " + engine + "!");
 			default:
 				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}
@@ -1098,6 +1097,7 @@ public interface IEmulationSection {
 		case MOS8580:
 			switch (engine) {
 			case EMULATION:
+			case HARDSID:
 				switch (emulation) {
 				case RESID:
 					switch (sidNum) {
@@ -1160,8 +1160,6 @@ public interface IEmulationSection {
 
 				}
 				break;
-			case HARDSID:
-				throw new RuntimeException("Filters cannot be set for engine: " + engine + "!");
 			default:
 				throw new RuntimeException("Unknown engine: " + engine + "!");
 			}

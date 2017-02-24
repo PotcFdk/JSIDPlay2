@@ -111,7 +111,7 @@ public class GameBase extends Tab implements UIPart {
 
 	public GameBase(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		setContent((Node) util.parse());
+		util.parse(this);
 		setId(ID);
 		setText(util.getBundle().getString(getId()));
 	}

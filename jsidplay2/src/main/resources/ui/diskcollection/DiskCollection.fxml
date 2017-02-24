@@ -21,69 +21,70 @@
 <?import ui.diskcollection.DiskCollectionCellFactory?>
 <?scenebuilder-preview-i18n-resource DiskCollection.properties?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
-		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
-		<children>
-			<CheckBox text="%AUTO_CONFIGURATION" fx:id="autoConfiguration"
-				onAction="#doAutoConfiguration" GridPane.rowIndex="0"
-				GridPane.columnIndex="0" GridPane.columnSpan="3" />
-			<TitledPane text="%DIRECTORY" collapsible="false"
-				GridPane.rowIndex="1" GridPane.columnIndex="0">
-				<Directory fx:id="directory" />
-			</TitledPane>
-			<TreeView fx:id="fileBrowser" GridPane.rowIndex="1"
-				GridPane.columnIndex="1">
-				<cellFactory>
-					<DiskCollectionCellFactory />
-				</cellFactory>
-				<contextMenu>
-					<ContextMenu fx:id="contextMenu">
-						<items>
-							<MenuItem fx:id="start" text="%START" onAction="#start" />
-							<MenuItem fx:id="attachDisk" text="%ATTACH_DISK"
-								onAction="#attachDisk" />
-						</items>
-					</ContextMenu>
-				</contextMenu>
-			</TreeView>
-			<ImageView fx:id="screenshot" fitWidth="320" fitHeight="200"
-				preserveRatio="true" GridPane.rowIndex="1" GridPane.columnIndex="2"
-				GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-			<TitledPane text="%CONFIGURATION" collapsible="true"
-				expanded="false" GridPane.rowIndex="2" GridPane.columnIndex="0"
-				GridPane.columnSpan="3">
-				<HBox>
-					<Label text="%BASE_DIR" />
-					<TextField fx:id="collectionDir" disable="true" />
-					<Button text="%BROWSE" onAction="#doBrowse">
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/browse.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-				</HBox>
-			</TitledPane>
-		</children>
-		<columnConstraints>
-			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-				percentWidth="30.0" prefWidth="100.0" />
-			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-				percentWidth="40.0" prefWidth="100.0" />
-			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-				percentWidth="30.0" prefWidth="100.0" />
-		</columnConstraints>
-		<rowConstraints>
-			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-				percentHeight="3.0" prefHeight="100.0" valignment="TOP" />
-			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-				percentHeight="87.0" prefHeight="100.0" />
-			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-				percentHeight="10.0" prefHeight="100.0" valignment="TOP" />
-		</rowConstraints>
-	</GridPane>
-</AnchorPane>
-
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
+	<AnchorPane>
+		<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
+			<children>
+				<CheckBox text="%AUTO_CONFIGURATION" fx:id="autoConfiguration"
+					onAction="#doAutoConfiguration" GridPane.rowIndex="0"
+					GridPane.columnIndex="0" GridPane.columnSpan="3" />
+				<TitledPane text="%DIRECTORY" collapsible="false"
+					GridPane.rowIndex="1" GridPane.columnIndex="0">
+					<Directory fx:id="directory" />
+				</TitledPane>
+				<TreeView fx:id="fileBrowser" GridPane.rowIndex="1"
+					GridPane.columnIndex="1">
+					<cellFactory>
+						<DiskCollectionCellFactory />
+					</cellFactory>
+					<contextMenu>
+						<ContextMenu fx:id="contextMenu">
+							<items>
+								<MenuItem fx:id="start" text="%START" onAction="#start" />
+								<MenuItem fx:id="attachDisk" text="%ATTACH_DISK"
+									onAction="#attachDisk" />
+							</items>
+						</ContextMenu>
+					</contextMenu>
+				</TreeView>
+				<ImageView fx:id="screenshot" fitWidth="320" fitHeight="200"
+					preserveRatio="true" GridPane.rowIndex="1" GridPane.columnIndex="2"
+					GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+				<TitledPane text="%CONFIGURATION" collapsible="true"
+					expanded="false" GridPane.rowIndex="2" GridPane.columnIndex="0"
+					GridPane.columnSpan="3">
+					<HBox>
+						<Label text="%BASE_DIR" />
+						<TextField fx:id="collectionDir" disable="true" />
+						<Button text="%BROWSE" onAction="#doBrowse">
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/browse.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+					</HBox>
+				</TitledPane>
+			</children>
+			<columnConstraints>
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					percentWidth="30.0" prefWidth="100.0" />
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					percentWidth="40.0" prefWidth="100.0" />
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					percentWidth="30.0" prefWidth="100.0" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+					percentHeight="3.0" prefHeight="100.0" valignment="TOP" />
+				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+					percentHeight="87.0" prefHeight="100.0" />
+				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+					percentHeight="10.0" prefHeight="100.0" valignment="TOP" />
+			</rowConstraints>
+		</GridPane>
+	</AnchorPane>
+</fx:root>

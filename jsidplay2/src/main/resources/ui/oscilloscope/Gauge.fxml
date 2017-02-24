@@ -4,8 +4,9 @@
 <?import javafx.scene.control.TitledPane?>
 <?scenebuilder-preview-i18n-resource Gauge.properties?>
 
-<TitledPane xmlns:fx="http://javafx.com/fxml" fx:id="border"
-	text=" " collapsible="false">
-	<Canvas fx:id="area" width="150" height="100" cache="true"
-		cacheHint="SPEED" />
-</TitledPane>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
+	<TitledPane fx:id="border" text=" " collapsible="false">
+		<Canvas fx:id="area" width="150" height="100" cache="true"
+			cacheHint="SPEED" />
+	</TitledPane>
+</fx:root>

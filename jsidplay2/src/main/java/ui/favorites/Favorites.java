@@ -16,7 +16,6 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
@@ -72,7 +71,7 @@ public class Favorites extends Tab implements UIPart {
 	public Favorites(C64Window window, Player player) {
 		this.window = window;
 		util = new UIUtil(window, player, this);
-		setContent((Node) util.parse());
+		util.parse(this);
 		setId(ID);
 		setText(util.getBundle().getString(getId()));
 	}

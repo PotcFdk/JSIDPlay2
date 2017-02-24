@@ -30,7 +30,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -89,7 +88,7 @@ public class FavoritesTab extends Tab implements UIPart {
 
 	public FavoritesTab(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		setContent((Node) util.parse());
+		util.parse(this);
 	}
 
 	@SuppressWarnings("rawtypes")

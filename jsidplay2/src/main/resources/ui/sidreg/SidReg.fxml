@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
@@ -17,133 +16,131 @@
 <?import ui.sidreg.SidRegWrite?>
 <?scenebuilder-preview-i18n-resource SidReg.properties?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<stylesheets>
-		<URL value="@SidReg.css" />
-	</stylesheets>
-	<VBox AnchorPane.bottomAnchor="10"
-		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
-		AnchorPane.topAnchor="10" fx:id="vbox">
-		<ToggleButton text="%START_STOP_RECORDING" fx:id="startStop"
-			onAction="#doStartStop">
-			<tooltip>
-				<Tooltip text="%START_STOP_RECORDING_TIP" />
-			</tooltip>
-		</ToggleButton>
-		<GridPane vgap="5" hgap="5">
-			<CheckBox text="%FREQ_1" selected="true" fx:id="freq1"
-				onAction="#doUpdateFilter" GridPane.rowIndex="0"
-				GridPane.columnIndex="0" />
-			<CheckBox text="%PULSE_1" selected="true" fx:id="pulse1"
-				onAction="#doUpdateFilter" GridPane.rowIndex="0"
-				GridPane.columnIndex="1" />
-			<CheckBox text="%CTRL_1" selected="true" fx:id="ctrl1"
-				onAction="#doUpdateFilter" GridPane.rowIndex="0"
-				GridPane.columnIndex="2" />
-			<CheckBox text="%A_D_1" selected="true" fx:id="ad1"
-				onAction="#doUpdateFilter" GridPane.rowIndex="0"
-				GridPane.columnIndex="3" />
-			<CheckBox text="%S_R_1" selected="true" fx:id="sr1"
-				onAction="#doUpdateFilter" GridPane.rowIndex="0"
-				GridPane.columnIndex="4" />
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
+	<AnchorPane stylesheets="@SidReg.css">
+		<VBox AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10" fx:id="vbox">
+			<ToggleButton text="%START_STOP_RECORDING" fx:id="startStop"
+				onAction="#doStartStop">
+				<tooltip>
+					<Tooltip text="%START_STOP_RECORDING_TIP" />
+				</tooltip>
+			</ToggleButton>
+			<GridPane vgap="5" hgap="5">
+				<CheckBox text="%FREQ_1" selected="true" fx:id="freq1"
+					onAction="#doUpdateFilter" GridPane.rowIndex="0"
+					GridPane.columnIndex="0" />
+				<CheckBox text="%PULSE_1" selected="true" fx:id="pulse1"
+					onAction="#doUpdateFilter" GridPane.rowIndex="0"
+					GridPane.columnIndex="1" />
+				<CheckBox text="%CTRL_1" selected="true" fx:id="ctrl1"
+					onAction="#doUpdateFilter" GridPane.rowIndex="0"
+					GridPane.columnIndex="2" />
+				<CheckBox text="%A_D_1" selected="true" fx:id="ad1"
+					onAction="#doUpdateFilter" GridPane.rowIndex="0"
+					GridPane.columnIndex="3" />
+				<CheckBox text="%S_R_1" selected="true" fx:id="sr1"
+					onAction="#doUpdateFilter" GridPane.rowIndex="0"
+					GridPane.columnIndex="4" />
 
-			<CheckBox text="%FREQ_2" selected="true" fx:id="freq2"
-				onAction="#doUpdateFilter" GridPane.rowIndex="1"
-				GridPane.columnIndex="0" />
-			<CheckBox text="%PULSE_2" selected="true" fx:id="pulse2"
-				onAction="#doUpdateFilter" GridPane.rowIndex="1"
-				GridPane.columnIndex="1" />
-			<CheckBox text="%CTRL_2" selected="true" fx:id="ctrl2"
-				onAction="#doUpdateFilter" GridPane.rowIndex="1"
-				GridPane.columnIndex="2" />
-			<CheckBox text="%A_D_2" selected="true" fx:id="ad2"
-				onAction="#doUpdateFilter" GridPane.rowIndex="1"
-				GridPane.columnIndex="3" />
-			<CheckBox text="%S_R_2" selected="true" fx:id="sr2"
-				onAction="#doUpdateFilter" GridPane.rowIndex="1"
-				GridPane.columnIndex="4" />
+				<CheckBox text="%FREQ_2" selected="true" fx:id="freq2"
+					onAction="#doUpdateFilter" GridPane.rowIndex="1"
+					GridPane.columnIndex="0" />
+				<CheckBox text="%PULSE_2" selected="true" fx:id="pulse2"
+					onAction="#doUpdateFilter" GridPane.rowIndex="1"
+					GridPane.columnIndex="1" />
+				<CheckBox text="%CTRL_2" selected="true" fx:id="ctrl2"
+					onAction="#doUpdateFilter" GridPane.rowIndex="1"
+					GridPane.columnIndex="2" />
+				<CheckBox text="%A_D_2" selected="true" fx:id="ad2"
+					onAction="#doUpdateFilter" GridPane.rowIndex="1"
+					GridPane.columnIndex="3" />
+				<CheckBox text="%S_R_2" selected="true" fx:id="sr2"
+					onAction="#doUpdateFilter" GridPane.rowIndex="1"
+					GridPane.columnIndex="4" />
 
-			<CheckBox text="%FREQ_3" selected="true" fx:id="freq3"
-				onAction="#doUpdateFilter" GridPane.rowIndex="2"
-				GridPane.columnIndex="0" />
-			<CheckBox text="%PULSE_3" selected="true" fx:id="pulse3"
-				onAction="#doUpdateFilter" GridPane.rowIndex="2"
-				GridPane.columnIndex="1" />
-			<CheckBox text="%CTRL_3" selected="true" fx:id="ctrl3"
-				onAction="#doUpdateFilter" GridPane.rowIndex="2"
-				GridPane.columnIndex="2" />
-			<CheckBox text="%A_D_3" selected="true" fx:id="ad3"
-				onAction="#doUpdateFilter" GridPane.rowIndex="2"
-				GridPane.columnIndex="3" />
-			<CheckBox text="%S_R_3" selected="true" fx:id="sr3"
-				onAction="#doUpdateFilter" GridPane.rowIndex="2"
-				GridPane.columnIndex="4" />
+				<CheckBox text="%FREQ_3" selected="true" fx:id="freq3"
+					onAction="#doUpdateFilter" GridPane.rowIndex="2"
+					GridPane.columnIndex="0" />
+				<CheckBox text="%PULSE_3" selected="true" fx:id="pulse3"
+					onAction="#doUpdateFilter" GridPane.rowIndex="2"
+					GridPane.columnIndex="1" />
+				<CheckBox text="%CTRL_3" selected="true" fx:id="ctrl3"
+					onAction="#doUpdateFilter" GridPane.rowIndex="2"
+					GridPane.columnIndex="2" />
+				<CheckBox text="%A_D_3" selected="true" fx:id="ad3"
+					onAction="#doUpdateFilter" GridPane.rowIndex="2"
+					GridPane.columnIndex="3" />
+				<CheckBox text="%S_R_3" selected="true" fx:id="sr3"
+					onAction="#doUpdateFilter" GridPane.rowIndex="2"
+					GridPane.columnIndex="4" />
 
-			<CheckBox text="%FILTER" selected="true" fx:id="filter"
-				onAction="#doUpdateFilter" GridPane.rowIndex="3"
-				GridPane.columnIndex="0" />
-			<CheckBox text="%VOL" selected="true" fx:id="vol"
-				onAction="#doUpdateFilter" GridPane.rowIndex="3"
-				GridPane.columnIndex="1" />
-			<CheckBox text="%PADDLES" selected="true" fx:id="paddles"
-				onAction="#doUpdateFilter" GridPane.rowIndex="3"
-				GridPane.columnIndex="2" />
-			<CheckBox text="%OSC_3" selected="true" fx:id="osc3"
-				onAction="#doUpdateFilter" GridPane.rowIndex="3"
-				GridPane.columnIndex="3" />
-			<CheckBox text="%ENV_3" selected="true" fx:id="env3"
-				onAction="#doUpdateFilter" GridPane.rowIndex="3"
-				GridPane.columnIndex="4" />
+				<CheckBox text="%FILTER" selected="true" fx:id="filter"
+					onAction="#doUpdateFilter" GridPane.rowIndex="3"
+					GridPane.columnIndex="0" />
+				<CheckBox text="%VOL" selected="true" fx:id="vol"
+					onAction="#doUpdateFilter" GridPane.rowIndex="3"
+					GridPane.columnIndex="1" />
+				<CheckBox text="%PADDLES" selected="true" fx:id="paddles"
+					onAction="#doUpdateFilter" GridPane.rowIndex="3"
+					GridPane.columnIndex="2" />
+				<CheckBox text="%OSC_3" selected="true" fx:id="osc3"
+					onAction="#doUpdateFilter" GridPane.rowIndex="3"
+					GridPane.columnIndex="3" />
+				<CheckBox text="%ENV_3" selected="true" fx:id="env3"
+					onAction="#doUpdateFilter" GridPane.rowIndex="3"
+					GridPane.columnIndex="4" />
 
-			<Button text="%SELECT_ALL" fx:id="selectAll" onAction="#doSelectAll"
-				GridPane.rowIndex="4" GridPane.columnIndex="0">
-				<graphic>
-					<ImageView>
-						<image>
-							<Image url="@/ui/icons/selectall.png" />
-						</image>
-					</ImageView>
-				</graphic>
-			</Button>
-			<Button text="%DESELECT_ALL" fx:id="deselectAll" onAction="#doDeselectAll"
-				GridPane.rowIndex="4" GridPane.columnIndex="1">
-				<graphic>
-					<ImageView>
-						<image>
-							<Image url="@/ui/icons/deselectall.png" />
-						</image>
-					</ImageView>
-				</graphic>
-			</Button>
-		</GridPane>
-		<TableView fx:id="regTable">
-			<columns>
-				<TableColumn text="%ABS_CYCLES">
-					<cellValueFactory>
-						<PropertyValueFactory property="absCycles" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="%COL_CYCLES" prefWidth="100">
-					<cellValueFactory>
-						<PropertyValueFactory property="relCycles" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="%COL_BASE" prefWidth="50">
-					<cellValueFactory>
-						<PropertyValueFactory property="baseAddr" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="%COL_DESCRIPTION" prefWidth="300">
-					<cellValueFactory>
-						<PropertyValueFactory property="description" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="%COL_VALUE">
-					<cellValueFactory>
-						<PropertyValueFactory property="value" />
-					</cellValueFactory>
-				</TableColumn>
-			</columns>
-		</TableView>
-	</VBox>
-</AnchorPane>
+				<Button text="%SELECT_ALL" fx:id="selectAll" onAction="#doSelectAll"
+					GridPane.rowIndex="4" GridPane.columnIndex="0">
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/selectall.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Button>
+				<Button text="%DESELECT_ALL" fx:id="deselectAll" onAction="#doDeselectAll"
+					GridPane.rowIndex="4" GridPane.columnIndex="1">
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/deselectall.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Button>
+			</GridPane>
+			<TableView fx:id="regTable">
+				<columns>
+					<TableColumn text="%ABS_CYCLES">
+						<cellValueFactory>
+							<PropertyValueFactory property="absCycles" />
+						</cellValueFactory>
+					</TableColumn>
+					<TableColumn text="%COL_CYCLES" prefWidth="100">
+						<cellValueFactory>
+							<PropertyValueFactory property="relCycles" />
+						</cellValueFactory>
+					</TableColumn>
+					<TableColumn text="%COL_BASE" prefWidth="50">
+						<cellValueFactory>
+							<PropertyValueFactory property="baseAddr" />
+						</cellValueFactory>
+					</TableColumn>
+					<TableColumn text="%COL_DESCRIPTION" prefWidth="300">
+						<cellValueFactory>
+							<PropertyValueFactory property="description" />
+						</cellValueFactory>
+					</TableColumn>
+					<TableColumn text="%COL_VALUE">
+						<cellValueFactory>
+							<PropertyValueFactory property="value" />
+						</cellValueFactory>
+					</TableColumn>
+				</columns>
+			</TableView>
+		</VBox>
+	</AnchorPane>
+</fx:root>

@@ -6,7 +6,6 @@ import java.io.PrintStream;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
@@ -28,7 +27,7 @@ public class ConsoleOutput extends VBox implements UIPart {
 
 	public ConsoleOutput(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		getChildren().add((Node) util.parse());
+		util.parse(this);
 	}
 
 	@FXML

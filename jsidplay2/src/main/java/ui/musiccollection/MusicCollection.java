@@ -214,7 +214,7 @@ public class MusicCollection extends Tab implements UIPart {
 
 	public MusicCollection(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		setContent((Node) util.parse());
+		util.parse(this);
 	}
 
 	public MusicCollectionType getType() {

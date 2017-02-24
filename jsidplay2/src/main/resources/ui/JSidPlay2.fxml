@@ -4,16 +4,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.TabPane?>
-<?import java.net.URL?>
 <?import ui.menubar.MenuBar?>
 <?import ui.toolbar.ToolBar?>
 <?import ui.statusbar.StatusBar?>
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
 <?scenebuilder-classpath-element ../../../../target/classes?>
-<Scene>
-	<stylesheets>
-		<URL value="@JSidPlay2.css" />
-	</stylesheets>
+<Scene stylesheets="@JSidPlay2.css">
 	<BorderPane xmlns:fx="http://javafx.com/fxml">
 		<top>
 			<VBox>

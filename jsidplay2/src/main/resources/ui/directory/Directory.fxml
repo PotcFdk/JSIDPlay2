@@ -9,7 +9,7 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?scenebuilder-preview-i18n-resource Directory.properties?>
 
-<VBox xmlns:fx="http://javafx.com/fxml">
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<Button text="%SWITCH_FONT" focusTraversable="false" onAction="#doSwitchFont" />
 	<TableView fx:id="directory">
 		<columns>
@@ -24,5 +24,5 @@
 			</TableColumn>
 		</columns>
 	</TableView>
-</VBox>
+</fx:root>
 

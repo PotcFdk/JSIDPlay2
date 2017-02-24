@@ -10,27 +10,28 @@
 <?import javafx.scene.control.Button?>
 <?scenebuilder-preview-i18n-resource Printer.properties?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
-		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
-		<children>
-			<Button text="%CLEAR_PAPER" onAction="#clearPaper"
-				GridPane.rowIndex="0" GridPane.columnIndex="0" />
-			<ScrollPane fx:id="scroll" prefWidth="480" prefHeight="600"
-				GridPane.rowIndex="1" GridPane.columnIndex="0">
-				<Canvas fx:id="paper" width="480" height="600" />
-			</ScrollPane>
-		</children>
-		<columnConstraints>
-			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-				percentWidth="100.0" prefWidth="100.0" />
-		</columnConstraints>
-		<rowConstraints>
-			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-				percentHeight="5.0" prefHeight="100.0" valignment="TOP" />
-			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-				percentHeight="95.0" prefHeight="100.0" />
-		</rowConstraints>
-	</GridPane>
-</AnchorPane>
-
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
+	<AnchorPane>
+		<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
+			<children>
+				<Button text="%CLEAR_PAPER" onAction="#clearPaper"
+					GridPane.rowIndex="0" GridPane.columnIndex="0" />
+				<ScrollPane fx:id="scroll" prefWidth="480" prefHeight="600"
+					GridPane.rowIndex="1" GridPane.columnIndex="0">
+					<Canvas fx:id="paper" width="480" height="600" />
+				</ScrollPane>
+			</children>
+			<columnConstraints>
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					percentWidth="100.0" prefWidth="100.0" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+					percentHeight="5.0" prefHeight="100.0" valignment="TOP" />
+				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+					percentHeight="95.0" prefHeight="100.0" />
+			</rowConstraints>
+		</GridPane>
+	</AnchorPane>
+</fx:root>

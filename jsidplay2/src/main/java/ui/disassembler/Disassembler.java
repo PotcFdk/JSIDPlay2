@@ -10,7 +10,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
@@ -56,7 +55,7 @@ public class Disassembler extends Tab implements UIPart {
 
 	public Disassembler(final C64Window window, final Player player) {
 		util = new UIUtil(window, player, this);
-		setContent((Node) util.parse());
+		util.parse(this);
 		setId(ID);
 		setText(util.getBundle().getString(getId()));
 	}

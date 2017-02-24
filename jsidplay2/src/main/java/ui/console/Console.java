@@ -1,7 +1,6 @@
 package ui.console;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import sidplay.Player;
 import ui.common.C64Window;
@@ -20,7 +19,7 @@ public class Console extends Tab implements UIPart {
 
 	public Console(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		setContent((Node) util.parse());
+		util.parse(this);
 		setId(ID);
 		setText(util.getBundle().getString(getId()));
 	}

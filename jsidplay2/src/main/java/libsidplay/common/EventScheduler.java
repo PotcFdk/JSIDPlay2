@@ -79,11 +79,11 @@ public final class EventScheduler {
 		@Override
 		public void event() throws InterruptedException {
 			synchronized (threadSafeQueue) {
-				while (!threadSafeQueue.isEmpty()) {
+				if (!threadSafeQueue.isEmpty()) {
 					threadSafeQueue.remove(0).event();
 				}
 			}
-			schedule(this, 50000);
+			schedule(this, 20000);
 		}
 	};
 

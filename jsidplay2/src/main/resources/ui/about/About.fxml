@@ -6,15 +6,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 <?import javafx.scene.text.Text?>
-<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ScrollPane?>
 <?scenebuilder-preview-i18n-resource About.properties?>
 
-<Scene xmlns:fx="http://javafx.com/fxml" height="768">
-	<stylesheets>
-		<URL value="@About.css" />
-	</stylesheets>
+<Scene xmlns:fx="http://javafx.com/fxml" height="768" stylesheets="@About.css">
 	<BorderPane>
 		<center>
 		<ScrollPane fitToHeight="false" fitToWidth="false" hbarPolicy="NEVER" pannable="false" focusTraversable="false"> 

@@ -20,137 +20,139 @@
 <?import javafx.scene.control.CheckBox?>
 <?scenebuilder-preview-i18n-resource Favorites.properties?>
 <?import javafx.geometry.Insets?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<fx:define>
-		<ToggleGroup fx:id="playbackGroup" />
-		<ToggleGroup fx:id="repeatGroup" />
-	</fx:define>
-	<BorderPane AnchorPane.bottomAnchor="10"
-		AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
-		AnchorPane.topAnchor="10">
-		<center>
-			<VBox>
-				<HBox alignment="CENTER">
-					<Button onAction="#addTab" prefWidth="20" prefHeight="20">
-						<tooltip>
-							<Tooltip text="%ADD_A_NEW_TAB" />
-						</tooltip>
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/addtab.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-					<Button text="%ADD" fx:id="add" onAction="#addFavorites">
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/add.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-					<Button text="%REMOVE" fx:id="remove" onAction="#removeFavorites">
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/remove.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-					<Button text="%SELECT_ALL" fx:id="selectAll" onAction="#selectAllFavorites">
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/selectall.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-					<Button text="%DESELECT_ALL" fx:id="deselectAll" onAction="#clearSelection">
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/deselectall.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-					<Button text="%LOAD" fx:id="load" onAction="#loadFavorites">
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/load.png" />
-								</image>
-							</ImageView>
-						</graphic>
 
-					</Button>
-					<Button text="%SAVEAS" fx:id="saveAs" onAction="#saveFavoritesAs">
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/save.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-					<Label text="%RENAME_TAB" />
-					<TextField fx:id="renameTab" onAction="#renameTab"
-						prefWidth="100" />
-				</HBox>
-				<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS"
-					VBox.vgrow="ALWAYS" />
-			</VBox>
-		</center>
-		<bottom>
-			<TitledPane text="%PLAYBACK_OPTIONS" collapsible="true"
-				expanded="false">
-				<GridPane hgap="10">
-					<Label text="%FADE_IN_LENGTH" alignment="CENTER_RIGHT"
-						GridPane.rowIndex="0" GridPane.columnIndex="0" />
-					<TextField fx:id="fadeInTime" GridPane.rowIndex="0"
-						GridPane.columnIndex="1">
-						<tooltip>
-							<Tooltip text="%FADE_IN_LENGTH_TIP"></Tooltip>
-						</tooltip>
-					</TextField>
-					<Label text="%FADE_OUT_LENGTH" alignment="CENTER_RIGHT"
-						GridPane.rowIndex="0" GridPane.columnIndex="2" />
-					<TextField fx:id="fadeOutTime" GridPane.rowIndex="0"
-						GridPane.columnIndex="3">
-						<tooltip>
-							<Tooltip text="%FADE_OUT_LENGTH_TIP"></Tooltip>
-						</tooltip>
-					</TextField>
-					<RadioButton text="%OFF" selected="true" toggleGroup="$playbackGroup"
-						fx:id="off" GridPane.rowIndex="1" GridPane.columnIndex="0"
-						onAction="#off" />
-					<RadioButton text="%NORMAL" toggleGroup="$playbackGroup"
-						fx:id="normal" GridPane.rowIndex="1" GridPane.columnIndex="1"
-						onAction="#normal" />
-					<RadioButton text="%RANDOM_ONE_PLAYLIST" toggleGroup="$playbackGroup"
-						fx:id="randomOne" GridPane.rowIndex="1" GridPane.columnIndex="2"
-						onAction="#randomOne" />
-					<RadioButton text="%RANDOM_ALL_PLAYLISTS" toggleGroup="$playbackGroup"
-						fx:id="randomAll" GridPane.rowIndex="1" GridPane.columnIndex="3"
-						onAction="#randomAll" />
-					<RadioButton text="%RANDOM_HVSC" toggleGroup="$playbackGroup"
-						fx:id="randomHVSC" GridPane.rowIndex="1" GridPane.columnIndex="4"
-						onAction="#randomHVSC" />
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
+	<AnchorPane>
+		<fx:define>
+			<ToggleGroup fx:id="playbackGroup" />
+			<ToggleGroup fx:id="repeatGroup" />
+		</fx:define>
+		<BorderPane AnchorPane.bottomAnchor="10"
+			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+			AnchorPane.topAnchor="10">
+			<center>
+				<VBox>
+					<HBox alignment="CENTER">
+						<Button onAction="#addTab" prefWidth="20" prefHeight="20">
+							<tooltip>
+								<Tooltip text="%ADD_A_NEW_TAB" />
+							</tooltip>
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/addtab.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Button text="%ADD" fx:id="add" onAction="#addFavorites">
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/add.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Button text="%REMOVE" fx:id="remove" onAction="#removeFavorites">
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/remove.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Button text="%SELECT_ALL" fx:id="selectAll" onAction="#selectAllFavorites">
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/selectall.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Button text="%DESELECT_ALL" fx:id="deselectAll" onAction="#clearSelection">
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/deselectall.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Button text="%LOAD" fx:id="load" onAction="#loadFavorites">
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/load.png" />
+									</image>
+								</ImageView>
+							</graphic>
 
-					<RadioButton text="%REPEAT_OFF" selected="true"
-						toggleGroup="$repeatGroup" fx:id="repeatOff" GridPane.rowIndex="2"
-						GridPane.columnIndex="0" onAction="#repeatOff" />
-					<RadioButton text="%REPEAT_ONE_TUNE" toggleGroup="$repeatGroup"
-						fx:id="repeatOne" GridPane.rowIndex="2" GridPane.columnIndex="1"
-						onAction="#repeatOne" />
-				</GridPane>
-			</TitledPane>
-		</bottom>
-	</BorderPane>
-</AnchorPane>
+						</Button>
+						<Button text="%SAVEAS" fx:id="saveAs" onAction="#saveFavoritesAs">
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/save.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Label text="%RENAME_TAB" />
+						<TextField fx:id="renameTab" onAction="#renameTab"
+							prefWidth="100" />
+					</HBox>
+					<TabPane fx:id="favoritesList" tabClosingPolicy="ALL_TABS"
+						VBox.vgrow="ALWAYS" />
+				</VBox>
+			</center>
+			<bottom>
+				<TitledPane text="%PLAYBACK_OPTIONS" collapsible="true"
+					expanded="false">
+					<GridPane hgap="10">
+						<Label text="%FADE_IN_LENGTH" alignment="CENTER_RIGHT"
+							GridPane.rowIndex="0" GridPane.columnIndex="0" />
+						<TextField fx:id="fadeInTime" GridPane.rowIndex="0"
+							GridPane.columnIndex="1">
+							<tooltip>
+								<Tooltip text="%FADE_IN_LENGTH_TIP"></Tooltip>
+							</tooltip>
+						</TextField>
+						<Label text="%FADE_OUT_LENGTH" alignment="CENTER_RIGHT"
+							GridPane.rowIndex="0" GridPane.columnIndex="2" />
+						<TextField fx:id="fadeOutTime" GridPane.rowIndex="0"
+							GridPane.columnIndex="3">
+							<tooltip>
+								<Tooltip text="%FADE_OUT_LENGTH_TIP"></Tooltip>
+							</tooltip>
+						</TextField>
+						<RadioButton text="%OFF" selected="true" toggleGroup="$playbackGroup"
+							fx:id="off" GridPane.rowIndex="1" GridPane.columnIndex="0"
+							onAction="#off" />
+						<RadioButton text="%NORMAL" toggleGroup="$playbackGroup"
+							fx:id="normal" GridPane.rowIndex="1" GridPane.columnIndex="1"
+							onAction="#normal" />
+						<RadioButton text="%RANDOM_ONE_PLAYLIST" toggleGroup="$playbackGroup"
+							fx:id="randomOne" GridPane.rowIndex="1" GridPane.columnIndex="2"
+							onAction="#randomOne" />
+						<RadioButton text="%RANDOM_ALL_PLAYLISTS" toggleGroup="$playbackGroup"
+							fx:id="randomAll" GridPane.rowIndex="1" GridPane.columnIndex="3"
+							onAction="#randomAll" />
+						<RadioButton text="%RANDOM_HVSC" toggleGroup="$playbackGroup"
+							fx:id="randomHVSC" GridPane.rowIndex="1" GridPane.columnIndex="4"
+							onAction="#randomHVSC" />
 
+						<RadioButton text="%REPEAT_OFF" selected="true"
+							toggleGroup="$repeatGroup" fx:id="repeatOff" GridPane.rowIndex="2"
+							GridPane.columnIndex="0" onAction="#repeatOff" />
+						<RadioButton text="%REPEAT_ONE_TUNE" toggleGroup="$repeatGroup"
+							fx:id="repeatOne" GridPane.rowIndex="2" GridPane.columnIndex="1"
+							onAction="#repeatOne" />
+					</GridPane>
+				</TitledPane>
+			</bottom>
+		</BorderPane>
+	</AnchorPane>
+</fx:root>

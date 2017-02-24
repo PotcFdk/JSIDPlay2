@@ -8,7 +8,6 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
@@ -98,12 +97,11 @@ public class StatusBar extends AnchorPane implements UIPart {
 				}
 			}
 		}
-
 	}
 
 	public StatusBar(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		getChildren().add((Node) util.parse());
+		util.parse(this);
 	}
 
 	@FXML

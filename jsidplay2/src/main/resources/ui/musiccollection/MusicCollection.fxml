@@ -32,170 +32,172 @@
 <?import ui.musiccollection.TuneInfoRowFactory?>
 <?scenebuilder-preview-i18n-resource MusicCollection.properties?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
-		AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
-		<children>
-			<CheckBox text="%AUTO_CONFIGURATION" fx:id="autoConfiguration"
-				onAction="#doAutoConfiguration" GridPane.rowIndex="0"
-				GridPane.columnIndex="0" GridPane.columnSpan="3" />
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
+	<AnchorPane>
+		<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
+			<children>
+				<CheckBox text="%AUTO_CONFIGURATION" fx:id="autoConfiguration"
+					onAction="#doAutoConfiguration" GridPane.rowIndex="0"
+					GridPane.columnIndex="0" GridPane.columnSpan="3" />
 
-			<TitledPane text="%TUNE_INFO" collapsible="false"
-				GridPane.rowIndex="1" GridPane.columnIndex="0">
-				<TableView focusTraversable="false" fx:id="tuneInfoTable">
-					<rowFactory>
-						<TuneInfoRowFactory />
-					</rowFactory>
-					<columns>
-						<TableColumn text="%TUNEINFO_NAME" fx:id="nameColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="name" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn text="%TUNEINFO_VALUE" fx:id="valueColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="value" />
-							</cellValueFactory>
-						</TableColumn>
-					</columns>
-				</TableView>
-			</TitledPane>
-			<TreeView fx:id="fileBrowser" GridPane.rowIndex="1"
-				GridPane.columnIndex="1">
-				<contextMenu>
-					<ContextMenu fx:id="contextMenu">
-						<items>
-							<MenuItem fx:id="showStil" text="%SHOW_STIL" disable="true"
-								onAction="#showSTIL" />
-							<Menu text="%CONVERT_TO">
-								<MenuItem fx:id="convertToPSID64" text="%PSID64"
-									onAction="#convertToPSID64" disable="true" />
-							</Menu>
-							<Menu fx:id="addToFavoritesMenu" text="%ADD_TO_FAVORITES" />
-							<MenuItem fx:id="soasc6581R2" text="%DOWNLOAD_R2"
-								onAction="#startDownload6581R2" disable="true" />
-							<MenuItem fx:id="soasc6581R4" text="%DOWNLOAD_R4"
-								onAction="#startDownload6581R4" disable="true" />
-							<MenuItem fx:id="soasc8580R5" text="%DOWNLOAD_R5"
-								onAction="#startDownload8580R5" disable="true" />
-						</items>
-					</ContextMenu>
-				</contextMenu>
-			</TreeView>
-			<TitledPane fx:id="photographPane" text="%COMPOSERS_PHOTO" collapsible="false"
-				GridPane.rowIndex="1" GridPane.columnIndex="2">
-				<ImageView fx:id="photograph" preserveRatio="true" />
-			</TitledPane>
-			<TitledPane text="%SEARCH" collapsible="true" expanded="false"
-				GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="3">
-				<VBox>
+				<TitledPane text="%TUNE_INFO" collapsible="false"
+					GridPane.rowIndex="1" GridPane.columnIndex="0">
+					<TableView focusTraversable="false" fx:id="tuneInfoTable">
+						<rowFactory>
+							<TuneInfoRowFactory />
+						</rowFactory>
+						<columns>
+							<TableColumn text="%TUNEINFO_NAME" fx:id="nameColumn">
+								<cellValueFactory>
+									<PropertyValueFactory property="name" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn text="%TUNEINFO_VALUE" fx:id="valueColumn">
+								<cellValueFactory>
+									<PropertyValueFactory property="value" />
+								</cellValueFactory>
+							</TableColumn>
+						</columns>
+					</TableView>
+				</TitledPane>
+				<TreeView fx:id="fileBrowser" GridPane.rowIndex="1"
+					GridPane.columnIndex="1">
+					<contextMenu>
+						<ContextMenu fx:id="contextMenu">
+							<items>
+								<MenuItem fx:id="showStil" text="%SHOW_STIL" disable="true"
+									onAction="#showSTIL" />
+								<Menu text="%CONVERT_TO">
+									<MenuItem fx:id="convertToPSID64" text="%PSID64"
+										onAction="#convertToPSID64" disable="true" />
+								</Menu>
+								<Menu fx:id="addToFavoritesMenu" text="%ADD_TO_FAVORITES" />
+								<MenuItem fx:id="soasc6581R2" text="%DOWNLOAD_R2"
+									onAction="#startDownload6581R2" disable="true" />
+								<MenuItem fx:id="soasc6581R4" text="%DOWNLOAD_R4"
+									onAction="#startDownload6581R4" disable="true" />
+								<MenuItem fx:id="soasc8580R5" text="%DOWNLOAD_R5"
+									onAction="#startDownload8580R5" disable="true" />
+							</items>
+						</ContextMenu>
+					</contextMenu>
+				</TreeView>
+				<TitledPane fx:id="photographPane" text="%COMPOSERS_PHOTO"
+					collapsible="false" GridPane.rowIndex="1" GridPane.columnIndex="2">
+					<ImageView fx:id="photograph" preserveRatio="true" />
+				</TitledPane>
+				<TitledPane text="%SEARCH" collapsible="true" expanded="false"
+					GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="3">
+					<VBox>
+						<HBox>
+							<Label text="%SEARCH_FOR" />
+							<ComboBox fx:id="searchCriteria" onAction="#searchCategory" />
+							<StackPane>
+								<TypeTextField fx:id="stringTextField" type="String"
+									visible="true" onAction="#doSetValue" />
+								<TypeTextField fx:id="integerTextField" type="Integer"
+									visible="false" onAction="#doSetValue" />
+								<TypeTextField fx:id="longTextField" type="Long"
+									visible="false" onAction="#doSetValue" />
+								<TypeTextField fx:id="shortTextField" type="Short"
+									visible="false" onAction="#doSetValue" />
+								<TypeTextField fx:id="dateTextField" type="Date"
+									visible="false" onAction="#doSetValue" />
+								<ComboBox fx:id="combo" onAction="#doSetValue" visible="false"
+									prefWidth="150" />
+							</StackPane>
+							<Button fx:id="startSearch" onAction="#doStartSearch">
+								<tooltip>
+									<Tooltip text="%SEARCH_NEXT" />
+								</tooltip>
+								<graphic>
+									<ImageView>
+										<image>
+											<Image url="@/ui/icons/search.png" />
+										</image>
+									</ImageView>
+								</graphic>
+							</Button>
+							<Button fx:id="stopSearch" disable="true" onAction="#doStopSearch">
+								<tooltip>
+									<Tooltip text="%SEARCH_STOP" />
+								</tooltip>
+								<graphic>
+									<ImageView>
+										<image>
+											<Image url="@/ui/icons/mini/stop.png" />
+										</image>
+									</ImageView>
+								</graphic>
+							</Button>
+							<Button fx:id="resetSearch" onAction="#doResetSearch">
+								<tooltip>
+									<Tooltip text="%SEARCH_FROM_START_AGAIN" />
+								</tooltip>
+								<graphic>
+									<ImageView>
+										<image>
+											<Image url="@/ui/icons/mini/reset.png" />
+										</image>
+									</ImageView>
+								</graphic>
+							</Button>
+							<Button fx:id="createSearchIndex" onAction="#doCreateSearchIndex">
+								<tooltip>
+									<Tooltip text="%RECREATE_SEARCH_DATABASE" />
+								</tooltip>
+								<graphic>
+									<ImageView>
+										<image>
+											<Image url="@/ui/icons/mini/createindex.png" />
+										</image>
+									</ImageView>
+								</graphic>
+							</Button>
+							<ComboBox fx:id="searchScope" />
+							<ComboBox fx:id="searchResult" />
+						</HBox>
+					</VBox>
+				</TitledPane>
+				<TitledPane text="%CONFIGURATION" collapsible="true"
+					expanded="false" GridPane.rowIndex="3" GridPane.columnIndex="0"
+					GridPane.columnSpan="3">
 					<HBox>
-						<Label text="%SEARCH_FOR" />
-						<ComboBox fx:id="searchCriteria" onAction="#searchCategory" />
-						<StackPane>
-							<TypeTextField fx:id="stringTextField" type="String"
-								visible="true" onAction="#doSetValue" />
-							<TypeTextField fx:id="integerTextField" type="Integer"
-								visible="false" onAction="#doSetValue" />
-							<TypeTextField fx:id="longTextField" type="Long"
-								visible="false" onAction="#doSetValue" />
-							<TypeTextField fx:id="shortTextField" type="Short"
-								visible="false" onAction="#doSetValue" />
-							<TypeTextField fx:id="dateTextField" type="Date"
-								visible="false" onAction="#doSetValue" />
-							<ComboBox fx:id="combo" onAction="#doSetValue" visible="false"
-								prefWidth="150" />
-						</StackPane>
-						<Button fx:id="startSearch" onAction="#doStartSearch">
-							<tooltip>
-								<Tooltip text="%SEARCH_NEXT" />
-							</tooltip>
+						<Label text="%BASE_DIR" />
+						<TextField fx:id="collectionDir" disable="true" />
+						<Button text="%BROWSE" onAction="#doBrowse">
 							<graphic>
 								<ImageView>
 									<image>
-										<Image url="@/ui/icons/search.png" />
+										<Image url="@/ui/icons/browse.png" />
 									</image>
 								</ImageView>
 							</graphic>
 						</Button>
-						<Button fx:id="stopSearch" disable="true" onAction="#doStopSearch">
-							<tooltip>
-								<Tooltip text="%SEARCH_STOP" />
-							</tooltip>
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/mini/stop.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button fx:id="resetSearch" onAction="#doResetSearch">
-							<tooltip>
-								<Tooltip text="%SEARCH_FROM_START_AGAIN" />
-							</tooltip>
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/mini/reset.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button fx:id="createSearchIndex" onAction="#doCreateSearchIndex">
-							<tooltip>
-								<Tooltip text="%RECREATE_SEARCH_DATABASE" />
-							</tooltip>
-							<graphic>
-								<ImageView>
-									<image>
-										<Image url="@/ui/icons/mini/createindex.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</Button>
-						<ComboBox fx:id="searchScope" />
-						<ComboBox fx:id="searchResult" />
+						<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
+							onAction="#gotoURL" />
 					</HBox>
-				</VBox>
-			</TitledPane>
-			<TitledPane text="%CONFIGURATION" collapsible="true"
-				expanded="false" GridPane.rowIndex="3" GridPane.columnIndex="0"
-				GridPane.columnSpan="3">
-				<HBox>
-					<Label text="%BASE_DIR" />
-					<TextField fx:id="collectionDir" disable="true" />
-					<Button text="%BROWSE" onAction="#doBrowse">
-						<graphic>
-							<ImageView>
-								<image>
-									<Image url="@/ui/icons/browse.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-					<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
-						onAction="#gotoURL" />
-				</HBox>
-			</TitledPane>
-		</children>
-		<columnConstraints>
-			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-				percentWidth="30.0" prefWidth="100.0" />
-			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-				percentWidth="40.0" prefWidth="100.0" />
-			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-				percentWidth="30.0" prefWidth="100.0" />
-		</columnConstraints>
-		<rowConstraints>
-			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-				percentHeight="3.0" prefHeight="100.0" valignment="TOP" />
-			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-				percentHeight="77.0" prefHeight="100.0" />
-			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-				percentHeight="10.0" prefHeight="100.0" valignment="TOP" />
-			<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-				percentHeight="10.0" prefHeight="100.0" valignment="TOP" />
-		</rowConstraints>
-	</GridPane>
-</AnchorPane>
+				</TitledPane>
+			</children>
+			<columnConstraints>
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					percentWidth="30.0" prefWidth="100.0" />
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					percentWidth="40.0" prefWidth="100.0" />
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					percentWidth="30.0" prefWidth="100.0" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+					percentHeight="3.0" prefHeight="100.0" valignment="TOP" />
+				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+					percentHeight="77.0" prefHeight="100.0" />
+				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+					percentHeight="10.0" prefHeight="100.0" valignment="TOP" />
+				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
+					percentHeight="10.0" prefHeight="100.0" valignment="TOP" />
+			</rowConstraints>
+		</GridPane>
+	</AnchorPane>
+</fx:root>

@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -81,7 +80,7 @@ public class ToolBar extends VBox implements UIPart {
 
 	public ToolBar(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		getChildren().add((Node) util.parse());
+		util.parse(this);
 	}
 
 	@FXML

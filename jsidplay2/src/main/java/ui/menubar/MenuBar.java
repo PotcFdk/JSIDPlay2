@@ -19,7 +19,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
@@ -31,7 +30,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.C64;
@@ -87,7 +86,7 @@ import ui.videoscreen.Video;
 import ui.webview.WebView;
 import ui.webview.WebViewType;
 
-public class MenuBar extends AnchorPane implements UIPart {
+public class MenuBar extends VBox implements UIPart {
 	/** NUVIE video player */
 	private static final String NUVIE_PLAYER_PRG = "/libsidplay/roms/nuvieplayer-v1.0.prg";
 	private static byte[] NUVIE_PLAYER;
@@ -109,8 +108,6 @@ public class MenuBar extends AnchorPane implements UIPart {
 		}
 	}
 
-	@FXML
-	protected AnchorPane main;
 	@FXML
 	protected CheckMenuItem pauseContinue, driveOn, driveSoundOn, parCable, installJiffyDos, expand2000, expand4000,
 			expand6000, expand8000, expandA000, turnPrinterOn;
@@ -171,7 +168,7 @@ public class MenuBar extends AnchorPane implements UIPart {
 
 	public MenuBar(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		getChildren().add((Node) util.parse());
+		util.parse(this);
 		this.window = (JSidPlay2) window;
 	}
 
@@ -211,7 +208,7 @@ public class MenuBar extends AnchorPane implements UIPart {
 		}
 
 		Platform.runLater(() -> {
-			main.getScene().setOnDragOver(event -> {
+			getScene().setOnDragOver(event -> {
 				Dragboard db = event.getDragboard();
 				if (db.hasFiles()) {
 					event.acceptTransferModes(TransferMode.COPY);
@@ -219,7 +216,7 @@ public class MenuBar extends AnchorPane implements UIPart {
 					event.consume();
 				}
 			});
-			main.getScene().setOnDragDropped(event -> {
+			getScene().setOnDragDropped(event -> {
 				Dragboard db = event.getDragboard();
 				boolean success = false;
 				if (db.hasFiles()) {
@@ -249,7 +246,7 @@ public class MenuBar extends AnchorPane implements UIPart {
 		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
-		final File file = fileDialog.showOpenDialog(main.getScene().getWindow());
+		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
 			try {
@@ -266,7 +263,7 @@ public class MenuBar extends AnchorPane implements UIPart {
 		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(CartFileExtensions.DESCRIPTION, CartFileExtensions.EXTENSIONS));
-		final File file = fileDialog.showOpenDialog(main.getScene().getWindow());
+		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {
 			final File tmpFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), "nuvieplayer-v1.0.prg");
 			tmpFile.deleteOnExit();
@@ -412,7 +409,7 @@ public class MenuBar extends AnchorPane implements UIPart {
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TapeFileExtensions.DESCRIPTION, TapeFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_TAPE"));
-		final File file = fileDialog.showOpenDialog(main.getScene().getWindow());
+		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {
 			try {
 				util.getPlayer().insertTape(file);
@@ -505,7 +502,7 @@ public class MenuBar extends AnchorPane implements UIPart {
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(DiskFileExtensions.DESCRIPTION, DiskFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_DISK"));
-		final File file = fileDialog.showOpenDialog(main.getScene().getWindow());
+		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {
 			try {
 				util.getPlayer().insertDisk(file);
@@ -535,7 +532,7 @@ public class MenuBar extends AnchorPane implements UIPart {
 		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		fileDialog.getExtensionFilters().add(new ExtensionFilter("Disk Image (D64)", "*.d64"));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_EMPTY_DISK"));
-		final File file = fileDialog.showSaveDialog(main.getScene().getWindow());
+		final File file = fileDialog.showSaveDialog(getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
 			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".d64");
@@ -914,7 +911,7 @@ public class MenuBar extends AnchorPane implements UIPart {
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(CartFileExtensions.DESCRIPTION, CartFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));
-		final File file = fileDialog.showOpenDialog(main.getScene().getWindow());
+		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {
 			try {
 				util.getPlayer().insertCartridge(type, file);

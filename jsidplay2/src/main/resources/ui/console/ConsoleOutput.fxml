@@ -9,14 +9,15 @@
 <?import javafx.scene.control.ScrollPane?>
 <?scenebuilder-preview-i18n-resource ConsoleOutput.properties?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml">
-	<TitledPane fx:id="titledPane" collapsible="false"
-		AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
-		AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-		<graphic>
-			<Button text="%CLEAR" onAction="#clearConsole" />
-		</graphic>
-		<TextArea editable="false" fx:id="console" />
-	</TitledPane>
-</AnchorPane>
-
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
+	<AnchorPane>
+		<TitledPane fx:id="titledPane" collapsible="false"
+			AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+			AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+			<graphic>
+				<Button text="%CLEAR" onAction="#clearConsole" />
+			</graphic>
+			<TextArea editable="false" fx:id="console" />
+		</TitledPane>
+	</AnchorPane>
+</fx:root>

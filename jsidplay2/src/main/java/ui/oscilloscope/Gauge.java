@@ -3,7 +3,6 @@ package ui.oscilloscope;
 import java.net.URL;
 import java.util.Arrays;
 
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TitledPane;
@@ -32,7 +31,7 @@ public class Gauge extends VBox implements UIPart {
 
 	public Gauge(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
-		getChildren().add((Node) util.parse());
+		util.parse(this);
 	}
 
 	/** data plots normalized between -1 .. 1 */

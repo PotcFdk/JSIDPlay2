@@ -18,7 +18,7 @@
 <?import ui.common.TypeTextField?>
 <?scenebuilder-preview-i18n-resource ToolBar.properties?>
 <?scenebuilder-classpath-element ../../../../../target/classes?>
-<VBox xmlns:fx="http://javafx.com/fxml" fx:id="main">
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane>
 		<HBox AnchorPane.leftAnchor="10" alignment="CENTER">
 			<ComboBox onAction="#setVideoStandard" fx:id="videoStandardBox" />
@@ -144,4 +144,4 @@
 			</Button>
 		</HBox>
 	</HBox>
-</VBox>
+</fx:root>
