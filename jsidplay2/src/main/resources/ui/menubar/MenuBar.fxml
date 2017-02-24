@@ -27,7 +27,6 @@
 			<ToggleGroup fx:id="videoCaptureGroup" />
 			<ToggleGroup fx:id="floppyGroup" />
 			<ToggleGroup fx:id="extensionGroup" />
-			<ToggleGroup fx:id="playSourceGroup" />
 		</fx:define>
 		<MenuBar fx:id="menuBar" AnchorPane.leftAnchor="10">
 			<menus>

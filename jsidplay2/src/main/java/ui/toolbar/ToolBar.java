@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -73,7 +72,6 @@ public class ToolBar extends VBox implements UIPart {
 	@FXML
 	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label;
 
-	private Scene scene;
 	private boolean duringInitialization;
 
 	private UIUtil util;
@@ -86,8 +84,6 @@ public class ToolBar extends VBox implements UIPart {
 	@FXML
 	private void initialize() {
 		this.duringInitialization = true;
-
-		this.scene = samplingBox.getScene();
 
 		final ResourceBundle bundle = util.getBundle();
 		final Configuration config = util.getConfig();
@@ -234,7 +230,7 @@ public class ToolBar extends VBox implements UIPart {
 		final FileChooser fileDialog = new FileChooser();
 		final FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MP3 file (*.mp3)", "*.mp3");
 		fileDialog.getExtensionFilters().add(extFilter);
-		final File file = fileDialog.showOpenDialog(scene.getWindow());
+		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getAudioSection().setMp3File(file.getAbsolutePath());
 			restart();

@@ -31,8 +31,8 @@ import ui.entities.gamebase.Games;
 public class GameBasePage extends Tab implements UIPart {
 
 	private static final String GB64_SCREENSHOT_DOWNLOAD_URL = "http://www.gb64.com/Screenshots/";
-	private static final String GB64_GAMES_DOWNLOAD_URL = "http://gamebase64.hardabasht.com/games/";
-
+	private static final String GB64_GAMES_DOWNLOAD_URL = "http://haendel.ddns.net/~ken/games/";
+	
 	@FXML
 	private TableView<Games> gamebaseTable;
 
