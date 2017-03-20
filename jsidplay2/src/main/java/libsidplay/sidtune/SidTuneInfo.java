@@ -15,10 +15,11 @@
  */
 package libsidplay.sidtune;
 
+import static libsidplay.components.pla.PLA.MAX_SIDS;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
-import libsidplay.components.pla.PLA;
 import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
@@ -54,12 +55,12 @@ public class SidTuneInfo {
 	/**
 	 * The SID chip base address for each SID.
 	 */
-	protected int[] sidChipBase = new int[PLA.MAX_SIDS];
+	protected int[] sidChipBase = new int[MAX_SIDS];
 
 	/**
 	 * SID Model for each SID.
 	 */
-	protected Model[] sidModel = new Model[PLA.MAX_SIDS];
+	protected Model[] sidModel = new Model[MAX_SIDS];
 
 	/**
 	 * First available page for relocation

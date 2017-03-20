@@ -1,5 +1,8 @@
 package netsiddev_builder;
 
+import static libsidplay.common.SIDChip.REG_COUNT;
+import static libsidplay.components.pla.PLA.MAX_SIDS;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,9 +13,7 @@ import libsidplay.common.Engine;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
-import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
-import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -51,13 +52,13 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		client.add(new TrySetSampling(audioSection.getSampling()));
 		client.add(new TrySetSidModel((byte) sidNum, chipModel, filterName));
 		client.add(new SetClocking(cpuClock.getCpuFrequency()));
-		for (byte sidNum2 = 0; sidNum2 < PLA.MAX_SIDS; sidNum2++) {
+		for (byte sidNum2 = 0; sidNum2 < MAX_SIDS; sidNum2++) {
 			for (byte voice = 0; voice < (client.getVersion() < 3 ? 3 : 4); voice++) {
 				client.add(new Mute(sidNum2, voice, emulationSection.isMuteVoice(sidNum2, voice)));
 			}
 		}
 		client.softFlush();
-		for (byte addr = 0; sidEmu != null && addr < SIDChip.REG_COUNT; addr++) {
+		for (byte addr = 0; sidEmu != null && addr < REG_COUNT; addr++) {
 			sid.write(addr, sidEmu.readInternalRegister(addr));
 		}
 		if (sidNum < sids.size())

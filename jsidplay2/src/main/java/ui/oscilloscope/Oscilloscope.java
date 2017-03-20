@@ -1,5 +1,7 @@
 package ui.oscilloscope;
 
+import static libsidplay.components.pla.PLA.MAX_SIDS;
+
 import java.util.function.Consumer;
 
 import javafx.animation.PauseTransition;
@@ -15,7 +17,6 @@ import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import libsidplay.components.pla.PLA;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
@@ -51,7 +52,7 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	@FXML
 	protected CheckBox muteVoice1, muteVoice2, muteVoice3, muteVoice4, muteVoice5, muteVoice6, muteVoice7, muteVoice8,
-	muteVoice9, muteVoice10, muteVoice11, muteVoice12;
+			muteVoice9, muteVoice10, muteVoice11, muteVoice12;
 	@FXML
 	private WaveGauge waveMono_0, waveMono_1, waveMono_2, waveStereo_0, waveStereo_1, waveStereo_2, wave3Sid_0,
 			wave3Sid_1, wave3Sid_2;
@@ -136,7 +137,7 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	private void startOscilloscope() {
 		/* Initially clear all gauges (unused SIDs inclusive) */
-		for (int chipNum = 0; chipNum < PLA.MAX_SIDS; chipNum++) {
+		for (int chipNum = 0; chipNum < MAX_SIDS; chipNum++) {
 			updateGauges(chipNum, Gauge::reset);
 		}
 		pt.setOnFinished(evt -> {

@@ -1,12 +1,14 @@
 package libsidplay.components.pla;
 
+import static libsidplay.common.SIDChip.REG_COUNT;
+import static libsidplay.common.SIDEmu.NONE;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
 import libsidplay.common.SIDListener;
 import libsidplay.components.cart.Cartridge;
@@ -113,7 +115,7 @@ public final class PLA {
 	public class SIDBank extends Bank {
 		/**
 		 * Size of mapping table. Each 32 bytes another SID chip is possible (it
-		 * can be assigned to IO range d000-dfff: 4096b/32b=128 places).<BR>
+		 * can be assigned to IO range 0xd000-0xdfff: 4096b/32b=128 places).<BR>
 		 * <B>Note:</B> First possible and default address of a SID in a C64 is
 		 * 0xd400. Other common places are 0xd400-0xd7ff, 0xde00 and 0xdf00.
 		 */
@@ -128,7 +130,8 @@ public final class PLA {
 		private final SIDEmu[] sidemu = new SIDEmu[MAX_SIDS];
 
 		/**
-		 * SID assigned to a bank number? Each bit represents a chip number.
+		 * SID assigned to a bank number? Each bit represents the availability
+		 * of a chip.
 		 */
 		private int[] sidBankUsed = new int[MAX_BANKS];
 
@@ -136,11 +139,11 @@ public final class PLA {
 		 * SID chip listener
 		 */
 		private SIDListener listener;
-		
+
 		public void setSIDListener(SIDListener listener) {
 			this.listener = listener;
 		}
-		
+
 		/** Reset mapping of memory banks. */
 		private void reset() {
 			Arrays.fill(sidmapper, 0);
@@ -160,7 +163,7 @@ public final class PLA {
 		public byte read(final int address) {
 			final SIDEmu sid = sidemu[sidmapper[address >> 5 & MAPPER_SIZE - 1]];
 			if (sid != null) {
-				return sid.read(address & SIDChip.REG_COUNT - 1);
+				return sid.read(address & REG_COUNT - 1);
 			} else {
 				return (byte) 0xff;
 			}
@@ -174,7 +177,7 @@ public final class PLA {
 		public void write(final int address, final byte value) {
 			final SIDEmu sid = sidemu[sidmapper[address >> 5 & MAPPER_SIZE - 1]];
 			if (sid != null) {
-				sid.write(address & SIDChip.REG_COUNT - 1, value);
+				sid.write(address & REG_COUNT - 1, value);
 				if (listener != null) {
 					final long time = context.getTime(Event.Phase.PHI2);
 					listener.write(time, address, value);
@@ -196,7 +199,7 @@ public final class PLA {
 
 		/** Un-plug SID chip implementation of a specific SID chip number. */
 		public void unplugSID(final int chipNum, final SIDEmu sidEmu, final int address) {
-			sidemu[chipNum] = SIDEmu.NONE;
+			sidemu[chipNum] = NONE;
 			sidmapper[address >> 5 & MAPPER_SIZE - 1] = 0;
 			sidBankUsed[address >> 8 & 0xf] &= ~(1 << chipNum);
 		}

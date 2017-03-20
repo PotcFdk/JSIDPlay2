@@ -1,5 +1,7 @@
 package resid_builder;
 
+import static libsidplay.components.pla.PLA.MAX_SIDS;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -12,7 +14,6 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.Mixer;
 import libsidplay.common.SamplingMethod;
-import libsidplay.components.pla.PLA;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
@@ -153,7 +154,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * SIDs to mix their sound output.
 	 */
-	protected final List<ReSIDBase> sids = new ArrayList<ReSIDBase>(PLA.MAX_SIDS);
+	protected final List<ReSIDBase> sids = new ArrayList<ReSIDBase>(MAX_SIDS);
 
 	/**
 	 * Mixer clocking SID chips and producing audio output.
@@ -183,15 +184,15 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Volume of all SIDs.
 	 */
-	private final int[] volume = new int[PLA.MAX_SIDS];
+	private final int[] volume = new int[MAX_SIDS];
 	/**
 	 * SID audibility on the left speaker of all SIDs 0(silent)..1(loud).
 	 */
-	private final float[] positionL = new float[PLA.MAX_SIDS];
+	private final float[] positionL = new float[MAX_SIDS];
 	/**
 	 * SID audibility on the right speaker of all SIDs 0(silent)..1(loud).
 	 */
-	private final float[] positionR = new float[PLA.MAX_SIDS];
+	private final float[] positionR = new float[MAX_SIDS];
 
 	/**
 	 * Fade-in/fade-out enabled.

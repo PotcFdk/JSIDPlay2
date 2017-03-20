@@ -15,12 +15,13 @@
  */
 package resid_builder;
 
+import static libsidplay.common.SIDChip.REG_COUNT;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
-import libsidplay.common.SIDChip;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
@@ -50,7 +51,7 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 		for (int voice = 0; voice < 4; voice++) {
 			sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
 		}
-		for (int i = 0; oldSIDEmu != null && !oldSIDEmu.equals(sid) && i < SIDChip.REG_COUNT; i++) {
+		for (int i = 0; oldSIDEmu != null && !oldSIDEmu.equals(sid) && i < REG_COUNT; i++) {
 			sid.write(i, oldSIDEmu.readInternalRegister(i));
 		}
 		add(sidNum, sid);

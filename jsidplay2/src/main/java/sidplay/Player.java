@@ -84,7 +84,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Timeout (in ms) for quitting the player.
 	 */
-	private static final int PAUSE_QUIT_TIME = 1000;
+	private static final int QUIT_TIME_MAX_WAIT = 1000;
 
 	/**
 	 * Previous song select timeout (< 4 secs).
@@ -217,7 +217,7 @@ public class Player extends HardwareEnsemble {
 	 */
 	public Player(final IConfig config, final Class<? extends MOS6510> cpuClass) {
 		super(config, cpuClass);
-		this.playList = PlayList.getInstance(config, RESET);
+		this.playList = PlayList.getInstance(config, tune);
 		this.timer = new Timer(this) {
 
 			@Override
@@ -529,7 +529,7 @@ public class Player extends HardwareEnsemble {
 				if (quitOrWait) {
 					quit();
 				}
-				playerThread.join(PAUSE_QUIT_TIME);
+				playerThread.join(QUIT_TIME_MAX_WAIT);
 				if (quitOrWait && playerThread.isAlive()) {
 					// emergency break, if audio driver is locked
 					playerThread.interrupt();

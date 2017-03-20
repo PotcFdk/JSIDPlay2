@@ -1,13 +1,16 @@
 package libsidplay;
 
+import static libsidplay.common.SIDEmu.NONE;
+import static libsidplay.components.pla.PLA.MAX_SIDS;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-
 import java.util.function.IntFunction;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -479,20 +482,20 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	 * 
 	 * @param sidCreator
 	 *            Responsible to decide which SID chips we need (SIDEmu) and
-	 *            which we don't need (SIDEmu.NONE). SID number and old SID
+	 *            which we don't need (NONE). SID number and old SID
 	 *            mapped to new SID.
 	 * @param sidLocator
 	 *            Responsible to determine the base address of the SID chips we
 	 *            need
 	 */
 	public final void insertSIDChips(BiFunction<Integer, SIDEmu, SIDEmu> sidCreator, IntFunction<Integer> sidLocator) {
-		for (int sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+		for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
 			SIDEmu oldSid = pla.getSIDBank().getSID(sidNum);
-			if (oldSid != SIDEmu.NONE) {
+			if (oldSid != NONE) {
 				pla.getSIDBank().unplugSID(sidNum, oldSid, sidLocator.apply(sidNum));
 			}
 			SIDEmu newSid = sidCreator.apply(sidNum, oldSid);
-			if (newSid != SIDEmu.NONE) {
+			if (newSid != NONE) {
 				pla.getSIDBank().plugInSID(sidNum, newSid, sidLocator.apply(sidNum));
 			}
 		}
@@ -516,9 +519,9 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	 *            SID chip consumer
 	 */
 	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
-		for (int chipNum = 0; chipNum < PLA.MAX_SIDS; chipNum++) {
+		for (int chipNum = 0; chipNum < MAX_SIDS; chipNum++) {
 			final SIDEmu sid = pla.getSIDBank().getSID(chipNum);
-			if (sid != SIDEmu.NONE) {
+			if (sid != NONE) {
 				action.accept(chipNum, sid);
 			}
 		}
@@ -534,7 +537,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	 */
 	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
 		final SIDEmu sid = pla.getSIDBank().getSID(chipNum);
-		if (sid != SIDEmu.NONE) {
+		if (sid != NONE) {
 			action.accept(sid);
 		}
 	}

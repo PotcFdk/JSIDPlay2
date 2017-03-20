@@ -15,6 +15,7 @@
  */
 package libsidplay.common;
 
+import static libsidplay.common.SIDChip.REG_COUNT;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
@@ -32,7 +33,7 @@ public abstract class SIDEmu {
 	public static final SIDEmu NONE = null;
 	
 	/** Internal cache of SID register state, used for GUI feedback. */
-	private final byte[] registers = new byte[SIDChip.REG_COUNT];
+	private final byte[] registers = new byte[REG_COUNT];
 
 	/**
 	 * Side effect free read access.

@@ -1,5 +1,6 @@
 package netsiddev_builder;
 
+import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static netsiddev.Response.BUSY;
 import static netsiddev.Response.OK;
 
@@ -11,7 +12,6 @@ import javafx.util.Pair;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.components.pla.PLA;
 import libsidplay.config.IEmulationSection;
 import netsiddev.Response;
 import netsiddev_builder.commands.Flush;
@@ -95,8 +95,8 @@ public class NetSIDClient {
 	 * command queue to initialize server side properly.
 	 */
 	private void addSetSidModels() {
-		commands.add(new TrySetSidCount((byte) PLA.MAX_SIDS));
-		for (byte sidNum = 0; sidNum < PLA.MAX_SIDS; sidNum++) {
+		commands.add(new TrySetSidCount((byte) MAX_SIDS));
+		for (byte sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
 			commands.add(new TrySetSidModel(sidNum, (byte) 0));
 		}
 	}

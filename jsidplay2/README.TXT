@@ -80,7 +80,19 @@ How to debug Java WebStart applications:
 set JAVAWS_VM_ARGS="-Xdebug -Dnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=8000"
 "c:\Program Files\Java\jdk1.7.0_07\bin\javaws.exe" http://kenchis.t15.org/jsidplay2/jsidplay2.jnlp
 
+Chameleon Command-Line:
+=======================
+sudo gedit /lib/udev/rules.d/100-local-permissions.rules:
+SUBSYSTEMS=="usb" ATTRS{idVendor}=="18d8" ATTRS{idProduct}=="201d" MODE:="0777" SYMLINK+="Chameleon"
+
+RESET (reset.txt consists of exactly one zero byte)
+./chacocmd  --addr  0x80000000 --writemem ./reset.txt
+
+SEND PROGRAM
+./chacocmd  --addr  0x0801 --writemem radiantx_spiral_silicon_towers.mem 
+
 TODO:
 =====
 libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
+
