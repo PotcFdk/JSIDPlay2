@@ -35,7 +35,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * The mixer mixes the generated sound samples into the drivers audio
-	 * buffer. This is used, after timer start has been reached.
+	 * buffer.
 	 * 
 	 * @author ken
 	 *

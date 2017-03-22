@@ -1,5 +1,6 @@
 package hardsid_builder;
 
+import static hardsid_builder.HardSIDBuilder.SHORTEST_DELAY;
 import static libsidplay.common.SIDChip.REG_COUNT;
 
 import libsidplay.common.ChipModel;
@@ -60,9 +61,9 @@ public class HardSID extends SIDEmu {
 	public void reset(final byte volume) {
 		hardSID.HardSID_Reset(deviceID);
 		for (byte reg = 0; reg < REG_COUNT; reg++) {
-			hardSID.HardSID_Write(deviceID, chipNum, HardSIDBuilder.SHORTEST_DELAY, reg, (byte) 0);
+			hardSID.HardSID_Write(deviceID, chipNum, SHORTEST_DELAY, reg, (byte) 0);
 		}
-		hardSID.HardSID_Write(deviceID, chipNum, HardSIDBuilder.SHORTEST_DELAY, (byte) 0xf, volume);
+		hardSID.HardSID_Write(deviceID, chipNum, SHORTEST_DELAY, (byte) 0xf, volume);
 		hardSID.HardSID_Flush(deviceID);
 	}
 

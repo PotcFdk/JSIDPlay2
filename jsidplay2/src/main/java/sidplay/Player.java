@@ -689,7 +689,7 @@ public class Player extends HardwareEnsemble {
 	 * Turn C64 off and on, load a tune and enter basic command.
 	 * 
 	 * @param tune
-	 *            tune to play (SidTune.RESET means just reset C64)
+	 *            tune to play (RESET means just reset C64)
 	 * @param command
 	 *            basic command to be entered after a normal reset
 	 */
