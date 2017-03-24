@@ -184,27 +184,33 @@ public class ID3V2Decoder {
 			is.skipBytes((int) readLength(lenbuf));
 			// readComment(is, readLength(lenbuf), enc);
 		} else {
-			int enc = is.read();
-			String fieldValue = readField(is, entryType,
-					(int) readLength(lenbuf), enc);
-			if (entryType.equals("TALB")) {
-				setAlbum(fieldValue);
-			} else if (entryType.equals("TPE1")) {
-				setInterpret(fieldValue);
-			} else if (entryType.equals("TPE2")) {
-				setAlbumInterpret(fieldValue);
-			} else if (entryType.equals("TCOM")) {
-				setComponist(fieldValue);
-			} else if (entryType.equals("TPOS")) {
-				setCdNumber(fieldValue);
-			} else if (entryType.equals("TCON")) {
-				setGenre(fieldValue);
-			} else if (entryType.equals("TIT2")) {
-				setTitle(fieldValue);
-			} else if (entryType.equals("TRCK")) {
-				setTrack(fieldValue);
-			} else if (entryType.equals("TYER")) {
-				setYear(fieldValue);
+			int length = 0;
+			try {
+				int enc = is.read();
+				length=(int) readLength(lenbuf);
+				String fieldValue = readField(is, entryType,
+						length, enc);
+				if (entryType.equals("TALB")) {
+					setAlbum(fieldValue);
+				} else if (entryType.equals("TPE1")) {
+					setInterpret(fieldValue);
+				} else if (entryType.equals("TPE2")) {
+					setAlbumInterpret(fieldValue);
+				} else if (entryType.equals("TCOM")) {
+					setComponist(fieldValue);
+				} else if (entryType.equals("TPOS")) {
+					setCdNumber(fieldValue);
+				} else if (entryType.equals("TCON")) {
+					setGenre(fieldValue);
+				} else if (entryType.equals("TIT2")) {
+					setTitle(fieldValue);
+				} else if (entryType.equals("TRCK")) {
+					setTrack(fieldValue);
+				} else if (entryType.equals("TYER")) {
+					setYear(fieldValue);
+				}
+			} catch (IOException e) {
+				System.err.println("Error reading ID3 tag length="+length+ ", type=" + entryType);
 			}
 		}
 		return false;
