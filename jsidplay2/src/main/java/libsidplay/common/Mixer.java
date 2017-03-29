@@ -57,6 +57,12 @@ public interface Mixer {
 	void setBalance(int sidNum, float balance);
 
 	/**
+	 * Pause player.
+	 */
+	default void pause() {
+	}
+
+	/**
 	 * Doubles speed factor.
 	 */
 	void fastForward();

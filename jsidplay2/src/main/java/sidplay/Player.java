@@ -192,7 +192,7 @@ public class Player extends HardwareEnsemble {
 	private ChangeListener<? super State> pauseListener = (s, oldValue, newValue) -> {
 		if (newValue == PAUSE) {
 			audioDriver.pause();
-			sidBuilder.pause();
+			configureMixer(mixer -> mixer.pause());
 			// audio driver continues automatically, next call of write!
 		}
 	};
