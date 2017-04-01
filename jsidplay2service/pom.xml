@@ -11,6 +11,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
+		<jsidplay2.version>3.8</jsidplay2.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -42,7 +43,7 @@
 		<dependency>
 			<groupId>jsidplay2</groupId>
 			<artifactId>jsidplay2</artifactId>
-			<version>3.8</version>
+			<version>${jsidplay2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jsidplay2</groupId>
@@ -93,11 +94,6 @@
 			<version>3.0.10.Final</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.1-api</artifactId>
-			<version>1.0.0.Final</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<!-- the context root -->
@@ -116,6 +112,28 @@
 				<groupId>org.jboss.as.plugins</groupId>
 				<artifactId>jboss-as-maven-plugin</artifactId>
 				<version>7.7.Final</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>truezip-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>remove persistence.xml</id>
+						<goals>
+							<goal>remove</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<fileset>
+								<directory>target/jsidplay2service.war/WEB-INF/lib/jsidplay2-${jsidplay2.version}.jar/META-INF</directory>
+								<includes>
+									<include>persistence.xml</include>
+								</includes>
+							</fileset>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

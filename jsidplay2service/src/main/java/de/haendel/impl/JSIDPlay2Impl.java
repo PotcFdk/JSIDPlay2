@@ -6,9 +6,6 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -23,8 +20,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.IntSupplier;
 
-import javax.persistence.metamodel.SingularAttribute;
-
 import libsidplay.config.IFilterSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -37,7 +32,6 @@ import sidplay.Player;
 import sidplay.audio.AudioDriver;
 import sidplay.ini.IniConfig;
 import ui.entities.collection.HVSCEntry;
-import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry;
 import ui.entities.config.Configuration;
 
@@ -196,24 +190,43 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 				StringBuffer stilText = formatStilText(stilEntry);
 				tuneInfos.put(StilEntry.class.getSimpleName() + ".text", stilText.toString());
 			}
-			for (Field field : HVSCEntry_.class.getDeclaredFields()) {
-				if (field.getName().equals(HVSCEntry_.id.getName())) {
-					continue;
-				}
-				if (!(SingularAttribute.class.isAssignableFrom(field.getType()))) {
-					continue;
-				}
-				String name = HVSCEntry.class.getSimpleName() + "." + field.getName();
-				Object value = null;
-				try {
-					SingularAttribute<?, ?> singleAttribute = (SingularAttribute<?, ?>) field.get(hvscEntry);
-					value = ((Method) singleAttribute.getJavaMember()).invoke(hvscEntry);
-				} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-				}
-				tuneInfos.put(name, String.valueOf(value != null ? value : ""));
-			}
+			addTuneInfo(tuneInfos, "HVSCEntry.path", hvscEntry.getPath());
+			addTuneInfo(tuneInfos, "HVSCEntry.name", hvscEntry.getName());
+			addTuneInfo(tuneInfos, "HVSCEntry.title", hvscEntry.getTitle());
+			addTuneInfo(tuneInfos, "HVSCEntry.author", hvscEntry.getAuthor());
+			addTuneInfo(tuneInfos, "HVSCEntry.released", hvscEntry.getReleased());
+			addTuneInfo(tuneInfos, "HVSCEntry.format", hvscEntry.getFormat());
+			addTuneInfo(tuneInfos, "HVSCEntry.playerId", hvscEntry.getPlayerId());
+			addTuneInfo(tuneInfos, "HVSCEntry.noOfSongs", hvscEntry.getNoOfSongs());
+			addTuneInfo(tuneInfos, "HVSCEntry.startSong", hvscEntry.getStartSong());
+			addTuneInfo(tuneInfos, "HVSCEntry.clockFreq", hvscEntry.getClockFreq());
+			addTuneInfo(tuneInfos, "HVSCEntry.speed", hvscEntry.getSpeed());
+			addTuneInfo(tuneInfos, "HVSCEntry.sidModel1", hvscEntry.getSidModel1());
+			addTuneInfo(tuneInfos, "HVSCEntry.sidModel2", hvscEntry.getSidModel2());
+			addTuneInfo(tuneInfos, "HVSCEntry.sidModel3", hvscEntry.getSidModel3());
+			addTuneInfo(tuneInfos, "HVSCEntry.compatibility", hvscEntry.getCompatibility());
+			addTuneInfo(tuneInfos, "HVSCEntry.tuneLength", hvscEntry.getTuneLength());
+			addTuneInfo(tuneInfos, "HVSCEntry.audio", hvscEntry.getAudio());
+			addTuneInfo(tuneInfos, "HVSCEntry.sidChipBase1", hvscEntry.getSidChipBase1());
+			addTuneInfo(tuneInfos, "HVSCEntry.sidChipBase2", hvscEntry.getSidChipBase2());
+			addTuneInfo(tuneInfos, "HVSCEntry.sidChipBase3", hvscEntry.getSidChipBase3());
+			addTuneInfo(tuneInfos, "HVSCEntry.driverAddress", hvscEntry.getDriverAddress());
+			addTuneInfo(tuneInfos, "HVSCEntry.loadAddress", hvscEntry.getLoadAddress());
+			addTuneInfo(tuneInfos, "HVSCEntry.loadLength", hvscEntry.getLoadLength());
+			addTuneInfo(tuneInfos, "HVSCEntry.initAddress", hvscEntry.getInitAddress());
+			addTuneInfo(tuneInfos, "HVSCEntry.playerAddress", hvscEntry.getPlayerAddress());
+			addTuneInfo(tuneInfos, "HVSCEntry.fileDate", hvscEntry.getFileDate());
+			addTuneInfo(tuneInfos, "HVSCEntry.fileSizeKb", hvscEntry.getFileSizeKb());
+			addTuneInfo(tuneInfos, "HVSCEntry.tuneSizeB", hvscEntry.getTuneSizeB());
+			addTuneInfo(tuneInfos, "HVSCEntry.relocStartPage", hvscEntry.getRelocStartPage());
+			addTuneInfo(tuneInfos, "HVSCEntry.relocNoPages", hvscEntry.getRelocNoPages());
+			addTuneInfo(tuneInfos, "HVSCEntry.stilGlbComment", hvscEntry.getStilGlbComment());
 		}
 		return tuneInfos;
+	}
+
+	private void addTuneInfo(Map<String, String> tuneInfos, String name, Object value) {
+		tuneInfos.put(name, String.valueOf(value != null ? value : ""));
 	}
 
 	private STIL getSTIL(String hvscRoot) {
