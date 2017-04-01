@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 	<persistence-unit name="configuration-ds" transaction-type="RESOURCE_LOCAL">
 		<description>JSIDPlay2 Configuration Entities</description>
-		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 		<class>ui.entities.config.AudioSection</class>
 		<class>ui.entities.config.C1541Section</class>
@@ -33,7 +33,7 @@
 	</persistence-unit>
 	<persistence-unit name="gamebase-ds" transaction-type="RESOURCE_LOCAL">
 		<description>GameBase64 Entities</description>
-		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 		<class>ui.entities.gamebase.Config</class>
 		<class>ui.entities.gamebase.Games</class>
@@ -54,7 +54,7 @@
 	</persistence-unit>
 	<persistence-unit name="hvsc-ds" transaction-type="RESOURCE_LOCAL">
 		<description>HVSC Entities</description>
-		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 		<class>ui.entities.collection.Version</class>
 		<class>ui.entities.collection.HVSCEntry</class>

@@ -107,8 +107,8 @@ public class KickAssembler {
 				}
 			} while (!asmNode2.isFinished());
 
-			MainOutputReciever mainOutputReciever = new MainOutputReciever(8192, false,
-					evaluationState.getMaxMemoryAddress(), null);
+			MainOutputReciever mainOutputReciever = new MainOutputReciever(8192, evaluationState.getMaxMemoryAddress(),
+					null, null);
 			asmNode2.deliverOutput(mainOutputReciever);
 			mainOutputReciever.finish();
 			return new Assembly(mainOutputReciever.getSegments().get("Default")).getData();
