@@ -99,9 +99,7 @@ public class JSidPlay2Main extends Application {
 		final JSidPlay2 jSidplay2 = new JSidPlay2(primaryStage, player);
 		// Set default position and size
 		final SidPlay2Section section = (SidPlay2Section) player.getConfig().getSidplay2Section();
-		if (section.getFullScreen() != null) {
-			primaryStage.setFullScreen(section.getFullScreen());
-		}
+		primaryStage.setFullScreen(Boolean.TRUE.equals(section.getFullScreen()));
 		primaryStage.fullScreenProperty()
 				.addListener((observable, oldValue, newValue) -> section.setFullScreen(newValue));
 		final Scene scene = primaryStage.getScene();
@@ -120,31 +118,6 @@ public class JSidPlay2Main extends Application {
 		}
 		jSidplay2.open();
 		testInstance = jSidplay2;
-	}
-
-	/**
-	 * Parse optional command line arguments.
-	 * 
-	 * @return configuration database chosen by command line arguments
-	 */
-	private Configuration getConfigurationFromCommandLineArgs() {
-		try {
-			Parameters parameters = getParameters();
-			if (parameters != null) {
-				JCommander commander = new JCommander(this, parameters.getRaw().toArray(new String[0]));
-				commander.setProgramName(getClass().getName());
-				commander.setCaseSensitiveOptions(true);
-				if (help) {
-					commander.usage();
-					System.out.println("Press <enter> to exit!");
-					System.in.read();
-					System.exit(0);
-				}
-			}
-		} catch (ParameterException | IOException e) {
-			System.err.println(e.getMessage());
-		}
-		return getConfiguration();
 	}
 
 	@Override
@@ -170,6 +143,31 @@ public class JSidPlay2Main extends Application {
 	//
 	// Helper methods
 	//
+	
+	/**
+	 * Parse optional command line arguments.
+	 * 
+	 * @return configuration database chosen by command line arguments
+	 */
+	private Configuration getConfigurationFromCommandLineArgs() {
+		try {
+			Parameters parameters = getParameters();
+			if (parameters != null) {
+				JCommander commander = new JCommander(this, parameters.getRaw().toArray(new String[0]));
+				commander.setProgramName(getClass().getName());
+				commander.setCaseSensitiveOptions(true);
+				if (help) {
+					commander.usage();
+					System.out.println("Press <enter> to exit!");
+					System.in.read();
+					System.exit(0);
+				}
+			}
+		} catch (ParameterException | IOException e) {
+			System.err.println(e.getMessage());
+		}
+		return getConfiguration();
+	}
 
 	/**
 	 * Get the players configuration, create a new one, if absent.
