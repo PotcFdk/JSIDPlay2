@@ -143,7 +143,7 @@ final public class ConsolePlayer {
 				printSoundcardDevices();
 				exit(1);
 			}
-			if (isRecording()) {
+			if (loop && isRecording()) {
 				System.out.println("Warning: Loop has been disabled while recording audio files!");
 				loop = false;
 			}
