@@ -23,7 +23,7 @@ import kickassu.errors.AsmError;
 import kickassu.exceptions.AsmErrorException;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.WebUtils;
+import libsidutils.DesktopIntegration;
 import libsidutils.assembler.KickAssembler;
 import sidplay.Player;
 import ui.common.C64Window;
@@ -98,7 +98,7 @@ public class Asm extends Tab implements UIPart {
 
 	@FXML
 	private void gotoHomepage() {
-		WebUtils.browse(HOMEPAGE_URL);
+		DesktopIntegration.browse(HOMEPAGE_URL);
 	}
 
 	@FXML

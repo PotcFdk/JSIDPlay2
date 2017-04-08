@@ -8,7 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
-import libsidutils.WebUtils;
+import libsidutils.DesktopIntegration;
 import sidplay.Player;
 import ui.JSidPlay2Main;
 import ui.common.C64Window;
@@ -52,7 +52,7 @@ public class Update extends C64Window {
 
 	@FXML
 	private void gotoLatestVersion() {
-		WebUtils.browse("http://sourceforge.net/projects/jsidplay2/files/latest/download");
+		DesktopIntegration.browse("http://sourceforge.net/projects/jsidplay2/files/latest/download");
 	}
 
 	@FXML

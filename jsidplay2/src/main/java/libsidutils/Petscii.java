@@ -62,10 +62,10 @@ public class Petscii {
 			0x2d, 0x2d, 0x7c, 0x7c, 0x7c, 0x7c, 0x2d, 0x2d, 0x2d, 0x2f, 0x5c, 0x5c, 0x2f, 0x2f, 0x23 };
 
 	/**
-	 * Convert PETSCII to ISO8859_1 characters.
+	 * Convert ISO-8859-1 to PETSCII characters.
 	 * 
 	 * @param c
-	 *            ISO8859_1 character
+	 *            ISO-8859-1 character
 	 * @return PETSCII byte
 	 */
 	public static byte iso88591ToPetscii(char c) {
@@ -73,11 +73,11 @@ public class Petscii {
 	}
 
 	/**
-	 * Convert PETSCII to ISO8859_1 characters.
+	 * Convert PETSCII to ISO-8859-1 characters.
 	 * 
 	 * @param c
 	 *            PETSCII byte
-	 * @return ISO8859_1 character (unmapped characters are converted to space)
+	 * @return ISO-8859-1 character (unmapped characters are converted to space)
 	 */
 	public static char petsciiToIso88591(byte c) {
 		byte b = (byte) PETSCII_TO_ISO8859_1[c & 0xff];
@@ -85,12 +85,12 @@ public class Petscii {
 	}
 
 	/**
-	 * Converts PETSCII to ISO8859_1 characters.
+	 * Converts PETSCII to ISO-8859-1 characters.
 	 * 
 	 * @param petscii
 	 *            PETSCII bytes.
 	 * 
-	 * @return ISO8859_1 characters.
+	 * @return ISO-8859-1 characters.
 	 */
 	public static final String petsciiToIso88591(final byte[] petscii) {
 		StringBuilder result = new StringBuilder();

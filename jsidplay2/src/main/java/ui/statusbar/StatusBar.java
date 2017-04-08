@@ -21,7 +21,7 @@ import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.WebUtils;
+import libsidutils.DesktopIntegration;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 import sidplay.Player;
 import sidplay.player.State;
@@ -111,7 +111,7 @@ public class StatusBar extends AnchorPane implements UIPart {
 		this.statusTooltip = new Tooltip();
 		this.status.setOnMouseClicked(e -> {
 			if (status.getUserData() != null)
-				WebUtils.browse(status.getUserData().toString());
+				DesktopIntegration.browse(status.getUserData().toString());
 		});
 		util.getPlayer().stateProperty().addListener(new StateChangeListener());
 

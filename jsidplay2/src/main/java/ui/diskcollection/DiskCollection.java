@@ -1,6 +1,5 @@
 package ui.diskcollection;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -31,6 +30,7 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import libsidutils.DesktopIntegration;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.Convenience;
@@ -264,15 +264,7 @@ public class DiskCollection extends Tab implements UIPart {
 
 	protected void attachAndRunDemo(File file, final File autoStartFile) {
 		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".pdf")) {
-			if (Desktop.isDesktopSupported()) {
-				try {
-					Desktop.getDesktop().open(file);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else {
-				System.err.println("Awt Desktop is not supported!");
-			}
+			DesktopIntegration.open(util.getConfig(), file);
 		} else {
 			try {
 				File extractedFile = extract(file);

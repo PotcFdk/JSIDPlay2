@@ -28,7 +28,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
-import libsidutils.WebUtils;
+import libsidutils.DesktopIntegration;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -234,7 +234,7 @@ public class GameBase extends Tab implements UIPart {
 
 	@FXML
 	private void gotoURL() {
-		WebUtils.browse(GB64_URL);
+		DesktopIntegration.browse(GB64_URL);
 	}
 
 	private void setRoot(File file) {

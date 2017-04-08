@@ -60,7 +60,7 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
-import libsidutils.WebUtils;
+import libsidutils.DesktopIntegration;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
@@ -466,7 +466,7 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void gotoURL() {
-		WebUtils.browse(collectionURL);
+		DesktopIntegration.browse(collectionURL);
 	}
 
 	@FXML
