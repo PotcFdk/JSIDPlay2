@@ -117,8 +117,6 @@
 			</fx:resources>
 			<fileset dir="target/classes" />
 			<fx:platform javafx="2.2+" j2se="1.8+">
-				<fx:jvmarg value="-Xms256m" />
-				<fx:jvmarg value="-Xmx768m" />
 			</fx:platform>
 		</fx:jar>
 		<!-- Unsign already signed jar -->
@@ -157,8 +155,8 @@
 			</fx:info>
 			<fx:permissions elevated="true" cachecertificates="true" />
 			<fx:platform javafx="2.2+" j2se="1.8+">
-				<fx:jvmarg value="-Xms256m" />
-				<fx:jvmarg value="-Xmx768m" />
+				<fx:jvmarg value="-Xms${javafx.initialHeapSize}m" />
+				<fx:jvmarg value="-Xmx${javafx.maxHeapSize}m" />
 			</fx:platform>
 			<fx:preferences shortcut="true" install="true" menu="true" />
 		</fx:deploy>

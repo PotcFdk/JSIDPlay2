@@ -24,6 +24,8 @@
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
+		<javafx.initialHeapSize>256</javafx.initialHeapSize>
+		<javafx.maxHeapSize>1024</javafx.maxHeapSize>
 		<!-- Optional: FTP upload coordinates -->
 		<serverId></serverId>
 		<serverUrl>ftp://JohnDoe:secret@rainbow.org</serverUrl>
@@ -541,6 +543,8 @@
 									<property name="project.url" value="${project.url}" />
 									<property name="codebase" value="${codebase}online/webstart" />
 									<property name="javafx.main.class" value="${javafx.main.class}" />
+									<property name="javafx.initialHeapSize" value="${javafx.initialHeapSize}" />
+									<property name="javafx.maxHeapSize" value="${javafx.maxHeapSize}" />
 									<property name="javafx.run.width" value="${javafx.run.width}" />
 									<property name="javafx.run.height" value="${javafx.run.height}" />
 									<property name="ant-contrib-jar"
@@ -586,8 +590,8 @@
 							</classPath>
 							<jre>
 								<minVersion>1.8.0</minVersion>
-								<initialHeapSize>256</initialHeapSize>
-								<maxHeapSize>768</maxHeapSize>
+								<initialHeapSize>${javafx.initialHeapSize}</initialHeapSize>
+								<maxHeapSize>${javafx.maxHeapSize}</maxHeapSize>
 							</jre>
 							<splash>
 								<file>src/main/launch4j/jsidplay2.bmp</file>
