@@ -234,6 +234,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
 		}));
 		screenUpdateService.cancel();
+		timer.stop();
 	}
 
 	@FXML
