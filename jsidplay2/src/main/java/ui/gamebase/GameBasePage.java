@@ -30,9 +30,6 @@ import ui.entities.gamebase.Games;
 
 public class GameBasePage extends Tab implements UIPart {
 
-	private static final String GB64_SCREENSHOT_DOWNLOAD_URL = "http://www.gb64.com/Screenshots/";
-	private static final String GB64_GAMES_DOWNLOAD_URL = "http://haendel.ddns.net/~ken/games/";
-	
 	@FXML
 	private TableView<Games> gamebaseTable;
 
@@ -76,8 +73,8 @@ public class GameBasePage extends Tab implements UIPart {
 					System.out.println("Screenshot is not available on GameBase64: " + newValue.getName());
 				} else {
 					try {
-						URL url = new URL(
-								GB64_SCREENSHOT_DOWNLOAD_URL + newValue.getScreenshotFilename().replace('\\', '/'));
+						URL url = new URL(util.getConfig().getOnlineSection().getGb64ScreenshotUrl()
+								+ newValue.getScreenshotFilename().replace('\\', '/'));
 						if (screenshot == null) {
 							screenshot = (ImageView) gamebaseTable.getScene().lookup("#screenshot");
 						}
@@ -122,7 +119,8 @@ public class GameBasePage extends Tab implements UIPart {
 					DoubleProperty progressProperty = util.progressProperty(gamebaseTable);
 					progressProperty.setValue(step / 100.f);
 				}
-			}, new URL(GB64_GAMES_DOWNLOAD_URL + game.getFilename().replace('\\', '/')), false).start();
+			}, new URL(util.getConfig().getOnlineSection().getGb64GamesUrl() + game.getFilename().replace('\\', '/')),
+					false).start();
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

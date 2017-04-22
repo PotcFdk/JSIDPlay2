@@ -130,6 +130,36 @@ public class OnlineSection {
 		soasc8580R5 = soasc8580r5;
 	}
 
+	private String gb64MusicUrl = DEPLOYMENT_URL+"music/";
+
+	public String getGb64MusicUrl() {
+		return gb64MusicUrl;
+	}
+	
+	public void setGb64MusicUrl(String gb64MusicUrl) {
+		this.gb64MusicUrl = gb64MusicUrl;
+	}
+	
+	private String gb64ScreenshotUrl = DEPLOYMENT_URL+"screenshots/";
+
+	public String getGb64ScreenshotUrl() {
+		return gb64ScreenshotUrl;
+	}
+	
+	public void setGb64ScreenshotUrl(String gb64ScreenshotUrl) {
+		this.gb64ScreenshotUrl = gb64ScreenshotUrl;
+	}
+	
+	private String gb64GamesUrl = DEPLOYMENT_URL+"games/";
+
+	public String getGb64GamesUrl() {
+		return gb64GamesUrl;
+	}
+	
+	public void setGb64GamesUrl(String gb64GamesUrl) {
+		this.gb64GamesUrl = gb64GamesUrl;
+	}
+	
 	private double zoom = DEF_ZOOM;
 
 	public double getZoom() {

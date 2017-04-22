@@ -85,8 +85,6 @@ public class GameBase extends Tab implements UIPart {
 
 	private static final String GB64_URL = "http://www.gb64.com";
 
-	private static final String GB64_MUSIC_DOWNLOAD_URL = "http://www.se2a1.net/soasc/SID/";
-
 	@FXML
 	protected CheckBox enableGameBase;
 	@FXML
@@ -197,7 +195,8 @@ public class GameBase extends Tab implements UIPart {
 	@FXML
 	private void downloadMusic() {
 		try {
-			URL url = new URL(GB64_MUSIC_DOWNLOAD_URL + linkMusic.getText().replace('\\', '/'));
+			URL url = new URL(
+					util.getConfig().getOnlineSection().getGb64MusicUrl() + linkMusic.getText().replace('\\', '/'));
 			try (InputStream is = url.openStream()) {
 				util.getPlayer().play(SidTune.load(linkMusic.getText(), is));
 				util.setPlayingTab(this);
