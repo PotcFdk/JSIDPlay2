@@ -23,8 +23,6 @@ public class ConsoleIO {
 
 	private String filename;
 
-	private boolean v1mute, v2mute, v3mute, v4mute, v5mute, v6mute, v7mute, v8mute, v9mute, v10mute, v11mute, v12mute;
-
 	public ConsoleIO(IniConfig config, String filename) {
 		this.config = config;
 		this.filename = filename;
@@ -264,66 +262,90 @@ public class ConsoleIO {
 				player.pauseContinue();
 				break;
 
-			case '1':
-				v1mute = !v1mute;
-				player.configureSID(0, sid -> sid.setVoiceMute(0, v1mute));
+			case '1': {
+				boolean isMuteVoice = emulation.isMuteVoice1() ^ true;
+				emulation.setMuteVoice1(isMuteVoice);
+				player.configureSID(0, sid -> sid.setVoiceMute(0, isMuteVoice));
 				break;
+			}
 
-			case '2':
-				v2mute = !v2mute;
-				player.configureSID(0, sid -> sid.setVoiceMute(1, v2mute));
+			case '2': {
+				boolean isMuteVoice = emulation.isMuteVoice2() ^ true;
+				emulation.setMuteVoice2(isMuteVoice);
+				player.configureSID(0, sid -> sid.setVoiceMute(1, isMuteVoice));
 				break;
+			}
 
-			case '3':
-				v3mute = !v3mute;
-				player.configureSID(0, sid -> sid.setVoiceMute(2, v3mute));
+			case '3': {
+				boolean isMuteVoice = emulation.isMuteVoice3() ^ true;
+				emulation.setMuteVoice3(isMuteVoice);
+				player.configureSID(0, sid -> sid.setVoiceMute(2, isMuteVoice));
 				break;
+			}
 
-			case '4':
-				v4mute = !v4mute;
-				player.configureSID(0, sid -> sid.setVoiceMute(3, v4mute));
+			case '4': {
+				boolean isMuteVoice = emulation.isMuteVoice4() ^ true;
+				emulation.setMuteVoice4(isMuteVoice);
+				player.configureSID(0, sid -> sid.setVoiceMute(3, isMuteVoice));
 				break;
+			}
 
-			case '5':
-				v5mute = !v5mute;
-				player.configureSID(1, sid -> sid.setVoiceMute(0, v5mute));
+			case '5': {
+				boolean isMuteVoice = emulation.isMuteStereoVoice1() ^ true;
+				emulation.setMuteStereoVoice1(isMuteVoice);
+				player.configureSID(1, sid -> sid.setVoiceMute(0, isMuteVoice));
 				break;
+			}
 
-			case '6':
-				v6mute = !v6mute;
-				player.configureSID(1, sid -> sid.setVoiceMute(1, v6mute));
+			case '6': {
+				boolean isMuteVoice = emulation.isMuteStereoVoice2() ^ true;
+				emulation.setMuteStereoVoice2(isMuteVoice);
+				player.configureSID(1, sid -> sid.setVoiceMute(1, isMuteVoice));
 				break;
+			}
 
-			case '7':
-				v7mute = !v7mute;
-				player.configureSID(1, sid -> sid.setVoiceMute(2, v7mute));
+			case '7': {
+				boolean isMuteVoice = emulation.isMuteStereoVoice3() ^ true;
+				emulation.setMuteStereoVoice3(isMuteVoice);
+				player.configureSID(1, sid -> sid.setVoiceMute(2, isMuteVoice));
 				break;
+			}
 
-			case '8':
-				v8mute = !v8mute;
-				player.configureSID(1, sid -> sid.setVoiceMute(3, v8mute));
+			case '8': {
+				boolean isMuteVoice = emulation.isMuteStereoVoice4() ^ true;
+				emulation.setMuteStereoVoice4(isMuteVoice);
+				player.configureSID(1, sid -> sid.setVoiceMute(3, isMuteVoice));
 				break;
+			}
 
-			case '9':
-				v9mute = !v9mute;
-				player.configureSID(2, sid -> sid.setVoiceMute(0, v9mute));
+			case '9': {
+				boolean isMuteVoice = emulation.isMuteThirdSIDVoice1() ^ true;
+				emulation.setMuteThirdSIDVoice1(isMuteVoice);
+				player.configureSID(2, sid -> sid.setVoiceMute(0, isMuteVoice));
 				break;
+			}
 
-			case 'a':
-				v10mute = !v10mute;
-				player.configureSID(2, sid -> sid.setVoiceMute(1, v10mute));
+			case 'a': {
+				boolean isMuteVoice = emulation.isMuteThirdSIDVoice2() ^ true;
+				emulation.setMuteThirdSIDVoice2(isMuteVoice);
+				player.configureSID(2, sid -> sid.setVoiceMute(1, isMuteVoice));
 				break;
+			}
 
-			case 'b':
-				v11mute = !v11mute;
-				player.configureSID(2, sid -> sid.setVoiceMute(2, v11mute));
+			case 'b': {
+				boolean isMuteVoice = emulation.isMuteThirdSIDVoice3() ^ true;
+				emulation.setMuteThirdSIDVoice3(isMuteVoice);
+				player.configureSID(2, sid -> sid.setVoiceMute(2, isMuteVoice));
 				break;
-
-			case 'c':
-				v12mute = !v12mute;
-				player.configureSID(2, sid -> sid.setVoiceMute(3, v12mute));
+			}
+			
+			case 'c': {
+				boolean isMuteVoice = emulation.isMuteThirdSIDVoice4() ^ true;
+				emulation.setMuteThirdSIDVoice4(isMuteVoice);
+				player.configureSID(2, sid -> sid.setVoiceMute(3, isMuteVoice));
 				break;
-
+			}
+			
 			case 'f': {
 				boolean filterEnable = emulation.isFilter() ^ true;
 				emulation.setFilter(filterEnable);
