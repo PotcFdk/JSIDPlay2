@@ -208,7 +208,7 @@ final public class ConsolePlayer {
 			try (FileInputStream input = new FileInputStream(file)) {
 				player.setSidDatabase(new SidDatabase(input));
 			} catch (IOException e) {
-				// silently ignored!
+				System.err.println("WARNING: song length database can not be read: " + e.getMessage());
 			}
 		}
 	}
