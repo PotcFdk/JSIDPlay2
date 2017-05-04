@@ -264,7 +264,17 @@ public class DiskCollection extends Tab implements UIPart {
 
 	protected void attachAndRunDemo(File file, final File autoStartFile) {
 		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".pdf")) {
-			DesktopIntegration.open(util.getConfig(), file);
+			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
+			File dst = new File(tmpDir, file.getName());
+			if (!dst.exists()) {
+				try {
+					TFile.cp(file, dst);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			dst.deleteOnExit();
+			DesktopIntegration.open(dst);
 		} else {
 			try {
 				File extractedFile = extract(file);

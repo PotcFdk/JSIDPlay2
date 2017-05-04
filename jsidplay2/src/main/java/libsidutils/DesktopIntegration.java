@@ -7,9 +7,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.Consumer;
 
-import de.schlichtherle.truezip.file.TFile;
-import libsidplay.config.IConfig;
-
 public class DesktopIntegration {
 
 	/**
@@ -38,18 +35,7 @@ public class DesktopIntegration {
 	 * @param link
 	 *            file to open
 	 */
-	public static void open(IConfig config, File file) {
-		String tmpDir = config.getSidplay2Section().getTmpDir();
-		File dst = new File(tmpDir, file.getName());
-		if (!dst.exists()) {
-			try {
-				TFile.cp(file, dst);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		dst.deleteOnExit();
-
+	public static void open(File dst) {
 		openInSeparateThread(dst, desktop -> {
 			try {
 				if (desktop.isSupported(Desktop.Action.OPEN)) {
