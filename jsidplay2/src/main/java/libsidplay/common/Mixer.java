@@ -78,7 +78,7 @@ public interface Mixer {
 	boolean isFastForward();
 
 	/**
-	 * @return bit mask of current speed factor (1 << 1x, 2x, ... , 32x) - 1
+	 * @return bit mask of current speed factor (1 << 0 = 1x, 1 << 1 = 2x, ... , 1 << 5 = 32x) - 1
 	 */
 	int getFastForwardBitMask();
 
