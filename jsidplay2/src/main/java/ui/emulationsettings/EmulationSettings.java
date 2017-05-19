@@ -1,5 +1,12 @@
 package ui.emulationsettings;
 
+import static libsidplay.common.ChipModel.MOS6581;
+import static libsidplay.common.ChipModel.MOS8580;
+import static libsidplay.common.Emulation.RESID;
+import static libsidplay.common.Emulation.RESIDFP;
+import static libsidplay.common.Engine.HARDSID;
+import static libsidplay.common.Engine.NETSID;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -193,12 +200,12 @@ public class EmulationSettings extends C64Window {
 		sid3Model.valueProperty().bindBidirectional(emulationSection.thirdSIDModelProperty());
 		sid3Model.setItems(sid3Models);
 
-		defaultModels = FXCollections.<ChipModel>observableArrayList(ChipModel.MOS6581, ChipModel.MOS8580);
+		defaultModels = FXCollections.<ChipModel>observableArrayList(MOS6581, MOS8580);
 		defaultModel.setConverter(new EnumToString<ChipModel>(bundle));
 		defaultModel.valueProperty().bindBidirectional(emulationSection.defaultSidModelProperty());
 		defaultModel.setItems(defaultModels);
 
-		defaultEmulations = FXCollections.<Emulation>observableArrayList(Emulation.RESID, Emulation.RESIDFP);
+		defaultEmulations = FXCollections.<Emulation>observableArrayList(RESID, RESIDFP);
 		defaultEmulation.setConverter(new EnumToString<Emulation>(bundle));
 		defaultEmulation.valueProperty().bindBidirectional(emulationSection.defaultEmulationProperty());
 		defaultEmulation.setItems(defaultEmulations);
@@ -257,7 +264,7 @@ public class EmulationSettings extends C64Window {
 		// forced 3-SID, only:
 		thirdAddress.setDisable(!isForced3Sid);
 		// fake stereo does not work for HardSID4U
-		fakeStereo.setDisable(emulationSection.getEngine() == Engine.HARDSID);
+		fakeStereo.setDisable(emulationSection.getEngine() == HARDSID);
 	}
 
 	@Override
@@ -491,23 +498,26 @@ public class EmulationSettings extends C64Window {
 		boolean filterEnable = emulationSection.isFilterEnable(num);
 
 		filters.clear();
-		if (engine == Engine.NETSID) {
+		if (engine == NETSID) {
 			filters.addAll(TrySetSidModel.getFilterNames(model));
 		} else {
 			filters.add("");
 			for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
-				if (emulation.equals(Emulation.RESIDFP)) {
-					if (filterSection.isReSIDfpFilter6581() && model == ChipModel.MOS6581) {
-						filters.add(filterSection.getName());
-					} else if (filterSection.isReSIDfpFilter8580() && model == ChipModel.MOS8580) {
-						filters.add(filterSection.getName());
-					}
-				} else {
-					if (filterSection.isReSIDFilter6581() && model == ChipModel.MOS6581) {
-						filters.add(filterSection.getName());
-					} else if (filterSection.isReSIDFilter8580() && model == ChipModel.MOS8580) {
+				switch (model) {
+				case MOS6581:
+					if (emulation.equals(RESIDFP) && filterSection.isReSIDfpFilter6581()
+							|| emulation.equals(RESID) && filterSection.isReSIDFilter6581()) {
 						filters.add(filterSection.getName());
 					}
+					break;
+				case MOS8580:
+					if (emulation.equals(RESIDFP) && filterSection.isReSIDfpFilter8580()
+							|| emulation.equals(RESID) && filterSection.isReSIDFilter8580()) {
+						filters.add(filterSection.getName());
+					}
+					break;
+				default:
+					break;
 				}
 			}
 		}
