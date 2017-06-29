@@ -112,6 +112,27 @@ Ben_Daglish
   COMMENT: A few editors are written for this player, see reference
 REFERENCE: http://csdb.dk/release/?id=97497
 
+(FCS_V1.0)
+     NAME: We-Music Editor V1.0
+   AUTHOR: Juha Granberg
+ RELEASED: 1987 Finland Cracking Service/Finnish Gold
+REFERENCE: http://csdb.dk/release/?id=97497
+  COMMENT: Derived from Ben Daglish Player
+
+(FCS_V1.1)
+     NAME: We-Music Editor V1.1
+   AUTHOR: Juha Granberg
+ RELEASED: 1988 Finland Cracking Service/Finnish Gold
+REFERENCE: http://csdb.dk/release/?id=97498
+  COMMENT: Derived from Ben Daglish Player
+
+
+Blackbird/LFT
+     NAME: Blackbird 1.0
+   AUTHOR: Linus Åkesson (lft)
+ RELEASED: 2017 lft
+REFERENCE: http://csdb.dk/release/?id=153555
+
 C64_Speech_System
      NAME: C64 Speech System
    AUTHOR: Kristian Köhntopp
@@ -144,6 +165,10 @@ REFERENCE: http://csdb.dk/release/?id=106959
    AUTHOR: Timo Taipalus (Abaddon)
  RELEASED: 2013
 REFERENCE: http://csdb.dk/release/?id=118865
+
+Chris_Grigg
+     NAME: Sound Programming Language (SPL)
+   AUTHOR: Chris Grigg
 
 Chris_Murray
    AUTHOR: Chris Murray
@@ -205,10 +230,7 @@ Cycleburner_Digi
    AUTHOR: Even Scharning (Cycleburner)
 
 Dane
-     NAME: JCH-editor 3.1 + NP22-25
    AUTHOR: Stellan Andersson (Dane)
- RELEASED: 2011
-REFERENCE: http://csdb.dk/release/?id=100406
 
 DefleMask_v1
    AUTHOR: Delek
@@ -586,6 +608,12 @@ JCH_OldPlayer
 JCH_Protracker
    AUTHOR: Jens-Christian Huus (JCH)
 
+(Dane_NewPlayer)
+     NAME: JCH-editor 3.1 + NP22-25
+   AUTHOR: Stellan Andersson (Dane)
+ RELEASED: 2011
+REFERENCE: http://csdb.dk/release/?id=100406
+
 JITT_1.x
    AUTHOR: Stefano Tognon (Ice00)
  RELEASED: 2008 Ice Team
@@ -656,6 +684,11 @@ KB/SDS
 
 KB/TOM
    AUTHOR: Tammo Hinrichs (kb) of The Obsessed Maniacs (TOM)
+
+Kemeny_Dio
+     NAME: Kemeny Dio Editor V1.0
+   AUTHOR: Sentinel
+REFERENCE: http://csdb.dk/release/?id=156925
 
 Kenneth_Arnold
    AUTHOR: Kenneth W. Arnold
@@ -941,6 +974,11 @@ MusicShop
  RELEASED: 1984 Brøderbund Software
 REFERENCE: http://csdb.dk/release/?id=82453
 
+Muso
+   AUTHOR: Tony Reihana
+ RELEASED: 1985
+REFERENCE: http://csdb.dk/release/?id=156826
+
 NinjaTracker_V1.x
    AUTHOR: Lasse Öörni (Cadaver)
  RELEASED: 2002 Covert Bitops
@@ -1099,7 +1137,7 @@ Robert_Westgate_v2
 
 RoMuzak_V6.x
    AUTHOR: Oliver Blasnik (ROM)
- RELEASED: 1989
+ RELEASED: 1989 Digital Marketing
 REFERENCE: http://csdb.dk/release/?id=17814
 
 RoMuzak_V7.x
@@ -1132,6 +1170,17 @@ REFERENCE: http://csdb.dk/release/?id=28685
 Sanyo_Digi
    AUTHOR: Stephane Martel (Sanyo)
 
+Sentinel_Composer_V1.0
+     NAME: Sentinel Composer V1.0
+   AUTHOR: Sentinel
+ RELEASED: 1994 Cherubs
+REFERENCE: http://csdb.dk/release/?id=156924
+
+Sequencer
+   AUTHOR: Thomas Krätzig
+ RELEASED: 1985
+REFERENCE: http://csdb.dk/release/?id=129802
+
 SidFactory/Laxity
    AUTHOR: Thomas Egeskov Petersen (Laxity)
  RELEASED: 2006
@@ -1147,6 +1196,7 @@ REFERENCE: http://csdb.dk/release/?id=33248
 
 SidTracker64
    AUTHOR: Daniel Larsson (Pernod)
+ RELEASED: 2015
 REFERENCE: http://www.sidtracker64.com
 
 SidWinder
@@ -1295,7 +1345,7 @@ REFERENCE: http://csdb.dk/release/?id=122393
 (DigiMonitor)
      NAME: DigiMonitor
    AUTHOR: Pex Tufvesson (Mahoney)
-  COMMENT: also known as JamMaster III by Banana
+  COMMENT: Uses the same digi routine as JamMaster II and JamMaster III by Banana
  RELEASED: 1987 Defiers
 REFERENCE: http://csdb.dk/release/?id=34224
 
