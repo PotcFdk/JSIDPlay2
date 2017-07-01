@@ -136,7 +136,6 @@ final public class ConsolePlayer {
 		try {
 			JCommander commander = new JCommander(this, args);
 			commander.setProgramName(getClass().getName());
-			commander.setCaseSensitiveOptions(true);
 			Optional<String> filename = filenames.stream().findFirst();
 			if (help || !filename.isPresent()) {
 				commander.usage();
