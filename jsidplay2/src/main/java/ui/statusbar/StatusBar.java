@@ -159,6 +159,7 @@ public class StatusBar extends AnchorPane implements UIPart {
 		line.append(determineVideoNorm());
 		line.append(determineEmulation());
 		line.append(determineChipModel());
+		line.append(detectPSID64ChipModel());
 		line.append(playerId);
 		double tuneSpeed = util.getPlayer().getC64().determineTuneSpeed();
 		if (tuneSpeed > 0) {
@@ -175,8 +176,6 @@ public class StatusBar extends AnchorPane implements UIPart {
 		line.append(String.format("%s: %s%s", util.getBundle().getString("TIME"), determinePlayTime(),
 				determineSongLength()));
 		
-		line.append(detectPSID64ChipModel());
-
 		status.setText(line.toString());
 		status.setTooltip(playerinfos.length() > 0 ? statusTooltip : null);
 		statusTooltip.setText(playerinfos.toString());
@@ -191,7 +190,7 @@ public class StatusBar extends AnchorPane implements UIPart {
 				if (emulationSection.getDefaultSidModel() != psid64ChipModel) {
 					emulationSection.setDefaultSidModel(psid64ChipModel);
 				}
-				return ", PSID64";
+				return "PSID64, ";
 			}
 		}
 		return "";

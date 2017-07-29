@@ -45,8 +45,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void initialize() {
-		getStage().setTitle(util.getBundle().getString("TITLE")
-				+ String.format(", %s: %s", util.getBundle().getString("RELEASE"), DATE));
+		getStage().setTitle(util.getBundle().getString("TITLE") + String.format(", %s: %s %s",
+				util.getBundle().getString("RELEASE"), DATE, util.getBundle().getString("AUTHOR")));
 
 		util.getPlayer().setRecordingFilenameProvider(this);
 		util.getPlayer().setExtendImagePolicy(this);
