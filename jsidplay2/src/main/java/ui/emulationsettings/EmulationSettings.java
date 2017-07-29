@@ -80,6 +80,8 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private CheckBox fakeStereo;
 	@FXML
+	private CheckBox detectPSID64ChipModel;
+	@FXML
 	private Slider mainVolume, secondVolume, thirdVolume, mainBalance, secondBalance, thirdBalance;
 	@FXML
 	Label mainVolumeValue, secondVolumeValue, thirdVolumeValue;
@@ -212,6 +214,7 @@ public class EmulationSettings extends C64Window {
 
 		boosted8580.selectedProperty().bindBidirectional(emulationSection.digiBoosted8580Property());
 		fakeStereo.selectedProperty().bindBidirectional(emulationSection.fakeStereoProperty());
+		detectPSID64ChipModel.selectedProperty().bindBidirectional(emulationSection.detectPSID64ChipModelProperty());
 
 		emulationChange = new EmulationChange();
 		util.getPlayer().stateProperty().addListener(emulationChange);
@@ -346,7 +349,7 @@ public class EmulationSettings extends C64Window {
 		setMainFilter();
 		setSecondFilter();
 	}
-
+	
 	@FXML
 	private void setStereoMode() {
 		StereoMode mode = stereoMode.getSelectionModel().getSelectedItem();

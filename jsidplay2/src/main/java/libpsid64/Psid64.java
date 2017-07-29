@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import sidplay.Player;
+import libsidplay.common.ChipModel;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
@@ -22,6 +22,7 @@ import libsidutils.cruncher.PUCrunch;
 import libsidutils.stil.STIL.Info;
 import libsidutils.stil.STIL.STILEntry;
 import libsidutils.stil.STIL.TuneEntry;
+import sidplay.Player;
 
 //   psid64 - create a C64 executable from a PSID file
 //   Copyright (C) 2001-2003  Roland Hermans <rolandh@users.sourceforge.net>
@@ -554,6 +555,31 @@ public class Psid64 {
 		puCrunch.setVerbose(verbose);
 		puCrunch.crunch(tmpFile.getAbsolutePath(),
 				new File(target, PathUtils.getFilenameWithoutSuffix(file.getName()) + ".prg").getAbsolutePath());
+	}
+
+	public static ChipModel detectChipModel(byte[] ram, int vicMemBase) {
+		if (checkScreenMessage(ram, vicMemBase, "PSID64", 2, 6)) {
+			for (int column = 1; column < 40; column++) {
+				if (checkScreenMessage(ram, vicMemBase, "8580", 12, column)) {
+					return ChipModel.MOS8580;
+				}
+				if (checkScreenMessage(ram, vicMemBase, "6581", 12, column)) {
+					return ChipModel.MOS6581;
+				}
+			}
+		}
+		return null;
+	}
+
+	protected static boolean checkScreenMessage(byte[] ram, int vicMemBase, String expected, int row, int column) {
+		final int offset = ((row - 1) * 40) + (column - 1);
+		for (int i = 0; i < expected.length(); i++) {
+			final byte screenCode = Petscii.iso88591ToPetscii(expected.charAt(i));
+			if (ram[vicMemBase + 0x0400 + offset + i] != screenCode) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

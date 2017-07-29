@@ -616,6 +616,10 @@ public final class PLA {
 		vicMemBase = base;
 	}
 
+	public int getVicMemBase() {
+		return vicMemBase;
+	}
+	
 	/**
 	 * Access memory as seen by VIC. The address should only contain the bottom
 	 * 14 bits.

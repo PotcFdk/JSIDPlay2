@@ -76,6 +76,8 @@ import libsidplay.config.IEmulationSection;
 @Embeddable
 public class EmulationSection implements IEmulationSection {
 
+	public static final boolean DEFAULT_DETECT_PSID64_CHIP_MODEL = true;
+	
 	private ObjectProperty<Engine> engine = new SimpleObjectProperty<Engine>(DEFAULT_ENGINE);
 
 	public ObjectProperty<Engine> engineProperty() {
@@ -212,6 +214,20 @@ public class EmulationSection implements IEmulationSection {
 		this.defaultSidModel.set(defaultSidModel);
 	}
 
+	private BooleanProperty detectPSID64ChipModel = new SimpleBooleanProperty(DEFAULT_DETECT_PSID64_CHIP_MODEL);
+
+	public boolean isDetectPSID64ChipModel() {
+		return detectPSID64ChipModel.get();
+	}
+
+	public void setDetectPSID64ChipModel(boolean detectPSID64ChipModel) {
+		this.detectPSID64ChipModel.set(detectPSID64ChipModel);
+	}
+
+	public BooleanProperty detectPSID64ChipModelProperty() {
+		return detectPSID64ChipModel;
+	}
+	
 	private ObjectProperty<ChipModel> userSidModel = new SimpleObjectProperty<ChipModel>(DEFAULT_USER_MODEL);
 
 	public ObjectProperty<ChipModel> userSidModelProperty() {

@@ -14,11 +14,13 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.AudioClip;
 import javafx.util.Duration;
+import libpsid64.Psid64;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DesktopIntegration;
@@ -172,9 +174,27 @@ public class StatusBar extends AnchorPane implements UIPart {
 		}
 		line.append(String.format("%s: %s%s", util.getBundle().getString("TIME"), determinePlayTime(),
 				determineSongLength()));
+		
+		line.append(detectPSID64ChipModel());
+
 		status.setText(line.toString());
 		status.setTooltip(playerinfos.length() > 0 ? statusTooltip : null);
 		statusTooltip.setText(playerinfos.toString());
+	}
+
+	private String detectPSID64ChipModel() {
+		if (util.getConfig().getEmulationSection().isDetectPSID64ChipModel()) {
+			ChipModel psid64ChipModel = Psid64.detectChipModel(util.getPlayer().getC64().getRAM(),
+					util.getPlayer().getC64().getVicMemBase());
+			if (psid64ChipModel != null) {
+				IEmulationSection emulationSection = util.getConfig().getEmulationSection();
+				if (emulationSection.getDefaultSidModel() != psid64ChipModel) {
+					emulationSection.setDefaultSidModel(psid64ChipModel);
+				}
+				return ", PSID64";
+			}
+		}
+		return "";
 	}
 
 	private String determineChipModel() {

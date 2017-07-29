@@ -88,6 +88,7 @@
 						<ComboBox fx:id="defaultEmulation" onAction="#setDefaultEmulation" />
 						<Label text="%DEFAULT_SID" />
 						<ComboBox fx:id="defaultModel" onAction="#setDefaultModel" />
+						<CheckBox text="%DETECT_PSID64_CHIP_MODEL" fx:id="detectPSID64ChipModel" />
 						<CheckBox text="%DIGI_BOOST" fx:id="boosted8580"
 							onAction="#setDigiBoost" />
 						<CheckBox text="%FAKE_STEREO" fx:id="fakeStereo"

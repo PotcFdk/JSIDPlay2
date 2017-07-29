@@ -477,6 +477,10 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		return clock == CPUClock.NTSC ? ntscVic : palVic;
 	}
 
+	public int getVicMemBase() {
+		return pla.getVicMemBase();
+	}
+	
 	/**
 	 * Insert SID chips to be used.
 	 * 
