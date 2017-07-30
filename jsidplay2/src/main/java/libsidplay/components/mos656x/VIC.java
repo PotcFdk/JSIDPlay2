@@ -376,6 +376,10 @@ public abstract class VIC extends Bank {
 		colorData[displayCycle] = vicReadColorMemoryPHI2(vc);
 	}
 
+	public int getVideoMatrixBase() {
+		return videoMatrixBase;
+	}
+	
 	/*
 	 * This table can be used to quadruple every bit, for instance %1011 ->
 	 * %1111000011111111. Additionally, the inverse of input is stored on the

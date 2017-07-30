@@ -388,4 +388,8 @@ public abstract class SidTune {
 	public static long getInitDelay(SidTune tune) {
 		return tune != RESET ? tune.getInitDelay() : RESET_INIT_DELAY;
 	}
+
+	public boolean isSolelyPrg() {
+		return getClass().equals(Prg.class);
+	}
 }

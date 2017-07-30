@@ -7,10 +7,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -557,25 +559,91 @@ public class Psid64 {
 				new File(target, PathUtils.getFilenameWithoutSuffix(file.getName()) + ".prg").getAbsolutePath());
 	}
 
-	public static ChipModel detectChipModel(byte[] ram, int vicMemBase) {
-		if (checkScreenMessage(ram, vicMemBase, "PSID64", 2, 6)) {
-			for (int column = 1; column < 40; column++) {
-				if (checkScreenMessage(ram, vicMemBase, "8580", 12, column)) {
-					return ChipModel.MOS8580;
-				}
-				if (checkScreenMessage(ram, vicMemBase, "6581", 12, column)) {
-					return ChipModel.MOS6581;
+	public static class ChipModelAndStereoAddress {
+		public CPUClock cpuClock;
+		public ChipModel[] chipModels;
+		public int stereoAddress;
+	}
+	
+	public static ChipModelAndStereoAddress detectChipModel(byte[] ram, int videoScreenAddress) {
+		ChipModelAndStereoAddress chipModelAndBaseAddress = new ChipModelAndStereoAddress();
+		List<ChipModel> result = new ArrayList<>();
+		// Search for PSID64 on video screen
+		if (checkScreenMessage(ram, videoScreenAddress, "PSID64", 2, 6)) {
+			// PAL/NTSC on video screen
+			chipModelAndBaseAddress.cpuClock = CPUClock.PAL;
+			if (checkScreenMessage(ram, videoScreenAddress, "NTSC", 12, 10)) {
+				chipModelAndBaseAddress.cpuClock = CPUClock.NTSC;
+			}
+			// Search for MOS6581 or MOS8580 on video screen at expected mono SID location
+			ChipModel chipModel = detectChipModel6581or8580(ram, videoScreenAddress, 12, 15);
+			if (chipModel != null) {
+				result.add(chipModel);
+			}
+			// Search for MOS6581 or MOS8580 on video screen at expected stereo SID location
+			chipModel = detectChipModel6581or8580(ram, videoScreenAddress, 12, 24);
+			if (chipModel != null) {
+				result.add(chipModel);
+			}
+			// XXX 3SID currently unsupported
+			int stereoAddress = detectStereoAddress(ram, videoScreenAddress, 12, 35);
+			chipModelAndBaseAddress.stereoAddress = stereoAddress;
+		}
+		chipModelAndBaseAddress.chipModels = result.toArray(new ChipModel[0]);
+		return chipModelAndBaseAddress;
+	}
+
+	private static int detectStereoAddress(byte[] ram, int videoScreenAddress, int row, int searchColumn) {
+		for (int column = searchColumn; column <= searchColumn + 1; column++) {
+			if (checkScreenMessage(ram, videoScreenAddress, "$", row, column)) {
+				return getStereoAdress(ram, videoScreenAddress, row, column);
+			}
+		}
+		return 0;
+	}
+
+	private static int getStereoAdress(byte[] ram, int videoScreenAddress, int row, int column) {
+		int stereoAddress = (getDigit(ram, videoScreenAddress, row, column+1) << 12)
+				| (getDigit(ram, videoScreenAddress, row, column+2) << 8)
+				| (getDigit(ram, videoScreenAddress, row, column+3) << 4)
+				| (getDigit(ram, videoScreenAddress, row, column+4));
+		return stereoAddress;
+	}
+
+	private static int getDigit(byte[] ram, int videoScreenAddress, int row, int column) {
+		final int offset = ((row - 1) * 40) + (column - 1);
+		int ch = (ram[videoScreenAddress + offset]) & 0xff;
+		if (ch>=48) {
+			// digit
+			ch-=48;
+		} else {
+			// lower case letter
+			ch+=9;
+		}
+		return ch;
+	}
+
+	private static ChipModel detectChipModel6581or8580(byte[] ram, int videoScreenAddress, int row, int searchColumn) {
+		for (int column = searchColumn; column <= searchColumn + 1; column++) {
+			for (String chipModelAsString : Arrays.asList("MOS8580", "MOS6581")) {
+				if (checkScreenMessage(ram, videoScreenAddress, chipModelAsString, row, column)) {
+					if (chipModelAsString.equals("MOS8580")) {
+						return ChipModel.MOS8580;
+					} else {
+						return ChipModel.MOS6581;
+					}
 				}
 			}
 		}
 		return null;
 	}
 
-	protected static boolean checkScreenMessage(byte[] ram, int vicMemBase, String expected, int row, int column) {
+	protected static boolean checkScreenMessage(byte[] ram, int videoScreenAddress, String expected, int row,
+			int column) {
 		final int offset = ((row - 1) * 40) + (column - 1);
 		for (int i = 0; i < expected.length(); i++) {
 			final byte screenCode = Petscii.iso88591ToPetscii(expected.charAt(i));
-			if (ram[vicMemBase + 0x0400 + offset + i] != screenCode) {
+			if (ram[videoScreenAddress + offset + i] != screenCode) {
 				return false;
 			}
 		}
