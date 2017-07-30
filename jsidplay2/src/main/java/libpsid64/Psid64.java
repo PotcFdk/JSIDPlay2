@@ -584,6 +584,11 @@ public class Psid64 {
 			chipModel = detectChipModel6581or8580(ram, videoScreenAddress, 12, 24);
 			if (chipModel != null) {
 				result.add(chipModel);
+			} else {
+				chipModel = detectChipModel6581or8580(ram, videoScreenAddress, 12, 21);
+				if (chipModel != null) {
+					result.add(chipModel);
+				}
 			}
 			// XXX 3SID currently unsupported
 			int stereoAddress = detectStereoAddress(ram, videoScreenAddress, 12, 35);
@@ -625,9 +630,9 @@ public class Psid64 {
 
 	private static ChipModel detectChipModel6581or8580(byte[] ram, int videoScreenAddress, int row, int searchColumn) {
 		for (int column = searchColumn; column <= searchColumn + 1; column++) {
-			for (String chipModelAsString : Arrays.asList("MOS8580", "MOS6581")) {
+			for (String chipModelAsString : Arrays.asList("MOS8580", "MOS6581","8580", "6581")) {
 				if (checkScreenMessage(ram, videoScreenAddress, chipModelAsString, row, column)) {
-					if (chipModelAsString.equals("MOS8580")) {
+					if (chipModelAsString.equals("MOS8580") || chipModelAsString.equals("8580")) {
 						return ChipModel.MOS8580;
 					} else {
 						return ChipModel.MOS6581;
