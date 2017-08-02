@@ -58,12 +58,12 @@ public class StatusBar extends AnchorPane implements UIPart {
 	private int oldHalfTrack;
 	private boolean oldMotorOn;
 	private CPUClock rememberCPUClock;
-	private ChipModel rememberDefaultSidModel;
+	private ChipModel rememberUserSidModel, rememberStereoSidModel;
 	private Boolean rememberForceStereoTune;
 	private Integer rememberDualSidBase;
 
 	protected UIUtil util;
-	
+
 	private class StateChangeListener implements ChangeListener<State> {
 		@Override
 		public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
@@ -182,7 +182,7 @@ public class StatusBar extends AnchorPane implements UIPart {
 		}
 		line.append(String.format("%s: %s%s", util.getBundle().getString("TIME"), determinePlayTime(),
 				determineSongLength()));
-		
+
 		status.setText(line.toString());
 		status.setTooltip(playerinfos.length() > 0 ? statusTooltip : null);
 		statusTooltip.setText(playerinfos.toString());
@@ -190,8 +190,7 @@ public class StatusBar extends AnchorPane implements UIPart {
 
 	private String detectPSID64ChipModel() {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		if (util.getPlayer().getTune() != SidTune.RESET && util.getPlayer().getTune().isSolelyPrg()
-				&& emulationSection.isDetectPSID64ChipModel()) {
+		if (SidTune.isSolelyPrg(util.getPlayer().getTune()) && emulationSection.isDetectPSID64ChipModel()) {
 			ChipModelAndStereoAddress psid64ChipModels = Psid64.detectChipModel(util.getPlayer().getC64().getRAM(),
 					util.getPlayer().getC64().getVicMemBase()
 							+ util.getPlayer().getC64().getVIC().getVideoMatrixBase());
@@ -201,25 +200,25 @@ public class StatusBar extends AnchorPane implements UIPart {
 					rememberCPUClock = emulationSection.getDefaultClockSpeed();
 				}
 				emulationSection.setDefaultClockSpeed(psid64ChipModels.cpuClock);
-				final C64 c64 = util.getPlayer().getC64();
-				final EventScheduler ctx = c64.getEventScheduler();
-				ctx.scheduleThreadSafe(new Event("Timer End To Play Next Favorite!") {
-					@Override
-					public void event() {
-						util.getPlayer().play(util.getPlayer().getTune());
-					}
-				});
+				restartPlayerThreadSafe();
 				return "";
 			}
 			if (psid64ChipModels.chipModels.length > 0) {
 				// remember saved state
 				boolean update = false;
-				if (emulationSection.getDefaultSidModel() != psid64ChipModels.chipModels[0]) {
-					// XXX different chip models in stereo mode, currently unsupported
-					if (rememberDefaultSidModel == null) {
-						rememberDefaultSidModel = emulationSection.getDefaultSidModel();
+				if (emulationSection.getUserSidModel() != psid64ChipModels.chipModels[0]) {
+					if (rememberUserSidModel == null) {
+						rememberUserSidModel = emulationSection.getUserSidModel();
 					}
-					emulationSection.setDefaultSidModel(psid64ChipModels.chipModels[0]);
+					emulationSection.setUserSidModel(psid64ChipModels.chipModels[0]);
+					update = true;
+				}
+				if (psid64ChipModels.chipModels.length > 1
+						&& emulationSection.getStereoSidModel() != psid64ChipModels.chipModels[1]) {
+					if (rememberStereoSidModel == null) {
+						rememberStereoSidModel = emulationSection.getStereoSidModel();
+					}
+					emulationSection.setStereoSidModel(psid64ChipModels.chipModels[1]);
 					update = true;
 				}
 				if (psid64ChipModels.chipModels.length == 1 && emulationSection.isForceStereoTune()) {
@@ -252,25 +251,23 @@ public class StatusBar extends AnchorPane implements UIPart {
 				return "PSID64, ";
 			}
 		}
-		if (util.getPlayer().getTune() != SidTune.RESET && !(util.getPlayer().getTune().isSolelyPrg())) {
+		if (!SidTune.isSolelyPrg(util.getPlayer().getTune())) {
 			// restore saved state
 			boolean update = false;
 			if (rememberCPUClock != null && emulationSection.getDefaultClockSpeed() != rememberCPUClock) {
 				emulationSection.setDefaultClockSpeed(rememberCPUClock);
 				rememberCPUClock = null;
-				final C64 c64 = util.getPlayer().getC64();
-				final EventScheduler ctx = c64.getEventScheduler();
-				ctx.scheduleThreadSafe(new Event("Timer End To Play Next Favorite!") {
-					@Override
-					public void event() {
-						util.getPlayer().play(util.getPlayer().getTune());
-					}
-				});
+				restartPlayerThreadSafe();
 				return "";
 			}
-			if (rememberDefaultSidModel != null && emulationSection.getDefaultSidModel() != rememberDefaultSidModel) {
-				emulationSection.setDefaultSidModel(rememberDefaultSidModel);
-				rememberDefaultSidModel = null;
+			if (rememberUserSidModel != null && emulationSection.getUserSidModel() != rememberUserSidModel) {
+				emulationSection.setUserSidModel(rememberUserSidModel);
+				rememberUserSidModel = null;
+				update = true;
+			}
+			if (rememberStereoSidModel != null && emulationSection.getStereoSidModel() != rememberStereoSidModel) {
+				emulationSection.setStereoSidModel(rememberStereoSidModel);
+				rememberStereoSidModel = null;
 				update = true;
 			}
 			if (rememberForceStereoTune != null && emulationSection.isForceStereoTune() != rememberForceStereoTune) {
@@ -288,6 +285,17 @@ public class StatusBar extends AnchorPane implements UIPart {
 			}
 		}
 		return "";
+	}
+
+	private void restartPlayerThreadSafe() {
+		final C64 c64 = util.getPlayer().getC64();
+		final EventScheduler ctx = c64.getEventScheduler();
+		ctx.scheduleThreadSafe(new Event("Restart Player cor CPUClock change") {
+			@Override
+			public void event() {
+				util.getPlayer().play(util.getPlayer().getTune());
+			}
+		});
 	}
 
 	private String determineChipModel() {
