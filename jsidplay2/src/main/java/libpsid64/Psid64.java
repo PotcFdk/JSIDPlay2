@@ -559,14 +559,8 @@ public class Psid64 {
 				new File(target, PathUtils.getFilenameWithoutSuffix(file.getName()) + ".prg").getAbsolutePath());
 	}
 
-	public static class ChipModelAndStereoAddress {
-		public CPUClock cpuClock;
-		public ChipModel[] chipModels;
-		public int stereoAddress;
-	}
-
-	public static ChipModelAndStereoAddress detectChipModel(byte[] ram, int videoScreenAddress) {
-		ChipModelAndStereoAddress chipModelAndBaseAddress = new ChipModelAndStereoAddress();
+	public static PSid64TuneInfo detectPSid64TuneInfo(byte[] ram, int videoScreenAddress) {
+		PSid64TuneInfo chipModelAndBaseAddress = new PSid64TuneInfo();
 		List<ChipModel> result = new ArrayList<>();
 		int row = 2;
 		int col = 6;
