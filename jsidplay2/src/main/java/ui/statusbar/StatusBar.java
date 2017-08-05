@@ -190,64 +190,63 @@ public class StatusBar extends AnchorPane implements UIPart {
 
 	private String detectPSID64ChipModel() {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		if (!emulationSection.isDetectPSID64ChipModel()) {
-			return "";
-		}
 		if (SidTune.isSolelyPrg(util.getPlayer().getTune())) {
-			PSid64TuneInfo psid64TuneInfo = Psid64.detectPSid64TuneInfo(util.getPlayer().getC64().getRAM(),
-					util.getPlayer().getC64().getVicMemBase()
-							+ util.getPlayer().getC64().getVIC().getVideoMatrixBase());
-			if (psid64TuneInfo.hasDifferentCPUClock(util.getPlayer().getC64().getClock())) {
-				if (rememberCPUClock == null) {
-					rememberCPUClock = emulationSection.getDefaultClockSpeed();
+			if (emulationSection.isDetectPSID64ChipModel()) {
+				PSid64TuneInfo psid64TuneInfo = Psid64.detectPSid64TuneInfo(util.getPlayer().getC64().getRAM(),
+						util.getPlayer().getC64().getVicMemBase()
+								+ util.getPlayer().getC64().getVIC().getVideoMatrixBase());
+				if (psid64TuneInfo.hasDifferentCPUClock(util.getPlayer().getC64().getClock())) {
+					if (rememberCPUClock == null) {
+						rememberCPUClock = emulationSection.getDefaultClockSpeed();
+					}
+					emulationSection.setDefaultClockSpeed(psid64TuneInfo.getCpuClock());
+					restartPlayerThreadSafe();
+					return "";
 				}
-				emulationSection.setDefaultClockSpeed(psid64TuneInfo.getCpuClock());
-				restartPlayerThreadSafe();
-				return "";
-			}
-			// remember saved state
-			boolean update = false;
-			if (psid64TuneInfo.hasDifferentUserChipModel(emulationSection.getUserSidModel())) {
-				if (rememberUserSidModel == null) {
-					rememberUserSidModel = emulationSection.getUserSidModel();
+				// remember saved state
+				boolean update = false;
+				if (psid64TuneInfo.hasDifferentUserChipModel(emulationSection.getUserSidModel())) {
+					if (rememberUserSidModel == null) {
+						rememberUserSidModel = emulationSection.getUserSidModel();
+					}
+					emulationSection.setUserSidModel(psid64TuneInfo.getUserChipModel());
+					update = true;
 				}
-				emulationSection.setUserSidModel(psid64TuneInfo.getUserChipModel());
-				update = true;
-			}
-			if (psid64TuneInfo.hasDifferentStereoChipModel(emulationSection.getStereoSidModel())) {
-				if (rememberStereoSidModel == null) {
-					rememberStereoSidModel = emulationSection.getStereoSidModel();
+				if (psid64TuneInfo.hasDifferentStereoChipModel(emulationSection.getStereoSidModel())) {
+					if (rememberStereoSidModel == null) {
+						rememberStereoSidModel = emulationSection.getStereoSidModel();
+					}
+					emulationSection.setStereoSidModel(psid64TuneInfo.getStereoChipModel());
+					update = true;
 				}
-				emulationSection.setStereoSidModel(psid64TuneInfo.getStereoChipModel());
-				update = true;
-			}
-			if (psid64TuneInfo.isMonoTune() && emulationSection.isForceStereoTune()) {
-				// mono tune detected
-				if (rememberForceStereoTune == null) {
-					rememberForceStereoTune = emulationSection.isForceStereoTune();
+				if (psid64TuneInfo.isMonoTune() && emulationSection.isForceStereoTune()) {
+					// mono tune detected
+					if (rememberForceStereoTune == null) {
+						rememberForceStereoTune = emulationSection.isForceStereoTune();
+					}
+					emulationSection.setForceStereoTune(false);
+					update = true;
+				} else if (psid64TuneInfo.isStereoTune() && !emulationSection.isForceStereoTune()) {
+					// stereo tune detected
+					if (rememberForceStereoTune == null) {
+						rememberForceStereoTune = emulationSection.isForceStereoTune();
+					}
+					emulationSection.setForceStereoTune(true);
+					update = true;
 				}
-				emulationSection.setForceStereoTune(false);
-				update = true;
-			} else if (psid64TuneInfo.isStereoTune() && !emulationSection.isForceStereoTune()) {
-				// stereo tune detected
-				if (rememberForceStereoTune == null) {
-					rememberForceStereoTune = emulationSection.isForceStereoTune();
+				if (psid64TuneInfo.hasDifferentStereoAddress(emulationSection.getDualSidBase())) {
+					update = true;
+					if (rememberDualSidBase == null) {
+						rememberDualSidBase = emulationSection.getDualSidBase();
+					}
+					emulationSection.setDualSidBase(psid64TuneInfo.getStereoAddress());
 				}
-				emulationSection.setForceStereoTune(true);
-				update = true;
-			}
-			if (psid64TuneInfo.hasDifferentStereoAddress(emulationSection.getDualSidBase())) {
-				update = true;
-				if (rememberDualSidBase == null) {
-					rememberDualSidBase = emulationSection.getDualSidBase();
+				if (update) {
+					emulationSection.setForce3SIDTune(false);
+					util.getPlayer().updateSIDChipConfiguration();
 				}
-				emulationSection.setDualSidBase(psid64TuneInfo.getStereoAddress());
+				return "PSID64, ";
 			}
-			if (update) {
-				emulationSection.setForce3SIDTune(false);
-				util.getPlayer().updateSIDChipConfiguration();
-			}
-			return "PSID64, ";
 		} else {
 			// restore saved state
 			boolean update = false;
