@@ -79,7 +79,7 @@ public class NetSIDClient {
 			TrySetSidModel.getFilterToSidModel().clear();
 			for (byte config = 0; config < sendReceive(new GetConfigCount()); config++) {
 				Pair<ChipModel, String> filter = sendReceiveConfig(new GetConfigInfo(config));
-				TrySetSidModel.getFilterToSidModel().put(new Pair<>(filter.getKey(), filter.getValue()), config);
+				TrySetSidModel.getFilterToSidModel().put(filter, config);
 			}
 			addSetSidModels();
 			softFlush();
@@ -199,7 +199,7 @@ public class NetSIDClient {
 			commands.add(tryWrite);
 		}
 		// add write to queue
-		tryWrite.addWrite(cycles, (byte) (reg | (sidNum << 5)), data);
+		tryWrite.addWrite(cycles, (byte) ((sidNum << 5) | reg), data);
 		// NB: if flush attempt fails, we have nevertheless queued command
 		// locally and thus are allowed to return OK in any case.
 		maybeSendWritesToServer();
