@@ -136,11 +136,11 @@ public class Configuration implements IConfig {
 				new KeyTableEntity(KeyCode.PERIOD.getName(), KeyTableEntry.PERIOD),
 				new KeyTableEntity(KeyCode.MINUS.getName(), KeyTableEntry.SLASH),
 				new KeyTableEntity(KeyCode.DOWN.getName(), KeyTableEntry.CURSOR_UP_DOWN),
-				new KeyTableEntity(KeyCode.UP.getName(), KeyTableEntry.CURSOR_UP_DOWN, true),
+				new KeyTableEntity(KeyCode.UP.getName(), KeyTableEntry.CURSOR_UP_DOWN),
 				new KeyTableEntity(KeyCode.RIGHT.getName(), KeyTableEntry.CURSOR_LEFT_RIGHT),
-				new KeyTableEntity(KeyCode.LEFT.getName(), KeyTableEntry.CURSOR_LEFT_RIGHT, true),
+				new KeyTableEntity(KeyCode.LEFT.getName(), KeyTableEntry.CURSOR_LEFT_RIGHT),
 
-				new KeyTableEntity(KeyCode.SPACE.getName(), KeyTableEntry.SPACE, true),
+				new KeyTableEntity(KeyCode.SPACE.getName(), KeyTableEntry.SPACE),
 
 				new KeyTableEntity(KeyCode.F1.getName(), KeyTableEntry.F1),
 				new KeyTableEntity(KeyCode.F3.getName(), KeyTableEntry.F3),

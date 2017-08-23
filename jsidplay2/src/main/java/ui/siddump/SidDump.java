@@ -44,7 +44,7 @@ public class SidDump extends Tab implements UIPart {
 	@FXML
 	protected ToggleButton replayAll, startStopRecording;
 	@FXML
-	private CheckBox timeInSeconds, lowResolutionMode;
+	private CheckBox startStopPlayer,timeInSeconds, lowResolutionMode;
 	@FXML
 	private TextField firstFrame, noteSpacing, maxRecordLength, patternSpacing, oldNoteFactor, tableFontSize, baseFreq,
 			baseNote, callsPerFrame;
@@ -188,6 +188,7 @@ public class SidDump extends Tab implements UIPart {
 				} catch (InvalidCommandException e) {
 					e.printStackTrace();
 				}
+				replayAll.setSelected(false);
 			});
 			fPlayerThread.start();
 		}
@@ -196,15 +197,19 @@ public class SidDump extends Tab implements UIPart {
 	@FXML
 	private void doStartStopRecording() {
 		if (startStopRecording.isSelected()) {
-			// restart tune, before recording starts
-			util.setPlayingTab(this);
-			util.getPlayer().play(util.getPlayer().getTune());
 			setTune(util.getPlayer().getTune());
 			util.getPlayer().getC64().setPlayRoutineObserver(sidDumpExtension);
+			// restart tune, before recording starts
+			util.setPlayingTab(this);
+			if (startStopPlayer.isSelected()) {
+				util.getPlayer().play(util.getPlayer().getTune());
+			}
 		} else {
-			util.getPlayer().pauseContinue();
 			util.getPlayer().getC64().setPlayRoutineObserver(null);
 			sidDumpExtension.stopRecording();
+			if (startStopPlayer.isSelected()) {
+				util.getPlayer().stopC64();
+			}
 		}
 	}
 

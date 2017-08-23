@@ -33,6 +33,11 @@
 						<Tooltip text="%START_STOP_RECORDING_TIP" />
 					</tooltip>
 				</ToggleButton>
+				<CheckBox text="%START_STOP_PLAYER" fx:id="startStopPlayer">
+					<tooltip>
+						<Tooltip text="%START_STOP_PLAYER_TIP" />
+					</tooltip>
+				</CheckBox>
 				<CheckBox text="%TIME_IN_SECONDS" fx:id="timeInSeconds">
 					<tooltip>
 						<Tooltip text="%TIME_IN_SECONDS_TIP" />

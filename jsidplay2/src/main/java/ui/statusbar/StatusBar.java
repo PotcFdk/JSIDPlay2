@@ -286,7 +286,7 @@ public class StatusBar extends AnchorPane implements UIPart {
 	private void restartPlayerThreadSafe() {
 		final C64 c64 = util.getPlayer().getC64();
 		final EventScheduler ctx = c64.getEventScheduler();
-		ctx.scheduleThreadSafe(new Event("Restart Player cor CPUClock change") {
+		ctx.scheduleThreadSafe(new Event("Restart Player for CPUClock change") {
 			@Override
 			public void event() {
 				util.getPlayer().play(util.getPlayer().getTune());

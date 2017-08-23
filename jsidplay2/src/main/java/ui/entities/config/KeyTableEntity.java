@@ -20,10 +20,6 @@ public class KeyTableEntity {
 	}
 
 	public KeyTableEntity(String keyCode, KeyTableEntry entry) {
-		this(keyCode, entry, false);
-	}
-
-	public KeyTableEntity(String keyCode, KeyTableEntry entry, boolean b) {
 		this.keyCodeName = keyCode;
 		this.entry = entry;
 	}
