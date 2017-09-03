@@ -1,5 +1,7 @@
 package sidplay.audio;
 
+import java.lang.reflect.InvocationTargetException;
+
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
@@ -13,19 +15,21 @@ import sidplay.audio.MP3Driver.MP3File;
  */
 public enum Audio {
 	/** Java Sound API. */
-	SOUNDCARD(new JavaSound()),
+	SOUNDCARD(JavaSound.class),
 	/** WAV file write. */
-	WAV(new WavFile()),
+	WAV(WavFile.class),
 	/** MP3 file write. */
-	MP3(new MP3File()),
+	MP3(MP3File.class),
 	/** Java Sound API plus WAV file write. */
-	LIVE_WAV(new ProxyDriver(new JavaSound(), new WavFile())),
+	LIVE_WAV(ProxyDriver.class, JavaSound.class, WavFile.class),
 	/** Java Sound API plus MP3 file write. */
-	LIVE_MP3(new ProxyDriver(new JavaSound(), new MP3File())),
+	LIVE_MP3(ProxyDriver.class, JavaSound.class, MP3File.class),
 	/** Java Sound API plus play-back of MP3 recording. */
-	COMPARE_MP3(CMP_MP3 = new CmpMP3File());
+	COMPARE_MP3(CmpMP3File.class);
 
-	private final AudioDriver audioDriver;
+	private final Class<? extends AudioDriver> audioDriverClass;
+	private final Class<? extends AudioDriver>[] parameterClasses;
+	private AudioDriver audioDriver;
 
 	/**
 	 * Create audio output using the audio driver
@@ -33,8 +37,10 @@ public enum Audio {
 	 * @param audioDriver
 	 *            audio driver
 	 */
-	Audio(final AudioDriver audioDriver) {
-		this.audioDriver = audioDriver;
+	@SafeVarargs
+	Audio(Class<? extends AudioDriver> audioDriverClass, Class<? extends AudioDriver>... parameters) {
+		this.audioDriverClass = audioDriverClass;
+		this.parameterClasses = parameters;
 	}
 
 	/**
@@ -43,10 +49,24 @@ public enum Audio {
 	 * @return audio driver
 	 */
 	public final AudioDriver getAudioDriver() {
-		return audioDriver;
+		try {
+			if (audioDriver == null) {
+				int parameterNum = 0;
+				Class<?> parameterTypes[] = new Class<?>[parameterClasses.length];
+				Object parametersValues[] = new Object[parameterClasses.length];
+				for (Class<?> parameterClass : parameterClasses) {
+					parameterTypes[parameterNum] = AudioDriver.class;
+					parametersValues[parameterNum++] = parameterClass.newInstance();
+				}
+				audioDriver = audioDriverClass.getConstructor(parameterTypes).newInstance(parametersValues);
+			}
+			return audioDriver;
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException("Audiodriver cannot be instanciated: " + audioDriverClass.getName(), e);
+		}
 	}
 
-	private static final CmpMP3File CMP_MP3;
 	private AudioDriver oldAudioDriver;
 
 	/**
@@ -59,7 +79,7 @@ public enum Audio {
 	 * @return audio driver to use
 	 */
 	public final AudioDriver getAudioDriver(final IAudioSection audioSection, final SidTune tune) {
-		return handleMP3(audioSection, tune, audioDriver);
+		return handleMP3(audioSection, tune, getAudioDriver());
 	}
 
 	/**
@@ -80,10 +100,10 @@ public enum Audio {
 			// Change driver settings to use comparison driver for MP3 play-back
 			audioSection.setPlayOriginal(true);
 			audioSection.setMp3File(((MP3Tune) tune).getMP3Filename());
-			newAudioDriver = CMP_MP3;
+			newAudioDriver = COMPARE_MP3.getAudioDriver();
 		}
-		if (CMP_MP3.equals(newAudioDriver)) {
-			CMP_MP3.setAudioSection(audioSection);
+		if (COMPARE_MP3.getAudioDriver().equals(newAudioDriver)) {
+			((CmpMP3File) newAudioDriver).setAudioSection(audioSection);
 		}
 		return newAudioDriver;
 	}
