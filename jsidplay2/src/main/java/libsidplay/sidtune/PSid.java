@@ -17,9 +17,11 @@
  */
 package libsidplay.sidtune;
 
+import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -30,6 +32,7 @@ import java.util.Scanner;
 
 import libsidplay.components.mos6510.MOS6510;
 import libsidutils.assembler.KickAssembler;
+import libsidutils.reloc65.Reloc65;
 
 class PSid extends Prg {
 
@@ -237,8 +240,6 @@ class PSid extends Prg {
 
 	private Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
 
-	private final KickAssembler assembler = new KickAssembler();
-
 	@Override
 	public Integer placeProgramInMemory(final byte[] mem) {
 		super.placeProgramInMemory(mem);
@@ -246,11 +247,15 @@ class PSid extends Prg {
 			mem[0x30c] = (byte) (info.currentSong - 1);
 			return null;
 		} else {
-			return psidInstallDriver(mem);
+			if (USE_KICKASSEMBLER) {
+				return assembleAndInstallDriver(mem);
+			} else {
+				return relocateAndInstallDriver(mem);
+			}
 		}
 	}
 
-	private int psidInstallDriver(final byte[] mem) {
+	private int assembleAndInstallDriver(final byte[] mem) {
 		HashMap<String, String> globals = new HashMap<String, String>();
 		globals.put("pc", String.valueOf(info.determinedDriverAddr));
 		globals.put("songNum", String.valueOf(info.currentSong));
@@ -268,6 +273,7 @@ class PSid extends Prg {
 				String.valueOf(info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3
 						? 1 : 1 << MOS6510.SR_INTERRUPT));
 		InputStream asm = PSid.class.getResourceAsStream(PSIDDRIVER_ASM);
+		KickAssembler assembler = new KickAssembler();
 		byte[] driver = assembler.assemble(PSIDDRIVER_ASM, asm, globals);
 		info.determinedDriverLength = driver.length - 2;
 		System.arraycopy(driver, 2, mem, info.determinedDriverAddr, info.determinedDriverLength);
@@ -279,6 +285,92 @@ class PSid extends Prg {
 			throw new RuntimeException("Driver must not be greater than one block! " + PSIDDRIVER_ASM);
 		}
 		return start;
+	}
+
+	private int relocateAndInstallDriver(final byte[] ram) {
+		byte[] PSID_DRIVER;
+		final String PSID_DRIVER_BIN = "/libsidplay/sidtune/psiddriver.bin";
+		try (DataInputStream is = new DataInputStream(PSid.class.getResourceAsStream(PSID_DRIVER_BIN))) {
+			URL url = PSid.class.getResource(PSID_DRIVER_BIN);
+			PSID_DRIVER = new byte[url.openConnection().getContentLength()];
+			is.readFully(PSID_DRIVER);
+		} catch (IOException e) {
+			throw new RuntimeException("Load failed for resource: " + PSID_DRIVER_BIN);
+		}
+		ByteBuffer relocatedBuffer = new Reloc65().reloc65(PSID_DRIVER, PSID_DRIVER.length, info.determinedDriverAddr - 10);
+
+		if (relocatedBuffer == null) {
+			throw new RuntimeException("Failed to relocate driver.");
+		}
+		info.determinedDriverLength = relocatedBuffer.limit() - 10;
+
+		final byte[] reloc_driver = relocatedBuffer.array();
+		final int reloc_driverPos = relocatedBuffer.position();
+
+		if (!(info.playAddr == 0 && info.loadAddr == 0x200)) {
+			/*
+			 * Setting these vectors seems a bit dangerous because we will still
+			 * run for some time
+			 */
+			ram[0x0314] = reloc_driver[reloc_driverPos + 2]; /* IRQ */
+			ram[0x0315] = reloc_driver[reloc_driverPos + 2 + 1];
+			if (info.compatibility != SidTune.Compatibility.RSIDv2
+					&& info.compatibility != SidTune.Compatibility.RSIDv3) {
+				ram[0x0316] = reloc_driver[reloc_driverPos + 2 + 2]; /* Break */
+				ram[0x0317] = reloc_driver[reloc_driverPos + 2 + 3];
+				ram[0x0318] = reloc_driver[reloc_driverPos + 2 + 4]; /* NMI */
+				ram[0x0319] = reloc_driver[reloc_driverPos + 2 + 5];
+			}
+		}
+		int pos = info.determinedDriverAddr;
+
+		/* Place driver into RAM */
+		System.arraycopy(reloc_driver, reloc_driverPos + 10, ram, pos, info.determinedDriverLength);
+
+		// Tell C64 about song
+		ram[pos++] = (byte) (info.currentSong - 1);
+		if (songSpeed[info.currentSong - 1] == Speed.VBI) {
+			ram[pos] = 0;
+		} else {
+			// SIDTUNE_SPEED_CIA_1A
+			ram[pos] = 1;
+		}
+
+		pos++;
+		ram[pos++] = (byte) (info.initAddr & 0xff);
+		ram[pos++] = (byte) (info.initAddr >> 8);
+		ram[pos++] = (byte) (info.playAddr & 0xff);
+		ram[pos++] = (byte) (info.playAddr >> 8);
+
+		final int powerOnDelay = (int) (0x100 + (System.currentTimeMillis() & 0x1ff));
+		ram[pos++] = (byte) (powerOnDelay & 0xff);
+		ram[pos++] = (byte) (powerOnDelay >> 8);
+		ram[pos++] = (byte) info.iomap(info.initAddr);
+		ram[pos++] = (byte) info.iomap(info.playAddr);
+		ram[pos + 1] = ram[pos + 0] = ram[0x02a6]; // PAL/NTSC flag
+		pos++;
+
+		// Add the required tune speed
+		switch (info.clockSpeed) {
+		case PAL:
+			ram[pos++] = 1;
+			break;
+		case NTSC:
+			ram[pos++] = 0;
+			break;
+		default: // UNKNOWN or ANY
+			pos++;
+			break;
+		}
+
+		// Default processor register flags on calling init
+		if (info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3) {
+			ram[pos++] = 0;
+		} else {
+			ram[pos++] = 1 << MOS6510.SR_INTERRUPT;
+		}
+
+		return reloc_driver[reloc_driverPos + 0] & 0xff | (reloc_driver[reloc_driverPos + 1] & 0xff) << 8;
 	}
 
 	/**
@@ -371,7 +463,6 @@ class PSid extends Prg {
 		if (info.determinedDriverAddr == 0) {
 			throw new SidTuneError("PSID: Can't relocate tune: no pages left to store driver.");
 		}
-
 	}
 
 	protected static SidTune load(final String name, final byte[] dataBuf) throws SidTuneError {

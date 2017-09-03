@@ -17,10 +17,12 @@
  */
 package libsidplay.sidtune;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -48,8 +50,6 @@ class Mus extends PSid {
 
 	private static final int DUAL_SID_BASE = 0xd500;
 
-	private final KickAssembler assembler = new KickAssembler();
-
 	/**
 	 * Needed for MUS/STR player installation.
 	 */
@@ -57,7 +57,11 @@ class Mus extends PSid {
 
 	@Override
 	public Integer placeProgramInMemory(final byte[] c64buf) {
-		installMusPlayers(c64buf);
+		if (USE_KICKASSEMBLER) {
+			assembleAndinstallMusPlayers(c64buf);
+		} else {
+			relocateAndInstallMusPlayers(c64buf);
+		}
 		return super.placeProgramInMemory(c64buf);
 	}
 
@@ -185,7 +189,9 @@ class Mus extends PSid {
 		return null;
 	}
 
-	private void installMusPlayers(final byte[] c64buf) {
+	private void assembleAndinstallMusPlayers(final byte[] c64buf) {
+		KickAssembler assembler = new KickAssembler();
+
 		Integer init;
 		Integer start;
 		{
@@ -231,6 +237,42 @@ class Mus extends PSid {
 		}
 		if (start == null) {
 			throw new RuntimeException("Label start not found in " + asmSource);
+		}
+	}
+
+	private void relocateAndInstallMusPlayers(byte[] c64buf) {
+		// Install MUS player #1
+		byte[] MUS_DRIVER1;
+		final String MUS_DRIVER1_BIN = "/libsidplay/sidtune/musdriver1.bin";
+		try (DataInputStream is = new DataInputStream(Mus.class.getResourceAsStream(MUS_DRIVER1_BIN))) {
+			URL url = Mus.class.getResource(MUS_DRIVER1_BIN);
+			MUS_DRIVER1 = new byte[url.openConnection().getContentLength()];
+			is.readFully(MUS_DRIVER1);
+		} catch (IOException e) {
+			throw new RuntimeException("Load failed for resource: " + MUS_DRIVER1_BIN);
+		}
+		int dest = (MUS_DRIVER1[0] & 0xff) + ((MUS_DRIVER1[1] & 0xff) << 8);
+		installMusPlayer(c64buf, MUS_DATA_ADDR, MUS_DRIVER1, dest + 0xc6e-1, dest + 0xc70-1);
+
+		info.initAddr = 0xec60;
+		info.playAddr = 0xec80;
+
+		if (info.getSIDChipBase(1) != 0) {
+			// Install MUS player #2
+			byte[] MUS_DRIVER2;
+			final String MUS_DRIVER2_BIN = "/libsidplay/sidtune/musdriver2.bin";
+			try (DataInputStream is = new DataInputStream(Mus.class.getResourceAsStream(MUS_DRIVER2_BIN))) {
+				URL url = Mus.class.getResource(MUS_DRIVER2_BIN);
+				MUS_DRIVER2 = new byte[url.openConnection().getContentLength()];
+				is.readFully(MUS_DRIVER2);
+			} catch (IOException e) {
+				throw new RuntimeException("Load failed for resource: " + MUS_DRIVER2_BIN);
+			}
+			dest = (MUS_DRIVER2[0] & 0xff) + ((MUS_DRIVER2[1] & 0xff) << 8);
+			installMusPlayer(c64buf, MUS_DATA_ADDR + musDataLen, MUS_DRIVER2, dest + 0xc6e-1, dest + 0xc70-1);
+
+			info.initAddr = 0xfc90;
+			info.playAddr = 0xfc96;
 		}
 	}
 

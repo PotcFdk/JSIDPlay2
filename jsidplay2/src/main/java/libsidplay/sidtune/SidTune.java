@@ -48,12 +48,20 @@ public abstract class SidTune {
 
 	private static Constructor<?> TFILE_IS = null;
 
+	protected static boolean USE_KICKASSEMBLER;
+
 	static {
 		// support for files contained in a ZIP (optionally in the classpath)
 		try {
 			TFILE_IS = (Constructor<?>) Class.forName("de.schlichtherle.truezip.file.TFileInputStream")
 					.getConstructor(File.class);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
+		}
+		// assemble PSID driver code at runtime (optionally in the classpath)
+		try {
+			Class.forName("kickass.KickAssembler");
+			USE_KICKASSEMBLER = true;
+		} catch (ClassNotFoundException e) {
 		}
 	}
 
