@@ -17,7 +17,6 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -202,20 +201,38 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		int tries = 0;
 		do {
 			tries++;
-			File file = createLocalFile(currentURL);
 
 			FileOutputStream fos = null;
 			try {
-				long contentLength = getConnection(currentURL).getContentLength();
+				while (true) {
+					HttpURLConnection connection = (HttpURLConnection) currentURL.openConnection(proxy);
+					connection.setInstanceFollowRedirects(false);
+					int responseCode = connection.getResponseCode();
+					switch (responseCode) {
+					case HttpURLConnection.HTTP_MOVED_PERM:
+					case HttpURLConnection.HTTP_MOVED_TEMP:
+					case HttpURLConnection.HTTP_SEE_OTHER:
+						String location = connection.getHeaderField("Location");
+						if (location != null) {
+							location = URLDecoder.decode(location, "UTF-8");
+							// Deal with relative URLs
+							URL next = new URL(currentURL, location);
+							currentURL = new URL(next.toExternalForm().replace(" ", "%20"));
+							continue;
+						}
+					}
+					long contentLength = connection.getContentLengthLong();
+					ReadableByteChannel rbc = new RBCWrapper(Channels.newChannel(connection.getInputStream()),
+							contentLength, this);
+					File file = createLocalFile(currentURL);
+					fos = new FileOutputStream(file);
+					fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
-				final URLConnection connection = currentURL.openConnection(proxy);
-				ReadableByteChannel rbc = new RBCWrapper(Channels.newChannel(connection.getInputStream()),
-						contentLength, this);
-				fos = new FileOutputStream(file);
-				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-
-				if (file.length() == contentLength) {
-					return file;
+					if (file.length() == contentLength) {
+						return file;
+					}
+					file.delete();
+					break;
 				}
 			} catch (IOException e) {
 				if (retry) {

@@ -6,9 +6,20 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventListener;
+import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.html.HTMLAnchorElement;
+
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
@@ -30,6 +41,73 @@ import ui.download.IDownloadListener;
 import ui.tuneinfos.TuneInfos;
 
 public class WebView extends Tab implements UIPart {
+
+	public class HyperlinkRedirectListener implements ChangeListener<Worker.State>, EventListener {
+
+		private static final String CLICK_EVENT = "click";
+		private static final String ANCHOR_TAG = "a";
+
+		@Override
+		public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
+			if (State.SUCCEEDED.equals(newValue)) {
+				Document document = webView.getEngine().getDocument();
+				NodeList anchors = document.getElementsByTagName(ANCHOR_TAG);
+				for (int i = 0; i < anchors.getLength(); i++) {
+					Node node = anchors.item(i);
+					if (node instanceof EventTarget) {
+						EventTarget eventTarget = (EventTarget) node;
+						eventTarget.addEventListener(CLICK_EVENT, this, false);
+					}
+				}
+			}
+		}
+
+		@Override
+		public void handleEvent(Event event) {
+			if (event.getCurrentTarget() instanceof HTMLAnchorElement) {
+				HTMLAnchorElement anchorElement = (HTMLAnchorElement) event.getCurrentTarget();
+				String href = anchorElement.getHref();
+				if (href == null) {
+					return;
+				}
+				try {
+					if (convenience.isSupportedMedia(new File(href))) {
+						// prevent to open media embedded in the browser window
+						event.preventDefault();
+					}
+					// we try to download even unsupported media links (HTTP redirect?)
+					new DownloadThread(util.getConfig(), new IDownloadListener() {
+
+						@Override
+						public void downloadStop(File downloadedFile) {
+							try {
+								if (downloadedFile != null && convenience.autostart(downloadedFile,
+										Convenience.LEXICALLY_FIRST_MEDIA, null)) {
+									downloadedFile.deleteOnExit();
+									Platform.runLater(() -> {
+										util.setPlayingTab(WebView.this);
+									});
+								} else if (downloadedFile != null) {
+									downloadedFile.delete();
+								}
+							} catch (IOException | SidTuneError | URISyntaxException e) {
+								// ignore
+							}
+						}
+
+						@Override
+						public void downloadStep(int step) {
+							DoubleProperty progressProperty = util.progressProperty(webView);
+							progressProperty.setValue(step / 100.f);
+						}
+					}, new URL(href), false).start();
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
 
 	@FXML
 	private Button backward, forward;
@@ -56,37 +134,10 @@ public class WebView extends Tab implements UIPart {
 	};
 
 	private ChangeListener<? super String> locationListener = (observable, oldValue, newValue) -> {
-		try {
-			urlField.setText(newValue);
-			if (!convenience.isSupportedMedia(new File(newValue)))
-				return;
-			new DownloadThread(util.getConfig(), new IDownloadListener() {
-
-				@Override
-				public void downloadStop(File downloadedFile) {
-					try {
-						if (downloadedFile != null
-								&& convenience.autostart(downloadedFile, Convenience.LEXICALLY_FIRST_MEDIA, null)) {
-							downloadedFile.deleteOnExit();
-							Platform.runLater(() -> {
-								util.setPlayingTab(WebView.this);
-							});
-						}
-					} catch (IOException | SidTuneError | URISyntaxException e) {
-						// ignore
-					}
-				}
-
-				@Override
-				public void downloadStep(int step) {
-					DoubleProperty progressProperty = util.progressProperty(webView);
-					progressProperty.setValue(step / 100.f);
-				}
-			}, new URL(newValue), false).start();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+		urlField.setText(newValue);
 	};
+
+	private HyperlinkRedirectListener hyperlinkRedirectListener = new HyperlinkRedirectListener();
 
 	private ChangeListener<? super Number> historyListener = (observable, oldValue, newValue) -> {
 		backward.setDisable(newValue.intValue() <= 0);
@@ -119,8 +170,8 @@ public class WebView extends Tab implements UIPart {
 		engine = webView.getEngine();
 		engine.getHistory().currentIndexProperty().addListener(historyListener);
 		engine.locationProperty().addListener(locationListener);
+		engine.getLoadWorker().stateProperty().addListener(hyperlinkRedirectListener);
 		engine.getLoadWorker().progressProperty().addListener(progressListener);
-
 		zoom.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getConfig().getOnlineSection().setZoom(newValue.doubleValue());
 			webView.setZoom(newValue.doubleValue());
@@ -131,6 +182,7 @@ public class WebView extends Tab implements UIPart {
 	@Override
 	public void doClose() {
 		engine.getHistory().currentIndexProperty().removeListener(historyListener);
+		engine.getLoadWorker().stateProperty().removeListener(hyperlinkRedirectListener);
 		engine.locationProperty().removeListener(locationListener);
 		engine.getLoadWorker().progressProperty().removeListener(progressListener);
 	}
