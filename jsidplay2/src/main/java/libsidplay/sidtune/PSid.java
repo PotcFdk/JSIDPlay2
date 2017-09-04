@@ -297,7 +297,7 @@ class PSid extends Prg {
 		} catch (IOException e) {
 			throw new RuntimeException("Load failed for resource: " + PSID_DRIVER_BIN);
 		}
-		ByteBuffer relocatedBuffer = new Reloc65().reloc65(PSID_DRIVER, PSID_DRIVER.length, info.determinedDriverAddr - 10);
+		ByteBuffer relocatedBuffer = new Reloc65().reloc65(PSID_DRIVER, info.determinedDriverAddr - 10);
 
 		if (relocatedBuffer == null) {
 			throw new RuntimeException("Failed to relocate driver.");
