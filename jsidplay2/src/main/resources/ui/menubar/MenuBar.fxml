@@ -244,6 +244,7 @@
 					<MenuItem text="%PROXY_SETTINGS" onAction="#proxySettings" />
 				</Menu>
 				<Menu text="%HELP">
+					<MenuItem text="%USERGUIDE" onAction="#userguide" />
 					<MenuItem text="%CHECK_FOR_UPDATES" onAction="#updateCheck" />
 					<SeparatorMenuItem />
 					<MenuItem text="%ABOUT" onAction="#about" />

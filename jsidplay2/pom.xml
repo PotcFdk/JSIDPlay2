@@ -165,6 +165,32 @@
 				<version>1.5.3</version>
 				<executions>
 					<execution>
+						<id>output-html-internal</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+						<configuration>
+							<backend>html</backend>
+							<doctype>book</doctype>
+							<outputDirectory>${project.build.directory}/classes/doc</outputDirectory>
+							<headerFooter>true</headerFooter>
+							<attributes>
+								<name>${project.name}</name>
+								<codebase>${codebase}</codebase>
+								<artifactId>${project.artifactId}</artifactId>
+								<version>${project.version}</version>
+
+								<!-- Display anchors on html document -->
+								<sectanchors>true</sectanchors>
+								<!-- Table of contents -->
+								<toc />
+								<!-- enable the TOC with 3 levels -->
+								<toclevels>3</toclevels>
+							</attributes>
+						</configuration>
+					</execution>
+					<execution>
 						<id>output-html</id>
 						<phase>generate-resources</phase>
 						<goals>

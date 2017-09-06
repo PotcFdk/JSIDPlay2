@@ -13,6 +13,7 @@ import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.html.HTMLAnchorElement;
+import org.w3c.dom.html.HTMLImageElement;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -44,6 +45,7 @@ public class WebView extends Tab implements UIPart {
 
 	public class HyperlinkRedirectListener implements ChangeListener<Worker.State>, EventListener {
 
+		private static final String IMG_TAG = "img";
 		private static final String CLICK_EVENT = "click";
 		private static final String ANCHOR_TAG = "a";
 
@@ -57,6 +59,17 @@ public class WebView extends Tab implements UIPart {
 					if (node instanceof EventTarget) {
 						EventTarget eventTarget = (EventTarget) node;
 						eventTarget.addEventListener(CLICK_EVENT, this, false);
+					}
+				}
+				NodeList nodeList = document.getElementsByTagName(IMG_TAG);
+				for (int i = 0; i < nodeList.getLength(); i++) {
+					HTMLImageElement n = (HTMLImageElement) nodeList.item(i);
+					String path = n.getSrc();
+					if (path.startsWith("images/")) {
+						URL m = WebView.class.getResource("/help/" + path);
+						if (m != null) {
+							n.setSrc(m.toExternalForm());
+						}
 					}
 				}
 			}
@@ -75,7 +88,8 @@ public class WebView extends Tab implements UIPart {
 						// prevent to open media embedded in the browser window
 						event.preventDefault();
 					}
-					// we try to download even unsupported media links (HTTP redirect?)
+					// we try to download even unsupported media links
+					// (HTTP redirection is very likely)
 					new DownloadThread(util.getConfig(), new IDownloadListener() {
 
 						@Override
