@@ -41,6 +41,7 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyType;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.cart.CartridgeType;
+import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
@@ -142,7 +143,8 @@ public class MenuBar extends VBox implements UIPart {
 					boolean doNotSwitch = selectedItem != null
 							&& (MusicCollection.class.isAssignableFrom(selectedItem.getClass())
 									|| Favorites.class.isAssignableFrom(selectedItem.getClass()));
-					if (sidTune == SidTune.RESET || (sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
+					if (sidTune == SidTune.RESET || (!MP3Tune.class.isAssignableFrom(sidTune.getClass())
+							&& sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
 						video();
 					}
 				} else if (newValue.equals(State.END)) {
