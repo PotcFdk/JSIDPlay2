@@ -61,12 +61,11 @@ public class WebView extends Tab implements UIPart {
 						eventTarget.addEventListener(CLICK_EVENT, this, false);
 					}
 				}
-				NodeList nodeList = document.getElementsByTagName(IMG_TAG);
-				for (int i = 0; i < nodeList.getLength(); i++) {
-					HTMLImageElement n = (HTMLImageElement) nodeList.item(i);
-					String path = n.getSrc();
-					if (path.startsWith("images/")) {
-						URL m = WebView.class.getResource("/help/" + path);
+				if (type == WebViewType.USERGUIDE) {
+					NodeList nodeList = document.getElementsByTagName(IMG_TAG);
+					for (int i = 0; i < nodeList.getLength(); i++) {
+						HTMLImageElement n = (HTMLImageElement) nodeList.item(i);
+						URL m = WebView.class.getResource(WebViewType.toAbsoluteUrl(n.getSrc()));
 						if (m != null) {
 							n.setSrc(m.toExternalForm());
 						}

@@ -1,5 +1,9 @@
 package ui.webview;
 
+import static ui.webview.WebViewType.Constants.DOC_IMAGES_DIR;
+import static ui.webview.WebViewType.Constants.DOC_RESOURCE_DIR;
+import static ui.webview.WebViewType.Constants.JAR_URL;
+
 public enum WebViewType {
 	/**
 	 * The C-64 Scene Database
@@ -36,9 +40,8 @@ public enum WebViewType {
 	/**
 	 * JSIDPlay2 User Guide
 	 */
-	USERGUIDE("jar:file:" + "/doc/UserGuide.html");
+	USERGUIDE(JAR_URL + DOC_RESOURCE_DIR + "UserGuide.html");
 
-	private static final String JAR_URL = "jar:file:";
 	private String url;
 
 	private WebViewType(String url) {
@@ -50,5 +53,27 @@ public enum WebViewType {
 			return getClass().getResource(url.replace(JAR_URL, "")).toExternalForm();
 		}
 		return url;
+	}
+
+	/**
+	 * Convert relative path names starting with "images/" of the documentation
+	 * to absolute path names (This is for the internal {@link USERGUIDE}
+	 * contained in the main JAR as resources located in sub-folder "/doc/").
+	 * 
+	 * @param url
+	 *            URL to make absolute
+	 * @return absolute URL
+	 */
+	public static String toAbsoluteUrl(String url) {
+		if (url.startsWith(DOC_IMAGES_DIR)) {
+			return DOC_RESOURCE_DIR + url;
+		}
+		return url;
+	}
+
+	static class Constants {
+		static final String JAR_URL = "jar:file:";
+		static final String DOC_RESOURCE_DIR = "/doc/";
+		static final String DOC_IMAGES_DIR = "images/";
 	}
 }
