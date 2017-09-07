@@ -87,6 +87,7 @@
 						<MenuItem text="%C64_SK" onAction="#c64" />
 						<MenuItem text="%FORUM64_DE" onAction="#forum64" />
 						<MenuItem text="%LEMON64_COM" onAction="#lemon64" />
+						<MenuItem text="%SOASC" onAction="#soasc" />
 						<MenuItem text="%JSIDPLAY2_SRC" onAction="#jsidplay2" />
 					</Menu>
 					<MenuItem text="%PRINTER" onAction="#printer" />

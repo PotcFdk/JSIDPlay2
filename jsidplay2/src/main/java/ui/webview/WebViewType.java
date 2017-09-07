@@ -34,9 +34,13 @@ public enum WebViewType {
 	 */
 	LEMON64_COM("http://www.lemon64.com/"),
 	/**
+	 * Stone Oakvalley's Authentic SID Collection (SOASC=)
+	 */
+	SOASC("http://se2a1.bigbox.info:40000/soasc/"),
+	/**
 	 * JSIDPlay2 Source Code
 	 */
-	JSIDPLAY2("http://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/"),
+	JSIDPLAY2_SRC("http://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/"),
 	/**
 	 * JSIDPlay2 User Guide
 	 */

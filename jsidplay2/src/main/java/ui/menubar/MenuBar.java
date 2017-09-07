@@ -817,10 +817,19 @@ public class MenuBar extends VBox implements UIPart {
 	}
 
 	@FXML
-	private void jsidplay2() {
-		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2.name())) {
+	private void soasc() {
+		if (!tabAlreadyOpen(WebViewType.SOASC.name())) {
 			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.JSIDPLAY2);
+			tab.setType(WebViewType.SOASC);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void jsidplay2() {
+		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2_SRC.name())) {
+			WebView tab = new WebView(window, util.getPlayer());
+			tab.setType(WebViewType.JSIDPLAY2_SRC);
 			addTab(tab);
 		}
 	}
@@ -889,7 +898,9 @@ public class MenuBar extends VBox implements UIPart {
 			forum64();
 		} else if (WebViewType.LEMON64_COM.name().equals(id)) {
 			lemon64();
-		} else if (WebViewType.JSIDPLAY2.name().equals(id)) {
+		} else if (WebViewType.SOASC.name().equals(id)) {
+			soasc();
+		} else if (WebViewType.JSIDPLAY2_SRC.name().equals(id)) {
 			jsidplay2();
 		} else if (WebViewType.USERGUIDE.name().equals(id)) {
 			userguide();
