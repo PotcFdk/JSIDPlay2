@@ -187,6 +187,7 @@
 								<toc />
 								<!-- enable the TOC with 3 levels -->
 								<toclevels>3</toclevels>
+								<docinfo1>true</docinfo1>
 							</attributes>
 						</configuration>
 					</execution>
@@ -213,6 +214,7 @@
 								<toc />
 								<!-- enable the TOC with 3 levels -->
 								<toclevels>3</toclevels>
+								<docinfo1>true</docinfo1>
 							</attributes>
 						</configuration>
 					</execution>
