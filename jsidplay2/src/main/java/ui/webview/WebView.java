@@ -22,11 +22,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Modality;
 import libsidplay.sidtune.SidTune;
@@ -94,12 +96,12 @@ public class WebView extends Tab implements UIPart {
 						@Override
 						public void downloadStop(File downloadedFile) {
 							try {
+								isDownloading = false;
+								Platform.runLater(() -> webView.setCursor(Cursor.DEFAULT));
 								if (downloadedFile != null && convenience.autostart(downloadedFile,
 										Convenience.LEXICALLY_FIRST_MEDIA, null)) {
 									downloadedFile.deleteOnExit();
-									Platform.runLater(() -> {
-										util.setPlayingTab(WebView.this);
-									});
+									Platform.runLater(() -> util.setPlayingTab(WebView.this));
 								} else if (downloadedFile != null) {
 									downloadedFile.delete();
 								}
@@ -110,6 +112,8 @@ public class WebView extends Tab implements UIPart {
 
 						@Override
 						public void downloadStep(int step) {
+							isDownloading = true;
+							Platform.runLater(() -> webView.setCursor(Cursor.WAIT));
 							DoubleProperty progressProperty = util.progressProperty(webView);
 							progressProperty.setValue(step / 100.f);
 						}
@@ -136,6 +140,7 @@ public class WebView extends Tab implements UIPart {
 	private Convenience convenience;
 	private WebViewType type;
 	private WebEngine engine;
+	private boolean isDownloading;
 
 	private UIUtil util;
 
@@ -178,6 +183,11 @@ public class WebView extends Tab implements UIPart {
 		convenience.setAutoStartedFile(file -> {
 			if (showTuneInfos && PathUtils.getFilenameSuffix(file.getName()).equalsIgnoreCase(".sid")) {
 				showTuneInfos(util.getPlayer().getTune(), file);
+			}
+		});
+		webView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+			if (isDownloading) {
+				event.consume();
 			}
 		});
 		engine = webView.getEngine();
