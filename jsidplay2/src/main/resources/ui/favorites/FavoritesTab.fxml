@@ -40,20 +40,13 @@
 							<cellFactory>
 								<FavoritesCellFactory />
 							</cellFactory>
-							<contextMenu>
-								<ContextMenu fx:id="contextMenuHeader">
-									<items>
-										<MenuItem fx:id="removeColumn" text="%REMOVE_COLUMN"
-											onAction="#removeColumn" />
-										<Menu fx:id="addColumnMenu" text="%ADD_COLUMN" />
-									</items>
-								</ContextMenu>
-							</contextMenu>
 						</TableColumn>
 					</columns>
 					<contextMenu>
 						<ContextMenu fx:id="contextMenu">
 							<items>
+								<MenuItem fx:id="removeColumn" text="%REMOVE_COLUMN" onAction="#removeColumn" />
+								<Menu fx:id="addColumnMenu" text="%ADD_COLUMN" />
 								<MenuItem fx:id="showStil" text="%SHOW_STIL" onAction="#showStil" />
 								<MenuItem text="%EXPORT_TO_DIR" onAction="#exportToDir" />
 								<Menu fx:id="moveToTab" text="%MOVE_TO_TAB" />

@@ -20,8 +20,6 @@ import java.util.Random;
 
 import javax.persistence.metamodel.SingularAttribute;
 
-import com.sun.javafx.scene.control.skin.TableColumnHeader;
-
 import de.schlichtherle.truezip.file.TFile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -37,7 +35,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumnBase;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -74,7 +72,7 @@ public class FavoritesTab extends Tab implements UIPart {
 	@FXML
 	private Button moveUp, moveDown;
 	@FXML
-	private ContextMenu contextMenuHeader, contextMenu;
+	private ContextMenu contextMenu;
 
 	private UIUtil util;
 
@@ -85,6 +83,7 @@ public class FavoritesTab extends Tab implements UIPart {
 
 	private ObjectProperty<HVSCEntry> currentlyPlayedHVSCEntryProperty;
 	private Favorites favorites;
+	private int selectedColumn;
 
 	public FavoritesTab(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
@@ -147,11 +146,6 @@ public class FavoritesTab extends Tab implements UIPart {
 				e.printStackTrace();
 			}
 		}
-		contextMenuHeader.setOnShown((event) -> {
-			TableColumnBase tableColumn = getContextMenuColumn();
-			// never remove the first column
-			removeColumn.setDisable(favoritesTable.getColumns().indexOf(tableColumn) == 0);
-		});
 
 		contextMenu.setOnShown((event) -> {
 			HVSCEntry hvscEntry = favoritesTable.getSelectionModel().getSelectedItem();
@@ -180,6 +174,18 @@ public class FavoritesTab extends Tab implements UIPart {
 			}
 			moveToTab.setDisable(moveToTab.getItems().isEmpty());
 			copyToTab.setDisable(copyToTab.getItems().isEmpty());
+			// never remove the first column
+			removeColumn.setDisable(true);
+			for (TablePosition tablePosition : favoritesTable.getSelectionModel().getSelectedCells()) {
+				selectedColumn = tablePosition.getColumn();
+				removeColumn.setDisable(favoritesTable.getSelectionModel().getSelectedCells().size() != 1
+						|| tablePosition.getColumn() <= 0);
+				break;
+			}
+			if (selectedColumn > 0) {
+				TableColumn tableColumn = favoritesTable.getColumns().get(selectedColumn);
+				removeColumn.setText(String.format(util.getBundle().getString("REMOVE_COLUMN"), tableColumn.getText()));
+			}
 		});
 
 		currentlyPlayedHVSCEntryProperty = new SimpleObjectProperty<HVSCEntry>();
@@ -218,7 +224,10 @@ public class FavoritesTab extends Tab implements UIPart {
 	@SuppressWarnings({ "rawtypes" })
 	@FXML
 	private void removeColumn() {
-		TableColumnBase tableColumn = getContextMenuColumn();
+		if (selectedColumn < 0) {
+			return;
+		}
+		TableColumn tableColumn = favoritesTable.getColumns().get(selectedColumn);
 		FavoriteColumn favoriteColumn = (FavoriteColumn) tableColumn.getUserData();
 		favoritesTable.getColumns().remove(tableColumn);
 		favoritesSection.getColumns().remove(favoriteColumn);
@@ -498,11 +507,6 @@ public class FavoritesTab extends Tab implements UIPart {
 		return null;
 	}
 
-	TableColumnBase<?, ?> getContextMenuColumn() {
-		TableColumnHeader columnHeader = (TableColumnHeader) contextMenuHeader.getOwnerNode();
-		return columnHeader.getTableColumn();
-	}
-
 	private void addAddColumnHeaderMenuItem(Menu addColumnMenu, final SingularAttribute<?, ?> attribute) {
 		MenuItem menuItem = new MenuItem();
 		menuItem.setText(attribute.getName());
@@ -527,7 +531,6 @@ public class FavoritesTab extends Tab implements UIPart {
 		cellFactory.setPlayer(util.getPlayer());
 		cellFactory.setCurrentlyPlayedHVSCEntryProperty(currentlyPlayedHVSCEntryProperty);
 		tableColumn.setCellFactory(cellFactory);
-		tableColumn.setContextMenu(contextMenuHeader);
 		tableColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
 			favoriteColumn.setWidth(newValue.doubleValue());
 		});
