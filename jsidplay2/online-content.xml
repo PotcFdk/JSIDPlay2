@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project>
 <project name="build online content" default="all" xmlns:fx="javafx:com.sun.javafx.tools.ant">
 	<description>
 		Create online content of JSIDPlay2
@@ -113,7 +114,7 @@
 		<fx:jar destfile="${webstart_dir}/${project.artifactId}-${project.version}.jar">
 			<fx:application name="${project.name}" mainClass="${javafx.main.class}" />
 			<fx:resources>
-				<fx:fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar,c64jukebox-${project.version}.jar" />
+				<fx:fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar" />
 			</fx:resources>
 			<fileset dir="target/classes" />
 			<fx:platform javafx="2.2+" j2se="1.8+">
@@ -127,7 +128,7 @@
 		<!-- Add required manifest attributes to ALL jars-->
 		<foreach target="manifest" param="jarToUpdate">
 			<path>
-				<fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar,c64jukebox-${project.version}.jar" />
+				<fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar" />
 			</path>
 		</foreach>
 		<!-- sign all jars using the SAME certificate -->
@@ -144,7 +145,7 @@
 		<fx:deploy embeddedWidth="100%" embeddedHeight="100%" width="${javafx.run.width}" height="${javafx.run.height}" nativeBundles="none" outdir="${webstart_dir}" outfile="${project.name}" embedjnlp="true" updatemode="background">
 			<fx:application name="${project.name}" mainClass="${javafx.main.class}" />
 			<fx:resources>
-				<fx:fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar,c64jukebox-${project.version}.jar" />
+				<fx:fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar" />
 				<fx:fileset dir="${webstart_dir}" type="native" os="Windows" arch="x86_64 x86" includes="*-natives-windows.jar" />
 				<fx:fileset dir="${webstart_dir}" type="native" os="Linux" arch="i386 ia64 x84_64 amd64" includes="*-natives-linux.jar" />
 				<fx:fileset dir="${webstart_dir}" type="native" os="Mac OS" includes="*-natives-osx.jar" />

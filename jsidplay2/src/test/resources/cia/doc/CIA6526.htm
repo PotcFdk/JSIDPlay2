@@ -1,18 +1,23 @@
 <HTML>
 <HEAD>
 <TITLE>A Software Model of the CIA6526</TITLE>
+<style type="text/css">
+.center {
+  text-align:center
+}
+</style>
 </HEAD>
 <BODY bgcolor="#FFFFFF">
-<CENTER>A Software Model of the CIA6526<br>
+<div class="center">A Software Model of the CIA6526<br>
 by pc64@compuserve.com (Wolfgang Lorenz)<br>
-Version 2.15, May 1997</CENTER>
+Version 2.15, May 1997</div>
 <br>
 This document is part of the Emulator Developers Kit (EDK) available at http://ourworld.compuserve.com/homepages/pc64/develop.htm. It describes the internal working of the CIA6526 from the standpoint of a software developer. It acts as an oversight to the source code which is provided as CIA6526.cpp and CIA6526.h. Time of Day (TOD) and Serial Data Register (SDR) haven't been implemented yet.<br>
 <br>
 The CIA6526 contains two timers, A and B. Timer A can be set to either count &oslash;2 (phi two) system clocks or rising edges of the CNT line. Bit 5 of the Control Register A at offset 0x0E selects the source for timer A.<br>
 <br>
-<CENTER><IMG SRC="CIA65261.GIF"><br>
-Figure 1. Source for Timer A</CENTER>
+<div class="center"><IMG SRC="CIA65261.gif"><br>
+Figure 1. Source for Timer A</div>
 <br>
 In &oslash;2 mode, the input of timer A is always 1. This means that the counter will be decremented with each system clock.<br>
 <br>
@@ -20,13 +25,13 @@ In CNT mode, the input must be synchronized with &oslash;2. When there is a risi
 <br>
 Timer B works similar but can also count underflows of timer A (cascaded mode). Bits 6 and 5 of the Control Register B at offset 0x0F select the source for timer B.<br>
 <br>
-<CENTER><IMG SRC="CIA65262.GIF"><br>
-Figure 2. Source for Timer B</CENTER>
+<div class="center"><IMG SRC="CIA65262.gif"><br>
+Figure 2. Source for Timer B</div>
 <br>
 Each timer consists of a 16 bit counter and a 16 bit latch. Two clocks after bit 0 in the CRA has been set to 1, the timer will start counting from its current value back to zero. When the counter has reached zero, it is reloaded from the latch as soon as there is another clock waiting in the pipeline. In &oslash;2 mode, this is always the case. This explains why you are reading zeros in cascaded mode only (2-2-2-1-1-1-0-0-2) but not in &oslash;2 mode (2-1-2).<br>
 <br>
-<CENTER><IMG SRC="CIA65263.GIF"><br>
-Figure 3. Layout of the Timer (both A and B)</CENTER>
+<div class="center"><IMG SRC="CIA65263.gif"><br>
+Figure 3. Layout of the Timer (both A and B)</div>
 <br>
 Whenever the counter is reloaded from the latch, either by underflow or by setting the force load bit of the CRA to 1, the next clock will be removed from the pipeline. This explains why you are reading two successive values (2-1-2-2-1-2) in &oslash;2 mode.<br>
 <br>
@@ -34,8 +39,8 @@ If the timer underflows and CRA bit 3 (one shot) is set or has been set in the c
 <br>
 The bits 6 and 7 of port B can be programmed to reflect the output of the timers. This is done with bit 1 in the Control Registers A and B.<br>
 <br>
-<CENTER><IMG SRC="CIA65264.GIF"><br>
-Figure 4. Timer Output to PB6 (Timer A) and PB7 (Timer B)</CENTER>
+<div class="center"><IMG SRC="CIA65264.gif"><br>
+Figure 4. Timer Output to PB6 (Timer A) and PB7 (Timer B)</div>
 <br>
 The normal output of a timer is a high pulse which lasts for one &oslash;2 clock. By setting bit 3 of the CRA, PB6 will be toggled between high and low at each underflow. The toggle flip-flop is set on a rising edge of bit 0 in the CRA and is cleared on a system reset.<br>
 <br>
@@ -43,8 +48,8 @@ The output of the toggle flip-flop may also be used for the SDR. This hasn't bee
 <br>
 When a timer underflows, the corresponding bit in the Interrupt Control Register (ICR) will be set.<br>
 <br>
-<CENTER><IMG SRC="CIA65265.GIF"><br>
-Figure 5. Interrupt Logic</CENTER>
+<div class="center"><IMG SRC="CIA65265.gif"><br>
+Figure 5. Interrupt Logic</div>
 <br>
 When the bit in the Interrupt Mask Register (IMR) is also set, the CIA6526 will raise an interrupt with a delay of one &oslash;2 clock. This interrupt can be prevented by reading the ICR at the time of the underflow. Once the interrupt flip-flop has been set, changing the condition in the IMR has no effect. Only reading the ICR will clear it.<br>
 <br>

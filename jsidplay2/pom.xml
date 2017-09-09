@@ -389,74 +389,12 @@
 							</archive>
 						</configuration>
 					</execution>
-					<execution>
-						<id>c64jukebox-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<includes>
-								<include>c64jukebox/**</include>
-								<include>hardsid_builder/**</include>
-								<include>libsidplay/**</include>
-								<include>libsidutils/**</include>
-								<include>resid_builder/**</include>
-								<include>sidplay/**</include>
-							</includes>
-							<excludes>
-								<exclude>hardsid_builder/driver/**</exclude>
-								<exclude>hardsid_builder/lib/**</exclude>
-							</excludes>
-							<outputDirectory>${project.build.directory}/deploy/online/webstart</outputDirectory>
-							<finalName>c64jukebox-${project.version}</finalName>
-							<archive>
-								<manifest>
-									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-									<addClasspath>false</addClasspath>
-								</manifest>
-								<manifestEntries>
-									<Entry-Point>c64jukebox.SIDPlay</Entry-Point>
-									<Application-Name>${project.name}</Application-Name>
-									<permissions>all-permissions</permissions>
-									<codebase>${codebase}</codebase>
-								</manifestEntries>
-							</archive>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.6</version>
 				<executions>
-					<execution>
-						<id>copy-resources-c64jukebox</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/main/deploy/c64jukebox</directory>
-									<filtering>true</filtering>
-									<includes>
-										<include>**/*.htm</include>
-									</includes>
-								</resource>
-								<resource>
-									<directory>src/main/deploy/c64jukebox</directory>
-									<filtering>false</filtering>
-									<excludes>
-										<exclude>**/*.htm</exclude>
-									</excludes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
 					<execution>
 						<id>copy-resources-deploy</id>
 						<phase>package</phase>
@@ -481,9 +419,6 @@
 										<exclude>**/*.htm</exclude>
 										<exclude>**/*.txt</exclude>
 									</excludes>
-								</resource>
-								<resource>
-									<directory>src/main/asciidoc/images</directory>
 								</resource>
 							</resources>
 						</configuration>

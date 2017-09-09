@@ -61,10 +61,6 @@ Click link:https://sourceforge.net/projects/jsidplay2/[here] to download
 
 == Further possibilities
 
-* Javascript API test page
-Preparation: Open Java Plugin Control Panel / Click Security High / Add site to Exception list
-{codebase}SIDPlay.htm
-If you want to embed the player without a graphical user interface into your own web-page, just check out the JavaScript API test page.
 * If you want to compare the quality of this emulation with the real thing and own a link:http://www.hardsid.com/[HardSID4U] soundcard,
 then just download and start link:http://www.acid64.com/[ACID64] (by Wilfred Bos) the recommended music player to play SID tunes on a real SID chip
 and additionally download the link:{codebase}jsiddevice-{version}.jar[Network SID Device] (part of JSIDPlay2).
