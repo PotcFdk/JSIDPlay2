@@ -782,7 +782,7 @@ public abstract class GuiTest implements Timeouts {
 
 		// Since moving takes time, only do it if we're not already at the
 		// desired point.
-		if (!MouseInfo.getPointerInfo().getLocation().equals(point)) {
+		if (!MouseInfo.getPointerInfo().getLocation().equals(new Point((int) point.getX(), (int) point.getY()))) {
 			move(MouseInfo.getPointerInfo().getLocation().getX(), point.getY());
 			move(point.getX(), point.getY());
 		}
