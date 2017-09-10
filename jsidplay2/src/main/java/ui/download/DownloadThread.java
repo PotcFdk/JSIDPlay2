@@ -17,6 +17,7 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -185,8 +186,11 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private HttpURLConnection getConnection(URL currentURL) throws IOException, ProtocolException {
 		HttpURLConnection.setFollowRedirects(true);
-		HttpURLConnection connection;
-		connection = (HttpURLConnection) currentURL.openConnection(proxy);
+		URLConnection openConnection = currentURL.openConnection(proxy);
+		if (!(openConnection instanceof HttpURLConnection)) {
+			throw new IOException("Unsupported url: " + currentURL);
+		}
+		HttpURLConnection connection = (HttpURLConnection) openConnection;
 		connection.setRequestMethod("HEAD");
 		return connection;
 	}
@@ -205,7 +209,12 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 			FileOutputStream fos = null;
 			try {
 				while (true) {
-					HttpURLConnection connection = (HttpURLConnection) currentURL.openConnection(proxy);
+					URLConnection openConnection = currentURL.openConnection(proxy);
+					if (!(openConnection instanceof HttpURLConnection)) {
+						System.err.println("Unsupported protocol: " + currentURL);
+						throw new IOException();
+					}
+					HttpURLConnection connection = (HttpURLConnection) openConnection;
 					connection.setInstanceFollowRedirects(false);
 					int responseCode = connection.getResponseCode();
 					switch (responseCode) {

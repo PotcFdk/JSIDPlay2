@@ -60,7 +60,9 @@ public class WebView extends Tab implements UIPart {
 					Node node = anchors.item(i);
 					if (node instanceof EventTarget) {
 						EventTarget eventTarget = (EventTarget) node;
-						eventTarget.addEventListener(CLICK_EVENT, this, false);
+						if (eventTarget.toString().startsWith("http://")) {
+							eventTarget.addEventListener(CLICK_EVENT, this, false);
+						}
 					}
 				}
 				if (type == WebViewType.USERGUIDE) {
