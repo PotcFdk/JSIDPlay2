@@ -221,13 +221,12 @@ public class FavoritesTab extends Tab implements UIPart {
 		moveRow(from, from + 1);
 	}
 
-	@SuppressWarnings({ "rawtypes" })
 	@FXML
 	private void removeColumn() {
 		if (selectedColumn < 0) {
 			return;
 		}
-		TableColumn tableColumn = favoritesTable.getColumns().get(selectedColumn);
+		TableColumn<HVSCEntry, ?> tableColumn = favoritesTable.getColumns().get(selectedColumn);
 		FavoriteColumn favoriteColumn = (FavoriteColumn) tableColumn.getUserData();
 		favoritesTable.getColumns().remove(tableColumn);
 		favoritesSection.getColumns().remove(favoriteColumn);
