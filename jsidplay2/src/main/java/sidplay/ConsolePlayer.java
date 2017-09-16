@@ -134,8 +134,8 @@ final public class ConsolePlayer {
 
 	private ConsolePlayer(final String[] args) {
 		try {
-			JCommander commander = new JCommander(this, args);
-			commander.setProgramName(getClass().getName());
+			JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName()).build();
+			commander.parse(args);
 			Optional<String> filename = filenames.stream().findFirst();
 			if (help || !filename.isPresent()) {
 				commander.usage();
