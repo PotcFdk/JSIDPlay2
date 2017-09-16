@@ -1,7 +1,12 @@
 package ui.update;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Properties;
 
 import javafx.event.ActionEvent;
@@ -39,10 +44,29 @@ public class Update extends C64Window {
 		float latestVersion = Integer.MIN_VALUE;
 		try {
 			Properties latestProperties = new Properties();
-			URL resource = new URL(
+			URL url = new URL(
 					"http://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/latest.properties?format=raw");
-			latestProperties.load(resource.openConnection().getInputStream());
-			latestVersion = Float.parseFloat(latestProperties.getProperty("version"));
+			while (true) {
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection(getProxy());
+				connection.setInstanceFollowRedirects(false);
+				int responseCode = connection.getResponseCode();
+				switch (responseCode) {
+				case HttpURLConnection.HTTP_MOVED_PERM:
+				case HttpURLConnection.HTTP_MOVED_TEMP:
+				case HttpURLConnection.HTTP_SEE_OTHER:
+					String location = connection.getHeaderField("Location");
+					if (location != null) {
+						location = URLDecoder.decode(location, "UTF-8");
+						// Deal with relative URLs
+						URL next = new URL(url, location);
+						url = new URL(next.toExternalForm());
+						continue;
+					}
+				}
+				latestProperties.load(connection.getInputStream());
+				latestVersion = Float.parseFloat(latestProperties.getProperty("version"));
+				break;
+			}
 		} catch (NullPointerException | IOException e) {
 		}
 		final boolean updateAvailable = latestVersion > currentVersion;
@@ -58,6 +82,16 @@ public class Update extends C64Window {
 	@FXML
 	private void okPressed(ActionEvent event) {
 		close();
+	}
+
+	private Proxy getProxy() {
+		if (util.getConfig().getSidplay2Section().isEnableProxy()) {
+			final SocketAddress addr = new InetSocketAddress(util.getConfig().getSidplay2Section().getProxyHostname(),
+					util.getConfig().getSidplay2Section().getProxyPort());
+			return new Proxy(Proxy.Type.HTTP, addr);
+		} else {
+			return Proxy.NO_PROXY;
+		}
 	}
 
 }
