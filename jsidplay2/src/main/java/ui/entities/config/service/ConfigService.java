@@ -56,6 +56,7 @@ public class ConfigService {
 
 	public ConfigService(ConfigurationType configurationType) {
 		this.configurationType = configurationType;
+		System.setProperty("hsqldb.reconfig_logging", "false");
 		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 	}
 
