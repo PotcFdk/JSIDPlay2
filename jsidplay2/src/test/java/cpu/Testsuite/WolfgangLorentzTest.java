@@ -19,14 +19,15 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDisk1() {
-		click("#VIDEO");
-		click("#floppy");
+		clickOn("#VIDEO");
+		clickOn("#floppy");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("Disk1.d64");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 		player.resetC64("LOAD\"*\",8\rRUN\r");
+		fastForward(SPEED_FACTOR);
 		while (!checkDiskChange(2)) {
 			sleep(10000);
 			if (checkTestFailed()) {
@@ -37,14 +38,15 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDisk2() {
-		click("#VIDEO");
-		click("#floppy");
+		clickOn("#VIDEO");
+		clickOn("#floppy");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("Disk2.d64");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 		player.resetC64("LOAD\"*\",8\rRUN\r");
+		fastForward(SPEED_FACTOR);
 		while (!checkDiskChange(3)) {
 			sleep(10000);
 			if (checkTestFailed()) {
@@ -55,14 +57,15 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDisk3() {
-		click("#VIDEO");
-		click("#floppy");
+		clickOn("#VIDEO");
+		clickOn("#floppy");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("Disk3.d64");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 		player.resetC64("LOAD\"*\",8\rRUN\r");
+		fastForward(SPEED_FACTOR);
 		while (!checkFinish()) {
 			sleep(10000);
 			if (checkTestFailed()) {

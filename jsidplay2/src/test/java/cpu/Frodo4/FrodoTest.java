@@ -19,17 +19,17 @@ public class FrodoTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDADB() {
-		click("#VIDEO");
-		click("#file");
-		click("#load");
+		clickOn("#VIDEO");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("dadb.prg");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 1);
-		click("#VIDEO");
+		clickOn("#VIDEO");
 		schedule(c64 -> c64.getKeyboard().keyPressed(SPACE));
 		sleep(SCHEDULE_THREADSAFE_TIMEOUT);
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 0);
@@ -40,17 +40,17 @@ public class FrodoTest extends JSIDPlay2Test {
 
 	@Test
 	public void testDE00all() {
-		click("#VIDEO");
-		click("#file");
-		click("#load");
+		clickOn("#VIDEO");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("de00all-sys49152.prg");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 0);
-		click("#VIDEO");
+		clickOn("#VIDEO");
 		schedule(c64 -> c64.getKeyboard().keyPressed(SPACE));
 		sleep(SCHEDULE_THREADSAFE_TIMEOUT);
 		Assert.assertTrue(player.getC64().getVIC().getRegisters()[0x20] == 1);

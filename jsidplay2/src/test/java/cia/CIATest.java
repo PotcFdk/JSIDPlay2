@@ -17,25 +17,25 @@ public class CIATest extends JSIDPlay2Test {
 
 	@Test
 	public void detectCIA6526() {
-		click("#VIDEO");
-		click("#file");
-		click("#load");
+		clickOn("#VIDEO");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("cia_detection.prg");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 
 		Assert.assertTrue(player.getC64().getRAM()[0xc093] == 0x0c);
 	}
 
 	@Test
 	public void timerBCountsA() {
-		click("#VIDEO");
-		click("#file");
-		click("#load");
+		clickOn("#VIDEO");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("cmp-b-counts-a.prg");
 		push(ENTER);
 		sleep(15000);

@@ -3,12 +3,12 @@ package ui.common;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import sidplay.Player;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import sidplay.Player;
 
 public abstract class C64Window implements UIPart {
 
@@ -21,6 +21,13 @@ public abstract class C64Window implements UIPart {
 	/** All UI pieces of this Stage */
 	private final Collection<UIPart> uiParts = new ArrayList<>();
 
+	private Runnable closeAction = () -> {
+		stage.close();
+		for (UIPart part : uiParts) {
+			part.doClose();
+		}
+	};
+	
 	/**
 	 * Create a scene in a new stage.
 	 */
@@ -58,15 +65,16 @@ public abstract class C64Window implements UIPart {
 	}
 
 	public void close() {
-		stage.close();
-		for (UIPart part : uiParts) {
-			part.doClose();
-		}
+		closeAction.run();
 	}
 
 	public void close(UIPart part) {
 		part.doClose();
 		uiParts.remove(part);
+	}
+
+	public final void setCloseAction(Runnable closeAction) {
+		this.closeAction = closeAction;
 	}
 
 	public Stage getStage() {

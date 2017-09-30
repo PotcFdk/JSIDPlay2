@@ -16,31 +16,31 @@ public class SidTuneTest extends JSIDPlay2Test {
 
 		config.getEmulationSection().setUserSidModel(ChipModel.AUTO);
 		config.getEmulationSection().setDefaultSidModel(ChipModel.MOS8580);
-		click("#file");
-		click("#load");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("sid_detection.prg");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 		Assert.assertTrue(checkScreenMessage("b", 1, 1));
 
 		config.getEmulationSection().setDefaultSidModel(ChipModel.MOS6581);
 		player.play(player.getTune());
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 		Assert.assertTrue(checkScreenMessage("a", 1, 1));
 	}
 
 	@Test
 	public void loadPSidStereoTest() {
 		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples/stereo/2sids/Nata");
-		click("#file");
-		click("#load");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("Anthrox_2SID.sid");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 
 		player.getC64().configureSID(0, sid -> Assert.assertNotNull(sid));
 		player.getC64().configureSID(1, sid -> Assert.assertNotNull(sid));
@@ -55,13 +55,13 @@ public class SidTuneTest extends JSIDPlay2Test {
 	@Test
 	public void loadPSidTest() {
 		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples");
-		click("#file");
-		click("#load");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("Turrican_2-The_Final_Fight.sid");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 
 		// Driver
 		Assert.assertTrue(checkRam(0xc000, new byte[] { 0x4c, 0x00, 0x08 }));
@@ -74,13 +74,13 @@ public class SidTuneTest extends JSIDPlay2Test {
 	@Test
 	public void loadP00Test() {
 		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples");
-		click("#file");
-		click("#load");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("PUZZLEND.p00");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 
 		Assert.assertTrue(checkRam(0x0801, new byte[] { (byte) 0xde, 0x38, (byte) 0xa9 }));
 	}
@@ -88,13 +88,13 @@ public class SidTuneTest extends JSIDPlay2Test {
 	@Test
 	public void loadMusTest() {
 		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples");
-		click("#file");
-		click("#load");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("Angie_A.mus");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 
 		// Driver
 		Assert.assertTrue(checkRam(0x0400, new byte[] { 0x4c, (byte) 0x80, (byte) 0xec }));
@@ -109,13 +109,13 @@ public class SidTuneTest extends JSIDPlay2Test {
 	@Test
 	public void loadMusStereoTest() {
 		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples/stereo");
-		click("#file");
-		click("#load");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("Safety_Dance.mus");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 
 		player.getC64().configureSID(0, sid -> Assert.assertNotNull(sid));
 		player.getC64().configureSID(1, sid -> Assert.assertNotNull(sid));
@@ -132,13 +132,13 @@ public class SidTuneTest extends JSIDPlay2Test {
 	@Test
 	public void loadPrgTest() {
 		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples");
-		click("#file");
-		click("#load");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("radiantx_spiral_silicon_towers.prg");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 
 		Assert.assertTrue(checkScreenMessage("Spiral Silicon Towers", 2, 1));
 	}
@@ -146,13 +146,13 @@ public class SidTuneTest extends JSIDPlay2Test {
 	@Test
 	public void loadPSid3SidTest() {
 		config.getSidplay2Section().setLastDirectory("target/test-classes/sid/examples/stereo/3sids");
-		click("#file");
-		click("#load");
+		clickOn("#file");
+		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		clearText();
+		selectAll();
 		type("Arcade_Memories_3SID.sid");
 		push(ENTER);
-		sleep(SID_TUNE_LOADED_TIMEOUT);
+		sleep(C64_RESET_TIMEOUT);
 
 		player.getC64().configureSID(0, sid -> Assert.assertNotNull(sid));
 		player.getC64().configureSID(1, sid -> Assert.assertNotNull(sid));
