@@ -56,7 +56,7 @@ public enum Audio {
 				Object parametersValues[] = new Object[parameterClasses.length];
 				for (Class<?> parameterClass : parameterClasses) {
 					parameterTypes[parameterNum] = AudioDriver.class;
-					parametersValues[parameterNum++] = parameterClass.newInstance();
+					parametersValues[parameterNum++] = parameterClass.getConstructor().newInstance();
 				}
 				audioDriver = audioDriverClass.getConstructor(parameterTypes).newInstance(parametersValues);
 			}
