@@ -12,8 +12,7 @@ import common.JSIDPlay2Test;
 public class WolfgangLorentzTest extends JSIDPlay2Test {
 
 	@Before
-	public void setup() {
-		super.setup();
+	public void before() {
 		config.getSidplay2Section().setLastDirectory("target/test-classes/cpu/Testsuite/d64");
 	};
 

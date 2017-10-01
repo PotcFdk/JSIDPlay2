@@ -37,8 +37,10 @@ public class JSIDPlay2Test extends ApplicationTest implements Timeouts {
 	 */
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		launch(JSidPlay2Main.class);
 		try {
+			if (JSidPlay2Main.getInstance() == null) {
+				launch(JSidPlay2Main.class);
+			}
 			do {
 				Thread.sleep(JSIDPLAY2_STARTUP_SLEEP);
 			} while (JSidPlay2Main.getInstance() == null);
@@ -48,9 +50,12 @@ public class JSIDPlay2Test extends ApplicationTest implements Timeouts {
 	}
 
 	@Before
-	public void setup() throws AssertionError {
-		JSidPlay2Main.getInstance().setCloseAction(() -> {
+	public final void jsidplay2Before() {
+		JSidPlay2Main.getInstance().setCloseActionEnabler(() -> {
+			// abort test on close operation
 			abortTest = true;
+			// do not close application
+			return false;
 		});
 		abortTest = false;
 		config = JSidPlay2Main.getInstance().getUtil().getConfig();
@@ -63,6 +68,14 @@ public class JSIDPlay2Test extends ApplicationTest implements Timeouts {
 	public FxRobot sleep(long milliseconds) {
 		if (abortTest) {
 			fail("Application closed!");
+		}
+		// we want to stay responsive for application abort
+		while (milliseconds > 500) {
+			milliseconds -= 500;
+			super.sleep(500);
+			if (abortTest) {
+				fail("Application closed!");
+			}
 		}
 		return super.sleep(milliseconds);
 	}

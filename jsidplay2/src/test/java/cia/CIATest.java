@@ -3,15 +3,15 @@ package cia;
 import static javafx.scene.input.KeyCode.ENTER;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import common.JSIDPlay2Test;
 
 public class CIATest extends JSIDPlay2Test {
 
-	@Override
-	public void setup() {
-		super.setup();
+	@Before
+	public void before() {
 		config.getSidplay2Section().setLastDirectory("target/test-classes/cia");
 	}
 

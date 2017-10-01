@@ -12,7 +12,7 @@ public interface Timeouts {
 	/**
 	 * Timeout until the C64 has been reset completely.
 	 */
-	int C64_RESET_TIMEOUT = 2500;
+	int C64_RESET_TIMEOUT = 5000;
 	/**
 	 * Timeout for a thread-safe scheduled event.
 	 */

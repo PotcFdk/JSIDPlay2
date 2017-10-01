@@ -2,6 +2,7 @@ package ui.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -21,13 +22,8 @@ public abstract class C64Window implements UIPart {
 	/** All UI pieces of this Stage */
 	private final Collection<UIPart> uiParts = new ArrayList<>();
 
-	private Runnable closeAction = () -> {
-		stage.close();
-		for (UIPart part : uiParts) {
-			part.doClose();
-		}
-	};
-	
+	private Supplier<Boolean> closeActionEnabler = () -> true;
+
 	/**
 	 * Create a scene in a new stage.
 	 */
@@ -65,7 +61,12 @@ public abstract class C64Window implements UIPart {
 	}
 
 	public void close() {
-		closeAction.run();
+		if (closeActionEnabler.get()) {
+			stage.close();
+			for (UIPart part : uiParts) {
+				part.doClose();
+			}
+		}
 	}
 
 	public void close(UIPart part) {
@@ -73,8 +74,8 @@ public abstract class C64Window implements UIPart {
 		uiParts.remove(part);
 	}
 
-	public final void setCloseAction(Runnable closeAction) {
-		this.closeAction = closeAction;
+	public void setCloseActionEnabler(Supplier<Boolean> closeActionEnabler) {
+		this.closeActionEnabler = closeActionEnabler;
 	}
 
 	public Stage getStage() {
