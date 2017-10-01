@@ -85,6 +85,7 @@ public class JSidPlay2Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+		testInstance = null;
 		player = new Player(getConfigurationFromCommandLineArgs());
 		player.setMenuHook(menuHook);
 		// automatically load tune on start-up

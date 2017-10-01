@@ -111,6 +111,32 @@
 			<version>2.0.7</version>
 		</dependency>
 		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
 			<version>2.1.8</version>
@@ -122,22 +148,22 @@
 			<version>1.72</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.testfx</groupId>
-		    <artifactId>testfx-core</artifactId>
-		    <version>4.0.7-alpha</version>
-		     <scope>test</scope>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-core</artifactId>
+			<version>4.0.7-alpha</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.testfx</groupId>
-		    <artifactId>testfx-junit</artifactId>
-		    <version>4.0.7-alpha</version>
-		    <scope>test</scope>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-junit</artifactId>
+			<version>4.0.7-alpha</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-		    <version>4.11</version>
-		    <scope>test</scope>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -174,7 +200,7 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>1.5.3</version>
+				<version>1.5.6</version>
 				<executions>
 					<execution>
 						<id>output-html-internal</id>
@@ -473,7 +499,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
+				<version>1.8</version>
 				<executions>
 					<execution>
 						<id>pack-jsiddevice-jar</id>
@@ -637,7 +663,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.1.0</version>
 				<configuration>
 					<descriptors>
 						<descriptor>src/main/assembly/zip.xml</descriptor>
@@ -736,7 +762,7 @@
 											asciidoctor-maven-plugin
 										</artifactId>
 										<versionRange>
-											[1.5.3,)
+											[1.5.6,)
 										</versionRange>
 										<goals>
 											<goal>

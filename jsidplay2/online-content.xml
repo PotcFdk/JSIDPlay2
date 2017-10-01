@@ -132,7 +132,7 @@
 			</path>
 		</foreach>
 		<!-- sign all jars using the SAME certificate -->
-		<exec executable="${java.home}/../bin/keytool" dir="${webstart_dir}" failonerror="true">
+		<exec executable="${java.home}/bin/keytool" dir="${webstart_dir}" failonerror="true">
 			<arg line="-selfcert -genkey -alias jsidplay2 -storepass jsidplay2 -keypass jsidplay2 -keystore jsidplay2.jks" />
 			<arg value="-dname" />
 			<arg value="cn=${project.organization.name}, ou=${project.name}, o=Open Source, l=Berlin, st=Berlin, c=DE" />
