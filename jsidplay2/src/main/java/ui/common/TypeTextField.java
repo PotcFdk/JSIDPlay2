@@ -53,25 +53,25 @@ public class TypeTextField extends TextField {
 			try {
 				return Long.parseLong(getText());
 			} catch (NumberFormatException e) {
-				return new Long(0L);
+				return Long.valueOf(0L);
 			}
 		} else if (type.get().equals("Integer") || type.get().equals("Date")) {
 			try {
 				return Integer.parseInt(getText());
 			} catch (NumberFormatException e) {
-				return new Integer(0);
+				return Integer.valueOf(0);
 			}
 		} else if (type.get().equals("Short")) {
 			try {
 				return Short.parseShort(getText());
 			} catch (NumberFormatException e) {
-				return new Short((short) 0);
+				return Short.valueOf((short) 0);
 			}
 		} else if (type.get().equals("Float")) {
 			try {
 				return Float.parseFloat(getText());
 			} catch (NumberFormatException e) {
-				return new Float(0.f);
+				return Float.valueOf(0.f);
 			}
 		}
 		return getText();
