@@ -30,6 +30,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <unistd.h>
+#include <string.h>
+#include <strings.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -56,6 +59,101 @@
 #include "traps.h"
 #include "types.h"
 
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
+
+
+int connectedToJava = 0, startComparison = 0, sockfd;
+BYTE cmp_reg_a = 0, cmp_reg_x = 0, cmp_reg_y = 0, cmp_reg_sp = 0;
+unsigned int cmp_reg_pc;
+DWORD syncClk=0;
+
+ssize_t read_all(int sockfd, void* buffer, unsigned long int length) {
+    int count = 0, n;
+    while (count < length) {
+        n = read(sockfd, buffer + count, length - count);
+        if (n < 0) {
+            return -1;
+        }
+        count += n;
+    }
+}
+
+void sendToJava(char *msg, int length, char dataType) {
+    int n;
+    int nlength;
+    int intSize = sizeof(int);
+
+    if (connectedToJava) {
+        // Send type
+        n = write(sockfd, &dataType, 1);
+        if (n != 1)
+            exit(0);
+        // Send data length
+        nlength = htonl(length);
+        n = write(sockfd, &nlength, intSize);
+        if (n != intSize)
+            exit(0);
+        // send data
+        n = write(sockfd,msg,length);
+        if (n != length)
+            exit(0);
+    }
+}
+
+char *receiveFromJava() {
+    int n;
+    char *buffer = NULL;
+    int received;
+    int intSize = sizeof(int);
+
+    if (connectedToJava) {
+        received = 0;
+        // receive response
+        n = read_all(sockfd,&received,intSize);
+        received = ntohl(received);
+        if (n != intSize)
+            exit(0);
+
+        buffer = calloc(received+1, 1);
+        n = read_all(sockfd,buffer,received);
+        if (n != received)
+            exit(0);
+    }
+    return buffer;
+}
+
+int connectToJava(char *hostname, int port) {
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
+    char * response;
+
+    if (!connectedToJava) {
+        sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (sockfd < 0)
+            return 1;
+        server = gethostbyname(hostname);
+        if (server == NULL) {
+            return 1;
+        }
+        bzero((char *) &serv_addr, sizeof(serv_addr));
+        serv_addr.sin_family = AF_INET;
+        bcopy((char *)server->h_addr,
+              (char *)&serv_addr.sin_addr.s_addr,
+              server->h_length);
+        serv_addr.sin_port = htons(port);
+        if (connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
+            return 1;
+        connectedToJava = 1;
+        response = receiveFromJava();
+        if (response != NULL) {
+            sscanf(response, "%04X,%02hhX,%02hhX,%02hhX,%02hhX", &cmp_reg_pc, &cmp_reg_a, &cmp_reg_x, &cmp_reg_y, &cmp_reg_sp);
+        }
+    }
+    return 0;
+}
+
 /* MACHINE_STUFF should define/undef
 
  - NEED_REG_PC
@@ -72,15 +170,17 @@ CLOCK debug_clk;
 /* ------------------------------------------------------------------------- */
 
 /* Implement the hack to make opcode fetches faster.  */
-#define JUMP(addr)                            \
-    do {                                      \
-        reg_pc = (unsigned int)(addr);        \
-        if (reg_pc >= bank_limit || reg_pc < bank_start) { \
+#define JUMP(addr)                                                                         \
+    do {                                                                                   \
+        reg_pc = (unsigned int)(addr);                                                     \
+        if (reg_pc >= (unsigned int)bank_limit || reg_pc < (unsigned int)bank_start) {     \
             mem_mmu_translate((unsigned int)(addr), &bank_base, &bank_start, &bank_limit); \
-        }                                     \
+        }                                                                                  \
     } while (0)
 
 /* ------------------------------------------------------------------------- */
+
+int check_ba_low = 0;
 
 inline static void interrupt_delay(void)
 {
@@ -119,35 +219,46 @@ static void maincpu_steal_cycles(void)
     /* special handling for steals during opcodes */
     opcode = OPINFO_NUMBER(*cs->last_opcode_info_ptr);
     switch (opcode) {
-        /* SHA */
-        case 0x93:
-        /* SHS */
-        case 0x9b:
-        /* SHY */
-        case 0x9c:
-        /* SHX */
-        case 0x9e:
-        /* SHA */
-        case 0x9f:
-            /* this is a hacky way of signaling SET_ABS_SH_I() that
-               cycles were stolen before the write */
-            /* (fall through) */
-
-        /* ANE */
-        case 0x8b:
-            /* this is a hacky way of signaling ANE() that
-               cycles were stolen after the first fetch */
-            /* (fall through) */
-
-        /* CLI */
-        case 0x58:
-            /* this is a hacky way of signaling CLI() that it
-               shouldn't delay the interrupt */
+    /* SHA */
+    case 0x93:
+        if (check_ba_low) {
             OPINFO_SET_ENABLES_IRQ(*cs->last_opcode_info_ptr, 1);
-            break;
+        }
+        break;
 
-        default:
-            break;
+    /* SHS */
+    case 0x9b:
+    /* (fall through) */
+    /* SHY */
+    case 0x9c:
+    /* (fall through) */
+    /* SHX */
+    case 0x9e:
+    /* (fall through) */
+    /* SHA */
+    case 0x9f:
+        /* this is a hacky way of signaling SET_ABS_SH_I() that
+           cycles were stolen before the write */
+        if (check_ba_low) {
+            OPINFO_SET_ENABLES_IRQ(*cs->last_opcode_info_ptr, 1);
+        }
+        break;
+
+    /* ANE */
+    case 0x8b:
+    /* this is a hacky way of signaling ANE() that
+       cycles were stolen after the first fetch */
+    /* (fall through) */
+
+    /* CLI */
+    case 0x58:
+        /* this is a hacky way of signaling CLI() that it
+           shouldn't delay the interrupt */
+        OPINFO_SET_ENABLES_IRQ(*cs->last_opcode_info_ptr, 1);
+        break;
+
+    default:
+        break;
     }
 
     /* SEI: do not update interrupt delay counters */
@@ -181,41 +292,58 @@ inline static void check_ba(void)
 
 /* FIXME do proper ROM/RAM/IO tests */
 
-void memmap_mem_store(unsigned int addr, unsigned int value)
+inline static void memmap_mem_update(unsigned int addr, int write)
 {
-    if ((addr >= 0xd000)&&(addr <= 0xdfff)) {
-        monitor_memmap_store(addr, MEMMAP_I_O_W);
+    unsigned int type = MEMMAP_RAM_R;
+
+    if (write) {
+        if ((addr >= 0xd000) && (addr <= 0xdfff)) {
+            type = MEMMAP_I_O_W;
+        } else {
+            type = MEMMAP_RAM_W;
+        }
     } else {
-        monitor_memmap_store(addr, MEMMAP_RAM_W);
-    }
-    (*_mem_write_tab_ptr[(addr) >> 8])((WORD)(addr), (BYTE)(value));
-}
-
-BYTE memmap_mem_read(unsigned int addr)
-{
-    check_ba();
-
-    switch(addr >> 12) {
+        switch (addr >> 12) {
         case 0xa:
         case 0xb:
         case 0xe:
         case 0xf:
-            memmap_state |= MEMMAP_STATE_IGNORE;
-            if (pport.data_read & (1 << ((addr>>14) & 1))) {
-                monitor_memmap_store(addr, (memmap_state&MEMMAP_STATE_OPCODE)?MEMMAP_ROM_X:(memmap_state&MEMMAP_STATE_INSTR)?0:MEMMAP_ROM_R);
+            if (pport.data_read & (1 << ((addr >> 14) & 1))) {
+                type = MEMMAP_ROM_R;
             } else {
-                monitor_memmap_store(addr, (memmap_state&MEMMAP_STATE_OPCODE)?MEMMAP_RAM_X:(memmap_state&MEMMAP_STATE_INSTR)?0:MEMMAP_RAM_R);
+                type = MEMMAP_RAM_R;
             }
-            memmap_state &= ~(MEMMAP_STATE_IGNORE);
             break;
         case 0xd:
-            monitor_memmap_store(addr, MEMMAP_I_O_R);
+            type = MEMMAP_I_O_R;
             break;
         default:
-            monitor_memmap_store(addr, (memmap_state&MEMMAP_STATE_OPCODE)?MEMMAP_RAM_X:(memmap_state&MEMMAP_STATE_INSTR)?0:MEMMAP_RAM_R);
+            type = MEMMAP_RAM_R;
             break;
+        }
+        if (memmap_state & MEMMAP_STATE_OPCODE) {
+            /* HACK: transform R to X */
+            type >>= 2;
+            memmap_state &= ~(MEMMAP_STATE_OPCODE);
+        } else if (memmap_state & MEMMAP_STATE_INSTR) {
+            /* ignore operand reads */
+            type = 0;
+        }
     }
-    memmap_state &= ~(MEMMAP_STATE_OPCODE);
+    monitor_memmap_store(addr, type);
+}
+
+void memmap_mem_store(unsigned int addr, unsigned int value)
+{
+    memmap_mem_update(addr, 1);
+    (*_mem_write_tab_ptr[(addr) >> 8])((WORD)(addr), (BYTE)(value));
+}
+
+/* read byte, check BA and mark as read */
+BYTE memmap_mem_read(unsigned int addr)
+{
+    check_ba();
+    memmap_mem_update(addr, 0);
     return (*_mem_read_tab_ptr[(addr) >> 8])((WORD)(addr));
 }
 
@@ -227,6 +355,13 @@ BYTE memmap_mem_read(unsigned int addr)
 #ifndef LOAD
 #define LOAD(addr) \
     memmap_mem_read(addr)
+#endif
+
+#ifndef LOAD_CHECK_BA_LOW
+#define LOAD_CHECK_BA_LOW(addr) \
+    check_ba_low = 1;           \
+    memmap_mem_read(addr);      \
+    check_ba_low = 0
 #endif
 
 #ifndef STORE_ZERO
@@ -261,6 +396,13 @@ inline static BYTE mem_read_check_ba(unsigned int addr)
 #ifndef LOAD
 #define LOAD(addr) \
     mem_read_check_ba(addr)
+#endif
+
+#ifndef LOAD_CHECK_BA_LOW
+#define LOAD_CHECK_BA_LOW(addr) \
+    check_ba_low = 1;           \
+    mem_read_check_ba(addr);    \
+    check_ba_low = 0
 #endif
 
 #ifndef STORE_ZERO
@@ -330,7 +472,7 @@ unsigned int last_opcode_addr;
 
 /* Number of write cycles for each 6510 opcode.  */
 const CLOCK maincpu_opcode_write_cycles[] = {
-            /* 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F */
+    /* 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F */
     /* $00 */  3, 0, 0, 2, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 2, /* $00 */
     /* $10 */  0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 0, 2, 0, 0, 2, 2, /* $10 */
     /* $20 */  2, 0, 0, 2, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, /* $20 */
@@ -347,7 +489,7 @@ const CLOCK maincpu_opcode_write_cycles[] = {
     /* $D0 */  0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 0, 2, 0, 0, 2, 2, /* $D0 */
     /* $E0 */  0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, /* $E0 */
     /* $F0 */  0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 0, 2, 0, 0, 2, 2  /* $F0 */
-            /* 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F */
+    /* 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F */
 };
 
 /* Public copy of the CPU registers.  As putting the registers into the
@@ -414,8 +556,9 @@ static void cpu_reset(void)
 
     interrupt_cpu_status_reset(maincpu_int_status);
 
-    if (preserve_monitor)
+    if (preserve_monitor) {
         interrupt_monitor_trap_on(maincpu_int_status);
+    }
 
     maincpu_clk = 6; /* # of clock cycles needed for RESET.  */
 
@@ -438,7 +581,7 @@ void maincpu_reset(void)
    account for the internal delays of the 6510, but does not actually check
    the status of the NMI line.  */
 inline static int interrupt_check_nmi_delay(interrupt_cpu_status_t *cs,
-                                            CLOCK cpu_clk)
+        CLOCK cpu_clk)
 {
     unsigned int delay_cycles = INTERRUPT_DELAY;
 
@@ -465,7 +608,7 @@ inline static int interrupt_check_nmi_delay(interrupt_cpu_status_t *cs,
    account for the internal delays of the 6510, but does not actually check
    the status of the IRQ line.  */
 inline static int interrupt_check_irq_delay(interrupt_cpu_status_t *cs,
-                                            CLOCK cpu_clk)
+        CLOCK cpu_clk)
 {
     unsigned int delay_cycles = INTERRUPT_DELAY;
 
@@ -496,72 +639,12 @@ static BYTE **o_bank_base;
 static int *o_bank_start;
 static int *o_bank_limit;
 
-void maincpu_resync_limits(void) {
+void maincpu_resync_limits(void)
+{
     if (o_bank_base) {
         mem_mmu_translate(reg_pc, o_bank_base, o_bank_start, o_bank_limit);
     }
 }
-
-/*
- * JSIDPlay2 Syncronization BEGIN
- */
-
-int connectedToJava = 0;
-int sockfd;
-DWORD javaClock=0;
-DWORD syncClk=0;
-
-int connectToJava(char *hostname, int port) {
-    int portno;
-    struct sockaddr_in serv_addr;
-    struct hostent *server;
-
-    if (!connectedToJava) {
-      portno = port;
-      sockfd = socket(AF_INET, SOCK_STREAM, 0);
-      if (sockfd < 0)
-        exit(0);
-      server = gethostbyname(hostname);
-      if (server == NULL) {
-        exit(0);
-      }
-      bzero((char *) &serv_addr, sizeof(serv_addr));
-      serv_addr.sin_family = AF_INET;
-      bcopy((char *)server->h_addr,
-           (char *)&serv_addr.sin_addr.s_addr,
-           server->h_length);
-      serv_addr.sin_port = htons(portno);
-      if (connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
-        exit(0);
-      syncClk = maincpu_clk;
-      connectedToJava = 1;
-    }
-    return 0;
-}
-
-int sendToJava(char *msg) {
-  int n;
-  char buffer[256];
-
-  if (connectedToJava) {
-    n = write(sockfd,msg,strlen(msg));
-    if (n < 0)
-         exit(0);
-    bzero(buffer,256);
-    n = read(sockfd,buffer,255);
-    if (n < 0)
-         exit(0);
-
-    if (!strncmp(buffer, "break", 5)) {
-      fprintf(stdout, "Set BREAK point here");
-    }
-  }
-  return 0;
-}
-
-/*
- * JSIDPlay2 Syncronization END
- */
 
 void maincpu_mainloop(void)
 {
@@ -588,7 +671,6 @@ void maincpu_mainloop(void)
     machine_trigger_reset(MACHINE_RESET_MODE_SOFT);
 
     while (1) {
-
 #define CLK maincpu_clk
 #define RMW_FLAG maincpu_rmw_flag
 #define LAST_OPCODE_INFO last_opcode_info
@@ -599,17 +681,13 @@ void maincpu_mainloop(void)
 
 #define ALARM_CONTEXT maincpu_alarm_context
 
-#define CHECK_PENDING_ALARM() \
-   (clk >= next_alarm_clk(maincpu_int_status))
+#define CHECK_PENDING_ALARM() (clk >= next_alarm_clk(maincpu_int_status))
 
-#define CHECK_PENDING_INTERRUPT() \
-   check_pending_interrupt(maincpu_int_status)
+#define CHECK_PENDING_INTERRUPT() check_pending_interrupt(maincpu_int_status)
 
-#define TRAP(addr) \
-   maincpu_int_status->trap_func(addr);
+#define TRAP(addr) maincpu_int_status->trap_func(addr);
 
-#define ROM_TRAP_HANDLER() \
-   traps_handler()
+#define ROM_TRAP_HANDLER() traps_handler()
 
 #define JAM()                                                         \
     do {                                                              \
@@ -618,19 +696,19 @@ void maincpu_mainloop(void)
         EXPORT_REGISTERS();                                           \
         tmp = machine_jam("   " CPU_STR ": JAM at $%04X   ", reg_pc); \
         switch (tmp) {                                                \
-          case JAM_RESET:                                             \
-            DO_INTERRUPT(IK_RESET);                                   \
-            break;                                                    \
-          case JAM_HARD_RESET:                                        \
-            mem_powerup();                                            \
-            DO_INTERRUPT(IK_RESET);                                   \
-            break;                                                    \
-          case JAM_MONITOR:                                           \
-            monitor_startup(e_comp_space);                            \
-            IMPORT_REGISTERS();                                       \
-            break;                                                    \
-          default:                                                    \
-            CLK_INC();                                                \
+            case JAM_RESET:                                           \
+                DO_INTERRUPT(IK_RESET);                               \
+                break;                                                \
+            case JAM_HARD_RESET:                                      \
+                mem_powerup();                                        \
+                DO_INTERRUPT(IK_RESET);                               \
+                break;                                                \
+            case JAM_MONITOR:                                         \
+                monitor_startup(e_comp_space);                        \
+                IMPORT_REGISTERS();                                   \
+                break;                                                \
+            default:                                                  \
+                CLK_INC();                                            \
         }                                                             \
     } while (0)
 
@@ -644,33 +722,94 @@ void maincpu_mainloop(void)
 
         maincpu_int_status->num_dma_per_opcode = 0;
 
-/*
- * JSIDPlay2 Syncronization BEGIN
- */
+        if (maincpu_clk_limit && (maincpu_clk > maincpu_clk_limit)) {
+            log_error(LOG_DEFAULT, "cycle limit reached.");
+            exit(EXIT_FAILURE);
+        }
 
-  // START syncronization
-  if (reg_pc == 3746 &&
-      reg_a == 25 &&
-      reg_x == 126 &&
-      reg_y == 1 &&
-      reg_sp == 232) {
-      connectToJava("localhost", 6510);
-  }
-//16457 -> 16466   OK: 16457: pc=0d99(3481), a=b7, x=20, y=04, sp=e8
-  char buf[512];
-  sprintf(buf, "clk=%d, syncClk=%d, pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x\n",
-                CLK, (CLK-syncClk), reg_pc, reg_a, reg_x, reg_y, reg_sp);
-  sendToJava(buf);
+        connectToJava("localhost", 6510);
 
-/*
- * JSIDPlay2 Syncronization END
- */
+        if (!startComparison && reg_pc==cmp_reg_pc && reg_a==cmp_reg_a &&   reg_x==cmp_reg_x && reg_y==cmp_reg_y && reg_sp==cmp_reg_sp) {
+            syncClk = maincpu_clk;
+            startComparison = 1;
+        }
+        if (startComparison) {
+            char buf[512];
+            sprintf(buf, "clk=%d, syncClk=%d, pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x\n",
+                    CLK, (CLK-syncClk), reg_pc, reg_a, reg_x, reg_y, reg_sp);
+            sendToJava(buf, strlen(buf), 1);
+            char *response = receiveFromJava();
+            if (response != NULL) {
+                if (!strcmp(response, "break")) {
+                    printf("Response=%s", response);
+                } else if (!strcmp(response, "read")) {
+                    // TODO BYTE read(unsigned int);
+                    // (*_mem_read_tab_ptr[(addr) >> 8])((WORD)(addr))
+                }
+                free(response);
+            }
+        }
 
 #if 0
-        if (CLK > 246171754)
+        if (CLK > 246171754) {
             debug.maincpu_traceflg = 1;
+        }
 #endif
     }
+}
+
+/* ------------------------------------------------------------------------- */
+
+void maincpu_set_pc(int pc) {
+    MOS6510_REGS_SET_PC(&maincpu_regs, pc);
+}
+
+void maincpu_set_a(int a) {
+    MOS6510_REGS_SET_A(&maincpu_regs, a);
+}
+
+void maincpu_set_x(int x) {
+    MOS6510_REGS_SET_X(&maincpu_regs, x);
+}
+
+void maincpu_set_y(int y) {
+    MOS6510_REGS_SET_Y(&maincpu_regs, y);
+}
+
+void maincpu_set_sign(int n) {
+    MOS6510_REGS_SET_SIGN(&maincpu_regs, n);
+}
+
+void maincpu_set_zero(int z) {
+    MOS6510_REGS_SET_ZERO(&maincpu_regs, z);
+}
+
+void maincpu_set_carry(int c) {
+    MOS6510_REGS_SET_CARRY(&maincpu_regs, c);
+}
+
+void maincpu_set_interrupt(int i) {
+    MOS6510_REGS_SET_INTERRUPT(&maincpu_regs, i);
+}
+
+unsigned int maincpu_get_pc(void) {
+    return MOS6510_REGS_GET_PC(&maincpu_regs);
+}
+
+unsigned int maincpu_get_a(void) {
+    return MOS6510_REGS_GET_A(&maincpu_regs);
+}
+
+unsigned int maincpu_get_x(void) {
+    return MOS6510_REGS_GET_X(&maincpu_regs);
+}
+
+unsigned int maincpu_get_y(void) {
+    return MOS6510_REGS_GET_Y(&maincpu_regs);
+}
+
+unsigned int maincpu_get_sp(void) {
+    return MOS6510_REGS_GET_SP(&maincpu_regs);
 }
 
 /* ------------------------------------------------------------------------- */
@@ -690,15 +829,15 @@ int maincpu_snapshot_write_module(snapshot_t *s)
     }
 
     if (0
-        || SMW_DW(m, maincpu_clk) < 0
-        || SMW_B(m, MOS6510_REGS_GET_A(&maincpu_regs)) < 0
-        || SMW_B(m, MOS6510_REGS_GET_X(&maincpu_regs)) < 0
-        || SMW_B(m, MOS6510_REGS_GET_Y(&maincpu_regs)) < 0
-        || SMW_B(m, MOS6510_REGS_GET_SP(&maincpu_regs)) < 0
-        || SMW_W(m, (WORD)MOS6510_REGS_GET_PC(&maincpu_regs)) < 0
-        || SMW_B(m, (BYTE)MOS6510_REGS_GET_STATUS(&maincpu_regs)) < 0
-        || SMW_DW(m, (DWORD)last_opcode_info) < 0
-        || SMW_DW(m, (DWORD)maincpu_ba_low_flags) < 0) {
+            || SMW_DW(m, maincpu_clk) < 0
+            || SMW_B(m, MOS6510_REGS_GET_A(&maincpu_regs)) < 0
+            || SMW_B(m, MOS6510_REGS_GET_X(&maincpu_regs)) < 0
+            || SMW_B(m, MOS6510_REGS_GET_Y(&maincpu_regs)) < 0
+            || SMW_B(m, MOS6510_REGS_GET_SP(&maincpu_regs)) < 0
+            || SMW_W(m, (WORD)MOS6510_REGS_GET_PC(&maincpu_regs)) < 0
+            || SMW_B(m, (BYTE)MOS6510_REGS_GET_STATUS(&maincpu_regs)) < 0
+            || SMW_DW(m, (DWORD)last_opcode_info) < 0
+            || SMW_DW(m, (DWORD)maincpu_ba_low_flags) < 0) {
         goto fail;
     }
 
@@ -737,15 +876,15 @@ int maincpu_snapshot_read_module(snapshot_t *s)
 
     /* XXX: Assumes `CLOCK' is the same size as a `DWORD'.  */
     if (0
-        || SMR_DW(m, &maincpu_clk) < 0
-        || SMR_B(m, &a) < 0
-        || SMR_B(m, &x) < 0
-        || SMR_B(m, &y) < 0
-        || SMR_B(m, &sp) < 0
-        || SMR_W(m, &pc) < 0
-        || SMR_B(m, &status) < 0
-        || SMR_DW_UINT(m, &last_opcode_info) < 0
-        || SMR_DW_INT(m, &maincpu_ba_low_flags) < 0) {
+            || SMR_DW(m, &maincpu_clk) < 0
+            || SMR_B(m, &a) < 0
+            || SMR_B(m, &x) < 0
+            || SMR_B(m, &y) < 0
+            || SMR_B(m, &sp) < 0
+            || SMR_W(m, &pc) < 0
+            || SMR_B(m, &status) < 0
+            || SMR_DW_UINT(m, &last_opcode_info) < 0
+            || SMR_DW_INT(m, &maincpu_ba_low_flags) < 0) {
         goto fail;
     }
 
@@ -776,4 +915,3 @@ fail:
     }
     return -1;
 }
-

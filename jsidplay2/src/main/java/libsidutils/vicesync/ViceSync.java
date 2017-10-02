@@ -1,9 +1,9 @@
 package libsidutils.vicesync;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -11,23 +11,27 @@ import java.util.Scanner;
 public class ViceSync {
 
 	private ServerSocket serverSocket;
-	private BufferedReader in;
-	private PrintWriter out;
-
+	private DataInputStream in;
+	private DataOutputStream out;
 	public void connect(int port) throws IOException {
 		int portNumber = port;
 		serverSocket = new ServerSocket(portNumber);
 		Socket clientSocket = serverSocket.accept();
-		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		out = new PrintWriter(clientSocket.getOutputStream(), true);
+		in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
+		out = new DataOutputStream(clientSocket.getOutputStream());
 	}
 
 	public String receive() throws IOException {
-		return in.readLine();
+		/*int type =*/ in.read();
+		int length = in.readInt();
+		byte[] result = new byte[length];
+		in.read(result);
+		return new String(result, "US-ASCII");
 	}
 
 	public void send(String answer) throws IOException {
-		out.println(answer);
+		out.writeInt(answer.length());
+		out.write(answer.getBytes());
 	}
 
 	public static class MOS6510State {
@@ -51,6 +55,9 @@ public class ViceSync {
 			return clk;
 		}
 
+		public long getSyncClk() {
+			return syncClk;
+		}
 		@Override
 		public boolean equals(Object obj) {
 			MOS6510State other = (MOS6510State) obj;
@@ -64,7 +71,7 @@ public class ViceSync {
 
 		@Override
 		public String toString() {
-			return String.format("%d - %d: pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x", clk, syncClk, pc, (byte) a,
+			return String.format("%08d - %d: pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x", clk, syncClk, pc, (byte) a,
 					(byte) x, (byte) y, (byte) sp);
 		}
 	}

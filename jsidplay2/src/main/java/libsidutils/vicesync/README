@@ -4,28 +4,45 @@ Some synchronization start has been found, where both implementations are exactl
 the same state. From here on the compare their states each instruction fetch until a difference has
 been detected. VICE sends its state to JSIDPlay2 and JSIDPlay2 compares with its own state.
 
-Build VICE:
-===========
-cd /home/ken/Downloads/vice-2.4
-# install eventually missing Ubuntu packages (e.g. my Ubuntu 15.10)
-sudo apt-get install libxt-dev libxaw7-dev libreadline-dev
-# enable debug symbols
-./configure CFLAGS='-g' CXXFLAGS='-g'
-# Remove optimization flags from all Makefiles: e.g. -O2
-<do it with your favorite editor here!>
+Build VICE (with debug settings):
+=================================
+Checkout source code of vice with eclipse, repository location:
+https://svn.code.sf.net/p/vice-emu/code/tags/v3.1/
+open a terminal
+cd /home/ken/workspace/vice
+# install eventually missing Ubuntu packages (e.g. my Ubuntu 17.10)
+sudo apt-get install byacc flex libpng-dev libreadline-dev libxaw7-dev texinfo
+# create configure script
+./autogen.sh
+# create makefiles with debug enabled and without optimizations
+./configure --enable-debug CFLAGS='-g -O0' CXXFLAGS='-g -O0'
+# create executables
+make
 
-cp mainc64cpu.c into the src folder
+# install a visual debugger
+sudo apt-get install kdevelop
+# start debugger
+kdevelop
+# Create new project using vice as main directory
+Open project
+Choose vice root dir
+Run/Configure Launches...
+Create New
+Executable: /home/ken/workspace/vice/src/x64sc
+# Enable line numbers for breakpoint settings
+Settings => configure editor => appearance => borders => tick show line numbers
+Set breakpoint in mainc64cpu.c: 744
+Start Debug from toolbar
+
+
+
+patch mainc64cpu.c in the src folder
 
 make
-sudo make install
-
-Fix directories once:
-=====================
-sudo mv /usr/local/lib64/vice /usr/local/lib/
 
 Debug EoD using VICE:
 =====================
-ddd --args x64sc -autostart "/media/readyshare/Ken/c64/JSIDPlay2/eod bug/EdgeOfDisgrace_1a.d64"
+ddd --args x64sc -autostart "/home/ken/workspace/jsidplay2/src/test/resources/demos/dontwork/EdgeOfDisgrace_1a.d64"
 
 File/Open Source...
 "Type" main*
