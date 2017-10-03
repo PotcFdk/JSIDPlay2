@@ -21,6 +21,7 @@ import static sidplay.player.State.START;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.function.BiConsumer;
@@ -76,6 +77,8 @@ import sidplay.player.Timer;
  * 
  */
 public class Player extends HardwareEnsemble {
+
+	protected static final Charset US_ASCII = Charset.forName("US-ASCII");
 
 	/**
 	 * Timeout (in ms) for sleeping, if player is paused.
@@ -434,12 +437,9 @@ public class Player extends HardwareEnsemble {
 	 *            command to type-in
 	 */
 	public final void typeInCommand(final String command) {
-		byte[] ram = c64.getRAM();
 		final int length = Math.min(command.length(), MAX_COMMAND_LEN);
-		for (int charNum = 0; charNum < length; charNum++) {
-			ram[RAM_COMMAND + charNum] = (byte) command.charAt(charNum);
-		}
-		ram[RAM_COMMAND_LEN] = (byte) length;
+		System.arraycopy(command.getBytes(US_ASCII), 0, c64.getRAM(), RAM_COMMAND, length);
+		c64.getRAM()[RAM_COMMAND_LEN] = (byte) length;
 	}
 
 	/**
