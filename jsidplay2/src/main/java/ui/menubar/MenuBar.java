@@ -835,6 +835,15 @@ public class MenuBar extends VBox implements UIPart {
 	}
 
 	@FXML
+	private void jsidplay2Javadoc() {
+		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2_JAVADOC.name())) {
+			WebView tab = new WebView(window, util.getPlayer());
+			tab.setType(WebViewType.JSIDPLAY2_JAVADOC);
+			addTab(tab);
+		}
+	}
+
+	@FXML
 	private void userguide() {
 		if (!tabAlreadyOpen(WebViewType.USERGUIDE.name())) {
 			WebView tab = new WebView(window, util.getPlayer());
@@ -902,6 +911,8 @@ public class MenuBar extends VBox implements UIPart {
 			soasc();
 		} else if (WebViewType.JSIDPLAY2_SRC.name().equals(id)) {
 			jsidplay2();
+		} else if (WebViewType.JSIDPLAY2_JAVADOC.name().equals(id)) {
+			jsidplay2Javadoc();
 		} else if (WebViewType.USERGUIDE.name().equals(id)) {
 			userguide();
 		}

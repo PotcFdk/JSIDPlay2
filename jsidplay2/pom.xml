@@ -272,6 +272,24 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+						<configuration>
+							<reportOutputDirectory>${project.build.directory}/classes</reportOutputDirectory>
+							<destDir>javadoc</destDir>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
@@ -768,6 +786,25 @@
 											<goal>
 												process-asciidoc
 											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-javadoc-plugin
+										</artifactId>
+										<versionRange>
+											[3.0.0-M1,)
+										</versionRange>
+										<goals>
+											<goal>javadoc</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
