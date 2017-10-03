@@ -113,12 +113,8 @@ public class SIDMixer implements Mixer {
 			// Erase audio buffers
 			audioBufferL.flip();
 			audioBufferR.flip();
-			for (int i = 0; i < bufferSize; i++) {
-				audioBufferL.put(0);
-				audioBufferR.put(0);
-			}
-			audioBufferL.clear();
-			audioBufferR.clear();
+			audioBufferL.put(new int[bufferSize]).clear();
+			audioBufferR.put(new int[bufferSize]).clear();
 			context.schedule(this, bufferSize);
 		}
 
