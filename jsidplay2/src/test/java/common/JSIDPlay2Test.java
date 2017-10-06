@@ -320,7 +320,6 @@ public class JSIDPlay2Test extends ApplicationTest implements Timeouts {
 	}
 
 	protected void fastForward(int speedFactor) {
-		sleep(C64_RESET_TIMEOUT);
 		player.configureMixer(mixer -> {
 			for (int i = 0; i < speedFactor; i++) {
 				mixer.fastForward();

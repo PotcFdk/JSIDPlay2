@@ -24,8 +24,8 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 		selectAll();
 		type("Disk1.d64");
 		push(ENTER);
-		sleep(C64_RESET_TIMEOUT);
 		player.resetC64("LOAD\"*\",8\rRUN\r");
+		sleep(C64_RESET_TIMEOUT);
 		fastForward(SPEED_FACTOR);
 		while (!checkDiskChange(2)) {
 			sleep(10000);
@@ -43,8 +43,8 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 		selectAll();
 		type("Disk2.d64");
 		push(ENTER);
-		sleep(C64_RESET_TIMEOUT);
 		player.resetC64("LOAD\"*\",8\rRUN\r");
+		sleep(C64_RESET_TIMEOUT);
 		fastForward(SPEED_FACTOR);
 		while (!checkDiskChange(3)) {
 			sleep(10000);
@@ -62,8 +62,8 @@ public class WolfgangLorentzTest extends JSIDPlay2Test {
 		selectAll();
 		type("Disk3.d64");
 		push(ENTER);
-		sleep(C64_RESET_TIMEOUT);
 		player.resetC64("LOAD\"*\",8\rRUN\r");
+		sleep(C64_RESET_TIMEOUT);
 		fastForward(SPEED_FACTOR);
 		while (!checkFinish()) {
 			sleep(10000);
