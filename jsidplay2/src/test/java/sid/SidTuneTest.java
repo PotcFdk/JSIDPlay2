@@ -1,12 +1,41 @@
 package sid;
 
+import static javafx.scene.input.KeyCode.A;
+import static javafx.scene.input.KeyCode.C;
+import static javafx.scene.input.KeyCode.D;
+import static javafx.scene.input.KeyCode.DIGIT0;
+import static javafx.scene.input.KeyCode.DIGIT2;
+import static javafx.scene.input.KeyCode.DIGIT3;
+import static javafx.scene.input.KeyCode.E;
 import static javafx.scene.input.KeyCode.ENTER;
-import libsidplay.common.ChipModel;
+import static javafx.scene.input.KeyCode.F;
+import static javafx.scene.input.KeyCode.G;
+import static javafx.scene.input.KeyCode.H;
+import static javafx.scene.input.KeyCode.I;
+import static javafx.scene.input.KeyCode.L;
+import static javafx.scene.input.KeyCode.M;
+import static javafx.scene.input.KeyCode.MINUS;
+import static javafx.scene.input.KeyCode.N;
+import static javafx.scene.input.KeyCode.O;
+import static javafx.scene.input.KeyCode.P;
+import static javafx.scene.input.KeyCode.PERIOD;
+import static javafx.scene.input.KeyCode.R;
+import static javafx.scene.input.KeyCode.S;
+import static javafx.scene.input.KeyCode.SHIFT;
+import static javafx.scene.input.KeyCode.T;
+import static javafx.scene.input.KeyCode.U;
+import static javafx.scene.input.KeyCode.UNDERSCORE;
+import static javafx.scene.input.KeyCode.W;
+import static javafx.scene.input.KeyCode.X;
+import static javafx.scene.input.KeyCode.Y;
+import static javafx.scene.input.KeyCode.Z;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import common.JSIDPlay2Test;
+import javafx.scene.input.KeyCode;
+import libsidplay.common.ChipModel;
 
 public class SidTuneTest extends JSIDPlay2Test {
 
@@ -19,8 +48,10 @@ public class SidTuneTest extends JSIDPlay2Test {
 		clickOn("#file");
 		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		selectAll();
-		type("sid_detection.prg");
+		press(KeyCode.CONTROL);
+		type(KeyCode.A);
+		release(KeyCode.CONTROL);
+		type(S, I, D).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(D, E, T, E, C, T, I, O, N, PERIOD, P, R, G);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 		Assert.assertTrue(checkScreenMessage("b", 1, 1));
@@ -37,8 +68,11 @@ public class SidTuneTest extends JSIDPlay2Test {
 		clickOn("#file");
 		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		selectAll();
-		type("Anthrox_2SID.sid");
+		press(KeyCode.CONTROL);
+		type(KeyCode.A);
+		release(KeyCode.CONTROL);
+		press(SHIFT).type(A).release(SHIFT).type(N, T, H, R, O, X).press(SHIFT).type(UNDERSCORE).release(SHIFT)
+				.type(DIGIT2).press(SHIFT).type(S, I, D).release(SHIFT).type(PERIOD, S, I, D);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 
@@ -58,8 +92,13 @@ public class SidTuneTest extends JSIDPlay2Test {
 		clickOn("#file");
 		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		selectAll();
-		type("Turrican_2-The_Final_Fight.sid");
+		press(KeyCode.CONTROL);
+		type(KeyCode.A);
+		release(KeyCode.CONTROL);
+		press(SHIFT).type(T).release(SHIFT).type(U, R, R, I, C, A, N).press(SHIFT).type(UNDERSCORE).release(SHIFT)
+				.type(DIGIT2, MINUS).press(SHIFT).type(T).release(SHIFT).type(H, E).press(SHIFT).type(UNDERSCORE)
+				.type(F).release(SHIFT).type(I, N, A, L).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(F)
+				.release(SHIFT).type(I, G, H, T, PERIOD, S, I, D);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 
@@ -77,8 +116,10 @@ public class SidTuneTest extends JSIDPlay2Test {
 		clickOn("#file");
 		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		selectAll();
-		type("PUZZLEND.p00");
+		press(KeyCode.CONTROL);
+		type(KeyCode.A);
+		release(KeyCode.CONTROL);
+		press(SHIFT).type(P, U, Z, Z, L, E, N, D).release(SHIFT).type(PERIOD, P, DIGIT0, DIGIT0);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 
@@ -91,8 +132,11 @@ public class SidTuneTest extends JSIDPlay2Test {
 		clickOn("#file");
 		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		selectAll();
-		type("Angie_A.mus");
+		press(KeyCode.CONTROL);
+		type(KeyCode.A);
+		release(KeyCode.CONTROL);
+		press(SHIFT).type(A).release(SHIFT).type(N, G, I, E).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(A)
+				.release(SHIFT).type(PERIOD, M, U, S);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 
@@ -112,8 +156,11 @@ public class SidTuneTest extends JSIDPlay2Test {
 		clickOn("#file");
 		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		selectAll();
-		type("Safety_Dance.mus");
+		press(KeyCode.CONTROL);
+		type(KeyCode.A);
+		release(KeyCode.CONTROL);
+		press(SHIFT).type(S).release(SHIFT).type(A, F, E, T, Y).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(D)
+				.release(SHIFT).type(A, N, C, E, PERIOD, M, U, S);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 
@@ -135,8 +182,12 @@ public class SidTuneTest extends JSIDPlay2Test {
 		clickOn("#file");
 		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		selectAll();
-		type("radiantx_spiral_silicon_towers.prg");
+		press(KeyCode.CONTROL);
+		type(KeyCode.A);
+		release(KeyCode.CONTROL);
+		type(R, A, D, I, A, N, T, X).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(S, P, I, R, A, L).press(SHIFT)
+				.type(UNDERSCORE).release(SHIFT).type(S, I, L, I, C, O, N).press(SHIFT).type(UNDERSCORE).release(SHIFT)
+				.type(T, O, W, E, R, S, PERIOD, P, R, G);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 
@@ -149,8 +200,12 @@ public class SidTuneTest extends JSIDPlay2Test {
 		clickOn("#file");
 		clickOn("#load");
 		sleep(FILE_BROWSER_OPENED_TIMEOUT);
-		selectAll();
-		type("Arcade_Memories_3SID.sid");
+		press(KeyCode.CONTROL);
+		type(KeyCode.A);
+		release(KeyCode.CONTROL);
+		press(SHIFT).type(A).release(SHIFT).type(R, C, A, D, E).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(M)
+				.release(SHIFT).type(E, M, O, R, I, E, S).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(DIGIT3)
+				.press(SHIFT).type(S, I, D).release(SHIFT).type(PERIOD, S, I, D);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 

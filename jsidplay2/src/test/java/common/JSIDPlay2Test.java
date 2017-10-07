@@ -2,15 +2,12 @@ package common;
 
 import static org.junit.Assert.fail;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit.ApplicationTest;
 
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import libsidplay.C64;
@@ -20,8 +17,27 @@ import sidplay.Player;
 import ui.JSidPlay2Main;
 import ui.entities.config.Configuration;
 
-public class JSIDPlay2Test extends ApplicationTest implements Timeouts {
+public class JSIDPlay2Test extends ApplicationTest {
 
+	/**
+	 * Sleep time to wait for JSIDPlay2 to start.
+	 */
+	protected static final int JSIDPLAY2_STARTUP_SLEEP = 1000;
+	/**
+	 * Timeout for the file browser to open.
+	 */
+	protected static final int FILE_BROWSER_OPENED_TIMEOUT = 2000;
+	/**
+	 * Timeout until the C64 has been reset completely.
+	 */
+	protected static final int C64_RESET_TIMEOUT = 5000;
+	/**
+	 * Timeout for a thread-safe scheduled event.
+	 */
+	protected static final int SCHEDULE_THREADSAFE_TIMEOUT = 2000;
+	/**
+	 * Maximum Fast forward speed.
+	 */
 	protected static final int SPEED_FACTOR = 3;
 
 	protected Configuration config;
@@ -80,14 +96,6 @@ public class JSIDPlay2Test extends ApplicationTest implements Timeouts {
 		return super.sleep(milliseconds);
 	}
 
-	@Override
-	public FxRobot sleep(long duration, TimeUnit timeUnit) {
-		if (abortTest) {
-			fail("Application closed!");
-		}
-		return super.sleep(duration, timeUnit);
-	}
-
 	/**
 	 * Show primary stage.
 	 * 
@@ -95,7 +103,7 @@ public class JSIDPlay2Test extends ApplicationTest implements Timeouts {
 	 */
 	@Override
 	public void start(Stage stage) {
-		stage.setOnCloseRequest((evt) -> evt.consume());
+		stage.setOnCloseRequest(evt -> evt.consume());
 		stage.show();
 	}
 
@@ -108,36 +116,6 @@ public class JSIDPlay2Test extends ApplicationTest implements Timeouts {
 	@Override
 	public FxRobotInterface clickOn(String query, MouseButton... buttons) {
 		return super.clickOn(query, buttons).moveBy(1, 1);
-	}
-
-	/**
-	 * Types the given text on the keyboard. Note: Typing depends on the operating
-	 * system keyboard layout!
-	 *
-	 * @param text
-	 */
-	public void type(String text) {
-		for (char ch : text.toCharArray()) {
-			boolean isShiftedCharacter = ch == '_' || Character.isUpperCase(ch);
-			if (isShiftedCharacter) {
-				press(KeyCode.SHIFT);
-			}
-			type(determineKeyCode(ch));
-			if (isShiftedCharacter) {
-				release(KeyCode.SHIFT);
-			}
-			sleep(100);
-		}
-	}
-
-	/**
-	 * Type Ctrl-A to select all text.
-	 */
-	public void selectAll() {
-		press(KeyCode.CONTROL);
-		type(KeyCode.A);
-		release(KeyCode.CONTROL);
-		sleep(100);
 	}
 
 	/**
@@ -195,128 +173,6 @@ public class JSIDPlay2Test extends ApplicationTest implements Timeouts {
 				eventConsumer.accept(player.getC64());
 			}
 		});
-	}
-
-	/**
-	 * Convert character to KeyCode.
-	 * 
-	 * @param character
-	 *            character to convert
-	 * @return converted character as KeyCode
-	 */
-	private KeyCode determineKeyCode(char character) {
-		KeyCode key = KeyCode.UNDEFINED;
-		key = (character == '\n') ? KeyCode.ENTER : key;
-		key = (character == '\t') ? KeyCode.TAB : key;
-		switch (character) {
-		case 'a':
-		case 'A':
-			return KeyCode.A;
-		case 'b':
-		case 'B':
-			return KeyCode.B;
-		case 'c':
-		case 'C':
-			return KeyCode.C;
-		case 'd':
-		case 'D':
-			return KeyCode.D;
-		case 'e':
-		case 'E':
-			return KeyCode.E;
-		case 'f':
-		case 'F':
-			return KeyCode.F;
-		case 'g':
-		case 'G':
-			return KeyCode.G;
-		case 'h':
-		case 'H':
-			return KeyCode.H;
-		case 'i':
-		case 'I':
-			return KeyCode.I;
-		case 'j':
-		case 'J':
-			return KeyCode.J;
-		case 'k':
-		case 'K':
-			return KeyCode.K;
-		case 'l':
-		case 'L':
-			return KeyCode.L;
-		case 'm':
-		case 'M':
-			return KeyCode.M;
-		case 'n':
-		case 'N':
-			return KeyCode.N;
-		case 'o':
-		case 'O':
-			return KeyCode.O;
-		case 'p':
-		case 'P':
-			return KeyCode.P;
-		case 'q':
-		case 'Q':
-			return KeyCode.Q;
-		case 'r':
-			return KeyCode.R;
-		case 's':
-		case 'S':
-			return KeyCode.S;
-		case 't':
-		case 'T':
-			return KeyCode.T;
-		case 'u':
-		case 'U':
-			return KeyCode.U;
-		case 'v':
-		case 'V':
-			return KeyCode.V;
-		case 'w':
-		case 'W':
-			return KeyCode.W;
-		case 'x':
-		case 'X':
-			return KeyCode.X;
-		case 'y':
-		case 'Y':
-			return KeyCode.Y;
-		case 'z':
-		case 'Z':
-			return KeyCode.Z;
-		case '_':
-			return KeyCode.UNDERSCORE;
-		case '-':
-			return KeyCode.MINUS;
-		case '.':
-			return KeyCode.PERIOD;
-		case '0':
-			return KeyCode.DIGIT0;
-		case '1':
-			return KeyCode.DIGIT1;
-		case '2':
-			return KeyCode.DIGIT2;
-		case '3':
-			return KeyCode.DIGIT3;
-		case '4':
-			return KeyCode.DIGIT4;
-		case '5':
-			return KeyCode.DIGIT5;
-		case '6':
-			return KeyCode.DIGIT6;
-		case '7':
-			return KeyCode.DIGIT7;
-		case '8':
-			return KeyCode.DIGIT8;
-		case '9':
-			return KeyCode.DIGIT9;
-
-		default:
-			break;
-		}
-		return key;
 	}
 
 	protected void fastForward(int speedFactor) {
