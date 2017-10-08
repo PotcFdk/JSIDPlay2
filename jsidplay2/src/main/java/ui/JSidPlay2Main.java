@@ -88,7 +88,7 @@ public class JSidPlay2Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		testInstance = null;
-		// how to get rid of INFO logging (HSQL is nasty)
+		// Get rid of INFO logging (HSQL is nasty)
 		System.setProperty("hsqldb.reconfig_logging", "false");
 		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 		Logger databaseLogger = Logger.getLogger("hsqldb.db");
