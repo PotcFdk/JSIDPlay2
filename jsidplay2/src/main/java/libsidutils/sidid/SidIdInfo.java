@@ -117,8 +117,7 @@ public class SidIdInfo extends SidIdBase {
 	/**
 	 * Read configuration file and configure the SID-ID class.
 	 * 
-	 * @return
-	 * @throws IOException
+	 * @throws IOException I/O error
 	 */
 	public void readconfig() throws IOException {
 		this.playerInfoList = new ArrayList<PlayerInfoSection>();

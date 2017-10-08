@@ -85,7 +85,7 @@ public class SID implements SIDChip {
 	 * 
 	 * @param nonLinearity
 	 * 
-	 * @See SID.kinkedDac
+	 * @see SID#kinkedDac(int, float, int)
 	 */
 	public void set6581VoiceNonlinearity(final float nonLinearity) {
 		if (nonLinearity == nonLinearity6581) {
@@ -132,9 +132,6 @@ public class SID implements SIDChip {
 
 	/**
 	 * Constructor.
-	 *
-	 * @param count
-	 *            chip number
 	 */
 	public SID() {
 		set6581VoiceNonlinearity(0.96f);

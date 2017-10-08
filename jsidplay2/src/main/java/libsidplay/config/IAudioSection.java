@@ -16,7 +16,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the audio to be used.
 	 * 
-	 * @param emulation
+	 * @param audio
 	 *            audio to be used
 	 */
 	void setAudio(Audio audio);
@@ -140,7 +140,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the main SID balance setting (0 - left, 1 - right speaker).
 	 * 
-	 * @param volume
+	 * @param balance
 	 *            the main SID balance setting
 	 */
 	void setMainBalance(float balance);
@@ -155,7 +155,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the second SID balance setting (0 - left, 1 - right speaker).
 	 * 
-	 * @param volume
+	 * @param balance
 	 *            the second SID balance setting
 	 */
 	void setSecondBalance(float balance);
@@ -170,7 +170,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the third SID balance setting (0 - left, 1 - right speaker).
 	 * 
-	 * @param volume
+	 * @param balance
 	 *            the third SID balance setting
 	 */
 	void setThirdBalance(float balance);

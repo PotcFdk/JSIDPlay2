@@ -69,8 +69,8 @@ public class Convenience {
 	 * 
 	 * Note: temporary files are removed or marked to be removed on exit.
 	 * 
-	 * @param url
-	 *            URL to open
+	 * @param file
+	 *            file to open
 	 * @param isMediaToAttach
 	 *            tester for media to attach
 	 * @param autoStartFile

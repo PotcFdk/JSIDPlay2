@@ -35,8 +35,8 @@ package libsidutils.stringsearch;
  * Symposium on Combinatorial Pattern Matching, 1998</em>). <br>
  * <br>
  * This is one of the fastest algorithms, but it does not beat the
- * {@link com.eaio.stringsearch.BoyerMooreHorspoolRaita} and the
- * {@link com.eaio.stringsearch.BoyerMooreHorspool} algorithms. <br>
+ * com.eaio.stringsearch.BoyerMooreHorspoolRaita and the
+ * com.eaio.stringsearch.BoyerMooreHorspool algorithms. <br>
  * <br>
  * 
  * <pre>
@@ -47,12 +47,12 @@ package libsidutils.stringsearch;
  *                O(mn) (worst case)
  * </pre>
  * 
- * @see <a href="http://www.dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz"> http://www.
- *      dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz </a>
- * @see <a href="http://www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz"> http://
- *      www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz </a>
- * @see <a href="http://citeseer.nj.nec.com/navarro98bitparallel.html"> http://
- *      citeseer.nj.nec.com/navarro98bitparallel.html </a>
+ * <a href="http://www.dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz"> http://www.
+ *      dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz </a><br>
+ * <a href="http://www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz"> http://
+ *      www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz </a><br>
+ * <a href="http://citeseer.nj.nec.com/navarro98bitparallel.html"> http://
+ *      citeseer.nj.nec.com/navarro98bitparallel.html </a><br>
  * @author <a href="mailto:jb@eaio.de">Johann Burkard</a>
  * @version 1.2
  */
@@ -70,7 +70,7 @@ public class BNDM extends StringSearch {
 	 * length. If it does, <b>only it's first 32 bytes</b> are processed which
 	 * might lead to unexpected results. Returns an <code>int</code> array.
 	 * 
-	 * @see com.eaio.stringsearch.StringSearch#processBytes(byte[])
+	 * com.eaio.stringsearch.StringSearch#processBytes(byte[])
 	 */
 	@Override
 	public Object processBytes(byte[] pattern) {
@@ -91,7 +91,7 @@ public class BNDM extends StringSearch {
 	 * length. If it does, <b>only it's first 32 bytes</b> are processed which
 	 * might lead to unexpected results. Returns a {@link CharIntMap}.
 	 * 
-	 * @see com.eaio.stringsearch.StringSearch#processChars(char[])
+	 * com.eaio.stringsearch.StringSearch#processChars(char[])
 	 */
 	@Override
 	public Object processChars(char[] pattern) {
@@ -108,7 +108,7 @@ public class BNDM extends StringSearch {
 	}
 
 	/**
-	 * @see com.eaio.stringsearch.StringSearch#searchBytes(byte[], int, int,
+	 * com.eaio.stringsearch.StringSearch#searchBytes(byte[], int, int,
 	 *      byte[], java.lang.Object)
 	 */
 	@Override
@@ -150,7 +150,7 @@ public class BNDM extends StringSearch {
 	}
 
 	/**
-	 * @see com.eaio.stringsearch.StringSearch#searchChars(char[], int, int,
+	 * com.eaio.stringsearch.StringSearch#searchChars(char[], int, int,
 	 *      char[], Object)
 	 */
 	@Override

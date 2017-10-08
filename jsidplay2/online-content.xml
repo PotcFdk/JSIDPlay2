@@ -103,11 +103,12 @@
 
 		<!-- Compile stylesheets -->
 		<fx:csstobin outdir="target/classes">
-			<fileset dir="target/classes" includes="**/*.css" />
+			<fileset dir="target/classes" includes="**/*.css" excludes="javadoc/**/*.css"/>
 		</fx:csstobin>
 		<delete>
 			<fileset dir="target/classes">
 				<include name="**/*.css"/>
+				<exclude name="javadoc/**/*.css"/>
 			</fileset>
 		</delete>
 		<!-- Create main jar -->

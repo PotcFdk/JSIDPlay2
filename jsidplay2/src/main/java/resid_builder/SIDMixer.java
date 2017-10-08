@@ -292,7 +292,7 @@ public class SIDMixer implements Mixer {
 	 * 
 	 * @param sidNum
 	 *            SID chip number
-	 * @param volume
+	 * @param volumeInDB
 	 *            volume in DB -6(-6db)..6(+6db)
 	 */
 	public void setVolume(int sidNum, float volumeInDB) {

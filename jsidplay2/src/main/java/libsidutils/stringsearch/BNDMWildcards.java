@@ -34,7 +34,7 @@ package libsidutils.stringsearch;
  * {@link #processBytes (byte[], byte)} methods. <br>
  * <br>
  * This algorithm is around five times faster than
- * {@link com.eaio.stringsearch.ShiftOrWildcards}. <br>
+ * com.eaio.stringsearch.ShiftOrWildcards. <br>
  * <br>
  * 
  * <pre>
@@ -43,7 +43,7 @@ package libsidutils.stringsearch;
  * 
  * @see #processBytes(byte[], byte)
  * @see #processChars(char[], char)
- * @see com.eaio.stringsearch.BNDM
+ * @see BNDM
  * @author <a href="mailto:jb@eaio.com">Johann Burkard</a>
  * @version 1.2
  */
@@ -67,7 +67,7 @@ public class BNDMWildcards extends BNDM {
 	 * might lead to unexpected results. The wildcard character is obtained from
 	 * the static {@link #wildcard} field.
 	 * 
-	 * @see com.eaio.stringsearch.StringSearch#processBytes(byte[])
+	 * com.eaio.stringsearch.StringSearch#processBytes(byte[])
 	 * @see #processBytes(byte[], byte)
 	 */
 	@Override

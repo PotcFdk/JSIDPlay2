@@ -379,7 +379,7 @@ public final class WaveformGenerator {
 	/**
 	 * Return the waveform offset. The zero level is ideally 0x800.
 	 * 
-	 * @return
+	 * @return the waveform offset
 	 */
 	public float getZeroLevel() {
 		return wftable[0][0];

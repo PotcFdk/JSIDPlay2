@@ -32,14 +32,14 @@ public class DesktopIntegration {
 	/**
 	 * Open a file (and run in a separate daemon thread).
 	 * 
-	 * @param link
+	 * @param file
 	 *            file to open
 	 */
-	public static void open(File dst) {
-		openInSeparateThread(dst, desktop -> {
+	public static void open(File file) {
+		openInSeparateThread(file, desktop -> {
 			try {
 				if (desktop.isSupported(Desktop.Action.OPEN)) {
-					desktop.open(dst);
+					desktop.open(file);
 				} else {
 					System.err.println("Awt Desktop action OPEN is not supported!");
 				}

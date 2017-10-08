@@ -263,8 +263,6 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Consumer for VIC screen output as ARGB data
-	 * 
-	 * @return C64 screen pixels as ARGB data
 	 */
 	protected Consumer<int[]> pixelConsumer = pixels -> {
 	};

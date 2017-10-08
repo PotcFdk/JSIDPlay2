@@ -63,7 +63,6 @@ import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
-import sidplay.audio.MP3Driver;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.ini.IniConfig;
 import sidplay.player.PlayList;
@@ -629,7 +628,7 @@ public class Player extends HardwareEnsemble {
 	 * time the player plays a tune (e.g. {@link MP3Stream})
 	 * 
 	 * @param driver
-	 *            for example {@link MP3Driver.MP3Stream}
+	 *            for example {@link MP3Stream}
 	 */
 	public final void setAudioDriver(final AudioDriver driver) {
 		this.audioDriver = driver;

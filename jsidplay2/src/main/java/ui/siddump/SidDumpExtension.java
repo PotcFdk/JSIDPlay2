@@ -422,9 +422,6 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 	/**
 	 * CPU jmp/jsr instruction callback to catch calls to the player address
-	 * 
-	 * @param cpuTime
-	 *            time in CPU
 	 */
 	@Override
 	public void jmpJsr() {

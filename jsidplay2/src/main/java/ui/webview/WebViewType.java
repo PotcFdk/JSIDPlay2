@@ -69,7 +69,7 @@ public enum WebViewType {
 
 	/**
 	 * Convert relative path names starting with "images/" of the documentation to
-	 * absolute path names (This is for the internal {@link USERGUIDE} contained in
+	 * absolute path names (This is for the internal {@link WebViewType#USERGUIDE} contained in
 	 * the main JAR as resources located in sub-folder "/doc/").
 	 * 
 	 * @param url

@@ -10,15 +10,15 @@ public interface IEmulationSection {
 	/**
 	 * Getter of the SID engine to be used.
 	 * 
-	 * @return the emulation to be used
+	 * @return the engine to be used
 	 */
 	Engine getEngine();
 
 	/**
 	 * Setter of the SID engine to be used.
 	 * 
-	 * @param emulation
-	 *            emulation to be used
+	 * @param engine
+	 *            engine to be used
 	 */
 	void setEngine(Engine engine);
 
