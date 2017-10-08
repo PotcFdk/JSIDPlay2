@@ -19,6 +19,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
@@ -56,7 +58,6 @@ import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.common.dialog.AlertDialog;
 import ui.console.Console;
 import ui.disassembler.Disassembler;
 import ui.diskcollection.DiskCollection;
@@ -1039,10 +1040,9 @@ public class MenuBar extends VBox implements UIPart {
 	}
 
 	private void openErrorDialog(String msg) {
-		AlertDialog alertDialog = new AlertDialog(util.getPlayer());
-		alertDialog.getStage().setTitle(util.getBundle().getString("ALERT_TITLE"));
-		alertDialog.setText(msg);
-		alertDialog.setWait(true);
-		alertDialog.open();
+		Alert alert = new Alert(AlertType.ERROR,"");
+		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
+		alert.getDialogPane().setHeaderText(msg);
+		alert.showAndWait();
 	}
 }

@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -86,6 +88,12 @@ public class JSidPlay2Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		testInstance = null;
+		// how to get rid of INFO logging (HSQL is nasty)
+		System.setProperty("hsqldb.reconfig_logging", "false");
+		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
+		Logger databaseLogger = Logger.getLogger("hsqldb.db");
+		databaseLogger.setLevel(Level.WARNING);
+		
 		player = new Player(getConfigurationFromCommandLineArgs());
 		player.setMenuHook(menuHook);
 		// automatically load tune on start-up

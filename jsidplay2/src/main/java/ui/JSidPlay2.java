@@ -6,10 +6,14 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.function.Function;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import libsidplay.components.c1541.ExtendImagePolicy;
@@ -19,7 +23,6 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import sidplay.Player;
 import ui.common.C64Window;
-import ui.common.dialog.YesNoDialog;
 
 public class JSidPlay2 extends C64Window implements IExtendImageListener, Function<SidTune, String> {
 
@@ -67,11 +70,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	public boolean isAllowed() {
 		if (util.getConfig().getC1541Section().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ASK) {
 			// EXTEND_ASK
-			YesNoDialog dialog = new YesNoDialog(util.getPlayer());
-			dialog.getStage().setTitle(util.getBundle().getString("EXTEND_DISK_IMAGE"));
-			dialog.setText(util.getBundle().getString("EXTEND_DISK_IMAGE_TO_40_TRACKS"));
-			dialog.open();
-			return dialog.getConfirmed().get();
+			Alert alert = new Alert(AlertType.CONFIRMATION, "");
+			alert.setTitle(util.getBundle().getString("EXTEND_DISK_IMAGE"));
+			alert.getDialogPane().setHeaderText(util.getBundle().getString("EXTEND_DISK_IMAGE_TO_40_TRACKS"));
+			Optional<ButtonType> result = alert.showAndWait();
+			return result.isPresent() && result.get() == ButtonType.OK;
 		} else if (util.getConfig().getC1541Section().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ACCESS) {
 			// EXTEND_ACCESS
 			return true;

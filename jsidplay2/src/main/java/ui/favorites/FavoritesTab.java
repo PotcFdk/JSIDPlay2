@@ -28,6 +28,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -49,7 +51,6 @@ import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.common.dialog.AlertDialog;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.config.FavoriteColumn;
@@ -577,11 +578,10 @@ public class FavoritesTab extends Tab implements UIPart {
 	}
 
 	private void openErrorDialog(String msg) {
-		AlertDialog alertDialog = new AlertDialog(util.getPlayer());
-		alertDialog.getStage().setTitle(util.getBundle().getString("ALERT_TITLE"));
-		alertDialog.setText(msg);
-		alertDialog.setWait(true);
-		alertDialog.open();
+		Alert alert = new Alert(AlertType.ERROR,"");
+		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
+		alert.getDialogPane().setHeaderText(msg);
+		alert.showAndWait();
 	}
 
 	public void setFavorites(Favorites favorites) {

@@ -2,8 +2,6 @@ package ui.entities.config.service;
 
 import java.io.File;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -56,8 +54,6 @@ public class ConfigService {
 
 	public ConfigService(ConfigurationType configurationType) {
 		this.configurationType = configurationType;
-		System.setProperty("hsqldb.reconfig_logging", "false");
-		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 	}
 
 	public Configuration load() {
@@ -176,6 +172,7 @@ public class ConfigService {
 	 * Close configuration database.
 	 */
 	public void close() {
+		em.close();
 		em.getEntityManagerFactory().close();
 		// Really persist the databases
 		org.hsqldb.DatabaseManager.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);

@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
@@ -37,7 +38,10 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
@@ -59,8 +63,8 @@ import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.PathUtils;
 import libsidutils.DesktopIntegration;
+import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
@@ -70,8 +74,6 @@ import ui.common.EnumToString;
 import ui.common.TypeTextField;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.common.dialog.AlertDialog;
-import ui.common.dialog.YesNoDialog;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
 import ui.entities.Database;
@@ -321,7 +323,8 @@ public class MusicCollection extends Tab implements UIPart {
 
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(tuneMatcherListener);
-		if (em != null && em.isOpen()) {
+		if (em != null) {
+			em.close();
 			em.getEntityManagerFactory().close();
 		}
 	}
@@ -442,15 +445,13 @@ public class MusicCollection extends Tab implements UIPart {
 
 	@FXML
 	private void doCreateSearchIndex() {
-		YesNoDialog dialog = new YesNoDialog(util.getPlayer());
-		dialog.getStage().setTitle(util.getBundle().getString("CREATE_SEARCH_DATABASE"));
-		dialog.setText(String.format(util.getBundle().getString("RECREATE_DATABASE"), type.get().toString()));
-		dialog.getConfirmed().addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
-				startSearch(true);
-			}
-		});
-		dialog.open();
+		Alert alert = new Alert(AlertType.CONFIRMATION, "");
+		alert.setTitle(util.getBundle().getString("CREATE_SEARCH_DATABASE"));
+		alert.getDialogPane().setHeaderText(String.format(util.getBundle().getString("RECREATE_DATABASE"), type.get().toString()));
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.isPresent() && result.get() == ButtonType.OK) {
+			startSearch(true);
+		}
 	}
 
 	@FXML
@@ -540,7 +541,8 @@ public class MusicCollection extends Tab implements UIPart {
 			}
 			setViewRoot(theRootFile);
 
-			if (em != null && em.getEntityManagerFactory().isOpen()) {
+			if (em != null) {
+				em.close();
 				em.getEntityManagerFactory().close();
 			}
 			File dbFilename = new File(rootFile.getParentFile(), type.get().toString());
@@ -557,11 +559,10 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void openErrorDialog(String msg, MusicCollectionType type) {
-		AlertDialog alertDialog = new AlertDialog(util.getPlayer());
-		alertDialog.getStage().setTitle(util.getBundle().getString("ALERT_TITLE"));
-		alertDialog.setText(String.format(util.getBundle().getString("ERR_CANNOT_CONFIGURE"), type) + msg);
-		alertDialog.setWait(true);
-		alertDialog.open();
+		Alert alert = new Alert(AlertType.ERROR,"");
+		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
+		alert.getDialogPane().setHeaderText(String.format(util.getBundle().getString("ERR_CANNOT_CONFIGURE"), type) + msg);
+		alert.showAndWait();
 	}
 
 	private void setViewRoot(final File theRootFile) {

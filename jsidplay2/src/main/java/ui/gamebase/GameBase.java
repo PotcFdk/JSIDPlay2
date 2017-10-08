@@ -256,6 +256,7 @@ public class GameBase extends Tab implements UIPart {
 
 	protected void connect(File dbFile) {
 		if (em != null) {
+			em.close();
 			em.getEntityManagerFactory().close();
 		}
 		em = Persistence.createEntityManagerFactory(PersistenceProperties.GAMEBASE_DS,
@@ -265,6 +266,7 @@ public class GameBase extends Tab implements UIPart {
 
 	public void doClose() {
 		if (em != null) {
+			em.close();
 			em.getEntityManagerFactory().close();
 		}
 	}
