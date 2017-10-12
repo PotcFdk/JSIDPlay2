@@ -17,6 +17,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 import javax.sound.sampled.Mixer;
 
@@ -557,12 +559,9 @@ class ClientContext {
 									StringWriter sw = new StringWriter();
 									e.printStackTrace(new PrintWriter(sw));
 									Platform.runLater(() -> {
-										Alert alert = new Alert();
-										alert.setText(sw.toString());
-										try {
-											alert.open();
-										} catch (Exception e1) {
-										}
+										Alert alert = new Alert(AlertType.ERROR,"");
+										alert.getDialogPane().setHeaderText(sw.toString());
+										alert.showAndWait();
 										System.exit(0);
 									});
 								}

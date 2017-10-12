@@ -13,6 +13,8 @@ import java.io.StringWriter;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
@@ -420,14 +422,10 @@ public class NetworkSIDDevice extends Application {
 	}
 
 	private void printErrorAndExit(String msg) {
-		Alert alert = new Alert();
-		alert.setText(msg);
-		try {
-			alert.open();
-		} catch (IOException e1) {
-		} finally {
-			System.exit(0);
-		}
+		Alert alert = new Alert(AlertType.ERROR,"");
+		alert.getDialogPane().setHeaderText(msg);
+		alert.showAndWait();
+		System.exit(0);
 	}
 
 	private String exceptionToString(Exception e) {
