@@ -48,7 +48,9 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
 	public static final int DEFAULT_FRAME_WIDTH = 1126;
 	public static final int DEFAULT_FRAME_HEIGHT = 996;
+	public static final int DEFAULT_FRAME_HEIGHT_MINIMIZED = 150;
 	public static final boolean DEFAULT_FULL_SCREEN = false;
+	public static final boolean DEFAULT_MINIMIZED = false;
 	public static final float DEFAULT_VIDEO_SCALING = 2.5f;
 	public static final boolean DEFAULT_SHOW_MONITOR = true;
 
@@ -380,6 +382,20 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public void setFullScreen(Boolean fullScreen) {
 		this.fullScreen = fullScreen;
+	}
+
+	private BooleanProperty minimizedProperty = new SimpleBooleanProperty(DEFAULT_MINIMIZED);
+
+	public boolean isMinimized() {
+		return minimizedProperty.get();
+	}
+
+	public void setMinimized(boolean isMinimized) {
+		minimizedProperty.set(isMinimized);
+	}
+
+	public BooleanProperty minimizedProperty() {
+		return minimizedProperty;
 	}
 
 	private FloatProperty videoScalingProperty = new SimpleFloatProperty(DEFAULT_VIDEO_SCALING);

@@ -1,5 +1,8 @@
 package ui.menubar;
 
+import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT;
+import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT_MINIMIZED;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -7,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +50,7 @@ import libsidplay.components.cart.CartridgeType;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import sidplay.Player;
 import sidplay.player.PlayList;
@@ -122,7 +127,7 @@ public class MenuBar extends VBox implements UIPart {
 	protected Button previous2, next2, nextFavorite;
 
 	@FXML
-	private ToggleButton pauseContinue2, fastForward2;
+	private ToggleButton pauseContinue2, fastForward2, minimizeMaximize;
 
 	@FXML
 	protected Tooltip previous2ToolTip, next2ToolTip;
@@ -178,9 +183,18 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void initialize() {
 		final Configuration config = util.getConfig();
+		final SidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final C1541Section c1541Section = config.getC1541Section();
 		final PrinterSection printer = config.getPrinterSection();
 
+		minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				getScene().lookup("#tabbedPane").setVisible(!newValue);
+				getScene().getWindow().setHeight(newValue ? DEFAULT_FRAME_HEIGHT_MINIMIZED : DEFAULT_FRAME_HEIGHT);
+			});
+		});
+		minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
+		
 		pauseContinue.selectedProperty().bindBidirectional(pauseContinue2.selectedProperty());
 		fastForward2.selectedProperty().bindBidirectional(fastForward.selectedProperty());
 		nextFavoriteDisabledState = new SimpleBooleanProperty(true);
@@ -1032,11 +1046,16 @@ public class MenuBar extends VBox implements UIPart {
 	}
 
 	private void setCurrentTrack(SidTune sidTune) {
+		StringBuilder trackInfo = new StringBuilder();
 		if (sidTune != SidTune.RESET) {
-			tracks.setText(String.format("%2d/%2d", sidTune.getInfo().getCurrentSong(), sidTune.getInfo().getSongs()));
-		} else {
-			tracks.setText("");
+			SidTuneInfo info = sidTune.getInfo();
+			Iterator<String> detail = info.getInfoString().iterator();
+			if (detail.hasNext()) {
+				trackInfo.append(detail.next()).append(' ');
+			}
+			trackInfo.append(String.format("%2d/%2d", info.getCurrentSong(), info.getSongs()));
 		}
+		tracks.setText(trackInfo.toString());
 	}
 
 	private void openErrorDialog(String msg) {

@@ -339,6 +339,18 @@
 					</ImageView>
 				</graphic>
 			</Button>
+			<ToggleButton fx:id="minimizeMaximize" focusTraversable="false">
+				<tooltip>
+					<Tooltip text="%MINIMIZE_MAXIMIZE" />
+				</tooltip>
+				<graphic>
+					<ImageView>
+						<image>
+							<Image url="@/ui/icons/minmax.png" />
+						</image>
+					</ImageView>
+				</graphic>
+			</ToggleButton>
 		</HBox>
 	</AnchorPane>
 </fx:root>
