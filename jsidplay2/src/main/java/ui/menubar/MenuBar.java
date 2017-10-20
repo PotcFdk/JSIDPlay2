@@ -944,6 +944,7 @@ public class MenuBar extends VBox implements UIPart {
 		});
 		window.getTabbedPane().getTabs().add(tab);
 		window.getTabbedPane().getSelectionModel().select(tab);
+		minimizeMaximize.setSelected(false);
 	}
 
 	private boolean tabAlreadyOpen(String fxId) {
