@@ -9,21 +9,21 @@ import java.util.List;
 import java.util.Map;
 
 import kickass.AssemblerToolbox;
-import kickass.asmnode.AsmNode;
-import kickass.asmnode.metanodes.AsmNodeList;
-import kickass.asmnode.metanodes.NamespaceNode;
-import kickass.asmnode.metanodes.ScopeAndSymbolPageNode;
-import kickass.asmnode.output.reciever.MainOutputReciever;
-import kickass.segments.MemoryBlock;
+import kickass.pass.asmnode.AsmNode;
+import kickass.pass.asmnode.metanodes.AsmNodeList;
+import kickass.pass.asmnode.metanodes.NamespaceNode;
+import kickass.pass.asmnode.metanodes.ScopeAndSymbolPageNode;
+import kickass.pass.asmnode.output.reciever.MainOutputReciever;
+import kickass.state.segments.MemoryBlock;
 import kickass.state.EvaluationState;
 import kickass.state.scope.symboltable.SymbolStatus;
-import kickass.tools.tuples.Pair;
-import kickass.valueholder.ConstantValueHolder;
-import kickass.values.HashtableValue;
-import kickassu.errors.AsmError;
-import kickassu.errors.printers.OneLineErrorPrinter;
-import kickassu.exceptions.AsmErrorException;
-import kickassu.parsing.sourcelocation.SourceRange;
+import kickass.nonasm.tools.tuples.Pair;
+import kickass.pass.valueholder.ConstantValueHolder;
+import kickass.pass.values.HashtableValue;
+import kickass.common.errors.AsmError;
+import kickass.common.errors.printers.OneLineErrorPrinter;
+import kickass.common.exceptions.AsmErrorException;
+import kickass.parsing.sourcelocation.SourceRange;
 
 public class KickAssembler {
 
@@ -73,10 +73,9 @@ public class KickAssembler {
 	public byte[] assemble(String resource, InputStream asm, final Map<String, String> globals) {
 		try {
 			evaluationState = new EvaluationState();
-			evaluationState.setMaxMemoryAddress(65635);
 			HashtableValue hashtableValue = new HashtableValue().addStringValues(globals);
 			hashtableValue.lock(null);
-			evaluationState.getSystemNamespace().getScope()
+			evaluationState.namespaceMgr.getSystemNamespace().getScope()
 					.defineErrorIfExist("cmdLineVars", arrReferenceValue -> new ConstantValueHolder(hashtableValue),
 							evaluationState, "ERROR! cmdLineVars is already defined", null)
 					.setStatus(SymbolStatus.defined);
@@ -85,10 +84,10 @@ public class KickAssembler {
 			if (asmNode == null) {
 				throw new RuntimeException("Parse error for assembler resource: " + resource);
 			}
-			asmNode = new NamespaceNode(asmNode, evaluationState.getRootNamespace());
+			asmNode = new NamespaceNode(asmNode, evaluationState.namespaceMgr.getRootNamespace());
 			AsmNodeList asmNodeList = new AsmNodeList(asmNode);
 			ScopeAndSymbolPageNode scopeAndSymbolPageNode = new ScopeAndSymbolPageNode(asmNodeList,
-					evaluationState.getSystemNamespace().getScope());
+					evaluationState.namespaceMgr.getSystemNamespace().getScope());
 			evaluationState.prepareNewPass();
 			AsmNode asmNode2 = scopeAndSymbolPageNode.executeMetaRegistrations(evaluationState);
 			asmNode2 = asmNode2.executePrepass(evaluationState);
@@ -96,25 +95,25 @@ public class KickAssembler {
 			do {
 				evaluationState.prepareNewPass();
 				asmNode2 = asmNode2.executePass(evaluationState);
-				evaluationState.getSegmentManager().postPass();
+				evaluationState.segmentMgr.postPass();
 				if (!evaluationState.getMadeMetaProgress() && !asmNode2.isFinished()) {
 					evaluationState.prepareNewPass();
 					evaluationState.setFailOnInvalidValue(true);
-					asmNode2.executePass(evaluationState);
+					asmNode2 = asmNode2.executePass(evaluationState);
 					throw new AsmErrorException(
 							"Made no progress and can\'t solve the program.. You should have gotten an error. Contact the author!",
 							(SourceRange) null);
 				}
 			} while (!asmNode2.isFinished());
 
-			MainOutputReciever mainOutputReciever = new MainOutputReciever(8192, evaluationState.getMaxMemoryAddress(),
-					null, null);
+			MainOutputReciever mainOutputReciever = new MainOutputReciever(8192, 65536, null, null,
+					evaluationState.log);
 			asmNode2.deliverOutput(mainOutputReciever);
 			mainOutputReciever.finish();
 			return new Assembly(mainOutputReciever.getSegments().get("Default")).getData();
 		} catch (AsmErrorException e) {
 			AsmError asmError = e.getError();
-			asmError.setCallStack(evaluationState.getCallStack());
+			asmError.setCallStack(evaluationState.callStack);
 			System.err.println(OneLineErrorPrinter.instance.printError(asmError, evaluationState));
 			throw new AsmErrorException(asmError);
 		} catch (Exception e) {
@@ -123,14 +122,14 @@ public class KickAssembler {
 	}
 
 	private void printErrorsAndTerminate(EvaluationState evaluationState) {
-		if (!evaluationState.getErrors().isEmpty()) {
-			int n = evaluationState.getErrors().size();
+		if (!evaluationState.errorMgr.getErrors().isEmpty()) {
+			int n = evaluationState.errorMgr.getErrors().size();
 			System.err.println("Got " + n + " errors while parsing:");
 			for (int i = 0; i < n; ++i) {
-				AsmError asmError = evaluationState.getErrors().get(i);
+				AsmError asmError = evaluationState.errorMgr.getErrors().get(i);
 				System.err.println("  " + OneLineErrorPrinter.instance.printError(asmError, evaluationState));
 			}
-			throw new AsmErrorException(evaluationState.getErrors().get(0));
+			throw new AsmErrorException(evaluationState.errorMgr.getErrors().get(0));
 		}
 	}
 
@@ -139,7 +138,7 @@ public class KickAssembler {
 	 */
 	public Map<String, Integer> getLabels() {
 		Map<String, Integer> result = new HashMap<>();
-		List<Pair<String, Integer>> localDefines = evaluationState.getResolvedSymbols();
+		List<Pair<String, Integer>> localDefines = evaluationState.scopeMgr.getResolvedSymbols();
 		for (Pair<String, Integer> entry : localDefines) {
 			result.put(entry.getA(), entry.getB());
 		}
