@@ -8,6 +8,7 @@ import static libsidplay.common.Engine.HARDSID;
 import static libsidplay.common.Engine.NETSID;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -76,11 +77,7 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private TextField baseAddress, thirdAddress;
 	@FXML
-	private CheckBox boosted8580;
-	@FXML
-	private CheckBox fakeStereo;
-	@FXML
-	private CheckBox detectPSID64ChipModel;
+	private CheckBox boosted8580, fakeStereo,detectPSID64ChipModel;
 	@FXML
 	private Slider mainVolume, secondVolume, thirdVolume, mainBalance, secondBalance, thirdBalance;
 	@FXML
@@ -110,16 +107,11 @@ public class EmulationSettings extends C64Window {
 		AudioSection audioSection = util.getConfig().getAudioSection();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-		mainFilterCurve.setAnimated(false);
-		mainFilterCurve.setCreateSymbols(false);
-		mainFilterCurve.setLegendVisible(false);
-		secondFilterCurve.setAnimated(false);
-		secondFilterCurve.setCreateSymbols(false);
-		secondFilterCurve.setLegendVisible(false);
-		thirdFilterCurve.setAnimated(false);
-		thirdFilterCurve.setCreateSymbols(false);
-		thirdFilterCurve.setLegendVisible(false);
-
+		for (LineChart<Number, Number> chart : Arrays.asList(mainFilterCurve, secondFilterCurve, thirdFilterCurve)) {
+			chart.setAnimated(false);
+			chart.setCreateSymbols(false);
+			chart.setLegendVisible(false);
+		}
 		mainFilters = FXCollections.<String>observableArrayList();
 		mainFilter.setItems(mainFilters);
 		secondFilters = FXCollections.<String>observableArrayList();
@@ -473,8 +465,7 @@ public class EmulationSettings extends C64Window {
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		series.setData(FXCollections.observableArrayList(dataList));
 
-		List<XYChart.Series<Number, Number>> seriesList = new ArrayList<>();
-		seriesList.add(series);
+		List<XYChart.Series<Number, Number>> seriesList = Arrays.asList(series);
 		filterCurve.setData(FXCollections.observableArrayList(seriesList));
 	}
 
