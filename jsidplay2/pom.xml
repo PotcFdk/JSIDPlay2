@@ -285,6 +285,7 @@
 							<reportOutputDirectory>${project.build.directory}/classes</reportOutputDirectory>
 							<destDir>javadoc</destDir>
 							<nonavbar>true</nonavbar>
+							<quiet>true</quiet>
 						</configuration>
 					</execution>
 				</executions>
