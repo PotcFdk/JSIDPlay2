@@ -286,6 +286,7 @@
 							<destDir>javadoc</destDir>
 							<nonavbar>true</nonavbar>
 							<quiet>true</quiet>
+							<failOnError>true</failOnError>
 						</configuration>
 					</execution>
 				</executions>
