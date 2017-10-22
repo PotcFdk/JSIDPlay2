@@ -187,14 +187,6 @@ public class MenuBar extends VBox implements UIPart {
 		final C1541Section c1541Section = config.getC1541Section();
 		final PrinterSection printer = config.getPrinterSection();
 
-		minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			Platform.runLater(() -> {
-				getScene().lookup("#tabbedPane").setVisible(!newValue);
-				getScene().getWindow().setHeight(newValue ? DEFAULT_FRAME_HEIGHT_MINIMIZED : DEFAULT_FRAME_HEIGHT);
-			});
-		});
-		minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
-		
 		pauseContinue.selectedProperty().bindBidirectional(pauseContinue2.selectedProperty());
 		fastForward2.selectedProperty().bindBidirectional(fastForward.selectedProperty());
 		nextFavoriteDisabledState = new SimpleBooleanProperty(true);
@@ -225,6 +217,13 @@ public class MenuBar extends VBox implements UIPart {
 		}
 
 		Platform.runLater(() -> {
+			minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
+				Platform.runLater(() -> {
+					getScene().lookup("#tabbedPane").setVisible(!newValue);
+					getScene().getWindow().setHeight(newValue ? DEFAULT_FRAME_HEIGHT_MINIMIZED : DEFAULT_FRAME_HEIGHT);
+				});
+			});
+			minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
 			getScene().setOnDragOver(event -> {
 				Dragboard db = event.getDragboard();
 				if (db.hasFiles()) {
