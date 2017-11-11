@@ -115,9 +115,11 @@ public class WebView extends Tab implements UIPart {
 						@Override
 						public void downloadStep(int step) {
 							isDownloading = true;
-							Platform.runLater(() -> webView.setCursor(Cursor.WAIT));
-							DoubleProperty progressProperty = util.progressProperty(webView);
-							progressProperty.setValue(step / 100.f);
+							Platform.runLater(() -> {
+								webView.setCursor(Cursor.WAIT);
+								DoubleProperty progressProperty = util.progressProperty(webView);
+								progressProperty.setValue(step / 100.f);
+							});
 						}
 					}, new URL(href), false).start();
 				} catch (MalformedURLException e) {
