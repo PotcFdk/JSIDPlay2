@@ -32,33 +32,13 @@ Executable: /home/ken/workspace/vice/src/x64sc
 # Enable line numbers for breakpoint settings
 Settings => configure editor => appearance => borders => tick show line numbers
 Set breakpoint in mainc64cpu.c: 744
-Start Debug from toolbar
-
-
 
 patch mainc64cpu.c in the src folder
 
 make
 
-Debug EoD using VICE:
-=====================
-ddd --args x64sc -autostart "/home/ken/workspace/jsidplay2/src/test/resources/demos/dontwork/EdgeOfDisgrace_1a.d64"
-
-File/Open Source...
-"Type" main*
-"Select" mainc64cpu.c
-"Click" Open
-
-Strg+F 246171754
-"Click"
-
-Set Breakpoint:
-===============
-"Right Click at the left side of the editor"
-"Set Breakpoint"
-
 (Order is important here!)
 1. Start JSIDPlay2Frame (beforehand: Use MOS6510ViceSync.class instead of MOS6510.class in Player.java's constructor)
-2. In DDD (Debugger) for VICE click run
+2. In kdevelop click run to launch VICE from toolbar
 
 Comunication is via socket connection (port=6510)
