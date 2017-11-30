@@ -17,6 +17,18 @@ import static sidplay.ini.IniDefaults.DEFAULT_SINGLE_TRACK;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_3SID_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE4;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -123,6 +135,42 @@ final public class ConsolePlayer {
 	@Parameter(names = { "--enableSidDatabase", "-n" }, descriptionKey = "ENABLE_SID_DATABASE", arity = 1)
 	private Boolean enableSidDatabase = DEFAULT_ENABLE_DATABASE;
 
+	@Parameter(names = { "--muteVoice1", "-1" }, descriptionKey = "MUTE_VOICE_1")
+	private Boolean muteVoice1 = DEFAULT_MUTE_VOICE1;
+
+	@Parameter(names = { "--muteVoice2", "-2" }, descriptionKey = "MUTE_VOICE_2")
+	private Boolean muteVoice2 = DEFAULT_MUTE_VOICE2;
+
+	@Parameter(names = { "--muteVoice3", "-3" }, descriptionKey = "MUTE_VOICE_3")
+	private Boolean muteVoice3 = DEFAULT_MUTE_VOICE3;
+
+	@Parameter(names = { "--muteVoice4", "-4" }, descriptionKey = "MUTE_VOICE_4")
+	private Boolean muteVoice4 = DEFAULT_MUTE_VOICE4;
+
+	@Parameter(names = { "--muteStereoVoice1", "-5" }, descriptionKey = "MUTE_VOICE_5")
+	private Boolean muteVoice5 = DEFAULT_MUTE_STEREO_VOICE1;
+
+	@Parameter(names = { "--muteStereoVoice2", "-6" }, descriptionKey = "MUTE_VOICE_6")
+	private Boolean muteVoice6 = DEFAULT_MUTE_STEREO_VOICE2;
+
+	@Parameter(names = { "--muteStereoVoice3", "-7" }, descriptionKey = "MUTE_VOICE_7")
+	private Boolean muteVoice7 = DEFAULT_MUTE_STEREO_VOICE3;
+
+	@Parameter(names = { "--muteStereoVoice4", "-8" }, descriptionKey = "MUTE_VOICE_8")
+	private Boolean muteVoice8 = DEFAULT_MUTE_STEREO_VOICE4;
+
+	@Parameter(names = { "--muteThirdSidVoice1", "-9" }, descriptionKey = "MUTE_VOICE_9")
+	private Boolean muteVoice9 = DEFAULT_MUTE_THIRDSID_VOICE1;
+
+	@Parameter(names = { "--muteThirdSidVoice2", "-10" }, descriptionKey = "MUTE_VOICE_10")
+	private Boolean muteVoice10 = DEFAULT_MUTE_THIRDSID_VOICE2;
+
+	@Parameter(names = { "--muteThirdSidVoice3", "-11" }, descriptionKey = "MUTE_VOICE_11")
+	private Boolean muteVoice11 = DEFAULT_MUTE_THIRDSID_VOICE3;
+
+	@Parameter(names = { "--muteThirdSidVoice4", "-12" }, descriptionKey = "MUTE_VOICE_12")
+	private Boolean muteVoice12 = DEFAULT_MUTE_THIRDSID_VOICE4;
+
 	@Parameter(names = { "--verbose", "-v" }, descriptionKey = "VERBOSE", validateWith = VerboseValidator.class)
 	private Integer verbose = 0;
 
@@ -166,6 +214,18 @@ final public class ConsolePlayer {
 			config.getEmulationSection().setFilter(!disableFilter);
 			config.getEmulationSection().setStereoFilter(!disableStereoFilter);
 			config.getEmulationSection().setThirdSIDFilter(!disable3rdSIDFilter);
+			config.getEmulationSection().setMuteVoice1(muteVoice1);
+			config.getEmulationSection().setMuteVoice2(muteVoice2);
+			config.getEmulationSection().setMuteVoice3(muteVoice3);
+			config.getEmulationSection().setMuteVoice4(muteVoice4);
+			config.getEmulationSection().setMuteStereoVoice1(muteVoice5);
+			config.getEmulationSection().setMuteStereoVoice2(muteVoice6);
+			config.getEmulationSection().setMuteStereoVoice3(muteVoice7);
+			config.getEmulationSection().setMuteStereoVoice4(muteVoice8);
+			config.getEmulationSection().setMuteThirdSIDVoice1(muteVoice9);
+			config.getEmulationSection().setMuteThirdSIDVoice2(muteVoice10);
+			config.getEmulationSection().setMuteThirdSIDVoice3(muteVoice11);
+			config.getEmulationSection().setMuteThirdSIDVoice4(muteVoice12);
 
 			final SidTune tune = SidTune.load(new File(filename.get()));
 			tune.getInfo().setSelectedSong(song);
