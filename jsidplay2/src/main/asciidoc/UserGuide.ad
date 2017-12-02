@@ -1,4 +1,4 @@
-= JSIDPlay2 User Guide
+= [[UserGuide]]JSIDPlay2 User Guide
 
 :toc:
 :toc-position: right
@@ -475,7 +475,7 @@ If the song length is well-known, it is separated by a slash and printed as well
 
 |===
 
-== <<usecases.ad#Usecases,Common Usecases>>
+== <<usecases.ad#Usecases,Example Usecases>>
 
 == Troubleshooting
 

@@ -36,9 +36,7 @@ JSidplay2 is able to
 * be integrated into Java enabled platforms
 * being used like a real C64 (watching demos, playing games etc.)
 
-== User Guide (work in progress)
-
-Here you can find link:{codebase}UserGuide.html[documentation]
+== <<UserGuide.ad#UserGuide,JSIDPlay2 User Guide>>
 
 == Latest Beta
 
