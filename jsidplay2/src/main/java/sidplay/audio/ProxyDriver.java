@@ -61,4 +61,11 @@ public class ProxyDriver implements AudioDriver {
 		return driverOne.buffer();
 	}
 
+	public AudioDriver getDriverOne() {
+		return driverOne;
+	}
+	
+	public AudioDriver getDriverTwo() {
+		return driverTwo;
+	}
 }

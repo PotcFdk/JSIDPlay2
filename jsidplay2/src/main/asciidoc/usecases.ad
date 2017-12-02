@@ -40,3 +40,19 @@ TIP: If you prefer to record only certain voices of a tune you are able to mute 
 --muteVoice1 <1>
 ----
 <1> Mute voice 1 (of the main SID). See usage to mute other voices as well.
+
+TIP: If you want only to record a specific time range of the SID:
+[source,subs="attributes+"]
+----
+--startTime 01:26  --defaultLength 01:30 <1>
+----
+<1> Start song at 1 minute and 26 seconds and record for one and a half minute.
+
+TIP: You can change the quality settings of MP3 recordings this way:
+[source,subs="attributes+"]
+----
+--cbr 160 <1>
+--vbr true --vbrQuality 0 <2>
+----
+<1> Bitrate in kbps (-1=auto, 32 40 48 56 64 80 96 112 128 160 192 224 256 320)
+<2> or alternatively use variable bitrate and highest quality (0=best, 5=medium, 9=worst)
