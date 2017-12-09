@@ -141,7 +141,7 @@ Network protocol.
 
 ** GET_CONFIG_COUNT (10): Query number of SID configurations supported by
 server.
-*** sid number is ignored.</li>
+*** sid number is ignored.
 *** data packet is ignored and should be 0 length.
 *** always returns COUNT and a 8-bit unsigned value that is 1 larger than the
 maximum valid configuration.
@@ -169,6 +169,6 @@ with a maximum of 255 characters excluding a null terminated byte
 ** SET_SID_MODEL (14):
 
 *** data packet is 1 byte long and contains:
-**** 8-bit unsigned value between 0 <= value <= max_config-1
+**** 8-bit unsigned value between 0 \<= value \<= max_config-1
 *** always returns OK.
 
