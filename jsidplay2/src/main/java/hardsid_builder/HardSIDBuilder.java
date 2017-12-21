@@ -192,7 +192,7 @@ public class HardSIDBuilder implements SIDBuilder {
 				}
 			}
 			throw new RuntimeException(String.format(
-					"HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)", deviceID,
+					"HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SIDs=%d)", deviceID,
 					hardSID.HardSID_SIDCount(deviceID)));
 		}
 		return (byte) (chipModel == ChipModel.MOS6581 ? sid6581 : sid8580);

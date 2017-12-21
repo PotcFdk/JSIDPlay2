@@ -79,7 +79,7 @@ public class MOS6510ViceSync extends MOS6510 {
 			try {
 				sync.connect(6510);
 				sockedStarted = true;
-				// here we tell vice where we want to start comparing the state!
+				// here we tell vice when we want to start comparing the state!
 				sync.send(String.format("%04X,%02X,%02X,%02X,%02X", cmpPC, cmpAcc, cmpX, cmpY, cmpSP));
 			} catch (IOException e) {
 				e.printStackTrace();

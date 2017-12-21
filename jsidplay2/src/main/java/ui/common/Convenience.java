@@ -168,7 +168,6 @@ public class Convenience {
 			File memberFile = new File(dir, member.getName());
 			memberFile.deleteOnExit();
 			if (memberFile.isFile() && isSupportedMedia(memberFile) && mediaTester.test(memberFile, toAttach)) {
-
 				if (memberFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".reu")) {
 					try {
 						player.insertCartridge(CartridgeType.REU, memberFile);

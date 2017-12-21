@@ -24,7 +24,6 @@ public class KnobSkin extends SkinBase<Slider> {
 		if (!e.isConsumed()) {
 			this.callActionForEvent(e);
 		}
-
 	};
 
 	private double knobRadius;

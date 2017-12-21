@@ -291,7 +291,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 			try {
 				util.getPlayer().insertCartridge(CartridgeType.CRT, file);
 				util.getPlayer().play(SidTune.RESET);
-
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
 			}

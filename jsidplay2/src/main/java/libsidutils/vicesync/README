@@ -41,4 +41,4 @@ make
 1. Start JSIDPlay2Frame (beforehand: Use MOS6510ViceSync.class instead of MOS6510.class in Player.java's constructor)
 2. In kdevelop click run to launch VICE from toolbar
 
-Comunication is via socket connection (port=6510)
+Communication is via socket connection (port=6510)
