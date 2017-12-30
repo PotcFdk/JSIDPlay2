@@ -20,6 +20,7 @@ import static libsidplay.sidtune.SidTune.Speed.CIA_1A;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -229,7 +230,7 @@ public abstract class SidTune {
 			return getContents(is);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
-			throw new IOException(file.getAbsolutePath(), e);
+			throw new FileNotFoundException(file.getAbsolutePath());
 		}
 	}
 
