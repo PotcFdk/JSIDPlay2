@@ -714,47 +714,51 @@ class PSid extends Prg {
 	}
 
 	/**
-	 * Calculate MD5 of the SID tune according to the header information.
+	 * Calculate MD5 checksum.
 	 * 
 	 * @return MD5 checksum as hex string
 	 */
 	@Override
-	public String getMD5Digest() {
-		// Include C64 data.
-		final byte[] myMD5 = new byte[info.c64dataLen + 6 + info.songs + (info.clockSpeed == Clock.NTSC ? 1 : 0)];
-		System.arraycopy(program, programOffset, myMD5, 0, info.c64dataLen);
-		int i = info.c64dataLen;
-		myMD5[i++] = (byte) (info.initAddr & 0xff);
-		myMD5[i++] = (byte) (info.initAddr >> 8);
-		myMD5[i++] = (byte) (info.playAddr & 0xff);
-		myMD5[i++] = (byte) (info.playAddr >> 8);
-		myMD5[i++] = (byte) (info.songs & 0xff);
-		myMD5[i++] = (byte) (info.songs >> 8);
-		for (int s = 1; s <= info.songs; s++) {
-			myMD5[i++] = (byte) getSongSpeed(s).speedValue();
-		}
-		// Deal with PSID v2NG clock speed flags: Let only NTSC
-		// clock speed change the MD5 fingerprint. That way the
-		// fingerprint of a PAL-speed sidtune in PSID v1, v2, and
-		// PSID v2NG format is the same.
-		if (info.clockSpeed == Clock.NTSC) {
-			myMD5[i++] = (byte) info.clockSpeed.ordinal();
-			// NB! If the fingerprint is used as an index into a
-			// song-lengths database or cache, modify above code to
-			// allow for PSID v2NG files which have clock speed set to
-			// SIDTUNE_CLOCK_ANY. If the SID player program fully
-			// supports the SIDTUNE_CLOCK_ANY setting, a sidtune could
-			// either create two different fingerprints depending on
-			// the clock speed chosen by the player, or there could be
-			// two different values stored in the database/cache.
-		}
+	public String getMD5Digest(MD5Method md5Method) {
+		if (md5Method == MD5Method.MD5_PSID_HEADER) {
+			final byte[] myMD5 = new byte[info.c64dataLen + 6 + info.songs + (info.clockSpeed == Clock.NTSC ? 1 : 0)];
+			System.arraycopy(program, programOffset, myMD5, 0, info.c64dataLen);
+			int i = info.c64dataLen;
+			myMD5[i++] = (byte) (info.initAddr & 0xff);
+			myMD5[i++] = (byte) (info.initAddr >> 8);
+			myMD5[i++] = (byte) (info.playAddr & 0xff);
+			myMD5[i++] = (byte) (info.playAddr >> 8);
+			myMD5[i++] = (byte) (info.songs & 0xff);
+			myMD5[i++] = (byte) (info.songs >> 8);
+			for (int s = 1; s <= info.songs; s++) {
+				myMD5[i++] = (byte) getSongSpeed(s).speedValue();
+			}
+			// Deal with PSID v2NG clock speed flags: Let only NTSC
+			// clock speed change the MD5 fingerprint. That way the
+			// fingerprint of a PAL-speed sidtune in PSID v1, v2, and
+			// PSID v2NG format is the same.
+			if (info.clockSpeed == Clock.NTSC) {
+				myMD5[i++] = (byte) info.clockSpeed.ordinal();
+				// NB! If the fingerprint is used as an index into a
+				// song-lengths database or cache, modify above code to
+				// allow for PSID v2NG files which have clock speed set to
+				// SIDTUNE_CLOCK_ANY. If the SID player program fully
+				// supports the SIDTUNE_CLOCK_ANY setting, a sidtune could
+				// either create two different fingerprints depending on
+				// the clock speed chosen by the player, or there could be
+				// two different values stored in the database/cache.
+			}
 
-		StringBuilder md5 = new StringBuilder();
-		final byte[] encryptMsg = MD5_DIGEST.digest(myMD5);
-		for (final byte anEncryptMsg : encryptMsg) {
-			md5.append(String.format("%02x", anEncryptMsg & 0xff));
+			StringBuilder md5 = new StringBuilder();
+			final byte[] encryptMsg = MD5_DIGEST.digest(myMD5);
+			for (final byte anEncryptMsg : encryptMsg) {
+				md5.append(String.format("%02x", anEncryptMsg & 0xff));
+			}
+			return md5.toString();
+		} else {
+			// md5Method == MD5_CONTENTS
+			return super.getMD5Digest(md5Method);
 		}
-		return md5.toString();
 	}
 
 	@Override

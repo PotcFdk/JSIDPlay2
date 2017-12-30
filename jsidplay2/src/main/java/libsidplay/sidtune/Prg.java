@@ -33,7 +33,7 @@ class Prg extends SidTune {
 	protected static final MessageDigest MD5_DIGEST;
 	private static final SidIdV2 SID_ID = new SidIdV2();
 	private static final SidIdInfo SID_ID_INFO = new SidIdInfo();
-	
+
 	static {
 		try {
 			MD5_DIGEST = MessageDigest.getInstance("MD5");
@@ -114,9 +114,17 @@ class Prg extends SidTune {
 		return SID_ID_INFO.getPlayerInfo(playerName);
 	}
 
+	/**
+	 * Calculate MD5 checksum.
+	 */
 	@Override
-	public String getMD5Digest() {
-		return null;
+	public String getMD5Digest(MD5Method md5Method) {
+		StringBuilder md5 = new StringBuilder();
+		final byte[] encryptMsg = MD5_DIGEST.digest(program);
+		for (final byte anEncryptMsg : encryptMsg) {
+			md5.append(String.format("%02x", anEncryptMsg & 0xff));
+		}
+		return md5.toString();
 	}
 
 	@Override

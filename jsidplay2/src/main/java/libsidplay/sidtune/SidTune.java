@@ -384,9 +384,9 @@ public abstract class SidTune {
 	public abstract PlayerInfoSection getPlayerInfo(String playerName);
 
 	/**
-	 * MD5 for song length detection.
+	 * Calculate MD5 checksum.
 	 */
-	public abstract String getMD5Digest();
+	public abstract String getMD5Digest(MD5Method md5Method);
 
 	/**
 	 * Return delay in C64 clocks before song init is done.

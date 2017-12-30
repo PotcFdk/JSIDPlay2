@@ -328,10 +328,8 @@ public class Favorites extends Tab implements UIPart {
 	}
 
 	private void setSongLengthDatabase(String hvscRoot) {
-		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot, SidDatabase.SONGLENGTHS_FILE))) {
-			util.getPlayer().setSidDatabase(new SidDatabase(input));
-		} catch (FileNotFoundException e) {
-			System.err.println(String.format(util.getBundle().getString("ERR_FILE_NOT_FOUND"), e.getMessage()));
+		try {
+			util.getPlayer().setSidDatabase(new SidDatabase(hvscRoot));
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

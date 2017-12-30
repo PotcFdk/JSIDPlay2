@@ -289,11 +289,6 @@ class Mus extends PSid {
 	}
 
 	@Override
-	public String getMD5Digest() {
-		return null;
-	}
-
-	@Override
 	public void save(final String destFileName) throws IOException {
 		try (FileOutputStream fMyOut = new FileOutputStream(destFileName)) {
 			fMyOut.write(program);

@@ -531,7 +531,7 @@ public class MusicCollection extends Tab implements UIPart {
 			File theRootFile = null;
 			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 			if (getType() == MusicCollectionType.HVSC) {
-				setSongLengthDatabase(rootFile.getAbsolutePath());
+				util.getPlayer().setSidDatabase(new SidDatabase(rootFile.getAbsolutePath()));
 				setSTIL(rootFile.getAbsolutePath());
 				sidPlay2Section.setHvsc(rootFile.getAbsolutePath());
 				theRootFile = sidPlay2Section.getHvscFile();
@@ -577,12 +577,6 @@ public class MusicCollection extends Tab implements UIPart {
 	private void setSTIL(String hvscRoot) throws IOException, NoSuchFieldException, IllegalAccessException {
 		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot, STIL.STIL_FILE))) {
 			util.getPlayer().setSTIL(new STIL(input));
-		}
-	}
-
-	private void setSongLengthDatabase(String hvscRoot) throws IOException {
-		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot, SidDatabase.SONGLENGTHS_FILE))) {
-			util.getPlayer().setSidDatabase(new SidDatabase(input));
 		}
 	}
 

@@ -49,6 +49,7 @@ public class MP3Tune extends SidTune {
 
 	@Override
 	public PlayerInfoSection getPlayerInfo(String playerName) {
+		// unused
 		return null;
 	}
 
@@ -96,7 +97,8 @@ public class MP3Tune extends SidTune {
 	}
 
 	@Override
-	public String getMD5Digest() {
+	public String getMD5Digest(MD5Method md5Method) {
+		// unused
 		return null;
 	}
 

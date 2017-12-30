@@ -11,7 +11,8 @@ public class TimeConverter {
 	 * Song length.<BR>
 	 * Syntax: "min:sec(attribute)"<BR>
 	 * e.g. "0:16(M)" for explanations please refer to file
-	 * "DOCUMENTS/Songlengths.faq" contained in HVSC.
+	 * "DOCUMENTS/Songlengths.faq" contained in HVSC. Attributes in braces are only
+	 * used until version HVSC#67.
 	 */
 	private static final Pattern TIME_VALUE = Pattern.compile("([0-9]{1,2}):([0-9]{2})(?:\\(.*)?");
 

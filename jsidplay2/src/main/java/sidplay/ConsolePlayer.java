@@ -31,7 +31,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -289,9 +288,8 @@ final public class ConsolePlayer {
 	private void setSIDDatabase(final Player player) {
 		String hvscRoot = player.getConfig().getSidplay2Section().getHvsc();
 		if (hvscRoot != null) {
-			File file = new File(hvscRoot, SidDatabase.SONGLENGTHS_FILE);
-			try (FileInputStream input = new FileInputStream(file)) {
-				player.setSidDatabase(new SidDatabase(input));
+			try {
+				player.setSidDatabase(new SidDatabase(hvscRoot));
 			} catch (IOException e) {
 				System.err.println("WARNING: song length database can not be read: " + e.getMessage());
 			}
