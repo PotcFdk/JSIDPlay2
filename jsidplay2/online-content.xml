@@ -260,7 +260,8 @@
 		<zip level="9" destfile="${hvsc_dir}/${hvsc_zip}" compress="true" update="false">
 			<fileset dir="${hvsc_dir}/${hvsc_subfolder}">
 				<include name="**/*.sid" />
-				<include name="**/*.md5" />
+				<include name="**/Songlengths.md5" />
+				<include name="**/STIL.txt" />
 			</fileset>
 		</zip>
 		<delete dir="${hvsc_dir}/${hvsc_subfolder}" />
