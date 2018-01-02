@@ -21,15 +21,15 @@ import sidplay.ini.IniReader;
  * @author ken
  *
  */
-public class SidDatabase {	
+public class SidDatabase {
 	/**
 	 * Until version HVSC#67
 	 */
-	public static final String SONGLENGTHS_FILE = "DOCUMENTS/Songlengths.txt";
+	private static final String SONGLENGTHS_FILE_TXT = "DOCUMENTS/Songlengths.txt";
 	/**
 	 * Since version HVSC#68
 	 */
-	public static final String SONGLENGTHS_FILE_MD5 = "DOCUMENTS/Songlengths.md5";
+	private static final String SONGLENGTHS_FILE_MD5 = "DOCUMENTS/Songlengths.md5";
 
 	private static Constructor<?> TFILE_IS = null;
 
@@ -56,13 +56,18 @@ public class SidDatabase {
 
 	private InputStream getInputStreamAndSetVersion(String hvscRoot)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, FileNotFoundException {
-		File file = getFile(hvscRoot, SONGLENGTHS_FILE);
+		File file = getFile(hvscRoot, SONGLENGTHS_FILE_TXT);
 		version = MD5Method.MD5_PSID_HEADER;
 		File songLengthFileMd5 = getFile(hvscRoot, SONGLENGTHS_FILE_MD5);
 		if (songLengthFileMd5.exists() && songLengthFileMd5.canRead()) {
 			file = songLengthFileMd5;
 			version = MD5Method.MD5_CONTENTS;
 		}
+		return getInputStream(file);
+	}
+
+	private InputStream getInputStream(File file)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, FileNotFoundException {
 		return TFILE_IS != null ? (InputStream) TFILE_IS.newInstance(file) : new FileInputStream(file);
 	}
 
@@ -71,8 +76,7 @@ public class SidDatabase {
 	}
 
 	/**
-	 * Get tune length (sum of all song length contained in the tune) in
-	 * seconds.
+	 * Get tune length (sum of all song length contained in the tune) in seconds.
 	 * 
 	 * @param tune
 	 *            tune to get the length for
@@ -128,10 +132,9 @@ public class SidDatabase {
 	}
 
 	/**
-	 * Get song length of a specific song number contained in the song length
-	 * line identified by MD5 checksum.<BR>
-	 * e.g.
-	 * "b67e3121c8d771f3f06020b47232fc80=0:24 0:28 <B>1:03</B> 0:22 1:22 0:22"
+	 * Get song length of a specific song number contained in the song length line
+	 * identified by MD5 checksum.<BR>
+	 * e.g. "b67e3121c8d771f3f06020b47232fc80=0:24 0:28 <B>1:03</B> 0:22 1:22 0:22"
 	 * for song number 3.
 	 * 
 	 * @param md5

@@ -111,21 +111,19 @@ public class IniConfig implements IConfig {
 
 	public IniConfig(boolean createIfNotExists, File iniPath) {
 		this.iniPath = iniPath;
-		if (iniPath != null) {
-			if (iniPath.exists()) {
-				try (FileInputStream is = new FileInputStream(iniPath)) {
-					iniReader = new IniReader(is);
-					clear();
-					/* validate loaded configuration */
-					if (sidplay2Section.getVersion() == REQUIRED_CONFIG_VERSION) {
-						System.out.println("Use INI file: " + iniPath);
-						return;
-					}
-				} catch (final Exception e) {
-					throw new RuntimeException(e);
+		if (iniPath != null && iniPath.exists()) {
+			try (InputStream is = new FileInputStream(iniPath)) {
+				iniReader = new IniReader(is);
+				clear();
+				/* validate loaded configuration */
+				if (sidplay2Section.getVersion() == REQUIRED_CONFIG_VERSION) {
+					System.out.println("Use INI file: " + iniPath);
+					return;
 				}
-				createINIBackup(iniPath);
+			} catch (final Exception e) {
+				throw new RuntimeException(e);
 			}
+			createINIBackup(iniPath);
 			System.out.println("Use internal INI file: " + FILE_NAME);
 		}
 
@@ -175,17 +173,15 @@ public class IniConfig implements IConfig {
 	}
 
 	private void readInternal() {
-		final InputStream is = getClass().getClassLoader().getResourceAsStream("sidplay/ini/" + FILE_NAME);
-
-		try {
+		try (InputStream is = getClass().getClassLoader().getResourceAsStream("sidplay/ini/" + FILE_NAME)) {
 			iniReader = new IniReader(is);
 			clear();
 			/*
 			 * Set the current version so that we detect old versions in future.
 			 */
 			sidplay2Section.setVersion(REQUIRED_CONFIG_VERSION);
-			is.close();
 		} catch (final IOException e) {
+			e.printStackTrace();
 			return;
 		}
 	}

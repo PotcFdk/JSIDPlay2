@@ -140,8 +140,8 @@ public class JSIDDeviceConfig {
 
 	private void read() {
 		if (iniPath != null && iniPath.exists()) {
-			try {
-				iniReader = new IniReader(new FileInputStream(iniPath));
+			try (InputStream is = new FileInputStream(iniPath)) {
+				iniReader = new IniReader(is);
 				clear();
 				/* validate loaded configuration */
 				if (jsiddeviceSection.getVersion() == REQUIRED_CONFIG_VERSION) {
@@ -155,7 +155,6 @@ public class JSIDDeviceConfig {
 			System.out.println(
 					"INI file old/broken (version=" + jsiddeviceSection.getVersion() + "). Using default settings.");
 		}
-
 		readInternal();
 	}
 
@@ -181,7 +180,6 @@ public class JSIDDeviceConfig {
 					return configPlace;
 				}
 			}
-
 			return configPlace;
 		} catch (final AccessControlException e) {
 			// No external config file in the ui version
@@ -201,23 +199,19 @@ public class JSIDDeviceConfig {
 	}
 
 	private void readInternal() {
-		final InputStream is = getClass().getClassLoader().getResourceAsStream("netsiddev/ini/" + FILE_NAME);
-
-		try {
+		try (InputStream is = getClass().getClassLoader().getResourceAsStream("netsiddev/ini/" + FILE_NAME)) {
 			iniReader = new IniReader(is);
 			clear();
-			is.close();
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public void write() {
-		if (!iniReader.isDirty()) {
-			return;
-		}
-
 		try {
+			if (!iniReader.isDirty()) {
+				return;
+			}
 			iniReader.save(iniPath.getAbsolutePath());
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
