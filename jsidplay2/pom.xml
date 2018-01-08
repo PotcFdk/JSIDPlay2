@@ -24,8 +24,8 @@
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
-		<javafx.initialHeapSize>256</javafx.initialHeapSize>
-		<javafx.maxHeapSize>1024</javafx.maxHeapSize>
+		<javafx.initialHeapSize>1024</javafx.initialHeapSize>
+		<javafx.maxHeapSize>1536</javafx.maxHeapSize>
 		<!-- Optional: FTP upload coordinates -->
 		<serverId></serverId>
 		<serverUrl>ftp://JohnDoe:secret@rainbow.org</serverUrl>
