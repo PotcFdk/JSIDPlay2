@@ -214,8 +214,7 @@ public abstract class SidTune {
 	}
 
 	/**
-	 * Does not affect status of object, and therefore can be used to load
-	 * files.
+	 * Does not affect status of object, and therefore can be used to load files.
 	 * 
 	 * @param file
 	 *            The file to load.
@@ -269,13 +268,12 @@ public abstract class SidTune {
 	/**
 	 * Create 32-bit PSID-style speed word.
 	 * 
-	 * Each bit in 'speed' specifies the speed for the corresponding song
-	 * number, i.e. bit 0 specifies the speed for song 1. If there are more than
-	 * 32 song, the speed specified for song 32 is also used for all higher
-	 * numbered songs.
+	 * Each bit in 'speed' specifies the speed for the corresponding song number,
+	 * i.e. bit 0 specifies the speed for song 1. If there are more than 32 song,
+	 * the speed specified for song 32 is also used for all higher numbered songs.
 	 * 
-	 * A 0 bit specifies vertical blank interrupt (50Hz PAL, 60Hz NTSC), and a 1
-	 * bit specifies CIA 1 timer interrupt (default 60Hz).
+	 * A 0 bit specifies vertical blank interrupt (50Hz PAL, 60Hz NTSC), and a 1 bit
+	 * specifies CIA 1 timer interrupt (default 60Hz).
 	 * 
 	 * @return 32-bit PSID-style speed word (defaults to CIA 1 timer interrupt)
 	 */
@@ -317,8 +315,8 @@ public abstract class SidTune {
 	 * <LI>tune SID base - SID base detected by tune information
 	 * <LI>0 - SID is not used
 	 * </OL>
-	 * Note: this function is static, even if no tune is loaded stereo mode can
-	 * be configured!
+	 * Note: this function is static, even if no tune is loaded stereo mode can be
+	 * configured!
 	 */
 	public static int getSIDAddress(IEmulationSection emulation, SidTune tune, int sidNum) {
 		boolean forcedStereoTune;
@@ -399,6 +397,6 @@ public abstract class SidTune {
 	}
 
 	public static boolean isSolelyPrg(SidTune tune) {
-		return tune!=RESET && tune.getClass().equals(Prg.class);
+		return tune != RESET && tune.getClass().equals(Prg.class);
 	}
 }

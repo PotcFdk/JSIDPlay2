@@ -34,9 +34,8 @@ public class T64 extends Prg {
 		t64.program = dataBuf;
 		t64.programOffset = entry.programOffset;
 		t64.info.loadAddr = entry.loadAddr;
-		t64.info.c64dataLen = Math.min(entry.c64dataLen, dataBuf.length - t64.programOffset); // don't
-																								// trust
-																								// entry.c64dataLen
+		// don't trust entry.c64dataLen
+		t64.info.c64dataLen = Math.min(entry.c64dataLen, dataBuf.length - t64.programOffset);
 
 		final String credit = Petscii.petsciiToIso88591(entry.name);
 		t64.info.infoString.add(credit);

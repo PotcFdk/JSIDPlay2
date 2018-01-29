@@ -120,13 +120,12 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	/**
 	 * Area backed by RAM, including cpu port addresses 0 and 1.
 	 * 
-	 * This is bit of a fake. We know that the CPU port is an internal detail of
-	 * the CPU, and therefore CPU should simply pay the price for
-	 * reading/writing to 0/1.
+	 * This is bit of a fake. We know that the CPU port is an internal detail of the
+	 * CPU, and therefore CPU should simply pay the price for reading/writing to
+	 * 0/1.
 	 * 
-	 * However, that would slow down all accesses, which is suboptimal.
-	 * Therefore we install this little hook to the 4k 0 region to deal with
-	 * this.
+	 * However, that would slow down all accesses, which is suboptimal. Therefore we
+	 * install this little hook to the 4k 0 region to deal with this.
 	 * 
 	 * @author Antti Lankila
 	 */
@@ -151,9 +150,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		private long dataSetClkBit7;
 
 		/**
-		 * indicates if the unused bits of the data port are still valid or
-		 * should be read as 0, 1 = unused bits valid, 0 = unused bits should be
-		 * 0
+		 * indicates if the unused bits of the data port are still valid or should be
+		 * read as 0, 1 = unused bits valid, 0 = unused bits should be 0
 		 */
 		private boolean dataSetBit6;
 		private boolean dataSetBit7;
@@ -404,9 +402,9 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 			@Override
 			public void restore() {
 				/*
-				 * in reality, the PLA chip has a RESTORE line, and it pulls the
-				 * NMI low. We're modeling the overall NMI and IRQ state in the
-				 * PLA, so we can't really do that. We just pulse NMI instead.
+				 * in reality, the PLA chip has a RESTORE line, and it pulls the NMI low. We're
+				 * modeling the overall NMI and IRQ state in the PLA, so we can't really do
+				 * that. We just pulse NMI instead.
 				 */
 				pla.setNMI(true);
 				pla.setNMI(false);
@@ -458,8 +456,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	}
 
 	/**
-	 * Install a play routine observer to hook the JSR command of the CPU. It
-	 * gets called, if the player address gets called.
+	 * Install a play routine observer to hook the JSR command of the CPU. It gets
+	 * called, if the player address gets called.
 	 * 
 	 * @param observer
 	 *            play routine observer
@@ -480,17 +478,16 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	public int getVicMemBase() {
 		return pla.getVicMemBase();
 	}
-	
+
 	/**
 	 * Insert SID chips to be used.
 	 * 
 	 * @param sidCreator
-	 *            Responsible to decide which SID chips we need (SIDEmu) and
-	 *            which we don't need (NONE). SID number and old SID
-	 *            mapped to new SID.
+	 *            Responsible to decide which SID chips we need (SIDEmu) and which
+	 *            we don't need (NONE). SID number and old SID are mapped to new
+	 *            SID.
 	 * @param sidLocator
-	 *            Responsible to determine the base address of the SID chips we
-	 *            need
+	 *            Responsible to determine the base address of the SID chips we need
 	 */
 	public final void insertSIDChips(BiFunction<Integer, SIDEmu, SIDEmu> sidCreator, IntFunction<Integer> sidLocator) {
 		for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
