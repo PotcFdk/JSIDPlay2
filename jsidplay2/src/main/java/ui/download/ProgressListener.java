@@ -3,28 +3,28 @@ package ui.download;
 import java.io.File;
 
 import javafx.application.Platform;
-import javafx.scene.Node;
+import javafx.scene.Scene;
 import ui.common.UIUtil;
 
 public abstract class ProgressListener implements IDownloadListener {
 	protected UIUtil util;
-	private Node node;
+	private Scene scene;
 
-	public ProgressListener(UIUtil util, Node node) {
+	public ProgressListener(UIUtil util, Scene scene) {
 		this.util = util;
-		this.node = node;
+		this.scene = scene;
 	}
 
 	@Override
 	public void downloadStep(final int pct) {
-		Platform.runLater(() -> util.progressProperty(node).set(pct / 100.));
+		Platform.runLater(() -> util.progressProperty(scene).set(pct / 100.));
 	}
 
 	@Override
 	public void downloadStop(File downloadedFile) {
 
 		if (downloadedFile == null) {
-			Platform.runLater(() -> util.progressProperty(node).set(0));
+			Platform.runLater(() -> util.progressProperty(scene).set(0));
 		}
 		downloaded(downloadedFile);
 	}

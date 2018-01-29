@@ -38,6 +38,8 @@ public class OnlineSection {
 		DEPLOYMENT_URL = codebase;
 	}
 
+	public static final String JSIDPLAY2_JS2_URL = DEPLOYMENT_URL + "jsidplay2.js2";
+
 	private String hvscUrl = DEPLOYMENT_URL + "online/hvsc/C64Music.zip";
 
 	public String getHvscUrl() {

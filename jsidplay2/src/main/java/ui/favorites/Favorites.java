@@ -3,6 +3,8 @@ package ui.favorites;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Random;
 
@@ -35,7 +37,10 @@ import ui.common.C64Window;
 import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.common.UIUtil;
+import ui.download.DownloadThread;
+import ui.download.ProgressListener;
 import ui.entities.config.FavoritesSection;
+import ui.entities.config.OnlineSection;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileExtensions;
@@ -47,6 +52,8 @@ public class Favorites extends Tab implements UIPart {
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
 
+	@FXML
+	private Button autoConfiguration;
 	@FXML
 	private Button add, remove, selectAll, deselectAll, load, save, saveAs;
 	@FXML
@@ -211,6 +218,38 @@ public class Favorites extends Tab implements UIPart {
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(nextTuneListener);
+	}
+
+	@FXML
+	private void doAutoConfiguration() {
+		autoConfiguration.setDisable(true);
+		try {
+			DownloadThread downloadThread = new DownloadThread(util.getConfig(),
+					new ProgressListener(util, favoritesList.getScene()) {
+
+						@Override
+						public void downloaded(final File file) {
+							Platform.runLater(() -> {
+								autoConfiguration.setDisable(false);
+								if (file != null) {
+									List<FavoritesSection> favorites = util.getConfig().getFavorites();
+									FavoritesSection favoritesSection = new FavoritesSection();
+									String tabName = PathUtils.getFilenameWithoutSuffix(file.getName());
+									favoritesSection.setName(tabName);
+									favorites.add(favoritesSection);
+									try {
+										getSelectedTab().loadFavorites(file);
+									} catch (IOException e1) {
+										e1.printStackTrace();
+									}
+								}
+							});
+						}
+					}, new URL(OnlineSection.JSIDPLAY2_JS2_URL));
+			downloadThread.start();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML

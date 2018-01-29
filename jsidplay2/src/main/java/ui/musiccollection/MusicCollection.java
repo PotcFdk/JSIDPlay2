@@ -398,7 +398,7 @@ public class MusicCollection extends Tab implements UIPart {
 			autoConfiguration.setDisable(true);
 			try {
 				DownloadThread downloadThread = new DownloadThread(util.getConfig(),
-						new ProgressListener(util, fileBrowser) {
+						new ProgressListener(util, fileBrowser.getScene()) {
 
 							@Override
 							public void downloaded(final File downloadedFile) {
@@ -610,7 +610,7 @@ public class MusicCollection extends Tab implements UIPart {
 			searchStart = x -> {
 				Platform.runLater(() -> {
 					disableSearch();
-					util.progressProperty(fileBrowser).set(ProgressBar.INDETERMINATE_PROGRESS);
+					util.progressProperty(fileBrowser.getScene()).set(ProgressBar.INDETERMINATE_PROGRESS);
 				});
 				searchIndexCreator.getSearchStart().accept(x);
 			};
@@ -618,7 +618,7 @@ public class MusicCollection extends Tab implements UIPart {
 			searchStop = cancelled -> {
 				Platform.runLater(() -> {
 					enableSearch();
-					util.progressProperty(fileBrowser).set(0);
+					util.progressProperty(fileBrowser.getScene()).set(0);
 				});
 				searchIndexCreator.getSearchStop().accept(cancelled);
 			};
@@ -749,7 +749,7 @@ public class MusicCollection extends Tab implements UIPart {
 	private void downloadStart(String url) {
 		System.out.println("Download URL: <" + url + ">");
 		try {
-			new DownloadThread(util.getConfig(), new ProgressListener(util, fileBrowser) {
+			new DownloadThread(util.getConfig(), new ProgressListener(util, fileBrowser.getScene()) {
 
 				@Override
 				public void downloaded(final File downloadedFile) {

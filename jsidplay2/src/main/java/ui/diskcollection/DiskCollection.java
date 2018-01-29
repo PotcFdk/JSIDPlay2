@@ -198,7 +198,7 @@ public class DiskCollection extends Tab implements UIPart {
 			autoConfiguration.setDisable(true);
 			try {
 				DownloadThread downloadThread = new DownloadThread(util.getConfig(),
-						new ProgressListener(util, fileBrowser) {
+						new ProgressListener(util, fileBrowser.getScene()) {
 
 							@Override
 							public void downloaded(final File downloadedFile) {

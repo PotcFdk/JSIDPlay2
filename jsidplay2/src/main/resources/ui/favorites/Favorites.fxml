@@ -100,6 +100,8 @@
 								</ImageView>
 							</graphic>
 						</Button>
+						<Button text="%AUTO_CONFIGURATION" fx:id="autoConfiguration"
+							onAction="#doAutoConfiguration" />
 						<Label text="%RENAME_TAB" />
 						<TextField fx:id="renameTab" onAction="#renameTab"
 							prefWidth="100" />

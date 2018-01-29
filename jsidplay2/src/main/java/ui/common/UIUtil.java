@@ -9,6 +9,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -89,9 +90,9 @@ public class UIUtil {
 		}
 	}
 
-	public final DoubleProperty progressProperty(Node node) {
-		if (progressProperty == null && node.getScene() != null) {
-			ProgressBar progressBar = (ProgressBar) node.getScene().lookup("#progress");
+	public final DoubleProperty progressProperty(Scene scene) {
+		if (progressProperty == null && scene != null) {
+			ProgressBar progressBar = (ProgressBar) scene.lookup("#progress");
 			if (progressBar != null) {
 				progressProperty = progressBar.progressProperty();
 			}

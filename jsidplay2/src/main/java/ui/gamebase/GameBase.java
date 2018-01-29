@@ -14,7 +14,7 @@ import de.schlichtherle.truezip.file.TFile;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Tab;
@@ -27,8 +27,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.PathUtils;
 import libsidutils.DesktopIntegration;
+import libsidutils.PathUtils;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
@@ -48,8 +48,8 @@ public class GameBase extends Tab implements UIPart {
 	private static final String EXT_MDB = ".mdb";
 
 	protected final class GameBaseListener extends ProgressListener {
-		protected GameBaseListener(UIUtil util, Node node) {
-			super(util, node);
+		protected GameBaseListener(UIUtil util, Scene scene) {
+			super(util, scene);
 		}
 
 		@Override
@@ -183,7 +183,7 @@ public class GameBase extends Tab implements UIPart {
 				try {
 					final URL url = new URL(util.getConfig().getOnlineSection().getGamebaseUrl());
 					DownloadThread downloadThread = new DownloadThread(util.getConfig(),
-							new GameBaseListener(util, letter), url);
+							new GameBaseListener(util, letter.getScene()), url);
 					downloadThread.start();
 				} catch (MalformedURLException e) {
 					e.printStackTrace();

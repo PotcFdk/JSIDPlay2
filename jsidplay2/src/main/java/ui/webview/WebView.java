@@ -117,7 +117,7 @@ public class WebView extends Tab implements UIPart {
 							isDownloading = true;
 							Platform.runLater(() -> {
 								webView.setCursor(Cursor.WAIT);
-								DoubleProperty progressProperty = util.progressProperty(webView);
+								DoubleProperty progressProperty = util.progressProperty(webView.getScene());
 								progressProperty.setValue(step / 100.f);
 							});
 						}
@@ -150,7 +150,7 @@ public class WebView extends Tab implements UIPart {
 
 	private ChangeListener<? super Number> progressListener = (observable, oldValue, newValue) -> {
 		Platform.runLater(() -> {
-			DoubleProperty progressProperty = util.progressProperty(webView);
+			DoubleProperty progressProperty = util.progressProperty(webView.getScene());
 			progressProperty.setValue(newValue);
 		});
 	};
