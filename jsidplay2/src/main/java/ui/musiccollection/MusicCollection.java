@@ -35,6 +35,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -248,7 +249,9 @@ public class MusicCollection extends Tab implements UIPart {
 	private void initialize() {
 		util.getPlayer().stateProperty().addListener(tuneMatcherListener);
 		tuneInfos = FXCollections.<TuneInfo> observableArrayList();
-		tuneInfoTable.setItems(tuneInfos);
+		SortedList<TuneInfo> sortedList = new SortedList<>(tuneInfos);
+		sortedList.comparatorProperty().bind(tuneInfoTable.comparatorProperty());
+		tuneInfoTable.setItems(sortedList);
 		tuneInfoTable.setPrefHeight(Double.MAX_VALUE);
 		photographPane.setPrefHeight(Double.MAX_VALUE);
 		nameColumn.prefWidthProperty().bind(tuneInfoTable.widthProperty().multiply(0.4));

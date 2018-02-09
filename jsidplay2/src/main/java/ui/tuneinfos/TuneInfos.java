@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 
@@ -33,7 +34,9 @@ public class TuneInfos extends C64Window {
 	@FXML
 	private void initialize() {
 		tuneInfos = FXCollections.<TuneInfo> observableArrayList();
-		tuneInfoTable.setItems(tuneInfos);
+		SortedList<TuneInfo> sortedList = new SortedList<>(tuneInfos);
+		sortedList.comparatorProperty().bind(tuneInfoTable.comparatorProperty());
+		tuneInfoTable.setItems(sortedList);
 	}
 
 	public void showTuneInfos(File tuneFile, SidTune tune) {

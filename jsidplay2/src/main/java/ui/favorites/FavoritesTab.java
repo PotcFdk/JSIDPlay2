@@ -27,6 +27,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -95,7 +96,9 @@ public class FavoritesTab extends Tab implements UIPart {
 	@FXML
 	private void initialize() {
 		filteredFavorites = FXCollections.<HVSCEntry>observableArrayList();
-		favoritesTable.setItems(filteredFavorites);
+		SortedList<HVSCEntry> sortedList = new SortedList<>(filteredFavorites);
+		sortedList.comparatorProperty().bind(favoritesTable.comparatorProperty());
+		favoritesTable.setItems(sortedList);
 		favoritesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		favoritesTable.getColumns().addListener((Change<? extends TableColumn<HVSCEntry, ?>> change) -> {
 			while (change.next()) {

@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -75,7 +76,9 @@ public class Asm extends Tab implements UIPart {
 		varValueColumn.setOnEditCommit((evt) -> evt.getTableView().getItems().get(evt.getTablePosition().getRow())
 				.setValue(evt.getNewValue()));
 		variables = FXCollections.<Variable>observableArrayList();
-		variablesTable.setItems(variables);
+		SortedList<Variable> sortedList = new SortedList<>(variables);
+		sortedList.comparatorProperty().bind(variablesTable.comparatorProperty());
+		variablesTable.setItems(sortedList);
 		varNameColumn.prefWidthProperty().bind(variablesTable.widthProperty().multiply(0.4));
 		varValueColumn.prefWidthProperty().bind(variablesTable.widthProperty().multiply(0.6));
 

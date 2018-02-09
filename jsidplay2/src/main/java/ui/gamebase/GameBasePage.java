@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
@@ -54,7 +55,9 @@ public class GameBasePage extends Tab implements UIPart {
 		convenience = new Convenience(util.getPlayer());
 		allGames = FXCollections.<Games>observableArrayList();
 		filteredGames = FXCollections.<Games>observableArrayList();
-		gamebaseTable.setItems(filteredGames);
+		SortedList<Games> sortedList = new SortedList<>(filteredGames);
+		sortedList.comparatorProperty().bind(gamebaseTable.comparatorProperty());
+		gamebaseTable.setItems(sortedList);
 		gamebaseTable.setOnKeyPressed((event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				Games game = gamebaseTable.getSelectionModel().getSelectedItem();

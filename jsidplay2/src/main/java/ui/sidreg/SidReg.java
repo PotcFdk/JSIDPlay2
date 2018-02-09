@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -60,7 +61,9 @@ public class SidReg extends Tab implements UIPart {
 	private void initialize() {
 		util.getPlayer().stateProperty().addListener(sidRegStop);
 		filteredSidRegWrites = FXCollections.<SidRegWrite>observableArrayList();
-		regTable.setItems(filteredSidRegWrites);
+		SortedList<SidRegWrite> sortedList = new SortedList<>(filteredSidRegWrites);
+		sortedList.comparatorProperty().bind(regTable.comparatorProperty());
+		regTable.setItems(sortedList);
 		allSidRegWrites = FXCollections.<SidRegWrite>observableArrayList();
 		filters = new HashSet<String>();
 		doUpdateFilter();

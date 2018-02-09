@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -118,7 +119,9 @@ public class SidDump extends Tab implements UIPart {
 			}
 		});
 		sidDumpOutputs = FXCollections.<SidDumpOutput>observableArrayList();
-		dumpTable.setItems(sidDumpOutputs);
+		SortedList<SidDumpOutput> sortedList = new SortedList<>(sidDumpOutputs);
+		sortedList.comparatorProperty().bind(dumpTable.comparatorProperty());
+		dumpTable.setItems(sortedList);
 		sidDumpPlayers = FXCollections.<SIDDumpPlayer>observableArrayList();
 		regPlayer.setItems(sidDumpPlayers);
 		SIDDumpConfiguration sidDump;

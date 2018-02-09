@@ -5,6 +5,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -50,7 +51,9 @@ public class JoystickSettings extends C64Window {
 	@FXML
 	private void initialize() {
 		components1 = FXCollections.<Component> observableArrayList();
-		testTable1.setItems(components1);
+		SortedList<Component> sortedList1 = new SortedList<>(components1);
+		sortedList1.comparatorProperty().bind(testTable1.comparatorProperty());
+		testTable1.setItems(sortedList1);
 		devices = FXCollections.<Controller> observableArrayList();
 		device1.setItems(devices);
 		up1.setItems(components1);
@@ -60,7 +63,9 @@ public class JoystickSettings extends C64Window {
 		fire1.setItems(components1);
 
 		components2 = FXCollections.<Component> observableArrayList();
-		testTable2.setItems(components2);
+		SortedList<Component> sortedList2 = new SortedList<>(components2);
+		sortedList2.comparatorProperty().bind(testTable2.comparatorProperty());
+		testTable2.setItems(sortedList2);
 		up2.setItems(components2);
 		down2.setItems(components2);
 		left2.setItems(components2);
