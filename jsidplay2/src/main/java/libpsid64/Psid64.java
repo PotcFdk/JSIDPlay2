@@ -560,28 +560,29 @@ public class Psid64 {
 	}
 
 	public static PSid64TuneInfo detectPSid64TuneInfo(byte[] ram, int videoScreenAddress) {
-		PSid64TuneInfo chipModelAndBaseAddress = new PSid64TuneInfo();
-		List<ChipModel> result = new ArrayList<>();
+		PSid64TuneInfo result = new PSid64TuneInfo();
+		List<ChipModel> chipModels = new ArrayList<>();
 		int row = 2;
 		int col = 6;
 		// Search for PSID64 on video screen
 		if (checkScreenMessage(ram, videoScreenAddress, "PSID64", row, col)) {
+			result.setDetected(true);
 			// start searching at line 12, column=10
 			row = 12;
 			col = 10;
 			// e.g. "PAL, 8580, 8580 at $D500"
 			// or "NTSC, MOS8580, MOS8580 at $D500"
 			// search for PAL/NTSC
-			chipModelAndBaseAddress.cpuClock = CPUClock.PAL;
+			result.cpuClock = CPUClock.PAL;
 			if (checkScreenMessage(ram, videoScreenAddress, "NTSC", row, col)) {
-				chipModelAndBaseAddress.cpuClock = CPUClock.NTSC;
+				result.cpuClock = CPUClock.NTSC;
 				// NTSC one char longer than PAL
 				col++;
 			}
 			// Search for MOS6581 or MOS8580 for mono SID chip model
 			String chipModel = detectChipModel6581or8580(ram, videoScreenAddress, row, col + 5);
 			if (chipModel != null) {
-				result.add(toChipModel(chipModel));
+				chipModels.add(toChipModel(chipModel));
 			}
 			// Search for MOS6581 or MOS8580 for steeo SID chip model
 			if (chipModel != null && chipModel.length() == "MOSXXXX".length()) {
@@ -590,7 +591,7 @@ public class Psid64 {
 			}
 			chipModel = detectChipModel6581or8580(ram, videoScreenAddress, row, col + 11);
 			if (chipModel != null) {
-				result.add(toChipModel(chipModel));
+				chipModels.add(toChipModel(chipModel));
 			}
 			if (chipModel != null && chipModel.length() == "MOSXXXX".length()) {
 				// MOS8580 three chars longer than 8580
@@ -598,10 +599,10 @@ public class Psid64 {
 			}
 			int stereoAddress = detectStereoAddress(ram, videoScreenAddress, row, col + 19);
 			// XXX 3SID currently unsupported
-			chipModelAndBaseAddress.stereoAddress = stereoAddress;
+			result.stereoAddress = stereoAddress;
 		}
-		chipModelAndBaseAddress.chipModels = result.toArray(new ChipModel[0]);
-		return chipModelAndBaseAddress;
+		result.chipModels = chipModels.toArray(new ChipModel[0]);
+		return result;
 	}
 
 	private static ChipModel toChipModel(String chipModelAsString) {

@@ -5,9 +5,18 @@ import libsidplay.common.ChipModel;
 
 public class PSid64TuneInfo {
 
+	protected boolean detected;
 	protected CPUClock cpuClock;
 	protected ChipModel[] chipModels;
 	protected int stereoAddress;
+
+	public boolean isDetected() {
+		return detected;
+	}
+	
+	public void setDetected(boolean detected) {
+		this.detected = detected;
+	}
 
 	public CPUClock getCpuClock() {
 		return cpuClock;
@@ -48,4 +57,5 @@ public class PSid64TuneInfo {
 	public int getStereoAddress() {
 		return stereoAddress;
 	}
+
 }

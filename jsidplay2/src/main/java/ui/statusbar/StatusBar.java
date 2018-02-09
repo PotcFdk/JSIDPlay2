@@ -245,7 +245,9 @@ public class StatusBar extends AnchorPane implements UIPart {
 					emulationSection.setForce3SIDTune(false);
 					util.getPlayer().updateSIDChipConfiguration();
 				}
-				return "PSID64, ";
+				if (psid64TuneInfo.isDetected()) {
+					return "PSID64, ";
+				}
 			}
 		} else {
 			// restore saved state
