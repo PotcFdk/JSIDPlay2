@@ -100,6 +100,10 @@ public abstract class PlayListTab extends TabBase {
 		favorites.removeViewAt(favorites.getChildCount() - 1);
 	}
 
+	public void removeAll() {
+		favorites.removeAllViews();;
+	}
+
 	public void gotoRow(final int currentSong) {
 		if (currentSong==-1)
 			return;

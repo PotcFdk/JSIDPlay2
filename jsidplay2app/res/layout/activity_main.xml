@@ -519,7 +519,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/random" />
-                </LinearLayout>
+                    <Button
+                        android:id="@+id/downloadPlayList"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="downloadPlayList"
+                        android:text="@string/downloadPlayList" />
+
+                    </LinearLayout>
 
                 <ScrollView
                     android:id="@+id/favoritesScroll"

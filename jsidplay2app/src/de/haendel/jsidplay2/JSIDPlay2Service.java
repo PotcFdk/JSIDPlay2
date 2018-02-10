@@ -235,8 +235,6 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 			throws UnsupportedEncodingException, IOException {
 		PlayListEntry entry = new PlayListEntry(resource);
 		playList.add(entry);
-
-		save();
 		return entry;
 	}
 
@@ -244,8 +242,12 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		PlayListEntry entry = getLast();
 		if (entry != null) {
 			playList.remove(entry);
-			save();
 		}
+	}
+
+	public void removeAll() throws UnsupportedEncodingException, IOException {
+		playList.clear();
+		save();
 	}
 
 	private MediaPlayer createMediaPlayer() {
@@ -368,7 +370,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		}
 	}
 
-	private void save() throws UnsupportedEncodingException, IOException {
+	public void save() throws UnsupportedEncodingException, IOException {
 		File sdRootDir = Environment.getExternalStorageDirectory();
 		File playlistFile = new File(new File(sdRootDir, JSIDPLAY2_FOLDER),
 				JSIDPLAY2_JS2);

@@ -1,13 +1,22 @@
 package de.haendel.jsidplay2;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -30,6 +39,50 @@ import de.haendel.jsidplay2.tab.SidsTab;
 
 public class MainActivity extends Activity implements PlayListener {
 
+	private static final String PLAYLIST_DOWNLOAD_URL = "http://haendel.ddns.net/~ken/jsidplay2.js2";
+
+	private class PlayListDownload extends AsyncTask<Void,Void,List<String>> {
+	    private String requestUrl;
+		private PlayListTab playListTab;
+
+	    private PlayListDownload(String requestUrl, PlayListTab playListTab) {
+	        this.requestUrl = requestUrl;
+	        this.playListTab = playListTab;
+	    }
+
+	    @Override
+	    protected List<String> doInBackground(Void... objects) {
+	    	List<String> downloadedFavorites = new ArrayList<String>();
+	    	try {
+	    	    BufferedReader in = new BufferedReader(new InputStreamReader(new URL(requestUrl).openStream()));
+	    	    String str;
+	    	    while ((str = in.readLine()) != null) {
+	    	    	downloadedFavorites.add("/C64Music" + str);
+	    	    }
+	    	    in.close();
+	    	} catch (MalformedURLException e) {
+	    	} catch (IOException e) {
+	    	}
+	        return downloadedFavorites;
+	    }
+
+	    @Override
+		protected void onPostExecute(List<String> downloadedFavorites) {
+			for (String favorite : downloadedFavorites) {
+				try {
+					playListTab.addRow(jsidplay2service.add(favorite));
+				} catch (IOException e) {
+					Log.e(appName, e.getMessage(), e);
+				}
+			}
+			try {
+				jsidplay2service.save();
+			} catch (IOException e) {
+				Log.e(appName, e.getMessage(), e);
+			}
+		}
+	}
+	
 	private String appName;
 	private Configuration configuration;
 
@@ -122,6 +175,7 @@ public class MainActivity extends Activity implements PlayListener {
 	public void removeFavorite(View view) {
 		try {
 			jsidplay2service.removeLast();
+			jsidplay2service.save();
 			playListTab.removeLast();
 		} catch (UnsupportedEncodingException e) {
 			Log.e(appName, e.getMessage(), e);
@@ -139,6 +193,33 @@ public class MainActivity extends Activity implements PlayListener {
 		stopService(playIntent);
 	}
 
+	public void downloadPlayList(View view) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Overwrite Playlist?");
+		builder.setCancelable(true);
+		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				try {
+					jsidplay2service.removeAll();
+				} catch (UnsupportedEncodingException e) {
+					Log.e(appName, e.getMessage(), e);
+				} catch (IOException e) {
+					Log.e(appName, e.getMessage(), e);
+				}
+				playListTab.removeAll();
+				new PlayListDownload(PLAYLIST_DOWNLOAD_URL, playListTab).execute();
+				dialog.cancel();
+			}
+		});
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+	
 	public void setRandomized(boolean randomized) {
 		this.randomized = randomized;
 		if (jsidplay2service != null) {
@@ -165,6 +246,7 @@ public class MainActivity extends Activity implements PlayListener {
 		try {
 			String resource = sidTab.getCurrentTune();
 			PlayListEntry entry = jsidplay2service.add(resource);
+			jsidplay2service.save();
 			playListTab.addRow(entry);
 			tabHost.setCurrentTabByTag(PlayListTab.class.getSimpleName());
 		} catch (IOException e) {
