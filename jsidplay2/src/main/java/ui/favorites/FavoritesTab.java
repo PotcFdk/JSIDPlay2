@@ -575,6 +575,9 @@ public class FavoritesTab extends Tab implements UIPart {
 			util.getPlayer().play(SidTune.load(getHVSCFile(hvscEntry)));
 			currentlyPlayedHVSCEntryProperty.set(hvscEntry);
 			favoritesTable.scrollTo(hvscEntry);
+			int selectedIndex = filteredFavorites.indexOf(hvscEntry);
+			favoritesSection.setSelectedRowFrom(selectedIndex);
+			favoritesSection.setSelectedRowTo(selectedIndex);
 		} catch (IOException | SidTuneError e) {
 			openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 		}
