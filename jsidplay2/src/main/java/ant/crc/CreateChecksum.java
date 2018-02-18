@@ -1,4 +1,4 @@
-package libsidutils.ant.crc;
+package ant.crc;
 
 import java.io.File;
 import java.io.IOException;

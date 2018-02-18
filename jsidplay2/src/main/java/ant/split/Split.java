@@ -1,4 +1,4 @@
-package libsidutils.ant.split;
+package ant.split;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

@@ -217,7 +217,7 @@
 		</delete>
 
 		<!-- create a CRC file -->
-		<java fork="true" classname="libsidutils.ant.crc.CreateChecksum" outputproperty="checksum_gb64">
+		<java fork="true" classname="ant.crc.CreateChecksum" outputproperty="checksum_gb64">
 			<classpath path="${compile_classpath}" />
 			<arg path="${gamebase_dir}/${gamebase_zip}" />
 		</java>
@@ -269,7 +269,7 @@
 		<delete dir="${hvsc_dir}/${hvsc_subfolder}" />
 
 		<!-- create a CRC file -->
-		<java fork="true" classname="libsidutils.ant.crc.CreateChecksum" outputproperty="checksum_hvsc">
+		<java fork="true" classname="ant.crc.CreateChecksum" outputproperty="checksum_hvsc">
 			<classpath path="${compile_classpath}" />
 			<arg path="${hvsc_dir}/${hvsc_zip}" />
 		</java>
@@ -281,7 +281,7 @@
 		</propertyfile>
 
 		<!-- Split ZIP file (sourceforge has a maximum file size limit) -->
-		<java fork="true" classname="libsidutils.ant.split.Split">
+		<java fork="true" classname="ant.split.Split">
 			<classpath path="${compile_classpath}" />
 			<arg value="--maxFileSize" />
 			<arg value="${hvsc_max_size}" />
@@ -329,7 +329,7 @@
 		<delete dir="${cgsc_dir}/${cgsc_subfolder}" />
 
 		<!-- create a CRC file -->
-		<java fork="true" classname="libsidutils.ant.crc.CreateChecksum" outputproperty="checksum_cgsc">
+		<java fork="true" classname="ant.crc.CreateChecksum" outputproperty="checksum_cgsc">
 			<classpath path="${compile_classpath}" />
 			<arg path="${cgsc_dir}/${cgsc_zip}" />
 		</java>
@@ -361,7 +361,7 @@
 		<mkdir dir="${demos_dir}" />
 		<copy todir="${demos_dir}" file="${test_src}/demos/${demos_zip}" />
 
-		<java fork="true" classname="libsidutils.ant.crc.CreateChecksum" outputproperty="checksum">
+		<java fork="true" classname="ant.crc.CreateChecksum" outputproperty="checksum">
 			<classpath path="${compile_classpath}" />
 			<arg path="${demos_dir}/${demos_zip}" />
 		</java>
@@ -406,7 +406,7 @@
 		<delete dir="${hvmec_dir}/HVMEC" />
 
 		<!-- create a CRC file -->
-		<java fork="true" classname="libsidutils.ant.crc.CreateChecksum" outputproperty="checksum_hvmec">
+		<java fork="true" classname="ant.crc.CreateChecksum" outputproperty="checksum_hvmec">
 			<classpath path="${compile_classpath}" />
 			<arg path="${hvmec_dir}/${hvmec_zip}" />
 		</java>
