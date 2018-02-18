@@ -145,6 +145,7 @@
 						<MenuItem text="%FORWARD" onAction="#forward" />
 						<MenuItem text="%STOP" onAction="#stop" />
 						<MenuItem text="%RESET_COUNTER" onAction="#resetCounter" />
+						<CheckMenuItem text="%TURBO_TAPE" fx:id="turboTape" />
 						<MenuItem text="%INSERT_TAPE" onAction="#insertTape">
 							<accelerator>
 								<KeyCodeCombination alt="UP" code="DIGIT1"

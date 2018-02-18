@@ -116,7 +116,7 @@ public class MenuBar extends VBox implements UIPart {
 	}
 
 	@FXML
-	protected CheckMenuItem pauseContinue, driveOn, driveSoundOn, parCable, installJiffyDos, expand2000, expand4000,
+	protected CheckMenuItem pauseContinue, turboTape, driveOn, driveSoundOn, parCable, installJiffyDos, expand2000, expand4000,
 			expand6000, expand8000, expandA000, turnPrinterOn;
 	@FXML
 	protected RadioMenuItem fastForward, normalSpeed, c1541, c1541_II, neverExtend, askExtend, accessExtend;
@@ -191,6 +191,7 @@ public class MenuBar extends VBox implements UIPart {
 		fastForward2.selectedProperty().bindBidirectional(fastForward.selectedProperty());
 		nextFavoriteDisabledState = new SimpleBooleanProperty(true);
 		nextFavorite.disableProperty().bind(nextFavoriteDisabledState);
+		turboTape.selectedProperty().bindBidirectional(sidplay2Section.turboTapeProperty());
 		driveOn.selectedProperty().bindBidirectional(c1541Section.driveOnProperty());
 		parCable.selectedProperty().bindBidirectional(c1541Section.parallelCableProperty());
 		installJiffyDos.selectedProperty().bindBidirectional(c1541Section.jiffyDosInstalledProperty());
@@ -417,7 +418,7 @@ public class MenuBar extends VBox implements UIPart {
 	private void resetCounter() {
 		util.getPlayer().getDatasette().control(Datasette.Control.RESET_COUNTER);
 	}
-
+	
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();

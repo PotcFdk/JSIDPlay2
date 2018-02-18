@@ -564,4 +564,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		turboTapeProperty.set(turboTape);
 	}
 
+	public BooleanProperty turboTapeProperty() {
+		return turboTapeProperty;
+	}
 }
