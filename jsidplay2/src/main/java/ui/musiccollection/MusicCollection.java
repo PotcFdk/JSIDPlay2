@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -557,7 +559,9 @@ public class MusicCollection extends Tab implements UIPart {
 			openErrorDialog(String.format(util.getBundle().getString("ERR_FILE_NOT_FOUND"), e.getMessage()), getType());
 		} catch (IOException | NoSuchFieldException | IllegalAccessException | PersistenceException
 				| IllegalStateException e) {
-			openErrorDialog(e.getMessage(), getType());
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			openErrorDialog(sw.toString(), getType());
 		}
 	}
 
