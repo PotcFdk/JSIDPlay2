@@ -64,13 +64,13 @@ public class Directory extends VBox implements UIPart {
 		dirColumn.prefWidthProperty().bind(directory.widthProperty());
 		directoryEntries = FXCollections.<DirectoryItem> observableArrayList();
 		directory.setItems(directoryEntries);
-		directory.setOnKeyPressed((event) -> {
+		directory.setOnKeyPressed(event -> {
 			DirectoryItem selectedItem = directory.getSelectionModel().getSelectedItem();
 			if (event.getCode() == KeyCode.ENTER && selectedItem != null) {
 				autoStartProgram();
 			}
 		});
-		directory.setOnMousePressed((event) -> {
+		directory.setOnMousePressed(event -> {
 			if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
 				autoStartProgram();
 			}

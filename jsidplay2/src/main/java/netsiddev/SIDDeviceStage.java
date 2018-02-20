@@ -16,7 +16,7 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 		util = new SIDDeviceUIUtil();
 
 		Scene scene = (Scene) util.parse(this);
-		scene.setOnKeyPressed((ke) -> {
+		scene.setOnKeyPressed(ke -> {
 			if ((ke.getCode() == KeyCode.ESCAPE) || (ke.getCode() == KeyCode.ENTER)) {
 				close();
 			}

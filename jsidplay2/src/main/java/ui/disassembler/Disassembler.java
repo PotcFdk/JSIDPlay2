@@ -120,7 +120,6 @@ public class Disassembler extends Tab implements UIPart {
 	}
 
 	private void disassemble(final int startAddr) {
-		// Platform.runLater(() -> {
 		assemblyLines.clear();
 		byte[] ram = util.getPlayer().getC64().getRAM();
 		int offset = startAddr;
@@ -130,7 +129,6 @@ public class Disassembler extends Tab implements UIPart {
 			assemblyLines.add(assemblyLine);
 			offset += cmd.getByteCount();
 		} while (offset <= 0xffff);
-		// });
 	}
 
 	protected AssemblyLine createAssemblyLine(byte[] ram, int startAddr, CPUCommand cmd) {

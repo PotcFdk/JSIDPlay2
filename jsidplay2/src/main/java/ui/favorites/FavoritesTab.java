@@ -151,7 +151,7 @@ public class FavoritesTab extends Tab implements UIPart {
 			}
 		}
 
-		contextMenu.setOnShown((event) -> {
+		contextMenu.setOnShown(event -> {
 			HVSCEntry hvscEntry = favoritesTable.getSelectionModel().getSelectedItem();
 			showStil.setDisable(hvscEntry == null || util.getPlayer().getStilEntry(hvscEntry.getPath()) == null);
 			List<Tab> tabs = favorites.getFavoriteTabs();
@@ -163,14 +163,14 @@ public class FavoritesTab extends Tab implements UIPart {
 				}
 				final String name = tab.getText();
 				MenuItem moveToTabItem = new MenuItem(name);
-				moveToTabItem.setOnAction((event2) -> {
+				moveToTabItem.setOnAction(event2 -> {
 					ObservableList<HVSCEntry> selectedItems = favoritesTable.getSelectionModel().getSelectedItems();
 					copyToTab(selectedItems, (FavoritesTab) tab);
 					removeFavorites(selectedItems);
 				});
 				moveToTab.getItems().add(moveToTabItem);
 				MenuItem copyToTabItem = new MenuItem(name);
-				copyToTabItem.setOnAction((event2) -> {
+				copyToTabItem.setOnAction(event2 -> {
 					ObservableList<HVSCEntry> selectedItems = favoritesTable.getSelectionModel().getSelectedItems();
 					copyToTab(selectedItems, (FavoritesTab) tab);
 				});
@@ -513,7 +513,7 @@ public class FavoritesTab extends Tab implements UIPart {
 	private void addAddColumnHeaderMenuItem(Menu addColumnMenu, final SingularAttribute<?, ?> attribute) {
 		MenuItem menuItem = new MenuItem();
 		menuItem.setText(attribute.getName());
-		menuItem.setOnAction((event) -> {
+		menuItem.setOnAction(event -> {
 			FavoriteColumn favoriteColumn = new FavoriteColumn();
 			favoriteColumn.setColumnProperty(attribute.getName());
 			favoritesSection.getColumns().add(favoriteColumn);

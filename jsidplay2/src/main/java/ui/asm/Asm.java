@@ -71,10 +71,10 @@ public class Asm extends Tab implements UIPart {
 		}
 		varNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		varNameColumn.setOnEditCommit(
-				(evt) -> evt.getTableView().getItems().get(evt.getTablePosition().getRow()).setName(evt.getNewValue()));
+				evt -> evt.getTableView().getItems().get(evt.getTablePosition().getRow()).setName(evt.getNewValue()));
 		varValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		varValueColumn.setOnEditCommit((evt) -> evt.getTableView().getItems().get(evt.getTablePosition().getRow())
-				.setValue(evt.getNewValue()));
+		varValueColumn.setOnEditCommit(
+				evt -> evt.getTableView().getItems().get(evt.getTablePosition().getRow()).setValue(evt.getNewValue()));
 		variables = FXCollections.<Variable>observableArrayList();
 		SortedList<Variable> sortedList = new SortedList<>(variables);
 		sortedList.comparatorProperty().bind(variablesTable.comparatorProperty());
@@ -124,7 +124,7 @@ public class Asm extends Tab implements UIPart {
 	private void compile() {
 		try {
 			HashMap<String, String> globals = new HashMap<String, String>();
-			variables.stream().forEach((var) -> globals.put(var.getName(), var.getValue()));
+			variables.stream().forEach(var -> globals.put(var.getName(), var.getValue()));
 			InputStream asm = new ByteArrayInputStream(contents.getText().getBytes("UTF-8"));
 			byte[] assembly = assembler.assemble(ASM_RESOURCE, asm, globals);
 			InputStream is = new ByteArrayInputStream(assembly);

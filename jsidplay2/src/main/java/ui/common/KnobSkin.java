@@ -20,7 +20,7 @@ import javafx.scene.layout.StackPane;
  */
 public class KnobSkin extends SkinBase<Slider> {
 
-	private final EventHandler<KeyEvent> keyEventListener = (e) -> {
+	private final EventHandler<KeyEvent> keyEventListener = e -> {
 		if (!e.isConsumed()) {
 			this.callActionForEvent(e);
 		}
@@ -59,8 +59,8 @@ public class KnobSkin extends SkinBase<Slider> {
 		knob.getChildren().add(knobDot);
 
 		getSkinnable().addEventHandler(KeyEvent.KEY_PRESSED, this.keyEventListener);
-		getSkinnable().setOnKeyPressed((ke) -> getSkinnable().requestLayout());
-		getSkinnable().setOnKeyReleased((ke) -> getSkinnable().requestLayout());
+		getSkinnable().setOnKeyPressed(ke -> getSkinnable().requestLayout());
+		getSkinnable().setOnKeyReleased(ke -> getSkinnable().requestLayout());
 		getSkinnable().setOnMousePressed(me -> {
 			double dragStart = mouseToValue(me.getX(), me.getY());
 			double zeroOneValue = (getSkinnable().getValue() - getSkinnable().getMin())

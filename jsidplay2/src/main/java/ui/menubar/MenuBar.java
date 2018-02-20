@@ -242,7 +242,7 @@ public class MenuBar extends VBox implements UIPart {
 					try {
 						video();
 						util.setPlayingTab(window.getTabbedPane().getTabs().stream()
-								.filter((tab) -> tab.getId().equals(Video.ID)).findFirst().get());
+								.filter(tab -> tab.getId().equals(Video.ID)).findFirst().get());
 						new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA,
 								null);
 					} catch (IOException | SidTuneError | URISyntaxException e) {
@@ -986,7 +986,7 @@ public class MenuBar extends VBox implements UIPart {
 
 	private void playTune(final SidTune tune) {
 		video();
-		util.setPlayingTab(window.getTabbedPane().getTabs().stream().filter((tab) -> tab.getId().equals(Video.ID))
+		util.setPlayingTab(window.getTabbedPane().getTabs().stream().filter(tab -> tab.getId().equals(Video.ID))
 				.findFirst().get());
 		util.getPlayer().play(tune);
 	}
@@ -999,7 +999,7 @@ public class MenuBar extends VBox implements UIPart {
 		video();
 		try {
 			Video videoScreen = (Video) window.getTabbedPane().getTabs().stream()
-					.filter((tab) -> tab.getId().equals(Video.ID)).findFirst().get();
+					.filter(tab -> tab.getId().equals(Video.ID)).findFirst().get();
 			Image vicImage = videoScreen.getVicImage();
 			if (vicImage != null) {
 				ImageIO.write(SwingFXUtils.fromFXImage(vicImage, null), format,
@@ -1037,7 +1037,7 @@ public class MenuBar extends VBox implements UIPart {
 			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
 			hvsc();
 			util.setPlayingTab(window.getTabbedPane().getTabs().stream()
-					.filter((tab) -> tab.getId().equals(MusicCollection.HVSC_ID)).findFirst().get());
+					.filter(tab -> tab.getId().equals(MusicCollection.HVSC_ID)).findFirst().get());
 			try {
 				util.getPlayer().play(SidTune.load(file));
 			} catch (IOException | SidTuneError e) {

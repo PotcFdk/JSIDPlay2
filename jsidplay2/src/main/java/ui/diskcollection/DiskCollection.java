@@ -125,7 +125,7 @@ public class DiskCollection extends Tab implements UIPart {
 		convenience = new Convenience(util.getPlayer());
 		directory.setPrefHeight(Double.MAX_VALUE);
 		directory.getAutoStartFileProperty().addListener(
-				(observable) -> attachAndRunDemo(fileBrowser.getSelectionModel().getSelectedItem().getValue(),
+				observable -> attachAndRunDemo(fileBrowser.getSelectionModel().getSelectedItem().getValue(),
 						directory.getAutoStartFileProperty().get()));
 		fileBrowser.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null && newValue.getValue().isFile()) {
@@ -138,7 +138,7 @@ public class DiskCollection extends Tab implements UIPart {
 				}
 			}
 		});
-		fileBrowser.setOnKeyPressed((event) -> {
+		fileBrowser.setOnKeyPressed(event -> {
 			TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
 			if (event.getCode() == KeyCode.ENTER && selectedItem != null) {
 				if (selectedItem.getValue().isFile()) {
@@ -149,14 +149,14 @@ public class DiskCollection extends Tab implements UIPart {
 				}
 			}
 		});
-		fileBrowser.setOnMousePressed((event) -> {
+		fileBrowser.setOnMousePressed(event -> {
 			final TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
 			if (selectedItem != null && selectedItem.getValue().isFile() && event.isPrimaryButtonDown()
 					&& event.getClickCount() > 1) {
 				attachAndRunDemo(fileBrowser.getSelectionModel().getSelectedItem().getValue(), null);
 			}
 		});
-		contextMenu.setOnShown((event) -> {
+		contextMenu.setOnShown(event -> {
 			TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
 			boolean disable = selectedItem == null || !selectedItem.getValue().isFile();
 			start.setDisable(disable);

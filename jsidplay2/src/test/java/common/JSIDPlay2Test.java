@@ -76,7 +76,7 @@ public class JSIDPlay2Test extends ApplicationTest {
 		abortTest = false;
 		config = JSidPlay2Main.getInstance().getUtil().getConfig();
 		player = JSidPlay2Main.getInstance().getUtil().getPlayer();
-		player.setMenuHook((player) -> {
+		player.setMenuHook(player -> {
 		});
 	}
 

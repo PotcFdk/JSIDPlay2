@@ -141,7 +141,7 @@ public class NetworkSIDDevice extends Application {
 		trayIcon.setImageAutoSize(true);
 
 		MenuItem aboutItem = new MenuItem(MENU_ABOUT);
-		aboutItem.addActionListener((e) -> Platform.runLater(() -> {
+		aboutItem.addActionListener(e -> Platform.runLater(() -> {
 			try {
 				if (aboutDialog == null) {
 					aboutDialog = new About();
@@ -157,7 +157,7 @@ public class NetworkSIDDevice extends Application {
 		popup.add(aboutItem);
 
 		MenuItem settingsItem = new MenuItem(MENU_SETTINGS);
-		settingsItem.addActionListener((e) -> Platform.runLater(() -> {
+		settingsItem.addActionListener(e -> Platform.runLater(() -> {
 			try {
 				if (settingsDialog == null) {
 					settingsDialog = new Settings();
@@ -175,7 +175,7 @@ public class NetworkSIDDevice extends Application {
 		popup.addSeparator();
 
 		MenuItem exitItem = new MenuItem(MENU_EXIT);
-		exitItem.addActionListener((e) -> System.exit(0));
+		exitItem.addActionListener(e -> System.exit(0));
 		popup.add(exitItem);
 
 		try {

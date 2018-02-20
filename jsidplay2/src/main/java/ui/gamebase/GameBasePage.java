@@ -58,13 +58,13 @@ public class GameBasePage extends Tab implements UIPart {
 		SortedList<Games> sortedList = new SortedList<>(filteredGames);
 		sortedList.comparatorProperty().bind(gamebaseTable.comparatorProperty());
 		gamebaseTable.setItems(sortedList);
-		gamebaseTable.setOnKeyPressed((event) -> {
+		gamebaseTable.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				Games game = gamebaseTable.getSelectionModel().getSelectedItem();
 				startGame(game);
 			}
 		});
-		gamebaseTable.setOnMousePressed((event) -> {
+		gamebaseTable.setOnMousePressed(event -> {
 			if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
 				Games game = gamebaseTable.getSelectionModel().getSelectedItem();
 				startGame(game);
