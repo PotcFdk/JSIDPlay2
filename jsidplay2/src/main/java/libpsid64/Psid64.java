@@ -384,8 +384,8 @@ public class Psid64 {
 	}
 
 	/**
-	 * Find free space in the C64 memory map for the screen and the driver code.
-	 * Of course the driver code takes priority over the screen.
+	 * Find free space in the C64 memory map for the screen and the driver code. Of
+	 * course the driver code takes priority over the screen.
 	 * 
 	 * @return free mem pages for driver/screen/char/stil
 	 */
@@ -511,8 +511,7 @@ public class Psid64 {
 	 *            first driver page which is already used (not free)
 	 * @param size
 	 *            number of consecutive free memory pages to search for
-	 * @return first page of free consecutive memory pages (null means not
-	 *         found)
+	 * @return first page of free consecutive memory pages (null means not found)
 	 */
 	private Integer findSpace(boolean pages[], Integer scr, Integer chars, Integer driver, int size) {
 		int firstPage = 0;
@@ -560,22 +559,23 @@ public class Psid64 {
 	}
 
 	public static PSid64TuneInfo detectPSid64TuneInfo(byte[] ram, int videoScreenAddress) {
-		PSid64TuneInfo result = new PSid64TuneInfo();
+		boolean detected = false;
+		CPUClock cpuClock = CPUClock.PAL;
 		List<ChipModel> chipModels = new ArrayList<>();
+		int stereoAddress = 0;
 		int row = 2;
 		int col = 6;
 		// Search for PSID64 on video screen
 		if (checkScreenMessage(ram, videoScreenAddress, "PSID64", row, col)) {
-			result.setDetected(true);
+			detected = true;
 			// start searching at line 12, column=10
 			row = 12;
 			col = 10;
 			// e.g. "PAL, 8580, 8580 at $D500"
 			// or "NTSC, MOS8580, MOS8580 at $D500"
 			// search for PAL/NTSC
-			result.cpuClock = CPUClock.PAL;
 			if (checkScreenMessage(ram, videoScreenAddress, "NTSC", row, col)) {
-				result.cpuClock = CPUClock.NTSC;
+				cpuClock = CPUClock.NTSC;
 				// NTSC one char longer than PAL
 				col++;
 			}
@@ -584,7 +584,7 @@ public class Psid64 {
 			if (chipModel != null) {
 				chipModels.add(toChipModel(chipModel));
 			}
-			// Search for MOS6581 or MOS8580 for steeo SID chip model
+			// Search for MOS6581 or MOS8580 for stereo SID chip model
 			if (chipModel != null && chipModel.length() == "MOSXXXX".length()) {
 				// MOS8580 three chars longer than 8580
 				col += 3;
@@ -597,12 +597,10 @@ public class Psid64 {
 				// MOS8580 three chars longer than 8580
 				col += 3;
 			}
-			int stereoAddress = detectStereoAddress(ram, videoScreenAddress, row, col + 19);
 			// XXX 3SID currently unsupported
-			result.stereoAddress = stereoAddress;
+			stereoAddress = detectStereoAddress(ram, videoScreenAddress, row, col + 19);
 		}
-		result.chipModels = chipModels.toArray(new ChipModel[0]);
-		return result;
+		return new PSid64TuneInfo(detected, cpuClock, chipModels, stereoAddress);
 	}
 
 	private static ChipModel toChipModel(String chipModelAsString) {

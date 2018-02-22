@@ -1,21 +1,26 @@
 package libpsid64;
 
+import java.util.List;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 
 public class PSid64TuneInfo {
 
-	protected boolean detected;
-	protected CPUClock cpuClock;
-	protected ChipModel[] chipModels;
-	protected int stereoAddress;
+	private final boolean detected;
+	private final CPUClock cpuClock;
+	private final List<ChipModel> chipModels;
+	private final int stereoAddress;
+
+	public PSid64TuneInfo(boolean detected, CPUClock cpuClock, List<ChipModel> chipModels, int stereoAddress) {
+		this.detected = detected;
+		this.cpuClock = cpuClock;
+		this.chipModels = chipModels;
+		this.stereoAddress = stereoAddress;
+	}
 
 	public boolean isDetected() {
 		return detected;
-	}
-	
-	public void setDetected(boolean detected) {
-		this.detected = detected;
 	}
 
 	public CPUClock getCpuClock() {
@@ -27,27 +32,27 @@ public class PSid64TuneInfo {
 	}
 
 	public boolean hasDifferentUserChipModel(ChipModel userSidModel) {
-		return chipModels.length > 0 && userSidModel != chipModels[0];
+		return chipModels.size() > 0 && userSidModel != chipModels.get(0);
 	}
 
 	public ChipModel getUserChipModel() {
-		return chipModels[0];
+		return chipModels.get(0);
 	}
 
 	public boolean hasDifferentStereoChipModel(ChipModel stereoSidModel) {
-		return chipModels.length > 1 && stereoSidModel != chipModels[1];
+		return chipModels.size() > 1 && stereoSidModel != chipModels.get(1);
 	}
 
 	public ChipModel getStereoChipModel() {
-		return chipModels[1];
+		return chipModels.get(1);
 	}
 
 	public boolean isMonoTune() {
-		return chipModels.length == 1;
+		return chipModels.size() == 1;
 	}
 
 	public boolean isStereoTune() {
-		return chipModels.length == 2;
+		return chipModels.size() == 2;
 	}
 
 	public boolean hasDifferentStereoAddress(int dualSidBase) {
