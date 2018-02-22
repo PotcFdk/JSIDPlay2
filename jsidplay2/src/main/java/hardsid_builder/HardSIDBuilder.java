@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
+import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -73,11 +74,7 @@ public class HardSIDBuilder implements SIDBuilder {
 
 	private static boolean initialized;
 
-	/**
-	 * @param config
-	 *            configuration
-	 */
-	public HardSIDBuilder(EventScheduler context, IConfig config) {
+	public HardSIDBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
 		this.config = config;
 		if (!initialized) {

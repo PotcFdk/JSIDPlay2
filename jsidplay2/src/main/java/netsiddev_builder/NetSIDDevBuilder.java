@@ -25,6 +25,7 @@ import netsiddev_builder.commands.SetSidLevel;
 import netsiddev_builder.commands.SetSidPosition;
 import netsiddev_builder.commands.TrySetSampling;
 import netsiddev_builder.commands.TrySetSidModel;
+import sidplay.audio.AudioDriver;
 
 public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
@@ -34,7 +35,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	private final NetSIDClient client;
 	private final List<NetSIDDev> sids = new ArrayList<>();
 
-	public NetSIDDevBuilder(EventScheduler context, IConfig config, SidTune tune, CPUClock cpuClock) {
+	public NetSIDDevBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.config = config;
 		this.cpuClock = cpuClock;
 		this.client = new NetSIDClient(context, config.getEmulationSection());
@@ -93,6 +94,11 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		client.softFlush();
 	}
 
+	@Override
+	public void setAudioDriver(AudioDriver audioDriver) {
+		// unused, since mixing is done on the server side
+	}
+	
 	@Override
 	public void start() {
 		client.start();

@@ -28,12 +28,11 @@ import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import resid_builder.resid.ReSID;
 import resid_builder.residfp.ReSIDfp;
-import sidplay.audio.AudioDriver;
 
 public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 
-	public ReSIDBuilder(EventScheduler context, IConfig config, CPUClock cpuClock, AudioDriver audioDriver) {
-		super(context, config, cpuClock, audioDriver);
+	public ReSIDBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
+		super(context, config, cpuClock);
 	}
 
 	/**
@@ -67,10 +66,10 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 	}
 
 	/**
-	 * Create SID emulation of a specific emulation type or re-use already used
-	 * SID chip, if implementation does not change.<BR>
-	 * Note: The reason for re-using SID implementation is to preserve the
-	 * current SID's internal state, when changing filters or chip model type.
+	 * Create SID emulation of a specific emulation type or re-use already used SID
+	 * chip, if implementation does not change.<BR>
+	 * Note: The reason for re-using SID implementation is to preserve the current
+	 * SID's internal state, when changing filters or chip model type.
 	 * 
 	 * @param oldSIDEmu
 	 *            currently used SID chip

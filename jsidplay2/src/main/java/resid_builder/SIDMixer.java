@@ -34,8 +34,7 @@ public class SIDMixer implements Mixer {
 	private static final int VOLUME_SCALER = 10;
 
 	/**
-	 * The mixer mixes the generated sound samples into the drivers audio
-	 * buffer.
+	 * The mixer mixes the generated sound samples into the drivers audio buffer.
 	 * 
 	 * @author ken
 	 *
@@ -61,15 +60,14 @@ public class SIDMixer implements Mixer {
 		private int fastForwardShift, fastForwardBitMask;
 
 		/**
-		 * The mixer mixes the generated sound samples into the drivers audio
-		 * buffer.
+		 * The mixer mixes the generated sound samples into the drivers audio buffer.
 		 * <OL>
 		 * <LI>Clock SIDs to fill audio buffer.
 		 * <LI>Accumulate samples to implement fast forwarding.
-		 * <LI>Resample the SID output, because the sample frequency is
-		 * different to the clock frequency.
-		 * <LI>Add dithering to reduce quantization noise, when moving to a
-		 * format with less precision.
+		 * <LI>Resample the SID output, because the sample frequency is different to the
+		 * clock frequency.
+		 * <LI>Add dithering to reduce quantization noise, when moving to a format with
+		 * less precision.
 		 * <LI>Cut-off overflow samples.
 		 * </OL>
 		 * <B>Note:</B><BR>
@@ -102,7 +100,7 @@ public class SIDMixer implements Mixer {
 					if (resamplerR.input(valR >> fastForwardShift)) {
 						if (!buffer.putShort((short) Math.max(Math.min(resamplerR.output() + dither, Short.MAX_VALUE),
 								Short.MIN_VALUE)).hasRemaining()) {
-							driver.write();
+							audioDriver.write();
 							buffer.clear();
 						}
 					}
@@ -119,8 +117,8 @@ public class SIDMixer implements Mixer {
 		}
 
 		/**
-		 * Triangularly shaped noise source for audio applications. Output of
-		 * this PRNG is between ]-1, 1[.
+		 * Triangularly shaped noise source for audio applications. Output of this PRNG
+		 * is between ]-1, 1[.
 		 * 
 		 * @return triangular noise sample
 		 */
@@ -160,12 +158,12 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Audio buffers for two channels (stereo).
 	 */
-	private final IntBuffer audioBufferL, audioBufferR;
+	private IntBuffer audioBufferL, audioBufferR;
 
 	/**
 	 * Capacity of the Audio buffers audioBufferL and audioBufferR.
 	 */
-	private final int bufferSize;
+	private int bufferSize;
 
 	/**
 	 * Resampler of sample output for two channels (stereo).
@@ -175,7 +173,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Audio driver
 	 */
-	private final AudioDriver driver;
+	private AudioDriver audioDriver;
 
 	/**
 	 * Volume of all SIDs.
@@ -198,20 +196,13 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Audio driver buffer.
 	 */
-	private final ByteBuffer buffer;
+	private ByteBuffer buffer;
 
-	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock, AudioDriver audioDriver) {
+	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
-		this.driver = audioDriver;
 		IAudioSection audioSection = config.getAudioSection();
-		this.buffer = driver.buffer();
-		this.bufferSize = audioSection.getBufferSize();
-		this.audioBufferL = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(ByteOrder.nativeOrder())
-				.asIntBuffer();
-		this.audioBufferR = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(ByteOrder.nativeOrder())
-				.asIntBuffer();
 		SamplingMethod samplingMethod = audioSection.getSampling();
 		int samplingFrequency = audioSection.getSamplingRate().getFrequency();
 		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(), samplingMethod, samplingFrequency,
@@ -221,6 +212,17 @@ public class SIDMixer implements Mixer {
 		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		this.fadeInFadeOutEnabled = sidplay2Section.getFadeInTime() != 0 || sidplay2Section.getFadeOutTime() != 0;
 		normalSpeed();
+	}
+
+	@Override
+	public void setAudioDriver(AudioDriver audioDriver) {
+		this.audioDriver = audioDriver;
+		this.buffer = audioDriver.buffer();
+		this.bufferSize = config.getAudioSection().getBufferSize();
+		this.audioBufferL = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(ByteOrder.nativeOrder())
+				.asIntBuffer();
+		this.audioBufferR = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(ByteOrder.nativeOrder())
+				.asIntBuffer();
 	}
 
 	/**

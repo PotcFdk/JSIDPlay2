@@ -307,11 +307,11 @@ public class Player extends HardwareEnsemble {
 		final Engine engine = config.getEmulationSection().getEngine();
 		switch (engine) {
 		case EMULATION:
-			return new ReSIDBuilder(c64.getEventScheduler(), config, cpuClock, audioDriver);
+			return new ReSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		case NETSID:
-			return new NetSIDDevBuilder(c64.getEventScheduler(), config, tune, cpuClock);
+			return new NetSIDDevBuilder(c64.getEventScheduler(), config, cpuClock);
 		case HARDSID:
-			return new HardSIDBuilder(c64.getEventScheduler(), config);
+			return new HardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		default:
 			throw new RuntimeException("Unknown engine type: " + engine);
 		}
@@ -617,6 +617,8 @@ public class Player extends HardwareEnsemble {
 
 		// PAL/NTSC
 		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));
+		
+		configureMixer(mixer -> mixer.setAudioDriver(audioDriver));
 
 		stateProperty.addListener(pauseListener);
 		reset();
@@ -635,8 +637,8 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
-	 * Play routine (clock chips until audio buffer is filled completely or
-	 * player gets paused).
+	 * Play routine (clock chips until audio buffer is filled completely or player
+	 * gets paused).
 	 * 
 	 * @return continue to play next time?
 	 * 
@@ -722,8 +724,8 @@ public class Player extends HardwareEnsemble {
 
 	/**
 	 * Play previous song.<BR>
-	 * <B>Note:</B> After {@link #PREV_SONG_TIMEOUT} has been reached, the
-	 * current tune is restarted instead.
+	 * <B>Note:</B> After {@link #PREV_SONG_TIMEOUT} has been reached, the current
+	 * tune is restarted instead.
 	 */
 	public final void previousSong() {
 		if (time() < PREV_SONG_TIMEOUT) {
