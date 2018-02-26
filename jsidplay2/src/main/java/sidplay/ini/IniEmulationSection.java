@@ -259,7 +259,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "UseStereoFilter", enable);
 	}
 
-	public final boolean getStereoFilter() {
+	protected final boolean getStereoFilter() {
 		return isStereoFilter();
 	}
 	
@@ -274,7 +274,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "Use3rdSIDFilter", enable);
 	}
 
-	public final boolean getThirdSIDFilter() {
+	protected final boolean getThirdSIDFilter() {
 		return isThirdSIDFilter();
 	}
 	
@@ -339,7 +339,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "forceStereoTune", force);
 	}
 
-	public final boolean getForceStereoTune() {
+	protected final boolean getForceStereoTune() {
 		return isForceStereoTune();
 	}
 	
@@ -354,7 +354,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "force3SIDTune", force);
 	}
 
-	public final boolean getForce3SIDTune() {
+	protected final boolean getForce3SIDTune() {
 		return isForce3SIDTune();
 	}
 	
@@ -369,7 +369,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteVoice1", mute);
 	}
 
-	public boolean getMuteVoice1() {
+	protected boolean getMuteVoice1() {
 		return isMuteVoice1();
 	}
 	
@@ -384,7 +384,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteVoice2", mute);
 	}
 
-	public boolean getMuteVoice2() {
+	protected boolean getMuteVoice2() {
 		return isMuteVoice2();
 	}
 	
@@ -399,7 +399,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteVoice3", mute);
 	}
 
-	public boolean getMuteVoice3() {
+	protected boolean getMuteVoice3() {
 		return isMuteVoice3();
 	}
 	
@@ -414,7 +414,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteVoice4", mute);
 	}
 
-	public boolean getMuteVoice4() {
+	protected boolean getMuteVoice4() {
 		return isMuteVoice4();
 	}
 	
@@ -429,7 +429,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteStereoVoice1", mute);
 	}
 
-	public boolean getMuteStereoVoice1() {
+	protected boolean getMuteStereoVoice1() {
 		return isMuteStereoVoice1();
 	}
 	
@@ -444,7 +444,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteStereoVoice2", mute);
 	}
 
-	public boolean getMuteStereoVoice2() {
+	protected boolean getMuteStereoVoice2() {
 		return isMuteStereoVoice2();
 	}
 	
@@ -459,7 +459,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteStereoVoice3", mute);
 	}
 
-	public boolean getMuteStereoVoice3() {
+	protected boolean getMuteStereoVoice3() {
 		return isMuteStereoVoice3();
 	}
 	
@@ -474,7 +474,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteStereoVoice4", mute);
 	}
 
-	public boolean getMuteStereoVoice4() {
+	protected boolean getMuteStereoVoice4() {
 		return isMuteStereoVoice4();
 	}
 	
@@ -489,7 +489,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteThirdSIDVoice1", mute);
 	}
 
-	public boolean getMuteThirdSIDVoice1() {
+	protected boolean getMuteThirdSIDVoice1() {
 		return isMuteThirdSIDVoice1();
 	}
 	
@@ -504,7 +504,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteThirdSIDVoice2", mute);
 	}
 
-	public boolean getMuteThirdSIDVoice2() {
+	protected boolean getMuteThirdSIDVoice2() {
 		return isMuteThirdSIDVoice2();
 	}
 	
@@ -519,7 +519,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteThirdSIDVoice3", mute);
 	}
 
-	public boolean getMuteThirdSIDVoice3() {
+	protected boolean getMuteThirdSIDVoice3() {
 		return isMuteThirdSIDVoice3();
 	}
 	
@@ -534,7 +534,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "muteThirdSIDVoice4", mute);
 	}
 
-	public boolean getMuteThirdSIDVoice4() {
+	protected boolean getMuteThirdSIDVoice4() {
 		return isMuteThirdSIDVoice4();
 	}
 	

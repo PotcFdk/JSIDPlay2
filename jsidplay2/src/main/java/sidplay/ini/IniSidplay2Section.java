@@ -60,7 +60,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 		iniReader.setProperty("SIDPlay2", "EnableDatabase", enable);
 	}
 
-	public final boolean getEnableDatabase() {
+	protected final boolean getEnableDatabase() {
 		return isEnableDatabase();
 	}
 	
@@ -97,7 +97,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 		iniReader.setProperty("SIDPlay2", "Loop", loop);
 	}
 
-	public boolean getLoop() {
+	protected boolean getLoop() {
 		return isLoop();
 	}
 	
@@ -112,7 +112,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 		iniReader.setProperty("SIDPlay2", "SingleTrack", singleSong);
 	}
 
-	public final boolean getSingle() {
+	protected final boolean getSingle() {
 		return isSingle();
 	}
 	
