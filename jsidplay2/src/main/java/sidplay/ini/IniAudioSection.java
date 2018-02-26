@@ -14,6 +14,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_SECOND_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
 
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
+
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
@@ -25,6 +28,7 @@ import sidplay.audio.Audio;
  * @author Ken Händel
  * 
  */
+@Parameters(resourceBundle = "sidplay.ini.IniAudioSection")
 public class IniAudioSection extends IniSection implements IAudioSection {
 	public IniAudioSection(IniReader iniReader) {
 		super(iniReader);
@@ -36,6 +40,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	@Parameter(names = { "--audio", "-a" }, descriptionKey = "DRIVER")
 	public void setAudio(Audio audio) {
 		iniReader.setProperty("Audio", "Audio", audio);
 	}
@@ -46,6 +51,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	@Parameter(names = { "--deviceIndex", "-A" }, descriptionKey = "DEVICEINDEX")
 	public void setDevice(int device) {
 		iniReader.setProperty("Audio", "Device", device);
 	}
@@ -67,6 +73,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 *            Playback/Recording frequency
 	 */
 	@Override
+	@Parameter(names = { "--frequency", "-f" }, descriptionKey = "FREQUENCY")
 	public final void setSamplingRate(final SamplingRate samplingRate) {
 		iniReader.setProperty("Audio", "Sampling Rate", samplingRate);
 	}
@@ -233,6 +240,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	@Parameter(names = { "--bufferSize", "-B" }, descriptionKey = "BUFFER_SIZE")
 	public void setBufferSize(int bufferSize) {
 		iniReader.setProperty("Audio", "Buffer Size", bufferSize);
 	}

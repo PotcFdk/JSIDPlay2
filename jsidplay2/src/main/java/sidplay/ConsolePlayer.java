@@ -1,35 +1,5 @@
 package sidplay;
 
-import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
-import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
-import static sidplay.ini.IniDefaults.DEFAULT_CLOCK_SPEED;
-import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
-import static sidplay.ini.IniDefaults.DEFAULT_EMULATION;
-import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_DATABASE;
-import static sidplay.ini.IniDefaults.DEFAULT_ENGINE;
-import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
-import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
-import static sidplay.ini.IniDefaults.DEFAULT_LOOP;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE4;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE1;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE2;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE3;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE4;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
-import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
-import static sidplay.ini.IniDefaults.DEFAULT_PLAY_LENGTH;
-import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING_RATE;
-import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
-import static sidplay.ini.IniDefaults.DEFAULT_SINGLE_TRACK;
-import static sidplay.ini.IniDefaults.DEFAULT_USE_3SID_FILTER;
-import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
-import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,11 +12,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
-import libsidplay.common.CPUClock;
-import libsidplay.common.ChipModel;
-import libsidplay.common.Emulation;
-import libsidplay.common.Engine;
-import libsidplay.common.SamplingRate;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -71,107 +36,14 @@ final public class ConsolePlayer {
 	@Parameter(names = "--cpuDebug", hidden = true, descriptionKey = "DEBUG")
 	private Boolean cpuDebug = Boolean.FALSE;
 
-	@Parameter(names = { "--audio", "-a" }, descriptionKey = "DRIVER")
-	private Audio audio = DEFAULT_AUDIO;
-
-	@Parameter(names = { "--bufferSize", "-B" }, descriptionKey = "BUFFER_SIZE")
-	private int bufferSize = DEFAULT_BUFFER_SIZE;
-
-	@Parameter(names = { "--deviceIndex", "-A" }, descriptionKey = "DEVICEINDEX")
-	private Integer deviceIdx = DEFAULT_DEVICE;
-
-	@Parameter(names = { "--engine", "-E" }, descriptionKey = "ENGINE")
-	private Engine engine = DEFAULT_ENGINE;
-
-	@Parameter(names = { "--defaultEmulation", "-e" }, descriptionKey = "DEFAULT_EMULATION")
-	private Emulation defaultEmulation = DEFAULT_EMULATION;
-
 	@Parameter(names = { "--recordingFilename", "-r" }, descriptionKey = "RECORDING_FILENAME")
 	private String recordingFilename = "jsidplay2";
 
 	@Parameter(names = { "--startSong", "-o" }, descriptionKey = "START_SONG")
 	private Integer song = null;
 
-	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP")
-	private Boolean loop = DEFAULT_LOOP;
-
-	@Parameter(names = { "--single", "-s" }, descriptionKey = "SINGLE")
-	private Boolean single = DEFAULT_SINGLE_TRACK;
-
-	@Parameter(names = { "--frequency", "-f" }, descriptionKey = "FREQUENCY")
-	private SamplingRate samplingRate = DEFAULT_SAMPLING_RATE;
-
-	@Parameter(names = { "--dualSID", "-d" }, descriptionKey = "DUAL_SID")
-	private Boolean dualSID = DEFAULT_FORCE_STEREO_TUNE;
-
-	@Parameter(names = { "--thirdSID", "-D" }, descriptionKey = "THIRD_SID")
-	private Boolean thirdSID = DEFAULT_FORCE_3SID_TUNE;
-
-	@Parameter(names = { "--forceClock", "-c" }, descriptionKey = "FORCE_CLOCK")
-	private CPUClock forceClock = null;
-
-	@Parameter(names = { "--defaultClock", "-k" }, descriptionKey = "DEFAULT_CLOCK")
-	private CPUClock defaultClock = DEFAULT_CLOCK_SPEED;
-
-	@Parameter(names = { "--disableFilter", "-i" }, descriptionKey = "DISABLE_FILTER")
-	private Boolean disableFilter = !DEFAULT_USE_FILTER;
-
-	@Parameter(names = { "--disableStereoFilter", "-j" }, descriptionKey = "DISABLE_STEREO_FILTER")
-	private Boolean disableStereoFilter = !DEFAULT_USE_STEREO_FILTER;
-
-	@Parameter(names = { "--disable3rdSidFilter", "-J" }, descriptionKey = "DISABLE_3RD_SID_FILTER")
-	private Boolean disable3rdSIDFilter = !DEFAULT_USE_3SID_FILTER;
-
-	@Parameter(names = { "--forceModel", "-m" }, descriptionKey = "FORCE_MODEL")
-	private ChipModel forceModel = ChipModel.AUTO;
-
-	@Parameter(names = { "--defaultModel", "-u" }, descriptionKey = "DEFAULT_MODEL")
-	private ChipModel defaultModel = DEFAULT_SID_MODEL;
-
 	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = ParameterTimeConverter.class)
 	private Integer startTime = 0;
-
-	@Parameter(names = { "--defaultLength", "-g" }, descriptionKey = "DEFAULT_LENGTH", converter = ParameterTimeConverter.class)
-	private Integer defaultLength = DEFAULT_PLAY_LENGTH;
-
-	@Parameter(names = { "--enableSidDatabase", "-n" }, descriptionKey = "ENABLE_SID_DATABASE", arity = 1)
-	private Boolean enableSidDatabase = DEFAULT_ENABLE_DATABASE;
-
-	@Parameter(names = { "--muteVoice1", "-1" }, descriptionKey = "MUTE_VOICE_1")
-	private Boolean muteVoice1 = DEFAULT_MUTE_VOICE1;
-
-	@Parameter(names = { "--muteVoice2", "-2" }, descriptionKey = "MUTE_VOICE_2")
-	private Boolean muteVoice2 = DEFAULT_MUTE_VOICE2;
-
-	@Parameter(names = { "--muteVoice3", "-3" }, descriptionKey = "MUTE_VOICE_3")
-	private Boolean muteVoice3 = DEFAULT_MUTE_VOICE3;
-
-	@Parameter(names = { "--muteVoice4", "-4" }, descriptionKey = "MUTE_VOICE_4")
-	private Boolean muteVoice4 = DEFAULT_MUTE_VOICE4;
-
-	@Parameter(names = { "--muteStereoVoice1", "-5" }, descriptionKey = "MUTE_VOICE_5")
-	private Boolean muteVoice5 = DEFAULT_MUTE_STEREO_VOICE1;
-
-	@Parameter(names = { "--muteStereoVoice2", "-6" }, descriptionKey = "MUTE_VOICE_6")
-	private Boolean muteVoice6 = DEFAULT_MUTE_STEREO_VOICE2;
-
-	@Parameter(names = { "--muteStereoVoice3", "-7" }, descriptionKey = "MUTE_VOICE_7")
-	private Boolean muteVoice7 = DEFAULT_MUTE_STEREO_VOICE3;
-
-	@Parameter(names = { "--muteStereoVoice4", "-8" }, descriptionKey = "MUTE_VOICE_8")
-	private Boolean muteVoice8 = DEFAULT_MUTE_STEREO_VOICE4;
-
-	@Parameter(names = { "--muteThirdSidVoice1", "-9" }, descriptionKey = "MUTE_VOICE_9")
-	private Boolean muteVoice9 = DEFAULT_MUTE_THIRDSID_VOICE1;
-
-	@Parameter(names = { "--muteThirdSidVoice2", "-10" }, descriptionKey = "MUTE_VOICE_10")
-	private Boolean muteVoice10 = DEFAULT_MUTE_THIRDSID_VOICE2;
-
-	@Parameter(names = { "--muteThirdSidVoice3", "-11" }, descriptionKey = "MUTE_VOICE_11")
-	private Boolean muteVoice11 = DEFAULT_MUTE_THIRDSID_VOICE3;
-
-	@Parameter(names = { "--muteThirdSidVoice4", "-12" }, descriptionKey = "MUTE_VOICE_12")
-	private Boolean muteVoice12 = DEFAULT_MUTE_THIRDSID_VOICE4;
 
 	@Parameter(names = { "--vbr" }, descriptionKey = "VBR", arity=1)
 	protected Boolean vbr;
@@ -193,7 +65,10 @@ final public class ConsolePlayer {
 
 	private ConsolePlayer(final String[] args) {
 		try {
-			JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName()).build();
+			final IniConfig config = new IniConfig(true);
+			JCommander commander = JCommander.newBuilder().addObject(this).addObject(config.getSidplay2Section())
+					.addObject(config.getAudioSection()).addObject(config.getEmulationSection())
+					.programName(getClass().getName()).build();
 			commander.parse(args);
 			Optional<String> filename = filenames.stream().findFirst();
 			if (help || !filename.isPresent()) {
@@ -201,42 +76,10 @@ final public class ConsolePlayer {
 				printSoundcardDevices();
 				exit(1);
 			}
-			if (loop && isRecording()) {
+			if (config.getSidplay2Section().isLoop() && isRecording(config.getAudioSection().getAudio())) {
 				System.out.println("Warning: Loop has been disabled while recording audio files!");
-				loop = false;
+				config.getSidplay2Section().setLoop(false);
 			}
-			final IniConfig config = new IniConfig(true);
-			config.getSidplay2Section().setLoop(loop);
-			config.getSidplay2Section().setSingle(single);
-			config.getSidplay2Section().setDefaultPlayLength(defaultLength);
-			config.getSidplay2Section().setEnableDatabase(enableSidDatabase);
-			config.getAudioSection().setAudio(audio);
-			config.getAudioSection().setSamplingRate(samplingRate);
-			config.getAudioSection().setBufferSize(bufferSize);
-			config.getAudioSection().setDevice(deviceIdx);
-			config.getEmulationSection().setEngine(engine);
-			config.getEmulationSection().setDefaultEmulation(defaultEmulation);
-			config.getEmulationSection().setForceStereoTune(dualSID);
-			config.getEmulationSection().setForce3SIDTune(thirdSID);
-			config.getEmulationSection().setUserClockSpeed(forceClock);
-			config.getEmulationSection().setDefaultClockSpeed(defaultClock);
-			config.getEmulationSection().setUserSidModel(forceModel);
-			config.getEmulationSection().setDefaultSidModel(defaultModel);
-			config.getEmulationSection().setFilter(!disableFilter);
-			config.getEmulationSection().setStereoFilter(!disableStereoFilter);
-			config.getEmulationSection().setThirdSIDFilter(!disable3rdSIDFilter);
-			config.getEmulationSection().setMuteVoice1(muteVoice1);
-			config.getEmulationSection().setMuteVoice2(muteVoice2);
-			config.getEmulationSection().setMuteVoice3(muteVoice3);
-			config.getEmulationSection().setMuteVoice4(muteVoice4);
-			config.getEmulationSection().setMuteStereoVoice1(muteVoice5);
-			config.getEmulationSection().setMuteStereoVoice2(muteVoice6);
-			config.getEmulationSection().setMuteStereoVoice3(muteVoice7);
-			config.getEmulationSection().setMuteStereoVoice4(muteVoice8);
-			config.getEmulationSection().setMuteThirdSIDVoice1(muteVoice9);
-			config.getEmulationSection().setMuteThirdSIDVoice2(muteVoice10);
-			config.getEmulationSection().setMuteThirdSIDVoice3(muteVoice11);
-			config.getEmulationSection().setMuteThirdSIDVoice4(muteVoice12);
 			if (vbr != null) {
 				setMP3DriverSetting(mp3Driver->mp3Driver.setVbr(vbr));
 			}
@@ -267,7 +110,8 @@ final public class ConsolePlayer {
 				}
 				return basename;
 			});
-			if (isRecording() && defaultLength <= 0
+			if (isRecording(config.getAudioSection().getAudio())
+					&& config.getSidplay2Section().getDefaultPlayLength() <= 0
 					&& player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0) == 0) {
 				System.err.println("ERROR: unknown song length in record mode"
 						+ " (please use option --defaultLength or configure song length database)");
@@ -296,7 +140,7 @@ final public class ConsolePlayer {
 		}
 	}
 
-	private boolean isRecording() {
+	private boolean isRecording(Audio audio) {
 		return audio == Audio.WAV || audio == Audio.MP3 || audio == Audio.LIVE_WAV || audio == Audio.LIVE_MP3;
 	}
 
