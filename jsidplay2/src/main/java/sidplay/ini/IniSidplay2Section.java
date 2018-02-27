@@ -60,10 +60,6 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 		iniReader.setProperty("SIDPlay2", "EnableDatabase", enable);
 	}
 
-	protected final boolean getEnableDatabase() {
-		return isEnableDatabase();
-	}
-	
 	@Override
 	public final int getDefaultPlayLength() {
 		return iniReader.getPropertyTime("SIDPlay2", "Default Play Length", DEFAULT_PLAY_LENGTH);
@@ -92,30 +88,22 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP")
+	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP", arity=1)
 	public void setLoop(boolean loop) {
 		iniReader.setProperty("SIDPlay2", "Loop", loop);
 	}
 
-	protected boolean getLoop() {
-		return isLoop();
-	}
-	
 	@Override
 	public final boolean isSingle() {
 		return iniReader.getPropertyBool("SIDPlay2", "SingleTrack", DEFAULT_SINGLE_TRACK);
 	}
 
 	@Override
-	@Parameter(names = { "--single", "-s" }, descriptionKey = "SINGLE")
+	@Parameter(names = { "--single", "-s" }, descriptionKey = "SINGLE", arity=1)
 	public final void setSingle(final boolean singleSong) {
 		iniReader.setProperty("SIDPlay2", "SingleTrack", singleSong);
 	}
 
-	protected final boolean getSingle() {
-		return isSingle();
-	}
-	
 	@Override
 	public final String getHvsc() {
 		return iniReader.getPropertyString("SIDPlay2", "HVSC Dir", DEFAULT_HVSC_DIR);
