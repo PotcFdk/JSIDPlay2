@@ -9,6 +9,9 @@ import java.nio.ByteOrder;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
 
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
+
 import lowlevel.LameEncoder;
 import mp3.MPEGMode;
 
@@ -26,6 +29,7 @@ public abstract class MP3Driver implements AudioDriver {
 	 * @author Ken Händel
 	 * 
 	 */
+	@Parameters(resourceBundle = "sidplay.audio.MP3File")
 	public static class MP3File extends MP3Driver {
 		@Override
 		protected OutputStream getOut(String recordingFilename) throws IOException {
@@ -54,8 +58,7 @@ public abstract class MP3Driver implements AudioDriver {
 	public static class MP3Stream extends MP3Driver {
 
 		/**
-		 * Use several instances for parallel emulator instances, where
-		 * applicable.
+		 * Use several instances for parallel emulator instances, where applicable.
 		 * 
 		 * @param out
 		 *            Output stream to write the encoded MP3 to
@@ -97,14 +100,17 @@ public abstract class MP3Driver implements AudioDriver {
 	 */
 	private LameEncoder jump3r;
 
+	@Parameter(names = { "--cbr" }, descriptionKey = "CBR")
 	public void setCbr(int cbr) {
 		this.cbr = cbr;
 	}
 
+	@Parameter(names = { "--vbrQuality" }, descriptionKey = "VBR_QUALITY")
 	public void setVbrQuality(int vbrQuality) {
 		this.vbrQuality = vbrQuality;
 	}
 
+	@Parameter(names = { "--vbr" }, descriptionKey = "VBR", arity = 1)
 	public void setVbr(boolean isVbr) {
 		this.vbr = isVbr;
 	}

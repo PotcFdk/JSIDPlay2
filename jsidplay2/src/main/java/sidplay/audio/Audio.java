@@ -1,6 +1,8 @@
 package sidplay.audio;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Optional;
 
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.MP3Tune;
@@ -44,7 +46,14 @@ public enum Audio {
 	}
 
 	/**
-	 * Get audio driver
+	 * Get audio driver.
+	 * 
+	 * <B>Note:</B> Audio drivers are instantiated at runtime on demand. We do not
+	 * want to load unused libraries like jump3r, if not required!<BR>
+	 * <B>Note2:</B> We try to reuse audio driver instances for the proxy driver's
+	 * sub-driver. The reason for this is, that it may have already been configured
+	 * by ConsolePlayer's command-line parameters (e.g. quality settings of
+	 * MP3Driver).
 	 * 
 	 * @return audio driver
 	 */
@@ -56,7 +65,14 @@ public enum Audio {
 				Object parametersValues[] = new Object[parameterClasses.length];
 				for (Class<?> parameterClass : parameterClasses) {
 					parameterTypes[parameterNum] = AudioDriver.class;
-					parametersValues[parameterNum++] = parameterClass.getConstructor().newInstance();
+					Optional<AudioDriver> parameterInstance = Arrays.asList(Audio.values()).stream()
+							.filter(audio -> parameterClass.isInstance(audio.audioDriver))
+							.map(audio -> audio.getAudioDriver()).findFirst();
+					if (parameterInstance.isPresent()) {
+						parametersValues[parameterNum++] = parameterInstance.get();
+					} else {
+						parametersValues[parameterNum++] = parameterClass.getConstructor().newInstance();
+					}
 				}
 				audioDriver = audioDriverClass.getConstructor(parameterTypes).newInstance(parametersValues);
 			}
@@ -102,7 +118,7 @@ public enum Audio {
 			audioSection.setMp3File(((MP3Tune) tune).getMP3Filename());
 			newAudioDriver = COMPARE_MP3.getAudioDriver();
 		}
-		if (COMPARE_MP3.getAudioDriver().equals(newAudioDriver)) {
+		if (COMPARE_MP3.audioDriver == newAudioDriver) {
 			((CmpMP3File) newAudioDriver).setAudioSection(audioSection);
 		}
 		return newAudioDriver;
