@@ -21,6 +21,7 @@ import mp3.MPEGMode;
  * @author Ken Händel
  * 
  */
+@Parameters(resourceBundle = "sidplay.audio.MP3Driver")
 public abstract class MP3Driver implements AudioDriver {
 
 	/**
@@ -29,7 +30,6 @@ public abstract class MP3Driver implements AudioDriver {
 	 * @author Ken Händel
 	 * 
 	 */
-	@Parameters(resourceBundle = "sidplay.audio.MP3File")
 	public static class MP3File extends MP3Driver {
 		@Override
 		protected OutputStream getOut(String recordingFilename) throws IOException {
