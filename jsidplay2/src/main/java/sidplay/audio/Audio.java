@@ -2,7 +2,6 @@ package sidplay.audio;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.Optional;
 
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.MP3Tune;
@@ -65,14 +64,10 @@ public enum Audio {
 				Object parametersValues[] = new Object[parameterClasses.length];
 				for (Class<?> parameterClass : parameterClasses) {
 					parameterTypes[parameterNum] = AudioDriver.class;
-					Optional<AudioDriver> parameterInstance = Arrays.asList(Audio.values()).stream()
+					parametersValues[parameterNum++] = Arrays.asList(values()).stream()
 							.filter(audio -> parameterClass.isInstance(audio.audioDriver))
-							.map(audio -> audio.getAudioDriver()).findFirst();
-					if (parameterInstance.isPresent()) {
-						parametersValues[parameterNum++] = parameterInstance.get();
-					} else {
-						parametersValues[parameterNum++] = parameterClass.getConstructor().newInstance();
-					}
+							.map(audio -> audio.audioDriver).findFirst()
+							.orElse((AudioDriver) parameterClass.getConstructor().newInstance());
 				}
 				audioDriver = audioDriverClass.getConstructor(parameterTypes).newInstance(parametersValues);
 			}
