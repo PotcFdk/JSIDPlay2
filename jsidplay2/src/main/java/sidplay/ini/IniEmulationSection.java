@@ -217,29 +217,30 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public String getNetSIDDevHost() {
 		return iniReader.getPropertyString("Emulation", "NetSIDDev Host", DEFAULT_NETSIDDEV_HOST);
 	}
-	
+
 	@Override
 	public void setNetSIDDevHost(String hostname) {
 		iniReader.setProperty("Emulation", "NetSIDDev Host", hostname);
 	}
-	
+
 	@Override
 	public int getNetSIDDevPort() {
 		return iniReader.getPropertyInt("Emulation", "NetSIDDev Port", DEFAULT_NETSIDDEV_PORT);
 	}
-	
+
 	@Override
 	public void setNetSIDDevPort(int port) {
 		iniReader.setProperty("Emulation", "NetSIDDev Port", port);
 	}
-	
+
 	@Override
 	public final boolean isFilter() {
 		return iniReader.getPropertyBool("Emulation", "UseFilter", DEFAULT_USE_FILTER);
 	}
 
 	@Override
-	@Parameter(names = { "--enableFilter", "-i" }, descriptionKey = "ENABLE_FILTER", arity=1)
+	@Parameter(names = { "--disableFilter",
+			"-i" }, descriptionKey = "DISABLE_FILTER", arity = 1, converter = NegatedBooleanConverter.class)
 	public final void setFilter(final boolean enable) {
 		iniReader.setProperty("Emulation", "UseFilter", enable);
 	}
@@ -247,14 +248,15 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected final boolean getFilter() {
 		return isFilter();
 	}
-	
+
 	@Override
 	public final boolean isStereoFilter() {
 		return iniReader.getPropertyBool("Emulation", "UseStereoFilter", DEFAULT_USE_STEREO_FILTER);
 	}
 
 	@Override
-	@Parameter(names = { "--enableStereoFilter", "-j" }, descriptionKey = "ENABLE_STEREO_FILTER", arity=1)
+	@Parameter(names = { "--disableStereoFilter",
+			"-j" }, descriptionKey = "DISABLE_STEREO_FILTER", arity = 1, converter = NegatedBooleanConverter.class)
 	public final void setStereoFilter(final boolean enable) {
 		iniReader.setProperty("Emulation", "UseStereoFilter", enable);
 	}
@@ -262,14 +264,15 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected final boolean getStereoFilter() {
 		return isStereoFilter();
 	}
-	
+
 	@Override
 	public final boolean isThirdSIDFilter() {
 		return iniReader.getPropertyBool("Emulation", "Use3rdSIDFilter", DEFAULT_USE_3SID_FILTER);
 	}
 
 	@Override
-	@Parameter(names = { "--enable3rdSidFilter", "-J" }, descriptionKey = "ENABLE_3RD_SID_FILTER", arity=1)
+	@Parameter(names = { "--disable3rdSidFilter",
+			"-J" }, descriptionKey = "DISABLE_3RD_SID_FILTER", arity = 1, converter = NegatedBooleanConverter.class)
 	public final void setThirdSIDFilter(final boolean enable) {
 		iniReader.setProperty("Emulation", "Use3rdSIDFilter", enable);
 	}
@@ -277,7 +280,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected final boolean getThirdSIDFilter() {
 		return isThirdSIDFilter();
 	}
-	
+
 	@Override
 	public int getSidNumToRead() {
 		return iniReader.getPropertyInt("Emulation", "SidNumToRead", DEFAULT_SID_NUM_TO_READ);
@@ -342,7 +345,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected final boolean getForceStereoTune() {
 		return isForceStereoTune();
 	}
-	
+
 	@Override
 	public final boolean isForce3SIDTune() {
 		return iniReader.getPropertyBool("Emulation", "force3SIDTune", DEFAULT_FORCE_3SID_TUNE);
@@ -357,7 +360,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected final boolean getForce3SIDTune() {
 		return isForce3SIDTune();
 	}
-	
+
 	@Override
 	public boolean isMuteVoice1() {
 		return iniReader.getPropertyBool("Emulation", "muteVoice1", DEFAULT_MUTE_VOICE1);
@@ -372,7 +375,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteVoice1() {
 		return isMuteVoice1();
 	}
-	
+
 	@Override
 	public boolean isMuteVoice2() {
 		return iniReader.getPropertyBool("Emulation", "muteVoice2", DEFAULT_MUTE_VOICE2);
@@ -387,7 +390,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteVoice2() {
 		return isMuteVoice2();
 	}
-	
+
 	@Override
 	public boolean isMuteVoice3() {
 		return iniReader.getPropertyBool("Emulation", "muteVoice3", DEFAULT_MUTE_VOICE3);
@@ -402,7 +405,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteVoice3() {
 		return isMuteVoice3();
 	}
-	
+
 	@Override
 	public boolean isMuteVoice4() {
 		return iniReader.getPropertyBool("Emulation", "muteVoice4", DEFAULT_MUTE_VOICE4);
@@ -417,7 +420,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteVoice4() {
 		return isMuteVoice4();
 	}
-	
+
 	@Override
 	public boolean isMuteStereoVoice1() {
 		return iniReader.getPropertyBool("Emulation", "muteStereoVoice1", DEFAULT_MUTE_STEREO_VOICE1);
@@ -432,7 +435,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteStereoVoice1() {
 		return isMuteStereoVoice1();
 	}
-	
+
 	@Override
 	public boolean isMuteStereoVoice2() {
 		return iniReader.getPropertyBool("Emulation", "muteStereoVoice2", DEFAULT_MUTE_STEREO_VOICE2);
@@ -447,7 +450,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteStereoVoice2() {
 		return isMuteStereoVoice2();
 	}
-	
+
 	@Override
 	public boolean isMuteStereoVoice3() {
 		return iniReader.getPropertyBool("Emulation", "muteStereoVoice3", DEFAULT_MUTE_STEREO_VOICE3);
@@ -462,7 +465,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteStereoVoice3() {
 		return isMuteStereoVoice3();
 	}
-	
+
 	@Override
 	public boolean isMuteStereoVoice4() {
 		return iniReader.getPropertyBool("Emulation", "muteStereoVoice4", DEFAULT_MUTE_STEREO_VOICE4);
@@ -477,7 +480,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteStereoVoice4() {
 		return isMuteStereoVoice4();
 	}
-	
+
 	@Override
 	public boolean isMuteThirdSIDVoice1() {
 		return iniReader.getPropertyBool("Emulation", "muteThirdSIDVoice1", DEFAULT_MUTE_THIRDSID_VOICE1);
@@ -492,7 +495,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteThirdSIDVoice1() {
 		return isMuteThirdSIDVoice1();
 	}
-	
+
 	@Override
 	public boolean isMuteThirdSIDVoice2() {
 		return iniReader.getPropertyBool("Emulation", "muteThirdSIDVoice2", DEFAULT_MUTE_THIRDSID_VOICE2);
@@ -507,7 +510,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteThirdSIDVoice2() {
 		return isMuteThirdSIDVoice2();
 	}
-	
+
 	@Override
 	public boolean isMuteThirdSIDVoice3() {
 		return iniReader.getPropertyBool("Emulation", "muteThirdSIDVoice3", DEFAULT_MUTE_THIRDSID_VOICE3);
@@ -522,7 +525,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteThirdSIDVoice3() {
 		return isMuteThirdSIDVoice3();
 	}
-	
+
 	@Override
 	public boolean isMuteThirdSIDVoice4() {
 		return iniReader.getPropertyBool("Emulation", "muteThirdSIDVoice4", DEFAULT_MUTE_THIRDSID_VOICE4);
@@ -537,7 +540,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	protected boolean getMuteThirdSIDVoice4() {
 		return isMuteThirdSIDVoice4();
 	}
-	
+
 	@Override
 	public final String getNetSIDFilter6581() {
 		return iniReader.getPropertyString("Emulation", "NetSID_Filter6581", DEFAULT_NETSID_FILTER_6581);
