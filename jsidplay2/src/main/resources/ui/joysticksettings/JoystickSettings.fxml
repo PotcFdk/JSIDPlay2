@@ -30,32 +30,37 @@
 					<Label text="%UP" GridPane.columnIndex="0" GridPane.rowIndex="2" />
 					<ComboBox fx:id="up1" onAction="#chooseUp1"
 						GridPane.columnIndex="1" GridPane.rowIndex="2" />
-					<TypeTextField type="Float" fx:id="up1Value" onAction="#chooseUp1Value"
-						GridPane.columnIndex="2" GridPane.rowIndex="2" />
+					<TypeTextField type="Float" fx:id="up1Value"
+						onAction="#chooseUp1Value" GridPane.columnIndex="2"
+						GridPane.rowIndex="2" />
 					<Label text="%DOWN" GridPane.columnIndex="0"
 						GridPane.rowIndex="3" />
 					<ComboBox fx:id="down1" onAction="#chooseDown1"
 						GridPane.columnIndex="1" GridPane.rowIndex="3" />
-					<TypeTextField type="Float" fx:id="down1Value" onAction="#chooseDown1Value"
-						GridPane.columnIndex="2" GridPane.rowIndex="3" />
+					<TypeTextField type="Float" fx:id="down1Value"
+						onAction="#chooseDown1Value" GridPane.columnIndex="2"
+						GridPane.rowIndex="3" />
 					<Label text="%LEFT" GridPane.columnIndex="0"
 						GridPane.rowIndex="4" />
 					<ComboBox fx:id="left1" onAction="#chooseLeft1"
 						GridPane.columnIndex="1" GridPane.rowIndex="4" />
-					<TypeTextField type="Float" fx:id="left1Value" onAction="#chooseLeft1Value"
-						GridPane.columnIndex="2" GridPane.rowIndex="4" />
+					<TypeTextField type="Float" fx:id="left1Value"
+						onAction="#chooseLeft1Value" GridPane.columnIndex="2"
+						GridPane.rowIndex="4" />
 					<Label text="%RIGHT" GridPane.columnIndex="0"
 						GridPane.rowIndex="5" />
 					<ComboBox fx:id="right1" onAction="#chooseRight1"
 						GridPane.columnIndex="1" GridPane.rowIndex="5" />
-					<TypeTextField type="Float" fx:id="right1Value" onAction="#chooseRight1Value"
-						GridPane.columnIndex="2" GridPane.rowIndex="5" />
+					<TypeTextField type="Float" fx:id="right1Value"
+						onAction="#chooseRight1Value" GridPane.columnIndex="2"
+						GridPane.rowIndex="5" />
 					<Label text="%FIRE" GridPane.columnIndex="0"
 						GridPane.rowIndex="6" />
 					<ComboBox fx:id="fire1" onAction="#chooseFire1"
 						GridPane.columnIndex="1" GridPane.rowIndex="6" />
-					<TypeTextField type="Float" fx:id="fire1Value" onAction="#chooseFire1Value"
-						GridPane.columnIndex="2" GridPane.rowIndex="6" />
+					<TypeTextField type="Float" fx:id="fire1Value"
+						onAction="#chooseFire1Value" GridPane.columnIndex="2"
+						GridPane.rowIndex="6" />
 				</GridPane>
 				<TableView fx:id="testTable1">
 					<columns>
@@ -87,32 +92,37 @@
 					<Label text="%UP" GridPane.columnIndex="0" GridPane.rowIndex="2" />
 					<ComboBox fx:id="up2" onAction="#chooseUp2"
 						GridPane.columnIndex="1" GridPane.rowIndex="2" />
-					<TypeTextField type="Float" fx:id="up2Value" onAction="#chooseUp2Value"
-						GridPane.columnIndex="2" GridPane.rowIndex="2" />
+					<TypeTextField type="Float" fx:id="up2Value"
+						onAction="#chooseUp2Value" GridPane.columnIndex="2"
+						GridPane.rowIndex="2" />
 					<Label text="%DOWN" GridPane.columnIndex="0"
 						GridPane.rowIndex="3" />
 					<ComboBox fx:id="down2" onAction="#chooseDown2"
 						GridPane.columnIndex="1" GridPane.rowIndex="3" />
-					<TypeTextField type="Float" fx:id="down2Value" onAction="#chooseDown2Value"
-						GridPane.columnIndex="2" GridPane.rowIndex="3" />
+					<TypeTextField type="Float" fx:id="down2Value"
+						onAction="#chooseDown2Value" GridPane.columnIndex="2"
+						GridPane.rowIndex="3" />
 					<Label text="%LEFT" GridPane.columnIndex="0"
 						GridPane.rowIndex="4" />
 					<ComboBox fx:id="left2" onAction="#chooseLeft2"
 						GridPane.columnIndex="1" GridPane.rowIndex="4" />
-					<TypeTextField type="Float" fx:id="left2Value" onAction="#chooseLeft2Value"
-						GridPane.columnIndex="2" GridPane.rowIndex="4" />
+					<TypeTextField type="Float" fx:id="left2Value"
+						onAction="#chooseLeft2Value" GridPane.columnIndex="2"
+						GridPane.rowIndex="4" />
 					<Label text="%RIGHT" GridPane.columnIndex="0"
 						GridPane.rowIndex="5" />
 					<ComboBox fx:id="right2" onAction="#chooseRight2"
 						GridPane.columnIndex="1" GridPane.rowIndex="5" />
-					<TypeTextField type="Float" fx:id="right2Value" onAction="#chooseRight2Value"
-						GridPane.columnIndex="2" GridPane.rowIndex="5" />
+					<TypeTextField type="Float" fx:id="right2Value"
+						onAction="#chooseRight2Value" GridPane.columnIndex="2"
+						GridPane.rowIndex="5" />
 					<Label text="%FIRE" GridPane.columnIndex="0"
 						GridPane.rowIndex="6" />
 					<ComboBox fx:id="fire2" onAction="#chooseFire2"
 						GridPane.columnIndex="1" GridPane.rowIndex="6" />
-					<TypeTextField type="Float" fx:id="fire2Value" onAction="#chooseFire2Value"
-						GridPane.columnIndex="2" GridPane.rowIndex="6" />
+					<TypeTextField type="Float" fx:id="fire2Value"
+						onAction="#chooseFire2Value" GridPane.columnIndex="2"
+						GridPane.rowIndex="6" />
 				</GridPane>
 				<TableView fx:id="testTable2">
 					<columns>

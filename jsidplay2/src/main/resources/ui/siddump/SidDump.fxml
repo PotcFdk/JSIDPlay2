@@ -52,8 +52,8 @@
 			<TitledPane text="%RECORD_OPTIONS" collapsible="false">
 				<GridPane>
 					<Label text="%MAX_RECORD_LENGTH" GridPane.columnIndex="0"
-						GridPane.rowIndex="0">
-					</Label>
+						GridPane.rowIndex="0" />
+
 					<TextField fx:id="maxRecordLength" text="00:00"
 						GridPane.columnIndex="1" GridPane.rowIndex="0">
 						<tooltip>
@@ -61,8 +61,8 @@
 						</tooltip>
 					</TextField>
 					<Label text="%NOTE_SPACING" GridPane.columnIndex="2"
-						GridPane.rowIndex="0">
-					</Label>
+						GridPane.rowIndex="0" />
+
 					<TextField fx:id="noteSpacing" text="0" onAction="#doSetNoteSpacing"
 						GridPane.columnIndex="3" GridPane.rowIndex="0">
 						<tooltip>
@@ -71,8 +71,8 @@
 					</TextField>
 
 					<Label text="%FIRST_FRAME" GridPane.columnIndex="0"
-						GridPane.rowIndex="1">
-					</Label>
+						GridPane.rowIndex="1" />
+
 					<TextField fx:id="firstFrame" text="0" onAction="#doSetFirstFrame"
 						GridPane.columnIndex="1" GridPane.rowIndex="1">
 						<tooltip>
@@ -80,8 +80,8 @@
 						</tooltip>
 					</TextField>
 					<Label text="%PATTERN_SPACING" GridPane.columnIndex="2"
-						GridPane.rowIndex="1">
-					</Label>
+						GridPane.rowIndex="1" />
+
 					<TextField fx:id="patternSpacing" text="0"
 						onAction="#doSetPatternSpacing" GridPane.columnIndex="3"
 						GridPane.rowIndex="1">
@@ -91,8 +91,8 @@
 					</TextField>
 
 					<Label text="%OLD_NOTE_FACTOR" GridPane.columnIndex="0"
-						GridPane.rowIndex="2">
-					</Label>
+						GridPane.rowIndex="2" />
+
 					<TextField fx:id="oldNoteFactor" text="1.0"
 						onAction="#doSetOldNoteFactor" GridPane.columnIndex="1"
 						GridPane.rowIndex="2">
@@ -101,8 +101,8 @@
 						</tooltip>
 					</TextField>
 					<Label text="%TABLE_FONT_SIZE" GridPane.columnIndex="2"
-						GridPane.rowIndex="2">
-					</Label>
+						GridPane.rowIndex="2" />
+
 					<TextField fx:id="tableFontSize" text="12"
 						onAction="#doSetTableFontSize" GridPane.columnIndex="3"
 						GridPane.rowIndex="2">
@@ -112,8 +112,8 @@
 					</TextField>
 
 					<Label text="%BASE_FREQ" GridPane.columnIndex="0"
-						GridPane.rowIndex="3">
-					</Label>
+						GridPane.rowIndex="3" />
+
 					<TextField fx:id="baseFreq" text="0x00" onAction="#doSetBaseFreq"
 						GridPane.columnIndex="1" GridPane.rowIndex="3">
 						<tooltip>
@@ -121,8 +121,8 @@
 						</tooltip>
 					</TextField>
 					<Label text="%BASE_NOTE" GridPane.columnIndex="2"
-						GridPane.rowIndex="3">
-					</Label>
+						GridPane.rowIndex="3" />
+
 					<TextField fx:id="baseNote" text="0xb0" onAction="#doSetBaseNote"
 						GridPane.columnIndex="3" GridPane.rowIndex="3">
 						<tooltip>
@@ -134,14 +134,14 @@
 			<TitledPane text="%REPLAY_OPTIONS" collapsible="false">
 				<GridPane>
 					<Label text="%EMULATE_PLAYER" GridPane.columnIndex="0"
-						GridPane.rowIndex="0">
-					</Label>
+						GridPane.rowIndex="0" />
+
 					<ComboBox fx:id="regPlayer" onAction="#doSetPlayer"
-						GridPane.columnIndex="1" GridPane.rowIndex="0">
-					</ComboBox>
+						GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
 					<Label text="%CALLS_PER_FRAME" GridPane.columnIndex="2"
-						GridPane.rowIndex="0">
-					</Label>
+						GridPane.rowIndex="0" />
+
 					<TextField text="1" fx:id="callsPerFrame" onAction="#doSetCallsPerFrame"
 						GridPane.columnIndex="3" GridPane.rowIndex="0">
 						<tooltip>

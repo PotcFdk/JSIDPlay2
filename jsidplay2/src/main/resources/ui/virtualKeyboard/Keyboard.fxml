@@ -299,17 +299,24 @@
 			<TitledPane text="%COMMANDS" collapsible="false">
 				<VBox spacing="5">
 					<FlowPane hgap="5" vgap="2">
-						<Button text="%FLOPPY_DIR" onAction="#directory" style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
-						<Button text="%FLOPPY_LOAD" onAction="#diskLoad" style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+						<Button text="%FLOPPY_DIR" onAction="#directory"
+							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+						<Button text="%FLOPPY_LOAD" onAction="#diskLoad"
+							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
 					</FlowPane>
 					<FlowPane hgap="5" vgap="2">
-						<Button text="%DATASETTE_LOAD" onAction="#tapeLoad" style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+						<Button text="%DATASETTE_LOAD" onAction="#tapeLoad"
+							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
 					</FlowPane>
 					<FlowPane hgap="5" vgap="2">
-						<Button text="%LIST" onAction="#list" style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue"/>
-						<Button text="%RUN" onAction="#run" style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
-						<Button text="%SYS" onAction="#sys" style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
-						<Button text="%RESET" onAction="#reset" style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+						<Button text="%LIST" onAction="#list"
+							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+						<Button text="%RUN" onAction="#run"
+							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+						<Button text="%SYS" onAction="#sys"
+							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+						<Button text="%RESET" onAction="#reset"
+							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
 					</FlowPane>
 				</VBox>
 			</TitledPane>

@@ -27,16 +27,16 @@
 	<GridPane>
 		<CheckBox text="%ENABLE_PROXY" GridPane.columnIndex="0"
 			GridPane.rowIndex="0" GridPane.columnSpan="3" fx:id="proxyEnable"
-			onAction="#setEnableProxy">
-		</CheckBox>
+			onAction="#setEnableProxy" />
+
 		<Label text="%HOSTNAME_AND_PORT" GridPane.columnIndex="0"
-			GridPane.rowIndex="1">
-		</Label>
+			GridPane.rowIndex="1" />
+
 		<TextField GridPane.columnIndex="1" GridPane.rowIndex="1"
-			fx:id="proxyHost" onAction="#setProxyHost">
-		</TextField>
+			fx:id="proxyHost" onAction="#setProxyHost" />
+
 		<TextField text="80" GridPane.columnIndex="2"
-			GridPane.rowIndex="1" fx:id="proxyPort" onAction="#setProxyPort">
-		</TextField>
+			GridPane.rowIndex="1" fx:id="proxyPort" onAction="#setProxyPort" />
+
 	</GridPane>
 </Scene>

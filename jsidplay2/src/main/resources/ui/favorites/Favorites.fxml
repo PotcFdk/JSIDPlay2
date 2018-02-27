@@ -119,7 +119,7 @@
 						<TextField fx:id="fadeInTime" GridPane.rowIndex="0"
 							GridPane.columnIndex="1">
 							<tooltip>
-								<Tooltip text="%FADE_IN_LENGTH_TIP"></Tooltip>
+								<Tooltip text="%FADE_IN_LENGTH_TIP" />
 							</tooltip>
 						</TextField>
 						<Label text="%FADE_OUT_LENGTH" alignment="CENTER_RIGHT"
@@ -127,7 +127,7 @@
 						<TextField fx:id="fadeOutTime" GridPane.rowIndex="0"
 							GridPane.columnIndex="3">
 							<tooltip>
-								<Tooltip text="%FADE_OUT_LENGTH_TIP"></Tooltip>
+								<Tooltip text="%FADE_OUT_LENGTH_TIP" />
 							</tooltip>
 						</TextField>
 						<RadioButton text="%OFF" selected="true" toggleGroup="$playbackGroup"

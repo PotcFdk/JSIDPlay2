@@ -52,45 +52,45 @@
 				<TitledPane text="%JUMP">
 					<GridPane>
 						<Label text="%ADDRESS" GridPane.rowIndex="0"
-							GridPane.columnIndex="0"></Label>
+							GridPane.columnIndex="0" />
 						<Button text="0x0000" GridPane.rowIndex="0"
-							GridPane.columnIndex="1" onAction="#gotoMemStart"></Button>
+							GridPane.columnIndex="1" onAction="#gotoMemStart" />
 						<Label text="%ADDRESS" GridPane.rowIndex="1"
-							GridPane.columnIndex="0"></Label>
+							GridPane.columnIndex="0" />
 						<TextField text="0x0000" GridPane.rowIndex="1"
-							GridPane.columnIndex="1" fx:id="address" onAction="#gotoAddress">
-						</TextField>
+							GridPane.columnIndex="1" fx:id="address" onAction="#gotoAddress" />
+
 						<Label text="%DRIVER_ADDRESS" GridPane.rowIndex="2"
-							GridPane.columnIndex="0"></Label>
+							GridPane.columnIndex="0" />
 						<Button text="?" GridPane.rowIndex="2"
-							GridPane.columnIndex="1" fx:id="driverAddress" onAction="#gotoDriverAddress"></Button>
+							GridPane.columnIndex="1" fx:id="driverAddress" onAction="#gotoDriverAddress" />
 						<Label text="%LOAD_ADDRESS" GridPane.rowIndex="3"
-							GridPane.columnIndex="0"></Label>
+							GridPane.columnIndex="0" />
 						<Button text="?" GridPane.rowIndex="3"
-							GridPane.columnIndex="1" fx:id="loadAddress" onAction="#gotoLoadAddress"></Button>
+							GridPane.columnIndex="1" fx:id="loadAddress" onAction="#gotoLoadAddress" />
 						<Label text="%INIT_ADDRESS" GridPane.rowIndex="4"
-							GridPane.columnIndex="0"></Label>
+							GridPane.columnIndex="0" />
 						<Button text="?" GridPane.rowIndex="4"
-							GridPane.columnIndex="1" fx:id="initAddress" onAction="#gotoInitAddress"></Button>
+							GridPane.columnIndex="1" fx:id="initAddress" onAction="#gotoInitAddress" />
 						<Label text="%PLAYER_ADDRESS" GridPane.rowIndex="5"
-							GridPane.columnIndex="0"></Label>
+							GridPane.columnIndex="0" />
 						<Button text="?" GridPane.rowIndex="5"
-							GridPane.columnIndex="1" fx:id="playerAddress" onAction="#gotoPlayerAddress"></Button>
+							GridPane.columnIndex="1" fx:id="playerAddress" onAction="#gotoPlayerAddress" />
 					</GridPane>
 				</TitledPane>
 				<TitledPane text="%SAVE_MEMORY">
 					<GridPane>
 						<Label text="%START" GridPane.rowIndex="0"
-							GridPane.columnIndex="0"></Label>
+							GridPane.columnIndex="0" />
 						<TextField GridPane.rowIndex="0" GridPane.columnIndex="1"
-							fx:id="startAddress"></TextField>
+							fx:id="startAddress" />
 						<Label text="%END" GridPane.rowIndex="1"
-							GridPane.columnIndex="0"></Label>
+							GridPane.columnIndex="0" />
 						<TextField GridPane.rowIndex="1" GridPane.columnIndex="1"
-							fx:id="endAddress"></TextField>
+							fx:id="endAddress" />
 						<Button text="%SAVE" GridPane.rowIndex="2"
 							GridPane.columnIndex="0" GridPane.columnSpan="2" fx:id="save"
-							onAction="#saveMemory"></Button>
+							onAction="#saveMemory" />
 					</GridPane>
 				</TitledPane>
 			</VBox>

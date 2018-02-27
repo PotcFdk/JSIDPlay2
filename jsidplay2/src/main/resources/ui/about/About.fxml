@@ -13,23 +13,24 @@
 <Scene xmlns:fx="http://javafx.com/fxml" height="768" stylesheets="@About.css">
 	<BorderPane>
 		<center>
-		<ScrollPane fitToHeight="false" fitToWidth="false" hbarPolicy="NEVER" pannable="false" focusTraversable="false"> 
-			<content> 
-				<HBox styleClass="creditsBox">
-					<padding>
-						<Insets top="5" right="5" left="5" bottom="5"/>                 
-			        </padding>
-					<TextFlow>
-						<Text fx:id="credits" />
-					</TextFlow>
-				</HBox>
-			</content>
-		</ScrollPane>		
+			<ScrollPane fitToHeight="false" fitToWidth="false"
+				hbarPolicy="NEVER" pannable="false" focusTraversable="false">
+				<content>
+					<HBox styleClass="creditsBox">
+						<padding>
+							<Insets top="5" right="5" left="5" bottom="5" />
+						</padding>
+						<TextFlow>
+							<Text fx:id="credits" />
+						</TextFlow>
+					</HBox>
+				</content>
+			</ScrollPane>
 		</center>
 		<bottom>
 			<VBox prefHeight="44" alignment="CENTER">
 				<HBox alignment="CENTER">
-					<Button text="%OK" onAction="#okPressed"></Button>
+					<Button text="%OK" onAction="#okPressed" />
 				</HBox>
 			</VBox>
 		</bottom>

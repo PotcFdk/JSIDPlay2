@@ -24,7 +24,8 @@
 <?import ui.emulationsettings.LogarithmicAxis?>
 <?scenebuilder-preview-i18n-resource EmulationSettings.properties?>
 
-<Scene xmlns:fx="http://javafx.com/fxml" width="1024" height="768" stylesheets="@EmulationSettings.css">
+<Scene xmlns:fx="http://javafx.com/fxml" width="1024" height="768"
+	stylesheets="@EmulationSettings.css">
 	<ScrollPane>
 		<VBox>
 			<TitledPane text="%VOLUME_CONTROL">

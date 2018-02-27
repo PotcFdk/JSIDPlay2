@@ -14,30 +14,33 @@
 <Scene xmlns:fx="http://javafx.com/fxml">
 	<VBox>
 		<padding>
-			<Insets top="10" right="10" left="10" bottom="0"/>                 
-        </padding>
+			<Insets top="10" right="10" left="10" bottom="0" />
+		</padding>
 
-		<TitledPane text="%AUDIO_SETTINGS" collapsible="false" focusTraversable="false">
+		<TitledPane text="%AUDIO_SETTINGS" collapsible="false"
+			focusTraversable="false">
 			<padding>
-				<Insets top="0" right="0" left="0" bottom="10"/>                 
-            </padding>
+				<Insets top="0" right="0" left="0" bottom="10" />
+			</padding>
 			<HBox spacing="10" alignment="CENTER_LEFT">
 				<Label text="%DEVICE" />
 				<ComboBox fx:id="audioDevice" onAction="#setAudioDevice" />
 			</HBox>
 		</TitledPane>
-		
-		<TitledPane text="%CONNECTION_SETTINGS" collapsible="false" focusTraversable="false">
+
+		<TitledPane text="%CONNECTION_SETTINGS" collapsible="false"
+			focusTraversable="false">
 			<padding>
-				<Insets top="0" right="0" left="0" bottom="10"/>                 
-            </padding>
+				<Insets top="0" right="0" left="0" bottom="10" />
+			</padding>
 			<HBox spacing="10" alignment="CENTER_LEFT">
 				<Label text="%ALLOW_EXTERNAL_CONNECTIONS" />
 				<CheckBox fx:id="allowExternalConnections" onAction="#setAllowExternalConnections" />
 			</HBox>
 		</TitledPane>
-		
-		<TitledPane text="%EMULATION_SETTINGS" collapsible="false" focusTraversable="false">
+
+		<TitledPane text="%EMULATION_SETTINGS" collapsible="false"
+			focusTraversable="false">
 			<HBox spacing="10" alignment="CENTER_LEFT">
 				<Label text="%DIGI_BOOST" />
 				<CheckBox fx:id="digiBoost" onAction="#setDigiBoost" />
@@ -45,7 +48,7 @@
 		</TitledPane>
 		<VBox prefHeight="44" alignment="CENTER">
 			<HBox alignment="BASELINE_CENTER">
-				<Button fx:id="okButton" text="%OK" onAction="#okPressed"></Button>
+				<Button fx:id="okButton" text="%OK" onAction="#okPressed" />
 			</HBox>
 		</VBox>
 	</VBox>

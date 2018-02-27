@@ -51,14 +51,14 @@
 			<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
 			<TextField fx:id="defaultTime" prefWidth="60">
 				<tooltip>
-					<Tooltip text="%DEFAULT_LENGTH_TIP"></Tooltip>
+					<Tooltip text="%DEFAULT_LENGTH_TIP" />
 				</tooltip>
 			</TextField>
 			<CheckBox text="%RESPECT_SONG_LENGTH" fx:id="enableSldb"
-				onAction="#doEnableSldb">
-			</CheckBox>
-			<CheckBox text="%SINGLE_SONG" fx:id="singleSong">
-			</CheckBox>
+				onAction="#doEnableSldb" />
+
+			<CheckBox text="%SINGLE_SONG" fx:id="singleSong" />
+
 		</HBox>
 		<HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
 			<spacing>10</spacing>
@@ -69,14 +69,14 @@
 			<TextField fx:id="hostname" onAction="#setHostname"
 				prefWidth="80">
 				<tooltip>
-					<Tooltip text="%HOSTNAME_TIP"></Tooltip>
+					<Tooltip text="%HOSTNAME_TIP" />
 				</tooltip>
 			</TextField>
 			<Label text="%PORT" fx:id="portLabel" />
 			<TypeTextField type="Integer" fx:id="port" onAction="#setPort"
 				prefWidth="60">
 				<tooltip>
-					<Tooltip text="%PORT_TIP"></Tooltip>
+					<Tooltip text="%PORT_TIP" />
 				</tooltip>
 			</TypeTextField>
 			<Label text="%6581" fx:id="hardsid6581Label" />

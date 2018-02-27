@@ -8,7 +8,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?scenebuilder-preview-i18n-resource STILView.properties?>
 
-<Scene xmlns:fx="http://javafx.com/fxml" width="800" height="600" stylesheets="@STILView.css">
+<Scene xmlns:fx="http://javafx.com/fxml" width="800" height="600"
+	stylesheets="@STILView.css">
 	<SplitPane orientation="HORIZONTAL" fx:id="splitPane">
 		<TreeView fx:id="tree" />
 		<ScrollPane vbarPolicy="ALWAYS">

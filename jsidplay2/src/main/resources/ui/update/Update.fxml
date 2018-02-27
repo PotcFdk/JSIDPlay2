@@ -8,7 +8,8 @@
 <?import javafx.scene.control.TextArea?>
 <?scenebuilder-preview-i18n-resource Update.properties?>
 
-<Scene xmlns:fx="http://javafx.com/fxml" width="640" height="200" stylesheets="@Update.css">
+<Scene xmlns:fx="http://javafx.com/fxml" width="640" height="200"
+	stylesheets="@Update.css">
 	<BorderPane>
 		<center>
 			<TextArea editable="false" wrapText="false" fx:id="update" />
@@ -16,7 +17,7 @@
 		<bottom>
 			<VBox>
 				<HBox alignment="BASELINE_CENTER">
-					<Button text="%OK" onAction="#okPressed"></Button>
+					<Button text="%OK" onAction="#okPressed" />
 				</HBox>
 				<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
 					onAction="#gotoLatestVersion" fx:id="latestVersionLink" />
