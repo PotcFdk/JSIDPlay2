@@ -17,7 +17,7 @@ java -jar jsidplay2_console-{version}.jar # <1>
 Example:
 [source,subs="attributes+"]
 ----
-Turrican_2-The_Final_Fight.sid --startSong 4 --single --audio LIVE_MP3 --recordingFilename Turrican
+Turrican_2-The_Final_Fight.sid --startSong 4 --single true --audio LIVE_MP3 --recordingFilename Turrican
 ---- 
 
 In this example we record the tune Turrican_2-The_Final_Fight.sid starting with song 4.
@@ -37,7 +37,7 @@ TIP: If you prefer not to listen the tune while recording, simply use option:
 TIP: If you prefer to record only certain voices of a tune you are able to mute voices this way:
 [source,subs="attributes+"]
 ----
---muteVoice1 <1>
+--muteVoice1 true<1>
 ----
 <1> Mute voice 1 (of the main SID). See usage to mute other voices as well.
 
