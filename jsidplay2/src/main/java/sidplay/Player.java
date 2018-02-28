@@ -705,21 +705,25 @@ public class Player extends HardwareEnsemble {
 	 * Pause or continue the player.
 	 */
 	public final void pauseContinue() {
-		if (stateProperty.get() == QUIT || stateProperty.get() == END) {
-			play(tune);
-		} else if (stateProperty.get() == PAUSE) {
-			stateProperty.set(PLAY);
-		} else {
-			stateProperty.set(PAUSE);
-		}
+		executeInPlayerThread("PauseContinue", () -> {
+			if (stateProperty.get() == QUIT || stateProperty.get() == END) {
+				play(tune);
+			} else if (stateProperty.get() == PAUSE) {
+				stateProperty.set(PLAY);
+			} else {
+				stateProperty.set(PAUSE);
+			}
+		});
 	}
 
 	/**
 	 * Play next song.
 	 */
 	public final void nextSong() {
-		playList.next();
-		stateProperty.set(RESTART);
+		executeInPlayerThread("Play next song", () -> {
+			playList.next();
+			stateProperty.set(RESTART);
+		});
 	}
 
 	/**
@@ -728,26 +732,32 @@ public class Player extends HardwareEnsemble {
 	 * tune is restarted instead.
 	 */
 	public final void previousSong() {
-		if (time() < PREV_SONG_TIMEOUT) {
-			playList.previous();
-		}
-		stateProperty.set(RESTART);
+		executeInPlayerThread("Play previous song", () -> {
+			if (time() < PREV_SONG_TIMEOUT) {
+				playList.previous();
+			}
+			stateProperty.set(RESTART);
+		});
 	}
 
 	/**
 	 * Play first song.
 	 */
 	public final void firstSong() {
-		playList.first();
-		stateProperty.set(RESTART);
+		executeInPlayerThread("Play first song", () -> {
+			playList.first();
+			stateProperty.set(RESTART);
+		});
 	}
 
 	/**
 	 * Play last song.
 	 */
 	public final void lastSong() {
-		playList.last();
-		stateProperty.set(RESTART);
+		executeInPlayerThread("Play last song", () -> {
+			playList.last();
+			stateProperty.set(RESTART);
+		});
 	}
 
 	/**
@@ -770,7 +780,9 @@ public class Player extends HardwareEnsemble {
 	 * Quit player.
 	 */
 	public final void quit() {
-		stateProperty.set(QUIT);
+		executeInPlayerThread("Quit", () -> {
+			stateProperty.set(QUIT);
+		});
 	}
 
 	/**
