@@ -83,3 +83,7 @@
 .cellValueError {
 	-fx-background-color:red;
 }
+
+#background {
+	-fx-background: #000000;	
+}

@@ -705,15 +705,13 @@ public class Player extends HardwareEnsemble {
 	 * Pause or continue the player.
 	 */
 	public final void pauseContinue() {
-		executeInPlayerThread("PauseContinue", () -> {
-			if (stateProperty.get() == QUIT || stateProperty.get() == END) {
-				play(tune);
-			} else if (stateProperty.get() == PAUSE) {
-				stateProperty.set(PLAY);
-			} else {
-				stateProperty.set(PAUSE);
-			}
-		});
+		if (stateProperty.get() == QUIT || stateProperty.get() == END) {
+			play(tune);
+		} else if (stateProperty.get() == PAUSE) {
+			stateProperty.set(PLAY);
+		} else {
+			stateProperty.set(PAUSE);
+		}
 	}
 
 	/**

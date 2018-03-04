@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
@@ -22,128 +23,144 @@
 
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
 	<AnchorPane>
-		<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
-			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
-			<children>
-				<TitledPane fx:id="monitor" text="%MONITOR" collapsible="true"
-					GridPane.columnIndex="0" GridPane.rowIndex="0">
-					<StackPane>
-						<Canvas fx:id="screen" />
-						<ImageView fx:id="monitorBorder">
-							<image>
-								<Image url="@/ui/icons/monitor.png" />
-							</image>
-						</ImageView>
-						<ImageView fx:id="breadbox" visible="false">
-							<image>
-								<Image url="@/ui/icons/c64.png" />
-							</image>
-						</ImageView>
-						<ImageView fx:id="pc64" visible="false">
-							<image>
-								<Image url="@/ui/icons/c64c.png" />
-							</image>
-						</ImageView>
-					</StackPane>
-				</TitledPane>
-				<VBox alignment="TOP_CENTER" GridPane.columnIndex="1"
-					GridPane.rowIndex="0">
-					<Button fx:id="keyboard" onAction="#showVirtualKeyboard">
-						<graphic>
-							<ImageView preserveRatio="true">
-								<image>
-									<Image url="@/ui/icons/keyboard.png" />
-								</image>
-							</ImageView>
-						</graphic>
-					</Button>
-					<Button onAction="#insertTape">
-						<graphic>
+		<BorderPane AnchorPane.bottomAnchor="10"
+			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
+			AnchorPane.topAnchor="10">
+			<center>
+				<GridPane>
+					<children>
+						<TitledPane id="background" fx:id="monitor" text="%MONITOR"
+							collapsible="true" GridPane.columnIndex="0" GridPane.rowIndex="0">
 							<StackPane>
-								<ImageView fx:id="datasetteOff" preserveRatio="true"
-									visible="false">
+								<Canvas fx:id="screen" />
+								<ImageView fx:id="monitorBorder">
 									<image>
-										<Image url="@/libsidplay/components/c1530/icons/datassette.png" />
+										<Image url="@/ui/icons/monitor.png" />
 									</image>
 								</ImageView>
-								<ImageView fx:id="datasetteLoad" preserveRatio="true"
-									visible="false">
+								<ImageView fx:id="breadbox" visible="false">
 									<image>
-										<Image url="@/libsidplay/components/c1530/icons/datassette_g.png" />
+										<Image url="@/ui/icons/c64.png" />
 									</image>
 								</ImageView>
-								<ImageView fx:id="datasetteSave" preserveRatio="true"
-									visible="false">
+								<ImageView fx:id="pc64" visible="false">
 									<image>
-										<Image url="@/libsidplay/components/c1530/icons/datassette_r.png" />
+										<Image url="@/ui/icons/c64c.png" />
 									</image>
 								</ImageView>
-								<Label fx:id="tapeName" StackPane.alignment="TOP_LEFT" />
 							</StackPane>
-						</graphic>
-					</Button>
-					<Button fx:id="floppy" onAction="#insertDisk">
-						<graphic>
-							<StackPane>
-								<ImageView fx:id="c1541Off" preserveRatio="true"
-									visible="false">
-									<image>
-										<Image url="@/libsidplay/components/c1541/icons/cbm1541c.png" />
-									</image>
-								</ImageView>
-								<ImageView fx:id="c1541On" preserveRatio="true"
-									visible="false">
-									<image>
-										<Image url="@/libsidplay/components/c1541/icons/cbm1541c_g.png" />
-									</image>
-								</ImageView>
-								<ImageView fx:id="c1541Load" preserveRatio="true"
-									visible="false">
-									<image>
-										<Image url="@/libsidplay/components/c1541/icons/cbm1541c_rg.png" />
-									</image>
-								</ImageView>
-								<ImageView fx:id="c1541IIOff" preserveRatio="true"
-									visible="false">
-									<image>
-										<Image url="@/libsidplay/components/c1541/icons/1541_ii.png" />
-									</image>
-								</ImageView>
-								<ImageView fx:id="c1541IIOn" preserveRatio="true"
-									visible="false">
-									<image>
-										<Image url="@/libsidplay/components/c1541/icons/1541_ii_r.png" />
-									</image>
-								</ImageView>
-								<ImageView fx:id="c1541IILoad" preserveRatio="true"
-									visible="false">
-									<image>
-										<Image url="@/libsidplay/components/c1541/icons/1541_ii_rg.png" />
-									</image>
-								</ImageView>
-								<Label fx:id="diskName" StackPane.alignment="TOP_LEFT" />
-							</StackPane>
-						</graphic>
-					</Button>
-					<Button fx:id="cartridge" onAction="#insertCartridge">
-						<graphic>
-							<StackPane>
-								<ImageView preserveRatio="true">
-									<image>
-										<Image url="@/libsidplay/components/cart/icons/cartridge.png" />
-									</image>
-								</ImageView>
-								<Label fx:id="cartridgeName" StackPane.alignment="TOP_LEFT" />
-							</StackPane>
-						</graphic>
-					</Button>
-				</VBox>
+						</TitledPane>
+						<VBox alignment="TOP_CENTER" GridPane.columnIndex="1"
+							GridPane.rowIndex="0">
+							<Button fx:id="keyboard" onAction="#showVirtualKeyboard">
+								<graphic>
+									<ImageView preserveRatio="true">
+										<image>
+											<Image url="@/ui/icons/keyboard.png" />
+										</image>
+									</ImageView>
+								</graphic>
+							</Button>
+							<Button onAction="#insertTape">
+								<graphic>
+									<StackPane>
+										<ImageView fx:id="datasetteOff" preserveRatio="true"
+											visible="false">
+											<image>
+												<Image url="@/libsidplay/components/c1530/icons/datassette.png" />
+											</image>
+										</ImageView>
+										<ImageView fx:id="datasetteLoad" preserveRatio="true"
+											visible="false">
+											<image>
+												<Image
+													url="@/libsidplay/components/c1530/icons/datassette_g.png" />
+											</image>
+										</ImageView>
+										<ImageView fx:id="datasetteSave" preserveRatio="true"
+											visible="false">
+											<image>
+												<Image
+													url="@/libsidplay/components/c1530/icons/datassette_r.png" />
+											</image>
+										</ImageView>
+										<Label fx:id="tapeName" StackPane.alignment="TOP_LEFT" />
+									</StackPane>
+								</graphic>
+							</Button>
+							<Button fx:id="floppy" onAction="#insertDisk">
+								<graphic>
+									<StackPane>
+										<ImageView fx:id="c1541Off" preserveRatio="true"
+											visible="false">
+											<image>
+												<Image url="@/libsidplay/components/c1541/icons/cbm1541c.png" />
+											</image>
+										</ImageView>
+										<ImageView fx:id="c1541On" preserveRatio="true"
+											visible="false">
+											<image>
+												<Image url="@/libsidplay/components/c1541/icons/cbm1541c_g.png" />
+											</image>
+										</ImageView>
+										<ImageView fx:id="c1541Load" preserveRatio="true"
+											visible="false">
+											<image>
+												<Image url="@/libsidplay/components/c1541/icons/cbm1541c_rg.png" />
+											</image>
+										</ImageView>
+										<ImageView fx:id="c1541IIOff" preserveRatio="true"
+											visible="false">
+											<image>
+												<Image url="@/libsidplay/components/c1541/icons/1541_ii.png" />
+											</image>
+										</ImageView>
+										<ImageView fx:id="c1541IIOn" preserveRatio="true"
+											visible="false">
+											<image>
+												<Image url="@/libsidplay/components/c1541/icons/1541_ii_r.png" />
+											</image>
+										</ImageView>
+										<ImageView fx:id="c1541IILoad" preserveRatio="true"
+											visible="false">
+											<image>
+												<Image url="@/libsidplay/components/c1541/icons/1541_ii_rg.png" />
+											</image>
+										</ImageView>
+										<Label fx:id="diskName" StackPane.alignment="TOP_LEFT" />
+									</StackPane>
+								</graphic>
+							</Button>
+							<Button fx:id="cartridge" onAction="#insertCartridge">
+								<graphic>
+									<StackPane>
+										<ImageView preserveRatio="true">
+											<image>
+												<Image url="@/libsidplay/components/cart/icons/cartridge.png" />
+											</image>
+										</ImageView>
+										<Label fx:id="cartridgeName" StackPane.alignment="TOP_LEFT" />
+									</StackPane>
+								</graphic>
+							</Button>
+						</VBox>
+					</children>
+					<columnConstraints>
+						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+							percentWidth="85.0" prefWidth="100.0" />
+						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+							percentWidth="15.0" prefWidth="100.0" />
+					</columnConstraints>
+				</GridPane>
+			</center>
+			<bottom>
 				<TitledPane text="%MONITOR_SETTINGS" expanded="false"
-					GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+					GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2"
+					maxHeight="Infinity" GridPane.vgrow="ALWAYS">
 					<HBox>
 						<VBox alignment="TOP_CENTER">
 							<Label fx:id="scalingValue" text="1.00" />
-							<Slider fx:id="scaling" min="0" max="3" value="2.00"
+							<Slider fx:id="scaling" min="0" max="4" value="2.00"
 								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 								majorTickUnit="0.1" showTickMarks="true">
 								<styleClass>
@@ -261,19 +278,7 @@
 						</VBox>
 					</HBox>
 				</TitledPane>
-			</children>
-			<columnConstraints>
-				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-					percentWidth="80.0" prefWidth="100.0" />
-				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-					percentWidth="20.0" prefWidth="100.0" />
-			</columnConstraints>
-			<rowConstraints>
-				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-					percentHeight="80.0" prefHeight="100.0" />
-				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"
-					percentHeight="20.0" prefHeight="100.0" valignment="TOP" />
-			</rowConstraints>
-		</GridPane>
+			</bottom>
+		</BorderPane>
 	</AnchorPane>
 </fx:root>
