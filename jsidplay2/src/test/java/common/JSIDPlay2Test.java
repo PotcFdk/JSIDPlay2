@@ -167,7 +167,7 @@ public class JSIDPlay2Test extends ApplicationTest {
 	 *            event consumer with event behavior
 	 */
 	protected void schedule(java.util.function.Consumer<C64> eventConsumer) {
-		player.getC64().getEventScheduler().scheduleThreadSafe(new Event("Test Event") {
+		player.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Test Event") {
 			@Override
 			public void event() throws InterruptedException {
 				eventConsumer.accept(player.getC64());

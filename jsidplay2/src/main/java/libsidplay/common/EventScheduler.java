@@ -37,11 +37,23 @@ import libsidplay.common.Event.Phase;
  * @author Antti S. Lankila
  */
 public final class EventScheduler {
+	
+	/**
+	 * Interval to check thread-safe queue for key-events
+	 */
+	private static final int THREAD_SAFE_KEY_EVENT_QUEUE_CHECK_INTERVAL = 50000;
+
+	/**
+	 * Interval to check thread-safe queue for events
+	 */
+	private static final int THREAD_SAFE_QUEUE_CHECK_INTERVAL = 500;
+
 	/** EventScheduler's current clock */
 	private long currentTime;
 
 	private double cyclesPerSecond;
 
+	private List<Event> threadSafeKeyQueue = new ArrayList<Event>();
 	private List<Event> threadSafeQueue = new ArrayList<Event>();
 
 	/**
@@ -83,9 +95,40 @@ public final class EventScheduler {
 					threadSafeQueue.remove(0).event();
 				}
 			}
-			schedule(this, 20000);
+			schedule(this, THREAD_SAFE_QUEUE_CHECK_INTERVAL);
 		}
 	};
+
+	/**
+	 * Periodic thread-safe event scheduling mechanism for key events.
+	 */
+	private final Event threadSafeQueueingKeyEvent = new Event("Inject key events in thread-safe manner.") {
+		@Override
+		public void event() throws InterruptedException {
+			synchronized (threadSafeKeyQueue) {
+				if (!threadSafeKeyQueue.isEmpty()) {
+					threadSafeKeyQueue.remove(0).event();
+				}
+			}
+			schedule(this, THREAD_SAFE_KEY_EVENT_QUEUE_CHECK_INTERVAL);
+		}
+	};
+
+	/**
+	 * Schedule a key event in a thread-safe manner.
+	 * 
+	 * The thread-safe queue is moved to the unsafe queue periodically, and
+	 * specific execution time is unpredictable, but will always occur during
+	 * the PHI1 phase.
+	 * 
+	 * @param event
+	 *            The event to schedule.
+	 */
+	public void scheduleThreadSafeKeyEvent(final Event event) {
+		synchronized (threadSafeKeyQueue) {
+			threadSafeKeyQueue.add(event);
+		}
+	}
 
 	/**
 	 * Schedule an event in a thread-safe manner.
@@ -197,9 +240,11 @@ public final class EventScheduler {
 	/** Cancel all pending events and reset time. */
 	public void reset() {
 		threadSafeQueue.clear();
+		threadSafeKeyQueue.clear();
 		currentTime = 0;
 		firstEvent.next = lastEvent;
 		schedule(threadSafeQueueingEvent, 0, Event.Phase.PHI1);
+		schedule(threadSafeQueueingKeyEvent, 0, Event.Phase.PHI1);
 	}
 
 	/**

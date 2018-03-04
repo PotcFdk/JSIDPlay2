@@ -447,7 +447,7 @@ public class Keyboard extends C64Window {
 	}
 
 	private void pressC64Key(final KeyTableEntry key) {
-		getC64().getEventScheduler().scheduleThreadSafe(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
+		getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
 			@Override
 			public void event() throws InterruptedException {
 				getC64().getKeyboard().keyPressed(key);
@@ -456,7 +456,7 @@ public class Keyboard extends C64Window {
 	}
 
 	private void releaseC64Key(final KeyTableEntry key) {
-		getC64().getEventScheduler().scheduleThreadSafe(new Event("Virtual Keyboard Key Released: " + key.name()) {
+		getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Released: " + key.name()) {
 			@Override
 			public void event() throws InterruptedException {
 				getC64().getKeyboard().keyReleased(key);

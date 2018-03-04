@@ -413,7 +413,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	private void pressC64Key(final KeyTableEntry key) {
 		util.getPlayer().getC64().getEventScheduler()
-				.scheduleThreadSafe(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
+				.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
 					@Override
 					public void event() throws InterruptedException {
 						util.getPlayer().getC64().getKeyboard().keyPressed(key);
@@ -423,7 +423,7 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 
 	private void releaseC64Key(final KeyTableEntry key) {
 		util.getPlayer().getC64().getEventScheduler()
-				.scheduleThreadSafe(new Event("Virtual Keyboard Key Released: " + key.name()) {
+				.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Released: " + key.name()) {
 					@Override
 					public void event() throws InterruptedException {
 						util.getPlayer().getC64().getKeyboard().keyReleased(key);
