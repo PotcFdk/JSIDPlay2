@@ -448,6 +448,44 @@
 							</archive>
 						</configuration>
 					</execution>
+					<execution>
+						<id>libsidplay-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>netsiddev/**/*.class</include>
+								<include>netsiddev_builder/**/*.class</include>
+								<include>resid_builder/**/*.class</include>
+								<include>hardsid_builder/**/*</include>
+								<include>libsidplay/**/*.class</include>
+								<include>libsidplay/**/*.bin</include>
+								<include>libsidutils/*</include>
+								<include>libsidutils/sidid/*</include>
+								<include>libsidutils/siddatabase/*</include>
+								<include>libsidutils/stil/*</include>
+								<include>libsidutils/stringsearch/*</include>
+								<include>sidplay/**/*.class</include>
+								<include>sidplay/ini/*.ini</include>
+							</includes>
+							<excludes>
+								<exclude>sidplay/ConsolePlayer*.class</exclude>
+							</excludes>
+							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
+							<finalName>libsidplay-${project.version}</finalName>
+							<archive>
+								<addMavenDescriptor>false</addMavenDescriptor>
+								<manifest>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+									<addClasspath>false</addClasspath>
+									<mainClass>sidplay.Player</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
