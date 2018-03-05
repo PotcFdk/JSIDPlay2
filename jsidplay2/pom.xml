@@ -463,6 +463,7 @@
 								<include>libsidplay/**/*.class</include>
 								<include>libsidplay/**/*.bin</include>
 								<include>libsidutils/*</include>
+								<include>libsidutils/reloc65/*</include>
 								<include>libsidutils/sidid/*</include>
 								<include>libsidutils/siddatabase/*</include>
 								<include>libsidutils/stil/*</include>
