@@ -456,7 +456,6 @@
 						</goals>
 						<configuration>
 							<includes>
-								<include>netsiddev/**/*.class</include>
 								<include>netsiddev_builder/**/*.class</include>
 								<include>resid_builder/**/*.class</include>
 								<include>hardsid_builder/**/*</include>
