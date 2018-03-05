@@ -267,7 +267,19 @@ public interface ISidPlay2Section {
 	int getFadeInTime();
 
 	/**
+	 * Setter of Fade-in start time in seconds, audio volume should be increased to the
+	 * max.
+	 */
+	void setFadeInTime(int fadeInTime);
+	
+	/**
 	 * Fade-out start time in seconds, audio volume should be lowered to zero.
 	 */
 	int getFadeOutTime();
+
+	/**
+	 * Setter of Fade-out start time in seconds, audio volume should be lowered to zero.
+	 */
+	void setFadeOutTime(int fadeOutTime);
+
 }

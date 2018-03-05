@@ -78,10 +78,22 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
+	public void setFadeInTime(int fadeInTime) {
+		iniReader.setProperty("SIDPlay2", "Fade In Time",
+				String.format("%02d:%02d", (fadeInTime / 60), (fadeInTime % 60)));
+	}
+	
+	@Override
 	public int getFadeOutTime() {
 		return iniReader.getPropertyTime("SIDPlay2", "Fade Out Time", DEFAULT_FADE_OUT_TIME);
 	}
 
+	@Override
+	public void setFadeOutTime(int fadeOutTime) {
+		iniReader.setProperty("SIDPlay2", "Fade Out Time",
+				String.format("%02d:%02d", (fadeOutTime / 60), (fadeOutTime % 60)));
+	}
+	
 	@Override
 	public boolean isLoop() {
 		return iniReader.getPropertyBool("SIDPlay2", "Loop", DEFAULT_LOOP);
