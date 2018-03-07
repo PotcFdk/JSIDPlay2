@@ -14,11 +14,14 @@
 package libsidutils.prg2tap;
 
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import libsidutils.assembler.KickAssembler;
@@ -28,6 +31,21 @@ public class PRG2TAP {
 	private static final String TURBO_HEADER_ASM = "/libsidutils/prg2tap/PRG2TAP_TurboHeader.asm";
 	private static final String TURBO_DATA_ASM = "/libsidutils/prg2tap/PRG2TAP_TurboData.asm";
 	private static final String SLOW_HEADER_ASM = "/libsidutils/prg2tap/PRG2TAP_SlowHeader.asm";
+
+	private static final String TURBO_HEADER_BIN = "/libsidutils/prg2tap/PRG2TAP_TurboHeader.bin";
+	private static final String TURBO_DATA_BIN = "/libsidutils/prg2tap/PRG2TAP_TurboData.bin";
+	private static final String SLOW_HEADER_BIN = "/libsidutils/prg2tap/PRG2TAP_SlowHeader.bin";
+
+	protected static boolean USE_KICKASSEMBLER;
+
+	static {
+		// assemble PSID driver code at runtime (optionally in the classpath)
+		try {
+			Class.forName("kickass.KickAssembler");
+			USE_KICKASSEMBLER = true;
+		} catch (ClassNotFoundException e) {
+		}
+	}
 
 	static final int MAX_NAME_LENGTH = 16;
 	private static final int TAP_HEADER_SIZE = 20;
@@ -59,39 +77,69 @@ public class PRG2TAP {
 	 */
 	public void add(final PRG2TAPProgram program) throws IOException {
 		assert (out != null);
-		HashMap<String, String> globals;
-		InputStream asm;
 		if (turboTape) {
-			globals = new HashMap<String, String>();
-			globals.put("name", getName(program));
-			globals.put("threshold", String.valueOf(threshold));
-			asm = PRG2TAP.class.getResourceAsStream(TURBO_HEADER_ASM);
-			byte[] header = assembler.assemble(TURBO_HEADER_ASM, asm, globals);
-
-			globals = new HashMap<String, String>();
-			asm = PRG2TAP.class.getResourceAsStream(TURBO_DATA_ASM);
-			byte[] data = assembler.assemble(TURBO_DATA_ASM, asm, globals);
-
-			slowConvert(header, 2, header.length - 2, 20000);
-			addSilence(200000);
-			slowConvert(data, 2, data.length - 2, 5000);
-			addSilence(1000000);
+			{
+				HashMap<String, String> globals = new HashMap<String, String>();
+				globals.put("name", getName(program));
+				globals.put("threshold", String.valueOf(threshold));
+				byte[] header = compile(globals, TURBO_HEADER_ASM, TURBO_HEADER_BIN);
+				if (!USE_KICKASSEMBLER) {
+					for (int i = 0; i < MAX_NAME_LENGTH; i++) {
+						header[5 + i] = program.getName()[i];
+					}
+					header[140] = (byte) (threshold & 255);
+					header[145] = (byte) (threshold >> 8);
+				}
+				slowConvert(header, 0, header.length, 20000);
+				addSilence(200000);
+			}
+			{
+				HashMap<String, String> globals = new HashMap<String, String>();
+				byte[] data = compile(globals, TURBO_DATA_ASM, TURBO_DATA_BIN);
+				slowConvert(data, 0, data.length, 5000);
+				addSilence(1000000);
+			}
 			turbotapeConvert(program);
 		} else {
-			final byte[] data = program.getMem();
 			final int start = program.getStartAddr();
 			final int end = start + program.getLength();
+			{
+				HashMap<String, String> globals = new HashMap<String, String>();
+				globals.put("name", getName(program));
+				globals.put("start", String.valueOf(start));
+				globals.put("end", String.valueOf(end));
+				byte[] header = compile(globals, SLOW_HEADER_ASM, SLOW_HEADER_BIN);
+				if (!USE_KICKASSEMBLER) {
+					header[1] = (byte) (program.getStartAddr() & 0xFF);
+					header[2] = (byte) ((program.getStartAddr() >> 8) & 0xFF);
+					header[3] = (byte) ((program.getStartAddr() + program.getLength()) & 0xFF);
+					header[4] = (byte) (((program.getStartAddr() + program.getLength()) >> 8) & 0xFF);
+					for (int i = 0; i < MAX_NAME_LENGTH; i++) {
+						header[5 + i] = program.getName()[i];
+					}
+				}
+				slowConvert(header, 0, header.length, 20000);
+				addSilence(200000);
+			}
+			slowConvert(program.getMem(), start, end - start, 5000);
+		}
+	}
 
-			globals = new HashMap<String, String>();
-			globals.put("name", getName(program));
-			globals.put("start", String.valueOf(start));
-			globals.put("end", String.valueOf(end));
-			asm = PRG2TAP.class.getResourceAsStream(SLOW_HEADER_ASM);
-			byte[] header = assembler.assemble(SLOW_HEADER_ASM, asm, globals);
-
-			slowConvert(header, 2, header.length - 2, 20000);
-			addSilence(200000);
-			slowConvert(data, start, end - start, 5000);
+	private byte[] compile(HashMap<String, String> globals, String resource, String compiledBin) {
+		if (USE_KICKASSEMBLER) {
+			InputStream asm = PRG2TAP.class.getResourceAsStream(resource);
+			byte[] result = assembler.assemble(resource, asm, globals);
+			return Arrays.copyOfRange(result, 2, result.length);
+		} else {
+			byte[] DRIVER;
+			try (DataInputStream is = new DataInputStream(PRG2TAP.class.getResourceAsStream(compiledBin))) {
+				URL url = PRG2TAP.class.getResource(compiledBin);
+				DRIVER = new byte[url.openConnection().getContentLength()];
+				is.readFully(DRIVER);
+			} catch (IOException e) {
+				throw new RuntimeException("Load failed for resource: " + compiledBin);
+			}
+			return DRIVER;
 		}
 	}
 
