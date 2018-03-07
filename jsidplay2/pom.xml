@@ -458,10 +458,12 @@
 							<includes>
 								<include>netsiddev_builder/**/*.class</include>
 								<include>resid_builder/**/*.class</include>
-								<include>hardsid_builder/**/*</include>
+								<include>hardsid_builder/**/*.class</include>
 								<include>libsidplay/**/*.class</include>
 								<include>libsidplay/**/*.bin</include>
-								<include>libsidutils/*</include>
+								<include>libsidutils/*.class</include>
+								<include>libsidutils/prg2tap/*.class</include>
+								<include>libsidutils/prg2tap/*.bin</include>
 								<include>libsidutils/reloc65/*</include>
 								<include>libsidutils/sidid/*</include>
 								<include>libsidutils/siddatabase/*</include>
