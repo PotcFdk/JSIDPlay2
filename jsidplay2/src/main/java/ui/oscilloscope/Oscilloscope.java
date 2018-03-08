@@ -154,13 +154,7 @@ public class Oscilloscope extends Tab implements UIPart {
 
 	@Override
 	public void doClose() {
-		final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
-		ctx.scheduleThreadSafe(new Event("Cancel Oscilloscope") {
-			@Override
-			public void event() throws InterruptedException {
-				ctx.cancel(highResolutionEvent);
-			}
-		});
+		util.getPlayer().getC64().getEventScheduler().cancel(highResolutionEvent);
 		stopOscilloscope();
 		util.getPlayer().stateProperty().removeListener(listener);
 	}
