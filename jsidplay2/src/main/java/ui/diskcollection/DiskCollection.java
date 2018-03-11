@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
 import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -297,7 +298,7 @@ public class DiskCollection extends Tab implements UIPart {
 	private Image createImage(final File file) {
 		File screenshot = findScreenshot(file);
 		if (screenshot != null && screenshot.exists()) {
-			try (InputStream is = ZipFileUtils.newFileInputStream(screenshot)) {
+			try (InputStream is = new TFileInputStream(screenshot)) {
 				return new Image(is);
 			} catch (IOException e) {
 				e.printStackTrace();

@@ -31,6 +31,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.SingularAttribute;
 
 import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -68,7 +69,6 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
-import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
@@ -585,7 +585,7 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void setSTIL(String hvscRoot) throws IOException, NoSuchFieldException, IllegalAccessException {
-		try (InputStream input = ZipFileUtils.newFileInputStream(ZipFileUtils.newFile(hvscRoot, STIL.STIL_FILE))) {
+		try (InputStream input = new TFileInputStream(new TFile(hvscRoot, STIL.STIL_FILE))) {
 			util.getPlayer().setSTIL(new STIL(input));
 		}
 	}
