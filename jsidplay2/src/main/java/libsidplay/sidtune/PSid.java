@@ -124,7 +124,7 @@ class PSid extends Prg {
 		private byte[] id = new byte[4];
 
 		/**
-		 * 0x0001, 0x0002 or 0x0003 or 0x0004
+		 * 0x0001, 0x0002, 0x0003 or 0x0004
 		 */
 		private short version;
 
@@ -222,16 +222,27 @@ class PSid extends Prg {
 
 	}
 
-	private static final String PSIDDRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
+	private static final String PSID_DRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
+
+	private static final String PSID_DRIVER_BIN = "/libsidplay/sidtune/psiddriver.bin";
 
 	//
 	// PSID_SPECIFIC and PSID_BASIC are mutually exclusive
 	//
 
+	/**
+	 * No more supported: MUS specific PSID files
+	 */
 	private static final int PSID_MUS = 1 << 0;
 
+	/**
+	 * No more supported: PSID specific PSID files
+	 */
 	private static final int PSID_SPECIFIC = 1 << 1;
 
+	/**
+	 * Compatibility: PSID BASIC files are handled like RSID_BASIC files
+	 */
 	private static final int PSID_BASIC = 1 << 1;
 
 	/**
@@ -274,24 +285,23 @@ class PSid extends Prg {
 				String.valueOf(
 						info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3 ? 1
 								: 1 << MOS6510.SR_INTERRUPT));
-		InputStream asm = PSid.class.getResourceAsStream(PSIDDRIVER_ASM);
+		InputStream asm = PSid.class.getResourceAsStream(PSID_DRIVER_ASM);
 		KickAssembler assembler = new KickAssembler();
-		byte[] driver = assembler.assemble(PSIDDRIVER_ASM, asm, globals);
+		byte[] driver = assembler.assemble(PSID_DRIVER_ASM, asm, globals);
 		info.determinedDriverLength = driver.length - 2;
 		System.arraycopy(driver, 2, mem, info.determinedDriverAddr, info.determinedDriverLength);
 		Integer start = assembler.getLabels().get("start");
 		if (start == null) {
-			throw new RuntimeException("Label start not found in " + PSIDDRIVER_ASM);
+			throw new RuntimeException("Label start not found in " + PSID_DRIVER_ASM);
 		}
 		if ((info.determinedDriverLength + 255) >> 8 != 1) {
-			throw new RuntimeException("Driver must not be greater than one block! " + PSIDDRIVER_ASM);
+			throw new RuntimeException("Driver must not be greater than one block! " + PSID_DRIVER_ASM);
 		}
 		return start;
 	}
 
 	private int relocateAndInstallDriver(final byte[] ram) {
 		byte[] PSID_DRIVER;
-		final String PSID_DRIVER_BIN = "/libsidplay/sidtune/psiddriver.bin";
 		try (DataInputStream is = new DataInputStream(PSid.class.getResourceAsStream(PSID_DRIVER_BIN))) {
 			URL url = PSid.class.getResource(PSID_DRIVER_BIN);
 			PSID_DRIVER = new byte[url.openConnection().getContentLength()];
@@ -331,14 +341,7 @@ class PSid extends Prg {
 
 		// Tell C64 about song
 		ram[pos++] = (byte) (info.currentSong - 1);
-		if (songSpeed[info.currentSong - 1] == Speed.VBI) {
-			ram[pos] = 0;
-		} else {
-			// SIDTUNE_SPEED_CIA_1A
-			ram[pos] = 1;
-		}
-
-		pos++;
+		ram[pos++] = (byte) (songSpeed[info.currentSong - 1] == Speed.VBI ? 0 : 1);
 		ram[pos++] = (byte) (info.initAddr & 0xff);
 		ram[pos++] = (byte) (info.initAddr >> 8);
 		ram[pos++] = (byte) (info.playAddr & 0xff);
@@ -349,8 +352,7 @@ class PSid extends Prg {
 		ram[pos++] = (byte) (powerOnDelay >> 8);
 		ram[pos++] = (byte) info.iomap(info.initAddr);
 		ram[pos++] = (byte) info.iomap(info.playAddr);
-		ram[pos + 1] = ram[pos + 0] = ram[0x02a6]; // PAL/NTSC flag
-		pos++;
+		ram[pos++] = ram[0x02a6]; // Flag: TV Standard: $00 = NTSC, $01 = PAL.
 
 		// Add the required tune speed
 		switch (info.clockSpeed) {
@@ -360,8 +362,8 @@ class PSid extends Prg {
 		case NTSC:
 			ram[pos++] = 0;
 			break;
-		default: // UNKNOWN or ANY
-			pos++;
+		default: // UNKNOWN or ANY? use clock speed of C64 system
+			ram[pos++] = ram[0x02a6];
 			break;
 		}
 
@@ -378,7 +380,6 @@ class PSid extends Prg {
 	/**
 	 * Common address resolution procedure
 	 *
-	 * @return True if the addresses could be resolved.
 	 * @throws SidTuneError
 	 */
 	private void resolveAddrs() throws SidTuneError {
