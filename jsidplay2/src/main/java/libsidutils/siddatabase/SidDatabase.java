@@ -1,17 +1,14 @@
 package libsidutils.siddatabase;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
-import de.schlichtherle.truezip.file.TFile;
 import libsidplay.sidtune.MD5Method;
 import libsidplay.sidtune.SidTune;
+import libsidutils.ZipFileUtils;
 import sidplay.ini.IniReader;
 
 /**
@@ -31,48 +28,24 @@ public class SidDatabase {
 	 */
 	private static final String SONGLENGTHS_FILE_MD5 = "DOCUMENTS/Songlengths.md5";
 
-	private static Constructor<?> TFILE_IS = null;
-
-	static {
-		// support for files contained in a ZIP (optionally in the classpath)
-		try {
-			TFILE_IS = (Constructor<?>) Class.forName("de.schlichtherle.truezip.file.TFileInputStream")
-					.getConstructor(File.class);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-		}
-	}
-
 	private MD5Method version;
 	private final IniReader database;
 
 	public SidDatabase(final String hvscRoot) throws IOException {
 		try (InputStream is = getInputStreamAndSetVersion(hvscRoot)) {
 			database = new IniReader(is);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-			throw new IOException(e.getMessage());
 		}
 	}
 
-	private InputStream getInputStreamAndSetVersion(String hvscRoot)
-			throws InstantiationException, IllegalAccessException, InvocationTargetException, FileNotFoundException {
-		File file = getFile(hvscRoot, SONGLENGTHS_FILE_TXT);
+	private InputStream getInputStreamAndSetVersion(String hvscRoot) throws FileNotFoundException {
+		File file = ZipFileUtils.newFile(hvscRoot, SONGLENGTHS_FILE_TXT);
 		version = MD5Method.MD5_PSID_HEADER;
-		File songLengthFileMd5 = getFile(hvscRoot, SONGLENGTHS_FILE_MD5);
+		File songLengthFileMd5 = ZipFileUtils.newFile(hvscRoot, SONGLENGTHS_FILE_MD5);
 		if (songLengthFileMd5.exists() && songLengthFileMd5.canRead()) {
 			file = songLengthFileMd5;
 			version = MD5Method.MD5_CONTENTS;
 		}
-		return getInputStream(file);
-	}
-
-	private InputStream getInputStream(File file)
-			throws InstantiationException, IllegalAccessException, InvocationTargetException, FileNotFoundException {
-		return TFILE_IS != null ? (InputStream) TFILE_IS.newInstance(file) : new FileInputStream(file);
-	}
-
-	private File getFile(String hvscRoot, String songLengthFilename) {
-		return TFILE_IS != null ? new TFile(hvscRoot, songLengthFilename) : new File(hvscRoot, songLengthFilename);
+		return ZipFileUtils.newFileInputStream(file);
 	}
 
 	/**

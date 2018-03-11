@@ -19,18 +19,15 @@ import static libsidplay.common.SIDChip.DEF_BASE_ADDRESS;
 import static libsidplay.sidtune.SidTune.Speed.CIA_1A;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.config.IEmulationSection;
+import libsidutils.ZipFileUtils;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 
 /**
@@ -47,17 +44,9 @@ public abstract class SidTune {
 	 */
 	protected static final int RESET_INIT_DELAY = 2500000;
 
-	private static Constructor<?> TFILE_IS = null;
-
 	protected static boolean USE_KICKASSEMBLER;
 
 	static {
-		// support for files contained in a ZIP (optionally in the classpath)
-		try {
-			TFILE_IS = (Constructor<?>) Class.forName("de.schlichtherle.truezip.file.TFileInputStream")
-					.getConstructor(File.class);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-		}
 		// assemble PSID driver code at runtime (optionally in the classpath)
 		try {
 			Class.forName("kickass.KickAssembler");
@@ -225,11 +214,8 @@ public abstract class SidTune {
 	 *             if the file could not be found.
 	 */
 	protected static final byte[] getContents(final File file) throws IOException {
-		try (InputStream is = TFILE_IS != null ? (InputStream) TFILE_IS.newInstance(file) : new FileInputStream(file)) {
+		try (InputStream is = ZipFileUtils.newFileInputStream(file)) {
 			return getContents(is);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-			throw new FileNotFoundException(file.getAbsolutePath());
 		}
 	}
 

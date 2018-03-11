@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
 import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -29,8 +28,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.PathUtils;
 import libsidutils.DesktopIntegration;
+import libsidutils.PathUtils;
+import libsidutils.ZipFileUtils;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.Convenience;
@@ -295,15 +295,13 @@ public class DiskCollection extends Tab implements UIPart {
 	}
 
 	private Image createImage(final File file) {
-		try {
-			File screenshot = findScreenshot(file);
-			if (screenshot != null && screenshot.exists()) {
-				try (TFileInputStream is = new TFileInputStream(screenshot)) {
-					return new Image(is);
-				}
+		File screenshot = findScreenshot(file);
+		if (screenshot != null && screenshot.exists()) {
+			try (InputStream is = ZipFileUtils.newFileInputStream(screenshot)) {
+				return new Image(is);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return null;
 	}
@@ -314,7 +312,8 @@ public class DiskCollection extends Tab implements UIPart {
 			return null;
 		}
 		String parentPath = getType() == DiskCollectionType.HVMEC
-				? file.getParentFile().getPath().replace(HVMEC_DATA, HVMEC_CONTROL) : file.getParentFile().getPath();
+				? file.getParentFile().getPath().replace(HVMEC_DATA, HVMEC_CONTROL)
+				: file.getParentFile().getPath();
 		List<File> parentFiles = PathUtils.getFiles(parentPath, rootItem.getValue(), null);
 		if (parentFiles.size() > 0) {
 			File parentFile = parentFiles.get(parentFiles.size() - 1);
@@ -349,7 +348,7 @@ public class DiskCollection extends Tab implements UIPart {
 		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
 			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
 			File dst = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file.getName()));
-			try (InputStream is = new GZIPInputStream(new TFileInputStream(file))) {
+			try (InputStream is = new GZIPInputStream(ZipFileUtils.newFileInputStream(file))) {
 				if (!dst.exists()) {
 					TFile.cp(is, dst);
 				}

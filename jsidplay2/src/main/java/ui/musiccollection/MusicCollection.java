@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -30,7 +31,6 @@ import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.SingularAttribute;
 
 import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -68,6 +68,7 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
+import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
@@ -127,7 +128,7 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private TableView<TuneInfo> tuneInfoTable;
 	@FXML
-	private TableColumn<TuneInfo,String> nameColumn, valueColumn;
+	private TableColumn<TuneInfo, String> nameColumn, valueColumn;
 	@FXML
 	private TitledPane photographPane;
 	@FXML
@@ -250,7 +251,7 @@ public class MusicCollection extends Tab implements UIPart {
 	@FXML
 	private void initialize() {
 		util.getPlayer().stateProperty().addListener(tuneMatcherListener);
-		tuneInfos = FXCollections.<TuneInfo> observableArrayList();
+		tuneInfos = FXCollections.<TuneInfo>observableArrayList();
 		SortedList<TuneInfo> sortedList = new SortedList<>(tuneInfos);
 		sortedList.comparatorProperty().bind(tuneInfoTable.comparatorProperty());
 		tuneInfoTable.setItems(sortedList);
@@ -258,24 +259,24 @@ public class MusicCollection extends Tab implements UIPart {
 		photographPane.setPrefHeight(Double.MAX_VALUE);
 		nameColumn.prefWidthProperty().bind(tuneInfoTable.widthProperty().multiply(0.4));
 		valueColumn.prefWidthProperty().bind(tuneInfoTable.widthProperty().multiply(0.6));
-		
+
 		searchScope.setConverter(new EnumToString<SearchScope>(util.getBundle()));
-		searchScope.setItems(FXCollections.<SearchScope> observableArrayList(SearchScope.values()));
+		searchScope.setItems(FXCollections.<SearchScope>observableArrayList(SearchScope.values()));
 		searchScope.getSelectionModel().select(SearchScope.FORWARD);
 
 		searchResult.setConverter(new EnumToString<SearchResult>(util.getBundle()));
-		searchResult.setItems(FXCollections.<SearchResult> observableArrayList(SearchResult.values()));
+		searchResult.setItems(FXCollections.<SearchResult>observableArrayList(SearchResult.values()));
 		searchResult.getSelectionModel().select(SearchResult.SHOW_NEXT_MATCH);
 
 		searchCriteria.setConverter(new SearchCriteriaToString(util.getBundle()));
 		searchCriteria.setItems(
-				FXCollections.<SearchCriteria<?, ?>> observableArrayList(SearchCriteria.getSearchableAttributes()));
+				FXCollections.<SearchCriteria<?, ?>>observableArrayList(SearchCriteria.getSearchableAttributes()));
 		searchCriteria.getSelectionModel().select(0);
 
-		comboItems = FXCollections.<Enum<?>> observableArrayList();
+		comboItems = FXCollections.<Enum<?>>observableArrayList();
 		combo.setItems(comboItems);
 
-		currentlyPlayedTreeItems = FXCollections.<TreeItem<File>> observableArrayList();
+		currentlyPlayedTreeItems = FXCollections.<TreeItem<File>>observableArrayList();
 
 		contextMenu.setOnShown(contextMenuEvent);
 
@@ -452,7 +453,8 @@ public class MusicCollection extends Tab implements UIPart {
 	private void doCreateSearchIndex() {
 		Alert alert = new Alert(AlertType.CONFIRMATION, "");
 		alert.setTitle(util.getBundle().getString("CREATE_SEARCH_DATABASE"));
-		alert.getDialogPane().setHeaderText(String.format(util.getBundle().getString("RECREATE_DATABASE"), type.get().toString()));
+		alert.getDialogPane()
+				.setHeaderText(String.format(util.getBundle().getString("RECREATE_DATABASE"), type.get().toString()));
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.isPresent() && result.get() == ButtonType.OK) {
 			startSearch(true);
@@ -566,9 +568,10 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void openErrorDialog(String msg, MusicCollectionType type) {
-		Alert alert = new Alert(AlertType.ERROR,"");
+		Alert alert = new Alert(AlertType.ERROR, "");
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
-		alert.getDialogPane().setHeaderText(String.format(util.getBundle().getString("ERR_CANNOT_CONFIGURE"), type) + msg);
+		alert.getDialogPane()
+				.setHeaderText(String.format(util.getBundle().getString("ERR_CANNOT_CONFIGURE"), type) + msg);
 		alert.showAndWait();
 	}
 
@@ -582,7 +585,7 @@ public class MusicCollection extends Tab implements UIPart {
 	}
 
 	private void setSTIL(String hvscRoot) throws IOException, NoSuchFieldException, IllegalAccessException {
-		try (TFileInputStream input = new TFileInputStream(new TFile(hvscRoot, STIL.STIL_FILE))) {
+		try (InputStream input = ZipFileUtils.newFileInputStream(ZipFileUtils.newFile(hvscRoot, STIL.STIL_FILE))) {
 			util.getPlayer().setSTIL(new STIL(input));
 		}
 	}
@@ -652,7 +655,8 @@ public class MusicCollection extends Tab implements UIPart {
 							e.printStackTrace();
 						}
 					}
-					addFavorite(sidplay2Section, favoritesToAddSearchResult, file);};
+					addFavorite(sidplay2Section, favoritesToAddSearchResult, file);
+				};
 				searchStop = cancelled -> Platform.runLater(() -> enableSearch());
 				break;
 
