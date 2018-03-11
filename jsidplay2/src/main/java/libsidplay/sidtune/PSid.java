@@ -108,7 +108,11 @@ class PSid extends Prg {
 				buffer.putShort(flags);
 				buffer.put(relocStartPage);
 				buffer.put(relocPages);
+			}
+			if (version >= 3) {
 				buffer.put(sidChip2MiddleNybbles);
+			}
+			if (version >= 4) {
 				buffer.put(sidChip3MiddleNybbles);
 			}
 			return buffer.array();
@@ -120,7 +124,7 @@ class PSid extends Prg {
 		private byte[] id = new byte[4];
 
 		/**
-		 * 0x0001, 0x0002 or 0x0003
+		 * 0x0001, 0x0002 or 0x0003 or 0x0004
 		 */
 		private short version;
 
@@ -162,26 +166,23 @@ class PSid extends Prg {
 		private int speed;
 
 		/**
-		 * ASCII strings, 31 characters long and terminated by a trailing zero
-		 * For version 0x0003, all 32 chars can be used without zero
-		 * termination. if less than 32 chars are used then it should be
-		 * terminated with a trailing zero
+		 * ASCII strings, 31 characters long and terminated by a trailing zero For
+		 * version 0x0003, all 32 chars can be used without zero termination. if less
+		 * than 32 chars are used then it should be terminated with a trailing zero
 		 */
 		private byte name[] = new byte[32];
 
 		/**
-		 * ASCII strings, 31 characters long and terminated by a trailing zero
-		 * For version 0x0003, all 32 chars can be used without zero
-		 * termination. if less than 32 chars are used then it should be
-		 * terminated with a trailing zero
+		 * ASCII strings, 31 characters long and terminated by a trailing zero For
+		 * version 0x0003, all 32 chars can be used without zero termination. if less
+		 * than 32 chars are used then it should be terminated with a trailing zero
 		 */
 		private byte author[] = new byte[32];
 
 		/**
-		 * ASCII strings, 31 characters long and terminated by a trailing zero
-		 * For version 0x0003, all 32 chars can be used without zero
-		 * termination. if less than 32 chars are used then it should be
-		 * terminated with a trailing zero
+		 * ASCII strings, 31 characters long and terminated by a trailing zero For
+		 * version 0x0003, all 32 chars can be used without zero termination. if less
+		 * than 32 chars are used then it should be terminated with a trailing zero
 		 */
 		private byte released[] = new byte[32];
 
@@ -201,8 +202,8 @@ class PSid extends Prg {
 		private byte relocPages;
 
 		/**
-		 * only version 0x0002+ reserved for version 0x0002 used in version
-		 * 0x0003 to indicate second SID chip address
+		 * only version 0x0002+ reserved for version 0x0002 used in version 0x0003 to
+		 * indicate second SID chip address
 		 */
 		private byte sidChip2MiddleNybbles;
 
@@ -270,8 +271,9 @@ class PSid extends Prg {
 		globals.put("playIOMap", String.valueOf(info.iomap(info.playAddr)));
 		globals.put("videoMode", String.valueOf(info.clockSpeed == Clock.PAL ? 1 : 0));
 		globals.put("flags",
-				String.valueOf(info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3
-						? 1 : 1 << MOS6510.SR_INTERRUPT));
+				String.valueOf(
+						info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3 ? 1
+								: 1 << MOS6510.SR_INTERRUPT));
 		InputStream asm = PSid.class.getResourceAsStream(PSIDDRIVER_ASM);
 		KickAssembler assembler = new KickAssembler();
 		byte[] driver = assembler.assemble(PSIDDRIVER_ASM, asm, globals);
@@ -309,8 +311,8 @@ class PSid extends Prg {
 
 		if (!(info.playAddr == 0 && info.loadAddr == 0x200)) {
 			/*
-			 * Setting these vectors seems a bit dangerous because we will still
-			 * run for some time
+			 * Setting these vectors seems a bit dangerous because we will still run for
+			 * some time
 			 */
 			ram[0x0314] = reloc_driver[reloc_driverPos + 2]; /* IRQ */
 			ram[0x0315] = reloc_driver[reloc_driverPos + 2 + 1];
@@ -404,9 +406,8 @@ class PSid extends Prg {
 	}
 
 	/**
-	 * Check for valid relocation information, and calculate place for driver.
-	 * The driver is only 1 block long, and we currently make use of this
-	 * knowledge.
+	 * Check for valid relocation information, and calculate place for driver. The
+	 * driver is only 1 block long, and we currently make use of this knowledge.
 	 */
 	protected void findPlaceForDriver() throws SidTuneError {
 		final short startlp = (short) (info.loadAddr >> 8);
@@ -566,7 +567,8 @@ class PSid extends Prg {
 						model2 = model1;
 					}
 				}
-
+			}
+			if (header.version >= 4) {
 				model3 = (header.flags >> 8) & 3;
 
 				/* Handle 3rd SID chip location */
@@ -637,9 +639,9 @@ class PSid extends Prg {
 		try (FileOutputStream fos = new FileOutputStream(name)) {
 			final PHeader header = new PHeader();
 			header.id = "PSID".getBytes(ISO_8859_1);
-			if (info.getSIDChipBase(2) != 0) {
+			if (info.sidChipBase[2] != 0) {
 				header.version = 4;
-			} else if (info.getSIDChipBase(1) != 0) {
+			} else if (info.sidChipBase[1] != 0) {
 				header.version = 3;
 			} else {
 				header.version = 2;
@@ -679,7 +681,7 @@ class PSid extends Prg {
 				String title = descriptionIt.next();
 				String author = descriptionIt.next();
 				String released = descriptionIt.next();
-				if (title.length() == 32 || author.length() == 32 || released.length() == 32) {
+				if (header.version == 2 && title.length() == 32 || author.length() == 32 || released.length() == 32) {
 					header.version = 3;
 				}
 				byte[] titleBytes = title.getBytes(ISO_8859_1);
@@ -697,9 +699,9 @@ class PSid extends Prg {
 			}
 
 			tmpFlags |= info.clockSpeed.ordinal() << 2;
-			tmpFlags |= info.getSIDModel(0).ordinal() << 4;
-			tmpFlags |= info.getSIDModel(1).ordinal() << 6;
-			tmpFlags |= info.getSIDModel(2).ordinal() << 8;
+			tmpFlags |= info.sidModel[0].ordinal() << 4;
+			tmpFlags |= info.sidModel[1].ordinal() << 6;
+			tmpFlags |= info.sidModel[2].ordinal() << 8;
 			header.flags = tmpFlags;
 
 			fos.write(header.getArray());
