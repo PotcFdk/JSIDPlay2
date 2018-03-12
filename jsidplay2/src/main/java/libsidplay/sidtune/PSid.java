@@ -505,7 +505,7 @@ class PSid extends Prg {
 
 		int speed = header.speed;
 
-		if (Arrays.equals(header.id, new byte[] { 'P', 'S', 'I', 'D' })) {
+		if (Arrays.equals(header.id, "PSID".getBytes(ISO_8859_1))) {
 			switch (header.version) {
 			case 1:
 				psid.info.compatibility = Compatibility.PSIDv1;
@@ -525,7 +525,7 @@ class PSid extends Prg {
 			default:
 				throw new SidTuneError("PSID: PSID version must be 1, 2, 3 or 4, now: " + header.version);
 			}
-		} else if (Arrays.equals(header.id, new byte[] { 'R', 'S', 'I', 'D' })) {
+		} else if (Arrays.equals(header.id, "RSID".getBytes(ISO_8859_1))) {
 			if ((header.flags & PSID_BASIC) != 0) {
 				psid.info.compatibility = Compatibility.RSID_BASIC;
 			} else {
@@ -667,10 +667,10 @@ class PSid extends Prg {
 				header.sidChip3MiddleNybbles = (byte) (info.sidChipBase[2] >> 4);
 			}
 			
-			short tmpFlags = 0;
+			header.flags = 0;
 			switch (info.compatibility) {
 			case RSID_BASIC:
-				tmpFlags |= PSID_BASIC;
+				header.flags |= PSID_BASIC;
 				//$FALL-THROUGH$
 
 			case RSIDv2:
@@ -709,11 +709,10 @@ class PSid extends Prg {
 				}
 			}
 
-			tmpFlags |= info.clockSpeed.ordinal() << 2;
-			tmpFlags |= info.sidModel[0].ordinal() << 4;
-			tmpFlags |= info.sidModel[1].ordinal() << 6;
-			tmpFlags |= info.sidModel[2].ordinal() << 8;
-			header.flags = tmpFlags;
+			header.flags |= info.clockSpeed.ordinal() << 2;
+			header.flags |= info.sidModel[0].ordinal() << 4;
+			header.flags |= info.sidModel[1].ordinal() << 6;
+			header.flags |= info.sidModel[2].ordinal() << 8;
 
 			fos.write(header.getArray());
 
