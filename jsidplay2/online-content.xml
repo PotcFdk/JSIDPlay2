@@ -134,14 +134,14 @@
 		</foreach>
 		<!-- sign all jars using the SAME certificate -->
 		<exec executable="${java.home}/bin/keytool" dir="${webstart_dir}" failonerror="true">
-			<arg line="-selfcert -genkey -alias jsidplay2 -storepass jsidplay2 -keypass jsidplay2 -keystore jsidplay2.jks" />
+			<arg line="-selfcert -genkey -storetype pkcs12 -alias jsidplay2 -storepass jsidplay2 -keypass jsidplay2 -keystore jsidplay2.pfx" />
 			<arg value="-dname" />
 			<arg value="cn=${project.organization.name}, ou=${project.name}, o=Open Source, l=Berlin, st=Berlin, c=DE" />
 		</exec>
-		<signjar destdir="${webstart_dir}" keyStore="${webstart_dir}/jsidplay2.jks" storePass="jsidplay2" alias="jsidplay2" keyPass="jsidplay2">
+		<signjar destdir="${webstart_dir}" keyStore="${webstart_dir}/jsidplay2.pfx" storePass="jsidplay2" alias="jsidplay2" keyPass="jsidplay2">
 			<fileset dir="${webstart_dir}" includes="*.jar" />
 		</signjar>
-		<delete file="${webstart_dir}/jsidplay2.jks" />
+		<delete file="${webstart_dir}/jsidplay2.pfx" />
 		<!-- create deployment types (webstart, native bundle, etc.) -->
 		<fx:deploy embeddedWidth="100%" embeddedHeight="100%" width="${javafx.run.width}" height="${javafx.run.height}" nativeBundles="none" outdir="${webstart_dir}" outfile="${project.name}" embedjnlp="true" updatemode="background">
 			<fx:application name="${project.name}" mainClass="${javafx.main.class}" />
