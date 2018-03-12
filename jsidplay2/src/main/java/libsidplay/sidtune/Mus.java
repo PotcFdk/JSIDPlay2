@@ -34,8 +34,10 @@ import libsidutils.assembler.KickAssembler;
 
 class Mus extends PSid {
 
-	protected static String MUSDRIVER1_ASM = "/libsidplay/sidtune/musdriver1.asm";
-	protected static String MUSDRIVER2_ASM = "/libsidplay/sidtune/musdriver2.asm";
+	private static final String MUSDRIVER1_ASM = "/libsidplay/sidtune/musdriver1.asm";
+	private static final String MUS_DRIVER1_BIN = "/libsidplay/sidtune/musdriver1.bin";
+	private static final String MUSDRIVER2_ASM = "/libsidplay/sidtune/musdriver2.asm";
+	private static final String MUS_DRIVER2_BIN = "/libsidplay/sidtune/musdriver2.bin";
 
 	/** Known SID names. MUS loader scans for these. */
 	private static final List<String> DEFAULT_MUS_NAMES = Arrays.asList(".mus", ".str", "_a.mus", "_b.mus");
@@ -243,7 +245,6 @@ class Mus extends PSid {
 	private void relocateAndInstallMusPlayers(byte[] c64buf) {
 		// Install MUS player #1
 		byte[] MUS_DRIVER1;
-		final String MUS_DRIVER1_BIN = "/libsidplay/sidtune/musdriver1.bin";
 		try (DataInputStream is = new DataInputStream(Mus.class.getResourceAsStream(MUS_DRIVER1_BIN))) {
 			URL url = Mus.class.getResource(MUS_DRIVER1_BIN);
 			MUS_DRIVER1 = new byte[url.openConnection().getContentLength()];
@@ -260,7 +261,6 @@ class Mus extends PSid {
 		if (info.getSIDChipBase(1) != 0) {
 			// Install MUS player #2
 			byte[] MUS_DRIVER2;
-			final String MUS_DRIVER2_BIN = "/libsidplay/sidtune/musdriver2.bin";
 			try (DataInputStream is = new DataInputStream(Mus.class.getResourceAsStream(MUS_DRIVER2_BIN))) {
 				URL url = Mus.class.getResource(MUS_DRIVER2_BIN);
 				MUS_DRIVER2 = new byte[url.openConnection().getContentLength()];

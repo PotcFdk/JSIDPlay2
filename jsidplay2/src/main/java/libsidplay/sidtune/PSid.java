@@ -70,18 +70,20 @@ class PSid extends Prg {
 			songs = buffer.getShort();
 			start = buffer.getShort();
 			speed = buffer.getInt();
-
 			buffer.get(name);
 			buffer.get(author);
 			buffer.get(released);
-
 			if (version >= 2) {
 				flags = buffer.getShort();
 				/* 2B */
 				relocStartPage = buffer.get();
 				relocPages = buffer.get();
+			}
+			if (version >= 3) {
 				/* 2SID */
 				sidChip2MiddleNybbles = buffer.get();
+			}
+			if (version >= 4) {
 				/* 3SID */
 				sidChip3MiddleNybbles = buffer.get();
 			}
@@ -281,10 +283,11 @@ class PSid extends Prg {
 		globals.put("initIOMap", String.valueOf(info.iomap(info.initAddr)));
 		globals.put("playIOMap", String.valueOf(info.iomap(info.playAddr)));
 		globals.put("videoMode", String.valueOf(info.clockSpeed == Clock.PAL ? 1 : 0));
-		globals.put("flags",
-				String.valueOf(
-						info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3 ? 1
-								: 1 << MOS6510.SR_INTERRUPT));
+		if (info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3) {
+			globals.put("flags", String.valueOf(1));
+		} else {
+			globals.put("flags", String.valueOf(1 << MOS6510.SR_INTERRUPT));
+		}
 		InputStream asm = PSid.class.getResourceAsStream(PSID_DRIVER_ASM);
 		KickAssembler assembler = new KickAssembler();
 		byte[] driver = assembler.assemble(PSID_DRIVER_ASM, asm, globals);
@@ -326,8 +329,8 @@ class PSid extends Prg {
 			 */
 			ram[0x0314] = reloc_driver[reloc_driverPos + 2]; /* IRQ */
 			ram[0x0315] = reloc_driver[reloc_driverPos + 2 + 1];
-			if (info.compatibility != SidTune.Compatibility.RSIDv2
-					&& info.compatibility != SidTune.Compatibility.RSIDv3) {
+			if (!(info.compatibility == SidTune.Compatibility.RSIDv2
+					|| info.compatibility == SidTune.Compatibility.RSIDv3)) {
 				ram[0x0316] = reloc_driver[reloc_driverPos + 2 + 2]; /* Break */
 				ram[0x0317] = reloc_driver[reloc_driverPos + 2 + 3];
 				ram[0x0318] = reloc_driver[reloc_driverPos + 2 + 4]; /* NMI */
@@ -556,30 +559,30 @@ class PSid extends Prg {
 			psid.info.relocStartPage = (short) (header.relocStartPage & 0xff);
 			psid.info.relocPages = (short) (header.relocPages & 0xff);
 
-			if (header.version >= 3) {
-				model2 = (header.flags >> 6) & 3;
-
-				/* Handle 2nd SID chip location */
-				int sid2loc = 0xd000 | (header.sidChip2MiddleNybbles & 0xff) << 4;
-				if (((sid2loc >= 0xd420 && sid2loc < 0xd800) || sid2loc >= 0xde00) && (sid2loc & 0x10) == 0) {
-					psid.info.sidChipBase[1] = sid2loc;
-					if (model2 == 0) {
-						// If Unknown then SID will be same SID as the first SID
-						model2 = model1;
-					}
+		}
+		if (header.version >= 3) {
+			model2 = (header.flags >> 6) & 3;
+			
+			/* Handle 2nd SID chip location */
+			int sid2loc = 0xd000 | (header.sidChip2MiddleNybbles & 0xff) << 4;
+			if (((sid2loc >= 0xd420 && sid2loc < 0xd800) || sid2loc >= 0xde00) && (sid2loc & 0x10) == 0) {
+				psid.info.sidChipBase[1] = sid2loc;
+				if (model2 == 0) {
+					// If Unknown then SID will be same SID as the first SID
+					model2 = model1;
 				}
 			}
-			if (header.version >= 4) {
-				model3 = (header.flags >> 8) & 3;
-
-				/* Handle 3rd SID chip location */
-				int sid3loc = 0xd000 | (header.sidChip3MiddleNybbles & 0xff) << 4;
-				if (((sid3loc >= 0xd420 && sid3loc < 0xd800) || sid3loc >= 0xde00) && (sid3loc & 0x10) == 0) {
-					psid.info.sidChipBase[2] = sid3loc;
-					if (model3 == 0) {
-						// If Unknown then SID will be same SID as the first SID
-						model3 = model1;
-					}
+		}
+		if (header.version >= 4) {
+			model3 = (header.flags >> 8) & 3;
+			
+			/* Handle 3rd SID chip location */
+			int sid3loc = 0xd000 | (header.sidChip3MiddleNybbles & 0xff) << 4;
+			if (((sid3loc >= 0xd420 && sid3loc < 0xd800) || sid3loc >= 0xde00) && (sid3loc & 0x10) == 0) {
+				psid.info.sidChipBase[2] = sid3loc;
+				if (model3 == 0) {
+					// If Unknown then SID will be same SID as the first SID
+					model3 = model1;
 				}
 			}
 		}
@@ -657,6 +660,13 @@ class PSid extends Prg {
 			header.relocStartPage = (byte) info.relocStartPage;
 			header.relocPages = (byte) info.relocPages;
 
+			if (info.sidChipBase[1] != 0) {
+				header.sidChip2MiddleNybbles = (byte) (info.sidChipBase[1] >> 4);
+			}
+			if (info.sidChipBase[2] != 0) {
+				header.sidChip3MiddleNybbles = (byte) (info.sidChipBase[2] >> 4);
+			}
+			
 			short tmpFlags = 0;
 			switch (info.compatibility) {
 			case RSID_BASIC:

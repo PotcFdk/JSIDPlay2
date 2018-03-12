@@ -1,5 +1,6 @@
 package ui.menubar;
 
+import static libsidplay.sidtune.SidTune.RESET;
 import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT;
 import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT_MINIMIZED;
 
@@ -121,7 +122,7 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	protected RadioMenuItem fastForward, normalSpeed, c1541, c1541_II, neverExtend, askExtend, accessExtend;
 	@FXML
-	protected MenuItem previous, next;
+	protected MenuItem save, previous, next;
 
 	@FXML
 	protected Button previous2, next2, nextFavorite;
@@ -140,7 +141,7 @@ public class MenuBar extends VBox implements UIPart {
 		public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
 			SidTune sidTune = util.getPlayer().getTune();
 			Platform.runLater(() -> {
-				nextFavoriteDisabledState.set(sidTune == SidTune.RESET || newValue == State.QUIT);
+				nextFavoriteDisabledState.set(sidTune == RESET || newValue == State.QUIT);
 				if (newValue == State.START) {
 					setCurrentTrack(sidTune);
 					updatePlayerButtons(util.getPlayer().getPlayList());
@@ -149,7 +150,7 @@ public class MenuBar extends VBox implements UIPart {
 					boolean doNotSwitch = selectedItem != null
 							&& (MusicCollection.class.isAssignableFrom(selectedItem.getClass())
 									|| Favorites.class.isAssignableFrom(selectedItem.getClass()));
-					if (sidTune == SidTune.RESET || (!MP3Tune.class.isAssignableFrom(sidTune.getClass())
+					if (sidTune == RESET || (!MP3Tune.class.isAssignableFrom(sidTune.getClass())
 							&& sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
 						video();
 					}
@@ -275,6 +276,23 @@ public class MenuBar extends VBox implements UIPart {
 	}
 
 	@FXML
+	private void save() {
+		final FileChooser fileDialog = new FileChooser();
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.getExtensionFilters()
+				.add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
+		final File file = fileDialog.showSaveDialog(getScene().getWindow());
+		if (file != null) {
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			try {
+				util.getPlayer().getTune().save(file.getAbsolutePath());
+			} catch (IOException e) {
+				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
+			}
+		}
+	}
+
+	@FXML
 	private void playVideo() {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
@@ -296,7 +314,7 @@ public class MenuBar extends VBox implements UIPart {
 
 	@FXML
 	private void reset() {
-		playTune(SidTune.RESET);
+		playTune(RESET);
 	}
 
 	@FXML
@@ -966,7 +984,7 @@ public class MenuBar extends VBox implements UIPart {
 		if (file != null) {
 			try {
 				util.getPlayer().insertCartridge(type, file);
-				util.getPlayer().play(SidTune.RESET);
+				util.getPlayer().play(RESET);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format("Cannot insert file '%s' as cartridge of type '%s'.",
 						file.getAbsolutePath(), type.name()));
@@ -977,7 +995,7 @@ public class MenuBar extends VBox implements UIPart {
 	private void insertCartridge(CartridgeType type, int sizeKB) {
 		try {
 			util.getPlayer().insertCartridge(type, sizeKB);
-			util.getPlayer().play(SidTune.RESET);
+			util.getPlayer().play(RESET);
 		} catch (IOException | SidTuneError ex) {
 			System.err.println(
 					String.format("Cannot insert cartridge of type '%s' and size '%d'KB.", type.name(), sizeKB));
@@ -1028,6 +1046,8 @@ public class MenuBar extends VBox implements UIPart {
 		next.setText(String.format(util.getBundle().getString("NEXT2") + " (%d/%d)", playList.getNext(),
 				playList.getLength()));
 		next2ToolTip.setText(next.getText());
+		
+		save.setDisable(util.getPlayer().getTune() == RESET);
 	}
 
 	private void playNextRandomHVSC() {
@@ -1048,7 +1068,7 @@ public class MenuBar extends VBox implements UIPart {
 
 	private void setCurrentTrack(SidTune sidTune) {
 		StringBuilder trackInfo = new StringBuilder();
-		if (sidTune != SidTune.RESET) {
+		if (sidTune != RESET) {
 			SidTuneInfo info = sidTune.getInfo();
 			Iterator<String> detail = info.getInfoString().iterator();
 			if (detail.hasNext()) {

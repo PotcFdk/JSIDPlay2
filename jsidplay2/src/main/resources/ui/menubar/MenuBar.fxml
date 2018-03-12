@@ -44,6 +44,12 @@
 									control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
 							</accelerator>
 						</MenuItem>
+						<MenuItem text="%SAVE" onAction="#save" fx:id="save">
+							<accelerator>
+								<KeyCodeCombination alt="UP" code="S"
+									control="DOWN" meta="UP" shift="UP" shortcut="DOWN" />
+							</accelerator>
+						</MenuItem>
 						<MenuItem text="%RESET" onAction="#reset">
 							<accelerator>
 								<KeyCodeCombination alt="UP" code="R"
