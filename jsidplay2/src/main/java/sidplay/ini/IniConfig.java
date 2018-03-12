@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,23 +142,17 @@ public class IniConfig implements IConfig {
 	 * @return the absolute path name of the INI file to use
 	 */
 	private static File getINIPath(boolean createIfNotExists) {
-		try {
-			File configPlace = null;
-			for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-				configPlace = new File(s, FILE_NAME);
-				if (configPlace.exists()) {
-					return configPlace;
-				}
+		File configPlace = null;
+		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			configPlace = new File(s, FILE_NAME);
+			if (configPlace.exists()) {
+				return configPlace;
 			}
-			if (createIfNotExists) {
-				return new File(System.getProperty("user.home"), FILE_NAME);
-			}
-			return configPlace;
-		} catch (final AccessControlException e) {
-			// No external config file in the ui version
-			return null;
 		}
-
+		if (createIfNotExists) {
+			return new File(System.getProperty("user.home"), FILE_NAME);
+		}
+		return configPlace;
 	}
 
 	/**

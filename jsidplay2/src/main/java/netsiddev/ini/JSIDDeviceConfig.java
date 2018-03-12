@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -168,24 +167,18 @@ public class JSIDDeviceConfig {
 	 * @return the absolute path name of the INI file to use
 	 */
 	private File getINIPath() {
-		try {
-			File configPlace = null;
-			for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-				if (s == null) {
-					continue;
-				}
-
-				configPlace = new File(s, FILE_NAME);
-				if (configPlace.exists()) {
-					return configPlace;
-				}
+		File configPlace = null;
+		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			if (s == null) {
+				continue;
 			}
-			return configPlace;
-		} catch (final AccessControlException e) {
-			// No external config file in the ui version
-			return null;
-		}
 
+			configPlace = new File(s, FILE_NAME);
+			if (configPlace.exists()) {
+				return configPlace;
+			}
+		}
+		return configPlace;
 	}
 
 	/**

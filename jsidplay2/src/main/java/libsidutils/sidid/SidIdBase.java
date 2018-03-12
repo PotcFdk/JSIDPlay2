@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.AccessControlException;
 
 public class SidIdBase {
 
@@ -90,17 +89,13 @@ public class SidIdBase {
 	 * @return the configuration file or null (not found)
 	 */
 	private File getLocation(String fname) {
-		try {
-			final String[] paths = new String[] { "user.dir", "user.home" };
-			for (final String path : paths) {
-				File sidIdFile;
-				sidIdFile = locate(path, fname);
-				if (sidIdFile.exists()) {
-					return sidIdFile;
-				}
+		final String[] paths = new String[] { "user.dir", "user.home" };
+		for (final String path : paths) {
+			File sidIdFile;
+			sidIdFile = locate(path, fname);
+			if (sidIdFile.exists()) {
+				return sidIdFile;
 			}
-		} catch (AccessControlException e) {
-			// access denied in the ui version
 		}
 		return null;
 	}

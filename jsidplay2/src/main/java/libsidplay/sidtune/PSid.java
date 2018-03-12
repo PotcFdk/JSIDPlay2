@@ -204,8 +204,7 @@ class PSid extends Prg {
 		private byte relocPages;
 
 		/**
-		 * only version 0x0002+ reserved for version 0x0002 used in version 0x0003 to
-		 * indicate second SID chip address
+		 * only version 0x0003 to indicate second SID chip address
 		 */
 		private byte sidChip2MiddleNybbles;
 
@@ -562,7 +561,7 @@ class PSid extends Prg {
 		}
 		if (header.version >= 3) {
 			model2 = (header.flags >> 6) & 3;
-			
+
 			/* Handle 2nd SID chip location */
 			int sid2loc = 0xd000 | (header.sidChip2MiddleNybbles & 0xff) << 4;
 			if (((sid2loc >= 0xd420 && sid2loc < 0xd800) || sid2loc >= 0xde00) && (sid2loc & 0x10) == 0) {
@@ -575,7 +574,7 @@ class PSid extends Prg {
 		}
 		if (header.version >= 4) {
 			model3 = (header.flags >> 8) & 3;
-			
+
 			/* Handle 3rd SID chip location */
 			int sid3loc = 0xd000 | (header.sidChip3MiddleNybbles & 0xff) << 4;
 			if (((sid3loc >= 0xd420 && sid3loc < 0xd800) || sid3loc >= 0xde00) && (sid3loc & 0x10) == 0) {
@@ -666,7 +665,7 @@ class PSid extends Prg {
 			if (info.sidChipBase[2] != 0) {
 				header.sidChip3MiddleNybbles = (byte) (info.sidChipBase[2] >> 4);
 			}
-			
+
 			header.flags = 0;
 			switch (info.compatibility) {
 			case RSID_BASIC:
