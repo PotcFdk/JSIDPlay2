@@ -56,7 +56,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public SidPlay2Section() {
 		Bindings.bindBidirectional(this.demos, demosFile, new FileToStringConverter());
-		Bindings.bindBidirectional(this.HVMEC, HVMECFile, new FileToStringConverter());
+		Bindings.bindBidirectional(this.hvmec, hvmecFile, new FileToStringConverter());
 		Bindings.bindBidirectional(this.mags, magsFile, new FileToStringConverter());
 		Bindings.bindBidirectional(this.hvsc, hvscFile, new FileToStringConverter());
 		Bindings.bindBidirectional(this.cgsc, cgscFile, new FileToStringConverter());
@@ -174,22 +174,26 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return singleProperty;
 	}
 
-	private ObjectProperty<File> HVMECFile = new SimpleObjectProperty<File>();
-	private StringProperty HVMEC = new SimpleStringProperty();
+	private ObjectProperty<File> hvmecFile = new SimpleObjectProperty<File>();
+	private StringProperty hvmec = new SimpleStringProperty();
 
 	@Transient
 	public File getHVMECFile() {
-		return HVMECFile.get();
+		return hvmecFile.get();
 	}
 
 	public String getHVMEC() {
-		return HVMEC.get();
+		return hvmec.get();
 	}
 
 	public void setHVMEC(String hVMEC) {
-		HVMEC.set(hVMEC);
+		hvmec.set(hVMEC);
 	}
 
+	public StringProperty hvmecProperty() {
+		return hvmec;
+	}
+	
 	private ObjectProperty<File> demosFile = new SimpleObjectProperty<File>();
 	private StringProperty demos = new SimpleStringProperty();
 
@@ -206,6 +210,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.demos.set(demos);
 	}
 
+	public StringProperty demosProperty() {
+		return demos;
+	}
+	
 	private ObjectProperty<File> magsFile = new SimpleObjectProperty<File>();
 	private StringProperty mags = new SimpleStringProperty();
 
@@ -222,6 +230,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.mags.set(mags);
 	}
 
+	public StringProperty magsProperty() {
+		return mags;
+	}
+	
 	private ObjectProperty<File> cgscFile = new SimpleObjectProperty<File>();
 	private StringProperty cgsc = new SimpleStringProperty();
 
@@ -238,6 +250,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.cgsc.set(cgsc);
 	}
 
+	public StringProperty cgscProperty() {
+		return cgsc;
+	}
+	
 	private ObjectProperty<File> hvscFile = new SimpleObjectProperty<File>();
 	private StringProperty hvsc = new SimpleStringProperty();
 
@@ -256,6 +272,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.hvsc.set(hvsc);
 	}
 
+	public StringProperty hvscProperty() {
+		return hvsc;
+	}
+	
 	private ObjectProperty<File> gameBase64File = new SimpleObjectProperty<File>();
 	private StringProperty gameBase64 = new SimpleStringProperty();
 

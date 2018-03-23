@@ -89,10 +89,13 @@ public class Favorites extends Tab implements UIPart {
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 
 		// Not already configured, yet?
-		if (sidplay2Section.getHvsc() != null) {
+		if (sidplay2Section.getHvscFile() != null) {
 			setSongLengthDatabase(sidplay2Section.getHvsc());
 			setSTIL(sidplay2Section.getHvsc());
 		}
+		autoConfiguration.setDisable(sidplay2Section.getHvscFile() == null);
+		sidplay2Section.hvscProperty()
+				.addListener((obj, o, n) -> autoConfiguration.setDisable(sidplay2Section.getHvscFile() == null));
 
 		Bindings.bindBidirectional(fadeInTime.textProperty(), sidplay2Section.fadeInTimeProperty(),
 				new TimeToStringConverter());

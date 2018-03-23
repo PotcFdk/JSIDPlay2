@@ -41,7 +41,8 @@ public class ZipFileUtils {
 			return INPUT_STREAM.newInstance(file);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
-			throw new RuntimeException(e);
+			throw (e.getCause() instanceof FileNotFoundException) ? (FileNotFoundException) e.getCause()
+					: new FileNotFoundException(e.getMessage());
 		}
 	}
 }
