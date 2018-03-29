@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.beust.jcommander.JCommander;
@@ -39,6 +39,19 @@ import ui.entities.config.service.ConfigService.ConfigurationType;
  */
 @Parameters(resourceBundle = "ui.JSidPlay2Main")
 public class JSidPlay2Main extends Application {
+
+	private static final String LOG_CONFIG_RES = "/sidplay/logconfig.properties";
+
+	static {
+		try {
+			// turn off HSQL logging re-configuration
+			System.setProperty("hsqldb.reconfig_logging", "false");
+			// configure JSIDPlay2 logging
+			LogManager.getLogManager().readConfiguration(JSidPlay2Main.class.getResourceAsStream(LOG_CONFIG_RES));
+		} catch (final IOException e) {
+			Logger.getAnonymousLogger().severe("Could not load " + LOG_CONFIG_RES + ": " + e.getMessage());
+		}
+	}
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
@@ -88,12 +101,6 @@ public class JSidPlay2Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		testInstance = null;
-		// Get rid of INFO logging (HSQL is nasty)
-		System.setProperty("hsqldb.reconfig_logging", "false");
-		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
-		Logger databaseLogger = Logger.getLogger("hsqldb.db");
-		databaseLogger.setLevel(Level.WARNING);
-		
 		player = new Player(getConfigurationFromCommandLineArgs());
 		player.setMenuHook(menuHook);
 		// automatically load tune on start-up
@@ -152,7 +159,7 @@ public class JSidPlay2Main extends Application {
 	//
 	// Helper methods
 	//
-	
+
 	/**
 	 * Parse optional command line arguments.
 	 * 

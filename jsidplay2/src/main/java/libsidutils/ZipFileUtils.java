@@ -32,7 +32,7 @@ public class ZipFileUtils {
 			return FILE.newInstance(parent, child);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
-			throw new RuntimeException(e);
+			return new File(parent, child);
 		}
 	}
 
@@ -41,8 +41,7 @@ public class ZipFileUtils {
 			return INPUT_STREAM.newInstance(file);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
-			throw (e.getCause() instanceof FileNotFoundException) ? (FileNotFoundException) e.getCause()
-					: new FileNotFoundException(e.getMessage());
+			return new FileInputStream(file);
 		}
 	}
 }
