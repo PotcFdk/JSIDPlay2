@@ -1,5 +1,5 @@
 package ui.download;
 
 interface RBCWrapperDelegate {
-	public void rbcProgressCallback(RBCWrapper rbc, double progress);
+	public void rbcProgressCallback(double progress);
 }

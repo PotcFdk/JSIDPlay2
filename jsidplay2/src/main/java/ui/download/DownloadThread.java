@@ -310,7 +310,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	@Override
-	public void rbcProgressCallback(RBCWrapper rbc, double progress) {
+	public void rbcProgressCallback(double progress) {
 		listener.downloadStep((int) progress);
 	}
 
