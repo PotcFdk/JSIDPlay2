@@ -142,7 +142,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		return true;
 	}
 
-	private boolean isSplittedInChunks() throws IOException {
+	private boolean isSplittedInChunks() throws MalformedURLException {
 		return checkExistingURL(getURL(1));
 	}
 
@@ -220,7 +220,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		throw new IOException(String.format("Download error for %s, i have tried %d times! ", decoded, MAX_TRY_COUNT));
 	}
 
-	private boolean hasNextPart(int part) throws IOException {
+	private boolean hasNextPart(int part) throws MalformedURLException {
 		return checkExistingURL(getURL(part));
 	}
 
