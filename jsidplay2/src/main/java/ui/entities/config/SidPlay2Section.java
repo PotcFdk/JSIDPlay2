@@ -18,6 +18,8 @@ import static sidplay.ini.IniDefaults.DEFAULT_TINT;
 import static sidplay.ini.IniDefaults.DEFAULT_TURBO_TAPE;
 
 import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -322,6 +324,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.proxyPort = proxyPort;
 	}
 
+	@Transient
+	public Proxy getProxy() {
+		if (enableProxy) {
+			return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHostname, proxyPort));
+		} else {
+			return Proxy.NO_PROXY;
+		}
+	}
+	
 	private String lastDirectory;
 
 	@Override

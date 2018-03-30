@@ -10,12 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.Proxy;
-import java.net.SocketAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
@@ -28,6 +24,7 @@ import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
 import de.schlichtherle.truezip.file.TFile;
+import libsidutils.InternetUtils;
 import ui.entities.config.Configuration;
 
 /**
@@ -75,8 +72,6 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	private final URL url;
 	private final IDownloadListener listener;
 
-	private Proxy proxy;
-
 	private boolean handleCrcAndSplits;
 
 	public DownloadThread(Configuration cfg, IDownloadListener listener, URL url) {
@@ -87,7 +82,6 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		this.config = cfg;
 		this.url = url;
 		this.listener = listener;
-		this.proxy = getProxy();
 		this.handleCrcAndSplits = handleCrcAndSplits;
 	}
 
@@ -148,16 +142,6 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		return true;
 	}
 
-	private Proxy getProxy() {
-		if (config.getSidplay2Section().isEnableProxy()) {
-			final SocketAddress addr = new InetSocketAddress(config.getSidplay2Section().getProxyHostname(),
-					config.getSidplay2Section().getProxyPort());
-			return new Proxy(Proxy.Type.HTTP, addr);
-		} else {
-			return Proxy.NO_PROXY;
-		}
-	}
-
 	private boolean isSplittedInChunks() throws IOException {
 		return checkExistingURL(getURL(1));
 	}
@@ -179,20 +163,14 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		return new URL(getURLUsingExt("." + String.format("%03d", part)));
 	}
 
-	private boolean checkExistingURL(URL currentURL) throws IOException {
-		HttpURLConnection connection = getConnection(currentURL);
-		return connection.getResponseCode() == HttpURLConnection.HTTP_OK && connection.getContentLength() >= 0;
-	}
-
-	private HttpURLConnection getConnection(URL currentURL) throws IOException, ProtocolException {
-		HttpURLConnection.setFollowRedirects(true);
-		URLConnection openConnection = currentURL.openConnection(proxy);
-		if (!(openConnection instanceof HttpURLConnection)) {
-			throw new IOException("Unsupported url: " + currentURL);
+	private boolean checkExistingURL(URL currentURL) {
+		try {
+			Proxy proxy = config.getSidplay2Section().getProxy();
+			URLConnection connection = InternetUtils.openConnection(currentURL, proxy);
+			return connection.getContentLength() >= 0;
+		} catch (IOException e) {
+			return false;
 		}
-		HttpURLConnection connection = (HttpURLConnection) openConnection;
-		connection.setRequestMethod("HEAD");
-		return connection;
 	}
 
 	private File download(URL currentURL, boolean retry) throws IOException {
@@ -208,41 +186,21 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 			FileOutputStream fos = null;
 			try {
-				while (true) {
-					URLConnection openConnection = currentURL.openConnection(proxy);
-					if (!(openConnection instanceof HttpURLConnection)) {
-						System.err.println("Unsupported protocol: " + currentURL);
-						throw new IOException();
-					}
-					HttpURLConnection connection = (HttpURLConnection) openConnection;
-					connection.setInstanceFollowRedirects(false);
-					int responseCode = connection.getResponseCode();
-					switch (responseCode) {
-					case HttpURLConnection.HTTP_MOVED_PERM:
-					case HttpURLConnection.HTTP_MOVED_TEMP:
-					case HttpURLConnection.HTTP_SEE_OTHER:
-						String location = connection.getHeaderField("Location");
-						if (location != null) {
-							location = URLDecoder.decode(location, "UTF-8");
-							// Deal with relative URLs
-							URL next = new URL(currentURL, location);
-							currentURL = new URL(next.toExternalForm().replace(" ", "%20"));
-							continue;
-						}
-					}
-					long contentLength = connection.getContentLengthLong();
-					ReadableByteChannel rbc = new RBCWrapper(Channels.newChannel(connection.getInputStream()),
-							contentLength, this);
-					File file = createLocalFile(currentURL);
-					fos = new FileOutputStream(file);
-					fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+				Proxy proxy = config.getSidplay2Section().getProxy();
+				URLConnection connection = InternetUtils.openConnection(currentURL, proxy);
+				currentURL = connection.getURL();
 
-					if (file.length() == contentLength) {
-						return file;
-					}
-					file.delete();
-					break;
+				long contentLength = connection.getContentLengthLong();
+				ReadableByteChannel rbc = new RBCWrapper(Channels.newChannel(connection.getInputStream()),
+						contentLength, this);
+				File file = createLocalFile(currentURL);
+				fos = new FileOutputStream(file);
+				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+
+				if (file.length() == contentLength) {
+					return file;
 				}
+				file.delete();
 			} catch (IOException e) {
 				if (retry) {
 					System.err.println(String.format("Download failed for %s, next try!", decoded));
