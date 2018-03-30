@@ -1068,15 +1068,25 @@ public class MenuBar extends VBox implements UIPart {
 
 	private void setCurrentTrack(SidTune sidTune) {
 		StringBuilder trackInfo = new StringBuilder();
+		StringBuilder trackInfoToolTip = new StringBuilder();
 		if (sidTune != RESET) {
 			SidTuneInfo info = sidTune.getInfo();
 			Iterator<String> detail = info.getInfoString().iterator();
 			if (detail.hasNext()) {
-				trackInfo.append(detail.next()).append(' ');
+				String title = detail.next();
+				trackInfo.append(title).append(' ');
+				trackInfoToolTip.append(title).append('\n');
+			}
+			if (detail.hasNext()) {
+				trackInfoToolTip.append(detail.next()).append('\n');
+			}
+			if (detail.hasNext()) {
+				trackInfoToolTip.append(detail.next());
 			}
 			trackInfo.append(String.format("%2d/%2d", info.getCurrentSong(), info.getSongs()));
 		}
 		tracks.setText(trackInfo.toString());
+		tracks.setTooltip(new Tooltip(trackInfoToolTip.toString()));
 	}
 
 	private void openErrorDialog(String msg) {
