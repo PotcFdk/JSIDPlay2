@@ -88,14 +88,16 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	@Override
 	public void run() {
 		// Part 1: Use already existing download
-		try {
-			File availableFile = createLocalFile(url);
-			if (alreadyAvailable(availableFile)) {
-				listener.downloadStop(availableFile);
-				return;
+		if (handleCrcAndSplits) {
+			try {
+				File availableFile = createLocalFile(url);
+				if (checkCrcOfAvailableFile(availableFile)) {
+					listener.downloadStop(availableFile);
+					return;
+				}
+			} catch (IOException e) {
+				// fall through!
 			}
-		} catch (IOException e) {
-			// fall through!
 		}
 		// Part 2: Download file(s)
 		File downloadedFile = null;
@@ -130,9 +132,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		}
 	}
 
-	private boolean alreadyAvailable(File file) throws IOException {
-		if (!handleCrcAndSplits)
-			return file.exists() && file.canRead() && file.length() > 0;
+	private boolean checkCrcOfAvailableFile(File file) throws IOException {
 		File crcFile = download(getCrcUrl(), false);
 		boolean checkCrc = checkCrc(crcFile, file);
 		if (!checkCrc) {
@@ -189,15 +189,19 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 				Proxy proxy = config.getSidplay2Section().getProxy();
 				URLConnection connection = InternetUtils.openConnection(currentURL, proxy);
 				currentURL = connection.getURL();
-
 				long contentLength = connection.getContentLengthLong();
+				File file = createLocalFile(currentURL);
+				if (isAlreadyAvailableFile(contentLength, file)) {
+					// only un-zipped entries will be remembered here (because we clean-up zips)
+					return file;
+				}
 				ReadableByteChannel rbc = new RBCWrapper(Channels.newChannel(connection.getInputStream()),
 						contentLength, this);
-				File file = createLocalFile(currentURL);
+				file = createLocalFile(currentURL);
 				fos = new FileOutputStream(file);
 				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
-				if (file.length() == contentLength) {
+				if (isAlreadyAvailableFile(contentLength, file)) {
 					return file;
 				}
 				file.delete();
@@ -209,15 +213,16 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 				}
 			} finally {
 				if (fos != null) {
-					try {
-						fos.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					fos.close();
 				}
 			}
 		} while (tries != MAX_TRY_COUNT);
 		throw new IOException(String.format("Download error for %s, i have tried %d times! ", decoded, MAX_TRY_COUNT));
+	}
+
+	private boolean isAlreadyAvailableFile(long contentLength, File availableFile) {
+		return availableFile.exists() && availableFile.isFile() && availableFile.canRead()
+				&& availableFile.length() == contentLength;
 	}
 
 	private boolean hasNextPart(int part) throws MalformedURLException {
