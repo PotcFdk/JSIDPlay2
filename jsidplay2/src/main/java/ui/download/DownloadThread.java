@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
@@ -94,6 +93,8 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 				if (checkCrcOfAvailableFile(availableFile)) {
 					listener.downloadStop(availableFile);
 					return;
+				} else {
+					System.err.println("Online file contents has changed, re-download!");
 				}
 			} catch (IOException e) {
 				// fall through!
@@ -116,13 +117,11 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		// Part 3: Optional CRC check
 		try {
 			if (handleCrcAndSplits) {
-				File crcFile = download(getCrcUrl(), false);
-				boolean checkCrc = checkCrc(crcFile, downloadedFile);
-				if (!checkCrc) {
+				if (checkCrcOfAvailableFile(downloadedFile)) {
+					System.out.println("CRC32 check OK for download: " + url);
+				} else {
 					System.err.println("CRC32 check failed!");
 					downloadedFile = null;
-				} else {
-					System.out.println("CRC32 check OK for download: " + url);
 				}
 			}
 		} catch (IOException ioE) {
@@ -134,16 +133,19 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private boolean checkCrcOfAvailableFile(File file) throws IOException {
 		File crcFile = download(getCrcUrl(), false);
-		boolean checkCrc = checkCrc(crcFile, file);
-		if (!checkCrc) {
-			System.err.println("Online file contents has changed, re-download!");
-			return false;
-		}
-		return true;
+		return checkCrc(crcFile, file);
 	}
 
 	private boolean isSplittedInChunks() throws MalformedURLException {
 		return checkExistingURL(getURL(1));
+	}
+
+	private boolean hasNextPart(int part) throws MalformedURLException {
+		return checkExistingURL(getURL(part));
+	}
+
+	private URL getCrcUrl() throws MalformedURLException {
+		return new URL(getURLUsingExt(".crc"));
 	}
 
 	private File downloadAndMergeChunks() throws IOException, MalformedURLException {
@@ -174,12 +176,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private File download(URL currentURL, boolean retry) throws IOException {
-		String decoded;
-		try {
-			decoded = URLDecoder.decode(currentURL.toString(), UTF_8);
-		} catch (UnsupportedEncodingException e1) {
-			throw new RuntimeException(e1);
-		}
+		String decoded = URLDecoder.decode(currentURL.toString(), UTF_8);
 		int tries = 0;
 		do {
 			tries++;
@@ -225,19 +222,11 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 				&& availableFile.length() == contentLength;
 	}
 
-	private boolean hasNextPart(int part) throws MalformedURLException {
-		return checkExistingURL(getURL(part));
-	}
-
-	private File createLocalFile(URL currentURL) {
-		try {
-			String decoded = URLDecoder.decode(currentURL.getFile(), UTF_8);
-			String name = new File(decoded).getName();
-			return new File(config.getSidplay2Section().getTmpDir(),
-					name.replaceAll(ILLEGAL_FILENAME_CHARS, REPLACEMENT_ILLEGAL_CHAR));
-		} catch (UnsupportedEncodingException e1) {
-			throw new RuntimeException(e1);
-		}
+	private File createLocalFile(URL currentURL) throws IOException {
+		String decoded = URLDecoder.decode(currentURL.getFile(), UTF_8);
+		String name = new File(decoded).getName();
+		return new File(config.getSidplay2Section().getTmpDir(),
+				name.replaceAll(ILLEGAL_FILENAME_CHARS, REPLACEMENT_ILLEGAL_CHAR));
 	}
 
 	private File mergeChunks(List<File> chunks) throws IOException {
@@ -270,10 +259,6 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		return tmp;
 	}
 
-	private URL getCrcUrl() throws MalformedURLException {
-		return new URL(getURLUsingExt(".crc"));
-	}
-
 	private boolean checkCrc(File crcFile, File download) throws IOException {
 		Properties properties = new Properties();
 		try (BufferedInputStream stream = new BufferedInputStream(new FileInputStream(crcFile))) {
@@ -283,13 +268,8 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 			long crc = Long.valueOf(properties.getProperty("crc32"), 16);
 			long fileLength = Integer.valueOf(properties.getProperty("size"));
 			String filename = properties.getProperty("filename");
-			if (!download.getName().equals(filename)) {
-				return false;
-			}
-			if (download.length() != fileLength) {
-				return false;
-			}
-			return calculateCRC32(download) == crc;
+			return download.getName().equals(filename) && download.length() == fileLength
+					&& calculateCRC32(download) == crc;
 		} catch (NumberFormatException e) {
 			return false;
 		}
